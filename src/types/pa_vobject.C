@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char* IDENT_VOBJECT_C="$Date: 2002/10/31 15:01:56 $";
+static const char* IDENT_VOBJECT_C="$Date: 2002/10/31 15:13:32 $";
 
 Value *VObject::as(const char *atype, bool looking_up) { 
 	if(!looking_up)
@@ -100,14 +100,15 @@ Value *VObject::stateless_object__get_element(const String& aname, Value& aself)
 
 /// VObject: (field)=value
 bool VObject::put_element(const String& aname, Value *avalue, bool replace) {
-	//copied from VStateless_class, maybe not needed try {
-		if(fbase && fbase->put_element(aname, avalue, true))
-			return true; // replaced in base
-	//} catch(Exception) {  /* allow override parent variables, useful for form descendants */ }
+	if(fbase && fbase->put_element(aname, avalue, true))
+		return true; // replaced in base dynamic fields
 
 	if(replace)
 		return ffields.put_replace(aname, avalue);
 	else {
+		if(VStateless_object::put_element(aname, avalue, true))
+			return true; // replaced in base statics fields
+
 		ffields.put(aname, avalue);
 		return false;
 	}
