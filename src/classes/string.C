@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.79 2001/10/09 13:23:25 parser Exp $
+	$Id: string.C,v 1.80 2001/10/11 10:21:44 parser Exp $
 */
 
 #include "classes.h"
@@ -410,7 +410,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 						"default option must be code");
 				string=r.process(*vdefault).get_string();
 				if(!string)
-					string=empty_string;
+					string=new(pool) String(pool);
 			} else
 				PTHROW(0, 0,
 					&method_name,

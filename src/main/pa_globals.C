@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.80 2001/10/01 08:53:58 parser Exp $
+	$Id: pa_globals.C,v 1.81 2001/10/11 10:21:44 parser Exp $
 */
 
 #include "pa_globals.h"
@@ -38,7 +38,6 @@ String *content_disposition_name;
 String *content_disposition_filename_name;
 
 String *unnamed_name;
-String *empty_string;
 
 String *auto_method_name;
 String *main_method_name;
@@ -126,7 +125,6 @@ void pa_globals_init(Pool& pool) {
 	content_disposition_filename_name=NEW String(pool, CONTENT_DISPOSITION_FILENAME_NAME);
 
 	unnamed_name=NEW String(pool, UNNAMED_NAME);
-	empty_string=NEW String(pool); 
 
 	auto_method_name=NEW String(pool, AUTO_METHOD_NAME);
 	main_method_name=NEW String(pool, MAIN_METHOD_NAME);

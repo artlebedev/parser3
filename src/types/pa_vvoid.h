@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vvoid.h,v 1.4 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vvoid.h,v 1.5 2001/10/11 10:21:44 parser Exp $
 */
 
 #ifndef PA_VVOID_H
@@ -23,7 +23,7 @@ public: // Value
 	const char *type() const { return "void"; }
 
 	/// VVoid: ""
-	const String *get_string() { return empty_string; }
+	const String *get_string() { return NEW String(pool()); }
 	/// VVoid: false
 	bool as_bool() const { return false; }
 	/// VVoid: false

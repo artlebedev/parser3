@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.67 2001/10/08 14:09:18 parser Exp $
+	$Id: untaint.C,v 1.68 2001/10/11 10:21:44 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -76,13 +76,14 @@ static const char * String_Untaint_lang_name[]={
 			just a flag, that value not stored
 		*/
 	"A",     ///< leave all characters intact
-	"F", ///< filename
-	"H",    ///< text in HTTP response header
+	"F", ///< file specification
+	"H",    ///< ext in HTTP response header
 	"M",    ///< text in mail header
 	"URI",       ///< text in uri
 	"T",     ///< ^table:set body
 	"SQL",       ///< ^table:sql body
 	"JS",        ///< JavaScript code
+	"XML",		///< ^dom:set xml
 	"HTML",      ///< HTML code (for editing)
 	"UHTML", ///< HTML code with USER chars
 };

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.105 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_string.h,v 1.106 2001/10/11 10:21:44 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -86,7 +86,9 @@ public:
 		CR_GROW_COUNT=2 ///< each time the String chunk_is_full() string expanded()
 	};
 
-	/// piece is tainted or not. the language to use when detaint 
+	/** piece is tainted or not. the language to use when detaint
+		remember to change String_Untaint_lang_name @ untaint.C along
+	*/
 	enum Untaint_lang {
 		UL_UNSPECIFIED=0, ///< zero value handy for hash lookup @see untaint_lang_name2enum
 		UL_CLEAN, ///< clean

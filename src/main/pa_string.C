@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.106 2001/10/05 16:12:40 parser Exp $
+	$Id: pa_string.C,v 1.107 2001/10/11 10:21:44 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -357,12 +357,12 @@ const Origin& String::origin() const {
 #endif
 
 String& String::mid(size_t start, size_t finish) const {
+	String& result=*NEW String(pool());
+
 	start=max(0, start);
 	finish=min(size(), finish);
 	if(start==finish)
-		return *empty_string;
-
-	String& result=*NEW String(pool());
+		return result;
 
 	size_t pos=0;
 	const Chunk *chunk=&head; 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.66 2001/09/30 12:27:59 parser Exp $
+	$Id: pa_globals.h,v 1.67 2001/10/11 10:21:44 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -97,7 +97,6 @@ extern String *exception_method_name;
 extern String *post_process_method_name;
 
 extern String *unnamed_name;
-extern String *empty_string;
 
 extern String *auto_method_name;
 extern String *main_method_name;

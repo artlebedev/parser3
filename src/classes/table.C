@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.125 2001/10/09 13:23:25 parser Exp $
+	$Id: table.C,v 1.126 2001/10/11 10:21:44 parser Exp $
 */
 
 #include "classes.h"
@@ -390,7 +390,7 @@ static void _flip(Request& r, const String& method_name, MethodParams *params) {
 				Array& new_row=*new(pool) Array(pool, old_table.size());
 				for(int i=0; i<old_table.size(); i++) {
 					const Array& old_row=old_table.at(i);
-					new_row+=column<old_row.size()?old_row.get(column):empty_string;
+					new_row+=column<old_row.size()?old_row.get(column):new(pool) String(pool);
 				}
 				new_table+=&new_row;
 			}
