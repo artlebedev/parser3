@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.46 2001/12/19 09:53:28 paf Exp $
+	$Id: mail.C,v 1.47 2001/12/19 12:26:11 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -29,6 +29,10 @@
 // global variable
 
 Methoded *mail_class;
+
+// consts
+
+const int ATTACHMENT_WEIGHT=100;
 
 // class
 
@@ -198,38 +202,40 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 
 #ifndef DOXYGEN
 struct Mail_seq_item {
-	const String *part_name;
-	Value *part_value;
+	int weight;
+	const String *name;
+	Value *value;
 };
 #endif
+static int get_part_name_weight(const Hash::Key& part_name) {
+	const char *cstr=part_name.cstr();
+	int offset=0;
+	if(strncmp(cstr, "text", 4)==0) {
+		cstr+=4;
+	} else if(strncmp(cstr, "attach", 6)==0) {
+		cstr+=6;
+		offset=ATTACHMENT_WEIGHT;
+	} else
+		throw Exception(0, 0,
+			&part_name,
+			"is neither text# nor attach#");
+
+	char *error_pos;
+	return strtol(cstr, &error_pos, 10)+offset;
+}
 static void add_part(const Hash::Key& part_name, Hash::Val *part_value, 
 					 void *info) {
 	Mail_seq_item **seq_ref=static_cast<Mail_seq_item **>(info);
-	(**seq_ref).part_name=&part_name;
-	(**seq_ref).part_value=static_cast<Value *>(part_value);
+	(**seq_ref).weight=get_part_name_weight(part_name);
+	(**seq_ref).name=&part_name;
+	(**seq_ref).value=static_cast<Value *>(part_value);
 	(*seq_ref)++;
 }
-static double key_of_part(const void *item) {
-	const char *cstr=static_cast<const Mail_seq_item *>(item)->part_name->cstr();
-	char *error_pos;
-	return strtod(cstr, &error_pos);
+static int key_of_part(const void *item) {
+	return static_cast<const Mail_seq_item *>(item)->weight;
 }
 static int sort_cmp_string_double_value(const void *a, const void *b) {
-	double va=key_of_part(a);
-	double vb=key_of_part(b);
-
-	// 0 logically equals infinity. so that attachments would go last
-	if(va==0)
-		return +1;
-	if(vb==0)
-		return -1;
-
-	if(va<vb)
-		return -1;
-	else if(va>vb)
-		return +1;
-	else 
-		return 0;
+	return key_of_part(a)-key_of_part(b);
 }
 static const String& letter_hash_to_string(Request& r, const String& method_name, 
 										   Hash& letter_hash, int level,
@@ -277,15 +283,15 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 				// intermediate boundary
 				result << "\n--" << boundary << "\n";
 
-				if(Hash *part_hash=seq[i].part_value->get_hash(&method_name))
-					if(seq[i].part_name->mid(0, 6/*attach*/)=="attach")
-						result << attach_hash_to_string(r, *seq[i].part_name, *part_hash);
+				if(Hash *part_hash=seq[i].value->get_hash(&method_name))
+					if(seq[i].weight>=ATTACHMENT_WEIGHT)
+						result << attach_hash_to_string(r, *seq[i].name, *part_hash);
 					else 
 						result << letter_hash_to_string(r, method_name, *part_hash, 
 							level+1, 0, 0);
 				else
 					throw Exception(0, 0,
-						seq[i].part_name,
+						seq[i].name,
 						"part is not hash");
 			}
 
