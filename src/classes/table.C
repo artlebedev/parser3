@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.40 2001/03/30 05:51:12 paf Exp $
+	$Id: table.C,v 1.41 2001/03/30 09:58:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -20,7 +20,7 @@
 VStateless_class *table_class;
 
 // methods
-
+/// @todo now remove CONFIG untaint, make pos() searches in String
 static void set_or_load(
 						Request& r, 
 						const String& method_name, Array *params, 
@@ -87,12 +87,9 @@ static void set_or_load(
 	// replace any previous table value
 	static_cast<VTable *>(r.self)->set_table(table);
 }
-
-
 static void _set(Request& r, const String& method_name, Array *params) {
 	set_or_load(r, method_name, params, false);
 }
-
 static void _load(Request& r, const String& method_name, Array *params) {
 	set_or_load(r, method_name, params, true);
 }
@@ -356,6 +353,31 @@ static void _flip(Request& r, const String& method_name, Array *params) {
 	vtable.set_table(new_table);
 }
 
+/// @todo now require \t to be clean [UL_NO]
+static void _append(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+	// data is last parameter
+	Value *value=static_cast<Value *>(params->get(0));
+	// forcing [this body type]
+	r.fail_if_junction_(true, *value, method_name, "body must not be junction");
+
+	const String& string=static_cast<VString *>(value)->as_string();
+
+	// parse cells
+	Array& row=*new(pool) Array(pool);
+	size_t pos_after=0;
+	int pos_before;
+	while((pos_before=string.pos("\t", pos_after))>=0) {
+		row+=&string.piece(pos_after, pos_before);
+		pos_after=pos_before+1/*\t*/;
+	}
+	// last piece
+	if(pos_after<string.size()) 
+		row+=&string.piece(pos_after, string.size());
+
+	static_cast<VTable *>(r.self)->table()+=&row;
+}
+
 // initialize
 
 void initialize_table_class(Pool& pool, VStateless_class& vclass) {
@@ -404,4 +426,7 @@ void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^table.flip[]
 	vclass.add_native_method("flip", Method::CT_DYNAMIC, _flip, 0, 0);
+
+	// ^table.append{r{tab}e{tab}c{tab}o{tab}r{tab}d}
+	vclass.add_native_method("append", Method::CT_DYNAMIC, _append, 1, 1);
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.57 2001/03/29 17:23:22 paf Exp $
+	$Id: pa_string.C,v 1.58 2001/03/30 09:58:59 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -295,6 +295,7 @@ int String::cmp(int& partial, const String& src, size_t this_offset) const {
 	}
 }
 
+/// @todo now fix like prev one. table:append doent not work because of this
 int String::cmp(int& partial, const char* b_ptr, size_t src_size) const {
 	size_t b_size=src_size?src_size:b_ptr?strlen(b_ptr):0;
 
@@ -397,6 +398,18 @@ break2:
 }
 
 int String::pos(const String& substr, size_t result) const {
+	for(; result<size(); result++) {
+		int partial; cmp(partial, substr, result);
+		if(
+			partial==0 || // full match
+			partial==2) // 'substr' starts 'this'+'result'
+			return result;
+	}
+	
+	return -1;
+}
+
+int String::pos(const char *substr, size_t result) const {
 	for(; result<size(); result++) {
 		int partial; cmp(partial, substr, result);
 		if(
