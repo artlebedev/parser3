@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.142 2001/07/13 10:58:03 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.143 2001/07/13 12:13:50 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -279,7 +279,8 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		cookie.fill_fields(*this);
 
 		// execute @main[]
-		const String *body_string=execute_method(*main_class, *main_method_name);
+		const String *body_string=execute_virtual_method(
+			*main_class, *main_method_name);
 		if(!body_string)
 			THROW(0,0,
 			0, 
@@ -507,7 +508,7 @@ VStateless_class *Request::use_buf(const char *source, const char *file,
 	VStateless_class& cclass=COMPILE(source, aclass, name, base_class, file);
 
 	// locate and execute possible @auto[] static method
-	execute_method(cclass, *auto_method_name, false /*no result needed*/);
+	execute_nonvirtual_method(cclass, *auto_method_name, false /*no result needed*/);
 	return &cclass;
 }
 

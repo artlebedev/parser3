@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.28 2001/06/28 07:44:17 parser Exp $
+	$Id: int.C,v 1.29 2001/07/13 12:13:50 parser Exp $
 */
-static const char *RCSId="$Id: int.C,v 1.28 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: int.C,v 1.29 2001/07/13 12:13:50 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -76,13 +76,14 @@ static void _mod(Request& r, const String&, MethodParams *params) { vint_op(r, p
 
 // from string.C
 extern 
-String& sql_result_string(Request& r, const String& method_name, MethodParams *params);
+const String* sql_result_string(Request& r, const String& method_name, 
+								MethodParams *params);
 
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	int val=sql_result_string(r, method_name, params).as_int();
-
+	const String *string=sql_result_string(r, method_name, params);
+	int val=string?string->as_int():params->as_int(1, r);
 	VInt& result=*new(pool) VInt(pool, val);
 	result.set_name(method_name);
 	r.write_assign_lang(result);
@@ -117,9 +118,9 @@ MInt::MInt(Pool& apool) : Methoded(apool) {
 	// ^int.format{format}
 	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
 
-	// ^int:sql[query]
-	// ^int:sql[query](offset)
-	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
+	// ^int:sql[query](default)
+	// ^int:sql[query](default)(offset)
+	add_native_method("sql", Method::CT_STATIC, _sql, 2, 3);
 }
 // global variable
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.61 2001/07/11 16:32:13 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.62 2001/07/13 12:13:50 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -257,7 +257,7 @@ static void _lower(Request& r, const String& method_name, MethodParams *params) 
 	change_case(r, method_name, params, String::CC_LOWER);
 }
 
-String& sql_result_string(Request& r, const String& method_name, MethodParams *params) {
+const String* sql_result_string(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	if(!r.connection)
@@ -267,11 +267,7 @@ String& sql_result_string(Request& r, const String& method_name, MethodParams *p
 
 	Value& statement=params->as_junction(0, "statement must be code");
 
-	ulong offset=0;
-	if(params->size()>1) {
-		Value& offset_code=params->as_junction(1, "offset must be expression");
-		offset=(ulong)r.process(offset_code).as_double();
-	}
+	ulong offset=(ulong)(params->size()>2?params->as_int(2, r):0);
 
 	Temp_lang temp_lang(r, String::UL_SQL);
 	const String& statement_string=r.process(statement).as_string();
@@ -300,14 +296,17 @@ String& sql_result_string(Request& r, const String& method_name, MethodParams *p
 			&statement_string,
 			"result must contain exactly one column");
 
-	if(sql_row_count!=1)
+	if(!sql_row_count)
+		return 0; // no lines, should return second param[default value]
+
+	if(sql_row_count>1)
 		PTHROW(0, 0,
 			&statement_string,
-			"result must contain exactly one row");
+			"result must not contain more then one row");	
 
-	String& result=*new(pool) String(pool);
+	String *result=new(pool) String(pool);
 	SQL_Driver::Cell& cell=sql_rows[0][0];
-	result.APPEND_TAINTED(
+	result->APPEND_TAINTED(
 		(const char *)cell.ptr, cell.size,
 		statement_cstr, 0);
 	
@@ -317,7 +316,15 @@ String& sql_result_string(Request& r, const String& method_name, MethodParams *p
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	VString& result=*new(pool) VString(sql_result_string(r, method_name, params));
+	const String *string=sql_result_string(r, method_name, params);
+	if(!string) {
+		Value& default_code=params->as_junction(1, "default result must code");
+		Value& processed_code=r.process(default_code);
+		string=processed_code.get_string();
+		if(!string)
+			string=empty_string;
+	}
+	VString& result=*new(pool) VString(*string);
 	result.set_name(method_name);
 	r.write_assign_lang(result);
 }
@@ -364,9 +371,9 @@ MString::MString(Pool& apool) : Methoded(apool) {
 	// ^string.tolower[]
 	add_native_method("lower", Method::CT_DYNAMIC, _lower, 0, 0);
 
-	// ^string:sql[query]
-	// ^string:sql[query](offset)
-	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
+	// ^string:sql[query]{default}
+	// ^string:sql[query]{default}(offset)
+	add_native_method("sql", Method::CT_STATIC, _sql, 2, 3);
 }	
 
 // global variable

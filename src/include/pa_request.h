@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.92 2001/07/13 12:13:50 parser Exp $
+	$Id: pa_request.h,v 1.93 2001/07/13 12:15:37 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -205,7 +205,7 @@ private: // execute.C
 		const Method& method, bool return_cstr=true);
 	const String *execute_virtual_method(Value& aself, 
 		const String& method_name, bool return_cstr=true);
-	const String *execute_nonvirtual_method(VStateless_class& aself, 
+	const String *execute_nonvirtual_method(VStateless_class& aclass, 
 		const String& method_name, bool return_cstr=true);
 
 	Value *get_element();

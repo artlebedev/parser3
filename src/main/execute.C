@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.177 2001/07/13 12:15:37 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.178 2001/07/13 12:15:51 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -846,10 +846,10 @@ const String *Request::execute_virtual_method(Value& aself,
 	return 0;
 }
 
-const String *Request::execute_nonvirtual_method(VStateless_class& aself, 
+const String *Request::execute_nonvirtual_method(VStateless_class& aclass, 
 												 const String& method_name, 
 												 bool return_cstr) {
-	if(const Method *method=aself.get_method(method_name))
+	if(const Method *method=aclass.get_method(method_name))
 		return execute_method(aself, *method, return_cstr);
 
 	return 0;
