@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.139 2002/01/21 12:33:05 paf Exp $
+	$Id: table.C,v 1.140 2002/01/22 08:59:59 paf Exp $
 */
 
 #include "classes.h"
@@ -464,8 +464,10 @@ static void _join(Request& r, const String& method_name, MethodParams *params) {
 		for(int src_row=0; src_row<src.size(); src_row++) {
 			src.set_current(src_row);
 			Array& dest_row=*new(pool) Array(pool);
-			for(int dest_column=0; dest_column<dest_columns->size(); dest_column++) 
-				dest_row+=src.item(*dest_columns->get_string(dest_column));
+			for(int dest_column=0; dest_column<dest_columns->size(); dest_column++) {
+				const String *src_item=src.item(*dest_columns->get_string(dest_column));
+				dest_row+=src_item?src_item:new(pool) String(pool);
+			}
 			dest+=&dest_row;
 		}
 		src.set_current(saved_src_current);

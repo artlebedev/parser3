@@ -4,11 +4,16 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-передается
-index1.html?cost=252333.22
+$stuff[^table::set{name	pos
+Alexander	boss
+Sergey	coder}]
 
-принимается
-^form:cost.double[]
+$people[^table::set{name	position
+Tema	art-director}]
+
+^stuff.join[$people]
+
+^stuff.save[join.txt]
 
 
 #^xpath[]
