@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.73 2002/01/23 13:58:05 paf Exp $
+	$Id: xdoc.C,v 1.74 2002/01/24 15:04:17 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -607,11 +607,11 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 					*file_spec,
 					gnome_buf, gnome_size, 
 					true/*as_text*/);
-	else {
-		*parser_size=gnome_size;
+	else if(*parser_size=gnome_size) {
 		*parser_buf=(char *)pool.malloc(gnome_size);
 		memcpy(*parser_buf, gnome_buf, gnome_size);
-	}
+	} else
+		*parser_buf=0;
 }
 
 static void _file(Request& r, const String& method_name, MethodParams *params) {
