@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/12/01 14:20:50 $";
+static const char * const IDENT="$Date: 2003/12/02 13:24:32 $";
 
 #include "libxslt/extensions.h"
 
@@ -36,22 +36,47 @@ struct MemoryStream {
 };
 #endif
 
+static void *
+xmlFileOpen_ReadIntoStream (const char* filename, bool adjust_path_to_root_from_document_root=false) {
+	Request& r=pa_thread_request();
+	char adjust_buf[MAX_STRING];	
+	if(adjust_path_to_root_from_document_root) {
+		const char* document_root=r.request_info.document_root;
+		if(!document_root)
+			document_root=".";
+
+		adjust_buf[0]=0;
+		strcat(adjust_buf, document_root);
+		strcat(adjust_buf, &filename[16]);
+		filename=adjust_buf;
+	} else
+		if(strstr(filename, "file://"))
+			filename+=7/*strlen("file://")*/; 
+		else if(strstr(filename, "://")) 
+			return 0; // plug out [do not handle other prefixes]
+
+	const char *buf;
+	try {
+		buf=file_read_text(r.charsets, *new String(filename));
+	} catch(const Exception& e) {
+		buf=e.comment();
+	} catch(...) {
+		buf="xmlFileOpenLocalhost: unknown error";
+	}
+	MemoryStream* stream=new(UseGC) MemoryStream;
+	stream->m_buf=buf;
+	stream->m_size=strlen(buf);
+	return (void *)stream;
+}
 
 #ifdef PA_SAFE_MODE
 static int
 xmlFileMatchSafeMode(const char* file_spec_cstr) {
-	if(strstr(file_spec_cstr, "://")) {
-		String* file_spec=new String(file_spec_cstr, true);
-		struct stat finfo;
-		if(stat(file_spec_cstr, &finfo)!=0)
-			throw Exception("file.missing", 
-				file_spec, 
-				"stat failed: %s (%d)", 
-					strerror(errno), errno);
-
-		check_safe_mode(finfo, file_spec, file_spec_cstr);
-	}
-	return 0;
+	return 1; // always intercept, causing xmlFileOpenSafeMode to be called
+}
+static void *
+xmlFileOpenSafeMode(const char* filename) {
+	return xmlFileOpen_ReadIntoStream(filename); // handles localfile case, else returns 0
 }
 #endif
 
@@ -71,37 +96,17 @@ xmlFileMatchLocalhost(const char* filename) {
 	return(0);
 }
 
-
 /**
- * xmlFileOpenHttpLocalhost :
+ * xmlFileOpenLocalhost:
  * filename:  the URI for matching
  *
  * http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
- *
- * input from FILE *, supports compressed input
- * if filename is " " then the standard input is used
  *
  * Returns an I/O context or NULL in case of error
  */
 static void *
 xmlFileOpenLocalhost (const char* filename) {
-	Request& r=pa_thread_request();
-	const char* document_root=r.request_info.document_root;
-	if(!document_root)
-		document_root=".";
-
-	char path[MAX_STRING];	
-	path[0]=0;
-	strcat(path, document_root);
-	strcat(path, &filename[16]);
-
-	if(char *buf=file_read_text(r.charsets, *new String(path), false)) {
-		MemoryStream *stream=new(UseGC) MemoryStream;
-		stream->m_buf=buf;
-		stream->m_size=strlen(buf);
-		return (void *)stream;
-	} else
-		return 0;
+	return xmlFileOpen_ReadIntoStream(filename, true/*adjust path to root from document_root*/);
 }
 
 static int
@@ -114,34 +119,51 @@ xmlFileMatchMethod(const char* filename) {
 /// parser://method/param/here -> ^MAIN:method[/params/here]
 static void *
 xmlFileOpenMethod (const char* afilename) {
-	Request& r=pa_thread_request();
+	const char* buf;
+	try {
+		Request& r=pa_thread_request();
 
-	char* s=pa_strdup(afilename+9 /*strlen("parser://")*/);
-	const char* method_cstr=lsplit(&s, '/');
-	const String* method=new String(method_cstr);
-	String::Body param_body("/");  
-	if(s)
-		param_body.append_know_length(s, strlen(s));
+		char* s=pa_strdup(afilename+9 /*strlen("parser://")*/);
+		const char* method_cstr=lsplit(&s, '/');
+		const String* method=new String(method_cstr);
+		String::Body param_body("/");  
+		if(s)
+			param_body.append_know_length(s, strlen(s));
 
-	VString* vparam=new VString(*new String(param_body, String::L_TAINTED));
-	{
-		Temp_lang temp_lang(r, String::L_XML); // default language: XML
-		Request::Execute_nonvirtual_method_result body=
-			r.execute_nonvirtual_method(r.main_class, *method, vparam, true);
-		if(body.string) {
-			MemoryStream *stream=new(UseGC) MemoryStream;
-			stream->m_buf=body.string->cstr(String::L_UNSPECIFIED);
-			stream->m_size=strlen(stream->m_buf);
-			return (void*)stream;
+		VString* vparam=new VString(*new String(param_body, String::L_TAINTED));
+		{
+			Temp_lang temp_lang(r, String::L_XML); // default language: XML
+			Request::Execute_nonvirtual_method_result body=
+				r.execute_nonvirtual_method(r.main_class, *method, vparam, true);
+			if(body.string) {
+				buf=body.string->cstr(String::L_UNSPECIFIED);
+			} else
+				throw Exception(0,
+					new String(afilename),
+					"'%s' method not found in %s class", 
+							method_cstr, MAIN_CLASS_NAME);
 		}
+	} catch(const Exception& e) {
+		buf=e.comment();
+	} catch(...) {
+		buf="xmlFileOpenLocalhost: unknown error";
 	}
-
-	throw Exception(0,
-		new String(afilename),
-		"'%s' method not found in %s class", 
-			method_cstr, MAIN_CLASS_NAME);
+	MemoryStream* stream=new(UseGC) MemoryStream;
+	stream->m_buf=buf;
+	stream->m_size=strlen(buf);
+	return (void *)stream;
 }
 
+/**
+ * pa_xmlFileReadMethod:
+ * @context:  the I/O context
+ * @buffer:  where to drop data
+ * @len:  number of bytes to write
+ *
+ * Read @len bytes to @buffer from the I/O channel.
+ *
+ * Returns the number of bytes written
+ */
 static int
 pa_xmlFileReadMethod (void * context, //< MemoryStream actually
 					  char * buffer, int len) 
@@ -162,8 +184,8 @@ void pa_xml_io_init() {
 #ifdef PA_SAFE_MODE
 	// safe mode checker, always fail match, but checks non-"://" there
 	xmlRegisterInputCallbacks(
-		xmlFileMatchSafeMode, 0,
-		0, 0);
+		xmlFileMatchSafeMode, xmlFileOpenSafeMode,
+		pa_xmlFileReadMethod, pa_xmlFileCloseMethod);
 #endif
 	// http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
 	xmlRegisterInputCallbacks(
