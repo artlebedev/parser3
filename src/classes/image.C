@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_IMAGE_C="$Date: 2003/09/01 07:12:23 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -921,7 +921,7 @@ static void _replace(Request& r, MethodParams& params) {
 			0,
 			"coordinates must be table");
 
-	gdImage::Point *all_p=new gdImage::Point[table->count()];
+	gdImage::Point *all_p=new(PointerFreeGC) gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
 	image->FilledPolygonReplaceColor(all_p, table->count(), 
@@ -943,7 +943,7 @@ static void _polyline(Request& r, MethodParams& params) {
 			0,
 			"coordinates must be table");
 
-	gdImage::Point* all_p=new gdImage::Point[table->count()];
+	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
 	image->Polygon(all_p, table->count(), 
@@ -965,7 +965,7 @@ static void _polygon(Request& r, MethodParams& params) {
 			0,
 			"coordinates must be table");
 
-	gdImage::Point* all_p=new gdImage::Point[table->count()];
+	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
 	image->Polygon(all_p, table->count(), 
@@ -986,7 +986,7 @@ static void _polybar(Request& r, MethodParams& params) {
 			0,
 			"coordinates must be table");
 
-	gdImage::Point* all_p=new gdImage::Point[table->count()];
+	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
 	image->FilledPolygon(all_p, table->count(), 
