@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.19 2001/03/29 17:32:57 paf Exp $
+	$Id: string.C,v 1.20 2001/03/29 17:34:26 paf Exp $
 */
 
 #include "pa_request.h"
@@ -99,7 +99,8 @@ static void split_list(Request& r, const String& method_name, Array *params,
 	if(delim.size()) {
 		size_t pos_after=0;
 		int pos_before;
-		while((pos_before=string.pos(delim, pos_after))>=0) { // we have 'delim' in 'string'?
+		// while we have 'delim' in 'string'...
+		while((pos_before=string.pos(delim, pos_after))>=0) {
 			list+=&string.piece(pos_after, pos_before);
 			pos_after=pos_before+delim.size();
 		}
@@ -117,11 +118,11 @@ static void _lsplit(Request& r, const String& method_name, Array *params) {
 
 	Array list(pool);
 	split_list(r, method_name, params, string, list);
-	Table& table=*new(pool) Table(pool, &string, 0);
+	Table& table=*new(pool) Table(pool, &string, 0/*nameless*/);
 
 	int size=list.size();
 	for(int i=0; i<size; i++) {
-		Array& row=*new(pool) Array(pool, 1);
+		Array& row=*new(pool) Array(pool, 1/*row preallocate(and only)*/);
 		table+=&(row+=list.quick_get(i));
 	}
 
@@ -134,10 +135,10 @@ static void _rsplit(Request& r, const String& method_name, Array *params) {
 
 	Array list(pool);
 	split_list(r, method_name, params, string, list);
-	Table& table=*new(pool) Table(pool, &string, 0);
+	Table& table=*new(pool) Table(pool, &string, 0/*nameless*/);
 
 	for(int i=list.size(); --i>=0; ) {
-		Array& row=*new(pool) Array(pool, 1);
+		Array& row=*new(pool) Array(pool, 1/*row preallocate(and only)*/);
 		table+=&(row+=list.get(i));
 	}
 
