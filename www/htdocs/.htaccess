@@ -1,54 +1,56 @@
-setenv CGI_YANDEX_TEST old_value
+deny from 195.239.227.18 
+deny from 194.84.132.18
+deny from 62.32.47.130
+deny from 62.32.63.235
 
-Action parsed-html /cgi-bin/debug/parser3
-#Action parsed-html /cgi-bin/release/parser3
-#Action parsed-html /cgi-bin/ReleaseHEAD/parser3
-#Action parsed-html /cgi-bin/DebugHEAD/parser3
-#Action parsed-html /cgi-bin/ProfileDebug/parser3
-#Action parsed-html /cgi-bin/DebugV7/parser3
-#Action parsed-html /cgi-bin/p2Debug/parser2
-#Action parsed-html /cgi-bin/release310/parser3
 AddHandler parsed-html html
+Action parsed-html /cgi-bin/debug/parser3
 
+# enabling SSI
+Options +Includes
+AddHandler server-parsed .htm
 
-#AddHandler parser3-handler html
 
 AddType image/x-icon ico
-
 AddType text/xml xsl
+AddType application/chm chm
+#AddType application/octet-stream chm
+
 
 RewriteEngine on
 RewriteBase /
 
+DirectoryIndex index.html index.htm
 
-#maximize
-RewriteRule \.htm$ - [L]
+# если пришли смотреть старые вещи - отправляем куда следует
+RewriteRule forum/message_([0-9]+) http://parser2.parser.ru/forum/message.html?id=$1 [L,R,QSA]
 
-# paf
-RewriteRule ^(admin|404|(rus|eng)/404) - [L]
+RewriteCond %{REQUEST_URI} (docs/introduction.html|docs/operators.+\.html|docs/example\.html|docs/appendix_.\.html|examples/example[0-9]\.html|download/parser_changes\.html)
+RewriteRule (.+) http://parser2.parser.ru/$1 [L,R,QSA]
 
-# Ґб«Ё ®Ўа вЁ«Ёбм Є ¤ЁаҐЄв®аЁЁ, Ё ­Ґвг § Єалў ойҐЈ® б«Ґи  - аҐ¤ЁаҐЄвЁ¬ Ё ЁбЇа ў«пҐ¬ нв®
+# если идем в админ или на 404 ошибку - не фиг ничего рерайтить вовсе
+RewriteRule ^(admin|tests|404)/ - [L]
+
+RewriteRule ^_ - [L]
+RewriteRule ^docs/(lang|src) - [L]
+RewriteRule ^docs/comment\.html$ - [L]
+RewriteRule \.(gif|jpg|png|js|css|exe|zip|rar|pdf|rtf|doc|xls|ppt|swf|ipx|txt|xslt|xsl|tif|eps|tiff|ico|ent|chm|cfm|gz|tgz|htm)$ - [L]
+
+# если обратились к директории, и нету закрывающего слеша - редиректим и исправляем это
 RewriteCond %{REQUEST_URI} !\.
 RewriteRule ^(.+[^/])$ http://%{SERVER_NAME}/$1/ [L,R,QSA]
 
-# а §аҐи Ґ¬ б¬®ваҐвм preview Ё xml в®«мЄ® "бў®Ё¬"
-RewriteCond %{QUERY_STRING} mode=(preview|xml|debug)
-RewriteCond %{REMOTE_ADDR} !^(213\.152\.135|194\.44\.50\.2|194\.183\.167\.97|194\.44\.50\.6|194\.44\.50\.253)
-RewriteRule (.*) /404/ [R,L]
+# разрешаем смотреть preview и xml только "своим"
+#RewriteCond %{QUERY_STRING} mode=(preview|xml|debug)
+RewriteCond %{QUERY_STRING} mode=(xml|debug)
+RewriteCond %{REMOTE_ADDR} !^213\.152\.135
+RewriteRule (.*) /_doc.html?request=/404/ [L]
 
-# нв® § аҐ¬Ё¬, Ї®Є  Ґбвм в®«мЄ® агббЄ з ўҐабЁп б ©в 
-RewriteCond %{REQUEST_URI} ^/eng
-#RewriteCond %{REMOTE_ADDR} ^(213\.152\.135|194\.44\.50\.2|194\.183\.167\.97|194\.44\.50\.6|194\.44\.50\.253)
-RewriteRule ^eng(.*)	 /$1?lang=eng [PT,QSA]
+#RewriteCond %{REQUEST_URI} off-line
+#RewriteCond %{REQUEST_URI} \.p$
+#RewriteRule ^off-line/(.*)$ /_file.html?file=$1 [L]
 
-RewriteCond %{REQUEST_URI} ^/rus
-RewriteRule ^rus(.*)	 /$1?lang=rus [PT,QSA]
-
-RewriteCond %{REQUEST_URI} !(gif|jpg|js|css|exe|zip|rar|pdf|doc|xls|ppt|swf|ipx|txt|xslt|xsl|tif|eps|tiff|ico|ent)$
-RewriteCond %{REQUEST_URI} !/_
+RewriteRule ^forum/([0-9]+)/ /_doc.html?request=/forum/&id=$1 [L,QSA]
 RewriteRule (.*)  /_doc.html?request=$1 [L,QSA]
-
-RewriteCond %{REQUEST_FILENAME}	!-f
-RewriteRule .*html$ /_doc.html?request=/404/
 
 ErrorDocument 404 /_doc.html?request=/404/

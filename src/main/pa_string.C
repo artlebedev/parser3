@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/09/26 06:53:27 $";
+static const char* IDENT_STRING_C="$Date: 2003/09/26 09:06:21 $";
 
 #include "pcre.h"
 
@@ -413,7 +413,7 @@ const String& String::replace(const Dictionary& dict) const {
 		if(Table::element_type row=dict.first_that_begins(current)) {
 			// prematch
 			if(size_t prematch_length=current-prematch_begin) {
-				result.langs.append(result.body, langs, prematch_begin-old_cstr, current-old_cstr);
+				result.langs.append(result.body, langs, prematch_begin-old_cstr, prematch_length);
 				result.body.append_strdup_know_length(prematch_begin, prematch_length);
 			}
 
@@ -433,7 +433,7 @@ const String& String::replace(const Dictionary& dict) const {
 
 	// postmatch
 	if(size_t postmatch_length=current-prematch_begin) {
-		result.langs.append(result.body, langs, prematch_begin-old_cstr, current-old_cstr);
+		result.langs.append(result.body, langs, prematch_begin-old_cstr, postmatch_length);
 		result.body.append_strdup_know_length(prematch_begin, postmatch_length);
 	}
 
