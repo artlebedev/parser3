@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.9 2002/09/17 11:33:54 paf Exp $
+#$Id: auto.p.dist.in,v 1.10 2003/11/11 09:41:25 paf Exp $
 
 @conf[]
 $charsetsdir[@charsetsdir@]
@@ -62,7 +62,7 @@ $LIMITS[
 #	    /usr/lib/sendmail -t -i -f postmaster
 #]
 
-@fatal_error[title;body]
+@fatal_error[title;subtitle;body]
 $response:status(500)
 $response:content-type[
         $.value[text/html]
@@ -71,32 +71,31 @@ $response:content-type[
 <html>
 <head><title>$title</title></head>
 <body>
-<H1>$title</H1>
+<h1>^if(def $subtitle){$subtitle;$title}</h1>
 $body
 #for [x] MSIE friendly
 ^for[i](0;512/8){<!-- -->}
 </body>
+</html>
 
 @unhandled_exception_debug[exception;stack]
-^fatal_error[Unhandled Exception (Debug);
-
+^fatal_error[Unhandled Exception^if(def $exception.type){ ($exception.type)};$exception.source;
 <pre>^untaint[html]{$exception.comment}</pre>
-^if(def $exception.source){
-<b>$exception.source</b><br>
-<pre>^untaint[html]{$exception.file^($exception.lineno^)}</pre>
+^if(def $exception.file){
+^untaint[html]{<tt>$exception.file^(${exception.lineno}:$exception.colno^)</tt>}
 }
-^if(def $exception.type){exception.type=$exception.type}
 ^if($stack){
-	<hr>
+	<hr/>
+	<table>
 	^stack.menu{
-		<tt>$stack.name</tt> $stack.file^($stack.lineno^)<br>
+		<tr><td>$stack.name</td><td><tt>$stack.file^(${stack.lineno}:$stack.colno^)</tt></td></tr>
 	}
+	</table>
 }
-
 ]
 
 @unhandled_exception_release[exception;stack]
-^fatal_error[Unhandled Exception;
+^fatal_error[Unhandled Exception;;
 
 <p>The server encountered an unhandled exception 
 and was unable to complete your request.</p>
@@ -109,7 +108,9 @@ or in debug version of unhandled_exception.</p>
 ]
 
 @unhandled_exception[exception;stack]
+#use debug version to see problem details
 ^unhandled_exception_release[$exception;$stack]
+#^unhandled_exception_debug[$exception;$stack]
 
 
 @auto[]
