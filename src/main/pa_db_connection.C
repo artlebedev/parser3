@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.26 2001/10/31 14:58:10 paf Exp $
+	$Id: pa_db_connection.C,v 1.27 2001/10/31 15:00:05 paf Exp $
 
 	developed with LIBDB 2.7.4
 */
@@ -84,7 +84,7 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 		| DB_CREATE 
 		| DB_INIT_MPOOL | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_TXN;
 
-	// trying to open with SOFT RECOVER option set
+	// prepare dbenv structure
 	memset(&dbenv, 0, sizeof(dbenv));
 	
 	// error handlers
