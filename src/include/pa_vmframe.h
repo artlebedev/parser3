@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.9 2001/02/25 18:02:12 paf Exp $
+  $Id: pa_vmframe.h,v 1.10 2001/03/01 13:52:59 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -62,7 +62,9 @@ public: // usage
 				&name(),
 				"call: too many params (max=%d)", method->params_names.size());
 		
-		my.put(*static_cast<String *>(method->params_names.get(store_param_index++)), value);
+		String& name=*static_cast<String *>(method->params_names.get(store_param_index++));
+		my.put(name, value);
+		value->set_name(name);
 	}
 	void fill_unspecified_params() {
 		Method *method=junction.method;
