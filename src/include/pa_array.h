@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char* IDENT_ARRAY_Y="$Date: 2003/01/21 15:51:09 $";
+static const char* IDENT_ARRAY_Y="$Date: 2003/04/11 15:00:05 $";
 
 #include "pa_pool.h"
 #include "pa_types.h"
@@ -76,7 +76,10 @@ public:
 	Array& operator += (const Item *src) { return *this+=const_cast<Item *>(src); }
 
 	/// append other Array portion to this one. starting from offset
-	Array& append_array(const Array& src, int offset=0, int limit=0);
+	Array& append_array(const Array& src, 
+		int offset=0, 
+		int limit=-1, //< negative limit means 'all'. zero limit means 'nothing'
+		bool reverse=false);
 
 	Item *get(int index) const;
 	int get_int(int index) const { return reinterpret_cast<int>(get(index)); }

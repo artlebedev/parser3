@@ -137,3 +137,11 @@
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
+
+#if !defined(max) && !defined(PA_DEFINED_MAX)
+inline int max(int a, int b) { return a>b?a:b; }
+inline int min(int a, int b){ return a<b?a:b; }
+inline size_t max(size_t a, size_t b) { return a>b?a:b; }
+inline size_t min(size_t a, size_t b){ return a<b?a:b; }
+#define PA_DEFINED_MAX
+#endif

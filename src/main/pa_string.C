@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/01/21 15:51:15 $";
+static const char* IDENT_STRING_C="$Date: 2003/04/11 15:00:05 $";
 
 #include "pcre.h"
 
@@ -477,12 +477,12 @@ static void regex_options(const String *options, int *result, bool& need_pre_pos
 
 /// @todo make replacement Table stacked
 bool String::match(
-				   const String *aorigin,
-				   const String& regexp, 
-				   const String *options,
-				   Table **table,
-				   Row_action row_action, void *info,
-				   bool *was_global) const { 
+		   const String *aorigin,
+		   const String& regexp, 
+		   const String *options,
+		   Table **table,
+		   Row_action row_action, void *info,
+		   bool *was_global) const { 
 
 	if(regexp.is_empty())
 		throw Exception(0,
@@ -492,7 +492,7 @@ bool String::match(
 	const char *pattern=regexp.cstr();
 	const char *errptr;
 	int erroffset;
-    bool need_pre_post_match=false;
+	bool need_pre_post_match=false;
 	int option_bits[2];  regex_options(options, option_bits, need_pre_post_match);
 	if(was_global)
 		*was_global=option_bits[1]!=0;
@@ -520,7 +520,8 @@ bool String::match(
 	int ovector[ovecsize];
 
 	// create table
-	*table=NEW Table(pool(), *string_match_table_template);
+	Table::Action_options table_options;
+	*table=NEW Table(pool(), *string_match_table_template, table_options);
 
 	int exec_option_bits=0;
 	int prestart=0;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/01/21 15:51:15 $";
+static const char* IDENT_TABLE_C="$Date: 2003/04/11 15:00:05 $";
 
 //#include <stdlib.h>
 
@@ -31,15 +31,15 @@ Table::Table(Pool& apool,
 		}
 }
 
-Table::Table(Pool& apool, const Table& source, int offset, int limit) :
-	Array(apool, limit/*may be more than needed, no harm done*/),
+Table::Table(Pool& apool, const Table& source, Action_options& options) :
+	Array(apool, options.limit/*may be more than needed, no harm done*/),
 
 	forigin_string(source.forigin_string),
 	fcurrent(0),
 	fcolumns(source.fcolumns),
 	name2number(source.name2number) {
 
-	append_array(source, offset, limit);
+	append_array(source, options.offset, options.limit, options.reverse);
 }
 
 int Table::column_name2index(const String& column_name, bool bark) const {
@@ -74,20 +74,66 @@ const String *Table::item(int column) const {
 	return 0; // it's OK we don't have row|column, just return nothing
 }
 
-bool Table::locate(int column, const String& value) {
-	int scurrent=fcurrent;
-	for(fcurrent=0; fcurrent<size(); fcurrent++) {
-		const String *item_value=item(column);
-		if(item_value && *item_value==value)
-			return true;
-	}
+void Table::set_current(int acurrent) { 
+	if(acurrent<0 || acurrent>size())
+		throw Exception(0,
+			0,
+			"table row (%d) out of range [0..%d]", acurrent, size()-1);
+	fcurrent=acurrent; 
+}
+bool Table::locate(Table::locate_func func, void *info, Table::Action_options& o) {
+	int size=this->size();
+	if(!size || !o.limit)
+		return false;
+	if(o.limit<0)
+		o.limit=size;
+	int row=o.offset;
 
-	fcurrent=scurrent;
+	int saved_current=current();
+	if(o.reverse) { // reverse
+		int to=max(0, row-o.limit);
+		for(; row>=to; --row) {
+			set_current(row);
+
+			if(func(*this, info))
+				return true;
+		}
+	} else { // forward
+		int to=min(row+o.limit, size);
+		for(; row<to; row++) {
+			set_current(row);
+
+			if(func(*this, info))
+				return true;
+		}
+	}
+	set_current(saved_current);
+
 	return false;
 }
 
-bool Table::locate(const String& column, const String& value) {
-	return locate(column_name2index(column, true), value);
+#ifndef DOXYGEN
+struct Locate_int_string_info {
+	int column;
+	const String* value;
+};
+#endif
+bool locate_int_string(Table& self, void* ainfo) {
+	Locate_int_string_info& info=*static_cast<Locate_int_string_info*>(ainfo);
+
+	const String *item_value=self.item(info.column);
+	return item_value && *item_value==*info.value;
+}
+
+bool Table::locate(int column, const String& value,
+		   Table::Action_options& options) {
+	Locate_int_string_info info={column, &value};
+	return locate(locate_int_string, &info, options);
+}
+
+bool Table::locate(const String& column, const String& value, 
+		   Table::Action_options& options) {
+	return locate(column_name2index(column, true), value, options);
 }
 
 void Table::offset(bool absolute, int offset) {

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2003/01/21 15:51:14 $";
+static const char* IDENT_REQUEST_C="$Date: 2003/04/11 15:00:05 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -629,7 +629,8 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 	if(mime_types)
 		if(const char *cext=strrchr(user_file_name_cstr, '.')) {
 			String sext(pool(), ++cext);
-			if(mime_types->locate(0, sext.change_case(pool(), String::CC_LOWER)))
+			Table::Action_options options;
+			if(mime_types->locate(0, sext.change_case(pool(), String::CC_LOWER), options))
 				if(const String *result=mime_types->item(1))
 					return *result;
 				else

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/04/11 11:47:05 $";
+static const char* IDENT_TABLE_C="$Date: 2003/04/11 15:00:04 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -30,57 +30,72 @@ public: // Methoded
 
 // methods
 
-static void get_copy_options(Request& r, const String& method_name, MethodParams *params, int param_index,
-							 const Table& source,
-							 int& offset,
-							 int& limit) {
-	offset=0;
-	limit=0;
-	if(params->size()<=param_index)
-		return;
+static Table::Action_options get_action_options(Request& r, 
+				     const String& method_name, MethodParams *params, 
+				     const Table& source) {
+	Table::Action_options result;
 
-	Value& voptions=params->as_no_junction(param_index, "options must be hash, not code");
-	if(!voptions.is_string()) {
-		if(Hash *options=voptions.get_hash(&method_name)) {
-			int valid_options=0;
-			if(Value *voffset=(Value *)options->get(*sql_offset_name)) {
-				valid_options++;
-				if(voffset->is_string()) {
-					const String& soffset=*voffset->get_string();
-					if(soffset == "cur")
-						offset=source.current();
-					else
-						throw Exception("parser.runtime",
-							&soffset,
-							"must be 'cur' string or expression");
-				} else 
-					offset=r.process_to_value(*voffset).as_int();
-			}
-			if(Value *vlimit=(Value *)options->get(*sql_limit_name)) {
-				valid_options++;
-				limit=r.process_to_value(*vlimit).as_int();
-			}
-			if(valid_options!=options->size())
+	if(!params->size())
+		return result;
+
+	Hash* options=params->get(params->size()-1).get_hash(&method_name);
+	if(!options)
+		return result;
+
+	result.defined=true;
+	bool defined_offset=false;
+
+	int valid_options=0;
+	if(Value *voffset=(Value *)options->get(*sql_offset_name)) {
+		valid_options++;
+		defined_offset=true;
+		if(voffset->is_string()) {
+			const String& soffset=*voffset->get_string();
+			if(soffset == "cur")
+				result.offset=source.current();
+			else
 				throw Exception("parser.runtime",
-					&method_name,
-					"called with invalid option");
-		} else
-			throw Exception("parser.runtime",
-				&method_name,
-				"options must be hash");
+					&soffset,
+					"must be 'cur' string or expression");
+		} else 
+			result.offset=r.process_to_value(*voffset).as_int();
 	}
-	if(!limit) // zero limit = sould be 'nothing to copy', for methods zero means 'all'
-		limit=-1; // thus fixing
+	if(Value *vlimit=(Value *)options->get(*sql_limit_name)) {
+		valid_options++;
+		result.limit=r.process_to_value(*vlimit).as_int();
+	}
+	if(Value *vreverse=(Value *)options->get(*table_reverse_name)) {
+		valid_options++;
+		result.reverse=r.process_to_value(*vreverse).as_bool();
+		if(result.reverse && !defined_offset)
+			result.offset=source.size()-1;
+	}
+	if(valid_options!=options->size())
+		throw Exception("parser.runtime",
+			&method_name,
+			"called with invalid option");
+
+	return result;
+}
+static check_option_param(bool options_defined, 
+			  const String& method_name, MethodParams *params, 
+			  int next_param_index,
+			  const char *msg) {
+	if(next_param_index+(options_defined?1:0) != params->size())
+		throw Exception("parser.runtime",
+			&method_name,
+			"%s", msg);
 }
 
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// clone/copy part?
 	if(const Table *source=params->get(0).get_table()) {
-		int offset, limit;
-		get_copy_options(r, method_name, params, 1, *source, 
-			offset, limit);
-		static_cast<VTable *>(r.get_self())->set_table(*new(pool) Table(pool, *source, offset, limit));
+		Table::Action_options o=get_action_options(r, method_name, params, *source);
+		check_option_param(o.defined, method_name, params, 1, 
+			"too many parameters");
+		static_cast<VTable *>(r.get_self())->
+			set_table(*new(pool) Table(pool, *source, o));
 		return;
 	}
 
@@ -366,7 +381,8 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 				table=vtable->get_table();
 			else {
 				// no? creating table of same structure as source
-				table=new(pool) Table(pool, *ri.table, 0, -1 /*no rows, just structure*/);
+				Table::Action_options table_options;
+				table=new(pool) Table(pool, *ri.table, table_options/*no rows, just structure*/);
 				ri.hash->put(*key, new(pool) VTable(pool, table));
 			}
 			*table+=&row;
@@ -528,43 +544,44 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 	static_cast<VTable *>(r.get_self())->set_table(new_table);
 }
 
-static bool _locate_expression(Request& r, const String& method_name, MethodParams *params) {
-	if(params->size()>1)
-		throw Exception("parser.runtime", 
-			&method_name,
-			"locate by expression has only one parameter - expression");
-
+#ifndef DOXYGEN
+struct Locate_expression_func_info {
+	Request* r;
+	Value* expression_code;
+};
+#endif
+bool locate_expression_func(Table& self, void* ainfo) {
+	Locate_expression_func_info& info=*static_cast<Locate_expression_func_info*>(ainfo);
+	return info.r->process_to_value(*info.expression_code).as_bool();
+}
+static bool _locate_expression(Table& table, Table::Action_options o,
+			       Request& r, const String& method_name, MethodParams *params) {
+	check_option_param(o.defined, method_name, params, 1,
+		"locate by expression only has parameters: expression and, maybe, options");
 	Value& expression_code=params->as_junction(0, "must be expression");
 
-	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
-	int saved_current=table.current();
-	int size=table.size();
-	for(int row=0; row<size; row++) {
-		table.set_current(row);
-
-		if(r.process_to_value(expression_code).as_bool())
-			return true;
-	}
-	table.set_current(saved_current);
+	Locate_expression_func_info info={&r, &expression_code};
+	table.locate(locate_expression_func, &info, o);
 	return false;
 }
-static bool _locate_name_value(Request& r, const String& method_name, MethodParams *params) {
-	if(params->size()>2)
-		throw Exception("parser.runtime", 
-			&method_name,
-			"locate by name and value has only two parameters - name and value");
+static bool _locate_name_value(Table& table, Table::Action_options o,
+			       Request& r, const String& method_name, MethodParams *params) {
+	check_option_param(o.defined, method_name, params, 2,
+		"locate by locate by name has parameters: name, value and, maybe, options");
+	const String& name=params->as_string(0, "column name must be string");
+	const String& value=params->as_string(1, "value must be string");
 
-	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
-	return table.locate(
-		params->as_string(0, "column name must be string"),
-		params->as_string(1, "value must be string")
-	);
+	return table.locate(name, value, o);
 }
 static void _locate(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
+	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
+
+	Table::Action_options o=get_action_options(r, method_name, params, table);
+
 	bool result=params->get(0).get_junction()?
-		_locate_expression(r, method_name, params) :
-		_locate_name_value(r, method_name, params);
+		_locate_expression(table, o, r, method_name, params) :
+		_locate_name_value(table, o, r, method_name, params);
 	r.write_no_lang(*new(pool) VBool(pool, result));
 }
 
@@ -603,30 +620,30 @@ static void _append(Request& r, const String& method_name, MethodParams *params)
 static void _join(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Table *maybe_src=params->as_no_junction(0, "table ref must not be code").get_table();
+	Table* maybe_src=params->as_no_junction(0, "table ref must not be code").get_table();
 	if(!maybe_src)
 		throw Exception("parser.runtime", 
 			&method_name, 
 			"source is not a table");
-
 	Table& src=*maybe_src;
+
+	Table::Action_options o=get_action_options(r, method_name, params, src);
+	check_option_param(o.defined, method_name, params, 1,
+		"invalid extra parameter");
+
 	Table& dest=static_cast<VTable *>(r.get_self())->table(&method_name);
 	if(&src == &dest)
 		throw Exception("parser.runtime", 
 			&method_name, 
 			"source and destination are same table");
 
-	int offset, limit;
-	get_copy_options(r, method_name, params, 1, src, 
-		offset, limit);
-
 	if(const Array *dest_columns=dest.columns()) { // dest is named
 		int saved_src_current=src.current();
-		int m=src.size()-offset;
-		if(!limit || limit>m)
-			limit=m;
-		int end=offset+limit;
-		for(int src_row=offset; src_row<end; src_row++) {
+		int m=src.size()-o.offset;
+		if(!o.limit || o.limit>m)
+			o.limit=m;
+		int end=o.offset+o.limit;
+		for(int src_row=o.offset; src_row<end; src_row++) {
 			src.set_current(src_row);
 			Array& dest_row=*new(pool) Array(pool);
 			for(int dest_column=0; dest_column<dest_columns->size(); dest_column++) {
@@ -868,7 +885,7 @@ MTable::MTable(Pool& apool) : Methoded(apool, "table") {
 	add_native_method("sort", Method::CT_DYNAMIC, _sort, 1, 2);
 
 	// ^table.locate[field;value]
-	add_native_method("locate", Method::CT_DYNAMIC, _locate, 1, 2);
+	add_native_method("locate", Method::CT_DYNAMIC, _locate, 1, 3);
 
 	// ^table.flip[]
 	add_native_method("flip", Method::CT_DYNAMIC, _flip, 0, 0);

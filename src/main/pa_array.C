@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_ARRAY_C="$Date: 2003/01/21 15:51:13 $";
+static const char* IDENT_ARRAY_C="$Date: 2003/04/11 15:00:05 $";
 
 #include "pa_pool.h"
 #include "pa_array.h"
@@ -85,14 +85,20 @@ void Array::put(int index, Item *item) {
 	chunk->rows[index-base].item=item;
 }
 
-Array& Array::append_array(const Array& src, int offset, int limit) {
-	//if(((void*)&src)==(void*)0x6cf520) _asm int 3;
+Array& Array::append_array(const Array& src, int offset, int limit, bool reverse) {
+	if(reverse)
+		throw Exception(0,
+			0,
+			"not implemented in this version, please upgrade");
 	// fix limit
 	{
-		int m=src.fused_rows-offset;
-		if(!m || limit<0)
+		if(offset<0 || offset>src.fused_rows)
 			return *this;
-		if(!limit || limit>m)
+
+		int m=src.fused_rows-offset;
+		if(!m || !limit)
+			return *this;
+		if(limit<0 || limit>m)
 			limit=m;
 	}
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2003/04/09 11:18:33 $";
+static const char* IDENT_DATE_C="$Date: 2003/04/11 15:00:04 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -226,9 +226,10 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 }
 
 static Table *fill_month_days(Request& r, 
-							  const String& method_name, MethodParams *params, bool rus){
+			      const String& method_name, MethodParams *params, bool rus){
 	Pool& pool=r.pool();
-	Table *result=new(pool) Table(pool, *date_calendar_table_template);
+	Table::Action_options table_options;
+	Table *result=new(pool) Table(pool, *date_calendar_table_template, table_options);
 
 	int year=params->as_int(1, "year must be int", r);
 	int month=max(1, min(params->as_int(2, "month must be int", r), 12)) -1;

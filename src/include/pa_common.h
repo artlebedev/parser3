@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2003/04/11 12:29:19 $";
+static const char* IDENT_COMMON_H="$Date: 2003/04/11 15:00:05 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -202,13 +202,6 @@ char *lsplit(char *string, char delim);
 char *lsplit(char **string_ref,char delim);
 char *rsplit(char *string, char delim);
 char *format(Pool& pool, double value, char *fmt);
-
-#ifndef max
-inline int max(int a, int b) { return a>b?a:b; }
-inline int min(int a, int b){ return a<b?a:b; }
-inline size_t max(size_t a, size_t b) { return a>b?a:b; }
-inline size_t min(size_t a, size_t b){ return a<b?a:b; }
-#endif
 
 size_t stdout_write(const void *buf, size_t size);
 

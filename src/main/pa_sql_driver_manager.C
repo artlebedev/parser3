@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/01/21 15:51:15 $";
+static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/04/11 15:00:05 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -174,7 +174,8 @@ SQL_Connection_ptr SQL_Driver_manager::get_connection(const String& request_url,
 			// no cached
 			const String *library=0;
 			const String *dlopen_file_spec=0;
-			if(protocol2driver_and_client->locate(0, global_protocol)) {
+			Table::Action_options options;
+			if(protocol2driver_and_client->locate(0, global_protocol, options)) {
 				if(!(library=protocol2driver_and_client->item(1)) || library->size()==0)
 					throw Exception("parser.runtime",
 						protocol2driver_and_client->origin_string(),
