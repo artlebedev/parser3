@@ -7,7 +7,7 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.10 2001/08/01 09:49:18 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.11 2001/08/01 09:53:00 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -16,11 +16,14 @@ static const char *RCSId="$Id: parser3pgsql.C,v 1.10 2001/08/01 09:49:18 parser 
 #include <libpq-fe.h>
 #include <libpq/libpq-fs.h>
 
-// OIDOID from #include <catalog/pg_type.h>
+// OIDOID from catalog/pg_type.h
 #define OIDOID			26
 // LO_BUFSIZE from interfaces\libpq\fe-lobj.c = 8192 (0x2000)
 // actually writing chunks of that size failed, reduced it twice
 #define LO_BUFSIZE		  0x1000
+// from postgres_ext.h
+#define InvalidOid		((Oid) 0)
+
 
 #include "ltdl.h"
 
