@@ -8,10 +8,16 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/09/17 16:46:26 $";
+static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/10/14 11:24:00 $";
 
 #include "pa_hash.h"
 #include "pa_vjunction.h"
+
+// defines
+
+#define CLASS_NAME "CLASS"
+
+// forwards
 
 class Temp_method;
 
@@ -31,16 +37,7 @@ public: // Value
 	/// VStateless_class: this
 	VStateless_class *get_class() { return this; }
 	
-	/// VStateless_class: $method
-	Value *get_element(const String& aname, Value *aself, bool looking_up) {
-		// $method=junction(self+class+method)
-		if(Method *method=static_cast<Method *>(fmethods.get(aname)))
-			return new(aname.pool()) VJunction(
-				*new(aname.pool()) Junction(aname.pool(), *aself, method, 0,0,0,0));
-		if(fbase)
-			return fbase->get_element(aname, aself, looking_up);
-		return 0;
-	}
+	/*overridef*/ Value *get_element(const String& aname, Value *aself, bool looking_up);
 
 public: // usage
 

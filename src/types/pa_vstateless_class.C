@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char* IDENT_VSTATELESS_CLASS_C="$Date: 2002/08/01 11:41:24 $";
+static const char* IDENT_VSTATELESS_CLASS_C="$Date: 2002/10/14 11:24:00 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"
@@ -26,4 +26,19 @@ void VStateless_class::add_native_method(
 		0/*parser_code*/, native_code
 		);
 	add_method(name, method);
+}
+
+/// VStateless_class: $CLASS, $method
+Value *VStateless_class::get_element(const String& aname, Value *aself, bool looking_up) {
+	// $CLASS
+	if(aname==CLASS_NAME)
+		return this;
+
+	// $method=junction(self+class+method)
+	if(Method *method=static_cast<Method *>(fmethods.get(aname)))
+		return new(aname.pool()) VJunction(
+			*new(aname.pool()) Junction(aname.pool(), *aself, method, 0,0,0,0));
+	if(fbase)
+		return fbase->get_element(aname, aself, looking_up);
+	return 0;
 }

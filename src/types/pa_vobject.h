@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/08/21 10:18:36 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/10/14 11:24:00 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
@@ -16,7 +16,6 @@ static const char* IDENT_VOBJECT_H="$Date: 2002/08/21 10:18:36 $";
 
 // defines
 
-#define CLASS_NAME "CLASS"
 #define BASE_NAME "BASE"
 
 /**	parser class instance, stores 

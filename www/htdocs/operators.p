@@ -1,16 +1,16 @@
 @auto[]
-$a[1]
+#$a[1]
 
 #@one[]
 
 @two[]
 #$h[^hash::create[]]
 #$a[x]
-$x
-$self.x
+#$x
+#$self.x
 
 @three[]
 ^process{^^eval(2*2)^$a[1]^$a}
 
 @touchit[]
-$i[touchit-set]
+$i[not after]
