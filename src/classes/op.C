@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.85 2002/04/15 12:03:31 paf Exp $
+	$Id: op.C,v 1.86 2002/04/15 13:17:04 paf Exp $
 */
 
 #include "classes.h"
@@ -70,7 +70,7 @@ static void _untaint(Request& r, const String& method_name, MethodParams *params
 		Value& vbody=params->as_junction(params->size()-1, "body must be code");
 		
 		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
-		r.write_pass_lang(r.process_to_value(vbody)); // process marking tainted with that lang
+		r.write_pass_lang(r.process(vbody)); // process marking tainted with that lang
 	}
 }
 
@@ -124,8 +124,7 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 		Temp_method temp_method_auto(self_class, *auto_method_name, 0);
 		
 		// evaluate source to process
-		const String& source=
-			r.process_to_string(params->as_junction(0, "body must be code"));
+		const String& source=r.process_to_string(params->as_junction(0, "body must be code"));
 
 		// process source code, append processed methods to 'self' class
 		// maybe-define new @main
@@ -163,16 +162,14 @@ static void _while(Request& r, const String& method_name, MethodParams *params) 
 				&method_name,
 				"endless loop detected");
 
-		bool condition=
-			r.process_to_value(
-				vcondition, 
+		bool condition=r.process_to_value(vcondition, 
 				/*0/*no name* /,*/
 				false/*don't intercept string*/).as_bool();
 		if(!condition) // ...condition is true
 			break;
 
 		// write processed body
-		r.write_pass_lang(r.process_to_value(body));
+		r.write_pass_lang(r.process(body));
 	}
 }
 
@@ -200,11 +197,11 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 		vint->set_int(i);
 		r.root->put_element(var_name, vint);
 
-		Value& processed_body=r.process_to_value(body_code);
+		StringOrValue processed_body=r.process(body_code);
 		if(delim_maybe_code) { // delimiter set?
 			const String *string=processed_body.get_string();
 			if(need_delim && string && string->size()) // need delim & iteration produced string?
-				r.write_pass_lang(r.process_to_string(*delim_maybe_code));
+				r.write_pass_lang(r.process(*delim_maybe_code));
 			need_delim=true;
 		}
 		r.write_pass_lang(processed_body);
@@ -261,7 +258,7 @@ r.sql_connect_time+=t[1]-t[0];
 	Temp_connection temp_connection(r, connection.get());
 	// execute body
 	try {
-		r.write_assign_lang(r.process_to_value(body_code));
+		r.write_assign_lang(r.process(body_code));
 	} catch(...) { // process problem
 		connection->mark_to_rollback();
 		/*re*/throw; 
@@ -287,7 +284,7 @@ static void _switch(Request& r, const String&, MethodParams *params) {
 	if(Value *selected_code=data.found ? data.found : data._default) {
 		// setting code context, would execute in ^switch[...]{>>context<<}
 		selected_code->get_junction()->change_context(cases_code.get_junction());
-		r.write_pass_lang(r.process_to_value(*selected_code));
+		r.write_pass_lang(r.process(*selected_code));
 	}
 }
 
@@ -569,7 +566,7 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 	Value& body_code=params->as_junction(0, "body_code must be code");
 	Value& catch_code=params->as_junction(1, "catch_code must be code");
 
-	Value *result;
+	StringOrValue result;
 
 	// taking snapshot of request processing status
 	//int ssexception_trace=r.exception_trace.top_index();
@@ -577,7 +574,7 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 	Value *sself=r.self, *sroot=r.root, *srcontext=r.rcontext;  
 	WContext *swcontext=r.wcontext;	
 	try {
-		result=&r.process_to_value(body_code);
+		result=r.process(body_code);
 	} catch(const Exception& e) {
 		// restoring request processing status
 		//r.exception_trace.top_index(ssexception_trace);
@@ -590,7 +587,7 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 		Junction *junction=catch_code.get_junction();
 		Value *saved_exception_var_value=junction->root->get_element(*exception_var_name);
 		junction->root->put_element(*exception_var_name, &vhash);
-		result=&r.process_to_value(catch_code);
+		result=r.process(catch_code);
 		bool handled=false;
 		if(Value *value=static_cast<Value *>(vhash.hash(0).get(*exception_handled_part_name)))
 			handled=value->as_bool();		
@@ -600,7 +597,7 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 			throw(e); // rethrow
 	}
 	// write it out 
-	r.write_pass_lang(*result);
+	r.write_pass_lang(result);
 }
 
 static void _throw_operator(Request& r, const String& method_name, MethodParams *params) {

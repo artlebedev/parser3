@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.77 2002/04/15 12:03:31 paf Exp $
+	$Id: file.C,v 1.78 2002/04/15 13:17:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -381,7 +381,7 @@ static void lock_execute_body(int , void *context) {
 	Lock_execute_body_info& info=*static_cast<Lock_execute_body_info *>(context);
 
 	// execute body
-	info.r->write_assign_lang(info.r->process_to_string(*info.body_code));
+	info.r->write_assign_lang(info.r->process(*info.body_code));
 };
 static void _lock(Request& r, const String& method_name, MethodParams *params) {
 	const String& file_spec=r.absolute(params->as_string(0, "file name must be string"));

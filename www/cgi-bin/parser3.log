@@ -8,3 +8,27 @@
 ] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(126): 'tmp' (hash) illegal assignment attempt to 'MAIN' (class), use constructor instead [parser.runtime]
 [Mon Apr 15 14:29:06 2002
 ] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(126): 'tmp' (hash) illegal assignment attempt to 'MAIN' (class), use constructor instead [parser.runtime]
+[Mon Apr 15 14:40:55 2002
+] global(0): 'unnamed' n must be int (parameter #1) [parser.runtime]
+[Mon Apr 15 14:40:55 2002
+] global(0): 'unnamed' n must be int (parameter #1) [parser.runtime]
+[Mon Apr 15 14:42:33 2002
+] global(0): 'unnamed' n must be int (parameter #1) [parser.runtime]
+[Mon Apr 15 14:42:53 2002
+] global(0): 'unnamed' n must be int (parameter #1) [parser.runtime]
+[Mon Apr 15 14:43:44 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(10): 'left' n must be int (parameter #1) [parser.runtime]
+[Mon Apr 15 14:54:59 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(10): 'left' n must be int (parameter #1) [parser.runtime]
+[Mon Apr 15 14:55:00 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(10): 'left' n must be int (parameter #1) [parser.runtime]
+[Mon Apr 15 14:56:36 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(152): 'count2' column not found [parser.runtime]
+[Mon Apr 15 15:19:10 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(152): 'name' column not found [parser.runtime]
+[Mon Apr 15 15:19:11 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(152): 'name' column not found [parser.runtime]
+[Mon Apr 15 15:59:30 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(128:1): parse error, expecting `']'' [parser.compile]
+[Mon Apr 15 15:59:30 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(128:1): parse error, expecting `']'' [parser.compile]

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.149 2002/04/15 10:35:21 paf Exp $
+	$Id: table.C,v 1.150 2002/04/15 13:17:04 paf Exp $
 */
 
 #include "classes.h"
@@ -253,11 +253,11 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	for(int row=0; row<size; row++) {
 		table.set_current(row);
 
-		Value& processed_body=r.process_to_value(body_code);
+		StringOrValue processed_body=r.process(body_code);
 		if(delim_maybe_code) { // delimiter set?
 			const String *string=processed_body.get_string();
 			if(need_delim && string && string->size()) // need delim & iteration produced string?
-				r.write_pass_lang(r.process_to_string(*delim_maybe_code));
+				r.write_pass_lang(r.process(*delim_maybe_code));
 			need_delim=true;
 		}
 		r.write_pass_lang(processed_body);
@@ -656,9 +656,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 	for(int row=0; row<size; row++) {
 		source_table.set_current(row);
 
-		bool condition=
-			r.process_to_value(
-				vcondition, 
+		bool condition=r.process_to_value(vcondition, 
 				/*0/*no name* /,*/
 				false/*don't intercept string*/).as_bool();
 
