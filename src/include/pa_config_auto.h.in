@@ -75,9 +75,6 @@
 /* no string origin tracking */
 #undef NO_STRING_ORIGIN
 
-/* no 'first' module */
-#undef WITHOUT_FIRST
-
 /* xml-abled parser */
 #undef XML
 
