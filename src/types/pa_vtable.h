@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.12 2001/03/29 17:11:43 paf Exp $
+	$Id: pa_vtable.h,v 1.13 2001/04/02 16:00:17 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -44,7 +44,7 @@ public:
 protected: // VAliased
 
 	/// disable .CLASS element. @see VAliased::get_element
-	bool are_static_calls_disabled() { return true; }
+	bool hide_class() { return true; }
 
 public: // usage
 

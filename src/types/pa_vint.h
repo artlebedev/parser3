@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.15 2001/03/27 16:35:57 paf Exp $
+	$Id: pa_vint.h,v 1.16 2001/04/02 16:00:17 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -38,7 +38,7 @@ public: // Value
 protected: // VAliased
 
 	/// disable .CLASS element. @see VAliased::get_element
-	bool are_static_calls_disabled() { return true; }
+	bool hide_class() { return true; }
 
 public: // usage
 

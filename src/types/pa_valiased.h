@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.h,v 1.11 2001/03/27 15:43:21 paf Exp $
+	$Id: pa_valiased.h,v 1.12 2001/04/02 16:00:16 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -68,27 +68,10 @@ protected: // VAliased
 /**
 	used in get_element for getting $CLASS and $BASE.
 
-	some classes have only dynamic method calls
-	and don't want to deal with static method calls:
-	they don't want to check for @c self validity [whether it is 'object' or a 'class'],
-	they want to assume they just called with 'object' @c self.
-
-	more that that - they even have no name in Parser -
-	they are not registered in in Request::classes.
-
-	so the only way to get to the 'class' having no ability 
-	to use @c $CLASS_NAME: or @c ^CLASS_NAME: syntax 
-	is to use something like this:
-	ex: VInt
-		this is nonsense:
-		@verbatim
-			$a(123) $ac[$a.CLASS] ^ac.inc[48]
-		@endverbatim
-
-	to disable that and to enable no 'self' checks in methods realisations
-	such classes can override this method with @c {return true;}
+	to disable those elements classes can override 
+	this method with @c {return true;}
 */
-	virtual bool are_static_calls_disabled() { return false; }
+	virtual bool hide_class() { return false; }
 
 private: // alias handling
 

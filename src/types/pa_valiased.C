@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.C,v 1.5 2001/03/27 15:43:21 paf Exp $
+	$Id: pa_valiased.C,v 1.6 2001/04/02 16:00:16 paf Exp $
 */
 
 #include "pa_valiased.h"
@@ -18,7 +18,7 @@
 Value *VAliased::get_element(const String& aname) {
 	// $CLASS=my class=myself
 	if(aname==CLASS_NAME) {
-		if(are_static_calls_disabled())
+		if(hide_class())
 			bark("(%s) has no "CLASS_NAME" element");
 		else
 			return fclass_alias;			
@@ -26,7 +26,7 @@ Value *VAliased::get_element(const String& aname) {
 
 	// $BASE=my parent
 	if(aname==BASE_NAME) {
-		if(are_static_calls_disabled()) 
+		if(hide_class()) 
 			bark("%s has no "BASE_NAME" element");
 		else {
 			Value *result=fclass_alias->base();

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.14 2001/03/28 14:07:19 paf Exp $
+	$Id: pa_vfile.h,v 1.15 2001/04/02 16:00:16 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -45,7 +45,7 @@ public: // Value
 protected: // VAliased
 
 	/// disable .CLASS element. @see VAliased::get_element
-	bool are_static_calls_disabled() { return true; }
+	bool hide_class() { return true; }
 
 public: // usage
 

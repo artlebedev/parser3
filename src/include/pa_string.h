@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.60 2001/04/02 09:29:17 paf Exp $
+	$Id: pa_string.h,v 1.61 2001/04/02 15:59:35 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -139,7 +139,8 @@ public:
 			-  1: means @c this starts @c src
 			-  2: means @src starts @this
 	*/
-	int cmp(int& partial, const char* src_ptr, size_t src_size=0) const;
+	int cmp(int& partial, const char* src_ptr, size_t src_size=0, 
+		size_t this_offset=0) const;
 	bool operator == (const char* src_ptr) const { 
 		size_t src_size=src_ptr?strlen(src_ptr):0;
 		if(size() != src_size)
@@ -165,7 +166,7 @@ public:
 	/// @return position of substr in string, -1 means "not found" [String version]
 	int pos(const String& substr, size_t this_offset=0) const;
 	/// @return position of substr in string, -1 means "not found" [const char* version]
-	int String::pos(const char *substr, size_t result) const;
+	int pos(const char *substr, size_t result) const;
 
 #ifndef NO_STRING_ORIGIN
 	/// origin of string. calculated by first row

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.58 2001/03/30 09:58:59 paf Exp $
+	$Id: pa_string.C,v 1.59 2001/04/02 15:59:56 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -225,6 +225,7 @@ break2:
 }
 
 int String::cmp(int& partial, const String& src, size_t this_offset) const {
+	partial=-1;
 	this_offset=min(this_offset, size()-1);
 
 	const Chunk *a_chunk=&head;
@@ -295,43 +296,51 @@ int String::cmp(int& partial, const String& src, size_t this_offset) const {
 	}
 }
 
-/// @todo now fix like prev one. table:append doent not work because of this
-int String::cmp(int& partial, const char* b_ptr, size_t src_size) const {
-	size_t b_size=src_size?src_size:b_ptr?strlen(b_ptr):0;
-
+int String::cmp(int& partial, const char* b_ptr, size_t src_size, 
+				size_t this_offset) const {
 	partial=-1;
+	size_t b_size=src_size?src_size:b_ptr?strlen(b_ptr):0;
+	this_offset=min(this_offset, size()-1);
+
 	const Chunk *a_chunk=&head;
 	const Chunk::Row *a_row=a_chunk->rows;
-	size_t a_offset=0;
+	size_t a_offset=this_offset;
 	size_t b_offset=0;
 	Chunk::Row *a_end=append_here;
 	size_t a_countdown=a_chunk->count;
 	bool a_break=false;
 	bool b_break=false;
-	while(true) {
+	for(size_t pos=0; true; pos+=a_row->item.size) {
 		a_break=a_row==a_end;
 		if(a_break || b_break)
 			break;
 
-		int size_diff=
-			(a_row->item.size-a_offset)-
-			(b_size-b_offset);
-
-		if(size_diff==0) { // a has same size as b
-			if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
-				return result;
-			a_row++; a_countdown--; a_offset=0;
-			b_break=true;
-		} else if (size_diff>0) { // a longer
-			if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, b_size-b_offset)!=0)
-				return result;
-			a_offset+=b_size-b_offset;
-			b_break=true;
-		} else { // b longer
-			if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
-				return result;
-			b_offset+=a_row->item.size-a_offset;
-			a_row++; a_countdown--; a_offset=0;
+		if(pos+a_row->item.size > this_offset) {
+			int size_diff=
+				(a_row->item.size-a_offset)-
+				(b_size-b_offset);
+			
+			if(size_diff==0) { // a has same size as b
+				if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
+					a_row->item.size-a_offset)!=0)
+					return result;
+				a_row++; a_countdown--; a_offset=0;
+				b_break=true;
+			} else if (size_diff>0) { // a longer
+				if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
+					b_size-b_offset)!=0)
+					return result;
+				a_offset+=b_size-b_offset;
+				b_break=true;
+			} else { // b longer
+				if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
+					a_row->item.size-a_offset)!=0)
+					return result;
+				b_offset+=a_row->item.size-a_offset;
+				a_row++; a_countdown--; a_offset=0;
+			}
+		} else {
+			a_row++; a_countdown--; a_offset-=a_row->item.size;
 		}
 
 		if(!a_countdown) {
@@ -411,7 +420,7 @@ int String::pos(const String& substr, size_t result) const {
 
 int String::pos(const char *substr, size_t result) const {
 	for(; result<size(); result++) {
-		int partial; cmp(partial, substr, result);
+		int partial; cmp(partial, substr, 0, result);
 		if(
 			partial==0 || // full match
 			partial==2) // 'substr' starts 'this'+'result'

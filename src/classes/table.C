@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.42 2001/04/02 09:29:12 paf Exp $
+	$Id: table.C,v 1.43 2001/04/02 15:59:06 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -20,7 +20,7 @@
 VStateless_class *table_class;
 
 // methods
-/// @todo now remove CONFIG untaint, make pos() searches in String
+/// @test remove CONFIG untaint, make pos() searches in String
 static void set_or_load(
 						Request& r, 
 						const String& method_name, Array *params, 
@@ -353,7 +353,7 @@ static void _flip(Request& r, const String& method_name, Array *params) {
 	vtable.set_table(new_table);
 }
 
-/// @todo now require \t to be clean [UL_NO]
+/// @test require \t to be clean [UL_NO]
 static void _append(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 	// data is last parameter
