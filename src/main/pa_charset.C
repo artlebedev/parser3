@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2003/12/19 10:39:05 $";
+static const char * const IDENT_CHARSET_C="$Date: 2004/02/03 13:09:52 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -13,6 +13,8 @@ static const char * const IDENT_CHARSET_C="$Date: 2003/12/19 10:39:05 $";
 #ifdef XML
 #include "libxml/encoding.h"
 #endif
+
+//#define PA_PATCHED_LIBXML_BACKWARD
 
 // globals
 
@@ -624,6 +626,28 @@ const String::C Charset::transcodeToCharset(const String::C src,
 
 static const Charset::Tables* tables[MAX_CHARSETS];
 
+#ifdef PA_PATCHED_LIBXML_BACKWARD
+
+#define declareXml256ioFuncs(i) \
+	static int xml256CharEncodingInputFunc##i( \
+		unsigned char *out, int *outlen, \
+		const unsigned char *in, int *inlen, void*) { \
+		return transcodeToUTF8( \
+			in, *(size_t*)inlen, \
+			out, *(size_t*)outlen, \
+			*tables[i]); \
+	} \
+	static int xml256CharEncodingOutputFunc##i( \
+		unsigned char *out, int *outlen, \
+		const unsigned char *in, int *inlen, void*) { \
+		return transcodeFromUTF8( \
+			in, *(size_t*)inlen, \
+			out, *(size_t*)outlen, \
+			*tables[i]); \
+	}
+
+#else
+
 #define declareXml256ioFuncs(i) \
 	static int xml256CharEncodingInputFunc##i( \
 		unsigned char *out, int *outlen, \
@@ -641,6 +665,9 @@ static const Charset::Tables* tables[MAX_CHARSETS];
 			out, *(size_t*)outlen, \
 			*tables[i]); \
 	}
+
+#endif
+
 
 declareXml256ioFuncs(0)	declareXml256ioFuncs(1)
 declareXml256ioFuncs(2)	declareXml256ioFuncs(3)
@@ -712,7 +739,11 @@ String::C Charset::transcode_cstr(xmlChar* s) {
 	if(xmlCharEncodingOutputFunc output=transcoder(FNAME).output) {
 		error=output(
 			(unsigned char*)out, &outlen,
-			(const unsigned char*)s, &inlen);
+			(const unsigned char*)s, &inlen
+#ifdef PA_PATCHED_LIBXML_BACKWARD
+			,0
+#endif
+			);
 	} else {
 		memcpy(out, s, outlen=inlen);
 		error=0;
@@ -751,10 +782,14 @@ xmlChar* Charset::transcode_buf2xchar(const char* buf, size_t buf_size) {
 #ifndef NDEBUG
 		saved_outlen=outlen;
 #endif
-		out=(xmlChar*)xmlMalloc(outlen+1);
+		out=(xmlChar*)g_malloc(outlen+1);
 		error=input(
 			out, &outlen,
-			(const unsigned char*)buf, (int*)&buf_size);
+			(const unsigned char*)buf, (int*)&buf_size
+#ifdef PA_PATCHED_LIBXML_BACKWARD
+			,0
+#endif
+			);
 	} else {
 		outlen=buf_size;
 #ifndef NDEBUG
