@@ -7,7 +7,7 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.6 2001/07/31 14:22:00 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.7 2001/08/01 07:41:37 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -18,7 +18,7 @@ static const char *RCSId="$Id: parser3pgsql.C,v 1.6 2001/07/31 14:22:00 parser E
 
 // #include <catalog/pg_type.h>
 #define OIDOID			26
-#define LO_BUFSIZE		  8192
+#define LO_BUFSIZE		  0x1000/*8192*/
 
 
 #include "ltdl.h"
@@ -218,14 +218,7 @@ public:
 							if(size) {
 								// read 
 								ptr=services.malloc(size);
-								char *buf=(char *)ptr;
-								int countdown=size_tell;
-								int size_read;
-								while(countdown && (size_read=lo_read(conn, fd, buf, min(LO_BUFSIZE, countdown)))>0) {
-									buf+=size_read;
-									countdown-=size_read;									
-								}
-								if(countdown)
+								if(!lo_read_ex(conn, fd, (const char *)ptr, size_tell))
 									PQclear_throw("lo_read can not read all bytes of object");
 							} else
 								ptr=0;
@@ -263,6 +256,8 @@ private: // private funcs
 		size_t statement_size=strlen(astatement);
 		//_asm int 3;
 
+		#define throwPQerror services._throw(PQerrorMessage(conn))
+
 		char *result=(char *)services.malloc(statement_size
 			+MAX_NUMBER*2+15 // limit # offset #
 			+MAX_STRING // in case of short 'strings'
@@ -280,50 +275,77 @@ private: // private funcs
 		} else 
 			o=astatement;
 
-		// /*:zzzz*/'literal' -> oid
+		// /**xxx**/'literal' -> oid
 		char *n=result;
 		while(*o) {
 			if(
 				o[0]=='/' &&
 				o[1]=='*' && 
-				o[2]==':') { // name start
+				o[2]=='*') { // name start
 				o+=3;
 				while(*o)
 					if(
 						o[0]=='*' &&
-						o[1]=='/' &&
-						o[2]=='\'') { // name end
-						o+=3;
+						o[1]=='*' &&
+						o[2]=='/' &&
+						o[3]=='\'') { // name end
+						o+=4;
 						Oid oid=lo_creat(conn, INV_READ|INV_WRITE);
+						if(oid==InvalidOid)
+							throwPQerror;
 						int fd=lo_open(conn, oid, INV_WRITE);
-						const char *start=o;
-						bool escaped=false;
-						while(*o && !(o[0]=='\'' && o[1]!='\'' && !escaped)) {
-							escaped=*o=='\\' || (o[0]=='\'' && o[1]=='\'');
-							if(escaped) {
-								// write pending, skip "\" or "'"
-								if(o!=start)
-									lo_write(conn, fd, start, o-start);
-								start=++o;
-							} else
-								o++;
-						}
-						if(o!=start)
-							lo_write(conn, fd, start, o-start);
-						lo_close(conn, fd);
+						if(fd>=0) {
+							const char *start=o;
+							bool escaped=false;
+							while(*o && !(o[0]=='\'' && o[1]!='\'' && !escaped)) {
+								escaped=*o=='\\' || (o[0]=='\'' && o[1]=='\'');
+								if(escaped) {
+									// write pending, skip "\" or "'"
+									if(!lo_write_ex(conn, fd, start, o-start))
+										services._throw("lo_write could not write all bytes of object (1)");
+									start=++o;
+								} else
+									o++;
+							}
+							if(!lo_write_ex(conn, fd, start, o-start))
+								services._throw("lo_write can not write all bytes of object (2)");
+							if(lo_close(conn, fd)<0)
+								throwPQerror;
+						} else
+							throwPQerror;
 						if(*o)
 							o++; // skip "'"
 
 						n+=snprintf(n, MAX_NUMBER, "%u", oid);
 						break;
 					} else
-						o++; // /*:skip*/
+						o++; // /**skip**/'xxx'
 			} else
 				*n++=*o++;
 		}
 		*n=0;
 
 		return result;
+	}
+
+private: // lo_read/write exchancements
+
+	bool lo_read_ex(PGconn *conn, int fd, const/*paf*/ char *buf, size_t len) {
+		int size_read;
+		while(len && (size_read=lo_read(conn, fd, buf, min(LO_BUFSIZE, len)))>0) {
+			buf+=size_read;
+			len-=size_read;									
+		}
+		return len==0;
+	}
+
+	bool lo_write_ex(PGconn *conn, int fd, const/*paf*/ char *buf, size_t len) {
+		int size_written;
+		while(len && (size_written=lo_write(conn, fd, buf, min(LO_BUFSIZE, len)))>0) {
+			buf+=size_written;
+			len-=size_written;									
+		}
+		return len==0;
 	}
 
 private: // conn client library funcs
