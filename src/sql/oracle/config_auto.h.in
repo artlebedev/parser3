@@ -6,6 +6,12 @@
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS
 
+/* Define if you have the <ctype.h> header file.  */
+#undef HAVE_CTYPE_H
+
+/* Define if you have the <setjmp.h> header file.  */
+#undef HAVE_SETJMP_H
+
 /* Define if you have the <stdio.h> header file.  */
 #undef HAVE_STDIO_H
 
