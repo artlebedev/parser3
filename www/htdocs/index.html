@@ -11,9 +11,10 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #$result[123]
 
 @main[]
+#^eval(2)
 #^tcrashlocaljunctionsv2[]
-^tcrashlocaljunctions[]
-#^tjunctions[]
+#^tcrashlocaljunctions[]
+^tjunctions[]
 #^replacetest[]
 #^matchoptionpp[]
 #^txdocxnodechild[]
@@ -156,10 +157,12 @@ $var[aaa]
 
 $j
 
-@tcrashlocaljunctions1[]
+@tcrashlocaljunctions1[][var]
+$var[varvalue]
 	$j{
 		$var
 	}
+$j
 
 @tjunctions[][tl]
 $t[^t::create[]]
