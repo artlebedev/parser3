@@ -12,9 +12,12 @@ $response:charset[windows-1251]
 #$response:charset[empty]
 #$response:content-type[$.value[text/html]$.charset[$response:charset]]
 
-#@postprocess[body]
+@postprocess[body]
 #<b>$body</b>
 #$result[123]
+$body
+<hr>
+OK
 
 @main[]
 #$a(123)
@@ -273,8 +276,53 @@ $response:charset[windows-1251]
 #^junctionselftest[]
 #^bad-compiletosystem[]
 #^steppedfor[i](1;10;2){$i }
-^file:fullpath[a.gif]<br>
-^file:fullpath[/abs/a.gif]<br>
+#^file:fullpath[a.gif]<br>
+#^file:fullpath[/abs/a.gif]<br>
+#$form:a/$form:image-map=
+#^foreachform[]
+#^selectSingleoct[]
+#^compilebug[]
+#^badhashcreate[]
+^badsendmail[]
+
+@badsendmail[]
+^mail:send[
+	$.from[hren < paf@design.ru
+	>]
+	$.to[paf@design.ru]
+	$.subject[test]
+]
+
+@badhashcreate[]
+$hash[
+	$.ok[1]
+]
+$.bad[1]
+
+@compilebug[]
+^a[]^#31=
+
+@selectSingleoct[]
+$d[^xdoc::create[doc]]
+$element[^d.selectSingle[$nothing]]
+
+
+@foreachform[]
+<a href=index.cgihtml?one&a=1&two&b=2&three?1,2>one</a><br>
+<a href=index.cgihtml?one&a=1&two&b=2&three?shit>two</a><br>
+
+^form:fields.foreach[key;value]{
+        $key -- $value
+}[<br>]
+<hr>
+$nameless[$form:tables.nameless]
+^if(def $nameless){
+	nameless table -- ^nameless.menu{$nameless.field}[,]
+}
+^if(def $form:imap){
+	<hr>
+	IMAP $form:imap.x : $form:imap.y
+}
 
 @steppedfor[name;from;to;step;code]
 $caller.$name($from)

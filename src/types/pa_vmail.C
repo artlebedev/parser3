@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/09/24 11:41:05 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/10/23 08:34:48 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -225,7 +225,7 @@ static void MimePart2body(GMimePart *part,
 
 int gmt_offset() {
 #if defined(HAVE_TIMEZONE) && defined(HAVE_DAYLIGHT)
-	return timezone+(daylight?60*60*sign(timezone):0);
+	return timezone+(daylight?60*60*(timezone<0?-1:timezone>0?+1:0):0);
 #else
 	time_t t=time(0);
 	tm *tm=localtime(&t);
@@ -345,13 +345,34 @@ static bool string_contains_char_which(const char *string, string_contains_char_
 	}
 	return false;
 }
-const String& extractEmail(const String& string) {
+static char *trimBoth(char *s) {
+	// sanity check
+	if(!s)
+		return 0;
+
+	// trim head whitespace
+	while(*s && isspace(*s))
+		s++;
+	// trim tail whitespace
+	char *tail=s+strlen(s);
+	if(tail>s) {
+		do {
+			--tail;
+			if(isspace(*tail))
+				*tail=0;
+		} while(tail>s);
+	}
+	// return it
+	return s;
+}
+/*nonstatic*/const String& extractEmail(const String& string) {
 	Pool& pool=string.pool();
 
 	char *email=string.cstr();
-	lsplit(email, '>'); lsplit(email, '\x0D');lsplit(email, '\x0A');
+	rsplit(email, '>');
 	char *next=rsplit(email, '<');
 	if(next) email=next;
+	email=trimBoth(email);
 
 	String& result=*new(pool) String(pool);
 	result.APPEND_TAINTED(email, 0, string.origin().file, string.origin().line);
@@ -382,15 +403,15 @@ const String& extractEmail(const String& string) {
 	if(strpbrk(email, "()<>,;:\\\"[]"/*specials minus @ and . */))
 		throw Exception(exception_type,
 			&result,
-			"email contains characters (specials)");
+			"email contains bad characters (specials)");
 	if(string_contains_char_which(email, (string_contains_char_which_check)isspace))
 		throw Exception(exception_type,
 			&result,
-			"email contains characters (whitespace)");
+			"email contains bad characters (whitespace)");
 	if(string_contains_char_which(email, (string_contains_char_which_check)iscntrl))
 		throw Exception(exception_type,
 			&result,
-			"email contains characters (control)");
+			"email contains bad characters (control)");
 	if(result.is_empty())
 		throw Exception(exception_type,
 			&string,
