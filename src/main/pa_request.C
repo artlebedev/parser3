@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.150 2001/08/10 08:58:56 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.151 2001/08/10 08:59:25 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -25,8 +25,6 @@ extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 #include "pa_vtable.h"
 #include "pa_vfile.h"
 #include "pa_dictionary.h"
-
-const int MAX_EXECUTE_SECONDS=1;
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
