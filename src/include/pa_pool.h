@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.58 2001/09/21 08:41:28 parser Exp $
+	$Id: pa_pool.h,v 1.59 2001/09/21 14:46:09 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -13,10 +13,11 @@
 
 #include "pa_config_includes.h"
 
+#ifdef XML
 #include <XalanDOM/XalanDOMString.hpp>
 #include <util/TransService.hpp>
 #include <PlatformSupport/XSLException.hpp>
-
+#endif
 
 // forwards
 
@@ -65,29 +66,11 @@ public:
 	/// current exception object of the pool
 	Exception& exception() const { return *fexception; }
 
-	/// resets transcoder if they change charset 
-	void set_charset(const String &charset);
-	/// returns current charset
-	const String& get_charset() { return *charset; }
-	/// converts Xalan string to char *
-	const char *transcode_cstr(const XalanDOMString& s);
-	/// converts Xalan string to parser String
-	String& transcode(const XalanDOMString& s);
-	/// converts XSL exception to parser exception
-	void _throw(const String *source, const XSLException& e);
-
-private:
-
-	void set_charset(const char *new_scharset);
-	void update_transcoder();
-
 private:
 
 	void *fstorage;
 	void *fcontext;
 	void *ftag;
-	const String *charset;
-	XMLTranscoder *transcoder;
 
 private: 
 	
@@ -134,6 +117,32 @@ private:
 	// current request's exception object
 	Exception *fexception;
 
+#ifdef XML
+
+public:
+	/// resets transcoder if they change charset 
+	void set_charset(const String &charset);
+	/// returns current charset
+	const String& get_charset() { return *charset; }
+	/// converts Xalan string to char *
+	const char *transcode_cstr(const XalanDOMString& s);
+	/// converts Xalan string to parser String
+	String& transcode(const XalanDOMString& s);
+	/// converts XSL exception to parser exception
+	void _throw(const String *source, const XSLException& e);
+
+private:
+
+	void set_charset(const char *new_scharset);
+	void update_transcoder();
+
+private:
+
+	const String *charset;
+	XMLTranscoder *transcoder;
+
+#endif
+
 private: //disabled
 
 	// Pool(const Pool&) {}
@@ -174,9 +183,11 @@ public:
 	void *calloc(size_t size) const { return fpool->calloc(size); }
 	void register_cleanup(void (*cleanup) (void *), void *data) { fpool->register_cleanup(cleanup, data); }
 	Exception& exception() const { return fpool->exception(); }
+#ifdef XML
 	const char *transcode_cstr(const XalanDOMString& s) { return fpool->transcode_cstr(s); }
 	String& transcode(const XalanDOMString& s) { return fpool->transcode(s); }
 	void _throw(const String *source, const XSLException& e) { fpool->_throw(source, e); }
+#endif
 	//}
 };
 /// useful macro for creating objects on current Pooled object Pooled::pool()

@@ -2,9 +2,8 @@
 	Parser: image manipulations impl1.
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
-
-	$Id: gif.C,v 1.6 2001/09/18 16:05:42 parser Exp $
 */
+static const char *RCSId="$Id: gif.C,v 1.7 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "gif.h"
 

@@ -4,10 +4,8 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
-
-	$Id: mail.C,v 1.37 2001/09/14 15:41:59 parser Exp $
 */
-static const char *RCSId="$Id: mail.C,v 1.37 2001/09/14 15:41:59 parser Exp $"; 
+static const char *RCSId="$Id: mail.C,v 1.38 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_config_includes.h"
 

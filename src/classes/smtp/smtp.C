@@ -5,11 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: smtp.C,v 1.2 2001/04/10 06:57:23 paf Exp $
-
-
 	Parts of the code here is based upon an early gensock and blat
 */
+static const char *RCSId="$Id: smtp.C,v 1.3 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "smtp.h"
 #include "pa_exception.h"

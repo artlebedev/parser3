@@ -4,9 +4,8 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
-
-	$Id: pa_pool.C,v 1.20 2001/09/17 14:46:49 parser Exp $
 */
+static const char *RCSId="$Id: pa_pool.C,v 1.21 2001/09/21 14:46:09 parser Exp $"; 
 
 #include <stdlib.h>
 

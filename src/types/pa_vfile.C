@@ -4,9 +4,10 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
-
-	$Id: pa_vfile.C,v 1.20 2001/09/14 15:41:59 parser Exp $
 */
+static const char *RCSId="$Id: pa_vfile.C,v 1.21 2001/09/21 14:46:09 parser Exp $"; 
+
+#include "pa_config_includes.h"
 
 #include "pa_vfile.h"
 #include "pa_vstring.h"

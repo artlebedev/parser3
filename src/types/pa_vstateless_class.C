@@ -4,9 +4,8 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
-
-	$Id: pa_vstateless_class.C,v 1.8 2001/04/26 15:01:52 paf Exp $
 */
+static const char *RCSId="$Id: pa_vstateless_class.C,v 1.9 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"

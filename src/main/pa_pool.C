@@ -5,23 +5,32 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_pool.C,v 1.25 2001/09/21 08:38:28 parser Exp $"; 
+static const char *RCSId="$Id: pa_pool.C,v 1.26 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_exception.h"
 #include "pa_common.h"
 
+#ifdef XML
 #include <PlatformSupport/DOMStringHelper.hpp>
 #include <util/PlatformUtils.hpp>
+#endif
 
 Pool::Pool(void *astorage) : 
-	fstorage(astorage), fcontext(0), ftag(0), fexception(0),
-	transcoder(0) {
+	fstorage(astorage), fcontext(0), ftag(0), fexception(0)
+#ifdef XML
+	, transcoder(0) 
+#endif
+	{
+#ifdef XML
 	charset=new(*this) String(*this, "UTF-8");
+#endif
 }
 
 Pool::~Pool() {
+#ifdef XML
 	delete transcoder;
+#endif
 }
 
 void Pool::fail_alloc(size_t size) const {
@@ -36,6 +45,7 @@ void Pool::fail_register_cleanup() const {
 		"failed to register cleanup");
 }
 
+#ifdef XML
 void Pool::set_charset(const String &new_charset) {
 	if(new_charset!=*charset) {
 		delete transcoder;  transcoder=0; // flag "we need new transcoder"
@@ -54,7 +64,6 @@ void Pool::update_transcoder() {
 			charset,
 			"unsupported encoding");
 }
-
 
 const char *Pool::transcode_cstr(const XalanDOMString& s) { 
 	update_transcoder();
@@ -106,3 +115,5 @@ void Pool::_throw(const String *source, const XSLException& e) {
 				e.getColumnNumber() // column number, or -1 if unknown
 		);
 }
+
+#endif

@@ -5,8 +5,6 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pcre_parser_ctype.c,v 1.4 2001/08/20 13:22:05 parser Exp $
-
 
 Perl-Compatible Regular ExpressionsThis is a support program to generate part of auto.p, containing
 character tables of various kinds. They are built according to specified
@@ -44,6 +42,7 @@ and semantics are as close as possible to those of the Perl 5 language.
 	   
 		See the file Tech.Notes for some information on the internals.
 */
+static const char *RCSId="$Id: pcre_parser_ctype.c,v 1.5 2001/09/21 14:46:09 parser Exp $"; 
 
 #include <ctype.h>
 #include <stdio.h>

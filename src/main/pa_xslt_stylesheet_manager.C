@@ -5,7 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_xslt_stylesheet_manager.C,v 1.2 2001/09/14 15:49:06 parser Exp $"; 
+#include "pa_config_includes.h"
+#ifdef XML
+
+static const char *RCSId="$Id: pa_xslt_stylesheet_manager.C,v 1.3 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_xslt_stylesheet_manager.h"
 #include "pa_stylesheet_connection.h"
@@ -13,11 +16,6 @@ static const char *RCSId="$Id: pa_xslt_stylesheet_manager.C,v 1.2 2001/09/14 15:
 #include "pa_exception.h"
 #include "pa_common.h"
 #include "pa_threads.h"
-
-#if _MSC_VER
-#	pragma warning(disable:4291)   // disable warning 
-//	"no matching operator delete found; memory will not be freed if initialization throws an exception
-#endif
 
 // globals
 
@@ -113,3 +111,4 @@ void XSLT_Stylesheet_manager::maybe_expire_connection_cache() {
 		prev_expiration_pass_time=now;
 	}
 }
+#endif

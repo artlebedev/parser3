@@ -5,15 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.75 2001/09/20 14:25:06 parser Exp $"; 
-
-#if _MSC_VER
-#	pragma warning(disable:4291)   // disable warning 
-//	"no matching operator delete found; memory will not be freed if initialization throws an exception
-#endif
-
-#include <util/PlatformUtils.hpp>
-#include <XalanTransformer/XalanTransformer.hpp>
+static const char *RCSId="$Id: pa_globals.C,v 1.76 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -21,6 +13,11 @@ static const char *RCSId="$Id: pa_globals.C,v 1.75 2001/09/20 14:25:06 parser Ex
 #include "pa_sql_driver_manager.h"
 #include "pa_xslt_stylesheet_manager.h"
 #include "pa_dictionary.h"
+
+#ifdef XML
+#include <util/PlatformUtils.hpp>
+#include <XalanTransformer/XalanTransformer.hpp>
+#endif
 
 String *user_html_name;
 String *content_type_name;
@@ -211,6 +208,7 @@ void pa_globals_init(Pool& pool) {
 	// SQL driver manager
  	SQL_driver_manager=NEW SQL_Driver_manager(pool);
 
+#ifdef XML
 	// Xerces & Xalan
 
 	// Use the static initializers to initialize the Xalan-C++ and Xerces-C++ platforms. 
@@ -220,4 +218,33 @@ void pa_globals_init(Pool& pool) {
 
 	// XSLT stylesheet driver manager
  	XSLT_stylesheet_manager=NEW XSLT_Stylesheet_manager(pool);
+#endif
 }
+
+#if defined(XML) && defined(_MSC_VER)
+#	define XERCES_BUILD_WIN32_BUILD "/parser3project/win32xml/xml-xerces/c/Build/Win32/VC6"
+#	define XALAN_BUILD_WIN32_BUILD "/parser3project/win32xml/xml-xalan/c/Build/Win32/VC6"
+#	ifdef _DEBUG
+#		pragma comment(lib, XERCES_BUILD_WIN32_BUILD "/Debug/xerces-c_1D.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XSLTD.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XPathD.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XalanTransformerD.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XalanDOMD.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/DOMSupportD.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/PlatformSupportD.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XMLSupportD.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XercesParserLiaisonD.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XalanSourceTreeD.lib")
+#	else
+#		pragma comment(lib, XERCES_BUILD_WIN32_BUILD "/Release/xerces-c_1.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XalanSourceTree.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/PlatformSupport.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XalanDOM.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/DOMSupport.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XalanTransformer.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XercesParserLiaison.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XMLSupport.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XPath.lib")
+#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XSLT.lib")
+#	endif
+#endif

@@ -4,9 +4,8 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
-
-	$Id: comms.C,v 1.2 2001/04/10 06:57:23 paf Exp $
 */
+static const char *RCSId="$Id: comms.C,v 1.3 2001/09/21 14:46:09 parser Exp $"; 
 
 #include <winsock.h>
 

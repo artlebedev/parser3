@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /vmg /GX /O2 /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\..\..\xml-xalan\c\src" /I "..\..\..\..\xml-xerces\c\src" /D "NDEBUG" /D "_CONSOLE" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /vmg /GX /O2 /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "/parser3project/win32xml/xml-xalan/c/src" /I "/parser3project/win32xml/xml-xerces/c/src" /D "NDEBUG" /D "_CONSOLE" /D "WIN32" /FD /I /parser3project/win32xml/xml-xalan/src" /I /parser3project/win32xml/xml-xerces/src" /I /parser3project/win32xml/xml-xerces/c/src" /I /parser3project/win32xml/xml-xalan/c/src" /TP " " " " /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
@@ -67,7 +67,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /vmg /GX /Zi /Od /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\..\..\xml-xalan\c\src" /I "..\..\..\..\xml-xerces\c\src" /D "_DEBUG" /D "_CONSOLE" /D "WIN32" /FD /TP /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /vmg /GX /Zi /Od /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "/parser3project/win32xml/xml-xalan/c/src" /I "/parser3project/win32xml/xml-xerces/c/src" /D "_DEBUG" /D "_CONSOLE" /D "WIN32" /FD /I /parser3project/win32xml/xml-xalan/src" /I /parser3project/win32xml/xml-xerces/src" /I /parser3project/win32xml/xml-xerces/c/src" /I /parser3project/win32xml/xml-xalan/c/src" /TP /GZ " " " " /c
 # SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"

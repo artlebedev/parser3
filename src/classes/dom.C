@@ -5,9 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.32 2001/09/21 09:04:18 parser Exp $"; 
-
 #include "classes.h"
+#ifdef XML
+
+static const char *RCSId="$Id: dom.C,v 1.33 2001/09/21 14:46:09 parser Exp $"; 
+
 #include "pa_request.h"
 #include "pa_vdom.h"
 #include "pa_xslt_stylesheet_manager.h"
@@ -362,6 +364,14 @@ Methoded *Dom_class;
 
 // creator
 
+#endif
+
 Methoded *MDom_create(Pool& pool) {
-	return Dom_class=new(pool) MDom(pool);
+	return 
+#ifdef XML
+		Dom_class=new(pool) MDom(pool);
+#else
+		0
+#endif
+	;
 }

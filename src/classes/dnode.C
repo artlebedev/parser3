@@ -5,14 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dnode.C,v 1.4 2001/09/20 14:25:06 parser Exp $"; 
-
-#if _MSC_VER
-#	pragma warning(disable:4291)   // disable warning 
-//	"no matching operator delete found; memory will not be freed if initialization throws an exception
-#endif
-
 #include "classes.h"
+#ifdef XML
+
+static const char *RCSId="$Id: dnode.C,v 1.5 2001/09/21 14:46:09 parser Exp $"; 
+
 #include "pa_request.h"
 #include "pa_vdnode.h"
 
@@ -118,8 +115,15 @@ MDnode::MDnode(Pool& apool) : Methoded(apool) {
 
 Methoded *Dnode_class;
 
-// creator
+#endif
 
+// creator
 Methoded *MDnode_create(Pool& pool) {
-	return Dnode_class=new(pool) MDnode(pool);
+	return 
+#ifdef XML
+		Dnode_class=new(pool) MDnode(pool)
+#else
+		0
+#endif
+		;
 }

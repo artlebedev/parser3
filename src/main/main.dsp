@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "..\..\..\xml-xalan\c\src" /I "..\..\..\xml-xerces\c\src" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "/parser3project/win32xml/xml-xalan/c/src" /I "/parser3project/win32xml/xml-xerces/c/src" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /I /parser3project/win32xml/xml-xerces/c/src" /I /parser3project/win32xml/xml-xalan/c/src" /TP " " /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "..\..\..\xml-xalan\c\src" /I "..\..\..\xml-xerces\c\src" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "/parser3project/win32xml/xml-xalan/c/src" /I "/parser3project/win32xml/xml-xerces/c/src" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /I /parser3project/win32xml/xml-xerces/c/src" /I /parser3project/win32xml/xml-xalan/c/src" /TP /GZ " " /c
 # SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -641,45 +641,179 @@ SOURCE=..\classes\void.C
 SOURCE=..\sql\pa_sql_driver.h
 # End Source File
 # End Group
+# Begin Group "xml"
+
+# PROP Default_Filter ""
+# Begin Group "xml-xerces"
+
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XSLTD.lib"
+SOURCE="..\..\..\win32xml\xml-xerces\c\Build\Win32\VC6\Debug\xerces-c_1D.lib"
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XPathD.lib"
+SOURCE="..\..\..\win32xml\xml-xerces\c\Build\Win32\VC6\Release\xerces-c_1.lib"
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "xml-xalan"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Debug\DOMSupportD.lib"
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XalanTransformerD.lib"
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Debug\PlatformSupportD.lib"
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XalanDOMD.lib"
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Debug\XalanSourceTreeD.lib"
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\DOMSupportD.lib"
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Debug\XalanTransformerD.lib"
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\PlatformSupportD.lib"
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Debug\XercesParserLiaisonD.lib"
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XMLSupportD.lib"
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Debug\XMLSupportD.lib"
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XercesParserLiaisonD.lib"
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Debug\XPathD.lib"
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XalanSourceTreeD.lib"
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Debug\XSLTD.lib"
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
-SOURCE="..\..\..\xml-xerces\c\Build\Win32\VC6\Debug\xerces-c_1D.lib"
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Release\DOMSupport.lib"
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
+# Begin Source File
+
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Release\PlatformSupport.lib"
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Release\XalanSourceTree.lib"
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Release\XalanTransformer.lib"
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Release\XercesParserLiaison.lib"
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Release\XMLSupport.lib"
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Release\XPath.lib"
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\..\win32xml\xml-xalan\c\Build\Win32\VC6\Release\XSLT.lib"
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# End Group
+# End Group
 # End Target
 # End Project

@@ -4,14 +4,10 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
-
-	$Id: pa_vdnode.C,v 1.5 2001/09/21 08:38:28 parser Exp $
 */
-
-#if _MSC_VER
-#	pragma warning(disable:4291)   // disable warning 
-//	"no matching operator delete found; memory will not be freed if initialization throws an exception
-#endif
+#include "pa_config_includes.h"
+#ifdef XML
+static const char *RCSId="$Id: pa_vdnode.C,v 1.6 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_vdnode.h"
 #include "pa_vdom.h"
@@ -131,3 +127,5 @@ virtual const XalanNamedNodeMap* getNotations () const = 0
 
 	return 0;
 }
+
+#endif

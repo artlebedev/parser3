@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: mod_parser3.C,v 1.42 2001/09/18 16:05:43 parser Exp $"; 
+static const char *RCSId="$Id: mod_parser3.C,v 1.43 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "httpd.h"
 #include "http_config.h"
@@ -596,3 +596,12 @@ module MODULE_VAR_EXPORT PARSER3_MODULE =
     0,                           /* [8] fixups */
     0                            /* [10] logger */
 };
+
+#if defined(_MSC_VER)
+#	define APACHE_WIN32_SRC "/parser3project/win32apache13/src"
+#	ifdef _DEBUG
+#		pragma comment(lib, APACHE_WIN32_SRC "/CoreD/ApacheCore.lib")
+#	else
+#		pragma comment(lib, APACHE_WIN32_SRC "/CoreR/ApacheCore.lib")
+#	endif
+#endif

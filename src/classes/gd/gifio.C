@@ -3,9 +3,6 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gifio.C,v 1.11 2001/09/06 06:11:13 parser Exp $
-
-
 	based on:
  **
  ** Based on GIFENCOD by David Rowley <mgardi@watdscu.waterloo.edu>. A
@@ -26,6 +23,7 @@
  ** CompuServe Incorporated.  GIF(sm) is a Service Mark property of
  ** CompuServe Incorporated.
 */
+static const char *RCSId="$Id: gifio.C,v 1.12 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "gif.h"
 

@@ -4,9 +4,8 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
-
-	$Id: pa_wcontext.C,v 1.7 2001/07/07 16:38:02 parser Exp $
 */
+static const char *RCSId="$Id: pa_wcontext.C,v 1.8 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"

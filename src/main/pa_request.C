@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.154 2001/09/20 14:34:42 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.155 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -233,10 +233,13 @@ void Request::core(
 		// value must be allocated on request's pool for that pool used on
 		// meaning constructing @see attributed_meaning_to_string
 		default_content_type=defaults?defaults->get_element(*content_type_name):0;
+#ifdef XML
+		// record default charset
 		if(default_content_type)
 			if(Hash *hash=default_content_type->get_hash())
 				if(Value *vcharset=(Value *)hash->get(*charset_name))
 					pool().set_charset(vcharset->as_string());		
+#endif
 
 		if(Value *element=main_class->get_element(*user_html_name))
 			if(Table *table=element->get_table())
