@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.206 2001/11/16 11:03:02 paf Exp $
+	$Id: execute.C,v 1.207 2001/12/21 11:17:25 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -425,15 +425,16 @@ void Request::execute(const Array& ops) {
 									frame->name(), frame->numbered_params()); // execute it
 							} else { // parser code
 								root=frame;
-								if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
-									anti_endless_execute_recoursion=0; // give @exception a chance
-									throw Exception(0, 0,
-										&frame->name(),
-										"endless recursion detected");
+								{ // anti_endless_execute_recoursion
+									if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
+										anti_endless_execute_recoursion=0; // give @exception a chance
+										throw Exception(0, 0,
+											&frame->name(),
+											"call canceled - endless recursion detected");
+									}
+									execute(*method.parser_code); // execute it
+									anti_endless_execute_recoursion--;
 								}
-								
-								execute(*method.parser_code); // execute it
-								anti_endless_execute_recoursion--;
 							}
 						} catch(...) {
 							// record it to stack trace
@@ -816,7 +817,18 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 		self=&junction->self;
 		root=junction->root;
 		rcontext=junction->rcontext;
-		execute(*junction->code);
+
+		{ // anti_endless_execute_recoursion
+			if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
+				anti_endless_execute_recoursion=0; // give @exception a chance
+				throw Exception(0, 0,
+					name,
+					"junction evaluation canceled - endless recursion detected");
+			}
+			execute(*junction->code);
+			anti_endless_execute_recoursion--;
+		}
+		
 		if(using_code_frame) {
 			// CodeFrame soul:
 			//   string writes were intercepted
