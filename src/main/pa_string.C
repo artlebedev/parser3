@@ -1,10 +1,10 @@
 /*
-  $Id: pa_string.C,v 1.11 2001/01/27 15:21:05 paf Exp $
+  $Id: pa_string.C,v 1.12 2001/01/29 12:21:35 paf Exp $
 */
 
 #include <string.h>
 
-#include "pa_pool.h"
+#include "pa_string.h"
 #include "pa_hash.h"
 
 void *String::operator new(size_t size, Pool *apool) {

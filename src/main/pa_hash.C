@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.6 2001/01/29 12:16:08 paf Exp $
+  $Id: pa_hash.C,v 1.7 2001/01/29 12:21:35 paf Exp $
 */
 
 /*
@@ -92,7 +92,7 @@ void Hash::put(Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
 			return;
 		}
 	
-	// not found proper pair -- create&link_in new pair
+	// proper pair not found -- create&link_in new pair
 	*ref=new(pool) Pair(code, key, value, *ref);
 }
 
