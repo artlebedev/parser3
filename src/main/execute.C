@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/10/31 10:27:57 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/10/31 10:29:23 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -846,13 +846,13 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 						if(Value *base_object=get_self()->base_object()) { // doing DYNAMIC call
 							Temp_derived temp_derived(*base_object, 0); // temporarily prevent go-back-down virtual calls
 							value=base_object->get_element(name, base_object, false); // virtual-up lookup starting from parent
-							goto _void;
+							goto value_ready;
 						}
 	}
 	if(!value)
 		value=ncontext->get_element(name, ncontext, false);
 
-_void:
+value_ready:
 	if(value)
 			value=&process_to_value(*value); // process possible code-junction
 	else
