@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.39 2001/05/16 16:48:56 parser Exp $
+	$Id: pa_array.h,v 1.40 2001/05/16 16:54:00 parser Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -174,7 +174,6 @@ private:
 	bool chunk_is_full() {
 		return append_here == link_row;
 	}
-	int expand_times;
 	void expand(int chunk_rows);
 
 private: //disabled

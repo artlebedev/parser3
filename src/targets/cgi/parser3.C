@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.81 2001/05/16 16:48:56 parser Exp $
+	$Id: parser3.C,v 1.82 2001/05/16 16:54:00 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -280,10 +280,6 @@ int main(int argc, char *argv[]) {
 
 		extern void log_pool_stats(Pool& pool);
 		log_pool_stats(pool);
-		extern void log_array_stats(Pool& pool);
-		log_array_stats(pool);
-		extern void log_array_lens(Pool& pool);
-		log_array_lens(pool);
 
 
 		// must be last in PTRY{}PCATCH
