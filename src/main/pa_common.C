@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.81 2001/10/31 15:01:33 paf Exp $
+	$Id: pa_common.C,v 1.82 2001/10/31 15:05:00 paf Exp $
 */
 
 #include "pa_common.h"
@@ -16,15 +16,12 @@
 #include "pa_hash.h"
 #include "pa_string.h"
 
-#ifndef WIN32
-#	ifndef _O_TEXT
-#		define _O_TEXT 0
-#	endif
-#	ifndef _O_BINARY
-#		define _O_BINARY 0
-#	endif
+#ifndef _O_TEXT
+#	define _O_TEXT 0
 #endif
-
+#ifndef _O_BINARY
+#	define _O_BINARY 0
+#endif
 #ifndef O_TRUNC
 #	define O_TRUNC 0
 #endif
