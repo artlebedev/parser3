@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.138 2001/04/05 19:35:16 paf Exp $
+	$Id: execute.C,v 1.139 2001/04/06 10:20:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -655,7 +655,7 @@ void Request::execute(const Array& ops) {
 		default:
 			THROW(0,0,
 				0,
-				"unhandled '%s' opcode", opcode_name[op.code]); 
+				"invalid opcode %d", op.code); 
 		}
 	}
 }
@@ -664,7 +664,9 @@ Value *Request::get_element() {
 	const String& name=POP_NAME();
 	Value *ncontext=POP();
 	Value *value=ncontext->get_element(name);
-
+	if(!value)
+		if(Method* method=ROOT.get_method(name)) // operator?
+			value=NEW VJunction(*NEW Junction(pool(), *self, self->get_class(), method, 0,0,0,0));
 	if(value)
 		value=&process(*value, &name); // process possible code-junction
 	else {

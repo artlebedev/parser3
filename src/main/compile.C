@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.33 2001/03/19 17:42:14 paf Exp $
+	$Id: compile.C,v 1.34 2001/04/06 10:20:36 paf Exp $
 */
 
 #include "code.h"
@@ -34,9 +34,8 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 		// yes. create it
 		cclass=NEW VClass(pool());
 		// defaulting base. may change with @BASE
-		if(!base_class)
-			base_class=&ROOT;
-		cclass->set_base(*base_class);
+		if(base_class)
+			cclass->set_base(*base_class);
 		classes().put(*name, cclass);
 		cclass->set_name(*name);
 	} else

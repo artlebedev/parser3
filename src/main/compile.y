@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.123 2001/04/03 17:15:07 paf Exp $
+	$Id: compile.y,v 1.124 2001/04/06 10:20:36 paf Exp $
 */
 
 /**
@@ -137,7 +137,7 @@ control_method: '@' STRING '\n'
 		YYERROR;
 	}
 	if(command==CLASS_NAME) {
-		if(PC.cclass!=&PC.request->ROOT) { // already changed from default?
+		if(PC.cclass) { // already changed from default?
 			strcpy(PC.error, "class already have a name '");
 			strncat(PC.error, PC.cclass->name().cstr(), 100);
 			strcat(PC.error, "'");
@@ -149,8 +149,6 @@ control_method: '@' STRING '\n'
 			// creating the class
 			PC.cclass=NEW VClass(POOL);
 			PC.cclass->set_name(*name);
-			// defaulting base. may change with @BASE
-			PC.cclass->set_base(PC.request->ROOT);
 			// append to request's classes
 			PC.request->classes().put(*name, PC.cclass);
 		} else {
@@ -163,7 +161,7 @@ control_method: '@' STRING '\n'
 				PC.request->use_file(
 					PC.request->absolute(*LA2S(strings_code, i)));
 		} else if(command==BASE_NAME) {
-			if(PC.cclass->base()!=&PC.request->ROOT) { // already changed from default?
+			if(PC.cclass->base()) { // already changed from default?
 				strcpy(PC.error, "class already have a base '");
 				strncat(PC.error, PC.cclass->base()->name().cstr(), 100);
 				strcat(PC.error, "'");
