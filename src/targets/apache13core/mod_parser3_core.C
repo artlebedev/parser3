@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2003/11/21 12:17:30 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2004/01/29 14:15:27 $";
 
 #include "pa_globals.h"
 
@@ -113,7 +113,7 @@ static int SAPI_environment_append(void *d, const char* k, const char* val) {
 }
 const char* const* SAPI::environment(SAPI_Info& SAPI_info) {
 	const pa_table *t=SAPI_info.r->subprocess_env;
-	const char** result=new const char*[pa_ap_table_size(t)+1/*0*/];
+	const char** result=new(UseGC) const char*[pa_ap_table_size(t)+1/*0*/];
 	SAPI_environment_append_info info={result};
 	pa_ap_table_do(SAPI_environment_append, &info, t, 0); *info.cur=0; // mark EOE
 	return result;
