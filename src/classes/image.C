@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.13 2001/04/12 14:07:33 paf Exp $
+	$Id: image.C,v 1.14 2001/04/12 14:08:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -360,7 +360,6 @@ static void _create(Request& r, const String& method_name, Array *params) {
 }
 
 /// ^image.gif[]
-/// ^image.gif[user-file-name]
 static void _gif(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
@@ -370,21 +369,13 @@ static void _gif(Request& r, const String& method_name, Array *params) {
 			&method_name,
 			"does not contain an image");
 
-	char *file_name_cstr=0;
-	if(params->size()) {
-		Value& vfile_name=*static_cast<Value *>(params->get(0));
-		// forcing [this body type]
-		r.fail_if_junction_(true, vfile_name, method_name, "file name must not be code");
-		
-		file_name_cstr=vfile_name.as_string().cstr(String::UL_FILE_NAME);
-	}
 	// could _ but don't thing it's wise to use $image.src for vfile.name
 
 	String out(pool);  image->Gif(out);
 	
 	VFile& vfile=*new(pool) VFile(pool);
 	String& image_gif=*new(pool) String(pool, "image/gif");
-	vfile.set(false/*not tainted*/, out.cstr(), out.size(), file_name_cstr, &image_gif);
+	vfile.set(false/*not tainted*/, out.cstr(), out.size(), 0, &image_gif);
 
 	r.write_no_lang(vfile);
 }
@@ -555,8 +546,7 @@ void initialize_image_class(Pool& pool, VStateless_class& vclass) {
 	vclass.add_native_method("create", Method::CT_DYNAMIC, _create, 2, 3);
 
 	/// ^image.gif[]
-	/// ^image.gif[user-file-name]
-	vclass.add_native_method("gif", Method::CT_DYNAMIC, _gif, 0, 1);
+	vclass.add_native_method("gif", Method::CT_DYNAMIC, _gif, 0, 0);
 
 	/// ^image.line(x0;y0;x1;y1;color)
 	vclass.add_native_method("line", Method::CT_DYNAMIC, _line, 5, 5);
