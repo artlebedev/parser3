@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.33 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vtable.h,v 1.34 2001/10/16 14:39:09 parser Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -31,7 +31,7 @@ public: // Value
 	/// VTable: count!=0
 	bool is_defined() const { return as_int()!=0; }
 	/// VTable: 0 or !0
-	bool as_bool() const { return as_int()!=0; }
+	bool as_bool() const { return is_defined(); }
 	/// VTable: count
 	Value *as_expr_result(bool return_string_as_is=false) { return NEW VInt(pool(), as_int()); }
 	/// extract VTable
