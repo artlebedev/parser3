@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.165 2002/03/27 15:30:37 paf Exp $
+	$Id: parser3.C,v 1.166 2002/04/04 07:57:50 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -195,14 +195,16 @@ void SAPI::send_body(Pool& , const void *buf, size_t size) {
 
 //
 
-char *full_file_spec(char *file_name) {
+void full_file_spec(const char *file_name, char *buf, size_t buf_size) {
 	if(file_name && !strchr(file_name, '/')) {
 		char cwd[MAX_STRING];  getcwd(cwd, MAX_STRING);
-		static char buf[MAX_STRING];
-		snprintf(buf, MAX_STRING, "%s/%s", cwd, file_name);
-		return buf;
+		snprintf(buf, buf_size, "%s/%s", cwd, file_name);
+	} else {
+		strncpy(buf, file_name, buf_size);
 	}
-	return file_name;
+#ifdef WIN32
+	back_slashes_to_slashes(buf);
+#endif
 }
 
 /**
@@ -230,26 +232,22 @@ void real_parser_handler(
 	
 	// Request info
 	Request::Info request_info;
+	char document_root_buf[MAX_STRING];
 	if(cgi) {
 		if(const char *env_document_root=SAPI::get_env(pool, "DOCUMENT_ROOT"))
 			request_info.document_root=env_document_root;
 		else if(const char *path_info=SAPI::get_env(pool, "PATH_INFO")) {
 			// IIS
-			size_t len=strlen(filespec_to_process)-strlen(path_info);
-			char *buf=(char *)pool.malloc(len+1);
-			memcpy(buf, filespec_to_process, len); buf[len]=0;
-			request_info.document_root=buf;
+			size_t len=min(sizeof(document_root_buf)-1, strlen(filespec_to_process)-strlen(path_info));
+			memcpy(document_root_buf, filespec_to_process, len); document_root_buf[len]=0;
+			request_info.document_root=document_root_buf;
 		} else
 			throw Exception("parser.runtime",
 				0,
 				"CGI: no PATH_INFO defined(in reinventing DOCUMENT_ROOT)");
 	} else {
-		char buf[MAX_STRING];
-		strncpy(buf, filespec_to_process, MAX_STRING-1); buf[MAX_STRING-1]=0;
-		if(rsplit(buf, '/') || rsplit(buf, '\\')) // strip filename
-			request_info.document_root=buf;
-		else
-			request_info.document_root="";
+		full_file_spec("", document_root_buf, sizeof(document_root_buf));
+		request_info.document_root=document_root_buf;
 	}
 	request_info.path_translated=filespec_to_process;
 	request_info.method=request_method ? request_method : "GET";
@@ -471,11 +469,9 @@ int main(int argc, char *argv[]) {
 	std::set_new_handler(failed_new);
 #endif
 
-	char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
-#ifdef WIN32
-	back_slashes_to_slashes(filespec_to_process);
-#endif
-	filespec_to_process=full_file_spec(filespec_to_process);
+	char *raw_filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
+	char filespec_to_process[MAX_STRING];
+	full_file_spec(raw_filespec_to_process, filespec_to_process, sizeof(filespec_to_process));
 
 	const char *request_method=getenv("REQUEST_METHOD");
 	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
