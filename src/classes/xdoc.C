@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/02/20 10:41:16 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/02/20 13:19:08 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -595,160 +595,6 @@ static void prepare_output_options(Request& r,
 	}
 }
 
-/// patching piecees from libxslt and libxml not to set meta encoding
-static int
-pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
-	       xsltStylesheetPtr style,
-		   const xmlChar *header_encoding) {
-    const xmlChar *encoding;
-    int base;
-    const xmlChar *method;
-    int indent;
-
-    if ((buf == NULL) || (result == NULL) || (style == NULL))
-	return(-1);
-    if ((result->children == NULL) ||
-	((result->children->type == XML_DTD_NODE) &&
-	 (result->children->next == NULL)))
-	return(0);
-
-    if ((style->methodURI != NULL) &&
-	((style->method == NULL) ||
-	 (!xmlStrEqual(style->method, (const xmlChar *) "xhtml")))) {
-        xsltGenericError(xsltGenericErrorContext,
-		"xsltSaveResultTo : unknown ouput method\n");
-        return(-1);
-    }
-
-    base = buf->written;
-
-    XSLT_GET_IMPORT_PTR(method, style, method)
-    XSLT_GET_IMPORT_PTR(encoding, style, encoding)
-	if(header_encoding)
-		encoding=header_encoding;
-    XSLT_GET_IMPORT_INT(indent, style, indent);
-
-    if ((method == NULL) && (result->type == XML_HTML_DOCUMENT_NODE))
-		method = BAD_CAST "html";
-
-	int omitXmlDecl;
-	XSLT_GET_IMPORT_INT(omitXmlDecl, style, omitXmlDeclaration);
-
-    if ((method != NULL) &&
-	(xmlStrEqual(method, (const xmlChar *) "html"))) {
-	if (indent == -1)
-	    indent = 1;
-
-    int is_xhtml = 0;
-    xmlDtdPtr dtd = xmlGetIntSubset(result);
-    if (dtd != NULL) {
-        is_xhtml = xmlIsXHTML(dtd->SystemID, dtd->ExternalID);
-        if (is_xhtml < 0)
-            is_xhtml = 0;
-	}
-	if(is_xhtml) {
-		method = BAD_CAST "xml";
-		omitXmlDecl = 0;
-	} else {
-		htmlDocContentDumpFormatOutput(buf, result, (const char *) encoding,
-		                       indent);
-		xmlOutputBufferFlush(buf);
-		goto finish;
-	}
-	}
-
-	if ((method != NULL) &&
-	       (xmlStrEqual(method, (const xmlChar *) "text"))) {
-	xmlNodePtr cur;
-
-	cur = result->children;
-	while (cur != NULL) {
-	    if (cur->type == XML_TEXT_NODE)
-		xmlOutputBufferWriteString(buf, (const char *) cur->content);
-
-	    /*
-	     * Skip to next node
-	     */
-	    if (cur->children != NULL) {
-		if ((cur->children->type != XML_ENTITY_DECL) &&
-		    (cur->children->type != XML_ENTITY_REF_NODE) &&
-		    (cur->children->type != XML_ENTITY_NODE)) {
-		    cur = cur->children;
-		    continue;
-		}
-	    }
-	    if (cur->next != NULL) {
-		cur = cur->next;
-		continue;
-	    }
-	    
-	    do {
-		cur = cur->parent;
-		if (cur == NULL)
-		    break;
-		if (cur == (xmlNodePtr) style->doc) {
-		    cur = NULL;
-		    break;
-		}
-		if (cur->next != NULL) {
-		    cur = cur->next;
-		    break;
-		}
-	    } while (cur != NULL);
-	}
-	xmlOutputBufferFlush(buf);
-    } else {
-	int standalone;
-
-	XSLT_GET_IMPORT_INT(standalone, style, standalone);
-
-	if (omitXmlDecl != 1) {
-	    xmlOutputBufferWriteString(buf, "<?xml version=");
-	    if (result->version != NULL) 
-			xmlBufferWriteQuotedString(buf->buffer, result->version);
-		else
-			xmlOutputBufferWriteString(buf, "\"1.0\"");
-	    if (encoding == NULL) {
-		if (result->encoding != NULL)
-		    encoding = result->encoding;
-		else if (result->charset != XML_CHAR_ENCODING_UTF8)
-		    encoding = BAD_CAST xmlGetCharEncodingName((xmlCharEncoding)result->charset);
-	    }
-	    if (encoding != NULL) {
-		xmlOutputBufferWriteString(buf, " encoding=");
-		xmlBufferWriteQuotedString(buf->buffer, (xmlChar *) encoding);
-	    }
-	    switch (standalone) {
-		case 0:
-		    xmlOutputBufferWriteString(buf, " standalone=\"no\"");
-		    break;
-		case 1:
-		    xmlOutputBufferWriteString(buf, " standalone=\"yes\"");
-		    break;
-		default:
-		    break;
-	    }
-	    xmlOutputBufferWriteString(buf, "?>\n");
-	}
-	if (result->children != NULL) {
-	    xmlNodePtr child = result->children;
-
-	    while (child != NULL) {
-		xmlNodeDumpOutput(buf, result, child, 0, (indent == 1),
-			          (const char *) encoding);
-		if (child->type == XML_DTD_NODE)
-		    xmlOutputBufferWriteString(buf, "\n");
-		child = child->next;
-	    }
-	    xmlOutputBufferWriteString(buf, "\n");
-	}
-	xmlOutputBufferFlush(buf);
-    }
-finish:
-    return(buf->written - base);
-}
-
-
 struct Xdoc2buf_result {
 	char* str;
 	size_t length;
@@ -807,7 +653,9 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
 	document->encoding=BAD_CAST xmlMemStrdup(render_encoding);
-	if(pa_xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get(), BAD_CAST header_encoding)<0
+	if(header_encoding)
+		stylesheet->encoding=BAD_CAST xmlMemStrdup(header_encoding);
+	if(xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0
 		|| xmlHaveGenericErrors()) {
 		GdomeException exc=0;
 		throw XmlException(0, exc);
