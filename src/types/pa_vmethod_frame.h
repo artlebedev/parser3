@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/10/15 08:31:57 $";
+static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/10/15 10:58:34 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -43,7 +43,7 @@ public: // Value
 			if(Value *result=static_cast<Value *>(my.get(aname)))
 				return result;
 		}
-		if(Value *result=fself->get_element(aname, aself, looking_up))
+		if(Value *result=self().get_element(aname, aself, looking_up))
 			return result;
 
 		if(aname==CALLER_NAME)
@@ -56,11 +56,11 @@ public: // Value
 		if(junction.method->max_numbered_params_count==0 && my.put_replace(aname, avalue))
 			return true;
 
-		return fself->put_element(aname, avalue, replace);
+		return self().put_element(aname, avalue, replace);
 	}
 
 	/// VMethodFrame: self_transparent
-	VStateless_class* get_class() { return fself->get_class(); }
+	VStateless_class* get_class() { return self().get_class(); }
 
 public: // WContext
 
@@ -113,6 +113,8 @@ public: // usage
 	VMethodFrame *caller() { return fcaller; }
 
 	void set_self(Value& aself) { fself=&aself; }
+	/// we sure that someone already set our self with VMethodFrame::set_self(Value&)
+	Value& self() { return *fself; }
 
 	bool can_store_param() {
 		const Method& method=*junction.method;
@@ -184,6 +186,21 @@ private:
 
 	Value *fresult_initial_void;
 
+};
+
+///	Auto-object used for temporary changing VMethod_frame::fself.
+class Temp_method_frame_self {
+	VMethodFrame& fmethod_frame;
+	Value& saved_self;
+public:
+	Temp_method_frame_self(VMethodFrame& amethod_frame, Value& aself) :
+		fmethod_frame(amethod_frame),
+		saved_self(amethod_frame.self()) {
+		fmethod_frame.set_self(aself);
+	}
+	~Temp_method_frame_self() {
+		fmethod_frame.set_self(saved_self);
+	}
 };
 
 #endif

@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/10/14 15:22:41 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/10/15 10:58:34 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -60,6 +60,7 @@ class Request : public Pooled {
 	friend class Temp_lang;
 	friend class Temp_connection;
 	friend class Request_context_saver;
+	friend class Temp_request_self;
 public:
 
 #ifdef RESOURCES_DEBUG
@@ -385,6 +386,21 @@ public:
 		fr.self=self; fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;
 		fr.flang=flang;
 		fr.fconnection=fconnection;
+	}
+};
+
+///	Auto-object used for temporary changing Request::self.
+class Temp_request_self {
+	Request& frequest;
+	Value *saved_self;
+public:
+	Temp_request_self(Request& arequest, Value& aself) :
+		frequest(arequest),
+		saved_self(arequest.self) {
+		frequest.self=&aself;
+	}
+	~Temp_request_self() {
+		frequest.self=saved_self;
 	}
 };
 

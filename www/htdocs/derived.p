@@ -29,3 +29,10 @@ derived_test2
 derived_includet<br>
 ^include[some.p]
 ^self.included_method[2]
+
+@inclass_process_test[][ipt]
+$ipt[3]
+#^process[$MAIN:CLASS]{^^eval($ipt*2)}
+#^process[$MAIN:CLASS]{^^test2[]}
+^process{^^test2[]}
+
