@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wwrapper.h,v 1.11 2001/03/07 13:55:46 paf Exp $
+  $Id: pa_wwrapper.h,v 1.12 2001/03/08 13:42:31 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -19,6 +19,7 @@ public: // Value
 	void put_element(const String& name, Value *avalue){ 
 		if(!fvalue)
 			fvalue=NEW VHash(pool());
+
 		fvalue->put_element(name, avalue); 
 	}
 

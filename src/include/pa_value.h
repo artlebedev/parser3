@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.44 2001/03/08 13:13:39 paf Exp $
+  $Id: pa_value.h,v 1.45 2001/03/08 13:42:31 paf Exp $
 */
 
 /*
@@ -93,6 +93,7 @@ public: // Value
 	// string: value
 	// unknown: ""
 	// double: value
+	// bool: must be 0: so in ^if(1>2) it would'nt become "FALSE" string which is 'true'
 	// others: 0
 	virtual String *get_string() { return 0; }
 	

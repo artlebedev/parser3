@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.18 2001/03/08 13:13:39 paf Exp $
+  $Id: pa_request.h,v 1.19 2001/03/08 13:42:31 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -60,7 +60,7 @@ private: // core data
 public:
 
 	void use(char *file, String *alias); // core.C
-	Value& autocalc(Value& value); // execute.C
+	Value& autocalc(Value& value, bool make_string); // execute.C
 	void write(Value& avalue); // execute.C
 
 private: // core.C

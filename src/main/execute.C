@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.70 2001/03/08 13:13:41 paf Exp $
+  $Id: execute.C,v 1.71 2001/03/08 13:42:32 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -544,13 +544,13 @@ Value *Request::get_element() {
 	Value *value=ncontext->get_element(name);
 
 	// autocalc possible code-junction
-	value=value?&autocalc(*value):NEW VUnknown(pool());
+	value=value?&autocalc(*value, true/*make_string*/):NEW VUnknown(pool());
 
 	value->set_name(name);
 	return value;
 }
 
-Value& Request::autocalc(Value& value) {
+Value& Request::autocalc(Value& value, bool make_string) {
 	Junction *junction=value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
 		// autocalc it
@@ -560,17 +560,29 @@ Value& Request::autocalc(Value& value) {
 		PUSH(rcontext);  
 		PUSH(wcontext);
 		
-		// almost plain wwrapper about junction wcontext, 
-		// BUT intercepts string writes
-		VCodeFrame frame(pool(), *junction->wcontext);  wcontext=&frame;
+		WContext *frame;
+		if(make_string) {
+			// almost plain wwrapper about junction wcontext, 
+			// BUT intercepts string writes
+			frame=NEW VCodeFrame(pool(), *junction->wcontext);  
+		} else {
+			// plain wwrapper
+			frame=NEW WWrapper(pool(), 0 /* empty */, false /*not constructing*/);
+		}
+		
+		wcontext=frame;
 		self=&junction->self;
 		root=junction->root;
 		rcontext=junction->rcontext;
 		execute(*junction->code);
-		// CodeFrame soul:
-		//   string writes were intercepted
-		//   returning them as the result of getting code-junction
-		Value& result=*NEW VString(*frame.get_string());
+		Value *result;
+		if(make_string) {
+			// CodeFrame soul:
+			//   string writes were intercepted
+			//   returning them as the result of getting code-junction
+			result=NEW VString(*frame->get_string());
+		} else 
+			result=frame->result();
 		
 		wcontext=static_cast<WContext *>(POP());  
 		rcontext=POP();  
@@ -578,7 +590,7 @@ Value& Request::autocalc(Value& value) {
 		self=static_cast<VAliased *>(POP());
 		
 		fprintf(stderr, "<-ja returned");
-		return result;
+		return *result;
 	} else
 		return value;
 }
