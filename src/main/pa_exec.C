@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Date: 2002/11/20 13:41:54 $";
+static const char* IDENT_EXEC_C="$Date: 2002/11/21 15:29:05 $";
 
 #include "pa_config_includes.h"
 
@@ -302,7 +302,7 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 	string << key << "=" << *static_cast<String *>(value);
 
 	char ***env_ref=static_cast<char ***>(info);
-	**env_ref=string.cstr(String::UL_PASS_APPENDED);  (*env_ref)++;
+	**env_ref=string.cstr(String::UL_UNSPECIFIED);  (*env_ref)++;
 #endif
 }
 
@@ -331,7 +331,7 @@ int pa_exec(
 	if(env) {
 		String string(env->pool());
 		env->for_each(append_env_pair, &string);
-		env_cstr=string.cstr();
+		env_cstr=string.cstr(UL_UNSPECIFIED);
 	}
 	if(DWORD error=CreateHiddenConsoleProcess(cmd, env_cstr, &pi, &hInWrite, &hOutRead, &hErrRead)) {
 		char szErrorDesc[MAX_STRING];

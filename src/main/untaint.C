@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2002/10/08 12:55:25 $";
+static const char* IDENT_UNTAINT_C="$Date: 2002/11/21 15:29:05 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -522,7 +522,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			throw Exception(0, 
 				this, 
 				"unknown untaint language #%d", 
-					static_cast<int>(row->item.lang)); // sould never
+					static_cast<int>(to_lang)); // should never
 			break; // never
 		}
 
