@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.88 2001/05/15 10:48:53 parser Exp $
+	$Id: pa_string.h,v 1.89 2001/05/15 14:31:58 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -85,8 +85,8 @@ class String : public Pooled {
 public:
 
 	enum {
-		CR_PREALLOCATED_COUNT=5, ///< default preallocated item count
-		CR_GROW_PERCENT=60 ///< each time the Array chunk_is_full() array expanded()
+		CR_PREALLOCATED_COUNT=2, ///< default preallocated item count
+		CR_GROW_PERCENT=60 ///< each time the String chunk_is_full() string expanded()
 	};
 
 	/// piece is tainted or not. the language to use when detaint 
@@ -272,6 +272,7 @@ private:
 	bool chunk_is_full() {
 		return append_here == link_row;
 	}
+	int expand_times;
 	void expand();
 
 	/// convert to C string, store to 'dest' which must be big enough for proper untaint

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.49 2001/04/04 10:50:34 paf Exp $
+	$Id: pa_pool.h,v 1.50 2001/05/15 14:31:58 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -42,8 +42,8 @@ public:
 	Exception& exception() const { return *fexception; }
 
 	/// allocates some bytes on pool
-	void *malloc(size_t size) {
-		return check(real_malloc(size), size);
+	void *malloc(size_t size, int place=0) {
+		return check(real_malloc(size, place), size);
 	}
 	/// allocates some bytes clearing them with zeros
 	void *calloc(size_t size) {
@@ -56,10 +56,13 @@ private:
 	void *fcontext;
 	void *ftag;
 
-private: // implementation defined
-
-    void *real_malloc(size_t size);
+private: 
+	
+	//{
+	/// @name implementation defined
+    void *real_malloc(size_t size, int place);
     void *real_calloc(size_t size);
+	//}
 
 private: 
 
@@ -114,7 +117,7 @@ public:
 
 	/// the Pooled-sole: Pooled instances can be allocated in Pool rather then on heap
 	static void *operator new(size_t size, Pool& apool) { 
-		return apool.malloc(size);
+		return apool.malloc(size, 1);
 	}
 
 	Pooled(Pool& apool) : fpool(&apool) {}

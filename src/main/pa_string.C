@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.82 2001/05/14 13:18:07 parser Exp $
+	$Id: pa_string.C,v 1.83 2001/05/15 14:31:58 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -23,12 +23,20 @@
 #include "pa_table.h"
 #include "pa_threads.h"
 
-//#include "pa_sapi.h"
+#include "pa_sapi.h"
+#define STRING_STAT_MAX_PIECES 1000
+int string_stat_pieces[STRING_STAT_MAX_PIECES];
+void log_string_stats(Pool& pool) {
+	for(int i=0; i<STRING_STAT_MAX_PIECES; i++)
+		if(int v=string_stat_pieces[i])
+			SAPI::log(pool, "%i: %10d",	
+				i, v);
+}
 
-// String
 
 String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
-	Pooled(apool) {
+	Pooled(apool),expand_times(0) {
+		string_stat_pieces[0]++;
 	last_chunk=&head;
 	head.count=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
@@ -44,6 +52,13 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 }
 
 void String::expand() {
+	{
+		int index=min(++expand_times, STRING_STAT_MAX_PIECES-1);
+		if(index)
+			string_stat_pieces[index-1]++;
+		string_stat_pieces[index]++;
+	}
+
 	size_t new_chunk_count=last_chunk->count+last_chunk->count*CR_GROW_PERCENT/100;
 	last_chunk=static_cast<Chunk *>(
 		malloc(sizeof(size_t)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *)));
@@ -55,6 +70,7 @@ void String::expand() {
 }
 
 String::String(const String& src) :	Pooled(src.pool()) {
+	string_stat_pieces[0]++;
 	head.count=CR_PREALLOCATED_COUNT;
 	
 	size_t src_used_rows=src.fused_rows;
@@ -187,16 +203,12 @@ int String::cmp(int& partial, const String& src,
 	Chunk::Row *b_end=src.append_here;
 	size_t a_countdown=a_chunk->count;
 	size_t b_countdown=b_chunk->count;
-	bool a_break=false;
-	bool b_break=false;
 	size_t result;
 	size_t pos=0; 
-	while(true) {
-		a_break=a_row==a_end;
-		b_break=b_row==b_end;
-		if(a_break || b_break)
-			break;
 
+	bool a_break=size()==0;
+	bool b_break=size()==0;
+	if(!(a_break || b_break)) while(true) {
 		if(pos+a_row->item.size > this_offset) {
 			if(lang!=UL_UNSPECIFIED && a_row->item.lang!=lang) 
 				return -1; // wrong lang -- bail out
@@ -229,7 +241,10 @@ int String::cmp(int& partial, const String& src,
 				pos+=a_row->item.size;
 				a_row++; a_countdown--; a_offset=0;
 			}
-			
+			if(b_break=b_row==b_end) {
+				a_break=a_row==a_end;
+				break;			
+			}
 			if(!b_countdown) {
 				b_chunk=b_row->link;
 				b_row=b_chunk->rows;
@@ -241,6 +256,10 @@ int String::cmp(int& partial, const String& src,
 			a_row++; a_countdown--; 
 		}
 
+		if(a_break=a_row==a_end) {
+			b_break=b_row==b_end;
+			break;
+		}
 		if(!a_countdown) {
 			a_chunk=a_row->link;
 			a_row=a_chunk->rows;
@@ -269,14 +288,11 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 	size_t b_offset=0;
 	Chunk::Row *a_end=append_here;
 	size_t a_countdown=a_chunk->count;
-	bool a_break=false;
-	bool b_break=false;
 	size_t pos=0;
-	while(true) {
-		a_break=a_row==a_end;
-		if(a_break || b_break)
-			break;
 
+	bool a_break=size()==0;
+	bool b_break=b_size==0;
+	if(!(a_break || b_break)) while(true) {
 		if(pos+a_row->item.size > this_offset) {
 			if(lang!=UL_UNSPECIFIED && a_row->item.lang!=lang) 
 				return -1; // wrong lang -- bail out
@@ -312,6 +328,8 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 			a_row++; a_countdown--; 
 		}
 
+		if(a_break=a_row==a_end)
+			break;
 		if(!a_countdown) {
 			a_chunk=a_row->link;
 			a_row=a_chunk->rows;
