@@ -423,7 +423,7 @@ Xhashfile
         /usr/lib/sendmail
         и, если доступна, то запускается с параметром "-t".	
     под win32 используется SMTP протокол, сервер задаётся 
-    	$MAIN.SMTP[smtp.domain.ru]
+    	$MAIL.SMTP[smtp.domain.ru]
 
 !image
     !$картинка[^image::measure[DATA]]
