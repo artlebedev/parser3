@@ -1,0 +1,312 @@
+2001-05-21  parser
+	* Makefile.in:
+	* configure:
+		z
+
+2001-05-17  parser
+	* parser3mysql.C:
+		connection from cache ->set_services(&services);
+
+	* parser3mysql.C:
+		mysqlclient 0 rows case [were malloc(0) which failed under
+		apache]
+
+	* parser3mysql.C:
+		doc cmds
+
+	* parser3mysql.C:
+	* parser3mysql.dsp:
+		done
+			@todo figure out about memory for errors:
+				static=add multithread locks;
+				dynamic=who should free it up?
+		that's char[maxlen] field in mysql.net structure, no need to free up
+
+	* parser3mysql.C:
+		fixed problem at last: 2connections own 1driver and
+		set_services fight for driver::fservices. before fix
+
+	* parser3mysql.C:
+		mysqlclient unix socket allowed:
+		$SQL.connect-string[mysql://test:test@[/a/b]/test/cp1251_koi8]
+
+2001-04-26  paf
+	* config_fixed.h:
+	* config_includes.h:
+	* parser3mysql.C:
+	* parser3mysql.dsp:
+		code documentation ++
+
+2001-04-23  paf
+	* Makefile.in:
+		makefile ins
+
+	* config_auto.h.in:
+	* libltdl/Makefile.in:
+		z
+
+	* libltdl/config_auto.h.in:
+	* libltdl/configure:
+		.h.in
+
+	* Makefile:
+	* configure:
+		configure.in + makefiles
+
+	* Makefile:
+		makefiles removed
+
+2001-04-18  paf
+	* Makefile.am:
+	* acinclude.m4:
+	* configure.in:
+	* libltdl/COPYING.TXT:
+	* libltdl/ltconfig:
+	* libltdl/ltmain.sh:
+		linux @alx
+
+2001-04-17  paf
+	* libltdl/config.h:
+		file config.h was initially added on branch gcc0415.
+
+	* parser3mysql.C:
+		mysql client implemented using new model
+
+	* libltdl/README:
+		file README was initially added on branch gcc0415.
+
+	* libltdl/ltmain.sh:
+	* ltmain.sh:
+		file ltmain.sh was initially added on branch gcc0415.
+
+	* libltdl/COPYING.TXT:
+		file COPYING.TXT was initially added on branch gcc0415.
+
+	* libltdl/acinclude.m4:
+		file acinclude.m4 was initially added on branch gcc0415.
+
+	* acinclude.m4:
+	* configure.in:
+	* parser3mysql.C:
+		compile4 @jav @win
+
+	* mkinstalldirs:
+		file mkinstalldirs was initially added on branch gcc0415.
+
+	* libltdl/libltdl_mysql.dsp:
+		file libltdl_mysql.dsp was initially added on branch gcc0415.
+
+	* libltdl/Makefile.am:
+		file Makefile.am was initially added on branch gcc0415.
+
+	* AUTHORS:
+	* COPYING:
+	* INSTALL:
+	* Makefile.am:
+	* NEWS:
+	* README:
+	* acinclude.m4:
+	* config.guess:
+	* config.sub:
+	* config_fixed.h:
+	* config_includes.h:
+	* configure.in:
+	* install-sh:
+	* libltdl/COPYING.TXT:
+	* libltdl/Makefile.am:
+	* libltdl/README:
+	* libltdl/acinclude.m4:
+	* libltdl/aclocal.m4:
+	* libltdl/config.h:
+	* libltdl/config_fixed.h:
+	* libltdl/configure.in:
+	* libltdl/libltdl_mysql.dsp:
+	* libltdl/ltconfig:
+	* libltdl/ltdl.c:
+	* libltdl/ltdl.h:
+	* libltdl/ltmain.sh:
+	* ltconfig:
+	* ltmain.sh:
+	* missing:
+	* mkinstalldirs:
+	* parser3mysql.C:
+	* parser3mysql.dsp:
+		exec @jav
+
+	* Makefile.am:
+	* acinclude.m4:
+	* config.guess:
+	* config.sub:
+	* configure.in:
+	* install-sh:
+	* libltdl/COPYING.TXT:
+	* libltdl/Makefile.am:
+	* libltdl/README:
+	* libltdl/acinclude.m4:
+	* libltdl/aclocal.m4:
+	* libltdl/config.h:
+	* libltdl/config_fixed.h:
+	* libltdl/configure.in:
+	* libltdl/libltdl_mysql.dsp:
+	* libltdl/ltdl.c:
+	* libltdl/ltdl.h:
+	* ltconfig:
+	* ltmain.sh:
+	* missing:
+	* mkinstalldirs:
+	* parser3mysql.C:
+	* parser3mysql.dsp:
+		sql driver interface now has initialize(client .so)
+
+	* config.guess:
+		file config.guess was initially added on branch gcc0415.
+
+	* libltdl/ltconfig:
+	* ltconfig:
+		file ltconfig was initially added on branch gcc0415.
+
+	* libltdl/ltdl.h:
+		file ltdl.h was initially added on branch gcc0415.
+
+	* libltdl/aclocal.m4:
+		file aclocal.m4 was initially added on branch gcc0415.
+
+	* config.sub:
+		file config.sub was initially added on branch gcc0415.
+
+	* libltdl/configure.in:
+		file configure.in was initially added on branch gcc0415.
+
+	* install-sh:
+		file install-sh was initially added on branch gcc0415.
+
+	* libltdl/ltdl.c:
+		file ltdl.c was initially added on branch gcc0415.
+
+	* Makefile.am:
+	* libltdl/ltconfig:
+	* libltdl/ltmain.sh:
+	* parser3mysql.C:
+		mysql client  @jav
+
+	* missing:
+		file missing was initially added on branch gcc0415.
+
+	* libltdl/config_fixed.h:
+		file config_fixed.h was initially added on branch gcc0415.
+
+2001-04-16  paf
+	* NEWS:
+		file NEWS was initially added on branch gcc0415.
+
+	* COPYING:
+		file COPYING was initially added on branch gcc0415.
+
+	* config_includes.h:
+		file config_includes.h was initially added on branch gcc0415.
+
+	* README:
+		file README was initially added on branch gcc0415.
+
+	* AUTHORS:
+		file AUTHORS was initially added on branch gcc0415.
+
+	* AUTHORS:
+	* COPYING:
+	* INSTALL:
+	* Makefile.am:
+	* NEWS:
+	* README:
+	* acinclude.m4:
+	* config_fixed.h:
+	* config_includes.h:
+	* configure.in:
+	* parser3mysql.C:
+		compile-1
+
+	* configure.in:
+		file configure.in was initially added on branch gcc0415.
+
+	* config_fixed.h:
+		file config_fixed.h was initially added on branch gcc0415.
+
+	* acinclude.m4:
+		file acinclude.m4 was initially added on branch gcc0415.
+
+	* INSTALL:
+		file INSTALL was initially added on branch gcc0415.
+
+2001-04-09  paf
+	* parser3mysql.dsp:
+		all targets exec
+
+	* parser3mysql.C:
+		exec win32 env
+
+2001-04-07  paf
+	* parser3mysql.C:
+		mail:send 1
+
+2001-04-06  paf
+	* parser3mysql.dsp:
+		table:dir 0 [without regexp]
+
+2001-04-05  paf
+	* parser3mysql.C:
+	* parser3mysql.dsp:
+		sql driver services for conv memory & error reporting
+
+	* parser3mysql.C:
+		mysql limit
+
+	* parser3mysql.C:
+		mysql 0
+
+	* parser3mysql.C:
+		sql ping
+
+	* parser3mysql.C:
+		sql quote. string untaint UL_SQL
+
+	* parser3mysql.C:
+		hash now not thread-safe.
+
+2001-04-04  paf
+	* parser3mysql.C:
+		mysql connect
+
+	* mySQL32/include/Libmysql.def:
+	* mySQL32/include/dbug.h:
+	* mySQL32/include/errmsg.h:
+	* mySQL32/include/m_ctype.h:
+	* mySQL32/include/m_string.h:
+	* mySQL32/include/my_list.h:
+	* mySQL32/include/my_pthread.h:
+	* mySQL32/include/my_sys.h:
+	* mySQL32/include/mysql.h:
+	* mySQL32/include/mysql_com.h:
+	* mySQL32/include/mysql_version.h:
+	* mySQL32/include/mysqld_error.h:
+	* mySQL32/include/raid.h:
+	* mySQL32/lib/opt/libmySQL.dll:
+	* mySQL32/lib/opt/libmySQL.lib:
+	* mySQL32/lib/opt/mysqlclient.lib:
+	* mySQL32/lib/opt/zlib.lib:
+	* parser3mysql.dsp:
+		mySQL32 added
+
+	* Makefile.am:
+	* parser3mysql.C:
+	* parser3mysql.def:
+	* parser3mysql.dsp:
+		forgot to add mysql client
+
+	* parser3mysql.C:
+		more manager&connection&driver
+
+	* parser3mysql.C:
+		mysql info
+
+	* parser3mysql.C:
+		z
+
