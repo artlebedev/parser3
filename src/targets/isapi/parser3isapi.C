@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/04/01 11:43:54 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/04/05 13:37:06 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -93,14 +93,14 @@ void SAPI::die(const char* fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
 	::abort(fmt, args);
-	va_end(args);
+//	va_end(args);
 }
 
 void SAPI::abort(const char* fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
 	::abort(fmt, args);
-	va_end(args);
+//	va_end(args);
 }
 
 char* SAPI::get_env(SAPI_Info& SAPI_info, const char* name) {
@@ -147,7 +147,7 @@ const char* const *SAPI::environment(SAPI_Info& info) {
 	// we know this buf is writable
 	char* all_http_vars=SAPI::get_env(info, "ALL_HTTP");
 	const int http_var_count=grep_char(all_http_vars, '\n')+1/*\n for theoretical(never saw) this \0*/;
-	
+
 	const char* *result=new const char*[IIS51var_count+http_var_count+1/*0*/];
 	const char* *cur=result;
 

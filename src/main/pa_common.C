@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/03/23 15:11:15 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/04/05 13:37:06 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1387,7 +1387,10 @@ char* pa_base64(const char *in, size_t len)
 	char* result=new(PointerFreeGC) char[len * 2 + 6];
 	int state=0;
 	int save=0;
-	size_t filled=g_mime_utils_base64_encode_close ((const unsigned char*)in, len, 
+#ifndef NDEBUG
+	size_t filled=
+#endif
+		g_mime_utils_base64_encode_close ((const unsigned char*)in, len, 
 		(unsigned char*)result, &state, &save);
 	assert(filled <= len * 2 + 6);
 
