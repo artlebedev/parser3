@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.29 2001/03/19 17:42:12 paf Exp $
+	$Id: pa_hash.h,v 1.30 2001/03/19 17:56:26 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -30,10 +30,10 @@ class Hash : public Pooled {
 public:
 
 	typedef String Key; ///< hash Key type. longing for templates
-	typedef void Value; ///< hash Value type. longing for templates
+	typedef void Val; ///< hash Val type. longing for templates
 
 	/// foreach iterator function type
-	typedef void (*Foreach_func)(const Key& key, Value *value, void *info);
+	typedef void (*Foreach_func)(const Key& key, Val *value, void *info);
 
 public:
 
@@ -45,22 +45,22 @@ public:
 	static uint generic_code(uint aresult, const char *start, uint allocated);
 
 	/// put a [value] under the [key], return existed or not
-	/*SYNCHRONIZED*/ bool put(const Key& key, Value *value);
+	/*SYNCHRONIZED*/ bool put(const Key& key, Val *value);
 
 	/// get associated [value] by the [key]
-	/*SYNCHRONIZED*/ Value *get(const Key& key) const;
+	/*SYNCHRONIZED*/ Val *get(const Key& key) const;
 
 	/// put a [value] under the [key] if that [key] existed, return existed or not
-	/*SYNCHRONIZED*/ bool put_replace(const Key& key, Value *value);
+	/*SYNCHRONIZED*/ bool put_replace(const Key& key, Val *value);
 
 	/// put a [value] under the [key] if that [key] NOT existed, return existed or not
-	/*SYNCHRONIZED*/ bool put_dont_replace(const Key& key, Value *value);
+	/*SYNCHRONIZED*/ bool put_dont_replace(const Key& key, Val *value);
 
 	/// put all 'src' values if NO with same key existed
 	/*SYNCHRONIZED*/ void merge_dont_replace(const Hash& src);
 
-	void put(const Key& key, int     value) { put(key, reinterpret_cast<Value *>(value)); }
-	void put(const Key& key, String *value) { put(key, static_cast<Value *>(value)); }
+	void put(const Key& key, int     value) { put(key, reinterpret_cast<Val *>(value)); }
+	void put(const Key& key, String *value) { put(key, static_cast<Val *>(value)); }
 
 	//@{
 	/// handy get, longing for Hash<int>, Hash<String *>
@@ -113,12 +113,12 @@ private:
 
 		uint code;
 		const Key key;
-		Value *value;
+		Val *value;
 		Pair *link;
 		
 		void *operator new(size_t allocated, Pool& apool);
 
-		Pair(uint acode, const Key& akey, Value *avalue, Pair *alink) :
+		Pair(uint acode, const Key& akey, Val *avalue, Pair *alink) :
 			code(acode),
 			key(akey),
 			value(avalue),

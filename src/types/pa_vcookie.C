@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.3 2001/03/19 16:06:16 paf Exp $
+	$Id: pa_vcookie.C,v 1.4 2001/03/19 17:56:29 paf Exp $
 */
 
 #include <string.h>
@@ -94,7 +94,7 @@ static VString *expires_timestamp(Pool& pool, double days_till_expire) {
 	return new(pool) VString(*new(pool) String(pool, buf));
 }
 
-static void output_set_cookie(const Hash::Key& aattribute, Hash::Value *ameaning) {
+static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) {
 	Pool& pool=aattribute.pool();
 	String string(pool);
 	// attribute
@@ -148,10 +148,10 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Value *ameaning
 		"set-cookie", 
 		string.cstr());
 }
-static void output_after(const Hash::Key& aattribute, Hash::Value *ameaning, void *) {
+static void output_after(const Hash::Key& aattribute, Hash::Val *ameaning, void *) {
 	output_set_cookie(aattribute, ameaning);
 }
-static void output_deleted(const Hash::Key& aattribute, Hash::Value *ameaning, void *) {
+static void output_deleted(const Hash::Key& aattribute, Hash::Val *ameaning, void *) {
 	output_set_cookie(aattribute, 0);
 }
 void VCookie::output_result() {

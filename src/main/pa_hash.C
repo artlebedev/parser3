@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.26 2001/03/19 17:42:16 paf Exp $
+	$Id: pa_hash.C,v 1.27 2001/03/19 17:56:28 paf Exp $
 */
 
 /*
@@ -82,7 +82,7 @@ uint Hash::generic_code(uint aresult, const char *start, uint allocated) {
 	return result;
 }
 
-bool Hash::put(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
+bool Hash::put(const Key& key, Val *value) {  SYNCHRONIZED(thread_safe);
 	if(full()) 
 		expand();
 
@@ -103,7 +103,7 @@ bool Hash::put(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
 	return false;
 }
 
-Hash::Value *Hash::get(const Key& key) const {  SYNCHRONIZED(thread_safe);
+Hash::Val *Hash::get(const Key& key) const {  SYNCHRONIZED(thread_safe);
 	uint code=key.hash_code();
 	uint index=code%allocated;
 	for(Pair *pair=refs[index]; pair; pair=pair->link)
@@ -113,7 +113,7 @@ Hash::Value *Hash::get(const Key& key) const {  SYNCHRONIZED(thread_safe);
 	return 0;
 }
 
-bool Hash::put_replace(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
+bool Hash::put_replace(const Key& key, Val *value) {  SYNCHRONIZED(thread_safe);
 	uint code=key.hash_code();
 	uint index=code%allocated;
 	for(Pair *pair=refs[index]; pair; pair=pair->link)
@@ -127,7 +127,7 @@ bool Hash::put_replace(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe
 	return false;
 }
 
-bool Hash::put_dont_replace(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
+bool Hash::put_dont_replace(const Key& key, Val *value) {  SYNCHRONIZED(thread_safe);
 	if(full()) 
 		expand();
 

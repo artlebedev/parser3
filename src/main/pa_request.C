@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.55 2001/03/19 17:42:16 paf Exp $
+	$Id: pa_request.C,v 1.56 2001/03/19 17:56:28 paf Exp $
 */
 
 #include <string.h>
@@ -58,7 +58,7 @@ Request::Request(Pool& apool,
 	classes().put(*cookie_class_name, &cookie);
 }
 
-static void output_response_attribute(const Hash::Key& aattribute, Hash::Value *ameaning, 
+static void output_response_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
 									  void *info) {
 	String *attribute_to_exclude=static_cast<String *>(info);
 	if(aattribute==*attribute_to_exclude)

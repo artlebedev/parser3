@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.16 2001/03/19 17:42:15 paf Exp $
+	$Id: pa_common.C,v 1.17 2001/03/19 17:56:27 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -183,7 +183,7 @@ const char *unescape_chars(Pool& pool, const char *cp, int len) {
 	return s;
 }
 
-static void append_attribute_subattribute(const Hash::Key& akey, Hash::Value *avalue, 
+static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *avalue, 
 										  void *info) {
 	if(akey==VALUE_NAME)
 		return;
