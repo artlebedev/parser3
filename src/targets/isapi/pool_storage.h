@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pool_storage.h,v 1.7 2001/09/15 13:34:33 parser Exp $
+	$Id: pool_storage.h,v 1.8 2001/09/15 14:22:47 parser Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
@@ -75,8 +75,8 @@ class Pool_storage {
 public:
 
 	Pool_storage() : 
-		allocations(10*0x400),
-		cleanups(100) {
+		cleanups(100),
+		allocations(10*0x400) {
 	}
 
 	void *malloc(size_t size) { 
@@ -102,21 +102,22 @@ public:
 	~Pool_storage() {
 		size_t i;
 
-		// allocations
-		for(i=0; i<allocations.used; i++)
-			free(allocations.items[i]);
-
-		// Cleanup_structs
+		// cleanups first, because they use some object's memory pointers
+		// Cleanup_structs 
 		for(i=0; i<cleanups.used; i++) {
 			Cleanup_struct& item=cleanups.items[i];
 			item.cleanup(item.data);
 		}
+
+		// allocations
+		for(i=0; i<allocations.used; i++)
+			free(allocations.items[i]);
 	}
 
 private:
 
-	List<void *> allocations;
 	List<Cleanup_struct> cleanups;
+	List<void *> allocations;
 
 };
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.8 2001/09/15 11:48:41 parser Exp $
+	$Id: pa_vdom.h,v 1.9 2001/09/15 14:22:47 parser Exp $
 */
 
 #ifndef PA_VDOM_H
@@ -41,11 +41,13 @@ protected: // VAliased
 public: // usage
 
 	VDom(Pool& apool) : VStateless_object(apool, *Dom_class), 
-		ftransformer(new XalanTransformer),
-		fparser_liaison(new XercesParserLiaison),
+		ftransformer(0),
+		fparser_liaison(0),
 		fparsed_source(0),
 		fdocument(0) {
 		register_cleanup(VDom_cleanup, this);
+		ftransformer=new XalanTransformer;
+		fparser_liaison=new XercesParserLiaison;
 	}
 private:
 	void cleanup() {
@@ -54,8 +56,8 @@ private:
 	}
 public:
 
-	XalanTransformer& get_transformer() {return *ftransformer; }
-	XercesParserLiaison& get_parser_liaison() { return *fparser_liaison; }
+	XalanTransformer& transformer() {return *ftransformer; }
+	XercesParserLiaison& parser_liaison() { return *fparser_liaison; }
 
 	void set_parsed_source(XalanParsedSource& aparsed_source) { fparsed_source=&aparsed_source; }
 	XalanParsedSource& get_parsed_source(Pool& pool, const String *source) { 
