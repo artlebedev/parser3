@@ -22,7 +22,8 @@ $aaa[xxx]
 ^BASE:test[]
 
 @test2[]
-derived_test2
+derived_test2<br>
+^$field=$field<br>
 #^shit[]
 
 @includet[]
@@ -34,5 +35,6 @@ derived_includet<br>
 $ipt[3]
 #^process[$MAIN:CLASS]{^^eval($ipt*2)}
 #^process[$MAIN:CLASS]{^^test2[]}
+$field[derived field value]
 ^process{^^test2[]}
 

@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/10/15 14:00:45 $";
+static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/10/15 14:28:57 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"

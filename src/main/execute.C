@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/10/15 10:05:00 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/10/15 14:28:57 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -44,8 +44,7 @@ char *opcode_name[]={
 	"GET_CLASS",
 	"CONSTRUCT_VALUE", "CONSTRUCT_EXPR", "CURLY_CODE__CONSTRUCT",
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
-	"GET_ELEMENT_OR_OPERATOR", "OP_GET_ELEMENT_OR_JUNCTION_EXPAND",
-	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
+	"GET_ELEMENT_OR_OPERATOR", "GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"OBJECT_POOL",	"STRING_POOL",
 	"STORE_PARAM",
 	"PREPARE_TO_CONSTRUCT_OBJECT",	"PREPARE_TO_EXPRESSION", 
@@ -261,12 +260,6 @@ void Request::execute(const Array& ops) {
 		case OP_GET_ELEMENT_OR_OPERATOR:
 			{
 				value=get_element(last_get_element_name, true);
-				PUSH(value);
-				break;
-			}
-		case OP_GET_ELEMENT_OR_JUNCTION_EXPAND:
-			{
-				value=get_element(last_get_element_name, false, true/* the only user */);
 				PUSH(value);
 				break;
 			}
@@ -828,8 +821,7 @@ void Request::execute(const Array& ops) {
 }
 
 /// @test cache|prepare junctions 
-Value *Request::get_element(const String *& remember_name, 
-							bool can_call_operator, bool should_explode_junction) {
+Value *Request::get_element(const String *& remember_name, bool can_call_operator) {
 	const String& name=POP_NAME();  remember_name=&name;
 	Value *ncontext=POP();
 	Value *value=0;
@@ -857,10 +849,9 @@ Value *Request::get_element(const String *& remember_name,
 		value=ncontext->get_element(name, ncontext, false);
 
 _void:
-	if(value) {
-		if(should_explode_junction) // process $junction, but leave $junction.xxx as is
+	if(value)
 			value=&process_to_value(*value); // process possible code-junction
-	} else
+	else
 		value=NEW VVoid(pool());
 
 	return value;
