@@ -1,3 +1,5 @@
+#  $Id: Makefile.am,v 1.6 2001/01/30 14:58:45 paf Exp $
+
 INCLUDES = -I../include
 
 noinst_LIBRARIES = libmain.a
