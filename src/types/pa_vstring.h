@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.27 2001/05/21 16:38:46 parser Exp $
+	$Id: pa_vstring.h,v 1.28 2001/05/21 16:57:39 parser Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -33,11 +33,11 @@ public: // Value
 			return NEW VDouble(pool(), as_double()); 
 	}
 	/// VString: fstring
-	const String *get_string() { return fstring; };
+	const String *get_string() { return &fstring; };
 	/// VString: fstring
-	double as_double() { return fstring->as_double(); }
+	double as_double() { return fstring.as_double(); }
 	/// VString: fstring
-	int as_int() { return fstring->as_int(); }
+	int as_int() { return fstring.as_int(); }
 
 	/// VString: vfile
 	const VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED) const;
@@ -60,18 +60,17 @@ protected: // VAliased
 public: // usage
 
 	VString(Pool& apool) : VStateless_object(apool, *string_class), 
-		fstring(new(apool) String(apool)) {
+		fstring(*new(apool) String(apool)) {
 	}
 
 	VString(const String& avalue) : VStateless_object(avalue.pool(), *string_class),
-		fstring(&avalue) {
+		fstring(avalue) {
 	}
 
-	const String& string() { return *fstring; }
-	void set_string(const String& astring) { fstring=&astring; }
+	const String& string() { return fstring; }
 
 private:
-	const String *fstring;
+	const String fstring;
 
 };
 
