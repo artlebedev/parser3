@@ -4,16 +4,16 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vdom.C,v 1.3 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vxdoc.C,v 1.1 2001/09/26 11:24:07 parser Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
-static const char *RCSId="$Id: pa_vdom.C,v 1.3 2001/09/26 10:32:26 parser Exp $"; 
+static const char *RCSId="$Id: pa_vxdoc.C,v 1.1 2001/09/26 11:24:07 parser Exp $"; 
 
-#include "pa_vdom.h"
+#include "pa_vxdoc.h"
 
-void VDom_cleanup(void *vdom) {
+void VXdoc_cleanup(void *vxdoc) {
 	//_asm int 3;
-	static_cast<VDom *>(vdom)->cleanup();
+	static_cast<VXdoc *>(vxdoc)->cleanup();
 }
 #endif

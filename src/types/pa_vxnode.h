@@ -4,11 +4,11 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdnode.h,v 1.3 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vxnode.h,v 1.1 2001/09/26 11:24:07 parser Exp $
 */
 
-#ifndef PA_VDNODE_H
-#define PA_VDNODE_H
+#ifndef PA_VXNODE_H
+#define PA_VXNODE_H
 
 #include "classes.h"
 #include "pa_common.h"
@@ -17,18 +17,18 @@
 #include <XalanDOM/XalanNode.hpp>
 #include <PlatformSupport/XSLException.hpp>
 
-extern Methoded *Dnode_class;
+extern Methoded *Xnode_class;
 
-//void VDnode_cleanup(void *);
+//void VXnode_cleanup(void *);
 
 /// value of type 'dnode'. implemented with XalanNode
-class VDnode : public VStateless_object {
-	//friend void VDnode_cleanup(void *);
+class VXnode : public VStateless_object {
+	//friend void VXnode_cleanup(void *);
 public: // Value
 
-	const char *type() const { return "dnode"; }
+	const char *type() const { return "xnode"; }
 
-	/// VDnode: $CLASS,$method, fields
+	/// VXnode: $CLASS,$method, fields
 	Value *get_element(const String& aname);
 
 protected: // VAliased
@@ -38,10 +38,10 @@ protected: // VAliased
 
 public: // usage
 
-	VDnode(Pool& apool, XalanNode *anode=0, VStateless_class& abase=*Dnode_class) : 
+	VXnode(Pool& apool, XalanNode *anode=0, VStateless_class& abase=*Xnode_class) : 
 		VStateless_object(apool, abase), 
 		fnode(anode) {
-		//register_cleanup(VDnode_cleanup, this);
+		//register_cleanup(VXnode_cleanup, this);
 	}
 private:
 	//void cleanup() {}
@@ -49,7 +49,7 @@ public:
 
 	void set_node(XalanNode& anode) { fnode=&anode; }
 
-public: // VDnode
+public: // VXnode
 	virtual XalanNode &get_node(Pool& pool, const String *source) { 
 		if(!fnode)
 			PTHROW(0, 0,

@@ -29,9 +29,16 @@
 #define	IS	279
 #define	NEG	280
 
-#line 8 "compile.y"
+#line 1 "compile.y"
 
-static char *RCSId="$Id: compile.tab.C,v 1.13 2001/09/24 14:34:25 parser Exp $"; 
+/** @file
+	Parser: compiler(lexical parser and grammar).
+
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: compile.tab.C,v 1.14 2001/09/26 11:24:07 parser Exp $
+*/
 
 /**
 	@todo parser4: 

@@ -95,14 +95,6 @@ SOURCE=.\pa_vcookie.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\pa_vdnode.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vdom.C
-# End Source File
-# Begin Source File
-
 SOURCE=.\pa_vfile.C
 # End Source File
 # Begin Source File
@@ -128,6 +120,14 @@ SOURCE=.\pa_vstring.C
 # Begin Source File
 
 SOURCE=.\pa_vtable.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vxdoc.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vxnode.C
 # End Source File
 # Begin Source File
 
@@ -164,14 +164,6 @@ SOURCE=.\pa_vcookie.h
 # Begin Source File
 
 SOURCE=.\pa_vdate.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vdnode.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vdom.h
 # End Source File
 # Begin Source File
 
@@ -247,6 +239,14 @@ SOURCE=.\pa_vvoid.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_vxdoc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vxnode.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_wcontext.h
 # End Source File
 # Begin Source File
@@ -264,7 +264,7 @@ SOURCE=..\ident.awk
 !IF  "$(CFG)" == "types - Win32 Release"
 
 USERDEP__IDENT="*.C"	
-# Begin Custom Build - Collecting $Id: types.dsp,v 1.1 2001/09/26 10:32:26 parser Exp $, creating ident.C...
+# Begin Custom Build - Collecting $Id: types.dsp,v 1.2 2001/09/26 11:24:07 parser Exp $, creating ident.C...
 InputPath=..\ident.awk
 
 "ident.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -279,7 +279,7 @@ InputPath=..\ident.awk
 
 !ELSEIF  "$(CFG)" == "types - Win32 Debug"
 
-# Begin Custom Build - Collecting $Id: types.dsp,v 1.1 2001/09/26 10:32:26 parser Exp $, creating ident.C...
+# Begin Custom Build - Collecting $Id: types.dsp,v 1.2 2001/09/26 11:24:07 parser Exp $, creating ident.C...
 InputPath=..\ident.awk
 
 "ident.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"

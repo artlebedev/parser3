@@ -4,34 +4,34 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.14 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vxdoc.h,v 1.1 2001/09/26 11:24:07 parser Exp $
 */
 
-#ifndef PA_VDOM_H
-#define PA_VDOM_H
+#ifndef PA_VXDOC_H
+#define PA_VXDOC_H
 
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
-#include "pa_vdnode.h"
+#include "pa_vxnode.h"
 
 #include <XercesParserLiaison/XercesParserLiaison.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
 #include <XalanTransformer/XalanParsedSource.hpp>
 #include <XalanSourceTree/XalanSourceTreeParserLiaison.hpp>
 
-extern Methoded *Dom_class;
+extern Methoded *Xdoc_class;
 
-void VDom_cleanup(void *);
+void VXdoc_cleanup(void *);
 
 /// value of type 'dom'. implemented with XalanDocument & co
-class VDom : public VDnode {
-	friend void VDom_cleanup(void *);
+class VXdoc : public VXnode {
+	friend void VXdoc_cleanup(void *);
 public: // Value
 
-	const char *type() const { return "dom"; }
+	const char *type() const { return "xdoc"; }
 /*
-	/// VDom: CLASS,method
+	/// VXdoc: CLASS,method
 	Value *get_element(const String& aname) {
 		// VStateless_object $CLASS,$method
 		if(Value *result=VStateless_object::get_element(aname))
@@ -51,12 +51,12 @@ public: // VDNode
 
 public: // usage
 
-	VDom(Pool& apool, XalanDocument *adocument=0) : VDnode(apool, 0, *Dom_class), 
+	VXdoc(Pool& apool, XalanDocument *adocument=0) : VXnode(apool, 0, *Xdoc_class), 
 		ftransformer(0),
 		fparser_liaison(0),
 		fparsed_source(0),
 		fdocument(adocument) {
-		register_cleanup(VDom_cleanup, this);
+		register_cleanup(VXdoc_cleanup, this);
 		ftransformer=new XalanTransformer;
 		fparser_liaison=new XercesParserLiaison;
 	}

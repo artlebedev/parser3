@@ -5,10 +5,10 @@
 OK
 
 @xslt[]
-$dom[^dom::set{<?xml version="1.0" encoding="windows-1252"?>
+$xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 
 <people>
-	<man id="1">
+	<man id="1"><![CDATA[ ment here]]>
 		<name>PAF</name>
 	</man>
 	<man id="2">
@@ -17,14 +17,14 @@ $dom[^dom::set{<?xml version="1.0" encoding="windows-1252"?>
 </people>
 }]
 
-^show-dom2[$dom]<hr>
-#^show-dnode1[$dom]<hr>
-$people[^dom.select[*/man]]
+^show-xdoc2[$xdoc]<hr>
+#^show-xnode1[$xdoc]<hr>
+$people[^xdoc.select[*/man]]
 #^show1[]
-^show-dnodes1[$people]<hr>
+^show-xnodes1[$people]<hr>
 #^people.0.owner.hren[]
 
-^show-dnode1[^dom.select-single[*/man[2]/name];0;1]<hr>
+^show-xnode1[^xdoc.select-single[*/man[2]/name];0;1]<hr>
 
 @show1[]
 ^for[i](0;^people._count[]-1){
@@ -38,48 +38,48 @@ $people[^dom.select[*/man]]
 }
 <hr>
 	
-@show-dnodes1[array][i]
+@show-xnodes1[array][i]
 ^for[i](0;^array._count[]-1){
-	^show-dnode1[$array.$i;0;1]
+	^show-xnode1[$array.$i;0;1]
 }
 
-@show-dnode1[dnode;level;single][l]
-^if(def $dnode){
+@show-xnode1[xnode;level;single][l]
+^if(def $xnode){
     ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
-    ^if($dnode.type eq element){
-    	&lt^;$dnode.name
-	    $pairs[$dnode.attributes]
+    ^if($xnode.type eq element){
+    	&lt^;$xnode.name
+	    $pairs[$xnode.attributes]
 	    ^if(def $pairs){
 	    	$names[^pairs._keys[]]
 	    	^names.menu{$names.key=$pairs.[$names.key].value }
 	    }
 	    &gt^;
     }{
-    	$dnode.name
+    	[$xnode.type]
     }
     
-    ^if(def $dnode.value){$dnode.value}<br>
-    ^show-dnode1[$dnode.first-child]($level+1)
+    ^if(def $xnode.value){$xnode.value}<br>
+    ^show-xnode1[$xnode.first-child]($level+1)
     ^if(!$single){
-	    ^show-dnode1[$dnode.next-sibling]($level)
+	    ^show-xnode1[$xnode.next-sibling]($level)
     }
 
-    ^if($dnode.type eq element){
-    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$dnode.name&gt^;<br>
+    ^if($xnode.type eq element){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$xnode.name&gt^;<br>
     }
 }
 
-@show-dom2[dom]
-^dom.save[save.xml;
+@show-xdoc2[xdoc]
+^xdoc.save[save.xml;
 #	$.encoding[windows-1251]
 	$.method[xml]
 ]
-$file[^dom.file[
+$file[^xdoc.file[
 #	$.encoding[windows-1251]
 	$.method[html]
 ]]
 ^file.save[text;save_file.html]
-^taint[^dom.string[]]
+^taint[^xdoc.string[]]
 #	$.encoding[windows-1251]
 #	$.method[xml]
 #]]

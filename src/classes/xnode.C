@@ -4,15 +4,15 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: dnode.C,v 1.6 2001/09/26 10:32:25 parser Exp $
+	$Id: xnode.C,v 1.1 2001/09/26 11:24:07 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
 
 #include "pa_request.h"
-#include "pa_vdnode.h"
+#include "pa_vxnode.h"
 
-#include "dnode.h"
+#include "xnode.h"
 
 #include <util/XMLString.hpp>
 #include <XalanSourceTree/XalanSourceTreeDOMSupport.hpp>
@@ -21,7 +21,7 @@
 
 // defines
 
-#define DNODE_CLASS_NAME "dnode"
+#define XNODE_CLASS_NAME "xnode"
 
 // class
 
@@ -30,7 +30,7 @@
 static void _select(Request& r, const String& method_name, MethodParams *params) {
 //	_asm int 3;
 	Pool& pool=r.pool();
-	VDnode& vnode=*static_cast<VDnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
 	// expression
 	const String& expression=params->as_string(0, "expression must not be code");
@@ -58,7 +58,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 				skey << buf;
 			}
 
-			result.hash().put(skey, new(pool) VDnode(pool, list.item(i)));
+			result.hash().put(skey, new(pool) VXnode(pool, list.item(i)));
 		}
 		result.set_name(method_name);
 		r.write_no_lang(result);
@@ -70,7 +70,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 static void _select_single(Request& r, const String& method_name, MethodParams *params) {
 //	_asm int 3;
 	Pool& pool=r.pool();
-	VDnode& vnode=*static_cast<VDnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
 	// expression
 	const String& expression=params->as_string(0, "expression must not be code");
@@ -89,7 +89,7 @@ static void _select_single(Request& r, const String& method_name, MethodParams *
 			&vnode.get_node(pool, &method_name), 
 			expression_dcstr)) {
 
-			VDnode& result=*new(pool) VDnode(pool, node);
+			VXnode& result=*new(pool) VXnode(pool, node);
 			result.set_name(method_name);
 			r.write_no_lang(result);
 		}
@@ -100,8 +100,8 @@ static void _select_single(Request& r, const String& method_name, MethodParams *
 
 // constructor
 
-MDnode::MDnode(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), DNODE_CLASS_NAME));
+MXnode::MXnode(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), XNODE_CLASS_NAME));
 
 	// ^node.select[/some/xpath/query] = hash $.#[dnode]
 	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
@@ -112,15 +112,15 @@ MDnode::MDnode(Pool& apool) : Methoded(apool) {
 }
 // global variable
 
-Methoded *Dnode_class;
+Methoded *Xnode_class;
 
 #endif
 
 // creator
-Methoded *MDnode_create(Pool& pool) {
+Methoded *MXnode_create(Pool& pool) {
 	return 
 #ifdef XML
-		Dnode_class=new(pool) MDnode(pool)
+		Xnode_class=new(pool) MXnode(pool)
 #else
 		0
 #endif

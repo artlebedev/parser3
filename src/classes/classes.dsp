@@ -126,32 +126,6 @@ SOURCE=.\date.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\dnode.C
-
-!IF  "$(CFG)" == "classes - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "classes - Win32 Debug"
-
-# ADD CPP /GX
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\dom.C
-
-!IF  "$(CFG)" == "classes - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "classes - Win32 Debug"
-
-# ADD CPP /GX
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=.\double.C
 # End Source File
 # Begin Source File
@@ -202,6 +176,14 @@ SOURCE=.\table.C
 
 SOURCE=.\void.C
 # End Source File
+# Begin Source File
+
+SOURCE=.\xdoc.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\xnode.C
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -212,7 +194,7 @@ SOURCE=.\classes.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\dnode.h
+SOURCE=.\xnode.h
 # End Source File
 # End Group
 # Begin Group "ident"
@@ -225,7 +207,7 @@ SOURCE=..\ident.awk
 !IF  "$(CFG)" == "classes - Win32 Release"
 
 USERDEP__IDENT="*.C"	
-# Begin Custom Build - Collecting $Id: classes.dsp,v 1.1 2001/09/26 10:32:25 parser Exp $, creating ident.C...
+# Begin Custom Build - Collecting $Id: classes.dsp,v 1.2 2001/09/26 11:24:07 parser Exp $, creating ident.C...
 InputPath=..\ident.awk
 
 "ident.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -240,7 +222,7 @@ InputPath=..\ident.awk
 
 !ELSEIF  "$(CFG)" == "classes - Win32 Debug"
 
-# Begin Custom Build - Collecting $Id: classes.dsp,v 1.1 2001/09/26 10:32:25 parser Exp $, creating ident.C...
+# Begin Custom Build - Collecting $Id: classes.dsp,v 1.2 2001/09/26 11:24:07 parser Exp $, creating ident.C...
 InputPath=..\ident.awk
 
 "ident.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"

@@ -4,17 +4,17 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: dom.C,v 1.35 2001/09/26 10:32:25 parser Exp $
+	$Id: xdoc.C,v 1.1 2001/09/26 11:24:07 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
 
 #include "pa_request.h"
-#include "pa_vdom.h"
+#include "pa_vxdoc.h"
 #include "pa_xslt_stylesheet_manager.h"
 #include "pa_stylesheet_connection.h"
 #include "pa_vfile.h"
-#include "dnode.h"
+#include "xnode.h"
 
 #include <strstream>
 #include <Include/PlatformDefinitions.hpp>
@@ -31,25 +31,25 @@
 
 // defines
 
-#define DOM_CLASS_NAME "dom"
+#define XDOC_CLASS_NAME "xdoc"
 
-#define DOM_OUTPUT_METHOD_OPTION_NAME "method"
-#define DOM_OUTPUT_METHOD_OPTION_VALUE_XML "xml"
-#define DOM_OUTPUT_METHOD_OPTION_VALUE_HTML "html"
-#define DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT "text"
+#define XDOC_OUTPUT_METHOD_OPTION_NAME "method"
+#define XDOC_OUTPUT_METHOD_OPTION_VALUE_XML "xml"
+#define XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML "html"
+#define XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT "text"
 
-#define DOM_OUTPUT_ENCODING_OPTION_NAME "encoding"
+#define XDOC_OUTPUT_ENCODING_OPTION_NAME "encoding"
 
-#define DOM_OUTPUT_DEFAULT_INDENT 4
+#define XDOC_OUTPUT_DEFAULT_INDENT 4
 
 // class
 
-class MDom : public MDnode {
+class MXdoc : public MXnode {
 public: // VStateless_class
-	Value *create_new_value(Pool& pool) { return new(pool) VDom(pool); }
+	Value *create_new_value(Pool& pool) { return new(pool) VXdoc(pool); }
 
 public:
-	MDom(Pool& pool);
+	MXdoc(Pool& pool);
 
 public: // Methoded
 	bool used_directly() { return true; }
@@ -93,12 +93,12 @@ static void create_optioned_listener(
 			if(Hash *options=voptions.get_hash()) {
 				// $.method[xml|html|text]
 				if(Value *vmethod=static_cast<Value *>(options->get(*new(pool) 
-					String(pool, DOM_OUTPUT_METHOD_OPTION_NAME))))
+					String(pool, XDOC_OUTPUT_METHOD_OPTION_NAME))))
 					method=&vmethod->as_string();
 
 				// $.encoding[windows-1251|...]
 				if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 
-					String(pool, DOM_OUTPUT_ENCODING_OPTION_NAME)))) {
+					String(pool, XDOC_OUTPUT_ENCODING_OPTION_NAME)))) {
 					scharset=&vencoding->as_string();
 				}
 			} else
@@ -109,15 +109,15 @@ static void create_optioned_listener(
 	}
 
 	xalan_encoding.append(charset=scharset->cstr());
-	if(!method/*default='xml'*/ || *method == DOM_OUTPUT_METHOD_OPTION_VALUE_XML) {
+	if(!method/*default='xml'*/ || *method == XDOC_OUTPUT_METHOD_OPTION_VALUE_XML) {
 		content_type="text/xml";
 		listener=new FormatterToXML(writer,
 			XalanDOMString(),  // version
 			true, // doIndent
-			DOM_OUTPUT_DEFAULT_INDENT, // indent 
+			XDOC_OUTPUT_DEFAULT_INDENT, // indent 
 			xalan_encoding  // encoding
 		);
-	} else if(*method == DOM_OUTPUT_METHOD_OPTION_VALUE_HTML) {
+	} else if(*method == XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML) {
 		content_type="text/html";
 		listener=new FormatterToHTML(writer,
 			xalan_encoding,  // encoding
@@ -125,9 +125,9 @@ static void create_optioned_listener(
 			XalanDOMString(),  // doctypeSystem; String to be printed at the top of the document 
 			XalanDOMString(),  // doctypePublic  
 			true, // doIndent 
-			DOM_OUTPUT_DEFAULT_INDENT // indent 
+			XDOC_OUTPUT_DEFAULT_INDENT // indent 
 		);
-	} else if(*method == DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT) {
+	} else if(*method == XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT) {
 		content_type="text/plain";
 		listener=new FormatterToText(writer,
 			xalan_encoding  // encoding
@@ -135,17 +135,17 @@ static void create_optioned_listener(
 	} else
 		PTHROW(0, 0,
 			method,
-			DOM_OUTPUT_METHOD_OPTION_NAME " option is invalid; valid methods are: "
-				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_XML "', "
-				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_HTML "', "
-				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT "'");			
+			XDOC_OUTPUT_METHOD_OPTION_NAME " option is invalid; valid methods are: "
+				"'" XDOC_OUTPUT_METHOD_OPTION_VALUE_XML "', "
+				"'" XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML "', "
+				"'" XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT "'");			
 
 	// never reached
 }
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VDnode& vnode=*static_cast<VDnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
 	// filespec
 	const String& file_name=params->as_string(0, "file name must not be code");
@@ -170,7 +170,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 
 static void _string(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VDnode& vnode=*static_cast<VDnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
 	// node
 	XalanNode& node=vnode.get_node(pool, &method_name);
@@ -196,7 +196,7 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 
 static void _file(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VDnode& vnode=*static_cast<VDnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
 	// node
 	XalanNode& node=vnode.get_node(pool, &method_name);
@@ -234,7 +234,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 
 static void _set(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VDom& vdom=*static_cast<VDom *>(r.self);
+	VXdoc& vdom=*static_cast<VXdoc *>(r.self);
 
 	Value& vxml=params->as_junction(0, "xml must be code");
 	Temp_lang temp_lang(r, String::UL_XML);
@@ -255,7 +255,7 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VDom& vdom=*static_cast<VDom *>(r.self);
+	VXdoc& vdom=*static_cast<VXdoc *>(r.self);
 
 	// filespec
 	const String& file_name=params->as_string(0, "file name must not be code");
@@ -285,7 +285,7 @@ static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning,
 }
 static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VDom& vdom=*static_cast<VDom *>(r.self);
+	VXdoc& vdom=*static_cast<VXdoc *>(r.self);
 
 	// params
 	if(params->size()>1) {
@@ -324,15 +324,15 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 			vdom.transformer().getLastError());
 
 	// write out result
-	VDom& result=*new(pool) VDom(pool);
+	VXdoc& result=*new(pool) VXdoc(pool);
 	result.set_document(*target);
 	r.write_no_lang(result);
 }
 
 // constructor
 
-MDom::MDom(Pool& apool) : MDnode(apool) {
-	set_name(*NEW String(pool(), DOM_CLASS_NAME));
+MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
+	set_name(*NEW String(pool(), XDOC_CLASS_NAME));
 
 	// ^dom.save[some.xml]
 	// ^dom.save[some.xml;options hash]
@@ -359,16 +359,16 @@ MDom::MDom(Pool& apool) : MDnode(apool) {
 }
 // global variable
 
-Methoded *Dom_class;
+Methoded *Xdoc_class;
 
 // creator
 
 #endif
 
-Methoded *MDom_create(Pool& pool) {
+Methoded *MXdoc_create(Pool& pool) {
 	return 
 #ifdef XML
-		Dom_class=new(pool) MDom(pool);
+		Xdoc_class=new(pool) MXdoc(pool);
 #else
 		0
 #endif
