@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2002/08/01 11:41:19 $";
+static const char* IDENT_UNTAINT_C="$Date: 2002/09/12 08:37:32 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -395,6 +395,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			break;
 		case UL_MAIL_HEADER:
 			// tainted, untaint language: mail-header
+			// http://www.ietf.org/rfc/rfc2047.txt
 			if(store_to_charset && store_to_charset_name) {
 				const void *mail_ptr;
 				size_t mail_size;
@@ -405,20 +406,45 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
 				const char *src=(const char *)mail_ptr;
 				bool to_quoted_printable=false;
+
+				//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
+				const char *tail=src+mail_size;
+				if(*--tail=='>') {
+					for(int size=mail_size-1; size--; tail--)
+						if(*tail=='<')
+							break;
+				}
+				const char *stop=*tail--=='<'?tail:0;
+
+				bool closed=false;
 				for(int size=mail_size; size--; src++) {
-					if((*src & 0x80)  // starting quote-printable-encoding on first 8bit char
-						|| (to_quoted_printable && (*src=='?' || *src=='=')) // additionally encoding '?' and '|'
-						) {
+/*RFC
+(3) 8-bit values which correspond to printable ASCII characters other
+   than "=", "?", and "_" (underscore), MAY be represented as those
+   characters.  (But see section 5 for restrictions.)  In
+   particular, SPACE and TAB MUST NOT be represented as themselves
+   within encoded words.
+*/
+					if(src==stop) {
+						dest+=sprintf(dest, "?=");
+						closed=true;
+					}
+					if((!stop || src<stop) && (
+						(*src & 0x80)  // starting quote-printable-encoding on first 8bit char
+						|| (to_quoted_printable 
+							&& (*src==' ' || *src=='=' || *src=='?') || *src=='_')
+						)) {
 						if(!to_quoted_printable) {
 							dest+=sprintf(dest, "=?%s?Q?", store_to_charset_name);
 							to_quoted_printable=true;
+
 						}
+						//RFC Upper case should be used for hexadecimal digits "A" through "F"
 						dest+=sprintf(dest, "=%02X", *src & 0xFF);
-					} else {
+					} else
 						*dest++=*src;						
-					}
 				}
-				if(to_quoted_printable) // close
+				if(to_quoted_printable && !closed) // close
 					dest+=sprintf(dest, "?=");
 			
 			} else {
