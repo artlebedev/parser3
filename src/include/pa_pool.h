@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.h,v 1.69 2001/11/05 11:46:24 paf Exp $
+	$Id: pa_pool.h,v 1.70 2001/11/16 11:03:34 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -36,6 +36,11 @@ public:
 
 	Pool(void *astorage);
 	~Pool();
+
+	///{@ statistics
+	size_t total_allocated() { return ftotal_allocated; }
+	unsigned int total_times() { return ftotal_times; }
+	///}@
 
 	void set_context(void *acontext) { fcontext=acontext; }
 	void *get_context() { return fcontext; }
@@ -83,8 +88,11 @@ private:
 
 	/// checks whether mem allocated OK. throws exception otherwise
 	void *check(void *ptr, size_t size) {
-		if(ptr)
+		if(ptr) {
+			ftotal_allocated+=size;
+			ftotal_times++;
 			return ptr;
+		}
 
 		fail_alloc(size);
 
@@ -119,6 +127,11 @@ private:
 	XMLTranscoder *transcoder;
 
 #endif
+
+private: // statistics
+	
+	size_t ftotal_allocated;
+	unsigned int ftotal_times;
 
 private: //disabled
 

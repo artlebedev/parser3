@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.134 2001/11/16 11:03:02 paf Exp $
+	$Id: parser3.C,v 1.135 2001/11/16 11:06:08 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -370,21 +370,16 @@ void call_real_parser_handler__do_SEH(
 #endif
 }
 
-void report_error(const char *prefix, const char *body, bool header_only) {
-}
-
-#if defined(HAVE_SET_NEW_HANDLER) || defined(WIN32)
-#ifdef HAVE_SET_NEW_HANDLER 
-void failed_new() {
-#else
+#ifdef WIN32
 int failed_new(size_t size) {
-#endif
-    const char *msg="out of memory in 'new'";
-    report_error(0, msg, false/*header_only*/);
-	SAPI::die(msg);
-#ifndef HAVE_SET_NEW_HANDLER
+	SAPI::die("out of memory in 'new', failed to allocated %u bytes", size);
 	return 0; // not reached
+}
 #endif
+
+#ifdef HAVE_SET_NEW_HANDLER
+void failed_new() {
+    SAPI::die("out of memory in 'new'");
 }
 #endif
 
