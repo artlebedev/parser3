@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.34 2001/03/14 17:09:18 paf Exp $
+	$Id: pa_request.C,v 1.35 2001/03/14 17:15:07 paf Exp $
 */
 
 #include <string.h>
@@ -85,7 +85,7 @@ char *Request::core(const char *sys_auto_path1,
 		//	until someone with less privileges have overriden them
 		Value *limits=main_class?main_class->get_element(*limits_name):0;
 		Value *element;
-		// $limits.max_post default 10M
+		// $limits.post_max_size default 10M
 		element=limits?limits->get_element(*post_max_size_name):0;
 		size_t value=element?(size_t)element->get_double():0;
 		size_t post_max_size=value?value:10*0x400*400;
@@ -105,7 +105,7 @@ char *Request::core(const char *sys_auto_path1,
 				"no 'auto.p' found (nither system nor any site's)");
 
 		// compiling requested file
-		main_class=use_file(fpage_filespec, true/*don't ignore read problem*/,
+		main_class=use_file(info.path_translated, true/*don't ignore read problem*/,
 			main_class_name, main_class);
 
 		// execute @main[]
@@ -268,10 +268,10 @@ char *Request::relative(const char *path, const char *file) {
 
 char *Request::absolute(const char *name) {
 	if(name[0]=='/') {
-		char *result=(char *)malloc(strlen(fdocument_root)+strlen(name)+1);
-		strcpy(result, fdocument_root);
+		char *result=(char *)malloc(strlen(info.document_root)+strlen(name)+1);
+		strcpy(result, info.document_root);
 		strcat(result, name);
 		return result;
 	} else 
-		return relative(fpage_filespec, name);
+		return relative(info.request_uri, name);
 }

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.53 2001/03/14 16:47:29 paf Exp $
+	$Id: pa_request.h,v 1.54 2001/03/14 17:15:06 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -156,11 +156,6 @@ private: // lang manipulation
 	void restore_lang(String::Untaint_lang alang) {
 		flang=alang;
 	}
-
-private: // web
-
-	const char *fdocument_root;
-	const char *fpage_filespec;
 
 };
 

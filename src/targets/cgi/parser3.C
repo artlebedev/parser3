@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.10 2001/03/14 16:47:34 paf Exp $
+	$Id: parser3.C,v 1.11 2001/03/14 17:15:08 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -73,8 +73,8 @@ int main(int argc, char *argv[]) {
 	if(!cgi) {
 		if(argc<2) {
 			char *binary=argv[0];
-			rsplit(binary, PATH_DELIMITER_CHAR);
-			printf("Usage: %s <file>\n", binary);
+			char *name=rsplit(binary, PATH_DELIMITER_CHAR);
+			printf("Usage: %s <file>\n", name?name:"parser3");
 			exit(1);
 		}
 	}
