@@ -4,12 +4,11 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_manager.C,v 1.2 2001/10/02 17:10:41 parser Exp $
+	$Id: pa_charset_manager.C,v 1.3 2001/10/02 17:12:53 parser Exp $
 */
 #include "pa_config_includes.h"
 
 #include "pa_charset_manager.h"
-#include "pa_stylesheet_connection.h"
 #include "ltdl.h"
 #include "pa_exception.h"
 #include "pa_common.h"

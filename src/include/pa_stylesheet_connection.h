@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.8 2001/10/02 17:11:41 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.9 2001/10/02 17:12:53 parser Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -15,6 +15,8 @@
 #include "pa_xslt_stylesheet_manager.h"
 #include "pa_exception.h"
 #include "pa_common.h"
+
+#include <XalanTransformer/XalanTransformer.hpp>
 
 // defines
 
