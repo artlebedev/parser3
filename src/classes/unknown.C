@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: unknown.C,v 1.5 2001/04/28 15:22:39 paf Exp $
+	$Id: unknown.C,v 1.6 2001/05/04 10:42:37 paf Exp $
 */
 
 #include "classes.h"
@@ -23,6 +23,7 @@
 class MUnknown : public Methoded {
 public:
 	MUnknown(Pool& pool);
+public: // Methoded
 	bool used_directly() { return false; }
 };
 

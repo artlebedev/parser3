@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.23 2001/05/02 11:49:17 paf Exp $
+	$Id: image.C,v 1.24 2001/05/04 10:42:36 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,11 +25,12 @@
 
 class MImage : public Methoded {
 public: // VStateless_class
-	
 	Value *create_new_value(Pool& pool) { return new(pool) VImage(pool); }
 
 public:
 	MImage(Pool& pool);
+
+public: // Methoded
 	bool used_directly() { return true; }
 
 };
@@ -253,7 +254,6 @@ static size_t read_disk(void*& buf, size_t limit, void *info) {
 
 // methods
 
-/// ^image:measure[DATA]
 static void _measure(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -300,9 +300,6 @@ static void append_attrib_pair(const Hash::Key& key, Hash::Val *val, void *info)
 	if(value.is_string() || value.as_double()>=0)
 		*ai.tag << "=\"" << value.as_string() << "\"";
 }
-/**	^image.html[]
-	^image.html[hash]
-*/
 static void _html(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -350,7 +347,6 @@ static gdImage *load(Request& r, const String& method_name,
 }
 
 
-/// ^image.load[background.gif]
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -363,9 +359,6 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	static_cast<VImage *>(r.self)->set(&file_name, width, height, &image);
 }
 
-/**	^image.create[width;height] bgcolor=white
-	^image.create[width;height;bgcolor]
-*/
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -380,7 +373,6 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	static_cast<VImage *>(r.self)->set(0, width, height, &image);
 }
 
-/// ^image.gif[]
 static void _gif(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -402,7 +394,6 @@ static void _gif(Request& r, const String& method_name, MethodParams *params) {
 	r.write_no_lang(vfile);
 }
 
-/// ^image.line(x0;y0;x1;y1;color)
 static void _line(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -420,7 +411,6 @@ static void _line(Request& r, const String& method_name, MethodParams *params) {
 		image->Color((int)r.process(params->get(4)).as_double()));
 }
 
-/// ^image.fill(x;y;color)
 static void _fill(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -436,7 +426,6 @@ static void _fill(Request& r, const String& method_name, MethodParams *params) {
 		image->Color((int)r.process(params->get(2)).as_double()));
 }
 
-/// ^image.rectangle(x0;y0;x1;y1;color)
 static void _rectangle(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -454,7 +443,6 @@ static void _rectangle(Request& r, const String& method_name, MethodParams *para
 		image->Color((int)r.process(params->get(4)).as_double()));
 }
 
-/// ^image.bar(x0;y0;x1;y1;color)
 static void _bar(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -472,7 +460,6 @@ static void _bar(Request& r, const String& method_name, MethodParams *params) {
 		image->Color((int)r.process(params->get(4)).as_double()));
 }
 
-/// ^image.replace(color-source;color-dest)(x;y)... point coord pairs
 static void _replace(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -499,7 +486,6 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 		image->Color((int)r.process(params->get(1)).as_double()));// dest color
 }
 
-/// ^image.polygon(color)(x;y)... point coord pairs
 static void _polygon(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -525,7 +511,6 @@ static void _polygon(Request& r, const String& method_name, MethodParams *params
 		image->Color((int)r.process(params->get(0)).as_double()));
 }
 
-/// ^image.polybar(color)(x;y)... point coord pairs
 static void _polybar(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -618,10 +603,6 @@ public:
 	}
 	
 };
-/**
-	^image.font[alPHAbet;font-file-name.gif](height)
-	^image.font[alPHAbet;font-file-name.gif](height;width)
-*/
 static void _font(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -637,7 +618,6 @@ static void _font(Request& r, const String& method_name, MethodParams *params) {
 		height, width);
 }
 
-/// ^image.text(x;y)[text]
 static void _text(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: form.C,v 1.10 2001/04/28 15:22:38 paf Exp $
+	$Id: form.C,v 1.11 2001/05/04 10:42:36 paf Exp $
 */
 
 #include "classes.h"
@@ -28,7 +28,7 @@ const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
 class MForm : public Methoded {
 public:
 	MForm(Pool& pool);
-protected: // Methoded
+public: // Methoded
 	bool used_directly() { return false; }
 	void configure_admin(Request& r);
 private:

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.69 2001/05/02 11:49:17 paf Exp $
+	$Id: table.C,v 1.70 2001/05/04 10:42:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -28,13 +28,13 @@
 
 class MTable : public Methoded {
 public: // VStateless_class
-	
 	Value *create_new_value(Pool& pool) { return new(pool) VTable(pool); }
 
 public:
 	MTable(Pool& pool);
-	bool used_directly() { return true; }
 
+public: // Methoded
+	bool used_directly() { return true; }
 };
 
 // methods

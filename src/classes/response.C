@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: response.C,v 1.10 2001/04/28 15:22:39 paf Exp $
+	$Id: response.C,v 1.11 2001/05/04 10:42:37 paf Exp $
 */
 
 #include "classes.h"
@@ -20,6 +20,7 @@
 class MResponse : public Methoded {
 public:
 	MResponse(Pool& pool);
+public: // Methoded
 	bool used_directly() { return false; }
 };
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.32 2001/04/28 16:04:55 paf Exp $
+	$Id: mod_parser3.C,v 1.33 2001/05/04 10:42:49 paf Exp $
 */
 
 #include "httpd.h"
@@ -24,9 +24,10 @@
 #include "pa_version.h"
 #include "pa_socks.h"
 
+/// apache parser module configuration [httpd.conf + .htaccess-es]
 struct Parser_module_config {
-    const char* parser_root_auto_path; /// filespec of admin's auto.p file
-    const char* parser_site_auto_path; /// filespec of site's auto.p file
+    const char* parser_root_auto_path; ///< filespec of admin's auto.p file
+    const char* parser_site_auto_path; ///< filespec of site's auto.p file
 };
 
 /*

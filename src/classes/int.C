@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.22 2001/04/28 15:22:38 paf Exp $
+	$Id: int.C,v 1.23 2001/05/04 10:42:36 paf Exp $
 */
 
 #include "classes.h"
@@ -26,6 +26,7 @@ void _string_format(Request& r, const String& method_name, MethodParams *);
 class MInt : public Methoded {
 public:
 	MInt(Pool& pool);
+public: // Methoded
 	bool used_directly() { return false; }
 };
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: random.C,v 1.10 2001/04/28 08:43:48 paf Exp $
+	$Id: random.C,v 1.11 2001/05/04 10:42:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -22,14 +22,12 @@
 class MRandom : public Methoded {
 public:
 	MRandom(Pool& pool);
+public: // Methoded
 	bool used_directly() { return true; }
 };
 
 // methods
 
-/**	^random.generate[]
-	^random.generate(range)
-*/
 static void _generate(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 

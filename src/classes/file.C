@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.35 2001/04/28 15:22:38 paf Exp $
+	$Id: file.C,v 1.36 2001/05/04 10:42:35 paf Exp $
 */
 
 #include "classes.h"
@@ -128,12 +128,7 @@ static void pass_cgi_header_attribute(Array::Item *value, void *info) {
 		hash.put(string.mid(0, colon_pos), 
 		new(string.pool()) VString(string.mid(colon_pos+1, string.size())));
 }
-/**
-	^exec[file-name]
-	^exec[file-name;env hash]
-	^exec[file-name;env hash;cmd;line;arg;s]
-	@todo fix `` in perl - they produced flipping consoles and no output to perl
-*/
+/// @todo fix `` in perl - they produced flipping consoles and no output to perl
 static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -277,9 +272,9 @@ MFile::MFile(Pool& apool) : Methoded(apool) {
 	// ^stat[disk-name]
 	add_native_method("stat", Method::CT_DYNAMIC, _stat, 1, 1);
 
-	// ^exec[file-name]
-	// ^exec[file-name;env hash]
-	// ^exec[file-name;env hash;1cmd;2line;3ar;4g;5s]
+	// ^cgi[file-name]
+	// ^cgi[file-name;env hash]
+	// ^cgi[file-name;env hash;1cmd;2line;3ar;4g;5s]
 	add_native_method("cgi", Method::CT_DYNAMIC, _cgi, 1, 2+5);
 }
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.80 2001/04/26 11:37:40 paf Exp $
+	$Id: pa_string.C,v 1.81 2001/05/04 10:42:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -490,7 +490,7 @@ static void regex_options(char *options, int *result){
 	returns true if fills table.
 	table format is defined and fixed[can be used by others]: 
 	@verbatim
-		pre-match/match/post-match/1/2/3/...
+		prematch/match/postmatch/1/2/3/...
 	@endverbatim
 */
 bool String::match(const unsigned char *pcre_tables,
@@ -567,9 +567,9 @@ bool String::match(const unsigned char *pcre_tables,
 		}
 
 		Array& row=*NEW Array(pool());
-		row+=&mid(0, ovector[0]); // .pre-match column value
+		row+=&mid(0, ovector[0]); // .prematch column value
 		row+=&mid(ovector[0], ovector[1]); // .match
-		row+=&mid(ovector[1], size()); // .post-match
+		row+=&mid(ovector[1], size()); // .postmatch
 		
 		for(int i=1; i<exec_substrings; i++) {
 			// -1:-1 case handled peacefully by mid() itself

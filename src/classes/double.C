@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.25 2001/05/03 15:05:15 paf Exp $
+	$Id: double.C,v 1.26 2001/05/04 10:42:35 paf Exp $
 */
 
 #include "classes.h"
@@ -26,6 +26,7 @@ void _string_format(Request& r, const String& method_name, MethodParams *);
 class MDouble : public Methoded {
 public:
 	MDouble(Pool& pool);
+public: // Methoded
 	bool used_directly() { return false; }
 };
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: classes.h,v 1.6 2001/05/03 15:05:15 paf Exp $
+	$Id: classes.h,v 1.7 2001/05/04 10:42:35 paf Exp $
 */
 
 #ifndef CLASSES_H
@@ -15,13 +15,9 @@
 #include "pa_array.h"
 
 /**	Pure virtual base for configurable Methoded descendants
+	@see Methoded_array
 */
 class Methoded : public VStateless_class {
-public: // Value
-
-	/// all: for error reporting after fail(), etc
-	const char *type() const { return "m_base"; }
-
 public: // Methoded
 
 	/** should Methoded_array::register_directly_used register this class in
@@ -44,14 +40,17 @@ public: // usage
 
 };
 
-
+/// @relates Methoded
 class Methoded_array : public Array {
 public:
 	Methoded_array(Pool& pool);
 
 public: // Methoded for_each-es
+	/// @see Methoded::configure_admin
 	void configure_admin(Request& r);
+	/// @see Methoded::configure_user
 	void configure_user(Request& r);
+	/// @see Methoded::register_directly_used
 	void register_directly_used(Request& r);
 };
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.13 2001/04/28 15:22:39 paf Exp $
+	$Id: op.C,v 1.14 2001/05/04 10:42:36 paf Exp $
 */
 
 #include "classes.h"
@@ -172,7 +172,6 @@ static void _use(Request& r, const String& method_name, MethodParams *params) {
 	r.use_file(r.absolute(vfile.as_string()));
 }
 
-/// ^for[i;from-number;to-number-inclusive]{code}[delim]
 static void _for(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const String& var_name=r.process(params->get(0)).as_string();
@@ -256,7 +255,6 @@ static void _sign(Request& r, const String& method_name, MethodParams *params) {
 	double_one_op(r, method_name, params,	&sign);
 }
 
-/// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
 static void _connect(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 

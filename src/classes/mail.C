@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.25 2001/04/28 13:24:57 paf Exp $
+	$Id: mail.C,v 1.26 2001/05/04 10:42:36 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -414,7 +414,6 @@ static void sendmail(Request& r, const String& method_name,
 
 // methods
 
-/// ^mail:send{hash}
 static void _send(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.43 2001/04/28 15:22:39 paf Exp $
+	$Id: string.C,v 1.44 2001/05/04 10:42:37 paf Exp $
 */
 
 #include "classes.h"
@@ -25,6 +25,7 @@
 class MString : public Methoded {
 public:
 	MString(Pool& pool);
+public: // Methoded
 	bool used_directly() { return false; }
 };
 
@@ -48,7 +49,6 @@ static void _double(Request& r, const String&, MethodParams *) {
 	r.write_no_lang(value);
 }
 
-/// ^string.format{format}
 /*not static*/void _string_format(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
