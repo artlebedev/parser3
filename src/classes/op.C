@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/31 10:23:45 $";
+static const char* IDENT_OP_C="$Date: 2002/10/31 15:01:53 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -249,8 +249,8 @@ struct timeval mt[2];
 	Value& body_code=params->as_junction(1, "body must be code");
 
 	Table *protocol2driver_and_client=0;
-	if(Value *sql=r.main_class.get_element(*new(pool) String(pool, MAIN_SQL_NAME), &r.main_class, false)) {
-		if(Value *element=sql->get_element(*new(pool) String(pool, MAIN_SQL_DRIVERS_NAME), sql, false)) {
+	if(Value *sql=r.main_class.get_element(*new(pool) String(pool, MAIN_SQL_NAME), r.main_class, false)) {
+		if(Value *element=sql->get_element(*new(pool) String(pool, MAIN_SQL_DRIVERS_NAME), *sql, false)) {
 			protocol2driver_and_client=element->get_table();
 		}
 	}
@@ -598,7 +598,7 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 
 		Junction *junction=catch_code.get_junction();
 		Value *method_frame=junction->method_frame;
-		Value *saved_exception_var_value=method_frame->get_element(*exception_var_name, method_frame, false);
+		Value *saved_exception_var_value=method_frame->get_element(*exception_var_name, *method_frame, false);
 		junction->method_frame->put_element(*exception_var_name, &vhash, false);
 		result=r.process(catch_code);
 		bool handled=false;

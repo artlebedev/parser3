@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/10/16 08:22:14 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/10/31 15:01:54 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -138,7 +138,7 @@ void Request::configure_admin(VStateless_class& conf_class, const String *source
 			...
 		]
 	*/
-	if(Value *vcharsets=conf_class.get_element(*charsets_name, &conf_class, false)) {
+	if(Value *vcharsets=conf_class.get_element(*charsets_name, conf_class, false)) {
 		if(Hash *charsets=vcharsets->get_hash(0))
 			charsets->for_each(load_charset);
 		else if(!vcharsets->get_string())
@@ -229,7 +229,7 @@ gettimeofday(&mt[0],NULL);
 		methoded_array->configure_user(*this);
 
 		// $MAIN:MIME-TYPES
-		if(Value *element=main_class.get_element(*mime_types_name, &main_class, false))
+		if(Value *element=main_class.get_element(*mime_types_name, main_class, false))
 			if(Table *table=element->get_table())
 				mime_types=table;			
 
@@ -263,7 +263,7 @@ gettimeofday(&mt[2],NULL);
 		// @postprocess
 		if(Value *value=main_class.get_element(
 				*NEW String(pool(), POST_PROCESS_METHOD_NAME), 
-				&main_class, 
+				main_class, 
 				false))
 			if(Junction *junction=value->get_junction())
 				if(const Method *method=junction->method) {
@@ -358,7 +358,7 @@ t[9]-t[3]
 			// in a gracefull way...
 			if(Value *value=main_class.get_element(
 					*NEW String(pool(), UNHANDLED_EXCEPTION_METHOD_NAME), 
-					&main_class,
+					main_class,
 					false)) {
 				if(Junction *junction=value->get_junction()) {
 					if(const Method *method=junction->method) {
@@ -457,7 +457,7 @@ VStateless_class *Request::use_file(VStateless_class& aclass,
 		file_spec=&absolute(file_name);
 	else {
 		file_spec=0;
-		if(Value *element=main_class.get_element(*class_path_name, &main_class, false)) {
+		if(Value *element=main_class.get_element(*class_path_name, main_class, false)) {
 			if(element->is_string()) {
 				file_spec=file_readable(absolute(element->as_string()), file_name); // found at class_path?
 			} else if(Table *table=element->get_table()) {
@@ -628,5 +628,5 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 }
 
 bool Request::origins_mode() {
-	return main_class.get_element(*origins_mode_name, &main_class, false)!=0;  // $ORIGINS mode
+	return main_class.get_element(*origins_mode_name, main_class, false)!=0;  // $ORIGINS mode
 }

@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXDOC="$Date: 2002/08/19 09:36:08 $";
+static const char* IDENT_VXDOC="$Date: 2002/10/31 15:01:57 $";
 
 #include "pa_vxdoc.h"
 
@@ -24,7 +24,7 @@ Value *VXdoc::as(const char *atype, bool looking_up) {
 }
 
 /// VXdoc: $CLASS,$method
-Value *VXdoc::get_element(const String& aname, Value *aself, bool looking_up) { 
+Value *VXdoc::get_element(const String& aname, Value& aself, bool looking_up) { 
 	// up
 	try {
 		if(Value *result=VXnode::get_element(aname, aself, looking_up)) {

@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/10/31 10:23:45 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/10/31 15:01:56 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
@@ -31,8 +31,8 @@ public: // Value
 
 	/// VObject: fclass
 	/*override*/ VStateless_class *get_class() { return &fclass; }
-	/*override*/ VStateless_class *get_last_derived_class() { return get_last_derived()->get_class(); }
-	/*override*/ Value *base_object() { return fbase; }
+	/*override*/ VStateless_class *get_last_derived_class() { return get_last_derived().get_class(); }
+	/*override*/ Value *base() { return fbase; }
 
 	/*override*/ bool is_defined() const;
 	/*override*/ Value *as_expr_result(bool);
@@ -44,10 +44,10 @@ public: // Value
 	/*override*/ Hash *get_hash(const String *source);
 	/*override*/ Table *get_table();
 
-	/*override*/ Value *get_element(const String& aname, Value *aself, bool /*looking_up*/);
+	/*override*/ Value *get_element(const String& aname, Value& aself, bool /*looking_up*/);
 	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace);
 
-	/// VObject: remember derived [the only client] */
+	/// VObject: remember derived [the only client]
 	/*override*/ VObject *set_derived(VObject *aderived) { 
 		VObject *result=fderived;
 		fderived=aderived;
@@ -67,9 +67,11 @@ public: // creation
 
 private:
 
-	Value *get_last_derived() {
-		return fderived?fderived->get_last_derived():this;
+	VObject& get_last_derived() {
+		return fderived?fderived->get_last_derived():*this;
 	}
+
+	Value *stateless_object__get_element(const String& aname, Value& aself);
 
 private:
 

@@ -1,6 +1,9 @@
 @CLASS
 base
 
+@auto[]
+$base_class_var[1]
+
 @create[abase]
 $base_instance_var[$abase]
 
@@ -14,6 +17,8 @@ base_test2
 
 
 @do_include[]
+^$base_class_var=$base_class_var<br>
+^$includet2derived_var=$includet2derived_var<br>
 ^$includet2override_var=$includet2override_var<br>
 ^include[some.p]
 @override[] me

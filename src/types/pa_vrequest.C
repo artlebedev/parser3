@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VREQUEST_C="$Date: 2002/08/15 10:26:05 $";
+static const char* IDENT_VREQUEST_C="$Date: 2002/10/31 15:01:56 $";
 
 #include "pa_vrequest.h"
 #include "pa_request.h"
@@ -13,7 +13,7 @@ static const char* IDENT_VREQUEST_C="$Date: 2002/08/15 10:26:05 $";
 #include "pa_charset.h"
 
 // request: CLASS,method,field
-Value *VRequest::get_element(const String& aname, Value * /*aself*/, bool /*looking_up*/) {
+Value *VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*looking_up*/) {
 	// $charset
 	if(aname==CHARSET_NAME)
 		return NEW VString(pool().get_source_charset().name());

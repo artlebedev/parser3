@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char* IDENT_VSTATELESS_CLASS_C="$Date: 2002/10/15 10:05:01 $";
+static const char* IDENT_VSTATELESS_CLASS_C="$Date: 2002/10/31 15:01:56 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"
@@ -37,7 +37,7 @@ void VStateless_class::add_native_method(
 }
 
 /// VStateless_class: $CLASS, $method
-Value *VStateless_class::get_element(const String& aname, Value *aself, bool looking_up) {
+Value *VStateless_class::get_element(const String& aname, Value& aself, bool looking_up) {
 	// $CLASS
 	if(aname==CLASS_NAME)
 		return this;
@@ -45,8 +45,12 @@ Value *VStateless_class::get_element(const String& aname, Value *aself, bool loo
 	// $method=junction(self+class+method)
 	if(Method *method=static_cast<Method *>(fmethods.get(aname)))
 		return new(aname.pool()) VJunction(
-			*new(aname.pool()) Junction(aname.pool(), *aself, method, 0,0,0,0));
+		*new(aname.pool()) Junction(aname.pool(), aself, method, 0,0,0,0));
+
+	// base monkey
 	if(fbase)
-		return fbase->get_element(aname, aself, looking_up);
+		if(Value *lbase=aself.base()) // one check would be enough...
+			return fbase->get_element(aname, *lbase, looking_up);
+
 	return 0;
 }

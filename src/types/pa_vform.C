@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char* IDENT_VFORM_C="$Date: 2002/10/22 10:31:43 $";
+static const char* IDENT_VFORM_C="$Date: 2002/10/31 15:01:55 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -301,7 +301,7 @@ void VForm::fill_fields_and_tables(Request& request) {
 	filled=true;
 }
 
-Value *VForm::get_element(const String& aname, Value *aself, bool looking_up) {
+Value *VForm::get_element(const String& aname, Value& aself, bool looking_up) {
 	if(!filled)
 		throw Exception("parser.runtime",
 			&aname,

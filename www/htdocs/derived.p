@@ -9,6 +9,7 @@ base
 
 @auto[]
 $aaa[1]
+$includet2derived_var[1]
 
 @create[aderived_param]
 ^BASE:create[base create actual param]

@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_OBJECT_H
 #define PA_VSTATELESS_OBJECT_H
 
-static const char* IDENT_VSTATELESS_OBJECT_H="$Date: 2002/08/14 14:18:31 $";
+static const char* IDENT_VSTATELESS_OBJECT_H="$Date: 2002/10/31 15:01:57 $";
 
 #include "pa_vjunction.h"
 #include "pa_vstateless_class.h"
@@ -21,7 +21,7 @@ class VStateless_object : public Value {
 public: // Value
 	
 	/// VStateless_object: $method, $CLASS_field 
-	Value *get_element(const String& aname, Value *aself, bool looking_up) {
+	Value *get_element(const String& aname, Value& aself, bool looking_up) {
 		return get_class()->get_element(aname, aself, looking_up);
 	}
 

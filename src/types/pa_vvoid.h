@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-static const char* IDENT_VVOID_H="$Date: 2002/08/14 14:18:32 $";
+static const char* IDENT_VVOID_H="$Date: 2002/10/31 15:01:57 $";
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -38,7 +38,7 @@ public: // Value
 
 
 	/// VVoid: methods
-	Value *get_element(const String& aname, Value *aself, bool looking_up) {
+	Value *get_element(const String& aname, Value& aself, bool looking_up) {
 		// methods
 		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
 			return result;

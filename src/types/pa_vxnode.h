@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char* IDENT_VXNODE_H="$Date: 2002/08/14 14:18:32 $";
+static const char* IDENT_VXNODE_H="$Date: 2002/10/31 15:01:57 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -39,7 +39,7 @@ public: // Value
 	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), as_bool()); }
 
 	/// VXnode: $CLASS,$method, fields
-	Value *get_element(const String& aname, Value *aself, bool /*looking_up*/);
+	Value *get_element(const String& aname, Value& aself, bool /*looking_up*/);
 
 public: // usage
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCLASS_C="$Date: 2002/10/14 11:24:00 $";
+static const char* IDENT_VCLASS_C="$Date: 2002/10/31 15:01:54 $";
 
 #include "pa_vclass.h"
 
@@ -17,7 +17,7 @@ static const char* IDENT_VCLASS_C="$Date: 2002/10/14 11:24:00 $";
 }
 
 /// VClass: $CLASS, (field)=STATIC value;(method)=method_ref with self=object_class
-Value *VClass::get_element(const String& aname, Value *aself, bool looking_up) {
+Value *VClass::get_element(const String& aname, Value& aself, bool looking_up) {
 	// simple things first: $field=static field
 	if(Value *result=static_cast<Value *>(ffields.get(aname)))
 		return result;

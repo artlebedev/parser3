@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VRESPONSE_C="$Date: 2002/10/25 08:05:05 $";
+static const char* IDENT_VRESPONSE_C="$Date: 2002/10/31 15:01:56 $";
 
 #include "pa_vresponse.h"
 #include "pa_charsets.h"
@@ -13,7 +13,7 @@ static const char* IDENT_VRESPONSE_C="$Date: 2002/10/25 08:05:05 $";
 #include "pa_vstring.h"
 #include "pa_vdate.h"
 
-Value *VResponse::get_element(const String& aname, Value *aself, bool looking_up) {
+Value *VResponse::get_element(const String& aname, Value& aself, bool looking_up) {
 	// $charset
 	if(aname==CHARSET_NAME)
 		return NEW VString(pool().get_client_charset().name());

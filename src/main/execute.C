@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/10/31 10:29:23 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/10/31 15:01:54 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -843,14 +843,14 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 			if(VStateless_class *called_class=ncontext->get_class())
 				if(VStateless_class *read_class=rcontext->get_class())
 					if(read_class->derived_from(*called_class)) // current derived from called
-						if(Value *base_object=get_self()->base_object()) { // doing DYNAMIC call
-							Temp_derived temp_derived(*base_object, 0); // temporarily prevent go-back-down virtual calls
-							value=base_object->get_element(name, base_object, false); // virtual-up lookup starting from parent
+						if(Value *base=get_self()->base()) { // doing DYNAMIC call
+							Temp_derived temp_derived(*base, 0); // temporarily prevent go-back-down virtual calls
+							value=base->get_element(name, *base, false); // virtual-up lookup starting from parent
 							goto value_ready;
 						}
 	}
 	if(!value)
-		value=ncontext->get_element(name, ncontext, false);
+		value=ncontext->get_element(name, *ncontext, false);
 
 value_ready:
 	if(value)
@@ -1006,7 +1006,7 @@ void Request::execute_nonvirtual_method(VStateless_class& aclass,
 
 const String *Request::execute_virtual_method(Value& aself, 
 											  const String& method_name) {
-	if(Value *value=aself.get_element(method_name, &aself, false))
+	if(Value *value=aself.get_element(method_name, aself, false))
 		if(Junction *junction=value->get_junction())
 			if(const Method *method=junction->method) {
 				const String *result;

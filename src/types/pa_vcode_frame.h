@@ -8,7 +8,7 @@
 #ifndef PA_VCODE_FRAME_H
 #define PA_VCODE_FRAME_H
 
-static const char* IDENT_VCODE_FRAME_H="$Date: 2002/09/10 12:02:24 $";
+static const char* IDENT_VCODE_FRAME_H="$Date: 2002/10/31 15:01:55 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -19,7 +19,7 @@ public: // Value
 
 	const char *type() const { return "code_frame"; }
 	/// VCodeFrame: twice transparent
-	Value *get_element(const String& aname, Value *aself, bool looking_up) { 
+	Value *get_element(const String& aname, Value& aself, bool looking_up) { 
 		return wcontext.get_element(aname, aself, looking_up); 
 	}
 	/// VCodeFrame: twice transparent

@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/10/31 10:23:45 $";
+static const char* IDENT_VALUE_H="$Date: 2002/10/31 15:01:54 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -94,7 +94,7 @@ public: // Value
 	virtual Value *base_object() { bark("(%s) has no base object"); return 0; }
 	
 	/// extract Value element
-	virtual Value *get_element(const String& /*aname*/, Value * /*aself*/, bool /*looking_up*/) { bark("(%s) has no elements"); return 0; }
+	virtual Value *get_element(const String& /*aname*/, Value& /*aself*/, bool /*looking_up*/) { bark("(%s) has no elements"); return 0; }
 
 	/// store Value element under @a name
 	virtual bool put_element(const String& name, Value * /*value*/, bool /*replace*/) { 
@@ -113,6 +113,8 @@ public: // Value
 	virtual VStateless_class *get_last_derived_class() {
 		return get_class();
 	};
+	/// extract base object or class of Value, if any
+	virtual Value *base() { bark("(%s) has can not have base"); return 0; }
 
 	/// extract VTable
 	virtual Table *get_table() { return 0; }
@@ -285,7 +287,7 @@ public:
 	Temp_value_element(Value& awhere, const String& aname, Value *awhat) : 
 		fwhere(awhere),
 		fname(aname),
-		saved(awhere.get_element(aname, &awhere, false)) {
+		saved(awhere.get_element(aname, awhere, false)) {
 		fwhere.put_element(aname, awhat, false);
 	}
 	~Temp_value_element() { 

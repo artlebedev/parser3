@@ -6,8 +6,8 @@
 $selffilespec[$filespec]
 #$form:here
 #$request:charset[UTF-8]
-$request:charset[windows-1251]
-$response:charset[windows-1251]
+##$request:charset[windows-1251]
+##$response:charset[windows-1251]
 #$response:charset[UTF-8]
 #$response:charset[empty]
 #$response:content-type[$.value[text/html]$.charset[$response:charset]]
@@ -288,12 +288,15 @@ OK
 #<hr>[$env:HTTP_REFERER]
 #$response:Content-TypE[bad]
 #^emailhead2[]
-^includet2override[]
+#^includet2overridedynamic[]
+^includet2overridestatic[]
 
-@includet2override[]
-#^derived:includet2override[]
+@includet2overridedynamic[]
 $derived[^derived::create[]]
 ^derived.includet2override[]
+
+@includet2overridestatic[]
+^derived:includet2override[]
 
 @emailhead2[]
 ^mail:send[

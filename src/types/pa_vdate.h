@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char* IDENT_VDATE_H="$Date: 2002/09/02 12:22:20 $";
+static const char* IDENT_VDATE_H="$Date: 2002/10/31 15:01:55 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -43,7 +43,7 @@ public: // Value
 
 
 	/// VDate: method,field
-	Value *get_element(const String& aname, Value *aself, bool looking_up) {
+	Value *get_element(const String& aname, Value& aself, bool looking_up) {
 		// $method
 		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
 			return result;

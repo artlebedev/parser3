@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char* IDENT_VFILE_H="$Date: 2002/08/14 14:18:30 $";
+static const char* IDENT_VFILE_H="$Date: 2002/10/31 15:01:55 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -40,7 +40,7 @@ public: // Value
 	}
 
 	/// VFile: method,field
-	Value *get_element(const String& aname, Value *aself, bool looking_up) {
+	Value *get_element(const String& aname, Value& aself, bool looking_up) {
 		// $method
 		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
 			return result;

@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/10/15 10:05:01 $";
+static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/10/31 15:01:56 $";
 
 #include "pa_hash.h"
 #include "pa_vjunction.h"
@@ -35,9 +35,10 @@ public: // Value
 	const char *type() const { return "stateless_class"; }
 
 	/// VStateless_class: this
-	VStateless_class *get_class() { return this; }
-	
-	/*overridef*/ Value *get_element(const String& aname, Value *aself, bool looking_up);
+	/*override*/ VStateless_class *get_class() { return this; }
+	/// VStateless_class: fbase
+	/*override*/ Value *base() { return fbase; }
+	/*override*/ Value *get_element(const String& aname, Value& aself, bool looking_up);
 
 public: // usage
 
@@ -45,7 +46,7 @@ public: // usage
 		const String *aname=0, 
 		VStateless_class *abase=0) : Value(apool), 
 		fname(aname),
-		fbase(abase),
+        fbase(abase),
 		fmethods(apool) {
 	}
 
@@ -135,16 +136,6 @@ public:
 	~Temp_method() { 
 		fclass.put_method(fname, saved_method);
 	}
-};
-
-///	Auto-object used for temporarily substituting/removing class base
-class Temp_base {
-	VStateless_class& fclass;
-	VStateless_class *fbase;
-public:
-	Temp_base(VStateless_class& aclass, VStateless_class *abase) : fclass(aclass), fbase(aclass.set_base(abase)) {}
-	~Temp_base() { fclass.set_base(fbase); }
-
 };
 
 #endif
