@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/08/08 09:35:22 $";
+static const char* IDENT_FILE_C="$Date: 2002/08/20 14:20:36 $";
 
 #include "pa_config_includes.h"
 
@@ -459,7 +459,7 @@ static void _find(Request& r, const String& method_name, MethodParams *params) {
 
 	// easy way
 	if(file_readable(r.absolute(*file_spec))) {
-		r.write_no_lang(*file_spec);
+		r.write_assign_lang(*file_spec);
 		return;
 	}
 
@@ -474,7 +474,7 @@ static void _find(Request& r, const String& method_name, MethodParams *params) {
 		local_test_name<<*(dirname=&dirname->mid(0, after_monkey_slash));
 		local_test_name<<basename;
 		if(file_readable(r.absolute(local_test_name))) {
-			r.write_no_lang(*new(pool) String(local_test_name));
+			r.write_assign_lang(*new(pool) String(local_test_name));
 			return;
 		}
 	}
