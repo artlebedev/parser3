@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/02/11 15:33:15 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/03/01 11:43:01 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -142,7 +142,11 @@ static bool set_addr(struct sockaddr_in *addr, const char* host, const short por
     addr->sin_family=AF_INET;
     addr->sin_port=htons(port); 
     if(host) {
-		if(struct hostent *hostIP=gethostbyname(host)) 
+		ulong packed_ip=inet_addr(host);
+		struct hostent *hostIP = packed_ip==INADDR_NONE?
+			gethostbyname(host)
+			: gethostbyaddr((char *)&packed_ip, sizeof(packed_ip), AF_INET);
+		if(hostIP) 
 			memcpy(&addr->sin_addr, hostIP->h_addr, hostIP->h_length); 
 		else
 			return false;
