@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char * const IDENT_VIMAGE_H="$Date: 2004/02/11 15:33:18 $";
+static const char * const IDENT_VIMAGE_H="$Date: 2004/03/01 13:22:25 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -41,14 +41,14 @@ public:
 	//@{******************************** char **********************************	
 	size_t index_of(char ch);
 	int index_width(size_t index);
-	void index_display(gdImage* image, int x, int y, size_t index);
+	void index_display(gdImage& image, int x, int y, size_t index);
 	//@}
 	//@{******************************* string *********************************
 	int step_width(int index);
 	//@}
 	/// counts trailing letter_spacing, consider this OK. useful for contiuations
 	int string_width(const String& s);
-	void string_display(gdImage* image, int x, int y, const String& s);	
+	void string_display(gdImage& image, int x, int y, const String& s);	
 };
 
 // externs
@@ -86,11 +86,28 @@ public: // usage
 
 public:
 
-	gdImage* image; 
-	Font* font;
+	gdImage& image() { 
+		if(!fimage)
+			throw Exception("parser.runtime",
+				0,
+				"using unitialized image object");
+
+		return *fimage;
+	}
+
+	void set_font(Font* afont) { ffont=afont; }
+	Font& font() {
+		if(!ffont)
+			throw Exception("parser.runtime",
+				0,
+				"set the font first");
+		return *ffont;
+	}
 
 private:
 
+	gdImage* fimage; 
+	Font* ffont;
 	HashStringValue ffields;
 	Value* fexif;
 

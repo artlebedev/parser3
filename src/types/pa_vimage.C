@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VIMAGE_C="$Date: 2004/02/11 15:33:18 $";
+static const char * const IDENT_VIMAGE_C="$Date: 2004/03/01 13:22:25 $";
 
 #include "pa_vimage.h"
 #include "pa_vint.h"
@@ -15,7 +15,7 @@ static const char * const IDENT_VIMAGE_C="$Date: 2004/02/11 15:33:18 $";
 void VImage::set(const String* src, int width, int height,
 				 gdImage* aimage,
 				 Value* aexif) {
-	image=aimage;
+	fimage=aimage;
 	fexif=aexif;
 
 	// $src
@@ -53,12 +53,12 @@ Value* VImage::get_element(const String& aname, Value& aself, bool looking_up) {
 bool VImage::put_element(const String& aname, Value* avalue, bool /*replace*/) {
 	ffields.put(aname, avalue);
 
-	if(image) {
+	if(fimage) {
 		if(aname=="line-width") {
-			image->SetLineWidth(min(max(avalue->as_int(), 1), 10));
+			fimage->SetLineWidth(min(max(avalue->as_int(), 1), 10));
 		} else if(aname=="line-style") {
 			const String& sline_style=avalue->as_string();
-			image->SetLineStyle(sline_style.length()?sline_style.cstr(String::L_AS_IS):0);
+			fimage->SetLineStyle(sline_style.length()?sline_style.cstr(String::L_AS_IS):0);
 		}
 	}
 

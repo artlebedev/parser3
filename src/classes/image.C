@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2004/02/19 15:38:00 $";
+static const char * const IDENT_IMAGE_C="$Date: 2004/03/01 13:22:25 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -813,17 +813,13 @@ static void _create(Request& r, MethodParams& params) {
 }
 
 static void _gif(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
 	const String *file_name=0;
 	if(params.count()>0)
 		file_name=&params.as_string(0, "file name must be string");
 
-	gdBuf buf=image->Gif();
+	gdBuf buf=image.Gif();
 	
 	VFile& vfile=*new VFile;
 	Value* content_type=new VString(*new String("image/gif"));
@@ -836,61 +832,45 @@ static void _gif(Request& r, MethodParams& params) {
 }
 
 static void _line(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
-	image->Line(
+	image.Line(
 		params.as_int(0, "x0 must be int", r), 
 		params.as_int(1, "y0 must be int", r), 
 		params.as_int(2, "x1 must be int", r), 
 		params.as_int(3, "y1 must be int", r), 
-		image->Color(params.as_int(4, "color must be int", r)));
+		image.Color(params.as_int(4, "color must be int", r)));
 }
 
 static void _fill(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
-	image->Fill(
+	image.Fill(
 		params.as_int(0, "x must be int", r), 
 		params.as_int(1, "y must be int", r), 
-		image->Color(params.as_int(2, "color must be int", r)));
+		image.Color(params.as_int(2, "color must be int", r)));
 }
 
 static void _rectangle(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
-	image->Rectangle(
+	image.Rectangle(
 		params.as_int(0, "x0 must be int", r), 
 		params.as_int(1, "y0 must be int", r), 
 		params.as_int(2, "x1 must be int", r), 
 		params.as_int(3, "y1 must be int", r), 
-		image->Color(params.as_int(4, "color must be int", r)));
+		image.Color(params.as_int(4, "color must be int", r)));
 }
 
 static void _bar(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
-	image->FilledRectangle(
+	image.FilledRectangle(
 		params.as_int(0, "x0 must be int", r), 
 		params.as_int(1, "y0 must be int", r), 
 		params.as_int(2, "x1 must be int", r), 
 		params.as_int(3, "y1 must be int", r), 
-		image->Color(params.as_int(4, "color must be int", r)));
+		image.Color(params.as_int(4, "color must be int", r)));
 }
 
 #ifndef DOXYGEN
@@ -902,11 +882,7 @@ static void add_point(Table::element_type row,
 }
 #endif
 static void _replace(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
 	Table* table=params.as_no_junction(2, "coordinates must not be code").get_table();
 	if(!table) 
@@ -917,17 +893,13 @@ static void _replace(Request& r, MethodParams& params) {
 	gdImage::Point *all_p=new(PointerFreeGC) gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
-	image->FilledPolygonReplaceColor(all_p, table->count(), 
-		image->Color(params.as_int(0, "src color must be int", r)),
-		image->Color(params.as_int(1, "dest color must be int", r)));
+	image.FilledPolygonReplaceColor(all_p, table->count(), 
+		image.Color(params.as_int(0, "src color must be int", r)),
+		image.Color(params.as_int(1, "dest color must be int", r)));
 }
 
 static void _polyline(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
 	Table* table=params.as_no_junction(1, "coordinates must not be code").get_table();
 	if(!table) 
@@ -938,17 +910,13 @@ static void _polyline(Request& r, MethodParams& params) {
 	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
-	image->Polygon(all_p, table->count(), 
-		image->Color(params.as_int(0, "color must be int", r)),
+	image.Polygon(all_p, table->count(), 
+		image.Color(params.as_int(0, "color must be int", r)),
 		false/*not closed*/);
 }
 
 static void _polygon(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
 	Table* table=params.as_no_junction(1, "coordinates must not be code").get_table();
 	if(!table) 
@@ -959,16 +927,12 @@ static void _polygon(Request& r, MethodParams& params) {
 	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
-	image->Polygon(all_p, table->count(), 
-		image->Color(params.as_int(0, "color must be int", r)));
+	image.Polygon(all_p, table->count(), 
+		image.Color(params.as_int(0, "color must be int", r)));
 }
 
 static void _polybar(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
 	Table* table=params.as_no_junction(1, "coordinates must not be code").get_table();
 	if(!table) 
@@ -979,8 +943,8 @@ static void _polybar(Request& r, MethodParams& params) {
 	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
-	image->FilledPolygon(all_p, table->count(), 
-		image->Color(params.as_int(0, "color must be int", r)));
+	image.FilledPolygon(all_p, table->count(), 
+		image.Color(params.as_int(0, "color must be int", r)));
 }
 
 // font
@@ -1018,9 +982,9 @@ int Font::index_width(size_t index) {
 	return 0;
 }
 
-void Font::index_display(gdImage* image, int x, int y, size_t index){
+void Font::index_display(gdImage& image, int x, int y, size_t index){
 	if(index!=STRING_NOT_FOUND) 
-		ifont->Copy(*image, x, y, 0, Y(0), index_width(index), height);
+		ifont->Copy(image, x, y, 0, Y(0), index_width(index), height);
 }
 
 /* ******************************** string ********************************** */
@@ -1038,7 +1002,7 @@ int Font::string_width(const String& s){
 	return result;
 }
 
-void Font::string_display(gdImage* image, int x, int y, const String& s){
+void Font::string_display(gdImage& image, int x, int y, const String& s){
 	const char* cstr=s.cstr();
 	for(const char* current=cstr; *current; current++) {
 		size_t index=index_of(*current);
@@ -1073,10 +1037,10 @@ static void _font(Request& r, MethodParams& params) {
 			"font-file height(%d) not divisable by alphabet size(%d), remainder=%d",
 				image->SY(), alphabet.length(), remainder);
 	
-	GET_SELF(r, VImage).font=new Font(
+	GET_SELF(r, VImage).set_font(new Font(
 		alphabet, 
 		image, 
-		image->SY() / alphabet.length(), monospace_width, spacebar_width);
+		image->SY() / alphabet.length(), monospace_width, spacebar_width));
 }
 
 static void _text(Request& r, MethodParams& params) {
@@ -1085,115 +1049,71 @@ static void _text(Request& r, MethodParams& params) {
 	const String& s=params.as_string(2, "text must not be code");
 
 	VImage& vimage=GET_SELF(r, VImage);
-	if(vimage.image)
-		if(vimage.font)
-			vimage.font->string_display(vimage.image, x, y, s);
-		else
-			throw Exception("parser.runtime",
-				0,
-				"set the font first");
-	else
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	vimage.font().string_display(vimage.image(), x, y, s);
 }
 
 static void _length(Request& r, MethodParams& params) {
 	const String& s=params.as_string(0, "text must not be code");
 
 	VImage& vimage=GET_SELF(r, VImage);
-	if(vimage.image)
-		if(vimage.font) {
-			r.write_no_lang(*new VInt(vimage.font->string_width(s)));
-		} else
-			throw Exception("parser.runtime",
-				0,
-				"set the font first");
-	else
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	r.write_no_lang(*new VInt(vimage.font().string_width(s)));
 }
 
 static void _arc(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
-	image->Arc(
+	image.Arc(
 		params.as_int(0, "center_x must be int", r), 
 		params.as_int(1, "center_y must be int", r), 
 		params.as_int(2, "width must be int", r), 
 		params.as_int(3, "height must be int", r), 
 		params.as_int(4, "start degrees must be int", r), 
 		params.as_int(5, "end degrees must be int", r), 
-		image->Color(params.as_int(6, "cx must be int", r)));
+		image.Color(params.as_int(6, "cx must be int", r)));
 }
 
 static void _sector(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
-	image->Sector(
+	image.Sector(
 		params.as_int(0, "center_x must be int", r), 
 		params.as_int(1, "center_y must be int", r), 
 		params.as_int(2, "width must be int", r), 
 		params.as_int(3, "height must be int", r), 
 		params.as_int(4, "start degrees must be int", r), 
 		params.as_int(5, "end degrees must be int", r), 
-		image->Color(params.as_int(6, "color must be int", r)));
+		image.Color(params.as_int(6, "color must be int", r)));
 }
 
 static void _circle(Request& r, MethodParams& params) {
-	gdImage* image=GET_SELF(r, VImage).image;
-	if(!image)
-		throw Exception(0, 
-			0, 
-			"does not contain an image");
+	gdImage& image=GET_SELF(r, VImage).image();
 
 	int size=params.as_int(2, "radius must be int", r)*2;
-	image->Arc(
+	image.Arc(
 		params.as_int(0, "center_x must be int", r), 
 		params.as_int(1, "center_y must be int", r), 
 		size, //w
 		size, //h
 		0, //s
 		360, //e
-		image->Color(params.as_int(3, "color must be int", r)));
+		image.Color(params.as_int(3, "color must be int", r)));
 }
 
-gdImage* as_image(MethodParams& params, int index, const char* msg) {
-	gdImage* src=0;
-
+gdImage& as_image(MethodParams& params, int index, const char* msg) {
 	Value& value=params.as_no_junction(index, msg);
 
 	if(Value* vimage=value.as(VIMAGE_TYPE, false)) {
-		src=static_cast<VImage *>(vimage)->image;
-		if(!src)
-			throw Exception("parser.runtime", 
-				0, 
-				msg);
+		return static_cast<VImage *>(vimage)->image();
 	} else
 		throw Exception("parser.runtime", 
 			0, 
 			msg);
-
-	return src;
 }
 
 static void _copy(Request& r, MethodParams& params) {
-	gdImage* dest=GET_SELF(r, VImage).image;
-	if(!dest)
-		throw Exception(0, 
-			0, 
-			"self does not contain an image");
+	gdImage& dest=GET_SELF(r, VImage).image();
 
-	gdImage* src=as_image(params, 0, "src must be image");
+	gdImage& src=as_image(params, 0, "src must be image");
 
 	int sx=params.as_int(1, "src_x must be int", r);
 	int sy=params.as_int(2, "src_y must be int", r);
@@ -1208,9 +1128,18 @@ static void _copy(Request& r, MethodParams& params) {
 		int tolerance=params.count()>1+2+2+2+2?
 			params.as_int(1+2+2+2+2, "tolerance must be int", r):150;
 
-		src->CopyResampled(*dest, dx, dy, sx, sy, dw, dh, sw, sh, tolerance);
+		src.CopyResampled(dest, dx, dy, sx, sy, dw, dh, sw, sh, tolerance);
 	} else
-		src->Copy(*dest, dx, dy, sx, sy, sw, sh);
+		src.Copy(dest, dx, dy, sx, sy, sw, sh);
+}
+
+static void _pixel(Request& r, MethodParams& params) {
+	gdImage& image=GET_SELF(r, VImage).image();
+
+	image.Fill(
+		params.as_int(0, "x must be int", r), 
+		params.as_int(1, "y must be int", r), 
+		image.Color(params.as_int(2, "color must be int", r)));
 }
 
 
@@ -1279,4 +1208,7 @@ MImage::MImage(): Methoded("image") {
 
 	// ^image.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h[;tolerance]]])
 	add_native_method("copy", Method::CT_DYNAMIC, _copy, 1+2+2+2, (1+2+2+2)+2+1);
+
+	// ^image.pixel(x;y)[(color)]
+	add_native_method("copy", Method::CT_DYNAMIC, _pixel, 2, 3);
 }
