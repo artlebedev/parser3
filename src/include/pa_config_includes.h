@@ -152,6 +152,8 @@
 
 // math function replacements
 
+#ifdef __cplusplus
+
 #ifndef HAVE_TRUNC
 inline double trunc(double param) { return param > 0? floor(param) : ceil(param); }
 #endif
@@ -169,6 +171,8 @@ inline int max(int a, int b) { return a>b?a:b; }
 inline int min(int a, int b){ return a<b?a:b; }
 inline size_t max(size_t a, size_t b) { return a>b?a:b; }
 inline size_t min(size_t a, size_t b){ return a<b?a:b; }
+#endif
+
 #endif
 
 #endif
