@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_opcode.h,v 1.6 2001/07/26 14:15:45 parser Exp $
+	$Id: pa_opcode.h,v 1.7 2001/10/31 13:07:34 paf Exp $
 */
 
 #ifndef CODE_H
@@ -46,7 +46,7 @@ enum OPCODE {
 
 	//@{
 	/// @name expression ops: binary
-	OP_SUB, OP_ADD, OP_MUL, OP_DIV, OP_MOD,
+	OP_SUB, OP_ADD, OP_MUL, OP_DIV, OP_MOD, OP_INTDIV,
 	OP_BIN_AND, OP_BIN_OR, OP_BIN_XOR,
 	OP_LOG_AND, OP_LOG_OR, OP_LOG_XOR,
 	OP_NUM_LT, OP_NUM_GT, OP_NUM_LE, OP_NUM_GE, OP_NUM_EQ, OP_NUM_NE,

@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.172 2001/10/18 06:52:05 parser Exp $
+	$Id: compile.y,v 1.173 2001/10/31 13:07:35 paf Exp $
 */
 
 /**
@@ -100,7 +100,7 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 
 /* numerical */
 %left '-' '+'
-%left '*' '/' '%'
+%left '*' '/' '%' '\\'
 %left NEG     /* negation: unary - */
 
 %%
@@ -501,6 +501,7 @@ expr:
 |	expr '*' expr { $$=$1;  P($$, $3);  O($$, OP_MUL) }
 |	expr '/' expr { $$=$1;  P($$, $3);  O($$, OP_DIV) }
 |	expr '%' expr { $$=$1;  P($$, $3);  O($$, OP_MOD) }
+|	expr '\\' expr { $$=$1;  P($$, $3);  O($$, OP_INTDIV) }
 |	expr '&' expr { $$=$1; 	P($$, $3);  O($$, OP_BIN_AND) }
 |	expr '|' expr { $$=$1;  P($$, $3);  O($$, OP_BIN_OR) }
 |	expr '#' expr { $$=$1;  P($$, $3);  O($$, OP_BIN_XOR) }
@@ -836,7 +837,7 @@ default:
 					goto break2;
 				}
 				goto break2;
-			case '+': case '*': case '/': case '%': 
+			case '+': case '*': case '/': case '%': case '\\':
 			case '~':
 			case ';':
 				RC;

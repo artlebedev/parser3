@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.200 2001/10/29 16:07:36 paf Exp $
+	$Id: execute.C,v 1.201 2001/10/31 13:07:35 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -47,7 +47,7 @@ char *opcode_name[]={
 	// expression ops: unary
 	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS",
 	// expression ops: binary
-	"SUB", "ADD", "MUL", "DIV", "MOD",
+	"SUB", "ADD", "MUL", "DIV", "MOD", "INTDIV",
 	"BIN_AND", "BIN_OR", "BIN_XOR",
 	"LOG_AND", "LOG_OR", "LOG_XOR",
 	"NUM_LT", "NUM_GT", "NUM_LE", "NUM_GE", "NUM_EQ", "NUM_NE",
@@ -576,6 +576,28 @@ void Request::execute(const Array& ops) {
 				}
 
 				value=NEW VDouble(pool(), fmod(a_double, b_double));
+				PUSH(value);
+				break;
+			}
+		case OP_INTDIV:
+			{
+				b=POP();  a=POP();
+
+				int a_int=a->as_int();
+				int b_int=b->as_int();
+
+				if(b_int == 0) {
+					const String *problem_source=&b->as_string();
+#ifndef NO_STRING_ORIGIN
+					if(!problem_source->origin().file)
+						problem_source=&b->name();
+#endif
+					throw Exception(0, 0,
+						problem_source,
+						"Division by zero");
+				}
+
+				value=NEW VInt(pool(), a_int / b_int);
 				PUSH(value);
 				break;
 			}
