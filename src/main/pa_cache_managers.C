@@ -5,12 +5,14 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_CACHE_MANAGERS_C="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_CACHE_MANAGERS_C="$Date: 2004/03/25 14:46:19 $";
 
 #include "pa_cache_managers.h"
 
 #include "pa_sql_driver_manager.h"
+#ifdef XML
 #include "pa_stylesheet_manager.h"
+#endif
 
 // globals
 
@@ -18,7 +20,9 @@ Cache_managers* cache_managers=0;
 
 Cache_managers::Cache_managers() {
 	put("sql", (SQL_driver_manager=new SQL_Driver_manager));
+#ifdef XML
 	put("stylesheet", (stylesheet_manager=new Stylesheet_manager));
+#endif
 }
 
 

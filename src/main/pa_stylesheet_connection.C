@@ -5,9 +5,10 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STYLESHEET_CONNECTION_C="$Date: 2004/02/13 14:06:02 $";
-
 #include "pa_config_includes.h"
+#ifdef XML
+static const char * const IDENT_STYLESHEET_CONNECTION_C="$Date: 2004/03/25 14:46:19 $";
+
 #include "pa_stylesheet_connection.h"
 #include "pa_xml_exception.h"
 
@@ -56,3 +57,5 @@ time_t Stylesheet_connection::get_disk_time() {
 	dependencies->for_each(update_max_mtime, &result);
 	return result;
 }
+
+#endif
