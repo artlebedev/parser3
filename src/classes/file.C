@@ -3,9 +3,11 @@
 
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+
+	portions by Victor Fedoseev" <vvf_ru@mail.ru> [January 23, 2003]
 */
 
-static const char* IDENT_FILE_C="$Date: 2003/03/21 09:43:48 $";
+static const char* IDENT_FILE_C="$Date: 2003/04/04 14:42:38 $";
 
 #include "pa_config_includes.h"
 
@@ -321,42 +323,22 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	// exec!
 	String raw_out(pool);
 	String& raw_err=*new(pool) String(pool);
-	int status=pa_exec(false/*forced_allow*/, script_name, &env, argv, *real_in, raw_out, raw_err);
+	int status=0;
+
+	const String *body=0;
+	const String *header=0;
+	const char *eol_marker=0; size_t eol_marker_size; int header_break_pos;
 
 	String *real_out=&raw_out;
 	String *real_err=&raw_err;
-
-	// transcode if necessary
-	if(charset) {
-		real_out=&Charset::transcode(pool, *charset, pool.get_source_charset(), raw_out);
-		real_err=&Charset::transcode(pool, *charset, pool.get_source_charset(), raw_err);
-	}
-
-
-	VFile& self=*static_cast<VFile *>(r.get_self());
-
-	const String *body=real_out; // ^file:exec
-	Value *content_type=0;
-	const char *eol_marker=0; size_t eol_marker_size;
-	const String *header=0;
 	if(cgi) { // ^file:cgi
-		// construct with 'out' body and header
-		int dos_pos=real_out->pos("\r\n\r\n", 4);
-		int unix_pos=real_out->pos("\n\n", 2);
-
-		bool unix_header_break;
-		switch((dos_pos >= 0?10:00) + (unix_pos >= 0?01:00)) {
-		case 10: // dos
-			unix_header_break=false;
-			break;
-		case 01: // unix
-			unix_header_break=true;
-			break;
-		case 11: // dos & unix
-			unix_header_break=unix_pos<dos_pos;
-			break;
-		default: // 00
-			unix_header_break=false; // calm down, compiler
+		status = pa_exec(false/*forced_allow*/, script_name, &env, argv, *real_in, raw_out, raw_err, &header_break_pos, &eol_marker, &eol_marker_size);
+		// transcode if necessary
+		if(charset) {
+			real_out=&Charset::transcode(pool, *charset, pool.get_source_charset(), raw_out);
+			real_err=&Charset::transcode(pool, *charset, pool.get_source_charset(), raw_err);
+		}
+		if(header_break_pos == -1)
 			throw Exception(0,
 				&method_name,
 				"output does not contain CGI header; "
@@ -364,21 +346,23 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 					status, 
 					(uint)real_out->size(), real_out->cstr(),
 					(uint)real_err->size(), real_err->cstr());
-			break; //never reached
-		}
-
-		int header_break_pos;
-		if(unix_header_break) {
-			header_break_pos=unix_pos;
-			eol_marker="\n"; eol_marker_size=1;
-		} else {
-			header_break_pos=dos_pos;
-			eol_marker="\r\n"; eol_marker_size=2;
-		}
 
 		header=&real_out->mid(0, header_break_pos);
 		body=&real_out->mid(header_break_pos+eol_marker_size*2, real_out->size());
+	}else{ // ^file:exec
+		status = pa_exec(false/*forced_allow*/, script_name, &env, argv, *real_in, raw_out, raw_err);
+		// transcode if necessary
+		if(charset) {
+			real_out=&Charset::transcode(pool, *charset, pool.get_source_charset(), raw_out);
+			real_err=&Charset::transcode(pool, *charset, pool.get_source_charset(), raw_err);
+		}
+		body=real_out;
 	}
+
+
+
+	VFile& self=*static_cast<VFile *>(r.get_self());
+
 	// body
 	self.set(false/*not tainted*/, body->cstr(), body->size());
 

@@ -1,13 +1,15 @@
 /** @file
 	Parser: program executing for different OS-es.
 
-	Copyright(c) 2000,2001, 2003 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+
+  	portions by Victor Fedoseev" <vvf_ru@mail.ru> [January 23, 2003]
 
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Date: 2003/01/21 15:51:14 $";
+static const char* IDENT_EXEC_C="$Date: 2003/04/04 14:42:38 $";
 
 #include "pa_config_includes.h"
 
@@ -27,7 +29,7 @@ static const char* IDENT_EXEC_C="$Date: 2003/01/21 15:51:14 $";
 
 /// this func from http://www.ccas.ru/~posp/popov/spawn.htm
 static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
-										char *szEnv,
+					char *szEnv,
                                         PROCESS_INFORMATION* ppi, 
                                         LPHANDLE phInWrite,
                                         LPHANDLE phOutRead,
@@ -111,18 +113,6 @@ error:
     return result;
 }
 
-static void read_pipe(String& result, HANDLE hOutRead, const char *file_spec, 
-					  String::Untaint_lang lang){
-	while(true) {
-		char *buf=(char *)result.pool().malloc(MAX_STRING);
-		unsigned long size;
-		if(!ReadFile(hOutRead, buf, MAX_STRING, &size, NULL) || !size) 
-			break;
-		result.APPEND(buf, size, lang, file_spec, 0);
-    }
-}
-
-
 static const char *buildCommand(Pool& pool, 
 								const String& origin_string,
 								const char *file_spec_cstr, const Array *argv) {
@@ -161,7 +151,7 @@ static const char *buildCommand(Pool& pool,
 	return result;
 }
 
-#else
+#else // WIN32
 
 static pid_t execve_piped(const char *file_spec_cstr, 
 			char * const argv[], char * const env[],
@@ -278,17 +268,79 @@ static int get_exit_status(int pid) {
 		WEXITSTATUS(status) : -2;
 }
 
-static void read_pipe(String& result, int file, const char *file_spec, String::Untaint_lang lang){
+#endif // WIN32
+
+static void read_pipe(String& result,
+#ifdef WIN32
+					  HANDLE hOutRead,
+#else // WIN32
+					   int file,
+#endif // WIN32
+					  const char *file_spec, 
+					  String::Untaint_lang lang,
+					  int *header_pos=0, const char **eol_marker=0, size_t *eol_marker_size=0){
+
+	if(header_pos) *header_pos = -1;
+	if(eol_marker) *eol_marker = "";
+	if(eol_marker_size) *eol_marker_size = 0;
+
+	int dos_seq_match = 0;
+	int unix_seq_match = 0;
+	int blk_pos = 0;
+	bool do_search = (header_pos || eol_marker || eol_marker_size);
+
 	while(true) {
 		char *buf=(char *)result.pool().malloc(MAX_STRING);
-		ssize_t size=read(file, buf, MAX_STRING);
+#ifdef WIN32
+		unsigned long size, i;
+		if(!ReadFile(hOutRead, buf, MAX_STRING, &size, NULL) || !size) 
+			break;
+#else // WIN32
+		ssize_t i, size=read(file, buf, MAX_STRING);
 		if(size<=0)
 			break;
+#endif // WIN32
+		if(do_search){
+			for(i=0; i<size; ++i){
+				if(buf[i] == '\n'){
+					if(++unix_seq_match==2){
+						do_search = false;
+						if(header_pos) *header_pos = blk_pos+i-1;
+						if(eol_marker) *eol_marker = "\n";
+						if(eol_marker_size) *eol_marker_size = 1;
+						break;
+					}
+					if(dos_seq_match==1){
+						++dos_seq_match;
+					}else if(dos_seq_match==3){
+						do_search = false;
+						if(header_pos) *header_pos = blk_pos+i-3;
+						if(eol_marker) *eol_marker = "\r\n";
+						if(eol_marker_size) *eol_marker_size = 2;
+						break;
+					}else
+						dos_seq_match = 0;
+				}else if(buf[i] == '\r'){
+					unix_seq_match = 0;
+					if(dos_seq_match==0 || dos_seq_match==2)
+						++dos_seq_match;
+					else
+						dos_seq_match = 0;
+				}else if(buf[i] == 0){
+					// assuming that the header may not contain 0
+					do_search = false;
+					break;
+				}else{
+					dos_seq_match = 0;
+					unix_seq_match = 0;
+				}
+			}
+			blk_pos += size;
+		}
 		result.APPEND(buf, size, lang, file_spec, 0);
     }
 }
 
-#endif
 
 ///@test maybe here and at argv construction --- cstr(String::UL_UNSPECIFIED
 static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) {
@@ -311,7 +363,8 @@ int pa_exec(
 			const String& file_spec, 
 			const Hash *env,
 			const Array *argv,
-			const String& in, String& out, String& err) {
+			const String& in, String& out, String& err,
+			int *header_pos, const char **eol_marker, size_t *eol_marker_size) {
 	Pool& pool=file_spec.pool();
 
 #ifdef NO_PA_EXECS
@@ -356,7 +409,7 @@ int pa_exec(
 		// without this char
 		WriteFile(hInWrite, "\x1A", 1, &written_size, NULL);
 		CloseHandle(hInWrite);
-		read_pipe(out, hOutRead, file_spec_cstr, String::UL_AS_IS);
+		read_pipe(out, hOutRead, file_spec_cstr, String::UL_AS_IS, header_pos, eol_marker, eol_marker_size);
 		CloseHandle(hOutRead);
 		read_pipe(err, hErrRead, file_spec_cstr, String::UL_TAINTED);		
 		CloseHandle(hErrRead);
@@ -424,7 +477,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		if(*in_cstr) // there is some in data
 			write(pipe_write, in_cstr, in.size());
 		close(pipe_write);
-		read_pipe(out, pipe_read, file_spec_cstr, String::UL_AS_IS);
+		read_pipe(out, pipe_read, file_spec_cstr, String::UL_AS_IS, header_pos, eol_marker, eol_marker_size);
 		close(pipe_read);
 		read_pipe(err, pipe_err, file_spec_cstr, String::UL_TAINTED);
 		close(pipe_err);
