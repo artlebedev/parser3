@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.19 2001/12/28 14:06:52 paf Exp $
+	$Id: pa_exec.C,v 1.20 2002/01/25 12:36:38 paf Exp $
 
 
 	@todo setrlimit
@@ -360,10 +360,18 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 #else
 
 	int pipe_write, pipe_read, pipe_err;
-	const char *argv_cstrs[5]={"", "", "", "", ""};
+	const char *argv_cstrs[10]={
+		"", "", "", "", "", 
+		"", "", "", "", ""
+	};
 	if(argv) {
-		int size=min(5, argv->size());
-		for(int i=0; i<size; i++)
+		const int argv_size=argv->size();
+		const int argv_max=sizeof(argv_cstrs)/sizeof(argv_cstrs[0]);
+		if(argv_size>argv_max)
+			throw Exception(0, 0,
+				&file_spec,
+				"too many arguments (%d > max %d)", argv_size, argv_max);
+		for(int i=0; i<argv_size; i++)
 			argv_cstrs[i]=argv->get_string(i)->cstr();
 	}
 	const char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC);
