@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.17 2001/02/13 10:00:27 paf Exp $
+  $Id: pa_string.h,v 1.18 2001/02/13 10:30:22 paf Exp $
 */
 
 /*
@@ -110,17 +110,17 @@ private: //disabled
 };
 
 
-class Char_type {
+class Char_types {
 public:
-	Char_type();
-	void set(char c, int value) { 
-		values[static_cast<unsigned int>(c)]=static_cast<char>(value); 
+	Char_types();
+	void set(char c, int type) { 
+		types[static_cast<unsigned int>(c)]=static_cast<char>(type); 
 	}
 	int get(char c) { 
-		return static_cast<int>(values[static_cast<unsigned int>(c)]); 
+		return static_cast<int>(types[static_cast<unsigned int>(c)]); 
 	}
 private:	
-	char values[0x100];
+	char type[0x100];
 };
 
 class String_iterator {
@@ -133,7 +133,7 @@ public:
 	int skip_to(Char_type& types);
 	bool skip_to(char c);
 
-	bool eof() { return feof; }
+	bool eof() { return position; }
 
 	// current char
 	char operator() const;
@@ -143,12 +143,10 @@ protected:
 	String& string;
 	// the row in which we are
 	Chunk::Row *read_here;
-	// position in that row's string fragment
-	int offset;
+	// position in text, eof when 0 
+	char *position;
 	// when read_here reaches this row, move to the next chunk
 	Chunk::Row *link_row;
-
-	bool feof;
 
 protected:
 

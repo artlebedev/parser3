@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.20 2001/02/13 10:09:53 paf Exp $
+  $Id: pa_string.C,v 1.21 2001/02/13 10:30:22 paf Exp $
 */
 
 #include <string.h>
@@ -211,10 +211,10 @@ String& String::append(const String_iterator& begin, const String_iterator& end)
 	return z;
 }
 
-// Char_set
+// Char_types
 
-Char_set::Char_set() {
-	memset(bools, 0, sizeof(bools));
+Char_types::Char_types() {
+	memset(types, 0, sizeof(types));
 }
 
 // String_iterator 
@@ -230,28 +230,29 @@ Char_set::Char_set() {
 
 	bool feof;
 
-String_iterator::String_iterator(String& astring) :	
-	string(astring), 
-	offset(0),
-	feof(astring.size()==0),
-	read_here(astring.head.rows),
-	link_row(astring.preallocated_link) {
+String_iterator::String_iterator(String& astring) :	string(astring) {
+	read_here=string.head.rows;
+	position=string.size()==0?0:read_here->item.ptr;
+	link_row=string.preallocated_link;
 }
 
 char String_iterator::operator() {
-	return feof?0:read_here->item.ptr[offset];
+	return position?*position:0;
 }
 
 void String_iterator::skip() {
-	if(feof)
+	if(!position)
 		return;
 
-	if(++offset==read_here->item.size) {
+	if(++position==
+		read_here->item.ptr+
+		read_here->item.size) {
+
+		// next row
 		if(++read_here==string.append_here) {
 			feof=true;
 			return;
 		}
-		offset=0;
 		if(read_here==link_row) {
 			Chunk *chunk=link_row->link;
 			if(!chunk)
@@ -262,22 +263,26 @@ void String_iterator::skip() {
 			read_here=chunk->rows;
 			link_row=chunk->rows[chunk->count];
 		}
+		position=read_here->item.ptr;
 	}
 }
 
 bool String_iterator::skip_to(char c) {
-	while(!feof) {
-		void *pos=memchr(read_here->ptr+offset, c, read_here->size-offset);
-		if(pos) {
-			offset=pos-read_here->ptr;
+	if(!position)
+		return false;
+
+	while(true) {
+		if(char *found=static_cast<char *>(
+			memchr(ptr, c, read_here->size-(position-read_here->ptr)))) {
+			position=found;
 			return true;
 		}
 
+		// next row
 		if(++read_here==string.append_here) {
-			feof=true;
+			position=0;
 			return false;
 		}
-		offset=0;
 		if(read_here==link_row) {
 			Chunk *chunk=link_row->link;
 			if(!chunk)
@@ -288,13 +293,35 @@ bool String_iterator::skip_to(char c) {
 			read_here=chunk->rows;
 			link_row=chunk->rows[chunk->count];
 		}
+		position=read_here->item.ptr;
 	}
-	return false;
 }
 
 int String_iterator::skip_to(Char_type& types) {
-	for(; !feof; skip())
-		if(char type=types.get(operator()))
-			return type;
-	return 0;
+	if(!position)
+		return false;
+
+	while(true) {
+		int countdown=read_here->size-(position-read_here->ptr)));
+		for(; countdown--; position++)
+			if(int type=types.get(*position))
+				return type;
+
+		// next row
+		if(++read_here==string.append_here) {
+			position=0;
+			return 0;
+		}
+		if(read_here==link_row) {
+			Chunk *chunk=link_row->link;
+			if(!chunk)
+				string.pool.exception().raise(
+					"String_iterator::skip_to(Char_type) missed "
+					"read_here==string.append_here check");
+
+			read_here=chunk->rows;
+			link_row=chunk->rows[chunk->count];
+		}
+		position=read_here->item.ptr;
+	}
 }
