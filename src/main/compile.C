@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.30 2001/03/13 16:38:23 paf Exp $
+	$Id: compile.C,v 1.31 2001/03/18 11:37:51 paf Exp $
 */
 
 #include "pa_request.h"
@@ -33,12 +33,12 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 		cclass=NEW VClass(pool());
 		// defaulting base. may change with @BASE
 		if(!base_class)
-			base_class=&root_class;
+			base_class=&ROOT;
 		cclass->set_base(*base_class);
 		classes().put(*name, cclass);
 		cclass->set_name(*name);
 	} else
-		cclass=&root_class; // until changed with @CLASS would consider operators loading
+		cclass=&ROOT; // until changed with @CLASS would consider operators loading
 	pc.cclass=cclass;
 
 	pc.source=source;

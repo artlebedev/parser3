@@ -307,6 +307,10 @@ SOURCE=..\types\pa_vrequest.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vresponse.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vstateless_class.C
 # End Source File
 # Begin Source File
@@ -363,6 +367,14 @@ SOURCE=..\classes\_int.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\classes\_request.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\_response.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\_root.h
 # End Source File
 # Begin Source File
@@ -392,6 +404,10 @@ SOURCE=..\classes\int.C
 # Begin Source File
 
 SOURCE=..\classes\request.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\response.C
 # End Source File
 # Begin Source File
 

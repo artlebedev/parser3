@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.7 2001/03/16 12:30:23 paf Exp $
+	$Id: pa_globals.C,v 1.8 2001/03/18 11:37:52 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -14,8 +14,12 @@
 #include "_form.h"
 #include "_env.h"
 #include "_request.h"
+#include "_response.h"
 
 Service_funcs service_funcs;
+
+String *content_type_name;
+String *body_name;
 
 String *exception_method_name;
 
@@ -31,6 +35,7 @@ String *env_class_name;
 String *table_class_name;
 String *form_class_name;
 String *request_class_name;
+String *response_class_name;
 
 String *result_var_name;
 
@@ -78,6 +83,9 @@ void globals_init(Pool& pool) {
 	#define LOCAL_STRING(name, value)  String name(pool); name.APPEND_CONST(value)
 
 	// names
+	NEW_STRING(content_type_name, CONTENT_TYPE_NAME);
+	NEW_STRING(body_name, BODY_NAME);
+
 	NEW_STRING(exception_method_name, EXCEPTION_METHOD_NAME);
 
 	NEW_STRING(unnamed_name, UNNAMED_NAME);
@@ -92,6 +100,7 @@ void globals_init(Pool& pool) {
 	NEW_STRING(env_class_name, ENV_CLASS_NAME);	
 	NEW_STRING(form_class_name, FORM_CLASS_NAME);	
 	NEW_STRING(request_class_name, REQUEST_CLASS_NAME);	
+	NEW_STRING(response_class_name, RESPONSE_CLASS_NAME);
 
 	NEW_STRING(result_var_name, RESULT_VAR_NAME);
 
@@ -124,4 +133,5 @@ void globals_init(Pool& pool) {
 	initialize_env_base_class(pool, *(env_base_class=new(pool) VStateless_class(pool)));  env_base_class->set_name(*env_class_name);  env_base_class->freeze();
 	initialize_form_base_class(pool, *(form_base_class=new(pool) VStateless_class(pool)));  form_base_class->set_name(*form_class_name);  form_base_class->freeze();
 	initialize_request_base_class(pool, *(request_base_class=new(pool) VStateless_class(pool)));  request_base_class->set_name(*request_class_name);  request_base_class->freeze();
+	initialize_response_base_class(pool, *(response_base_class=new(pool) VStateless_class(pool)));  response_base_class->set_name(*response_class_name);  response_base_class->freeze();
 }

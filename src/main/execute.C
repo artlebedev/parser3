@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.113 2001/03/16 12:46:35 paf Exp $
+	$Id: execute.C,v 1.114 2001/03/18 11:37:52 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -343,11 +343,12 @@ void Request::execute(const Array& ops) {
 						wcontext->constructing() && // constructing?
 						wcontext->somebody_entered_some_class()) { // ^class:method[..]?
 						// yes, this is a constructor call
+						// some stateless_object derivates with constructors
 						if(called_class->name()==TABLE_CLASS_NAME)
 							self=NEW VTable(pool());
-						else if(called_class->name()==ENV_CLASS_NAME)
+						else /*if(called_class->name()==ENV_CLASS_NAME)
 							self=NEW VEnv(pool());
-						else
+						else */ // stateful object
 							self=NEW VObject(pool(), *called_class);
 						frame->write(*self, 
 							String::Untaint_lang::NO  // not used, always an object, not string
@@ -693,7 +694,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 	return *result;
 }
 
-char *Request::execute_method(Value& aself, const Method& method, bool return_cstr) {
+const String *Request::execute_method(Value& aself, const Method& method, bool return_cstr) {
 	PUSH(self);  
 	PUSH(root);  
 	PUSH(rcontext);  
@@ -707,9 +708,9 @@ char *Request::execute_method(Value& aself, const Method& method, bool return_cs
 	execute(*method.parser_code);
 	
 	// result
-	char *result;
+	const String *result;
 	if(return_cstr)
-		result=wcontext->get_string()->cstr(); // chars
+		result=&wcontext->as_string();
 	else
 		result=0; // ignore result
 	
@@ -722,7 +723,7 @@ char *Request::execute_method(Value& aself, const Method& method, bool return_cs
 	return result;
 }
 
-char *Request::execute_method(Value& aself, 
+const String *Request::execute_method(Value& aself, 
 							  const String& method_name, bool return_cstr) {
 	if(Value *value=aself.get_element(method_name))
 		if(Junction *junction=value->get_junction())

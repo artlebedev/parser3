@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.40 2001/03/16 12:30:24 paf Exp $
+	$Id: pa_request.C,v 1.41 2001/03/18 11:37:52 paf Exp $
 */
 
 #include <string.h>
@@ -27,10 +27,11 @@ Request::Request(Pool& apool,
 				 Info& ainfo,
 				 String::Untaint_lang alang) : Pooled(apool),
 	stack(apool),
-	root_class(apool),
-	env_class(apool),
-	form_class(apool),
-	request_class(apool, *this),
+	ROOT(apool),
+	env(apool),
+	form(apool),
+	request(apool, *this),
+	response(apool),
 	fclasses(apool),
 	flang(alang),
 	info(ainfo)
@@ -38,24 +39,27 @@ Request::Request(Pool& apool,
 	// root superclass, 
 	//   parent of all classes, 
 	//   operators holder
-	initialize_root_class(pool(), root_class);
-	classes().put(*root_class_name, &root_class);
+	initialize_root_class(pool(), ROOT);
+	classes().put(*root_class_name, &ROOT);
 	// table class
 	classes().put(*table_class_name, table_class);	
 //	table_class->set_name(*table_class_name);
 
 	// env class
-	classes().put(*env_class_name, &env_class);
+	classes().put(*env_class_name, &env);
 	// form class
-	classes().put(*form_class_name, &form_class);	
+	classes().put(*form_class_name, &form);	
 	// request class
-	classes().put(*request_class_name, &request_class);	
+	classes().put(*request_class_name, &request);	
+	// response class
+	classes().put(*response_class_name, &response);	
 }
 
-char *Request::core(const char *sys_auto_path1,
-					const char *sys_auto_path2) {
-	char *result;
+void Request::core(Exception& system_exception,
+				   const char *sys_auto_path1,
+				   const char *sys_auto_path2) {
 	VStateless_class *main_class=0;
+	bool need_rethrow=false;  Exception rethrow_me;
 	TRY {
 		char *auto_filespec=(char *)malloc(MAX_STRING);
 		
@@ -93,7 +97,9 @@ char *Request::core(const char *sys_auto_path1,
 		int value=element?(size_t)element->get_double():0;
 		int post_max_size=value?value:10*0x400*400;
 
-		form_class.fill_fields(*this, post_max_size);
+		//response.fields().put(*content_type_name, TODO);
+
+		form.fill_fields(*this, post_max_size);
 
 		// TODO: load site auto.p files, all assigned bases from upper dir
 		/*char *site_auto_file="Y:\\parser3\\src\\auto.p";
@@ -112,16 +118,19 @@ char *Request::core(const char *sys_auto_path1,
 			main_class_name, main_class);
 
 		// execute @main[]
-		result=execute_method(*main_class, *main_method_name);
-		if(!result)
+		const String *body_string=execute_method(*main_class, *main_method_name);
+		if(!body_string)
 			THROW(0,0,
 			0, 
 			"'"MAIN_METHOD_NAME"' method not found");
+
+		// store 'body' unless response already have one
+		response.fields().put_dont_replace(*body_name, NEW VString(*body_string));
 	} 
 	CATCH(e) {
 		TRY {
 			// we're returning not result, but error explanation
-			result=0;
+			const String *body_string=0;
 			
 			if(main_class) { // we've managed to end up with some main_class
 				// maybe we'd be lucky enough as to report an error
@@ -185,51 +194,70 @@ char *Request::core(const char *sys_auto_path1,
 								code_value=NEW VUnknown(pool());
 							frame.store_param(code_name, code_value);
 
-							result=execute_method(frame, *method);
+							{
+								Temp_lang temp_lang(*this, 
+									String::Untaint_lang::HTML_TYPO);
+								body_string=execute_method(frame, *method);
+							}
 						}
 			}
 			
-			// couldn't report an error beautifully, doing that ugly
-			if(!result) {
-				result=(char *)malloc(MAX_STRING);
-				result[0]=0;
+			if(!body_string) {  // couldn't report an error beautifully?
+				// doing that ugly
+
+				// assign content-type
+				String &content_type_value=*NEW String(pool());
+				content_type_value.APPEND_CONST("text/plain");
+				response.fields().put(*content_type_name, 
+					NEW VString(content_type_value));
+
+				// make up result: $origin $source $comment $type $code
+				char *buf=(char *)malloc(MAX_STRING);
 				size_t printed=0;
 				const String *problem_source=e.problem_source();
 				if(problem_source) {
 #ifndef NO_STRING_ORIGIN
 					const Origin& origin=problem_source->origin();
 					if(origin.file)
-						printed+=snprintf(result+printed, MAX_STRING-printed, "%s(%d): ", 
+						printed+=snprintf(buf+printed, MAX_STRING-printed, "%s(%d): ", 
 						origin.file, 1+origin.line);
 #endif
-					printed+=snprintf(result+printed, MAX_STRING-printed, "'%s' ", 
+					printed+=snprintf(buf+printed, MAX_STRING-printed, "'%s' ", 
 						problem_source->cstr());
 				}
-				printed+=snprintf(result+printed, MAX_STRING-printed, "%s", 
+				printed+=snprintf(buf+printed, MAX_STRING-printed, "%s", 
 					e.comment());
 				const String *type=e.type();
 				if(type) {
-					printed+=snprintf(result+printed, MAX_STRING-printed, "  type: %s", 
+					printed+=snprintf(buf+printed, MAX_STRING-printed, "  type: %s", 
 						type->cstr());
 					const String *code=e.code();
 					if(code)
-						printed+=snprintf(result+printed, MAX_STRING-printed, ", code: %s", 
+						printed+=snprintf(buf+printed, MAX_STRING-printed, ", code: %s", 
 						code->cstr());
 				}
+				String *error_string=NEW String(pool()); error_string->APPEND_CONST(buf);
+				body_string=error_string;
 			}
+
+			// store 'body' overwriting any response already had
+			response.fields().put(*body_name, NEW VString(*body_string));
 		}
 		CATCH(e) {
-			// exception in exception handler occured
-			// probably totally out of memory
-			// can't say anything about such sad story
-			// would just return 0
-			result=0;
+			// exception in request exception handler
+			// remember to rethrow it
+			rethrow_me=e;  need_rethrow=true; 
 		}
 		END_CATCH
 	}
-	END_CATCH
+	END_CATCH // do not use pool() after this point - no exception handler set
+	          // any throw() would try to use zero exception() pointer 
 
-	return result;
+	if(need_rethrow) // there were an exception set for us to rethrow?
+		system_exception._throw(rethrow_me.type(), rethrow_me.code(),
+			rethrow_me.problem_source(),
+			rethrow_me.comment());
+
 }
 
 VStateless_class *Request::use_file(

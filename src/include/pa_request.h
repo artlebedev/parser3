@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.56 2001/03/16 12:30:22 paf Exp $
+	$Id: pa_request.h,v 1.57 2001/03/18 11:37:51 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -19,6 +19,7 @@
 #include "pa_venv.h"
 #include "pa_vform.h"
 #include "pa_vrequest.h"
+#include "pa_vresponse.h"
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \
@@ -63,7 +64,7 @@ public:
 	Hash& classes() { return fclasses; }
 
 	// core request processing
-	char *core(
+	void core(Exception& system_exception,
 		const char *sys_auto_path1,
 		const char *sys_auto_path2);
 
@@ -118,13 +119,15 @@ public:
 	Info& info;
 
 	// default base
-	VClass root_class;
+	VClass ROOT;
 	// $env:fields here
-	VEnv env_class;
+	VEnv env;
 	// $form:elements here
-	VForm form_class;
+	VForm form;
 	// $request:elements here
-	VRequest request_class;
+	VRequest request;
+	// $response:
+	VResponse response;
 
 	// contexts
 	Value *self, *root, *rcontext;
@@ -144,8 +147,10 @@ private: // compile.C
 
 private: // execute.C
 
-	char *execute_method(Value& aself, const Method& method, bool return_cstr=true);
-	char *execute_method(Value& aself, const String& method_name, bool return_cstr=true);
+	const String *execute_method(Value& aself, const Method& method, 
+		bool return_cstr=true);
+	const String *execute_method(Value& aself, const String& method_name, 
+		bool return_cstr=true);
 
 	Value *get_element();
 

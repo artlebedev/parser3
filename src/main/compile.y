@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.103 2001/03/16 09:52:59 paf Exp $
+	$Id: compile.y,v 1.104 2001/03/18 11:37:52 paf Exp $
 */
 
 /*
@@ -130,7 +130,7 @@ control_method: '@' STRING '\n'
 		YYERROR;
 	}
 	if(command==CLASS_NAME) {
-		if(PC->cclass!=&PC->request->root_class) { // already changed from default?
+		if(PC->cclass!=&PC->request->ROOT) { // already changed from default?
 			strcpy(PC->error, "class already have a name '");
 			strncat(PC->error, PC->cclass->name().cstr(), 100);
 			strcat(PC->error, "'");
@@ -143,7 +143,7 @@ control_method: '@' STRING '\n'
 			PC->cclass=NEW VClass(POOL);
 			PC->cclass->set_name(*name);
 			// defaulting base. may change with @BASE
-			PC->cclass->set_base(PC->request->root_class);
+			PC->cclass->set_base(PC->request->ROOT);
 			// append to request's classes
 			PC->request->classes().put(*name, PC->cclass);
 		} else {
@@ -158,7 +158,7 @@ control_method: '@' STRING '\n'
 				PC->request->use_file(file.cstr());
 			}
 		} else if(command==BASE_NAME) {
-			if(PC->cclass->base()!=&PC->request->root_class) { // already changed from default?
+			if(PC->cclass->base()!=&PC->request->ROOT) { // already changed from default?
 				strcpy(PC->error, "class already have a base '");
 				strncat(PC->error, PC->cclass->base()->name().cstr(), 100);
 				strcat(PC->error, "'");

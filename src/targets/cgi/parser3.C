@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.15 2001/03/16 12:30:25 paf Exp $
+	$Id: parser3.C,v 1.16 2001/03/18 11:37:53 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -96,7 +96,6 @@ int main(int argc, char *argv[]) {
 
 	const char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
 
-	char *result;  char error[MAX_STRING];  error[0]=0;
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
 #ifdef WIN32
@@ -158,48 +157,63 @@ int main(int argc, char *argv[]) {
 		strcat(sys_auto_path2, PATH_DELIMITER_STRING);
 		
 		// process the request
-		result=request.core(
+		request.core(pool.exception(),
 			sys_auto_path1, 
 			sys_auto_path2);
-		// set error, will be reported in case result==0
-		strcpy(error, "exception occured in request exception handler");
 
-		// must be last in PTRY{}PCATCH
-#ifdef WIN32
-#	if _MSC_VER
-		SetUnhandledExceptionFilter(0);
-#	endif
-#endif
-	} PCATCH(e) { // global problem @globals fill @Request create @prepare to .core()
-		result=0;
-		strcpy(error, e.comment());
-	}
-	PEND_CATCH
+		// extract request.response body
+		Value *body_value=static_cast<Value *>(
+			request.response.fields().get(*body_name));
+		const char *body=body_value?
+			body_value->as_string().cstr():"no body";// TODO: IMAGE&FILE
 
-	// write out the result	
-	if(cgi) {
-		if(result) {
-			const char *content_type="text/html";
+		// OK. write out the result
+		if(cgi) {
+			// content-type:
+			Value *content_type_value=static_cast<Value *>(
+				request.response.fields().get(*content_type_name));
+			const char *content_type=content_type_value?
+				content_type_value->as_string().cstr():"text/html";
+
+			// header
 			printf(
 				"Content-type: %s\n"
 				"Content-length: %d\n"
 				"\n", 
 				content_type,
-				strlen(result));
-			stdout_write(result);
-		} else {
+				strlen(body));
+		}
+		// body
+		stdout_write(body);
+
+			// must be last in PTRY{}PCATCH
+#ifdef WIN32
+#	if _MSC_VER
+		SetUnhandledExceptionFilter(0);
+#	endif
+		// successful finish
+		return 0;
+#endif
+	} PCATCH(e) { // global problem 
+		// @globals fill 
+		// @Request create 
+		// @prepare to .core()
+		// @request.core when reporting request exception
+		// @write result
+		const char *error=e.comment();
+
+		if(cgi) {
 			printf(
 				"Content-type: text/plain\n"
 				"Content-length: %d\n"
 				"\n", 
 				strlen(error));
 			stdout_write(error);
-		}
-	} else
-		if(result)
-			printf("%s", result);
-		else
+		} else
 			fputs(error, stderr);
 
-	return 0;
+		// unsuccessful finish
+		return 1;
+	}
+	PEND_CATCH
 }

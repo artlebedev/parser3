@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.17 2001/03/16 12:46:36 paf Exp $
+	$Id: pa_value.h,v 1.18 2001/03/18 11:37:54 paf Exp $
 */
 
 /*
@@ -81,6 +81,7 @@ public: // Value
 	// form: CLASS,BASE,method,field
 	// string: $CLASS,$BASE,$method
 	// request: CLASS,BASE,method,fields
+	// response: CLASS,BASE,method,fields
 	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
 	
 	// hash: (key)=value
@@ -88,6 +89,7 @@ public: // Value
 	// object_instance: (field)=value
 	// codeframe: wcontext_transparent
 	// methodframe: my or self_transparent
+	// response: (attribute)=value
 	virtual void put_element(const String& name, Value *value) { bark("(%s) does not accept elements"); }
 
 	// object_class, object_instance: object_class
@@ -96,6 +98,7 @@ public: // Value
 	// class: this
 	// env: this
 	// request: this
+	// hash: this
 	virtual VStateless_class *get_class() { return 0; }
 
 	// valiased: this

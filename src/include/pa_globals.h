@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.7 2001/03/16 12:30:22 paf Exp $
+	$Id: pa_globals.h,v 1.8 2001/03/18 11:37:50 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -13,6 +13,9 @@
 #include "pa_hash.h"
 
 #define AUTO_FILE_NAME "auto.p"
+
+#define CONTENT_TYPE_NAME "content-type"
+#define BODY_NAME "body"
 
 #define EXCEPTION_METHOD_NAME "exception"
 
@@ -27,6 +30,7 @@
 #define ENV_CLASS_NAME "env"
 #define FORM_CLASS_NAME "form"
 #define REQUEST_CLASS_NAME "request"
+#define RESPONSE_CLASS_NAME "response"
 
 #define LIMITS_NAME "limits"
 #define POST_MAX_SIZE_NAME "post_max_size"
@@ -48,6 +52,9 @@ extern short hex_value[0x100];
 extern Service_funcs service_funcs;
 
 // global strings
+extern String *content_type_name;
+extern String *body_name;
+
 extern String *exception_method_name;
 
 extern String *unnamed_name;
@@ -62,6 +69,7 @@ extern String *env_class_name;
 extern String *table_class_name;
 extern String *form_class_name;
 extern String *request_class_name;
+extern String *response_class_name;
 
 extern String *limits_name;
 extern String *post_max_size_name;

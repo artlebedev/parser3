@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.24 2001/03/16 09:26:42 paf Exp $
+	$Id: pa_hash.h,v 1.25 2001/03/18 11:37:50 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -20,6 +20,8 @@ public:
 
 	typedef String Key;
 	typedef void Value;
+
+	typedef void (*Foreach_func)(void *info, const Key& key, Value *value);
 
 public:
 
@@ -52,6 +54,8 @@ public:
 	const String *get_string(const Key& key) { return static_cast<String *>(get(key)); }
 
 	int size() { return used; }
+
+	void foreach(Foreach_func func, void *info);
 
 protected:
 

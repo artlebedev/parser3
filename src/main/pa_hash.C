@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.20 2001/03/11 08:16:35 paf Exp $
+	$Id: pa_hash.C,v 1.21 2001/03/18 11:37:52 paf Exp $
 */
 
 /*
@@ -148,4 +148,11 @@ void Hash::merge_dont_replace(const Hash& src) {  SYNCHRONIZED(thread_safe);
 		for(Pair *pair=src.refs[i]; pair; pair=pair->link)
 			put_dont_replace(pair->key, pair->value);
 	// MAY:optimize this.allocated==src.allocated case
+}
+
+void Hash::foreach(Foreach_func func, void *info) {
+	Pair **ref=refs;
+	for(int index=0; index<allocated; index++)
+		for(Pair *pair=*ref++; pair; pair=pair->link)
+			(*func)(info, pair->key, pair->value);
 }
