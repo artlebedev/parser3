@@ -408,7 +408,8 @@ sys/file.h \
 sys/locking.h \
 sys/types.h \
 sys/select.h \
-sys/resource.h
+sys/resource.h \
+winsock.h
 )
 
 dnl Checks for libraries.
