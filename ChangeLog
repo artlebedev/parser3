@@ -1,3 +1,378 @@
+2002-11-26  paf
+	* operators.txt 1.101:
+	* src/main/pa_common.C 1.130:
+	* www/htdocs/index.html 1.182:
+		http:// response status!=200 made exception: http.status with
+		source=bad status#
+
+	* src/main/pa_common.C 1.131:
+	* www/htdocs/.htaccess 1.11:
+		utf8 prefix ignored @read text
+
+	* src/main/pa_request.C 1.241:
+		fixed lang in reponse header
+
+2002-11-25  paf
+	* operators.txt 1.99:
+	* src/main/pa_common.C 1.128:
+	* www/htdocs/index.html 1.181:
+		http fields now UPPERCASE
+		
+		$file[^file::load[http://there]]
+		$file.SERVER
+
+	* configure.in 1.49:
+	* src/classes/image.C 1.83:
+	* src/include/pa_config_auto.h.in 1.33:
+	* src/include/pa_config_includes.h 1.22:
+	* src/main/Makefile.am 1.35:
+	* src/main/Makefile.in 1.46:
+	* src/main/pa_common.C 1.129:
+	* src/main/pa_globals.C 1.142:
+		http://
+		and image const void related probs fixed
+
+	* operators.txt 1.98:
+	* src/classes/file.C 1.104:
+	* src/classes/table.C 1.168:
+	* src/classes/xdoc.C 1.105:
+	* src/include/pa_common.h 1.85:
+	* src/include/pa_globals.h 1.97:
+	* src/main/pa_common.C 1.126:
+	* src/main/pa_globals.C 1.141:
+	* src/main/pa_request.C 1.239:
+	* src/types/pa_vfile.C 1.35:
+	* src/types/pa_vfile.h 1.51:
+	* www/htdocs/index.html 1.179:
+		table/xdoc/file::load now understand http:// prefix and additional params, sample:
+		$rates[^xdoc::load[http://www.cbr.ru/scripts/XML_daily.asp?date_req=02/03/2002;
+		   $.USER-AGENT[parser3]
+		]]
+
+	* src/classes/file.C 1.105:
+	* src/classes/image.C 1.82:
+	* src/classes/xdoc.C 1.106:
+	* src/include/pa_common.h 1.86:
+	* src/main/pa_common.C 1.127:
+	* src/main/pa_request.C 1.240:
+	* www/htdocs/index.html 1.180:
+		checked http options [invalid onces now reported]
+		made default
+		user-agent: paf
+
+2002-11-22  paf
+	* operators.txt 1.97:
+	* src/classes/image.C 1.80:
+	* src/include/pa_globals.h 1.96:
+	* src/main/execute.C 1.294:
+	* src/main/pa_globals.C 1.140:
+	* src/types/pa_vimage.C 1.21:
+	* src/types/pa_vimage.h 1.33:
+	* www/htdocs/.htaccess 1.10:
+	* www/htdocs/index.html 1.178:
+		$image.exif support
+		$image.exif.DateTime & co
+
+2002-11-21  paf
+	* src/classes/image.C 1.78:
+		jpeg size measure fixed: were badly skipping EXIF information [
+		were big block and it's size were considered negative :(]
+
+	* operators.txt 1.96:
+	* src/classes/image.C 1.77:
+	* src/include/pa_common.h 1.83:
+	* src/main/pa_common.C 1.123:
+	* src/types/pa_vmail.C 1.34:
+	* www/htdocs/index.html 1.177:
+		image.measure internals rewritten. no there's reader.seek, and all's ready for EXIF extraction
+		[now we fail to measure files with EXIF info]
+
+	* src/main/pa_common.C 1.122:
+		O_TRUNCATE killed, ftruncate  used instead:
+		O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
+
+	* src/main/pa_exec.C 1.44:
+	* src/main/untaint.C 1.110:
+		cstr(UL_UNSPECIFIED) [not _PASS_APPENDED)
+
+2002-11-20  paf
+	* src/main/pa_exec.C 1.41:
+		pa_exec: data written only if size>0
+
+	* src/targets/cgi/parser3.C 1.205:
+		logging @signal += query_string
+
+	* src/include/pa_config_fixed.h 1.52:
+	* src/main/pa_common.C 1.121:
+	* src/main/pa_exec.C 1.40:
+	* src/targets/cgi/parser3.C 1.200:
+		^file:exec/cgi [pa_exec] pipe read errors now checked
+
+	* src/main/pa_exec.C 1.43:
+		*** empty log message ***
+
+	* operators.txt 1.95:
+	* src/classes/file.C 1.103:
+		^file::exec/cgi[file;$.stdin[] << disable HTTP-POST repassing
+
+	* src/include/pa_request.h 1.158:
+	* src/main/execute.C 1.293:
+	* src/main/pa_request.C 1.238:
+	* src/targets/cgi/parser3.C 1.201:
+		SIGUSR1 >> writes to error_log uri of currently processed document
+		SIGPIPE >> interrupts request processing [exception = DB rollback]
+
+	* src/targets/cgi/parser3.C 1.203:
+		SIGNALS overriden @ main top
+
+	* configure.in 1.48:
+	* src/include/pa_config_auto.h.in 1.32:
+	* src/include/pa_config_includes.h 1.21:
+	* src/main/pa_exec.C 1.42:
+	* src/targets/cgi/parser3.C 1.204:
+		comment
+
+2002-11-19  paf
+	* src/targets/cgi/parser3.C 1.199:
+		removed #ifdef WIN32 around check of CGI: Illegal call
+
+2002-11-01  paf
+	* src/main/execute.C 1.292:
+		comment
+
+2002-10-31  paf
+	* src/types/pa_vobject.C 1.11:
+	* src/types/pa_vstateless_object.h 1.27:
+		object put replaces static parent if any
+
+	* src/main/execute.C 1.291:
+		found out why, checked that for now.
+		todo: find out a way for that user could do that
+
+	* src/types/pa_vobject.C [global_static_self_fix] 1.9.4.2:
+	* src/types/pa_vstateless_class.C [global_static_self_fix] 1.17.4.2:
+		realized that one can't remember derivates in base class: there's so many of them.
+		also there can be no virtual method calls in static classes
+
+	* src/classes/op.C 1.124:
+	* src/types/pa_value.h 1.107:
+	* src/types/pa_vobject.h 1.36:
+	* www/htdocs/base.p 1.4:
+	* www/htdocs/derived.p 1.22:
+	* www/htdocs/index.html 1.174:
+	* www/htdocs/operators.p 1.11:
+	* www/htdocs/some.p 1.2:
+		^process[$caller.self]{...}
+		now compiles to last derived object part of that 'self'
+
+	* src/classes/form.C [global_static_self_fix] 1.32.4.1:
+	* src/classes/mail.C [global_static_self_fix] 1.80.4.1:
+	* src/classes/op.C [global_static_self_fix] 1.124.2.1:
+	* src/classes/xnode.h [global_static_self_fix] 1.16.4.1:
+	* src/main/execute.C [global_static_self_fix] 1.289.2.1:
+	* src/main/pa_request.C [global_static_self_fix] 1.236.4.1:
+	* src/types/pa_value.h [global_static_self_fix] 1.107.2.1:
+	* src/types/pa_vclass.C [global_static_self_fix] 1.14.4.1:
+	* src/types/pa_vclass.h [global_static_self_fix] 1.37.4.1:
+	* src/types/pa_vcode_frame.h [global_static_self_fix] 1.22.4.1:
+	* src/types/pa_vcookie.C [global_static_self_fix] 1.51.4.1:
+	* src/types/pa_vcookie.h [global_static_self_fix] 1.21.4.1:
+	* src/types/pa_vdate.h [global_static_self_fix] 1.22.4.1:
+	* src/types/pa_venv.h [global_static_self_fix] 1.26.4.1:
+	* src/types/pa_vfile.h [global_static_self_fix] 1.49.4.1:
+	* src/types/pa_vform.C [global_static_self_fix] 1.70.4.1:
+	* src/types/pa_vform.h [global_static_self_fix] 1.43.4.1:
+	* src/types/pa_vhash.h [global_static_self_fix] 1.40.4.1:
+	* src/types/pa_vimage.h [global_static_self_fix] 1.31.4.1:
+	* src/types/pa_vmail.C [global_static_self_fix] 1.32.4.1:
+	* src/types/pa_vmail.h [global_static_self_fix] 1.6.4.1:
+	* src/types/pa_vmath.h [global_static_self_fix] 1.12.4.1:
+	* src/types/pa_vmethod_frame.h [global_static_self_fix] 1.43.4.1:
+	* src/types/pa_vobject.C [global_static_self_fix] 1.9.4.1:
+	* src/types/pa_vobject.h [global_static_self_fix] 1.36.2.1:
+	* src/types/pa_vrequest.C [global_static_self_fix] 1.25.4.1:
+	* src/types/pa_vrequest.h [global_static_self_fix] 1.23.4.1:
+	* src/types/pa_vresponse.C [global_static_self_fix] 1.14.2.1:
+	* src/types/pa_vresponse.h [global_static_self_fix] 1.29.4.1:
+	* src/types/pa_vstateless_class.C [global_static_self_fix] 1.17.4.1:
+	* src/types/pa_vstateless_class.h [global_static_self_fix] 1.40.4.1:
+	* src/types/pa_vstateless_object.h [global_static_self_fix] 1.25.4.1:
+	* src/types/pa_vstatus.C [global_static_self_fix] 1.13.4.1:
+	* src/types/pa_vstatus.h [global_static_self_fix] 1.13.4.1:
+	* src/types/pa_vstring.h [global_static_self_fix] 1.52.4.1:
+	* src/types/pa_vtable.C [global_static_self_fix] 1.19.4.1:
+	* src/types/pa_vtable.h [global_static_self_fix] 1.46.4.1:
+	* src/types/pa_vvoid.h [global_static_self_fix] 1.14.4.1:
+	* src/types/pa_vxdoc.C [global_static_self_fix] 1.21.4.1:
+	* src/types/pa_vxdoc.h [global_static_self_fix] 1.29.4.1:
+	* src/types/pa_vxnode.C [global_static_self_fix] 1.28.4.1:
+	* src/types/pa_vxnode.h [global_static_self_fix] 1.20.4.1:
+	* src/types/pa_wwrapper.h [global_static_self_fix] 1.26.4.1:
+	* www/htdocs/base.p [global_static_self_fix] 1.4.2.1:
+	* www/htdocs/derived.p [global_static_self_fix] 1.22.2.1:
+	* www/htdocs/index.html [global_static_self_fix] 1.174.2.1:
+		static call $self fixed
+
+	* www/htdocs/base.p 1.6:
+	* www/htdocs/derived.p 1.24:
+	* www/htdocs/index.html 1.176:
+		this example creates base object, which is wrong, todo: find
+		out why
+
+	* src/main/compile.tab.C [global_static_self_fix] 1.75.4.1:
+	* src/types/pa_vobject.C [global_static_self_fix] 1.9.4.4:
+		killed $virtual_fields in dynamic, but one can reach derived  
+		static[class] variable from base
+
+	* src/classes/form.C 1.33:
+	* src/classes/mail.C 1.81:
+	* src/classes/op.C 1.125:
+	* src/classes/xnode.h 1.17:
+	* src/main/compile.tab.C 1.76:
+	* src/main/execute.C 1.290:
+	* src/main/pa_request.C 1.237:
+	* src/types/pa_value.h 1.108:
+	* src/types/pa_vclass.C 1.15:
+	* src/types/pa_vclass.h 1.38:
+	* src/types/pa_vcode_frame.h 1.23:
+	* src/types/pa_vcookie.C 1.52:
+	* src/types/pa_vcookie.h 1.22:
+	* src/types/pa_vdate.h 1.23:
+	* src/types/pa_venv.h 1.27:
+	* src/types/pa_vfile.h 1.50:
+	* src/types/pa_vform.C 1.71:
+	* src/types/pa_vform.h 1.44:
+	* src/types/pa_vhash.h 1.41:
+	* src/types/pa_vimage.h 1.32:
+	* src/types/pa_vmail.C 1.33:
+	* src/types/pa_vmail.h 1.7:
+	* src/types/pa_vmath.h 1.13:
+	* src/types/pa_vmethod_frame.h 1.44:
+	* src/types/pa_vobject.C 1.10:
+	* src/types/pa_vobject.h 1.37:
+	* src/types/pa_vrequest.C 1.26:
+	* src/types/pa_vrequest.h 1.24:
+	* src/types/pa_vresponse.C 1.15:
+	* src/types/pa_vresponse.h 1.30:
+	* src/types/pa_vstateless_class.C 1.18:
+	* src/types/pa_vstateless_class.h 1.41:
+	* src/types/pa_vstateless_object.h 1.26:
+	* src/types/pa_vstatus.C 1.14:
+	* src/types/pa_vstatus.h 1.14:
+	* src/types/pa_vstring.h 1.53:
+	* src/types/pa_vtable.C 1.20:
+	* src/types/pa_vtable.h 1.47:
+	* src/types/pa_vvoid.h 1.15:
+	* src/types/pa_vxdoc.C 1.22:
+	* src/types/pa_vxdoc.h 1.30:
+	* src/types/pa_vxnode.C 1.29:
+	* src/types/pa_vxnode.h 1.21:
+	* src/types/pa_wwrapper.h 1.27:
+	* www/htdocs/base.p 1.5:
+	* www/htdocs/derived.p 1.23:
+	* www/htdocs/index.html 1.175:
+		static fix merged
+
+	* src/classes/op.C [global_static_self_fix] 1.124.2.2:
+	* src/types/pa_value.h [global_static_self_fix] 1.107.2.2:
+	* src/types/pa_vmethod_frame.h [global_static_self_fix] 1.43.4.2:
+	* src/types/pa_vobject.C [global_static_self_fix] 1.9.4.3:
+	* src/types/pa_vobject.h [global_static_self_fix] 1.36.2.2:
+	* src/types/pa_vstateless_class.C [global_static_self_fix] 1.17.4.3:
+	* src/types/pa_vstateless_class.h [global_static_self_fix] 1.40.4.2:
+		fixed statics, left $virtual_fields in dynamic
+
+	* src/main/execute.C 1.288:
+		comment
+
+2002-10-30  paf
+	* www/htdocs/derived.p 1.21:
+	* www/htdocs/some.p 1.1:
+		include method overriding tested OK
+
+2002-10-29  paf
+	* src/targets/isapi/parser3isapi.C 1.80:
+		comment on 404 bad status re-passing [iis to blame]
+
+	* src/classes/string.C 1.122:
+		changed string.save to pass current sql connection to cstr
+		thus one can
+		^connect[some server]{
+		     $s[insert into table x (x) values (^taint[sql]{value})]
+		     ^s.save[some.sql]
+		}
+		and he'd get in some.sql file code with properly escaped.
+		[tried in mssql->mysql export->import of binary data]
+
+2002-10-28  paf
+	* www/htdocs/index.html 1.172:
+	* www/htdocs/index.html 1.173:
+		bad email handling test
+
+2002-10-25  paf
+	* src/include/pa_hash.h [hash_insensitive_garbage] 1.57.4.1:
+	* src/main/pa_hash.C [hash_insensitive_garbage] 1.52.4.1:
+	* src/main/pa_request.C [hash_insensitive_garbage] 1.236.2.1:
+	* src/types/pa_vresponse.C [hash_insensitive_garbage] 1.13.2.1:
+		saving for maybe-future
+
+	* src/types/pa_vresponse.C 1.14:
+		case insensitive response user fields get/put
+
+2002-10-23  paf
+	* src/types/pa_vmail.C 1.32:
+	* www/htdocs/index.html 1.171:
+		email whitespace trimBoth-ed
+
+	* operators.txt 1.94:
+	* src/classes/table.C 1.166:
+		^table.hash{code}...
+		^table.hash(expr)...
+
+2002-10-22  paf
+	* src/types/pa_vform.C 1.70:
+	* src/types/pa_vform.h 1.43:
+		removed needless VForm::Append...(...Value)
+
+	* src/main/execute.C 1.287:
+		$.name outside of $name[...]
+		checked
+
+	* src/main/compile.tab.C 1.75:
+	* src/main/compile.y 1.203:
+		lexer changed to fix ^call[]^#HH bug [that situation yelded no
+		EON, which whas wrong]
+
+2002-10-21  paf
+	* operators.txt 1.91:
+	* src/types/pa_vform.C 1.67:
+		$form:image-map
+
+	* operators.txt 1.92:
+	* src/types/pa_vform.C 1.68:
+		$form:nameless = "?value&...", "...&value&...", "...&value"
+
+	* operators.txt 1.93:
+	* src/types/pa_vform.C 1.69:
+	* src/types/pa_vform.h 1.42:
+		$form:qtail
+		$form:imap.x/y
+
+	* operators.txt 1.90:
+	* src/classes/file.C 1.102:
+	* www/htdocs/index.html 1.170:
+		/some/page.html: ^file:fullpath[a.gif] => /some/a.gif
+
+2002-10-17  paf
+	* src/classes/op.C 1.123:
+		exception handling fixed [were bad with contexts]
+
+	* src/main/compile.tab.C 1.74:
+	* src/main/compile.y 1.202:
+		operators precedence changed a little:
+		logical not and bitwise negation precedence made highest,
+		<< and >> bitshits precedence made equal [were << higher than >>]
+
 2002-10-16  paf
 	* src/classes/op.C 1.122:
 	* src/include/pa_request.h 1.157:
@@ -9,6 +384,9 @@
 	* www/htdocs/index.html 1.168:
 		Request::self considered equal to VMethodFrame::self, and removed,
 		Request::get_self() mapped to VMethodFrame.self()
+
+	* www/htdocs/index.html 1.169:
+		bad compile to system class test
 
 	* src/classes/op.C 1.121:
 	* src/main/pa_request.C 1.235:
@@ -1560,7 +1938,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2002/10/16 09:02:21 $
+		$Date: 2002/11/27 07:59:15 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -8875,7 +9253,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.17 2002/10/16 09:02:21 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.18 2002/11/27 07:59:15 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -8918,7 +9296,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.17 2002/10/16 09:02:21 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.18 2002/11/27 07:59:15 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -14364,7 +14742,7 @@
 	* src/targets/parser.C 1.3:
 	* src/targets/parser.dsp 1.2:
 	* src/targets/parser.dsp 1.3:
-		$Id: ChangeLog,v 1.17 2002/10/16 09:02:21 paf Exp $ check
+		$Id: ChangeLog,v 1.18 2002/11/27 07:59:15 paf Exp $ check
 
 	* src/targets/parser.C 1.2:
 		$id$ check
