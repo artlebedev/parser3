@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.12 2001/11/19 12:17:06 paf Exp $
+	$Id: mod_parser3.C,v 1.13 2001/11/26 12:14:09 paf Exp $
 */
 
 #include "httpd.h"
@@ -484,6 +484,7 @@ static void parser_server_init(server_rec *s, pool *p) {
  * structure.
  */
 static void *parser_create_dir_config(pool *p, char *dirspec) {
+	//_asm int 3;
 	/*
      * Allocate the space for our record from the pool supplied.
      */
@@ -493,9 +494,6 @@ static void *parser_create_dir_config(pool *p, char *dirspec) {
      * Now fill in the defaults.  If there are any `parent' configuration
      * records, they'll get merged as part of a separate callback.
      */
-    cfg->parser_root_config_filespec = 0;
-	cfg->parser_site_config_filespec = 0;
-	cfg->parser_status_allowed=false;
 
     return (void *) cfg;
 }
@@ -514,25 +512,31 @@ static void *parser_create_dir_config(pool *p, char *dirspec) {
  *
  * The return value is a pointer to the created module-specific structure
  * containing the merged values.
+
+   20011126 paf: noticed, that this is called even on virtual root merge with something "parent",
+   while thought that that is part of merge_server...
+
  */
 static void *parser_merge_dir_config(pool *p, void *parent_conf,
                                       void *newloc_conf) {
+	//_asm int 3;
     Parser_module_config *merged_config = 
 		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
     Parser_module_config *pconf = (Parser_module_config *) parent_conf;
     Parser_module_config *nconf = (Parser_module_config *) newloc_conf;
 
-	// always from parent
-    merged_config->parser_root_config_filespec = ap_pstrdup(p, pconf->parser_root_config_filespec);
+    merged_config->parser_root_config_filespec = ap_pstrdup(p, nconf->parser_root_config_filespec?
+		nconf->parser_root_config_filespec:pconf->parser_root_config_filespec);
+    merged_config->parser_site_config_filespec = ap_pstrdup(p, nconf->parser_site_config_filespec?
+		nconf->parser_site_config_filespec:pconf->parser_site_config_filespec);
 	merged_config->parser_status_allowed=
 		pconf->parser_status_allowed ||
 		nconf->parser_status_allowed;
-    /*
+
+	/*
      * Some things get copied directly from the more-specific record, rather
      * than getting merged.
      */
-    merged_config->parser_site_config_filespec = ap_pstrdup(p, nconf->parser_site_config_filespec?
-		nconf->parser_site_config_filespec:pconf->parser_site_config_filespec);
 
     return (void *) merged_config;
 }
@@ -545,16 +549,13 @@ static void *parser_merge_dir_config(pool *p, void *parent_conf,
  * structure.
  */
 static void *parser_create_server_config(pool *p, server_rec *s) {
+	//_asm int 3;
     /*
-     * As with the parser_create_dir_config() reoutine, we allocate and fill
+     * As with the parser_create_dir_config() routine, we allocate and fill
      * in an empty record.
      */
     Parser_module_config *cfg=
 		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
-
-    cfg->parser_root_config_filespec = 0;
-	cfg->parser_site_config_filespec = 0;
-	cfg->parser_status_allowed=false;
 
     return (void *) cfg;
 }
@@ -575,6 +576,7 @@ static void *parser_create_server_config(pool *p, server_rec *s) {
 static void *parser_merge_server_config(pool *p, void *server1_conf,
                                          void *server2_conf)
 {
+	//_asm int 3;
 
     Parser_module_config *merged_config = 
 		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
