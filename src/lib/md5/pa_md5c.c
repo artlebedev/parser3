@@ -107,18 +107,11 @@
  * ----------------------------------------------------------------------------
  */
 
-static const char* IDENT_MD5_C="$Date: 2003/04/15 07:17:42 $";
+static const char* IDENT_MD5_C="$Date: 2003/04/25 10:54:54 $";
 
 #include <string.h>
 
-#include "PA_md5.h"
-//#include "ap.h"
-//#ifdef CHARSET_EBCDIC
-//#include "ebcdic.h"
-//#endif /*CHARSET_EBCDIC*/
-//#if HAVE_CRYPT_H
-//#include <crypt.h>
-//#endif
+#include "pa_md5.h"
 
 #define PA_cpystrn(strDest, strSource, count) strncpy(strDest, strSource, count)
 

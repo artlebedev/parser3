@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/04/14 13:58:16 $";
+static const char* IDENT_TABLE_C="$Date: 2003/04/25 10:54:54 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -77,7 +77,7 @@ static Table::Action_options get_action_options(Request& r,
 
 	return result;
 }
-static check_option_param(bool options_defined, 
+static void check_option_param(bool options_defined, 
 			  const String& method_name, MethodParams *params, 
 			  int next_param_index,
 			  const char *msg) {
