@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.85 2001/12/15 21:37:43 paf Exp $
+	$Id: untaint.C,v 1.86 2001/12/17 18:03:59 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -50,7 +50,7 @@ inline bool need_file_encode(unsigned char c){
 		return false;
 
     return !strchr(
-		"_./()-"
+		" _./()-"
 #ifdef WIN32
 		":\\~"
 #endif
