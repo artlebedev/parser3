@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcode_frame.h,v 1.9 2001/10/13 15:59:43 parser Exp $
+	$Id: pa_vcode_frame.h,v 1.10 2001/10/13 16:02:13 parser Exp $
 */
 
 #ifndef PA_VCODE_FRAME_H
@@ -21,7 +21,11 @@ public: // Value
 	/// VCodeFrame: twice transparent
 	Value *get_element(const String& name) { return wcontext.get_element(name); }
 	/// VCodeFrame: twice transparent
-	void put_element(const String& name, Value *value){ wcontext.put_element(name, value); }
+	void put_element(const String& name, Value *value){ 
+		// $hash[^if(1){$.field[]}]
+		// put goes to $hash
+		wcontext.put_element(name, value); 
+	}
 
 public: // WContext
 
@@ -32,7 +36,8 @@ public: // WContext
 
 	/// VCodeFrame: twice transparent
 	virtual void write(Value& value) {
-		// ^method[^if(){$hash}
+		// ^method[^if(1){$hash}]
+		// write goes ^method[here]
 		wcontext.write(value);
 	}
 
