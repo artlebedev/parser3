@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.37 2001/02/24 16:19:06 paf Exp $
+  $Id: compile.y,v 1.38 2001/02/25 08:12:22 paf Exp $
 */
 
 %{
@@ -57,7 +57,7 @@ method: control_method | code_method;
 
 control_method: '@' STRING '\n' 
 				control_strings {
-	String& name=*LA2S($2);
+	String& name=*SLA2S($2);
 	YYSTYPE strings_code=$4;
 	if(strings_code->size()<1*2) {
 		strcpy(PC->error, "@");
@@ -67,7 +67,7 @@ control_method: '@' STRING '\n'
 	}
 	if(name==CLASS_NAME) {
 		if(strings_code->size()==1*2) 
-			PC->vclass->set_name(*LA2S(strings_code));
+			PC->vclass->set_name(*SLA2S(strings_code));
 		else {
 			strcpy(PC->error, "@"CLASS_NAME" must contain sole name");
 			YYERROR;
@@ -75,18 +75,18 @@ control_method: '@' STRING '\n'
 	} else {
 		if(name==USES_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) {
-				String *file=LA2S(strings_code, i);
+				String *file=SLA2S(strings_code, i);
 				file->APPEND_CONST(".p");
 				PC->request->use(file->cstr(), 0);
 			}
 		} else if(name==PARENTS_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) {
-				String& parent_name=*LA2S(strings_code, i);
+				String& parent_name=*SLA2S(strings_code, i);
 				VClass *parent=static_cast<VClass *>(
 					PC->request->classes().get(parent_name));
 				if(!parent) {
 					strcpy(PC->error, parent_name.cstr());
-					strcat(PC->error, ": undefined class");
+					strcat(PC->error, ": undefined class in @"PARENTS_NAME);
 					YYERROR;
 				}
 				PC->vclass->add_parent(*parent);
@@ -105,17 +105,17 @@ maybe_string: empty | STRING;
 
 code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' 
 			maybe_codes {
-	const String *name=LA2S($2);
+	const String *name=SLA2S($2);
 
 	YYSTYPE params_names_code=$3;
 	Array& params_names=*NEW Array(POOL);
 	for(int i=0; i<params_names_code->size(); i+=2)
-		params_names+=LA2S(params_names_code, i);
+		params_names+=SLA2S(params_names_code, i);
 
 	YYSTYPE locals_names_code=$4;
 	Array& locals_names=*NEW Array(POOL);
 	for(int i=0; i<locals_names_code->size(); i+=2)
-		locals_names+=LA2S(locals_names_code, i);
+		locals_names+=SLA2S(locals_names_code, i);
 
 	Method& method=*NEW Method(POOL, *name, params_names, locals_names, *$7);
 	PC->vclass->add_method(*name, method);
@@ -153,7 +153,7 @@ name_without_curly_rdive: name_without_curly_rdive_read | name_without_curly_rdi
 name_without_curly_rdive_read: name_without_curly_rdive_code {
 	$$=N(POOL); 
 	Array *diving_code=$1;
-	String *first_name=LA2S(diving_code);
+	String *first_name=SLA2S(diving_code);
 	if(first_name && *first_name==SELF_NAME) {
 		OP($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
@@ -183,7 +183,7 @@ name_expr_wdive: name_expr_wdive_write | name_expr_wdive_root;
 name_expr_wdive_write: name_expr_dive_code {
 	$$=N(POOL); 
 	Array *diving_code=$1;
-	String *first_name=LA2S(diving_code);
+	String *first_name=SLA2S(diving_code);
 	if(first_name && *first_name==SELF_NAME) {
 		OP($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
@@ -221,7 +221,7 @@ complex_constructor_param_body: codes__excluding_sole_str_literal;
 codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
 
 constructor_two_params_value: STRING ';' constructor_one_param_value {
-	char *operator_or_fmt=LA2S($1)->cstr();
+	char *operator_or_fmt=SLA2S($1)->cstr();
 	$$=N(POOL);
 	P($$, $1); /* stack: ncontext name operator_or_fmt */
 	P($$, $3); /* stack: ncontext name operator_or_fmt expr */
@@ -241,11 +241,25 @@ constructor_two_params_value: STRING ';' constructor_one_param_value {
 
 /* call */
 
-call: '^' name_without_curly_rdive store_params EON { /* ^field.$method{vasya} */
+call: '^' call_name store_params EON { /* ^field.$method{vasya} */
 	$$=$2; /* with_xxx,diving code; stack: context,method_name */
 	OP($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
 	P($$, $3); /* filling method_frame.store_params */
 	OP($$, OP_CALL); /* method_frame=pop; ncontext=pop; call(ncontext,method_frame) */
+};
+
+call_name: name_without_curly_rdive | class_method_name;
+
+class_method_name: STRING ':' name_expr_value {
+	String& name=*SLA2S($1);
+	VClass *vclass=static_cast<VClass *>(PC->request->classes().get(name));
+	if(!vclass) {
+		strcpy(PC->error, name.cstr());
+		strcat(PC->error, ": undefined class in call");
+		YYERROR;
+	}
+	$$=CL(vclass);
+	P($$, $3);
 };
 
 store_params: store_param | store_params store_param { $$=$1; P($$, $2) };
@@ -338,7 +352,7 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 /* basics */
 
 write_str_literal: STRING {
-	if(LA2S($1)->size()) {
+	if(SLA2S($1)->size()) {
 		$$=$1;
 		OP($$, OP_WRITE);
 	} else {
@@ -346,7 +360,7 @@ write_str_literal: STRING {
 		$$=N(POOL);
 	}
 };
-empty_value: /* empty */ { $$=L(NEW VString(POOL)) };
+empty_value: /* empty */ { $$=SL(NEW VString(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%
@@ -690,7 +704,7 @@ break2:
 			PC->string->APPEND(begin, end-begin, PC->file, begin_line/*, start_col*/);
 		}
 		// create STRING value: array of OP_VALUE+vstring
-		*lvalp=L(NEW VString(PC->string));
+		*lvalp=SL(NEW VString(PC->string));
 		// new pieces storage
 		PC->string=NEW String(POOL);
 		// go!
@@ -713,6 +727,6 @@ static void
           YYSTYPE value)
      {
        if(type==STRING)
-         fprintf(file, " \"%s\"", LA2S(value)->cstr());
+         fprintf(file, " \"%s\"", SLA2S(value)->cstr());
      }
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.27 2001/02/24 14:17:08 paf Exp $
+  $Id: pa_value.h,v 1.28 2001/02/25 08:12:21 paf Exp $
 */
 
 /*
@@ -122,15 +122,11 @@ public: // Value
 	// codeframe: wcontext_transparent
 	virtual VClass *get_class() { return 0; }
 
-	// object_class: true when this class is this or derived from 'ancestor'
-	// frame: transparent
-	// wcontext: transparent
-	// codeframe: wcontext_transparent
-	virtual bool is_or_derived_from(VClass& ancestor) { failed("thoghts of ancestors of '%s'"); return false; }
-
 public: // usage
 
-	Value(Pool& apool) : Pooled(apool), fname(0) {}
+	Value(Pool& apool) : Pooled(apool), fname(new(apool) String(apool)) {
+		fname->APPEND_CONST("unnamed");
+	}
 
 	void set_name(String& aname) { fname=&aname; }
 

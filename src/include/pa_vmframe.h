@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.1 2001/02/24 11:20:32 paf Exp $
+  $Id: pa_vmframe.h,v 1.2 2001/02/25 08:12:21 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -29,8 +29,6 @@ public: // Value
 
 	// frame: none yet | transparent
 	VClass *get_class() const { return self->get_class(); }
-	// frame: none yet | transparent
-	bool is_or_derived_from(VClass& ancestor) { return self->is_or_derived_from(ancestor); }
 
 public: // usage
 

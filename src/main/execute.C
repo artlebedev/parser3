@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.37 2001/02/24 14:20:51 paf Exp $
+  $Id: execute.C,v 1.38 2001/02/25 08:12:22 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -10,6 +10,7 @@
 #include "pa_vunknown.h"
 #include "pa_vcframe.h"
 #include "pa_vmframe.h"
+#include "pa_vobject.h"
 
 #include <stdio.h>
 
@@ -19,7 +20,7 @@
 
 
 char *opcode_name[]={
-	"STRING",  "CODE",
+	"STRING",  "CODE",  "CLASS",
 	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
 	"CONSTRUCT",
 	"EXPRESSION_EVAL",	"MODIFY_EVAL",
@@ -53,6 +54,10 @@ void dump(int level, const Array& ops) {
 		if(op.code==OP_STRING) {
 			VString *vstring=static_cast<VString *>(ops.quick_get(++i));
 			printf(" \"%s\"", vstring->get_string()->cstr());
+		}
+		if(op.code==OP_CLASS) {
+			VClass *vclass=static_cast<VClass *>(ops.quick_get(++i));
+			printf(" \"%s\"", vclass->name()->cstr());
 		}
 		printf("\n");
 
@@ -89,7 +94,8 @@ void Request::execute(const Array& ops) {
 		case OP_CODE:
 			{
 				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
-				printf(" (%d)", local_ops->size());
+				printf(" (%d)\n", local_ops->size());
+				dump(1, *local_ops);
 				Junction& j=*NEW Junction(pool(), 
 					*self,
 					0,
@@ -97,6 +103,12 @@ void Request::execute(const Array& ops) {
 				
 				Value *value=NEW VJunction(j);
 				PUSH(value);
+				break;
+			}
+		case OP_CLASS:
+			{
+				VClass *vclass=static_cast<VClass *>(ops.quick_get(++i));
+		        PUSH(vclass);
 				break;
 			}
 			
@@ -198,7 +210,7 @@ void Request::execute(const Array& ops) {
 					THROW(0,0,
 						value->name(),
 						"is not a method or a junction (it is '%s'), can not call it",
-						value->type()); 
+							value->type()); 
 				//unless(method) method=operators.get_method[...;code/native_code](name)
 				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);
 				PUSH(frame);
@@ -218,11 +230,22 @@ void Request::execute(const Array& ops) {
 				VMethodFrame *frame=static_cast<VMethodFrame *>(POP());
 				frame->fill_unspecified_params();
 				PUSH(self);  PUSH(root);  PUSH(rcontext);  PUSH(wcontext); 
-				//left_class=ncontext.get_class()
-				//right_class=frame.self.get_class()
-				//self=f(left_class[thoughts' food], right_self[junction], right_class[static], wcontext.value()[dynamic], new(right_class)[construct])
-				self=&frame->junction.self; // TODO: не всегда frame..self
+
+				VClass *context_class=wcontext->get_class();
+				VClass *called_class=frame->junction.self.get_class();
+				// context is some class? [variable already constructed?]
+				if(context_class) { // yes
+					// is it me or one of my parents? 
+					if(context_class->is_or_derived_from(*called_class)) // yes
+						self=&frame->junction.self; // dynamic call
+					else // no
+						self=called_class; // static call
+				} else { // no, we have constructor call here: $some(^class:method(..))
+					self=NEW VObject(pool(), *called_class);
+					frame->write(self);
+				}
 				frame->set_self(self);
+
 				root=rcontext=wcontext=frame;
 				execute(frame->junction.method->code);
 				Value *value=wcontext->result();
@@ -231,7 +254,6 @@ void Request::execute(const Array& ops) {
 				printf("<-returned");
 				break;
 			}
-
 
 		default:
 			printf("\tTODO");

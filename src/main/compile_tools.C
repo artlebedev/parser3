@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.13 2001/02/24 08:28:37 paf Exp $
+  $Id: compile_tools.C,v 1.14 2001/02/25 08:12:22 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -27,7 +27,7 @@ void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array) {
 }
 
 
-Array *L(VString *vstring) {
+Array *SL(VString *vstring) {
 	// empty ops array
 	Array *result=N(vstring->pool());
 
@@ -36,8 +36,21 @@ Array *L(VString *vstring) {
 
 	return result;
 }
+Array *CL(VClass *vclass) {
+	// empty ops array
+	Array *result=N(vclass->pool());
 
-String *LA2S(Array *literal_string_array, int offset) {
+	// append OP_CLASS
+	Operation op; op.code=OP_CLASS;
+	*result+=op.cast;
+
+	// append 'vclass'
+	*result+=vclass;
+
+	return result;
+}
+
+String *SLA2S(Array *literal_string_array, int offset) {
 	Operation op;
 	op.cast=literal_string_array->get(offset+0);
 	if(op.code!=OP_STRING)

@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.15 2001/02/24 16:19:06 paf Exp $
+  $Id: compile_tools.h,v 1.16 2001/02/25 08:12:22 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -82,13 +82,18 @@ void PVS(Array/*<op>*/ *result, VString *vstring);
 void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array);
 
 
-// Literal // returns array with 
+// String Literal // returns array with 
 // first: OP_STRING instruction
 // second op: string itself
-
-Array *L(VString *vstring);
+Array *SL(VString *vstring);
 // Literal Array to(2) String // return string value from literal array OP+string array
-String *LA2S(Array *literal_string_array, int offset=0);
+String *SLA2S(Array *literal_string_array, int offset=0);
+
+// Class Literal // returns array with 
+// first: OP_CLASS instruction
+// second op: vclass itself
+Array *CL(VClass *vclass);
+
 
 void push_LS(struct parse_control *pc, lexical_state new_state);
 void pop_LS(struct parse_control *pc);
