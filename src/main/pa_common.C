@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.20 2001/03/21 14:06:45 paf Exp $
+	$Id: pa_common.C,v 1.21 2001/03/22 12:09:59 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -75,7 +75,7 @@ char *file_read_text(Pool& pool, const char *fname, bool fail_on_read_problem) {
 	if(fail_on_read_problem)
 		PTHROW(0,0,
 			0,
-			"use: can not read '%s' file", fname);
+			"can not read '%s' file", fname);
     return 0;
 }
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.63 2001/03/22 11:19:11 paf Exp $
+	$Id: pa_request.C,v 1.64 2001/03/22 12:09:59 paf Exp $
 */
 
 #include <string.h>
@@ -71,6 +71,14 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 		attributed_meaning_to_string(lmeaning).cstr());
 }
 
+/**
+	load MAIN class, execute @main.
+	MAIN class consists of all the auto.p files we'd manage to find
+	plus
+	the file user requested us to process
+	all located classes become children of one another,
+	composing class we name 'MAIN'
+*/
 void Request::core(const char *root_auto_path, bool root_auto_fail,
 				   const char *site_auto_path, bool site_auto_fail,
 				   bool header_only) {
@@ -79,26 +87,19 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 	TRY {
 		char *auto_filespec=(char *)malloc(MAX_STRING);
 		
-		// load MAIN class,
-		//	it consists of all the auto.p files we'd manage to find
-		//	plus
-		//	the file user requested us to process
-		//	all located classes become children of one another,
-		//	composing class we name 'MAIN'
-
 		// loading root auto.p 
 		if(root_auto_path) {
-			strncpy(auto_filespec, root_auto_path, MAX_STRING-strlen(AUTO_FILE_NAME));
-			strcat(auto_filespec, AUTO_FILE_NAME);
+			strncpy(auto_filespec, root_auto_path, MAX_STRING-strlen("/" AUTO_FILE_NAME));
+			strcat(auto_filespec, "/" AUTO_FILE_NAME);
 			main_class=use_file(
 				auto_filespec, root_auto_fail,
 				main_class_name, main_class);
 		}
 
-		// loading system auto.p 2
+		// loading site auto.p
 		if(site_auto_path) {
-			strncpy(auto_filespec, site_auto_path, MAX_STRING-strlen(AUTO_FILE_NAME));
-			strcat(auto_filespec, AUTO_FILE_NAME);
+			strncpy(auto_filespec, site_auto_path, MAX_STRING-strlen("/" AUTO_FILE_NAME));
+			strcat(auto_filespec, "/" AUTO_FILE_NAME);
 			main_class=use_file(
 				auto_filespec, site_auto_fail,
 				main_class_name, main_class);
@@ -125,12 +126,6 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// $MAIN:defaults
 		Value *defaults=main_class?main_class->get_element(*defaults_name):0;
 		fdefault_content_type=defaults?defaults->get_element(*content_type_name):0;
-
-		// there must be some auto.p
-		if(/*\*/0&&!main_class)
-			THROW(0,0,
-				0,
-				"no 'auto.p' found (nither system nor any site's)");
 
 		// compiling requested file
 		main_class=use_file(info.path_translated, true/*don't ignore read problem*/,

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.20 2001/03/22 11:19:10 paf Exp $
+	$Id: pa_globals.h,v 1.21 2001/03/22 12:09:58 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -16,7 +16,7 @@
 
 //@{
 /// constant string. class name, predefined method & co
-#define AUTO_FILE_NAME "/auto.p"
+#define AUTO_FILE_NAME "auto.p"
 
 #define CONTENT_TYPE_NAME "content-type"
 #define BODY_NAME "body"

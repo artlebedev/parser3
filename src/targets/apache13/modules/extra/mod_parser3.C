@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.8 2001/03/22 11:19:12 paf Exp $
+	$Id: mod_parser3.C,v 1.9 2001/03/22 12:10:01 paf Exp $
 */
 
 #include "httpd.h"
@@ -551,10 +551,6 @@ static int parser_handler(request_rec *r)
 			String::UL_HTML_TYPO
 			);
 		
-		ap_log_error(APLOG_MARK, APLOG_DEBUG, r->server, 
-			"mod_parser3: handler(%s|%s)", dcfg->parser_root_auto_path,
-			dcfg->parser_site_auto_path);
-
 		// process the request
 		request.core(
 			dcfg->parser_root_auto_path, true, // /path/to/admin/auto.p
@@ -630,11 +626,7 @@ static int parser_handler(request_rec *r)
  *
  * There is no return value.
  */
-
-
-/*
- * All our module-initialiser does is add its trace to the log.
- */
+/// @todo answer this: "why when it's called second time all globals are cleared?"
 static void parser_init(server_rec *s, pool *p)
 {
 #if MODULE_MAGIC_NUMBER >= 19980527
