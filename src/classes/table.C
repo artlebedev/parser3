@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.30 2001/03/26 10:36:52 paf Exp $
+	$Id: table.C,v 1.31 2001/03/27 13:47:29 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -110,9 +110,45 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	lfile_name.append(vfile_name->as_string(),
 		String::UL_FILE_NAME, true);
 
-	static_cast<VTable *>(r.self)->table().save(
-		params->size()==2/*nameless save*/, 
-		r.absolute(lfile_name));
+	Table& table=static_cast<VTable *>(r.self)->table();
+
+	String sdata(pool);
+	if(params->size()==1) { // not nameless=named output
+		// write out names line
+		if(table.columns()) { // named table
+			for(int column=0; column<table.columns()->size(); column++) {
+				if(column)
+					sdata.APPEND_CONST("\t");
+				sdata.append(*static_cast<String *>(table.columns()->quick_get(column)), 
+					String::UL_TABLE);
+			}
+		} else { // nameless table
+			int lsize=table.size()?static_cast<Array *>(table.get(0))->size():0;
+			if(lsize)
+				for(int column=0; column<lsize; column++) {
+					char *cindex_tab=(char *)malloc(MAX_NUMBER);
+					snprintf(cindex_tab, MAX_NUMBER, "%d\t", column);
+					sdata.APPEND_CONST(cindex_tab);
+				}
+			else
+				sdata.APPEND_CONST("empty nameless table");
+		}
+		sdata.APPEND_CONST("\n");
+	}
+	// data lines
+	for(int index=0; index<table.size(); index++) {
+		Array *row=static_cast<Array *>(table.quick_get(index));
+		for(int column=0; column<row->size(); column++) {
+			if(column)
+				sdata.APPEND_CONST("\t");
+			sdata.append(*static_cast<String *>(row->quick_get(column)), 
+				String::UL_TABLE);
+		}
+		sdata.APPEND_CONST("\n");
+	}
+
+	// write
+	file_write(pool, r.absolute(lfile_name), sdata.cstr(), sdata.size(), true);
 }
 
 static void _count(Request& r, const String&, Array *) {

@@ -14,10 +14,9 @@ _	&nbsp^;
 (c)	&copy^;
 ^#A9	&copy^;	windows (c)
 }]
-^html-typo.save[a]
 
 @main[]
-^file:delete[a]
+^if(-f index.html){y}{n}<BR>
 ^taint[html-typo;не знаю
 я ничего
 
@@ -33,8 +32,8 @@ f
 
 ^$t.a=$t.a<BR>
 ^t.offset[2]
-$r[^t.record[]]
-^$r.a=$r.a<BR>
+#$r[^t.record[]]
+#^$r.a=$r.a<BR>
 
 ^$request:uri=$request:uri<BR>
 ^$env:PATH_INFO=$env:PATH_INFO<BR>

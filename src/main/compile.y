@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.116 2001/03/26 09:59:38 paf Exp $
+	$Id: compile.y,v 1.117 2001/03/27 13:47:30 paf Exp $
 */
 
 /**
@@ -31,6 +31,7 @@
 #include "pa_config_includes.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include "compile_tools.h"
 #include "pa_value.h"
@@ -788,33 +789,33 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				RC;
 			case 'l': case 'g': case 'e': case 'n':
 				if(end==begin) // right after whitespace
-					switch(*PC.source) {
-//					case '?': // ok [and bad cases, yacc would bark at them]
-					case 't': // lt gt [et nt]
-						result=c=='l'?SLT:c=='g'?SGT:BAD_STRING_COMPARISON_OPERATOR;
-						skip_analized=1;
-						goto break2;
-					case 'e': // le ge ne [ee]
-						result=c=='l'?SLE:c=='g'?SGE:c=='n'?SNE:BAD_STRING_COMPARISON_OPERATOR;
-						skip_analized=1;
-						goto break2;
-					case 'q': // eq [lq gq nq]
-						result=c=='e'?SEQ:BAD_STRING_COMPARISON_OPERATOR;
-						skip_analized=1;
-						goto break2;
+					if(isspace(PC.source[1])) {
+						switch(*PC.source) {
+							//					case '?': // ok [and bad cases, yacc would bark at them]
+						case 't': // lt gt [et nt]
+							result=c=='l'?SLT:c=='g'?SGT:BAD_STRING_COMPARISON_OPERATOR;
+							skip_analized=1;
+							goto break2;
+						case 'e': // le ge ne [ee]
+							result=c=='l'?SLE:c=='g'?SGE:c=='n'?SNE:BAD_STRING_COMPARISON_OPERATOR;
+							skip_analized=1;
+							goto break2;
+						case 'q': // eq [lq gq nq]
+							result=c=='e'?SEQ:BAD_STRING_COMPARISON_OPERATOR;
+							skip_analized=1;
+							goto break2;
+						}
 					}
 				break;
 			case 'i':
 				if(end==begin) // right after whitespace
-					switch(PC.source[0]) {
-					case 'n': 
-						{ // in
+					if(isspace(PC.source[1])) {
+						switch(PC.source[0]) {
+						case 'n': // in
 							skip_analized=1;
 							result=IN;
 							goto break2;
-						}
-					case 's': 
-						{ // is
+						case 's': // is
 							skip_analized=1;
 							result=IS;
 							goto break2;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.19 2001/03/26 10:36:56 paf Exp $
+	$Id: pa_table.C,v 1.20 2001/03/27 13:47:31 paf Exp $
 */
 
 #include <stdlib.h>
@@ -55,45 +55,4 @@ const String *Table::item(const String& column_name) {
 	}
 
 	return item(column_index);
-}
-
-void Table::save(bool nameless_save, const String& file_spec) {
-	String sdata(pool());
-	if(!nameless_save) { // not nameless=named output
-		// write out names line
-		if(fcolumns) { // named table
-			for(int column=0; column<fcolumns->size(); column++) {
-				if(column)
-					sdata.APPEND_CONST("\t");
-				sdata.append(*static_cast<String *>(fcolumns->quick_get(column)), 
-					String::UL_TABLE);
-			}
-		} else { // nameless table
-			int lsize=size()?static_cast<Array *>(get(0))->size():0;
-			if(lsize)
-				for(int column=0; column<lsize; column++) {
-					char *cindex_tab=(char *)malloc(MAX_NUMBER);
-					snprintf(cindex_tab, MAX_NUMBER, "%d\t", column);
-					sdata.APPEND_CONST(cindex_tab);
-				}
-			else
-				sdata.APPEND_CONST("empty nameless table");
-		}
-		sdata.APPEND_CONST("\n");
-	}
-	// data lines
-	for(int index=0; index<size(); index++) {
-		Array *row=static_cast<Array *>(quick_get(index));
-		for(int column=0; column<row->size(); column++) {
-			if(column)
-				sdata.APPEND_CONST("\t");
-			sdata.append(*static_cast<String *>(row->quick_get(column)), 
-				String::UL_TABLE);
-		}
-		sdata.APPEND_CONST("\n");
-	}
-
-	// write
-	char *cdata=sdata.cstr();
-	file_write(pool(), file_spec, cdata, strlen(cdata), true);
 }
