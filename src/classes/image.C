@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/11/28 12:23:39 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/29 08:17:52 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -72,7 +72,7 @@ public:
 
 	/*override*/void seek(long value, int whence) {
 		if(lseek(f, value, whence)<0)
-			throw Exception("file.seek",
+			throw Exception("image.format",
 				&file_name, 
 				"seek(value=%ld, whence=%d) failed: %s (%d), actual filename '%s'", 
 					value, whence, strerror(errno), errno, fname);
@@ -104,11 +104,11 @@ public:
 		switch(whence) {
 		case SEEK_CUR: new_offset=offset+value; break;
 		case SEEK_SET: new_offset=(size_t)value; break;
-		default: throw Exception("file.seek", 0, "whence #%d not supported", 0, whence); break;
+		default: throw Exception(0, 0, "whence #%d not supported", 0, whence); break; // never
 		}
 		
 		if((ssize_t)new_offset<0 || new_offset>size)
-			throw Exception("file.seek",
+			throw Exception("image.format",
 				&file_name, 
 				"seek(value=%l, whence=%d) failed: out of buffer, new_offset>size (%l>%l) or new_offset<0", 
 					value, whence, new_offset, size);
