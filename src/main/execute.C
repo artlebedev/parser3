@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/08/12 14:24:58 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/08/12 14:21:52 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -477,7 +477,7 @@ void Request::execute(const Array& ops) {
 							&frame.name(),
 							"method is static and can not be used as constructor");
 				} else
-					self=&frame.junction.self;
+					self=&frame.junction.self; // static call
 
 				frame.set_self(*self);
 
