@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.C,v 1.7 2001/10/26 13:48:19 paf Exp $
+	$Id: pa_db_manager.C,v 1.8 2001/10/27 09:35:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -83,6 +83,8 @@ DB_Connection_ptr DB_Manager::get_connection_ptr(const String& request_db_home,
 /// @todo get rid of memory spending Stack [zeros deep inside got accumulated]
 DB_Connection *DB_Manager::get_connection_from_cache(const String& db_home) { 
 	SYNCHRONIZED;
+
+	maybe_expire_connection_cache();
 
 	return static_cast<DB_Connection *>(connection_cache.get(db_home));
 }

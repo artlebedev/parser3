@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.16 2001/10/26 16:39:44 paf Exp $
+	$Id: pa_db_connection.C,v 1.17 2001/10/27 09:35:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -171,6 +171,8 @@ void DB_Connection::clear_dbfile(const String& file_name) {
 /// @todo get rid of memory spending Stack [zeros deep inside got accumulated]
 DB_Table *DB_Connection::get_table_from_cache(const String& file_name) { 
 	SYNCHRONIZED;
+
+	maybe_expire_table_cache();
 
 	return static_cast<DB_Table *>(table_cache.get(file_name));
 }
