@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.139 2002/06/20 14:50:22 paf Exp $
+	$Id: pa_request.h,v 1.140 2002/06/24 11:59:32 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -20,6 +20,7 @@
 #include "pa_venv.h"
 #include "pa_vstatus.h"
 #include "pa_vform.h"
+#include "pa_vmail.h"
 #include "pa_vmath.h"
 #include "pa_vrequest.h"
 #include "pa_vresponse.h"
@@ -81,6 +82,7 @@ public:
 		const char *content_type;
 		size_t content_length;
 		const char *cookie;
+		bool mail_received;
 	};
 	
 	Request(Pool& apool,
@@ -238,6 +240,8 @@ public:
 	VStatus status;
 	/// $form:elements
 	VForm form;
+	/// $mail
+	VMail mail;
 	/// $math:constants
 	VMath math;
 	/// $request:elements

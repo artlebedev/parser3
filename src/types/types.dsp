@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "\parser3project\win32\xml\glib\include" /I "\parser3project\win32\xml\glib\include\glib" /I "\parser3project\win32\xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32\xml\libxml2-x.x.x\include" /I "\parser3project\win32\xml\libxslt-x.x.x" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "\parser3project\win32\xml\glib\include" /I "\parser3project\win32\xml\glib\include\glib" /I "\parser3project\win32\xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32\xml\libxml2-x.x.x\include" /I "\parser3project\win32\xml\libxslt-x.x.x" /I "\parser3project\win32\gnome\gmime-x.x.x" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FD /TP /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
@@ -66,7 +66,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "types___Win32_Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "\parser3project\win32\xml\glib\include" /I "\parser3project\win32\xml\glib\include\glib" /I "\parser3project\win32\xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32\xml\libxml2-x.x.x\include" /I "\parser3project\win32\xml\libxslt-x.x.x" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "_AFXDLL" /FD /GZ /TP /c
+# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "\parser3project\win32\xml\glib\include" /I "\parser3project\win32\xml\glib\include\glib" /I "\parser3project\win32\xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32\xml\libxml2-x.x.x\include" /I "\parser3project\win32\xml\libxslt-x.x.x" /I "\parser3project\win32\gnome\gmime-x.x.x" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "_AFXDLL" /FD /GZ /TP /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG" /d "_AFXDLL"
@@ -91,7 +91,7 @@ LIB32=link.exe -lib
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "\parser3project\win32\xml\glib\include" /I "\parser3project\win32\xml\glib\include\glib" /I "\parser3project\win32\xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32\xml\libxml2-x.x.x\include" /I "\parser3project\win32\xml\libxslt-x.x.x" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FD /GZ /TP /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "\parser3project\win32\xml\glib\include" /I "\parser3project\win32\xml\glib\include\glib" /I "\parser3project\win32\xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32\xml\libxml2-x.x.x\include" /I "\parser3project\win32\xml\libxslt-x.x.x" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FD /GZ /TP /c
+# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "\parser3project\win32\xml\glib\include" /I "\parser3project\win32\xml\glib\include\glib" /I "\parser3project\win32\xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32\xml\libxml2-x.x.x\include" /I "\parser3project\win32\xml\libxslt-x.x.x" /I "\parser3project\win32\gnome\gmime-x.x.x" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FD /GZ /TP /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -283,6 +283,14 @@ SOURCE=.\pa_vint.h
 # Begin Source File
 
 SOURCE=.\pa_vjunction.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vmail.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vmail.h
 # End Source File
 # Begin Source File
 

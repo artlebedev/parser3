@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.183 2002/06/20 13:39:57 paf Exp $
+	$Id: parser3.C,v 1.184 2002/06/24 11:59:33 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -24,10 +24,14 @@
 
 #ifdef WIN32
 #	include <windows.h>
+#	include "getopt.h"
+#else
+#	include <getopt.h>
 #endif
 
 //#define DEBUG_POOL_MALLOC
 //#define DEBUG_STRING_APPENDS_VS_EXPANDS
+//#define DEBUG_MAIL_RECEIVE "test2.eml"
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
 extern ulong 
@@ -67,9 +71,10 @@ const char **RCSIds[]={
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
 
-const char *argv0;
-Pool *pool; // global pool [dont describe to doxygen: it confuses it with param names]
-bool cgi; ///< we were started as CGI?
+static const char *argv0;
+static Pool *pool; // global pool [dont describe to doxygen: it confuses it with param names]
+static bool cgi; ///< we were started as CGI?
+static bool mail_received=false; ///< we were started with -m option? [asked to parse incoming message to $mail:received]
 
 // SAPI
 
@@ -206,7 +211,7 @@ void SAPI::send_body(Pool& , const void *buf, size_t size) {
 
 //
 
-void full_file_spec(const char *file_name, char *buf, size_t buf_size) {
+static void full_file_spec(const char *file_name, char *buf, size_t buf_size) {
 	if(file_name)
 		if(file_name[0]=='/' 
 #ifdef WIN32
@@ -234,7 +239,7 @@ main workhorse
 		wich is tested but seems slow.
 		IIS5 todo find out proper 'illegal call' check 
 */
-void real_parser_handler(
+static void real_parser_handler(
 					const char *filespec_to_process,
 					const char *request_method, bool header_only) {
 	// init socks
@@ -307,15 +312,16 @@ void real_parser_handler(
 	const char *content_length=SAPI::get_env(*pool, "CONTENT_LENGTH");
 	request_info.content_length=(content_length?atoi(content_length):0);
 	request_info.cookie=SAPI::get_env(*pool, "HTTP_COOKIE");
-	
+	request_info.mail_received=mail_received;
+
 	// prepare to process request
 	Request request(*pool,
 		request_info,
-#ifdef _DEBUG
+/*#ifdef _DEBUG
 		String::UL_HTML|String::UL_OPTIMIZE_BIT
-#else
+#else*/
 		cgi ? String::UL_HTML|String::UL_OPTIMIZE_BIT : String::UL_AS_IS
-#endif
+/*#endif*/
 		,
 		true /* status_allowed */);
 	
@@ -367,7 +373,7 @@ void real_parser_handler(
 
 }
 
-void call_real_parser_handler__do_SEH(
+static void call_real_parser_handler__do_SEH(
 								 const char *filespec_to_process,
 								 const char *request_method, bool header_only) {
 #if _MSC_VER && !defined(_DEBUG)
@@ -404,15 +410,37 @@ int failed_new(size_t size) {
 #endif
 
 #ifdef HAVE_SET_NEW_HANDLER
-void failed_new() {
+static void failed_new() {
     SAPI::die("out of memory in 'new'");
 }
 #endif
+
+static void usage(const char *program) {
+	fprintf(stderr,
+		"Parser/%s Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)\n"
+		"Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\n"
+		"\n"
+		"Usage: %s [options] file\n"
+		"Options are:\n"
+#ifdef WITH_MAIL_RECEIVE
+		"    -m  Parse mail, put received letter to $mail:received\n"
+#endif
+		"    -h  Display usage information (this message)\n"
+		, PARSER_VERSION, 
+		program);
+	exit(EINVAL);
+}
 
 int main(int argc, char *argv[]) {
 	Pool_storage global_pool_storage;
 	Pool global_pool(&global_pool_storage);
 	pool=&global_pool;
+
+#ifdef DEBUG_MAIL_RECEIVE
+	if(FILE *fake_in=fopen(DEBUG_MAIL_RECEIVE, "rt")) {
+		dup2(fake_in->_file, 0/*STDIN_FILENO*/);
+	}
+#endif
 
 #ifdef _DEBUG
 //	_crtBreakAlloc=33112;
@@ -429,17 +457,39 @@ int main(int argc, char *argv[]) {
 		getenv("GATEWAY_INTERFACE") || 
 		getenv("REQUEST_METHOD");
 	
-	if(!cgi) {
-		if(argc<2) {
-			printf(
-				"Parser/%s Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)\n"
-				"Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\n"
-				"\n"
-				"Usage: %s <file>\n",
-				PARSER_VERSION, 
-				argv0?argv0:"parser3");
-			return 1;
+	char *raw_filespec_to_process;
+	if(cgi) 
+		raw_filespec_to_process=getenv("PATH_TRANSLATED");
+	else {
+		optind = 1;
+		opterr = 0;
+		int c;
+		while((c = getopt(argc, argv, "h"
+#ifdef WITH_MAIL_RECEIVE
+			"m"
+#endif
+			)) > 0) {
+			switch (c) {
+			case 'h':
+				usage(argv[0]);
+				break;
+#ifdef WITH_MAIL_RECEIVE
+			case 'm':
+				mail_received=true;
+				break;
+#endif
+			default:
+				fprintf(stderr, "%s: invalid option '%c'\n", argv[0], optopt);
+				usage(argv[0]);
+				break;
+			}
 		}
+		if (optind != argc - 1) {
+			fprintf(stderr, "%s: file not specified\n", argv[0]);
+			usage(argv[0]);
+		}
+		
+		raw_filespec_to_process=argv[optind++];
 	}
 
 #ifdef WIN32
@@ -470,7 +520,6 @@ int main(int argc, char *argv[]) {
 	std::set_new_handler(failed_new);
 #endif
 
-	char *raw_filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
 	char filespec_to_process[MAX_STRING];
 	full_file_spec(raw_filespec_to_process, filespec_to_process, sizeof(filespec_to_process));
 

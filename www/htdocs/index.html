@@ -12,14 +12,11 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #<b>$body</b>
 #$result[123]
 
-@f[a;b]
-
 @main[]
 #$a(123)
 #^a.format[%.10u]
 #$result[111]
 #^f[a]
-
 #^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
 #	^int:sql{select news_id from news where news_id=-1}[$.default{2}]<br>
 #    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
@@ -184,7 +181,104 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^div[]
 #^datecreatestring3[]
 #^tfilespec[]
-^tcrypt[]
+#^tcrypt[]
+#^cryptdocsample[]
+^sendtests[]
+OK
+
+@sendtests[]
+#^text[]
+#^html[]
+#^text-n-html[]
+#^file[]
+#^text-n-file[]
+^text-n-html-n-file[]
+#^backwardcomp[]
+
+@backwardcomp[]
+^mail:send[
+	$.from[paf]
+	$.to[paf]
+	$.body[this is text value]
+]
+
+@text[]
+^mail:send[
+	$.from[paf]
+	$.to[paf]
+	$.text[
+		$.value[this is text value]
+	]
+]
+
+@html[]
+^mail:send[
+	$.from[paf]
+	$.to[paf]
+	$.html{this is <b>html</b> value ^taint[<] 10}
+]
+
+@text-n-html[]
+^mail:send[
+	$.from[paf]
+	$.to[paf]
+	$.text[
+		$.value[this is text value]
+	]
+	$.html[
+	$.value{this is <b>html</b> value ^taint[<] 10}
+	]
+]
+
+@file[]
+^mail:send[
+	$.from[paf]
+	$.to[paf]
+	$.file[^file::load[binary;image.jpg]]
+]
+
+@text-n-file[]
+^mail:send[
+	$.from[paf]
+	$.to[paf]
+	$.text[
+		$.value[this is text value]
+	]
+	$.file[^file::load[binary;image.jpg]]
+]
+
+@text-n-html-n-file[]
+^mail:send[
+	$.from[paf]
+	$.to[paf]
+	$.text[
+		$.value[this is text value]
+	]
+	$.html[
+	$.COntent-type[$.value[text/html]$.charset[windows-1251xx]]
+	$.value{this is <b>html</b> value ^taint[<] 10}
+	]
+	$.file[^file::load[binary;image.jpg]]
+]
+
+
+
+@md5salt[]
+1234
+
+@cryptdocsample[]
+$users[^table::create{name	password
+alice	***
+bob	***
+}]
+
+$htpasswd[^table::create[nameless]{}]
+^users.menu{
+	^htpasswd.append{$users.name:^math:crypt[$users.password;^$apr1^$^md5salt[]]}
+}
+
+^htpasswd.save[nameless;.htpasswd-parser-test]
+
 
 @tcrypt[]
 ^math:crypt[paf;^$apr1^$salt123]

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vform.h,v 1.34 2002/06/10 13:27:40 paf Exp $
+	$Id: pa_vform.h,v 1.35 2002/06/24 11:59:34 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -15,8 +15,6 @@
 
 #define FORM_FIELDS_ELEMENT_NAME "fields"
 #define FORM_TABLES_ELEMENT_NAME "tables"
-
-extern Methoded *form_base_class;
 
 class Request;
 
@@ -40,7 +38,7 @@ public: // Value
 	
 	const char *type() const { return "form"; }
 	
-	// form: CLASS,method,fields,tables,field
+	// form: CLASS,method,field,tables field
 	Value *get_element(const String& aname);
 
 public: // usage

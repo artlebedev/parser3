@@ -487,6 +487,14 @@ SOURCE=..\include\pa_types.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_uue.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_uue.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\untaint.C
 # End Source File
 # End Target

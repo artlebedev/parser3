@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.212 2002/06/20 14:50:23 paf Exp $
+	$Id: pa_request.C,v 1.213 2002/06/24 11:59:32 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -47,6 +47,7 @@ Request::Request(Pool& apool,
 	env(apool),
 	status(apool),
 	form(apool),
+	mail(apool),
 	math(apool),
 	request(apool, *this),
 	response(apool),
@@ -101,6 +102,8 @@ Request::Request(Pool& apool,
 	/// bases used
 	// form class
 	classes().put(form.get_class()->base()->name(), &form);	
+	// mail class
+	classes().put(mail.get_class()->base()->name(), &mail);	
 	// math class
 	classes().put(math.get_class()->base()->name(), &math);	
 }
@@ -232,6 +235,9 @@ gettimeofday(&mt[0],NULL);
 
 		// filling cookies
 		cookie.fill_fields(*this);
+
+		// filling mail received
+		mail.fill_received(*this);
 
 #ifdef RESOURCES_DEBUG
 //measure:after compile

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.h,v 1.14 2002/02/08 08:30:12 paf Exp $
+	$Id: pa_charset.h,v 1.15 2002/06/24 11:59:32 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
@@ -75,6 +75,7 @@ private:
 	void transcodeFromUTF8(Pool& pool,
 									   const void *source_body, size_t source_content_length,
 									   const void *& dest_body, size_t& dest_content_length) const;
+
 	void transcodeToCharset(Pool& pool,
 										   const Charset& dest_transcoder,
 										   const void *source_body, size_t source_content_length,

@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.75 2002/06/20 13:39:57 paf Exp $
+	$Id: parser3isapi.C,v 1.76 2002/06/24 11:59:33 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -376,7 +376,7 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 	request_info.content_type=lpECB->lpszContentType;
 	request_info.content_length=lpECB->cbTotalBytes;
 	request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
-
+	request_info.mail_received=false;
 	
 	// prepare to process request
 	Request request(pool,

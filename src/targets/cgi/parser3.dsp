@@ -204,6 +204,14 @@ SOURCE=.\ident.C.new
 # End Group
 # Begin Source File
 
+SOURCE=.\getopt.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\getopt.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_pool.C
 
 !IF  "$(CFG)" == "parser3 - Win32 Release"

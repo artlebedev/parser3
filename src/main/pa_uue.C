@@ -1,0 +1,87 @@
+/** @file
+	Parser: uuencoding impl.
+
+	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+
+	$Id: pa_uue.C,v 1.1 2002/06/24 11:59:33 paf Exp $
+
+
+	@todo setrlimit
+*/
+
+#include "pa_config_includes.h"
+
+#include "pa_uue.h"
+
+static unsigned char uue_table[64] = {
+  '`', '!', '"', '#', '$', '%', '&', '\'',
+  '(', ')', '*', '+', ',', '-', '.', '/',
+  '0', '1', '2', '3', '4', '5', '6', '7',
+  '8', '9', ':', ';', '<', '=', '>', '?',
+  '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+  'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+  'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+  'X', 'Y', 'Z', '[', '\\',']', '^', '_'
+};
+void pa_uuencode(String& result, const char *file_name_cstr, const VFile& vfile) {
+	//header
+	result << "content-transfer-encoding: x-uuencode\n" << "\n";
+	result << "begin 644 " << file_name_cstr << "\n";
+
+	//body
+	const unsigned char *in=(const unsigned char *)vfile.value_ptr();
+	size_t in_length=vfile.value_size();
+
+	int count=45;
+	for(const unsigned char *itemp=in; itemp<(in+in_length); itemp+=count) {
+		int index;	
+
+		if((itemp+count)>(in+in_length)) 
+			count=in_length-(itemp-in);
+
+		char *buf=(char *)result.pool().malloc(MAX_STRING);
+		char *optr=buf;
+		
+		/*
+		* for UU and XX, encode the number of bytes as first character
+		*/
+		*optr++ = uue_table[count];
+		
+		for (index=0; index<=count-3; index+=3) {
+			*optr++ = uue_table[itemp[index] >> 2];
+			*optr++ = uue_table[((itemp[index  ] & 0x03) << 4) | (itemp[index+1] >> 4)];
+			*optr++ = uue_table[((itemp[index+1] & 0x0f) << 2) | (itemp[index+2] >> 6)];
+			*optr++ = uue_table[  itemp[index+2] & 0x3f];
+		}
+		
+		/*
+		* Special handlitempg for itempcomplete litempes
+		*/
+		if (index != count) {
+			if (count - index == 2) {
+				*optr++ = uue_table[itemp[index] >> 2];
+				*optr++ = uue_table[((itemp[index  ] & 0x03) << 4) | 
+					( itemp[index+1] >> 4)];
+				*optr++ = uue_table[((itemp[index+1] & 0x0f) << 2)];
+				*optr++ = uue_table[0];
+			}
+			else if (count - index == 1) {
+				*optr++ = uue_table[ itemp[index] >> 2];
+				*optr++ = uue_table[(itemp[index] & 0x03) << 4];
+				*optr++ = uue_table[0];
+				*optr++ = uue_table[0];
+			}
+		}
+		/*
+		* end of line
+		*/
+		*optr++ = '\n';	
+		*optr = 0;
+		result << buf;
+	}
+	
+	//footer
+	result.APPEND_AS_IS((const char *)uue_table, 1/* one char */, 0, 0) << "\n"
+		"end\n";
+}

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.66 2002/06/12 13:35:25 paf Exp $
+	$Id: mail.C,v 1.67 2002/06/24 11:59:31 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,6 +15,7 @@
 #include "pa_exec.h"
 #include "pa_charsets.h"
 #include "pa_charset.h"
+#include "pa_uue.h"
 
 #ifdef _MSC_VER
 #	include "smtp/smtp.h"
@@ -26,13 +27,13 @@
 
 #define MAIL_NAME "MAIL"
 
-// global variable
-
-Methoded *mail_class;
-
 // consts
 
 const int ATTACHMENT_WEIGHT=100;
+
+// global variable
+
+Methoded *mail_base_class;
 
 // class
 
@@ -40,87 +41,10 @@ class MMail : public Methoded {
 public:
 	MMail(Pool& pool);
 public: // Methoded
-	bool used_directly() { return true; }
-	void configure_user(Request& r);
+	bool used_directly() { return false; }
 private:
 	String mail_name;
 };
-
-// helpers
-
-// uuencode
-
-static unsigned char uue_table[64] = {
-  '`', '!', '"', '#', '$', '%', '&', '\'',
-  '(', ')', '*', '+', ',', '-', '.', '/',
-  '0', '1', '2', '3', '4', '5', '6', '7',
-  '8', '9', ':', ';', '<', '=', '>', '?',
-  '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
-  'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-  'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
-  'X', 'Y', 'Z', '[', '\\',']', '^', '_'
-};
-static void uuencode(String& result, const char *file_name_cstr, const VFile& vfile) {
-	//header
-	result << "content-transfer-encoding: x-uuencode\n" << "\n";
-	result << "begin 644 " << file_name_cstr << "\n";
-
-	//body
-	const unsigned char *in=(const unsigned char *)vfile.value_ptr();
-	size_t in_length=vfile.value_size();
-
-	int count=45;
-	for(const unsigned char *itemp=in; itemp<(in+in_length); itemp+=count) {
-		int index;	
-
-		if((itemp+count)>(in+in_length)) 
-			count=in_length-(itemp-in);
-
-		char *buf=(char *)result.pool().malloc(MAX_STRING);
-		char *optr=buf;
-		
-		/*
-		* for UU and XX, encode the number of bytes as first character
-		*/
-		*optr++ = uue_table[count];
-		
-		for (index=0; index<=count-3; index+=3) {
-			*optr++ = uue_table[itemp[index] >> 2];
-			*optr++ = uue_table[((itemp[index  ] & 0x03) << 4) | (itemp[index+1] >> 4)];
-			*optr++ = uue_table[((itemp[index+1] & 0x0f) << 2) | (itemp[index+2] >> 6)];
-			*optr++ = uue_table[  itemp[index+2] & 0x3f];
-		}
-		
-		/*
-		* Special handlitempg for itempcomplete litempes
-		*/
-		if (index != count) {
-			if (count - index == 2) {
-				*optr++ = uue_table[itemp[index] >> 2];
-				*optr++ = uue_table[((itemp[index  ] & 0x03) << 4) | 
-					( itemp[index+1] >> 4)];
-				*optr++ = uue_table[((itemp[index+1] & 0x0f) << 2)];
-				*optr++ = uue_table[0];
-			}
-			else if (count - index == 1) {
-				*optr++ = uue_table[ itemp[index] >> 2];
-				*optr++ = uue_table[(itemp[index] & 0x03) << 4];
-				*optr++ = uue_table[0];
-				*optr++ = uue_table[0];
-			}
-		}
-		/*
-		* end of line
-		*/
-		*optr++ = '\n';	
-		*optr = 0;
-		result << buf;
-	}
-	
-	//footer
-	result.APPEND_AS_IS((const char *)uue_table, 1/* one char */, 0, 0) << "\n"
-		"end\n";
-}
 
 /** ^mail:send[$attach[$type[uue|mime64] $value[DATA]]] 
 	@todo solve - bad with html attaches
@@ -157,7 +81,7 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 
 	const String *type=vformat?&vformat->as_string():0;
 	if(!type/*default = uue*/ || *type=="uue") {
-		uuencode(result, file_name_cstr, *vfile);
+		pa_uuencode(result, file_name_cstr, *vfile);
 	} else // for now
 		throw Exception("parser.runtime",
 			type,
@@ -236,8 +160,8 @@ static int key_of_part(const void *item) {
 static int sort_cmp_string_double_value(const void *a, const void *b) {
 	return key_of_part(a)-key_of_part(b);
 }
-static const String& letter_hash_to_string(Request& r, const String& method_name, 
-										   Hash& letter_hash, int level,
+static const String& message_hash_to_string(Request& r, const String& method_name, 
+										   Hash& message_hash, int level,
 										   const String **from, const String **to) {
 	Pool& pool=r.pool();
 
@@ -245,13 +169,13 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 	String& result=*new(pool) String(pool);
 
 	Charset *charset;
-	if(Value *vrecodecharset_name=static_cast<Value *>(letter_hash.get(*charset_name)))
+	if(Value *vrecodecharset_name=static_cast<Value *>(message_hash.get(*charset_name)))
 		charset=&charsets->get_charset(vrecodecharset_name->as_string());
 	else
 		charset=&pool.get_source_charset();
 
 	const char *content_charset_name=0;
-	if(Value *vcontent_type=static_cast<Value *>(letter_hash.get(*content_type_name)))
+	if(Value *vcontent_type=static_cast<Value *>(message_hash.get(*content_type_name)))
 		if(Hash *hcontent_type=vcontent_type->get_hash(0))
 			if(Value *vcontentcharset_name=static_cast<Value *>(hcontent_type->get(*charset_name)))
 				content_charset_name=vcontentcharset_name->as_string().cstr();
@@ -265,9 +189,9 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 		&result,
 		from, to
 	};
-	letter_hash.for_each(add_header_attribute, &mail_info);
+	message_hash.for_each(add_header_attribute, &mail_info);
 
-	if(Value *body_element=static_cast<Value *>(letter_hash.get(*body_name))) {
+	if(Value *body_element=static_cast<Value *>(message_hash.get(*body_name))) {
 		if(Hash *body_hash=body_element->get_hash(&method_name)) {
 			// body parts..
 			// ..collect
@@ -300,7 +224,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 					if(seq[i].weight>=ATTACHMENT_WEIGHT)
 						result << attach_hash_to_string(r, *seq[i].name, *part_hash);
 					else 
-						result << letter_hash_to_string(r, method_name, *part_hash, 
+						result << message_hash_to_string(r, method_name, *part_hash, 
 							level+1, 0, 0);
 				else
 					throw Exception("parser.runtime",
@@ -335,12 +259,12 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 }
 
 static void sendmail(Request& r, const String& method_name, 
-					 const String& letter, 
+					 const String& message, 
 					 const String *from, const String *to) {
 	Pool& pool=r.pool();
 
-	char *letter_cstr=letter.cstr();
-	Hash *mail_conf=static_cast<Hash *>(r.classes_conf.get(mail_class->name()));
+	char *message_cstr=message.cstr();
+	Hash *mail_conf=static_cast<Hash *>(r.classes_conf.get(mail_base_class->name()));
 
 #ifdef _MSC_VER
 	if(!from)
@@ -363,7 +287,7 @@ static void sendmail(Request& r, const String& method_name,
 		if(!port)
 			port="25";
 
-		smtp.Send(server, port, letter_cstr, from->cstr(), to->cstr());
+		smtp.Send(server, port, message_cstr, from->cstr(), to->cstr());
 	} else
 		throw Exception("parser.runtime",
 			&method_name,
@@ -420,7 +344,7 @@ static void sendmail(Request& r, const String& method_name,
 		);
 
 
-	String in(pool, letter_cstr); String out(pool); String err(pool);
+	String in(pool, message_cstr); String out(pool); String err(pool);
 	int exit_status=pa_exec(
 		// forced_allow
 #ifdef PA_FORCED_SENDMAIL
@@ -456,9 +380,12 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 			"message must be hash");
 
 	const String *from, *to;
-	const String& letter=letter_hash_to_string(r, method_name, *hash, 0, &from, &to);
+	const String& message=hash->get(*body_name)/*old format*/?
+		message_hash_to_string(r, method_name, *hash, 0, &from, &to) : // old
+		static_cast<VMail *>(r.self)->message_hash_to_string(r, &method_name, hash, 0, &from, &to); // new
 
-	sendmail(r, method_name, letter, from, to);
+	//r.write_pass_lang(message);
+	sendmail(r, method_name, message, from, to);
 }
 
 // constructor & configurator
@@ -470,21 +397,8 @@ MMail::MMail(Pool& apool) : Methoded(apool, MAIL_CLASS_NAME),
 	add_native_method("send", Method::CT_STATIC, _send, 1, 1);
 }
 
-void MMail::configure_user(Request& r) {
-	Pool& pool=r.pool();
-
-	// $MAIN:MAIL[$SMTP[mail.design.ru]]
-	if(Value *mail_element=r.main_class->get_element(mail_name))
-		if(Hash *mail_conf=mail_element->get_hash(0))
-			r.classes_conf.put(name(), mail_conf);
-		else if(!mail_element->get_string())
-			throw Exception("parser.runtime",
-				0,
-				"$" MAIN_CLASS_NAME ":" MAIL_NAME " is not hash");
-}
-
 // creator
 
 Methoded *MMail_create(Pool& pool) {
-	return mail_class=new(pool) MMail(pool);
+	return mail_base_class=new(pool) MMail(pool);
 }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.23 2002/06/20 13:39:57 paf Exp $
+	$Id: mod_parser3.C,v 1.24 2002/06/24 11:59:33 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -263,6 +263,7 @@ static void real_parser_handler(Pool& pool, request_rec *r) {
 	const char *content_length=SAPI::get_env(pool, "CONTENT_LENGTH");
 	request_info.content_length=content_length?atoi(content_length):0;
 	request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
+	request_info.mail_received=false;
 
     // config
 	Parser_module_config *dcfg=our_dconfig(r);

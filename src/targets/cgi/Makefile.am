@@ -21,4 +21,4 @@ ident.C: $(IDENT_AWK) $(IDENT_DEPS) Makefile.am
 	cat $(IDENT_DEPS) | $(AWK) -f $(IDENT_AWK) -v project=parser3 >> ident.C.new 
 	mv ident.C.new ident.C 
 
-EXTRA_DIST = parser3.dsp
+EXTRA_DIST = parser3.dsp getopt.h getopt.c

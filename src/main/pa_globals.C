@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.130 2002/06/12 14:09:49 paf Exp $
+	$Id: pa_globals.C,v 1.131 2002/06/24 11:59:32 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -458,17 +458,17 @@ void pa_globals_init(Pool& pool) {
 }
 
 #if defined(XML) && defined(_MSC_VER)
-#	define XML_LIBS "/parser3project/win32/xml"
-#	pragma comment(lib, XML_LIBS "/glib/lib/libglib-1.3-11.lib")
+#	define GNOME_LIBS "/parser3project/win32/gnome"
+#	pragma comment(lib, GNOME_LIBS "/glib/lib/libglib-1.3-11.lib")
 #	ifdef _DEBUG
-#		pragma comment(lib, XML_LIBS "/libxml2-x.x.x/win32/dsp/libxml2_so_debug/libxml2.lib")
-#		pragma comment(lib, XML_LIBS "/libxslt-x.x.x/win32/dsp/libexslt_so_debug/libexslt.lib")
-#		pragma comment(lib, XML_LIBS "/libxslt-x.x.x/win32/dsp/libxslt_so_debug/libxslt.lib")
-#		pragma comment(lib, XML_LIBS "/gdome2-x.x.x/win32/dsp/Debug/libgdome.lib")
+#		pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/dsp/libxml2_so_debug/libxml2.lib")
+#		pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libexslt_so_debug/libexslt.lib")
+#		pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libxslt_so_debug/libxslt.lib")
+#		pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/dsp/Debug/libgdome.lib")
 #	else
-#		pragma comment(lib, XML_LIBS "/libxml2-x.x.x/win32/dsp/libxml2_so_release/libxml2.lib")
-#		pragma comment(lib, XML_LIBS "/libxslt-x.x.x/win32/dsp/libexslt_so_release/libexslt.lib")
-#		pragma comment(lib, XML_LIBS "/libxslt-x.x.x/win32/dsp/libxslt_so_release/libxslt.lib")
-#		pragma comment(lib, XML_LIBS "/gdome2-x.x.x/win32/dsp/Release/libgdome.lib")
+#		pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/dsp/libxml2_so_release/libxml2.lib")
+#		pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libexslt_so_release/libexslt.lib")
+#		pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libxslt_so_release/libxslt.lib")
+#		pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/dsp/Release/libgdome.lib")
 #	endif
 #endif

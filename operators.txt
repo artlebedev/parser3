@@ -414,16 +414,80 @@ Xhashfile
     ^code.cache[заголовки новостей](35){....}
 
 !mail
+    !$mail.received=MESSAGE:
+        .from
+        .reply-to
+        .subject
+        .date класса data
+        .message-id
+        .raw[
+            .—џ–ќ≈_ѕќЋ№«ќ¬ј“≈Ћ№— ќ≈-ѕќЋ≈-«ј√ќЋќ¬ ј
+        ]
+        .text если из письма можно вынуть текст, он тут
+        .html если из письма можно вынуть HTML, он тут
+        $.{text|html|file}#[ << нумеруетс€ как и в mail:send (text, text2, ...) (attachment, attachment2, ...)
+            $.content-type[
+                $.value[{text|...|x-unknown}/{plain|html|...|x-unknown}]
+                [$.charset[windows-1251]] << в каком пришло, сейчас уже перекодировано
+                $.ѕќЋ№«ќ¬ј“≈Ћ№— »…-ѕј–јћ≈“–-«ј√ќЋќ¬ ј
+            ]
+            $.description
+            $.content-id
+            $.content-md5
+            $.content-location
+            .raw[
+                .—џ–ќ≈_ѕќЋ№«ќ¬ј“≈Ћ№— ќ≈-ѕќЋ≈-«ј√ќЋќ¬ ј
+            ]
+            $.value[строка|FILE]
+        ]
+        $.message#[MESSAGE]
+
+    !^mail:send[
+        $.charset[кодировка заголовка и текстовых блоков] 
+        $.any-header-field 
+        $.text[string]
+        $.text[
+           $.any-header-field 
+           $.value[string]
+        ]
+        $.html{string}
+        $.html[
+            $.any-header-field 
+            $.value{string}
+        ]
+        $.file#[FILE]
+        $.file#[
+            $.any-header-field 
+            $value[FILE]
+        ]
+    ]
+    !если charset указан, письмо перекодируетс€ в этот charset
+    !content-type.charset не вли€ет на перекодирование
+    !после имени части может идти # число
+        ^mail:send[
+#           по-умолчанию, совпадает с source encoding.
+#           задаЄт кодировку body
+            $.charset[windows-1251] 
+#           нет умолчани€
+            $.content-type[$.value[text/plain] $.charset[windows-1251]]
+            $.from["вас€" <vasya@design.ru>]
+            $.to["пет€" <petya@design.ru>]
+            $.subject[пойдЄм пивка]
+            $.body[
+                слова
+            ]
+        ]
     !:send[$.header-field[] $.charset[кодировка письма] $.body[когда body не строка, 
         а hash, отсылаетс€ multipart письмо]]
     !если charset указан, письмо перекодируетс€ в этот charset
     !content-type.charset не вли€ет на перекодирование
+    !после имени части может идти целое число, части пойдут в пор€дке чисел.
     !если body указан строкой, то это текст письма, никаких вложений.
     !если body указан hash, то это части, будут собраны текстовые блоки, затем вложени€
+    !это старый формат, поддерживаетс€ дл€ обратной совместимости
     !если им€ части начинаетс€ со слова text, то это текстовый блок.
     !если им€ части начинаетс€ со слова attach, то это вложение, формат задани€::
         !$attach[$.format[!uue|Xbase64] $.value[DATA] $.file-name[user-file-name]]
-    !после имени части может идти целое число, части пойдут в пор€дке чисел.
     !важно: при multipart не указывать content-type
         ^mail:send[
 #           по-умолчанию, совпадает с source encoding.

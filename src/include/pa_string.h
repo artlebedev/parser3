@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.138 2002/04/22 14:25:41 paf Exp $
+	$Id: pa_string.h,v 1.139 2002/06/24 11:59:32 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -106,6 +106,7 @@ public:
 
 public:
 
+	static String& OnPool(Pool& apool, const char *local_src=0, size_t src_size=0, bool tainted=false);
 	String(Pool& apool, const char *src=0, size_t src_size=0, bool tainted=false);
 	String(const String& src);
 	bool is_empty() const { return append_here==head.chunk.rows; }
@@ -153,6 +154,11 @@ public:
 	*/
 	int cmp(int& partial, const char* src_ptr, size_t src_size=0, 
 		size_t this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
+	/// this starts with src
+	bool starts_with(const char* src_ptr, size_t src_size=0) const {
+		int p; cmp(p, src_ptr, src_size);
+		return p==0 || p==2;
+	}
 	bool operator == (const char* src_ptr) const { 
 		size_t src_size=src_ptr?strlen(src_ptr):0;
 		if(size() != src_size)

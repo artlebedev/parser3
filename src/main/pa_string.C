@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.159 2002/06/10 13:50:03 paf Exp $
+	$Id: pa_string.C,v 1.160 2002/06/24 11:59:33 paf Exp $
 */
 
 #include "pcre.h"
@@ -27,6 +27,17 @@
 ulong string_piece_appends=0;
 #endif
 
+String& String::OnPool(Pool& apool, const char *local_src, size_t src_size, bool tainted) {
+	if(local_src && *local_src) {
+		if(src_size==0)
+			src_size=strlen(local_src);
+		
+		char *pooled_src=(char *)apool.malloc(src_size);
+		memcpy(pooled_src, local_src, src_size);
+		return *new(apool) String(apool, pooled_src, src_size, tainted);
+	} else
+		return *new(apool) String(apool);
+}
 String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	Pooled(apool) {
 	last_chunk=&head.chunk;

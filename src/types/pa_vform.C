@@ -1,11 +1,10 @@
 /**	@file
 	Parser: @b form class.
-	based on The CGI_C library, by Thomas Boutell.
 
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 	
-	$Id: pa_vform.C,v 1.56 2002/06/10 13:27:40 paf Exp $
+	$Id: pa_vform.C,v 1.57 2002/06/24 11:59:34 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -51,6 +50,8 @@ static char *searchAttribute(char *data, const char *attr, size_t len){
 }
 
 // VForm
+
+extern Methoded *form_base_class;
 
 VForm::VForm(Pool& apool) : VStateless_class(apool, 0, form_base_class),
 	fields(apool),
@@ -225,7 +226,6 @@ void VForm::AppendFormEntry(
 	fields.put_dont_replace(sname, value);
 }
 
-/// @todo parse input letter if some switch is on
 void VForm::fill_fields_and_tables(Request& request) {
 	// parsing QS [GET and ?name=value from uri rewrite)]
 	if(request.info.query_string) {
@@ -234,8 +234,8 @@ void VForm::fill_fields_and_tables(Request& request) {
 		memcpy(buf, request.info.query_string, length);
 		ParseGetFormInput(buf, length);
 	}
-	
-	// parsing POSTed data
+
+	// parsing POST data
 	if(request.info.method) {
 		if(const char *content_type=request.info.content_type)
 			if(StrEqNc(request.info.method, "post", true)) {
@@ -248,8 +248,7 @@ void VForm::fill_fields_and_tables(Request& request) {
 					ParseMimeInput(buf, request.post_data, request.post_size);
 				}
 			}
-	} else
-		; // letter?
+	}
 
 	filled=true;
 }
