@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/25 15:37:12 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/11/26 09:02:14 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -140,13 +140,32 @@ static bool set_addr(struct sockaddr_in *addr, const char* host, const short por
 }
 
 static void http_read_response(String& response, int sock){
+	bool check_status=true;
+	ssize_t EOLat=0;
 	while(true) {
 		char *buf=(char *)response.pool().malloc(MAX_STRING); 
 		ssize_t size=recv(sock, buf, MAX_STRING, 0); 
 		if(size<=0)
 			break;
-		response.APPEND_TAINTED(buf, size, "http response", 0); 
+		response.APPEND_TAINTED(buf, size, "remote HTTP server response", 0); 
+		if(check_status && (EOLat=response.pos("\r\n", 2))>=0) { // checking status in first response
+			check_status=false;
+
+			const String& status_line=response.mid(0, (size_t)EOLat);
+			Array astatus(response.pool()); 
+			size_t pos_after_ref=0; status_line.split(astatus, &pos_after_ref, " ", 1); 
+			const String* status_code=astatus.get_string(1); 
+
+			if(!status_code || *status_code!="200")
+				throw Exception("http.status",
+					status_code,
+					"invalid HTTP response status");
+		}
     }
+	if(check_status)
+		throw Exception("http.response",
+			0,
+			"bad response from host - no status found (size=%lu)", response.size()); 
 }
 
 /* ********************** request *************************** */
@@ -327,11 +346,6 @@ static void file_read_http(Pool& pool, const String& file_spec,
 			"bad response from host - no status line "); 
 	}
 	//processing headers
-	Array astatus(pool); 
-	pos_after_ref=0;
-	status_line->split(astatus, &pos_after_ref, " ", 1); 
-	const String * status_code=astatus.get_string(1); 
-	
 	for(int i=1;i<aheaders.size();i++) {
 		if(const String *line=aheaders.get_string(i)) {
 			pos=line->pos(": ", 2); 
@@ -351,10 +365,8 @@ static void file_read_http(Pool& pool, const String& file_spec,
 
 	// output response
 	data=body.cstr(); data_size=body.size();
-	if(out_fields) {
-		headers.put(*file_status_name, new(pool) VString(*status_code)); 
+	if(out_fields)
 		*out_fields=&headers;
-	}
 }
 
 #ifndef DOXYGEN
