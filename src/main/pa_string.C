@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.77 2001/04/20 14:18:43 paf Exp $
+	$Id: pa_string.C,v 1.78 2001/04/23 13:38:31 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -456,7 +456,6 @@ void String::split(Array& result,
 	}
 }
 
-/// @test really @b test: s x m [tested: i & g ]
 static void regex_options(char *options, int *result){
     struct Regex_option {
 		char key;
