@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxdoc.h,v 1.16 2002/01/14 17:48:57 paf Exp $
+	$Id: pa_vxdoc.h,v 1.17 2002/01/28 10:40:06 paf Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -23,6 +23,12 @@
 //#include "libexslt/exslt.h"
 //#include "libxslt/xsltInternals.h"
 
+// defines
+
+#define VXDOC_TYPE "xdoc"
+
+// externals
+
 extern Methoded *Xdoc_class;
 
 void VXdoc_cleanup(void *);
@@ -32,7 +38,7 @@ class VXdoc : public VXnode {
 	friend void VXdoc_destructor(void *);
 public: // Value
 
-	const char *type() const { return "xdoc"; }
+	const char *type() const { return VXDOC_TYPE; }
 
 	/// VXdoc: true
 	bool as_bool() const { return true; }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.33 2002/01/24 15:11:59 paf Exp $
+	$Id: xnode.C,v 1.34 2002/01/28 10:40:06 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -12,6 +12,7 @@
 #include "pa_charset.h"
 #include "pa_request.h"
 #include "pa_vxnode.h"
+#include "pa_vxdoc.h"
 #include "pa_vvoid.h"
 
 #include "xnode.h"
@@ -22,6 +23,10 @@ extern "C" {
 };
 #include "gdome.h"
 #include "libxml/xpath.h"
+
+// defines 
+
+#define XNODE_CLASS_NAME "xdoc"
 
 // classes
 
@@ -91,16 +96,13 @@ private:
 	xmlXPathContext *_Ptr;
 };
 
-// defines
-
-#define XNODE_CLASS_NAME "xnode"
-
 // helpers
 
 GdomeNode *as_node(Pool& pool, const String& method_name, MethodParams *params, 
 						int index, const char *msg) {
 	Value& value=params->as_no_junction(index, msg);
-	if(strcmp(value.type(), VXNODE_TYPE)!=0)
+	if(strcmp(value.type(), VXNODE_TYPE)!=0 
+		|| strcmp(value.type(), VXDOC_TYPE)!=0)
 		throw Exception(0, 0,
 			&method_name,
 			msg);
