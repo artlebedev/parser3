@@ -1,24 +1,24 @@
-# Microsoft Developer Studio Project File - Name="libltdl_oraclesql" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="libltdl_oracle" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
 
-CFG=libltdl_oraclesql - Win32 Debug
+CFG=libltdl_oracle - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "libltdl_oraclesql.mak".
+!MESSAGE NMAKE /f "libltdl_oracle.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "libltdl_oraclesql.mak" CFG="libltdl_oraclesql - Win32 Debug"
+!MESSAGE NMAKE /f "libltdl_oracle.mak" CFG="libltdl_oracle - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "libltdl_oraclesql - Win32 Release" (based on "Win32 (x86) Static Library")
-!MESSAGE "libltdl_oraclesql - Win32 Debug" (based on "Win32 (x86) Static Library")
+!MESSAGE "libltdl_oracle - Win32 Release" (based on "Win32 (x86) Static Library")
+!MESSAGE "libltdl_oracle - Win32 Debug" (based on "Win32 (x86) Static Library")
 !MESSAGE 
 
 # Begin Project
@@ -28,7 +28,7 @@ CFG=libltdl_oraclesql - Win32 Debug
 CPP=cl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "libltdl_oraclesql - Win32 Release"
+!IF  "$(CFG)" == "libltdl_oracle - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -51,7 +51,7 @@ LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
 # ADD LIB32 /nologo
 
-!ELSEIF  "$(CFG)" == "libltdl_oraclesql - Win32 Debug"
+!ELSEIF  "$(CFG)" == "libltdl_oracle - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -78,8 +78,8 @@ LIB32=link.exe -lib
 
 # Begin Target
 
-# Name "libltdl_oraclesql - Win32 Release"
-# Name "libltdl_oraclesql - Win32 Debug"
+# Name "libltdl_oracle - Win32 Release"
+# Name "libltdl_oracle - Win32 Debug"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
