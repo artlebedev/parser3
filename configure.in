@@ -50,14 +50,17 @@ AC_LANG_CPLUSPLUS
 
 dnl Arguments
 
-AC_ARG_ENABLE(string-origins, [  --disable-string-origins to switch off string origin tracking],
+AC_ARG_ENABLE(safe-mode, [  --disable-safe-mode     to enable reading and executing
+                          files belonging to group+user other then effective],
 [
-if test "$enableval" = "no"; then
-	AC_MSG_WARN(disabling string origin tracking)
-	AC_DEFINE(NO_STRING_ORIGIN,,no string origin tracking)
-fi
+    SAFE_MODE=$enableval
 ]
 )
+if test "$SAFE_MODE" = "no"; then
+	AC_MSG_WARN(enabling reading of files belonging to group+user other then effective)
+else
+	AC_DEFINE(PA_SAFE_MODE,,reading of files belonging to group+user other then effective)
+fi
 
 AC_ARG_ENABLE(execs, [  --disable-execs         to disable any execs
                           (file::exec, file::cgi, unix mail:send)],
@@ -69,15 +72,16 @@ fi
 ]
 )
 
-AC_ARG_ENABLE(foreign-group-files, [  --disable-foreign-group-files to disable read and executing
-                          files belonging to group other then effective],
+AC_ARG_ENABLE(string-origins, [  --disable-string-origins to switch off string origin tracking],
 [
 if test "$enableval" = "no"; then
-	AC_MSG_WARN(disabling reading of files belonging to group other then effective)
-	AC_DEFINE(NO_FOREIGN_GROUP_FILES,,disabled reading and executing files of non-process-effective-group)
+	AC_MSG_WARN(disabling string origin tracking)
+	AC_DEFINE(NO_STRING_ORIGIN,,no string origin tracking)
 fi
 ]
 )
+
+
 srccharsetsdir=$srcdir/etc/parser3.charsets
 CHARSETS_REQUESTED="windows-1251"
 AC_ARG_WITH(charsets, [  --with-charsets=CHARSET[,CHARSET,...]  Enables charsets in root config (windows-1251,
@@ -96,7 +100,7 @@ AC_DEFUN(PA_SUBSTCHARSET, [
 	commentcharset_$2='#'
 	for c in $CHARSETS_REQUESTED; do
 		if test "$1" = "$c"; then
-			AC_MSG_WARN(Enabling charset $1)
+			AC_MSG_WARN(enabling charset $1)
 			commentcharset_$2=
 		fi
 	done
