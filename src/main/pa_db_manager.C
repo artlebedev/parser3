@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.C,v 1.12 2001/11/05 11:46:27 paf Exp $
+	$Id: pa_db_manager.C,v 1.13 2001/11/05 14:19:55 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -29,11 +29,12 @@ const int CHECK_EXPIRED_CONNECTIONS_SECONDS=EXPIRE_UNUSED_CONNECTION_SECONDS*2;
 // callbacks
 
 static void expire_connection(const Hash::Key& key, Hash::Val *& value, void *info) {
-	DB_Connection& connection=*static_cast<DB_Connection *>(value);
-	time_t older_dies=reinterpret_cast<time_t>(info);
+	if(DB_Connection *connection=static_cast<DB_Connection *>(value)) {
+		time_t older_dies=reinterpret_cast<time_t>(info);
 
-	if(connection.expired(older_dies)) {
-		connection.~DB_Connection();  value=0;
+		if(connection->expired(older_dies)) {
+			connection->~DB_Connection();  value=0;
+		}
 	}
 }
 
