@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.8 2002/09/17 11:24:20 paf Exp $
+#$Id: auto.p.dist.in,v 1.9 2002/09/17 11:33:54 paf Exp $
 
 @conf[]
 $charsetsdir[@charsetsdir@]
@@ -10,7 +10,7 @@ $CHARSETS[
 @commentcharset_windows1251@    $.windows-1251[$charsetsdir/windows-1251.cfg]
 @commentcharset_windows1257@    $.windows-1257[$charsetsdir/windows-1257.cfg]
 ]
-#change your client libraries paths to those on your system
+#change your client libraries paths to those on your system
 $SQL[
 	$.drivers[^table::set{protocol	driver	client
 mysql	$sqldriversdir/libparser3mysql.@dll_extension@	@mysql_client@
