@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-static const char * const IDENT_MEMORY_H="$Date: 2004/01/29 13:50:21 $";
+static const char * const IDENT_MEMORY_H="$Date: 2004/01/29 14:28:16 $";
 
 // include
 
@@ -61,7 +61,8 @@ inline void *pa_malloc_atomic(size_t size) {
 inline char *pa_strdup(const char* auto_variable_never_null, size_t helper_length=0) {
 	size_t known_length=(helper_length?helper_length:strlen(auto_variable_never_null));
 
-	if(char *result=static_cast<char*>(pa_gc_malloc_atomic(known_length+1))) {
+	size_t size=known_length+1;
+	if(char *result=static_cast<char*>(pa_gc_malloc_atomic(size))) {
 		memcpy(result, auto_variable_never_null, known_length);
 		result[known_length]=0;
 		return result;
