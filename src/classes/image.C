@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/09/18 08:52:48 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/21 09:18:18 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -44,39 +44,76 @@ public: // Methoded
 #ifndef DOXYGEN
 class Measure_reader {
 public:
-	enum { READ_CHUNK_SIZE=0x400*20 };// 20K
-	typedef size_t(*Func)(void *& buf, size_t limit, void *info);
+	virtual size_t read(const void *&buf, size_t limit)=0;
+	virtual void seek(long delta)=0;
+};
 
-	Measure_reader(Func afunc, void *ainfo) : 
-		func(afunc), info(ainfo), 
-		chunk(0), offset(0), size(0) {
+class Measure_file_reader: public Measure_reader {
+public:
+	Measure_file_reader(Pool& apool, int af, const String& afile_name, const char *afname): 
+		pool(apool), file_name(afile_name), fname(afname), f(af) {
 	}
 
-	size_t read(void *&buf, size_t limit) {
-		if(offset+limit>size) // nothing left
-			if(offset==0 || limit==1) { // only one-byte continuations allowed
-				size=(*func)(chunk, READ_CHUNK_SIZE, info);
-				offset=0;
-			} else
-				return 0;// as if EOF
-		if(!size) // EOF
+	/*override*/size_t read(const void *&abuf, size_t limit) {
+		if(limit==0)
 			return 0;
-			
-		// something left
-		size_t read_size=min(offset+limit, size)-offset;
-		buf=((unsigned char *)chunk)+offset;
-		offset+=read_size;
+
+		void *lbuf=pool.malloc(limit);
+		size_t read_size=(size_t)::read(f, lbuf, limit);  abuf=lbuf;
+		if(ssize_t(read_size)<0 || read_size>limit)
+			throw Exception(0,
+				&file_name, 
+				"measure failed: actually read %lu bytes count not in [0..%lu] valid range", 
+			read_size, limit);
+
 		return read_size;
 	}
 
-private:
-	Func func;
-	void *info;
+	/*override*/void seek(long delta) {
+		if(lseek(f, delta, SEEK_CUR)<0)
+			throw Exception("file.seek",
+				&file_name, 
+				"seek(delta=%ld) failed: %s (%d), actual filename '%s'", 
+					delta, strerror(errno), errno, fname);
+	}
 
-	void *chunk;
-	size_t offset;
-	size_t size;
+private:
+	Pool& pool;
+	const String& file_name; const char *fname;
+	int f;
 };
+
+class Measure_buf_reader: public Measure_reader {
+public:
+	Measure_buf_reader(const void *abuf, size_t asize, const String& afile_name): 
+		buf(abuf), size(asize), file_name(afile_name), offset(0) {
+	}
+	
+	/*override*/size_t read(const void *&abuf, size_t limit) {
+		size_t to_read=min(limit, size-offset);
+		abuf=(const char*)buf+offset;
+		offset+=to_read;
+		return to_read;
+	}
+
+	/*override*/void seek(long delta) {
+		size_t new_offset=offset+delta;
+		if((ssize_t)new_offset<0 || new_offset>size)
+			throw Exception("file.seek",
+				&file_name, 
+				"seek(offset=%l) failed: out of buffer, new_offset>size (%l>%l) or new_offset<0", 
+					delta, new_offset, size);
+		offset=new_offset;
+	}
+
+private:
+
+	const void *buf; size_t size;
+	const String& file_name; 
+
+	size_t offset;
+};
+
 #endif
 
 /// PNG file header
@@ -193,9 +230,8 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 			break;
 		} else {
             // Dummy read to skip over data
-            size_t limit=big_endian_to_int(head->length) - 2;
-			if(reader.read(buf, limit)<limit)
-				break;
+            long offset=big_endian_to_int(head->length) - 2;
+			reader.seek(offset);
         }
 	}
 
@@ -247,68 +283,47 @@ void measure(Pool& pool, const String& file_name,
 			"can not determine image type - no file name extension");
 }
 
-#ifndef DOXYGEN
-struct Read_mem_info {
-	unsigned char *ptr;
-	unsigned char *eof;
-};
-#endif
-static size_t read_mem(void*& buf, size_t limit, void *info) {
-	Read_mem_info& rmi=*static_cast<Read_mem_info *>(info);
-	buf=rmi.ptr;
-	size_t read_size=min(limit, (size_t)(rmi.eof-rmi.ptr));
-	rmi.ptr+=read_size;
-	return read_size;
-}
-
-#ifndef DOXYGEN
-struct Read_disk_info {
-	const String *file_spec;
-	size_t offset;
-};
-#endif
-static size_t read_disk(void*& buf, size_t limit, void *info) {
-	Read_disk_info& rdi=*static_cast<Read_disk_info *>(info);
-	Pool& pool=rdi.file_spec->pool();
-
-	size_t read_size;
-	file_read(pool, *rdi.file_spec, 
-			   buf, read_size, 
-			   false/*as_text*/, 
-			   true/*fail_on_read_problem*/, 
-			   rdi.offset, limit);
-
-	rdi.offset+=read_size;
-	return read_size;
-}
-
 // methods
+
+#ifndef DOXYGEN
+struct File_measure_action_info {
+	int *width;
+	int *height;
+	const String *file_name;
+};
+#endif
+static void file_measure_action(Pool& pool,
+								int f, 
+								const String& file_spec, const char *fname, bool as_text,
+								void *context) {
+	File_measure_action_info& info=*static_cast<File_measure_action_info *>(context);
+
+	Measure_file_reader reader(pool, f, *info.file_name, fname);
+	measure(pool, *info.file_name, reader, *info.width, *info.height);
+}
 
 static void _measure(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	Value& data=params->as_no_junction(0, "data must not be code");
 
-	void *info;Measure_reader::Func read_func;
-	Read_mem_info read_mem_info;
-	Read_disk_info read_disk_info;
+	int width=0;
+	int height=0;
 	const String *file_name;
-	if(data.is_string()) {
-		file_name=data.get_string();
-		read_disk_info.file_spec=&r.absolute(*file_name);
-		read_disk_info.offset=0;
-		info=&read_disk_info;read_func=read_disk;
+	if(file_name=data.get_string()) {
+		File_measure_action_info info={&width, &height, file_name};
+		file_read_action_under_lock(pool, r.absolute(*file_name), 
+			"measure", file_measure_action, &info);
 	} else {
 		const VFile& vfile=*data.as_vfile();
 		file_name=&static_cast<Value *>(vfile.fields().get(*name_name))->as_string();
-		read_mem_info.ptr=(unsigned char *)vfile.value_ptr();
-		read_mem_info.eof=read_mem_info.ptr+vfile.value_size();
-		info=&read_mem_info;read_func=read_mem;
+		Measure_buf_reader reader(
+			vfile.value_ptr(),
+			vfile.value_size(),
+			*file_name
+		);
+		measure(pool, *file_name, reader, width, height);
 	}
-
-	Measure_reader reader(read_func, info);
-	int width, height;
-	measure(pool, *file_name, reader, width, height);
 
 	static_cast<VImage *>(r.get_self())->set(file_name, width, height);
 }

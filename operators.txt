@@ -940,6 +940,7 @@ xdoc(xnode)
     !file.lock                                                        shared/exclusive lock error
     !file.missing         ^file:delete[delme]                         not found
     !file.access          ^table::load[.]                             no rights
+    !file.seek                                                        seek failed
     !image.format         ^image::measure[index.html]                 not gif/jpg
     !sql.connect          ^connect[mysql://baduser:pass@host/db]{}    not found/timeout
     !sql.execute          ^void:sql{select bad}                       syntax error

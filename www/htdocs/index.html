@@ -6,8 +6,8 @@
 $selffilespec[$filespec]
 #$form:here
 #$request:charset[UTF-8]
-##$request:charset[windows-1251]
-##$response:charset[windows-1251]
+$request:charset[windows-1251]
+$response:charset[windows-1251]
 #$response:charset[UTF-8]
 #$response:charset[empty]
 #$response:content-type[$.value[text/html]$.charset[$response:charset]]
@@ -290,7 +290,29 @@ OK
 #^emailhead2[]
 #^includet2overridedynamic[]
 #^includet2overridestatic[]
-^virtualtest2[]
+#^virtualtest2[]
+#^message-id-test[]
+^bad-jpeg-measure[]
+
+@bad-jpeg-measure[]
+$dir[jpg]
+$file[^file:list[$dir;\.jpe?g^$]]
+^file.menu{
+	$image[^image::measure[$dir/$file.name]]
+	^image.html[]
+	<br>
+}
+
+@message-id-test[]
+^mail:send[
+	$.from[paf@mail]
+	$.to[paf@mail]
+	$.subject[test]
+#	$.message-id[<1@parser.ru>]
+	$.Message-id[<2@parser.ru>]
+	$.subject[проверка]
+	$.text[мычит!]
+]
 
 @virtualtest2[]
 $derived[^derived::create[]]

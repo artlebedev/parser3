@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2002/09/18 12:40:38 $";
+static const char* IDENT_COMMON_H="$Date: 2002/11/21 09:18:19 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -89,9 +89,27 @@ void fix_line_breaks(
 					 size_t& size ///< may change! used to speedup next actions
 					 );
 
+typedef void (*File_read_action)(Pool& pool,
+								 int f, 
+								 const String& file_spec, const char *fname, bool as_text,
+								 void *context);
+
+/**
+	shared-lock specified file, 
+	do actions under lock.
+	if fail_on_read_problem is true[default] throws an exception
+	
+	@returns true if read OK
+*/
+bool file_read_action_under_lock(Pool& pool, const String& file_spec, 
+				const char *action_name, File_read_action action, void *context,
+				bool as_text=false,
+				bool fail_on_read_problem=true);
 /**
 	read specified text file using pool, 
 	if fail_on_read_problem is true[default] throws an exception
+
+  	@returns true if read OK
 */
 char *file_read_text(Pool& pool, 
 					 const String& file_spec, 
@@ -100,12 +118,15 @@ char *file_read_text(Pool& pool,
 /**
 	read specified file using pool, 
 	if fail_on_read_problem is true[default] throws an exception
+
+	@returns true if read OK
 */
 bool file_read(Pool& pool, const String& file_spec, 
 			   void*& data, size_t& size, 
 			   bool as_text,
-			   bool fail_on_read_problem=true,
-			   size_t offset=0, size_t limit=0);
+			   bool fail_on_read_problem=true);
+
+typedef void (*File_write_action)(int f, void *context);
 
 /**
 	lock specified file exclusively, 
@@ -117,7 +138,7 @@ bool file_read(Pool& pool, const String& file_spec,
 */
 bool file_write_action_under_lock(
 				const String& file_spec, 
-				const char *action_name, void (*action)(int, void *), void *context=0,
+				const char *action_name, File_write_action action, void *context,
 				bool as_text=false,
 				bool do_append=false,
 				bool do_block=true,

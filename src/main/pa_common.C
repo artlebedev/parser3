@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/21 07:26:29 $";
+static const char* IDENT_COMMON_C="$Date: 2002/11/21 09:18:19 $";
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -111,13 +111,65 @@ char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_prob
 	void *result;  size_t size;
 	return file_read(pool, file_spec, result, size, true, fail_on_read_problem)?(char *)result:0;
 }
+
+#ifndef DOXYGEN
+struct File_read_action_info {
+	void **data; size_t *data_size;
+};
+#endif
+static void file_read_action(Pool& pool,
+							 int f, 
+							 const String& file_spec, const char *fname, bool as_text,
+							 void *context) {
+	File_read_action_info& info=*static_cast<File_read_action_info *>(context);
+
+    struct stat finfo;
+	if(stat(fname, &finfo)!=0)
+		throw Exception("file.missing", // hardly possible: we just opened it OK
+			&file_spec, 
+			"stat failed: %s (%d), actual filename '%s'", 
+				strerror(errno), errno, fname);
+
+	if(size_t to_read_size=(size_t)finfo.st_size) { 
+		*info.data=pool.malloc(to_read_size+(as_text?1:0), 3);
+		*info.data_size=(size_t)read(f, *info.data, to_read_size);
+
+		if(ssize_t(*info.data_size)<0 || *info.data_size>to_read_size)
+			throw Exception(0,
+				&file_spec, 
+				"read failed: actually read %lu bytes count not in [0..%lu] valid range", 
+					*info.data_size, to_read_size);
+	} else { // empty file
+		if(as_text) {
+			*info.data=pool.malloc(1);
+			*(char*)(*info.data)=0;
+		} else 
+			*info.data=0;
+		*info.data_size=0;
+		return;
+	}
+
+	if(as_text) {
+		fix_line_breaks((char *)(*info.data), *info.data_size);
+		// note: after fixing
+		((char*&)(*info.data))[*info.data_size]=0;
+	}
+}
 bool file_read(Pool& pool, const String& file_spec, 
 			   void*& data, size_t& data_size, bool as_text,
-			   bool fail_on_read_problem,
-			   size_t offset, size_t limit) {
+			   bool fail_on_read_problem) {
+	File_read_action_info info={&data, &data_size};
+	return file_read_action_under_lock(pool, file_spec, 
+		"read", file_read_action, &info,
+		as_text, fail_on_read_problem);
+}
+
+bool file_read_action_under_lock(Pool& pool, const String& file_spec, 
+				const char *action_name, File_read_action action, void *context,
+				bool as_text,
+				bool fail_on_read_problem) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	int f;
-    struct stat finfo;
 
 	// first open, next stat:
 	// directory update of NTFS hard links performed on open.
@@ -127,79 +179,39 @@ bool file_read(Pool& pool, const String& file_spec,
 	//   directory entry of b.html in NTFS not updated at once,
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
+	// later: it seems, even this does not help sometimes
     if((f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
-		if(lock_shared_blocking(f)!=0) {
-			Exception e("file.lock",
-					&file_spec, 
-					"shared lock failed: %s (%d), actual filename '%s'", 
-						strerror(errno), errno, fname);
-			unlock(f);
-			close(f);
-			if(fail_on_read_problem)
-				throw e;
-			return false;
-		}
-		if(stat(fname, &finfo)!=0) {
-			Exception e("file.missing",
-					&file_spec, 
-					"stat failed: %s (%d), actual filename '%s'", 
-						strerror(errno), errno, fname);
-			unlock(f);
-			close(f);
-			if(fail_on_read_problem)
-				throw e;
-			return false;
-		}
+		try {
+			if(lock_shared_blocking(f)!=0)
+				throw Exception("file.lock",
+						&file_spec, 
+						"shared lock failed: %s (%d), actual filename '%s'", 
+							strerror(errno), errno, fname);
+
 #ifdef NO_FOREIGN_GROUP_FILES
-		if(finfo.st_gid/*foreign?*/!=getegid()) {
-			Exception e("parser.runtime",
-				&file_spec,
-				"parser reading files of foreign group disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
-					fname);
-			unlock(f);
-			close(f);
-			if(fail_on_read_problem)
-				throw e;
-			return false;
-		}
+			if(finfo.st_gid/*foreign?*/!=getegid()) {
+				throw Exception("parser.runtime",
+					&file_spec,
+					"parser reading files of foreign group disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
+						fname);
 #endif
-		size_t max_size=limit?min(offset+limit, (size_t)finfo.st_size)-offset:finfo.st_size;
-		if(!max_size) { // eof
-			if(as_text) {
-				data=pool.malloc(1);
-				*(char*)data=0;
-			} else 
-				data=0;
-			data_size=0;
-		} else {
-			data=pool.malloc(max_size+(as_text?1:0), 3);
-			if(offset)
-				lseek(f, offset, SEEK_SET);
-			data_size=read(f, data, max_size);
-		}
-		unlock(f);
-		close(f);
-		if(!max_size) // eof
-			return true;
 
-		if(ssize_t(data_size)<0 || data_size>max_size)
-			throw Exception(0,
-				&file_spec, 
-				"read failed: actually read %d bytes count not in [0..%lu] valid range", 
-					data_size, (unsigned long)max_size); //never
+			action(pool, f, file_spec, fname, as_text, context);
+		} catch(...) {
+			unlock(f);close(f);
+			if(fail_on_read_problem)
+				/*re*/throw;
+			return false;			
+		} 
 
-		if(as_text) {
-			fix_line_breaks((char *)data, data_size);
-			// note: after fixing
-			((char*&)data)[data_size]=0;
-		}
+		unlock(f);close(f);
 		return true;
     } else {
 		if(fail_on_read_problem)
 			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
 				&file_spec, 
-				"read failed: %s (%d), actual filename '%s'", 
-					strerror(errno), errno, fname);
+				"%s failed: %s (%d), actual filename '%s'", 
+					action_name, strerror(errno), errno, fname);
 		return false;
 	}
 }
@@ -215,7 +227,7 @@ static void create_dir_for_file(const String& file_spec) {
 
 bool file_write_action_under_lock(
 				const String& file_spec, 
-				const char *action_name, void (*action)(int, void *), void *context,
+				const char *action_name, File_write_action action, void *context,
 				bool as_text,
 				bool do_append,
 				bool do_block,
@@ -245,15 +257,13 @@ bool file_write_action_under_lock(
 		} catch(...) {
 			if(!do_append)
 				ftruncate(f, tell(f)); // one can not use O_TRUNC, read lower
-			unlock(f);
-			close(f);
+			unlock(f);close(f);
 			/*re*/throw;
 		}
 		
 		if(!do_append)
 			ftruncate(f, tell(f)); // O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
-		unlock(f);
-		close(f);
+		unlock(f);close(f);
 		return true;
 	} else
 		throw Exception(errno==EACCES?"file.access":0,

@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/10/31 15:01:55 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/11/21 09:18:19 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -573,18 +573,20 @@ static const String& text_value_to_string(Request& r, const String *source,
 const String& VMail::message_hash_to_string(Request& r, const String *source,
 											Hash *message_hash, int level, 
 											const String **from, const String **to) {
+	Pool& pool=r.pool();
+	
 	if(!message_hash)
 		throw Exception("parser.runtime",
 			source,
 			"message must be hash");
 
-	String& result=*NEW String(pool());
+	String& result=*new(pool) String(pool);
 
 	Charset *charset;
 	if(Value *vrecodecharset_name=static_cast<Value *>(message_hash->get(*charset_name)))
 		charset=&charsets->get_charset(vrecodecharset_name->as_string());
 	else
-		charset=&pool().get_source_charset();
+		charset=&pool.get_source_charset();
 
 	Store_message_element_info info={
 		charset,
@@ -597,7 +599,7 @@ const String& VMail::message_hash_to_string(Request& r, const String *source,
 		if(to)
 			*to=0;
 		for(int pt=0; pt<P_TYPES_COUNT; pt++)
-			info.parts[pt]=NEW Array(pool());
+			info.parts[pt]=new(pool) Array(pool);
 		message_hash->for_each(store_message_element, &info);
 		if(!info.errors_to)
 			result << "errors-to: postmaster\n"; // errors-to: default
