@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2004/02/17 10:38:08 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2004/02/27 12:57:46 $";
 
 
 #include "pa_string.h"
@@ -34,7 +34,7 @@ extern "C" { // author forgot to do that
     {  \
 	bool skip=false; \
 	if(optimize) switch(c) { \
-	case ' ': case '\r': case '\n': case '\t': \
+	case ' ': case '\n': case '\t': \
 		if(whitespace) \
 			skip=true; /*skipping subsequent*/ \
 		else \
