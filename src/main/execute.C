@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/02 10:55:49 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/02 12:20:15 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -695,6 +695,8 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 			{
 				b=POP();  a=POP();
 				double result=a->as_double() - b->as_double();
+				double zero=0.0;
+				result+=zero;
 				value=NEW VBool(pool(), result < 0.0);
 				PUSH(value);
 				break;
@@ -727,6 +729,8 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 			{
 				b=POP();  a=POP();
 				double result=a->as_double() - b->as_double();
+				double zero=0.0;
+				result+=zero;
 				value=NEW VBool(pool(), result == 0.0);
 				PUSH(value);
 				break;
