@@ -64,8 +64,6 @@ APACHE_LIBS = @APACHE_LIBS@
 AWK = @AWK@
 CC = @CC@
 CXX = @CXX@
-DB2_INCLUDES = @DB2_INCLUDES@
-DB2_LIBS = @DB2_LIBS@
 INCLTDL = @INCLTDL@
 LIBADD_DL = @LIBADD_DL@
 LIBLTDL = @LIBLTDL@
@@ -84,11 +82,11 @@ sqldriversdir = @sqldriversdir@
 
 SUBDIRS = gd smtp
 
-INCLUDES = -I../types -I../sql -I../pcre -Igd @XML_INCLUDES@ @DB2_INCLUDES@
+INCLUDES = -I../types -I../sql -I../pcre -Igd @XML_INCLUDES@
 
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h
-libclasses_a_SOURCES = classes.awk double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C hashfile.C ident.C classes.C
+libclasses_a_SOURCES = classes.awk double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C ident.C classes.C
 
 CLASSES_INC_DEPS = *.C
 CLEANFILES = classes.inc
@@ -110,7 +108,7 @@ LIBS = @LIBS@
 libclasses_a_LIBADD = 
 libclasses_a_OBJECTS =  double.o file.o form.o image.o int.o mail.o op.o \
 math.o response.o string.o table.o void.o hash.o date.o xnode.o xdoc.o \
-hashfile.o ident.o classes.o
+ident.o classes.o
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -126,9 +124,9 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/classes.P .deps/date.P .deps/double.P .deps/file.P \
-.deps/form.P .deps/hash.P .deps/hashfile.P .deps/ident.P .deps/image.P \
-.deps/int.P .deps/mail.P .deps/math.P .deps/op.P .deps/response.P \
-.deps/string.P .deps/table.P .deps/void.P .deps/xdoc.P .deps/xnode.P
+.deps/form.P .deps/hash.P .deps/ident.P .deps/image.P .deps/int.P \
+.deps/mail.P .deps/math.P .deps/op.P .deps/response.P .deps/string.P \
+.deps/table.P .deps/void.P .deps/xdoc.P .deps/xnode.P
 SOURCES = $(libclasses_a_SOURCES)
 OBJECTS = $(libclasses_a_OBJECTS)
 

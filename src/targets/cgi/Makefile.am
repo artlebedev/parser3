@@ -6,7 +6,7 @@ INCLUDES = -I../../classes -I../../types -I../../sql -I../../pcre -I$(INCLTDL) @
 bin_PROGRAMS = parser3
 noinst_HEADERS = pa_config_paths.h pool_storage.h
 parser3_SOURCES = pa_pool.C pa_threads.C parser3.C ident.C
-parser3_LDADD=../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a ../../pcre/libpcre.a $(LIBLTDL) $(LIBADD_DL) @XML_LIBS@ @DB2_LIBS@
+parser3_LDADD=../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a ../../pcre/libpcre.a $(LIBLTDL) $(LIBADD_DL) @XML_LIBS@
 
 IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.C

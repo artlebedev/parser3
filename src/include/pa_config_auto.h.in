@@ -147,9 +147,6 @@
 /* xml-abled parser */
 #undef XML
 
-/* DB2-abled parser */
-#undef DB2
-
 /* Windows32 target platform */
 #undef WIN32
 

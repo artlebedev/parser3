@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.116 2002/02/18 15:24:28 paf Exp $
+	$Id: pa_globals.C,v 1.117 2002/02/22 10:11:33 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -31,10 +31,6 @@ extern "C" {
 #include "pa_charsets.h"
 #include "pa_charset.h"
 #include "pa_threads.h"
-
-#ifdef DB2
-#include "pa_db_manager.h"
-#endif
 
 String *content_type_name;
 String *charset_name;
@@ -393,12 +389,6 @@ void pa_globals_init(Pool& pool) {
 	cache_managers->put(*NEW String(pool, "sql"), 
 		SQL_driver_manager=NEW SQL_Driver_manager(pool));
 
-#ifdef DB2
-	// DB driver manager
-	cache_managers->put(*NEW String(pool, "db"), 
-		DB_manager=NEW DB_Manager(pool));
-#endif
-
 #ifdef XML
 	// initializing xml libs
 
@@ -470,15 +460,5 @@ void pa_globals_init(Pool& pool) {
 #		pragma comment(lib, XML_LIBS "/libxslt-x.x.x/win32/dsp/libexslt_so_release/libexslt.lib")
 #		pragma comment(lib, XML_LIBS "/libxslt-x.x.x/win32/dsp/libxslt_so_release/libxslt.lib")
 #		pragma comment(lib, XML_LIBS "/gdome2-x.x.x/win32/dsp/Release/libgdome.lib")
-#	endif
-#endif
-
-
-#if defined(DB2) && defined(_MSC_VER)
-#	define LIBDB2_WIN32_BUILD "/parser3project/win32db/lib"
-#	ifdef _DEBUG
-#		pragma comment(lib, LIBDB2_WIN32_BUILD "/debug/libdb.lib")
-#	else
-#		pragma comment(lib, LIBDB2_WIN32_BUILD "/release/libdb.lib")
 #	endif
 #endif

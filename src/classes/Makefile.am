@@ -1,10 +1,10 @@
 SUBDIRS = gd smtp
 
-INCLUDES = -I../types -I../sql -I../pcre -Igd @XML_INCLUDES@ @DB2_INCLUDES@
+INCLUDES = -I../types -I../sql -I../pcre -Igd @XML_INCLUDES@
 
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h
-libclasses_a_SOURCES = classes.awk double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C hashfile.C ident.C classes.C
+libclasses_a_SOURCES = classes.awk double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C ident.C classes.C
 
 CLASSES_INC_DEPS = *.C
 
