@@ -1,11 +1,11 @@
 /** @file
-	Parser: sql connection decl.
+	Parser: sql fconnection decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.8 2001/05/17 12:51:05 parser Exp $
+	$Id: pa_sql_connection.h,v 1.9 2001/05/17 13:23:28 parser Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -16,41 +16,39 @@
 #include "pa_sql_driver.h"
 #include "pa_sql_driver_manager.h"
 
-/// SQL connection. handy wrapper around low level SQL_Driver
+/// SQL fconnection. handy wrapper around low level SQL_Driver
 class SQL_Connection : public Pooled {
 
 public:
 
-	void set_services(SQL_Driver_services *services) {
-		fdriver.set_services(services);
-	}
-
-	SQL_Connection(Pool& pool,
-		const String& aurl, 
-		SQL_Driver& adriver,
-		char *used_only_in_constructor_url_cstr) : Pooled(pool),
+	SQL_Connection(Pool& pool, const String& aurl, SQL_Driver& adriver) : Pooled(pool),
 		furl(aurl),
 		fdriver(adriver) {
-		fdriver.connect(used_only_in_constructor_url_cstr, &connection);
+	}
+	void set_services(SQL_Driver_services *aservices) {
+		fservices=aservices;
 	}
 
-	void close(Pool& pool) {
-		SQL_driver_manager->close_connection(furl, *this, pool);
+	void close() {
+		SQL_driver_manager->close_connection(furl, *this);
 	}
 
-	void disconnect() { fdriver.disconnect(connection); }
-	void commit() { fdriver.commit(connection); }
-	void rollback() { fdriver.rollback(connection); }
-	bool ping() { return fdriver.ping(connection); }
+	void connect(char *used_only_in_connect_url_cstr) { 
+		fdriver.connect(used_only_in_connect_url_cstr, *fservices, &fconnection);
+	}
+	void disconnect() { fdriver.disconnect(*fservices, fconnection); }
+	void commit() { fdriver.commit(*fservices, fconnection); }
+	void rollback() { fdriver.rollback(*fservices, fconnection); }
+	bool ping() { return fdriver.ping(*fservices, fconnection); }
 	uint quote(char *to, const char *from, unsigned int length) {
-		return fdriver.quote(connection, to, from, length);
+		return fdriver.quote(*fservices, fconnection, to, from, length);
 	}
 
 	void query(
 		const char *statement, unsigned long offset, unsigned long limit,
 		unsigned int *column_count, SQL_Driver::Cell **columns,
 		unsigned long *row_count, SQL_Driver::Cell ***rows) { 
-		fdriver.query(connection, 
+		fdriver.query(*fservices, fconnection, 
 			statement, offset, limit, 
 			column_count, columns,
 			row_count, rows);
@@ -59,9 +57,10 @@ public:
 
 private:
 
-	SQL_Driver& fdriver;
-	void *connection;
 	const String& furl;
+	SQL_Driver& fdriver;
+	SQL_Driver_services *fservices;
+	void *fconnection;
 };
 
 #endif

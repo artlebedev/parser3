@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.17 2001/05/17 08:52:40 parser Exp $
+	$Id: parser3mysql.C,v 1.18 2001/05/17 13:23:28 parser Exp $
 */
 
 #include "config_includes.h"
@@ -50,17 +50,18 @@ public:
 		return dlink(dlopen_file_spec);
 	}
 	/**	connect
-		@param used_only_to_connect_url 
+		@param used_only_in_connect_url
 			format: @b user:pass@host[:port]/database/charset 
 			3.23.22b
 			Currently the only option for @b character_set_name is cp1251_koi8.
 			WARNING: must be used only to connect, for buffer doesn't live long
 	*/
 	void connect(
-		char *used_only_to_connect_url, 
+		char *used_only_in_connect_url, 
+		SQL_Driver_services& services, 
 		void **connection ///< output: MYSQL *
 		) {
-		char *user=used_only_to_connect_url;
+		char *user=used_only_in_connect_url;
 		char *host=lsplit(user, '@');
 		char *db=lsplit(host, '/');
 		char *pwd=lsplit(user, ':');
@@ -72,7 +73,7 @@ public:
 	    MYSQL *mysql=mysql_init(NULL);
 		if(!mysql_real_connect(mysql, 
 			host, user, pwd, db, port?port:MYSQL_PORT, NULL, 0))
-			services->_throw(mysql_error(mysql));
+			services._throw(mysql_error(mysql));
 
 		if(charset) { 
 			// set charset
@@ -80,23 +81,24 @@ public:
 			strncat(statement, charset, MAX_STRING);
 			
 			if(mysql_query(mysql, statement)) 
-				services->_throw(mysql_error(mysql));
+				services._throw(mysql_error(mysql));
 			(*mysql_store_result)(mysql); // throw out the result [don't need but must call]
 		}
 
 		*(MYSQL **)connection=mysql;
 	}
-	void disconnect(void *connection) {
+	void disconnect(SQL_Driver_services&, void *connection) {
 	    mysql_close((MYSQL *)connection);
 	}
-	void commit(void *connection) {}
-	void rollback(void *connection) {}
+	void commit(SQL_Driver_services&, void *) {}
+	void rollback(SQL_Driver_services&, void *) {}
 
-	bool ping(void *connection) {
+	bool ping(SQL_Driver_services&, void *connection) {
 		return mysql_ping((MYSQL *)connection)==0;
 	}
 
-	unsigned int quote(void *connection,
+	unsigned int quote(
+		SQL_Driver_services&, void *connection,
 		char *to, const char *from, unsigned int length) {
 		/*
 			3.23.22b
@@ -108,7 +110,8 @@ public:
 		*/
 		return (*mysql_escape_string)(to, from, length);
 	}
-	void query(void *connection, 
+	void query(
+		SQL_Driver_services& services, void *connection, 
 		const char *astatement, unsigned long offset, unsigned long limit,
 		unsigned int *column_count, Cell **columns, 
 		unsigned long *row_count, Cell ***rows) {
@@ -119,7 +122,7 @@ public:
 		const char *statement;
 		if(offset || limit) {
 			size_t statement_size=strlen(astatement);
-			char *statement_limited=(char *)services->malloc(
+			char *statement_limited=(char *)services.malloc(
 				statement_size+MAX_NUMBER*2+8/* limit #,#*/+1);
 			char *cur=statement_limited;
 			memcpy(cur, astatement, statement_size); cur+=statement_size;
@@ -133,9 +136,9 @@ public:
 			statement=astatement;
 
 		if(mysql_query(mysql, statement)) 
-			services->_throw(mysql_error(mysql));
+			services._throw(mysql_error(mysql));
 		if(!(res=mysql_store_result(mysql)) && mysql_field_count(mysql)) 
-			services->_throw(mysql_error(mysql));
+			services._throw(mysql_error(mysql));
 		if(!res) {
 			// empty result
 			*row_count=0;
@@ -147,16 +150,16 @@ public:
 		if(!*column_count) // old client
 			*column_count=mysql_field_count(mysql);
 
-		*columns=(Cell *)services->malloc(sizeof(Cell)*(*column_count));
+		*columns=(Cell *)services.malloc(sizeof(Cell)*(*column_count));
 
 		*row_count=(unsigned long)mysql_num_rows(res);
-		*rows=(Cell **)services->malloc(sizeof(Cell *)*(*row_count));
+		*rows=(Cell **)services.malloc(sizeof(Cell *)*(*row_count));
 		
 		for(unsigned int i=0; i<(*column_count); i++){
 			MYSQL_FIELD *field=mysql_fetch_field(res);
 			size_t size=strlen(field->name);
 			(*columns)[i].size=size;
-			(*columns)[i].ptr=services->malloc(size);
+			(*columns)[i].ptr=services.malloc(size);
 			memcpy((*columns)[i].ptr, field->name, size);
 		}
 		
@@ -168,7 +171,7 @@ public:
 				for(unsigned int i=0; i<(*column_count); i++){
 					size_t size=(size_t)lengths[i];
 					row[i].size=size;
-					row[i].ptr=services->malloc(size);
+					row[i].ptr=services.malloc(size);
 					memcpy(row[i].ptr, mysql_row[i], size);
 				}
 		}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.9 2001/05/17 08:42:22 parser Exp $
+	$Id: pa_sql_driver.h,v 1.10 2001/05/17 13:23:28 parser Exp $
 
 
 	driver dynamic library must look like this:
@@ -56,12 +56,7 @@ public:
 
 public:
 
-	/// assignes services to driver. you can not use driver until this
-	void set_services(SQL_Driver_services *aservices) { services=aservices; }
-
-	SQL_Driver() :
-		services(0) {
-	}
+	SQL_Driver() {}
 	/// get api version
 	virtual int api_version() =0;
 	/// initialize driver by loading sql dynamic link library
@@ -73,25 +68,29 @@ public:
 
 		@returns true+'connection' on success. 'error' on failure
 	*/
-	virtual void connect(char *used_only_to_connect_url, void **connection) =0;
-	virtual void disconnect(void *connection) =0;
-	virtual void commit(void *connection) =0;
-	virtual void rollback(void *connection) =0;
+	virtual void connect(char *used_only_in_connect_url_cstr, 
+		SQL_Driver_services& services, void **connection) =0;
+	virtual void disconnect(
+		SQL_Driver_services& services, void *connection) =0;
+	virtual void commit(
+		SQL_Driver_services& services, void *connection) =0;
+	virtual void rollback(
+		SQL_Driver_services& services, void *connection) =0;
 	/// @returns true to indicate that connection still alive 
-	virtual bool ping(void *connection) =0;
+	virtual bool ping(
+		SQL_Driver_services& services, void *connection) =0;
 	/// encodes the string in 'from' to an escaped SQL string
-	virtual unsigned int quote(void *connection,
+	virtual unsigned int quote(
+		SQL_Driver_services& services, void *connection,
 		char *to, const char *from, unsigned int length) =0;
-	virtual void query(void *connection,
+	virtual void query(
+		SQL_Driver_services& services, void *connection,
 		const char *statement, unsigned long offset, unsigned long limit,
 		unsigned int *column_count, Cell **columns,
 		unsigned long *row_count, Cell ***rows) =0;
 	/// log error message
 	//static void log(Pool& pool, const char *fmt, ...);
 
-protected:
-
-	SQL_Driver_services *services;
 };
 
 typedef SQL_Driver *(*SQL_Driver_create_func)();

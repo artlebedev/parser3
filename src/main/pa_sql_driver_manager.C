@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.15 2001/05/17 12:51:05 parser Exp $
+	$Id: pa_sql_driver_manager.C,v 1.16 2001/05/17 13:23:28 parser Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -54,6 +54,7 @@ private:
 /// @param request_url protocol://[driver-dependent]
 SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url, 
 												   Table *protocol2driver_and_client) {
+////__asm int 3;
 	Pool& pool=request_url.pool(); // request pool											   
 
 	// we have table for locating protocol's library
@@ -69,7 +70,10 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 		result=0;
 	}
 
-	if(!result) { // no cached connection or it were unpingabe: connect/reconnect
+	char *request_url_cstr;
+	if(result)
+		request_url_cstr=0; // no need to connect, just reassign services & they can use
+	else { // no cached connection or it were unpingabe: connect/reconnect
 		int pos=request_url.pos("://", 3);
 		if(pos<0)
 			PTHROW(0, 0,
@@ -77,7 +81,7 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 				"no protocol specified"); // NOTE: not THROW, but PTHROW
 
 		// make global_url C-string on global pool
-		char *request_url_cstr=request_url.cstr(String::UL_AS_IS);
+		request_url_cstr=request_url.cstr(String::UL_AS_IS);
 		char *global_url_cstr=(char *)malloc(strlen(request_url_cstr)+1);
 		strcpy(global_url_cstr, request_url_cstr);
 		// make global_url string on global pool
@@ -156,21 +160,21 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 		}
 	
 		// allocate in global pool 
-		// associate with services[request], deassociates at close
-		result=new(this->pool()) SQL_Connection(this->pool(), 
-			global_url, *driver, request_url_cstr);
+		// associate with services[request]
+		result=new(this->pool()) SQL_Connection(this->pool(), global_url, *driver);
 	}
 
-	// associate with services[request]
+	// associate with services[request]  (deassociates at close)
 	result->set_services(new(pool) SQL_Driver_services_impl(pool, request_url)); 
-	SAPI::log(pool, "get_connection: %p", result);
+	// if not connected yet, do that now, when result has services
+	if(request_url_cstr)
+		result->connect(request_url_cstr);
+	// return it
 	return *result;
 }
 
 void SQL_Driver_manager::close_connection(const String& url, 
-										  SQL_Connection& connection,
-										  Pool& pool) {
-	SAPI::log(pool, "close_connection: %p", &connection);
+										  SQL_Connection& connection) {
 	// deassociate from services[request]
 	connection.set_services(0);
 	put_connection_to_cache(url, connection);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.20 2001/05/17 12:51:05 parser Exp $
+	$Id: op.C,v 1.21 2001/05/17 13:23:28 parser Exp $
 */
 
 #include "classes.h"
@@ -299,7 +299,7 @@ static void _connect(Request& r, const String&, MethodParams *params) {
 	PEND_CATCH
 
 	// close connection [cache it]
-	connection.close(pool);
+	connection.close();
 	// recall current connection from remembered
 	r.connection=saved_connection;
 
