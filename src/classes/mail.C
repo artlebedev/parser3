@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2002/12/24 08:41:55 $";
+static const char* IDENT_MAIL_C="$Date: 2002/12/26 14:01:46 $";
 
 #include "pa_config_includes.h"
 
@@ -320,7 +320,7 @@ static void sendmail(Request& r, const String& method_name,
 		throw Exception("parser.runtime",
 			&method_name,
 			"Parser was configured with --with-sendmail="PA_FORCED_SENDMAIL
-			" key, to change sendmail you should reconfigure and recompie it").;
+			" key, to change sendmail you should reconfigure and recompie it");
 #else
 		if(Value *sendmail_value=static_cast<Value *>(mail_conf->get(String(pool, sendmailkey_cstr))))
 			sendmail_command=&sendmail_value->as_string();
