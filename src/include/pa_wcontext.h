@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.10 2001/02/23 09:43:14 paf Exp $
+  $Id: pa_wcontext.h,v 1.11 2001/02/23 12:47:08 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -59,7 +59,7 @@ public: // usage
 		else
 			if(fvalue) // already have value?
 				THROW(0,0,  // don't need to construct twice
-					0,
+					fvalue->name(),
 					"value already assigned, use constructor to reassign it");
 			else
 				fvalue=avalue;
