@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.19 2001/04/19 15:38:06 paf Exp $
+	$Id: pa_vcookie.C,v 1.20 2001/04/19 16:28:18 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -51,7 +51,7 @@ void VCookie::put_element(const String& aname, Value *avalue) {
 //#include <stdio.h>
 void VCookie::fill_fields(Request& request) {
 	//request.info.cookie="test-session=value%3D5; test-default1=value%3D1; test-default2=value%3D2; test-tomorrow=value%3D3";
-	request.info.cookie="\"вот\"=\"прислал \\\"browser\\\"\"";
+	//request.info.cookie="\"вот\"=\"прислал \\\"browser\\\"\"";
 	if(!request.info.cookie)
 		return;
 /*

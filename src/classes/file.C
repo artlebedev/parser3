@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.28 2001/04/17 19:31:06 paf Exp $
+	$Id: file.C,v 1.29 2001/04/19 16:28:10 paf Exp $
 */
 
 #include "pa_request.h"
@@ -102,11 +102,18 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 	Hash& hash=*static_cast<Hash *>(info);
 	hash.put(key, &static_cast<Value *>(value)->as_string());
 }
+
+static void pass_cgi_header_attribute(Array::Item *value, void *info) {
+	String& string=*static_cast<String *>(value);
+	Hash& hash=*static_cast<Hash *>(info);
+	int colon_pos=string.pos(":", 1);
+	if(colon_pos>0)
+		hash.put(string.mid(0, colon_pos), &string.mid(colon_pos+1, string.size()));
+}
 /**
 	^exec[file-name]
 	^exec[file-name;env hash]
 	^exec[file-name;env hash;cmd;line;arg;s]
-	@test header to $fields. waits for header '\' tricks
 	@todo fix `` in perl - they produced flipping consoles and no output to perl
 */
 static void _cgi(Request& r, const String& method_name, MethodParams *params) {
@@ -186,9 +193,12 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	VFile& self=*static_cast<VFile *>(r.self);
 	// construct with 'out' body and header
 	int delim_size;
+	const char *delim="\n";
 	int pos=out.pos("\n\n", delim_size=2);
-	if(pos<0)
+	if(pos<0) {
+		delim="\r\n";
 		pos=out.pos("\r\n\r\n", delim_size=4);
+	}
 	if(pos<0) {
 		delim_size=0; // calm down, compiler
 		PTHROW(0, 0,
@@ -200,10 +210,16 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	const String& header=out.mid(0, pos);
 	const String& body=out.mid(pos+delim_size, out.size());
 
+	// todo header to $fields
+	{
+		Array rows(pool);
+		size_t pos_after=0;
+		header.split(rows, &pos_after, delim, 1, String::UL_CLEAN);
+		rows.for_each(pass_cgi_header_attribute, &self.fields());
+	}
+
 	// body
 	self.set(false/*not tainted*/, body.cstr(String::UL_AS_IS), body.size());
-
-	// todo header to $fields. waits for header '\' tricks
 
 	// $exit-code
 	self.fields().put(

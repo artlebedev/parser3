@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.39 2001/04/19 15:37:56 paf Exp $
+	$Id: pa_common.h,v 1.40 2001/04/19 16:28:14 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -150,7 +150,7 @@ void back_slashes_to_slashes(char *s);
 		qsort(names,cnt,sizeof_names,func_addr)
 #endif
 
-bool StrEqNc(const char *s1, const char *s2, bool strict);
+bool StrEqNc(const char *s1, const char *s2, bool strict=true);
 char *unquote(char*& current, char stop_at);
 
 #endif
