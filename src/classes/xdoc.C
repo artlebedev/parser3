@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.13 2001/10/09 14:25:30 parser Exp $
+	$Id: xdoc.C,v 1.14 2001/10/11 14:57:53 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -253,7 +253,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&node); // Walk that node and produce the XML...
 	} catch(const XSLException& e) {
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 }
 
@@ -278,7 +278,7 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 		// write out result
 		r.write_no_lang(parserString);
 	} catch(const XSLException& e) {
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 }
 
@@ -317,7 +317,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*file_name*/, vcontent_type);
 		r.write_no_lang(vfile);
 	} catch(const XSLException& e) {
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 }
 
@@ -336,19 +336,19 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 		parsedSource = new XalanDefaultParsedSource2(&stream);
 	}
 	catch (XSLException& e)	{
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 	catch (SAXParseException& e)	{
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 	catch (SAXException& e)	{
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 	catch (XMLException& e) {
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 	catch(const XalanDOMException&	e)	{
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 
 	// replace any previous parsed source
@@ -368,19 +368,19 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 		parsedSource = new XalanDefaultParsedSource2(filespec);
 	}
 	catch (XSLException& e)	{
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 	catch (SAXParseException& e)	{
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 	catch (SAXException& e)	{
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 	catch (XMLException& e) {
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 	catch(const XalanDOMException&	e)	{
-		r._throw(&method_name, e);
+		pool.exception()._throw(pool, &method_name, e);
 	}
 
 	// replace any previous parsed source
@@ -434,23 +434,23 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	}
 	catch (XSLException& e)	{
 		connection.close();
-		r._throw(&stylesheet_file_name, e);
+		pool.exception()._throw(pool, &stylesheet_file_name, e);
 	}
 	catch (SAXParseException& e)	{
 		connection.close();
-		r._throw(&stylesheet_file_name, e);
+		pool.exception()._throw(pool, &stylesheet_file_name, e);
 	}
 	catch (SAXException& e)	{
 		connection.close();
-		r._throw(&stylesheet_file_name, e);
+		pool.exception()._throw(pool, &stylesheet_file_name, e);
 	}
 	catch (XMLException& e) {
 		connection.close();
-		r._throw(&stylesheet_file_name, e);
+		pool.exception()._throw(pool, &stylesheet_file_name, e);
 	}
 	catch(const XalanDOMException&	e)	{
 		connection.close();
-		r._throw(&stylesheet_file_name, e);
+		pool.exception()._throw(pool, &stylesheet_file_name, e);
 	}
 
 	// write out result

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.3 2001/09/28 09:37:09 parser Exp $
+	$Id: xnode.C,v 1.4 2001/10/11 14:57:53 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -61,7 +61,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 		result.set_name(method_name);
 		r.write_no_lang(result);
 	} catch(const XSLException& e) {
-		r._throw(&expression, e);
+		pool.exception()._throw(pool, &expression, e);
 	}
 }
 
@@ -92,7 +92,7 @@ static void _select_single(Request& r, const String& method_name, MethodParams *
 			r.write_no_lang(result);
 		}
 	} catch(const XSLException& e) {
-		r._throw(&expression, e);
+		pool.exception()._throw(pool, &expression, e);
 	}
 }
 
