@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2002/08/13 15:55:41 $";
+static const char* IDENT_MAIL_C="$Date: 2002/09/18 08:52:48 $";
 
 #include "pa_config_includes.h"
 
@@ -400,7 +400,7 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 	const String *from, *to;
 	const String& message=hash->get(*body_name)/*old format*/?
 		message_hash_to_string(r, method_name, *hash, 0, &from, &to) : // old
-		static_cast<VMail *>(r.self)->message_hash_to_string(r, &method_name, hash, 0, &from, &to); // new
+		static_cast<VMail *>(r.get_self())->message_hash_to_string(r, &method_name, hash, 0, &from, &to); // new
 
 	//r.write_pass_lang(message);
 	sendmail(r, method_name, message, from, to);

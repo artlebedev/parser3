@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VOID_C="$Date: 2002/08/20 09:37:31 $";
+static const char* IDENT_VOID_C="$Date: 2002/09/18 08:52:49 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -41,14 +41,14 @@ static void _pos(Request& r, const String& method_name, MethodParams *params) {
 
 static void _int(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
-	VVoid *vvoid=static_cast<VVoid *>(r.self);
+	VVoid *vvoid=static_cast<VVoid *>(r.get_self());
 	r.write_no_lang(*new(pool) VInt(pool, 
 		params->size()==0?vvoid->as_int():params->as_int(0, "default must be int", r)));
 }
 
 static void _double(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
-	VVoid *vvoid=static_cast<VVoid *>(r.self);
+	VVoid *vvoid=static_cast<VVoid *>(r.get_self());
 	r.write_no_lang(*new(pool) VDouble(pool, 
 		params->size()==0?vvoid->as_double():params->as_double(0, "default must be double", r)));
 }

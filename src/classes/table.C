@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/09/17 14:34:53 $";
+static const char* IDENT_TABLE_C="$Date: 2002/09/18 08:52:49 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -80,7 +80,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		int offset, limit;
 		get_copy_options(r, method_name, params, 1, *source, 
 			offset, limit);
-		static_cast<VTable *>(r.self)->set_table(*new(pool) Table(pool, *source, offset, limit));
+		static_cast<VTable *>(r.get_self())->set_table(*new(pool) Table(pool, *source, offset, limit));
 		return;
 	}
 
@@ -120,7 +120,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	}
 
 	// replace any previous table value
-	static_cast<VTable *>(r.self)->set_table(table);
+	static_cast<VTable *>(r.get_self())->set_table(table);
 }
 
 static void _load(Request& r, const String& method_name, MethodParams *params) {
@@ -178,7 +178,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	};
 
 	// replace any previous table value
-	static_cast<VTable *>(r.self)->set_table(table);
+	static_cast<VTable *>(r.get_self())->set_table(table);
 }
 
 /// @todo "x\nx" "xxx""xx"
@@ -187,7 +187,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Value& vfile_name=params->as_no_junction(params->size()-1, 
 		"file name must not be code");
 
-	Table& table=static_cast<VTable *>(r.self)->table(&method_name);
+	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
 
 	bool do_append=false;
 	String sdata(pool);
@@ -245,19 +245,19 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 
 static void _count(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	int result=static_cast<VTable *>(r.self)->table(&method_name).size();
+	int result=static_cast<VTable *>(r.get_self())->table(&method_name).size();
 	r.write_no_lang(*new(pool) VInt(pool, result));
 }
 
 static void _line(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	int result=1+static_cast<VTable *>(r.self)->table(&method_name).current();
+	int result=1+static_cast<VTable *>(r.get_self())->table(&method_name).current();
 	r.write_no_lang(*new(pool) VInt(pool, result));
 }
 
 static void _offset(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Table& table=static_cast<VTable *>(r.self)->table(&method_name);
+	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
 	if(params->size()) {
 		bool absolute=false;
 		if(params->size()>1) {
@@ -283,7 +283,7 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	
 	Value *delim_maybe_code=params->size()>1?&params->get(1):0;
 
-	Table& table=static_cast<VTable *>(r.self)->table(&method_name);
+	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
 	bool need_delim=false;
 	int saved_current=table.current();
 	int size=table.size();
@@ -337,7 +337,7 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 }
 static void _hash(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Table& self_table=static_cast<VTable *>(r.self)->table(&method_name);
+	Table& self_table=static_cast<VTable *>(r.get_self())->table(&method_name);
 	Value& result=*new(pool) VHash(pool);
 	if(const Array *columns=self_table.columns())
 		if(columns->size()>0) {
@@ -426,7 +426,7 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 		reverse=params->as_no_junction(1, "order must not be code").as_string()=="desc":
 		false; // default=asc
 
-	Table& old_table=static_cast<VTable *>(r.self)->table(&method_name);
+	Table& old_table=static_cast<VTable *>(r.get_self())->table(&method_name);
 	Table& new_table=*new(pool) Table(pool, &method_name, old_table.columns());
 
 	Table_seq_item *seq=(Table_seq_item *)pool.malloc(sizeof(Table_seq_item)*old_table.size());
@@ -460,7 +460,7 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 		new_table+=seq[reverse?old_table.size()-1-i:i].row;
 
 	// replace any previous table value
-	static_cast<VTable *>(r.self)->set_table(new_table);
+	static_cast<VTable *>(r.get_self())->set_table(new_table);
 }
 
 static bool _locate_expression(Request& r, const String& method_name, MethodParams *params) {
@@ -471,7 +471,7 @@ static bool _locate_expression(Request& r, const String& method_name, MethodPara
 
 	Value& expression_code=params->as_junction(0, "must be expression");
 
-	Table& table=static_cast<VTable *>(r.self)->table(&method_name);
+	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
 	int saved_current=table.current();
 	int size=table.size();
 	for(int row=0; row<size; row++) {
@@ -489,7 +489,7 @@ static bool _locate_name_value(Request& r, const String& method_name, MethodPara
 			&method_name,
 			"locate by name and value has only two parameters - name and value");
 
-	Table& table=static_cast<VTable *>(r.self)->table(&method_name);
+	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
 	return table.locate(
 		params->as_string(0, "column name must be string"),
 		params->as_string(1, "value must be string")
@@ -505,7 +505,7 @@ static void _locate(Request& r, const String& method_name, MethodParams *params)
 
 static void _flip(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Table& old_table=static_cast<VTable *>(r.self)->table(&method_name);
+	Table& old_table=static_cast<VTable *>(r.get_self())->table(&method_name);
 	Table& new_table=*new(pool) Table(pool, &method_name, 0/*nameless*/);
 	if(old_table.size())
 		if(int old_cols=old_table.at(0).size()) 
@@ -532,7 +532,7 @@ static void _append(Request& r, const String& method_name, MethodParams *params)
 	Array& row=*new(pool) Array(pool);
 	string.split(row, 0, "\t", 1, String::UL_AS_IS);
 
-	static_cast<VTable *>(r.self)->table(&method_name)+=&row;
+	static_cast<VTable *>(r.get_self())->table(&method_name)+=&row;
 }
 
 static void _join(Request& r, const String& method_name, MethodParams *params) {
@@ -545,7 +545,7 @@ static void _join(Request& r, const String& method_name, MethodParams *params) {
 			"source is not a table");
 
 	Table& src=*maybe_src;
-	Table& dest=static_cast<VTable *>(r.self)->table(&method_name);
+	Table& dest=static_cast<VTable *>(r.get_self())->table(&method_name);
 	if(&src == &dest)
 		throw Exception("parser.runtime", 
 			&method_name, 
@@ -686,7 +686,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		new(pool) Table(pool, &method_name, 0); // query returned no table, fake it
 
 	// replace any previous table value
-	static_cast<VTable *>(r.self)->set_table(*result);
+	static_cast<VTable *>(r.get_self())->set_table(*result);
 }
 
 static void _columns(Request& r, const String& method_name, MethodParams *) {
@@ -696,7 +696,7 @@ static void _columns(Request& r, const String& method_name, MethodParams *) {
 	result_columns+=new(pool) String(pool, "column");
 	Table& result_table=*new(pool) Table(pool, &method_name, &result_columns);
 
-	Table& source_table=static_cast<VTable *>(r.self)->table(&method_name);
+	Table& source_table=static_cast<VTable *>(r.get_self())->table(&method_name);
 	if(const Array *source_columns=source_table.columns()) {
 		Array_iter i(*source_columns);
 		while(i.has_next()) {
@@ -714,7 +714,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 
 	Value& vcondition=params->as_junction(0, "condition must be expression");
 
-	Table& source_table=static_cast<VTable *>(r.self)->table(&method_name);
+	Table& source_table=static_cast<VTable *>(r.get_self())->table(&method_name);
 	Table& result_table=*new(pool) Table(pool, 
 		source_table.origin_string(), 
 		source_table.columns()

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2002/09/17 10:58:23 $";
+static const char* IDENT_HASH_C="$Date: 2002/09/18 08:52:47 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -104,7 +104,7 @@ static void _create_or_add(Request& r, const String& method_name, MethodParams *
 	if(params->size()) {
 		Value& vb=params->as_no_junction(0, "param must be hash");
 		if(Hash *b=vb.get_hash(&method_name))
-			b->for_each(copy_all_overwrite_to, &static_cast<VHash *>(r.self)->hash(&method_name));
+			b->for_each(copy_all_overwrite_to, &static_cast<VHash *>(r.get_self())->hash(&method_name));
 	}
 }
 
@@ -117,7 +117,7 @@ static void _sub(Request& r, const String& method_name, MethodParams *params) {
 	
 	Value& vb=params->as_no_junction(0, "param must be hash");
 	if(Hash *b=vb.get_hash(&method_name))
-		b->for_each(remove_key_from, &static_cast<VHash *>(r.self)->hash(&method_name));
+		b->for_each(remove_key_from, &static_cast<VHash *>(r.get_self())->hash(&method_name));
 }
 
 static void copy_all_dontoverwrite_to(const Hash::Key& key, Hash::Val *value, void *info) {
@@ -128,7 +128,7 @@ static void _union(Request& r, const String& method_name, MethodParams *params) 
 	Pool& pool=r.pool();
 
 	// dest = copy of self
-	Hash& dest=*new(pool) Hash(static_cast<VHash *>(r.self)->hash(&method_name));
+	Hash& dest=*new(pool) Hash(static_cast<VHash *>(r.get_self())->hash(&method_name));
 	// dest += b
 	Value& vb=params->as_no_junction(0, "param must be hash");
 	if(Hash *b=vb.get_hash(&method_name))
@@ -164,7 +164,7 @@ static void _intersection(Request& r, const String& method_name, MethodParams *p
 			b,
 			&dest
 		};
-		static_cast<VHash *>(r.self)->hash(&method_name).for_each(copy_intersection_to, &info);
+		static_cast<VHash *>(r.get_self())->hash(&method_name).for_each(copy_intersection_to, &info);
 	}
 
 	// return result
@@ -185,7 +185,7 @@ static void _intersects(Request& r, const String& method_name, MethodParams *par
 	// dest += b
 	Value& vb=params->as_no_junction(0, "param must be hash");
 	if(Hash *b=vb.get_hash(&method_name))
-		yes=static_cast<VHash *>(r.self)->hash(&method_name).first_that(intersects, b)!=0;
+		yes=static_cast<VHash *>(r.get_self())->hash(&method_name).first_that(intersects, b)!=0;
 
 	// return result
 	r.write_no_lang(*new(pool) VBool(pool, yes));
@@ -231,7 +231,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	const String& statement_string=r.process_to_string(statement);
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
-	Hash& hash=static_cast<VHash *>(r.self)->hash(&method_name);
+	Hash& hash=static_cast<VHash *>(r.get_self())->hash(&method_name);
 	hash.clear();	
 	Hash_sql_event_handlers handlers(pool, method_name,
 		statement_string, statement_cstr, 
@@ -259,7 +259,7 @@ static void _keys(Request& r, const String& method_name, MethodParams *) {
 	columns+=new(pool) String(pool, "key");
 	Table& table=*new(pool) Table(pool, &method_name, &columns);
 
-	static_cast<VHash *>(r.self)->hash(&method_name).for_each(keys_collector, &table);
+	static_cast<VHash *>(r.get_self())->hash(&method_name).for_each(keys_collector, &table);
 
 	r.write_no_lang(*new(pool) VTable(pool, &table));
 }
@@ -268,13 +268,13 @@ static void _count(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 
 	r.write_no_lang(
-		*new(pool) VInt(pool, static_cast<VHash *>(r.self)->hash(&method_name).size()));
+		*new(pool) VInt(pool, static_cast<VHash *>(r.get_self())->hash(&method_name).size()));
 }
 
 static void _delete(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	static_cast<VHash *>(r.self)->hash(&method_name).remove(params->as_string(0, "key must be string"));
+	static_cast<VHash *>(r.get_self())->hash(&method_name).remove(params->as_string(0, "key must be string"));
 }
 
 #ifndef DOXYGEN
@@ -295,8 +295,8 @@ static void one_foreach_cycle(const Hash::Key& akey, Hash::Val *avalue,
 	Foreach_info& i=*static_cast<Foreach_info *>(info);
 
 	i.vkey->set_string(akey);
-	i.r->method_frame->put_element(*i.key_var_name, i.vkey, false);
-	i.r->method_frame->put_element(*i.value_var_name, static_cast<Value *>(avalue), false);
+	i.r->get_method_frame()->put_element(*i.key_var_name, i.vkey, false);
+	i.r->get_method_frame()->put_element(*i.value_var_name, static_cast<Value *>(avalue), false);
 
 	StringOrValue sv_processed=i.r->process(*i.body_code);
 	const String *s_processed=sv_processed.get_string();
@@ -323,7 +323,7 @@ static void _foreach(Request& r, const String& method_name, MethodParams *params
 		new(pool) VString(pool),
 		false
 	};
-	VHash& self=*static_cast<VHash *>(r.self);
+	VHash& self=*static_cast<VHash *>(r.get_self());
 	Hash& hash=self.hash(&method_name);
 	VHash_lock lock(self);
 	hash.for_each(one_foreach_cycle, &info);

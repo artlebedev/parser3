@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/08/15 09:07:48 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/09/18 08:52:48 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -310,7 +310,7 @@ static void _measure(Request& r, const String& method_name, MethodParams *params
 	int width, height;
 	measure(pool, *file_name, reader, width, height);
 
-	static_cast<VImage *>(r.self)->set(file_name, width, height);
+	static_cast<VImage *>(r.get_self())->set(file_name, width, height);
 }
 
 #ifndef DOXYGEN
@@ -338,7 +338,7 @@ static void _html(Request& r, const String& method_name, MethodParams *params) {
 	String tag(pool);
 	tag << "<img";
 
-	const Hash& fields=static_cast<VImage *>(r.self)->fields();
+	const Hash& fields=static_cast<VImage *>(r.get_self())->fields();
 	Hash *attribs=0;
 
 	if(params->size()) {
@@ -394,7 +394,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	gdImage& image=*load(r, method_name, file_name);
 	int width=image.SX();
 	int height=image.SY();
-	static_cast<VImage *>(r.self)->set(&file_name, width, height, &image);
+	static_cast<VImage *>(r.get_self())->set(&file_name, width, height, &image);
 }
 
 static void _create(Request& r, const String& method_name, MethodParams *params) {
@@ -408,13 +408,13 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	gdImage& image=*new(pool) gdImage(pool);
 	image.Create(width, height);
 	image.FilledRectangle(0, 0, width-1, height-1, image.Color(bgcolor_value));
-	static_cast<VImage *>(r.self)->set(0, width, height, &image);
+	static_cast<VImage *>(r.get_self())->set(0, width, height, &image);
 }
 
 static void _gif(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -435,7 +435,7 @@ static void _gif(Request& r, const String& method_name, MethodParams *params) {
 static void _line(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -452,7 +452,7 @@ static void _line(Request& r, const String& method_name, MethodParams *params) {
 static void _fill(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -467,7 +467,7 @@ static void _fill(Request& r, const String& method_name, MethodParams *params) {
 static void _rectangle(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -484,7 +484,7 @@ static void _rectangle(Request& r, const String& method_name, MethodParams *para
 static void _bar(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -511,7 +511,7 @@ static void add_point(Array::Item *value, void *info) {
 static void _replace(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -534,7 +534,7 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 static void _polyline(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -557,7 +557,7 @@ static void _polyline(Request& r, const String& method_name, MethodParams *param
 static void _polygon(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -579,7 +579,7 @@ static void _polygon(Request& r, const String& method_name, MethodParams *params
 static void _polybar(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -686,7 +686,7 @@ static void _font(Request& r, const String& method_name, MethodParams *params) {
 			&method_name,
 			"alphabet must not be empty");
 	
-	static_cast<VImage *>(r.self)->font=new(pool) Font(pool, 
+	static_cast<VImage *>(r.get_self())->font=new(pool) Font(pool, 
 		alphabet, 
 		image, 
 		image.SY() / alphabet.size(), monospace_width, spacebar_width);
@@ -699,7 +699,7 @@ static void _text(Request& r, const String& method_name, MethodParams *params) {
 	int y=params->as_int(1, "y must be int", r);
 	const String& s=params->as_string(2, "text must not be code");
 
-	VImage& vimage=*static_cast<VImage *>(r.self);
+	VImage& vimage=*static_cast<VImage *>(r.get_self());
 	if(vimage.image)
 		if(vimage.font)
 			vimage.font->string_display(*vimage.image, x, y, s);
@@ -718,7 +718,7 @@ static void _length(Request& r, const String& method_name, MethodParams *params)
 
 	const String& s=params->as_string(0, "text must not be code");
 
-	VImage& vimage=*static_cast<VImage *>(r.self);
+	VImage& vimage=*static_cast<VImage *>(r.get_self());
 	if(vimage.image)
 		if(vimage.font) {
 			r.write_no_lang(*new(pool) VInt(pool, vimage.font->string_width(s)));
@@ -735,7 +735,7 @@ static void _length(Request& r, const String& method_name, MethodParams *params)
 static void _arc(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -754,7 +754,7 @@ static void _arc(Request& r, const String& method_name, MethodParams *params) {
 static void _sector(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -773,7 +773,7 @@ static void _sector(Request& r, const String& method_name, MethodParams *params)
 static void _circle(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.get_self())->image;
 	if(!image)
 		throw Exception(0, 
 			&method_name, 
@@ -813,7 +813,7 @@ gdImage& as_image(Pool& pool, const String& method_name, MethodParams *params,
 static void _copy(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	gdImage *dest=static_cast<VImage *>(r.self)->image;
+	gdImage *dest=static_cast<VImage *>(r.get_self())->image;
 	if(!dest)
 		throw Exception(0, 
 			&method_name, 

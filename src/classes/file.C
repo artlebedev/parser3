@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/09/16 15:21:36 $";
+static const char* IDENT_FILE_C="$Date: 2002/09/18 08:52:47 $";
 
 #include "pa_config_includes.h"
 
@@ -95,7 +95,7 @@ static void _save(Request& r, const String&, MethodParams *params) {
 	Value& vfile_name=params->as_no_junction(1, "file name must not be code");
 
 	// save
-	static_cast<VFile *>(r.self)->save(r.absolute(vfile_name.as_string()),
+	static_cast<VFile *>(r.get_self())->save(r.absolute(vfile_name.as_string()),
 		vmode_name.as_string()==TEXT_MODE_NAME);
 }
 
@@ -129,7 +129,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 		params->as_string(2, "filename must be string").cstr(String::UL_FILE_SPEC)
 		:lfile_name.cstr(String::UL_FILE_SPEC);
 	
-	static_cast<VFile *>(r.self)->set(true/*tainted*/, data, size, 
+	static_cast<VFile *>(r.get_self())->set(true/*tainted*/, data, size, 
 		user_file_name, new(pool) VString(r.mime_type_of(user_file_name)));
 }
 
@@ -145,7 +145,7 @@ static void _stat(Request& r, const String& method_name, MethodParams *params) {
 		size,
 		atime, mtime, ctime);
 	
-	VFile& vfile=*static_cast<VFile *>(r.self);
+	VFile& vfile=*static_cast<VFile *>(r.get_self());
 	vfile.set(true/*tainted*/, 0/*no bytes*/, size);
 	Hash& ff=vfile.fields();
 	ff.put(*new(pool) String(pool, "adate"), new(pool) VDate(pool, atime));
@@ -277,7 +277,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	String& err=*new(pool) String(pool);
 	int status=pa_exec(false/*forced_allow*/, script_name, &env, argv, in, out, err);
 
-	VFile& self=*static_cast<VFile *>(r.self);
+	VFile& self=*static_cast<VFile *>(r.get_self());
 
 	const String *body=&out; // ^file:exec
 	Value *content_type=0;

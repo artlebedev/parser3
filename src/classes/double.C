@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DOUBLE_C="$Date: 2002/09/10 10:22:12 $";
+static const char* IDENT_DOUBLE_C="$Date: 2002/09/18 08:52:47 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -32,7 +32,7 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 	Value *default_code=params->size()>0?
 		default_code=&params->as_junction(0, "default must be int"):0; // (default)
 
-	VDouble *vdouble=static_cast<VDouble *>(r.self);
+	VDouble *vdouble=static_cast<VDouble *>(r.get_self());
 	Value& result=*new(pool) VInt(pool, vdouble->as_int());
 	r.write_no_lang(result);
 }
@@ -42,7 +42,7 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 	Value *default_code=params->size()>0?
 		default_code=&params->as_junction(0, "default must be double"):0; // (default)
 
-	VDouble *vdouble=static_cast<VDouble *>(r.self);
+	VDouble *vdouble=static_cast<VDouble *>(r.get_self());
 	Value& result=*new(pool) VDouble(pool, vdouble->as_double());
 	r.write_no_lang(result);
 }
@@ -57,7 +57,7 @@ static void __mod(VDouble& vdouble, double param) { vdouble.mod((int)param); }
 
 static void vdouble_op(Request& r, MethodParams *params, 
 					   vdouble_op_func_ptr func) {
-	VDouble *vdouble=static_cast<VDouble *>(r.self);
+	VDouble *vdouble=static_cast<VDouble *>(r.get_self());
 	double param=params->size()?
 			params->as_double(0, "param must be double", r):1/*used in inc/dec*/;
 	(*func)(*vdouble, param);

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/08/29 12:22:46 $";
+static const char* IDENT_STRING_C="$Date: 2002/09/18 08:52:49 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -31,7 +31,7 @@ public: // Methoded
 
 static void _length(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	double result=r.self->get_string()->size();
+	double result=r.get_self()->get_string()->size();
 	r.write_no_lang(*new(pool) VDouble(pool, result));
 }
 
@@ -41,7 +41,7 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 	Value *default_code=params->size()>0?
 		default_code=&params->as_junction(0, "default must be int"):0; // (default)
 	try {
-		converted=r.self->as_int();
+		converted=r.get_self()->as_int();
 	} catch(...) { // convert problem
 		if(!default_code) // we have a problem when no default
 			/*re*/throw;
@@ -57,7 +57,7 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 	Value *default_code=params->size()>0?
 		default_code=&params->as_junction(0, "default must be double"):0; // (default)
 	try {
-		converted=r.self->as_double();
+		converted=r.get_self()->as_double();
 	} catch(...) { // convert problem
 		if(!default_code) // we have a problem when no default
 			/*re*/throw;  
@@ -75,7 +75,7 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 	// for some time due to stupid {} in original design
 	const String& fmt=r.process_to_string(fmt_maybe_code);
 
-	char *buf=format(pool, r.self->as_double(), fmt.cstr());
+	char *buf=format(pool, r.get_self()->as_double(), fmt.cstr());
 
 	String result(pool);
 	result.APPEND_CLEAN(buf, 0, 
@@ -89,7 +89,7 @@ static void _left(Request& r, const String&, MethodParams *params) {
 
 	size_t n=(size_t)params->as_int(0, "n must be int", r);
 	
-	const String& string=static_cast<VString *>(r.self)->string();
+	const String& string=static_cast<VString *>(r.get_self())->string();
 	r.write_assign_lang(string.mid(0, n));
 }
 
@@ -98,13 +98,13 @@ static void _right(Request& r, const String&, MethodParams *params) {
 
 	size_t n=(size_t)params->as_int(0, "n must be int", r);
 	
-	const String& string=static_cast<VString *>(r.self)->string();
+	const String& string=static_cast<VString *>(r.get_self())->string();
 	r.write_assign_lang(string.mid(string.size()-n, string.size()));
 }
 
 static void _mid(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& string=*r.self->get_string();
+	const String& string=*r.get_self()->get_string();
 
 	size_t p=(size_t)max(0, params->as_int(0, "p must be int", r));
 	size_t n=params->size()>1?
@@ -118,7 +118,7 @@ static void _pos(Request& r, const String& method_name, MethodParams *params) {
 
 	Value& substr=params->as_no_junction(0, "substr must not be code");
 	
-	const String& string=static_cast<VString *>(r.self)->string();
+	const String& string=static_cast<VString *>(r.get_self())->string();
 	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
 }
 
@@ -215,7 +215,7 @@ static Table *split_horizontal(Request& r, const String& string, Array& pieces, 
 static void split_with_options(Request& r, const String& method_name, MethodParams *params,
 							   int bits) {
 	Pool& pool=r.pool();
-	const String& string=*r.self->get_string();
+	const String& string=*r.get_self()->get_string();
 
 	Array pieces(pool);
 	split_list(r, method_name, params, 0,
@@ -298,7 +298,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	Table *table;
 	if(params->size()<3) { // search
-		const String& src=static_cast<VString *>(r.self)->string();
+		const String& src=static_cast<VString *>(r.get_self())->string();
 
 		bool was_global;
 		bool matched=src.match(
@@ -316,7 +316,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 			result=new(pool) VBool(pool, matched);			
 		r.write_assign_lang(*result);
 	} else { // replace
-		const String& src=*r.self->get_string();
+		const String& src=*r.get_self()->get_string();
 
 		Value& replacement_code=params->as_junction(2, "replacement param must be code");
 
@@ -343,7 +343,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 static void change_case(Request& r, const String& method_name, MethodParams *params, 
 						String::Change_case_kind kind) {
 	Pool& pool=r.pool();
-	const String& src=static_cast<VString *>(r.self)->string();
+	const String& src=static_cast<VString *>(r.get_self())->string();
 
 	r.write_assign_lang(src.change_case(pool, kind));
 }
@@ -464,7 +464,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 
 static void _replace(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& src=*r.self->get_string();
+	const String& src=*r.get_self()->get_string();
 
 	Table *table=params->as_no_junction(0, "parameter must not be code").get_table();
 	if(!table)
@@ -480,7 +480,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	const String& file_name=params->as_string(params->size()-1, 
 		"file name must be string");
 
-	const String& src=static_cast<VString *>(r.self)->string();
+	const String& src=static_cast<VString *>(r.get_self())->string();
 
 	bool do_append=false;
 	if(params->size()>1) {
@@ -500,7 +500,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 }
 
 static void _normalize(Request& r, const String& method_name, MethodParams * /*params*/) {
- 	r.write_assign_lang(r.self->get_string()->join_chains(r.pool(), 0/*cstr*/));
+ 	r.write_assign_lang(r.get_self()->get_string()->join_chains(r.pool(), 0/*cstr*/));
 }
 
 // constructor

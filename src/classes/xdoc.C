@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2002/09/17 14:34:53 $";
+static const char* IDENT_XDOC_C="$Date: 2002/09/18 08:52:50 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -170,7 +170,7 @@ static void writeNode(Request& r,  const String& method_name, GdomeNode *node,
 // Element createElement(in DOMString tagName) raises(DOMException);
 static void _createElement(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	const String& tagName=params->as_string(0, "tagName must be string");
 
@@ -185,7 +185,7 @@ static void _createElement(Request& r, const String& method_name, MethodParams *
 // DocumentFragment createDocumentFragment()
 static void _createDocumentFragment(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	GdomeException exc;
 	GdomeNode *node=
@@ -198,7 +198,7 @@ static void _createDocumentFragment(Request& r, const String& method_name, Metho
 // Text createTextNode(in DOMString data);
 static void _createTextNode(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	const String& data=params->as_string(0, "data must be string");
 
@@ -213,7 +213,7 @@ static void _createTextNode(Request& r, const String& method_name, MethodParams 
 // Comment createComment(in DOMString data)
 static void _createComment(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	const String& data=params->as_string(0, "data must be string");
 
@@ -228,7 +228,7 @@ static void _createComment(Request& r, const String& method_name, MethodParams *
 // CDATASection createCDATASection(in DOMString data) raises(DOMException);
 static void _createCDATASection(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	const String& data=params->as_string(0, "data must be string");
 
@@ -243,7 +243,7 @@ static void _createCDATASection(Request& r, const String& method_name, MethodPar
 // ProcessingInstruction createProcessingInstruction(in DOMString target,in DOMString data) raises(DOMException);
 static void _createProcessingInstruction(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	const String& target=params->as_string(0, "data must be string");
 	const String& data=params->as_string(1, "data must be string");
@@ -260,7 +260,7 @@ static void _createProcessingInstruction(Request& r, const String& method_name, 
 // Attr createAttribute(in DOMString name) raises(DOMException);
 static void _createAttribute(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	const String& name=params->as_string(0, "name must be string");
 
@@ -274,7 +274,7 @@ static void _createAttribute(Request& r, const String& method_name, MethodParams
 // EntityReference createEntityReference(in DOMString name) raises(DOMException);
 static void _createEntityReference(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	const String& name=params->as_string(0, "name must be string");
 
@@ -289,7 +289,7 @@ static void _createEntityReference(Request& r, const String& method_name, Method
 // NodeList getElementsByTagName(in DOMString name);
 static void _getElementsByTagName(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	const String& name=params->as_string(0, "name must be string");
 
@@ -322,7 +322,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 
 static void _getElementsByTagNameNS(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	// namespaceURI;localName
 	const String& namespaceURI=params->as_string(0, "namespaceURI must be string");
@@ -355,7 +355,7 @@ static void _getElementsByTagNameNS(Request& r, const String& method_name, Metho
 
 static void _getElementById(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	// elementId
 	const String& elementId=params->as_string(0, "elementID must be string");
@@ -376,7 +376,7 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 
 static void _importNode(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	GdomeNode *importedNode=
 		as_node(method_name, params, 0, "importedNode must be node");
@@ -402,7 +402,7 @@ GdomeAttr *gdome_doc_createAttributeNS (GdomeDocument *self, GdomeDOMString *nam
 
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	Value& param=params->get(params->size()-1);
 	GdomeDocument *document;
@@ -467,7 +467,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	// filespec
 	const String& file_name=params->as_string(0, "uri must be string");
@@ -649,7 +649,7 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 
 static void _file(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 	VXdoc::Output_options oo(vdoc.output_options);
 	char *buf; size_t buf_size;
 	xdoc2buf(pool, vdoc, method_name, params, 0, 
@@ -677,7 +677,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	const String& file_spec=r.absolute(params->as_string(0, "file name must be string"));
 	
@@ -690,7 +690,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 
 static void _string(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 	VXdoc::Output_options oo(vdoc.output_options);
 	char *buf; size_t buf_size;
 	xdoc2buf(pool, vdoc, method_name, params, 0, 
@@ -775,7 +775,7 @@ static VXdoc& _transform(Pool& pool, const String *doc_source, const String *sty
 }
 static void _transform(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
 
 	// params
 	const char **transform_params=0;

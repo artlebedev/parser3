@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_RESPONSE_C="$Date: 2002/08/01 11:41:13 $";
+static const char* IDENT_RESPONSE_C="$Date: 2002/09/18 08:52:49 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -22,7 +22,7 @@ public: // Methoded
 // methods
 
 static void _clear(Request& r, const String& method_name, MethodParams *) {
-	r.self/*VResponse*/->get_hash(&method_name)/*sure not 0*/->clear();
+	r.get_self()/*VResponse*/->get_hash(&method_name)/*sure not 0*/->clear();
 }
 
 // constructor

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_INT_C="$Date: 2002/08/01 11:41:12 $";
+static const char* IDENT_INT_C="$Date: 2002/09/18 08:52:48 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -33,7 +33,7 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 	if(params->size()>0)
 		params->as_junction(0, "default must be int");
 
-	VInt *vint=static_cast<VInt *>(r.self);
+	VInt *vint=static_cast<VInt *>(r.get_self());
 	r.write_no_lang(*new(pool) VInt(pool, vint->get_int()));
 }
 
@@ -43,7 +43,7 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 	if(params->size()>0)
 		params->as_junction(0, "default must be double");
 
-	VInt *vint=static_cast<VInt *>(r.self);
+	VInt *vint=static_cast<VInt *>(r.get_self());
 	r.write_no_lang(*new(pool) VDouble(pool, vint->as_double()));
 }
 
@@ -57,7 +57,7 @@ static void __mod(VInt& vint, double param) { vint.mod((int)param); }
 
 static void vint_op(Request& r, MethodParams *params, 
 					 vint_op_func_ptr func) {
-	VInt *vint=static_cast<VInt *>(r.self);
+	VInt *vint=static_cast<VInt *>(r.get_self());
 	double param=params->size()?params->as_double(0, "param must be numerical", r):1;
 	(*func)(*vint, param);
 }

@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2002/08/19 09:36:46 $";
+static const char* IDENT_XNODE_C="$Date: 2002/09/18 08:52:50 $";
 
 #include "pa_charset.h"
 #include "pa_request.h"
@@ -126,7 +126,7 @@ GdomeAttr * as_attr(Pool& pool, const String& method_name, MethodParams *params,
 // Node insertBefore(in Node newChild,in Node refChild) raises(DOMException);
 static void _insertBefore(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.get_self());
 	GdomeNode *selfNode=vnode.get_node(&method_name);
 	GdomeNode *newChild=as_node(method_name, params, 0, "newChild must be node");
 	GdomeNode *refChild=as_node(method_name, params, 1, "refChild must be node");
@@ -145,7 +145,7 @@ static void _insertBefore(Request& r, const String& method_name, MethodParams *p
 // Node replaceChild(in Node newChild,in Node oldChild) raises(DOMException);
 static void _replaceChild(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.get_self());
 	GdomeNode *selfNode=vnode.get_node(&method_name);
 	GdomeNode *newChild=as_node(method_name, params, 0, "newChild must be node");
 	GdomeNode *refChild=as_node(method_name, params, 1, "refChild must be node");
@@ -163,7 +163,7 @@ static void _replaceChild(Request& r, const String& method_name, MethodParams *p
 // Node removeChild(in Node oldChild) raises(DOMException);
 static void _removeChild(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.get_self());
 	GdomeNode *selfNode=vnode.get_node(&method_name);
 	GdomeNode *oldChild=as_node(method_name, params, 0, "oldChild must be node");
 	
@@ -180,7 +180,7 @@ static void _removeChild(Request& r, const String& method_name, MethodParams *pa
 // Node appendChild(in Node newChild) raises(DOMException);
 static void _appendChild(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.get_self());
 	GdomeNode *selfNode=vnode.get_node(&method_name);
 	GdomeNode *newChild=as_node(method_name, params, 0, "newChild must be node");
 	
@@ -197,7 +197,7 @@ static void _appendChild(Request& r, const String& method_name, MethodParams *pa
 // boolean hasChildNodes();
 static void _hasChildNodes(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.get_self());
 	GdomeNode *node=vnode.get_node(&method_name);
 
 	GdomeException exc;
@@ -209,7 +209,7 @@ static void _hasChildNodes(Request& r, const String& method_name, MethodParams *
 // Node cloneNode(in boolean deep);
 static void _cloneNode(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.get_self());
 	GdomeNode *node=vnode.get_node(&method_name);
 
 	bool deep=params->as_bool(0, "deep must be bool", r);
@@ -223,14 +223,14 @@ static void _cloneNode(Request& r, const String& method_name, MethodParams *para
 
 GdomeElement *get_self_element(Request& r, const String& method_name) {
 	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.get_self());
 	GdomeNode *node=vnode.get_node(&method_name);
 
 	GdomeException exc;
 	if(gdome_n_nodeType(node, &exc)!=GDOME_ELEMENT_NODE)
 		throw Exception("parser.runtime",
 			&method_name,
-			"method can be called on node of ELEMENT type");
+			"method can only be called on nodes of ELEMENT type");
 
 	return GDOME_EL(node);
 }
@@ -395,7 +395,7 @@ static void _getElementsByTagNameNS(Request& r, const String& method_name, Metho
 // void normalize();
 static void _normalize(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.get_self());
 	GdomeNode *selfNode=vnode.get_node(&method_name);
 
 	GdomeException exc;
@@ -413,7 +413,7 @@ static void _selectX(Request& r, const String& method_name, MethodParams *params
 							  Value *& result)) {
 //	_asm int 3;
 	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	VXnode& vnode=*static_cast<VXnode *>(r.get_self());
 
 	// expression
 	const String& expression=params->as_string(0, "expression must be string");

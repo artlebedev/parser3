@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/09/17 16:46:25 $";
+static const char* IDENT_OP_C="$Date: 2002/09/18 08:52:48 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -102,7 +102,7 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 
 static void _process(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VStateless_class& self_class=*r.self->get_class();
+	VStateless_class& self_class=*r.get_self()->get_class();
 	const Method *main_method;
 	{
 		// temporary remove language change
@@ -203,7 +203,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 
 	bool need_delim=false;
 	VInt *vint=new(pool) VInt(pool, 0);
-	r.method_frame->put_element(var_name, vint, false);
+	r.get_method_frame()->put_element(var_name, vint, false);
 	for(int i=from; i<=to; i++) {
 		vint->set_int(i);
 
@@ -577,23 +577,10 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 	Value& catch_code=params->as_junction(1, "catch_code must be code");
 
 	StringOrValue result;
-
-	// taking snapshot of request processing status
-	//int ssexception_trace=r.exception_trace.top_index();
-	int sstack=r.stack.top_index();
-	Value *sself=r.self;
-	VMethodFrame *smethod_frame=r.method_frame;
-	Value *srcontext=r.rcontext;  
-	WContext *swcontext=r.wcontext;	
 	try {
+		Request_context_saver cs(r); // taking snapshot of request processing status, restoring it at }
 		result=r.process(body_code);
 	} catch(const Exception& e) {
-		// restoring request processing status
-		//r.exception_trace.top_index(ssexception_trace);
-		r.stack.top_index(sstack);
-		r.self=sself; r.method_frame=smethod_frame, r.rcontext=srcontext; r.wcontext=swcontext;
-		
-		
 		VHash& vhash=exception2vhash(pool, e);
 
 		Junction *junction=catch_code.get_junction();

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2002/08/08 14:35:30 $";
+static const char* IDENT_DATE_C="$Date: 2002/09/18 08:52:47 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -29,7 +29,7 @@ public: // Methoded
 
 static void _now(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VDate *vdate=static_cast<VDate *>(r.self);
+	VDate *vdate=static_cast<VDate *>(r.get_self());
 
 	time_t t=time(0);
 	if(params->size()==1) // ^now(offset)
@@ -49,7 +49,7 @@ static int NN_year_to_NNNN(int year) {
 /// @test 09 ok? [octal maybe]
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VDate *vdate=static_cast<VDate *>(r.self);
+	VDate *vdate=static_cast<VDate *>(r.get_self());
 
 	time_t t;
 	if(params->size()==1) { 
@@ -122,7 +122,7 @@ date_part_set:
 
 static void _sql_string(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	VDate *vdate=static_cast<VDate *>(r.self);
+	VDate *vdate=static_cast<VDate *>(r.get_self());
 	int size=1+ 4+1+2+1+2 +1+ 2+1+2+1+2 +1 +1;
 	char *buf=(char *)pool.malloc(size);
 	time_t time=vdate->get_time();
@@ -138,7 +138,7 @@ static void _sql_string(Request& r, const String& method_name, MethodParams *) {
 
 static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VDate *vdate=static_cast<VDate *>(r.self);
+	VDate *vdate=static_cast<VDate *>(r.get_self());
 
 	const String& what=params->as_string(0, "'what' must be string");
     int oyear=0;

@@ -244,9 +244,22 @@ $response:charset[windows-1251]
 #^longlreplace[]
 #^table2hash_onecolumn[]
 #^crossopvars[]
-^three[]
+#^three[]
+^badLangAfterCatch[]
 <hr>
 OK
+
+@badLangAfterCatch[]
+^try{
+	$a[ 
+		тут язык сменился на pass_appended
+		^throw[user;test]
+		и улетело с не тем  языком
+	]
+}{
+	$exception.handled(1)
+}
+1  2
 
 @crossopvars[]
 #^one[]<hr>

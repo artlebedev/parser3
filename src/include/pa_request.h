@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/09/10 12:05:37 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/09/18 08:52:50 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -63,6 +63,7 @@ class VMethodFrame;
 class Request : public Pooled {
 	friend class Temp_lang;
 	friend class Temp_connection;
+	friend class Request_context_saver;
 public:
 
 #ifdef RESOURCES_DEBUG
@@ -251,7 +252,17 @@ public:
 	/// $cookie:elements
 	VCookie cookie;
 
+	/// 'MAIN' class conglomerat
+	VStateless_class *main_class;
+
+	/// classes configured data
+	Hash classes_conf;
+
+private:
+
 	//@{ request processing status
+	/// exception stack trace
+	Stack exception_trace;
 	/// execution stack
 	Stack stack;
 	/// contexts
@@ -259,15 +270,16 @@ public:
 	VMethodFrame *method_frame;
 	Value *rcontext;
 	WContext *wcontext;
-	/// exception stack trace
-	Stack exception_trace;
+	/// current language
+	uchar flang; 
+	/// current connection
+	SQL_Connection *fconnection;
 	//@}
 
-	/// 'MAIN' class conglomerat
-	VStateless_class *main_class;
+public: // status read methods
 
-	/// classes configured data
-	Hash classes_conf;
+	Value *get_self() { return self; }
+	VMethodFrame *get_method_frame() { return method_frame; }
 
 private: // core data
 
@@ -332,11 +344,6 @@ private: // lang manipulation
 		flang=alang;
 	}
 
-private: // lang&raw 
-	
-	uchar flang;
-
-
 private: // connection manipulation
 
 	SQL_Connection *set_connection(SQL_Connection *aconnection) {
@@ -350,10 +357,46 @@ private: // connection manipulation
 
 private:
 
-	/// connection
+	void output_result(const VFile& body_file, bool header_only);
+};
+
+/// Auto-object used to save request context across ^try body
+class Request_context_saver {
+
+	Request& fr;
+
+	/// exception stack trace
+	int exception_trace;
+	/// execution stack
+	int stack;
+	/// contexts
+	Value *self;
+	VMethodFrame *method_frame;
+	Value *rcontext;
+	WContext *wcontext;
+	/// current language
+	uchar flang; 
+	/// current connection
 	SQL_Connection *fconnection;
 
-	void output_result(const VFile& body_file, bool header_only);
+public:
+	Request_context_saver(Request& ar) : 
+		exception_trace(ar.exception_trace.top_index()),	
+		stack(ar.stack.top_index()),
+		self(ar.self),
+		method_frame(ar.method_frame),
+		rcontext(ar.rcontext),
+		wcontext(ar.wcontext),
+		flang(ar.flang),
+		fconnection(ar.fconnection),
+		fr(ar) {}
+	~Request_context_saver() {
+		fr.exception_trace.top_index(exception_trace);
+		fr.stack.top_index(stack);
+		fr.self=self; fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;
+		fr.flang=flang;
+		fr.fconnection=fconnection;
+	}
 };
 
 ///	Auto-object used for temporary changing Request::flang.
