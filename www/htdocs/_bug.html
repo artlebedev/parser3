@@ -1,14 +1,13 @@
-$s[^mail:send[
-	$.from[paf@design.ru]
-	$.to[paf@design.ru]
+<pre>
+^mail:send[
+	$.from[from]
+	$.to[to]
 	$.html{
-	<b>ok</b>
+	cid=xxx
 	}
 	$.file[
-		$.xxxx[vvv]
-		$.from[bug]
 		$.value[^file::load[binary;_bug.html]]
-	]
-]]
-^s.save[a.eml]
-OK
+#		$.content-disposition[inline]
+		$.content-disposition[]
+    ]
+]

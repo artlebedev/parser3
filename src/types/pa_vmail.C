@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2004/09/01 09:53:41 $";
+static const char * const IDENT_VMAIL_C="$Date: 2004/09/01 12:21:10 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -462,6 +462,7 @@ struct Store_message_element_info {
 	int parts_count;
 	bool backward_compatibility;
 	Value* content_type;
+	bool had_content_disposition;
 
 	Store_message_element_info(
 		Request_charsets& acharsets,
@@ -477,7 +478,8 @@ struct Store_message_element_info {
 		errors_to(0),
 		mime_version_specified(false),
 		parts_count(0),
-		backward_compatibility(false), content_type(0) {
+		backward_compatibility(false), content_type(0),
+		had_content_disposition(false){
 	}
 };
 #endif
@@ -516,6 +518,8 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 	// fetch some special headers
 	if(low_element_name=="from")
 		info->from=&extractEmails(element_value->as_string());
+	if(low_element_name==CONTENT_DISPOSITION_NAME)
+		info->had_content_disposition=true;
 	if(info->extract_to) { // defined only when SMTP used, see mail.C [collecting info for RCPT to-s]
 		bool is_to=low_element_name=="to" ;
 		bool is_cc=low_element_name=="cc" ;
@@ -546,6 +550,9 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 	// preparing header line
 	const String& source_line=attributed_meaning_to_string(*element_value,
 		String::L_PASS_APPENDED/*does not matter, would cstr(AS_IS) right away*/);
+	if(source_line.is_empty())
+		return; // we don't need empty headers here [used in clearing content-disposition]
+
 	const char* source_line_cstr=source_line.cstr();
 	String::C mail=Charset::transcode(
 		String::C(source_line_cstr, source_line.length()),
@@ -577,11 +584,11 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	VFile* vfile;
 	const String* file_name=0;
 	Value* vformat=0;
+	const String* dummy_from;
+	String* dummy_to;
+	Store_message_element_info info(r.charsets, 
+		result, dummy_from, false, dummy_to);
 	if(HashStringValue *send_hash=send_value->get_hash()) { // hash
-		const String* dummy_from;
-		String* dummy_to;
-		Store_message_element_info info(r.charsets, 
-			result, dummy_from, false, dummy_to);
 		send_hash->for_each(store_message_element, &info);
 
 		// $.value
@@ -609,10 +616,13 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	// content-type: application/octet-stream
 	result << "content-type: " << r.mime_type_of(file_name_cstr) 
 		<< "; name=\"" << file_name_cstr << "\"\n";
-	// content-disposition: attachment; filename="user_file_name"
-	result << 
-		CONTENT_DISPOSITION_NAME ": "CONTENT_DISPOSITION_VALUE"; "
-		CONTENT_DISPOSITION_FILENAME_NAME"=\"" << file_name_cstr << "\"\n";
+
+	if(!info.had_content_disposition) {
+		// content-disposition: attachment; filename="user_file_name"
+		result << 
+			CONTENT_DISPOSITION_NAME ": "CONTENT_DISPOSITION_VALUE"; "
+			CONTENT_DISPOSITION_FILENAME_NAME"=\"" << file_name_cstr << "\"\n";
+	}
 
 	const String* type=vformat?&vformat->as_string():0;
 	if(!type/*default = uue*/ || *type=="uue") {
