@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.85 2001/03/28 14:07:17 paf Exp $
+	$Id: pa_request.C,v 1.86 2001/03/29 08:28:04 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -49,7 +49,8 @@ Request::Request(Pool& apool,
 	info(ainfo),
 	used_files(apool),
 	default_content_type(0),
-	mime_types(0)
+	mime_types(0),
+	html_typo_table(0)
 {
 	// root superclass, 
 	//   parent of all classes, 
@@ -187,8 +188,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// meaning constructing @see attributed_meaning_to_string
 		default_content_type=defaults?defaults->get_element(*content_type_name):0;
 		if(Value *element=main_class->get_element(*html_typo_name))
-			if(Table *table=element->get_table())
-				pool().set_tag(table);
+			html_typo_table=element->get_table();
 
 		// $MAIN:MIME-TYPES
 		if(Value *element=main_class->get_element(*mime_types_name))

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.71 2001/03/28 14:41:29 paf Exp $
+	$Id: pa_request.h,v 1.72 2001/03/29 08:28:03 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -157,6 +157,7 @@ public:
 
 	/// $MAIN:MIME-TYPES
 	Table *mime_types;
+	Table *html_typo_table;
 
 	/// contexts
 	Value *self, *root, *rcontext;

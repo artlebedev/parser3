@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.45 2001/03/26 08:27:25 paf Exp $
+	$Id: pa_pool.h,v 1.46 2001/03/29 08:28:03 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -15,6 +15,7 @@
 
 class Exception;
 class Temp_exception;
+class Request;
 
 /** 
 	Pool mechanizm allows users not to free up allocated memory,
@@ -25,18 +26,17 @@ class Temp_exception;
 
 	@see Pooled
 */
-
 class Pool {
 	friend Temp_exception;
 public:
 
-	Pool(void *astorage) : fstorage(astorage), fcontext(0), ftag(0), fexception(0) {}
+	Pool(void *astorage) : fstorage(astorage), fcontext(0), frequest(0), fexception(0) {}
 
 	void set_context(void *acontext) { fcontext=acontext; }
 	void *context() { return fcontext; }
 
-	void set_tag(void *atag) { ftag=atag; }
-	void *tag() { return ftag; }
+	void set_request(Request *arequest) { frequest=arequest; }
+	Request *request() { return frequest; }
 
 	/// current exception object of the pool
 	Exception& exception() const { return *fexception; }
@@ -54,7 +54,7 @@ private:
 
 	void *fstorage;
 	void *fcontext;
-	void *ftag;
+	Request *frequest;
 
 private: // implementation defined
 
