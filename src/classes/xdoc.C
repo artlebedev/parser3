@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.9 2001/10/05 16:12:40 parser Exp $
+	$Id: xdoc.C,v 1.10 2001/10/05 17:33:50 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -24,6 +24,8 @@
 #include <XalanTransformer/XalanParsedSource.hpp>
 #	include <XalanTransformer/XalanDefaultParsedSource.hpp>
 #	include <XalanSourceTree/XalanSourceTreeDocument.hpp>
+#	include <XalanSourceTree/XalanSourceTreeContentHandler.hpp>
+#	include <sax2/XMLReaderFactory.hpp>
 #include <XMLSupport/FormatterToXML.hpp>
 #include <XMLSupport/FormatterToHTML.hpp>
 #include <XMLSupport/FormatterToText.hpp>
@@ -88,10 +90,25 @@ class XalanSourceTreeParserLiaison2: public XalanSourceTreeParserLiaison {
 public:
 	XalanSourceTreeParserLiaison2(XalanSourceTreeDOMSupport&		theSupport) : XalanSourceTreeParserLiaison(theSupport), 
 		ferror_handler(new HandlerBase) {
-		setErrorHandler(ferror_handler); // disable stderr output
 	}
-//	virtual fatal?error!!
 
+	XalanDocument*
+	parseXMLStream2(
+				const InputSource&		inputSource) {
+		XalanSourceTreeContentHandler	theContentHandler(createXalanSourceTreeDocument());
+		XalanAutoPtr<SAX2XMLReader>		theReader(XMLReaderFactory::createXMLReader());
+		theReader->setContentHandler(&theContentHandler);
+		theReader->setDTDHandler(&theContentHandler);
+		theReader->setErrorHandler(ferror_handler); // disable stderr output
+		theReader->setLexicalHandler(&theContentHandler);
+		EntityResolver* const	theResolver = getEntityResolver();
+		if (theResolver != 0) {
+			theReader->setEntityResolver(theResolver);
+		}
+		theReader->parse(inputSource);
+		return theContentHandler.getDocument();
+	}
+	
 	~XalanSourceTreeParserLiaison2() {
 	}
 private:
@@ -117,7 +134,7 @@ private:
 
 	XalanSourceTreeDOMSupport		m_domSupport;
 
-	XalanSourceTreeParserLiaison2	m_parserLiaison;
+	XalanSourceTreeParserLiaison2	m_parserLiaison2;
 
 	XalanSourceTreeDocument* const	m_parsedSource;
 };
@@ -125,12 +142,12 @@ private:
 XalanDefaultParsedSource2::XalanDefaultParsedSource2(const XSLTInputSource&	theInputSource):
 	XalanParsedSource(),
 	m_domSupport(),
-	m_parserLiaison(m_domSupport),
-	m_parsedSource(m_parserLiaison.mapDocument(m_parserLiaison.parseXMLStream(theInputSource)))
+	m_parserLiaison2(m_domSupport),
+	m_parsedSource(m_parserLiaison2.mapDocument(m_parserLiaison2.parseXMLStream2(theInputSource)))
 {
 	assert(m_parsedSource != 0);
 
-	m_domSupport.setParserLiaison(&m_parserLiaison);
+	m_domSupport.setParserLiaison(&m_parserLiaison2);
 }
 
 
@@ -330,51 +347,26 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 			vdoc.transformer().getLastError());
 */
 
-	int error;
-	CharVectorType							m_errorMessage;
-	m_errorMessage.push_back(0);
 	try
 	{
 			parsedSource = new XalanDefaultParsedSource2(&stream);
-			error=0;
-
 		//todo free parsedSource
 	}
-	catch (XSLException& e)
-	{
-		TranscodeToLocalCodePage(e.getMessage(), m_errorMessage, true);
-
-		error = -1;
+	catch (XSLException& e)	{
+		r._throw(&method_name, e);
 	}
-	catch (SAXException& e)
-	{
-		TranscodeToLocalCodePage(e.getMessage(), m_errorMessage, true);
-
-		error = -2;
+	catch (SAXParseException& e)	{
+		r._throw(&method_name, e);
 	}
-	catch (XMLException& e)
-	{
-		TranscodeToLocalCodePage(e.getMessage(), m_errorMessage, true);
-
-		error = -3;
+	catch (SAXException& e)	{
+		r._throw(&method_name, e);
 	}
-	catch(const XalanDOMException&	e)
-	{
-		XalanDOMString theMessage("XalanDOMException caught.  The code is ");
-			
-		append(theMessage,	LongToDOMString(long(e.getExceptionCode())));
-
-		append(theMessage,	XalanDOMString("."));						 
-
-		TranscodeToLocalCodePage(theMessage, m_errorMessage, true);
-
-		error = -3;
+	catch (XMLException& e) {
+		r._throw(&method_name, e);
 	}
-
-	if(error)
-		PTHROW(0, 0,
-			&method_name,
-			&m_errorMessage[0]);
+	catch(const XalanDOMException&	e)	{
+		r._throw(&method_name, e);
+	}
 
 	// replace any previous parsed source
 	vdoc.set_parsed_source(*parsedSource);

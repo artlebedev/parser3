@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.60 2001/10/02 17:05:49 parser Exp $
+	$Id: pa_pool.h,v 1.61 2001/10/05 17:33:50 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -17,6 +17,9 @@
 #include <XalanDOM/XalanDOMString.hpp>
 #include <util/TransService.hpp>
 #include <PlatformSupport/XSLException.hpp>
+#include <sax/SAXException.hpp>
+#include <sax/SAXParseException.hpp>
+#include <util/XMLException.hpp>
 #endif
 
 // forwards
@@ -132,6 +135,14 @@ public:
 	String& transcode(const XalanDOMString& s);
 	/// converts XSL exception to parser exception
 	void _throw(const String *source, const XSLException& e);
+	/// converts SAX exception to parser exception
+	void _throw(const String *source, const SAXException& e);
+	/// converts SAX parse exception to parser exception
+	void _throw(const String *source, const SAXParseException& e);
+	/// converts XML exception to parser exception
+	void _throw(const String *source, const XMLException& e);
+	/// converts Xalan DOM exception to parser exception
+	void _throw(const String *source, const XalanDOMException& e);
 
 private:
 
@@ -188,6 +199,10 @@ public:
 	const char *transcode_cstr(const XalanDOMString& s) { return fpool->transcode_cstr(s); }
 	String& transcode(const XalanDOMString& s) { return fpool->transcode(s); }
 	void _throw(const String *source, const XSLException& e) { fpool->_throw(source, e); }
+	void _throw(const String *source, const SAXException& e) { fpool->_throw(source, e); }
+	void _throw(const String *source, const SAXParseException& e) { fpool->_throw(source, e); }
+	void _throw(const String *source, const XMLException& e) { fpool->_throw(source, e); }
+	void _throw(const String *source, const XalanDOMException& e) { fpool->_throw(source, e); }
 #endif
 	//}
 };

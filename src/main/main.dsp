@@ -330,10 +330,6 @@ SOURCE=.\pa_xslt_stylesheet_manager.C
 
 SOURCE=.\untaint.C
 # End Source File
-# Begin Source File
-
-SOURCE=..\classes\xdoc.C
-# End Source File
 # End Group
 # Begin Group "sql"
 
