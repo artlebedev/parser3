@@ -3,9 +3,9 @@
 	global sql driver connection, must be thread-safe
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_connection.h,v 1.20 2002/02/08 07:27:43 paf Exp $
+	$Id: pa_db_connection.h,v 1.21 2002/02/08 08:30:12 paf Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H

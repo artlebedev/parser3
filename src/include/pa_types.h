@@ -2,9 +2,9 @@
 	Parser: generally used types & constants decls.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_types.h,v 1.36 2002/02/08 07:27:45 paf Exp $
+	$Id: pa_types.h,v 1.37 2002/02/08 08:30:14 paf Exp $
 */
 
 #ifndef PA_TYPES_H

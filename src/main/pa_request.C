@@ -2,9 +2,9 @@
 	Parser: request class main part. @see compile.C and execute.C.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.193 2002/02/08 07:27:48 paf Exp $
+	$Id: pa_request.C,v 1.194 2002/02/08 08:30:16 paf Exp $
 */
 
 #include "pa_sapi.h"

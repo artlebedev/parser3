@@ -2,9 +2,9 @@
 	Parser: @b cookie class decls.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vcookie.h,v 1.14 2002/02/08 07:27:52 paf Exp $
+	$Id: pa_vcookie.h,v 1.15 2002/02/08 08:30:19 paf Exp $
 */
 
 #ifndef PA_VCOOKIE_H

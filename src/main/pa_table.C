@@ -2,9 +2,9 @@
 	Parser: table class.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_table.C,v 1.43 2002/02/08 07:27:49 paf Exp $
+	$Id: pa_table.C,v 1.44 2002/02/08 08:30:16 paf Exp $
 */
 
 #include <stdlib.h>

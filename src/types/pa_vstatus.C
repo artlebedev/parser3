@@ -2,9 +2,9 @@
 	Parser: @b status class impl.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstatus.C,v 1.5 2002/02/08 07:27:54 paf Exp $
+	$Id: pa_vstatus.C,v 1.6 2002/02/08 08:30:20 paf Exp $
 */
 
 #include "pa_vstatus.h"

@@ -2,9 +2,9 @@
 	Parser: status press center implementation.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_cache_managers.C,v 1.3 2002/02/08 07:27:47 paf Exp $
+	$Id: pa_cache_managers.C,v 1.4 2002/02/08 08:30:15 paf Exp $
 */
 
 #include "pa_cache_managers.h"

@@ -2,9 +2,9 @@
 	Parser: zero Mutex realization class.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_threads.C,v 1.7 2002/02/08 07:27:51 paf Exp $
+	$Id: pa_threads.C,v 1.8 2002/02/08 08:30:18 paf Exp $
 */
 
 #include "pa_threads.h"

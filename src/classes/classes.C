@@ -2,9 +2,9 @@
 	Parser: @b Methoded and Methoded_array classes.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: classes.C,v 1.14 2002/02/08 07:27:39 paf Exp $
+	$Id: classes.C,v 1.15 2002/02/08 08:30:09 paf Exp $
 */
 
 #include "classes.h"

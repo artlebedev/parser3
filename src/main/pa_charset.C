@@ -1,10 +1,10 @@
 /** @file
 	Parser: Charset connection implementation.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.19 2002/02/08 07:27:47 paf Exp $
+	$Id: pa_charset.C,v 1.20 2002/02/08 08:32:34 paf Exp $
 */
 
 #include "pa_charset.h"

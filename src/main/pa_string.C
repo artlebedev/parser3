@@ -2,9 +2,9 @@
 	Parser: string class. @see untasize_t.C.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.137 2002/02/08 07:27:49 paf Exp $
+	$Id: pa_string.C,v 1.138 2002/02/08 08:30:16 paf Exp $
 */
 
 #include "pcre.h"

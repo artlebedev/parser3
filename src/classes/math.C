@@ -2,9 +2,9 @@
 	Parser: @b math parser class.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: math.C,v 1.12 2002/02/08 07:27:40 paf Exp $
+	$Id: math.C,v 1.13 2002/02/08 08:30:10 paf Exp $
 */
 
 #include "pa_common.h"

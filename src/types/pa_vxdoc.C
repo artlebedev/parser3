@@ -1,14 +1,14 @@
 /** @dom
 	Parser: @b dom parser type.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxdoc.C,v 1.10 2002/02/08 07:27:55 paf Exp $
+	$Id: pa_vxdoc.C,v 1.12 2002/02/08 08:32:35 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
-static const char *RCSId="$Id: pa_vxdoc.C,v 1.10 2002/02/08 07:27:55 paf Exp $"; 
+static const char *RCSId="$Id: pa_vxdoc.C,v 1.12 2002/02/08 08:32:35 paf Exp $"; 
 
 #include "pa_vxdoc.h"
 

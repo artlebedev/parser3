@@ -2,9 +2,9 @@
 	Parser: Configure file for autoconf-disabled platforms.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_fixed.h,v 1.37 2002/02/08 07:27:43 paf Exp $
+	$Id: pa_config_fixed.h,v 1.38 2002/02/08 08:30:12 paf Exp $
 
 
 	tested only with MS Visual C++ V6

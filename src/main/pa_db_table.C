@@ -2,9 +2,9 @@
 	Parser: Charset table implementation.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.C,v 1.19 2002/02/08 07:27:47 paf Exp $
+	$Id: pa_db_table.C,v 1.20 2002/02/08 08:30:15 paf Exp $
 */
 
 #include "pa_config_includes.h"

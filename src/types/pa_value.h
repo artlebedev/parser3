@@ -2,9 +2,9 @@
 	Parser: Value, Method, Junction class decls.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_value.h,v 1.78 2002/02/08 07:27:51 paf Exp $
+	$Id: pa_value.h,v 1.79 2002/02/08 08:30:18 paf Exp $
 */
 
 #ifndef PA_VALUE_H

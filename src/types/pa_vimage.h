@@ -2,9 +2,9 @@
 	Parser: @b image parser type decl.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vimage.h,v 1.23 2002/02/08 07:27:53 paf Exp $
+	$Id: pa_vimage.h,v 1.24 2002/02/08 08:30:19 paf Exp $
 */
 
 #ifndef PA_VIMAGE_H

@@ -2,9 +2,9 @@
 	Parser: @b bool class decls.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vbool.h,v 1.16 2002/02/08 07:27:51 paf Exp $
+	$Id: pa_vbool.h,v 1.17 2002/02/08 08:30:18 paf Exp $
 */
 
 #ifndef PA_VBOOL_H

@@ -2,9 +2,9 @@
 	Parser: IIS extension.
 
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.62 2002/02/08 07:27:51 paf Exp $
+	$Id: parser3isapi.C,v 1.63 2002/02/08 08:30:18 paf Exp $
 */
 
 #ifndef _MSC_VER

@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b image parser class.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: image.C,v 1.65 2002/02/08 07:27:40 paf Exp $
+	$Id: image.C,v 1.67 2002/02/08 08:32:33 paf Exp $
 */
 
 /*

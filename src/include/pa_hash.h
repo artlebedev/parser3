@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_hash.h,v 1.53 2002/02/08 07:27:44 paf Exp $
+	$Id: pa_hash.h,v 1.54 2002/02/08 08:30:13 paf Exp $
 */
 
 #ifndef PA_HASH_H

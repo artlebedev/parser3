@@ -2,9 +2,9 @@
 	Parser: apache 1.3 module.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.16 2002/02/08 07:27:50 paf Exp $
+	$Id: mod_parser3.C,v 1.17 2002/02/08 08:30:17 paf Exp $
 */
 
 #include "httpd.h"

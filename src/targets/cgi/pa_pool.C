@@ -2,9 +2,9 @@
 	Parser: CGI memory manager impl.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.35 2002/02/08 07:27:50 paf Exp $
+	$Id: pa_pool.C,v 1.36 2002/02/08 08:30:17 paf Exp $
 */
 
 #include "pa_pool.h"

@@ -2,9 +2,9 @@
 	Parser: sql driver manager implementation.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.C,v 1.12 2002/02/08 07:27:49 paf Exp $
+	$Id: pa_stylesheet_manager.C,v 1.13 2002/02/08 08:30:16 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML

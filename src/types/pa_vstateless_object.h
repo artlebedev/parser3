@@ -2,9 +2,9 @@
 	Parser: @b stateless_object class decl.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstateless_object.h,v 1.14 2002/02/08 07:27:54 paf Exp $
+	$Id: pa_vstateless_object.h,v 1.15 2002/02/08 08:30:20 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_OBJECT_H

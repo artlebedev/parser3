@@ -2,9 +2,9 @@
 	Parser: exception decls.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.30 2002/02/08 07:27:43 paf Exp $
+	$Id: pa_exception.h,v 1.31 2002/02/08 08:30:13 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H

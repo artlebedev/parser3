@@ -2,9 +2,9 @@
 	Parser: program executing for different OS-es.
 
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.24 2002/02/08 07:27:48 paf Exp $
+	$Id: pa_exec.C,v 1.25 2002/02/08 08:31:31 paf Exp $
 
 
 	@todo setrlimit

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_opcode.h,v 1.13 2002/02/08 07:27:44 paf Exp $
+	$Id: pa_opcode.h,v 1.14 2002/02/08 08:30:13 paf Exp $
 */
 
 #ifndef CODE_H

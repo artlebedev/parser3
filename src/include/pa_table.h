@@ -2,9 +2,9 @@
 	Parser: table class decl.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_table.h,v 1.40 2002/02/08 07:27:45 paf Exp $
+	$Id: pa_table.h,v 1.41 2002/02/08 08:30:14 paf Exp $
 */
 
 #ifndef PA_TABLE_H

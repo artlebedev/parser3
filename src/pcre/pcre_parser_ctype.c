@@ -3,7 +3,7 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 
 Perl-Compatible Regular ExpressionsThis is a support program to generate part of auto.p, containing
@@ -42,7 +42,7 @@ and semantics are as close as possible to those of the Perl 5 language.
 	   
 		See the file Tech.Notes for some information on the internals.
 */
-static const char *RCSId="$Id: pcre_parser_ctype.c,v 1.8 2002/02/08 07:27:49 paf Exp $"; 
+static const char *RCSId="$Id: pcre_parser_ctype.c,v 1.9 2002/02/08 08:30:17 paf Exp $"; 
 
 #include <ctype.h>
 #include <stdio.h>

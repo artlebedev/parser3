@@ -2,9 +2,9 @@
 	Parser: @b string parser class.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.96 2002/02/08 07:27:41 paf Exp $
+	$Id: string.C,v 1.97 2002/02/08 08:30:10 paf Exp $
 */
 
 #include "classes.h"
