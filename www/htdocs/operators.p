@@ -16,5 +16,6 @@ $i[after]
 @reada[]
 ^$a=$a
 
-@process_in_op[]
-#^process
+@include[filename][f]
+$f[^file::load[text;$filename]]^process[$caller.CLASS]{^untaint{$f.text}}
+

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/15 08:31:56 $";
+static const char* IDENT_OP_C="$Date: 2002/10/15 09:42:41 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -97,25 +97,32 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 	Pool& pool=r.pool();
 	const Method *main_method;
 	{
-		Value& vjunction=params->as_junction(0, "body must be code");
+		Value& vjunction=params->as_junction(params->size()-1, "body must be code");
 
-		//VStateless_class& self_class=*r.get_self()->get_class();
-		//make this param. with this: as default 
-		VStateless_class *self_class=vjunction.get_junction()->self.get_class();
-		if(!self_class)
-			throw Exception(0,
+		Value *vtarget;
+		vtarget=params->size()>1?
+			&params->as_no_junction(0, "target must not be code")
+			:r.get_method_frame()->caller();
+		if(!vtarget)
+			throw Exception("parser.runtime",
 				&method_name,
-				"has no self class");
+				"no caller"); // can't be, somebody really called ^process
 
+		VStateless_class *target_class=vtarget->get_class();
+		if(!target_class)
+			throw Exception("parser.runtime",
+				&method_name,
+				"no target class");
+		
 		// evaluate source to process
 		const String& source=r.process_to_string(vjunction);
 
 		// temporary remove language change
 		Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 		// temporary zero @main so to maybe-replace it in processed code
-		Temp_method temp_method_main(*self_class, r.main_method_name, 0);
+		Temp_method temp_method_main(*target_class, r.main_method_name, 0);
 		// temporary zero @auto so it wouldn't be auto-called in Request::use_buf
-		Temp_method temp_method_auto(*self_class, *auto_method_name, 0);
+		Temp_method temp_method_auto(*target_class, *auto_method_name, 0);
 		
 		// calculate pseudo file name of processed chars
 		// would be something like "/some/file(4) process"
@@ -140,13 +147,13 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 
 		// process source code, append processed methods to 'self' class
 		// maybe-define new @main
-		r.use_buf(*self_class,
+		r.use_buf(*target_class,
 			source.cstr(String::UL_UNSPECIFIED, r.connection(0)), 
 			*new(pool) String(pool, heap_place, place_size, true /*tainted*/),
 			heap_place);
 		
 		// main_method
-		main_method=self_class->get_method(r.main_method_name);
+		main_method=target_class->get_method(r.main_method_name);
 	}
 	// after restoring current-request-lang
 	// maybe-execute @main[]
@@ -653,7 +660,7 @@ VClassMAIN::VClassMAIN(Pool& apool): VClass(apool) {
 	add_native_method("taint", Method::CT_ANY, _taint, 1, 2);
 
 	// ^process[code]
-	add_native_method("process", Method::CT_ANY, _process, 1, 1);
+	add_native_method("process", Method::CT_ANY, _process, 1, 2);
 
 	// ^rem{code}
 	add_native_method("rem", Method::CT_ANY, _rem, 1, 10000);
