@@ -7,6 +7,10 @@ addhandler parser3-handler .html
 addhandler parser3-cgi-handler .cgihtml
 action parser3-cgi-handler /cgi-bin/parser3
 
+addhandler parser3-0005-cgi-handler .cgi5html
+action parser3-0005-cgi-handler /cgi-bin/parser3_0005
+
+
 order deny,allow
 deny from all
 
