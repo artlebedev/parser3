@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXNODE_C="$Date: 2002/08/01 11:41:25 $";
+static const char* IDENT_VXNODE_C="$Date: 2002/08/05 14:19:10 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -47,7 +47,7 @@ Value *VXnode::get_element(const String& name) {
 				String& skey=*NEW String(pool());
 				{
 					char *buf=(char *)malloc(MAX_NUMBER);
-					snprintf(buf, MAX_NUMBER, "%d", ++i);
+					snprintf(buf, MAX_NUMBER, "%d", i++);
 					skey << buf;
 				}
 				result->hash(&name).put(skey, NEW VXnode(pool(), currentNode));
