@@ -83,7 +83,7 @@ void process_var(method_self_n_params_n_locals& root, Value& self,
 	// the char type after long name
 	CHAR_TYPE names_ended_before=get_names( 
 		iter, var_names_breaks,
-		&prefix, &names); // can return size()=0 when $self alone
+		&prefix, &names); // can return size()==0 when $self alone
 
 	bool read_mode=name_ended_before==' ';
 	Value *context=
@@ -153,7 +153,7 @@ void process_method(method_self_n_params_n_locals& root, Value& self,
 	// the char type after long name
 	CHAR_TYPE names_ended_before=get_names(
 		iter, method_names_breaks,
-		&prefix, &names); // can return size()=0 when ^self alone
+		&prefix, &names); // can return size()==0 when ^self alone
 
 	Value *context=
 		prefix?
@@ -217,7 +217,7 @@ void process_method(method_self_n_params_n_locals& root, Value& self,
 	}
 
 
-	// evaluating param values
+	// evaluate param values
 	Array/*<Value&>*/ param_values(pool);
 	get_params(
 		iter,
@@ -225,14 +225,14 @@ void process_method(method_self_n_params_n_locals& root, Value& self,
 		&param_values);
 	iter++; // skip ']'
 
-	// preparing contexts
+	// prepare contexts
 	Method_self_n_params_n_locals local_rcontext(pool, 
 		context,
 		method->param_names, param_values,
 		method->local_names);
 	WContext local_wcontext(pool, context);
 	String_iterator local_iter(method->code);
-	// calling method/operator
+	// call method/operator
 	process(
 		local_rcontext/* $:vars */, context /* $self.vars */,
 		local_rcontext, local_wcontext, 
@@ -257,21 +257,21 @@ CHAR_TYPE get_names(
 	if(iter.eof())
 		return -1;
 
-	if(iter()==':') {
+	if(iter()==':') { // $:name ?
 		prefix=ROOT_PREFIX;
 		iter++; // skip ':'
-	} else
+	} else // $name
 		prefix=NO_PREFIX;
 
 	CHAR_TYPE result;
 	while(true) {
-		// preparing context
+		// prepare context
 		WContext local_wcontext(pool /* empty */);
-		// executing code until separator, writing to that context
+		// execute code until separator, writing to that context
 		result=process(root, self,
 			arcontext, local_wcontext, 
 			iter, breaks);
-		// reading resulting name
+		// read resulting name
 		String *name=local_wcontext.get_string();
 		if(*name==SELF) // is it "self"?
 			if(prefix || names.size()) // already $: or $self.  or $name.
@@ -285,7 +285,7 @@ CHAR_TYPE get_names(
 			break;
 	}
 
-	// can only return size()=0 when $self alone
+	// can only return size()==0 when $self alone
 	if(names.size()==0 && prefix!=SELF_PREFIX)
 		pool.exception().raise("names: empty chain");
 
