@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.38 2001/02/25 08:12:22 paf Exp $
+  $Id: compile.y,v 1.39 2001/02/25 08:50:13 paf Exp $
 */
 
 %{
@@ -18,6 +18,10 @@
 #include "compile_tools.h"
 #include "pa_value.h"
 #include "pa_request.h"
+#include "pa_vobject.h"
+
+#define SELF_NAME "self"
+#define USES_NAME "USES"
 
 int real_yyerror(parse_control *pc, char *s);
 static void yyprint(FILE *file, int type, YYSTYPE value);
@@ -250,7 +254,7 @@ call: '^' call_name store_params EON { /* ^field.$method{vasya} */
 
 call_name: name_without_curly_rdive | class_method_name;
 
-class_method_name: STRING ':' name_expr_value {
+class_method_name: STRING ':' name_advance1 {
 	String& name=*SLA2S($1);
 	VClass *vclass=static_cast<VClass *>(PC->request->classes().get(name));
 	if(!vclass) {
@@ -522,10 +526,6 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				result=c;
 				goto break2;
 			}
-			if(c==':') {
-				result=c;
-				goto break2;
-			}
 			if(c=='(') {
 				PC->ls=LS_VAR_ROUND;
 				lexical_brackets_nestage=1;
@@ -538,22 +538,22 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				result=c;
 				goto break2;
 			}
-			if(c=='.'/* name part delim */ || c=='$'/* name part subvar */) {
+			if(c=='.'/* name part delim */ || 
+				c=='$'/* name part subvar */ ||
+				c==':'/* ':name' or 'class:name' */) {
 				result=c;
 				goto break2;
 			}
 			break;
 		case LS_VAR_NAME_CURLY:
-			if(c==':') {
-				result=c;
-				goto break2;
-			}
 			if(c=='}') {  /* ${name} finished, restoring LS */
 				pop_LS(PC);
 				result=c;
 				goto break2;
 			}
-			if(c=='.'/* name part delim */ || c=='$'/*name part subvar*/) {
+			if(c=='.'/* name part delim */ || 
+				c=='$'/*name part subvar*/ ||
+				c==':'/* ':name' or 'class:name' */) {
 				result=c;
 				goto break2;
 			}
@@ -618,7 +618,9 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				result=c;
 				goto break2;
 			}
-			if(c=='.'/* name part delim */ || c=='$'/* name part subvar */) {
+			if(c=='.'/* name part delim */ || 
+				c=='$'/* name part subvar */ ||
+				c==':'/* ':name' or 'class:name' */) {
 				result=c;
 				goto break2;
 			}

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.38 2001/02/25 08:12:22 paf Exp $
+  $Id: execute.C,v 1.39 2001/02/25 08:50:14 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -108,6 +108,7 @@ void Request::execute(const Array& ops) {
 		case OP_CLASS:
 			{
 				VClass *vclass=static_cast<VClass *>(ops.quick_get(++i));
+				printf(" \"%s\"", vclass->name()->cstr());
 		        PUSH(vclass);
 				break;
 			}
@@ -209,7 +210,7 @@ void Request::execute(const Array& ops) {
 				if(!junction)
 					THROW(0,0,
 						value->name(),
-						"is not a method or a junction (it is '%s'), can not call it",
+						"type is '%s', can not call it (must be method or junction)",
 							value->type()); 
 				//unless(method) method=operators.get_method[...;code/native_code](name)
 				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);

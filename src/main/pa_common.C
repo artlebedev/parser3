@@ -1,5 +1,5 @@
 /*
-  $Id: pa_common.C,v 1.2 2001/02/20 18:45:53 paf Exp $
+  $Id: pa_common.C,v 1.3 2001/02/25 08:50:14 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -11,7 +11,6 @@
 #include <sys/stat.h>
 #include <io.h>
 #include <stdio.h>
-
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -53,6 +52,5 @@ char *file_read(Pool& pool, char *fname) {
 		close(f);
 		return result;//prepare_config(result, remove_empty_lines);
     }
-	// maybe: exception?
     return NULL;
 }

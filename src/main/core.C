@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.36 2001/02/24 15:35:28 paf Exp $
+$Id: core.C,v 1.37 2001/02/25 08:50:13 paf Exp $
 */
 
 #include "pa_request.h"
@@ -50,6 +50,11 @@ void Request::core() {
 
 void Request::use(char *file, String *name) {
 	char *source=file_read(pool(), file);
+	if(!source)
+		THROW(0,0,
+			0,
+			"use: can not read '%s' file", file);
+
 	VClass& vclass=COMPILE(source, file);
 	if(name) // they forced some name?
 		vclass.set_name(*name);

@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.16 2001/02/25 08:12:22 paf Exp $
+  $Id: compile_tools.h,v 1.17 2001/02/25 08:50:13 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -9,8 +9,6 @@
 #include "pa_types.h"
 #include "pa_vstring.h"
 #include "pa_request.h"
-
-#define CLASS_NAME "CLASS"
 
 enum lexical_state {
 	LS_USER,

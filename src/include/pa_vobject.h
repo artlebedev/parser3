@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vobject.h,v 1.3 2001/02/25 08:12:21 paf Exp $
+  $Id: pa_vobject.h,v 1.4 2001/02/25 08:50:12 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -8,17 +8,19 @@
 #include "pa_value.h"
 #include "pa_vjunction.h"
 
+#define CLASS_NAME "CLASS"
+
 class VObject : public Value {
 public: // Value
 	
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "Object"; }
 
-	// object_instance: (field)=value;(STATIC)=hash;(method)=method_ref
+	// object_instance: (field)=value;(CLASS)=vclass;(method)=method_ref
 	Value *get_element(const String& name) {
-		// $STATIC=STATIC hash
-		if(name==STATIC_NAME)
-			return &vclass.STATICS;
+		// $CLASS=my class
+		if(name==CLASS_NAME)
+			return &vclass;
 
 		// $method=junction(this+method)
 		if(Method *method=static_cast<Method *>(vclass.methods().get(name))) {
@@ -36,7 +38,7 @@ public: // Value
 	// object_instance: (field)=value
 	void put_element(const String& name, Value *value) {
 		// speed1:
-		//   will not check for '$STATIC(subst)' trick
+		//   will not check for '$CLASS(subst)' trick
 		//   will hope that user ain't THAT self-hating person
 		// speed2:
 		//   will not check for '$method_name(subst)' trick

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.12 2001/02/24 15:26:02 paf Exp $
+  $Id: pa_request.h,v 1.13 2001/02/25 08:50:12 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -14,8 +14,6 @@
 #include "pa_vclass.h"
 
 #define MAIN_METHOD_NAME "main"
-#define SELF_NAME "self"
-#define USES_NAME "USES"
 #define NAME_RUN "RUN"
 
 #ifndef NO_STRING_ORIGIN
