@@ -118,6 +118,10 @@ SOURCE=..\include\pa_request.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_sapi.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_stack.h
 # End Source File
 # Begin Source File

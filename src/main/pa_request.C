@@ -5,11 +5,12 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.68 2001/03/23 10:14:34 paf Exp $
+	$Id: pa_request.C,v 1.69 2001/03/23 10:27:31 paf Exp $
 */
 
 #include <string.h>
 
+#include "pa_sapi.h"
 #include "pa_common.h"
 #include "pa_request.h"
 #include "pa_wwrapper.h"
@@ -66,7 +67,7 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 	Pool& pool=lmeaning.pool();
 
 	String attribute(pool);
-	(*sapi.add_header_attribute)(pool,
+	SAPI::add_header_attribute(pool,
 		attribute.append(aattribute, String::UL_HEADER, true).cstr(), 
 		attributed_meaning_to_string(lmeaning).cstr());
 }
@@ -367,13 +368,13 @@ void Request::output_result(const String& body_string, bool header_only) {
 	if(content_length) { // useful for redirecting [header "location: http://..."]
 		char content_length_cstr[MAX_NUMBER];
 		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
-		(*sapi.add_header_attribute)(pool(), "content-length", content_length_cstr);
+		SAPI::add_header_attribute(pool(), "content-length", content_length_cstr);
 	}
 
 	// send header
-	(*sapi.send_header)(pool());
+	SAPI::send_header(pool());
 
 	// send body
 	if(!header_only)
-		(*sapi.send_body)(pool(), body, content_length);
+		SAPI::send_body(pool(), body, content_length);
 }

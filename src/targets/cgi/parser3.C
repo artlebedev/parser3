@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.36 2001/03/23 10:14:36 paf Exp $
+	$Id: parser3.C,v 1.37 2001/03/23 10:27:32 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -30,6 +30,7 @@
 #include <string.h>
 #include <fcntl.h>
 
+#include "pa_sapi.h"
 #include "pa_common.h"
 #include "pa_globals.h"
 #include "pa_request.h"
@@ -66,13 +67,13 @@ static void fix_slashes(char *s) {
 }
 //\endif
 
-// service funcs
-
-static const char *sapi_get_env(Pool& pool, const char *name) {
+//@{
+/// SAPI funcs decl
+const char *SAPI::get_env(Pool& pool, const char *name) {
  	return getenv(name);
 }
 
-static uint sapi_read_post(Pool& pool, char *buf, uint max_bytes) {
+uint SAPI::read_post(Pool& pool, char *buf, uint max_bytes) {
 	uint read_size=0;
 	do {
 		int chunk_size=read(fileno(stdin), 
@@ -85,13 +86,13 @@ static uint sapi_read_post(Pool& pool, char *buf, uint max_bytes) {
 	return read_size;
 }
 
-static void sapi_add_header_attribute(Pool& pool, const char *key, const char *value) {
+void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) {
 	if(cgi)
 		printf("%s: %s\n", key, value);
 }
 
 /// @todo intelligent cache-control
-static void sapi_send_header(Pool& pool) {
+void SAPI::send_header(Pool& pool) {
 	if(cgi) {
 		puts("Expires: Fri, 23 Mar 2001 09:32:23 GMT");
 
@@ -100,19 +101,10 @@ static void sapi_send_header(Pool& pool) {
 	}
 }
 
-static void sapi_send_body(Pool& pool, const char *buf, size_t size) {
+void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 	stdout_write(buf, size);
 }
-
-/// SAPI
-SAPI sapi={
-	sapi_get_env,
-	sapi_read_post,
-	sapi_add_header_attribute,
-	sapi_send_header,
-	sapi_send_body
-};
-
+//@}
 
 // main
 
@@ -155,7 +147,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 		// init global variables
-		globals_init(pool);
+		pa_globals_init(pool);
 
 		if(!filespec_to_process)
 			PTHROW(0, 0,
@@ -220,17 +212,17 @@ int main(int argc, char *argv[]) {
 		int content_length=strlen(body);
 
 		// prepare header
-		sapi_add_header_attribute(pool, "content-type", "text/plain");
+		SAPI::add_header_attribute(pool, "content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
 		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
-		sapi_add_header_attribute(pool, "content-length", content_length_cstr);
+		SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
 
 		// send header
-		sapi_send_header(pool);
+		SAPI::send_header(pool);
 
 		// body
 		if(!header_only)
-			sapi_send_body(pool, body, content_length);
+			SAPI::send_body(pool, body, content_length);
 
 		// unsuccessful finish
 		return 1;

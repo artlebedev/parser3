@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.13 2001/03/23 10:14:38 paf Exp $
+	$Id: pa_vform.C,v 1.14 2001/03/23 10:27:35 paf Exp $
 */
 
 /**
@@ -15,6 +15,7 @@
 #include <ctype.h>
 #include <string.h>
 
+#include "pa_sapi.h"
 #include "pa_vform.h"
 #include "pa_vstring.h"
 #include "pa_globals.h"
@@ -106,7 +107,7 @@ void VForm::ParsePostFormInput(const char *content_type, int post_size,
 		return;
 
 	input=(char *) malloc(post_size);
-	int read_size=(*sapi.read_post)(pool(), input, post_size);
+	int read_size=SAPI::read_post(pool(), input, post_size);
 	if(read_size!=post_size)
 		THROW(0, 0,
 			0,

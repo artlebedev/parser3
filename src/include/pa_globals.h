@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.22 2001/03/23 10:14:33 paf Exp $
+	$Id: pa_globals.h,v 1.23 2001/03/23 10:27:30 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -50,29 +50,11 @@
 #define RESULT_VAR_NAME "result"
 //@}
 
-/// target-specific service functions
-struct SAPI {
-	/// get env
-	const char *(*get_env)(Pool& pool, const char *name);
-	/// read POST request bytes
-	uint (*read_post)(Pool& pool, char *buf, uint max_bytes);
-	/// add response header attribute
-	void (*add_header_attribute)(Pool& pool, const char *key, const char *value);
-	/// add response header attribute
-	void (*send_header)(Pool& pool);
-	/// output body bytes
-	void (*send_body)(Pool& pool, const char *buf, size_t size);
-};
-
-
 /// core func
-void globals_init(Pool& pool);
+void pa_globals_init(Pool& pool);
 
 /// hex_value[c] = hex value of c
 extern short hex_value[0x100];
-
-/// target-specific service functions
-extern SAPI sapi;
 
 //@{
 /// global string

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.14 2001/03/23 10:14:35 paf Exp $
+	$Id: mod_parser3.C,v 1.15 2001/03/23 10:27:32 paf Exp $
 */
 
 #include "httpd.h"
@@ -16,6 +16,7 @@
 #include "http_protocol.h"
 #include "util_script.h"
 
+#include "pa_sapi.h"
 #include "pa_common.h"
 #include "pa_globals.h"
 #include "pa_request.h"
@@ -77,17 +78,17 @@ static const char *cmd_parser_auto_path(cmd_parms *cmd, void *mconfig, char *fil
 
 
 //@{
-/// service func decl
-static const char *sapi_get_env(Pool& pool, const char *name) {
+/// SAPI func decl
+const char *SAPI::get_env(Pool& pool, const char *name) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
  	return (const char *)ap_table_get(r->subprocess_env, name);
 }
 
-static uint sapi_read_post(Pool& pool, char *buf, uint max_bytes) {
+uint SAPI::read_post(Pool& pool, char *buf, uint max_bytes) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
 /*    ap_log_error(APLOG_MARK, APLOG_DEBUG, r->server, 
-		"mod_parser3: sapi_read_post(max=%u)", max_bytes);
+		"mod_parser3: SAPI::read_post(max=%u)", max_bytes);
 */
 	int retval;
     if((retval = ap_setup_client_block(r, REQUEST_CHUNKED_ERROR)))
@@ -110,7 +111,7 @@ static uint sapi_read_post(Pool& pool, char *buf, uint max_bytes) {
 	return total_read_bytes;
 }
 
-static void sapi_add_header_attribute(Pool& pool, const char *key, const char *value) {
+void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
 	if(strcasecmp(key, "content-type")==0) {
@@ -124,7 +125,7 @@ static void sapi_add_header_attribute(Pool& pool, const char *key, const char *v
 		ap_table_merge(r->headers_out, key, value);
 }
 
-static void sapi_send_header(Pool& pool) {
+void SAPI::send_header(Pool& pool) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
     ap_hard_timeout("Send header", r);
@@ -132,7 +133,7 @@ static void sapi_send_header(Pool& pool) {
 	ap_kill_timeout(r);
 }
 
-static void sapi_send_body(Pool& pool, const char *buf, size_t size) {
+void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
     ap_hard_timeout("Send body", r);
@@ -140,15 +141,6 @@ static void sapi_send_body(Pool& pool, const char *buf, size_t size) {
 	ap_kill_timeout(r);
 }
 //@}
-
-/// SAPI
-SAPI sapi={
-	sapi_get_env,
-	sapi_read_post,
-	sapi_add_header_attribute,
-	sapi_send_header,
-	sapi_send_body
-};
 
 /**
 	main workhorse
@@ -211,17 +203,17 @@ static int parser_handler(request_rec *r)
 		int content_length=strlen(body);
 
 		// prepare header
-		sapi_add_header_attribute(pool, "content-type", "text/plain");
+		SAPI::add_header_attribute(pool, "content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
 		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
-		sapi_add_header_attribute(pool, "content-length", content_length_cstr);
+		SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
 
 		// send header
-		sapi_send_header(pool);
+		SAPI::send_header(pool);
 
 		// send body
 		if(!r->header_only)
-			sapi_send_body(pool, body, content_length);
+			SAPI::send_body(pool, body, content_length);
 
 		// unsuccessful finish
 	}
@@ -286,7 +278,7 @@ static void setup_module_cells() {
 	pool.set_storage(module_pool);
 	PTRY {
 		// init global variables
-		globals_init(pool);
+		pa_globals_init(pool);
 		
 		//...
 	} PCATCH(e) { // global problem 

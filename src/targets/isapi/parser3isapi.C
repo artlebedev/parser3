@@ -7,6 +7,7 @@
 
 #include <httpext.h>
 
+#include "pa_sapi.h"
 #include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_version.h"
@@ -14,15 +15,14 @@
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
 
 //@{
-/// service func decl
-
+/// SAPI funcs decl
 struct sapi_func_context {
 	LPEXTENSION_CONTROL_BLOCK lpECB;
 	String *header;
 	DWORD http_response_code;
 };
 
-static const char *sapi_get_env(Pool& pool, const char *name) {
+const char *SAPI::get_env(Pool& pool, const char *name) {
 	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
 
 	char *variable_buf=(char *)pool.malloc(MAX_STRING);
@@ -45,7 +45,7 @@ static const char *sapi_get_env(Pool& pool, const char *name) {
 	return 0;
 }
 
-static uint sapi_read_post(Pool& pool, char *buf, uint max_bytes) {
+uint SAPI::read_post(Pool& pool, char *buf, uint max_bytes) {
 	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
 
 	DWORD read_from_buf=0;
@@ -75,7 +75,7 @@ static uint sapi_read_post(Pool& pool, char *buf, uint max_bytes) {
 	return total_read;
 }
 
-static void sapi_add_header_attribute(Pool& pool, const char *key, const char *value) {
+void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) {
 	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
 
 	if(strcasecmp(key, "location")==0) 
@@ -92,7 +92,7 @@ static void sapi_add_header_attribute(Pool& pool, const char *key, const char *v
 }
 
 /// @todo intelligent cache-control
-static void sapi_send_header(Pool& pool) {
+void SAPI::send_header(Pool& pool) {
 	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
 
 	ctx.header->APPEND_CONST(
@@ -128,7 +128,7 @@ static void sapi_send_header(Pool& pool) {
 		HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
 }
 
-static void sapi_send_body(Pool& pool, const char *buf, size_t size) {
+void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
 
 	DWORD num_bytes=size;
@@ -136,15 +136,6 @@ static void sapi_send_body(Pool& pool, const char *buf, size_t size) {
 		const_cast<char *>(buf), &num_bytes, HSE_IO_SYNC);
 }
 //@}
-
-/// SAPI
-SAPI sapi={
-	sapi_get_env,
-	sapi_read_post,
-	sapi_add_header_attribute,
-	sapi_send_header,
-	sapi_send_body
-};
 
 // 
 
@@ -157,7 +148,7 @@ static void parser_init() {
 	static Pool pool; // global pool
 	PTRY {
 		// init global variables
-		globals_init(pool);
+		pa_globals_init(pool);
 		
 		//...
 	} PCATCH(e) { // global problem 
@@ -199,7 +190,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		// Request info
 		Request::Info request_info;
 		
-		if(!(request_info.document_root=sapi_get_env(pool, "APPL_PHYSICAL_PATH")))
+		if(!(request_info.document_root=SAPI::get_env(pool, "APPL_PHYSICAL_PATH")))
 			PTHROW(0, 0,
 				0,
 				"can not get server variable APPL_PHYSICAL_PATH (error #%lu)",
@@ -221,7 +212,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		
 		request_info.content_type=lpECB->lpszContentType;
 		request_info.content_length=lpECB->cbTotalBytes;
-		request_info.cookie=sapi_get_env(pool, "HTTP_COOKIE");
+		request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
 		
 		// prepare to process request
 		Request request(pool,
@@ -248,17 +239,17 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		int content_length=strlen(body);
 
 		// prepare header
-		sapi_add_header_attribute(pool, "content-type", "text/plain");
+		SAPI::add_header_attribute(pool, "content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
 		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
-		sapi_add_header_attribute(pool, "content-length", content_length_cstr);
+		SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
 
 		// send header
-		sapi_send_header(pool);
+		SAPI::send_header(pool);
 
 		// send body
 		if(!header_only)
-			sapi_send_body(pool, body, content_length);
+			SAPI::send_body(pool, body, content_length);
 
 		// unsuccessful finish
 		_endthread();

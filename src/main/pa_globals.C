@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.26 2001/03/22 11:19:11 paf Exp $
+	$Id: pa_globals.C,v 1.27 2001/03/23 10:27:31 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -83,7 +83,7 @@ static void setup_hex_value() {
 	hex_value['f'] = 15;
 }
 
-void globals_init(Pool& pool) {
+void pa_globals_init(Pool& pool) {
 	// hex value
 	setup_hex_value();
 

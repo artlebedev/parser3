@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.10 2001/03/23 10:14:38 paf Exp $
+	$Id: pa_vcookie.C,v 1.11 2001/03/23 10:27:34 paf Exp $
 */
 
 #include <string.h>
 #include <time.h>
 
+#include "pa_sapi.h"
 #include "pa_common.h"
 #include "pa_vcookie.h"
 #include "pa_vstring.h"
@@ -145,7 +146,7 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 	String::UL_PASS_APPENDED);
 
 	// output
-	(*sapi.add_header_attribute)(pool,
+	SAPI::add_header_attribute(pool,
 		"set-cookie", 
 		string.cstr());
 }
