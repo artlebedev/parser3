@@ -8,7 +8,7 @@
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
 
-static const char* IDENT_VMAIL_H="$Date: 2003/07/24 11:31:26 $";
+static const char* IDENT_VMAIL_H="$Date: 2003/08/19 08:22:13 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -27,7 +27,7 @@ class Request_info;
 */
 class VMail: public VStateless_class {
 
-	VHash* vreceived;
+	VHash vreceived;
 
 public: // Value
 	

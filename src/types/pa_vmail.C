@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2003/08/19 07:16:23 $";
+static const char* IDENT_VMAIL_C="$Date: 2003/08/19 08:22:13 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -62,49 +62,46 @@ VMail::VMail(): VStateless_class(0, mail_base_class) {}
 
 #ifdef WITH_MAILRECEIVE
 
+#define EXCEPTION_VALUE "x-exception"
+
 static const String& maybeUpperCase(Charset& source_charset, 
 				    const String& src, bool toUpperCase) {
 	return toUpperCase?src.change_case(source_charset, String::CC_UPPER):src;
 }
 
-static String::C UTF8toSource(Charset& source_charset, 
-			 const char* source_body, size_t source_content_length) {
-	String::C result(0, 0);
-	if(source_body) {
-		if(!source_content_length)
-			source_content_length=strlen(source_body);
-		result=Charset::transcode(String::C(source_body, source_content_length),
+static String::C UTF8toSource(Charset& source_charset, const char* source_body) {
+	if(source_body)
+		return Charset::transcode(String::C(source_body, strlen(source_body)),
 			UTF8_charset, source_charset);
-	}
-
-	return result;
+	else
+		return String::C(0, 0);
 }
 
 static void putReceived(Charset& source_charset, 
 			HashStringValue& received, 
-			const char* name, Value* value, 
+			const char* must_clone_name, Value* value, 
 			bool nameToUpperCase=false) {
 
-	if(name && value) {
+	if(must_clone_name && value) {
 		received.put(
 			maybeUpperCase(source_charset, 
-				*new String(pa_strdup(name), 0, true/*tainted*/), nameToUpperCase),
+				*new String(pa_strdup(must_clone_name)), nameToUpperCase),
 			value);
 	}
 }
 
 static void putReceived(Charset& source_charset, 
 			HashStringValue& received, 
-			const char* must_clone_name, const char* must_clone_value, size_t help_must_clone_value_size=0, 
+			const char* must_clone_name, const char* must_clone_value, 
 			bool nameToUpperCase=false) {
 	if(must_clone_name && must_clone_value) {
-		String::C cloned_value=UTF8toSource(source_charset,
-			must_clone_value, help_must_clone_value_size);
+		String::C cloned_value=UTF8toSource(source_charset, must_clone_value);
 		
 		putReceived(source_charset,
 			received, 
 			pa_strdup(must_clone_name), 
-			new VString(*new String(pa_strdup(cloned_value.str, cloned_value.length), true/*tainted*/))
+			new VString(*new String(pa_strdup(cloned_value.str))),
+			nameToUpperCase
 		);
 	}
 }
@@ -112,7 +109,7 @@ static void putReceived(Charset& source_charset,
 static void putReceived(HashStringValue& received, const char* must_clone_name, time_t value) {
 	if(must_clone_name)
 		received.put(
-			*new StringBody(pa_strdup(must_clone_name)), 
+			StringBody(pa_strdup(must_clone_name)), 
 			new VDate(value)
 		);
 }
@@ -128,7 +125,7 @@ static void MimeHeaderField2received(const char* must_clone_name, const char* mu
 
 	putReceived(*info.source_charset, 
 		*info.received, 
-		must_clone_name, must_clone_value, 0, true/*nameInUpperCase*/);
+		must_clone_name, must_clone_value, true/*nameInUpperCase*/);
 }
 
 static void parse(Request& r, GMimeStream *stream, HashStringValue& received);
@@ -140,7 +137,6 @@ struct MimePart2body_info {
 	int partCounts[P_TYPES_COUNT];
 };
 #endif
-/// @test why no copy to global in P_HTML putReceived?
 static void MimePart2body(GMimePart *part, gpointer data) {
 	MimePart2body_info& info=*static_cast<MimePart2body_info *>(data);
 	Charset& source_charset=info.r->charsets.source();
@@ -241,7 +237,7 @@ static void MimePart2body(GMimePart *part, gpointer data) {
 				putReceived(source_charset, partX, VALUE_NAME, vfile);
 			} else {
 				// P_TEXT, P_HTML
-				putReceived(source_charset, partX, VALUE_NAME,(const char*)local_buf, buf_len);
+				putReceived(source_charset, partX, VALUE_NAME,(const char*)local_buf);
 			}
 		}
 	}
@@ -316,9 +312,15 @@ static void parse(Request& r, GMimeStream *stream, HashStringValue& received) {
 
 		// normal unref
 		g_mime_object_unref(GMIME_OBJECT(message));
+	} catch(const Exception& e) {
+		// abnormal unref
+		g_mime_object_unref(GMIME_OBJECT(message));
+		putReceived(source_charset, received, VALUE_NAME, "<exception occured while parsing message>");
+		putReceived(source_charset, received, EXCEPTION_VALUE, e.comment());
 	} catch(...) {
 		// abnormal unref
 		g_mime_object_unref(GMIME_OBJECT(message));
+		putReceived(source_charset, received, VALUE_NAME, "<exception occured while parsing message>");
 	}
 }
 #endif
@@ -341,12 +343,20 @@ void VMail::fill_received(Request& r) {
 		stream = istream;
 		try {
 			// parse incoming stream
-			parse(r, stream, vreceived->hash());
+			parse(r, stream, vreceived.hash());
 			// normal stream free 
 			g_mime_stream_unref(stream);
+		} catch(const Exception& e) {
+			// abnormal stream free 
+			g_mime_stream_unref(stream);
+			Charset& source_charset=r.charsets.source();
+			HashStringValue& received=vreceived.hash();
+			putReceived(source_charset, received, VALUE_NAME, "<exception occured while parsing messages>");
+			putReceived(source_charset, received, EXCEPTION_VALUE, e.comment());
 		} catch(...) {
 			// abnormal stream free 
 			g_mime_stream_unref(stream);
+			rethrow;
 		}
 	}
 #endif
@@ -794,7 +804,7 @@ Value* VMail::get_element(const String& aname, Value& aself, bool looking_up) {
 	// $fields
 #ifdef WITH_MAILRECEIVE
 	if(aname==MAIL_RECEIVED_ELEMENT_NAME)
-		return vreceived;
+		return &vreceived;
 #endif
 
 	// $CLASS,$method
@@ -805,7 +815,7 @@ Value* VMail::get_element(const String& aname, Value& aself, bool looking_up) {
 }
 
 #if defined(WITH_MAILRECEIVE) && defined(_MSC_VER)
-#	define GNOME_LIBS "/parser3project/win32mailreceive/win32/gnome"
+#	define GNOME_LIBS "../../../../win32/gnome"
 #	pragma comment(lib, GNOME_LIBS "/glib/lib/libglib-1.3-11.lib")
 #	ifdef _DEBUG
 #		pragma comment(lib, GNOME_LIBS "/gmime-x.x.x/Debug/libgmime.lib")
