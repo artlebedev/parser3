@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2003/12/01 12:55:03 $";
+static const char * const IDENT_XDOC_C="$Date: 2003/12/10 14:17:43 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -569,10 +569,6 @@ static void prepare_output_options(Request& r,
 				param_option_over_output_option(*options, "omit-xml-declaration", oo.omitXmlDeclaration);
 				// $.standalone[yes|no]
 				param_option_over_output_option(*options, "standalone", oo.standalone);
-				// $.doctype-public[?]
-				param_option_over_output_option(*options, "doctype-public", oo.doctypePublic);
-				// $.doctype-system[?]
-				param_option_over_output_option(*options, "doctype-system", oo.doctypeSystem);
 				// $.indent[yes|no]
 				param_option_over_output_option(*options, "indent", oo.indent);
 				// $.media-type[text/{html|xml|plain}]
@@ -638,8 +634,8 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 	OOS2STYLE(method);
 	OOS2STYLE(encoding);
 	OOS2STYLE(mediaType);
-	OOS2STYLE(doctypeSystem);
-	OOS2STYLE(doctypePublic);
+//	OOS2STYLE(doctypeSystem);
+	//OOS2STYLE(doctypePublic);
 	OOE2STYLE(indent);
 	OOS2STYLE(version);
 	OOE2STYLE(standalone);
@@ -785,8 +781,6 @@ static VXdoc& _transform(Request& r, const String* stylesheet_source,
 	oo.method=stylesheet->method?&r.transcode(stylesheet->method):0;
 	oo.encoding=stylesheet->encoding?&r.transcode(stylesheet->encoding):0;
 	oo.mediaType=stylesheet->mediaType?&r.transcode(stylesheet->mediaType):0;
-	oo.doctypeSystem=stylesheet->doctypeSystem?&r.transcode(stylesheet->doctypeSystem):0;
-	oo.doctypePublic=stylesheet->doctypePublic?&r.transcode(stylesheet->doctypePublic):0;
 	oo.indent=stylesheet->indent!=0;
 	oo.version=stylesheet->version?&r.transcode(stylesheet->version):0;
 	oo.standalone=stylesheet->standalone!=0;

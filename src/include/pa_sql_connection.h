@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char * const IDENT_SQL_CONNECTION_H="$Date: 2003/11/20 16:34:25 $";
+static const char * const IDENT_SQL_CONNECTION_H="$Date: 2003/12/10 14:17:45 $";
 
 
 #include "pa_sql_driver.h"
@@ -34,6 +34,7 @@ class SQL_Driver_services_impl: public SQL_Driver_services {
 public:
 	SQL_Driver_services_impl(): furl(0) {}
 	void set_url(const String& aurl) { furl=&aurl;}
+	const String& url_without_login() const;
 
 	override void *malloc(size_t size) { return pa_malloc(size); }
 	override void *malloc_atomic(size_t size) { return pa_malloc_atomic(size); }
@@ -70,9 +71,6 @@ public:
 		throw fexception;
 #endif
 	}
-
-private:
-	const String& url_without_login() const;
 };
 
 /// SQL connection. handy wrapper around low level SQL_Driver
@@ -93,6 +91,8 @@ public:
 		time_used(0), 
 		marked_to_rollback(false) {
 	}
+
+	SQL_Driver_services_impl& services() { return fservices; }
 	
 	const String& get_url() { return furl; }
 

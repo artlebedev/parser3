@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2003/11/20 16:34:24 $";
+static const char * const IDENT_CHARSET_H="$Date: 2003/12/10 14:17:45 $";
 
 
 #include "pa_exception.h"
@@ -169,7 +169,8 @@ private:
 
 extern Charset::UTF8CaseTable UTF8CaseToUpper;
 extern Charset::UTF8CaseTable UTF8CaseToLower;
-void change_case_UTF8(const XMLByte* srcData, XMLByte* toFill, 
+void change_case_UTF8(const XMLByte* srcData, size_t srcLen,
+					  XMLByte* toFill, size_t toFillLen,
 					  const Charset::UTF8CaseTable& table);
 
 

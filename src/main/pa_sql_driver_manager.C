@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/11/20 17:15:12 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/12/10 14:17:45 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -242,47 +242,42 @@ void SQL_Driver_manager::maybe_expire_cache() {
 		prev_expiration_pass_time=now;
 	}
 }
-/*
-static void add_connection_to_status_cache_table(Array::Item *value, void *info) {
-	SQL_Connection& connection=*static_cast<SQL_Connection* >(value);
-	Table& table=*static_cast<Table *>(info);
 
+static void add_connection_to_status_cache_table(SQL_Connection& connection, Table* table) {
 	if(connection.connected()) {
-		Array& row=*new Array();
+		ArrayString& row=*new ArrayString;
 
 		// url
-		row+=&url_without_login(connection.get_url());
+		row+=&connection.services().url_without_login();
 		// time
 		time_t time_used=connection.get_time_used();
-		const char* unsafe_time_cstr=ctime(&time_used);
-		int time_buf_size=strlen(unsafe_time_cstr);
-		char *safe_time_buf=pool.copy(unsafe_time_cstr, time_buf_size);
-		row+=new String(safe_time_buf, time_buf_size);
+		row+=new String(pa_strdup(ctime(&time_used)));
 
-		table+=&row;
+		*table+=&row;
 	}
 }
-static void add_connections_to_status_cache_table(const Hash::Key& key, Hash::Val *value, void *info) {
-	Stack& stack=*static_cast<Stack *>(value);
-	Array_iter iter(stack);
-	for(int countdown=stack.top_index(); countdown-->=0; )
-		add_connection_to_status_cache_table(iter.next(), info);
-}*/
-/// @todo convert to object_ptr
+static void add_connections_to_status_cache_table(
+	SQL_Driver_manager::connection_cache_type::key_type /*key*/, 
+	SQL_Driver_manager::connection_cache_type::value_type stack, Table* table) 
+{
+		for(Array_iterator<SQL_Connection*> i(*stack); i.has_next(); )
+			add_connection_to_status_cache_table(*i.next(), table);
+}
+
 Value* SQL_Driver_manager::get_status() {
 	Value* result=new VHash;
-	/*
+
 	// cache
 	{
-		Array& columns=*new Array();
+		ArrayString& columns=*new ArrayString;
 		columns+=new String("url");
 		columns+=new String("time");
-		Table& table=*new Table(0, &columns, connection_cache.length());
+		Table& table=*new Table(&columns, connection_cache.count());
 
 		connection_cache.for_each(add_connections_to_status_cache_table, &table);
 
-		result.hash(source).put(*new String("cache"), new VTable(&table));
-	}*/
+		result->get_hash()->put(*new String("cache"), new VTable(&table));
+	}
 
 	return result;
 }

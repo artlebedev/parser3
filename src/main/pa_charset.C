@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2003/11/20 17:46:01 $";
+static const char * const IDENT_CHARSET_C="$Date: 2003/12/10 14:17:45 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -519,13 +519,19 @@ static void change_case_UTF8(XMLCh src, XMLByte*& outPtr,
 						const Charset::UTF8CaseTable& table) {
 	store_UTF8(change_case_UTF8(src, table), outPtr);
 };
-void change_case_UTF8(const XMLByte* srcData, XMLByte* toFill, 
-							const Charset::UTF8CaseTable& table) {
+void change_case_UTF8(const XMLByte* srcData, size_t srcLen,
+					  XMLByte* toFill, size_t toFillLen,
+					  const Charset::UTF8CaseTable& table) {
 	const XMLByte* srcPtr=srcData;
+	const XMLByte* srcEnd=srcData+srcLen;
 	XMLByte* outPtr=toFill;
+	XMLByte* outEnd=toFill+toFillLen;
 
-	// Get the next leading byte out
-	while (const XMLByte firstByte = *srcPtr) {
+	//  We now loop until we either run out of input data, or room to store
+	while ((srcPtr < srcEnd) && (outPtr < outEnd)) {
+		// Get the next leading byte out
+		const XMLByte firstByte =* srcPtr;
+
 		if(firstByte<= 127) {
 			change_case_UTF8(firstByte, outPtr, table);
 			srcPtr++;

@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char * const IDENT_VXDOC_H="$Date: 2003/11/20 16:34:30 $";
+static const char * const IDENT_VXDOC_H="$Date: 2003/12/10 14:17:45 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -87,8 +87,6 @@ public:
 		const String* method;            /* the output method */
 		const String* encoding;          /* encoding string */
 		const String* mediaType;         /* media-type string */
-		const String* doctypeSystem;     /* doctype-system string */
-		const String* doctypePublic;     /* doctype-public string */
 		bool indent;                 /* should output being indented */
 		const String* version;           /* version string */
 		bool standalone;             /* standalone = "yes" | "no" */

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2003/12/02 11:20:28 $";
+static const char * const IDENT_STRING_C="$Date: 2003/12/10 14:17:45 $";
 
 #include "pcre.h"
 
@@ -375,14 +375,14 @@ String& String::change_case(Charset& source_charset, Change_case_kind kind) cons
 		return result;
 
 	char* new_cstr=cstrm();
-	char *dest=new_cstr;
+	size_t new_cstr_len=length();
 	if(source_charset.isUTF8()) {
 		switch(kind) {
 		case CC_UPPER:
-			change_case_UTF8((const XMLByte*)new_cstr, (XMLByte*)new_cstr, UTF8CaseToUpper);
+			change_case_UTF8((const XMLByte*)new_cstr, new_cstr_len, (XMLByte*)new_cstr, new_cstr_len, UTF8CaseToUpper);
 			break;
 		case CC_LOWER:
-			change_case_UTF8((const XMLByte*)new_cstr, (XMLByte*)new_cstr, UTF8CaseToLower);
+			change_case_UTF8((const XMLByte*)new_cstr, new_cstr_len, (XMLByte*)new_cstr, new_cstr_len, UTF8CaseToLower);
 			break;
 		default:
 			assert(!"unknown change case kind");
@@ -409,6 +409,7 @@ String& String::change_case(Charset& source_charset, Change_case_kind kind) cons
 			break; // never
 		}	
 
+		char *dest=new_cstr;
 		unsigned char index;
 		for(const char* current=new_cstr; (index=(unsigned char)*current); current++) {
 			unsigned char c=a[index];

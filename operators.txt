@@ -922,12 +922,12 @@ xdoc(xnode)
             url    time    
             url    time    
             url    time    
-    !$status:stylesheet
+    $status:stylesheet
         !cache table
             file    time
             file    time
             file    time
-    !$status:charset hash
+    $status:charset hash
         !cache table
             file
             file
