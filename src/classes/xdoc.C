@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.74 2002/01/24 15:04:17 paf Exp $
+	$Id: xdoc.C,v 1.75 2002/01/24 15:06:45 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -591,7 +591,12 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 	OOE2STYLE(omitXmlDeclaration);
 
 	xmlDoc *document=((Gdome_xml_Document*)vdoc.get_document(&method_name))->n;
-	xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get());
+	if(xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0) {
+		GdomeException exc=0;
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
+	}
 
 	// write out result
 	char *gnome_buf;  size_t gnome_size;
