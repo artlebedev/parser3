@@ -88,11 +88,15 @@ OK
 ^mail:send[
 	$.from[Александр Петросян <paf@design.ru>]
 	$.to[Александр Петросян <paf@design.ru>]
-	$.subject[проверка2]
+	$.subject[проверка4]
 	$.body[
 		$.text[
 			$.content-type[$.value[text/plain] $.charset[windows-1251]]
 			$.body[проверка]
+		]
+		$.attachment[
+			$.value[^file::load[text;index.html]]
+			$.file-name[привет всем.html]			
 		]
 	]
 ]
