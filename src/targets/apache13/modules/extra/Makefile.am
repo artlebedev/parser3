@@ -10,8 +10,8 @@ libpostbuildmessage.a:
 	@echo "1. add these lines to Configuration file"
 	@echo
 	@echo "PARSER_SRC={path to your parser3 sources}"
-	@echo "PARSER_LIBS=\$\(PARSER_SRC)/main/libmain.a \$\(PARSER_SRC)/classes/libclasses.a \$\(PARSER_SRC)/main/libmain.a \$\(PARSER_SRC)/types/libtypes.a \$\(PARSER_SRC)/libltdl/.libs/libltdlc.al -ldl \$\(PARSER_SRC)/classes/gd/libgd.a \$\(PARSER_SRC)/pcre/libpcre.a \$\(PARSER_SRC)/targets/apache13/modules/extra/libmod_parser3.a"
-	@echo "EXTRA_LIBS=\$\(PARSER_LIBS) \$\(PARSER_LIBS)"
+	@echo "PARSER_LIBS=\$$(PARSER_SRC)/main/libmain.a \$$(PARSER_SRC)/classes/libclasses.a \$$(PARSER_SRC)/main/libmain.a \$$(PARSER_SRC)/types/libtypes.a \$$(PARSER_SRC)/libltdl/.libs/libltdlc.al -ldl \$$(PARSER_SRC)/classes/gd/libgd.a \$$(PARSER_SRC)/pcre/libpcre.a \$$(PARSER_SRC)/targets/apache13/modules/extra/libmod_parser3.a"
+	@echo "EXTRA_LIBS=\$$(PARSER_LIBS) \$$(PARSER_LIBS)"
 	@echo "AddModule modules/extra/mod_parser3.o"
 	@echo
 	@echo "2. create empty file modules/extra/mod_parser3.c"
