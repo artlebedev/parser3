@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/01/21 15:51:07 $";
+static const char* IDENT_MATH_C="$Date: 2003/04/04 09:42:04 $";
 
 #include "pa_common.h"
 #include "pa_vint.h"
@@ -47,11 +47,11 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 
 	Value& range=params->as_junction(0, "range must be expression");
-    double top=r.process_to_value(range).as_double();
-    if(top<=1)
+	double top=r.process_to_value(range).as_double();
+	if(top<=0)
 		throw Exception("parser.runtime",
 			&method_name,
-			"top must be above 1(%g)", top);
+			"top must be above 0(%g)", top);
 	
 	r.write_no_lang(*new(pool) VInt(pool, _random(uint(top))));
 }
