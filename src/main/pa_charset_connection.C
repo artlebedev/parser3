@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_connection.C,v 1.4 2001/10/02 11:07:45 parser Exp $
+	$Id: pa_charset_connection.C,v 1.5 2001/10/02 11:11:47 parser Exp $
 */
 
 #include "pa_charset_connection.h"
@@ -31,7 +31,7 @@
 //
 
 inline void prepare_case_tables(unsigned char *tables) {
-	memset(fpcre_tables, 0, sizeof(tables));
+	memset(tables, 0, sizeof(tables));
 
 	unsigned char *lcc_table=tables+lcc_offset;
 	unsigned char *fcc_table=tables+fcc_offset;

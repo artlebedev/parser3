@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.100 2001/09/30 12:06:04 parser Exp $
+	$Id: pa_request.h,v 1.101 2001/10/02 11:07:45 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -141,7 +141,7 @@ public:
 	const String& mime_type_of(const char *user_file_name_cstr);
 
 	/// PCRE character tables
-	unsigned char *pcre_tables();
+	const unsigned char *pcre_tables();
 
 public:
 	

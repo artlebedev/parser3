@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /GX /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -116,41 +116,6 @@ SOURCE=.\pcre.h
 # Begin Source File
 
 SOURCE=.\pcre.3.txt
-# End Source File
-# End Group
-# Begin Group "Helper programs"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\dftables.c
-
-!IF  "$(CFG)" == "pcre - Win32 Release"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build - Creating chartables.c...
-OutDir=.\Release
-InputPath=.\dftables.c
-
-"chartables.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	$(OutDir)\pcre_dftables>chartables.c
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "pcre - Win32 Debug"
-
-# PROP Ignore_Default_Tool 1
-# Begin Custom Build - Creating chartables.c...
-OutDir=.\Debug
-InputPath=.\dftables.c
-
-"chartables.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	$(OutDir)\pcre_dftables>chartables.c
-
-# End Custom Build
-
-!ENDIF 
-
 # End Source File
 # End Group
 # End Target

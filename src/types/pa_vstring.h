@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.35 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vstring.h,v 1.36 2001/10/02 11:07:45 parser Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -53,7 +53,8 @@ public: // Value
 			return result;
 
 		// bad $string.field
-		bark("(%s) does not have fields");  return 0;
+		bark("(%s) does not have fields",
+			"%s method not found", &name);  return 0;
 	}
 
 protected: // VAliased

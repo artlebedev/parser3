@@ -4,15 +4,10 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.164 2001/10/01 10:53:16 parser Exp $
+	$Id: pa_request.C,v 1.165 2001/10/02 11:07:45 parser Exp $
 */
 
 #include "pa_config_includes.h"
-
-//#include "pcre.h"
-//#include "internal.h"
-extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
-
 #include "pa_sapi.h"
 #include "pa_common.h"
 #include "pa_request.h"
@@ -592,9 +587,6 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 	return *NEW String(pool(), "application/octet-stream");
 }
 
-unsigned char *Request::pcre_tables() {
-	if(unsigned char *result=(unsigned char *)CTYPE.get(pool().get_charset()))
-		return result;
-
-	return pcre_default_tables;
+const unsigned char *Request::pcre_tables() {
+	return (const unsigned char *)CTYPE.get(pool().get_charset());
 }
