@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.93 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.94 2001/08/24 09:25:17 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -327,6 +327,9 @@ int main(int argc, char *argv[]) {
 		// body
 		if(!header_only)
 			SAPI::send_body(pool, body, content_length);
+
+		if(!cgi)
+			SAPI::send_body(pool, "\n", 1);
 
 		// unsuccessful finish
 		return 1;
