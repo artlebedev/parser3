@@ -7,7 +7,7 @@
 
 	2001.07.30 using MySQL 3.23.22b
 */
-static const char *RCSId="$Id: parser3mysql.C,v 1.29 2001/08/28 13:29:41 parser Exp $"; 
+static const char *RCSId="$Id: parser3mysql.C,v 1.30 2001/09/05 08:57:43 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -268,6 +268,6 @@ private: // mysql client library funcs linking
 
 };
 
-extern "C" SQL_Driver *create() {
+extern "C" SQL_Driver *SQL_DRIVER_CREATE_FUNC_NAME() {
 	return new MySQL_Driver();
 }
