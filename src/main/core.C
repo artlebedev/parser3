@@ -1,4 +1,6 @@
-// TODO: $RESULT
+// TODO: 
+//   $RESULT
+//   ^menu[!unevaluated!]
 
 enum Prefix {
 	NO_PREFIX,
@@ -16,6 +18,8 @@ enum CHAR_TYPE {
 	CONSTRUCTOR_BODY_FINISH_TYPE,
 	BLOCK_START_TYPE,
 	BLOCK_FINISH_TYPE,
+	PARAM_STOP_NORMAL_TYPE,
+	PARAM_STOP_SPECIAL_TYPE,
 	
 	Z_TYPE
 };
@@ -23,6 +27,8 @@ enum CHAR_TYPE {
 Char_types var_or_method_start;
 Char_types var_or_method_start_or_constructor_stop;
 Char_types var_or_method_start_or_block_stop;
+Char_types var_or_method_start_or_block_stop_or_param_stop_normal;
+Char_types var_or_method_start_or_block_stop_or_param_stop_special;
 Char_types common_names_breaks, var_names_breaks, method_names_breaks;
 String SELF;
 String RESULT;
@@ -36,6 +42,11 @@ void prepare() {
 
 	var_or_method_start_or_block_stop=var_or_method_start;
 	var_or_method_start_or_block_stop.set(']', STOP_TYPE);
+
+	var_or_method_start_or_block_stop_or_param_stop_normal=var_or_method_start_or_block_stop;
+	var_or_method_start_or_block_stop_or_param_stop_normal.set(';', PARAM_STOP_NORMAL_TYPE);
+	var_or_method_start_or_block_stop_or_param_stop_special=var_or_method_start_or_block_stop;
+	var_or_method_start_or_block_stop_or_param_stop_special.set('`', PARAM_STOP_SPECIAL_TYPE);
 
 	common_names_breaks.set(0, ' ', STOP_TYPE);
 	common_names_breaks.set('.', DOT_TYPE);
@@ -282,6 +293,8 @@ CHAR_TYPE get_names(
 			iter, breaks);
 		// read resulting name
 		String *name=local_wcontext.get_string();
+		if(!name)
+			pool.exception().raise("names: name string missing");
 		if(*name==SELF) // is it "self"?
 			if(prefix || names.size()) // already $: or $self.  or $name.
 				pool.exception().raise("names: 'self' not first on chain");
@@ -290,7 +303,8 @@ CHAR_TYPE get_names(
 		else // simple $name or .name, emiting
 			names+=name;
 
-		if(result!=DOT_TYPE) // not "name." ?
+		// stop if not '.', otherwise continue with next name on chain
+		if(result!=DOT_TYPE)
 			break;
 	}
 
@@ -305,4 +319,41 @@ void get_params(
 		String_iterator& iter,
 		Value *arcontext,
 		Array/*<Values&>*/& param_values) {
+	// arg1;arg2;...]
+	// ...`argX.1;argX.2`...]
+	
+	while(true) {
+		// prepare context
+		WContext local_wcontext(pool /* empty */);
+		bool back_stick_at_start=iter()=='`'; // parameter starts with '`' ?
+		if(back_stick_at_start)
+			iter++; // skip '`'
+		// evaluate param body in that context
+		CHAR_TYPE type=process(root, self, // parameter must end on ';' or '`' depending on start
+			arcontext, local_wcontext, 
+			iter, back_stick_at_start?var_or_method_start_or_block_stop_or_param_stop_special:var_or_method_start_or_block_stop_or_param_stop_normal
+			);
+		switch(type) {
+		case PARAM_STOP_NORMAL_TYPE:
+			iter++; // skip ';'
+			break;
+		case PARAM_STOP_SPECIAL_TYPE:
+			iter++; // skip '`'
+			char c=iter();
+			if(c==';')
+				iter++; // skip ';'
+			else if(c!=']')
+				pool.exception().raise("params: closing backstick doesn't adjoin semicolon or closing bracket");
+			break;
+		default:
+			break; // ']'  or eof: ^method[params;...;eof which would'nt process honestly
+		}
+
+		// emit resulting param's value
+		param_values+=local_wcontext.value();
+
+		// stop on ] or eof, otherwise continue with next param
+		if(type==STOP_TYPE || type<0)
+			break;
+	}
 }
