@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.34 2001/02/24 11:20:33 paf Exp $
+  $Id: execute.C,v 1.35 2001/02/24 11:30:10 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -257,11 +257,11 @@ Value *Request::get_element() {
 			root=junction->root;
 			rcontext=junction->rcontext;
 			execute(*junction->code);
-			// CodeFrame soul: string writes intercepted
-			String *code_string_result=frame.get_string();
+			// CodeFrame soul:
+			//    string writes intercepted
+			//   and they are the result of getting code junction
+			value=NEW VString(frame.get_string());
 			wcontext=static_cast<WContext *>(POP());  rcontext=POP();  root=POP();  self=POP();
-			// writing string result to current context
-			wcontext->write(code_string_result);
 			printf("<-ja returned");
 		}
 	} else {
