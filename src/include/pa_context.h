@@ -1,5 +1,5 @@
 /*
-  $Id: pa_context.h,v 1.6 2001/02/14 13:40:54 paf Exp $
+  $Id: pa_context.h,v 1.7 2001/02/21 11:10:02 paf Exp $
 */
 
 /*
@@ -11,18 +11,16 @@
 
 #include "pa_value.h"
 
-typedef Value RContext;
-
 class WContext : public Value {
 public:
 
 	// appends a string to result
 	// until Value written, ignores afterwards
 	void write(String& astring);
-	// if value.string!=0 writes just string, not Value
-	// raises an error if already
+	// if value.string!=0 writes string altogether[for showing class names, etc]
+	// writes Value; raises an error if already
 	void write(Value& avalue);
-	void write(String_iterator& from, String_iterator& to);
+	//void write(String_iterator& from, String_iterator& to);
 
 	// retrives the resulting value
 	// that can be Text if value==0 or the Value object
@@ -32,18 +30,20 @@ public:
 	
 public: //implement by replicating to value->calls
 
-	virtual String *get_string() const { return &string };
-	virtual void put_string(const String *astring) { check(value)->put_string(astring); };
+	const char *get_type() const { return "WContext"; }
 
-	virtual Method_ref *get_method_ref() const { return check(value)->get_method_ref(); }
+	String *get_string() const { return &string };
+	void put_string(const String *astring) { check(value)->put_string(astring); };
 
-	virtual Value *get_element(const String& name) const { return check(value)->get_element(name); }
-	virtual void put_element(const String& name, const Value *avalue){ check(value)->put_element(name, avalue); }
+	Method_ref *get_method_ref() const { return check(value)->get_method_ref(); }
 
-	virtual Method *get_method(const String& name) const { return check(value)->get_method(name); }
+	Value *get_element(const String& name) const { return check(value)->get_element(name); }
+	void put_element(const String& name, const Value *avalue){ check(value)->put_element(name, avalue); }
 
-	virtual Class *get_class() const { return value?value->get_class():0; }
-	virtual bool has_parent(Class *aparent) { return value?value->has_parent(aparent):false; }
+	Method *get_method(const String& name) const { return check(value)->get_method(name); }
+
+	Class *get_class() const { return value?value->get_class():0; }
+	bool has_parent(Class *aparent) { return value?value->has_parent(aparent):false; }
 
 private:
 	String& string;

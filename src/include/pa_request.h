@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.4 2001/01/30 13:07:31 paf Exp $
+  $Id: pa_request.h,v 1.5 2001/02/21 11:10:02 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -7,6 +7,7 @@
 
 #include "pa_pool.h"
 #include "pa_exception.h"
+#include "pa_hash.h"
 
 class Local_request_exception;
 
@@ -14,12 +15,17 @@ class Request {
 	friend Local_request_exception;
 public:
 	
-	Request(Pool& apool) : fpool(apool) {}
+	Request(Pool& apool) : 
+		fpool(apool), 
+		fclasses(new(apool) Hash(apool)) {
+	}
 	~Request() {}
 
+	// IMPORTANT: don't use pool without  Local_request_exception 
 	Pool& pool() { return fpool; }
 
 	Exception& exception() { return *fexception; }
+	Hash& classes() { return *fclasses; }
 
 protected:
 
@@ -41,6 +47,9 @@ private:
 
 	// current request's exception object
 	Exception *fexception;
+
+	// defined classes
+	Hash *fclasses;
 
 };
 

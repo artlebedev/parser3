@@ -1,5 +1,5 @@
 /*
-  $Id: compile.h,v 1.2 2001/02/21 06:59:43 paf Exp $
+  $Id: compile.h,v 1.3 2001/02/21 11:10:02 paf Exp $
 */
 
 #ifndef COMPILE_H
@@ -12,7 +12,7 @@
 #	define COMPILE_PARAMS Request& request, char *source, char *file
 #	define COMPILE(pool, source, file) real_compile(pool, source, file)
 #else
-#	define COMPILE_PARAMS Request& request, char *source
+#	define COMPILE_PARAMS Request& request, String& name, char *source
 #	define COMPILE(pool, source, file) real_compile(pool, source)
 #endif
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.14 2001/02/11 11:27:24 paf Exp $
+  $Id: pa_hash.h,v 1.15 2001/02/21 11:10:02 paf Exp $
 */
 
 /*
@@ -24,7 +24,8 @@ public:
 
 public:
 
-	Hash(Pool& apool, bool athread_safe);
+	Hash(Pool& apool,bool) : Pooled(apool) { construct(apool, true); }
+	Hash(Pool& apool) : Pooled(apool) { construct(apool, false); }
 
 	// useful generic hash function
 	static uint generic_code(uint aresult, const char *start, uint size);
@@ -33,13 +34,17 @@ public:
 	/*SYNCHRONIZED*/ void put(const Key& key, Value *value);
 
 	// get associated [value] by the [key]
-	/*SYNCHRONIZED*/ Value *get(const Key& key);
+	/*SYNCHRONIZED*/ Value *get(const Key& key) const;
 
 	void put(const Key& key, int     value) { put(key, reinterpret_cast<Value *>(value)); }
 	void put(const Key& key, String *value) { put(key, static_cast<Value *>(value)); }
 
 	int get_int(const Key& key) { return reinterpret_cast<int>(get(key)); }
 	String *get_string(const Key& key) { return static_cast<String *>(get(key)); }
+
+protected:
+
+	void construct(Pool& apool, bool athread_safe);
 
 private:
 
@@ -72,7 +77,7 @@ private:
 		friend Hash;
 
 		uint code;
-		Key key;
+		const Key key;
 		Value *value;
 		Pair *link;
 		

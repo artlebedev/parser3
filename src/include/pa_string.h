@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.22 2001/02/20 18:45:51 paf Exp $
+  $Id: pa_string.h,v 1.23 2001/02/21 11:10:02 paf Exp $
 */
 
 /*
@@ -34,6 +34,7 @@
 #	define STRING_APPEND_PARAMS const char *src, size_t size
 #	define APPEND(src, size, file, line) real_append(src, size)
 #endif
+#define	APPEND_CONST(src) APPEND(src, 0, 0, 0)
 
 //class String_iterator;
 
