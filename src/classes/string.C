@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.94 2002/01/25 11:33:45 paf Exp $
+	$Id: string.C,v 1.95 2002/02/07 11:31:53 paf Exp $
 */
 
 #include "classes.h"
@@ -80,11 +80,12 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 /*not static*/void _string_format(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& fmt=params->as_junction(0, "fmt must be code");
+	Value& fmt_maybe_code=params->get(0);
+	// for some time due to stupid {} in original design
+	const String& fmt=
+		(fmt_maybe_code.get_junction()?r.process(fmt_maybe_code):fmt_maybe_code).as_string();
 
-	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
-	char *buf=format(pool, r.self->as_double(), 
-		r.process(fmt).as_string().cstr(String::UL_UNSPECIFIED, r.connection(0)));
+	char *buf=format(pool, r.self->as_double(), fmt.cstr());
 
 	String result(pool);
 	result.APPEND_CLEAN(buf, 0, 
