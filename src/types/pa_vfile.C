@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vfile.C,v 1.28 2002/03/04 14:51:10 paf Exp $
+	$Id: pa_vfile.C,v 1.29 2002/03/11 07:15:23 paf Exp $
 */
 
 #include "pa_vfile.h"
@@ -39,14 +39,18 @@ void VFile::set(bool tainted,
 	// $size
 	ffields.put(*size_name, NEW VInt(pool(), fvalue_size));
 	// $text
-	if(fvalue_ptr) { // assigned files don't have bytes
+	if(fvalue_ptr && fvalue_size) { // assigned files don't have ptr, and we really have some bytes
 		String& text=*NEW String(pool());
 		char *premature_zero_pos=(char *)memchr(fvalue_ptr, 0, fvalue_size);
-		if(premature_zero_pos!=fvalue_ptr)
-			text.APPEND((char *)fvalue_ptr, 
-				premature_zero_pos?premature_zero_pos-(char *)fvalue_ptr:fvalue_size, 
+		if(premature_zero_pos!=fvalue_ptr) {
+			size_t copy_size=premature_zero_pos?premature_zero_pos-(char *)fvalue_ptr:fvalue_size;
+			char *copy_ptr=(char *)malloc(copy_size);
+			memcpy(copy_ptr, fvalue_ptr, copy_size);
+			fix_line_breaks(copy_ptr, copy_size);
+			text.APPEND(copy_ptr,  copy_size, 
 				tainted? String::UL_TAINTED : String::UL_AS_IS,
 				origin_file, 0);
+		}
 		ffields.put(*text_name, NEW VString(text));
 	}
 	// $mime-type
