@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.37 2001/03/23 10:27:32 paf Exp $
+	$Id: parser3.C,v 1.38 2001/03/23 10:32:53 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -174,8 +174,7 @@ int main(int argc, char *argv[]) {
 		request_info.cookie=getenv("HTTP_COOKIE");
 
 		// prepare to process request
-		Pool request_pool;
-		Request request(request_pool,
+		Request request(pool,
 			request_info,
 			cgi ? String::UL_HTML_TYPO : String::UL_NO
 			);
