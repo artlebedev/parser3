@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.49 2001/03/06 12:22:58 paf Exp $
+  $Id: execute.C,v 1.50 2001/03/06 12:57:30 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -208,7 +208,7 @@ void Request::execute(const Array& ops) {
 		case OP_REDUCE_RWPOOL:
 			{
 				String *string=wcontext->get_string();
-				Value *value=NEW VString(*string);
+				Value *value=string?NEW VString(*string):NEW VString(pool());
 				wcontext=static_cast<WContext *>(POP());
 				rcontext=POP();
 				PUSH(value);
@@ -217,7 +217,7 @@ void Request::execute(const Array& ops) {
 		case OP_CREATE_SWPOOL:
 			{
 				PUSH(wcontext);
-				wcontext=NEW WWrapper(pool(), 0 /* empty */, true /* constructing */);
+				wcontext=NEW WWrapper(pool(), 0 /* empty */, false /* not constructing */);
 				break;
 			}
 		case OP_REDUCE_SWPOOL:
@@ -225,7 +225,8 @@ void Request::execute(const Array& ops) {
 				// from "$a $b" part of expression taking only string value,
 				// ignoring any other content of wcontext
 				String *string=wcontext->get_string();
-				Value *value=NEW VString(*string);
+				Value *value=string?NEW VString(*string):NEW VString(pool());
+				wcontext=static_cast<WContext *>(POP());
 				PUSH(value);
 				break;
 			}
@@ -269,8 +270,7 @@ void Request::execute(const Array& ops) {
 				// constructing?
 				if(wcontext->constructing()) {  // yes
 					// constructor call: $some(^class:method(..))
-					self=NEW VObject(pool(), *called_class);
-					frame->write(self);
+					frame->write(self=NEW VObject(pool(), *called_class));
 				} else {  // no
 					// context is object or class & is it my class or my parent's class?
 					VClass *read_class=rcontext->get_class();

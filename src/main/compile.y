@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.49 2001/03/06 12:22:58 paf Exp $
+  $Id: compile.y,v 1.50 2001/03/06 12:57:30 paf Exp $
 */
 
 %{
@@ -40,6 +40,7 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %token EON
 %token STRING
 %token BOGUS
+%token LOGICAL_AND LOGICAL_OR
 
 %%
 
@@ -387,7 +388,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 	char *begin=PC->source;
 	char *end;
 	int begin_line=PC->line;
-	while(1) {
+	while(true) {
 		c=*(end=(PC->source++));
 
 		if(c=='\n') {
@@ -411,7 +412,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				begin=PC->source; // ^
 				begin_line=PC->line;
 				// skip over ^ and _
-				PC->source++;
+				PC->source++;  PC->col++;
 				// skip analysis = forced literal
 				continue;
 			}
@@ -524,23 +525,33 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				lexical_brackets_nestage++;
 				RC;
 			case '+': case '-': case '*': case '/': case '%': 
+				RC;
 			case '&': case '|': 
+				if(*PC->source==c) { // &&  ||
+					result=c=='&'?LOGICAL_AND:LOGICAL_OR;
+					PC->source++;  PC->col++;
+				} else
+					result=c;				
+				goto break2;
 			case '<': case '>': case '=': case '!':
 			case ';':
 				RC;
 			case '"':
 				push_LS(PC, LS_EXPRESSION_STRING);
 				RC;
+			case 'l': case 'g': case 'e': case 'n':
+				if(end==begin) {
+					case(*PC->source) {
+					}
+				}
 				break;
 			case ' ': case '\t': case '\n':
 				if(end!=begin) {
 					// append piece till whitespace
 					PC->string->APPEND(begin, end-begin, PC->file, begin_line);
 				}
-				// skip over whitespace
-				PC->source++;
 				// reset piece 'start' position & line
-				begin=PC->source; // ^
+				begin=PC->source; // after whitespace
 				begin_line=PC->line;
 				continue;
 			}
