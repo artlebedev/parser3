@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.11 2001/03/21 14:06:54 paf Exp $
+	$Id: pa_vform.C,v 1.12 2001/03/22 16:38:24 paf Exp $
 */
 
 /**
@@ -107,7 +107,7 @@ void VForm::ParsePostFormInput(const char *content_type, int post_size,
 
 	input=(char *) malloc(post_size);
 	int read_size=(*service_funcs.read_post)(pool(), input, post_size);
-	if(read_size !=post_size)
+	if(read_size!=post_size)
 		THROW(0, 0,
 			0,
 			"ParsePostFormInput: post_size(%d)!=read_size(%d)", 

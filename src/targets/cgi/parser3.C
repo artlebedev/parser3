@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.31 2001/03/22 15:30:47 paf Exp $
+	$Id: parser3.C,v 1.32 2001/03/22 16:38:22 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -117,12 +117,13 @@ static void send_body(const char *buf, size_t size) {
 // main
 
 int main(int argc, char *argv[]) {
-	// TODO:umask(2);
-//\#ifdef WIN32
+	umask(2);
+
+#ifdef WIN32
 	setmode(fileno(stdin), _O_BINARY);
 	setmode(fileno(stdout), _O_BINARY);
 	setmode(fileno(stderr), _O_BINARY);
-//\#endif
+#endif
 
 	// were we started as CGI?
 	cgi=
@@ -193,7 +194,6 @@ int main(int argc, char *argv[]) {
 		// c:\windows
 		root_auto_path=(char *)pool.malloc(MAX_STRING);
 		GetWindowsDirectory(root_auto_path, MAX_STRING);
-		strcat(root_auto_path, "/");
 #else
 		// ~nobody
 		root_auto_path=getenv("HOME");
@@ -203,7 +203,6 @@ int main(int argc, char *argv[]) {
 		char *site_auto_path=(char *)pool.malloc(MAX_STRING);
 		strncpy(site_auto_path, argv[0], MAX_STRING);  // filespec of my binary
 		rsplit(site_auto_path, '/');  rsplit(site_auto_path, '\\');// strip filename
-		strcat(site_auto_path, "/");
 		
 		// process the request
 		request.core(pool.exception(),

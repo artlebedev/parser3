@@ -1,7 +1,9 @@
 @main[]
 ^$root_test=$root_test !<BR>
 ^$site_test=$site_test !<BR>
-${cookie:н}?
+^${cookie:вот}=${cookie:вот}?<BR>
+^$request:query=$request:query<BR>
+^$request:uri=$request:uri<BR>
 
 <form method=post>
 (^$form:name=$form:name)<BR>
@@ -13,6 +15,8 @@ ${cookie:н}?
 ^if(^test.length[]){$test}{$def}
 
 @exception[origin;source;comment;type;code]
+<body bgcolor=black>
+<font color=white>
 ERROR:
 ^if(def $source){$origin '$source'}
 ${comment}.
