@@ -8,7 +8,7 @@
 #ifndef PA_EXEC_H
 #define PA_EXEC_H
 
-static const char * const IDENT_EXEC_H="$Date: 2004/05/11 15:03:49 $";
+static const char * const IDENT_EXEC_H="$Date: 2004/05/11 15:05:21 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
