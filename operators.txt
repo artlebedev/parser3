@@ -100,7 +100,9 @@ Xне сделано, видимо, не будет сделано
             charset=cp1251_koi8&
             timeout=3&
             compress=1&
-            named_pipe=1
+            named_pipe=1&
+            autocommit=1
+            autocommit если выставить в 0, будет делать commit/rollback
 
         !pgsql://user:pass@{host[:port]|[local]}/database?
             client_encoding=win,[to-find-out]&
