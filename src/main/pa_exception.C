@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_exception.C,v 1.12 2001/08/27 12:02:24 parser Exp $"; 
+static const char *RCSId="$Id: pa_exception.C,v 1.13 2001/08/27 13:40:41 parser Exp $"; 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,8 +24,6 @@ void Exception::_throw(const String *atype, const String *acode,
 		va_list args;
 		va_start(args, comment_fmt);
 		vsnprintf(fcomment, MAX_STRING, comment_fmt, args);
-		//fcomment[0]='z';
-		//fcomment[1]=0;
 		va_end(args);
 	} else 
 		fcomment[0]=0;
