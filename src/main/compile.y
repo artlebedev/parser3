@@ -238,13 +238,16 @@ name_expr_with_subvar_value: STRING subvar_get_writes {
 	P($$, $2);
 	OP($$, OP_REDUCE_EWPOOL);
 };
-subvar_ref_name_rdive: STRING {
-/*
-	TODO: подсмотреть в $1, и если там в первом элементе первая буква ":"
-		то выкинуть её и делать не OP_WITH_READ, а WITH_ROOT
-*/
-	$$=N(pool); OP($$, OP_WITH_READ);
+subvar_ref_name_rdive: subvar_ref_name_rdive_read | subvar_ref_name_rdive_root;
+subvar_ref_name_rdive_read: STRING {
+	$$=N(pool); 
+	OP($$, OP_WITH_READ);
 	P($$, $1);
+};
+subvar_ref_name_rdive_root: ':' STRING {
+	$$=N(pool); 
+	OP($$, OP_WITH_ROOT);
+	P($$, $2);
 };
 subvar_get_writes: subvar__get_write | subvar_get_writes subvar__get_write { $$=$1; P($$, $2) };
 subvar__get_write: '$' subvar_ref_name_rdive {
@@ -437,6 +440,10 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				result=c;
 				goto break2;
 			}
+			if(c==':') {
+				result=c;
+				goto break2;
+			}
 			if(c=='(') {
 				PC->ls=LS_VAR_ROUND;
 				lexical_brackets_nestage=1;
@@ -455,6 +462,10 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			}
 			break;
 		case LS_VAR_NAME_CURLY:
+			if(c==':') {
+				result=c;
+				goto break2;
+			}
 			if(c=='}') {  /* ${name} finished, restoring LS */
 				pop_LS(PC);
 				result=c;

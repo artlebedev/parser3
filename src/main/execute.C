@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.19 2001/02/22 13:58:43 paf Exp $
+  $Id: execute.C,v 1.20 2001/02/22 14:14:07 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -70,6 +70,16 @@ void Request::execute(Array& ops) {
 		case OP_WITH_READ: 
 			{
 				stack.push(rcontext);
+				break;
+			}
+		case OP_WITH_ROOT: 
+			{
+				stack.push(root);
+				break;
+			}
+		case OP_WITH_SELF: 
+			{
+				stack.push(self);
 				break;
 			}
 			
