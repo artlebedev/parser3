@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.73 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_common.C,v 1.74 2001/10/19 15:14:20 parser Exp $
 */
 
 #include "pa_common.h"

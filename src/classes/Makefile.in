@@ -83,8 +83,8 @@ XML_INCLUDES = @XML_INCLUDES@
 XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 host_os = @host_os@
-
-SUBDIRS = gd xalan-patched
+@COMPILE_XML_TRUE@SUBDIRS = gd xalan-patched
+@COMPILE_XML_FALSE@SUBDIRS = gd
 
 INCLUDES = -I../types -I../sql -I../pcre -Igd -Ixalan-patched @XML_INCLUDES@
 
@@ -123,6 +123,7 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
+DIST_SUBDIRS =  gd xalan-patched gd
 DEP_FILES =  .deps/classes.P .deps/date.P .deps/double.P .deps/file.P \
 .deps/form.P .deps/hash.P .deps/ident.P .deps/image.P .deps/int.P \
 .deps/mail.P .deps/math.P .deps/op.P .deps/response.P .deps/string.P \
@@ -300,7 +301,7 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
-	for subdir in $(SUBDIRS); do \
+	for subdir in $(DIST_SUBDIRS); do \
 	  if test "$$subdir" = .; then :; else \
 	    test -d $(distdir)/$$subdir \
 	    || mkdir $(distdir)/$$subdir \

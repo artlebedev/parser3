@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.65 2001/10/19 14:42:53 parser Exp $
+	$Id: pa_pool.h,v 1.66 2001/10/19 15:14:20 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -14,7 +14,7 @@
 #include "pa_config_includes.h"
 
 #ifdef XML
-#include< memory>
+#include <memory>
 #include <XalanDOM/XalanDOMString.hpp>
 #include <util/TransService.hpp>
 #endif
