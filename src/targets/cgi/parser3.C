@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.136 2001/11/16 12:38:44 paf Exp $
+	$Id: parser3.C,v 1.137 2001/11/16 16:00:59 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -111,6 +111,11 @@ void SAPI::log(Pool& , const char *fmt, ...) {
 }
 
 void SAPI::die(const char *fmt, ...) {
+#ifdef DEBUG_POOL_MALLOC
+	extern void log_pool_stats(Pool& pool);
+	log_pool_stats(pool);
+#endif
+
     va_list args;
 	va_start(args,fmt);
 	::log(fmt, args);
