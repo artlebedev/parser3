@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.104 2002/01/22 13:04:26 paf Exp $
+	$Id: pa_globals.C,v 1.105 2002/01/23 09:47:02 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -340,12 +340,13 @@ void pa_globals_init(Pool& pool) {
     //never added yet xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
 
 //regretfully this not only replaces entities on parse, but also on generate	xmlSubstituteEntitiesDefault(1);
+	// never switched this on xmlIndentTreeOutput=1;
 
 	memset(xml_generic_error_infos, 0, sizeof(xml_generic_error_infos));
 	xmlSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
 	xsltSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
-	FILE *f=fopen("y:\\xslt.log", "wt");
-	xsltSetGenericDebugFunc(f/*stderr*/, 0);
+//	FILE *f=fopen("y:\\xslt.log", "wt");
+//	xsltSetGenericDebugFunc(f/*stderr*/, 0);
 
 	// XSLT stylesheet manager
 	cache_managers->put(*NEW String(pool, "stylesheet"), 
