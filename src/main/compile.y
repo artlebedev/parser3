@@ -1,5 +1,5 @@
 %{
-#define YYSTYPE void *
+#define YYSTYPE Array/*<op>*/ *
 #define YYPARSE_PARAM pc
 #define YYLEX_PARAM pc
 #define YYDEBUG 1
@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "pa_exception.h"
 #include "compile_tools.h"
 
 int yyerror (char *s);
@@ -35,7 +36,7 @@ input: empty | codes;
 
 codes: code | codes code { 
 	$$=$1; 
-	P(&$$,$2);
+	P($$,$2);
 };
 code: write_str_literal | action;
 action: get | put | with | call;
@@ -44,7 +45,7 @@ action: get | put | with | call;
 
 get: '$' any_name {
 	$$=$2; /* stack: resulting value */
-	A(&$$,OP_WRITE); /* value=pop; write(value) */
+	OP($$,OP_WRITE); /* value=pop; write(value) */
 };
 
 any_name: name_without_curly_rdive BREAK | name_in_curly_rdive;
@@ -57,10 +58,10 @@ name_without_curly_rdive: name_rdive {
 	TODO: подсмотреть в $1, и если там первым элементом self,
 		то выкинуть его и делать не OP_WITH_READ, а WITH_SELF
 	*/ 
-	$$=N(PC->pool); A(&$$, OP_WITH_READ); /* stack: starting context */
-	P(&$$,$1); /* diving code; stack: current context */
+	$$=N(PC->pool); OP($$, OP_WITH_READ); /* stack: starting context */
+	P($$,$1); /* diving code; stack: current context */
 };
-name_rdive: name_advance2 | name_path name_advance2 { $$=$1; P(&$$,$2) }
+name_rdive: name_advance2 | name_path name_advance2 { $$=$1; P($$,$2) }
 
 /* put */
 
@@ -74,10 +75,10 @@ put: '$' name_expr_dive '(' constructor_value ')' {
 			обругать
 */
 	$$=N(PC->pool); 
-	A(&$$, OP_WITH_WRITE); /* stack: starting context */
-	P(&$$,$2); /* diving code; stack: context,name */
-	P(&$$,$4); /* stack: context,name,constructor_value */
-	A(&$$,OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
+	OP($$, OP_WITH_WRITE); /* stack: starting context */
+	P($$,$2); /* diving code; stack: context,name */
+	P($$,$4); /* stack: context,name,constructor_value */
+	OP($$,OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 };
 constructor_value: 
 	constructor_one_param_value
@@ -91,28 +92,31 @@ constructor_one_param_value:
 empty_value: empty;
 complex_constructor_param_value: complex_constructor_param_body {
 	$$=N(PC->pool); 
-	A(&$$, OP_CREATE_EWPOOL); /* stack: empty write context */
-	P(&$$,$1); /* some codes to that context */
-	A(&$$,OP_REDUCE_EWPOOL); /* context=pop; stack: context.value() */
+	OP($$, OP_CREATE_EWPOOL); /* stack: empty write context */
+	P($$,$1); /* some codes to that context */
+	OP($$,OP_REDUCE_EWPOOL); /* context=pop; stack: context.value() */
 };
 complex_constructor_param_body:
 	codes__excluding_sole_str_literal
 |	codes__str__followed_by__excluding_sole_str_literal
 ;
 constructor_two_params_value: STR_LITERAL ';' constructor_one_param_value {
-	char *operator_or_fmt=string_cstr(LS($1));
+	const String *operator_or_fmtS=LA2S($1);
+	char *operator_or_fmt=operator_or_fmtS->cstr();
 	$$=N(PC->pool);
-	G(&$$, operator_or_fmt);/* stack: ncontext name char*operator_or_fmt */
-	P(&$$, $3); /* stack: ncontext name char*operator_or_fmt expr */
+	P($$, $1);/* stack: ncontext name operator_or_fmt */
+	P($$, $3); /* stack: ncontext name operator_or_fmt expr */
 	switch(operator_or_fmt[0]) {
 	case '=': case '%':
-		A(&$$, OP_EXPRESSION_EVAL);
+		OP($$, OP_EXPRESSION_EVAL);
 		break;
 	case '+': case '-': case '*': case '/':
-		A(&$$, OP_MODIFY_EVAL);
+		OP($$, OP_MODIFY_EVAL);
 		break;
 	default:
-		exception(PC->pool, 0,0, LS($1), "invalid modification operator");
+		PC->pool->exception().raise(0,0, 
+			operator_or_fmtS, 
+			"invalid modification operator");
 	}
 	/* stack: ncontext name value */
 };
@@ -137,44 +141,44 @@ call: '^' name_expr_dive store_params BREAK { /* ^field.$method{vasya} */
 				обругать безобразие
 */
 	$$=N(PC->pool); 
-	A(&$$, OP_WITH_READ); /* stack: starting context */
-	P(&$$,$2); /* diving code; stack: context,method_name */
-	A(&$$,OP_GET_METHOD_FRAME); /* stack: context,method_frame */
-	P(&$$,$3); /* filling method_frame.store_params */
-	A(&$$,OP_CALL); /* method_frame=pop; ncontext=pop; call(ncontext,method_frame) */
+	OP($$, OP_WITH_READ); /* stack: starting context */
+	P($$,$2); /* diving code; stack: context,method_name */
+	OP($$,OP_GET_METHOD_FRAME); /* stack: context,method_frame */
+	P($$,$3); /* filling method_frame.store_params */
+	OP($$,OP_CALL); /* method_frame=pop; ncontext=pop; call(ncontext,method_frame) */
 };
 
-store_params: store_param | store_params store_param { $$=$1; P(&$$,$2) };
+store_params: store_param | store_params store_param { $$=$1; P($$,$2) };
 store_param: store_round_param | store_curly_param;
 store_round_param: '(' store_param_parts ')' {$$=$2};
-store_param_parts: store_param_part | store_param_parts ';' store_param_part { $$=$1; P(&$$,$3) };
+store_param_parts: store_param_part | store_param_parts ';' store_param_part { $$=$1; P($$,$3) };
 store_param_part: constructor_one_param_value {
 	$$=$1;
-	A(&$$,OP_STORE_PARAM);
+	OP($$,OP_STORE_PARAM);
 }
 store_curly_param: '{' input '}' {
 	$$=N(PC->pool); 
-	A(&$$, OP_CODE_ARRAY);
-	G(&$$,$2);
-	A(&$$,OP_CREATE_JUNCTION);
-	A(&$$,OP_STORE_PARAM);
+	OP($$, OP_CODE_ARRAY);
+	AA($$,$2);
+	OP($$,OP_CREATE_JUNCTION);
+	OP($$,OP_STORE_PARAM);
 };
 
 /* name */
 
-name_expr_dive: name_expr_value | name_path name_expr_value { $$=$1; P(&$$,$2) };
+name_expr_dive: name_expr_value | name_path name_expr_value { $$=$1; P($$,$2) };
 
-name_path: name_step | name_path name_step { $$=$1; P(&$$,$2) };
+name_path: name_step | name_path name_step { $$=$1; P($$,$2) };
 name_step: name_advance1 '.';
 name_advance1: name_expr_value {
 	/* stack: context */
 	$$=$1; /* stack: context,name */
-	A(&$$,OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	OP($$,OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 };
 name_advance2: name_expr_value {
 	/* stack: context */
 	$$=$1; /* stack: context,name */
-	A(&$$,OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	OP($$,OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 }
 |	STR_LITERAL BOGUS
 ;
@@ -185,28 +189,28 @@ name_expr_value:
 ;
 name_expr_subvar_value: '$' subvar_ref_name_rdive {
 	$$=$2;
-	A(&$$,OP_GET_ELEMENT);
+	OP($$,OP_GET_ELEMENT);
 };
 name_expr_with_subvar_value: STR_LITERAL subvar_get_writes {
 	$$=N(PC->pool); 
-	A(&$$, OP_CREATE_EWPOOL);
-	P(&$$,$1);
-	A(&$$,OP_WRITE);
-	P(&$$,$2);
-	A(&$$,OP_REDUCE_EWPOOL);
+	OP($$, OP_CREATE_EWPOOL);
+	P($$,$1);
+	OP($$,OP_WRITE);
+	P($$,$2);
+	OP($$,OP_REDUCE_EWPOOL);
 };
 subvar_ref_name_rdive: STR_LITERAL {
 /*
 	TODO: подсмотреть в $1, и если там в первом элементе первая буква ":"
 		то выкинуть её и делать не OP_WITH_READ, а WITH_ROOT
 */
-	$$=N(PC->pool); A(&$$, OP_WITH_READ);
-	P(&$$,$1);
+	$$=N(PC->pool); OP($$, OP_WITH_READ);
+	P($$,$1);
 };
-subvar_get_writes: subvar__get_write | subvar_get_writes subvar__get_write { $$=$1; P(&$$,$2) };
+subvar_get_writes: subvar__get_write | subvar_get_writes subvar__get_write { $$=$1; P($$,$2) };
 subvar__get_write: '$' subvar_ref_name_rdive {
 	$$=$2;
-	A(&$$,OP_GET_ELEMENT__WRITE);
+	OP($$,OP_GET_ELEMENT__WRITE);
 };
 
 
@@ -214,10 +218,10 @@ subvar__get_write: '$' subvar_ref_name_rdive {
 
 with: '$' name_without_curly_rdive '{' codes '}' {
 	$$=$2;
-	A(&$$,OP_CREATE_RWPOOL);
-	P(&$$,$4);
-	A(&$$,OP_REDUCE_RWPOOL);
-	A(&$$,OP_WRITE);
+	OP($$,OP_CREATE_RWPOOL);
+	P($$,$4);
+	OP($$,OP_REDUCE_RWPOOL);
+	OP($$,OP_WRITE);
 };
 
 /* codes_in_brackets */
@@ -225,19 +229,19 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 codes__str__followed_by__excluding_sole_str_literal:
 	write_str_literal codes__excluding_sole_str_literal {
 		$$=$1;
-		P(&$$,$2);
+		P($$,$2);
 }
 ;
 codes__excluding_sole_str_literal:
 	action
 |	codes__excluding_sole_str_literal write_str_literal {
 		$$=$1;
-		P(&$$,$2);
+		P($$,$2);
 }
 ;
 write_str_literal: STR_LITERAL {
 	$$=$1;
-	A(&$$,OP_WRITE);
+	OP($$,OP_WRITE);
 };
 
 /* */
@@ -292,7 +296,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				pending_c == '(' || pending_c == ')' ||
 				pending_c == '{' || pending_c == '}') {
 				/* append piece till ^ */
-				CSTRING_APPEND(PC->string, start, PC->source-start -1/*^*/, PC->file, start_line);
+				PC->string->APPEND(start, PC->source-start -1/*^*/, PC->file, start_line);
 				/* reset piece 'start' position & line */
 				start=PC->source+1/*^*/;
 				start_line=PC->line;
@@ -498,11 +502,11 @@ break2:
 	else {
 		PC->pending_state=result;
 		/* append last piece */
-		CSTRING_APPEND(PC->string, start, PC->source-start-1, PC->file, start_line);
+		PC->string->APPEND(start, PC->source-start-1, PC->file, start_line);
 		/* create STR_LITERAL value: array of OP_STRING+string */
 		*lvalp=L(PC->string);
 		/* new pieces storage */
-		PC->string=string_create(PC->pool);
+		PC->string=new(*PC->pool) String(*PC->pool);
 		/* go */
 		return STR_LITERAL;
 	}
@@ -521,6 +525,6 @@ static void
           YYSTYPE value)
      {
        if (type == STR_LITERAL)
-         fprintf (file, " \"%s\"", string_cstr(LS(value)));
+         fprintf (file, " \"%s\"", LA2S(value)->cstr());
      }
 

@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.2 2001/02/20 19:21:13 paf Exp $
+  $Id: compile_tools.h,v 1.3 2001/02/21 06:21:19 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -21,7 +21,7 @@ enum lexical_state {
 };
 struct parse_control {
 	/* input */
-	void *pool;
+	Pool *pool;
 #ifndef NO_CSTRING_ORIGIN
 	char *source;
 	char *file;
@@ -29,7 +29,7 @@ struct parse_control {
 #endif
 	/* state */
 	int pending_state/*=0*/;
-	void *string/*=string_create(...)*/;
+	String *string/*=new(pool) String(pool)*/;
 	
 #define MAX_LEXICAL_STATES 100
 	enum lexical_state ls/*=LS_USER*/;
@@ -38,55 +38,48 @@ struct parse_control {
 	int brackets_nestages[MAX_LEXICAL_STATES];
 	
 	/* output: Array *  */
-	void *result;
+	Array *result;
 };
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-	/* New array // return empty array */
-	void *N(void *apool);
-	
-	/* Assembler instruction // append ordinary instruction to result */
-	void A(void **result, enum OPCODE acode);
-
-	/* Assembler arGument // append instruction; append param */
-	void G(void **result, void *param);
-
-	/* Literal // returns array with 
-		// first: OP_STRING instruction
-		// second op: string itself
-	*/
-	void *L(void *astring);
-	/* Literal String // return string value from literal array OP+string array */
-	void *LS(void *literal);
-
-	/* aPpend code array // append code_array to result */
-	void P(void **result, void *code_array);
-
-
-	void push_LS(struct parse_control *pc);
-	void pop_LS(struct parse_control *pc);
-
-	void *string_create(void *pool);
-
-#ifndef NO_STRING_ORIGIN
-#	define CSTRING_APPEND_PARAMS void *astring, char *piece, size_t size, char *file, uint line
-#	define CSTRING_APPEND(astring, piece, size, file, line) real_cstring_append(astring, piece, size, file, line)
-#else
-#	define CSTRING_APPEND_PARAMS void *astring, char *piece, size_t size
-#	define CSTRING_APPEND(astring, piece, size, file, line) real_cstring_append(astring, piece, size)
-#endif
-	void real_cstring_append(CSTRING_APPEND_PARAMS);
-	char *string_cstr(void *astring);
-
-	void exception(void *pool, 
-		void *atype, void *acode,
-		void *aproblem_source, 
-		char *acomment);
-
-#ifdef __cplusplus
+/* New array // return empty array */
+inline Array/*<op>*/ *N(Pool *pool) {
+	return new(*pool) Array/*<op>*/(*pool);
 }
-#endif
+
+/* Assembler instruction // append ordinary instruction to ops */
+inline void OP(Array/*<op>*/ *result, enum OPCODE code) {
+	Operation op; op.code=code;
+	*result+=op.cast;
+}
+
+/* Argument String // append String to ops*/
+inline void AS(Array/*<op>*/ *result, String *string) {
+	*result+=string;
+}
+/* Argument Array // append Array to ops */
+inline void AA(Array/*<op>*/ *result, Array/*<op>*/ *array) {
+	*result+=array;
+}
+/* Argument Eval_expression // append eval_expression to ops */
+inline void AE(Array/*<op>*/ *result, char *eval_expression) {
+	*result+=eval_expression;
+}
+
+inline void P(Array/*<op>*/ *result, Array *code_array) {
+	result->append_array(*code_array);
+}
+
+
+/* Literal // returns array with 
+// first: OP_STRING instruction
+// second op: string itself
+*/
+Array *L(String *string);
+/* Literal Array to(2) String // return string value from literal array OP+string array */
+const String *LA2S(Array *literal_string_array);
+
+
+void push_LS(struct parse_control *pc);
+void pop_LS(struct parse_control *pc);
 
 #endif

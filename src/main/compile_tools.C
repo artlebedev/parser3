@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.2 2001/02/20 19:21:13 paf Exp $
+  $Id: compile_tools.C,v 1.3 2001/02/21 06:21:19 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -7,44 +7,23 @@
 #include "pa_array.h"
 #include "pa_exception.h"
 
-void *N(void *apool) {
-	Pool& pool=*static_cast<Pool *>(apool);
-	return new(pool) Array(pool);
-}
-
-void A(void **result, enum OPCODE acode) {
-	int code=acode;
-	(*static_cast<Array *>(*result))+=reinterpret_cast<Array::Item *>(code);
-}
-
-void G(void **result, void *param) {
-	(*static_cast<Array *>(*result))+=param;
-}
-
-void *L(void *astring) {
-	String *string=static_cast<String *>(astring);
-
+Array *L(String *string) {
 	// empty ops array
-	void *result=N(&string->pool());
+	Array *result=N(&string->pool());
 
 	// append OP_STRING
-	int code=OP_STRING;
-	*(static_cast<Array *>(result))+=reinterpret_cast<Array::Item *>(code);
+	Operation op; op.code=OP_STRING;
+	*result+=reinterpret_cast<Array::Item *>(op.cast);
 
 	// append 'string'
-	*(static_cast<Array *>(result))+=string;
+	*result+=string;
 
 	return result;
 }
 
-void *LS(void *literal) {
-	return const_cast<void *>(static_cast<Array *>(literal)->get(1));
+const String *LA2S(Array *literal_string_array) {
+	return static_cast<const String *>(literal_string_array->get(1));
 }
-
-void P(void **result, void *code_array) {
-	(*(static_cast<Array *>(*result))).append_array(*static_cast<Array *>(code_array));
-}
-
 
 
 void push_LS(struct parse_control *pc) {
@@ -60,30 +39,4 @@ void pop_LS(struct parse_control *pc) {
 	else
 		(static_cast<Pool *>(pc->pool))->exception().raise(0, 0, 0, 
 			"push_LS: stack underflow");
-}
-
-void *string_create(void *apool) {
-	Pool& pool=*static_cast<Pool *>(apool);
-	return new(pool) String(pool);
-}
-
-void real_cstring_append(CSTRING_APPEND_PARAMS) {
-	static_cast<String *>(astring)->APPEND(piece, size, file, line);
-}
-
-char *string_cstr(void *astring) {
-	return static_cast<String *>(astring)->cstr();
-}
-
-/* exception */
-
-void exception(void *pool, 
-		void *atype, void *acode,
-		void *aproblem_source, 
-		char *acomment) {
-	static_cast<Pool *>(pool)->exception().raise(
-		static_cast<class String *>(atype), 
-		static_cast<class String *>(acode), 
-		static_cast<class String *>(aproblem_source), 
-		acomment);
 }

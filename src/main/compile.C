@@ -1,7 +1,8 @@
 /*
-  $Id: compile.C,v 1.2 2001/02/20 19:21:13 paf Exp $
+  $Id: compile.C,v 1.3 2001/02/21 06:21:19 paf Exp $
 */
 
+#include "pa_string.h"
 #include "pa_array.h"
 #include "code.h"
 #include "compile_tools.h"
@@ -27,7 +28,7 @@ Array *real_compile(COMPILE_PARAMS) {
 #endif
 	/* state to initial */
 	pc.pending_state=0;
-	pc.string=string_create(pool);
+	pc.string=new(*pool) String(*pool);
 	pc.ls=LS_USER;
 	pc.sp=0;
 	/* parse! */

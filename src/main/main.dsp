@@ -89,7 +89,7 @@ SOURCE=.\compile.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\compile.tab.c
+SOURCE=.\compile.tab.C
 # End Source File
 # Begin Source File
 
@@ -103,9 +103,10 @@ SOURCE=.\compile.y
 InputPath=.\compile.y
 InputName=compile
 
-"compile.tab.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+"compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	call VCVARS32 
 	d:\cygwin\bin\bison -v -d $(InputName).y 
+	ren compile.tab.c compile.tab.C 
 	
 # End Custom Build
 

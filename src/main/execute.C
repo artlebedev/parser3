@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.2 2001/02/20 19:21:13 paf Exp $
+  $Id: execute.C,v 1.3 2001/02/21 06:21:20 paf Exp $
 */
 
 #include "pa_array.h"
@@ -14,7 +14,6 @@ char *opcode_name[]={
 	"CONSTRUCT",
 	"EXPRESSION_EVAL",	"MODIFY_EVAL",
 	"WRITE",
-	"REPLACE_RESULT",
 	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
 	"CREATE_RWPOOL",	"REDUCE_RWPOOL",
@@ -40,7 +39,7 @@ void dump(int level, const Array *ops) {
 
 		if(code==OP_CODE_ARRAY) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops->raw_get(++i));
-			dump(level=1, local_ops);
+			dump(level+1, local_ops);
 		}
 	}
 }
