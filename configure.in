@@ -393,6 +393,7 @@ stdio.h \
 errno.h \
 ctype.h \
 math.h \
+crypt.h \
 time.h sys/time.h \
 stdlib.h \
 string.h \
@@ -434,6 +435,8 @@ esac
 
 AC_CHECK_LIB(m, sin)
 
+AC_CHECK_LIB(crypt, crypt)
+
 dnl Checks for functions.
 
 AC_CHECK_FUNCS(
@@ -444,7 +447,8 @@ flock \
 _locking \
 fcntl \
 lockf \
-getrusage
+getrusage \
+crypt
 )
 
 dnl We require qsort(3) and select(2).
