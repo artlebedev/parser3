@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2004/07/27 09:07:10 $";
+static const char * const IDENT_VDATE_H="$Date: 2005/03/23 08:49:59 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -44,6 +44,26 @@ public: // Value
 	/// VDate: 0 or !0
 	override bool as_bool() const { return ftime!=0; }
 
+	tm *get_localtime()
+	{
+		const char* saved_tz=0;
+		static char saved_tz_pair[MAX_STRING];
+		static char temp_tz_pair[MAX_STRING];
+		if(ftz_cstr) {
+			saved_tz=getenv("TZ");
+			::set_tz(ftz_cstr, temp_tz_pair, sizeof(temp_tz_pair));
+		}
+		tm *result=::localtime(&ftime);
+		if(saved_tz)
+			::set_tz(saved_tz, saved_tz_pair, sizeof(saved_tz_pair));
+		if(!result)
+			throw Exception(0,
+				0,
+				"invalid datetime (after changing TZ)");
+
+		return result;
+	}
+
 
 	/// VDate: method,field
 	override Value* get_element(const String& aname, Value& aself, bool looking_up) {
@@ -56,21 +76,7 @@ public: // Value
 			return new VString(*ftz);
 
 		// $year month day  hour minute second  weekday
-
-		const char* saved_tz=0;
-		static char saved_tz_pair[MAX_STRING];
-		static char temp_tz_pair[MAX_STRING];
-		if(ftz_cstr) {
-			saved_tz=getenv("TZ");
-			::set_tz(ftz_cstr, temp_tz_pair, sizeof(temp_tz_pair));
-		}
-		tm *tmOut=localtime(&ftime);
-		if(!tmOut)
-			throw Exception(0,
-				0,
-				"invalid datetime (after changing TZ)");
-		if(saved_tz)
-			::set_tz(saved_tz, saved_tz_pair, sizeof(saved_tz_pair));
+		tm *tmOut=get_localtime();
 
 		int result;
 		if(aname=="year") result=1900+tmOut->tm_year;

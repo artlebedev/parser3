@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2004/07/28 14:38:20 $";
+static const char * const IDENT_DATE_C="$Date: 2005/03/23 08:50:04 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -152,8 +152,7 @@ static void _sql_string(Request& r, MethodParams&) {
 	VDate& vdate=GET_SELF(r, VDate);
 	int size=1+ 4+1+2+1+2 +1+ 2+1+2+1+2 +1 +1;
 	char *buf=new(PointerFreeGC) char[size];
-	time_t time=vdate.get_time();
-	size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", localtime(&time));
+	size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", vdate.get_localtime());
 	
 	r.write_assign_lang(String(buf, size));
 }
