@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.16 2001/03/18 11:37:53 paf Exp $
+	$Id: parser3.C,v 1.17 2001/03/18 12:10:57 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -66,6 +66,16 @@ int read_post(char *buf, int max_bytes) {
 	} while(read_size<max_bytes);
 
 	return read_size;
+}
+
+void stdout_write_header_attribute(const Hash::Key& key, Hash::Value *value, void *info) {
+	String *key_to_exclude=static_cast<String *>(info);
+	if(key==*key_to_exclude)
+		return;
+
+	printf("%s: %s\n", 
+		key.cstr(), 
+		static_cast<Value *>(value)->as_string().cstr());
 }
 
 int main(int argc, char *argv[]) {
@@ -169,18 +179,14 @@ int main(int argc, char *argv[]) {
 
 		// OK. write out the result
 		if(cgi) {
-			// content-type:
-			Value *content_type_value=static_cast<Value *>(
-				request.response.fields().get(*content_type_name));
-			const char *content_type=content_type_value?
-				content_type_value->as_string().cstr():"text/html";
-
-			// header
+			// header: response fields 
+			request.response.fields().foreach(stdout_write_header_attribute,
+				body_name);
+			
+			// header: content-length
 			printf(
-				"Content-type: %s\n"
-				"Content-length: %d\n"
+				"content-length: %d\n"
 				"\n", 
-				content_type,
 				strlen(body));
 		}
 		// body

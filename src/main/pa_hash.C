@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.21 2001/03/18 11:37:52 paf Exp $
+	$Id: pa_hash.C,v 1.22 2001/03/18 12:10:56 paf Exp $
 */
 
 /*
@@ -154,5 +154,5 @@ void Hash::foreach(Foreach_func func, void *info) {
 	Pair **ref=refs;
 	for(int index=0; index<allocated; index++)
 		for(Pair *pair=*ref++; pair; pair=pair->link)
-			(*func)(info, pair->key, pair->value);
+			(*func)(pair->key, pair->value, info);
 }
