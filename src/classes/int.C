@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.7 2001/03/11 08:44:39 paf Exp $
+	$Id: int.C,v 1.8 2001/03/11 09:24:41 paf Exp $
 */
 
 #include "pa_request.h"
@@ -37,7 +37,7 @@ static void _inc(Request& r, Array *params) {
 		static_cast<int>(r.autocalc(
 			*static_cast<Value *>(params->get(0)),
 			0/*no name*/,
-			false/*don't make it string*/).get_double()):1;
+			false/*don't intercept string*/).get_double()):1;
 	vint->inc(increment);
 }
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.37 2001/03/11 08:28:41 paf Exp $
+	$Id: pa_request.h,v 1.38 2001/03/11 09:24:42 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -54,7 +54,7 @@ public:
 	Value& autocalc(
 		Value& value, 
 		const String *name=0,
-		bool make_string=true); // execute.C
+		bool intercept_string=true); // execute.C
 
 	void write(const String& astring) {
 		wcontext->write(astring, String::Untaint_lang::NO);  // write(const) = clean

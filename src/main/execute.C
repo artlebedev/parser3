@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.89 2001/03/11 08:16:34 paf Exp $
+	$Id: execute.C,v 1.90 2001/03/11 09:24:43 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -581,7 +581,16 @@ Value *Request::get_element() {
 	return value;
 }
 
-Value& Request::autocalc(Value& value, const String *name, bool make_string) {
+Value& Request::autocalc(Value& value, const String *name, bool intercept_string) {
+	// intercept_string:
+	//	true:
+	//		they want result=string value, 
+	//		possible object result goes to wcontext
+	//	false:
+	//		they want any result[string|object]
+	//		nothing goes to wcontext.
+	//		used in (expression) params evaluation
+
 	Junction *junction=value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
 		// autocalc it
@@ -592,7 +601,7 @@ Value& Request::autocalc(Value& value, const String *name, bool make_string) {
 		PUSH(wcontext);
 		
 		WContext *frame;
-		if(make_string) {
+		if(intercept_string) {
 			// almost plain wwrapper about junction wcontext, 
 			// BUT intercepts string writes
 			frame=NEW VCodeFrame(pool(), *junction->wcontext);  
@@ -607,7 +616,7 @@ Value& Request::autocalc(Value& value, const String *name, bool make_string) {
 		rcontext=junction->rcontext;
 		execute(*junction->code);
 		Value *result;
-		if(make_string) {
+		if(intercept_string) {
 			// CodeFrame soul:
 			//   string writes were intercepted
 			//   returning them as the result of getting code-junction

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.13 2001/03/11 08:44:39 paf Exp $
+	$Id: root.C,v 1.14 2001/03/11 09:24:41 paf Exp $
 */
 
 #include "pa_request.h"
@@ -14,7 +14,7 @@ static void _if(Request& r, Array *params) {
 		r.autocalc(
 			*static_cast<Value *>(params->get(0)), 
 			0/*no name*/,
-			false/*don't make it string*/).get_bool();
+			false/*don't intercept string*/).get_bool();
 	if(condition) {
 		Value& value=r.autocalc(*static_cast<Value *>(params->get(1)));
 		r.wcontext->write(value, String::Untaint_lang::PASS_APPENDED);
