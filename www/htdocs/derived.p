@@ -5,7 +5,7 @@
 derived
 
 @BASE
-table
+form
 
 @auto[]
 $derived_var[derived_var_val]
