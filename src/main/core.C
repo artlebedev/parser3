@@ -11,7 +11,7 @@ void process(Pool& pool,
 }
 
 void process_dollar(Pool& pool, 
-					Value& THIS,
+					Value& self,
 					RContext& rcontext, WContext& wcontext, 
 					StringIterator& iter, char char_to_stop_before) {
 
@@ -29,6 +29,7 @@ void process_dollar(Pool& pool,
 	Value *context=read_mode?rcontext:wcontext;
 	
 	if(read_mode) {
+		// 'context' dive into dotted path
 		for(int i=0; i<names.count(); i++) {
 			context=context->get_element(static_cast<Value *>(names.get[i]));
 			if(!context) // no such object field, nothing bad, just ignore that
@@ -43,6 +44,7 @@ void process_dollar(Pool& pool,
 		int steps=names.count();
 		if(construct_mode)
 			steps--;
+		// 'context' dive into dotted path, if constructing then "excluding last .name"
 		for(int i=0; i<steps; i++) {
 			String& name=static_cast<String&>(names.get[i]);
 			Value *next_current=context->get_element(name);
@@ -52,12 +54,15 @@ void process_dollar(Pool& pool,
 		}
 
 		if(construct_mode) {  
+			// .name(construct-code), processing on rcontext in empty temp wcontext
 			// pure side effect, no wcontext.write here
+			// last .name
 			String& name=static_cast<String&>(names.get[steps]);
 			WContext local_wcontext(pool /* empty */);
 			process(pool, rcontext, local_wcontext, iter, ')');
 			context->put_element(name, local_wcontext.value());
 		} else { // =='['
+			// .name[with-code], processing on 'context'
 			WContext local_context(pool, context);
 			process(pool, local_context, local_context, iter, ']');
 			wcontext.write(local_context);
@@ -84,6 +89,7 @@ void process_bird(Pool& pool,
 	Value *context=rcontext;
 	iter++; // skip '['
 
+	// 'context' dive into dotted path, excluding last .name
 	Value *local_self=context;
 	int steps=names.count()-1;
 	for(int i=0; i<steps; i++) {
@@ -93,6 +99,7 @@ void process_bird(Pool& pool,
 			pool.exception().raise(name, "call: to void.method");
 	}
 	
+	// last .name
 	String& name=static_cast<String&>(names.get[steps]);
 	// first we're trying to locate method with that 'name'
 	Method *method=context.get_method(name);

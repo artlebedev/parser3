@@ -1,5 +1,5 @@
 /*
-  $Id: pa_context.h,v 1.2 2001/02/12 11:34:11 paf Exp $
+  $Id: pa_context.h,v 1.3 2001/02/12 11:44:41 paf Exp $
 */
 
 /*
@@ -34,11 +34,12 @@ public: //implement by replicating to value->calls
 	virtual String *get_string() const { return &string };
 	virtual void put_string(const String *astring) { check(value)->put_string(astring); };
 
+	virtual Method_ref *get_method_ref() const { return check(value)->get_method_ref(); }
+
 	virtual Value *get_element(const String& name) const { return check(value)->get_element(name); }
 	virtual void put_element(const String& name, const Value *avalue){ check(value)->put_element(name, avalue); }
 
 	virtual Method *get_method(const String& name) const { return check(value)->get_method(name); }
-	virtual Method_ref *get_method_ref() const { return check(value)->get_method_ref(); }
 
 private:
 	String& string;

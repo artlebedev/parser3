@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.2 2001/02/12 11:34:11 paf Exp $
+  $Id: pa_value.h,v 1.3 2001/02/12 11:44:41 paf Exp $
 */
 
 /*
@@ -29,6 +29,9 @@ public:
 	virtual String *get_string() const =0;
 	virtual String *put_string(const String *astring)=0;
 
+	// method_ref: "self" part, method
+	virtual Method_ref *get_method_ref() const =0;
+
 	// hash: (key)=value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	// object_instance: (field)=value;(STATIC)=hash;(method)=method_ref
@@ -37,9 +40,6 @@ public:
 
 	// object_instance, object_class: method
 	virtual Method *get_method(const String& name) const =0;
-
-	// method_ref: "self" part, method
-	virtual Method_ref *get_method_ref() const =0;
 };
 
 /*
