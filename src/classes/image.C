@@ -5,14 +5,18 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.5 2001/04/11 07:44:12 paf Exp $
+	$Id: image.C,v 1.6 2001/04/11 13:03:39 paf Exp $
 */
 
 #include "pa_config_includes.h"
 
+#include <stdio.h>
+
 #ifdef WIN32
 #	include "smtp/smtp.h"
 #endif
+
+#include "gif.h"
 
 #include "pa_common.h"
 #include "pa_request.h"
@@ -269,7 +273,7 @@ static void _measure(Request& r, const String& method_name, Array *params) {
 	int width, height;
 	measure(pool, *file_name, reader, width, height);
 
-	static_cast<VImage *>(r.self)->set(*file_name, width, height);
+	static_cast<VImage *>(r.self)->set(file_name, width, height);
 }
 
 struct Attrib_info {
@@ -285,14 +289,8 @@ static void append_attrib_pair(const Hash::Key& key, Hash::Val *val, void *info)
 	Value& value=*static_cast<Value *>(val);
 	// src="a.gif" width=123 ismap[=-1]
 	*ai.tag << " " << key;
-	if(value.is_string() || value.as_double()>=0) {
-		*ai.tag << "=";
-		if(value.is_string())
-			*ai.tag << "\"";
-		*ai.tag << value.as_string();
-		if(value.is_string())
-			*ai.tag << "\"";
-	}
+	if(value.is_string() || value.as_double()>=0)
+		*ai.tag << "=\"" << value.as_string() << "\"";
 }
 /// ^image.html[]
 /// ^image.html[hash]
@@ -305,7 +303,7 @@ static void _html(Request& r, const String& method_name, Array *params) {
 	Hash& fields=static_cast<VImage *>(r.self)->fields();
 	Hash *attribs=0;
 
-	if(params->size())
+	if(params)
 		if(attribs=static_cast<Value *>(params->get(0))->get_hash()) {
 			Attrib_info attrib_info={&tag, 0};
 			attribs->for_each(append_attrib_pair, &attrib_info);
@@ -316,8 +314,86 @@ static void _html(Request& r, const String& method_name, Array *params) {
 
 	Attrib_info attrib_info={&tag, attribs};
 	fields.for_each(append_attrib_pair, &attrib_info);
-	tag << ">";
+	tag << " />";
 	r.write_pass_lang(tag);
+}
+
+/// ^image.load[background.gif]
+static void _load(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	Value& vfile_name=*static_cast<Value *>(params->get(0));
+	// forcing [this body type]
+	r.fail_if_junction_(true, vfile_name, method_name, "file name must not be code");
+	const String& file_name=vfile_name.as_string();
+
+	const char *file_name_cstr=r.absolute(file_name).cstr(String::UL_FILE_NAME);
+	if(FILE *f=fopen(file_name_cstr, "rb")) {
+		gdImagePtr image=gdImageCreateFromGif(f);
+		int width=gdImageSX(image);
+		int height=gdImageSY(image);
+		fclose(f);
+
+		static_cast<VImage *>(r.self)->set(&file_name, width, height, image);
+	} else
+		PTHROW(0, 0,
+			&method_name,
+			"can not open background image '%s'", file_name_cstr);
+}
+
+inline void v2rgb(int v, int& r, int& g, int& b) {
+	r=v>>8*2 & 0xFF;
+	g=v>>8*1 & 0xFF;
+	b=v      & 0xFF;
+}
+
+/// ^image.create[width;height] bgcolor=white
+/// ^image.create[width;height;bgcolor]
+static void _create(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	int width=(int)r.process(*static_cast<Value *>(params->get(0))).as_double();
+	int height=(int)r.process(*static_cast<Value *>(params->get(1))).as_double();
+	int bgcolor_value=0xFFFFFF;
+	if(params->size()>2)
+		bgcolor_value=
+			(int)r.process(*static_cast<Value *>(params->get(2))).as_double();
+	gdImagePtr image=gdImageCreate(width, height);
+	{
+		int r,g,b; v2rgb(bgcolor_value, r,g,b);
+		gdImageFilledRectangle(image, 0, 0, width-1, height-1, 
+			gdImageColorExact(image, r,g,b));
+	}
+	static_cast<VImage *>(r.self)->set(0, width, height, image);
+}
+
+/// ^image.gif[]
+/// ^image.gif[user-file-name]
+/// @test gdImageDestroy make gd pooled!
+static void _gif(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	gdImagePtr image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0,
+			&method_name,
+			"does not contain image");
+
+	char *file_name_cstr=0;
+	if(params) {
+		Value& vfile_name=*static_cast<Value *>(params->get(0));
+		// forcing [this body type]
+		r.fail_if_junction_(true, vfile_name, method_name, "file name must not be code");
+		
+		file_name_cstr=vfile_name.as_string().cstr(String::UL_FILE_NAME);
+	}
+	// could _ but don't thing it's wise to use $image.src for vfile.name
+	
+	VFile& vfile=*new(pool) VFile(pool);
+	String& image_gif=*new(pool) String(pool, "image/gif");
+	vfile.set(false/*not tainted*/, z, z, file_name_cstr, &image_gif);
+
+	r.write_no_lang(vfile);
 }
 
 // initialize
@@ -328,4 +404,15 @@ void initialize_image_class(Pool& pool, VStateless_class& vclass) {
 	/// ^image.html[]
 	/// ^image.html[hash]
 	vclass.add_native_method("html", Method::CT_DYNAMIC, _html, 0, 1);
+
+	/// ^image.load[background.gif]
+	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
+
+	/// ^image.create[width;height] bgcolor=white
+	/// ^image.create[width;height;bgcolor]
+	vclass.add_native_method("create", Method::CT_DYNAMIC, _create, 2, 3);
+
+	/// ^image.gif[]
+	/// ^image.gif[user-file-name]
+	vclass.add_native_method("gif", Method::CT_DYNAMIC, _gif, 0, 1);
 }

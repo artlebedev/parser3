@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.53 2001/04/10 10:32:10 paf Exp $
+	$Id: pa_globals.C,v 1.54 2001/04/11 13:03:44 paf Exp $
 */
 
 #include "pcre.h"
@@ -50,6 +50,9 @@ String *main_method_name;
 
 String *op_class_name;
 String *main_class_name;
+String *string_class_name;
+String *double_class_name;
+String *int_class_name;
 String *env_class_name;
 String *table_class_name;
 String *file_class_name;
@@ -148,6 +151,9 @@ void pa_globals_init(Pool& pool) {
 
 	op_class_name=NEW String(pool, OP_CLASS_NAME);
 	main_class_name=NEW String(pool, MAIN_CLASS_NAME);
+	string_class_name=NEW String(pool, STRING_CLASS_NAME);
+	double_class_name=NEW String(pool, DOUBLE_CLASS_NAME);
+	int_class_name=NEW String(pool, INT_CLASS_NAME);
 	table_class_name=NEW String(pool, TABLE_CLASS_NAME);
 	file_class_name=NEW String(pool, FILE_CLASS_NAME);
 	env_class_name=NEW String(pool, ENV_CLASS_NAME);	
@@ -254,15 +260,15 @@ void pa_globals_init(Pool& pool) {
 	pcre_tables=pcre_maketables();
 
 	// stateless classes
-	initialize_string_class(pool, *(string_class=NEW VStateless_class(pool)));
-	initialize_double_class(pool, *(double_class=NEW VStateless_class(pool)));
-	initialize_int_class(pool, *(int_class=NEW VStateless_class(pool)));
-	initialize_table_class(pool, *(table_class=NEW VStateless_class(pool)));
-	initialize_file_class(pool, *(file_class=NEW VStateless_class(pool)));
-	initialize_response_class(pool, *(response_class=NEW VStateless_class(pool)));
-	initialize_random_class(pool, *(random_class=NEW VStateless_class(pool)));
-	initialize_mail_class(pool, *(mail_class=NEW VStateless_class(pool)));
-	initialize_image_class(pool, *(image_class=NEW VStateless_class(pool)));
+	initialize_string_class(pool, *(string_class=NEW VStateless_class(pool)));  string_class->set_name(*string_class_name);
+	initialize_double_class(pool, *(double_class=NEW VStateless_class(pool)));  double_class->set_name(*double_class_name);
+	initialize_int_class(pool, *(int_class=NEW VStateless_class(pool)));  int_class->set_name(*int_class_name);
+	initialize_table_class(pool, *(table_class=NEW VStateless_class(pool)));  table_class->set_name(*table_class_name);
+	initialize_file_class(pool, *(file_class=NEW VStateless_class(pool)));  file_class->set_name(*file_class_name);
+	initialize_response_class(pool, *(response_class=NEW VStateless_class(pool)));  response_class->set_name(*response_class_name);
+	initialize_random_class(pool, *(random_class=NEW VStateless_class(pool)));  random_class->set_name(*random_class_name);
+	initialize_mail_class(pool, *(mail_class=NEW VStateless_class(pool)));  mail_class->set_name(*mail_class_name);
+	initialize_image_class(pool, *(image_class=NEW VStateless_class(pool)));  image_class->set_name(*image_class_name);
 
 	// stateless base classes
 	initialize_form_base_class(pool, *(form_base_class=NEW VStateless_class(pool)));  form_base_class->set_name(*form_class_name);

@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Output_Dir "gd___Win32_Debug"
 # PROP Intermediate_Dir "gd___Win32_Debug"
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ  /c
+# ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FD /GZ /TP /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
@@ -85,22 +85,22 @@ LIB32=link.exe -lib
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# End Group
-# Begin Group "Header Files"
-
-# PROP Default_Filter "h;hpp;hxx;hm;inl"
-# End Group
 # Begin Source File
 
 SOURCE=.\gif.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\gif.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\gifio.C
 # End Source File
+# End Group
+# Begin Group "Header Files"
+
+# PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\gif.h
+# End Source File
+# End Group
 # End Target
 # End Project

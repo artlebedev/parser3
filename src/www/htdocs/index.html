@@ -31,12 +31,22 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
-$form:a
+image:create<BR>
+$face[^image:create(100;200)]
+^$face.width=$face.width<BR>
+^$face.height=$face.height<BR>
+<HR>
+
+image:load<BR>
+$face[^image:load[001004paf(c)lena_karin.gif]]
+^$face.src=$face.src<BR>
+^$face.width=$face.width<BR>
+^$face.height=$face.height<BR>
 <HR>
 ^if($form:photo){
 upload file:<BR>
 $face[^image:measure[$form:photo]]
-^$face.src=$face.src<BR>
+$face.src=$face.src<BR>
 ^$face.width=$face.width<BR>
 ^$face.height=$face.height<BR>
 <HR>

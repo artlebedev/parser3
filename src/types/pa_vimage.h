@@ -5,11 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.2 2001/04/10 11:24:03 paf Exp $
+	$Id: pa_vimage.h,v 1.3 2001/04/11 13:03:46 paf Exp $
 */
 
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
+
+#include "gif.h"
 
 #include "pa_common.h"
 //#include "pa_globals.h"
@@ -52,7 +54,8 @@ public: // usage
 		ffields(apool) {
 	}
 
-	void set(const String& src, int width, int height);
+	void set(const String *src, int width, int height,
+		gdImagePtr aimage=0);
 	void save(const String& image_spec) {
 		/*if(fvalue_ptr)
 			image_write(pool(), image_spec, fvalue_ptr, fvalue_size, false);
@@ -63,6 +66,10 @@ public: // usage
 	}
 
 	Hash fields() const { return ffields; }
+
+public:
+
+	gdImagePtr image;
 
 private:
 

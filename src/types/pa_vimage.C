@@ -5,16 +5,20 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vimage.C,v 1.2 2001/04/10 14:00:04 paf Exp $
+	$Id: pa_vimage.C,v 1.3 2001/04/11 13:03:46 paf Exp $
 */
 
 #include "pa_vimage.h"
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-void VImage::set(const String& src, int width, int height) {
+void VImage::set(const String *src, int width, int height,
+				 gdImagePtr aimage) {
+	image=aimage;
+
 	// $src
-	ffields.put(String(pool(), "src"), NEW VString(src));
+	if(src)
+		ffields.put(String(pool(), "src"), NEW VString(*src));
 	// $width
 	if(width)
 		ffields.put(String(pool(), "width"), NEW VInt(pool(), width));
