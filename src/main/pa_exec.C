@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_EXEC_C="$Date: 2004/02/27 10:52:16 $";
 
 #include "pa_config_includes.h"
 
@@ -271,7 +271,9 @@ static pid_t execve_piped(const char* file_spec_cstr,
 
 static int get_exit_status(int pid) {
 	int status;
-	if(!waitpid(pid, &status, 0))
+	pid_t cid;
+	while ((cid=waitpid(pid, &status, WUNTRACED)) == -1 && errno == EINTR);	
+	if(!cid)
 		return -1;
 	return WIFEXITED(status) ? 
 		WEXITSTATUS(status) : -2;
