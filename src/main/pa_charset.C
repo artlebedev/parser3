@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_CHARSET_C="$Date: 2004/07/07 09:50:25 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -393,7 +393,7 @@ static int transcodeFromUTF8(const XMLByte* srcData, size_t& srcLen,
 		default:
 			throw Exception(0,
 				0,
-				"transcodeFromUTF8 error: wrong trailingBytes value(%d)", trailingBytes);
+				"transcodeFromUTF8 error: wrong trailingBytes value(%d)", trailingBytes); // never
 		}
 		tmpVal-=gUTFOffsets[trailingBytes];
 		
@@ -403,12 +403,17 @@ static int transcodeFromUTF8(const XMLByte* srcData, size_t& srcLen,
 		if(!(tmpVal & 0xFFFF0000)) {
 			if(XMLByte xlat=xlatOneTo(tmpVal, tables, 0))
 				*outPtr++=xlat;
-			else 
+			else {
+				if(tmpVal & 0xFFFFFF00)
+					goto fail;
 				outPtr+=sprintf((char *)outPtr, "&#%d;", tmpVal); // &#decimal;
-		} else
-			throw Exception(0,
-			0,
-			"transcodeFromUTF8 error: too big tmpVal(0x%08X)", tmpVal);
+			}
+		} else {
+fail:
+			const XMLByte* recoverPtr=srcPtr-trailingBytes-1;
+			for(uint i=0; i<=trailingBytes; i++)
+				outPtr+=sprintf((char*)outPtr, "%%%02X", *recoverPtr++);
+		}
 	}
 	
 	// Update the bytes eaten

@@ -7,8 +7,8 @@ deny from 62.32.63.235
 #AddHandler parser3-handler html
 AddHandler parsed-html html
 #Action parsed-html /cgi-bin/bug/parser3
-#Action parsed-html /cgi-bin/debug/parser3
-Action parsed-html /cgi-bin/release/parser3
+Action parsed-html /cgi-bin/debug/parser3
+#Action parsed-html /cgi-bin/release/parser3
 #Action parsed-html /cgi-bin/ReleaseHEAD/parser3
 #Action parsed-html /cgi-bin/DebugHEAD/parser3
 #Action parsed-html /cgi-bin/ProfileDebug/parser3
