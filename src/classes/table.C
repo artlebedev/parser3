@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_TABLE_C="$Date: 2003/09/29 09:58:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -601,7 +601,7 @@ static void _locate(Request& r, MethodParams& params) {
 
 static void _flip(Request& r, MethodParams& params) {
 	Table& old_table=GET_SELF(r, VTable).table();
-	Table& new_table=*new Table(old_table.columns());
+	Table& new_table=*new Table(0);
 	if(size_t old_count=old_table.count())
 		if(size_t old_cols=old_table[0]->count()) 
 			for(size_t column=0; column<old_cols; column++) {
