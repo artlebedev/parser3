@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.46 2001/09/26 10:32:25 parser Exp $
+	$Id: image.C,v 1.47 2001/10/04 14:56:29 parser Exp $
 */
 
 /*
@@ -612,14 +612,14 @@ public:
 	}
 	
 	/* ******************************** string ********************************** */
-	/*
-	int string_width(const char *cstr){
+	
+	int string_width(const String& s){
+		const char *cstr=s.cstr(String::UL_AS_IS);
 		int result=0;
 		for(; *cstr; cstr++)
 			result+=index_width(index_of(*cstr));
 		return result;
 	}
-	*/
 	
 	void string_display(gdImage& image, int x, int y, const String& s){
 		const char *cstr=s.cstr(String::UL_AS_IS);
@@ -670,6 +670,27 @@ static void _text(Request& r, const String& method_name, MethodParams *params) {
 		if(vimage.font)
 			vimage.font->string_display(*vimage.image, x, y, s);
 		else
+			PTHROW(0, 0,
+				&method_name,
+				"set the font first");
+	else
+		PTHROW(0, 0, 
+			&method_name, 
+			"does not contain an image");
+}
+
+static void _length(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	const String& s=params->as_string(0, "text must not be code");
+
+	VImage& vimage=*static_cast<VImage *>(r.self);
+	if(vimage.image)
+		if(vimage.font) {
+			VInt& result=*new(pool) VInt(pool, vimage.font->string_width(s));
+			result.set_name(method_name);
+			r.write_assign_lang(result);
+		} else
 			PTHROW(0, 0,
 				&method_name,
 				"set the font first");
@@ -732,6 +753,9 @@ MImage::MImage(Pool& apool) : Methoded(apool) {
 
     // ^image.text(x;y)[text]
 	add_native_method("text", Method::CT_DYNAMIC, _text, 3, 3);
+	
+    // ^image.ngth[text]
+	add_native_method("length", Method::CT_DYNAMIC, _length, 1, 1);
 	
 }
 

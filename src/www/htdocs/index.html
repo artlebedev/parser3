@@ -14,7 +14,7 @@ $table[^table::load[a.cfg]]
 ^table.menu{$table.a}
 
 @tconnect[]
-^connect[mysql://test:test@paf/test?charset=cp1251_koi8&compress=1&timeout=1]{
+^connect[mysql://test:test@paf/test?charset=cp1251_koi8&compress=1&timeout=1&named_pipe=1]{
 $tables[^table::sql{show tables}]
 #$cols[^tables.columns[]]
 #$cols.column
@@ -59,7 +59,7 @@ $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 #<!DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd">
 
 <people>
-	<man id="1">
+	<man id="1" имя="word слово">
 		<name>P&#171^;AFB</name>
 	</man>
 	<man id="2">
