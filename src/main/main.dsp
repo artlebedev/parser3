@@ -287,6 +287,10 @@ SOURCE=..\types\pa_vobject.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vobject_base.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vstring.h
 # End Source File
 # Begin Source File

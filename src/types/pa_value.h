@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.2 2001/03/11 08:16:37 paf Exp $
+	$Id: pa_value.h,v 1.3 2001/03/11 12:22:00 paf Exp $
 */
 
 /*
@@ -139,6 +139,7 @@ public: // Value
 
 	// hash: (key)=value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
+	// object_base: (CLASS)=vclass;(BASE)=base;(method)=method_ref
 	// object_instance: (field)=value;(CLASS)=vclass;(method)=method_ref
 	// operator_class: (field)=value - static values only
 	// codeframe: wcontext_transparent
