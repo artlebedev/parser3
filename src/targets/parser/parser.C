@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.4 2001/01/30 14:57:42 paf Exp $
+  $Id: parser.C,v 1.5 2001/02/11 11:27:26 paf Exp $
 */
 
 #include <stdio.h>
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 		Pool pool(fatal_exception);
 		
 		char *file="file1";
-		String& string=pool.make_string();
+		String& string=*new(pool) String(pool);
 		string.APPEND("Hello, ", file, 1);
 		string.APPEND("w", file, 2);
 		string.APPEND("o", file, 3);
@@ -33,12 +33,12 @@ int main(int argc, char *argv[]) {
 		printf(string.cstr());
 		
 		char *key1_file="key1_file";
-		Hash& hash=pool.make_hash();
+		Hash& hash=*new(pool) Hash(pool, false);
 		String key1=string;
 		key1.APPEND("1", key1_file, 1);
-		String& value1=pool.make_string();
+		String& value1=*new(pool) String(pool);
 		value1.APPEND("i'm value1\n", file, 1);
-		String& value2=pool.make_string();
+		String& value2=*new(pool) String(pool);
 		value2.APPEND("i'm value2\n", file, 1);
 		hash.put(key1, &value1);
 		char *key2_file="key2_file";
@@ -48,12 +48,12 @@ int main(int argc, char *argv[]) {
 		String *found_value=(String*)hash.get(key2);
 		printf(found_value?found_value->cstr():"not found\n");
 		
-		String& a=pool.make_string(); 	a.APPEND("fi", file, 1); a.APPEND("rst", file, 2);
-		String& b=pool.make_string(); 	b.APPEND("fir", file, 1); b.APPEND("st", file, 2);
+		String& a=*new(pool) String(pool); 	a.APPEND("fi", file, 1); a.APPEND("rst", file, 2);
+		String& b=*new(pool) String(pool); 	b.APPEND("fir", file, 1); b.APPEND("st", file, 2);
 		printf(a==b?"eq\n":"ne\n");
 		
 		
-		Array& array=pool.make_array(2);
+		Array& array=*new(pool) Array(pool, 2);
 		array+="first";
 		array+="second";
 		array+="third";
@@ -62,11 +62,11 @@ int main(int argc, char *argv[]) {
 			array.get_cstr(1),
 			array.get_cstr(2));
 		
-		Array& a1=pool.make_array();
+		Array& a1=*new(pool) Array(pool);
 		a1+="first";
-		Array& a2=pool.make_array();
+		Array& a2=*new(pool) Array(pool);
 		a2+="second";
-		Array& asum=pool.make_array();
+		Array& asum=*new(pool) Array(pool);
 		asum.append_array(a1);
 		asum.append_array(a2);
 		printf("%s-%s\n", 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 			*/
 			Table table(request, "_file.cfg", 1, 0);
 			for(int n=1; n<=5; n++) {
-				Array& row=request.pool().make_array(3/*table.columns()->size()*/);
+				Array& row=*new(request.pool()) Array(request.pool(), 3/*table.columns()->size()*/);
 				char *buf=static_cast<char *>(request.pool().malloc(MAX_STRING));
 				row+=itoa(n, buf);
 				row+="paf";

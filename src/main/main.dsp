@@ -123,6 +123,10 @@ SOURCE=..\include\pa_common.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_context.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_exception.h
 # End Source File
 # Begin Source File
@@ -152,6 +156,10 @@ SOURCE=..\include\pa_threads.h
 # Begin Source File
 
 SOURCE=..\include\pa_types.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_value.h
 # End Source File
 # End Group
 # End Target

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.13 2001/01/29 22:34:57 paf Exp $
+  $Id: pa_hash.h,v 1.14 2001/02/11 11:27:24 paf Exp $
 */
 
 /*
@@ -12,12 +12,11 @@
 
 #include <stddef.h>
 
+#include "pa_pool.h"
 #include "pa_types.h"
 #include "pa_string.h"
 
-class Pool;
-
-class Hash {
+class Hash : public Pooled {
 public:
 
 	typedef String Key;
@@ -25,7 +24,6 @@ public:
 
 public:
 
-	void *operator new(size_t size, Pool& apool);
 	Hash(Pool& apool, bool athread_safe);
 
 	// useful generic hash function
@@ -42,11 +40,6 @@ public:
 
 	int get_int(const Key& key) { return reinterpret_cast<int>(get(key)); }
 	String *get_string(const Key& key) { return static_cast<String *>(get(key)); }
-
-protected:
-
-	// the pool I'm allocated on
-	Pool& pool;
 
 private:
 

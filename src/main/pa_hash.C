@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.10 2001/01/29 22:34:58 paf Exp $
+  $Id: pa_hash.C,v 1.11 2001/02/11 11:27:25 paf Exp $
 */
 
 /*
@@ -10,7 +10,7 @@
 	For more information about Zend please visit http://www.zend.com/
 */
 
-#include "pa_pool.h"
+#include "pa_hash.h"
 #include "pa_threads.h"
 
 void *Hash::Pair::operator new(size_t size, Pool& apool) {
@@ -26,12 +26,9 @@ uint Hash::sizes[]={
 int Hash::sizes_count=
 	sizeof(sizes)/sizeof(uint);
 
-void *Hash::operator new(size_t size, Pool& apool) {
-	return apool.malloc(size);
-}
 
 Hash::Hash(Pool& apool, bool athread_safe) :
-	pool(apool),
+	Pooled(apool),
 	thread_safe(athread_safe) {
 	
 	size=sizes[size_index=0];

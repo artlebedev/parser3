@@ -1,18 +1,15 @@
 /*
-  $Id: pa_array.C,v 1.12 2001/01/30 13:07:31 paf Exp $
+  $Id: pa_array.C,v 1.13 2001/02/11 11:27:25 paf Exp $
 */
 
 #include <string.h>
 
 #include "pa_pool.h"
 #include "pa_array.h"
-
-void *Array::operator new(size_t size, Pool& apool) {
-	return apool.malloc(size);
-}
+#include "pa_exception.h"
 
 Array::Array(Pool& apool, int initial_rows) :
-	pool(apool) {
+	Pooled(apool) {
 	head=tail=static_cast<Chunk *>(
 		pool.malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
 	head->count=initial_rows;

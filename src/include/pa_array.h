@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.12 2001/01/29 20:46:21 paf Exp $
+  $Id: pa_array.h,v 1.13 2001/02/11 11:27:24 paf Exp $
 */
 
 /*
@@ -20,12 +20,11 @@
 
 #include <stddef.h>
 
+#include "pa_pool.h"
 #include "pa_types.h"
 #include "pa_string.h"
 
-class Pool;
-
-class Array {
+class Array : public Pooled {
 public:
 
 	typedef void Item;
@@ -37,7 +36,6 @@ public:
 
 public:
 
-	void *operator new(size_t size, Pool& apool);
 	Array(Pool& apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
 	int size() const { return fused_rows; }
@@ -50,11 +48,6 @@ public:
 	const String *get_string(int index) const { 
 		return static_cast<const String *>(get(index)); 
 	}
-
-protected:
-
-	// the pool I'm allocated on
-	Pool& pool;
 
 private:
 

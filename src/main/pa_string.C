@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.16 2001/01/29 22:34:58 paf Exp $
+  $Id: pa_string.C,v 1.17 2001/02/11 11:27:25 paf Exp $
 */
 
 #include <string.h>
@@ -8,12 +8,8 @@
 #include "pa_string.h"
 #include "pa_hash.h"
 
-void *String::operator new(size_t size, Pool& apool) {
-	return apool.malloc(size);
-}
-
 String::String(Pool& apool) :
-	pool(apool) {
+	Pooled(apool) {
 	head.count=curr_chunk_rows=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
 	head.preallocated_link=0;
@@ -33,7 +29,7 @@ void String::expand() {
 }
 
 String::String(const String& src) :
-	pool(src.pool) {
+	Pooled(src.pool) {
 	head.count=CR_PREALLOCATED_COUNT;
 	
 	int src_used_rows=src.used_rows();

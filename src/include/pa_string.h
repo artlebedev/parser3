@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.14 2001/01/29 22:34:57 paf Exp $
+  $Id: pa_string.h,v 1.15 2001/02/11 11:27:24 paf Exp $
 */
 
 /*
@@ -24,9 +24,8 @@
 
 #include <stddef.h>
 
+#include "pa_pool.h"
 #include "pa_types.h"
-
-class Pool;
 
 #ifndef NO_STRING_ORIGIN
 #	define STRING_APPEND_PARAMS const char *src, char *file, uint line
@@ -36,8 +35,7 @@ class Pool;
 #	define APPEND(src, file, line) real_append(src)
 #endif
 
-
-class String {
+class String : public Pooled {
 public:
 	enum {
 		CR_PREALLOCATED_COUNT=5,
@@ -46,7 +44,6 @@ public:
 
 public:
 
-	void *operator new(size_t size, Pool& apool);
 	String(Pool& apool);
 	String(const String& src);
 	size_t size() const { return fsize; }
@@ -58,11 +55,6 @@ public:
 	uint hash_code() const;
 
 	const Origin& origin() const { return head.rows[0].item.origin; }
-
-protected:
-
-	// the pool I'm allocated on
-	Pool& pool;
 
 private:
 
@@ -112,5 +104,6 @@ private: //disabled
 	String& operator = (const String&) { return *this; }
 
 };
+
 
 #endif
