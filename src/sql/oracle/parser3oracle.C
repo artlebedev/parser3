@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6, tested with Oracle 7.x.x
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.8 2001/08/23 12:10:30 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.9 2001/08/23 12:21:31 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -414,7 +414,7 @@ private: // private funcs
 			for(i=0; i<lobs.count; i++) {
 				if(i)
 					*n++=',';
-				n+=sprintf(n, "%*s", lobs.items[i].name_size, lobs.items[i].name_ptr);
+				n+=sprintf(n, "%.*s", lobs.items[i].name_size, lobs.items[i].name_ptr);
 				/*memcpy(n, lobs.items[i].name_ptr, lobs.items[i].name_size);
 				n+=lobs.items[i].name_size;*/
 			}
@@ -422,7 +422,7 @@ private: // private funcs
 			for(i=0; i<lobs.count; i++) {
 				if(i)
 					*n++='x';
-				n+=sprintf(n, ":%*s", lobs.items[i].name_size, lobs.items[i].name_ptr);
+				n+=sprintf(n, ":%.*s", lobs.items[i].name_size, lobs.items[i].name_ptr);
 				/**n++=':';
 				memcpy(n, lobs.items[i].name_ptr, lobs.items[i].name_size);
 				n+=lobs.items[i].name_size;*/

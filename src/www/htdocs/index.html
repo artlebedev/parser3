@@ -3,6 +3,7 @@ t.p
 dtf.p
 
 @main[]
+#^savetest[]
 ^oratestinsert[]
 #^oratestread[]
 #^process_check[]
@@ -12,11 +13,16 @@ dtf.p
 #^list[]
 #^tests[]
 #^func(0)<hr>
+
+@savetest[]
+$file[^file::load[text;index.html]]
+^file.save[binary;/some/dir/here.dat]
+OK
 	
 @oratestinsert[]
 ^connect[oracle://mts_admin:admin_pwd@ORACLE.PAF.OFFICE.DESIGN.RU]{
 #^void:sql{create table lobtest(test clob)}
-^void:sql{insert into lobtest values (/**test**/'буквы')}
+^void:sql{insert into lobtest values (/**test**/'бу''квы')}
 $table[^table::sql{select * from lobtest}]
 ^table.menu{<hr>$table.test}
 }
