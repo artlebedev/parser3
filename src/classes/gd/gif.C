@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.16 2001/10/16 07:47:16 parser Exp $
+	$Id: gif.C,v 1.17 2001/10/16 07:53:31 parser Exp $
 
 	based on: gd
 
@@ -663,7 +663,7 @@ void gdImage::CopyResized(gdImage& dst, int dstX, int dstY, int srcX, int srcY, 
 	for (i=0; (i < srcW); i++) {
 		int got;
 		accum += (double)dstW/(double)srcW;
-		got = floor(accum);
+		got = (int)floor(accum);
 		stx[i] = got;
 		accum -= got;
 	}
@@ -671,7 +671,7 @@ void gdImage::CopyResized(gdImage& dst, int dstX, int dstY, int srcX, int srcY, 
 	for (i=0; (i < srcH); i++) {
 		int got;
 		accum += (double)dstH/(double)srcH;
-		got = floor(accum);
+		got = (int)floor(accum);
 		sty[i] = got;
 		accum -= got;
 	}
