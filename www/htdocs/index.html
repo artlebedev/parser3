@@ -209,9 +209,18 @@ $selffilespec[$filespec]
 #^monthdays(8)
 #^xdoctypetest[]
 #^xtabletest[]
-^staticstest[]
+#^staticstest[]
+^staticstest2[]
 <hr>
 OK
+
+@staticstest2[]
+^$derived:derived_var=$derived:derived_var<br>
+^$derived:a=$derived:a<br>
+#$derived:a[changed] ^$derived:a=$derived:a<br> should be error when there is a
+$derived:derived_var[changed] 
+^$derived:derived_var=$derived:derived_var<br>
+
 
 @staticstest[]
 $derived[^derived::create[]]

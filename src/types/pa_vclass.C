@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCLASS_C="$Date: 2002/08/13 16:10:38 $";
+static const char* IDENT_VCLASS_C="$Date: 2002/08/13 16:27:53 $";
 
 #include "pa_vclass.h"
 
@@ -27,17 +27,7 @@ Value *VClass::get_element(const String& aname, Value *aself, bool looking_down)
 	try {
 		if(fbase && fbase->put_element(aname, avalue, true))
 			return true; // replaced in base
-	} catch(Exception) { 
-		/* ignore "can not store to table&co errors for nonexistent elements */ 
-		bool error;
-		try {
-			error=get_element(aname, this, false)!=0;
-		} catch(Exception) { 
-			error=false;
-		}
-		if(error)
-			/*re*/throw;
-	}
+	} catch(Exception) {  /* allow override parent variables, useful for form descendants */ }
 
 	if(replace)
 		return ffields.put_replace(aname, avalue);
