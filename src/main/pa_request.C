@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.128 2001/05/07 13:30:03 paf Exp $
+	$Id: pa_request.C,v 1.129 2001/05/10 13:10:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -167,6 +167,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 		// configure root options
 		//	until someone with less privileges have overriden them
+		OP.configure_admin(*this);
 		methoded_array->configure_admin(*this);
 
 		// loading site auto.p
@@ -217,6 +218,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			main_class_name, main_class);
 
 		// configure not-root=user options
+		OP.configure_user(*this);
 		methoded_array->configure_user(*this);
 
 		// $MAIN:DEFAULTS

@@ -1,31 +1,52 @@
-@padding[content]
-<table cellspacing=0 cellpadding=8 border=0 width=100%><td>$content</td></table>
+@auto[]
+$user-html[^table:set{user	html	comment
+<<	&laquo^;	длинные user вперёд
+>>	&raquo^;
+\n\n	<p>	!эти есть в таблице по умолчанию
+\n	<br>	!но т.к. заменяем, надо повторить.
+<	&lt^;	!можно этим воспользоваться,
+>	&gt^;	!и что-то сделать ДО обычных замен
+"	&quot^;	!например из << и >>
+&	&amp^;	!сделать ёлочки-кавычки.
+_	&nbsp^;
+^#AB	&laquo^;	windows коды ёлочек
+^#BB	&raquo^;	windows коды ёлочек
+(c)	&copy^;
+^#A9	&copy^;	windows (c)
+}]
+#$if(!($SQL is hash)){$SQL[$z[z]]}
+$SQL.connect-string[mysql://test:test@localhost/test/cp1251_koi8]
+#for ^file:load[name;user-name;mime-type << autodetection]
+$MIME-TYPES[^table:set{ext	mime-type
+zip	application/zip
+doc	application/msword
+xls	application/vnd.ms-excel
+pdf	application/pdf
+ppt	application/powerpoint
+rtf	application/rtf
+gif	image/gif
+jpg	image/jpeg
+png	image/png
+tif	image/tiff
+html	text/html
+htm	text/html
+txt	text/plain
+mts	application/metastream
+mid	audio/midi
+midi	audio/midi
+mp3	audio/mpeg
+ram	audio/x-pn-realaudio
+rpm	audio/x-pn-realaudio-plugin
+ra	audio/x-realaudio
+wav	audio/x-wav
+au	audio/basic
+mpg	video/mpeg
+avi	video/x-msvideo
+mov	video/quicktime
+swf	application/x-shockwave-flash
+}]
 
-@href[url;content;flag]
-^if($flag){<a href="$url">$content</a>}{$content}
+@auto_test[]
+^BASE.auto_test[]
+<li>DR
 
-@main[]
-$branches[^table:load[/_site.cfg]]
-<html><head>
-<title>parser III</title></head>
-<body bgcolor=8896A7>
-<table cellspacing=2 cellpadding=2 border=0 width="90%" align=center>
-	<tr>
-		<td colspan=^branches.count[]><font size=2 color=white><b>parser III</b></font></td>
-	</tr>
-	<tr bgcolor=black>
-		$branches{
-			^menu{
-				<td width=^eval(100/^count[])%>^:href{/$folder/;<font size=2 color=white><b>$name</b></font>}(!(in "/$folder/"))</td>
-			}
-		}
-	</tr>
-	<tr bgcolor=white>
-		<td colspan=2 bgcolor=CCCCCC>^padding{^leftCol[]}</td>
-		<td colspan=^eval(^branches.count[]-2)>^padding{^body[]}</td>
-	</tr>
-	<tr>
-		<td colspan=^branches.count[]><font size=2 color=white>Copyright &copy^; 2001 <a href=http://www.design.ru/ style="color:white">Студия Артемия Лебедева</a></font></td>
-	</tr>
-</table>
-</body></html>

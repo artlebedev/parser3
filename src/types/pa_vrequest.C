@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vrequest.C,v 1.5 2001/04/26 15:01:52 paf Exp $
+	$Id: pa_vrequest.C,v 1.6 2001/05/10 13:10:37 paf Exp $
 */
 
 #include "pa_vrequest.h"
@@ -53,11 +53,9 @@ Value *VRequest::get_element(const String& aname) {
 		cstr=frequest.info.query_string;
 	if(aname=="uri")
 		cstr=frequest.info.uri;
-	if(!cstr)
-		return 0;
 	
 	String& string=*NEW String(pool());
-	string.APPEND_TAINTED(cstr, 0, "request", 0);
+	string.APPEND_TAINTED(cstr?cstr:"", 0, "request", 0);
 	return NEW VString(string);
 }
 

@@ -5,20 +5,20 @@ $t[^table:set{key	value
 $h[^t.hash[key]]
 
 
-^rem{
+#^rem{
 ^connect[$SQL.connect-string]{
 	$shit[^taint[our's]]
 #	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
 	$paf[^table:sql{select * from paf order by id desc}(5)]
 	$paf{
-	^empty{query result is empty}{
+	^if(^empty[]){query result is empty}{
 	<table border=1>
 		<tr><td>id</td><td>name</td><td>age</td></tr>
 		^menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
 	</table>
 	}}
 }
-}
+#}
 
 <HR>
 $abc{}
