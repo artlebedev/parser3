@@ -5,15 +5,16 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.8 2001/06/28 07:44:17 parser Exp $
+	$Id: hash.C,v 1.9 2001/07/02 13:59:59 parser Exp $
 */
-static const char *RCSId="$Id: hash.C,v 1.8 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: hash.C,v 1.9 2001/07/02 13:59:59 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
+#include "pa_vtable.h"
 
 // defines
 
@@ -125,6 +126,28 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	}
 }
 
+static void keys_collector(const Hash::Key& key, Hash::Val *value, void *info) {
+	Table& table=*static_cast<Table *>(info);
+	Pool& pool=table.pool();
+
+	Array& row=*new(pool) Array(pool);
+	row+=&key;
+	table+=&row;
+}
+static void _keys(Request& r, const String& method_name, MethodParams *) {
+	Pool& pool=r.pool();
+
+	Array& columns=*new(pool) Array(pool);
+	columns+=new(pool) String(pool, "key");
+	Table& table=*new(pool) Table(pool, &method_name, &columns);
+
+	static_cast<VHash *>(r.self)->hash().for_each(keys_collector, &table);
+
+	VTable& result=*new(pool) VTable(pool, &table);
+	result.set_name(method_name);
+	r.write_no_lang(result);
+}
+
 // constructor
 
 MHash::MHash(Pool& apool) : Methoded(apool) {
@@ -137,6 +160,8 @@ MHash::MHash(Pool& apool) : Methoded(apool) {
 	// ^hash:sql[query][(count[;offset])]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);
 
+	// ^hash.keys[]
+	add_native_method("keys", Method::CT_DYNAMIC, _keys, 0, 0);	
 }
 
 // global variable
