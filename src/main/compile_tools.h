@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.36 2001/03/29 09:31:44 paf Exp $
+	$Id: compile_tools.h,v 1.37 2001/04/19 18:30:40 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -102,7 +102,9 @@ Array *VL(Value *value);
 Value *LA2V(Array *literal_string_array, int offset=0);
 /// Literal Array to(2) String  @return String value from literal Array OP+String array
 inline const String *LA2S(Array *literal_string_array, int offset=0) {
-	return LA2V(literal_string_array, offset)->get_string();
+	if(Value *value=LA2V(literal_string_array, offset))
+		return value->get_string();
+	return 0;
 }
 void change_string_literal_to_double_literal(Array *literal_string_array);
 void change_string_literal_to_write_string_literal(Array *literal_string_array);
