@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_fixed.h,v 1.44 2002/06/24 15:04:22 paf Exp $
+	$Id: pa_config_fixed.h,v 1.45 2002/06/24 15:18:43 paf Exp $
 
 
 	tested only with MS Visual C++ V6
@@ -32,6 +32,9 @@
 #define HAVE__LOCKING
 #define HAVE_PRAGMA_PACK
 #define USE_SMTP
+//gmime
+#define off_t _off_t
+#define ssize_t int
 
 // no string origin tracking
 //#define NO_STRING_ORIGIN
