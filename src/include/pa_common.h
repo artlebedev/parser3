@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2002/08/01 11:41:15 $";
+static const char* IDENT_COMMON_H="$Date: 2002/08/15 12:05:36 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -178,14 +178,6 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 size_t stdout_write(const void *buf, size_t size);
 
 char *unescape_chars(Pool& pool, const char *cp, int len);
-
-/**
-	$content-type[text/html] -> 
-		content-type: text/html
-	$content-type[$value[text/html] charset[windows-1251]] -> 
-		content-type: text/html; charset=windows-1251
-*/
-const String& attributed_meaning_to_string(Value& meaning, String::Untaint_lang lang);
 
 #ifdef WIN32
 void back_slashes_to_slashes(char *s);

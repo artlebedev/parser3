@@ -5,13 +5,14 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCOOKIE_C="$Date: 2002/08/14 14:18:29 $";
+static const char* IDENT_VCOOKIE_C="$Date: 2002/08/15 12:05:37 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
 #include "pa_vcookie.h"
 #include "pa_vstring.h"
 #include "pa_request.h"
+#include "pa_vdate.h"
 
 #define SESSION_NAME "session"
 #define DEFAULT_EXPIRES_DAYS 90
@@ -103,28 +104,20 @@ void VCookie::fill_fields(Request& request) {
 	} while(current);
 }
 
-static VString *expires_timestamp(Pool&pool, const String *source, double days_till_expire) {
-    const char month_names[12][4]={
-		"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-    const char days[7][4]={
-		"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-	
+static VDate& expires_vdate(Pool& pool, const String *source, double days_till_expire) {
 	time_t when=time(NULL)+(time_t)(60*60*24*days_till_expire);
 	struct tm *tms=gmtime(&when);
 	if(!tms)
 		throw Exception(0,
 			source,
 			"bad expires time (seconds from epoch=%ld)", when);
-	char *buf=(char *)pool.malloc(MAX_STRING);
-	snprintf(buf, MAX_STRING, "%s, %.2d-%s-%.4d %.2d:%.2d:%.2d GMT", 
-		days[tms->tm_wday],
-		tms->tm_mday,month_names[tms->tm_mon],tms->tm_year+1900,
-		tms->tm_hour,tms->tm_min,tms->tm_sec);
-	return new(pool) VString(*new(pool) String(pool, buf));
+
+	return *new(pool) VDate(pool, when);
 }
 
 /*
-	@todo http://www.netscape.com/newsref/std/cookie_spec.html
+	@todo 
+	http://www.netscape.com/newsref/std/cookie_spec.html
 	When sending cookies to a server, 
 	all cookies with a more specific path mapping should be sent before cookies 
 	with less specific path mappings. 
@@ -163,19 +156,19 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 				} else {
 					// $expires(days)
 					if(double days_till_expire=expires->as_double())
-						hash->put(*expires_name, expires_timestamp(pool, &aattribute, days_till_expire));
+						hash->put(*expires_name, &expires_vdate(pool, &aattribute, days_till_expire));
 					else // $expires(0)
 						hash->remove(*expires_name);
 				}
 			} else // $expires not assigned, defaulting
-				hash->put(*expires_name, expires_timestamp(pool, &aattribute, DEFAULT_EXPIRES_DAYS));
+				hash->put(*expires_name, &expires_vdate(pool, &aattribute, DEFAULT_EXPIRES_DAYS));
 		} else { // ...[string value]
 			Value *wrap_meaning=new(pool) VHash(pool);
 			// wrapping meaning into hash
 			wrap_meaning->get_hash(&aattribute)->put(*value_name, meaning);
 			// string = $expires not assigned, defaulting
 			wrap_meaning->get_hash(&aattribute)->put(*expires_name, 
-				expires_timestamp(pool, &aattribute, DEFAULT_EXPIRES_DAYS));
+				&expires_vdate(pool, &aattribute, DEFAULT_EXPIRES_DAYS));
 			// replacing meaning with hash-wrapped one
 			meaning=wrap_meaning;
 		}
@@ -189,7 +182,7 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 		// Set-Cookie: (attribute)=; path=/
 		meaning=new(pool) VHash(pool);
 		meaning->get_hash(&aattribute)->put(*expires_name, 
-			expires_timestamp(pool, &aattribute, -DEFAULT_EXPIRES_DAYS));
+			&expires_vdate(pool, &aattribute, -DEFAULT_EXPIRES_DAYS));
 	}
 	// defaulting path
 	if(!meaning->get_hash(&aattribute)->get(*path_name))

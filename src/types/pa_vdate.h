@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char* IDENT_VDATE_H="$Date: 2002/08/15 10:21:43 $";
+static const char* IDENT_VDATE_H="$Date: 2002/08/15 12:05:37 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -69,7 +69,7 @@ public: // usage
 		ftime(adate) {
 	}
 
-	time_t get_time() { return ftime; }
+	time_t get_time() const { return ftime; }
 	void set_time(time_t atime) { ftime=atime; }
 
 private:

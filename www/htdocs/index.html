@@ -19,18 +19,18 @@ $selffilespec[$filespec]
 #^a.format[%.10u]
 #$result[111]
 #^f[a]
-^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
+#^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
 #	^int:sql{select news_id from news where news_id=-1}[
 ##	$.default{2}
 #	]<br>
-    ^hash::sql{bad}
+#    ^hash::sql{bad}
 #    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
 #	^file::load[text;^string:sql{select 'from sql server' }]
 #	^string:sql{select '^^hello[]' }] $ORIGINS(1)
 #	^process{	^^h[]}
 #	^process{^string:sql{select '1
 #	^^hello[]' }]	}
-}
+#}
 #^eval(2)
 #^tcrashlocaljunctionsv2[]
 #^tcrashlocaljunctions[]
@@ -143,7 +143,6 @@ $selffilespec[$filespec]
 #^tif[]
 #^image[]
 #^mail2[]
-#^cookie[]
 #^response[]
 #^regexp2[]
 #^ttablerem[]
@@ -214,9 +213,18 @@ $selffilespec[$filespec]
 #^xtabletest[]
 #^staticstest[]
 #^staticstest2[]
-^rbodytest[]
+#^rbodytest[]
+#^cookie[]
+^cookieexpirestest[]
 <hr>
 OK
+
+@cookieexpirestest[]
+#$cookie:exptest[1]
+#$cookie:exptest[$.value[2] $.expires(+1)]
+$response:xxxx[^date::now(+10)]
+$response:yyy[$.value[^date::now(+20)]]
+$response:yyy[$.value[vvv] $.aaaa[^date::now(+20)]]
 
 @rbodytest[]
 $request:body=
@@ -1798,7 +1806,7 @@ $response:body[^pict.gif[]]
 ]
 
 @cookie[]
-$env:HTTP_COOKIE<br>
+#$env:HTTP_COOKIE<br>
 
 #$cookie:переменная[test тест ТЕСТ2]
 =$cookie:переменная=<br>

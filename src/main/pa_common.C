@@ -5,16 +5,11 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/08/05 13:58:45 $";
+static const char* IDENT_COMMON_C="$Date: 2002/08/15 12:05:36 $";
 
 #include "pa_common.h"
-#include "pa_types.h"
 #include "pa_exception.h"
-#include "pa_pool.h"
 #include "pa_globals.h"
-#include "pa_value.h"
-#include "pa_hash.h"
-#include "pa_string.h"
 
 #ifdef WIN32
 #	include <windows.h>
@@ -504,43 +499,6 @@ char *unescape_chars(Pool& pool, const char *cp, int len) {
 	}
 	s[dstPos]=0;
 	return s;
-}
-
-/// used by attributed_meaning_to_string / append_attribute_subattribute
-struct Attributed_meaning_info {
-	String *header; // header line being constructed
-	String::Untaint_lang lang; // language in which to append to that line
-};
-static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *avalue, 
-										  void *info) {
-	if(akey==VALUE_NAME)
-		return;
-
-	Attributed_meaning_info& ami=*static_cast<Attributed_meaning_info *>(info);
-
-	// ...; charset=windows1251
-	*ami.header << "; ";
-	ami.header->append(akey, ami.lang);
-	*ami.header << "=";
-	ami.header->append(static_cast<Value *>(avalue)->as_string(), ami.lang);
-}
-const String& attributed_meaning_to_string(Value& meaning, 
-										   String::Untaint_lang lang) {
-	String &result=*new(meaning.pool()) String(meaning.pool());
-	if(Hash *hash=meaning.get_hash(0)) {
-		// $value(value) $subattribute(subattribute value)
-		if(Value *value=static_cast<Value *>(hash->get(*value_name)))
-			result.append(value->as_string(), lang, true);
-
-		Attributed_meaning_info attributed_meaning_info={
-			&result,
-			lang
-		};
-		hash->for_each(append_attribute_subattribute, &attributed_meaning_info);
-	} else // result value
-		result.append(meaning.as_string(), lang, true);
-
-	return result;
 }
 
 #ifdef WIN32
