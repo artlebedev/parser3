@@ -79,7 +79,7 @@ $a[vasya,fedya,kolya]
 ^$request:browser.type=$request:browser.type<BR>
 ^$request:browser.version=$request:browser.version<BR>
 
-$tf[^file:load[test.zip;abc.zip]]
+$tf[^file:load[test.zip;abc.zip;image/gif]]
 $response:body[$tf]
 
 ^$tf.name=$tf.name<BR>
