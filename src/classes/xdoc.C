@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.89 2002/04/09 15:27:13 paf Exp $
+	$Id: xdoc.C,v 1.90 2002/04/09 15:56:35 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -25,6 +25,7 @@ extern "C" {
 #include "libxslt/xsltInternals.h"
 #include "libxslt/transform.h"
 #include "libxslt/xsltutils.h"
+#include "libxslt/variables.h"
 
 // defines
 
@@ -655,15 +656,20 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	const String& stylesheet_filespec=r.absolute(params->as_string(0, "file name must be string"));
 	Stylesheet_connection_ptr connection=stylesheet_manager->get_connection(stylesheet_filespec);
 
-	// transform
+	// prepare to transform
 	xsltStylesheet *stylesheet=connection->stylesheet(false/*nocache*/);
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document(&method_name));
 	xsltTransformContext_auto_ptr transformContext(
 		xsltNewTransformContext(stylesheet, document));
+	// make params literal
+    if (transformContext->globalVars == NULL) // strangly not initialized by xsltNewTransformContext
+		transformContext->globalVars = xmlHashCreate(20);
+	xsltQuoteUserParams(transformContext.get(), transform_params);
+	// do transform
 	xmlDoc *transformed=xsltApplyStylesheetUser(
 		stylesheet,
 		document,
-		transform_params,
+		0/*already quoted-inserted  transform_params*/,
 		0/*const char *output*/,
 		0/*FILE *profile*/,
 		transformContext.get());

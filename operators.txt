@@ -616,6 +616,7 @@ xdoc(xnode)
         !cdata-section-elements = qnames 
         !indent = "yes" | "no"
         !media-type = string /> 
+        !параметры передаются как есть, не xpath выражения
 
     !.string[output options]
     !.save[file.xml;output options] с шапкой
