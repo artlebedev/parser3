@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vxnode.C,v 1.9 2001/11/01 15:45:28 paf Exp $
+	$Id: pa_vxnode.C,v 1.10 2001/11/05 10:21:28 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -39,51 +39,51 @@ Value *VXnode::get_element(const String& name) {
 
 		// fields
 
-		XalanNode& node=get_node(pool(), &name);
+		XalanNode& selfNode=get_node(pool(), &name);
 
 		if(name=="nodeName") {
-			return NEW VString(transcode(node.getNodeName()));
+			return NEW VString(transcode(selfNode.getNodeName()));
 		} else if(name=="nodeValue") {
-			return NEW VString(transcode(node.getNodeValue()));
+			return NEW VString(transcode(selfNode.getNodeValue()));
 		} else if(name=="nodeType") {
-			return NEW VInt(pool(), node.getNodeType());
+			return NEW VInt(pool(), selfNode.getNodeType());
 		} else if(name=="parentNode") {
-			if(XalanNode *result_node=node.getParentNode())
+			if(XalanNode *result_node=selfNode.getParentNode())
 				return NEW VXnode(pool(), result_node, false);
 		} else if(name=="childNodes") {	
-			if(const XalanNodeList *nodes=node.getChildNodes()) {
+			if(XalanNode *currentNode=selfNode.getFirstChild()) {
 				VHash *result=NEW VHash(pool());
-				for(int i=0; i<nodes->getLength(); i++) {
+				int i=0;
+				do {
 					String& skey=*NEW String(pool());
 					{
 						char *buf=(char *)malloc(MAX_NUMBER);
-						snprintf(buf, MAX_NUMBER, "%d", i);
+						snprintf(buf, MAX_NUMBER, "%d", ++i);
 						skey << buf;
 					}
-
-					result->hash(0).put(skey, NEW VXnode(pool(), nodes->item(i), false));
-				}
+					result->hash(&name).put(skey, NEW VXnode(pool(), currentNode, false));
+				} while(currentNode=currentNode->getNextSibling());
 				return result;
 			}
 		} else if(name=="firstChild") {
-			if(XalanNode *result_node=node.getFirstChild())
+			if(XalanNode *result_node=selfNode.getFirstChild())
 				return NEW VXnode(pool(), result_node, false);
 		} else if(name=="lastChild") {
-			if(XalanNode *result_node=node.getLastChild())
+			if(XalanNode *result_node=selfNode.getLastChild())
 				return NEW VXnode(pool(), result_node, false);
 		} else if(name=="previousSibling") {
-			if(XalanNode *result_node=node.getPreviousSibling())
+			if(XalanNode *result_node=selfNode.getPreviousSibling())
 				return NEW VXnode(pool(), result_node, false);
 		} else if(name=="nextSibling") {
-			if(XalanNode *result_node=node.getNextSibling())
+			if(XalanNode *result_node=selfNode.getNextSibling())
 				return NEW VXnode(pool(), result_node, false);
 		} else if(name=="ownerDocument") {
-			if(XalanDocument *document=node.getOwnerDocument())
+			if(XalanDocument *document=selfNode.getOwnerDocument())
 				return NEW VXdoc(pool(), document, false/*owns not*/);
-		} else switch(node.getNodeType()) {
+		} else switch(selfNode.getNodeType()) {
 			case XalanNode::ELEMENT_NODE: 
 				if(name=="attributes") {
-					if(const XalanNamedNodeMap *attributes=node.getAttributes()) {
+					if(const XalanNamedNodeMap *attributes=selfNode.getAttributes()) {
 						VHash *result=NEW VHash(pool());
 						for(int i=0; i<attributes->getLength(); i++) {
 							XalanNode *attr_node=attributes->item(i);
@@ -94,12 +94,12 @@ Value *VXnode::get_element(const String& name) {
 						return result;
 					}
 				} else if(name=="tagName") {
-					return NEW VString(transcode(static_cast<XalanElement *>(&node)->getTagName()));
+					return NEW VString(transcode(static_cast<XalanElement *>(&selfNode)->getTagName()));
 				}
 				break;
 			case XalanNode::ATTRIBUTE_NODE: 
 				if(name=="specified")
-					return NEW VBool(pool(), static_cast<XalanAttr *>(&node)->getSpecified());
+					return NEW VBool(pool(), static_cast<XalanAttr *>(&selfNode)->getSpecified());
 				break;
 	/*
 			case XalanNode::COMMENT_NODE: 
@@ -107,11 +107,11 @@ Value *VXnode::get_element(const String& name) {
 	*/
 			case XalanNode::PROCESSING_INSTRUCTION_NODE: 
 				if(name=="target")
-					return NEW VString(transcode(static_cast<XalanProcessingInstruction *>(&node)->getTarget()));
+					return NEW VString(transcode(static_cast<XalanProcessingInstruction *>(&selfNode)->getTarget()));
 				break;
 			case XalanNode::DOCUMENT_TYPE_NODE: 
 				{
-					XalanDocumentType& doctype=*static_cast<XalanDocumentType *>(&node);
+					XalanDocumentType& doctype=*static_cast<XalanDocumentType *>(&selfNode);
 					if(name=="name") {
 						// readonly attribute DOMString name;
 						// The name of DTD; i.e., the name immediately following 
@@ -124,13 +124,13 @@ Value *VXnode::get_element(const String& name) {
 					virtual const XalanNamedNodeMap* getEntities () const = 0 
 					This function returns a NamedNodeMap containing the general entities, both external and internal, declared in the DTD. More...
 					virtual const XalanNamedNodeMap* getNotations () const = 0 
-					This function returns a named node map containing an entry for each notation declared in a document's DTD. More...
+					This function returns a named selfNode map containing an entry for each notation declared in a document's DTD. More...
 					*/
 				}
 				break;
 			case XalanNode::NOTATION_NODE:
 				{
-					XalanNotation& notation=*static_cast<XalanNotation *>(&node);
+					XalanNotation& notation=*static_cast<XalanNotation *>(&selfNode);
 					if(name=="publicId") {
 						// readonly attribute DOMString publicId;
 						return NEW VString(transcode(notation.getPublicId()));

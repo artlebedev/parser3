@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.48 2001/10/31 14:58:10 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.49 2001/11/05 10:21:28 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -14,6 +14,8 @@
 #include "pa_common.h"
 #include "pa_threads.h"
 #include "pa_stack.h"
+#include "pa_vhash.h"
+#include "pa_vtable.h"
 
 // globals
 
@@ -24,6 +26,18 @@ SQL_Driver_manager *SQL_driver_manager;
 const int EXPIRE_UNUSED_CONNECTION_SECONDS=60;
 const int CHECK_EXPIRED_CONNECTIONS_SECONDS=EXPIRE_UNUSED_CONNECTION_SECONDS*2;
 
+// helpers
+
+const String& url_without_login(Pool& pool, const String& url) {
+	String& result=*new(pool) String(pool);
+	result << url.mid(0, url.pos(":")) << "://****";
+
+	int at_pos=url.pos("@");
+	if(at_pos>0)
+		result << url.mid(at_pos, url.size());
+
+	return result;
+}
 
 /// SQL_Driver_services Pooled implementation
 class SQL_Driver_services_impl : public SQL_Driver_services, public Pooled {
@@ -41,11 +55,9 @@ public:
 		and from there... #2 propagate_exception()
 	*/
 	virtual void _throw(const char *comment) { 
-		String& protocol=*NEW String(pool());
-		/// hiding passwords and addresses from accidental show [imagine user forgot @exception]
-		protocol << furl.mid(0, furl.pos(":")) << "://****";
+		// hiding passwords and addresses from accidental show [imagine user forgot @exception]
 		e=Exception(0, 0, 
-			&protocol,
+			&url_without_login(pool(), furl),
 			comment); 
 
 		longjmp(mark, 1);
@@ -76,11 +88,12 @@ static void expire_connections(const Hash::Key& key, Hash::Val *value, void *inf
 
 // SQL_Driver_manager
 
-SQL_Driver_manager::SQL_Driver_manager(Pool& pool) : Pooled(pool),
-		driver_cache(pool),
-		connection_cache(pool),
+SQL_Driver_manager::SQL_Driver_manager(Pool& apool) : Pooled(apool),
+		driver_cache(apool),
+		connection_cache(apool),
 		prev_expiration_pass_time(0) {
-	
+
+	status_providers->put(*NEW String(pool(), "sql"), this);
 }
 
 SQL_Driver_manager::~SQL_Driver_manager() {
@@ -283,4 +296,49 @@ void SQL_Driver_manager::maybe_expire_connection_cache() {
 
 		prev_expiration_pass_time=now;
 	}
+}
+
+static void add_connection_to_status_cache_table(Array::Item *value, void *info) {
+	SQL_Connection& connection=*static_cast<SQL_Connection *>(value);
+	Table& table=*static_cast<Table *>(info);
+
+	if(connection.connected()) {
+		Pool& pool=table.pool();
+		Array& row=*new(pool) Array(pool, 3);
+
+		row+=&url_without_login(pool, connection.get_url());
+		time_t time_stamp=connection.get_time_stamp();
+		const char *unsafe_time_cstr=ctime(&time_stamp);
+		int time_buf_size=strlen(unsafe_time_cstr);
+		char *safe_time_buf=(char *)pool.malloc(time_buf_size);
+		memcpy(safe_time_buf, unsafe_time_cstr, time_buf_size);
+		row+=new(pool) String(pool, safe_time_buf, time_buf_size);
+
+		table+=&row;
+	}
+}
+static void add_connections_to_status_cache_table(const Hash::Key& key, Hash::Val *value, void *info) {
+	Stack& stack=*static_cast<Stack *>(value);
+	Array_iter iter(stack);
+	for(int countdown=stack.top_index(); countdown-->=0; )
+		add_connection_to_status_cache_table(iter.next(), info);
+}
+
+
+Value& SQL_Driver_manager::get_status(Pool& pool, const String *source) {
+	VHash& result=*new(pool) VHash(pool);
+	
+	// cache
+	{
+		Array& columns=*new(pool) Array(pool, 3);
+		columns+=new(pool) String(pool, "url");
+		columns+=new(pool) String(pool, "time");
+		Table& table=*new(pool) Table(pool, 0, &columns, connection_cache.size());
+
+		connection_cache.for_each(add_connections_to_status_cache_table, &table);
+
+		result.hash(source).put(*new(pool) String(pool, "cache"), new(pool) VTable(pool, &table));
+	}
+
+	return result;
 }

@@ -273,6 +273,10 @@ SOURCE=.\pa_vstateless_object.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_vstatus.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_vstring.C
 # End Source File
 # Begin Source File

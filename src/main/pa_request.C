@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.174 2001/11/01 15:45:28 paf Exp $
+	$Id: pa_request.C,v 1.175 2001/11/05 10:21:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -54,6 +54,7 @@ Request::Request(Pool& apool,
 	stack(apool),
 	OP(*MOP_create(apool)),
 	env(apool),
+	status(apool),
 	form(apool),
 	math(apool),
 	request(apool, *this),
@@ -83,6 +84,8 @@ Request::Request(Pool& apool,
 	/// methodless
 	// env class
 	classes().put(*NEW String(pool(), ENV_CLASS_NAME), &env);
+	// status class
+	classes().put(*NEW String(pool(), STATUS_CLASS_NAME), &status);
 	// request class
 	classes().put(*NEW String(pool(), REQUEST_CLASS_NAME), &request);	
 	// cookie class

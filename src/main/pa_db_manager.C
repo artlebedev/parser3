@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.C,v 1.10 2001/10/30 15:08:19 paf Exp $
+	$Id: pa_db_manager.C,v 1.11 2001/11/05 10:21:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,6 +15,7 @@
 #include "pa_exception.h"
 #include "pa_threads.h"
 #include "pa_stack.h"
+#include "pa_vhash.h"
 
 // globals
 
@@ -38,10 +39,11 @@ static void expire_connection(const Hash::Key& key, Hash::Val *& value, void *in
 
 // DB_Manager
 
-DB_Manager::DB_Manager(Pool& pool) : Pooled(pool),
-	connection_cache(pool),
+DB_Manager::DB_Manager(Pool& apool) : Pooled(apool),
+	connection_cache(apool),
 	prev_expiration_pass_time(0) {
 
+	status_providers->put(*NEW String(pool(), "db"), this);
 }
 
 DB_Manager::~DB_Manager() {
@@ -105,6 +107,25 @@ void DB_Manager::maybe_expire_connection_cache() {
 
 		prev_expiration_pass_time=now;
 	}
+}
+
+Value& DB_Manager::get_status(Pool& pool, const String *source) {
+	VHash& result=*new(pool) VHash(pool);
+/*	
+	// cache
+	{
+		Array& columns=*new(pool) Array(pool, 3);
+		columns+=new(pool) String(pool, "protocol");
+		columns+=new(pool) String(pool, "time");
+		columns+=new(pool) String(pool, "times");
+		Table& table=*new(pool) Table(pool, 0, &columns, connection_cache.size());
+
+		connection_cache.for_each(add_connections_to_status_cache_table, &table);
+
+		result.hash(source).put(*new(pool) String(pool, "cache"), new(pool) VTable(pool, &table));
+	}
+*/
+	return result;
 }
 
 #endif

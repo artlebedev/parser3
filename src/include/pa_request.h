@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.107 2001/10/29 08:23:49 paf Exp $
+	$Id: pa_request.h,v 1.108 2001/11/05 10:21:26 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -19,6 +19,7 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 #include "pa_venv.h"
+#include "pa_vstatus.h"
 #include "pa_vform.h"
 #include "pa_vmath.h"
 #include "pa_vrequest.h"
@@ -158,6 +159,8 @@ public:
 	Methoded& OP;
 	/// $env:fields
 	VEnv env;
+	/// $status:fields
+	VStatus status;
 	/// $form:elements
 	VForm form;
 	/// $math:constants

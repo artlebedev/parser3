@@ -377,6 +377,14 @@ SOURCE=..\include\pa_stack.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_status_provider.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_status_provider.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_string.C
 # End Source File
 # Begin Source File

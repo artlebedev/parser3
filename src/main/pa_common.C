@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.83 2001/10/31 16:19:58 paf Exp $
+	$Id: pa_common.C,v 1.84 2001/11/05 10:21:27 paf Exp $
 */
 
 #include "pa_common.h"
@@ -442,7 +442,7 @@ bool StrEqNc(const char *s1, const char *s2, bool strict) {
 	}
 }
 
-static int isLeap(int year) {
+static bool isLeap(int year) {
     return !(
              (year % 4) || ((year % 400) && !(year % 100))
             );

@@ -5,27 +5,27 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.h,v 1.6 2001/10/29 08:23:49 paf Exp $
+	$Id: pa_db_manager.h,v 1.7 2001/11/05 10:21:26 paf Exp $
 */
 
 #ifndef PA_DB_MANAGER_H
 #define PA_DB_MANAGER_H
 
 #include "pa_config_includes.h"
-#include "pa_pool.h"
 #include "pa_hash.h"
 #include "pa_db_connection.h"
+#include "pa_status_provider.h"
 
 // defines
 
 // forwards
 
 /// sql driver manager
-class DB_Manager : public Pooled {
+class DB_Manager : public Pooled, public Status_provider {
 	friend class DB_Connection;
 public:
 
-	DB_Manager(Pool& pool);
+	DB_Manager(Pool& apool);
 	~DB_Manager();
 
 	/** 
@@ -43,11 +43,13 @@ private: // connection cache, never expires
 private:
 	time_t prev_expiration_pass_time;
 
-private: // for DB_Connection
-
 private:
 
 	Hash connection_cache;
+
+public: // Status_provider
+
+	virtual Value& get_status(Pool& pool, const String *source);
 
 };
 

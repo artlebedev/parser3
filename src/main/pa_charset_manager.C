@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_manager.C,v 1.3 2001/10/02 17:12:53 parser Exp $
+	$Id: pa_charset_manager.C,v 1.4 2001/11/05 10:21:27 paf Exp $
 */
 #include "pa_config_includes.h"
 
@@ -13,6 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 #include "pa_threads.h"
+#include "pa_vhash.h"
 
 // globals
 
@@ -22,6 +23,13 @@ Charset_manager *charset_manager;
 
 
 // Charset_manager
+
+Charset_manager::Charset_manager(Pool& apool) : Pooled(apool),
+	cache(apool) {
+
+	status_providers->put(*NEW String(pool(), "charset"), this);
+}
+
 
 Charset_connection& Charset_manager::get_connection(const String& request_name, const String& request_file_spec) {
 	Pool& pool=request_name.pool(); // request pool											   
@@ -68,4 +76,23 @@ void Charset_manager::put_connection_to_cache(const String& file_spec,
 	SYNCHRONIZED;
 
 	cache.put(file_spec, &connection);
+}
+
+Value& Charset_manager::get_status(Pool& pool, const String *source) {
+	VHash& result=*new(pool) VHash(pool);
+/*	
+	// cache
+	{
+		Array& columns=*new(pool) Array(pool, 3);
+		columns+=new(pool) String(pool, "protocol");
+		columns+=new(pool) String(pool, "time");
+		columns+=new(pool) String(pool, "times");
+		Table& table=*new(pool) Table(pool, 0, &columns, connection_cache.size());
+
+		connection_cache.for_each(add_connections_to_status_cache_table, &table);
+
+		result.hash(source).put(*new(pool) String(pool, "cache"), new(pool) VTable(pool, &table));
+	}
+*/
+	return result;
 }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.87 2001/10/29 14:13:15 paf Exp $
+	$Id: pa_globals.C,v 1.88 2001/11/05 10:21:27 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -15,6 +15,7 @@
 #include "pa_stylesheet_manager.h"
 #include "pa_charset_manager.h"
 #include "pa_sapi.h"
+#include "pa_status_provider.h"
 
 #ifdef DB2
 #include "pa_db_manager.h"
@@ -220,6 +221,10 @@ void pa_globals_init(Pool& pool) {
 	DT_ROW("\\n\\n", "<p>");
 	DT_ROW("\\n", "<br>");
 	default_typo_dict=NEW Dictionary(*default_typo_table);
+
+	// Status registration, must be initialized before all registrants
+	status_providers=NEW Status_providers(pool);
+
 
 	// SQL driver manager
  	SQL_driver_manager=NEW SQL_Driver_manager(pool);

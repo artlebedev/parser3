@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_manager.C,v 1.1 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_stylesheet_manager.C,v 1.2 2001/11/05 10:21:28 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -16,6 +16,7 @@
 #include "pa_common.h"
 #include "pa_threads.h"
 #include "pa_stack.h"
+#include "pa_vhash.h"
 
 // globals
 
@@ -122,4 +123,24 @@ void Stylesheet_manager::maybe_expire_connection_cache() {
 		prev_expiration_pass_time=now;
 	}
 }
+
+Value& Stylesheet_manager::get_status(Pool& pool, const String *source) {
+	VHash& result=*new(pool) VHash(pool);
+/*	
+	// cache
+	{
+		Array& columns=*new(pool) Array(pool, 3);
+		columns+=new(pool) String(pool, "protocol");
+		columns+=new(pool) String(pool, "time");
+		columns+=new(pool) String(pool, "times");
+		Table& table=*new(pool) Table(pool, 0, &columns, connection_cache.size());
+
+		connection_cache.for_each(add_connections_to_status_cache_table, &table);
+
+		result.hash(source).put(*new(pool) String(pool, "cache"), new(pool) VTable(pool, &table));
+	}
+*/
+	return result;
+}
+
 #endif

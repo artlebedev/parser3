@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.17 2001/10/29 17:35:50 paf Exp $
+	$Id: pa_sql_connection.h,v 1.18 2001/11/05 10:21:26 paf Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -36,7 +36,7 @@ public:
 		time_stamp(0) {
 	}
 	
-	const String& url() { return furl; }
+	const String& get_url() { return furl; }
 
 	void set_services(SQL_Driver_services *aservices) {
 		time_stamp=time(0); // they started to use at this time
@@ -45,6 +45,7 @@ public:
 	bool expired(time_t older_dies) {
 		return time_stamp<older_dies;
 	}
+	time_t get_time_stamp() { return time_stamp; }
 
 	void close() {
 		SQL_driver_manager->close_connection(furl, *this);

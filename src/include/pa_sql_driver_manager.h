@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.h,v 1.14 2001/10/29 08:23:49 paf Exp $
+	$Id: pa_sql_driver_manager.h,v 1.15 2001/11/05 10:21:27 paf Exp $
 */
 
 #ifndef PA_SQL_DRIVER_MANAGER_H
@@ -17,7 +17,7 @@
 #include "pa_hash.h"
 #include "pa_table.h"
 #include "pa_string.h"
-
+#include "pa_status_provider.h"
 
 // defines
 
@@ -29,11 +29,11 @@
 class SQL_Connection;
 
 /// sql driver manager
-class SQL_Driver_manager : public Pooled {
+class SQL_Driver_manager : public Pooled, public Status_provider {
 	friend class SQL_Connection;
 public:
 
-	SQL_Driver_manager(Pool& pool);
+	SQL_Driver_manager(Pool& apool);
 	~SQL_Driver_manager();
 
 	/** 
@@ -66,6 +66,11 @@ private:
 
 	Hash driver_cache;
 	Hash connection_cache;
+
+public: // Status_provider
+
+	virtual Value& get_status(Pool& pool, const String *source);
+
 };
 
 /// global

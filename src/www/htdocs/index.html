@@ -1,5 +1,6 @@
 @main[]
-^thashforeach3[]
+#^xchildren[]
+#^thashforeach3[]
 #^thashforeach2[]
 #^thashforeach[]
 #^thashdelete[]
@@ -51,11 +52,48 @@
 #^mail[]
 #^exec[]
 #^fori[]
-#^tconnect[]
+^tconnect[]
+^status[]
 #^xslt[]
 #^xml[]
 #^header[]
 OK
+
+@status[]
+$c[$status:sql.cache]
+<table border=1>
+<tr>
+	<td colspan=3>
+	sql.cache
+	</td>
+</tr>
+	<td>url</td>
+	<td>time</td>
+^c.menu{
+<tr>
+	<td>$c.url</td>
+	<td>$c.time</td>
+</tr>
+}
+</table>
+
+@xchildren[]
+$constructor[
+<block1 name="main_srvr" type="0" label="Основное тело" />
+<block2 name="main_srvr2" type="0" label="Основное тело" />
+]
+
+$constr[^xdoc::set{<?xml version="1.0" encoding="windows-1251" ?>
+<block-list>^untaint[as-is]{$constructor}</block-list>}]
+
+$children[$constr.documentElement.childNodes]
+^if($children){
+^for[i](1;^children._count[]){
+	$node[$children.$i]
+	$node.nodeName<br>
+}
+}
+   
 
 @thashforeach3[]
 $h[

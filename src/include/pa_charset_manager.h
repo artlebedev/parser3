@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_manager.h,v 1.2 2001/10/29 08:23:49 paf Exp $
+	$Id: pa_charset_manager.h,v 1.3 2001/11/05 10:21:26 paf Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -16,9 +16,9 @@
 #include "pa_config_includes.h"
 #include "pa_charset_connection.h"
 #include "pa_hash.h"
+#include "pa_status_provider.h"
 
 // defines
-
 
 // forwards
 
@@ -28,13 +28,11 @@ class Charset_connection;
 		maintains 
 		charset cache
 */
-class Charset_manager : public Pooled {
+class Charset_manager : public Pooled, public Status_provider {
 	friend class Charset_connection;
 public:
 
-	Charset_manager(Pool& pool) : Pooled(pool),
-		cache(pool) {
-	}
+	Charset_manager(Pool& apool);
 
 	/** 
 		check for disk update of {file_spec}
@@ -52,6 +50,11 @@ private: // cache
 private:
 
 	Hash cache;
+
+public: // Status_provider
+
+	virtual Value& get_status(Pool& pool, const String *source);
+
 };
 
 /// global
