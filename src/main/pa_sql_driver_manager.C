@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2004/03/04 12:05:16 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2004/12/23 16:47:31 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -32,8 +32,11 @@ const String& SQL_Driver_services_impl::url_without_login() const {
 	String& result=*new String;
 	result << furl->mid(0, furl->pos(':')) << "://****";
 
-	size_t at_pos=furl->pos('@');
-	if(at_pos!=STRING_NOT_FOUND)
+	size_t at_pos=0;
+	size_t new_at_pos;
+	while( (new_at_pos=furl->pos('@', at_pos+1))!=STRING_NOT_FOUND)
+		at_pos=new_at_pos;
+	if(at_pos)
 		result << furl->mid(at_pos, furl->length());
 
 	return result;
