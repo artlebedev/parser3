@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2004/03/10 10:42:11 $";
+static const char * const IDENT_XNODE_C="$Date: 2004/10/21 06:37:50 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -242,7 +242,7 @@ static void _getAttribute(Request& r, MethodParams& params) {
 	GdomeDOMString *attribute_value=
 		gdome_el_getAttribute(element, r.transcode(name).use(), &exc);
 	// write out result
-	r.write_no_lang(r.transcode(attribute_value));
+	r.write_pass_lang(r.transcode(attribute_value));
 }
 
 // void setAttribute(in DOMString name, in DOMString value) raises(DOMException);
@@ -353,7 +353,7 @@ static void _getAttributeNS(Request& r, MethodParams& params) {
 			r.transcode(namespaceURI).use(),
 			r.transcode(localName).use(), &exc);
 	// write out result
-	r.write_no_lang(r.transcode(attribute_value));
+	r.write_pass_lang(r.transcode(attribute_value));
 }
 
 // void setAttributeNS(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value) raises(DOMException);
