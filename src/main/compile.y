@@ -101,8 +101,7 @@ complex_constructor_param_body:
 |	codes__str__followed_by__excluding_sole_str_literal
 ;
 constructor_two_params_value: STRING ';' constructor_one_param_value {
-	const String *operator_or_fmtS=LA2S($1);
-	char *operator_or_fmt=operator_or_fmtS->cstr();
+	char *operator_or_fmt=LA2S($1)->cstr();
 	$$=N(PC->pool);
 	P($$, $1);/* stack: ncontext name operator_or_fmt */
 	P($$, $3); /* stack: ncontext name operator_or_fmt expr */
