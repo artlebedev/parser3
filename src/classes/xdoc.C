@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.71 2002/01/23 12:19:56 paf Exp $
+	$Id: xdoc.C,v 1.72 2002/01/23 13:07:53 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -439,11 +439,6 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	vdoc.set_document(document);
 }
 
-/**	@test  maybe needed		
-	int savedReplaceEntities=xmlSubstituteEntitiesDefault(1);
-	...
-	xmlSubstituteEntitiesDefault(savedReplaceEntities);
-*/
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);

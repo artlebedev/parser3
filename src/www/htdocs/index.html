@@ -4,8 +4,9 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-$cost_value(2500001)
-^cost_value.format{%.2f}
+$a[123456789012345678901234567890]
+$b(^a.double[])
+^b.format{%.20E}
 
 
 #^xpath[]

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.107 2002/01/23 12:19:56 paf Exp $
+	$Id: pa_globals.C,v 1.108 2002/01/23 13:07:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -211,7 +211,7 @@ void pa_globals_destroy(void *) {
 	}
 }
 
-/// @test // replace entities on load. WARNING: in sources there is a hint on one should call this for each thread xmlSubstituteEntitiesDefault(1);
+/// @test hint on one should call this for each thread xmlSubstituteEntitiesDefault(1);
 void pa_globals_init(Pool& pool) {
 	pool.register_cleanup(pa_globals_destroy, 0);
 
