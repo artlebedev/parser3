@@ -6,7 +6,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vmail.C,v 1.1 2002/06/24 14:24:03 paf Exp $
+	$Id: pa_vmail.C,v 1.2 2002/06/24 14:27:42 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -275,8 +275,6 @@ static void parse(GMimeStream *stream, Hash& received) {
 
 
 void VMail::fill_received(Request& request) {
-int a=timezone;
-int b=sign(timezone);
 	// store letter to received
 #ifdef WITH_MAIL_RECEIVE
 	if(request.info.mail_received) {
