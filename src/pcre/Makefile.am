@@ -1,4 +1,4 @@
-#  $Id: Makefile.am,v 1.8 2001/05/21 08:16:13 parser Exp $
+#  $Id: Makefile.am,v 1.9 2001/05/21 08:16:44 parser Exp $
 
 bin_PROGRAMS = dftables pcre_parser_ctype
 dftables_SOURCES = dftables.c 
@@ -11,6 +11,8 @@ CHARTABLES_C=chartables.c
 
 $(CHARTABLES_C):   dftables
 	./dftables >$(CHARTABLES_C)
+
+pcre.c: $(CHARTABLES_C)
 
 noinst_LIBRARIES = libpcre.a
 libpcre_a_SOURCES = get.c pcre.c study.c maketables.c
