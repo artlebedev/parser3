@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.h,v 1.3 2001/10/25 13:17:53 paf Exp $
+	$Id: pa_db_manager.h,v 1.4 2001/10/26 13:48:18 paf Exp $
 */
 
 #ifndef PA_DB_MANAGER_H
@@ -14,12 +14,11 @@
 #include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_hash.h"
-
+#include "pa_db_connection.h"
+\
 // defines
 
 // forwards
-
-class DB_Connection;
 
 /// sql driver manager
 class DB_Manager : public Pooled {
@@ -34,7 +33,7 @@ public:
 		using driver dynamic library found in table, if not loaded yet
 		checks driver version
 	*/
-	DB_Connection& get_connection(const String& db_home, const String& request_origin);
+	DB_Connection_ptr get_connection_ptr(const String& db_home, const String *source);
 
 private: // connection cache, never expires
 
@@ -45,9 +44,6 @@ private:
 	time_t prev_expiration_pass_time;
 
 private: // for DB_Connection
-
-	/// caches connection
-	void close_connection(const String& db_home, DB_Connection& connection);
 
 private:
 

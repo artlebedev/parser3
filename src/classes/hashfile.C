@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.10 2001/10/26 07:06:34 paf Exp $
+	$Id: hashfile.C,v 1.11 2001/10/26 13:48:18 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -37,13 +37,9 @@ static void _open(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VHashfile& self=*static_cast<VHashfile *>(r.self);
 	
-	// db_home & file_name
-	const String &db_home=params->as_string(0, "DB_HOME must be string");
-	const String &file_name=params->as_string(1, "filename must be string");
-
-	self.set_table(
-		DB_manager->get_connection(db_home, method_name)
-		.get_table(file_name, method_name)
+	self.assign(
+		params->as_string(0, "DB_HOME must be string"), 
+		params->as_string(1, "filename must be string")
 	);
 }
 
@@ -54,8 +50,8 @@ static void _clear(Request& r, const String& method_name, MethodParams *params) 
 	const String &db_home=params->as_string(0, "DB_HOME must be string");
 	const String &file_name=params->as_string(1, "filename must be string");
 
-	DB_manager->get_connection(db_home, method_name)
-		.clear_dbfile(file_name);
+	DB_manager->get_connection_ptr(db_home, &method_name)->
+		clear_dbfile(file_name);
 }
 
 
@@ -67,10 +63,10 @@ static void _transaction(Request& r, const String& method_name, MethodParams *pa
 	Value& body_code=params->as_junction(0, "body must be code");
 
 	// table
-	DB_Table& table=self.get_table(&method_name);
+	DB_Table_ptr table_ptr=self.get_table_ptr(&method_name);
 
 	// transaction
-	DB_Transaction transaction(table);
+	DB_Transaction transaction(pool, *table_ptr, self.current_transaction);
 
 	// execute body
 	try {
@@ -101,22 +97,19 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	double expires=params->as_double(1, "expires must be number", r);
 	Value& body_code=params->as_junction(2, "body must be code");
 
-	// table
-	DB_Table& table=self.get_table(&method_name);
-
 	// transaction
-	DB_Transaction transaction(table);
+	DB_Transaction transaction(pool, *self.get_table_ptr(&method_name), self.current_transaction);
 
 	// execute body
 	try {
 		if(expires) { // 'expires' specified? try cached copy...
-			if(String *cached_body=table.get(key)) { // have cached copy?
+			if(String *cached_body=transaction.get(key)) { // have cached copy?
 				r.write_assign_lang(*cached_body);
 				// happy with it
 				return;
 			}
 		} else // 'expires'=0, forget cached copy
-			table.remove(key);
+			transaction.remove(key);
 
 		// save
 		Autosave_marked_to_cancel_cache saved(self);
@@ -127,7 +120,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 		
 		// put it to cache if 'expires' specified & never called ^delete[]
 		if(expires && !self.marked_to_cancel_cache())
-			table.put(key, processed_body.as_string(), time(0)+(time_t)expires);
+			transaction.put(key, processed_body.as_string(), time(0)+(time_t)expires);
 	} catch(...) { // process/commit problem
 		transaction.mark_to_rollback();
 		
@@ -144,10 +137,8 @@ static void _delete(Request& r, const String& method_name, MethodParams *params)
 	else {
 		// key
 		const String &key=params->as_string(0, "key must be string");
-		// table
-		DB_Table& table=self.get_table(&method_name);
 		// remove
-		table.remove(key);
+		self.get_table_ptr(&method_name)->remove(self.current_transaction, key);
 	}
 }
 

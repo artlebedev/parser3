@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhashfile.h,v 1.8 2001/10/25 13:17:54 paf Exp $
+	$Id: pa_vhashfile.h,v 1.9 2001/10/26 13:48:19 paf Exp $
 */
 
 #ifndef PA_VHASHFILE_H
@@ -15,6 +15,7 @@
 #include "pa_hash.h"
 #include "pa_vint.h"
 #include "pa_db_table.h"
+#include "pa_db_manager.h"
 
 // externs
 
@@ -59,37 +60,43 @@ public: // value
 public: // usage
 
 	VHashfile(Pool& apool) : VStateless_class(apool, hashfile_base_class),
-		ftable(0), fmarked_to_cancel_cache(false) {
-		register_cleanup(VHashfile_cleanup, this);
+		fdb_home(0), ffile_name(0), 
+		current_transaction(0), 
+		fmarked_to_cancel_cache(false) {
 	}
-private:
-	void cleanup() {
-		if(ftable)
-			ftable->close();  // cache it
-	}
-public:
 
-	void set_table(DB_Table& atable) { ftable=&atable; }
-	DB_Table& get_table(const String *source) const { 
-		if(!ftable)
+	void assign(const String& adb_home, const String& afile_name) { 
+		fdb_home=&adb_home;
+		ffile_name=&afile_name;
+	}
+	DB_Table_ptr get_table_ptr(const String *source) {
+		if(!fdb_home)
 			throw Exception(0, 0,
 				source,
 				"can not be applied to uninitialized instance");
 
-		return *ftable;
+		return 
+			DB_manager->
+			get_connection_ptr(*fdb_home, source)->
+			get_table_ptr(*ffile_name, source);
 	}
 
 	void mark_to_cancel_cache() { fmarked_to_cancel_cache=true; }
 	bool marked_to_cancel_cache() { return fmarked_to_cancel_cache; }
 
+public:
+
+	DB_Transaction *current_transaction;
+
 private:
 
-	Value *get_field(const String& name);
-	void put_field(const String& name, Value *value);
+	Value *get_field(const String& aname);
+	void put_field(const String& aname, Value *avalue);
 
 private:
 
-	DB_Table *ftable;
+	const String *fdb_home;
+	const String *ffile_name;
 	bool fmarked_to_cancel_cache;
 
 };

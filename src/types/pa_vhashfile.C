@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vhashfile.C,v 1.10 2001/10/25 13:17:54 paf Exp $
+	$Id: pa_vhashfile.C,v 1.11 2001/10/26 13:48:19 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -17,11 +17,6 @@
 #include "pa_globals.h"
 
 // methods
-
-void VHashfile_cleanup(void *vhashfile) {
-	//_asm int 3;
-	static_cast<VHashfile *>(vhashfile)->cleanup();
-}
 
 void VHashfile::put_field(const String& aname, Value *avalue) {
 	time_t time_to_die=0;
@@ -45,24 +40,25 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 	} else
 		value_string=&avalue->as_string();
 
-	get_table(&aname).put(aname, *value_string, time_to_die);
+	get_table_ptr(&aname)->put(current_transaction, aname, *value_string, time_to_die);
 }
 
-Value *VHashfile::get_field(const String& name) {
-	if(String *string=get_table(&name).get(name))
+Value *VHashfile::get_field(const String& aname) {
+	if(String *string=get_table_ptr(&aname)->get(current_transaction, pool(), aname))
 		return NEW VString(*string);
 	else
 		return 0;
 }
 
 Hash *VHashfile::get_hash(const String *source) {
+	DB_Cursor cursor(*get_table_ptr(source), current_transaction, source);
+
 	Hash& result=*NEW Hash(pool());
-	DB_Cursor cursor(get_table(source), source);
 
 	while(true) {
 		String *key;
 		String *data;
-		if(!cursor.get(key, data, DB_NEXT))
+		if(!cursor.get(pool(), key, data, DB_NEXT))
 			break;
 
 		if(key) // not expired

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.41 2001/10/05 08:20:26 parser Exp $
+	$Id: pa_hash.C,v 1.42 2001/10/26 13:48:19 paf Exp $
 */
 
 /*
@@ -162,6 +162,14 @@ void Hash::merge_dont_replace(const Hash& src) {
 }
 
 void Hash::for_each(For_each_func func, void *info) const {
+	Pair **ref=refs;
+	for(int index=0; index<allocated; index++)
+		for(Pair *pair=*ref++; pair; pair=pair->link)
+			if(pair->value)
+				(*func)(pair->key, pair->value, info);
+}
+
+void Hash::for_each(For_each_func_refed func, void *info) const {
 	Pair **ref=refs;
 	for(int index=0; index<allocated; index++)
 		for(Pair *pair=*ref++; pair; pair=pair->link)
