@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.11 2001/02/21 11:19:25 paf Exp $
+  $Id: parser.C,v 1.12 2001/02/21 15:00:08 paf Exp $
 */
 
 #include <stdio.h>
@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
 				if(!method_main)
 					request.exception().raise(0,0,
 						&class_RUN->name(),
-						"no 'main' method");
+						"no 'main' method in class");
 
 				Array& code=method_main->code;
 				execute(pool, code);
@@ -194,9 +194,12 @@ int main(int argc, char *argv[]) {
 			const String *problem_source=e.problem_source();
 			if(problem_source) {
 				const Origin& origin=problem_source->origin();
-				printf("  '%s' [%s:%d]\n", 
-					problem_source->cstr(),
-					origin.file, origin.line);
+				printf("  '%s'\n", 
+					problem_source->cstr());
+				if(origin.file)
+					printf(" [%s:%d]",
+						origin.file, origin.line);
+				printf("\n");
 			}
 		}
 	} else {

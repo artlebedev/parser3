@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.6 2001/02/21 11:13:16 paf Exp $
+  $Id: compile_tools.h,v 1.7 2001/02/21 15:00:02 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -12,6 +12,10 @@
 
 enum lexical_state {
 	LS_USER,
+	LS_DEF_NAME,
+	LS_DEF_PARAMS,
+	LS_DEF_LOCALS,
+	LS_DEF_COMMENT,
 	LS_VAR_NAME_SIMPLE,
 	LS_VAR_NAME_CURLY,
 	LS_VAR_ROUND,
@@ -79,10 +83,10 @@ inline void P(Array/*<op>*/ *result, Array *code_array) {
 */
 Array *L(String *string);
 /* Literal Array to(2) String // return string value from literal array OP+string array */
-const String *LA2S(Array *literal_string_array);
+String *LA2S(Array *literal_string_array, int offset=0);
 
 
-void push_LS(struct parse_control *pc);
+void push_LS(struct parse_control *pc, lexical_state new_state);
 void pop_LS(struct parse_control *pc);
 
 #endif

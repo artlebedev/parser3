@@ -32,17 +32,48 @@ int yylex(YYSTYPE *lvalp, void *pc);
 
 %%
 
-result: input { 
+all:
+	one_big_piece {
 	String& name_main=*new(pool) String(pool);
 	name_main.APPEND_CONST("main");
 	Array& param_names=*new(pool) Array(pool);
 	Array& local_names=*new(pool) Array(pool);
 	Method *method=new(pool) Method(pool, name_main, param_names, local_names, *$1);
 	*PC->methods+=method;
+}
+|	methods;
+
+methods: method | methods method;
+one_big_piece: maybe_codes;
+
+method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' 
+			maybe_codes {
+	const String *name=LA2S($2);
+
+	YYSTYPE params_names_code=$3;
+	Array& params_names=*new(pool) Array(pool);
+	for(int i=0; i<params_names_code->size(); i+=2)
+		params_names+=LA2S(params_names_code, i);
+
+	YYSTYPE locals_names_code=$4;
+	Array& locals_names=*new(pool) Array(pool);
+	for(int i=0; i<locals_names_code->size(); i+=2)
+		locals_names+=LA2S(locals_names_code, i);
+
+	Method *method=new(pool) Method(pool, *name, params_names, locals_names, *$7);
+	*PC->methods+=method;
 };
-input: empty | codes;
+
+maybe_bracketed_strings: empty | bracketed_maybe_strings;
+bracketed_maybe_strings: '[' maybe_strings ']' {$$=$2};
+maybe_strings: empty | strings;
+strings: STRING | strings ';' STRING { $$=$1; P($$, $3) };
+
+maybe_comment: empty | STRING;
 
 /* codes */
+
+maybe_codes: empty | codes;
 
 codes: code | codes code { 
 	$$=$1; 
@@ -71,7 +102,7 @@ name_without_curly_rdive: name_rdive {
 	$$=N(pool); OP($$, OP_WITH_READ); /* stack: starting context */
 	P($$, $1); /* diving code; stack: current context */
 };
-name_rdive: name_advance2 | name_path name_advance2 { $$=$1; P($$, $2) }
+name_rdive: name_advance2 | name_path name_advance2 { $$=$1; P($$, $2) };
 
 /* put */
 
@@ -164,7 +195,7 @@ store_param_part: constructor_one_param_value {
 	$$=$1;
 	OP($$, OP_STORE_PARAM);
 }
-store_curly_param: '{' input '}' {
+store_curly_param: '{' maybe_codes '}' {
 	$$=N(pool); 
 	OP($$, OP_CODE_ARRAY);
 	AA($$, $2);
@@ -295,7 +326,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 		if(c=='\n') {
 			PC->line++;
 			PC->col=0;
-		}
+		} else
 			PC->col++;
 
 		/* escaping: ^^ ^$ ^; ^) ^} ^( ^{ */
@@ -317,20 +348,81 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			}
 		}
 		switch(PC->ls) {
+
+		// USER'S = NOT OURS
 		case LS_USER:
 			if(c=='$') {
-				push_LS(PC);  PC->ls=LS_VAR_NAME_SIMPLE;
+				push_LS(PC, LS_VAR_NAME_SIMPLE);
 				result=c;
 				goto break2;
 			}
 			if(c=='^') {
-				push_LS(PC);  PC->ls=LS_METHOD_NAME;
+				push_LS(PC, LS_METHOD_NAME);
 				result=c;
+				goto break2;
+			}
+			if(c=='@' && PC->col==0+1) {
+				result=c;
+				push_LS(PC, LS_DEF_NAME);
+				goto break2;
+			}
+			
+			break;
+
+		// METHOD DEFINITION
+		case LS_DEF_NAME:
+			if(c=='[') {
+				result=c;
+				PC->ls=LS_DEF_PARAMS;
+				goto break2;
+			}
+			if(c=='\n') { // wrong. bailing out
+				result=c;
+				pop_LS(PC);
+				goto break2;
+			}
+			break;
+		case LS_DEF_PARAMS:
+			if(c==';') {
+				result=c;
+				goto break2;
+			}
+			if(c==']') {
+				result=c;
+				PC->ls=*PC->source=='['?LS_DEF_LOCALS:LS_DEF_COMMENT;
+				goto break2;
+			}
+			if(c=='\n') { // wrong. bailing out
+				result=c;
+				pop_LS(PC);
+				goto break2;
+			}
+			break;
+		case LS_DEF_LOCALS:
+			if(c=='[' || c==';') {
+				result=c;
+				goto break2;
+			}
+			if(c==']') {
+				result=c;
+				PC->ls=LS_DEF_COMMENT;
+				goto break2;
+			}
+			if(c=='\n') { // wrong. bailing out
+				result=c;
+				pop_LS(PC);
+				goto break2;
+			}
+			break;
+		case LS_DEF_COMMENT:
+			if(c=='\n') {
+				result=c;
+				pop_LS(PC);
 				goto break2;
 			}
 			break;
 
-		/* VAR */
+		// VARIABLE GET/PUT/WITH
 		case LS_VAR_NAME_SIMPLE:
 			if(c==0 || 
 				c==' '|| c=='\t' || c=='\n' || 
@@ -375,12 +467,12 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			break;
 		case LS_VAR_ROUND:
 			if(c=='$') {
-				push_LS(PC);  PC->ls=LS_VAR_NAME_SIMPLE;
+				push_LS(PC, LS_VAR_NAME_SIMPLE);
 				result=c;
 				goto break2;
 			}
 			if(c=='^') {
-				push_LS(PC);  PC->ls=LS_METHOD_NAME;
+				push_LS(PC, LS_METHOD_NAME);
 				result=c;
 				goto break2;
 			}
@@ -400,12 +492,12 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			break;
 		case LS_VAR_CURLY:
 			if(c=='$') {
-				push_LS(PC);  PC->ls=LS_VAR_NAME_SIMPLE;
+				push_LS(PC, LS_VAR_NAME_SIMPLE);
 				result=c;
 				goto break2;
 			}
 			if(c=='^') {
-				push_LS(PC);  PC->ls=LS_METHOD_NAME;
+				push_LS(PC, LS_METHOD_NAME);
 				result=c;
 				goto break2;
 			}
@@ -419,7 +511,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				lexical_brackets_nestage++;
 			break;
 
-		/* METHOD */
+		// METHOD CALL
 		case LS_METHOD_NAME:
 			if(c=='(') {
 				PC->ls=LS_METHOD_ROUND;
@@ -440,12 +532,12 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			break;
 		case LS_METHOD_ROUND:
 			if(c=='$') {
-				push_LS(PC);  PC->ls=LS_VAR_NAME_SIMPLE;
+				push_LS(PC, LS_VAR_NAME_SIMPLE);
 				result=c;
 				goto break2;
 			}
 			if(c=='^') {
-				push_LS(PC);  PC->ls=LS_METHOD_NAME;
+				push_LS(PC, LS_METHOD_NAME);
 				result=c;
 				goto break2;
 			}
@@ -464,12 +556,12 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			break;
 		case LS_METHOD_CURLY:
 			if(c=='$') {
-				push_LS(PC);  PC->ls=LS_VAR_NAME_SIMPLE;
+				push_LS(PC, LS_VAR_NAME_SIMPLE);
 				result=c;
 				goto break2;
 			}
 			if(c=='^') {
-				push_LS(PC);  PC->ls=LS_METHOD_NAME;
+				push_LS(PC, LS_METHOD_NAME);
 				result=c;
 				goto break2;
 			}
@@ -512,13 +604,16 @@ break2:
 		return result;
 	else {
 		PC->pending_state=result;
-		/* append last piece */
+		// strip last \n before LS_DEF_NAME or EOF
+		if((c=='@' || c==0) && end[-1]=='\n')
+			end--;
+		// append last piece
 		PC->string->APPEND(begin, end-begin, PC->file, begin_line/*, start_col*/);
-		/* create STRING value: array of OP_STRING+string */
+		// create STRING value: array of OP_STRING+string
 		*lvalp=L(PC->string);
-		/* new pieces storage */
+		// new pieces storage
 		PC->string=new(pool) String(pool);
-		/* go */
+		// go!
 		return STRING;
 	}
 }

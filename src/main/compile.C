@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.7 2001/02/21 11:13:16 paf Exp $
+  $Id: compile.C,v 1.8 2001/02/21 15:00:02 paf Exp $
 */
 
 #include "pa_string.h"
@@ -39,10 +39,16 @@ Array *real_compile(COMPILE_PARAMS) {
 	
 	// parse! 
 	yydebug=1;
-	if(yyparse(&pc)) // error?
+	if(yyparse(&pc)) {// error?
+		if(pc.col==1) {
+			// step back from last char.  -1 col means EOL
+			pc.line--;
+			pc.col=-1;
+		}
 		request.exception().raise(0,0,
 			0,
-			"%s @%s[%d:%d]", pc.error, file, 1+pc.line, pc.col/*already+1*/);
+			"%s [%s:%d:%d]", pc.error, file, 1+pc.line, pc.col);
+	}
 
 	// result
 	return pc.methods;

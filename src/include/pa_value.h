@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.10 2001/02/21 11:18:57 paf Exp $
+  $Id: pa_value.h,v 1.11 2001/02/21 14:59:41 paf Exp $
 */
 
 /*
@@ -23,21 +23,21 @@ class WContext;
 
 class Method : public Pooled {
 public:
-	String& name;
-	Array& param_names;
-	Array& local_names;
+	const String& name;
+	Array& params_names;
+	Array& locals_names;
 	Array& code;
 
 	Method(
 		Pool& apool,
-		String& aname,
-		Array& aparam_names,
-		Array& alocal_names,
+		const String& aname,
+		Array& aparams_names,
+		Array& alocals_names,
 		Array& acode) : 
 		Pooled(apool),
 		name(aname),
-		param_names(aparam_names),
-		local_names(alocal_names),
+		params_names(aparams_names),
+		locals_names(alocals_names),
 		code(acode) {
 	}
 };

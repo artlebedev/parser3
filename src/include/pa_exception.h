@@ -1,5 +1,5 @@
 /*
-  $Id: pa_exception.h,v 1.3 2001/01/30 13:43:42 paf Exp $
+  $Id: pa_exception.h,v 1.4 2001/02/21 14:59:41 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -35,8 +35,8 @@ private:
 	char fcomment[MAX_STRING];
 };
 
+#define EXCEPTION_TRY(e) (setjmp((e).mark)==0)
 // usage:
 //   if(EXCEPTION_TRY(e)) { ...; if(?) e.raise(?); ...; } else { catch-code }
-#define EXCEPTION_TRY(e) (setjmp((e).mark)==0)
 
 #endif
