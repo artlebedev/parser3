@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.54 2001/05/07 15:31:50 paf Exp $
+	$Id: pa_value.h,v 1.55 2001/05/08 05:50:04 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -337,9 +337,8 @@ public:
 	}
 
 	/// call this before invoking to ensure proper actual numbered params count
-	void check_actual_numbered_params(
+	void check_actual_numbered_params(Pool& pool,
 		Value& self, const String& actual_name, Array *actual_numbered_params) const {
-		Pool& pool=self.pool();
 
 		int actual_count=actual_numbered_params?actual_numbered_params->size():0;
 		if(actual_count<min_numbered_params_count) // not proper count? bark

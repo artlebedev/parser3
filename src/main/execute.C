@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.153 2001/05/07 14:09:04 paf Exp $
+	$Id: execute.C,v 1.154 2001/05/08 05:50:01 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -402,7 +402,7 @@ void Request::execute(const Array& ops) {
 						method.call_type==Method::CT_ANY ||
 						method.call_type==call_type) // allowed call type?
 						if(method.native_code) { // native code?
-							method.check_actual_numbered_params(
+							method.check_actual_numbered_params(pool(),
 								frame->junction.self, 
 								frame->name(), frame->numbered_params());
 							(*method.native_code)(

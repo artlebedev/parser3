@@ -1,8 +1,9 @@
-@t[a]
--${a}-
-@end
-
 @main[]
+$filelist[^table:dir[]]
+<hr>
+$path[/news/tululu/]
+^path.flip[]
+<hr>
 $branches[^table:set{name	val
 index.cgihtml	123
 }]
@@ -65,3 +66,8 @@ ${comment}.
 @auto_test[]
 ^BASE.auto_test[]
 <li>${request:uri}!
+
+@t[a]
+-${a}-
+@end
+
