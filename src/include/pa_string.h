@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.4 2001/01/27 10:02:59 paf Exp $
+  $Id: pa_string.h,v 1.5 2001/01/27 12:04:53 paf Exp $
 */
 
 /*
@@ -37,8 +37,6 @@ private:
 	// the pool I'm allocated on
 	Pool *pool;
 
-	// last chank allocated count cache
-	int curr_chunk_rows;
 	struct Chunk {
 		// the number of rows per chunk
 		int count;
@@ -62,11 +60,21 @@ private:
 	// of the link to the next chunk to allocate
 	Chunk::Row *link_row;
 
+private:
+	// last chank allocated count
+	int curr_chunk_rows;
+
+	// string size
+	size_t fsize;
+
+	// used rows in all chunks
+	int fused_rows;
+
+private:
 	// new&constructors made private to enforce factory manufacturing at pool
 	void *operator new(size_t size, Pool *apool);
 
 	void construct(Pool *apool);
-	String() { /* never */}
 	String(Pool *apool) { 
 		construct(apool); 
 	}
@@ -79,16 +87,19 @@ private:
 		return append_here == link_row;
 	}
 	void expand();
-	int used_rows();
+
+private: //disabled
+
+	String& operator = (String& src) { return *this; }
 
 public:
 
 	String(String& src);
-	size_t size();
+	size_t size() { return fsize; }
+	int used_rows() { return fused_rows; }
 	char *c_str();
 	String& operator += (char *src);
 	bool operator == (String& src);
-	String& operator = (String& src);
 
 	uint hash_code();
 };

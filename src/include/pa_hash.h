@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.1 2001/01/27 10:02:59 paf Exp $
+  $Id: pa_hash.h,v 1.2 2001/01/27 12:04:53 paf Exp $
 */
 
 /*
@@ -52,19 +52,24 @@ private:
 
 	// main storage
 	class Pair {
+		friend Hash;
+
 		uint code;
 		Key key;
 		Value *value;
 		Pair *link;
-		Pair(uint acode, Key& akey, Value *avalue) :
+		
+		void *operator new(size_t size, Pool *apool);
+
+		Pair(uint acode, Key& akey, Value *avalue, Pair *alink) :
 			code(acode),
 			key(akey),
 			value(avalue),
-			link(0) {}
-	} **pair_refs;
+			link(alink) {}
+	} **refs;
 
 	// new&constructors made private to enforce factory manufacturing at pool
-	static void *operator new(size_t size, Pool *apool);
+	void *operator new(size_t size, Pool *apool);
 
 	Hash(Pool *apool);
 
@@ -75,7 +80,6 @@ private:
 
 public:
 
-	Hash() { /* never */ }
 	static uint generic_code(uint aresult, char *start, uint size);
 	void put(Key& key, Value *value);
 	Value* get(Key& key);
