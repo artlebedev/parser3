@@ -1,0 +1,122 @@
+void process(Pool& pool, 
+			 Value& self,
+			 RContext& rcontext, WContext& wcontext, 
+			 StringIterator& code, char char_to_stop_before) {
+	
+	// $ on code?
+	process_dollar(pool, rcontext, wcontext, code, char_to_stop_before);
+
+	// ^ on code?
+	process_bird(pool, rcontext, wcontext, code, char_to_stop_before);
+}
+
+void process_dollar(Pool& pool, 
+					Value& THIS,
+					RContext& rcontext, WContext& wcontext, 
+					StringIterator& iter, char char_to_stop_before) {
+
+	// $name.field.subfield -- read
+	// $name.field.subfield(constructor code) -- construct
+	// $name.field.subfield[usage code & if none existed autoconstructed as VHash] -- use OR auto-VHash construct
+	
+	Array/*<String&>*/ names(pool);  // what.they.refer.to left-to-right list
+	char names_ended_before; // the char after long name
+	get_names(
+		iter, " ([",
+		&names, &names_ended_before); // must return count()>0
+
+	bool read_mode=name_ended_before==' ';
+	Value *context=read_mode?rcontext:wcontext;
+	
+	if(read_mode) {
+		for(int i=0; i<names.count(); i++) {
+			context=context->get_element(static_cast<Value *>(names.get[i]));
+			if(!context) // no such object field, nothing bad, just ignore that
+				return;
+		}
+		wcontext.write(context);
+	} else { // write mode
+		iter++; // skip '(' '['
+
+		bool construct_mode=names_ended_before=='(';
+
+		int steps=names.count();
+		if(construct_mode)
+			steps--;
+		for(int i=0; i<steps; i++) {
+			String& name=static_cast<String&>(names.get[i]);
+			Value *next_current=context->get_element(name);
+			if(next_current)
+				next_current=context->put_element(name, new(pool) VHash(pool));
+			context=new_current;
+		}
+
+		if(construct_mode) {  
+			// pure side effect, no wcontext.write here
+			String& name=static_cast<String&>(names.get[steps]);
+			WContext local_wcontext(pool /* empty */);
+			process(pool, rcontext, local_wcontext, iter, ')');
+			context->put_element(name, local_wcontext.value());
+		} else { // =='['
+			WContext local_context(pool, context);
+			process(pool, local_context, local_context, iter, ']');
+			wcontext.write(local_context);
+		}
+		
+		iter++; // skip ')' ']'
+	}
+}
+
+void process_bird(Pool& pool, 
+				  Value& self,
+				  RContext& rcontext, WContext& wcontext, 
+				  StringIterator& iter, char char_to_stop_before) {
+	
+	// ^name.field.subfield.method[..] -- plain call
+	// ^name.field.subfield.method_ref[..] -- method ref call, when .get_method()!=0
+	
+	Array/*<String&>*/ names(pool);  // what.they.refer.to left-to-right list
+	char names_ended_before; // the char after long name
+	get_names(
+		iter, "[",
+		&names, &names_ended_before); // must return count()>0
+
+	Value *context=rcontext;
+	iter++; // skip '['
+
+	Value *local_self=context;
+	int steps=names.count()-1;
+	for(int i=0; i<steps; i++) {
+		String& name=static_cast<String&>(names.get[i]);
+		context=(local_self=context)->get_element(name);
+		if(!context) // no such object field, sad story: can't call method of void
+			pool.exception().raise(name, "call: to void.method");
+	}
+	
+	String& name=static_cast<String&>(names.get[steps]);
+	// first we're trying to locate method with that 'name'
+	Method *method=context.get_method(name);
+	if(!method) { // no such method: try to locate method ref field
+		Value *value=context.get_element(name);
+		if(!value) // failed: no element of that 'name'
+			pool.exception().raise(name, "call: no method field found");
+		method=value->get_method();
+		if(!method) // failed: that field wasn't method_ref
+			pool.exception().raise(name, "call: this field is not a method reference");
+		local_self=value->get_self();
+	}
+
+
+	Array/*<String&>*/ param_values(pool);
+	get_params(
+		iter, "]",
+		&param_values);
+	iter++; // skip ']'
+
+	Method_this_n_params local_rcontext(pool, 
+		local_self,
+		method->param_names, param_values);
+	WContext local_wcontext(pool /* empty */);
+	process(pool, local_rcontext, local_wcontext, iter, ']');
+	wcontext.write(local_wcontext);
+}

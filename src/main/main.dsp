@@ -87,6 +87,19 @@ LIB32=link.exe -lib
 # PROP Default_Filter "C;cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\core.C
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_array.C
 # End Source File
 # Begin Source File
@@ -100,6 +113,10 @@ SOURCE=.\pa_exception.C
 # Begin Source File
 
 SOURCE=.\pa_hash.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_pool.C
 # End Source File
 # Begin Source File
 
