@@ -1,7 +1,133 @@
+2002-12-27  paf
+	* src/doc/aliased.dox 1.5:
+	* src/doc/index.dox 1.4:
+	* src/doc/module.dox 1.4:
+	* src/doc/pooled.dox 1.4:
+	* www/htdocs/index.html 1.207:
+		removed outdated parts, made links to language docs
+
+	* src/include/pa_version.h [release_3_0_0007] 1.7.10.1:
+		0007
+
+	* src/include/pa_config_auto.h.in 1.36:
+		comment
+
+2002-12-26  paf
+	* INSTALL 1.29:
+	* src/include/pa_config_auto.h.in 1.35:
+	* src/main/pa_common.C 1.140:
+	* src/main/pa_exec.C 1.47:
+		changing SAFE_MODE politics
+
+	* src/classes/file.C 1.106:
+		file:fullpath[a.gif] when document root did not contain
+		trailing / fixed.
+
+2002-12-25  paf
+	* src/main/pa_globals.C 1.147:
+		optimized-as-is
+
+	* src/main/pa_globals.C 1.148:
+		optimized-xml
+
+2002-12-24  paf
+	* src/main/pa_common.C 1.139:
+	* src/main/pa_pool.C 1.58:
+		pool::copy on zero size|ptr fixed [were really called with zero
+		size when .html?a=&b=]
+
+	* src/main/pa_exec.C 1.46:
+	* www/htdocs/index.html 1.206:
+		fork/pipe error now [old always-pipe-error fixed]
+
+	* src/classes/mail.C 1.86:
+		$MAIL in @conf now invalid when configured with --with-sendmail
+
+2002-12-23  paf
+	* src/types/pa_vcookie.C 1.54:
+		cookie:field[put value] fixed [were ignoring parameters & were
+		storing only string with default expires
+
+	* src/main/pa_charset.C 1.32:
+		From: "Victor Fedoseev" <vvf_ru@mail.ru>
+		To: "Alexandr Petrosian (PAF)" <PAF@design.ru>
+		Sent: Monday, December 23, 2002 4:22 AM
+		Subject: bug â Charset::transcode_buf2xchar
+
+2002-12-20  paf
+	* src/targets/cgi/parser3.C 1.215:
+		removed last \n appending in non-win32 non-cgi [script] runs
+
+2002-12-19  paf
+	* operators.txt 1.107:
+	* src/include/pa_globals.h 1.99:
+	* src/include/pa_request.h 1.159:
+	* src/main/pa_globals.C 1.146:
+	* src/main/pa_request.C 1.244:
+	* www/htdocs/index.html 1.205:
+		$response:download
+
+	* src/classes/mail.C 1.85:
+		'to' check bugfix [now checked only on ms compiler [win32]].
+
+	* INSTALL 1.28:
+		--without-iconv recommended [it crashes on some systems [tested on elik]]
+		moreover, it's not needed there [parser registers charsets itself]
+
+	* INSTALL 1.27:
+		-without-iconv recommended [it crashes on some systems [tested
+		on elik]]
+
+2002-12-18  paf
+	* src/classes/xdoc.C 1.107:
+		doc->URL on xdoc.load set correctly now
+
+2002-12-17  paf
+	* src/targets/cgi/parser3.C [release_3_0_0006] 1.213.2.1:
+		1. on win32 in die: abort() reverted to exit(1)
+		2. more flexible iilegal call check
+
+	* src/targets/cgi/parser3.C 1.214:
+		merged die&iis changes
+
+2002-12-16  paf
+	* src/main/untaint.C 1.114:
+		filespec russian small 'r' changed to latin 'p' bug fix
+
+	* Makefile.in 1.38:
+		ltmain.sh silly required for stupid automake added
+
+	* ltmain.sh 1.3:
+		*** empty log message ***
+
+	* ltmain.sh [release_3_0_0006] 1.2.2.1:
+		some automakes silly insist on having this handy
+
 2002-12-15  paf
+	* src/main/untaint.C 1.113:
+		filespec russian small 'r' changed to latin 'p'
+
+	* src/main/pa_common.C [release_3_0_0006] 1.137.2.1:
+		ftruncate having checked
+
+	* src/classes/smtp/smtp.C [release_3_0_0006] 1.18.2.1:
+	* src/main/compile.C [release_3_0_0006] 1.67.6.1:
+		removed warning
+
 	* configure.in [release_3_0_0006] 1.52.2.1:
 	* src/include/pa_version.h [release_3_0_0006] 1.7.8.1:
 		new version
+
+	* configure.in [release_3_0_0006] 1.52.2.2:
+	* src/include/pa_config_auto.h.in [release_3_0_0006] 1.33.2.1:
+		*** empty log message ***
+
+	* configure.in 1.53:
+	* src/classes/smtp/smtp.C 1.19:
+	* src/include/pa_config_auto.h.in 1.34:
+	* src/main/compile.C 1.68:
+	* src/main/pa_common.C 1.138:
+		merged small changes from branch 6 to HEAD
 
 2002-12-14  paf
 	* src/sql/pa_sql_driver.h 1.33:
@@ -2216,7 +2342,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2002/12/15 13:32:48 $
+		$Date: 2002/12/27 14:43:27 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -9588,7 +9714,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.20 2002/12/15 13:32:48 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.20.2.1 2002/12/27 14:43:27 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -9631,7 +9757,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.20 2002/12/15 13:32:48 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.20.2.1 2002/12/27 14:43:27 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -15077,7 +15203,7 @@
 	* src/targets/parser.C 1.3:
 	* src/targets/parser.dsp 1.2:
 	* src/targets/parser.dsp 1.3:
-		$Id: ChangeLog,v 1.20 2002/12/15 13:32:48 paf Exp $ check
+		$Id: ChangeLog,v 1.20.2.1 2002/12/27 14:43:27 paf Exp $ check
 
 	* src/targets/parser.C 1.2:
 		$id$ check
