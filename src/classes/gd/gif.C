@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.17 2001/10/16 07:53:31 parser Exp $
+	$Id: gif.C,v 1.18 2001/10/16 09:59:23 parser Exp $
 
 	based on: gd
 
@@ -40,7 +40,7 @@ void gdImage::Create(int asx, int asy) {
 	interlace = 0;
 }
 
-int gdImage::ColorClosest(int r, int g, int b)
+int gdImage::ColorClosest(int r, int g, int b, int tolerance)
 {
 	int i;
 	long rd, gd, bd;
@@ -55,12 +55,12 @@ int gdImage::ColorClosest(int r, int g, int b)
 		gd = (green[i] - g);
 		bd = (blue[i] - b);
 		dist = rd * rd + gd * gd + bd * bd;
-		if ((i == 0) || (dist < mindist)) {
+		if ((i == 0) || (dist < mindist+tolerance)) {
 			mindist = dist;	
 			ct = i;
 		}
 	}
-	return ct;
+	return mindist<tolerance?ct:-1;
 }
 
 int gdImage::ColorExact(int r, int g, int b)
@@ -642,93 +642,123 @@ void gdImage::Copy(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int w, 
 	}
 }			
 
-void gdImage::CopyResized(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int dstW, int dstH, int srcW, int srcH)
+static double round(double param) { return floor(param+0.5); }
+void gdImage::CopyResampled(gdImage& dst,
+		      int dstX, int dstY,
+		      int srcX, int srcY,
+		      int dstW, int dstH,
+			  int srcW, int srcH)
 {
 	gdImage& src=*this;
-	int c;
 	int x, y;
-	int tox, toy;
-	int ydest;
-	int i;
-	int colorMap[gdMaxColors];
-	/* Stretch vectors */
-	int *stx;
-	int *sty;
-	/* We only need to use floating point to determine the correct
-		stretch vector for one line's worth. */
-	double accum;
-	stx = (int *) malloc(sizeof(int) * srcW);
-	sty = (int *) malloc(sizeof(int) * srcH);
-	accum = 0;
-	for (i=0; (i < srcW); i++) {
-		int got;
-		accum += (double)dstW/(double)srcW;
-		got = (int)floor(accum);
-		stx[i] = got;
-		accum -= got;
-	}
-	accum = 0;
-	for (i=0; (i < srcH); i++) {
-		int got;
-		accum += (double)dstH/(double)srcH;
-		got = (int)floor(accum);
-		sty[i] = got;
-		accum -= got;
-	}
-	for (i=0; (i<gdMaxColors); i++) {
-		colorMap[i] = (-1);
-	}
-	toy = dstY;
-	for (y=srcY; (y < (srcY + srcH)); y++) {
-		for (ydest=0; (ydest < sty[y-srcY]); ydest++) {
-			tox = dstX;
-			for (x=srcX; (x < (srcX + srcW)); x++) {
-				int nc;
-				if (!stx[x - srcX]) {
-					continue;
-				}
-				c = src.GetPixel(x, y);
-				/* Added 7/24/95: support transparent copies */
-				if (src.GetTransparent() == c) {
-					tox += stx[x-srcX];
-					continue;
-				}
-				/* Have we established a mapping for this color? */
-				if (colorMap[c] == (-1)) {
-					/* If it's the same image, mapping is trivial */
-					if (&dst == &src) {
-						nc = c;
-					} else { 
-						/* First look for an exact match */
-						nc = dst.ColorExact(
-							src.red[c], src.green[c],
-							src.blue[c]);
-					}	
-					if (nc == (-1)) {
-						/* No, so try to allocate it */
-						nc = dst.ColorAllocate(
-							src.red[c], src.green[c],
-							src.blue[c]);
-						/* If we're out of colors, go for the
-							closest color */
-						if (nc == (-1)) {
-							nc = dst.ColorClosest(
-								src.red[c], src.green[c],
-								src.blue[c]);
-						}
+	for (y = dstY; (y < dstY + dstH); y++) {
+		for (x = dstX; (x < dstX + dstW); x++) {
+			int pd = dst.GetPixel (x, y);
+			/* Added 7/24/95: support transparent copies */
+			if (src.GetTransparent() == pd)
+				continue;
+			
+			float sy1, sy2, sx1, sx2;
+			float sx, sy;
+			float spixels = 0;
+			float red = 0.0, green = 0.0, blue = 0.0;
+			sy1 = ((float) y - (float) dstY) * (float) srcH /
+				(float) dstH;
+			sy2 = ((float) (y + 1) - (float) dstY) * (float) srcH /
+				(float) dstH;
+			sy = sy1;
+			do
+			{
+				float yportion;
+				if (floor (sy) == floor (sy1))
+				{
+					yportion = 1.0 - (sy - floor (sy));
+					if (yportion > sy2 - sy1)
+					{
+						yportion = sy2 - sy1;
 					}
-					colorMap[c] = nc;
+					sy = floor (sy);
 				}
-				for (i=0; (i < stx[x - srcX]); i++) {
-					dst.SetPixel(tox, toy, colorMap[c]);
-					tox++;
+				else if (sy == floor (sy2))
+				{
+					yportion = sy2 - floor (sy2);
+				}
+				else
+				{
+					yportion = 1.0;
+				}
+				sx1 = ((float) x - (float) dstX) * (float) srcW /
+					dstW;
+				sx2 = ((float) (x + 1) - (float) dstX) * (float) srcW /
+					dstW;
+				sx = sx1;
+				do
+				{
+					float xportion;
+					float pcontribution;
+					int p;
+					if (floor (sx) == floor (sx1))
+					{
+						xportion = 1.0 - (sx - floor (sx));
+						if (xportion > sx2 - sx1)
+						{
+							xportion = sx2 - sx1;
+						}
+						sx = floor (sx);
+					}
+					else if (sx == floor (sx2))
+					{
+						xportion = sx2 - floor (sx2);
+					}
+					else
+					{
+						xportion = 1.0;
+					}
+					pcontribution = xportion * yportion;
+					p = src.GetPixel (
+						(int) sx,
+						(int) sy);
+					red += Red (p) * pcontribution;
+					green += Green (p) * pcontribution;
+					blue += Blue (p) * pcontribution;
+					spixels += xportion * yportion;
+					sx += 1.0;
+				} while (sx < sx2);
+				sy += 1.0;
+			} while (sy < sy2);
+			if (spixels != 0.0) {
+				red /= spixels;
+				green /= spixels;
+				blue /= spixels;
+			}
+			/* Clamping to allow for rounding errors above */
+			if (red > 255.0)
+				red = 255.0;
+			if (green > 255.0)
+				green = 255.0;
+			if (blue > 255.0)
+				blue = 255.0;
+			
+			red=round(red);
+			green=round(green);
+			blue=round(blue);
+			/* First look for an exact match */
+			int nc = dst.ColorExact(red, green, blue);
+			if (nc == (-1)) {
+				/* No, so go for the closest color with high tolerance */
+				nc = dst.ColorClosest(red, green, blue,  100);
+				if (nc == (-1)) {
+					/* Not found with even high tolerance, so try to allocate it */
+					nc = dst.ColorAllocate(red, green,blue);
+
+					/* If we're out of colors, go for the closest color */
+					if (nc == (-1))
+						nc = dst.ColorClosest(red, green, blue);
 				}
 			}
-			toy++;
+			dst.SetPixel(x, y, nc);
 		}
-	}
-	free(stx);
-	free(sty);
+    }
 }
 
 static int gdGetWord(int *result, FILE *in)

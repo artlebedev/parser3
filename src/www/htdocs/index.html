@@ -1,4 +1,5 @@
-@main[]^imageresize[]
+@main[]^faceesize[]
+#^imageresize[]
 #^ifassignhash[]#^tintdefault[]#$response:status[404]
 #^ifpasshash[]
 #^movedir[]
@@ -30,15 +31,22 @@
 #^header[]
 OK
 
+@faceesize[]
+$k(2)
+$pict[^image::load[paf.gif]]
+$small[^image::create($pict.width/$k;$pict.height/$k)]
+^small.copy[$pict](0;0;$pict.width;$pict.height;0;0;$small.width;$small.height)
+$response:body[^small.gif[]]
+
 @imageresize[]
 $k(2)
 $pict[^image::create(400*$k;200*$k)]
 $pict.line-width(2)
 ^pict.arc($pict.width/2;$pict.height/2;$pict.width-1;$pict.height-1;0;360;0x000000)
-^pict.arc($pict.width/2;$pict.height/2;$pict.width-10;$pict.height-10;0+10;360-10;0xff0000)
+^pict.arc($pict.width/2;$pict.height/2;$pict.width-20;$pict.height-20;0+20;360-20;0xff0000)
 #^pict.arc($pict.width/2;$pict.height/2;$pict.width;$pict.height;0;360;0xff0000)
-^pict.circle($pict.width/2;$pict.height/2;$pict.height/2-10;0x0000ff)
-^pict.arc($pict.width/2;$pict.height/2;$pict.height-26;$pict.height-26;0+10;360-10;0xff0000)
+^pict.circle($pict.width/2;$pict.height/2;$pict.height/2-20;0x0000ff)
+^pict.arc($pict.width/2;$pict.height/2;$pict.height-26;$pict.height-26;0+20;360-20;0xff0000)
 #$response:body[^pict.gif[]]
 
 $small[^image::create($pict.width/$k;$pict.height/$k)]
