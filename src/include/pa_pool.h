@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.56 2001/09/21 07:30:25 parser Exp $
+	$Id: pa_pool.h,v 1.57 2001/09/21 08:38:28 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -67,8 +67,12 @@ public:
 
 	/// resets transcoder if they change charset 
 	void set_charset(const String &charset);
+	/// returns current charset
+	const String *get_charset() { return charset; }
 	/// converts Xalan string to char *
-	const char *transcode(const XalanDOMString& s);
+	const char *transcode_cstr(const XalanDOMString& s);
+	/// converts Xalan string to parser String
+	String& transcode(const XalanDOMString& s);
 	/// converts XSL exception to parser exception
 	void _throw(const String *source, const XSLException& e);
 
@@ -82,7 +86,7 @@ private:
 	void *fstorage;
 	void *fcontext;
 	void *ftag;
-	const String *scharset; const char *charset;
+	const String *charset;
 	XMLTranscoder *transcoder;
 
 private: 
@@ -164,20 +168,16 @@ public:
 	*/
 	void set_pool(Pool *apool) { fpool=apool; }
 
-	/// useful wrapper around pool
+	//{
+	/// @name useful wrapper around pool
 	void *malloc(size_t size) const { return fpool->malloc(size); }
-	/// useful wrapper around pool
 	void *calloc(size_t size) const { return fpool->calloc(size); }
-	/// useful wrapper around pool
-	void register_cleanup(void (*cleanup) (void *), void *data) { 
-		fpool->register_cleanup(cleanup, data);
-	}
-	/// useful wrapper around pool
+	void register_cleanup(void (*cleanup) (void *), void *data) { fpool->register_cleanup(cleanup, data); }
 	Exception& exception() const { return fpool->exception(); }
-	/// useful wrapper around pool
-	const char *transcode(const XalanDOMString& s) { return fpool->transcode(s); }
-	/// useful wrapper around pool
+	const char *transcode_cstr(const XalanDOMString& s) { return fpool->transcode_cstr(s); }
+	String& transcode(const XalanDOMString& s) { return fpool->transcode(s); }
 	void _throw(const String *source, const XSLException& e) { fpool->_throw(source, e); }
+	//}
 };
 /// useful macro for creating objects on current Pooled object Pooled::pool()
 #define NEW new(pool())
