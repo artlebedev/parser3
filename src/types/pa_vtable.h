@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.27 2001/07/25 10:43:14 parser Exp $
+	$Id: pa_vtable.h,v 1.28 2001/08/03 11:54:19 parser Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -37,15 +37,9 @@ protected: // VAliased
 public: // usage
 
 	VTable(Pool& apool, Table* atable=0) : VStateless_object(apool, *table_class), 
-		ftable(atable), locked(false) {
+		ftable(atable) {
 	}
-	void lock() { 
-		check_lock();
-		locked=true; 
-	}
-	void unlock() { locked=false; }
 	void set_table(Table& avalue) { 
-		check_lock();
 		ftable=&avalue; 
 	}
 	Table& table() { 
@@ -59,15 +53,9 @@ private:
 
 	Value *fields_element();
 
-	void check_lock() {
-		if(locked)
-			bark("is locked");
-	}
-
 private:
 
 	Table *ftable;
-	bool locked;
 
 };
 

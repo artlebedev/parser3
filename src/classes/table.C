@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.98 2001/08/02 09:58:33 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.99 2001/08/03 11:54:19 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -327,8 +327,9 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	Table& table=vtable.table();
 	bool need_delim=false;
-	vtable.lock(); int saved_current=table.current();
-	for(int row=0; row<table.size(); row++) {
+	int saved_current=table.current();
+	int size=table.size();
+	for(int row=0; row<size; row++) {
 		table.set_current(row);
 
 		Value& processed_body=r.process(body_code);
@@ -340,7 +341,7 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 		}
 		r.write_pass_lang(processed_body);
 	}
-	table.set_current(saved_current); vtable.unlock();
+	table.set_current(saved_current);
 }
 
 static void _empty(Request& r, const String& method_name, MethodParams *params) {
@@ -507,7 +508,7 @@ static void _flip(Request& r, const String& method_name, MethodParams *params) {
 				new_table+=&new_row;
 			}
 
-	vtable.set_table(new_table);
+	r.write_no_lang(*new(pool) VTable(pool, &new_table));
 }
 
 static void _append(Request& r, const String& method_name, MethodParams *params) {
@@ -521,10 +522,7 @@ static void _append(Request& r, const String& method_name, MethodParams *params)
 	string.split(row, 0, "\t", 1, String::UL_CLEAN);
 
 	VTable& vtable=*static_cast<VTable *>(r.self);
-	// disable ^a.menu{^a.append[]}
-	vtable.lock();
 	vtable.table()+=&row;
-	vtable.unlock();
 }
 
 static void _join(Request& r, const String& method_name, MethodParams *params) {
