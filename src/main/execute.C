@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.98 2001/03/12 22:21:02 paf Exp $
+	$Id: execute.C,v 1.99 2001/03/13 12:37:05 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -333,7 +333,7 @@ void Request::execute(const Array& ops) {
 					// substitute class alias to the class they are called AS
 					Temp_alias temp_alias(*aliased, *frame->junction.vclass);
 
-					Method& method=*frame->junction.method;
+					const Method& method=*frame->junction.method;
 					if(method.native_code) { // native code?
 						method.check_actual_numbered_params(
 							frame->name(), frame->numbered_params());
@@ -650,34 +650,41 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 	return *result;
 }
 
-char *Request::execute_static_method(VClass& vclass, String& method_name, bool return_cstr) {
-	if(const Method *method=vclass.get_method(method_name)) {
-		PUSH(self);  
-		PUSH(root);  
-		PUSH(rcontext);  
-		PUSH(wcontext);
-		
-		// initialize contexts
-		root=rcontext=self=&vclass;
-		wcontext=NEW WWrapper(pool(), &vclass, false /* not constructing */);
-		
-		// execute!	
-		execute(*method->parser_code);
-		
-		// result
-		char *result;
-		if(return_cstr)
-			result=wcontext->get_string()->cstr(); // chars
-		else
-			result=0; // ignore result
-		
-		wcontext=static_cast<WContext *>(POP());  
-		rcontext=POP();  
-		root=POP();  
-		self=static_cast<VAliased *>(POP());
-		
-		// return
-		return result;
-	}
+char *Request::execute_method(Value& aself, const Method& method, bool return_cstr) {
+	PUSH(self);  
+	PUSH(root);  
+	PUSH(rcontext);  
+	PUSH(wcontext);
+	
+	// initialize contexts
+	root=rcontext=self=&aself;
+	wcontext=NEW WWrapper(pool(), &aself, false /* not constructing */);
+	
+	// execute!	
+	execute(*method.parser_code);
+	
+	// result
+	char *result;
+	if(return_cstr)
+		result=wcontext->get_string()->cstr(); // chars
+	else
+		result=0; // ignore result
+	
+	wcontext=static_cast<WContext *>(POP());  
+	rcontext=POP();  
+	root=POP();  
+	self=static_cast<VAliased *>(POP());
+	
+	// return
+	return result;
+}
+
+char *Request::execute_method(Value& aself, 
+							  const String& method_name, bool return_cstr) {
+	if(Value *value=aself.get_element(method_name))
+		if(Junction *junction=value->get_junction())
+			if(const Method *method=junction->method) 
+				return execute_method(aself, *method, return_cstr);
+
 	return 0;
 }

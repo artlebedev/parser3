@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmframe.h,v 1.4 2001/03/12 12:00:08 paf Exp $
+	$Id: pa_vmframe.h,v 1.5 2001/03/13 12:37:06 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -49,7 +49,7 @@ public: // usage
 		my(0), fnumbered_params(0),
 		fself(0) {
 
-		Method &method=*junction.method;
+		const Method &method=*junction.method;
 
 		if(method.max_numbered_params_count) // are this method params numbered?
 			fnumbered_params=NEW Array(pool()); // create storage
@@ -71,7 +71,7 @@ public: // usage
 	void set_self(Value& aself) { fself=&aself; }
 
 	void store_param(const String& actual_method_name, Value *value) {
-		Method& method=*junction.method;
+		const Method& method=*junction.method;
 		int max_params=
 			method.max_numbered_params_count?method.max_numbered_params_count:
 			method.params_names?method.params_names->size():
@@ -93,7 +93,7 @@ public: // usage
 		}
 	}
 	void fill_unspecified_params() {
-		Method &method=*junction.method;
+		const Method &method=*junction.method;
 		if(method.params_names) // there are any named parameters might need filling?
 			for(; store_param_index<method.params_names->size(); store_param_index++) {
 				Value *value=NEW VUnknown(pool());

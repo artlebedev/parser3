@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.24 2001/03/13 12:07:15 paf Exp $
+	$Id: pa_request.C,v 1.25 2001/03/13 12:37:05 paf Exp $
 */
 
 #include <string.h>
@@ -56,7 +56,7 @@ void Request::core() {
 		char *sys_auto_file="C:\\temp\\auto.p";
 		VClass *main_class=use_file(
 			sys_auto_file, false/*ignore possible read problem*/,
-			0/*new class*/, main_class_name);
+			main_class_name);
 
 		// TODO: использовать $MAIN:limits здесь, пока их не сломали враги
 
@@ -64,7 +64,7 @@ void Request::core() {
 		char *site_auto_file="Y:\\parser3\\src\\auto.p";
 		main_class=use_file(
 			site_auto_file, false/*ignore possible read problem*/,
-			0/*new class*/, main_class_name, main_class);
+			main_class_name, main_class);
 
 		// there must be some auto.p
 		if(!main_class)
@@ -73,11 +73,17 @@ void Request::core() {
 				"no 'auto.p' found (nither system nor any site's)");
 
 		// compiling requested file
-		use_file(page_filespec, true/*don't ignore read problem*/,
-			0/*new class*/, main_class_name, main_class);
+		main_class=use_file(page_filespec, true/*don't ignore read problem*/,
+			main_class_name, main_class);
 
-		// executing some @main[]
-		char *result=execute_MAIN();
+		// execute @main[]
+		char *result=execute_method(*main_class, *main_method_name, 
+			true /*result needed*/);
+		if(!result)
+			THROW(0,0,
+			0, 
+			"'"MAIN_METHOD_NAME"' method not found");
+
 		printf("result-----------------\n%sEOF----------------\n", result);
 	} 
 	CATCH(e) {
@@ -108,14 +114,14 @@ void Request::core() {
 
 VClass *Request::use_file(
 						  const char *file, bool fail_on_read_problem,
-						  VClass *aclass, const String *name, 
+						  const String *name, 
 						  VClass *base_class) {
 	// TODO: обнаружить|решить cyclic dependences
 	char *source=file_read(pool(), file, fail_on_read_problem);
 	if(!source)
 		return base_class;
 
-	return use_buf(source, file, aclass, name, base_class);
+	return use_buf(source, file, 0/*new class*/, name, base_class);
 }
 
 VClass *Request::use_buf(
@@ -126,23 +132,8 @@ VClass *Request::use_buf(
 	VClass& cclass=COMPILE(source, aclass, name, base_class, file);
 
 	// locate and execute possible @auto[] static method
-	execute_static_method(cclass, *auto_method_name, false /*no result needed*/);
+	execute_method(cclass, *auto_method_name, false /*no result needed*/);
 	return &cclass;
-}
-
-char *Request::execute_MAIN() {
-	// locate class with @main[] & execute it
-	for(int i=classes_array().size(); --i>=0;) {
-		VClass *vclass=static_cast<VClass *>(classes_array().get(i));
-		char *result=execute_static_method(*vclass, *main_method_name, true /*result needed*/);
-		if(result)
-			return result;
-	}
-	
-	THROW(0,0,
-		0, 
-		"'"MAIN_METHOD_NAME"' method not found");
-	return 0;
 }
 
 void Request::fail_if_junction_(bool is, 

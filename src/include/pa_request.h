@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.44 2001/03/12 18:13:49 paf Exp $
+	$Id: pa_request.h,v 1.45 2001/03/13 12:37:04 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -16,6 +16,7 @@
 #include "pa_value.h"
 #include "pa_stack.h"
 #include "pa_vclass.h"
+#include "pa_vobject.h"
 
 #define UNNAMED_NAME "unnamed"
 
@@ -64,7 +65,7 @@ public:
 
 	VClass *use_file(
 		const char *file, bool fail_on_read_problem=true,
-		VClass *aclass=0, const String *name=0, 
+		const String *name=0, 
 		VClass *base_class=0); // core.C
 	VClass *use_buf(
 		const char *source, const char *file,
@@ -113,17 +114,14 @@ private: // core data
 	// execution stack
 	Stack stack;
 
-private: // core.C
-
-	char *execute_MAIN();
-
 private: // compile.C
 
 	VClass& real_compile(COMPILE_PARAMS);
 
 private: // execute.C
 
-	char *execute_static_method(VClass& vclass, String& method_name, bool return_cstr);
+	char *execute_method(Value& aself, const Method& method, bool return_cstr);
+	char *execute_method(Value& aself, const String& method_name, bool return_cstr);
 
 	Value *get_element();
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.27 2001/03/12 09:08:49 paf Exp $
+	$Id: compile.C,v 1.28 2001/03/13 12:37:05 paf Exp $
 */
 
 #include "pa_request.h"
@@ -27,7 +27,7 @@ VClass& Request::real_compile(COMPILE_PARAMS) {
 	pc.request=this;
 	VClass *cclass;
 	if(aclass) // we were told the class to compile to?
-		cclass=aclass; // yes, remember it
+		cclass=aclass; // yes, remember it [used in ^process]
 	else if(name) { // we were told the name of compiled class?
 		// yes. create it
 		cclass=NEW VClass(pool());

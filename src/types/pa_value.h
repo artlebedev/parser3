@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.7 2001/03/12 13:13:22 paf Exp $
+	$Id: pa_value.h,v 1.8 2001/03/13 12:37:06 paf Exp $
 */
 
 /*
@@ -57,7 +57,7 @@ public:
 	}
 
 	void check_actual_numbered_params(
-		const String& actual_name, Array *actual_numbered_params) {
+		const String& actual_name, Array *actual_numbered_params) const {
 		int actual_count=actual_numbered_params?actual_numbered_params->size():0;
 		if(actual_count<min_numbered_params_count) // not proper count? bark
 			THROW(0, 0,
@@ -73,7 +73,7 @@ public:
 
 	Junction(Pool& apool,
 		Value& aself,
-		VClass *avclass, Method *amethod,
+		VClass *avclass, const Method *amethod,
 		Value *aroot,
 		Value *arcontext,
 		WContext *awcontext,
@@ -90,7 +90,7 @@ public:
 	// always present
 	Value& self;
 	// either these // so called 'method-junction'
-	VClass *vclass;  Method *method;
+	VClass *vclass;  const Method *method;
 	// or these are present // so called 'code-junction'
 	Value *root;
 	Value *rcontext;
