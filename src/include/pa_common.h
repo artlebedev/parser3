@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.62 2001/11/09 11:06:57 paf Exp $
+	$Id: pa_common.h,v 1.63 2001/11/14 11:26:17 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -16,6 +16,15 @@
 
 class Value;
 
+#ifndef vsnprintf
+int __vsnprintf(char *, size_t, const char *, va_list);
+#	define vsnprintf __vsnprintf 
+#endif
+#ifndef snprintf
+int __snprintf(char *, size_t, const char *, ...);
+#	define snprintf __snprintf
+#endif
+
 #if _MSC_VER
 /*
 inline int open( const char *filename, int oflag ) { return _open(filename, oflag); }
@@ -25,15 +34,6 @@ inline int write( int handle, const void *buffer, unsigned int count ) { return 
 inline int stat( const char *path, struct _stat *buffer ) { return _stat(path, buffer); }
 inline long lseek( int handle, long offset, int origin ) { return _lseek(handle, offset, origin); }
 */
-
-#ifndef vsnprintf
-int __vsnprintf(char *, size_t, const char *, va_list);
-#	define vsnprintf __vsnprintf 
-#endif
-#ifndef snprintf
-int __snprintf(char *, size_t, const char *, ...);
-#	define snprintf __snprintf
-#endif
 
 //access
 #define F_OK 0
