@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.174.2.2 2002/05/06 10:50:23 paf Exp $
+	$Id: parser3.C,v 1.174.2.3 2002/05/28 13:51:55 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -278,10 +278,10 @@ void real_parser_handler(
 				request_info.uri=reconstructed_uri;
 			} else
 				request_info.uri=path_info;
-			else
-				throw Exception("parser.runtime",
-					0,
-					"CGI: no PATH_INFO defined(in reinventing REQUEST_URI)");
+		else
+			throw Exception("parser.runtime",
+				0,
+				"CGI: no PATH_INFO defined(in reinventing REQUEST_URI)");
 			
 #ifndef WIN32
 			// they've changed this under IIS5.
@@ -294,7 +294,7 @@ void real_parser_handler(
 			}
 #endif
 	} else
-		request_info.uri=0;
+		request_info.uri="";
 	
 	request_info.content_type=SAPI::get_env(*pool, "CONTENT_TYPE");
 	const char *content_length=SAPI::get_env(*pool, "CONTENT_LENGTH");
