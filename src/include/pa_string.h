@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.127 2002/02/20 11:15:13 paf Exp $
+	$Id: pa_string.h,v 1.128 2002/02/20 12:35:29 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -228,8 +228,12 @@ public:
 
 public: // debug private:
 
-	/// several String fragments
-	struct Chunk {
+	/** several String fragments
+		
+		'mutable' because can write after it's end, after it was appended to somebody 
+		@see String::append
+	*/
+	mutable struct Chunk {
 		typedef uchar count_type;
 		count_type count; ///< the number of rows in chunk
 		/// string fragment or a link to next chunk union

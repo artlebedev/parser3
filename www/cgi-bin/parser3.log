@@ -29,3 +29,12 @@ z
 [Wed Feb 20 13:36:21 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=11672761
 [Wed Feb 20 14:03:33 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=11672761
 [Wed Feb 20 14:10:14 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=11484213 /2% economy on string::link_row removal
+[Wed Feb 20 14:16:14 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=8918634/11484213
+[Wed Feb 20 15:06:06 2002] string piece appends=158190, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2558916, total_alloc_size=9674460 // first results:15%, that's only appends to emptystring
+[Wed Feb 20 15:26:02 2002] string piece appends=166051, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2421420, total_alloc_size=9674460
+[Wed Feb 20 15:29:27 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634 // final results: 22% economy of total-without-any-optimization
+[Wed Feb 20 15:31:40 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634
+[Wed Feb 20 15:31:41 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634
+[Wed Feb 20 15:31:41 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634
+[Wed Feb 20 15:31:41 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634
+[Wed Feb 20 15:31:42 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634

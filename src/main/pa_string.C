@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.141 2002/02/20 11:15:13 paf Exp $
+	$Id: pa_string.C,v 1.142 2002/02/20 12:35:29 paf Exp $
 */
 
 #include "pcre.h"
@@ -87,7 +87,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 	if(!last_chunk) // growth stopped [we're appended as string to somebody]
 		throw Exception(0, 0,
 			this,
-			"string growth stopped");
+			"string growth stopped (append cstr)");
 
 	if(!src)
 		return *this;
