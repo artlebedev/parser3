@@ -1,0 +1,42 @@
+*** ../0/gdome2-0.7.2/libgdome/gdomecore/gdome-xml-node.h	Wed May 15 11:44:39 2002
+--- ./libgdome/gdomecore/gdome-xml-node.h	Fri Jan 10 14:49:59 2003
+***************
+*** 199,204 ****
+                                                    GdomeNode *newChild,
+                                                    GdomeException *exc);
+  
+! const GdomeNodeVtab gdome_xml_n_vtab;
+  
+  #endif /* GDOME_NODE_FILE */
+--- 199,204 ----
+                                                    GdomeNode *newChild,
+                                                    GdomeException *exc);
+  
+! extern const GdomeNodeVtab gdome_xml_n_vtab;
+  
+  #endif /* GDOME_NODE_FILE */
+*** ../0/gdome2-0.7.2/libgdome/gdomecore/gdome-xml-xmlmemory.c	Mon Apr  1 21:08:24 2002
+--- ./libgdome/gdomecore/gdome-xml-xmlmemory.c	Fri Jan 10 14:51:45 2003
+***************
+*** 33,42 ****
+  #include <libxml/parser.h>
+  #include "gdome-xml-node.h"
+  
+! const xmlChar xmlStringText[] = { 't', 'e', 'x', 't', 0 };
+! const xmlChar xmlStringTextNoenc[] =
+    { 't', 'e', 'x', 't', 'n', 'o', 'e', 'n', 'c', 0 };
+! const xmlChar xmlStringComment[] = { 'c', 'o', 'm', 'm', 'e', 'n', 't', 0 };
+  
+  void gdome_xmlFreeProp (xmlAttrPtr cur);
+  void gdome_xmlFreePropList (xmlAttrPtr cur);
+--- 33,42 ----
+  #include <libxml/parser.h>
+  #include "gdome-xml-node.h"
+  
+! static const xmlChar xmlStringText[] = { 't', 'e', 'x', 't', 0 };
+! static const xmlChar xmlStringTextNoenc[] =
+    { 't', 'e', 'x', 't', 'n', 'o', 'e', 'n', 'c', 0 };
+! static const xmlChar xmlStringComment[] = { 'c', 'o', 'm', 'm', 'e', 'n', 't', 0 };
+  
+  void gdome_xmlFreeProp (xmlAttrPtr cur);
+  void gdome_xmlFreePropList (xmlAttrPtr cur);
