@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.107 2001/09/04 19:03:23 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.108 2001/09/04 19:05:04 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -131,7 +131,7 @@ void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 //
 
 char *full_file_spec(char *file_name) {
-	if(!strchr(file_name, '/')) {
+	if(file_name && !strchr(file_name, '/')) {
 		static char cwd[MAX_STRING];  getcwd(cwd, MAX_STRING);
 		static char buf[MAX_STRING];
 		snprintf(buf, MAX_STRING, "%s/%s", cwd, file_name);
