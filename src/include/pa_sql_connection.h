@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.16 2001/10/29 17:34:24 paf Exp $
+	$Id: pa_sql_connection.h,v 1.17 2001/10/29 17:35:50 paf Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -18,7 +18,7 @@
 // defines
 
 /// @see SQL_Driver_services_impl::_throw
-#define SQL_CONNECTION_FUNC_GUARDED(actions) \
+#define SQL_CONNECTION_SERVICED_FUNC_GUARDED(actions) \
 	if(!fservices || !setjmp(fservices->mark)) { \
 		actions; \
 	} else \
@@ -52,7 +52,7 @@ public:
 
 	bool connected() { return fconnection!=0; }
 	void connect(char *used_only_in_connect_url_cstr) { 
-		SQL_CONNECTION_FUNC_GUARDED(
+		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
 			fdriver.connect(used_only_in_connect_url_cstr, *fservices, &fconnection)
 		);
 	}
@@ -60,23 +60,23 @@ public:
 		fdriver.disconnect(fconnection); fconnection=0; 
 	}
 	void commit() { 
-		SQL_CONNECTION_FUNC_GUARDED(
+		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
 			fdriver.commit(*fservices, fconnection) 
 		);
 	}
 	void rollback() { 
-		SQL_CONNECTION_FUNC_GUARDED(
+		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
 			fdriver.rollback(*fservices, fconnection)
 		);
 	}
 	bool ping() { 
-		SQL_CONNECTION_FUNC_GUARDED(
+		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
 			return fdriver.ping(*fservices, fconnection)
 		);
 		return 0; // never reached
 	}
 	uint quote(char *to, const char *from, unsigned int length) {
-		SQL_CONNECTION_FUNC_GUARDED(
+		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
 			return fdriver.quote(*fservices, fconnection, to, from, length)
 		);
 		return 0; // never reached
@@ -85,7 +85,7 @@ public:
 	void query(
 		const char *statement, unsigned long offset, unsigned long limit,
 		SQL_Driver_query_event_handlers& handlers) { 
-		SQL_CONNECTION_FUNC_GUARDED(
+		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
 			fdriver.query(*fservices, fconnection, 
 				statement, offset, limit, 
 				handlers)
