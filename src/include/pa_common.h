@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.35 2001/04/09 11:04:10 paf Exp $
+	$Id: pa_common.h,v 1.36 2001/04/10 07:40:48 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -103,6 +103,7 @@ void file_write(Pool& pool,
 void file_delete(Pool& pool, const String& file_spec);
 
 bool file_readable(const String& file_spec);
+bool file_executable(const String& file_spec);
 
 /**
 	scans for @a delim[default \n] in @a *row_ref, 

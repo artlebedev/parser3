@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.12 2001/04/10 07:27:53 paf Exp $
+	$Id: mail.C,v 1.13 2001/04/10 07:40:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -280,7 +280,7 @@ static void sendmail(Request& r, const String& method_name,
 
 	char *letter_cstr=letter.cstr();
 
-#ifdef WIN32
+#ifndef WIN32
 	if(!from)
 		PTHROW(0, 0,
 			&method_name,
@@ -305,51 +305,69 @@ static void sendmail(Request& r, const String& method_name,
 	} else
 		PTHROW(0, 0,
 			&method_name,
-			"$MAIN:MAIL.SMTP not defined");
+			"$"MAIN_CLASS_NAME":"MAIL_NAME".SMTP not defined");
 #else
 	// unix
-	// $MAIN:MAIL.SMTP[mail.design.ru]
+	// $MAIN:MAIL.prog1["/usr/sbin/sendmail -t"] default
+	// $MAIN:MAIL.prog2["/usr/lib/sendmail -t"] default
 	if(r.mail) {
-		int no=0;
 		char no_cstr[MAX_NUMBER];
-		while(true) {
-			snprintf(no_cstr, MAX_NUMBER, "%d", ++no);
-			String prog_key(pool, "prog");  prog_key << no_cstr;
-			if(Value *prog_value=static_cast<Value *>(r.mail->get(prog_key))) {
-				// "/usr/sbin/sendmail -t"
-				const String& prog_string=prog_value->as_string();
-				Array argv(pool);
-				const String *file_spec;
-				int after_file_spec=prog_string.pos(" ", 1);
-				if(after_file_spec<=0)
-					file_spec=&prog_string;
-				else {
-					size_t pos_after=after_file_spec;
-					file_spec=&prog_string.mid(0, pos_after);
-					prog_string.split(argv, &pos_after, " ", 1, String::UL_CLEAN);
+		for(int no=-2; ; no++) {
+			const String *prog_string;
+			switch(no) {
+			case -2: prog_string=new(pool) String(pool, "/usr/sbin/sendmail -t"); break;
+			case -1: prog_string=new(pool) String(pool, "/usr/lib/sendmail -t"); break;
+			default: 
+				{
+					String prog_key(pool, "prog");
+					snprintf(no_cstr, MAX_NUMBER, "%d", no);
+					prog_key << no_cstr;
+					if(Value *prog_value=static_cast<Value *>(r.mail->get(prog_key)))
+						prog_string=&prog_value->as_string();
+					else
+						if(no==0)
+							continue;
+						else
+							PTHROW(0, 0,
+								&method_name,
+								"$"MAIN_CLASS_NAME":"MAIL_NAME".%s not defined", 
+								prog_key.cstr());
 				}
+			}
+			// we know prog_string here
+			Array argv(pool);
+			const String *file_spec;
+			int after_file_spec=prog_string->pos(" ", 1);
+			if(after_file_spec<=0)
+				file_spec=prog_string;
+			else {
+				size_t pos_after=after_file_spec;
+				file_spec=&prog_string->mid(0, pos_after);
+				prog_string->split(argv, &pos_after, " ", 1, String::UL_CLEAN);
+			}
 
-				String in(pool, letter_cstr); String out(pool); String err(pool);
-				int exit_status=pa_exec(*file_spec,
-					0/*default env*/,
-					&argv,
-					in, out, err);
-				if(exit_status || err.size())
-					PTHROW(0, 0,
-						&method_name,
-						"'%s' reported problem: %s (%d)",
-							file_spec->cstr(),
-							err.size()?err.cstr():"UNKNOWN", 
-							exit_status);
-			} else
+			// skip unavailable
+			if(!file_executable(*file_spec))
+				continue;
+
+			String in(pool, letter_cstr); String out(pool); String err(pool);
+			int exit_status=pa_exec(*file_spec,
+				0/*default env*/,
+				&argv,
+				in, out, err);
+			if(exit_status || err.size())
 				PTHROW(0, 0,
 					&method_name,
-					"$MAIN:MAIL.%s not defined", prog_key.cstr());
+					"'%s' reported problem: %s (%d)",
+						file_spec->cstr(),
+						err.size()?err.cstr():"UNKNOWN", 
+						exit_status);
+			break;
 		}
 	} else
 		PTHROW(0, 0,
 			&method_name,
-			"$MAIN:MAIL not defined");
+			"$"MAIN_CLASS_NAME":"MAIL_NAME" not defined");
 #endif
 }
 

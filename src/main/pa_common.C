@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.42 2001/04/09 11:04:12 paf Exp $
+	$Id: pa_common.C,v 1.43 2001/04/10 07:40:50 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -141,6 +141,9 @@ void file_delete(Pool& pool, const String& file_spec) {
 
 bool file_readable(const String& file_spec) {
     return access(file_spec.cstr(String::UL_FILE_NAME), R_OK)==0;
+}
+bool file_executable(const String& file_spec) {
+    return access(file_spec.cstr(String::UL_FILE_NAME), X_OK)==0;
 }
 
 char *getrow(char **row_ref, char delim) {
