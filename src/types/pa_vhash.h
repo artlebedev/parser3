@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char* IDENT_VHASH_H="$Date: 2003/04/04 10:46:20 $";
+static const char* IDENT_VHASH_H="$Date: 2003/06/06 12:06:08 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -52,16 +52,16 @@ public: // value
 
 	/// VHash: (key)=value
 	Value *get_element(const String& aname, Value& aself, bool looking_up) { 
-		// $method
-		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
+		// $element
+		if(Value *result=static_cast<Value *>(fhash.get(aname)))
 			return result;
 
 		// $fields -- pseudo field to make 'hash' more like 'table'
 		if(aname == HASH_FIELDS_NAME)
 			return this;
 
-		// $element
-		if(Value *result=static_cast<Value *>(fhash.get(aname)))
+		// $method
+		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
 			return result;
 
 		// default value
