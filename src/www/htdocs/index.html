@@ -3,9 +3,12 @@ t.p
 dtf.p
 
 @main[]
+^t3partycooki[]
+#^t3partycookie[]
+#^tcookie[]
 #^tfilemove[]
 #^treplace[]
-^measuretest[]
+#^measuretest[]
 #^savetest[]
 #^oratestinsert[]
 #^oratestread[]
@@ -16,6 +19,20 @@ dtf.p
 #^list[]
 #^tests[]
 #^func(0)<hr>
+
+@t3partycookie2[]
+#z<img width=100 height=100 src=http://i/cgi-bin/p3p.cgi>z
+z<img width=100 height=100 src=http://i.office.design.ru/cgi-bin/p3p.cgi>z
+
+@t3partycookie[]
+z<img width=100 height=100 src=http://rotabanner.adex.ru/cgi-bin/banner/mail>z
+
+@tcookie[]
+$response:P3P[policyref="http://parser3/w3c/paf.xml"]
+$cookie:test[$form:x^math:random(100)]
+$env:HTTP_COOKIE<br>
+get:$cookie:test
+#<img src=http://parser3.office.design.ru/?x=coffice>
 
 @tfilemove[]
 ^file:move[a/a;b/b]
