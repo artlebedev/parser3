@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.170 2002/04/15 06:46:01 paf Exp $
+	$Id: parser3.C,v 1.171 2002/04/15 08:21:52 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -92,8 +92,10 @@ static void log(const char *fmt, va_list args) {
 
 	// prefix
 	time_t t=time(0);
-	const char *stamp=ctime(&t);
-	fprintf(f, "[%.*s] ", strlen(stamp)-1, stamp);
+	if(const char *stamp=ctime(&t)) { // never saw that
+		if(size_t len=strlen(stamp)) // saw that once
+			fprintf(f, "[%.*s] ", len, stamp);
+	}
 	// message
 
 	char buf[MAX_STRING];
