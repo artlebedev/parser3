@@ -250,6 +250,10 @@ SOURCE=.\pa_charset_connection.C
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_charset_manager.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_common.C
 # End Source File
 # Begin Source File

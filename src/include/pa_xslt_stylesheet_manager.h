@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_xslt_stylesheet_manager.h,v 1.3 2001/10/01 08:53:58 parser Exp $
+	$Id: pa_xslt_stylesheet_manager.h,v 1.4 2001/10/01 10:53:16 parser Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -46,10 +46,10 @@ public:
 	*/
 	Stylesheet_connection& get_connection(const String& file_spec);
 
-private: // stylesheet cache
+private: // cache
 
 	Stylesheet_connection *get_connection_from_cache(const String& file_spec);
-	void put_connection_to_cache(const String& file_spec, Stylesheet_connection& stylesheet);
+	void put_connection_to_cache(const String& file_spec, Stylesheet_connection& connection);
 	void maybe_expire_connection_cache();
 private:
 	time_t prev_expiration_pass_time;
@@ -57,7 +57,7 @@ private:
 private: // for stylesheet
 
 	/// caches connection
-	void close_connection(const String& file_spec, Stylesheet_connection& stylesheet);
+	void close_connection(const String& file_spec, Stylesheet_connection& connection);
 
 private:
 

@@ -4,13 +4,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.163 2001/10/01 08:53:58 parser Exp $
+	$Id: pa_request.C,v 1.164 2001/10/01 10:53:16 parser Exp $
 */
 
 #include "pa_config_includes.h"
 
-#include "pcre.h"
-#include "internal.h"
+//#include "pcre.h"
+//#include "internal.h"
 extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 
 #include "pa_sapi.h"
@@ -25,14 +25,7 @@ extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 #include "pa_vtable.h"
 #include "pa_vfile.h"
 #include "pa_dictionary.h"
-
-#ifdef XML
-#	include <util/XercesDefs.hpp>
-#	include <util/TransENameMap.hpp>
-#	include <util/XML256TableTranscoder.hpp>
-#	include <util/PlatformUtils.hpp>
-#	include <PlatformSupport/XalanTranscodingServices.hpp>
-#endif
+#include "pa_charset_manager.h"
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
@@ -43,253 +36,15 @@ const char *ORIGINS_CONTENT_TYPE="text/plain";
 
 Methoded *MOP_create(Pool&);
 
-
-inline void prepare_case_tables(unsigned char *tables) {
-	unsigned char *lcc_table=tables+lcc_offset;
-	unsigned char *fcc_table=tables+fcc_offset;
-	for(int i=0; i<0x100; i++)
-		lcc_table[i]=fcc_table[i]=i;
-}
-inline void cstr2ctypes(unsigned char *tables, const unsigned char *cstr, 
-						unsigned char bit) {
-	unsigned char *ctypes_table=tables+ctypes_offset;
-	ctypes_table[0]=bit;
-	for(; *cstr; cstr++) {
-		unsigned char c=*cstr;
-		ctypes_table[c]|=bit;
-	}
-}
-inline unsigned int to_wchar_code(const String *s) {
-	if(!s || s->size()==0)
-		return 0;
-	if(s->size()==1)
-		return (unsigned int)s->first_char();
-	return (unsigned int)s->as_int();
-}
-inline bool to_bool(const String *s) {
-	return s && s->size()!=0;
-}
-static void element2ctypes(unsigned char c, bool belongs,
-						   unsigned char *tables,  unsigned char bit, int group_offset=-1) {
-	if(!belongs)
-		return;
-
-	unsigned char *ctypes_table=tables+ctypes_offset;
-
-	ctypes_table[c]|=bit;
-	if(group_offset>=0)
-		tables[cbits_offset+group_offset+c/8] |= 1 << (c%8);
-}
-static void element2case(unsigned char from, unsigned char to,
-						 unsigned char *tables) {
-	if(!to) 
-		return;
-
-	unsigned char *lcc_table=tables+lcc_offset;
-	unsigned char *fcc_table=tables+fcc_offset;
-	lcc_table[from]=to;
-	fcc_table[from]=to; fcc_table[to]=from;
-}
-
-#ifndef DOXYGEN
-struct Charset_tables {
-	// pcre_tables
-	unsigned char *pcre_tables;
-#ifdef XML
-	// transcoder
-	XMLCh *fromTable;
-	XMLTransService::TransRec *toTable;
-	unsigned int toTableSz;
-#endif
-};
-#endif
-
-static void ctype_table_row_to_charset_tables(Array::Item *value, void *info) {
-	Array& row=*static_cast<Array *>(value);
-	Charset_tables& tables=*static_cast<Charset_tables *>(info);
-	
-// char	white-space	digit	hex-digit	letter	word	lowercase	unicode1	unicode2	
-	unsigned int c=to_wchar_code(row.get_string(0));
-	
-	// pcre_tables
-	element2ctypes(c, to_bool(row.get_string(1)), tables.pcre_tables, ctype_space, cbit_space);
-	element2ctypes(c, to_bool(row.get_string(2)), tables.pcre_tables, ctype_digit, cbit_digit);
-	element2ctypes(c, to_bool(row.get_string(3)), tables.pcre_tables, ctype_xdigit);
-	element2ctypes(c, to_bool(row.get_string(4)), tables.pcre_tables, ctype_letter);
-	element2ctypes(c, to_bool(row.get_string(5)), tables.pcre_tables, ctype_word, cbit_word);
-	element2case(c, to_wchar_code(row.get_string(6)), tables.pcre_tables);
-
-#ifdef XML
-	// transcoder
-	XMLCh unicode1=row.size()>7?(XMLCh)to_wchar_code(row.get_string(7)):0;
-	XMLCh unicode2=row.size()>8?(XMLCh)to_wchar_code(row.get_string(8)):0;
-	if(!tables.fromTable[c])
-		tables.fromTable[c]=unicode1?unicode1:(XMLCh)c;
-	tables.toTable[tables.toTableSz].intCh=unicode1?unicode1:(XMLCh)c;
-	tables.toTable[tables.toTableSz].extCh=(XMLByte)c;
-	tables.toTableSz++;
-	if(unicode2) {
-		tables.toTable[tables.toTableSz].intCh=unicode2;
-		tables.toTable[tables.toTableSz].extCh=(XMLByte)c;
-		tables.toTableSz++;
-	}
-#endif
-}
-static int sort_cmp_Trans_rec_intCh(const void *a, const void *b) {
-	const XMLCh ca=static_cast<const XMLTransService::TransRec *>(a)->intCh;
-	const XMLCh cb=static_cast<const XMLTransService::TransRec *>(b)->intCh;
-	// move zeros to end of table
-	if(ca==0)
-		return +1;
-	if(cb==0)
-		return -1;
-
-	//
-	return ca-cb;
-}
-
-
-#ifdef XML
-template <class TType> class ENameMapFor2 : public ENameMap
-{
-public :
-    // -----------------------------------------------------------------------
-    //  Constructors and Destructor
-    // -----------------------------------------------------------------------
-    ENameMapFor2(
-		const XMLCh* const encodingName
-        , const XMLCh* const                        fromTable
-        , const XMLTransService::TransRec* const    toTable
-        , const unsigned int                        toTableSize
-		) : ENameMap(encodingName),
-		ffromTable(fromTable),
-		ftoTable(toTable),
-		ftoTableSize(toTableSize) {}
-    ~ENameMapFor2() {}
-
-    // -----------------------------------------------------------------------
-    //  Implementation of virtual factory method
-    // -----------------------------------------------------------------------
-    virtual XMLTranscoder* makeNew(const unsigned int blockSize) const {
-		return new TType(
-			getKey(), 
-			blockSize,
-			ffromTable,
-			ftoTable, ftoTableSize);
-	}
-private:
-	const XMLCh* const                        ffromTable;
-	const XMLTransService::TransRec* const    ftoTable;
-	const unsigned int                        ftoTableSize;
-
-private :
-    // -----------------------------------------------------------------------
-    //  Unimplemented constructors and operators
-    // -----------------------------------------------------------------------
-    ENameMapFor2();
-    ENameMapFor2(const ENameMapFor2<TType>&);
-    void operator=(const ENameMapFor2<TType>&);
-};
-
-class XML256TableTranscoder2 : public XML256TableTranscoder
-{
-public :
-    XML256TableTranscoder2(
-        const   XMLCh* const                        encodingName
-        , const unsigned int                        blockSize
-        , const XMLCh* const                        fromTable
-        , const XMLTransService::TransRec* const    toTable
-        , const unsigned int                        toTableSize
-		) : XML256TableTranscoder(encodingName, blockSize, fromTable, toTable, toTableSize) {}
-
-private :
-    XML256TableTranscoder2();
-    XML256TableTranscoder2(const XML256TableTranscoder2&);
-    void operator=(const XML256TableTranscoder2&);
-};
-#endif
-
-#ifdef XALAN_HACK_DIGITAL_ENTITIES
-static void hack_s_maximumCharacterValues(const XalanDOMString& encoding) {
-/*
-	open:
-		xml-xalan/c/src/PlatformSupport/XalanTranscodingServices.hpp 
-	find: 
-		static const MaximumCharacterValueMapType&	s_maximumCharacterValues;
-	paste to next line:
-		friend static void hack_s_maximumCharacterValues(const XalanDOMString& encoding); // hack by paf
-*/
-
-	/**/
-	const_cast<XalanTranscodingServices::MaximumCharacterValueMapType &>(
-		XalanTranscodingServices::s_maximumCharacterValues).insert(
-		XalanTranscodingServices::MaximumCharacterValueMapType::value_type(encoding, 0xFFFF));
-		/**/
-}
-#endif
-
-/// @todo addEncoding only once!
 static void load_charset(const Hash::Key& akey, Hash::Val *avalue, 
 										  void *info) {
-	Hash& CTYPE=*static_cast<Hash *>(info);
-	Pool& pool=CTYPE.pool();
-
-	Charset_tables tables={
-		// pcre_tables
-		// lowcase, flipcase, bits digit+word+whitespace, masks
-		(unsigned char *)pool.calloc(tables_length) // pcre_tables
-#ifdef XML
-		// transcoder
-		, (XMLCh *)pool.calloc(sizeof(XMLCh)*0x100) // fromTable
-		, 0 // toTable
-		, 0 // toTableSz
-#endif
-	};
-	prepare_case_tables(tables.pcre_tables);
-	cstr2ctypes(tables.pcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
-
-	// fill tables
 	Value& value=*static_cast<Value *>(avalue);
-	if(Table *table=value.get_table()) {
-#ifdef XML
-		tables.toTable=(XMLTransService::TransRec *)pool.calloc(
-			sizeof(XMLTransService::TransRec)*table->size()*2);
-#endif
-		table->for_each(ctype_table_row_to_charset_tables, &tables);
-#ifdef XML
-		// sort by the Unicode code point
-		_qsort(tables.toTable, tables.toTableSz, sizeof(*tables.toTable), 
-			sort_cmp_Trans_rec_intCh);
-#endif
-	} else
-		PTHROW(0, 0,
-			&value.name(),
-			"must be hash");
+	Hash& CTYPE=*static_cast<Hash *>(info);
+
+	Charset_connection& connection=charset_manager->get_connection(akey, value.as_string());
 
 	// charset->pcre_tables 
-	CTYPE.put(akey, tables.pcre_tables);
-
-#ifdef XML
-	// charset->transcoder
-	XalanDOMString sencoding(akey.cstr());
-#ifdef XALAN_HACK_DIGITAL_ENTITIES
-	hack_s_maximumCharacterValues(sencoding);
-#endif
-	const XMLCh* const auto_encoding_cstr=sencoding.c_str();
-	int size=sizeof(XMLCh)*(sencoding.size()+1);
-	XMLCh* pool_encoding_cstr=(XMLCh*)malloc(size);
-	memcpy(pool_encoding_cstr, auto_encoding_cstr, size);
-    XMLString::upperCase(pool_encoding_cstr);
-
-    XMLPlatformUtils::fgTransService->addEncoding(
-		pool_encoding_cstr, 
-		new ENameMapFor2<XML256TableTranscoder2>(
-			pool_encoding_cstr
-			, tables.fromTable
-			, tables.toTable
-			, tables.toTableSz
-		));
-#endif
+	CTYPE.put(akey, connection.pcre_tables());
 }
 
 //
@@ -370,6 +125,22 @@ void Request::core(
 				main_class_name, main_class);
 		}
 
+		if(main_class) {
+			/* $MAIN:CHARSETS[
+					$.charsetname1[/full/path/to/charset/file.cfg]
+					...
+				]
+			*/
+			if(Value *vcharsets=main_class->get_element(*charsets_name)) {
+				if(Hash *charsets=vcharsets->get_hash())
+					charsets->for_each(load_charset, &CTYPE);
+				else
+					THROW(0, 0,
+						&vcharsets->name(),
+						"must be hash");
+			}
+		}
+
 		// configure root options
 		//	until someone with less privileges have overriden them
 		OP.configure_admin(*this);
@@ -446,15 +217,6 @@ void Request::core(
 		if(Value *element=main_class->get_element(*mime_types_name))
 			if(Table *table=element->get_table())
 				mime_types=table;			
-
-		if(Value *vcharsets=main_class->get_element(*charsets_name)) {
-			if(Hash *charsets=vcharsets->get_hash())
-				charsets->for_each(load_charset, &CTYPE);
-			else
-				THROW(0, 0,
-					&vcharsets->name(),
-					"must be hash");
-		}
 
 		// filling form fields
 		form.fill_fields_and_tables(*this);
