@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.41 2002/03/27 15:30:35 paf Exp $
+	$Id: xnode.C,v 1.42 2002/03/28 14:02:30 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -98,7 +98,7 @@ private:
 
 // helpers
 
-GdomeNode *as_node(Pool& pool, const String& method_name, MethodParams *params, 
+GdomeNode *as_node(const String& method_name, MethodParams *params, 
 						int index, const char *msg) {
 	Value& value=params->as_no_junction(index, msg);
 	if(!(strcmp(value.type(), VXNODE_TYPE)==0 
@@ -115,7 +115,7 @@ GdomeNode *as_node(Pool& pool, const String& method_name, MethodParams *params,
 
 GdomeAttr * as_attr(Pool& pool, const String& method_name, MethodParams *params, 
 						int index, const char *msg) {
-	GdomeNode *node=as_node(pool, method_name, params, index, msg);
+	GdomeNode *node=as_node(method_name, params, index, msg);
 	GdomeException exc;
 	if(gdome_n_nodeType(node, &exc)!=GDOME_ATTRIBUTE_NODE)
 		throw Exception("parser.runtime",
@@ -134,8 +134,8 @@ static void _insertBefore(Request& r, const String& method_name, MethodParams *p
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
 	GdomeNode *selfNode=vnode.get_node(&method_name);
-	GdomeNode *newChild=as_node(pool, method_name, params, 0, "newChild must be node");
-	GdomeNode *refChild=as_node(pool, method_name, params, 1, "refChild must be node");
+	GdomeNode *newChild=as_node(method_name, params, 0, "newChild must be node");
+	GdomeNode *refChild=as_node(method_name, params, 1, "refChild must be node");
 	
 	GdomeException exc;
 	if(GdomeNode *retNode=gdome_n_insertBefore(selfNode, newChild, refChild, &exc)) {
@@ -153,8 +153,8 @@ static void _replaceChild(Request& r, const String& method_name, MethodParams *p
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
 	GdomeNode *selfNode=vnode.get_node(&method_name);
-	GdomeNode *newChild=as_node(pool, method_name, params, 0, "newChild must be node");
-	GdomeNode *refChild=as_node(pool, method_name, params, 1, "refChild must be node");
+	GdomeNode *newChild=as_node(method_name, params, 0, "newChild must be node");
+	GdomeNode *refChild=as_node(method_name, params, 1, "refChild must be node");
 	
 	GdomeException exc;
 	if(GdomeNode *retNode=gdome_n_replaceChild(selfNode, newChild, refChild, &exc)) {
@@ -171,7 +171,7 @@ static void _removeChild(Request& r, const String& method_name, MethodParams *pa
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
 	GdomeNode *selfNode=vnode.get_node(&method_name);
-	GdomeNode *oldChild=as_node(pool, method_name, params, 0, "oldChild must be node");
+	GdomeNode *oldChild=as_node(method_name, params, 0, "oldChild must be node");
 	
 	GdomeException exc;
 	if(GdomeNode *retNode=gdome_n_removeChild(selfNode, oldChild, &exc)) {
@@ -188,7 +188,7 @@ static void _appendChild(Request& r, const String& method_name, MethodParams *pa
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
 	GdomeNode *selfNode=vnode.get_node(&method_name);
-	GdomeNode *newChild=as_node(pool, method_name, params, 0, "newChild must be node");
+	GdomeNode *newChild=as_node(method_name, params, 0, "newChild must be node");
 	
 	GdomeException exc;
 	if(GdomeNode *retNode=gdome_n_appendChild(selfNode, newChild, &exc)) {

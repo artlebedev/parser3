@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.87 2002/03/27 15:30:34 paf Exp $
+	$Id: xdoc.C,v 1.88 2002/03/28 14:02:30 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -311,7 +311,7 @@ static void _importNode(Request& r, const String& method_name, MethodParams *par
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
 	GdomeNode *importedNode=
-		as_node(pool, method_name, params, 0, "importedNode must be node");
+		as_node(method_name, params, 0, "importedNode must be node");
 	bool deep=
 		params->as_bool(1, "deep must be bool", r);
 
