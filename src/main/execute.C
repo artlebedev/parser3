@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.161 2001/05/17 19:33:33 parser Exp $
+	$Id: execute.C,v 1.162 2001/05/21 10:59:38 parser Exp $
 */
 
 #include "pa_opcode.h"
@@ -712,7 +712,7 @@ Value *Request::get_element() {
 	return value;
 }
 
-/**	intercept_string:
+/**	@param intercept_string
 	- true:
 		they want result=string value, 
 		possible object result goes to wcontext
