@@ -4,12 +4,13 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.38 2002/02/08 08:30:16 paf Exp $
+	$Id: pa_exception.C,v 1.39 2002/03/13 13:00:02 paf Exp $
 */
 
 #include "pa_common.h"
 #include "pa_exception.h"
 #include "pa_globals.h"
+#include "pa_sapi.h"
 
 Exception::Exception() {
 	ftype=fcode=fproblem_source=0;
@@ -27,6 +28,8 @@ Exception::Exception(const String *atype, const String *acode,
 
 	if(comment_fmt) {
 		fcomment=(char *)malloc(MAX_STRING);
+		if(!fcomment)
+			SAPI::die("out of memory in 'Exception::Exception', failed to allocated %u bytes", MAX_STRING);
 		va_list args;
 		va_start(args, comment_fmt);
 		vsnprintf(fcomment, MAX_STRING, comment_fmt, args);
