@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2003/11/20 16:34:25 $";
+static const char * const IDENT_REQUEST_H="$Date: 2003/11/28 09:24:52 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -334,6 +334,25 @@ public: // status read methods
 	}
 	*/
 
+	/// for @main[]
+	const String* execute_virtual_method(Value& aself, const String& method_name);
+
+	/// for @postprocess[body]
+	StringOrValue execute_method(VMethodFrame& amethodFrame, const Method& method);
+	//{ for @conf[filespec] and @auto[filespec] and parser://method/call
+	const String* execute_method(Value& aself, 
+		const Method& method, VString* optional_param,
+		bool do_return_string);
+	struct Execute_nonvirtual_method_result {
+		const String* string;
+		Method* method;
+		Execute_nonvirtual_method_result(): string(0), method(0) {}
+	};
+	Execute_nonvirtual_method_result execute_nonvirtual_method(VStateless_class& aclass, 
+		const String& method_name, VString* optional_param,
+		bool do_return_string);
+	//}
+
 #ifdef XML
 public: // charset helpers
 
@@ -362,24 +381,6 @@ private: // compile.C
 		uint file_no);
 
 private: // execute.C
-
-	/// for @postprocess[body]
-	StringOrValue execute_method(VMethodFrame& amethodFrame, const Method& method);
-	//{ for @conf[filespec] and @auto[filespec]
-	const String* execute_method(Value& aself, 
-		const Method& method, VString* optional_param,
-		bool do_return_string);
-	struct Execute_nonvirtual_method_result {
-		const String* string;
-		Method* method;
-		Execute_nonvirtual_method_result(): string(0), method(0) {}
-	};
-	Execute_nonvirtual_method_result execute_nonvirtual_method(VStateless_class& aclass, 
-		const String& method_name, VString* optional_param,
-		bool do_return_string);
-	//}
-	/// for @main[]
-	const String* execute_virtual_method(Value& aself, const String& method_name);
 
 	Value& get_element(Value& ncontext, const String& name, bool can_call_operator);
 

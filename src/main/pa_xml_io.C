@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/11/27 15:10:01 $";
+static const char * const IDENT="$Date: 2003/11/28 09:24:52 $";
 
 #include "libxslt/extensions.h"
 
@@ -105,6 +105,7 @@ struct MemoryStream {
 
 		size_t to_read=min(a_size, left);
 		memcpy(a_buffer, m_buf, to_read);
+		m_position+=to_read;
 		return to_read;
 	}
 
@@ -113,7 +114,7 @@ struct MemoryStream {
 
 static int
 xmlFileMatchMethod(const char* filename) {
-	if (!strncmp(filename, "parser://", 7 /*strlen("parser://"), and check xmlFileOpenMethod*/))
+	if (!strncmp(filename, "parser://", 9 /*strlen("parser://"), and check xmlFileOpenMethod*/))
 		return(1);
 	return(0);
 }
@@ -124,23 +125,26 @@ xmlFileOpenMethod (const char* afilename) {
 	//_asm int 3;
 	Request& r=pa_thread_request();
 
-	char* s=pa_strdup(afilename+7 /*strlen("parser://")*/);
+	char* s=pa_strdup(afilename+9 /*strlen("parser://")*/);
 	const char* method_cstr=lsplit(&s, '/');
 	const String* method=new String(method_cstr);
+	VString* param=s?new VString(*new String(s)):0;
 	{
 		Temp_lang temp_lang(r, String::L_XML); // default language: XML
-		// @todo: s=params
-		if(const String* body_string=r.execute_virtual_method(r.main_class, *method)) {
+		Request::Execute_nonvirtual_method_result body=
+			r.execute_nonvirtual_method(r.main_class, *method, param, true);
+		if(body.string) {
 			MemoryStream *stream=new(UseGC) MemoryStream;
-			stream->m_buf=body_string->cstr(String::L_UNSPECIFIED);
+			stream->m_buf=body.string->cstr(String::L_UNSPECIFIED);
 			stream->m_size=strlen(stream->m_buf);
 			return (void*)stream;
 		}
 	}
 
 	throw Exception(0,
-		method,
-		"not found (referred from parser://name/)");
+		new String(afilename),
+		"'%s' method not found in %s class", 
+			method_cstr, MAIN_CLASS_NAME);
 }
 
 static int
