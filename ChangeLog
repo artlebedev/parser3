@@ -1,3 +1,703 @@
+2002-04-04  paf
+	* src/include/pa_string.h:
+	* src/main/pa_string.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		fixed string.replace [when reconstructing pieces were split by
+		max_integral(piece.size), thus some strings to replace happen
+		to be split into two = not replaced)
+
+	* src/targets/cgi/parser3.C:
+	* src/targets/cgi/parser3.C:
+	* src/targets/cgi/parser3.dsp:
+	* src/targets/cgi/parser3.dsp:
+		document root in standalone version = current dir
+
+2002-04-03  paf
+	* INSTALL:
+	* Makefile.in:
+	* configure:
+	* configure.in:
+	* etc/Makefile.in:
+	* etc/parser3.charsets/Makefile.in:
+	* etc/parser3.conf.in:
+	* src/Makefile.in:
+	* src/include/Makefile.in:
+	* src/libltdl/Makefile.in:
+	* src/main/Makefile.in:
+	* src/pcre/Makefile.in:
+		root config configure options
+
+	* configure:
+	* configure.in:
+		more checks on nonexistent charset
+
+2002-04-02  paf
+	* src/main/compile.C:
+		parser.compile [exception name more like in doc]
+
+2002-04-01  paf
+	* src/classes/mail.C:
+	* src/include/pa_string.h:
+	* src/main/untaint.C:
+	* src/targets/isapi/parser3isapi.dsp:
+	* www/cgi-bin/parser3.log:
+		mail subject encoding taken from .content-type.charset, not .charset
+
+2002-03-29  paf
+	* operators.txt:
+	* src/classes/date.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		^date::create now may not supply day, default 1.
+		checked 29.03 -> 29.02 roll on non 366 days' year.  | 31.05->31.04   roll
+
+	* etc/parser3.charsets/koi8-r.cfg:
+		koi8-r += ukranian letters
+
+2002-03-28  paf
+	* operators.txt:
+	* src/classes/date.C:
+	* src/classes/op.C:
+	* src/include/pa_globals.h:
+	* src/include/pa_hash.h:
+	* src/main/pa_globals.C:
+	* src/types/pa_vdate.h:
+	* www/htdocs/index.html:
+		^cache[file][date]{
+		   ^cache(seconds)
+		   ^cache[date]
+		}
+
+	* src/classes/xdoc.C:
+	* src/classes/xnode.C:
+	* src/classes/xnode.h:
+		removed redundant pool param
+
+2002-03-27  paf
+	* operators.txt:
+	* src/classes/op.C:
+	* src/include/pa_config_fixed.h:
+	* src/include/pa_request.h:
+	* src/main/execute.C:
+	* src/main/pa_request.C:
+	* www/cgi-bin/parser3.log:
+		decided agains resetting exception_trace, just changed name
+
+	* operators.txt:
+	* src/classes/date.C:
+	* src/classes/double.C:
+	* src/classes/file.C:
+	* src/classes/form.C:
+	* src/classes/hash.C:
+	* src/classes/image.C:
+	* src/classes/int.C:
+	* src/classes/mail.C:
+	* src/classes/math.C:
+	* src/classes/op.C:
+	* src/classes/smtp/smtp.C:
+	* src/classes/string.C:
+	* src/classes/table.C:
+	* src/classes/void.C:
+	* src/classes/xdoc.C:
+	* src/classes/xnode.C:
+	* src/include/pa_exception.h:
+	* src/include/pa_request.h:
+	* src/include/pa_stylesheet_connection.h:
+	* src/main/compile.C:
+	* src/main/compile_tools.C:
+	* src/main/execute.C:
+	* src/main/pa_array.C:
+	* src/main/pa_charset.C:
+	* src/main/pa_charsets.C:
+	* src/main/pa_common.C:
+	* src/main/pa_dictionary.C:
+	* src/main/pa_exception.C:
+	* src/main/pa_exec.C:
+	* src/main/pa_pool.C:
+	* src/main/pa_request.C:
+	* src/main/pa_socks.C:
+	* src/main/pa_sql_driver_manager.C:
+	* src/main/pa_string.C:
+	* src/main/pa_table.C:
+	* src/main/untaint.C:
+	* src/targets/apache13/mod_parser3.C:
+	* src/targets/cgi/parser3.C:
+	* src/targets/isapi/parser3isapi.C:
+	* src/types/pa_value.h:
+	* src/types/pa_vcookie.C:
+	* src/types/pa_vfile.h:
+	* src/types/pa_vform.C:
+	* src/types/pa_vhash.h:
+	* src/types/pa_vmethod_frame.h:
+	* src/types/pa_vstatus.C:
+	* src/types/pa_vtable.C:
+	* src/types/pa_vxdoc.h:
+	* src/types/pa_vxnode.h:
+	* src/types/pa_wcontext.C:
+	* src/types/pa_wwrapper.h:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		assigned exception types
+
+2002-03-26  paf
+	* operators.txt:
+	* src/classes/date.C:
+	* www/htdocs/index.html:
+		fixed date roll on daylightsaving days
+		mktime took into account tm_isdst flag, which remained from BEFORE roll, but should have been reset
+
+	* src/classes/op.C:
+	* www/htdocs/index.html:
+		forced language of $source field of exception to 'tainted',
+		so that sql-langed-frags could be outputed outside of connect
+
+	* src/include/pa_common.h:
+	* src/main/pa_exec.C:
+		windows exec chdir fixed
+
+	* operators.txt:
+	* src/classes/date.C:
+	* www/htdocs/index.html:
+		removed date.roll limit of +-1 offset
+
+2002-03-25  paf
+	* INSTALL:
+		comment on --disable-link-stdcpp
+
+	* INSTALL:
+	* configure:
+	* configure.in:
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/Makefile.in:
+		libstdc++ link skipping configure option
+
+	* src/classes/file.C:
+	* src/classes/mail.C:
+	* src/include/pa_exec.h:
+	* src/main/pa_exec.C:
+		f(!forced_allow)
+		to allow
+		--with-sendmail to work with any/both
+		--disable-foreign-group-files --disable-execs
+
+	* src/classes/op.C:
+	* src/include/pa_sql_connection.h:
+		sql connection with error were put to cache with '
+		marked_to_rollback' flag, all consequent even OK requests
+		rolled back
+
+	* INSTALL:
+		"--with=sendmail=COMMAND"
+		comment
+
+	* INSTALL:
+	* configure:
+	* configure.in:
+	* src/classes/mail.C:
+	* src/include/pa_config_auto.h.in:
+	* src/main/pa_exec.C:
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/Makefile.in:
+		--disable-foreign-group-files now disables execs also.
+		introducing --sendmail
+
+	* INSTALL:
+	* INSTALL:
+	* src/classes/mail.C:
+	* src/classes/mail.C:
+		*** empty log message ***
+
+	* operators.txt:
+		pgsql options comment
+
+	* operators.txt:
+	* src/targets/cgi/parser3.C:
+		http_site_config_filespec
+
+2002-03-22  paf
+	* operators.txt:
+		few comments on sets
+
+	* src/main/pa_exec.C:
+		createprocess nowindow flag
+		check on readfile false return
+
+2002-03-18  paf
+	* src/main/pa_charset.C:
+	* src/targets/isapi/pa_threads.C:
+	* src/types/pa_vdouble.h:
+		removed some tested @tests
+
+	* etc/parser3.conf.in:
+	* operators.txt:
+	* src/classes/op.C:
+	* src/include/pa_exception.h:
+	* src/include/pa_globals.h:
+	* src/include/pa_request.h:
+	* src/include/pa_stack.h:
+	* src/main/pa_globals.C:
+	* src/main/pa_request.C:
+	* www/cgi-bin/parser3.log:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+	* www/htdocs/index.html:
+		introducing ^try
+
+2002-03-15  paf
+	* operators.txt:
+	* src/classes/table.C:
+	* www/htdocs/index.html:
+		^table.locate(logical expr)
+
+2002-03-13  paf
+	* src/main/pa_exception.C:
+		checked not-pooled malloc
+
+2002-03-11  paf
+	* src/types/pa_vfile.C:
+		$file.text now 0A linebreaks,
+		file::exec/cgi linebreaks "0D0A" changed to 0A onces
+
+	* INSTALL:
+	* configure:
+	* configure.in:
+	* src/include/pa_config_auto.h.in:
+	* src/include/pa_config_fixed.h:
+	* src/main/pa_exec.C:
+	* src/main/pa_exec.C:
+	* www/htdocs/index.html:
+	* www/htdocs/index.html:
+	* www/htdocs/index.html:
+		--disable-execs
+
+	* INSTALL:
+	* configure:
+	* configure.in:
+	* src/include/pa_config_auto.h.in:
+	* src/main/pa_common.C:
+		--disable-foreign-group-files
+
+2002-03-05  paf
+	* src/targets/isapi/parser3isapi.C:
+	* src/targets/isapi/parser3isapi.dsp:
+		iis5 now requires headers to be terminated with \r\n manually [
+		refuses to separate header/body itself]
+
+	* operators.txt:
+	* operators.txt:
+	* src/classes/date.C:
+	* src/classes/date.C:
+		date week calendar columns named
+
+	* src/main/pa_globals.C:
+	* src/targets/cgi/parser3.C:
+	* src/targets/isapi/parser3isapi.C:
+	* www/htdocs/index.html:
+		isapi site config beside .dll
+
+2002-03-04  paf
+	* src/targets/isapi/pa_threads.C:
+	* src/targets/isapi/parser3isapi.C:
+	* src/targets/isapi/parser3isapi.dsp:
+		isapi updated
+
+	* src/classes/op.C:
+	* src/types/pa_vfile.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		process body now evaluated in PASS language
+
+	* src/classes/op.C:
+	* src/include/pa_string.h:
+	* src/main/pa_string.C:
+		string deserialize checks on broken file
+
+2002-03-01  paf
+	* src/main/pa_exec.C:
+		execle -> execve, now argc OK
+
+2002-02-28  paf
+	* src/main/pa_string.C:
+		origin by first piece preferred before last piece
+
+	* src/main/pa_charsets.C:
+		when placing charset to cache using global name now [were
+		request]
+
+	* configure:
+	* configure.in:
+	* src/targets/apache13/ApacheModuleParser3.dsp:
+	* src/targets/apache13/mod_parser3.C:
+	* src/targets/apache13/p3runConfigure.in:
+	* src/targets/apache13/pa_threads.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/auto.p:
+		apache module updated
+
+	* src/main/untaint.C:
+		removed some debug comments
+
+2002-02-27  paf
+	* src/patches/libgdome_morestatic.patch:
+		refused to link statically due to 3 duplicates, they are made static
+
+	* etc/parser3.conf.in:
+		.dll -> .so
+
+	* src/main/pa_charset.C:
+		size_t
+
+	* INSTALL:
+		shared/static-xml
+		with-pathlink
+
+	* operators.txt:
+	* operators.txt:
+		SMTP comment
+
+2002-02-26  paf
+	* src/classes/xnode.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/auto.p:
+	* www/htdocs/global.xsl:
+	* www/htdocs/index.html:
+		in some situation, xpath query returned result with type NODESET, but empty nodeset member field,
+		checked that
+
+	* src/main/pa_exec.C:
+		more precise names for vars, cosmetic
+
+2002-02-22  paf
+	* operators.txt:
+	* src/types/pa_vcookie.C:
+	* src/types/pa_vcookie.C:
+	* www/cgi-bin/parser3.log:
+		cookie "expires=0" =  "session"
+
+	* src/include/pa_string.h:
+	* src/main/pa_string.C:
+	* src/main/pa_string.C:
+	* src/main/pa_string.C:
+	* www/cgi-bin/parser3.log:
+	* www/cgi-bin/parser3.log:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/auto.p:
+	* www/htdocs/index.html:
+		string iterators fixed again, so were String::join_chain
+
+	* configure:
+	* configure.in:
+		glib###.a detection fixed
+
+	* Makefile.in:
+	* configure:
+	* configure.in:
+	* etc/Makefile.in:
+	* etc/parser3.charsets/Makefile.in:
+	* src/Makefile.in:
+	* src/classes/Makefile.am:
+	* src/classes/Makefile.in:
+	* src/classes/gd/Makefile.in:
+	* src/classes/hashfile.C:
+	* src/classes/smtp/Makefile.in:
+	* src/include/Makefile.am:
+	* src/include/Makefile.in:
+	* src/include/pa_config_auto.h.in:
+	* src/include/pa_db_connection.h:
+	* src/include/pa_db_manager.h:
+	* src/include/pa_db_table.h:
+	* src/libltdl/Makefile.in:
+	* src/main/Makefile.am:
+	* src/main/Makefile.in:
+	* src/main/pa_db_connection.C:
+	* src/main/pa_db_manager.C:
+	* src/main/pa_db_table.C:
+	* src/main/pa_globals.C:
+	* src/patches/Makefile.in:
+	* src/pcre/Makefile.in:
+	* src/sql/Makefile.in:
+	* src/targets/Makefile.in:
+	* src/targets/apache13/Makefile.in:
+	* src/targets/apache13/p3runConfigure.in:
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/Makefile.in:
+	* src/targets/isapi/Makefile.in:
+	* src/types/Makefile.am:
+	* src/types/Makefile.in:
+	* src/types/pa_vhashfile.C:
+	* src/types/pa_vhashfile.h:
+		removed hashfile support for now
+
+	* acconfig.h:
+	* src/libltdl/acconfig.h:
+		acconfig move in cvs[from src/libltdl to /]
+
+	* etc/parser3.charsets/windows-1251.cfg:
+		&deg;
+
+	* Makefile.am:
+	* Makefile.in:
+		make update
+
+	* INSTALL:
+		hashfile removed from INSTALL
+
+	* Makefile.in:
+	* configure:
+	* configure.in:
+	* src/include/pa_config_auto.h.in:
+		--with-shared-xml
+		--with-static-xml
+
+	* INSTALL:
+		without-zlib comment
+
+	* operators.txt:
+	* src/classes/classes.dsp:
+	* src/main/main.dsp:
+	* src/types/types.dsp:
+		removed hashfile support from sources for now
+
+	* src/classes/classes.dsp:
+	* src/classes/gd/gd.dsp:
+	* src/main/compile.tab.C:
+	* src/main/main.dsp:
+	* src/targets/apache13/ApacheModuleParser3.dsp:
+	* src/targets/cgi/parser3.dsp:
+	* src/targets/isapi/parser3isapi.dsp:
+	* src/types/types.dsp:
+		*.dsp: removed refereces to win32db & ancient xalan&xml
+
+2002-02-21  paf
+	* Makefile.am:
+	* Makefile.in:
+		make cvsupdate
+
+	* src/main/untaint.C:
+	* www/cgi-bin/parser3.log:
+		removed debug code, activated commented-for debug parts
+
+	* src/include/pa_string.h:
+	* src/include/pa_types.h:
+	* src/main/pa_string.C:
+	* src/main/untaint.C:
+	* www/cgi-bin/parser3.log:
+		STRING_*FOREACH_ROW
+		changed to stop at append_row, not at link zero
+		now string to string appending works
+
+2002-02-20  paf
+	* src/include/pa_string.h:
+	* src/main/execute.C:
+	* src/main/untaint.C:
+	* src/targets/cgi/pa_pool.C:
+	* src/targets/cgi/parser3.C:
+	* www/htdocs/index.html:
+		//#define DEBUG_STRING_APPENDS_VS_EXPANDS
+
+	* src/include/pa_string.h:
+	* src/main/pa_string.C:
+	* src/main/untaint.C:
+	* www/cgi-bin/parser3.log:
+		economy: 22%
+
+	* operators.txt:
+	* src/include/pa_common.h:
+	* src/include/pa_config_fixed.h:
+	* src/include/pa_string.h:
+	* src/include/pa_types.h:
+	* src/main/compile.tab.C:
+	* src/main/execute.C:
+	* src/main/pa_string.C:
+	* src/main/untaint.C:
+	* src/targets/cgi/pa_pool.C:
+	* src/targets/cgi/parser3.C:
+	* www/htdocs/auto.p:
+	* www/htdocs/global.xsl:
+	* www/htdocs/index.html:
+		strign to string append optimiziation idea and estimates
+
+	* src/include/pa_string.h:
+	* src/include/pa_stylesheet_connection.h:
+	* src/main/pa_db_manager.C:
+	* src/main/pa_dictionary.C:
+	* src/main/pa_string.C:
+	* src/main/untaint.C:
+	* src/targets/cgi/parser3.C:
+	* src/types/pa_vcookie.C:
+	* src/types/pa_vstring.h:
+	* www/htdocs/index.html:
+		speed uptimized: string::is_empty
+
+	* src/include/pa_string.h:
+	* src/main/pa_string.C:
+	* src/main/untaint.C:
+	* www/cgi-bin/parser3.log:
+		space uptimized: string::link_row removed
+
+2002-02-19  paf
+	* src/classes/xdoc.C:
+	* src/classes/xnode.C:
+		getElementsByTagName and *NS moved to node [element]
+
+	* src/classes/math.C:
+		not used directly [but erroreously reported that 'is', thus
+		registering twice&other probs]
+
+	* src/main/compile.C:
+	* src/main/compile.C:
+		without string_origins not worked
+
+	* src/main/compile.C:
+		without string_origins parse error file+line+col possible
+
+2002-02-18  paf
+	* src/types/pa_vdouble.h:
+		since we have in_expression
+		removed that trick i've installed into double::as_string
+
+	* INSTALL:
+		local install comment
+
+	* src/main/compile.tab.C:
+	* src/main/compile.y:
+	* www/htdocs/global.xsl:
+	* www/htdocs/index.html:
+		integer  division stops name
+
+	* Makefile.in:
+	* acinclude.m4:
+	* aclocal.m4:
+	* configure:
+	* configure.in:
+	* etc/Makefile.in:
+	* etc/parser3.charsets/Makefile.in:
+	* src/Makefile.in:
+	* src/classes/Makefile.in:
+	* src/classes/gd/Makefile.in:
+	* src/classes/smtp/Makefile.in:
+	* src/include/Makefile.in:
+	* src/include/pa_config_auto.h.in:
+	* src/include/pa_config_includes.h:
+	* src/libltdl/Makefile.am:
+	* src/libltdl/Makefile.in:
+	* src/libltdl/config.h:
+	* src/libltdl/config_auto.h.in:
+	* src/libltdl/configure:
+	* src/libltdl/configure.in:
+	* src/main/Makefile.in:
+	* src/patches/Makefile.in:
+	* src/pcre/Makefile.in:
+	* src/sql/Makefile.in:
+	* src/targets/Makefile.in:
+	* src/targets/apache13/Makefile.in:
+	* src/targets/apache13/p3runConfigure.in:
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/Makefile.in:
+	* src/targets/cgi/parser3.C:
+	* src/targets/isapi/Makefile.in:
+	* src/types/Makefile.in:
+		removed libtool usage from build mech
+
+	* operators.txt:
+	* src/classes/date.C:
+		date::create [were date::set, with backward comp
+
+	* src/classes/math.C:
+	* www/htdocs/index.html:
+		math:random range check fixed
+
+	* src/main/compile.tab.C:
+		bison env set so one could compile without cygwin installed
+
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/Makefile.in:
+	* src/targets/cgi/parser3.C:
+		*** empty log message ***
+
+	* src/main/pa_globals.C:
+		extern "C" was removed too fast
+
+	* Makefile.in:
+	* ltconfig:
+	* ltmain.sh:
+		removed libtool subpart files
+
+	* src/main/main.dsp:
+	* src/main/pa_globals.C:
+		removed unneded
+		#ifdef __cplusplus
+		}
+		#endif
+
+	* src/include/pa_opcode.h:
+	* src/include/pa_request.h:
+	* src/main/compile.tab.C:
+	* src/main/compile.y:
+	* src/main/execute.C:
+	* src/types/pa_wcontext.h:
+	* www/htdocs/index.html:
+	* www/htdocs/index.html:
+		in_expression
+		aimed to solve old problem with string/nonstring values,
+		now in expressions double/int values are passed as-is, without stupid tostring/fromstring conversions
+
+	* operators.txt:
+	* src/targets/cgi/parser3.C:
+		PARSER_ROOT_CONFIG
+
+	* src/classes/classes.dsp:
+	* src/classes/gd/gd.dsp:
+	* src/classes/smtp/smtp.dsp:
+	* src/main/main.dsp:
+	* src/main/pa_globals.C:
+	* src/targets/cgi/parser3.dsp:
+	* src/types/types.dsp:
+		win32xml now contains gnome xml libs
+		parser .dsp-s changed accordingly
+
+	* src/libltdl/Makefile.am:
+	* src/libltdl/Makefile.in:
+		make dist for libltdl updated
+
+	* operators.txt:
+		\ comment
+
+2002-02-13  paf
+	* src/pcre/ibm-1257.ucm:
+		1257 unicode table added
+
+	* INSTALL:
+	* configure:
+	* configure.in:
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/Makefile.in:
+		--with-glib-config
+		CXXLINK=$(CC) for targets/cgi/parser3
+
+	* src/include/pa_config_includes.h:
+		sys/time time both included now.
+		vaguely remember confilicts on this on some system [not on six|ablv]
+		so when would see them again would think up proper check
+
+	* etc/parser3.charsets/windows-1257.cfg:
+	* etc/parser3.conf.in:
+	* src/pcre/pcre_parser_ctype.c:
+	* src/targets/cgi/parser3.C:
+		baltic charset file generated, in generation script ispunct
+		check added
+
+	* src/main/pa_common.C:
+		strnchr: sanity check added
+
+	* src/main/pa_common.C:
+		truncation never occured when writing files on unix [since i've changed cache mech]
+		fix
+
+	* etc/parser3.charsets/windows-1257.cfg:
+		id added
+
 2002-02-08  paf
 	* src/classes/classes.C:
 	* src/classes/classes.h:
@@ -146,9 +846,63 @@
 	* src/types/pa_wwrapper.h:
 		2002
 
+	* src/types/pa_vcookie.C:
+	* src/types/pa_vcookie.C:
+	* src/types/pa_vcookie.C:
+	* src/types/pa_vcookie.C:
+		VCookie::fill_fields one check forgotten
+
+	* src/classes/smtp/Makefile.am:
+	* src/classes/smtp/Makefile.in:
+	* src/include/Makefile.am:
+	* src/include/Makefile.in:
+	* src/patches/Makefile.am:
+	* src/patches/Makefile.in:
+	* src/sql/Makefile.am:
+	* src/sql/Makefile.in:
+	* src/targets/isapi/Makefile.am:
+	* src/targets/isapi/Makefile.in:
+		forgotten makes
+
 	* src/libltdl/Makefile.am:
 	* src/libltdl/Makefile.in:
 		makes
+
+	* AUTHORS:
+	* COPYING:
+	* INSTALL:
+	* INSTALL:
+	* README:
+		install&others updated
+
+	* Makefile.am:
+	* Makefile.in:
+	* configure:
+	* configure.in:
+	* etc/parser3.charsets/Makefile.am:
+	* etc/parser3.charsets/Makefile.in:
+	* src/Makefile.am:
+	* src/Makefile.in:
+	* src/classes/Makefile.am:
+	* src/classes/Makefile.in:
+	* src/classes/gd/Makefile.am:
+	* src/classes/gd/Makefile.in:
+	* src/libltdl/Makefile.am:
+	* src/libltdl/Makefile.in:
+	* src/main/Makefile.am:
+	* src/main/Makefile.in:
+	* src/main/pa_status_provider.C:
+	* src/pcre/Makefile.am:
+	* src/pcre/Makefile.in:
+	* src/targets/Makefile.am:
+	* src/targets/Makefile.in:
+	* src/targets/apache13/Makefile.am:
+	* src/targets/apache13/Makefile.in:
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/Makefile.in:
+	* src/types/Makefile.am:
+	* src/types/Makefile.in:
+		'make dist' works
 
 	* src/classes/classes.C:
 	* src/classes/classes.h:
@@ -5854,7 +6608,7 @@
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.2 2002/02/08 10:56:14 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.3 2002/04/04 13:48:30 paf Exp $";
 
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
@@ -5897,7 +6651,7 @@
 	* src/main/untaint.C:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
-		static char *RCSId="$Id: ChangeLog,v 1.2 2002/02/08 10:56:14 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.3 2002/04/04 13:48:30 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C:
@@ -11951,7 +12705,7 @@
 	* src/targets/parser.C:
 	* src/targets/parser.dsp:
 	* src/targets/parser.dsp:
-		$Id: ChangeLog,v 1.2 2002/02/08 10:56:14 paf Exp $ check
+		$Id: ChangeLog,v 1.3 2002/04/04 13:48:30 paf Exp $ check
 
 	* src/targets/parser.C:
 		$id$ check
