@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/26 09:02:14 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/11/26 12:39:44 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -416,6 +416,15 @@ bool file_read(Pool& pool, const String& file_spec,
 	}
 
 	if(result && as_text) {
+		// UTF-8 signature: EF BB BF
+		if(data_size>=3) {
+			char *in=(char *)data;
+			if((in[0] == '\xEF') && (in[1] == '\xBB') &&
+				(in[2] == '\xBF')) {
+				data=in+3; data_size-=3;// skip prefix
+			}
+		}
+
 		fix_line_breaks((char *)(data), data_size); 
 		// note: after fixing
 		((char*&)(data))[data_size]=0;
