@@ -6,6 +6,10 @@ input_date.p
 ^if($ставить){y;n}
 
 @main[]
+$path[/news/tululu/]
+$pieces[^path.lsplit[/]]
+$pieces{^count[]: ^menu{{$piece}}[,].}
+<hr>
 ^href[href;title](1<2)
 
 <hr>
@@ -271,20 +275,6 @@ $th[^t2.hash[key;a]]
 
 $filelist[^table:dir[.]]
 <hr>
-$path[/news/tululu/]
-#^path.flip[]
-<hr>
-$branches[^table:set{name	val
-index.cgihtml	123
-}]
-$splitURI[^request:uri.lsplit[/]]
-name ^if(^branches.locate[name;$splitURI.1]){found;not found}:
-$branches.name
-<HR>
-$splitURI[^request:uri.lsplit[/]]
-$splitURI.0!$splitURI.1
-<HR>
-
 $t2[^table:set{dir	title
 /here	Here
 }]

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.60 2001/07/09 16:13:17 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.61 2001/07/11 16:32:13 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -112,13 +112,20 @@ static void _lsplit(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 
-	Array& row=*new(pool) Array(pool);
-	split_list(r, method_name, params, string, row);
+	Array pieces(pool);
+	split_list(r, method_name, params, string, pieces);
+
+	Array& columns=*new(pool) Array(pool);
+	columns+=new(pool) String(pool, "piece");
 
 	Table& table=*new(pool) Table(pool, &string, 
-		0/*nameless*/, 1/*row preallocate(and only)*/);
-	table+=&row;
-
+		&columns, pieces.size());
+	int size=pieces.quick_size();
+	for(int i=0; i<size; i++) {
+		Array& row=*new(pool) Array(pool);
+		row+=pieces.quick_get(i);
+		table+=&row;
+	}
 	r.write_no_lang(*new(pool) VTable(pool, &table));
 }
 
@@ -126,16 +133,19 @@ static void _rsplit(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 
-	Array list(pool);
-	split_list(r, method_name, params, string, list);
+	Array pieces(pool);
+	split_list(r, method_name, params, string, pieces);
 
-	Array& row=*new(pool) Array(pool);
-	for(int i=list.size(); --i>=0; )
-		row+=list.get(i);
+	Array& columns=*new(pool) Array(pool);
+	columns+=new(pool) String(pool, "piece");
 
 	Table& table=*new(pool) Table(pool, &string, 
-		0/*nameless*/, 1/*row preallocate(and only)*/);
-	table+=&row;
+		&columns, pieces.size());
+	for(int i=pieces.size(); --i>=0; ) {
+		Array& row=*new(pool) Array(pool);
+		row+=pieces.get(i);
+		table+=&row;
+	}
 
 	r.write_no_lang(*new(pool) VTable(pool, &table));
 }
