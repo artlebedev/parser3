@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCOOKIE_C="$Date: 2003/07/24 11:31:25 $";
+static const char* IDENT_VCOOKIE_C="$Date: 2003/08/19 11:03:55 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -165,7 +165,8 @@ static void output_set_cookie(
 	if(ameaning) { // assigning value
 		// Set-Cookie: (attribute)=(value); path=/
 		lmeaning=ameaning;
-		if(HashStringValue *hash=lmeaning->get_hash()) { // ...[hash value]
+		HashStringValue *hash;
+		if(hash=lmeaning->get_hash()) { // ...[hash value]
 			// $expires
 			if(Value* expires=hash->get(expires_name)) {
 				const String* string;
@@ -184,11 +185,11 @@ static void output_set_cookie(
 				hash->put(expires_name, &expires_vdate(DEFAULT_EXPIRES_DAYS));
 		} else { // ...[string value]
 			Value* wrap_meaning=new VHash;
-			HashStringValue& hash=*wrap_meaning->get_hash();
+			hash=wrap_meaning->get_hash();
 			// wrapping lmeaning into hash
-			hash.put(value_name, lmeaning);
+			hash->put(value_name, lmeaning);
 			// string = $expires not assigned, defaulting
-			hash.put(expires_name, &expires_vdate(DEFAULT_EXPIRES_DAYS));
+			hash->put(expires_name, &expires_vdate(DEFAULT_EXPIRES_DAYS));
 			// replacing lmeaning with hash-wrapped one
 			lmeaning=wrap_meaning;
 		}
