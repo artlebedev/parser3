@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.63 2001/07/18 10:06:04 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.64 2001/07/25 09:57:33 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -37,6 +37,7 @@ String *main_method_name;
 String *main_class_name;
 
 String *result_var_name;
+String *match_var_name;
 String *string_pre_match_name;
 String *string_match_name;
 String *string_post_match_name;
@@ -121,6 +122,7 @@ void pa_globals_init(Pool& pool) {
 	main_class_name=NEW String(pool, MAIN_CLASS_NAME);
 
 	result_var_name=NEW String(pool, RESULT_VAR_NAME);
+	match_var_name=NEW String(pool, MATCH_VAR_NAME);
 	string_pre_match_name=NEW String(pool, STRING_PRE_MATCH_NAME);
 	string_match_name=NEW String(pool, STRING_MATCH_NAME);
 	string_post_match_name=NEW String(pool, STRING_POST_MATCH_NAME);

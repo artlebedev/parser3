@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.55 2001/07/18 10:06:04 parser Exp $
+	$Id: pa_globals.h,v 1.56 2001/07/25 09:57:33 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -57,6 +57,7 @@ class Table;
 #define ORIGINS_MODE_NAME "ORIGINS"
 
 #define RESULT_VAR_NAME "result"
+#define MATCH_VAR_NAME "match"
 
 #define STRING_PRE_MATCH_NAME "prematch"
 #define STRING_MATCH_NAME "match"
@@ -111,6 +112,7 @@ extern String *vfile_mime_type_name;
 extern String *origins_mode_name;
 
 extern String *result_var_name;
+extern String *match_var_name;
 extern String *string_pre_match_name;
 extern String *string_match_name;
 extern String *string_post_match_name;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.65 2001/07/23 11:19:25 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.66 2001/07/25 09:57:33 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -183,9 +183,10 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 			vtable.set_name(*ai.origin);
 
 			Junction *junction=ai.replacement_code->get_junction();
-			junction->rcontext=/*must be some way to get to 
-							   outside world junction->root=*/&vtable;
+			Value *saved_match_var_value=junction->root->get_element(*match_var_name);
+			junction->root->put_element(*match_var_name, &vtable);
 			Value& replaced=ai.request->process(*ai.replacement_code, ai.origin, false);
+			junction->root->put_element(*match_var_name, saved_match_var_value);
 
 			/*
 			ai.dest->APPEND_CONST("(");

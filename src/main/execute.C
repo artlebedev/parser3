@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.182 2001/07/25 08:16:21 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.183 2001/07/25 09:57:33 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -776,6 +776,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 			frame=NEW WWrapper(pool(), 0/*empty*/, false/*not constructing*/);
 		}
 		
+		//frame->set_name(value.name());
 		wcontext=frame;
 		self=&junction->self;
 		root=junction->root;
