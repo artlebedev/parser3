@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.51 2001/03/06 13:07:03 paf Exp $
+  $Id: compile.y,v 1.52 2001/03/06 13:24:40 paf Exp $
 */
 
 %{
@@ -19,6 +19,7 @@
 #include "pa_value.h"
 #include "pa_request.h"
 #include "pa_vobject.h"
+#include "pa_vdouble.h"
 
 #define SELF_NAME "self"
 #define USES_NAME "USES"
@@ -184,9 +185,9 @@ name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; 
 
 /* put */
 
-put: '$' name_expr_wdive '[' constructor_value ']' {
+put: '$' name_expr_wdive constructor_value {
 	$$=$2; /* stack: context,name */
-	P($$, $4); /* stack: context,name,constructor_value */
+	P($$, $3); /* stack: context,name,constructor_value */
 	OP($$, OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 };
 name_expr_wdive: 
@@ -216,18 +217,37 @@ name_expr_wdive_root: ':' name_expr_dive_code {
 name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
 
 constructor_value: 
-	empty_value /* optimized $var() case */
-|	STRING /* optimized $var(STRING) case */
-|	complex_constructor_param_value /* $var(something complex) */
+	'[' constructor_code_value ']' { $$=$2 }
+|	'(' constructor_expression_value ')' { $$=$2 }
 ;
-complex_constructor_param_value: complex_constructor_param_body {
+constructor_code_value: 
+	empty_value /* optimized $var[] case */
+|	STRING /* optimized $var[STRING] case */
+|	complex_constructor_code_value /* $var[something complex] */
+;
+complex_constructor_code_value: complex_constructor_code {
 	$$=N(POOL); 
 	OP($$, OP_CREATE_EWPOOL); /* stack: empty write context */
 	P($$, $1); /* some codes to that context */
 	OP($$, OP_REDUCE_EWPOOL); /* context=pop; stack: context.value() */
 };
-complex_constructor_param_body: codes__excluding_sole_str_literal;
+complex_constructor_code: codes__excluding_sole_str_literal;
 codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
+
+constructor_expression_value:
+	empty_value /* optimized $var() case */
+|	STRING /* optimized $var(STRING) case */
+;/*|	complex_constructor_expression_value /* $var(something complex) * /
+;
+complex_constructor_expression_value: complex_constructor_expression {
+	$$=N(POOL); 
+	OP($$, OP_CREATE_SWPOOL); /* stack: empty write context * /
+	P($$, $1); /* some codes to that context * /
+	OP($$, OP_REDUCE_SWPOOL); /* context=pop; stack: context.get_string() * /
+};
+complex_constructor_expression:
+;
+*/
 
 /* call */
 
@@ -258,7 +278,7 @@ store_param_part:
 	$$=$1;
 	OP($$, OP_STORE_PARAM);
 }
-|	complex_constructor_param_value { /* (something complex) */
+|	complex_constructor_code_value { /* (something complex) */
 	$$=$1;
 	OP($$, OP_STORE_PARAM);
 }
