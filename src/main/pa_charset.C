@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.25 2002/07/30 14:09:23 paf Exp $
+	$Id: pa_charset.C,v 1.26 2002/07/30 14:28:47 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -363,6 +363,7 @@ static int transcodeToUTF8(
 
 	return srcPtr==srcEnd?(int)toFillLen:-1;
 }
+/// @todo digital entites only when xml/html output [at output in html/xml mode, in html part of a letter]
 static size_t transcodeFromUTF8(
 								const XMLByte *srcData, size_t& srcLen,
 								XMLByte* toFill, size_t& toFillLen,
