@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/02 14:59:48 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/10 10:22:12 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -875,7 +875,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 		if(using_code_frame) {
 			// almost plain wwrapper about junction wcontext, 
 			// BUT intercepts string writes
-			VCodeFrame local(pool(), *junction->wcontext);  
+			VCodeFrame local(pool(), *junction->wcontext);
 			wcontext=&local;
 
 			// execute it

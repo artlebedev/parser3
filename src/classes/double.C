@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DOUBLE_C="$Date: 2002/08/01 11:41:12 $";
+static const char* IDENT_DOUBLE_C="$Date: 2002/09/10 10:22:12 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -92,7 +92,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			val=0; //calm, compiler
 		}
 	VDouble& result=*new(pool) VDouble(pool, val);
-	r.write_assign_lang(result);
+	r.write_no_lang(result);
 }
 
 // constructor
