@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: mod_parser3.C,v 1.36 2001/07/18 10:06:04 parser Exp $"; 
+static const char *RCSId="$Id: mod_parser3.C,v 1.37 2001/07/25 10:57:58 parser Exp $"; 
 
 #include "httpd.h"
 #include "http_config.h"
@@ -136,6 +136,9 @@ size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
 void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
+	if(strcasecmp(key, "location")==0) 
+		r->status=302;
+
 	if(strcasecmp(key, "content-type")==0) {
 		/* r->content_type, *not* r->headers_out("Content-type").  If you don't
 		 * set it, it will be filled in with the server's default type (typically
@@ -143,7 +146,9 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 		 * case.
 		 */
 		r->content_type = value;
-	} else
+	} else if(strcasecmp(key, "status")==0) 
+		r->status=atoi(value);
+	else
 		ap_table_merge(r->headers_out, key, value);
 }
 
