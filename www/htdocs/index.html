@@ -287,15 +287,24 @@ OK
 #^keygenedhash[]<br>
 #<hr>[$env:HTTP_REFERER]
 #$response:Content-TypE[bad]
-^emailhead2[]
+#^emailhead2[]
+^includet2override[]
+
+@includet2override[]
+#^derived:includet2override[]
+$derived[^derived::create[]]
+^derived.includet2override[]
 
 @emailhead2[]
 ^mail:send[
 	$.charset[koi8-r]
 	$.from[paf@design.ru]
 	$.to[paf@mail]
-	$.reply-to[^taint[agat] <^taint[ag_7k@mail.ru]>]
-	$.subject[test]
+#	$.reply-to[^taint[agat] <^taint[ag_7k@mail.ru]>]
+$user[^taint[agat]]
+$email[^taint[ag_7k@mail.ru]]
+	$.reply-to[$user $email]
+	$.subject[test2]
 ]
 
 @keygenedhash[]

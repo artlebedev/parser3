@@ -32,7 +32,8 @@ derived_includet<br>
 ^self.included_method[2]
 
 @includet2override[]
-^include[some.p]
+$includet2override_var[1]
+^do_include[]
 ^override[]
 
 @override[] me

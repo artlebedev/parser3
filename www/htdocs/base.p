@@ -10,3 +10,11 @@ $base_instance_var[$abase]
 
 @test2[]
 base_test2
+
+
+
+@do_include[]
+^$includet2override_var=$includet2override_var<br>
+^include[some.p]
+@override[] me
+in base

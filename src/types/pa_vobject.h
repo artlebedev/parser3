@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/10/14 11:24:00 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/10/31 10:23:45 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
@@ -30,7 +30,8 @@ public: // Value
 	/*override*/ Value *as(const char *atype, bool looking_up);
 
 	/// VObject: fclass
-	VStateless_class *get_class() { return &fclass; }
+	/*override*/ VStateless_class *get_class() { return &fclass; }
+	/*override*/ VStateless_class *get_last_derived_class() { return get_last_derived()->get_class(); }
 	/*override*/ Value *base_object() { return fbase; }
 
 	/*override*/ bool is_defined() const;

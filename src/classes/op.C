@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/17 09:04:53 $";
+static const char* IDENT_OP_C="$Date: 2002/10/31 10:23:45 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -102,7 +102,7 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 	{
 		Value& vjunction=params->as_junction(params->size()-1, "body must be code");
 
-		VStateless_class *target_class=target_self.get_class();
+		VStateless_class *target_class=target_self.get_last_derived_class();
 		if(!target_class)
 			throw Exception("parser.runtime",
 				&method_name,

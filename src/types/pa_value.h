@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/10/15 07:52:37 $";
+static const char* IDENT_VALUE_H="$Date: 2002/10/31 10:23:45 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -108,6 +108,11 @@ public: // Value
 	
 	/// extract VStateless_class
 	virtual VStateless_class *get_class()=0;
+
+	/// extract VStateless_class
+	virtual VStateless_class *get_last_derived_class() {
+		return get_class();
+	};
 
 	/// extract VTable
 	virtual Table *get_table() { return 0; }
