@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.38 2002/02/08 08:30:10 paf Exp $
+	$Id: xnode.C,v 1.39 2002/02/19 15:03:10 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -368,6 +368,39 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 	r.write_no_lang(result);
 }
 
+static void _getElementsByTagNameNS(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	GdomeElement *element=get_self_element(r, method_name);
+
+	// namespaceURI;localName
+	const String& namespaceURI=params->as_string(0, "namespaceURI must be string");
+	const String& localName=params->as_string(1, "localName must be string");
+
+	GdomeException exc;
+	VHash& result=*new(pool) VHash(pool);
+	if(GdomeNodeList *nodes=
+		gdome_el_getElementsByTagNameNS(
+			element, 
+			pool.transcode(namespaceURI).get(),
+			pool.transcode(localName).get(),
+			&exc)) {
+		gulong length=gdome_nl_length(nodes, &exc);
+		for(gulong i=0; i<length; i++) {
+			String& skey=*new(pool) String(pool);
+			{
+				char *buf=(char *)pool.malloc(MAX_NUMBER);
+				snprintf(buf, MAX_NUMBER, "%d", i);
+				skey << buf;
+			}
+
+			result.hash(0).put(skey, new(pool) VXnode(pool, gdome_nl_item(nodes, i, &exc)));
+		}
+	}
+
+	// write out result
+	r.write_no_lang(result);
+}
+
 // void normalize();
 static void _normalize(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
@@ -618,6 +651,8 @@ MXnode::MXnode(Pool& apool) : Methoded(apool),
 	add_native_method("removeAttributeNode", Method::CT_DYNAMIC, _removeAttributeNode, 1, 1);
 	// NodeList getElementsByTagName(in DOMString name);
 	add_native_method("getElementsByTagName", Method::CT_DYNAMIC, _getElementsByTagName, 1, 1);
+	// NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName);
+	add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
 	// void normalize();
 	add_native_method("normalize", Method::CT_DYNAMIC, _normalize, 0, 0);
 
