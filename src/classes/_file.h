@@ -5,11 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _file.h,v 1.3 2001/04/10 10:32:03 paf Exp $
+	$Id: _file.h,v 1.4 2001/04/17 19:00:26 paf Exp $
 */
 
-#ifndef _FILE_H
-#define _FILE_H
+#ifndef CLASSES_FILE_H
+#define CLASSES_FILE_H
 
 #include "pa_vstateless_class.h"
 

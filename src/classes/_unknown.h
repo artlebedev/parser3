@@ -5,11 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _unknown.h,v 1.1 2001/04/12 15:02:37 paf Exp $
+	$Id: _unknown.h,v 1.2 2001/04/17 19:00:26 paf Exp $
 */
 
-#ifndef _UNKNOWN_H
-#define _UNKNOWN_H
+#ifndef CLASSES_UNKNOWN_H
+#define CLASSES_UNKNOWN_H
 
 #include "pa_vclass.h"
 

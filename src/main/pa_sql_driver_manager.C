@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.6 2001/04/05 13:19:43 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.7 2001/04/17 19:00:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -53,13 +53,13 @@ private:
 //   protocol://user:pass@host:port/database
 //              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ this is driver-dependent
 SQL_Connection& SQL_Driver_manager::get_connection(const String& url, 
-												   Table *protocol2library) {
+												   Table *protocol2driver_and_client) {
 	SYNCHRONIZED(true);
 
 	Pool& pool=url.pool(); // request pool											   
 
 	// we have table for locating protocol's library
-	if(!protocol2library)
+	if(!protocol2driver_and_client)
 		PTHROW(0, 0,
 			&url,
 			"$SQL:drivers table must be defined");
@@ -90,15 +90,20 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& url,
 		url_cstr++;
 
 	SQL_Driver *driver;
+	const String *dlopen_file_spec=0;
 	// first trying to get cached driver
 	if(!(driver=get_driver_from_cache(protocol))) {
 		// no cached
 		const String *library=0;
-		if(protocol2library->locate(0, protocol)) {
-			if(!(library=protocol2library->item(1)) || library->size()==0)
+		if(protocol2driver_and_client->locate(0, protocol)) {
+			if(!(library=protocol2driver_and_client->item(1)) || library->size()==0)
 				PTHROW(0, 0,
-					protocol2library->origin_string(),
-					"library column for protocol '%s' is empty", protocol_cstr);
+					protocol2driver_and_client->origin_string(),
+					"driver library column for protocol '%s' is empty", protocol_cstr);
+			if(!(dlopen_file_spec=protocol2driver_and_client->item(2)) || dlopen_file_spec->size()==0)
+				PTHROW(0, 0,
+					protocol2driver_and_client->origin_string(),
+					"client library column for protocol '%s' is empty", protocol_cstr);
 		} else
 			PTHROW(0, 0,
 				&url,
@@ -123,11 +128,20 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& url,
 
 		// validate driver api version
 		int driver_api_version=driver->api_version();
-		if(driver_api_version<SQL_DRIVER_API_VERSION)
+		if(driver_api_version!=SQL_DRIVER_API_VERSION)
 			PTHROW(0, 0,
 				library,
-				"driver API version is 0x%04X while current minimum is 0x%04X",
+				"driver implements API version 0x%04X not equal to 0x%04X",
 					driver_api_version, SQL_DRIVER_API_VERSION);
+
+		// initialise by connecting to sql client dynamic link library
+		const char *dlopen_file_spec_cstr=dlopen_file_spec->cstr(String::UL_FILE_NAME);
+		if(const char *error=driver->initialize(
+			dlopen_file_spec_cstr))
+			PTHROW(0, 0,
+				library,
+				"driver failed to initialize client library '%s', %s",
+					dlopen_file_spec_cstr, error);
 
 		// cache it
 		put_driver_to_cache(protocol, *driver);
@@ -140,7 +154,8 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& url,
 	// allocate in global pool 
 	// associate with services[request], deassociates at close
 	SQL_Connection& result=
-		*new(this->pool()) SQL_Connection(this->pool(), url, *driver, services, url_cstr);
+		*new(this->pool()) SQL_Connection(this->pool(), 
+		url, *driver, services, url_cstr);
 	
 	return result;
 }

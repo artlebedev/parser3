@@ -5,16 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.17 2001/04/15 13:12:17 paf Exp $
+	$Id: image.C,v 1.18 2001/04/17 19:00:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
-
-#include <stdio.h>
-
-#ifdef WIN32
-#	include "smtp/smtp.h"
-#endif
 
 #include "gif.h"
 
@@ -138,7 +132,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 	bool flag=false;
 	
 	unsigned char *prefix;
-	const prefix_size=2;
+	const size_t prefix_size=2;
 	if(reader.read(prefix, prefix_size)<prefix_size)
 		PTHROW(0, 0, 
 			origin_string, 
@@ -298,7 +292,7 @@ static void _html(Request& r, const String& method_name, MethodParams *params) {
 	String tag(pool);
 	tag << "<img";
 
-	Hash& fields=static_cast<VImage *>(r.self)->fields();
+	const Hash& fields=static_cast<VImage *>(r.self)->fields();
 	Hash *attribs=0;
 
 	if(params->size())

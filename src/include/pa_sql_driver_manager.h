@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.h,v 1.2 2001/04/04 11:47:28 paf Exp $
+	$Id: pa_sql_driver_manager.h,v 1.3 2001/04/17 19:00:36 paf Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -39,7 +39,7 @@ public:
 		using driver dynamic library found in table, if not loaded yet
 		checks driver version
 	*/
-	SQL_Connection& get_connection(const String& url, Table *protocol2library);
+	SQL_Connection& get_connection(const String& url, Table *protocol2driver_and_client);
 
 private: // driver cache
 

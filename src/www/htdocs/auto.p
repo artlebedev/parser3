@@ -15,8 +15,8 @@ $LOCALE[
 ]
 $SQL[
 	$connect-string[mysql://test:test@localhost/test/cp1251_koi8]
-	$drivers[^table:set{protocol	library
-mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll
+	$drivers[^table:set{protocol	driver	client
+mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll	Y:\parser3\src\sql\mysql\mySQL32\lib\opt\libmySQL.dll
 }]
 ]
 $MAIL[

@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gifio.C,v 1.5 2001/04/11 18:07:18 paf Exp $
+	$Id: gifio.C,v 1.6 2001/04/17 19:00:32 paf Exp $
 
 
 	based on:
@@ -371,8 +371,6 @@ typedef        unsigned char   char_type;
 *              Joe Orost             (decvax!vax135!petsd!joe)
 *
 */
-#include <ctype.h>
-
 #ifdef COMPATIBLE               /* But wrong! */
 # define MAXCODE(n_bits)      ((code_int) 1 <<(n_bits) - 1)
 #else /*COMPATIBLE*/

@@ -5,11 +5,8 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: random.C,v 1.6 2001/04/15 13:12:18 paf Exp $
+	$Id: random.C,v 1.7 2001/04/17 19:00:27 paf Exp $
 */
-
-#include <process.h>
-#include <time.h>
 
 #include "pa_config_includes.h"
 #include "pa_common.h"

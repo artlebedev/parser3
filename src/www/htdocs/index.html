@@ -122,7 +122,10 @@ $face[^image:measure[001004paf(c)lena_karin.jpg]]
 <HR>
 }
 
+env.pl<BR>
 $e[^file:cgi[env.pl;$t[<b>1</b>]]]
+^$e.exit-code=$e.exit-code<BR>
+^$e.stderr="$e.stderr"<BR>
 $e.text
 <HR>
 
@@ -199,6 +202,7 @@ $d[^table:dir[/;html^$]]
 ^d.menu{$name;<BR>}
 <HR>
 
+#^rem{
 ^connect[$SQL.connect-string]{
 	$shit[^taint[our's]]
 #	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
@@ -211,6 +215,7 @@ $d[^table:dir[/;html^$]]
 	</table>
 	}}
 }
+#}
 
 <HR>
 

@@ -5,11 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _exec.h,v 1.2 2001/04/09 10:08:28 paf Exp $
+	$Id: _exec.h,v 1.3 2001/04/17 19:00:26 paf Exp $
 */
 
-#ifndef _EXEC_H
-#define _EXEC_H
+#ifndef CLASSES_EXEC_H
+#define CLASSES_EXEC_H
 
 #include "pa_vclass.h"
 

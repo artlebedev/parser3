@@ -3,12 +3,8 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.4 2001/04/12 14:07:34 paf Exp $
+	$Id: gif.C,v 1.5 2001/04/17 19:00:32 paf Exp $
 */
-
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
 
 #include "gif.h"
 
@@ -609,7 +605,12 @@ void gdImage::Polygon(Point *p, int n, int c)
 	}
 }	
 	
-int gdCompareInt(const void *a, const void *b);
+static int gdCompareInt(const void *a, const void *b)
+{
+	return (*(const int *)a) - (*(const int *)b);
+}
+
+
 	
 void gdImage::FilledPolygon(Point *p, int n, int c)
 {
@@ -849,11 +850,6 @@ void gdImage::FilledPolygonReplaceColor(Point *p, int n, int a, int b)
 				polyInts[i+1], y, a,b);
 		}
 	}
-}
-
-static int gdCompareInt(const void *a, const void *b)
-{
-	return (*(const int *)a) - (*(const int *)b);
 }
 
 void gdImage::SetInterlace(int interlaceArg)

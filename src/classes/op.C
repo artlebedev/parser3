@@ -5,12 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.7 2001/04/15 14:40:53 paf Exp $
+	$Id: op.C,v 1.8 2001/04/17 19:00:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
-#include <math.h>
-
 #include "pa_common.h"
 #include "pa_request.h"
 #include "_op.h"

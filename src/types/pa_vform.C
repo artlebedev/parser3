@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.24 2001/04/11 08:13:43 paf Exp $
+	$Id: pa_vform.C,v 1.25 2001/04/17 19:01:02 paf Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
@@ -25,7 +25,8 @@
 // parse helper funcs
 
 static size_t getHeader(const char *data, size_t len){
-    size_t i, enter=-1;
+    size_t i;
+    int enter=-1;
     if (data)
 	for (i=0;i<len;i++)
 	    if (data[i]=='\n'){

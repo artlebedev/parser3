@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_exec.C,v 1.1 2001/04/09 16:04:50 paf Exp $
+	$Id: pa_exec.C,v 1.2 2001/04/17 19:00:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -101,7 +101,7 @@ error:
     return FALSE;
 }
 
-static read_pipe(String& result, HANDLE hOutRead, const char *file_spec){
+static void read_pipe(String& result, HANDLE hOutRead, const char *file_spec){
 	while(true) {
 		char *buf=(char *)result.pool().malloc(MAX_STRING);
 		unsigned long size;
@@ -255,9 +255,9 @@ static int get_exit_status(int pid) {
 		WEXITSTATUS(status) : -2;
 }
 
-static read_pipe(String& result, int file, const char *file_spec){
+static void read_pipe(String& result, int file, const char *file_spec){
 	while(true) {
-		char *buf=(char *)pool.malloc(MAX_STRING);
+		char *buf=(char *)result.pool().malloc(MAX_STRING);
 		size_t size=read(file, buf, MAX_STRING);
 		if(!size) 
 			break;
@@ -277,8 +277,8 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 	String string(key.pool());
 	string << key << "=" << *static_cast<String *>(value);
 
-	char **env_ptr=static_cast<char **>(info);
-	*env_ptr++=string.cstr();
+	char ***env_ref=static_cast<char ***>(info);
+	**env_ref=string.cstr();  (*env_ref)++;
 #endif
 }
 int pa_exec(const String& file_spec, 
@@ -342,25 +342,25 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 #else
 
 	int pipe_write, pipe_read, pipe_err;
-	const char *argv_cstr[5]={"", "", "", "", ""};
+	const char *argv_cstrs[5]={"", "", "", "", ""};
 	if(argv) {
 		int size=min(5, argv->size());
 		for(int i=0; i<size; i++)
-			argv_cstr[i]=argv->get_string(i).cstr(String::UL_AS_IS);
+			argv_cstrs[i]=argv->get_string(i)->cstr(String::UL_AS_IS);
 	}
-	const char *file_spec_cstr=file_spec->cstr(String::UL_FILE_NAME);
-	char **env_cstr=0;
+	const char *file_spec_cstr=file_spec.cstr(String::UL_FILE_NAME);
+	char **env_cstrs=0;
 	if(env) {
-		env_cstr_array=
+		env_cstrs=
 			(char **)env->pool().malloc(sizeof(char *)*(env->size()+1/*0*/));
-		char **env_ptr=env_cstr_array;
-		env->for_each(append_env_pair, &env_ptr);
-		*env_ptr=0;
+		char **env_ref=env_cstrs;
+		env->for_each(append_env_pair, &env_ref);
+		*env_ref=0;
 	}
-	if(int pid=execle_piped(sendmail_filespec, 
+	if(int pid=execle_piped(
 		file_spec_cstr,
-		argv_cstr[0], argv_cstr[1], argv_cstr[2], argv_cstr[3], argv_cstr[4],
-		env_cstr,
+		argv_cstrs[0], argv_cstrs[1], argv_cstrs[2], argv_cstrs[3], argv_cstrs[4],
+		env_cstrs,
 		&pipe_write, &pipe_read, &pipe_err)) {
 
 		const char *in_cstr=in.cstr(String::UL_AS_IS);
@@ -374,7 +374,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		return get_exit_status(pid); // negative may mean "-errno[execl()]"
 	} else 
 		PTHROW(0, 0,
-			file_spec,
+			&file_spec,
 			"pipe error");
 #endif
 

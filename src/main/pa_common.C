@@ -6,18 +6,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.46 2001/04/11 08:36:19 paf Exp $
+	$Id: pa_common.C,v 1.47 2001/04/17 19:00:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
-
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <io.h>
-#include <stdio.h>
-#include <errno.h>
-#include <ctype.h>
-
 #include "pa_common.h"
 #include "pa_types.h"
 #include "pa_exception.h"
@@ -26,6 +18,15 @@
 #include "pa_value.h"
 #include "pa_hash.h"
 #include "pa_string.h"
+
+#ifndef WIN32
+#	ifndef _O_TEXT
+#		define _O_TEXT 0
+#	endif
+#	ifndef _O_BINARY
+#		define _O_BINARY 0
+#	endif
+#endif
 
 #if _MSC_VER
 
@@ -73,6 +74,11 @@ bool file_read(Pool& pool, const String& file_spec,
 		/*if(exclusive)
 			flock(f, LOCK_EX);*/
 		size_t max_size=limit?min(offset+limit, finfo.st_size)-offset:finfo.st_size;
+		if(!max_size) { // eof
+			data=0;
+			read_size=0;
+			return true;
+		}
 		data=pool.malloc(max_size+(as_text?1:0));
 		if(offset)
 			lseek(f, offset, SEEK_SET);

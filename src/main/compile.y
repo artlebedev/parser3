@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.124 2001/04/06 10:20:36 paf Exp $
+	$Id: compile.y,v 1.125 2001/04/17 19:00:40 paf Exp $
 */
 
 /**
@@ -44,9 +44,9 @@
 #define SELF_ELEMENT_NAME "self"
 #define USE_CONTROL_METHOD_NAME "USE"
 
-int real_yyerror(parse_control *pc, char *s);
+static int real_yyerror(parse_control *pc, char *s);
 static void yyprint(FILE *file, int type, YYSTYPE value);
-int yylex(YYSTYPE *lvalp, void *pc);
+static int yylex(YYSTYPE *lvalp, void *pc);
 
 
 // local convinient inplace typecast & var

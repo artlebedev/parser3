@@ -5,11 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _image.h,v 1.1 2001/04/10 13:22:54 paf Exp $
+	$Id: _image.h,v 1.2 2001/04/17 19:00:26 paf Exp $
 */
 
-#ifndef _IMAGE_H
-#define _IMAGE_H
+#ifndef CLASSES_IMAGE_H
+#define CLASSES_IMAGE_H
 
 #include "pa_vclass.h"
 

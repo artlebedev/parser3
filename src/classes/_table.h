@@ -5,11 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _table.h,v 1.5 2001/04/10 10:32:04 paf Exp $
+	$Id: _table.h,v 1.6 2001/04/17 19:00:26 paf Exp $
 */
 
-#ifndef _TABLE_H
-#define _TABLE_H
+#ifndef CLASSES_TABLE_H
+#define CLASSES_TABLE_H
 
 #include "pa_vclass.h"
 

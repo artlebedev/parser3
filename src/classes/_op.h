@@ -5,11 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _op.h,v 1.4 2001/04/10 10:32:03 paf Exp $
+	$Id: _op.h,v 1.5 2001/04/17 19:00:26 paf Exp $
 */
 
-#ifndef _OP_H
-#define _OP_H
+#ifndef CLASSES_OP_H
+#define CLASSES_OP_H
 
 #include "pa_vclass.h"
 

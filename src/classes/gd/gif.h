@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.h,v 1.5 2001/04/12 13:15:20 paf Exp $
+	$Id: gif.h,v 1.6 2001/04/17 19:00:32 paf Exp $
 
 
 	based on:
@@ -21,11 +21,11 @@
 #ifndef GIF_H
 #define GIF_H 1
 
+#include "pa_config_includes.h"
+
 #include "pa_pool.h"
 #include "pa_string.h"
 
-#include <stdio.h>
-#include <string.h>
 #define gdMaxColors 0x100
 #define HSIZE  5003            /* 80% occupancy */
 

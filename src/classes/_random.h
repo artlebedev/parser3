@@ -5,11 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _random.h,v 1.2 2001/04/10 10:32:03 paf Exp $
+	$Id: _random.h,v 1.3 2001/04/17 19:00:26 paf Exp $
 */
 
-#ifndef _RANDOM_H
-#define _RANDOM_H
+#ifndef CLASSES_RANDOM_H
+#define CLASSES_RANDOM_H
 
 #include "pa_vclass.h"
 

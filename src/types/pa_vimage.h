@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.7 2001/04/12 16:26:23 paf Exp $
+	$Id: pa_vimage.h,v 1.8 2001/04/17 19:01:02 paf Exp $
 */
 
 #ifndef PA_VIMAGE_H
@@ -18,7 +18,7 @@
 
 class gdImage; class Font;
 
-/** holds <img> attributes 
+/** holds img attributes 
 	and [image itself]
 */
 class VImage : public VStateless_object {

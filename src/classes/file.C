@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.26 2001/04/15 13:12:17 paf Exp $
+	$Id: file.C,v 1.27 2001/04/17 19:00:27 paf Exp $
 */
 
 #include "pa_request.h"
@@ -152,6 +152,10 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	PASS(REMOTE_USER);
 	// SCRIPT_NAME
 	env.put(String(pool, "SCRIPT_NAME"), &script_name);
+#ifdef WIN32
+	// WIN32 shell
+	PASS(COMSPEC);
+#endif
 
 	if(params->size()>1) {
 		Value& venv=params->get_no_junction(1, "env must not be code");
@@ -172,7 +176,7 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 
 	const String in(pool, r.post_data, r.post_size);
 	String out(pool);
-	String err(pool);
+	String& err=*new(pool) String(pool);
 	int exit_code=pa_exec(script_name, &env, argv,
 		in, out, err);
 
@@ -186,7 +190,8 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 		delim_size=0; // calm down, compiler
 		PTHROW(0, 0,
 			&method_name,
-			"output does not contain CGI header");
+			"output does not contain CGI header; exit code=%d; size=%u; text: \"%s\"", 
+				exit_code, (uint)out.size(), out.cstr());
 	}
 
 	const String& header=out.mid(0, pos);

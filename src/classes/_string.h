@@ -5,11 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _string.h,v 1.8 2001/04/15 13:12:17 paf Exp $
+	$Id: _string.h,v 1.9 2001/04/17 19:00:26 paf Exp $
 */
 
-#ifndef _STRING_H
-#define _STRING_H
+#ifndef CLASSES_STRING_H
+#define CLASSES_STRING_H
 
 #include "pa_vclass.h"
 

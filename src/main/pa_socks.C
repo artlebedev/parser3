@@ -5,8 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_socks.C,v 1.1 2001/04/07 14:23:34 paf Exp $
+	$Id: pa_socks.C,v 1.2 2001/04/17 19:00:41 paf Exp $
 */
+
+#define NO_UNISTD_H
+#include "pa_config_includes.h"
 
 #ifdef WIN32
 #include <winsock.h>

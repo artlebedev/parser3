@@ -5,12 +5,12 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.18 2001/04/15 13:12:17 paf Exp $
+	$Id: mail.C,v 1.19 2001/04/17 19:00:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #	include "smtp/smtp.h"
 #endif
 
@@ -276,7 +276,7 @@ static void sendmail(Request& r, const String& method_name,
 
 	char *letter_cstr=letter.cstr();
 
-#ifdef WIN32
+#ifdef _MSC_VER
 	if(!from)
 		PTHROW(0, 0,
 			&method_name,

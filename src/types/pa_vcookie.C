@@ -5,12 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.17 2001/04/09 10:08:33 paf Exp $
+	$Id: pa_vcookie.C,v 1.18 2001/04/17 19:01:01 paf Exp $
 */
 
-#include <string.h>
-#include <time.h>
-
+#include "pa_config_includes.h"
 #include "pa_sapi.h"
 #include "pa_common.h"
 #include "pa_vcookie.h"

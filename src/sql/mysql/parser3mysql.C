@@ -5,15 +5,16 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.13 2001/04/09 14:02:02 paf Exp $
+	$Id: parser3mysql.C,v 1.14 2001/04/17 19:00:51 paf Exp $
 */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include "config_includes.h"
 
 #include "pa_sql_driver.h"
+
+#define NO_CLIENT_LONG_LONG
 #include "mysql.h"
+#include "ltdl.h"
 
 #define MAX_STRING 0x400
 #define MAX_NUMBER 20
@@ -48,6 +49,10 @@ public:
 
 	/// get api version
 	int api_version() { return SQL_DRIVER_API_VERSION; }
+	/// initialize driver by loading sql dynamic link library
+	const char *initialize(const char *dlopen_file_spec) {
+		return dlink(dlopen_file_spec);
+	}
 	/// connect
 	void connect(
 		char *url, /**< @b user:pass@host[:port]/database/charset 
@@ -76,7 +81,7 @@ public:
 			
 			if(mysql_query(mysql, statement)) 
 				services->_throw(mysql_error(mysql));
-			mysql_store_result(mysql); // throw out the result [don't need but must call]
+			(*mysql_store_result)(mysql); // throw out the result [don't need but must call]
 		}
 
 		*(MYSQL **)connection=mysql;
@@ -101,7 +106,7 @@ public:
 
 			it's already UNTAINT_TIMES_BIGGER
 		*/
-		return mysql_escape_string(to, from, length);
+		return (*mysql_escape_string)(to, from, length);
 	}
 	void query(void *connection, 
 		const char *astatement, unsigned long offset, unsigned long limit,
@@ -139,6 +144,9 @@ public:
 		}
 		
 		*column_count=mysql_num_fields(res);
+		if(!*column_count) // old client
+			*column_count=mysql_field_count(mysql);
+
 		*columns=(Cell *)services->malloc(sizeof(Cell)*(*column_count));
 
 		*row_count=(unsigned long)mysql_num_rows(res);
@@ -167,6 +175,83 @@ public:
 		
 		mysql_free_result(res);
 	}
+
+private: // mysql client library funcs
+
+	typedef MYSQL* (STDCALL *t_mysql_init)(MYSQL *); 	t_mysql_init mysql_init;
+	
+	typedef MYSQL_RES* (STDCALL *t_mysql_store_result)(MYSQL *); t_mysql_store_result mysql_store_result;
+	
+	typedef int		(STDCALL *t_mysql_query)(MYSQL *, const char *q); t_mysql_query mysql_query;
+	
+	typedef char * (STDCALL *t_mysql_error)(MYSQL *); t_mysql_error mysql_error;
+	static char* STDCALL subst_mysql_error(MYSQL *mysql) { return (mysql)->net.last_error; }
+
+	typedef MYSQL*		(STDCALL *t_mysql_real_connect)(MYSQL *, const char *host,
+					   const char *user,
+					   const char *passwd,
+					   const char *db,
+					   unsigned int port,
+					   const char *unix_socket,
+					   unsigned int clientflag); t_mysql_real_connect mysql_real_connect;
+
+	typedef void		(STDCALL *t_mysql_close)(MYSQL *); t_mysql_close mysql_close;
+	
+	typedef int		(STDCALL *t_mysql_ping)(MYSQL *); t_mysql_ping mysql_ping;
+	
+	typedef unsigned long	(STDCALL *t_mysql_escape_string)(char *to,const char *from,
+					    unsigned long from_length); t_mysql_escape_string mysql_escape_string;
+	
+	typedef void		(STDCALL *t_mysql_free_result)(MYSQL_RES *result); t_mysql_free_result mysql_free_result;
+	
+	typedef unsigned long* (STDCALL *t_mysql_fetch_lengths)(MYSQL_RES *result); t_mysql_fetch_lengths mysql_fetch_lengths;
+	
+	typedef MYSQL_ROW	(STDCALL *t_mysql_fetch_row)(MYSQL_RES *result); t_mysql_fetch_row mysql_fetch_row;
+	
+	typedef MYSQL_FIELD*	(STDCALL *t_mysql_fetch_field)(MYSQL_RES *result); t_mysql_fetch_field mysql_fetch_field;
+	
+	typedef my_ulonglong (STDCALL *t_mysql_num_rows)(MYSQL_RES *); t_mysql_num_rows mysql_num_rows;
+	static my_ulonglong STDCALL subst_mysql_num_rows(MYSQL_RES *res) { return res->row_count; }
+	
+	typedef unsigned int (STDCALL *t_mysql_num_fields)(MYSQL_RES *); t_mysql_num_fields mysql_num_fields;
+	static unsigned int STDCALL subst_mysql_num_fields(MYSQL_RES *res) { return res->field_count; }
+
+	typedef unsigned int (STDCALL *t_mysql_field_count)(MYSQL *); t_mysql_field_count mysql_field_count;
+	static unsigned int STDCALL subst_mysql_field_count(MYSQL *mysql) { return mysql->field_count; }
+
+private: // mysql client library funcs linking
+
+	const char *dlink(const char *dlopen_file_spec) {
+        lt_dlhandle handle=lt_dlopen(dlopen_file_spec);
+        if (!handle)
+			return "can not open the dynamic link module";
+
+		#define DSLINK(name, action) \
+			name=(t_##name)lt_dlsym(handle, #name); \
+				if(!name) \
+					action;
+
+		#define DLINK(name) DSLINK(name, return "function " #name " was not found")
+		#define SLINK(name) DSLINK(name, name=subst_##name)
+		
+		DLINK(mysql_init);
+		DLINK(mysql_store_result);
+		DLINK(mysql_query);
+		SLINK(mysql_error);
+		DLINK(mysql_real_connect);
+		DLINK(mysql_close);
+		DLINK(mysql_ping);
+		DLINK(mysql_escape_string);
+		DLINK(mysql_free_result);
+		DLINK(mysql_fetch_lengths);
+		DLINK(mysql_fetch_row);
+		DLINK(mysql_fetch_field);
+		SLINK(mysql_num_rows);
+		SLINK(mysql_num_fields);
+		SLINK(mysql_field_count);
+		return 0;
+	}
+
 };
 
 extern "C" SQL_Driver *create() {

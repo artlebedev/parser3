@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.63 2001/04/11 08:13:41 paf Exp $
+	$Id: parser3.C,v 1.64 2001/04/17 19:00:59 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -13,12 +13,6 @@
 #ifdef WIN32
 #	include <windows.h>
 #endif
-
-#include <io.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <time.h>
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -246,7 +240,7 @@ int main(int argc, char *argv[]) {
 		GetWindowsDirectory(root_auto_path, MAX_STRING);
 #else
 		// ~nobody  todo: figure out a better place
-		char *root_auto_path=SAPI::get_env(pool, "HOME");
+		const char *root_auto_path=SAPI::get_env(pool, "HOME");
 #endif
 		
 		// beside by binary

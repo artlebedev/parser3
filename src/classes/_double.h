@@ -5,11 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _double.h,v 1.6 2001/04/10 10:32:03 paf Exp $
+	$Id: _double.h,v 1.7 2001/04/17 19:00:25 paf Exp $
 */
 
-#ifndef _DOUBLE_H
-#define _DOUBLE_H
+#ifndef CLASSES_DOUBLE_H
+#define CLASSES_DOUBLE_H
 
 #include "pa_vclass.h"
 

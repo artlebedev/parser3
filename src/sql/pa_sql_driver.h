@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.5 2001/04/05 20:01:25 paf Exp $
+	$Id: pa_sql_driver.h,v 1.6 2001/04/17 19:00:46 paf Exp $
 
 
 	driver dynamic library must look like this:
@@ -42,7 +42,7 @@ public:
 	virtual void _throw(const char *comment) =0;
 };
 
-#define SQL_DRIVER_API_VERSION 0x0300
+#define SQL_DRIVER_API_VERSION 0x0301
 
 /// SQL driver API
 class SQL_Driver {
@@ -63,6 +63,8 @@ public:
 	}
 	/// get api version
 	virtual int api_version() =0;
+	/// initialize driver by loading sql dynamic link library
+	virtual const char *initialize(const char *dlopen_file_spec) =0;
 	/// connect. @returns true+'connection' on success. 'error' on failure
 	virtual void connect(char *url, void **connection) =0;
 	virtual void disconnect(void *connection) =0;
