@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.63 2001/09/26 10:32:26 parser Exp $
+	$Id: untaint.C,v 1.64 2001/10/05 16:26:05 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -159,6 +159,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 	Dictionary *typo_dict=user_typo_dict?user_typo_dict:default_typo_dict;
 
 	bool whitespace=true;
+	bool need_to_close_http_header_quote=false;
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
@@ -237,7 +238,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 						case '\"': to_string("\\\"", 2);  break;
 						_default;
 					});
-					*dest++='\"';
+					need_to_close_http_header_quote=true;
 				} else {
 					memcpy(dest, row->item.ptr, row->item.size); 
 					dest+=row->item.size;
@@ -404,6 +405,9 @@ char *String::store_to(char *dest, Untaint_lang lang,
 		}
 		chunk=row->link;
 	} while(chunk);
+
+	if(need_to_close_http_header_quote)
+		*dest++='\"';
 break2:
 	return dest;
 }
