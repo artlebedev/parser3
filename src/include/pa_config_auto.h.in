@@ -12,6 +12,9 @@
 /* Define if you have the _locking function.  */
 #undef HAVE__LOCKING
 
+/* Define if you have the fcntl function.  */
+#undef HAVE_FCNTL
+
 /* Define if you have the flock function.  */
 #undef HAVE_FLOCK
 

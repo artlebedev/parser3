@@ -4,29 +4,17 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_socks.C,v 1.9 2001/12/28 14:06:52 paf Exp $
+	$Id: pa_socks.C,v 1.10 2002/02/07 17:41:36 paf Exp $
 */
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"
 
+#ifndef HAVE_SYS_SELECT_H
+#include <winsock.h>
+
 #include "pa_exception.h"
 #include "pa_socks.h"
-
-#ifdef WIN32
-#include <winsock.h>
-#else
-//#include <netinet/tcp.h>
-//#include <arpa/nameser.h>
-//#include <netdb.h>
-//#include <signal.h>
-#endif
-
-
-
-/* ************************ Common stuff *********************** */
-
-#ifdef WIN32
 
 WSADATA wsaData;
 
@@ -60,6 +48,8 @@ void done_socks() {
 }
 
 #else
+
+#include "pa_pool.h"
 
 void init_socks(Pool& pool) {}
 void done_socks() {}

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.98 2002/02/05 12:09:23 paf Exp $
+	$Id: pa_common.C,v 1.99 2002/02/07 17:41:36 paf Exp $
 */
 
 #include "pa_common.h"
@@ -34,83 +34,47 @@
 
 // locking constants
 
-// win32
-#ifdef _LK_NBLCK
-#	define TEST_LOCK_EX _LK_NBLCK
+#ifdef HAVE_FLOCK
+
+static int lock_shared_blocking(int fd) { return flock(fd, LOCK_SH); }
+static int lock_exclusive_blocking(int fd) { return flock(fd, LOCK_EX); }
+static int lock_exclusive_nonblocking(int fd) { return flock(fd, LOCK_EX || LOCK_NB); }
+static int unlock(int fd) { return flock(fd, LOCK_UN); }
+
 #else
-// *
-#	if defined LOCK_EX && defined LOCK_NB
-#			define TEST_LOCK_EX (LOCK_EX || LOCK_NB)
-#	else
-// sun 
-#		ifdef F_TLOCK
-#			define TEST_LOCK_EX F_TLOCK
-#		else
-#			error unable to define TEST_LOCK_EX
-#		endif
-#	endif
-#endif
-
-#ifndef LOCK_EX
-// win32
-#	ifdef _LK_LOCK
-#		define LOCK_EX _LK_LOCK
-#	else
-// sun 
-#		ifdef F_LOCK
-#			define LOCK_EX F_LOCK
-#		else
-#			error unable to define LOCK_EX
-#		endif
-#	endif
-#endif
-
-#ifndef LOCK_SH
-// win32
-#	ifdef _LK_RLCK
-#		define LOCK_SH _LK_RLCK
-#	else
-// sun 
-/// @todo shared lock bit. forgot where to get those  F_LOCK consts group
-#		ifdef F_LOCK
-#			define LOCK_SH F_LOCK
-#		else
-#			error unable to define LOCK_SH
-#		endif
-#	endif
-#endif
-
-#ifndef LOCK_UN
-// win32
-#	ifdef _LK_UNLCK
-#		define LOCK_UN _LK_UNLCK
-#	else
-// sun 
-#		ifdef F_ULOCK
-#			define LOCK_UN F_ULOCK
-#		else
-#			error unable to define LOCK_UN
-#		endif
-#	endif
-#endif
-
-#ifndef HAVE_FLOCK
-static int flock(int fd, int operation) {
-	lseek(fd, 0, SEEK_SET);
-// win32
 #ifdef HAVE__LOCKING
-	int result=_locking(fd, operation, 1);
+
+#define FLOCK(operation) lseek(fd, 0, SEEK_SET); return _locking(fd, operation, 1)
+static int lock_shared_blocking(int fd) { FLOCK(_LK_LOCK); }
+static int lock_exclusive_blocking(int fd) { FLOCK(_LK_LOCK); }
+static int lock_exclusive_nonblocking(int fd) { FLOCK(_LK_NBLCK); }
+static int unlock(int fd) { FLOCK(_LK_UNLCK); }
+
 #else
-// sun
+#ifdef HAVE_FCNTL
+
+#define FLOCK(cmd, arg) struct flock ls={arg, SEEK_SET}; return fcntl(fd, cmd, &ls)
+static int lock_shared_blocking(int fd) { FLOCK(F_SETLKW, F_RDLCK); }
+static int lock_exclusive_blocking(int fd) { FLOCK(F_SETLKW, F_WRLCK); }
+static int lock_exclusive_nonblocking(int fd) { FLOCK(F_SETLK, F_RDLCK); }
+static int unlock(int fd) { FLOCK(F_SETLK, F_UNLCK); }
+
+#else
 #ifdef HAVE_LOCKF
-	int result=lockf(fd, operation, 1);
+
+#define FLOCK(fd, operation) lseek(fd, 0, SEEK_SET); return lockf(fd, operation, 1)
+static int lock_shared_blocking(int fd) { FLOCK(F_LOCK); } // on intel solaris man doesn't have doc on shared blocking
+static int lock_exclusive_blocking(int fd) { FLOCK(F_LOCK); }
+static int lock_exclusive_nonblocking(int fd) { FLOCK(F_TLOCK); }
+static int unlock(int fd) { FLOCK(F_TLOCK); }
+
 #else
-#	error unable to find locking func
+
+#error unable to find file locking func
+
 #endif
 #endif
-	lseek(fd, 0, SEEK_SET);
-	return result;
-}
+#endif
 #endif
 
 static char *strnchr(char *buf, size_t size, char c) {
@@ -169,13 +133,13 @@ bool file_read(Pool& pool, const String& file_spec,
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
     if((f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
-		flock(f, LOCK_SH);		
+		lock_shared_blocking(f);		
 		if(stat(fname, &finfo)!=0) {
 			Exception e(0, 0, 
 					&file_spec, 
 					"stat failed: %s (%d), actual filename '%s'", 
 						strerror(errno), errno, fname);
-			flock(f, LOCK_UN);
+			unlock(f);
 			close(f);
 			if(fail_on_read_problem)
 				throw e;
@@ -195,7 +159,7 @@ bool file_read(Pool& pool, const String& file_spec,
 				lseek(f, offset, SEEK_SET);
 			data_size=read(f, data, max_size);
 		}
-		flock(f, LOCK_UN);
+		unlock(f);
 		close(f);
 		if(!max_size) // eof
 			return true;
@@ -245,7 +209,7 @@ bool file_write_action_under_lock(
 		O_CREAT|O_RDWR
 		|(as_text?_O_TEXT:_O_BINARY)
 		|(do_append?O_APPEND:0), 0664))>=0) {
-		if(flock(f, do_block?LOCK_EX:TEST_LOCK_EX)!=0) {
+		if((do_block?lock_exclusive_blocking(f):lock_exclusive_nonblocking(f))!=0) {
 			close(f);
 			return false;
 		}
@@ -256,7 +220,7 @@ bool file_write_action_under_lock(
 #if O_TRUNC==0
 			ftruncate(f, tell(f));
 #endif
-			flock(f, LOCK_UN);
+			unlock(f);
 			close(f);
 			/*re*/throw;
 		}
@@ -264,7 +228,7 @@ bool file_write_action_under_lock(
 #if O_TRUNC==0
 		ftruncate(f, tell(f));
 #endif
-		flock(f, LOCK_UN);
+		unlock(f);
 		close(f);
 		return true;
 	} else

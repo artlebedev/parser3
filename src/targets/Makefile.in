@@ -88,8 +88,7 @@ host_os = @host_os@
 rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 #don't compile apache
-@COMPILE_APACHE13_MODULE_TRUE@SUBDIRS = cgi apache13
-@COMPILE_APACHE13_MODULE_FALSE@SUBDIRS = cgi
+SUBDIRS = cgi
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -100,7 +99,6 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DIST_SUBDIRS =  cgi apache13 cgi
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
@@ -220,7 +218,7 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
-	for subdir in $(DIST_SUBDIRS); do \
+	for subdir in $(SUBDIRS); do \
 	  if test "$$subdir" = .; then :; else \
 	    test -d $(distdir)/$$subdir \
 	    || mkdir $(distdir)/$$subdir \
@@ -299,6 +297,10 @@ uninstall-am uninstall all-redirect all-am all installdirs-am \
 installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
+
+if COMPILE_APACHE13_MODULE
+else
+endif
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

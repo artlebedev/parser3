@@ -89,11 +89,9 @@ rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
 INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql -I../../pcre @XML_INCLUDES@
-
 bin_PROGRAMS = parser3
 parser3_SOURCES = pa_config_paths.h pa_pool.C pa_threads.C parser3.C ident.C
 parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../pcre/libpcre.a @XML_LIBS@ @DB2_LIBS@
-
 IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -387,6 +385,8 @@ install-data-am install-data install-am install uninstall-am uninstall \
 all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
+
+
 
 
 ident.C: $(IDENT_AWK) $(IDENT_DEPS) Makefile.am
