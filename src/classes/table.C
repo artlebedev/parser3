@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/12/09 12:19:16 $";
+static const char* IDENT_TABLE_C="$Date: 2002/12/14 12:47:29 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -457,8 +457,6 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 
 	// calculate key values
 	bool key_values_are_strings=true;
-	// save 'current'
-	int saved_current=old_table.current();
 	for(i=0; i<old_table.size(); i++) {
 		old_table.set_current(i);
 		// calculate key value
@@ -472,8 +470,6 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 		else
 			seq[i].value.d=value.as_double();
 	}
-	// restore 'current'
-	old_table.set_current(saved_current);
 	// sort keys
 	_qsort(seq, old_table.size(), sizeof(Table_seq_item), 
 		key_values_are_strings?sort_cmp_string:sort_cmp_double);
