@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.27 2001/03/10 11:03:48 paf Exp $
+  $Id: pa_string.h,v 1.28 2001/03/10 12:12:50 paf Exp $
 */
 
 /*
@@ -49,7 +49,9 @@ public:
 		NO, // clean
 		YES,  // tainted, untaint language as assigned later 
 		// untaint languages. assigned by ^untaint[lang]{...}
-		APPENDED, // leave langage build into string being appended
+		PASS_APPENDED,
+			// leave language built into string being appended
+			// just a flag, that value not stored
 		AS_IS,
 		SQL,
 		JS,

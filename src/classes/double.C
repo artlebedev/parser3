@@ -1,5 +1,5 @@
 /*
-$Id: double.C,v 1.2 2001/03/10 11:03:46 paf Exp $
+$Id: double.C,v 1.3 2001/03/10 12:12:49 paf Exp $
 */
 
 #include "pa_request.h"
@@ -17,14 +17,14 @@ static void _int(Request& r, Array *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
 	Value& value=*new(pool) VInt(pool, static_cast<int>(vdouble->get_double()));
-	r.wcontext->write(value);
+	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
 }
 
 static void _double(Request& r, Array *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
 	Value& value=*new(pool) VDouble(pool, vdouble->get_double());
-	r.wcontext->write(value);
+	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
 }
 
 static void _inc(Request& r, Array *params) {

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.C,v 1.8 2001/03/10 11:44:42 paf Exp $
+  $Id: pa_wcontext.C,v 1.9 2001/03/10 12:12:51 paf Exp $
 */
 
 #include "pa_wcontext.h"
@@ -12,10 +12,10 @@ void WContext::write(const String& astring, String::Untaint_lang lang) {
 
 // if value is VString writes fstring,
 // else writes Value; raises an error if already
-void WContext::write(Value& avalue) {
+void WContext::write(Value& avalue, String::Untaint_lang lang) {
 	const String *fstring=avalue.get_string();
 	if(fstring)
-		write(*fstring, String::Untaint_lang::APPENDED);
+		write(*fstring, lang);
 	else
 		if(fvalue) // already have value?
 			THROW(0,0,  // must not construct twice

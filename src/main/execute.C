@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.82 2001/03/10 11:44:42 paf Exp $
+  $Id: execute.C,v 1.83 2001/03/10 12:12:51 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -179,7 +179,7 @@ void Request::execute(const Array& ops) {
 		case OP_WRITE:
 			{
 				Value *value=POP();
-				wcontext->write(*value);
+				write(*value);
 				break;
 			}
 			
@@ -193,7 +193,7 @@ void Request::execute(const Array& ops) {
 		case OP_GET_ELEMENT__WRITE:
 			{
 				Value *value=get_element();
-				wcontext->write(*value);
+				write(*value);
 				break;
 			}
 
@@ -299,7 +299,9 @@ void Request::execute(const Array& ops) {
 					if(wcontext->constructing()) {  // constructing?
 						// yes, constructor call: $some(^class:method(..))
 						self=NEW VObject(pool(), *called_class);
-						frame->write(*self);
+						frame->write(*self, 
+							String::Untaint_lang::NO  // not used, always an object, not string
+						);
 					} else 
 						self=&frame->junction.self; // no, static or simple dynamic call
 

@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.82 2001/03/10 11:44:41 paf Exp $
+  $Id: compile.y,v 1.83 2001/03/10 12:12:51 paf Exp $
 */
 
 %{
@@ -770,7 +770,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				switch(c) {
 				case '+': case '-': case '*': case '/': case '%': 
 				case '&': case '|': 
-				case '<': case '>': case '=': case '!':
+				case '=': case '!':
 					pop_LS(PC);
 					PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
 					result=EON;
@@ -782,6 +782,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			case ' ': case '\t': case '\n':
 			case ';':
 			case ']': case '}': case ')': case '"':
+			case '<': case '>':  // these stand for HTML brackets and expression binary ops
 				pop_LS(PC);
 				PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
 				result=EON;

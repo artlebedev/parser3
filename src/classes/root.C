@@ -1,5 +1,5 @@
 /*
-$Id: root.C,v 1.8 2001/03/10 11:18:13 paf Exp $
+$Id: root.C,v 1.9 2001/03/10 12:12:49 paf Exp $
 */
 
 #include "pa_request.h"
@@ -12,10 +12,10 @@ static void _if(Request& r, Array *params) {
 			false/*don't make it string*/).get_bool();
 	if(condition) {
 		Value& value=r.autocalc(*static_cast<Value *>(params->get(1)));
-		r.wcontext->write(value);
+		r.wcontext->write(value, String::Untaint_lang::PASS_APPENDED);
 	} else if(params->size()==3) {
 		Value& value=r.autocalc(*static_cast<Value *>(params->get(2)));
-		r.wcontext->write(value);
+		r.wcontext->write(value, String::Untaint_lang::PASS_APPENDED);
 	}
 }
 

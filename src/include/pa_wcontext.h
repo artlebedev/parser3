@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.26 2001/03/10 11:44:32 paf Exp $
+  $Id: pa_wcontext.h,v 1.27 2001/03/10 12:12:50 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -32,7 +32,7 @@ public: // WContext
 
 	// if value is VString writes fstring,
 	// else writes Value; raises an error if already
-	virtual void write(Value& avalue);
+	virtual void write(Value& avalue, String::Untaint_lang lang);
 
 public: // usage
 

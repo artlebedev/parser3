@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.24 2001/03/10 11:44:31 paf Exp $
+  $Id: pa_request.h,v 1.25 2001/03/10 12:12:50 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -45,8 +45,9 @@ public:
 	void use(char *file, String *alias); // core.C
 	Value& autocalc(Value& value, bool make_string=true); // execute.C
 
-	void write(String& astring) {
-		wcontext->write(astring, lang); // append string, assigning untaint language
+	void write(Value& avalue) {
+		// appending possible string, assigning untaint language
+		wcontext->write(avalue, lang); 
 	}
 
 public:

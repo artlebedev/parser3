@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.34 2001/03/10 11:03:49 paf Exp $
+  $Id: pa_string.C,v 1.35 2001/03/10 12:12:51 paf Exp $
 */
 
 #include <string.h>
@@ -143,7 +143,7 @@ String& String::append(const String& src, Untaint_lang lang) {
 	return *this;
 }
 void String::set_lang(Chunk::Row *row, Untaint_lang lang, size_t size) {
-	if(lang==APPENDED)
+	if(lang==PASS_APPENDED)
 		return;
 
 	while(size--) {
@@ -187,7 +187,22 @@ char *String::cstr() const {
 			if(row==append_here)
 				goto break2;
 
-			memcpy(copy_here, row->item.ptr, row->item.size);
+			switch(row->item.lang) {
+			case NO:
+			case YES: // for VString.get_double of tainted values
+			case AS_IS: 
+				memcpy(copy_here, row->item.ptr, row->item.size); 
+				break;
+			case HTML_TYPO: 
+				memset(copy_here, '?', row->item.size); 
+				break;
+			default:
+				THROW(0,0,
+					this,
+					"unknown untaint language #%d of %d piece", 
+						static_cast<int>(row->item.lang),
+						i);
+			}
 			copy_here+=row->item.size;
 			row++;
 		}
