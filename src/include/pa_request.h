@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.52 2001/03/13 19:35:04 paf Exp $
+	$Id: pa_request.h,v 1.53 2001/03/14 16:47:29 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -42,11 +42,19 @@ class Request : public Pooled {
 	friend Temp_lang;
 public:
 	
+	struct Info {
+		const char *document_root;
+		const char *path_translated;
+		const char *request_method;
+		const char *query_string;
+		const char *request_uri;
+		const char *content_type;
+		size_t content_length;
+	};
+	
 	Request(Pool& apool,
-		String::Untaint_lang alang,
-
-		const char *adocument_root,
-		const char *apage_filespec		
+		Info& ainfo,
+		String::Untaint_lang alang
 	);
 	~Request() {}
 
@@ -101,6 +109,9 @@ public:
 
 public:
 	
+	//
+	Info& info;
+
 	// default base
 	VClass root_class;
 	// $env:fields here

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.32 2001/03/14 09:02:52 paf Exp $
+	$Id: pa_request.C,v 1.33 2001/03/14 16:47:33 paf Exp $
 */
 
 #include <string.h>
@@ -24,17 +24,15 @@
 #define LOCAL_STRING(name, value)  String name(pool()); name.APPEND_CONST(value)
 
 Request::Request(Pool& apool,
-				 String::Untaint_lang alang,
-				 const char *adocument_root,
-				 const char *apage_filespec) : Pooled(apool),
+				 Info& ainfo,
+				 String::Untaint_lang alang) : Pooled(apool),
 	stack(apool),
 	root_class(apool),
 	env_class(apool),
 	form_class(apool),
 	fclasses(apool),
 	flang(alang),
-	fdocument_root(adocument_root),
-	fpage_filespec(apage_filespec)
+	info(ainfo)
 {
 	// root superclass, 
 	//   parent of all classes, 
@@ -84,6 +82,7 @@ char *Request::core(const char *sys_auto_path1,
 		}
 
 		// TODO: использовать $MAIN:limits здесь, пока их не сломали враги
+		form_class.fill_fields(*this, 0/*todo: max post buf*/);
 
 		// TODO: load site auto.p files, all assigned bases from upper dir
 		char *site_auto_file="Y:\\parser3\\src\\auto.p";

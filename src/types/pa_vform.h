@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.3 2001/03/14 08:50:06 paf Exp $
+	$Id: pa_vform.h,v 1.4 2001/03/14 16:47:36 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -12,6 +12,8 @@
 #include "pa_vstateless_class.h"
 #include "_form.h"
 #include "pa_common.h"
+
+class Request;
 
 class VForm : public VStateless_class {
 public: // Value
@@ -29,26 +31,27 @@ public: // Value
 			return result;
 
 		// $element
-		return static_cast<Value *>(ffields.get(aname));
+		return static_cast<Value *>(fields.get(aname));
 	}
 
 public: // usage
 
 	VForm(Pool& apool) : VStateless_class(apool, form_base_class),
-		ffields(apool) {
+		fields(apool) {
 
 		//construct_fields();
 	}
 
-	Hash& fields() { return ffields; }
+//	Hash& fields() { return ffields; }
+
+	void fill_fields(
+		Request& request,
+		size_t max_post_buf
+		);
 
 private:
 
-	//void construct_fields();
-
-private:
-
-	Hash ffields;
+	Hash fields;
 
 };
 

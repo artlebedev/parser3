@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.14 2001/03/14 09:02:51 paf Exp $
+	$Id: pa_types.h,v 1.15 2001/03/14 16:47:29 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -30,7 +30,7 @@
 
 
 // for now: used in Exception::fcomment
-#define MAX_STRING 5*0x400
+#define MAX_STRING 0x400
 #define MAX_NUMBER 40
 
 #define STATIC_NAME "STATIC"

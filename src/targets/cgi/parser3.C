@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.9 2001/03/14 09:12:06 paf Exp $
+	$Id: parser3.C,v 1.10 2001/03/14 16:47:34 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -23,7 +23,6 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_common.h"
-#include "vform_fields_fill.h"
 
 Pool pool; // global pool
 
@@ -56,7 +55,14 @@ LONG WINAPI TopLevelExceptionFilter (
 #	endif
 #endif
 
+size_t read_post(char *&buf, size_t max_bytes) {
+	return 0;
+}
+
 int main(int argc, char *argv[]) {
+	// Service funcs 
+	service_funcs.read_post=read_post;
+	
 	// were we started as CGI?
 	bool cgi=
 		getenv("SERVER_SOFTWARE") || 
@@ -64,6 +70,17 @@ int main(int argc, char *argv[]) {
 		getenv("GATEWAY_INTERFACE") || 
 		getenv("REQUEST_METHOD");
 	
+	if(!cgi) {
+		if(argc<2) {
+			char *binary=argv[0];
+			rsplit(binary, PATH_DELIMITER_CHAR);
+			printf("Usage: %s <file>\n", binary);
+			exit(1);
+		}
+	}
+
+	const char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
+
 	char *result;  char error[MAX_STRING];  error[0]=0;
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
@@ -74,29 +91,36 @@ int main(int argc, char *argv[]) {
 #	endif
 #endif
 
+		// init global variables
 		globals_init(pool);
-		
+
+		// Request info
 		// TODO: ifdef WIN32 flip \\ to /
-		const char *document_root="Y:/parser3/src/";
-		const char *page_filespec="Y:/parser3/src/test.p";
-		
+		Request::Info request_info;
+		request_info.document_root="Y:/parser3/src/";
+		request_info.path_translated=filespec_to_process;
+		request_info.request_method=getenv("REQUEST_METHOD");
+		request_info.query_string=getenv("QUERY_STRING");
+		request_info.request_uri=getenv("REQUEST_URI");
+		request_info.content_type=getenv("CONTENT_TYPE");
+		const char *content_length=getenv("CONTENT_LENGTH");
+		request_info.content_length=(content_length?atoi(content_length):0);
+
 		// prepare to process request
 		Request request(Pool(),
-			cgi ? String::Untaint_lang::HTML_TYPO : String::Untaint_lang::NO,
-			document_root,
-			page_filespec
+			request_info,
+			cgi ? String::Untaint_lang::HTML_TYPO : String::Untaint_lang::NO
 			);
-		
-		// fill user passed forms
-		vform_fields_fill(pool, cgi, request.form_class.fields());
 		
 		// some root-controlled location
 		char *sys_auto_path1;
 #ifdef WIN32
+		// c:\windows
 		sys_auto_path1=(char *)pool.malloc(MAX_STRING);
 		GetWindowsDirectory(sys_auto_path1, MAX_STRING);
-		strcat(sys_auto_path1, "\\");
+		strcat(sys_auto_path1, PATH_DELIMITER_STRING);
 #else
+		// ~nobody
 		sys_auto_path1=getenv("HOME");
 #endif
 		

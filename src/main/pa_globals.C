@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.2 2001/03/14 09:12:05 paf Exp $
+	$Id: pa_globals.C,v 1.3 2001/03/14 16:47:33 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -13,6 +13,8 @@
 #include "_table.h"
 #include "_form.h"
 #include "_env.h"
+
+Service_funcs service_funcs;
 
 String *exception_method_name;
 

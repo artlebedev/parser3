@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.2 2001/03/14 09:12:04 paf Exp $
+	$Id: pa_globals.h,v 1.3 2001/03/14 16:47:29 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -27,8 +27,16 @@
 #define ENV_CLASS_NAME "env"
 #define FORM_CLASS_NAME "form"
 
+struct Service_funcs {
+	size_t (*read_post)(char *&buf, size_t max_bytes);
+};
+
+
 // core func
 void globals_init(Pool& pool);
+
+//
+extern Service_funcs service_funcs;
 
 // global strings
 extern String *exception_method_name;
