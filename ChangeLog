@@ -1,3 +1,504 @@
+2002-04-25  paf
+	* src/classes/table.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/.htaccess:
+	* www/htdocs/index.html:
+		removed restriction on column count to ^table.hash to work, now
+		must be >0 [were >1]
+
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		sample of 'using junction out of context'
+
+2002-04-24  paf
+	* src/classes/classes.dsp:
+	* src/classes/gd/gd.dsp:
+	* src/classes/smtp/smtp.dsp:
+	* src/libltdl/libltdl.dsp:
+	* src/main/compile.tab.C:
+	* src/main/main.dsp:
+	* src/pcre/pcre.dsp:
+	* src/pcre/pcre_dftables.dsp:
+	* src/pcre/pcre_parser_ctype.dsp:
+	* src/targets/apache13/ApacheModuleParser3.dsp:
+	* src/targets/cgi/parser3.C:
+	* src/targets/cgi/parser3.dsp:
+	* src/targets/isapi/parser3isapi.dsp:
+	* src/types/types.dsp:
+		MSVC profile targets
+
+2002-04-23  paf
+	* operators.txt:
+	* src/classes/string.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		int/double/string:sql{}[$.default{code}]
+		fixed [were barking: "junction used outside of context"]
+
+2002-04-22  paf
+	* src/classes/string.C:
+	* src/include/pa_string.h:
+	* src/main/pa_string.C:
+	* src/types/pa_vstring.C:
+	* src/types/pa_vstring.h:
+	* types.txt:
+		^string.optimize[]
+
+	* src/main/execute.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		junctions to local contexts got cleanized&checked later
+
+	* src/main/execute.C:
+	* www/cgi-bin/parser3.log:
+		rolled back to before_killing_userjunction_contexts
+
+	* src/include/pa_globals.h:
+	* src/include/pa_table.h:
+	* src/main/pa_globals.C:
+	* src/main/pa_string.C:
+	* src/main/pa_table.C:
+		fixed match table template
+
+	* src/classes/string.C:
+	* src/classes/string.C:
+		optimize removed from string .left/right/pos
+
+	* src/main/execute.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		user junctions context killed
+
+2002-04-19  paf
+	* src/classes/string.C:
+	* src/include/pa_request.h:
+	* src/include/pa_string.h:
+	* src/main/pa_request.C:
+	* src/main/pa_string.C:
+	* src/types/pa_vstring.C:
+	* src/types/pa_vstring.h:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		string now optimized prior to .left .right .mid .pos .match when that is profitable,
+		and always before .replace
+		when $ORIGINS(1) optimization disabled
+		economy from not wasting mem on lots of strings which occur by lots of String:mid calls to get parts of source string between found_occurances
+
+	* src/classes/op.C:
+	* src/classes/string.C:
+	* src/types/pa_value.h:
+		VTable removed from each String::match replace iteration, and made stacked
+		sizeof(VTable)=12bytes economy on each replace code
+
+	* src/include/pa_globals.h:
+	* src/include/pa_table.h:
+	* src/main/pa_globals.C:
+	* src/main/pa_string.C:
+		String::match table columns globalized, not created @ each ^match anymore
+		economy: sizeof(Array)+space on 3+x cells=24+ bytes per ^match
+
+	* src/classes/file.C:
+		ovector now local
+		economy: 16 bytes per ^file:list
+
+	* src/classes/string.C:
+	* src/include/pa_string.h:
+	* src/main/pa_string.C:
+	* www/htdocs/index.html:
+		string.match[]['] option enables generation of $match.prematch
+		.match .postmatch columns
+
+	* src/main/pa_string.C:
+		String::match options analized without cstr-ing them now
+
+	* src/doc/chmhelper.pl:
+	* src/doc/doxygen.cfg:
+	* src/doc/footer.htm:
+	* src/doc/html2chm.cmd:
+	* src/doc/postbuild.txt:
+	* src/doc/sources2html.cmd:
+	* src/doc/view_chm.cmd:
+	* src/doc/view_html.cmd:
+		config updated to doxygen 1.2.15,
+		created helper which fixes minor bugs in chm project files & htm tree.
+		changed extension to .htm
+
+	* src/doc/footer.htm:
+		2001,
+
+2002-04-18  paf
+	* src/classes/classes.h:
+	* src/classes/hash.C:
+	* src/types/pa_value.h:
+	* src/types/pa_vbool.h:
+	* src/types/pa_vcookie.h:
+	* src/types/pa_vdate.h:
+	* src/types/pa_vdouble.h:
+	* src/types/pa_venv.h:
+	* src/types/pa_vfile.h:
+	* src/types/pa_vhash.h:
+	* src/types/pa_vimage.h:
+	* src/types/pa_vint.h:
+	* src/types/pa_vjunction.h:
+	* src/types/pa_vobject.h:
+	* src/types/pa_vrequest.h:
+	* src/types/pa_vresponse.h:
+	* src/types/pa_vstateless_class.h:
+	* src/types/pa_vstateless_object.h:
+	* src/types/pa_vstatus.h:
+	* src/types/pa_vstring.h:
+	* src/types/pa_vtable.h:
+	* src/types/pa_vvoid.h:
+	* src/types/pa_vxdoc.h:
+	* src/types/pa_vxnode.h:
+		fclass_real lowered from VStateless_class to VObject
+
+	* src/types/pa_value.C:
+		forced to cut that from .h because of VStateless_class usage [
+		undefined in .h]
+
+	* src/classes/classes.h:
+	* src/classes/date.C:
+	* src/classes/double.C:
+	* src/classes/file.C:
+	* src/classes/form.C:
+	* src/classes/hash.C:
+	* src/classes/image.C:
+	* src/classes/int.C:
+	* src/classes/mail.C:
+	* src/classes/math.C:
+	* src/classes/op.C:
+	* src/classes/response.C:
+	* src/classes/string.C:
+	* src/classes/table.C:
+	* src/classes/void.C:
+	* src/classes/xnode.C:
+	* src/include/pa_globals.h:
+	* src/include/pa_request.h:
+	* src/main/execute.C:
+	* src/main/pa_globals.C:
+	* src/main/pa_request.C:
+	* src/types/Makefile.am:
+	* src/types/pa_value.h:
+	* src/types/pa_vdouble.h:
+	* src/types/pa_vform.C:
+	* src/types/pa_vhash.h:
+	* src/types/pa_vint.h:
+	* src/types/pa_vmath.h:
+	* src/types/pa_vmethod_frame.h:
+	* src/types/pa_vstateless_class.h:
+	* src/types/pa_wcontext.C:
+	* src/types/pa_wcontext.h:
+	* src/types/pa_wwrapper.h:
+	* src/types/types.dsp:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		removed Value::fname
+
+	* src/include/pa_opcode.h:
+	* src/main/compile.tab.C:
+	* src/main/compile.y:
+	* src/main/compile_tools.C:
+	* src/main/compile_tools.h:
+	* src/main/execute.C:
+	* src/main/pa_request.C:
+	* src/types/pa_vmethod_frame.h:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		OP_GET_METHOD_FRAME merged with OP_CALL, VCodeFrame move to
+		stack [no more heap waste on each CALL]
+
+	* src/types/pa_valiased.C:
+	* src/types/pa_valiased.h:
+	* src/types/pa_vclass.h:
+	* src/types/pa_vobject.h:
+	* src/types/pa_wcontext.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		VAliased get/set alias now virtual and implemented down in
+		VClass, fclass_alias removed,
+
+	* src/main/pa_request.C:
+	* src/types/pa_valiased.h:
+	* src/types/pa_vstateless_class.h:
+	* src/types/pa_vstateless_object.h:
+	* src/types/pa_vstring.h:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		VStateless_string_object speicalized light version of VStateless_object
+
+	* src/types/Makefile.in:
+		*** empty log message ***
+
+	* src/doc/doxygen.cfg:
+		.chi generation disabled
+
+	* src/classes/classes.h:
+	* src/classes/xdoc.C:
+	* src/classes/xnode.C:
+	* src/classes/xnode.h:
+	* src/types/pa_vxdoc.C:
+	* www/cgi-bin/parser3.log:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+	* www/htdocs/index.html:
+		xdoc(xnode) now fully - fields&methods
+
+	* src/classes/op.C:
+		^throw comment param made optional
+
+2002-04-17  paf
+	* src/types/pa_vhash.h:
+		vstring wrong parent fixed
+
+	* src/classes/op.C:
+		taint local result var bug fixed
+
+	* src/doc/ClassExample1.dox:
+	* src/doc/ClassExample2.dox:
+	* src/doc/ClassExample3.dox:
+	* src/doc/compiler.dox:
+	* src/doc/module.dox:
+	* src/doc/pooled.dox:
+	* src/doc/string.dox:
+	* src/doc/targets.dox:
+	* src/include/pa_pool.h:
+	* src/include/pa_types.h:
+		dox updated to current state, PTHROW freshen to throw & co
+
+2002-04-16  paf
+	* src/classes/op.C:
+		exception2vhash file now tainted
+
+	* src/include/pa_opcode.h:
+	* src/main/compile.tab.C:
+	* src/main/compile.y:
+	* src/main/execute.C:
+	* src/targets/cgi/parser3.C:
+	* www/cgi-bin/parser3.log:
+		OP_CALL -> OP_CALL__WRITE and used that for removing VString wrapper
+
+	* src/doc/postbuild.txt:
+	* src/main/execute.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		result in @postprocess & @unhandled_exception now taken into
+		account as in usual functions
+
+	* src/doc/postbuild.txt:
+		instructions on post .html build
+
+	* asm.txt:
+	* form.txt:
+	* lang.txt:
+	* sql.txt:
+	* www/cgi-bin/parser3.log:
+		removed outdated. see in Attic asm.txt as most interesting
+
+	* src/classes/op.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/auto.p:
+		extra check on empty file in origin in _execute
+
+	* src/classes/date.C:
+	* src/main/compile.tab.C:
+	* src/targets/cgi/parser3.C:
+	* www/cgi-bin/parser3.log:
+	* www/cgi-bin/parser3.log:
+		cheched date:create(days) param for validity [later were
+		assumed valid and crashed on invalid onces]
+
+	* src/classes/file.C:
+	* src/main/pa_exec.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		stderr of execs mark as tainted
+
+	* src/main/execute.C:
+	* www/htdocs/index.html:
+		$result in @main now taken into account as in usual functions
+
+	* src/classes/op.C:
+	* www/cgi-bin/parser3.log:
+		_process pseudo origin copied from local var to heap
+
+	* src/main/pa_request.C:
+		uri in error log
+
+	* src/main/pa_request.C:
+	* src/targets/isapi/parser3isapi.C:
+	* www/htdocs/index.html:
+		removed check, preventing content-length: 0 from appearing
+
+	* src/doc/doxygen.cfg:
+	* src/doc/html2chm.cmd:
+		.chm file only now, no .chi
+
+2002-04-15  paf
+	* src/classes/image.C:
+	* src/classes/op.C:
+	* src/classes/op.C:
+	* src/classes/string.C:
+	* src/classes/table.C:
+	* src/include/pa_request.h:
+	* src/main/execute.C:
+	* src/types/pa_value.h:
+	* src/types/pa_vmethod_frame.h:
+	* src/types/pa_wcontext.h:
+	* www/cgi-bin/parser3.log:
+		StringOrValue wcontext result, now ready for dual writes
+
+	* src/classes/file.C:
+	* src/classes/op.C:
+	* src/classes/table.C:
+	* www/cgi-bin/parser3.log:
+		finished dual write_xxx_lang functions
+
+	* src/main/execute.C:
+	* src/types/pa_value.h:
+	* www/cgi-bin/parser3.log:
+		fixed name update
+
+	* src/main/execute.C:
+		CodeFrame soul fixed [mistakenly killed by prev changes]
+
+	* src/classes/date.C:
+	* src/classes/file.C:
+	* src/classes/mail.C:
+	* src/classes/string.C:
+	* src/classes/xnode.C:
+	* src/include/pa_request.h:
+	* src/types/pa_value.h:
+	* src/types/pa_wcontext.h:
+		removed absolutely unnecessary VString shells
+
+	* src/classes/op.C:
+	* src/include/pa_globals.h:
+	* src/include/pa_opcode.h:
+	* src/include/pa_request.h:
+	* src/main/compile.tab.C:
+	* src/main/compile.y:
+	* src/main/compile_tools.C:
+	* src/main/compile_tools.h:
+	* src/main/execute.C:
+	* src/main/pa_globals.C:
+	* src/main/pa_request.C:
+	* src/targets/cgi/parser3.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		switch in hash constructor fixed [were problems with using of
+		stacked wwrapper after it's death]
+
+	* src/classes/file.C:
+	* src/classes/hash.C:
+	* src/classes/op.C:
+	* src/include/pa_request.h:
+	* src/main/execute.C:
+	* src/types/pa_wcontext.h:
+		started dual write_xxx_lang functions, if checked & works
+
+	* src/targets/cgi/parser3.C:
+		ctime sometimes can be just "", checked that
+
+	* src/main/compile.tab.C:
+	* src/main/compile.y:
+	* src/main/compile_tools.C:
+	* src/main/compile_tools.h:
+	* src/main/execute.C:
+		OP_GET_ELEMENT+OP_GET_ELEMENT__WRITE
+		changed to OP_WRITE_VALUE
+		in var get cases
+
+2002-04-12  paf
+	* operators.txt:
+	* src/classes/table.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		table.select(expression) 0
+
+2002-04-11  paf
+	* src/classes/string.C:
+	* src/include/pa_request.h:
+	* src/main/execute.C:
+		Request::process_internal codeFrame & wwrapper stacked [not
+		wasting  heap anymore]
+
+2002-04-10  paf
+	* src/include/pa_string.h:
+	* src/main/pa_string.C:
+	* src/main/untaint.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		killed 8 bytes from String.head
+
+	* src/classes/double.C:
+	* src/classes/file.C:
+	* src/classes/hash.C:
+	* src/classes/image.C:
+	* src/classes/int.C:
+	* src/classes/math.C:
+	* src/classes/op.C:
+	* src/classes/string.C:
+	* src/classes/table.C:
+	* src/classes/void.C:
+	* src/classes/xdoc.C:
+	* src/include/pa_request.h:
+	* src/main/execute.C:
+	* src/main/pa_string.C:
+		killed Request::process() wrapping VString(String) in case we
+		need only String
+
+2002-04-09  paf
+	* src/main/pa_common.C:
+	* src/targets/cgi/parser3.C:
+	* src/types/pa_vdouble.h:
+	* src/types/pa_vint.h:
+		int/double get_string now not pool.malloc(MAX_NUMBER) but
+		really neaded
+
+	* etc/Makefile.in:
+	* etc/parser3.charsets/Makefile.in:
+	* src/classes/Makefile.in:
+	* src/classes/gd/Makefile.in:
+	* src/classes/smtp/Makefile.in:
+	* src/patches/Makefile.in:
+	* src/sql/Makefile.in:
+	* src/targets/Makefile.in:
+	* src/targets/apache13/Makefile.in:
+	* src/targets/cgi/Makefile.in:
+	* src/targets/isapi/Makefile.in:
+	* src/types/Makefile.in:
+		makse
+
+	* operators.txt:
+	* src/classes/double.C:
+	* src/classes/int.C:
+	* www/htdocs/global.xsl:
+		int/double.int/double(default)
+
+	* src/main/compile.tab.C:
+	* src/targets/cgi/parser3.C:
+	* src/targets/isapi/parser3isapi.C:
+	* www/cgi-bin/parser3.log:
+		removed
+		{
+		  char *a;
+		  {
+		     /*sub local*/char b[...];
+		     a=b;
+		situations
+
+	* src/classes/xdoc.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/global.xsl:
+	* www/htdocs/index.html:
+		xslt params fixed
+
+	* operators.txt:
+	* src/classes/xdoc.C:
+	* www/cgi-bin/parser3.log:
+		xslt params made literal
+
 2002-04-04  paf
 	* src/include/pa_string.h:
 	* src/main/pa_string.C:
@@ -6608,7 +7109,7 @@
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.3 2002/04/04 13:48:30 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.4 2002/04/25 14:35:19 paf Exp $";
 
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
@@ -6651,7 +7152,7 @@
 	* src/main/untaint.C:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
-		static char *RCSId="$Id: ChangeLog,v 1.3 2002/04/04 13:48:30 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.4 2002/04/25 14:35:19 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C:
@@ -12705,7 +13206,7 @@
 	* src/targets/parser.C:
 	* src/targets/parser.dsp:
 	* src/targets/parser.dsp:
-		$Id: ChangeLog,v 1.3 2002/04/04 13:48:30 paf Exp $ check
+		$Id: ChangeLog,v 1.4 2002/04/25 14:35:19 paf Exp $ check
 
 	* src/targets/parser.C:
 		$id$ check

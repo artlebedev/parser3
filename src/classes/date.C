@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.27 2002/04/18 10:50:59 paf Exp $
+	$Id: date.C,v 1.28 2002/04/25 14:35:20 paf Exp $
 */
 
 #include "classes.h"
@@ -38,26 +38,57 @@ static void _now(Request& r, const String& method_name, MethodParams *params) {
 	vdate->set_time(t);
 }
 
+static int NN_year_to_NNNN(int year) {
+	if(year<70) // 0..69 -> 100..169 [2000..2069]
+		year+=100;
+	if(year>=1900)
+		year-=1900;
+	return year;
+}
+
+/// @test 09 ok? [octal maybe]
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDate *vdate=static_cast<VDate *>(r.self);
 
 	time_t t;
-	if(params->size()==1) { // ^set(float days)
-		t=(time_t)(params->as_double(0, "float days must be double", r)*SECS_PER_DAY);
-		if(t<0 || !localtime(&t))
-			throw Exception(0,
-				&method_name,
-				"invalid datetime");
+	if(params->size()==1) { 
+		if(const String *sdate=params->get(0).get_string()) { // ^create[2002-04-25 18:14:00]
+			char *cstr=sdate->cstr();
+			const char *year=lsplit(&cstr, '-');
+			const char *month=lsplit(&cstr, '-');
+			const char *mday=lsplit(&cstr, ' ');
+			const char *hour=lsplit(&cstr, ':');
+			const char *min=lsplit(&cstr, ':');
+			const char *sec=cstr;
+			if(!year)
+				throw Exception(0,
+					sdate,
+					"no part of date specified, must be in YYYY-NN-DD HH-MM-SS format");
+			tm tmIn={0};
+			tmIn.tm_isdst=-1;
+			tmIn.tm_year=NN_year_to_NNNN(atoi(year));
+			tmIn.tm_mon=month?atoi(month)-1:0;
+			tmIn.tm_mday=mday?atoi(mday):1;
+			tmIn.tm_hour=hour?atoi(hour):0;
+			tmIn.tm_min=min?atoi(min):0;
+			tmIn.tm_sec=sec?atoi(sec):0;
+			t=mktime(&tmIn);
+			if(t<0)
+				throw Exception(0,
+					sdate,
+					"invalid datetime");
+		} else { // ^create(float days)
+			t=(time_t)(params->as_double(0, "float days must be double", r)*SECS_PER_DAY);
+			if(t<0 || !localtime(&t))
+				throw Exception(0,
+					&method_name,
+					"invalid datetime");
+		}
 	} else if(params->size()>=2) { // ^set(y;m;d[;h[;m[;s]]])
 		tm tmIn={0};
 		tmIn.tm_isdst=-1;
-		int year=params->as_int(0, "year must be int", r);
-		if(year<70) // 0..69 -> 100..169 [2000..2069]
-			year+=100;
-		if(year>=1900)
-			year-=1900;
-		tmIn.tm_year=year;
+		tmIn.tm_year=NN_year_to_NNNN(params->as_int(0, "year must be int", r));
 		tmIn.tm_mon=params->as_int(1, "month must be int", r)-1;
 		tmIn.tm_mday=params->size()>2?params->as_int(2, "mday must be int", r):1;
 		if(params->size()>3) tmIn.tm_hour=params->as_int(3, "hour must be int", r);
@@ -277,6 +308,7 @@ MDate::MDate(Pool& apool) : Methoded(apool, "date") {
 
 	// ^set(float days)
 	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 6);
+	// old name for compatibility with <= v1.17 2002/2/18 12:13:42 paf
 	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 6);
 
 	// ^sql-string[]
