@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.6 2001/02/22 09:14:46 paf Exp $
+  $Id: compile_tools.C,v 1.7 2001/02/22 10:43:45 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -41,13 +41,11 @@ void push_LS(struct parse_control *pc, lexical_state new_state) {
 	if(pc->sp<MAX_LEXICAL_STATES) {
 		pc->stack[pc->sp++]=pc->ls;  pc->ls=new_state;
 	} else
-		(static_cast<Pool *>(pc->pool))->exception().raise(0, 0, 0, 
-			"push_LS: stack overflow");
+		pc->pool->THROW(0, 0, 0, "push_LS: stack overflow");
 }
 void pop_LS(struct parse_control *pc) {
 	if(--pc->sp>=0)
 		pc->ls=pc->stack[pc->sp];
 	else
-		(static_cast<Pool *>(pc->pool))->exception().raise(0, 0, 0, 
-			"push_LS: stack underflow");
+		pc->pool->THROW(0, 0, 0, "push_LS: stack underflow");
 }

@@ -623,7 +623,7 @@ break2:
 
 int real_yyerror(parse_control *pc, char *s)  /* Called by yyparse on error */
      {
-       fprintf(stderr, "[%s]\n", s);
+       //fprintf(stderr, "[%s]\n", s);
 
 	   s[MAX_STRING-1]=0; strcpy(pc->error, s);
 	   return 1;

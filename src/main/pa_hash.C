@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.13 2001/02/21 11:13:16 paf Exp $
+  $Id: pa_hash.C,v 1.14 2001/02/22 10:43:46 paf Exp $
 */
 
 /*
@@ -33,7 +33,7 @@ void Hash::construct(Pool& apool, bool athread_safe) {
 	size=sizes[size_index=0];
 	threshold=size*THRESHOLD_PERCENT/100;
 	used=0;
-	refs=static_cast<Pair **>(pool().calloc(sizeof(Pair *)*size));
+	refs=static_cast<Pair **>(calloc(sizeof(Pair *)*size));
 }
 
 void Hash::expand() {
@@ -43,7 +43,7 @@ void Hash::expand() {
 	// allocated bigger refs array
 	size_index=size_index+1<sizes_count?size_index+1:sizes_count-1;
 	size=sizes[size_index];
-	refs=static_cast<Pair **>(pool().calloc(sizeof(Pair *)*size));
+	refs=static_cast<Pair **>(calloc(sizeof(Pair *)*size));
 
 	// rehash
 	Pair **old_ref=old_refs;

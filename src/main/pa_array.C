@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.16 2001/02/21 17:36:58 paf Exp $
+  $Id: pa_array.C,v 1.17 2001/02/22 10:43:45 paf Exp $
 */
 
 #include <string.h>
@@ -11,7 +11,7 @@
 Array::Array(Pool& apool, int initial_rows) :
 	Pooled(apool) {
 	head=tail=static_cast<Chunk *>(
-		pool().malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
+		malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
 	head->count=initial_rows;
 	append_here=head->rows;
 	link_row=&head->rows[initial_rows];
@@ -24,7 +24,7 @@ Array::Array(Pool& apool, int initial_rows) :
 
 void Array::expand(int chunk_rows) {
 	Chunk *chunk=tail=static_cast<Chunk *>(
-		pool().malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *)));
+		malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *)));
 	chunk->count=chunk_rows;
 	link_row->link=chunk;
 	append_here=chunk->rows;
@@ -45,7 +45,7 @@ Array& Array::operator += (Item *src) {
 
 Array::Item *Array::get(int index) const {
 	if(!(index>=0 && index<size())) {
-		pool().exception().raise(0, 0, 0, 
+		THROW(0, 0, 0, 
 			"Array::get(%d) out of range [0..%d]", index, size()-1);
 		return 0;
 	}
@@ -68,7 +68,7 @@ Array::Item *Array::get(int index) const {
 
 void Array::put(int index, Item *item) {
 	if(!(index>=0 && index<size())) {
-		pool().exception().raise(0, 0, 0, 
+		THROW(0, 0, 0, 
 			"Array::put(%d) out of range [0..%d]", index, size()-1);
 		return;
 	}

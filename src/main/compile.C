@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.12 2001/02/22 09:36:23 paf Exp $
+  $Id: compile.C,v 1.13 2001/02/22 10:43:45 paf Exp $
 */
 
 #include "pa_request.h"
@@ -20,7 +20,7 @@ Array& Request::real_compile(COMPILE_PARAMS) {
 
 	// input 
 	pc.pool=&pool();
-	pc.methods=new(pool()) Array(pool());
+	pc.methods=NEW Array(pool());
 	if(!source)
 		return *pc.methods;
 
@@ -31,7 +31,7 @@ Array& Request::real_compile(COMPILE_PARAMS) {
 #endif
 	// initialise state
 	pc.pending_state=0;
-	pc.string=new(pool()) String(pool());	
+	pc.string=NEW String(pool());	
 	pc.ls=LS_USER;
 	pc.sp=0;
 	
@@ -43,7 +43,7 @@ Array& Request::real_compile(COMPILE_PARAMS) {
 			pc.line--;
 			pc.col=-1;
 		}
-		exception().raise(0,0,
+		THROW(0,0,
 			0,
 			"%s [%s:%d:%d]", pc.error, file, 1+pc.line, pc.col);
 	}

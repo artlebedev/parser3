@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.23 2001/02/22 09:36:24 paf Exp $
+$Id: core.C,v 1.24 2001/02/22 10:43:45 paf Exp $
 */
 
 #include "pa_request.h"
@@ -11,43 +11,18 @@ $Id: core.C,v 1.23 2001/02/22 09:36:24 paf Exp $
 
 void core() {
 	Exception exception;
-	if(EXCEPTION_TRY(exception)) {
-		Pool pool(exception);
-		Request request(pool);
-		request.core();
-	} else {
-		Exception& e=exception;
-		printf("fatal exception occured: %s\n", e.comment());
-		const String *type=e.type();
-		if(type) {
-			printf("  type: %s", type->cstr());
-			const String *code=e.code();
-			if(code)
-				printf(", code: %s", code->cstr());
-			printf("\n");
-		}
-		const String *problem_source=e.problem_source();
-		if(problem_source) {
-			const Origin& origin=problem_source->origin();
-			printf("  '%s'\n", 
-				problem_source->cstr());
-			if(origin.file)
-				printf(" [%s:%d]",
-				origin.file, origin.line);
-			printf("\n");
-		}
-	}
+	Pool pool(exception);
+	Request request(pool);
+	request.core();
 }
 
 void Request::core() {
-	Exception local_exception;
-	Local_request_exception subst(*this, local_exception);
-	if(EXCEPTION_TRY(local_exception)) {
+	TRY {
 		String name_RUN(pool()); name_RUN.APPEND_CONST("RUN");
 		char *result=execute_MAIN(construct_class(name_RUN, load_and_compile_RUN()));
 		printf("-----------------\n%s\n----------------\n", result);
-	} else {
-		Exception& e=exception();
+	} 
+	CATCH(e) {
 		printf("operator error occured: %s\n", e.comment());
 		const String *type=e.type();
 		if(type) {
@@ -68,6 +43,7 @@ void Request::core() {
 			printf("\n");
 		}
 	}
+	END_CATCH
 }
 
 Array& Request::load_and_compile_RUN() {
@@ -105,7 +81,7 @@ char *Request::execute_MAIN(VClass *class_RUN) {
 
 	Method *method_main=class_RUN->get_method(name_main);
 	if(!method_main)
-		exception().raise(0,0,
+		THROW(0,0,
 			&class_RUN->name(),
 			"no '"MAIN_METHOD_NAME"' method in class");
 

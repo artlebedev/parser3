@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.13 2001/02/22 09:14:25 paf Exp $
+  $Id: pa_value.h,v 1.14 2001/02/22 10:43:42 paf Exp $
 */
 
 /*
@@ -108,7 +108,7 @@ public:
 private: 
 
 	void failed(char *action) {
-		pool().exception().raise(0,0,
+		THROW(0,0,
 			0,
 			action, type());
 	}

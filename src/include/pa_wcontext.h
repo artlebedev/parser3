@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.5 2001/02/22 09:14:25 paf Exp $
+  $Id: pa_wcontext.h,v 1.6 2001/02/22 10:43:42 paf Exp $
 */
 
 /*
@@ -54,9 +54,9 @@ public: // usage
 			write(string);
 		else
 			if(fvalue) // already have value?
-				pool().exception().raise(0,0,  // don't need to construct twice
-				0,
-				"value already assigned, use constructor to reassign it");
+				THROW(0,0,  // don't need to construct twice
+					0,
+					"value already assigned, use constructor to reassign it");
 			else
 				fvalue=avalue;
 	}
@@ -76,7 +76,7 @@ private:
 	// raises an exception on 0 value
 	Value *check_value() const {
 		if(!fvalue)
-			pool().exception().raise(0,0,
+			THROW(0,0,
 				0,
 				"accessing wcontext without value");
 

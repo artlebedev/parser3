@@ -1,5 +1,5 @@
 /*
-  $Id: pa_exception.C,v 1.3 2001/01/30 13:43:43 paf Exp $
+  $Id: pa_exception.C,v 1.4 2001/02/22 10:43:45 paf Exp $
 */
 
 #include <stdio.h>
@@ -8,9 +8,9 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-void Exception::raise(const String *atype, const String *acode,
+void Exception::_throw(const String *atype, const String *acode,
 					  const String *aproblem_source, 
-					  const char *comment_fmt, ...) {
+					  const char *comment_fmt, ...) const {
 	ftype=atype;
 	fcode=acode;
 	fproblem_source=aproblem_source;

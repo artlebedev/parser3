@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.15 2001/02/21 17:37:04 paf Exp $
+  $Id: parser.C,v 1.16 2001/02/22 10:43:49 paf Exp $
 */
 
 #include <stdio.h>
@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 	return 0;
 
 	Exception fatal_exception;
-	if(EXCEPTION_TRY(fatal_exception)) {
+/*	if(EXCEPTION_TRY(fatal_exception)) {*/
 		Pool pool(fatal_exception);
 		
 		char *file="file1";
@@ -82,9 +82,9 @@ int main(int argc, char *argv[]) {
 		Pool request_pool(fatal_exception);
 		Request request(request_pool);
 
-		Exception operator_exception;
-		Local_request_exception subst(request, operator_exception);
-		if(EXCEPTION_TRY(request.exception())) {
+		//Exception operator_exception;
+		//Local_request_exception subst(request, operator_exception);
+		//if(EXCEPTION_TRY(request.exception())) {
 			/*
 			Array acolumns(request.pool());
 			acolumns+="id";
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
 			Table table(request, "_file.cfg", 1, 0);
 			for(int n=1; n<=5; n++) {
 				Array& row=*new(request.pool()) Array(request.pool(), 3/*table.columns()->size()*/);
-				char *buf=static_cast<char *>(request.pool().malloc(MAX_STRING));
+				char *buf=static_cast<char *>(request.malloc(MAX_STRING));
 				row+=itoa(n, buf);
 				row+="paf";
 				row+="99";
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
 				for(int i=0; i<5/*table.columns()->size()*/; i++) {
 					/**/
 					String name(request.pool());
-					char *buf=static_cast<char *>(request.pool().malloc(MAX_STRING));
+					char *buf=static_cast<char *>(request.malloc(MAX_STRING));
 					name.APPEND(itoa(i, buf), 0,"names file", 0);
 					//name.APPEND("id", "names file", 0);
 					table.read_item(line, name);
@@ -149,6 +149,7 @@ int main(int argc, char *argv[]) {
 			int type=si.skip_to(types);
 			si++;
 */
+			/*
 		} else {
 			Exception& e=request.exception();
 			printf("operator_error occured: %s\n", e.comment());
@@ -174,6 +175,6 @@ int main(int argc, char *argv[]) {
 	} else {
 		printf("fatal exception occured: %s\n", fatal_exception.comment());
 	}
-
+*/
 	return 0;
 }

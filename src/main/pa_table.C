@@ -1,5 +1,5 @@
 /*
-  $Id: pa_table.C,v 1.8 2001/02/20 18:45:53 paf Exp $
+  $Id: pa_table.C,v 1.9 2001/02/22 10:43:46 paf Exp $
 */
 
 #include <stdlib.h>
@@ -31,7 +31,7 @@ Table::Table(Request& arequest,
 
 const Array &Table::at(int index) {
 	if(index<0 || index>=size())
-		request.exception().raise(0, 0, 
+		THROW(0, 0, 
 			0,
 			"table row index %d is out of range [0..%d]", 
 			index, size()-1);
@@ -51,7 +51,7 @@ const char *Table::item(const String& column_name) {
 		if(found_index)
 			column_index=found_index-1;
 		else
-			request.exception().raise(0, 0,
+			THROW(0, 0,
 				&column_name, 
 				"column not found");
 	} else {

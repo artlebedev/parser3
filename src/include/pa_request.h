@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.7 2001/02/21 17:36:30 paf Exp $
+  $Id: pa_request.h,v 1.8 2001/02/22 10:43:42 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -25,19 +25,14 @@
 class Local_request_exception;
 
 class Request : public Pooled {
-	friend Local_request_exception;
 public:
 	
 	Request(Pool& apool) : Pooled(apool),
-		fpool(apool), 
 		stack(apool),
 		fclasses(apool)
 		{
 	}
 	~Request() {}
-
-	// IMPORTANT: don't use without  Local_request_exception 
-	Exception& exception() { return *fexception; }
 
 	// global classes
 	Hash& classes() { return fclasses; }
@@ -71,37 +66,6 @@ private: // execute.C
 
 	void execute(Array& ops);
 
-protected:
-
-	// all request' objects are allocated in this pool
-	Pool& fpool;
-
-	// exception replacement mechanism is protected from direct usage
-	// Local_request_exception object enforces paired set/restore
-	Exception *set_exception(Exception *e){
-		Exception *r=fexception;
-		fexception=e;
-		return r;
-	}
-	void restore_exception(Exception *e) {
-		fexception=e;
-	}
-
-private:
-
-	// current request's exception object
-	Exception *fexception;
-
-};
-
-class Local_request_exception {
-	Request request;
-	Exception *saved_exception;
-public:
-	Local_request_exception(Request& arequest, Exception& exception) : 
-		request(arequest),
-		saved_exception(arequest.set_exception(&exception)) {}
-	~Local_request_exception() { request.restore_exception(saved_exception); }
 };
 
 // core func

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.29 2001/02/22 08:26:12 paf Exp $
+  $Id: pa_string.C,v 1.30 2001/02/22 10:43:46 paf Exp $
 */
 
 #include <string.h>
@@ -24,7 +24,7 @@ String::String(Pool& apool) :
 void String::expand() {
 	int new_chunk_count=last_chunk->count+last_chunk->count*CR_GROW_PERCENT/100;
 	last_chunk=static_cast<Chunk *>(
-		pool().malloc(sizeof(int)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *)));
+		malloc(sizeof(int)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *)));
 	last_chunk->count=new_chunk_count;
 	link_row->link=last_chunk;
 	append_here=last_chunk->rows;
@@ -58,7 +58,7 @@ String::String(const String& src) :
 		// remaining rows into new_chunk
 		int curr_chunk_rows=src_used_rows-head.count;
 		Chunk *new_chunk=static_cast<Chunk *>(
-			pool().malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
+			malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
 		new_chunk->count=curr_chunk_rows;
 		head.preallocated_link=new_chunk;
 		append_here=link_row=&new_chunk->rows[new_chunk->count];
@@ -106,7 +106,7 @@ String& String::operator += (const String& src) {
 		//   allocating only enough mem to fit src string rows
 		//   next append would allocate a new chunk
 		last_chunk=static_cast<Chunk *>(
-			pool().malloc(sizeof(int)+sizeof(Chunk::Row)*src_used_rows+sizeof(Chunk *)));
+			malloc(sizeof(int)+sizeof(Chunk::Row)*src_used_rows+sizeof(Chunk *)));
 		last_chunk->count=src_used_rows;
 		link_row->link=last_chunk;
 		append_here=link_row=&last_chunk->rows[src_used_rows];
@@ -163,7 +163,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 }
 
 char *String::cstr() const {
-	char *result=static_cast<char *>(pool().malloc(size()+1));
+	char *result=static_cast<char *>(malloc(size()+1));
 
 	char *copy_here=result;
 	const Chunk *chunk=&head; 
