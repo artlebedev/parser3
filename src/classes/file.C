@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/10/21 08:22:17 $";
+static const char* IDENT_FILE_C="$Date: 2002/11/20 10:01:01 $";
 
 #include "pa_config_includes.h"
 
@@ -248,6 +248,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	env.put(*new(pool) String(pool, "SCRIPT_NAME"), &script_name);
 	//env.put(*new(pool) String(pool, "SCRIPT_FILENAME"), ??&script_name);
 
+	bool stdin_specified=false;
 	// environment & stdin from param
 	String in(pool);
 	if(params->size()>1) {
@@ -255,10 +256,11 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 		if(Hash *user_env=venv.get_hash(&method_name)) {
 			Append_env_pair_info info={&env};
 			user_env->for_each(append_env_pair, &info);
-			if(info.vstdin)
-				if(info.vstdin->is_string())
-					in.append(*info.vstdin->get_string(), String::UL_CLEAN, true);
-				else
+			if(info.vstdin) {
+				stdin_specified=true;
+				if(const String *sstdin=info.vstdin->get_string()) {
+					in.append(*sstdin, String::UL_CLEAN, true);
+				} else
 					if(VFile *vfile=static_cast<VFile *>(info.vstdin->as("file", false)))
 						in.APPEND_TAINTED((const char *)vfile->value_ptr(), vfile->value_size(),
 							"$.stdin[assigned]", 0);
@@ -266,6 +268,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 						throw Exception("parser.runtime",
 							&method_name,
 							STDIN_EXEC_PARAM_NAME " parameter must be string or file");
+			}
 		}
 	}
 
@@ -278,7 +281,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	}
 
 	// passing POST data
-	if(in.is_empty()) // if $.stdin[...] not specified 
+	if(!stdin_specified) // if $.stdin[...] not specified 
 		in.APPEND(r.post_data, r.post_size, String::UL_CLEAN, "POST data (passed)", 0);
 
 	// exec!
