@@ -1,5 +1,5 @@
-#@USE
-#t.p
+@USE
+/t.p
 
 @auto[filespec]
 $selffilespec[$filespec]
@@ -206,9 +206,19 @@ $selffilespec[$filespec]
 #^datesaving[]
 #^badconstructor[]
 #^calendar[]
-^monthdays(8)
+#^monthdays(8)
+^xtabletest[]
+#^xdoctypetest[]
 <hr>
 OK
+
+@xdoctypetest[]
+$xdoc[^xdoc::create[x]]
+^if($xdoc is xdoc){y}{n}
+
+@xtabletest[]
+$xtableo[^xtable::create[]]
+^if($xtableo is table){y}{n}
 
 @monthdays[month]
 $from[^date::create(2000;$month;1)]

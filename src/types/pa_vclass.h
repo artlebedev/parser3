@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char* IDENT_VCLASS_H="$Date: 2002/08/02 10:58:37 $";
+static const char* IDENT_VCLASS_H="$Date: 2002/08/09 14:18:39 $";
 
 #include "pa_vstateless_class.h"
 //#include "pa_vhash.h"
@@ -23,6 +23,13 @@ class VClass : public VStateless_class {
 public: // Value
 	
 	const char *type() const { return name_cstr(); }
+
+	Value *as(const char *atype) {
+		if(Value *result=Value::as(atype))
+			return result;
+		else
+			return fbase?fbase->as(atype):0;
+	}
 
 	/// VClass: true
 	Value *as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }

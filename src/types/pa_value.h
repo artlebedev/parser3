@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/01 11:41:22 $";
+static const char* IDENT_VALUE_H="$Date: 2002/08/09 14:18:39 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -33,6 +33,14 @@ public: // Value
 
 	/// all: value type, used for error reporting and 'is' expression operator
 	virtual const char *type() const =0;
+
+	/**
+		all except derived class: this if @atype eq type()
+		derived class: can locate parent class by it's type
+	*/
+	virtual Value *as(const char *atype) {
+		return atype && strcmp(type(), atype)==0?this:0;
+	}
 	
 	/** is this value defined?
 		@return for

@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/08/02 10:58:37 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/08/09 14:18:40 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
@@ -22,6 +22,7 @@ class VObject : public VStateless_object {
 public: // Value
 	
 	const char *type() const { return fclass_real.name_cstr(); }
+	Value *as(const char *atype) { return fclass_real.as(atype); }
 
 	/// VObject: fclass_real
 	VStateless_class *get_class() { return &fclass_real; }
