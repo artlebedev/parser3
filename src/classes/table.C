@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/08/15 10:38:18 $";
+static const char* IDENT_TABLE_C="$Date: 2002/09/17 08:44:45 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -281,14 +281,14 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	for(int row=0; row<size; row++) {
 		table.set_current(row);
 
-		StringOrValue processed_body=r.process(body_code);
-		if(delim_maybe_code) { // delimiter set?
-			const String *string=processed_body.get_string();
-			if(need_delim && string && string->size()) // need delim & iteration produced string?
+		StringOrValue sv_processed=r.process(body_code);
+		const String *s_processed=sv_processed.get_string();
+		if(delim_maybe_code && s_processed && s_processed->size()) { // delimiter set and we have body
+			if(need_delim) // need delim & iteration produced string?
 				r.write_pass_lang(r.process(*delim_maybe_code));
 			need_delim=true;
 		}
-		r.write_pass_lang(processed_body);
+		r.write_pass_lang(sv_processed);
 	}
 	table.set_current(saved_current);
 }

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/09/10 14:56:33 $";
+static const char* IDENT_OP_C="$Date: 2002/09/17 08:44:44 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -207,14 +207,14 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 	for(int i=from; i<=to; i++) {
 		vint->set_int(i);
 
-		StringOrValue processed_body=r.process(body_code);
-		if(delim_maybe_code) { // delimiter set?
-			const String *string=processed_body.get_string();
-			if(need_delim && string && string->size()) // need delim & iteration produced string?
+		StringOrValue sv_processed=r.process(body_code);
+		const String *s_processed=sv_processed.get_string();
+		if(delim_maybe_code && s_processed && s_processed->size()) { // delimiter set and we have body
+			if(need_delim) // need delim & iteration produced string?
 				r.write_pass_lang(r.process(*delim_maybe_code));
 			need_delim=true;
 		}
-		r.write_pass_lang(processed_body);
+		r.write_pass_lang(sv_processed);
 	}
 }
 
