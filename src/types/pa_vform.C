@@ -5,13 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.28 2001/04/28 08:44:15 paf Exp $
+	$Id: pa_vform.C,v 1.29 2001/05/17 19:33:33 parser Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
 */
-
-#include "pa_config_includes.h"
 
 #include "pa_sapi.h"
 #include "pa_vform.h"

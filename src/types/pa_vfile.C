@@ -5,11 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.16 2001/04/11 08:36:22 paf Exp $
+	$Id: pa_vfile.C,v 1.17 2001/05/17 19:33:33 parser Exp $
 */
 
-#include "pa_config_includes.h"
-#include <memory.h>
 #include "pa_vfile.h"
 #include "pa_vstring.h"
 #include "pa_vint.h"

@@ -5,10 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.20 2001/04/19 16:28:18 paf Exp $
+	$Id: pa_vcookie.C,v 1.21 2001/05/17 19:33:33 parser Exp $
 */
 
-#include "pa_config_includes.h"
 #include "pa_sapi.h"
 #include "pa_common.h"
 #include "pa_vcookie.h"

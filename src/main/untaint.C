@@ -5,10 +5,8 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.48 2001/05/14 13:18:07 parser Exp $
+	$Id: untaint.C,v 1.49 2001/05/17 19:33:33 parser Exp $
 */
-
-#include "pa_config_includes.h"
 
 #include "pa_pool.h"
 #include "pa_string.h"

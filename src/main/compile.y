@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.133 2001/05/15 10:01:25 parser Exp $
+	$Id: compile.y,v 1.134 2001/05/17 19:33:32 parser Exp $
 */
 
 /**
@@ -27,8 +27,6 @@
 #define YYERROR_VERBOSE	1
 #define yyerror(msg)  real_yyerror((parse_control *)pc, msg)
 #define YYPRINT(file, type, value)  yyprint(file, type, value)
-
-#include "pa_config_includes.h"
 
 #include "compile_tools.h"
 #include "pa_value.h"

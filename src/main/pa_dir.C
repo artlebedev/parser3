@@ -5,10 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_dir.C,v 1.2 2001/04/09 08:55:30 paf Exp $
+	$Id: pa_dir.C,v 1.3 2001/05/17 19:33:33 parser Exp $
 */
 
-#include "pa_config_includes.h"
 #include "pa_dir.h"
 #include "pa_common.h"
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_config_includes.h,v 1.8 2001/05/17 10:22:24 parser Exp $
+	$Id: pa_config_includes.h,v 1.9 2001/05/17 19:33:32 parser Exp $
 
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
@@ -84,4 +84,8 @@
 
 #ifdef HAVE_SETJMP_H
 #	include <setjmp.h>
+#endif
+
+#ifdef HAVE_MEMORY_H
+#	include <memory.h>
 #endif

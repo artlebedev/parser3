@@ -5,10 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.160 2001/05/17 15:43:08 parser Exp $
+	$Id: execute.C,v 1.161 2001/05/17 19:33:33 parser Exp $
 */
 
-#include "pa_config_includes.h"
 #include "pa_opcode.h"
 #include "pa_array.h" 
 #include "pa_request.h"

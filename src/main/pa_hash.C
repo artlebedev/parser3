@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.34 2001/04/23 08:52:24 paf Exp $
+	$Id: pa_hash.C,v 1.35 2001/05/17 19:33:33 parser Exp $
 */
 
 /*
@@ -15,8 +15,6 @@
 	http://www.zend.com/license/0_92.txt
 	For more information about Zend please visit http://www.zend.com/
 */
-
-#include "pa_config_includes.h"
 
 #include "pa_hash.h"
 

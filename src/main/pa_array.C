@@ -5,10 +5,8 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.C,v 1.34 2001/05/16 16:54:00 parser Exp $
+	$Id: pa_array.C,v 1.35 2001/05/17 19:33:33 parser Exp $
 */
-
-#include "pa_config_includes.h"
 
 #include "pa_pool.h"
 #include "pa_array.h"

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.49 2001/05/14 13:18:07 parser Exp $
+	$Id: string.C,v 1.50 2001/05/17 19:33:32 parser Exp $
 */
 
 #include "classes.h"
@@ -184,7 +184,7 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 		*ai.dest << *ai.post_match;
 }
 
-/// @todo use pcre:study!
+/// @todo use pcre:study somehow
 static void _match(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const String& src=*static_cast<VString *>(r.self)->get_string();

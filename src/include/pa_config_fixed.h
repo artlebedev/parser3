@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_config_fixed.h,v 1.10 2001/05/17 12:51:05 parser Exp $
+	$Id: pa_config_fixed.h,v 1.11 2001/05/17 19:33:32 parser Exp $
 
 
 	tested only with MS Visual C++ V6
@@ -27,3 +27,4 @@
 #define HAVE_STRING_H
 #define HAVE_DIRECT_H
 #define HAVE_SETJMP_H
+#define HAVE_MEMORY_H

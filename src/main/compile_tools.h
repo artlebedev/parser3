@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.39 2001/05/07 14:00:49 paf Exp $
+	$Id: compile_tools.h,v 1.40 2001/05/17 19:33:33 parser Exp $
 */
 
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
+#include "pa_config_includes.h"
 #include "pa_opcode.h"
 #include "pa_types.h"
 #include "pa_vstring.h"
