@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.9 2001/05/16 16:48:56 parser Exp $
+	$Id: pa_pool.C,v 1.10 2001/05/16 17:10:34 parser Exp $
 */
 
 #include <stdlib.h>
@@ -64,6 +64,10 @@
 #include "pa_wcontext.h"
 #include "pa_wwrapper.h"
 
+
+//#define DEBUG_POOL_MALLOC
+
+#ifdef DEBUG_POOL_MALLOC
 #define MALLOC_STAT_MAXSIZE (0x400*0x400)
 #define MALLOC_STAT_PLACES 10
 
@@ -152,8 +156,10 @@ ST(WWrapper);
 				total_times);
 		}		
 }
+#endif
 
-void *Pool::real_malloc(size_t size, int place) {
+void *Pool::real_malloc(size_t size/*, int place*/) {
+#ifdef DEBUG_POOL_MALLOC
 	int index=min(MALLOC_STAT_MAXSIZE-1, size);
 /*	if(size==88) {
 		_asm { 
@@ -162,6 +168,7 @@ void *Pool::real_malloc(size_t size, int place) {
 	}*/
 	malloc_times[place][index]++;
 	malloc_places[place]++;
+#endif
 	return ::malloc(size);
 }
 
