@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.109 2002/04/22 14:25:41 paf Exp $
+	$Id: string.C,v 1.110 2002/04/23 10:30:03 paf Exp $
 */
 
 #include "classes.h"
@@ -335,7 +335,9 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 				if(Value *voffset=(Value *)options->get(*sql_offset_name))
 					offset=(ulong)r.process_to_value(*voffset).as_double();
 				if(default_code=(Value *)options->get(*sql_default_name)) {
-					if(!default_code->get_junction())
+					if(Junction *default_junction=default_code->get_junction())
+						default_junction->change_context(statement.get_junction());
+					else
 						throw Exception("parser.runtime",
 							&method_name,
 							"default option must be code");
