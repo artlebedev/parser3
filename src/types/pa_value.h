@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.64 2001/07/07 16:38:01 parser Exp $
+	$Id: pa_value.h,v 1.65 2001/07/12 11:19:06 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -163,7 +163,13 @@ public: // Value
 		- VResponse: (attribute)=value
 		- VCookie: field
 	*/
-	virtual void put_element(const String& name, Value *value) { bark("(%s) does not accept elements"); }
+	virtual void put_element(const String& name, Value *value) { 
+		// to prevent modification of system classes,
+		// created at system startup, and not having exception
+		// handler installed, we neet to bark using request.pool
+		bark("(%s) does not accept elements", 
+			"element can not be stored to %s", &name); 
+	}
 	
 	/** extract VStateless_class
 		@return for
@@ -212,10 +218,12 @@ private:
 protected: 
 
 	/// throws exception specifying bark-reason and name() type() of problematic value
-	void bark(char *reason) const {
-		THROW(0, 0,
-			&name(),
-			reason, type());
+	void bark(char *reason, 
+		const char *alt_reason=0, const String *problem_source=0) const {
+		Pool& pool=problem_source?problem_source->pool():this->pool();
+		PTHROW(0, 0,
+			problem_source?problem_source:&name(),
+			problem_source?alt_reason:reason, type());
 	}
 
 };
