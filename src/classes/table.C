@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.75 2001/05/08 08:16:40 paf Exp $
+	$Id: table.C,v 1.76 2001/05/08 09:16:10 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -273,16 +273,9 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 	Row_info& ri=*static_cast<Row_info *>(info);
 	Pool& pool=ri.table->pool();
 
-	Value *result;
-	if(ri.value_fields->size()==1) { // key=value [not valueS]
-		int value_field=ri.value_fields->get_int(0);
-		if(value_field<row.size())
-			result=new(pool) VString(*row.get_string(value_field));
-		else
-			result=0;
-	} else {
-		VHash& vhash=*new(pool) VHash(pool);
-		Hash& hash=*vhash.get_hash();
+	if(ri.key_field<row.size()) {
+		VHash& result=*new(pool) VHash(pool);
+		Hash& hash=*result.get_hash();
 		for(int i=0; i<ri.value_fields->size(); i++) {
 			int value_field=ri.value_fields->get_int(i);
 			if(value_field<row.size())
@@ -291,11 +284,8 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 					new(pool) VString(*row.get_string(value_field)));
 		}
 		
-		result=&vhash;
-	}
-	
-	if(ri.key_field<row.size())
 		ri.hash->put(*row.get_string(ri.key_field), result);
+	}
 }
 static void _hash(Request& r, const String& method_name, MethodParams *params) {
 	Table& table=static_cast<VTable *>(r.self)->table();
