@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.35 2001/08/24 06:26:13 parser Exp $
+	$Id: mail.C,v 1.36 2001/09/05 08:35:04 parser Exp $
 */
-static const char *RCSId="$Id: mail.C,v 1.35 2001/08/24 06:26:13 parser Exp $"; 
+static const char *RCSId="$Id: mail.C,v 1.36 2001/09/05 08:35:04 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -177,13 +177,14 @@ static void *find_content_type_charset(const Hash::Key& aattribute, Hash::Val *a
 	return StrEqNc(aattribute.cstr(), "charset")?ameaning:0;
 }
 
-/// used by mail: _send / letter_hash_to_string / add_header_attribute
+#ifndef DOXYGEN
 struct Mail_info {
 	String *attribute_to_exclude;
 	const char *charset;
 	String *header;
 	const String **from, **to;
 };
+#endif
 static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
 								 void *info) {
 
@@ -208,11 +209,12 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 		"\n";
 }
 
-/// used in mail: _send / letter_hash_to_string / add_part
+#ifndef DOXYGEN
 struct Mail_seq_item {
 	const String *part_name;
 	Value *part_value;
 };
+#endif
 static void add_part(const Hash::Key& part_name, Hash::Val *part_value, 
 					 void *info) {
 	Mail_seq_item **seq_ref=static_cast<Mail_seq_item **>(info);
@@ -353,18 +355,18 @@ static void sendmail(Request& r, const String& method_name,
 	// unix
 	// $MAIN:MAIL.prog1["/usr/sbin/sendmail -t"] default
 	// $MAIN:MAIL.prog2["/usr/lib/sendmail -t"] default
-	if(mail_conf) {
-		char no_cstr[MAX_NUMBER];
-		for(int no=-2; ; no++) {
-			const String *prog_string;
-			switch(no) {
-			case -2: prog_string=new(pool) String(pool, "/usr/sbin/sendmail -t"); break;
-			case -1: prog_string=new(pool) String(pool, "/usr/lib/sendmail -t"); break;
-			default: 
-				{
-					String prog_key(pool, "prog");
-					snprintf(no_cstr, MAX_NUMBER, "%d", no);
-					prog_key << no_cstr;
+	char no_cstr[MAX_NUMBER];
+	for(int no=-2; ; no++) {
+		const String *prog_string;
+		switch(no) {
+		case -2: prog_string=new(pool) String(pool, "/usr/sbin/sendmail -t"); break;
+		case -1: prog_string=new(pool) String(pool, "/usr/lib/sendmail -t"); break;
+		default: 
+			{
+				String prog_key(pool, "prog");
+				snprintf(no_cstr, MAX_NUMBER, "%d", no);
+				prog_key << no_cstr;
+				if(mail_conf) {
 					if(Value *prog_value=static_cast<Value *>(mail_conf->get(prog_key)))
 						prog_string=&prog_value->as_string();
 					else
@@ -375,42 +377,42 @@ static void sendmail(Request& r, const String& method_name,
 								&method_name,
 								"$"MAIN_CLASS_NAME":"MAIL_NAME".%s not defined", 
 								prog_key.cstr());
-				}
+				} else
+					PTHROW(0, 0,
+						&method_name,
+						"$" MAIN_CLASS_NAME ":" MAIL_NAME " not defined");
 			}
-			// we know prog_string here
-			Array argv(pool);
-			const String *file_spec;
-			int after_file_spec=prog_string->pos(" ", 1);
-			if(after_file_spec<=0)
-				file_spec=prog_string;
-			else {
-				size_t pos_after=after_file_spec;
-				file_spec=&prog_string->mid(0, pos_after);
-				prog_string->split(argv, &pos_after, " ", 1, String::UL_CLEAN);
-			}
-
-			// skip unavailable default programs
-			if(no<0 && !file_executable(*file_spec))
-				continue;
-
-			String in(pool, letter_cstr); String out(pool); String err(pool);
-			int exit_status=pa_exec(*file_spec,
-				0/*default env*/,
-				&argv,
-				in, out, err);
-			if(exit_status || err.size())
-				PTHROW(0, 0,
-					&method_name,
-					"'%s' reported problem: %s (%d)",
-						file_spec->cstr(),
-						err.size()?err.cstr():"UNKNOWN", 
-						exit_status);
-			break;
 		}
-	} else
-		PTHROW(0, 0,
-			&method_name,
-			"$" MAIN_CLASS_NAME ":" MAIL_NAME " not defined");
+		// we know prog_string here
+		Array argv(pool);
+		const String *file_spec;
+		int after_file_spec=prog_string->pos(" ", 1);
+		if(after_file_spec<=0)
+			file_spec=prog_string;
+		else {
+			size_t pos_after=after_file_spec;
+			file_spec=&prog_string->mid(0, pos_after);
+			prog_string->split(argv, &pos_after, " ", 1, String::UL_CLEAN);
+		}
+
+		// skip unavailable default programs
+		if(no<0 && !file_executable(*file_spec))
+			continue;
+
+		String in(pool, letter_cstr); String out(pool); String err(pool);
+		int exit_status=pa_exec(*file_spec,
+			0/*default env*/,
+			&argv,
+			in, out, err);
+		if(exit_status || err.size())
+			PTHROW(0, 0,
+				&method_name,
+				"'%s' reported problem: %s (%d)",
+					file_spec->cstr(),
+					err.size()?err.cstr():"UNKNOWN", 
+					exit_status);
+		break;
+	}
 #endif
 }
 
