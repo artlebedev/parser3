@@ -1,9 +1,12 @@
 @main[]
-^untaint[as-is]{^process[$request:query]}<BR>
-^$request:query=$request:query<BR>
-^$request:uri=$request:uri<BR>
-<a href=^taint[uri][вот$request:query]>aaaaaaaa</a>
-$response:test[$value[value] $attr[attr value]]
+<pre>
+^$cookie:test-default1=$cookie:test-default1
+^$cookie:test-default2=$cookie:test-default2
+^$cookie:test-tomorrow=$cookie:test-tomorrow
+^$cookie:test-session=$cookie:test-session
 
-^response:clear[]
-$response:body[вот]
+$cookie:test-default1[value=1]
+$cookie:test-default2[$value[value=2]]
+$cookie:test-tomorrow[$value[value=3] $expires(1)]
+$cookie:test-session[$value[value=5] $expires[session]]
+z

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.15 2001/03/14 16:47:29 paf Exp $
+	$Id: pa_types.h,v 1.16 2001/03/18 20:31:26 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -14,10 +14,10 @@
 #endif
 
 #ifdef WIN32
-#if _MSC_VER
-#pragma warning(disable:4355)   // disable C4355 warning about using this
-	                            // in calls to parent constructors
-#endif
+#	if _MSC_VER
+#		pragma warning(disable:4355)   // disable C4355 warning about using this
+		                               // in calls to parent constructors
+#	endif
 #endif
 
 #ifdef WIN32
@@ -32,8 +32,6 @@
 // for now: used in Exception::fcomment
 #define MAX_STRING 0x400
 #define MAX_NUMBER 40
-
-#define STATIC_NAME "STATIC"
 
 #undef uint
 typedef unsigned int uint;

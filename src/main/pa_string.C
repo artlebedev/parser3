@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.42 2001/03/18 17:18:36 paf Exp $
+	$Id: pa_string.C,v 1.43 2001/03/18 20:31:27 paf Exp $
 */
 
 #include <string.h>
@@ -152,7 +152,7 @@ String& String::append(const String& src, Untaint_lang lang, bool forced) {
 	return *this;
 }
 void String::set_lang(Chunk::Row *row, Untaint_lang lang, bool forced, size_t size) {
-	if(lang==PASS_APPEND)
+	if(lang==PASS_APPENDED)
 		return;
 
 	while(size--) {

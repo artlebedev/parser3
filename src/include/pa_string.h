@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.39 2001/03/18 17:18:35 paf Exp $
+	$Id: pa_string.h,v 1.40 2001/03/18 20:31:26 paf Exp $
 */
 
 /*
@@ -62,10 +62,11 @@ public:
 		NO, // clean
 		YES,  // tainted, untaint language as assigned later 
 		// untaint languages. assigned by ^untaint[lang]{...}
-		PASS_APPEND,
+		PASS_APPENDED,
 			// leave language built into string being appended
 			// just a flag, that value not stored
 		AS_IS,
+		HEADER,
 		URI,
 		TABLE,
 		SQL,

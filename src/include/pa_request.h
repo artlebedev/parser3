@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.59 2001/03/18 14:45:26 paf Exp $
+	$Id: pa_request.h,v 1.60 2001/03/18 20:31:25 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -20,6 +20,7 @@
 #include "pa_vform.h"
 #include "pa_vrequest.h"
 #include "pa_vresponse.h"
+#include "pa_vcookie.h"
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \
@@ -52,6 +53,7 @@ public:
 		const char *uri;
 		const char *content_type;
 		size_t content_length;
+		const char *cookie;
 	};
 	
 	Request(Pool& apool,
@@ -93,7 +95,7 @@ public:
 	}
 	// appending string, passing language built into string being written
 	void write_pass_lang(String& astring) {
-		wcontext->write(astring, String::Untaint_lang::PASS_APPEND); 
+		wcontext->write(astring, String::Untaint_lang::PASS_APPENDED); 
 	}
 	// appending possible string, assigning untaint language
 	void write_assign_lang(Value& avalue) {
@@ -101,7 +103,7 @@ public:
 	}
 	// appending possible string, passing language built into string being written
 	void write_pass_lang(Value& avalue) {
-		wcontext->write(avalue, String::Untaint_lang::PASS_APPEND); 
+		wcontext->write(avalue, String::Untaint_lang::PASS_APPENDED); 
 	}
 	// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
@@ -132,6 +134,8 @@ public:
 	VRequest request;
 	// $response:
 	VResponse response;
+	// $cookie:
+	VCookie cookie;
 
 	// contexts
 	Value *self, *root, *rcontext;

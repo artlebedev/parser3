@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.5 2001/03/18 13:38:49 paf Exp $
+	$Id: pa_vform.C,v 1.6 2001/03/18 20:31:30 paf Exp $
 */
 
 /*
@@ -16,7 +16,7 @@
 #include "pa_vform.h"
 #include "pa_vstring.h"
 #include "pa_globals.h"
-#include "pa_common.h"
+//#include "pa_common.h"
 #include "pa_request.h"
 
 // parse helper funcs
@@ -93,42 +93,6 @@ char *VForm::getAttributeValue(const char *data,char *attr,int len) {
     return NULL;
 }
 
-void VForm::UnescapeChars(char **sp, const char *cp, int len) {
-	char *s;
-	EscapeState escapeState=EscapeRest;
-	int escapedValue=0;
-	int srcPos=0;
-	int dstPos=0;
-	s=(char *) malloc(len + 1);
-	while(srcPos < len) {
-		int ch=cp[srcPos];
-		switch(escapeState) {
-			case EscapeRest:
-			if(ch=='%') {
-				escapeState=EscapeFirst;
-			} else if(ch=='+') {
-				s[dstPos++]=' ';
-			} else {
-				s[dstPos++]=ch;	
-			}
-			break;
-			case EscapeFirst:
-			escapedValue=hex_value[ch] << 4;	
-			escapeState=EscapeSecond;
-			break;
-			case EscapeSecond:
-			escapedValue +=hex_value[ch];
-			s[dstPos++]=escapedValue;
-			escapeState=EscapeRest;
-			break;
-		}
-		srcPos++;
-	}
-	s[dstPos]=0;
-	*sp=s;
-}		
-	
-
 void VForm::ParseGetFormInput(const char *query_string) {
 	ParseFormInput(query_string, strlen(query_string));
 }
@@ -162,8 +126,6 @@ void VForm::ParseFormInput(const char *data, int length) {
 		int foundAmp=0;
 		int start=pos;
 		int len=0;
-		char *attr;
-		char *value;
 		while(pos !=length) {
 			if(data[pos]=='=') {
 				foundEq=1;
@@ -175,7 +137,7 @@ void VForm::ParseFormInput(const char *data, int length) {
 		}
 		if(!foundEq)
 			break;
-		UnescapeChars(&attr, data+start, len);
+		const char *attr=unescape_chars(pool(), data+start, len);
 		start=pos;
 		len=0;
 		while(pos !=length) {
@@ -189,7 +151,7 @@ void VForm::ParseFormInput(const char *data, int length) {
 		}
 		/* The last pair probably won't be followed by a &, but
 			that's fine, so check for that after accepting it */
-		UnescapeChars(&value, data+start, len);
+		const char *value=unescape_chars(pool(), data+start, len);
 		/* OK, we have a new pair, add it to the list. */
 		AppendFormEntry(attr, value);
 		if(!foundAmp)
@@ -246,11 +208,7 @@ void VForm::AppendFormEntry(const char *name,
 	fields.put(sname, value);
 }
 
-void VForm::fill_fields(
-						Request& request,
-						int post_max_size
-						)
-{
+void VForm::fill_fields(Request& request, int post_max_size) {
 	// parsing QS [GET and ?name=value from uri rewrite)]
 	if(request.info.query_string)
 		ParseGetFormInput(request.info.query_string);

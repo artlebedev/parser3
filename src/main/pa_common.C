@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.13 2001/03/18 14:45:27 paf Exp $
+	$Id: pa_common.C,v 1.14 2001/03/18 20:31:27 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -20,6 +20,11 @@
 #include "pa_common.h"
 #include "pa_types.h"
 #include "pa_exception.h"
+#include "pa_pool.h"
+#include "pa_globals.h"
+#include "pa_value.h"
+#include "pa_hash.h"
+#include "pa_string.h"
 
 #ifdef WIN32
 
@@ -136,4 +141,69 @@ size_t stdout_write(const char *buf, size_t size) {
 #else
 	return fwrite(buf, 1, size, stdout);
 #endif
+}
+
+const char *unescape_chars(Pool& pool, const char *cp, int len) {
+	char *s=(char *)pool.malloc(len + 1);
+	enum EscapeState {
+		EscapeRest,
+		EscapeFirst,
+		EscapeSecond
+	} escapeState=EscapeRest;
+	int escapedValue=0;
+	int srcPos=0;
+	int dstPos=0;
+	while(srcPos < len) {
+		int ch=cp[srcPos];
+		switch(escapeState) {
+			case EscapeRest:
+			if(ch=='%') {
+				escapeState=EscapeFirst;
+			} else if(ch=='+') {
+				s[dstPos++]=' ';
+			} else {
+				s[dstPos++]=ch;	
+			}
+			break;
+			case EscapeFirst:
+			escapedValue=hex_value[ch] << 4;	
+			escapeState=EscapeSecond;
+			break;
+			case EscapeSecond:
+			escapedValue +=hex_value[ch];
+			s[dstPos++]=escapedValue;
+			escapeState=EscapeRest;
+			break;
+		}
+		srcPos++;
+	}
+	s[dstPos]=0;
+	return s;
+}
+
+static void append_attribute_subattribute(const Hash::Key& akey, Hash::Value *avalue, 
+										  void *info) {
+	if(akey==VALUE_NAME)
+		return;
+
+	// ...; charset=windows1251
+	String *string=static_cast<String *>(info);
+	string->APPEND_CONST("; ");
+	string->append(akey, String::Untaint_lang::HEADER, true);
+	string->APPEND_CONST("=");
+	string->append(static_cast<Value *>(avalue)->as_string(), 
+		String::Untaint_lang::HEADER, true);
+}
+const String& attributed_meaning_string(Value *meaning) {
+	String &result=*new(meaning->pool()) String(meaning->pool());
+	if(Hash *hash=meaning->get_hash()) {
+		// $value(value) $subattribute(subattribute value)
+		if(Value *value=static_cast<Value *>(hash->get(*value_name)))
+			result.append(value->as_string(), String::Untaint_lang::HEADER, true);
+
+		hash->foreach(append_attribute_subattribute, &result);
+	} else // result value
+		result.append(meaning->as_string(), String::Untaint_lang::HEADER, true);
+
+	return result;
 }

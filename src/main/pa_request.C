@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.50 2001/03/18 17:45:49 paf Exp $
+	$Id: pa_request.C,v 1.51 2001/03/18 20:31:27 paf Exp $
 */
 
 #include <string.h>
@@ -29,6 +29,7 @@ Request::Request(Pool& apool,
 	form(apool),
 	request(apool, *this),
 	response(apool),
+	cookie(apool),
 	fclasses(apool),
 	fdefault_lang(adefault_lang), flang(adefault_lang),
 	info(ainfo),
@@ -51,24 +52,10 @@ Request::Request(Pool& apool,
 	classes().put(*request_class_name, &request);	
 	// response class
 	classes().put(*response_class_name, &response);	
+	// cookie class
+	classes().put(*cookie_class_name, &cookie);
 }
 
-static void append_attribute_subattribute(const Hash::Key& akey, Hash::Value *avalue, 
-										  void *info) {
-	if(akey==VALUE_NAME)
-		return;
-
-	// ...; charset=windows1251
-	String *string=static_cast<String *>(info);
-	string->APPEND_CONST("; ");
-	
-	string->append(akey, String::Untaint_lang::URI, true);
-
-	string->APPEND_CONST("=");
-
-	Value *value=static_cast<Value *>(avalue);
-	string->append(value->as_string(), String::Untaint_lang::URI, true);
-}
 static void output_response_attribute(const Hash::Key& aattribute, Hash::Value *ameaning, 
 									  void *info) {
 	String *attribute_to_exclude=static_cast<String *>(info);
@@ -76,23 +63,11 @@ static void output_response_attribute(const Hash::Key& aattribute, Hash::Value *
 		return;
 
 	String attribute(aattribute.pool());
-	attribute.append(aattribute, String::Untaint_lang::URI, true);
-
-	Value *meaning=static_cast<Value *>(ameaning);
-	String string(meaning->pool());
-	if(Hash *hash=meaning->get_hash()) {
-		// $value(value) $subattribute(subattribute value)
-		Value *value=static_cast<Value *>(hash->get(*value_name));
-		if(value)
-			string.append(value->as_string(), String::Untaint_lang::URI, true);
-
-		hash->foreach(append_attribute_subattribute, &string);
-	} else // string value
-		string.append(meaning->as_string(), String::Untaint_lang::URI, true);
+	attribute.append(aattribute, String::Untaint_lang::HEADER, true);
 
 	(*service_funcs.output_header_attribute)(
 		attribute.cstr(), 
-		string.cstr());
+		attributed_meaning_string(static_cast<Value *>(ameaning)).cstr());
 }
 
 void Request::core(Exception& system_exception,
@@ -138,6 +113,7 @@ void Request::core(Exception& system_exception,
 		int post_max_size=value?value:10*0x400*400;
 
 		form.fill_fields(*this, post_max_size);
+		cookie.fill_fields(*this);
 
 		// TODO: load site auto.p files, all assigned bases from upper dir
 		/*char *site_auto_file="Y:\\parser3\\src\\auto.p";
@@ -377,8 +353,12 @@ char *Request::absolute(const char *name) {
 }
 
 void Request::output_result(const String& body_string) {
+	// header: cookies
+	cookie.output_result();
+	
 	// set default content-type
-	response.fields().put_dont_replace(*content_type_name, fdefault_content_type);
+	if(fdefault_content_type)
+		response.fields().put_dont_replace(*content_type_name, fdefault_content_type);
 
 	// header: $response:fields without :body
 	response.fields().foreach(output_response_attribute, /*excluding*/ body_name);

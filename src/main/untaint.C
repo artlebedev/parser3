@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: untaint.C,v 1.4 2001/03/18 16:32:25 paf Exp $
+	$Id: untaint.C,v 1.5 2001/03/18 20:31:27 paf Exp $
 */
 
 #include <string.h>
@@ -28,12 +28,29 @@
 			strncpy(copy_here, b, bsize); \
 			copy_here+=bsize; \
 		break
+#define escape_encode(need_encode_func)  \
+		default: \
+			if(need_encode_func(*ptr)) { \
+				static const char *hex="0123456789ABCDEF"; \
+				char chunk[3]={'%'}; \
+				chunk[1]=hex[((unsigned char)*ptr)/0x10]; \
+				chunk[2]=hex[((unsigned char)*ptr)%0x10]; \
+				strncpy(copy_here, chunk, 3);  copy_here+=3; \
+			} else \
+				*copy_here++=*ptr; \
+			break
 
-inline bool need_encode(unsigned char c){
+inline bool need_uri_encode(unsigned char c){
     if ((c>='0') && (c<='9') || (c>='A') && (c<='Z') || (c>='a') && (c<='z')) 
 		return false;
 
-    return strchr("_-./", c)==0;
+    return !strchr("_-./", c);
+}
+inline bool need_header_encode(unsigned char c){
+    if(strchr(" ,:", c))
+		return false;
+
+	return need_uri_encode(c);
 }
 
 // String
@@ -68,17 +85,13 @@ char *String::cstr() const {
 				// tainted, untaint language: uri
 				escape(
 					escape_value(' ', '+');
-					default: 
-						if(need_encode(*ptr)) {
-							static const char *hex="0123456789ABCDEF";
-							char chunk[3]={'%'};
-							chunk[1]=hex[((unsigned char)*ptr)/0x10];
-							chunk[2]=hex[((unsigned char)*ptr)%0x10];
-							strncpy(copy_here, chunk, 3);  copy_here+=3;
-						} else 
-							*copy_here++=*ptr;
-
-						break;
+					escape_encode(need_uri_encode);
+				);
+				break;
+			case HEADER:
+				// tainted, untaint language: header
+				escape(
+					escape_encode(need_header_encode);
 				);
 				break;
 			case TABLE: 

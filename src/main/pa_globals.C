@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.13 2001/03/18 17:18:36 paf Exp $
+	$Id: pa_globals.C,v 1.14 2001/03/18 20:31:27 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -15,12 +15,15 @@
 #include "_env.h"
 #include "_request.h"
 #include "_response.h"
+#include "_cookie.h"
 
 Service_funcs service_funcs;
 
 String *content_type_name;
 String *body_name;
 String *value_name;
+String *expires_name;
+String *path_name;
 
 String *exception_method_name;
 
@@ -37,6 +40,7 @@ String *table_class_name;
 String *form_class_name;
 String *request_class_name;
 String *response_class_name;
+String *cookie_class_name;
 
 String *result_var_name;
 
@@ -86,6 +90,8 @@ void globals_init(Pool& pool) {
 	content_type_name=new(pool) String(pool, CONTENT_TYPE_NAME);
 	body_name=new(pool) String(pool, BODY_NAME);
 	value_name=new(pool) String(pool, VALUE_NAME);
+	expires_name=new(pool) String(pool, EXPIRES_NAME);
+	path_name=new(pool) String(pool, PATH_NAME);
 
 	exception_method_name=new(pool) String(pool, EXCEPTION_METHOD_NAME);
 
@@ -102,6 +108,7 @@ void globals_init(Pool& pool) {
 	form_class_name=new(pool) String(pool, FORM_CLASS_NAME);	
 	request_class_name=new(pool) String(pool, REQUEST_CLASS_NAME);	
 	response_class_name=new(pool) String(pool, RESPONSE_CLASS_NAME);
+	cookie_class_name=new(pool) String(pool, COOKIE_CLASS_NAME);
 
 	result_var_name=new(pool) String(pool, RESULT_VAR_NAME);
 
@@ -115,6 +122,8 @@ void globals_init(Pool& pool) {
 	untaint_lang_name2enum=new(pool) Hash(pool);
 	String as_is(pool, "as-is");  
 	untaint_lang_name2enum->put(as_is, (int)String::Untaint_lang::AS_IS);
+	String header(pool, "header");  
+	untaint_lang_name2enum->put(header, (int)String::Untaint_lang::HEADER);
 	String uri(pool, "uri");  
 	untaint_lang_name2enum->put(uri, (int)String::Untaint_lang::URI);
 	String table(pool, "table");
@@ -139,4 +148,5 @@ void globals_init(Pool& pool) {
 	initialize_form_base_class(pool, *(form_base_class=new(pool) VStateless_class(pool)));  form_base_class->set_name(*form_class_name);  form_base_class->freeze();
 	initialize_request_base_class(pool, *(request_base_class=new(pool) VStateless_class(pool)));  request_base_class->set_name(*request_class_name);  request_base_class->freeze();
 	initialize_response_base_class(pool, *(response_base_class=new(pool) VStateless_class(pool)));  response_base_class->set_name(*response_class_name);  response_base_class->freeze();
+	initialize_cookie_base_class(pool, *(cookie_base_class=new(pool) VStateless_class(pool)));  cookie_base_class->set_name(*cookie_class_name);  cookie_base_class->freeze();
 }

@@ -3,17 +3,21 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.13 2001/03/18 14:45:26 paf Exp $
+	$Id: pa_common.h,v 1.14 2001/03/18 20:31:25 paf Exp $
 */
 
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#include "pa_config.h"
+#ifdef HAVE_CONFIG_H
+#	include "pa_config.h"
+#endif
 
 #include <stdarg.h>
 #include "pa_pool.h"
 
+class String;
+class Value;
 
 #ifdef WIN32
 
@@ -43,5 +47,9 @@ inline int min(int a,int b){ return a<b?a:b; }
 #endif
 
 size_t stdout_write(const char *buf, size_t size);
+
+const char *unescape_chars(Pool& pool, const char *cp, int len);
+
+const String& attributed_meaning_string(Value *meaning);
 
 #endif

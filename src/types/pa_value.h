@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.20 2001/03/18 17:39:30 paf Exp $
+	$Id: pa_value.h,v 1.21 2001/03/18 20:31:29 paf Exp $
 */
 
 /*
@@ -42,6 +42,7 @@ public: // Value
 	// bool: this
 	// double: this
 	// int: this
+	// unknown: this
 	virtual Value *get_expr_result() { bark("(%s) can not be used in expression"); return 0; }
 
 	// hash: fhash
@@ -87,6 +88,7 @@ public: // Value
 	// string: $CLASS,$BASE,$method
 	// request: CLASS,BASE,method,fields
 	// response: CLASS,BASE,method,fields
+	// cookie: CLASS,BASE,method,field
 	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
 	
 	// hash: (key)=value
@@ -95,6 +97,7 @@ public: // Value
 	// codeframe: wcontext_transparent
 	// methodframe: my or self_transparent
 	// response: (attribute)=value
+	// cookie: field
 	virtual void put_element(const String& name, Value *value) { bark("(%s) does not accept elements"); }
 
 	// object_class, object_instance: object_class
@@ -104,6 +107,7 @@ public: // Value
 	// env: this
 	// request: this
 	// hash: this
+	// vcookie: this
 	virtual VStateless_class *get_class() { return 0; }
 
 	// valiased: this

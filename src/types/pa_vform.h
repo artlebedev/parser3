@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.6 2001/03/15 09:04:08 paf Exp $
+	$Id: pa_vform.h,v 1.7 2001/03/18 20:31:30 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -38,25 +38,12 @@ public: // usage
 
 	VForm(Pool& apool) : VStateless_class(apool, form_base_class),
 		fields(apool) {
-
-		//construct_fields();
 	}
 
 //	Hash& fields() { return ffields; }
 
-	void fill_fields(
-		Request& request,
-		int post_max_size
-		);
+	void fill_fields(Request& request, int post_max_size);
 
-private:
-
-	enum EscapeState {
-		EscapeRest,
-		EscapeFirst,
-		EscapeSecond
-	};
-	
 private:
 
 	char *strpart(const char *str, int len);

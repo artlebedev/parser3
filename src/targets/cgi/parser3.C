@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.20 2001/03/18 16:32:26 paf Exp $
+	$Id: parser3.C,v 1.21 2001/03/18 20:31:29 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -150,6 +150,7 @@ int main(int argc, char *argv[]) {
 		request_info.content_type=getenv("CONTENT_TYPE");
 		const char *content_length=getenv("CONTENT_LENGTH");
 		request_info.content_length=(content_length?atoi(content_length):0);
+		request_info.cookie=getenv("HTTP_COOKIE");
 
 		// prepare to process request
 		Request request(Pool(),
