@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2004/12/23 16:18:53 $";
+static const char * const IDENT_PARSER3_C="$Date: 2005/01/19 15:48:25 $";
 
 #include "pa_config_includes.h"
 
@@ -107,7 +107,7 @@ static void log(const char* fmt, va_list args) {
 	if(const char* stamp=ctime(&t)) { // never saw that
 		if(size_t len=strlen(stamp)) // saw once stamp being =""
 			fprintf(f, "[%.*s] [%u] ", len-1, stamp,
-			getpid()
+			(unsigned int)getpid()
 			);
 	}
 	// message
@@ -125,12 +125,14 @@ static void log(const char* fmt, va_list args) {
 	else
 		fflush(f);
 }
+#ifdef PA_DEBUG_CGI_ENTRY_EXIT
 static void log(const char* fmt, ...) {
     va_list args;
 	va_start(args,fmt);
 	log(fmt, args);
 	va_end(args);
 }
+#endif
 
 // appends to parser3.log located beside my binary if openable, to stderr otherwize
 void SAPI::log(SAPI_Info&, const char* fmt, ...) {
