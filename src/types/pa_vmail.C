@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/08/05 14:00:12 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/08/07 07:28:26 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -367,6 +367,11 @@ const String& extractEmail(const String& string) {
 		throw Exception(0,
 			&result,
 			"email contains characters (control)");
+
+	if(result.is_empty())
+		throw Exception(0,
+			&string,
+			"email is empty");
 
 	return result;
 }

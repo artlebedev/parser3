@@ -5,11 +5,16 @@
 <xsl:param name="param1">defparam1</xsl:param>
 <xsl:param name="param2">defparam2</xsl:param>
 
+<xsl:variable name="var1">
+<inside>in?<deep value="1"/></inside>
+</xsl:variable>
+
 	<xsl:template match="doc">
 		param1=<xsl:value-of select="$param1"/><br/>
 		param2=<xsl:value-of select="$param2"/><br/>
 
-		test return <something background=""/>
+		test return: <!--xsl:copy-of select="$var1/inside"/-->=
+		 <something background=""/>
 	</xsl:template>
 
 	<xsl:template name="test">
