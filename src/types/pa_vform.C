@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char* IDENT_VFORM_C="$Date: 2002/10/31 15:01:55 $";
+static const char* IDENT_VFORM_C="$Date: 2002/11/19 09:03:20 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
