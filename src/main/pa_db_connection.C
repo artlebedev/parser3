@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.13 2001/10/26 13:48:19 paf Exp $
+	$Id: pa_db_connection.C,v 1.14 2001/10/26 15:26:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -17,12 +17,16 @@
 #include "pa_stack.h"
 #include "pa_common.h"
 
+// defines
+
+#define DB_ERROR_PREFIX "db_err: "
+#define DB_EXCEPTION_NO_LOG_MESSAGE1 DB_ERROR_PREFIX"Ignoring log file"
+#define DB_EXCEPTION_NO_LOG_MESSAGE2 DB_ERROR_PREFIX"log_get: unable to find checkpoint record"
+
 // consts
 
 const int EXPIRE_UNUSED_TABLE_SECONDS=60;
 const int CHECK_EXPIRED_TABLES_SECONDS=EXPIRE_UNUSED_TABLE_SECONDS*2;
-
-const char *DB_WARNING1="Finding last valid log LSN";
 
 // callbacks
 
@@ -34,13 +38,9 @@ static void db_paniccall(DB_ENV *dbenv, int error) {
 }
 
 static void db_errcall(const char *, char *buffer) {
-	// were it warning?
-	if(strncmp(buffer, DB_WARNING1, strlen(DB_WARNING1))==0)
-		return;
-
 	throw Exception(0, 0, 
 		0, 
-		"db_err: %s", 
+		DB_ERROR_PREFIX "%s", 
 		buffer);
 }
 
@@ -61,10 +61,6 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 	table_cache(apool),
 	prev_expiration_pass_time(0) {
 	//_asm  int 3;
-	memset(&dbenv, 0, sizeof(dbenv));
-	dbenv.db_paniccall=db_paniccall;
-	dbenv.db_errcall=db_errcall;
-
 	char DB_DATA_DIR__VALUE[MAX_STRING];
 	char DB_LOG_DIR__VALUE[MAX_STRING];
 	char DB_TMP_DIR__VALUE[MAX_STRING];
@@ -87,25 +83,38 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 		| DB_CREATE 
 		| DB_INIT_MPOOL | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_TXN;
 
-/*	try {
+	try {
 		// 1: trying to open with SOFT RECOVER option set
+		memset(&dbenv, 0, sizeof(dbenv));
 		check("db_appinit soft recover", &fdb_home, db_appinit(
 			db_home_cstr,
 			db_config, 
 			&dbenv, 
 			flags | DB_RECOVER
 		));
-	} catch(...) {
-		try {*/
-			// 2: trying to open WITHOUT SOFT RECOVER option set
+	} catch(const Exception& e) {
+		if(
+			strncmp(
+				e.comment(), 
+				DB_EXCEPTION_NO_LOG_MESSAGE1, 
+				strlen(DB_EXCEPTION_NO_LOG_MESSAGE1))==0 || 
+			strncmp(
+				e.comment(), 
+				DB_EXCEPTION_NO_LOG_MESSAGE2, 
+				strlen(DB_EXCEPTION_NO_LOG_MESSAGE2))==0) {
+			// no log = no SOFT RECOVER
+			// 2.1: trying to open with NO RECOVER option set
+			memset(&dbenv, 0, sizeof(dbenv));
 			check("db_appinit no recover", &fdb_home, db_appinit(
 				db_home_cstr,
 				db_config, 
 				&dbenv, 
 				flags
 			));
-/*		} catch(...) {
-			// 3: trying to open with FATAL RECOVER option set
+		} else {
+			// some serious error
+			// 2.2: trying to open with FATAL RECOVER option set
+			memset(&dbenv, 0, sizeof(dbenv));
 			check("db_appinit fatal recover", &fdb_home, db_appinit(
 				db_home_cstr,
 				db_config, 
@@ -113,7 +122,11 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 				flags | DB_RECOVER_FATAL
 			));
 		}
-	}*/
+	}
+
+	// error handlers
+	dbenv.db_paniccall=db_paniccall;
+	dbenv.db_errcall=db_errcall;
 }
 
 DB_Connection::~DB_Connection() {
