@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2004/07/07 09:50:25 $";
+static const char * const IDENT_CHARSET_C="$Date: 2004/09/06 15:15:45 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -404,12 +404,9 @@ static int transcodeFromUTF8(const XMLByte* srcData, size_t& srcLen,
 			if(XMLByte xlat=xlatOneTo(tmpVal, tables, 0))
 				*outPtr++=xlat;
 			else {
-				if(tmpVal & 0xFFFFFF00)
-					goto fail;
-				outPtr+=sprintf((char *)outPtr, "&#%d;", tmpVal); // &#decimal;
+				outPtr+=sprintf((char *)outPtr, "&#%u;", tmpVal); // &#decimal;
 			}
 		} else {
-fail:
 			const XMLByte* recoverPtr=srcPtr-trailingBytes-1;
 			for(uint i=0; i<=trailingBytes; i++)
 				outPtr+=sprintf((char*)outPtr, "%%%02X", *recoverPtr++);
