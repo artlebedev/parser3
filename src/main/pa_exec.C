@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2004/07/07 09:59:11 $";
+static const char * const IDENT_EXEC_C="$Date: 2004/07/07 10:22:28 $";
 
 #include "pa_config_includes.h"
 
@@ -295,8 +295,8 @@ static void read_pipe(String& result, int file, String::Language lang){
 #ifndef DOXYGEN
 struct Append_env_pair_info {
 #ifdef WIN32
-	String& string;
-	Append_env_pair_info(String& astring): string(astring) {}
+	String::Body& body;
+	Append_env_pair_info(String::Body& abody): body(abody) {}
 #else
 	char **env_ref;
 #endif
@@ -306,8 +306,8 @@ struct Append_env_pair_info {
 static void append_env_pair(HashStringString::key_type key, HashStringString::value_type value,
 		Append_env_pair_info *info) {
 #ifdef WIN32
-	info->string << key << "=" << value;
-	info->string.append_know_length("\1", 1, String::L_AS_IS); // placeholder for of zero byte
+	info->body << key << "=" << value;
+	info->body.append_know_length("\1", 1); // placeholder for of zero byte
 #else
 	String::Body body;
 	body << key << "=" << value.cstr(String::L_UNSPECIFIED);
@@ -316,7 +316,6 @@ static void append_env_pair(HashStringString::key_type key, HashStringString::va
 #endif
 }
 
-/// @todonow unix part to smart_ptr
 PA_exec_result pa_exec(
 			bool 
 #if defined(NO_PA_EXEC) || defined(PA_SAFE_MODE)
@@ -343,10 +342,10 @@ PA_exec_result pa_exec(
 	const char* cmd=buildCommand(file_spec.cstr(String::L_FILE_SPEC), argv);
 	char* env_cstr=0;
 	if(env) {
-		String string;
-		Append_env_pair_info info(string);
+		String::Body body;
+		Append_env_pair_info info(body);
 		env->for_each(append_env_pair, &info);
-		env_cstr=info.string.cstrm(String::L_UNSPECIFIED);
+		env_cstr=info.body.cstrm();
 		for(char* replacer=env_cstr; *replacer; replacer++)
 			if(*replacer=='\1')
 				*replacer=0;

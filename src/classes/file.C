@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2004/06/18 15:55:46 $";
+static const char * const IDENT_FILE_C="$Date: 2004/07/07 10:22:28 $";
 
 #include "pa_config_includes.h"
 
@@ -224,7 +224,7 @@ static void append_env_pair(
 			throw Exception("parser.runtime",
 				new String(akey, String::L_TAINTED),
 				"not safe environment variable");
-		info->env->put(akey, avalue->as_string());
+		info->env->put(akey, avalue->as_string().cstr(String::L_UNSPECIFIED));
 	}
 }
 #ifndef DOXYGEN
