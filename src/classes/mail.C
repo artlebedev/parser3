@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2003/11/04 12:29:16 $";
+static const char* IDENT_MAIL_C="$Date: 2003/11/04 12:46:49 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -97,7 +97,7 @@ static void sendmail(Request& r,
 	// $MAIN:MAIL.sendmail["/usr/sbin/sendmail -t -i -f postmaster"] default
 	// $MAIN:MAIL.sendmail["/usr/lib/sendmail -t -i  -f postmaster"] default
 
-	const String* sendmail_command;
+	String* sendmail_command=new String;
 	if(vmail_conf) {
 #ifdef PA_FORCED_SENDMAIL
 		throw Exception("parser.runtime",
@@ -106,7 +106,7 @@ static void sendmail(Request& r,
 			" key, to change sendmail you should reconfigure and recompie it");
 #else
 		if(Value* sendmail_value=vmail_conf->get_hash()->get(mail_sendmail_name))
-			sendmail_command=&sendmail_value->as_string();
+			*sendmail_command<<sendmail_value->as_string();
 		else
 			throw Exception("parser.runtime",
 				0,
@@ -114,17 +114,17 @@ static void sendmail(Request& r,
 #endif
 	} else {
 #ifdef PA_FORCED_SENDMAIL
-		sendmail_command=new String(PA_FORCED_SENDMAIL);
+		sendmail_command<<PA_FORCED_SENDMAIL;
 #else
 		String* test=new String("/usr/sbin/sendmail");
 		if(!file_executable(*test))
 			test=new String("/usr/lib/sendmail");
-		*test<<" -t -i -f postmaster";
-		sendmail_command=test;
+		*sendmail_command<<*test;
+		*sendmail_command<<" -t -i -f postmaster";
 #endif
 	}
 	if(options)
-		sendmail_command<<" "<<*options;
+		*sendmail_command<<" "<<*options;
 
 	// we know sendmail_command here, should replace "postmaster" with "$from" from message
 	size_t at_postmaster=sendmail_command->pos("postmaster");

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/11/04 12:04:39 $";
+static const char* IDENT_TABLE_C="$Date: 2003/11/04 12:50:22 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -384,10 +384,10 @@ static void maybe_enclose( String& to, const String& from, char encloser, const 
 	if(encloser) {
 		to<<*sencloser;
 		// while we have 'encloser'...
-		for( size_t pos_before, pos_after=0; (pos_before=from.pos( encloser, pos_after ))!=STRING_NOT_FOUND; ) {
+		size_t pos_after=0;
+		for( size_t pos_before; (pos_before=from.pos( encloser, pos_after ))!=STRING_NOT_FOUND; pos_after=pos_before+1) {
             to<<from.mid(pos_before+1/*+found encloser*/, pos_after-pos_before);
 			to<<*sencloser; // doubling encloser
-			pos_after=pos_before+1;
 		}
 		// last piece
 		size_t from_length=from.length();
