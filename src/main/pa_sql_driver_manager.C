@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.42 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_sql_driver_manager.C,v 1.43 2001/10/29 08:05:37 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -32,20 +32,28 @@ public:
 		furl(aurl) {
 	}
 
-	/// allocates some bytes on pool
-	void *malloc(size_t size) { return Pooled::malloc(size); }
-	/// allocates some bytes clearing them with zeros
-	void *calloc(size_t size) { return Pooled::calloc(size); }
+	virtual void *malloc(size_t size) { return Pooled::malloc(size); }
+	virtual void *calloc(size_t size) { return Pooled::calloc(size); }
 
-	/// throw exception
-	void _throw(const char *comment) { 
-		throw Exception(0, 0, 
+	/**
+		the idea is to #1 jump to C++ some function to main body, where
+		every function stack frame has exception unwind information
+		and from there... #2 propagate_exception()
+	*/
+	virtual void _throw(const char *comment) { 
+		e=Exception(0, 0, 
 			&furl, 
 			comment); 
+
+		longjmp(mark, 1);
+	}
+	virtual void propagate_exception() {
+		throw e;
 	}
 
 private:
 	const String& furl;
+	Exception e;
 };
 
 // helpers

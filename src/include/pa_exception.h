@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.h,v 1.18 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_exception.h,v 1.19 2001/10/29 08:05:37 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -27,6 +27,7 @@ class Pool;
 class Exception {
 public:
 
+	Exception();
 	Exception(
 		const String *atype, const String *acode,
 		const String *aproblem_source, 

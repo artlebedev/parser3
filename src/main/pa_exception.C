@@ -4,12 +4,16 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.C,v 1.22 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_exception.C,v 1.23 2001/10/29 08:05:37 paf Exp $
 */
 
 #include "pa_common.h"
 #include "pa_exception.h"
 
+Exception::Exception() {
+	ftype=fcode=fproblem_source=0;
+	fcomment=0;
+}
 Exception::Exception(const String *atype, const String *acode,
 					  const String *aproblem_source, 
 					  const char *comment_fmt, ...) {

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.18 2001/10/24 14:43:17 parser Exp $
+	$Id: pa_sql_driver.h,v 1.19 2001/10/29 08:05:37 paf Exp $
 
 
 	driver dynamic library must look like this:
@@ -37,11 +37,16 @@ public:
 	virtual void *malloc(size_t size) =0;
 	/// allocates some bytes clearing them with zeros
 	virtual void *calloc(size_t size) =0;
-	/// throw exception
+	/// prepare throw exception
 	virtual void _throw(const char *comment) =0;
+	/// throw C++ exception from prepared
+	virtual void propagate_exception() =0;
+public:
+	/// regretrully public, because can't make stack frames: "nowhere to return to"
+	jmp_buf mark;
 };
 
-#define SQL_DRIVER_API_VERSION 0x0305
+#define SQL_DRIVER_API_VERSION 0x0100
 #define SQL_DRIVER_CREATE create
 #define SQL_DRIVER_CREATE_NAME "create" /* could not figure out how to # it :( */
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.14 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_sql_connection.h,v 1.15 2001/10/29 08:05:37 paf Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -14,6 +14,15 @@
 #include "pa_pool.h"
 #include "pa_sql_driver.h"
 #include "pa_sql_driver_manager.h"
+
+// defines
+
+/// @see SQL_Driver_services_impl::_throw
+#define SQL_CONNECTION_FUNC_GUARDED(actions) \
+	if(!setjmp(fservices->mark)) { \
+		actions; \
+	} else \
+		fservices->propagate_exception();
 
 /// SQL connection. handy wrapper around low level SQL_Driver
 class SQL_Connection : public Pooled {
@@ -43,22 +52,46 @@ public:
 
 	bool connected() { return fconnection!=0; }
 	void connect(char *used_only_in_connect_url_cstr) { 
-		fdriver.connect(used_only_in_connect_url_cstr, *fservices, &fconnection);
+		SQL_CONNECTION_FUNC_GUARDED(
+			fdriver.connect(used_only_in_connect_url_cstr, *fservices, &fconnection)
+		);
 	}
-	void disconnect() { fdriver.disconnect(fconnection); fconnection=0; }
-	void commit() { fdriver.commit(*fservices, fconnection); }
-	void rollback() { fdriver.rollback(*fservices, fconnection); }
-	bool ping() { return fdriver.ping(*fservices, fconnection); }
+	void disconnect() { 
+		SQL_CONNECTION_FUNC_GUARDED(
+			fdriver.disconnect(fconnection); fconnection=0; 
+		);
+	}
+	void commit() { 
+		SQL_CONNECTION_FUNC_GUARDED(
+			fdriver.commit(*fservices, fconnection) 
+		);
+	}
+	void rollback() { 
+		SQL_CONNECTION_FUNC_GUARDED(
+			fdriver.rollback(*fservices, fconnection)
+		);
+	}
+	bool ping() { 
+		SQL_CONNECTION_FUNC_GUARDED(
+			return fdriver.ping(*fservices, fconnection)
+		);
+		return 0; // never reached
+	}
 	uint quote(char *to, const char *from, unsigned int length) {
-		return fdriver.quote(*fservices, fconnection, to, from, length);
+		SQL_CONNECTION_FUNC_GUARDED(
+			return fdriver.quote(*fservices, fconnection, to, from, length)
+		);
+		return 0; // never reached
 	}
 
 	void query(
 		const char *statement, unsigned long offset, unsigned long limit,
 		SQL_Driver_query_event_handlers& handlers) { 
-		fdriver.query(*fservices, fconnection, 
-			statement, offset, limit, 
-			handlers);
+		SQL_CONNECTION_FUNC_GUARDED(
+			fdriver.query(*fservices, fconnection, 
+				statement, offset, limit, 
+				handlers)
+		);
 	}
 
 
