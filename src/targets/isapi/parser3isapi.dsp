@@ -100,6 +100,10 @@ SOURCE=.\pa_pool.C
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_threads.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\parser3isapi.C
 
 !IF  "$(CFG)" == "parser3isapi - Win32 Release"
