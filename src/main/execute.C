@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/10/14 11:57:45 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/10/14 12:16:06 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -1008,11 +1008,10 @@ void Request::execute_method(Value& aself,
 }
 
 void Request::execute_nonvirtual_method(VStateless_class& aclass, 
-												 const String& method_name, VString *optional_param,
+												 const Method *method, VString *optional_param,
 												 const String **return_string,
 												 const Method **return_method) {
 
-	const Method *method=aclass.get_method(method_name);
 	if(return_string)
 		*return_string=0;
 	if(return_method)

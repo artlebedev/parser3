@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/09/21 12:36:10 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/10/14 12:16:06 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -315,7 +315,7 @@ private: // execute.C
 		const Method& method, VString *optional_param,
 		const String **return_string);
 	void execute_nonvirtual_method(VStateless_class& aclass, 
-		const String& method_name, VString *optional_param,
+		const Method *method, VString *optional_param,
 		const String **return_string,
 		const Method **return_method=0);
 	//}

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/09/21 12:36:10 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/10/14 12:16:06 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -513,7 +513,7 @@ VStateless_class *Request::use_buf(const char *source,
 	// locate and execute possible @conf[] static
 	const Method *method_called;
 	execute_nonvirtual_method(cclass, 
-		*conf_method_name, vfilespec,
+		cclass.get_method(*conf_method_name), vfilespec,
 		0/*no result needed*/, &method_called);
 	if(method_called) {
 		if(!main_class)
@@ -522,8 +522,9 @@ VStateless_class *Request::use_buf(const char *source,
 	}
 
 	// locate and execute possible @auto[] static
-	execute_nonvirtual_method(cclass, 
-		*auto_method_name, vfilespec,
+	execute_nonvirtual_method(
+		&cclass==&OP?*main_class:cclass,  // execute operators@auto in MAIN context
+		cclass.get_method(*auto_method_name), vfilespec,
 		0/*no result needed*/);
 	return &cclass;
 }
