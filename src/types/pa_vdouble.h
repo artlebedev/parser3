@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vdouble.h,v 1.32 2002/02/08 08:30:19 paf Exp $
+	$Id: pa_vdouble.h,v 1.33 2002/02/18 15:33:38 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -31,11 +31,8 @@ public: // Value
 	const String *get_string() {
 		char *buf=(char *)pool().malloc(MAX_NUMBER);
 		String *result=NEW String(pool());
-		size_t filled_size=snprintf(buf, MAX_NUMBER, "%g", fdouble);
-		if(strchr(buf, 'e'))
-			filled_size=snprintf(buf, MAX_NUMBER, "%.20e", fdouble);
 		result->APPEND_CLEAN(
-			buf, filled_size, 
+			buf, snprintf(buf, MAX_NUMBER, "%g", fdouble), 
 			name().origin().file, name().origin().line);
 		return result;
 	}
