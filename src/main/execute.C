@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/08/29 12:22:47 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/02 10:49:22 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -694,42 +694,48 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 		case OP_NUM_LT: 
 			{
 				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_double() < b->as_double());
+				double result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), result < 0);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GT: 
 			{
 				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_double() > b->as_double());
+				double result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), result > 0);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_LE: 
 			{
 				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_double() <= b->as_double());
+				double result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), result <= 0);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GE: 
 			{
 				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_double() >= b->as_double());
+				double result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), result >= 0);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_EQ: 
 			{
 				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_double() == b->as_double());
+				double result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), result == 0);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_NE: 
 			{
 				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_double() != b->as_double());
+				double result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), result != 0);
 				PUSH(value);
 				break;
 			}
