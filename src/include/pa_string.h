@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.52 2001/03/25 08:52:34 paf Exp $
+	$Id: pa_string.h,v 1.53 2001/03/25 10:14:38 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -37,8 +37,6 @@
 /// appends tainted piece to String  @see String::real_append
 #	define APPEND_TAINTED(src, size, file, line) \
 	real_append(src, size, String::UL_YES, file, line)
-#	define APPEND_SPECIFIC_TAINTED(src, size, lang, file, line) \
-	real_append(src, size, lang, file, line)
 #else
 #	define STRING_APPEND_PARAMS \
 		const char *src, \
@@ -50,8 +48,6 @@
 /// appends tainted piece to String  @see String::real_append
 #	define APPEND_TAINTED(src, size, file, line) \
 	real_append(src, size, String::UL_YES)
-#	define APPEND_SPECIFIC_TAINTED(src, size, lang, file, line) \
-	real_append(src, size, lang)
 #endif
 /// handy: appends const char* piece to String  @see String::real_append
 #define	APPEND_CONST(src) APPEND(src, 0, 0, 0)

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.114 2001/03/25 08:52:35 paf Exp $
+	$Id: compile.y,v 1.115 2001/03/25 10:14:39 paf Exp $
 */
 
 /**
@@ -621,8 +621,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		if(c=='#' && PC.col==1) {
 			if(end!=begin) {
 				// append piece till #
-				PC.string->APPEND_SPECIFIC_TAINTED(begin, end-begin, 
-					String::UL_TABLE, PC.file, begin_line);
+				PC.string->APPEND(begin, end-begin, PC.file, begin_line);
 			}
 			// fall into COMMENT lexical state [wait for \n]
 			push_LS(PC, LS_COMMENT);
