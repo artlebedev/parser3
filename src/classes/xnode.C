@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.34 2002/01/28 10:40:06 paf Exp $
+	$Id: xnode.C,v 1.35 2002/01/28 10:50:03 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -26,7 +26,7 @@ extern "C" {
 
 // defines 
 
-#define XNODE_CLASS_NAME "xdoc"
+#define XNODE_CLASS_NAME "xnode"
 
 // classes
 
@@ -214,7 +214,6 @@ static void _hasChildNodes(Request& r, const String& method_name, MethodParams *
 }
 
 // Node cloneNode(in boolean deep);
-/// @test ownerDocument=?
 static void _cloneNode(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
