@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.18 2001/03/19 20:07:38 paf Exp $
+	$Id: pa_common.C,v 1.19 2001/03/20 07:34:32 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -74,7 +74,7 @@ void unlock(FILE *f) {
 }
 
 
-char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem) {
+char *file_read_text(Pool& pool, const char *fname, bool fail_on_read_problem) {
     int f;
     struct stat finfo;
     if(fname && !stat(fname,&finfo) &&(f=open(fname,O_RDONLY
@@ -104,6 +104,7 @@ char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem) {
 void file_write(Pool& pool, 
 				const char *fname, 
 				const char *data, size_t size, 
+				bool as_text,
 				bool exclusive) {
 	if(fname) {
 		int f;
@@ -112,11 +113,15 @@ void file_write(Pool& pool,
 				close(f);
 		}
 		if(access(fname, R_OK|W_OK)==0) {
-			if((f=open(fname,O_RDWR|_O_BINARY
+			int mode=O_RDWR
 #ifdef WIN32
 				|O_TRUNC
 #endif
-				,0666))>=0) {
+			;
+#ifdef WIN32
+			mode|=as_text?_O_TEXT:_O_BINARY;
+#endif
+			if((f=open(fname,mode,0666))>=0) {
 				if(exclusive)
 					flock(f, LOCK_EX);
 				

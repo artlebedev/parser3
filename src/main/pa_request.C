@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.60 2001/03/19 22:11:09 paf Exp $
+	$Id: pa_request.C,v 1.61 2001/03/20 07:34:32 paf Exp $
 */
 
 #include <string.h>
@@ -303,7 +303,7 @@ VStateless_class *Request::use_file(
 									const char *file, bool fail_on_read_problem,
 									const String *name, 
 									VStateless_class *base_class) {
-	char *source=file_read(pool(), file, fail_on_read_problem);
+	char *source=file_read_text(pool(), file, fail_on_read_problem);
 	if(!source)
 		return base_class;
 

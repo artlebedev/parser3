@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.18 2001/03/20 06:45:18 paf Exp $
+	$Id: pa_common.h,v 1.19 2001/03/20 07:34:31 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -72,12 +72,12 @@ void lock(FILE *f, long position);
 void unlock(FILE *f);
 
 /**
-	read specified file using pool, 
+	read specified text file using pool, 
 	if fail_on_read_problem is true[default] throws an exception
 */
-char *file_read(Pool& pool, 
-				const char *fname, 
-				bool fail_on_read_problem=true);
+char *file_read_text(Pool& pool, 
+					 const char *fname, 
+					 bool fail_on_read_problem=true);
 
 /**
 	write data to specified file using pool, 
@@ -86,6 +86,7 @@ char *file_read(Pool& pool,
 void file_write(Pool& pool, 
 				const char *fname,
 				const char *data, size_t size, 
+				bool as_text,
 				bool exclusive=false);
 
 /**

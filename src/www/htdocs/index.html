@@ -1,6 +1,5 @@
-$t[^table:load[проверка.cfg]]
-$t.a
-
+$t[^table:load[test.cfg]]
+^t.save[test2.cfg]
 <form method=post enctype=multipart/form-data>
 <input name=photo type=file>
 <input type=submit>
@@ -11,6 +10,6 @@ $t.a
 	^$form:photo.name='$form:photo.name'
 	^$form:photo.size='$form:photo.size'
 	^$form:photo.text='$form:photo.text'
-	^form:photo.save[-вовка.txt]
+	^form:photo.save[paf.txt]
 	</pre>
 }

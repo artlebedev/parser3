@@ -5,9 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.21 2001/03/20 06:45:16 paf Exp $
+	$Id: table.C,v 1.22 2001/03/20 07:34:30 paf Exp $
 */
 
+#include <string.h>
 #include "pa_common.h"
 #include "pa_request.h"
 #include "_table.h"
@@ -48,7 +49,7 @@ static void set_or_load(
 	}
 	// data
 	char *data=is_load?
-		file_read(pool, r.absolute(ldata_or_filename)/*\, false*/):ldata_or_filename;
+		file_read_text(pool, r.absolute(ldata_or_filename)/*\, false*/):ldata_or_filename;
 
 	// parse columns
 	Array *columns;
@@ -97,6 +98,61 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	set_or_load(r, method_name, params, true);
 }
 
+static void _save(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+	Value *vfile_name=static_cast<Value *>(params->get(params->size()-1));
+	// forcing
+	// ^save[this body type]
+	r.fail_if_junction_(true, *vfile_name, 
+		method_name, "file name must not be junction");
+
+	// forcing untaint language
+	String lfile_name(pool);
+	lfile_name.append(vfile_name->as_string(),
+		String::Untaint_lang::FILE_NAME, true);
+
+	Table& table=static_cast<VTable *>(r.self)->table();
+
+	String sdata(pool);
+	if(params->size()==1) { // not nameless=named output
+		// write out names line
+		if(const Array *columns=table.columns()) { // named table
+			for(int column=0; column<columns->size(); column++) {
+				if(column)
+					sdata.APPEND_CONST("\t");
+				sdata.append(*static_cast<String *>(columns->quick_get(column)), 
+					String::Untaint_lang::TABLE);
+			}
+		} else { // nameless table
+			int size=table.size()?static_cast<Array *>(table.get(0))->size():0;
+			if(size)
+				for(int column=0; column<size; column++) {
+					char *cindex_tab=(char *)pool.malloc(MAX_NUMBER);
+					snprintf(cindex_tab, MAX_NUMBER, "%d\t", column);
+					sdata.APPEND_CONST(cindex_tab);
+				}
+			else
+				sdata.APPEND_CONST("empty nameless table");
+		}
+		sdata.APPEND_CONST("\n");
+	}
+	// data lines
+	for(int index=0; index<table.size(); index++) {
+		Array *row=static_cast<Array *>(table.quick_get(index));
+		for(int column=0; column<row->size(); column++) {
+			if(column)
+				sdata.APPEND_CONST("\t");
+			sdata.append(*static_cast<String *>(row->quick_get(column)), 
+				String::Untaint_lang::TABLE);
+		}
+		sdata.APPEND_CONST("\n");
+	}
+
+	// write
+	char *cdata=sdata.cstr();
+	file_write(pool, r.absolute(lfile_name.cstr()), cdata, strlen(cdata), true, true);
+}
+
 static void _count(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, static_cast<VTable *>(r.self)->table().size());
@@ -134,8 +190,8 @@ static void _menu(Request& r, const String& method_name, Array *params) {
 
 	Table& table=static_cast<VTable *>(r.self)->table();
 	bool need_delim=false;
-	for(int i=0; i<table.size(); i++) {
-		table.set_current(i);
+	for(int row=0; row<table.size(); row++) {
+		table.set_current(row);
 
 		Value& processed_body=r.process(body_code);
 		if(delim_code) { // delimiter set?
@@ -162,13 +218,17 @@ static void _empty(Request& r, const String&, Array *params) {
 // initialize
 
 void initialize_table_class(Pool& pool, VStateless_class& vclass) {
-	// ^table.set[data]  
-	// ^table.set[nameless;data]
+	// ^table.set{data}
+	// ^table.set[nameless]{data}
 	vclass.add_native_method("set", _set, 1, 2);
 
 	// ^table.load[file]  
 	// ^table.load[nameless;file]
 	vclass.add_native_method("load", _load, 1, 2);
+
+	// ^table.save[file]  
+	// ^table.save[nameless;file]
+	vclass.add_native_method("save", _save, 1, 2);
 
 	// ^table.count[]
 	vclass.add_native_method("count", _count, 0, 0);
