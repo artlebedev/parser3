@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.53 2001/03/29 15:00:22 paf Exp $
+	$Id: pa_string.C,v 1.54 2001/03/29 15:36:16 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -386,4 +386,8 @@ String& String::piece(size_t start, size_t finish) const {
 	} while(chunk);
 break2:
 	return result;
+}
+
+size_t String::pos(const String& substr) const {
+	return 0;
 }

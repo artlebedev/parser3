@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.15 2001/03/29 15:00:19 paf Exp $
+	$Id: string.C,v 1.16 2001/03/29 15:36:14 paf Exp $
 */
 
 #include "pa_request.h"
@@ -40,15 +40,14 @@ void _string_format(Request& r, const String& method_name, Array *params) {
 
 	Value& fmt=*static_cast<Value *>(params->get(0));
 	// forcing ^format[this param type]
-	r.fail_if_junction_(true, fmt, 
-		method_name, "fmt must not be junction");
+	r.fail_if_junction_(true, fmt, method_name, "fmt must not be junction");
 
 	char *buf=format(pool, r.self->as_double(), fmt.as_string().cstr());
 	
 	r.write_no_lang(String(pool, buf));
 }
 
-void _left(Request& r, const String& method_name, Array *params) {
+void _left(Request& r, const String&, Array *params) {
 	Pool& pool=r.pool();
 
 	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
@@ -57,7 +56,7 @@ void _left(Request& r, const String& method_name, Array *params) {
 	r.write_assign_lang(*new(pool) VString(string.piece(0, n)));
 }
 
-void _right(Request& r, const String& method_name, Array *params) {
+void _right(Request& r, const String&, Array *params) {
 	Pool& pool=r.pool();
 
 	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
@@ -66,7 +65,7 @@ void _right(Request& r, const String& method_name, Array *params) {
 	r.write_assign_lang(*new(pool) VString(string.piece(string.size()-n, string.size())));
 }
 
-void _mid(Request& r, const String& method_name, Array *params) {
+void _mid(Request& r, const String&, Array *params) {
 	Pool& pool=r.pool();
 
 	size_t p=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
@@ -74,6 +73,17 @@ void _mid(Request& r, const String& method_name, Array *params) {
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VString(string.piece(p, p+n)));
+}
+
+void _pos(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	Value& substr=*static_cast<Value *>(params->get(0));
+	// forcing ^pos[this param type]
+	r.fail_if_junction_(true, substr, method_name, "substr must not be junction");
+	
+	const String& string=*static_cast<VString *>(r.self)->get_string();
+	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
 }
 
 // initialize
@@ -97,5 +107,8 @@ void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 	vclass.add_native_method("right", _right, 1, 1);
 	// ^string.mid(p;n)
 	vclass.add_native_method("mid", _mid, 2, 2);
+
+	// ^string.pos[substr]
+	vclass.add_native_method("pos", _pos, 1, 1);
 }	
 
