@@ -875,6 +875,12 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_hash.h">
 		</File>
 		<File
+			RelativePath=".\pa_os.C">
+		</File>
+		<File
+			RelativePath="..\include\pa_os.h">
+		</File>
+		<File
 			RelativePath="pa_memory.C">
 			<FileConfiguration
 				Name="Debug|Win32">

@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_COMMON_H="$Date: 2003/11/06 08:48:59 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -56,9 +56,6 @@ inline long lseek( int handle, long offset, int origin ) { return _lseek(handle,
 
 #endif
 
-/// yields to OS for secs secs and usecs milliseconds
-int pa_sleep(unsigned long secs, unsigned long usecs);
-
 /** under WIN32 "t" mode fixes DOS chars OK, 
 	can't say that about other systems/ line break styles
 */
@@ -66,6 +63,11 @@ void fix_line_breaks(
 		     char *str,
 		     size_t& length///< may change! used to speedup next actions
 		     );
+
+int pa_lock_shared_blocking(int fd);
+int pa_lock_exclusive_blocking(int fd);
+int pa_lock_exclusive_nonblocking(int fd);
+int pa_unlock(int fd);
 
 typedef void (*File_read_action)(
 				 struct stat& finfo,

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/11/03 13:20:30 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/11/06 08:48:59 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -71,37 +71,37 @@ int PASCAL closesocket(SOCKET);
 
 #ifdef HAVE_FLOCK
 
-static int lock_shared_blocking(int fd) { return flock(fd, LOCK_SH); }
-static int lock_exclusive_blocking(int fd) { return flock(fd, LOCK_EX); }
-static int lock_exclusive_nonblocking(int fd) { return flock(fd, LOCK_EX || LOCK_NB); }
-static int unlock(int fd) { return flock(fd, LOCK_UN); }
+static int pa_lock_shared_blocking(int fd) { return flock(fd, LOCK_SH); }
+static int pa_lock_exclusive_blocking(int fd) { return flock(fd, LOCK_EX); }
+static int pa_lock_exclusive_nonblocking(int fd) { return flock(fd, LOCK_EX || LOCK_NB); }
+static int pa_unlock(int fd) { return flock(fd, LOCK_UN); }
 
 #else
 #ifdef HAVE__LOCKING
 
 #define FLOCK(operation) lseek(fd, 0, SEEK_SET);  return _locking(fd, operation, 1)
-static int lock_shared_blocking(int fd) { FLOCK(_LK_LOCK); }
-static int lock_exclusive_blocking(int fd) { FLOCK(_LK_LOCK); }
-static int lock_exclusive_nonblocking(int fd) { FLOCK(_LK_NBLCK); }
-static int unlock(int fd) { FLOCK(_LK_UNLCK); }
+static int pa_lock_shared_blocking(int fd) { FLOCK(_LK_LOCK); }
+static int pa_lock_exclusive_blocking(int fd) { FLOCK(_LK_LOCK); }
+static int pa_lock_exclusive_nonblocking(int fd) { FLOCK(_LK_NBLCK); }
+static int pa_unlock(int fd) { FLOCK(_LK_UNLCK); }
 
 #else
 #ifdef HAVE_FCNTL
 
 #define FLOCK(cmd, arg) struct flock ls={arg, SEEK_SET};  return fcntl(fd, cmd, &ls)
-static int lock_shared_blocking(int fd) { FLOCK(F_SETLKW, F_RDLCK); }
-static int lock_exclusive_blocking(int fd) { FLOCK(F_SETLKW, F_WRLCK); }
-static int lock_exclusive_nonblocking(int fd) { FLOCK(F_SETLK, F_RDLCK); }
-static int unlock(int fd) { FLOCK(F_SETLK, F_UNLCK); }
+static int pa_lock_shared_blocking(int fd) { FLOCK(F_SETLKW, F_RDLCK); }
+static int pa_lock_exclusive_blocking(int fd) { FLOCK(F_SETLKW, F_WRLCK); }
+static int pa_lock_exclusive_nonblocking(int fd) { FLOCK(F_SETLK, F_RDLCK); }
+static int pa_unlock(int fd) { FLOCK(F_SETLK, F_UNLCK); }
 
 #else
 #ifdef HAVE_LOCKF
 
 #define FLOCK(fd, operation) lseek(fd, 0, SEEK_SET);  return lockf(fd, operation, 1)
-static int lock_shared_blocking(int fd) { FLOCK(F_LOCK); } // on intel solaris man doesn't have doc on shared blocking
-static int lock_exclusive_blocking(int fd) { FLOCK(F_LOCK); }
-static int lock_exclusive_nonblocking(int fd) { FLOCK(F_TLOCK); }
-static int unlock(int fd) { FLOCK(F_TLOCK); }
+static int pa_lock_shared_blocking(int fd) { FLOCK(F_LOCK); } // on intel solaris man doesn't have doc on shared blocking
+static int pa_lock_exclusive_blocking(int fd) { FLOCK(F_LOCK); }
+static int pa_lock_exclusive_nonblocking(int fd) { FLOCK(F_TLOCK); }
+static int pa_unlock(int fd) { FLOCK(F_TLOCK); }
 
 #else
 
@@ -113,10 +113,10 @@ static int unlock(int fd) { FLOCK(F_TLOCK); }
 #endif
 
 #else
-static int lock_shared_blocking(int fd) { return 0; }
-static int lock_exclusive_blocking(int fd) { return 0; }
-static int lock_exclusive_nonblocking(int fd) { return 0; }
-static int unlock(int fd) { return 0; }
+static int pa_lock_shared_blocking(int fd) { return 0; }
+static int pa_lock_exclusive_blocking(int fd) { return 0; }
+static int pa_lock_exclusive_nonblocking(int fd) { return 0; }
+static int pa_unlock(int fd) { return 0; }
 
 #endif
 
@@ -676,7 +676,7 @@ bool file_read_action_under_lock(const String& file_spec,
 	// later: it seems, even this does not help sometimes
     if((f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
 		try {
-			if(lock_shared_blocking(f)!=0)
+			if(pa_lock_shared_blocking(f)!=0)
 				throw Exception("file.lock", 
 						&file_spec, 
 						"shared lock failed: %s (%d), actual filename '%s'", 
@@ -695,13 +695,13 @@ bool file_read_action_under_lock(const String& file_spec,
 
 			action(finfo, f, file_spec, fname, as_text, context); 
 		} catch(...) {
-			unlock(f);close(f); 
+			pa_unlock(f);close(f); 
 			if(fail_on_read_problem)
 				rethrow;
 			return false;			
 		} 
 
-		unlock(f);close(f); 
+		pa_unlock(f);close(f); 
 		return true;
     } else {
 		if(fail_on_read_problem)
@@ -738,7 +738,7 @@ bool file_write_action_under_lock(
 		O_CREAT|O_RDWR
 		|(as_text?_O_TEXT:_O_BINARY)
 		|(do_append?O_APPEND:PA_O_TRUNC), 0664))>=0) {
-		if((do_block?lock_exclusive_blocking(f):lock_exclusive_nonblocking(f))!=0) {
+		if((do_block?pa_lock_exclusive_blocking(f):pa_lock_exclusive_nonblocking(f))!=0) {
 			Exception e("file.lock", 
 				&file_spec, 
 				"shared lock failed: %s (%d), actual filename '%s'", 
@@ -756,7 +756,7 @@ bool file_write_action_under_lock(
 			if(!do_append)
 				ftruncate(f, lseek(f, 0, SEEK_CUR)); // one can not use O_TRUNC, read lower
 #endif
-			unlock(f);close(f); 
+			pa_unlock(f);close(f); 
 			rethrow;
 		}
 		
@@ -764,7 +764,7 @@ bool file_write_action_under_lock(
 		if(!do_append)
 			ftruncate(f, lseek(f, 0, SEEK_CUR)); // O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
 #endif
-		unlock(f);close(f); 
+		pa_unlock(f);close(f); 
 		return true;
 	} else
 		throw Exception(errno==EACCES?"file.access":0, 
@@ -1143,19 +1143,3 @@ int __snprintf(char* b, size_t s, const char* f, ...) {
     va_end(l); 
 	return r;
 }
-
-int pa_sleep(unsigned long secs, unsigned long usecs) {
-	for (;  usecs >= 1000000; ++secs, usecs -= 1000000); 
-
-#ifdef WIN32
-	Sleep(secs * 1000 + usecs / 1000); 
-	return 0;
-#else
-	struct timeval t;
-	t.tv_sec = secs;
-	t.tv_usec = usecs;
-	return (select(0, NULL, NULL, NULL, &t) == -1 ? errno : 0); 
-#endif
-}
-
-
