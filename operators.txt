@@ -568,10 +568,10 @@ Xhashfile
         смотрит на .ext case insensitive, 
         умеет мерить пока только .gif и .jpg .jpeg
     !$image.exif << hash после measure jpeg с exif информацией 
-		!$image.exif.DateTime & co 
-			[полный список см. http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html]
-		!числа типа int/double,
-		!перечисления в виде hash с ключами 0..count-1
+        !$image.exif.DateTime & co 
+            [полный список см. http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html]
+        !числа типа int/double,
+        !перечисления в виде hash с ключами 0..count-1
     !$картинка.src .width .height
     !$картинка.line-width  число=ширина линий
        !$картинка.line-style строка=стиль линий '*** * '='*** * *** * *** * '
@@ -937,10 +937,15 @@ xdoc(xnode)
         там лежат в обратном порядке имена[name] и места вызовов[file line] 
         операторов/методов, приведших к ошибке.
 
-!при загрузке файла (file::load, table::load, xdoc::load) можно указать в имени файла 
+!при загрузке файла (file::load, table::load, xdoc::load) можно указать такое имя файла:
     !http://domain/document?params
-    такой будет запрошен и получен
-
+    !а также, возможно, указать опции:
+        !$.method[GET|HEAD]
+        !$.timeout(3)  << в секундах, по-умолчанию =2
+        !$.headers[
+        !    $поле[значение] << по-умолчанию, user-agent=parser3
+        !]
+    !file::load в дополнительные поля записывает ПОЛЕ:значение (имена полей ответа заглавными буквами)
 
 !системные типы ошибок:
     !parser.compile       ^test[}                компиляция (непарная скобка, ...)
