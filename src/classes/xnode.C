@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_XNODE_C="$Date: 2003/09/22 07:05:53 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -338,6 +338,118 @@ static void _getElementsByTagName(Request& r, MethodParams& params) {
 	r.write_no_lang(result);
 }
 
+// DOM 2
+
+// DOMString getAttributeNS(in DOMString name);
+static void _getAttributeNS(Request& r, MethodParams& params) {
+	GdomeElement* element=get_self_element(r);
+	
+	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
+	const String& localName=params.as_string(0, "localName must be string");
+
+	GdomeException exc;
+	GdomeDOMString *attribute_value=
+		gdome_el_getAttributeNS(element, 
+			r.transcode(namespaceURI).use(),
+			r.transcode(localName).use(), &exc);
+	// write out result
+	r.write_no_lang(r.transcode(attribute_value));
+}
+
+// void setAttributeNS(in DOMString name, in DOMString value) raises(DOMException);
+static void _setAttributeNS(Request& r, MethodParams& params) {
+	GdomeElement* element=get_self_element(r);
+	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
+	const String& qualifiedName=params.as_string(1, "qualifiedName must be string");
+	const String& attribute_value=params.as_string(2, "value must be string");
+
+	GdomeException exc;
+	gdome_el_setAttributeNS(element,
+		r.transcode(namespaceURI).use(),
+		r.transcode(qualifiedName).use(), 
+		r.transcode(attribute_value).use(),
+		&exc);
+	if(exc)
+		throw Exception(0, exc);
+}
+
+// void removeAttributeNS(in DOMString name) raises(DOMException);
+static void _removeAttributeNS(Request& r, MethodParams& params) {
+	GdomeElement* element=get_self_element(r);
+	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
+	const String& localName=params.as_string(1, "localName must be string");
+
+	GdomeException exc;
+	gdome_el_removeAttributeNS(element, 
+	r.transcode(namespaceURI).use(),
+	r.transcode(localName).use(), 
+	&exc);
+	if(exc)
+		throw Exception(0, exc);
+}
+
+// Attr getAttributeNodeNS(in DOMString name);
+static void _getAttributeNodeNS(Request& r, MethodParams& params) {
+	GdomeElement* element=get_self_element(r);
+	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
+	const String& name=params.as_string(1, "name must be string");
+
+	GdomeException exc;
+	if(GdomeAttr *attr=gdome_el_getAttributeNodeNS(element, 
+		r.transcode(namespaceURI).use(), r.transcode(name).use(), &exc)) {
+		// write out result
+		r.write_no_lang(*new VXnode(&r.charsets, (GdomeNode* )attr));
+	} else if(exc)
+		throw Exception(
+			0, 
+			exc);
+}
+
+// Attr setAttributeNodeNS(in Attr newAttr) raises(DOMException);
+static void _setAttributeNodeNS(Request& r, MethodParams& params) {
+	GdomeElement* element=get_self_element(r);
+	GdomeAttr * newAttr=as_attr(params, 0, "newAttr must be ATTRIBUTE node");
+
+	GdomeException exc;
+	if(GdomeAttr *returnAttr=gdome_el_setAttributeNodeNS(element, newAttr, &exc)) {
+		// write out result
+		r.write_no_lang(*new VXnode(&r.charsets, (GdomeNode* )returnAttr));
+	} else
+		throw Exception(
+			0, 
+			exc);
+}
+
+// boolean hasAttribute();
+static void _hasAttribute(Request& r, MethodParams& params) {
+	GdomeElement* element=get_self_element(r);
+
+	const String& name=params.as_string(0, "name must be string");
+
+	GdomeException exc;
+	// write out result
+	bool result=gdome_el_hasAttribute(element, 
+	r.transcode(name).use(),
+	&exc)!=0;
+	r.write_no_lang(*new VBool(result));
+}
+
+// boolean hasAttributeNS();
+static void _hasAttributeNS(Request& r, MethodParams& params) {
+	GdomeElement* element=get_self_element(r);
+
+	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
+	const String& localName=params.as_string(1, "localName must be string");
+
+	GdomeException exc;
+	// write out result
+	bool result=gdome_el_hasAttributeNS(element, 
+	r.transcode(namespaceURI).use(),
+	r.transcode(localName).use(),
+	&exc)!=0;
+	r.write_no_lang(*new VBool(result));
+}
+
 static void _getElementsByTagNameNS(Request& r, MethodParams& params) {
 	GdomeElement* element=get_self_element(r);
 
@@ -604,6 +716,23 @@ MXnode::MXnode(const char* aname, VStateless_class *abase):
 	add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
 	// void normalize();
 	add_native_method("normalize", Method::CT_DYNAMIC, _normalize, 0, 0);
+
+	/// DOM2 element
+
+	// DOMString getAttributeNS(in DOMString name);
+	add_native_method("getAttributeNS", Method::CT_DYNAMIC, _getAttributeNS, 2, 2);
+	// void setAttributeNS(in DOMString name, in DOMString value) raises(DOMException);
+	add_native_method("setAttributeNS", Method::CT_DYNAMIC, _setAttributeNS, 3, 3);
+	// void removeAttributeNS(in DOMString name) raises(DOMException);
+	add_native_method("removeAttributeNS", Method::CT_DYNAMIC, _removeAttributeNS, 2, 2);
+	// Attr getAttributeNodeNS(in DOMString name);
+	add_native_method("getAttributeNodeNS", Method::CT_DYNAMIC, _getAttributeNodeNS, 2, 2);
+	// Attr setAttributeNodeNS(in Attr newAttr) raises(DOMException);
+	add_native_method("setAttributeNodeNS", Method::CT_DYNAMIC, _setAttributeNodeNS, 1, 1);
+	// boolean hasAttribute(in Attr newAttr) raises(DOMException);
+	add_native_method("hasAttribute", Method::CT_DYNAMIC, _hasAttribute, 1, 1);
+	// boolean hasAttributeNS(in Attr newAttr) raises(DOMException);
+	add_native_method("hasAttributeNS", Method::CT_DYNAMIC, _hasAttributeNS, 2, 2);
 
 	/// parser
 	// ^node.select[/some/xpath/query] = hash $.#[dnode]

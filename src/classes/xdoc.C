@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_XDOC_C="$Date: 2003/09/22 07:05:52 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -180,6 +180,23 @@ static void _createElement(Request& r, MethodParams& params) {
 	writeNode(r, node, exc);
 }
 
+// Element createElementNS(in DOMString localName) raises(DOMException);
+static void _createElementNS(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
+
+	// namespaceURI;localName
+	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
+	const String& localName=params.as_string(1, "localName must be string");
+
+	GdomeException exc;
+	GdomeNode *node=
+		(GdomeNode *)gdome_doc_createElementNS(vdoc.get_document(), 
+		r.transcode(namespaceURI).use(),
+		r.transcode(localName).use(),
+		&exc);
+	writeNode(r, node, exc);
+}
+
 // DocumentFragment createDocumentFragment()
 static void _createDocumentFragment(Request& r, MethodParams&) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
@@ -263,6 +280,24 @@ static void _createAttribute(Request& r, MethodParams& params) {
 		&exc);
 	writeNode(r, node, exc);
 }
+
+// Attr createAttributeNS(in DOMString name) raises(DOMException);
+static void _createAttributeNS(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
+
+	// namespaceURI;qualifiedName
+	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
+	const String& qualifiedName=params.as_string(1, "name must be string");
+
+	GdomeException exc;
+	GdomeNode *node=(GdomeNode *)gdome_doc_createAttributeNS(
+		vdoc.get_document(),
+		r.transcode(namespaceURI).use(),
+		r.transcode(qualifiedName).use(),
+		&exc);
+	writeNode(r, node, exc);
+}
+
 // EntityReference createEntityReference(in DOMString name) raises(DOMException);
 static void _createEntityReference(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
@@ -857,6 +892,12 @@ MXdoc::MXdoc(): MXnode(XDOC_CLASS_NAME, xnode_class) {
 
     // Node (in Node importedNode, in boolean deep) raises(DOMException)
 	add_native_method("importNode", Method::CT_DYNAMIC, _importNode, 2, 2);
+
+	// Attr createAttributeNS(in DOMString name) raises(DOMException);
+	add_native_method("createAttributeNS", Method::CT_DYNAMIC, _createAttributeNS, 2, 2);
+
+	// Element createElementNS(in DOMString tagName) raises(DOMException);
+	add_native_method("createElementNS", Method::CT_DYNAMIC, _createElementNS, 2, 2);
 
 	// NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName);
 	add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
