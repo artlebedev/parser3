@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.106 2002/04/19 11:59:43 paf Exp $
+	$Id: string.C,v 1.107 2002/04/22 14:10:38 paf Exp $
 */
 
 #include "classes.h"
@@ -88,7 +88,7 @@ static void _left(Request& r, const String&, MethodParams *params) {
 
 	size_t n=(size_t)params->as_int(0, "n must be int", r);
 	
-	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
+	const String& string=static_cast<VString *>(r.self)->string(r.origins_mode());
 	r.write_assign_lang(string.mid(0, n));
 }
 
@@ -97,7 +97,7 @@ static void _right(Request& r, const String&, MethodParams *params) {
 
 	size_t n=(size_t)params->as_int(0, "n must be int", r);
 	
-	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
+	const String& string=static_cast<VString *>(r.self)->string(r.origins_mode());
 	r.write_assign_lang(string.mid(string.size()-n, string.size()));
 }
 
@@ -117,7 +117,7 @@ static void _pos(Request& r, const String& method_name, MethodParams *params) {
 
 	Value& substr=params->as_no_junction(0, "substr must not be code");
 	
-	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
+	const String& string=static_cast<VString *>(r.self)->string(r.origins_mode());
 	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
 }
 
