@@ -2,3 +2,8 @@
 [Thu Apr 25 13:30:43 2002] /index.cgihtml: user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' [file.missing]
 [Thu Apr 25 13:30:44 2002] /index.cgihtml: user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' [file.missing]
 [Thu Apr 25 13:30:45 2002] /index.cgihtml: user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' [file.missing]
+[Thu Apr 25 13:42:52 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1325:19): parse error, expecting `']'' or `';'' [parser.compile]
+[Thu Apr 25 13:43:17 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1329:25): parse error, expecting `']'' or `';'' [parser.compile]
+[Thu Apr 25 13:43:18 2002] /index.cgihtml: junction used outside of context [parser.runtime]
+[Thu Apr 25 13:48:30 2002] /index.cgihtml: junction used outside of context [parser.runtime]
+[Thu Apr 25 13:48:31 2002] /index.cgihtml: junction used outside of context [parser.runtime]
