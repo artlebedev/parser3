@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/03/05 10:32:17 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/03/05 11:38:12 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -76,7 +76,7 @@ int PASCAL closesocket(SOCKET);
 
 const String file_status_name(FILE_STATUS_NAME);
 
-// defines for statics
+// defines
 
 #define HTTP_METHOD_NAME  "method"
 #define HTTP_TIMEOUT_NAME    "timeout"
@@ -84,8 +84,8 @@ const String file_status_name(FILE_STATUS_NAME);
 #define HTTP_ANY_STATUS_NAME "any-status"
 #define HTTP_CHARSET_NAME "charset"
 #define HTTP_TABLES_NAME "tables"
-
-// statics
+#define HTTP_USER "user"
+#define HTTP_PASSWORD "password"
 
 // defines
 
@@ -128,8 +128,8 @@ char* file_read_text(Request_charsets& charsets,
 	return file.success?file.str:0;
 }
 
-#ifdef PA_HTTP
 //http request stuff
+#ifdef PA_HTTP
 
 #undef CRLF
 #define CRLF "\r\n"
@@ -327,6 +327,20 @@ static Charset* detect_charset(Charset& source_charset, const String& content_ty
 	return 0;
 }
 
+static const String* basic_authorization_field(const char* user, const char* pass) {
+	if(!user&& !pass)
+		return 0;
+
+	String combined;  
+	if(user)
+		combined<<user;
+	combined<<":";
+	if(pass)
+		combined<<pass;
+	
+	String* result=new String("Basic "); *result<<pa_base64(combined.cstr(), combined.length());
+	return result;
+}
 
 #ifndef DOXYGEN
 struct File_read_http_result {
@@ -348,6 +362,8 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	bool fail_on_status_ne_200=true;
 	Value* vheaders=0;
 	Charset *asked_remote_charset=0;
+	const char* user_cstr=0;
+	const char* password_cstr=0;
 
 	if(options) {
 		int valid_options=0;
@@ -370,6 +386,14 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 			valid_options++;
 			asked_remote_charset=&::charsets.get(vcharset_name->as_string().
 				change_case(charsets.source(), String::CC_UPPER));
+		}
+		if(Value* vuser=options->get(HTTP_USER)) {
+			valid_options++;
+			user_cstr=vuser->as_string().cstr();
+		}
+		if(Value* vpassword=options->get(HTTP_PASSWORD)) {
+			valid_options++;
+			password_cstr=vpassword->as_string().cstr();
 		}
 
 		if(valid_options!=options->count())
@@ -414,6 +438,10 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 			request<<"GET";
 		request<< " "<< uri <<" HTTP/1.0" CRLF
 			"host: "<< host << CRLF; 
+
+		if(const String* authorization_field_value=basic_authorization_field(user_cstr, password_cstr))
+			request<<"Authorization: "<<*authorization_field_value<<CRLF;
+
 		bool user_agent_specified=false;
 		if(vheaders && !vheaders->is_string()) { // allow empty
 			if(HashStringValue *headers=vheaders->get_hash()) {
@@ -1104,4 +1132,177 @@ int __snprintf(char* b, size_t s, const char* f, ...) {
     int r=__vsnprintf(b, s, f, l); 
     va_end(l); 
 	return r;
+}
+
+/* mime64 functions are from libgmime[http://spruce.sourceforge.net/gmime/] lib */
+/*
+ *  Authors: Michael Zucchi <notzed@helixcode.com>
+ *           Jeffrey Stedfast <fejj@helixcode.com>
+ *
+ *  Copyright 2000 Helix Code, Inc. (www.helixcode.com)
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Street #330, Boston, MA 02111-1307, USA.
+ *
+ */
+static char *base64_alphabet =
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+/**
+ * g_mime_utils_base64_encode_step:
+ * @in: input stream
+ * @inlen: length of the input
+ * @out: output string
+ * @state: holds the number of bits that are stored in @save
+ * @save: leftover bits that have not yet been encoded
+ *
+ * Base64 encodes a chunk of data. Performs an 'encode step', only
+ * encodes blocks of 3 characters to the output at a time, saves
+ * left-over state in state and save (initialise to 0 on first
+ * invocation).
+ *
+ * Returns the number of bytes encoded.
+ **/
+static size_t
+g_mime_utils_base64_encode_step (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save)
+{
+	const register unsigned char *inptr;
+	register unsigned char *outptr;
+	
+	if (inlen <= 0)
+		return 0;
+	
+	inptr = in;
+	outptr = out;
+	
+	if (inlen + ((unsigned char *)save)[0] > 2) {
+		const unsigned char *inend = in + inlen - 2;
+		register int c1 = 0, c2 = 0, c3 = 0;
+		register int already;
+		
+		already = *state;
+		
+		switch (((char *)save)[0]) {
+		case 1:	c1 = ((unsigned char *)save)[1]; goto skip1;
+		case 2:	c1 = ((unsigned char *)save)[1];
+			c2 = ((unsigned char *)save)[2]; goto skip2;
+		}
+		
+		/* yes, we jump into the loop, no i'm not going to change it, its beautiful! */
+		while (inptr < inend) {
+			c1 = *inptr++;
+		skip1:
+			c2 = *inptr++;
+		skip2:
+			c3 = *inptr++;
+			*outptr++ = base64_alphabet [c1 >> 2];
+			*outptr++ = base64_alphabet [(c2 >> 4) | ((c1 & 0x3) << 4)];
+			*outptr++ = base64_alphabet [((c2 & 0x0f) << 2) | (c3 >> 6)];
+			*outptr++ = base64_alphabet [c3 & 0x3f];
+			/* this is a bit ugly ... */
+			if ((++already) >= 19) {
+				*outptr++ = '\n';
+				already = 0;
+			}
+		}
+		
+		((unsigned char *)save)[0] = 0;
+		inlen = 2 - (inptr - inend);
+		*state = already;
+	}
+	
+	//d(printf ("state = %d, inlen = %d\n", (int)((char *)save)[0], inlen));
+	
+	if (inlen > 0) {
+		register char *saveout;
+		
+		/* points to the slot for the next char to save */
+		saveout = & (((char *)save)[1]) + ((char *)save)[0];
+		
+		/* inlen can only be 0 1 or 2 */
+		switch (inlen) {
+		case 2:	*saveout++ = *inptr++;
+		case 1:	*saveout++ = *inptr++;
+		}
+		((char *)save)[0] += inlen;
+	}
+	
+	/*d(printf ("mode = %d\nc1 = %c\nc2 = %c\n",
+		  (int)((char *)save)[0],
+		  (int)((char *)save)[1],
+		  (int)((char *)save)[2]));*/
+	
+	return (outptr - out);
+}
+
+/**
+ * g_mime_utils_base64_encode_close:
+ * @in: input stream
+ * @inlen: length of the input
+ * @out: output string
+ * @state: holds the number of bits that are stored in @save
+ * @save: leftover bits that have not yet been encoded
+ *
+ * Base64 encodes the input stream to the output stream. Call this
+ * when finished encoding data with g_mime_utils_base64_encode_step to
+ * flush off the last little bit.
+ *
+ * Returns the number of bytes encoded.
+ **/
+static size_t
+g_mime_utils_base64_encode_close (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save)
+{
+	unsigned char *outptr = out;
+	int c1, c2;
+	
+	if (inlen > 0)
+		outptr += g_mime_utils_base64_encode_step (in, inlen, outptr, state, save);
+	
+	c1 = ((unsigned char *)save)[1];
+	c2 = ((unsigned char *)save)[2];
+	
+	switch (((unsigned char *)save)[0]) {
+	case 2:
+		outptr[2] = base64_alphabet [(c2 & 0x0f) << 2];
+		goto skip;
+	case 1:
+		outptr[2] = '=';
+	skip:
+		outptr[0] = base64_alphabet [c1 >> 2];
+		outptr[1] = base64_alphabet [c2 >> 4 | ((c1 & 0x3) << 4)];
+		outptr[3] = '=';
+		outptr += 4;
+		break;
+	}
+	
+	*outptr++ = 0;
+	
+	*save = 0;
+	*state = 0;
+	
+	return (outptr - out);
+}
+
+char* pa_base64(const char *in, size_t len)
+{
+	/* wont go to more than 2x size (overly conservative) */
+	char* result=new(PointerFreeGC) char[len * 2 + 6];
+	int state=0;
+	int save=0;
+	size_t filled=g_mime_utils_base64_encode_close ((const unsigned char*)in, len, 
+		(unsigned char*)result, &state, &save);
+	assert(filled <= len * 2 + 6);
+
+	return result;
 }

@@ -1,10 +1,9 @@
-$request:charset[koi8-r]
+$request:charset[windows-1251]
 $response:charset[windows-1251]
 
-$SQL.connect-string[odbc://DSN=nestle^;UID=nestle^;PWD=mbm32^;ClientCharset=windows-1251]
-#$SQL.connect-string[odbc://DSN=theatre_enciclop^;UID=root^;PWD=^;bug=here]
-#^bpt[]
-^connect[$SQL.connect-string]{
-	^string:sql{select question from faq}[$.limit(1)]
-}
-OK
+$f[^file::load[text;http://parser/_paf/;
+	$.user[paf]
+	$.password[123]
+]]
+
+$f.text
