@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char* IDENT_VDOUBLE_H="$Date: 2002/08/12 10:32:53 $";
+static const char* IDENT_VDOUBLE_H="$Date: 2002/09/23 14:09:25 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -44,7 +44,7 @@ public: // Value
 	/// VDouble: fdouble
 	double as_double() const { return fdouble; }
 	/// VDouble: fdouble
-	int as_int() const { return (int)fdouble; }
+	int as_int() const { return (int)round(fdouble); }
 	/// VDouble: 0 or !0
 	bool as_bool() const { return fdouble!=0; }
 
