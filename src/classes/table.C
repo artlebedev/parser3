@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/08/06 14:23:22 $";
+static const char* IDENT_TABLE_C="$Date: 2002/08/07 10:25:56 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -40,7 +40,7 @@ static void get_copy_options(Request& r, const String& method_name, MethodParams
 		return;
 
 	Value& voptions=params->as_no_junction(param_index, "options must be hash, not code");
-	if(!voptions.is_string())
+	if(!voptions.is_string()) {
 		if(Hash *options=voptions.get_hash(&method_name)) {
 			if(Value *voffset=(Value *)options->get(*sql_offset_name))
 				if(voffset->is_string()) {
@@ -59,6 +59,9 @@ static void get_copy_options(Request& r, const String& method_name, MethodParams
 			throw Exception("parser.runtime",
 				&method_name,
 				"options must be hash");
+	}
+	if(!limit) // zero limit = sould be 'nothing to copy', for methods zero means 'all'
+		limit=-1; // thus fixing
 }
 
 static void _create(Request& r, const String& method_name, MethodParams *params) {

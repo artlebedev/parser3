@@ -183,7 +183,6 @@ $selffilespec[$filespec]
 #^tfilespec[]
 #^tcrypt[]
 #^cryptdocsample[]
-^sendtests[]
 #^tnormalize[]
 #^xmltransformbyxdoc[]
 #^sergestrandef[]
@@ -192,9 +191,10 @@ $selffilespec[$filespec]
 #^calendar[]
 #^mimet[]
 #^cgit[]
-#^joinlimit[]
+^joinlimit[]
 #^tableclonelimit[]
-^transparams[]
+#^transparams[]
+#^sendtests[]
 <hr>
 OK
 
@@ -227,7 +227,8 @@ xx
 #^dest.join[$source;$.limit(2)]
 #^dest.join[$source;$.offset(1)$.limit(1)]
 #^dest.join[$source;$.offset(1)$.limit(2)]
-^dest.join[$source;$.offset[cur]$.limit(1)]
+#^dest.join[$source;$.offset[cur]$.limit(1)]
+^dest.join[$source;$.limit(0)]
 
 ^dest.menu{$dest.a}[,]<br>
 
