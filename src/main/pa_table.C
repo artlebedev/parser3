@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.26 2001/04/05 16:30:42 paf Exp $
+	$Id: pa_table.C,v 1.27 2001/05/07 08:29:45 paf Exp $
 */
 
 #include <stdlib.h>
@@ -33,17 +33,9 @@ Table::Table(Pool& apool,
 }
 
 int Table::column_name2index(const String& column_name) const {
-	if(fcolumns) { // named
-		int column_number=name2number.get_int(column_name);
-		if(column_number)
-			return column_number-1;
-		else {
-			THROW(0, 0,
-				&column_name, 
-				"column not found");
-			return 0; // unreached
-		}
-	} else { // nameless
+	if(fcolumns) // named
+		return name2number.get_int(column_name)-1; // -1 = column not found
+	else { // nameless
 		char *error_pos=0;
 		int result=(int)strtol(column_name.cstr(), &error_pos, 0);
 		if(error_pos && *error_pos)

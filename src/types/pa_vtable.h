@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.17 2001/05/07 08:11:58 paf Exp $
+	$Id: pa_vtable.h,v 1.18 2001/05/07 08:29:48 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -25,18 +25,23 @@ public: // Value
 	const char *type() const { return "table"; }
 	/// extract VTable
 	Table *get_table() { return ftable; }
-	/// VTable: column/method
+	/// VTable: columns,methods
 	Value *get_element(const String& name) {
 		// columns
-		if(ftable)
-			if(const String *string=ftable->item(name))
-				return NEW VString(*string);
+		if(ftable) {
+			int index=ftable->column_name2index(name);
+			if(index>=0) // there is such column
+				return NEW VString(*ftable->item(index));
+		}
 
 		// methods
 		if(Value *result=VStateless_object::get_element(name))
 			return result;
 
-		return NEW VUnknown(pool());
+		THROW(0, 0,
+			&name, 
+			"column not found");
+		return 0; //unreached
 	}
 
 public:
@@ -72,15 +77,15 @@ public: // usage
 
 private:
 
-	Table *ftable;
-	bool locked;
-
-private:
-
 	void check_lock() {
 		if(locked)
 			bark("is locked");
 	}
+
+private:
+
+	Table *ftable;
+	bool locked;
 
 };
 
