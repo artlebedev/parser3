@@ -5,14 +5,14 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.17 2001/07/20 09:40:46 parser Exp $
+	$Id: pa_vclass.h,v 1.18 2001/09/24 15:09:23 parser Exp $
 */
 
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
 #include "pa_vstateless_class.h"
-#include "pa_vhash.h"
+//#include "pa_vhash.h"
 #include "pa_vjunction.h"
 
 /**	stores 

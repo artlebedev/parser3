@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhash.h,v 1.20 2001/09/24 15:07:42 parser Exp $
+	$Id: pa_vhash.h,v 1.21 2001/09/24 15:09:23 parser Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -13,6 +13,7 @@
 #include "classes.h"
 #include "pa_value.h"
 #include "pa_hash.h"
+#include "pa_vint.h"
 
 extern Methoded *hash_base_class;
 
