@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.16 2001/04/10 10:32:04 paf Exp $
+	$Id: mail.C,v 1.17 2001/04/11 08:13:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -113,7 +113,7 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 
 	const VFile *vfile;
 	if(Value *value=static_cast<Value *>(attach_hash.get(*value_name)))
-		vfile=value->as_vfile();
+		vfile=value->as_vfile(String::UL_AS_IS); // bad with html attaches. todo: solve
 	else
 		PTHROW(0, 0,
 			&origin_string,

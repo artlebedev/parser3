@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.45 2001/04/10 10:32:14 paf Exp $
+	$Id: pa_value.h,v 1.46 2001/04/11 08:13:42 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -100,7 +100,7 @@ public: // Value
 		- VString: vfile
 		- VImage: true
 	*/
-	virtual const VFile *as_vfile() const { 
+	virtual const VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED) const { 
 		bark("(%s) does not have file value"); return 0; 
 	}
 	/** extract Junction

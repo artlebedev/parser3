@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.14 2001/04/10 10:32:15 paf Exp $
+	$Id: pa_vfile.C,v 1.15 2001/04/11 08:13:43 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -21,6 +21,8 @@ void VFile::set(bool tainted,
 	fvalue_ptr=avalue_ptr;
 	fvalue_size=avalue_size;
 
+	const char *origin_file="user <input type=file>";
+
 	ffields.clear();
 	// $name
 	char *lfile_name;
@@ -34,7 +36,9 @@ void VFile::set(bool tainted,
 		
 	} else
 		lfile_name="noname.dat";
-	ffields.put(*name_name, NEW VString(*NEW String(pool(), lfile_name, 0, true)));
+	String& sfile_name=*NEW String(pool());
+	sfile_name.APPEND(lfile_name, 0, String::UL_FILE_NAME, origin_file, 0);
+	ffields.put(*name_name, NEW VString(sfile_name));
 	// $size
 	ffields.put(*size_name, NEW VInt(pool(), fvalue_size));
 	// $text
@@ -45,7 +49,7 @@ void VFile::set(bool tainted,
 			text.APPEND((char *)fvalue_ptr, 
 			premature_zero_pos?premature_zero_pos-(char *)fvalue_ptr:fvalue_size, 
 			tainted? String::UL_TAINTED : String::UL_CLEAN,
-			"user <input type=file>", 0);
+			origin_file, 0);
 		ffields.put(*text_name, NEW VString(text));
 	}
 	// $mime-type

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.2 2001/04/06 10:32:16 paf Exp $
+	$Id: op.C,v 1.3 2001/04/11 08:13:38 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -70,13 +70,14 @@ static void _taint(Request& r, const String& method_name, Array *params) {
 	if(params->size()==1)
 		lang=String::UL_TAINTED; // mark as simply 'tainted'. useful in table:set
 	else {
-		const String& lang_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
+		const String& lang_name=
+			r.process(*static_cast<Value *>(params->get(0))).as_string();
 		lang=static_cast<String::Untaint_lang>(
 			untaint_lang_name2enum->get_int(lang_name));
 		if(!lang)
 			PTHROW(0, 0,
-			&lang_name,
-			"invalid taint language");
+				&lang_name,
+				"invalid taint language");
 	}
 
 	{

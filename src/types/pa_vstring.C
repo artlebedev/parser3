@@ -5,15 +5,15 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vstring.C,v 1.2 2001/04/09 11:30:44 paf Exp $
+	$Id: pa_vstring.C,v 1.3 2001/04/11 08:13:43 paf Exp $
 */
 
 #include "pa_vstring.h"
 #include "pa_vfile.h"
 
-const VFile *VString::as_vfile() const {
+const VFile *VString::as_vfile(String::Untaint_lang lang) const {
 	VFile& result=*NEW VFile(pool());
-	const char *cstr=fstring.cstr(String::UL_AS_IS);
+	const char *cstr=fstring.cstr(lang);
 	result.set(false/*not tainted*/, cstr, fstring.size());
 	return &result;
 }

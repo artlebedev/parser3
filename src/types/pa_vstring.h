@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.21 2001/04/10 10:32:15 paf Exp $
+	$Id: pa_vstring.h,v 1.22 2001/04/11 08:13:43 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -54,7 +54,7 @@ public: // Value
 	}
 
 	/// VString: vfile
-	const VFile *as_vfile() const;
+	const VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED) const;
 
 	/// VString: $method
 	Value *get_element(const String& name) {
