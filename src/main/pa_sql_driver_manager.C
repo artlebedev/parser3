@@ -5,15 +5,15 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.13 2001/05/17 09:47:17 parser Exp $
+	$Id: pa_sql_driver_manager.C,v 1.14 2001/05/17 10:12:28 parser Exp $
 */
 
-#include "pa_config_includes.h"
-#include "ltdl.h"
 #include "pa_sql_driver_manager.h"
+#include "ltdl.h"
 #include "pa_sql_connection.h"
 #include "pa_exception.h"
 #include "pa_common.h"
+#include "pa_threads.h"
 
 // globals
 

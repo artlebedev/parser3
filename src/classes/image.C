@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.26 2001/05/11 17:45:10 parser Exp $
+	$Id: image.C,v 1.27 2001/05/17 10:12:28 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -87,23 +87,23 @@ struct GIF_Header {
 
 /// JPEG file header
 struct JFIF_Header {
-	char length[2];              // length of JFIF segment marker
-	char identifier[5];          // JFIF identifier
-	char version[2];             // version
-	char units;                  // units X of Y pixel density
-	char xdensity[2];            // X pixel density
-	char ydensity[2];            // X pixel density
-	char xthumbnails;            // width of thumbnails
-	char ythumbnails;            // height of thumbnails
-	char reserved;               // reserved
+	char length[2];              //< length of JFIF segment marker
+	char identifier[5];          //< JFIF identifier
+	char version[2];             //< version
+	char units;                  //< units X of Y pixel density
+	char xdensity[2];            //< X pixel density
+	char ydensity[2];            //< X pixel density
+	char xthumbnails;            //< width of thumbnails
+	char ythumbnails;            //< height of thumbnails
+	char reserved;               //< reserved
 };
 /// JPEG frame header
 struct JPG_Frame {
-	char length[2];               // length of image marker
-	char data;                    // data precision of bits/sample
-	char height[2];               // image height
-	char width[2];                // image width
-	char numComponents;           // number of color components
+	char length[2];               //< length of image marker
+	char data;                    //< data precision of bits/sample
+	char height[2];               //< image height
+	char width[2];                //< image width
+	char numComponents;           //< number of color components
 };
 
 //
@@ -544,8 +544,8 @@ static void _polybar(Request& r, const String& method_name, MethodParams *params
 class Font : public Pooled {
 public:
 	
-	int height;	    /* Font heigth */
-	int space;	    /* Default char width */
+	int height;	    //< Font heigth
+	int space;	    //< Default char width
 	gdImage& ifont;
 	const String& alphabet;
 	

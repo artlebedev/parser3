@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.86 2001/05/16 08:10:22 parser Exp $
+	$Id: pa_string.C,v 1.87 2001/05/17 10:12:28 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -21,7 +21,6 @@
 #include "pa_array.h"
 #include "pa_globals.h"
 #include "pa_table.h"
-#include "pa_threads.h"
 
 String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	Pooled(apool) {

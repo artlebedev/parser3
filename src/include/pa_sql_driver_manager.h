@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.h,v 1.3 2001/04/17 19:00:36 paf Exp $
+	$Id: pa_sql_driver_manager.h,v 1.4 2001/05/17 10:12:28 parser Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -14,11 +14,11 @@
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
 
+#include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_sql_driver.h"
 #include "pa_hash.h"
 #include "pa_stack.h"
-#include "pa_threads.h"
 #include "pa_table.h"
 #include "pa_string.h"
 
