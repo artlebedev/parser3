@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/04/14 14:59:29 $";
+static const char* IDENT_MATH_C="$Date: 2003/04/15 07:17:42 $";
 
 #include "pa_common.h"
 #include "pa_vint.h"
@@ -152,10 +152,9 @@ static void _crypt(Request& r, const String& method_name, MethodParams *params) 
     if(strncmp(normal_salt, PA_MD5PW_ID, PA_MD5PW_IDLEN) == 0) {
 		const size_t sample_size=120;
 		char *sample_buf=(char *)pool.malloc(sample_size);
-		pa_MD5Encode((const unsigned char *)password,
+		PA_MD5Encode((const unsigned char *)password,
 			(const unsigned char *)normal_salt, 1/*TRUE: mix in magic string*/,
-			sample_buf, sample_size,
-			0, 0);
+			sample_buf, sample_size);
 		r.write_pass_lang(*new(pool) String(pool, sample_buf));
     } else {
 #ifdef HAVE_CRYPT
@@ -179,22 +178,22 @@ static void _crypt(Request& r, const String& method_name, MethodParams *params) 
 static void _md5(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const char *string=params->as_string(0, "parameter must be string").cstr();
-	const size_t sample_size=120;
-	char sample_buf[sample_size];
-	const int sample_bytes_count=12;
-	unsigned char sample_bytes[sample_bytes_count];
-	pa_MD5Encode((const unsigned char *)string,
-		(const unsigned char *)"",  0/*FALSE: mix in magic string*/,
-		sample_buf, sample_size,
-		sample_bytes, sample_bytes_count);
-	char *sample_bytes_hex=(char *)pool.malloc(sample_bytes_count*2/*byte->hh*/+1/*for zero-teminator*/);
-	unsigned char *src=sample_bytes;
-	unsigned char *end=sample_bytes+sample_bytes_count;
-	char *dest=sample_bytes_hex;
+
+
+	PA_MD5_CTX context;
+	unsigned char digest[16];
+	PA_MD5Init(&context);
+	PA_MD5Update(&context, (const unsigned char*)string, strlen(string));
+	PA_MD5Final(digest, &context);
+
+	char *digest_bytes_hex=(char *)pool.malloc(sizeof(digest)*2/*byte->hh*/+1/*for zero-teminator*/);
+	unsigned char *src=digest;
+	unsigned char *end=digest+sizeof(digest);
+	char *dest=digest_bytes_hex;
 	while(src<end)
 		dest+=snprintf(dest, 3, "%02x", *src++);
 
-	r.write_pass_lang(*new(pool) String(pool, sample_bytes_hex));
+	r.write_pass_lang(*new(pool) String(pool, digest_bytes_hex));
 }
 
 // constructor

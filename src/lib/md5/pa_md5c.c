@@ -1,7 +1,7 @@
 /** @file
 	Parser: copied from apache 1.3.20  sources.
-	Replaced ap_ to pa_ prefixes. linked into all targets but Apache-module target,
-	where linked targets/apache/pa_md5c.c stub instead.
+	Replaced ap_ to PA_ prefixes. linked into all targets but Apache-module target,
+	where linked targets/apache/PA_md5c.c stub instead.
 
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 */
@@ -97,7 +97,7 @@
  */
 
 /*
- * The pa_MD5Encode() routine uses much code obtained from the FreeBSD 3.0
+ * The PA_MD5Encode() routine uses much code obtained from the FreeBSD 3.0
  * MD5 crypt() function, which is licenced as follows:
  * ----------------------------------------------------------------------------
  * "THE BEER-WARE LICENSE" (Revision 42):
@@ -107,11 +107,11 @@
  * ----------------------------------------------------------------------------
  */
 
-static const char* IDENT_MD5_C="$Date: 2003/04/14 14:59:29 $";
+static const char* IDENT_MD5_C="$Date: 2003/04/15 07:17:42 $";
 
 #include <string.h>
 
-#include "pa_md5.h"
+#include "PA_md5.h"
 //#include "ap.h"
 //#ifdef CHARSET_EBCDIC
 //#include "ebcdic.h"
@@ -120,7 +120,7 @@ static const char* IDENT_MD5_C="$Date: 2003/04/14 14:59:29 $";
 //#include <crypt.h>
 //#endif
 
-#define pa_cpystrn(strDest, strSource, count) strncpy(strDest, strSource, count)
+#define PA_cpystrn(strDest, strSource, count) strncpy(strDest, strSource, count)
 
 /* Constants for MD5Transform routine.
  */
@@ -192,7 +192,7 @@ static unsigned char PADDING[64] =
 
 /* MD5 initialization. Begins an MD5 operation, writing a new context.
  */
-PA_API_EXPORT(void) pa_MD5Init(PA_MD5_CTX *context)
+PA_API_EXPORT(void) PA_MD5Init(PA_MD5_CTX *context)
 {
     context->count[0] = context->count[1] = 0;
     /* Load magic initialization constants. */
@@ -206,7 +206,7 @@ PA_API_EXPORT(void) pa_MD5Init(PA_MD5_CTX *context)
    operation, processing another message block, and updating the
    context.
  */
-PA_API_EXPORT(void) pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input,
+PA_API_EXPORT(void) PA_MD5Update(PA_MD5_CTX *context, const unsigned char *input,
 			      unsigned int inputLen)
 {
     unsigned int i, idx, partLen;
@@ -266,7 +266,7 @@ PA_API_EXPORT(void) pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input
 /* MD5 finalization. Ends an MD5 message-digest operation, writing the
    the message digest and zeroizing the context.
  */
-PA_API_EXPORT(void) pa_MD5Final(unsigned char digest[16], PA_MD5_CTX *context)
+PA_API_EXPORT(void) PA_MD5Final(unsigned char digest[16], PA_MD5_CTX *context)
 {
     unsigned char bits[8];
     unsigned int idx, padLen;
@@ -278,13 +278,13 @@ PA_API_EXPORT(void) pa_MD5Final(unsigned char digest[16], PA_MD5_CTX *context)
 #ifdef CHARSET_EBCDIC
     /* XXX: @@@: In order to make this no more complex than necessary,
      * this kludge converts the bits[] array using the ascii-to-ebcdic
-     * table, because the following pa_MD5Update() re-translates
+     * table, because the following PA_MD5Update() re-translates
      * its input (ebcdic-to-ascii).
-     * Otherwise, we would have to pass a "conversion" flag to pa_MD5Update()
+     * Otherwise, we would have to pass a "conversion" flag to PA_MD5Update()
      */
     ascii2ebcdic(bits,bits,8);
 
-    /* Since everything is converted to ascii within pa_MD5Update(), 
+    /* Since everything is converted to ascii within PA_MD5Update(), 
      * the initial 0x80 (PADDING[0]) must be stored as 0x20 
      */
     PADDING[0] = os_toebcdic[0x80];
@@ -293,10 +293,10 @@ PA_API_EXPORT(void) pa_MD5Final(unsigned char digest[16], PA_MD5_CTX *context)
     /* Pad out to 56 mod 64. */
     idx = (unsigned int) ((context->count[0] >> 3) & 0x3f);
     padLen = (idx < 56) ? (56 - idx) : (120 - idx);
-    pa_MD5Update(context, (const unsigned char *)PADDING, padLen);
+    PA_MD5Update(context, (const unsigned char *)PADDING, padLen);
 
     /* Append length (before padding) */
-    pa_MD5Update(context, (const unsigned char *)bits, 8);
+    PA_MD5Update(context, (const unsigned char *)bits, 8);
 
     /* Store state in digest */
     Encode(digest, context->state, 16);
@@ -427,7 +427,7 @@ static void Decode(UINT4 *output, const unsigned char *input, unsigned int len)
  * the FreeBSD 3.0 /usr/src/lib/libcrypt/crypt.c file, which is
  * licenced as stated at the top of this file.
  */
-PA_API_EXPORT(void) pa_to64(char *s, unsigned long v, int n)
+PA_API_EXPORT(void) PA_to64(char *s, unsigned long v, int n)
 {
     static unsigned char itoa64[] =         /* 0 ... 63 => ASCII - 64 */
 	"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -438,10 +438,9 @@ PA_API_EXPORT(void) pa_to64(char *s, unsigned long v, int n)
     }
 }
 
-PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *pw,
+PA_API_EXPORT(void) PA_MD5Encode(const unsigned char *pw,
 			      const unsigned char *salt, int mix_in_magic_string,
-			      char* result_base64, size_t result_base64_size,
-			      unsigned char* result_raw, size_t result_raw_size)
+			      char* result_base64, size_t result_base64_size)
 {
     /*
      * Minimum size is 8 bytes for salt, plus 1 for the trailing NUL,
@@ -488,36 +487,36 @@ PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *pw,
     /*
      * 'Time to make the doughnuts..'
      */
-    pa_MD5Init(&ctx);
+    PA_MD5Init(&ctx);
 
     pwlen = strlen((char *)pw);
     /*
      * The password first, since that is what is most unknown
      */
-    pa_MD5Update(&ctx, pw, pwlen);
+    PA_MD5Update(&ctx, pw, pwlen);
 
     if(mix_in_magic_string) {
 	    /*
 	     * Then our magic string
 	     */
-	    pa_MD5Update(&ctx, (const unsigned char *) PA_MD5PW_ID, PA_MD5PW_IDLEN);
+	    PA_MD5Update(&ctx, (const unsigned char *) PA_MD5PW_ID, PA_MD5PW_IDLEN);
     }
 
     /*
      * Then the raw salt
      */
-    pa_MD5Update(&ctx, sp, sl);
+    PA_MD5Update(&ctx, sp, sl);
 
     /*
      * Then just as many characters of the MD5(pw, salt, pw)
      */
-    pa_MD5Init(&ctx1);
-    pa_MD5Update(&ctx1, pw, pwlen);
-    pa_MD5Update(&ctx1, sp, sl);
-    pa_MD5Update(&ctx1, pw, pwlen);
-    pa_MD5Final(final, &ctx1);
+    PA_MD5Init(&ctx1);
+    PA_MD5Update(&ctx1, pw, pwlen);
+    PA_MD5Update(&ctx1, sp, sl);
+    PA_MD5Update(&ctx1, pw, pwlen);
+    PA_MD5Final(final, &ctx1);
     for(pl = pwlen; pl > 0; pl -= 16) {
-	pa_MD5Update(&ctx, final, (pl > 16) ? 16 : (unsigned int) pl);
+	PA_MD5Update(&ctx, final, (pl > 16) ? 16 : (unsigned int) pl);
     }
 
     /*
@@ -530,10 +529,10 @@ PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *pw,
      */
     for (i = pwlen; i != 0; i >>= 1) {
 	if (i & 1) {
-	    pa_MD5Update(&ctx, final, 1);
+	    PA_MD5Update(&ctx, final, 1);
 	}
 	else {
-	    pa_MD5Update(&ctx, pw, 1);
+	    PA_MD5Update(&ctx, pw, 1);
 	}
     }
 
@@ -541,12 +540,12 @@ PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *pw,
      * Now make the output string.  We know our limitations, so we
      * can use the string routines without bounds checking.
      */
-    pa_cpystrn(passwd, PA_MD5PW_ID, PA_MD5PW_IDLEN + 1);
-    pa_cpystrn(passwd + PA_MD5PW_IDLEN, (char *)sp, sl + 1);
+    PA_cpystrn(passwd, PA_MD5PW_ID, PA_MD5PW_IDLEN + 1);
+    PA_cpystrn(passwd + PA_MD5PW_IDLEN, (char *)sp, sl + 1);
     passwd[PA_MD5PW_IDLEN + sl]     = '$';
     passwd[PA_MD5PW_IDLEN + sl + 1] = '\0';
 
-    pa_MD5Final(final, &ctx);
+    PA_MD5Final(final, &ctx);
 
     /*
      * And now, just to make sure things don't run too fast..
@@ -554,47 +553,45 @@ PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *pw,
      * need 30 seconds to build a 1000 entry dictionary...
      */
     for (i = 0; i < 1000; i++) {
-	pa_MD5Init(&ctx1);
+	PA_MD5Init(&ctx1);
 	if (i & 1) {
-	    pa_MD5Update(&ctx1, pw, pwlen);
+	    PA_MD5Update(&ctx1, pw, pwlen);
 	}
 	else {
-	    pa_MD5Update(&ctx1, final, 16);
+	    PA_MD5Update(&ctx1, final, 16);
 	}
 	if (i % 3) {
-	    pa_MD5Update(&ctx1, sp, sl);
+	    PA_MD5Update(&ctx1, sp, sl);
 	}
 
 	if (i % 7) {
-	    pa_MD5Update(&ctx1, pw, pwlen);
+	    PA_MD5Update(&ctx1, pw, pwlen);
 	}
 
 	if (i & 1) {
-	    pa_MD5Update(&ctx1, final, 16);
+	    PA_MD5Update(&ctx1, final, 16);
 	}
 	else {
-	    pa_MD5Update(&ctx1, pw, pwlen);
+	    PA_MD5Update(&ctx1, pw, pwlen);
 	}
-	pa_MD5Final(final,&ctx1);
+	PA_MD5Final(final,&ctx1);
     }
 
     p = passwd + strlen(passwd);
 
-    l = (final[ 0]<<16) | (final[ 6]<<8) | final[12]; pa_to64(p, l, 4); p += 4;
-    l = (final[ 1]<<16) | (final[ 7]<<8) | final[13]; pa_to64(p, l, 4); p += 4;
-    l = (final[ 2]<<16) | (final[ 8]<<8) | final[14]; pa_to64(p, l, 4); p += 4;
-    l = (final[ 3]<<16) | (final[ 9]<<8) | final[15]; pa_to64(p, l, 4); p += 4;
-    l = (final[ 4]<<16) | (final[10]<<8) | final[ 5]; pa_to64(p, l, 4); p += 4;
-    l =                    final[11]                ; pa_to64(p, l, 2); p += 2;
+    l = (final[ 0]<<16) | (final[ 6]<<8) | final[12]; PA_to64(p, l, 4); p += 4;
+    l = (final[ 1]<<16) | (final[ 7]<<8) | final[13]; PA_to64(p, l, 4); p += 4;
+    l = (final[ 2]<<16) | (final[ 8]<<8) | final[14]; PA_to64(p, l, 4); p += 4;
+    l = (final[ 3]<<16) | (final[ 9]<<8) | final[15]; PA_to64(p, l, 4); p += 4;
+    l = (final[ 4]<<16) | (final[10]<<8) | final[ 5]; PA_to64(p, l, 4); p += 4;
+    l =                    final[11]                ; PA_to64(p, l, 2); p += 2;
     *p = '\0';
-
-    pa_cpystrn(result_base64, passwd, result_base64_size - 1);
-    if(result_raw)
-	memcpy(result_raw, final, result_raw_size);
 
     /*
      * Don't leave anything around in vm they could use.
      */
     memset(final, 0, sizeof(final));
     
+
+    PA_cpystrn(result_base64, passwd, result_base64_size - 1);
 }

@@ -96,7 +96,7 @@
 #ifndef PA_MD5_H
 #define PA_MD5_H
 
-static const char* IDENT_MD5_H="$Date: 2003/04/14 14:59:29 $";
+static const char* IDENT_MD5_H="$Date: 2003/04/15 07:17:42 $";
 
 #define PA_API_EXPORT(rtype) rtype
 
@@ -129,16 +129,15 @@ typedef struct {
 #define PA_MD5PW_ID "$apr1$"
 #define PA_MD5PW_IDLEN 6
 
-PA_API_EXPORT(void) pa_MD5Init(PA_MD5_CTX *context);
-PA_API_EXPORT(void) pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input,
+PA_API_EXPORT(void) PA_MD5Init(PA_MD5_CTX *context);
+PA_API_EXPORT(void) PA_MD5Update(PA_MD5_CTX *context, const unsigned char *input,
 			      unsigned int inputLen);
-PA_API_EXPORT(void) pa_MD5Final(unsigned char digest[MD5_DIGESTSIZE],
+PA_API_EXPORT(void) PA_MD5Final(unsigned char digest[MD5_DIGESTSIZE],
 			     PA_MD5_CTX *context);
-PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *password,
+PA_API_EXPORT(void) PA_MD5Encode(const unsigned char *password,
 			      const unsigned char *salt, int mix_in_magic_string,
-			      char *result_base64, size_t result_base64_size,
-			      unsigned char* result_raw, size_t result_raw_size);
-PA_API_EXPORT(void) pa_to64(char *s, unsigned long v, int n);
+			      char *result_base64, size_t result_base64_size);
+PA_API_EXPORT(void) PA_to64(char *s, unsigned long v, int n);
 
 #ifdef __cplusplus
 }
