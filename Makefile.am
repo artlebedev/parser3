@@ -10,11 +10,11 @@ update:
 	$(MAKE)
 
 commit:
-	# trick to make 'make' happy at check out time
-	# without this aclocal.m4 never updates
-	# and becomes older than it's prerequisities
-	# thus causing redundant remaking:
-	# aclocal+autoconf+automake
+#	trick to make 'make' happy at check out time
+#	without this aclocal.m4 never updates
+#	and becomes older than it's prerequisities
+#	thus causing redundant remaking:
+#	aclocal+autoconf+automake
 
 	cvs commit -m "no message" -f acinclude.m4
 	cvs commit -m "no message" -f acconfig.h
