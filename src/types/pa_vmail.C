@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/08/01 11:41:24 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/08/05 14:00:12 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -202,14 +202,16 @@ static void MimePart2body(GMimePart *part,
 		} else {
 			// $.value[string|file]
 			size_t buf_len;
-			const void *buf=g_mime_part_get_content(part, &buf_len);
+			const void *local_buf=g_mime_part_get_content(part, &buf_len);
 			if(partType==P_FILE) {
 				VFile& vfile=*new(pool) VFile(pool);
-				vfile.set(true/*tainted*/, buf, buf_len, content_filename);
+				char *global_buf=(char *)pool.malloc(buf_len);
+				memcpy(global_buf, local_buf, buf_len);
+				vfile.set(true/*tainted*/, global_buf, buf_len, content_filename);
 				putReceived(partX, VALUE_NAME, &vfile);
 			} else {
 				// P_TEXT, P_HTML
-				putReceived(partX, VALUE_NAME,(const char*)buf, buf_len);
+				putReceived(partX, VALUE_NAME,(const char*)local_buf, buf_len);
 			}
 		}
 	}
