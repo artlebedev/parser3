@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-static const char* IDENT_TABLE_H="$Date: 2003/04/14 11:22:53 $";
+static const char* IDENT_TABLE_H="$Date: 2003/04/14 14:00:05 $";
 
 #include "pa_types.h"
 #include "pa_array.h"
@@ -32,12 +32,17 @@ static const char* IDENT_TABLE_H="$Date: 2003/04/14 11:22:53 $";
 class Table : public Array {
 public:
 	struct Action_options {
-	     int offset;
-	     int limit; //< negative limit means 'all'. zero limit means 'nothing'
-	     bool reverse;
-	     bool defined;
-
-	     Action_options(): offset(0), limit(-1), reverse(false), defined(false) {}
+		int offset;
+		int limit; //< negative limit means 'all'. zero limit means 'nothing'
+		bool reverse;
+		bool defined;
+		
+		Action_options(
+			int aoffset=0, 
+			int alimit=-1, 
+			bool areverse=false): 
+			offset(aoffset), limit(alimit), reverse(areverse), 
+			defined(false) {}
 	};
 
 	Table(Pool& apool,

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/04/14 12:08:16 $";
+static const char* IDENT_TABLE_C="$Date: 2003/04/14 13:58:16 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -381,7 +381,7 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 				table=vtable->get_table();
 			else {
 				// no? creating table of same structure as source
-				Table::Action_options table_options;
+				Table::Action_options table_options(0, 0);
 				table=new(pool) Table(pool, *ri.table, table_options/*no rows, just structure*/);
 				ri.hash->put(*key, new(pool) VTable(pool, table));
 			}
