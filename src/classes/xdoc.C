@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.7 2001/09/30 12:06:04 parser Exp $
+	$Id: xdoc.C,v 1.8 2001/10/05 11:21:10 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -287,7 +287,7 @@ static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning,
 		XalanDOMString(attribute_cstr),  
 		XalanDOMString(meaning_cstr));
 }
-static void _xslt(Request& r, const String& method_name, MethodParams *params) {
+static void _transform(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
@@ -425,9 +425,9 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 	// ^xdoc::load[some.xml]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
 
-	// ^xdoc.xslt[stylesheet file_name]
-	// ^xdoc.xslt[stylesheet file_name;params hash]
-	add_native_method("xslt", Method::CT_DYNAMIC, _xslt, 1, 2);
+	// ^xdoc.transform[stylesheet file_name]
+	// ^xdoc.transform[stylesheet file_name;params hash]
+	add_native_method("transform", Method::CT_DYNAMIC, _transform, 1, 2);
 
 	// ^xdoc.getElementById[elementId]
 	add_native_method("getElementById", Method::CT_DYNAMIC, _getElementById, 1, 1);

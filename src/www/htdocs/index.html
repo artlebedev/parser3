@@ -1,5 +1,5 @@
 @main[]
-^regexp2[]
+#^regexp2[]
 #^ttablerem[]
 #^pcre[]
 #^regexp[]<hr>
@@ -7,13 +7,18 @@
 #^exec[]
 #^fori[]
 #^tconnect[]
-#^xslt[]
+^xslt[]
+#^xml[]
 #^header[]
 OK
 
+@xslt[]
+^xdata[]
+$xdoc.xslt[]
+
 @regexp2[]
-$s[select]
-$s[^s.match[^^\s][]{!}]
+$s[  select]
+$s[^s.match[^^\s*][]{!}]
 $s
 
 @header[]
@@ -80,7 +85,7 @@ $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 </people>
 }]
 
-@xslt[]
+@xml[]
 ^xdata[]
 
 ^show-xdoc2[$xdoc]<hr>
