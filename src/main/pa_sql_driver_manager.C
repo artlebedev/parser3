@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2002/12/09 11:07:40 $";
+static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2002/12/09 11:14:55 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -59,18 +59,18 @@ public:
 		one can simply 'throw' from dynamic library.
 		[sad story: one can not longjump/throw due to some bug in gcc as of 3.2.1 version]
 	*/
-	virtual void _throw(const SQL_Exception& e) { 
+	virtual void _throw(const SQL_Exception& aexception) { 
 		// converting SQL_exception to parser Exception
 		// hiding passwords and addresses from accidental show [imagine user forgot @exception]
 #ifdef PA_WITH_SJLJ_EXCEPTIONS
 		throw
 #else
-		e=
+		fexception=
 #endif
-			Exception(e.ftype, 
-				e.fproblem_source?static_cast<const String*>(e.fproblem_source)
+			Exception(aexception.ftype, 
+				aexception.fproblem_source?static_cast<const String*>(aexception.fproblem_source)
 					:&url_without_login(pool(), furl),
-				e.fcomment); 
+				aexception.fcomment); 
 
 #ifndef PA_WITH_SJLJ_EXCEPTIONS
 		longjmp(mark, 1);
@@ -78,13 +78,13 @@ public:
 	}
 	virtual void propagate_exception() {
 #ifndef PA_WITH_SJLJ_EXCEPTIONS
-		throw e;
+		throw fexception;
 #endif
 	}
 
 private:
 	const String& furl;
-	Exception e;
+	Exception fexception;
 };
 
 // helpers
