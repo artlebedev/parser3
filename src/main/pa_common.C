@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/03/05 11:38:12 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/03/05 13:17:59 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -439,6 +439,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		request<< " "<< uri <<" HTTP/1.0" CRLF
 			"host: "<< host << CRLF; 
 
+		// http://www.ietf.org/rfc/rfc2617.txt
 		if(const String* authorization_field_value=basic_authorization_field(user_cstr, password_cstr))
 			request<<"Authorization: "<<*authorization_field_value<<CRLF;
 
