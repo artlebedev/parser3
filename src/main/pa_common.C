@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/12/10 07:55:22 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/12/10 07:58:36 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -222,7 +222,8 @@ static int http_request(char*& response, size_t& response_size,
 			0, 
 			"zero hostname");  //never
 
-	volatile int sock=-1;
+	volatile // to prevent makeing it register variable, because it will be clobbered by longjmp [thanks gcc warning]
+		int sock=-1;
 #ifdef PA_USE_ALARM
 	signal(SIGALRM, timeout_handler); 
 #endif
