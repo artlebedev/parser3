@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.41 2001/03/18 13:38:48 paf Exp $
+	$Id: pa_string.C,v 1.42 2001/03/18 17:18:36 paf Exp $
 */
 
 #include <string.h>
@@ -99,14 +99,14 @@ String::String(const String& src) :	Pooled(src.pool()) {
 	fsize=src.fsize;
 }
 
-String& String::append(const String& src, Untaint_lang lang) {
+String& String::append(const String& src, Untaint_lang lang, bool forced) {
 	int src_used_rows=src.used_rows();
 	int dst_free_rows=link_row-append_here;
 	
 	if(src_used_rows<=dst_free_rows) {
 		// all new rows fit into last chunk
 		memcpy(append_here, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
-		set_lang(append_here, lang, src_used_rows);
+		set_lang(append_here, lang, forced, src_used_rows);
 		append_here+=src_used_rows;
 	} else {
 		// not all new rows fit into last chunk: shrinking it to used part,
@@ -131,7 +131,7 @@ String& String::append(const String& src, Untaint_lang lang) {
 				// not last source chunk
 				// taking it all
 				memcpy(new_rows, old_chunk->rows, sizeof(Chunk::Row)*old_count);
-				set_lang(new_rows, lang, old_count);
+				set_lang(new_rows, lang, forced, old_count);
 				new_rows+=old_count;
 				rows_left_to_copy-=old_count;
 
@@ -140,7 +140,7 @@ String& String::append(const String& src, Untaint_lang lang) {
 				// the last source chunk
 				// taking only those rows of chunk that _left_to_copy
 				memcpy(new_rows, old_chunk->rows, sizeof(Chunk::Row)*rows_left_to_copy);
-				set_lang(new_rows, lang, rows_left_to_copy);
+				set_lang(new_rows, lang, forced, rows_left_to_copy);
 				break;
 			}
 		}
@@ -151,18 +151,18 @@ String& String::append(const String& src, Untaint_lang lang) {
 
 	return *this;
 }
-void String::set_lang(Chunk::Row *row, Untaint_lang lang, size_t size) {
+void String::set_lang(Chunk::Row *row, Untaint_lang lang, bool forced, size_t size) {
 	if(lang==PASS_APPEND)
 		return;
 
 	while(size--) {
 		Untaint_lang& item_lang=(row++)->item.lang;
-		if(item_lang==YES) // tainted? need untaint language assignment
+		if(item_lang==YES || forced) // tainted? need untaint language assignment
 			item_lang=lang;  // assign untaint language
 	}
 }
 
-void String::change_lang(Untaint_lang lang) {
+/*void String::change_lang(Untaint_lang lang) {
 	Chunk *chunk=&head; 
 	do {
 		Chunk::Row *row=chunk->rows;
@@ -178,7 +178,7 @@ void String::change_lang(Untaint_lang lang) {
 break2:
 	return;
 }
-
+*/
 String& String::real_append(STRING_APPEND_PARAMS) {
 	if(!src)
 		return *this;

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.38 2001/03/18 14:45:26 paf Exp $
+	$Id: pa_string.h,v 1.39 2001/03/18 17:18:35 paf Exp $
 */
 
 /*
@@ -95,13 +95,13 @@ public:
 	bool operator != (const String& src) const { return cmp(src)!=0; }
 
 	bool operator == (const char* b_ptr) const;
-	String& append(const String& src, Untaint_lang lang);
+	String& append(const String& src, Untaint_lang lang, bool forced=false);
 
 	uint hash_code() const;
 
 	const Origin& origin() const { return head.rows[0].item.origin; }
 
-	void change_lang(Untaint_lang lang);
+//	void change_lang(Untaint_lang lang);
 
 private:
 
@@ -148,7 +148,7 @@ private:
 		return append_here == link_row;
 	}
 	void expand();
-	void set_lang(Chunk::Row *row, Untaint_lang lang, size_t size);
+	void set_lang(Chunk::Row *row, Untaint_lang lang, bool forced, size_t size);
 
 private: //disabled
 

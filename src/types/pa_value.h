@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.18 2001/03/18 11:37:54 paf Exp $
+	$Id: pa_value.h,v 1.19 2001/03/18 17:18:37 paf Exp $
 */
 
 /*
@@ -26,6 +26,7 @@ class Request;
 class VTable;
 class Junction;
 class Method;
+class VHash;
 
 class Value : public Pooled {
 public: // Value
@@ -42,6 +43,9 @@ public: // Value
 	// double: this
 	// int: this
 	virtual Value *get_expr_result() { bark("(%s) can not be used in expression"); return 0; }
+
+	// hash: this
+	virtual VHash *get_hash() { return 0; }
 
 	// string: value
 	// unknown: ""

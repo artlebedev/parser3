@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.12 2001/03/18 14:45:27 paf Exp $
+	$Id: pa_globals.C,v 1.13 2001/03/18 17:18:36 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -20,6 +20,7 @@ Service_funcs service_funcs;
 
 String *content_type_name;
 String *body_name;
+String *value_name;
 
 String *exception_method_name;
 
@@ -84,6 +85,7 @@ void globals_init(Pool& pool) {
 	// names
 	content_type_name=new(pool) String(pool, CONTENT_TYPE_NAME);
 	body_name=new(pool) String(pool, BODY_NAME);
+	value_name=new(pool) String(pool, VALUE_NAME);
 
 	exception_method_name=new(pool) String(pool, EXCEPTION_METHOD_NAME);
 

@@ -6,5 +6,8 @@ $limits[
 	$post_max_size(10*0x400*0x400)
 ]	
 $defaults[
-	$content-type[text/html]
+	$content-type[
+		$value[text/html]
+		
+	]
 ]

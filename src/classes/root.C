@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.43 2001/03/18 16:32:24 paf Exp $
+	$Id: root.C,v 1.44 2001/03/18 17:18:34 paf Exp $
 */
 
 #include <string.h>
@@ -73,9 +73,12 @@ static void _taint(Request& r, const String& method_name, Array *params) {
 		r.fail_if_junction_(true, *vbody, 
 			method_name, "body must not be junction");
 		
-		Temp_lang temp_lang(r, String::Untaint_lang::AS_IS); // set temporarily as-is language
-		String result(r.process(*vbody).as_string()); // process marking tainted with that lang
-		result.change_lang(lang); // switch result language to specified
+		// set temporarily as-is language
+		Temp_lang temp_lang(r, String::Untaint_lang::AS_IS);
+		String result(r.pool());
+		result.append(
+			r.process(*vbody).as_string(),  // process marking tainted with that lang
+			lang);  // switch result language to specified
 		r.write_pass_lang(result);
 	}
 }

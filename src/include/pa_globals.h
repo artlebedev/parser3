@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.10 2001/03/18 14:45:26 paf Exp $
+	$Id: pa_globals.h,v 1.11 2001/03/18 17:18:35 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -16,6 +16,7 @@
 
 #define CONTENT_TYPE_NAME "content-type"
 #define BODY_NAME "body"
+#define VALUE_NAME "value"
 
 #define EXCEPTION_METHOD_NAME "exception"
 
@@ -57,6 +58,7 @@ extern Service_funcs service_funcs;
 // global strings
 extern String *content_type_name;
 extern String *body_name;
+extern String *value_name;
 
 extern String *exception_method_name;
 

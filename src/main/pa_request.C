@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.46 2001/03/18 16:32:25 paf Exp $
+	$Id: pa_request.C,v 1.47 2001/03/18 17:18:36 paf Exp $
 */
 
 #include <string.h>
@@ -53,20 +53,48 @@ Request::Request(Pool& apool,
 	classes().put(*response_class_name, &response);	
 }
 
-void output_response_attribute(const Hash::Key& akey, Hash::Value *avalue, void *info) {
-	String *key_to_exclude=static_cast<String *>(info);
-	if(akey==*key_to_exclude || !avalue)
+static void append_attribute_subattribute(const Hash::Key& akey, Hash::Value *avalue, 
+										  void *info) {
+	if(akey==VALUE_NAME)
 		return;
 
-	String key(akey);
-	key.change_lang(String::Untaint_lang::URI);
+	// ...; charset=windows1251
+	String *string=static_cast<String *>(info);
+	string->APPEND_CONST("; ");
+	
+	string->append(akey, String::Untaint_lang::URI, true);
 
-	String value=static_cast<Value *>(avalue)->as_string();
-	value.change_lang(String::Untaint_lang::URI);
+	string->APPEND_CONST("=");
+
+	Value *value=static_cast<Value *>(avalue);
+	string->append(value->as_string(), String::Untaint_lang::URI, true);
+}
+static void output_response_attribute(const Hash::Key& akey, Hash::Value *ameaning, 
+									  void *info) {
+	String *key_to_exclude=static_cast<String *>(info);
+	if(akey==*key_to_exclude)
+		return;
+
+	String key(akey.pool());
+	key.append(akey, String::Untaint_lang::URI, true);
+
+	Value *meaning=static_cast<Value *>(ameaning);
+	String string(meaning->pool());
+	if(VHash *vhash=meaning->get_hash()) {
+		// $value(value) $subattribute(subattribute value)
+		Hash& hash=vhash->hash();
+
+		Value *value=static_cast<Value *>(hash.get(*value_name));
+		if(value)
+			string.append(value->as_string(), String::Untaint_lang::URI, true);
+
+		hash.foreach(append_attribute_subattribute, &string);
+	} else // string value
+		string.append(meaning->as_string(), String::Untaint_lang::URI, true);
 
 	(*service_funcs.output_header_attribute)(
 		key.cstr(), 
-		value.cstr());
+		string.cstr());
 }
 
 void Request::core(Exception& system_exception,
@@ -122,8 +150,8 @@ void Request::core(Exception& system_exception,
 		// $MAIN:defaults
 		Value *defaults=main_class?main_class->get_element(*defaults_name):0;
 		// $defaults.content-type
-		element=defaults?defaults->get_element(*content_type_name):0;
-		response.fields().put(*content_type_name, fdefault_content_type=element);
+		if(fdefault_content_type=defaults?defaults->get_element(*content_type_name):0)
+			response.fields().put(*content_type_name, fdefault_content_type);
 
 		// there must be some auto.p
 		if(!main_class)
@@ -202,8 +230,9 @@ void Request::core(Exception& system_exception,
 							String source_name(pool(), "source");
 							Value *source_value=0;
 							if(problem_source) {
-								String& problem_source_copy=*NEW String(*problem_source);
-								problem_source_copy.change_lang(flang);
+								String& problem_source_copy=*NEW String(pool());
+								problem_source_copy.append(*problem_source, 
+									flang, true);
 								source_value=NEW VString(problem_source_copy);
 							}
 							frame.store_param(source_name, 
@@ -220,9 +249,9 @@ void Request::core(Exception& system_exception,
 							String type_name(pool(), "type");
 							Value *type_value;
 							if(e.type()) {
-								String& type_copy=*NEW String(*e.type());
-								type_copy.change_lang(flang);
-								type_value=NEW VString(type_copy);
+								String& type_copy=*NEW String(pool());
+								type_value=NEW VString(type_copy.append(*e.type(), 
+									flang, true));
 							} else
 								type_value=NEW VUnknown(pool());
 							frame.store_param(type_name, type_value);
@@ -231,9 +260,9 @@ void Request::core(Exception& system_exception,
 							String code_name(pool(), "code");
 							Value *code_value;
 							if(e.code()) {
-								String& code_copy=*NEW String(*e.code());
-								code_copy.change_lang(flang);
-								code_value=NEW VString(code_copy);
+								String& code_copy=*NEW String(pool());
+								code_value=NEW VString(code_copy.append(*e.code(), 
+									flang, true));
 							} else
 								code_value=NEW VUnknown(pool());
 							frame.store_param(code_name, code_value);
@@ -284,7 +313,8 @@ void Request::core(Exception& system_exception,
 			}
 
 			// set $response:content-type
-			response.fields().put(*content_type_name, content_type);
+			if(content_type)
+				response.fields().put(*content_type_name, content_type);
 
 			// ERROR. write it out
 			output_result(*body_string);
