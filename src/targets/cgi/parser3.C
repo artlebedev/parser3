@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/10/15 10:05:01 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/11/19 14:39:56 $";
 
 #include "pa_config_includes.h"
 
@@ -288,7 +288,6 @@ static void real_parser_handler(
 				0,
 				"CGI: no PATH_INFO defined(in reinventing REQUEST_URI)");
 			
-#ifndef WIN32
 			// they've changed this under IIS5.
 			if(const char *script_name=SAPI::get_env(request_pool, "SCRIPT_NAME")) {
 				size_t script_name_len=strlen(script_name);
@@ -297,7 +296,6 @@ static void real_parser_handler(
 					script_name_len != uri_len) // under IIS they are the same
 					SAPI::die("CGI: illegal call");
 			}
-#endif
 	} else
 		request_info.uri="";
 	
