@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.45 2001/04/03 05:28:01 paf Exp $
+	$Id: table.C,v 1.46 2001/04/03 05:32:02 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -376,27 +376,18 @@ static void _flip(Request& r, const String& method_name, Array *params) {
 	vtable.set_table(new_table);
 }
 
-/// @test use String::split
 static void _append(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 	// data is last parameter
 	Value *value=static_cast<Value *>(params->get(0));
-	// forcing [this body type]
-	r.fail_if_junction_(true, *value, method_name, "body must not be junction");
+	// forcing {this body type}
+	r.fail_if_junction_(false, *value, method_name, "body must be junction");
 
-	const String& string=static_cast<VString *>(value)->as_string();
+	const String& string=r.process(*value).as_string();
 
 	// parse cells
 	Array& row=*new(pool) Array(pool);
-	size_t pos_after=0;
-	int pos_before;
-	while((pos_before=string.pos("\t", 1, pos_after, String::UL_CLEAN))>=0) {
-		row+=&string.piece(pos_after, pos_before);
-		pos_after=pos_before+1/*\t*/;
-	}
-	// last piece
-	if(pos_after<string.size()) 
-		row+=&string.piece(pos_after, string.size());
+	string.split(row, 0, "\t", 1, String::UL_CLEAN);
 
 	static_cast<VTable *>(r.self)->table()+=&row;
 }
