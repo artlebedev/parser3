@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.26 2001/11/15 20:26:34 paf Exp $
+	$Id: pa_exception.C,v 1.27 2001/11/20 17:58:47 paf Exp $
 */
 
 #include "pa_common.h"
@@ -18,6 +18,8 @@ Exception::Exception(const String *atype, const String *acode,
 					  const String *aproblem_source, 
 					  const char *comment_fmt, ...) {
 	//_asm int 3;
+//__asm__("int3");
+
 	ftype=atype;
 	fcode=acode;
 	fproblem_source=aproblem_source;

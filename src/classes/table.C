@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.130 2001/11/05 11:46:21 paf Exp $
+	$Id: table.C,v 1.131 2001/11/20 17:58:47 paf Exp $
 */
 
 #include "classes.h"
@@ -467,7 +467,7 @@ public:
 		statement_string(astatement_string),
 		statement_cstr(astatement_cstr),
 		columns(*new(pool) Array(pool)),
-		row(0), row_index(0),
+		row(0), 
 		table(0)
 	{
 	}
@@ -490,7 +490,7 @@ public:
 		if(size)
 			cell->APPEND_TAINTED(
 				(const char *)ptr, size, 
-				statement_cstr, row_index++);
+				statement_cstr, table->size()-1);
 		(*row)+=cell;
 	}
 
@@ -500,7 +500,6 @@ private:
 	const String& statement_string; const char *statement_cstr;
 	Array& columns;
 	Array *row;
-	uint row_index;
 public:
 	Table *table;
 };
