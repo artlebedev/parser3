@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.2 2001/04/04 11:47:30 paf Exp $
+	$Id: parser3mysql.C,v 1.3 2001/04/04 12:13:20 paf Exp $
 */
 
 #include "pa_sql_driver.h"
@@ -15,29 +15,30 @@
 class MySQL_Driver : public SQL_Driver {
 public:
 
-	MySQL_Driver() : SQL_Driver() {}
+	MySQL_Driver() : SQL_Driver(),
+		info(0) {
+	}
 
 	/// get api version
 	int api_version() { return SQL_API_VERSION; }
 	/// connect @test move info inside
-	bool connect(const char *url, void **info, const char **error) {
-		/**error="mysql connect failed";
-		return false;*/
-		*info=0;
-		return true;
+	const char *connect(const char *url) {
+		/*return "mysql connect failed";*/
+		return 0;
 	}
-	bool disconnect(void *info, const char **error) {
-		*error="mysql disconnect failed";
-		return false;
+	const char *disconnect() {
+		return "mysql disconnect failed";
 	}
-	bool commit(void *info, const char **error) {
-		*error="mysql commit failed";
-		return false;
+	const char *commit() {
+		return 0;//"mysql commit failed";
 	}
-	bool rollback(void *info, const char **error) {
-		*error="mysql rollback failed";
-		return false;
+	const char *rollback() {
+		return "mysql rollback failed";
 	}
+	
+private:
+
+	void *info;
 };
 
 extern "C" SQL_Driver *create() {
