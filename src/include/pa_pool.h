@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.16 2001/01/29 20:46:22 paf Exp $
+  $Id: pa_pool.h,v 1.17 2001/01/30 11:51:07 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -11,13 +11,14 @@
 #include "pa_hash.h"
 #include "pa_array.h"
 //#include "pa_table.h"
+#include "pa_exception.h"
 
 class Pool {
 public:
 	Pool();
 	~Pool();
-    void *malloc(size_t size);
-    void *calloc(size_t size);
+    virtual void *malloc(size_t size)=0;
+    virtual void *calloc(size_t size)=0;
 
 	String& make_string() {
 		return *new(*this) String(*this);
@@ -38,9 +39,25 @@ public:
 		return *new(this) Table(this, afile, aline, acolumns, initial_rows);
 	}*/
 
+	Exception *global_exception() { return fglobal_exception; }
+	Exception *set_global_exception(Exception *e);
+	void restore_global_exception(Exception *e);
+
+	Exception *local_exception() { return flocal_exception; }
+	Exception *set_local_exception(Exception *e);
+	void restore_local_exception(Exception *e);
+
+protected:
+
+	Exception *fglobal_exception;
+	Exception *flocal_exception;
+
+	// checks whether mem allocated OK. throws exceptions
+	void *check(void *ptr);
+
 private: //disabled
 
-	Pool(Pool&) {}
+	Pool(const Pool&) {}
 	Pool& operator = (const Pool&) { return *this; }
 };
 

@@ -1,28 +1,25 @@
 /*
-  $Id: pa_request.h,v 1.2 2001/01/29 21:51:51 paf Exp $
+  $Id: pa_request.h,v 1.3 2001/01/30 11:51:07 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
 #include "pa_pool.h"
-#include "pa_error.h"
 
 class Request {
 public:
 	
 	// all request' objects are allocated in this pool
 	// they die with request
-	Pool pool;
+	Pool& pool() { return fpool; }
 	
-	// these errors handled on global(request) level
-	Error request_error;
-
-	// these errors handled on local(operator) level
-	Error operator_error;
-
-	Request() {}
+	Request(Pool& apool) : fpool(apool) {}
 	~Request() {}
+
+protected:
+
+	Pool& fpool;
 };
 
 #endif

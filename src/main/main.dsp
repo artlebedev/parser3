@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Za /W3 /Gm /GR- /GX- /Zi /Od /I ".." /I "../include" /D "_DEBUG" /D "_LIB" /D "WIN32" /FR /FD /TP /GZ /c
+# ADD CPP /nologo /Za /W3 /Gm /Zi /Od /I ".." /I "../include" /D "_DEBUG" /D "_LIB" /D "WIN32" /FR /FD /TP /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -82,9 +82,9 @@ LIB32=link.exe -lib
 
 # Name "main - Win32 Release"
 # Name "main - Win32 Debug"
-# Begin Group "Source Files"
+# Begin Group "main"
 
-# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# PROP Default_Filter "C;cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
 SOURCE=.\pa_array.C
@@ -95,7 +95,7 @@ SOURCE=.\pa_common.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\pa_error.C
+SOURCE=.\pa_exception.C
 # End Source File
 # Begin Source File
 
@@ -112,13 +112,6 @@ SOURCE=.\pa_string.C
 # Begin Source File
 
 SOURCE=.\pa_table.C
-
-!IF  "$(CFG)" == "main - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "main - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -138,7 +131,7 @@ SOURCE=..\include\pa_common.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\include\pa_error.h
+SOURCE=..\include\pa_exception.h
 # End Source File
 # Begin Source File
 
