@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.150 2002/04/04 13:42:51 paf Exp $
+	$Id: pa_string.C,v 1.151 2002/04/10 08:53:55 paf Exp $
 */
 
 #include "pcre.h"
@@ -29,9 +29,9 @@ ulong string_piece_appends=0;
 
 String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	Pooled(apool) {
-	last_chunk=&head;
-	head.count=CR_PREALLOCATED_COUNT;
-	append_here=head.rows;
+	last_chunk=&head.chunk;
+	head.chunk.count=CR_PREALLOCATED_COUNT;
+	append_here=head.chunk.rows;
 
 	if(src)
 		if(tainted)
@@ -42,9 +42,9 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 
 String::String(const String& src) :	
 	Pooled(src.pool()) {
-	last_chunk=&head;
-	head.count=CR_PREALLOCATED_COUNT;
-	append_here=head.rows;
+	last_chunk=&head.chunk;
+	head.chunk.count=CR_PREALLOCATED_COUNT;
+	append_here=head.chunk.rows;
 
 	append(src, UL_UNSPECIFIED);
 }
@@ -71,7 +71,12 @@ void String::expand() {
 		new_chunk_count=max_integral(Chunk::count_type);
 
 	Chunk *new_chunk=static_cast<Chunk *>(
-		malloc(sizeof(Chunk::count_type)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *), 10));
+		malloc(
+			sizeof(Chunk)// count+interpadding(?)+rows[CR_PREALLOCATED_COUNT]+tailpadding(??)
+			-sizeof(Chunk::rows_type) // PREALLOCATED rows
+			+sizeof(Chunk::Row)*new_chunk_count // neaded rows
+			+sizeof(Chunk *) // link size
+		, 10));
 	new_chunk->rows[new_chunk->count=new_chunk_count].link=0;
 	last_chunk->rows[last_chunk->count].link=new_chunk;
 	
@@ -135,7 +140,7 @@ char String::first_char() const {
 			this,
 			"getting first char of empty string");
 
-	return *head.rows[0].item.ptr;
+	return *head.chunk.rows[0].item.ptr;
 }
 
 uint String::hash_code() const {
@@ -153,8 +158,8 @@ int String::cmp(int& partial, const String& src,
 	size_t a_size=size();
 	this_offset=min(this_offset, a_size-1);
 
-	const Chunk *a_chunk=&head;
-	const Chunk *b_chunk=&src.head;
+	const Chunk *a_chunk=&head.chunk;
+	const Chunk *b_chunk=&src.head.chunk;
 	const Chunk::Row *a_row=a_chunk->rows;
 	const Chunk::Row *b_row=b_chunk->rows;
 	size_t a_offset=this_offset;
@@ -243,7 +248,7 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 	size_t b_size=src_size?src_size:b_ptr?strlen(b_ptr):0;
 	this_offset=min(this_offset, a_size-1);
 
-	const Chunk *a_chunk=&head;
+	const Chunk *a_chunk=&head.chunk;
 	const Chunk::Row *a_row=a_chunk->rows;
 	size_t a_offset=this_offset;
 	size_t b_offset=0;
@@ -320,7 +325,7 @@ const Origin& String::origin() const {
 	// when last peice is constant, 
 	// ex: parser_root_auto_path{dynamic} / auto.p{const}
 	// using first piece
-	Origin& first_origin=head.rows[0].item.origin;
+	Origin& first_origin=head.chunk.rows[0].item.origin;
 	return first_origin.file ? first_origin : append_here[-1].item.origin;
 }
 #endif
@@ -701,9 +706,9 @@ double String::as_double() const {
 	double result;
 	const char *cstr;
 	char buf[MAX_NUMBER];
-	if(head.rows+1==append_here) {
-		int size=min(head.rows[0].item.size, MAX_NUMBER-1);
-		memcpy(buf, head.rows[0].item.ptr, size);
+	if(head.chunk.rows+1==append_here) {
+		int size=min(head.chunk.rows[0].item.size, MAX_NUMBER-1);
+		memcpy(buf, head.chunk.rows[0].item.ptr, size);
 		buf[size]=0;
 		cstr=buf;
 	} else
@@ -729,9 +734,9 @@ int String::as_int() const {
 	int result;
 	const char *cstr;
 	char buf[MAX_NUMBER];
-	if(head.rows+1==append_here) {
-		int size=min(head.rows[0].item.size, MAX_NUMBER-1);
-		memcpy(buf, head.rows[0].item.ptr, size);
+	if(head.chunk.rows+1==append_here) {
+		int size=min(head.chunk.rows[0].item.size, MAX_NUMBER-1);
+		memcpy(buf, head.chunk.rows[0].item.ptr, size);
 		buf[size]=0;
 		cstr=buf;
 	} else

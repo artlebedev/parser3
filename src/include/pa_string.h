@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.134 2002/04/04 13:42:50 paf Exp $
+	$Id: pa_string.h,v 1.135 2002/04/10 08:53:54 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -12,8 +12,6 @@
 
 #include "pa_pool.h"
 #include "pa_types.h"
-
-class Table;
 
 #ifndef NO_STRING_ORIGIN
 #	define STRING_APPEND_PARAMS \
@@ -44,6 +42,7 @@ class Table;
 /// handy: appends const char* piece to String  @see String::real_append
 #define	APPEND_CONST(src) APPEND_AS_IS(src, 0, 0, 0)
 
+class Table;
 class Array;
 class SQL_Connection;
 class Dictionary;
@@ -109,7 +108,7 @@ public:
 
 	String(Pool& apool, const char *src=0, size_t src_size=0, bool tainted=false);
 	String(const String& src);
-	bool is_empty() const { return append_here==head.rows; }
+	bool is_empty() const { return append_here==head.chunk.rows; }
 	size_t size() const;
 	/// convert to C string. if 'lang' known, forcing 'lang' to it
 	char *cstr(Untaint_lang lang=UL_AS_IS, 
@@ -229,15 +228,13 @@ public:
 private:
 
 	/** several String fragments
-		
-		'mutable' because can write after it's end, after it was appended to somebody 
-		@see String::append
 	*/
-	mutable struct Chunk {
+	struct Chunk {
 		typedef uchar count_type;
 		count_type count; ///< the number of rows in chunk
+		// here could be some padding bytes
 		/// string fragment or a link to next chunk union
-		union Row {
+		typedef union Row {
 			typedef uchar item_size_type;
 			/// fragment
 			struct { 
@@ -248,10 +245,19 @@ private:
 				Origin origin;  ///< origin
 #endif
 			} item;
+			// we are using the fact that there's no padding before this field!
 			Chunk *link;  ///< link to the next chunk in chain
-		} rows[CR_PREALLOCATED_COUNT+1/*for head.rows[CR_PREALLOCATED_COUNT].link*/];
-	}
-		head;  ///< the head chunk of the chunk chain
+		} rows_type[CR_PREALLOCATED_COUNT];
+		rows_type rows;
+	};
+	/**
+		'mutable' because can write after it's end, after it was appended to somebody 
+		@see String::append
+	*/
+	mutable struct {
+		Chunk chunk;
+		Chunk *link_storage;
+	} head;  ///< the head chunk of the chunk chain
 
 	/// next append would write to this record
 	Chunk::Row *append_here;
@@ -302,7 +308,7 @@ private: //disabled
 	} 
 
 #define STRING_PREFIX_FOREACH_ROW(self, body) { \
-	const Chunk *chunk=&(self).head;  \
+	const Chunk *chunk=&(self).head.chunk;  \
 	const Chunk::Row *row=chunk->rows; \
 	uint countdown=chunk->count; \
 	STRING_PREPARED_FOREACH_ROW(self, body) \

@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: untaint.C,v 1.100 2002/04/01 09:37:51 paf Exp $
+	$Id: untaint.C,v 1.101 2002/04/10 08:53:55 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -156,7 +156,7 @@ inline bool need_quote_http_header(const char *ptr, size_t size) {
 	if no language-change specified and src not yet appended to some other string[last_chunk!=0]
 		shrinking dest last_chunk[preparing it for linking],
 		///shrinking src last_chunk[preparing it to be linked, consequent dest.appends would go there],
-		linking[dest.last_chunk = src.head]
+		linking[dest.last_chunk = src.head.chunk]
 	if some language-change specified or src already appended to some other string[last_chunk==0]
 		cloning pieces.
 */
@@ -178,34 +178,34 @@ String& String::append(const String& src, uchar lang, bool forced) {
 #endif
 
 		// using fact: 
-		// src.head.count initally equeals this.head.count and shrinks-only, 
-		// so can't be more than this.head.count, 
+		// src.head.chunk.count initally equeals this.head.chunk.count and shrinks-only, 
+		// so can't be more than this.head.chunk.count, 
 		// which means that we know that 
-		// src.head would fit into this.head
-		if(is_empty()) { // our head is empty
-			// they have more than head? we need all head : we need only filled-part of head
-			Chunk *src_head_link=src.head.rows[src.head.count].link;
-			size_t head_count=src_head_link?src.head.count:(src.append_here-src.head.rows);
-			// "your head is my head"
-			memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*(head_count));
+		// src.head.chunk would fit into this.head.chunk
+		if(is_empty()) { // our head.chunk is empty
+			// they have more than head.chunk? we need all head.chunk : we need only filled-part of head.chunk
+			Chunk *src_head_link=src.head.chunk.rows[src.head.chunk.count].link;
+			size_t head_count=src_head_link?src.head.chunk.count:(src.append_here-src.head.chunk.rows);
+			// "your head.chunk is my head.chunk"
+			memcpy(head.chunk.rows, src.head.chunk.rows, sizeof(Chunk::Row)*(head_count));
 			if(src_head_link) {
 				// "your body is my body"
-				head.rows[head.count=head_count].link=src_head_link;
+				head.chunk.rows[head.chunk.count=head_count].link=src_head_link;
 				// "your last_chunk is mine now"
 				last_chunk=src.last_chunk;
 				// "your append_here is mine now"
 				append_here=src.append_here;
 			} else {
 				// "your last_chunk is mine now"
-				last_chunk=&head;
+				last_chunk=&head.chunk;
 				// "your append_here is recalc-mine now"
-				append_here=head.rows+head_count;
+				append_here=head.chunk.rows+head_count;
 			}
-		} else { // our head contains something
+		} else { // our head.chunk contains something
 			// "chopping off my tail-reserve"
 			last_chunk->count=append_here-last_chunk->rows;
 			// "you is my tail"
-			append_here->link=&src.head;
+			append_here->link=&src.head.chunk;
 			// "your last_chunk is mine now"
 			last_chunk=src.last_chunk;
 			// "your append_here is mine now"

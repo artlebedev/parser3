@@ -40,3 +40,4 @@
 [Tue Apr 09 20:15:34 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
 [Tue Apr 09 20:15:35 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
 [Tue Apr 09 20:17:38 2002] root_config(0): 'C:\WINNT/parser3.conf' read failed: No such file or directory (2), actual filename 'C:\WINNT/parser3.conf' [file.missing]
+[Wed Apr 10 12:47:43 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1146:23): parse error, expecting `']'' or `';'' [parser.compile]
