@@ -1,6 +1,6 @@
 @main[]
-^eval(10\3)<br>
-
+^sappend[]
+#^eval(10\3)<br>
 #^tform[]
 #^formattest[]
 #^filelist[]
@@ -50,6 +50,13 @@
 #^xml[]
 #^header[]
 OK
+
+@sappend[]
+$test[123]
+^test.save[test]
+^test.save[append;test]
+
+
 
 @tform[]
 ^if(def $form:new_file){y}{n}

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.86 2001/10/29 13:04:46 paf Exp $
+	$Id: string.C,v 1.87 2001/10/31 14:01:44 paf Exp $
 */
 
 #include "classes.h"
@@ -427,14 +427,25 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vfile_name=params->as_no_junction(0, 
-		"file name must not be code");
+	const String& file_name=params->as_string(params->size()-1, 
+		"file name must be string");
 
 	const String& src=*static_cast<VString *>(r.self)->get_string();
 
+	bool do_append=false;
+	if(params->size()>1) {
+		const String& mode=params->as_string(0, "mode must be string");
+		if(mode=="append")
+			do_append=true;
+		else
+			throw Exception(0, 0,
+				&mode,
+				"unknown mode, must be 'append'");
+	}		
+
 	// write
-	file_write(pool, r.absolute(vfile_name.as_string()), 
-		src.cstr(String::UL_AS_IS), src.size(), true);
+	file_write(pool, r.absolute(file_name), 
+		src.cstr(), src.size(), true, do_append);
 }
 
 // constructor
@@ -488,7 +499,7 @@ MString::MString(Pool& apool) : Methoded(apool) {
 	add_native_method("replace", Method::CT_DYNAMIC, _replace, 1, 1);
 
 	// ^string.save[file]  
-	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 1);
+	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
 }	
 
 // global variable

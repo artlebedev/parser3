@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.79 2001/10/30 16:30:08 paf Exp $
+	$Id: pa_common.C,v 1.80 2001/10/31 14:01:45 paf Exp $
 */
 
 #include "pa_common.h"
@@ -16,13 +16,17 @@
 #include "pa_hash.h"
 #include "pa_string.h"
 
-#ifndef WIN32
+#ifdef WIN32
 #	ifndef _O_TEXT
 #		define _O_TEXT 0
 #	endif
 #	ifndef _O_BINARY
 #		define _O_BINARY 0
 #	endif
+#endif
+
+#ifndef O_TRUNC
+#	define O_TRUNC 0
 #endif
 
 #if _MSC_VER
@@ -140,40 +144,33 @@ static void create_dir_for_file(const String& file_spec) {
 void file_write(Pool& pool, 
 				const String& file_spec, 
 				const void *data, size_t size, 
-				bool as_text/*, 
+				bool as_text,
+				bool do_append/*, 
 				bool exclusive*/) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	int f;
-	if(access(fname, W_OK)!=0) {/*no*/
+	if(access(fname, W_OK)!=0) // no
 		create_dir_for_file(file_spec);
 
-		if((f=open(fname, O_WRONLY|O_CREAT|_O_BINARY, 0666))>0)
-			close(f);
-	}
-	if(access(fname, R_OK|W_OK)==0) {
-		int mode=O_RDWR|(as_text?_O_TEXT:_O_BINARY)
-#ifdef WIN32
-			|O_TRUNC
+	if((f=open(fname, 
+		O_CREAT|O_RDWR
+		|(as_text?_O_TEXT:_O_BINARY)
+		|(do_append?O_APPEND:O_TRUNC), 0666))>=0) {
+		/*if(exclusive)
+			flock(f, LOCK_EX);*/
+		
+		if(size) write(f, data, size);
+#if O_TRUNC==0
+		ftruncate(f, size);
 #endif
-		;
-		if((f=open(fname, mode, 0666))>=0) {
-			/*if(exclusive)
-				flock(f, LOCK_EX);*/
-			
-			if(size) write(f, data, size);
-#ifndef WIN32
-			ftruncate(f, size);
-#endif
-			/*if(exclusive)
-				flock(f, LOCK_UN);*/
-			close(f);
-			return;
-		}
-	}
-	throw Exception(0, 0, 
-		&file_spec, 
-		"write failed: %s (%d), actual filename '%s'", 
-			strerror(errno), errno, fname);
+		/*if(exclusive)
+			flock(f, LOCK_UN);*/
+		close(f);
+	} else
+		throw Exception(0, 0, 
+			&file_spec, 
+			"write failed: %s (%d), actual filename '%s'", 
+				strerror(errno), errno, fname);
 }
 
 // throws nothing! [this is required in file_move & file_delete]

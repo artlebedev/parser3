@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.15 2001/10/22 16:44:42 parser Exp $
+	$Id: xnode.C,v 1.16 2001/10/31 14:01:44 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -302,7 +302,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 
 	// expression
 	const String& expression=params->as_string(0, "expression must be string");
-	const char *expression_cstr=expression.cstr(String::UL_AS_IS);
+	const char *expression_cstr=expression.cstr();
 	XalanDOMString dstring(expression_cstr);
 	const XalanDOMChar *expression_dcstr=dstring.c_str();
 
@@ -340,7 +340,7 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 
 	// expression
 	const String& expression=params->as_string(0, "expression must be string");
-	const char *expression_cstr=expression.cstr(String::UL_AS_IS);
+	const char *expression_cstr=expression.cstr();
 	XalanDOMString dstring(expression_cstr);
 	const XalanDOMChar *expression_dcstr=dstring.c_str();
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.63 2001/10/29 17:49:57 paf Exp $
+	$Id: file.C,v 1.64 2001/10/31 14:01:44 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -271,7 +271,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 		}
 	}
 	// body
-	self.set(false/*not tainted*/, body->cstr(String::UL_AS_IS), body->size());
+	self.set(false/*not tainted*/, body->cstr(), body->size());
 
 	// $status
 	self.fields().put(
@@ -306,7 +306,7 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 	if(params->size()>1) {
 		regexp=&params->as_no_junction(1, "regexp must not be code").as_string();
 
-		const char *pattern=regexp->cstr(String::UL_AS_IS);
+		const char *pattern=regexp->cstr();
 		const char *errptr;
 		int erroffset;
 		regexp_code=pcre_compile(pattern, PCRE_EXTRA | PCRE_DOTALL, 

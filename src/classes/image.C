@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.60 2001/10/29 13:04:45 paf Exp $
+	$Id: image.C,v 1.61 2001/10/31 14:01:44 paf Exp $
 */
 
 /*
@@ -397,7 +397,7 @@ static void _gif(Request& r, const String& method_name, MethodParams *params) {
 	VFile& vfile=*new(pool) VFile(pool);
 	Value *content_type=new(pool) VString(*new(pool) String(pool, "image/gif"));
 	vfile.set(false/*not tainted*/, 
-		out.cstr(String::UL_AS_IS), out.size(), 0, content_type);
+		out.cstr(), out.size(), 0, content_type);
 
 	r.write_no_lang(vfile);
 }
@@ -618,7 +618,7 @@ public:
 	/* ******************************** string ********************************** */
 	
 	int string_width(const String& s){
-		const char *cstr=s.cstr(String::UL_AS_IS);
+		const char *cstr=s.cstr();
 		int result=0;
 		for(; *cstr; cstr++)
 			result+=index_width(index_of(*cstr));
@@ -626,7 +626,7 @@ public:
 	}
 	
 	void string_display(gdImage& image, int x, int y, const String& s){
-		const char *cstr=s.cstr(String::UL_AS_IS);
+		const char *cstr=s.cstr();
 		if(cstr) for(; *cstr; cstr++) {
 			int index=index_of(*cstr);
 			index_display(image, x, y, index);

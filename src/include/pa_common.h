@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.57 2001/10/30 16:30:08 paf Exp $
+	$Id: pa_common.h,v 1.58 2001/10/31 14:01:45 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -90,7 +90,8 @@ bool file_read(Pool& pool, const String& file_spec,
 void file_write(Pool& pool, 
 				const String& file_spec,
 				const void *data, size_t size, 
-				bool as_text/*,
+				bool as_text,
+				bool do_append=false/*,
 				bool exclusive=false*/);
 
 /**
