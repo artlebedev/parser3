@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.100 2001/08/31 15:56:46 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.101 2001/09/03 17:07:02 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -277,8 +277,11 @@ int main(int argc, char *argv[]) {
 		static char root_auto_path[MAX_STRING];
 		GetWindowsDirectory(root_auto_path, MAX_STRING);
 #else
-		// ~nobody  todo: figure out a better place
-		const char *root_auto_path=SAPI::get_env(pool, "HOME");
+#	ifdef SYSCONFDIR
+		const char *root_auto_path=SYSCONFDIR;
+#	else
+		const char *root_auto_path="/etc";
+#	endif
 #endif
 		
 		// beside by binary
