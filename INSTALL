@@ -16,8 +16,9 @@
   That renaming is needed for SQL drivers to be able to find 
   necessary include-file in Parser3 sources.
 
+  NOTE: on some system you sould run 'gmake'.
+
   By default your would get 'parser3' binary without support of these features:
-	* cache(hashfile class) 
 	* xml(xdoc and xnode classes)
 
 
@@ -54,20 +55,6 @@
 
   * You can compile and use parser without any additional libraries.
     That would be 'basic' version of it.
-
-
-  * In case you wish cache(hashfile class) support you need library
-      libdb 2.x.x >= 2.7.7
-    on your system, and specify it to Parser3 configure script.
-
-    Installation sequence of this library to $D/BerkeleyDB:
-      cd db-2.x.x
-      cd build_unix
-      ../dist/configure --prefix=$D
-      make install
-
-
-    Parser3 configure option is --with-db2=$D/BerkeleyDB
 
 
   * In case you wish xml(xdoc and xnode classes) support you need libraries
@@ -132,4 +119,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.6 2002/02/18 12:01:33 paf Exp $
+$Id: INSTALL,v 1.7 2002/02/22 13:02:40 paf Exp $
