@@ -3,7 +3,7 @@ AC_INIT(README)
 AM_INIT_AUTOMAKE(parser, 3.0b, nodefine)
 
 dnl expand srcdir
-P3S=`cd $srcdir ; pwd`
+P3S=`cd $srcdir/src ; pwd`
 AC_SUBST(P3S)
 
 PARSER_VERSION=$VERSION
@@ -34,18 +34,6 @@ if test "$enableval" = "no"; then
 fi
 ]
 )
-
-AC_ARG_WITH(apache13,[  --with-apache13=D       D is the Apache13 source distribution directory
-                          builds library for apache_module using that dir
-                          (do not add /src)],
-	APACHE13=$withval
-    if test \! -f "$APACHE13/src/include/httpd.h"; then
-    	AC_MSG_ERROR($APACHE13 does not seem to be valid Apache13 source distribution directory)
-    fi
-)
-AC_SUBST(APACHE13)
-AM_CONDITIONAL(COMPILE_APACHE13_MODULE, test -n "$APACHE13")
-
 
 AC_ARG_WITH(pathlink,[  --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)],
@@ -122,6 +110,18 @@ changequote([, ])dnl
 ])
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
+
+AC_ARG_WITH(apache13,[  --with-apache13=D       D is the Apache13 source distribution directory
+                          builds library for apache_module using that dir
+                          (do not add /src)],
+	APACHE13=$withval
+    if test \! -f "$APACHE13/src/include/httpd.h"; then
+    	AC_MSG_ERROR($APACHE13 does not seem to be valid Apache13 source distribution directory)
+    fi
+)
+AC_SUBST(APACHE13)
+AM_CONDITIONAL(COMPILE_APACHE13_MODULE, test -n "$APACHE13")
+
 
 dnl AC_CANONICAL_SYSTEM
 AC_CANONICAL_HOST

@@ -14,10 +14,6 @@ ac_default_prefix=/usr/local
 ac_help="$ac_help
   --disable-string-origins to switch off string origin tracking"
 ac_help="$ac_help
-  --with-apache13=D       D is the Apache13 source distribution directory
-                          builds library for apache_module using that dir
-                          (do not add /src)"
-ac_help="$ac_help
   --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)"
 ac_help="$ac_help
@@ -29,6 +25,10 @@ ac_help="$ac_help
 ac_help="$ac_help
   --with-static-xml=D     D is the directory where
                           Gnome XML libraries are installed (static libs)"
+ac_help="$ac_help
+  --with-apache13=D       D is the Apache13 source distribution directory
+                          builds library for apache_module using that dir
+                          (do not add /src)"
 
 # Initialize some variables set by options.
 # The variables have the same names as the options, with
@@ -785,7 +785,7 @@ fi
 
 
 
-P3S=`cd $srcdir ; pwd`
+P3S=`cd $srcdir/src ; pwd`
 
 
 PARSER_VERSION=$VERSION
@@ -1300,28 +1300,6 @@ fi
 fi
 
 
-# Check whether --with-apache13 or --without-apache13 was given.
-if test "${with_apache13+set}" = set; then
-  withval="$with_apache13"
-  APACHE13=$withval
-    if test \! -f "$APACHE13/src/include/httpd.h"; then
-    	{ echo "configure: error: $APACHE13 does not seem to be valid Apache13 source distribution directory" 1>&2; exit 1; }
-    fi
-
-fi
-
-
-
-
-if test -n "$APACHE13"; then
-  COMPILE_APACHE13_MODULE_TRUE=
-  COMPILE_APACHE13_MODULE_FALSE='#'
-else
-  COMPILE_APACHE13_MODULE_TRUE='#'
-  COMPILE_APACHE13_MODULE_FALSE=
-fi
-
-
 # Check whether --with-pathlink or --without-pathlink was given.
 if test "${with_pathlink+set}" = set; then
   withval="$with_pathlink"
@@ -1413,6 +1391,28 @@ EOF
 fi
 
 
+
+
+# Check whether --with-apache13 or --without-apache13 was given.
+if test "${with_apache13+set}" = set; then
+  withval="$with_apache13"
+  APACHE13=$withval
+    if test \! -f "$APACHE13/src/include/httpd.h"; then
+    	{ echo "configure: error: $APACHE13 does not seem to be valid Apache13 source distribution directory" 1>&2; exit 1; }
+    fi
+
+fi
+
+
+
+
+if test -n "$APACHE13"; then
+  COMPILE_APACHE13_MODULE_TRUE=
+  COMPILE_APACHE13_MODULE_FALSE='#'
+else
+  COMPILE_APACHE13_MODULE_TRUE='#'
+  COMPILE_APACHE13_MODULE_FALSE=
+fi
 
 
 
@@ -3047,11 +3047,11 @@ s%@SET_MAKE@%$SET_MAKE%g
 s%@P3S@%$P3S%g
 s%@CC@%$CC%g
 s%@CXX@%$CXX%g
+s%@XML_INCLUDES@%$XML_INCLUDES%g
+s%@XML_LIBS@%$XML_LIBS%g
 s%@APACHE13@%$APACHE13%g
 s%@COMPILE_APACHE13_MODULE_TRUE@%$COMPILE_APACHE13_MODULE_TRUE%g
 s%@COMPILE_APACHE13_MODULE_FALSE@%$COMPILE_APACHE13_MODULE_FALSE%g
-s%@XML_INCLUDES@%$XML_INCLUDES%g
-s%@XML_LIBS@%$XML_LIBS%g
 s%@host@%$host%g
 s%@host_alias@%$host_alias%g
 s%@host_cpu@%$host_cpu%g
