@@ -1,9 +1,11 @@
 #this read configure.in comment on stdc++ about next line
 if DO_NOT_LINK_LIBSTDCPP
-CXXLD=$(CC)
+CXXLDtrue=$(CC)
 else
-CXXLD=$(CXX)
+CXXLDfalse=$(CXX)
 endif
+
+CXXLD=$(CXXLDtrue) $(CXXLDfalse)
 
 INCLUDES = -I../../classes -I../../types -I../../sql -I../../lib/pcre -I../../lib/md5 -I$(INCLTDL) @XML_INCLUDES@
 PA_LIBS = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a ../../lib/pcre/libpcre.a ../../lib/md5/libmd5.a $(LIBLTDL)

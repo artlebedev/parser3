@@ -1,40 +1,181 @@
-/* src/include/pa_config_auto.h.in.  Generated automatically from configure.in by autoheader.  */
+/* src/include/pa_config_auto.h.in.  Generated from configure.in by autoheader.  */
 
-/* Define as __inline if that's what the C compiler calls it.  */
-#undef inline
+/* Define to 1 if you have the <arpa/inet.h> header file. */
+#undef HAVE_ARPA_INET_H
 
-/* Define to `long' if <sys/types.h> doesn't define.  */
-#undef off_t
+/* Define to 1 if you have the `crypt' function. */
+#undef HAVE_CRYPT
 
-/* Define to `unsigned' if <sys/types.h> doesn't define.  */
-#undef size_t
+/* Define to 1 if you have the <crypt.h> header file. */
+#undef HAVE_CRYPT_H
 
-/* Define if you have the ANSI C header files.  */
-#undef STDC_HEADERS
-
-/* Define if you can safely include both <sys/time.h> and <time.h>.  */
-#undef TIME_WITH_SYS_TIME
-
-/* Define if you have the GNU dld library.  */
-#undef HAVE_DLD
-
-/* Define if you have the libdl library or equivalent.  */
-#undef HAVE_LIBDL
-
-/* Define if you have the shl_load function.  */
-#undef HAVE_SHL_LOAD
-
-/* Define to `unsigned int' if <sys/types.h> does not define. */
-#undef size_t
-
-/* Define to `int' if <sys/types.h> does not define. */
-#undef ssize_t
+/* Define to 1 if you have the <ctype.h> header file. */
+#undef HAVE_CTYPE_H
 
 /* Define if you have daylight external variable in <time.h> */
 #undef HAVE_DAYLIGHT
 
+/* Define to 1 if you have the <direct.h> header file. */
+#undef HAVE_DIRECT_H
+
+/* Define if you have the GNU dld library */
+#undef HAVE_DLD
+
+/* Define to 1 if you have the `dlerror' function. */
+#undef HAVE_DLERROR
+
+/* Define to 1 if you have the <errno.h> header file. */
+#undef HAVE_ERRNO_H
+
+/* Define to 1 if you have the `fcntl' function. */
+#undef HAVE_FCNTL
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#undef HAVE_FCNTL_H
+
+/* Define to 1 if you have the `flock' function. */
+#undef HAVE_FLOCK
+
+/* Define to 1 if you have the `ftruncate' function. */
+#undef HAVE_FTRUNCATE
+
+/* Define to 1 if you have the `getrusage' function. */
+#undef HAVE_GETRUSAGE
+
+/* Define to 1 if you have the `gettimeofday' function. */
+#undef HAVE_GETTIMEOFDAY
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <io.h> header file. */
+#undef HAVE_IO_H
+
+/* Define to 1 if you have the `crypt' library (-lcrypt). */
+#undef HAVE_LIBCRYPT
+
+/* Define if you have the libdl library or equivalent. */
+#undef HAVE_LIBDL
+
+/* Define to 1 if you have the `m' library (-lm). */
+#undef HAVE_LIBM
+
+/* Define to 1 if you have the `nsl' library (-lnsl). */
+#undef HAVE_LIBNSL
+
+/* Define to 1 if you have the `socket' library (-lsocket). */
+#undef HAVE_LIBSOCKET
+
+/* Define to 1 if you have the `wsock32' library (-lwsock32). */
+#undef HAVE_LIBWSOCK32
+
+/* Define to 1 if you have the `xnet' library (-lxnet). */
+#undef HAVE_LIBXNET
+
+/* Define to 1 if you have the `lockf' function. */
+#undef HAVE_LOCKF
+
+/* Define to 1 if you have the <math.h> header file. */
+#undef HAVE_MATH_H
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <netdb.h> header file. */
+#undef HAVE_NETDB_H
+
+/* Define to 1 if you have the <netinet/in.h> header file. */
+#undef HAVE_NETINET_IN_H
+
+/* Define to 1 if you have the <new> header file. */
+#undef HAVE_NEW
+
+/* compiler supports pragma pack */
+#undef HAVE_PRAGMA_PACK
+
+/* Define to 1 if you have the <process.h> header file. */
+#undef HAVE_PROCESS_H
+
+/* Define to 1 if you have the `qsort' function. */
+#undef HAVE_QSORT
+
+/* Define to 1 if you have the `round' function. */
+#undef HAVE_ROUND
+
+/* Define to 1 if you have the `select' function. */
+#undef HAVE_SELECT
+
+/* Define to 1 if you have the <setjmp.h> header file. */
+#undef HAVE_SETJMP_H
+
+/* library has set_new_handler func */
+#undef HAVE_SET_NEW_HANDLER
+
+/* Define if you have the shl_load function. */
+#undef HAVE_SHL_LOAD
+
+/* Define to 1 if you have the `siglongjmp' function. */
+#undef HAVE_SIGLONGJMP
+
+/* Define to 1 if you have the `sign' function. */
+#undef HAVE_SIGN
+
+/* Define to 1 if you have the <signal.h> header file. */
+#undef HAVE_SIGNAL_H
+
+/* Define to 1 if you have the `sigsetjmp' function. */
+#undef HAVE_SIGSETJMP
+
+/* Define to 1 if you have the <stdarg.h> header file. */
+#undef HAVE_STDARG_H
+
+/* Define to 1 if you have the <stddef.h> header file. */
+#undef HAVE_STDDEF_H
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/file.h> header file. */
+#undef HAVE_SYS_FILE_H
+
+/* Define to 1 if you have the <sys/locking.h> header file. */
+#undef HAVE_SYS_LOCKING_H
+
+/* Define to 1 if you have the <sys/resource.h> header file. */
+#undef HAVE_SYS_RESOURCE_H
+
+/* Define to 1 if you have the <sys/select.h> header file. */
+#undef HAVE_SYS_SELECT_H
+
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#undef HAVE_SYS_SOCKET_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
 /* Define if you have timezone external variable in <time.h> */
 #undef HAVE_TIMEZONE
+
+/* Define to 1 if you have the <time.h> header file. */
+#undef HAVE_TIME_H
 
 /* Define if you have tm_gmtoff member of tm structure in <time.h> */
 #undef HAVE_TM_GMTOFF
@@ -42,167 +183,17 @@
 /* Define if you have tm_tzadj member of tm structure in <time.h> */
 #undef HAVE_TM_TZADJ
 
-/* Define if you have the _locking function.  */
-#undef HAVE__LOCKING
-
-/* Define if you have the crypt function.  */
-#undef HAVE_CRYPT
-
-/* Define if you have the dlerror function.  */
-#undef HAVE_DLERROR
-
-/* Define if you have the fcntl function.  */
-#undef HAVE_FCNTL
-
-/* Define if you have the flock function.  */
-#undef HAVE_FLOCK
-
-/* Define if you have the ftruncate function.  */
-#undef HAVE_FTRUNCATE
-
-/* Define if you have the getrusage function.  */
-#undef HAVE_GETRUSAGE
-
-/* Define if you have the gettimeofday function.  */
-#undef HAVE_GETTIMEOFDAY
-
-/* Define if you have the lockf function.  */
-#undef HAVE_LOCKF
-
-/* Define if you have the qsort function.  */
-#undef HAVE_QSORT
-
-/* Define if you have the round function.  */
-#undef HAVE_ROUND
-
-/* Define if you have the select function.  */
-#undef HAVE_SELECT
-
-/* Define if you have the siglongjmp function.  */
-#undef HAVE_SIGLONGJMP
-
-/* Define if you have the sign function.  */
-#undef HAVE_SIGN
-
-/* Define if you have the sigsetjmp function.  */
-#undef HAVE_SIGSETJMP
-
-/* Define if you have the trunc function.  */
+/* Define to 1 if you have the `trunc' function. */
 #undef HAVE_TRUNC
 
-/* Define if you have the <arpa/inet.h> header file.  */
-#undef HAVE_ARPA_INET_H
-
-/* Define if you have the <crypt.h> header file.  */
-#undef HAVE_CRYPT_H
-
-/* Define if you have the <ctype.h> header file.  */
-#undef HAVE_CTYPE_H
-
-/* Define if you have the <direct.h> header file.  */
-#undef HAVE_DIRECT_H
-
-/* Define if you have the <errno.h> header file.  */
-#undef HAVE_ERRNO_H
-
-/* Define if you have the <fcntl.h> header file.  */
-#undef HAVE_FCNTL_H
-
-/* Define if you have the <io.h> header file.  */
-#undef HAVE_IO_H
-
-/* Define if you have the <math.h> header file.  */
-#undef HAVE_MATH_H
-
-/* Define if you have the <memory.h> header file.  */
-#undef HAVE_MEMORY_H
-
-/* Define if you have the <netdb.h> header file.  */
-#undef HAVE_NETDB_H
-
-/* Define if you have the <netinet/in.h> header file.  */
-#undef HAVE_NETINET_IN_H
-
-/* Define if you have the <new> header file.  */
-#undef HAVE_NEW
-
-/* Define if you have the <process.h> header file.  */
-#undef HAVE_PROCESS_H
-
-/* Define if you have the <setjmp.h> header file.  */
-#undef HAVE_SETJMP_H
-
-/* Define if you have the <signal.h> header file.  */
-#undef HAVE_SIGNAL_H
-
-/* Define if you have the <stdarg.h> header file.  */
-#undef HAVE_STDARG_H
-
-/* Define if you have the <stddef.h> header file.  */
-#undef HAVE_STDDEF_H
-
-/* Define if you have the <stdio.h> header file.  */
-#undef HAVE_STDIO_H
-
-/* Define if you have the <stdlib.h> header file.  */
-#undef HAVE_STDLIB_H
-
-/* Define if you have the <string.h> header file.  */
-#undef HAVE_STRING_H
-
-/* Define if you have the <sys/file.h> header file.  */
-#undef HAVE_SYS_FILE_H
-
-/* Define if you have the <sys/locking.h> header file.  */
-#undef HAVE_SYS_LOCKING_H
-
-/* Define if you have the <sys/resource.h> header file.  */
-#undef HAVE_SYS_RESOURCE_H
-
-/* Define if you have the <sys/select.h> header file.  */
-#undef HAVE_SYS_SELECT_H
-
-/* Define if you have the <sys/socket.h> header file.  */
-#undef HAVE_SYS_SOCKET_H
-
-/* Define if you have the <sys/stat.h> header file.  */
-#undef HAVE_SYS_STAT_H
-
-/* Define if you have the <sys/time.h> header file.  */
-#undef HAVE_SYS_TIME_H
-
-/* Define if you have the <sys/types.h> header file.  */
-#undef HAVE_SYS_TYPES_H
-
-/* Define if you have the <time.h> header file.  */
-#undef HAVE_TIME_H
-
-/* Define if you have the <unistd.h> header file.  */
+/* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define if you have the <winsock.h> header file.  */
+/* Define to 1 if you have the <winsock.h> header file. */
 #undef HAVE_WINSOCK_H
 
-/* Define if you have the crypt library (-lcrypt).  */
-#undef HAVE_LIBCRYPT
-
-/* Define if you have the m library (-lm).  */
-#undef HAVE_LIBM
-
-/* Define if you have the nsl library (-lnsl).  */
-#undef HAVE_LIBNSL
-
-/* Define if you have the socket library (-lsocket).  */
-#undef HAVE_LIBSOCKET
-
-/* Define if you have the wsock32 library (-lwsock32).  */
-#undef HAVE_LIBWSOCK32
-
-/* Define if you have the xnet library (-lxnet).  */
-#undef HAVE_LIBXNET
-
-/* disabled reading of files belonging to group+user other then effective */
-#undef PA_SAFE_MODE
+/* Define to 1 if you have the `_locking' function. */
+#undef HAVE__LOCKING
 
 /* pa_exec disabled */
 #undef NO_PA_EXECS
@@ -210,30 +201,54 @@
 /* no string origin tracking */
 #undef NO_STRING_ORIGIN
 
-/* one can throw from dynamic library */
-#undef PA_WITH_SJLJ_EXCEPTIONS
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
 
-/* xml-abled parser (uses shared library) */
-#undef XML
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
 
-/* xml-abled parser (uses static library) */
-#undef XML
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
 
-/* has $mail:received (uses shared library) */
-#undef WITH_MAILRECEIVE
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
 
-/* has $mail:received (uses static library) */
-#undef WITH_MAILRECEIVE
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
 
 /* parser uses this command instead of user-defined sendmail commands */
 #undef PA_FORCED_SENDMAIL
 
+/* disabled reading of files belonging to group+user other then effective */
+#undef PA_SAFE_MODE
+
+/* one can throw from dynamic library */
+#undef PA_WITH_SJLJ_EXCEPTIONS
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
+
 /* Windows32 target platform */
 #undef WIN32
 
-/* compiler supports pragma pack */
-#undef HAVE_PRAGMA_PACK
+/* has \$mail:received (uses static library) */
+#undef WITH_MAILRECEIVE
 
-/* library has set_new_handler func */
-#undef HAVE_SET_NEW_HANDLER
+/* xml-abled parser (uses static library) */
+#undef XML
 
+/* Define as `__inline' if that's what the C compiler calls it, or to nothing
+   if it is not supported. */
+#undef inline
+
+/* Define to `long' if <sys/types.h> does not define. */
+#undef off_t
+
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+#undef size_t
+
+/* Define to `int' if <sys/types.h> does not define. */
+#undef ssize_t

@@ -5,6 +5,16 @@ AC_INIT(ltdl.c)
     enable_ltdl_install=yes
 
 AM_INIT_AUTOMAKE(libltdl,1.0,-)
+
+AH_TEMPLATE([HAVE_DLD],
+	[Define if you have the GNU dld library])
+
+AH_TEMPLATE([HAVE_LIBDL],
+        [Define if you have the libdl library or equivalent.])
+
+AH_TEMPLATE([HAVE_SHL_LOAD],
+        [Define if you have the shl_load function. ])
+
 AM_CONFIG_HEADER(config_auto.h)
 AM_MAINTAINER_MODE
 
@@ -84,7 +94,7 @@ fi
 
 dnl Check for command to grab the raw symbol name followed
 dnl by C symbol name from nm.
-AC_REQUIRE([AC_CANONICAL_HOST])dnl
+dnl AC_REQUIRE([AC_CANONICAL_HOST])dnl
 dnl AC_REQUIRE([AC_PROG_NM])dnl
 # Check for command to grab the raw symbol name followed by C symbol from nm.
 AC_MSG_CHECKING([command to parse $NM output])
