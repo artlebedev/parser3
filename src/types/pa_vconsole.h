@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char* IDENT_VCONSOLE_H="$Date: 2003/11/10 09:28:35 $";
+static const char* IDENT_VCONSOLE_H="$Date: 2003/11/10 10:24:14 $";
 
 // includes
 
@@ -55,6 +55,7 @@ public: // Value
 		if(aname==CONSOLE_LINE_NAME) {
 			const char* cstr=avalue->as_string().cstr();
 			puts(cstr);
+			fflush(stdout);
 
 			return true;
 		}
