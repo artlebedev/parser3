@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/02/17 15:02:15 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/02/17 15:08:14 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -636,6 +636,12 @@ pa_xsltSaveResultToMem(
 	||xmlStrEqual(method, (const xmlChar *) "xhtml"))) {
 	if (indent == -1)
 	    indent = 1;
+	//
+	// * xmlDocDumpFormatMemoryEnc:
+	// Note it is up to the caller of this function to free the
+	// allocated memory with xmlFree()
+	// 
+	// we wont free anything, and wont copy that data anymore [already done inside and zeroterminated]
 	xmlDocDumpFormatMemoryEnc(result, &doc_txt_ptr, &doc_txt_len, (const char *) encoding,
 		                       indent);
     } else if ((method != NULL) &&
@@ -739,13 +745,12 @@ pa_xsltSaveResultToMem(
 			doc_txt_len=buf->buffer->use;
 			doc_txt_ptr=buf->buffer->content;
 		}
-	}
 
-	if(doc_txt_ptr && doc_txt_len)
-		doc_txt_ptr=BAD_CAST pa_strdup((const char*)doc_txt_ptr, doc_txt_len);
+		if(doc_txt_ptr && doc_txt_len)
+			doc_txt_ptr=BAD_CAST pa_strdup((const char*)doc_txt_ptr, doc_txt_len);
 
-	if(buf)
 		xmlOutputBufferClose(buf);
+	}
 }
 
 struct Xdoc2buf_result {
