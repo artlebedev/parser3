@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.62 2002/01/15 15:02:13 paf Exp $
+	$Id: xdoc.C,v 1.63 2002/01/15 16:02:42 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -485,42 +485,20 @@ static void prepare_output_options(
 	}
 }
 
-
-static void _save(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-
-	const String& file_name=params->as_string(0, "file name must be string");
-	const String& filespec=r.absolute(file_name);
-	
-	GdomeException exc;
-	if(!gdome_di_saveDocToFile(domimpl,
-		vdoc.get_document(&method_name),
-		filespec.cstr(String::UL_FILE_SPEC),
-		GDOME_SAVE_LIBXML_INDENT /*GDOME_SAVE_STANDARD */,
-		&exc))
-		throw Exception(0, 0, 
-			&method_name, 
-			exc);
-}
-
-static void _string(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-
-	VXdoc::Output_options oo(vdoc.output_options);
-	prepare_output_options(pool, method_name, params, 0,
+static void xdoc2buf(Pool& pool, VXdoc& vdoc, 
+					 const String& method_name, MethodParams *params, int index,
+					 VXdoc::Output_options& oo,
+					 const String *file_spec,
+					 char **parser_buf, size_t *parser_size) {
+	prepare_output_options(pool, method_name, params, index,
 		oo);
 
-	xmlCharEncodingHandler *encoder=0;
-	if(oo.encoding) {
-		const char *encoding_cstr=oo.encoding->cstr();
-		encoder=xmlFindCharEncodingHandler(encoding_cstr);
-		if(!encoder)
-			throw Exception(0, 0,
-				&method_name,
-				"encoding '%s' not supported", encoding_cstr);
-	}
+	const char *encoding_cstr=oo.encoding->cstr();
+	xmlCharEncodingHandler *encoder=xmlFindCharEncodingHandler(encoding_cstr);
+	if(!encoder)
+		throw Exception(0, 0,
+			&method_name,
+			"encoding '%s' not supported", encoding_cstr);
 	// UTF-8 encoder contains empty input/output converters, 
 	// which is wrong for xmlOutputBufferCreateIO
 	// while zero encoder goes perfectly 
@@ -555,54 +533,78 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 	xsltFreeStylesheet(stylesheet);
 
 	// write out result
-	char *gnome_buf; size_t buf_size;
-    if(outputBuffer->conv) {
-		buf_size=outputBuffer->conv->use;
+	char *gnome_buf;  size_t gnome_size;
+	if(outputBuffer->conv) {
+		gnome_size=outputBuffer->conv->use;
 		gnome_buf=(char *)outputBuffer->conv->content;
-    } else {
-		buf_size=outputBuffer->buffer->use;
+	} else {
+		gnome_size=outputBuffer->buffer->use;
 		gnome_buf=(char *)outputBuffer->buffer->content;
-    }
-
-	char *request_buf=(char *)pool.malloc(buf_size);
-	memcpy(request_buf, gnome_buf, buf_size);
-	r.write_no_lang(*new(pool) String(pool, request_buf, buf_size));
+	}
+	if(file_spec)
+		file_write(pool, 
+					*file_spec,
+					gnome_buf, gnome_size, 
+					true/*as_text*/);
+	else {
+		*parser_size=gnome_size;
+		*parser_buf=(char *)pool.malloc(gnome_size);
+		memcpy(*parser_buf, gnome_buf, gnome_size);
+	}
 }
 
-/// @test remove text/xml const. <output method+mediatype / ^file[method+mediatype
 static void _file(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-
-	char *mem;
-	GdomeException exc;
-	if(!gdome_di_saveDocToMemory(domimpl,
-		vdoc.get_document(&method_name),
-		&mem,
-		GDOME_SAVE_LIBXML_INDENT /*GDOME_SAVE_STANDARD */,
-		&exc))
-		throw Exception(0, 0, 
-			&method_name, 
-			exc);
-
-	// move to pool memory
-	size_t buf_size=strlen(mem);
-	char *buf=(char *)pool.malloc(buf_size);
-	memcpy(buf, mem, buf_size);
-	g_free(mem);
+	VXdoc::Output_options oo(vdoc.output_options);
+	char *buf; size_t buf_size;
+	xdoc2buf(pool, vdoc, method_name, params, 0, 
+		oo,
+		0/*memory*/,
+		&buf, &buf_size);
+	// write out result
+	r.write_no_lang(*new(pool) String(pool, buf, buf_size));
 
 	// write out result
 	VFile& vfile=*new(pool) VFile(pool);
-	const String& scontent_type=*new(pool) String(pool, "text/xml");
-	Value *vcontent_type=new(pool) VString(scontent_type);
+	Value *vcontent_type;
 	VHash *vhcontent_type=new(pool) VHash(pool);
-	vhcontent_type->hash(&method_name).put(*value_name, new(pool) VString(scontent_type));
-	const String& scharset=pool.get_source_charset().name();
-	vhcontent_type->hash(&method_name).put(*new(pool) String(pool, "charset"), new(pool) VString(scharset));
+	vhcontent_type->hash(&method_name).put(
+		*value_name, 
+		new(pool) VString(*oo.mediaType));
+	vhcontent_type->hash(&method_name).put(
+		*new(pool) String(pool, "charset"), 
+		new(pool) VString(*oo.encoding));
 	vcontent_type=vhcontent_type;
 	
 	vfile.set(false/*tainted*/, buf, buf_size, 0/*file_name*/, vcontent_type);
 	r.write_no_lang(vfile);
+}
+
+static void _save(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	const String& file_spec=r.absolute(params->as_string(0, "file name must be string"));
+	
+	VXdoc::Output_options oo(vdoc.output_options);
+	xdoc2buf(pool, vdoc, method_name, params, 1, 
+		oo,
+		&file_spec,
+		0, 0);
+}
+
+static void _string(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+	VXdoc::Output_options oo(vdoc.output_options);
+	char *buf; size_t buf_size;
+	xdoc2buf(pool, vdoc, method_name, params, 0, 
+		oo,
+		0/*to memory*/,
+		&buf, &buf_size);
+	// write out result
+	r.write_no_lang(*new(pool) String(pool, buf, buf_size));
 }
 
 static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning, 

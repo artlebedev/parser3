@@ -801,17 +801,15 @@ by id:
 }
 
 @show-xdoc2[xdoc]
-^rem{
 ^xdoc.save[out/save.xml;
-#	$.encoding[windows-1251]
+#	$.encoding[utf-8]
 	$.method[xml]
 ]
 $file[^xdoc.file[
-#	$.encoding[windows-1251]
+	$.encoding[utf-8]
 	$.method[html]
 ]]
 ^file.save[text;out/save_file.html]
-}
 #$response:body[^xdoc.file[	$.media-type[text/paf]  ]]
 <pre>^taint[html][^xdoc.string[
 #	$.method[html]
