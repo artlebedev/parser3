@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.84 2001/05/19 19:10:20 parser Exp $
+	$Id: parser3.C,v 1.85 2001/05/21 07:32:04 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -83,6 +83,8 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 
 	if(opened)
 		fclose(f);
+	else
+		fflush(f);
 }
 
 const char *SAPI::get_env(Pool& pool, const char *name) {

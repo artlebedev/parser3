@@ -5,13 +5,14 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.131 2001/05/17 15:20:15 parser Exp $
+	$Id: pa_request.C,v 1.132 2001/05/21 07:32:04 parser Exp $
 */
 
 #include "pa_config_includes.h"
 
 #include "pcre.h"
 #include "internal.h"
+extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -266,7 +267,8 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			cstr2ctypes(pcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
 
 			element2case(pcre_tables, *ctype, *ctype_lowercase_name);
-		}
+		} else
+			pcre_tables=pcre_default_tables;
 
 		// filling form fields
 		form.fill_fields(*this);
