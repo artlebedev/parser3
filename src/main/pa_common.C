@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.86 2001/11/09 11:06:57 paf Exp $
+	$Id: pa_common.C,v 1.87 2001/11/09 11:47:55 paf Exp $
 */
 
 #include "pa_common.h"
@@ -53,11 +53,12 @@ static char *strnchr(char *buf, size_t size, char c) {
 }
 
 void fix_line_breaks(char *buf, size_t& size) {
+	//_asm int 3;
 	const char * const eob=buf+size;
-	char *dest=cstr;
+	char *dest=buf;
 	// fix DOS: \r\n -> \n
 	// fix Macintosh: \r -> \n
-	char *bol=cstr;
+	char *bol=buf;
 	while(char *eol=strnchr(bol, eob -bol, '\r')) {
 		size_t len=eol-bol;
 		if(dest!=bol)
@@ -65,7 +66,7 @@ void fix_line_breaks(char *buf, size_t& size) {
 		dest+=len;
 		*dest++='\n';
 
-		if(eol[1]=='\n') { // \r,\n = DOS
+		if(&eol[1]<eob && eol[1]=='\n') { // \r,\n = DOS
 			bol=eol+2;
 			size--;
 		} else // \r,not \n = Macintosh
@@ -73,7 +74,7 @@ void fix_line_breaks(char *buf, size_t& size) {
 	}
 	// last piece without \r, including terminating 0
 	if(dest!=bol)
-		strcpy(dest, bol);
+		memcpy(dest, bol, eob-bol);
 }
 
 char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_problem) {
@@ -81,7 +82,7 @@ char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_prob
 	return file_read(pool, file_spec, result, size, true, fail_on_read_problem)?(char *)result:0;
 }
 bool file_read(Pool& pool, const String& file_spec, 
-			   void*& data, size_t& read_size, bool as_text,
+			   void*& data, size_t& data_size, bool as_text,
 			   bool fail_on_read_problem,
 			   size_t offset, size_t limit) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
@@ -103,6 +104,7 @@ bool file_read(Pool& pool, const String& file_spec,
 		/*if(exclusive)
 			flock(f, LOCK_EX);*/
 		size_t max_size=limit?min(offset+limit, finfo.st_size)-offset:finfo.st_size;
+		int read_size;
 		if(!max_size) { // eof
 			if(as_text) {
 				data=pool.malloc(1);
@@ -122,17 +124,18 @@ bool file_read(Pool& pool, const String& file_spec,
 		if(!max_size) // eof
 			return true;
 
-		if(read_size>=0 && read_size<=max_size) {
-			if(as_text)
-				((char*&)data)[read_size]=0;
-		} else
+		if(read_size<0 || read_size>max_size)
 			throw Exception(0, 0, 
 				&file_spec, 
 				"read failed: actually read %d bytes count not in [0..%lu] valid range", 
 					read_size, (unsigned long)max_size); //never
-		
-		if(as_text)
-			fix_line_breaks((char *)data, read_size);
+
+		data_size=read_size;		
+		if(as_text) {
+			fix_line_breaks((char *)data, data_size);
+			// note: after fixing
+			((char*&)data)[data_size]=0;
+		}
 		return true;
     }
 	if(fail_on_read_problem)
