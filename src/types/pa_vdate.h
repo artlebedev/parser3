@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2004/07/27 08:57:44 $";
+static const char * const IDENT_VDATE_H="$Date: 2004/07/27 09:07:10 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -65,6 +65,10 @@ public: // Value
 			::set_tz(ftz_cstr, temp_tz_pair, sizeof(temp_tz_pair));
 		}
 		tm *tmOut=localtime(&ftime);
+		if(!tmOut)
+			throw Exception(0,
+				0,
+				"invalid datetime (after changing TZ)");
 		if(saved_tz)
 			::set_tz(saved_tz, saved_tz_pair, sizeof(saved_tz_pair));
 
