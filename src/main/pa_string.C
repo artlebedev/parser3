@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.116 2001/10/29 16:29:08 paf Exp $
+	$Id: pa_string.C,v 1.117 2001/10/29 16:56:31 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -137,7 +137,7 @@ String& String::append(const String& src, Untaint_lang lang, bool forced) {
 				goto break2;
 			
 			APPEND(row->item.ptr, row->item.size, 
-				(lang!=UL_PASS_APPENDED && (row->item.lang==UL_TAINTED || forced))?lang:row->item.lang,
+				(lang!=UL_PASS_APPENDED && (row->item.lang==UL_TAINTED || forced))?lang:(Untaint_lang)row->item.lang,
 				row->item.origin.file, row->item.origin.line);
 		}
 		chunk=row->link;
@@ -398,7 +398,7 @@ String& String::mid(size_t start, size_t finish) const {
 				size_t size=finished?finish-pos:row->item.size;
 				result.APPEND(
 					row->item.ptr+offset, size-offset, 
-					row->item.lang,
+					(Untaint_lang)row->item.lang,
 					row->item.origin.file, row->item.origin.line);
 				if(finished)
 					goto break2;
@@ -662,7 +662,7 @@ String& String::change_case(Pool& pool, const unsigned char *tables,
 			}
 			
 			result.APPEND(new_cstr, row->item.size, 
-				row->item.lang,
+				(Untaint_lang)row->item.lang,
 				row->item.origin.file, row->item.origin.line);
 		}
 		chunk=row->link;
@@ -675,7 +675,7 @@ break2:
 void String::join_chain(Pool& pool, 
 					   uint& ai, const Chunk*& achunk, const Chunk::Row*& arow,
 					   Untaint_lang& joined_lang, const char *& joined_ptr, size_t& joined_size) const {
-	joined_lang=arow->item.lang;
+	joined_lang=(Untaint_lang)arow->item.lang;
 	
 	// calc size
 	joined_size=0;
@@ -804,7 +804,7 @@ String& String::replace_in_reconstructed(Pool& pool, Dictionary& dict) const {
 			}
 
 			result.APPEND(new_cstr, dest-new_cstr, 
-				row->item.lang,
+				(Untaint_lang)row->item.lang,
 				row->item.origin.file, row->item.origin.line);
 		}
 		chunk=row->link;

@@ -4,13 +4,17 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.28 2001/10/19 14:42:53 parser Exp $
+	$Id: pa_types.h,v 1.29 2001/10/29 16:56:31 paf Exp $
 */
 
 #ifndef PA_TYPES_H
 #define PA_TYPES_H
 
 #include "pa_config_includes.h"
+
+#if defined(_MSC_VER) || defined(HAVE_PRAGMA_PACK)
+#pragma pack(1)
+#endif
 
 #if _MSC_VER
 // using this in calls to parent constructors
@@ -25,6 +29,9 @@
 
 // identifier was truncated to '255' characters in the debug information
 #pragma warning(disable:4786)
+
+// used #pragma pack to change alignment
+#pragma warning(disable:4103)
 
 #endif
 
@@ -42,10 +49,12 @@ typedef unsigned long ulong;
 
 #ifndef NO_STRING_ORIGIN
 /// all String pieces hold information of where they come from
+
 struct Origin {
 	const char *file;  ///< macros file name | load file name | sql query text
-	uint line; ///< file line no | record no
+	unsigned short line; ///< file line no | record no
 };
+
 #endif
 
 #endif

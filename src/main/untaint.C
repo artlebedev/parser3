@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.71 2001/10/29 16:29:08 paf Exp $
+	$Id: untaint.C,v 1.72 2001/10/29 16:56:31 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -176,7 +176,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			if(row==append_here)
 				goto break2;
 
-			Untaint_lang to_lang=lang==UL_UNSPECIFIED?row->item.lang:lang;
+			Untaint_lang to_lang=lang==UL_UNSPECIFIED?(Untaint_lang)row->item.lang:lang;
 
 			char *dest_before_origins=dest;
 

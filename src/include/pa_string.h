@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.112 2001/10/29 16:29:07 paf Exp $
+	$Id: pa_string.h,v 1.113 2001/10/29 16:56:30 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -173,7 +173,6 @@ public:
 		return cmp(partial, src_ptr, 0)!=0; 
 	}
 
-
 	/** 
 		appends other String.
 
@@ -251,7 +250,7 @@ private:
 			struct { 
 				const char *ptr;  ///< pointer to the start
 				size_t size;  ///< length
-				Untaint_lang lang; ///< untaint flag, later untaint language
+				unsigned char/*Untaint_lang*/ lang; ///< untaint flag, later untaint language
 #ifndef NO_STRING_ORIGIN
 				Origin origin;  ///< origin
 #endif
