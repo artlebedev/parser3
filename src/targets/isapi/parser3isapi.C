@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.51 2001/10/12 14:28:48 parser Exp $
+	$Id: parser3isapi.C,v 1.52 2001/10/13 17:42:52 parser Exp $
 */
 
 #ifndef _MSC_VER
@@ -314,7 +314,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		Request::Info request_info;
 
 		size_t path_translated_buf_size=strlen(lpECB->lpszPathTranslated)+1;
-		char *filespec_to_process=(char *)malloc(path_translated_buf_size);
+		char *filespec_to_process=(char *)pool.malloc(path_translated_buf_size);
 		memcpy(filespec_to_process, lpECB->lpszPathTranslated, path_translated_buf_size);
 #ifdef WIN32
 		back_slashes_to_slashes(filespec_to_process);
@@ -335,7 +335,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		request_info.method=lpECB->lpszMethod;
 		request_info.query_string=lpECB->lpszQueryString;
 		if(lpECB->lpszQueryString && *lpECB->lpszQueryString) {
-			char *reconstructed_uri=(char *)malloc(
+			char *reconstructed_uri=(char *)pool.malloc(
 				strlen(lpECB->lpszPathInfo)+1/*'?'*/+
 				strlen(lpECB->lpszQueryString)+1/*0*/);
 			strcpy(reconstructed_uri, lpECB->lpszPathInfo);

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.120 2001/10/12 12:15:32 parser Exp $
+	$Id: parser3.C,v 1.121 2001/10/13 17:42:52 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -280,7 +280,7 @@ int main(int argc, char *argv[]) {
 				request_info.uri=env_request_uri;
 			else if(const char *path_info=SAPI::get_env(pool, "PATH_INFO"))
 				if(query_string) {
-					char *reconstructed_uri=(char *)malloc(
+					char *reconstructed_uri=(char *)pool.malloc(
 						strlen(path_info)+1/*'?'*/+
 						strlen(query_string)+1/*0*/);
 					strcpy(reconstructed_uri, path_info);
