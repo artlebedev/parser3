@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.h,v 1.15 2002/06/24 11:59:32 paf Exp $
+	$Id: pa_charset.h,v 1.15.2.1 2002/06/27 11:56:18 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
@@ -110,8 +110,12 @@ public:
 	const char *transcode_cstr(xmlChar *s);
 	/// converts xmlChar* null-terminated string to parser String
 	String& transcode(xmlChar *s);
+	/** converts sized char * to xmlChar*
+		@returns xmlChar * which caller should free
+	*/
+	xmlChar *transcode_buf2xchar(const char *buf, size_t buf_size);
 	/// converts char * to GdomeDOMString
-	GdomeDOMString_auto_ptr transcode_buf(const char *buf, size_t buf_size);
+	GdomeDOMString_auto_ptr transcode_buf2dom(const char *buf, size_t buf_size);
 	/// converts parser String to GdomeDOMString
 	GdomeDOMString_auto_ptr transcode(const String& s);
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.93 2002/06/25 15:08:09 paf Exp $
+	$Id: xdoc.C,v 1.93.2.1 2002/06/27 11:56:18 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -332,15 +332,13 @@ GdomeElement *gdome_doc_createElementNS (GdomeDocument *self, GdomeDOMString *na
 GdomeAttr *gdome_doc_createAttributeNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
 */
 
-
 static void _create(Request& r, const String& method_name, MethodParams *params) {
-	//_asm int 3;
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	Value& param=params->get(0);
+	Value& param=params->get(params->size()-1);
 	GdomeDocument *document;
-	if(param.get_junction()) { // {<tag/>}
+	if(param.get_junction()) { // {<?xml?>...}
 		Temp_lang temp_lang(r, String::UL_XML);
 		const String& xml=r.process_to_string(param);
 
@@ -383,6 +381,18 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 
 		/// +xalan createXMLDecl ?
 	}
+	
+	// URI 
+	const char *URI_cstr;
+	if(params->size()>1) { // absolute(param)
+		const String& URI=params->as_string(0, "URI must be string");
+		URI_cstr=r.absolute(URI).cstr();
+	} else // default = disk path to requested document
+		URI_cstr=r.info.path_translated;
+	xmlDoc *doc=gdome_xml_doc_get_xmlDoc(document);
+	if(URI_cstr)
+		doc->URL=pool.transcode_buf2xchar(URI_cstr, strlen(URI_cstr));
+
 	// replace any previous parsed source
 	vdoc.set_document(document);
 }
@@ -720,7 +730,10 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		xmlDoc *document=gdome_xml_doc_get_xmlDoc(
 			static_cast<VXdoc *>(&vmaybe_xdoc)->get_document(&method_name));
 		// compile xdoc stylesheet
-		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(document));
+		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(document)); 
+		// strange thing - xsltParseStylesheetDoc records document and destroys it in stylesheet destructor
+		// we don't need that
+		stylesheet_ptr->doc=0;
 		if(xmlHaveGenericErrors()) {
 			GdomeException exc=0;
 			throw Exception(&method_name, exc);
@@ -785,8 +798,9 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool, XDOC_CLASS_NAME, Xnode_class) {
 	/// parser
 	
 	// ^xdoc::create{qualifiedName}
-	// ^xdoc::_create[<some>xml</some>]
-	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 1);	
+	// ^xdoc::create[<some>xml</some>]
+	// ^xdoc::create[URI][<some>xml</some>]
+	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 2);	
 	// for backward compatibility with <=v 1.82 2002/01/31 11:51:46 paf
 	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 1);
 

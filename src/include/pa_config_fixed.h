@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_fixed.h,v 1.45.2.1 2002/06/26 12:45:30 paf Exp $
+	$Id: pa_config_fixed.h,v 1.45.2.2 2002/06/27 11:56:19 paf Exp $
 
 
 	tested only with MS Visual C++ V6
@@ -46,5 +46,5 @@
 //#define WITH_MAILRECEIVE
 
 // xml-abled parser
-//#define XML
+#define XML
 

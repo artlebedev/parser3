@@ -5,7 +5,7 @@
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.h,v 1.80 2002/06/18 09:51:36 paf Exp $
+	$Id: pa_pool.h,v 1.80.4.1 2002/06/27 11:56:19 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -81,6 +81,8 @@ public:
 	const char *transcode_cstr(GdomeDOMString *s);
 	/// @see Charset::transcode(GdomeDOMString *s);
 	String& transcode(GdomeDOMString *s);
+	/// @see Charset::transcode_cstr(const char *buf, size_t buf_size=0);
+	xmlChar *transcode_buf2xchar(const char *buf, size_t buf_size=0);
 	/// @see Charset::transcode(const String& s)
 	GdomeDOMString_auto_ptr transcode(const String& s);
 

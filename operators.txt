@@ -676,8 +676,10 @@ xdoc(xnode)
     !равно текущей кодировке выходной страницы,
         $response:charset
     ::sql{...}
-    !::create{<?xml?><string/>} старое имя 'set'
-    !::create[qualifiedName]
+    !::create[[URI]]{<?xml?><string/>} старое имя 'set'
+    !::create[[URI]][qualifiedName]
+      URI default = disk path to requested document
+      для каталогов конечный / обязателен
     !::load[file.xml]
     !.transform[rules.xsl|xdoc][[params hash]] выдаёт dom
         шаблон кэшируется, кэш обновляется при изменении даты файла шаблона,
