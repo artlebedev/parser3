@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.34 2001/08/28 14:43:07 parser Exp $
+	$Id: image.C,v 1.35 2001/08/31 10:18:08 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.34 2001/08/28 14:43:07 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.35 2001/08/31 10:18:08 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -544,16 +544,18 @@ static void _polybar(Request& r, const String& method_name, MethodParams *params
 class Font : public Pooled {
 public:
 	
-	int height;	    //< Font heigth
-	int space;	    //< Default char width
+	const static int kerning;
+	int height;	    ///< Font heigth
+	int monospace;	    ///< Default char width
+	int spacebarspace; ///< spacebar width
 	gdImage& ifont;
 	const String& alphabet;
 	
 	Font(Pool& pool, 
 		const String& aalphabet, 
-		gdImage& aifont, int aheight, int aspace) : Pooled(pool), 
+		gdImage& aifont, int aheight, int amonospace, int aspacebarspace) : Pooled(pool), 
 		alphabet(aalphabet), 
-		height(aheight), space(aspace), 
+		height(aheight), monospace(amonospace),  spacebarspace(aspacebarspace),
 		ifont(aifont) {
 	}
 	
@@ -566,14 +568,12 @@ public:
 	
 	int index_width(int index) {
 		if(index<0)
-			index=index_of('.');
-		if(index<0) 
-			return 0;
+			return spacebarspace;
 		int tr=ifont.GetTransparent();
-		for(int x=ifont.SX()-1; x>0; x--) {
+		for(int x=ifont.SX()-1; x>=0; x--) {
 			for(int y=0; y<height-1; y++)
 				if(ifont.GetPixel(x, Y(y))!=tr) 
-					return x+2;
+					return x+1;
 		}
 		return 0;
 	}
@@ -598,24 +598,27 @@ public:
 		if(cstr) for(; *cstr; cstr++) {
 			int index=index_of(*cstr);
 			index_display(image, x, y, index);
-			x+=space ? space : index_width(index);
+			x+=kerning + (monospace ? monospace : index_width(index));
 		}
 	}
 	
 };
+const int Font::kerning=1;
+
 static void _font(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	Value& valphabet=params->as_no_junction(0, "alphabet must not be code");
 	Value& file_name=params->as_no_junction(1, "file_name must not be code");
 	int height=r.process(params->get(2)).as_int();
+	int spacebar_width=r.process(params->get(3)).as_int();
 
-	int width=params->size()>3?r.process(params->get(3)).as_int():0;
+	int monospace_width=params->size()>4?r.process(params->get(4)).as_int():0;
 
 	static_cast<VImage *>(r.self)->font=new(pool) Font(pool, 
 		valphabet.as_string(), 
 		*load(r, method_name, file_name.as_string()), 
-		height, width);
+		height, monospace_width, spacebar_width);
 }
 
 static void _text(Request& r, const String& method_name, MethodParams *params) {
@@ -683,9 +686,9 @@ MImage::MImage(Pool& apool) : Methoded(apool) {
 	// ^image.polybar(color)(x;y)... point coord pairs
 	add_native_method("polybar", Method::CT_DYNAMIC, _polybar, 1+3*2, 1+100*2);
 
-    // ^image.font[alPHAbet;font-file-name.gif](height)
-    // ^image.font[alPHAbet;font-file-name.gif](height;width)
-	add_native_method("font", Method::CT_DYNAMIC, _font, 3, 4);
+    // ^image.font[alPHAbet;font-file-name.gif](height;spacebar_width)
+    // ^image.font[alPHAbet;font-file-name.gif](height;spacebar_width;width)
+	add_native_method("font", Method::CT_DYNAMIC, _font, 4, 5);
 
     // ^image.text(x;y)[text]
 	add_native_method("text", Method::CT_DYNAMIC, _text, 3, 3);

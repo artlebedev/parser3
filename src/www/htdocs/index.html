@@ -3,7 +3,8 @@ t.p
 dtf.p
 
 @main[]
-^tdoubledefault[]
+^ttext[]
+#^tdoubledefault[]
 #^tintdefault[]
 #^t3partycookie[]
 #^t3partycookie[]
@@ -21,6 +22,19 @@ dtf.p
 #^list[]
 #^tests[]
 #^func(0)<hr>
+
+@ttext[]
+$картинка[^image::load[/i/commons_22_prev.gif]]
+^картинка.font[ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя0123456789-+=!\"%:,.^^^;<>?@()[]'&*/^$;/i/font.gif](14;9)
+0;10)[привет]
+
+^картинка.text(10;10)[ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkl]
+^картинка.text(10;30)[mnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ]
+^картинка.text(10;50)[абвгдежзийклмнопрстуфхцчшщъыьэюя0123456789]
+^картинка.text(10;70)[!-+=!\"%:,.^^^;<>?@()[]'&*/^$!]
+
+
+$response:body[^картинка.gif[]]
 
 @tdoubledefault[]
 $a[123.6x]
