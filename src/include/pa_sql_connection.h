@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char * const IDENT_SQL_CONNECTION_H="$Date: 2003/12/10 14:17:45 $";
+static const char * const IDENT_SQL_CONNECTION_H="$Date: 2003/12/10 14:54:53 $";
 
 
 #include "pa_sql_driver.h"
@@ -18,9 +18,12 @@ static const char * const IDENT_SQL_CONNECTION_H="$Date: 2003/12/10 14:17:45 $";
 
 /// @see SQL_Driver_services_impl::_throw
 #ifdef PA_WITH_SJLJ_EXCEPTIONS
-	#define SQL_CONNECTION_SERVICED_FUNC_GUARDED(actions) actions
+	#define SQL_CONNECTION_SERVICED_FUNC_GUARDED(actions) \
+		use(); \
+		actions
 #else
 	#define SQL_CONNECTION_SERVICED_FUNC_GUARDED(actions) \
+		use(); \
 		if(!setjmp(fservices.mark)) { \
 			actions; \
 		} else \
@@ -103,7 +106,7 @@ public:
 		time_used=time(0); // they started to use at this time
 	}
 	bool expired(time_t older_dies) {
-		return /*!freferences && */time_used<older_dies;
+		return time_used<older_dies;
 	}
 	time_t get_time_used() { return time_used; }
 
@@ -125,7 +128,6 @@ public:
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
 			return fdriver.quote(fservices, fconnection, str, length)
 		);
-//		return 0; // never reached
 	}
 
 	void query(
