@@ -36,9 +36,9 @@
 	Parser: compiler(lexical parser and grammar).
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.26 2001/11/05 11:46:26 paf Exp $
+	$Id: compile.tab.C,v 1.27 2001/12/06 20:19:31 paf Exp $
 */
 
 /**

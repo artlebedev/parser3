@@ -1,4 +1,5 @@
 @main[]
+^bigxslt[]
 #$ORIGINS(1)
 #$t[^table::set{a b} ^table::set{c d}]
 #^ttaintuntaint[]
@@ -68,11 +69,28 @@
 #^exec[]
 #^fori[]
 #^tconnect[]
-^xslt[]
+#^xslt[]
 #^xml[]
 #^header[]
 <hr>
 OK
+
+@bigxslt[]
+$xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
+<document>
+        <script>
+        	here
+        </script>
+	<block>
+		<p>hi</p>
+	</block>
+</document>
+}]
+
+
+#^show-xdoc2[$xdoc]
+^show-xdoc2[^xdoc.transform[templates/_document.xslt]]
+<hr>
 
 @ttaintuntaint[]
 <!-- некий панковский заголовок с буковкой C в круглых скобках -->^taint[html][

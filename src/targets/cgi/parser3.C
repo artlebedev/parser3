@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.145 2001/12/05 11:26:42 paf Exp $
+	$Id: parser3.C,v 1.146 2001/12/06 20:19:31 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -408,7 +408,7 @@ int main(int argc, char *argv[]) {
 	umask(2);
 
 	// were we started as CGI?
-	cgi=1||
+	cgi=
 		getenv("SERVER_SOFTWARE") || 
 		getenv("SERVER_NAME") || 
 		getenv("GATEWAY_INTERFACE") || 
