@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/01/21 15:51:07 $";
+static const char* IDENT_TABLE_C="$Date: 2003/04/04 13:44:59 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -450,6 +450,9 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 		false; // default=asc
 
 	Table& old_table=static_cast<VTable *>(r.get_self())->table(&method_name);
+	if(old_table.size()==0)
+		return;
+
 	Table& new_table=*new(pool) Table(pool, &method_name, old_table.columns());
 
 	Table_seq_item *seq=(Table_seq_item *)pool.malloc(sizeof(Table_seq_item)*old_table.size());
