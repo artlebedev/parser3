@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.30 2001/04/19 15:38:03 paf Exp $
+	$Id: parser3isapi.C,v 1.31 2001/04/25 14:55:22 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -289,7 +289,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	} PCATCH(e) { // global problem
 		// don't allocate anything on pool here:
 		//   possible pool' exception not catch-ed now
-		//   and there could be out-of-memory exception
+			//   and there could be out-of-memory exception
 		const char *body=e.comment();
 		// log it
 		SAPI::log(pool, "exception in request exception handler: %s", body);
