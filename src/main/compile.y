@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.146 2001/07/09 16:13:17 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.147 2001/07/24 12:26:22 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -37,7 +37,6 @@ static char *RCSId="$Id: compile.y,v 1.146 2001/07/09 16:13:17 parser Exp $";
 
 #define SELF_ELEMENT_NAME "self"
 #define USE_CONTROL_METHOD_NAME "USE"
-#define END_CONTROL_METHOD_NAME "end"
 
 static int real_yyerror(parse_control *pc, char *s);
 static void yyprint(FILE *file, int type, YYSTYPE value);
@@ -125,8 +124,6 @@ control_method: '@' STRING '\n'
 				maybe_control_strings {
 	const String& command=*LA2S($2);
 	YYSTYPE strings_code=$4;
-	if(command==END_CONTROL_METHOD_NAME && strings_code->size()==0)
-		break;
 	if(strings_code->size()<1*2) {
 		strcpy(PC.error, "@");
 		strcat(PC.error, command.cstr());
@@ -645,6 +642,19 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				RC;
 			case '@':
 				if(PC.col==0+1) {
+					if(
+						PC.source[0]=='e' && 
+						PC.source[1]=='n' && 
+						PC.source[2]=='d' &&
+						PC.source[3]=='\n') {
+						if(end!=begin) {
+							// append piece till @
+							PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
+						}
+						PC.source+=3+1; begin=PC.source;
+						PC.line++; begin_line=PC.line;
+						continue;
+					}
 					push_LS(PC, LS_DEF_NAME);
 					RC;
 				}
@@ -733,6 +743,11 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			break;
 
 		case LS_DEF_SPECIAL_BODY:
+			//                          @todo in case
+			// ################
+			// @next-method
+			// we are here with c=='@'
+			// which is wrong, and need action
 			if(c=='\n') {
 				switch(*PC.source) {
 				case '@': case 0: // end of special_code
