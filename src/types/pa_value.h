@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.75 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_value.h,v 1.76 2001/10/23 14:43:44 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -75,7 +75,7 @@ public: // Value
 		- VHash: fhash
 		- VResponse: ffields
 	*/
-	virtual Hash *get_hash() { return 0; }
+	virtual Hash *get_hash(const String * /*source*/) { return 0; }
 	
 	/** extract const String
 		@return for

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vhashfile.C,v 1.3 2001/10/22 16:44:43 parser Exp $
+	$Id: pa_vhashfile.C,v 1.4 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -36,8 +36,21 @@ Value *VHashfile::get_field(const String& name) {
 		return 0;
 }
 
-Hash *VHashfile::get_hash() {
-	return 0;
+Hash *VHashfile::get_hash(const String *source) {
+	Hash& result=*NEW Hash(pool());
+	DB_Connection& connection=get_connection(0/*source*/);
+	DB_Cursor cursor=connection.cursor(source);
+
+	while(true) {
+		String& key=*NEW String(pool());
+		String& data=*NEW String(pool());
+		if(!cursor.get(key, data, DB_NEXT))
+			break;
+
+		result.put(key, NEW VString(data));
+	}
+
+	return &result;
 }
 
 #endif

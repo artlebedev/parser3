@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.84 2001/10/19 12:43:30 parser Exp $
+	$Id: string.C,v 1.85 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "classes.h"
@@ -349,7 +349,7 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 	if(params->size()>1) {
 		Value& voptions=params->as_no_junction(1, "options must be hash, not code");
 		if(voptions.is_defined())
-			if(options=voptions.get_hash()) {
+			if(options=voptions.get_hash(&method_name)) {
 				if(Value *vlimit=(Value *)options->get(*sql_limit_name))
 					limit=(ulong)r.process(*vlimit).as_double();
 				if(Value *voffset=(Value *)options->get(*sql_offset_name))

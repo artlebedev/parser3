@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.41 2001/10/19 12:43:29 parser Exp $
+	$Id: mail.C,v 1.42 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -253,7 +253,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 	const char *charset=0;
 	if(Value *content_type=
 		static_cast<Value *>(letter_hash.first_that(find_content_type)))
-		if(Hash *hash=content_type->get_hash())
+		if(Hash *hash=content_type->get_hash(&method_name))
 			if(Value *content_type_charset=
 				static_cast<Value *>(hash->first_that(find_content_type_charset)))
 				charset=content_type_charset->as_string().cstr();
@@ -268,7 +268,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 	letter_hash.for_each(add_header_attribute, &mail_info);
 
 	if(Value *body_element=static_cast<Value *>(letter_hash.get(*body_name))) {
-		if(Hash *body_hash=body_element->get_hash()) {
+		if(Hash *body_hash=body_element->get_hash(&method_name)) {
 			char *boundary=(char *)pool.malloc(MAX_NUMBER);
 			snprintf(boundary, MAX_NUMBER-5/*lEvEl*/, "lEvEl%d", level);
 			// multi-part
@@ -288,7 +288,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 				// intermediate boundary
 				result << "\n--" << boundary << "\n";
 
-				if(Hash *part_hash=seq[i].part_value->get_hash())
+				if(Hash *part_hash=seq[i].part_value->get_hash(&method_name))
 					if(seq[i].part_name->mid(0, 6/*attach*/)=="attach")
 						result << attach_hash_to_string(r, *seq[i].part_name, *part_hash);
 					else 
@@ -421,7 +421,7 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	Value& vhash=params->as_no_junction(0, "message must not be code");
-	Hash *hash=vhash.get_hash();
+	Hash *hash=vhash.get_hash(&method_name);
 	if(!hash)
 		throw Exception(0, 0,
 			&method_name,
@@ -452,7 +452,7 @@ void MMail::configure_user(Request& r) {
 
 	// $MAIN:MAIL[$SMTP[mail.design.ru]]
 	if(Value *mail_element=r.main_class->get_element(mail_name))
-		if(Hash *mail_conf=mail_element->get_hash())
+		if(Hash *mail_conf=mail_element->get_hash(0))
 			r.classes_conf.put(name(), mail_conf);
 		else
 			throw Exception(0, 0,

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.h,v 1.2 2001/10/23 12:41:05 parser Exp $
+	$Id: pa_db_connection.h,v 1.3 2001/10/23 14:43:44 parser Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
@@ -26,12 +26,14 @@
 // forwards
 
 class Auto_transaction;
+class DB_Cursor;
 
 // class
 
-/// DB connection. handy wrapper around low level DB_Driver
+/// DB connection. handy wrapper around low level <db.h> calls
 class DB_Connection : public Pooled {
 	friend Auto_transaction;
+	friend DB_Cursor;
 public:
 
 	DB_Connection(Pool& pool, const String& afile_spec, DB_ENV& adbenv);
@@ -59,10 +61,12 @@ public:
 	String *get(const String& key);
 	void _delete(const String& key);
 
+	DB_Cursor cursor(const String *source);
+
 private:
 
 	DB_ENV& fdbenv;
-	const String& ffile_spec;
+	const String& ffile_spec; const char *file_spec_cstr;
 	Pool *fservices_pool;
 	DB *db;
 	bool needs_recovery;
@@ -97,10 +101,10 @@ private: // transaction
 	
 private:
 
-
 	void check(const char *operation, const String *source, int error);
 	void *malloc(size_t size) { return fservices_pool->malloc(size); }
 	void *calloc(size_t size) { return fservices_pool->calloc(size); }
+	void dbt_to_string(DBT& dbt, String& result);
 
 };
 
@@ -122,6 +126,27 @@ public:
 	}
 	void mark_to_rollback() {
 		marked_to_rollback=true;
+	}
+};
+
+/// DB cursor. handy wrapper around low level <db.h> calls
+class DB_Cursor {
+	friend DB_Connection;
+private:
+	DB_Cursor(DB_Connection& aconnection, const String *asource);
+public:
+	~DB_Cursor();
+	bool get(String& key, String& data, u_int32_t flags);
+private:
+	const String *fsource;
+	DB_Connection& fconnection;
+	DBC *cursor;
+private:
+	void check(const char *operation, const String *source, int error) {
+		fconnection.check(operation, source, error);
+	}
+	void dbt_to_string(DBT& dbt, String& result) {
+		fconnection.dbt_to_string(dbt, result);
 	}
 };
 

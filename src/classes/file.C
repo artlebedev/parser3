@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.59 2001/10/19 12:43:29 parser Exp $
+	$Id: file.C,v 1.60 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -215,7 +215,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 
 	if(params->size()>1) {
 		Value& venv=params->as_no_junction(1, "env must not be code");
-		if(Hash *user_env=venv.get_hash())
+		if(Hash *user_env=venv.get_hash(&method_name))
 			user_env->for_each(append_env_pair, &env);
 	}
 
@@ -361,6 +361,7 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 	if(regexp_code)
 		(*pcre_free)(regexp_code);
 
+	// write out result
 	VTable& result=*new(pool) VTable(pool, &table);
 	result.set_name(method_name);
 	r.write_no_lang(result);

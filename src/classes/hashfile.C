@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.4 2001/10/23 12:53:22 parser Exp $
+	$Id: hashfile.C,v 1.5 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -93,6 +93,16 @@ static void _clear(Request& r, const String& method_name, MethodParams *params) 
 	DB_manager->clear_dbfile(r.absolute(file_spec));
 }
 
+static void _hash(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VHashfile& self=*static_cast<VHashfile *>(r.self);
+	
+	// write out result
+	VHash& result=*new(pool) VHash(pool, *self.get_hash(&method_name));
+	result.set_name(method_name);
+	r.write_no_lang(result);
+}
+
 // constructor
 
 MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
@@ -106,15 +116,13 @@ MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
 	// ^hashfile:clear[filename]
 	add_native_method("clear", Method::CT_STATIC, _clear, 1, 1);
-	// ^pack[]
-	add_native_method("pack", Method::CT_DYNAMIC, _pack, 0, 0);
+	// ^hash[]
+	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
 /*
 	// ^cache[key](seconds){code}
 	add_native_method("cache", Method::CT_DYNAMIC, _cache, 3, 3);
 	// ^cancel[]
 	add_native_method("cancel", Method::CT_DYNAMIC, _cancel, 0, 0);
-	// ^hash[]
-	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
 	*/
 }
 

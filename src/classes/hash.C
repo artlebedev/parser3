@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.23 2001/10/19 12:43:29 parser Exp $
+	$Id: hash.C,v 1.24 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "classes.h"
@@ -71,7 +71,7 @@ public:
 				statement_cstr, row_index++);
 		if(column_index==0) {
 			VHash *row_vhash=new(pool) VHash(pool);
-			row_hash=row_vhash->get_hash();
+			row_hash=row_vhash->get_hash(0);
 			rows_hash.put(*cell, row_vhash);
 		} else
 			row_hash->put(*columns.get_string(column_index), new(pool) VString(*cell));
@@ -100,7 +100,7 @@ static void _create_or_add(Request& r, const String& method_name, MethodParams *
 	
 	if(params->size()) {
 		Value& vb=params->as_no_junction(0, "param must be hash");
-		if(Hash *b=vb.get_hash())
+		if(Hash *b=vb.get_hash(&method_name))
 			b->for_each(copy_all_overwrite_to, &static_cast<VHash *>(r.self)->hash());
 	}
 }
@@ -114,7 +114,7 @@ static void _sub(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	
 	Value& vb=params->as_no_junction(0, "param must be hash");
-	if(Hash *b=vb.get_hash())
+	if(Hash *b=vb.get_hash(&method_name))
 		b->for_each(remove_key_from, &static_cast<VHash *>(r.self)->hash());
 }
 
@@ -130,7 +130,7 @@ static void _union(Request& r, const String& method_name, MethodParams *params) 
 	Hash& dest=*new(pool) Hash(static_cast<VHash *>(r.self)->hash());
 	// dest += b
 	Value& vb=params->as_no_junction(0, "param must be hash");
-	if(Hash *b=vb.get_hash())
+	if(Hash *b=vb.get_hash(&method_name))
 		b->for_each(copy_all_dontoverwrite_to, &dest);
 
 	// return result
@@ -160,7 +160,7 @@ static void _intersection(Request& r, const String& method_name, MethodParams *p
 	Hash& dest=*new(pool) Hash(pool);
 	// dest += b
 	Value& vb=params->as_no_junction(0, "param must be hash");
-	if(Hash *b=vb.get_hash()) {
+	if(Hash *b=vb.get_hash(&method_name)) {
 		Copy_intersection_to_info info={
 			b,
 			&dest
@@ -187,7 +187,7 @@ static void _intersects(Request& r, const String& method_name, MethodParams *par
 	Hash& dest=*new(pool) Hash(pool);
 	// dest += b
 	Value& vb=params->as_no_junction(0, "param must be hash");
-	if(Hash *b=vb.get_hash())
+	if(Hash *b=vb.get_hash(&method_name))
 		yes=static_cast<VHash *>(r.self)->hash().first_that(intersects, b)!=0;
 
 	// return result

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.33 2001/10/23 12:53:22 parser Exp $
+	$Id: xdoc.C,v 1.34 2001/10/23 14:43:44 parser Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -381,7 +381,7 @@ static void create_optioned_listener(
 	if(params->size()>index) {
 		Value& voptions=params->as_no_junction(index, "options must be string");
 		if(voptions.is_defined()) {
-			if(Hash *options=voptions.get_hash()) {
+			if(Hash *options=voptions.get_hash(&method_name)) {
 				// $.method[xml|html|text]
 				if(Value *vmethod=static_cast<Value *>(options->get(*new(pool) 
 					String(pool, XDOC_OUTPUT_METHOD_OPTION_NAME))))
@@ -692,7 +692,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	if(params->size()>1) {
 		Value& vparams=params->as_no_junction(1, "transform parameters parameter must be string");
 		if(vparams.is_defined())
-			if(Hash *params=vparams.get_hash())
+			if(Hash *params=vparams.get_hash(&method_name))
 				params->for_each(add_xslt_param, &vdoc.transformer());
 			else
 				throw Exception(0, 0,

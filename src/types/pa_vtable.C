@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vtable.C,v 1.7 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_vtable.C,v 1.8 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "pa_vtable.h"
@@ -31,7 +31,7 @@ static void store_column_item_to_hash(Array::Item *item, void *info) {
 Value *VTable::fields_element() {
 	if(const Array *columns=table().columns()) {
 		Value *result=NEW VHash(pool());
-		Record_info record_info={&pool(), &table(), result->get_hash()};
+		Record_info record_info={&pool(), &table(), result->get_hash(0)};
 		columns->for_each(store_column_item_to_hash, &record_info);
 		return result;
 	}

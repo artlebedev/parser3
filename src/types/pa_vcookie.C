@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.28 2001/10/18 14:35:32 parser Exp $
+	$Id: pa_vcookie.C,v 1.29 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "pa_sapi.h"
@@ -28,7 +28,7 @@ Value *VCookie::get_element(const String& name) {
 		return 0;
 	
 	if(Value *after_meaning=static_cast<Value *>(after.get(name))) // assigned 'after'?
-		if(Hash *hash=after_meaning->get_hash())
+		if(Hash *hash=after_meaning->get_hash(&name))
 			return static_cast<Value *>(hash->get(*value_name));
 		else
 			return after_meaning;
@@ -41,7 +41,7 @@ Value *VCookie::get_element(const String& name) {
 void VCookie::put_element(const String& name, Value *value) {
 	// $cookie
 	bool remove;
-	if(Hash *hash=value->get_hash())
+	if(Hash *hash=value->get_hash(&name))
 		remove=hash->size()==0;
 	else
 		remove=value->as_string().size()==0;
@@ -142,7 +142,7 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 	if(ameaning) { // assigning value
 		// Set-Cookie: (attribute)=(value); path=/
 		meaning=static_cast<Value *>(ameaning);
-		if(Hash *hash=meaning->get_hash()) { // ...[hash value]
+		if(Hash *hash=meaning->get_hash(&aattribute)) { // ...[hash value]
 			// $expires
 			if(Value *expires=static_cast<Value *>(hash->get(*expires_name))) {
 				const String *string;
@@ -159,9 +159,9 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 		} else { // ...[string value]
 			Value *wrap_meaning=new(pool) VHash(pool);
 			// wrapping meaning into hash
-			wrap_meaning->get_hash()->put(*value_name, meaning);
+			wrap_meaning->get_hash(&aattribute)->put(*value_name, meaning);
 			// string = $expires not assigned, defaulting
-			wrap_meaning->get_hash()->put(*expires_name, 
+			wrap_meaning->get_hash(&aattribute)->put(*expires_name, 
 				expires_timestamp(pool, DEFAULT_EXPIRES_DAYS));
 			// replacing meaning with hash-wrapped one
 			meaning=wrap_meaning;
@@ -175,12 +175,12 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 
 		// Set-Cookie: (attribute)=; path=/
 		meaning=new(pool) VHash(pool);
-		meaning->get_hash()->put(*expires_name, 
+		meaning->get_hash(&aattribute)->put(*expires_name, 
 			expires_timestamp(pool, -DEFAULT_EXPIRES_DAYS));
 	}
 	// defaulting path
-	if(!meaning->get_hash()->get(*path_name))
-		meaning->get_hash()->put(*path_name, 
+	if(!meaning->get_hash(&aattribute)->get(*path_name))
+		meaning->get_hash(&aattribute)->put(*path_name, 
 			new(pool) VString(*new(pool) String(pool, "/")));
 
 	// append meaning

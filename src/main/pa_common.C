@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.74 2001/10/19 15:14:20 parser Exp $
+	$Id: pa_common.C,v 1.75 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "pa_common.h"
@@ -393,7 +393,7 @@ static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *aval
 const String& attributed_meaning_to_string(Value& meaning, 
 										   String::Untaint_lang lang) {
 	String &result=*new(meaning.pool()) String(meaning.pool());
-	if(Hash *hash=meaning.get_hash()) {
+	if(Hash *hash=meaning.get_hash(0)) {
 		// $value(value) $subattribute(subattribute value)
 		if(Value *value=static_cast<Value *>(hash->get(*value_name)))
 			result.append(value->as_string(), lang, true);

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.171 2001/10/22 08:27:44 parser Exp $
+	$Id: pa_request.C,v 1.172 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -132,7 +132,7 @@ void Request::core(
 				]
 			*/
 			if(Value *vcharsets=main_class->get_element(*charsets_name)) {
-				if(Hash *charsets=vcharsets->get_hash())
+				if(Hash *charsets=vcharsets->get_hash(0))
 					charsets->for_each(load_charset, &CTYPE);
 				else
 					throw Exception(0, 0,
@@ -203,7 +203,7 @@ void Request::core(
 		default_content_type=defaults?defaults->get_element(*content_type_name):0;
 		// record default charset
 		if(default_content_type)
-			if(Hash *hash=default_content_type->get_hash())
+			if(Hash *hash=default_content_type->get_hash(0))
 				if(Value *vcharset=(Value *)hash->get(*charset_name))
 					pool().set_charset(vcharset->as_string());		
 

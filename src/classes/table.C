@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.127 2001/10/19 12:43:30 parser Exp $
+	$Id: table.C,v 1.128 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "classes.h"
@@ -244,7 +244,7 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 
 	if(ri.key_field<row.size()) {
 		VHash& result=*new(pool) VHash(pool);
-		Hash& hash=*result.get_hash();
+		Hash& hash=*result.get_hash(0);
 		for(int i=0; i<ri.value_fields->size(); i++) {
 			int value_field=ri.value_fields->get_int(i);
 			if(value_field<row.size())
@@ -288,7 +288,7 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 			}
 
 			// integers: key_field & value_fields
-			Row_info row_info={&self_table, key_field, &value_fields, result.get_hash()};
+			Row_info row_info={&self_table, key_field, &value_fields, result.get_hash(0)};
 			self_table.for_each(table_row_to_hash, &row_info);
 		}
 	result.set_name(method_name);
@@ -507,7 +507,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	if(params->size()>1) {
 		Value& voptions=params->as_no_junction(1, "options must be hash, not code");
 		if(voptions.is_defined())
-			if(Hash *options=voptions.get_hash()) {
+			if(Hash *options=voptions.get_hash(&method_name)) {
 				if(Value *vlimit=(Value *)options->get(*sql_limit_name))
 					limit=(ulong)r.process(*vlimit).as_double();
 				if(Value *voffset=(Value *)options->get(*sql_offset_name))

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: response.C,v 1.14 2001/09/26 10:32:25 parser Exp $
+	$Id: response.C,v 1.15 2001/10/23 14:43:44 parser Exp $
 */
 
 #include "classes.h"
@@ -25,8 +25,8 @@ public: // Methoded
 
 // methods
 
-static void _clear(Request& r, const String&, MethodParams *) {
-	r.self/*VResponse*/->get_hash()/*sure not 0*/->clear();
+static void _clear(Request& r, const String& method_name, MethodParams *) {
+	r.self/*VResponse*/->get_hash(&method_name)/*sure not 0*/->clear();
 }
 
 // constructor
