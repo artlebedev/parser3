@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2003/11/20 16:34:24 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2003/11/25 12:58:53 $";
 
 // includes
 
@@ -139,19 +139,19 @@ public:
 
 	/// get index-element
 	T get(size_t index) const {
-		assert(index>=0 && index<count());
+		assert(index<count());
 		return felements[index];
 	}
 
 	/// ref version of get
 	T& get_ref(size_t index) const {
-		assert(index>=0 && index<count());
+		assert(index<count());
 		return felements[index];
 	}
 
 	/// put index-element
 	void put(size_t index, T element) {
-		assert(index>=0 && index<count());
+		assert(index<count());
 		felements[index]=element;
 	}
 
