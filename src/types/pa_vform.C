@@ -5,7 +5,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 	
-	$Id: pa_vform.C,v 1.55 2002/04/18 10:51:01 paf Exp $
+	$Id: pa_vform.C,v 1.56 2002/06/10 13:27:40 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -54,7 +54,8 @@ static char *searchAttribute(char *data, const char *attr, size_t len){
 
 VForm::VForm(Pool& apool) : VStateless_class(apool, 0, form_base_class),
 	fields(apool),
-	tables(apool) {
+	tables(apool),
+	filled(false) {
 }
 
 char *VForm::strpart(const char *str, size_t len) {
@@ -249,9 +250,16 @@ void VForm::fill_fields_and_tables(Request& request) {
 			}
 	} else
 		; // letter?
+
+	filled=true;
 }
 
 Value *VForm::get_element(const String& aname) {
+	if(!filled)
+		throw Exception("parser.runtime",
+			&aname,
+			"not determined yet");
+
 	// $fields
 	if(aname==FORM_FIELDS_ELEMENT_NAME)
 		return NEW VHash(pool(), Hash(fields));

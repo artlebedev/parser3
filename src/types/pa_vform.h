@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vform.h,v 1.33 2002/02/08 08:30:19 paf Exp $
+	$Id: pa_vform.h,v 1.34 2002/06/10 13:27:40 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -64,6 +64,7 @@ private:
 
 private:
 
+	bool filled;
 	Hash fields;
 	Hash tables;
 
