@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-static const char* IDENT_VSTRING_H="$Date: 2003/07/24 11:31:26 $";
+static const char* IDENT_VSTRING_H="$Date: 2003/08/19 12:07:36 $";
 
 // includes
 
@@ -56,9 +56,7 @@ public: // Value
 			return result;
 
 		// bad $string.field
-		bark("is '%s', it does not have fields",
-			"%s method not found", &aname);  
-		return 0;
+		return bark("%s method not found", &aname);  
 	}
 
 public: // usage

@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2003/08/19 09:12:04 $";
+static const char* IDENT_VALUE_H="$Date: 2003/08/19 12:07:35 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -62,8 +62,7 @@ public: // Value
 	
 	/// what's the meaning of this value in context of expression?
 	virtual Value& as_expr_result(bool /*return_string_as_is*/=false) {
-		bark("is '%s', can not be used in expression"); 
-		return *static_cast<Value*>(0); // never
+		return *bark("is '%s', can not be used in expression"); 
 	}
 	
 	
@@ -106,8 +105,7 @@ public: // Value
 		// to prevent modification of system classes,
 		// created at system startup, and not having exception
 		// handler installed, we neet to bark using request.pool
-		bark("is '%s', it does not accept elements", 
-			"element can not be stored to %s", &aname); 
+		bark("element can not be stored to %s", &aname); 
 		return false;
 	}
 	
@@ -138,11 +136,11 @@ public: // usage
 protected: 
 
 	/// throws exception specifying bark-reason and name() type() of problematic value
-	void bark(char *reason, 
-		const char* alt_reason=0, const String *problem_source=0) const {
+	Value* bark(const char *reason, const String *problem_source=0) const {
 		throw Exception("parser.runtime",
-			problem_source,
-			alt_reason?alt_reason:reason, type());
+			problem_source, 
+			reason, type());
+		return 0; // useful for calming down compiler
 	}
 
 };

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VREQUEST_C="$Date: 2003/07/24 11:31:26 $";
+static const char* IDENT_VREQUEST_C="$Date: 2003/08/19 12:07:35 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -30,7 +30,7 @@ Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*look
 			buf=finfo.post_data;
 			size=finfo.post_size;
 		} else
-			bark("%s field not found", 0, &aname);
+			return bark("%s field not found", &aname);
 
 		return new VString(*new String(buf?buf:"", size, true));
 	}

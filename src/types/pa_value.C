@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VALUE_C="$Date: 2003/07/24 11:31:25 $";
+static const char* IDENT_VALUE_C="$Date: 2003/08/19 12:07:35 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -30,17 +30,15 @@ VObject* Value::set_derived(VObject* /*aderived*/) { return 0; }
 
 Junction* Value::get_junction() { return 0; }
 
-Value* Value::base_object() { bark("is '%s', it has no base object"); return 0; }
+Value* Value::base_object() { return bark("is '%s', it has no base object"); }
 
 Value* Value::get_element(const String& /*aname*/, Value& /*aself*/, bool /*looking_up*/) {
-	bark("is '%s', it has no elements");
-	return 0;
+	return bark("is '%s', it has no elements");
 }
 
 
 VFile* Value::as_vfile(String::Language /*lang*/, const Request_charsets* /*charsets*/) { 
-	bark("is '%s', it does not have file value"); 
-	return 0;  //never
+	bark("is '%s', it does not have file value"); return 0;
 }
 
 /// call this before invoking to ensure proper actual numbered params count
