@@ -8,12 +8,13 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char * const IDENT_VXDOC_H="$Date: 2004/03/01 12:12:28 $";
+static const char * const IDENT_VXDOC_H="$Date: 2004/03/10 10:42:11 $";
 
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
 #include "pa_vxnode.h"
+#include "pa_vhash.h"
 
 // defines
 
@@ -38,7 +39,7 @@ public: // Value
 	/// VXdoc: true
 	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VBool(as_bool()); }
 
-	/// VXnode: $CLASS,$method, fields
+	/// VXdoc: $CLASS,$method, fields
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 
 public: // VXNode
@@ -47,10 +48,14 @@ public: // VXNode
 		return (GdomeNode*)get_document();
 	}
 
+	override VXdoc& get_xdoc() {
+		return *this;
+	}
+
 public: // usage
 
 	VXdoc(Request_charsets* acharsets, GdomeDocument *adocument) : 
-		VXnode(acharsets, 0), 
+		VXnode(acharsets, *this, 0), 
 		fdocument(0) {
 		assign_document(adocument); // not adding ref, owning a doc
 	}
@@ -84,6 +89,8 @@ public: // VXdoc
 	}
 
 public:
+
+	VHash search_namespaces;
 
 	struct Output_options {
 		const String* method;            /* the output method */

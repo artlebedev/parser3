@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char * const IDENT_VXNODE_H="$Date: 2004/02/11 15:33:19 $";
+static const char * const IDENT_VXNODE_H="$Date: 2004/03/10 10:42:12 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -34,6 +34,10 @@ extern "C" {
 
 extern Methoded* xnode_class;
 
+// forwards
+
+class VXdoc;
+
 /// value of type 'xnode'. implemented with GdomeNode
 class VXnode: public VStateless_object, PA_Cleaned {
 public: // Value
@@ -55,8 +59,9 @@ public: // Value
 
 public: // usage
 
-	VXnode(Request_charsets* acharsets, GdomeNode* anode) : 
+	VXnode(Request_charsets* acharsets, VXdoc& adocument, GdomeNode* anode) : 
 		fcharsets(acharsets),
+		fdocument(adocument),
 		fnode(anode/*not adding ref, owning a node*/) {
 	}
 
@@ -77,12 +82,17 @@ public: // VXnode
 		return fnode; 
 	}
 
+	virtual VXdoc& get_xdoc() {
+		return fdocument;
+	}
+
 protected:
 
 	Request_charsets* fcharsets;
 
 private:
 
+	VXdoc& fdocument;
 	GdomeNode* fnode;
 };
 

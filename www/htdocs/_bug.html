@@ -5,7 +5,6 @@ $response:content-type[text/html]
 
 $xdoc[^xdoc::load[_bug.xml]]
 #^xdoc.string[]
-$nodes[^xdoc.select[//x:second][
-	$.x[http://pif.design.ru/]
-]]
+$xdoc.search-namespaces.x[http://pif.design.ru/]
+$nodes[^xdoc.select[//x:second]]
 ^nodes._count[]

@@ -7,9 +7,13 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2004/02/11 15:33:19 $";
+static const char * const IDENT_VXDOC="$Date: 2004/03/10 10:42:11 $";
 
 #include "pa_vxdoc.h"
+
+// defines
+
+#define SEARCH_NAMESPACES_NAME "search-namespaces"
 
 Value* VXdoc::as(const char* atype, bool looking_up) {
 	if(Value* result=Value::as(atype, looking_up))
@@ -20,6 +24,10 @@ Value* VXdoc::as(const char* atype, bool looking_up) {
 
 /// VXdoc: $CLASS,$method
 Value* VXdoc::get_element(const String& aname, Value& aself, bool looking_up) { 
+	if(aname==SEARCH_NAMESPACES_NAME) {
+		return &search_namespaces;
+	}
+
 	// up
 	try {
 		return VXnode::get_element(aname, aself, looking_up);
@@ -32,13 +40,13 @@ Value* VXdoc::get_element(const String& aname, Value& aself, bool looking_up) {
 
 		if(aname=="doctype") {
 			// readonly attribute DocumentType doctype;
-			return new VXnode(fcharsets, (GdomeNode*)gdome_doc_doctype(document, &exc));
+			return new VXnode(fcharsets, *this, (GdomeNode*)gdome_doc_doctype(document, &exc));
 		} else if(aname=="implementation") {
 			// readonly attribute DOMImplementation implementation;
 			return 0;
 		} else if(aname=="documentElement") {
 			// readonly attribute Element documentElement;
-			return new VXnode(fcharsets, (GdomeNode *)gdome_doc_documentElement(document, &exc));
+			return new VXnode(fcharsets, *this, (GdomeNode *)gdome_doc_documentElement(document, &exc));
 		} 	
 
 		return bark("%s field not found", &aname);

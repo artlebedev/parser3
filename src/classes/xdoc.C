@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/03/01 12:12:28 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/03/10 10:42:11 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -157,13 +157,13 @@ private:
 
 // methods
 
-static void writeNode(Request& r, GdomeNode *node, 
+static void writeNode(Request& r, VXdoc& xdoc, GdomeNode *node, 
 					  GdomeException exc) {
 	if(!node || exc)
 		throw XmlException(0, exc);
 
 	// write out result
-	r.write_no_lang(*new VXnode(&r.charsets, node));
+	r.write_no_lang(*new VXnode(&r.charsets, xdoc, node));
 }
 
 // Element createElement(in DOMString tagName) raises(DOMException);
@@ -177,7 +177,7 @@ static void _createElement(Request& r, MethodParams& params) {
 		(GdomeNode *)gdome_doc_createElement(vdoc.get_document(), 
 		r.transcode(tagName).use(),
 		&exc);
-	writeNode(r, node, exc);
+	writeNode(r, vdoc, node, exc);
 }
 
 // Element createElementNS(in DOMString namespaceURI, in DOMString qualifiedName) raises(DOMException);
@@ -194,7 +194,7 @@ static void _createElementNS(Request& r, MethodParams& params) {
 		r.transcode(namespaceURI).use(),
 		r.transcode(qualifiedName).use(),
 		&exc);
-	writeNode(r, node, exc);
+	writeNode(r, vdoc, node, exc);
 }
 
 // DocumentFragment createDocumentFragment()
@@ -206,7 +206,7 @@ static void _createDocumentFragment(Request& r, MethodParams&) {
 		(GdomeNode *)gdome_doc_createDocumentFragment(
 		vdoc.get_document(),
 		&exc);
-	writeNode(r, node, exc);
+	writeNode(r, vdoc, node, exc);
 }
 
 // Text createTextNode(in DOMString data);
@@ -220,7 +220,7 @@ static void _createTextNode(Request& r, MethodParams& params) {
 		vdoc.get_document(),
 		r.transcode(data).use(),
 		&exc);
-	writeNode(r, node, exc);
+	writeNode(r, vdoc, node, exc);
 }
 
 // Comment createComment(in DOMString data)
@@ -234,7 +234,7 @@ static void _createComment(Request& r, MethodParams& params) {
 		vdoc.get_document(),
 		r.transcode(data).use(),
 		&exc);
-	writeNode(r, node, exc);
+	writeNode(r, vdoc, node, exc);
 }
 
 // CDATASection createCDATASection(in DOMString data) raises(DOMException);
@@ -248,7 +248,7 @@ static void _createCDATASection(Request& r, MethodParams& params) {
 		vdoc.get_document(),
 		r.transcode(data).use(),
 		&exc);
-	writeNode(r, node, exc);
+	writeNode(r, vdoc, node, exc);
 }
 
 // ProcessingInstruction createProcessingInstruction(in DOMString target,in DOMString data) raises(DOMException);
@@ -264,7 +264,7 @@ static void _createProcessingInstruction(Request& r, MethodParams& params) {
 		r.transcode(target).use(), 
 		r.transcode(data).use(),
 		&exc);
-	writeNode(r, node, exc);
+	writeNode(r, vdoc, node, exc);
 }
 
 // Attr createAttribute(in DOMString name) raises(DOMException);
@@ -278,7 +278,7 @@ static void _createAttribute(Request& r, MethodParams& params) {
 		vdoc.get_document(),
 		r.transcode(name).use(),
 		&exc);
-	writeNode(r, node, exc);
+	writeNode(r, vdoc, node, exc);
 }
 
 // Attr createAttributeNS(in DOMString namespaceURI, in DOMString qualifiedName) raises(DOMException);
@@ -295,7 +295,7 @@ static void _createAttributeNS(Request& r, MethodParams& params) {
 		r.transcode(namespaceURI).use(),
 		r.transcode(qualifiedName).use(),
 		&exc);
-	writeNode(r, node, exc);
+	writeNode(r, vdoc, node, exc);
 }
 
 // EntityReference createEntityReference(in DOMString name) raises(DOMException);
@@ -309,7 +309,7 @@ static void _createEntityReference(Request& r, MethodParams& params) {
 		vdoc.get_document(),
 		r.transcode(name).use(),
 		&exc);
-	writeNode(r, node, exc);
+	writeNode(r, vdoc, node, exc);
 }
 
 // NodeList getElementsByTagName(in DOMString name);
@@ -329,7 +329,7 @@ static void _getElementsByTagName(Request& r, MethodParams& params) {
 		for(gulong i=0; i<length; i++)
 			result.hash().put(
 				String::Body::Format(i), 
-				new VXnode(&r.charsets, gdome_nl_item(nodes, i, &exc)));
+				new VXnode(&r.charsets, vdoc, gdome_nl_item(nodes, i, &exc)));
 	} else if(exc)
 		throw XmlException(0, exc);
 
@@ -356,7 +356,7 @@ static void _getElementsByTagNameNS(Request& r, MethodParams& params) {
 		for(gulong i=0; i<length; i++)
 			result.hash().put(
 				String::Body::Format(i), 
-				new VXnode(&r.charsets, gdome_nl_item(nodes, i, &exc)));
+				new VXnode(&r.charsets, vdoc, gdome_nl_item(nodes, i, &exc)));
 	}
 
 	// write out result
@@ -375,7 +375,7 @@ static void _getElementById(Request& r, MethodParams& params) {
 		r.transcode(elementId).use(),
 		&exc)) {
 		// write out result
-		r.write_no_lang(*new VXnode(&r.charsets, node));
+		r.write_no_lang(*new VXnode(&r.charsets, vdoc, node));
 	} else if(exc || xmlHaveGenericErrors())
 		throw XmlException(&elementId, exc);
 }
@@ -396,7 +396,7 @@ static void _importNode(Request& r, MethodParams& params) {
 		throw XmlException(0, exc);
 
 	// write out result
-	r.write_no_lang(*new VXnode(&r.charsets, outputNode));
+	r.write_no_lang(*new VXnode(&r.charsets, vdoc, outputNode));
 }
 /*
 GdomeElement *gdome_doc_createElementNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);

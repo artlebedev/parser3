@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXNODE_C="$Date: 2004/02/11 15:33:19 $";
+static const char * const IDENT_VXNODE_C="$Date: 2004/03/10 10:42:12 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -36,7 +36,7 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 		return new VInt(gdome_n_nodeType(selfNode, &exc));
 	} else if(aname=="parentNode") {
 		if(GdomeNode* result_node=gdome_n_parentNode(selfNode, &exc))
-			return new VXnode(fcharsets, result_node);
+			return new VXnode(fcharsets, fdocument, result_node);
 		return 0;
 	} else if(aname=="childNodes") {	
 		if(GdomeNode* currentNode=gdome_n_firstChild(selfNode, &exc)) {
@@ -45,26 +45,26 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 			do {
 				result->hash().put(
 					String::Body::Format(i++), 
-					new VXnode(fcharsets, currentNode));
+					new VXnode(fcharsets, fdocument, currentNode));
 			} while((currentNode=gdome_n_nextSibling(currentNode, &exc)));
 			return result;
 		}
 		return 0;
 	} else if(aname=="firstChild") {
 		if(GdomeNode* result_node=gdome_n_firstChild(selfNode, &exc))
-			return new VXnode(fcharsets, result_node);
+			return new VXnode(fcharsets, fdocument, result_node);
 		return 0;
 	} else if(aname=="lastChild") {
 		if(GdomeNode* result_node=gdome_n_lastChild(selfNode, &exc))
-			return new VXnode(fcharsets, result_node);
+			return new VXnode(fcharsets, fdocument, result_node);
 		return 0;
 	} else if(aname=="previousSibling") {
 		if(GdomeNode* result_node=gdome_n_previousSibling(selfNode, &exc))
-			return new VXnode(fcharsets, result_node);
+			return new VXnode(fcharsets, fdocument, result_node);
 		return 0;
 	} else if(aname=="nextSibling") {
 		if(GdomeNode* result_node=gdome_n_nextSibling(selfNode, &exc))
-			return new VXnode(fcharsets, result_node);
+			return new VXnode(fcharsets, fdocument, result_node);
 		return 0;
 	} else if(aname=="ownerDocument") {
 		if(GdomeDocument *document=gdome_n_ownerDocument(selfNode, &exc))
@@ -80,7 +80,7 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 						GdomeNode* attr_node=gdome_nnm_item(attributes, i, &exc);
 						result->hash().put(
 							fcharsets->source().transcode(gdome_n_nodeName(attr_node, &exc)), 
-							new VXnode(fcharsets, attr_node));
+							new VXnode(fcharsets, fdocument, attr_node));
 					}
 					return result;
 				}
@@ -158,7 +158,7 @@ bool VXnode::put_element(const String& aname, Value* avalue, bool /*replace*/)
 		return true;
 	}
 
-	bark("element can not be stored to %s (field is read only)", &aname);
+	bark("element can not be stored to %s", &aname);
 	return false;
 }
 #endif
