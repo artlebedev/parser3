@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2003/11/20 16:34:26 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2003/11/26 12:49:27 $";
 
 #include "pa_config_includes.h"
 
@@ -24,7 +24,7 @@ extern "C" {
 #include "pa_string.h"
 #include "pa_sapi.h"
 #include "pa_threads.h"
-
+#include "pa_xml_io.h"
 
 // defines
 
@@ -64,13 +64,20 @@ static void setup_hex_value() {
 	hex_value['f'] = 15;
 }
 
-#ifdef XML
 
-const int MAX_CONCURRENT_XML_GENERIC_ERROR_THREADS=10;
+Hash<pa_thread_t, Request*> thread_request;
+void pa_register_thread_request(Request& r) {
+	thread_request.put(pa_get_thread_id(), &r);
+}
+/// retrives request set by pa_set_request function, useful in contextless places [slow]
+Request& pa_thread_request() {
+	return *thread_request.get(pa_get_thread_id());
+}
+
+#ifdef XML
 
 class XML_Generic_error_info {
 public:
-	pa_thread_t thread_id;
 	char buf[MAX_STRING];
 	size_t used;
 public:
@@ -78,7 +85,6 @@ public:
 		reset();
 	}
 	void reset() { 
-		thread_id=0; 
 		buf[used=0]=0;
 	}
 	const char* get_and_reset() {
@@ -87,20 +93,12 @@ public:
 		reset();
 		return result;
 	}
-} xml_generic_error_infos[MAX_CONCURRENT_XML_GENERIC_ERROR_THREADS];
+};
 
-XML_Generic_error_info *xml_generic_error_info(pa_thread_t thread_id) {
-	for(int i=0; i<MAX_CONCURRENT_XML_GENERIC_ERROR_THREADS; i++) {
-		XML_Generic_error_info *p=xml_generic_error_infos+i;
-		if(p->thread_id==thread_id)
-			return p;
-	}
-	return 0;
-}
+Hash<pa_thread_t, XML_Generic_error_info*> xml_generic_error_infos;
 
-static void
-xmlParserGenericErrorFunc(void *  /*ctx*/, const char* msg, ...) { 
-	//_asm int 3;
+static void xmlParserGenericErrorFunc(void *  /*ctx*/, const char* msg, ...) { 
+//_asm int 3;
 	pa_thread_t thread_id=pa_get_thread_id();
 
 	// infinitely looking for free slot to fill it
@@ -108,14 +106,9 @@ xmlParserGenericErrorFunc(void *  /*ctx*/, const char* msg, ...) {
 		SYNCHRONIZED;  // find+fill blocked
 
 		// first try to get existing for this thread_id
-		XML_Generic_error_info *p=xml_generic_error_info(thread_id);
-		if(!p) { // occupy empty one
-			p=xml_generic_error_info(0);
-			if(!p) // wait for empty one to appear
-				continue;
-		}
-
-		p->thread_id=thread_id;
+		XML_Generic_error_info *p=xml_generic_error_infos.get(thread_id);
+		if(!p) // occupy empty one
+			xml_generic_error_infos.put(thread_id, (p=new(PointerFreeGC) XML_Generic_error_info));
 		
 		va_list args;
 		va_start(args, msg);
@@ -131,7 +124,7 @@ bool xmlHaveGenericErrors() {
 
 	SYNCHRONIZED;  // find blocked
 
-	return xml_generic_error_info(thread_id)!=0;
+	return xml_generic_error_infos.get(thread_id)!=0;
 }
 
 const char* xmlGenericErrors() {
@@ -139,83 +132,10 @@ const char* xmlGenericErrors() {
 
 	SYNCHRONIZED;  // find+free blocked
 
-	XML_Generic_error_info *p=xml_generic_error_info(thread_id);
-	if(!p) // no errors for our thread_id registered
-		return 0;
+	if(XML_Generic_error_info *p=xml_generic_error_infos.get(thread_id))
+		return p->get_and_reset();
 
-	return p->get_and_reset();
-}
-
-/**
- * xmlFileMatchWithLocalhostEqDocumentRoot:
- * filename:  the URI for matching
- *
- * check if the URI matches an HTTP one
- *
- * Returns 1 if matches, 0 otherwise
- */
-static int
-xmlFileMatchLocalhost(const char* filename) {
-	if (!strncmp(filename, "http://localhost", 16))
-		return(1);
-	return(0);
-}
-
-
-/**
- * xmlFileOpenHttpLocalhost :
- * filename:  the URI for matching
- *
- * http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
- *
- * input from FILE *, supports compressed input
- * if filename is " " then the standard input is used
- *
- * Returns an I/O context or NULL in case of error
- */
-static void *
-xmlFileOpenLocalhost (const char* filename) {
-	//_asm int 3;
-	FILE *fd;
-	const char* documentRoot;
-	char path[1000];
-	
-	path[0]=0;
-	strcat(path, (documentRoot=getenv("DOCUMENT_ROOT"))?documentRoot:".");
-	strcat(path, &filename[16]);
-	
-#ifdef WIN32
-	fd = fopen(path, "rb");
-#else
-	fd = fopen(path, "r");
-#endif /* WIN32 */
-	return((void *) fd);
-}
-
-/**
- * xmlFileRead:
- * @context:  the I/O context
- * @buffer:  where to drop data
- * @len:  number of bytes to write
- *
- * Read @len bytes to @buffer from the I/O channel.
- *
- * Returns the number of bytes written
- */
-static int
-pa_xmlFileRead (void * context, char * buffer, int len) {
-	return(fread(&buffer[0], 1,  len, (FILE *) context));
-}
-
-/**
- * xmlFileClose:
- * @context:  the I/O context
- *
- * Close an I/O channel
- */
-static int
-pa_xmlFileClose (void * context) {
-	return ( ( fclose((FILE *) context) == EOF ) ? -1 : 0 );
+	return 0; // no errors for our thread_id registered
 }
 
 #endif
@@ -413,10 +333,7 @@ void pa_globals_init() {
 //	FILE *f=fopen("y:\\xslt.log", "wt");
 //	xsltSetGenericDebugFunc(f/*stderr*/, 0);
 
-	// http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
-	xmlRegisterInputCallbacks(
-		xmlFileMatchLocalhost, xmlFileOpenLocalhost,
-		pa_xmlFileRead, pa_xmlFileClose);
+	pa_xml_io_init();
 #endif
 }
 

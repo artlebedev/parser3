@@ -752,6 +752,9 @@ xdoc(xnode)
       URI default = disk path to requested document
       для каталогов конечный / обязателен
     !::load[file.xml[;опции]]
+        опции кроме стандартных:
+        $.resolver[$method]
+        в @method[uri] придёт адрес, метод должен вернуть текст
     !.transform[rules.xsl|xdoc][[params hash]] выдаёт dom
         шаблон кэшируется, кэш обновляется при изменении даты файла шаблона,
         или изменении даты файла "имя шаблона.stamp"[проверка даты stamp приоритетнее]

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2003/11/24 12:47:21 $";
+static const char * const IDENT_REQUEST_C="$Date: 2003/11/26 12:49:27 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -131,6 +131,8 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	// private mime types
 	mime_types(0)
 {
+	pa_register_thread_request(*this);
+
 	// file_no=0 => unknown
 	file_list+=String::Body("UNKNOWN");
 	file_list+=String::Body("-body of process-"); // pseudo_file_no__process

@@ -1,0 +1,102 @@
+/** @file
+	Parser: plugins to xml library, controlling i/o; implementation
+
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+*/
+
+#include "pa_xml_io.h"
+
+#ifdef XML
+
+static const char * const IDENT="$Date: 2003/11/26 12:49:44 $";
+
+#include "libxslt/extensions.h"
+
+#include "pa_globals.h"
+#include "pa_request.h"
+
+
+/**
+ * xmlFileMatchWithLocalhostEqDocumentRoot:
+ * filename:  the URI for matching
+ *
+ * check if the URI matches an HTTP one
+ *
+ * Returns 1 if matches, 0 otherwise
+ */
+static int
+xmlFileMatchLocalhost(const char* filename) {
+	if (!strncmp(filename, "http://localhost", 16))
+		return(1);
+	return(0);
+}
+
+
+/**
+ * xmlFileOpenHttpLocalhost :
+ * filename:  the URI for matching
+ *
+ * http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
+ *
+ * input from FILE *, supports compressed input
+ * if filename is " " then the standard input is used
+ *
+ * Returns an I/O context or NULL in case of error
+ */
+static void *
+xmlFileOpenLocalhost (const char* filename) {
+	//_asm int 3;
+	FILE *fd;
+	const char* document_root=pa_thread_request().request_info.document_root;
+	if(!document_root)
+		document_root=".";
+
+	char path[MAX_STRING];	
+	path[0]=0;
+	strcat(path, document_root);
+	strcat(path, &filename[16]);
+	
+#ifdef WIN32
+	fd = fopen(path, "rb");
+#else
+	fd = fopen(path, "r");
+#endif /* WIN32 */
+	return((void *) fd);
+}
+
+/**
+ * xmlFileRead:
+ * @context:  the I/O context
+ * @buffer:  where to drop data
+ * @len:  number of bytes to write
+ *
+ * Read @len bytes to @buffer from the I/O channel.
+ *
+ * Returns the number of bytes written
+ */
+static int
+pa_xmlFileRead (void * context, char * buffer, int len) {
+	return(fread(&buffer[0], 1,  len, (FILE *) context));
+}
+
+/**
+ * xmlFileClose:
+ * @context:  the I/O context
+ *
+ * Close an I/O channel
+ */
+static int
+pa_xmlFileClose (void * context) {
+	return ( ( fclose((FILE *) context) == EOF ) ? -1 : 0 );
+}
+
+
+void pa_xml_io_init() {
+	// http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
+	xmlRegisterInputCallbacks(
+		xmlFileMatchLocalhost, xmlFileOpenLocalhost,
+		pa_xmlFileRead, pa_xmlFileClose);
+}
+
+#endif

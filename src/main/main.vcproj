@@ -1294,6 +1294,9 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_xml_exception.h">
 		</File>
 		<File
+			RelativePath=".\pa_xml_io.C">
+		</File>
+		<File
 			RelativePath="untaint.C">
 			<FileConfiguration
 				Name="Debug|Win32">

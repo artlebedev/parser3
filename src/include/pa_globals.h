@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char * const IDENT_GLOBALS_H="$Date: 2003/11/20 16:34:25 $";
+static const char * const IDENT_GLOBALS_H="$Date: 2003/11/26 12:49:27 $";
 
 
 #include "pa_hash.h"
@@ -22,6 +22,7 @@ static const char * const IDENT_GLOBALS_H="$Date: 2003/11/20 16:34:25 $";
 class Dictionary;
 class Charset;
 class Table;
+class Request;
 
 /// core func
 void pa_globals_init();
@@ -38,5 +39,10 @@ bool xmlHaveGenericErrors();
 /// get xml generic error accumulated for current thread. WARNING: it is up to caller to free up
 const char* xmlGenericErrors();
 #endif
+
+/// register request for local thread to retrive later with pa_get_request()
+void pa_register_thread_request(Request&);
+/// retrives request set by pa_set_request function, useful in contextless places [slow]
+Request& pa_thread_request();
 
 #endif
