@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.28 2001/05/08 10:23:49 paf Exp $
+	$Id: mail.C,v 1.29 2001/05/23 07:37:01 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -332,7 +332,7 @@ static void sendmail(Request& r, const String& method_name,
 
 	SMTP& smtp=*new(pool) SMTP(pool, method_name);
 	Value *server_port;
-	// $MAIN:MAIL.SMTP[mail.design.ru]
+	// $MAIN:MAIL.SMTP[mail.yourdomain.ru[:port]]
 	if(mail_conf && 
 		(server_port=static_cast<Value *>(mail_conf->get(
 			*new(pool) String(pool, "SMTP"))))) {

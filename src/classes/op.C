@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.25 2001/05/23 06:54:47 parser Exp $
+	$Id: op.C,v 1.26 2001/05/23 07:37:01 parser Exp $
 */
 
 #include "classes.h"
@@ -331,7 +331,7 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	add_native_method("process", Method::CT_ANY, _process, 1, 1);
 
 	// ^rem{code}
-	add_native_method("rem", Method::CT_ANY, _rem, 1, 1);
+	add_native_method("rem", Method::CT_ANY, _rem, 1, 1000);
 
 	// ^while(condition){code}
 	add_native_method("while", Method::CT_ANY, _while, 2, 2);
