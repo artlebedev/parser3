@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_exec.C,v 1.3 2001/04/23 09:38:53 paf Exp $
+	$Id: pa_exec.C,v 1.4 2001/04/24 07:58:14 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -116,17 +116,18 @@ static void read_pipe(String& result, HANDLE hOutRead, const char *file_spec){
 static const char *buildCommand(Pool& pool, 
 								const String& origin_string,
 								const char *file_spec_cstr, const Array *argv) {
-	FILE *f=fopen(file_spec_cstr, "r");
-	if(f) {
+	if(FILE *f=fopen(file_spec_cstr, "r")) {
 		char buf[MAX_STRING];
 		size_t size=fread(buf, 1, MAX_STRING-1, f);
 		if(size>2) {
 			buf[size]=0;
 			if(strncmp(buf, "#!", 2)==0) {
-				char *atEOL=strchr(buf, '\n');
-				if(atEOL) {
+				const char *begin=buf+2;
+				if(*begin==' ') // alx: were an old magic for some linux-es
+					begin++;
+				if(char *end=strchr(begin, '\n')) {
 					String string(pool);
-					string.APPEND_AS_IS(buf+2, atEOL-(buf+2), 
+					string.APPEND_AS_IS(begin, end-begin, 
 						origin_string.origin().file, 0);
 					string << " " << file_spec_cstr;
 					if(argv)
