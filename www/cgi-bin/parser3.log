@@ -135,3 +135,4 @@ z
 [Wed Mar 27 16:50:23 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(155): 'paf' is stupid [custom1 -]
 [Wed Mar 27 17:16:00 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(155): 'paf' is stupid [custom1]
 [Wed Mar 27 18:17:33 2002] (null) [-]
+[Fri Mar 29 13:14:20 2002] user-request(0): 'Y:/parser3project/parser3/www/htdocs/test.html' read failed: No such file or directory (2), actual filename 'Y:/parser3project/parser3/www/htdocs/test.html' [file.missing]

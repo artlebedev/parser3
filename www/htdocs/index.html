@@ -7,7 +7,8 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^cacheexpireschanging[]
+^rolls2[]
+#^cacheexpireschanging[]
 #^cacheexpiresfixed[]
 #^dateoffsets[]
 #^exceptionTypes[]
@@ -115,11 +116,18 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 <hr>
 OK
 
+@rolls2[]
+$now[^date::now[]]
+$d[^date::create($now.year;$now.month)] ^d.sql-string[]<br>
+^for[i](1;12){
+	^d.roll[month](-1) ^d.sql-string[]<br>
+}
+
 @cacheexpireschanging[]
 ^cache[$DB_HOME/keyключ][^date::now(+1)]{ ^rem{1 day}
     ^cache[^date::now(+4/24/60/60)]
 #    ^cache(2)
-    ^cache(0)
+#    ^cache(0)
 	^math:random(100)
 }
 

@@ -68,7 +68,6 @@ Xне сделано, видимо, не будет сделано
                 $exception.file $exception.lineno [если не запрещены при компил€ции]
                 $exception.source = вас€
                 $exception.comment = болван
-                ^if($exception.type eq connect){^cache[read]}
             }
             ^case[_default]{
                 код, обрабатывающий другую ошибку
@@ -142,11 +141,11 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         /**им€_пол€**/'literal'
     !^rem{}
     !^cache[файл](секунд){код}
-    	!относительное задание времени
+        !относительное задание времени
         !скэшировать строку, котора€ получаетс€ при выполнении кода на 'секунд' секунд
         !если 0секунд, значит не кэшировать, а старый такой стереть
     !^cache[файл][expires date]{код}
-    	!абсолютное задание времени
+        !абсолютное задание времени
     X^cache[файл] удалить файл [не ругает, если его нет] // такое было, больше не будет, делать ^cache(0)
     !^cache(секунд)
     !^cache[expires date]
@@ -558,7 +557,7 @@ Xhashfile
     !^date::now[]
     !^date::now(смещение в дн€х) выдаЄт сейчас+смещение
     !^date::create(дней с epoch) // старое им€ set
-    !^date::create(year;month;day[;hour[;minute[;second]]]) // старое им€ set
+    !^date::create(year;month[;day[;hour[;minute[;second]]]]) // старое им€ set
     !$date.year month day  hour minute second  weekday read-only    
     !^date.roll[year|month|day](+-смещение) сдвигает дату
     !^date.sql-string[] %Y-%m-%d %H:%M:%S
@@ -818,7 +817,7 @@ xdoc(xnode)
     !file.access          ^table::load[.]                             no rights
     !image.format         ^image::measure[index.html]                 not gif/jpg
     !sql.connect          ^connect[mysql://baduser:pass@host/db]{}    not found/timeout
-    !sql.execute          ^connect[mysql://okuser:pass@host/db]{^void:sql{select bad}}             syntax error
+    !sql.execute          ^void:sql{select bad}                       syntax error
     !xml                  ^xdoc::create{<forgot?>}                    any error in xml/xslt libs
     !smtp.connect                                                     not found/timeout
     !smtp.execute                                                     communication error

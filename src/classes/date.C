@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.23 2002/03/28 14:26:48 paf Exp $
+	$Id: date.C,v 1.24 2002/03/29 10:26:00 paf Exp $
 */
 
 #include "classes.h"
@@ -49,7 +49,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	time_t t;
 	if(params->size()==1) // ^set(float days)
 		t=(time_t)(params->as_double(0, "float days must be double", r)*SECS_PER_DAY);
-	else if(params->size()>=3) { // ^set(y;m;d[;h[;m[;s]]])
+	else if(params->size()>=2) { // ^set(y;m;d[;h[;m[;s]]])
 		tm tmIn={0};
 		tmIn.tm_isdst=-1;
 		int year=params->as_int(0, "year must be int", r);
@@ -59,7 +59,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 			year-=1900;
 		tmIn.tm_year=year;
 		tmIn.tm_mon=params->as_int(1, "month must be int", r)-1;
-		tmIn.tm_mday=params->as_int(2, "mday must be int", r);
+		tmIn.tm_mday=params->size()>2?params->as_int(2, "mday must be int", r):1;
 		if(params->size()>3) tmIn.tm_hour=params->as_int(3, "hour must be int", r);
 		if(params->size()>4) tmIn.tm_min=params->as_int(4, "minutes must be int", r);
 		if(params->size()>5) tmIn.tm_sec=params->as_int(5, "seconds must be int", r);
@@ -71,7 +71,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	} else
 		throw Exception("parser.runtime",
 			&method_name,
-			"invalid params count, must be 1 or >=3");
+			"invalid params count, must be 1 or >=2");
 	vdate->set_time(t);
 }
 
@@ -126,6 +126,10 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 		throw Exception(0,
 		&method_name,
 		"bad resulting time (after roll)");
+	if(oday==0 && tmIn.tm_mday!=tmSaved.tm_mday)
+		throw Exception(0,
+			&method_name,
+			"bad resulting time (day hole)", t);
 
     tm *tmOut=localtime(&t);
 	if(!tmOut)
@@ -144,7 +148,7 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 			||tmOut->tm_min!=tmSaved.tm_min)
 			throw Exception(0,
 				&method_name,
-				"bad resulting time (timeline hole)");
+				"bad resulting time (hour hole)");
 
 		if(t<0)
 			throw Exception(0,
