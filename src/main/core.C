@@ -1,7 +1,7 @@
 void process(Pool& pool, 
 			 Value& self,
 			 RContext& rcontext, WContext& wcontext, 
-			 StringIterator& code, char char_to_stop_before) {
+			 String_iterator& code, char char_to_stop_before) {
 	
 	// $ on code?
 	process_dollar(pool, rcontext, wcontext, code, char_to_stop_before);
@@ -17,7 +17,7 @@ void process(Pool& pool,
 void process_dollar(Pool& pool, 
 					Value& self,
 					RContext& rcontext, WContext& wcontext, 
-					StringIterator& iter, char char_to_stop_before) {
+					String_iterator& iter, char char_to_stop_before) {
 
 	// $name.field.subfield -- read
 	// $name.field.subfield(constructor code) -- construct
@@ -80,7 +80,7 @@ void process_dollar(Pool& pool,
 void process_bird(Pool& pool, 
 				  Value& self,
 				  RContext& rcontext, WContext& wcontext, 
-				  StringIterator& iter, char char_to_stop_before) {
+				  String_iterator& iter, char char_to_stop_before) {
 	
 	// ^name.field.subfield.method[..] -- plain call
 	// ^name.field.subfield.method_ref[..] -- method ref call, when .get_method()!=0
@@ -112,10 +112,11 @@ void process_bird(Pool& pool,
 		Value *value=context.get_element(name);
 		if(!value) // failed: no element of that 'name'
 			pool.exception().raise(name, "call: no method field found");
-		method=value->get_method();
-		if(!method) // failed: that field wasn't method_ref
+		Method_ref *method_ref=value->get_method_ref();
+		if(!method_ref) // failed: that field wasn't method_ref
 			pool.exception().raise(name, "call: this field is not a method reference");
-		local_self=value->get_self();
+		method=method_ref->method;
+		local_self=method_ref->self;
 	}
 
 
