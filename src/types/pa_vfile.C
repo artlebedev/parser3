@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VFILE_C="$Date: 2003/11/20 16:34:29 $";
+static const char * const IDENT_VFILE_C="$Date: 2003/12/17 10:12:59 $";
 
 #include "classes.h"
 #include "pa_vfile.h"
@@ -60,7 +60,7 @@ void VFile::set(
 		String& text=*new String;
 		char *premature_zero_pos=(char *)memchr(fvalue_ptr, 0, fvalue_size);
 		if(premature_zero_pos!=fvalue_ptr) {
-			size_t copy_size=premature_zero_pos?premature_zero_pos-(char *)fvalue_ptr:fvalue_size;
+			size_t copy_size=premature_zero_pos?premature_zero_pos-fvalue_ptr:fvalue_size;
 			char *copy_ptr=strdup(fvalue_ptr, copy_size);
 			fix_line_breaks(copy_ptr, copy_size);
 			text.append_know_length(copy_ptr, copy_size, tainted? String::L_TAINTED : String::L_AS_IS);
