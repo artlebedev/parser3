@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.83 2001/03/10 12:12:51 paf Exp $
+  $Id: compile.y,v 1.84 2001/03/10 15:17:46 paf Exp $
 */
 
 %{
@@ -496,8 +496,8 @@ string_inside_quotes_value: maybe_codes {
 /* basics */
 
 write_string: STRING {
-	$$=$1;
-	O($$, OP_WRITE);
+	// optimized from OP_STRING+OP_WRITE to OP_STRING__WRITE
+	change_string_literal_to_write_string_literal($$=$1)
 };
 
 empty_double_value: /* empty */ { $$=VL(NEW VDouble(POOL, 0)) };

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.85 2001/03/10 14:05:36 paf Exp $
+  $Id: execute.C,v 1.86 2001/03/10 15:17:47 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -29,7 +29,7 @@ char *opcode_name[]={
 	"WITH_SELF",	"WITH_ROOT",	"WITH_READ",	"WITH_WRITE",
 	"GET_CLASS",
 	"CONSTRUCT_VALUE",  "CONSTRUCT_DOUBLE",
-	"WRITE",
+	"WRITE",  "STRING__WRITE",
 	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
 	"CREATE_RWPOOL",	"REDUCE_RWPOOL",
@@ -66,7 +66,7 @@ void dump(int level, const Array& ops) {
 		op.cast=ops.quick_get(i);
 		fprintf(stderr, "%*s%s", level*4, "", opcode_name[op.code]);
 
-		if(op.code==OP_VALUE) {
+		if(op.code==OP_VALUE || op.code==OP_STRING__WRITE) {
 			Value *value=static_cast<Value *>(ops.quick_get(++i));
 			fprintf(stderr, " \"%s\" %s", value->get_string()->cstr(), value->type());
 		}
@@ -180,6 +180,13 @@ void Request::execute(const Array& ops) {
 			{
 				Value *value=POP();
 				write(*value);
+				break;
+			}
+		case OP_STRING__WRITE:
+			{
+				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
+				fprintf(stderr, " \"%s\"", vstring->value().cstr());
+				write(vstring->value());
 				break;
 			}
 			

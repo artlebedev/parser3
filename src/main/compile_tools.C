@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.23 2001/03/10 11:44:42 paf Exp $
+  $Id: compile_tools.C,v 1.24 2001/03/10 15:17:46 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -52,7 +52,10 @@ void change_string_literal_to_double_literal(Array *literal_string_array) {
 	Value *value=vstring->get_expr_result();
 	literal_string_array->put(1, value);
 }
-
+void change_string_literal_to_write_string_literal(Array *literal_string_array) {
+	Operation op; op.code=OP_STRING__WRITE;
+	literal_string_array->put(0, op.cast);
+}
 
 void push_LS(struct parse_control *pc, lexical_state new_state) {
 	if(pc->sp<MAX_LEXICAL_STATES) {

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vstring.h,v 1.15 2001/03/10 11:44:32 paf Exp $
+  $Id: pa_vstring.h,v 1.16 2001/03/10 15:17:44 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -35,6 +35,8 @@ public: // usage
 	VString(const String& avalue) : VObject(avalue.pool(), *string_class),
 		fvalue(avalue) {
 	}
+
+	const String& value() { return fvalue; }
 
 private:
 	const String& fvalue;

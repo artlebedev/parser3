@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vint.h,v 1.2 2001/03/10 11:44:32 paf Exp $
+  $Id: pa_vint.h,v 1.3 2001/03/10 15:17:44 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -15,7 +15,7 @@ class VInt : public VObject {
 public: // Value
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "integer"; }
+	const char *type() const { return "int"; }
 	// int: this
 	Value *get_expr_result() { return this; }
 
