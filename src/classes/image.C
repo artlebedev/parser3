@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2003/11/20 17:19:27 $";
+static const char * const IDENT_IMAGE_C="$Date: 2003/12/02 11:55:46 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -161,8 +161,6 @@ public:
 };
 
 class Measure_file_reader: public Measure_reader {
-
-	;
 	const String& file_name; const char* fname;
 	int f;
 
@@ -331,7 +329,8 @@ static void measure_gif(const String& origin_string,
 			 Measure_reader& reader, ushort& width, ushort& height) {
 
 	const char* buf;
-	if(reader.read(buf, head_size)<sizeof(GIF_Header))
+	const size_t head_size=sizeof(GIF_Header);
+	if(reader.read(buf, head_size)<head_size)
 		throw Exception("image.format", 
 			&origin_string, 
 			"not GIF file - too small");
@@ -636,7 +635,8 @@ static void measure_png(const String& origin_string,
 			 Measure_reader& reader, ushort& width, ushort& height) {
 
 	const char* buf;
-	if(reader.read(buf, head_size)<sizeof(PNG_Header))
+	const size_t head_size=sizeof(PNG_Header);
+	if(reader.read(buf, head_size)<head_size)
 		throw Exception("image.format", 
 			&origin_string, 
 			"not PNG file - too small");
