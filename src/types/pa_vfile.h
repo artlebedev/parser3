@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char* IDENT_VFILE_H="$Date: 2003/01/21 15:51:19 $";
+static const char* IDENT_VFILE_H="$Date: 2003/11/11 12:52:44 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -44,7 +44,7 @@ public: // Value
 
 public: // usage
 
-	VFile::VFile(Pool& apool) : VStateless_object(apool),
+	VFile(Pool& apool) : VStateless_object(apool),
 		fvalue_ptr(0),
 		fvalue_size(0),
 		ffields(apool) {
