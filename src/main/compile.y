@@ -5,7 +5,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.204 2003/01/21 15:53:09 paf Exp $
+	$Id: compile.y,v 1.205 2003/04/07 07:07:30 paf Exp $
 */
 
 /**
@@ -44,6 +44,7 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 
 
 // local convinient inplace typecast & var
+#undef PC
 #define PC  (*(parse_control *)pc)
 #define POOL  (*PC.pool)
 #undef NEW
