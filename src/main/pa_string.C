@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/07/28 13:43:58 $";
+static const char * const IDENT_STRING_C="$Date: 2004/09/13 10:39:17 $";
 
 #include "pcre.h"
 
@@ -28,6 +28,13 @@ int pa_atoi(const char* str, const String* problem_source) {
 
 	int result;
 	char *error_pos;
+	bool negative=false;
+	if(str[0]=='-') {
+		negative=true;
+		str++;
+	} else if(str[0]=='+') {
+		str++;
+	}
 	// 0xABC
 	if(str[0]=='0')
 		if(str[1]=='x' || str[1]=='X')
@@ -39,6 +46,8 @@ int pa_atoi(const char* str, const String* problem_source) {
 		}
 	else
 		result=(int)strtol(str, &error_pos, 0);
+	if(negative)
+		result=-result;
 
 	while(char c=*error_pos++)
 		if(!isspace((unsigned char)c))
@@ -60,14 +69,26 @@ double pa_atod(const char* str, const String* problem_source) {
 
 	double result;
 	char *error_pos;
+	bool negative=false;
+	if(str[0]=='-') {
+		negative=true;
+		str++;
+	} else if(str[0]=='+') {
+		str++;
+	}
 	// 0xABC
 	if(str[0]=='0')
 		if(str[1]=='x' || str[1]=='X')
 			result=(double)(unsigned long)strtol(str, &error_pos, 0);
-		else
-			result=(double)strtod(str+1/*skip leading 0*/, &error_pos);
+		else {
+			 // skip leading 0000, to disable octal interpretation
+			do str++; while(*str=='0');				
+			result=(double)strtod(str, &error_pos);
+		}
 	else
 		result=(double)strtod(str, &error_pos);
+	if(negative)
+		result=-result;
 
 	while(char c=*error_pos++)
 		if(!isspace((unsigned char)c))
