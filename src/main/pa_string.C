@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.50 2001/03/24 19:12:20 paf Exp $
+	$Id: pa_string.C,v 1.51 2001/03/24 19:30:07 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -290,7 +290,7 @@ int String::cmp(const String& src) const {
 int String::cmp(const char* b_ptr, int& partial, size_t src_size) const {
 	size_t b_size=src_size?src_size:b_ptr?strlen(b_ptr):0;
 
-	partial=0;
+	partial=-1;
 	const Chunk *a_chunk=&head;
 	const Chunk::Row *a_row=a_chunk->rows;
 	int a_offset=0;
@@ -332,11 +332,11 @@ int String::cmp(const char* b_ptr, int& partial, size_t src_size) const {
 		}
 	}
 	if(a_break==b_break) // ended simultaneously
-		return 0;
+		return partial=0;
 	else if(a_break) // first bytes equal, but a ended before b
-		return partial=-1;
+		return partial=1;
 	else
-		return partial=+1;
+		return partial=2;
 }
 
 #ifndef NO_STRING_ORIGIN

@@ -1,12 +1,12 @@
 @auto[]
 $html-typo[^table:set{user	html
-_	&nbsp^;
-{	&laquo^;
-}	&raquo^;
+&gt^;&gt^;	&raquo^;
 }]
+&lt^;&lt^;	&laquo^;
+_	&nbsp^;
 
 @main[]
-<HR>
+^taint[html-typo;>>]<HR>
 $t[^table:load[/test.cfg]]
 ^process[@b[]
 f
@@ -43,7 +43,7 @@ $response:location[http://parser3/123]
 </form>
 
 @default[test;def]
-^if(^test.length[]){$test}{$def}
+$result[^if(^test.length[]){$test}{$def}]
 
 @exception[origin;source;comment;type;code]
 <body bgcolor=black>

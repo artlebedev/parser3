@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.13 2001/03/24 19:12:20 paf Exp $
+	$Id: untaint.C,v 1.14 2001/03/24 19:30:07 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -70,7 +70,9 @@ static bool typo_present(Array::Item *value, const void *info) {
 
 	int partial;
 	row->get_string(0)->cmp(src, partial);
-	return partial==-1;
+	return 
+		partial==0 || // full match
+		partial==1; // typo left column starts 'src'
 }
 
 /// @todo optimize whitespaces for all but 'html'

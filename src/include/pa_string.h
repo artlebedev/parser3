@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.50 2001/03/24 19:12:18 paf Exp $
+	$Id: pa_string.h,v 1.51 2001/03/24 19:30:06 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -130,8 +130,10 @@ public:
 	/**
 		 @param partial 
 			returns partial match status. 
-			-1 means @c this starts @c src
-			+2 means @src starts @this
+			- -1: strings too different
+			-  0: full match
+			-  1: means @c this starts @c src
+			-  2: means @src starts @this
 	*/
 	int cmp(const char* src_ptr, int& partial, size_t src_size=0) const;
 	bool operator == (const char* src_ptr) const { 
