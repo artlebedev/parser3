@@ -93,17 +93,22 @@ get: '$' any_name {
 any_name: name_without_curly_rdive EON | name_in_curly_rdive;
 
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
-name_without_curly_rdive: name_rdive {
- 	/* 
-	TODO: подсмотреть в $1, и если там в первом элементе первая буква ":"
-		то выкинуть её и делать не OP_WITH_READ, а WITH_ROOT
+name_without_curly_rdive: name_without_curly_rdive_read | name_without_curly_rdive_root;
+name_without_curly_rdive_read: name_without_curly_rdive_code {
+/*
 	TODO: подсмотреть в $1, и если там первым элементом self,
 		то выкинуть его и делать не OP_WITH_READ, а WITH_SELF
-	*/ 
-	$$=N(pool); OP($$, OP_WITH_READ); /* stack: starting context */
+		*/
+	$$=N(pool); 
+	OP($$, OP_WITH_READ); /* stack: starting context */
 	P($$, $1); /* diving code; stack: current context */
 };
-name_rdive: name_advance2 | name_path name_advance2 { $$=$1; P($$, $2) };
+name_without_curly_rdive_root: ':' name_without_curly_rdive_code {
+	$$=N(pool); 
+	OP($$, OP_WITH_ROOT); /* stack: starting context */
+	P($$, $2); /* diving code; stack: current context */
+};
+name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; P($$, $2) };
 
 /* put */
 
