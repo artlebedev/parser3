@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.37 2001/09/01 14:47:11 parser Exp $
+	$Id: image.C,v 1.38 2001/09/01 14:49:01 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.37 2001/09/01 14:47:11 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.38 2001/09/01 14:49:01 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -544,7 +544,7 @@ static void _polybar(Request& r, const String& method_name, MethodParams *params
 class Font : public Pooled {
 public:
 	
-	const static int kerning;
+	const static int letter_spacing;
 	int height;	    ///< Font heigth
 	int monospace;	    ///< Default char width
 	int spacebarspace; ///< spacebar width
@@ -598,12 +598,12 @@ public:
 		if(cstr) for(; *cstr; cstr++) {
 			int index=index_of(*cstr);
 			index_display(image, x, y, index);
-			x+=kerning + (monospace ? monospace : index_width(index));
+			x+=letter_spacing + (monospace ? monospace : index_width(index));
 		}
 	}
 	
 };
-const int Font::kerning=1;
+const int Font::letter_spacing=1;
 
 static void _font(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
