@@ -26,13 +26,13 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char * const IDENT_SQL_DRIVER_H="$Date: 2003/11/20 16:34:27 $";
+static const char * const IDENT_SQL_DRIVER_H="$Date: 2003/12/22 11:44:36 $";
 
 #include <sys/types.h>
 #include <setjmp.h>
 #include <stdlib.h>
 
-#define SQL_DRIVER_API_VERSION 0x0007
+#define SQL_DRIVER_API_VERSION 0x0008
 #define SQL_DRIVER_CREATE create /* used in driver implementation */
 #define SQL_DRIVER_CREATE_NAME "create" /* could not figure out how to # it :( */
 
@@ -75,6 +75,14 @@ public:
 	virtual void *malloc_atomic(size_t size) =0;
 	/// reallocates bytes 
 	virtual void *realloc(void *ptr, size_t size) =0;
+	/// $request:charset
+	virtual const char* request_charset() =0;
+	/// transcoder
+	virtual void transcode(const char* src, size_t src_length,
+		const char*& dst, size_t& dst_length,
+		const char* charset_from_name,
+		const char* charset_to_name
+		) =0;
 	/// prepare throw exception
 	virtual void _throw(const SQL_Error& e) =0;
 	/// throw C++ exception from prepared
@@ -127,19 +135,14 @@ public:
 	virtual void connect(char *used_only_in_connect_url_cstr, 
 		SQL_Driver_services& services, void **connection) =0;
 	virtual void disconnect(void *connection) =0;
-	virtual void commit(
-		SQL_Driver_services& services, void *connection) =0;
-	virtual void rollback(
-		SQL_Driver_services& services, void *connection) =0;
+	virtual void commit(void *connection) =0;
+	virtual void rollback(void *connection) =0;
 	/// @returns true to indicate that connection still alive 
-	virtual bool ping(
-		SQL_Driver_services& services, void *connection) =0;
+	virtual bool ping(void *connection) =0;
 	/// encodes the string in 'from' to an escaped SQL string
-	virtual const char* quote(
-		SQL_Driver_services& services, void *connection,
+	virtual const char* quote(void *connection,
 		const char* str, unsigned int length) =0;
-	virtual void query(
-		SQL_Driver_services& services, void *connection,
+	virtual void query(void *connection,
 		const char* statement, unsigned long offset, unsigned long limit,
 		SQL_Driver_query_event_handlers& handlers) =0;
 };

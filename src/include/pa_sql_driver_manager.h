@@ -9,7 +9,7 @@
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_H="$Date: 2003/12/11 09:25:50 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_H="$Date: 2003/12/22 11:44:35 $";
 
 
 #include "pa_sql_driver.h"
@@ -54,7 +54,9 @@ public:
 		using driver dynamic library found in table, if not loaded yet
 		checks driver version
 	*/
-	SQL_Connection* get_connection(const String& aurl, Table *protocol2driver_and_client);
+	SQL_Connection* get_connection(const String& aurl, 
+		Table *protocol2driver_and_client,
+		const char* arequest_charset);
 
 private: // driver cache
 

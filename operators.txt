@@ -119,6 +119,7 @@ Xне сделано, видимо, не будет сделано
             NLS_ISO_CURRENCY  ISO currency symbol
             NLS_SORT  sort sequence
             ORA_ENCRYPT_LOGIN=TRUE
+            ClientCharset=parser-charset << charset in which parser thinks client works
 
         !odbc://DSN=dsn^;UID=user^;PWD=password
 

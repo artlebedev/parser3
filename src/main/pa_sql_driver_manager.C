@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/12/19 14:30:52 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/12/22 11:44:35 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -15,6 +15,7 @@ static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/12/19 14:30:52
 #include "pa_common.h"
 #include "pa_vhash.h"
 #include "pa_vtable.h"
+#include "pa_charsets.h"
 
 // globals
 
@@ -36,6 +37,25 @@ const String& SQL_Driver_services_impl::url_without_login() const {
 		result << furl->mid(at_pos, furl->length());
 
 	return result;
+}
+
+void SQL_Driver_services_impl::transcode(const char* src, size_t src_length,
+	const char*& dst, size_t& dst_length,
+	const char* charset_from_name,
+	const char* charset_to_name
+	) 
+{
+	try {
+		String::C result=Charset::transcode(String::C(src, src_length), 
+			charsets.get(charset_from_name),
+			charsets.get(charset_to_name));
+		dst=result.str;
+		dst_length=result.length;
+	} catch(const Exception& e) {
+		_throw(SQL_Error(e.type(), e.comment()));
+	} catch(...) {
+		_throw(SQL_Error(0, "unknown error while transcoding in sql driver"));
+	}
 }
 
 // helpers
@@ -66,7 +86,8 @@ SQL_Driver_manager::~SQL_Driver_manager() {
 
 /// @param aurl protocol://[driver-dependent]
 SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
-						   Table *protocol2driver_and_client) {
+						   Table *protocol2driver_and_client,
+						   const char* arequest_charset) {
 	// we have table for locating protocol's library
 	if(!protocol2driver_and_client)
 		throw Exception("parser.runtime",
@@ -171,7 +192,7 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 			put_driver_to_cache(protocol, driver);
 		}
 	
-		connection=new SQL_Connection(aurl, *driver);
+		connection=new SQL_Connection(aurl, *driver, arequest_charset);
 		// associate with pool[request]  (deassociates at close)
 		connection->set_url(); 
 	}

@@ -1,4 +1,107 @@
+2003-12-17  paf
+	* src/main/pa_globals.C 1.165:
+		bugfix: removed false warning [warning: unreported
+		xmlGenericErrors]
+
+	* src/types/pa_vfile.C 1.39:
+		beauty: removed outdated cast
+
+	* src/main/pa_common.C 1.170:
+		bugfix: empty http response caused gpf
+
+	* src/include/pa_string.h 1.154:
+		bugfix: removed too strong a assert
+
+2003-12-15  paf
+	* src/classes/xdoc.C 1.127:
+		bugfix: taint uri under ^xdoc::create{now works}
+
+2003-12-11  paf
+	* src/classes/file.C 1.119:
+	* src/classes/mail.C 1.99:
+	* src/classes/op.C 1.143:
+	* src/classes/xdoc.C 1.126:
+	* src/main/pa_request.C 1.263:
+	* src/types/pa_vimage.C 1.28:
+	* src/types/pa_vmath.C 1.6:
+	* src/types/pa_vstatus.C 1.21:
+		beauty cancel: gcc does not understand that
+
+	* src/include/pa_cache_managers.h 1.15:
+	* src/main/pa_cache_managers.C 1.12:
+	* src/main/pa_globals.C 1.164:
+	* src/main/pa_request.C 1.264:
+	* src/types/pa_vstatus.C 1.22:
+		bugfix(solaris): removed dependency on object initialization
+		order [one more place]
+
+	* src/main/pa_cache_managers.C 1.11:
+	* src/main/pa_sql_driver_manager.C 1.78:
+	* src/main/pa_stylesheet_manager.C 1.23:
+		bugfix(solaris): removed dependency on object initialization
+		order [two places]
+
+	* src/main/Makefile.am 1.43:
+	* src/main/Makefile.in 1.56:
+		*** empty log message ***
+
+	* src/classes/file.C 1.118:
+	* src/classes/mail.C 1.98:
+	* src/classes/op.C 1.142:
+	* src/classes/xdoc.C 1.125:
+	* src/include/pa_cache_managers.h 1.14:
+	* src/include/pa_sql_connection.h 1.36:
+	* src/include/pa_sql_driver_manager.h 1.30:
+	* src/include/pa_stylesheet_manager.h 1.20:
+	* src/main/pa_request.C 1.262:
+	* src/main/pa_stylesheet_manager.C 1.24:
+	* src/types/pa_vimage.C 1.27:
+	* src/types/pa_vmath.C 1.5:
+	* src/types/pa_vstatus.C 1.20:
+		beauty: removed redundant ctor call [relying on implicit String
+		:Body(cstr) call]
+
+	* operators.txt 1.148:
+	* src/types/pa_vstatus.C 1.23:
+		    !$status:pid process id
+		    !$status:tid thread id
+
+2003-12-10  paf
+	* src/include/pa_sql_connection.h 1.35:
+	* www/htdocs/.htaccess 1.24:
+		bugfix: $status:sql.cache back  << time now ok
+
+	* operators.txt 1.147:
+	* src/main/pa_sql_driver_manager.C 1.77:
+	* src/main/pa_stylesheet_manager.C 1.22:
+		$status:stylesheet.cache back operational
+
+	* operators.txt 1.146:
+	* src/classes/xdoc.C 1.124:
+	* src/include/pa_charset.h 1.28:
+	* src/include/pa_sql_connection.h 1.34:
+	* src/main/pa_charset.C 1.44:
+	* src/main/pa_sql_driver_manager.C 1.76:
+	* src/main/pa_string.C 1.192:
+	* src/types/pa_vxdoc.h 1.35:
+	* www/htdocs/.htaccess 1.23:
+		$status:sql.cache back operational
+
 2003-12-02  paf
+	* src/types/pa_vmail.C 1.57:
+		bugfix: ^mail:send[$.file[$.value[>>xxxx<<]] now untaints
+		properly [were: as-is forced]
+
+	* src/main/pa_xml_io.C 1.15:
+		bugfix: on some platforms one can't throw exceptions out of libxml callbacks:
+		reimplemented error handling of http://localhost, parser://method and safemode check callbacks
+
+	* src/main/pa_string.C [release_3_1_1] 1.185.2.1:
+		bugfix: SPARC gpf on %4!=0 address int ref [merged from HEAD]
+
+	* src/classes/image.C 1.103:
+		nothing: comment removed
+
 	* src/main/pa_string.C 1.191:
 		bugfix: sparc gpf on reading %4!=0 addresses to int
 
@@ -10738,7 +10841,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2003/12/10 14:17:42 $
+		$Date: 2003/12/22 11:44:33 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -17898,7 +18001,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.29 2003/12/10 14:17:42 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.30 2003/12/22 11:44:33 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -17941,7 +18044,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.29 2003/12/10 14:17:42 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.30 2003/12/22 11:44:33 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -23304,7 +23407,7 @@
 	* src/main/pa_pool.C 1.2:
 	* src/main/pa_string.C 1.3:
 	* src/main/pa_string.C 1.4:
-		$Id: ChangeLog,v 1.29 2003/12/10 14:17:42 paf Exp $ check
+		$Id: ChangeLog,v 1.30 2003/12/22 11:44:33 paf Exp $ check
 
 	* src/include/pa_pool.h 1.5:
 	* src/include/pa_string.h 1.2:

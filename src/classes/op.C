@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2003/12/11 09:36:51 $";
+static const char * const IDENT_OP_C="$Date: 2003/12/22 11:44:34 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -18,6 +18,7 @@ static const char * const IDENT_OP_C="$Date: 2003/12/11 09:36:51 $";
 #include "pa_vdate.h"
 #include "pa_vmethod_frame.h"
 #include "pa_vclass.h"
+#include "pa_charset.h"
 
 // limits
 
@@ -284,7 +285,8 @@ gettimeofday(&mt[0],NULL);
 #endif
 	// connect
 	SQL_Connection* connection=SQL_driver_manager->get_connection(url.as_string(), 
-		protocol2driver_and_client);
+		protocol2driver_and_client,
+		r.charsets.source().NAME().cstr());
 
 #ifdef RESOURCES_DEBUG
 //measure:after connect

@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char * const IDENT_SQL_CONNECTION_H="$Date: 2003/12/11 09:25:50 $";
+static const char * const IDENT_SQL_CONNECTION_H="$Date: 2003/12/22 11:44:35 $";
 
 
 #include "pa_sql_driver.h"
@@ -34,14 +34,22 @@ static const char * const IDENT_SQL_CONNECTION_H="$Date: 2003/12/11 09:25:50 $";
 class SQL_Driver_services_impl: public SQL_Driver_services {
 	const String* furl;
 	Exception fexception;
+	const char* frequest_charset;
 public:
-	SQL_Driver_services_impl(): furl(0) {}
+	SQL_Driver_services_impl(const char* arequest_charset): furl(0), frequest_charset(arequest_charset) {}
 	void set_url(const String& aurl) { furl=&aurl;}
 	const String& url_without_login() const;
 
-	override void *malloc(size_t size) { return pa_malloc(size); }
-	override void *malloc_atomic(size_t size) { return pa_malloc_atomic(size); }
-	override void *realloc(void *ptr, size_t size) { return pa_realloc(ptr, size); }
+	override void* malloc(size_t size) { return pa_malloc(size); }
+	override void* malloc_atomic(size_t size) { return pa_malloc_atomic(size); }
+	override void* realloc(void *ptr, size_t size) { return pa_realloc(ptr, size); }
+
+	override const char* request_charset() { return frequest_charset; }
+	override void transcode(const char* src, size_t src_length,
+		const char*& dst, size_t& dst_length,
+		const char* charset_from_name,
+		const char* charset_to_name
+		);
 
 	/**
 		normally we can't 'throw' from dynamic library, so
@@ -83,16 +91,15 @@ class SQL_Connection: public PA_Object {
 	SQL_Driver_services_impl fservices;
 	void *fconnection;
 	time_t time_used;
-	bool marked_to_rollback;
 
 public:
 
-	SQL_Connection(const String& aurl, SQL_Driver& adriver):
+	SQL_Connection(const String& aurl, SQL_Driver& adriver, const char* arequest_charset):
 		furl(aurl),
 		fdriver(adriver),
+		fservices(arequest_charset),
 		fconnection(0),
-		time_used(0), 
-		marked_to_rollback(false) {
+		time_used(0) {
 	}
 
 	SQL_Driver_services_impl& services() { return fservices; }
@@ -121,12 +128,12 @@ public:
 	}
 	bool ping() { 
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-			return fdriver.ping(fservices, fconnection)
+			return fdriver.ping(fconnection)
 		);
 	}
 	const char* quote(const char* str, unsigned int length) {
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-			return fdriver.quote(fservices, fconnection, str, length)
+			return fdriver.quote(fconnection, str, length)
 		);
 	}
 
@@ -136,7 +143,7 @@ public:
 		const String& source) {
 		try {
 			SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-				fdriver.query(fservices, fconnection, 
+				fdriver.query(fconnection, 
 					statement, offset, limit, 
 					handlers)
 			);	
@@ -153,23 +160,17 @@ public:
 
 	void commit() { 
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-			fdriver.commit(fservices, fconnection) 
+			fdriver.commit(fconnection) 
 		);
 	}
 	void rollback() { 
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-			fdriver.rollback(fservices, fconnection)
+			fdriver.rollback(fconnection)
 		);
 	}
 
 	/// return to cache
 	void close() {
-		if(marked_to_rollback) {
-			rollback();
-			marked_to_rollback=false;
-		} else
-			commit();
-
 		SQL_driver_manager->close_connection(furl, this);
 	}
 
