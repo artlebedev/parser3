@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/11/03 13:20:30 $";
+static const char* IDENT_TABLE_C="$Date: 2003/11/04 10:49:34 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -52,8 +52,8 @@ String table_reverse_name(TABLE_REVERSE_NAME);
 
 // local defines
 
-#define COLUMN_SEPARATOR_NAME "column-separator"
-#define COLUMN_ENCLOSER_NAME "column-encloser"
+#define COLUMN_SEPARATOR_NAME "separator"
+#define COLUMN_ENCLOSER_NAME "encloser"
 
 
 // methods
@@ -178,7 +178,7 @@ static void _create(Request& r, MethodParams& params) {
 	GET_SELF(r, VTable).set_table(table);
 }
 
-inline char* remove_encloser(char* cstr, char encloser) {
+static char* remove_encloser(char* cstr, char encloser) {
 	if(cstr[0]!=encloser)
 		return cstr;
 
@@ -206,6 +206,117 @@ inline char* remove_encloser(char* cstr, char encloser) {
 	return cstr;
 }
 
+struct lsplit_result {
+	char* piece;
+	char delim;
+
+	operator bool() { return piece!=0; }
+};
+
+inline lsplit_result lsplit(char* string, char delim1, char delim2) {
+	lsplit_result result;
+    if(string) {
+		char delims[]={delim1, delim2, 0};
+		if(char* v=strpbrk(string, delims)) {
+			result.delim=*v;
+			*v=0;
+			result.piece=v+1;
+			return result;
+		}
+    }
+	result.piece=0;
+	result.delim=0;
+    return result;
+}
+
+inline lsplit_result lsplit(char* *string_ref, char delim1, char delim2) {
+    lsplit_result result;
+	result.piece=*string_ref;
+	lsplit_result next=lsplit(*string_ref, delim1, delim2);
+	result.delim=next.delim;
+	*string_ref=next.piece;
+    return result;
+}
+
+static lsplit_result lsplit(char** string_ref, char delim1, char delim2, char encloser) {
+	lsplit_result result;
+
+    if(char* string=*string_ref) {
+		if(encloser && *string==encloser) {
+            string++;
+			
+			char *read;
+			char *write;
+			write=read=string;
+			char c;
+			while(c=*read++) {
+				if(c==encloser) {
+					char n=*read;
+					if(n==encloser) // double-encloser stands for encloser
+						read++;
+					else if(n==delim1 || n==delim2) {
+						result.delim=n;
+						read++;
+						break;
+					}
+				}
+
+				*write++=c;
+			}
+			*write=0; // terminate
+			*string_ref=c? read: 0;
+			result.piece=string;
+			return result;
+		} else
+			return lsplit(string_ref, delim1, delim2);
+    }
+	result.piece=0;
+    return result;
+}
+
+static void skip_empty_and_comment_lines( char** data_ref ) {
+	if(char *data=*data_ref) {
+		while( char c=*data ) {
+			if( c== '\n' || c == '#' ) {
+				/*nowhere=*/getrow(&data); // remove empty&comment lines
+				*data_ref=data;
+				continue;
+			}
+			break;
+		}
+	}
+}
+
+struct TableSeparators {
+	char column;
+	char encloser;
+
+	TableSeparators() {
+		column='\t';
+		encloser=0;
+	}
+	void load( HashStringValue& options ) {
+		if(Value* vseparator=options.get(COLUMN_SEPARATOR_NAME)) {
+			options.remove(COLUMN_SEPARATOR_NAME);
+			const String& sseparator=vseparator->as_string();
+			if(sseparator.length()!=1)
+				throw Exception("parser.runtime",
+					&sseparator,
+					"separator must be one character long");
+			column=sseparator.first_char();
+		}
+		if(Value* vencloser=options.get(COLUMN_ENCLOSER_NAME)) {
+			options.remove(COLUMN_ENCLOSER_NAME);
+			const String& sencloser=vencloser->as_string();
+			if(sencloser.length()!=1)
+				throw Exception("parser.runtime",
+					&sencloser,
+					"encloser must be one character long");
+			encloser=sencloser.first_char();
+		}
+	}
+};
+
 static void _load(Request& r, MethodParams& params) {
 	const String&  first_param=params.as_string(0, "file name must be string");
 	int filename_param_index=0;
@@ -215,30 +326,12 @@ static void _load(Request& r, MethodParams& params) {
 	size_t options_param_index=filename_param_index+1;
 
 	HashStringValue *options=0;
-	char column_separator='\t';
-	char column_encloser=0;
+	TableSeparators separators;
 	if(options_param_index<params.count()
 		&& (options=params.as_no_junction(options_param_index, "additional params must be hash").get_hash())) {
 		// cloning, so that we could change [to simplify checks on params inside file_read_text
 		options=new HashStringValue(*options);
-		if(Value* vseparator=options->get(COLUMN_SEPARATOR_NAME)) {
-			options->remove(COLUMN_SEPARATOR_NAME);
-			const String& sseparator=vseparator->as_string();
-			if(sseparator.length()!=1)
-				throw Exception("parser.runtime",
-					&sseparator,
-					"separator must be one character long");
-			column_separator=sseparator.first_char();
-		}
-		if(Value* vencloser=options->get(COLUMN_ENCLOSER_NAME)) {
-			options->remove(COLUMN_ENCLOSER_NAME);
-			const String& sencloser=vencloser->as_string();
-			if(sencloser.length()!=1)
-				throw Exception("parser.runtime",
-					&sencloser,
-					"encloser must be one character long");
-			column_encloser=sencloser.first_char();
-		}
+		separators.load(*options);
 	}
 
 	// loading text
@@ -255,39 +348,33 @@ static void _load(Request& r, MethodParams& params) {
 	} else {
 		columns=Table::columns_type(new ArrayString);
 
-		while(char *row_chars=getrow(&data)) {
-			// remove empty&comment lines
-			if(!*row_chars || *row_chars == '#')
-				continue;
-			do {
-				char *column_chars=lsplit(&row_chars, column_separator);
-				if(column_encloser)
-					column_chars=remove_encloser(column_chars, column_encloser);
-				*columns+=new String(column_chars, 0, true);
-			} while(row_chars);
-
-			break;
+		skip_empty_and_comment_lines(&data);
+		while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
+			*columns+=new String(sr.piece, 0, true);
+			if(sr.delim=='\n') 
+				break;
 		}
 	}
+	
+	Table& table=*new Table(columns);
 
 	// parse cells
-	Table& table=*new Table(columns);//что-то очень плохое с realloc'ом: 1000 сильно помогает
-	char *row_chars;
-	int cells=0;
-	while(row_chars=getrow(&data)) {
-		// remove empty&comment lines
-		if(!*row_chars || *row_chars == '#')
-			continue;
-		Table::element_type row(new ArrayString);
-		while(char *cell_chars=lsplit(&row_chars, '\t')) {
-			if(column_encloser)
-				cell_chars=remove_encloser(cell_chars, column_encloser);
-			*row+=new String(cell_chars, 0, true);
-			cells++;
+	Table::element_type row(new ArrayString);
+	skip_empty_and_comment_lines(&data);
+	while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
+		if(!sr.delim && !row->count()) // append last empty column [if without \n]
+			break;
+		*row+=new String(sr.piece, 0, true);
+		if(sr.delim=='\n') {
+			table+=row;
+			row=new ArrayString;
+			skip_empty_and_comment_lines(&data);
 		}
+	}
+	// last line [if without \n]
+	if(row->count())
 		table+=row;
-	};
-
+	
 	// replace any previous table value
 	GET_SELF(r, VTable).set_table(table);
 }

@@ -9,3 +9,25 @@ $date.hour $date.minute $date.second
 
 $image[^image::create(10;10)]
 $response:download[^image.gif[a.gif]]
+
+
+----------
+
+#xxx
+
+"a -""
+#xx
+*b"	c
+#c
+a"b	c!
+
+$t[^table::load[excel.txt;$.column-encloser["]]]
+$c[^t.columns[]]
+^c.menu{=$c.column=|}<br>
+^t.menu{
+	^c.menu{
+		=$t.[$c.column]=|
+	}
+	<br>
+
+}
