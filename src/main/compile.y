@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.89 2001/03/11 08:16:34 paf Exp $
+	$Id: compile.y,v 1.90 2001/03/11 09:30:45 paf Exp $
 */
 
 /*
@@ -18,7 +18,7 @@
 */
 
 %{
-#define YYSTYPE  Array/*<op>*/ *
+#define YYSTYPE  Array/*<Operation>*/ *
 #define YYPARSE_PARAM  pc
 #define YYLEX_PARAM  pc
 #define YYDEBUG  1
@@ -229,10 +229,7 @@ maybe_comment: empty | STRING;
 
 maybe_codes: empty | codes;
 
-codes: code | codes code { 
-	$$=$1; 
-	P($$, $2);
-};
+codes: code | codes code { $$=$1; P($$, $2) };
 code: write_string | action;
 action: get | put | with | call;
 
@@ -310,7 +307,7 @@ construct_by_code: '[' any_constructor_code_value ']' {
 	O($$, OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 }
 ;
-construct_by_expr: '(' any_expr ')' { 
+construct_by_expr: '(' expr_value ')' { 
 	$$=$2; /* stack: context, name, value */
 	O($$, OP_CONSTRUCT_EXPR); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 }
@@ -379,7 +376,7 @@ store_expr_param_part: write_expr_value {
 	$$=N(POOL); 
 	PCA($$, $1);
 };
-write_expr_value: any_expr {
+write_expr_value: expr_value {
 	$$=$1;
 	O($$, OP_WRITE);
 };
@@ -454,10 +451,6 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 
 /* expr */
 
-any_expr:
-	empty_double_value /* optimized $var() case */
-|	expr_value /* $var(something) */
-;
 expr_value: expr {
 	if(($$=$1)->size()==2) // only one string literal in there?
 		change_string_literal_to_double_literal($$); // make that string literal Double
@@ -515,7 +508,6 @@ write_string: STRING {
 	change_string_literal_to_write_string_literal($$=$1)
 };
 
-empty_double_value: /* empty */ { $$=VL(NEW VDouble(POOL, 0)) };
 empty_string_value: /* empty */ { $$=VL(NEW VString(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 

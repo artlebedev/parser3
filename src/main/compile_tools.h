@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.27 2001/03/11 08:16:34 paf Exp $
+	$Id: compile_tools.h,v 1.28 2001/03/11 09:30:45 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -59,33 +59,33 @@ struct parse_control {
 };
 
 // New array // return empty array
-inline Array/*<op>*/ *N(Pool& pool) {
-	return new(pool) Array/*<op>*/(pool);
+inline Array/*<Operation>*/ *N(Pool& pool) {
+	return new(pool) Array/*<Operation>*/(pool);
 }
 
 // Assembler instruction // append ordinary instruction to ops
-inline void O(Array/*<op>*/ *result, enum OPCODE code) {
+inline void O(Array/*<Operation>*/ *result, enum OPCODE code) {
 	Operation op; op.code=code;
 	*result+=op.cast;
 }
 
 // Argument Eval_expression // append eval_expression to ops
-inline void AE(Array/*<op>*/ *result, char *eval_expression) {
+inline void AE(Array/*<Operation>*/ *result, char *eval_expression) {
 	*result+=eval_expression;
 }
 
 // aPpend 'code_array' to 'result'
-inline void P(Array/*<op>*/ *result, Array *code_array) {
+inline void P(Array/*<Operation>*/ *result, Array *code_array) {
 	result->append_array(*code_array);
 }
 // aPpend part of 'code_array', starting from offset, to 'result'
-inline void P(Array/*<op>*/ *result, Array *code_array, int offset) {
+inline void P(Array/*<Operation>*/ *result, Array *code_array, int offset) {
 	result->append_array(*code_array, offset);
 }
 // aPpend 'vstring' to 'result'
-void PV(Array/*<op>*/ *result, VString *vstring);
+void PV(Array/*<Operation>*/ *result, VString *vstring);
 // aPpend 'Code_Array' to result
-void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array);
+void PCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
 
 
 // Value Literal // returns array with 

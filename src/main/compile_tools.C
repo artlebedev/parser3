@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.C,v 1.26 2001/03/11 08:16:34 paf Exp $
+	$Id: compile_tools.C,v 1.27 2001/03/11 09:30:45 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -13,7 +13,7 @@
 #include "pa_vstring.h"
 #include "pa_vdouble.h"
 
-void PV(Array/*<op>*/ *result, Value *value) {
+void PV(Array/*<Operation>*/ *result, Value *value) {
 	// append OP_VALUE
 	Operation op; op.code=OP_VALUE;
 	*result+=op.cast;
@@ -22,7 +22,7 @@ void PV(Array/*<op>*/ *result, Value *value) {
 	*result+=value;
 }
 
-void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array) {
+void PCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
 	// append OP_CODE
 	Operation op; op.code=OP_CODE__STORE_PARAM;
 	*result+=op.cast;
