@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.116 2001/12/21 12:47:56 paf Exp $
+	$Id: pa_request.h,v 1.117 2002/01/16 10:28:34 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -54,6 +54,7 @@ class VMethodFrame;
 /// Main workhorse.
 class Request : public Pooled {
 	friend class Temp_lang;
+	friend class Temp_connection;
 public:
 
 #ifdef RESOURCES_DEBUG
@@ -158,6 +159,16 @@ public:
 	/// returns the mime type of 'user_file_name_cstr'
 	const String& mime_type_of(const char *user_file_name_cstr);
 
+	/// returns current SQL connection if any
+	SQL_Connection *connection(const String *source) { 
+		if(!fconnection && source)
+			throw Exception(0, 0,
+				source,
+				"outside of 'connect' operator");
+
+		return fconnection; 
+	}
+
 public:
 	
 	/// info from web server
@@ -189,9 +200,6 @@ public:
 
 	/// 'MAIN' class conglomerat
 	VStateless_class *main_class;
-
-	/// connection
-	SQL_Connection *connection;
 
 	/// classes configured data
 	Hash classes_conf;
@@ -231,10 +239,6 @@ private: // execute.C
 
 	Value *get_element();
 
-private: // lang&raw 
-	
-	uchar flang;
-
 private: // defaults
 
 	const uchar fdefault_lang;
@@ -256,6 +260,28 @@ private: // lang manipulation
 		flang=alang;
 	}
 
+private: // lang&raw 
+	
+	uchar flang;
+
+
+private: // connection manipulation
+
+	SQL_Connection *set_connection(SQL_Connection *aconnection) {
+		SQL_Connection *result=fconnection;
+		fconnection=aconnection;
+		return result;
+	}
+	void restore_connection(SQL_Connection *aconnection) {
+		fconnection=aconnection;
+	}
+
+private:
+
+	/// connection
+	SQL_Connection *fconnection;
+
+
 private:
 
 	void output_result(const VFile& body_file, bool header_only);
@@ -272,6 +298,20 @@ public:
 	}
 	~Temp_lang() { 
 		frequest.restore_lang(saved_lang); 
+	}
+};
+
+///	Auto-object used for temporary changing Request::fconnection.
+class Temp_connection {
+	Request& frequest;
+	SQL_Connection *saved_connection;
+public:
+	Temp_connection(Request& arequest, SQL_Connection *aconnection) : 
+		frequest(arequest),
+		saved_connection(arequest.set_connection(aconnection)) {
+	}
+	~Temp_connection() { 
+		frequest.restore_connection(saved_connection); 
 	}
 };
 

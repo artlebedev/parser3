@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_connection.h,v 1.20 2001/12/15 21:28:20 paf Exp $
+	$Id: pa_sql_connection.h,v 1.21 2002/01/16 10:28:34 paf Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -26,29 +26,27 @@
 /// SQL connection. handy wrapper around low level SQL_Driver
 class SQL_Connection : public Pooled {
 
+	friend class SQL_Connection_ptr;
+
 public:
 
 	SQL_Connection(Pool& pool, const String& aurl, SQL_Driver& adriver) : Pooled(pool),
 		furl(aurl),
 		fdriver(adriver),
 		fconnection(0),
-		time_stamp(0) {
+		time_used(0), used(0),
+		marked_to_rollback(false) {
 	}
 	
 	const String& get_url() { return furl; }
 
 	void set_services(SQL_Driver_services *aservices) {
-		time_stamp=time(0); // they started to use at this time
 		fservices=aservices;
 	}
 	bool expired(time_t older_dies) {
-		return time_stamp<older_dies;
+		return !used && time_used<older_dies;
 	}
-	time_t get_time_stamp() { return time_stamp; }
-
-	void close() {
-		SQL_driver_manager->close_connection(furl, *this);
-	}
+	time_t get_time_used() { return time_used; }
 
 	bool connected() { return fconnection!=0; }
 	void connect(char *used_only_in_connect_url_cstr) { 
@@ -58,16 +56,6 @@ public:
 	}
 	void disconnect() { 
 		fdriver.disconnect(fconnection); fconnection=0; 
-	}
-	void commit() { 
-		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-			fdriver.commit(*fservices, fconnection) 
-		);
-	}
-	void rollback() { 
-		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-			fdriver.rollback(*fservices, fconnection)
-		);
 	}
 	bool ping() { 
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
@@ -92,6 +80,48 @@ public:
 		);
 	}
 
+	void mark_to_rollback() {
+		marked_to_rollback=true;
+	}
+
+private: // closing process
+
+	void commit() { 
+		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
+			fdriver.commit(*fservices, fconnection) 
+		);
+	}
+	void rollback() { 
+		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
+			fdriver.rollback(*fservices, fconnection)
+		);
+	}
+
+	/// return to cache
+	void close() {
+		if(marked_to_rollback)
+			rollback();
+		else
+			commit();
+
+		SQL_driver_manager->close_connection(furl, *this);
+	}
+
+private: // connection usage methods
+
+	void use() {
+		time_used=time(0); // they started to use at this time
+		used++;
+	}
+	void unuse() {
+		used--;
+		if(!used)
+			close();
+	}
+
+private: // connection usage data
+
+	int used;
 
 private:
 
@@ -99,7 +129,39 @@ private:
 	SQL_Driver& fdriver;
 	SQL_Driver_services *fservices;
 	void *fconnection;
-	time_t time_stamp;
+	time_t time_used;
+	bool marked_to_rollback;
+};
+
+/// Auto-object used to track SQL_Connection usage
+class SQL_Connection_ptr {
+	SQL_Connection *fconnection;
+public:
+	explicit SQL_Connection_ptr(SQL_Connection *aconnection) : fconnection(aconnection) {
+		fconnection->use();
+	}
+	~SQL_Connection_ptr() {
+		fconnection->unuse();
+	}
+	SQL_Connection* operator->() {
+		return fconnection;
+	}
+	SQL_Connection* get() const {
+		return fconnection; 
+	}
+
+	// copying
+	SQL_Connection_ptr(const SQL_Connection_ptr& src) : fconnection(src.fconnection) {
+		fconnection->use();
+	}
+	SQL_Connection_ptr& operator =(const SQL_Connection_ptr& src) {
+		// may do without this=src check
+		fconnection->unuse();
+		fconnection=src.fconnection;
+		fconnection->use();
+
+		return *this;
+	}
 };
 
 #endif

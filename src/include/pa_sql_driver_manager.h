@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.h,v 1.20 2001/12/15 21:28:20 paf Exp $
+	$Id: pa_sql_driver_manager.h,v 1.21 2002/01/16 10:28:34 paf Exp $
 */
 
 #ifndef PA_SQL_DRIVER_MANAGER_H
@@ -26,6 +26,7 @@
 // forwards
 
 class SQL_Connection;
+class SQL_Connection_ptr;
 
 /// sql driver manager
 class SQL_Driver_manager : public Cache_manager {
@@ -40,7 +41,7 @@ public:
 		using driver dynamic library found in table, if not loaded yet
 		checks driver version
 	*/
-	SQL_Connection& get_connection(const String& url, const String& request_origin,
+	SQL_Connection_ptr get_connection(const String& url, const String& request_origin,
 		Table *protocol2driver_and_client);
 
 private: // driver cache

@@ -1,10 +1,10 @@
 /** @file
-	Parser: ISAPI: pool storage class decl.
+	Parser: CGI: pool storage class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pool_storage.h,v 1.6 2001/12/13 11:29:22 paf Exp $
+	$Id: pool_storage.h,v 1.7 2002/01/16 10:28:35 paf Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.C,v 1.57 2001/12/13 15:13:57 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.58 2002/01/16 10:28:35 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -100,7 +100,7 @@ SQL_Driver_manager::~SQL_Driver_manager() {
 }
 
 /// @param request_url protocol://[driver-dependent]
-SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
+SQL_Connection_ptr SQL_Driver_manager::get_connection(const String& request_url,
 												   const String& request_origin,
 												   Table *protocol2driver_and_client) {
 	Pool& pool=request_origin.pool(); // request pool											   
@@ -115,17 +115,17 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 	SQL_Driver_services *services=new(pool) SQL_Driver_services_impl(pool, request_url); 
 
 	// first trying to get cached connection
-	SQL_Connection *result=get_connection_from_cache(request_url);
-	if(result) {
-		result->set_services(services);
-		if(!result->ping()) { // we have some cached connection, is it pingable?
-			result->disconnect(); // kill unpingabe=dead connection
-			result=0;
+	SQL_Connection *connection=get_connection_from_cache(request_url);
+	if(connection) {
+		connection->set_services(services);
+		if(!connection->ping()) { // we have some cached connection, is it pingable?
+			connection->disconnect(); // kill unpingabe=dead connection
+			connection=0;
 		}
 	}
 
 	char *request_url_cstr;
-	if(result)
+	if(connection)
 		request_url_cstr=0; // calm, compiler
 	else { // no cached connection or it were unpingabe: connect/reconnect
 		int pos=request_url.pos("://", 3);
@@ -220,16 +220,16 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 		// allocate in global pool 
 		// associate with services[request]
 		// NOTE: never freed up!
-		result=new(this->pool()) SQL_Connection(this->pool(), global_url, *driver);
+		connection=new(this->pool()) SQL_Connection(this->pool(), global_url, *driver);
 		// associate with services[request]  (deassociates at close)
-		result->set_services(services); 
+		connection->set_services(services); 
 	}
 
-	// if not connected yet, do that now, when result has services
-	if(!result->connected())
-		result->connect(request_url_cstr);
-	// return it
-	return *result;
+	// if not connected yet, do that now, when connection has services
+	if(!connection->connected())
+		connection->connect(request_url_cstr);
+	// return autoclosing object for it
+	return connection;
 }
 
 void SQL_Driver_manager::close_connection(const String& url, 
@@ -304,8 +304,8 @@ static void add_connection_to_status_cache_table(Array::Item *value, void *info)
 		// url
 		row+=&url_without_login(pool, connection.get_url());
 		// time
-		time_t time_stamp=connection.get_time_stamp();
-		const char *unsafe_time_cstr=ctime(&time_stamp);
+		time_t time_used=connection.get_time_used();
+		const char *unsafe_time_cstr=ctime(&time_used);
 		int time_buf_size=strlen(unsafe_time_cstr);
 		char *safe_time_buf=(char *)pool.malloc(time_buf_size);
 		memcpy(safe_time_buf, unsafe_time_cstr, time_buf_size);

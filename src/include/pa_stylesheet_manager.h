@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.h,v 1.9 2001/12/15 21:28:20 paf Exp $
+	$Id: pa_stylesheet_manager.h,v 1.10 2002/01/16 10:28:35 paf Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -23,6 +23,7 @@
 // forwards
 
 class Stylesheet_connection;
+class Stylesheet_connection_ptr;
 
 /** XSLT stylesheet driver manager
 		maintains 
@@ -38,7 +39,7 @@ public:
 		check for disk update of "{file_spec}" or "{file_spec}.stamp",
 		if not updated return cached version[if any] otherwise load/compile/return
 	*/
-	Stylesheet_connection& get_connection(const String& file_spec);
+	Stylesheet_connection_ptr get_connection(const String& file_spec);
 
 private: // cache
 

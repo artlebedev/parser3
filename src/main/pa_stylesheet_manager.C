@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.C,v 1.9 2002/01/14 17:48:57 paf Exp $
+	$Id: pa_stylesheet_manager.C,v 1.10 2002/01/16 10:28:35 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -53,12 +53,12 @@ Stylesheet_manager::~Stylesheet_manager() {
 		reinterpret_cast<void *>(time(0)+1/*=in future=expire all*/));
 }
 
-Stylesheet_connection& Stylesheet_manager::get_connection(const String& request_file_spec) {
+Stylesheet_connection_ptr Stylesheet_manager::get_connection(const String& request_file_spec) {
 	Pool& pool=request_file_spec.pool(); // request pool											   
 
 	// first trying to get cached stylesheet
-	Stylesheet_connection *result=get_connection_from_cache(request_file_spec);
-	if(!result) {
+	Stylesheet_connection *connection=get_connection_from_cache(request_file_spec);
+	if(!connection) {
 		// then just construct it
 
 		// make global_file_spec C-string on global pool
@@ -68,12 +68,12 @@ Stylesheet_connection& Stylesheet_manager::get_connection(const String& request_
 		// make global_file_spec string on global pool
 		String& global_file_spec=*new(this->pool()) String(this->pool(), global_file_spec_cstr);
 
-		result=new(this->pool()) Stylesheet_connection(this->pool(), global_file_spec);
+		connection=new(this->pool()) Stylesheet_connection(this->pool(), global_file_spec);
 	}
 	// associate with services[request]  (deassociates at close)
-	result->set_services(&pool); 
-	// return it
-	return *result;
+	connection->set_services(&pool); 
+	// return autoclosing object for it
+	return connection;
 }
 
 void Stylesheet_manager::close_connection(const String& file_spec, 

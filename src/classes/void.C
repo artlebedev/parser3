@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: void.C,v 1.13 2001/11/05 11:46:21 paf Exp $
+	$Id: void.C,v 1.14 2002/01/16 10:28:34 paf Exp $
 */
 
 #include "classes.h"
@@ -67,20 +67,15 @@ private:
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	if(!r.connection)
-		throw Exception(0, 0,
-			&method_name,
-			"without connect");
-
 	Value& statement=params->as_junction(0, "statement must be code");
 
 	Temp_lang temp_lang(r, String::UL_SQL);
 	const String& statement_string=r.process(statement).as_string();
 	const char *statement_cstr=
-		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
+		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
 	Void_sql_event_handlers handlers(pool, statement_string);
 	try {
-		r.connection->query(
+		r.connection(&method_name)->query(
 			statement_cstr, 0, 0,
 			handlers);
 	} catch(const Exception& e) {

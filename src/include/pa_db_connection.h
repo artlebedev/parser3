@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_connection.h,v 1.18 2001/12/15 21:28:19 paf Exp $
+	$Id: pa_db_connection.h,v 1.19 2002/01/16 10:28:34 paf Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
@@ -92,7 +92,7 @@ public:
 class DB_Connection_ptr {
 	DB_Connection *fconnection;
 public:
-	DB_Connection_ptr(DB_Connection *aconnection) : fconnection(aconnection) {
+	explicit DB_Connection_ptr(DB_Connection *aconnection) : fconnection(aconnection) {
 		fconnection->use();
 	}
 	~DB_Connection_ptr() {

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.190 2001/12/26 08:46:13 paf Exp $
+	$Id: pa_request.C,v 1.191 2002/01/16 10:28:35 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -58,7 +58,7 @@ Request::Request(Pool& apool,
 	default_content_type(0),
 	mime_types(0),
 	main_class(0),
-	connection(0),
+	fconnection(0),
 	classes_conf(apool),
 	anti_endless_execute_recoursion(0),
 	trace(apool)

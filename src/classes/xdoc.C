@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.64 2002/01/16 09:27:00 paf Exp $
+	$Id: xdoc.C,v 1.65 2002/01/16 10:28:34 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -82,7 +82,71 @@ private:
 	xmlOutputBuffer *_Ptr;
 };
 
+class xsltTransformContext_auto_ptr {
+public:
+	explicit xsltTransformContext_auto_ptr(xsltTransformContext *_P = 0) 
+		: _Owns(_P != 0), _Ptr(_P) {}
+	xsltTransformContext_auto_ptr(const xsltTransformContext_auto_ptr& _Y) 
+		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
+	xsltTransformContext_auto_ptr& operator=(const xsltTransformContext_auto_ptr& _Y) 
+		{if (this != &_Y)
+			{if (_Ptr != _Y.get())
+				{if (_Owns && _Ptr)
+					xsltFreeTransformContext(_Ptr);
+				_Owns = _Y._Owns; }
+			else if (_Y._Owns)
+				_Owns = true;
+			_Ptr = _Y.release(); }
+		return (*this); }
+	~xsltTransformContext_auto_ptr()
+		{if (_Owns && _Ptr)
+			xsltFreeTransformContext(_Ptr); }
+	xsltTransformContext& operator*() const 
+		{return (*get()); }
+	xsltTransformContext *operator->() const 
+		{return (get()); }
+	xsltTransformContext *get() const 
+		{return (_Ptr); }
+	xsltTransformContext *release() const 
+		{((xsltTransformContext_auto_ptr *)this)->_Owns = false;
+		return (_Ptr); }
+private:
+	bool _Owns;
+	xsltTransformContext *_Ptr;
+};
 
+class xsltStylesheet_auto_ptr {
+public:
+	explicit xsltStylesheet_auto_ptr(xsltStylesheet *_P = 0) 
+		: _Owns(_P != 0), _Ptr(_P) {}
+	xsltStylesheet_auto_ptr(const xsltStylesheet_auto_ptr& _Y) 
+		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
+	xsltStylesheet_auto_ptr& operator=(const xsltStylesheet_auto_ptr& _Y) 
+		{if (this != &_Y)
+			{if (_Ptr != _Y.get())
+				{if (_Owns && _Ptr)
+					xsltFreeStylesheet(_Ptr);
+				_Owns = _Y._Owns; }
+			else if (_Y._Owns)
+				_Owns = true;
+			_Ptr = _Y.release(); }
+		return (*this); }
+	~xsltStylesheet_auto_ptr()
+		{if (_Owns && _Ptr)
+			xsltFreeStylesheet(_Ptr); }
+	xsltStylesheet& operator*() const 
+		{return (*get()); }
+	xsltStylesheet *operator->() const 
+		{return (get()); }
+	xsltStylesheet *get() const 
+		{return (_Ptr); }
+	xsltStylesheet *release() const 
+		{((xsltStylesheet_auto_ptr *)this)->_Owns = false;
+		return (_Ptr); }
+private:
+	bool _Owns;
+	xsltStylesheet *_Ptr;
+};
 
 // methods
 
@@ -358,7 +422,7 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 
 	GdomeException exc;
 	GdomeDocument *document=gdome_di_createDocFromMemory(domimpl,
-		xml.cstr(String::UL_UNSPECIFIED, r.connection),
+		xml.cstr(String::UL_UNSPECIFIED, r.connection(0)),
 		GDOME_LOAD_PARSING
 		/* GDOME_LOAD_VALIDATING  pending until kill warning of no-dtd*/ 
 		/*|GDOME_LOAD_SUBSTITUTE_ENTITIES */,
@@ -506,8 +570,8 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 
 	xmlOutputBuffer_auto_ptr outputBuffer(xmlAllocOutputBuffer(encoder));
 
-	xsltStylesheet *stylesheet=xsltNewStylesheet();
-	if(!stylesheet)
+	xsltStylesheet_auto_ptr stylesheet(xsltNewStylesheet());
+	if(!stylesheet.get())
 		throw Exception(0, 0,
 			&method_name,
 			"xsltNewStylesheet failed");
@@ -528,8 +592,7 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 	OOE2STYLE(omitXmlDeclaration);
 
 	xmlDoc *document=((Gdome_xml_Document*)vdoc.get_document(&method_name))->n;
-	xsltSaveResultTo(outputBuffer.get(), document, stylesheet);
-	xsltFreeStylesheet(stylesheet);
+	xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get());
 
 	// write out result
 	char *gnome_buf;  size_t gnome_size;
@@ -637,27 +700,24 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 
 	// stylesheet
 	const String& stylesheet_filespec=r.absolute(params->as_string(0, "file name must be string"));
-	Stylesheet_connection& connection=stylesheet_manager->get_connection(stylesheet_filespec);
+	Stylesheet_connection_ptr connection=stylesheet_manager->get_connection(stylesheet_filespec);
 
 	// transform
-	xsltStylesheet *stylesheet=connection.stylesheet(false/*nocache*/);
+	xsltStylesheet *stylesheet=connection->stylesheet(false/*nocache*/);
 	xmlDoc *document=((Gdome_xml_Document*)vdoc.get_document(&method_name))->n;
-	xsltTransformContext *transformContext=xsltNewTransformContext(stylesheet, document);
+	xsltTransformContext_auto_ptr transformContext(
+		xsltNewTransformContext(stylesheet, document));
 	xmlDoc *transformed=xsltApplyStylesheetUser(
 		stylesheet,
 		document,
 		transform_params,
 		0/*const char *output*/,
 		0/*FILE *profile*/,
-		transformContext);
-	if(!transformed) {
-		xsltFreeTransformContext(transformContext);
-		// close
-		connection.close();
+		transformContext.get());
+	if(!transformed)
 		throw Exception(0, 0,
 			&method_name, 
 			"transform failed. TODO: show errors");
-	}
 
 	//gdome_xml_doc_mkref dislikes XML_HTML_DOCUMENT_NODE  type, fixing
 	transformed->type=XML_DOCUMENT_NODE;
@@ -696,13 +756,8 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	oo.standalone=stylesheet->standalone!=0;
 	oo.omitXmlDeclaration=stylesheet->omitXmlDeclaration!=0;
 
-	xsltFreeTransformContext(transformContext);
-	// close
-	connection.close();
-
 	// write out result
 	r.write_no_lang(result);
-
 }
 
 // constructor

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.66 2001/12/24 09:05:34 paf Exp $
+	$Id: op.C,v 1.67 2002/01/16 10:28:33 paf Exp $
 */
 
 #include "classes.h"
@@ -124,7 +124,10 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 
 		// process source code, append processed methods to 'self' class
 		// maybe-define new @main
-		r.use_buf(source.cstr(String::UL_UNSPECIFIED, r.connection), place, &self_class);
+		r.use_buf(
+			source.cstr(String::UL_UNSPECIFIED, r.connection(0)), 
+			place, 
+			&self_class);
 		
 		// maybe-execute @main[]
 		if(const Method *method=self_class.get_method(*main_method_name)) {
@@ -245,7 +248,7 @@ struct timeval mt[2];
 gettimeofday(&mt[0],NULL);
 #endif
 	// connect
-	SQL_Connection& connection=SQL_driver_manager->get_connection(
+	SQL_Connection_ptr connection=SQL_driver_manager->get_connection(
 		url.as_string(), method_name, protocol2driver_and_client);
 
 #ifdef RESOURCES_DEBUG
@@ -258,35 +261,15 @@ for(int i=0;i<2;i++)
 
 r.sql_connect_time+=t[1]-t[0];
 #endif
-	// remember/set current connection
-	SQL_Connection *saved_connection=r.connection;
-	r.connection=&connection;
+	Temp_connection temp_connection(r, connection.get());
 	// execute body
 	try {
-		try {
-			r.write_assign_lang(r.process(body_code));
-			
-			connection.commit();
-		} catch(...) { // process/commit problem
-			connection.rollback();
-			
-			/*re*/throw; 
-		}
-
-	} catch(...) {
-		// close connection [cache it]
-		connection.close();
-		// recall current connection from remembered
-		r.connection=saved_connection;
-
-		/*re*/throw;
+		r.write_assign_lang(r.process(body_code));
+		
+	} catch(...) { // process/commit problem
+		connection->mark_to_rollback();
+		/*re*/throw; 
 	}
-
-	// and anyway
-	// close connection [cache it]
-	connection.close();
-	// recall current connection from remembered
-	r.connection=saved_connection;
 }
 
 #ifndef DOXYGEN

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.137 2001/12/25 09:00:28 paf Exp $
+	$Id: table.C,v 1.138 2002/01/16 10:28:34 paf Exp $
 */
 
 #include "classes.h"
@@ -519,11 +519,6 @@ public:
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	if(!r.connection)
-		throw Exception(0, 0, 
-			&method_name, 
-			"without connect");
-
 	Value& statement=params->as_junction(0, "statement must be code");
 
 	ulong limit=0;
@@ -545,7 +540,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Temp_lang temp_lang(r, String::UL_SQL);
 	const String& statement_string=r.process(statement).as_string();
 	const char *statement_cstr=
-		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
+		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
 	Table_sql_event_handlers handlers(pool, method_name,
 		statement_string, statement_cstr);
 	try {
@@ -554,7 +549,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	//measure:before
 	gettimeofday(&mt[0],NULL);
 #endif	
-		r.connection->query(
+		r.connection(&method_name)->query(
 			statement_cstr, offset, limit, 
 			handlers);
 	

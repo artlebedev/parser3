@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.92 2001/12/15 21:28:18 paf Exp $
+	$Id: string.C,v 1.93 2002/01/16 10:28:33 paf Exp $
 */
 
 #include "classes.h"
@@ -84,7 +84,7 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	char *buf=format(pool, r.self->as_double(), 
-		r.process(fmt).as_string().cstr(String::UL_UNSPECIFIED, r.connection));
+		r.process(fmt).as_string().cstr(String::UL_UNSPECIFIED, r.connection(0)));
 
 	String result(pool);
 	result.APPEND_CLEAN(buf, 0, 
@@ -337,11 +337,6 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 								Hash *& options, Value *& default_code) {
 	Pool& pool=r.pool();
 
-	if(!r.connection)
-		throw Exception(0, 0,
-			&method_name,
-			"without connect");
-
 	Value& statement=params->as_junction(0, "statement must be code");
 
 	ulong limit=0;
@@ -371,10 +366,10 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 	Temp_lang temp_lang(r, String::UL_SQL);
 	const String& statement_string=r.process(statement).as_string();
 	const char *statement_cstr=
-		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
+		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
 	String_sql_event_handlers handlers(pool, statement_string, statement_cstr);
 	try {
-		r.connection->query(
+		r.connection(&method_name)->query(
 			statement_cstr, offset, limit, 
 			handlers);
 	} catch(const Exception& e) { // query problem

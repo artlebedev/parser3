@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hash.C,v 1.31 2001/11/12 10:00:31 paf Exp $
+	$Id: hash.C,v 1.32 2002/01/16 10:28:33 paf Exp $
 */
 
 #include "classes.h"
@@ -197,11 +197,6 @@ static void _intersects(Request& r, const String& method_name, MethodParams *par
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	if(!r.connection)
-		throw Exception(0, 0,
-			&method_name,
-			"without connect");
-
 	Value& statement=params->as_junction(0, "statement must be code");
 
 	ulong limit=0;
@@ -219,13 +214,13 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Temp_lang temp_lang(r, String::UL_SQL);
 	const String& statement_string=r.process(statement).as_string();
 	const char *statement_cstr=
-		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
+		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
 	Hash& hash=static_cast<VHash *>(r.self)->hash(&method_name);
 	hash.clear();	
 	Hash_sql_event_handlers handlers(pool, method_name,
 		statement_string, statement_cstr, hash);
 
-	r.connection->query(
+	r.connection(&method_name)->query(
 		statement_cstr, offset, limit,
 		handlers);
 }
