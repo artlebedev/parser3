@@ -696,9 +696,11 @@ Xhashfile
         дл€ удобного создани€ по значению из базы
         формат1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
         формат2: %H:%M[:%S]
-    !$date.year month day  hour minute second  weekday yearday(0...) daylightsaving
+    !$date.year month day  hour minute second  weekday yearday(0...) daylightsaving TZ
         read-only
+        TZ="" << локальна€ зона
     !^date.roll[year|month|day](+-смещение) сдвигает дату
+    !^date.roll[TZ;Ќова€ зона] говорит, что дата в таком-то часовом по€се: вли€ет на .hour&co
     !^date.sql-string[] %Y-%m-%d %H:%M:%S
         where published='$дата.sql-string[]'
     !^date:calendar[rus|eng;год;мес€ц] выдаЄт неименованную таблицу 
