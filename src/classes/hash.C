@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.26 2001/11/01 14:59:57 paf Exp $
+	$Id: hash.C,v 1.27 2001/11/01 15:11:36 paf Exp $
 */
 
 #include "classes.h"
@@ -352,9 +352,6 @@ MHash::MHash(Pool& apool) : Methoded(apool) {
 	add_native_method("_count", Method::CT_DYNAMIC, _count, 0, 0);	
 
 	// ^hash.foreach[key;value]{code}[delim]
-	Array *for_each_locals=NEW Array(pool(), 2);
-	*for_each_locals += NEW String(pool(), "key");
-
 	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
 }
 
