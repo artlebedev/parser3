@@ -44,7 +44,7 @@ $a[vasya,fedya,kolya]
 ^^a.right(3)="^a.right(3)"<BR>
 ^^a.mid(1;3)="^a.mid(1;3)"<BR>
 <HR>
-^twop[a;]
+^^twop[a;]=^twop[a;]<BR>
 ^$request:browser.type=$request:browser.type<BR>
 ^$request:browser.version=$request:browser.version<BR>
 
@@ -128,6 +128,35 @@ $response:location[http://parser3/123]
 <textarea name=name rows=5 cols=40>^untaint[html]{^default[$form:name;не знаю]}</textarea><BR>
 <input type=submit>
 </form>
+
+<HR>
+$свойства_когда_пьян[
+	$цвет_глаз[красный]
+]
+$вася[
+	$свойства[$свойства_когда_пьян]
+]
+
+$кусок_имени_поля[ства]
+^$кусок_имени_поля=$кусок_имени_поля<BR>
+^$вася.свой^$кусок_имени_поля.цвет_глаз=$вася.свой$кусок_имени_поля.цвет_глаз
+<HR>
+<form method=post enctype=multipart/form-data>
+<input name=photo type=file>
+<input type=submit>
+</form>
+<hr>
+^if($form:photo){
+	<pre>
+	^$form:photo.name='$form:photo.name'
+	^$form:photo.size='$form:photo.size'
+	^$form:photo.text='$form:photo.text'
+	^form:photo.save[paf.txt]
+	</pre>
+}
+
+#todo proper! untaint $response:refresh[$value[2] $content[url=http://design.ru]]
+
 
 @default[test;def]
 $result[^if(^test.length[]){$test}{$def}]
