@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.1 2001/09/14 15:41:59 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.2 2001/09/15 11:48:41 parser Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -25,7 +25,6 @@
 
 /**	Connection with stylesheet: 
 	remembers time and can figure out that it needs recompilation
-	@test free ftransformer somehow
 */
 class Stylesheet_connection : public Pooled {
 
@@ -56,6 +55,9 @@ public:
 
 	void disconnect() { 
 		/*ignore error*/ftransformer->destroyStylesheet(fstylesheet);  fstylesheet=0; 
+
+		// connection effectively useless now, free up some memory
+		delete ftransformer; 
 	}
 
 	bool connected() { return fstylesheet!=0; }

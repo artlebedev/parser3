@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.20 2001/09/14 15:41:59 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.21 2001/09/15 11:48:41 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -102,7 +102,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	vDom.set_parsed_source(*parsedSource);
 }
 
-const char *strX(const XalanDOMString& s) {
+static const char *strX(const XalanDOMString& s) {
 	return XMLString::transcode(s.c_str());
 }
 
@@ -149,10 +149,10 @@ private:
 };
 
 
-void create_optioned_listener(
-							  const char *& content_type, const char *& charset, FormatterListener *& listener, 
-							  Pool& pool, 
-							  const String& method_name, MethodParams *params, int index, Writer& writer) {
+static void create_optioned_listener(
+									 const char *& content_type, const char *& charset, FormatterListener *& listener, 
+									 Pool& pool, 
+									 const String& method_name, MethodParams *params, int index, Writer& writer) {
 	charset=0;
 	const String *method=0;
 	XalanDOMString xalan_encoding;

@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.42 2001/09/14 15:41:59 parser Exp $
+	$Id: image.C,v 1.43 2001/09/15 11:48:41 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.42 2001/09/14 15:41:59 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.43 2001/09/15 11:48:41 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -47,7 +47,7 @@ public: // Methoded
 
 // helpers
 
-/// simple buffered reader[from memory/file], used in _measure
+#ifndef DOXYGEN
 class Measure_reader {
 public:
 	enum { READ_CHUNK_SIZE=0x400*10 };// 10K
@@ -83,6 +83,7 @@ private:
 	size_t offset;
 	size_t size;
 };
+#endif
 
 /// GIF file header
 struct GIF_Header {

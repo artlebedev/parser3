@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pool_storage.h,v 1.4 2001/04/03 07:32:49 paf Exp $
+	$Id: pool_storage.h,v 1.5 2001/09/15 11:48:41 parser Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
@@ -54,6 +54,12 @@ public:
 
 		return ptrs[used++]=::calloc(size, 1);
 	}
+
+	/// @test implement
+	void register_cleanup(void (*cleanup) (void *), void *data) {
+		
+	}
+
 
 private:
 

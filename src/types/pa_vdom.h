@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.7 2001/09/15 10:31:14 parser Exp $
+	$Id: pa_vdom.h,v 1.8 2001/09/15 11:48:41 parser Exp $
 */
 
 #ifndef PA_VDOM_H
@@ -22,8 +22,11 @@
 
 extern Methoded *Dom_class;
 
+void VDom_cleanup(void *);
+
 /// value of type 'dom'. implemented with Xalan
 class VDom : public VStateless_object {
+	friend void VDom_cleanup(void *);
 public: // Value
 
 	const char *type() const { return "dom"; }
@@ -37,17 +40,19 @@ protected: // VAliased
 
 public: // usage
 
-	/** 
-		@test XalanTransformer free somehow
-		@test XercesParserLiaison free somehow
-	*/
-	
 	VDom(Pool& apool) : VStateless_object(apool, *Dom_class), 
 		ftransformer(new XalanTransformer),
 		fparser_liaison(new XercesParserLiaison),
 		fparsed_source(0),
 		fdocument(0) {
+		register_cleanup(VDom_cleanup, this);
 	}
+private:
+	void cleanup() {
+		delete ftransformer;
+		delete fparser_liaison;
+	}
+public:
 
 	XalanTransformer& get_transformer() {return *ftransformer; }
 	XercesParserLiaison& get_parser_liaison() { return *fparser_liaison; }

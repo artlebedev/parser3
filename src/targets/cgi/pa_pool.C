@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.17 2001/06/27 12:44:33 parser Exp $
+	$Id: pa_pool.C,v 1.18 2001/09/15 11:48:41 parser Exp $
 */
 
 #include <stdlib.h>
@@ -171,4 +171,8 @@ void *Pool::real_malloc(size_t size/*, int place*/) {
 
 void *Pool::real_calloc(size_t size) {
 	return ::calloc(size, 1);
+}
+
+void Pool::register_cleanup(void (*cleanup) (void *), void *data) {
+	/* we free nothing in CGI */
 }

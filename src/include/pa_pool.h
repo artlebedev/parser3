@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.52 2001/05/17 10:22:24 parser Exp $
+	$Id: pa_pool.h,v 1.53 2001/09/15 11:48:41 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -38,9 +38,6 @@ public:
 	void set_tag(void *atag) { ftag=atag; }
 	void *tag() { return ftag; }
 
-	/// current exception object of the pool
-	Exception& exception() const { return *fexception; }
-
 	/// allocates some bytes on pool
 	void *malloc(size_t size/*, int place=0*/) {
 		return check(real_malloc(size/*, place*/), size);
@@ -49,6 +46,12 @@ public:
 	void *calloc(size_t size) {
 		return check(real_calloc(size), size);
 	}
+
+	/// registers a routine to clean up non-pooled allocations
+	void register_cleanup(void (*cleanup) (void *), void *data);
+
+	/// current exception object of the pool
+	Exception& exception() const { return *fexception; }
 
 private:
 
@@ -135,6 +138,10 @@ public:
 	void *malloc(size_t size) const { return fpool->malloc(size); }
 	/// useful wrapper around pool
 	void *calloc(size_t size) const { return fpool->calloc(size); }
+	/// useful wrapper around pool
+	void register_cleanup(void (*cleanup) (void *), void *data) { 
+		fpool->register_cleanup(cleanup, data);
+	}
 	/// useful wrapper around pool
 	Exception& exception() const { return fpool->exception(); }
 };

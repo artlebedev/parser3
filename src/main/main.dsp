@@ -352,6 +352,19 @@ SOURCE=..\types\pa_vdate.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vdom.C
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# ADD CPP /GX
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vdom.h
 # End Source File
 # Begin Source File
