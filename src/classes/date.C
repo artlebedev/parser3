@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2004/02/19 15:25:10 $";
+static const char * const IDENT_DATE_C="$Date: 2004/02/19 15:38:00 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -72,7 +72,7 @@ static int to_tm_year(int iyear) {
 // 2002-04-25 18:14:00
 // 18:14:00
 // 2002:04:25 [+maybe time]
-/*not static, used in image.C*/ time_t cstr_to_time_t(char *cstr) {
+/*not static, used in image.C*/ tm cstr_to_time_t(char *cstr) {
 	if( !cstr || !*cstr )
 		throw Exception(0,
 			0,
@@ -107,37 +107,28 @@ static int to_tm_year(int iyear) {
 	tmIn.tm_mon=month?pa_atoi(month)-1:0;
 	tmIn.tm_mday=mday?pa_atoi(mday):1;
 date_part_set:
-	int savedHour=tmIn.tm_hour=hour?pa_atoi(hour):0;
+	tmIn.tm_hour=hour?pa_atoi(hour):0;
 	tmIn.tm_min=min?pa_atoi(min):0;
 	tmIn.tm_sec=sec?pa_atoi(sec):0;	
-	time_t result=mktime(&tmIn);
-	if(tmIn.tm_hour!=savedHour)
-		throw Exception(0,
-			0, //report_error_origin,
-			"invalid datetime: spring daylightsaving hour hole");
-	if(result<0)
-		throw Exception(0,
-			0, //report_error_origin,
-			"invalid datetime");
-
-	return result;
+	return tmIn;
 }
 
 static void _create(Request& r, MethodParams& params) {
 	VDate& vdate=GET_SELF(r, VDate);
 
-	time_t t;
+	tm tmIn;
 	if(params.count()==1) { 
 		// ^create[2002-04-25 18:14:00]
 		// ^create[18:14:00]
 		if(const String* sdate=params[0].get_string())
-			t=cstr_to_time_t(sdate->cstrm());
+			vdate.set_time(cstr_to_time_t(sdate->cstrm()));
 		else { // ^create(float days)
-			t=(time_t)round(params.as_double(0, "float days must be double", r)*SECS_PER_DAY);
+			time_t t=(time_t)round(params.as_double(0, "float days must be double", r)*SECS_PER_DAY);
 			if(t<0 || !localtime(&t))
 				throw Exception(0,
 					0,
 					"invalid datetime");
+			vdate.set_time(t);
 		}
 	} else if(params.count()>=2) { // ^create(y;m;d[;h[;m[;s]]])
 		tm tmIn; memset(&tmIn, 0, sizeof(tmIn));
@@ -149,20 +140,11 @@ static void _create(Request& r, MethodParams& params) {
 		if(params.count()>3) savedHour=tmIn.tm_hour=params.as_int(3, "hour must be int", r);
 		if(params.count()>4) tmIn.tm_min=params.as_int(4, "minutes must be int", r);
 		if(params.count()>5) tmIn.tm_sec=params.as_int(5, "seconds must be int", r);
-		t=mktime(&tmIn);
-		if(tmIn.tm_hour!=savedHour)
-			throw Exception(0,
-				0, //report_error_origin,
-				"invalid datetime: spring daylightsaving hour hole");
-		if(t<0)
-			throw Exception(0,
-				0,
-				"invalid datetime");
+		vdate.set_time(tmIn);
 	} else
 		throw Exception("parser.runtime",
 			0,
 			"invalid params count, must be 1 or >=2");
-	vdate.set_time(t);
 }
 
 static void _sql_string(Request& r, MethodParams&) {

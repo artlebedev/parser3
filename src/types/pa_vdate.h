@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2004/02/11 15:33:17 $";
+static const char * const IDENT_VDATE_H="$Date: 2004/02/19 15:38:00 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -90,8 +90,32 @@ public: // usage
 		ftz_cstr(0) {
 	}
 
+	VDate(tm tmIn) : 
+		ftime(0),
+		ftz(0),
+		ftz_cstr(0) {
+		set_time(tmIn);
+	}
+
 	time_t get_time() const { return ftime; }
-	void set_time(time_t atime) { ftime=atime; }
+	void set_time(time_t atime) { 
+		if(atime<0)
+			throw Exception(0,
+				0,
+				"invalid datetime");
+		ftime=atime; 
+	}
+	void set_time(tm tmIn) { 
+		time_t t=mktime(&tmIn);
+		if(t<0) {
+			// on some platforms mktime does not fix spring daylightsaving time hole
+			// in russia -- last sunday of march, 2am->3am hole
+			// trying to recover:
+			tmIn.tm_hour--;
+			t=mktime(&tmIn);
+		}
+		set_time(t);
+	}
 	void set_tz(const String* atz) { 
 		if((ftz=atz))
 			ftz_cstr=ftz->cstr();
