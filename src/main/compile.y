@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.201 2002/10/15 14:28:57 paf Exp $
+	$Id: compile.y,v 1.202 2002/10/17 10:57:06 paf Exp $
 */
 
 /**
@@ -95,20 +95,21 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 %left '<' '>' "<=" ">="   "lt" "gt" "le" "ge"
 %left "==" "!="  "eq" "ne"
 %left "is" "def" "in" "-f" "-d"
-%left '!'
 
 /* bitwise */
 %left "!|"
 %left '|'
 %left '&' 
-%left '~'
-%left ">>"
-%left "<<" 
+%left "<<"  ">>"
 
 /* numerical */
-%left '-' '+'
-%left '*' '/' '%' '\\'
-%left NEG     /* negation: unary - */
+%left '+' '-'
+%left '*' '/' '\\' '%'
+%left NUNARY   /* unary - + */
+
+/* out-of-group */
+%left '~' /* bitwise */
+%left '!'  /* logical */
 
 %%
 all:
@@ -529,8 +530,8 @@ expr:
 |	'\'' string_inside_quotes_value '\'' { $$ = $2; }
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
-|	'-' expr %prec NEG { $$=$2;  O($$, OP_NEG) }
-|	'+' expr %prec NEG { $$=$2 }
+|	'-' expr %prec NUNARY { $$=$2;  O($$, OP_NEG) }
+|	'+' expr %prec NUNARY { $$=$2 }
 |	'~' expr { $$=$2;	 O($$, OP_INV) }
 |	'!' expr { $$=$2;  O($$, OP_NOT) }
 |	"def" expr { $$=$2;  O($$, OP_DEF) }
