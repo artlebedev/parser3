@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.128 2001/11/05 11:46:30 paf Exp $
+	$Id: parser3.C,v 1.129 2001/11/05 15:18:15 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -127,7 +127,7 @@ size_t SAPI::read_post(Pool& , char *buf, size_t max_bytes) {
 	do {
 		int chunk_size=read(fileno(stdin), 
 			buf+read_size, min(READ_POST_CHUNK_SIZE, max_bytes-read_size));
-		if(chunk_size<0)
+		if(chunk_size<=0)
 			break;
 		read_size+=chunk_size;
 	} while(read_size<max_bytes);
