@@ -38,7 +38,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.47 2002/04/15 06:45:57 paf Exp $
+	$Id: compile.tab.C,v 1.48 2002/04/15 08:13:09 paf Exp $
 */
 
 /**
@@ -207,19 +207,19 @@ static const short yyrline[] = { 0,
    107,   117,   119,   119,   120,   122,   122,   124,   190,   190,
    191,   191,   192,   193,   193,   195,   224,   224,   225,   226,
    226,   227,   227,   229,   229,   233,   233,   235,   235,   236,
-   236,   237,   237,   237,   241,   245,   246,   246,   247,   248,
-   250,   251,   273,   274,   274,   278,   282,   284,   285,   286,
-   303,   308,   310,   312,   313,   315,   321,   329,   335,   337,
-   338,   340,   346,   347,   347,   351,   355,   358,   361,   375,
-   377,   377,   378,   380,   381,   383,   384,   385,   386,   388,
-   390,   392,   394,   396,   398,   402,   406,   410,   412,   413,
-   415,   424,   424,   426,   426,   427,   428,   436,   441,   443,
-   445,   446,   447,   449,   453,   462,   468,   473,   473,   474,
-   479,   481,   483,   487,   499,   504,   506,   507,   508,   509,
-   510,   512,   513,   514,   515,   516,   517,   518,   519,   521,
-   522,   523,   524,   525,   526,   527,   528,   529,   530,   531,
-   532,   533,   534,   535,   536,   537,   538,   539,   540,   541,
-   542,   543,   544,   545,   548,   557,   562,   563
+   236,   237,   237,   237,   241,   248,   249,   249,   250,   251,
+   253,   254,   276,   277,   277,   281,   285,   287,   288,   289,
+   306,   311,   313,   315,   316,   318,   324,   332,   338,   340,
+   341,   343,   349,   350,   350,   354,   358,   361,   364,   378,
+   380,   380,   381,   383,   384,   386,   387,   388,   389,   391,
+   393,   395,   397,   399,   401,   405,   409,   413,   415,   416,
+   418,   427,   427,   429,   429,   430,   431,   439,   444,   446,
+   448,   449,   450,   452,   456,   465,   471,   476,   476,   477,
+   482,   484,   486,   490,   502,   507,   509,   510,   511,   512,
+   513,   515,   516,   517,   518,   519,   520,   521,   522,   524,
+   525,   526,   527,   528,   529,   530,   531,   532,   533,   534,
+   535,   536,   537,   538,   539,   540,   541,   542,   543,   544,
+   545,   546,   547,   548,   551,   560,   565,   566
 };
 #endif
 
@@ -1139,20 +1139,23 @@ case 29:
 case 35:
 #line 241 "compile.y"
 {
-	yyval=yyvsp[0]; /* stack: resulting value */
-	O(yyval, OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
+	yyval=yyvsp[0]; /* stack: resulting value */ 
+	changetail_or_append(yyval, 
+		OP_GET_ELEMENT, OP_GET_ELEMENT__WRITE,
+		OP_WRITE_VALUE
+		); /* value=pop; wcontext.write(value) */
 ;
     break;}
 case 36:
-#line 245 "compile.y"
+#line 248 "compile.y"
 { yyval=yyvsp[0] ;
     break;}
 case 39:
-#line 247 "compile.y"
+#line 250 "compile.y"
 { yyval=yyvsp[-1] ;
     break;}
 case 42:
-#line 251 "compile.y"
+#line 254 "compile.y"
 {
 	yyval=N(POOL); 
 	Array *diving_code=yyvsp[0];
@@ -1177,22 +1180,22 @@ case 42:
 ;
     break;}
 case 43:
-#line 273 "compile.y"
+#line 276 "compile.y"
 { yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
     break;}
 case 45:
-#line 274 "compile.y"
+#line 277 "compile.y"
 { yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
     break;}
 case 46:
-#line 278 "compile.y"
+#line 281 "compile.y"
 {
 	yyval=yyvsp[-1]; /* stack: context,name */
 	P(yyval, yyvsp[0]); /* stack: context,name,constructor_value */
 ;
     break;}
 case 50:
-#line 286 "compile.y"
+#line 289 "compile.y"
 {
 	yyval=N(POOL);
 	Array *diving_code=yyvsp[0];
@@ -1212,7 +1215,7 @@ case 50:
 ;
     break;}
 case 51:
-#line 303 "compile.y"
+#line 306 "compile.y"
 {
 	yyval=N(POOL); 
 	O(yyval, OP_WITH_WRITE); /* stack: starting context */
@@ -1220,11 +1223,11 @@ case 51:
 ;
     break;}
 case 52:
-#line 308 "compile.y"
+#line 311 "compile.y"
 { yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
     break;}
 case 56:
-#line 315 "compile.y"
+#line 318 "compile.y"
 {
 	// stack: context, name
 	yyval=yyvsp[-1]; // stack: context, name, value
@@ -1232,7 +1235,7 @@ case 56:
 ;
     break;}
 case 57:
-#line 321 "compile.y"
+#line 324 "compile.y"
 { 
 	yyval=N(POOL); 
 	O(yyval, OP_PREPARE_TO_EXPRESSION);
@@ -1242,7 +1245,7 @@ case 57:
 ;
     break;}
 case 58:
-#line 329 "compile.y"
+#line 332 "compile.y"
 {
 	// stack: context, name
 	yyval=N(POOL); 
@@ -1250,7 +1253,7 @@ case 58:
 ;
     break;}
 case 62:
-#line 340 "compile.y"
+#line 343 "compile.y"
 {
 	yyval=N(POOL); 
 	PJP(yyval, yyvsp[0]); /* stack: empty write context */
@@ -1259,30 +1262,30 @@ case 62:
 ;
     break;}
 case 65:
-#line 347 "compile.y"
+#line 350 "compile.y"
 { yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
     break;}
 case 66:
-#line 351 "compile.y"
+#line 354 "compile.y"
 {
 	yyval=yyvsp[0]; /* stack: value */
 	O(yyval, OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 ;
     break;}
 case 67:
-#line 355 "compile.y"
+#line 358 "compile.y"
 { 
 					PC.in_call_value=true; 
 			;
     break;}
 case 68:
-#line 358 "compile.y"
+#line 361 "compile.y"
 {
 				PC.in_call_value=false;
 			;
     break;}
 case 69:
-#line 361 "compile.y"
+#line 364 "compile.y"
 { /* ^field.$method{vasya} */
 	yyval=yyvsp[-3]; /* with_xxx,diving code; stack: context,method_junction */
 	O(yyval, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
@@ -1298,56 +1301,56 @@ case 69:
 ;
     break;}
 case 72:
-#line 377 "compile.y"
+#line 380 "compile.y"
 { yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
     break;}
 case 76:
-#line 383 "compile.y"
+#line 386 "compile.y"
 {yyval=yyvsp[-1];
     break;}
 case 77:
-#line 384 "compile.y"
+#line 387 "compile.y"
 {yyval=yyvsp[-1];
     break;}
 case 78:
-#line 385 "compile.y"
+#line 388 "compile.y"
 {yyval=yyvsp[-1];
     break;}
 case 80:
-#line 388 "compile.y"
+#line 391 "compile.y"
 { yyval=yyvsp[-2]; P(yyval, yyvsp[0]) ;
     break;}
 case 82:
-#line 392 "compile.y"
+#line 395 "compile.y"
 { yyval=yyvsp[-2]; P(yyval, yyvsp[0]) ;
     break;}
 case 84:
-#line 396 "compile.y"
+#line 399 "compile.y"
 { yyval=yyvsp[-2]; P(yyval, yyvsp[0]) ;
     break;}
 case 85:
-#line 398 "compile.y"
+#line 401 "compile.y"
 {
 	yyval=yyvsp[0];
 	O(yyval, OP_STORE_PARAM);
 ;
     break;}
 case 86:
-#line 402 "compile.y"
+#line 405 "compile.y"
 {
 	yyval=N(POOL); 
 	PEA(yyval, yyvsp[0]);
 ;
     break;}
 case 87:
-#line 406 "compile.y"
+#line 409 "compile.y"
 {
 	yyval=N(POOL); 
 	PCA(yyval, yyvsp[0]);
 ;
     break;}
 case 91:
-#line 415 "compile.y"
+#line 418 "compile.y"
 {
 	yyval=N(POOL); 
 	O(yyval, OP_PREPARE_TO_EXPRESSION);
@@ -1356,15 +1359,15 @@ case 91:
 ;
     break;}
 case 93:
-#line 424 "compile.y"
+#line 427 "compile.y"
 { yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
     break;}
 case 95:
-#line 426 "compile.y"
+#line 429 "compile.y"
 { yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
     break;}
 case 97:
-#line 428 "compile.y"
+#line 431 "compile.y"
 {
 	// we know that name_advance1 not called from ^xxx context
 	// so we'll not check for operator call possibility as we do in name_advance2
@@ -1375,7 +1378,7 @@ case 97:
 ;
     break;}
 case 98:
-#line 436 "compile.y"
+#line 439 "compile.y"
 {
 	/* stack: context */
 	yyval=yyvsp[0]; /* stack: context,name */
@@ -1383,14 +1386,14 @@ case 98:
 ;
     break;}
 case 104:
-#line 449 "compile.y"
+#line 452 "compile.y"
 {
 	yyval=yyvsp[0];
 	O(yyval, OP_GET_ELEMENT);
 ;
     break;}
 case 105:
-#line 453 "compile.y"
+#line 456 "compile.y"
 {
 	Array *code;
 	{
@@ -1402,7 +1405,7 @@ case 105:
 ;
     break;}
 case 106:
-#line 462 "compile.y"
+#line 465 "compile.y"
 {
 	yyval=N(POOL); 
 	PJP(yyval, yyvsp[-1]); /* stack: empty write context */
@@ -1411,7 +1414,7 @@ case 106:
 ;
     break;}
 case 107:
-#line 468 "compile.y"
+#line 471 "compile.y"
 {
 	yyval=N(POOL); 
 	O(yyval, OP_WITH_READ);
@@ -1419,25 +1422,25 @@ case 107:
 ;
     break;}
 case 109:
-#line 473 "compile.y"
+#line 476 "compile.y"
 { yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
     break;}
 case 110:
-#line 474 "compile.y"
+#line 477 "compile.y"
 {
 	yyval=yyvsp[0];
 	O(yyval, OP_GET_ELEMENT__WRITE);
 ;
     break;}
 case 113:
-#line 483 "compile.y"
+#line 486 "compile.y"
 {
 	yyval=yyvsp[-1]; // stack: class name string
 	O(yyval, OP_GET_CLASS);
 ;
     break;}
 case 114:
-#line 487 "compile.y"
+#line 490 "compile.y"
 {
 	yyval=yyvsp[-1];
 	if(!PC.in_call_value) {
@@ -1448,7 +1451,7 @@ case 114:
 ;
     break;}
 case 115:
-#line 499 "compile.y"
+#line 502 "compile.y"
 {
 	// see OP_PREPARE_TO_EXPRESSION!!
 	if((yyval=yyvsp[0])->size()==2) // only one string literal in there?
@@ -1456,151 +1459,151 @@ case 115:
 ;
     break;}
 case 119:
-#line 508 "compile.y"
+#line 511 "compile.y"
 { yyval = yyvsp[-1]; ;
     break;}
 case 120:
-#line 509 "compile.y"
+#line 512 "compile.y"
 { yyval = yyvsp[-1]; ;
     break;}
 case 121:
-#line 510 "compile.y"
+#line 513 "compile.y"
 { yyval = yyvsp[-1]; ;
     break;}
 case 122:
-#line 512 "compile.y"
+#line 515 "compile.y"
 { yyval=yyvsp[0];  O(yyval, OP_NEG) ;
     break;}
 case 123:
-#line 513 "compile.y"
+#line 516 "compile.y"
 { yyval=yyvsp[0] ;
     break;}
 case 124:
-#line 514 "compile.y"
+#line 517 "compile.y"
 { yyval=yyvsp[0];	 O(yyval, OP_INV) ;
     break;}
 case 125:
-#line 515 "compile.y"
+#line 518 "compile.y"
 { yyval=yyvsp[0];  O(yyval, OP_NOT) ;
     break;}
 case 126:
-#line 516 "compile.y"
+#line 519 "compile.y"
 { yyval=yyvsp[0];  O(yyval, OP_DEF) ;
     break;}
 case 127:
-#line 517 "compile.y"
+#line 520 "compile.y"
 { yyval=yyvsp[0];  O(yyval, OP_IN) ;
     break;}
 case 128:
-#line 518 "compile.y"
+#line 521 "compile.y"
 { yyval=yyvsp[0];  O(yyval, OP_FEXISTS) ;
     break;}
 case 129:
-#line 519 "compile.y"
+#line 522 "compile.y"
 { yyval=yyvsp[0];  O(yyval, OP_DEXISTS) ;
     break;}
 case 130:
-#line 521 "compile.y"
+#line 524 "compile.y"
 {	yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_SUB) ;
     break;}
 case 131:
-#line 522 "compile.y"
+#line 525 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_ADD) ;
     break;}
 case 132:
-#line 523 "compile.y"
+#line 526 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_MUL) ;
     break;}
 case 133:
-#line 524 "compile.y"
+#line 527 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_DIV) ;
     break;}
 case 134:
-#line 525 "compile.y"
+#line 528 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_MOD) ;
     break;}
 case 135:
-#line 526 "compile.y"
+#line 529 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_INTDIV) ;
     break;}
 case 136:
-#line 527 "compile.y"
+#line 530 "compile.y"
 { yyval=yyvsp[-2]; 	P(yyval, yyvsp[0]);  O(yyval, OP_BIN_AND) ;
     break;}
 case 137:
-#line 528 "compile.y"
+#line 531 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_BIN_OR) ;
     break;}
 case 138:
-#line 529 "compile.y"
+#line 532 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_BIN_XOR) ;
     break;}
 case 139:
-#line 530 "compile.y"
+#line 533 "compile.y"
 { yyval=yyvsp[-2];  PNC(yyval, yyvsp[0]);  O(yyval, OP_LOG_AND) ;
     break;}
 case 140:
-#line 531 "compile.y"
+#line 534 "compile.y"
 { yyval=yyvsp[-2];  PNC(yyval, yyvsp[0]);  O(yyval, OP_LOG_OR) ;
     break;}
 case 141:
-#line 532 "compile.y"
+#line 535 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_LOG_XOR) ;
     break;}
 case 142:
-#line 533 "compile.y"
+#line 536 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_LT) ;
     break;}
 case 143:
-#line 534 "compile.y"
+#line 537 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_GT) ;
     break;}
 case 144:
-#line 535 "compile.y"
+#line 538 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_LE) ;
     break;}
 case 145:
-#line 536 "compile.y"
+#line 539 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_GE) ;
     break;}
 case 146:
-#line 537 "compile.y"
+#line 540 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_EQ) ;
     break;}
 case 147:
-#line 538 "compile.y"
+#line 541 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_NE) ;
     break;}
 case 148:
-#line 539 "compile.y"
+#line 542 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_LT) ;
     break;}
 case 149:
-#line 540 "compile.y"
+#line 543 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_GT) ;
     break;}
 case 150:
-#line 541 "compile.y"
+#line 544 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_LE) ;
     break;}
 case 151:
-#line 542 "compile.y"
+#line 545 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_GE) ;
     break;}
 case 152:
-#line 543 "compile.y"
+#line 546 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_EQ) ;
     break;}
 case 153:
-#line 544 "compile.y"
+#line 547 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_NE) ;
     break;}
 case 154:
-#line 545 "compile.y"
+#line 548 "compile.y"
 { yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_IS) ;
     break;}
 case 155:
-#line 548 "compile.y"
+#line 551 "compile.y"
 {
 	yyval=N(POOL);
 	PSP(yyval, yyvsp[0]); /* stack: empty write context */
@@ -1609,18 +1612,18 @@ case 155:
 ;
     break;}
 case 156:
-#line 557 "compile.y"
+#line 560 "compile.y"
 {
 	// optimized from OP_STRING+OP_WRITE_VALUE to OP_STRING__WRITE
 	change_string_literal_to_write_string_literal(yyval=yyvsp[0])
 ;
     break;}
 case 157:
-#line 562 "compile.y"
+#line 565 "compile.y"
 { yyval=VL(NEW VVoid(POOL)) ;
     break;}
 case 158:
-#line 563 "compile.y"
+#line 566 "compile.y"
 { yyval=N(POOL) ;
     break;}
 }
@@ -1845,7 +1848,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 565 "compile.y"
+#line 568 "compile.y"
 
 #endif
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.h,v 1.59 2002/04/15 06:45:58 paf Exp $
+	$Id: compile_tools.h,v 1.60 2002/04/15 08:13:10 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -120,6 +120,7 @@ inline const String *LA2S(Array *literal_string_array, int offset=0) {
 }
 void change_string_literal_to_double_literal(Array *literal_string_array);
 void change_string_literal_to_write_string_literal(Array *literal_string_array);
+void changetail_or_append(Array *opcodes, OPCODE find, OPCODE replace, OPCODE notfound);
 
 void push_LS(parse_control& pc, lexical_state new_state);
 void pop_LS(parse_control& pc);

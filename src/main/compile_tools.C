@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.C,v 1.47 2002/04/15 06:45:58 paf Exp $
+	$Id: compile_tools.C,v 1.48 2002/04/15 08:13:10 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -106,6 +106,22 @@ void change_string_literal_to_write_string_literal(Array *literal_string_array) 
 	Operation op; op.code=OP_STRING__WRITE;
 	literal_string_array->put(0, op.cast);
 }
+void changetail_or_append(Array *opcodes, OPCODE find, OPCODE replace, OPCODE notfound) {
+	if(int tail=opcodes->size()) {
+		--tail;
+		Operation op;
+		op.cast=opcodes->get(tail);
+		if(op.code==find) {
+			op.code=replace;
+			opcodes->put(tail, op.cast);
+			return;
+		}
+	}
+
+	Operation op; op.code=notfound;
+	*opcodes+=op.cast;
+}
+
 
 void push_LS(parse_control& pc, lexical_state new_state) { 
 	if(pc.ls_sp<MAX_LEXICAL_STATES) {

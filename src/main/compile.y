@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.183 2002/04/15 06:45:58 paf Exp $
+	$Id: compile.y,v 1.184 2002/04/15 08:13:09 paf Exp $
 */
 
 /**
@@ -239,8 +239,11 @@ action: get | put | call;
 /* get */
 
 get: get_value {
-	$$=$1; /* stack: resulting value */
-	O($$, OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
+	$$=$1; /* stack: resulting value */ 
+	changetail_or_append($$, 
+		OP_GET_ELEMENT, OP_GET_ELEMENT__WRITE,
+		OP_WRITE_VALUE
+		); /* value=pop; wcontext.write(value) */
 };
 get_value: '$' get_name_value { $$=$2 };
 get_name_value: name_without_curly_rdive EON | name_in_curly_rdive;
