@@ -697,6 +697,14 @@ xdoc(xnode)
             file
             file
 
+    !$status:rusage hash
+    	!utime user time used
+    	!stime system time used
+    	!maxrss max resident set size
+    	!ixrss integral shared text memory size
+    	!idrss integral unshared data size
+    	!isrss integral unshared stack size
+
 !MAIN
     это класс, загружаемый на автомате из parser3.conf, 
     кучи auto.p и запрашиваемого документа:
