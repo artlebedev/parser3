@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.36 2001/09/01 14:39:25 parser Exp $
+	$Id: image.C,v 1.37 2001/09/01 14:47:11 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.36 2001/09/01 14:39:25 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.37 2001/09/01 14:47:11 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -608,16 +608,26 @@ const int Font::kerning=1;
 static void _font(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& valphabet=params->as_no_junction(0, "alphabet must not be code");
-	Value& file_name=params->as_no_junction(1, "file_name must not be code");
+	const String& alphabet=params->as_string(0, "alphabet must not be code");
+	gdImage& image=*load(r, method_name, params->as_string(1, "file_name must not be code"));
 	int spacebar_width=params->as_int(2, r);
+	int monospace_width;
+	if(params->size()>3) {
+		monospace_width=params->as_int(3, r);
+		if(!monospace_width)
+			monospace_width=image.SX();
+	} else
+		monospace_width=0;
 
-	int monospace_width=params->size()>3?params->as_int(3, r):0;
-	gdImage& image=*load(r, method_name, file_name.as_string());
+	if(!alphabet.size())
+		PTHROW(0, 0,
+			&method_name,
+			"alphabet must not be empty");
+	
 	static_cast<VImage *>(r.self)->font=new(pool) Font(pool, 
-		valphabet.as_string(), 
+		alphabet, 
 		image, 
-		image.SY(), monospace_width, spacebar_width);
+		image.SY() / alphabet.size(), monospace_width, spacebar_width);
 }
 
 static void _text(Request& r, const String& method_name, MethodParams *params) {
