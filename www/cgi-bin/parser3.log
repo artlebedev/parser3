@@ -33,19 +33,3 @@ z
 [Wed Feb 20 15:06:06 2002] string piece appends=158190, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2558916, total_alloc_size=9674460 // first results:15%, that's only appends to emptystring
 [Wed Feb 20 15:26:02 2002] string piece appends=166051, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2421420, total_alloc_size=9674460
 [Wed Feb 20 15:29:27 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634 // final results: 22% economy of total-without-any-optimization
-[Wed Feb 20 15:31:40 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634
-[Wed Feb 20 15:31:41 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634
-[Wed Feb 20 15:31:41 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634
-[Wed Feb 20 15:31:41 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634
-[Wed Feb 20 15:31:42 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634
-[Wed Feb 20 20:30:48 2002] Y:/parser3project/parser3/www/htdocs/admin/objects/auto.p(1): 'engine_admin.p' not found along MAIN:CLASS_PATH [- -]
-[Wed Feb 20 20:30:56 2002] Y:/parser3project/parser3/www/htdocs/admin/objects/auto.p(1): 'engine_admin.p' not found along MAIN:CLASS_PATH [- -]
-[Wed Feb 20 20:31:43 2002] Y:/parser3project/parser3/www/htdocs/admin/objects/auto.p(1): 'engine_admin.p' not found along MAIN:CLASS_PATH [- -]
-[Wed Feb 20 20:32:21 2002] Y:/parser3project/parser3/www/htdocs/admin/objects/object_lf.html(55): 'frameLeft_admin' (void) not a method or junction, can not call it [- -]
-[Wed Feb 20 20:33:16 2002] Y:/parser3project/parser3/www/htdocs/admin/objects/object_lf.html(55): 'frameLeft_admin' (void) not a method or junction, can not call it [- -]
-[Wed Feb 20 20:34:10 2002] Y:/parser3project/parser3/www/htdocs/admin/objects/object_lf.html(55): 'frameLeft_admin' (void) not a method or junction, can not call it [- -]
-[Wed Feb 20 20:35:52 2002] Y:/parser3project/parser3/www/htdocs/admin/objects/object_lf.html(55): 'frameLeft_admin' (void) not a method or junction, can not call it [- -]
-[Wed Feb 20 20:36:12 2002] Y:/parser3project/parser3/www/htdocs/admin/objects/object_lf.html(55): 'frameLeft_admin' (void) not a method or junction, can not call it [- -]
-[Thu Feb 21 13:25:40 2002] Y:\parser3project\parser3\www\cgi-bin/parser3.conf(28): 'mysql://****@db-mysql/mdm' Can't connect to MySQL server on 'db-mysql' (10060) [- -]
-[Thu Feb 21 13:26:05 2002] Y:\parser3project\parser3\www\cgi-bin/parser3.conf(2): 'c:\drives\y\parser3project\mysql\debug\parser3mysql.dll' driver failed to initialize client library 'c:\drives\Y\parser3project\win32mysql\lib\debug\libmySQL.dll', can not open the dynamic link module [- -]
-[Thu Feb 21 15:03:47 2002] Y:\parser3project\parser3\www\cgi-bin/parser3.conf(28): 'mysql://****@db-mysql/mdm' Can't connect to MySQL server on 'db-mysql' (10060) [- -]

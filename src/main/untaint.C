@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: untaint.C,v 1.96 2002/02/21 14:36:54 paf Exp $
+	$Id: untaint.C,v 1.97 2002/02/21 14:44:37 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -183,7 +183,7 @@ String& String::append(const String& src, uchar lang, bool forced) {
 		// which means that we know that 
 		// src.head would fit into this.head
 		if(is_empty()) { // our head is empty
-/*			// they have more than head? we need all head : we need only filled-part of head
+			// they have more than head? we need all head : we need only filled-part of head
 			Chunk *src_head_link=src.head.rows[src.head.count].link;
 			size_t head_count=src_head_link?src.head.count:(src.append_here-src.head.rows);
 			// "your head is my head"
@@ -200,12 +200,11 @@ String& String::append(const String& src, uchar lang, bool forced) {
 				last_chunk=&head;
 				// "your append_here is recalc-mine now"
 				append_here=head.rows+head_count;
-			}*/
+			}
 		} else { // our head contains something
-			/*
-			for(Chunk::Row *row=src.last_chunk->rows; row<src.append_here; row++)
+/*			for(Chunk::Row *row=src.last_chunk->rows; row<src.append_here; row++)
 				if(row->link==(void*)0xcdcdcdcd)
-					_asm int 3;
+					_asm int 3;*/
 			// "chopping off my tail-reserve"
 			last_chunk->count=append_here-last_chunk->rows;
 			// "you is my tail"
@@ -214,14 +213,11 @@ String& String::append(const String& src, uchar lang, bool forced) {
 			last_chunk=src.last_chunk;
 			// "your append_here is mine now"
 			append_here=src.append_here;
-		// stop-growing mark
-		src.last_chunk=0;
-		return *this;*/
 		}
 
 		// stop-growing mark
-//		src.last_chunk=0;
-//		return *this;
+		src.last_chunk=0;
+		return *this;
 	}
 
 	// manually unrolled code to avoid do{if(const)} constructs
@@ -255,10 +251,10 @@ String& String::append(const String& src, uchar lang, bool forced) {
 				row->item.lang==UL_TAINTED?lang:row->item.lang,
 				row->item.origin.file, row->item.origin.line);
 		);
-
+/*
 			for(Chunk::Row *row=last_chunk->rows; row<append_here; row++)
 				if(row->link==(void*)0xcdcdcdcd)
-					_asm int 3;
+					_asm int 3;*/
 	return *this;
 }
 
