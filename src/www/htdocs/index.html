@@ -1,4 +1,10 @@
 @main[]
+^switch(5){
+	^case(1){one}
+	^case(5){five}
+	^case[DEFAULT]{def}
+}
+<hr>
 ^connect[pgsql://paf:paf123@six/paf]{
 #	^void:sql{create table lotest (test oid)}
 #	^void:sql{insert into lotest (test) values (/**test**/'пр\'ив''е3')}

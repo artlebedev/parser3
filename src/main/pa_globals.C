@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.67 2001/08/02 06:55:53 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.68 2001/08/02 07:00:08 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -66,10 +66,7 @@ Dictionary *default_typo_dict;
 short hex_value[0x100];
 
 static void setup_hex_value() {
-	int i;
-	for (i=0; (i < 0x100); i++) {
-		hex_value[i] = 0;
-	}
+	memset(hex_value, 0, sizeof(hex_value));
 	hex_value['0'] = 0;	
 	hex_value['1'] = 1;	
 	hex_value['2'] = 2;	

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_dictionary.C,v 1.1 2001/08/01 12:08:40 parser Exp $"; 
+static const char *RCSId="$Id: pa_dictionary.C,v 1.2 2001/08/02 07:00:08 parser Exp $"; 
 
 #include "pa_dictionary.h"
 
@@ -17,7 +17,7 @@ static void add_first(Array::Item *value, void *info) {
 
 Dictionary::Dictionary(Table& atable) : Pooled(atable.pool()), table(atable) {
 	// clear firsts
-	memset(first, sizeof(first), 0);
+	memset(first, 0, sizeof(first));
 	// grab first letters of first column of a table
 	table.for_each(add_first, this);
 }
