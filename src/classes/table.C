@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/09/17 10:58:24 $";
+static const char* IDENT_TABLE_C="$Date: 2002/09/17 14:34:53 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -42,7 +42,9 @@ static void get_copy_options(Request& r, const String& method_name, MethodParams
 	Value& voptions=params->as_no_junction(param_index, "options must be hash, not code");
 	if(!voptions.is_string()) {
 		if(Hash *options=voptions.get_hash(&method_name)) {
-			if(Value *voffset=(Value *)options->get(*sql_offset_name))
+			int valid_options=0;
+			if(Value *voffset=(Value *)options->get(*sql_offset_name)) {
+				valid_options++;
 				if(voffset->is_string()) {
 					const String& soffset=*voffset->get_string();
 					if(soffset == "cur")
@@ -53,8 +55,15 @@ static void get_copy_options(Request& r, const String& method_name, MethodParams
 							"must be 'cur' string or expression");
 				} else 
 					offset=r.process_to_value(*voffset).as_int();
-			if(Value *vlimit=(Value *)options->get(*sql_limit_name))
+			}
+			if(Value *vlimit=(Value *)options->get(*sql_limit_name)) {
+				valid_options++;
 				limit=r.process_to_value(*vlimit).as_int();
+			}
+			if(valid_options!=options->size())
+				throw Exception("parser.runtime",
+					&method_name,
+					"called with invalid option");
 		} else
 			throw Exception("parser.runtime",
 				&method_name,
@@ -626,10 +635,19 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		Value& voptions=params->as_no_junction(1, "options must be hash, not code");
 		if(!voptions.is_string())
 			if(Hash *options=voptions.get_hash(&method_name)) {
-				if(Value *vlimit=(Value *)options->get(*sql_limit_name))
+				int valid_options=0;
+				if(Value *vlimit=(Value *)options->get(*sql_limit_name)) {
+					valid_options++;
 					limit=(ulong)r.process_to_value(*vlimit).as_double();
-				if(Value *voffset=(Value *)options->get(*sql_offset_name))
+				}
+				if(Value *voffset=(Value *)options->get(*sql_offset_name)) {
+					valid_options++;
 					offset=(ulong)r.process_to_value(*voffset).as_double();
+				}
+				if(valid_options!=options->size())
+					throw Exception("parser.runtime",
+						&method_name,
+						"called with invalid option");
 			} else
 				throw Exception("parser.runtime",
 					&method_name,

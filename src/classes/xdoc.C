@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2002/08/19 09:48:39 $";
+static const char* IDENT_XDOC_C="$Date: 2002/09/17 14:34:53 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -510,6 +510,7 @@ static void param_option_over_output_option(Pool& pool,
 	}
 }
 
+/// @test valid_options check
 static void prepare_output_options(
 								   Pool& pool, const String& method_name, MethodParams *params, int index,
 								   VXdoc::Output_options& oo) {
