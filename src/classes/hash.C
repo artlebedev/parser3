@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2004/02/17 11:08:38 $";
+static const char * const IDENT_HASH_C="$Date: 2004/02/25 13:42:14 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -44,6 +44,8 @@ class Hash_sql_event_handlers: public SQL_Driver_query_event_handlers {
 	HashStringValue* row_hash;
 	int column_index;
 	ArrayString columns;
+	bool only_one_column;
+	static VBool only_one_column_value;
 public:
 	Hash_sql_event_handlers(
 		const String& astatement_string, const char* astatement_cstr,
@@ -53,7 +55,8 @@ public:
 		distinct(adistinct),
 		rows_hash(arows_hash),
 		row_hash(0),
-		column_index(0) {
+		column_index(0),
+		only_one_column(false) {
 	}
 	bool add_column(SQL_Error& error, const char* str, size_t length) {
 		try {
@@ -65,12 +68,11 @@ public:
 		}
 	}
 	bool before_rows(SQL_Error& error) { 
-		if(columns.count()<=1) {
-			error=SQL_Error("parser.runtime",
-				/*method_name,*/
-				"column count must be more than 1 to create a hash");
+		if(columns.count()<1) {
+			error=SQL_Error("parser.runtime", "no columns");
 			return true;
 		}
+		only_one_column=columns.count()==1;
 
 		return false;
 	}
@@ -88,11 +90,11 @@ public:
 				row_hash=&row_vhash->hash();
 				if(rows_hash.put_dont_replace(cell, row_vhash)) // put. existed?
 					if(!distinct) {
-						error=SQL_Error("parser.runtime",
-							/*cell,*/
-							"duplicate key");
+						error=SQL_Error("parser.runtime", "duplicate key");
 						return true;
 					}
+				if(only_one_column)
+					row_hash->put(cell, &only_one_column_value);
 			} else
 				row_hash->put(*columns[column_index], new VString(cell));
 			column_index++;
@@ -105,6 +107,8 @@ public:
 	}
 
 };
+VBool Hash_sql_event_handlers::only_one_column_value(true);
+
 #endif
 
 static void copy_all_overwrite_to(
