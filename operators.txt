@@ -92,7 +92,7 @@ Xне сделано, видимо, не будет сделано
         default as-is
     !^taint[[lang]][код]
         default "just tainted, language unknown"
-    ^process[[$caller.CLASS|$object|$КЛАСС:CLASS]]{строка, которая будет process-ed, как код}[
+    !^process[[$caller.CLASS|$object|$КЛАСС:CLASS]]{строка, которая будет process-ed, как код}[
         $.main[во что переименовать @main]
         $.file[имя файла из которого, якобы, данный текст]
         $.lineno(номер строки в файле, откуда данный текст. можно отрицательный) 
