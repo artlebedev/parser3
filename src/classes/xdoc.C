@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.47 2001/11/22 09:59:38 paf Exp $
+	$Id: xdoc.C,v 1.48 2001/12/13 07:32:12 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -608,7 +608,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 }
 
 static void _set(Request& r, const String& method_name, MethodParams *params) {
-	//_asm int 3;
+//	_asm int 3;
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
