@@ -301,7 +301,7 @@ OK
 #^downloadtest[]
 #^cachebug[]
 #^quickregexatend[]
-^httpfileloadtest2[]
+#^httpfileloadtest2[]
 #^datecreatecolon[]
 #^exifdocsample[]
 #^rusagetv[]
@@ -317,6 +317,17 @@ OK
 #^form_fields_modification_bug[]
 #^nbsp_xslt_output[]
 #^mailcharset[]
+^transparence_copy_test[]
+
+@transparence_copy_test[]
+$k(2)
+$image[^image::load[paf.gif]]
+$mark[^image::load[mark.gif]]
+#^image.copy[$mark](0;0;$mark.width;$mark.height;0;0)
+^image.copy[$mark](0;0;$mark.width;$mark.height;0;0;$image.width/$k;$image.height/$k)
+
+$response:body[^image.gif[]]
+
 
 @mailcharset[]
 ^mail:send[

@@ -14,7 +14,7 @@
 	can incorporate them into new versions. 
 */
 
-static const char* IDENT_GIF_C="$Date: 2002/08/01 11:41:13 $";
+static const char* IDENT_GIF_C="$Date: 2003/01/16 10:13:14 $";
 
 #include "gif.h"
 
@@ -657,17 +657,21 @@ void gdImage::CopyResampled(gdImage& dst,
 {
 	gdImage& src=*this;
 	int x, y;
+	int srcTransparent=src.GetTransparent();
+	int dstTransparent=dst.GetTransparent();
 	for (y = dstY; (y < dstY + dstH); y++) {
 		for (x = dstX; (x < dstX + dstW); x++) {
 			int pd = dst.GetPixel (x, y);
 			/* Added 7/24/95: support transparent copies */
-			if (src.GetTransparent() == pd)
+			/* fixed by paf 20030116, another fix below */
+			if (pd == dstTransparent)
 				continue;
 			
 			double sy1, sy2, sx1, sx2;
 			double sx, sy;
 			double spixels = 0;
 			double red = 0.0, green = 0.0, blue = 0.0;
+			bool transparent=true;
 			sy1 = ((double) y - (double) dstY) * (double) srcH /
 				(double) dstH;
 			sy2 = ((double) (y + 1) - (double) dstY) * (double) srcH /
@@ -724,14 +728,22 @@ void gdImage::CopyResampled(gdImage& dst,
 					p = src.GetPixel (
 						(int) sx,
 						(int) sy);
-					red += Red (p) * pcontribution;
-					green += Green (p) * pcontribution;
-					blue += Blue (p) * pcontribution;
+					// fix added 20020116 by paf to support transparent src
+					if (p!=srcTransparent) {
+						transparent = false;
+						red += Red (p) * pcontribution;
+						green += Green (p) * pcontribution;
+						blue += Blue (p) * pcontribution;
+					}
 					spixels += xportion * yportion;
 					sx += 1.0;
 				} while (sx < sx2);
 				sy += 1.0;
 			} while (sy < sy2);
+
+			if(transparent)
+				continue;
+
 			if (spixels != 0.0) {
 				red /= spixels;
 				green /= spixels;
