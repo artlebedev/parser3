@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.75 2002/01/24 15:06:45 paf Exp $
+	$Id: xdoc.C,v 1.76 2002/01/24 15:11:59 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -590,7 +590,7 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 	OOE2STYLE(standalone);
 	OOE2STYLE(omitXmlDeclaration);
 
-	xmlDoc *document=((Gdome_xml_Document*)vdoc.get_document(&method_name))->n;
+	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document(&method_name));
 	if(xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0) {
 		GdomeException exc=0;
 		throw Exception(0, 0, 
@@ -708,7 +708,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 
 	// transform
 	xsltStylesheet *stylesheet=connection->stylesheet(false/*nocache*/);
-	xmlDoc *document=((Gdome_xml_Document*)vdoc.get_document(&method_name))->n;
+	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document(&method_name));
 	xsltTransformContext_auto_ptr transformContext(
 		xsltNewTransformContext(stylesheet, document));
 	xmlDoc *transformed=xsltApplyStylesheetUser(

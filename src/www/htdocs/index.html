@@ -4,19 +4,15 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-$a[123456789012345678901234567890]
-$b(^a.double[])
-^b.format{%.20E}
-<hr>
-^eval(2*2)
-
+^xmloutattrwithoutvalue[]
+#^precisionProblem[]
 #^xpath[]
 #^ttablesetlang[]
 #^mail3[]
 #^ttime[]
 #^tupper[]
 #^treplace[]
-^xslt2[]
+#^xslt2[]
 #^tcache2[]
 #$ORIGINS(1)
 #$t[^table::set{a b} ^table::set{c d}]
@@ -92,6 +88,21 @@ $b(^a.double[])
 #^header[]
 <hr>
 OK
+
+@xmloutattrwithoutvalue[]
+#$ORIGINS(1)
+$doc[^xdoc::set{<?xml version="1.0"?><doc background=""><br/></doc>}]
+$doc[^doc.transform[global.xsl]]
+=^taint[html][^doc.string[$.method[xhtml]]]=
+
+
+
+@precisionProblem[]
+$a[123456789012345678901234567890]
+$b(^a.double[])
+^b.format{%.20E}
+<hr>
+^eval(2*2)
 
 @xpath[]
 $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251" ?>

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.32 2002/01/24 14:10:08 paf Exp $
+	$Id: xnode.C,v 1.33 2002/01/24 15:11:59 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -398,7 +398,7 @@ static void _selectX(Request& r, const String& method_name, MethodParams *params
 	GdomeDocument *dome_document=gdome_n_ownerDocument(dome_node, &exc);
 	if(!dome_document) // document does not own itself, so ownerDocument = 0
 		dome_document=GDOME_DOC(dome_node); // and we need downcast
-	xmlDoc *xml_document=((_Gdome_xml_Document *)dome_document)->n;
+	xmlDoc *xml_document=gdome_xml_doc_get_xmlDoc(dome_document);
     xmlXPathContext_auto_ptr ctxt(xmlXPathNewContext(xml_document));
 	ctxt->node=gdome_xml_n_get_xmlNode(dome_node);
 	/*error to stderr for now*/
