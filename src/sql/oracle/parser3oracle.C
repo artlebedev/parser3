@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6 [@test tested with Oracle 7.x.x]
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.12 2001/08/24 07:14:36 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.13 2001/08/24 09:14:32 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -440,7 +440,7 @@ private: // private funcs
 		unsigned long offset, unsigned long limit, 
 		SQL_Driver_query_event_handlers& handlers) {
 
-		ub2 stmt_type=-1; // UNKNOWN // OCI_STMT_SELECT;//
+		ub2 stmt_type=0; // UNKNOWN
 	/*
 		//gpfs on sun. paf 000818
 		//Zanyway, this is needed before. 
