@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.10 2001/03/18 13:22:06 paf Exp $
+	$Id: pa_globals.C,v 1.11 2001/03/18 13:38:47 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -81,50 +81,47 @@ void globals_init(Pool& pool) {
 	// hex value
 	setup_hex_value();
 
-	#define NEW_CONST(name, value)  name=new(pool) String(pool); name->APPEND_CONST(value)
-	#define LOCAL_CONST(name, value)  String name(pool); name.APPEND_CONST(value)
-
 	// names
-	NEW_CONST(content_type_name, CONTENT_TYPE_NAME);
-	NEW_CONST(body_name, BODY_NAME);
+	content_type_name=new(pool) String(pool, CONTENT_TYPE_NAME);
+	body_name=new(pool) String(pool, BODY_NAME);
 
-	NEW_CONST(exception_method_name, EXCEPTION_METHOD_NAME);
+	exception_method_name=new(pool) String(pool, EXCEPTION_METHOD_NAME);
 
-	NEW_CONST(unnamed_name, UNNAMED_NAME);
+	unnamed_name=new(pool) String(pool, UNNAMED_NAME);
 	empty_string=new(pool) String(pool); 
 
-	NEW_CONST(auto_method_name, AUTO_METHOD_NAME);
-	NEW_CONST(main_method_name, MAIN_METHOD_NAME);
+	auto_method_name=new(pool) String(pool, AUTO_METHOD_NAME);
+	main_method_name=new(pool) String(pool, MAIN_METHOD_NAME);
 
-	NEW_CONST(root_class_name, ROOT_CLASS_NAME);
-	NEW_CONST(main_class_name, MAIN_CLASS_NAME);
-	NEW_CONST(table_class_name, TABLE_CLASS_NAME);
-	NEW_CONST(env_class_name, ENV_CLASS_NAME);	
-	NEW_CONST(form_class_name, FORM_CLASS_NAME);	
-	NEW_CONST(request_class_name, REQUEST_CLASS_NAME);	
-	NEW_CONST(response_class_name, RESPONSE_CLASS_NAME);
+	root_class_name=new(pool) String(pool, ROOT_CLASS_NAME);
+	main_class_name=new(pool) String(pool, MAIN_CLASS_NAME);
+	table_class_name=new(pool) String(pool, TABLE_CLASS_NAME);
+	env_class_name=new(pool) String(pool, ENV_CLASS_NAME);	
+	form_class_name=new(pool) String(pool, FORM_CLASS_NAME);	
+	request_class_name=new(pool) String(pool, REQUEST_CLASS_NAME);	
+	response_class_name=new(pool) String(pool, RESPONSE_CLASS_NAME);
 
-	NEW_CONST(result_var_name, RESULT_VAR_NAME);
+	result_var_name=new(pool) String(pool, RESULT_VAR_NAME);
 
 
-	NEW_CONST(limits_name, LIMITS_NAME);
-	NEW_CONST(post_max_size_name, POST_MAX_SIZE_NAME);
+	limits_name=new(pool) String(pool, LIMITS_NAME);
+	post_max_size_name=new(pool) String(pool, POST_MAX_SIZE_NAME);
 
-	NEW_CONST(defaults_name, DEFAULTS_NAME);
+	defaults_name=new(pool) String(pool, DEFAULTS_NAME);
 
 	// hashes
 	untaint_lang_name2enum=new(pool) Hash(pool);
-	LOCAL_CONST(as_is, "as-is");  
+	String as_is(pool, "as-is");  
 	untaint_lang_name2enum->put(as_is, (int)String::Untaint_lang::AS_IS);
-	LOCAL_CONST(table, "table");
+	String table(pool, "table");
 	untaint_lang_name2enum->put(table, (int)String::Untaint_lang::TABLE);
-	LOCAL_CONST(sql, "sql");
+	String sql(pool, "sql");
 	untaint_lang_name2enum->put(sql, (int)String::Untaint_lang::SQL);
-	LOCAL_CONST(js, "js");
+	String js(pool, "js");
 	untaint_lang_name2enum->put(js, (int)String::Untaint_lang::JS);
-	LOCAL_CONST(html, "html");
+	String html(pool, "html");
 	untaint_lang_name2enum->put(html, (int)String::Untaint_lang::HTML);
-	LOCAL_CONST(html_typo, "html-typo");
+	String html_typo(pool, "html-typo");
 	untaint_lang_name2enum->put(html_typo, (int)String::Untaint_lang::HTML_TYPO);
 
 	// read-only stateless classes

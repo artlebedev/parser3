@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.43 2001/03/18 13:22:07 paf Exp $
+	$Id: pa_request.C,v 1.44 2001/03/18 13:38:48 paf Exp $
 */
 
 #include <string.h>
@@ -145,11 +145,6 @@ void Request::core(Exception& system_exception,
 			// this is what we'd return in $response:body
 			const String *body_string=0;
 
-			#define NEW_TAINTED(name, value)  \
-				name=NEW String(pool()); name->APPEND_TAINTED(value,0,0,0)
-			#define LOCAL_CONST(name, value)  \
-				String name(pool()); name.APPEND_CONST(value)
-
 			if(main_class) { // we've managed to end up with some main_class
 				// maybe we'd be lucky enough as to report an error
 				// in a gracefull way...
@@ -163,7 +158,7 @@ void Request::core(Exception& system_exception,
 
 							const String *problem_source=e.problem_source();
 							// origin
-							LOCAL_CONST(origin_name, "origin");
+							String origin_name(pool(), "origin");
 							Value *origin_value=0;
 #ifndef NO_STRING_ORIGIN
 							if(problem_source) {
@@ -172,7 +167,8 @@ void Request::core(Exception& system_exception,
 									char *buf=(char *)malloc(MAX_STRING);
 									snprintf(buf, MAX_STRING, "%s(%d):", 
 										origin.file, 1+origin.line);
-									String *NEW_TAINTED(origin_file_line, buf);
+									String *origin_file_line=NEW String(pool(),
+										buf, true);
 									origin_value=NEW VString(*origin_file_line);
 								}
 							}
@@ -181,7 +177,7 @@ void Request::core(Exception& system_exception,
 								origin_value?origin_value:NEW VUnknown(pool()));
 
 							// source
-							LOCAL_CONST(source_name, "source");
+							String source_name(pool(), "source");
 							Value *source_value=0;
 							if(problem_source) {
 								String& problem_source_copy=*NEW String(*problem_source);
@@ -192,13 +188,14 @@ void Request::core(Exception& system_exception,
 								source_value?source_value:NEW VUnknown(pool()));
 
 							// comment
-							LOCAL_CONST(comment_name, "comment");
-							String *NEW_TAINTED(comment_value, e.comment());
+							String comment_name(pool(), "comment");
+							String *comment_value=NEW String(pool(),
+								e.comment(), true);
 							frame.store_param(comment_name, 
 								NEW VString(*comment_value));
 
 							// type
-							LOCAL_CONST(type_name, "type");
+							String type_name(pool(), "type");
 							Value *type_value;
 							if(e.type()) {
 								String& type_copy=*NEW String(*e.type());
@@ -209,7 +206,7 @@ void Request::core(Exception& system_exception,
 							frame.store_param(type_name, type_value);
 
 							// code
-							LOCAL_CONST(code_name, "code");
+							String code_name(pool(), "code");
 							Value *code_value;
 							if(e.code()) {
 								String& code_copy=*NEW String(*e.code());
@@ -256,14 +253,12 @@ void Request::core(Exception& system_exception,
 						printed+=snprintf(buf+printed, MAX_STRING-printed, ", code: %s", 
 						code->cstr());
 				}
-				String *error_string=NEW String(pool()); error_string->APPEND_CONST(buf);
 
 				// future $response:content-type
-				String &content_type_value=*NEW String(pool());
-				content_type_value.APPEND_CONST("text/plain");
+				String &content_type_value=*NEW String(pool(), "text/plain");
 				content_type=NEW VString(content_type_value);
 				// future $response:body
-				body_string=error_string;
+				body_string=NEW String(pool(), buf);
 			}
 
 			// store $response:content-type

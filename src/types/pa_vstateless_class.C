@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.C,v 1.3 2001/03/13 20:02:11 paf Exp $
+	$Id: pa_vstateless_class.C,v 1.4 2001/03/18 13:38:49 paf Exp $
 */
 
 #include "pa_vstateless_class.h"
@@ -28,7 +28,7 @@ void VStateless_class::add_native_method(
 	Native_code_ptr native_code,
 	int min_numbered_params_count, int max_numbered_params_count) {
 
-	String& name=*NEW String(pool());  name.APPEND_CONST(cstr_name);
+	String& name=*NEW String(pool(), cstr_name);
 	
 	Method& method=*NEW Method(pool(),
 		name,

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.36 2001/03/18 13:22:05 paf Exp $
+	$Id: pa_string.h,v 1.37 2001/03/18 13:38:47 paf Exp $
 */
 
 /*
@@ -75,7 +75,7 @@ public:
 
 public:
 
-	String(Pool& apool);
+	String(Pool& apool, const char *src=0, bool tainted=false);
 	String(const String& src);
 	size_t size() const { return fsize; }
 	int used_rows() const { return fused_rows; }

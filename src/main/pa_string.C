@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.40 2001/03/18 13:22:07 paf Exp $
+	$Id: pa_string.C,v 1.41 2001/03/18 13:38:48 paf Exp $
 */
 
 #include <string.h>
@@ -15,7 +15,7 @@
 
 // String
 
-String::String(Pool& apool) :
+String::String(Pool& apool, const char *src, bool tainted) :
 	Pooled(apool) {
 	last_chunk=&head;
 	head.count=CR_PREALLOCATED_COUNT;
@@ -23,6 +23,12 @@ String::String(Pool& apool) :
 	head.preallocated_link=0;
 	link_row=&head.rows[head.count];
 	fused_rows=fsize=0;
+
+	if(src)
+		if(tainted)
+			APPEND_TAINTED(src, 0, 0, 0);
+		else
+			APPEND(src, 0, 0, 0);
 }
 
 void String::expand() {

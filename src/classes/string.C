@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.11 2001/03/13 17:17:25 paf Exp $
+	$Id: string.C,v 1.12 2001/03/18 13:38:45 paf Exp $
 */
 
 #include "pa_request.h"
@@ -45,8 +45,7 @@ void _string_format(Request& r, const String& method_name, Array *params) {
 
 	char *buf=format(pool, r.self->get_double(), fmt.as_string().cstr());
 	
-	String *string=new(pool) String(pool);
-	r.write_no_lang(string->APPEND_CONST(buf));
+	r.write_no_lang(String(pool, buf));
 }
 
 // initialize

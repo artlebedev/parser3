@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.4 2001/03/16 12:30:26 paf Exp $
+	$Id: pa_vform.C,v 1.5 2001/03/18 13:38:49 paf Exp $
 */
 
 /*
@@ -232,8 +232,7 @@ void VForm::ParseMimeInput(const char *content_type,
 void VForm::AppendFormEntry(const char *name, 
 							const char *value_ptr, int value_size,
 							const char *file_name) {
-	String& sname=*NEW String(pool());
-	sname.APPEND_CONST(name);
+	String& sname=*NEW String(pool(), name);
 
 	Value *value;
 	if(file_name)

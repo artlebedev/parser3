@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.7 2001/03/13 11:52:45 paf Exp $
+	$Id: pa_vdouble.h,v 1.8 2001/03/18 13:38:48 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -25,9 +25,7 @@ public: // Value
 	const String *get_string() {
 		char *buf=(char *)pool().malloc(MAX_NUMBER);
 		snprintf(buf, MAX_NUMBER, "%g", fdouble);
-		String *result=NEW String(pool());
-		result->APPEND_CONST(buf);
-		return result;
+		return NEW String(pool(), buf);
 	}
 	// double: fdouble
 	double get_double() { return fdouble; }

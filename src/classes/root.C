@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.40 2001/03/13 17:17:25 paf Exp $
+	$Id: root.C,v 1.41 2001/03/18 13:38:45 paf Exp $
 */
 
 #include <string.h>
@@ -191,9 +191,9 @@ static void _eval(Request& r, const String& method_name, Array *params) {
 			method_name, "fmt must not be junction");
 
 		Pool& pool=r.pool();
-		String *string=new(pool) String(pool);
-		string->APPEND_CONST(format(pool, result->get_double(), fmt.as_string().cstr()));
-		result=new(pool) VString(*string);
+		String& string=*new(pool) String(pool);
+		string.APPEND_CONST(format(pool, result->get_double(), fmt.as_string().cstr()));
+		result=new(pool) VString(string);
 	}
 	r.write_no_lang(*result);
 }
