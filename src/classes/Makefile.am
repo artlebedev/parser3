@@ -1,4 +1,4 @@
-#  $Id: Makefile.am,v 1.13 2001/05/21 17:38:46 parser Exp $
+#  $Id: Makefile.am,v 1.14 2001/06/29 08:42:42 parser Exp $
 
 SUBDIRS = gd
 
@@ -15,5 +15,5 @@ $(CLASSES_INC): $(METHODED) classes.awk
 $(CLASSES_C): $(CLASSES_INC)
 
 noinst_LIBRARIES = libclasses.a
-libclasses_a_SOURCES = $(CLASSES_C) double.C file.C form.C image.C int.C mail.C op.C random.C response.C string.C table.C nothing.C hash.C
+libclasses_a_SOURCES = $(CLASSES_C) double.C file.C form.C image.C int.C mail.C op.C random.C response.C string.C table.C void.C hash.C
 CLEANFILES = $(CLASSES_INC)
