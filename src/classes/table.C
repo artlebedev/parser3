@@ -5,10 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.58 2001/04/06 12:34:50 paf Exp $
+	$Id: table.C,v 1.59 2001/04/06 13:41:29 paf Exp $
 */
 
 #include "pa_config_includes.h"
+
+#include "pcre.h"
+
 #include "pa_common.h"
 #include "pa_request.h"
 #include "_table.h"
@@ -515,6 +518,33 @@ static void _dir(Request& r, const String& method_name, Array *params) {
 	// forcing [path]
 	r.fail_if_junction_(true, relative_path, method_name, "path must not be code");
 
+	const String *regexp;
+	pcre *regexp_code;
+	int ovecsize;
+	int *ovector;
+	if(params->size()>1) {
+		Value& regexp_value=*static_cast<Value *>(params->get(1));
+		// forcing [regexp]
+		r.fail_if_junction_(true, regexp_value, method_name, "regexp must not be code");
+		regexp=&regexp_value.as_string();
+
+		const char *pattern=regexp->cstr(String::UL_AS_IS);
+		const char *errptr;
+		int erroffset;
+		regexp_code=pcre_compile(pattern, PCRE_EXTRA | PCRE_DOTALL, 
+			&errptr, &erroffset,
+			pcre_tables);
+
+		if(!regexp_code)
+			PTHROW(0, 0,
+				&regexp->mid(erroffset, regexp->size()),
+				"regular expression syntax error - %s", errptr);
+
+		ovector=(int *)malloc(sizeof(int)*(ovecsize=(1/*match*/)*3));
+	} else 
+		regexp_code=0;
+
+
 	const char* absolute_path_cstr=r.absolute(relative_path.as_string())
 		.cstr(String::UL_FILE_NAME);
 
@@ -523,16 +553,39 @@ static void _dir(Request& r, const String& method_name, Array *params) {
 	Table& table=*new(pool) Table(pool, &method_name, &columns);
 
 	LOAD_DIR(absolute_path_cstr, 
-		Array& row=*new(pool) Array(pool);
 		size_t file_name_size=strlen(ffblk.ff_name);
-		char *file_name=(char *)r.malloc(file_name_size);
-		memcpy(file_name, ffblk.ff_name, file_name_size);
-		String &string=*new(pool) String(pool);
-		string.APPEND_TAINTED(file_name, file_name_size, 
-			method_name.origin().file, method_name.origin().line);
-		row+=&string;
-		table+=&row;
+		bool suits=true;
+		if(regexp_code) {
+			int exec_result=pcre_exec(regexp_code, 0,
+				ffblk.ff_name, file_name_size, 0,
+				0, ovector, ovecsize);
+			
+			if(exec_result==PCRE_ERROR_NOMATCH)
+				suits=false;
+			else if(exec_result<0) {
+				(*pcre_free)(regexp_code);
+				PTHROW(0, 0,
+					regexp,
+					"regular expression execute #%d", 
+						exec_result);
+			}
+		}
+
+		if(suits) {
+			char *file_name_cstr=(char *)r.malloc(file_name_size);
+			memcpy(file_name_cstr, ffblk.ff_name, file_name_size);
+			String &file_name=*new(pool) String(pool);
+			file_name.APPEND_TAINTED(file_name_cstr, file_name_size, 
+				method_name.origin().file, method_name.origin().line);
+		
+			Array& row=*new(pool) Array(pool);
+			row+=&file_name;
+			table+=&row;
+		}
 	);
+
+	if(regexp_code)
+		(*pcre_free)(regexp_code);
 
 	// replace any previous table value
 	static_cast<VTable *>(r.self)->set_table(table);

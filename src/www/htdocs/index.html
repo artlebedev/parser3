@@ -23,16 +23,22 @@ $n
 @twop[a;b]
 ($a,$b)
 
-@post-process[data]
-(<BR>$data)<BR>
-#^data.match[1][g]{X}
+@Zpost-process[data]
+#(<BR>$data)<BR>
+^data.match[1][g]{X}
 
 @mt[s;m]
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
-$d[^table:dir[/news]]
-^d.menu{$name;,}
+^^table:dir[/]:<BR>
+$d[^table:dir[/]]
+^d.menu{$name;<BR>}
+<HR>
+
+^^table:dir[/;i]<BR>
+$d[^table:dir[/;i]]
+^d.menu{$name;<BR>}
 <HR>
 
 ^connect[$SQL.connect-string]{

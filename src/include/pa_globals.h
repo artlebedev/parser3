@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.39 2001/04/06 10:32:18 paf Exp $
+	$Id: pa_globals.h,v 1.40 2001/04/06 13:41:30 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -136,5 +136,8 @@ extern Hash *untaint_lang_name2enum;
 
 /// global table
 extern Table *default_typo_table;
+
+/// global pcre tables
+extern const unsigned char *pcre_tables;
 
 #endif

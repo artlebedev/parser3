@@ -5,8 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.45 2001/04/06 10:32:20 paf Exp $
+	$Id: pa_globals.C,v 1.46 2001/04/06 13:41:32 paf Exp $
 */
+
+#include "pcre.h"
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -75,6 +77,8 @@ String *main_sql_drivers_name;
 Hash *untaint_lang_name2enum;
 
 Table *default_typo_table;
+
+const unsigned char *pcre_tables;
 
 short hex_value[0x100];
 
@@ -234,6 +238,10 @@ void pa_globals_init(Pool& pool) {
 			*default_typo_table+=row;
 		}
 	}
+
+
+	// pcre tables
+	pcre_tables=pcre_maketables();
 
 	// stateless classes
 	initialize_string_class(pool, *(string_class=NEW VStateless_class(pool)));

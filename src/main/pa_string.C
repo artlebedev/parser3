@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.73 2001/04/05 19:35:16 paf Exp $
+	$Id: pa_string.C,v 1.74 2001/04/06 13:41:32 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -496,12 +496,6 @@ bool String::match(const String *aorigin,
 				   Table **table,
 				   Row_action row_action, void *info) const { 
 
-	static const unsigned char *tables=0; {	SYNCHRONIZED(true);
-		if(!tables)
-			tables=pcre_maketables();
-	}
-
-
 	if(!regexp.size())
 		THROW(0, 0,
 			aorigin,
@@ -512,12 +506,12 @@ bool String::match(const String *aorigin,
     int option_bits[2];  regex_options(options?options->cstr():0, option_bits);
 	pcre *code=pcre_compile(pattern, option_bits[0], 
 		&errptr, &erroffset,
-		tables);
+		pcre_tables);
 
 	if(!code)
 		THROW(0, 0,
 			&regexp.mid(erroffset, regexp.size()),
-			"match error - %s", errptr);
+			"regular expression syntax error - %s", errptr);
 	
 	int info_substrings=pcre_info(code, 0, 0);
 	if(info_substrings<0) {
@@ -564,7 +558,7 @@ bool String::match(const String *aorigin,
 			(*pcre_free)(code);
 			THROW(0, 0,
 				aorigin,
-				"pcre_exec error #%d", 
+				"regular expression execute error #%d", 
 					exec_substrings);
 		}
 
