@@ -7,7 +7,7 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.1 2001/07/30 15:32:18 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.2 2001/07/31 07:47:08 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -21,8 +21,6 @@ static const char *RCSId="$Id: parser3pgsql.C,v 1.1 2001/07/30 15:32:18 parser E
 
 #if _MSC_VER
 #	define snprintf _snprintf
-#endif
-#ifndef strcasecmp
 #	define strcasecmp _stricmp
 #endif
 
