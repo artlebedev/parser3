@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.49 2001/12/13 13:01:55 paf Exp $
+	$Id: xdoc.C,v 1.50 2001/12/13 13:05:10 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -17,7 +17,6 @@
 #include "pa_vfile.h"
 #include "xnode.h"
 
-#include <memory>
 #include <strstream>
 #include <Include/PlatformDefinitions.hpp>
 #include <util/PlatformUtils.hpp>
