@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: op.C,v 1.30 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: op.C,v 1.31 2001/07/03 09:20:55 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -231,9 +231,9 @@ typedef double (*math_one_double_op_func_ptr)(double);
 static double round(double op) { return floor(op+0.5); }
 static double sign(double op) { return op > 0 ? 1 : ( op < 0 ? -1 : 0 ); }
 
-static void double_one_op(Request& r, 
-						  const String& method_name, MethodParams *params,
-						  math_one_double_op_func_ptr func) {
+static void math_one_op(Request& r, 
+						const String& method_name, MethodParams *params,
+						math_one_double_op_func_ptr func) {
 	Pool& pool=r.pool();
 	Value& param=params->get_junction(0, "parameter must be expression");
 
@@ -242,33 +242,17 @@ static void double_one_op(Request& r,
 	r.write_no_lang(result);
 }
 
-static void _round(Request& r, const String& method_name, MethodParams *params) {
-	double_one_op(r, method_name, params,	&round);
-}
+#define _MATH(name) \
+	static void _##name(Request& r, const String& method_name, MethodParams *params) {\
+		math_one_op(r, method_name, params,	&round);\
+	}
+_MATH(round);	_MATH(floor);	_MATH(ceiling);
+_MATH(abs);	_MATH(sign);
+_MATH(exp);	_MATH(log);	
+_MATH(sin);	_MATH(asin);	
+_MATH(cos);	_MATH(acos);	
+_MATH(tan);	_MATH(atan);
 
-static void _floor(Request& r, const String& method_name, MethodParams *params) {
-	double_one_op(r, method_name, params,	&floor);
-}
-
-static void _ceiling(Request& r, const String& method_name, MethodParams *params) {
-	double_one_op(r, method_name, params,	&ceil);
-}
-
-static void _abs(Request& r, const String& method_name, MethodParams *params) {
-	double_one_op(r, method_name, params,	&fabs);
-}
-
-static void _sign(Request& r, const String& method_name, MethodParams *params) {
-	double_one_op(r, method_name, params,	&sign);
-}
-
-static void _log(Request& r, const String& method_name, MethodParams *params) {
-	double_one_op(r, method_name, params,	&log);
-}
-
-static void _exp(Request& r, const String& method_name, MethodParams *params) {
-	double_one_op(r, method_name, params,	&exp);
-}
 
 static void _connect(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -411,28 +395,13 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	// math functions
 
 	// ^round(expr)	
-	add_native_method("round", Method::CT_ANY, _round, 1, 1);
-
-	// ^floor(expr)	
-	add_native_method("floor", Method::CT_ANY, _floor, 1, 1);
-
-	// ^ceiling(expr)	
-	add_native_method("ceiling", Method::CT_ANY, _ceiling, 1, 1);
-
-	// ^abs(expr)	
-	add_native_method("abs", Method::CT_ANY, _abs, 1, 1);
-
-	// ^sign(expr)
-	add_native_method("sign", Method::CT_ANY, _sign, 1, 1);
-
-	// ^log(expr)
-	add_native_method("log", Method::CT_ANY, _log, 1, 1);
-
-	// ^exp(expr)
-	add_native_method("exp", Method::CT_ANY, _exp, 1, 1);
-
-	
-	// connect
+	#define ADD_MATH(name) add_native_method(#name, Method::CT_ANY, _##name, 1, 1);
+	ADD_MATH(round);	ADD_MATH(floor);	ADD_MATH(ceiling);
+	ADD_MATH(abs);	ADD_MATH(sign);
+	ADD_MATH(exp);	ADD_MATH(log);	
+	ADD_MATH(sin);	ADD_MATH(asin);	
+	ADD_MATH(cos);	ADD_MATH(acos);	
+	ADD_MATH(tan);	ADD_MATH(atan);
 
 	// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
 	add_native_method("connect", Method::CT_ANY, _connect, 2, 2);

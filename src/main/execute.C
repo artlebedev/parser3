@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.172 2001/06/29 14:16:29 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.173 2001/07/03 09:20:55 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -552,10 +552,10 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 
-				int a_int=a->as_int();
-				int b_int=b->as_int();
+				double a_double=a->as_double();
+				double b_double=b->as_double();
 
-				if(b_int == 0) {
+				if(b_double == 0) {
 					const String *problem_source=&b->as_string();
 #ifndef NO_STRING_ORIGIN
 					if(!problem_source->origin().file)
@@ -566,7 +566,7 @@ void Request::execute(const Array& ops) {
 						"Modulus by zero");
 				}
 
-				Value *value=NEW VDouble(pool(), a_int % b_int);
+				Value *value=NEW VDouble(pool(), fmod(a_double, b_double));
 				PUSH(value);
 				break;
 			}
