@@ -1,10 +1,10 @@
 /** @file
 	Parser: commonly functions.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.101 2002/02/08 08:31:31 paf Exp $
+	$Id: pa_common.C,v 1.103 2002/02/13 11:59:29 paf Exp $
 */
 
 #include "pa_common.h"
@@ -78,6 +78,10 @@ static int unlock(int fd) { FLOCK(F_TLOCK); }
 #endif
 
 static char *strnchr(char *buf, size_t size, char c) {
+	// sanity check
+	if(!buf)
+		return 0;
+
 	for(; size-->0; buf++) {
 		if(*buf==c)
 			return buf;
