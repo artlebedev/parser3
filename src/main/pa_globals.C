@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.110 2002/01/25 11:22:51 paf Exp $
+	$Id: pa_globals.C,v 1.111 2002/01/29 08:45:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -85,11 +85,13 @@ String *hash_default_element_name;
 
 Hash *untaint_lang_name2enum;
 
-GdomeDOMImplementation *domimpl;
-
 Charset *utf8_charset;
 
 short hex_value[0x100];
+
+#ifdef XML
+GdomeDOMImplementation *domimpl;
+#endif
 
 static void setup_hex_value() {
 	memset(hex_value, 0, sizeof(hex_value));

@@ -4,9 +4,10 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.79 2002/01/28 10:33:52 paf Exp $
+	$Id: xdoc.C,v 1.80 2002/01/29 08:45:36 paf Exp $
 */
 #include "pa_types.h"
+#include "classes.h"
 #ifdef XML
 
 #include "gdome.h"
@@ -20,7 +21,6 @@ extern "C" {
 #include "libxslt/xsltutils.h"
 
 #include "pa_stylesheet_connection.h"
-#include "classes.h"
 #include "pa_request.h"
 #include "pa_vxdoc.h"
 #include "pa_charset.h"
@@ -613,7 +613,7 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 	OOE2STYLE(omitXmlDeclaration);
 
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document(&method_name));
-	if(xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0) {
+	if(xsltSaveResultTo	n(outputBuffer.get(), document, stylesheet.get())<0) {
 		GdomeException exc=0;
 		throw Exception(0, 0, 
 			&method_name, 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.75 2002/01/21 13:04:03 paf Exp $
+	$Id: pa_globals.h,v 1.76 2002/01/29 08:45:37 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -140,13 +140,13 @@ extern String *hash_default_element_name;
 extern Hash *untaint_lang_name2enum;
 
 
-/// DOMImplementation
-extern GdomeDOMImplementation *domimpl;
-
 /// UTF8 charset
 extern Charset *utf8_charset;
 
 #ifdef XML
+/// DOMImplementation
+extern GdomeDOMImplementation *domimpl;
+
 /// flag whether there were some xml generic errors on current thread
 bool xmlHaveGenericErrors();
 /// get xml generic error accumulated for current thread. WARNING: it is up to caller to free up

@@ -4,7 +4,8 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^xdocset1[]
+^xoutputrusattr[]
+#^xdocset1[]
 #^regexp3[]
 #^exec2[]
 #^tlock[]
@@ -92,6 +93,10 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@xoutputrusattr[]
+$d[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?><d attr="привет"/>}]
+^show_xdoc2[$d]
 
 @xdocset1[]
 $d[^xdoc::set{<?xml version="1.0"?><d>=^taint[&]=</d>}]

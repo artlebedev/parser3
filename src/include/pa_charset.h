@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.h,v 1.11 2002/01/25 11:22:51 paf Exp $
+	$Id: pa_charset.h,v 1.12 2002/01/29 08:45:36 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
@@ -122,6 +122,7 @@ private:
 
 };
 
+#ifdef XML
 /// Auto-object used to track GdomeDOMString usage
 class GdomeDOMString_auto_ptr {
 	GdomeDOMString *fstring;
@@ -158,5 +159,6 @@ public:
 		return *this;
 	}
 };
+#endif
 
 #endif
