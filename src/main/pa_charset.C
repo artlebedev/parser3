@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.1 2001/12/15 21:28:21 paf Exp $
+	$Id: pa_charset.C,v 1.2 2001/12/15 21:39:32 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -140,8 +140,8 @@ extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 Charset::Charset(Pool& apool, const String& aname, const String *file_spec) : Pooled(apool),
 	fname(apool) {
 	// fname
-	char *name_cstr=(char *)malloc(aname.size());
-	memcpy(name_cstr, aname.cstr(String::UL_AS_IS), aname.size());
+	char *name_cstr=(char *)malloc(aname.size()+1);
+	memcpy(name_cstr, aname.cstr(String::UL_AS_IS), aname.size()+1);
 	fname.APPEND_CLEAN(name_cstr, aname.size(), 0, 0);
 
 	if(file_spec) {
