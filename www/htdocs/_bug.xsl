@@ -13,7 +13,7 @@
 	<xsl:template match="/doc">
 		<html>
 		<head/>
-		passed<br/>
+		мычит<br/>
 		</html>
 	</xsl:template>
 	

@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2004/02/11 15:33:13 $";
+static const char * const IDENT_CHARSET_H="$Date: 2004/02/18 12:46:49 $";
 
 
 #include "pa_exception.h"
@@ -57,6 +57,7 @@ public:
 	Charset(Request_charsets* charsets, const String::Body ANAME, const String* afile_spec);
 	
 	const String::Body NAME() const { return FNAME; }
+	const char* NAME_CSTR() const { return FNAME_CSTR; }
 
 	bool isUTF8() const { return fisUTF8; }
 

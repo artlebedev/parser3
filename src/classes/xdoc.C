@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/02/18 11:54:08 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/02/18 12:46:49 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -598,7 +598,8 @@ static void prepare_output_options(Request& r,
 /// patching piecees from libxslt and libxml not to set meta encoding
 static int
 pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
-	       xsltStylesheetPtr style) {
+	       xsltStylesheetPtr style,
+		   const xmlChar *header_encoding) {
     const xmlChar *encoding;
     int base;
     const xmlChar *method;
@@ -623,6 +624,8 @@ pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 
     XSLT_GET_IMPORT_PTR(method, style, method)
     XSLT_GET_IMPORT_PTR(encoding, style, encoding)
+	if(header_encoding)
+		encoding=header_encoding;
     XSLT_GET_IMPORT_INT(indent, style, indent);
 
     if ((method == NULL) && (result->type == XML_HTML_DOCUMENT_NODE))
@@ -643,19 +646,7 @@ pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
         if (is_xhtml < 0)
             is_xhtml = 0;
 	}
-	xmlNodePtr cur=result->last;
-	if(!cur) {
-		is_xhtml=0;
-	}
-
 	if(is_xhtml) {
-		// xhtmlNodeDumpOutput is static :(
-		if((cur->parent == (xmlNodePtr) result) &&
-            (cur->type == XML_ELEMENT_NODE) &&
-			(xmlStrEqual(cur->name, BAD_CAST "html"))) {
-			//cur->name=BAD_CAST "html ";
-		}
-
 		method = BAD_CAST "xml";
 		omitXmlDecl = 0;
 	} else {
@@ -714,16 +705,14 @@ pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 	if (omitXmlDecl != 1) {
 	    xmlOutputBufferWriteString(buf, "<?xml version=");
 	    if (result->version != NULL) 
-		xmlBufferWriteQuotedString(buf->buffer, result->version);
-	    else
-		xmlOutputBufferWriteString(buf, "\"1.0\"");
+			xmlBufferWriteQuotedString(buf->buffer, result->version);
+		else
+			xmlOutputBufferWriteString(buf, "\"1.0\"");
 	    if (encoding == NULL) {
 		if (result->encoding != NULL)
 		    encoding = result->encoding;
 		else if (result->charset != XML_CHAR_ENCODING_UTF8)
-		    encoding = (const xmlChar *)
-			       xmlGetCharEncodingName((xmlCharEncoding)
-			                              result->charset);
+		    encoding = BAD_CAST xmlGetCharEncodingName((xmlCharEncoding)result->charset);
 	    }
 	    if (encoding != NULL) {
 		xmlOutputBufferWriteString(buf, " encoding=");
@@ -767,25 +756,33 @@ struct Xdoc2buf_result {
 static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc, 
 					 MethodParams& params, int index,
 					 VXdoc::Output_options& oo,
-					 const String* file_spec) {
+					 const String* file_spec,
+					 bool use_source_charset_to_render_and_client_charset_to_write_to_header=false) {
 	Xdoc2buf_result result;
 	prepare_output_options(r, params, index,
 		oo);
 
-	const char* encoding_cstr=oo.encoding->cstr();
-	xmlCharEncodingHandler *encoder=xmlFindCharEncodingHandler(encoding_cstr);
-	if(!encoder)
+	const char* render_encoding;
+	const char* header_encoding;
+	if(use_source_charset_to_render_and_client_charset_to_write_to_header) {
+		render_encoding=r.charsets.source().NAME_CSTR();
+		header_encoding=r.charsets.client().NAME_CSTR();
+	} else {
+		header_encoding=render_encoding=oo.encoding->cstr();
+	}
+
+	xmlCharEncodingHandler *renderer=xmlFindCharEncodingHandler(render_encoding);
+	if(!renderer)
 		throw Exception("parser.runtime",
 			0,
-			"encoding '%s' not supported", encoding_cstr);
-	// UTF-8 encoder contains empty input/output converters, 
+			"encoding '%s' not supported", render_encoding);
+	// UTF-8 renderer contains empty input/output converters, 
 	// which is wrong for xmlOutputBufferCreateIO
-	// while zero encoder goes perfectly 
-	const char* encoder_name=encoder->name;
-	if(strcmp(encoder_name, "UTF-8")==0)
-		encoder=0;
+	// while zero renderer goes perfectly 
+	if(strcmp(render_encoding, "UTF-8")==0)
+		renderer=0;
 
-	xmlOutputBuffer_auto_ptr outputBuffer(xmlAllocOutputBuffer(encoder));
+	xmlOutputBuffer_auto_ptr outputBuffer(xmlAllocOutputBuffer(renderer));
 
 	xsltStylesheet_auto_ptr stylesheet(xsltNewStylesheet());
 	if(!stylesheet.get())
@@ -809,8 +806,9 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 	OOE2STYLE(omitXmlDeclaration);
 
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
-	document->encoding=BAD_CAST xmlMemStrdup(encoder_name);
-	if(pa_xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0) {
+	//document->encoding=BAD_CAST xmlMemStrdup(encoder_name);
+	if(pa_xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get(), BAD_CAST header_encoding)<0
+		|| xmlHaveGenericErrors()) {
 		GdomeException exc=0;
 		throw XmlException(0, exc);
 	}
@@ -878,7 +876,8 @@ static void _string(Request& r, MethodParams& params) {
 	VXdoc::Output_options oo(vdoc.output_options);
 	Xdoc2buf_result buf=xdoc2buf(r, vdoc, params, 0, 
 		oo,
-		0/*not to file, to memory*/);
+		0/*not to file, to memory*/,
+		true/*use source charset to render, client charset to put to header*/);
 	// write out result
 	r.write_no_lang(String(buf.str, buf.length));
 }
