@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/08/12 10:32:53 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/08/12 11:22:55 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
@@ -20,17 +20,17 @@ static const char* IDENT_VOBJECT_H="$Date: 2002/08/12 10:32:53 $";
 #define BASE_NAME "BASE"
 
 /**	parser class instance,
-	stores class VObject::fclass_real;
+	stores class VObject::fclass;
 	stores fields VObject::ffields (dynamic, not static, which are stored in class).
 */
-class VObject : public VStateless_object {
+class VObject: public VStateless_object {
 public: // Value
 	
-	const char *type() const { return fclass_real.name_cstr(); }
-	Value *as(const char *atype) { return fclass_real.as(atype); }
+	const char *type() const { return fclass.name_cstr(); }
+	Value *as(const char *atype) { return fclass.as(atype); }
 
-	/// VObject: fclass_real
-	VStateless_class *get_class() { return &fclass_real; }
+	/// VObject: class of derived  or  fclass
+	VStateless_class *get_class() { return fderived?fderived->get_class():&fclass; }
 	/// VObject : true
 	Value *as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
 	/// VObject : true
@@ -44,9 +44,9 @@ public: // Value
 
 		// $CLASS
 		if(name==CLASS_NAME)
-			return get_class();
+			return &fclass;
 
-		// $method
+		// $method of last child or upper
 		return VStateless_object::get_element(name);
 	}
 
@@ -62,19 +62,28 @@ public: // Value
 		ffields.put(name, value);
 	}
 
+	/// VObject: remember derived [the only client] */
+	/*override*/ void set_derived(Value& aderived) { 
+		fderived=&aderived;
+	}
+
 public: // creation
 
-	VObject(Pool& apool, VStateless_class& aclass_real) : VStateless_object(apool), 
-		fclass_real(aclass_real),
-		ffields(apool) {//,
-		//zz fbase(fclass_real.base()?fclass_real.base()->create_new_value(apool):0) {
+	VObject(Pool& apool, VStateless_class& aclass) : VStateless_object(apool), 
+		fclass(aclass),
+		ffields(apool),
+		fderived(0),
+		fbase(fclass.base()?fclass.base()->create_new_value(apool):0) {
+		if(fbase)
+			fbase->set_derived(*this);
 	}
 
 private:
 
-	VStateless_class& fclass_real;
+	VStateless_class& fclass;
 	Hash ffields;
-	//Value *fbase;
+	Value *fderived;
+	Value *fbase;
 };
 
 #endif

@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char* IDENT_VCLASS_H="$Date: 2002/08/12 10:32:53 $";
+static const char* IDENT_VCLASS_H="$Date: 2002/08/12 11:22:55 $";
 
 #include "pa_vstateless_class.h"
 //#include "pa_vhash.h"
@@ -42,7 +42,7 @@ public: // Value
 		if(Value *result=get_field(aname))
 			return result;
 		
-		// $CLASS,$method
+		// $method
 		return VStateless_class::get_element(aname);
 	}
 
@@ -52,7 +52,7 @@ public: // Value
 	}
 
 	/// @returns object of this class
-	virtual Value *create_new_value(Pool& ) { 
+	/*override*/ Value *create_new_value(Pool& ) { 
 		return NEW VObject(pool(), *this);
 	}
 

@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/12 10:32:53 $";
+static const char* IDENT_VALUE_H="$Date: 2002/08/12 11:22:55 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -32,6 +32,11 @@ public: // Value
 
 	/// all: value type, used for error reporting and 'is' expression operator
 	virtual const char *type() const =0;
+
+	/** remember derived class instance 
+	    - VObject: the only client
+	*/
+	virtual void set_derived(Value& /*aderived*/) { /*do nothing*/ }
 
 	/**
 		all except derived class: this if @atype eq type()
@@ -189,7 +194,7 @@ public: // Value
 		@return for
 		- VX: x_class
 		- VStateless_class: this
-		- VStateless_object: fclass_real
+		- VObject: class of derived  or  fclass
 		- WContext: none yet | transparent
 		these are methodless classes:
 		- VBool: 0
