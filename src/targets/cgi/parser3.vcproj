@@ -22,7 +22,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/vmg"
-				optimization="2" GlobalOptimizations="TRUE" 				
+				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="NDEBUG;_CONSOLE;WIN32"
@@ -49,7 +50,8 @@
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Release/parser3.pdb"
-				MapFileName=".\Release/parser3.map"
+				GenerateMapFile="TRUE"
+				MapLines="TRUE"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
