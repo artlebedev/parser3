@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2003/11/20 17:07:44 $";
+static const char * const IDENT_TABLE_C="$Date: 2003/11/25 15:41:57 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -644,8 +644,8 @@ static void _hash(Request& r, MethodParams& params) {
 					&r,
 					&self_table,
 					/*key_code=*/key_param->get_junction()?key_param:0,
-					/*key_field=*/info.key_code?-1
-						:self_table.column_name2index(key_param->as_string(), true),
+					/*key_field=*/(info.key_code?-1
+						:self_table.column_name2index(key_param->as_string(), true)),
 					&value_fields,
 					&result.hash(),
 					distinct,
