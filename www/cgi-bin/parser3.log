@@ -7,3 +7,8 @@
 [Thu Apr 25 13:43:18 2002] /index.cgihtml: junction used outside of context [parser.runtime]
 [Thu Apr 25 13:48:30 2002] /index.cgihtml: junction used outside of context [parser.runtime]
 [Thu Apr 25 13:48:31 2002] /index.cgihtml: junction used outside of context [parser.runtime]
+[Thu Apr 25 18:32:56 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1327:23): parse error, expecting `']'' or `';'' [parser.compile]
+[Thu Apr 25 18:34:36 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1327:21): parse error, expecting `']'' or `';'' [parser.compile]
+[Thu Apr 25 18:34:41 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(147): '2002' year&month parts of date abscent, must be in YYYY-NN-DD HH-MM-SS format [-]
+[Thu Apr 25 18:34:41 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(147): '2002' year&month parts of date abscent, must be in YYYY-NN-DD HH-MM-SS format [-]
+[Thu Apr 25 18:34:50 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1328:1): parse error, expecting `']'' or `';'' [parser.compile]

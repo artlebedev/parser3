@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.28 2002/04/25 14:35:20 paf Exp $
+	$Id: date.C,v 1.29 2002/04/25 14:40:24 paf Exp $
 */
 
 #include "classes.h"
@@ -56,15 +56,15 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		if(const String *sdate=params->get(0).get_string()) { // ^create[2002-04-25 18:14:00]
 			char *cstr=sdate->cstr();
 			const char *year=lsplit(&cstr, '-');
+			if(!cstr) // there were no '-'
+				throw Exception(0,
+					sdate,
+					"year&month parts of date abscent, must be in YYYY-NN-DD HH-MM-SS format");
 			const char *month=lsplit(&cstr, '-');
 			const char *mday=lsplit(&cstr, ' ');
 			const char *hour=lsplit(&cstr, ':');
 			const char *min=lsplit(&cstr, ':');
 			const char *sec=cstr;
-			if(!year)
-				throw Exception(0,
-					sdate,
-					"no part of date specified, must be in YYYY-NN-DD HH-MM-SS format");
 			tm tmIn={0};
 			tmIn.tm_isdst=-1;
 			tmIn.tm_year=NN_year_to_NNNN(atoi(year));
