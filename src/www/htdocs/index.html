@@ -7,7 +7,9 @@
 $dom[^dom::load[test.xml]]
 #^dom.save[$.encoding[windows-1251];write.xml]
 #^dom.save[;write.xml]
-^dom.save[$.encoding[windows-1251];write.xml]
+^dom.save[$.encoding[windows-1251] $.method[xml];write.xml]
+^dom.save[$.encoding[windows-1251] $.method[html];write.html]
+^dom.save[$.encoding[windows-1251] $.method[text];write.txt]
 
 @testdom1[]
 $dom[^dom::load[test.xml]]

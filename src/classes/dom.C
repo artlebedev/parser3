@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.13 2001/09/10 15:51:41 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.14 2001/09/11 08:39:04 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -138,7 +138,8 @@ FormatterListener *create_optioned_listener(Pool& pool,
 	if(voptions.is_defined()) {
 		if(Hash *options=voptions.get_hash()) {
 			// $.method[xml|html|text]
-			method=options->get_string(*new(pool) String(pool, DOM_OUTPUT_METHOD_OPTION_NAME));
+			method=&static_cast<Value *>(options->get(*new(pool) 
+				String(pool, DOM_OUTPUT_METHOD_OPTION_NAME)))->as_string();
 
 			// $.encoding[windows-1251|...]
 			if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 
@@ -175,9 +176,9 @@ FormatterListener *create_optioned_listener(Pool& pool,
 	else
 		PTHROW(0, 0,
 			method,
-			DOM_OUTPUT_METHOD_OPTION_NAME "option must be "
-				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_XML "' or "
-				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_HTML "' or "
+			DOM_OUTPUT_METHOD_OPTION_NAME " option is invalid; valid methods are: "
+				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_XML "', "
+				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_HTML "', "
 				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT "'");			
 
 	// never reached
