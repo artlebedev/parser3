@@ -23,7 +23,7 @@ $n
 @twop[a;b]
 ($a,$b)
 
-@Zpost-process[data]
+@ß post-process[data]
 #(<BR>$data)<BR>
 ^data.match[1][g]{X}
 
@@ -59,7 +59,7 @@ $drawing{
 ^$drawing.width=$width<BR>
 ^$drawing.height=$height<BR>
 ^for[i](0;$width/4){
-^line(0;0)($:i*4)($height-1;0)
+^line(0;0)($:i*4;$height-1)(0x00FF00)
 }
 
 ^rectangle(100;10)(180;40)(0xFF0000)
