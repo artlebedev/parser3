@@ -1,5 +1,6 @@
 @main[]
-^mail[]
+^image[]
+#^mail[]
 #^cookie[]
 #^response[]
 #^regexp2[]
@@ -14,6 +15,14 @@
 #^xml[]
 #^header[]
 OK
+
+@image[]
+$pict[^image::create(400;200)]
+^pict.arc($pict.width/2;$pict.height/2;$pict.width;$pict.height;0;360;0x000000)
+^pict.circle($pict.width/2;$pict.height/2;$pict.height/2-5;0x000000)
+$response:body[^pict.gif[]]
+
+
 
 @mail[]
 ^mail:send[

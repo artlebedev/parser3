@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.49 2001/10/08 15:50:22 parser Exp $
+	$Id: image.C,v 1.50 2001/10/08 16:06:49 parser Exp $
 */
 
 /*
@@ -748,12 +748,12 @@ static void _circle(Request& r, const String& method_name, MethodParams *params)
 			&method_name, 
 			"does not contain an image");
 
-	int radius=params->as_int(2, r);
+	int size=params->as_int(2, r)*2;
 	image->Arc(
 		params->as_int(0, r), //cx
 		params->as_int(1, r), //cy
-		radius, //w
-		radius, //h
+		size, //w
+		size, //h
 		0, //s
 		360, //e
 		image->Color(params->as_int(3, r)));
