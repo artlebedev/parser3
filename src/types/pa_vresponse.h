@@ -1,21 +1,24 @@
-/*
-	Parser
+/** @file
+	Parser: response class.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vresponse.h,v 1.2 2001/03/18 17:39:30 paf Exp $
+	$Id: pa_vresponse.h,v 1.3 2001/03/19 22:48:38 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-#include "pa_vstateless_class.h"
+#include "pa_vstateless_object.h"
 #include "pa_string.h"
 #include "_response.h"
 
 class Response;
 
-class VResponse : public VStateless_class {
+/// response class
+class VResponse : public VStateless_object {
 public: // Value
 	
 	// all: for error reporting after fail(), etc
@@ -27,7 +30,7 @@ public: // Value
 	// response: CLASS,BASE,method,fields
 	Value *get_element(const String& name) {
 		// $CLASS,$BASE,$method
-		if(Value *result=VStateless_class::get_element(name))
+		if(Value *result=VStateless_object::get_element(name))
 			return result;
 		
 		// $field
@@ -41,7 +44,7 @@ public: // Value
 
 public: // usage
 
-	VResponse(Pool& apool) : VStateless_class(apool, response_base_class),
+	VResponse(Pool& apool) : VStateless_object(apool, *response_class),
 		ffields(apool) {
 	}
 	

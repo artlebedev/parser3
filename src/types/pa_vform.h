@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.10 2001/03/19 22:44:23 paf Exp $
+	$Id: pa_vform.h,v 1.11 2001/03/19 22:48:38 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -18,7 +18,7 @@
 class Request;
 
 /**
-	derivates from VStateless_class so that :CLASS element referred to this.
+	derivates from VStateless_class so that :CLASS element referred to \a this.
 
 	and users could do such tricks:
 	@verbatim
