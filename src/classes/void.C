@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VOID_C="$Date: 2002/08/01 11:41:13 $";
+static const char* IDENT_VOID_C="$Date: 2002/08/15 10:38:18 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -70,16 +70,10 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
 	Void_sql_event_handlers handlers(pool, statement_string);
-	try {
-		r.connection(&method_name)->query(
-			statement_cstr, 0, 0,
-			handlers);
-	} catch(const Exception& e) {
-		// more specific source [were url]
-		throw Exception("sql.execute", 
-			&statement_string, 
-			"%s", e.comment());
-	}
+	r.connection(&method_name)->query(
+		statement_cstr, 0, 0,
+		handlers,
+		statement_string);
 }
 
 // constructor

@@ -19,17 +19,18 @@ $selffilespec[$filespec]
 #^a.format[%.10u]
 #$result[111]
 #^f[a]
-#^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
+^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
 #	^int:sql{select news_id from news where news_id=-1}[
 ##	$.default{2}
 #	]<br>
+    ^hash::sql{bad}
 #    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
 #	^file::load[text;^string:sql{select 'from sql server' }]
 #	^string:sql{select '^^hello[]' }] $ORIGINS(1)
 #	^process{	^^h[]}
 #	^process{^string:sql{select '1
 #	^^hello[]' }]	}
-#}
+}
 #^eval(2)
 #^tcrashlocaljunctionsv2[]
 #^tcrashlocaljunctions[]

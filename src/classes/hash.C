@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2002/08/13 13:02:39 $";
+static const char* IDENT_HASH_C="$Date: 2002/08/15 10:38:18 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -217,7 +217,8 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 
 	r.connection(&method_name)->query(
 		statement_cstr, offset, limit,
-		handlers);
+		handlers,
+		statement_string);
 }
 
 static void keys_collector(const Hash::Key& key, Hash::Val *value, void *info) {

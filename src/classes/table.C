@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/08/13 13:08:46 $";
+static const char* IDENT_TABLE_C="$Date: 2002/08/15 10:38:18 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -616,15 +616,15 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
 	Table_sql_event_handlers handlers(pool, method_name,
 		statement_string, statement_cstr);
-	try {
 #ifdef RESOURCES_DEBUG
 	struct timeval mt[2];
 	//measure:before
 	gettimeofday(&mt[0],NULL);
 #endif	
-		r.connection(&method_name)->query(
-			statement_cstr, offset, limit, 
-			handlers);
+	r.connection(&method_name)->query(
+		statement_cstr, offset, limit, 
+		handlers,
+		statement_string);
 	
 #ifdef RESOURCES_DEBUG
 		//measure:after connect
@@ -636,12 +636,6 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	    
 	r.sql_request_time+=t[1]-t[0];
 #endif	    			
-	} catch(const Exception& e) { // query problem
-		// more specific source [were url]
-		throw Exception("sql.execute", 
-			&statement_string, 
-			"%s", e.comment());
-	}
 
 	Table *result=
 		handlers.table?handlers.table: // query resulted in table? return it

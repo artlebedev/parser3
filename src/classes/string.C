@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/08/07 13:54:23 $";
+static const char* IDENT_STRING_C="$Date: 2002/08/15 10:38:18 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -353,16 +353,10 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
 	String_sql_event_handlers handlers(pool, statement_string, statement_cstr);
-	try {
-		r.connection(&method_name)->query(
-			statement_cstr, offset, limit, 
-			handlers);
-	} catch(const Exception& e) { // query problem
-		// give more specific source [were url]
-		throw Exception("sql.execute",
-			&statement_string, 
-			"%s", e.comment());
-	}
+	r.connection(&method_name)->query(
+		statement_cstr, offset, limit, 
+		handlers,
+		statement_string);
 	
 	if(!handlers.got_cell)
 		return 0; // no lines, caller should return second param[default value]
