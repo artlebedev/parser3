@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.33 2001/08/28 14:39:50 parser Exp $
+	$Id: image.C,v 1.34 2001/08/28 14:43:07 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.33 2001/08/28 14:39:50 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.34 2001/08/28 14:43:07 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -131,13 +131,13 @@ void measure_gif(Pool& pool, const String *origin_string,
 	if(reader.read(buf, head_size)<head_size)
 		PTHROW(0, 0, 
 			origin_string, 
-			"broken GIF header - file size is less then %d bytes", head_size);
+			"not GIF file - too small");
 	GIF_Header *head=(GIF_Header *)buf;
 
 	if(strncmp(head->type, "GIF", 3)!=0)
 		PTHROW(0, 0, 
 			origin_string, 
-			"bad image file - GIF signature not found");	
+			"not GIF file - signature not found");	
 
 	width=little_endian_to_int(head->width);
 	height=little_endian_to_int(head->height);
@@ -147,21 +147,21 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 			 Measure_reader& reader, int& width, int& height) {
 	// JFIF format markers
 	const unsigned char MARKER=0xFF;
-	const unsigned char SIZE_FIRST=0xC0;
-	const unsigned char SIZE_LAST=0xC3;
+	const unsigned char CODE_SIZE_FIRST=0xC0;
+	const unsigned char CODE_SIZE_LAST=0xC3;
 
 	void *buf;
 	const size_t prefix_size=2;
 	if(reader.read(buf, prefix_size)<prefix_size)
 		PTHROW(0, 0, 
 			origin_string, 
-			"broken JPEG file - size is less then %d bytes", prefix_size);
+			"not JPEG file - too small");
 	unsigned char *signature=(unsigned char *)buf;
 	
 	if(!(signature[0]==0xFF && signature[1]==0xD8)) 
 		PTHROW(0, 0, 
 			origin_string, 
-			"broken JPEG file - signature not found");
+			"not JPEG file - signature not found");
 
 	bool found=false;
 	while(true) {
@@ -175,7 +175,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 		if(head->marker!=MARKER)
 			break;
 
-		if(head->code >= SIZE_FIRST && head->code  <= SIZE_LAST) {
+		if(head->code >= CODE_SIZE_FIRST && head->code  <= CODE_SIZE_LAST) {
             // Segments that contain size info
 			if(reader.read(buf, sizeof(JPG_Size_segment_body))<sizeof(JPG_Size_segment_body))
 				break;
