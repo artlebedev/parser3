@@ -9,12 +9,59 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2004/02/11 15:33:16 $";
+static const char * const IDENT="$Date: 2004/02/13 14:01:08 $";
 
 #include "libxslt/extensions.h"
 
+#include "pa_threads.h"
 #include "pa_globals.h"
 #include "pa_request.h"
+
+static Hash<pa_thread_t, HashStringBool*> xml_dependencies;
+
+static void add_dependency(const String::Body url) { 
+	pa_thread_t thread_id=pa_get_thread_id();
+	HashStringBool* urls;
+	{
+		SYNCHRONIZED;
+
+		// try to get existing for this thread_id
+		urls=xml_dependencies.get(thread_id);
+	}
+
+	if(urls) // do we need to monitor now?
+		urls->put(url, true);
+}
+
+void pa_xmlStartMonitoringDependencies() { 
+	pa_thread_t thread_id=pa_get_thread_id();
+	HashStringBool* urls=new HashStringBool;
+	{
+		SYNCHRONIZED;  // find+fill blocked
+
+		xml_dependencies.put(thread_id, urls);
+	}
+}
+
+void pa_xmlStopMonitoringDependencies() { 
+	pa_thread_t thread_id=pa_get_thread_id();
+	{
+		SYNCHRONIZED;  // find+fill blocked
+
+		xml_dependencies.put(thread_id, 0);
+	}
+}
+
+HashStringBool* pa_xmlGetDependencies() {
+	pa_thread_t thread_id=pa_get_thread_id();
+	{
+		SYNCHRONIZED;  // find+remove blocked
+
+		HashStringBool* result=xml_dependencies.get(thread_id);
+		xml_dependencies.remove(thread_id);
+		return result;
+	}
+}
 
 #ifndef DOXYGEN
 struct MemoryStream {
@@ -37,7 +84,7 @@ struct MemoryStream {
 #endif
 
 static void *
-xmlFileOpen_ReadIntoStream (const char* filename, bool adjust_path_to_root_from_document_root=false) {
+xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_to_root_from_document_root=false) {
 	Request& r=pa_thread_request();
 	char adjust_buf[MAX_STRING];	
 	if(adjust_path_to_root_from_document_root) {
@@ -47,21 +94,29 @@ xmlFileOpen_ReadIntoStream (const char* filename, bool adjust_path_to_root_from_
 
 		adjust_buf[0]=0;
 		strcat(adjust_buf, document_root);
-		strcat(adjust_buf, &filename[16]);
-		filename=adjust_buf;
+		strcat(adjust_buf, &do_not_store_filename[16]);
+		do_not_store_filename=adjust_buf;
 	} else
-		if(strstr(filename, "file://"))
-			filename+=7/*strlen("file://")*/; 
-		else if(strstr(filename, "://")) 
+		if(strstr(do_not_store_filename, "file://"))
+			do_not_store_filename+=7/*strlen("file://")*/; 
+		else if(*do_not_store_filename && do_not_store_filename[1]!=':' && strstr(do_not_store_filename, "://"))  {
+			pa_xmlStopMonitoringDependencies();
 			return 0; // plug out [do not handle other prefixes]
+		}
+
+	const char* can_store_filename=pa_strdup(do_not_store_filename);
+	add_dependency(can_store_filename);
 
 	const char *buf;
 	try {
-		buf=file_read_text(r.charsets, *new String(filename));
+		buf=file_read_text(r.charsets, *new String(can_store_filename));
 	} catch(const Exception& e) {
+		if(strcmp(e.type(), "file.missing")==0)
+			return 0; // let the library try that and report an error properly
+
 		buf=e.comment();
 	} catch(...) {
-		buf="xmlFileOpenLocalhost: unknown error";
+		buf="xmlFileOpen_ReadIntoStream: unknown error";
 	}
 	MemoryStream* stream=new(UseGC) MemoryStream;
 	stream->m_buf=buf;
@@ -69,16 +124,14 @@ xmlFileOpen_ReadIntoStream (const char* filename, bool adjust_path_to_root_from_
 	return (void *)stream;
 }
 
-#ifdef PA_SAFE_MODE
 static int
-xmlFileMatchSafeMode(const char* file_spec_cstr) {
-	return 1; // always intercept, causing xmlFileOpenSafeMode to be called
+xmlFileMatchMonitor(const char* /*file_spec_cstr*/) {
+	return 1; // always intercept, causing xmlFileOpenMonitor to be called
 }
 static void *
-xmlFileOpenSafeMode(const char* filename) {
+xmlFileOpenMonitor(const char* filename) {
 	return xmlFileOpen_ReadIntoStream(filename); // handles localfile case, else returns 0
 }
-#endif
 
 
 /**
@@ -181,12 +234,12 @@ pa_xmlFileCloseMethod (void * /*context*/) {
 
 
 void pa_xml_io_init() {
-#ifdef PA_SAFE_MODE
+	// file open monitorer [for xslt cacher]
 	// safe mode checker, always fail match, but checks non-"://" there
 	xmlRegisterInputCallbacks(
-		xmlFileMatchSafeMode, xmlFileOpenSafeMode,
+		xmlFileMatchMonitor, xmlFileOpenMonitor,
 		pa_xmlFileReadMethod, pa_xmlFileCloseMethod);
-#endif
+
 	// http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
 	xmlRegisterInputCallbacks(
 		xmlFileMatchLocalhost, xmlFileOpenLocalhost,

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2004/02/11 15:33:16 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2004/02/13 14:01:08 $";
 
 #include "pa_config_includes.h"
 
@@ -100,28 +100,26 @@ public:
 	}
 };
 
-Hash<pa_thread_t, XML_Generic_error_info*> xml_generic_error_infos;
+static Hash<pa_thread_t, XML_Generic_error_info*> xml_generic_error_infos;
 
 static void xmlParserGenericErrorFunc(void *  /*ctx*/, const char* msg, ...) { 
 //_asm int 3;
 	pa_thread_t thread_id=pa_get_thread_id();
 
-	// infinitely looking for free slot to fill it
-	while(true) {
+	XML_Generic_error_info* p;
+	{
 		SYNCHRONIZED;  // find+fill blocked
 
 		// first try to get existing for this thread_id
-		XML_Generic_error_info *p=xml_generic_error_infos.get(thread_id);
+		p=xml_generic_error_infos.get(thread_id);
 		if(!p) // occupy empty one
 			xml_generic_error_infos.put(thread_id, (p=new(PointerFreeGC) XML_Generic_error_info));
-		
-		va_list args;
-		va_start(args, msg);
-		p->used+=vsnprintf(p->buf+p->used, sizeof(p->buf)-p->used, msg, args);
-		va_end(args);
-
-		break;
 	}
+		
+	va_list args;
+	va_start(args, msg);
+	p->used+=vsnprintf(p->buf+p->used, sizeof(p->buf)-p->used, msg, args);
+	va_end(args);
 }
 
 bool xmlHaveGenericErrors() {

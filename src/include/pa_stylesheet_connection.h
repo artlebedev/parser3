@@ -8,7 +8,7 @@
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-static const char * const IDENT_STYLESHEET_CONNECTION_H="$Date: 2004/02/11 15:33:14 $";
+static const char * const IDENT_STYLESHEET_CONNECTION_H="$Date: 2004/02/13 14:01:08 $";
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"
@@ -17,10 +17,9 @@ static const char * const IDENT_STYLESHEET_CONNECTION_H="$Date: 2004/02/11 15:33
 #include "pa_xml_exception.h"
 #include "pa_common.h"
 #include "pa_globals.h"
+#include "pa_xml_io.h"
 
 // defines
-
-#define STYLESHEET_FILENAME_STAMP_SUFFIX ".stamp"
 
 /**	Connection with stylesheet: 
 	remembers time and can figure out that it needs recompilation
@@ -32,8 +31,8 @@ class Stylesheet_connection: public PA_Object {
 private:
 
 	String::Body ffile_spec;
-	bool uncachable;
 	xsltStylesheet *fstylesheet;
+	HashStringBool* dependencies;
 	time_t time_used;
 	time_t prev_disk_time;
 
@@ -42,17 +41,20 @@ public:
 	Stylesheet_connection(String::Body afile_spec):
 		ffile_spec(afile_spec),
 		fstylesheet(0),
+		dependencies(0),
 		time_used(0),
 		prev_disk_time(0),
 		used(0)  
-	{
-		uncachable=ffile_spec.pos("://")!=CORD_NOT_FOUND;
-	}
+	{}
 	
 	String::Body file_spec() { return ffile_spec; }
 
+	bool uncachable() {
+		return !dependencies/*means they were external*/;
+	}
+
 	bool expired(time_t older_dies) {
-		return uncachable || !used && time_used<older_dies;
+		return uncachable() || !used && time_used<older_dies;
 	}
 	time_t get_time_used() { return time_used; }
 
@@ -64,7 +66,7 @@ public:
 
 	xsltStylesheet *stylesheet() { 
 		time_t new_disk_time=0;
-		if(uncachable || (new_disk_time=get_new_disk_time()))
+		if(uncachable() || (new_disk_time=get_new_disk_time()))
 			load(new_disk_time);
 		return fstylesheet; 
 	}
@@ -81,38 +83,8 @@ private:
 		return now_disk_time>prev_disk_time?now_disk_time:0;
 	}
 
-	void load(time_t new_disk_time) {
-		int saved=xmlDoValidityCheckingDefaultValue;//
-		xmlDoValidityCheckingDefaultValue=0;//
-		xsltStylesheet *nstylesheet=xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr());
-		xmlDoValidityCheckingDefaultValue = saved;//
-		if(xmlHaveGenericErrors()) {
-			GdomeException exc=0;
-			throw XmlException(new String(ffile_spec, String::L_TAINTED), exc);
-		}
-		if(!nstylesheet)
-			throw Exception("file.missing",
-				new String(ffile_spec, String::L_TAINTED),
-				"stylesheet failed to load");
-
-		xsltFreeStylesheet(fstylesheet);  
-		fstylesheet=nstylesheet;
-		prev_disk_time=new_disk_time;
-	}
-
-	time_t get_disk_time() {
-		size_t size;
-		time_t atime, mtime, ctime;
-		String stamp_file_spec(ffile_spec, String::L_AS_IS);
-		stamp_file_spec << STYLESHEET_FILENAME_STAMP_SUFFIX;
-		// {file_spec}.stamp modification time OR {file_spec}
-		const String& stat_file_spec=file_readable(stamp_file_spec)?stamp_file_spec:*new String(ffile_spec, String::L_AS_IS);
-		file_stat(stat_file_spec, 
-			size,
-			atime, mtime, ctime,
-			true/*exception on error*/);
-		return mtime;
-	}
+	void load(time_t new_disk_time);
+	time_t get_disk_time();
 
 private: // connection usage methods
 

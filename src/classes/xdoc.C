@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/02/11 15:33:13 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/02/13 14:01:08 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -17,7 +17,7 @@ static const char * const IDENT_XDOC_C="$Date: 2004/02/11 15:33:13 $";
 #include "libxslt/transform.h"
 #include "libxslt/xsltutils.h"
 #include "libxslt/variables.h"
-
+#include "libxslt/imports.h"
 
 #include "pa_vmethod_frame.h"
 
@@ -732,8 +732,10 @@ static void add_xslt_param(
 	*info->current_transform_param++=(s=info->r->transcode(attribute))->str; *info->strings+=s;
 	*info->current_transform_param++=(s=info->r->transcode(meaning->as_string()))->str; *info->strings+=s;
 }
+
 static VXdoc& _transform(Request& r, const String* stylesheet_source, 
-						   VXdoc& vdoc, xsltStylesheetPtr stylesheet, const char** transform_params) {
+						   VXdoc& vdoc, xsltStylesheetPtr stylesheet, const char** transform_params) 
+{
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
 	xsltTransformContext_auto_ptr transformContext(
 		xsltNewTransformContext(stylesheet, document));

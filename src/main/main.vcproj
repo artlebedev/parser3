@@ -297,6 +297,9 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_string.h">
 		</File>
 		<File
+			RelativePath=".\pa_stylesheet_connection.C">
+		</File>
+		<File
 			RelativePath="..\include\pa_stylesheet_connection.h">
 		</File>
 		<File
