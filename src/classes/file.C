@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.19 2001/04/05 18:22:56 paf Exp $
+	$Id: file.C,v 1.20 2001/04/08 13:11:15 paf Exp $
 */
 
 #include "pa_request.h"
@@ -101,27 +101,8 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	char *user_file_name=params->size()==1?lfile_name.cstr(String::UL_FILE_NAME)
 		:static_cast<Value *>(params->get(1))->as_string().cstr();
 	
-	const String *mime_type=0;
-	if(params->size()==3)
-		mime_type=&static_cast<Value *>(params->get(2))->as_string();
-	else {
-		if(r.mime_types) {
-			if(char *cext=strrchr(user_file_name, '.')) {
-				cext++;
-				String sext(pool, cext);
-				if(r.mime_types->locate(0, sext))
-					if(!(mime_type=r.mime_types->item(1)))
-						PTHROW(0, 0,
-						r.mime_types->origin_string(),
-						"MIME-TYPE table column elements must not be empty");
-			}
-		}
-	}
-
-	if(!mime_type)
-		mime_type=new(pool) String(pool, "application/octet-stream");
-
-	static_cast<VFile *>(r.self)->set(data, size, user_file_name, mime_type);
+	static_cast<VFile *>(r.self)->set(data, size, 
+		user_file_name, &r.mime_type_of(user_file_name));
 }
 
 // initialize
@@ -139,6 +120,5 @@ void initialize_file_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^load[disk-name]
 	// ^load[disk-name;user-name]
-	// ^load[disk-name;user-name;mime-type]
-	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 3);
+	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
 }

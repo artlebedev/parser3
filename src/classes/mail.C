@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.9 2001/04/07 17:33:04 paf Exp $
+	$Id: mail.C,v 1.10 2001/04/08 13:11:15 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,12 +25,80 @@ VStateless_class *mail_class;
 
 // helpers
 
-/// @test uuencode
+// uuencode
+
+static unsigned char uue_table[64] = {
+  '`', '!', '"', '#', '$', '%', '&', '\'',
+  '(', ')', '*', '+', ',', '-', '.', '/',
+  '0', '1', '2', '3', '4', '5', '6', '7',
+  '8', '9', ':', ';', '<', '=', '>', '?',
+  '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+  'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+  'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+  'X', 'Y', 'Z', '[', '\\',']', '^', '_'
+};
 static void uuencode(String& result, const char *file_name_cstr, const VFile& vfile) {
-	// content-transfer-encoding: x-uuencode
-	result+="content-transfer-encoding: x-uuencode\n";
-	result+="\n";
-	result+="todo";
+	//header
+	result << "content-transfer-encoding: x-uuencode\n" << "\n";
+	result << "begin 644 " << file_name_cstr << "\n";
+
+	//body
+	const unsigned char *itemp;
+
+	int index;
+	int count=45;
+
+	const unsigned char *in=(const unsigned char *)vfile.value_ptr();
+	size_t in_length=vfile.value_size();
+
+	for(itemp=in; itemp<(in+in_length); itemp+=count) {
+		if((itemp+count)>(in+in_length)) 
+			count=in_length-(itemp-in);
+
+		char *buf=(char *)result.pool().malloc(MAX_STRING);
+		char *optr=buf;
+		
+		/*
+		* for UU and XX, encode the number of bytes as first character
+		*/
+		*optr++ = uue_table[count];
+		
+		for (index=0; index<=count-3; index+=3) {
+			*optr++ = uue_table[itemp[index] >> 2];
+			*optr++ = uue_table[((itemp[index  ] & 0x03) << 4) | (itemp[index+1] >> 4)];
+			*optr++ = uue_table[((itemp[index+1] & 0x0f) << 2) | (itemp[index+2] >> 6)];
+			*optr++ = uue_table[  itemp[index+2] & 0x3f];
+		}
+		
+		/*
+		* Special handlitempg for itempcomplete litempes
+		*/
+		if (index != count) {
+			if (count - index == 2) {
+				*optr++ = uue_table[itemp[index] >> 2];
+				*optr++ = uue_table[((itemp[index  ] & 0x03) << 4) | 
+					( itemp[index+1] >> 4)];
+				*optr++ = uue_table[((itemp[index+1] & 0x0f) << 2)];
+				*optr++ = uue_table[0];
+			}
+			else if (count - index == 1) {
+				*optr++ = uue_table[ itemp[index] >> 2];
+				*optr++ = uue_table[(itemp[index] & 0x03) << 4];
+				*optr++ = uue_table[0];
+				*optr++ = uue_table[0];
+			}
+		}
+		/*
+		* end of line
+		*/
+		*optr++ = '\n';	
+		*optr = 0;
+		result << buf;
+	}
+	
+	//footer
+	result.APPEND_CLEAN((const char *)uue_table, 1/* one char */, 0, 0) << "\n"
+		"end\n";
 }
 
 /// ^mail:send[$attach[$type[uue|mime64] $value[DATA]]] 
@@ -65,10 +133,10 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 
 	String& result=*new(pool) String(pool);
 
+	// content-type: application/octet-stream
+	result << "content-type: " << r.mime_type_of(file_name_cstr) << "\n";
 	// content-disposition: attachment; filename="user_file_name"
-	result+="content-disposition: attachment; filename=\"";
-	result+=file_name_cstr;
-	result+="\"\n";
+	result << "content-disposition: attachment; filename=\"" << file_name_cstr << "\"\n";
 
 	const String& type=vtype->as_string();
 	if(type=="uue") {
@@ -87,7 +155,6 @@ struct Mail_info {
 	String *header;
 	const String **from, **to;
 };
-
 static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
 								 void *info) {
 
@@ -105,10 +172,10 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 		*mi.to=&lmeaning.as_string();
 
 	// append header line
-	*mi.header+=aattribute;
-	*mi.header+=":";
-	*mi.header+=attributed_meaning_to_string(lmeaning, String::UL_MAIL_HEADER);
-	*mi.header+="\n";
+	*mi.header << 
+		aattribute << ":" << 
+		attributed_meaning_to_string(lmeaning, String::UL_MAIL_HEADER) << 
+		"\n";
 }
 struct Seq_item {
 	const String *part_name;
@@ -162,9 +229,8 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			char *boundary=(char *)pool.malloc(MAX_NUMBER);
 			snprintf(boundary, MAX_NUMBER-5/*lEvEl*/, "lEvEl%d", level);
 			// multi-part
-			((result+=
-				"content-type: multipart/mixed; boundary=\"")+=boundary)+="\"\n"
-				"\n"
+			result << "content-type: multipart/mixed; boundary=\"" << boundary << "\"\n";
+			result << "\n" 
 				"This is a multi-part message in MIME format.";
 
 			// body parts..
@@ -177,13 +243,13 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			// ..insert in 'seq' order
 			for(int i=0; i<body_hash->size(); i++) {
 				// intermediate boundary
-				((result+="\n--")+=boundary)+="\n";
+				result << "\n--" << boundary << "\n";
 
 				if(Hash *part_hash=seq[i].part_value->get_hash())
 					if(seq[i].part_name->mid(0, 6/*attach*/)=="attach")
-						result+=attach_hash_to_string(r, *seq[i].part_name, *part_hash);
+						result << attach_hash_to_string(r, *seq[i].part_name, *part_hash);
 					else 
-						result+=letter_hash_to_string(r, method_name, *part_hash, 
+						result << letter_hash_to_string(r, method_name, *part_hash, 
 							level+1, 0, 0);
 				else
 					PTHROW(0, 0,
@@ -192,10 +258,11 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			}
 
 			// finish boundary
-			((result+="\n--")+=boundary)+="--\n";
+			result << "\n--" << boundary << "--\n";
 		} else {
-			result+="\n"; // header|body separator
-			result+=body_element->as_string();  // body
+			result << 
+				"\n" << // header|body separator
+				body_element->as_string();  // body
 		}
 	} else 
 		PTHROW(0, 0,
@@ -264,8 +331,8 @@ static void _send(Request& r, const String& method_name, Array *params) {
 	const String *from, *to;
 	const String& letter=letter_hash_to_string(r, method_name, *hash, 0, &from, &to);
 
-	r.write_assign_lang(*new(pool) VString(letter));
-	//sendmail(r, method_name, letter, from, to);
+	//r.write_assign_lang(*new(pool) VString(letter));
+	sendmail(r, method_name, letter, from, to);
 }
 
 // initialize

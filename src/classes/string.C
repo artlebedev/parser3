@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.36 2001/04/05 18:22:57 paf Exp $
+	$Id: string.C,v 1.37 2001/04/08 13:11:15 paf Exp $
 */
 
 #include "pa_request.h"
@@ -154,7 +154,7 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 	if(row) { // begin&middle
 		// piece from last match['start'] to beginning of this match['finish']
 		if(start!=finish)
-			ai.dest->append(ai.src->mid(start, finish), String::UL_PASS_APPENDED);//ai.dest->APPEND_CONST("-");
+			*ai.dest << ai.src->mid(start, finish);//ai.dest->APPEND_CONST("-");
 		// store found parts in one-record Vtable
 		if(table.size()) // middle
 			table.put(0, row);
@@ -170,14 +170,14 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 
 			/*
 			ai.dest->APPEND_CONST("(");
-				ai.dest->append(*(String *)row->get(1/*match* /), String::UL_PASS_APPENDED);
+				*ai.dest << *(String *)row->get(1/*match* /);
 			ai.dest->APPEND_CONST(")");
 			*/
-			ai.dest->append(replaced.as_string(), String::UL_PASS_APPENDED);
+			*ai.dest << replaced.as_string();
 		}
 		ai.post_match=(String *)row->get(2/*post_match*/);
 	} else // end
-		ai.dest->append(*ai.post_match, String::UL_PASS_APPENDED);
+		*ai.dest << *ai.post_match;
 }
 
 /** search/replace

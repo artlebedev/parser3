@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.79 2001/04/07 13:48:39 paf Exp $
+	$Id: pa_request.h,v 1.80 2001/04/08 13:11:17 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -138,6 +138,9 @@ public:
 	/// returns an absolute @a path to relative @a name
 	const String& absolute(const String& relative_name);
 
+	/// returns the mime type of 'user_file_name_cstr'
+	const String& mime_type_of(const char *user_file_name_cstr);
+
 public:
 	
 	/// info from web server
@@ -155,9 +158,6 @@ public:
 	VResponse response;
 	/// $cookie:
 	VCookie cookie;
-
-	/// $MAIN:MIME-TYPES
-	Table *mime_types;
 
 	/// contexts
 	Value *self, *root, *rcontext;
@@ -203,6 +203,11 @@ private: // defaults
 
 	const String::Untaint_lang fdefault_lang;
 	Value *default_content_type;
+
+private: // mime types
+
+	/// $MAIN:MIME-TYPES
+	Table *mime_types;
 
 private: // lang manipulation
 

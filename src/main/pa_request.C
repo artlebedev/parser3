@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.103 2001/04/07 13:56:46 paf Exp $
+	$Id: pa_request.C,v 1.104 2001/04/08 13:11:19 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -474,8 +474,7 @@ const String& Request::relative(const char *apath, const String& relative_name) 
 	memcpy(lpath, apath, lpath_buf_size);
     rsplit(lpath, '/');
 	String& result=*NEW String(pool(), lpath);
-    result.APPEND_CONST("/");
-	result.append(relative_name, String::UL_PASS_APPENDED);
+    result << "/" << relative_name;
     return result;
 }
 
@@ -483,7 +482,7 @@ const String& Request::absolute(const String& relative_name) {
 	char *relative_name_cstr=relative_name.cstr();
 	if(relative_name_cstr[0]=='/') {
 		String& result=*NEW String(pool(), info.document_root);
-		result.append(relative_name, String::UL_PASS_APPENDED);
+		result << relative_name;
 		return result;
 	} else 
 		return relative(info.path_translated, relative_name);
@@ -546,4 +545,19 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	// send body
 	if(!header_only)
 		SAPI::send_body(pool(), body, content_length);
+}
+
+const String& Request::mime_type_of(const char *user_file_name_cstr) {
+	if(mime_types)
+		if(const char *cext=strrchr(user_file_name_cstr, '.')) {
+			String sext(pool(), ++cext);
+			if(mime_types->locate(0, sext))
+				if(const String *result=mime_types->item(1))
+					return *result;
+				else
+					THROW(0, 0,
+						mime_types->origin_string(),
+						"MIME-TYPE table column elements must not be empty");
+		}
+	return *NEW String(pool(), "application/octet-stream");
 }

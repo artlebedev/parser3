@@ -47,9 +47,8 @@ PAF
 ]
 		]
 		$attach[
-			$value[test]
+			$value[^file:load[test.zip]]
 			$type[uue]
-			$file-name[te st.txt]
 		]
 	]
 ]</pre>
@@ -220,7 +219,7 @@ $a[vasya,fedya,kolya]
 ^$request:browser.type=$request:browser.type<BR>
 ^$request:browser.version=$request:browser.version<BR>
 
-$tf[^file:load[test.zip;abc.zip;image/gif]]
+$tf[^file:load[test.zip;abc.zip]]
 #$response:body[$tf]
 
 ^$tf.name=$tf.name<BR>
