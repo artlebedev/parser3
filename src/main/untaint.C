@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: untaint.C,v 1.53 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: untaint.C,v 1.54 2001/07/09 16:51:54 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -121,7 +121,9 @@ size_t String::cstr_bufsize(Untaint_lang lang) const {
 	return (lang==UL_AS_IS?size():size()*UNTAINT_TIMES_BIGGER) +1;
 }
 
-///	@todo fix theoretical \n mem overrun in TYPO replacements
+/** @todo fix theoretical \n mem overrun in TYPO replacements
+@todo rename base_64 to quoted_printable [invalid name now]
+*/
 char *String::store_to(char *dest, Untaint_lang lang, 
 					   SQL_Connection *connection,
 					   const char *charset) const {
