@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2003/11/06 09:15:16 $";
+static const char* IDENT_XNODE_C="$Date: 2003/11/12 05:46:49 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -155,10 +155,10 @@ static void _replaceChild(Request& r, MethodParams& params) {
 	VXnode& vnode=GET_SELF(r, VXnode);
 	GdomeNode* selfNode=vnode.get_node();
 	GdomeNode* newChild=as_node(params, 0, "newChild must be node");
-	GdomeNode* refChild=as_node(params, 1, "refChild must be node");
+	GdomeNode* oldChild=as_node(params, 1, "oldChild must be node");
 	
 	GdomeException exc;
-	if(GdomeNode* retNode=gdome_n_replaceChild(selfNode, newChild, refChild, &exc)) {
+	if(GdomeNode* retNode=gdome_n_replaceChild(selfNode, newChild, oldChild, &exc)) {
 		// write out result
 		r.write_no_lang(*new VXnode(&r.charsets, retNode));
 	} else
