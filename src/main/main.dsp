@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /O2 /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "..\classes\xml-xalan\c\src" /I "..\classes\xml-xerces\c\src" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /O2 /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "..\..\..\xml-xalan\c\src" /I "..\..\..\xml-xerces\c\src" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /Zi /Od /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "..\classes\xml-xalan\c\src" /I "..\classes\xml-xerces\c\src" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /Zi /Od /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "..\..\..\xml-xalan\c\src" /I "..\..\..\xml-xerces\c\src" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
 # SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -643,43 +643,43 @@ SOURCE=..\sql\pa_sql_driver.h
 # End Group
 # Begin Source File
 
-SOURCE="..\classes\xml-xerces\c\Build\Win32\VC6\Debug\xerces-c_1D.lib"
+SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XSLTD.lib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XSLTD.lib"
+SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XPathD.lib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XPathD.lib"
+SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XalanTransformerD.lib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XalanTransformerD.lib"
+SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XalanDOMD.lib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XalanDOMD.lib"
+SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\DOMSupportD.lib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\DOMSupportD.lib"
+SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\PlatformSupportD.lib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\PlatformSupportD.lib"
+SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XMLSupportD.lib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XMLSupportD.lib"
+SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XercesParserLiaisonD.lib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XercesParserLiaisonD.lib"
+SOURCE="..\..\..\xml-xalan\c\Build\Win32\VC6\Debug\XalanSourceTreeD.lib"
 # End Source File
 # Begin Source File
 
-SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XalanSourceTreeD.lib"
+SOURCE="..\..\..\xml-xerces\c\Build\Win32\VC6\Debug\xerces-c_1D.lib"
 # End Source File
 # End Target
 # End Project
