@@ -1,1 +1,1 @@
-START /max "" chm\parser3.chm
+START /max "" chm\parser3src.chm

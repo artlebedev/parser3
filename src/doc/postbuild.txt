@@ -1,3 +1,0 @@
-*.html rename to *.htm
-*.htm,*.js replace .html -> .htm
-tree.htm += <meta http-equiv="Content-Type" content="text/html;charset=Windows-1251">
