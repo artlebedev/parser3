@@ -256,6 +256,10 @@ SOURCE=..\include\pa_vhash.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_vint.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_vjunction.h
 # End Source File
 # Begin Source File
@@ -288,7 +292,23 @@ SOURCE=..\include\pa_wwrapper.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\classes\_double.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\_int.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\_string.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\double.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\int.C
 # End Source File
 # Begin Source File
 

@@ -1,0 +1,73 @@
+/*
+$Id: string.C,v 1.1 2001/03/09 08:19:46 paf Exp $
+*/
+
+#include "pa_request.h"
+#include "_string.h"
+#include "pa_vdouble.h"
+#include "pa_vint.h"
+
+// global var
+
+VClass *string_class;
+
+// methods
+
+static void _length(Request& r, Array *) {
+	Pool& pool=r.pool();
+	Value& value=*new(pool) VDouble(pool, r.self->as_string().size());
+	r.wcontext->write(value);
+}
+
+static void _int(Request& r, Array *) {
+	Pool& pool=r.pool();
+	Value& value=*new(pool) VInt(pool, static_cast<int>(r.self->get_double()));
+	r.wcontext->write(value);
+}
+
+static void _double(Request& r, Array *) {
+	Pool& pool=r.pool();
+	Value& value=*new(pool) VDouble(pool, r.self->get_double());
+	r.wcontext->write(value);
+}
+
+void initialize_string_class(Pool& pool) {
+	string_class=new(pool) VClass(pool);
+
+	// ^string.length[]
+	String& LENGTH_NAME=*new(pool) String(pool);
+	LENGTH_NAME.APPEND_CONST("length");
+
+	Method& LENGTH_METHOD=*new(pool) Method(pool,
+		LENGTH_NAME,
+		0, 0, // min,max numbered_params_count
+		0/*params_names*/, 0/*locals_names*/,
+		0/*parser_code*/, _length
+	);
+	string_class->add_method(LENGTH_NAME, LENGTH_METHOD);
+
+	// ^string.int[]
+	String& INT_NAME=*new(pool) String(pool);
+	INT_NAME.APPEND_CONST("int");
+
+	Method& INT_METHOD=*new(pool) Method(pool,
+		INT_NAME,
+		0, 0, // min,max numbered_params_count
+		0/*params_names*/, 0/*locals_names*/,
+		0/*parser_code*/, _int
+	);
+	string_class->add_method(INT_NAME, INT_METHOD);
+
+	// ^string.double[]
+	String& DOUBLE_NAME=*new(pool) String(pool);
+	DOUBLE_NAME.APPEND_CONST("double");
+
+	Method& DOUBLE_METHOD=*new(pool) Method(pool,
+		DOUBLE_NAME,
+		0, 0, // min,max numbered_params_count
+		0/*params_names*/, 0/*locals_names*/,
+		0/*parser_code*/, _double
+	);
+	string_class->add_method(DOUBLE_NAME, DOUBLE_METHOD);
+}
+

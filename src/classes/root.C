@@ -1,16 +1,21 @@
 /*
-$Id: root.C,v 1.5 2001/03/09 04:47:26 paf Exp $
+$Id: root.C,v 1.6 2001/03/09 08:19:46 paf Exp $
 */
 
 #include "pa_request.h"
 
-static void _if(Request& r, Array& params) {
+static void _if(Request& r, Array *params) {
 	bool condition=
 		r.autocalc(
-			*static_cast<Value *>(params.get(0)), 
+			*static_cast<Value *>(params->get(0)), 
 			false/*don't make it string*/).get_bool();
-	Value& value=r.autocalc(*static_cast<Value *>(params.get(condition?1:2)));
-	r.wcontext->write(value);
+	if(condition) {
+		Value& value=r.autocalc(*static_cast<Value *>(params->get(1)));
+		r.wcontext->write(value);
+	} else if(params->size()==3) {
+		Value& value=r.autocalc(*static_cast<Value *>(params->get(2)));
+		r.wcontext->write(value);
+	}
 }
 
 void construct_root_class(Request& request) {
@@ -20,7 +25,7 @@ void construct_root_class(Request& request) {
 
 	Method& IF_METHOD=*new(pool) Method(pool,
 		IF_NAME,
-		3/*numbered_params_count*/,
+		2, 3, // min,max numbered_params_count
 		0/*params_names*/, 0/*locals_names*/,
 		0/*parser_code*/, _if
 	);

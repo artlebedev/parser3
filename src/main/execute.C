@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.79 2001/03/09 04:47:29 paf Exp $
+  $Id: execute.C,v 1.80 2001/03/09 08:19:51 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -28,7 +28,7 @@ char *opcode_name[]={
 	// actions
 	"WITH_SELF",	"WITH_ROOT",	"WITH_READ",	"WITH_WRITE",
 	"GET_CLASS",
-	"CONSTRUCT",
+	"CONSTRUCT_VALUE",  "CONSTRUCT_DOUBLE",
 	"WRITE",
 	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
@@ -92,7 +92,7 @@ void Request::execute(const Array& ops) {
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
-		fprintf(stderr, "%d:%s", stack.top_index(), opcode_name[op.code]); fflush(stderr);
+		fprintf(stderr, "%d:%s", stack.top_index()+1, opcode_name[op.code]); fflush(stderr);
 
 		switch(op.code) {
 		// param in next instruction
@@ -158,13 +158,22 @@ void Request::execute(const Array& ops) {
 			}
 			
 		// OTHER ACTIONS BUT WITHs
-		case OP_CONSTRUCT:
+		case OP_CONSTRUCT_VALUE:
 			{
 				Value *value=POP();
 				String& name=POP_NAME();
 				Value *ncontext=POP();
 				value->set_name(name);
 				ncontext->put_element(name, value);
+				break;
+			}
+		case OP_CONSTRUCT_EXPR:
+			{
+				Value *value=POP();
+				String& name=POP_NAME();
+				Value *ncontext=POP();
+				value->set_name(name);
+				ncontext->put_element(name, value->get_expr_result());
 				break;
 			}
 		case OP_WRITE:
@@ -215,7 +224,11 @@ void Request::execute(const Array& ops) {
 		case OP_REDUCE_RWPOOL:
 			{
 				String *string=wcontext->get_string();
-				Value *value=string?NEW VString(*string):NEW VString();
+				Value *value;
+				if(string)
+					value=NEW VString(*string);
+				else
+					value=NEW VUnknown(pool());
 				wcontext=static_cast<WContext *>(POP());
 				rcontext=POP();
 				PUSH(value);
@@ -232,7 +245,11 @@ void Request::execute(const Array& ops) {
 				// from "$a $b" part of expression taking only string value,
 				// ignoring any other content of wcontext
 				String *string=wcontext->get_string();
-				Value *value=string?NEW VString(*string):NEW VString();
+				Value *value;
+				if(string)
+					value=NEW VString(*string);
+				else
+					NEW VUnknown(pool());
 				wcontext=static_cast<WContext *>(POP());
 				PUSH(value);
 				break;
@@ -281,7 +298,7 @@ void Request::execute(const Array& ops) {
 				else // no, not me or relative of mine (total stranger)
 					if(wcontext->constructing()) {  // constructing?
 						// yes, constructor call: $some(^class:method(..))
-						self=NEW VObject(*called_class);
+						self=NEW VObject(pool(), *called_class);
 						frame->write(*self);
 					} else 
 						self=&frame->junction.self; // no, static or simple dynamic call
@@ -295,9 +312,10 @@ void Request::execute(const Array& ops) {
 					Temp_alias temp_alias(*aliased, *frame->junction.vclass);
 
 					Method& method=*frame->junction.method;
-					if(method.native_code) // native code?
+					if(method.native_code) { // native code?
+						method.check_actual_numbered_params(frame->numbered_params());
 						(*method.native_code)(*this, frame->numbered_params()); // execute it
-					else // parser code
+					} else // parser code
 						execute(*method.parser_code); // execute it
 				}
 				Value *value=wcontext->result();
@@ -316,16 +334,14 @@ void Request::execute(const Array& ops) {
 		case OP_NEG:
 			{
 				Value *operand=POP();
-				Value *value=NEW VDouble(pool(), 
-					-operand->get_double());
+				Value *value=NEW VDouble(pool(), -operand->get_double());
 				PUSH(value);
 				break;
 			}
 		case OP_INV:
 			{
 				Value *operand=POP();
-				Value *value=NEW VDouble(pool(), 
-					~static_cast<int>(operand->get_double()));
+				Value *value=NEW VDouble(pool(), ~static_cast<int>(operand->get_double()));
 				PUSH(value);
 				break;
 			}
@@ -362,32 +378,28 @@ void Request::execute(const Array& ops) {
 		case OP_SUB: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
-					a->get_double() - b->get_double());
+				Value *value=NEW VDouble(pool(), a->get_double() - b->get_double());
 				PUSH(value);
 				break;
 			}
 		case OP_ADD: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
-					a->get_double() + b->get_double());
+				Value *value=NEW VDouble(pool(), a->get_double() + b->get_double());
 				PUSH(value);
 				break;
 			}
 		case OP_MUL: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
-					a->get_double() * b->get_double());
+				Value *value=NEW VDouble(pool(), a->get_double() * b->get_double());
 				PUSH(value);
 				break;
 			}
 		case OP_DIV: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
-					a->get_double() / b->get_double());
+				Value *value=NEW VDouble(pool(), a->get_double() / b->get_double());
 				PUSH(value);
 				break;
 			}

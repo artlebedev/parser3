@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vdouble.h,v 1.9 2001/03/08 17:14:51 paf Exp $
+  $Id: pa_vdouble.h,v 1.10 2001/03/09 08:19:47 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -7,14 +7,17 @@
 
 #include "pa_value.h"
 #include "pa_common.h"
+#include "classes/_double.h"
 
 #define MAX_DOUBLE_AS_STRING 20
 
-class VDouble : public Value {
+class VDouble : public VObject {
 public: // Value
 
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "double"; }
+	// double: this
+	Value *get_expr_result() { return this; }
 
 	// double: fdouble
 	String *get_string() {
@@ -31,9 +34,11 @@ public: // Value
 
 public: // usage
 
-	VDouble(Pool& apool, double adouble) : Value(apool), 
+	VDouble(Pool& apool, double adouble) : VObject(apool, *double_class), 
 		fdouble(adouble) {
 	}
+
+	void inc(double increment) { fdouble+=increment; }
 
 private:
 

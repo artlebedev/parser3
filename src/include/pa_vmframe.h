@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.20 2001/03/09 04:47:27 paf Exp $
+  $Id: pa_vmframe.h,v 1.21 2001/03/09 08:19:47 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -42,11 +42,12 @@ public: // usage
 
 		junction(ajunction),
 		store_param_index(0),
-		my(0), fself(0) {
+		my(0), fnumbered_params(0),
+		fself(0) {
 
 		Method &method=*junction.method;
 
-		if(method.numbered_params_count) // are this method params numbered?
+		if(method.max_numbered_params_count) // are this method params numbered?
 			fnumbered_params=NEW Array(pool()); // create storage
 		else // named params
 			my=NEW Hash(pool()); // create storage
@@ -68,18 +69,18 @@ public: // usage
 	void store_param(Value *value) {
 		Method& method=*junction.method;
 		int max_params=
-			method.numbered_params_count?method.numbered_params_count:
+			method.max_numbered_params_count?method.max_numbered_params_count:
 			method.params_names?method.params_names->size():
 			0;
 		if(store_param_index==max_params)
 			THROW(0,0,
 				&junction.self.name(),
-				"%s method '%s' accepts maximum %d parameter(s)", 
+				"(%s) method '%s' accepts maximum %d parameter(s)", 
 					junction.self.type(),
 					method.name.cstr(),
 					max_params);
 		
-		if(method.numbered_params_count) { // are this method params numbered?
+		if(method.max_numbered_params_count) { // are this method params numbered?
 			*fnumbered_params+=value;
 		} else { // named param
 			String& name=*static_cast<String *>(
@@ -90,24 +91,17 @@ public: // usage
 	}
 	void fill_unspecified_params() {
 		Method &method=*junction.method;
-		if(method.numbered_params_count) { // are this method params numbered?
-			for(; store_param_index<method.numbered_params_count; store_param_index++) {
+		if(method.params_names) // there are any named parameters might need filling?
+			for(; store_param_index<method.params_names->size(); store_param_index++) {
 				Value *value=NEW VUnknown(pool());
-				//value->set_name(/*"Param#" . store_param_index*/);
-				*fnumbered_params+=value;
+				String& name=*static_cast<String *>(
+					method.params_names->get(store_param_index));
+				value->set_name(name);
+				my->put(name, value);
 			}
-		} else { // named params
-			if(method.params_names) // there are any parameters might need filling?
-				for(; store_param_index<method.params_names->size(); store_param_index++) {
-					Value *value=NEW VUnknown(pool());
-					String& name=*static_cast<String *>(method.params_names->get(store_param_index));
-					value->set_name(name);
-					my->put(name, value);
-				}
-		}
 	}
 
-	Array& numbered_params() { return *fnumbered_params; }
+	Array *numbered_params() { return fnumbered_params; }
 
 public:
 	

@@ -1,5 +1,6 @@
+
 /*
-  $Id: pa_value.h,v 1.47 2001/03/08 17:14:51 paf Exp $
+  $Id: pa_value.h,v 1.48 2001/03/09 08:19:47 paf Exp $
 */
 
 /*
@@ -12,6 +13,7 @@
 #include "pa_pool.h"
 #include "pa_string.h"
 #include "pa_array.h"
+#include "pa_exception.h"
 
 #define NAME_NAME "NAME"
 
@@ -22,13 +24,13 @@ class WContext;
 class VAliased;
 class Request;
 
-typedef void (*Native_code_ptr)(Request& request, Array& params);
+typedef void (*Native_code_ptr)(Request& request, Array *params);
 
 class Method : public Pooled {
 public:
 	const String& name;
 	// either numbered params // for native-code methods = operators
-	int numbered_params_count;
+	int min_numbered_params_count, max_numbered_params_count;
 	// or named params&locals // for parser-code methods
 	Array *params_names;  Array *locals_names;
 	// the Code
@@ -37,15 +39,26 @@ public:
 	Method(
 		Pool& apool,
 		const String& aname,
-		int anumbered_params_count,
+		int amin_numbered_params_count, int amax_numbered_params_count,
 		Array *aparams_names, Array *alocals_names,
 		const Array *aparser_code, Native_code_ptr anative_code) : 
 
 		Pooled(apool),
 		name(aname),
-		numbered_params_count(anumbered_params_count),
+		min_numbered_params_count(amin_numbered_params_count),
+		max_numbered_params_count(amax_numbered_params_count),
 		params_names(aparams_names), locals_names(alocals_names),
 		parser_code(aparser_code), native_code(anative_code) {
+	}
+
+	void check_actual_numbered_params(Array *actual_numbered_params) {
+		int actual_count=actual_numbered_params?actual_numbered_params->size():0;
+		if(actual_count<min_numbered_params_count) // not proper count? bark
+			THROW(0, 0,
+				&name,
+				"native method accepts minimum %d parameters", 
+					min_numbered_params_count);
+
 	}
 };
 
@@ -89,6 +102,11 @@ public: // Value
 	// unknown: false
 	// others: true
 	virtual bool get_defined() { return true; }
+	// string: fvalue as VDouble
+	// bool: this
+	// double: this
+	// int: this
+	virtual Value *get_expr_result() { failed("getting expression result of '%s'"); return 0; }
 
 	// string: value
 	// unknown: ""
@@ -99,6 +117,7 @@ public: // Value
 	
 	// string: value
 	// double: value
+	// integer: finteger
 	// bool: value
 	virtual double get_double() { failed("getting numerical value of '%s'"); return 0; }
 

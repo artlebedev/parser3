@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.21 2001/03/08 17:14:53 paf Exp $
+  $Id: compile_tools.C,v 1.22 2001/03/09 08:19:50 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -49,9 +49,8 @@ String *SLA2S(Array *literal_string_array, int offset) {
 
 void change_string_literal_to_double_literal(Array *literal_string_array) {
 	VString *vstring=static_cast<VString *>(literal_string_array->get(1));
-	Pool& pool=vstring->pool();
-	VDouble *vdouble=new(pool) VDouble(pool, vstring->get_double());
-	literal_string_array->put(1, vdouble);
+	Value *value=vstring->get_expr_result();
+	literal_string_array->put(1, value);
 }
 
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vbool.h,v 1.5 2001/03/08 17:14:51 paf Exp $
+  $Id: pa_vbool.h,v 1.6 2001/03/09 08:19:47 paf Exp $
 */
 
 #ifndef PA_VBOOL_H
@@ -15,6 +15,8 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "bool"; }
+	// bool: this
+	Value *get_expr_result() { return this; }
 	// bool: fbool
 	bool get_bool() { return fbool; }
 	// bool: fbool

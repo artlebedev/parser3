@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.80 2001/03/09 04:47:29 paf Exp $
+  $Id: compile.y,v 1.81 2001/03/09 08:19:50 paf Exp $
 */
 
 %{
@@ -92,7 +92,7 @@ all: /* TODO: у ^execute непременно задать какой-то name, см. 'RUN' */
 	MAIN.APPEND_CONST(MAIN_METHOD_NAME);
 	Method& method=*NEW Method(POOL, 
 		MAIN, 
-		0, /*numbered_params_count*/
+		0, 0, /*min, max numbered_params_count*/
 		0/*param_names*/, 0/*local_names*/, 
 		$1/*parser_code*/, 0/*native_code*/);
 	PC->vclass->add_method(MAIN, method);
@@ -197,7 +197,7 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 
 	Method& method=*NEW Method(POOL, 
 		*name, 
-		0/*numbered_params_count*/, 
+		0, 0/*min,max numbered_params_count*/, 
 		params_names, locals_names, 
 		$7, 0);
 	PC->vclass->add_method(*name, method);
@@ -218,7 +218,7 @@ codes: code | codes code {
 	$$=$1; 
 	P($$, $2);
 };
-code: write_str_literal | action;
+code: write_string | action;
 action: get | put | with | call;
 
 /* get */
@@ -259,10 +259,9 @@ name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; 
 
 /* put */
 
-put: '$' name_expr_wdive constructor_value {
+put: '$' name_expr_wdive construct {
 	$$=$2; /* stack: context,name */
 	P($$, $3); /* stack: context,name,constructor_value */
-	O($$, OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 };
 name_expr_wdive: 
 	name_expr_wdive_write
@@ -290,9 +289,16 @@ name_expr_wdive_root: ':' name_expr_dive_code {
 };
 name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
 
-constructor_value: 
-	'[' any_constructor_code_value ']' { $$=$2 }
-|	'(' any_expr ')' { $$=$2 }
+construct: construct_by_code | construct_by_expr;
+construct_by_code: '[' any_constructor_code_value ']' {
+	$$=$2; /* stack: context, name, value */
+	O($$, OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
+}
+;
+construct_by_expr: '(' any_expr ')' { 
+	$$=$2; /* stack: context, name, value */
+	O($$, OP_CONSTRUCT_EXPR); /* value=pop; name=pop; context=pop; construct(context,name,value) */
+}
 ;
 any_constructor_code_value: 
 	empty_string_value /* optimized $var[] case */
@@ -435,12 +441,11 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 
 any_expr:
 	empty_double_value /* optimized $var() case */
-|	optimized_expr /* $var(something) */
+|	expr_value /* $var(something) */
 ;
-optimized_expr: expr {
-	if(($$=$1)->size()==2) { // only one string literal in there?
+expr_value: expr {
+	if(($$=$1)->size()==2) // only one string literal in there?
 		change_string_literal_to_double_literal($$); // make that string literal Double
-	}
 };
 expr: 
 	STRING
@@ -490,13 +495,13 @@ string_inside_quotes_value: maybe_codes {
 
 /* basics */
 
-write_str_literal: STRING {
+write_string: STRING {
 	$$=$1;
 	O($$, OP_WRITE);
 };
 
 empty_double_value: /* empty */ { $$=VL(NEW VDouble(POOL, 0)) };
-empty_string_value: /* empty */ { $$=VL(NEW VString()) };
+empty_string_value: /* empty */ { $$=VL(NEW VString(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%
