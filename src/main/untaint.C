@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2004/01/22 08:28:55 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2004/02/06 09:25:22 $";
 
 
 #include "pa_string.h"
@@ -457,8 +457,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 		});
 		break;
 	default:
-		assert(!"should never");
-		SAPI::die("unknown untaint language #%d", 
+		SAPI::abort("unknown untaint language #%d", 
 			static_cast<int>(to_lang)); // should never
 		break; // never
 	}
