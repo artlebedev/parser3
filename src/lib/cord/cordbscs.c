@@ -113,9 +113,14 @@ void CORD_dump_inner(CORD x, unsigned n)
     if (x == 0) {
       	fputs("NIL\n", stdout);
     } else if (CORD_IS_STRING(x)) {
-        for (i = 0; i <= SHORT_LIMIT; i++) {
-            if (x[i] == '\0') break;
-            putchar(x[i]);
+        for (i = 0; i <= SHORT_LIMIT*1000; i++) {
+			if (x[i] == '\0') { putchar('!'); break; }
+			switch(x[i]){
+				case '\n': putchar('|'); break;
+				case '\r': putchar('#'); break;
+				case '\t': putchar('@'); break;
+				default: putchar(x[i]); break;
+			}
         }
         if (x[i] != '\0') fputs("...", stdout);
         putchar('\n');
@@ -131,7 +136,7 @@ void CORD_dump_inner(CORD x, unsigned n)
         			&(((CordRep *)x) -> function);
         if (IS_SUBSTR(x)) printf("(Substring) ");
         printf("Function: %p (len: %d): ", x, (int)(func -> len));
-        for (i = 0; i < 20 && i < func -> len; i++) {
+        for (i = 0; i < 20*1000 && i < func -> len; i++) {
             putchar((*(func -> fn))(i, func -> client_data));
         }
         if (i < func -> len) fputs("...", stdout);
