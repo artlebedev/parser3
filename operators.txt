@@ -243,7 +243,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
        ничего не выдаёт
     !^void.right(n)
        ничего не выдаёт
-    !^void.pos(p[;n])
+    !^void.mid(p[;n])
        ничего не выдаёт
     !^имя.int[]  (default) 
         0 или default
