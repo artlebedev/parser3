@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_string.C,v 1.98 2001/08/06 16:18:26 parser Exp $"; 
+static const char *RCSId="$Id: pa_string.C,v 1.99 2001/08/09 16:53:27 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -657,10 +657,13 @@ double String::as_double() const {
 	const char *cstr=this->cstr();
 	char *error_pos=0;
 	// 0xABC
-	if(cstr[0]=='0' && (cstr[1]=='x' || cstr[1]=='X'))
-		result=(double)(unsigned long)strtol(cstr, &error_pos, 0);
+	if(cstr[0]=='0')
+		if(cstr[1]=='x' || cstr[1]=='X')
+			result=(double)(unsigned long)strtol(cstr, &error_pos, 0);
+		else
+			result=(double)strtod(/*skip leading 0*/++cstr, &error_pos);
 	else
-		result=strtod(cstr, &error_pos);
+		result=(double)strtod(cstr, &error_pos);
 
 	if(error_pos && *error_pos)
 		THROW(0, 0,
@@ -674,8 +677,11 @@ int String::as_int() const {
 	const char *cstr=this->cstr();
 	char *error_pos=0;
 	// 0xABC
-	if(cstr[0]=='0' && (cstr[1]=='x' || cstr[1]=='X'))
-		result=(int)(unsigned long)strtol(cstr, &error_pos, 0);
+	if(cstr[0]=='0')
+		if(cstr[1]=='x' || cstr[1]=='X')
+			result=(int)(unsigned long)strtol(cstr, &error_pos, 0);
+		else
+			result=(int)strtol(/*skip leading 0*/++cstr, &error_pos, 0);
 	else
 		result=(int)strtol(cstr, &error_pos, 0);
 
