@@ -14,9 +14,26 @@ dtf.p
 	
 @oratest[]
 ^connect[oracle://mts_admin:admin_pwd@ORACLE.PAF.OFFICE.DESIGN.RU]{
+^rem{
 $tables[^table::sql{select table_name from user_tables}]
 ^tables.menu{
 	$tables.table_name<br>
+}
+<hr>
+}
+$news[^table::sql{select * from news}[$.limit(2)]]
+^rem{
+news columns:<br>
+$news_columns[^news.columns[]]
+^news_columns.menu{
+	$news_columns.column<br>
+}
+<hr>
+}
+news description:<br>
+^news.menu{
+<hr>
+	$news.description
 }
 }
 
