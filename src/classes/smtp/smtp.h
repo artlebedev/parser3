@@ -4,13 +4,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: smtp.h,v 1.5 2001/11/05 11:46:23 paf Exp $
+	$Id: smtp.h,v 1.6 2001/12/28 14:52:40 paf Exp $
 */
-
-#include <winsock.h>
 
 #include "pa_pool.h"
 #include "pa_string.h"
+
+#include <winsock.h>
 
 //////////////////////////////////////////////////////////////////////////////
 
