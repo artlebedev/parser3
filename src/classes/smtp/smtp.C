@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: smtp.C,v 1.1 2001/04/07 13:48:37 paf Exp $
+	$Id: smtp.C,v 1.2 2001/04/10 06:57:23 paf Exp $
 
 
 	Parts of the code here is based upon an early gensock and blat
@@ -32,7 +32,7 @@ SMTP::SMTP(Pool& pool, const String& aorigin_string) : Pooled(pool),
 
 // ---------------------------------------------------------------------------
 void SMTP:: 
-ConnectToHost(char *hostname, char *service)
+ConnectToHost(const char *hostname, const char *service)
 {
     struct sockaddr_in	sa_in;
     int			        our_port;
@@ -89,7 +89,7 @@ GetBuffer(int wait)
 
     if( SOCKET_ERROR == (retval = select(0, &fds, NULL, NULL, &timeout)) )
     {
-        char    what_error[256];
+        //char    what_error[256];
         int     error_code = WSAGetLastError();
 
         if( error_code == WSAEINPROGRESS && wait ) 
@@ -97,11 +97,13 @@ GetBuffer(int wait)
             return WAIT_A_BIT;
         }
 
+		/*
         wsprintf(what_error,
 	            "GetBuffer() unexpected error from select: %d",
 	            error_code);
 
         ShowError(what_error);
+		*/
     }
 
     // if we don't want to wait
@@ -125,7 +127,7 @@ GetBuffer(int wait)
 
     if( SOCKET_ERROR == bytes_read ) 
     {
-        char    what_error[256];
+        //char    what_error[256];
         int     ws_error = WSAGetLastError();
 
         switch( ws_error ) 
@@ -143,10 +145,12 @@ GetBuffer(int wait)
                 return WAIT_A_BIT;
 
             default:
-                wsprintf(what_error,
+                /*wsprintf(what_error,
 		                "GetBuffer() unexpected error: %d",
 		                ws_error);
                 ShowError(what_error);
+				*/
+				break;
         }
     }
 
@@ -406,7 +410,7 @@ send_data(const char * message)
 // returns 0 if all is OK
 // returns 50, 51, 52 if fails
 void SMTP::
-open_socket( char *server, char *service )
+open_socket( const char *server, const char *service )
 {
 	ConnectToHost(server, service);
 
@@ -421,7 +425,7 @@ open_socket( char *server, char *service )
 // returns 50, 51, 52 if open_socket() fails
 // returns 10, 11, 12, 13, 14, 15 if any get_line()'s fail
 void SMTP::
-prepare_message(char *from, char *to, char *server, char *service)
+prepare_message(char *from, char *to, const char *server, const char *service)
 {
 	char	out_data[MAXOUTLINE];
 	char	*ptr;
@@ -512,7 +516,7 @@ static char *extractEmail(char *email) {
 // returns 1 if MakeSmtpHeader() fails
 // returns 10, 11, 12, 13, 14, 15, 50, 51, 52 if prepare_message() fails
 void SMTP::
-Send(char *server, char *service, const char *msg, char *from, char *to)
+Send(const char *server, const char *service, const char *msg, char *from, char *to)
 {
     prepare_message( extractEmail(from), extractEmail(to), server, service);
 

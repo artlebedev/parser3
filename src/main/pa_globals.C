@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.51 2001/04/09 11:30:40 paf Exp $
+	$Id: pa_globals.C,v 1.52 2001/04/10 06:57:26 paf Exp $
 */
 
 #include "pcre.h"
@@ -114,7 +114,6 @@ static void setup_hex_value() {
 	hex_value['f'] = 15;
 }
 
-/// @test problems with $t[^table:set{}] ^t.menu{^if(){}}  if not a field!
 void pa_globals_init(Pool& pool) {
 	#undef NEW
 	#define NEW new(pool)

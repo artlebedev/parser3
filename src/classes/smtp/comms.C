@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: comms.C,v 1.1 2001/04/07 13:48:37 paf Exp $
+	$Id: comms.C,v 1.2 2001/04/10 06:57:23 paf Exp $
 */
 
 #include <winsock.h>
@@ -13,17 +13,8 @@
 #include "smtp.h"
 
 // ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-void SMTP:: 
-ShowError(char * message)
-{
-    OutputDebugString (message);
-}
-
-// ---------------------------------------------------------------------------
 int SMTP:: 
-IsAddressARawIpaddress(char * string)
+IsAddressARawIpaddress(const char * string)
 {
     while( *string ) 
     {
@@ -38,7 +29,7 @@ IsAddressARawIpaddress(char * string)
 
 //---------------------------------------------------------------------------
 int SMTP:: 
-ResolveService(char* service, int *our_port)
+ResolveService(const char* service, int *our_port)
 {
     struct servent FAR  *serventry = NULL;
     int                 retval = 0;
@@ -83,7 +74,7 @@ ResolveService(char* service, int *our_port)
 
 //---------------------------------------------------------------------------
 int SMTP:: 
-ResolveHostname(char* hostname, struct sockaddr_in *sa_in)
+ResolveHostname(const char* hostname, struct sockaddr_in *sa_in)
 {
     struct hostent FAR *hostentry = NULL;
     unsigned long 	    ip_address;
@@ -127,7 +118,7 @@ int SMTP::
 GetConnection(SOCKET the_socket, struct sockaddr_in *sa_in)
 {
     int     retval = 0;
-    char    message[512];
+    //char    message[512];
 
     if( SOCKET_ERROR == connect(the_socket,
 			                    (struct sockaddr *)sa_in,
@@ -143,8 +134,8 @@ GetConnection(SOCKET the_socket, struct sockaddr_in *sa_in)
                 return WSAECONNREFUSED;
 
             default:
-                wsprintf(message, "unexpected error %d from winsock\n", retval);
-                ShowError(message);
+                //wsprintf(message, "unexpected error %d from winsock\n", retval);
+                //ShowError(message);
                 return WSAHOST_NOT_FOUND;
         }
     }

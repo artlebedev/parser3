@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: smtp.h,v 1.1 2001/04/07 13:48:37 paf Exp $
+	$Id: smtp.h,v 1.2 2001/04/10 06:57:24 paf Exp $
 */
 
 #include <winsock.h>
@@ -61,15 +61,15 @@ public:
 	SMTP(Pool& pool, const String& aorigin_string);
 
     // smtp.C
-	void	Send(char *, char *, const char *,  char *, char *);
+	void	Send(const char *, const char *, const char *,  char *, char *);
 	BOOL	MakeSmtpHeader(char *, char *, char *, char *);
-	void	prepare_message(char *, char *,  char *, char *);
-	void	open_socket(char *, char *);
+	void	prepare_message(char *, char *,  const char *, const char *);
+	void	open_socket(const char *, const char *);
 	int		get_line(void);
 	void	SendSmtpError(const char *);
 	void	transform_and_send_edit_data(const char *);
 	void	send_data(const char *);
-	void	ConnectToHost(char *, char *);
+	void	ConnectToHost(const char *, const char *);
 	int		GetBuffer(int);
 	int		GetChar(int, char *);
 	void	SendLine(const char *, unsigned long);
@@ -78,12 +78,11 @@ public:
 	BOOL	CloseConnect();
 
     // comms.C
-    int      IsAddressARawIpaddress(char *);
-    int      ResolveService(char *, int *);
-    int      ResolveHostname(char *, struct sockaddr_in *);
+    int      IsAddressARawIpaddress(const char *);
+    int      ResolveService(const char *, int *);
+    int      ResolveHostname(const char *, struct sockaddr_in *);
     int      GetAndSetTheSocket(SOCKET *);
     int      GetConnection(SOCKET, struct sockaddr_in *);
     void     MiscSocketSetup(SOCKET, fd_set *, struct timeval *);
-    void     ShowError(char *);
 };
 
