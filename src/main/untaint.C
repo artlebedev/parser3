@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.81 2001/11/22 10:28:46 paf Exp $
+	$Id: untaint.C,v 1.82 2001/11/22 10:29:47 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -84,8 +84,7 @@ static const char * String_Untaint_lang_name[]={
 	"SQL",       ///< ^table:sql body
 	"JS",        ///< JavaScript code
 	"XML",		///< ^dom:set xml
-	"HTML",      ///< HTML code (for editing)
-	"UHTML", ///< HTML code with USER chars
+	"HTML"      ///< HTML code (for editing)
 };
 
 
