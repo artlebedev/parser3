@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/14 15:44:22 $";
+static const char* IDENT_OP_C="$Date: 2002/10/15 08:31:56 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -100,6 +100,7 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 		Value& vjunction=params->as_junction(0, "body must be code");
 
 		//VStateless_class& self_class=*r.get_self()->get_class();
+		//make this param. with this: as default 
 		VStateless_class *self_class=vjunction.get_junction()->self.get_class();
 		if(!self_class)
 			throw Exception(0,

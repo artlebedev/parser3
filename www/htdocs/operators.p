@@ -15,3 +15,6 @@ $i[after]
 
 @reada[]
 ^$a=$a
+
+@process_in_op[]
+#^process

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/10/14 15:22:42 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/10/15 08:31:56 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -398,6 +398,7 @@ void Request::execute(const Array& ops) {
 						last_get_element_name, 
 						"(%s) not a method or junction, can not call it",
 							value->type());
+				/* no check needed, code compiled the way that that's impossible
 				// check: 
 				//	that this is method-junction, not a code-junction
 				// [disabling these contstructions:]
@@ -408,8 +409,9 @@ void Request::execute(const Array& ops) {
 						last_get_element_name, 
 						"(%s) is code junction, can not call it",
 							value->type());
+				*/
 
-				VMethodFrame frame(pool(), *last_get_element_name, *junction);
+				VMethodFrame frame(pool(), *last_get_element_name, *junction, method_frame/*caller*/);
 				if(local_ops){ // store param code goes here
 					PUSH(&frame); // argument for *STORE_PARAM ops
 					execute(*local_ops);
@@ -981,7 +983,7 @@ void Request::execute_method(Value& aself,
 //	WWrapper local(pool(), &aself, wcontext);
 //	wcontext=&local; 
 	Junction local_junction(pool(), *self, &method, 0,0,0,0);
-	VMethodFrame local_frame(pool(), method.name, local_junction);
+	VMethodFrame local_frame(pool(), method.name, local_junction, method_frame/*caller*/);
 	if(optional_param && local_frame.can_store_param()) {
 		local_frame.store_param(optional_param);
 		local_frame.fill_unspecified_params();

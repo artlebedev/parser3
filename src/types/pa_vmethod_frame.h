@@ -8,12 +8,17 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/09/17 17:14:32 $";
+static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/10/15 08:31:57 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
 #include "pa_vjunction.h"
 #include "pa_request.h"
+
+// defines
+
+#define CALLER_NAME "caller"
+
 
 /**	Method frame write context
 	accepts values written by method code
@@ -32,13 +37,19 @@ public: // Value
 		return result ? result->get_string() : WContext::get_string();
 	}
 	
-	/// VMethodFrame: my or self_transparent
+	/// VMethodFrame: my or self_transparent or $caller
 	Value *get_element(const String& aname, Value *aself, bool looking_up) { 
 		if(junction.method->max_numbered_params_count==0) {
 			if(Value *result=static_cast<Value *>(my.get(aname)))
 				return result;
 		}
-		return fself->get_element(aname, aself, looking_up); 
+		if(Value *result=fself->get_element(aname, aself, looking_up))
+			return result;
+
+		if(aname==CALLER_NAME)
+			return caller();
+
+		return 0;
 	}
 	/// VMethodFrame: my or self_transparent
 	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace) { 
@@ -64,11 +75,13 @@ public: // usage
 
 	VMethodFrame(Pool& apool, 
 		const String& aname,
-		const Junction& ajunction/*info: always method-junction*/) : 
+		const Junction& ajunction/*info: always method-junction*/,
+		VMethodFrame *acaller) : 
 		WContext(apool, 0 /* empty */, 0 /* no parent, junctions can be reattached only up to VMethodFrame */ ),
 
 		fname(aname),
 		junction(ajunction),
+		fcaller(acaller),
 		store_param_index(0),
 
 		my(apool),
@@ -97,6 +110,7 @@ public: // usage
 	}
 
 	const String& name() { return fname; }
+	VMethodFrame *caller() { return fcaller; }
 
 	void set_self(Value& aself) { fself=&aself; }
 
@@ -160,6 +174,7 @@ public:
 private:
 
 	const String& fname;
+	VMethodFrame *fcaller;
 
 	int store_param_index;
 	Hash my;/*OR*/MethodParams fnumbered_params;
