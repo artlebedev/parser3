@@ -17,12 +17,22 @@ $selffilespec[$filespec]
 #^a.format[%.10u]
 #$result[111]
 #^f[a]
-#^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
+^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
 #	^int:sql{select news_id from news where news_id=-1}[
 ##	$.default{2}
 #	]<br>
 #    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
-#}
+#	^file::load[text;^string:sql{select '^^hello[]' }]
+#	^string:sql{select '^^hello[]' }] $ORIGINS(1)
+	^process{here
+	^$aa[xxx]
+#	^string:sql{select '^^hello[]' }]
+	goes}
+	after
+	$aa
+	$ORIGINS(1)
+
+}
 #^eval(2)
 #^tcrashlocaljunctionsv2[]
 #^tcrashlocaljunctions[]
@@ -196,7 +206,7 @@ $selffilespec[$filespec]
 #^transparams[]
 #^sendtests[]
 #^wwrapperpass[]
-^badpos[]
+#^badpos[]
 <hr>
 OK
 

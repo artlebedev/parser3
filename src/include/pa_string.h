@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char* IDENT_STRING_H="$Date: 2002/08/08 08:43:38 $";
+static const char* IDENT_STRING_H="$Date: 2002/08/08 09:02:43 $";
 
 #include "pa_pool.h"
 #include "pa_types.h"
@@ -180,7 +180,7 @@ public:
 
 	/// extracts first char of a string, if any
 	char first_char() const {
-		return is_empty()?*head.chunk.rows[0].item.ptr:0;
+		return is_empty()?0:*head.chunk.rows[0].item.ptr;
 	}
 
 	/// extracts [start, finish) piece of string
