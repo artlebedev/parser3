@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.101 2001/08/10 07:02:43 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.102 2001/08/10 07:10:17 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -440,8 +440,8 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	Value& key_maker=params->as_junction(0, "key-maker must be code");
 
-	bool reverse=params->size()==2/*..[asc|desc]*/?
-		reverse=params->as_no_junction(1, "order must not be code").as_string()=="desc":
+	bool reverse=params->size()==2/*..[desc|asc|]*/?
+		reverse=params->as_no_junction(1, "order must not be code").as_string()=="asc":
 		false;
 
 	Table& old_table=static_cast<VTable *>(r.self)->table();
@@ -799,8 +799,8 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 	// ^table:hash[key field name][value field name;...]
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 1, 1000);
 
-	// ^table.sort{string-key-maker} ^table.sort{string-key-maker}[asc|desc]
-	// ^table.sort(numeric-key-maker) ^table.sort(numeric-key-maker)[asc|desc]
+	// ^table.sort{string-key-maker} ^table.sort{string-key-maker}[desc|asc]
+	// ^table.sort(numeric-key-maker) ^table.sort(numeric-key-maker)[desc|asc]
 	add_native_method("sort", Method::CT_DYNAMIC, _sort, 1, 2);
 
 	// ^table.locate[field;value]
