@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxdoc.h,v 1.12 2001/11/05 11:46:35 paf Exp $
+	$Id: pa_vxdoc.h,v 1.13 2001/11/21 14:00:28 paf Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -27,7 +27,7 @@ void VXdoc_cleanup(void *);
 
 /// value of type 'xdoc'. implemented with XalanDocument & co
 class VXdoc : public VXnode {
-	friend void VXdoc_cleanup(void *);
+	friend void VXdoc_destructor(void *);
 public: // Value
 
 	const char *type() const { return "xdoc"; }
@@ -59,16 +59,16 @@ public: // usage
 		fparser_xalan_liaison(0), fparser_xerces_liaison(0), ferror_handler(0),
 		fparsed_source(0),
 		fdocument(adocument), fowns_document(aowns_document) {
-		register_cleanup(VXdoc_cleanup, this);
+		register_cleanup(VXdoc_destructor, this);
 		ftransformer=new XalanTransformer2;
 		//fparser_xalan_liaison=new XalanSourceTreeParserLiaison;
 		fparser_xerces_liaison=new XercesParserLiaison;
 		ferror_handler=new HandlerBase;
 		//fparser_xalan_liaison->setErrorHandler(ferror_handler); // disable stderr output
 		fparser_xerces_liaison->setErrorHandler(ferror_handler); // disable stderr output
+		memset(&output_options, 0, sizeof(output_options));
 	}
-private:
-	void cleanup() {
+	~VXdoc() {
 		if(fowns_document)
 			delete fdocument;
 
@@ -113,6 +113,22 @@ public:
 				"can not be applied to uninitialized instance");
 		return *fdocument; 
 	}
+
+public:
+
+	struct Output_options {
+		const char *method;
+		XalanDOMString encoding;
+		XalanDOMString mediaType;
+		XalanDOMString doctypeSystem;
+		XalanDOMString doctypePublic;
+		bool doIndent;
+		XalanDOMString version;
+		XalanDOMString standalone;
+		bool xmlDecl;
+		Output_options() : method(0), doIndent(false), xmlDecl(false) {
+		}
+	} output_options;
 
 private:
 

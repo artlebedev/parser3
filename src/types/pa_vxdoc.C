@@ -4,20 +4,20 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_vxdoc.C,v 1.6 2001/11/05 11:46:34 paf Exp $
+	$Id: pa_vxdoc.C,v 1.7 2001/11/21 14:00:28 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
-static const char *RCSId="$Id: pa_vxdoc.C,v 1.6 2001/11/05 11:46:34 paf Exp $"; 
+static const char *RCSId="$Id: pa_vxdoc.C,v 1.7 2001/11/21 14:00:28 paf Exp $"; 
 
 #include "pa_vxdoc.h"
 
 #include <XalanDOM/XalanDocumentType.hpp>
 #include <XalanDOM/XalanElement.hpp>
 
-void VXdoc_cleanup(void *vxdoc) {
+void VXdoc_destructor(void *vxdoc) {
 	//_asm int 3;
-	static_cast<VXdoc *>(vxdoc)->cleanup();
+	static_cast<VXdoc *>(vxdoc)->~VXdoc();
 }
 
 /// VXdoc: $CLASS,$method

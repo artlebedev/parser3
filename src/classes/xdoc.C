@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.45 2001/11/12 10:00:31 paf Exp $
+	$Id: xdoc.C,v 1.46 2001/11/21 14:00:27 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -42,6 +42,8 @@
 #include <dom/DOM_Document.hpp>
 #include <XercesParserLiaison/XercesDocumentBridge.hpp>
 #include <XalanTransformer/XercesDOMParsedSource.hpp>
+#include <XSLT/StylesheetRoot.hpp>
+#include <XalanTransformer/XalanCompiledStylesheet.hpp>
 
 // defines
 
@@ -51,9 +53,6 @@
 #define XDOC_OUTPUT_METHOD_OPTION_VALUE_XML "xml"
 #define XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML "html"
 #define XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT "text"
-
-#define XDOC_OUTPUT_ENCODING_OPTION_NAME "encoding"
-
 #define XDOC_OUTPUT_DEFAULT_INDENT 4
 
 // class
@@ -367,17 +366,67 @@ XalanDefaultParsedSource2::createHelper() const
 }
 
 
-
+static void param_option_over_output_option(Pool& pool, 
+											Hash *param_options, const char *option_name,
+											XalanDOMString& output_option) {
+	if(Value *value=static_cast<Value *>(param_options->get(*new(pool) 
+		String(pool, option_name)))) {
+		output_option.clear();
+		output_option.append(value->as_string().cstr());
+	}
+}
+static void param_option_over_output_option(Pool& pool, 
+											Hash *param_options, const char *option_name,
+											bool& output_option) {
+	if(Value *value=static_cast<Value *>(param_options->get(*new(pool) 
+		String(pool, option_name)))) {
+		const String& s=value->as_string();
+		if(s=="yes")
+			output_option=true;
+		else if(s=="no")
+			output_option=false;
+		else
+			throw Exception(0, 0,
+				&s,
+				"%s must be either 'yes' or 'no'", option_name);
+	}
+}
 
 static void create_optioned_listener(
-									 const char *& content_type, const char *& charset, FormatterListener *& listener, 
-									 Pool& pool, 
-									 const String& method_name, MethodParams *params, int index, Writer& writer) {
-	// default encoding from pool
-	const String *scharset=&pool.get_charset();
-	const String *method=0;
-	XalanDOMString xalan_encoding;
+									 Pool& pool, const String& method_name, MethodParams *params, int index,
+									 VXdoc::Output_options& oo, Writer& writer,
+									 FormatterListener *& listener) {
+/*
+	XalanDOMString encoding;
+	XalanDOMString mediaType;
+	XalanDOMString doctypeSystem;
+	XalanDOMString doctypePublic;
+	bool doIndent;
+	XalanDOMString version;
+	XalanDOMString standalone;
+	bool xmlDecl;
+*/
 
+/*
+<xsl:output
+  !method = "xml" | "html" | "text" | qname-but-not-ncname 
+  !version = nmtoken 
+  !encoding = string 
+  !omit-xml-declaration = "yes" | "no"
+  !standalone = "yes" | "no"
+  !doctype-public = string 
+  !doctype-system = string 
+  cdata-section-elements = qnames 
+  !indent = "yes" | "no"
+  !media-type = string /> 
+*/
+
+	/*
+		fToXML->setStripCData(stripCData);
+		fToXML->setEscapeCData(escapeCData);
+	*/
+
+	// configuring with options from parameter...
 	if(params->size()>index) {
 		Value& voptions=params->as_no_junction(index, "options must be string");
 		if(voptions.is_defined()) {
@@ -385,44 +434,74 @@ static void create_optioned_listener(
 				// $.method[xml|html|text]
 				if(Value *vmethod=static_cast<Value *>(options->get(*new(pool) 
 					String(pool, XDOC_OUTPUT_METHOD_OPTION_NAME))))
-					method=&vmethod->as_string();
+					oo.method=vmethod->as_string().cstr();
 
+				// $.version[1.0]
+				param_option_over_output_option(pool, options, "version", oo.version);
 				// $.encoding[windows-1251|...]
-				if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 
-					String(pool, XDOC_OUTPUT_ENCODING_OPTION_NAME)))) {
-					scharset=&vencoding->as_string();
-				}
+				param_option_over_output_option(pool, options, "encoding", oo.encoding);
+				// $.omit-xml-declaration[yes|no]
+				bool omit_xml_declaration=!oo.xmlDecl;
+				param_option_over_output_option(pool, options, "omit-xml-declaration", omit_xml_declaration);
+				oo.xmlDecl=!omit_xml_declaration;
+				// $.standalone[yes|no]
+				param_option_over_output_option(pool, options, "standalone", oo.standalone);
+				// $.doctype-public[?]
+				param_option_over_output_option(pool, options, "doctype-public", oo.doctypePublic);
+				// $.doctype-system[?]
+				param_option_over_output_option(pool, options, "doctype-system", oo.doctypeSystem);
+				// $.indent[yes|no]
+				param_option_over_output_option(pool, options, "indent", oo.doIndent);
+				// $.media-type[text/{html|xml|plain}]
+				param_option_over_output_option(pool, options, "media-type", oo.mediaType);				 
 			}
 		}
 	}
 
-	xalan_encoding.append(charset=scharset->cstr());
-	if(!method/*default='xml'*/ || *method == XDOC_OUTPUT_METHOD_OPTION_VALUE_XML) {
-		content_type="text/xml";
+	// default encoding from pool
+	if(oo.encoding.empty())
+		oo.encoding.append(pool.get_charset().cstr());
+	// default method=xml
+	if(!oo.method)
+		oo.method=XDOC_OUTPUT_METHOD_OPTION_VALUE_XML;
+
+	if(strcmp(oo.method, XDOC_OUTPUT_METHOD_OPTION_VALUE_XML)==0) {
+		if(oo.mediaType.empty())
+			oo.mediaType.append("text/xml");
 		listener=new FormatterToXML(writer,
-			XalanDOMString(),  // version
-			true, // doIndent
+			oo.version,  
+			oo.doIndent,
 			XDOC_OUTPUT_DEFAULT_INDENT, // indent 
-			xalan_encoding  // encoding
+			oo.encoding,
+			oo.mediaType,
+			oo.doctypeSystem,
+			oo.doctypePublic,
+			oo.xmlDecl,
+			oo.standalone
 		);
-	} else if(*method == XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML) {
-		content_type="text/html";
+	} else if(strcmp(oo.method, XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML)==0) {
+		if(oo.mediaType.empty())
+			oo.mediaType.append("text/html");
 		listener=new FormatterToHTML(writer,
-			xalan_encoding,  // encoding
-			XalanDOMString(),  // mediaType 
-			XalanDOMString(),  // doctypeSystem; String to be printed at the top of the document 
-			XalanDOMString(),  // doctypePublic  
-			true, // doIndent 
-			XDOC_OUTPUT_DEFAULT_INDENT // indent 
+			oo.encoding,
+			oo.mediaType,
+			oo.doctypeSystem,
+			oo.doctypePublic,
+			oo.doIndent,
+			XDOC_OUTPUT_DEFAULT_INDENT, // indent 
+			oo.version,
+			oo.standalone,
+			oo.xmlDecl
 		);
-	} else if(*method == XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT) {
-		content_type="text/plain";
+	} else if(strcmp(oo.method, XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT)==0) {
+		if(oo.mediaType.empty())
+			oo.mediaType.append("text/plain");
 		listener=new FormatterToText(writer,
-			xalan_encoding  // encoding
+			oo.encoding
 		);
 	} else
 		throw Exception(0, 0,
-			method,
+			&method_name,
 			XDOC_OUTPUT_METHOD_OPTION_NAME " option is invalid; valid methods are: "
 				"'" XDOC_OUTPUT_METHOD_OPTION_VALUE_XML "', "
 				"'" XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML "', "
@@ -433,6 +512,7 @@ static void create_optioned_listener(
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
 	// filespec
@@ -443,12 +523,12 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	XalanNode& node=vnode.get_node(pool, &method_name);
 
 	try {
+		VXdoc::Output_options oo(vdoc.output_options);
 		XalanFileOutputStream stream(XalanDOMString(filespec, strlen(filespec)));
 		XalanOutputStreamPrintWriter writer(stream);
-		const char *content_type, *charset;
 		FormatterListener *formatterListener;
-		create_optioned_listener(content_type, charset, formatterListener, 
-			pool, method_name, params, 1, writer);
+		create_optioned_listener(pool, method_name, params, 1, 
+			oo, writer, formatterListener);
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&node); // Walk that node and produce the XML...
 	} catch(const XSLException& e) {
@@ -468,13 +548,13 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 			"no documentElement");
 
 	try {
+		VXdoc::Output_options oo(vdoc.output_options);
 		String parserString=*new(pool) String(pool);
 		ParserStringXalanOutputStream stream(parserString);
 		XalanOutputStreamPrintWriter writer(stream);
-		const char *content_type, *charset;
 		FormatterListener *formatterListener;
-		create_optioned_listener(content_type, charset, formatterListener, 
-			pool, method_name, params, 0, writer);
+		create_optioned_listener(pool, method_name, params, 0, 
+			oo, writer, formatterListener);
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(node); // Walk that node and produce the XML...
 
@@ -488,35 +568,38 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 
 static void _file(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
 	// node
 	XalanNode& node=vnode.get_node(pool, &method_name);
 
 	try {
+		VXdoc::Output_options oo(vdoc.output_options);
 		String& parserString=*new(pool) String(pool);
 		ParserStringXalanOutputStream stream(parserString);
 		XalanOutputStreamPrintWriter writer(stream);
-		const char *content_type, *charset;
 		FormatterListener *formatterListener;
-		create_optioned_listener(content_type, charset, formatterListener, 
-			pool, method_name, params, 0, writer);
+		create_optioned_listener(pool, method_name, params, 0, 
+			oo, writer, formatterListener);
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&node); // Walk that node and produce the XML...
 
 		// write out result
 		VFile& vfile=*new(pool) VFile(pool);
 		const char *cstr=parserString.cstr();
-		String *scontent_type=new(pool) String(pool, content_type);
+		const String& scontent_type=pool.transcode(oo.mediaType);
 		Value *vcontent_type;
-		if(charset) {
+		if(oo.encoding.empty()) 
+			vcontent_type=new(pool) VString(scontent_type);
+		else {
 			VHash *vhcontent_type=new(pool) VHash(pool);
-			vhcontent_type->hash(&method_name).put(*value_name, new(pool) VString(*scontent_type));
-			String *scharset=new(pool) String(pool, charset);
-			vhcontent_type->hash(&method_name).put(*new(pool) String(pool, "charset"), new(pool) VString(*scharset));
+			vhcontent_type->hash(&method_name).put(*value_name, new(pool) VString(scontent_type));
+			const String& scharset=pool.transcode(oo.encoding);
+			vhcontent_type->hash(&method_name).put(*new(pool) String(pool, "charset"), new(pool) VString(scharset));
 			vcontent_type=vhcontent_type;
-		} else
-			vcontent_type=new(pool) VString(*scontent_type);
+		}
+		
 		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*file_name*/, vcontent_type);
 		r.write_no_lang(vfile);
 	} catch(const XSLException& e) {
@@ -655,17 +738,64 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		//   but still there some extra "xerces" words at start of transform body
 		//   wich were originally "xalan"
 		//   not daring to change that
+
+		const XalanCompiledStylesheet& stylesheet=connection.stylesheet(true/*nocache*/);
 		if(vdoc.has_parsed_source()) { // set|load, not create?
 			vdoc.transformer().transform2(
 				vdoc.get_parsed_source(pool, &method_name), 
-				&connection.stylesheet(true/*nocache*/), 
+				&stylesheet, 
 				target);
 		} else {
 			target=vdoc.parser_xerces_liaison().createDocument();
 			vdoc.transformer().transform2(
 				vdoc.get_document(pool, &method_name), 
-				&connection.stylesheet(true/*nocache*/), 
+				&stylesheet, 
 				target);
+		}
+		VXdoc& result=*new(pool) VXdoc(pool, target, false/*owns not*/);
+		// write out result
+		r.write_no_lang(result);
+		//
+		if(const StylesheetRoot *stylesheetRoot=stylesheet.getStylesheetRoot()) {
+			/*
+			<xsl:output
+			!method = "xml" | "html" | "text"
+				X| qname-but-not-ncname 
+			!version = nmtoken 
+			!encoding = string 
+			!omit-xml-declaration = "yes" | "no"
+			!standalone = "yes" | "no"
+			!doctype-public = string 
+			!doctype-system = string 
+			cdata-section-elements = qnames 
+			!indent = "yes" | "no"
+			!media-type = string /> 
+			*/
+
+			VXdoc::Output_options& oo=result.output_options;
+			oo.encoding=stylesheetRoot->m_encoding;
+			oo.mediaType=stylesheetRoot->m_mediatype;
+			oo.doctypeSystem=stylesheetRoot->m_doctypeSystem;
+			oo.doctypePublic=stylesheetRoot->m_doctypePublic;
+			oo.doIndent=stylesheetRoot->m_indentResult;
+			oo.version=stylesheetRoot->m_version;
+			oo.standalone=stylesheetRoot->m_standalone;
+			oo.xmlDecl=!stylesheetRoot->m_omitxmlDecl;
+
+			switch(stylesheetRoot->getOutputMethod()) {
+			case FormatterListener::OUTPUT_METHOD_HTML: 
+				oo.method=XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML; break;
+			case FormatterListener::OUTPUT_METHOD_TEXT: 
+				oo.method=XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT; break;
+			case FormatterListener::OUTPUT_METHOD_NONE: 
+			case FormatterListener::OUTPUT_METHOD_XML: 
+				oo.method=XDOC_OUTPUT_METHOD_OPTION_VALUE_XML; break;
+			default:
+				throw Exception(0, 0,
+					&method_name,
+					"unsupported output method specified"); 
+				break; // never
+			}
 		}
 	}
 	catch (XSLException& e)	{
@@ -691,10 +821,6 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 
 	// close
 	connection.close();
-
-	// write out result
-	VXdoc& result=*new(pool) VXdoc(pool, target, false/*owns not*/);
-	r.write_no_lang(result);
 }
 
 static void _getElementById(Request& r, const String& method_name, MethodParams *params) {
