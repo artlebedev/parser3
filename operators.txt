@@ -658,7 +658,11 @@ math
     !^math:degrees radians
     !^math:pow sqrt
     !^math:random(ширина диапазона)
-    ^math:GUID {C2C0983C-E26E-4169-BD07-77ECE9405BA5}
+    ^math:GUID[]
+    	C2C0983C-E26E-4169-BD07-77ECE9405BA5
+    !^math:md5[string]
+        выдает digest строки, длиной 16 байт в виде строки, 
+        где байты digest выданы в hex виде, впритык, в нижнем регистре
     !^math:crypt[password;salt]
        salt prefix $apr1$ вызывает встроенный MD5 алгоритм, 
          если нет тела salt, оно создаётся случайным
