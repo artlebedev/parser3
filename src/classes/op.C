@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.16 2001/05/08 06:07:47 paf Exp $
+	$Id: op.C,v 1.17 2001/05/08 06:13:00 paf Exp $
 */
 
 #include "classes.h"
@@ -225,10 +225,9 @@ typedef double (*math_one_double_op_func_ptr)(double);
 static double round(double op) { return floor(op+0.5); }
 static double sign(double op) { return op > 0 ? 1 : ( op < 0 ? -1 : 0 ); }
 
-static void double_one_op(
-								Request& r, 
-								const String& method_name, MethodParams *params,
-								math_one_double_op_func_ptr func) {
+static void double_one_op(Request& r, 
+						  const String& method_name, MethodParams *params,
+						  math_one_double_op_func_ptr func) {
 	Pool& pool=r.pool();
 	Value& param=params->get_junction(0, "parameter must be expression");
 
