@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.24 2001/03/08 17:14:51 paf Exp $
+  $Id: pa_vclass.h,v 1.25 2001/03/08 17:24:46 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -49,16 +49,8 @@ public: // usage
 
 	VClass(Pool& apool) : VAliased(apool, *this), 
 		fbase(0),
-		ffields(*new(apool) Hash(apool)),
-		fmethods(*new(apool) Hash(apool)) {
-	}
-
-	VClass(Pool& apool, 
-		VClass *abase, Hash& afields, Hash& amethods) : VAliased(apool, *this), 
-
-		fbase(abase),
-		ffields(afields),
-		fmethods(amethods) {
+		ffields(apool),
+		fmethods(apool) {
 	}
 
 	void add_method(const String& name, Method& method) {
@@ -110,8 +102,8 @@ private:
 private:
 
 	VClass *fbase;
-	Hash& ffields;
-	Hash& fmethods;
+	Hash ffields;
+	Hash fmethods;
 };
 
 #endif

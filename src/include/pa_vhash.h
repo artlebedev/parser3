@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vhash.h,v 1.9 2001/03/08 17:14:51 paf Exp $
+  $Id: pa_vhash.h,v 1.10 2001/03/08 17:24:46 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -30,13 +30,10 @@ public: // value
 public: // usage
 
 	VHash(Pool& apool) : Value(apool), 
-		fvalue(*new(apool) Hash(apool)) {}
-
-	VHash(Pool& apool, Hash& avalue) : Value(apool), 
-		fvalue(avalue) {}
+		fvalue(apool) {}
 
 private:
-	Hash& fvalue;
+	Hash fvalue;
 };
 
 #endif

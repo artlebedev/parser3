@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vobject.h,v 1.13 2001/03/08 17:14:51 paf Exp $
+  $Id: pa_vobject.h,v 1.14 2001/03/08 17:24:46 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -51,18 +51,13 @@ public: // creation
 
 	VObject(VClass& aclass_real) : VAliased(aclass_real.pool(), aclass_real), 
 		fclass_real(aclass_real),
-		ffields(*new(aclass_real.pool()) Hash(aclass_real.pool())) {
-	}
-
-	VObject(VClass& aclass_real, Hash& afields) : VAliased(aclass_real.pool(), aclass_real), 
-		fclass_real(aclass_real),
-		ffields(afields) {
+		ffields(aclass_real.pool()) {
 	}
 
 private:
 
 	VClass& fclass_real;
-	Hash& ffields;
+	Hash ffields;
 };
 
 #endif
