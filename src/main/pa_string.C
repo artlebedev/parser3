@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.88 2001/05/19 19:55:45 parser Exp $
+	$Id: pa_string.C,v 1.89 2001/05/21 16:38:46 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -633,6 +633,41 @@ String& String::change_case(Pool& pool, const unsigned char *tables,
 		chunk=row->link;
 	} while(chunk);
 break2:
+
+	return result;
+}
+
+double String::as_double() { 
+	double result;
+	const char *cstr=this->cstr();
+	char *error_pos=0;
+	// 0xABC
+	if(cstr[0]=='0' && (cstr[1]=='x' || cstr[1]=='X'))
+		result=(double)(unsigned long)strtol(cstr, &error_pos, 0);
+	else
+		result=strtod(cstr, &error_pos);
+
+	if(error_pos && *error_pos)
+		THROW(0, 0,
+			this,
+			"invalid number (double)");
+
+	return result;
+}
+int String::as_int() { 
+	int result;
+	const char *cstr=this->cstr();
+	char *error_pos=0;
+	// 0xABC
+	if(cstr[0]=='0' && (cstr[1]=='x' || cstr[1]=='X'))
+		result=(int)(unsigned long)strtol(cstr, &error_pos, 0);
+	else
+		result=(int)strtol(cstr, &error_pos, 0);
+
+	if(error_pos && *error_pos)
+		THROW(0, 0,
+			this,
+			"invalid number (int)");
 
 	return result;
 }
