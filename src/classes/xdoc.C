@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2002/11/25 14:57:32 $";
+static const char* IDENT_XDOC_C="$Date: 2002/12/18 16:11:26 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -490,6 +490,10 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 			&uri, 
 			exc);
 	}
+	const char *URI_cstr=uri.cstr();
+	xmlDoc *doc=gdome_xml_doc_get_xmlDoc(document);
+	if(URI_cstr)
+		doc->URL=pool.transcode_buf2xchar(URI_cstr, strlen(URI_cstr));
 
 	// replace any previous parsed source
 	vdoc.set_document(document);
