@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.26 2001/10/24 14:39:44 parser Exp $
+	$Id: pa_vform.h,v 1.27 2001/10/24 16:33:02 parser Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -55,11 +55,11 @@ public: // usage
 private:
 
 	char *strpart(const char *str, size_t len);
-	char *getAttributeValue(const char *data,char *attr,size_t len);
+	char *getAttributeValue(char *data,char *attr,size_t len);
 	void UnescapeChars(char **sp, const char *cp, size_t len);
-	void ParseGetFormInput(char *query_string);
+	void ParseGetFormInput(char *query_string, size_t length);
 	void ParseFormInput(char *data, size_t length);
-	void ParseMimeInput(const char *content_type, char *data, size_t length);
+	void ParseMimeInput(char *content_type, char *data, size_t length);
 	void AppendFormEntry(
 		const char *name, 
 		char *value_ptr, size_t value_size=0,

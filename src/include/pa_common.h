@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.54 2001/10/24 14:39:44 parser Exp $
+	$Id: pa_common.h,v 1.55 2001/10/24 16:33:02 parser Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -143,7 +143,7 @@ inline int min(int a,int b){ return a<b?a:b; }
 
 size_t stdout_write(const void *buf, size_t size);
 
-const char *unescape_chars(Pool& pool, const char *cp, int len);
+char *unescape_chars(Pool& pool, const char *cp, int len);
 
 /**
 	$content-type[text/html] -> 

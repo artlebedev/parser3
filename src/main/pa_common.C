@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.76 2001/10/24 14:39:44 parser Exp $
+	$Id: pa_common.C,v 1.77 2001/10/24 16:33:02 parser Exp $
 */
 
 #include "pa_common.h"
@@ -333,7 +333,7 @@ size_t stdout_write(const void *buf, size_t size) {
 #endif
 }
 
-const char *unescape_chars(Pool& pool, const char *cp, int len) {
+char *unescape_chars(Pool& pool, const char *cp, int len) {
 	char *s=(char *)pool.malloc(len + 1);
 	enum EscapeState {
 		EscapeRest, 

@@ -5,7 +5,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 	
-	$Id: pa_vform.C,v 1.41 2001/10/24 14:39:44 parser Exp $
+	$Id: pa_vform.C,v 1.42 2001/10/24 16:33:02 parser Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -33,7 +33,7 @@ static size_t getHeader(const char *data, size_t len){
     return 0;
 }
 
-static const char *searchAttribute(const char *data, const char *attr, size_t len){
+static char *searchAttribute(char *data, const char *attr, size_t len){
     size_t i;
     if (data)
 	for (i=0;i<len;i++)
@@ -59,8 +59,8 @@ char *VForm::strpart(const char *str, size_t len) {
     return result;
 }
 
-char *VForm::getAttributeValue(const char *data, char *attr, size_t len) {
-    const char *value=searchAttribute(data, attr, len);
+char *VForm::getAttributeValue(char *data, char *attr, size_t len) {
+    char *value=searchAttribute(data, attr, len);
     if (value){
 		size_t i;
 		if (!(len-=value-data)) return NULL;
@@ -75,11 +75,11 @@ char *VForm::getAttributeValue(const char *data, char *attr, size_t len) {
     return NULL;
 }
 
-void VForm::ParseGetFormInput(const char *query_string) {
-	ParseFormInput(query_string, strlen(query_string));
+void VForm::ParseGetFormInput(char *query_string, size_t length) {
+	ParseFormInput(query_string, length);
 }
 
-void VForm::ParseFormInput(const char *data, size_t length) {
+void VForm::ParseFormInput(char *data, size_t length) {
 	/* Scan for pairs, unescaping and storing them as they are found. */
 	size_t pos=0;
 	while(pos !=length) {
@@ -98,7 +98,7 @@ void VForm::ParseFormInput(const char *data, size_t length) {
 		}
 		if(!foundEq)
 			break;
-		const char *attr=unescape_chars(pool(), data+start, len);
+		char *attr=unescape_chars(pool(), data+start, len);
 		start=pos;
 		len=0;
 		while(pos !=length) {
@@ -112,7 +112,7 @@ void VForm::ParseFormInput(const char *data, size_t length) {
 		}
 		/* The last pair probably won't be followed by a &, but
 			that's fine, so check for that after accepting it */
-		const char *value=unescape_chars(pool(), data+start, len);
+		char *value=unescape_chars(pool(), data+start, len);
 		/* OK, we have a new pair, add it to the list. */
 		AppendFormEntry(attr, value);
 		if(!foundAmp)
@@ -120,8 +120,8 @@ void VForm::ParseFormInput(const char *data, size_t length) {
 	}
 }
 
-void VForm::ParseMimeInput(const char *content_type, 
-						   const char *data, size_t length) {
+void VForm::ParseMimeInput(char *content_type, 
+						   char *data, size_t length) {
 /* Scan for mime-presented pairs, storing them as they are found. */
 	const char 
 		*boundary=getAttributeValue(content_type, "boundary=", strlen(content_type)), 
@@ -132,7 +132,7 @@ void VForm::ParseMimeInput(const char *content_type,
 			"VForm::ParseMimeInput no boundary attribute of Content-Type");
 
 	while(true) {
-		const char 
+		char 
 			*dataStart=searchAttribute(data, boundary, lastData-data), 
 			*dataEnd=searchAttribute(dataStart, boundary, lastData-dataStart);
 		size_t headerSize=getHeader(dataStart, lastData-dataStart);
@@ -199,16 +199,25 @@ void VForm::AppendFormEntry(const char *aname,
 /// @todo parse input letter if some switch is on
 void VForm::fill_fields_and_tables(Request& request) {
 	// parsing QS [GET and ?name=value from uri rewrite)]
-	if(request.info.query_string)
-		ParseGetFormInput(request.info.query_string);
+	if(request.info.query_string) {
+		size_t length=strlen(request.info.query_string);
+		char *buf=(char *)malloc(length);
+		memcpy(buf, request.info.query_string, length);
+		ParseGetFormInput(buf, length);
+	}
+	
 	// parsing POSTed data
 	if(request.info.method) {
 		if(const char *content_type=request.info.content_type)
 			if(StrEqNc(request.info.method, "post", true)) {
 				if(StrEqNc(content_type, "application/x-www-form-urlencoded", true)) 
 					ParseFormInput(request.post_data, request.post_size);
-				else if(StrEqNc(content_type, "multipart/form-data", 0))
-					ParseMimeInput(content_type, request.post_data, request.post_size);
+				else if(StrEqNc(content_type, "multipart/form-data", 0)) {
+					size_t length=strlen(content_type)+1;
+					char *buf=(char *)malloc(length);
+					memcpy(buf, content_type, length);
+					ParseMimeInput(buf, request.post_data, request.post_size);
+				}
 			}
 	} else
 		; // letter?
