@@ -32,16 +32,13 @@ static void _test(Request& r, const String& method_name, MethodParams *params) {
 3. В конструкторе задать имя класса и зарегистрировать методы:
 
 @code
-MExample1::MExample1(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), "example1"));
-
-
+MExample1::MExample1(Pool& apool) : Methoded(apool, "example1") {
 	// ^example1:test[]
 	add_native_method("test", Method::CT_STATIC, _test, 0, 0);
 }
 @endcode
 
-@see Value::set_name, VStateless_class::add_native_method
+@see VStateless_class::add_native_method
 
 4. И, наконец, определить производящую функцию, с именем M{имя_файла_с_заглавной_буквы}_create:
 @code
@@ -50,7 +47,7 @@ Methoded *MExample1_create(Pool& pool) {
 }
 @endcode
 
-5. Если для работы классу необходимы какие-то настройки, то их можно принять из системного auto.p,
+5. Если для работы классу необходимы какие-то настройки, то их можно принять из системного parser3.conf,
 или из пользовательского MAIN класса, переопределив Methoded::configure_admin и/или Methoded::configure_user.
 
 Пользователь сможет вызвать метод так:

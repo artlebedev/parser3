@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.175 2002/04/25 15:38:03 paf Exp $
+	$Id: parser3.C,v 1.176 2002/04/29 05:59:34 paf Exp $
 */
 
 #include "pa_config_includes.h"

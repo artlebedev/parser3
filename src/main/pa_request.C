@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.204 2002/04/19 11:59:44 paf Exp $
+	$Id: pa_request.C,v 1.205 2002/04/29 05:59:33 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -309,8 +309,7 @@ t[9]-t[3]
 		// we're returning not result, but error explanation
 		try {
 			// log the beast
-			const String *problem_source=e.problem_source();
-			if(problem_source && problem_source->size())
+			if(const String *problem_source=e.problem_source())
 				SAPI::log(pool(),
 					"%s: "
 #ifndef NO_STRING_ORIGIN
@@ -394,8 +393,7 @@ t[9]-t[3]
 				// make up result: $origin $source $comment $type $code
 				char *buf=(char *)malloc(MAX_STRING);
 				size_t printed=0;
-				const String *problem_source=e.problem_source();
-				if(problem_source) {
+				if(const String *problem_source=e.problem_source()) {
 #ifndef NO_STRING_ORIGIN
 					const Origin& origin=problem_source->origin();
 					if(origin.file)

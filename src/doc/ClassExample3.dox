@@ -21,5 +21,8 @@ $variable[^example3::create[]]
 
 «десь VExample3, это класс значени€, см. ClassExample2.
 ≈го не нужно регистрировать, поскольку он Methoded::used_directly true.
+ќднако в нЄм необходимо объ€вить
+	VStateless_class *get_class() { return example_class3; }
+где example_class3 это глобальный экземпл€р MExample3.
 
 */
