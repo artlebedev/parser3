@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.78 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_globals.C,v 1.79 2001/09/30 12:27:59 parser Exp $
 */
 
 #include "pa_globals.h"
@@ -51,13 +51,7 @@ String *string_match_name;
 String *string_post_match_name;
 
 String *defaults_name;
-String *ctype_name;
-String *ctype_white_space_name;
-String *ctype_digit_name;
-String *ctype_hex_digit_name;
-String *ctype_letter_name;
-String *ctype_word_name;
-String *ctype_lowercase_name;
+String *charsets_name;
 String *mime_types_name;
 String *vfile_mime_type_name;
 String *origins_mode_name;
@@ -146,13 +140,7 @@ void pa_globals_init(Pool& pool) {
 
 
 	defaults_name=NEW String(pool, DEFAULTS_NAME);
-	ctype_name=NEW String(pool, CTYPE_NAME);
-	ctype_white_space_name=NEW String(pool, CTYPE_WHITE_SPACE_NAME);
-	ctype_digit_name=NEW String(pool, CTYPE_DIGIT_NAME);
-	ctype_hex_digit_name=NEW String(pool, CTYPE_HEX_DIGIT_NAME);
-	ctype_letter_name=NEW String(pool, CTYPE_LETTER_NAME);
-	ctype_word_name=NEW String(pool, CTYPE_WORD_NAME);
-	ctype_lowercase_name=NEW String(pool, CTYPE_LOWERCASE_NAME);
+	charsets_name=NEW String(pool, CHARSETS_NAME);
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
 	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
 	origins_mode_name=NEW String(pool, ORIGINS_MODE_NAME);

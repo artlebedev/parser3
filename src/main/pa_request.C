@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.159 2001/09/30 12:06:04 parser Exp $
+	$Id: pa_request.C,v 1.160 2001/09/30 12:27:59 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -91,7 +91,7 @@ static void element2case(unsigned char from, unsigned char to,
 }
 
 #ifndef DOXYGEN
-struct CTYPE_Tables {
+struct Charset_tables {
 	// pcre_tables
 	unsigned char *pcre_tables;
 #ifdef XML
@@ -103,9 +103,9 @@ struct CTYPE_Tables {
 };
 #endif
 
-static void ctype_table_row_to_CTYPE_tables(Array::Item *value, void *info) {
+static void ctype_table_row_to_charset_tables(Array::Item *value, void *info) {
 	Array& row=*static_cast<Array *>(value);
-	CTYPE_Tables& tables=*static_cast<CTYPE_Tables *>(info);
+	Charset_tables& tables=*static_cast<Charset_tables *>(info);
 	
 // char	white-space	digit	hex-digit	letter	word	lowercase	unicode1	unicode2	
 	unsigned int c=to_wchar_code(row.get_string(0));
@@ -204,12 +204,12 @@ private :
 };
 #endif
 
-static void load_ctype_for_charset(const Hash::Key& akey, Hash::Val *avalue, 
+static void load_charset(const Hash::Key& akey, Hash::Val *avalue, 
 										  void *info) {
 	Hash& CTYPE=*static_cast<Hash *>(info);
 	Pool& pool=CTYPE.pool();
 
-	CTYPE_Tables tables={
+	Charset_tables tables={
 		// pcre_tables
 		// lowcase, flipcase, bits digit+word+whitespace, masks
 		(unsigned char *)pool.calloc(tables_length) // pcre_tables
@@ -230,7 +230,7 @@ static void load_ctype_for_charset(const Hash::Key& akey, Hash::Val *avalue,
 		tables.toTable=(XMLTransService::TransRec *)pool.calloc(
 			sizeof(XMLTransService::TransRec)*table->size()*2);
 #endif
-		table->for_each(ctype_table_row_to_CTYPE_tables, &tables);
+		table->for_each(ctype_table_row_to_charset_tables, &tables);
 #ifdef XML
 		// sort by the Unicode code point
 		_qsort(tables.toTable, tables.toTableSz, sizeof(*tables.toTable), 
@@ -420,12 +420,12 @@ void Request::core(
 			if(Table *table=element->get_table())
 				mime_types=table;			
 
-		if(Value *vctype=main_class->get_element(*ctype_name)) {
-			if(Hash *ctype=vctype->get_hash())
-				ctype->for_each(load_ctype_for_charset, &CTYPE);
+		if(Value *vcharsets=main_class->get_element(*charsets_name)) {
+			if(Hash *charsets=vcharsets->get_hash())
+				charsets->for_each(load_charset, &CTYPE);
 			else
 				THROW(0, 0,
-					&vctype->name(),
+					&vcharsets->name(),
 					"must be hash");
 		}
 

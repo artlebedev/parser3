@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.65 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_globals.h,v 1.66 2001/09/30 12:27:59 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -46,13 +46,7 @@ class Dictionary;
 #define MAIN_CLASS_NAME "MAIN"
 
 #define DEFAULTS_NAME "DEFAULTS"
-#define CTYPE_NAME "CTYPE"
-#	define CTYPE_WHITE_SPACE_NAME "white-space"
-#	define CTYPE_DIGIT_NAME "digit"
-#	define CTYPE_HEX_DIGIT_NAME "hex-digit"
-#	define CTYPE_LETTER_NAME "letter"
-#	define CTYPE_WORD_NAME "word"
-#	define CTYPE_LOWERCASE_NAME "lowercase"
+#define CHARSETS_NAME "CHARSETS"
 #define MIME_TYPES_NAME "MIME-TYPES"
 #define VFILE_MIME_TYPE_NAME "mime-type"
 #define ORIGINS_MODE_NAME "ORIGINS"
@@ -112,13 +106,7 @@ extern String *main_class_name;
 
 
 extern String *defaults_name;
-extern String *ctype_name;
-extern String *ctype_white_space_name;
-extern String *ctype_digit_name;
-extern String *ctype_hex_digit_name;
-extern String *ctype_letter_name;
-extern String *ctype_word_name;
-extern String *ctype_lowercase_name;
+extern String *charsets_name;
 
 extern String *mime_types_name;
 extern String *vfile_mime_type_name;
