@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.2 2001/04/07 11:55:30 paf Exp $
+	$Id: mail.C,v 1.3 2001/04/07 12:13:13 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -93,24 +93,25 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 	if(Value *body_element=static_cast<Value *>(letter_hash.get(*body_name))) {
 		if(Hash *body_hash=body_element->get_hash()) {
 			char *boundary=(char *)pool.malloc(MAX_NUMBER);
-			snprintf(boundary, MAX_NUMBER, "B%d", level);
+			snprintf(boundary, MAX_NUMBER-6/*level_*/, "level_%d", level);
 			// multi-part
-			result+="content-type: multipart/mixed;\n"
-				"    boundary=\"----="; result+=boundary; result+="\"\n"
+			((result+=
+				"content-type: multipart/mixed;\n"
+				"    boundary=\"----=")+=boundary)+="\"\n"
 				"\n"
 				"This is a multi-part message in MIME format.";
 
-			// body parts
-			// collect
+			// body parts..
+			// ..collect
 			Seq_item *seq=(Seq_item *)malloc(sizeof(Seq_item)*body_hash->size());
 			Seq_item *seq_ref=seq;  body_hash->for_each(add_part, &seq_ref);
-			// sort
+			// ..sort
 			_qsort(seq, body_hash->size(), sizeof(Seq_item), 
 				sort_cmp_string_double_value);
-			// insert parts in 'seq' order
+			// ..insert in 'seq' order
 			for(int i=0; i<body_hash->size(); i++) {
 				// intermediate boundary
-				result+="\n------="; result+=boundary; result+="\n";
+				((result+="\n------=")+=boundary)+="\n";
 
 				if(Hash *part_hash=seq[i].part_value->get_hash())
 					result+=letter_hash_to_string(r, method_name, *part_hash, 
@@ -122,7 +123,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			}
 
 			// finish boundary
-			result+="\n------="; result+=boundary; result+="--\n";
+			((result+="\n------=")+=boundary)+="--\n";
 		} else {
 			result+="\n"; // header|body separator
 			result+=body_element->as_string(); 
