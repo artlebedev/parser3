@@ -23,8 +23,8 @@ CFG=parser3odbc - Win32 Debug
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""
-# PROP Scc_LocalPath ""
+# PROP Scc_ProjName "parser3odbc"
+# PROP Scc_LocalPath "."
 CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
@@ -127,101 +127,38 @@ SOURCE=.\parser3odbc.def
 # Begin Source File
 
 SOURCE=.\MFCpatches\AFXIMPL.H
-
-!IF  "$(CFG)" == "parser3odbc - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3odbc - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\MFCpatches\CTLIMPL.H
-
-!IF  "$(CFG)" == "parser3odbc - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3odbc - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\MFCpatches\DAOIMPL.H
-
-!IF  "$(CFG)" == "parser3odbc - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3odbc - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\MFCpatches\DBCORE.CPP
-
-!IF  "$(CFG)" == "parser3odbc - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3odbc - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\MFCpatches\DBIMPL.H
-
-!IF  "$(CFG)" == "parser3odbc - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3odbc - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\MFCpatches\OLEIMPL2.H
-
-!IF  "$(CFG)" == "parser3odbc - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3odbc - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\MFCpatches\SOCKIMPL.H
-
-!IF  "$(CFG)" == "parser3odbc - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3odbc - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\MFCpatches\STDAFX.H
-
-!IF  "$(CFG)" == "parser3odbc - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3odbc - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\MFCpatches\WINHAND_.H
-
-!IF  "$(CFG)" == "parser3odbc - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3odbc - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # End Group
 # End Target
