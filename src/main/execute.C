@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.165 2001/05/21 17:13:57 parser Exp $
+	$Id: execute.C,v 1.166 2001/05/28 06:10:06 parser Exp $
 */
 
 #include "pa_opcode.h"
@@ -694,14 +694,14 @@ void Request::execute(const Array& ops) {
 Value *Request::get_element() {
 	const String& name=POP_NAME();
 	Value *ncontext=POP();
-	Value *value/*;	
+	Value *value;
 	if(Method* method=OP.get_method(name)) { // operator?
 		// as if that method were in self and we have normal dynamic method here
 		Junction& junction=*NEW Junction(pool(), 
 			*self, self->get_class(), method, 0,0,0,0);
 		value=NEW VJunction(junction);
 	} else
-		value*/=ncontext->get_element(name);
+		value=ncontext->get_element(name);
 	if(value)
 		value=&process(*value, &name); // process possible code-junction
 	else {
