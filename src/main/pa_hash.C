@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.28 2001/03/23 13:08:10 paf Exp $
+	$Id: pa_hash.C,v 1.29 2001/03/24 10:54:46 paf Exp $
 */
 
 /*
@@ -154,7 +154,7 @@ void Hash::merge_dont_replace(const Hash& src) {  SYNCHRONIZED(thread_safe);
 	// MAY:optimize this.allocated==src.allocated case
 }
 
-void Hash::foreach(Foreach_func func, void *info) {
+void Hash::for_each(For_each_func func, void *info) {
 	Pair **ref=refs;
 	for(int index=0; index<allocated; index++)
 		for(Pair *pair=*ref++; pair; pair=pair->link)

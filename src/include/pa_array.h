@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.28 2001/03/21 14:06:43 paf Exp $
+	$Id: pa_array.h,v 1.29 2001/03/24 10:54:44 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -36,7 +36,14 @@
 class Array : public Pooled {
 public:
 
-	typedef void Item; ///< Array item type
+	/// Array item type
+	typedef void Item;
+
+	/// for_each iterator function type
+	typedef void (*For_each_func)(Item *value, void *info);
+
+	/// first_that iterator function type
+	typedef Item *(*First_that_func)(Item *value, const void *info);
 
 	enum {
 		CR_INITIAL_ROWS_DEFAULT=10, ///< default preallocated row count
@@ -88,6 +95,12 @@ public:
 	const String *get_string(int index) const { 
 		return const_cast<const String *>(static_cast<String *>(get(index))); 
 	}
+
+	/// iterate over all elements
+	void for_each(For_each_func func, void *info=0);
+
+	/// iterate over all elements until condition
+	void* first_that(First_that_func func, const void *info=0);
 
 private:
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.66 2001/03/22 11:19:10 paf Exp $
+	$Id: pa_request.h,v 1.67 2001/03/24 10:54:45 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -163,6 +163,9 @@ private: // core data
 
 	// classes
 	Hash fclasses;
+
+	// already used files to avoid cyclic uses
+	Hash used_files;
 
 	// execution stack
 	Stack stack;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.109 2001/03/24 09:57:51 paf Exp $
+	$Id: compile.y,v 1.110 2001/03/24 10:54:46 paf Exp $
 */
 
 /**
@@ -166,7 +166,6 @@ control_method: '@' STRING '\n'
 				YYERROR;
 			}
 			if(strings_code->size()==1*2) {
-				// TODO: преодолеть self и циклические base
 				const String& base_name=*SLA2S(strings_code);
 				VClass *base=static_cast<VClass *>(
 					PC->request->classes().get(base_name));
@@ -544,7 +543,7 @@ empty: /* empty */ { $$=N(POOL) };
 		4:[^({]=pop
 */
 
-int yylex(YYSTYPE *lvalp, void *pc) {
+static int yylex(YYSTYPE *lvalp, void *pc) {
 	#define lexical_brackets_nestage PC->brackets_nestages[PC->sp]
 	#define RC {result=c; goto break2; }
 
@@ -1017,19 +1016,12 @@ break2:
 	return result;
 }
 
-int real_yyerror(parse_control *pc, char *s)  /* Called by yyparse on error */
-     {
-	   strncpy(pc->error, s, MAX_STRING); // TODO: перепроверить с треклятым последним байтом
+static int real_yyerror(parse_control *pc, char *s) {  // Called by yyparse on error
+	   strncpy(pc->error, s, MAX_STRING);
 	   return 1;
-     }
+}
 
-static void
-     yyprint(
-          FILE *file,
-          int type,
-          YYSTYPE value)
-     {
-       if(type==STRING)
-         fprintf(file, " \"%s\"", SLA2S(value)->cstr());
-     }
-
+static void yyprint(FILE *file, int type, YYSTYPE value) {
+	if(type==STRING)
+		fprintf(file, " \"%s\"", SLA2S(value)->cstr());
+}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.11 2001/03/23 10:27:34 paf Exp $
+	$Id: pa_vcookie.C,v 1.12 2001/03/24 10:54:48 paf Exp $
 */
 
 #include <string.h>
@@ -157,6 +157,6 @@ static void output_deleted(const Hash::Key& aattribute, Hash::Val *ameaning, voi
 	output_set_cookie(aattribute, 0);
 }
 void VCookie::output_result() {
-	after.foreach(output_after, this);
-	deleted.foreach(output_deleted, this);
+	after.for_each(output_after, this);
+	deleted.for_each(output_deleted, this);
 }

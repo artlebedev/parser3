@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.24 2001/03/24 09:24:44 paf Exp $
+	$Id: pa_common.C,v 1.25 2001/03/24 10:54:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -245,7 +245,7 @@ const String& attributed_meaning_to_string(Value& meaning) {
 		if(Value *value=static_cast<Value *>(hash->get(*value_name)))
 			result.append(value->as_string(), String::UL_HEADER, true);
 
-		hash->foreach(append_attribute_subattribute, &result);
+		hash->for_each(append_attribute_subattribute, &result);
 	} else // result value
 		result.append(meaning.as_string(), String::UL_HEADER, true);
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.C,v 1.25 2001/03/23 13:08:10 paf Exp $
+	$Id: pa_array.C,v 1.26 2001/03/24 10:54:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -146,4 +146,39 @@ Array& Array::append_array(const Array& src, int offset) {
 	fused_rows+=src_rows_to_copy;
 
 	return *this;
+}
+
+void Array::for_each(For_each_func func, void *info) {
+	Chunk *chunk=head;
+	while(true) {
+		if(chunk==tail) { // last chunk?
+			for(Chunk::Row *row=chunk->rows; row!=append_here; row++)
+				(*func)(row->item, info);
+			break;
+		} else {
+			int count=chunk->count;
+			for(int i=0; i<count; i++)
+				(*func)(chunk->rows[i].item, info);
+			chunk=chunk->rows[count].link;
+		}
+	}
+}
+
+Array::Item* Array::first_that(First_that_func func, const void *info) {
+	Chunk *chunk=head;
+	while(true) {
+		if(chunk==tail) { // last chunk?
+			for(Chunk::Row *row=chunk->rows; row!=append_here; row++)
+				if(Item *result=(*func)(row->item, info))
+					return result;
+			break;
+		} else {
+			int count=chunk->count;
+			for(int i=0; i<count; i++)
+				if(Item *result=(*func)(chunk->rows[i].item, info))
+					return result;
+			chunk=chunk->rows[count].link;
+		}
+	}
+	return 0;
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.30 2001/03/19 17:56:26 paf Exp $
+	$Id: pa_hash.h,v 1.31 2001/03/24 10:54:45 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -32,8 +32,8 @@ public:
 	typedef String Key; ///< hash Key type. longing for templates
 	typedef void Val; ///< hash Val type. longing for templates
 
-	/// foreach iterator function type
-	typedef void (*Foreach_func)(const Key& key, Val *value, void *info);
+	/// for_each iterator function type
+	typedef void (*For_each_func)(const Key& key, Val *value, void *info);
 
 public:
 
@@ -72,7 +72,7 @@ public:
 	int size() { return used; }
 
 	/// iterate over all not zero elements
-	void foreach(Foreach_func func, void *info=0);
+	void for_each(For_each_func func, void *info=0);
 
 	/// remove all elements
 	void clear();

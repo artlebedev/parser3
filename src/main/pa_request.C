@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.72 2001/03/24 08:54:03 paf Exp $
+	$Id: pa_request.C,v 1.73 2001/03/24 10:54:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -39,7 +39,8 @@ Request::Request(Pool& apool,
 	fclasses(apool),
 	fdefault_lang(adefault_lang), flang(adefault_lang),
 	info(ainfo),
-	fdefault_content_type(0)
+	fdefault_content_type(0),
+	used_files(apool)
 {
 	// root superclass, 
 	//   parent of all classes, 
@@ -325,10 +326,16 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 }
 
-/// @todo find|solve cyclic dependences
 VStateless_class *Request::use_file(const char *file, bool fail_on_read_problem,
 									const String *name, 
 									VStateless_class *base_class) {
+	// cyclic dependence check
+	String& sfile=*NEW String(pool(), file);
+	if(used_files.get(sfile))
+		return base_class;
+	used_files.put(sfile, (Hash::Val *)true);
+
+
 	char *source=file_read_text(pool(), file, fail_on_read_problem);
 	if(!source)
 		return base_class;
@@ -384,11 +391,12 @@ void Request::output_result(const String& body_string, bool header_only) {
 	cookie.output_result();
 	
 	// set default content-type
-	if(fdefault_content_type)
-		response.fields().put_dont_replace(*content_type_name, fdefault_content_type);
+	if(!fdefault_content_type)
+		fdefault_content_type=NEW VString(*NEW String(pool(), "text/html"));
+	response.fields().put_dont_replace(*content_type_name, fdefault_content_type);
 
 	// prepare header: $response:fields without :body
-	response.fields().foreach(add_header_attribute, /*excluding*/ body_name);
+	response.fields().for_each(add_header_attribute, /*excluding*/ body_name);
 
 	// prepare...
 	const char *body=body_string.cstr();
