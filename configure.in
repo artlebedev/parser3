@@ -510,6 +510,7 @@ ftruncate \
 getrusage \
 gettimeofday \
 crypt \
+sigsetjmp \
 siglongjmp
 )
 
