@@ -94,9 +94,11 @@ Xне сделано, видимо, не будет сделано
             compress=1&
             named_pipe=1
 
-        !pgsql://user:pass@{host[:port]|[local]}/database
+        !pgsql://user:pass@{host[:port]|[local]}/database?
+            client_encoding=win,[to-find-out]&
+            datestyle=ISO,SQL,Postgres,European,NonEuropean=US,German,DEFAULT=ISO
         
-        oracle://user:pass@service?
+        !oracle://user:pass@service?
             NLS_LANG=RUSSIAN_AMERICA.CL8MSWIN1251&
             NLS_LANGUAGE  language-dependent conventions
             NLS_TERRITORY  territory-dependent conventions
