@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.16 2001/02/25 17:33:43 paf Exp $
+  $Id: pa_request.h,v 1.17 2001/03/08 11:27:47 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -14,14 +14,15 @@
 #include "pa_vclass.h"
 
 #define MAIN_METHOD_NAME "main"
-#define NAME_RUN "RUN"
+#define RUN_NAME "RUN"
+#define ROOT_NAME "ROOT"
 
 #ifndef NO_STRING_ORIGIN
-#	define COMPILE_PARAMS char *source, String *default_name, char *file
-#	define COMPILE(source, default_name, file) real_compile(source, default_name, file)
+#	define COMPILE_PARAMS char *source, String *name, char *file
+#	define COMPILE(source, name, file) real_compile(source, name, file)
 #else
-#	define COMPILE_PARAMS char *source, String *default_name
-#	define COMPILE(source, default_name, file) real_compile(source, default_name)
+#	define COMPILE_PARAMS char *source, String *name
+#	define COMPILE(source, name, file) real_compile(source, name)
 #endif
 
 class Local_request_exception;
@@ -29,12 +30,7 @@ class Local_request_exception;
 class Request : public Pooled {
 public:
 	
-	Request(Pool& apool) : Pooled(apool),
-		stack(apool),
-		fclasses(apool),
-		fclasses_array(apool)
-		{
-	}
+	Request(Pool& apool);
 	~Request() {}
 
 	// global classes
@@ -43,6 +39,10 @@ public:
 
 	// core request processing
 	void core();
+
+public:
+
+	VClass ROOT_CLASS; // default base
 
 private: // core data
 

@@ -283,5 +283,22 @@ SOURCE=..\include\pa_wcontext.h
 SOURCE=..\include\pa_wwrapper.h
 # End Source File
 # End Group
+# Begin Group "classes"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\classes\root.C
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# End Group
 # End Target
 # End Project

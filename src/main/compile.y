@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.72 2001/03/08 10:07:10 paf Exp $
+  $Id: compile.y,v 1.73 2001/03/08 11:27:49 paf Exp $
 */
 
 %{
@@ -113,9 +113,24 @@ control_method: '@' STRING '\n'
 		YYERROR;
 	}
 	if(name==CLASS_NAME) {
-		if(strings_code->size()==1*2) 
-			PC->vclass->set_name(*SLA2S(strings_code));
-		else {
+		if(PC->vclass!=&PC->request->ROOT_CLASS) { // already changed from default?
+			strcpy(PC->error, "class already have a name '");
+			strncat(PC->error, PC->vclass->name().cstr(), 100);
+			strcat(PC->error, "'");
+			YYERROR;
+		}
+		if(strings_code->size()==1*2) {
+			// new class' name
+			String *name=SLA2S(strings_code);
+			// creating the class
+			PC->vclass=NEW VClass(POOL);
+			PC->vclass->set_name(*name);
+			// defaulting base. may change with @BASE
+			PC->vclass->set_base(PC->request->ROOT_CLASS);
+			// append to request's classes
+			PC->request->classes_array()+=PC->vclass;
+			PC->request->classes().put(*name, PC->vclass);
+		} else {
 			strcpy(PC->error, "@"CLASS_NAME" must contain sole name");
 			YYERROR;
 		}
@@ -127,7 +142,12 @@ control_method: '@' STRING '\n'
 				PC->request->use(file->cstr(), 0);
 			}
 		} else if(name==BASE_NAME) {
+			if(PC->vclass->base()!=&PC->request->ROOT_CLASS) { // already changed from default?
+				strcpy(PC->error, "there must be only one @"BASE_NAME);
+				YYERROR;
+			}
 			if(strings_code->size()==1*2) {
+				// TODO: преодолеть self и циклические base
 				String& base_name=*SLA2S(strings_code);
 				VClass *base=static_cast<VClass *>(
 					PC->request->classes().get(base_name));
@@ -509,6 +529,8 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			PC->col=0;
 		} else
 			PC->col++;
+
+		// todo: # in 0+1 column comment
 
 		// escaping: ^^ ^$ ^; ^) ^} ^( ^{ ^"
 		if(c=='^') 

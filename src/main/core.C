@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.42 2001/03/06 10:49:24 paf Exp $
+$Id: core.C,v 1.43 2001/03/08 11:27:49 paf Exp $
 */
 
 #include "pa_request.h"
@@ -15,10 +15,23 @@ void core() {
 	request.core();
 }
 
+Request::Request(Pool& apool) : Pooled(apool),
+	stack(apool),
+	ROOT_CLASS(apool),
+	fclasses(apool),
+	fclasses_array(apool)
+{
+	// adding root superclass, 
+	//   parent of all classes, 
+	//   operators holder
+	String ROOT(pool()); ROOT.APPEND_CONST(ROOT_NAME);
+	classes().put(ROOT, &ROOT_CLASS);
+}
+
 void Request::core() {
 	TRY {
 		char *file="Y:\\parser3\\src\\test.p";
-		String RUN(pool()); RUN.APPEND_CONST(NAME_RUN);
+		String RUN(pool()); RUN.APPEND_CONST(RUN_NAME);
 		use(file, &RUN);
 
 		char *result=execute_MAIN();
@@ -48,7 +61,7 @@ void Request::core() {
 	END_CATCH
 }
 
-void Request::use(char *file, String *alias) {
+void Request::use(char *file, String *name) {
 	// TODO: обнаружить|решить cyclic dependences
 	char *source=file_read(pool(), file);
 	if(!source)
@@ -56,14 +69,11 @@ void Request::use(char *file, String *alias) {
 			0,
 			"use: can not read '%s' file", file);
 
-	VClass& vclass=COMPILE(source, alias, file);
-	String& vclass_name=vclass.name();
-	//TODO: обнаружить, что грузят не объект, а операторы.
-	// загрузить операторы
-	classes_array()+=&vclass;
-	classes().put(vclass_name, &vclass);
-	if(alias)
-		classes().put(*alias, &vclass);
+	COMPILE(source, name, file);
+	// TODO: запустить @STATIC[], если есть
+
+//	if(alias)
+		//classes().put(*alias, &vclass);
 }
 
 char *Request::execute_MAIN() {
