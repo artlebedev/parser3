@@ -8,7 +8,7 @@
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-static const char* IDENT_STYLESHEET_CONNECTION_H="$Date: 2003/11/06 09:11:35 $";
+static const char * const IDENT_STYLESHEET_CONNECTION_H="$Date: 2003/11/20 16:34:25 $";
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"

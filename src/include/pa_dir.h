@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-static const char* IDENT_DIR_H="$Date: 2003/07/24 11:31:21 $";
+static const char * const IDENT_DIR_H="$Date: 2003/11/20 16:34:24 $";
 
 #include "pa_config_includes.h"
 

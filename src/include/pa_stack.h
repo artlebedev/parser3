@@ -8,7 +8,7 @@
 #ifndef PA_STACK_H
 #define PA_STACK_H
 
-static const char* IDENT_STACK_H="$Date: 2003/10/02 07:26:46 $";
+static const char * const IDENT_STACK_H="$Date: 2003/11/20 16:34:25 $";
 
 #include "pa_config_includes.h"
 #include "pa_array.h"

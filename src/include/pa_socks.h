@@ -8,7 +8,7 @@
 #ifndef PA_SOCKS_H
 #define PA_SOCKS_H
 
-static const char* IDENT_SOCKS_H="$Date: 2003/07/24 11:31:21 $";
+static const char * const IDENT_SOCKS_H="$Date: 2003/11/20 16:34:25 $";
 
 void pa_init_socks();
 void pa_done_socks();

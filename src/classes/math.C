@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/11/20 15:35:29 $";
+static const char * const IDENT_MATH_C="$Date: 2003/11/20 16:34:23 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"

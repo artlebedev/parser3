@@ -8,7 +8,7 @@
 #ifndef PA_OS_H
 #define PA_OS_H
 
-static const char* IDENT_OS_H="$Date: 2003/11/19 08:20:02 $";
+static const char * const IDENT_OS_H="$Date: 2003/11/20 16:34:25 $";
 
 int pa_lock_shared_blocking(int fd);
 int pa_lock_exclusive_blocking(int fd);

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXCEPTION_C="$Date: 2003/11/06 09:11:35 $";
+static const char * const IDENT_EXCEPTION_C="$Date: 2003/11/20 16:34:26 $";
 
 #include "pa_common.h"
 #include "pa_exception.h"

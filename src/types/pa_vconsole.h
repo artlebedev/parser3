@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char* IDENT_VCONSOLE_H="$Date: 2003/11/20 15:35:32 $";
+static const char * const IDENT_VCONSOLE_H="$Date: 2003/11/20 16:34:28 $";
 
 // includes
 

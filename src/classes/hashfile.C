@@ -6,7 +6,7 @@
 */
 
 
-static const char* IDENT="$Id: hashfile.C,v 1.31 2003/11/20 15:35:29 paf Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.32 2003/11/20 16:34:23 paf Exp $";
 
 #include "classes.h"
 

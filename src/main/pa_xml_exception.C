@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char* IDENT="$Date: 2003/11/06 08:51:01 $";
+static const char * const IDENT="$Date: 2003/11/20 16:34:27 $";
 
 #include "pa_xml_exception.h"
 #include "pa_globals.h"

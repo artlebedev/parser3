@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char* IDENT_UUE_C="$Date: 2003/07/24 11:31:24 $";
+static const char * const IDENT_UUE_C="$Date: 2003/11/20 16:34:27 $";
 
 #include "pa_config_includes.h"
 

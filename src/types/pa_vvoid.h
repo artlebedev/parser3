@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-static const char* IDENT_VVOID_H="$Date: 2003/11/20 15:35:33 $";
+static const char * const IDENT_VVOID_H="$Date: 2003/11/20 16:34:30 $";
 
 #include "classes.h"
 #include "pa_vstateless_object.h"

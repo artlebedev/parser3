@@ -8,7 +8,7 @@
 #ifndef PA_UUE_H
 #define PA_UUE_H
 
-static const char* IDENT_UUE_H="$Date: 2003/07/24 11:31:22 $";
+static const char * const IDENT_UUE_H="$Date: 2003/11/20 16:34:25 $";
 
 #include "pa_string.h"
 #include "pa_vfile.h"

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FORM_C="$Date: 2003/09/29 10:35:13 $";
+static const char * const IDENT_FORM_C="$Date: 2003/11/20 16:34:23 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"

@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_OBJECT_H
 #define PA_VSTATELESS_OBJECT_H
 
-static const char* IDENT_VSTATELESS_OBJECT_H="$Date: 2003/07/24 11:31:26 $";
+static const char * const IDENT_VSTATELESS_OBJECT_H="$Date: 2003/11/20 16:34:30 $";
 
 // include
 

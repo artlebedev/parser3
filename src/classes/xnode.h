@@ -8,7 +8,7 @@
 #ifndef XNODE_H
 #define XNODE_H
 
-static const char* IDENT_XNODE_H="$Date: 2003/07/24 11:31:20 $";
+static const char * const IDENT_XNODE_H="$Date: 2003/11/20 16:34:24 $";
 
 class MXnode: public Methoded {
 public: // Value

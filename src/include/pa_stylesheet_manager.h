@@ -10,7 +10,7 @@
 #ifndef PA_STYLESHEET_MANAGER_H
 #define PA_STYLESHEET_MANAGER_H
 
-static const char* IDENT_STYLESHEET_MANAGER_H="$Date: 2003/09/25 09:15:02 $";
+static const char * const IDENT_STYLESHEET_MANAGER_H="$Date: 2003/11/20 16:34:25 $";
 
 
 #include "pa_hash.h"

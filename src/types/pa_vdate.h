@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char* IDENT_VDATE_H="$Date: 2003/11/20 15:35:32 $";
+static const char * const IDENT_VDATE_H="$Date: 2003/11/20 16:34:28 $";
 
 #include "classes.h"
 #include "pa_common.h"

@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char* IDENT_SQL_DRIVER_H="$Date: 2003/07/24 11:31:24 $";
+static const char * const IDENT_SQL_DRIVER_H="$Date: 2003/11/20 16:34:27 $";
 
 #include <sys/types.h>
 #include <setjmp.h>

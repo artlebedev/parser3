@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/11/20 16:32:12 $";
+static const char * const IDENT_REQUEST_H="$Date: 2003/11/20 16:34:25 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"

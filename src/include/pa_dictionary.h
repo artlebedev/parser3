@@ -8,7 +8,7 @@
 #ifndef PA_DICTIONARY_H
 #define PA_DICTIONARY_H
 
-static const char* IDENT_DICTIONARY_H="$Date: 2003/10/03 09:40:57 $";
+static const char * const IDENT_DICTIONARY_H="$Date: 2003/11/20 16:34:24 $";
 
 #include "pa_table.h"
 

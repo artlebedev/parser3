@@ -8,7 +8,7 @@
 #ifndef PA_THREADS_H
 #define PA_THREADS_H
 
-static const char* IDENT_THREADS_H="$Date: 2003/07/24 11:31:21 $";
+static const char * const IDENT_THREADS_H="$Date: 2003/11/20 16:34:25 $";
 
 #include "pa_config_includes.h"
 #include "pa_types.h"

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/11/20 15:35:30 $";
+static const char * const IDENT_TABLE_C="$Date: 2003/11/20 16:34:23 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"

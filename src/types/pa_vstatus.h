@@ -8,7 +8,7 @@
 #ifndef PA_VSTATUS_H
 #define PA_VSTATUS_H
 
-static const char* IDENT_VSTATUS_H="$Date: 2003/07/24 11:31:26 $";
+static const char * const IDENT_VSTATUS_H="$Date: 2003/11/20 16:34:30 $";
 
 // includes
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_WCONTEXT_C="$Date: 2003/09/19 10:09:50 $";
+static const char * const IDENT_WCONTEXT_C="$Date: 2003/11/20 16:34:30 $";
 
 #include "pa_wcontext.h"
 

@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char* IDENT_METHOD_H="$Date: 2003/07/24 11:31:25 $";
+static const char * const IDENT_METHOD_H="$Date: 2003/11/20 16:34:28 $";
 
 
 /*#include "pa_string.h"

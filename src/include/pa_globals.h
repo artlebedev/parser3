@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2003/11/06 09:11:35 $";
+static const char * const IDENT_GLOBALS_H="$Date: 2003/11/20 16:34:25 $";
 
 
 #include "pa_hash.h"

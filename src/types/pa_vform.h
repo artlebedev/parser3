@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char* IDENT_VFORM_H="$Date: 2003/07/24 11:31:26 $";
+static const char * const IDENT_VFORM_H="$Date: 2003/11/20 16:34:29 $";
 
 // includes
 

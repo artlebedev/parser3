@@ -8,7 +8,7 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-static const char* IDENT_CLASSES_H="$Date: 2003/07/24 11:31:19 $";
+static const char * const IDENT_CLASSES_H="$Date: 2003/11/20 16:34:23 $";
 
 // include
 

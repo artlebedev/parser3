@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_SOCKS_C="$Date: 2003/07/24 11:31:24 $";
+static const char * const IDENT_SOCKS_C="$Date: 2003/11/20 16:34:26 $";
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"

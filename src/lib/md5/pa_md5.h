@@ -96,7 +96,7 @@
 #ifndef PA_MD5_H
 #define PA_MD5_H
 
-static const char* IDENT_MD5_H="$Date: 2003/07/24 11:31:22 $";
+static const char * const IDENT_MD5_H="$Date: 2003/11/20 16:34:25 $";
 
 #define PA_API_EXPORT(rtype) rtype
 

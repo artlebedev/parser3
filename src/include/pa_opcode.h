@@ -9,7 +9,7 @@
 #ifndef OPCODE_H
 #define OPCODE_H
 
-static const char* IDENT_OPCODE_H="$Date: 2003/07/24 11:31:21 $";
+static const char * const IDENT_OPCODE_H="$Date: 2003/11/20 16:34:25 $";
 
 ///	Compiled operation code
 enum OPCODE {

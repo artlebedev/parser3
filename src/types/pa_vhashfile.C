@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/20 15:35:32 $";
+static const char * const IDENT="$Date: 2003/11/20 16:34:29 $";
 
 #include "pa_globals.h"
 #include "pa_threads.h"

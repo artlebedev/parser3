@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-static const char* IDENT_MEMORY_H="$Date: 2003/11/06 09:56:17 $";
+static const char * const IDENT_MEMORY_H="$Date: 2003/11/20 16:34:25 $";
 
 // include
 

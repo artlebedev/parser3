@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char* IDENT_VOBJECT_C="$Date: 2003/11/20 15:35:32 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2003/11/20 16:34:30 $";
 
 Value* VObject::as(const char* atype, bool looking_up) { 
 	if(!looking_up)

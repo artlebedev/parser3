@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_CLASSES_C="$Date: 2003/07/24 11:31:19 $";
+static const char * const IDENT_CLASSES_C="$Date: 2003/11/20 16:34:23 $";
 
 #include "classes.h"
 #include "pa_request.h"

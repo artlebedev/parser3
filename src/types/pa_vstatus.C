@@ -7,7 +7,7 @@
 	Win32 rusage author: Victor Fedoseev <vvf_ru@mail.ru>
 */
 
-static const char* IDENT_VSTATUS_C="$Date: 2003/09/25 09:15:03 $";
+static const char * const IDENT_VSTATUS_C="$Date: 2003/11/20 16:34:30 $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"

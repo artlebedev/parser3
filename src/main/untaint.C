@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2003/09/26 15:45:24 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2003/11/20 16:34:27 $";
 
 
 #include "pa_string.h"

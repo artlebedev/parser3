@@ -4,13 +4,13 @@
 	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Date: 2003/09/25 09:15:02 $
+	$Date: 2003/11/20 16:34:24 $
 */
 
 #ifndef PA_CACHE_MANAGERS_H
 #define PA_CACHE_MANAGERS_H
 
-static const char* IDENT_CACHE_MANAGERS_H="$Date: 2003/09/25 09:15:02 $";
+static const char * const IDENT_CACHE_MANAGERS_H="$Date: 2003/11/20 16:34:24 $";
 
 #include "pa_hash.h"
 #include "pa_value.h"

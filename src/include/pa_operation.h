@@ -9,7 +9,7 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-static const char* IDENT_OPERATION_H="$Date: 2003/11/20 15:35:30 $";
+static const char * const IDENT_OPERATION_H="$Date: 2003/11/20 16:34:25 $";
 
 #include "pa_array.h"
 #include "pa_opcode.h"

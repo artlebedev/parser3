@@ -8,7 +8,7 @@
 #ifndef PA_VMEMORY_H
 #define PA_VMEMORY_H
 
-static const char* IDENT_VMEMORY_H="$Date: 2003/07/24 11:31:26 $";
+static const char * const IDENT_VMEMORY_H="$Date: 2003/11/20 16:34:30 $";
 
 #include "classes.h"
 #include "pa_vstateless_object.h"

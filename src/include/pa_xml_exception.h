@@ -10,7 +10,7 @@
 
 #ifdef XML
 
-static const char* IDENT_XML_EXCEPTION_H="$Date: 2003/11/06 08:50:26 $";
+static const char * const IDENT_XML_EXCEPTION_H="$Date: 2003/11/20 16:34:25 $";
 
 // includes
 

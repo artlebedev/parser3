@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char* IDENT_VHASHFILE_H="$Date: 2003/11/10 07:06:13 $";
+static const char * const IDENT_VHASHFILE_H="$Date: 2003/11/20 16:34:29 $";
 
 #include "classes.h"
 #include "pa_pool.h"

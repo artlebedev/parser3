@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char* IDENT_VXDOC_H="$Date: 2003/11/20 15:35:33 $";
+static const char * const IDENT_VXDOC_H="$Date: 2003/11/20 16:34:30 $";
 
 #include "classes.h"
 #include "pa_common.h"

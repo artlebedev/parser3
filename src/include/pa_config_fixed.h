@@ -10,7 +10,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-static const char* IDENT_CONFIG_FIXED_H="$Date: 2003/11/06 08:22:48 $";
+static const char * const IDENT_CONFIG_FIXED_H="$Date: 2003/11/20 16:34:24 $";
 
 #define inline  __inline
 #define HAVE_ASSERT_H

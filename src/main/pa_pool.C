@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_POOL_C="$Date: 2003/11/07 13:59:22 $";
+static const char * const IDENT_POOL_C="$Date: 2003/11/20 16:34:26 $";
 
 #include "pa_pool.h"
 #include "pa_exception.h"

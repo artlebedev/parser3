@@ -8,7 +8,7 @@
 #ifndef PA_VBOOL_H
 #define PA_VBOOL_H
 
-static const char* IDENT_VBOOL_H="$Date: 2003/07/24 11:31:25 $";
+static const char * const IDENT_VBOOL_H="$Date: 2003/11/20 16:34:28 $";
 
 // include
 

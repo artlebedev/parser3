@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char* IDENT_EXCEPTION_H="$Date: 2003/11/06 08:48:59 $";
+static const char * const IDENT_EXCEPTION_H="$Date: 2003/11/20 16:34:24 $";
 
 // includes
 

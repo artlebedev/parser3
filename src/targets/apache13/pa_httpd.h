@@ -8,7 +8,7 @@
 #ifndef PA_HTTPD_H
 #define PA_HTTPD_H
 
-static const char* IDENT_HTTPD_H="$Date: 2003/09/30 08:38:04 $";
+static const char * const IDENT_HTTPD_H="$Date: 2003/11/20 16:34:27 $";
 
 #ifdef __cplusplus
 extern "C" {

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_SMTP_H="$Date: 2003/11/20 15:35:30 $";
+static const char * const IDENT_SMTP_H="$Date: 2003/11/20 16:34:24 $";
 
 
 #include "pa_string.h"

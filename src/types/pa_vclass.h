@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char* IDENT_VCLASS_H="$Date: 2003/11/07 13:59:22 $";
+static const char * const IDENT_VCLASS_H="$Date: 2003/11/20 16:34:28 $";
 
 // includes
 

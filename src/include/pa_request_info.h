@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_INFO_H
 #define PA_REQUEST_INFO_H
 
-static const char* IDENT_REQUEST_INFO_H="$Date: 2003/07/24 11:31:21 $";
+static const char * const IDENT_REQUEST_INFO_H="$Date: 2003/11/20 16:34:25 $";
 
 /// some information from web server
 class Request_info {

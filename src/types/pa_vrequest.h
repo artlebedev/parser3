@@ -8,7 +8,7 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-static const char* IDENT_VREQUEST_H="$Date: 2003/07/24 11:31:26 $";
+static const char * const IDENT_VREQUEST_H="$Date: 2003/11/20 16:34:30 $";
 
 // includes
 

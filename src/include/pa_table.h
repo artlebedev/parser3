@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-static const char* IDENT_TABLE_H="$Date: 2003/11/20 16:32:12 $";
+static const char * const IDENT_TABLE_H="$Date: 2003/11/20 16:34:25 $";
 
 #include "pa_types.h"
 #include "pa_hash.h"

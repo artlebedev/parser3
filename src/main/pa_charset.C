@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSET_C="$Date: 2003/11/20 15:35:31 $";
+static const char * const IDENT_CHARSET_C="$Date: 2003/11/20 16:34:26 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"

@@ -8,7 +8,7 @@
 #ifndef PA_VMATH_H
 #define PA_VMATH_H
 
-static const char* IDENT_VMATH_H="$Date: 2003/07/24 11:31:26 $";
+static const char * const IDENT_VMATH_H="$Date: 2003/11/20 16:34:30 $";
 
 // includes
 

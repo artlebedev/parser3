@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char* IDENT_ARRAY_Y="$Date: 2003/11/20 16:32:12 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2003/11/20 16:34:24 $";
 
 // includes
 

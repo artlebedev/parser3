@@ -8,7 +8,7 @@
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
 
-static const char* IDENT_VMAIL_H="$Date: 2003/11/04 12:29:16 $";
+static const char * const IDENT_VMAIL_H="$Date: 2003/11/20 16:34:30 $";
 
 #include "classes.h"
 #include "pa_common.h"

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MEMORY_C="$Date: 2003/07/24 11:36:34 $";
+static const char * const IDENT_MEMORY_C="$Date: 2003/11/20 16:34:26 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"

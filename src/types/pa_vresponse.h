@@ -8,7 +8,7 @@
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-static const char* IDENT_VRESPONSE_H="$Date: 2003/07/24 11:31:26 $";
+static const char * const IDENT_VRESPONSE_H="$Date: 2003/11/20 16:34:30 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"

@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char* IDENT_HASH_H="$Date: 2003/07/24 11:31:21 $";
+static const char * const IDENT_HASH_H="$Date: 2003/11/20 16:34:25 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"

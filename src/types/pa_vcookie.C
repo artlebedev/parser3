@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCOOKIE_C="$Date: 2003/11/06 09:56:17 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2003/11/20 16:34:28 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"

@@ -8,7 +8,7 @@
 #ifndef PA_JUNCTION_H
 #define PA_JUNCTION_H
 
-static const char* IDENT_JUNCTION_H="$Date: 2003/07/24 11:31:25 $";
+static const char * const IDENT_JUNCTION_H="$Date: 2003/11/20 16:34:28 $";
 
 
 #include "pa_string.h"

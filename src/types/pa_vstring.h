@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-static const char* IDENT_VSTRING_H="$Date: 2003/08/19 12:07:36 $";
+static const char * const IDENT_VSTRING_H="$Date: 2003/11/20 16:34:30 $";
 
 // includes
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/11/20 15:35:32 $";
+static const char * const IDENT_STRING_C="$Date: 2003/11/20 16:34:27 $";
 
 #include "pcre.h"
 

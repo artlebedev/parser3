@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char* IDENT_VHASH_H="$Date: 2003/11/20 16:32:12 $";
+static const char * const IDENT_VHASH_H="$Date: 2003/11/20 16:34:29 $";
 
 #include "classes.h"
 #include "pa_value.h"

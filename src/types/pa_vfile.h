@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char* IDENT_VFILE_H="$Date: 2003/11/20 15:35:32 $";
+static const char * const IDENT_VFILE_H="$Date: 2003/11/20 16:34:29 $";
 
 // include
 

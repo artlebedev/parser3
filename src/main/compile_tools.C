@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMPILE_TOOLS_C="$Date: 2003/07/24 11:31:23 $";
+static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2003/11/20 16:34:26 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"

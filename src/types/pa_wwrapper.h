@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char* IDENT_WWRAPPER_H="$Date: 2003/07/24 11:31:27 $";
+static const char * const IDENT_WWRAPPER_H="$Date: 2003/11/20 16:34:30 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2003/11/20 15:35:29 $";
+static const char * const IDENT_IMAGE_C="$Date: 2003/11/20 16:34:23 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file

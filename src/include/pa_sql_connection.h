@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char* IDENT_SQL_CONNECTION_H="$Date: 2003/11/20 15:35:30 $";
+static const char * const IDENT_SQL_CONNECTION_H="$Date: 2003/11/20 16:34:25 $";
 
 
 #include "pa_sql_driver.h"
