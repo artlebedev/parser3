@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmframe.h,v 1.6 2001/03/13 13:43:32 paf Exp $
+	$Id: pa_vmframe.h,v 1.7 2001/03/16 10:38:08 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -87,10 +87,11 @@ public: // usage
 		if(method.max_numbered_params_count) { // are this method params numbered?
 			*fnumbered_params+=value;
 		} else { // named param
-			const String& name=*method.params_names->get_string(store_param_index++);
+			const String& name=*method.params_names->get_string(store_param_index);
 			my->put(name, value); // remember param
 			value->set_name(name); // set param's 'name'
 		}
+		store_param_index++;
 	}
 	void fill_unspecified_params() {
 		const Method &method=*junction.method;

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.109 2001/03/16 09:52:59 paf Exp $
+	$Id: execute.C,v 1.110 2001/03/16 10:38:07 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -20,6 +20,7 @@
 #include "pa_vtable.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #define PUSH(value) stack.push(value)
 #define POP() static_cast<Value *>(stack.pop())
@@ -412,7 +413,8 @@ void Request::execute(const Array& ops) {
 		case OP_IN:
 			{
 				Value *operand=POP();
-				Value *value=NEW VBool(pool(), true/*TODO*/);
+				const char *path=operand->as_string().cstr();
+				Value *value=NEW VBool(pool(), strcmp(path, info.request_uri)<=0);
 				PUSH(value);
 				break;
 			}
