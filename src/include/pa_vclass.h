@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.11 2001/02/24 13:18:19 paf Exp $
+  $Id: pa_vclass.h,v 1.12 2001/02/24 13:21:58 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -47,7 +47,7 @@ public: // Value
 		if(this==&ancestor)
 			return true; // it's me
 
-		return parents_hash.get(ancestor.name())!=0;
+		return parents_hash.get(*ancestor.name())!=0;
 	}
 
 public: // usage
@@ -67,7 +67,7 @@ public: // usage
 	}
 	void add_parent(VClass& parent) {
 		parents+=&parent;
-		parents_hash.put(parent.name(), &parent);
+		parents_hash.put(*parent.name(), &parent);
 	}
 
 public: //usage

@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.32 2001/02/24 08:28:37 paf Exp $
+$Id: core.C,v 1.33 2001/02/24 13:21:59 paf Exp $
 */
 
 #include "pa_request.h"
@@ -57,7 +57,7 @@ VClass *Request::construct_class(String& name, Array& compiled_methods) {
 	Array immediate_parents(pool());
 	// TODO: immediate_parents=@PARENTS
 
-	VClass *result=NEW VClass(pool(), name, immediate_parents);
+	VClass *result=NEW VClass(pool(), immediate_parents);
 	result->set_name(name);
 	classes().put(name, result);
 		
@@ -82,16 +82,15 @@ char *Request::execute_MAIN(VClass *class_RUN) {
 	Value *value_main=class_RUN->get_element(name_main);
 	if(!value_main)
 		THROW(0,0,
-			&class_RUN->name(),
-			"no '"MAIN_METHOD_NAME"' method in class");
+			class_RUN->name(), "class does not contain method '"MAIN_METHOD_NAME"'");
 
 	Junction *junction_main=value_main->get_junction();
 	const Method *method_main=junction_main->method;
 
 	if(!method_main)
 		THROW(0,0,
-			&class_RUN->name(),
-			"'"MAIN_METHOD_NAME"' in class is not a method");
+			class_RUN->name(), 
+			"class does contain '"MAIN_METHOD_NAME"' but it is not a method");
 
 	// execute!	
 	execute(method_main->code);
