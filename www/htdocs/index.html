@@ -4,7 +4,7 @@
 @auto[filespec]
 $selffilespec[$filespec]
 #$form:here
-$request:charset[windows-1251]
+$request:charset[UTF-8]
 $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
@@ -134,7 +134,7 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^tdef[]
 #^ford[]
 #^tif[]
-#^image[]
+^image[]
 #^mail2[]
 #^cookie[]
 #^response[]
@@ -185,10 +185,19 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^cryptdocsample[]
 #^sendtests[]
 #^tnormalize[]
-^xmltransformbyxdoc[]
+#^xmltransformbyxdoc[]
 #^sergestrandef[]
+#^tstdin[]
+#^tfind[]
 <hr>
 OK
+
+@tfind[]
+^file:find[index.html]
+
+@tstdin[]
+$f[^file::exec[test.pl;$.stdin[проверка stdin потока]]]
+<pre>$f.text</pre>
 
 @sergestrandef[]
 $sQuantity[ ]

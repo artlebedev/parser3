@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char* IDENT_VFORM_C="$Date: 2002/08/01 11:41:23 $";
+static const char* IDENT_VFORM_C="$Date: 2002/08/02 09:33:14 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -185,6 +185,7 @@ void VForm::AppendFormEntry(
 	Value *value;
 	if(file_name) {
 		VFile *vfile=NEW VFile(pool());
+		// maybe transcode text/* files?
 		vfile->set(true/*tainted*/, cvalue_ptr, cvalue_size, file_name);
 		value=vfile;
 	} else {

@@ -641,6 +641,7 @@ math
     !$date.year month day  hour minute second  weekday todo:yearday
         read-only
     !^date.roll[year|month|day](+-смещение) сдвигает дату
+       возможно, флажок, подправл€ющий день
     !^date.sql-string[] %Y-%m-%d %H:%M:%S
         where published='$дата.sql-string[]'
     !^date:calendar[rus|eng;год;мес€ц] выдаЄт неименованную таблицу 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/08/01 11:41:19 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/08/02 09:32:38 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -553,8 +553,9 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	// header: cookies
 	cookie.output_result();
 	
+	VString *body_file_content_type;
 	// set content-type
-	if(String *body_file_content_type=static_cast<String *>(
+	if(body_file_content_type=static_cast<VString *>(
 		body_file.fields().get(*vfile_mime_type_name))) {
 		// body file content type
 		response.fields().put(*content_type_name, body_file_content_type);
@@ -576,13 +577,18 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	// prepare header: $response:fields without :body
 	response.fields().for_each(add_header_attribute, this);
 
-	// transcode
 	const void *client_body;
 	size_t client_content_length;
-	Charset::transcode(pool(),
-		pool().get_source_charset(), body_file.value_ptr(), body_file.value_size(),
-		pool().get_client_charset(), client_body, client_content_length
-	);
+	// transcode text body when "text/*" or simple result
+	if(!body_file_content_type/*vstring.as_vfile*/ || body_file_content_type->as_string().pos("text/")==0) {
+		Charset::transcode(pool(),
+			pool().get_source_charset(), body_file.value_ptr(), body_file.value_size(),
+			pool().get_client_charset(), client_body, client_content_length
+		);
+	} else {
+		client_body=body_file.value_ptr();
+		client_content_length=body_file.value_size();
+	}
 
 	// prepare header: content-length
 	char content_length_cstr[MAX_NUMBER];
