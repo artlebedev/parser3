@@ -317,6 +317,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         состоит из большого числа фрагментов
     !^string.trim[start|both|end[;chars]] выкидывает charset из начала/конца/и начала и конца
         default 'chars' -- whitespace chars
+    !^string.append[string]
 
 !table
     в выражении 
