@@ -1,3 +1,8 @@
-#  $Id: Makefile.am,v 1.1 2001/04/24 14:41:39 paf Exp $
+#  $Id: Makefile.am,v 1.2 2001/04/24 15:50:46 paf Exp $
 
-SUBDIRS = extra
+APACHE13_SRC=../../../../../../apache-1.3/src/
+
+INCLUDES = -I../../../../include -I../../../../classes -I../../../../types $(INCLTDL) -I../../../../sql -I$(APACHE13_SRC)/include -I$(APACHE13_SRC)/os/unix
+
+noinst_LIBRARIES = libmod_parser3.a
+libmod_parser3_a_SOURCES = pa_pool.C mod_parser3.C
