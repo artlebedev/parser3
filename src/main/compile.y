@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.46 2001/02/26 09:54:14 paf Exp $
+  $Id: compile.y,v 1.47 2001/03/06 10:49:23 paf Exp $
 */
 
 %{
@@ -183,7 +183,7 @@ name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; 
 
 /* put */
 
-put: '$' name_expr_wdive '(' constructor_value ')' {
+put: '$' name_expr_wdive '[' constructor_value ']' {
 	$$=$2; /* stack: context,name */
 	P($$, $4); /* stack: context,name,constructor_value */
 	OP($$, OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
@@ -265,7 +265,7 @@ call_name: name_without_curly_rdive;
 
 store_params: store_param | store_params store_param { $$=$1; P($$, $2) };
 store_param: store_round_param | store_curly_param;
-store_round_param: '(' store_param_parts ')' {$$=$2};
+store_round_param: '[' store_param_parts ']' {$$=$2};
 store_param_parts:
 	store_param_part
 |	store_param_parts ';' store_param_part { $$=$1; P($$, $3) }
@@ -423,7 +423,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			char next_c=*PC->source;
 
 			if(next_c=='^' || next_c=='$' || next_c==';' ||
-				next_c=='(' || next_c==')' ||
+				next_c=='[' || next_c==']' ||
 				next_c=='{' || next_c=='}') {
 				if(end!=begin) {
 					// append piece till ^
@@ -526,7 +526,8 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 		case LS_VAR_NAME_SIMPLE:
 			if(c==0 || 
 				c==' '|| c=='\t' || c=='\n' || 
-				c==')' || c=='}') {
+				c==';' || 
+				c==']' || c=='}') {
 				pop_LS(PC);
 				PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
 				result=EON;
@@ -537,7 +538,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				result=c;
 				goto break2;
 			}
-			if(c=='(') {
+			if(c=='[') {
 				PC->ls=LS_VAR_ROUND;
 				lexical_brackets_nestage=1;
 				result=c;
@@ -580,7 +581,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				result=c;
 				goto break2;
 			}
-			if(c==')') {
+			if(c==']') {
 				if(--lexical_brackets_nestage==0) {
 					pop_LS(PC);
 					result=c;
@@ -591,7 +592,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				result=c;
 				goto break2;
 			}
-			if(c=='(')
+			if(c=='[')
 				lexical_brackets_nestage++;
 			break;
 		case LS_VAR_CURLY:
@@ -617,7 +618,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 
 		// METHOD CALL
 		case LS_METHOD_NAME:
-			if(c=='(') {
+			if(c=='[') {
 				PC->ls=LS_METHOD_ROUND;
 				lexical_brackets_nestage=1;
 				result=c;
@@ -651,13 +652,13 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				result=c;
 				goto break2;
 			}
-			if(c==')')
+			if(c==']')
 				if(--lexical_brackets_nestage==0) {
 					PC->ls=LS_METHOD_AFTER;
 					result=c;
 					goto break2;
 				}
-			if(c=='(')
+			if(c=='[')
 				lexical_brackets_nestage++;
 			break;
 		case LS_METHOD_CURLY:
@@ -681,7 +682,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				lexical_brackets_nestage++;
 			break;
 		case LS_METHOD_AFTER:
-			if(c=='(') {/* )( }( */
+			if(c=='[') {/* )( }( */
 				PC->ls=LS_METHOD_ROUND;
 				lexical_brackets_nestage=1;
 				result=c;

@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.41 2001/02/25 16:36:12 paf Exp $
+$Id: core.C,v 1.42 2001/03/06 10:49:24 paf Exp $
 */
 
 #include "pa_request.h"
@@ -49,6 +49,7 @@ void Request::core() {
 }
 
 void Request::use(char *file, String *alias) {
+	// TODO: обнаружить|решить cyclic dependences
 	char *source=file_read(pool(), file);
 	if(!source)
 		THROW(0,0,
