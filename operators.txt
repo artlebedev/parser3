@@ -257,7 +257,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         пример:
         ^if(def $form:name) не пуста?
         ^if($user.isAlive) истина? [автопреобразование к числу, не ноль?]
-    !^string::sql{query}[[$.limit(2) $.offset(4) $.default{n/a}]]
+    !^string::sql{query}[[$.limit(1) $.offset(4) $.default{n/a}]]
         результат запроса должен быть один столбец/одна строка
     !^имя.int[] .int(default) целочисленное значение строки. 
         если ломается преобразование, берётся default
