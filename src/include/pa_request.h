@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.113 2001/12/14 12:53:47 paf Exp $
+	$Id: pa_request.h,v 1.114 2001/12/14 15:25:50 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -159,8 +159,11 @@ public:
 	/// returns the mime type of 'user_file_name_cstr'
 	const String& mime_type_of(const char *user_file_name_cstr);
 
-	/// transcoder [pcre_tables + byte->unicode & back]
-	const Transcoder* transcoder();
+	/// transcoder for source encoding [pcre_tables + byte->unicode & back]
+	const Transcoder* source_transcoder();
+
+	/// transcoder for client encoding [pcre_tables + byte->unicode & back]
+	const Transcoder* client_transcoder();
 
 	/// pcre_tables [up/low case & co]
 	const unsigned char *pcre_tables();

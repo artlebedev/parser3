@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_transcoder.h,v 1.1 2001/12/14 12:55:36 paf Exp $
+	$Id: pa_transcoder.h,v 1.2 2001/12/14 15:25:50 paf Exp $
 */
 
 #ifndef PA_TRANSCODER_H
@@ -64,7 +64,7 @@ struct Transcoder {
 										   const void *& dest_body, size_t& dest_content_length) const;
 };
 
-void transcoder_transcode(Pool& pool,
+void transcode(Pool& pool,
 	const Transcoder *source_transcoder, const void *source_body, size_t source_content_length,
 	const Transcoder *dest_transcoder, const void *& dest_body, size_t& dest_content_length
 );

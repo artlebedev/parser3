@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_transcoder.C,v 1.2 2001/12/14 14:50:17 paf Exp $
+	$Id: pa_transcoder.C,v 1.3 2001/12/14 15:25:50 paf Exp $
 */
 
 #include "pa_common.h"
@@ -47,7 +47,7 @@ XMLByte Transcoder::xlatOneTo(const XMLCh toXlat) const {
     return 0;
 }
 
-void transcoder_transcode(Pool& pool,
+void transcode(Pool& pool,
 	const Transcoder *source_transcoder, const void *source_body, size_t source_content_length,
 	const Transcoder *dest_transcoder, const void *& dest_body, size_t& dest_content_length
 	) {

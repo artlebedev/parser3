@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.184 2001/12/14 12:53:48 paf Exp $
+	$Id: pa_request.C,v 1.185 2001/12/14 15:25:50 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -606,22 +606,12 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	// prepare header: $response:fields without :body
 	response.fields().for_each(add_header_attribute, this);
 
-	// source bytes+transcoder
-	const Transcoder *source_transcoder=transcoder();
-	const void *source_body=body_file.value_ptr();
-	size_t source_content_length=body_file.value_size();
-
-	// client bytes+transcoder
-	Transcoder *client_transcoder;
-	Value *vclient_charset=static_cast<Value *>(response.fields().get(*charset_name));
-	client_transcoder=vclient_charset?(Transcoder *)CTYPE.get(vclient_charset->as_string()):0;
+	// transcode
 	const void *client_body;
 	size_t client_content_length;
-
-	// transcode
-	transcoder_transcode(pool(),
-		source_transcoder, source_body, source_content_length,
-		client_transcoder, client_body, client_content_length
+	::transcode(pool(),
+		source_transcoder(), body_file.value_ptr(), body_file.value_size(),
+		client_transcoder(), client_body, client_content_length
 	);
 
 	// prepare header: content-length
@@ -654,13 +644,17 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 	return *NEW String(pool(), "application/octet-stream");
 }
 
-const Transcoder* Request::transcoder() {
+const Transcoder* Request::source_transcoder() {
 	return (Transcoder *)CTYPE.get(pool().get_charset());
+}
+const Transcoder* Request::client_transcoder() {
+	Value *vclient_charset=static_cast<Value *>(response.fields().get(*charset_name));
+	return vclient_charset?(Transcoder *)CTYPE.get(vclient_charset->as_string()):0;
 }
 
 const unsigned char *Request::pcre_tables() {
-	if(const Transcoder *ltranscoder=transcoder())
-		return ltranscoder->pcre_tables;
+	if(const Transcoder *transcoder=source_transcoder())
+		return transcoder->pcre_tables;
 
 	// this is not for pcre itself, 
 	// it can do default, it's for string.lower&co

@@ -5,7 +5,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vform.C,v 1.48 2001/11/09 11:06:57 paf Exp $
+	$Id: pa_vform.C,v 1.49 2001/12/14 15:25:50 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -75,6 +75,14 @@ char *VForm::getAttributeValue(char *data, char *attr, size_t len) {
     return NULL;
 }
 
+void VForm::transcode(
+	const void *client_body, size_t client_content_length,
+	const void *& source_body, size_t& source_content_length) {
+	::transcode(pool(),
+		client_transcoder, client_body, client_content_length,
+		source_transcoder, source_body, source_content_length);
+}
+
 void VForm::ParseGetFormInput(char *query_string, size_t length) {
 	ParseFormInput(query_string, length);
 }
@@ -122,7 +130,8 @@ void VForm::ParseFormInput(char *data, size_t length) {
 	}
 }
 
-void VForm::ParseMimeInput(char *content_type, 
+void VForm::ParseMimeInput(
+						   char *content_type, 
 						   char *data, size_t length) {
 /* Scan for mime-presented pairs, storing them as they are found. */
 	const char 
@@ -154,21 +163,32 @@ void VForm::ParseMimeInput(char *content_type,
 	}
 }
 
-void VForm::AppendFormEntry(const char *aname, 
-							char *value_ptr, size_t value_size, 
+void VForm::AppendFormEntry(
+							const char *cname_cstr, 
+							char *cvalue_ptr, size_t cvalue_size, 
 							const char *file_name) {
-	String& sname=*NEW String(pool(), aname);
+	const void *sname_ptr;
+	size_t sname_size;
+	transcode(
+		cname_cstr, strlen(cname_cstr),
+		sname_ptr, sname_size);
+	String& sname=*NEW String(pool(), (const char *)sname_ptr, sname_size);
 
 	Value *value;
 	if(file_name) {
 		VFile *vfile=NEW VFile(pool());
-		vfile->set(true/*tainted*/, value_ptr, value_size, file_name);
+		vfile->set(true/*tainted*/, cvalue_ptr, cvalue_size, file_name);
 		value=vfile;
 	} else {
-		fix_line_breaks(value_ptr, value_size);
+		fix_line_breaks(cvalue_ptr, cvalue_size);
+
+		const void *svalue_ptr; size_t svalue_size;
+		transcode(
+			cvalue_ptr, cvalue_size, // client [from]
+			svalue_ptr, svalue_size); // source [to]
 		
 		String& string=*NEW String(pool());
-		string.APPEND_TAINTED(value_ptr, value_size, "form", 0);
+		string.APPEND_TAINTED((const char*)svalue_ptr, svalue_size, "form", 0);
 
 		// tables
 		{
@@ -200,6 +220,9 @@ void VForm::AppendFormEntry(const char *aname,
 
 /// @todo parse input letter if some switch is on
 void VForm::fill_fields_and_tables(Request& request) {
+	client_transcoder=request.client_transcoder();
+	source_transcoder=request.source_transcoder();
+
 	// parsing QS [GET and ?name=value from uri rewrite)]
 	if(request.info.query_string) {
 		size_t length=strlen(request.info.query_string);
