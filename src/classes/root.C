@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.56 2001/04/04 06:16:18 paf Exp $
+	$Id: root.C,v 1.57 2001/04/04 10:50:33 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -283,20 +283,22 @@ static void _sign(Request& r, const String& method_name, Array *params) {
 static void _connect(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
-	Value& connect_string=*static_cast<Value *>(params->get(0));
-	r.fail_if_junction_(true, connect_string, 
-		method_name, "connect string must not be junction");
+	Value& url=*static_cast<Value *>(params->get(0));
+	r.fail_if_junction_(true, url, 
+		method_name, "url must not be junction");
 
 	Value& body_code=*static_cast<Value *>(params->get(1));
 	r.fail_if_junction_(false, body_code, 
 		method_name, "body must be junction");
 
 	// remember/set current connection
-	const String *saved_connection=r.connection;
-	r.connection=&connect_string.as_string();
+	SQL_Connection *saved_connection=r.connection;
 
+	// do the job
 	bool need_rethrow=false;  Exception rethrow_me;
 	PTRY {
+		r.connection=&SQL_driver_manager->get_connection(
+			url.as_string(), r.protocol2library);
 		r.write_assign_lang(r.process(body_code));
 	} 
 	PCATCH(e) { // connect/process problem

@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /Zi /Od /I ".." /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /Zi /Od /I ".." /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\libltdl" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
 # SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -127,6 +127,14 @@ SOURCE=..\include\pa_request.h
 # Begin Source File
 
 SOURCE=..\include\pa_sapi.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_sql_driver.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_sql_driver_manager.h
 # End Source File
 # Begin Source File
 
@@ -230,6 +238,10 @@ SOURCE=.\pa_pool.C
 # Begin Source File
 
 SOURCE=.\pa_request.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_sql_driver_manager.C
 # End Source File
 # Begin Source File
 

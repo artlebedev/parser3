@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.33 2001/04/03 07:20:52 paf Exp $
+	$Id: pa_hash.h,v 1.34 2001/04/04 10:50:34 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -23,7 +23,7 @@
 
 	Automatically rehashed when almost full.
 
-	The only object that can be thread safe, wich is specified in constructor,
+	can be thread safe, wich is specified in constructor,
 	default 'not safe'.
 */
 class Hash : public Pooled {
@@ -94,7 +94,7 @@ private:
 	};
 
 	// am I thread-safe?
-	bool thread_safe;
+	bool fthread_safe;
 
 	// the index of [allocated] in [allocates]
 	int allocates_index;

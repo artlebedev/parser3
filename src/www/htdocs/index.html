@@ -31,8 +31,8 @@ $n
 $m ^if(^s.match[$:m][i]){matches}{do not match} $s<BR>
 
 @main[]
-^connect[$DEFAULTS.connect-string]{
-	$news[^table:sql{select * from news}(1;4)]
+^connect[$SQL.connect-string]{
+	$news[^table:sql{select * from news}[1;4]]
 	^$news.0=$news.0<BR>
 	^connect[2$DEFAULTS.connect-string]{
 		$news[^table:sql{select * from news}(1;4)]

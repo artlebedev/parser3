@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.36 2001/04/04 06:16:19 paf Exp $
+	$Id: pa_globals.h,v 1.37 2001/04/04 10:50:34 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -59,6 +59,9 @@ class Table;
 #define DEFAULTS_NAME "DEFAULTS"
 #define MIME_TYPES_NAME "MIME-TYPES"
 #define VFILE_MIME_TYPE_NAME "mime-type"
+
+#define MAIN_SQL_NAME "SQL"
+#define MAIN_SQL_DRIVERS_NAME "drivers"
 
 #define RESULT_VAR_NAME "result"
 
@@ -114,6 +117,9 @@ extern String *post_max_size_name;
 extern String *defaults_name;
 extern String *mime_types_name;
 extern String *vfile_mime_type_name;
+
+extern String *main_sql_name;
+extern String *main_sql_drivers_name;
 
 extern String *result_var_name;
 extern String *string_pre_match_name;

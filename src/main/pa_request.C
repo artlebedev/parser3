@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.94 2001/04/04 06:16:21 paf Exp $
+	$Id: pa_request.C,v 1.95 2001/04/04 10:50:36 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -52,7 +52,7 @@ Request::Request(Pool& apool,
 	used_files(apool),
 	default_content_type(0),
 	mime_types(0),
-	connection(0)
+	connection(0), protocol2library(0)
 {
 	// root superclass, 
 	//   parent of all classes, 
@@ -194,6 +194,11 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		if(Value *element=main_class->get_element(*html_typo_name))
 			if(Table *table=element->get_table())
 				pool().set_tag(table);
+
+		// $MAIN:SQL.drivers
+		if(Value *sql=main_class->get_element(*main_sql_name))
+			if(Value *element=sql->get_element(*main_sql_drivers_name))
+				protocol2library=element->get_table();		
 
 		// $MAIN:MIME-TYPES
 		if(Value *element=main_class->get_element(*mime_types_name))

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.69 2001/04/03 17:01:02 paf Exp $
+	$Id: pa_string.h,v 1.70 2001/04/04 10:50:34 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -166,7 +166,7 @@ public:
 	uint hash_code() const;
 
 	/// extracts [start, finish) piece of string
-	String& piece(size_t start, size_t finish) const;
+	String& mid(size_t start, size_t finish) const;
 
 	/// @return position of substr in string, -1 means "not found" [String version]
 	int pos(const String& substr, 

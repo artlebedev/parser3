@@ -8,6 +8,8 @@ $DEFAULTS[
 		$value[text/html]
 		$charset[windows-1251]
 	]
+]
+$SQL[
 	$connect-string[mysql://user:pass@host:port/database]
 ]
 #for ^file:load[name;user-name;mime-type << autodetection]

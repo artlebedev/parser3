@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.28 2001/04/02 09:29:18 paf Exp $
+	$Id: pa_table.h,v 1.29 2001/04/04 10:50:34 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -15,7 +15,6 @@
 #include "pa_array.h"
 #include "pa_hash.h"
 #include "pa_string.h"
-#include "pa_request.h"
 
 /** 
 	VTable backend.

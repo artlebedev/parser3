@@ -5,13 +5,14 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.24 2001/03/29 20:53:04 paf Exp $
+	$Id: pa_table.C,v 1.25 2001/04/04 10:50:36 paf Exp $
 */
 
 #include <stdlib.h>
 
 #include "pa_table.h"
 #include "pa_pool.h"
+#include "pa_exception.h"
 
 Table::Table(Pool& apool, 
 			 const String *aorigin_string,

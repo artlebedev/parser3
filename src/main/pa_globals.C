@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.41 2001/04/03 14:39:03 paf Exp $
+	$Id: pa_globals.C,v 1.42 2001/04/04 10:50:36 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -20,6 +20,7 @@
 #include "_response.h"
 #include "_file.h"
 #include "_random.h"
+#include "pa_sql_driver_manager.h"
 
 String *html_typo_name;
 String *content_type_name;
@@ -65,6 +66,9 @@ String *post_max_size_name;
 String *defaults_name;
 String *mime_types_name;
 String *vfile_mime_type_name;
+
+String *main_sql_name;
+String *main_sql_drivers_name;
 
 Hash *untaint_lang_name2enum;
 
@@ -155,6 +159,9 @@ void pa_globals_init(Pool& pool) {
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
 	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
 
+	main_sql_name=NEW String(pool, MAIN_SQL_NAME);
+	main_sql_drivers_name=NEW String(pool, MAIN_SQL_DRIVERS_NAME);
+
 	// hashes
 	untaint_lang_name2enum=NEW Hash(pool);
 	String as_is(pool, "as-is");  
@@ -234,4 +241,7 @@ void pa_globals_init(Pool& pool) {
 
 	// stateless base classes
 	initialize_form_base_class(pool, *(form_base_class=NEW VStateless_class(pool)));  form_base_class->set_name(*form_class_name);
+
+	// SQL_Driver_manager
+ 	SQL_driver_manager=NEW SQL_Driver_manager(pool);
 }

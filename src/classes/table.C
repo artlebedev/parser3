@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.49 2001/04/04 06:16:18 paf Exp $
+	$Id: table.C,v 1.50 2001/04/04 10:50:33 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -451,6 +451,7 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 	}
 
 	Table& table=*new(pool) Table(pool, &method_name, 0);
+/*
 	Array& row=*new(pool) Array(pool);
 
 	Temp_lang temp_lang(r, String::UL_SQL);
@@ -462,7 +463,7 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 		limit);
 	row+=new(pool) String(pool, buf);
 	table+=&row;
-
+*/
 	// replace any previous table value
 	static_cast<VTable *>(r.self)->set_table(table);
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.31 2001/04/03 17:01:03 paf Exp $
+	$Id: untaint.C,v 1.32 2001/04/04 10:50:36 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,6 +15,7 @@
 #include "pa_hash.h"
 #include "pa_exception.h"
 #include "pa_table.h"
+#include "pa_globals.h"
 
 #define escape(action) \
 	{ \

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sapi.h,v 1.3 2001/04/03 06:23:04 paf Exp $
+	$Id: pa_sapi.h,v 1.4 2001/04/04 10:50:34 paf Exp $
 */
 
 #ifndef PA_SAPI_H
@@ -14,7 +14,7 @@
 #include "pa_pool.h"
 #include "pa_types.h"
 
-/// target web-server api
+/// target web-Server API
 struct SAPI {
 	/// get env
 	static const char *get_env(Pool& pool, const char *name);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.76 2001/04/04 06:16:19 paf Exp $
+	$Id: pa_request.h,v 1.77 2001/04/04 10:50:34 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -23,6 +23,7 @@
 #include "pa_vrequest.h"
 #include "pa_vresponse.h"
 #include "pa_vcookie.h"
+#include "pa_sql_driver_manager.h"
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \
@@ -164,7 +165,9 @@ public:
 	WContext *wcontext;
 
 	/// connection
-	const String *connection;
+	SQL_Connection *connection;
+	/// table of protocol's libraries. read from $SQL:drivers
+	Table *protocol2library;
 
 private: // core data
 

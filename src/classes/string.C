@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.34 2001/04/03 17:43:49 paf Exp $
+	$Id: string.C,v 1.35 2001/04/04 10:50:33 paf Exp $
 */
 
 #include "pa_request.h"
@@ -60,7 +60,7 @@ static void _left(Request& r, const String&, Array *params) {
 	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
-	r.write_assign_lang(*new(pool) VString(string.piece(0, n)));
+	r.write_assign_lang(*new(pool) VString(string.mid(0, n)));
 }
 
 static void _right(Request& r, const String&, Array *params) {
@@ -69,7 +69,7 @@ static void _right(Request& r, const String&, Array *params) {
 	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
-	r.write_assign_lang(*new(pool) VString(string.piece(string.size()-n, string.size())));
+	r.write_assign_lang(*new(pool) VString(string.mid(string.size()-n, string.size())));
 }
 
 static void _mid(Request& r, const String&, Array *params) {
@@ -79,7 +79,7 @@ static void _mid(Request& r, const String&, Array *params) {
 	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(1))).as_double();
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
-	r.write_assign_lang(*new(pool) VString(string.piece(p, p+n)));
+	r.write_assign_lang(*new(pool) VString(string.mid(p, p+n)));
 }
 
 static void _pos(Request& r, const String& method_name, Array *params) {
@@ -154,7 +154,7 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 	if(row) { // begin&middle
 		// piece from last match['start'] to beginning of this match['finish']
 		if(start!=finish)
-			ai.dest->append(ai.src->piece(start, finish), String::UL_PASS_APPENDED);//ai.dest->APPEND_CONST("-");
+			ai.dest->append(ai.src->mid(start, finish), String::UL_PASS_APPENDED);//ai.dest->APPEND_CONST("-");
 		// store found parts in one-record Vtable
 		if(table.size()) // middle
 			table.put(0, row);

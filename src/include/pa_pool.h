@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.48 2001/04/04 06:16:19 paf Exp $
+	$Id: pa_pool.h,v 1.49 2001/04/04 10:50:34 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -109,7 +109,7 @@ private: //disabled
 */
 class Pooled {
 	// the pool i'm allocated on
-	Pool& fpool;
+	Pool *fpool;
 public:
 
 	/// the Pooled-sole: Pooled instances can be allocated in Pool rather then on heap
@@ -117,18 +117,23 @@ public:
 		return apool.malloc(size);
 	}
 
-	Pooled(Pool& apool) : fpool(apool) {
-	}
+	Pooled(Pool& apool) : fpool(&apool) {}
 
 	/// my pool
-	Pool& pool() const { return fpool; }
+	Pool& pool() const { return *fpool; }
+
+	/** used for moving objects from one pool to another. 
+		in between object can have no pool and can not be used
+		@see SQL_Driver_manager
+	*/
+	void set_pool(Pool *apool) { fpool=apool; }
 
 	/// useful wrapper around pool
-	void *malloc(size_t size) const { return fpool.malloc(size); }
+	void *malloc(size_t size) const { return fpool->malloc(size); }
 	/// useful wrapper around pool
-	void *calloc(size_t size) const { return fpool.calloc(size); }
+	void *calloc(size_t size) const { return fpool->calloc(size); }
 	/// useful wrapper around pool
-	Exception& exception() const { return fpool.exception(); }
+	Exception& exception() const { return fpool->exception(); }
 };
 /// useful macro for creating objects on current Pooled object Pooled::pool()
 #define NEW new(pool())

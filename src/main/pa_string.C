@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.68 2001/04/03 17:01:03 paf Exp $
+	$Id: pa_string.C,v 1.69 2001/04/04 10:50:36 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -342,7 +342,7 @@ const Origin& String::origin() const {
 }
 #endif
 
-String& String::piece(size_t start, size_t finish) const {
+String& String::mid(size_t start, size_t finish) const {
 	start=max(0, start);
 	finish=min(size(), finish);
 	if(start==finish)
@@ -415,12 +415,12 @@ void String::split(Array& result,
 		int pos_before;
 		// while we have 'delim'...
 		for(; (pos_before=pos(delim, delim_size, pos_after, lang))>=0 && limit; limit--) {
-			result+=&piece(pos_after, pos_before);
+			result+=&mid(pos_after, pos_before);
 			pos_after=pos_before+delim_size;
 		}
 		// last piece
 		if(pos_after<size() && limit) {
-			result+=&piece(pos_after, size());
+			result+=&mid(pos_after, size());
 			pos_after=size();
 		}
 		if(pos_after_ref)
@@ -441,12 +441,12 @@ void String::split(Array& result,
 		int pos_before;
 		// while we have 'delim'...
 		for(; (pos_before=pos(delim, pos_after, lang))>=0 && limit; limit--) {
-			result+=&piece(pos_after, pos_before);
+			result+=&mid(pos_after, pos_before);
 			pos_after=pos_before+delim.size();
 		}
 		// last piece
 		if(pos_after<size() && limit) {
-			result+=&piece(pos_after, size());
+			result+=&mid(pos_after, size());
 			pos_after=size();
 		}
 		if(pos_after_ref)
@@ -515,7 +515,7 @@ bool String::match(const String *aorigin,
 
 	if(!code)
 		THROW(0, 0,
-			&regexp.piece(erroffset, regexp.size()),
+			&regexp.mid(erroffset, regexp.size()),
 			"match error - %s", errptr);
 	
 	int info_substrings=pcre_info(code, 0, 0);
@@ -568,13 +568,13 @@ bool String::match(const String *aorigin,
 		}
 
 		Array& row=*NEW Array(pool());
-		row+=&piece(0, ovector[0]); // .pre-match column value
-		row+=&piece(ovector[0], ovector[1]); // .match
-		row+=&piece(ovector[1], size()); // .post-match
+		row+=&mid(0, ovector[0]); // .pre-match column value
+		row+=&mid(ovector[0], ovector[1]); // .match
+		row+=&mid(ovector[1], size()); // .post-match
 		
 		for(int i=1; i<exec_substrings; i++) {
-			// -1:-1 case handled peacefully by piece() itself
-			row+=&piece(ovector[i*2+0], ovector[i*2+1]); // .i column value
+			// -1:-1 case handled peacefully by mid() itself
+			row+=&mid(ovector[i*2+0], ovector[i*2+1]); // .i column value
 		}
 		
 		(*row_action)(**table, &row, startoffset, ovector[0], info);

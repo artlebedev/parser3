@@ -1,3 +1,3 @@
-#  $Id: Makefile.am,v 1.3 2001/03/21 14:06:37 paf Exp $
+#  $Id: Makefile.am,v 1.4 2001/04/04 10:50:30 paf Exp $
 
-SUBDIRS = classes types main targets
+SUBDIRS = classes types main targets libltdl sql

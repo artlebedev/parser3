@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.29 2001/03/24 10:54:46 paf Exp $
+	$Id: pa_hash.C,v 1.30 2001/04/04 10:50:36 paf Exp $
 */
 
 /*
@@ -36,7 +36,7 @@ int Hash::allocates_count=
 
 
 void Hash::construct(Pool& apool, bool athread_safe) {
-	thread_safe=athread_safe;
+	fthread_safe=athread_safe;
 	
 	allocated=allocates[allocates_index=0];
 	threshold=allocated*THRESHOLD_PERCENT/100;
@@ -82,7 +82,7 @@ uint Hash::generic_code(uint aresult, const char *start, uint allocated) {
 	return result;
 }
 
-bool Hash::put(const Key& key, Val *value) {  SYNCHRONIZED(thread_safe);
+bool Hash::put(const Key& key, Val *value) {  SYNCHRONIZED(fthread_safe);
 	if(full()) 
 		expand();
 
@@ -103,7 +103,7 @@ bool Hash::put(const Key& key, Val *value) {  SYNCHRONIZED(thread_safe);
 	return false;
 }
 
-Hash::Val *Hash::get(const Key& key) const {  SYNCHRONIZED(thread_safe);
+Hash::Val *Hash::get(const Key& key) const {  SYNCHRONIZED(fthread_safe);
 	uint code=key.hash_code();
 	uint index=code%allocated;
 	for(Pair *pair=refs[index]; pair; pair=pair->link)
@@ -113,7 +113,7 @@ Hash::Val *Hash::get(const Key& key) const {  SYNCHRONIZED(thread_safe);
 	return 0;
 }
 
-bool Hash::put_replace(const Key& key, Val *value) {  SYNCHRONIZED(thread_safe);
+bool Hash::put_replace(const Key& key, Val *value) {  SYNCHRONIZED(fthread_safe);
 	uint code=key.hash_code();
 	uint index=code%allocated;
 	for(Pair *pair=refs[index]; pair; pair=pair->link)
@@ -127,7 +127,7 @@ bool Hash::put_replace(const Key& key, Val *value) {  SYNCHRONIZED(thread_safe);
 	return false;
 }
 
-bool Hash::put_dont_replace(const Key& key, Val *value) {  SYNCHRONIZED(thread_safe);
+bool Hash::put_dont_replace(const Key& key, Val *value) {  SYNCHRONIZED(fthread_safe);
 	if(full()) 
 		expand();
 
@@ -147,7 +147,7 @@ bool Hash::put_dont_replace(const Key& key, Val *value) {  SYNCHRONIZED(thread_s
 	return false;
 }
 
-void Hash::merge_dont_replace(const Hash& src) {  SYNCHRONIZED(thread_safe);
+void Hash::merge_dont_replace(const Hash& src) {  SYNCHRONIZED(fthread_safe);
 	for(int i=0; i<src.allocated; i++)
 		for(Pair *pair=src.refs[i]; pair; pair=pair->link)
 			put_dont_replace(pair->key, pair->value);
@@ -162,7 +162,7 @@ void Hash::for_each(For_each_func func, void *info) {
 				(*func)(pair->key, pair->value, info);
 }
 
-void Hash::clear() {  SYNCHRONIZED(thread_safe);
+void Hash::clear() {  SYNCHRONIZED(fthread_safe);
 	memset(refs, 0, sizeof(*refs)*allocated);
 	used=0;
 }
