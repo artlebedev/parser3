@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.30 2001/05/08 12:58:00 paf Exp $
+	$Id: pa_table.C,v 1.31 2001/05/17 15:57:35 parser Exp $
 */
 
 #include <stdlib.h>
@@ -64,13 +64,14 @@ const String *Table::item(int column) const {
 }
 
 bool Table::locate(int column, const String& value) {
+	int scurrent=fcurrent;
 	for(fcurrent=0; fcurrent<size(); fcurrent++) {
 		const String *item_value=item(column);
 		if(item_value && *item_value==value)
 			return true;
 	}
 
-	fcurrent=0;
+	fcurrent=scurrent;
 	return false;
 }
 
