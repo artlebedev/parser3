@@ -1,5 +1,6 @@
 @main[]
-^image[]
+^tif[]
+#^image[]
 #^mail2[]
 #^cookie[]
 #^response[]
@@ -15,6 +16,9 @@
 #^xml[]
 #^header[]
 OK
+
+@tif[]
+^if[def]{y;n}
 
 @image[]
 $pict[^image::create(400;200)]
@@ -99,7 +103,7 @@ $s[abc¿¡¬]
 ]
 
 @exec[]
-$a[^file::exec[fc.exe;a;b]]
+$a[^file::exec[fc.exe;;a;b]]
 $a.status|$a.stderr<hr>
 
 @fori[][i]

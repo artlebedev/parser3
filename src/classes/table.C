@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.119 2001/10/08 16:42:06 parser Exp $
+	$Id: table.C,v 1.120 2001/10/09 07:06:00 parser Exp $
 */
 
 #include "classes.h"
@@ -321,7 +321,7 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	Value& body_code=params->as_junction(0, "body must be code");
 	
-	Value *delim_code=params->size()==2?&params->get(1):0;
+	Value *delim_code=params->size()==2?&params->as_junction(1, "delim must be code"):0;
 
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	Table& table=vtable.table();
@@ -481,8 +481,9 @@ static void _locate(Request& r, const String& method_name, MethodParams *params)
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	Table& table=vtable.table();
 	Value& result=*new(pool) VBool(pool, table.locate(
-		params->get(0).as_string(), 
-		params->get(1).as_string()));
+		params->as_string(0, "column name must be string"),
+		params->as_string(1, "value must be string")
+	));
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }

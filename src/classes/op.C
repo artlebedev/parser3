@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.47 2001/09/30 09:56:43 parser Exp $
+	$Id: op.C,v 1.48 2001/10/09 07:06:00 parser Exp $
 */
 
 #include "classes.h"
@@ -39,7 +39,7 @@ private:
 // methods
 
 static void _if(Request& r, const String&, MethodParams *params) {
-	Value& condition_code=params->get(0);
+	Value& condition_code=params->as_junction(0, "condition must be expression");
 
 	bool condition=r.process(condition_code, 
 		0/*no name*/,
@@ -53,7 +53,7 @@ static void _if(Request& r, const String&, MethodParams *params) {
 static void _untaint(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	const String& lang_name=r.process(params->get(0)).as_string();
+	const String& lang_name=params->as_string(0, "lang must be string");
 	String::Untaint_lang lang=static_cast<String::Untaint_lang>(
 		untaint_lang_name2enum->get_int(lang_name));
 	if(!lang)
@@ -76,8 +76,7 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 	if(params->size()==1)
 		lang=String::UL_TAINTED; // mark as simply 'tainted'. useful in table:set
 	else {
-		const String& lang_name=
-			r.process(params->get(0)).as_string();
+		const String& lang_name=params->as_string(0, "lang must be string");
 		lang=static_cast<String::Untaint_lang>(
 			untaint_lang_name2enum->get_int(lang_name));
 		if(!lang)
@@ -119,7 +118,7 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 		
 		// evaluate source to process
 		const String& source=
-			r.process(params->get(0)).as_string();
+			r.process(params->as_no_junction(0, "body must be string")).as_string();
 
 		// process source code, append processed methods to 'self' class
 		// maybe-define new @main
@@ -171,11 +170,11 @@ static void _use(Request& r, const String& method_name, MethodParams *params) {
 
 static void _for(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& var_name=r.process(params->get(0)).as_string();
-	int from=r.process(params->get(1)).as_int();
-	int to=r.process(params->get(2)).as_int();
+	const String& var_name=params->as_string(0, "var name must be string");
+	int from=params->as_int(1, "from must be int", r);
+	int to=params->as_int(2, "to must be int", r);
 	Value& body_code=params->as_junction(3, "body must be code");
-	Value *delim_code=params->size()==3+1+1?&params->get(3+1):0;
+	Value *delim_code=params->size()==3+1+1?&params->as_junction(3+1, "delim must be code"):0;
 
 	bool need_delim=false;
 	VInt *vint=new(pool) VInt(pool, 0);

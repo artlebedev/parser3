@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.77 2001/10/08 16:42:06 parser Exp $
+	$Id: string.C,v 1.78 2001/10/09 07:06:00 parser Exp $
 */
 
 #include "classes.h"
@@ -107,7 +107,7 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 static void _left(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	size_t n=(size_t)r.process(params->get(0)).as_double();
+	size_t n=(size_t)params->as_int(0, "n must be int", r);
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VString(string.mid(0, n)));
@@ -116,7 +116,7 @@ static void _left(Request& r, const String&, MethodParams *params) {
 static void _right(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	size_t n=(size_t)r.process(params->get(0)).as_double();
+	size_t n=(size_t)params->as_int(0, "n must be int", r);
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VString(string.mid(string.size()-n, string.size())));
@@ -125,8 +125,8 @@ static void _right(Request& r, const String&, MethodParams *params) {
 static void _mid(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	size_t p=(size_t)r.process(params->get(0)).as_double();
-	size_t n=(size_t)r.process(params->get(1)).as_double();
+	size_t p=(size_t)params->as_int(0, "p must be int", r);
+	size_t n=(size_t)params->as_int(1, "n must be int", r);
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VString(string.mid(p, p+n)));

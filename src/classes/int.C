@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.34 2001/09/26 10:32:25 parser Exp $
+	$Id: int.C,v 1.35 2001/10/09 07:06:00 parser Exp $
 */
 
 #include "classes.h"
@@ -58,11 +58,7 @@ static void __mod(VInt& vint, double param) { vint.mod((int)param); }
 static void vint_op(Request& r, MethodParams *params, 
 					 vint_op_func_ptr func) {
 	VInt *vint=static_cast<VInt *>(r.self);
-	double param=params->size()?
-		r.process(
-			params->get(0),
-			0/*no name*/,
-			false/*don't intercept string*/).as_double():1;
+	double param=params->size()?params->as_double(0, "param must be numerical", r):1;
 	(*func)(*vint, param);
 }
 

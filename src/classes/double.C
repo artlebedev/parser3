@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.37 2001/09/26 10:32:25 parser Exp $
+	$Id: double.C,v 1.38 2001/10/09 07:06:00 parser Exp $
 */
 
 #include "classes.h"
@@ -59,10 +59,7 @@ static void vdouble_op(Request& r, MethodParams *params,
 					   vdouble_op_func_ptr func) {
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
 	double param=params->size()?
-		r.process(
-			params->get(0),
-			0/*no name*/,
-			false/*don't intercept string*/).as_double():1/*used in inc/dec*/;
+			params->as_double(0, "param must be double", r):1/*used in inc/dec*/;
 	(*func)(*vdouble, param);
 }
 
