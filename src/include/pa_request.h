@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/11/07 13:59:21 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/11/19 08:20:02 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -318,7 +318,7 @@ public:
 	VCookie& cookie;
 
 	/// classes configured data
-	HashStringObject classes_conf;
+	Hash<const String::Body, void*> classes_conf;
 
 public: // status read methods
 

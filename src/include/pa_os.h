@@ -8,14 +8,14 @@
 #ifndef PA_OS_H
 #define PA_OS_H
 
-static const char* IDENT_OS_H="$Date: 2003/11/06 08:50:26 $";
+static const char* IDENT_OS_H="$Date: 2003/11/19 08:20:02 $";
 
 int pa_lock_shared_blocking(int fd);
 int pa_lock_exclusive_blocking(int fd);
 int pa_lock_exclusive_nonblocking(int fd);
 int pa_unlock(int fd);
 
-/// yields to OS for secs secs and usecs milliseconds
+/// yields to OS for secs secs and usecs microseconds (1E-6)
 int pa_sleep(unsigned long secs, unsigned long usecs);
 
 #endif

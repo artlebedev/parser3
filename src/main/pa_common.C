@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/11/10 06:51:06 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/11/19 08:20:02 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -497,6 +497,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	if(!real_remote_charset)
 		real_remote_charset=asked_remote_charset;
 
+	// todo: do that only if ^file::load[text
 	// output response
 	String::C real_body=Charset::transcode(
 		String::C(raw_body.cstrm()/*must be modifiable*/, raw_body.length()),

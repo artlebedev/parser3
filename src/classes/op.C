@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2003/11/06 09:16:33 $";
+static const char* IDENT_OP_C="$Date: 2003/11/19 08:20:02 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -322,7 +322,7 @@ public:
 #endif
 static void _switch(Request& r, MethodParams& params) {
 	Switch_data* data=new Switch_data(r, r.process_to_value(params[0]));
-	Temp_hash_value<const String::Body, PA_Object*> 
+	Temp_hash_value<const String::Body, void*> 
 		switch_data_setter(r.classes_conf, switch_data_name, data);
 
 	Value& cases_code=params.as_junction(1, "switch cases must be code");
@@ -396,13 +396,14 @@ void cache_delete(const String& file_spec) {
 }
 
 #ifndef DOXYGEN
-class Cache_data: public PA_Object {
+struct Cache_scope {
 public:
 	time_t expires;
+	const String* body_from_disk;
 };
 struct Locked_process_and_cache_put_action_info {
 	Request *r;
-	Cache_data *data;
+	Cache_scope *data;
 	Value* body_code; const String* evaluated_body;
 };
 #endif
@@ -434,7 +435,7 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 }
 const String* locked_process_and_cache_put(Request& r, 
 					   Value& body_code,
-					   Cache_data& data,
+					   Cache_scope& data,
 					   const String& file_spec) {
 	Locked_process_and_cache_put_action_info info={0};
 	info.r=&r;
@@ -453,7 +454,12 @@ const String* locked_process_and_cache_put(Request& r,
 		cache_delete(file_spec);
 	return result;
 }
-const String* cache_get(Request_charsets& charsets, const String& file_spec, time_t now) {
+struct Cache_get_result {
+	const String* body;
+	bool expired;
+} cache_get(Request_charsets& charsets, const String& file_spec, time_t now) {
+	Cache_get_result result={0};
+
 	File_read_result file=file_read(charsets, file_spec, 
 			   false/*as_text*/, 
 			   0, //no params
@@ -464,16 +470,18 @@ const String* cache_get(Request_charsets& charsets, const String& file_spec, tim
 		Data_string_serialized_prolog& prolog=
 			*reinterpret_cast<Data_string_serialized_prolog *>(file.str);
 
-		String* result=new String;
+		String* body=new String;
 		if(
 			file.length>=sizeof(Data_string_serialized_prolog)
-			&& prolog.version==DATA_STRING_SERIALIZED_VERSION
-			&& prolog.expires > now
-			&& result->deserialize(sizeof(Data_string_serialized_prolog),  file.str, file.length))
-			return result;
+			&& prolog.version==DATA_STRING_SERIALIZED_VERSION) {
+			if(body->deserialize(sizeof(Data_string_serialized_prolog),  file.str, file.length)) {
+				result.body=body;
+				result.expired=prolog.expires <= now;
+			}
+		}
 	}
 
-	return 0;
+	return result;
 }
 static time_t as_expires(Request& r, MethodParams& params, 
 						int index, time_t now) {
@@ -491,6 +499,23 @@ static const String& as_file_spec(Request& r, MethodParams& params, int index) {
 static void _cache(Request& r, MethodParams& params) {
 	time_t now=time(0);
 
+	if(params.count()==0) {
+		Cache_scope* scope=static_cast<Cache_scope*>(r.classes_conf.get(cache_data_name));
+		if(!scope)
+			throw Exception("parser.runtime",
+				0,
+				"getting old cache body without cache");
+		
+		if(const String* body_from_disk=scope->body_from_disk) // we have something old
+			r.write_assign_lang(*body_from_disk);
+		else
+			throw Exception(0,
+				0,
+				"there is no old cached body");
+
+		return;
+	}
+
 	// ^cache[filename] ^cache(seconds) ^cache[expires date]
 	if(params.count()==1) {
 		if(params[0].is_string()) { // filename?
@@ -499,15 +524,15 @@ static void _cache(Request& r, MethodParams& params) {
 		}
 
 		// secods|expires date
-		Cache_data* data=static_cast<Cache_data*>(r.classes_conf.get(cache_data_name));
-		if(!data)
+		Cache_scope* scope=static_cast<Cache_scope*>(r.classes_conf.get(cache_data_name));
+		if(!scope)
 			throw Exception("parser.runtime",
 				0,
 				"expire-time reducing instruction without cache");
 		
 		time_t expires=as_expires(r, params, 0, now);
-		if(expires < data->expires)
-			data->expires=expires;
+		if(expires < scope->expires)
+			scope->expires=expires;
 
 		return;
 	}
@@ -515,13 +540,13 @@ static void _cache(Request& r, MethodParams& params) {
 	// file_spec, expires, body code
 	const String& file_spec=r.absolute(params.as_string(0, "filespec must be string"));
 
-	Cache_data* data=new Cache_data;
-	Temp_hash_value<const String::Body, PA_Object*> 
-		cache_data_setter(r.classes_conf, cache_data_name, data);
-	data->expires=as_expires(r, params, 1, now);
+	Cache_scope scope={as_expires(r, params, 1, now)};
+
+	Temp_hash_value<const String::Body, void*> 
+		cache_scope_setter(r.classes_conf, cache_data_name, &scope);
 	Value& body_code=params.as_junction(2, "body must be code");
 
-	if(data->expires>now) { // valid 'expires' specified? try cached copy...
+	if(scope.expires>now) { // valid 'expires' specified? try cached copy...
 		// hence we don't hope to have unary create/lockEX
 		// we need some plan to live in a life like that, so... 
 		// worst races plan:
@@ -539,24 +564,30 @@ static void _cache(Request& r, MethodParams& params) {
 		//          |lockSH succeeds; ...
 
 		for(int retry=0; retry<2; retry++) {
-			if(const String* cached_body=cache_get(r.charsets, file_spec, now)) { // have cached copy?
-				// write it out 
-				r.write_assign_lang(*cached_body);
-				// happy with it
-				return;
+			Cache_get_result cached=cache_get(r.charsets, file_spec, now);
+			if(cached.body) { // have cached copy?
+				if(cached.expired) 
+					scope.body_from_disk=cached.body; // storing for user to retrive it with ^cache[]
+				else 
+				{  // and it's not expired yet
+    				// write it out 
+    				r.write_assign_lang(*cached.body);
+    				// happy with it
+    				return;
+    			}
 			}
 
-			// non-blocked lock; process; cache it
-			if(const String* processed_body=
-				locked_process_and_cache_put(r, body_code, *data, file_spec)) {
-				// write it out 
-				r.write_assign_lang(*processed_body);
-				// happy with it
-				return;
-			} else { // somebody writing result right now
-				pa_sleep(0, 500000); // waiting half a second
-				retry=0; // prolonging our wait, than could cache_get it, without processing body_code
-			}
+     		// non-blocked lock; process; cache it
+     		if(const String* processed_body=
+     			locked_process_and_cache_put(r, body_code, scope, file_spec)) {
+     			// write it out 
+     			r.write_assign_lang(*processed_body);
+     			// happy with it
+     			return;
+     		} else { // somebody writing result right now
+     			pa_sleep(0, 500000); // waiting half a second
+     			retry=0; // prolonging our wait, than could cache_get it, without processing body_code
+     		}
 		}
 		throw Exception(0,
 			&file_spec,
@@ -691,9 +722,10 @@ VClassMAIN::VClassMAIN(): VClass() {
 	add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
 
 
-	// ^cache[file_spec] delete cache
 	// ^cache[file_spec](time){code} time=0 no cache
-	add_native_method("cache", Method::CT_ANY, _cache, 1, 3);
+	// ^cache[file_spec] delete cache
+	// ^cache[] retrive old cached body, if any
+	add_native_method("cache", Method::CT_ANY, _cache, 0, 3);
 	
 	// switch
 
