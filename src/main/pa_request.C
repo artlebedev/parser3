@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2004/08/18 08:58:31 $";
+static const char * const IDENT_REQUEST_C="$Date: 2004/10/05 10:55:36 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -290,6 +290,12 @@ struct timeval mt[10];
 gettimeofday(&mt[0],NULL);
 #endif
 	try {
+		// filling cookies
+		cookie.fill_fields(request_info);
+
+		// filling mail received
+		mail.fill_received(*this);
+
 		// loading config
 		if(config_filespec) {
 			const String& filespec=*new String(config_filespec);
@@ -350,12 +356,6 @@ gettimeofday(&mt[0],NULL);
 		if(Value* element=main_class.get_element(mime_types_name, main_class, false))
 			if(Table *table=element->get_table())
 				mime_types=table;			
-
-		// filling cookies
-		cookie.fill_fields(request_info);
-
-		// filling mail received
-		mail.fill_received(*this);
 
 #ifdef RESOURCES_DEBUG
 //measure:after compile
