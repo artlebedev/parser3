@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.8 2001/03/12 20:59:27 paf Exp $
+	$Id: table.C,v 1.9 2001/03/12 21:18:00 paf Exp $
 */
 
 #include "pa_request.h"
@@ -103,8 +103,8 @@ static void _offset(Request& r, const String&, Array *params) {
 	Table& table=r.self->as_vtable().table();
 	if(params->size()) {
 		if(int size=table.size()) {
-			int offset=static_cast<int>(
-				r.process(*static_cast<Value *>(params->get(0))).get_double());
+			int offset=
+				(int)r.process(*static_cast<Value *>(params->get(0))).get_double();
 			table.set_current((table.get_current()+offset+size)%size);
 		}
 	} else {

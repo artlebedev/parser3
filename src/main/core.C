@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.C,v 1.62 2001/03/12 18:13:49 paf Exp $
+	$Id: core.C,v 1.63 2001/03/12 21:18:00 paf Exp $
 */
 
 #include "core.h"
@@ -48,23 +48,17 @@ void core() {
 	// hashes
 	untaint_lang_name2enum=new(pool) Hash(pool);
 	LOCAL_STRING(as_is, "as-is");  
-	untaint_lang_name2enum->put(as_is, 
-		static_cast<int>(String::Untaint_lang::AS_IS));
+	untaint_lang_name2enum->put(as_is, (int)String::Untaint_lang::AS_IS);
 	LOCAL_STRING(table, "table");
-	untaint_lang_name2enum->put(table, 
-		static_cast<int>(String::Untaint_lang::TABLE));
+	untaint_lang_name2enum->put(table, (int)String::Untaint_lang::TABLE);
 	LOCAL_STRING(sql, "sql");
-	untaint_lang_name2enum->put(sql, 
-		static_cast<int>(String::Untaint_lang::SQL));
+	untaint_lang_name2enum->put(sql, (int)String::Untaint_lang::SQL);
 	LOCAL_STRING(js, "js");
-	untaint_lang_name2enum->put(js, 
-		static_cast<int>(String::Untaint_lang::JS));
+	untaint_lang_name2enum->put(js, (int)String::Untaint_lang::JS);
 	LOCAL_STRING(html, "html");
-	untaint_lang_name2enum->put(html, 
-		static_cast<int>(String::Untaint_lang::HTML));
+	untaint_lang_name2enum->put(html, (int)String::Untaint_lang::HTML);
 	LOCAL_STRING(html_typo, "html-typo");
-	untaint_lang_name2enum->put(html_typo, 
-		static_cast<int>(String::Untaint_lang::HTML_TYPO));
+	untaint_lang_name2enum->put(html_typo, (int)String::Untaint_lang::HTML_TYPO);
 
 	// read-only classes
 	initialize_string_class(pool, *(string_class=new(pool) VClass(pool)));  string_class->freeze();

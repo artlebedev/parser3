@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.7 2001/03/12 09:08:46 paf Exp $
+	$Id: string.C,v 1.8 2001/03/12 21:18:00 paf Exp $
 */
 
 #include "pa_request.h"
@@ -25,7 +25,7 @@ static void _length(Request& r, const String&, Array *) {
 
 static void _int(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VInt(pool, static_cast<int>(r.self->get_double()));
+	Value& value=*new(pool) VInt(pool, (int)r.self->get_double());
 	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
 }
 

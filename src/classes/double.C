@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.10 2001/03/12 09:08:45 paf Exp $
+	$Id: double.C,v 1.11 2001/03/12 21:17:59 paf Exp $
 */
 
 #include "pa_request.h"
@@ -20,7 +20,7 @@ VClass *double_class;
 static void _int(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
-	Value& value=*new(pool) VInt(pool, static_cast<int>(vdouble->get_double()));
+	Value& value=*new(pool) VInt(pool, (int)vdouble->get_double());
 	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
 }
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.30 2001/03/12 20:36:52 paf Exp $
+	$Id: root.C,v 1.31 2001/03/12 21:18:00 paf Exp $
 */
 
 #include <string.h>
@@ -11,6 +11,7 @@
 
 #include "pa_request.h"
 #include "_root.h"
+#include "pa_vint.h"
 
 static void _if(Request& r, const String&, Array *params) {
 	bool condition=
@@ -130,6 +131,41 @@ static void _use(Request& r, const String& method_name, Array *params) {
 	r.use_file(r.absolute(file));
 }
 
+static void _for(Request& r, const String& method_name, Array *params) {
+	// ^for[i;from-number;to-number-inclusive]{code}[delim]
+
+	Pool& pool=r.pool();
+	const String& var_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
+	int from=(int)r.process(*static_cast<Value *>(params->get(1))).get_double();
+	int to=(int)r.process(*static_cast<Value *>(params->get(2))).get_double();
+	Value& body_code=*static_cast<Value *>(params->get(3));
+	// forcing ^menu{this param type}
+	r.fail_if_junction_(false, body_code, 
+		method_name, "body must be junction");
+	Value *delim_code=params->size()==3+1+1?static_cast<Value *>(params->get(3+1)):0;
+
+	bool need_delim=false;
+	int endless_loop_count=0;
+	for(VInt *vint=new(pool) VInt(pool, from); vint->get_int()<=to; vint->inc()) {
+		if(++endless_loop_count>=2001) // endless loop?
+			R_THROW(0, 0,
+				&method_name,
+				"endless loop detected");
+		r.wcontext->put_element(var_name, vint);
+
+		Value& processed_body=r.process(body_code);
+		if(delim_code) { // delimiter set?
+			const String *string=processed_body.get_string();
+			if(need_delim && string && string->size()) // need delim & iteration produced string?
+				r.write_pass_lang(r.process(*delim_code));
+			need_delim=true;
+		}
+		r.write_pass_lang(processed_body);
+	}
+}
+
+
+
 typedef double (*math_one_double_op_func_ptr)(double);
 static double round(double op) { return floor(op+0.5); }
 static double sign(double op) { return op > 0 ? 1 : ( op < 0 ? -1 : 0 ); }
@@ -148,7 +184,6 @@ static void _math_one_double_op(
 	Value& result=*new(pool) VDouble(pool, (*func)(r.process(param).get_double()));
 	r.wcontext->write(result, String::Untaint_lang::NO /*always object, not string*/);
 }
-
 
 static void _round(Request& r, const String& method_name, Array *params) {
 	_math_one_double_op(r, method_name, params,	&round);
@@ -190,6 +225,9 @@ void initialize_root_class(Pool& pool, VClass& vclass) {
 	// ^use[file]
 	vclass.add_native_method("use", _use, 1, 1);
 
+	// ^for[i;from-number;to-number-inclusive]{code}[delim]
+	vclass.add_native_method("for", _for, 3+1, 3+1+1);
+
 
 	// math functions
 
@@ -207,5 +245,4 @@ void initialize_root_class(Pool& pool, VClass& vclass) {
 
 	// ^sign(expr)
 	vclass.add_native_method("sign", _sign, 1, 1);
-
 }

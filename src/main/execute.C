@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.96 2001/03/12 18:13:50 paf Exp $
+	$Id: execute.C,v 1.97 2001/03/12 21:18:01 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -360,7 +360,7 @@ void Request::execute(const Array& ops) {
 		case OP_INV:
 			{
 				Value *operand=POP();
-				Value *value=NEW VDouble(pool(), ~static_cast<int>(operand->get_double()));
+				Value *value=NEW VDouble(pool(), ~(int)operand->get_double());
 				PUSH(value);
 				break;
 			}
@@ -426,8 +426,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					static_cast<int>(a->get_double()) %
-					static_cast<int>(b->get_double()));
+					(int)a->get_double() %
+					(int)b->get_double());
 				PUSH(value);
 				break;
 			}
@@ -435,8 +435,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					static_cast<int>(a->get_double()) &
-					static_cast<int>(b->get_double()));
+					(int)a->get_double() &
+					(int)b->get_double());
 				PUSH(value);
 				break;
 			}
@@ -444,8 +444,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					static_cast<int>(a->get_double()) |
-					static_cast<int>(b->get_double()));
+					(int)a->get_double() |
+					(int)b->get_double());
 				PUSH(value);
 				break;
 			}
@@ -453,8 +453,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					static_cast<int>(a->get_double()) ^
-					static_cast<int>(b->get_double()));
+					(int)a->get_double() ^
+					(int)b->get_double());
 				PUSH(value);
 				break;
 			}

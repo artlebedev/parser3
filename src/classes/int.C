@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.10 2001/03/12 09:08:46 paf Exp $
+	$Id: int.C,v 1.11 2001/03/12 21:17:59 paf Exp $
 */
 
 #include "pa_request.h"
@@ -34,10 +34,10 @@ static void _double(Request& r, const String&, Array *) {
 static void _inc(Request& r, const String&, Array *params) {
 	VInt *vint=static_cast<VInt *>(r.self);
 	int increment=params->size()?
-		static_cast<int>(r.process(
+		(int)r.process(
 			*static_cast<Value *>(params->get(0)),
 			0/*no name*/,
-			false/*don't intercept string*/).get_double()):1;
+			false/*don't intercept string*/).get_double():1;
 	vint->inc(increment);
 }
 
