@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.37 2001/03/28 14:41:32 paf Exp $
+	$Id: pa_value.h,v 1.38 2001/03/29 09:31:45 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -39,13 +39,13 @@ public: // Value
 		- VUnknown: false
 		- others: true
 	*/
-	virtual bool is_defined() { return true; }
+	virtual bool is_defined() const { return true; }
 	/** is this value string?
 		@return for
 		- VString: true
 		- others: false
 	*/
-	virtual bool is_string() { return false; }
+	virtual bool is_string() const { return false; }
 	/** what's the meaning of this value in context of expression?
 		@return for
 		- VString: fstring as VDouble or this depending on return_string_as_is

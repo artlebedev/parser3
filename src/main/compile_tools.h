@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.35 2001/03/25 08:52:36 paf Exp $
+	$Id: compile_tools.h,v 1.36 2001/03/29 09:31:44 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -57,48 +57,53 @@ struct parse_control {
 	enum lexical_state stack[MAX_LEXICAL_STATES];
 	int brackets_nestages[MAX_LEXICAL_STATES];
 	
-	// output: filled input 'methods' and 'error' if any
+	/// output: filled input 'methods' and 'error' if any
 	char error[MAX_STRING];
 };
 
-// New array // return empty array
+/// New array // return empty array
 inline Array/*<Operation>*/ *N(Pool& pool) {
 	return new(pool) Array/*<Operation>*/(pool);
 }
 
-// Assembler instruction // append ordinary instruction to ops
+/// Assembler instruction // append ordinary instruction to ops
 inline void O(Array/*<Operation>*/ *result, enum OPCODE code) {
 	Operation op; op.code=code;
 	*result+=op.cast;
 }
 
-// Argument Eval_expression // append eval_expression to ops
+/// Argument Eval_expression // append eval_expression to ops
 inline void AE(Array/*<Operation>*/ *result, char *eval_expression) {
 	*result+=eval_expression;
 }
 
-// aPpend 'code_array' to 'result'
+/// aPpend 'code_array' to 'result'
 inline void P(Array/*<Operation>*/ *result, Array *code_array) {
 	result->append_array(*code_array);
 }
-// aPpend part of 'code_array', starting from offset, to 'result'
+/// aPpend part of 'code_array', starting from offset, to 'result'
 inline void P(Array/*<Operation>*/ *result, Array *code_array, int offset) {
 	result->append_array(*code_array, offset);
 }
-// aPpend 'vstring' to 'result'
+/// aPpend 'vstring' to 'result'
 void PV(Array/*<Operation>*/ *result, VString *vstring);
-// aPpend 'simple Code_Array' to result
+/// aPpend 'simple Code_Array' to result
 void PCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
-// aPpend 'expression Code_Array' to result
+/// aPpend 'expression Code_Array' to result
 void PEA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
 
-// Value Literal // returns array with 
-// first: OP_VALUE instruction
-// second op: string itself
+/**
+	Value Literal // returns array with 
+	- first: OP_VALUE instruction
+	- second op: string itself
+*/
 Array *VL(Value *value);
-// Literal Array to(2) String // return string value from literal array OP+string array
-const String *SLA2S(Array *literal_string_array, int offset=0);
-
+/// Literal Array to(2) Value @return Value from literal Array OP+Value
+Value *LA2V(Array *literal_string_array, int offset=0);
+/// Literal Array to(2) String  @return String value from literal Array OP+String array
+inline const String *LA2S(Array *literal_string_array, int offset=0) {
+	return LA2V(literal_string_array, offset)->get_string();
+}
 void change_string_literal_to_double_literal(Array *literal_string_array);
 void change_string_literal_to_write_string_literal(Array *literal_string_array);
 

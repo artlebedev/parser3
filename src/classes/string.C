@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.13 2001/03/27 16:35:52 paf Exp $
+	$Id: string.C,v 1.14 2001/03/29 09:31:42 paf Exp $
 */
 
 #include "pa_request.h"
@@ -62,5 +62,8 @@ void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^string.format[]
 	vclass.add_native_method("format", _string_format, 1, 1);
+
+	// ^string.toupper[]
+	//vclass.add_native_method("toupper", _toupper, 0, 0);
 }	
 

@@ -172,8 +172,7 @@ InputName=compile
 
 "compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	call VCVARS32 
-	d:\cygwin\bin\bison -v $(InputName).y 
-	ren compile.tab.c compile.tab.C 
+	d:\cygwin\bin\bison -v $(InputName).y -o compile.tab.C 
 	
 # End Custom Build
 
@@ -185,8 +184,7 @@ InputName=compile
 
 "compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	call VCVARS32 
-	d:\cygwin\bin\bison -v $(InputName).y 
-	ren compile.tab.c compile.tab.C 
+	d:\cygwin\bin\bison -v $(InputName).y -o compile.tab.C 
 	
 # End Custom Build
 

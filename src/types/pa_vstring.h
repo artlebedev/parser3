@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.16 2001/03/27 16:35:57 paf Exp $
+	$Id: pa_vstring.h,v 1.17 2001/03/29 09:31:45 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -24,7 +24,7 @@ public: // Value
 	/// all: for error reporting after fail(), etc
 	const char *type() const { return "string"; }
 	/// VString: true
-	bool is_string() { return true; }
+	bool is_string() const { return true; }
 	/// VString: fstring as VDouble or this depending on return_string_as_is
 	Value *as_expr_result(bool return_string_as_is=false) { 
 		if(return_string_as_is)

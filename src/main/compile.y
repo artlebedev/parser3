@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.119 2001/03/27 14:51:29 paf Exp $
+	$Id: compile.y,v 1.120 2001/03/29 09:31:43 paf Exp $
 */
 
 /**
@@ -39,6 +39,7 @@
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
 #include "pa_globals.h"
+#include "pa_vunknown.h"
 
 #define SELF_ELEMENT_NAME "self"
 #define USE_CONTROL_METHOD_NAME "USE"
@@ -126,7 +127,7 @@ method: control_method | code_method;
 
 control_method: '@' STRING '\n' 
 				control_strings {
-	const String& command=*SLA2S($2);
+	const String& command=*LA2S($2);
 	YYSTYPE strings_code=$4;
 	if(strings_code->size()<1*2) {
 		strcpy(PC.error, "@");
@@ -143,7 +144,7 @@ control_method: '@' STRING '\n'
 		}
 		if(strings_code->size()==1*2) {
 			// new class' name
-			const String *name=SLA2S(strings_code);
+			const String *name=LA2S(strings_code);
 			// creating the class
 			PC.cclass=NEW VClass(POOL);
 			PC.cclass->set_name(*name);
@@ -159,7 +160,7 @@ control_method: '@' STRING '\n'
 		if(command==USE_CONTROL_METHOD_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) 
 				PC.request->use_file(
-					PC.request->absolute(*SLA2S(strings_code, i)));
+					PC.request->absolute(*LA2S(strings_code, i)));
 		} else if(command==BASE_NAME) {
 			if(PC.cclass->base()!=&PC.request->ROOT) { // already changed from default?
 				strcpy(PC.error, "class already have a base '");
@@ -168,7 +169,7 @@ control_method: '@' STRING '\n'
 				YYERROR;
 			}
 			if(strings_code->size()==1*2) {
-				const String& base_name=*SLA2S(strings_code);
+				const String& base_name=*LA2S(strings_code);
 				VClass *base=static_cast<VClass *>(
 					PC.request->classes().get(base_name));
 				if(!base) {
@@ -201,14 +202,14 @@ maybe_string: empty | STRING;
 
 code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' 
 			maybe_codes {
-	const String *name=SLA2S($2);
+	const String *name=LA2S($2);
 
 	YYSTYPE params_names_code=$3;
 	Array *params_names=0;
 	if(int size=params_names_code->size()) {
 		params_names=NEW Array(POOL);
 		for(int i=0; i<size; i+=2)
-			*params_names+=SLA2S(params_names_code, i);
+			*params_names+=LA2S(params_names_code, i);
 	}
 
 	YYSTYPE locals_names_code=$4;
@@ -216,7 +217,7 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 	if(int size=locals_names_code->size()) {
 		locals_names=NEW Array(POOL);
 		for(int i=0; i<size; i+=2)
-			*locals_names+=SLA2S(locals_names_code, i);
+			*locals_names+=LA2S(locals_names_code, i);
 	}
 
 	Method& method=*NEW Method(POOL, 
@@ -258,7 +259,7 @@ name_without_curly_rdive:
 name_without_curly_rdive_read: name_without_curly_rdive_code {
 	$$=N(POOL); 
 	Array *diving_code=$1;
-	const String *first_name=SLA2S(diving_code);
+	const String *first_name=LA2S(diving_code);
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
 		O($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
@@ -291,7 +292,7 @@ name_expr_wdive:
 name_expr_wdive_write: name_expr_dive_code {
 	$$=N(POOL);
 	Array *diving_code=$1;
-	const String *first_name=SLA2S(diving_code);
+	const String *first_name=LA2S(diving_code);
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
 		O($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
@@ -322,7 +323,7 @@ construct_by_expr: '(' expr_value ')' {
 }
 ;
 any_constructor_code_value: 
-	empty_string_value /* optimized $var[] case */
+	unknown_value /* optimized $var[] case */
 |	STRING /* optimized $var[STRING] case */
 |	constructor_code_value /* $var[something complex] */
 ;
@@ -356,14 +357,19 @@ store_param:
 |	store_round_param
 |	store_curly_param
 ;
-store_square_param: '[' store_code_param_parts ']' {$$=$2};
+store_square_param: '[' store_code_param_parts ']' {
+	YYSTYPE params_code=$2;
+	if(params_code->size()==3) // probably [] case. [OP_VALUE + Unknown + STORE_PARAM]
+		if(!LA2V(params_code)->is_defined()) { // value is VUnknown?
+			$$=N(POOL);  // ^zzz[] case. don't append lone empty param.
+			break;
+		}
+
+	$$=params_code;
+};
 store_round_param: '(' store_expr_param_parts ')' {$$=$2};
 store_curly_param: '{' store_curly_param_parts '}' {$$=$2};
 store_code_param_parts:
-	empty /* optimized [] case */
-|	store_code_param_parts_not_empty
-;
-store_code_param_parts_not_empty:
 	store_code_param_part
 |	store_code_param_parts ';' store_code_param_part { $$=$1; P($$, $3) }
 ;
@@ -375,16 +381,10 @@ store_curly_param_parts:
 	store_curly_param_part
 |	store_curly_param_parts ';' store_curly_param_part { $$=$1; P($$, $3) }
 ;
-store_code_param_part: 
-	STRING { /* optimized [STRING] case */
+store_code_param_part: code_param_value {
 	$$=$1;
 	O($$, OP_STORE_PARAM);
-}
-|	constructor_code_value { /* [something complex] */
-	$$=$1;
-	O($$, OP_STORE_PARAM);
-}
-;
+};
 store_expr_param_part: write_expr_value {
 	$$=N(POOL); 
 	PEA($$, $1);
@@ -393,6 +393,11 @@ store_curly_param_part: maybe_codes {
 	$$=N(POOL); 
 	PCA($$, $1);
 };
+code_param_value:
+	unknown_value /* optimized [;...] case */
+|	STRING /* optimized [STRING] case */
+|	constructor_code_value /* [something complex] */
+;
 write_expr_value: expr_value {
 	$$=$1;
 	O($$, OP_WRITE_EXPR_RESULT);
@@ -526,7 +531,7 @@ write_string: STRING {
 	change_string_literal_to_write_string_literal($$=$1)
 };
 
-empty_string_value: /* empty */ { $$=VL(NEW VString(POOL)) };
+unknown_value: /* empty */ { $$=VL(NEW VUnknown(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%
@@ -1075,5 +1080,5 @@ static int real_yyerror(parse_control *pc, char *s) {  // Called by yyparse on e
 
 static void yyprint(FILE *file, int type, YYSTYPE value) {
 	if(type==STRING)
-		fprintf(file, " \"%s\"", SLA2S(value)->cstr());
+		fprintf(file, " \"%s\"", LA2S(value)->cstr());
 }
