@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXNODE_C="$Date: 2002/08/15 10:21:43 $";
+static const char* IDENT_VXNODE_C="$Date: 2002/09/04 07:46:09 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -39,6 +39,7 @@ Value *VXnode::get_element(const String& aname, Value *aself, bool looking_up) {
 	} else if(aname=="parentNode") {
 		if(GdomeNode *result_node=gdome_n_parentNode(selfNode, &exc))
 			return NEW VXnode(pool(), result_node);
+		return 0;
 	} else if(aname=="childNodes") {	
 		if(GdomeNode *currentNode=gdome_n_firstChild(selfNode, &exc)) {
 			VHash *result=NEW VHash(pool());
@@ -54,21 +55,27 @@ Value *VXnode::get_element(const String& aname, Value *aself, bool looking_up) {
 			} while(currentNode=gdome_n_nextSibling(currentNode, &exc));
 			return result;
 		}
+		return 0;
 	} else if(aname=="firstChild") {
 		if(GdomeNode *result_node=gdome_n_firstChild(selfNode, &exc))
 			return NEW VXnode(pool(), result_node);
+		return 0;
 	} else if(aname=="lastChild") {
 		if(GdomeNode *result_node=gdome_n_lastChild(selfNode, &exc))
 			return NEW VXnode(pool(), result_node);
+		return 0;
 	} else if(aname=="previousSibling") {
 		if(GdomeNode *result_node=gdome_n_previousSibling(selfNode, &exc))
 			return NEW VXnode(pool(), result_node);
+		return 0;
 	} else if(aname=="nextSibling") {
 		if(GdomeNode *result_node=gdome_n_nextSibling(selfNode, &exc))
 			return NEW VXnode(pool(), result_node);
+		return 0;
 	} else if(aname=="ownerDocument") {
 		if(GdomeDocument *document=gdome_n_ownerDocument(selfNode, &exc))
 			return NEW VXdoc(pool(), document);
+		return 0;
 	} else switch(gdome_n_nodeType(selfNode, &exc)) {
 		case GDOME_ELEMENT_NODE: 
 			if(aname=="attributes") {
@@ -83,6 +90,7 @@ Value *VXnode::get_element(const String& aname, Value *aself, bool looking_up) {
 					}
 					return result;
 				}
+				return 0;
 			} else if(aname=="tagName") {
 				return NEW VString(transcode(gdome_el_tagName(GDOME_EL(selfNode), &exc)));
 			}
