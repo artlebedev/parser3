@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/10/23 10:04:54 $";
+static const char* IDENT_TABLE_C="$Date: 2002/11/25 14:10:52 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -125,12 +125,19 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	// filename is last parameter
-	Value& vfile_name=params->as_no_junction(params->size()-1, 
-		"file name must not be code");
-
+	const String& first_param=params->as_string(0, "file name must be string");
+	int filename_param_index=0;
+	bool nameless=first_param=="nameless";
+	if(nameless)
+		filename_param_index++;
+	int options_param_index=filename_param_index+1;
+	
 	// loading text
-	char *data=file_read_text(pool, r.absolute(vfile_name.as_string()));
+	char *data=file_read_text(pool, 
+		r.absolute(params->as_string(filename_param_index, "file name must be string")),
+		true,
+		options_param_index<params->size()?params->as_no_junction(options_param_index, "additional params must be hash").get_hash(&method_name):0
+	);
 
 	// parse columns
 	Array *columns;
@@ -139,7 +146,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	const char *file=origin.file;
 	uint line=origin.line;
 #endif
-	if(params->size()==2) {
+	if(nameless) {
 		columns=0; // nameless
 	} else {
 		columns=new(pool) Array(pool);
@@ -765,7 +772,7 @@ MTable::MTable(Pool& apool) : Methoded(apool, "table") {
 
 	// ^table::load[file]  
 	// ^table::load[nameless;file]
-	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
+	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 3);
 
 	// ^table.save[file]  
 	// ^table.save[nameless;file]

@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VFILE_C="$Date: 2002/08/21 06:24:07 $";
+static const char* IDENT_VFILE_C="$Date: 2002/11/25 14:10:53 $";
 
 #include "pa_vfile.h"
 #include "pa_vstring.h"
@@ -57,4 +57,13 @@ void VFile::set(bool tainted,
 	// $mime-type
 	if(content_type)
 		ffields.put(*content_type_name, content_type);
+}
+
+Value *VFile::get_element(const String& aname, Value& aself, bool looking_up) {
+	// $method
+	if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
+		return result;
+
+	// $field
+	return static_cast<Value *>(ffields.get(aname));
 }

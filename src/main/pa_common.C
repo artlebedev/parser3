@@ -5,14 +5,18 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/25 08:55:12 $";
+static const char* IDENT_COMMON_C="$Date: 2002/11/25 14:10:52 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
 #include "pa_globals.h"
+#include "pa_hash.h"
+#include "pa_vstring.h"
 
 #ifdef WIN32
 #	include <windows.h>
+#else
+#	define closesocket close
 #endif
 
 // some maybe-undefined constants
@@ -36,7 +40,7 @@ static int unlock(int fd) { return flock(fd, LOCK_UN); }
 #else
 #ifdef HAVE__LOCKING
 
-#define FLOCK(operation) lseek(fd, 0, SEEK_SET); return _locking(fd, operation, 1)
+#define FLOCK(operation) lseek(fd, 0, SEEK_SET);  return _locking(fd, operation, 1)
 static int lock_shared_blocking(int fd) { FLOCK(_LK_LOCK); }
 static int lock_exclusive_blocking(int fd) { FLOCK(_LK_LOCK); }
 static int lock_exclusive_nonblocking(int fd) { FLOCK(_LK_NBLCK); }
@@ -45,7 +49,7 @@ static int unlock(int fd) { FLOCK(_LK_UNLCK); }
 #else
 #ifdef HAVE_FCNTL
 
-#define FLOCK(cmd, arg) struct flock ls={arg, SEEK_SET}; return fcntl(fd, cmd, &ls)
+#define FLOCK(cmd, arg) struct flock ls={arg, SEEK_SET};  return fcntl(fd, cmd, &ls)
 static int lock_shared_blocking(int fd) { FLOCK(F_SETLKW, F_RDLCK); }
 static int lock_exclusive_blocking(int fd) { FLOCK(F_SETLKW, F_WRLCK); }
 static int lock_exclusive_nonblocking(int fd) { FLOCK(F_SETLK, F_RDLCK); }
@@ -54,7 +58,7 @@ static int unlock(int fd) { FLOCK(F_SETLK, F_UNLCK); }
 #else
 #ifdef HAVE_LOCKF
 
-#define FLOCK(fd, operation) lseek(fd, 0, SEEK_SET); return lockf(fd, operation, 1)
+#define FLOCK(fd, operation) lseek(fd, 0, SEEK_SET);  return lockf(fd, operation, 1)
 static int lock_shared_blocking(int fd) { FLOCK(F_LOCK); } // on intel solaris man doesn't have doc on shared blocking
 static int lock_exclusive_blocking(int fd) { FLOCK(F_LOCK); }
 static int lock_exclusive_nonblocking(int fd) { FLOCK(F_TLOCK); }
@@ -69,12 +73,13 @@ static int unlock(int fd) { FLOCK(F_TLOCK); }
 #endif
 #endif
 
-static char *strnchr(char *buf, size_t size, char c) {
+
+static char* strnchr(char* buf, size_t size, char c) {
 	// sanity check
 	if(!buf)
 		return 0;
 
-	for(; size-->0; buf++) {
+	for(;  size-->0; buf++) {
 		if(*buf==c)
 			return buf;
 	}
@@ -82,86 +87,301 @@ static char *strnchr(char *buf, size_t size, char c) {
 	return 0;
 }
 
-void fix_line_breaks(char *buf, size_t& size) {
+void fix_line_breaks(char* buf, size_t& size) {
 	//_asm int 3;
-	const char * const eob=buf+size;
-	char *dest=buf;
+	const char* const eob=buf+size;
+	char* dest=buf;
 	// fix DOS: \r\n -> \n
 	// fix Macintosh: \r -> \n
-	char *bol=buf;
-	while(char *eol=strnchr(bol, eob -bol, '\r')) {
+	char* bol=buf;
+	while(char* eol=strnchr(bol, eob -bol, '\r')) {
 		size_t len=eol-bol;
 		if(dest!=bol)
-			memcpy(dest, bol, len);
+			memcpy(dest, bol, len); 
 		dest+=len;
-		*dest++='\n';
+		*dest++='\n'; 
 
-		if(&eol[1]<eob && eol[1]=='\n') { // \r,\n = DOS
+		if(&eol[1]<eob && eol[1]=='\n') { // \r, \n = DOS
 			bol=eol+2;
-			size--;
-		} else // \r,not \n = Macintosh
+			size--; 
+		} else // \r, not \n = Macintosh
 			bol=eol+1;
 	}
 	// last piece without \r, including terminating 0
 	if(dest!=bol)
-		memcpy(dest, bol, eob-bol);
+		memcpy(dest, bol, eob-bol); 
 }
 
-char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_problem) {
+char* file_read_text(Pool& pool, const String& file_spec, 
+					 bool fail_on_read_problem,
+					 Hash *params, Hash** out_fields) {
 	void *result;  size_t size;
-	return file_read(pool, file_spec, result, size, true, fail_on_read_problem)?(char *)result:0;
+	return file_read(pool, file_spec, result, size, true, params, out_fields, fail_on_read_problem)?(char *)result:0;
+}
+
+//http request stuff
+/* ************************ http stuff *********************** */
+
+static bool set_addr(struct sockaddr_in *addr, const char* host, const short port){
+    memset(addr, 0, sizeof(*addr)); 
+    addr->sin_family=AF_INET;
+    addr->sin_port=htons(port); 
+    if(host) {
+		if(struct hostent *hostIP=gethostbyname(host)) 
+			memcpy(&addr->sin_addr, hostIP->h_addr, hostIP->h_length); 
+		else
+			return false;
+    } else 
+		addr->sin_addr.s_addr=INADDR_ANY;
+    return true;
+}
+
+static void http_read_response(String& response, int sock){
+	while(true) {
+		char *buf=(char *)response.pool().malloc(MAX_STRING); 
+		ssize_t size=recv(sock, buf, MAX_STRING, 0); 
+		if(size<=0)
+			break;
+		response.APPEND_TAINTED(buf, size, "http response", 0); 
+    }
+}
+
+/* ********************** request *************************** */
+
+#if defined(SIGALRM) && defined(HAVE_SIGSETJMP) && defined(HAVE_SIGLONGJMP)
+#	define WE_CAN_USE_ALARM
+#endif
+
+#ifdef WE_CAN_USE_ALARM
+static sigjmp_buf timeout_env;
+static void timeout_handler(int sig){
+    siglongjmp(timeout_env, 1); 
+}
+#endif
+
+static void http_request(String& response,
+							const String *origin_string, 
+							const char* host, int port, 
+							const char* request, 
+							int timeout){
+	if(!host)
+		throw Exception("http.host", 
+			origin_string, 
+			"zero hostname");  //never
+
+#ifdef WE_CAN_USE_ALARM
+    signal(SIGALRM, timeout_handler); 
+#endif
+	int sock=-1;
+	try {
+#ifdef WE_CAN_USE_ALARM
+		if(sigsetjmp(timeout_env, 1))
+			throw Exception("http.timeout", 
+				origin_string, 
+				"timeout occured while retrieving document"); 
+		else {
+			alarm(timeout); 
+#endif
+			struct sockaddr_in dest;
+		
+    		if(!set_addr(&dest, host, port))
+				throw Exception("http.host", 
+					origin_string, 
+					"can't resolve hostname \"%s\"", host); 
+			
+			if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/))<0)
+				throw Exception("http.connect", 
+					origin_string, 
+					"can't make socket : %s (%d)", strerror(errno), errno); 
+			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest)))
+				throw Exception("http.connect", 
+					origin_string, 
+					"can't connect to host \"%s\": %s (%d)", host, strerror(errno), errno); 
+			size_t request_size=strlen(request);
+			if(send(sock, request, request_size, 0)!=(ssize_t)request_size)
+				throw Exception("http.connect", 
+					origin_string, 
+					"error sending request : %s (%d)", strerror(errno), errno); 
+
+			http_read_response(response, sock); 
+			if(sock>=0) 
+				closesocket(sock); 
+#ifdef WE_CAN_USE_ALARM
+		}
+#endif
+	} catch(...) {
+		if(sock>=0) 
+			closesocket(sock); 
+#ifdef WE_CAN_USE_ALARM
+		alarm(0); 
+#endif
+		/*re*/throw;
+	}
+}
+
+static void headers_foreacher(const Hash::Key& key, Hash::Val *value, void *info)
+{
+    String * request=static_cast<String *>(info); 
+    *(request)<<key<<": "<<*(static_cast<Value *>(value))->get_string()<<"\n"; 
+}
+
+static void file_read_http(Pool& pool, const String& file_spec, 
+					void*& data, size_t& data_size, 
+					Hash *params=0, Hash** out_fields=0) {
+	char host[MAX_STRING]; 
+	char* uri; 
+	int port;
+	const char* method="GET"; 
+	int timeout=2;
+
+	char* connect_string=file_spec.cstr(String::UL_UNSPECIFIED); 
+	if(strncmp(connect_string, "http://", 7)!=0)
+		throw Exception(0, 
+			&file_spec, 
+			"does not start with http://"); //never
+	connect_string+=7;
+
+	strncpy(host, connect_string, sizeof(host)-1);  host[sizeof(host)-1]=0;
+	char* host_uri=lsplit(host, '/'); 
+	uri=host_uri?connect_string+(host_uri-1-host):"/"; 
+	char* port_cstr=lsplit(host, ':'); 
+	char* error_pos=0;
+	port=port_cstr?strtol(port_cstr, &error_pos, 0):80;
+
+	if(params) {
+		if(Value *method_element=static_cast<Value *>(params->get(*http_method_name)))
+			method=method_element->as_string().cstr(); 
+		if(Value *timeout_element=static_cast<Value *>(params->get(*http_timeout_name)))
+			timeout=timeout_element->as_int(); 
+	}
+
+	//making request
+	String request(pool); 
+	request<< method <<" "<< uri <<" HTTP/1.0\nHost: "<< host<<"\n"; 
+	if(params)
+		if(Value *headers_element=static_cast<Value *>(params->get(*http_headers_name)))
+		{
+			Hash *headers=headers_element->get_hash(&file_spec); 
+			headers->for_each(headers_foreacher, &request); 
+		}
+	request<<"\n"; 
+	
+	//sending request
+	String response(pool); 
+	http_request(response,
+		&file_spec, host, port, request.cstr(String::UL_UNSPECIFIED), timeout); 
+	
+	//processing results	
+	int pos=response.pos("\r\n\r\n", 4); 
+	if(pos<1){
+		throw Exception("http.response", 
+			&file_spec,
+			"bad response from host - no headers found"); 
+	}
+	String header_block=response.mid(0, pos); 
+	String body=response.mid(pos+4, response.size()); 
+	
+	Array aheaders(pool); 
+	Hash& headers=*new(pool) Hash(pool); 
+	size_t pos_after_ref=0;
+	header_block.split(aheaders, &pos_after_ref, "\r\n", 2); 
+	
+	//processing status code
+	const String *status_line=aheaders.get_string(0); 
+	if(!status_line){
+		throw Exception("http.response", 
+			&file_spec,
+			"bad response from host - no status line "); 
+	}
+	//processing headers
+	Array astatus(pool); 
+	pos_after_ref=0;
+	status_line->split(astatus, &pos_after_ref, " ", 1); 
+	const String * status_code=astatus.get_string(1); 
+	
+	for(int i=1;i<aheaders.size();i++) {
+		if(const String *line=aheaders.get_string(i)) {
+			pos=line->pos(": ", 2); 
+			if(pos<1)
+				throw Exception("http.response", 
+					&file_spec,
+					"bad response from host - bad header \"%s\"", line->cstr()); 
+				
+			headers.put(line->mid(0, pos), new(pool) VString(line->mid(pos+2, line->size()))); 
+		} else
+			throw Exception("http.response", 
+				&file_spec, 
+				"bad response from host - bad headers \"%s\"", header_block.cstr()); 
+	}
+
+	// output response
+	data=body.cstr(); data_size=body.size();
+	if(out_fields) {
+		headers.put(*file_status_name, new(pool) VString(*status_code)); 
+		*out_fields=&headers;
+	}
 }
 
 #ifndef DOXYGEN
 struct File_read_action_info {
 	void **data; size_t *data_size;
-};
+}; 
 #endif
-static void file_read_action(Pool& pool,
-							 struct stat& finfo,
+static void file_read_action(Pool& pool, 
+							 struct stat& finfo, 
 							 int f, 
-							 const String& file_spec, const char *fname, bool as_text,
+							 const String& file_spec, const char* fname, bool as_text, 
 							 void *context) {
-	File_read_action_info& info=*static_cast<File_read_action_info *>(context);
+	File_read_action_info& info=*static_cast<File_read_action_info *>(context); 
 	if(size_t to_read_size=(size_t)finfo.st_size) { 
-		*info.data=pool.malloc(to_read_size+(as_text?1:0), 3);
-		*info.data_size=(size_t)read(f, *info.data, to_read_size);
+		*info.data=pool.malloc(to_read_size+(as_text?1:0), 3); 
+		*info.data_size=(size_t)read(f, *info.data, to_read_size); 
 
 		if(ssize_t(*info.data_size)<0 || *info.data_size>to_read_size)
-			throw Exception(0,
+			throw Exception(0, 
 				&file_spec, 
 				"read failed: actually read %lu bytes count not in [0..%lu] valid range", 
-					*info.data_size, to_read_size);
+					*info.data_size, to_read_size); 
 	} else { // empty file
 		if(as_text) {
-			*info.data=pool.malloc(1);
+			*info.data=pool.malloc(1); 
 			*(char*)(*info.data)=0;
 		} else 
 			*info.data=0;
 		*info.data_size=0;
 		return;
 	}
-
-	if(as_text) {
-		fix_line_breaks((char *)(*info.data), *info.data_size);
-		// note: after fixing
-		((char*&)(*info.data))[*info.data_size]=0;
-	}
 }
 bool file_read(Pool& pool, const String& file_spec, 
-			   void*& data, size_t& data_size, bool as_text,
+			   void*& data, size_t& data_size, 
+			   bool as_text, Hash *params, Hash** out_fields, 
 			   bool fail_on_read_problem) {
-	File_read_action_info info={&data, &data_size};
-	return file_read_action_under_lock(pool, file_spec, 
-		"read", file_read_action, &info,
-		as_text, fail_on_read_problem);
+	bool result;
+	if(file_spec.starts_with("http://", 7)) {
+		// fail on read problem
+		file_read_http(pool, file_spec, data, data_size, params, out_fields); 
+		result=true;
+	} else {
+		File_read_action_info info={&data, &data_size}; 
+		result=file_read_action_under_lock(pool, file_spec, 
+			"read", file_read_action, &info, 
+			as_text, fail_on_read_problem); 
+	}
+
+	if(result && as_text) {
+		fix_line_breaks((char *)(data), data_size); 
+		// note: after fixing
+		((char*&)(data))[data_size]=0;
+	}
+
+	return result;
 }
 
 bool file_read_action_under_lock(Pool& pool, const String& file_spec, 
-				const char *action_name, File_read_action action, void *context,
-				bool as_text,
+				const char* action_name, File_read_action action, void *context, 
+				bool as_text, 
 				bool fail_on_read_problem) {
-	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
+	const char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
 	int f;
 
 	// first open, next stat:
@@ -169,49 +389,49 @@ bool file_read_action_under_lock(Pool& pool, const String& file_spec,
 	// ex: 
 	//   a.html:^test[] and b.html hardlink to a.html
 	//   user inserts ! before ^test in a.html
-	//   directory entry of b.html in NTFS not updated at once,
+	//   directory entry of b.html in NTFS not updated at once, 
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
 	// later: it seems, even this does not help sometimes
     if((f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
 		try {
 			if(lock_shared_blocking(f)!=0)
-				throw Exception("file.lock",
+				throw Exception("file.lock", 
 						&file_spec, 
 						"shared lock failed: %s (%d), actual filename '%s'", 
-							strerror(errno), errno, fname);
+							strerror(errno), errno, fname); 
 
 			struct stat finfo;
 			if(stat(fname, &finfo)!=0)
 				throw Exception("file.missing", // hardly possible: we just opened it OK
 					&file_spec, 
 					"stat failed: %s (%d), actual filename '%s'", 
-						strerror(errno), errno, fname);
+						strerror(errno), errno, fname); 
 
 #ifdef NO_FOREIGN_GROUP_FILES
 			if(finfo.st_gid/*foreign?*/!=getegid()) {
-				throw Exception("parser.runtime",
-					&file_spec,
+				throw Exception("parser.runtime", 
+					&file_spec, 
 					"parser reading files of foreign group disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
-						fname);
+						fname); 
 #endif
 
-			action(pool, finfo, f, file_spec, fname, as_text, context);
+			action(pool, finfo, f, file_spec, fname, as_text, context); 
 		} catch(...) {
-			unlock(f);close(f);
+			unlock(f);close(f); 
 			if(fail_on_read_problem)
 				/*re*/throw;
 			return false;			
 		} 
 
-		unlock(f);close(f);
+		unlock(f);close(f); 
 		return true;
     } else {
 		if(fail_on_read_problem)
-			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
+			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
 				&file_spec, 
 				"%s failed: %s (%d), actual filename '%s'", 
-					action_name, strerror(errno), errno, fname);
+					action_name, strerror(errno), errno, fname); 
 		return false;
 	}
 }
@@ -220,126 +440,126 @@ static void create_dir_for_file(const String& file_spec) {
 	size_t pos_after=1;
 	int pos_before;
 	while((pos_before=file_spec.pos("/", 1, pos_after))>=0) {
-		mkdir(file_spec.mid(0, pos_before).cstr(String::UL_FILE_SPEC), 0775);
+		mkdir(file_spec.mid(0, pos_before).cstr(String::UL_FILE_SPEC), 0775); 
 		pos_after=pos_before+1;
 	}
 }
 
 bool file_write_action_under_lock(
 				const String& file_spec, 
-				const char *action_name, File_write_action action, void *context,
-				bool as_text,
-				bool do_append,
-				bool do_block,
+				const char* action_name, File_write_action action, void *context, 
+				bool as_text, 
+				bool do_append, 
+				bool do_block, 
 				bool fail_on_lock_problem) {
-	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
+	const char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
 	int f;
 	if(access(fname, W_OK)!=0) // no
-		create_dir_for_file(file_spec);
+		create_dir_for_file(file_spec); 
 
 	if((f=open(fname, 
 		O_CREAT|O_RDWR
 		|(as_text?_O_TEXT:_O_BINARY)
 		|(do_append?O_APPEND:0), 0664))>=0) {
 		if((do_block?lock_exclusive_blocking(f):lock_exclusive_nonblocking(f))!=0) {
-			Exception e("file.lock",
+			Exception e("file.lock", 
 				&file_spec, 
 				"shared lock failed: %s (%d), actual filename '%s'", 
-				strerror(errno), errno, fname);
-			close(f);
+				strerror(errno), errno, fname); 
+			close(f); 
 			if(fail_on_lock_problem)
 				throw e;
 			return false;
 		}
 
 		try {
-			action(f, context);
+			action(f, context); 
 		} catch(...) {
 			if(!do_append)
 				ftruncate(f, lseek(f, 0, SEEK_CUR)); // one can not use O_TRUNC, read lower
-			unlock(f);close(f);
+			unlock(f);close(f); 
 			/*re*/throw;
 		}
 		
 		if(!do_append)
 			ftruncate(f, lseek(f, 0, SEEK_CUR)); // O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
-		unlock(f);close(f);
+		unlock(f);close(f); 
 		return true;
 	} else
-		throw Exception(errno==EACCES?"file.access":0,
+		throw Exception(errno==EACCES?"file.access":0, 
 			&file_spec, 
 			"%s failed: %s (%d), actual filename '%s'", 
-				action_name, strerror(errno), errno, fname);
+				action_name, strerror(errno), errno, fname); 
 	// here should be nothing, see rethrow above
 }
 
 #ifndef DOXYGEN
 struct File_write_action_info {
 	const void *data; size_t size;
-};
+}; 
 #endif
 static void file_write_action(int f, void *context) {
-	File_write_action_info& info=*static_cast<File_write_action_info *>(context);
+	File_write_action_info& info=*static_cast<File_write_action_info *>(context); 
 	if(info.size) {
-		int written=write(f, info.data, info.size);
+		int written=write(f, info.data, info.size); 
 		if(written<0)
-			throw Exception(0,
-				0,
-				"write failed: %s (%d)",  strerror(errno), errno);
+			throw Exception(0, 
+				0, 
+				"write failed: %s (%d)",  strerror(errno), errno); 
 	}
 }
 void file_write(
 				const String& file_spec, 
 				const void *data, size_t size, 
-				bool as_text,
+				bool as_text, 
 				bool do_append) {
-	File_write_action_info info={data, size};
+	File_write_action_info info={data, size}; 
 	file_write_action_under_lock(
 				file_spec, 
-				"write", file_write_action, &info,
-				as_text,
-				do_append);
+				"write", file_write_action, &info, 
+				as_text, 
+				do_append); 
 }
 
 // throws nothing! [this is required in file_move & file_delete]
 static void rmdir(const String& file_spec, size_t pos_after) {
 	int pos_before;
 	if((pos_before=file_spec.pos("/", 1, pos_after))>=0)
-		rmdir(file_spec, pos_before+1);
+		rmdir(file_spec, pos_before+1); 
 	
-	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::UL_FILE_SPEC));
+	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::UL_FILE_SPEC)); 
 }
 bool file_delete(const String& file_spec, bool fail_on_read_problem) {
-	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
+	const char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
 	if(unlink(fname)!=0)
 		if(fail_on_read_problem)
-			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
+			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
 				&file_spec, 
 				"unlink failed: %s (%d), actual filename '%s'", 
-					strerror(errno), errno, fname);
+					strerror(errno), errno, fname); 
 		else
 			return false;
 
-	rmdir(file_spec, 1);
+	rmdir(file_spec, 1); 
 	return true;
 }
 void file_move(const String& old_spec, const String& new_spec) {
-	const char *old_spec_cstr=old_spec.cstr(String::UL_FILE_SPEC);
-	const char *new_spec_cstr=new_spec.cstr(String::UL_FILE_SPEC);
+	const char* old_spec_cstr=old_spec.cstr(String::UL_FILE_SPEC); 
+	const char* new_spec_cstr=new_spec.cstr(String::UL_FILE_SPEC); 
 	
-	create_dir_for_file(new_spec);
+	create_dir_for_file(new_spec); 
 
 	if(rename(old_spec_cstr, new_spec_cstr)!=0)
-		throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
+		throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
 			&old_spec, 
 			"rename failed: %s (%d), actual filename '%s' to '%s'", 
-				strerror(errno), errno, old_spec_cstr, new_spec_cstr);
+				strerror(errno), errno, old_spec_cstr, new_spec_cstr); 
 
-	rmdir(old_spec, 1);
+	rmdir(old_spec, 1); 
 }
 
 
-bool entry_exists(const char *fname, struct stat *afinfo) {
+bool entry_exists(const char* fname, struct stat *afinfo) {
 	struct stat lfinfo;
 	bool result=stat(fname, &lfinfo)==0;
 	if(afinfo)
@@ -348,16 +568,16 @@ bool entry_exists(const char *fname, struct stat *afinfo) {
 }
 
 bool entry_exists(const String& file_spec) {
-	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
-	return entry_exists(fname, 0);
+	const char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
+	return entry_exists(fname, 0); 
 }
 
 static bool entry_readable(const String& file_spec, bool need_dir) {
-    char *fname=file_spec.cstr(String::UL_FILE_SPEC);
+    char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
 	if(need_dir) {
-		size_t size=strlen(fname);
+		size_t size=strlen(fname); 
 		while(size) {
-			char c=fname[size-1];
+			char c=fname[size-1]; 
 			if(c=='/' || c=='\\')
 				fname[--size]=0;
 			else
@@ -372,14 +592,14 @@ static bool entry_readable(const String& file_spec, bool need_dir) {
 	return false;
 }
 bool file_readable(const String& file_spec) {
-	return entry_readable(file_spec, false);
+	return entry_readable(file_spec, false); 
 }
 bool dir_readable(const String& file_spec) {
-	return entry_readable(file_spec, true);
+	return entry_readable(file_spec, true); 
 }
 String *file_readable(const String& path, const String& name) {
-	String *result=new(path.pool()) String(path);
-	*result << "/";
+	String *result=new(path.pool()) String(path); 
+	*result << "/"; 
 	*result << name;
 	return file_readable(*result)?result:0;
 }
@@ -389,19 +609,19 @@ bool file_executable(const String& file_spec) {
 
 bool file_stat(const String& file_spec, 
 			   size_t& rsize, 
-			   time_t& ratime,
-			   time_t& rmtime,
-			   time_t& rctime,
+			   time_t& ratime, 
+			   time_t& rmtime, 
+			   time_t& rctime, 
 			   bool fail_on_read_problem) {
-	Pool& pool=file_spec.pool();
-	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
+	Pool& pool=file_spec.pool(); 
+	const char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
     struct stat finfo;
 	if(stat(fname, &finfo)!=0)
 		if(fail_on_read_problem)
-			throw Exception("file.missing",
+			throw Exception("file.missing", 
 				&file_spec, 
 				"getting file size failed: %s (%d), real filename '%s'", 
-					strerror(errno), errno, fname);
+					strerror(errno), errno, fname); 
 		else
 			return false;
 	rsize=finfo.st_size;
@@ -411,10 +631,10 @@ bool file_stat(const String& file_spec,
 	return true;
 }
 
-char *getrow(char **row_ref, char delim) {
-    char *result=*row_ref;
+char* getrow(char* *row_ref, char delim) {
+    char* result=*row_ref;
     if(result) {
-		*row_ref=strchr(result, delim);
+		*row_ref=strchr(result, delim); 
 		if(*row_ref) 
 			*((*row_ref)++)=0; 
 		else if(!*result) 
@@ -423,9 +643,9 @@ char *getrow(char **row_ref, char delim) {
     return result;
 }
 
-char *lsplit(char *string, char delim) {
+char* lsplit(char* string, char delim) {
     if(string) {
-		char *v=strchr(string, delim);
+		char* v=strchr(string, delim); 
 		if(v) {
 			*v=0;
 			return v+1;
@@ -434,16 +654,16 @@ char *lsplit(char *string, char delim) {
     return 0;
 }
 
-char *lsplit(char **string_ref, char delim) {
-    char *result=*string_ref;
-	char *next=lsplit(*string_ref, delim);
+char* lsplit(char* *string_ref, char delim) {
+    char* result=*string_ref;
+	char* next=lsplit(*string_ref, delim); 
     *string_ref=next;
     return result;
 }
 
-char *rsplit(char *string, char delim) {
+char* rsplit(char* string, char delim) {
     if(string) {
-		char *v=strrchr(string, delim);
+		char* v=strrchr(string, delim); 
 		if(v) {
 			*v=0;
 			return v+1;
@@ -453,44 +673,44 @@ char *rsplit(char *string, char delim) {
 }
 
 /// @todo less stupid type detection
-char *format(Pool& pool, double value, char *fmt) {
-	char local_buf[MAX_NUMBER];
+char* format(Pool& pool, double value, char* fmt) {
+	char local_buf[MAX_NUMBER]; 
 	size_t size;
 	
 	if(fmt)
 		if(strpbrk(fmt, "diouxX"))
 			if(strpbrk(fmt, "ouxX"))
-				size=snprintf(local_buf, sizeof(local_buf), fmt, (uint)value);
+				size=snprintf(local_buf, sizeof(local_buf), fmt, (uint)value); 
 			else
-				size=snprintf(local_buf, sizeof(local_buf), fmt, (int)value);
+				size=snprintf(local_buf, sizeof(local_buf), fmt, (int)value); 
 		else
-			size=snprintf(local_buf, sizeof(local_buf), fmt, value);
+			size=snprintf(local_buf, sizeof(local_buf), fmt, value); 
 	else
-		size=snprintf(local_buf, sizeof(local_buf), "%d", (int)value);
+		size=snprintf(local_buf, sizeof(local_buf), "%d", (int)value); 
 	
-	char *pool_buf=(char *)pool.malloc(size+1, 4);
-	memcpy(pool_buf, local_buf, size+1);
+	char* pool_buf=(char *)pool.malloc(size+1, 4); 
+	memcpy(pool_buf, local_buf, size+1); 
 	return pool_buf;
 }
 
 size_t stdout_write(const void *buf, size_t size) {
 #ifdef WIN32
 	do{
-		int chunk_written=fwrite(buf, 1, min(8*0x400, size), stdout);
+		int chunk_written=fwrite(buf, 1, min(8*0x400, size), stdout); 
 		if(chunk_written<=0)
 			break;
 		size-=chunk_written;
 		buf=((const char*)buf)+chunk_written;
-	} while(size>0);
+	} while(size>0); 
 
 	return size;
 #else
-	return fwrite(buf, 1, size, stdout);
+	return fwrite(buf, 1, size, stdout); 
 #endif
 }
 
-char *unescape_chars(Pool& pool, const char *cp, int len) {
-	char *s=(char *)pool.malloc(len + 1, 5);
+char* unescape_chars(Pool& pool, const char* cp, int len) {
+	char* s=(char *)pool.malloc(len + 1, 5); 
 	enum EscapeState {
 		EscapeRest, 
 		EscapeFirst, 
@@ -500,13 +720,13 @@ char *unescape_chars(Pool& pool, const char *cp, int len) {
 	int srcPos=0;
 	int dstPos=0;
 	while(srcPos < len) {
-		int ch=cp[srcPos];
+		int ch=cp[srcPos]; 
 		switch(escapeState) {
 			case EscapeRest:
 			if(ch=='%') {
 				escapeState=EscapeFirst;
 			} else if(ch=='+') {
-				s[dstPos++]=' ';
+				s[dstPos++]=' '; 
 			} else {
 				s[dstPos++]=ch;	
 			}
@@ -516,35 +736,35 @@ char *unescape_chars(Pool& pool, const char *cp, int len) {
 			escapeState=EscapeSecond;
 			break;
 			case EscapeSecond:
-			escapedValue +=hex_value[ch];
+			escapedValue +=hex_value[ch]; 
 			s[dstPos++]=escapedValue;
 			escapeState=EscapeRest;
 			break;
 		}
-		srcPos++;
+		srcPos++; 
 	}
 	s[dstPos]=0;
 	return s;
 }
 
 #ifdef WIN32
-void back_slashes_to_slashes(char *s) {
+void back_slashes_to_slashes(char* s) {
 	if(s)
 		for(; *s; s++)
 			if(*s=='\\')
-				*s='/';
+				*s='/'; 
 }
 /*
-void slashes_to_back_slashes(char *s) {
+void slashes_to_back_slashes(char* s) {
 	if(s)
 		for(; *s; s++)
 			if(*s=='/')
-				*s='\\';
+				*s='\\'; 
 }
 */
 #endif
 
-bool StrEqNc(const char *s1, const char *s2, bool strict) {
+bool StrEqNc(const char* s1, const char* s2, bool strict) {
 	while(true) {
 		if(!(*s1)) {
 			if(!(*s2))
@@ -558,47 +778,47 @@ bool StrEqNc(const char *s1, const char *s2, bool strict) {
 				return false;
 		} else if((*s1) !=(*s2))
 			return false;
-		s1++;
-		s2++;
+		s1++; 
+		s2++; 
 	}
 }
 
 static bool isLeap(int year) {
     return !(
              (year % 4) || ((year % 400) && !(year % 100))
-            );
+            ); 
 }
 
 int getMonthDays(int year, int month) {
     int monthDays[]={
-        31,
-        isLeap(year) ? 29 : 28,
-        31,
-        30,
-        31,
-        30,
-        31,
-        31,
-        30,
-        31,
-        30,
+        31, 
+        isLeap(year) ? 29 : 28, 
+        31, 
+        30, 
+        31, 
+        30, 
+        31, 
+        31, 
+        30, 
+        31, 
+        30, 
         31
-    };
-    return monthDays[month];
+    }; 
+    return monthDays[month]; 
 }
 
-void remove_crlf(char *start, char *end) {
-	for(char *p=start; p<end; p++)
+void remove_crlf(char* start, char* end) {
+	for(char* p=start; p<end; p++)
 		switch(*p) {
-			case '\n': *p='|'; break;
-			case '\r': *p=' '; break;
+			case '\n': *p='|';  break;
+			case '\r': *p=' ';  break;
 		}
 }
 
 
 /// must be last in this file
 #undef vsnprintf
-int __vsnprintf(char *b, size_t s, const char *f, va_list l) {
+int __vsnprintf(char* b, size_t s, const char* f, va_list l) {
 	if(!s)
 		return 0;
 
@@ -613,11 +833,11 @@ int __vsnprintf(char *b, size_t s, const char *f, va_list l) {
 
 	  if the number of bytes to write exceeds buffer, then count bytes are written and –1 is returned
 	*/
-	r=_vsnprintf(b, s, f, l);
+	r=_vsnprintf(b, s, f, l); 
 	if(r<0) 
 		r=s;
 #else
-	r=vsnprintf(b, s, f, l);
+	r=vsnprintf(b, s, f, l); 
 	/*
 	solaris: 
 	man vsnprintf
@@ -638,24 +858,24 @@ int __vsnprintf(char *b, size_t s, const char *f, va_list l) {
 	return r;
 }
 
-int __snprintf(char *b, size_t s, const char *f, ...) {
+int __snprintf(char* b, size_t s, const char* f, ...) {
 	va_list l;
-    va_start(l, f);
-    int r=__vsnprintf(b, s, f, l);
-    va_end(l);
+    va_start(l, f); 
+    int r=__vsnprintf(b, s, f, l); 
+    va_end(l); 
 	return r;
 }
 
 int pa_sleep(unsigned long secs, unsigned long usecs) {
-	for (; usecs >= 1000000; ++secs, usecs -= 1000000);
+	for (;  usecs >= 1000000; ++secs, usecs -= 1000000); 
 
 #ifdef WIN32
-	Sleep(secs * 1000 + usecs / 1000);
+	Sleep(secs * 1000 + usecs / 1000); 
 	return 0;
 #else
 	struct timeval t;
 	t.tv_sec = secs;
 	t.tv_usec = usecs;
-	return (select(0, NULL, NULL, NULL, &t) == -1 ? errno : 0);
+	return (select(0, NULL, NULL, NULL, &t) == -1 ? errno : 0); 
 #endif
 }

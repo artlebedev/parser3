@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/11/22 16:16:33 $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/11/25 14:10:52 $";
 
 #include "pa_config_includes.h"
 
@@ -75,6 +75,11 @@ String *sql_distinct_name;
 String *charset_UTF8_name;
 
 String *hash_default_element_name;
+
+String *http_method_name;
+String *http_timeout_name;
+String *http_headers_name;
+String *file_status_name;
 
 
 Table *string_match_table_template;
@@ -361,6 +366,13 @@ void pa_globals_init(Pool& pool) {
 	// hash
 	hash_default_element_name=NEW String(pool, HASH_DEFAULT_ELEMENT_NAME);
 
+	// http
+	http_method_name=NEW String(pool, HTTP_METHOD_NAME);
+	http_timeout_name=NEW String(pool, HTTP_TIMEOUT_NAME);
+	http_headers_name=NEW String(pool, HTTP_HEADERS_NAME);
+	file_status_name=NEW String(pool, FILE_STATUS_NAME);
+
+	
 	// hashes
 	untaint_lang_name2enum=NEW Hash(pool);
 	#define ULN(cstr, LANG) \

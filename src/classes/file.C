@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/11/20 10:01:01 $";
+static const char* IDENT_FILE_C="$Date: 2002/11/25 14:10:51 $";
 
 #include "pa_config_includes.h"
 
@@ -120,17 +120,32 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	Value& vmode_name=params-> as_no_junction(0, "mode must not be code");
 	const String& lfile_name=r.absolute(params->as_no_junction(1, "file name must not be code").as_string());
+	Value *third_param=params->size()>2?&params->as_no_junction(2, "filename or options must not be code"):0;
+	Hash *third_param_hash=third_param?third_param->get_hash(&method_name):0;
+	int alt_filename_param_index=2;
+	if(third_param_hash)
+		alt_filename_param_index++;
 
 	void *data;  size_t size;
+	Hash *fields=0;
 	file_read(pool, lfile_name, data, size, 
-		vmode_name.as_string()==TEXT_MODE_NAME);
+		vmode_name.as_string()==TEXT_MODE_NAME,
+		third_param_hash,
+		&fields
+	);
 
-	char *user_file_name=params->size()>2?
-		params->as_string(2, "filename must be string").cstr(String::UL_FILE_SPEC)
+	char *user_file_name=params->size()>alt_filename_param_index?
+		params->as_string(alt_filename_param_index, "filename must be string").cstr(String::UL_FILE_SPEC)
 		:lfile_name.cstr(String::UL_FILE_SPEC);
+
+	Value *vcontent_type=0;
+	if(fields)
+		vcontent_type=static_cast<Value *>(fields->get(*content_type_name));
+	if(!vcontent_type)
+		vcontent_type=new(pool) VString(r.mime_type_of(user_file_name));
 	
-	static_cast<VFile *>(r.get_self())->set(true/*tainted*/, data, size, 
-		user_file_name, new(pool) VString(r.mime_type_of(user_file_name)));
+	VFile& self=*static_cast<VFile *>(r.get_self());
+	self.set(true/*tainted*/, data, size, user_file_name, vcontent_type);
 }
 
 static void _stat(Request& r, const String& method_name, MethodParams *params) {
@@ -350,7 +365,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 
 	// $status
 	self.fields().put(
-		*new(pool) String(pool, "status"),
+		*file_status_name,
 		new(pool) VInt(pool, status));
 	
 	// $stderr

@@ -292,7 +292,30 @@ OK
 #^includet2overridestatic[]
 #^virtualtest2[]
 #^message-id-test[]
-^test_exif[jpg]
+#^test_exif[jpg]
+#^http_prefix[]
+#^http_prefix_table[]
+^http_prefix_xml[]
+
+@http_prefix_xml[]
+ $xdoc[^xdoc::load[http://www.cbr.ru/scripts/XML_daily.asp?date_req=02/03/2002;$.param[1]]]
+<pre>^taint[^xdoc.string[]]</pre>
+
+@http_prefix_table[]
+$table[^table::load[nameless;http://www.artlebedev.ru;$.USER-AGENT[paf]]]
+^table.count[]
+<hr>
+<pre>$table.0</pre>
+
+@http_prefix[]
+#$file[^file::load[text;http://www.artlebedev.ru]]
+#$file[^file::load[text;http://www.artlebedev.ru;alt]]
+$file[^file::load[text;http://www.artlebedev.ru;
+	$.USER-AGENT[paf]
+]]
+$file.status
+<hr>
+<pre>$file.text</pre>
 
 @test_exif[dir]
 $file[^file:list[$dir;\.(jpe?g|JPE?G)^$]]

@@ -8,12 +8,12 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2002/11/21 12:47:18 $";
+static const char* IDENT_COMMON_H="$Date: 2002/11/25 14:10:52 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
 
-class Value;
+class Hash;
 
 // replace system s*nprintf with our versions
 #undef vsnprintf 
@@ -114,7 +114,8 @@ bool file_read_action_under_lock(Pool& pool, const String& file_spec,
 */
 char *file_read_text(Pool& pool, 
 					 const String& file_spec, 
-					 bool fail_on_read_problem=true);
+					 bool fail_on_read_problem=true,
+					 Hash *params=0, Hash** out_fields=0);
 
 /**
 	read specified file using pool, 
@@ -125,6 +126,7 @@ char *file_read_text(Pool& pool,
 bool file_read(Pool& pool, const String& file_spec, 
 			   void*& data, size_t& size, 
 			   bool as_text,
+			   Hash *params=0, Hash** out_fields=0,
 			   bool fail_on_read_problem=true);
 
 typedef void (*File_write_action)(int f, void *context);

@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2002/11/22 16:16:33 $";
+static const char* IDENT_GLOBALS_H="$Date: 2002/11/25 14:10:52 $";
 
 #include "pa_pool.h"
 
@@ -78,6 +78,11 @@ class Table;
 
 #define HASH_DEFAULT_ELEMENT_NAME "_default"
 
+#define HTTP_METHOD_NAME  "method"
+#define HTTP_TIMEOUT_NAME    "timeout"
+#define HTTP_HEADERS_NAME "headers"
+#define FILE_STATUS_NAME  "status"
+
 //@}
 
 /// core func
@@ -138,6 +143,11 @@ extern String *sql_distinct_name;
 extern String *charset_UTF8_name;
 
 extern String *hash_default_element_name;
+
+extern String *http_method_name;
+extern String *http_timeout_name;
+extern String *http_headers_name;
+extern String *file_status_name;
 
 //@}
 

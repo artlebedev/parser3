@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2002/10/15 15:12:56 $";
+static const char* IDENT_XDOC_C="$Date: 2002/11/25 14:10:52 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -476,9 +476,14 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	// filespec
 	const String& file_name=params->as_string(0, "uri must be string");
 	const String& uri=r.absolute(file_name);
-	
+
+	void *data;  size_t size;
+	file_read(pool, uri, data, size, false/*not text*/,
+		params->size()>1?params->as_no_junction(1, "additional params must be hash").get_hash(&method_name)
+			:0);
+
 	GdomeDocument *document=(GdomeDocument *)
-		gdome_xml_n_mkref((xmlNode *)xmlParseFile(uri.cstr()));
+		gdome_xml_n_mkref((xmlNode *)xmlParseMemory((const char *)data, size));
 	if(!document || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
 		throw Exception(
@@ -884,7 +889,7 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool, XDOC_CLASS_NAME, Xnode_class) {
 	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 1);
 
 	// ^xdoc::load[some.xml]
-	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
+	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
 
 	// ^xdoc.save[some.xml]
 	// ^xdoc.save[some.xml;options hash]

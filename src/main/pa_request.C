@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/11/20 13:37:23 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/11/25 14:10:53 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -539,7 +539,8 @@ const String& Request::absolute(const String& relative_name) {
 		result << relative_name;
 		return result;
 	} else 
-		return relative(info.path_translated, relative_name);
+		return relative_name.pos("://")<0? relative(info.path_translated, relative_name)
+			:relative_name; // something like "http://xxx"
 }
 
 static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
