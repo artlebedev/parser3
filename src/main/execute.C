@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.55 2001/03/06 15:55:35 paf Exp $
+  $Id: execute.C,v 1.56 2001/03/06 17:18:57 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -41,8 +41,8 @@ char *opcode_name[]={
 	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS",
 	// expression ops: binary
 	"SUB", "ADD", "MUL", "DIV", "MOD",
-	"BIN_AND", "BIN_OR",
-	"LOG_AND", "LOG_OR",
+	"BIN_AND", "BIN_OR", "BIN_XOR",
+	"LOG_AND", "LOG_OR", "LOG_XOR",
 	"NUM_LT", "NUM_GT", "NUM_LE", "NUM_GE", "NUM_EQ", "NUM_NE",
 	"STR_LT", "STR_GT", "STR_LE", "STR_GE", "STR_EQ", "STR_NE"
 };
@@ -392,6 +392,16 @@ void Request::execute(const Array& ops) {
 				PUSH(value);
 				break;
 			}
+		case OP_BIN_XOR:
+			{
+				Value *b=POP();
+				Value *a=POP();
+				Value *value=NEW VDouble(pool(), 
+					static_cast<int>(a->get_double()) ^
+					static_cast<int>(b->get_double()));
+				PUSH(value);
+				break;
+			}
 		case OP_LOG_AND:
 			{
 				Value *b=POP();
@@ -408,6 +418,16 @@ void Request::execute(const Array& ops) {
 				Value *a=POP();
 				Value *value=NEW VBool(pool(), 
 					a->get_bool() ||
+					b->get_bool());
+				PUSH(value);
+				break;
+			}
+		case OP_LOG_XOR:
+			{
+				Value *b=POP();
+				Value *a=POP();
+				Value *value=NEW VBool(pool(), 
+					a->get_bool() ^
 					b->get_bool());
 				PUSH(value);
 				break;

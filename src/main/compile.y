@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.58 2001/03/06 17:03:18 paf Exp $
+  $Id: compile.y,v 1.59 2001/03/06 17:18:57 paf Exp $
 */
 
 %{
@@ -44,8 +44,9 @@ int yylex(YYSTYPE *lvalp, void *pc);
 
 %token BAD_STRING_COMPARISON_OPERATOR
 
-%token LOR "||"
 %token LAND "&&"
+%token LOR "||"
+%token LXOR "##"
 
 %token NLE "<="
 %token NGE ">="
@@ -60,13 +61,14 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %token SNE "ne"
 
 /* logical */
-%left '<' '>' "<=" ">="
+%left '<' '>' "<=" ">=" "##"
 %left "==" "!="
 %left "||"
 %left "&&"
 %left NOT     /* not: unary ! */
 
 /* bitwise */
+%left '#'
 %left '&' '|'
 %left INV     /* invertion: unary ~ */
 
@@ -433,6 +435,11 @@ expr:
 	P($$, $3); // stack: first,second operands
 	O($$, OP_BIN_OR); // value=first|second; stack: value
 }
+|	expr '#' expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_BIN_XOR); // value=first^second; stack: value
+}
 |	expr "&&" expr {
 	$$=$1; // stack: first operand
 	P($$, $3); // stack: first,second operands
@@ -442,6 +449,11 @@ expr:
 	$$=$1; // stack: first operand
 	P($$, $3); // stack: first,second operands
 	O($$, OP_LOG_OR); // value=first||second; stack: value
+}
+|	expr "##" expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_LOG_XOR); // value=first^second; stack: value
 }
 |	expr '<' expr {
 	$$=$1; // stack: first operand
@@ -491,13 +503,18 @@ complex_expr_value: complex_expr {
 /* basics */
 
 write_str_literal: STRING {
-	if(SLA2S($1)->size()) {
+	$$=$1;
+	O($$, OP_WRITE);
+	/*
+					   
+					   if(SLA2S($1)->size()) {
 		$$=$1;
 		O($$, OP_WRITE);
 	} else {
 		// optimized case of special end of macro. see yylex
 		$$=N(POOL);
 	}
+	*/
 };
 number: STRING {
 	change_string_literal_to_double_literal($$=$1);
@@ -682,9 +699,9 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			case '~':
 			case ';':
 				RC;
-			case '&': case '|': 
+			case '&': case '|':  case '#':
 				if(*PC->source==c) { // && ||
-					result='&'?LAND:LOR;
+					result=c=='#'?LXOR:c=='&'?LAND:LOR;
 					skip_analized_char=true;
 				} else
 					result=c;
@@ -916,14 +933,17 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 	}
 
 break2:
-	if(end!=begin) {
-		// strip last \n before LS_DEF_NAME or EOF
-		if((c=='@' || c==0) && end[-1]=='\n')
+	if(end!=begin) { // there is last piece?
+		if((c=='@' || c==0) && end[-1]=='\n') { // we are before LS_DEF_NAME or EOF?
+			// strip last \n
 			end--;
-		if(end!=begin) {
-			// append last piece
+		}
+		if(end!=begin) { // last piece still alive?
+			// append it
 			PC->string->APPEND(begin, end-begin, PC->file, begin_line/*, start_col*/);
 		}
+	}
+	if(PC->string->size()) { // something accumulated?
 		// create STRING value: array of OP_VALUE+vstring
 		*lvalp=VL(NEW VString(*PC->string));
 		// new pieces storage
