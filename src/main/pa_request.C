@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.62 2001/03/21 14:06:46 paf Exp $
+	$Id: pa_request.C,v 1.63 2001/03/22 11:19:11 paf Exp $
 */
 
 #include <string.h>
@@ -71,8 +71,8 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 		attributed_meaning_to_string(lmeaning).cstr());
 }
 
-void Request::core(const char *sys_auto_path1,
-				   const char *sys_auto_path2,
+void Request::core(const char *root_auto_path, bool root_auto_fail,
+				   const char *site_auto_path, bool site_auto_fail,
 				   bool header_only) {
 	VStateless_class *main_class=0;
 	bool need_rethrow=false;  Exception rethrow_me;
@@ -86,21 +86,21 @@ void Request::core(const char *sys_auto_path1,
 		//	all located classes become children of one another,
 		//	composing class we name 'MAIN'
 
-		// loading system auto.p 1
-		if(sys_auto_path1) {
-			strncpy(auto_filespec, sys_auto_path1, MAX_STRING-strlen(AUTO_FILE_NAME));
+		// loading root auto.p 
+		if(root_auto_path) {
+			strncpy(auto_filespec, root_auto_path, MAX_STRING-strlen(AUTO_FILE_NAME));
 			strcat(auto_filespec, AUTO_FILE_NAME);
 			main_class=use_file(
-				auto_filespec, false/*ignore possible read problem*/,
+				auto_filespec, root_auto_fail,
 				main_class_name, main_class);
 		}
 
 		// loading system auto.p 2
-		if(sys_auto_path2) {
-			strncpy(auto_filespec, sys_auto_path2, MAX_STRING-strlen(AUTO_FILE_NAME));
+		if(site_auto_path) {
+			strncpy(auto_filespec, site_auto_path, MAX_STRING-strlen(AUTO_FILE_NAME));
 			strcat(auto_filespec, AUTO_FILE_NAME);
 			main_class=use_file(
-				auto_filespec, false/*ignore possible read problem*/,
+				auto_filespec, site_auto_fail,
 				main_class_name, main_class);
 		}
 
@@ -339,8 +339,8 @@ void Request::fail_if_junction_(bool is, Value& value,
 char *Request::relative(const char *path, const char *file) {
     char *result=(char *)malloc(strlen(path)+strlen(file)+1);
 	strcpy(result, path);
-    rsplit(result, PATH_DELIMITER_CHAR);
-    strcat(result, PATH_DELIMITER_STRING);
+    rsplit(result, '/');
+    strcat(result, "/");
     strcat(result, file);
     return result;
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.65 2001/03/21 14:06:43 paf Exp $
+	$Id: pa_request.h,v 1.66 2001/03/22 11:19:10 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -76,8 +76,10 @@ public:
 		BEWARE: may throw exception to you: catch it!
 	*/
 	void core(
-		const char *sys_auto_path1,
-		const char *sys_auto_path2,
+		const char *root_auto_path, ///< path to system auto.p file
+		bool root_auto_fail, ///< fail if system auto.p file not found
+		const char *site_auto_path, ///< path to site auto.p file
+		bool site_auto_fail, ///< fail if site auto.p file not found
 		bool header_only);
 
 	/// executes ops

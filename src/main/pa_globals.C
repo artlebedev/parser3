@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.25 2001/03/21 14:06:46 paf Exp $
+	$Id: pa_globals.C,v 1.26 2001/03/22 11:19:11 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -16,8 +16,6 @@
 #include "_form.h"
 #include "_response.h"
 #include "_file.h"
-
-Service_funcs service_funcs;
 
 String *content_type_name;
 String *body_name;

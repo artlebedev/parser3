@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.8 2001/03/22 07:05:43 paf Exp $
+	$Id: pa_vcookie.C,v 1.9 2001/03/22 11:19:16 paf Exp $
 */
 
 #include <string.h>
@@ -18,6 +18,8 @@
 
 #define SESSION_NAME "session"
 #define DEFAULT_EXPIRES_DAYS 90
+
+/// @todo change urlencode here and in untaint.C to HTTP standard's " and \" mech
 
 // VCookie
 

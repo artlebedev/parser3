@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.29 2001/03/21 16:59:07 paf Exp $
+	$Id: parser3.C,v 1.30 2001/03/22 11:19:15 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -40,7 +40,7 @@ bool cgi; ///< we were started as CGI?
 #ifdef WIN32
 #	if _MSC_VER
 // intercept global system errors
-LONG WINAPI TopLevelExceptionFilter (
+static LONG WINAPI TopLevelExceptionFilter (
 									 struct _EXCEPTION_POINTERS *ExceptionInfo
 									 ) {
 	char buf[MAX_STRING];
@@ -68,7 +68,7 @@ LONG WINAPI TopLevelExceptionFilter (
 #endif
 
 //\if
-void fix_slashes(char *s) {
+static void fix_slashes(char *s) {
 	if(s)
 		for(; *s; s++)
 			if(*s=='\\')
@@ -78,11 +78,11 @@ void fix_slashes(char *s) {
 
 // service funcs
 
-const char *get_env(Pool& pool, const char *name) {
+static const char *get_env(Pool& pool, const char *name) {
  	return getenv(name);
 }
 
-int read_post(char *buf, int max_bytes) {
+static uint read_post(char *buf, uint max_bytes) {
 	int read_size=0;
 	do {
 		int chunk_size=read
@@ -95,17 +95,29 @@ int read_post(char *buf, int max_bytes) {
 	return read_size;
 }
 
-void output_header_attribute(const char *key, const char *value) {
+static void add_header_attribute(const char *key, const char *value) {
 	if(cgi)
 		printf("%s: %s\n", key, value);
 }
 
-void output_body(const char *buf, size_t size) {
+static void send_header(const char *buf, size_t size) {
 	if(cgi) // header | body  delimiter
 		puts("");
+}
 
+static void send_body(const char *buf, size_t size) {
 	stdout_write(buf, size);
 }
+
+/// Service funcs 
+ Service_funcs service_funcs={
+		get_env,
+		read_post,
+		add_header_attribute,
+		send_header,
+		send_body
+ };
+
 
 // main
 
@@ -117,12 +129,6 @@ int main(int argc, char *argv[]) {
 	setmode(fileno(stderr), _O_BINARY);
 //\#endif
 
-	// Service funcs 
-	service_funcs.get_env=get_env;
-	service_funcs.read_post=read_post;
-	service_funcs.output_header_attribute=output_header_attribute;
-	service_funcs.output_body=output_body;
-	
 	// were we started as CGI?
 	cgi=
 		getenv("SERVER_SOFTWARE") || 
@@ -187,27 +193,27 @@ int main(int argc, char *argv[]) {
 			);
 		
 		// some root-controlled location
-		char *sys_auto_path1;
+		char *root_auto_path;
 #ifdef WIN32
 		// c:\windows
-		sys_auto_path1=(char *)pool.malloc(MAX_STRING);
-		GetWindowsDirectory(sys_auto_path1, MAX_STRING);
-		strcat(sys_auto_path1, PATH_DELIMITER_STRING);
+		root_auto_path=(char *)pool.malloc(MAX_STRING);
+		GetWindowsDirectory(root_auto_path, MAX_STRING);
+		strcat(root_auto_path, "/");
 #else
 		// ~nobody
-		sys_auto_path1=getenv("HOME");
+		root_auto_path=getenv("HOME");
 #endif
 		
 		// beside by binary
-		char *sys_auto_path2=(char *)pool.malloc(MAX_STRING);
-		strncpy(sys_auto_path2, argv[0], MAX_STRING);  // filespec of my binary
-		rsplit(sys_auto_path2, '/');  rsplit(sys_auto_path2, '\\');// strip filename
-		strcat(sys_auto_path2, PATH_DELIMITER_STRING);
+		char *site_auto_path=(char *)pool.malloc(MAX_STRING);
+		strncpy(site_auto_path, argv[0], MAX_STRING);  // filespec of my binary
+		rsplit(site_auto_path, '/');  rsplit(site_auto_path, '\\');// strip filename
+		strcat(site_auto_path, "/");
 		
 		// process the request
 		request.core(pool.exception(),
-			sys_auto_path1, 
-			sys_auto_path2);
+			root_auto_path, false,
+			site_auto_path, false);
 		// no actions with request' data past this point
 		// request.exception not not handled here, but all
 		// request' data are associated with it's pool=exception

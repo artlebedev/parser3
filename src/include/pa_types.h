@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.21 2001/03/19 21:39:32 paf Exp $
+	$Id: pa_types.h,v 1.22 2001/03/22 11:19:10 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -23,11 +23,6 @@
 									   // but no 'case' labels
 #	endif
 #endif
-
-///	path delimiter char
-#	define PATH_DELIMITER_CHAR '/'
-///	path delimiter string
-#	define PATH_DELIMITER_STRING "/"
 
 /// for rare cases of undefined length using this-sized strings
 #define MAX_STRING 0x400
