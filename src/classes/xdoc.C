@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.21 2001/10/18 09:49:58 parser Exp $
+	$Id: xdoc.C,v 1.22 2001/10/18 10:07:10 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -579,7 +579,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		*dom_document,
 		0,
 		false /*threadSafe*/,
-		false /*buildBridge, too early, empty document*/);
+		false /*don' buildBridge -- too early, empty document*/);
 
 	// replace any previous document
 	vdoc.set_document(xalan_document);
