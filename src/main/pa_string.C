@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.129 2001/12/10 09:44:17 paf Exp $
+	$Id: pa_string.C,v 1.130 2001/12/13 10:24:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -735,7 +735,7 @@ String& String::reconstruct(Pool& pool) const {
 	//_asm int 3;
 	String& result=*new(pool) String(pool);
 	const Chunk *chunk=&head; 
-	do {
+	while(true) {
 		const Chunk::Row *row=chunk->rows;
 		for(uint i=0; i<chunk->count; ) {
 			if(row==append_here)
@@ -744,16 +744,19 @@ String& String::reconstruct(Pool& pool) const {
 			uchar joined_lang;
 			const char *joined_ptr;
 			size_t joined_size;
+#ifndef NO_STRING_ORIGIN
+			const char *joined_origin_file=row->item.origin.file;
+			const size_t joined_origin_line=row->item.origin.line;
+#endif
 			join_chain(pool, i, chunk, row,
 				joined_lang, joined_ptr, joined_size);
 
-			result.APPEND(joined_ptr, joined_size, 
-				joined_lang,
-				row->item.origin.file, row->item.origin.line);
+			result.APPEND(joined_ptr, joined_size, joined_lang,
+				joined_origin_file, joined_origin_line);
 			if(!chunk)
 				goto break2;
 		}
-	} while(true);
+	}
 break2:
 
 	return result;
