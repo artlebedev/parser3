@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/09/12 11:57:43 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/09/16 07:08:49 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -397,6 +397,13 @@ static void store_message_element(const Hash::Key& raw_element_name, Hash::Val *
 	// grep parts
 	for(int pt=0; pt<P_TYPES_COUNT; pt++) {
 		if(low_element_name.starts_with(part_name_starts[pt])) {
+			// check that $.message# '#' is digit
+			size_t start_len=strlen(part_name_starts[pt]);
+			if(low_element_name.size()>start_len) {
+				const char *at_num=low_element_name.mid(start_len, start_len+1).cstr();
+				if(!isdigit(*at_num))
+					continue;
+			}
 			*i.parts[pt]+=&element_value;
 			i.parts_count++;
 			return;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2002/09/12 08:48:26 $";
+static const char* IDENT_UNTAINT_C="$Date: 2002/09/16 07:08:49 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -427,9 +427,10 @@ char *String::store_to(char *dest, Untaint_lang lang,
    particular, SPACE and TAB MUST NOT be represented as themselves
    within encoded words.
 */
-					if(src==stop) {
+					if(src==stop && to_quoted_printable) {
 						dest+=sprintf(dest, "?=");
 						closed=true;
+						to_quoted_printable=false;
 					}
 					if((!stop || src<stop) && (
 						(*src & 0x80)  // starting quote-printable-encoding on first 8bit char
