@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.146 2001/12/06 20:19:31 paf Exp $
+	$Id: parser3.C,v 1.147 2001/12/13 10:37:04 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -177,7 +177,7 @@ void SAPI::add_header_attribute(Pool& , const char *key, const char *value) {
 /// @todo intelligent cache-control
 void SAPI::send_header(Pool& ) {
 	if(cgi) {
-		puts("expires: Fri, 23 Mar 2001 09:32:23 GMT");
+//		puts("expires: Fri, 23 Mar 2001 09:32:23 GMT");
 
 		// header | body  delimiter
 		puts("");

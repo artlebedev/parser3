@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.60 2001/11/19 12:17:07 paf Exp $
+	$Id: parser3isapi.C,v 1.61 2001/12/13 10:37:04 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -187,10 +187,10 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 void SAPI::send_header(Pool& pool) {
 	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.get_context());
 
-	ctx.header->APPEND_CONST(
+/*	ctx.header->APPEND_CONST(
 		"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
 		"\r\n");
-	HSE_SEND_HEADER_EX_INFO header_info;
+*/	HSE_SEND_HEADER_EX_INFO header_info;
 
 	char status_buf[MAX_STATUS_LENGTH];
 	switch(ctx.http_response_code) {

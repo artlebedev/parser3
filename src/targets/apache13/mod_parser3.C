@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.13 2001/11/26 12:14:09 paf Exp $
+	$Id: mod_parser3.C,v 1.14 2001/12/13 10:37:03 paf Exp $
 */
 
 #include "httpd.h"
@@ -328,7 +328,7 @@ static int parser_handler(request_rec *r) {
 	/* A flag which modules can set, to indicate that the data being
 	 * returned is volatile, and clients should be told not to cache it.
 	 */
-	r->no_cache=1;
+//	r->no_cache=1;
 
 	try { // global try
 		call_real_parser_handler__do_SEH(pool, r);
