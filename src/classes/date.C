@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: date.C,v 1.4 2001/07/18 10:06:04 parser Exp $
+	$Id: date.C,v 1.5 2001/09/04 09:07:04 parser Exp $
 */
-static const char *RCSId="$Id: date.C,v 1.4 2001/07/18 10:06:04 parser Exp $"; 
+static const char *RCSId="$Id: date.C,v 1.5 2001/09/04 09:07:04 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -71,13 +71,13 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	vdate->set_time(time);
 }
 
-static void _string(Request& r, const String& method_name, MethodParams *) {
+static void _sql_string(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	VDate *vdate=static_cast<VDate *>(r.self);
 	int size=1+ 4+1+2+1+2 +1+ 2+1+2+1+2 +1 +1;
 	char *buf=(char *)pool.malloc(size);
 	time_t time=vdate->get_time();
-	size=strftime(buf, size, "'%Y-%m-%d %H:%M:%S'", gmtime(&time));
+	size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", gmtime(&time));
 	
 	String& string=*new(pool) String(pool);
 	string.APPEND_CLEAN(buf, size, 
@@ -137,7 +137,7 @@ MDate::MDate(Pool& apool) : Methoded(apool) {
 	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 6);
 
 	// ^string[]
-	add_native_method("string", Method::CT_DYNAMIC, _string, 0, 0);
+	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 0);
 
 	// ^roll(year|month|day;+/- 1)
 	add_native_method("roll", Method::CT_DYNAMIC, _roll, 2, 2);
