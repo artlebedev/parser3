@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/09/09 13:57:27 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/10/06 10:55:10 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -21,6 +21,7 @@ static const char * const IDENT_COMMON_C="$Date: 2004/09/09 13:57:27 $";
 #include "pa_vint.h"
 #include "pa_vhash.h"
 #include "pa_vtable.h"
+#include "pa_socks.h"
 
 #ifdef CYGWIN
 #define _GNU_H_WINDOWS32_SOCKETS
@@ -247,19 +248,25 @@ static int http_request(char*& response, size_t& response_size,
 					0, 
 					"can not resolve hostname \"%s\"", host); 
 			
-			if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/))<0)
+			if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/))<0) {
+				int no=pa_socks_errno();
 				throw Exception("http.connect", 
 					0, 
-					"can not make socket: %s (%d)", strerror(errno), errno); 
-			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest)))
+					"can not make socket: %s (%d)", pa_socks_strerr(no), no); 
+			}
+			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest))) {
+				int no=pa_socks_errno();
 				throw Exception("http.connect", 
 					0, 
-					"can not connect to host \"%s\": %s (%d)", host, strerror(errno), errno); 
+					"can not connect to host \"%s\": %s (%d)", host, pa_socks_strerr(no), no); 
+			}
 			size_t request_size=strlen(request);
-			if(send(sock, request, request_size, 0)!=(ssize_t)request_size)
+			if(send(sock, request, request_size, 0)!=(ssize_t)request_size) {
+				int no=pa_socks_errno();
 				throw Exception("http.connect", 
 					0, 
-					"error sending request: %s (%d)", strerror(errno), errno); 
+					"error sending request: %s (%d)", pa_socks_strerr(no), no); 
+			}
 
 			result=http_read_response(response, response_size, sock, fail_on_status_ne_200); 
 			closesocket(sock); 

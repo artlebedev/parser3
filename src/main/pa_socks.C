@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SOCKS_C="$Date: 2004/04/01 11:43:54 $";
+static const char * const IDENT_SOCKS_C="$Date: 2004/10/06 10:55:10 $";
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"
@@ -69,9 +69,37 @@ void pa_socks_done() {
 	} 
 }
 
+const char* pa_socks_strerr(int no) {
+	char buf[MAX_STRING];
+	buf[0]=0;
+	size_t error_size=FormatMessage( 
+		FORMAT_MESSAGE_FROM_SYSTEM | 
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		no,
+		0, // Default language
+		(LPTSTR) &buf,
+		sizeof(buf),
+		NULL 
+	);
+	if(error_size>3) // ".\r\n"
+		buf[error_size-3]=0;
+	return buf[0]? pa_strdup(buf): "unknown error";
+}
+int pa_socks_errno() {
+	return WSAGetLastError();
+}
+
 #else
 
 void pa_socks_init() {}
 void pa_socks_done() {}
+
+const char* pa_socks_strerr(int no) {
+	return strerror(no);
+}
+int pa_socks_errno() {
+	return errno;
+}
 
 #endif
