@@ -84,13 +84,13 @@ pgsql_client = @pgsql_client@
 sqldriversdir = @sqldriversdir@
 
 confdir = @bindir@
-conf_DATA = parser3.conf.dist
+conf_DATA = auto.p.dist
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../src/include/pa_config_auto.h
-CONFIG_CLEAN_FILES =  parser3.conf.dist
+CONFIG_CLEAN_FILES =  auto.p.dist
 DATA =  $(conf_DATA)
 
-DIST_COMMON =  Makefile.am Makefile.in parser3.conf.dist.in
+DIST_COMMON =  Makefile.am Makefile.in auto.p.dist.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -106,7 +106,7 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-parser3.conf.dist: $(top_builddir)/config.status parser3.conf.dist.in
+auto.p.dist: $(top_builddir)/config.status auto.p.dist.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 install-confDATA: $(conf_DATA)

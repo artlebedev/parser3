@@ -537,6 +537,11 @@ Xhashfile
         выполняется код
         разблокируется
     Xchmod[...] НЕТ И НЕ БУДЕТ, ЧТОБЫ НЕ МОГЛИ СДЕЛАТЬ executable и запустить, даже если ftp запрещает chmod.
+    !^file:dirname[/a/some.tar.gz]=/a
+    !^file:dirname[/a/b/]=/a
+    !^file:basename[/a/some.tar.gz]=some.tar.gz
+    !^file:justname[/a/some.tar.gz]=some.tar
+    !^file:justext[/a/some.tar.gz]=gz
 
 math
     !$math:PI

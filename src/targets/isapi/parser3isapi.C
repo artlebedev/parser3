@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.74 2002/06/12 14:09:50 paf Exp $
+	$Id: parser3isapi.C,v 1.74.2.1 2002/06/20 16:31:09 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -390,22 +390,22 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 			/* status_allowed */);
 
 	// beside by binary
-	static char site_config_path[MAX_STRING];
-	strncpy(site_config_path, argv0, MAX_STRING-1);  site_config_path[MAX_STRING-1]=0; // filespec of my binary
+	static char beside_binary_path[MAX_STRING];
+	strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
 	if(!(
-		rsplit(site_config_path, '/') || 
-		rsplit(site_config_path, '\\'))) { // strip filename
+		rsplit(beside_binary_path, '/') || 
+		rsplit(beside_binary_path, '\\'))) { // strip filename
 		// no path, just filename
-		site_config_path[0]='.'; site_config_path[1]=0;
+		beside_binary_path[0]='.'; beside_binary_path[1]=0;
 	}	
 	char config_filespec[MAX_STRING];
 	snprintf(config_filespec, MAX_STRING, 
 		"%s/%s", 
-		site_config_path, CONFIG_FILE_NAME);
+		beside_binary_path, AUTO_FILE_NAME);
 
 	// process the request
 	request.core(
-		config_filespec, false /*fail_on_read_problem*/, // /path/to/parser3.conf
+		config_filespec, false /*fail_on_read_problem*/, // /path/to/first/auto.p
 		header_only);
 }
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vmethod_frame.h,v 1.26 2002/04/18 11:41:30 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.26.6.1 2002/06/20 16:31:09 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -102,6 +102,10 @@ public: // usage
 	void set_self(Value& aself) { fself=&aself; }
 	Value *self() { return fself; }
 
+	bool can_store_param() {
+		const Method& method=*junction.method;
+		return method.params_names && store_param_index<method.params_names->size();
+	}
 	void store_param(Value *value) {
 		const Method& method=*junction.method;
 		int max_params=

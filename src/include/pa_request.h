@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.138 2002/06/12 14:09:49 paf Exp $
+	$Id: pa_request.h,v 1.138.2.1 2002/06/20 16:31:08 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -126,7 +126,7 @@ public:
 		VStateless_class *base_class=0); // core.C
 	/// compiles a @a source buffer
 	VStateless_class *use_buf(
-		const char *source, const char *file,
+		const char *source, const String& filespec, const char *filespec_cstr,
 		VStateless_class *aclass=0, const String *name=0, 
 		VStateless_class *base_class=0); // core.C
 
@@ -290,14 +290,19 @@ private: // compile.C
 
 private: // execute.C
 
-	void execute_method(Value& aself, const Method& method,
-		const String **return_string);
+	/// for @postprocess[body]
 	const String& execute_method(VMethodFrame& amethodFrame, const Method& method);
-	const String *execute_virtual_method(Value& aself, const String& method_name);
+	//{ for @conf[filespec] and @auto[filespec]
+	void execute_method(Value& aself, 
+		const Method& method, VString *optional_param,
+		const String **return_string);
 	void execute_nonvirtual_method(VStateless_class& aclass, 
-		const String& method_name,
+		const String& method_name, VString *optional_param,
 		const String **return_string,
 		const Method **return_method=0);
+	//}
+	/// for @main[]
+	const String *execute_virtual_method(Value& aself, const String& method_name);
 
 	Value *get_element(const String *& remember_name, bool can_call_operator);
 

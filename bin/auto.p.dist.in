@@ -1,0 +1,100 @@
+#$Id: auto.p.dist.in,v 1.2.2.1 2002/06/20 16:31:07 paf Exp $
+
+@conf[]
+$charsetsdir[@charsetsdir@]
+$sqldriversdir[@sqldriversdir@]
+
+$CHARSETS[
+@commentcharset_koi8r@    $.koi8-r[$charsetsdir/koi8-r.cfg]
+@commentcharset_windows1250@    $.windows-1250[$charsetsdir/windows-1250.cfg]
+@commentcharset_windows1251@    $.windows-1251[$charsetsdir/windows-1251.cfg]
+@commentcharset_windows1257@    $.windows-1257[$charsetsdir/windows-1257.cfg]
+]
+#change your client libraries paths to those on your system
+$SQL[
+	$.drivers[^table::set{protocol	driver	client
+mysql	$sqldriversdir/libparser3mysql.so	@mysql_client@
+pgsql	$sqldriversdir/libparser3pgsql.so	@pgsql_client@
+oracle	$sqldriversdir/libparser3oracle.so	@oracle_client@
+}]
+]
+
+#for ^file:load[name;user-name] mime-type autodetection
+$MIME-TYPES[^table::set{ext	mime-type
+zip	application/zip
+doc	application/msword
+xls	application/vnd.ms-excel
+pdf	application/pdf
+ppt	application/powerpoint
+rtf	application/rtf
+gif	image/gif
+jpg	image/jpeg
+png	image/png
+tif	image/tiff
+html	text/html
+htm	text/html
+txt	text/plain
+mts	application/metastream
+mid	audio/midi
+midi	audio/midi
+mp3	audio/mpeg
+ram	audio/x-pn-realaudio
+rpm	audio/x-pn-realaudio-plugin
+ra	audio/x-realaudio
+wav	audio/x-wav
+au	audio/basic
+mpg	video/mpeg
+avi	video/x-msvideo
+mov	video/quicktime
+swf	application/x-shockwave-flash
+}]
+
+$LIMITS[
+	$.post_max_size(10*0x400*0x400)
+]	
+
+#$MAIL[
+#	$.sendmail[your sendmail command goes here]
+#	these are tried when no 'sendmail' specified:
+#	    /usr/sbin/sendmail -ti
+#	    /usr/lib/sendmail -ti
+#]
+
+@unhandled_exception[exception;stack]
+<noindex>
+$response:content-type[
+        $.value[text/html]
+        $.charset[$response:charset]
+]
+
+<title>UNHANDLED EXCEPTION (root)</title>
+<body bgcolor=white>
+<font color=black>
+<pre>^untaint[html]{$exception.comment}</pre>
+^if(def $exception.source){
+<b>$exception.source</b><br>
+<pre>^untaint[html]{$exception.file^($exception.lineno^)}</pre>
+}
+^if(def $exception.type){exception.type=$exception.type}
+^if($stack){
+	<hr>
+	^stack.menu{
+		<tt>$stack.name</tt> $stack.file^($stack.lineno^)<br>
+	}
+}
+</noindex>
+
+@auto[]
+#source/client charsets
+$request:charset[windows-1251]
+$response:charset[windows-1251]
+
+$response:content-type[
+        $.value[text/html]
+        $.charset[$response:charset]
+]
+
+#$SQL.connect-string[mysql://user:pass@host/db?charset=cp1251_koi8]
+#$SQL.connect-string[pgsql://user:pass@host/db]
+#$SQL.connect-string[oracle://user:pass@service?NLS_LANG=RUSSIAN_AMERICA.CL8MSWIN1251&NLS_DATE_FORMAT=YYYY-MM-DD HH24:MI:SS]
+#$SQL.connect-string[odbc://DSN=datasource^;UID=user^;PWD=password]

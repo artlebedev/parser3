@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.88 2002/06/18 14:24:00 paf Exp $
+	$Id: file.C,v 1.88.2.1 2002/06/20 16:31:07 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -432,6 +432,56 @@ static void _lock(Request& r, const String& method_name, MethodParams *params) {
 	file_write_action_under_lock(file_spec, "lock", lock_execute_body, &info);
 }
 
+static int lastposafter(const String& s, int after, const char *substr, size_t substr_size, bool beforelast=false) {
+	size_t size;
+	if(beforelast)
+		size=s.size();
+	int at;
+	while((at=s.pos(substr, substr_size, after))>=0) {
+		size_t newafter=at+substr_size/*skip substr*/;
+		if(beforelast && newafter==size)
+			break;
+		after=newafter;
+	}
+
+	return after;
+}
+
+static void _dirname(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	const String& file_spec=params->as_string(0, "file name must be string");
+    // /a/some.tar.gz > /a
+	// /a/b/ > /a
+	int afterslash=lastposafter(file_spec, 0, "/", 1, true);
+	if(afterslash>0)
+		r.write_assign_lang(file_spec.mid(0, afterslash==1?1:afterslash-1));
+	else
+		r.write_assign_lang(*new(pool) String(pool, ".", 1));
+}
+
+static void _basename(Request& r, const String& method_name, MethodParams *params) {
+	const String& file_spec=params->as_string(0, "file name must be string");
+    // /a/some.tar.gz > some.tar.gz
+	int afterslash=lastposafter(file_spec, 0, "/", 1);
+	r.write_assign_lang(file_spec.mid(afterslash, file_spec.size()));
+}
+
+static void _justname(Request& r, const String& method_name, MethodParams *params) {
+	const String& file_spec=params->as_string(0, "file name must be string");
+    // /a/some.tar.gz > some.tar
+	int afterslash=lastposafter(file_spec, 0, "/", 1);
+	int afterdot=lastposafter(file_spec, afterslash, ".", 1);
+	r.write_assign_lang(file_spec.mid(afterslash, afterdot!=afterslash?afterdot-1:file_spec.size()));
+}
+static void _justext(Request& r, const String& method_name, MethodParams *params) {
+	const String& file_spec=params->as_string(0, "file name must be string");
+    // /a/some.tar.gz > gz
+	int afterdot=lastposafter(file_spec, 0, ".", 1);
+	if(afterdot>0)
+		r.write_assign_lang(file_spec.mid(afterdot, file_spec.size()));
+}
+
+
 // constructor
 
 MFile::MFile(Pool& apool) : Methoded(apool, "file") {
@@ -472,6 +522,15 @@ MFile::MFile(Pool& apool) : Methoded(apool, "file") {
 	// ^file:lock[path]{code}
 	add_native_method("lock", Method::CT_STATIC, _lock, 2, 2);
 
+    // ^file:dirname[/a/some.tar.gz]=/a
+	// ^file:dirname[/a/b/]=/a
+	add_native_method("dirname", Method::CT_STATIC, _dirname, 1, 1);
+    // ^file:basename[/a/some.tar.gz]=some.tar.gz
+    add_native_method("basename", Method::CT_STATIC, _basename, 1, 1);
+    // ^file:justname[/a/some.tar.gz]=some.tar
+	add_native_method("justname", Method::CT_STATIC, _justname, 1, 1);
+    // ^file:justext[/a/some.tar.gz]=gz
+	add_native_method("justext", Method::CT_STATIC, _justext, 1, 1);
 }
 
 // global variable

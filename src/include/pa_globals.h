@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.88 2002/06/12 14:09:48 paf Exp $
+	$Id: pa_globals.h,v 1.88.2.1 2002/06/20 16:31:08 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -20,7 +20,6 @@ class Table;
 
 //@{
 /// constant string. class name, predefined method & co
-#define CONFIG_FILE_NAME "parser3.conf"
 #define AUTO_FILE_NAME "auto.p"
 
 #define CONTENT_TYPE_NAME "content-type"

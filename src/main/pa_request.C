@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.211 2002/06/12 14:09:49 paf Exp $
+	$Id: pa_request.C,v 1.211.2.1 2002/06/20 16:31:08 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -474,25 +474,31 @@ VStateless_class *Request::use_file(const String& file_name,
 	if(!source)
 		return base_class;
 
-	return use_buf(source, file_spec->cstr(), 0/*new class*/, name, base_class);
+	return use_buf(source, *file_spec, file_spec->cstr(), 0/*new class*/, name, base_class);
 }
 
 
-VStateless_class *Request::use_buf(const char *source, const char *file,
+VStateless_class *Request::use_buf(const char *source, 
+								   const String& filespec, const char *filespec_cstr,
 								   VStateless_class *aclass, const String *name, 
 								   VStateless_class *base_class) {
 	// compile loaded class
-	VStateless_class& cclass=COMPILE(source, aclass, name, base_class, file);
+	VStateless_class& cclass=COMPILE(source, aclass, name, base_class, filespec_cstr);
+
+	VString *vfilespec=NEW VString(filespec);
 
 	// locate and execute possible @conf[] static
 	const Method *method_called;
-	execute_nonvirtual_method(cclass, *conf_method_name, 0/*no result needed*/, 
-		&method_called);
+	execute_nonvirtual_method(cclass, 
+		*conf_method_name, vfilespec,
+		0/*no result needed*/, &method_called);
 	if(method_called)
 		configure_admin(cclass, &method_called->name);
 
 	// locate and execute possible @auto[] static
-	execute_nonvirtual_method(cclass, *auto_method_name, 0/*no result needed*/);
+	execute_nonvirtual_method(cclass, 
+		*auto_method_name, vfilespec,
+		0/*no result needed*/);
 	return &cclass;
 }
 
@@ -589,7 +595,7 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 				else
 					throw Exception("parser.runtime",
 						mime_types->origin_string(),
-						"MIME-TYPE table column elements must not be empty");
+						MIME_TYPES_NAME  " table column elements must not be empty");
 		}
 	return *NEW String(pool(), "application/octet-stream");
 }
