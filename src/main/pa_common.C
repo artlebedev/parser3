@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.41 2001/04/09 09:48:20 paf Exp $
+	$Id: pa_common.C,v 1.42 2001/04/09 11:04:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -299,6 +299,14 @@ void back_slashes_to_slashes(char *s) {
 			if(*s=='\\')
 				*s='/';
 }
+/*
+void slashes_to_back_slashes(char *s) {
+	if(s)
+		for(; *s; s++)
+			if(*s=='/')
+				*s='\\';
+}
+*/
 #endif
 
 bool StrEqNc(const char *s1, const char *s2, bool strict) {

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: exec.C,v 1.1 2001/04/09 09:48:15 paf Exp $
+	$Id: exec.C,v 1.2 2001/04/09 11:04:08 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -47,8 +47,9 @@ static void _cgi(Request& r, const String& method_name, Array *params) {
 	}
 
 	const String in(pool, r.post_data, r.post_size);
-	String out(pool), err(pool);
-	SAPI::execute(vfile_name.as_string(), env, argv,
+	String out(pool);
+	String err(pool);
+	SAPI::execute(r.absolute(vfile_name.as_string()), env, argv,
 		in, out, err);
 	r.write_pass_lang(out);
 	if(err.size())

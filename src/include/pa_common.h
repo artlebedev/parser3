@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.34 2001/04/09 09:48:17 paf Exp $
+	$Id: pa_common.h,v 1.35 2001/04/09 11:04:10 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -135,6 +135,7 @@ const String& attributed_meaning_to_string(Value& meaning, String::Untaint_lang 
 
 #ifdef WIN32
 void back_slashes_to_slashes(char *s);
+//void slashes_to_back_slashes(char *s);
 #endif
 
 #ifndef _qsort

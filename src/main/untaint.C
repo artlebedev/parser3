@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.36 2001/04/07 10:34:45 paf Exp $
+	$Id: untaint.C,v 1.37 2001/04/09 11:04:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -47,7 +47,7 @@ inline bool need_file_encode(unsigned char c){
 
     return !strchr(
 #ifdef WIN32
-		":\\"
+		":\\~"
 #endif
 		"./", c);
 }
