@@ -161,7 +161,121 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^checkList[]
 #^datetest[]
 #^tserge[]
-^envt[]
+#^envt[]
+#^selectt[]
+#^select2[]
+#^selectSingle2[]
+#^selectString2[]
+#^selectNumber2[]
+#^selectBool2[]
+#^xdoccreate[]
+#^xdoccreatetag[]
+#^xdocload[]
+#^xdocstring[]
+#^xdocsave[]
+^div[]
+
+@div[]
+$var(5)
+^var.inc(7)
+^var.dec(3)
+^var.div(4)
+^var.mul(2)
+$var
+
+
+@xdocsave[]
+$document[^xdoc::create{<?xml version="1.0" encoding="windows-1251" ?>
+<document>
+строка1<br/>
+строка2<br/>
+</document>}]
+^document.save[test.xml]
+
+@xdocstring[]
+$document[^xdoc::create{<?xml version="1.0" encoding="windows-1251" ?>
+<document>
+строка1<br/>
+строка2<br/>
+</document>}]
+^document.string[
+    $.method[html]
+]
+
+
+@xdocload[]
+$document[^xdoc::load[article.xml]]
+$response:body[^document.file[$.media-type[text/xml]]]
+
+
+@xdoccreatetag[]
+$document[^xdoc::create[document]]
+$paraNode[^document.createElement[para]]
+$dummy[^document.documentElement.appendChild[$paraNode]]
+$response:body[^document.file[$.media-type[text/xml]]]
+
+
+@xdoccreate[]
+$document[^xdoc::create{<?xml version="1.0" encoding="windows-1251" ?>
+<document>
+текст
+</document>}]
+$response:body[^document.file[$.media-type[text/xml]]]
+
+@selectBool2[]
+$d[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
+<t attr="привет" n="123"/>}]
+^if(^d.selectBool[/t/@n > 10]){
+    /t/@n больше 10
+}{
+    не больше
+}
+
+
+@selectNumber2[]
+$d[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
+<t attr="привет" n="123"/>}]
+^d.selectNumber[number(/t/@n)+1]<br>
+^d.selectNumber[2*2]<br>
+
+
+@selectString2[]
+$d[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
+<t attr="привет" n="123"/>}]
+# результат=привет
+^d.selectString[string(t/@attr)]
+
+
+@selectSingle2[]
+$d[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
+<t attr="привет" n="123"/>}]
+# результат=один элемент "t"
+$element[^d.selectSingle[t]]
+# результат=2 (количество атрибутов <t>)
+Количество атрибутов: ^element.attributes._count[]<br>
+# результат=не существует (нет <x>)
+^if(^d.select[x]){
+    x существует
+}{
+    x не существует
+}
+
+@select2[]
+$d[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?><t attr="привет" n="123"/>}]
+# результат: список из одного элемента "t"
+$list[^d.select[t]]
+# результат: 2 = количество атрибутов <t>
+^list.0.attributes._count[]<br>
+^for[i](0;$list-1){
+    $attr[$list.$i]
+    $attr.nodeName = $attr.nodeType<br>
+}
+
+
+@selectt[]
+$d[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?><t attr="привет" n="123"/>}]
+$list[^d.select[t]]
+^list.0.attributes._count[]
 
 @envt[]
 $f[^file::exec[showenv.cmd;
