@@ -94,7 +94,7 @@ dir&gt;nul
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				optimization="2" GlobalOptimizations="TRUE" 				
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\..\..\win32\apache13\src\include;..\..\..\..\win32\apache13\src\os\win32"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;SHARED_MODULE"
@@ -180,7 +180,7 @@ dir&gt;nul
 				Name="Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					Optimization="2"
+					optimization="2" GlobalOptimizations="TRUE" 				
 					AdditionalIncludeDirectories=""
 					PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;SHARED_MODULE;$(NoInherit)"
 					CompileAs="1"/>

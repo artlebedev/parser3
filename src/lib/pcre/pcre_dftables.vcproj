@@ -80,7 +80,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				optimization="2" GlobalOptimizations="TRUE" 				
 				InlineFunctionExpansion="1"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				StringPooling="TRUE"
@@ -150,7 +150,7 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						Optimization="2"
+						optimization="2" GlobalOptimizations="TRUE" 				
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>

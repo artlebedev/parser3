@@ -22,7 +22,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				optimization="2" GlobalOptimizations="TRUE" 				
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="include,..\gc\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
@@ -125,7 +125,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
+				optimization="2" GlobalOptimizations="TRUE" 				
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="include,..\gc\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
@@ -246,7 +246,7 @@
 				Name="Profile Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					Optimization="2"
+					optimization="2" GlobalOptimizations="TRUE" 				
 					AdditionalIncludeDirectories=""
 					PreprocessorDefinitions=""/>
 			</FileConfiguration>
@@ -263,7 +263,7 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					Optimization="2"
+					optimization="2" GlobalOptimizations="TRUE" 				
 					AdditionalIncludeDirectories=""
 					PreprocessorDefinitions=""/>
 			</FileConfiguration>
@@ -283,7 +283,7 @@
 				Name="Profile Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					Optimization="2"
+					optimization="2" GlobalOptimizations="TRUE" 				
 					AdditionalIncludeDirectories=""
 					PreprocessorDefinitions=""/>
 			</FileConfiguration>
@@ -300,7 +300,7 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					Optimization="2"
+					optimization="2" GlobalOptimizations="TRUE" 				
 					AdditionalIncludeDirectories=""
 					PreprocessorDefinitions=""/>
 			</FileConfiguration>
@@ -320,7 +320,7 @@
 				Name="Profile Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					Optimization="2"
+					optimization="2" GlobalOptimizations="TRUE" 				
 					AdditionalIncludeDirectories=""
 					PreprocessorDefinitions=""/>
 			</FileConfiguration>
@@ -337,7 +337,7 @@
 				Name="Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					Optimization="2"
+					optimization="2" GlobalOptimizations="TRUE" 				
 					AdditionalIncludeDirectories=""
 					PreprocessorDefinitions=""/>
 			</FileConfiguration>
