@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.138 2002/01/16 10:28:34 paf Exp $
+	$Id: table.C,v 1.139 2002/01/21 12:33:05 paf Exp $
 */
 
 #include "classes.h"
@@ -92,16 +92,22 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	uint line=origin.line;
 #endif
 	if(params->size()==2) {
-		columns=0;
+		columns=0; // nameless
 	} else {
 		columns=new(pool) Array(pool);
 
-		if(char *row_chars=getrow(&data)) 
+		while(char *row_chars=getrow(&data)) {
+			// remove empty&comment lines
+			if(!*row_chars || *row_chars == '#')
+				continue;
 			do {
 				String *name=new(pool) String(pool);
 				name->APPEND_TAINTED(lsplit(&row_chars, '\t'), 0, file, line++);
 				*columns+=name;
 			} while(row_chars);
+
+			break;
+		}
 	}
 
 	// parse cells
