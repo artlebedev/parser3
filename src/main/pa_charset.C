@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.21 2002/02/27 16:37:38 paf Exp $
+	$Id: pa_charset.C,v 1.22 2002/03/18 08:16:15 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -448,7 +448,6 @@ void Charset::transcodeToUTF8(Pool& pool,
 	// return
 	adest_body=dest_body;
 }
-/// @test buf overflow
 void Charset::transcodeFromUTF8(Pool& pool,
 								   const void *source_body, size_t source_content_length,
 								   const void *& adest_body, size_t& dest_content_length) const {

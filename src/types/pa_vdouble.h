@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vdouble.h,v 1.33 2002/02/18 15:33:38 paf Exp $
+	$Id: pa_vdouble.h,v 1.34 2002/03/18 08:16:15 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -25,8 +25,6 @@ public: // Value
 	Value *as_expr_result(bool ) { return NEW VDouble(pool(), fdouble); }
 
 	/** VDouble: fdouble 
-		@test
-			now $a(2*2) 2*2 becomes double, then string, then double again!! get rid of that
 	*/
 	const String *get_string() {
 		char *buf=(char *)pool().malloc(MAX_NUMBER);

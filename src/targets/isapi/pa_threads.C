@@ -4,14 +4,13 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_threads.C,v 1.9 2002/03/04 10:03:07 paf Exp $
+	$Id: pa_threads.C,v 1.10 2002/03/18 08:16:15 paf Exp $
 */
 
 #include "pa_threads.h"
 
 #include <windows.h>
 
-/// @test really?
 const bool parser_multithreaded=true;
 
 pa_thread_t pa_get_thread_id() {
