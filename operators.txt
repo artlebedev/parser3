@@ -412,6 +412,12 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
                ]
             ]
         ]
+    !для отправки используется программа с параметрами, задаваемая 
+    	$MAIL.sendmail[команда]
+    	если не будет задана, проверяется, доступна ли 
+    	/usr/sbin/sendmail или
+        /usr/lib/sendmail
+        и, если доступна, то запускается с параметром "-t".	
 
 !image
     !$картинка[^image::measure[DATA]]

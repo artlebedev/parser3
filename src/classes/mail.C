@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.50 2001/12/28 14:06:50 paf Exp $
+	$Id: mail.C,v 1.51 2002/02/06 08:40:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -365,66 +365,56 @@ static void sendmail(Request& r, const String& method_name,
 			"$"MAIN_CLASS_NAME":"MAIL_NAME".SMTP not defined");
 #else
 	// unix
-	// $MAIN:MAIL.prog1["/usr/sbin/sendmail -t"] default
-	// $MAIN:MAIL.prog2["/usr/lib/sendmail -t"] default
-	char no_cstr[MAX_NUMBER];
-	for(int no=-2; ; no++) {
-		const String *prog_string;
-		switch(no) {
-		case -2: prog_string=new(pool) String(pool, "/usr/sbin/sendmail -t"); break;
-		case -1: prog_string=new(pool) String(pool, "/usr/lib/sendmail -t"); break;
-		default: 
-			{
-				String prog_key(pool, "prog");
-				snprintf(no_cstr, MAX_NUMBER, "%d", no);
-				prog_key << no_cstr;
-				if(mail_conf) {
-					if(Value *prog_value=static_cast<Value *>(mail_conf->get(prog_key)))
-						prog_string=&prog_value->as_string();
-					else
-						if(no==0)
-							continue;
-						else
-							throw Exception(0, 0,
-								&method_name,
-								"$"MAIN_CLASS_NAME":"MAIL_NAME".%s not defined", 
-								prog_key.cstr());
-				} else
-					throw Exception(0, 0,
-						&method_name,
-						"$" MAIN_CLASS_NAME ":" MAIL_NAME " not defined");
-			}
-		}
-		// we know prog_string here
-		Array argv(pool);
-		const String *file_spec;
-		int after_file_spec=prog_string->pos(" ", 1);
-		if(after_file_spec<=0)
-			file_spec=prog_string;
-		else {
-			size_t pos_after=after_file_spec;
-			file_spec=&prog_string->mid(0, pos_after);
-			prog_string->split(argv, &pos_after, " ", 1, String::UL_AS_IS);
-		}
+	// $MAIN:MAIL.sendmail["/usr/sbin/sendmail -t"] default
+	// $MAIN:MAIL.sendmail["/usr/lib/sendmail -t"] default
 
-		// skip unavailable default programs
-		if(no<0 && !file_executable(*file_spec))
-			continue;
-
-		String in(pool, letter_cstr); String out(pool); String err(pool);
-		int exit_status=pa_exec(*file_spec,
-			0/*default env*/,
-			&argv,
-			in, out, err);
-		if(exit_status || err.size())
+	const char *sendmailkey_cstr="sendmail";
+	const String *sendmail_string;
+	if(mail_conf) {
+		if(Value *sendmail_value=static_cast<Value *>(mail_conf->get(String(pool, sendmailkey_cstr))))
+			sendmail_string=&sendmail_value->as_string();
+		else
 			throw Exception(0, 0,
 				&method_name,
-				"'%s' reported problem: %s (%d)",
-					file_spec->cstr(),
-					err.size()?err.cstr():"UNKNOWN", 
-					exit_status);
-		break;
+				"$"MAIN_CLASS_NAME":"MAIL_NAME".%s not defined", 
+				sendmailkey_cstr);
+	} else {
+		sendmail_string=new(pool) String(pool, "/usr/sbin/sendmail");
+		if(!file_executable(*sendmail_string))
+			sendmail_string=new(pool) String(pool, "/usr/lib/sendmail");
+		sendmail_string->APPEND_CONST("-t");
 	}
+
+	// we know sendmail_string here
+	Array argv(pool);
+	const String *file_spec;
+	int after_file_spec=sendmail_string->pos(" ", 1);
+	if(after_file_spec<=0)
+		file_spec=sendmail_string;
+	else {
+		size_t pos_after=after_file_spec+1;
+		file_spec=&sendmail_string->mid(0, pos_after);
+		sendmail_string->split(argv, &pos_after, " ", 1, String::UL_AS_IS);
+	}
+
+	if(!file_executable(*sendmail_string))
+		throw Exception(0, 0,
+			sendmail_string,
+			"is not executable. Set $"MAIN_CLASS_NAME":"MAIL_NAME".%s with appropriate sendmail command", 
+				sendmailkey_cstr);
+
+	String in(pool, letter_cstr); String out(pool); String err(pool);
+	int exit_status=pa_exec(*file_spec,
+		0/*default env*/,
+		&argv,
+		in, out, err);
+	if(exit_status || err.size())
+		throw Exception(0, 0,
+			&method_name,
+			"'%s' reported problem: %s (%d)",
+				file_spec->cstr(),
+				err.size()?err.cstr():"UNKNOWN", 
+				exit_status);
 #endif
 }
 
