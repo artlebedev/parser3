@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.135 2001/12/24 09:05:34 paf Exp $
+	$Id: pa_string.C,v 1.136 2001/12/25 09:00:28 paf Exp $
 */
 
 #include "pcre.h"
@@ -207,7 +207,7 @@ int String::cmp(int& partial, const String& src,
 	bool b_break=src.size()==0;
 	if(!(a_break || b_break)) while(true) {
 		if(pos+a_row->item.size > this_offset) {
-			if(lang!=UL_UNSPECIFIED && a_row->item.lang!=lang) 
+			if(lang!=UL_UNSPECIFIED && a_row->item.lang>lang) 
 				return -1; // wrong lang -- bail out
 
 			int size_diff=
@@ -292,7 +292,7 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 	bool b_break=b_size==0;
 	if(!(a_break || b_break)) while(true) {
 		if(pos+a_row->item.size > this_offset) {
-			if(lang!=UL_UNSPECIFIED && a_row->item.lang!=lang) 
+			if(lang!=UL_UNSPECIFIED && a_row->item.lang>lang) 
 				return -1; // wrong lang -- bail out
 
 			int size_diff=

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.48 2001/12/24 10:00:04 paf Exp $
+	$Id: mail.C,v 1.49 2001/12/25 09:00:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -404,7 +404,7 @@ static void sendmail(Request& r, const String& method_name,
 		else {
 			size_t pos_after=after_file_spec;
 			file_spec=&prog_string->mid(0, pos_after);
-			prog_string->split(argv, &pos_after, " ", 1, String::UL_CLEAN);
+			prog_string->split(argv, &pos_after, " ", 1, String::UL_AS_IS);
 		}
 
 		// skip unavailable default programs

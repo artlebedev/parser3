@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.121 2001/12/17 18:44:51 paf Exp $
+	$Id: pa_string.h,v 1.122 2001/12/25 09:00:28 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -82,15 +82,17 @@ public:
 	*/
 	enum Untaint_lang {
 		UL_UNSPECIFIED=0, ///< zero value handy for hash lookup @see untaint_lang_name2enum
+		// these two must go before others, there are checks for >UL_AS_IS
 		UL_CLEAN, ///< clean
-		UL_TAINTED,  ///< tainted, untaint language as assigned later 
-		// untaint languages. assigned by ^untaint[lang]{...}
+		UL_AS_IS,     ///< leave all characters intact
+
 		UL_PASS_APPENDED,
 			/**<
 				leave language built into string being appended.
 				just a flag, that value not stored
 			*/
-		UL_AS_IS,     ///< leave all characters intact
+		UL_TAINTED,  ///< tainted, untaint language as assigned later 
+		// untaint languages. assigned by ^untaint[lang]{...}
 		UL_FILE_SPEC, ///< file specification
 		UL_HTTP_HEADER,    ///< text in HTTP response header
 		UL_MAIL_HEADER,    ///< text in mail header

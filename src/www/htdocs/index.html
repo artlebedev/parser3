@@ -1,8 +1,10 @@
 @auto[]
 $request:charset[windows-1251]
 $response:charset[windows-1251]
+$response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
+^ttablesetlang[]
 #^mail3[]
 #^ttime[]
 #^tupper[]
@@ -16,7 +18,7 @@ $response:charset[windows-1251]
 #^badvsnprintf[]
 #^badoracequoting[]
 #^badconstructors[]
-^xloadwrongtable[]
+#^xloadwrongtable[]
 #^xsetwrongtable[]
 #^if($form:test){y}{n}
 #^tablecolumnerror[]
@@ -83,6 +85,23 @@ $response:charset[windows-1251]
 #^header[]
 <hr>
 OK
+
+@ttablesetlang[]
+$a-tab-b[a	b
+1	2]
+
+$t[^table::set{$a-tab-b}]
+=$t.a=
+<hr>
+
+$t[^table::set[nameless]{^taint[$a-tab-b]}]
+=$t.0=
+<hr>
+
+$t[^table::set{^untaint{^taint[$a-tab-b]}}]
+=$t.a=
+
+#^t.append{1	2}
 
 @mail3[]
 ^mail:send[

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.136 2001/12/15 21:28:18 paf Exp $
+	$Id: table.C,v 1.137 2001/12/25 09:00:28 paf Exp $
 */
 
 #include "classes.h"
@@ -50,15 +50,15 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 		columns=new(pool) Array(pool);
 
 		Array head(pool);
-		data.split(head, &pos_after, "\n", 1, String::UL_CLEAN, 1);
+		data.split(head, &pos_after, "\n", 1, String::UL_AS_IS, 1);
 		if(head.size())
-			head.get_string(0)->split(*columns, 0, "\t", 1, String::UL_CLEAN);
+			head.get_string(0)->split(*columns, 0, "\t", 1, String::UL_AS_IS);
 	}
 
 	Table& table=*new(pool) Table(pool, &method_name, columns);
 	// parse cells
 	Array rows(pool);
-	data.split(rows, &pos_after, "\n", 1, String::UL_CLEAN);
+	data.split(rows, &pos_after, "\n", 1, String::UL_AS_IS);
 	Array_iter i(rows);
 	while(i.has_next()) {
 		Array& row=*new(pool) Array(pool);
@@ -67,7 +67,7 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 		if(!string.size())
 			continue;
 
-		string.split(row, 0, "\t", 1, String::UL_CLEAN);
+		string.split(row, 0, "\t", 1, String::UL_AS_IS);
 		table+=&row;
 	}
 
@@ -431,7 +431,7 @@ static void _append(Request& r, const String& method_name, MethodParams *params)
 
 	// parse cells
 	Array& row=*new(pool) Array(pool);
-	string.split(row, 0, "\t", 1, String::UL_CLEAN);
+	string.split(row, 0, "\t", 1, String::UL_AS_IS);
 
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	vtable.table()+=&row;
