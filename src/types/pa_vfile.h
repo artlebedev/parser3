@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.26 2001/05/07 14:00:53 paf Exp $
+	$Id: pa_vfile.h,v 1.27 2001/07/18 10:06:04 parser Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -34,7 +34,8 @@ public: // Value
 	bool as_bool() { return true; }
 
 	/// VFile: this
-	const VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED) const { 
+	VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED,
+		bool origins_mode=false) { 
 		return this; 
 	}
 

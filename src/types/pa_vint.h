@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.22 2001/05/11 17:45:10 parser Exp $
+	$Id: pa_vint.h,v 1.23 2001/07/18 10:06:04 parser Exp $
 */
 
 #ifndef PA_VINT_H
@@ -29,7 +29,9 @@ public: // Value
 	const String *get_string() {
 		char *buf=(char *)pool().malloc(MAX_NUMBER);
 		snprintf(buf, MAX_NUMBER, "%d", finteger);
-		return NEW String(pool(), buf);
+		String *result=NEW String(pool());
+		result->APPEND_CLEAN(buf, 0, name().origin().file, name().origin().line);
+		return result;
 	}
 	/// VInt: finteger
 	double as_double() { return as_int(); }

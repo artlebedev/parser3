@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.97 2001/07/07 17:59:02 parser Exp $
+	$Id: pa_string.h,v 1.98 2001/07/18 10:06:04 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -114,6 +114,8 @@ public:
 	String(Pool& apool, const char *src=0, size_t src_size=0, bool tainted=false);
 	String(const String& src);
 	size_t size() const { return fsize; }
+	/// makes store_to produce origin:text\n output
+	void set_origins_mode(bool aorigins_mode) const { forigins_mode=aorigins_mode; }
 	/// convert to C string. if 'lang' known, forcing 'lang' to it
 	char *cstr(Untaint_lang lang=UL_UNSPECIFIED, 
 		SQL_Connection *connection=0,
@@ -265,6 +267,9 @@ private:
 
 	// used rows in all chunks
 	int fused_rows;
+
+	/// origins_mode changes behaviour of store_to[cstr()]
+	mutable bool forigins_mode;
 
 private:
 

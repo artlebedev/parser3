@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_string.C,v 1.93 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: pa_string.C,v 1.94 2001/07/18 10:06:04 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -22,7 +22,8 @@ static const char *RCSId="$Id: pa_string.C,v 1.93 2001/06/28 07:44:17 parser Exp
 #include "pa_table.h"
 
 String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
-	Pooled(apool) {
+	Pooled(apool),
+	forigins_mode(false) {
 	last_chunk=&head;
 	head.count=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
@@ -37,18 +38,9 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 			APPEND_CLEAN(src, src_size, 0, 0);
 }
 
-void String::expand() {
-	size_t new_chunk_count=last_chunk->count+CR_GROW_COUNT;
-	last_chunk=static_cast<Chunk *>(
-		malloc(sizeof(size_t)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *)));
-	last_chunk->count=new_chunk_count;
-	link_row->link=last_chunk;
-	append_here=last_chunk->rows;
-	link_row=&last_chunk->rows[last_chunk->count];
-	link_row->link=0;
-}
-
-String::String(const String& src) :	Pooled(src.pool()) {
+String::String(const String& src) :	
+	Pooled(src.pool()),
+	forigins_mode(false) {
 	head.count=CR_PREALLOCATED_COUNT;
 	
 	size_t src_used_rows=src.fused_rows;
@@ -103,6 +95,17 @@ String::String(const String& src) :	Pooled(src.pool()) {
 	link_row->link=0;
 	fused_rows=src_used_rows;
 	fsize=src.fsize;
+}
+
+void String::expand() {
+	size_t new_chunk_count=last_chunk->count+CR_GROW_COUNT;
+	last_chunk=static_cast<Chunk *>(
+		malloc(sizeof(size_t)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *)));
+	last_chunk->count=new_chunk_count;
+	link_row->link=last_chunk;
+	append_here=last_chunk->rows;
+	link_row=&last_chunk->rows[last_chunk->count];
+	link_row->link=0;
 }
 
 String& String::append(const String& src, Untaint_lang lang, bool forced) {

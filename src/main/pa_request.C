@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.143 2001/07/13 12:13:50 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.144 2001/07/18 10:06:04 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -30,6 +30,7 @@ const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
 
 /// content type of response when no $MAIN:defaults.content-type defined
 const char *DEFAULT_CONTENT_TYPE="text/html";
+const char *ORIGINS_CONTENT_TYPE="text/plain";
 
 Methoded *MOP_create(Pool&);
 
@@ -304,13 +305,19 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 						NEW VString(*execute_method(frame, *method));
 				}
 
-		const VFile *body_file=body_vstring_after_post_process->as_vfile();
+		bool origins_mode=main_class->get_element(*origins_mode_name)!=0;
+
+		const VFile *body_file=body_vstring_after_post_process->as_vfile(
+			String::UL_UNSPECIFIED, origins_mode);
 
 		// extract response body
 		Value *body_value=static_cast<Value *>(
 			response.fields().get(*body_name));
 		if(body_value) // there is some $response.body
 			body_file=body_value->as_vfile();
+		else if(origins_mode)
+			response.fields().put(*content_type_name, 
+				NEW VString(*NEW String(pool(), ORIGINS_CONTENT_TYPE)));
 
 		// OK. write out the result
 		output_result(*body_file, header_only);
@@ -463,7 +470,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				body_string=NEW String(pool(), buf);
 			}
 
-			const VString body_vstring(*body_string);
+			VString body_vstring(*body_string);
 			const VFile *body_file=body_vstring.as_vfile();
 
 			// ERROR. write it out

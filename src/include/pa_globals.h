@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.54 2001/05/17 10:22:24 parser Exp $
+	$Id: pa_globals.h,v 1.55 2001/07/18 10:06:04 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -54,6 +54,7 @@ class Table;
 #	define CTYPE_LOWERCASE_NAME "lowercase"
 #define MIME_TYPES_NAME "MIME-TYPES"
 #define VFILE_MIME_TYPE_NAME "mime-type"
+#define ORIGINS_MODE_NAME "ORIGINS"
 
 #define RESULT_VAR_NAME "result"
 
@@ -107,6 +108,7 @@ extern String *ctype_lowercase_name;
 
 extern String *mime_types_name;
 extern String *vfile_mime_type_name;
+extern String *origins_mode_name;
 
 extern String *result_var_name;
 extern String *string_pre_match_name;

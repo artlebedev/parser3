@@ -5,14 +5,16 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vstring.C,v 1.8 2001/05/21 17:40:13 parser Exp $
+	$Id: pa_vstring.C,v 1.9 2001/07/18 10:06:04 parser Exp $
 */
 
 #include "pa_vstring.h"
 #include "pa_vfile.h"
 
-const VFile *VString::as_vfile(String::Untaint_lang lang) const {
+VFile *VString::as_vfile(String::Untaint_lang lang,
+		bool origins_mode) {
 	VFile& result=*NEW VFile(pool());
+	fstring.set_origins_mode(origins_mode);
 	const char *cstr=fstring.cstr(lang);
 	result.set(false/*not tainted*/, cstr, strlen(cstr));
 	return &result;

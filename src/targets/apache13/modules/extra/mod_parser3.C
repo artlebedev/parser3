@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: mod_parser3.C,v 1.35 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: mod_parser3.C,v 1.36 2001/07/18 10:06:04 parser Exp $"; 
 
 #include "httpd.h"
 #include "http_config.h"
@@ -23,6 +23,15 @@ static const char *RCSId="$Id: mod_parser3.C,v 1.35 2001/06/28 07:44:17 parser E
 #include "pa_version.h"
 #include "pa_socks.h"
 
+#ifdef _DEBUG
+#	define DEBUG_PREFIX "debug_"
+#	define PARSER3_MODULE debug_parser3_module
+#else
+#	define DEBUG_PREFIX
+#	define PARSER3_MODULE parser3_module
+#endif
+
+
 /// apache parser module configuration [httpd.conf + .htaccess-es]
 struct Parser_module_config {
     const char* parser_root_auto_path; ///< filespec of admin's auto.p file
@@ -33,14 +42,14 @@ struct Parser_module_config {
  * Declare ourselves so the configuration routines can find and know us.
  * We'll fill it in at the end of the module.
  */
-extern "C" module MODULE_VAR_EXPORT parser3_module;
+extern "C" module MODULE_VAR_EXPORT PARSER3_MODULE;
 
 /*
  * Locate our directory configuration record for the current request.
  */
 static Parser_module_config *our_dconfig(request_rec *r) {
     return (Parser_module_config *) 
-		ap_get_module_config(r->per_dir_config, &parser3_module);
+		ap_get_module_config(r->per_dir_config, &PARSER3_MODULE);
 }
 
 static const char *cmd_parser_auto_path(cmd_parms *cmd, void *mconfig, char *file_spec) {
@@ -504,7 +513,7 @@ static int parser_access_checker(request_rec *r) {
 static const command_rec parser_cmds[] =
 {
     {
-        "parser_root_auto_path",              /* directive name */
+        DEBUG_PREFIX"parser_root_auto_path",              /* directive name */
         (const char *(*)(void))((void *)cmd_parser_auto_path), // config action routine
         (void*)true,                   /* argument to include in call */
         (int)(ACCESS_CONF|RSRC_CONF),             /* where available */
@@ -512,7 +521,7 @@ static const command_rec parser_cmds[] =
         "Parser root auto.p filespec (Admin)" // directive description
     },
     {
-        "parser_site_auto_path",              /* directive name */
+        DEBUG_PREFIX"parser_site_auto_path",              /* directive name */
         (const char *(*)(void))((void *)cmd_parser_auto_path), // config action routine
         (void*)false,                   /* argument to include in call */
         (int)(OR_OPTIONS),             /* where available */
@@ -541,7 +550,7 @@ static const command_rec parser_cmds[] =
  */
 static const handler_rec parser_handlers[] =
 {
-    {"parser3-handler", parser_handler},
+    {DEBUG_PREFIX"parser3-handler", parser_handler},
     {NULL}
 };
 
@@ -559,7 +568,7 @@ static const handler_rec parser_handlers[] =
  * during request processing.  Note that not all routines are necessarily
  * called (such as if a resource doesn't have access restrictions).
  */
-module MODULE_VAR_EXPORT parser3_module =
+module MODULE_VAR_EXPORT PARSER3_MODULE =
 {
     STANDARD_MODULE_STUFF,
     parser_server_init,          /* module initializer */

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.65 2001/07/12 11:19:06 parser Exp $
+	$Id: pa_value.h,v 1.66 2001/07/18 10:06:04 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -78,6 +78,7 @@ public: // Value
 		- VString: value
 		- VVoid: ""
 		- VDouble: value
+		- VInt: value
 		- VBool: must be 0: so in ^if(1>2) it would'nt become "FALSE" string which is 'true'
 		- others: 0
 		- WContext: accumulated fstring
@@ -121,7 +122,8 @@ public: // Value
 		- VString: vfile
 		- VImage: true
 	*/
-	virtual const VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED) const { 
+	virtual VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED,
+		bool origins_mode=false) { 
 		bark("(%s) does not have file value"); return 0; 
 	}
 	

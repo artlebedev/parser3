@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: math.C,v 1.3 2001/07/07 16:38:01 parser Exp $"; 
+static const char *RCSId="$Id: math.C,v 1.4 2001/07/18 10:06:04 parser Exp $"; 
 
 #include "pa_config_includes.h"
 #include "pa_common.h"
@@ -39,7 +39,9 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
 			&method_name,
 			"bad range [0..%u]", max);
 	
-	r.write_no_lang(*new(pool) VInt(pool, rand()%max));
+	Value& result=*new(pool) VInt(pool, rand()%max);
+	result.set_name(method_name);
+	r.write_no_lang(result);
 }
 
 

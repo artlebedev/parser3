@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: date.C,v 1.3 2001/07/09 16:13:17 parser Exp $
+	$Id: date.C,v 1.4 2001/07/18 10:06:04 parser Exp $
 */
-static const char *RCSId="$Id: date.C,v 1.3 2001/07/09 16:13:17 parser Exp $"; 
+static const char *RCSId="$Id: date.C,v 1.4 2001/07/18 10:06:04 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -79,7 +79,11 @@ static void _string(Request& r, const String& method_name, MethodParams *) {
 	time_t time=vdate->get_time();
 	size=strftime(buf, size, "'%Y-%m-%d %H:%M:%S'", gmtime(&time));
 	
-	Value& result=*new(pool) VString(*new(pool) String(pool, buf, size));
+	String& string=*new(pool) String(pool);
+	string.APPEND_CLEAN(buf, size, 
+		method_name.origin().file, 
+		method_name.origin().line);
+	Value& result=*new(pool) VString(string);
 	r.write_assign_lang(result);
 }
 

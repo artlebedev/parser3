@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.32 2001/07/07 16:38:01 parser Exp $
+	$Id: mail.C,v 1.33 2001/07/18 10:06:04 parser Exp $
 */
-static const char *RCSId="$Id: mail.C,v 1.32 2001/07/07 16:38:01 parser Exp $"; 
+static const char *RCSId="$Id: mail.C,v 1.33 2001/07/18 10:06:04 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -120,7 +120,9 @@ static void uuencode(String& result, const char *file_name_cstr, const VFile& vf
 		"end\n";
 }
 
-/// ^mail:send[$attach[$type[uue|mime64] $value[DATA]]] 
+/** ^mail:send[$attach[$type[uue|mime64] $value[DATA]]] 
+	@todo solve - bad with html attaches
+*/
 static const String& attach_hash_to_string(Request& r, const String& origin_string, 
 										   Hash& attach_hash) {
 	Pool& pool=r.pool();

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.28 2001/05/21 16:57:39 parser Exp $
+	$Id: pa_vstring.h,v 1.29 2001/07/18 10:06:04 parser Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -40,7 +40,8 @@ public: // Value
 	int as_int() { return fstring.as_int(); }
 
 	/// VString: vfile
-	const VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED) const;
+	VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED,
+		bool origins_mode=false);
 
 	/// VString: $method
 	Value *get_element(const String& name) {

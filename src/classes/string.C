@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.62 2001/07/13 12:13:50 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.63 2001/07/18 10:06:04 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -59,8 +59,12 @@ static void _double(Request& r, const String& method_name, MethodParams *) {
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	char *buf=format(pool, r.self->as_double(), r.process(fmt).as_string().cstr());
-	
-	r.write_no_lang(String(pool, buf));
+
+	String result(pool);
+	result.APPEND_CLEAN(buf, 0, 
+		method_name.origin().file,
+		method_name.origin().line);
+	r.write_no_lang(result);
 }
 
 static void _left(Request& r, const String&, MethodParams *params) {

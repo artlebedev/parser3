@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: untaint.C,v 1.54 2001/07/09 16:51:54 parser Exp $"; 
+static const char *RCSId="$Id: untaint.C,v 1.55 2001/07/18 10:06:04 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -116,9 +116,11 @@ inline bool need_quote_http_header(const char *ptr, size_t size) {
 	return false;
 }
 
-/// @todo maybe additional check "are all pieces are clean?" would be profitable?
+/** @todo maybe additional check "are all pieces are clean?" would be profitable?
+	@todo fix potential forigins_mode buf overrun
+*/
 size_t String::cstr_bufsize(Untaint_lang lang) const {
-	return (lang==UL_AS_IS?size():size()*UNTAINT_TIMES_BIGGER) +1;
+	return (lang==UL_AS_IS?size():size()*UNTAINT_TIMES_BIGGER*(forigins_mode?10:1)) +1;
 }
 
 /** @todo fix theoretical \n mem overrun in TYPO replacements
@@ -139,9 +141,27 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			if(row==append_here)
 				goto break2;
 
+			Untaint_lang to_lang=lang==UL_UNSPECIFIED?row->item.lang:lang;
+
+			char *dest_before_origins=dest;
+
+			if(forigins_mode) {
+#ifndef NO_STRING_ORIGIN
+				if(row->item.origin.file)
+					dest+=sprintf(dest, "%s(%d)",
+						row->item.origin.file,
+						1+row->item.origin.line);
+				else
+					dest+=sprintf(dest, "unknown");
+#endif
+				dest+=sprintf(dest, "#%d: ",
+					to_lang);
+			}
+			char *dest_after_origins=dest;
+
 			// WARNING:
 			//	string can grow only UNTAINT_TIMES_BIGGER
-			switch(lang==UL_UNSPECIFIED?row->item.lang:lang) {
+			switch(to_lang) {
 			case UL_CLEAN:
 				// clean piece
 				{ // optimizing whitespace
@@ -341,6 +361,17 @@ char *String::store_to(char *dest, Untaint_lang lang,
 
 			if((lang==UL_UNSPECIFIED?row->item.lang:lang)!=UL_CLEAN)
 				whitespace=false;
+
+			if(forigins_mode)
+				if(dest==dest_after_origins) // never moved==optimized space
+					dest=dest_before_origins;
+				else {
+					for(char *p=dest_after_origins; p<dest; p++)
+						if(*p=='\n')
+							*p='|';
+
+					to_char('\n');
+				}
 		}
 		chunk=row->link;
 	} while(chunk);

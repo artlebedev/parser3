@@ -14,6 +14,8 @@ $method[$$name]
 test1 result
 
 @main[]
+$ORIGINS(1)
+^eval(2*11)
 ^call[test1]
 <hr>
 $input_date:input_date_auto_test
@@ -341,7 +343,7 @@ ${comment}.
 ^connect[$connect-string]{
 	$shit[^taint[our's]]
 #	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
-	^void:sql{update paf set age=age+1}
+#	^void:sql{update paf set age=age+1}
 	$paf[^table:sql{select * from paf order by id desc}(5)]
 	$paf{
 	^if(^empty[]){query result is empty}{

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.92 2001/07/09 16:13:17 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.93 2001/07/18 10:06:04 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -154,13 +154,12 @@ static Table *fill_month_days(Request& r,
     for(int _day=1-weekDay1; _day<=monthDays;) {
 		Array& row=*new(pool) Array(pool, 7);
     	for(int wday=0; wday<7; wday++, _day++) {
-        	String *cell;
+        	String *cell=new(pool) String(pool);
 			if(_day>=1 && _day<=monthDays) {
 				char *buf=(char *)malloc(2+1); 
-				sprintf(buf, "%02d", _day); 
-				cell=new(pool) String(pool, buf);
-            } else
-				cell=new(pool) String(pool);
+				cell->APPEND_CLEAN(buf, sprintf(buf, "%02d", _day), 
+					method_name.origin().file, method_name.origin().line);
+            }
 			row+=cell;            
         }
     	*result+=&row;
@@ -200,10 +199,18 @@ static Table *fill_week_days(Request& r,
     for(int curWeekDay=0; curWeekDay<7; curWeekDay++, t+=SECS_PER_DAY) {
         tm *tmOut=localtime(&t);
 		Array& row=*new(pool) Array(pool, 4);
-		{char *buf=(char *)malloc(4+1); sprintf(buf, "%04d", 1900+tmOut->tm_year); row+=new(pool) String(pool, buf);}
-		{char *buf=(char *)malloc(2+1); sprintf(buf, "%02d", 1+tmOut->tm_mon); row+=new(pool) String(pool, buf);}
-		{char *buf=(char *)malloc(2+1); sprintf(buf, "%02d", tmOut->tm_mday); row+=new(pool) String(pool, buf);}
-		{char *buf=(char *)malloc(2+1); sprintf(buf, "%02d", tmOut->tm_wday); row+=new(pool) String(pool, buf);}
+#define WDFILL(size, value) { \
+		char *buf=(char *)malloc(size+1); \
+		String *cell=new(pool) String(pool); \
+		cell->APPEND_CLEAN(buf, sprintf(buf, "%0"#size"d", value), \
+			method_name.origin().file, \
+			method_name.origin().line); \
+		row+=cell; \
+		}
+		WDFILL(4, 1900+tmOut->tm_year);
+		WDFILL(2, 1+tmOut->tm_mon);
+		WDFILL(2, tmOut->tm_mday);
+		WDFILL(2, tmOut->tm_wday);
         *result+=&row;
     }
     
@@ -284,15 +291,17 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		sdata.cstr(), sdata.size(), true);
 }
 
-static void _count(Request& r, const String&, MethodParams *) {
+static void _count(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, static_cast<VTable *>(r.self)->table().size());
+	value.set_name(method_name);
 	r.write_no_lang(value);
 }
 
 static void _line(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, 1+static_cast<VTable *>(r.self)->table().current());
+	value.set_name(method_name);
 	r.write_no_lang(value);
 }
 
@@ -304,6 +313,7 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 		table.shift(r.process(offset_expr).as_int());
 	} else {
 		Value& value=*new(pool) VInt(pool, table.current());
+		value.set_name(method_name);
 		r.write_no_lang(value);
 	}
 }
