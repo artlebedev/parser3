@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/02/27 15:24:03 $";
+static const char * const IDENT_STRING_C="$Date: 2004/03/01 08:52:24 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -503,22 +503,21 @@ static void _trim(Request& r, MethodParams& params) {
 	String::Trim_kind kind=String::TRIM_BOTH;
 	const char* chars=0;
 	if(params.count()>0) {
-		if(params.count()>1) { // [>>kind<<;chars]
-			const String& skind=params.as_string(0, 
-				"'where' must be string");
-			if(skind==TRIM_START_OPTION)
-				kind=String::TRIM_START;
-			else if(skind==TRIM_END_OPTION)
-				kind=String::TRIM_END;
-			else if(skind==TRIM_BOTH_OPTION)
-				kind=String::TRIM_BOTH;
-			else
-				throw Exception("parser.runtime",
-					&skind,
-					"'kind' should be one of "TRIM_START_OPTION", "TRIM_BOTH_OPTION", "TRIM_END_OPTION);
-		}
+		const String& skind=params.as_string(0, 
+			"'where' must be string");
+		if(skind==TRIM_START_OPTION)
+			kind=String::TRIM_START;
+		else if(skind==TRIM_END_OPTION)
+			kind=String::TRIM_END;
+		else if(skind==TRIM_BOTH_OPTION)
+			kind=String::TRIM_BOTH;
+		else
+			throw Exception("parser.runtime",
+				&skind,
+				"'kind' should be one of "TRIM_START_OPTION", "TRIM_BOTH_OPTION", "TRIM_END_OPTION);
 
-		chars=params.as_string(params.count()-1, 
+		if(params.count()>1)
+			chars=params.as_string(1, 
 			"'chars' must be string").cstr();
 	}
 
