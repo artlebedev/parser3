@@ -1,4 +1,4 @@
-#$Id: parser3.conf.in,v 1.2 2002/01/29 15:28:30 paf Exp $
+#$Id: parser3.conf.in,v 1.3 2002/01/30 09:48:30 paf Exp $
 
 @auto[]
 $prefix[@prefix@]
@@ -61,10 +61,10 @@ $LIMITS[
 	$.post_max_size(10*0x400*0x400)
 ]	
 
-$MAIL[
+#$MAIL[
 #	$.prog1[/usr/sbin/sendmail -t]
 #	$.prog2[/usr/lib/sendmail -t]
-]
+#]
 
 @exception[origin;source;comment;type;code;stack]
 <title>ROOT_CONF_ERROR</title>
