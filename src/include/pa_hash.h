@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.4 2001/01/27 15:21:05 paf Exp $
+  $Id: pa_hash.h,v 1.5 2001/01/29 10:22:01 paf Exp $
 */
 
 /*
@@ -34,10 +34,10 @@ private:
 	// the pool I'm allocated on
 	Pool *pool;
 
-	// the index of size in sizes
+	// the index of [size] in [sizes]
 	int size_index;
 
-	// possible sizes. prime numbers
+	// possible [sizes]. prime numbers
 	static uint sizes[];
 	static int sizes_count;
 
@@ -73,15 +73,21 @@ private:
 
 	Hash(Pool *apool);
 
-	bool full() {
-		return used==threshold;
-	}
+	// filled to threshold: needs expanding
+	bool full() { return used==threshold; }
+
+	// allocate larger buffer & rehash
 	void expand();
 
 public:
 
+	// useful generic hash function
 	static uint generic_code(uint aresult, char *start, uint size);
+
+	// put a [value] under the [key]
 	void put(Key& key, Value *value);
+
+	// get associated [value] by the [key]
 	Value* get(Key& key);
 
 private: //disabled
