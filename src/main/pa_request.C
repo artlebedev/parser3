@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/08/06 09:07:59 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/08/12 07:59:06 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -553,9 +553,9 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	// header: cookies
 	cookie.output_result();
 	
-	VString *body_file_content_type;
+	Value *body_file_content_type;
 	// set content-type
-	if(body_file_content_type=static_cast<VString *>(
+	if(body_file_content_type=static_cast<Value *>(
 		body_file.fields().get(*content_type_name))) {
 		// body file content type
 		response.fields().put(*content_type_name, body_file_content_type);
@@ -580,6 +580,9 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	const void *client_body;
 	size_t client_content_length;
 	// transcode text body when "text/*" or simple result
+	if(body_file_content_type)
+		if(Hash *hash=body_file_content_type->get_hash(0))
+			body_file_content_type=static_cast<Value *>(hash->get(*value_name));
 	if(!body_file_content_type/*vstring.as_vfile*/ || body_file_content_type->as_string().pos("text/")==0) {
 		Charset::transcode(pool(),
 			pool().get_source_charset(), body_file.value_ptr(), body_file.value_size(),
