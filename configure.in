@@ -198,7 +198,8 @@ new \
 sys/file.h \
 sys/locking.h \
 sys/types.h \
-sys/select.h
+sys/select.h \
+sys/resource.h
 )
 
 dnl Checks for libraries.

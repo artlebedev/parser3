@@ -4,11 +4,18 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstatus.C,v 1.1 2002/02/05 14:44:45 paf Exp $
+	$Id: pa_vstatus.C,v 1.2 2002/02/05 14:57:51 paf Exp $
 */
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"
+#include "pa_vhash.h"
+#include "pa_vdouble.h"
+
+#ifdef HAVE_SYS_RESOURCE_H
+// rusage
+#include <sys/resource.h>
+#endif
 
 Value *VStatus::get_element(const String& aname) {
 	// getstatus
@@ -18,22 +25,22 @@ Value *VStatus::get_element(const String& aname) {
 #ifdef HAVE_GETRUSAGE
 	// rusage
 	if(aname=="rusage") {
-		VHash& rusage=*new(pool) VHash(pool);
+		VHash& rusage=*NEW VHash(pool());
 	    struct rusage u;
 	    if(int error=getrusage(RUSAGE_SELF,&u))
 			throw Exception(0, 0,
 				&aname,
 				"getrusage failed (%d)", error);
 
-		Hash& hash=rusage.hash(aname);
-		hash.put(*new(pool) String(pool, "utime"), new(pool) VDouble(pool, 
+		Hash& hash=rusage.hash(&aname);
+		hash.put(*NEW String(pool(), "utime"), NEW VDouble(pool(), 
 			u.ru_utime.tv_sec+u.ru_utime.tv_usec/10000));
-		hash.put(*new(pool) String(pool, "stime"), new(pool) VDouble(pool, 
+		hash.put(*NEW String(pool(), "stime"), NEW VDouble(pool(), 
 			u.ru_stime.tv_sec+u.ru_stime.tv_usec/10000));
-		hash.put(*new(pool) String(pool, "maxrss"), new(pool) VDouble(pool, u.ru_maxrss));
-		hash.put(*new(pool) String(pool, "ixrss"), new(pool) VDouble(pool, u.ru_ixrss));
-		hash.put(*new(pool) String(pool, "idrss"), new(pool) VDouble(pool, u.ru_idrss));
-		hash.put(*new(pool) String(pool, "isrss"), new(pool) VDouble(pool, u.ru_isrss));
+		hash.put(*NEW String(pool(), "maxrss"), NEW VDouble(pool(), u.ru_maxrss));
+		hash.put(*NEW String(pool(), "ixrss"), NEW VDouble(pool(), u.ru_ixrss));
+		hash.put(*NEW String(pool(), "idrss"), NEW VDouble(pool(), u.ru_idrss));
+		hash.put(*NEW String(pool(), "isrss"), NEW VDouble(pool(), u.ru_isrss));
 
 		return &rusage;
 	}

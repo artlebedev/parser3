@@ -15,11 +15,20 @@
 /* Define if you have the flock function.  */
 #undef HAVE_FLOCK
 
+/* Define if you have the getrusage function.  */
+#undef HAVE_GETRUSAGE
+
 /* Define if you have the lockf function.  */
 #undef HAVE_LOCKF
 
+/* Define if you have the qsort function.  */
+#undef HAVE_QSORT
+
 /* Define if you have the round function.  */
 #undef HAVE_ROUND
+
+/* Define if you have the select function.  */
+#undef HAVE_SELECT
 
 /* Define if you have the sign function.  */
 #undef HAVE_SIGN
@@ -78,8 +87,17 @@
 /* Define if you have the <sys/locking.h> header file.  */
 #undef HAVE_SYS_LOCKING_H
 
+/* Define if you have the <sys/resource.h> header file.  */
+#undef HAVE_SYS_RESOURCE_H
+
+/* Define if you have the <sys/select.h> header file.  */
+#undef HAVE_SYS_SELECT_H
+
 /* Define if you have the <sys/stat.h> header file.  */
 #undef HAVE_SYS_STAT_H
+
+/* Define if you have the <sys/time.h> header file.  */
+#undef HAVE_SYS_TIME_H
 
 /* Define if you have the <sys/types.h> header file.  */
 #undef HAVE_SYS_TYPES_H
