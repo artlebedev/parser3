@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.46 2001/12/15 21:28:21 paf Exp $
+	$Id: pa_pool.C,v 1.47 2001/12/27 19:57:09 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -12,10 +12,6 @@
 #include "pa_common.h"
 #include "pa_sapi.h"
 #include "pa_charset.h"
-
-#ifdef XML
-#include <util/PlatformUtils.hpp>
-#endif
 
 Pool::Pool(void *astorage) : 
 	fstorage(astorage), fcontext(0), 
@@ -59,15 +55,15 @@ Charset& Pool::get_client_charset() {
 
 #ifdef XML
 
-const char *Pool::transcode_cstr(const XalanDOMString& s) { 
+const char *Pool::transcode_cstr(GdomeDOMString *s) { 
 	return get_source_charset().transcode_cstr(s); 
 }
 
-String& Pool::transcode(const XalanDOMString& s) { 
+String& Pool::transcode(GdomeDOMString *s) { 
 	return get_source_charset().transcode(s); 
 }
 
-std::auto_ptr<XalanDOMString> Pool::transcode(const String& s) {
+GdomeDOMString *Pool::transcode(const String& s) {
 	return get_source_charset().transcode(s); 
 }
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxdoc.h,v 1.13 2001/11/21 14:00:28 paf Exp $
+	$Id: pa_vxdoc.h,v 1.14 2001/12/27 19:57:10 paf Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -15,11 +15,12 @@
 #include "pa_vstateless_object.h"
 #include "pa_vxnode.h"
 
-#include <sax/HandlerBase.hpp>
-#include <XercesParserLiaison/XercesParserLiaison.hpp>
-#include "XalanTransformer2.hpp"
-#include <XalanTransformer/XalanParsedSource.hpp>
-#include <XalanSourceTree/XalanSourceTreeParserLiaison.hpp>
+//#include "libxml/xmlmemory.h"
+//#include "libxml/parser.h"
+//#include "libxslt/xslt.h"
+//#include "libxslt/libxslt.h"
+//#include "libxslt/extensions.h"
+//#include "libexslt/exslt.h"
 
 extern Methoded *Xdoc_class;
 
@@ -48,74 +49,51 @@ protected: // VAliased
 
 public: // VDNode
 
-	XalanNode &get_node(Pool& pool, const String *source) { 
-		return get_document(pool, source);
+	/// @test conv validity
+	GdomeNode *get_node(Pool& pool, const String *source) { 
+		return (GdomeNode *)get_document(pool, source);
 	}
 
 public: // usage
 
-	VXdoc(Pool& apool, XalanDocument *adocument, bool aowns_document) : VXnode(apool, 0, false, *Xdoc_class), 
-		ftransformer(0),
-		fparser_xalan_liaison(0), fparser_xerces_liaison(0), ferror_handler(0),
-		fparsed_source(0),
-		fdocument(adocument), fowns_document(aowns_document) {
-		register_cleanup(VXdoc_destructor, this);
-		ftransformer=new XalanTransformer2;
-		//fparser_xalan_liaison=new XalanSourceTreeParserLiaison;
-		fparser_xerces_liaison=new XercesParserLiaison;
-		ferror_handler=new HandlerBase;
-		//fparser_xalan_liaison->setErrorHandler(ferror_handler); // disable stderr output
-		fparser_xerces_liaison->setErrorHandler(ferror_handler); // disable stderr output
-		memset(&output_options, 0, sizeof(output_options));
-	}
-	~VXdoc() {
-		if(fowns_document)
-			delete fdocument;
+	VXdoc(Pool& apool, GdomeDocument *adocument) : VXnode(apool, 0, *Xdoc_class) {
+//		ftransformer(0) 
+		GdomeException exc;
+		if(fdocument=adocument)
+			gdome_doc_ref(fdocument, &exc);
 
-		delete fparsed_source;
-		delete ftransformer;
-		//delete fparser_xalan_liaison;
-		delete fparser_xerces_liaison;
-		delete ferror_handler;
+		register_cleanup(VXdoc_destructor, this);
+//		ftransformer=new XalanTransformer2;
+//		memset(&output_options, 0, sizeof(output_options));
+	}
+protected:
+	~VXdoc() {
+		GdomeException exc;
+		if(fdocument)			
+			gdome_doc_unref(fdocument, &exc);
+
+//		delete ftransformer;
 	}
 public:
 
-	XalanTransformer2& transformer() {return *ftransformer; }
-	//XalanSourceTreeParserLiaison& parser_xalan_liaison() { return *fparser_xalan_liaison; }
-	XercesParserLiaison& parser_xerces_liaison() { return *fparser_xerces_liaison; }
+	//XalanTransformer2& transformer() {return *ftransformer; }
+	void set_document(GdomeDocument *adocument) { 
+		GdomeException exc;
+		if(fdocument)			
+			gdome_doc_unref(fdocument, &exc);
 
-	bool has_parsed_source() { return fparsed_source!=0; }
-	void set_parsed_source(const XalanParsedSource& aparsed_source) { 
-		delete fparsed_source; // delete prev
-		fparsed_source=&aparsed_source; 
+		gdome_doc_ref(fdocument=adocument, &exc);
 	}
-	const XalanParsedSource& get_parsed_source(Pool& pool, const String *source) { 
-		if(!fparsed_source)
-			throw Exception(0, 0,
-				source,
-				"can not be performed on this instance (xslt[xslt] not supported, use save+xslt[load])");
-		return *fparsed_source; 
-	}
-
-	void set_document(XalanDocument& adocument, bool aowns_document) { 
-		if(fowns_document)
-			delete fdocument;
-
-		fdocument=&adocument; 
-		fowns_document=aowns_document;
-	}
-	XalanDocument &get_document(Pool& pool, const String *source) { 
-		if(fparsed_source)
-			return *fparsed_source->getDocument();
+	GdomeDocument *get_document(Pool& pool, const String *source) { 
 		if(!fdocument)
 			throw Exception(0, 0,
 				source,
 				"can not be applied to uninitialized instance");
-		return *fdocument; 
+		return fdocument; 
 	}
 
 public:
-
+/*
 	struct Output_options {
 		const char *method;
 		XalanDOMString encoding;
@@ -129,19 +107,10 @@ public:
 		Output_options() : method(0), doIndent(false), xmlDecl(false) {
 		}
 	} output_options;
-
+*/
 private:
 
-	XalanTransformer2 *ftransformer;
-	XalanSourceTreeParserLiaison *fparser_xalan_liaison;
-	XercesParserLiaison	*fparser_xerces_liaison;
-	ErrorHandler *ferror_handler;
-
-	const XalanParsedSource *fparsed_source;
-
-	bool fowns_document;
-	XalanDocument *fdocument;
-
+	GdomeDocument *fdocument;
 };
 
 #endif

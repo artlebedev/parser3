@@ -4,11 +4,11 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_vxdoc.C,v 1.7 2001/11/21 14:00:28 paf Exp $
+	$Id: pa_vxdoc.C,v 1.8 2001/12/27 19:57:10 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
-static const char *RCSId="$Id: pa_vxdoc.C,v 1.7 2001/11/21 14:00:28 paf Exp $"; 
+static const char *RCSId="$Id: pa_vxdoc.C,v 1.8 2001/12/27 19:57:10 paf Exp $"; 
 
 #include "pa_vxdoc.h"
 
@@ -22,28 +22,24 @@ void VXdoc_destructor(void *vxdoc) {
 
 /// VXdoc: $CLASS,$method
 Value *VXdoc::get_element(const String& name) { 
-	try {
-		// $CLASS,$method
-		if(Value *result=VStateless_object::get_element(name))
-			return result;
+	// $CLASS,$method
+	if(Value *result=VStateless_object::get_element(name))
+		return result;
 
-		// fields
-		XalanDocument& document=get_document(pool(), &name);
+	// fields
+	GdomeDocument *document=get_document(pool(), &name);
+	GdomeException exc;
 
-		if(name=="doctype") {
-			// readonly attribute DocumentType doctype;
-			return NEW VXnode(pool(), document.getDoctype(), false);
-		} else if(name=="implementation") {
-			// readonly attribute DOMImplementation implementation;
-			return 0;
-		} else if(name=="documentElement") {
-			// readonly attribute Element documentElement;
-			return NEW VXnode(pool(), document.getDocumentElement(), false);
-		} 	
-	
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool(), &name, e);
-	}
+	if(name=="doctype") {
+		// readonly attribute DocumentType doctype;
+		return NEW VXnode(pool(), gdome_doc_doctype(document, &exc), false);
+	} else if(name=="implementation") {
+		// readonly attribute DOMImplementation implementation;
+		return 0;
+	} else if(name=="documentElement") {
+		// readonly attribute Element documentElement;
+		return NEW VXnode(pool(), document.gdome_doc_documentElement(document, &exc), false);
+	} 	
 
 	return 0;
 }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.h,v 1.2 2001/12/26 08:46:12 paf Exp $
+	$Id: pa_charset.h,v 1.3 2001/12/27 19:57:08 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
@@ -20,12 +20,30 @@ namespace PCRE {
 #	include "internal.h"
 };
 
+#ifdef XML
+#include "libxml/encoding.h"
+#endif
+
 // defines
 
 #ifdef XML
-#	include <util/XercesDefs.hpp>
+/*#	include <util/XercesDefs.hpp>
 #	include <util/TransService.hpp>
 #	define Charset_TransRec XMLTransService::TransRec
+*/
+
+#	ifndef XMLCh 
+#		define XMLCh unsigned int
+#	endif
+#	ifndef XMLByte
+#		define XMLByte unsigned char
+#	endif
+
+	struct Charset_TransRec {
+		XMLCh intCh;
+		XMLByte extCh;
+	};
+
 #else
 #	ifndef XMLCh 
 #		define XMLCh unsigned int
@@ -94,18 +112,18 @@ private:
 	void initTranscoder(const String *source, const char *name_cstr);
 
 public:
-	/// converts Xalan string to char *
-	const char *transcode_cstr(const XalanDOMString& s);
-	/// converts Xalan string to parser String
-	String& transcode(const XalanDOMString& s);
-	/// converts char * to Xalan string
-	std::auto_ptr<XalanDOMString> transcode_buf(const char *buf, size_t buf_size);
-	/// converts parser String to Xalan string
-	std::auto_ptr<XalanDOMString> transcode(const String& s);
+	/// converts GdomeDOMString string to char *
+	const char *transcode_cstr(GdomeDOMString *s);
+	/// converts GdomeDOMString string to parser String
+	String& transcode(GdomeDOMString *s);
+	/// converts char * to GdomeDOMString
+	GdomeDOMString *transcode_buf(const char *buf, size_t buf_size);
+	/// converts parser String to GdomeDOMString
+	GdomeDOMString *transcode(const String& s);
 
 private:
 
-	XMLTranscoder *transcoder;
+	xmlCharEncodingHandler *transcoder;
 
 #endif
 

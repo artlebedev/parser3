@@ -4,19 +4,13 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.7 2001/12/26 08:46:13 paf Exp $
+	$Id: pa_charset.C,v 1.8 2001/12/27 19:57:09 paf Exp $
 */
 
 #include "pa_charset.h"
-//#include "pa_exception.h"
-//#include "pa_common.h"
-//#include "pa_threads.h"
 
 #ifdef XML
-#	include<util/TransENameMap.hpp>
-#	include<util/XML256TableTranscoder.hpp>
-#	include<util/PlatformUtils.hpp>
-#	include<PlatformSupport/XalanTranscodingServices.hpp>
+#include "libxml/encoding.h"
 #endif
 
 // globals
@@ -77,7 +71,9 @@ static void element2case(unsigned char from, unsigned char to,
 	fcc_table[from]=to; fcc_table[to]=from;
 }
 
+/// @test custom encodings
 #ifdef XML
+/*
 template <class TType> class ENameMapFor2 : public ENameMap {
 public:
     // -----------------------------------------------------------------------
@@ -132,6 +128,7 @@ private:
     XML256TableTranscoder2(const XML256TableTranscoder2&);
     void operator=(const XML256TableTranscoder2&);
 };
+*/
 #endif
 
 // methods
@@ -239,6 +236,7 @@ void Charset::loadDefinition(const String& request_file_spec) {
 
 #ifdef XML
 void Charset::addEncoding(const char *name_cstr) {
+/*
 	// addEncoding
 	XalanDOMString sencoding(name_cstr);
 	const XMLCh* const auto_encoding_cstr=sencoding.c_str();
@@ -255,11 +253,11 @@ void Charset::addEncoding(const char *name_cstr) {
 			, toTable
 			, toTableSize
 		));
+*/
 }
 
 void Charset::initTranscoder(const String *source, const char *name_cstr) {
-	XMLTransService::Codes resValue;
-	transcoder=XMLPlatformUtils::fgTransService->makeNewTranscoderFor(name_cstr, resValue, 60);
+	transcoder=xmlFindCharEncodingHandler(name_cstr);
 	if(!transcoder)
 		throw Exception(0, 0,
 			source,
@@ -546,56 +544,52 @@ void Charset::transcodeToCharset(Pool& pool,
 }			
 
 #ifdef XML
-const char *Charset::transcode_cstr(const XalanDOMString& s) { 
-	const unsigned int len=s.size()*2;
-	XMLByte* dest=(XMLByte *)malloc((len+1)*sizeof(XMLByte));
-	bool error=true;
-	try {
-		if(transcoder) {
-			unsigned int charsEaten;
-			unsigned int size=transcoder->transcodeTo(
-				s.c_str(), s.length(),
-				dest, len,
-				charsEaten,
-				XMLTranscoder::UnRep_RepChar //UnRep_Throw
-			);
-			dest[size]=0;
-			error=false;
-		}
-	} catch(XMLException& e) {
-		Exception::provide_source(pool(), 0, e);
-	}
-	return(const char *)dest;
+const char *Charset::transcode_cstr(GdomeDOMString *s) { 
+	if(!transcoder)
+		throw Exception(0, 0,
+			0,
+			"transcode_cstr no transcoder");
+
+	int inlen=gdome_str_length(s);
+	int outlen=inlen+1; // max
+	char *out=(char *)malloc(outlen*sizeof(char));
+	
+	int size=transcoder->output(
+		(unsigned char*)out, &outlen,
+		(const unsigned char*)s->str, &inlen);
+	if(size<0)
+		throw Exception(0, 0,
+			0,
+			"transcode_cstr failed (%d)", size);
+
+	out[size]=0;
+	return out;
 }
-String& Charset::transcode(const XalanDOMString& s) { 
+String& Charset::transcode(GdomeDOMString *s) { 
 	return *NEW String(pool(), transcode_cstr(s)); 
 }
 
-std::auto_ptr<XalanDOMString>Charset::transcode_buf(const char *buf, size_t buf_size) { 
-	unsigned int dest_size=0;
-	XMLCh* dest=(XMLCh *)malloc((buf_size+1)*sizeof(XMLCh));
-	unsigned char *charSizes=(unsigned char *)malloc(buf_size*sizeof(unsigned char));
-	XalanDOMString *result;
-	try {
-		if(transcoder) {
-			unsigned int bytesEaten;
-			unsigned int dest_size=transcoder->transcodeFrom(
-				(unsigned char *)buf,
-				(const unsigned int)buf_size,
-				dest,(const unsigned int)buf_size,
-				bytesEaten,
-				charSizes
-			);
-			result=new XalanDOMString(dest, dest_size);
-		}
-	} catch(XMLException& e) {
-		Exception::provide_source(pool(), 0, e);
-		result=0; //calm, compiler
-	}
-	
-	return std::auto_ptr<XalanDOMString>(result);
+/// @test less memory using -maybe- xmlParserInputBufferCreateMem
+GdomeDOMString *Charset::transcode_buf(const char *buf, size_t buf_size) { 
+	if(!transcoder)
+		throw Exception(0, 0,
+			0,
+			"transcode_buf no transcoder");
+
+	int outlen=buf_size*6/*max*/+1;
+	unsigned char *out=(unsigned char*)malloc(outlen*sizeof(unsigned char));
+	int size=transcoder->input(
+		out, &outlen,
+		(const unsigned char *)buf,  (int *)&buf_size);
+	if(size<0)
+		throw Exception(0, 0,
+			0,
+			"transcode_buf failed (%d)", size);
+
+	out[size]=0;
+	return gdome_str_mkref_own((gchar*)out);
 }
-std::auto_ptr<XalanDOMString>Charset::transcode(const String& s) { 
+GdomeDOMString *Charset::transcode(const String& s) { 
 	const char *cstr=s.cstr(String::UL_UNSPECIFIED);
 
 	return transcode_buf(cstr, strlen(cstr)); 

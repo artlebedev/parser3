@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charsets.C,v 1.3 2001/12/26 08:46:13 paf Exp $
+	$Id: pa_charsets.C,v 1.4 2001/12/27 19:57:09 paf Exp $
 */
 
 #include "pa_charsets.h"

@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /vmg /GX /Zi /O2 /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "\parser3project\win32xml\xml-xerces\c\src" /I "\parser3project\win32xml\xml-xalan\c\src" /D "NDEBUG" /D "_CONSOLE" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /vmg /GX /Zi /O2 /I "\parser3project\win32xml\xml-xerces\c\src" /I "\parser3project\win32xml\xml-xalan\c\src" /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\pcre" /I "\parser3project\win32xml\glib\include" /I "\parser3project\win32xml\glib\include\glib" /I "\parser3project\win32xml\gdome2-0.7.0\libgdome" /I "\parser3project\win32xml\libxml2-2.4.12\include" /I "\parser3project\win32xml\libxslt-1.0.9" /D "NDEBUG" /D "_CONSOLE" /D "WIN32" /FD /TP /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -66,7 +66,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /Gi /vmg /GX /Zi /Od /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "\parser3project\win32xml\xml-xerces\c\src" /I "\parser3project\win32xml\xml-xalan\c\src" /I "..\..\pcre" /D "_DEBUG" /D "_CONSOLE" /D "WIN32" /FD /TP /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /Gi /vmg /GX /Zi /Od /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\pcre" /I "\parser3project\win32xml\glib\include" /I "\parser3project\win32xml\glib\include\glib" /I "\parser3project\win32xml\gdome2-0.7.0\libgdome" /I "\parser3project\win32xml\libxml2-2.4.12\include" /I "\parser3project\win32xml\libxslt-1.0.9" /D "_DEBUG" /D "_CONSOLE" /D "WIN32" /FD /TP /GZ /c
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
 BSC32=bscmake.exe

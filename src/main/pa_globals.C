@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.95 2001/12/15 21:28:21 paf Exp $
+	$Id: pa_globals.C,v 1.96 2001/12/27 19:57:09 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -20,6 +20,14 @@
 
 #ifdef DB2
 #include "pa_db_manager.h"
+#endif
+
+#ifdef XML
+//#include "libxml/parser.h"
+//#include "libxslt/xslt.h"
+//#include "libxslt/libxslt.h"
+#include "libxslt/extensions.h"
+#include "libexslt/exslt.h"
 #endif
 
 String *content_type_name;
@@ -103,6 +111,10 @@ static void setup_hex_value() {
 
 void pa_globals_destroy(void *) {
 	try {
+#ifdef XML
+		GdomeException exc;
+		gdome_di_unref (domimpl, &exc);
+#endif
 		if(cache_managers)
 			cache_managers->~Cache_managers();
 
@@ -212,37 +224,38 @@ void pa_globals_init(Pool& pool) {
 #endif
 
 #ifdef XML
-	// XSLT stylesheet driver manager
+	// initializing xml libs
+
+	/* First I get a DOMImplementation reference */
+	domimpl = gdome_di_mkref ();
+    /*
+     * Register the EXSLT extensions and the test module
+     */
+    exsltRegisterAll();
+    xsltRegisterTestModule();
+    xmlDefaultSAXHandlerInit();
+    /*
+     * disable CDATA from being built in the document tree
+     */
+    xmlDefaultSAXHandler.cdataBlock = NULL;
+
+
+	// XSLT stylesheet manager
 	cache_managers->put(*NEW String(pool, "stylesheet"), 
 		stylesheet_manager=NEW Stylesheet_manager(pool));
 #endif
 }
 
 #if defined(XML) && defined(_MSC_VER)
-#	define XERCES_BUILD_WIN32_BUILD "/parser3project/win32xml/xml-xerces/c/Build/Win32/VC6"
-#	define XALAN_BUILD_WIN32_BUILD "/parser3project/win32xml/xml-xalan/c/Build/Win32/VC6"
+#	define XML_LIBS "/parser3project/win32xml"
+#	pragma comment(lib, XML_LIBS "/glib/lib/libglib-1.3-11.lib")
+#	pragma comment(lib, XML_LIBS "/libxml2-2.4.12/win32/dsp/libxml2_so/libxml2.lib")
+#	pragma comment(lib, XML_LIBS "/libxslt-1.0.9/win32/dsp/libexslt_so/libexslt.lib")
+#	pragma comment(lib, XML_LIBS "/libxslt-1.0.9/win32/dsp/libxslt_a/libxslt.lib")
 #	ifdef _DEBUG
-#		pragma comment(lib, XERCES_BUILD_WIN32_BUILD "/Debug/xerces-c_1D.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XSLTD.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XPathD.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XalanTransformerD.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XalanDOMD.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/DOMSupportD.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/PlatformSupportD.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XMLSupportD.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XercesParserLiaisonD.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Debug/XalanSourceTreeD.lib")
+#		pragma comment(lib, XML_LIBS "/gdome2-0.7.0/win32/dsp/Debug/gdome.lib")
 #	else
-#		pragma comment(lib, XERCES_BUILD_WIN32_BUILD "/Release/xerces-c_1.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XalanSourceTree.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/PlatformSupport.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XalanDOM.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/DOMSupport.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XalanTransformer.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XercesParserLiaison.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XMLSupport.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XPath.lib")
-#		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XSLT.lib")
+#		pragma comment(lib, XML_LIBS "/gdome2-0.7.0/win32/dsp/Release/gdome.lib")
 #	endif
 #endif
 
@@ -255,4 +268,3 @@ void pa_globals_init(Pool& pool) {
 #		pragma comment(lib, LIBDB2_WIN32_BUILD "/release/libdb.lib")
 #	endif
 #endif
-

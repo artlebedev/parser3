@@ -100,8 +100,12 @@ time, run time or study time, respectively. */
 
 typedef int BOOL;
 
+#ifndef FALSE
 #define FALSE   0
+#endif
+#ifndef TRUE
 #define TRUE    1
+#endif
 
 /* These are escaped items that aren't just an encoding of a particular data
 value such as \n. They must have non-zero values, as check_escape() returns

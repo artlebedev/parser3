@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.h,v 1.73 2001/12/15 21:28:19 paf Exp $
+	$Id: pa_pool.h,v 1.74 2001/12/27 19:57:08 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -14,9 +14,7 @@
 #include "pa_config_includes.h"
 
 #ifdef XML
-#include <memory>
-#include <XalanDOM/XalanDOMString.hpp>
-#include <util/TransService.hpp>
+#include "gdome.h"
 #endif
 
 // forwards
@@ -71,10 +69,12 @@ public:
 	///}@
 
 #ifdef XML
-	const char *transcode_cstr(const XalanDOMString& s);
-	String& transcode(const XalanDOMString& s);
+
+	const char *transcode_cstr(GdomeDOMString *s);
+	String& transcode(GdomeDOMString *s);
 	/// @see Charset::transcode(const String& s)
-	std::auto_ptr<XalanDOMString> transcode(const String& s);
+	GdomeDOMString *transcode(const String& s);
+
 #endif
 
 private:
@@ -159,8 +159,10 @@ public:
 	void *calloc(size_t size) const { return fpool->calloc(size); }
 	void register_cleanup(void (*cleanup) (void *), void *data) { fpool->register_cleanup(cleanup, data); }
 #ifdef XML
-	const char *transcode_cstr(const XalanDOMString& s) { return fpool->transcode_cstr(s); }
-	String& transcode(const XalanDOMString& s) { return fpool->transcode(s); }
+
+	const char *transcode_cstr(GdomeDOMString *s) { return fpool->transcode_cstr(s); }
+	String& transcode(GdomeDOMString *s) { return fpool->transcode(s); }
+
 #endif
 	//}
 };

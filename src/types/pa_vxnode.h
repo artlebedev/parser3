@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxnode.h,v 1.8 2001/11/05 11:46:35 paf Exp $
+	$Id: pa_vxnode.h,v 1.9 2001/12/27 19:57:10 paf Exp $
 */
 
 #ifndef PA_VXNODE_H
@@ -13,9 +13,6 @@
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
-
-#include <XalanDOM/XalanNode.hpp>
-#include <PlatformSupport/XSLException.hpp>
 
 // defines
 
@@ -27,7 +24,7 @@ extern Methoded *Xnode_class;
 
 //void VXnode_cleanup(void *);
 
-/// value of type 'xnode'. implemented with XalanNode
+/// value of type 'xnode'. implemented with GdomeNode
 class VXnode : public VStateless_object {
 	friend void VXnode_cleanup(void *);
 public: // Value
@@ -50,40 +47,43 @@ protected: // VAliased
 
 public: // usage
 
-	VXnode(Pool& apool, XalanNode *anode, bool aowns_node, VStateless_class& abase=*Xnode_class) : 
-		VStateless_object(apool, abase), 
-		fnode(anode), fowns_node(aowns_node) {
+	VXnode(Pool& apool, GdomeNode *anode, VStateless_class& abase=*Xnode_class) : 
+		VStateless_object(apool, abase) {
+		GdomeException exc;
+		if(fnode=anode)
+			gdome_n_ref(fnode, &exc);
+
 		register_cleanup(VXnode_cleanup, this);
 	}
-private:
-	void cleanup() {
-		if(fowns_node)
-			delete fnode;
+protected:
+	~VXnode() {
+		GdomeException exc;
+		if(fnode)			
+			gdome_n_unref(fnode, &exc);
 	}
 public:
 
-	void set_node(XalanNode& anode, bool aowns_node) { 
-		if(fowns_node)
-			delete fnode;
+	void set_node(GdomeNode *anode, bool aowns_node) { 
+		GdomeException exc;
+		if(fnode)			
+			gdome_n_unref(fnode, &exc);
 
-		fnode=&anode; 
-		fowns_node=aowns_node;
+		gdome_n_ref(fnode=anode, &exc);
 	}
 
 public: // VXnode
-	virtual XalanNode &get_node(Pool& pool, const String *source) { 
+	virtual GdomeNode *get_node(Pool& pool, const String *source) { 
 		if(!fnode)
 			throw Exception(0, 0,
 				source,
 				"can not be applied to uninitialized instance");
 
-		return *fnode; 
+		return fnode; 
 	}
 
 private:
 
-	bool fowns_node;
-	XalanNode *fnode;
+	GdomeNode *fnode;
 
 };
 

@@ -4,14 +4,10 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.148 2001/12/13 13:02:43 paf Exp $
+	$Id: parser3.C,v 1.149 2001/12/27 19:57:09 paf Exp $
 */
 
 #include "pa_config_includes.h"
-
-#ifdef WIN32
-#	include <windows.h>
-#endif
 
 #if _MSC_VER
 #	include <new.h>
@@ -26,8 +22,8 @@
 #include "pa_version.h"
 #include "pool_storage.h"
 
-#ifdef XML
-#include <XalanTransformer/XalanCAPI.h>
+#ifdef WIN32
+#	include <windows.h>
 #endif
 
 //#define DEBUG_POOL_MALLOC
@@ -201,24 +197,6 @@ char *full_file_spec(char *file_name) {
 	return file_name;
 }
 
-#ifdef XML
-/**
- * Terminate Xalan and Xerces.
- *
- * Should be called only once per process after deleting all
- * instances of XalanTransformer.  Once a process has called
- * this function, it cannot use the API for the remaining
- * lifetime of the process.
-
-	
-	this requirement is fullfilled by using Pool::register_cleanup
- */
-void callXalanTerminate(void *) {
-	//_asm int 3;
-	XalanTerminate();
-}
-#endif
-
 /**
 main workhorse
 
@@ -233,18 +211,6 @@ void real_parser_handler(
 					const char *request_method, bool header_only) {
 	// init socks
 	init_socks(pool);
-	
-#ifdef XML
-	/**
-	* Initialize Xerces and Xalan.
-	*
-	* Should be called only once per process before making
-	* any other API calls.
-	*/
-	//_asm int 3;
-	XalanInitialize();
-	pool.register_cleanup(callXalanTerminate, 0);
-#endif
 	
 	// init global classes
 	init_methoded_array(pool);

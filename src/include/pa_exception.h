@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.23 2001/12/15 21:28:19 paf Exp $
+	$Id: pa_exception.h,v 1.24 2001/12/27 19:57:08 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -14,10 +14,12 @@
 #include "pa_string.h"
 
 #ifdef XML
+/*
 #include <PlatformSupport/XSLException.hpp>
 #include <sax/SAXException.hpp>
 #include <sax/SAXParseException.hpp>
 #include <util/XMLException.hpp>
+*/
 #endif
 
 class Pool;
@@ -38,6 +40,7 @@ public:
 	~Exception();
 
 #ifdef XML
+	/*
 	/// converts XSL exception to parser exception
 	static void provide_source(Pool& pool, const String *source, const XSLException& e);
 	/// converts SAX exception to parser exception
@@ -48,6 +51,7 @@ public:
 	static void provide_source(Pool& pool, const String *source, const XMLException& e);
 	/// converts Xalan DOM exception to parser exception
 	static void provide_source(Pool& pool, const String *source, const XalanDOMException& e);
+	*/
 #endif
 
 	/// extracts exception type

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.68 2001/12/15 21:28:18 paf Exp $
+	$Id: pa_common.h,v 1.69 2001/12/27 19:57:08 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -16,7 +16,7 @@
 class Value;
 
 // replace system s*nprintf with our versions
-#undef vsnpritnf
+#undef vsnprintf 
 int __vsnprintf(char *, size_t, const char *, va_list);
 #define vsnprintf __vsnprintf 
 #undef snprintf
