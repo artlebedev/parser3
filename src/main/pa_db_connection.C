@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.8 2001/10/24 10:09:12 parser Exp $
+	$Id: pa_db_connection.C,v 1.9 2001/10/24 10:26:16 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -143,11 +143,14 @@ String *DB_Connection::get(const String& key) {
 		return 0;
 	else {
 		check("get", &key, error);
-		return data_dbt_to_string(dbt_data);
+		String *result=data_dbt_to_string(dbt_data);
+		if(!result) // save efforts by deleting expired keys
+			check("del expired", &key, db->del(db, ftid, &dbt_key, 0/*flags*/));
+		return result;
 	}		
 }
 
-void DB_Connection::_delete(const String& key) {
+void DB_Connection::remove(const String& key) {
 	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
 
 	int error=db->del(db, ftid, &dbt_key, 0/*flags*/);
@@ -182,9 +185,16 @@ bool DB_Cursor::get(String *& key, String *& data, u_int32_t flags) {
 
 	if(data=data_dbt_to_string(dbt_data)) // not expired
 		key=&key_dbt_to_string(dbt_key);
-	else
+	else {
+		// save efforts by deleting expired keys
+		remove(0/*flags*/);
 		key=0;
+	}
 	return true;
+}
+
+void DB_Cursor::remove(u_int32_t flags) {
+	check("c_del", fsource,  cursor->c_del(cursor, flags));
 }
 
 #endif

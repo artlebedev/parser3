@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.5 2001/10/23 14:43:44 parser Exp $
+	$Id: hashfile.C,v 1.6 2001/10/24 10:26:16 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -71,7 +71,7 @@ static void _transaction(Request& r, const String& method_name, MethodParams *pa
 	}
 }
 
-static void _delete(Request& r, const String& method_name, MethodParams *params) {
+static void remove(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VHashfile& self=*static_cast<VHashfile *>(r.self);
 	
@@ -81,7 +81,7 @@ static void _delete(Request& r, const String& method_name, MethodParams *params)
 	// connection
 	DB_Connection& connection=self.get_connection(&method_name);
 
-	connection._delete(key);
+	connection.remove(key);
 }
 
 static void _clear(Request& r, const String& method_name, MethodParams *params) {
@@ -113,7 +113,7 @@ MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
 	// ^transaction{code}
 	add_native_method("transaction", Method::CT_DYNAMIC, _transaction, 1, 1);
 	// ^hashfile.delete[key]
-	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
+	add_native_method("delete", Method::CT_DYNAMIC, remove, 1, 1);
 	// ^hashfile:clear[filename]
 	add_native_method("clear", Method::CT_STATIC, _clear, 1, 1);
 	// ^hash[]
