@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VOID_C="$Date: 2002/09/18 08:52:49 $";
+static const char* IDENT_VOID_C="$Date: 2002/12/09 11:07:40 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -54,7 +54,7 @@ static void _double(Request& r, const String&, MethodParams *params) {
 }
 
 #ifndef DOXYGEN
-class Void_sql_event_handlers : public SQL_Driver_query_event_handlers {
+class Void_sql_event_handlers: public SQL_Driver_query_event_handlers {
 public:
 	Void_sql_event_handlers(Pool& apool, const String& astatement_string) :
 		pool(apool), statement_string(astatement_string) {
@@ -62,7 +62,7 @@ public:
 	void add_column(void *ptr, size_t size) { /* ignore */ }
 	void before_rows() {
 		// there are some result rows, which is wrong
-		throw Exception("parser.runtime",
+		throw SQL_Exception("parser.runtime",
 			&statement_string,
 			"must return nothing");
 	}

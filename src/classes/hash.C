@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2002/10/15 10:09:51 $";
+static const char* IDENT_HASH_C="$Date: 2002/12/09 11:07:39 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -31,12 +31,12 @@ public: // Methoded
 // methods
 
 #ifndef DOXYGEN
-class Hash_sql_event_handlers : public SQL_Driver_query_event_handlers {
+class Hash_sql_event_handlers: public SQL_Driver_query_event_handlers {
 public:
 	Hash_sql_event_handlers(Pool& apool, const String& amethod_name,
 		const String& astatement_string, const char *astatement_cstr,
 		bool adistinct,
-		Hash& arows_hash) :
+		Hash& arows_hash): 
 		pool(apool), 
 		method_name(amethod_name),
 		statement_string(astatement_string),
@@ -55,7 +55,7 @@ public:
 	}
 	void before_rows() { 
 		if(columns.size()<=1)
-			throw Exception("parser.runtime",
+			throw SQL_Exception("parser.runtime",
 				&method_name,
 				"column count must be more than 1 to create a hash");
 	}
@@ -73,7 +73,7 @@ public:
 			row_hash=row_vhash->get_hash(0);
 			if(rows_hash.put_dont_replace(*cell, row_vhash)) // put. existed?
 				if(!distinct)
-					throw Exception("parser.runtime",
+					throw SQL_Exception("parser.runtime",
 						cell,
 						"duplicate key");
 		} else

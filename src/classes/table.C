@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/11/25 14:10:52 $";
+static const char* IDENT_TABLE_C="$Date: 2002/12/09 11:07:40 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -601,7 +601,7 @@ static void _join(Request& r, const String& method_name, MethodParams *params) {
 }
 
 #ifndef DOXYGEN
-class Table_sql_event_handlers : public SQL_Driver_query_event_handlers {
+class Table_sql_event_handlers: public SQL_Driver_query_event_handlers {
 public:
 	Table_sql_event_handlers(Pool& apool, const String& amethod_name,
 		const String& astatement_string, const char *astatement_cstr) :

@@ -26,9 +26,58 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char* IDENT_SQL_DRIVER_H="$Date: 2002/08/01 11:41:20 $";
+static const char* IDENT_SQL_DRIVER_H="$Date: 2002/12/09 11:11:33 $";
 
 #include <sys/types.h>
+
+#define SQL_DRIVER_API_VERSION 0x0004
+#define SQL_DRIVER_CREATE create /* used in driver implementation */
+#define SQL_DRIVER_CREATE_NAME "create" /* could not figure out how to # it :( */
+
+/// fields are freed elsewhere
+class SQL_Exception {
+	friend class SQL_Driver_services_impl;
+
+	bool fdefined;
+	const char *ftype;
+	const void *fproblem_source;
+	const char *fcomment;
+public:
+	SQL_Exception():
+		fdefined(false) {}
+	SQL_Exception(
+		const char *atype,
+		const void *aproblem_source, 
+		const char *acomment):
+		fdefined(true),
+		ftype(atype),
+		fproblem_source(aproblem_source),
+		fcomment(acomment) {}
+	SQL_Exception(const char *acomment):
+		fdefined(true),
+		ftype(0),
+		fproblem_source(0),
+		fcomment(acomment) {}
+/*
+	SQL_Exception(const SQL_Exception& src) : 
+		fdefined(src.fdefined),
+		ftype(src.ftype),
+		fproblem_source(src.fproblem_source),
+		fcomment(src.fcomment) {}
+*/
+	const SQL_Exception& operator =(const SQL_Exception& src) {
+		fdefined=src.fdefined;
+		ftype=src.ftype;
+		fproblem_source=src.fproblem_source;
+		fcomment=src.fcomment;
+		return *this;
+	}
+
+	bool defined() { return fdefined; }
+	const char *type() { return ftype; }
+	const void *problem_source() { return fproblem_source; }
+	const char *comment() { return fcomment; }
+};
 
 /// service functions for SQL driver to use
 class SQL_Driver_services {
@@ -38,17 +87,15 @@ public:
 	/// allocates some bytes clearing them with zeros
 	virtual void *calloc(size_t size) =0;
 	/// prepare throw exception
-	virtual void _throw(const char *comment) =0;
+	virtual void _throw(const SQL_Exception& e) =0;
 	/// throw C++ exception from prepared
 	virtual void propagate_exception() =0;
+	/// helper func
+	void _throw(const char *comment) { _throw(SQL_Exception(0, 0, comment)); }
 public:
 	/// regretrully public, because can't make stack frames: "nowhere to return to"
 	jmp_buf mark;
 };
-
-#define SQL_DRIVER_API_VERSION 0x0003
-#define SQL_DRIVER_CREATE create /* used in driver implementation */
-#define SQL_DRIVER_CREATE_NAME "create" /* could not figure out how to # it :( */
 
 /// events, occuring when SQL_Driver::query()-ing
 class SQL_Driver_query_event_handlers {

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/10/29 10:19:40 $";
+static const char* IDENT_STRING_C="$Date: 2002/12/09 11:07:39 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -366,7 +366,7 @@ static void _lower(Request& r, const String& method_name, MethodParams *params) 
 class String_sql_event_handlers : public SQL_Driver_query_event_handlers {
 public:
 	String_sql_event_handlers(Pool& apool, 
-		const String& astatement_string, const char *astatement_cstr) :
+		const String& astatement_string, const char *astatement_cstr):
 		pool(apool), 
 		statement_string(astatement_string),
 		statement_cstr(astatement_cstr),
@@ -376,7 +376,7 @@ public:
 
 	void add_column(void *ptr, size_t size) {
 		if(got_column)
-			throw Exception("parser.runtime",
+			throw SQL_Exception("parser.runtime",
 				&statement_string,
 				"result must contain exactly one column");
 		got_column=true;
@@ -385,7 +385,7 @@ public:
 	void add_row() { /* ignore */ }
 	void add_row_cell(void *ptr, size_t size) {
 		if(got_cell)
-			throw Exception("parser.runtime",
+			throw SQL_Exception("parser.runtime",
 				&statement_string,
 				"result must not contain more then one row");
 		got_cell=true;
