@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.199 2002/04/16 09:32:00 paf Exp $
+	$Id: pa_request.C,v 1.200 2002/04/16 14:41:39 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -563,11 +563,9 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	);
 
 	// prepare header: content-length
-	if(client_content_length) { // useful for redirecting [header "location: http://..."]
-		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%u", client_content_length);
-		SAPI::add_header_attribute(pool(), "content-length", content_length_cstr);
-	}
+	char content_length_cstr[MAX_NUMBER];
+	snprintf(content_length_cstr, MAX_NUMBER, "%u", client_content_length);
+	SAPI::add_header_attribute(pool(), "content-length", content_length_cstr);
 
 	// send header
 	SAPI::send_header(pool());

@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.68 2002/04/09 16:27:27 paf Exp $
+	$Id: parser3isapi.C,v 1.69 2002/04/16 14:41:40 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -403,7 +403,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		int header_len=snprintf(header_buf, MAX_STRING,
 			"content-type: text/plain\r\n"
 			"content-length: %lu\r\n"
-			"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
+//			"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
 			"\r\n",
 			content_length);
 
