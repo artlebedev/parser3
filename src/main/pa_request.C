@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.144 2001/07/18 10:06:04 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.145 2001/07/18 13:18:00 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -284,8 +284,8 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			*main_class, *main_method_name);
 		if(!body_string)
 			THROW(0,0,
-			0, 
-			"'"MAIN_METHOD_NAME"' method not found");
+				0, 
+				"'"MAIN_METHOD_NAME"' method not found");
 
 		VString body_vstring_before_post_process(*body_string);
 		VString *body_vstring_after_post_process=&body_vstring_before_post_process;

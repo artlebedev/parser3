@@ -1,4 +1,5 @@
 @auto[]
+#$ORIGINS(1)
 $user-html[^table:set{user	html	comment
 <<	&laquo^;	длинные user вперёд
 >>	&raquo^;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: untaint.C,v 1.55 2001/07/18 10:06:04 parser Exp $"; 
+static const char *RCSId="$Id: untaint.C,v 1.56 2001/07/18 13:18:00 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -60,6 +60,31 @@ inline bool need_http_header_encode(unsigned char c){
 
 	return need_uri_encode(c);
 }
+
+//
+
+static const char * String_Untaint_lang_name[]={
+	"U", ///< zero value handy for hash lookup @see untaint_lang_name2enum
+	"C", ///< clean
+	"T",  ///< tainted, untaint language as assigned later 
+	// untaint languages. assigned by ^untaint[lang]{...}
+	"P",
+		/**<
+			leave language built into string being appended.
+			just a flag, that value not stored
+		*/
+	"A",     ///< leave all characters intact
+	"F", ///< filename
+	"H",    ///< text in HTTP response header
+	"M",    ///< text in mail header
+	"URI",       ///< text in uri
+	"T",     ///< ^table:set body
+	"SQL",       ///< ^table:sql body
+	"JS",        ///< JavaScript code
+	"HTML",      ///< HTML code (for editing)
+	"UHTML", ///< HTML code with USER chars
+};
+
 
 // String
 
@@ -154,8 +179,8 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				else
 					dest+=sprintf(dest, "unknown");
 #endif
-				dest+=sprintf(dest, "#%d: ",
-					to_lang);
+				dest+=sprintf(dest, "#%s: ",
+					String_Untaint_lang_name[to_lang]);
 			}
 			char *dest_after_origins=dest;
 
