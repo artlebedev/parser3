@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2003/11/20 17:15:12 $";
+static const char * const IDENT_VMAIL_C="$Date: 2003/11/25 15:50:58 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -165,8 +165,7 @@ static void MimePart2body(GMimePart *part, gpointer data) {
 		{
 			// $.raw[
 			VHash* vraw(new VHash);  putReceived(source_charset, partX, RAW_NAME, vraw);
-			MimeHeaderField2received_info hfr_info={
-				&source_charset, &vraw->hash()};
+			MimeHeaderField2received_info hfr_info={&source_charset, &vraw->hash()};
 			g_mime_header_foreach(part->headers, MimeHeaderField2received, &hfr_info);
 		}
 		const char* content_filename=0;
@@ -267,8 +266,7 @@ static void parse(Request& r, GMimeStream *stream, HashStringValue& received) {
 		{
 			// $.raw[
 			VHash* vraw(new VHash);  putReceived(source_charset, received, RAW_NAME, vraw);
-			MimeHeaderField2received_info hfr_info={
-				&source_charset, &vraw->hash()};
+			MimeHeaderField2received_info hfr_info={&source_charset, &vraw->hash()};
 			g_mime_header_foreach(messageHeader->headers, MimeHeaderField2received, &hfr_info);
 		}
 

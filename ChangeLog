@@ -1,3 +1,759 @@
+2003-11-25  paf
+	* src/main/untaint.C 1.125:
+		bugfix: consequences of not reading this comment: 
+		CORD_pos_chars_left /* Number of characters in cache.  <= 0 ==
+		 none	*/
+
+	* src/include/pa_array.h 1.63:
+		removed needless checks
+
+2003-11-24  paf
+	* operators.txt 1.142:
+	* src/types/pa_vxnode.C 1.36:
+	* src/types/pa_vxnode.h 1.28:
+		$xdoc[^xdoc::create[test]]
+		$tn[^xdoc.createTextNode[text node value]]
+		$dummy[^xdoc.firstChild.appendChild[$tn]]
+		$xdoc.firstChild.firstChild.nodeValue[different]
+		^taint[^xdoc.string[]]
+
+	* src/main/pa_request.C 1.260:
+	* src/types/pa_vform.C 1.77:
+	* src/types/pa_vform.h 1.48:
+		removed limit: now $form:xxx can be accessed anytime, even in @auto/conf
+		[and request/response:charset still can be changed anytime]
+
+	* src/include/pa_hash.h 1.61:
+	* src/types/types.vcproj 1.6:
+		linker HPUX nongnu workaround: static Hash::allocates -> static Hash_allocates
+
+	* src/main/pa_common.C 1.169:
+		bugfix: ^file::load[binary;http://...]   now not transcodes
+		response body
+
+2003-11-21  paf
+	* src/main/pa_exec.C 1.55:
+		bug in safe mode
+
+	* src/include/Makefile.am 1.7:
+		pa_xml_exception.h
+
+	* Makefile.am 1.40:
+	* Makefile.in 1.54:
+	* configure 1.73:
+	* configure.in 1.71:
+	* parser3.sln 1.8:
+	* src/classes/Makefile.am 1.47:
+	* src/classes/Makefile.am 1.48:
+	* src/classes/Makefile.in 1.59:
+	* src/classes/classes.vcproj 1.5:
+	* src/include/Makefile.in 1.15:
+	* src/include/pa_config_auto.h.in 1.39:
+	* src/lib/Makefile.am 1.7:
+	* src/lib/Makefile.in 1.12:
+	* src/lib/gd/Makefile.am 1.1:
+	* src/lib/gd/Makefile.in 1.1:
+	* src/lib/gd/Makefile.in 1.2:
+	* src/lib/gd/gd.vcproj 1.1:
+	* src/lib/gd/gif.C 1.1:
+	* src/lib/gd/gif.h 1.1:
+	* src/lib/gd/gifio.C 1.1:
+	* src/lib/gd/mtables.h 1.1:
+	* src/lib/smtp/Makefile.am 1.1:
+	* src/lib/smtp/Makefile.in 1.1:
+	* src/lib/smtp/Makefile.in 1.2:
+	* src/lib/smtp/comms.C 1.1:
+	* src/lib/smtp/smtp.C 1.1:
+	* src/lib/smtp/smtp.h 1.1:
+	* src/lib/smtp/smtp.vcproj 1.1:
+	* src/targets/apache13/p3runConfigure.in 1.15:
+	* src/targets/apache13core/Makefile.in 1.5:
+	* src/targets/cgi/Makefile.am 1.50:
+	* src/targets/cgi/Makefile.in 1.66:
+	* src/types/Makefile.am 1.35:
+	* src/types/Makefile.in 1.54:
+		rearrange: gd&smtp moved to src/lib
+
+	* src/targets/apache13/ApacheModuleParser3.vcproj 1.5:
+	* src/targets/isapi/parser3isapi.C 1.85:
+		more warnings --
+
+	* Makefile.am 1.41:
+	* Makefile.in 1.55:
+	* acinclude.m4 1.28:
+	* aclocal.m4 1.31:
+	* acsite.m4 1.6:
+	* configure 1.74:
+	* configure.in 1.72:
+	* src/classes/mail.C 1.97:
+		*** empty log message ***
+
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.5:
+	* src/targets/apache13core/Makefile.am 1.5:
+	* src/targets/apache13core/mod_parser3.C 1.7:
+	* src/targets/apache13core/mod_parser3_core.C 1.1:
+		renamed mod_parser3 to mod_parser3_core to help DOXYGEN
+
+	* src/classes/mail.C 1.96:
+		bugfix: typo
+
+2003-11-20  paf
+	* src/main/execute.C 1.303:
+	* src/main/pa_request.C 1.257:
+		old forgotten todo: when can't report problem (undefined @
+		unhandled_exception) problem source string were not reported
+
+	* src/classes/classes.vcproj 1.4:
+	* src/classes/date.C 1.53:
+	* src/classes/double.C 1.55:
+	* src/classes/file.C 1.114:
+	* src/classes/hash.C 1.61:
+	* src/classes/hashfile.C 1.31:
+	* src/classes/image.C 1.98:
+	* src/classes/int.C 1.51:
+	* src/classes/mail.C 1.93:
+	* src/classes/math.C 1.35:
+	* src/classes/memory.C 1.4:
+	* src/classes/op.C 1.138:
+	* src/classes/string.C 1.128:
+	* src/classes/table.C 1.191:
+	* src/classes/xdoc.C 1.118:
+	* src/classes/xnode.C 1.62:
+	* src/include/pa_config_includes.h 1.27:
+	* src/include/pa_operation.h 1.3:
+	* src/include/pa_sql_connection.h 1.32:
+	* src/include/pa_table.h 1.54:
+	* src/include/pa_types.h 1.46:
+	* src/lib/ltdl/config_fixed.h 1.3:
+	* src/lib/ltdl/ltdl.vcproj 1.2:
+	* src/lib/md5/md5.vcproj 1.2:
+	* src/lib/pcre/maketables.c 1.2:
+	* src/lib/pcre/pcre_dftables.vcproj 1.2:
+	* src/lib/pcre/pcre_parser_ctype.vcproj 1.2:
+	* src/lib/sdbm/apr_file_io.C 1.2:
+	* src/main/compile.tab.C 1.93:
+	* src/main/execute.C 1.301:
+	* src/main/main.vcproj 1.6:
+	* src/main/pa_cache_managers.C 1.9:
+	* src/main/pa_charset.C 1.40:
+	* src/main/pa_common.C 1.166:
+	* src/main/pa_dir.C 1.16:
+	* src/main/pa_exec.C 1.53:
+	* src/main/pa_globals.C 1.160:
+	* src/main/pa_os.C 1.3:
+	* src/main/pa_request.C 1.255:
+	* src/main/pa_string.C 1.187:
+	* src/main/pa_table.C 1.57:
+	* src/targets/apache13/ApacheModuleParser3.vcproj 1.4:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.4:
+	* src/targets/cgi/parser3.vcproj 1.5:
+	* src/targets/isapi/parser3isapi.vcproj 1.2:
+	* src/types/pa_value.h 1.115:
+	* src/types/pa_vconsole.h 1.3:
+	* src/types/pa_vdate.h 1.28:
+	* src/types/pa_vfile.h 1.54:
+	* src/types/pa_vhashfile.C 1.36:
+	* src/types/pa_vimage.C 1.25:
+	* src/types/pa_vimage.h 1.36:
+	* src/types/pa_vmail.C 1.53:
+	* src/types/pa_vobject.C 1.14:
+	* src/types/pa_vstateless_class.h 1.46:
+	* src/types/pa_vtable.C 1.23:
+	* src/types/pa_vtable.h 1.50:
+	* src/types/pa_vvoid.h 1.19:
+	* src/types/pa_vxdoc.h 1.33:
+	* src/types/pa_vxnode.h 1.26:
+	* src/types/types.vcproj 1.5:
+		turned on warnings level4 on all projects (except libltdl=off & libsdbm=level3)
+		found several unitialized vars
+
+	* src/classes/classes.C 1.20:
+	* src/classes/classes.h 1.25:
+	* src/classes/date.C 1.54:
+	* src/classes/double.C 1.56:
+	* src/classes/file.C 1.115:
+	* src/classes/form.C 1.37:
+	* src/classes/hash.C 1.62:
+	* src/classes/hashfile.C 1.32:
+	* src/classes/image.C 1.99:
+	* src/classes/int.C 1.52:
+	* src/classes/mail.C 1.94:
+	* src/classes/math.C 1.36:
+	* src/classes/memory.C 1.5:
+	* src/classes/op.C 1.139:
+	* src/classes/response.C 1.25:
+	* src/classes/string.C 1.129:
+	* src/classes/table.C 1.192:
+	* src/classes/void.C 1.30:
+	* src/classes/xdoc.C 1.119:
+	* src/classes/xnode.C 1.63:
+	* src/classes/xnode.h 1.20:
+	* src/include/pa_array.h 1.62:
+	* src/include/pa_cache_managers.h 1.12:
+	* src/include/pa_charset.h 1.27:
+	* src/include/pa_charsets.h 1.11:
+	* src/include/pa_common.h 1.97:
+	* src/include/pa_config_fixed.h 1.62:
+	* src/include/pa_dictionary.h 1.16:
+	* src/include/pa_dir.h 1.15:
+	* src/include/pa_exception.h 1.42:
+	* src/include/pa_exec.h 1.14:
+	* src/include/pa_globals.h 1.107:
+	* src/include/pa_hash.h 1.60:
+	* src/include/pa_memory.h 1.8:
+	* src/include/pa_opcode.h 1.26:
+	* src/include/pa_operation.h 1.4:
+	* src/include/pa_os.h 1.3:
+	* src/include/pa_request.h 1.172:
+	* src/include/pa_request_charsets.h 1.3:
+	* src/include/pa_request_info.h 1.3:
+	* src/include/pa_sapi.h 1.24:
+	* src/include/pa_socks.h 1.13:
+	* src/include/pa_sql_connection.h 1.33:
+	* src/include/pa_sql_driver_manager.h 1.29:
+	* src/include/pa_stack.h 1.21:
+	* src/include/pa_string.h 1.153:
+	* src/include/pa_stylesheet_connection.h 1.35:
+	* src/include/pa_stylesheet_manager.h 1.18:
+	* src/include/pa_table.h 1.56:
+	* src/include/pa_threads.h 1.28:
+	* src/include/pa_types.h 1.47:
+	* src/include/pa_uue.h 1.6:
+	* src/include/pa_xml_exception.h 1.2:
+	* src/lib/md5/pa_md5.h 1.9:
+	* src/lib/md5/pa_md5c.c 1.11:
+	* src/lib/sdbm/apr_file_io.C 1.3:
+	* src/lib/sdbm/apr_strings.C 1.2:
+	* src/main/compile.C 1.71:
+	* src/main/compile_tools.C 1.56:
+	* src/main/compile_tools.h 1.71:
+	* src/main/execute.C 1.302:
+	* src/main/pa_cache_managers.C 1.10:
+	* src/main/pa_charset.C 1.41:
+	* src/main/pa_charsets.C 1.14:
+	* src/main/pa_common.C 1.168:
+	* src/main/pa_dictionary.C 1.20:
+	* src/main/pa_dir.C 1.17:
+	* src/main/pa_exception.C 1.46:
+	* src/main/pa_exec.C 1.54:
+	* src/main/pa_globals.C 1.161:
+	* src/main/pa_memory.C 1.3:
+	* src/main/pa_os.C 1.4:
+	* src/main/pa_pool.C 1.62:
+	* src/main/pa_request.C 1.256:
+	* src/main/pa_socks.C 1.20:
+	* src/main/pa_sql_driver_manager.C 1.74:
+	* src/main/pa_string.C 1.188:
+	* src/main/pa_stylesheet_manager.C 1.20:
+	* src/main/pa_table.C 1.58:
+	* src/main/pa_uue.C 1.6:
+	* src/main/pa_xml_exception.C 1.2:
+	* src/main/untaint.C 1.123:
+	* src/sql/pa_sql_driver.h 1.36:
+	* src/targets/apache13/mod_parser3.c 1.9:
+	* src/targets/apache13/pa_httpd.h 1.5:
+	* src/targets/apache13core/mod_parser3.C 1.6:
+	* src/targets/apache13core/pa_threads.C 1.3:
+	* src/targets/cgi/pa_threads.C 1.14:
+	* src/targets/cgi/parser3.C 1.222:
+	* src/targets/isapi/pa_threads.C 1.15:
+	* src/targets/isapi/parser3isapi.C 1.84:
+	* src/types/pa_junction.h 1.3:
+	* src/types/pa_method.h 1.3:
+	* src/types/pa_value.C 1.13:
+	* src/types/pa_value.h 1.116:
+	* src/types/pa_vbool.h 1.23:
+	* src/types/pa_vclass.C 1.19:
+	* src/types/pa_vclass.h 1.42:
+	* src/types/pa_vcode_frame.h 1.26:
+	* src/types/pa_vconsole.h 1.4:
+	* src/types/pa_vcookie.C 1.59:
+	* src/types/pa_vcookie.h 1.25:
+	* src/types/pa_vdate.h 1.29:
+	* src/types/pa_vdouble.h 1.44:
+	* src/types/pa_venv.h 1.30:
+	* src/types/pa_vfile.C 1.38:
+	* src/types/pa_vfile.h 1.55:
+	* src/types/pa_vform.C 1.76:
+	* src/types/pa_vform.h 1.47:
+	* src/types/pa_vhash.h 1.49:
+	* src/types/pa_vhashfile.C 1.37:
+	* src/types/pa_vhashfile.h 1.26:
+	* src/types/pa_vimage.C 1.26:
+	* src/types/pa_vimage.h 1.37:
+	* src/types/pa_vint.h 1.40:
+	* src/types/pa_vjunction.h 1.21:
+	* src/types/pa_vmail.C 1.54:
+	* src/types/pa_vmail.h 1.13:
+	* src/types/pa_vmath.C 1.4:
+	* src/types/pa_vmath.h 1.16:
+	* src/types/pa_vmemory.h 1.3:
+	* src/types/pa_vmethod_frame.C 1.3:
+	* src/types/pa_vmethod_frame.h 1.47:
+	* src/types/pa_vobject.C 1.15:
+	* src/types/pa_vobject.h 1.41:
+	* src/types/pa_vrequest.C 1.31:
+	* src/types/pa_vrequest.h 1.27:
+	* src/types/pa_vresponse.C 1.19:
+	* src/types/pa_vresponse.h 1.34:
+	* src/types/pa_vstateless_class.C 1.21:
+	* src/types/pa_vstateless_class.h 1.47:
+	* src/types/pa_vstateless_object.h 1.30:
+	* src/types/pa_vstatus.C 1.19:
+	* src/types/pa_vstatus.h 1.17:
+	* src/types/pa_vstring.C 1.24:
+	* src/types/pa_vstring.h 1.57:
+	* src/types/pa_vtable.C 1.24:
+	* src/types/pa_vtable.h 1.51:
+	* src/types/pa_vvoid.h 1.20:
+	* src/types/pa_vxdoc.C 1.26:
+	* src/types/pa_vxdoc.h 1.34:
+	* src/types/pa_vxnode.C 1.34:
+	* src/types/pa_vxnode.h 1.27:
+	* src/types/pa_wcontext.C 1.27:
+	* src/types/pa_wcontext.h 1.45:
+	* src/types/pa_wwrapper.h 1.30:
+		static const char * const IDENT
+
+	* src/classes/date.C 1.55:
+	* src/classes/date.C 1.56:
+	* src/classes/date.C 1.57:
+	* src/classes/file.C 1.116:
+	* src/classes/file.C 1.117:
+	* src/classes/hash.C 1.63:
+	* src/classes/hash.C 1.64:
+	* src/classes/image.C 1.100:
+	* src/classes/image.C 1.101:
+	* src/classes/image.C 1.102:
+	* src/classes/mail.C 1.95:
+	* src/classes/math.C 1.37:
+	* src/classes/op.C 1.140:
+	* src/classes/op.C 1.141:
+	* src/classes/string.C 1.130:
+	* src/classes/string.C 1.131:
+	* src/classes/table.C 1.193:
+	* src/classes/xdoc.C 1.120:
+	* src/classes/xdoc.C 1.121:
+	* src/include/pa_array.h 1.61:
+	* src/include/pa_cache_managers.h 1.13:
+	* src/include/pa_pool.h 1.89:
+	* src/include/pa_request.h 1.171:
+	* src/include/pa_string.h 1.152:
+	* src/include/pa_stylesheet_connection.h 1.36:
+	* src/include/pa_table.h 1.55:
+	* src/main/compile_tools.h 1.70:
+	* src/main/pa_charset.C 1.42:
+	* src/main/pa_charset.C 1.43:
+	* src/main/pa_common.C 1.167:
+	* src/main/pa_dictionary.C 1.21:
+	* src/main/pa_dir.C 1.18:
+	* src/main/pa_request.C 1.259:
+	* src/main/pa_sql_driver_manager.C 1.75:
+	* src/main/pa_string.C 1.189:
+	* src/main/pa_string.C 1.190:
+	* src/main/pa_table.C 1.59:
+	* src/main/untaint.C 1.124:
+	* src/types/pa_value.C 1.14:
+	* src/types/pa_vcookie.C 1.60:
+	* src/types/pa_vdate.h 1.30:
+	* src/types/pa_vhash.h 1.48:
+	* src/types/pa_vhashfile.C 1.38:
+	* src/types/pa_vimage.h 1.38:
+	* src/types/pa_vmail.C 1.55:
+	* src/types/pa_vmethod_frame.C 1.4:
+	* src/types/pa_vmethod_frame.h 1.48:
+	* src/types/pa_vxnode.C 1.35:
+	* src/types/pa_wcontext.h 1.44:
+		more warnings --
+
+2003-11-19  paf
+	* operators.txt 1.141:
+	* src/classes/op.C 1.136:
+	* src/include/pa_request.h 1.170:
+	* src/main/pa_request.C 1.254:
+		cache[...]{body}{catch block with $exception.handled[cache] 
+		meaning "get expired cache, if any. else error"}
+
+	* src/classes/op.C 1.135:
+	* src/include/pa_os.h 1.2:
+	* src/include/pa_request.h 1.169:
+	* src/main/pa_common.C 1.165:
+		cache: ^cache[] fallback
+		todo: kinda ^try:  ^cache[...]{body}{catch code with $exception.cache field}
+
+	* src/classes/op.C 1.137:
+		more ansi C++ comp
+
+2003-11-12  paf
+	* src/classes/xnode.C 1.61:
+		replaceChild: 2nd param now named oldChild [copy/paste bug]
+
+2003-11-11  paf
+	* src/types/pa_value.h [release_3_0_8] 1.109.6.1:
+	* src/types/pa_vfile.h [release_3_0_8] 1.52.6.1:
+		more C++ compatible [HP C++ failed]
+
+	* operators.txt 1.139:
+	* operators.txt 1.140:
+		*** empty log message ***
+
+	* bin/auto.p.dist.in 1.10:
+		colno
+
+2003-11-10  paf
+	* src/types/pa_vhashfile.C 1.35:
+	* src/types/pa_vhashfile.h 1.25:
+		add: hashfile old serialize version and exipire now removes entries
+
+	* operators.txt 1.135:
+		comment: updated
+
+	* operators.txt 1.138:
+	* src/main/pa_request.C 1.253:
+	* src/types/Makefile.am 1.34:
+	* src/types/pa_vconsole.h 1.1:
+	* src/types/types.vcproj 1.4:
+		$console:line read/write  [for nntp]
+
+	* operators.txt 1.134:
+	* src/classes/hashfile.C 1.30:
+	* src/include/pa_common.h 1.96:
+	* src/main/pa_common.C 1.164:
+	* src/types/pa_vhashfile.C 1.34:
+	* src/types/pa_vhashfile.h 1.24:
+		^hashfile.delete[] removes files altogether [and dir, if could]
+
+	* src/types/pa_vconsole.h 1.2:
+		flush
+
+	* src/types/Makefile.in 1.53:
+		*** empty log message ***
+
+	* src/lib/sdbm/sdbm.c 1.3:
+		bugfix: sdbm: .h said it's OK to remove nonexistent pair. .c
+		coded that that was error. fixed
+
+	* src/types/pa_vhashfile.C 1.33:
+		sdbm: exception type change to file.access [regretfull can't
+		split it to different exceptions without modifying sdbm source
+		wich would prefer not to]
+
+	* operators.txt 1.136:
+		mysql: transaction support: ?autocommit=0
+
+2003-11-07  paf
+	* src/classes/date.C 1.52:
+	* src/classes/file.C 1.113:
+	* src/classes/hash.C 1.60:
+	* src/classes/hashfile.C 1.29:
+	* src/classes/image.C 1.97:
+	* src/classes/table.C 1.190:
+	* src/classes/xdoc.C 1.117:
+	* src/include/Makefile.am 1.6:
+	* src/include/pa_array.h 1.60:
+	* src/include/pa_pool.h 1.88:
+	* src/include/pa_request.h 1.168:
+	* src/main/Makefile.am 1.41:
+	* src/main/execute.C 1.300:
+	* src/main/main.vcproj 1.5:
+	* src/main/pa_pool.C 1.61:
+	* src/main/pa_request.C 1.252:
+	* src/targets/cgi/parser3.C 1.221:
+	* src/types/pa_vclass.C 1.18:
+	* src/types/pa_vclass.h 1.41:
+	* src/types/pa_vhashfile.h 1.23:
+	* src/types/pa_vobject.h 1.40:
+	* src/types/pa_vstateless_class.h 1.45:
+		resurrected: pool idea. now only for destructing objects at
+		request processing end
+
+	* src/include/Makefile.in 1.14:
+	* src/main/Makefile.in 1.54:
+		*** empty log message ***
+
+2003-11-06  paf
+	* src/classes/xdoc.C 1.116:
+	* src/classes/xnode.C 1.60:
+	* src/include/pa_charset.h 1.26:
+	* src/include/pa_globals.h 1.106:
+	* src/include/pa_stylesheet_connection.h 1.34:
+	* src/main/pa_exception.C 1.45:
+	* src/types/pa_vxnode.h 1.25:
+		XmlException changes
+
+	* src/types/pa_vhashfile.C 1.30:
+		hashfile: foreach body can bodify $self
+
+	* operators.txt 1.133:
+	* src/types/pa_vhashfile.C 1.32:
+		hashfile: clear & expiration [time in value. todo: move time to
+		key]
+
+	* src/include/pa_memory.h 1.7:
+	* src/targets/cgi/parser3.C 1.220:
+	* src/types/pa_value.C 1.12:
+	* src/types/pa_value.h 1.114:
+	* src/types/pa_vcookie.C 1.58:
+	* src/types/pa_vhashfile.C 1.23:
+	* src/types/pa_vhashfile.h 1.18:
+	* www/htdocs/.htaccess 1.22:
+		hashfile implemented get/put [raw]
+
+	* operators.txt 1.130:
+	* src/classes/hashfile.C 1.26:
+	* src/types/pa_vhashfile.C 1.25:
+	* src/types/pa_vhashfile.h 1.20:
+		hashfile: hash
+
+	* src/lib/sdbm/Makefile.am 1.2:
+	* src/lib/sdbm/apr_file_io.C 1.1:
+	* src/lib/sdbm/apr_strings.C 1.1:
+		move to upper dir, .am updated
+
+	* configure 1.69:
+	* configure.in 1.65:
+	* operators.txt 1.128:
+	* parser3.sln 1.6:
+	* src/classes/classes.vcproj 1.3:
+	* src/classes/hashfile.C 1.24:
+	* src/classes/xdoc.C 1.115:
+	* src/include/pa_config_fixed.h 1.61:
+	* src/include/pa_exception.h 1.40:
+	* src/include/pa_globals.h 1.105:
+	* src/include/pa_memory.h 1.6:
+	* src/include/pa_version.h 1.11:
+	* src/lib/ltdl/libltdl.vcproj 1.2:
+	* src/lib/ltdl/libltdl.vcproj.vspscc 1.2:
+	* src/lib/ltdl/ltdl.vcproj 1.1:
+	* src/lib/ltdl/ltdl.vcproj.vspscc 1.1:
+	* src/lib/sdbm/apr-include/apr.h 1.4:
+	* src/lib/sdbm/apr-include/apr_errno.h 1.4:
+	* src/lib/sdbm/apr-include/apr_file_info.h 1.1:
+	* src/lib/sdbm/apr-include/apr_file_io.h 1.4:
+	* src/lib/sdbm/apr-include/apr_pools.h 1.4:
+	* src/lib/sdbm/apr-include/apr_sdbm.h 1.3:
+	* src/lib/sdbm/apr-include/apr_strings.h 1.3:
+	* src/lib/sdbm/apr-include/apu.h 1.3:
+	* src/main/compile.tab.C 1.92:
+	* src/main/main.vcproj 1.3:
+	* src/main/pa_charset.C 1.39:
+	* src/targets/apache13/ApacheModuleParser3.vcproj 1.3:
+	* src/targets/apache13/mod_parser3.c 1.8:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.3:
+	* src/targets/cgi/parser3.vcproj 1.4:
+	* src/types/Makefile.am 1.30:
+	* src/types/pa_vhash.C 1.4:
+	* src/types/pa_vhashfile.C 1.22:
+	* src/types/pa_vhashfile.h 1.17:
+	* src/types/pa_vxnode.h 1.24:
+	* src/types/types.vcproj 1.3:
+	* www/htdocs/.htaccess 1.21:
+		hashfile: started again with sdbm from apache
+
+	* operators.txt 1.131:
+	* src/classes/hash.C 1.58:
+	* src/classes/hash.C 1.59:
+	* src/classes/hashfile.C 1.27:
+	* src/classes/hashfile.C 1.28:
+	* src/types/pa_vhashfile.C 1.26:
+	* src/types/pa_vhashfile.h 1.21:
+		hashfile: foreach
+
+	* operators.txt 1.132:
+	* src/types/pa_vhashfile.C 1.27:
+	* src/types/pa_vhashfile.h 1.22:
+		hashfile: clear and proper locking
+
+	* src/include/Makefile.in 1.13:
+	* src/include/pa_config_includes.h 1.26:
+	* src/include/pa_version.h 1.12:
+		our replacements of max& co only for cpp
+
+	* parser3.sln 1.7:
+	* src/targets/apache13/p3runConfigure.in 1.14:
+	* src/targets/cgi/Makefile.am 1.49:
+		.vcproj & .am updated to include sdbm
+
+	* operators.txt 1.129:
+	* src/classes/hashfile.C 1.25:
+	* src/types/pa_vhashfile.C 1.24:
+	* src/types/pa_vhashfile.h 1.19:
+	* tests/todo.txt 1.4:
+		hashfile: delete
+
+	* configure.in 1.66:
+	* configure.in 1.67:
+	* src/classes/Makefile.am 1.46:
+	* src/classes/Makefile.in 1.58:
+	* src/include/Makefile.am 1.5:
+	* src/lib/Makefile.am 1.6:
+	* src/lib/Makefile.in 1.11:
+	* src/lib/sdbm/Makefile.am 1.3:
+	* src/lib/sdbm/Makefile.in 1.1:
+	* src/lib/sdbm/apr-include/Makefile.am 1.1:
+	* src/lib/sdbm/apr-include/Makefile.in 1.1:
+	* src/lib/sdbm/sdbm.vcproj 1.3:
+	* src/main/Makefile.am 1.39:
+	* src/main/Makefile.am 1.40:
+	* src/main/Makefile.in 1.53:
+	* src/targets/cgi/.cvsignore 1.3:
+	* src/targets/cgi/Makefile.in 1.65:
+	* src/types/Makefile.am 1.32:
+	* src/types/Makefile.am 1.33:
+	* src/types/Makefile.in 1.52:
+		*** empty log message ***
+
+	* src/include/pa_common.h 1.95:
+	* src/include/pa_exception.h 1.41:
+	* src/include/pa_os.h 1.1:
+	* src/include/pa_xml_exception.h 1.1:
+	* src/lib/sdbm/sdbm.vcproj 1.1:
+	* src/main/main.vcproj 1.4:
+	* src/main/pa_common.C 1.162:
+	* src/main/pa_os.C 1.1:
+	* src/main/pa_xml_exception.C 1.1:
+		locking move to pa_os [along with pa_sleep]
+		apr-impl locking done
+
+	* src/types/pa_vhashfile.C 1.29:
+		hashfile: clear now works [were trying to do that in foreach, 
+		no errors, but surely wrong]
+
+	* src/lib/sdbm/apr-include/apr_pools.h 1.5:
+	* src/lib/sdbm/sdbm.c 1.2:
+	* src/lib/sdbm/sdbm.vcproj 1.2:
+		just compiled
+
+	* tests/todo.txt 1.5:
+		hashfile: done
+
+	* src/classes/op.C 1.134:
+	* src/main/pa_os.C 1.2:
+		just linked
+
+	* src/classes/Makefile.am 1.45:
+	* src/types/Makefile.am 1.31:
+		.am sdbm INCLUDES updates
+
+2003-11-05  paf
+	* src/lib/sdbm/apr-include/apr.h 1.2:
+	* src/lib/sdbm/apr-include/apr_errno.h 1.2:
+	* src/lib/sdbm/apr-include/apr_file_io.h 1.2:
+	* src/lib/sdbm/apr-include/apr_pools.h 1.2:
+	* src/lib/sdbm/apr-include/apr_strings.h 1.1:
+	* src/lib/sdbm/apr-include/apu.h 1.1:
+		started porting: grabbed some parts of apr headers
+
+	* src/lib/sdbm/Makefile.am 1.1:
+	* src/lib/sdbm/sdbm.c 1.1:
+	* src/lib/sdbm/sdbm_hash.c 1.1:
+	* src/lib/sdbm/sdbm_lock.c 1.1:
+	* src/lib/sdbm/sdbm_pair.c 1.1:
+	* src/lib/sdbm/sdbm_pair.h 1.1:
+	* src/lib/sdbm/sdbm_private.h 1.1:
+	* src/lib/sdbm/sdbm_tune.h 1.1:
+		original from httpd-2.0.43\srclib\apr-util\dbm\sdbm
+
+	* src/lib/sdbm/apr-include/apr.h 1.1:
+	* src/lib/sdbm/apr-include/apr.h 1.3:
+	* src/lib/sdbm/apr-include/apr_errno.h 1.1:
+	* src/lib/sdbm/apr-include/apr_errno.h 1.3:
+	* src/lib/sdbm/apr-include/apr_file_io.h 1.1:
+	* src/lib/sdbm/apr-include/apr_file_io.h 1.3:
+	* src/lib/sdbm/apr-include/apr_pools.h 1.1:
+	* src/lib/sdbm/apr-include/apr_pools.h 1.3:
+	* src/lib/sdbm/apr-include/apr_sdbm.h 1.1:
+	* src/lib/sdbm/apr-include/apr_sdbm.h 1.2:
+	* src/lib/sdbm/apr-include/apr_strings.h 1.2:
+	* src/lib/sdbm/apr-include/apu.h 1.2:
+		*** empty log message ***
+
+	* src/classes/classes.vcproj [release_3_1_1] 1.2.6.1:
+	* src/include/pa_config_fixed.h [release_3_1_1] 1.58.6.1:
+	* src/main/main.vcproj [release_3_1_1] 1.2.6.1:
+	* src/targets/apache13/ApacheModuleParser3.vcproj [release_3_1_1] 1.2.6.1:
+	* src/targets/apache13/mod_parser3.c [release_3_1_1] 1.7.2.1:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj [release_3_1_1] 1.2.6.1:
+	* src/targets/cgi/parser3.vcproj [release_3_1_1] 1.3.2.1:
+		not has to be in \parser3project dir anymore
+
+	* src/main/helpers/CaseFolding.txt 1.1:
+		http://www.unicode.org/Public/UNIDATA/CaseFolding.txt
+
+	* src/main/pa_charset.C [release_3_1_1] 1.38.2.1:
+		bugfix: had broken binary search [copied thoughtlessly from
+		xalan]
+
+2003-11-04  paf
+	* operators.txt 1.124:
+	* src/classes/table.C 1.187:
+	* tests/todo.txt 1.2:
+		^table::load
+		        !$.separator[^#09]
+		        !$.encloser["] <nothing> by default
+
+	* operators.txt 1.125:
+	* src/classes/table.C 1.188:
+	* src/main/pa_string.C 1.186:
+	* tests/todo.txt 1.3:
+		^table.save[...
+		        $.separator[^#09]
+		        $.encloser["] <nothing> by default
+
+	* operators.txt 1.126:
+	* src/classes/mail.C 1.91:
+	* src/types/pa_vmail.C 1.52:
+	* src/types/pa_vmail.h 1.12:
+		    !^mail:send[
+		    	$.options[unix: string to append to sendmail command line]
+
+	* src/classes/Makefile.am 1.44:
+	* src/classes/Makefile.in 1.57:
+		classes.C to rebuild last
+
+	* src/classes/mail.C 1.92:
+	* src/classes/table.C 1.189:
+		compiled on unix
+
+	* operators.txt 1.127:
+		comment: ^mail:send[$.options[
+
+2003-11-03  paf
+	* src/targets/cgi/parser3.C 1.219:
+		beauty: SIGUSRX removed qs= printing [already included into uri
+		xxx]
+
+	* operators.txt 1.120:
+	* src/classes/date.C 1.49:
+		    !^date::unix-timestamp()
+		    !^date.unix-timestamp[]
+
+	* operators.txt 1.121:
+	* src/classes/image.C 1.95:
+	* tests/todo.txt 1.1:
+	* www/htdocs/auto.p 1.21:
+		^image.gif[filename] for $response:download
+
+	* operators.txt 1.123:
+	* src/classes/table.C 1.186:
+	* src/main/pa_common.C 1.161:
+		^table::load[; options:
+		        !$.column-separator[^#09]
+		        !$.column-encloser["]
+
+	* operators.txt 1.122:
+	* src/include/pa_config_fixed.h 1.60:
+	* src/types/pa_vrequest.C 1.30:
+		$request:document-root
+
+	* src/classes/date.C 1.50:
+		minor precaution
+
+2003-10-31  paf
+	* src/include/pa_config_fixed.h 1.59:
+	* src/include/pa_version.h [release_3_1_1] 1.10.2.1:
+		*** empty log message ***
+
 2003-10-30  paf
 	* src/classes/date.C 1.47:
 	* src/classes/image.C 1.94:
@@ -18,7 +774,6 @@
 2003-10-24  paf
 	* Makefile.am 1.36:
 	* src/classes/Makefile.am 1.43:
-	* src/classes/smtp/Makefile.am 1.3:
 	* src/lib/cord/Makefile.am 1.3:
 	* src/lib/md5/Makefile.am 1.3:
 	* src/lib/pcre/Makefile.am 1.2:
@@ -31,7 +786,6 @@
 
 	* Makefile.in 1.50:
 	* src/classes/Makefile.in 1.56:
-	* src/classes/smtp/Makefile.in 1.14:
 	* src/include/pa_version.h 1.10:
 	* src/lib/cord/Makefile.in 1.3:
 	* src/lib/md5/Makefile.in 1.8:
@@ -497,8 +1251,6 @@
 	* gnu.vcproj 1.1:
 	* parser3.sln 1.1:
 	* src/classes/classes.vcproj 1.1:
-	* src/classes/gd/gd.vcproj 1.1:
-	* src/classes/smtp/smtp.vcproj 1.1:
 	* src/lib/cord/cord.vcproj 1.1:
 	* src/lib/ltdl/libltdl.vcproj 1.1:
 	* src/lib/md5/md5.vcproj 1.1:
@@ -539,10 +1291,6 @@
 	* parser3.vssscc 1.1:
 	* src/classes/classes.dsp 1.31:
 	* src/classes/classes.vcproj.vspscc 1.1:
-	* src/classes/gd/gd.dsp 1.32:
-	* src/classes/gd/gd.vcproj.vspscc 1.1:
-	* src/classes/smtp/smtp.dsp 1.28:
-	* src/classes/smtp/smtp.vcproj.vspscc 1.1:
 	* src/lib/cord/cord.dsp 1.3:
 	* src/lib/cord/cord.vcproj.vspscc 1.1:
 	* src/lib/ltdl/libltdl.dsp 1.7:
@@ -630,12 +1378,6 @@
 	* src/classes/double.C 1.54:
 	* src/classes/file.C 1.111:
 	* src/classes/form.C 1.35:
-	* src/classes/gd/Makefile.am 1.11:
-	* src/classes/gd/Makefile.in 1.44:
-	* src/classes/gd/gd.dsp 1.30:
-	* src/classes/gd/gif.C 1.31:
-	* src/classes/gd/gif.h 1.24:
-	* src/classes/gd/gifio.C 1.22:
 	* src/classes/hash.C 1.57:
 	* src/classes/image.C 1.91:
 	* src/classes/int.C 1.50:
@@ -644,11 +1386,6 @@
 	* src/classes/memory.C 1.2:
 	* src/classes/op.C 1.129:
 	* src/classes/response.C 1.24:
-	* src/classes/smtp/Makefile.in 1.13:
-	* src/classes/smtp/comms.C 1.12:
-	* src/classes/smtp/smtp.C 1.21:
-	* src/classes/smtp/smtp.dsp 1.26:
-	* src/classes/smtp/smtp.h 1.12:
 	* src/classes/string.C 1.126:
 	* src/classes/table.C 1.182:
 	* src/classes/void.C 1.29:
@@ -890,8 +1627,6 @@
 		to reflect date format change (were - become ' ')
 
 	* src/classes/classes.dsp 1.30:
-	* src/classes/gd/gd.dsp 1.31:
-	* src/classes/smtp/smtp.dsp 1.27:
 	* src/main/main.dsp 1.166:
 	* src/main/pa_globals.C 1.158:
 	* src/targets/apache13core/ApacheModuleParser3Core.dsp 1.3:
@@ -2224,8 +2959,6 @@
 		http://i2/tasks/edit/?id=4480590323629807263
 
 	* src/classes/classes.dsp 1.27:
-	* src/classes/gd/gd.dsp 1.28:
-	* src/classes/smtp/smtp.dsp 1.24:
 	* src/lib/ltdl/libltdl.dsp 1.5:
 	* src/lib/md5/md5.dsp 1.4:
 	* src/lib/pcre/pcre.dsp 1.3:
@@ -2243,8 +2976,6 @@
 		one line inside
 
 	* src/classes/classes.dsp 1.28:
-	* src/classes/gd/gd.dsp 1.29:
-	* src/classes/smtp/smtp.dsp 1.25:
 	* src/main/main.dsp 1.164:
 	* src/targets/cgi/parser3.dsp 1.63:
 	* src/types/pa_vmail.C 1.43:
@@ -2566,7 +3297,6 @@
 	* src/targets/cgi/parser3.C [template_gc] 1.216.2.30.2.19:
 		array::get/put inlined
 
-	* src/classes/gd/gif.h [template_gc] 1.23.2.5.2.6:
 	* src/include/pa_array.h [template_gc] 1.57.2.27.2.14:
 	* src/main/execute.C [template_gc] 1.295.2.27.2.13:
 	* src/targets/cgi/parser3.C [template_gc] 1.216.2.30.2.20:
@@ -2649,8 +3379,6 @@
 		file Makefile.am was initially added on branch template_gc.
 
 	* src/classes/classes.dsp [template_gc] 1.25.10.5.2.8:
-	* src/classes/gd/gd.dsp [template_gc] 1.26.10.2.2.6:
-	* src/classes/smtp/smtp.dsp [template_gc] 1.22.10.1.2.7:
 	* src/include/pa_config_fixed.h [template_gc] 1.54.2.5.2.4:
 	* src/main/compile.tab.C [template_gc] 1.81.2.13.2.19:
 	* src/main/main.dsp [template_gc] 1.161.6.14.2.7:
@@ -2665,7 +3393,6 @@
 	* src/targets/cgi/parser3.C [template_gc] 1.216.2.30.2.16:
 		xml memory debugging showed no errors. todo: debug parser memory
 
-	* src/classes/gd/Makefile.am [template_gc] 1.10.16.1:
 	* src/main/pa_memory.C [template_gc] 1.1.2.5.2.9:
 		bug() to set bpt in (memory.c)
 		some .am changes
@@ -2697,7 +3424,6 @@
 	* src/main/pa_memory.C [template_gc] 1.1.2.5.2.8:
 		moved memory debugging to global level: to pa_gc_malloc
 
-	* src/classes/gd/Makefile.in [template_gc] 1.43.2.3.2.2:
 	* src/lib/gc/Makefile.am [template_gc] 1.1.2.1:
 	* src/lib/gc/Makefile.in [template_gc] 1.1.2.1:
 	* src/lib/gc/include/Makefile.am [template_gc] 1.1.2.1:
@@ -2793,9 +3519,7 @@
 		disabled gc, become even slower
 
 	* src/classes/classes.dsp [template_gc] 1.25.10.5.2.7:
-	* src/classes/gd/gd.dsp [template_gc] 1.26.10.2.2.5:
 	* src/classes/memory.C [template_gc] 1.1.2.2:
-	* src/classes/smtp/smtp.dsp [template_gc] 1.22.10.1.2.6:
 	* src/classes/xdoc.C [template_gc] 1.108.2.19.2.16:
 	* src/include/pa_array.h [template_gc] 1.57.2.27.2.8:
 	* src/include/pa_request.h [template_gc] 1.160.2.37.2.14:
@@ -2856,9 +3580,7 @@
 
 	* src/classes/classes.dsp [template_gc] 1.25.10.5.2.6:
 	* src/classes/file.C [template_gc] 1.107.2.16.2.11:
-	* src/classes/gd/gd.dsp [template_gc] 1.26.10.2.2.4:
 	* src/classes/op.C [template_gc] 1.127.2.22.2.20:
-	* src/classes/smtp/smtp.dsp [template_gc] 1.22.10.1.2.5:
 	* src/classes/table.C [template_gc] 1.172.2.14.2.18:
 	* src/include/pa_array.h [template_gc] 1.57.2.27.2.7:
 	* src/include/pa_charset.h [template_gc] 1.20.2.18.2.5:
@@ -2898,7 +3620,6 @@
 		file Makefile.in was initially added on branch template_gc.
 
 	* src/classes/classes.dsp [template_gc] 1.25.10.5.2.4:
-	* src/classes/smtp/smtp.dsp [template_gc] 1.22.10.1.2.3:
 	* src/lib/cord/cord.dsp [template_gc] 1.1.2.3:
 	* src/main/compile.tab.C [template_gc] 1.81.2.13.2.13:
 	* src/main/compile_tools.h [template_gc] 1.67.2.8.2.3:
@@ -2942,8 +3663,6 @@
 		a number of bugfixes [while testing first real site (aval)]
 
 	* src/classes/classes.dsp [template_gc] 1.25.10.5.2.5:
-	* src/classes/gd/gd.dsp [template_gc] 1.26.10.2.2.3:
-	* src/classes/smtp/smtp.dsp [template_gc] 1.22.10.1.2.4:
 	* src/lib/cord/cord.dsp [template_gc] 1.1.2.4:
 	* src/lib/ltdl/libltdl.dsp [template_gc] 1.3.2.2.2.2:
 	* src/lib/md5/md5.dsp [template_gc] 1.2.10.2.2.1:
@@ -2966,14 +3685,9 @@
 	* src/Makefile.in [template_gc] 1.55.2.3.2.1:
 	* src/classes/Makefile.am [template_gc] 1.40.16.2:
 	* src/classes/Makefile.in [template_gc] 1.53.2.3.2.1:
-	* src/classes/gd/Makefile.in [template_gc] 1.43.2.3.2.1:
-	* src/classes/gd/gif.C [template_gc] 1.30.2.4.2.3:
-	* src/classes/gd/gif.h [template_gc] 1.23.2.5.2.5:
 	* src/classes/mail.C [template_gc] 1.88.2.16.2.14:
 	* src/classes/math.C [template_gc] 1.24.2.12.2.8:
 	* src/classes/op.C [template_gc] 1.127.2.22.2.19:
-	* src/classes/smtp/Makefile.in [template_gc] 1.12.2.3.2.1:
-	* src/classes/smtp/smtp.h [template_gc] 1.11.2.4.2.3:
 	* src/include/Makefile.in [template_gc] 1.11.2.5.2.1:
 	* src/include/pa_common.h [template_gc] 1.89.2.13.2.8:
 	* src/include/pa_config_auto.h.in [template_gc] 1.37.2.2.2.1:
@@ -3027,8 +3741,6 @@
 		ported pa_exec
 
 	* src/classes/classes.dsp 1.26:
-	* src/classes/gd/gd.dsp 1.27:
-	* src/classes/smtp/smtp.dsp 1.23:
 	* src/lib/ltdl/libltdl.dsp 1.4:
 	* src/lib/md5/md5.dsp 1.3:
 	* src/lib/pcre/pcre.dsp 1.2:
@@ -3208,8 +3920,6 @@
 		image.C compiled
 
 	* src/classes/mail.C [template_gc] 1.88.2.16.2.10:
-	* src/classes/smtp/smtp.C [template_gc] 1.20.2.3.2.2:
-	* src/classes/smtp/smtp.h [template_gc] 1.11.2.4.2.2:
 	* src/classes/string.C [template_gc] 1.125.2.15.2.11:
 	* src/classes/table.C [template_gc] 1.172.2.14.2.11:
 	* src/types/pa_vmail.h [template_gc] 1.9.2.6.2.3:
@@ -3249,8 +3959,6 @@
 		classes.lib
 		main.lib compiled
 
-	* src/classes/gd/gif.h [template_gc] 1.23.2.5.2.2:
-	* src/classes/gd/gifio.C [template_gc] 1.21.2.2.2.6:
 	* src/classes/image.C [template_gc] 1.90.2.15.2.14:
 	* src/classes/op.C [template_gc] 1.127.2.22.2.16:
 	* src/classes/table.C [template_gc] 1.172.2.14.2.16:
@@ -3265,7 +3973,6 @@
 		would rewrite as realloc now
 
 	* src/classes/mail.C [template_gc] 1.88.2.16.2.11:
-	* src/classes/smtp/smtp.C [template_gc] 1.20.2.3.2.3:
 	* src/main/pa_request.C [template_gc] 1.245.2.37.2.10:
 	* src/targets/cgi/parser3.C [template_gc] 1.216.2.30.2.5:
 	* src/types/pa_vstateless_class.C [template_gc] 1.19.2.9.2.5:
@@ -3343,8 +4050,6 @@
 	* src/classes/double.C [template_gc] 1.53.2.8.2.3:
 	* src/classes/file.C [template_gc] 1.107.2.16.2.6:
 	* src/classes/form.C [template_gc] 1.34.2.7.2.5:
-	* src/classes/gd/gif.C [template_gc] 1.30.2.4.2.2:
-	* src/classes/gd/gifio.C [template_gc] 1.21.2.2.2.4:
 	* src/classes/hash.C [template_gc] 1.54.2.13.2.8:
 	* src/classes/image.C [template_gc] 1.90.2.15.2.11:
 	* src/classes/int.C [template_gc] 1.49.2.7.2.3:
@@ -3399,7 +4104,6 @@
 		hashcode implemented fully, including per-char callback [it can
 		be - substr CORD node]
 
-	* src/classes/gd/gif.h [template_gc] 1.23.2.5.2.4:
 	* src/classes/table.C [template_gc] 1.172.2.14.2.17:
 	* src/include/pa_string.h [template_gc] 1.144.2.28.2.29:
 	* src/main/pa_string.C [template_gc] 1.172.2.21.2.25:
@@ -3408,7 +4112,6 @@
 	* src/classes/date.C [template_gc] 1.42.2.11.2.7:
 	* src/classes/file.C [template_gc] 1.107.2.16.2.8:
 	* src/classes/form.C [template_gc] 1.34.2.7.2.6:
-	* src/classes/gd/gifio.C [template_gc] 1.21.2.2.2.5:
 	* src/classes/image.C [template_gc] 1.90.2.15.2.13:
 	* src/classes/math.C [template_gc] 1.24.2.12.2.7:
 	* src/classes/op.C [template_gc] 1.127.2.22.2.15:
@@ -3440,8 +4143,6 @@
 	* src/main/pa_string.C [template_gc] 1.172.2.21.2.20:
 		string.C compiled
 
-	* src/classes/gd/gif.h [template_gc] 1.23.2.5.2.3:
-	* src/classes/gd/gifio.C [template_gc] 1.21.2.2.2.7:
 	* src/include/pa_array.h [template_gc] 1.57.2.27.2.5:
 	* src/main/compile.tab.C [template_gc] 1.81.2.13.2.11:
 		gif encoding rewritten to rewalloc with 100byte buf ahead
@@ -3508,7 +4209,6 @@
 	* src/classes/double.C [template_gc] 1.53.2.8.2.2:
 	* src/classes/file.C [template_gc] 1.107.2.16.2.5:
 	* src/classes/form.C [template_gc] 1.34.2.7.2.4:
-	* src/classes/gd/gifio.C [template_gc] 1.21.2.2.2.3:
 	* src/classes/hash.C [template_gc] 1.54.2.13.2.5:
 	* src/classes/image.C [template_gc] 1.90.2.15.2.8:
 	* src/classes/int.C [template_gc] 1.49.2.7.2.2:
@@ -3785,7 +4485,6 @@
 
 	* parser3.dsw [template_gc] 1.7.6.1.2.2:
 	* src/classes/file.C [template_gc] 1.107.2.16.2.3:
-	* src/classes/gd/gifio.C [template_gc] 1.21.2.2.2.2:
 	* src/classes/image.C [template_gc] 1.90.2.15.2.4:
 	* src/classes/op.C [template_gc] 1.127.2.22.2.5:
 	* src/classes/string.C [template_gc] 1.125.2.15.2.4:
@@ -3853,8 +4552,6 @@
 
 2003-03-19  paf
 	* src/classes/classes.dsp [template_gc] 1.25.10.5.2.2:
-	* src/classes/gd/gd.dsp [template_gc] 1.26.10.2.2.2:
-	* src/classes/smtp/smtp.dsp [template_gc] 1.22.10.1.2.2:
 	* src/classes/string.C [template_gc] 1.125.2.15.2.3:
 	* src/classes/table.C [template_gc] 1.172.2.14.2.3:
 	* src/include/pa_array.h [template_gc] 1.57.2.27.2.1:
@@ -3986,10 +4683,6 @@
 	* src/classes/double.C [template_gc] 1.53.2.8.2.1:
 	* src/classes/file.C [template_gc] 1.107.2.16.2.1:
 	* src/classes/form.C [template_gc] 1.34.2.7.2.1:
-	* src/classes/gd/gd.dsp [template_gc] 1.26.10.2.2.1:
-	* src/classes/gd/gif.C [template_gc] 1.30.2.4.2.1:
-	* src/classes/gd/gif.h [template_gc] 1.23.2.5.2.1:
-	* src/classes/gd/gifio.C [template_gc] 1.21.2.2.2.1:
 	* src/classes/hash.C [template_gc] 1.54.2.13.2.1:
 	* src/classes/image.C [template_gc] 1.90.2.15.2.1:
 	* src/classes/int.C [template_gc] 1.49.2.7.2.1:
@@ -3997,9 +4690,6 @@
 	* src/classes/math.C [template_gc] 1.24.2.12.2.1:
 	* src/classes/op.C [template_gc] 1.127.2.22.2.1:
 	* src/classes/response.C [template_gc] 1.23.2.8.2.1:
-	* src/classes/smtp/smtp.C [template_gc] 1.20.2.3.2.1:
-	* src/classes/smtp/smtp.dsp [template_gc] 1.22.10.1.2.1:
-	* src/classes/smtp/smtp.h [template_gc] 1.11.2.4.2.1:
 	* src/classes/string.C [template_gc] 1.125.2.15.2.1:
 	* src/classes/table.C [template_gc] 1.172.2.14.2.1:
 	* src/classes/void.C [template_gc] 1.28.2.5.2.1:
@@ -4212,8 +4902,6 @@
 	* etc/parser3.charsets/Makefile.in [autoptr] 1.17.2.3:
 	* src/Makefile.in [autoptr] 1.55.2.3:
 	* src/classes/Makefile.in [autoptr] 1.53.2.3:
-	* src/classes/gd/Makefile.in [autoptr] 1.43.2.3:
-	* src/classes/smtp/Makefile.in [autoptr] 1.12.2.3:
 	* src/include/Makefile.in [autoptr] 1.11.2.5:
 	* src/lib/Makefile.in [autoptr] 1.8.2.3:
 	* src/lib/md5/Makefile.in [autoptr] 1.6.2.3:
@@ -4258,8 +4946,6 @@
 	* etc/parser3.charsets/Makefile.in [autoptr] 1.17.2.2:
 	* src/Makefile.in [autoptr] 1.55.2.2:
 	* src/classes/Makefile.in [autoptr] 1.53.2.2:
-	* src/classes/gd/Makefile.in [autoptr] 1.43.2.2:
-	* src/classes/smtp/Makefile.in [autoptr] 1.12.2.2:
 	* src/include/Makefile.in [autoptr] 1.11.2.4:
 	* src/lib/Makefile.in [autoptr] 1.8.2.2:
 	* src/lib/md5/Makefile.in [autoptr] 1.6.2.2:
@@ -4776,9 +5462,7 @@
 		file 061.processed was initially added on branch autoptr.
 
 	* src/classes/Makefile.in [autoptr] 1.53.2.1:
-	* src/classes/gd/Makefile.in [autoptr] 1.43.2.1:
 	* src/classes/mail.C [autoptr] 1.88.2.13:
-	* src/classes/smtp/Makefile.in [autoptr] 1.12.2.1:
 	* src/main/Makefile.in [autoptr] 1.50.2.3:
 	* src/main/pa_exec.C [autoptr] 1.48.2.16:
 	* src/sql/Makefile.in [autoptr] 1.11.2.1:
@@ -5918,8 +6602,6 @@
 		now use -H to output CGI header when parser used in command line [useful for tests also]
 
 	* src/classes/file.C [autoptr] 1.107.2.14:
-	* src/classes/gd/gif.C [autoptr] 1.30.2.4:
-	* src/classes/gd/gif.h [autoptr] 1.23.2.5:
 	* src/classes/image.C [autoptr] 1.90.2.11:
 	* src/classes/mail.C [autoptr] 1.88.2.11:
 	* src/classes/op.C [autoptr] 1.127.2.16:
@@ -6016,8 +6698,6 @@
 
 2003-02-19  paf
 	* src/classes/form.C [autoptr] 1.34.2.6:
-	* src/classes/smtp/smtp.C [autoptr] 1.20.2.3:
-	* src/classes/smtp/smtp.h [autoptr] 1.11.2.4:
 	* src/include/pa_charset.h [autoptr] 1.20.2.12:
 	* src/include/pa_pool.h [autoptr] 1.86.2.30:
 	* src/main/pa_charset.C [autoptr] 1.33.2.10:
@@ -6248,7 +6928,6 @@
 		image compiled
 
 	* src/classes/mail.C [autoptr] 1.88.2.6:
-	* src/classes/smtp/smtp.h [autoptr] 1.11.2.3:
 	* src/include/pa_request.h [autoptr] 1.160.2.19:
 	* src/main/pa_request.C [autoptr] 1.245.2.15:
 		mail compiled
@@ -6320,8 +6999,6 @@
 	* src/classes/math.C [autoptr] 1.24.2.3:
 	* src/classes/op.C [autoptr] 1.127.2.7:
 	* src/classes/response.C [autoptr] 1.23.2.2:
-	* src/classes/smtp/smtp.C [autoptr] 1.20.2.2:
-	* src/classes/smtp/smtp.h [autoptr] 1.11.2.2:
 	* src/classes/string.C [autoptr] 1.125.2.3:
 	* src/classes/table.C [autoptr] 1.172.2.3:
 	* src/classes/void.C [autoptr] 1.28.2.2:
@@ -6349,7 +7026,6 @@
 	* src/types/pa_method.h 1.1:
 		file pa_method.h was initially added on branch autoptr.
 
-	* src/classes/gd/gif.C [autoptr] 1.30.2.3:
 	* src/include/pa_globals.h [autoptr] 1.101.2.13:
 	* src/main/pa_cache_managers.C [autoptr] 1.7.2.5:
 	* src/main/pa_charset.C [autoptr] 1.33.2.7:
@@ -6594,9 +7270,6 @@
 	* src/classes/double.C [autoptr] 1.53.2.1:
 	* src/classes/file.C [autoptr] 1.107.2.3:
 	* src/classes/form.C [autoptr] 1.34.2.1:
-	* src/classes/gd/gif.C [autoptr] 1.30.2.2:
-	* src/classes/gd/gif.h [autoptr] 1.23.2.4:
-	* src/classes/gd/gifio.C [autoptr] 1.21.2.2:
 	* src/classes/hash.C [autoptr] 1.54.2.2:
 	* src/classes/image.C [autoptr] 1.90.2.3:
 	* src/classes/int.C [autoptr] 1.49.2.1:
@@ -6604,9 +7277,6 @@
 	* src/classes/math.C [autoptr] 1.24.2.2:
 	* src/classes/op.C [autoptr] 1.127.2.5:
 	* src/classes/response.C [autoptr] 1.23.2.1:
-	* src/classes/smtp/comms.C [autoptr] 1.11.2.1:
-	* src/classes/smtp/smtp.C [autoptr] 1.20.2.1:
-	* src/classes/smtp/smtp.h [autoptr] 1.11.2.1:
 	* src/classes/string.C [autoptr] 1.125.2.1:
 	* src/classes/table.C [autoptr] 1.172.2.2:
 	* src/classes/void.C [autoptr] 1.28.2.1:
@@ -6884,7 +7554,6 @@
 	* src/types/types.dsp [autoptr] 1.35.10.3:
 		vstateless_class compiled
 
-	* src/classes/gd/gif.h [autoptr] 1.23.2.3:
 	* src/include/pa_charset.h [autoptr] 1.20.2.8:
 	* src/include/pa_request.h [autoptr] 1.160.2.7:
 	* src/include/pa_sql_driver_manager.h [autoptr] 1.26.2.5:
@@ -7006,11 +7675,6 @@
 	* src/include/pa_request_info.h 1.1:
 		file pa_request_info.h was initially added on branch autoptr.
 
-	* src/classes/gd/gd.dsp [autoptr] 1.26.10.1:
-	* src/classes/gd/gif.C [autoptr] 1.30.2.1:
-	* src/classes/gd/gif.h [autoptr] 1.23.2.1:
-	* src/classes/gd/gif.h [autoptr] 1.23.2.2:
-	* src/classes/gd/gifio.C [autoptr] 1.21.2.1:
 	* src/include/pa_array.h [autoptr] 1.57.2.14:
 	* src/include/pa_exception.h [autoptr] 1.38.2.11:
 	* src/include/pa_pool.h [autoptr] 1.86.2.19:
@@ -7378,9 +8042,6 @@
 	* src/classes/double.C 1.53:
 	* src/classes/file.C 1.107:
 	* src/classes/form.C 1.34:
-	* src/classes/gd/gif.C 1.30:
-	* src/classes/gd/gif.h 1.23:
-	* src/classes/gd/gifio.C 1.21:
 	* src/classes/hash.C 1.54:
 	* src/classes/image.C 1.90:
 	* src/classes/int.C 1.49:
@@ -7388,9 +8049,6 @@
 	* src/classes/math.C 1.24:
 	* src/classes/op.C 1.127:
 	* src/classes/response.C 1.23:
-	* src/classes/smtp/comms.C 1.11:
-	* src/classes/smtp/smtp.C 1.20:
-	* src/classes/smtp/smtp.h 1.11:
 	* src/classes/string.C 1.125:
 	* src/classes/table.C 1.172:
 	* src/classes/void.C 1.28:
@@ -7534,7 +8192,6 @@
 		introducing
 			$.any-status(1)
 
-	* src/classes/gd/gif.C 1.29:
 	* www/htdocs/index.html 1.210:
 		image.copy fixed transparent resampling
 
@@ -7543,8 +8200,6 @@
 	* etc/parser3.charsets/Makefile.in 1.17:
 	* src/Makefile.in 1.55:
 	* src/classes/Makefile.in 1.53:
-	* src/classes/gd/Makefile.in 1.43:
-	* src/classes/smtp/Makefile.in 1.12:
 	* src/include/Makefile.in 1.11:
 	* src/lib/Makefile.in 1.8:
 	* src/lib/md5/Makefile.in 1.6:
@@ -7650,8 +8305,6 @@
 	* mkinstalldirs 1.2:
 	* src/Makefile.in 1.54:
 	* src/classes/Makefile.in 1.52:
-	* src/classes/gd/Makefile.in 1.42:
-	* src/classes/smtp/Makefile.in 1.11:
 	* src/include/Makefile.in 1.10:
 	* src/include/pa_config_auto.h.in 1.37:
 	* src/lib/Makefile.in 1.7:
@@ -7796,7 +8449,6 @@
 	* src/main/pa_common.C [release_3_0_0006] 1.137.2.1:
 		ftruncate having checked
 
-	* src/classes/smtp/smtp.C [release_3_0_0006] 1.18.2.1:
 	* src/main/compile.C [release_3_0_0006] 1.67.6.1:
 		removed warning
 
@@ -7809,7 +8461,6 @@
 		*** empty log message ***
 
 	* configure.in 1.53:
-	* src/classes/smtp/smtp.C 1.19:
 	* src/include/pa_config_auto.h.in 1.34:
 	* src/main/compile.C 1.68:
 	* src/main/pa_common.C 1.138:
@@ -7838,8 +8489,6 @@
 	* etc/parser3.charsets/Makefile.in 1.15:
 	* src/Makefile.in 1.53:
 	* src/classes/Makefile.in 1.51:
-	* src/classes/gd/Makefile.in 1.41:
-	* src/classes/smtp/Makefile.in 1.10:
 	* src/include/Makefile.in 1.9:
 	* src/lib/Makefile.in 1.6:
 	* src/lib/ltdl/Makefile.in 1.2:
@@ -7890,7 +8539,6 @@
 	* www/htdocs/index.html 1.199:
 		wow! found/fixed bug in lowlevel proc
 
-	* src/classes/smtp/smtp.C 1.15:
 	* src/main/pa_common.C 1.137:
 	* src/main/untaint.C 1.111:
 	* src/types/pa_vmail.C 1.38:
@@ -7916,7 +8564,6 @@
 	* src/main/main.dsp 1.161:
 		pa_version included into main.dsp
 
-	* src/classes/smtp/smtp.C 1.14:
 	* www/htdocs/index.html 1.196:
 		smtp line ends fixed. now \r\n [not \r]. some smtp servers [
 		win32] leave \n intact, and some clients [bat] fail to show
@@ -7928,13 +8575,11 @@
 	* www/htdocs/index.html 1.197:
 		mail:send MIME-Version default
 
-	* src/classes/smtp/smtp.C 1.17:
 	* src/main/untaint.C 1.112:
 	* www/htdocs/index.html 1.201:
 		mail header closed properly
 
 	* src/classes/mail.C 1.84:
-	* src/classes/smtp/smtp.C 1.18:
 	* src/types/pa_vmail.C 1.39:
 	* src/types/pa_vmail.h 1.8:
 	* www/htdocs/index.html 1.202:
@@ -7961,8 +8606,6 @@
 	* gnu.dsp 1.2:
 	* src/Makefile.in 1.52:
 	* src/classes/Makefile.in 1.50:
-	* src/classes/gd/Makefile.in 1.40:
-	* src/classes/smtp/Makefile.in 1.9:
 	* src/include/Makefile.in 1.8:
 	* src/lib/Makefile.am 1.3:
 	* src/lib/Makefile.in 1.5:
@@ -8915,8 +9558,6 @@
 	* etc/parser3.charsets/Makefile.in 1.13:
 	* src/Makefile.in 1.51:
 	* src/classes/Makefile.in 1.49:
-	* src/classes/gd/Makefile.in 1.39:
-	* src/classes/smtp/Makefile.in 1.8:
 	* src/include/Makefile.in 1.7:
 	* src/lib/Makefile.in 1.4:
 	* src/lib/md5/Makefile.in 1.2:
@@ -9721,8 +10362,6 @@
 
 2002-08-07  paf
 	* src/classes/classes.dsp 1.24:
-	* src/classes/gd/gd.dsp 1.26:
-	* src/classes/smtp/smtp.dsp 1.22:
 	* src/classes/table.C 1.158:
 	* src/lib/pcre/pcre_parser_ctype.dsp 1.2:
 	* src/main/pa_array.C 1.52:
@@ -9855,7 +10494,6 @@
 
 	* src/Makefile.in 1.50:
 	* src/classes/Makefile.in 1.48:
-	* src/classes/gd/Makefile.in 1.38:
 	* src/main/Makefile.in 1.44:
 	* src/targets/apache13/Makefile.in 1.37:
 	* src/targets/cgi/Makefile.in 1.51:
@@ -9882,9 +10520,6 @@
 	* src/classes/double.C 1.49:
 	* src/classes/file.C 1.92:
 	* src/classes/form.C 1.28:
-	* src/classes/gd/gif.C 1.28:
-	* src/classes/gd/gif.h 1.22:
-	* src/classes/gd/gifio.C 1.20:
 	* src/classes/hash.C 1.42:
 	* src/classes/image.C 1.74:
 	* src/classes/int.C 1.46:
@@ -9892,9 +10527,6 @@
 	* src/classes/math.C 1.23:
 	* src/classes/op.C 1.99:
 	* src/classes/response.C 1.21:
-	* src/classes/smtp/comms.C 1.10:
-	* src/classes/smtp/smtp.C 1.13:
-	* src/classes/smtp/smtp.h 1.10:
 	* src/classes/string.C 1.114:
 	* src/classes/table.C 1.155:
 	* src/classes/void.C 1.21:
@@ -10016,7 +10648,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2003/10/31 12:34:34 $
+		$Date: 2003/11/25 15:50:57 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -10027,11 +10659,6 @@
 	* src/classes/double.C 1.48:
 	* src/classes/file.C 1.91:
 	* src/classes/form.C 1.27:
-	* src/classes/gd/Makefile.am 1.10:
-	* src/classes/gd/gd.dsp 1.25:
-	* src/classes/gd/gif.C 1.27:
-	* src/classes/gd/gif.h 1.21:
-	* src/classes/gd/gifio.C 1.19:
 	* src/classes/hash.C 1.41:
 	* src/classes/image.C 1.73:
 	* src/classes/int.C 1.45:
@@ -10039,10 +10666,6 @@
 	* src/classes/math.C 1.22:
 	* src/classes/op.C 1.98:
 	* src/classes/response.C 1.20:
-	* src/classes/smtp/comms.C 1.9:
-	* src/classes/smtp/smtp.C 1.12:
-	* src/classes/smtp/smtp.dsp 1.21:
-	* src/classes/smtp/smtp.h 1.9:
 	* src/classes/string.C 1.113:
 	* src/classes/table.C 1.154:
 	* src/classes/void.C 1.20:
@@ -10194,7 +10817,6 @@
 		errors-to: now default "postmaster"
 
 	* src/classes/mail.C 1.70:
-	* src/classes/smtp/smtp.C 1.11:
 	* src/types/pa_vmail.C 1.9:
 	* www/cgi-bin/parser3.log 1.77:
 		mail from/to now must be.
@@ -10374,8 +10996,6 @@
 	* etc/parser3.charsets/Makefile.in 1.11:
 	* src/Makefile.in 1.49:
 	* src/classes/Makefile.in 1.47:
-	* src/classes/gd/Makefile.in 1.37:
-	* src/classes/smtp/Makefile.in 1.7:
 	* src/include/Makefile.in 1.6:
 	* src/include/pa_config_auto.h.in 1.25:
 	* src/lib/Makefile.in 1.3:
@@ -10435,8 +11055,6 @@
 		^mail:send rewritten with backward comp
 
 	* src/classes/classes.dsp 1.22:
-	* src/classes/gd/gd.dsp 1.24:
-	* src/classes/smtp/smtp.dsp 1.20:
 	* src/main/main.dsp 1.156:
 	* src/main/pa_globals.C 1.132:
 	* src/targets/apache13/ApacheModuleParser3.dsp 1.14:
@@ -10645,8 +11263,6 @@
 	* etc/Makefile.in 1.8:
 	* etc/parser3.charsets/Makefile.am 1.3:
 	* etc/parser3.charsets/Makefile.in 1.10:
-	* src/classes/smtp/Makefile.am 1.2:
-	* src/classes/smtp/Makefile.in 1.6:
 	* src/targets/apache13/Makefile.in 1.34:
 		parser3.conf.dist moved to bin, .in & *.am updated
 
@@ -10686,8 +11302,6 @@
 	* etc/parser3.charsets/Makefile.in 1.9:
 	* src/Makefile.in 1.47:
 	* src/classes/Makefile.in 1.45:
-	* src/classes/gd/Makefile.in 1.36:
-	* src/classes/smtp/Makefile.in 1.5:
 	* src/include/Makefile.in 1.5:
 	* src/main/Makefile.in 1.41:
 	* src/sql/Makefile.in 1.5:
@@ -10829,8 +11443,6 @@
 	* etc/parser3.charsets/windows-1251.cfg 1.5:
 	* operators.txt 1.40:
 	* src/classes/classes.dsp 1.20:
-	* src/classes/gd/gd.dsp 1.23:
-	* src/classes/smtp/smtp.dsp 1.19:
 	* src/main/compile.tab.C 1.54:
 	* src/main/main.dsp 1.152:
 	* src/main/pa_globals.C 1.127:
@@ -10843,8 +11455,6 @@
 		fixed .dsp-s along with reorganized cvs modules dirs structure
 
 	* src/classes/classes.dsp [release_1_0_0001] 1.18.2.2:
-	* src/classes/gd/gd.dsp [release_1_0_0001] 1.21.2.2:
-	* src/classes/smtp/smtp.dsp [release_1_0_0001] 1.17.2.2:
 	* src/main/compile.tab.C [release_1_0_0001] 1.52.2.2:
 	* src/main/main.dsp [release_1_0_0001] 1.150.2.2:
 	* src/main/pa_globals.C [release_1_0_0001] 1.124.2.3:
@@ -10896,12 +11506,8 @@
 2002-05-07  paf
 	* src/classes/classes.dsp 1.19:
 	* src/classes/classes.dsp [release_1_0_0001] 1.18.2.1:
-	* src/classes/gd/gd.dsp 1.22:
-	* src/classes/gd/gd.dsp [release_1_0_0001] 1.21.2.1:
 	* src/classes/op.C 1.95:
 	* src/classes/op.C [release_1_0_0001] 1.93.2.1:
-	* src/classes/smtp/smtp.dsp 1.18:
-	* src/classes/smtp/smtp.dsp [release_1_0_0001] 1.17.2.1:
 	* src/include/pa_globals.h 1.85:
 	* src/include/pa_globals.h [release_1_0_0001] 1.84.2.1:
 	* src/include/pa_request.h 1.134:
@@ -11015,8 +11621,6 @@
 
 2002-04-24  paf
 	* src/classes/classes.dsp 1.18:
-	* src/classes/gd/gd.dsp 1.21:
-	* src/classes/smtp/smtp.dsp 1.17:
 	* src/main/compile.tab.C 1.52:
 	* src/main/main.dsp 1.150:
 	* src/targets/apache13/ApacheModuleParser3.dsp 1.11:
@@ -11458,8 +12062,6 @@
 	* etc/Makefile.in 1.6:
 	* etc/parser3.charsets/Makefile.in 1.8:
 	* src/classes/Makefile.in 1.44:
-	* src/classes/gd/Makefile.in 1.35:
-	* src/classes/smtp/Makefile.in 1.4:
 	* src/sql/Makefile.in 1.4:
 	* src/targets/Makefile.in 1.35:
 	* src/targets/apache13/Makefile.in 1.33:
@@ -11591,7 +12193,6 @@
 	* src/classes/mail.C 1.60:
 	* src/classes/math.C 1.16:
 	* src/classes/op.C 1.78:
-	* src/classes/smtp/smtp.C 1.10:
 	* src/classes/string.C 1.98:
 	* src/classes/table.C 1.146:
 	* src/classes/void.C 1.17:
@@ -11887,9 +12488,7 @@
 	* src/Makefile.in 1.45:
 	* src/classes/Makefile.am 1.38:
 	* src/classes/Makefile.in 1.43:
-	* src/classes/gd/Makefile.in 1.34:
 	* src/classes/hashfile.C 1.23:
-	* src/classes/smtp/Makefile.in 1.3:
 	* src/include/Makefile.am 1.2:
 	* src/include/Makefile.in 1.3:
 	* src/include/pa_config_auto.h.in 1.20:
@@ -11945,7 +12544,6 @@
 		removed hashfile support from sources for now
 
 	* src/classes/classes.dsp 1.17:
-	* src/classes/gd/gd.dsp 1.20:
 	* src/main/compile.tab.C 1.45:
 	* src/main/main.dsp 1.149:
 	* src/targets/apache13/ApacheModuleParser3.dsp 1.9:
@@ -12060,8 +12658,6 @@
 	* etc/parser3.charsets/Makefile.in 1.5:
 	* src/Makefile.in 1.44:
 	* src/classes/Makefile.in 1.42:
-	* src/classes/gd/Makefile.in 1.33:
-	* src/classes/smtp/Makefile.in 1.2:
 	* src/include/Makefile.in 1.2:
 	* src/include/pa_config_auto.h.in 1.19:
 	* src/include/pa_config_includes.h 1.19:
@@ -12125,8 +12721,6 @@
 		PARSER_ROOT_CONFIG
 
 	* src/classes/classes.dsp 1.15:
-	* src/classes/gd/gd.dsp 1.19:
-	* src/classes/smtp/smtp.dsp 1.16:
 	* src/main/main.dsp 1.146:
 	* src/main/pa_globals.C 1.114:
 	* src/targets/cgi/parser3.dsp 1.42:
@@ -12173,9 +12767,6 @@
 	* src/classes/double.C 1.42:
 	* src/classes/file.C 1.71:
 	* src/classes/form.C 1.20:
-	* src/classes/gd/gif.C 1.25:
-	* src/classes/gd/gif.h 1.19:
-	* src/classes/gd/gifio.C 1.17:
 	* src/classes/hash.C 1.34:
 	* src/classes/hashfile.C 1.21:
 	* src/classes/image.C 1.65:
@@ -12184,9 +12775,6 @@
 	* src/classes/math.C 1.12:
 	* src/classes/op.C 1.70:
 	* src/classes/response.C 1.17:
-	* src/classes/smtp/comms.C 1.7:
-	* src/classes/smtp/smtp.C 1.8:
-	* src/classes/smtp/smtp.h 1.7:
 	* src/classes/string.C 1.96:
 	* src/classes/table.C 1.143:
 	* src/classes/void.C 1.15:
@@ -12319,8 +12907,6 @@
 	* src/types/pa_vcookie.C 1.39:
 		VCookie::fill_fields one check forgotten
 
-	* src/classes/smtp/Makefile.am 1.1:
-	* src/classes/smtp/Makefile.in 1.1:
 	* src/include/Makefile.am 1.1:
 	* src/include/Makefile.in 1.1:
 	* src/sql/Makefile.am 1.3:
@@ -12346,8 +12932,6 @@
 	* src/Makefile.in 1.43:
 	* src/classes/Makefile.am 1.37:
 	* src/classes/Makefile.in 1.41:
-	* src/classes/gd/Makefile.am 1.9:
-	* src/classes/gd/Makefile.in 1.32:
 	* src/main/Makefile.am 1.30:
 	* src/main/Makefile.in 1.37:
 	* src/main/pa_status_provider.C 1.5:
@@ -12367,9 +12951,6 @@
 	* src/classes/double.C 1.43:
 	* src/classes/file.C 1.72:
 	* src/classes/form.C 1.21:
-	* src/classes/gd/gif.C 1.26:
-	* src/classes/gd/gif.h 1.20:
-	* src/classes/gd/gifio.C 1.18:
 	* src/classes/hash.C 1.35:
 	* src/classes/hashfile.C 1.22:
 	* src/classes/image.C 1.66:
@@ -12379,9 +12960,6 @@
 	* src/classes/math.C 1.13:
 	* src/classes/op.C 1.71:
 	* src/classes/response.C 1.18:
-	* src/classes/smtp/comms.C 1.8:
-	* src/classes/smtp/smtp.C 1.9:
-	* src/classes/smtp/smtp.h 1.8:
 	* src/classes/string.C 1.97:
 	* src/classes/table.C 1.144:
 	* src/classes/void.C 1.16:
@@ -12531,7 +13109,6 @@
 	* configure 1.5:
 	* configure.in 1.7:
 	* src/classes/Makefile.in 1.39:
-	* src/classes/gd/Makefile.in 1.30:
 	* src/include/pa_config_auto.h.in 1.18:
 	* src/main/Makefile.in 1.35:
 	* src/main/pa_common.C 1.99:
@@ -12543,7 +13120,6 @@
 		added yet another locking function: fcntl
 
 	* src/classes/Makefile.in 1.40:
-	* src/classes/gd/Makefile.in 1.31:
 	* src/main/Makefile.in 1.36:
 	* src/targets/Makefile.in 1.31:
 	* src/targets/apache13/Makefile.in 1.29:
@@ -12681,8 +13257,6 @@
 	* src/Makefile.in 1.42:
 	* src/classes/Makefile.am 1.36:
 	* src/classes/Makefile.in 1.38:
-	* src/classes/gd/Makefile.am 1.8:
-	* src/classes/gd/Makefile.in 1.29:
 	* src/main/Makefile.am 1.29:
 	* src/main/Makefile.in 1.34:
 	* src/targets/Makefile.in 1.29:
@@ -12740,8 +13314,6 @@
 	* src/Makefile.in 1.41:
 	* src/classes/Makefile.am 1.35:
 	* src/classes/Makefile.in 1.37:
-	* src/classes/gd/Makefile.am 1.7:
-	* src/classes/gd/Makefile.in 1.28:
 	* src/include/pa_config_auto.h.in 1.16:
 	* src/main/Makefile.am 1.28:
 	* src/main/Makefile.in 1.33:
@@ -12824,7 +13396,6 @@
 	* src/Makefile.in 1.40:
 	* src/classes/Makefile.am 1.34:
 	* src/classes/Makefile.in 1.36:
-	* src/classes/gd/Makefile.in 1.27:
 	* src/main/Makefile.in 1.32:
 	* src/targets/Makefile.in 1.27:
 	* src/targets/apache13/Makefile.in 1.27:
@@ -13036,13 +13607,6 @@
 		
 		docs says "set it to 1", never going into details, so I decided to try NOT to do that
 
-	* src/classes/gd/gif.C 1.24:
-	* src/classes/gd/mtables.h 1.2:
-		angles adjust for image.arc and image.sector
-
-	* src/classes/gd/gif.C 1.23:
-		added bounds check into image.replace...LineReplaceColor
-
 2002-01-21  paf
 	* src/include/pa_stylesheet_connection.h 1.20:
 	* src/main/pa_exception.C 1.32:
@@ -13211,17 +13775,11 @@
 		^string with glib works 0
 
 2001-12-28  paf
-	* src/classes/smtp/smtp.h 1.6:
 	* src/main/pa_globals.C 1.98:
 		renamed gdome to libgdome.dll
 
 	* src/classes/classes.dsp 1.14:
-	* src/classes/gd/gd.dsp 1.18:
-	* src/classes/gd/gifio.C 1.16:
 	* src/classes/mail.C 1.50:
-	* src/classes/smtp/comms.C 1.6:
-	* src/classes/smtp/smtp.C 1.7:
-	* src/classes/smtp/smtp.dsp 1.15:
 	* src/classes/xdoc.C 1.54:
 	* src/classes/xnode.C 1.19:
 	* src/classes/xnode.h 1.5:
@@ -13705,7 +14263,6 @@
 		process cstr(,connection)
 
 	* src/Makefile.in 1.38:
-	* src/classes/gd/Makefile.in 1.26:
 	* src/classes/xdoc.C 1.47:
 	* src/targets/Makefile.in 1.26:
 	* src/targets/apache13/Makefile.in 1.25:
@@ -13782,7 +14339,6 @@
 		UL_CLEAN pieces now inherit UL_OPTIMIZED_BIT at wcontext.write
 
 	* src/classes/Makefile.in 1.32:
-	* src/classes/gd/Makefile.in 1.25:
 	* src/main/Makefile.in 1.29:
 	* src/targets/Makefile.am 1.8:
 	* src/targets/Makefile.in 1.25:
@@ -14055,9 +14611,6 @@
 	* src/classes/double.C 1.41:
 	* src/classes/file.C 1.65:
 	* src/classes/form.C 1.19:
-	* src/classes/gd/gif.C 1.22:
-	* src/classes/gd/gif.h 1.18:
-	* src/classes/gd/gifio.C 1.15:
 	* src/classes/hash.C 1.30:
 	* src/classes/hashfile.C 1.15:
 	* src/classes/image.C 1.62:
@@ -14066,9 +14619,6 @@
 	* src/classes/math.C 1.9:
 	* src/classes/op.C 1.58:
 	* src/classes/response.C 1.16:
-	* src/classes/smtp/comms.C 1.5:
-	* src/classes/smtp/smtp.C 1.6:
-	* src/classes/smtp/smtp.h 1.5:
 	* src/classes/string.C 1.88:
 	* src/classes/table.C 1.130:
 	* src/classes/void.C 1.13:
@@ -14234,7 +14784,6 @@
 	* src/types/pa_vcookie.C 1.31:
 		^hash.delete[key]
 
-	* src/classes/gd/gif.C 1.21:
 	* src/classes/math.C 1.8:
 	* src/include/pa_common.h 1.59:
 		HAVE_TRUNC HAVE_ROUND checks [for hp, there are such in math.h]
@@ -14244,7 +14793,6 @@
 
 	* src/Makefile.in 1.34:
 	* src/classes/Makefile.in 1.31:
-	* src/classes/gd/Makefile.in 1.24:
 	* src/include/pa_config_auto.h.in 1.12:
 	* src/main/Makefile.in 1.26:
 	* src/targets/Makefile.in 1.24:
@@ -14345,8 +14893,6 @@
 		rolled back {} in xdoc.createTextNode for now
 
 	* src/classes/classes.dsp 1.13:
-	* src/classes/gd/gd.dsp 1.17:
-	* src/classes/smtp/smtp.dsp 1.14:
 	* src/main/main.dsp 1.137:
 	* src/targets/apache13/ApacheModuleParser3.dsp 1.8:
 	* src/targets/cgi/parser3.dsp 1.38:
@@ -14571,7 +15117,6 @@
 	* src/Makefile.in 1.32:
 	* src/classes/Makefile.am 1.29:
 	* src/classes/Makefile.in 1.29:
-	* src/classes/gd/Makefile.in 1.23:
 	* src/include/pa_config_fixed.h 1.27:
 	* src/main/Makefile.am 1.23:
 	* src/main/Makefile.in 1.25:
@@ -14599,7 +15144,6 @@
 
 	* src/Makefile.in 1.31:
 	* src/classes/Makefile.in 1.28:
-	* src/classes/gd/Makefile.in 1.22:
 	* src/include/pa_config_auto.h.in 1.9:
 	* src/main/Makefile.am 1.22:
 	* src/main/Makefile.in 1.24:
@@ -14891,16 +15435,12 @@
 	* src/classes/double.C 1.40:
 	* src/classes/file.C 1.59:
 	* src/classes/form.C 1.18:
-	* src/classes/gd/gd.dsp 1.16:
-	* src/classes/gd/gif.C 1.20:
 	* src/classes/hash.C 1.23:
 	* src/classes/image.C 1.57:
 	* src/classes/int.C 1.37:
 	* src/classes/mail.C 1.41:
 	* src/classes/math.C 1.7:
 	* src/classes/op.C 1.53:
-	* src/classes/smtp/smtp.C 1.5:
-	* src/classes/smtp/smtp.dsp 1.13:
 	* src/classes/string.C 1.84:
 	* src/classes/table.C 1.127:
 	* src/classes/void.C 1.12:
@@ -15064,18 +15604,13 @@
 		string::mid fixed, string.mid n functionality preserved
 
 2001-10-16  parser
-	* src/types/pa_vhash.h 1.23:
-	* src/types/pa_vtable.h 1.34:
-		hash can be used as boolean
-
-	* src/types/pa_vimage.C 1.12:
-		comment
-
-	* src/classes/gd/gif.C 1.18:
-	* src/classes/gd/gif.h 1.16:
-	* src/classes/image.C 1.55:
-		:CopyResampled made gd2beta+my hands, very ineffective, but
-		works for small paleted image
+	* src/classes/classes.dsp 1.8:
+	* src/main/main.dsp 1.133:
+	* src/targets/apache13/ApacheModuleParser3.dsp 1.4:
+	* src/targets/cgi/parser3.dsp 1.32:
+	* src/targets/isapi/parser3isapi.dsp 1.26:
+	* src/types/types.dsp 1.8:
+		ident >nul 2>&1
 
 	* src/classes/xnode.C 1.7:
 	* src/classes/xnode.C 1.8:
@@ -15084,40 +15619,33 @@
 	* src/classes/image.C 1.54:
 		gd size/resize bugfix
 
-	* src/classes/classes.dsp 1.8:
-	* src/classes/gd/gd.dsp 1.15:
-	* src/classes/smtp/smtp.dsp 1.12:
-	* src/main/main.dsp 1.133:
-	* src/targets/apache13/ApacheModuleParser3.dsp 1.4:
-	* src/targets/cgi/parser3.dsp 1.32:
-	* src/targets/isapi/parser3isapi.dsp 1.26:
-	* src/types/types.dsp 1.8:
-		ident >nul 2>&1
-
-	* src/classes/gd/gif.C 1.19:
-	* src/classes/gd/gif.h 1.17:
-	* src/classes/image.C 1.56:
-		image.copy tolerance
-
-	* src/classes/gd/gif.C 1.16:
-		copyResized
+	* src/classes/image.C 1.55:
+		:CopyResampled made gd2beta+my hands, very ineffective, but
+		works for small paleted image
 
 	* src/classes/string.C 1.82:
 	* src/main/pa_string.C 1.110:
 		$string.mid(p[;n])
+
+	* src/classes/image.C 1.56:
+		image.copy tolerance
+
+	* src/types/pa_vhash.h 1.23:
+	* src/types/pa_vtable.h 1.34:
+		hash can be used as boolean
 
 	* src/main/pa_common.C 1.72:
 		\r\n -> \n   DOS
 		\r -> \n Macintosh
 		on all systems
 
-	* src/classes/gd/gif.C 1.17:
-		couple casts
-
 	* src/classes/image.C 1.53:
 	* src/types/pa_vimage.h 1.20:
 		image.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w
 		;dest h]])
+
+	* src/types/pa_vimage.C 1.12:
+		comment
 
 2001-10-15  parser
 	* src/Makefile.in 1.29:
@@ -15181,8 +15709,6 @@
 		thus helping early problem spotting
 
 	* src/classes/classes.dsp 1.7:
-	* src/classes/gd/gd.dsp 1.14:
-	* src/classes/smtp/smtp.dsp 1.11:
 	* src/classes/xdoc.C 1.15:
 	* src/main/compile.tab.C 1.22:
 	* src/main/main.dsp 1.132:
@@ -15207,8 +15733,6 @@
 	* src/Makefile.in 1.28:
 	* src/classes/Makefile.in 1.22:
 	* src/classes/Makefile.in 1.23:
-	* src/classes/gd/Makefile.in 1.19:
-	* src/classes/gd/Makefile.in 1.20:
 	* src/include/pa_config_auto.h.in 1.8:
 	* src/main/Makefile.in 1.20:
 	* src/main/Makefile.in 1.21:
@@ -15240,7 +15764,6 @@
 
 	* src/Makefile.in 1.27:
 	* src/classes/Makefile.in 1.24:
-	* src/classes/gd/Makefile.in 1.21:
 		makes. stdc++ lib added to apache libraries
 
 	* src/classes/hash.C 1.22:
@@ -15257,12 +15780,12 @@
 	* src/types/pa_vhash.h 1.22:
 		    !^hash::create[[copy_from]]
 
-	* src/classes/hash.C 1.21:
-		    !^hash::append[append_from]
-
 	* src/targets/apache13/Makefile.am 1.7:
 	* src/targets/apache13/p3runConfigure.in 1.2:
 		added
+
+	* src/classes/hash.C 1.21:
+		    !^hash::append[append_from]
 
 	* src/include/pa_string.h 1.107:
 	* src/main/pa_string.C 1.108:
@@ -15288,11 +15811,6 @@
 		got rid of empty_string, which caused errors - it hasnt exception but somebody[value.bark] tried to throw it on it's pool
 
 2001-10-10  parser
-	* src/classes/gd/gif.C 1.15:
-		arc algorithms: commented all bresenhams, algs must be unified
-		 not "perfect"
-
-	* src/classes/gd/gif.C 1.14:
 	* src/main/compile.tab.C 1.19:
 	* src/main/compile.y 1.170:
 		^a[^b] more informative compile error
@@ -15335,8 +15853,6 @@
 	* src/classes/Makefile.am 1.24:
 	* src/classes/Makefile.in 1.20:
 	* src/classes/Makefile.in 1.21:
-	* src/classes/gd/Makefile.in 1.17:
-	* src/classes/gd/Makefile.in 1.18:
 	* src/main/Makefile.am 1.20:
 	* src/main/Makefile.in 1.18:
 	* src/main/Makefile.in 1.19:
@@ -15384,33 +15900,14 @@
 		^string.save[file]
 
 2001-10-08  parser
-	* src/types/pa_vcookie.C 1.25:
-		removing cookie made more netscape-like way
-
-	* src/classes/xdoc.C 1.12:
-		xdoc:load exceptions intercepted [like in set]
-
-	* src/classes/image.C 1.48:
-	* src/include/pa_common.h 1.53:
-	* src/main/pa_common.C 1.71:
-	* src/types/pa_vcookie.C 1.26:
-		cookie urlencoded [netscape doc reread]
-
-	* src/classes/gd/gif.C 1.10:
-		image.bar now draws (100 100 0 0)
-
-	* src/classes/gd/gif.C 1.11:
-	* src/classes/gd/mtables.h 1.1:
-		image:arc image:circle
-
-	* src/classes/gd/gd.dsp 1.13:
-	* src/classes/gd/gif.C 1.12:
-	* src/classes/gd/gif.h 1.15:
 	* src/classes/image.C 1.49:
 	* src/types/pa_vcookie.C 1.27:
 	* src/types/pa_vimage.C 1.11:
 		image:sector
 		removed image:html internal "line-*" attribs
+
+	* src/types/pa_vcookie.C 1.25:
+		removing cookie made more netscape-like way
 
 	* src/classes/file.C 1.57:
 	* src/classes/form.C 1.17:
@@ -15419,7 +15916,9 @@
 		header untainting to UL_HTTP_HEADER, UL_MAIL_HEADER made
 		nonforced [only tainted pieces]
 
-	* src/classes/gd/gif.C 1.13:
+	* src/classes/xdoc.C 1.12:
+		xdoc:load exceptions intercepted [like in set]
+
 	* src/classes/image.C 1.50:
 		image:circle [and round arc] uses Bresenham
 
@@ -15439,6 +15938,12 @@
 	* src/main/compile.tab.C 1.18:
 	* src/types/pa_vxdoc.h 1.3:
 		parsedSource produced by nonstandard liaison freed up
+
+	* src/classes/image.C 1.48:
+	* src/include/pa_common.h 1.53:
+	* src/main/pa_common.C 1.71:
+	* src/types/pa_vcookie.C 1.26:
+		cookie urlencoded [netscape doc reread]
 
 	* src/include/pa_common.h 1.52:
 	* src/main/pa_common.C 1.69:
@@ -15527,7 +16032,6 @@
 
 	* src/Makefile.in 1.21:
 	* src/classes/Makefile.in 1.19:
-	* src/classes/gd/Makefile.in 1.16:
 	* src/main/Makefile.in 1.17:
 	* src/targets/Makefile.in 1.16:
 	* src/targets/apache13/Makefile.in 1.16:
@@ -15581,10 +16085,6 @@
 	* src/main/pa_charset_connection.C 1.2:
 		removed entitify external hack [internal installed]
 
-	* src/classes/gd/Makefile.am 1.6:
-	* src/classes/gd/Makefile.in 1.15:
-		makes
-
 	* src/main/Makefile.am 1.19:
 	* src/main/Makefile.in 1.16:
 		makes+removed dtd
@@ -15630,9 +16130,6 @@
 
 2001-09-27  parser
 	* src/classes/classes.dsp 1.4:
-	* src/classes/gd/gd.dsp 1.12:
-	* src/classes/gd/gifio.C 1.14:
-	* src/classes/smtp/smtp.dsp 1.10:
 	* src/classes/xdoc.C 1.3:
 	* src/main/main.dsp 1.126:
 	* src/targets/cgi/parser3.dsp 1.30:
@@ -15655,8 +16152,6 @@
 	* src/Makefile.am 1.11:
 	* src/classes/Makefile.am 1.22:
 	* src/classes/Makefile.in 1.18:
-	* src/classes/gd/Makefile.am 1.5:
-	* src/classes/gd/Makefile.in 1.14:
 	* src/main/Makefile.am 1.18:
 	* src/main/Makefile.in 1.15:
 	* src/targets/Makefile.in 1.15:
@@ -15683,10 +16178,6 @@
 	* src/classes/double.C 1.37:
 	* src/classes/file.C 1.55:
 	* src/classes/form.C 1.16:
-	* src/classes/gd/gd.dsp 1.10:
-	* src/classes/gd/gif.C 1.9:
-	* src/classes/gd/gif.h 1.14:
-	* src/classes/gd/gifio.C 1.13:
 	* src/classes/hash.C 1.19:
 	* src/classes/image.C 1.46:
 	* src/classes/int.C 1.34:
@@ -15694,10 +16185,6 @@
 	* src/classes/math.C 1.6:
 	* src/classes/op.C 1.45:
 	* src/classes/response.C 1.14:
-	* src/classes/smtp/comms.C 1.4:
-	* src/classes/smtp/smtp.C 1.4:
-	* src/classes/smtp/smtp.dsp 1.8:
-	* src/classes/smtp/smtp.h 1.4:
 	* src/classes/string.C 1.75:
 	* src/classes/table.C 1.115:
 	* src/classes/void.C 1.10:
@@ -15818,8 +16305,6 @@
 		xdoc&xnode now
 
 	* src/classes/classes.dsp 1.3:
-	* src/classes/gd/gd.dsp 1.11:
-	* src/classes/smtp/smtp.dsp 1.9:
 	* src/classes/xdoc.C 1.2:
 	* src/classes/xnode.C 1.2:
 	* src/classes/xnode.h 1.2:
@@ -15849,8 +16334,6 @@
 	* src/classes/Makefile.am 1.20:
 	* src/classes/Makefile.in 1.17:
 	* src/classes/dom.C 1.34:
-	* src/classes/gd/Makefile.am 1.4:
-	* src/classes/gd/Makefile.in 1.13:
 	* src/include/pa_stylesheet_connection.h 1.4:
 	* src/main/Makefile.am 1.17:
 	* src/main/Makefile.in 1.14:
@@ -15876,7 +16359,6 @@
 	* src/Makefile.in 1.19:
 	* src/classes/Makefile.am 1.19:
 	* src/classes/Makefile.in 1.16:
-	* src/classes/gd/Makefile.in 1.12:
 	* src/include/pa_config_auto.h.in 1.6:
 	* src/main/Makefile.in 1.13:
 	* src/targets/Makefile.in 1.13:
@@ -15902,9 +16384,6 @@
 		fixed small bugs with usinge hash/table in expressions
 
 	* src/classes/classes.cmd 1.3:
-	* src/classes/gd/gd.dsp 1.9:
-	* src/classes/gd/gif.C 1.8:
-	* src/classes/gd/gif.h 1.13:
 	* src/classes/image.C 1.45:
 	* src/classes/op.C 1.44:
 	* src/classes/table.C 1.114:
@@ -15944,8 +16423,6 @@
 		started unix makes update
 
 2001-09-21  parser
-	* src/classes/gd/gd.dsp 1.8:
-	* src/classes/smtp/smtp.dsp 1.7:
 	* src/main/main.dsp 1.121:
 	* src/targets/cgi/parser3.dsp 1.26:
 	* src/targets/isapi/parser3isapi.dsp 1.21:
@@ -15978,14 +16455,8 @@
 	* src/classes/dom.C 1.33:
 	* src/classes/file.C 1.54:
 	* src/classes/form.C 1.15:
-	* src/classes/gd/gd.dsp 1.6:
-	* src/classes/gd/gif.C 1.7:
-	* src/classes/gd/gifio.C 1.12:
 	* src/classes/int.C 1.33:
 	* src/classes/mail.C 1.38:
-	* src/classes/smtp/comms.C 1.3:
-	* src/classes/smtp/smtp.C 1.3:
-	* src/classes/smtp/smtp.dsp 1.5:
 	* src/doc/doxygen.cfg 1.16:
 	* src/include/pa_config_fixed.h 1.12:
 	* src/include/pa_pool.h 1.59:
@@ -16019,11 +16490,8 @@
 
 	* src/Makefile.in 1.18:
 	* src/classes/classes.h 1.11:
-	* src/classes/gd/gd.dsp 1.7:
-	* src/classes/gd/gif.h 1.12:
 	* src/classes/hash.C 1.18:
 	* src/classes/op.C 1.43:
-	* src/classes/smtp/smtp.dsp 1.6:
 	* src/classes/table.C 1.113:
 	* src/doc/doxygen.cfg 1.17:
 	* src/include/pa_common.h 1.50:
@@ -16068,8 +16536,6 @@
 
 	* src/classes/dnode.C 1.4:
 	* src/classes/dom.C 1.28:
-	* src/classes/gd/gd.dsp 1.5:
-	* src/classes/smtp/smtp.dsp 1.4:
 	* src/include/pa_config_includes.h 1.10:
 	* src/include/pa_globals.h 1.63:
 	* src/include/pa_pool.h 1.55:
@@ -16114,8 +16580,6 @@
 2001-09-18  parser
 	* src/classes/dnode.C 1.2:
 	* src/classes/dom.C 1.25:
-	* src/classes/gd/gif.C 1.6:
-	* src/classes/gd/gif.h 1.11:
 	* src/classes/hash.C 1.17:
 	* src/classes/image.C 1.44:
 	* src/classes/op.C 1.42:
@@ -16209,8 +16673,6 @@
 		        	$.1[node1]
 		        ]
 
-	* src/classes/gd/gif.C [before_xml] 1.5.8.2:
-	* src/classes/gd/gif.h [before_xml] 1.10.4.2:
 	* src/classes/image.C [before_xml] 1.40.4.2:
 	* src/types/pa_vimage.C [before_xml] 1.7.8.2:
 		$image.line-style
@@ -16228,8 +16690,6 @@
 		bugfix: in expression compound($aa.zz.xx) names now can have minus '-' in name after '.'
 
 2001-09-15  parser
-	* src/classes/gd/gif.C [before_xml] 1.5.8.1:
-	* src/classes/gd/gif.h [before_xml] 1.10.4.1:
 	* src/classes/image.C [before_xml] 1.40.4.1:
 	* src/types/pa_vimage.C [before_xml] 1.7.8.1:
 	* src/types/pa_vimage.h [before_xml] 1.13.6.1:
@@ -16489,7 +16949,6 @@
 		a=1&a=2 would result in $form:a being a table with one column '
 		element' and two rows: 1 and 2
 
-	* src/classes/gd/gifio.C 1.11:
 	* src/classes/image.C 1.40:
 	* src/classes/op.C 1.41:
 	* src/classes/string.C 1.74:
@@ -16520,7 +16979,6 @@
 
 	* src/Makefile.in 1.16:
 	* src/classes/Makefile.in 1.15:
-	* src/classes/gd/Makefile.in 1.11:
 	* src/main/Makefile.in 1.12:
 	* src/targets/cgi/Makefile.in 1.14:
 	* src/types/Makefile.in 1.11:
@@ -16654,7 +17112,6 @@
 
 	* src/Makefile.in 1.12:
 	* src/classes/Makefile.in 1.13:
-	* src/classes/gd/Makefile.in 1.9:
 	* src/main/Makefile.in 1.10:
 	* src/targets/Makefile.in 1.10:
 	* src/targets/apache13/Makefile.in 1.9:
@@ -16688,7 +17145,6 @@
 		configure to skip apache
 
 	* src/classes/Makefile.in 1.14:
-	* src/classes/gd/Makefile.in 1.10:
 	* src/main/Makefile.in 1.11:
 	* src/targets/apache13/Makefile.in 1.10:
 	* src/targets/cgi/Makefile.in 1.11:
@@ -16703,15 +17159,10 @@
 	* src/targets/isapi/parser3isapi.C 1.36:
 		strncpy forced with zero ending in case of limit
 
-	* src/classes/gd/gif.h 1.10:
-	* src/classes/gd/gifio.C 1.10:
-		#endif /*some comments removed*/
-
 	* src/classes/image.C 1.34:
 		image error msgs
 
 	* src/classes/Makefile.am 1.18:
-	* src/classes/gd/Makefile.am 1.3:
 	* src/main/Makefile.am 1.15:
 	* src/targets/cgi/Makefile.am 1.11:
 	* src/types/Makefile.am 1.6:
@@ -16723,7 +17174,6 @@
 2001-08-27  parser
 	* src/Makefile.in 1.11:
 	* src/classes/Makefile.in 1.12:
-	* src/classes/gd/Makefile.in 1.8:
 	* src/main/Makefile.in 1.9:
 	* src/main/pa_common.C 1.61:
 	* src/main/pa_exception.C 1.12:
@@ -17141,7 +17591,6 @@
 	* src/Makefile.am 1.6:
 	* src/Makefile.in 1.10:
 	* src/classes/Makefile.am 1.17:
-	* src/classes/gd/Makefile.am 1.2:
 	* src/main/Makefile.am 1.13:
 	* src/targets/Makefile.am 1.6:
 	* src/targets/apache13/Makefile.am 1.2:
@@ -17180,7 +17629,6 @@
 		$ORIGINS(1) output tracing mode
 
 	* src/classes/Makefile.in 1.11:
-	* src/classes/gd/Makefile.in 1.7:
 	* src/main/Makefile.in 1.7:
 	* src/targets/Makefile.in 1.8:
 	* src/targets/apache13/Makefile.in 1.7:
@@ -17360,7 +17808,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.27 2003/10/31 12:34:34 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.28 2003/11/25 15:50:57 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -17403,7 +17851,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.27 2003/10/31 12:34:34 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.28 2003/11/25 15:50:57 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -17450,7 +17898,6 @@
 2001-05-24  parser
 	* src/Makefile.in 1.7:
 	* src/classes/Makefile.in 1.8:
-	* src/classes/gd/Makefile.in 1.6:
 	* src/main/Makefile.in 1.6:
 	* src/targets/Makefile.in 1.7:
 	* src/targets/apache13/Makefile.in 1.6:
@@ -17501,7 +17948,6 @@
 	* src/Makefile.in 1.6:
 	* src/classes/Makefile.in 1.6:
 	* src/classes/Makefile.in 1.7:
-	* src/classes/gd/Makefile.in 1.5:
 	* src/main/Makefile.in 1.5:
 	* src/targets/Makefile.in 1.6:
 	* src/targets/apache13/Makefile.in 1.5:
@@ -17538,7 +17984,6 @@
 
 	* src/Makefile.in 1.5:
 	* src/classes/Makefile.in 1.5:
-	* src/classes/gd/Makefile.in 1.4:
 	* src/main/Makefile.in 1.4:
 	* src/targets/Makefile.in 1.5:
 	* src/targets/apache13/Makefile.in 1.4:
@@ -17650,7 +18095,6 @@
 2001-05-18  parser
 	* src/Makefile.in 1.3:
 	* src/classes/Makefile.in 1.3:
-	* src/classes/gd/Makefile.in 1.3:
 	* src/include/pa_config_auto.h.in 1.3:
 	* src/main/Makefile.in 1.3:
 	* src/targets/Makefile.in 1.4:
@@ -17913,8 +18357,6 @@
 
 	* src/Makefile.in 1.2:
 	* src/classes/Makefile.in 1.2:
-	* src/classes/gd/Makefile.in 1.2:
-	* src/classes/gd/gif.h 1.9:
 	* src/include/pa_config_auto.h.in 1.2:
 	* src/include/pa_config_fixed.h 1.6:
 	* src/include/pa_config_includes.h 1.6:
@@ -17937,9 +18379,6 @@
 	* src/include/pa_common.h 1.43:
 	* src/include/pa_config_includes.h 1.7:
 		inline undefed for C++, that's all
-
-	* src/classes/gd/gif.h 1.8:
-		gif.h accedently removed
 
 	* src/classes/Makefile.am 1.8:
 	* src/classes/hash.C 1.1:
@@ -18061,7 +18500,6 @@
 	* src/types/pa_vtable.h 1.18:
 		table: fields, then methods.  so to enable 'dir' fields & co. more
 
-	* src/classes/gd/gifio.C 1.9:
 	* src/classes/string.C 1.45:
 	* src/classes/table.C 1.71:
 	* src/doc/ClassExample1.dox 1.2:
@@ -18458,13 +18896,10 @@
 
 	* src/classes/_exec.h 1.4:
 	* src/classes/_image.h 1.3:
-	* src/classes/gd/gif.h 1.7:
-	* src/classes/gd/gifio.C 1.8:
 	* src/classes/image.C 1.21:
 	* src/classes/mail.C 1.22:
 	* src/classes/op.C 1.9:
 	* src/classes/random.C 1.9:
-	* src/classes/smtp/smtp.h 1.3:
 	* src/classes/string.C 1.40:
 	* src/classes/table.C 1.65:
 	* src/doc/doxygen.cfg 1.5:
@@ -18558,7 +18993,6 @@
 		windows32 buildCommand
 
 2001-04-23  paf
-	* src/classes/gd/gifio.C 1.7:
 	* src/classes/image.C 1.20:
 	* src/classes/mail.C 1.21:
 	* src/include/pa_globals.h 1.50:
@@ -18623,8 +19057,6 @@
 		tested OK
 		/// @test really @b test: s x m [tested: i & g ]
 
-	* src/classes/gd/Makefile.am 1.1:
-	* src/classes/gd/Makefile.in 1.1:
 	* src/targets/Makefile.in 1.1:
 		makefiles&co
 
@@ -18706,7 +19138,6 @@
 		fixed http://alx/~paf/ doesnt load /auto.p
 
 2001-04-18  paf
-	* src/classes/smtp/smtp.dsp 1.2:
 	* src/main/Makefile.am 1.10:
 	* src/main/main.dsp 1.92:
 	* src/targets/cgi/Makefile.am 1.4:
@@ -18740,9 +19171,6 @@
 	* src/classes/_table.h 1.6:
 	* src/classes/_unknown.h 1.2:
 	* src/classes/file.C 1.27:
-	* src/classes/gd/gif.C 1.5:
-	* src/classes/gd/gif.h 1.6:
-	* src/classes/gd/gifio.C 1.6:
 	* src/classes/image.C 1.18:
 	* src/classes/mail.C 1.19:
 	* src/classes/op.C 1.8:
@@ -18796,9 +19224,6 @@
 	* src/classes/_string.h [gcc0415] 1.8.2.1:
 	* src/classes/_table.h [gcc0415] 1.5.2.1:
 	* src/classes/_unknown.h [gcc0415] 1.1.2.1:
-	* src/classes/gd/gif.C [gcc0415] 1.4.2.1:
-	* src/classes/gd/gif.h [gcc0415] 1.5.2.1:
-	* src/classes/gd/gifio.C [gcc0415] 1.5.2.1:
 	* src/classes/image.C [gcc0415] 1.17.2.1:
 	* src/classes/mail.C [gcc0415] 1.18.2.1:
 	* src/classes/op.C [gcc0415] 1.7.2.1:
@@ -18865,7 +19290,6 @@
 	* src/types/pa_vunknown.h 1.9:
 		^unknown:int[]=0 double[]=0
 
-	* src/classes/gd/gif.C 1.4:
 	* src/classes/image.C 1.13:
 		image:line/fill/rectangle/bar/replace/polygon/polybar
 
@@ -18873,7 +19297,6 @@
 	* src/main/pa_hash.C 1.33:
 		hash bug fixed
 
-	* src/classes/gd/gif.h 1.5:
 	* src/classes/image.C 1.12:
 	* src/classes/op.C 1.4:
 	* src/main/execute.C 1.146:
@@ -18914,10 +19337,6 @@
 	* src/types/pa_vmframe.h 1.13:
 		libimaging dead end: pil parses header in .py
 
-	* src/classes/gd/gd.dsp 1.3:
-	* src/classes/gd/gif.C 1.2:
-	* src/classes/gd/gif.h 1.2:
-	* src/classes/gd/gifio.C 1.2:
 	* src/classes/image.C 1.8:
 	* src/types/pa_vimage.C 1.5:
 	* src/types/pa_vimage.h 1.5:
@@ -18928,12 +19347,9 @@
 	* src/types/pa_vform.C 1.23:
 		fixed post [broke when moved post read to core]
 
-	* src/classes/gd/gd.dsp 1.1:
-	* src/classes/smtp/smtp.dsp 1.1:
 	* src/main/main.dsp 1.87:
 		gd+smtp made separate libs
 
-	* src/classes/gd/gifio.C 1.3:
 	* src/classes/image.C 1.9:
 	* src/types/pa_vimage.C 1.6:
 	* src/types/pa_vimage.h 1.6:
@@ -18948,7 +19364,6 @@
 	* src/types/pa_vstring.C 1.4:
 		fixed vstring:as_vfile  length
 
-	* src/classes/gd/gd.dsp 1.2:
 	* src/classes/image.C 1.6:
 	* src/include/pa_globals.h 1.47:
 	* src/main/main.dsp 1.88:
@@ -18957,15 +19372,10 @@
 	* src/types/pa_vimage.h 1.3:
 		gd dead end. switching to python imaging lib
 
-	* src/classes/gd/gif.h 1.3:
-	* src/classes/gd/gifio.C 1.4:
 	* src/classes/image.C 1.10:
 	* src/main/main.dsp 1.90:
 		gd with mem write + image just compiled
 
-	* src/classes/gd/gif.C 1.3:
-	* src/classes/gd/gif.h 1.4:
-	* src/classes/gd/gifio.C 1.5:
 	* src/classes/image.C 1.11:
 		image:create image:load
 
@@ -18981,9 +19391,6 @@
 	* src/classes/_string.h 1.7:
 	* src/classes/_table.h 1.5:
 	* src/classes/file.C 1.25:
-	* src/classes/gd/gif.C 1.1:
-	* src/classes/gd/gif.h 1.1:
-	* src/classes/gd/gifio.C 1.1:
 	* src/classes/mail.C 1.16:
 	* src/include/pa_common.h 1.37:
 	* src/include/pa_globals.h 1.45:
@@ -19023,9 +19430,6 @@
 		image:measure -90
 
 	* src/classes/mail.C 1.11:
-	* src/classes/smtp/comms.C 1.2:
-	* src/classes/smtp/smtp.C 1.2:
-	* src/classes/smtp/smtp.h 1.2:
 	* src/main/pa_globals.C 1.52:
 		smtp some consts
 
@@ -19184,9 +19588,6 @@
 		z
 
 	* src/classes/mail.C 1.4:
-	* src/classes/smtp/comms.C 1.1:
-	* src/classes/smtp/smtp.C 1.1:
-	* src/classes/smtp/smtp.h 1.1:
 	* src/include/pa_globals.h 1.42:
 	* src/include/pa_request.h 1.79:
 	* src/main/main.dsp 1.80:
@@ -22813,7 +23214,7 @@
 	* src/main/pa_pool.C 1.2:
 	* src/main/pa_string.C 1.3:
 	* src/main/pa_string.C 1.4:
-		$Id: ChangeLog,v 1.27 2003/10/31 12:34:34 paf Exp $ check
+		$Id: ChangeLog,v 1.28 2003/11/25 15:50:57 paf Exp $ check
 
 	* src/include/pa_pool.h 1.5:
 	* src/include/pa_string.h 1.2:
