@@ -1,13 +1,13 @@
 /** @file
 	Parser: @b status class impl.
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	Win32 rusage author: Victor Fedoseev <vvf_ru@mail.ru>
 */
 
-static const char * const IDENT_VSTATUS_C="$Date: 2003/12/11 11:53:04 $";
+static const char * const IDENT_VSTATUS_C="$Date: 2004/02/11 15:33:19 $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"

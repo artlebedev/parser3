@@ -1,7 +1,7 @@
 /** @file
 	Parser: Configure file for autoconf-disabled platforms.
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	tested only with MS Visual C++ V6
@@ -10,7 +10,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-static const char * const IDENT_CONFIG_FIXED_H="$Date: 2003/11/20 16:34:24 $";
+static const char * const IDENT_CONFIG_FIXED_H="$Date: 2004/02/11 15:33:13 $";
 
 #define inline  __inline
 #define HAVE_ASSERT_H

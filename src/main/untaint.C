@@ -1,11 +1,11 @@
 /** @file
 	Parser: String class part: untaint mechanizm.
 
-	Copyright(c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2004/02/06 09:40:28 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2004/02/11 15:33:16 $";
 
 
 #include "pa_string.h"

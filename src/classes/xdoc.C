@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b xdoc parser class.
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/02/03 16:29:45 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/02/11 15:33:13 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"

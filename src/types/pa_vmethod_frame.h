@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b method_frame write context
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2003/11/20 17:07:44 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2004/02/11 15:33:18 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"

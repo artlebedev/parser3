@@ -1,14 +1,14 @@
 /** @file
 	Parser: program executing for different OS-es decls.
 
-	Copyright (c) 2000,2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000,2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_EXEC_H
 #define PA_EXEC_H
 
-static const char * const IDENT_EXEC_H="$Date: 2003/11/20 16:34:24 $";
+static const char * const IDENT_EXEC_H="$Date: 2004/02/11 15:33:14 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"

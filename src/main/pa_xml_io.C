@@ -1,7 +1,7 @@
 /** @file
 	Parser: plugins to xml library, controlling i/o; implementation
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/12/02 13:24:32 $";
+static const char * const IDENT="$Date: 2004/02/11 15:33:16 $";
 
 #include "libxslt/extensions.h"
 

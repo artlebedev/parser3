@@ -1,7 +1,7 @@
 /** @file
 	Parser: memory reference counting classes decls.
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-static const char * const IDENT_MEMORY_H="$Date: 2004/01/29 14:28:16 $";
+static const char * const IDENT_MEMORY_H="$Date: 2004/02/11 15:33:14 $";
 
 // include
 

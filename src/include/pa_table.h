@@ -1,14 +1,14 @@
 /** @file
 	Parser: table class decl.
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-static const char * const IDENT_TABLE_H="$Date: 2003/11/20 16:34:25 $";
+static const char * const IDENT_TABLE_H="$Date: 2004/02/11 15:33:14 $";
 
 #include "pa_types.h"
 #include "pa_hash.h"

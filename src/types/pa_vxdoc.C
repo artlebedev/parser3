@@ -1,13 +1,13 @@
 /** @dom
 	Parser: @b dom parser type.
 
-	Copyright(c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2003/11/20 16:34:30 $";
+static const char * const IDENT_VXDOC="$Date: 2004/02/11 15:33:19 $";
 
 #include "pa_vxdoc.h"
 

@@ -1,11 +1,11 @@
 /** @file
 	Parser: SMTP sender impl.
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMS_C="$Date: 2003/11/21 12:35:50 $";
+static const char * const IDENT_COMMS_C="$Date: 2004/02/11 15:33:15 $";
 
 #include "smtp.h"
 #include <winsock.h>

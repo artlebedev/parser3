@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b math parser class.
 
-	Copyright(c) 2001-2003 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001-2004 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 
 	portions from gen_uuid.c,
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2003/11/20 17:46:01 $";
+static const char * const IDENT_MATH_C="$Date: 2004/02/11 15:33:12 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"

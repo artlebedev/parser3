@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b console class decl.
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char * const IDENT_VCONSOLE_H="$Date: 2003/11/20 16:34:28 $";
+static const char * const IDENT_VCONSOLE_H="$Date: 2004/02/11 15:33:17 $";
 
 // includes
 

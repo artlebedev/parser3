@@ -1,11 +1,11 @@
 /** @file
 	Parser: status press center implementation.
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_CACHE_MANAGERS_C="$Date: 2003/12/11 10:25:52 $";
+static const char * const IDENT_CACHE_MANAGERS_C="$Date: 2004/02/11 15:33:15 $";
 
 #include "pa_cache_managers.h"
 

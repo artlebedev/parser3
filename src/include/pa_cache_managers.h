@@ -1,16 +1,16 @@
 /** @file
 	Parser: cache managers center decl.
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Date: 2003/12/11 10:25:52 $
+	$Date: 2004/02/11 15:33:13 $
 */
 
 #ifndef PA_CACHE_MANAGERS_H
 #define PA_CACHE_MANAGERS_H
 
-static const char * const IDENT_CACHE_MANAGERS_H="$Date: 2003/12/11 10:25:52 $";
+static const char * const IDENT_CACHE_MANAGERS_H="$Date: 2004/02/11 15:33:13 $";
 
 #include "pa_hash.h"
 #include "pa_value.h"

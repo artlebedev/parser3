@@ -1,7 +1,7 @@
 /** @file
 	Parser: compiled code related decls.
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
@@ -9,7 +9,7 @@
 #ifndef OPCODE_H
 #define OPCODE_H
 
-static const char * const IDENT_OPCODE_H="$Date: 2003/11/20 16:34:25 $";
+static const char * const IDENT_OPCODE_H="$Date: 2004/02/11 15:33:14 $";
 
 ///	Compiled operation code
 enum OPCODE {

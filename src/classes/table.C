@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b table parser class.
 
-	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2003/11/25 15:44:48 $";
+static const char * const IDENT_TABLE_C="$Date: 2004/02/11 15:33:13 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
