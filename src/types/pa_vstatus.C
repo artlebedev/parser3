@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VSTATUS_C="$Date: 2002/08/13 15:55:45 $";
+static const char* IDENT_VSTATUS_C="$Date: 2002/08/14 14:18:31 $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"
@@ -17,7 +17,7 @@ static const char* IDENT_VSTATUS_C="$Date: 2002/08/13 15:55:45 $";
 #include <sys/resource.h>
 #endif
 
-Value *VStatus::get_element(const String& aname, Value * /*aself*/, bool /*looking_down*/) {
+Value *VStatus::get_element(const String& aname, Value * /*aself*/, bool /*looking_up*/) {
 	// getstatus
 	if(Cache_manager *manager=static_cast<Cache_manager *>(cache_managers->get(aname)))
 		return &manager->get_status(pool(), &aname);

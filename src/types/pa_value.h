@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/13 15:55:42 $";
+static const char* IDENT_VALUE_H="$Date: 2002/08/14 14:18:29 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -40,11 +40,11 @@ public: // Value
 	virtual VObject *set_derived(VObject * /*aderived*/) { return 0; }
 
 	/**
-		all except derived class: this if @atype eq type()
-		derived class: can locate parent class by it's type
+		all except VObject/VClass: this if @atype eq type()
+		VObject/VClass: can locate parent class by it's type
 	*/
-	virtual Value *as(const char *atype) {
-		return atype && strcmp(type(), atype)==0?this:0;
+	virtual bool is(const char *atype, bool looking_up) const {
+		return atype && strcmp(type(), atype)==0;
 	}
 	
 	/** is this value defined?
@@ -152,11 +152,11 @@ public: // Value
 	*/
 	virtual Junction *get_junction() { return 0; }
 	
-	/** extract Value junction of name @a name, when @a looking_down looks only down
+	/** extract Value junction of name @a name, when @a looking_up looks only down
 		@return for
 		- VStateless_class: self or parent method junction
 		- VObject: child or self or parent method junction
-	virtual Junction *get_junction(const String& /*name* /, bool /*looking_down* /) { bark("(%s) has no junctions"); return 0; }
+	virtual Junction *get_junction(const String& /*name* /, bool /*looking_up* /) { bark("(%s) has no junctions"); return 0; }
 	*/
 
 	/** extract base object of Value
@@ -184,7 +184,7 @@ public: // Value
 		- VFile: method,field
 		- VDate: CLASS,method,field
 		*/
-	virtual Value *get_element(const String& /*aname*/, Value * /*aself*/, bool /*looking_down*/) { bark("(%s) has no elements"); return 0; }
+	virtual Value *get_element(const String& /*aname*/, Value * /*aself*/, bool /*looking_up*/) { bark("(%s) has no elements"); return 0; }
 
 	/** store Value element under @a name
 		@return for

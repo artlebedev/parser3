@@ -8,7 +8,7 @@
 #ifndef PA_VENV_H
 #define PA_VENV_H
 
-static const char* IDENT_VENV_H="$Date: 2002/08/13 15:55:43 $";
+static const char* IDENT_VENV_H="$Date: 2002/08/14 14:18:29 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -26,7 +26,7 @@ public: // Value
 	VStateless_class *get_class() { return 0; }
 
 	// VEnv: field
-	Value *get_element(const String& aname, Value * /*aself*/, bool /*looking_down*/) {
+	Value *get_element(const String& aname, Value * /*aself*/, bool /*looking_up*/) {
 		// getenv
 		String& string=*NEW String(pool());
 		const char *val=SAPI::get_env(pool(), aname.cstr());

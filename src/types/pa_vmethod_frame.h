@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/08/13 15:55:44 $";
+static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/08/14 14:18:30 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -32,12 +32,12 @@ public: // Value
 	}
 	
 	/// VMethodFrame: my or self_transparent
-	Value *get_element(const String& aname, Value *aself, bool looking_down) { 
+	Value *get_element(const String& aname, Value *aself, bool looking_up) { 
 		if(junction.method->max_numbered_params_count==0) {
 			if(Value *result=static_cast<Value *>(my.get(aname)))
 				return result;
 		}
-		return fself->get_element(aname, aself, looking_down); 
+		return fself->get_element(aname, aself, looking_up); 
 	}
 	/// VMethodFrame: my or self_transparent
 	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace) { 

@@ -5,14 +5,21 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCLASS_C="$Date: 2002/08/13 16:27:53 $";
+static const char* IDENT_VCLASS_C="$Date: 2002/08/14 14:18:29 $";
 
 #include "pa_vclass.h"
 
+/*override*/ bool VClass::is(const char *atype, bool looking_up) const {
+	if(Value::is(atype, looking_up))
+		return true;
+	else
+		return fbase?fbase->is(atype, looking_up):false;
+}
+
 /// VClass: (field)=STATIC value;(method)=method_ref with self=object_class
-Value *VClass::get_element(const String& aname, Value *aself, bool looking_down) {
+Value *VClass::get_element(const String& aname, Value *aself, bool looking_up) {
 	// $method or other base element
-	if(Value *result=VStateless_class::get_element(aname, aself, looking_down))
+	if(Value *result=VStateless_class::get_element(aname, aself, looking_up))
 		return result;
 
 	// $field=static field

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCOOKIE_C="$Date: 2002/08/13 15:55:43 $";
+static const char* IDENT_VCOOKIE_C="$Date: 2002/08/14 14:18:29 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -18,7 +18,7 @@ static const char* IDENT_VCOOKIE_C="$Date: 2002/08/13 15:55:43 $";
 
 // VCookie
 
-Value *VCookie::get_element(const String& aname, Value * /*aself*/, bool /*looking_down*/) {
+Value *VCookie::get_element(const String& aname, Value * /*aself*/, bool /*looking_up*/) {
 	// $CLASS
 	if(aname==CLASS_NAME)
 		return this;

@@ -7,7 +7,25 @@
 
 #include "pa_vobject.h"
 
-static const char* IDENT_VOBJECT_C="$Date: 2002/08/13 16:31:31 $";
+static const char* IDENT_VOBJECT_C="$Date: 2002/08/14 14:18:30 $";
+
+bool VObject::is(const char *atype, bool looking_up) const { 
+	if(!looking_up)
+		return get_last_derived_const()->is(atype, true/*the only user*/); // figure out from last_derivate upwards
+
+	// is it me?
+	if(Value::is(atype, false))
+		return true;
+
+	// is it my base?
+	if(fbase) {
+		if(fbase->is(atype, true))
+			return true;
+	}
+
+	// neither
+	return false;
+}
 
 /// VObject: true, todo: z base table can be 33
 Value *VObject::as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
@@ -15,9 +33,9 @@ Value *VObject::as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
 bool VObject::as_bool() const { return true; }
 
 /// VObject: (field)=value;(CLASS)=vclass;(method)=method_ref
-Value *VObject::get_element(const String& aname, Value * /*aself*/, bool looking_down) {
+Value *VObject::get_element(const String& aname, Value * /*aself*/, bool looking_up) {
 	// gets element from last_derivate upwards
-	if(!looking_down) {
+	if(!looking_up) {
 		// $CLASS
 		if(aname==CLASS_NAME)
 			return get_class();

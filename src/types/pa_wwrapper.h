@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char* IDENT_WWRAPPER_H="$Date: 2002/08/13 15:55:46 $";
+static const char* IDENT_WWRAPPER_H="$Date: 2002/08/14 14:18:32 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"
@@ -19,8 +19,8 @@ public: // Value
 
 	const char *type() const { return "wwrapper"; }
 	/// WWrapper: transparent
-	Value *get_element(const String& aname, Value *aself, bool looking_down) { 
-		return check_value()->get_element(aname, aself, looking_down); 
+	Value *get_element(const String& aname, Value *aself, bool looking_up) { 
+		return check_value()->get_element(aname, aself, looking_up); 
 	}
 	/// WWrapper: transparent
 	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace) { 

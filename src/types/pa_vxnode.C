@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXNODE_C="$Date: 2002/08/13 15:55:46 $";
+static const char* IDENT_VXNODE_C="$Date: 2002/08/14 14:18:32 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -20,9 +20,9 @@ void VXnode_cleanup(void *vxnode) {
 	static_cast<VXnode *>(vxnode)->~VXnode();
 }
 
-Value *VXnode::get_element(const String& aname, Value *aself, bool looking_down) { 
+Value *VXnode::get_element(const String& aname, Value *aself, bool looking_up) { 
 	// $CLASS,$method
-	if(Value *result=VStateless_object::get_element(aname, aself, looking_down))
+	if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
 		return result;
 
 	// fields

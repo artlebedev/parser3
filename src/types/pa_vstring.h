@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-static const char* IDENT_VSTRING_H="$Date: 2002/08/13 15:55:45 $";
+static const char* IDENT_VSTRING_H="$Date: 2002/08/14 14:18:31 $";
 
 #include <stdlib.h>
 
@@ -48,9 +48,9 @@ public: // Value
 		bool origins_mode=false);
 
 	/// VString: $method
-	Value *get_element(const String& aname, Value *aself, bool looking_down) {
+	Value *get_element(const String& aname, Value *aself, bool looking_up) {
 		// $method
-		if(Value *result=VStateless_object::get_element(aname, aself, looking_down))
+		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
 			return result;
 
 		// bad $string.field

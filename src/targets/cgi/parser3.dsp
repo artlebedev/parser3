@@ -113,14 +113,6 @@ LINK32=link.exe
 # Name "parser3 - Win32 Profile"
 # Begin Source File
 
-SOURCE=.\fixopt.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\fixopt.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\getopt.c
 # End Source File
 # Begin Source File

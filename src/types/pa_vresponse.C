@@ -5,20 +5,20 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VRESPONSE_C="$Date: 2002/08/13 15:55:44 $";
+static const char* IDENT_VRESPONSE_C="$Date: 2002/08/14 14:18:31 $";
 
 #include "pa_vresponse.h"
 #include "pa_charsets.h"
 #include "pa_charset.h"
 #include "pa_vstring.h"
 
-Value *VResponse::get_element(const String& aname, Value *aself, bool looking_down) {
+Value *VResponse::get_element(const String& aname, Value *aself, bool looking_up) {
 	// $charset
 	if(aname==CHARSET_NAME)
 		return NEW VString(pool().get_client_charset().name());
 
 	// $method
-	if(Value *result=VStateless_object::get_element(aname, aself, looking_down))
+	if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
 		return result;
 	
 	// $field

@@ -225,8 +225,12 @@ $derived:derived_var[changed]
 @staticstest[]
 $derived[^derived::create[]]
 ^derived.test[]
+<hr>
 ^$derived.a=$derived.a<br>
 ^$derived.x=$derived.x<br>
+<hr>
+^if($derived is derived){derived is derived}{error: derived is not derived}<br>
+^if($derived is table){derived is table}{error:derived is not table}<br>
 
 
 @xdoctypetest[]
