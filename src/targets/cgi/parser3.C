@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.66 2001/04/20 09:04:16 paf Exp $
+	$Id: parser3.C,v 1.67 2001/04/20 14:18:52 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
 	if(!cgi) {
 		if(argc<2) {
 			printf("Usage: %s <file>\n", argv0?argv0:"parser3");
-			exit(1);
+			return 1;
 		}
 	}
 

@@ -5,10 +5,8 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.55 2001/04/12 15:02:41 paf Exp $
+	$Id: pa_globals.C,v 1.56 2001/04/20 14:18:42 paf Exp $
 */
-
-#include "pcre.h"
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -27,7 +25,7 @@
 #include "_image.h"
 #include "_unknown.h"
 
-String *html_typo_name;
+String *user_html_name;
 String *content_type_name;
 String *body_name;
 String *value_name;
@@ -75,8 +73,13 @@ String *limits_name;
 String *post_max_size_name;
 
 String *defaults_name;
-String *locale_name;
-String *locale_ctype_name;
+String *ctype_name;
+String *ctype_white_space_name;
+String *ctype_digit_name;
+String *ctype_hex_digit_name;
+String *ctype_letter_name;
+String *ctype_word_name;
+String *ctype_lowercase_name;
 String *mime_types_name;
 String *vfile_mime_type_name;
 String *mail_name;
@@ -87,8 +90,6 @@ String *main_sql_drivers_name;
 Hash *untaint_lang_name2enum;
 
 Table *default_typo_table;
-
-const unsigned char *pcre_tables;
 
 short hex_value[0x100];
 
@@ -129,7 +130,7 @@ void pa_globals_init(Pool& pool) {
 	setup_hex_value();
 
 	// names
-	html_typo_name=NEW String(pool, HTML_TYPO_NAME);
+	user_html_name=NEW String(pool, USER_HTML_NAME);
 	content_type_name=NEW String(pool, CONTENT_TYPE_NAME);
 	body_name=NEW String(pool, BODY_NAME);
 	value_name=NEW String(pool, VALUE_NAME);
@@ -178,8 +179,13 @@ void pa_globals_init(Pool& pool) {
 	post_max_size_name=NEW String(pool, POST_MAX_SIZE_NAME);
 
 	defaults_name=NEW String(pool, DEFAULTS_NAME);
-	locale_name=NEW String(pool, LOCALE_NAME);
-	locale_ctype_name=NEW String(pool, LOCALE_CTYPE_NAME);
+	ctype_name=NEW String(pool, CTYPE_NAME);
+	ctype_white_space_name=NEW String(pool, CTYPE_WHITE_SPACE_NAME);
+	ctype_digit_name=NEW String(pool, CTYPE_DIGIT_NAME);
+	ctype_hex_digit_name=NEW String(pool, CTYPE_HEX_DIGIT_NAME);
+	ctype_letter_name=NEW String(pool, CTYPE_LETTER_NAME);
+	ctype_word_name=NEW String(pool, CTYPE_WORD_NAME);
+	ctype_lowercase_name=NEW String(pool, CTYPE_LOWERCASE_NAME);
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
 	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
 	mail_name=NEW String(pool, MAIL_NAME);
@@ -257,10 +263,6 @@ void pa_globals_init(Pool& pool) {
 			*default_typo_table+=row;
 		}
 	}
-
-
-	// pcre tables
-	pcre_tables=pcre_maketables();
 
 	// stateless classes
 	initialize_unknown_class(pool, *(unknown_class=NEW VStateless_class(pool)));  unknown_class->set_name(*unknown_class_name);

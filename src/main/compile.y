@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.125 2001/04/17 19:00:40 paf Exp $
+	$Id: compile.y,v 1.126 2001/04/20 14:18:41 paf Exp $
 */
 
 /**
@@ -579,8 +579,9 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 
 		if(c=='^' && PC.ls!=LS_COMMENT && PC.ls!=LS_DEF_COMMENT) 
 			switch(*PC.source) {
-			// escaping: ^^ ^$ ^; ^) ^} ^( ^{ ^"
+			// escaping: ^^ & co
 			case '^': case '$': case ';':
+			case '(': case ')':
 			case '[': case ']':
 			case '{': case '}':
 			case '"': 
@@ -864,13 +865,14 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case 0:
 			case ' ': case '\t': case '\n':
 			case ';':
-			case ']': case '}': case ')': case '"':
+			case ']': case '}': case ')': 
+			case '"': case '\'':
 			case '<': case '>':  // these stand for HTML brackets and expression binary ops
 			case '+': case '*': case '/': case '%': 
 			case '&': case '|': 
 			case '=': case '!':
 			// common delimiters
-			case '\'': case ',':
+			case ',':
 				pop_LS(PC);
 				PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
 				result=EON;

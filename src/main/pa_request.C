@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.116 2001/04/19 15:38:00 paf Exp $
+	$Id: pa_request.C,v 1.117 2001/04/20 14:18:43 paf Exp $
 */
 
 #include "pa_config_includes.h"
 
-#include <locale.h>
+#include "pcre.h"
+#include "internal.h"
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -59,7 +60,8 @@ Request::Request(Pool& apool,
 	default_content_type(0),
 	mime_types(0),
 	connection(0), protocol2library(0),
-	mail(0)
+	mail(0), 
+	pcre_tables(0)
 {
 	// root superclass, 
 	//   parent of all classes, 
@@ -88,6 +90,65 @@ Request::Request(Pool& apool,
 	classes().put(*image_class_name, image_class);
 }
 
+static void element2ctypes(unsigned char *tables, 
+	Value& ctype, const String& name, 
+	unsigned char bit,
+	int group_offset=-1,
+	bool skip_ws=true) {
+	Value *value=ctype.get_element(name);
+	if(!value)
+		return;
+
+	unsigned char *ctypes_table=tables+ctypes_offset;
+	const unsigned char *cstr=
+		(const unsigned char *)value->as_string().cstr(String::UL_AS_IS);
+	for(; *cstr; cstr++) {
+		unsigned char c=*cstr;
+		if(skip_ws && (c=='\n' || c=='\t' || c==' '))
+			continue;
+		ctypes_table[c]|=bit;
+
+		if(group_offset>=0)
+			tables[cbits_offset+group_offset+c/8] |= 1 << (c&7);
+	}				
+}
+static void cstr2ctypes(unsigned char *tables, const unsigned char *cstr, 
+						unsigned char bit) {
+	unsigned char *ctypes_table=tables+ctypes_offset;
+	ctypes_table[0]=bit;
+	for(; *cstr; cstr++) {
+		unsigned char c=*cstr;
+		ctypes_table[c]|=bit;
+	}
+}
+static void prepare_case_tables(unsigned char *tables) {
+	unsigned char *lcc_table=tables+lcc_offset;
+	unsigned char *fcc_table=tables+fcc_offset;
+	for(int i=0; i<0x100; i++)
+		lcc_table[i]=fcc_table[i]=i;
+}
+static void element2case(unsigned char *tables, Value& ctype, const String& name) {
+	Value *value=ctype.get_element(name);
+	if(!value)
+		return;
+
+	unsigned char *lcc_table=tables+lcc_offset;
+	unsigned char *fcc_table=tables+fcc_offset;
+	const unsigned char *cstr=
+		(const unsigned char *)value->as_string().cstr(String::UL_AS_IS);
+	unsigned char from=0;
+	for(; *cstr; cstr++) {
+		unsigned char c=*cstr;
+		if(c=='\n' || c=='\t' || c==' ')
+			continue;
+		if(from) {
+			lcc_table[from]=c;
+			fcc_table[from]=c; fcc_table[c]=from;
+			from=0;
+		} else
+			from=c;
+	}
+}
 /**
 	load MAIN class, execute @main.
 	MAIN class consists of all the auto.p files we'd manage to find
@@ -95,8 +156,6 @@ Request::Request(Pool& apool,
 	the file user requested us to process
 	all located classes become children of one another,
 	composing class we name 'MAIN'
-
-	@test get rid of setlocale
 */
 void Request::core(const char *root_auto_path, bool root_auto_fail,
 				   const char *site_auto_path, bool site_auto_fail,
@@ -196,7 +255,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// value must be allocated on request's pool for that pool used on
 		// meaning constructing @see attributed_meaning_to_string
 		default_content_type=defaults?defaults->get_element(*content_type_name):0;
-		if(Value *element=main_class->get_element(*html_typo_name))
+		if(Value *element=main_class->get_element(*user_html_name))
 			if(Table *table=element->get_table())
 				pool().set_tag(table);
 
@@ -210,23 +269,39 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			if(Table *table=element->get_table())
 				mime_types=table;			
 
-		// $MAIN:LOCALE.ctype[Russian_Russia.1251]
-/*
-#define LC_ALL	    0
-#define LC_COLLATE  1
-#define LC_CTYPE    2
-#define LC_MONETARY 3
-#define LC_NUMERIC  4
-#define LC_TIME     5
-*/
-		if(Value *locale=main_class->get_element(*locale_name))
-			if(Value *element=locale->get_element(*locale_ctype_name)) {
-				const String& name=element->as_string();
-				if(!setlocale(LC_CTYPE, name.cstr()))
-					THROW(0, 0,
-						&name,
-						"locale is invalid");
-			}
+		/*
+			$MAIN:CTYPE[
+				$white-space[
+					^#09^#0A^#0B^#0C^#0D^#20]
+				$digit[
+					0123456789]
+				$hex-digit[
+					0123456789ABCDEFabcdef]
+				$letter[
+					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]
+				$word[
+					0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz]
+				$meta[
+					^#00$()*+.?[^{|]
+
+				$lowercase[
+					AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz]
+			]
+		*/
+		if(Value *ctype=main_class->get_element(*ctype_name)) {
+			// lowcase, flipcase, bits digit+word+whitespace, masks
+			pcre_tables=(unsigned char *)calloc(tables_length);
+			prepare_case_tables(pcre_tables);
+
+			element2ctypes(pcre_tables, *ctype, *ctype_white_space_name, ctype_space, cbit_space, false);
+			element2ctypes(pcre_tables, *ctype, *ctype_digit_name, ctype_digit, cbit_digit);
+			element2ctypes(pcre_tables, *ctype, *ctype_hex_digit_name, ctype_xdigit);
+			element2ctypes(pcre_tables, *ctype, *ctype_letter_name, ctype_letter);
+			element2ctypes(pcre_tables, *ctype, *ctype_word_name, ctype_word, cbit_word);
+			cstr2ctypes(pcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
+
+			element2case(pcre_tables, *ctype, *ctype_lowercase_name);
+		}
 
 		// $MAIN:MAIL[$SMTP[mail.design.ru]]
 		if(Value *mail_element=main_class->get_element(*mail_name))

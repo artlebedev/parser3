@@ -1,20 +1,3 @@
-@auto[]
-$html-typo[^table:set{user	html	comment
-<<	&laquo^;	длинные user вперёд
->>	&raquo^;
-\n\n	<p>	!эти есть в таблице по умолчанию
-\n	<br>	!но т.к. заменяем, надо повторить.
-<	&lt^;	!можно этим воспользоваться,
->	&gt^;	!и что-то сделать ДО обычных замен
-"	&quot^;	!например из << и >>
-&	&amp^;	!сделать ёлочки-кавычки.
-_	&nbsp^;
-^#AB	&laquo^;	windows коды ёлочек
-^#BB	&raquo^;	windows коды ёлочек
-(c)	&copy^;
-^#A9	&copy^;	windows (c)
-}]
-
 @dump[t]
 ^t.menu{$n<BR>}
 <HR>
@@ -23,7 +6,7 @@ $n
 @twop[a;b]
 ($a,$b)
 
-@Я post-process[data]
+@Я postprocess[data]
 #(<BR>$data)<BR>
 ^data.match[1][g]{X}
 
@@ -245,9 +228,9 @@ $sm[^s.match[(.)][g]]
 ^^"$s".match[(.)][g]:<BR>
 ^sm.menu{
 	^line[]:<BR>
-	^$pre-match=$pre-match<BR>
+	^$prematch=$prematch<BR>
 	^$match=$match<BR>
-	^$post-match=$post-match<BR>
+	^$postmatch=$postmatch<BR>
 	^$1=$1<BR>
 }
 <HR>
@@ -255,9 +238,9 @@ $sm[^s.match[(.)][]]
 ^^"$s".match[(.)][]:<BR>
 ^sm.menu{
 	^line[]:<BR>
-	^$pre-match=$pre-match<BR>
+	^$prematch=$prematch<BR>
 	^$match=$match<BR>
-	^$post-match=$post-match<BR>
+	^$postmatch=$postmatch<BR>
 	^$1=$1<BR>
 }
 <HR>

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.80 2001/04/11 08:36:16 paf Exp $
+	$Id: pa_string.h,v 1.81 2001/04/20 14:18:36 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -196,7 +196,8 @@ public:
 
 	typedef void (*Row_action)(Table& table, Array *row, int start, int finish, 
 		void *info);
-	bool match(const String *aorigin,
+	bool match(const unsigned char *pcre_tables,
+		const String *aorigin,		
 		const String& regexp, 
 		const String *options,
 		Table **table,

@@ -53,7 +53,8 @@ order to be consistent. */
 int main(void)
 {
 int i;
-unsigned const char *tables = pcre_maketables();
+unsigned const char *tables;
+	tables = pcre_maketables();
 
 printf(
   "/*************************************************\n"

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.76 2001/04/10 11:24:00 paf Exp $
+	$Id: pa_string.C,v 1.77 2001/04/20 14:18:43 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -490,7 +490,8 @@ static void regex_options(char *options, int *result){
 		pre-match/match/post-match/1/2/3/...
 	@endverbatim
 */
-bool String::match(const String *aorigin,
+bool String::match(const unsigned char *pcre_tables,
+				   const String *aorigin,
 				   const String& regexp, 
 				   const String *options,
 				   Table **table,

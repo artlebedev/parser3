@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.62 2001/04/15 13:32:39 paf Exp $
+	$Id: table.C,v 1.63 2001/04/20 14:18:30 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -487,7 +487,7 @@ static void _dir(Request& r, const String& method_name, MethodParams *params) {
 		int erroffset;
 		regexp_code=pcre_compile(pattern, PCRE_EXTRA | PCRE_DOTALL, 
 			&errptr, &erroffset,
-			pcre_tables);
+			r.pcre_tables);
 
 		if(!regexp_code)
 			PTHROW(0, 0,

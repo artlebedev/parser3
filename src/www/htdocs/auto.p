@@ -9,10 +9,48 @@ $DEFAULTS[
 		$charset[windows-1251]
 	]
 ]
-$LOCALE[
+$user-html[^table:set{user	html	comment
+<<	&laquo^;	длинные user вперёд
+>>	&raquo^;
+\n\n	<p>	!эти есть в таблице по умолчанию
+\n	<br>	!но т.к. заменяем, надо повторить.
+<	&lt^;	!можно этим воспользоваться,
+>	&gt^;	!и что-то сделать ДО обычных замен
+"	&quot^;	!например из << и >>
+&	&amp^;	!сделать ёлочки-кавычки.
+_	&nbsp^;
+^#AB	&laquo^;	windows коды ёлочек
+^#BB	&raquo^;	windows коды ёлочек
+(c)	&copy^;
+^#A9	&copy^;	windows (c)
+}]
 #for ^match{}[i]
-	$ctype[Russian_Russia.1251]
+$CTYPE[
+    $white-space[
+        ^#09^#0A^#0B^#0C^#0D^#20^#A0]
+    $digit[
+        0123456789]
+    $hex-digit[
+        0123456789ABCDEFabcdef]
+    $letter[
+        ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz^#80^#81^#83
+        ^#8A^#8C^#8D^#8E^#8F^#90^#9A^#9C^#9D^#9E^#9F^#A1^#A2^#A3^#A5^#A8
+        ^#AA^#AF^#B2^#B3^#B4^#B8^#BA^#BC^#BD^#BE^#BF└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥
+        ╙╘╒╓╫╪┘┌█▄▌▐▀рстуфхцчшщъыьэюяЁёЄєЇїЎў°∙·√№¤■ ]
+    $word[
+        0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz
+        ^#80^#81^#83^#8A^#8C^#8D^#8E^#8F^#90^#9A^#9C^#9D^#9E^#9F^#A1^#A2
+        ^#A3^#A5^#A8^#AA^#AF^#B2^#B3^#B4^#B8^#BA^#BC^#BD^#BE^#BF└┴┬├─┼╞
+        ╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀рстуфхцчшщъыьэюяЁёЄєЇїЎў°∙·√№¤■ ]
+
+    $lowercase[
+        AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz^#80^#90^#81^#83
+        ^#8A^#9A^#8C^#9C^#8D^#9D^#8E^#9E^#8F^#9F^#A1^#A2^#A3^#BC^#A5^#B4
+        ^#A8^#B8^#AA^#BA^#AF^#BF^#B2^#B3^#BD^#BE└р┴с┬т├у─ф┼х╞ц╟ч╚ш╔щ╩ъ╦ы
+        ╠ь═э╬ю╧я╨Ё╤ё╥Є╙є╘Ї╒ї╓Ў╫ў╪°┘∙┌·█√▄№▌¤▐■▀ ]
 ]
+
+
 $SQL[
 	$connect-string[mysql://test:test@localhost/test/cp1251_koi8]
 	$drivers[^table:set{protocol	driver	client

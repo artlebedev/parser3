@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.38 2001/04/15 13:12:18 paf Exp $
+	$Id: string.C,v 1.39 2001/04/20 14:18:29 paf Exp $
 */
 
 #include "pa_request.h"
@@ -192,7 +192,8 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	Table *table;
 	if(params->size()<3) { // search
-		if(src.match(&method_name, 
+		if(src.match(r.pcre_tables,
+			&method_name, 
 			regexp.as_string(), options,
 			&table,
 			search_action, 0)) {
@@ -214,7 +215,8 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 			&replacement_code,
 			&src
 		};
-		src.match(&method_name, 
+		src.match(r.pcre_tables,
+			&method_name, 
 			r.process(regexp).as_string(), options,
 			&table,
 			replace_action, &replace_action_info);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.48 2001/04/12 15:02:39 paf Exp $
+	$Id: pa_globals.h,v 1.49 2001/04/20 14:18:36 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -21,7 +21,7 @@ class Table;
 /// constant string. class name, predefined method & co
 #define AUTO_FILE_NAME "auto.p"
 
-#define HTML_TYPO_NAME "html-typo"
+#define USER_HTML_NAME "user-html"
 
 #define CONTENT_TYPE_NAME "content-type"
 #define BODY_NAME "body"
@@ -64,8 +64,13 @@ class Table;
 #define LIMITS_NAME "LIMITS"
 #define POST_MAX_SIZE_NAME "post_max_size"
 #define DEFAULTS_NAME "DEFAULTS"
-#define LOCALE_NAME "LOCALE"
-#define LOCALE_CTYPE_NAME "ctype"
+#define CTYPE_NAME "CTYPE"
+#	define CTYPE_WHITE_SPACE_NAME "white-space"
+#	define CTYPE_DIGIT_NAME "digit"
+#	define CTYPE_HEX_DIGIT_NAME "hex-digit"
+#	define CTYPE_LETTER_NAME "letter"
+#	define CTYPE_WORD_NAME "word"
+#	define CTYPE_LOWERCASE_NAME "lowercase"
 #define MIME_TYPES_NAME "MIME-TYPES"
 #define VFILE_MIME_TYPE_NAME "mime-type"
 #define MAIL_NAME "MAIL"
@@ -75,9 +80,9 @@ class Table;
 
 #define RESULT_VAR_NAME "result"
 
-#define STRING_PRE_MATCH_NAME "pre-match"
+#define STRING_PRE_MATCH_NAME "prematch"
 #define STRING_MATCH_NAME "match"
-#define STRING_POST_MATCH_NAME "post-match"
+#define STRING_POST_MATCH_NAME "postmatch"
 //@}
 
 /// core func
@@ -88,7 +93,7 @@ extern short hex_value[0x100];
 
 //@{
 /// global string
-extern String *html_typo_name;
+extern String *user_html_name;
 extern String *content_type_name;
 extern String *body_name;
 extern String *value_name;
@@ -131,8 +136,14 @@ extern String *limits_name;
 extern String *post_max_size_name;
 
 extern String *defaults_name;
-extern String *locale_name;
-extern String *locale_ctype_name;
+extern String *ctype_name;
+extern String *ctype_white_space_name;
+extern String *ctype_digit_name;
+extern String *ctype_hex_digit_name;
+extern String *ctype_letter_name;
+extern String *ctype_word_name;
+extern String *ctype_lowercase_name;
+
 extern String *mime_types_name;
 extern String *vfile_mime_type_name;
 extern String *mail_name;
@@ -151,8 +162,5 @@ extern Hash *untaint_lang_name2enum;
 
 /// global table
 extern Table *default_typo_table;
-
-/// global pcre tables
-extern const unsigned char *pcre_tables;
 
 #endif

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.82 2001/04/15 12:32:59 paf Exp $
+	$Id: pa_request.h,v 1.83 2001/04/20 14:18:36 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -168,6 +168,8 @@ public:
 	Table *protocol2library;
 	/// mail options
 	Hash *mail;
+	/// PCRE character tables
+	unsigned char *pcre_tables;
 
 private: // core data
 
