@@ -1,6 +1,11 @@
+deny from 195.239.227.18 
+deny from 194.84.132.18
+deny from 62.32.47.130
+deny from 62.32.63.235
+
 #apache
 #AddHandler parser3-handler html
-AddHandler parsed-html html phtml
+AddHandler parsed-html html
 Action parsed-html /cgi-bin/debug/parser3
 #Action parsed-html /cgi-bin/release/parser3
 #Action parsed-html /cgi-bin/ReleaseHEAD/parser3
@@ -8,34 +13,58 @@ Action parsed-html /cgi-bin/debug/parser3
 #Action parsed-html /cgi-bin/ProfileDebug/parser3
 #Action parsed-html /cgi-bin/DebugV7/parser3
 #Action parsed-html /cgi-bin/p2Debug/parser2
-#Action parsed-html /cgi-bin/release308/parser3
 #Action parsed-html /cgi-bin/release310/parser3
+#Action parsed-html /cgi-bin/release308/parser3
 #Action parsed-html /cgi-bin/release311/parser3
+
+
+
+
+# enabling SSI
+Options +Includes
+AddHandler server-parsed .htm
+
+
+AddType image/x-icon ico
+AddType text/xml xsl
+AddType application/chm chm
+#AddType application/octet-stream chm
+
 
 RewriteEngine on
 RewriteBase /
 
-RewriteRule ^maximized.htm$ - [L]
+DirectoryIndex index.html index.htm
 
+# если пришли смотреть старые вещи - отправляем куда следует
+RewriteRule forum/message_([0-9]+) http://parser2.parser.ru/forum/message.html?id=$1 [L,R,QSA]
+
+RewriteCond %{REQUEST_URI} (docs/introduction.html|docs/operators.+\.html|docs/example\.html|docs/appendix_.\.html|examples/example[0-9]\.html|download/parser_changes\.html)
+RewriteRule (.+) http://parser2.parser.ru/$1 [L,R,QSA]
+
+# если идем в админ или на 404 ошибку - не фиг ничего рерайтить вовсе
+RewriteRule ^(admin|tests|404)/ - [L]
+
+RewriteRule ^_ - [L]
+RewriteRule ^docs/(lang|src) - [L]
+RewriteRule ^docs/comment\.html$ - [L]
+RewriteRule \.(gif|jpg|png|js|css|exe|zip|rar|pdf|rtf|doc|xls|ppt|swf|ipx|txt|xslt|xsl|tif|eps|tiff|ico|ent|chm|cfm|gz|tgz|htm)$ - [L]
+
+# если обратились к директории, и нету закрывающего слеша - редиректим и исправляем это
 RewriteCond %{REQUEST_URI} !\.
 RewriteRule ^(.+[^/])$ http://%{SERVER_NAME}/$1/ [L,R,QSA]
 
+# разрешаем смотреть preview и xml только "своим"
+#RewriteCond %{QUERY_STRING} mode=(preview|xml|debug)
 RewriteCond %{QUERY_STRING} mode=(xml|debug)
-RewriteCond %{REMOTE_ADDR} !^(213\.152\.135|195\.151\.168)
+RewriteCond %{REMOTE_ADDR} !^213\.152\.135
 RewriteRule (.*) /_doc.html?request=/404/ [L]
 
-RewriteRule (where2buy/moscow/)metro.gif  /_doc.html?request=$1&image=yes [L,QSA]
-RewriteRule (tariffs/.*/)full/  /_doc.html?request=$1&full=yes [L,QSA]
-RewriteRule (search/)full/  /_doc.html?request=$1&map=full [L,QSA]
+#RewriteCond %{REQUEST_URI} off-line
+#RewriteCond %{REQUEST_URI} \.p$
+#RewriteRule ^off-line/(.*)$ /_file.html?file=$1 [L]
 
-RewriteCond %{REQUEST_URI} !(gif|jpg|png|js|css|exe|zip|rar|pdf|rtf|doc|xls|ppt|swf|ipx|txt|xslt|xsl|dtd|tif|eps|tiff|ico|ent|chm|cfm|gz)$
-RewriteCond %{REQUEST_URI} !/_
+RewriteRule ^forum/([0-9]+)/ /_doc.html?request=/forum/&id=$1 [L,QSA]
 RewriteRule (.*)  /_doc.html?request=$1 [L,QSA]
 
-
-Options +IncludesNoExec
-AddType text/html .shtml
-AddHandler server-parsed .shtml
-
-ErrorDocument 404 /_error404.shtml
-ErrorDocument 500 /_error500.shtml
+ErrorDocument 404 /_doc.html?request=/404/

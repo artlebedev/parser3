@@ -1,9 +1,27 @@
+@main[]
 $request:charset[windows-1251]
 $response:charset[windows-1251]
+$response:content-type[text/html]
 
-$f[^file::load[text;http://parser/_paf/;
-	$.user[paf]
-	$.password[123]
+^if(def $form:param){
+	^$form:param=$form:param<br>
+
+	$several[$form:tables.several]
+	^$form:tables.several=^several.menu{
+		$several.field
+	}[,]
+}{
+
+$f[^file::load[text;http://parser3/_bug.html;
+#	$.method[POST]
+	$.form[
+		$.param[pass=ed
+		]
+		$.several[^table::create[nameless]{1^#0A2}]
+	]
+	$.any-status(1)
 ]]
 
-$f.text
+=$f.text=
+
+}

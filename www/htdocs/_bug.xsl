@@ -12,6 +12,7 @@
 	<xsl:template match="/doc">
 		<html>
 			<xsl:copy-of select="."/>
+			<br/>
 		</html>
 	</xsl:template>
 	

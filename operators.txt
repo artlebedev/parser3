@@ -1021,7 +1021,7 @@ console
 !при загрузке файла (file::load, table::load, xdoc::load) можно указать такое им€ файла:
     !http://domain/document[?params<<deprecated, use $.form[...]]
     !а также, возможно, указать опции:
-        !$.method[GET|HEAD]
+        !$.method[GET|POST|HEAD]
         !$.timeout(3)  << в секундах, по-умолчанию =2
         !$.headers[
         !    $поле[значение] << значение имеет формат, как $response:«ј√ќЋќ¬ќ 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/03/05 15:14:47 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/03/09 14:49:46 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -344,19 +344,46 @@ static const String* basic_authorization_field(const char* user, const char* pas
 	return result;
 }
 
-/// @todo table value
+static void form_string_value2string(
+								  HashStringValue::key_type key, 
+								  const String& value, 
+								  String& result) 
+{
+	result << String(key, String::L_TAINTED) << "=";
+	result.append(value, String::L_URI, true);
+	result<< "&";
+}
+#ifndef DOXYGEN
+struct Form_table_value2string_info {
+	HashStringValue::key_type key;
+	String& result;
+
+	Form_table_value2string_info(HashStringValue::key_type akey, String& aresult): 
+		key(akey), result(aresult) {}
+};
+#endif
+static void form_table_value2string(Table::element_type row, Form_table_value2string_info* info) {
+	form_string_value2string(info->key, *row->get(0), info->result);
+}
 static void form_value2string(
 								  HashStringValue::key_type key, 
 								  HashStringValue::value_type value, 
 								  String* result) 
 {
-	*result << String(key, String::L_TAINTED) << "=";
-	result->append(value->as_string(), String::L_URI, true);
+	if(const String* svalue=value->get_string())
+		form_string_value2string(key, *svalue, *result);
+	else if(Table* tvalue=value->get_table()) {
+		Form_table_value2string_info info(key, *result);
+		tvalue->for_each(form_table_value2string, &info);
+	} else
+		throw Exception(0,
+			new String(key, String::L_TAINTED),
+			"is %s, "HTTP_FORM_NAME" option value must either string or table", value->type());
 }
 static const char* form2string(HashStringValue& form) {
 	String string;
 	form.for_each(form_value2string, &string);
-	return 0; // todo
+	return string.cstr(String::L_UNSPECIFIED);
 }
 #ifndef DOXYGEN
 struct File_read_http_result {
@@ -388,28 +415,36 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		if(Value* vmethod=options->get(HTTP_METHOD_NAME)) {
 			valid_options++;
 			method=vmethod->as_string().cstr();
-		} else if(Value* vform=options->get(HTTP_FORM_NAME)) {
+		}
+		if(Value* vform=options->get(HTTP_FORM_NAME)) {
 			valid_options++;
 			form=vform->get_hash(); 
-		} else if(Value* vbody=options->get(HTTP_BODY_NAME)) {
+		} 
+		if(Value* vbody=options->get(HTTP_BODY_NAME)) {
 			valid_options++;
 			body_cstr=vbody->as_string().cstr(String::L_UNSPECIFIED);
-		} else if(Value* vtimeout=options->get(HTTP_TIMEOUT_NAME)) {
+		} 
+		if(Value* vtimeout=options->get(HTTP_TIMEOUT_NAME)) {
 			valid_options++;
 			timeout=vtimeout->as_int(); 
-		} else if((vheaders=options->get(HTTP_HEADERS_NAME))) {
+		} 
+		if((vheaders=options->get(HTTP_HEADERS_NAME))) {
 			valid_options++;
-		} else if(Value* vany_status=options->get(HTTP_ANY_STATUS_NAME)) {
+		} 
+		if(Value* vany_status=options->get(HTTP_ANY_STATUS_NAME)) {
 			valid_options++;
 			fail_on_status_ne_200=!vany_status->as_bool(); 
-		} else if(Value* vcharset_name=options->get(HTTP_CHARSET_NAME)) {
+		} 
+		if(Value* vcharset_name=options->get(HTTP_CHARSET_NAME)) {
 			valid_options++;
 			asked_remote_charset=&::charsets.get(vcharset_name->as_string().
 				change_case(charsets.source(), String::CC_UPPER));
-		} else if(Value* vuser=options->get(HTTP_USER)) {
+		} 
+		if(Value* vuser=options->get(HTTP_USER)) {
 			valid_options++;
 			user_cstr=vuser->as_string().cstr();
-		} else if(Value* vpassword=options->get(HTTP_PASSWORD)) {
+		} 
+		if(Value* vpassword=options->get(HTTP_PASSWORD)) {
 			valid_options++;
 			password_cstr=vpassword->as_string().cstr();
 		}
@@ -465,11 +500,13 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		head << " " << uri;
 		if(form)
 			if(method_is_get)
-				head << form2string(*form);
-			else
-				body_cstr = form2string(*form);
+				head << "?" << form2string(*form);
 		head <<" HTTP/1.0" CRLF
 			"host: "<< host << CRLF; 
+		if(form && !method_is_get) {
+			head << "content-type: application/x-www-form-urlencoded" CRLF;
+			body_cstr = form2string(*form);
+		}
 
 		// http://www.ietf.org/rfc/rfc2617.txt
 		if(const String* authorization_field_value=basic_authorization_field(user_cstr, password_cstr))
@@ -489,6 +526,17 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		if(!user_agent_specified) // defaulting
 			head << "user-agent: " DEFAULT_USER_AGENT CRLF;
 
+		if(body_cstr) {
+			// recode those pieces which are not in String::L_URI lang 
+			// [those violating HTTP standard, but widly used]
+			body_cstr=Charset::transcode(
+				String::C(body_cstr, strlen(body_cstr)),
+				charsets.source(),
+				*asked_remote_charset);
+
+			head << "content-length: " << format(strlen(body_cstr), "%u") << CRLF;
+		}
+
 		const char* head_cstr=head.cstr(String::L_UNSPECIFIED);
 
 		// recode those pieces which are not in String::L_URI lang 
@@ -498,21 +546,8 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 			charsets.source(),
 			*asked_remote_charset);
 
-		if(body_cstr) {
-			// recode those pieces which are not in String::L_URI lang 
-			// [those violating HTTP standard, but widly used]
-			body_cstr=Charset::transcode(
-				String::C(body_cstr, strlen(body_cstr)),
-				charsets.source(),
-				*asked_remote_charset);
-		}
-
-		request_head_and_body << head_cstr;
-		if(body_cstr)
-			head << "content-length: " << format(strlen(body_cstr), "%u") << CRLF;
-
-		// end of header
-		request_head_and_body << CRLF; 
+		// head + end of header
+		request_head_and_body << head_cstr << CRLF;
 		// body
 		if(body_cstr)
 			request_head_and_body << body_cstr;
