@@ -1,11 +1,12 @@
 /*
-  $Id: pa_wwrapper.h,v 1.2 2001/02/23 18:12:44 paf Exp $
+  $Id: pa_wwrapper.h,v 1.3 2001/02/24 11:20:32 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
 #include "pa_wcontext.h"
+#include "pa_exception.h"
 
 class WWrapper : public WContext {
 public: // Value
@@ -37,7 +38,7 @@ private:
 		if(!fvalue)
 			THROW(0,0,
 				0,
-				"accessing wcontext without value");
+				"accessing wrapper without value");
 
 		return fvalue;
 	}

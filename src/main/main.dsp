@@ -135,6 +135,10 @@ SOURCE=.\pa_array.C
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_cframe.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_common.C
 # End Source File
 # Begin Source File
@@ -160,6 +164,10 @@ SOURCE=.\pa_table.C
 # Begin Source File
 
 SOURCE=.\pa_value.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_wcontext.C
 # End Source File
 # End Group
 # Begin Group "include"
@@ -219,11 +227,11 @@ SOURCE=..\include\pa_value.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\include\pa_vclass.h
+SOURCE=..\include\pa_vcframe.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\include\pa_vframe.h
+SOURCE=..\include\pa_vclass.h
 # End Source File
 # Begin Source File
 
@@ -232,6 +240,10 @@ SOURCE=..\include\pa_vhash.h
 # Begin Source File
 
 SOURCE=..\include\pa_vjunction.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_vmframe.h
 # End Source File
 # Begin Source File
 

@@ -1,11 +1,12 @@
 /*
-  $Id: pa_vhash.h,v 1.1 2001/02/22 16:21:49 paf Exp $
+  $Id: pa_vhash.h,v 1.2 2001/02/24 11:20:32 paf Exp $
 */
 
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
 #include "pa_value.h"
+#include "pa_hash.h"
 
 class VHash : public Value {
 public: // value

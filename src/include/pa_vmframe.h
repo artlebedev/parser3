@@ -1,18 +1,19 @@
 /*
-  $Id: pa_vframe.h,v 1.5 2001/02/24 09:56:02 paf Exp $
+  $Id: pa_vmframe.h,v 1.1 2001/02/24 11:20:32 paf Exp $
 */
 
-#ifndef PA_VFRAME_H
-#define PA_VFRAME_H
+#ifndef PA_VMFRAME_H
+#define PA_VMFRAME_H
 
 #include "pa_wcontext.h"
 #include "pa_vunknown.h"
+#include "pa_vjunction.h"
 
-class VFrame : public WContext {
+class VMethodFrame : public WContext {
 public: // Value
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "VFrame"; }
+	const char *type() const { return "MethodFrame"; }
 	// frame: my or self_transparent
 	Value *get_element(const String& name) { 
 		Value *result=static_cast<Value *>(my.get(name));
@@ -33,7 +34,7 @@ public: // Value
 
 public: // usage
 
-	VFrame(Pool& apool, const Junction& ajunction) : WContext(apool, 0 /* empty */),
+	VMethodFrame(Pool& apool, const Junction& ajunction) : WContext(apool, 0 /* empty */),
 		junction(ajunction),
 		store_param_index(0),
 		my(apool),
@@ -60,7 +61,7 @@ public: // usage
 		
 		my.put(*static_cast<String *>(method->params_names.get(store_param_index++)), value);
 	}
-	void fill_empty_params() {
+	void fill_unspecified_params() {
 		Method *method=junction.method;
 		for(; store_param_index<method->params_names.size(); store_param_index++)
 			my.put(

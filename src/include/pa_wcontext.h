@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.13 2001/02/23 17:12:57 paf Exp $
+  $Id: pa_wcontext.h,v 1.14 2001/02/24 11:20:32 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -17,6 +17,15 @@ public: // Value
 	// WContext: accumulated string
 	String *get_string() { return string; };
 
+public: // WContext
+
+	// appends a string to result
+	virtual void write(String *astring);
+
+	// if value is VString writes string,
+	// else writes Value; raises an error if already
+	virtual void write(Value *avalue);
+
 public: // usage
 
 	WContext(Pool& apool, Value *avalue) : Value(apool), 
@@ -24,34 +33,13 @@ public: // usage
 		string(new(apool) String(apool)) {
 	}
 
-	// appends a string to result
-	void write(String *astring) {
-		if(!astring)
-			return;
-
-		*string+=*astring;
+	// retrives the resulting value
+	Value *value() const {
+		return fvalue;
 	}
-	// if value is VString writes string,
-	// else writes Value; raises an error if already
-	void write(Value *avalue) {
-		if(!avalue)
-			return;
-
-		String *string=avalue->get_string();
-		if(string)
-			write(string);
-		else
-			if(fvalue) // already have value?
-				THROW(0,0,  // don't need to construct twice
-					fvalue->name(),
-					"value already assigned, use constructor to reassign it");
-			else
-				fvalue=avalue;
-	}
-
 	// retrives the resulting value
 	// that can be VString if value==0 or the Value object
-	Value *value() const {
+	Value *value_or_string() const {
 		return fvalue?fvalue:NEW VString(string);
 	}
 

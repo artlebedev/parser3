@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.33 2001/02/24 09:00:11 paf Exp $
+  $Id: execute.C,v 1.34 2001/02/24 11:20:33 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -8,9 +8,8 @@
 #include "pa_vstring.h"
 #include "pa_vhash.h"
 #include "pa_vunknown.h"
-#include "pa_vframe.h"
-#include "pa_wwrapper.h"
-#include "pa_vjunction.h"
+#include "pa_vcframe.h"
+#include "pa_vmframe.h"
 
 #include <stdio.h>
 
@@ -92,8 +91,9 @@ void Request::execute(const Array& ops) {
 				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 				printf(" (%d)", local_ops->size());
 				Junction& j=*NEW Junction(pool(), 
+					*self,
 					0,
-					root,self,rcontext,local_ops);
+					root,rcontext,wcontext,local_ops);
 				
 				Value *value=NEW VJunction(j);
 				PUSH(value);
@@ -162,7 +162,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_REDUCE_EWPOOL:
 			{
-				Value *value=wcontext->value();
+				Value *value=wcontext->value_or_string();
 				wcontext=static_cast<WContext *>(POP());
 				PUSH(value);
 				break;
@@ -198,14 +198,14 @@ void Request::execute(const Array& ops) {
 						"is not a method or a junction (it is '%s'), can not call it",
 						value->type()); 
 				//unless(method) method=operators.get_method[...;code/native_code](name)
-				VFrame *frame=NEW VFrame(pool(), *junction);
+				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);
 				PUSH(frame);
 				break;
 			}
 		case OP_STORE_PARAM:
 			{
 				Value *value=POP();
-				VFrame *frame=static_cast<VFrame *>(stack[0]);
+				VMethodFrame *frame=static_cast<VMethodFrame *>(stack[0]);
 				frame->store_param(value);
 				break;
 			}
@@ -213,13 +213,13 @@ void Request::execute(const Array& ops) {
 		case OP_CALL:
 			{
 				printf("->\n");
-				VFrame *frame=static_cast<VFrame *>(POP());
-				frame->fill_empty_params();
-				PUSH(self);  PUSH(root);  PUSH(rcontext);  PUSH(wcontext);
+				VMethodFrame *frame=static_cast<VMethodFrame *>(POP());
+				frame->fill_unspecified_params();
+				PUSH(self);  PUSH(root);  PUSH(rcontext);  PUSH(wcontext); 
 				//left_class=ncontext.get_class()
 				//right_class=frame.self.get_class()
 				//self=f(left_class[thoughts' food], right_self[junction], right_class[static], wcontext.value()[dynamic], new(right_class)[construct])
-				self=frame->junction.self; // TODO: не всегда frame..self
+				self=&frame->junction.self; // TODO: не всегда frame..self
 				frame->set_self(self);
 				root=rcontext=wcontext=frame;
 				execute(frame->junction.method->code);
@@ -249,16 +249,19 @@ Value *Request::get_element() {
 		if(junction && junction->code) { // is it a code junction?
 			// autocalc it
 			printf("ja->\n");
-			VFrame frame(pool(), *junction);
 			PUSH(self);  PUSH(root);  PUSH(rcontext);  PUSH(wcontext);
-			frame.set_self(self=junction->self);
+			// almost plain wwrapper about junction wcontext, 
+			// BUT intercepts string writes
+			VCodeFrame frame(pool(), *junction->wcontext);  wcontext=&frame;
+			self=&junction->self;
 			root=junction->root;
 			rcontext=junction->rcontext;
-			wcontext=&frame;
 			execute(*junction->code);
-			value=wcontext->value();
-			//value=NEW VString(wcontext->get_string());
+			// CodeFrame soul: string writes intercepted
+			String *code_string_result=frame.get_string();
 			wcontext=static_cast<WContext *>(POP());  rcontext=POP();  root=POP();  self=POP();
+			// writing string result to current context
+			wcontext->write(code_string_result);
 			printf("<-ja returned");
 		}
 	} else {

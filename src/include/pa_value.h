@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.23 2001/02/24 08:28:35 paf Exp $
+  $Id: pa_value.h,v 1.24 2001/02/24 11:20:32 paf Exp $
 */
 
 /*
@@ -53,23 +53,26 @@ class Junction : public Pooled {
 public:
 
 	Junction(Pool& apool,
+		Value& aself,
 		Method *amethod,
-		Value *aself,
 		Value *aroot,
 		Value *arcontext,
+		WContext *awcontext,
 		const Array *acode) : Pooled(apool),
 		
-		method(amethod),
 		self(aself),
+		method(amethod),
 		root(aroot),
 		rcontext(arcontext),
+		wcontext(awcontext),
 		code(acode) {
 	}
 
+	Value& self;
 	Method *method;
-	Value *self;
 	Value *root;
 	Value *rcontext;
+	WContext *wcontext;
 	const Array *code;
 };
 
@@ -97,22 +100,26 @@ public: // Value
 	// operator_class: (field)=value - static values only
 	// wcontext: transparent
 	// frame: my or self_transparent
+	// codeframe: wcontext_transparent
 	virtual Value *get_element(const String& name) { failed("getting element from %s:%s"); return 0; }
 	
 	// hash: (key)=value
 	// object_class, operator_class: (field)=value - static values only
 	// wcontext: transparent
 	// frame: my or self_transparent
+	// codeframe: wcontext_transparent
 	virtual void put_element(const String& name, Value *value) { failed("putting element to %s:%s"); }
 
 	// object_class, object_instance: object_class
 	// frame: transparent
 	// wcontext: transparent
+	// codeframe: wcontext_transparent
 	virtual VClass *get_class() { return 0; }
 
 	// object_class: true when this class is this or derived from 'ancestor'
 	// frame: transparent
 	// wcontext: transparent
+	// codeframe: wcontext_transparent
 	virtual bool is_or_derived_from(VClass& ancestor) { failed("thoghts of ancestors of %s:%s"); return false; }
 
 public: // usage
