@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/08/08 14:35:31 $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/08/19 09:26:53 $";
 
 #include "pa_config_includes.h"
 
@@ -449,7 +449,10 @@ void pa_globals_init(Pool& pool) {
 	xmlLoadExtDtdDefaultValue |= XML_DETECT_IDS;
 	// Bit in the loadsubset context field to tell to do complete the elements attributes lists 
 	// with the ones defaulted from the DTDs 
-    //never added yet xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
+    xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
+
+	// validate each document after load/create (?)
+	//xmlDoValidityCheckingDefaultValue = 1;
 
 //regretfully this not only replaces entities on parse, but also on generate	xmlSubstituteEntitiesDefault(1);
 	// never switched this on xmlIndentTreeOutput=1;

@@ -8,7 +8,7 @@
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-static const char* IDENT_STYLESHEET_CONNECTION_H="$Date: 2002/08/01 11:41:16 $";
+static const char* IDENT_STYLESHEET_CONNECTION_H="$Date: 2002/08/19 09:26:52 $";
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"
@@ -79,8 +79,11 @@ private:
 	void load(time_t new_disk_time) {
 		Pool& pool=*fservices_pool;
 
+		int saved=xmlDoValidityCheckingDefaultValue;//
+		xmlDoValidityCheckingDefaultValue=0;//
 		xsltStylesheet *nstylesheet=
 			xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr(String::UL_FILE_SPEC));
+		xmlDoValidityCheckingDefaultValue = saved;//
 		if(xmlHaveGenericErrors()) {
 			GdomeException exc=0;
 			throw Exception(&ffile_spec, exc);
