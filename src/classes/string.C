@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.76 2001/09/30 09:56:43 parser Exp $
+	$Id: string.C,v 1.77 2001/10/08 16:42:06 parser Exp $
 */
 
 #include "classes.h"
@@ -51,7 +51,7 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 			rethrow_me=e;  
 			converted=0;
 		} else
-			converted=params->as_int(0, r); // (default)
+			converted=params->as_int(0, "default must be int", r); // (default)
 	}
 	PEND_CATCH
 	if(convert_problem)
@@ -76,7 +76,7 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 			rethrow_me=e;  
 			converted=0;
 		} else
-			converted=params->as_double(0, r); // (default)
+			converted=params->as_double(0, "default must be double", r); // (default)
 	}
 	PEND_CATCH
 	if(convert_problem)

@@ -1,6 +1,6 @@
 @main[]
 ^image[]
-#^mail[]
+#^mail2[]
 #^cookie[]
 #^response[]
 #^regexp2[]
@@ -24,10 +24,13 @@ $response:body[^pict.gif[]]
 
 
 
-@mail[]
+@mail2[]
 ^mail:send[
+	$.content-type[$.value[text/plain] $.charset[windows-1251]]
+	$.from[Александр Петросян <paf@design.ru>]
 	$.to[Александр Петросян <paf@design.ru>]
-	..
+	$.subject[проверка]
+	$.body[проверка]
 ]
 
 @cookie[]

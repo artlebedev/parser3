@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.101 2001/10/02 11:07:45 parser Exp $
+	$Id: pa_request.h,v 1.102 2001/10/08 16:42:06 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -281,12 +281,12 @@ public:
 		return get_as(index, false, msg); 
 	}
 	/// handy expression auto-processing to double
-	double as_double(int index, Request& r) { 
-		return get_processed(index, r).as_double(); 
+	double as_double(int index, const char *msg, Request& r) { 
+		return get_processed(index, msg, r).as_double(); 
 	}
 	/// handy expression auto-processing to int
-	int as_int(int index, Request& r) { 
-		return get_processed(index, r).as_int(); 
+	int as_int(int index, const char *msg, Request& r) { 
+		return get_processed(index, msg, r).as_int(); 
 	}
 	/// handy string ensurer
 	const String& as_string(int index, const char *msg) { 
@@ -305,8 +305,8 @@ private:
 		return result;
 	}
 
-	Value& get_processed(int index, Request& r) {
-		return r.process(get(index),
+	Value& get_processed(int index, const char *msg, Request& r) {
+		return r.process(as_junction(index, msg),
 			0/*no name*/,
 			false/*don't intercept string*/);
 	}

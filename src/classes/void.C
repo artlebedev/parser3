@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: void.C,v 1.10 2001/09/26 10:32:25 parser Exp $
+	$Id: void.C,v 1.11 2001/10/08 16:42:06 parser Exp $
 */
 
 #include "classes.h"
@@ -33,14 +33,14 @@ static void _int(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 	VVoid *vvoid=static_cast<VVoid *>(r.self);
 	r.write_no_lang(*new(pool) VInt(pool, 
-		params->size()==0?vvoid->as_int():params->as_int(0, r)/*default*/));
+		params->size()==0?vvoid->as_int():params->as_int(0, "default must be int", r)));
 }
 
 static void _double(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 	VVoid *vvoid=static_cast<VVoid *>(r.self);
 	r.write_no_lang(*new(pool) VDouble(pool, 
-		params->size()==0?vvoid->as_double():params->as_double(0, r)/*default*/));
+		params->size()==0?vvoid->as_double():params->as_double(0, "default must be double", r)));
 }
 
 #ifndef DOXYGEN

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.50 2001/10/08 16:06:49 parser Exp $
+	$Id: image.C,v 1.51 2001/10/08 16:42:06 parser Exp $
 */
 
 /*
@@ -367,11 +367,11 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	int width=params->as_int(0, r);
-	int height=params->as_int(1, r);
+	int width=params->as_int(0, "width must be int", r);
+	int height=params->as_int(1, "height must be int", r);
 	int bgcolor_value=0xffFFff;
 	if(params->size()>2)
-		bgcolor_value=params->as_int(2, r);
+		bgcolor_value=params->as_int(2, "color must be int", r);
 	gdImage& image=*new(pool) gdImage(pool);
 	image.Create(width, height);
 	image.FilledRectangle(0, 0, width-1, height-1, image.Color(bgcolor_value));
@@ -409,11 +409,11 @@ static void _line(Request& r, const String& method_name, MethodParams *params) {
 			"does not contain an image");
 
 	image->Line(
-		params->as_int(0, r), 
-		params->as_int(1, r), 
-		params->as_int(2, r), 
-		params->as_int(3, r), 
-		image->Color(params->as_int(4, r)));
+		params->as_int(0, "x0 must be int", r), 
+		params->as_int(1, "y0 must be int", r), 
+		params->as_int(2, "x1 must be int", r), 
+		params->as_int(3, "y1 must be int", r), 
+		image->Color(params->as_int(4, "color must be int", r)));
 }
 
 static void _fill(Request& r, const String& method_name, MethodParams *params) {
@@ -426,9 +426,9 @@ static void _fill(Request& r, const String& method_name, MethodParams *params) {
 			"does not contain an image");
 
 	image->Fill(
-		params->as_int(0, r), 
-		params->as_int(1, r), 
-		image->Color(params->as_int(2, r)));
+		params->as_int(0, "x must be int", r), 
+		params->as_int(1, "y must be int", r), 
+		image->Color(params->as_int(2, "color must be int", r)));
 }
 
 static void _rectangle(Request& r, const String& method_name, MethodParams *params) {
@@ -441,11 +441,11 @@ static void _rectangle(Request& r, const String& method_name, MethodParams *para
 			"does not contain an image");
 
 	image->Rectangle(
-		params->as_int(0, r), 
-		params->as_int(1, r), 
-		params->as_int(2, r), 
-		params->as_int(3, r), 
-		image->Color(params->as_int(4, r)));
+		params->as_int(0, "x0 must be int", r), 
+		params->as_int(1, "y0 must be int", r), 
+		params->as_int(2, "x1 must be int", r), 
+		params->as_int(3, "y1 must be int", r), 
+		image->Color(params->as_int(4, "color must be int", r)));
 }
 
 static void _bar(Request& r, const String& method_name, MethodParams *params) {
@@ -458,11 +458,11 @@ static void _bar(Request& r, const String& method_name, MethodParams *params) {
 			"does not contain an image");
 
 	image->FilledRectangle(
-		params->as_int(0, r), 
-		params->as_int(1, r), 
-		params->as_int(2, r), 
-		params->as_int(3, r), 
-		image->Color(params->as_int(4, r)));
+		params->as_int(0, "x0 must be int", r), 
+		params->as_int(1, "y0 must be int", r), 
+		params->as_int(2, "x1 must be int", r), 
+		params->as_int(3, "y1 must be int", r), 
+		image->Color(params->as_int(4, "color must be int", r)));
 }
 
 #ifndef DOXYGEN
@@ -494,8 +494,8 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
 	image->FilledPolygonReplaceColor(all_p, table->size(), 
-		image->Color(params->as_int(0, r)), // src color
-		image->Color(params->as_int(1, r)));// dest color
+		image->Color(params->as_int(0, "src color must be int", r)),
+		image->Color(params->as_int(1, "dest color must be int", r)));
 }
 
 static void _polyline(Request& r, const String& method_name, MethodParams *params) {
@@ -517,7 +517,7 @@ static void _polyline(Request& r, const String& method_name, MethodParams *param
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
 	image->Polygon(all_p, table->size(), 
-		image->Color(params->as_int(0, r)),
+		image->Color(params->as_int(0, "color must be int", r)),
 		false/*not closed*/);
 }
 
@@ -540,7 +540,7 @@ static void _polygon(Request& r, const String& method_name, MethodParams *params
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
 	image->Polygon(all_p, table->size(), 
-		image->Color(params->as_int(0, r)));
+		image->Color(params->as_int(0, "color must be int", r)));
 }
 
 static void _polybar(Request& r, const String& method_name, MethodParams *params) {
@@ -562,7 +562,7 @@ static void _polybar(Request& r, const String& method_name, MethodParams *params
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
 	image->FilledPolygon(all_p, table->size(), 
-		image->Color(params->as_int(0, r)));
+		image->Color(params->as_int(0, "color must be int", r)));
 }
 
 // font
@@ -639,10 +639,10 @@ static void _font(Request& r, const String& method_name, MethodParams *params) {
 
 	const String& alphabet=params->as_string(0, "alphabet must not be code");
 	gdImage& image=*load(r, method_name, params->as_string(1, "file_name must not be code"));
-	int spacebar_width=params->as_int(2, r);
+	int spacebar_width=params->as_int(2, "spacebar_width must be int", r);
 	int monospace_width;
 	if(params->size()>3) {
-		monospace_width=params->as_int(3, r);
+		monospace_width=params->as_int(3, "monospace_width must be int", r);
 		if(!monospace_width)
 			monospace_width=image.SX();
 	} else
@@ -662,8 +662,8 @@ static void _font(Request& r, const String& method_name, MethodParams *params) {
 static void _text(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	int x=params->as_int(0, r);
-	int y=params->as_int(1, r);
+	int x=params->as_int(0, "x must be int", r);
+	int y=params->as_int(1, "y must be int", r);
 	const String& s=params->as_string(2, "text must not be code");
 
 	VImage& vimage=*static_cast<VImage *>(r.self);
@@ -711,13 +711,13 @@ static void _arc(Request& r, const String& method_name, MethodParams *params) {
 			"does not contain an image");
 
 	image->Arc(
-		params->as_int(0, r), //cx
-		params->as_int(1, r), //cy
-		params->as_int(2, r), //w
-		params->as_int(3, r), //h
-		params->as_int(4, r), //s
-		params->as_int(5, r), //e
-		image->Color(params->as_int(6, r)));
+		params->as_int(0, "center_x must be int", r), 
+		params->as_int(1, "center_y must be int", r), 
+		params->as_int(2, "width must be int", r), 
+		params->as_int(3, "height must be int", r), 
+		params->as_int(4, "start degrees must be int", r), 
+		params->as_int(5, "end degrees must be int", r), 
+		image->Color(params->as_int(6, "cx must be int", r)));
 }
 
 static void _sector(Request& r, const String& method_name, MethodParams *params) {
@@ -730,13 +730,13 @@ static void _sector(Request& r, const String& method_name, MethodParams *params)
 			"does not contain an image");
 
 	image->Sector(
-		params->as_int(0, r), //cx
-		params->as_int(1, r), //cy
-		params->as_int(2, r), //w
-		params->as_int(3, r), //h
-		params->as_int(4, r), //s
-		params->as_int(5, r), //e
-		image->Color(params->as_int(6, r)));
+		params->as_int(0, "center_x must be int", r), 
+		params->as_int(1, "center_y must be int", r), 
+		params->as_int(2, "width must be int", r), 
+		params->as_int(3, "height must be int", r), 
+		params->as_int(4, "start degrees must be int", r), 
+		params->as_int(5, "end degrees must be int", r), 
+		image->Color(params->as_int(6, "color must be int", r)));
 }
 
 static void _circle(Request& r, const String& method_name, MethodParams *params) {
@@ -748,15 +748,15 @@ static void _circle(Request& r, const String& method_name, MethodParams *params)
 			&method_name, 
 			"does not contain an image");
 
-	int size=params->as_int(2, r)*2;
+	int size=params->as_int(2, "radius must be int", r)*2;
 	image->Arc(
-		params->as_int(0, r), //cx
-		params->as_int(1, r), //cy
+		params->as_int(0, "center_x must be int", r), 
+		params->as_int(1, "center_y must be int", r), 
 		size, //w
 		size, //h
 		0, //s
 		360, //e
-		image->Color(params->as_int(3, r)));
+		image->Color(params->as_int(3, "color must be int", r)));
 }
 
 // constructor

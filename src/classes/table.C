@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.118 2001/10/02 15:40:32 parser Exp $
+	$Id: table.C,v 1.119 2001/10/08 16:42:06 parser Exp $
 */
 
 #include "classes.h"
@@ -134,8 +134,8 @@ static Table *fill_month_days(Request& r,
 	Pool& pool=r.pool();
 	Table *result=new(pool) Table(pool, &method_name, 0/*&columns*/);
 
-    int year=params->as_int(1, r);
-    int month=max(1, min(params->as_int(2, r), 12)) -1;
+    int year=params->as_int(1, "year must be int", r);
+    int month=max(1, min(params->as_int(2, "month must be int", r), 12)) -1;
 
     tm tmIn={0, 0, 0, 1, month, year-1900};
     time_t t=mktime(&tmIn);
@@ -177,9 +177,9 @@ static Table *fill_week_days(Request& r,
 	columns+=new(pool) String(pool, "weekday");
 	Table *result=new(pool) Table(pool, &method_name, &columns);
 
-    int year=params->as_int(1, r);
-    int month=max(1, min(params->as_int(2, r), 12)) -1;
-    int day=params->as_int(3, r);
+    int year=params->as_int(1, "year must be int", r);
+    int month=max(1, min(params->as_int(2, "month must be int", r), 12)) -1;
+    int day=params->as_int(3, "day must be int", r);
     
     tm tmIn={0, 0, 18, day, month, year-1900};
     time_t t=mktime(&tmIn);

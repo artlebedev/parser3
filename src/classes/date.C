@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: date.C,v 1.8 2001/09/26 10:32:25 parser Exp $
+	$Id: date.C,v 1.9 2001/10/08 16:42:06 parser Exp $
 */
 
 #include "classes.h"
@@ -42,21 +42,21 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 
 	time_t time;
 	if(params->size()==1) // ^set(float days)
-		time=(time_t)(params->as_double(0, r)*SECS_PER_DAY);
+		time=(time_t)(params->as_double(0, "float days must be double", r)*SECS_PER_DAY);
 	else if(params->size()>=3) { // ^set(y;m;d[;h[;m[;s]]])
 		tm tmIn={0};
 		tmIn.tm_isdst=-1;
-		int year=params->as_int(0, r);
+		int year=params->as_int(0, "year must be int", r);
 		if(year<70) // 0..69 -> 100..169 [2000..2069]
 			year+=100;
 		if(year>=1900)
 			year-=1900;
 		tmIn.tm_year=year;
-		tmIn.tm_mon=params->as_int(1, r)-1;
-		tmIn.tm_mday=params->as_int(2, r);
-		if(params->size()>3) tmIn.tm_hour=params->as_int(3, r);
-		if(params->size()>4) tmIn.tm_min=params->as_int(4, r);
-		if(params->size()>5) tmIn.tm_sec=params->as_int(5, r);
+		tmIn.tm_mon=params->as_int(1, "month must be int", r)-1;
+		tmIn.tm_mday=params->as_int(2, "mday must be int", r);
+		if(params->size()>3) tmIn.tm_hour=params->as_int(3, "hour must be int", r);
+		if(params->size()>4) tmIn.tm_min=params->as_int(4, "minutes must be int", r);
+		if(params->size()>5) tmIn.tm_sec=params->as_int(5, "seconds must be int", r);
 		time=mktime(&tmIn);
 		if(time<0)
 			PTHROW(0, 0,
@@ -103,7 +103,7 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 			&what,
 			"must be year|month|day");
 	
-	*offset=params->as_int(1, r);
+	*offset=params->as_int(1, "offset must be int", r);
 	if(!(*offset==1 || *offset==-1))
 		PTHROW(0, 0,
 			&method_name,
