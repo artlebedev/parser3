@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2004/05/11 15:03:49 $";
+static const char * const IDENT_VMAIL_C="$Date: 2004/07/21 13:53:20 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -53,6 +53,10 @@ static const char* const part_name_begins[P_TYPES_COUNT]={"text", "html", "file"
 
 static const String format_name(FORMAT_NAME);
 static const String charset_name(CHARSET_NAME);
+
+// consts
+
+const int MAX_CHARS_IN_HEADER_LINE=500;
 
 // VMail
 
@@ -546,8 +550,17 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 		info->charsets.source(), 
 		info->charsets.mail());
 	String& mail_line=*new String;
-	///@todo can convert to append_help_length if transcode would return zero-terminated
-	mail_line.append_know_length(mail.str, mail.length, String::L_MAIL_HEADER);
+	while(mail.length) {
+		bool too_long=mail.length>MAX_CHARS_IN_HEADER_LINE;
+		size_t length=too_long
+			? MAX_CHARS_IN_HEADER_LINE
+			: mail.length;
+		mail_line.append_strdup(mail.str, length, String::L_MAIL_HEADER);
+		mail.length-=length;
+
+		if(too_long)
+			mail_line << "\n "; // break header and continue it on next line
+	}	
 
 	// append header line
 	info->header 
