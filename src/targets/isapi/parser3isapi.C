@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2003/11/20 16:34:28 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2003/11/21 09:38:14 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -81,7 +81,7 @@ void SAPI::log(SAPI_Info& SAPI_info, const char* fmt, ...) {
 }
 
 /// @todo event log
-static void die_or_abort(const char* fmt, va_list args, bool write_core) {
+static void abort(const char* fmt, va_list args) {
 	if(FILE *log=fopen("c:\\parser3die.log", "at")) {
 		vfprintf(log, fmt, args);
 		fclose(log);
@@ -92,14 +92,14 @@ static void die_or_abort(const char* fmt, va_list args, bool write_core) {
 void SAPI::die(const char* fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	die_or_abort(fmt, args, false/*write core?*/);
+	::abort(fmt, args);
 	va_end(args);
 }
 
 void SAPI::abort(const char* fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	die_or_abort(fmt, args, true/*write core?*/);
+	::abort(fmt, args);
 	va_end(args);
 }
 
@@ -265,7 +265,7 @@ static bool parser_init() {
 		// successful finish
 		return true;
 	} catch(const Exception& e) { // global problem 
-		const char* body=e.comment();
+		//const char* body=e.comment();
 		
 		// unsuccessful finish
 		return false;
@@ -473,8 +473,8 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 
 BOOL WINAPI DllMain(
   HINSTANCE hinstDLL,  // handle to the DLL module
-  DWORD fdwReason,     // reason for calling function
-  LPVOID lpvReserved   // reserved
+  DWORD /*fdwReason*/,     // reason for calling function
+  LPVOID /*lpvReserved*/   // reserved
   ) {
 
 	GetModuleFileName(
