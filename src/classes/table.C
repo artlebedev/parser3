@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.96 2001/07/25 11:22:46 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.97 2001/07/28 12:07:26 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -376,10 +376,11 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 	}
 }
 static void _hash(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
 	Table& table=static_cast<VTable *>(r.self)->table();
+	Value& result=*new(pool) VHash(pool);
 	if(const Array *columns=table.columns()) 
 		if(columns->size()>1) {
-			Pool& pool=r.pool();
 
 			const String& key_field_name=params->as_no_junction(0, 
 				"key field name must not be code").as_string();
@@ -402,12 +403,11 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 			}
 
 			// integers: key_field & value_fields
-			Value& result=*new(pool) VHash(pool);
 			Row_info row_info={&table, key_field, &value_fields, result.get_hash()};
 			table.for_each(table_row_to_hash, &row_info);
-			result.set_name(method_name);
-			r.write_no_lang(result);
 		}
+	result.set_name(method_name);
+	r.write_no_lang(result);
 }
 
 /// used by table: _sort / sort_cmp_string|sort_cmp_double
