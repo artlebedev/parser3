@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.71 2002/02/08 08:30:10 paf Exp $
+	$Id: op.C,v 1.72 2002/03/04 10:03:35 paf Exp $
 */
 
 #include "classes.h"
@@ -387,34 +387,26 @@ Value *locked_process_and_cache_put(Request& r,
 }
 String *cache_get(Pool& pool, const String& file_spec) {
 	void* data; size_t data_size;
-	if(!file_read(pool, file_spec, 
+	if(file_read(pool, file_spec, 
 			   data, data_size, 
 			   false/*as_text*/, 
 			   false/*fail_on_read_problem*/)
-	    || !data_size/* ignore reads which are empty due to 
-			non-unary open+lockEX conflict with lockSH */)
-		return 0;
+	    && data_size/* ignore reads which are empty due to 
+			non-unary open+lockEX conflict with lockSH */) {
 	
-	Data_string_serialized_prolog& prolog=
-		*static_cast<Data_string_serialized_prolog *>(data);
+		Data_string_serialized_prolog& prolog=
+			*static_cast<Data_string_serialized_prolog *>(data);
 
-	if(data_size<sizeof(Data_string_serialized_prolog))
-		throw Exception(0, 0,
-			&file_spec,
-			"bad cached file (size=%d), too short (minsize=%d)", 
-			    data_size, sizeof(Data_string_serialized_prolog));
+		String *result=new(pool) String(pool);
+		if(
+			data_size>=sizeof(Data_string_serialized_prolog)
+			&& prolog.version==DATA_STRING_SERIALIZED_VERSION
+			&& result->deserialize(
+				sizeof(Data_string_serialized_prolog),  data, data_size, file_spec.cstr()))
+			return result;
+	}
 
-	if(prolog.version!=DATA_STRING_SERIALIZED_VERSION)
-		throw Exception(0, 0,
-			&file_spec,
-			"data string version 0x%04X not equal to 0x%04X, recreate file",
-				prolog.version, DATA_STRING_SERIALIZED_VERSION);
-
-	String& result=*new(pool) String(pool);
-	result.deserialize(
-		sizeof(Data_string_serialized_prolog), 
-		data, data_size, file_spec.cstr());
-	return &result;
+	return 0;
 }
 static void _cache(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();

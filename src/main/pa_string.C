@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.147 2002/02/28 09:35:41 paf Exp $
+	$Id: pa_string.C,v 1.148 2002/03/04 10:03:35 paf Exp $
 */
 
 #include "pcre.h"
@@ -802,26 +802,32 @@ void String::serialize(size_t prolog_size, void *& buf, size_t& buf_size) const 
 		cur+=row->item.size;
 	);
 }
-void String::deserialize(size_t prolog_size, void *buf, size_t buf_size, const char *file) {
+bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size, const char *file) {
 	if(buf_size<=prolog_size)
-		return;
+		return false;
 
 	char *cur=(char *)buf+prolog_size;
 	buf_size-=prolog_size;
 
 	while(buf_size) {
-		uchar lang=*(uchar *)(cur);
-		
+		if(sizeof(uchar)+sizeof(ushort)>buf_size) // lang+size
+			return false;
+
+		uchar lang=*(uchar *)(cur);		
 		ushort size=uchars2ushort(
 			*(uchar*)(cur+sizeof(uchar)*1),
 			*(uchar*)(cur+sizeof(uchar)*2)
 		);
 
+		size_t piece_size=sizeof(uchar)+sizeof(ushort)+size;
+		if(piece_size>buf_size) // buffer overrun, can be on incomplete cache files
+			return false;
+
 		const char *ptr=(const char*)(cur+sizeof(uchar)*3); 
 		APPEND(ptr, size, lang, file, 0);
 
-		size_t piece_size=sizeof(uchar)+sizeof(ushort)+size;
 		cur+=piece_size;
 		buf_size-=piece_size;
 	}
+	return true;
 }
