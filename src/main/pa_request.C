@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.161 2001/09/30 13:28:15 parser Exp $
+	$Id: pa_request.C,v 1.162 2001/09/30 14:36:26 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -122,6 +122,8 @@ static void ctype_table_row_to_charset_tables(Array::Item *value, void *info) {
 #ifdef XML
 	XMLCh unicode1=row.size()>7?(XMLCh)to_wchar_code(row.get_string(7)):0;
 	XMLCh unicode2=row.size()>8?(XMLCh)to_wchar_code(row.get_string(8)):0;
+	if(!tables.fromTable[c])
+		tables.fromTable[c]=unicode1?unicode1:(XMLCh)c;
 	tables.toTable[tables.toTableSz].intCh=unicode1?unicode1:(XMLCh)c;
 	tables.toTable[tables.toTableSz].extCh=(XMLByte)c;
 	tables.toTableSz++;
