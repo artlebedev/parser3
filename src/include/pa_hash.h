@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.9 2001/01/29 12:13:14 paf Exp $
+  $Id: pa_hash.h,v 1.10 2001/01/29 15:56:03 paf Exp $
 */
 
 /*
@@ -25,6 +25,9 @@ public:
 
 public:
 
+	void *operator new(size_t size, Pool *apool);
+	Hash(Pool *apool, bool athread_safe);
+
 	// useful generic hash function
 	static uint generic_code(uint aresult, char *start, uint size);
 
@@ -34,16 +37,17 @@ public:
 	// get associated [value] by the [key]
 	/*SYNCHRONIZED*/ Value* get(Key& key);
 
+protected:
+
+	// the pool I'm allocated on
+	Pool *pool;
+
 private:
-	friend Pool;
 
 	// expand when these %% of size exausted
 	enum {
 		THRESHOLD_PERCENT=75
 	};
-
-	// the pool I'm allocated on
-	Pool *pool;
 
 	// am I thread-safe?
 	bool thread_safe;
@@ -82,11 +86,6 @@ private:
 			link(alink) {}
 	} **refs;
 
-	// new&constructors made private to enforce factory manufacturing at pool
-	void *operator new(size_t size, Pool *apool);
-
-	Hash(Pool *apool, bool athread_safe);
-
 	// filled to threshold: needs expanding
 	bool full() { return used==threshold; }
 
@@ -95,8 +94,8 @@ private:
 
 private: //disabled
 
-	Hash& operator = (Hash& src) { return *this; }
-	Hash(Hash& src) {}
+	Hash(Hash&) {}
+	Hash& operator = (Hash&) { return *this; }
 };
 
 #endif

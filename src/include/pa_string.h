@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.9 2001/01/29 14:00:39 paf Exp $
+  $Id: pa_string.h,v 1.10 2001/01/29 15:56:03 paf Exp $
 */
 
 /*
@@ -29,11 +29,11 @@
 class Pool;
 
 #ifndef NO_STRING_ORIGIN
-#	define STRING_APPEND_PARAMS char *src, char *origin, uint line
-#	define APPEND(src, origin, line) real_append(src, origin, line)
+#	define STRING_APPEND_PARAMS char *src, char *file, uint line
+#	define APPEND(src, file, line) real_append(src, file, line)
 #else
 #	define STRING_APPEND_PARAMS char *src
-#	define APPEND(src, origin, line) real_append(src)
+#	define APPEND(src, file, line) real_append(src)
 #endif
 
 
@@ -46,6 +46,8 @@ public:
 
 public:
 
+	void *operator new(size_t size, Pool *apool);
+	String(Pool *apool);
 	String(String& src);
 	size_t size() { return fsize; }
 	int used_rows() { return fused_rows; }
@@ -55,11 +57,12 @@ public:
 
 	uint hash_code();
 
-private:
-	friend Pool;
+protected:
 
 	// the pool I'm allocated on
 	Pool *pool;
+
+private:
 
 	struct Chunk {
 		// the number of rows in chunk
@@ -69,10 +72,7 @@ private:
 			struct {
 				char *ptr;  // pointer to the start of string fragment
 				size_t size;  // length of the fragment
-#ifndef NO_STRING_ORIGIN
-				char *origin;  // macros file name | load file name | sql query text
-				uint line; // file line no | record no
-#endif
+				Origin origin;  // origin of this fragment
 			} item;
 			Chunk *link;  // link to the next chunk in chain
 		} rows[CR_PREALLOCATED_COUNT];
@@ -99,10 +99,6 @@ private:
 	int fused_rows;
 
 private:
-	// new&constructors made private to enforce factory manufacturing at pool
-	void *operator new(size_t size, Pool *apool);
-
-	String(Pool *apool);
 
 	bool chunk_is_full() {
 		return append_here == link_row;
@@ -111,7 +107,7 @@ private:
 
 private: //disabled
 
-	String& operator = (String& src) { return *this; }
+	String& operator = (String&) { return *this; }
 
 };
 

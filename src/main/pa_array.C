@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.6 2001/01/29 10:15:04 paf Exp $
+  $Id: pa_array.C,v 1.7 2001/01/29 15:56:04 paf Exp $
 */
 
 #include <string.h>
@@ -10,8 +10,8 @@ void *Array::operator new(size_t size, Pool *apool) {
 	return apool->malloc(size);
 }
 
-void Array::construct(Pool *apool, int initial_rows) {
-	pool=apool;
+Array::Array(Pool *apool, int initial_rows) :
+	pool(apool) {
 	head=tail=static_cast<Chunk *>(
 		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
 	head->count=initial_rows;

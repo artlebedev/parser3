@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.6 2001/01/29 12:00:45 paf Exp $
+  $Id: pa_array.h,v 1.7 2001/01/29 15:56:03 paf Exp $
 */
 
 /*
@@ -26,25 +26,30 @@ class Pool;
 
 class Array {
 public:
+
 	typedef void *Item;
 
 	enum {
-		CR_PREALLOCATED_COUNT=10,
+		CR_INITIAL_ROWS_DEFAULT=10,
 		CR_GROW_PERCENT=60
 	};
 
 public:
 
+	void *operator new(size_t size, Pool *apool);
+	Array(Pool *apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
+
 	int size() { return fused_rows; }
 	Array& operator += (Item src);
-	Item& operator [] (int index);
 	Array& operator += (Array& src);
+	Item& operator [] (int index);
 
-private:
-	friend Pool;
+protected:
 
 	// the pool I'm allocated on
 	Pool *pool;
+
+private:
 
 	struct Chunk {
 		// the number of rows in chunk
@@ -69,6 +74,7 @@ private:
 	Chunk::Row *link_row;
 
 private:
+
 	// array size
 	int fused_rows;
 
@@ -76,17 +82,6 @@ private:
 	Chunk *cache_chunk;
 	
 private:
-	// new&constructors made private to enforce factory manufacturing at pool
-	void *operator new(size_t size, Pool *apool);
-
-	void construct(Pool *apool, int initial_rows);
-	Array(Pool *apool) {
-		construct(apool, CR_PREALLOCATED_COUNT); 
-	}
-	Array(Pool *apool, int initial_rows) {
-		construct(apool, initial_rows); 
-	}
-
 
 	bool chunk_is_full() {
 		return append_here == link_row;
@@ -95,8 +90,8 @@ private:
 
 private: //disabled
 
-	Array& operator = (Array& src) { return *this; }
-	Array(Array& src) {}
+	Array(Array&) {}
+	Array& operator = (Array&) { return *this; }
 };
 
 #endif

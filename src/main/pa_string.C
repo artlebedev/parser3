@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.13 2001/01/29 14:00:39 paf Exp $
+  $Id: pa_string.C,v 1.14 2001/01/29 15:56:04 paf Exp $
 */
 
 #include <string.h>
@@ -32,8 +32,8 @@ void String::expand() {
 	link_row->link=0;
 }
 
-String::String(String& src) {
-	pool=src.pool;
+String::String(String& src) :
+	pool(src.pool) {
 	head.count=CR_PREALLOCATED_COUNT;
 	
 	int src_used_rows=src.used_rows();
@@ -103,8 +103,8 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 	append_here->item.ptr=src;
 	fsize+=append_here->item.size=len;
 #ifndef NO_STRING_ORIGIN
-	append_here->item.origin=origin;
-	append_here->item.line=line;
+	append_here->item.origin.file=file;
+	append_here->item.origin.line=line;
 #endif
 	append_here++; fused_rows++;
 
