@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/16 08:22:13 $";
+static const char* IDENT_OP_C="$Date: 2002/10/17 09:04:53 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -586,11 +586,14 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 	Value& catch_code=params->as_junction(1, "catch_code must be code");
 
 	StringOrValue result;
+	// taking snapshot of try-context
+	Request_context_saver try_context(r);
 	try {
-		Request_context_saver context_saved(r); // taking snapshot of request processing status, restoring it at }
 		result=r.process(body_code);
-		context_saved.restore(); // manually restoring context
 	} catch(const Exception& e) {
+		Request_context_saver throw_context(r); // taking snapshot of throw-context [stack trace contains error]
+		try_context.restore(); // restoring try-context to perform catch-code
+
 		VHash& vhash=exception2vhash(pool, e);
 
 		Junction *junction=catch_code.get_junction();
@@ -603,10 +606,12 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 			handled=value->as_bool();		
 		junction->method_frame->put_element(*exception_var_name, saved_exception_var_value, false);
 
-		if(!handled)
+		if(!handled) {
+			throw_context.restore(); // restoring throw-context [exception were not handled]
 			throw(e); // rethrow
+		}
 	}
-	// write it out 
+	// write out result
 	r.write_pass_lang(result);
 }
 
