@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.6 2001/01/26 18:55:55 paf Exp $
+  $Id: pa_string.C,v 1.7 2001/01/27 10:02:59 paf Exp $
 */
 
 #include <string.h>
@@ -122,8 +122,8 @@ int String::used_rows() {
 	return result;
 }
 
-unsigned int String::hash_code() {
-	unsigned int result=0;
+uint String::hash_code() {
+	uint result=0;
 
 	Chunk *chunk=&head; 
 	do {

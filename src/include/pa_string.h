@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.3 2001/01/26 18:55:55 paf Exp $
+  $Id: pa_string.h,v 1.4 2001/01/27 10:02:59 paf Exp $
 */
 
 /*
@@ -19,6 +19,8 @@
 #define PA_STRING_H
 
 #include <stddef.h>
+
+#include "pa_types.h"
 
 class Pool;
 
@@ -88,7 +90,7 @@ public:
 	bool operator == (String& src);
 	String& operator = (String& src);
 
-	unsigned int hash_code();
+	uint hash_code();
 };
 
 #endif
