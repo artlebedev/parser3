@@ -1,0 +1,10 @@
+--- libgdome/gdomecore/gdome-xml-document.h.0   Wed Jan 30 14:03:47 2002
++++ libgdome/gdomecore/gdome-xml-document.h     Wed Jan 30 14:04:38 2002
+@@ -119,7 +119,7 @@
+                                                                 GdomeException *exc);
+
+
+-const GdomeDocumentVtab gdome_xml_doc_vtab;
++extern const GdomeDocumentVtab gdome_xml_doc_vtab;
+
+ #endif /* GDOME_DOC_FILE */
