@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/09/20 13:42:48 $";
+static const char* IDENT_COMMON_C="$Date: 2002/11/20 09:44:43 $";
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -185,7 +185,7 @@ bool file_read(Pool& pool, const String& file_spec,
 		if(!max_size) // eof
 			return true;
 
-		if(int(data_size)<0 || data_size>max_size)
+		if(ssize_t(data_size)<0 || data_size>max_size)
 			throw Exception(0,
 				&file_spec, 
 				"read failed: actually read %d bytes count not in [0..%lu] valid range", 

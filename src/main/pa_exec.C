@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Date: 2002/08/01 11:41:18 $";
+static const char* IDENT_EXEC_C="$Date: 2002/11/20 09:44:43 $";
 
 #include "pa_config_includes.h"
 
@@ -280,8 +280,8 @@ static int get_exit_status(int pid) {
 static void read_pipe(String& result, int file, const char *file_spec, String::Untaint_lang lang){
 	while(true) {
 		char *buf=(char *)result.pool().malloc(MAX_STRING);
-		size_t size=read(file, buf, MAX_STRING);
-		if(!size)
+		ssize_t size=read(file, buf, MAX_STRING);
+		if(size<=0)
 			break;
 		result.APPEND(buf, size, lang, file_spec, 0);
     }
@@ -301,7 +301,7 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 	string << key << "=" << *static_cast<String *>(value);
 
 	char ***env_ref=static_cast<char ***>(info);
-	**env_ref=string.cstr();  (*env_ref)++;
+	**env_ref=string.cstr(String::UL_PASSAPPENED);  (*env_ref)++;
 #endif
 }
 

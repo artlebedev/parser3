@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/11/19 14:39:56 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/11/20 09:44:44 $";
 
 #include "pa_config_includes.h"
 
@@ -170,7 +170,7 @@ const char *const *SAPI::environment(Pool&) {
 size_t SAPI::read_post(Pool& , char *buf, size_t max_bytes) {
 	size_t read_size=0;
 	do {
-		int chunk_size=read(fileno(stdin), 
+		ssize_t chunk_size=read(fileno(stdin), 
 			buf+read_size, min(READ_POST_CHUNK_SIZE, max_bytes-read_size));
 		if(chunk_size<=0)
 			break;

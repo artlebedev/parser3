@@ -10,7 +10,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-static const char* IDENT_CONFIG_FIXED_H="$Date: 2002/09/24 11:41:04 $";
+static const char* IDENT_CONFIG_FIXED_H="$Date: 2002/11/20 09:44:43 $";
 
 #define inline  __inline
 #define HAVE_STDARG_H
@@ -50,7 +50,7 @@ static const char* IDENT_CONFIG_FIXED_H="$Date: 2002/09/24 11:41:04 $";
 //#define NO_PA_EXECS
 
 // has $mail:received
-#define WITH_MAILRECEIVE
+//#define WITH_MAILRECEIVE
 
 // xml-abled parser
 #define XML
