@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/02/17 14:22:53 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/02/17 15:01:01 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -596,30 +596,33 @@ static void prepare_output_options(Request& r,
 }
 
 /// patching piece from libxslt not to set meta encoding
-static int
-pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
-	       xsltStylesheetPtr style) {
+static void
+pa_xsltSaveResultToMem(	
+					   xmlChar*& doc_txt_ptr, 	int& doc_txt_len,
+					   xmlDocPtr result,
+					   xsltStylesheetPtr style,
+					   xmlCharEncodingHandler* encoder) 
+{
     const xmlChar *encoding;
     int base;
     const xmlChar *method;
     int indent;
+	xmlOutputBufferPtr buf = 0;
 
-    if ((buf == NULL) || (result == NULL) || (style == NULL))
-	return(-1);
+    if ((result == NULL) || (style == NULL))
+	return;
     if ((result->children == NULL) ||
 	((result->children->type == XML_DTD_NODE) &&
 	 (result->children->next == NULL)))
-	return(0);
+	return;
 
     if ((style->methodURI != NULL) &&
 	((style->method == NULL) ||
 	 (!xmlStrEqual(style->method, (const xmlChar *) "xhtml")))) {
         xsltGenericError(xsltGenericErrorContext,
 		"xsltSaveResultTo : unknown ouput method\n");
-        return(-1);
+        return;
     }
-
-    base = buf->written;
 
     XSLT_GET_IMPORT_PTR(method, style, method)
     XSLT_GET_IMPORT_PTR(encoding, style, encoding)
@@ -629,19 +632,16 @@ pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 	method = (const xmlChar *) "html";
 
     if ((method != NULL) &&
-	(xmlStrEqual(method, (const xmlChar *) "html"))) {
+	(xmlStrEqual(method, (const xmlChar *) "html")
+	||xmlStrEqual(method, (const xmlChar *) "xhtml"))) {
 	if (indent == -1)
 	    indent = 1;
-	htmlDocContentDumpFormatOutput(buf, result, (const char *) encoding,
+	xmlDocDumpFormatMemoryEnc(result, &doc_txt_ptr, &doc_txt_len, (const char *) encoding,
 		                       indent);
-	xmlOutputBufferFlush(buf);
-    } else if ((method != NULL) &&
-	(xmlStrEqual(method, (const xmlChar *) "xhtml"))) {
-	htmlDocContentDumpOutput(buf, result, (const char *) encoding);
-	xmlOutputBufferFlush(buf);
     } else if ((method != NULL) &&
 	       (xmlStrEqual(method, (const xmlChar *) "text"))) {
 	xmlNodePtr cur;
+	buf = xmlAllocOutputBuffer(encoder);
 
 	cur = result->children;
 	while (cur != NULL) {
@@ -678,10 +678,10 @@ pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 		}
 	    } while (cur != NULL);
 	}
-	xmlOutputBufferFlush(buf);
     } else {
 	int omitXmlDecl;
 	int standalone;
+	buf = xmlAllocOutputBuffer(encoder);
 
 	XSLT_GET_IMPORT_INT(omitXmlDecl, style, omitXmlDeclaration);
 	XSLT_GET_IMPORT_INT(standalone, style, standalone);
@@ -728,11 +728,25 @@ pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 	    }
 	    xmlOutputBufferWriteString(buf, "\n");
 	}
-	xmlOutputBufferFlush(buf);
     }
-    return(buf->written - base);
-}
 
+	if(buf) {
+		xmlOutputBufferFlush(buf);
+		if(buf->conv) {
+			doc_txt_len=buf->conv->use;
+			doc_txt_ptr=buf->conv->content;
+		} else {
+			doc_txt_len=buf->buffer->use;
+			doc_txt_ptr=buf->buffer->content;
+		}
+	}
+
+	if(doc_txt_ptr && doc_txt_len)
+		doc_txt_ptr=BAD_CAST pa_strdup((const char*)doc_txt_ptr, doc_txt_len);
+
+	if(buf)
+		xmlOutputBufferClose(buf);
+}
 
 struct Xdoc2buf_result {
 	char* str;
@@ -759,8 +773,6 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 	if(strcmp(encoder_name, "UTF-8")==0)
 		encoder=0;
 
-	xmlOutputBuffer_auto_ptr outputBuffer(xmlAllocOutputBuffer(encoder));
-
 	xsltStylesheet_auto_ptr stylesheet(xsltNewStylesheet());
 	if(!stylesheet.get())
 		throw Exception(0,
@@ -784,29 +796,21 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
 	document->encoding=BAD_CAST xmlMemStrdup(encoder_name);
-	if(pa_xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0) {
+
+	xmlChar* doc_txt_ptr;
+	int doc_txt_len;
+	pa_xsltSaveResultToMem(doc_txt_ptr, doc_txt_len, document, stylesheet.get(), encoder);
+	if(xmlHaveGenericErrors()) {
 		GdomeException exc=0;
 		throw XmlException(0, exc);
 	}
 
-	// write out result
-	char *gnome_str;  size_t gnome_length;
-	if(outputBuffer->conv) {
-		gnome_length=outputBuffer->conv->use;
-		gnome_str=(char *)outputBuffer->conv->content;
-	} else {
-		gnome_length=outputBuffer->buffer->use;
-		gnome_str=(char *)outputBuffer->buffer->content;
-	}
-
-	if((result.length=gnome_length)) {
-		result.str=pa_strdup(gnome_str, gnome_length);
-	} else
-		result.str=0;
+	result.length=doc_txt_len;
+	result.str=(char*)doc_txt_ptr;
 
 	if(file_spec)
 		file_write(*file_spec,
-			gnome_str, gnome_length, 
+		result.str, result.length, 
 			true/*as_text*/);
 
 	return result;
