@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char* IDENT_VFORM_C="$Date: 2002/10/21 09:06:53 $";
+static const char* IDENT_VFORM_C="$Date: 2002/10/21 09:55:56 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -103,7 +103,8 @@ void VForm::ParseGetFormInput(const char *query_string, size_t length) {
 }
 
 void VForm::ParseFormInput(const char *data, size_t length) {
-	{ // cut out ?image_map_tail
+	// cut out ?image_map_tail
+	{
 		for(size_t pos=0; pos<length; pos++) {
 			if(data[pos]=='?') {
 				// fake form field
@@ -114,45 +115,29 @@ void VForm::ParseFormInput(const char *data, size_t length) {
 			}
 		}
 	}
-	/* Scan for pairs, unescaping and storing them as they are found. */
-	size_t pos=0;
-	while(pos !=length) {
-		size_t foundEq=0;
-		size_t foundAmp=0;
+	// Scan for pairs, unescaping and storing them as they are found
+	for(size_t pos=0; pos<length; ) {
 		size_t start=pos;
-		size_t len=0;
-		while(pos !=length) {
-			if(data[pos]=='=') {
-				foundEq=1;
-				pos++;
-				break;
-			}
-			pos++;
-			len++;
-		}
-		if(!foundEq)
-			break;
-		char *attr=unescape_chars(pool(), data+start, len);
-		start=pos;
-		len=0;
-		while(pos !=length) {
+		size_t finish=length;
+		for(; pos<length; pos++) {
 			if(data[pos]=='&') {
-				foundAmp=1;
-				pos++;
+				finish=pos++;
 				break;
 			}
-			pos++;
-			len++;
 		}
-		/* The last pair probably won't be followed by a &, but
-			that's fine, so check for that after accepting it */
-		char *value=unescape_chars(pool(), data+start, len);
-		/* OK, we have a new pair, add it to the list. */
-		size_t value_size=strlen(value);
-		AppendFormEntry(attr, value, value_size);
 
-		if(!foundAmp)
-			break;
+		size_t aftereq=start;
+		size_t lookingeq=start;
+		for(; lookingeq<finish; lookingeq++) {
+			if(data[lookingeq]=='=') {
+				aftereq=++lookingeq;
+				break;
+			}
+		}
+
+		const char *attr=aftereq>start?unescape_chars(pool(), data+start, aftereq-1-start):"nameless";
+		char *value=unescape_chars(pool(), data+aftereq, finish-aftereq);
+		AppendFormEntry(attr, value, strlen(value));
 	}
 }
 
