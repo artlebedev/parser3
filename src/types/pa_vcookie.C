@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2003/11/20 16:34:28 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2003/11/20 17:15:12 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -164,7 +164,7 @@ static void output_set_cookie(
 		// Set-Cookie: (attribute)=(value); path=/
 		lmeaning=ameaning;
 		HashStringValue *hash;
-		if(hash=lmeaning->get_hash()) { // ...[hash value]
+		if((hash=lmeaning->get_hash())) { // ...[hash value]
 			// $expires
 			if(Value* expires=hash->get(expires_name)) {
 				const String* string;

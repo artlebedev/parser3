@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2003/11/20 16:34:23 $";
+static const char * const IDENT_XDOC_C="$Date: 2003/11/20 17:22:48 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -429,20 +429,20 @@ static void _create(Request& r, MethodParams& params) {
 		const String& qualifiedName=param.as_string();
 
 		GdomeException exc;
-		/*
+#if 0
 		GdomeDocumentType *documentType=gdome_di_createDocumentType (
 			docimpl, 
 			r.transcode(qualifiedName), 
-			0/*publicId* /, 
-			0/*systemId* /, 
+			0/*publicId*/, 
+			0/*systemId*/, 
 			&exc);
 		if(!documentType || exc || xmlHaveGenericErrors())
 			throw Exception(
 				method_name, 
 				exc);
 		/// +xalan createXMLDecl ?
-		*/
-		document=gdome_di_createDocument (domimpl, 
+#endif
+		document=gdome_di_createDocument(domimpl, 
 			0/*namespaceURI*/, 
 			r.transcode(qualifiedName).use(), 
 			0/*doctype*/, 
@@ -661,7 +661,7 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 		gnome_str=(char *)outputBuffer->buffer->content;
 	}
 
-	if(result.length=gnome_length) {
+	if((result.length=gnome_length)) {
 		result.str=pa_strdup(gnome_str, gnome_length);
 	} else
 		result.str=0;

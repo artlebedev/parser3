@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2003/11/20 16:34:27 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2003/11/20 17:15:12 $";
 
 
 #include "pa_string.h"
@@ -98,35 +98,9 @@ inline bool need_http_header_encode(unsigned char c){
 	return need_uri_encode(c);
 }
 
-//
-
-static const char*  String_Untaint_lang_name[]={
-	"U", ///< zero value handy for hash lookup @see untaint_lang_name2enum
-	"C", ///< clean
-	"T",  ///< tainted, untaint language as assigned later 
-	// untaint languages. assigned by ^untaint[lang]{...}
-	"P",
-		/**<
-			leave language built into string being appended.
-			just a flag, that value not stored
-		*/
-	"A",     ///< leave all characters intact
-	"F", ///< file specification
-	"H",    ///< ext in HTTP response header
-	"M",    ///< text in mail header
-	"URI",       ///< text in uri
-	"T",     ///< ^table:set body
-	"SQL",       ///< ^table:sql body
-	"JS",        ///< JavaScript code
-	"XML",		///< ^dom:set xml
-	"HTML"      ///< HTML code (for editing)
-};
-
-
 // String
 
 /*
-
 HTTP-header    = field-name ":" [ field-value ] CRLF
 
        field-name     = token
@@ -268,7 +242,7 @@ inline bool mail_header_char_valid_within_Qencoded(char c) {
 		|| strchr("!*+-/", c);
 }
 inline bool addr_spec_soon(const char *src) {
-	for(char c; c=*src; src++)
+	for(char c; (c=*src); src++)
 		if(c=='<')
 			return true;
 		else if(!(c==' ' || c=='\t'))
@@ -373,7 +347,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 					info->charsets->client());
 
 			char c;
-			for(const char* src=output.str; c=*src++; ) 
+			for(const char* src=output.str; (c=*src++); ) 
 				encode(need_uri_encode, '%', c);
 		}
 		break;
@@ -400,7 +374,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 
 			bool email=false;
 			uchar c;
-			for(const char* src=mail_ptr; c=(uchar)*src++; ) {
+			for(const char* src=mail_ptr; (c=(uchar)*src++); ) {
 				//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
 				if(to_quoted_printable && (c==',' || addr_spec_soon(src) || c == '"')) {
 					email=c=='<';

@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2003/11/20 16:34:30 $";
+static const char * const IDENT_VMAIL_C="$Date: 2003/11/20 17:15:12 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -300,8 +300,7 @@ static void parse(Request& r, GMimeStream *stream, HashStringValue& received) {
 
 		// .body[part/parts
 		GMimePart *part=message->mime_part;
-		const GMimeContentType *type=g_mime_part_get_content_type(part);
-		MimePart2body_info info={&r, &received};
+		MimePart2body_info info={&r, &received, {0}};
 		g_mime_part_foreach(part, MimePart2body, &info);
 
 		// normal unref
@@ -645,7 +644,7 @@ static const String& text_value_to_string(Request& r,
 	case P_HTML: 
 		{
 			Temp_lang temp_lang(r, String::Language(String::L_HTML | String::L_OPTIMIZE_BIT));
-			if(Junction* junction=text_value->get_junction())
+			if(text_value->get_junction())
 				body=&r.process_to_string(*text_value);
 			else {
 				throw Exception("parser.runtime",
