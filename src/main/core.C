@@ -254,14 +254,17 @@ CHAR_TYPE get_names(
 	// $name.subname) $name.subname]
 	// $:name... $self...
 
+	if(iter.eof())
+		return -1;
+
 	if(iter()==':') {
 		prefix=ROOT_PREFIX;
 		iter++; // skip ':'
 	} else
 		prefix=NO_PREFIX;
 
-	CHAR_TYPE result=-1;
-	while(!iter.eof()) {
+	CHAR_TYPE result;
+	while(true) {
 		// preparing context
 		WContext local_wcontext(pool /* empty */);
 		// executing code until separator, writing to that context
