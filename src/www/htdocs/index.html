@@ -15,12 +15,16 @@ $dom[^dom::set{<?xml version="1.0" encoding="windows-1251"?>
 </people>
 }]
 
-^show-dnode[$dom]<hr>
-$people[^dom.xpath[*/man[@id=1]]]
-#^show1[]
-#^show-dnodes[$people]<hr>
-^show-dnodes2[$people]<hr>
+#^show-dnode1[$dom]<hr>
+#^show-dnode2[$dom]<hr>
+$people[^dom.select[*/man/name]]
+^show1[]
+#^show-dnodes2[$people]<hr>
 #^people.0.owner.hren[]
+
+$man[^dom.select-single[*/man]]
+	^show-dnode1[$man;0;1]
+<hr>
 
 @show1[]
 ^for[i](0;^people._count[]-1){
@@ -32,31 +36,52 @@ $people[^dom.xpath[*/man[@id=1]]]
 		}
 	<br>
 }
-
-@show-dnodes[array][i]
+<hr>
+	
+@show-dnodes1[array][i]
 ^for[i](0;^array._count[]-1){
-	^show-dnode[$array.$i]
+	^show-dnode1[$array.$i]
 }
 
-@show-dnode[dnode;level][l]
-^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
-^if($dnode.type eq element){
-	&lt^;$dnode.name
-$pairs[$dnode.attributes]
-^if(def $pairs){
-	$names[^pairs._keys[]]
-	^names.menu{$names.key=$pairs.[$names.key].value }
-}
-&gt^;
-}{[$dnode.type]}
- 
-^if(def $dnode.value){'$dnode.value'}<br>
-^if(def ${dnode.first-child}){^show-dnode[$dnode.first-child]($level+1)}
-^if(def ${dnode.next-sibling}){^show-dnode[$dnode.next-sibling]($level)}
+@show-dnode1[dnode;level;single][l]
+^if(def $dnode){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
+    ^if($dnode.type eq element){
+    	&lt^;$dnode.name
+	    $pairs[$dnode.attributes]
+	    ^if(def $pairs){
+	    	$names[^pairs._keys[]]
+	    	^names.menu{$names.key=$pairs.[$names.key].value }
+	    }
+	    &gt^;
+    }{
+    	[$dnode.type]
+    }
+    
+    ^if(def $dnode.value){$dnode.value}<br>
+    ^if(!$single){
+	    ^show-dnode1[$dnode.first-child]($level+1)
+	    ^show-dnode1[$dnode.next-sibling]($level)
+    }
 
-^if($dnode.type eq element){
-^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$dnode.name&gt^;<br>
+    ^if($dnode.type eq element){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$dnode.name&gt^;<br>
+    }
 }
 
-@show-dnodes2[people]
-^people.string[]
+@show-dnodes2[array][i]
+^for[i](0;^array._count[]-1){
+	^show-dnode2[$array.$i]
+}
+<hr>
+
+@show-dnode2[dnode]
+^if(def $dnode){
+^taint[^dnode.string[
+	$.method[html]
+	$.encoding[windows-1251]
+]]
+;
+	no dnode here
+}
+<hr>
