@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.30 2001/02/25 09:42:03 paf Exp $
+  $Id: pa_value.h,v 1.31 2001/02/25 13:23:01 paf Exp $
 */
 
 /*
@@ -15,9 +15,6 @@
 //#include "pa_voperator.h"
 
 #define NAME_NAME "NAME"
-#define PARENTS_NAME "PARENTS"
-#define STATIC_NAME "STATIC"
-#define STATICS_NAME "STATICS"
 
 class Value;
 class VClass;
@@ -86,7 +83,7 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	virtual const char *type() const =0;
-	/*const*/ String *name() const { return fname; }
+	/*const*/ String& name() const { return *fname; }
 
 	// string: value
 	// unknown: ""

@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.38 2001/02/25 09:14:02 paf Exp $
+$Id: core.C,v 1.39 2001/02/25 13:23:02 paf Exp $
 */
 
 #include "pa_request.h"
@@ -56,11 +56,11 @@ void Request::use(char *file, String *alias) {
 			"use: can not read '%s' file", file);
 
 	VClass& vclass=COMPILE(source, alias, file);
-	String *vclass_name=vclass.name();
-	if(!vclass_name)
-		return; //TODO: add operators 
+	String& vclass_name=vclass.name();
+	//TODO: обнаружить, что грузят не объект, а операторы.
+	// загрузить операторы
 	classes_array()+=&vclass;
-	classes().put(*vclass_name, &vclass);
+	classes().put(vclass_name, &vclass);
 	if(alias)
 		classes().put(*alias, &vclass);
 }

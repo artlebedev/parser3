@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.17 2001/02/23 14:18:26 paf Exp $
+  $Id: pa_hash.h,v 1.18 2001/02/25 13:23:00 paf Exp $
 */
 
 /*
@@ -30,14 +30,20 @@ public:
 	// useful generic hash function
 	static uint generic_code(uint aresult, const char *start, uint size);
 
-	// put a [value] under the [key]
-	/*SYNCHRONIZED*/ void put(const Key& key, Value *value);
+	// put a [value] under the [key], return existed or not
+	/*SYNCHRONIZED*/ bool put(const Key& key, Value *value);
 
 	// get associated [value] by the [key]
 	/*SYNCHRONIZED*/ Value *get(const Key& key) const;
 
 	// put a [value] under the [key] if that [key] existed, return existed or not
-	/*SYNCHRONIZED*/ bool replace(const Key& key, Value *value);
+	/*SYNCHRONIZED*/ bool put_replace(const Key& key, Value *value);
+
+	// put a [value] under the [key] if that [key] NOT existed, return existed or not
+	/*SYNCHRONIZED*/ bool put_dont_replace(const Key& key, Value *value);
+
+	// put all 'src' values if NO with same key existed
+	/*SYNCHRONIZED*/ void merge_dont_replace(const Hash& src);
 
 	void put(const Key& key, int     value) { put(key, reinterpret_cast<Value *>(value)); }
 	void put(const Key& key, String *value) { put(key, static_cast<Value *>(value)); }

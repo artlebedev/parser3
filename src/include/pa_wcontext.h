@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.15 2001/02/24 11:46:03 paf Exp $
+  $Id: pa_wcontext.h,v 1.16 2001/02/25 13:23:01 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -15,7 +15,7 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "WContext"; }
 	// WContext: accumulated string
-	String *get_string() { return string; };
+	String *get_string() { return &string; };
 
 public: // WContext
 
@@ -30,7 +30,7 @@ public: // usage
 
 	WContext(Pool& apool, Value *avalue) : Value(apool), 
 		fvalue(avalue),
-		string(new(apool) String(apool)) {
+		string(*new(apool) String(apool)) {
 	}
 
 	// retrives the resulting value
@@ -46,7 +46,7 @@ public: // usage
 protected:
 	Value *fvalue;
 private:
-	String *string;
+	String& string;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.41 2001/02/25 10:11:50 paf Exp $
+  $Id: execute.C,v 1.42 2001/02/25 13:23:02 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -57,7 +57,7 @@ void dump(int level, const Array& ops) {
 		}
 		if(op.code==OP_CLASS) {
 			VClass *vclass=static_cast<VClass *>(ops.quick_get(++i));
-			printf(" \"%s\"", vclass->name()->cstr());
+			printf(" \"%s\"", vclass->name().cstr());
 		}
 		printf("\n");
 
@@ -108,7 +108,7 @@ void Request::execute(const Array& ops) {
 		case OP_CLASS:
 			{
 				VClass *vclass=static_cast<VClass *>(ops.quick_get(++i));
-				printf(" \"%s\"", vclass->name()->cstr());
+				printf(" \"%s\"", vclass->name().cstr());
 		        PUSH(vclass);
 				break;
 			}
@@ -194,7 +194,7 @@ void Request::execute(const Array& ops) {
 		case OP_REDUCE_RWPOOL:
 			{
 				String *string=wcontext->get_string();
-				Value *value=NEW VString(string);
+				Value *value=NEW VString(*string);
 				wcontext=static_cast<WContext *>(POP());
 				rcontext=POP();
 				PUSH(value);
@@ -209,7 +209,7 @@ void Request::execute(const Array& ops) {
 				Junction *junction=value->get_junction();
 				if(!junction)
 					THROW(0,0,
-						value->name(),
+						&value->name(),
 						"type is '%s', can not call it (must be method or junction)",
 							value->type()); 
 				//unless(method) method=operators.get_method[...;code/native_code](name)
@@ -234,13 +234,13 @@ void Request::execute(const Array& ops) {
 
 				VClass *called_class=frame->junction.self.get_class();
 				// variable already constructed?
-				if(wcontext->get_class()) { // yes
+				if(wcontext->get_class()) {  // yes
 					// static or dynamic call
 					self=&frame->junction.self;
-				} else { // no
+				} else {  // no
 					// constructor call: $some(^class:method(..))
 					self=NEW VObject(pool(), *called_class);
-					frame->write(self); 
+					frame->write(self);
 				}
 				frame->set_self(self);
 
@@ -282,7 +282,7 @@ Value *Request::get_element() {
 			// CodeFrame soul:
 			//   string writes were intercepted
 			//   returning them as the result of getting code-junction
-			value=NEW VString(frame.get_string());
+			value=NEW VString(*frame.get_string());
 			wcontext=static_cast<WContext *>(POP());  rcontext=POP();  root=POP();  self=POP();
 			printf("<-ja returned");
 		}

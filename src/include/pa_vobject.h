@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vobject.h,v 1.4 2001/02/25 08:50:12 paf Exp $
+  $Id: pa_vobject.h,v 1.5 2001/02/25 13:23:01 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -7,8 +7,6 @@
 
 #include "pa_value.h"
 #include "pa_vjunction.h"
-
-#define CLASS_NAME "CLASS"
 
 class VObject : public Value {
 public: // Value

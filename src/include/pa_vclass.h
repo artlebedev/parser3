@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.16 2001/02/25 10:11:49 paf Exp $
+  $Id: pa_vclass.h,v 1.17 2001/02/25 13:23:01 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -10,6 +10,9 @@
 #include "pa_vstring.h"
 #include "pa_vjunction.h"
 
+#define CLASS_NAME "CLASS"
+#define BASE_NAME "BASE"
+
 class VClass : public Value {
 public: // Value
 	
@@ -18,16 +21,15 @@ public: // Value
 
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	Value *get_element(const String& aname) {
-		// $NAME=name()
+		// $NAME=my name
 		if(aname==NAME_NAME)
 			return NEW VString(name());
-		// $PARENTS=parents table
-		if(aname==PARENTS_NAME)
-			return 0;// TODO: table of parents
-		// $STATIC=STATIC hash
-		if(aname==STATICS_NAME)
-			return &STATICS;
-
+		// $CLASS=my class=myself
+		if(aname==CLASS_NAME)
+			return this;
+		// $BASE=my parent
+		if(aname==BASE_NAME)
+			return base();
 		// $method=junction(this+method)
 		if(Method *method=static_cast<Method *>(methods().get(aname))) {
 			Junction& j=*NEW Junction(pool(), 
@@ -36,27 +38,25 @@ public: // Value
 
 			return NEW VJunction(j);
 		}
-
-		// $field=STATIC.field
-		return STATICS.get_element(aname);
+		// $field=static field
+		return get_field(aname);
 	}
 
 	// object_class, operator_class: (field)=value - static values only
 	void put_element(const String& name, Value *value) {
-		STATICS.put_element(name, value);
+		set_field(name, value);
 	}
 
 	// object_class, object_instance: object_class
-	VClass *get_class() { return this; /*TODO: think when?*/ }
+	VClass *get_class() { return this; }
 
 public: // usage
 
 	VClass(Pool& apool) : 
 		Value(apool), 
-		STATICS(apool),
+		fields(apool),
 		fmethods(apool),
-		parents(apool),
-		parents_hash(apool) {
+		fbase(0) {
 	}
 
 	void add_method(const String& name, Method& method) {
@@ -64,29 +64,42 @@ public: // usage
 	}
 	Hash& methods() { return fmethods; }
 	
-	void add_parent(VClass& parent) {
-		parents+=&parent;
-		parents_hash.put(*parent.name(), &parent);
-		// TODO: monkey immediate_parent
-			// fill parents & parents_hash
+	void set_base(VClass& abase) {
+		// remember the guy
+		fbase=&abase;
+		
+		// append base_method to my methods unless already there is one
+		// 'virtual' here
+		fmethods.merge_dont_replace(abase.methods());
 	}
-/*
-	// true when me_or_ancestor is me or my ancestor
-	bool is_or_derived_from(VClass& me_or_ancestor) {
-		if(this==&me_or_ancestor)
-			return true; // it's me
-
-		return parents_hash.get(*me_or_ancestor.name())!=0;
-	}
-*/
-public: //usage
-
-	VHash STATICS;
+	VClass *base() { return fbase; }
 
 private:
 
+	Value *get_field(const String& name) {
+		Value *result=static_cast<Value *>(fields.get(name));
+		if(!result && fbase)
+			result=fbase->get_field(name);
+		return result;
+	}
+		
+	void set_field(const String& name, Value *value) {
+		if(fbase && fbase->replace_field(name, value))
+			return;
+
+		fields.put(name, value);
+	}
+	bool replace_field(const String& name, Value *value) {
+		return 
+			(fbase && fbase->replace_field(name, value)) ||
+			fields.put_replace(name, value);
+	}
+	
+private:
+
+	VClass *fbase;
+	Hash fields;
 	Hash fmethods;
-	Array parents;  Hash parents_hash;
 };
 
 #endif

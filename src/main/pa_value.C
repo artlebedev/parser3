@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.C,v 1.4 2001/02/24 11:46:04 paf Exp $
+  $Id: pa_value.C,v 1.5 2001/02/25 13:23:02 paf Exp $
 */
 
 #include "pa_value.h"
@@ -7,6 +7,6 @@
 
 void Value::failed(char *action) {
 	THROW(0,0,
-		name(),
+		&name(),
 		action, type());
 }

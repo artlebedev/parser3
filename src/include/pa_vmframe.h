@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.3 2001/02/25 09:42:03 paf Exp $
+  $Id: pa_vmframe.h,v 1.4 2001/02/25 13:23:01 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -23,7 +23,7 @@ public: // Value
 	}
 	// frame: my or self_transparent
 	void put_element(const String& name, Value *value){ 
-		if(!my.replace(name, value))
+		if(!my.put_replace(name, value))
 			self->put_element(name, value);
 	}
 
@@ -51,7 +51,7 @@ public: // usage
 		Method *method=junction.method;
 		if(store_param_index==method->params_names.size())
 			THROW(0,0,
-				name(),
+				&name(),
 				"call: too many params (max=%d)", method->params_names.size());
 		
 		my.put(*static_cast<String *>(method->params_names.get(store_param_index++)), value);

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.16 2001/02/23 14:18:27 paf Exp $
+  $Id: pa_hash.C,v 1.17 2001/02/25 13:23:02 paf Exp $
 */
 
 /*
@@ -74,7 +74,7 @@ uint Hash::generic_code(uint aresult, const char *start, uint size) {
 	return result;
 }
 
-void Hash::put(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
+bool Hash::put(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
 	if(full()) 
 		expand();
 
@@ -85,11 +85,14 @@ void Hash::put(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
 		if(pair->code==code && pair->key==key) {
 			// found a pair with the same key
 			pair->value=value;
-			return;
+			return true;
 		}
 	
 	// proper pair not found -- create&link_in new pair
+	if(!*ref) // root cell were used?
+		used++; // not, we'll use it and record the fact
 	*ref=NEW Pair(code, key, value, *ref);
+	return false;
 }
 
 Hash::Value *Hash::get(const Key& key) const {  SYNCHRONIZED(thread_safe);
@@ -102,7 +105,7 @@ Hash::Value *Hash::get(const Key& key) const {  SYNCHRONIZED(thread_safe);
 	return 0;
 }
 
-bool Hash::replace(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
+bool Hash::put_replace(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
 	uint code=key.hash_code();
 	uint index=code%size;
 	for(Pair *pair=refs[index]; pair; pair=pair->link)
@@ -116,3 +119,29 @@ bool Hash::replace(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
 	return false;
 }
 
+bool Hash::put_dont_replace(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
+	if(full()) 
+		expand();
+
+	uint code=key.hash_code();
+	uint index=code%size;
+	Pair **ref=&refs[index];
+	for(Pair *pair=*ref; pair; pair=pair->link)
+		if(pair->code==code && pair->key==key) {
+			// found a pair with the same key, NOT replacing
+			return true;
+		}
+
+	// proper pair not found -- create&link_in new pair
+	*ref=NEW Pair(code, key, value, *ref);
+	if(!*ref) // root cell were used?
+		used++; // not, we'll use it and record the fact
+	return false;
+}
+
+void Hash::merge_dont_replace(const Hash& src) {  SYNCHRONIZED(thread_safe);
+	for(int i=0; i<src.size; i++)
+		for(Pair *pair=src.refs[i]; pair; pair=pair->link)
+			put_dont_replace(pair->key, pair->value);
+	// MAY:optimize this.size==src.size case
+}

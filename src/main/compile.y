@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.44 2001/02/25 10:48:59 paf Exp $
+  $Id: compile.y,v 1.45 2001/02/25 13:23:02 paf Exp $
 */
 
 %{
@@ -83,22 +83,25 @@ control_method: '@' STRING '\n'
 				file->APPEND_CONST(".p");
 				PC->request->use(file->cstr(), 0);
 			}
-		} else if(name==PARENTS_NAME) {
-			for(int i=0; i<strings_code->size(); i+=2) {
-				String& parent_name=*SLA2S(strings_code, i);
-				VClass *parent=static_cast<VClass *>(
-					PC->request->classes().get(parent_name));
-				if(!parent) {
-					strcpy(PC->error, parent_name.cstr());
-					strcat(PC->error, ": undefined class in @"PARENTS_NAME);
+		} else if(name==BASE_NAME) {
+			if(strings_code->size()==1*2) {
+				String& base_name=*SLA2S(strings_code);
+				VClass *base=static_cast<VClass *>(
+					PC->request->classes().get(base_name));
+				if(!base) {
+					strcpy(PC->error, base_name.cstr());
+					strcat(PC->error, ": undefined class in @"BASE_NAME);
 					YYERROR;
 				}
-				PC->vclass->add_parent(*parent);
+				PC->vclass->set_base(*base);
+			} else {
+				strcpy(PC->error, "@"BASE_NAME" must contain sole name");
+				YYERROR;
 			}
 		} else {
 			strcpy(PC->error, name.cstr());
 			strcat(PC->error, ": invalid special name. valid names are "
-				CLASS_NAME", "USES_NAME" and "PARENTS_NAME);
+				CLASS_NAME", "USES_NAME" and "BASE_NAME);
 			YYERROR;
 		}
 	}
@@ -714,7 +717,7 @@ break2:
 			PC->string->APPEND(begin, end-begin, PC->file, begin_line/*, start_col*/);
 		}
 		// create STRING value: array of OP_VALUE+vstring
-		*lvalp=SL(NEW VString(PC->string));
+		*lvalp=SL(NEW VString(*PC->string));
 		// new pieces storage
 		PC->string=NEW String(POOL);
 		// go!

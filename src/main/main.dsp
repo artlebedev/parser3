@@ -168,6 +168,10 @@ SOURCE=.\pa_value.C
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_vclass.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_wcontext.C
 # End Source File
 # End Group
