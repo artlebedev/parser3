@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.115 2001/09/26 10:32:25 parser Exp $
+	$Id: table.C,v 1.116 2001/09/27 14:37:38 parser Exp $
 */
 
 #include "classes.h"
@@ -470,7 +470,8 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 	for(i=0; i<old_table.size(); i++)
 		new_table+=seq[reverse?old_table.size()-1-i:i].row;
 
-	r.write_no_lang(*new(pool) VTable(pool, &new_table));
+	// replace any previous table value
+	static_cast<VTable *>(r.self)->set_table(new_table);
 }
 
 static void _locate(Request& r, const String& method_name, MethodParams *params) {
