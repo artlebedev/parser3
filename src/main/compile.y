@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.84 2001/03/10 15:17:46 paf Exp $
+  $Id: compile.y,v 1.85 2001/03/10 15:56:16 paf Exp $
 */
 
 %{
@@ -20,9 +20,10 @@
 #include "pa_request.h"
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
+#include "core.h"
 
-#define SELF_NAME "self"
-#define USE_NAME "USE"
+#define SELF_ELEMENT_NAME "self"
+#define USE_CONTROL_METHOD_NAME "USE"
 
 int real_yyerror(parse_control *pc, char *s);
 static void yyprint(FILE *file, int type, YYSTYPE value);
@@ -88,14 +89,12 @@ int yylex(YYSTYPE *lvalp, void *pc);
 
 all: /* TODO: у ^execute непременно задать какой-то name, см. 'RUN' */
 	one_big_piece {
-	String& MAIN=*NEW String(POOL);
-	MAIN.APPEND_CONST(MAIN_METHOD_NAME);
 	Method& method=*NEW Method(POOL, 
-		MAIN, 
+		*main_method_name, 
 		0, 0, /*min, max numbered_params_count*/
 		0/*param_names*/, 0/*local_names*/, 
 		$1/*parser_code*/, 0/*native_code*/);
-	PC->vclass->add_method(MAIN, method);
+	PC->vclass->add_method(*main_method_name, method);
 }
 |	methods;
 
@@ -137,7 +136,7 @@ control_method: '@' STRING '\n'
 			YYERROR;
 		}
 	} else {
-		if(command==USE_NAME) {
+		if(command==USE_CONTROL_METHOD_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) {
 				String file(*SLA2S(strings_code, i));
 				file.APPEND_CONST(".p");
@@ -166,7 +165,7 @@ control_method: '@' STRING '\n'
 		} else {
 			strcpy(PC->error, command.cstr());
 			strcat(PC->error, ": invalid special name. valid names are "
-				CLASS_NAME", "USE_NAME" and "BASE_NAME);
+				CLASS_NAME", "USE_CONTROL_METHOD_NAME" and "BASE_NAME);
 			YYERROR;
 		}
 	}
@@ -238,7 +237,7 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 	$$=N(POOL); 
 	Array *diving_code=$1;
 	const String *first_name=SLA2S(diving_code);
-	if(first_name && *first_name==SELF_NAME) {
+	if(first_name && *first_name==SELF_ELEMENT_NAME) {
 		O($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
 			/* skip over... */
@@ -271,7 +270,7 @@ name_expr_wdive_write: name_expr_dive_code {
 	$$=N(POOL);
 	Array *diving_code=$1;
 	const String *first_name=SLA2S(diving_code);
-	if(first_name && *first_name==SELF_NAME) {
+	if(first_name && *first_name==SELF_ELEMENT_NAME) {
 		O($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
 			/* skip over... */

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.29 2001/03/10 15:44:30 paf Exp $
+  $Id: pa_request.h,v 1.30 2001/03/10 15:56:14 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -15,7 +15,7 @@
 
 #define MAIN_METHOD_NAME "main"
 #define AUTO_METHOD_NAME "auto"
-#define RUN_METHOD_NAME "RUN"
+#define RUN_CLASS_NAME "RUN"
 #define AUTO_CLASS_NAME "AUTO"
 
 #define ROOT_CLASS_NAME "ROOT"

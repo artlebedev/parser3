@@ -1,5 +1,5 @@
 /*
-$Id: pa_request.C,v 1.5 2001/03/10 15:44:32 paf Exp $
+$Id: pa_request.C,v 1.6 2001/03/10 15:56:16 paf Exp $
 */
 
 #include "pa_request.h"
@@ -8,6 +8,7 @@ $Id: pa_request.C,v 1.5 2001/03/10 15:44:32 paf Exp $
 #include "pa_vclass.h"
 #include "classes/_root.h"
 #include "classes/_env.h"
+#include "core.h"
 
 #include <stdio.h>
 
@@ -24,24 +25,20 @@ Request::Request(Pool& apool) : Pooled(apool),
 	// adding root superclass, 
 	//   parent of all classes, 
 	//   operators holder
-	String root_class_name(pool()); root_class_name.APPEND_CONST(ROOT_CLASS_NAME);
-	classes().put(root_class_name, &root_class);
+	classes().put(*root_class_name, &root_class);
 
 	// env class
 	initialize_env_class(pool(), env_class);
-	String env_class_name(pool()); env_class_name.APPEND_CONST(ENV_CLASS_NAME);
-	classes().put(env_class_name, &env_class);
+	classes().put(*env_class_name, &env_class);
 }
 
 void Request::core() {
 	TRY {
 		char *auto_file="Y:\\parser3\\src\\auto.p";
-		String auto_method_name(pool()); auto_method_name.APPEND_CONST(AUTO_METHOD_NAME);
-		use(auto_file, &auto_method_name, false/*ignore possible error*/);
+		use(auto_file, auto_class_name, false/*ignore possible error*/);
 
 		char *test_file="Y:\\parser3\\src\\test.p";
-		String run_method_name(pool()); run_method_name.APPEND_CONST(RUN_METHOD_NAME);
-		use(test_file, &run_method_name);
+		use(test_file, run_class_name);
 
 		char *result=execute_MAIN();
 		printf("result-----------------\n%sEOF----------------\n", result);
