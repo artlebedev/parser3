@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.27 2001/03/25 09:10:28 paf Exp $
+	$Id: table.C,v 1.28 2001/03/25 09:40:54 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -72,6 +72,8 @@ static void set_or_load(
 	Table& table=*new(pool) Table(pool, &method_name, columns);
 	char *row_chars;
 	while(row_chars=getrow(&data)) {
+		if(!*row_chars) // remove empty lines
+			continue;
 		Array *row=new(pool) Array(pool);
 		while(char *cell_chars=lsplit(&row_chars, '\t')) {
 			String *cell=new(pool) String(pool);

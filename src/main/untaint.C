@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.17 2001/03/25 09:10:30 paf Exp $
+	$Id: untaint.C,v 1.18 2001/03/25 09:40:55 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -16,21 +16,13 @@
 #include "pa_exception.h"
 #include "pa_table.h"
 
-#define escape(cases) \
+#define escape(action) \
 	{ \
 		const char *src=row->item.ptr; \
 		for(int size=row->item.size; size--; src++) \
-			switch(*src) { \
-				cases \
-			} \
+			action \
 	}
-#define to_char(a, c)  case a: *dest++=c; break
 #define _default  default: *dest++=*src; break
-#define to_string(a, b, bsize)  \
-		case a: \
-			strncpy(dest, b, bsize); \
-			dest+=bsize; \
-		break
 #define encode(need_encode_func, prefix)  \
 		default: \
 			if(need_encode_func(*src)) { \
@@ -42,6 +34,10 @@
 			} else \
 				*dest++=*src; \
 			break
+#define to_char(c)  *dest++=c
+#define to_string(b, bsize)  \
+		strncpy(dest, b, bsize); \
+		dest+=bsize; \
 
 inline bool need_file_encode(unsigned char c){
     if((c>='0') &&(c<='9') ||(c>='A') &&(c<='Z') ||(c>='a') &&(c<='z')) 
@@ -56,7 +52,7 @@ inline bool need_uri_encode(unsigned char c){
     return !strchr("_-./", c);
 }
 inline bool need_header_encode(unsigned char c){
-    if(strchr(" ,:", c))
+    if(strchr(" , :", c))
 		return false;
 
 	return need_uri_encode(c);
@@ -103,31 +99,31 @@ char *String::store_to(char *dest) const {
 				break;
 			case UL_FILE_NAME:
 				// tainted, untaint language: file [name]
-				escape(
-					to_char(' ', '_');
+				escape(switch(*src) {
+					case ' ': to_char('_');  break;
 					encode(need_file_encode, '-');
-				);
+				});
 				break;
 			case UL_URI:
 				// tainted, untaint language: uri
-				escape(
-					to_char(' ', '+');
+				escape(switch(*src) {
+					case ' ': to_char('+');  break;
 					encode(need_uri_encode, '%');
-				);
+				});
 				break;
 			case UL_HEADER:
 				// tainted, untaint language: header
-				escape(
+				escape(switch(*src) {
 					encode(need_header_encode, '%');
-				);
+				});
 				break;
 			case UL_TABLE: 
 				// tainted, untaint language: table
-				escape(
-					to_char('\t', ' ');
-					to_char('\n', ' ');
+				escape(switch(*src) {
+					case '\t': to_char(' ');  break;
+					case '\n': to_char(' ');  break;
 					_default;
-				);
+				});
 				break;
 			case UL_SQL:
 				// tainted, untaint language: sql
@@ -136,77 +132,82 @@ char *String::store_to(char *dest) const {
 				dest+=row->item.size;
 				break;
 			case UL_JS:
-				escape(
-					to_string('"', "\\\"", 2);
-					to_string('\'', "\\'", 2);
-					to_string('\n', "\\n", 2);
-					to_string('\\', "\\\\", 2);
-					to_string('\xFF', "\\\xFF", 2);
+				escape(switch(*src) {
+					case '"': to_string("\\\"", 2);  break;
+					case '\'': to_string("\\'", 2);  break;
+					case '\n': to_string("\\n", 2);  break;
+					case '\\': to_string("\\\\", 2);  break;
+					case '\xFF': to_string("\\\xFF", 2);  break;
 					_default;
-				);
+				});
 				break;
 			case UL_HTML:
-				escape(
-					to_string('&', "&amp;", 5);
-					to_string('>', "&gt;", 4);
-					to_string('<', "&lt;",4);
-					to_string('"', "&quot;",6);
-					to_char('\t', ' ');
-					//TODO: XSLT to_string('\'', "&apos;", 6)
+				escape(switch(*src) {
+					case '&': to_string("&amp;", 5);  break;
+					case '>': to_string("&gt;", 4);  break;
+					case '<': to_string("&lt;", 4);  break;
+					case '"': to_string("&quot;", 6);  break;
+					//TODO: XSLT to_string!'\'', "&apos;", 6)
 					_default;
-				);
+				});
 				break;
 			case UL_HTML_TYPO: {
 				// tainted, untaint language: html-typo
-				char *html=(char *)malloc(size()*6/*"&quot;" the longest possible*/+1);
-				size_t html_size;
+				char *html_for_typo=
+					(char *)malloc(size()*6/*"&quot;" the longest possible*/+1);
+				size_t html_for_typo_size;
 				{ // local dest
-					char *dest=html;
-					escape(
-						to_string('&', "&amp;", 5);
-						to_string('>', "&gt;", 4);
-						to_string('<', "&lt;",4);
-						to_string('"', "&quot;",6);
-						to_char('\t', ' ');
+					char *dest=html_for_typo;
+					escape(switch(*src) {
+						// BEWARE: check maximum replacement length in malloc above
+						case '&': to_string("&amp;", 5);  break;
+						case '>': to_string("&gt;", 4);  break;
+						case '<': to_string("&lt;", 4);  break;
+						case '"': to_string("&quot;", 6);  break;
 						// convinient name for typo match "\n"
 						case '\r': 
-							*dest++='\\';  *dest++='n'; // \r -> \n
-							if(src[1]=='\n') // \r\n -> remove \n
-								src++;
+							if(typo_table) {
+								*dest++='\\';  *dest++='n'; // \r -> \n
+								if(src[1]=='\n') // \r\n -> remove \n
+									src++;
+							}
 							break;
-						to_string('\n', "\\n", 2);
-						//TODO: XSLT to_string('\'', "&apos;", 6)
+						case '\n': 
+							if(typo_table)
+								to_string("\\n", 2);
+							break;
+						//TODO: XSLT to_string!'\'', "&apos;", 6)
 						_default;
-					);
+					});
 					*dest=0;
-					html_size=dest-html;
+					html_for_typo_size=dest-html_for_typo;
 				}
 				// typo table replacements
 				if(typo_table) {
-					const char *src=html;
+					const char *src=html_for_typo;
 					do {
 						// there is a row where first column starts 'src'
 						if(Table::Item *item=typo_table->first_that(typo_present, src)) {
 							// get a=>b values
 							const String& a=*static_cast<Array *>(item)->get_string(0);
 							const String& b=*static_cast<Array *>(item)->get_string(1);
-							// empty 'a' check
-							if(a.size()==0) {
+							// empty 'a' | 'b' checks
+							if(a.size()==0 || b.size()==0) {
 								pool().set_tag(0); // avoid recursion
-								THROW(0, 0,
-									typo_table->origin_string(),
-									"typo table first column elements must not be empty");
+								THROW(0, 0, 
+									typo_table->origin_string(), 
+									"typo table column elements must not be empty");
 							}
 							// overflow check:
 							//   b allowed to be max UNTAINT_TIMES_BIGGER then a
 							if(b.size()>UNTAINT_TIMES_BIGGER*a.size()) {
 								pool().set_tag(0); // avoid recursion
-								THROW(0, 0,
-									&b,
+								THROW(0, 0, 
+									&b, 
 									"is %g times longer then '%s', "
-									"while maximum, handled by Parser, is %d",
+									"while maximum, handled by Parser, is %d", 
 										((double)b.size())/a.size(), 
-										a.cstr(),
+										a.cstr(), 
 										UNTAINT_TIMES_BIGGER);
 							}
 
@@ -219,16 +220,16 @@ char *String::store_to(char *dest) const {
 							*dest++=*src++;
 					} while(*src);
 				} else {
-					memcpy(dest, html, html_size);
-					dest+=html_size;
+					memcpy(dest, html_for_typo, html_for_typo_size);
+					dest+=html_for_typo_size;
 				}
 				break;
 				}
 			default:
-				THROW(0,0,
-					this,
+				THROW(0, 0, 
+					this, 
 					"unknown untaint language #%d of %d piece", 
-						static_cast<int>(row->item.lang),
+						static_cast<int>(row->item.lang), 
 						i);
 			}
 			row++;
