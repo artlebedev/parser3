@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.171 2001/10/10 12:41:29 parser Exp $
+	$Id: compile.y,v 1.172 2001/10/18 06:52:05 parser Exp $
 */
 
 /**
@@ -611,7 +611,7 @@ default:
 			case '(': case ')':
 			case '[': case ']':
 			case '{': case '}':
-			case '"': 
+			case '"':  case ':':
 				if(end!=begin) {
 					// append piece till ^
 					PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);

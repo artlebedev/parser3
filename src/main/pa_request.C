@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.167 2001/10/03 12:55:15 parser Exp $
+	$Id: pa_request.C,v 1.168 2001/10/18 06:52:05 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -323,7 +323,7 @@ void Request::core(
 								const Origin& origin=problem_source->origin();
 								if(origin.file) {
 									char *buf=(char *)malloc(MAX_STRING);
-									size_t buf_size=snprintf(buf, MAX_STRING, "%s(%d):", 
+									size_t buf_size=snprintf(buf, MAX_STRING, "%s(%d)", 
 										origin.file, 1+origin.line);
 									String *origin_file_line=NEW String(pool(),
 										buf, buf_size, true);
