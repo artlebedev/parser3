@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver.h,v 1.21 2001/11/11 10:52:50 paf Exp $
+	$Id: pa_sql_driver.h,v 1.22 2001/11/11 10:54:49 paf Exp $
 
 
 	driver dynamic library must look like this:
