@@ -1,9 +1,9 @@
-SUBDIRS = src etc
+SUBDIRS = src etc bin
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
-EXTRA_DIST = asm.txt form.txt lang.txt operators.txt sql.txt types.txt parser3.dsw 
+EXTRA_DIST = operators.txt parser3.dsw 
 
 update:
 	cvs update

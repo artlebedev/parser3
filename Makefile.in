@@ -83,9 +83,9 @@ oracle_client = @oracle_client@
 pgsql_client = @pgsql_client@
 sqldriversdir = @sqldriversdir@
 
-SUBDIRS = src etc
+SUBDIRS = src etc bin
 
-EXTRA_DIST = asm.txt form.txt lang.txt operators.txt sql.txt types.txt parser3.dsw 
+EXTRA_DIST = operators.txt parser3.dsw 
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ./src/include/pa_config_auto.h

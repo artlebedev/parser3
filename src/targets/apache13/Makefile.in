@@ -83,7 +83,6 @@ host_os = @host_os@
 mysql_client = @mysql_client@
 oracle_client = @oracle_client@
 pgsql_client = @pgsql_client@
-rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
 INCLUDES := $(INCLUDES) -I../../classes -I../../types $(INCLTDL) -I../../sql -I../../pcre -I$(APACHE13)/src/include -I$(APACHE13)/src/os/unix -I$(APACHE13)/src/os/win32 @XML_INCLUDES@

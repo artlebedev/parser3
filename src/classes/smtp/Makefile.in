@@ -10,6 +10,8 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+#do not automake, desined to be compiled with MSVC only
+
 
 SHELL = @SHELL@
 
