@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.77 2001/03/08 16:54:26 paf Exp $
+  $Id: compile.y,v 1.78 2001/03/08 17:08:14 paf Exp $
 */
 
 %{
@@ -344,12 +344,12 @@ store_expr_param_parts:
 |	store_expr_param_parts ';' store_expr_param_part { $$=$1; P($$, $3) }
 ;
 store_code_param_part: 
-	empty /* optimized () case */
-|	STRING { /* optimized (STRING) case */
+	empty /* optimized [] case */
+|	STRING { /* optimized [STRING] case */
 	$$=$1;
 	O($$, OP_STORE_PARAM);
 }
-|	constructor_code_value { /* (something complex) */
+|	constructor_code_value { /* [something complex] */
 	$$=$1;
 	O($$, OP_STORE_PARAM);
 }

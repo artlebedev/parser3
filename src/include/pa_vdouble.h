@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vdouble.h,v 1.7 2001/03/08 16:54:25 paf Exp $
+  $Id: pa_vdouble.h,v 1.8 2001/03/08 17:08:13 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -17,12 +17,12 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "double"; }
 	// clone
-	Value *clone() { return NEW VDouble(fdouble); }
+	Value *clone() const { return NEW VDouble(fdouble); }
 
 	// double: fdouble
 	String *get_string() {
 		char *buf=static_cast<char *>(pool().malloc(MAX_DOUBLE_AS_STRING));
-		snprintf(buf, MAX_DOUBLE_AS_STRING, "%g", fdouble);
+		snprintf(buf, MAX_DOUBLE_AS_STRING, "%g", fdouble.value);
 		String *result=NEW String(pool());
 		result->APPEND_CONST(buf);
 		return result;

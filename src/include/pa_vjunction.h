@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vjunction.h,v 1.4 2001/03/08 16:54:25 paf Exp $
+  $Id: pa_vjunction.h,v 1.5 2001/03/08 17:08:13 paf Exp $
 */
 
 #ifndef PA_VJUNCTION_H
@@ -14,7 +14,7 @@ public: // VJunction
 	const char *type() const { return "fjunction"; }
 
 	// clone
-	Value *clone() { return NEW VJunction(fjunction); };
+	Value *clone() const { return NEW VJunction(fjunction); };
 
 	// fjunction: method, root,self,rcontext, code
 	Junction *get_junction() { return &fjunction; }

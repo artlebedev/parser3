@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vobject.h,v 1.11 2001/03/08 16:54:25 paf Exp $
+  $Id: pa_vobject.h,v 1.12 2001/03/08 17:08:13 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -18,7 +18,7 @@ public: // Value
 	const char *type() const { return "object"; }
 
 	// clone
-	Value *clone() { return NEW VObject(fclass_real, ffields); };
+	Value *clone() const { return NEW VObject(fclass_real, ffields); };
 
 	// object_instance: (field)=value;(CLASS)=vclass;(method)=method_ref
 	Value *get_element(const String& name) {

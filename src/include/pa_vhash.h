@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vhash.h,v 1.7 2001/03/08 16:54:25 paf Exp $
+  $Id: pa_vhash.h,v 1.8 2001/03/08 17:08:13 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -14,7 +14,7 @@ public: // value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "fvalue"; }
 	// clone
-	Value *clone() { return NEW VHash(pool(), fvalue); };
+	Value *clone() const { return NEW VHash(pool(), fvalue); };
 
 	// fvalue: (key)=value
 	Value *get_element(const String& name) { 
