@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.3 2001/10/19 12:43:30 parser Exp $
+	$Id: mod_parser3.C,v 1.4 2001/10/19 13:43:59 parser Exp $
 */
 
 #include "httpd.h"
@@ -141,7 +141,7 @@ static const char *cmd_parser_config(cmd_parms *cmd, void *mconfig, char *file_s
 //@{
 /// SAPI func decl
 void SAPI::log(Pool& pool, const char *fmt, ...) {
-	request_rec *r=static_cast<request_rec *>(pool.context());
+	request_rec *r=static_cast<request_rec *>(pool.get_context());
 
     va_list args;
     va_start(args,fmt);
@@ -153,12 +153,12 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 }
 
 const char *SAPI::get_env(Pool& pool, const char *name) {
-	request_rec *r=static_cast<request_rec *>(pool.context());
+	request_rec *r=static_cast<request_rec *>(pool.get_context());
  	return (const char *)ap_table_get(r->subprocess_env, name);
 }
 
 size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
-	request_rec *r=static_cast<request_rec *>(pool.context());
+	request_rec *r=static_cast<request_rec *>(pool.get_context());
 
 /*    ap_log_error(APLOG_MARK, APLOG_DEBUG, r->server, 
 		"mod_parser3: SAPI::read_post(max=%u)", max_bytes);
@@ -185,7 +185,7 @@ size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
 }
 
 void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) {
-	request_rec *r=static_cast<request_rec *>(pool.context());
+	request_rec *r=static_cast<request_rec *>(pool.get_context());
 
 	if(strcasecmp(key, "location")==0) 
 		r->status=302;
@@ -204,7 +204,7 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 }
 
 void SAPI::send_header(Pool& pool) {
-	request_rec *r=static_cast<request_rec *>(pool.context());
+	request_rec *r=static_cast<request_rec *>(pool.get_context());
 
     ap_hard_timeout("Send header", r);
     ap_send_http_header(r);
@@ -212,7 +212,7 @@ void SAPI::send_header(Pool& pool) {
 }
 
 void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
-	request_rec *r=static_cast<request_rec *>(pool.context());
+	request_rec *r=static_cast<request_rec *>(pool.get_context());
 
     ap_hard_timeout("Send body", r);
 	ap_rwrite(buf, size, r);

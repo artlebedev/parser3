@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.169 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_request.C,v 1.170 2001/10/19 13:43:59 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -417,7 +417,7 @@ void Request::core(
 
 			// ERROR. write it out
 			output_result(*body_file, header_only);
-		} catch(const Exception& e) {
+		} catch(const Exception& ) {
 			/*re*/throw;
 		}
 	}
