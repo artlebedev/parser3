@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.191 2002/09/13 10:43:26 paf Exp $
+	$Id: compile.y,v 1.192 2002/09/13 11:35:13 paf Exp $
 */
 
 /**
@@ -796,6 +796,8 @@ default:
 
 		case LS_DEF_PARAMS:
 			switch(c) {
+			case '$': // common error
+				RC;
 			case ';':
 				RC;
 			case ']':
