@@ -43,7 +43,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.86 2003/08/18 08:27:39 paf Exp $
+	$Id: compile.tab.C,v 1.87 2003/08/19 09:07:02 paf Exp $
 */
 
 /**
@@ -771,14 +771,14 @@ yyparse(YYPARSE_PARAM_ARG)
 
 #ifdef YYPURE
   int yychar;
-  YYSTYPE yylval;
+  YYSTYPE yylval=0; /*paf:calm down, vc7 warning level 4*/
   int yynerrs;
 #ifdef YYLSP_NEEDED
   YYLTYPE yylloc;
 #endif
 #endif
 
-  YYSTYPE yyval;		/*  the variable used to return		*/
+  YYSTYPE yyval=0; /*paf:calm down, vc7 warning level 4*/		/*  the variable used to return		*/
 				/*  semantic values from the action	*/
 				/*  routines				*/
 
