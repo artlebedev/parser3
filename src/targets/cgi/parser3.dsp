@@ -147,6 +147,23 @@ SOURCE=.\ident.C
 SOURCE=.\ident.C.new
 # End Source File
 # End Group
+# Begin Group "libs debug"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\..\..\win32db\lib\debug\libdb.lib
+# PROP Exclude_From_Build 1
+# End Source File
+# End Group
+# Begin Group "libs release"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\..\..\win32db\lib\release\libdb.lib
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\pa_pool.C

@@ -143,7 +143,6 @@ SOURCE=.\hash.C
 # Begin Source File
 
 SOURCE=.\hashfile.C
-# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
