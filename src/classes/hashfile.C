@@ -6,7 +6,7 @@
 */
 
 
-static const char* IDENT="$Id: hashfile.C,v 1.24 2003/11/06 08:22:48 paf Exp $";
+static const char* IDENT="$Id: hashfile.C,v 1.25 2003/11/06 10:09:33 paf Exp $";
 
 #include "classes.h"
 
@@ -48,21 +48,16 @@ static void _hash(Request& r, MethodParams& params) {
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
-
+#endif
 static void _delete(Request& r, MethodParams& params) {
 	VHashfile& self=GET_SELF(r, VHashfile);
 	
-	if(params.size()==0)
-		self.mark_to_cancel_cache();
-	else {
-		// key
-		const String &key=params.as_string(0, "key must be string");
-		// remove
-		self.get_table_ptr(&method_name)->remove(key);
-	}
+	// key
+	const String &key=params.as_string(0, "key must be string");
+	// remove
+	self.remove(key);
 }
 
-#endif
 static void _clear(Request& r, MethodParams&) {
 	VHashfile& self=GET_SELF(r, VHashfile);
 	self.clear();
@@ -117,7 +112,7 @@ MHashfile::MHashfile(): Methoded("hashfile") {
 	// ^hash[]
 //	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
 	// ^hashfile.delete[key]
-//	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
+	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
 	// ^hashfile.clear[]
 	add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
 	// ^hashfile.foreach[key;value]{code}[delim]

@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char* IDENT_VHASHFILE_H="$Date: 2003/11/06 09:56:17 $";
+static const char* IDENT_VHASHFILE_H="$Date: 2003/11/06 10:09:33 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -64,8 +64,8 @@ public: // usage
 	override ~VHashfile();
 
 	void open(const String& afile_name);
-
 	void clear();
+	void remove(const String& aname);
 
 private:
 

@@ -431,12 +431,12 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         поэтому необходимо задать $request/response:charset в одном из них. не после.
 
 hashfile
-    ^hashfile::open[filename]
+    !^hashfile::open[filename]
     ^hashfile.clear[]  забыть всё
-    .ключ[значение]  положить значение
+    !.ключ[значение]  положить значение
     .ключ[$.value[значение] $.expires(секунд)}  положить значение на expires секунд
-    .ключ  достать
-    ^delete[[ключ]]  удалить ключ
+    !.ключ  достать
+    !^delete[ключ]  удалить ключ
     ^hash[]
         преобразовать в обычный hash
     ^foreach[key|value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]

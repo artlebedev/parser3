@@ -42,3 +42,9 @@ v]}]
 ^t.save[t.cfg;
 	$.encloser["]
 ]
+
+----------------
+
+$hf[^hashfile::open[hf]]
+$hf.paf[works]
+$hf.paf

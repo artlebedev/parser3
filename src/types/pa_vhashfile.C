@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 09:56:17 $";
+static const char* IDENT="$Date: 2003/11/06 10:09:33 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -64,11 +64,11 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 
 	apr_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
-	key.dsize=strlen(key.dptr);
+	key.dsize=aname.length();
 
 	apr_sdbm_datum_t value;
 	value.dptr=const_cast<char*>(value_string->cstr());
-	value.dsize=strlen(key.dptr);
+	value.dsize=value_string->length();
 
 // *           APR_SDBM_INSERT     return an error if the record exists
  	check("apr_sdbm_store", apr_sdbm_store(db, key, value, APR_SDBM_REPLACE));
@@ -77,16 +77,24 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 Value *VHashfile::get_field(const String& aname) {
 	apr_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
-	key.dsize=strlen(key.dptr);
+	key.dsize=aname.length();
 
 	apr_sdbm_datum_t value;
 
 	check("apr_sdbm_fetch", apr_sdbm_fetch(db, &value, key));
 
 	if(value.dptr)
-		return new VString(String(pa_strdup(value.dptr, value.dsize)));
+		return new VString(*new String(pa_strdup(value.dptr, value.dsize)));
 	else
 		return 0;
+}
+
+void VHashfile::remove(const String& aname) {
+	apr_sdbm_datum_t key;
+	key.dptr=const_cast<char*>(aname.cstr());
+	key.dsize=aname.length();
+
+	check("apr_sdbm_delete", apr_sdbm_delete(db, key));
 }
 
 HashStringValue *VHashfile::get_hash(const String *source) {

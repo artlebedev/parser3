@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 09:56:17 $";
+static const char* IDENT="$Date: 2003/11/06 10:09:33 $";
 
 #include "apr_file_io.h"
 
@@ -137,9 +137,11 @@ APR_DECLARE(apr_status_t) apr_file_write_full(apr_file_t *file, const void *buf,
     } while (rv == (apr_size_t)-1 && errno == EINTR);
 
     if (rv == (apr_size_t)-1) {
-        *bytes_written = 0;
+		if(bytes_written)
+			*bytes_written = 0;
         return errno;
     }
-	*bytes_written=rv;
+	if(bytes_written)
+		*bytes_written=rv;
 	return APR_SUCCESS;
 }
