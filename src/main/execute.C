@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.210 2002/01/31 12:00:42 paf Exp $
+	$Id: execute.C,v 1.211 2002/01/31 12:40:35 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -166,7 +166,7 @@ void Request::execute(const Array& ops) {
 		case OP_GET_CLASS:
 			{
 				// maybe they do ^class:method[] call, remember the fact
-				wcontext->set_somebody_entered_some_class();
+				wcontext->set_somebody_entered_some_class(true);
 
 				const String& name=POP_NAME();
 				value=static_cast<Value *>(classes().get(name));
@@ -209,6 +209,11 @@ void Request::execute(const Array& ops) {
 				Value *ncontext=POP();
 				ncontext->put_element(name, value);
 				value->set_name(name);
+
+				// forget the fact they've entered some $class/object.xxx
+				// see OP_GET_ELEMENT
+				wcontext->set_somebody_entered_some_object(false);
+				wcontext->set_somebody_entered_some_class(false);
 				break;
 			}
 		case OP_CONSTRUCT_EXPR:
@@ -256,9 +261,10 @@ void Request::execute(const Array& ops) {
 				value=POP();
 				write_assign_lang(*value);
 
-				// forget the fact they've entered some ^object.method[].
+				// forget the fact they've entered some ^object/class.xxx or $object/class.xxx
 				// see OP_GET_ELEMENT
 				wcontext->set_somebody_entered_some_object(false);
+				wcontext->set_somebody_entered_some_class(false);
 				break;
 			}
 		case OP_WRITE_EXPR_RESULT:
@@ -280,6 +286,7 @@ void Request::execute(const Array& ops) {
 		case OP_GET_ELEMENT:
 			{
 				//_asm int 3;
+				// uses entered object/class flags to plug in operators
 				value=get_element();
 
 				// maybe they do ^object.method[] call, remember the fact

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.h,v 1.23 2001/12/21 12:47:57 paf Exp $
+	$Id: pa_wcontext.h,v 1.24 2002/01/31 12:40:35 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -70,11 +70,14 @@ public: // usage
 	void set_constructing(bool aconstructing) { flags.constructing=aconstructing?1:0; }
 	bool get_constructing() { return flags.constructing!=0; }
 
-	void set_somebody_entered_some_class() { flags.entered_class=1; }
+	void set_somebody_entered_some_class(bool aentered_class) { 
+		flags.entered_class=aentered_class?1:0; 
+	}
 	bool get_somebody_entered_some_class() { return flags.entered_class!=0; }
 
 	void set_somebody_entered_some_object(bool aentered_object) {   
-		flags.entered_object=aentered_object?1:0; }
+		flags.entered_object=aentered_object?1:0; 
+	}
 	bool get_somebody_entered_some_object() { return flags.entered_object!=0; }
 
 protected:
