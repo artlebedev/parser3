@@ -35,8 +35,6 @@ AM_PROG_LIBTOOL
 dnl Configure libltdl
 AC_CONFIG_SUBDIRS(libltdl)
 
-CALC_ARGS
-
 dnl Checks for libraries.
 
 dnl Checks for header files.
