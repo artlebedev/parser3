@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/11/20 14:14:17 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/11/20 14:20:58 $";
 
 #include "pa_config_includes.h"
 
@@ -128,7 +128,7 @@ void SAPI::die(const char *fmt, ...) {
 	// log
 
 	// logging is more important than user 
-	// she can cancel download, we'd get SIG_PIPE, 
+	// she can cancel download, we'd get SIGPIPE, 
 	// nothing would be logged then
 	::log(fmt, args);
 

@@ -117,3 +117,8 @@
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
+

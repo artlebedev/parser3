@@ -398,6 +398,7 @@ dnl Checks for header files.
 AC_HEADER_TIME
 
 AC_CHECK_HEADERS(
+signal.h \
 unistd.h \
 process.h \
 stddef.h \

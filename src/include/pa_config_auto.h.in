@@ -114,6 +114,9 @@
 /* Define if you have the <setjmp.h> header file.  */
 #undef HAVE_SETJMP_H
 
+/* Define if you have the <signal.h> header file.  */
+#undef HAVE_SIGNAL_H
+
 /* Define if you have the <stdarg.h> header file.  */
 #undef HAVE_STDARG_H
 
