@@ -6,7 +6,7 @@ $n
 @twop[a;b]
 ($a,$b)
 
-@ß postprocess[data]
+@Zpostprocess[data]
 #(<BR>$data)<BR>
 ^data.match[1][g]{X}
 
@@ -14,8 +14,6 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
-
-
 image:create<BR>
 $itext[^image:create(300;100)]
 $itext{
@@ -28,8 +26,10 @@ $itext{
 }
 $ff[^itext.gif[]]
 ^ff.save[i/itext.gif]
+^rem{
 ^ff.save[i2/itext.gif]
 ^file:delete[i2/itext.gif]
+}
 ^itext.html[$src[i/itext.gif]]
 
 
@@ -277,7 +277,13 @@ $src[^table:set{a	b	c	d
 s1	s2	s3	s4
 }]
 ^dest.join[$src]
-^dest.menu{$a!$b!$c!<BR>}
+dest.menu:<BR>
+^dest.menu{$a!$b!$c!<BR>
+^rem{lock violation^table:set[nameless]{1
+2
+3}]
+}
+}
 
 <HR>
 ^^random:generate(10)=^random:generate(10)<BR>

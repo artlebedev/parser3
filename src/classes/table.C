@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.63 2001/04/20 14:18:30 paf Exp $
+	$Id: table.C,v 1.64 2001/04/23 10:58:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -186,15 +186,15 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 	}
 }
 
-/// @test $a.menu{ $a[123] }
 static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	Value& body_code=params->get_junction(0, "body must be code");
 	
 	Value *delim_code=params->size()==2?&params->get(1):0;
 
-	Table& table=static_cast<VTable *>(r.self)->table();
+	VTable& vtable=*static_cast<VTable *>(r.self);
+	Table& table=vtable.table();
 	bool need_delim=false;
-	int saved_current=table.current();
+	vtable.lock(); int saved_current=table.current();
 	for(int row=0; row<table.size(); row++) {
 		table.set_current(row);
 
@@ -207,7 +207,7 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 		}
 		r.write_pass_lang(processed_body);
 	}
-	table.set_current(saved_current);
+	table.set_current(saved_current); vtable.unlock();
 }
 
 static void _empty(Request& r, const String& method_name, MethodParams *params) {

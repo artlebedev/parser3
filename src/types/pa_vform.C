@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.25 2001/04/17 19:01:02 paf Exp $
+	$Id: pa_vform.C,v 1.26 2001/04/23 10:58:32 paf Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
@@ -174,7 +174,7 @@ void VForm::AppendFormEntry(const char *aname,
 	fields.put(sname, value);
 }
 
-/// @test parse input letter if some switch is on
+/// @todo parse input letter if some switch is on
 void VForm::fill_fields(Request& request) {
 	//AppendFormEntry("fs", "<1!2>", 5, 0);
 	// parsing QS [GET and ?name=value from uri rewrite)]
