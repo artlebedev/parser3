@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/12/26 11:45:37 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/02/24 12:38:54 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -171,10 +171,10 @@ static void http_read_response(String& response, int sock){
 /* ********************** request *************************** */
 
 #if defined(SIGALRM) && defined(HAVE_SIGSETJMP) && defined(HAVE_SIGLONGJMP)
-#	define WE_CAN_USE_ALARM
+#	define PA_USE_ALARM
 #endif
 
-#ifdef WE_CAN_USE_ALARM
+#ifdef PA_USE_ALARM
 static sigjmp_buf timeout_env;
 static void timeout_handler(int sig){
     siglongjmp(timeout_env, 1); 
@@ -191,50 +191,54 @@ static void http_request(String& response,
 			origin_string, 
 			"zero hostname");  //never
 
-#ifdef WE_CAN_USE_ALARM
+#ifdef PA_USE_ALARM
     signal(SIGALRM, timeout_handler); 
 #endif
 	int sock=-1;
-	try {
-#ifdef WE_CAN_USE_ALARM
-		if(sigsetjmp(timeout_env, 1))
-			throw Exception("http.timeout", 
-				origin_string, 
-				"timeout occured while retrieving document"); 
-		else {
-			alarm(timeout); 
+#ifdef PA_USE_ALARM
+	if(sigsetjmp(timeout_env, 1)) {
+		// stupid gcc [2.95.4] generated bad code
+		// which failed to handle sigsetjmp+throw: crashed inside of pre-throw code.
+		// rewritten simplier [though duplicating closesocket code]
+		if(sock>=0) 
+			closesocket(sock); 
+		throw Exception("http.timeout", 
+			origin_string, 
+			"timeout occured while retrieving document"); 
+	} else {
+		alarm(timeout); 
 #endif
-			struct sockaddr_in dest;
+	try {
+		struct sockaddr_in dest;
+	
+    	if(!set_addr(&dest, host, port))
+			throw Exception("http.host", 
+				origin_string, 
+				"can not resolve hostname \"%s\"", host); 
 		
-    		if(!set_addr(&dest, host, port))
-				throw Exception("http.host", 
-					origin_string, 
-					"can not resolve hostname \"%s\"", host); 
-			
-			if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/))<0)
-				throw Exception("http.connect", 
-					origin_string, 
-					"can not make socket: %s (%d)", strerror(errno), errno); 
-			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest)))
-				throw Exception("http.connect", 
-					origin_string, 
-					"can not connect to host \"%s\": %s (%d)", host, strerror(errno), errno); 
-			size_t request_size=strlen(request);
-			if(send(sock, request, request_size, 0)!=(ssize_t)request_size)
-				throw Exception("http.connect", 
-					origin_string, 
-					"error sending request: %s (%d)", strerror(errno), errno); 
+		if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/))<0)
+			throw Exception("http.connect", 
+				origin_string, 
+				"can not make socket: %s (%d)", strerror(errno), errno); 
+		if(connect(sock, (struct sockaddr *)&dest, sizeof(dest)))
+			throw Exception("http.connect", 
+				origin_string, 
+				"can not connect to host \"%s\": %s (%d)", host, strerror(errno), errno); 
+		size_t request_size=strlen(request);
+		if(send(sock, request, request_size, 0)!=(ssize_t)request_size)
+			throw Exception("http.connect", 
+				origin_string, 
+				"error sending request: %s (%d)", strerror(errno), errno); 
 
-			http_read_response(response, sock); 
-			if(sock>=0) 
-				closesocket(sock); 
-#ifdef WE_CAN_USE_ALARM
-		}
+		http_read_response(response, sock); 
+		closesocket(sock); 
+#ifdef PA_USE_ALARM
+		alarm(0); 
 #endif
 	} catch(...) {
 		if(sock>=0) 
 			closesocket(sock); 
-#ifdef WE_CAN_USE_ALARM
+#ifdef PA_USE_ALARM
 		alarm(0); 
 #endif
 		/*re*/throw;
