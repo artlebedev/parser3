@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.67 2001/04/03 16:34:28 paf Exp $
+	$Id: pa_string.C,v 1.68 2001/04/03 17:01:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -505,7 +505,7 @@ bool String::match(const String *aorigin,
 			tables=pcre_maketables();
 		}
 	}
-	const char *pattern=regexp.cstr();
+	const char *pattern=regexp.cstr(UL_AS_IS);
 	const char *errptr;
 	int erroffset;
     int option_bits[2];  regex_options(options?options->cstr():0, option_bits);
@@ -528,7 +528,7 @@ bool String::match(const String *aorigin,
 	}
 
 	int startoffset=0;
-	const char *subject=cstr();
+	const char *subject=cstr(UL_AS_IS);
 	int length=strlen(subject);
 	int ovecsize;
 	int *ovector=(int *)malloc(sizeof(int)*

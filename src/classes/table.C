@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.47 2001/04/03 08:23:06 paf Exp $
+	$Id: table.C,v 1.48 2001/04/03 17:01:01 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -72,11 +72,8 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, *vfilename, 
 		method_name, "file name must not be junction");
 
-	// forcing untaint language
-	String lfilename(pool);
-	lfilename.append(vfilename->as_string(), String::UL_FILE_NAME, true);
 	// loading text
-	char *data=file_read_text(pool, r.absolute(lfilename));
+	char *data=file_read_text(pool, r.absolute(vfilename->as_string()));
 
 	// parse columns
 	Array *columns;
@@ -125,11 +122,6 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, *vtable_name, 
 		method_name, "file name must not be junction");
 
-	// forcing untaint language
-	String ltable_name(pool);
-	ltable_name.append(vtable_name->as_string(),
-		String::UL_FILE_NAME, true);
-
 	Table& table=static_cast<VTable *>(r.self)->table();
 
 	String sdata(pool);
@@ -168,7 +160,8 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	}
 
 	// write
-	file_write(pool, r.absolute(ltable_name), sdata.cstr(), sdata.size(), true);
+	file_write(pool, r.absolute(vtable_name->as_string()), 
+		sdata.cstr(), sdata.size(), true);
 }
 
 static void _count(Request& r, const String&method_name, Array *) {

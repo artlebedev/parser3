@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.17 2001/04/03 08:23:05 paf Exp $
+	$Id: file.C,v 1.18 2001/04/03 17:01:01 paf Exp $
 */
 
 #include "pa_request.h"
@@ -31,13 +31,8 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, vfile_name, 
 		method_name, "file name must not be junction");
 
-	// forcing untaint language
-	String lfile_name(pool);
-	lfile_name.append(vfile_name.as_string(),
-		String::UL_FILE_NAME, true);
-
 	// save
-	static_cast<VFile *>(r.self)->save(r.absolute(lfile_name));
+	static_cast<VFile *>(r.self)->save(r.absolute(vfile_name.as_string()));
 }
 
 static void _delete(Request& r, const String& method_name, Array *params) {
@@ -48,13 +43,8 @@ static void _delete(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, vfile_name, 
 		method_name, "file name must not be junction");
 
-	// forcing untaint language
-	String lfile_name(pool);
-	lfile_name.append(vfile_name.as_string(),
-		String::UL_FILE_NAME, true);
-		
 	// unlink
-	file_delete(pool, r.absolute(lfile_name));
+	file_delete(pool, r.absolute(vfile_name.as_string()));
 }
 
 static void _find(Request& r, const String& method_name, Array *params) {
@@ -65,10 +55,7 @@ static void _find(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, vfile_name, 
 		method_name, "file name must not be junction");
 
-	// forcing untaint language
-	String lfile_name(pool);
-	lfile_name.append(vfile_name.as_string(),
-		String::UL_FILE_NAME, true);
+	const String &lfile_name=vfile_name.as_string();
 
 	// passed file name simply exists in current dir
 	if(file_readable(r.absolute(lfile_name))) {
@@ -106,15 +93,12 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, vfile_name, 
 		method_name, "file name must not be junction");
 
-	// forcing untaint language
-	String lfile_name(pool);
-	lfile_name.append(vfile_name.as_string(),
-		String::UL_FILE_NAME, true);
+	const String& lfile_name=vfile_name.as_string();
 
 	void *data;  size_t size;
 	file_read(pool, r.absolute(lfile_name), data, size, false/*binary*/);
 
-	char *user_file_name=params->size()==1?lfile_name.cstr()
+	char *user_file_name=params->size()==1?lfile_name.cstr(String::UL_FILE_NAME)
 		:static_cast<Value *>(params->get(1))->as_string().cstr();
 	
 	const String *mime_type=0;

@@ -25,22 +25,22 @@ $n
 
 @post-process[data]
 #(<BR>$data)<BR>
-^data.match{1}[g]{X}
+^data.match[1][g]{X}
 
 @mt[s;m]
-$m ^if(^s.match{$:m}[i]){matches}{do not match} $s<BR>
+$m ^if(^s.match[$:m][i]){matches}{do not match} $s<BR>
 
 @main[]
 first chars!<BR>
 ^rem{
 $r[1223]
-^^"$r".match{2}[i]{(^$match)}=^r.match{2}[i]{($match)}<BR>
-^^"$r".match{2}[g]{(^$match)}=^r.match{2}[g]{($match)}<BR>
-^^"$r".match{2+}[g]{(^$match)}=^r.match{2+}[g]{($match)}<BR>
+^^"$r".match[2][i]{(^$match)}=^r.match[2][i]{($match)}<BR>
+^^"$r".match[2][g]{(^$match)}=^r.match[2][g]{($match)}<BR>
+^^"$r".match[2+][g]{(^$match)}=^r.match[2+][g]{($match)}<BR>
 <HR>
 $s[abcﬂ]
-$sm[^s.match{(.)}[g]]
-^^"$s".match{(.)}[g]:<BR>
+$sm[^s.match[(.)][g]]
+^^"$s".match[(.)][g]:<BR>
 ^sm.menu{
 	^line[]:<BR>
 	^$pre-match=$pre-match<BR>
@@ -49,8 +49,8 @@ $sm[^s.match{(.)}[g]]
 	^$1=$1<BR>
 }
 <HR>
-$sm[^s.match{(.)}[]]
-^^"$s".match{(.)}[]:<BR>
+$sm[^s.match[(.)][]]
+^^"$s".match[(.)][]:<BR>
 ^sm.menu{
 	^line[]:<BR>
 	^$pre-match=$pre-match<BR>

@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.38 2001/04/03 07:54:25 paf Exp $
+	$Id: pa_common.C,v 1.39 2001/04/03 17:01:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -53,7 +53,7 @@ char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_prob
 bool file_read(Pool& pool, const String& file_spec, 
 			   void*& data, size_t& size, bool as_text,
 			   bool fail_on_read_problem) {
-	char *fname=file_spec.cstr();
+	char *fname=file_spec.cstr(String::UL_FILE_NAME);
 	int f;
     struct stat finfo;
 
@@ -100,7 +100,7 @@ void file_write(Pool& pool,
 				const void *data, size_t size, 
 				bool as_text/*, 
 				bool exclusive*/) {
-	char *fname=file_spec.cstr();
+	char *fname=file_spec.cstr(String::UL_FILE_NAME);
 	int f;
 	if(access(fname, F_OK)!=0) {/*no*/
 		if((f=open(fname, O_WRONLY|O_CREAT|_O_BINARY, 0666))>0)
@@ -132,14 +132,14 @@ void file_write(Pool& pool,
 }
 
 void file_delete(Pool& pool, const String& file_spec) {
-	if(unlink(file_spec.cstr())!=0)
+	if(unlink(file_spec.cstr(String::UL_FILE_NAME))!=0)
 		PTHROW(0, 0, 
 			&file_spec, 
 			"unlink failed: %s (#%d)", strerror(errno), errno);
 }
 
 bool file_readable(const String& file_spec) {
-    return access(file_spec.cstr(), R_OK)==0;
+    return access(file_spec.cstr(String::UL_FILE_NAME), R_OK)==0;
 }
 
 char *getrow(char **row_ref, char delim) {

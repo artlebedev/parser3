@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.31 2001/04/03 16:34:26 paf Exp $
+	$Id: string.C,v 1.32 2001/04/03 17:01:01 paf Exp $
 */
 
 #include "pa_request.h"
@@ -146,7 +146,6 @@ struct Replace_action_info {
 	Request *request;  const String *origin;
 	const String *src;  String *dest;
 	Value *replacement_code;
-	bool first_time;
 	const String *post_match;
 };
 static void replace_row_action(Table& table, Array *row, int start, int finish, 
@@ -155,13 +154,12 @@ static void replace_row_action(Table& table, Array *row, int start, int finish,
 	if(row) { // begin&middle
 		// piece from last match['start'] to beginning of this match['finish']
 		if(start!=finish)
-			ai.dest->APPEND_CONST("-");//ai.dest->append(ai.src->piece(start, finish), String::UL_PASS_APPENDED);
+			ai.dest->append(ai.src->piece(start, finish), String::UL_PASS_APPENDED);//ai.dest->APPEND_CONST("-");
 		// store found parts in one-record Vtable
-		if(ai.first_time) { // begin
-			ai.first_time=false;
-			table+=row;
-		} else
+		if(table.size()) // middle
 			table.put(0, row);
+		else // begin
+			table+=row;
 		{ // execute 'replacement_code' in 'table' context
 			VTable& vtable=*new(table.pool()) VTable(table.pool(), &table);
 			vtable.set_name(*ai.origin);
@@ -181,16 +179,16 @@ static void replace_row_action(Table& table, Array *row, int start, int finish,
 }
 
 /** search/replace
-	^string.match{regexp}[options]
-	^string.match{regexp}[options]{replacement-code}
+	^string.match[regexp][options]
+	^string.match[regexp][options]{replacement-code}
 */
 static void _match(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 	const String& src=*static_cast<VString *>(r.self)->get_string();
 
 	Value& regexp=*static_cast<Value *>(params->get(0));
-	// forcing {this param type}
-	r.fail_if_junction_(false, regexp, method_name, "regexp must be junction");
+	// forcing [this param type]
+	r.fail_if_junction_(true, regexp, method_name, "regexp must not be junction");
 
 	const String *options=0;
 	if(params->size()>1) {
@@ -205,7 +203,7 @@ static void _match(Request& r, const String& method_name, Array *params) {
 	Table *table;
 	if(params->size()<3) { // search
 		if(src.match(&method_name, 
-			r.process(regexp).as_string(), options,
+			regexp.as_string(), options,
 			&table,
 			search_row_action, 0)) {
 			// matched
@@ -227,7 +225,6 @@ static void _match(Request& r, const String& method_name, Array *params) {
 			&r, &method_name,
 			&src, &dest,
 			&replacement_code,
-			true,
 			&src
 		};
 		src.match(&method_name, 
@@ -270,8 +267,8 @@ void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 	// ^string.rsplit[delim]
 	vclass.add_native_method("rsplit", Method::CT_DYNAMIC, _rsplit, 1, 1);
 
-	// ^string.match{regexp}[options]
-	// ^string.match{regexp}[options]{replacement-code}
+	// ^string.match[regexp][options]
+	// ^string.match[regexp][options]{replacement-code}
 	vclass.add_native_method("match", Method::CT_DYNAMIC, _match, 1, 3);
 }	
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.30 2001/04/03 07:32:46 paf Exp $
+	$Id: untaint.C,v 1.31 2001/04/03 17:01:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -43,7 +43,11 @@ inline bool need_file_encode(unsigned char c){
     if((c>='0') &&(c<='9') ||(c>='A') &&(c<='Z') ||(c>='a') &&(c<='z')) 
 		return false;
 
-    return !strchr("./", c);
+    return !strchr(
+#ifdef WIN32
+		":\\"
+#endif
+		"./", c);
 }
 inline bool need_uri_encode(unsigned char c){
     if((c>='0') &&(c<='9') ||(c>='A') &&(c<='Z') ||(c>='a') &&(c<='z')) 
@@ -75,7 +79,7 @@ static bool typo_present(Array::Item *value, const void *info) {
 	@test optimize whitespaces for all but 'html'
 	@todo fix theoretical \n mem overrun in TYPO replacements
 */
-char *String::store_to(char *dest) const {
+char *String::store_to(char *dest, Untaint_lang lang) const {
 	// $MAIN:html-typo table
 	Table *user_typo_table=static_cast<Table *>(pool().tag());
 	Table *typo_table=user_typo_table?user_typo_table:default_typo_table;
@@ -89,7 +93,7 @@ char *String::store_to(char *dest) const {
 
 			// WARNING:
 			//	string can grow only UNTAINT_TIMES_BIGGER
-			switch(row->item.lang) {
+			switch(lang==UL_UNKNOWN?row->item.lang:lang) {
 			case UL_CLEAN:
 				// clean piece
 			case UL_TAINTED:
