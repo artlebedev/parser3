@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.7 2001/03/12 20:55:14 paf Exp $
+	$Id: table.C,v 1.8 2001/03/12 20:59:27 paf Exp $
 */
 
 #include "pa_request.h"
@@ -137,6 +137,17 @@ static void _menu(Request& r, const String& method_name, Array *params) {
 	}
 }
 
+static void _empty(Request& r, const String&, Array *params) {
+	Table& table=r.self->as_vtable().table();
+	if(table.size()==0) {
+		Value& value=r.process(*static_cast<Value *>(params->get(0)));
+		r.write_pass_lang(value);
+	} else if(params->size()==2) {
+		Value& value=r.process(*static_cast<Value *>(params->get(1)));
+		r.write_pass_lang(value);
+	}
+}
+
 void initialize_table_class(Pool& pool, VClass& vclass) {
 	// ^table.set[data]  ^table.set[nameless;data]
 	vclass.add_native_method("set", _set, 1, 2);
@@ -155,4 +166,8 @@ void initialize_table_class(Pool& pool, VClass& vclass) {
 
 	// ^table.menu{code}  ^table.menu{code}[delim]
 	vclass.add_native_method("menu", _menu, 1, 2);
+
+	// ^table.empty{code-when-empty}  ^table.empty{code-when-empty}{code-when-not}
+	vclass.add_native_method("empty", _empty, 1, 2);
+
 }	
