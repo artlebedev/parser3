@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2002/09/23 09:50:18 $";
+static const char* IDENT_DATE_C="$Date: 2002/10/08 06:57:04 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -99,7 +99,7 @@ date_part_set:
 					&method_name,
 					"invalid datetime");
 		}
-	} else if(params->size()>=2) { // ^set(y;m;d[;h[;m[;s]]])
+	} else if(params->size()>=2) { // ^create(y;m;d[;h[;m[;s]]])
 		tm tmIn={0};
 		tmIn.tm_isdst=-1;
 		tmIn.tm_year=NN_year_to_NNNN(params->as_int(0, "year must be int", r));
