@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.25 2001/03/08 17:24:46 paf Exp $
+  $Id: pa_vclass.h,v 1.26 2001/03/09 04:47:27 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -7,7 +7,6 @@
 
 #include "pa_valiased.h"
 #include "pa_vhash.h"
-#include "pa_vstring.h"
 #include "pa_vjunction.h"
 
 #define CLASS_NAME "CLASS"
@@ -20,27 +19,10 @@ public: // Value
 	const char *type() const { return "class"; }
 
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
-	Value *get_element(const String& aname) {
-		// $NAME=my name
-		if(aname==NAME_NAME)
-			return NEW VString(fclass_alias->name());
-		// $CLASS=my class=myself
-		if(aname==CLASS_NAME)
-			return fclass_alias;
-		// $BASE=my parent
-		if(aname==BASE_NAME)
-			return fclass_alias->base();
-		// $method=junction(self+class+method)
-		if(Junction *junction=get_junction(*this, aname))
-			return NEW VJunction(*junction);
-		// $field=static field
-		return get_field(aname);
-	}
+	Value *get_element(const String& aname);
 
 	// object_class, operator_class: (field)=value - static values only
-	void put_element(const String& name, Value *value) {
-		set_field(name, value);
-	}
+	void put_element(const String& name, Value *value);
 
 	// object_class, object_instance: object_class
 	VClass *get_class() { return this; }

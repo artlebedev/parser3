@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.79 2001/03/08 17:14:53 paf Exp $
+  $Id: compile.y,v 1.80 2001/03/09 04:47:29 paf Exp $
 */
 
 %{
@@ -496,7 +496,7 @@ write_str_literal: STRING {
 };
 
 empty_double_value: /* empty */ { $$=VL(NEW VDouble(POOL, 0)) };
-empty_string_value: /* empty */ { $$=VL(NEW VString(POOL)) };
+empty_string_value: /* empty */ { $$=VL(NEW VString()) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%

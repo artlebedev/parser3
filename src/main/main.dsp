@@ -188,15 +188,7 @@ SOURCE=..\include\pa_array.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\include\pa_bool.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\include\pa_common.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_double.h
 # End Source File
 # Begin Source File
 
@@ -296,7 +288,15 @@ SOURCE=..\include\pa_wwrapper.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\classes\_string.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\root.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\string.C
 # End Source File
 # End Group
 # End Target

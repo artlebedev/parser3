@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.19 2001/03/08 17:14:51 paf Exp $
+  $Id: pa_vmframe.h,v 1.20 2001/03/09 04:47:27 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -16,14 +16,16 @@ public: // Value
 	const char *type() const { return "method_frame"; }
 	// frame: my or self_transparent
 	Value *get_element(const String& name) { 
-		Value *result=static_cast<Value *>(my->get(name));
-		if(!result)
-			result=fself->get_element(name);
-		return result; 
+		if(my) {
+			Value *result=static_cast<Value *>(my->get(name));
+			if(result)
+				return result;
+		}
+		return fself->get_element(name); 
 	}
 	// frame: my or self_transparent
 	void put_element(const String& name, Value *value){ 
-		if(!my->put_replace(name, value))
+		if(!(my && my->put_replace(name, value)))
 			fself->put_element(name, value);
 	}
 

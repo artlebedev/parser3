@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.20 2001/03/08 13:52:09 paf Exp $
+  $Id: pa_request.h,v 1.21 2001/03/09 04:47:27 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -50,10 +50,6 @@ private: // core data
 	Hash fclasses;
 	Array fclasses_array;
 
-	// contexts
-	Value *self, *root, *rcontext;
-	WContext *wcontext;
-	
 	// execution stack
 	Stack stack;
 
@@ -61,8 +57,13 @@ public:
 
 	void use(char *file, String *alias); // core.C
 	Value& autocalc(Value& value, bool make_string=true); // execute.C
-	void write(Value& avalue); // execute.C
 
+public:
+
+	// contexts
+	Value *self, *root, *rcontext;
+	WContext *wcontext;
+	
 private: // core.C
 
 	char *execute_MAIN();

@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.45 2001/03/08 13:13:41 paf Exp $
+$Id: core.C,v 1.46 2001/03/09 04:47:29 paf Exp $
 */
 
 #include "pa_request.h"
@@ -8,9 +8,11 @@ $Id: core.C,v 1.45 2001/03/08 13:13:41 paf Exp $
 #include "pa_vclass.h"
 
 #include <stdio.h>
+#include "classes/_string.h"
 
 void core() {
 	Pool pool;
+	initialize_string_class(pool);
 	Request request(pool);
 	request.core();
 }

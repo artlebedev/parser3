@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.78 2001/03/08 17:14:53 paf Exp $
+  $Id: execute.C,v 1.79 2001/03/09 04:47:29 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -215,7 +215,7 @@ void Request::execute(const Array& ops) {
 		case OP_REDUCE_RWPOOL:
 			{
 				String *string=wcontext->get_string();
-				Value *value=string?NEW VString(*string):NEW VString(pool());
+				Value *value=string?NEW VString(*string):NEW VString();
 				wcontext=static_cast<WContext *>(POP());
 				rcontext=POP();
 				PUSH(value);
@@ -232,7 +232,7 @@ void Request::execute(const Array& ops) {
 				// from "$a $b" part of expression taking only string value,
 				// ignoring any other content of wcontext
 				String *string=wcontext->get_string();
-				Value *value=string?NEW VString(*string):NEW VString(pool());
+				Value *value=string?NEW VString(*string):NEW VString();
 				wcontext=static_cast<WContext *>(POP());
 				PUSH(value);
 				break;
@@ -600,8 +600,4 @@ Value& Request::autocalc(Value& value, bool make_string) {
 		return *result;
 	} else
 		return value;
-}
-
-void Request::write(Value& avalue) {
-	wcontext->write(avalue);
 }

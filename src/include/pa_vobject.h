@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vobject.h,v 1.14 2001/03/08 17:24:46 paf Exp $
+  $Id: pa_vobject.h,v 1.15 2001/03/09 04:47:27 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -7,6 +7,7 @@
 
 #include "pa_valiased.h"
 #include "pa_vjunction.h"
+#include "pa_vclass.h"
 
 class Temp_class_alias;
 

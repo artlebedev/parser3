@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.23 2001/03/08 13:13:39 paf Exp $
+  $Id: pa_wcontext.h,v 1.24 2001/03/09 04:47:27 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -41,10 +41,6 @@ public: // usage
 
 	bool constructing() { return fconstructing; }
 
-/*	// retrives the resulting value
-	Value *object() const {
-		return fvalue;
-	}*/
 	// retrives the resulting value
 	// that can be VString if value==0 or the Value object
 	Value *result() const {
