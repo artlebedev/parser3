@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.10 2001/01/29 12:13:14 paf Exp $
+  $Id: pa_pool.h,v 1.11 2001/01/29 14:00:39 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -20,9 +20,6 @@ public:
 
 	String& make_string() { 
 		return *new(this) String(this);
-	}
-	String& make_string(char *src) {
-		return *new(this) String(this, src);
 	}
 	Hash& make_hash() {
 		return *new(this) Hash(this, false);

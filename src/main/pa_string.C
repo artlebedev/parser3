@@ -1,9 +1,10 @@
 /*
-  $Id: pa_string.C,v 1.12 2001/01/29 12:21:35 paf Exp $
+  $Id: pa_string.C,v 1.13 2001/01/29 14:00:39 paf Exp $
 */
 
 #include <string.h>
 
+#include "pa_pool.h"
 #include "pa_string.h"
 #include "pa_hash.h"
 
@@ -11,8 +12,8 @@ void *String::operator new(size_t size, Pool *apool) {
 	return apool->malloc(size);
 }
 
-void String::construct(Pool *apool) {
-	pool=apool;
+String::String(Pool *apool) :
+	pool(apool) {
 	head.count=curr_chunk_rows=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
 	head.preallocated_link=0;
@@ -89,7 +90,7 @@ String::String(String& src) {
 	fsize=src.fsize;
 }
 
-String& String::operator += (char *src) {
+String& String::real_append(STRING_APPEND_PARAMS) {
 	if(!src)
 		return *this;
 	int len=strlen(src);
@@ -101,6 +102,10 @@ String& String::operator += (char *src) {
 
 	append_here->item.ptr=src;
 	fsize+=append_here->item.size=len;
+#ifndef NO_STRING_ORIGIN
+	append_here->item.origin=origin;
+	append_here->item.line=line;
+#endif
 	append_here++; fused_rows++;
 
 	return *this;

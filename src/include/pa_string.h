@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.8 2001/01/29 12:00:45 paf Exp $
+  $Id: pa_string.h,v 1.9 2001/01/29 14:00:39 paf Exp $
 */
 
 /*
@@ -18,11 +18,24 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
+#ifdef HAVE_CONFIG_H
+#include "pa_config.h"
+#endif
+
 #include <stddef.h>
 
 #include "pa_types.h"
 
 class Pool;
+
+#ifndef NO_STRING_ORIGIN
+#	define STRING_APPEND_PARAMS char *src, char *origin, uint line
+#	define APPEND(src, origin, line) real_append(src, origin, line)
+#else
+#	define STRING_APPEND_PARAMS char *src
+#	define APPEND(src, origin, line) real_append(src)
+#endif
+
 
 class String {
 public:
@@ -37,7 +50,7 @@ public:
 	size_t size() { return fsize; }
 	int used_rows() { return fused_rows; }
 	char *c_str();
-	String& operator += (char *src);
+	String& real_append(STRING_APPEND_PARAMS);
 	bool operator == (String& src);
 
 	uint hash_code();
@@ -56,6 +69,10 @@ private:
 			struct {
 				char *ptr;  // pointer to the start of string fragment
 				size_t size;  // length of the fragment
+#ifndef NO_STRING_ORIGIN
+				char *origin;  // macros file name | load file name | sql query text
+				uint line; // file line no | record no
+#endif
 			} item;
 			Chunk *link;  // link to the next chunk in chain
 		} rows[CR_PREALLOCATED_COUNT];
@@ -85,14 +102,7 @@ private:
 	// new&constructors made private to enforce factory manufacturing at pool
 	void *operator new(size_t size, Pool *apool);
 
-	void construct(Pool *apool);
-	String(Pool *apool) { 
-		construct(apool); 
-	}
-	String(Pool *apool, char *src) {
-		construct(apool);
-		*this+=src;
-	}
+	String(Pool *apool);
 
 	bool chunk_is_full() {
 		return append_here == link_row;
