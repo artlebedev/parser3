@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.54 2001/04/11 13:03:44 paf Exp $
+	$Id: pa_globals.C,v 1.55 2001/04/12 15:02:41 paf Exp $
 */
 
 #include "pcre.h"
@@ -25,6 +25,7 @@
 #include "pa_sql_driver_manager.h"
 #include "_mail.h"
 #include "_image.h"
+#include "_unknown.h"
 
 String *html_typo_name;
 String *content_type_name;
@@ -48,6 +49,7 @@ String *empty_string;
 String *auto_method_name;
 String *main_method_name;
 
+String *unknown_class_name;
 String *op_class_name;
 String *main_class_name;
 String *string_class_name;
@@ -149,6 +151,7 @@ void pa_globals_init(Pool& pool) {
 	auto_method_name=NEW String(pool, AUTO_METHOD_NAME);
 	main_method_name=NEW String(pool, MAIN_METHOD_NAME);
 
+	unknown_class_name=NEW String(pool, UNKNOWN_CLASS_NAME);
 	op_class_name=NEW String(pool, OP_CLASS_NAME);
 	main_class_name=NEW String(pool, MAIN_CLASS_NAME);
 	string_class_name=NEW String(pool, STRING_CLASS_NAME);
@@ -260,6 +263,7 @@ void pa_globals_init(Pool& pool) {
 	pcre_tables=pcre_maketables();
 
 	// stateless classes
+	initialize_unknown_class(pool, *(unknown_class=NEW VStateless_class(pool)));  unknown_class->set_name(*unknown_class_name);
 	initialize_string_class(pool, *(string_class=NEW VStateless_class(pool)));  string_class->set_name(*string_class_name);
 	initialize_double_class(pool, *(double_class=NEW VStateless_class(pool)));  double_class->set_name(*double_class_name);
 	initialize_int_class(pool, *(int_class=NEW VStateless_class(pool)));  int_class->set_name(*int_class_name);

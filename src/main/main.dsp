@@ -469,6 +469,10 @@ SOURCE=..\classes\_table.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\classes\_unknown.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\double.C
 # End Source File
 # Begin Source File
@@ -510,6 +514,10 @@ SOURCE=..\classes\string.C
 # Begin Source File
 
 SOURCE=..\classes\table.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\unknown.C
 # End Source File
 # End Group
 # Begin Group "sql"
