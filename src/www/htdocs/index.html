@@ -31,6 +31,23 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
+$form:a
+<HR>
+^if($form:photo){
+upload file:<BR>
+$face[^image:measure[$form:photo]]
+^$face.src=$face.src<BR>
+^$face.width=$face.width<BR>
+^$face.height=$face.height<BR>
+<HR>
+}
+gif file class:<BR>
+$face[^image:measure[^file:load[001004paf(c)lena_karin.gif]]]
+^$face.src=$face.src<BR>
+^$face.width=$face.width<BR>
+^$face.height=$face.height<BR>
+^^face.html[]=^face.html[]<BR>
+<HR>
 gif:<BR>
 $face[^image:measure[001004paf(c)lena_karin.gif]]
 ^$face.src=$face.src<BR>
@@ -327,6 +344,7 @@ $response:location[http://parser3/123]
 ^$request:uri=$request:uri<BR>
 
 <form method=post>
+<input type=hidden name=a value=123>
 <table border=1 width=250><tr><td>$form:name</td></tr></table>
 <textarea name=name rows=5 cols=40>^untaint[html]{^default[$form:name;Пробный текст: А.Ф._Петросян <<Жизнь в Аду>>
 нажми Submit]}</textarea><BR>

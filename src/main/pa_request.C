@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.109 2001/04/10 11:24:00 paf Exp $
+	$Id: pa_request.C,v 1.110 2001/04/11 07:44:15 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -126,16 +126,15 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				size_t value=element?(size_t)element->as_double():0;
 				size_t post_max_size=value?value:MAX_POST_SIZE_DEFAULT;
 				
-				size_t post_size=max(0, min(info.content_length, post_max_size));
-				if(post_size) {
+				if(size_t limit=max(0, min(info.content_length, post_max_size))) {
 					// read POST data
-					post_data=(char *)malloc(post_size);
-					size_t read_size=SAPI::read_post(pool(), post_data, post_size);
-					if(read_size!=post_size)
+					post_data=(char *)malloc(limit);
+					post_size=SAPI::read_post(pool(), post_data, limit);
+					if(post_size!=limit)
 						THROW(0, 0, 
 							0, 
-							"post_size(%d)!=read_size(%d)", 
-								post_size, read_size);
+							"post_size(%d)!=limit(%d)", 
+								post_size, limit);
 				}
 			}
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.4 2001/04/10 14:18:28 paf Exp $
+	$Id: image.C,v 1.5 2001/04/11 07:44:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -303,19 +303,18 @@ static void _html(Request& r, const String& method_name, Array *params) {
 	tag << "<img";
 
 	Hash& fields=static_cast<VImage *>(r.self)->fields();
-	Hash *temporary=0;
+	Hash *attribs=0;
 
-	if(params->size()) {
-		if(temporary=static_cast<Value *>(params->get(0))->get_hash()) {
+	if(params->size())
+		if(attribs=static_cast<Value *>(params->get(0))->get_hash()) {
 			Attrib_info attrib_info={&tag, 0};
-			temporary->for_each(append_attrib_pair, &attrib_info);
+			attribs->for_each(append_attrib_pair, &attrib_info);
 		} else
 			PTHROW(0, 0,
 				&method_name,
-				"parameter must be hash");
-	}
+				"attributes must be must be hash");
 
-	Attrib_info attrib_info={&tag, temporary};
+	Attrib_info attrib_info={&tag, attribs};
 	fields.for_each(append_attrib_pair, &attrib_info);
 	tag << ">";
 	r.write_pass_lang(tag);

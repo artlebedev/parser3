@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.22 2001/04/09 11:30:44 paf Exp $
+	$Id: pa_vform.C,v 1.23 2001/04/11 07:44:17 paf Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
@@ -170,6 +170,7 @@ void VForm::AppendFormEntry(const char *aname,
 		value=NEW VString(string);
 	}
 
+	SAPI::log(pool(), "AppendFormEntry %s", sname.cstr());
 	fields.put(sname, value);
 }
 
