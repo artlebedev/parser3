@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: classes.C,v 1.9 2001/09/26 10:32:25 parser Exp $
+	$Id: classes.C,v 1.10 2001/09/26 13:39:57 parser Exp $
 */
 
 #include "classes.h"
@@ -31,8 +31,8 @@ Methoded_array::Methoded_array(Pool& apool) : Array(apool) {
 
 static void configure_admin_one(Array::Item *value, void *info) {
 	Request& r=*static_cast<Request *>(info);
-	Methoded *methoded=static_cast<Methoded *>(value);
-	methoded->configure_admin(r);
+	if(Methoded *methoded=static_cast<Methoded *>(value))
+		methoded->configure_admin(r);
 }
 
 void Methoded_array::configure_admin(Request& r) {
