@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.29 2001/04/19 16:28:10 paf Exp $
+	$Id: file.C,v 1.30 2001/04/19 16:40:05 paf Exp $
 */
 
 #include "pa_request.h"
@@ -108,7 +108,8 @@ static void pass_cgi_header_attribute(Array::Item *value, void *info) {
 	Hash& hash=*static_cast<Hash *>(info);
 	int colon_pos=string.pos(":", 1);
 	if(colon_pos>0)
-		hash.put(string.mid(0, colon_pos), &string.mid(colon_pos+1, string.size()));
+		hash.put(string.mid(0, colon_pos), 
+		new(string.pool()) VString(string.mid(colon_pos+1, string.size())));
 }
 /**
 	^exec[file-name]
@@ -187,17 +188,17 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	const String in(pool, r.post_data, r.post_size);
 	String out(pool);
 	String& err=*new(pool) String(pool);
-	int exit_code=pa_exec(script_name, &env, argv,
-		in, out, err);
+//	out.APPEND_CONST("content-type:text/plain\nheader:test-header\n\ntest-body");
+	int exit_code=pa_exec(script_name, &env, argv, in, out, err);
 
 	VFile& self=*static_cast<VFile *>(r.self);
 	// construct with 'out' body and header
 	int delim_size;
-	const char *delim="\n";
-	int pos=out.pos("\n\n", delim_size=2);
+	const char *eol_marker="\r\n"; size_t eol_marker_size=2;
+	int pos=out.pos("\r\n\r\n", delim_size=4);
 	if(pos<0) {
-		delim="\r\n";
-		pos=out.pos("\r\n\r\n", delim_size=4);
+		eol_marker="\n"; eol_marker_size=1;
+		pos=out.pos("\n\n", delim_size=2);
 	}
 	if(pos<0) {
 		delim_size=0; // calm down, compiler
@@ -210,16 +211,15 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	const String& header=out.mid(0, pos);
 	const String& body=out.mid(pos+delim_size, out.size());
 
-	// todo header to $fields
-	{
-		Array rows(pool);
-		size_t pos_after=0;
-		header.split(rows, &pos_after, delim, 1, String::UL_CLEAN);
-		rows.for_each(pass_cgi_header_attribute, &self.fields());
-	}
-
 	// body
 	self.set(false/*not tainted*/, body.cstr(String::UL_AS_IS), body.size());
+
+	// header to $fields
+	{
+		Array rows(pool);
+		header.split(rows, 0, eol_marker, eol_marker_size, String::UL_CLEAN);
+		rows.for_each(pass_cgi_header_attribute, &self.fields());
+	}
 
 	// $exit-code
 	self.fields().put(
