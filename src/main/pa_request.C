@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.73 2001/03/24 10:54:46 paf Exp $
+	$Id: pa_request.C,v 1.74 2001/03/24 10:59:48 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -39,7 +39,7 @@ Request::Request(Pool& apool,
 	fclasses(apool),
 	fdefault_lang(adefault_lang), flang(adefault_lang),
 	info(ainfo),
-	fdefault_content_type(0),
+	default_content_type(0),
 	used_files(apool)
 {
 	// root superclass, 
@@ -161,7 +161,9 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 		// $MAIN:defaults
 		Value *defaults=main_class?main_class->get_element(*defaults_name):0;
-		fdefault_content_type=defaults?defaults->get_element(*content_type_name):0;
+		default_content_type=defaults?
+			defaults->get_element(*content_type_name)
+			:NEW VString(*default_content_type_string);
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);
@@ -391,9 +393,7 @@ void Request::output_result(const String& body_string, bool header_only) {
 	cookie.output_result();
 	
 	// set default content-type
-	if(!fdefault_content_type)
-		fdefault_content_type=NEW VString(*NEW String(pool(), "text/html"));
-	response.fields().put_dont_replace(*content_type_name, fdefault_content_type);
+	response.fields().put_dont_replace(*content_type_name, default_content_type);
 
 	// prepare header: $response:fields without :body
 	response.fields().for_each(add_header_attribute, /*excluding*/ body_name);

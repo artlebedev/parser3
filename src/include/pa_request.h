@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.67 2001/03/24 10:54:45 paf Exp $
+	$Id: pa_request.h,v 1.68 2001/03/24 10:59:47 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -190,7 +190,7 @@ private: // lang&raw
 private: // defaults
 
 	const String::Untaint_lang fdefault_lang;
-	Value *fdefault_content_type;
+	Value *default_content_type;
 
 private: // lang manipulation
 
