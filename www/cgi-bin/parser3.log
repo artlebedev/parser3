@@ -139,3 +139,7 @@ z
 [Fri Mar 29 18:23:15 2002] Y:/parser3project/parser3/www/htdocs/paul.html(0): 'send' message must not be code (parameter #1) [parser.runtime]
 [Fri Mar 29 18:23:53 2002] Y:/parser3project/parser3/www/htdocs/paul.html(0): 'send' message must not be code (parameter #1) [parser.runtime]
 [Fri Mar 29 18:24:00 2002] Y:/parser3project/parser3/www/htdocs/paul.html(0): 'send' message must not be code (parameter #1) [parser.runtime]
+[Thu Apr 04 11:42:42 2002] W:/nestle/www/auto.p(1): 'hosting.p' not found along MAIN:CLASS_PATH [parser.runtime]
+[Thu Apr 04 11:43:16 2002] W:/nestle/www/auto.p(1): 'hosting.p' not found along MAIN:CLASS_PATH [parser.runtime]
+[Thu Apr 04 11:47:05 2002] 'main' method not found [parser.runtime]
+[Thu Apr 04 11:48:42 2002] W:/nestle/www/auto.p(1): 'hosting.p' not found along MAIN:CLASS_PATH [parser.runtime]

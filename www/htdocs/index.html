@@ -7,7 +7,8 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^rolls2[]
+^voidparams[]
+#^rolls2[]
 #^cacheexpireschanging[]
 #^cacheexpiresfixed[]
 #^dateoffsets[]
@@ -115,6 +116,12 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@voidparams[]
+^voidparamsm[$form:field]
+
+@voidparamsm[p]
+^p.int(123)
 
 @rolls2[]
 $now[^date::now[]]

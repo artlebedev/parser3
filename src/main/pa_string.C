@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.149 2002/03/27 15:30:37 paf Exp $
+	$Id: pa_string.C,v 1.150 2002/04/04 13:42:51 paf Exp $
 */
 
 #include "pcre.h"
@@ -655,9 +655,11 @@ void String::join_chain(Pool& pool,
 	}
 }
 
-String& String::reconstruct(Pool& pool) const {
-	//_asm int 3;
+/// @test if in some piece were found no dict words, append it, not it's duplicate
+String& String::replace(Pool& pool, Dictionary& dict) const {
+//	return reconstruct(pool).replace_in_reconstructed(pool, dict);
 	String& result=*new(pool) String(pool);
+
 	STRING_FOREACH_ROW(
 		uchar joined_lang;
 		const char *joined_ptr;
@@ -668,20 +670,9 @@ IFNDEF_NO_STRING_ORIGIN(
 );
 		join_chain(pool, chunk, row, countdown,
 			joined_lang, joined_ptr, joined_size);
-
-		result.APPEND(joined_ptr, joined_size, joined_lang,
-			joined_origin_file, joined_origin_line);
-	);
-
-	return result;
-};
-
-String& String::replace_in_reconstructed(Pool& pool, Dictionary& dict) const {
-	//_asm int 3;
-	String& result=*new(pool) String(pool);
-	STRING_FOREACH_ROW(
-		const char *src=row->item.ptr; 
-		size_t src_size=row->item.size;
+		
+		const char *src=joined_ptr; 
+		size_t src_size=joined_size;
 		char *new_cstr=(char *)pool.malloc((size_t)ceil(src_size*dict.max_ratio()), 14);
 		char *dest=new_cstr;
 		while(src_size) {
@@ -700,15 +691,10 @@ String& String::replace_in_reconstructed(Pool& pool, Dictionary& dict) const {
 			}
 		}
 
-		result.APPEND(new_cstr, dest-new_cstr, 
-			row->item.lang,
-			row->item.origin.file, row->item.origin.line);
+		result.APPEND(new_cstr, dest-new_cstr, joined_lang,
+			joined_origin_file, joined_origin_line);
 	);
 	return result;
-}
-
-String& String::replace(Pool& pool, Dictionary& dict) const {
-	return reconstruct(pool).replace_in_reconstructed(pool, dict);
 }
 
 double String::as_double() const { 
