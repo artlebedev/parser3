@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.146 2002/02/22 12:25:45 paf Exp $
+	$Id: pa_string.C,v 1.147 2002/02/28 09:35:41 paf Exp $
 */
 
 #include "pcre.h"
@@ -314,14 +314,14 @@ const Origin& String::origin() const {
 		return empty_origin;
 	}
 	
-	// determining origin by last appended piece
-	// because first one frequently constant. 
+	// determining origin by first piece or last appended piece
+	// because any of them can be constant=without origin: 
 	// ex: ^load[/file] "document_root" + "/file"
 	// when last peice is constant, 
 	// ex: parser_root_auto_path{dynamic} / auto.p{const}
 	// using first piece
-	Origin& last_origin=append_here[-1].item.origin;
-	return last_origin.file ? last_origin : head.rows[0].item.origin;
+	Origin& first_origin=head.rows[0].item.origin;
+	return first_origin.file ? first_origin : append_here[-1].item.origin;
 }
 #endif
 
