@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.66 2001/04/03 15:35:24 paf Exp $
+	$Id: pa_string.C,v 1.67 2001/04/03 16:34:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -513,11 +513,10 @@ bool String::match(const String *aorigin,
 		&errptr, &erroffset,
 		tables);
 
-	if(!code) {
+	if(!code)
 		THROW(0, 0,
 			&regexp.piece(erroffset, regexp.size()),
-			errptr);
-	}
+			"match error - %s", errptr);
 	
 	int info_substrings=pcre_info(code, 0, 0);
 	if(info_substrings<0) {
@@ -556,7 +555,7 @@ bool String::match(const String *aorigin,
 		
 		if(exec_substrings==PCRE_ERROR_NOMATCH) {
 			(*pcre_free)(code);
-			(*row_action)(**table, 0/*last time, no row*/, info);
+			(*row_action)(**table, 0/*last time, no row*/, 0, 0, info);
 			return option_bits[1]!=0; // global=true+table, not global=false
 		}
 
@@ -578,15 +577,14 @@ bool String::match(const String *aorigin,
 			row+=&piece(ovector[i*2+0], ovector[i*2+1]); // .i column value
 		}
 		
-		(*row_action)(**table, &row, info);
+		(*row_action)(**table, &row, startoffset, ovector[0], info);
 
-		if(!option_bits[1]) { // not global
+		if(!option_bits[1] || !(startoffset=ovector[1])) { // not global | going to hang
 			(*pcre_free)(code);
-			(*row_action)(**table, 0/*last time, no row*/, info);
+			(*row_action)(**table, 0/*last time, no row*/, 0, 0, info);
 			return true;
 		}
 
-		startoffset=ovector[1];
 /*
 		if(option_bits[0] & PCRE_MULTILINE)
 			exec_option_bits|=PCRE_NOTBOL; // start of subject+startoffset not BOL

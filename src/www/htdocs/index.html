@@ -24,15 +24,19 @@ $n
 ($a,$b)
 
 @post-process[data]
-(<BR>$data)<BR>
+#(<BR>$data)<BR>
+^data.match{1}[g]{X}
 
 @mt[s;m]
 $m ^if(^s.match{$:m}[i]){matches}{do not match} $s<BR>
 
 @main[]
+first chars!<BR>
+^rem{
 $r[1223]
-^^"$r".match{2}[i]{!}=^r.match{2}[i]{($match)}<BR>
-^^"$r".match{2}[g]{!}=^r.match{2}[g]{($match)}<BR>
+^^"$r".match{2}[i]{(^$match)}=^r.match{2}[i]{($match)}<BR>
+^^"$r".match{2}[g]{(^$match)}=^r.match{2}[g]{($match)}<BR>
+^^"$r".match{2+}[g]{(^$match)}=^r.match{2+}[g]{($match)}<BR>
 <HR>
 $s[abcß]
 $sm[^s.match{(.)}[g]]
@@ -62,7 +66,7 @@ $sm[^s.match{(.)}[]]
 ^mt[$s;x]
 
 <HR>
-
+}
 $dest[^table:set[nameless]{
 $form:d11	d12	d13
 d21	d22	d23
@@ -189,7 +193,8 @@ $response:location[http://parser3/123]
 </ol>
 <HR>
 
-^${cookie:גמע}=${cookie:גמע}?<BR>
+^${coo1k0iAeB:גמע}=${cookie:גמע}?<BR>
+^${coo1k0iAeB:גמע}=${cookie:גמע}?<BR>
 ^$request:query=$request:query<BR>
 ^$request:uri=$request:uri<BR>
 
