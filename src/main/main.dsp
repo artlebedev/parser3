@@ -400,6 +400,10 @@ SOURCE=..\include\pa_uue.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_version.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\untaint.C
 # End Source File
 # End Target
