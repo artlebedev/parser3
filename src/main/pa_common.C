@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/09/18 12:40:38 $";
+static const char* IDENT_COMMON_C="$Date: 2002/09/20 13:42:48 $";
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -350,7 +350,17 @@ bool entry_exists(const String& file_spec) {
 }
 
 static bool entry_readable(const String& file_spec, bool need_dir) {
-    const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
+    char *fname=file_spec.cstr(String::UL_FILE_SPEC);
+	if(need_dir) {
+		size_t size=strlen(fname);
+		while(size) {
+			char c=fname[size-1];
+			if(c=='/' || c=='\\')
+				fname[--size]=0;
+			else
+				break;
+		}
+	}
 	struct stat finfo;
 	if(access(fname, R_OK)==0 && entry_exists(fname, &finfo)) {
 		bool is_dir=(finfo.st_mode&S_IFDIR) != 0;
