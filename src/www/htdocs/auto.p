@@ -1,4 +1,8 @@
 @auto[]
+$class_path[^table::set{path
+d:\y\parser3\src\www\classes
+}]
+
 $limits[
 	$.post_max_size(10*0x400*0x400)
 ]	

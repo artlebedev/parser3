@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.45 2001/07/24 09:45:27 parser Exp $
+	$Id: file.C,v 1.46 2001/08/06 12:23:11 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.45 2001/07/24 09:45:27 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.46 2001/08/06 12:23:11 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -239,8 +239,10 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			delim_size=0; // calm down, compiler
 			PTHROW(0, 0,
 				&method_name,
-				"output does not contain CGI header; exit code=%d; size=%u; text: \"%s\"", 
-					status, (uint)out.size(), out.cstr());
+				"output does not contain CGI header; exit code=%d; outsize=%u; out: \"%s\"; errsize=%u; err: \"%s\"", 
+					status, 
+					(uint)out.size(), out.cstr(),
+					(uint)err.size(), err.cstr());
 		}
 
 		const String& header=out.mid(0, pos);
