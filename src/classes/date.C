@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2002/08/05 11:28:09 $";
+static const char* IDENT_DATE_C="$Date: 2002/08/05 13:15:11 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -243,7 +243,7 @@ static Table *fill_month_days(Request& r,
 				tm tms={0,0,0,  _day, month, year-1900};
 				/*normalize*/mktime(&tms);
 
-				const int weekno_buf_size=2+1;
+				const int weekno_buf_size=2+1/*for stupid snprintfs*/ +1;
 
 				// http://www.merlyn.demon.co.uk/weekinfo.htm
 				const int FirstThurs[] = {7,5,4,3,2,7,6,5,4,2,1,7,6,4,3,2,1,6,5,4,3,1,7,6,5,3,2,1};
