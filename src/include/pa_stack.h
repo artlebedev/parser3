@@ -1,5 +1,5 @@
 /*
-  $Id: pa_stack.h,v 1.1 2001/02/21 17:36:30 paf Exp $
+  $Id: pa_stack.h,v 1.2 2001/02/22 13:33:24 paf Exp $
 */
 
 #ifndef PA_STACK_H
@@ -10,28 +10,30 @@
 class Stack : public Array {
 public:
 
-	Stack(Pool& apool) : Array(apool), top(0) {
+	Stack(Pool& apool) : Array(apool), ftop(0) {
 	}
 
 	void push(Item *item) {
-		if(top<size()) // cell is already allocated?
-			put(top, item); // use it
+		if(ftop<size()) // cell is already allocated?
+			put(ftop, item); // use it
 		else
 			*this+=item; // append it
-		top++;
+		ftop++;
 	}
 	Item *pop() {
-		return get(--top);
+		return get(--ftop);
 	}
 
 	Item *operator [] (int top_offset) {
-		return get(top-top_offset-1);
+		return get(ftop-top_offset-1);
 	}
+
+	int top() { return ftop; }
 
 private:
 
 	// deepest used index
-	int top;
+	int ftop;
 
 };
 

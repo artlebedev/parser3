@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.6 2001/02/22 10:43:42 paf Exp $
+  $Id: pa_wcontext.h,v 1.7 2001/02/22 13:33:25 paf Exp $
 */
 
 /*
@@ -10,6 +10,7 @@
 #define PA_WCONTEXT_H
 
 #include "pa_value.h"
+#include "pa_vstring.h"
 
 class WContext : public Value {
 public: // Value
@@ -17,7 +18,7 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "WContext"; }
 	// wcontext: accumulated string
-	String *get_string() { return &string; };
+	String *get_string() { return string; };
 	// wcontext: transparent
 	Value *get_element(const String& name) const { return check_value()->get_element(name); }
 	// wcontext: transparent
@@ -33,7 +34,7 @@ public: // usage
 
 	WContext(Pool& apool, Value *avalue) : Value(apool), 
 		fvalue(avalue),
-		string(apool) {
+		string(new(apool) String(apool)) {
 	}
 
 	// appends a string to result
@@ -41,7 +42,7 @@ public: // usage
 		if(!astring)
 			return;
 
-		string+=*astring;
+		*string+=*astring;
 	}
 	// if value is VString writes string,
 	// else writes Value; raises an error if already
@@ -60,16 +61,15 @@ public: // usage
 			else
 				fvalue=avalue;
 	}
-	//void write(String_iterator& from, String_iterator& to);
 
 	// retrives the resulting value
 	// that can be VString if value==0 or the Value object
 	Value *value() const {
-		return fvalue?fvalue:0;//TODO: new VString(string);
+		return fvalue?fvalue:NEW VString(string);
 	}
 	
 private:
-	String string;
+	String *string;
 	Value *fvalue;
 
 private:

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.8 2001/02/22 10:43:42 paf Exp $
+  $Id: pa_request.h,v 1.9 2001/02/22 13:33:24 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -65,6 +65,8 @@ private: // compile.C
 private: // execute.C
 
 	void execute(Array& ops);
+
+	Value *get_element();
 
 };
 

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.16 2001/02/22 12:43:55 paf Exp $
+  $Id: execute.C,v 1.17 2001/02/22 13:33:28 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -58,7 +58,7 @@ void Request::execute(Array& ops) {
 	int size=ops.size();
 	for(int i=0; i<size; i++) {
 		int code=reinterpret_cast<int>(ops.quick_get(i));
-		printf("%s", opcode_name[code]);
+		printf("%d:%s", stack.top(), opcode_name[code]);
 
 		if(code==OP_CODE_ARRAY) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
@@ -118,10 +118,28 @@ void Request::execute(Array& ops) {
 			
 		case OP_GET_ELEMENT:
 			{
-				String *name=static_cast<String *>(stack.pop());
-				Value *ncontext=static_cast<Value *>(stack.pop());
-				Value *value=ncontext->get_element(*name); // name бывает method, тогда выдаЄт new junction(ј¬“ќ¬џ„»—Ћя“№=false, root,self,rcontext,wcontext,code)
-				// name бывает им€ junction, тогда или оставл€ет в покое, или вычисл€ет в зависимости от флага ј¬“ќ¬џ„»—Ћя“№
+				Value *value=get_element();
+				stack.push(value);
+				break;
+			}
+
+		case OP_GET_ELEMENT__WRITE_VALUE:
+			{
+				Value *value=get_element();
+				wcontext->write(value);
+				break;
+			}
+
+		case OP_CREATE_EWPOOL:
+			{
+				stack.push(wcontext);
+				wcontext=NEW WContext(pool(), 0 /* empty */);
+				break;
+			}
+		case OP_REDUCE_EWPOOL:
+			{
+				Value *value=wcontext->value();
+				wcontext=static_cast<WContext *>(stack.pop());
 				stack.push(value);
 				break;
 			}
@@ -132,4 +150,12 @@ void Request::execute(Array& ops) {
 		}
 		printf("\n");
 	}
+}
+
+Value *Request::get_element() {
+	String *name=static_cast<String *>(stack.pop());
+	Value *ncontext=static_cast<Value *>(stack.pop());
+	Value *value=ncontext->get_element(*name); // name бывает method, тогда выдаЄт new junction(ј¬“ќ¬џ„»—Ћя“№=false, root,self,rcontext,wcontext,code)
+	// name бывает им€ junction, тогда или оставл€ет в покое, или вычисл€ет в зависимости от флага ј¬“ќ¬џ„»—Ћя“№
+	return value;
 }
