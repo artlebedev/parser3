@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.108 2002/04/09 08:10:37 paf Exp $
+	$Id: pa_common.C,v 1.109 2002/06/10 09:24:36 paf Exp $
 */
 
 #include "pa_common.h"
@@ -323,7 +323,7 @@ static bool entry_readable(const String& file_spec, bool need_dir) {
     const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	struct stat finfo;
 	if(access(fname, R_OK)==0 && stat(fname, &finfo)==0) {
-		bool is_dir=finfo.st_mode&S_IFDIR != 0;
+		bool is_dir=(finfo.st_mode&S_IFDIR) != 0;
 		return is_dir==need_dir;
 	}
 	return false;
