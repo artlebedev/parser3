@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vstring.C,v 1.7 2001/05/21 16:57:39 parser Exp $
+	$Id: pa_vstring.C,v 1.8 2001/05/21 17:40:13 parser Exp $
 */
 
 #include "pa_vstring.h"
