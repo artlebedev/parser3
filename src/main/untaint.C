@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2002/12/05 12:53:48 $";
+static const char* IDENT_UNTAINT_C="$Date: 2002/12/05 13:00:53 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -450,14 +450,12 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				const char *src=(const char *)mail_ptr;
 				bool to_quoted_printable=false;
 
-				bool closed=false;
 				bool email=false;
 				for(const char *end=src+mail_size; src<end; src++) {
 					//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
 					if(to_quoted_printable && (*src==',' || *src=='<')) {
 						email=*src=='<';
 						dest+=sprintf(dest, "?=");
-						closed=true;
 						to_quoted_printable=false;
 					}
 					if(!email && (
@@ -478,7 +476,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					if(*src=='>')
 						email=false;
 				}
-				if(to_quoted_printable && !closed) // close
+				if(to_quoted_printable) // close
 					dest+=sprintf(dest, "?=");
 			
 			} else {

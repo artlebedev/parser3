@@ -7,10 +7,12 @@
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char* IDENT_SMTP_C="$Date: 2002/12/05 12:55:02 $";
+static const char* IDENT_SMTP_C="$Date: 2002/12/05 13:00:53 $";
 
 #include "pa_exception.h"
 #include "smtp.h"
+
+//#define DEBUG_SHOW
 
 SMTP::SMTP(Pool& pool, const String& aorigin_string) : Pooled(pool),
 	origin_string(aorigin_string) {
@@ -503,7 +505,9 @@ static char *rsplit(char *string, char delim) {
 void SMTP::
 Send(const char *server, const char *service, const char *msg, char *from, char *to)
 {
-	//throw Exception("paf.debug",0,"%s|%s|%s", from, to, msg);
+#ifdef DEBUG_SHOW
+	throw Exception("paf.debug",0,"%s|%s|%s", from, to, msg);
+#endif
 
     prepare_message( from, to, server, service);
 
