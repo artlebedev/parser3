@@ -11,11 +11,13 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #$result[123]
 
 @main[]
+^txdocxnodechild[]
+#^tclasses[]
 #$math:PI
 #^b:method[]
 #^main[]
 #^errort[]
-^tselectNumber[]
+#^tselectNumber[]
 #$result[hello]
 #^invaliddate2[]
 #^process2[]
@@ -133,6 +135,19 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@txdocxnodechild[]
+$xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251" ?><d/>}]
+$xdoc.nodeName
+^xdoc.selectNumber[2*2]
+
+
+@tclasses[]
+$t[^t::create[]]
+^t.method[]
+<hr>
+^t.base_method[]
+
 
 @errort[]
 ^xdoc::create[a]
