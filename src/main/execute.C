@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/02 12:20:15 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/02 14:27:54 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -130,6 +130,8 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 
 		Value *value;
 		Value *a; Value *b;
+		bool bool_result;
+		double double_result;
 		Array *b_code;
 		switch(op.code) {
 		// param in next instruction
@@ -658,29 +660,27 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 		case OP_LOG_AND:
 			{
 				b_code=POP_CODE();  a=POP();
-				bool result;
 				if(a->as_bool()) {
 					execute(*b_code);
 					b=POP();
-					result=b->as_bool();
+					bool_result=b->as_bool();
 				} else
-					result=false;
-				value=NEW VBool(pool(), result);
+					bool_result=false;
+				value=NEW VBool(pool(), bool_result);
 				PUSH(value);
 				break;
 			}
 		case OP_LOG_OR:
 			{
 				b_code=POP_CODE();  a=POP();
-				bool result;
 				if(a->as_bool()) 
-					result=true;
+					bool_result=true;
 				else {
 					execute(*b_code);
 					b=POP();
-					result=b->as_bool();
+					bool_result=b->as_bool();
 				}
-				value=NEW VBool(pool(), result);
+				value=NEW VBool(pool(), bool_result);
 				PUSH(value);
 				break;
 			}
@@ -694,52 +694,48 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 		case OP_NUM_LT: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				double zero=0.0;
-				result+=zero;
-				value=NEW VBool(pool(), result < 0.0);
+				double_result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), double_result < 0);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GT: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), result > 0.0);
+				double_result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), double_result > 0);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_LE: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), result <= 0.0);
+				double_result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), double_result <= 0);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GE: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), result >= 0.0);
+				double_result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), double_result >= 0);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_EQ: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				double zero=0.0;
-				result+=zero;
-				value=NEW VBool(pool(), result == 0.0);
+				double_result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), double_result== 0);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_NE: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), result != 0.0);
+				double_result=a->as_double() - b->as_double();
+				value=NEW VBool(pool(), double_result != 0);
 				PUSH(value);
 				break;
 			}
