@@ -79,7 +79,7 @@
     patch -p0 < $D/parser3project/parser3/src/patches/libxml_transcoder_context2.patch
     patch -p0 < $D/parser3project/parser3/src/patches/libxml_transcoder_context3.patch
     patch -p0 < $D/parser3project/parser3/src/patches/libxml_transcoder_context4.patch
-    ./configure --prefix=$D/gnome
+    ./configure --prefix=$D/gnome --without-zlib
     make install
 
     libxslt:
@@ -119,4 +119,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.7 2002/02/22 13:02:40 paf Exp $
+$Id: INSTALL,v 1.8 2002/02/22 16:05:58 paf Exp $
