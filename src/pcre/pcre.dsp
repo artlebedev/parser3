@@ -118,5 +118,40 @@ SOURCE=.\pcre.h
 SOURCE=.\pcre.3.txt
 # End Source File
 # End Group
+# Begin Group "Helper programs"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\dftables.c
+
+!IF  "$(CFG)" == "pcre - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build - Creating chartables.c...
+OutDir=.\Release
+InputPath=.\dftables.c
+
+"chartables.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(OutDir)\pcre_dftables>chartables.c
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "pcre - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build - Creating chartables.c...
+OutDir=.\Debug
+InputPath=.\dftables.c
+
+"chartables.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	$(OutDir)\pcre_dftables>chartables.c
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# End Group
 # End Target
 # End Project
