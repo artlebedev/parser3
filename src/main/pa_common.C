@@ -5,14 +5,17 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/05/30 10:45:37 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/06/20 09:56:01 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
 #include "pa_globals.h"
 #include "pa_hash.h"
+#include "pa_table.h"
 #include "pa_vstring.h"
 #include "pa_vdate.h"
+#include "pa_vhash.h"
+#include "pa_vtable.h"
 
 #ifdef WIN32
 #	include <windows.h>
@@ -182,11 +185,11 @@ static void timeout_handler(int sig){
 #endif
 
 static int http_request(String& response,
-							const String *origin_string, 
-							const char* host, int port, 
-							const char* request, 
-							int timeout,
-							bool fail_on_status_ne_200) {
+			const String *origin_string, 
+			const char* host, int port, 
+			const char* request, 
+			int timeout,
+			bool fail_on_status_ne_200) {
 	if(!host)
 		throw Exception("http.host", 
 			origin_string, 
@@ -270,6 +273,7 @@ static void http_pass_header(const Hash::Key& key, Hash::Val *value, void *info)
 	if(key.change_case(pool, String::CC_UPPER)=="USER-AGENT")
 		i.user_agent_specified=true;
 }
+/// @todo build .cookies field. use ^file.tables.SET-COOKIES.menu{ for now
 static void file_read_http(Pool& pool, const String& file_spec, 
 					void*& data, size_t& data_size, 
 					Hash *options=0, Hash** out_fields=0) {
@@ -359,6 +363,10 @@ static void file_read_http(Pool& pool, const String& file_spec,
 	
 	Array aheaders(pool); 
 	Hash& headers=*new(pool) Hash(pool); 
+	VHash* vtables=new(pool) VHash(pool);
+	headers.put(*http_tables_name, vtables);
+	Hash& tables=vtables->hash(0);
+
 	size_t pos_after_ref=0;
 	header_block.split(aheaders, &pos_after_ref, "\r\n", 2); 
 	
@@ -370,10 +378,33 @@ static void file_read_http(Pool& pool, const String& file_spec,
 				throw Exception("http.response", 
 					&connect_string,
 					"bad response from host - bad header \"%s\"", line->cstr()); 
-				
-			headers.put(
-				line->mid(0, pos).change_case(pool, String::CC_UPPER), 
-				new(pool) VString(line->mid(pos+2, line->size()))); 
+		
+			const String& sname=line->mid(0, pos).change_case(pool, String::CC_UPPER);
+			const String& string=line->mid(pos+2, line->size());
+
+			// tables
+			{
+				Value *valready=(Value *)tables.get(sname);
+				bool existed=valready!=0;
+				Table *table;
+				if(existed) {
+					// second+ appearence
+					table=valready->get_table();
+				} else {
+					// first appearence
+					Array& columns=*new(pool) Array(pool, 1);
+					columns+=new(pool) String(pool, "value");
+					table=new(pool) Table(pool, 0, &columns);
+				}
+				// this string becomes next row
+				Array& row=*new(pool) Array(pool, 1);
+				row+=&string;
+				*table+=&row;
+				// not existed before? add it
+				if(!existed)
+					tables.put(sname, new(pool) VTable(pool, table));
+			}
+			headers.put(sname, new(pool) VString(string));
 		} else
 			throw Exception("http.response", 
 				&connect_string, 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2003/04/11 15:00:05 $";
+static const char* IDENT_GLOBALS_C="$Date: 2003/06/20 09:56:01 $";
 
 #include "pa_config_includes.h"
 
@@ -80,6 +80,7 @@ String *charset_UTF8_name;
 
 String *hash_default_element_name;
 
+String *http_tables_name;
 String *http_method_name;
 String *http_timeout_name;
 String *http_headers_name;
@@ -362,6 +363,7 @@ void pa_globals_init(Pool& pool) {
 	hash_default_element_name=NEW String(pool, HASH_DEFAULT_ELEMENT_NAME);
 
 	// http
+	http_tables_name=NEW String(pool, HTTP_TABLES_NAME);
 	http_method_name=NEW String(pool, HTTP_METHOD_NAME);
 	http_timeout_name=NEW String(pool, HTTP_TIMEOUT_NAME);
 	http_headers_name=NEW String(pool, HTTP_HEADERS_NAME);
@@ -564,6 +566,7 @@ void pa_globals_init(Pool& pool) {
 	// Bit in the loadsubset context field to tell to do complete the elements attributes lists 
 	// with the ones defaulted from the DTDs 
     xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
+///    xmlParserDebugEntities=1;///
 
 	// validate each document after load/create (?)
 	//xmlDoValidityCheckingDefaultValue = 1;
