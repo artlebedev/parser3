@@ -1,15 +1,12 @@
-@main[]
-test: '$test'<BR>
-local auto: '$local_auto'<BR>
+@USE
+news
 
+@слева[]
+текст слева
 
-<form method=post action=index.html>
-введите выражение <input name=expr value="$form:expr">
-<input type=submit value="и нажмите кнопку">
-</form>
-
-птичка выпрыгнет тут: ^process[^^eval($form:expr)[%.4f]]?
- 
-@Zexception[origin;source;comment;type;code]
-Сервер испытывает временные трудности.
-напишите болвану администратору, что у него в $origin есть $source, который $comment (насквозь).
+@справа[]
+$новость[^новость:загрузить[]]
+$новость{
+	<h1>$заголовок</h1>
+	$тело
+}

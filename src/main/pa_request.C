@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.38 2001/03/15 11:00:41 paf Exp $
+	$Id: pa_request.C,v 1.39 2001/03/15 11:09:49 paf Exp $
 */
 
 #include <string.h>
@@ -93,10 +93,10 @@ char *Request::core(const char *sys_auto_path1,
 		form_class.fill_fields(*this, post_max_size);
 
 		// TODO: load site auto.p files, all assigned bases from upper dir
-		char *site_auto_file="Y:\\parser3\\src\\auto.p";
+		/*char *site_auto_file="Y:\\parser3\\src\\auto.p";
 		main_class=use_file(
-			site_auto_file, false/*ignore possible read problem*/,
-			main_class_name, main_class);
+			site_auto_file, false/*ignore possible read problem* /,
+			main_class_name, main_class);*/
 
 		// there must be some auto.p
 		if(!main_class)
