@@ -14,7 +14,7 @@
 	can incorporate them into new versions. 
 */
 
-static const char * const IDENT_GIF_C="$Date: 2004/03/01 13:33:11 $";
+static const char * const IDENT_GIF_C="$Date: 2004/03/25 11:50:57 $";
 
 #include "gif.h"
 
@@ -113,6 +113,8 @@ int gdImage::Color(unsigned int rgb){
     return ColorRGB(r & 0xFF,g & 0xFF,b & 0xFF);
 }
 unsigned int gdImage::DecodeColor(int color) {
+	if(color<0)
+		return color;
 	return (((red[color]<<8) + green[color])<<8)+blue[color];
 }
 
@@ -157,7 +159,7 @@ void gdImage::SetPixel(int x, int y, int color)
 
 int gdImage::GetPixel(int x, int y)
 {
-	return BoundsSafe(x, y) ? pixels[x][y]:0;
+	return BoundsSafe(x, y) ? pixels[x][y]:-1;
 }
 
 /* Bresenham as presented in Foley & Van Dam */
