@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.228 2002/04/15 10:35:22 paf Exp $
+	$Id: execute.C,v 1.229 2002/04/15 11:33:31 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -833,9 +833,10 @@ Value *Request::get_element(bool can_call_operator) {
 		}
 	if(!value)
 		value=ncontext->get_element(name);
-	if(value)
-		value=&process_to_value(*value/* ++ name*/); // process possible code-junction
-	else {
+	if(value) {
+		value=&process_to_value(*value); // process possible code-junction
+		value->update_name(name);
+	} else {
 		value=NEW VVoid(pool());
 		value->set_name(name);
 	}
@@ -854,10 +855,7 @@ Value *Request::get_element(bool can_call_operator) {
 
     using the fact it's either string_ or value_ result requested to speed up checkes
 */
-StringOrValue Request::process(
-							   Value& input_value,
-							   bool intercept_string,
-							   void (*postexecute)(void *info), void *postexecute_info) {
+StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	StringOrValue result;
 	Junction *junction=input_value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
@@ -887,14 +885,10 @@ StringOrValue Request::process(
 			// execute it
 			recoursion_checked_execute(0/*result_name*/, *junction->code);
 			
-			// maybe-postexecute something
-			if(postexecute)
-				postexecute(postexecute_info);
-		
 			// CodeFrame soul:
 			//   string writes were intercepted
 			//   returning them as the result of getting code-junction
-			result=wcontext->result();
+			result.set_string(*wcontext->get_string());
 		} else {
 			// plain wwrapper
 			WWrapper local(pool(), 0/*empty*/);
@@ -902,10 +896,6 @@ StringOrValue Request::process(
 		
 			// execute it
 			recoursion_checked_execute(0/*result_name*/, *junction->code);
-		
-			// maybe-postexecute something
-			if(postexecute)
-				postexecute(postexecute_info);
 		
 			result=wcontext->result();
 		}
