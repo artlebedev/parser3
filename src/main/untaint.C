@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: untaint.C,v 1.8 2001/03/19 17:42:16 paf Exp $
+	$Id: untaint.C,v 1.9 2001/03/19 20:46:38 paf Exp $
 */
 
 #include <string.h>
@@ -30,11 +30,11 @@
 			strncpy(copy_here, b, bsize); \
 			copy_here+=bsize; \
 		break
-#define escape_encode(need_encode_func)  \
+#define escape_encode(need_encode_func, prefix)  \
 		default: \
 			if(need_encode_func(*ptr)) { \
 				static const char *hex="0123456789ABCDEF"; \
-				char chunk[3]={'%'}; \
+				char chunk[3]={prefix}; \
 				chunk[1]=hex[((unsigned char)*ptr)/0x10]; \
 				chunk[2]=hex[((unsigned char)*ptr)%0x10]; \
 				strncpy(copy_here, chunk, 3);  copy_here+=3; \
@@ -42,6 +42,12 @@
 				*copy_here++=*ptr; \
 			break
 
+inline bool need_file_encode(unsigned char c){
+    if ((c>='0') && (c<='9') || (c>='A') && (c<='Z') || (c>='a') && (c<='z')) 
+		return false;
+
+    return !strchr("./\\", c);
+}
 inline bool need_uri_encode(unsigned char c){
     if ((c>='0') && (c<='9') || (c>='A') && (c<='Z') || (c>='a') && (c<='z')) 
 		return false;
@@ -57,7 +63,7 @@ inline bool need_header_encode(unsigned char c){
 
 // String
 
-/// \todo optimize whitespaces for all but 'html'
+/// @todo optimize whitespaces for all but 'html'
 char *String::cstr() const {
 	char *result=(char *)malloc(size()*UNTAINT_TIMES_BIGGER+1);
 
@@ -83,17 +89,24 @@ char *String::cstr() const {
 				memcpy(copy_here, row->item.ptr, row->item.size); 
 				copy_here+=row->item.size;
 				break;
+			case FILE:
+				// tainted, untaint language: file [name]
+				escape(
+					escape_value(' ', '_');
+					escape_encode(need_file_encode, '-');
+				);
+				break;
 			case URI:
 				// tainted, untaint language: uri
 				escape(
 					escape_value(' ', '+');
-					escape_encode(need_uri_encode);
+					escape_encode(need_uri_encode, '%');
 				);
 				break;
 			case HEADER:
 				// tainted, untaint language: header
 				escape(
-					escape_encode(need_header_encode);
+					escape_encode(need_header_encode, '%');
 				);
 				break;
 			case TABLE: 

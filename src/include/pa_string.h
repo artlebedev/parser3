@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.44 2001/03/19 20:07:37 paf Exp $
+	$Id: pa_string.h,v 1.45 2001/03/19 20:46:36 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -84,6 +84,7 @@ public:
 				just a flag, that value not stored
 			*/
 		AS_IS,  ///< leave all characters intact
+		FILE,   ///< filename
 		HEADER, ///< text in response header
 		URI,    ///< text in uri
 		TABLE,  ///< ^table:set body

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.14 2001/03/19 17:42:16 paf Exp $
+	$Id: pa_pool.C,v 1.15 2001/03/19 20:46:38 paf Exp $
 */
 
 #include <string.h>
@@ -13,7 +13,7 @@
 #include "pa_pool.h"
 #include "pa_exception.h"
 
-/// \todo if(!fexception) die("Pool::fail with no exception set")
+/// @todo if(!fexception) die("Pool::fail with no exception set")
 void Pool::fail(size_t size) const {
 	fexception->_throw(0, 0,
 		0,

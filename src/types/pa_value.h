@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.26 2001/03/19 20:07:39 paf Exp $
+	$Id: pa_value.h,v 1.27 2001/03/19 20:46:39 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -47,6 +47,7 @@ public: // Value
 		- VDouble: this
 		- VInt: this
 		- VUnknown: this
+		- VFile: this
 	*/
 	virtual Value *get_expr_result() { bark("(%s) can not be used in expression"); return 0; }
 	/** extract Hash
@@ -79,6 +80,7 @@ public: // Value
 		- VBool: value
 		- VInt: 0 or !0
 		- VDouble: 0 or !0
+		- VFile: true
 	*/
 	virtual bool get_bool() { bark("(%s) does not have logical value"); return 0; }
 	/** extract Junction
@@ -102,6 +104,7 @@ public: // Value
 		- VRequest: CLASS,BASE,method,fields
 		- VResponse: CLASS,BASE,method,fields
 		- VCookie: CLASS,BASE,method,field
+		- VFile: CLASS,BASE,method,field
 		*/
 	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
 	/** store Value element under \a name

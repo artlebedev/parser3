@@ -1,13 +1,15 @@
-/*
-	Parser
+/**
+	Parser: form class.
+
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.9 2001/03/19 20:07:39 paf Exp $
+	$Id: pa_vform.C,v 1.10 2001/03/19 20:46:40 paf Exp $
 */
 
 /**
-	\todo based on cgic by ?
+	@todo based on cgic by ?
 */
 
 #include <ctype.h>

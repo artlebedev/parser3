@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.57 2001/03/19 19:17:44 paf Exp $
+	$Id: pa_request.C,v 1.58 2001/03/19 20:46:38 paf Exp $
 */
 
 #include <string.h>
@@ -299,7 +299,7 @@ void Request::core(Exception& system_exception,
 
 }
 
-/// \todo find|solve cyclic dependences
+/// @todo find|solve cyclic dependences
 VStateless_class *Request::use_file(
 									const char *file, bool fail_on_read_problem,
 									const String *name, 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.1 2001/03/19 20:08:12 paf Exp $
+	$Id: file.C,v 1.2 2001/03/19 20:46:35 paf Exp $
 */
 
 #include "pa_request.h"
@@ -20,11 +20,14 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	//\Pool& pool=r.pool();
 	Value *vfile_name=static_cast<Value *>(params->get(0));
 	// forcing
-	// ^save[this body type] 
-	r.fail_if_junction_(true, *vfile_name, 
-		method_name, "file name must not be junction");
+	// ^save{this body type}
+	r.fail_if_junction_(false, *vfile_name, method_name, "file name must be junction");
 
-	static_cast<VFile *>(r.self)->save(r.absolute(vfile_name->as_string().cstr()));
+	{
+		Temp_lang temp_lang(r, String::Untaint_lang::FILE);
+		static_cast<VFile *>(r.self)->save(
+			r.absolute(r.process(*vfile_name).as_string().cstr()));
+	}
 }
 
 // initialize

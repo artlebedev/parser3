@@ -1,18 +1,12 @@
-@main[]
-<pre>
-^$cookie:test-default1=$cookie:test-default1
-^$cookie:test-default2=$cookie:test-default2
-^$cookie:test-tomorrow=$cookie:test-tomorrow
-^$cookie:test-session=$cookie:test-session
-
-$cookie:test-default1[value=1]
-$cookie:test-default2[$value[value=2]]
-$cookie:test-tomorrow[$value[value=3] $expires(1)]
-$cookie:test-session[$value[value=8] $expires[session]]
-z
-$t[^table:set{a	b
-$form:ta	12
-12	22
-}]
-^$t.a="$t.a"
-^$t.b="$t.b"
+<form method=post enctype=multipart/form-data>
+<input name=photo type=file>
+<input type=submit>
+</form>
+<hr>
+^if($form:photo){
+	<pre>
+	^$form:photo.name='$form:photo.name'
+	^$form:photo.size='$form:photo.size'
+	^$form:photo.text='$form:photo.text'
+	</pre>
+}

@@ -279,6 +279,10 @@ SOURCE=..\types\pa_venv.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vfile.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vfile.h
 # End Source File
 # Begin Source File

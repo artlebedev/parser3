@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.18 2001/03/19 20:07:35 paf Exp $
+	$Id: table.C,v 1.19 2001/03/19 20:46:35 paf Exp $
 */
 
 #include "pa_common.h"
@@ -26,15 +26,15 @@ static void set_or_load(
 	// data is last parameter
 	Value *vdata=static_cast<Value *>(params->get(params->size()-1));
 	// forcing
-	// ^load[this body type] 
+	// ^load{this body type}
 	// ^set{this body type}
-	r.fail_if_junction_(is_load, *vdata, 
-		method_name, is_load?"body must not be junction":"body must be junction");
+	r.fail_if_junction_(false, *vdata, method_name, "body must be junction");
 
 	// data or file_name
 	char *data_or_filename;
 	{
-		Temp_lang temp_lang(r, String::Untaint_lang::TABLE);
+		Temp_lang temp_lang(r, 
+			is_load ? String::Untaint_lang::FILE : String::Untaint_lang::TABLE);
 		data_or_filename=r.process(*vdata).as_string().cstr();
 	}
 	// data
