@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/02/24 12:38:54 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/02/25 12:27:17 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -185,7 +185,7 @@ static void http_request(String& response,
 							const String *origin_string, 
 							const char* host, int port, 
 							const char* request, 
-							int timeout){
+							int timeout) {
 	if(!host)
 		throw Exception("http.host", 
 			origin_string, 
@@ -205,7 +205,7 @@ static void http_request(String& response,
 		throw Exception("http.timeout", 
 			origin_string, 
 			"timeout occured while retrieving document"); 
-	} else {
+	} else
 		alarm(timeout); 
 #endif
 	try {
