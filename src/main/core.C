@@ -1,20 +1,53 @@
+enum Prefix {
+	NO_PREFIX,
+	ROOT_PREFIX,
+	SELF_PREFIX
+};
+
+enum CHAR_TYPE {
+	NO_TYPE=0, // these got skipped by String::skip_to
+	DOLLAR_TYPE,
+	BIRD_TYPE,
+	STOP_TYPE///=-1 // same as EOF type(-1), see String::skip_to
+};
+
+Char_types dollar_or_bird;
+Char_types dollar_or_bird_or_close_round_bracket;
+Char_types dollar_or_bird_or_close_square_bracket;
+
+void prepare() {
+	dollar_or_bird.set('$', DOLLAR_TYPE);
+	dollar_or_bird.set('^', BIRD_TYPE);
+	dollar_or_bird_or_close_round_bracket=dollar_or_bird;
+	dollar_or_bird_or_close_round_bracket.set(')', STOP_TYPE);
+	dollar_or_bird_or_close_square_bracket=dollar_or_bird;
+	dollar_or_bird_or_close_square_bracket.set(']', STOP_TYPE);
+}
+
 void process(method_self_n_params_n_locals& root, Value& self,
 			 arcontext& arcontext, WContext& awcontext, 
-			 String_iterator& code, char char_to_stop_before) {
-	
-	// $ on code?
-	process_dollar(root, self, arcontext, awcontext, code, char_to_stop_before);
+			 String_iterator& iter, Char_types& breaks) {
+	while(!iter.eof()) {
+		String_iterator start(iter);
+		CHAR_TYPE type=iter.skip_to(breaks);
+		awcontext.write(start, iter);
 
-	// ^ on code?
-	process_bird(root, self, arcontext, awcontext, code, char_to_stop_before);
-
-	// TODO
-	// 2. вызовы статических методов
+		switch(type) {
+		case DOLLAR_TYPE: 
+			process_dollar(root, self, arcontext, awcontext, iter, breaks);
+			break;
+		case BIRD_TYPE:
+			process_bird(root, self, arcontext, awcontext, iter, breaks);
+			break;
+		case STOP_TYPE:
+			return;
+		}
+	}
 }
 
 void process_dollar(method_self_n_params_n_locals& root, Value& self,
 					arcontext& arcontext, WContext& awcontext, 
-					String_iterator& iter, char char_to_stop_before) {
+					String_iterator& iter, Char_types& breaks) {
 
 	// $name.field.subfield -- read
 	// $name.field.subfield(constructor code) -- construct
@@ -130,11 +163,11 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 			Class *left_class=awcontext.get_class();
 			if(left_class) {
 				if(left_class.has_parent(right_class)) // dynamic call
-					context=awcontext.value(); // it's 'self'
+					context=awcontext.value(); // it's 'self' instance
 				else // static call
 					context=right_class; // 'self' := class, not instance
 			} else { // constructor: $some(^class:method[..]) call
-				context=new(pool) VClass(pool, right_class); // 'self' := new VClass of 'class:'
+				context=new(pool) VClass(pool, right_class); // 'self' := new instance of 'class:'
 				awcontext.write(context);
 			}
 		}
@@ -157,7 +190,7 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 	}
 
 
-	Array/*<String&>*/ param_values(pool);
+	Array/*<Value&>*/ param_values(pool);
 	get_params(
 		iter,
 		arcontext,
@@ -169,9 +202,24 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 		method->param_names, param_values,
 		method->local_names);
 	WContext local_wcontext(pool, context);
+	String_iterator local_iter(method->code);
 	process(
 		local_rcontext/* $:vars */, context /* $self.vars */,
 		local_rcontext, local_wcontext, 
-		iter, ']');
+		local_iter, 0);
 	awcontext.write(local_wcontext);
+}
+
+
+void get_names(
+		String_iterator& iter, Char_types& stop_chars,
+		Prefix prefix, Array& names, char& names_ended_before) {
+
+	// can return count()=0 when $self alone
+}
+
+void get_params(
+		String_iterator& iter,
+		Value *arcontext,
+		Array/*<Values&>*/& param_values) {
 }

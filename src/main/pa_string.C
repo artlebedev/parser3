@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.22 2001/02/13 10:50:23 paf Exp $
+  $Id: pa_string.C,v 1.23 2001/02/14 13:40:55 paf Exp $
 */
 
 #include <string.h>
@@ -88,6 +88,11 @@ String::String(const String& src) :
 	fused_rows=src_used_rows;
 	fsize=src.fsize;
 }
+/*
+String(const String_iterator& begin, const String_iterator& end) {
+	;//TODO
+}
+*/
 
 String& String::real_append(STRING_APPEND_PARAMS) {
 	if(!src)
@@ -217,6 +222,10 @@ String& String::append(const String_iterator& begin, const String_iterator& end)
 
 Char_types::Char_types() {
 	memset(types, 0, sizeof(types));
+}
+
+void Char_types::set(char from, char to, int type) {
+	memset(&types[static_cast<unsigned int>(from)], type, to-from);
 }
 
 // String_iterator 

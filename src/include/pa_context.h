@@ -1,5 +1,5 @@
 /*
-  $Id: pa_context.h,v 1.5 2001/02/14 12:20:47 paf Exp $
+  $Id: pa_context.h,v 1.6 2001/02/14 13:40:54 paf Exp $
 */
 
 /*
@@ -22,6 +22,7 @@ public:
 	// if value.string!=0 writes just string, not Value
 	// raises an error if already
 	void write(Value& avalue);
+	void write(String_iterator& from, String_iterator& to);
 
 	// retrives the resulting value
 	// that can be Text if value==0 or the Value object

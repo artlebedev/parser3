@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.19 2001/02/13 10:50:23 paf Exp $
+  $Id: pa_string.h,v 1.20 2001/02/14 13:40:54 paf Exp $
 */
 
 /*
@@ -49,6 +49,7 @@ public:
 
 	String(Pool& apool);
 	String(const String& src);
+	//String(const String_iterator& begin, const String_iterator& end);
 	size_t size() const { return fsize; }
 	int used_rows() const { return fused_rows; }
 	char *cstr() const;
@@ -113,6 +114,7 @@ private: //disabled
 class Char_types {
 public:
 	Char_types();
+	void set(char from, char to, int type);
 	void set(char c, int type) { 
 		types[static_cast<unsigned int>(c)]=static_cast<char>(type); 
 	}
