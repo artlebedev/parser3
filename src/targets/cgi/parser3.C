@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.184 2002/06/24 11:59:33 paf Exp $
+	$Id: parser3.C,v 1.185 2002/06/24 14:47:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -31,7 +31,7 @@
 
 //#define DEBUG_POOL_MALLOC
 //#define DEBUG_STRING_APPENDS_VS_EXPANDS
-//#define DEBUG_MAIL_RECEIVE "test2.eml"
+//#define DEBUG_MAILRECEIVE "test2.eml"
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
 extern ulong 
@@ -422,7 +422,7 @@ static void usage(const char *program) {
 		"\n"
 		"Usage: %s [options] file\n"
 		"Options are:\n"
-#ifdef WITH_MAIL_RECEIVE
+#ifdef WITH_MAILRECEIVE
 		"    -m  Parse mail, put received letter to $mail:received\n"
 #endif
 		"    -h  Display usage information (this message)\n"
@@ -436,8 +436,8 @@ int main(int argc, char *argv[]) {
 	Pool global_pool(&global_pool_storage);
 	pool=&global_pool;
 
-#ifdef DEBUG_MAIL_RECEIVE
-	if(FILE *fake_in=fopen(DEBUG_MAIL_RECEIVE, "rt")) {
+#ifdef DEBUG_MAILRECEIVE
+	if(FILE *fake_in=fopen(DEBUG_MAILRECEIVE, "rt")) {
 		dup2(fake_in->_file, 0/*STDIN_FILENO*/);
 	}
 #endif
@@ -465,7 +465,7 @@ int main(int argc, char *argv[]) {
 		opterr = 0;
 		int c;
 		while((c = getopt(argc, argv, "h"
-#ifdef WITH_MAIL_RECEIVE
+#ifdef WITH_MAILRECEIVE
 			"m"
 #endif
 			)) > 0) {
@@ -473,7 +473,7 @@ int main(int argc, char *argv[]) {
 			case 'h':
 				usage(argv[0]);
 				break;
-#ifdef WITH_MAIL_RECEIVE
+#ifdef WITH_MAILRECEIVE
 			case 'm':
 				mail_received=true;
 				break;
