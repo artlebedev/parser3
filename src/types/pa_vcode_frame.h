@@ -8,7 +8,7 @@
 #ifndef PA_VCODE_FRAME_H
 #define PA_VCODE_FRAME_H
 
-static const char* IDENT_VCODE_FRAME_H="$Date: 2002/08/01 11:41:22 $";
+static const char* IDENT_VCODE_FRAME_H="$Date: 2002/08/07 13:24:30 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -30,28 +30,24 @@ public: // Value
 public: // WContext
 
 	/// VCodeFrame: intercepting string writes 
-	virtual void write(const String& string, String::Untaint_lang lang) {
+	void write(const String& string, String::Untaint_lang lang) {
 		fstring.append(string, lang);
-	}
-
-	/// VCodeFrame: twice transparent
-	virtual void write(Value& value) {
-		// ^method[^if(1){$hash}]
-		// write goes ^method[here]
-		wcontext.write(value);
 	}
 
 	/** VCodeFrame: twice transparent
 
 		if value is VString writes fstring,
 		else writes Value; raises an error if already
+
+		$hash[^if(1){$hash}]
 	*/
-	virtual void write(Value& value, String::Untaint_lang lang) {
-		if(const String *fstring=value.get_string())
-			write(*fstring, lang);
+	void write(Value& avalue, const String* aorigin) {
+		if(const String *fstring=avalue.get_string())
+			write(*fstring, String::UL_PASS_APPENDED);
 		else
-			wcontext.write(value, lang);		
+			wcontext.write(avalue, aorigin);		
 	}
+
 
 public: // usage
 
