@@ -134,6 +134,10 @@ SOURCE=..\include\pa_sapi.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_socks.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_sql_connection.h
 # End Source File
 # Begin Source File
@@ -246,6 +250,10 @@ SOURCE=.\pa_pool.C
 # Begin Source File
 
 SOURCE=.\pa_request.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_socks.C
 # End Source File
 # Begin Source File
 

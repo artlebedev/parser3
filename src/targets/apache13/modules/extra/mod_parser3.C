@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.21 2001/04/03 07:32:47 paf Exp $
+	$Id: mod_parser3.C,v 1.22 2001/04/07 14:23:37 paf Exp $
 */
 
 #include "httpd.h"
@@ -21,6 +21,9 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_version.h"
+#include "pa_socks.h"
+
+/// @todo init_socks
 
 struct Parser_module_config {
     const char* parser_root_auto_path; /// filespec of admin's auto.p file

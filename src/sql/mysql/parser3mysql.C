@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.11 2001/04/05 20:01:27 paf Exp $
+	$Id: parser3mysql.C,v 1.12 2001/04/07 14:23:35 paf Exp $
 */
 
 #include <stdlib.h>
@@ -88,7 +88,6 @@ public:
 	void rollback(void *connection) {}
 
 	bool ping(void *connection) {
-		return false;
 		return mysql_ping((MYSQL *)connection)==0;
 	}
 

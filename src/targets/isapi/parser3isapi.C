@@ -12,6 +12,9 @@
 #include "pa_request.h"
 #include "pa_version.h"
 #include "pool_storage.h"
+#include "pa_socks.h"
+
+/// @todo init_socks
 
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
 

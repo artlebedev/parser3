@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.56 2001/04/03 07:32:48 paf Exp $
+	$Id: parser3.C,v 1.57 2001/04/07 14:23:39 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -24,6 +24,7 @@
 #include "pa_common.h"
 #include "pa_globals.h"
 #include "pa_request.h"
+#include "pa_socks.h"
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
@@ -169,6 +170,9 @@ int main(int argc, char *argv[]) {
 		//TODO: initSocks();
 #endif
 
+		// 
+		init_socks(pool);
+
 		// init global variables
 		pa_globals_init(pool);
 
@@ -256,6 +260,9 @@ int main(int argc, char *argv[]) {
 			root_auto_path, false,
 			site_auto_path, false,
 			header_only);
+
+		//
+		done_socks();
 
 		// must be last in PTRY{}PCATCH
 #ifdef WIN32
