@@ -78,8 +78,8 @@ other root:
 #^tcounterone[$DB_HOME]
 
 @tcounterone[DB_HOME]
-#^hashfile:clear[$DB_HOME;counter]
 $counter[^hashfile::open[$DB_HOME;counter]]
+^counter.clear[]
 ^counter.transaction{
 #	$counter.value(10)
 	$counter.value($counter.value+1)

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_table.h,v 1.3 2001/10/26 13:48:18 paf Exp $
+	$Id: pa_db_table.h,v 1.4 2001/10/27 10:14:45 paf Exp $
 */
 
 #ifndef PA_DB_TABLE_H
@@ -161,6 +161,7 @@ public:
 	~DB_Cursor();
 	/// pass empty strings to key&data, would fill them
 	bool get(Pool& pool, String *& key, String *& data, u_int32_t flags);
+	bool move(u_int32_t flags);
 	void remove(u_int32_t flags);
 private:
 	const String *fsource;

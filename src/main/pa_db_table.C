@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_table.C,v 1.3 2001/10/26 13:48:19 paf Exp $
+	$Id: pa_db_table.C,v 1.4 2001/10/27 10:14:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -262,6 +262,22 @@ bool DB_Cursor::get(Pool& pool, String *& key, String *& data, u_int32_t flags) 
 		remove(0/*flags*/);
 		key=0;
 	}
+	return true;
+}
+
+bool DB_Cursor::move(u_int32_t flags) {
+	DBT dbt_key={0}; // must be zeroed
+	DBT dbt_data={0}; // must be zeroed
+	dbt_key.flags=dbt_data.flags=DB_DBT_PARTIAL; // just peep, not actually read [size=0]
+	
+	int error=cursor->c_get(cursor, &dbt_key, &dbt_data, 
+		DEADLOCK_POSSIBILITY_REDUCTION_FLAGS
+		| flags 
+	);
+	if(error==DB_NOTFOUND)
+		return false;
+
+	check("c_get", fsource, error);
 	return true;
 }
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.17 2001/10/27 09:35:12 paf Exp $
+	$Id: pa_db_connection.C,v 1.18 2001/10/27 10:14:45 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -151,20 +151,6 @@ DB_Table_ptr DB_Connection::get_table_ptr(const String& request_file_name, const
 
 	// return auto-it
 	return DB_Table_ptr(result);
-}
-void DB_Connection::clear_dbfile(const String& file_name) {
-	// open&clear
-	DB *db;
-	DB_INFO dbinfo;
-	memset(&dbinfo, 0, sizeof(dbinfo));
-	check("open(clear)", &file_name, db_open(
-		file_name.cstr(String::UL_FILE_SPEC), 
-		PA_DB_ACCESS_METHOD, 
-		DB_CREATE | DB_TRUNCATE/* used in single thread, no need for |DB_THREAD*/,
-		0666, 
-		&dbenv, &dbinfo, &db));
-
-	check("close", &file_name, db->close(db, 0/*flags*/));  db=0; 
 }
 
 // table cache

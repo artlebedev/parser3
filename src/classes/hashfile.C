@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.11 2001/10/26 13:48:18 paf Exp $
+	$Id: hashfile.C,v 1.12 2001/10/27 10:14:45 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -42,18 +42,6 @@ static void _open(Request& r, const String& method_name, MethodParams *params) {
 		params->as_string(1, "filename must be string")
 	);
 }
-
-static void _clear(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	
-	// db_home & file_name
-	const String &db_home=params->as_string(0, "DB_HOME must be string");
-	const String &file_name=params->as_string(1, "filename must be string");
-
-	DB_manager->get_connection_ptr(db_home, &method_name)->
-		clear_dbfile(file_name);
-}
-
 
 static void _transaction(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -142,6 +130,21 @@ static void _delete(Request& r, const String& method_name, MethodParams *params)
 	}
 }
 
+static void _clear(Request& r, const String& method_name, MethodParams *) {
+	Pool& pool=r.pool();
+	VHashfile& self=*static_cast<VHashfile *>(r.self);
+	DB_Cursor cursor(
+		*self.get_table_ptr(&method_name), 
+		self.current_transaction, &method_name);
+
+	while(true) {
+		if(!cursor.move(DB_NEXT))
+			break;
+
+		cursor.remove(0/*flags*/);
+	}
+}
+
 // constructor
 
 MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
@@ -149,8 +152,6 @@ MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
 
 	// ^hashfile::open[db_home;filename]
 	add_native_method("open", Method::CT_DYNAMIC, _open, 2, 2);
-	// ^hashfile:clear[db_home;filename]
-	add_native_method("clear", Method::CT_STATIC, _clear, 2, 2);
 	// ^transaction{code}
 	add_native_method("transaction", Method::CT_DYNAMIC, _transaction, 1, 1);
 	// ^hash[]
@@ -159,6 +160,8 @@ MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
 	add_native_method("cache", Method::CT_DYNAMIC, _cache, 3, 3);
 	// ^hashfile.delete[key]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
+	// ^hashfile.clear[]
+	add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
 }
 
 // global variable
