@@ -332,6 +332,9 @@
 			RelativePath="pa_vcode_frame.h">
 		</File>
 		<File
+			RelativePath=".\pa_vconsole.h">
+		</File>
+		<File
 			RelativePath="pa_vcookie.C">
 			<FileConfiguration
 				Name="Profile Debug|Win32">

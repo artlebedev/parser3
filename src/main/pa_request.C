@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2003/11/07 13:59:22 $";
+static const char* IDENT_REQUEST_C="$Date: 2003/11/10 09:28:14 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -31,6 +31,7 @@ static const char* IDENT_REQUEST_C="$Date: 2003/11/07 13:59:22 $";
 #include "pa_vcookie.h"
 #include "pa_vresponse.h"
 #include "pa_vmemory.h"
+#include "pa_vconsole.h"
 
 // consts
 
@@ -155,6 +156,8 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	classes().put(String::Body(REQUEST_CLASS_NAME), new VRequest(arequest_info, charsets));	
 	// cookie class
 	classes().put(String::Body(COOKIE_CLASS_NAME), &cookie);
+	// console class
+	classes().put(String::Body(CONSOLE_CLASS_NAME), new VConsole());
 
 	/// methoded
 	// response class

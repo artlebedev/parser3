@@ -950,6 +950,10 @@ xdoc(xnode)
             Return the total number of bytes [EVER(c)PAF] allocated in this process.		
             Never decreases.							
 
+console
+    $console:timeout
+    !$console:line
+        read/write строку
 
 !DATA::=string | file
 
