@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.20 2001/10/11 11:52:55 parser Exp $
+	$Id: hash.C,v 1.21 2001/10/11 12:04:19 parser Exp $
 */
 
 #include "classes.h"
@@ -94,17 +94,13 @@ static void copy_pair_to(const Hash::Key& key, Hash::Val *value, void *info) {
 	dest.put(key, value);
 }
 
-static void _create(Request& r, const String& method_name, MethodParams *params) {
+static void _create_or_append(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	
 	if(params->size()) {
 		Value& vsrc=params->as_no_junction(0, "copy_from must be hash");
 		if(Hash *src=vsrc.get_hash())
 			src->for_each(copy_pair_to, &static_cast<VHash *>(r.self)->hash());
-		else
-			PTHROW(0, 0,
-				&method_name,
-				"copy_from must be hash");
 	}
 }
 
@@ -189,8 +185,10 @@ static void _count(Request& r, const String& method_name, MethodParams *) {
 MHash::MHash(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), HASH_CLASS_NAME));
 
-	// ^hash::create[[default value]]
-	add_native_method("create", Method::CT_DYNAMIC, _create, 0, 1);
+	// ^hash::create[[copy_from]]
+	add_native_method("create", Method::CT_DYNAMIC, _create_or_append, 0, 1);
+	// ^hash::append[[copy_from]]
+	add_native_method("append", Method::CT_DYNAMIC, _create_or_append, 1, 1);
 
 	// ^hash:sql[query][(count[;offset])]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);
