@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.84 2002/06/11 14:23:27 paf Exp $
+	$Id: file.C,v 1.85 2002/06/18 11:09:02 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -202,8 +202,11 @@ static bool is_safe_env_key(const char *key) {
 }
 static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) {
 	Hash& hash=*static_cast<Hash *>(info);
-	if(is_safe_env_key(key.cstr()))
-		hash.put(key, &static_cast<Value *>(value)->as_string());
+	if(!is_safe_env_key(key.cstr()))
+		throw Exception("parser.runtime",
+			&key,
+			"not safe environment variable");
+	hash.put(key, &static_cast<Value *>(value)->as_string());
 }
 static void pass_cgi_header_attribute(Array::Item *value, void *info) {
 	String& string=*static_cast<String *>(value);

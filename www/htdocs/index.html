@@ -161,7 +161,7 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^checkList[]
 #^datetest[]
 #^tserge[]
-#^envt[]
+^envt[]
 #^selectt[]
 #^select2[]
 #^selectSingle2[]
@@ -173,7 +173,19 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^xdocload[]
 #^xdocstring[]
 #^xdocsave[]
-^div[]
+#^div[]
+#^datecreatestring3[]
+
+@datecreatestring3[]
+$new_after[^date::now(-3)]
+$articles[^table::create{id	title	last_update
+1	привет	2002-07-03}]
+^articles.menu{
+    $last_update[^date::create[$articles.last_update]]
+    <a href=${articles.id}.html>$articles.title</a>
+    ^if($last_update > $new_after){новая}
+    <br>
+}
 
 @div[]
 $var(5)

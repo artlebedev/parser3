@@ -119,3 +119,4 @@
 [Wed Jun 12 15:25:32 2002] /index.cgihtml: c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(0): 'conf' parser already configured [parser.runtime]
 [Wed Jun 12 15:25:34 2002] /index.cgihtml: c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(0): 'conf' parser already configured [parser.runtime]
 [Wed Jun 12 18:02:29 2002] /index.cgihtml: c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(98): 'windows-1251' unknown charset [parser.runtime]
+[Tue Jun 18 15:04:28 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(293): 'bad' not safe environment variable [parser.runtime]
