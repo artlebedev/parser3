@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.131 2001/11/20 17:58:47 paf Exp $
+	$Id: table.C,v 1.132 2001/11/21 08:26:55 paf Exp $
 */
 
 #include "classes.h"
@@ -38,10 +38,9 @@ public: // Methoded
 static void _set(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// data is last parameter
-	Value& vdata=params->as_junction(params->size()-1, "body must be code");
-
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
-	const String& data=r.process(vdata).as_string();
+	const String& data=
+		r.process(params->as_junction(params->size()-1, "body must be code")).as_string();
 
 	size_t pos_after=0;
 	// parse columns
@@ -413,7 +412,8 @@ static void _flip(Request& r, const String& method_name, MethodParams *params) {
 
 static void _append(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	// data is last parameter
+	// data
+	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	const String& string=
 		r.process(params->as_junction(0, "body must be code")).as_string();
 

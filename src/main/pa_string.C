@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.123 2001/11/19 12:17:06 paf Exp $
+	$Id: pa_string.C,v 1.124 2001/11/21 08:26:55 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -423,6 +423,7 @@ void String::split(Array& result,
 				   size_t* pos_after_ref, 
 				   const char *delim, size_t delim_size, 
 				   Untaint_lang lang, int limit) const {
+	int self_size=size();
 	if(delim_size) {
 		size_t pos_after=pos_after_ref?*pos_after_ref:0;
 		int pos_before;
@@ -432,16 +433,16 @@ void String::split(Array& result,
 			pos_after=pos_before+delim_size;
 		}
 		// last piece
-		if(pos_after<size() && limit) {
-			result+=&mid(pos_after, size());
-			pos_after=size();
+		if(pos_after<self_size && limit) {
+			result+=&mid(pos_after, self_size);
+			pos_after=self_size;
 		}
 		if(pos_after_ref)
 			*pos_after_ref=pos_after;
 	} else { // empty delim
 		result+=this;
 		if(pos_after_ref)
-			*pos_after_ref+=size();
+			*pos_after_ref+=self_size;
 	}
 }
 
