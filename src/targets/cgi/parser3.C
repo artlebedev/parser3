@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/12/17 12:46:55 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/12/20 11:52:04 $";
 
 #include "pa_config_includes.h"
 
@@ -621,13 +621,7 @@ int main(int argc, char *argv[]) {
 		SAPI::die("<unknown exception>");
 #endif
 	}
-	
 
-#ifndef WIN32
-	// 
-	if(!cgi)
-		SAPI::send_body(global_pool, "\n", 1);
-#endif
 	//_asm int 3;
 	return 0;
 }
