@@ -2783,7 +2783,7 @@ fi
 
   ;;
 # never tested this, only theoretically by letter from demos about parser2 build
-  *-hp-ux*)
+  *-hpux*)
       echo $ac_n "checking for main in -lnsl""... $ac_c" 1>&6
 echo "configure:2789: checking for main in -lnsl" >&5
 ac_lib_var=`echo nsl'_'main | sed 'y%./+-%__p_%'`
