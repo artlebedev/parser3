@@ -81,7 +81,7 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 host_os = @host_os@
 
-INCLUDES = -I../classes -I../sql -I../classes/gd @XML_INCLUDES@
+INCLUDES = -I../classes -I../classes/xalan-patched -I../sql -I../classes/gd @XML_INCLUDES@
 
 noinst_LIBRARIES = libtypes.a
 libtypes_a_SOURCES = pa_valiased.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C ident.C
@@ -113,7 +113,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/ident.P .deps/pa_valiased.P .deps/pa_vcookie.P \
 .deps/pa_vfile.P .deps/pa_vform.P .deps/pa_vimage.P .deps/pa_vrequest.P \
@@ -225,7 +225,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \

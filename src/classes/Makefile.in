@@ -83,7 +83,7 @@ host_os = @host_os@
 
 SUBDIRS = gd xalan-patched
 
-INCLUDES = -I../types -I../sql -I../pcre -Igd @XML_INCLUDES@
+INCLUDES = -I../types -I../sql -I../pcre -Igd -Ixalan-patched @XML_INCLUDES@
 
 noinst_LIBRARIES = libclasses.a
 libclasses_a_SOURCES = classes.C double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C ident.C
@@ -118,7 +118,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/classes.P .deps/date.P .deps/double.P .deps/file.P \
 .deps/form.P .deps/hash.P .deps/ident.P .deps/image.P .deps/int.P \
@@ -290,7 +290,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
