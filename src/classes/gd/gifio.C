@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gifio.C,v 1.6 2001/04/17 19:00:32 paf Exp $
+	$Id: gifio.C,v 1.7 2001/04/23 09:38:45 paf Exp $
 
 
 	based on:
@@ -316,7 +316,7 @@ void
 gdGifEncoder::Putbyte(int c) {
 	char *p=(char *)malloc(1);
 	*p=c;
-	fp.APPEND_CLEAN(p, 1, 0, 0);
+	fp.APPEND_AS_IS(p, 1, 0, 0);
 }
 /*
 * Write out a word to the GIF file
@@ -327,13 +327,13 @@ gdGifEncoder::Putword(int w)
 	char *p=(char *)malloc(2);
 	p[0]=w & 0xff;
 	p[1]=(w / 256) & 0xff;
-	fp.APPEND_CLEAN(p, 2, 0, 0);
+	fp.APPEND_AS_IS(p, 2, 0, 0);
 }
 
 void gdGifEncoder::Write(void *buf, size_t size) {
 	char *p=(char *)malloc(size);
 	memcpy(p, buf, size);
-	fp.APPEND_CLEAN(p, size, 0, 0);
+	fp.APPEND_AS_IS(p, size, 0, 0);
 }
 
 /***************************************************************************

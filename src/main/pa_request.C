@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.118 2001/04/23 08:52:24 paf Exp $
+	$Id: pa_request.C,v 1.119 2001/04/23 09:38:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -321,12 +321,12 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		VString body_vstring_before_post_process(*body_string);
 		VString *body_vstring_after_post_process=&body_vstring_before_post_process;
 		
-		// post-process
+		// @postprocess
 		if(Value *value=main_class->get_element(*post_process_method_name))
 			if(Junction *junction=value->get_junction())
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
-					//	@post-process[data]
+					//	@postprocess[data]
 					VMethodFrame frame(pool(), *junction, false);
 					frame.set_self(*main_class);
 
@@ -341,7 +341,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// extract response body
 		Value *body_value=static_cast<Value *>(
 			response.fields().get(*body_name));
-		if(body_value) // there is some $request.body
+		if(body_value) // there is some $response.body
 			body_file=body_value->as_vfile();
 
 		// OK. write out the result

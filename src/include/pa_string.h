@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.82 2001/04/23 08:52:20 paf Exp $
+	$Id: pa_string.h,v 1.83 2001/04/23 09:38:50 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -46,14 +46,17 @@ class Table;
 #	define APPEND(src, size, lang, file, line) \
 		real_append(src, size, lang)
 #endif
-/// appends clean piece to String  @see String::real_append
+/// appends clean piece to String @see String::real_append
 #define APPEND_CLEAN(src, size, file, line) \
 	APPEND(src, size, String::UL_CLEAN, file, line)
+/// appends piece to String as-is @see String::real_append
+#define APPEND_AS_IS(src, size, file, line) \
+	APPEND(src, size, String::UL_AS_IS, file, line)
 /// appends tainted piece to String  @see String::real_append
 #define APPEND_TAINTED(src, size, file, line) \
 	APPEND(src, size, String::UL_TAINTED, file, line)
 /// handy: appends const char* piece to String  @see String::real_append
-#define	APPEND_CONST(src) APPEND_CLEAN(src, 0, 0, 0)
+#define	APPEND_CONST(src) APPEND_AS_IS(src, 0, 0, 0)
 
 class Array;
 class SQL_Connection;
@@ -124,7 +127,7 @@ public:
 		return result;
 	}
 	/** append fragment
-		@see APPEND_CLEAN, APPEND_TAINTED, APPEND_CONST
+		@see APPEND_AS_IS, APPEND_CLEAN, APPEND_TAINTED, APPEND_CONST
 	*/
 	String& real_append(STRING_APPEND_PARAMS);
 	/// @return <0 ==0 or >0 depending on comparison result

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.20 2001/04/23 08:52:15 paf Exp $
+	$Id: mail.C,v 1.21 2001/04/23 09:38:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -96,7 +96,7 @@ static void uuencode(String& result, const char *file_name_cstr, const VFile& vf
 	}
 	
 	//footer
-	result.APPEND_CLEAN((const char *)uue_table, 1/* one char */, 0, 0) << "\n"
+	result.APPEND_AS_IS((const char *)uue_table, 1/* one char */, 0, 0) << "\n"
 		"end\n";
 }
 
@@ -232,10 +232,6 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			if(Value *content_type_charset=
 				static_cast<Value *>(hash->first_that(find_content_type_charset)))
 				charset=content_type_charset->as_string().cstr();
-
-//		if(Hash *hash=ameaning)->get_hash()))
-//			if(VString *vcharset=hash->get_string(String(pool, "charset
-
 
 	*from=*to=0;
 	Mail_info mail_info={
@@ -408,8 +404,8 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 	const String *from, *to;
 	const String& letter=letter_hash_to_string(r, method_name, *hash, 0, &from, &to);
 
-	r.write_assign_lang(*new(pool) VString(letter));
-	//sendmail(r, method_name, letter, from, to);
+//	r.write_assign_lang(*new(pool) VString(letter));
+	sendmail(r, method_name, letter, from, to);
 }
 
 // initialize

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.19 2001/04/17 19:31:06 paf Exp $
+	$Id: image.C,v 1.20 2001/04/23 09:38:39 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -374,7 +374,8 @@ static void _gif(Request& r, const String& method_name, MethodParams *params) {
 	
 	VFile& vfile=*new(pool) VFile(pool);
 	String& image_gif=*new(pool) String(pool, "image/gif");
-	vfile.set(false/*not tainted*/, out.cstr(), out.size(), 0, &image_gif);
+	vfile.set(false/*not tainted*/, 
+		out.cstr(String::UL_AS_IS), out.size(), 0, &image_gif);
 
 	r.write_no_lang(vfile);
 }

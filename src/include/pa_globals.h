@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.49 2001/04/20 14:18:36 paf Exp $
+	$Id: pa_globals.h,v 1.50 2001/04/23 09:38:50 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -34,7 +34,7 @@ class Table;
 #define TEXT_NAME "text"
 
 #define EXCEPTION_METHOD_NAME "exception"
-#define POST_PROCESS_METHOD_NAME "post-process"
+#define POST_PROCESS_METHOD_NAME "postprocess"
 
 #define CONTENT_DISPOSITION_NAME "content-disposition"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"

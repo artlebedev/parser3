@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_exec.C,v 1.2 2001/04/17 19:00:41 paf Exp $
+	$Id: pa_exec.C,v 1.3 2001/04/23 09:38:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -108,7 +108,7 @@ static void read_pipe(String& result, HANDLE hOutRead, const char *file_spec){
 		ReadFile( hOutRead, buf, MAX_STRING, &size, NULL );
 		if(!size) 
 			break;
-		result.APPEND_CLEAN(buf, size, file_spec, 0);
+		result.APPEND_AS_IS(buf, size, file_spec, 0);
     }
 }
 
@@ -126,7 +126,7 @@ static const char *buildCommand(Pool& pool,
 				char *atEOL=strchr(buf, '\n');
 				if(atEOL) {
 					String string(pool);
-					string.APPEND_CLEAN(buf+2, atEOL-(buf+2), 
+					string.APPEND_AS_IS(buf+2, atEOL-(buf+2), 
 						origin_string.origin().file, 0);
 					string << " " << file_spec_cstr;
 					if(argv)
@@ -261,7 +261,7 @@ static void read_pipe(String& result, int file, const char *file_spec){
 		size_t size=read(file, buf, MAX_STRING);
 		if(!size) 
 			break;
-		result.APPEND_CLEAN(buf, size, file_spec, 0);
+		result.APPEND_AS_IS(buf, size, file_spec, 0);
     }
 }
 
@@ -272,7 +272,7 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 	String& string=*static_cast<String *>(info);
 	
 	string << key << "=" << *static_cast<String *>(value);
-	string.APPEND_CLEAN("", 1, 0, 0); // zero byte
+	string.APPEND_AS_IS("", 1, 0, 0); // zero byte
 #else
 	String string(key.pool());
 	string << key << "=" << *static_cast<String *>(value);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.43 2001/04/23 08:52:24 paf Exp $
+	$Id: untaint.C,v 1.44 2001/04/23 09:38:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -120,7 +120,6 @@ inline bool need_quote_http_header(const char *ptr, size_t size) {
 }
 
 /**
-	@test optimize whitespaces for all but 'html'
 	@todo fix theoretical \n mem overrun in TYPO replacements
 */
 char *String::store_to(char *dest, Untaint_lang lang, 
@@ -130,6 +129,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 	Table *user_typo_table=static_cast<Table *>(pool().tag());
 	Table *typo_table=user_typo_table?user_typo_table:default_typo_table;
 
+	bool whitespace=true;
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
@@ -142,6 +142,23 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			switch(lang==UL_UNSPECIFIED?row->item.lang:lang) {
 			case UL_CLEAN:
 				// clean piece
+				{ // optimizing whitespace
+					const char *src=row->item.ptr; 
+					for(int size=row->item.size; size--; src++)
+						switch(*src) {
+						case ' ': case '\n': case '\r': case '\t':
+							if(!whitespace) {
+								*dest++=*src;
+								whitespace=true;
+							}
+							break;
+						default:
+							whitespace=false;
+							*dest++=*src;
+							break;
+						}
+				}
+				break;
 			case UL_TAINTED:
 				// tainted piece, but undefined untaint language
 				// for VString.as_double of tainted values
@@ -318,6 +335,9 @@ char *String::store_to(char *dest, Untaint_lang lang,
 						static_cast<int>(row->item.lang), 
 						i); // never
 			}
+
+			if((lang==UL_UNSPECIFIED?row->item.lang:lang)!=UL_CLEAN)
+				whitespace=false;
 		}
 		chunk=row->link;
 	} while(chunk);
