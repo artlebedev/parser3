@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_venv.h,v 1.4 2001/03/13 14:02:51 paf Exp $
+	$Id: pa_venv.h,v 1.5 2001/03/13 14:11:08 paf Exp $
 */
 
 #ifndef PA_VENV_H
@@ -12,6 +12,7 @@
 #include "pa_vstateless_class.h"
 #include "pa_string.h"
 #include "_env.h"
+#include "pa_common.h"
 
 class VEnv : public VStateless_class {
 public: // Value
@@ -25,11 +26,9 @@ public: // Value
 		if(Value *result=VStateless_class::get_element(aname))
 			return result;
 
+		// getenv
 		String& string=*NEW String(pool());
-		char *file="environment";
-		int line=3;
-		char *value="<value>";// TODO: getenv
-		string.APPEND_TAINTED(value, 0, file, line);
+		string.APPEND_TAINTED(getenv(aname.cstr()), 0, "environment", 0);
 		return NEW VString(string);
 	}
 
