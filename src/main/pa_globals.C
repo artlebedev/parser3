@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2004/02/13 14:01:08 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2004/02/16 11:20:05 $";
 
 #include "pa_config_includes.h"
 
@@ -80,23 +80,15 @@ Request& pa_thread_request() {
 #ifdef XML
 
 class XML_Generic_error_info {
-public:
+public:/*internal, actually*/
 	char buf[MAX_STRING*5];
 	size_t used;
 public:
 	XML_Generic_error_info() {
-		reset();
-	}
-	void reset() { 
 		buf[used=0]=0;
 	}
-	const char* get_and_reset() {
-		if(used) {
-			char* result=pa_strdup(buf, used);
-			reset();
-			return result;
-		} else
-			return 0;		
+	const char* get() {
+		return used? buf: 0;
 	}
 };
 
@@ -135,8 +127,10 @@ const char* xmlGenericErrors() {
 
 	SYNCHRONIZED;  // find+free blocked
 
-	if(XML_Generic_error_info *p=xml_generic_error_infos.get(thread_id))
-		return p->get_and_reset();
+	if(XML_Generic_error_info *p=xml_generic_error_infos.get(thread_id)) {
+		xml_generic_error_infos.remove(thread_id);
+		return p->get();
+	}
 
 	return 0; // no errors for our thread_id registered
 }
