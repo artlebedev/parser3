@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.26 2001/03/13 13:43:30 paf Exp $
+	$Id: pa_request.C,v 1.27 2001/03/13 16:38:24 paf Exp $
 */
 
 #include <string.h>
@@ -23,26 +23,23 @@ Request::Request(Pool& apool) : Pooled(apool),
 	stack(apool),
 	root_class(apool),
 	env_class(apool),
+	form_class(apool),
 	fclasses(apool),
-	fclasses_array(apool),
 	flang(String::Untaint_lang::HTML_TYPO)
 {
-	// root class
-	initialize_root_class(pool(), root_class);
-	// adding root superclass, 
+	// root superclass, 
 	//   parent of all classes, 
 	//   operators holder
+	initialize_root_class(pool(), root_class);
 	classes().put(*root_class_name, &root_class);
-	//root_class.set_name(*root_class_name);
-
-	// env class
-	initialize_env_class(pool(), env_class);
-	classes().put(*env_class_name, &env_class);
-
 	// table class
 	classes().put(*table_class_name, table_class);	
-	table_class->set_name(*table_class_name);
+//	table_class->set_name(*table_class_name);
 
+	// env class
+	classes().put(*env_class_name, &env_class);
+	// form class
+	classes().put(*form_class_name, &form_class);	
 
 	// web
 	// TODO: ifdef WIN32 flip \\ to /

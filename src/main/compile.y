@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.95 2001/03/13 14:28:51 paf Exp $
+	$Id: compile.y,v 1.96 2001/03/13 16:38:23 paf Exp $
 */
 
 /*
@@ -145,7 +145,6 @@ control_method: '@' STRING '\n'
 			// defaulting base. may change with @BASE
 			PC->cclass->set_base(PC->request->root_class);
 			// append to request's classes
-			PC->request->classes_array()+=PC->cclass;
 			PC->request->classes().put(*name, PC->cclass);
 		} else {
 			strcpy(PC->error, "@"CLASS_NAME" must contain sole name");

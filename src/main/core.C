@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.C,v 1.64 2001/03/13 13:43:30 paf Exp $
+	$Id: core.C,v 1.65 2001/03/13 16:38:23 paf Exp $
 */
 
 #include "core.h"
@@ -12,8 +12,9 @@
 #include "_int.h"
 #include "_table.h"
 #include "pa_request.h"
+#include "_form.h"
 
-#define GLOBAL_STRING(name, value)  name=new(pool) String(pool); name->APPEND_CONST(value)
+#define NEW_STRING(name, value)  name=new(pool) String(pool); name->APPEND_CONST(value)
 #define LOCAL_STRING(name, value)  String name(pool); name.APPEND_CONST(value)
 
 String *unnamed_name;
@@ -22,10 +23,11 @@ String *empty_string;
 String *auto_method_name;
 String *main_method_name;
 
-String *main_class_name;
 String *root_class_name;
+String *main_class_name;
 String *env_class_name;
 String *table_class_name;
+String *form_class_name;
 
 Hash *untaint_lang_name2enum;
 
@@ -34,16 +36,17 @@ void core() {
 	Pool pool;
 	
 	// names
-	GLOBAL_STRING(unnamed_name, UNNAMED_NAME);
+	NEW_STRING(unnamed_name, UNNAMED_NAME);
 	empty_string=new(pool) String(pool); 
 
-	GLOBAL_STRING(auto_method_name, AUTO_METHOD_NAME);
-	GLOBAL_STRING(main_method_name, MAIN_METHOD_NAME);
-	
-	GLOBAL_STRING(main_class_name, MAIN_CLASS_NAME);
-	GLOBAL_STRING(root_class_name, ROOT_CLASS_NAME);
-	GLOBAL_STRING(env_class_name, ENV_CLASS_NAME);	
-	GLOBAL_STRING(table_class_name, TABLE_CLASS_NAME);
+	NEW_STRING(auto_method_name, AUTO_METHOD_NAME);
+	NEW_STRING(main_method_name, MAIN_METHOD_NAME);
+
+	NEW_STRING(root_class_name, ROOT_CLASS_NAME);
+	NEW_STRING(main_class_name, MAIN_CLASS_NAME);
+	NEW_STRING(table_class_name, TABLE_CLASS_NAME);
+	NEW_STRING(env_class_name, ENV_CLASS_NAME);	
+	NEW_STRING(form_class_name, FORM_CLASS_NAME);	
 
 	// hashes
 	untaint_lang_name2enum=new(pool) Hash(pool);
@@ -65,6 +68,10 @@ void core() {
 	initialize_double_class(pool, *(double_class=new(pool) VStateless_class(pool)));  double_class->freeze();
 	initialize_int_class(pool, *(int_class=new(pool) VStateless_class(pool)));  int_class->freeze();
 	initialize_table_class(pool, *(table_class=new(pool) VStateless_class(pool)));  table_class->freeze();
+
+	// read-only stateless base classes
+	initialize_env_base_class(pool, *(env_base_class=new(pool) VStateless_class(pool)));  env_base_class->freeze();
+	initialize_form_base_class(pool, *(form_base_class=new(pool) VStateless_class(pool)));  form_base_class->freeze();
 
 	// request
 	Request request(pool);

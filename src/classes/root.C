@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.38 2001/03/13 13:43:28 paf Exp $
+	$Id: root.C,v 1.39 2001/03/13 16:38:21 paf Exp $
 */
 
 #include <string.h>
@@ -43,7 +43,7 @@ static void _untaint(Request& r, const String& method_name, Array *params) {
 	String::Untaint_lang lang=static_cast<String::Untaint_lang>(
 		untaint_lang_name2enum->get_int(lang_name));
 	if(!lang)
-		R_THROW(0, 0,
+		RTHROW(0, 0,
 			&lang_name,
 			"invalid untaint language");
 
@@ -114,7 +114,7 @@ static void _while(Request& r, const String& method_name, Array *params) {
 	int endless_loop_count=0;
 	while(true) {
 		if(++endless_loop_count>=1973) // endless loop?
-			R_THROW(0, 0,
+			RTHROW(0, 0,
 				&method_name,
 				"endless loop detected");
 
@@ -159,7 +159,7 @@ static void _for(Request& r, const String& method_name, Array *params) {
 	int endless_loop_count=0;
 	for(int i=from; i<=to; i++) {
 		if(++endless_loop_count>=2001) // endless loop?
-			R_THROW(0, 0,
+			RTHROW(0, 0,
 				&method_name,
 				"endless loop detected");
 		vint->set_int(i);

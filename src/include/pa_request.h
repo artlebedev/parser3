@@ -3,14 +3,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.47 2001/03/13 13:53:36 paf Exp $
+	$Id: pa_request.h,v 1.48 2001/03/13 16:38:22 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
 #include "pa_pool.h"
-#include "pa_exception.h"
 #include "pa_hash.h"
 #include "pa_wcontext.h"
 #include "pa_value.h"
@@ -18,16 +17,18 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 #include "pa_venv.h"
+#include "pa_vform.h"
 
 #define UNNAMED_NAME "unnamed"
 
 #define MAIN_METHOD_NAME "main"
 #define AUTO_METHOD_NAME "auto"
-#define MAIN_CLASS_NAME "MAIN"
 
 #define ROOT_CLASS_NAME "ROOT"
-#define ENV_CLASS_NAME "ENV"
+#define MAIN_CLASS_NAME "MAIN"
 #define TABLE_CLASS_NAME "table"
+#define ENV_CLASS_NAME "env"
+#define FORM_CLASS_NAME "form"
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \
@@ -57,7 +58,6 @@ public:
 
 	// global classes
 	Hash& classes() { return fclasses; }
-	Array& classes_array() { return fclasses_array; }
 
 	// core request processing
 	void core();
@@ -99,8 +99,10 @@ public:
 	
 	// default base
 	VClass root_class;
-	// $ENV:fields here
+	// $env:fields here
 	VEnv env_class;
+	// $form:elements here
+	VForm form_class;
 
 	// contexts
 	Value *self, *root, *rcontext;
@@ -110,7 +112,6 @@ private: // core data
 
 	// classes
 	Hash fclasses;
-	Array fclasses_array;
 
 	// execution stack
 	Stack stack;

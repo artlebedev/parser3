@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_venv.h,v 1.5 2001/03/13 14:11:08 paf Exp $
+	$Id: pa_venv.h,v 1.6 2001/03/13 16:38:27 paf Exp $
 */
 
 #ifndef PA_VENV_H
@@ -34,10 +34,9 @@ public: // Value
 
 public: // usage
 
-	VEnv(Pool& apool) : VStateless_class(apool) {
+	VEnv(Pool& apool) : VStateless_class(apool, env_base_class) {
 	}
 
-private:
 };
 
 #endif

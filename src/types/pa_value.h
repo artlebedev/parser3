@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.10 2001/03/13 14:02:51 paf Exp $
+	$Id: pa_value.h,v 1.11 2001/03/13 16:38:27 paf Exp $
 */
 
 /*
@@ -151,6 +151,7 @@ public: // Value
 	// methodframe: my or self_transparent
 	// table: column
 	// env: CLASS,BASE,method,field
+	// form: CLASS,BASE,method,field
 	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
 	
 	// hash: (key)=value

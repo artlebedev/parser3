@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.10 2001/03/12 21:54:20 paf Exp $
+	$Id: pa_common.C,v 1.11 2001/03/13 16:38:24 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -59,7 +59,7 @@ char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem) {
 		return result;//prepare_config(result, remove_empty_lines);
     }
 	if(fail_on_read_problem)
-		POOL_THROW(0,0,
+		PTHROW(0,0,
 			0,
 			"use: can not read '%s' file", fname);
     return 0;

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.31 2001/03/13 11:19:30 paf Exp $
+	$Id: pa_pool.h,v 1.32 2001/03/13 16:38:22 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -114,8 +114,8 @@ public:
 		if(setjmp(temp_exception.mark)==0)
 
 #define THROW exception()._throw
-#define POOL_THROW pool.exception()._throw
-#define R_THROW r.pool().exception()._throw
+#define PTHROW pool.exception()._throw
+#define RTHROW r.pool().exception()._throw
 #define CATCH(e) \
 		else{ \
 			Exception& e=temp_exception;

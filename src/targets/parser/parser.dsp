@@ -92,6 +92,10 @@ SOURCE=..\..\include\core.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\include\pa_hash.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\pa_pool.h
 # End Source File
 # Begin Source File
