@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.110 2001/03/16 10:38:07 paf Exp $
+	$Id: execute.C,v 1.111 2001/03/16 11:10:20 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -300,12 +300,14 @@ void Request::execute(const Array& ops) {
 		case OP_GET_METHOD_FRAME:
 			{
 				Value *value=POP();
-				// info: this one's always method-junction, not a code-junction
+				// info: 
+				//	code compiled so that this one's always method-junction, 
+				//	not a code-junction
 				Junction *junction=value->get_junction();
 				if(!junction)
 					THROW(0,0,
 						&value->name(),
-						"(%s) uncallable, must be method or junction",
+						"(%s) not a method or junction, can not call it",
 							value->type()); 
 
 				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);

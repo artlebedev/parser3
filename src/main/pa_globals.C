@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.5 2001/03/15 09:04:06 paf Exp $
+	$Id: pa_globals.C,v 1.6 2001/03/16 11:10:20 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -29,6 +29,8 @@ String *main_class_name;
 String *env_class_name;
 String *table_class_name;
 String *form_class_name;
+
+String *result_var_name;
 
 String *limits_name;
 String *post_max_size_name;
@@ -87,6 +89,9 @@ void globals_init(Pool& pool) {
 	NEW_STRING(table_class_name, TABLE_CLASS_NAME);
 	NEW_STRING(env_class_name, ENV_CLASS_NAME);	
 	NEW_STRING(form_class_name, FORM_CLASS_NAME);	
+
+	NEW_STRING(result_var_name, RESULT_VAR_NAME);
+
 
 	NEW_STRING(limits_name, LIMITS_NAME);
 	NEW_STRING(post_max_size_name, POST_MAX_SIZE_NAME);

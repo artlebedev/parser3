@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.6 2001/03/16 09:26:45 paf Exp $
+	$Id: pa_wcontext.h,v 1.7 2001/03/16 11:10:21 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -41,31 +41,30 @@ public: // WContext
 	// else writes Value; raises an error if already
 	virtual void write(Value& avalue, String::Untaint_lang lang);
 
+	// retrives the resulting value
+	// that can be VString if value==0 or the Value object
+	// wmethod_frame first checks for $result and if there is one, returns it instead
+	virtual Value *result() const {
+		return fvalue?fvalue:NEW VString(fstring);
+	}
+
 public: // usage
 
 	WContext(Pool& apool, Value *avalue, bool aconstructing) : Value(apool), 
-		fvalue(avalue),
-		fconstructing(aconstructing),
-		fsomebody_entered_some_class(false),
-		fstring(*new(apool) String(apool)) {
+		fstring(*new(apool) String(apool)),
+		fconstructing(aconstructing), fvalue(avalue),
+		fsomebody_entered_some_class(false) {
 	}
 
 	bool constructing() { return fconstructing; }
 	void set_somebody_entered_some_class() { fsomebody_entered_some_class=true; }
 	bool somebody_entered_some_class() { return fsomebody_entered_some_class; }
 
-	// retrives the resulting value
-	// that can be VString if value==0 or the Value object
-	Value *result() const {
-		return fvalue?fvalue:NEW VString(fstring);
-	}
-
 protected:
-	bool fconstructing;
-	Value *fvalue;
+	String& fstring;
+	bool fconstructing;  Value *fvalue;
 private:
 	bool fsomebody_entered_some_class;
-	String& fstring;
 };
 
 #endif

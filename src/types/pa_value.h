@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.15 2001/03/16 09:26:45 paf Exp $
+	$Id: pa_value.h,v 1.16 2001/03/16 11:10:21 paf Exp $
 */
 
 /*
@@ -117,6 +117,7 @@ public: // Value
 	// double: value
 	// bool: must be 0: so in ^if(1>2) it would'nt become "FALSE" string which is 'true'
 	// others: 0
+	// WContext: accumulated fstring
 	virtual const String *get_string() { return 0; }
 	
 	// string: value

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.5 2001/03/15 09:04:02 paf Exp $
+	$Id: pa_globals.h,v 1.6 2001/03/16 11:10:19 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -29,6 +29,8 @@
 
 #define LIMITS_NAME "limits"
 #define POST_MAX_SIZE_NAME "post_max_size"
+
+#define RESULT_VAR_NAME "result"
 
 struct Service_funcs {
 	int (*read_post)(char *buf, int max_bytes);
@@ -61,6 +63,8 @@ extern String *form_class_name;
 
 extern String *limits_name;
 extern String *post_max_size_name;
+
+extern String *result_var_name;
 
 // global hashes
 extern Hash *untaint_lang_name2enum;

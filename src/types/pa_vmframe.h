@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmframe.h,v 1.7 2001/03/16 10:38:08 paf Exp $
+	$Id: pa_vmframe.h,v 1.8 2001/03/16 11:10:21 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -39,6 +39,15 @@ public: // Value
 	// methodframe: self_transparent
 	VAliased *get_aliased() { return fself->get_aliased(); }
 
+public: // wcontext
+
+	Value *result() const {
+		// check the $result value
+		Value *result=my?static_cast<Value*>(my->get(*result_var_name)):0;
+		// if we have one, return it, else return as usual: accumulated fstring or fvalue
+		return result && result->get_defined()?result:WContext::result();
+	}
+
 public: // usage
 
 	VMethodFrame(Pool& apool, const Junction& ajunction/*info: always method-junction*/) : 
@@ -53,17 +62,24 @@ public: // usage
 
 		if(method.max_numbered_params_count) // are this method params numbered?
 			fnumbered_params=NEW Array(pool()); // create storage
-		else // named params
+		else { // named params
 			my=NEW Hash(pool()); // create storage
-
-		if(method.locals_names) { // there are any local var names?
-			// remember them
-			// those are flags that name is local == to be looked up in 'my'
-			for(int i=0; i<method.locals_names->size(); i++) {
-				Value *value=NEW VUnknown(pool());
-				const String& name=*method.locals_names->get_string(i);
-				my->put(name, value);
-				value->set_name(name);
+			
+			if(method.locals_names) { // are there any local var names?
+				// remember them
+				// those are flags that name is local == to be looked up in 'my'
+				for(int i=0; i<method.locals_names->size(); i++) {
+					// speedup: not checking for clash with "result" name
+					Value *value=NEW VUnknown(pool());
+					const String& name=*method.locals_names->get_string(i);
+					my->put(name, value);
+					value->set_name(name);
+				}
+			}
+			{ // always there is one local: $result
+				Value *result_value=NEW VUnknown(pool());
+				my->put(*result_var_name, result_value);
+				result_value->set_name(*result_var_name);
 			}
 		}
 	}
@@ -87,6 +103,7 @@ public: // usage
 		if(method.max_numbered_params_count) { // are this method params numbered?
 			*fnumbered_params+=value;
 		} else { // named param
+			// speedup: not checking for clash with "result" name
 			const String& name=*method.params_names->get_string(store_param_index);
 			my->put(name, value); // remember param
 			value->set_name(name); // set param's 'name'
