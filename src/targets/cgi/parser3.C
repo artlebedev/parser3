@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/11/20 14:20:58 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/11/20 14:50:51 $";
 
 #include "pa_config_includes.h"
 
@@ -223,15 +223,23 @@ static void full_file_spec(const char *file_name, char *buf, size_t buf_size) {
 #endif
 }
 
+static void log_signal(const char *signal_name) {
+	SAPI::log(global_pool, request? "%s received. uri=%s, qs=%s"
+		:"%s received. no request being processed", 
+		signal_name,
+		request?request->info.uri:"-",
+		request?request->info.query_string:"-");
+}
+
 #ifdef SIGUSR1
-void SIGUSR1_Handler(int /*sig*/){
-	SAPI::log(global_pool, "SIGUSR1 received. url=%s", request?request->info.uri:"<no request>");
+static void SIGUSR1_handler(int /*sig*/){
+	log_signal("SIGUSR1");
 }
 #endif
 
 #ifdef SIGPIPE
-void SIGPIPE_Handler(int /*sig*/){
-	SAPI::log(global_pool, "SIGPIPE received. url=%s", request?request->info.uri:"<no request>");
+static void SIGPIPE_handler(int /*sig*/){
+	log_signal("SIGPIPE");
 	if(request)
 		request->interrupt();
 }
@@ -451,11 +459,11 @@ static void usage(const char *program) {
 
 int main(int argc, char *argv[]) {
 #ifdef SIGUSR1
-    if(signal(SIGUSR1, SIGUSR1_Handler)==SIG_ERR)
+    if(signal(SIGUSR1, SIGUSR1_handler)==SIG_ERR)
 		SAPI::die("Can not set handler for SIGUSR1");
 #endif
 #ifdef SIGPIPE
-    if(signal(SIGPIPE, SIGPIPE_Handler)==SIG_ERR)
+    if(signal(SIGPIPE, SIGPIPE_handler)==SIG_ERR)
 		SAPI::die("Can not set handler for SIGPIPE");
 #endif
 
