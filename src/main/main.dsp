@@ -80,114 +80,6 @@ LIB32=link.exe -lib
 
 # Name "main - Win32 Release"
 # Name "main - Win32 Debug"
-# Begin Group "include"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\include\pa_array.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_charset_connection.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_charset_manager.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_common.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_config_fixed.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_config_includes.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_dictionary.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_dir.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_exception.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_exec.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_globals.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_hash.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_opcode.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_pool.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_request.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_sapi.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_socks.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_sql_connection.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_sql_driver_manager.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_stack.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_string.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_stylesheet_connection.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_table.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_threads.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_types.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_xslt_stylesheet_manager.h
-# End Source File
-# End Group
 # Begin Group "Source Files"
 
 # PROP Default_Filter "C;cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
@@ -331,6 +223,9 @@ SOURCE=.\pa_xslt_stylesheet_manager.C
 SOURCE=.\untaint.C
 # End Source File
 # End Group
+# Begin Group "Header Files"
+
+# PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Group "sql"
 
 # PROP Default_Filter ""
@@ -339,12 +234,113 @@ SOURCE=.\untaint.C
 SOURCE=..\sql\pa_sql_driver.h
 # End Source File
 # End Group
-# Begin Group "Header Files"
-
-# PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
 SOURCE=.\compile_tools.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_array.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_charset_connection.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_charset_manager.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_common.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_config_fixed.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_config_includes.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_dictionary.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_dir.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_exception.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_exec.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_globals.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_hash.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_opcode.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_pool.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_request.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_sapi.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_socks.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_sql_connection.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_sql_driver_manager.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_stack.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_string.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_stylesheet_connection.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_table.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_threads.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_types.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_xslt_stylesheet_manager.h
 # End Source File
 # End Group
 # Begin Group "ident"
