@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.22 2001/07/18 10:06:04 parser Exp $
+	$Id: pa_vdouble.h,v 1.23 2001/07/25 12:46:45 parser Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -28,9 +28,10 @@ public: // Value
 	/// VDouble: fdouble
 	const String *get_string() {
 		char *buf=(char *)pool().malloc(MAX_NUMBER);
-		snprintf(buf, MAX_NUMBER, "%g", fdouble);
 		String *result=NEW String(pool());
-		result->APPEND_CLEAN(buf, 0, name().origin().file, name().origin().line);
+		result->APPEND_CLEAN(
+			buf, snprintf(buf, MAX_NUMBER, "%g", fdouble), 
+			name().origin().file, name().origin().line);
 		return result;
 	}
 	/// VDouble: fdouble

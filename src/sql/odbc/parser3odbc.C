@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3odbc.C,v 1.1 2001/07/23 13:59:52 parser Exp $"; 
+static const char *RCSId="$Id: parser3odbc.C,v 1.2 2001/07/25 12:46:45 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -118,8 +118,14 @@ public:
 
 			it's already UNTAINT_TIMES_BIGGER
 		*/
-		memcpy(to, from, length);//todo: ' -> ''
-		return length;
+		// ' -> ''
+		unsigned int result=length;
+		while(length--) {
+			if(*from=='\'')
+				*to++='\'';
+			*to++=*from++;
+		}
+		return result;
 	}
 	void query(
 		SQL_Driver_services& services, void *connection, 
@@ -175,13 +181,12 @@ public:
 							handlers.add_row_cell(ptr, size);
 						}
 					}
-					rs.MoveNext();
-					row++;
+					rs.MoveNext();  row++;
 				}
 				
 				rs.Close();
 			} else {
-				// empty result
+				db->ExecuteSQL(statement);
 			}
 		} 
 		CATCH_ALL (e) {
