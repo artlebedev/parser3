@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSET_C="$Date: 2003/09/29 09:42:12 $";
+static const char* IDENT_CHARSET_C="$Date: 2003/11/05 13:53:30 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -117,10 +117,6 @@ void Charset::load_definition(Request_charsets& charsets, const String& afile_sp
 
 	// charset
 	memset(&tables, 0, sizeof(tables));
-	// strangly vital
-	tables.toTable[tables.toTableSize].intCh=0;
-	tables.toTable[tables.toTableSize].extCh=(XMLByte)0;
-	tables.toTableSize++;
 
 	// loading text
 	char *data=file_read_text(charsets, afile_spec);
@@ -192,22 +188,20 @@ void Charset::sort_ToTable() {
 static XMLByte xlatOneTo(const XMLCh toXlat,
 			 const Charset::Tables& tables,
 			 XMLByte not_found) {
-	unsigned int    lowOfs = 0;
-	unsigned int    hiOfs = tables.toTableSize - 1;
-	do {
+	int    lo = 0;
+	int    hi = tables.toTableSize - 1;
+	while(lo<=hi) {
 		// Calc the mid point of the low and high offset.
-		const unsigned int midOfs =((hiOfs - lowOfs) / 2)+lowOfs;
-		
-		//  If our test char is greater than the mid point char, then
-		//  we move up to the upper half. Else we move to the lower
-		//  half. If its equal, then its our guy.
-		if(toXlat>tables.toTable[midOfs].intCh)
-			lowOfs = midOfs;
-		else if(toXlat<tables.toTable[midOfs].intCh)
-			hiOfs = midOfs;
+		const unsigned int i = (lo + hi) / 2;
+
+		XMLCh cur=tables.toTable[i].intCh;
+		if(toXlat==cur)
+			return tables.toTable[i].extCh;
+		if(toXlat>cur)
+			lo = i+1;
 		else
-			return tables.toTable[midOfs].extCh;
-	} while(lowOfs+1<hiOfs);
+			hi = i-1;
+	}
 	
 	return not_found;
 }
@@ -454,23 +448,22 @@ const String::C Charset::transcodeToUTF8(const String::C src) const {
 }
 
 static XMLCh change_case_UTF8(const XMLCh src, const Charset::UTF8CaseTable& table) {
-	unsigned int    lowOfs = 0;
-	unsigned int    hiOfs = table.size - 1;
-	do {
+	int    lo = 0;
+	int    hi = table.size - 1;
+	while(lo<=hi) {
 		// Calc the mid point of the low and high offset.
-		const unsigned int midOfs =((hiOfs - lowOfs) / 2)+lowOfs;
-		
-		//  If our test char is greater than the mid point char, then
-		//  we move up to the upper half. Else we move to the lower
-		//  half. If its equal, then its our guy.
-		if(src>table.records[midOfs].from)
-			lowOfs = midOfs;
-		else if(src<table.records[midOfs].from)
-			hiOfs = midOfs;
+		const unsigned int i = (lo + hi) / 2;
+
+		XMLCh cur=table.records[i].from;
+		if(src==cur)
+			return table.records[i].to;
+		if(src>cur)
+			lo = i+1;
 		else
-			return table.records[midOfs].to;
-	} while(lowOfs+1<hiOfs);
-	
+			hi = i-1;
+	}
+
+	// not found
 	return src;
 }
 
