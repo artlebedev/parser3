@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2004/02/06 09:25:22 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2004/02/06 09:40:28 $";
 
 
 #include "pa_string.h"
@@ -23,14 +23,9 @@ extern "C" { // author forgot to do that
 #include "ec.h"
 }
 
-#define PA_SQL
-
-#ifdef PA_SQL
 #include "pa_sql_connection.h"
-#endif
 
 // defines
-
 
 #undef CORD_ec_append
 // redefining to intercept flushes and implement whitespace optimization
@@ -412,7 +407,6 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 			_default;
 		});
 		break;
-#ifdef PA_SQL
 	case String::L_SQL:
 		// tainted, untaint language: sql
 		if(info->connection) {
@@ -426,7 +420,6 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 				0,
 				"untaint in SQL language failed - no connection specified");
 		break;
-#endif
 	case String::L_JS:
 		escape(switch(c) {
 			case '"': to_string("\\\"");  break;
