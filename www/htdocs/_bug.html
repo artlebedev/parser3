@@ -2,7 +2,11 @@
 ^connect[oracle://mts_imprimatur2:imp2@mts]{
 #    ^in[]
 #	^out[]
-	^inout[]
+#	^inout[]
+#	^ex[]
+#	^ex2[]
+#	^ex3[]
+	^ex4[]
 	OK
 }
 
@@ -62,3 +66,58 @@ end;
 	after "$vars.aio"
 
 #	^string:sql{select a from paf}
+
+@exp[]
+create or replace procedure pafex is
+begin
+DECLARE
+   out_of_stock   EXCEPTION;
+begin
+ raise out_of_stock;
+ end;
+end;
+/
+@ex[]
+^void:sql{
+begin 
+pafex^; 
+end^;
+}
+@ex[]
+^void:sql{call pafex()}
+
+@exp2[]
+create or replace procedure pafex2 is
+begin
+ raise ZERO_DIVIDE;
+end;
+/
+@ex2[]
+^void:sql{call pafex2()}
+
+
+@exp3[]
+create or replace procedure pafex3 is
+begin
+DECLARE
+   out_of_stock   EXCEPTION;
+   PRAGMA EXCEPTION_INIT(out_of_stock, -333);
+begin
+ raise out_of_stock;
+ end;
+end;
+/
+@ex3[]
+^void:sql{call pafex3()}
+
+
+@exp4[]
+create or replace procedure pafex4 is
+begin
+	raise_application_error(-20444, 'Salary is missing');
+end;
+/
+@ex4[]
+^void:sql{call pafex4()}
+
+
