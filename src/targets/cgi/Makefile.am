@@ -1,5 +1,3 @@
-#  $Id: Makefile.am,v 1.8 2001/05/18 12:58:07 parser Exp $
-
 INCLUDES = -I../../include -I../../classes -I../../types -I$(INCLTDL) -I../../sql
 
 bin_PROGRAMS = parser3

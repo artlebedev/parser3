@@ -1,5 +1,3 @@
-#  $Id: Makefile.am,v 1.3 2001/04/17 19:01:01 paf Exp $
-
 INCLUDES = -I../include -I../classes -I../sql
 
 noinst_LIBRARIES = libtypes.a

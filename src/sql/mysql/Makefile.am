@@ -1,5 +1,3 @@
-#  $Id: Makefile.am,v 1.3 2001/04/18 15:55:41 paf Exp $
-
 SUBDIRS = libltdl
 
 LIBTOOL_DEPS = @LIBTOOL_DEPS@

@@ -1,5 +1,3 @@
-#  $Id: Makefile.am,v 1.12 2001/04/28 15:47:45 paf Exp $
-
 INCLUDES = -I../include -I../types -I../classes -I../sql -I../pcre -I../libltdl
 
 noinst_LIBRARIES = libmain.a

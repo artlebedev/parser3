@@ -1,5 +1,3 @@
-#  $Id: Makefile.am,v 1.16 2001/07/07 16:38:01 parser Exp $
-
 SUBDIRS = gd
 
 INCLUDES = -I../include -I../types -I../sql -Igd -I../pcre

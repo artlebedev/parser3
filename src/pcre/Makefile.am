@@ -1,5 +1,3 @@
-#  $Id: Makefile.am,v 1.9 2001/05/21 08:16:44 parser Exp $
-
 bin_PROGRAMS = dftables pcre_parser_ctype
 dftables_SOURCES = dftables.c 
 pcre_parser_ctype_SOURCES = pcre_parser_ctype.c
