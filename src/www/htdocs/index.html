@@ -1,5 +1,5 @@
 @main[]
-#$response:content-type[$.value[text/html] $.charset[windows-1251]]
+$response:content-type[$.value[text/html] $.charset[windows-1251]]
 ^xslt[]
 OK
 
@@ -70,15 +70,15 @@ $people[^dom.select[*/man]]
 
 @show-dom2[dom]
 ^dom.save[save.xml;
-	$.encoding[windows-1251]
+#	$.encoding[windows-1251]
 	$.method[xml]
 ]
 $file[^dom.file[
-	$.encoding[windows-1251]
+#	$.encoding[windows-1251]
 	$.method[html]
 ]]
 ^file.save[text;save_file.html]
 ^taint[^dom.string[
-	$.encoding[windows-1251]
+#	$.encoding[windows-1251]
 	$.method[html]
 ]]
