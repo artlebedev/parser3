@@ -1,3 +1,8 @@
-$image[^image::create(100;100)]
-^image.pixel(0;0;0xFF0000)
-$response:body[^image.gif[]]
+$hash[
+	$.a[1]
+	$.b[2]
+]
+$table[^hash._keys[]]
+$table[^hash._keys[column_name]]
+$columns[^table.columns[]]
+$columns.column

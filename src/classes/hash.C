@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2004/02/25 13:42:14 $";
+static const char * const IDENT_HASH_C="$Date: 2004/03/01 13:46:46 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -271,9 +271,15 @@ static void keys_collector(
 	*row+=new String(key, String::L_TAINTED);
 	*table+=row;
 }
-static void _keys(Request& r, MethodParams&) {
+static void _keys(Request& r, MethodParams& params) {
+	const String* keys_column_name;
+	if(params.count()>0)
+		keys_column_name=&params.as_string(0, "column name must be string");
+	else 
+		keys_column_name=new String("key");
+
 	Table::columns_type columns(new ArrayString);
-	*columns+=new String("key");
+	*columns+=keys_column_name;
 	Table* table=new Table(columns);
 
 	GET_SELF(r, VHash).hash().for_each(keys_collector, table);
@@ -360,8 +366,8 @@ MHash::MHash(): Methoded("hash")
 	// ^hash:sql[query][$.limit(1) $.offset(2)]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 
-	// ^hash._keys[]
-	add_native_method("_keys", Method::CT_DYNAMIC, _keys, 0, 0);	
+	// ^hash._keys[[column name]]
+	add_native_method("_keys", Method::CT_DYNAMIC, _keys, 0, 1);	
 
 	// ^hash._count[]
 	add_native_method("_count", Method::CT_DYNAMIC, _count, 0, 0);	
