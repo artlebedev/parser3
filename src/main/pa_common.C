@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/01/21 15:51:13 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/01/23 08:20:39 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -273,7 +273,7 @@ static void file_read_http(Pool& pool, const String& file_spec,
 	bool fail_on_status_ne_200=true;
 	Value *vheaders=0;
 
-	String connect_string(pool);
+	String& connect_string=*new(pool) String(pool); // must not be local [exception may be reported outside]
 	// not in ^sql{... UL_SQL ...} spirit, but closer to ^file::load one
 	connect_string.append(file_spec, String::UL_URI); // tainted pieces -> URI pieces
 
