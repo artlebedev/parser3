@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.12 2001/03/28 09:38:09 paf Exp $
+	$Id: pa_vfile.h,v 1.13 2001/03/28 13:21:32 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -49,12 +49,21 @@ protected: // VAliased
 
 public: // usage
 
-	VFile(Pool& apool, 
-		const void *avalue_ptr, size_t avalue_size,
-		const char *afile_name);
+	VFile::VFile(Pool& apool) : VStateless_object(apool, *file_class),
+		fvalue_ptr(0),
+		fvalue_size(0),
+		fields(apool) {
+	}
 
+	void set(const void *avalue_ptr, size_t avalue_size, const char *afile_name);
+	
 	void save(const String& file_spec) {
-		file_write(pool(), file_spec, fvalue_ptr, fvalue_size, false);
+		if(fvalue_ptr)
+			file_write(pool(), file_spec, fvalue_ptr, fvalue_size, false);
+		else
+			THROW(0, 0,
+				&file_spec,
+				"saving unassigned file"); //never
 	}
 
 private:

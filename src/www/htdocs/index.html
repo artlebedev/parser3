@@ -16,13 +16,15 @@ _	&nbsp^;
 }]
 
 @dump[t]
-^t.menu{$n<BR>}
+#^t.menu{$n<BR>}
 <HR>
 @func[n]
 $n
 @main[]
-$tf123[^file:load[test.cfg]]
+$tf[^file:load[test.cfg]]
 ^$tf.size=$tf.size<BR>
+^$tf.text:<BR>
+$tf.text<HR>
 <HR>
 ^file:find[test.cfg]<BR>
 ^file:find[tes.cfg]{not found}<BR>
@@ -34,20 +36,20 @@ $t[^table:set{n
 1.2
 2
 }]
-$t{^locate[n;2z]^found{$n}{not found}}<BR>
-$t{^locate[n;3]^found{found:$n}{not found}}<BR>
+#$t{^locate[n;2z]^found{$n}{not found}}<BR>
+#$t{^locate[n;3]^found{found:$n}{not found}}<BR>
 ^$t:<BR>
 ^dump[$t]
-^t.sort($n)
+#^t.sort($n)
 ^^t.sort(^$n):<BR>
 ^dump[$t]
-^t.sort{^:func($n)}
+#^t.sort{^:func($n)}
 ^^t.sort{^^:func(^$n)}:<BR>
 ^dump[$t]
-^t.sort{$n}
+#^t.sort{$n}
 ^^t.sort{^$n}:<BR>
 ^dump[$t]
-^t.sort{$n}[desc]
+#^t.sort{$n}[desc]
 ^^t.sort{^$n}[desc]:<BR>
 ^dump[$t]
 <HR>

@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.34 2001/03/28 09:38:08 paf Exp $
+	$Id: pa_common.C,v 1.35 2001/03/28 13:21:30 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -47,8 +47,8 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
 char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_problem) {
 	void *result;
 	size_t size;
-	return 
-		file_read(pool, file_spec, result, size, fail_on_read_problem)?(char *)result:0;
+	return file_read(pool, file_spec, result, size, true, 
+		fail_on_read_problem)?(char *)result:0;
 }
 bool file_read(Pool& pool, const String& file_spec, 
 			   void*& data, size_t& size, bool as_text,
@@ -63,7 +63,8 @@ bool file_read(Pool& pool, const String& file_spec,
 	//   a.html:^test[] and b.html hardlink to a.html
 	//   user inserts ! before ^test in a.html
 	//   directory entry of b.html in NTFS not updated at once,
-	//   they delay update till open, so we must not do stat before that
+	//   they delay update till open, so we would receive "!^test[" string
+	//   if would do stat, next open.
     if(
 		(f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0 && 
 		stat(fname, &finfo)==0) {
@@ -82,7 +83,7 @@ bool file_read(Pool& pool, const String& file_spec,
 			PTHROW(0, 0, 
 				&file_spec, 
 				"read failed: actually read %d bytes count not in [0..%ul] valid range", 
-					size, (unsigned long)finfo.st_size);
+					size, (unsigned long)finfo.st_size); //never
 		
 		return true;//prepare_config(result, remove_empty_lines);
     }

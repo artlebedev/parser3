@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.9 2001/03/28 09:38:06 paf Exp $
+	$Id: file.C,v 1.10 2001/03/28 13:21:27 paf Exp $
 */
 
 #include "pa_request.h"
@@ -100,8 +100,7 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 	Value& vfile_name=*static_cast<Value *>(params->get(0));
 
-	// forcing
-	// ^load[this body type]
+	// forcing ^load[this body type]
 	r.fail_if_junction_(true, vfile_name, 
 		method_name, "file name must not be junction");
 
@@ -116,7 +115,8 @@ static void _load(Request& r, const String& method_name, Array *params) {
 
 	char *user_file_name=params->size()==1?lfile_name.cstr()
 		:static_cast<Value *>(params->get(1))->as_string().cstr();
-	r.write_no_lang(*new(pool) VFile(pool, data, size, user_file_name));
+	
+	static_cast<VFile *>(r.self)->set(data, size, user_file_name);
 }
 
 // initialize

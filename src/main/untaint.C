@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.23 2001/03/27 16:35:55 paf Exp $
+	$Id: untaint.C,v 1.24 2001/03/28 13:21:30 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -170,8 +170,9 @@ char *String::store_to(char *dest) const {
 						case '\r': 
 							if(typo_table) {
 								*dest++='\\';  *dest++='n'; // \r -> \n
-								if(src[1]=='\n') // \r\n -> remove \n
-									src++;
+								if(src[1]=='\n') { // \r\n -> remove \n
+									size--; src++;
+								}
 							}
 							break;
 						case '\n': 

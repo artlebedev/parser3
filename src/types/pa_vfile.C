@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.7 2001/03/28 09:38:09 paf Exp $
+	$Id: pa_vfile.C,v 1.8 2001/03/28 13:21:32 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -14,13 +14,12 @@
 #include "pa_vstring.h"
 #include "pa_vint.h"
 
-VFile::VFile(Pool& apool, 
-			 const void *avalue_ptr, size_t avalue_size,
-			 const char *afile_name) : VStateless_object(apool, *file_class),
-			 
-			 fvalue_ptr(avalue_ptr),
-			 fvalue_size(avalue_size),
-			 fields(apool) {
+void VFile::set(const void *avalue_ptr, size_t avalue_size,
+				const char *afile_name) {
+	fvalue_ptr=avalue_ptr;
+	fvalue_size=avalue_size;
+
+	fields.clear();
 	// $name
 	char *lfile_name=(char *)malloc(strlen(afile_name)+1);
 	strcpy(lfile_name, afile_name);
@@ -35,8 +34,9 @@ VFile::VFile(Pool& apool,
 	String& text=*NEW String(pool());
 	char *premature_zero_pos=(char *)memchr(fvalue_ptr, 0, fvalue_size);
 	if(premature_zero_pos!=fvalue_ptr)
-		text.APPEND((char *)fvalue_ptr, 
+		text.APPEND_TAINTED((char *)fvalue_ptr, 
 			premature_zero_pos?premature_zero_pos-(char *)fvalue_ptr:fvalue_size, 
 			"user <input type=file>", 0);
 	fields.put(*text_name, NEW VString(text));
 }
+
