@@ -31,8 +31,8 @@ $m ^if(^s.match{$:m}[i]){matches}{do not match} $s<BR>
 
 @main[]
 $r[1223]
-^^"$r".match{2}[i]{!}=^r.match{2}[i]{!}<BR>
-^^"$r".match{2}[g]{!}=^r.match{2}[g]{!}<BR>
+^^"$r".match{2}[i]{!}=^r.match{2}[i]{($match)}<BR>
+^^"$r".match{2}[g]{!}=^r.match{2}[g]{($match)}<BR>
 <HR>
 $s[abcﬂ]
 $sm[^s.match{(.)}[g]]

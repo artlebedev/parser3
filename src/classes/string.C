@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.29 2001/04/03 15:35:23 paf Exp $
+	$Id: string.C,v 1.30 2001/04/03 15:54:46 paf Exp $
 */
 
 #include "pa_request.h"
@@ -143,6 +143,7 @@ static void search_row_action(Table& table, Array *row, void *) {
 }
 
 struct Replace_action_info {
+	Request *request;  const String *origin;
 	String *dest;
 	Value *replacement_code;
 	bool first_time;
@@ -150,14 +151,25 @@ struct Replace_action_info {
 };
 static void replace_row_action(Table& table, Array *row, void *info) {
 	Replace_action_info& ai=*static_cast<Replace_action_info *>(info);
-	//table+=&row;
 	if(row) { // begin/middle
+		// store found parts in one-record Vtable
 		if(ai.first_time) { // begin
 			ai.first_time=false;
 			ai.dest->append(*(String *)row->get(0/*pre_match*/), 
 				String::UL_PASS_APPENDED);
+			table+=row;
+		} else
+			table.put(0, row);
+		{ // execute 'replacement_code' in 'table' context
+			VTable& vtable=*new(table.pool()) VTable(table.pool(), &table);
+			vtable.set_name(*ai.origin);
+
+			Junction *junction=ai.replacement_code->get_junction();
+			junction->rcontext/*=junction->self*/=&vtable;
+			Value& replaced=ai.request->process(*ai.replacement_code, ai.origin, false);
+
+			ai.dest->append(replaced.as_string(), String::UL_PASS_APPENDED);
 		}
-		ai.dest->APPEND_CONST("M");
 		ai.post_match=(String *)row->get(2/*post_match*/);
 	} else // end
 		ai.dest->append(*ai.post_match, String::UL_PASS_APPENDED);
@@ -207,6 +219,7 @@ static void _match(Request& r, const String& method_name, Array *params) {
 
 		String& dest=*new(pool) String(pool);
 		Replace_action_info replace_action_info={
+			&r, &method_name,
 			&dest,
 			&replacement_code,
 			true,
