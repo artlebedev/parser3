@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/08/01 11:41:18 $";
+static const char* IDENT_COMMON_C="$Date: 2002/08/05 13:45:53 $";
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -282,8 +282,15 @@ struct File_write_action_info {
 #endif
 static void file_write_action(int f, void *context) {
 	File_write_action_info& info=*static_cast<File_write_action_info *>(context);
-	if(info.size) 
-		write(f, info.data, info.size);
+	if(info.size) {
+		size_t written=write(f, info.data, info.size);
+		if(written!=info.size)
+			throw Exception(0,
+				0,
+				"write failed: %s (%d), number of bytes written not equal to requested(%u!=%u), %s", 
+					strerror(errno), errno,
+					written, info.size);
+	}
 }
 void file_write(
 				const String& file_spec, 
