@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.46 2001/09/26 15:43:59 parser Exp $
+	$Id: parser3isapi.C,v 1.47 2001/10/08 09:04:08 parser Exp $
 */
 
 #ifndef _MSC_VER
@@ -72,8 +72,10 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 	char buf[MAX_STRING];
 	const char *prefix="PARSER_ERROR:";
 	strcpy(buf, prefix);
-	DWORD size=vsnprintf(buf+strlen(prefix), MAX_STRING-strlen(prefix), fmt, args);
-	
+	char *start=buf+strlen(prefix);
+	size_t size=vsnprintf(start, MAX_STRING-strlen(prefix), fmt, args);
+	remove_crlf(start, start+size);
+
 	ctx.lpECB->ServerSupportFunction(ctx.lpECB->ConnID, 
 		HSE_APPEND_LOG_PARAMETER, buf, &size, 0);
 }

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.116 2001/09/26 15:43:59 parser Exp $
+	$Id: parser3.C,v 1.117 2001/10/08 09:04:08 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -97,7 +97,12 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 	// message
     va_list args;
 	va_start(args,fmt);
-	vfprintf(f, fmt, args);
+
+	char buf[MAX_STRING];
+	size_t size=vsnprintf(buf, MAX_STRING, fmt, args);
+	remove_crlf(buf, buf+size);
+
+	fwrite(buf, size, 1, f);
 	va_end(args);
 	// newline
 	fprintf(f, "\n");

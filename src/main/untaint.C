@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.65 2001/10/08 08:52:45 parser Exp $
+	$Id: untaint.C,v 1.66 2001/10/08 09:04:08 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -15,6 +15,7 @@
 #include "pa_globals.h"
 #include "pa_sql_connection.h"
 #include "pa_dictionary.h"
+#include "pa_common.h"
 
 #define escape(action) \
 	{ \
@@ -396,11 +397,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				if(dest==dest_after_origins) // never moved==optimized space
 					dest=dest_before_origins;
 				else {
-					for(char *p=dest_after_origins; p<dest; p++)
-						switch(*p) {
-							case '\n': *p='|'; break;
-							case '\r': *p=' '; break;
-						}
+					remove_crlf(dest_after_origins, dest);
 
 					to_char('\n');
 				}

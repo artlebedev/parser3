@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.51 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_common.h,v 1.52 2001/10/08 09:04:08 parser Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -163,5 +163,7 @@ char *unquote(char*& current, char stop_at);
 
 #define SECS_PER_DAY (60*60*24)
 int getMonthDays(int year, int month);
+
+void remove_crlf(char *start, char *end);
 
 #endif

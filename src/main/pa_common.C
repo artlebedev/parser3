@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.68 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_common.C,v 1.69 2001/10/08 09:04:08 parser Exp $
 */
 
 #include "pa_common.h"
@@ -481,4 +481,12 @@ int getMonthDays(int year, int month) {
         31
     };
     return monthDays[month];
+}
+
+void remove_crlf(char *start, char *end) {
+	for(char *p=start; p<end; p++)
+		switch(*p) {
+			case '\n': *p='|'; break;
+			case '\r': *p=' '; break;
+		}
 }
