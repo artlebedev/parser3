@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.22 2001/03/23 13:08:10 paf Exp $
+	$Id: pa_common.C,v 1.23 2001/03/24 08:54:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -126,9 +126,9 @@ char *getrow(char **row_ref, char delim) {
     return result;
 }
 
-char *lsplit(char *string_ref, char delim) {
-    if(string_ref) {
-		char *v=strchr(string_ref, delim);
+char *lsplit(char *string, char delim) {
+    if(string) {
+		char *v=strchr(string, delim);
 		if(v) {
 			*v=0;
 			return v+1;

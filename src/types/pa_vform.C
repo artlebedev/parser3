@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.15 2001/03/23 13:08:14 paf Exp $
+	$Id: pa_vform.C,v 1.16 2001/03/24 08:54:05 paf Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
@@ -42,8 +42,8 @@ static bool StrEqNc(const char *s1, const char *s2, bool strict) {
 	}
 }
 
-static int getHeader(const char *data,int len){
-    int i,enter=-1;
+static size_t getHeader(const char *data,size_t len){
+    size_t i,enter=-1;
     if (data)
 	for (i=0;i<len;i++)
 	    if (data[i]=='\n'){
@@ -53,12 +53,12 @@ static int getHeader(const char *data,int len){
     return 0;
 }
 
-static const char *searchAttribute(const char *data,const char *attr,int len){
-    int i;
+static const char *searchAttribute(const char *data,const char *attr,size_t len){
+    size_t i;
     if (data)
 	for (i=0;i<len;i++)
 	    if (tolower(data[i])==*attr){
-		int j;
+		size_t j;
 		for (j=i+1;j<=len;j++)
 		    if (!attr[j-i]) return &data[j];
 		    else {
@@ -71,7 +71,7 @@ static const char *searchAttribute(const char *data,const char *attr,int len){
 
 // VForm
 
-char *VForm::strpart(const char *str, int len) {
+char *VForm::strpart(const char *str, size_t len) {
     char *result=(char *)malloc(len+1);
     if (!result) return NULL;
     memcpy(result,str,len);
@@ -79,10 +79,10 @@ char *VForm::strpart(const char *str, int len) {
     return result;
 }
 
-char *VForm::getAttributeValue(const char *data,char *attr,int len) {
+char *VForm::getAttributeValue(const char *data,char *attr,size_t len) {
     const char *value=searchAttribute(data,attr,len);
     if (value){
-	int i;
+	size_t i;
 	if (!(len-=value-data)) return NULL;
 	if (*value=='"') {
 	    for (i=1;i<len;i++)	if (value[i]=='"') break;
@@ -99,14 +99,14 @@ void VForm::ParseGetFormInput(const char *query_string) {
 	ParseFormInput(query_string, strlen(query_string));
 }
 
-void VForm::ParsePostFormInput(const char *content_type, int post_size, 
+void VForm::ParsePostFormInput(const char *content_type, size_t post_size, 
 							   bool mime_mode) {
 	char *input;
 	if(!post_size) 
 		return;
 
 	input=(char *) malloc(post_size);
-	int read_size=SAPI::read_post(pool(), input, post_size);
+	size_t read_size=SAPI::read_post(pool(), input, post_size);
 	if(read_size!=post_size)
 		THROW(0, 0,
 			0,
@@ -119,14 +119,14 @@ void VForm::ParsePostFormInput(const char *content_type, int post_size,
 		ParseFormInput(input, post_size);
 }
 
-void VForm::ParseFormInput(const char *data, int length) {
+void VForm::ParseFormInput(const char *data, size_t length) {
 	/* Scan for pairs, unescaping and storing them as they are found. */
-	int pos=0;
+	size_t pos=0;
 	while(pos !=length) {
-		int foundEq=0;
-		int foundAmp=0;
-		int start=pos;
-		int len=0;
+		size_t foundEq=0;
+		size_t foundAmp=0;
+		size_t start=pos;
+		size_t len=0;
 		while(pos !=length) {
 			if(data[pos]=='=') {
 				foundEq=1;
@@ -161,7 +161,7 @@ void VForm::ParseFormInput(const char *data, int length) {
 }
 
 void VForm::ParseMimeInput(const char *content_type, 
-						   const char *data, int length) {
+						   const char *data, size_t length) {
 /* Scan for mime-presented pairs, storing them as they are found. */
 	const char 
 		*boundary=getAttributeValue(content_type,"boundary=",strlen(content_type)),
@@ -175,11 +175,11 @@ void VForm::ParseMimeInput(const char *content_type,
 		const char 
 			*dataStart=searchAttribute(data,boundary,lastData-data),
 			*dataEnd=searchAttribute(dataStart,boundary,lastData-dataStart);
-		int headerSize=getHeader(dataStart,lastData-dataStart);
+		size_t headerSize=getHeader(dataStart,lastData-dataStart);
 
 		if(!dataStart|!dataEnd|!headerSize) break;
 		if(searchAttribute(dataStart,"content-disposition: form-data",headerSize)){
-			int valueSize=(dataEnd-dataStart)-headerSize-5-strlen(boundary);
+			size_t valueSize=(dataEnd-dataStart)-headerSize-5-strlen(boundary);
 			char *attr=getAttributeValue(dataStart," name=",headerSize),
 			     *fName=getAttributeValue(dataStart," filename=",headerSize);
 
@@ -193,7 +193,7 @@ void VForm::ParseMimeInput(const char *content_type,
 }
 
 void VForm::AppendFormEntry(const char *aname, 
-							const char *value_ptr, int value_size,
+							const char *value_ptr, size_t value_size,
 							const char *file_name) {
 	String& sname=*NEW String(pool(), aname);
 
@@ -211,7 +211,7 @@ void VForm::AppendFormEntry(const char *aname,
 	fields.put(sname, value);
 }
 
-void VForm::fill_fields(Request& request, int post_max_size) {
+void VForm::fill_fields(Request& request, size_t post_max_size) {
 	// parsing QS [GET and ?name=value from uri rewrite)]
 	if(request.info.query_string)
 		ParseGetFormInput(request.info.query_string);
@@ -219,7 +219,7 @@ void VForm::fill_fields(Request& request, int post_max_size) {
 	if(request.info.method) {
 		if(const char *content_type=request.info.content_type)
 			if(StrEqNc(request.info.method, "post",true)) {
-				int post_size=max(0, min(request.info.content_length, post_max_size));
+				size_t post_size=max(0, min(request.info.content_length, post_max_size));
 				if(StrEqNc(content_type, "application/x-www-form-urlencoded",true)) 
 					ParsePostFormInput(content_type, post_size, false);
 				else if(StrEqNc(content_type, "multipart/form-data",0))

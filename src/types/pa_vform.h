@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.13 2001/03/20 06:45:20 paf Exp $
+	$Id: pa_vform.h,v 1.14 2001/03/24 08:54:05 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -56,20 +56,20 @@ public: // usage
 
 //	Hash& fields() { return ffields; }
 
-	void fill_fields(Request& request, int post_max_size);
+	void fill_fields(Request& request, size_t post_max_size);
 
 private:
 
-	char *strpart(const char *str, int len);
-	char *getAttributeValue(const char *data,char *attr,int len);
-	void UnescapeChars(char **sp, const char *cp, int len);
+	char *strpart(const char *str, size_t len);
+	char *getAttributeValue(const char *data,char *attr,size_t len);
+	void UnescapeChars(char **sp, const char *cp, size_t len);
 	void ParseGetFormInput(const char *query_string);
-	void ParsePostFormInput(const char *content_type, int post_size, bool mime_mode);
-	void ParseFormInput(const char *data, int length);
-	void ParseMimeInput(const char *content_type, const char *data, int length);
+	void ParsePostFormInput(const char *content_type, size_t post_size, bool mime_mode);
+	void ParseFormInput(const char *data, size_t length);
+	void ParseMimeInput(const char *content_type, const char *data, size_t length);
 	void AppendFormEntry(
 		const char *name, 
-		const char *value_ptr, int value_size=0,
+		const char *value_ptr, size_t value_size=0,
 		const char *file_name=0);
 
 private:

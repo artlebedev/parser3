@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pool_storage.h,v 1.1 2001/03/23 19:25:33 paf Exp $
+	$Id: pool_storage.h,v 1.2 2001/03/24 08:54:05 paf Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
@@ -59,7 +59,7 @@ private:
 
 	bool full() { return used==size; }
 	bool expand() {
-		size_t new_size=size*2;
+		size_t new_size=size*3/2;
 		void **new_ptrs=(void **)::realloc(ptrs, new_size*sizeof(void *));
 		if(new_ptrs) {
 			ptrs=new_ptrs;

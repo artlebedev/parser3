@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.41 2001/03/23 14:03:28 paf Exp $
+	$Id: parser3.C,v 1.42 2001/03/24 08:54:04 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -24,7 +24,10 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 
-Pool pool; // global pool [dont describe to doxygen: it confuses it with param names]
+/// IIS refuses to read bigger chunks
+const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
+
+Pool pool(0); // global pool [dont describe to doxygen: it confuses it with param names]
 bool cgi; ///< we were started as CGI?
 
 #ifdef WIN32
@@ -66,7 +69,7 @@ uint SAPI::read_post(Pool& pool, char *buf, uint max_bytes) {
 	uint read_size=0;
 	do {
 		int chunk_size=read(fileno(stdin), 
-			buf+read_size, min(0x400*0x400, max_bytes-read_size));
+			buf+read_size, min(READ_POST_CHUNK_SIZE, max_bytes-read_size));
 		if(chunk_size<0)
 			break;
 		read_size+=chunk_size;
@@ -175,23 +178,26 @@ int main(int argc, char *argv[]) {
 		request_info.method=request_method;
 		const char *query_string=getenv("QUERY_STRING");
 		request_info.query_string=query_string;
-		if(const char *env_request_uri=getenv("REQUEST_URI"))
-			request_info.uri=env_request_uri;
-		else if (const char *path_info=getenv("PATH_INFO")) {
-			if(query_string) {
-				char *reconstructed_uri=(char *)malloc(
-					strlen(path_info)+1/*'?'*/+
-					strlen(query_string)+1/*0*/);
-				strcpy(reconstructed_uri, path_info);
-				strcat(reconstructed_uri, "?");
-				strcat(reconstructed_uri, query_string);
-				request_info.uri=reconstructed_uri;
-			} else
-				request_info.uri=path_info;
-		} else
-			PTHROW(0, 0,
-				0,
-				"CGI: no PATH_INFO defined (in reinventing REQUEST_URI)");
+		if(cgi) 
+			if(const char *env_request_uri=getenv("REQUEST_URI"))
+				request_info.uri=env_request_uri;
+			else if (const char *path_info=getenv("PATH_INFO"))
+				if(query_string) {
+					char *reconstructed_uri=(char *)malloc(
+						strlen(path_info)+1/*'?'*/+
+						strlen(query_string)+1/*0*/);
+					strcpy(reconstructed_uri, path_info);
+					strcat(reconstructed_uri, "?");
+					strcat(reconstructed_uri, query_string);
+					request_info.uri=reconstructed_uri;
+				} else
+					request_info.uri=path_info;
+			else
+				PTHROW(0, 0,
+					0,
+					"CGI: no PATH_INFO defined (in reinventing REQUEST_URI)");
+		else
+			request_info.uri=0;
 
 		request_info.content_type=getenv("CONTENT_TYPE");
 		const char *content_length=getenv("CONTENT_LENGTH");

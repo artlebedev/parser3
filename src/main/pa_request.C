@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.71 2001/03/23 19:25:16 paf Exp $
+	$Id: pa_request.C,v 1.72 2001/03/24 08:54:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -22,6 +22,10 @@
 #include "pa_vmframe.h"
 #include "pa_types.h"
 
+/// $limits.post_max_size default 10M
+const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
+
+//
 Request::Request(Pool& apool,
 				 Info& ainfo,
 				 String::Untaint_lang adefault_lang) : Pooled(apool),
@@ -97,6 +101,18 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				main_class_name, main_class);
 		}
 
+		// $MAIN:limits hash used here,
+		//	until someone with less privileges have overriden them
+		Value *limits=main_class?main_class->get_element(*limits_name):0;
+		Value *element;
+		// $limits.post_max_size default 10M
+		element=limits?limits->get_element(*post_max_size_name):0;
+		size_t value=element?(size_t)element->get_double():0;
+		size_t post_max_size=value?value:MAX_POST_SIZE_DEFAULT;
+
+		form.fill_fields(*this, post_max_size);
+		cookie.fill_fields(*this);
+
 		// loading site auto.p
 		if(site_auto_path) {
 			strncpy(auto_filespec, site_auto_path, MAX_STRING-strlen("/" AUTO_FILE_NAME));
@@ -106,31 +122,45 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				main_class_name, main_class);
 		}
 
-		Value *element;
-		// $MAIN:limits hash used here,
-		//	until someone with less privileges have overriden them
-		Value *limits=main_class?main_class->get_element(*limits_name):0;
-		// $limits.post_max_size default 10M
-		element=limits?limits->get_element(*post_max_size_name):0;
-		int value=element?(size_t)element->get_double():0;
-		int post_max_size=value?value:10*0x400*400;
+		// loading auto.p files from document_root/.. 
+		// to the one beside requested file.
+		// all assigned bases from upper dir
+		{
+			/* /document/root */
+			char *monkey_auto_path=
+				(char *)malloc(strlen(info.path_translated)+strlen(AUTO_FILE_NAME)+1);
+			strcpy(monkey_auto_path, info.document_root);
 
-		form.fill_fields(*this, post_max_size);
-		cookie.fill_fields(*this);
+			/* /requested/file.html */
+			char *branches=(char *)malloc(strlen(info.path_translated)+1);
+			strcpy(branches, info.path_translated+strlen(info.document_root));
+			char *next=branches;
 
-		// TODO: load site auto.p files, all assigned bases from upper dir
-		/*char *site_auto_file="Y:\\parser3\\src\\auto.p";
-		main_class=use_file(
-			site_auto_file, false/*ignore possible read problem* /,
-			main_class_name, main_class);*/
+			char *append_here=monkey_auto_path+strlen(monkey_auto_path);
+			size_t slash_auto_p_size=strlen("/" AUTO_FILE_NAME);
+			while(true) {
+				char *step=lsplit(&next, '/');
+				if(next) { // not 'file.html' part
+					size_t step_size=strlen(step);
+					memcpy(append_here, step, step_size);
+					append_here+=step_size;
+					memcpy(append_here, "/" AUTO_FILE_NAME, slash_auto_p_size+1);
+					append_here++/* / */;
 
-		// $MAIN:defaults
-		Value *defaults=main_class?main_class->get_element(*defaults_name):0;
-		fdefault_content_type=defaults?defaults->get_element(*content_type_name):0;
+					main_class=use_file(monkey_auto_path, false/*ignore read problem*/,
+						main_class_name, main_class);
+				} else
+					break;
+			}
+		}
 
 		// compiling requested file
 		main_class=use_file(info.path_translated, true/*don't ignore read problem*/,
 			main_class_name, main_class);
+
+		// $MAIN:defaults
+		Value *defaults=main_class?main_class->get_element(*defaults_name):0;
+		fdefault_content_type=defaults?defaults->get_element(*content_type_name):0;
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);

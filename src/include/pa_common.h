@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.21 2001/03/23 13:08:08 paf Exp $
+	$Id: pa_common.h,v 1.22 2001/03/24 08:54:01 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -93,7 +93,7 @@ void file_write(Pool& pool,
 	or to zero if no @a delim were found.
 */
 char *getrow(char **row_ref,char delim='\n');
-//char *lsplit(char *,char);
+//char *lsplit(char *string, char delim);
 char *lsplit(char **string_ref,char delim);
 char *rsplit(char *string, char delim);
 char *format(Pool& pool, double value, char *fmt);

@@ -3,6 +3,7 @@
 $t[^table:load[/test.cfg]]
 ^$t.a=$t.a<BR>
 
+^$request:uri=$request:uri<BR>
 ^$env:REQUEST_URI=$env:REQUEST_URI<BR>
 ^$env:PATH_INFO=$env:PATH_INFO<BR>
 
@@ -18,6 +19,7 @@ $response:location[http://parser3/123]
 
 ^$root_test=$root_test !<BR>
 ^$site_test=$site_test !<BR>
+^$main_test=$main_test !<BR>
 ^${cookie:вот}=${cookie:вот}?<BR>
 ^$request:query=$request:query<BR>
 ^$request:uri=$request:uri<BR>
@@ -39,3 +41,6 @@ ERROR:
 ${comment}.
 ^if(def $type){type=$type}
 ^if(def $code){code=$code}
+
+@auto[]
+$main_test[$main_test + .html]
