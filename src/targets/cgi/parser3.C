@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.85 2001/05/21 07:32:04 parser Exp $
+	$Id: parser3.C,v 1.86 2001/05/21 07:58:41 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -52,7 +52,8 @@ static LONG WINAPI TopLevelExceptionFilter(struct _EXCEPTION_POINTERS *Exception
 #endif
 
 // SAPI
-// appends to parser3.log located beside my binary
+
+// appends to parser3.log located beside my binary if openable, to stderr otherwize
 void SAPI::log(Pool& pool, const char *fmt, ...) {
 	bool opened;
 	FILE *f=0;
@@ -256,7 +257,7 @@ int main(int argc, char *argv[]) {
 		// prepare to process request
 		Request request(pool,
 			request_info,
-			true ||cgi ? String::UL_USER_HTML : String::UL_AS_IS
+			cgi ? String::UL_USER_HTML : String::UL_AS_IS
 			);
 		
 		// some root-controlled location
@@ -273,6 +274,9 @@ int main(int argc, char *argv[]) {
 		static char site_auto_path[MAX_STRING];
 		strncpy(site_auto_path, argv[0], MAX_STRING);  // filespec of my binary
 		rsplit(site_auto_path, '/');  rsplit(site_auto_path, '\\');// strip filename
+		SAPI::log(pool, "r=%s, s=%s", 
+			root_auto_path, 
+			site_auto_path);
 		
 		// process the request
 		request.core(
