@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2004/07/26 14:43:08 $";
+static const char * const IDENT_COMMON_H="$Date: 2004/12/23 15:01:03 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -68,6 +68,8 @@ int pa_lock_shared_blocking(int fd);
 int pa_lock_exclusive_blocking(int fd);
 int pa_lock_exclusive_nonblocking(int fd);
 int pa_unlock(int fd);
+
+void create_dir_for_file(const String& file_spec);
 
 typedef void (*File_read_action)(
 				 struct stat& finfo,

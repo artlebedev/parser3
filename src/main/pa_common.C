@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/12/10 08:37:53 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/12/23 15:01:03 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -842,7 +842,7 @@ bool file_read_action_under_lock(const String& file_spec,
 	}
 }
 
-static void create_dir_for_file(const String& file_spec) {
+void create_dir_for_file(const String& file_spec) {
 	size_t pos_after=1;
 	size_t pos_before;
 	while((pos_before=file_spec.pos('/', pos_after))!=STRING_NOT_FOUND) {

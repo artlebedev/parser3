@@ -5,9 +5,10 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2004/12/23 14:15:49 $";
+static const char * const IDENT="$Date: 2004/12/23 15:01:03 $";
 
 #include "pa_globals.h"
+#include "pa_common.h"
 #include "pa_threads.h"
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -32,7 +33,12 @@ void check(const char *step, apr_status_t status) {
 }
 
 void VHashfile::open(const String& afile_name) {
-	check("apr_sdbm_open(shared)", apr_sdbm_open(&m_db, file_name=afile_name.cstr(String::L_FILE_SPEC), 
+	file_name=afile_name.cstr(String::L_FILE_SPEC);
+
+	if(!entry_exists(file_name))
+		create_dir_for_file(afile_name);
+
+	check("apr_sdbm_open(shared)", apr_sdbm_open(&m_db, file_name, 
                                         APR_CREATE|APR_READ|APR_SHARELOCK, 
                                         0664, 0));
 }
