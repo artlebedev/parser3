@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2004/05/26 08:21:56 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2004/07/01 07:20:10 $";
 
 
 #include "pa_string.h"
@@ -58,7 +58,7 @@ extern "C" { // author forgot to do that
 		char c=CORD_pos_fetch(info->pos); \
 		action \
 	}
-#define _default  default: CORD_ec_append(info->result, c); break
+#define _default CORD_ec_append(info->result, c)
 #define encode(need_encode_func, prefix, otherwise)  \
 	if(need_encode_func(c)) { \
 		static const char* hex="0123456789ABCDEF"; \
@@ -419,17 +419,39 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 			case '\n': to_string("\\n");  break;
 			case '\\': to_string("\\\\");  break;
 			case '\xFF': to_string("\\\xFF");  break;
-			_default;
+			default: _default; break;
 		});
 		break;
 	case String::L_XML:
+		// [2]    Char    ::=    #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF] 
 		escape(switch(c) {
+			case '\x9': 
+			case '\xA': 
+			case '\xD': // this is usually removed on input
+				_default; 
+				break;
 			case '&': to_string("&amp;");  break;
 			case '>': to_string("&gt;");  break;
 			case '<': to_string("&lt;");  break;
 			case '"': to_string("&quot;");  break;
 			case '\'': to_string("&apos;");  break;
-			_default;
+			default: 
+				if(((unsigned char)c)<0x20) {
+					// fixing it, so that libxml would not result
+					// in fatal error parsing text
+					// though it really violates standard.
+					// to indicate there were an error
+					// replace bad char not to it's code, 
+					// which we can do,
+					// but rather to '!' to show that input were actually
+					// invalid.
+					// life: shows that MSIE can somehow garble form values
+					// so that they contain these chars.
+					to_char('!'); 
+				} else {
+					_default; 
+				}
+				break;
 		});
 		break;
 	case String::L_HTML:
@@ -438,7 +460,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 			case '>': to_string("&gt;");  break;
 			case '<': to_string("&lt;");  break;
 			case '"': to_string("&quot;");  break;
-			_default;
+			default: _default; break;
 		});
 		break;
 	default:
