@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SMTP_H="$Date: 2004/02/24 10:36:16 $";
+static const char * const IDENT_SMTP_H="$Date: 2004/02/25 11:14:22 $";
 
 
 #include "pa_string.h"
@@ -25,21 +25,63 @@ int PASCAL closesocket(SOCKET);
 		typedef u_int	SOCKET;
 #		define closesocket close
 		inline int WSAGetLastError() { return errno; }
-#		define WSAEPROTONOSUPPORT EPROTONOSUPPORT
-#		define WSAESOCKTNOSUPPORT ESOCKTNOSUPPORT
-#		define WSAENOTCONN ENOTCONN
-#		define WSAENETDOWN ESHUTDOWN
-#		define WSAENETUNREACH EHOSTUNREACH
-#		define WSAENETRESET ENETRESET
-#		define WSAECONNABORTED ECONNABORTED
-#		define WSAECONNRESET ECONNRESET
-#		define WSAEWOULDBLOCK EWOULDBLOCK
-#		define WSAECONNREFUSED ECONNREFUSED
 
-#		define WSAHOST_NOT_FOUND (2)
+#ifdef EPROTONOSUPPORT
+#		define WSAEPROTONOSUPPORT EPROTONOSUPPORT
+#else
+#		define WSAEPROTONOSUPPORT (10000)
+#endif
+#ifdef ESOCKTNOSUPPORT
+#		define WSAESOCKTNOSUPPORT ESOCKTNOSUPPORT
+#else
+#		define WSAESOCKTNOSUPPORT (10001)
+#endif
+#ifdef ENOTCONN
+#		define WSAENOTCONN ENOTCONN
+#else
+#		define WSAENOTCONN (10002)
+#endif
+#ifdef ESHUTDOWN
+#		define WSAENETDOWN ESHUTDOWN
+#else
+#		define WSAENETDOWN (10003)
+#endif
+#ifdef EHOSTUNREACH
+#		define WSAENETUNREACH EHOSTUNREACH
+#else
+#		define WSAENETUNREACH (10004)
+#endif
+#ifdef ENETRESET
+#		define WSAENETRESET ENETRESET
+#else
+#		define WSAENETRESET (10005)
+#endif
+#ifdef ECONNABORTED
+#		define WSAECONNABORTED ECONNABORTED
+#else
+#		define WSAECONNABORTED (10006)
+#endif
+#ifdef ECONNRESET
+#		define WSAECONNRESET ECONNRESET
+#else
+#		define WSAECONNRESET (10007)
+#endif
+#ifdef EWOULDBLOCK
+#		define WSAEWOULDBLOCK EWOULDBLOCK
+#else
+#		define WSAEWOULDBLOCK (10008)
+#endif
+#ifdef ECONNREFUSED
+#		define WSAECONNREFUSED ECONNREFUSED
+#else
+#		define WSAECONNREFUSED (10009)
+#endif
+#		define WSAHOST_NOT_FOUND (10010)
+
 #		ifndef INADDR_NONE
 #			define INADDR_NONE ((unsigned long) -1)
 #		endif
+
 #		ifndef INVALID_SOCKET
 #			define INVALID_SOCKET  (SOCKET)(~0)
 #		endif
