@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.26 2001/03/12 17:16:48 paf Exp $
+	$Id: root.C,v 1.27 2001/03/12 18:13:48 paf Exp $
 */
 
 #include <string.h>
@@ -82,8 +82,43 @@ static void _process(Request& r, const String& method_name, Array *params) {
 }
 	
 static void _rem(Request& r, const String& method_name, Array *params) {
+	// forcing ^rem{this param type}
 	r.fail_if_junction_(false, *static_cast<Value *>(params->get(0)), 
 		method_name, "body must be junction");
+}
+
+
+// TODO: отловить бесконечный цикл
+static void _while(Request& r, const String& method_name, Array *params) {
+	Value& vcondition=*static_cast<Value *>(params->get(0));
+	// forcing ^while(this param type){}
+	r.fail_if_junction_(false, vcondition, 
+		method_name, "condition must be junction");
+	
+	Value& body=*static_cast<Value *>(params->get(1));
+	// forcing ^while(){this param type}
+	r.fail_if_junction_(false, body, 
+		method_name, "body must be junction");
+
+	// while...
+	int endless_loop_count=0;
+	while(true) {
+		if(++endless_loop_count>=1973) // endless loop?
+			R_THROW(0, 0,
+				&method_name,
+				"endless loop detected");
+
+		bool condition=
+			r.process(
+				vcondition, 
+				0/*no name*/,
+				false/*don't intercept string*/).get_bool();
+		if(!condition) // ...condition is true
+			break;
+
+		// write processed body
+		r.write_pass_lang(r.process(body));
+	}
 }
 
 void initialize_root_class(Pool& pool, VClass& vclass) {
@@ -99,4 +134,7 @@ void initialize_root_class(Pool& pool, VClass& vclass) {
 
 	// ^rem{code}
 	vclass.add_native_method("rem", _rem, 1, 1);
+
+	// ^while(condition){code}
+	vclass.add_native_method("while", _while, 2, 2);
 }

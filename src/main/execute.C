@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.95 2001/03/12 17:00:47 paf Exp $
+	$Id: execute.C,v 1.96 2001/03/12 18:13:50 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -309,7 +309,7 @@ void Request::execute(const Array& ops) {
 					self=rcontext; // class dynamic call
 				else // no, not me or relative of mine (total stranger)
 					if(wcontext->constructing()) {  // constructing?
-						// yes, constructor call: $some(^class:method(..))
+						// yes, constructor call: $some[^class:method[..]]
 						if(called_class->name()==TABLE_CLASS_NAME)
 							self=NEW VTable(pool());
 						else

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.91 2001/03/12 09:08:50 paf Exp $
+	$Id: compile.y,v 1.92 2001/03/12 18:13:49 paf Exp $
 */
 
 /*
@@ -38,7 +38,7 @@
 #include "core.h"
 
 #define SELF_ELEMENT_NAME "self"
-#define USE_CONTROL_METHOD_NAME "USE"
+#define USE_CONTROL_METHOD_NAME "use"
 
 int real_yyerror(parse_control *pc, char *s);
 static void yyprint(FILE *file, int type, YYSTYPE value);
@@ -179,9 +179,10 @@ control_method: '@' STRING '\n'
 				YYERROR;
 			}
 		} else {
-			strcpy(PC->error, command.cstr());
-			strcat(PC->error, ": invalid special name. valid names are "
-				CLASS_NAME", "USE_CONTROL_METHOD_NAME" and "BASE_NAME);
+			strcpy(PC->error, "'");
+			strncat(PC->error, command.cstr(), MAX_STRING-1);
+			strcat(PC->error, "' invalid special name. valid names are "
+				"'"CLASS_NAME"', '"USE_CONTROL_METHOD_NAME"' and '"BASE_NAME"'");
 			YYERROR;
 		}
 	}
@@ -775,9 +776,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			if(PC->ls==LS_EXPRESSION_VAR_NAME) {
 				// name in expr ends also before binary operators 
 				switch(c) {
-				case '+': case '-': case '*': case '/': case '%': 
-				case '&': case '|': 
-				case '=': case '!':
+				case '-': 
 					pop_LS(PC);
 					PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
 					result=EON;
@@ -790,6 +789,9 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			case ';':
 			case ']': case '}': case ')': case '"':
 			case '<': case '>':  // these stand for HTML brackets and expression binary ops
+			case '+': case '*': case '/': case '%': 
+			case '&': case '|': 
+			case '=': case '!':
 				pop_LS(PC);
 				PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
 				result=EON;

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.3 2001/03/12 17:16:48 paf Exp $
+	$Id: table.C,v 1.4 2001/03/12 18:13:48 paf Exp $
 */
 
 #include "pa_request.h"
@@ -27,6 +27,9 @@ static void set_or_load(
 	Pool& pool=r.pool();
 	// data is last parameter
 	Value *vdata=static_cast<Value *>(params->get(params->size()-1));
+	// forcing
+	//	[this param type] 
+	//	[this param type] 
 	r.fail_if_junction_(true, *vdata, 
 		method_name, "body must not be a junction");
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.C,v 1.61 2001/03/12 13:13:21 paf Exp $
+	$Id: core.C,v 1.62 2001/03/12 18:13:49 paf Exp $
 */
 
 #include "core.h"
@@ -34,7 +34,7 @@ void core() {
 	Pool pool;
 	
 	// names
-	GLOBAL_STRING(unnamed_name, "unnamed");
+	GLOBAL_STRING(unnamed_name, UNNAMED_NAME);
 	empty_string=new(pool) String(pool); 
 
 	GLOBAL_STRING(auto_method_name, AUTO_METHOD_NAME);

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.2 2001/03/11 08:16:38 paf Exp $
+	$Id: pa_wcontext.h,v 1.3 2001/03/12 18:13:50 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -55,9 +55,9 @@ public: // usage
 	}
 
 protected:
+	bool fconstructing;
 	Value *fvalue;
 private:
-	bool fconstructing;
 	String& fstring;
 };
 

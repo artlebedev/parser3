@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.43 2001/03/12 17:16:49 paf Exp $
+	$Id: pa_request.h,v 1.44 2001/03/12 18:13:49 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -16,6 +16,8 @@
 #include "pa_value.h"
 #include "pa_stack.h"
 #include "pa_vclass.h"
+
+#define UNNAMED_NAME "unnamed"
 
 #define MAIN_METHOD_NAME "main"
 #define AUTO_METHOD_NAME "auto"

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.6 2001/03/12 12:00:07 paf Exp $
+	$Id: pa_vclass.h,v 1.7 2001/03/12 18:13:50 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -13,8 +13,8 @@
 #include "pa_vhash.h"
 #include "pa_vjunction.h"
 
-#define CLASS_NAME "CLASS"
-#define BASE_NAME "BASE"
+#define CLASS_NAME "class"
+#define BASE_NAME "base"
 
 class Temp_method;
 
