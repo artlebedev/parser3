@@ -296,6 +296,10 @@ SOURCE=..\classes\_double.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\classes\_env.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\_int.h
 # End Source File
 # Begin Source File
@@ -309,6 +313,10 @@ SOURCE=..\classes\_string.h
 # Begin Source File
 
 SOURCE=..\classes\double.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\env.C
 # End Source File
 # Begin Source File
 

@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.48 2001/03/10 11:03:49 paf Exp $
+$Id: core.C,v 1.49 2001/03/10 11:18:15 paf Exp $
 */
 
 #include "pa_request.h"
@@ -9,6 +9,7 @@ $Id: core.C,v 1.48 2001/03/10 11:03:49 paf Exp $
 
 #include <stdio.h>
 #include "classes/_root.h"
+#include "classes/_env.h"
 #include "classes/_string.h"
 #include "classes/_double.h"
 #include "classes/_int.h"
@@ -25,19 +26,23 @@ void core() {
 Request::Request(Pool& apool) : Pooled(apool),
 	stack(apool),
 	root_class(apool),
+	env_class(apool),
 	fclasses(apool),
 	fclasses_array(apool),
 	lang(String::Untaint_lang::HTML_TYPO)
 {
-	// construct_root_class
+	// root class
 	initialize_root_class(pool(), root_class);
-
-
 	// adding root superclass, 
 	//   parent of all classes, 
 	//   operators holder
 	String ROOT(pool()); ROOT.APPEND_CONST(ROOT_NAME);
 	classes().put(ROOT, &root_class);
+
+	// env class
+	initialize_env_class(pool(), env_class);
+	String ENV(pool()); ENV.APPEND_CONST(ENV_NAME);
+	classes().put(ENV, &env_class);
 }
 
 void Request::core() {

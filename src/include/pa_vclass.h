@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.26 2001/03/09 04:47:27 paf Exp $
+  $Id: pa_vclass.h,v 1.27 2001/03/10 11:18:14 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -60,6 +60,13 @@ public: // usage
 		return 0; 
 	}
 
+	void set_field(const String& name, Value *value) {
+		if(fbase && fbase->replace_field(name, value))
+			return;
+
+		ffields.put(name, value);
+	}
+
 private:
 
 	Value *get_field(const String& name) {
@@ -69,12 +76,6 @@ private:
 		return result;
 	}
 		
-	void set_field(const String& name, Value *value) {
-		if(fbase && fbase->replace_field(name, value))
-			return;
-
-		ffields.put(name, value);
-	}
 	bool replace_field(const String& name, Value *value) {
 		return 
 			(fbase && fbase->replace_field(name, value)) ||

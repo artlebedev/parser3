@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.22 2001/03/10 11:03:47 paf Exp $
+  $Id: pa_request.h,v 1.23 2001/03/10 11:18:14 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -15,7 +15,9 @@
 
 #define MAIN_METHOD_NAME "main"
 #define RUN_NAME "RUN"
+
 #define ROOT_NAME "ROOT"
+#define ENV_NAME "ENV"
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS char *source, String *name, char *file
@@ -51,6 +53,8 @@ public:
 	
 	// default base
 	VClass root_class;
+	// $ENV:fields here
+	VClass env_class;
 
 	// contexts
 	Value *self, *root, *rcontext;

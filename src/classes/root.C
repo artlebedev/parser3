@@ -1,8 +1,9 @@
 /*
-$Id: root.C,v 1.7 2001/03/10 11:03:47 paf Exp $
+$Id: root.C,v 1.8 2001/03/10 11:18:13 paf Exp $
 */
 
 #include "pa_request.h"
+#include "_root.h"
 
 static void _if(Request& r, Array *params) {
 	bool condition=
