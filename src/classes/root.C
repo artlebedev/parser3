@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.19 2001/03/12 09:31:26 paf Exp $
+	$Id: root.C,v 1.20 2001/03/12 09:35:01 paf Exp $
 */
 
 #include <string.h>
@@ -49,11 +49,11 @@ static void _untaint(Request& r, const String& name, Array *params) {
 	
 
 static void _process(Request& r, const String& name, Array *params) {
-	Value *vsource=static_cast<Value *>(params->get(0));
 	// evaluate source to process
-	const String& source=r.process(*vsource).as_string();
+	const String& source=r.process(*static_cast<Value *>(params->get(0))).as_string();
 
-	// process source code, append processed methods to 'self' class
+	// calculate pseudo file name of processed chars
+	// would be something like "/some/file(4) process"
 	char place[MAX_STRING];
 #ifndef NO_STRING_ORIGIN
 	const Origin& origin=source.origin();
@@ -64,10 +64,11 @@ static void _process(Request& r, const String& name, Array *params) {
 	strncpy(place, MAX_STRING, name.cstr());
 #endif	
 
-	VClass &self_class=*r.self->get_class();
-	// temporarily zeroing @main so to maybe-replace it in processed code
+	VClass& self_class=*r.self->get_class();
+	// temporarily zero @main so to maybe-replace it in processed code
 	Temp_method temp_method(self_class, *main_method_name, 0);
 
+	// process source code, append processed methods to 'self' class
 	// maybe-define new @main
 	r.use_buf(source.cstr(), place, &self_class);
 
