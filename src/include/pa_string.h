@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.18 2001/02/13 10:30:22 paf Exp $
+  $Id: pa_string.h,v 1.19 2001/02/13 10:50:23 paf Exp $
 */
 
 /*
@@ -120,7 +120,7 @@ public:
 		return static_cast<int>(types[static_cast<unsigned int>(c)]); 
 	}
 private:	
-	char type[0x100];
+	char types[0x100];
 };
 
 class String_iterator {
@@ -130,23 +130,23 @@ public:
 	void operator ++() { skip(); }
 	void operator ++(int) { skip(); }
 
-	int skip_to(Char_type& types);
+	int skip_to(Char_types& types);
 	bool skip_to(char c);
 
-	bool eof() { return position; }
+	bool eof() { return position==0; }
 
 	// current char
-	char operator() const;
+	char operator() () const;
 
 protected:
 	// home string
 	String& string;
 	// the row in which we are
-	Chunk::Row *read_here;
+	String::Chunk::Row *read_here;
 	// position in text, eof when 0 
-	char *position;
+	const char *position;
 	// when read_here reaches this row, move to the next chunk
-	Chunk::Row *link_row;
+	String::Chunk::Row *link_row;
 
 protected:
 

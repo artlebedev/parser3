@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.5 2001/02/11 11:27:26 paf Exp $
+  $Id: parser.C,v 1.6 2001/02/13 10:50:24 paf Exp $
 */
 
 #include <stdio.h>
@@ -120,6 +120,30 @@ int main(int argc, char *argv[]) {
 				}
 				printf("%s\n", line.cstr());
 			}
+
+
+			String it(request.pool());
+			it.APPEND("ab.cd[zzz]", 0,0);
+			String_iterator si(it);
+			/*si++;
+			si++;
+			si++;
+			si++;
+			si++;
+			si++;
+			*/
+			/*bool found=si.skip_to('.');
+			si++;
+			*/
+			si++;
+			Char_types types;
+			types.set(' ', 1);
+			types.set('[', 2);
+			types.set(']', 3);
+			int type=si.skip_to(types);
+			si++;
+
+
 		} else {
 			Exception& e=request.exception();
 			printf("operator_error occured: %s\n", e.comment());
