@@ -233,7 +233,6 @@ $response:charset[windows-1251]
 #^mail2[]
 #^exec[]
 #^passpost[]
-#^menudelim[]
 #^fordelim[]
 #^duplicatetable2hashkey[]
 #^duplicatehashsqlkey[]
@@ -256,9 +255,28 @@ $response:charset[windows-1251]
 #^xml[]
 #^mail4[]
 #^voidconstructorpass[]
-#^touchittest[]
 #^$form:CLASS.a=$form:CLASS.a<br>
-^cookie2[]
+#^cookie2[]
+#^menudelim[]
+#^touchittest[]
+#^touchittest2[]
+#^opauto[]
+^trycontextt[]
+
+@trycontextt[]
+^try{
+	^trycontexttsub[]
+}{
+	$exception.handled(0)
+}
+
+
+@trycontexttsub[]
+^bad[]
+
+
+@opauto[]
+^reada[]
 
 
 @rusage2[]
@@ -323,6 +341,11 @@ $hash[
 }	
 
 @touchittest[][i]
+$i[before]
+^touchit[]
+$i
+
+@touchittest2[]
 $i[before]
 ^touchit[]
 $i

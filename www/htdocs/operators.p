@@ -1,7 +1,5 @@
 @auto[]
-#$a[1]
-
-#@one[]
+$a[1]
 
 @two[]
 #$h[^hash::create[]]
@@ -13,4 +11,7 @@
 ^process{^^eval(2*2)^$a[1]^$a}
 
 @touchit[]
-$i[not after]
+$i[after]
+
+@reada[]
+^$a=$a

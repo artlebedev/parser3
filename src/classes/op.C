@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/09/18 08:52:48 $";
+static const char* IDENT_OP_C="$Date: 2002/10/14 13:53:20 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -578,8 +578,9 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 
 	StringOrValue result;
 	try {
-		Request_context_saver cs(r); // taking snapshot of request processing status, restoring it at }
+		Request_context_saver context_saved(r); // taking snapshot of request processing status, restoring it at }
 		result=r.process(body_code);
+		context_saved.restore(); // manually restoring context
 	} catch(const Exception& e) {
 		VHash& vhash=exception2vhash(pool, e);
 

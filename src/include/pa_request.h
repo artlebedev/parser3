@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/10/14 12:16:06 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/10/14 13:53:21 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -364,7 +364,6 @@ private:
 
 /// Auto-object used to save request context across ^try body
 class Request_context_saver {
-
 	Request& fr;
 
 	/// exception stack trace
@@ -392,7 +391,7 @@ public:
 		flang(ar.flang),
 		fconnection(ar.fconnection),
 		fr(ar) {}
-	~Request_context_saver() {
+	void restore() {
 		fr.exception_trace.top_index(exception_trace);
 		fr.stack.top_index(stack);
 		fr.self=self; fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;
