@@ -273,3 +273,6 @@
 [Wed Jul 31 18:16:58 2002] /paf.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/paf.cgihtml(1): 'paf"' email contains characters (specials) [<no type>]
 [Wed Jul 31 18:17:02 2002] /paf.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/paf.cgihtml(2): '"paf"@mail.design.ru' email contains characters (specials) [<no type>]
 [Wed Jul 31 18:17:06 2002] /paf.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/paf.cgihtml(0): 'send' $MAIN:MAIL.SMTP not defined [parser.runtime]
+[Thu Aug 01 11:54:24 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(194): 'zstdin' not safe environment variable [parser.runtime]
+[Thu Aug 01 11:56:01 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(194): 'c:/drives/y/parser3project/parser3/www/htdocs/test.pl' exec failed - The system cannot find the file specified (2). Consider adding shbang line (#!x:\interpreter\command line) [<no type>]
+[Thu Aug 01 11:56:47 2002] file:exec: syntax error at c:/drives/y/parser3project/parser3/www/htdocs/test.pl line 3, at EOF |Execution of c:/drives/y/parser3project/parser3/www/htdocs/test.pl aborted due to compilation errors. |

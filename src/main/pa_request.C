@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.216 2002/07/30 13:37:08 paf Exp $
+	$Id: pa_request.C,v 1.217 2002/08/01 10:31:38 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -516,19 +516,18 @@ VStateless_class *Request::use_buf(const char *source,
 }
 
 const String& Request::relative(const char *apath, const String& relative_name) {
-	int lpath_buf_size=strlen(apath)+1;
-    char *lpath=(char *)malloc(lpath_buf_size);
-	memcpy(lpath, apath, lpath_buf_size);
-    if(!rsplit(lpath, '/'))
-		strcpy(lpath, ".");
-	String& result=*NEW String(pool(), lpath);
-    result << "/" << relative_name;
+	int hpath_buf_size=strlen(apath)+1;
+    char *hpath=(char *)malloc(hpath_buf_size);
+	memcpy(hpath, apath, hpath_buf_size);
+	String& result=*NEW String(pool());
+    if(rsplit(hpath, '/')) // if something/splitted
+		result << hpath << "/";
+    result << relative_name;
     return result;
 }
 
 const String& Request::absolute(const String& relative_name) {
-	char *relative_name_cstr=relative_name.cstr();
-	if(relative_name_cstr[0]=='/') {
+	if(relative_name.first_char()=='/') {
 		String& result=*NEW String(pool(), info.document_root);
 		result << relative_name;
 		return result;

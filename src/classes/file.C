@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.89 2002/06/20 15:42:28 paf Exp $
+	$Id: file.C,v 1.90 2002/08/01 10:31:38 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,6 +25,7 @@
 // defines
 
 #define TEXT_MODE_NAME "text"
+#define STDIN_EXEC_PARAM_NAME "stdin"
 
 // consts
 
@@ -87,10 +88,6 @@ public:
 
 };
 
-// consts
-
-const int FIND_MONKEY_MAX_HOPS=10;
-
 // methods
 
 static void _save(Request& r, const String&, MethodParams *params) {
@@ -117,37 +114,6 @@ static void _move(Request& r, const String&, MethodParams *params) {
 	file_move(
 		r.absolute(vfrom_file_name.as_string()),
 		r.absolute(vto_file_name.as_string()));
-}
-
-static void _find(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
-
-	const String &lfile_name=vfile_name.as_string();
-
-	// passed file name simply exists in current dir
-	if(file_readable(r.absolute(lfile_name))) {
-		r.write_no_lang(lfile_name);
-		return;
-	}
-
-	// scan .. dirs for result
-	for(int i=0; i<FIND_MONKEY_MAX_HOPS; i++) {
-		String local_test_name(pool);
-		for(int j=0; j<i; j++)
-			local_test_name.APPEND_CONST("../");
-		local_test_name.append(lfile_name, String::UL_CLEAN);
-		if(file_readable(r.absolute(local_test_name))) {
-			r.write_no_lang(*new(pool) String(local_test_name));
-			return;
-		}
-	}
-
-	// not found
-	if(params->size()==2) {
-		Value& not_found_code=params->as_junction(1, "not-found param must be code");
-		r.write_pass_lang(r.process(not_found_code));
-	}
 }
 
 static void _load(Request& r, const String& method_name, MethodParams *params) {
@@ -200,13 +166,25 @@ static bool is_safe_env_key(const char *key) {
 	}
 	return false;
 }
+#ifndef DOXYGEN
+struct Append_env_pair_info {
+	Hash* hash;
+	const String* sstdin;
+};
+#endif
 static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) {
-	Hash& hash=*static_cast<Hash *>(info);
-	if(!is_safe_env_key(key.cstr()))
-		throw Exception("parser.runtime",
-			&key,
-			"not safe environment variable");
-	hash.put(key, &static_cast<Value *>(value)->as_string());
+	Append_env_pair_info& pi=*static_cast<Append_env_pair_info *>(info);
+	const String& svalue=static_cast<Value *>(value)->as_string();
+
+	if(key==STDIN_EXEC_PARAM_NAME) {
+		pi.sstdin=&svalue;
+	} else {
+		if(!is_safe_env_key(key.cstr()))
+			throw Exception("parser.runtime",
+				&key,
+				"not safe environment variable");
+		pi.hash->put(key, &svalue);
+	}
 }
 static void pass_cgi_header_attribute(Array::Item *value, void *info) {
 	String& string=*static_cast<String *>(value);
@@ -216,8 +194,7 @@ static void pass_cgi_header_attribute(Array::Item *value, void *info) {
 		hash.put(string.mid(0, colon_pos), 
 		new(string.pool()) VString(string.mid(colon_pos+1, string.size())));
 }
-/** @todo fix `` in perl - they produced flipping consoles and no output to perl
-*/
+/// @todo fix `` in perl - they produced flipping consoles and no output to perl
 static void _exec_cgi(Request& r, const String& method_name, MethodParams *params,
 					  bool cgi) {
 	Pool& pool=r.pool();
@@ -261,12 +238,19 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	env.put(*new(pool) String(pool, "SCRIPT_NAME"), &script_name);
 	//env.put(*new(pool) String(pool, "SCRIPT_FILENAME"), ??&script_name);
 
+	// environment & stdin from param
+	String in(pool);
 	if(params->size()>1) {
 		Value& venv=params->as_no_junction(1, "env must not be code");
-		if(Hash *user_env=venv.get_hash(&method_name))
-			user_env->for_each(append_env_pair, &env);
+		if(Hash *user_env=venv.get_hash(&method_name)) {
+			Append_env_pair_info info={&env};
+			user_env->for_each(append_env_pair, &info);
+			if(info.sstdin)
+				in.append(*info.sstdin, String::UL_CLEAN, true);
+		}
 	}
 
+	// argv from params
 	Array *argv=0;
 	if(params->size()>2) {
 		argv=new(pool) Array(pool, params->size()-2);
@@ -274,11 +258,12 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			*argv+=&params->as_string(i, "parameter must be string");
 	}
 
-	String in(pool);
-	in.APPEND(r.post_data, r.post_size, String::UL_CLEAN, "passing post data", 0);
+	// passing POST data
+	if(in.is_empty()) // if $.stdin[...] not specified 
+		in.APPEND(r.post_data, r.post_size, String::UL_CLEAN, "POST data (passed)", 0);
+
+	// exec!
 	String out(pool);
-	//out.APPEND_CONST("content-type:text/plain\nheader:test-header\n\ntest-body");
-	//out<<in;
 	String& err=*new(pool) String(pool);
 	int status=pa_exec(false/*forced_allow*/, script_name, &env, argv, in, out, err);
 
@@ -298,7 +283,8 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			delim_size=0; // calm down, compiler
 			throw Exception(0,
 				&method_name,
-				"output does not contain CGI header; exit status=%d; stdoutsize=%u; stdout: \"%s\"; stderrsize=%u; stderr: \"%s\"", 
+				"output does not contain CGI header; "
+				"exit status=%d; stdoutsize=%u; stdout: \"%s\"; stderrsize=%u; stderr: \"%s\"", 
 					status, 
 					(uint)out.size(), out.cstr(),
 					(uint)err.size(), err.cstr());
@@ -447,6 +433,44 @@ static int lastposafter(const String& s, int after, const char *substr, size_t s
 	return after;
 }
 
+static void _find(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	const String &file_name=params->as_no_junction(0, "file name must not be code").as_string();
+	const String *file_spec;
+	if(file_name.first_char()=='/')
+		file_spec=&file_name;
+	else 
+		file_spec=&r.relative(r.info.uri, file_name);
+
+	// easy way
+	if(file_readable(r.absolute(*file_spec))) {
+		r.write_no_lang(*file_spec);
+		return;
+	}
+
+	// monkey way
+	int after_base_slash=lastposafter(*file_spec, 0, "/", 1);
+	const String *dirname=&file_spec->mid(0, after_base_slash);
+	const String& basename=file_spec->mid(after_base_slash, file_spec->size());
+
+	int after_monkey_slash;
+	while((after_monkey_slash=lastposafter(*dirname, 0, "/", 1, true))>0) {
+		String local_test_name(pool);
+		local_test_name<<*(dirname=&dirname->mid(0, after_monkey_slash));
+		local_test_name<<basename;
+		if(file_readable(r.absolute(local_test_name))) {
+			r.write_no_lang(*new(pool) String(local_test_name));
+			return;
+		}
+	}
+
+	// no way, not found
+	if(params->size()==2) {
+		Value& not_found_code=params->as_junction(1, "not-found param must be code");
+		r.write_pass_lang(r.process(not_found_code));
+	}
+}
+
 static void _dirname(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const String& file_spec=params->as_string(0, "file name must be string");
@@ -494,10 +518,6 @@ MFile::MFile(Pool& apool) : Methoded(apool, "file") {
 	// ^move[from-file-name;to-file-name]
 	add_native_method("move", Method::CT_STATIC, _move, 2, 2);
 
-	// ^find[file-name]
-	// ^find[file-name]{when-not-found}
-	add_native_method("find", Method::CT_STATIC, _find, 1, 2);
-
 	// ^load[mode;disk-name]
 	// ^load[mode;disk-name;user-name]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 2, 3);
@@ -521,6 +541,10 @@ MFile::MFile(Pool& apool) : Methoded(apool, "file") {
 
 	// ^file:lock[path]{code}
 	add_native_method("lock", Method::CT_STATIC, _lock, 2, 2);
+
+	// ^find[file-name]
+	// ^find[file-name]{when-not-found}
+	add_native_method("find", Method::CT_STATIC, _find, 1, 2);
 
     // ^file:dirname[/a/some.tar.gz]=/a
 	// ^file:dirname[/a/b/]=/a

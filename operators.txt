@@ -591,7 +591,7 @@ Xhashfile
         возвращённый заголовок рассыпается на $поля
         $status
         $stderr
-    !^file::exec[имя файла[;env hash[;1cmd[;2line[;3ar[;4g[;5s;...under win32 max 10 args]]]]]]]
+    !^file::exec[имя файла[;env hash $.stdin[текст][;1cmd[;2line[;3ar[;4g[;5s;...under win32 max 10 args]]]]]]]
     !^file:move[старое имя файла;новое имя файла] 
         можно переименовывать и двигать каталоги[win32: но не через границу дисков]
         каталоги для dest создаются с правами 775
