@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.4 2001/10/11 14:57:53 parser Exp $
+	$Id: xnode.C,v 1.5 2001/10/11 14:58:15 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -105,8 +105,8 @@ MXnode::MXnode(Pool& apool) : Methoded(apool),
 	// ^node.select[/some/xpath/query] = hash $.#[dnode]
 	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
 
-	// ^node.select-single[/some/xpath/query] = first dnode
-	add_native_method("select-single", Method::CT_DYNAMIC, _select_single, 1, 1);
+	// ^node.selectSingle[/some/xpath/query] = first dnode
+	add_native_method("selectSingle", Method::CT_DYNAMIC, _select_single, 1, 1);
 
 	// consts
 
