@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.72 2001/03/08 13:52:10 paf Exp $
+  $Id: execute.C,v 1.73 2001/03/08 15:15:46 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -92,7 +92,7 @@ void Request::execute(const Array& ops) {
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
-		fprintf(stderr, "%d:%s", stack.top()+1, opcode_name[op.code]); fflush(stderr);
+		fprintf(stderr, "%d:%s", stack.top_index(), opcode_name[op.code]); fflush(stderr);
 
 		switch(op.code) {
 		// param in next instruction
@@ -105,7 +105,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_CODE__STORE_PARAM:
 			{
-				VMethodFrame *frame=static_cast<VMethodFrame *>(stack[stack.top()]);
+				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
 				// code
 				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 				fprintf(stderr, " (%d)\n", local_ops->size());
@@ -258,7 +258,7 @@ void Request::execute(const Array& ops) {
 		case OP_STORE_PARAM:
 			{
 				Value *value=POP();
-				VMethodFrame *frame=static_cast<VMethodFrame *>(stack[0]);
+				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
 				frame->store_param(value);
 				break;
 			}
