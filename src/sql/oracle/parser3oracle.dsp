@@ -122,13 +122,5 @@ SOURCE=.\config_includes.h
 SOURCE=..\pa_sql_driver.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\oracle32\lib\oraSQL8.LIB
-# End Source File
-# Begin Source File
-
-SOURCE=.\oracle32\lib\oci.lib
-# End Source File
 # End Target
 # End Project

@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6, tested with Oracle 7.x.x
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.5 2001/08/23 11:13:53 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.6 2001/08/23 11:57:15 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -118,17 +118,16 @@ public:
 	int api_version() { return SQL_DRIVER_API_VERSION; }
 	/// initialize driver by loading sql dynamic link library
 	const char *initialize(const char *dlopen_file_spec) {
-/*		const char *error=dlopen_file_spec?
+		const char *error=dlopen_file_spec?
 			dlink(dlopen_file_spec):"client library column is empty";
-		if(!error) {*/
+		if(!error) {
 			OCIInitialize((ub4)OCI_THREADED, (dvoid *)0, 
 				(dvoid * (*)(void *, unsigned int))0, 
 				(dvoid * (*)(void*, void*, unsigned int))0,  
 				(void (*)(void*, void*))0 );
-		/*}
+		}
 
-		return error;*/
-			return 0;
+		return error;
 	}
 
 	/**	connect
@@ -455,7 +454,7 @@ private: // private funcs
 		else if(strncasecmp(statement, "update", 6)==0)
 			stmt_type=OCI_STMT_UPDATE;
 
-		int status=OCIStmtExecute(cs.svchp, stmthp, cs.errhp, 
+		sword status=OCIStmtExecute(cs.svchp, stmthp, cs.errhp, 
 			(ub4) stmt_type==OCI_STMT_SELECT?0:1, (ub4)0, 
 			(OCISnapshot *) NULL, 
 			(OCISnapshot *) NULL, (ub4)OCI_DEFAULT);
@@ -598,7 +597,7 @@ private: // private funcs
 						if(cols[i].indicator) { // NULL?
 							size=0;
 							ptr=0;
-						} else 
+						} else // not NULL
 							switch(cols[i].type) {
 							case SQLT_CLOB: 
 								{
@@ -619,10 +618,14 @@ private: // private funcs
 									break;
 								}
 							default:
-								const char *str=cols[i].str;
-								size=strlen(str);
-								ptr=services.malloc(size);
-								memcpy(ptr, str, size);
+								if(const char *str=cols[i].str) {
+									size=strlen(str);
+									ptr=services.malloc(size);
+									memcpy(ptr, str, size);
+								} else {
+									size=0;
+									ptr=0;
+								}
 								break;
 						}
 						handlers.add_row_cell(ptr, size);
@@ -648,8 +651,114 @@ cleanup: // no check call after this point!
 	}
 
 private: // conn client library funcs
+	
+	friend void check(
+		SQL_Driver_services& services, OracleSQL_connection_struct &cs, 
+		const char *step, sword status);
+	friend sb4 cbf_get_data(dvoid *ctxp, 
+		OCIBind *bindp, 
+		ub4 iter, ub4 index, 
+		dvoid **bufpp, 
+		ub4 **alenp, 
+		ub1 *piecep, 
+		dvoid **indpp, 
+		ub2 **rcodepp);
 
-//	typedef void (*t_PQfinish)(PGconn *conn);  t_PQfinish PQfinish;
+
+#define OCI_DECL(name, params) \
+	typedef sword (*t_OCI##name)params; t_OCI##name OCI##name
+
+	OCI_DECL(Initialize, (ub4 mode, dvoid *ctxp, 
+		dvoid * (*malocfp)(dvoid *ctxp, size_t size),
+		dvoid * (*ralocfp)(dvoid *ctxp, dvoid *memptr, size_t newsize),
+		void (*mfreefp)(dvoid *ctxp, dvoid *memptr) ));
+
+	OCI_DECL(EnvInit, (OCIEnv **envp, ub4 mode, 
+		size_t xtramem_sz, dvoid **usrmempp)); 
+		
+	OCI_DECL(AttrGet, (CONST dvoid *trgthndlp, ub4 trghndltyp, 
+		dvoid *attributep, ub4 *sizep, ub4 attrtype, 
+		OCIError *errhp));
+	
+	OCI_DECL(AttrSet, (dvoid *trgthndlp, ub4 trghndltyp, dvoid *attributep,
+								ub4 size, ub4 attrtype, OCIError *errhp));
+
+	OCI_DECL(BindByPos, (OCIStmt *stmtp, OCIBind **bindp, OCIError *errhp,
+		ub4 position, dvoid *valuep, sb4 value_sz,
+		ub2 dty, dvoid *indp, ub2 *alenp, ub2 *rcodep,
+		ub4 maxarr_len, ub4 *curelep, ub4 mode));
+
+	OCI_DECL(BindDynamic, (OCIBind *bindp, OCIError *errhp, dvoid *ictxp,
+		OCICallbackInBind icbfp, dvoid *octxp,
+		OCICallbackOutBind ocbfp));
+	
+	OCI_DECL(DefineByPos, (OCIStmt *stmtp, OCIDefine **defnp, OCIError *errhp,
+		ub4 position, dvoid *valuep, sb4 value_sz, ub2 dty,
+		dvoid *indp, ub2 *rlenp, ub2 *rcodep, ub4 mode));
+	
+	OCI_DECL(DescriptorAlloc, (CONST dvoid *parenth, dvoid **descpp, 
+		CONST ub4 type, CONST size_t xtramem_sz, 
+		dvoid **usrmempp));
+	
+	OCI_DECL(DescriptorFree, (dvoid *descp, CONST ub4 type));
+
+	
+	OCI_DECL(ErrorGet, (dvoid *hndlp, ub4 recordno, OraText *sqlstate,
+                       sb4 *errcodep, OraText *bufp, ub4 bufsiz, ub4 type));
+
+	OCI_DECL(HandleAlloc, (CONST dvoid *parenth, dvoid **hndlpp, CONST ub4 type, 
+                       CONST size_t xtramem_sz, dvoid **usrmempp));
+
+	OCI_DECL(HandleFree, (dvoid *hndlp, CONST ub4 type));
+					   
+	OCI_DECL(LobGetLength, (OCISvcCtx *svchp, OCIError *errhp, 
+                          OCILobLocator *locp,
+                          ub4 *lenp));
+
+	OCI_DECL(LobRead, (OCISvcCtx *svchp, OCIError *errhp, OCILobLocator *locp,
+                     ub4 *amtp, ub4 offset, dvoid *bufp, ub4 bufl, 
+                     dvoid *ctxp, sb4 (*cbfp)(dvoid *ctxp, 
+                                              CONST dvoid *bufp, 
+                                              ub4 len, 
+                                              ub1 piece),
+                     ub2 csid, ub1 csfrm));
+
+	OCI_DECL(LobWrite, (OCISvcCtx *svchp, OCIError *errhp, OCILobLocator *locp,
+                      ub4 *amtp, ub4 offset, dvoid *bufp, ub4 buflen, 
+                      ub1 piece, dvoid *ctxp, 
+                      sb4 (*cbfp)(dvoid *ctxp, 
+                                  dvoid *bufp, 
+                                  ub4 *len, 
+                                  ub1 *piece),
+                      ub2 csid, ub1 csfrm));
+
+	OCI_DECL(ParamGet, (CONST dvoid *hndlp, ub4 htype, OCIError *errhp, 
+                     dvoid **parmdpp, ub4 pos));
+
+	OCI_DECL(ServerAttach, (OCIServer *srvhp, OCIError *errhp,
+                          CONST OraText *dblink, sb4 dblink_len, ub4 mode));
+
+	OCI_DECL(ServerDetach, (OCIServer *srvhp, OCIError *errhp, ub4 mode));
+
+	OCI_DECL(SessionBegin, (OCISvcCtx *svchp, OCIError *errhp, OCISession *usrhp,
+                          ub4 credt, ub4 mode));
+
+	OCI_DECL(SessionEnd, (OCISvcCtx *svchp, OCIError *errhp, OCISession *usrhp, 
+                         ub4 mode));
+
+	OCI_DECL(StmtExecute, (OCISvcCtx *svchp, OCIStmt *stmtp, OCIError *errhp, 
+                         ub4 iters, ub4 rowoff, CONST OCISnapshot *snap_in, 
+                         OCISnapshot *snap_out, ub4 mode));
+
+	OCI_DECL(StmtFetch, (OCIStmt *stmtp, OCIError *errhp, ub4 nrows, 
+                        ub2 orientation, ub4 mode));
+
+	OCI_DECL(StmtPrepare, (OCIStmt *stmtp, OCIError *errhp, CONST OraText *stmt,
+                          ub4 stmt_len, ub4 language, ub4 mode));
+
+	OCI_DECL(TransCommit, (OCISvcCtx *svchp, OCIError *errhp, ub4 flags));
+
+	OCI_DECL(TransRollback, (OCISvcCtx *svchp, OCIError *errhp, ub4 flags));
 
 private: // conn client library funcs linking
 
@@ -663,14 +772,28 @@ private: // conn client library funcs linking
 				if(!name) \
 					action;
 
-		#define DLINK(name) DSLINK(name, return "function " #name " was not found")
+		#define OLINK(name) DSLINK(OCI##name, return "function OCI" #name " was not found")
 		
-//		DLINK(PQfinish);
+		OLINK(Initialize);
+		OLINK(EnvInit);
+		OLINK(AttrGet);		OLINK(AttrSet);
+		OLINK(BindByPos);		OLINK(BindDynamic);
+		OLINK(DefineByPos);
+		OLINK(DescriptorAlloc);		OLINK(DescriptorFree);
+		OLINK(ErrorGet);
+		OLINK(HandleAlloc);		OLINK(HandleFree);
+		OLINK(LobGetLength);
+		OLINK(LobRead);		OLINK(LobWrite);
+		OLINK(ParamGet);
+		OLINK(ServerAttach);		OLINK(ServerDetach);
+		OLINK(SessionBegin);		OLINK(SessionEnd);
+		OLINK(StmtExecute);		OLINK(StmtFetch);		OLINK(StmtPrepare);
+		OLINK(TransCommit);		OLINK(TransRollback);
 
 		return 0;
 	}
 
-};
+} *OracleSQL_driver;
 
 void check(
 	SQL_Driver_services& services, OracleSQL_connection_struct &cs, 
@@ -685,7 +808,7 @@ void check(
 	case OCI_ERROR:
 		{
 		sb4 errcode;
-		if(OCIErrorGet((dvoid *)cs.errhp, (ub4)1, (text *) NULL, &errcode, 
+		if(OracleSQL_driver->OCIErrorGet((dvoid *)cs.errhp, (ub4)1, (text *) NULL, &errcode, 
 			(text *) reason, (ub4) sizeof(reason), OCI_HTYPE_ERROR)==OCI_SUCCESS)
 			msg=reason;
 		else
@@ -748,9 +871,11 @@ static sb4 cbf_get_data(dvoid *ctxp,
 		*(OracleSQL_query_lobs::cbf_context_struct *)ctxp;
 
 	if(index==0) {
-		static ub4  rows=0;
-		OCIAttrGet((CONST dvoid *) bindp, OCI_HTYPE_BIND, (dvoid *)&rows, 
-			(ub4 *)sizeof(ub2), OCI_ATTR_ROWS_RETURNED, context.cs->errhp);
+		static ub4  rows;
+		check(*context.services, *context.cs, "AttrGet cbf_get_data ROWS_RETURNED", 
+			OracleSQL_driver->OCIAttrGet(
+				(CONST dvoid *) bindp, OCI_HTYPE_BIND, (dvoid *)&rows, 
+				(ub4 *)sizeof(ub2), OCI_ATTR_ROWS_RETURNED, context.cs->errhp))	;
 		context.rows->count=(ub2)rows;
 		context.rows->row=(OracleSQL_query_lobs::return_rows::return_row *)
 			context.services->malloc(sizeof(OracleSQL_query_lobs::return_rows::return_row)*rows);
@@ -758,7 +883,7 @@ static sb4 cbf_get_data(dvoid *ctxp,
 
 	OracleSQL_query_lobs::return_rows::return_row &var=context.rows->row[index];
 
-	check(*context.services, *context.cs, "alloc output var desc dynamic", OCIDescriptorAlloc(
+	check(*context.services, *context.cs, "alloc output var desc dynamic", OracleSQL_driver->OCIDescriptorAlloc(
 		(dvoid *) context.cs->envhp, (dvoid **)&var.locator, 
 		(ub4)OCI_DTYPE_LOB, 
 		0, (dvoid **)0));
@@ -778,5 +903,5 @@ void tolower(char *out, const char *in, size_t size) {
 }
 
 extern "C" SQL_Driver *create() {
-	return new OracleSQL_Driver();
+	return OracleSQL_driver=new OracleSQL_Driver();
 }

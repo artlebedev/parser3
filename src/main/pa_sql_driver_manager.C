@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.24 2001/08/20 13:22:05 parser Exp $"; 
+static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.25 2001/08/23 11:57:15 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -151,7 +151,7 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 				PTHROW(0, 0,
 					library,
 					"driver failed to initialize client library '%s', %s",
-						specified_dlopen_file_spec?dlopen_file_spec_cstr:"unspeciifed", 
+						specified_dlopen_file_spec?dlopen_file_spec_cstr:"unspecifed", 
 						error);
 
 			// cache it
