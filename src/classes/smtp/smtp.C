@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: smtp.C,v 1.10 2002/03/27 15:30:35 paf Exp $
+	$Id: smtp.C,v 1.11 2002/07/31 14:31:02 paf Exp $
 
 	Parts of the code here is based upon an early gensock and blat
 */
@@ -501,12 +501,6 @@ static char *rsplit(char *string, char delim) {
     }
     return NULL;	
 }
-static char *extractEmail(char *email) {
-	lsplit(email, '>'); lsplit(email, '\x0D');lsplit(email, '\x0A');
-	char *next=rsplit(email, '<');
-	if(next) email=next;
-	return email;
-}
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
@@ -516,7 +510,7 @@ static char *extractEmail(char *email) {
 void SMTP::
 Send(const char *server, const char *service, const char *msg, char *from, char *to)
 {
-    prepare_message( extractEmail(from), extractEmail(to), server, service);
+    prepare_message( from, to, server, service);
 
     send_data(msg);
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.69 2002/07/11 07:31:42 paf Exp $
+	$Id: mail.C,v 1.70 2002/07/31 14:31:01 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -99,6 +99,8 @@ struct Mail_info {
 	const String **from, **to;
 };
 #endif
+
+const String& extractEmail(const String& string);
 static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
 								 void *info) {
 
@@ -112,9 +114,9 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 
 	// fetch from & to from header for SMTP
 	if(mi.from && aattribute=="from")
-		*mi.from=&lmeaning.as_string();
+		*mi.from=&extractEmail(lmeaning.as_string());
 	if(mi.to && aattribute=="to")
-		*mi.to=&lmeaning.as_string();
+		*mi.to=&extractEmail(lmeaning.as_string());
 
 	// append header line
 	*mi.header << 
@@ -267,15 +269,15 @@ static void sendmail(Request& r, const String& method_name,
 	char *message_cstr=message.cstr();
 	Hash *mail_conf=static_cast<Hash *>(r.classes_conf.get(mail_base_class->name()));
 
-#ifdef _MSC_VER
 	if(!from)
 		throw Exception("parser.runtime",
 			&method_name,
-			"has no 'from' header specified");
+			"parameter does not specify 'from' header field");
 	if(!to)
 		throw Exception("parser.runtime",
 			&method_name,
-			"has no 'to' header specified");
+			"parameter does not specify 'to' header field");
+#ifdef _MSC_VER
 
 	SMTP& smtp=*new(pool) SMTP(pool, method_name);
 	Value *server_port;
@@ -295,8 +297,8 @@ static void sendmail(Request& r, const String& method_name,
 			"$"MAIN_CLASS_NAME":"MAIL_NAME".SMTP not defined");
 #else
 	// unix
-	// $MAIN:MAIL.sendmail["/usr/sbin/sendmail -t"] default
-	// $MAIN:MAIL.sendmail["/usr/lib/sendmail -t"] default
+	// $MAIN:MAIL.sendmail["/usr/sbin/sendmail -t -i -f postmaster"] default
+	// $MAIN:MAIL.sendmail["/usr/lib/sendmail -t -i  -f postmaster"] default
 
 	const String *sendmail_command;
 #ifdef PA_FORCED_SENDMAIL
@@ -315,12 +317,21 @@ static void sendmail(Request& r, const String& method_name,
 		String *test=new(pool) String(pool, "/usr/sbin/sendmail");
 		if(!file_executable(*test))
 			test=new(pool) String(pool, "/usr/lib/sendmail");
-		test->APPEND_CONST(" -ti");
+		test->APPEND_CONST(" -t -i -f postmaster");
 		sendmail_command=test;
 	}
 #endif
 
-	// we know sendmail_command here
+	// we know sendmail_command here, should replace "postmaster" with "$from" from message
+	int at_postmaster=sendmail_command->pos("postmaster");
+	if(at_postmaster>0) {
+		String& reconstructed=sendmail_command->mid(0, at_postmaster);
+		reconstructed.append(*from);
+		reconstructed.append(sendmail_command->mid(at_postmaster+10/*postmaster*/));
+		sendmail_command=&reconstructed;
+	}
+
+	// execute it
 	Array argv(pool);
 	const String *file_spec;
 	int after_file_spec=sendmail_command->pos(" ", 1);
@@ -339,7 +350,7 @@ static void sendmail(Request& r, const String& method_name,
 #ifdef PA_FORCED_SENDMAIL
 			" Use configure key \"--with-sendmail=appropriate sendmail command\""
 #else
-			" Set $"MAIN_CLASS_NAME":"MAIL_NAME".%s with appropriate sendmail command", 
+			" Set $"MAIN_CLASS_NAME":"MAIL_NAME".%s to appropriate sendmail command", 
 				sendmailkey_cstr
 #endif
 		);

@@ -6,7 +6,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vmail.C,v 1.8 2002/06/28 09:59:02 paf Exp $
+	$Id: pa_vmail.C,v 1.9 2002/07/31 14:31:02 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -312,6 +312,62 @@ struct Store_message_element_info {
 	bool has_content_type;
 };
 #endif
+typedef int (*string_contains_char_which_check)(int);
+static bool string_contains_char_which(const char *string, string_contains_char_which_check check) {
+	while(char c=*string++) {
+		if(check(c))
+			return true;
+	}
+	return false;
+}
+const String& extractEmail(const String& string) {
+	Pool& pool=string.pool();
+
+	char *email=string.cstr();
+	lsplit(email, '>'); lsplit(email, '\x0D');lsplit(email, '\x0A');
+	char *next=rsplit(email, '<');
+	if(next) email=next;
+
+	String& result=*new(pool) String(pool);
+	result.APPEND_TAINTED(email, 0, string.origin().file, string.origin().line);
+
+	/*
+		http://www.faqs.org/rfcs/rfc822.html
+
+		addr-spec   =  local-part "@" domain        ; global address
+	
+		local-part  =  word *("." word)             ; uninterpreted case-preserved
+		word        =  atom / quoted-string
+
+		domain      =  sub-domain *("." sub-domain)
+		sub-domain  =  domain-ref / domain-literal
+		domain-ref  =  atom                         ; symbolic reference
+
+        domain-literal << ignoring for now
+		quoted-string in word << ignoring for now
+
+		atom        =  1*<any CHAR except specials, SPACE and CTLs>  << the ONLY to check
+
+		specials    =  "(" / ")" / "<" / ">" / "@"  ; Must be in quoted-
+                 /  "," / ";" / ":" / "\" / <">  ;  string, to use
+                 /  "." / "[" / "]"              ;  within a word.
+
+	*/
+	if(strpbrk(email, "()<>,;:\\\"[]"/*specials minus @ and . */))
+		throw Exception(0,
+			&result,
+			"email contains characters (specials)");
+	if(string_contains_char_which(email, (string_contains_char_which_check)isspace))
+		throw Exception(0,
+			&result,
+			"email contains characters (whitespace)");
+	if(string_contains_char_which(email, (string_contains_char_which_check)iscntrl))
+		throw Exception(0,
+			&result,
+			"email contains characters (control)");
+
+	return result;
+}
 static void store_message_element(const Hash::Key& raw_element_name, Hash::Val *aelement_value, 
 								  void *info) {
 	Value& element_value=*static_cast<Value *>(aelement_value);
@@ -336,9 +392,9 @@ static void store_message_element(const Hash::Key& raw_element_name, Hash::Val *
 
 	// fetch from & to from header for SMTP
 	if(i.from && low_element_name=="from")
-		*i.from=&element_value.as_string();
+		*i.from=&extractEmail(element_value.as_string());
 	if(i.to && low_element_name=="to")
-		*i.to=&element_value.as_string();
+		*i.to=&extractEmail(element_value.as_string());
 
 	// append header line
 	*i.header << 
