@@ -646,8 +646,7 @@ math
     !^date.sql-string[] %Y-%m-%d %H:%M:%S
         where published='$дата.sql-string[]'
     !^date:calendar[rus|eng;год;мес€ц] выдаЄт неименованную таблицу 
-        столбцы: 0..6, week
-        todo:weekyear
+        столбцы: 0..6, week, weekyear
     !^date:calendar[rus|eng;год;мес€ц;день] выдаЄт именнованную таблицу
         столбцы: year, month, day, weekday
     
