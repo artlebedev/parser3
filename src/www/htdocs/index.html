@@ -31,15 +31,11 @@ $n
 $m ^if(^s.match[$:m][i]){matches}{do not match} $s<BR>
 
 @main[]
-^if(def $form:fs){
-	$form:fs<BR>
-	^form:fs.match[!][g]{?}<BR>
+^if(def $form:s){
+	$form:s<BR>
+	^form:s.match[!][g]{<b>!</b>}<BR>
 	<HR>
 }
-$ts[^taint[<1!2!3>]]
-$ts<BR>
-^ts.match[!][g]{?}
-<HR>
 
 $r[1223]
 ^^"$r".match[2][]{(^$match)}=^r.match[2][]{($match)}<BR>
