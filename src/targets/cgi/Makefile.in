@@ -85,7 +85,7 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 host_os = @host_os@
 
-INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql @XML_INCLUDES@
+INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql -I../../pcre @XML_INCLUDES@
 
 #for sysadmin-controlled auto.p
 CPPFLAGS := $(CPPFLAGS) -DSYSCONFDIR=\"$(sysconfdir)\"
