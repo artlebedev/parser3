@@ -45,11 +45,10 @@ else
     AC_MSG_RESULT($1.$2 (ok))
 fi
 
-dnl the order of C, C++ is important
-AC_PROG_CC
-AC_LANG_C AC_C_INLINE
 AC_PROG_CXX
-AC_LANG_CPLUSPLUS
+AC_PROG_CC
+dnl most tests sould be compiled with C compiler [especially qsort test]
+AC_LANG_C AC_C_INLINE
 
 dnl Arguments
 
@@ -143,7 +142,7 @@ AC_ARG_WITH(mysql-client,[  --with-mysql-client=mysqlclientlib?withparams
 
 	if test -z "$mysql_client"; then
 		mysql_client="-configure could not guess-"
-		AC_MSG_WARN(could not guess mysql client)
+		AC_MSG_RESULT(could not guess)
 	else
 		AC_MSG_RESULT($mysql_client)
 	fi
@@ -165,7 +164,7 @@ AC_ARG_WITH(pgsql-client,[  --with-pgsql-client=pgsqlclientlib?withparams
 
 	if test -z "$pgsql_client"; then
 		pgsql_client="-configure could not guess-"
-		AC_MSG_WARN(could not guess pgsql client)
+		AC_MSG_RESULT(could not guess)
 	else
 		AC_MSG_RESULT($pgsql_client)
 	fi
@@ -183,7 +182,7 @@ AC_ARG_WITH(oracle-client,[  --with-oracle-client=oracleclientlib?withparams
 
 	if test -z "$oracle_client"; then
 		oracle_client="-configure could not guess-"
-		AC_MSG_WARN(could not guess oracle client)
+		AC_MSG_RESULT(could not guess)
 	else
 		oracle_client="$oracle_client?ORACLE_HOME=$ORACLE_HOME&ORA_NLS33=$ORACLE_HOME/ocommon/nls/admin/data"
 		AC_MSG_RESULT($oracle_client)
@@ -399,7 +398,7 @@ AC_CHECK_TYPE(off_t, long)
 AC_CHECK_TYPE(ssize_t, int)
 
 
-dnl Checks for header files.
+dnl Checks for C header files.
 
 AC_HEADER_TIME
 
@@ -423,7 +422,6 @@ string.h \
 direct.h \
 setjmp.h \
 memory.h \
-new \
 sys/file.h \
 sys/locking.h \
 sys/types.h \
@@ -529,6 +527,10 @@ AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no))                         
 
 
+dnl these tests should go in C++ language {
+AC_LANG_CPLUSPLUS
+AC_CHECK_HEADERS(new)
+
 AC_MSG_CHECKING(whether compiler supports pragma pack)
 AC_TRY_COMPILE(
 #pragma pack(1)
@@ -557,6 +559,9 @@ std::set_new_handler(failed_new);
 ],		
     AC_MSG_RESULT(no)
 )
+
+AC_LANG_C
+dnl } these tests sould go in C++ language, restoring default
 
 
 dnl AC_ARG_ENABLE(db, [  --enable-db             to enable 'hashfile' parser class],
