@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 12:58:27 $";
+static const char* IDENT="$Date: 2003/11/10 06:15:10 $";
 
 #include "pa_globals.h"
 #include "pa_threads.h"
@@ -24,9 +24,10 @@ void check(const char *step, apr_status_t status) {
 	if(status==APR_SUCCESS)
 		return;
 
-	throw Exception("todo.todo",
+	throw Exception("file.access",
 		0,
-		"%s error: %d", step, status);
+		"%s error: %s (%d)", 
+			step, strerror(status), status);
 }
 
 void VHashfile::open(const String& afile_name) {
