@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exec.h,v 1.1 2001/04/09 16:04:47 paf Exp $
+	$Id: pa_exec.h,v 1.2 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef PA_EXEC_H
 #define PA_EXEC_H
 
+#include "pa_config_includes.h"
 #include "pa_string.h"
 #include "pa_hash.h"
 #include "pa_array.h"

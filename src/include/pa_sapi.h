@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sapi.h,v 1.8 2001/04/09 16:04:47 paf Exp $
+	$Id: pa_sapi.h,v 1.9 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
+#include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_types.h"
 

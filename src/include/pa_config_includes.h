@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_config_includes.h,v 1.7 2001/05/10 17:59:24 paf Exp $
+	$Id: pa_config_includes.h,v 1.8 2001/05/17 10:22:24 parser Exp $
 
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
@@ -46,6 +46,10 @@
 #	include <stdarg.h>
 #endif
 
+#ifdef HAVE_STDDEF_H
+#	include <stddef.h>
+#endif
+
 #ifdef HAVE_STDIO_H
 #	include <stdio.h>
 #endif
@@ -76,4 +80,8 @@
 
 #ifdef HAVE_DIRECT_H
 #	include <direct.h>
+#endif
+
+#ifdef HAVE_SETJMP_H
+#	include <setjmp.h>
 #endif

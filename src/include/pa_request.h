@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.87 2001/04/28 13:25:01 paf Exp $
+	$Id: pa_request.h,v 1.88 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
+#include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_hash.h"
 #include "pa_wcontext.h"

@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.6 2001/05/17 08:42:22 parser Exp $
+	$Id: pa_sql_connection.h,v 1.7 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
+#include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_sql_driver.h"
 #include "pa_sql_driver_manager.h"

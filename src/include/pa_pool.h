@@ -5,13 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.51 2001/05/16 17:10:34 parser Exp $
+	$Id: pa_pool.h,v 1.52 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef PA_POOL_H
 #define PA_POOL_H
 
-#include <stddef.h>
+#include "pa_config_includes.h"
 
 class Exception;
 class Temp_exception;

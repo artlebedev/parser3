@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_socks.h,v 1.2 2001/04/26 15:14:10 paf Exp $
+	$Id: pa_socks.h,v 1.3 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef PA_SOCKS_H
 #define PA_SOCKS_H
 
+#include "pa_config_includes.h"
 #include "pa_pool.h"
 
 void init_socks(Pool& pool);

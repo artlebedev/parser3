@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stack.h,v 1.8 2001/03/19 17:42:12 paf Exp $
+	$Id: pa_stack.h,v 1.9 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef PA_STACK_H
 #define PA_STACK_H
 
+#include "pa_config_includes.h"
 #include "pa_array.h"
 
 /// simple stack based on Array

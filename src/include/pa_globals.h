@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.53 2001/04/28 13:31:11 paf Exp $
+	$Id: pa_globals.h,v 1.54 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
+#include "pa_config_includes.h"
 #include "pa_pool.h"
 
 class String;

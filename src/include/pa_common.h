@@ -5,15 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.43 2001/05/10 17:59:24 paf Exp $
+	$Id: pa_common.h,v 1.44 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
 #include "pa_config_includes.h"
-#include <stdio.h>
-
 #include "pa_pool.h"
 #include "pa_string.h"
 

@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_opcode.h,v 1.1 2001/05/07 14:00:46 paf Exp $
+	$Id: pa_opcode.h,v 1.2 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef CODE_H
 #define CODE_H
 
+#include "pa_config_includes.h"
 #include "pa_string.h"
 #include "pa_array.h"
 

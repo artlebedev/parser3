@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.32 2001/05/08 08:14:53 paf Exp $
+	$Id: pa_table.h,v 1.33 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
+#include "pa_config_includes.h"
 #include "pa_types.h"
 #include "pa_array.h"
 #include "pa_hash.h"

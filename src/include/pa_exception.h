@@ -5,14 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.h,v 1.11 2001/03/19 17:42:12 paf Exp $
+	$Id: pa_exception.h,v 1.12 2001/05/17 10:22:24 parser Exp $
 */
 
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-#include <setjmp.h>
-
+#include "pa_config_includes.h"
 #include "pa_types.h"
 #include "pa_string.h"
 
