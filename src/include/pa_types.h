@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.20 2001/03/19 19:17:43 paf Exp $
+	$Id: pa_types.h,v 1.21 2001/03/19 21:39:32 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -24,20 +24,10 @@
 #	endif
 #endif
 
-/** @def PATH_DELIMITER_CHAR
-	path delimiter char, depens on OS
-*/
-/**	@def PATH_DELIMITER_STRING
-	path delimiter string, depens on OS
-*/
-#ifdef WIN32
-#	define PATH_DELIMITER_CHAR '\\'
-#	define PATH_DELIMITER_STRING "\\"
-#else
+///	path delimiter char
 #	define PATH_DELIMITER_CHAR '/'
+///	path delimiter string
 #	define PATH_DELIMITER_STRING "/"
-#endif
-
 
 /// for rare cases of undefined length using this-sized strings
 #define MAX_STRING 0x400

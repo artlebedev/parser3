@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: stateless class decls.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.5 2001/03/19 19:17:47 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.6 2001/03/19 21:39:37 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -18,6 +20,23 @@
 
 class Temp_method;
 
+/**
+	object' class. 
+	
+	basically collection of methods.
+
+	some classes are freeze()-ed after their creation so that
+	malicious users would not alter their method set using some tricks
+	like
+	@verbatim
+		$response.process[@new-resonse-method[]
+		defined here
+		]
+	@endverbatim
+	affecting unaware neibours.
+
+	@see VStateless_object, Temp_method
+*/
 class VStateless_class : public VAliased {
 	friend Temp_method;
 public: // Value
@@ -94,6 +113,7 @@ protected:
 
 };
 
+///	Auto-object used for temporarily substituting/removing class method
 class Temp_method {
 	VStateless_class& fclass;
 	const String& fname;

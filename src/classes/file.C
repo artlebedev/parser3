@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.2 2001/03/19 20:46:35 paf Exp $
+	$Id: file.C,v 1.3 2001/03/19 21:39:30 paf Exp $
 */
 
 #include "pa_request.h"
@@ -12,7 +12,7 @@
 
 // global var
 
-VStateless_class *file_base_class;
+VStateless_class *file_class;
 
 // methods
 
@@ -32,7 +32,7 @@ static void _save(Request& r, const String& method_name, Array *params) {
 
 // initialize
 
-void initialize_file_base_class(Pool& pool, VStateless_class& vclass) {
+void initialize_file_class(Pool& pool, VStateless_class& vclass) {
 	// ^save[file-name]
 	vclass.add_native_method("save", _save, 1, 1);
 }

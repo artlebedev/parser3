@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.3 2001/03/19 20:47:22 paf Exp $
+	$Id: pa_vfile.C,v 1.4 2001/03/19 21:39:37 paf Exp $
 */
 
 #include <string.h>
@@ -16,7 +16,7 @@
 
 VFile::VFile(Pool& apool, 
 			 const char *avalue_ptr, size_t avalue_size,
-			 const char *afile_name) : VStateless_class(apool, file_base_class),
+			 const char *afile_name) : VStateless_object(apool, *file_class),
 			 
 			 fvalue_ptr(avalue_ptr),
 			 fvalue_size(avalue_size),

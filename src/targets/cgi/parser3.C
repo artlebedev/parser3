@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.25 2001/03/19 19:17:45 paf Exp $
+	$Id: parser3.C,v 1.26 2001/03/19 21:39:35 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -54,6 +54,12 @@ LONG WINAPI TopLevelExceptionFilter (
 	return EXCEPTION_EXECUTE_HANDLER; // never reached
 }
 #	endif
+
+void fix_slashes(char *s) {
+	for(; *s; s++)
+		if(*s=='\\')
+			*s='/';
+}
 #endif
 
 // service funcs
@@ -113,7 +119,10 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	const char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
+	char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
+#ifdef WIN32
+	fix_slashes(filespec_to_process);
+#endif
 
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
@@ -133,7 +142,6 @@ int main(int argc, char *argv[]) {
 				"no file to process");
 
 		// Request info
-		// TODO: ifdef WIN32 flip \\ to /
 		Request::Info request_info;
 		const char *document_root=getenv("DOCUMENT_ROOT");
 		if(!document_root) {

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.2 2001/03/19 20:46:40 paf Exp $
+	$Id: pa_vfile.h,v 1.3 2001/03/19 21:39:37 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -11,12 +11,12 @@
 
 #include "pa_common.h"
 #include "pa_globals.h"
-#include "pa_vstateless_class.h"
+#include "pa_vstateless_object.h"
 #include "_file.h"
 
 class Request;
 
-class VFile : public VStateless_class {
+class VFile : public VStateless_object {
 public: // Value
 	
 	/// all: for error reporting after fail(), etc
@@ -30,7 +30,7 @@ public: // Value
 	/// VFile: CLASS,BASE,method,field
 	Value *VFile::get_element(const String& aname) {
 		// $CLASS,$BASE,$method
-		if(Value *result=VStateless_class::get_element(aname))
+		if(Value *result=VStateless_object::get_element(aname))
 			return result;
 
 		// $element

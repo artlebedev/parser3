@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: aliased class decls.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.h,v 1.5 2001/03/19 17:42:17 paf Exp $
+	$Id: pa_valiased.h,v 1.6 2001/03/19 21:39:37 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -13,6 +15,36 @@
 
 class Temp_alias;
 
+/**
+	the object or class which effective class can change along method call.
+
+	consider this:
+	@verbatim
+		@CLASS
+		article
+		@display[]
+		^display_head[]
+		^display_body[]
+		^display_tail[]
+
+		@CLASS
+		news_article
+		@display_tail[]
+		...some calls...
+
+		@main[]
+		$na[^news_article:load[]]
+		^na.display[]
+	@endverbatim
+	here ^na.display[] call would go to \a article class
+	then back to news_article:display_tail.
+
+	basically object's effective class changed twice:
+	-# from news_article to article in ^display[] call
+	-# from article to news_article in ^display_tail[] call
+	  
+	@see Temp_alias
+*/
 class VAliased : public Value {
 	friend Temp_alias;
 public: // creation
@@ -42,6 +74,7 @@ protected:
 	VStateless_class *fclass_alias;
 };
 
+///	Auto-object used for temporarily changing object's effective class
 class Temp_alias {
 	VAliased& vobject;
 	VStateless_class *saved_alias;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.58 2001/03/19 20:46:38 paf Exp $
+	$Id: pa_request.C,v 1.59 2001/03/19 21:39:34 paf Exp $
 */
 
 #include <string.h>
@@ -352,7 +352,7 @@ char *Request::absolute(const char *name) {
 		strcat(result, name);
 		return result;
 	} else 
-		return relative(info.uri, name);
+		return relative(info.path_translated, name);
 }
 
 void Request::output_result(const String& body_string) {

@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: stateless object decl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_object.h,v 1.4 2001/03/19 19:17:47 paf Exp $
+	$Id: pa_vstateless_object.h,v 1.5 2001/03/19 21:39:37 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_OBJECT_H
@@ -13,6 +15,11 @@
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
 
+/**
+	the object of some class. 
+	
+	"of some class" means "with some methods".
+*/
 class VStateless_object : public VAliased {
 public: // Value
 	
