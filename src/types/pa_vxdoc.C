@@ -1,14 +1,14 @@
 /** @dom
 	Parser: @b dom parser type.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxdoc.C,v 1.11 2002/02/08 08:31:33 paf Exp $
+	$Id: pa_vxdoc.C,v 1.13 2002/04/18 15:54:39 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
-static const char *RCSId="$Id: pa_vxdoc.C,v 1.11 2002/02/08 08:31:33 paf Exp $"; 
+static const char *RCSId="$Id: pa_vxdoc.C,v 1.13 2002/04/18 15:54:39 paf Exp $"; 
 
 #include "pa_vxdoc.h"
 
@@ -19,8 +19,8 @@ void VXdoc_destructor(void *vxdoc) {
 
 /// VXdoc: $CLASS,$method
 Value *VXdoc::get_element(const String& name) { 
-	// $CLASS,$method
-	if(Value *result=VStateless_object::get_element(name))
+	// up
+	if(Value *result=VXnode::get_element(name))
 		return result;
 
 	// fields

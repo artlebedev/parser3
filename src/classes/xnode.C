@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.44 2002/04/18 10:51:00 paf Exp $
+	$Id: xnode.C,v 1.45 2002/04/18 15:54:39 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -606,7 +606,9 @@ static void _selectString(Request& r, const String& method_name, MethodParams *p
 
 // constructor
 
-MXnode::MXnode(Pool& apool) : Methoded(apool, "xnode"), 
+MXnode::MXnode(Pool& apool, const char *aname, VStateless_class *abase) : 
+	Methoded(apool, aname?aname:"xnode", abase), 
+
 	consts(apool) 
 {
 	/// DOM1 node

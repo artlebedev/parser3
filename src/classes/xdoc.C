@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.91 2002/04/10 09:53:14 paf Exp $
+	$Id: xdoc.C,v 1.92 2002/04/18 15:54:39 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -46,7 +46,6 @@ public:
 	MXdoc(Pool& pool);
 
 public: // Methoded
-	bool used_directly() { return true; }
 	void configure_admin(Request& r);
 };
 
@@ -723,11 +722,8 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 
 // constructor
 
-MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
-	set_name(*NEW String(pool(), XDOC_CLASS_NAME));
-
-	/// @test how to create empty type html?
-
+/// @test how to create empty type html?
+MXdoc::MXdoc(Pool& apool) : MXnode(apool, XDOC_CLASS_NAME, Xnode_class) {
 	/// DOM1
 
 	// Element createElement(in DOMString tagName) raises(DOMException);

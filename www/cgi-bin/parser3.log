@@ -77,3 +77,4 @@
 [Thu Apr 18 19:36:18 2002] (null): Y:/parser3project/parser3/www/htdocs/index.html(1): 't.p' not found along MAIN:CLASS_PATH [parser.runtime]
 [Thu Apr 18 19:50:14 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1228:14): parse error, expecting `']'' or `';'' [parser.compile]
 [Thu Apr 18 19:50:15 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(141): 'selectNumber' expression must be string (parameter #1) [parser.runtime]
+[Thu Apr 18 19:51:01 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1229:17): parse error, expecting `']'' or `';'' [parser.compile]
