@@ -1,5 +1,6 @@
 @main[]
-^formattest[]
+^tform[]
+#^formattest[]
 #^filelist[]
 #^connect[mysql://user:pass@host]{ }
 #^безнадёжна_попытка_поправить_непоправимое[]
@@ -47,6 +48,13 @@
 #^xml[]
 #^header[]
 OK
+
+@tform[]
+^if(def $form:file){y}{n}
+<form method=post enctype=multipart/form-data>
+<input type=file name=file>
+<input type=submit>
+</input>
 
 @formattest[]
 $size(15.124)

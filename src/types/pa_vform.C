@@ -5,7 +5,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 	
-	$Id: pa_vform.C,v 1.43 2001/10/30 14:20:54 paf Exp $
+	$Id: pa_vform.C,v 1.44 2001/10/30 15:50:00 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -114,7 +114,7 @@ void VForm::ParseFormInput(char *data, size_t length) {
 			that's fine, so check for that after accepting it */
 		char *value=unescape_chars(pool(), data+start, len);
 		/* OK, we have a new pair, add it to the list. */
-		AppendFormEntry(attr, value);
+		AppendFormEntry(attr, value, strlen(value));
 		if(!foundAmp)
 			break;
 	}
@@ -155,9 +155,6 @@ void VForm::ParseMimeInput(char *content_type,
 void VForm::AppendFormEntry(const char *aname, 
 							char *value_ptr, size_t value_size, 
 							const char *file_name) {
-	if(value_size==0)
-		value_size=strlen(value_ptr);
-
 	fix_line_breaks(value_ptr, value_size);
 
 	String& sname=*NEW String(pool(), aname);

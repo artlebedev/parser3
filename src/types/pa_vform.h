@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.27 2001/10/24 16:33:02 parser Exp $
+	$Id: pa_vform.h,v 1.28 2001/10/30 15:50:00 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -62,7 +62,7 @@ private:
 	void ParseMimeInput(char *content_type, char *data, size_t length);
 	void AppendFormEntry(
 		const char *name, 
-		char *value_ptr, size_t value_size=0,
+		char *value_ptr, size_t value_size,
 		const char *file_name=0);
 
 private:
