@@ -60,15 +60,27 @@
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
 
-/* some test var */
-#undef test_var
+/* Define if you have the nsl library (-lnsl).  */
+#undef HAVE_LIBNSL
 
-/* Windows32 target platform */
-#undef WIN32
+/* Define if you have the socket library (-lsocket).  */
+#undef HAVE_LIBSOCKET
+
+/* Define if you have the wsock32 library (-lwsock32).  */
+#undef HAVE_LIBWSOCK32
+
+/* Define if you have the xnet library (-lxnet).  */
+#undef HAVE_LIBXNET
+
+/* no string origin tracking */
+#undef NO_STRING_ORIGIN
 
 /* no 'first' module */
 #undef WITHOUT_FIRST
 
-/* no string origin tracking */
-#undef NO_STRING_ORIGIN
+/* location of sysadmin-controlled auto.p */
+#undef SYSCONFDIR
+
+/* Windows32 target platform */
+#undef WIN32
 
