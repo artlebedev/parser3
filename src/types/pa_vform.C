@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char* IDENT_VFORM_C="$Date: 2002/08/15 10:13:20 $";
+static const char* IDENT_VFORM_C="$Date: 2002/10/21 09:06:53 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -103,6 +103,17 @@ void VForm::ParseGetFormInput(const char *query_string, size_t length) {
 }
 
 void VForm::ParseFormInput(const char *data, size_t length) {
+	{ // cut out ?image_map_tail
+		for(size_t pos=0; pos<length; pos++) {
+			if(data[pos]=='?') {
+				// fake form field
+				AppendFormEntry("image-map", data+pos+1, length-pos-1);
+				// cut tail
+				length=pos;
+				break;
+			}
+		}
+	}
 	/* Scan for pairs, unescaping and storing them as they are found. */
 	size_t pos=0;
 	while(pos !=length) {
