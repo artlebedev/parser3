@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vrequest.C,v 1.2 2001/03/19 22:56:45 paf Exp $
+	$Id: pa_vrequest.C,v 1.3 2001/03/19 23:07:24 paf Exp $
 */
 
 #include "pa_vrequest.h"
@@ -13,10 +13,6 @@
 
 // request: CLASS,BASE,method,field
 Value *VRequest::get_element(const String& aname) {
-	// $CLASS,$BASE,$method
-	if(Value *result=VStateless_object::get_element(aname))
-		return result;
-	
 	// $query $uri 
 	const char *cstr=0;
 	if(aname=="query")

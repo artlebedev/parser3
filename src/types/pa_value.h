@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.29 2001/03/19 22:38:11 paf Exp $
+	$Id: pa_value.h,v 1.30 2001/03/19 23:07:24 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -100,7 +100,7 @@ public: // Value
 		- VEnv: field
 		- VForm: CLASS,BASE,method,field
 		- VString: $CLASS,$BASE,$method
-		- VRequest: CLASS,BASE,method,fields
+		- VRequest: fields
 		- VResponse: CLASS,BASE,method,fields
 		- VCookie: field
 		- VFile: CLASS,BASE,method,field

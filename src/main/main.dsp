@@ -387,10 +387,6 @@ SOURCE=..\classes\_int.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\classes\_request.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\classes\_response.h
 # End Source File
 # Begin Source File
@@ -420,10 +416,6 @@ SOURCE=..\classes\form.C
 # Begin Source File
 
 SOURCE=..\classes\int.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\request.C
 # End Source File
 # Begin Source File
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.11 2001/03/19 22:48:38 paf Exp $
+	$Id: pa_vform.h,v 1.12 2001/03/19 23:07:24 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -25,7 +25,7 @@ class Request;
 		^rem{pass somebody something with elements}
 
 		^rem{this time that would be elements of a form}
-		^somebody[^form:CLASS]
+		^somebody[$form:CLASS]
 
 		^rem{this time that would be elements of a table record}
 		$news[^table:sql[select * from news]]
