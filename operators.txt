@@ -641,7 +641,7 @@ math
         для удобного создания по значению из базы
         формат1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
         формат2: %H:%M[:%S]
-    !$date.year month day  hour minute second  weekday todo:yearday todo:isdst
+    !$date.year month day  hour minute second  weekday yearday(0...) daylightsaving
         read-only
     !^date.roll[year|month|day](+-смещение) сдвигает дату
     !^date.sql-string[] %Y-%m-%d %H:%M:%S
