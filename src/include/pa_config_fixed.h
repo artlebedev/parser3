@@ -10,7 +10,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-static const char * const IDENT_CONFIG_FIXED_H="$Date: 2004/02/11 15:33:13 $";
+static const char * const IDENT_CONFIG_FIXED_H="$Date: 2004/05/24 10:21:45 $";
 
 #define inline  __inline
 #define HAVE_ASSERT_H
@@ -36,6 +36,7 @@ static const char * const IDENT_CONFIG_FIXED_H="$Date: 2004/02/11 15:33:13 $";
 #define HAVE_TIMEZONE
 #define HAVE_DAYLIGHT
 #define USE_SMTP
+#define PA_LITTLE_ENDIAN
 #define PA_WITH_SJLJ_EXCEPTIONS
 
 //gmime
