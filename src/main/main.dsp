@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /O2 /I ".." /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /O2 /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /Zi /Od /I "..\libltdl" /I ".." /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /Zi /Od /I "..\libltdl" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
 # SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -111,6 +111,10 @@ SOURCE=..\include\pa_dir.h
 # Begin Source File
 
 SOURCE=..\include\pa_exception.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_exec.h
 # End Source File
 # Begin Source File
 
@@ -237,7 +241,7 @@ SOURCE=.\pa_exception.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\targets\pa_exec.C
+SOURCE=.\pa_exec.C
 # End Source File
 # Begin Source File
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.23 2001/04/09 14:01:54 paf Exp $
+	$Id: file.C,v 1.24 2001/04/09 16:04:45 paf Exp $
 */
 
 #include "pa_request.h"
@@ -13,6 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_table.h"
 #include "pa_vint.h"
+#include "pa_exec.h"
 
 // consts
 
@@ -187,7 +188,7 @@ static void _cgi(Request& r, const String& method_name, Array *params) {
 	const String in(pool, r.post_data, r.post_size);
 	String out(pool);
 	String err(pool);
-	int exit_code=SAPI::execute(script_name, &env, argv,
+	int exit_code=pa_exec(script_name, &env, argv,
 		in, out, err);
 
 	VFile& self=*static_cast<VFile *>(r.self);

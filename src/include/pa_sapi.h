@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sapi.h,v 1.7 2001/04/09 15:48:56 paf Exp $
+	$Id: pa_sapi.h,v 1.8 2001/04/09 16:04:47 paf Exp $
 */
 
 #ifndef PA_SAPI_H
@@ -32,12 +32,6 @@ struct SAPI {
 	static void send_header(Pool& pool);
 	/// output body bytes
 	static void send_body(Pool& pool, const void *buf, size_t size);
-	/// @return exit_status
-	static int execute(Pool& pool,
-		const String& file_spec, 
-		const Hash *env,
-		const Array *argv,
-		const String& in, String& out, String& err);
 };
 
 #endif

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.61 2001/04/09 15:49:01 paf Exp $
+	$Id: parser3.C,v 1.62 2001/04/09 16:04:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,7 +25,6 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_socks.h"
-#include "pa_exec.h"
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
@@ -124,13 +123,6 @@ void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 	stdout_write(buf, size);
 }
 
-int SAPI::execute(const String& file_spec, 
-	const Hash *env,
-	const Array *argv,
-	const String& in, String& out, String& err) {
-	return pa_exec(file_spec, env, argv, in,  out, err);
-}
-
 /**
 	main workhorse
 
@@ -175,10 +167,9 @@ int main(int argc, char *argv[]) {
 		// must be first in PTRY{}PCATCH
 #ifdef WIN32
 		SetUnhandledExceptionFilter(&TopLevelExceptionFilter);
-		//TODO: initSocks();
 #endif
 
-		// 
+		// init socks
 		init_socks(pool);
 
 		// init global variables

@@ -13,9 +13,6 @@
 #include "pa_version.h"
 #include "pool_storage.h"
 #include "pa_socks.h"
-#include "pa_exec.h"
-
-/// @todo init_socks
 
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
 
@@ -161,13 +158,6 @@ void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 		const_cast<void *>(buf), &num_bytes, HSE_IO_SYNC);
 }
 
-int SAPI::execute(const String& file_spec, 
-	const Hash *env,
-	const Array *argv,
-	const String& in, String& out, String& err) {
-	return pa_exec(file_spec, env, argv, in,  out, err);
-}
-
 // 
 
 static bool parser_init() {
@@ -178,6 +168,9 @@ static bool parser_init() {
 
 	static Pool pool(0); // global pool
 	PTRY {
+		// init socks
+		init_socks(pool);
+
 		// init global variables
 		pa_globals_init(pool);
 		

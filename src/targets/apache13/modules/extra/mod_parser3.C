@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.26 2001/04/09 15:48:59 paf Exp $
+	$Id: mod_parser3.C,v 1.27 2001/04/09 16:04:55 paf Exp $
 */
 
 #include "httpd.h"
@@ -155,29 +155,6 @@ void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 	ap_kill_timeout(r);
 }
 
-int SAPI::execute(Pool& pool,
-				  const String& file_spec, 
-				  const Hash *env,
-				  const Array *argv,
-				  const String& in, String& out, String& err) {
-	request_rec *r=static_cast<request_rec *>(pool.context());
-
-    /*
-     * we spawn out of r->main if it's there so that we can avoid
-     * waiting for free_proc_chain to cleanup in the middle of an
-     * SSI request -djg
-     */
-    if(!ap_bspawn_child(r->main ? r->main->pool : r->pool, cgi_child,
-		(void *) &cld, kill_after_timeout,
-		&script_out, &script_in, &script_err))
-		PTHROW(0, 0,
-			&file_spec,
-			"could not spawn child process");
-	
-	
-	return pa_exec(file_spec, env, argv, in,  out, err);
-}
-
 //@}
 
 /**
@@ -314,6 +291,9 @@ static void setup_module_cells() {
      */
 	static Pool pool(ap_make_sub_pool(NULL)); // global pool
 	PTRY {
+		// init socks
+		init_socks(pool);
+
 		// init global variables
 		pa_globals_init(pool);
 	} PCATCH(e) { // global problem 
