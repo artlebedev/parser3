@@ -1,3 +1,30 @@
+2004-04-02  paf
+	* src/targets/cgi/parser3.C 1.226:
+		new: CGI_PARSER_LOG env variable allows to specify where to put
+		parser log file
+
+	* src/main/pa_string.C 1.197:
+		bugfix: $s[009] ^s.int[] now 9, were error
+
+2004-04-01  paf
+	* src/include/pa_cache_managers.h 1.17:
+	* src/include/pa_globals.h 1.110:
+	* src/include/pa_socks.h 1.15:
+	* src/main/pa_cache_managers.C 1.15:
+	* src/main/pa_globals.C 1.174:
+	* src/main/pa_socks.C 1.22:
+	* src/targets/apache13/mod_parser3.c 1.11:
+	* src/targets/apache13/pa_httpd.h 1.6:
+	* src/targets/apache13core/mod_parser3_core.C 1.5:
+	* src/targets/cgi/parser3.C 1.225:
+	* src/targets/isapi/parser3isapi.C 1.89:
+	* src/targets/isapi/parser3isapi.def 1.2:
+		bugfix: sql connections now are disconnected
+
+	* src/classes/table.C 1.201:
+		bugfix: bugfix: table::load last line without tab and enter
+		were ignored
+
 2004-03-30  paf
 	* src/doc/ClassExample1.dox 1.5:
 	* src/doc/ClassExample2.dox 1.5:
@@ -11845,7 +11872,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2004/04/01 14:39:35 $
+		$Date: 2004/04/05 08:02:02 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -19005,7 +19032,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.36 2004/04/01 14:39:35 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.37 2004/04/05 08:02:02 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -19048,7 +19075,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.36 2004/04/01 14:39:35 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.37 2004/04/05 08:02:02 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -24411,7 +24438,7 @@
 	* src/main/pa_pool.C 1.2:
 	* src/main/pa_string.C 1.3:
 	* src/main/pa_string.C 1.4:
-		$Id: ChangeLog,v 1.36 2004/04/01 14:39:35 paf Exp $ check
+		$Id: ChangeLog,v 1.37 2004/04/05 08:02:02 paf Exp $ check
 
 	* src/include/pa_pool.h 1.5:
 	* src/include/pa_string.h 1.2:
