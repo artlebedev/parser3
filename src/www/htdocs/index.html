@@ -15,6 +15,7 @@ $a.status|$a.stderr<hr>
 
 @xslt[]
 $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
+<!DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd">
 
 <people>
 	<man id="1">
@@ -36,11 +37,7 @@ $people[^xdoc.select[*/man]]
 ^show-xnode1[^xdoc.select-single[*/man[2]/name];0;1]<hr>
 
 by id:
-^show-xnode1[^xdoc.getElementById[2];0;1]
-<hr>
-by tag:
-$elementByTag[^xdoc.getElementsByTagName[name]]
-^show1[$elementByTag]
+^show-xnode1[^xdoc.getElementById[1];0;1]
 <hr>
 
 @show1[array]

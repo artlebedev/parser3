@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.3 2001/09/27 07:26:27 parser Exp $
+	$Id: xdoc.C,v 1.4 2001/09/27 07:54:58 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -345,7 +345,7 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 		r.write_no_lang(result);
 	}
 }
-
+/*
 static void _getElementsByTagName(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
@@ -399,7 +399,7 @@ static void _getElementsByTagNameNS(Request& r, const String& method_name, Metho
 	// write out result
 	r.write_no_lang(result);
 }
-
+*/
 // constructor
 
 MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
@@ -429,13 +429,13 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 
 	// ^xdoc.getElementById[elementId]
 	add_native_method("getElementById", Method::CT_DYNAMIC, _getElementById, 1, 1);
-	
+/*	
 	// ^xdoc.getElementsByTagName[tagname]
 	add_native_method("getElementsByTagName", Method::CT_DYNAMIC, _getElementsByTagName, 1, 1);
 
 	// ^xdoc.getElementsByTagNameNS[namespaceURI;localName] = array of nodes
 	add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
-
+*/
 }
 // global variable
 
