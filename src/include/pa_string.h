@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.51 2001/03/24 19:30:06 paf Exp $
+	$Id: pa_string.h,v 1.52 2001/03/25 08:52:34 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -29,21 +29,29 @@
 #ifndef NO_STRING_ORIGIN
 #	define STRING_APPEND_PARAMS \
 		const char *src, size_t size,  \
-		bool tainted, \
+		String::Untaint_lang lang, \
 		const char *file, uint line
 /// appends clean piece to String  @see String::real_append
-#	define APPEND(src, size, file, line) real_append(src, size, false, file, line)
+#	define APPEND(src, size, file, line) \
+	real_append(src, size, String::UL_NO, file, line)
 /// appends tainted piece to String  @see String::real_append
-#	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true, file, line)
+#	define APPEND_TAINTED(src, size, file, line) \
+	real_append(src, size, String::UL_YES, file, line)
+#	define APPEND_SPECIFIC_TAINTED(src, size, lang, file, line) \
+	real_append(src, size, lang, file, line)
 #else
 #	define STRING_APPEND_PARAMS \
 		const char *src, \
 		size_t size, \
-		bool tainted
+		String::Untaint_lang lang
 /// appends clean piece to String  @see String::real_append
-#	define APPEND(src, size, file, line) real_append(src, size, false)
+#	define APPEND(src, size, file, line) \
+	real_append(src, size, String::UL_NO)
 /// appends tainted piece to String  @see String::real_append
-#	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true)
+#	define APPEND_TAINTED(src, size, file, line) \
+	real_append(src, size, String::UL_YES)
+#	define APPEND_SPECIFIC_TAINTED(src, size, lang, file, line) \
+	real_append(src, size, lang)
 #endif
 /// handy: appends const char* piece to String  @see String::real_append
 #define	APPEND_CONST(src) APPEND(src, 0, 0, 0)

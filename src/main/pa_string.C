@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.51 2001/03/24 19:30:07 paf Exp $
+	$Id: pa_string.C,v 1.52 2001/03/25 08:52:36 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -194,7 +194,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 
 	append_here->item.ptr=src;
 	fsize+=append_here->item.size=size;
-	append_here->item.lang=tainted?UL_YES:UL_NO;
+	append_here->item.lang=lang;
 #ifndef NO_STRING_ORIGIN
 	append_here->item.origin.file=file;
 	append_here->item.origin.line=line;
@@ -300,6 +300,10 @@ int String::cmp(const char* b_ptr, int& partial, size_t src_size) const {
 	bool a_break=false;
 	bool b_break=false;
 	while(true) {
+		a_break=a_row==a_end;
+		if(a_break || b_break)
+			break;
+
 		int size_diff=
 			(a_row->item.size-a_offset)-
 			(b_size-b_offset);
@@ -320,10 +324,6 @@ int String::cmp(const char* b_ptr, int& partial, size_t src_size) const {
 			b_offset+=a_row->item.size-a_offset;
 			a_row++; a_countdown--; a_offset=0;
 		}
-
-		a_break=a_row==a_end;
-		if(a_break || b_break)
-			break;
 
 		if(!a_countdown) {
 			a_chunk=a_row->link;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.113 2001/03/24 16:30:42 paf Exp $
+	$Id: compile.y,v 1.114 2001/03/25 08:52:35 paf Exp $
 */
 
 /**
@@ -48,8 +48,8 @@ int yylex(YYSTYPE *lvalp, void *pc);
 
 
 // local convinient inplace typecast & var
-#define PC  ((parse_control *)pc)
-#define POOL  *PC->pool
+#define PC  (*(parse_control *)pc)
+#define POOL  (*PC.pool)
 #undef NEW
 #define NEW new(POOL)
 #ifndef DOXYGEN
@@ -62,6 +62,7 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %token BOGUS
 
 %token BAD_STRING_COMPARISON_OPERATOR
+%token BAD_HEX_LITERAL
 
 %token LAND "&&"
 %token LOR "||"
@@ -113,7 +114,7 @@ all:
 		0, 0, /*min, max numbered_params_count*/
 		0/*param_names*/, 0/*local_names*/, 
 		$1/*parser_code*/, 0/*native_code*/);
-	PC->cclass->add_method(*main_method_name, method);
+	PC.cclass->add_method(*main_method_name, method);
 }
 |	methods;
 
@@ -127,67 +128,67 @@ control_method: '@' STRING '\n'
 	const String& command=*SLA2S($2);
 	YYSTYPE strings_code=$4;
 	if(strings_code->size()<1*2) {
-		strcpy(PC->error, "@");
-		strcat(PC->error, command.cstr());
-		strcat(PC->error, " is empty");
+		strcpy(PC.error, "@");
+		strcat(PC.error, command.cstr());
+		strcat(PC.error, " is empty");
 		YYERROR;
 	}
 	if(command==CLASS_NAME) {
-		if(PC->cclass!=&PC->request->ROOT) { // already changed from default?
-			strcpy(PC->error, "class already have a name '");
-			strncat(PC->error, PC->cclass->name().cstr(), 100);
-			strcat(PC->error, "'");
+		if(PC.cclass!=&PC.request->ROOT) { // already changed from default?
+			strcpy(PC.error, "class already have a name '");
+			strncat(PC.error, PC.cclass->name().cstr(), 100);
+			strcat(PC.error, "'");
 			YYERROR;
 		}
 		if(strings_code->size()==1*2) {
 			// new class' name
 			const String *name=SLA2S(strings_code);
 			// creating the class
-			PC->cclass=NEW VClass(POOL);
-			PC->cclass->set_name(*name);
+			PC.cclass=NEW VClass(POOL);
+			PC.cclass->set_name(*name);
 			// defaulting base. may change with @BASE
-			PC->cclass->set_base(PC->request->ROOT);
+			PC.cclass->set_base(PC.request->ROOT);
 			// append to request's classes
-			PC->request->classes().put(*name, PC->cclass);
+			PC.request->classes().put(*name, PC.cclass);
 		} else {
-			strcpy(PC->error, "@"CLASS_NAME" must contain sole name");
+			strcpy(PC.error, "@"CLASS_NAME" must contain sole name");
 			YYERROR;
 		}
 	} else {
 		if(command==USE_CONTROL_METHOD_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) 
-				PC->request->use_file(
-					PC->request->absolute(*SLA2S(strings_code, i)));
+				PC.request->use_file(
+					PC.request->absolute(*SLA2S(strings_code, i)));
 		} else if(command==BASE_NAME) {
-			if(PC->cclass->base()!=&PC->request->ROOT) { // already changed from default?
-				strcpy(PC->error, "class already have a base '");
-				strncat(PC->error, PC->cclass->base()->name().cstr(), 100);
-				strcat(PC->error, "'");
+			if(PC.cclass->base()!=&PC.request->ROOT) { // already changed from default?
+				strcpy(PC.error, "class already have a base '");
+				strncat(PC.error, PC.cclass->base()->name().cstr(), 100);
+				strcat(PC.error, "'");
 				YYERROR;
 			}
 			if(strings_code->size()==1*2) {
 				const String& base_name=*SLA2S(strings_code);
 				VClass *base=static_cast<VClass *>(
-					PC->request->classes().get(base_name));
+					PC.request->classes().get(base_name));
 				if(!base) {
-					strcpy(PC->error, base_name.cstr());
-					strcat(PC->error, ": undefined class in @"BASE_NAME);
+					strcpy(PC.error, base_name.cstr());
+					strcat(PC.error, ": undefined class in @"BASE_NAME);
 					YYERROR;
 				}
 				// @CLASS == @BASE sanity check
-				if(PC->cclass==base) {
-					strcpy(PC->error, "@"CLASS_NAME" equals @"BASE_NAME);
+				if(PC.cclass==base) {
+					strcpy(PC.error, "@"CLASS_NAME" equals @"BASE_NAME);
 					YYERROR;
 				}
-				PC->cclass->set_base(*base);
+				PC.cclass->set_base(*base);
 			} else {
-				strcpy(PC->error, "@"BASE_NAME" must contain sole name");
+				strcpy(PC.error, "@"BASE_NAME" must contain sole name");
 				YYERROR;
 			}
 		} else {
-			strcpy(PC->error, "'");
-			strncat(PC->error, command.cstr(), MAX_STRING/2);
-			strcat(PC->error, "' invalid special name. valid names are "
+			strcpy(PC.error, "'");
+			strncat(PC.error, command.cstr(), MAX_STRING/2);
+			strcat(PC.error, "' invalid special name. valid names are "
 				"'"CLASS_NAME"', '"USE_CONTROL_METHOD_NAME"' and '"BASE_NAME"'");
 			YYERROR;
 		}
@@ -222,7 +223,7 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 		0, 0/*min,max numbered_params_count*/, 
 		params_names, locals_names, 
 		$7, 0);
-	PC->cclass->add_method(*name, method);
+	PC.cclass->add_method(*name, method);
 };
 
 maybe_bracketed_strings: empty | bracketed_maybe_strings;
@@ -544,60 +545,89 @@ empty: /* empty */ { $$=N(POOL) };
 */
 
 static int yylex(YYSTYPE *lvalp, void *pc) {
-	#define lexical_brackets_nestage PC->brackets_nestages[PC->sp]
+	#define lexical_brackets_nestage PC.brackets_nestages[PC.sp]
 	#define RC {result=c; goto break2; }
 
     register int c;
     int result;
 	
-	if(PC->pending_state) {
-		result=PC->pending_state;
-		PC->pending_state=0;
+	if(PC.pending_state) {
+		result=PC.pending_state;
+		PC.pending_state=0;
 		return result;
 	}
 	
-	const char *begin=PC->source;
+	const char *begin=PC.source;
 	const char *end;
-	int begin_line=PC->line;
+	int begin_line=PC.line;
 	int skip_analized=0;
 	while(true) {
-		c=*(end=(PC->source++));
+		c=*(end=(PC.source++));
 
 		if(c=='\n') {
-			PC->line++;
-			PC->col=0;
+			PC.line++;
+			PC.col=0;
 		} else
-			PC->col++;
+			PC.col++;
 
-		// escaping: ^^ ^$ ^; ^) ^} ^( ^{ ^"
 		if(c=='^') 
-			switch(*PC->source) {
+			switch(*PC.source) {
+			// escaping: ^^ ^$ ^; ^) ^} ^( ^{ ^"
 			case '^': case '$': case ';':
 			case '[': case ']':
 			case '{': case '}':
-			case '"':
+			case '"': 
 				if(end!=begin) {
 					// append piece till ^
-					PC->string->APPEND(begin, end-begin, PC->file, begin_line);
+					PC.string->APPEND(begin, end-begin, PC.file, begin_line);
 				}
 				// reset piece 'begin' position & line
-				begin=PC->source; // ^
-				begin_line=PC->line;
+				begin=PC.source; // ^
+				begin_line=PC.line;
 				// skip over ^ and _
-				PC->source++;  PC->col++;
+				PC.source++;  PC.col++;
 				// skip analysis = forced literal
 				continue;
+
+			// converting ^#HH into char(hex(HH))
+			case '#':
+				if(end!=begin) {
+					// append piece till ^
+					PC.string->APPEND(begin, end-begin, PC.file, begin_line);
+				}
+				// #HH ?
+				if(PC.source[0]=='#' && PC.source[1] && PC.source[2]) {
+					char *hex=(char *)POOL.malloc(1);
+					hex[0]=
+						hex_value[(unsigned char)PC.source[1]]*0x10+
+						hex_value[(unsigned char)PC.source[2]];
+					if(hex[0]==0) {
+						result=BAD_HEX_LITERAL;
+						goto break2; // wrong hex value[no ^#00 chars allowed]: bail out
+					}
+					// append char(hex(HH))
+					PC.string->APPEND(hex, 1, PC.file, begin_line);
+					// skip over ^#HH
+					PC.source+=3;
+					PC.col+=3;
+					// reset piece 'begin' position & line
+					begin=PC.source; // ^
+					begin_line=PC.line;
+					continue;
+				}
+				break;
 			}
 		// #comment  start skipping
-		if(c=='#' && PC->col==1) {
+		if(c=='#' && PC.col==1) {
 			if(end!=begin) {
 				// append piece till #
-				PC->string->APPEND(begin, end-begin, PC->file, begin_line);
+				PC.string->APPEND_SPECIFIC_TAINTED(begin, end-begin, 
+					String::UL_TABLE, PC.file, begin_line);
 			}
 			// fall into COMMENT lexical state [wait for \n]
 			push_LS(PC, LS_COMMENT);
 		}
-		switch(PC->ls) {
+		switch(PC.ls) {
 
 		// USER'S = NOT OURS
 		case LS_USER:
@@ -609,7 +639,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				push_LS(PC, LS_METHOD_NAME);
 				RC;
 			case '@':
-				if(PC->col==0+1) {
+				if(PC.col==0+1) {
 					push_LS(PC, LS_DEF_NAME);
 					RC;
 				}
@@ -621,8 +651,8 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		case LS_COMMENT:
 			if(c=='\n') {
 				// skip comment
-				begin=PC->source;
-				begin_line=PC->line;
+				begin=PC.source;
+				begin_line=PC.line;
 
 				pop_LS(PC);
 				continue;
@@ -648,10 +678,10 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		case LS_DEF_NAME:
 			switch(c) {
 			case '[':
-				PC->ls=LS_DEF_PARAMS;
+				PC.ls=LS_DEF_PARAMS;
 				RC;
 			case '\n':
-				PC->ls=LS_DEF_SPECIAL_BODY;
+				PC.ls=LS_DEF_SPECIAL_BODY;
 				RC;
 			}
 			break;
@@ -661,7 +691,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case ';':
 				RC;
 			case ']':
-				PC->ls=*PC->source=='['?LS_DEF_LOCALS:LS_DEF_COMMENT;
+				PC.ls=*PC.source=='['?LS_DEF_LOCALS:LS_DEF_COMMENT;
 				RC;
 			case '\n': // wrong. bailing out
 				pop_LS(PC);
@@ -675,7 +705,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case ';':
 				RC;
 			case ']':
-				PC->ls=LS_DEF_COMMENT;
+				PC.ls=LS_DEF_COMMENT;
 				RC;
 			case '\n': // wrong. bailing out
 				pop_LS(PC);
@@ -692,7 +722,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 
 		case LS_DEF_SPECIAL_BODY:
 			if(c=='\n') {
-				switch(*PC->source) {
+				switch(*PC.source) {
 				case '@': case 0: // end of special_code
 					pop_LS(PC);
 					break;
@@ -707,9 +737,9 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			switch(c) {
 			case ')':
 				if(--lexical_brackets_nestage==0)
-					if(PC->ls==LS_METHOD_ROUND) // method round param ended
-						PC->ls=LS_METHOD_AFTER; // look for method end
-					else // PC->ls==LS_VAR_ROUND // variable constructor ended
+					if(PC.ls==LS_METHOD_ROUND) // method round param ended
+						PC.ls=LS_METHOD_AFTER; // look for method end
+					else // PC.ls==LS_VAR_ROUND // variable constructor ended
 						pop_LS(PC); // return to normal life
 				RC;
 			case '$':
@@ -722,7 +752,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				lexical_brackets_nestage++;
 				RC;
 			case '-':
-				if(*PC->source=='f') { // -f
+				if(*PC.source=='f') { // -f
 					skip_analized=1;
 					result=FEXISTS;
 				} else
@@ -733,14 +763,14 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case ';':
 				RC;
 			case '&': case '|':  case '#':
-				if(*PC->source==c) { // && ||
+				if(*PC.source==c) { // && ||
 					result=c=='#'?LXOR:c=='&'?LAND:LOR;
 					skip_analized=1;
 				} else
 					result=c;
 				goto break2;
 			case '<': case '>': case '=': case '!': 
-				if(*PC->source=='=') { // <= >= == !=
+				if(*PC.source=='=') { // <= >= == !=
 					skip_analized=1;
 					switch(c) {
 					case '<': result=NLE; break;
@@ -756,7 +786,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				RC;
 			case 'l': case 'g': case 'e': case 'n':
 				if(end==begin) // right after whitespace
-					switch(*PC->source) {
+					switch(*PC.source) {
 //					case '?': // ok [and bad cases, yacc would bark at them]
 					case 't': // lt gt [et nt]
 						result=c=='l'?SLT:c=='g'?SGT:BAD_STRING_COMPARISON_OPERATOR;
@@ -774,7 +804,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				break;
 			case 'i':
 				if(end==begin) // right after whitespace
-					switch(PC->source[0]) {
+					switch(PC.source[0]) {
 					case 'n': 
 						{ // in
 							skip_analized=1;
@@ -791,7 +821,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				break;
 			case 'd':
 				if(end==begin) // right after whitespace
-					if(PC->source[0]=='e' && PC->source[1]=='f') { // def
+					if(PC.source[0]=='e' && PC.source[1]=='f') { // def
 						skip_analized=2;
 						result=DEF;
 						goto break2;
@@ -805,8 +835,8 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				// that's a leading|traling space or after-operator-space
 				// ignoring it
 				// reset piece 'begin' position & line
-				begin=PC->source; // after whitespace char
-				begin_line=PC->line;
+				begin=PC.source; // after whitespace char
+				begin_line=PC.line;
 				continue;
 			}
 			break;
@@ -814,12 +844,12 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		// VARIABLE GET/PUT/WITH
 		case LS_VAR_NAME_SIMPLE:
 		case LS_EXPRESSION_VAR_NAME:
-			if(PC->ls==LS_EXPRESSION_VAR_NAME) {
+			if(PC.ls==LS_EXPRESSION_VAR_NAME) {
 				// name in expr ends also before binary operators 
 				switch(c) {
 				case '-': 
 					pop_LS(PC);
-					PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
+					PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
 					result=EON;
 					goto break2;
 				}
@@ -836,24 +866,24 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			// common delimiters
 			case '\'': case ',':
 				pop_LS(PC);
-				PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
+				PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
 				result=EON;
 				goto break2;
 			case '[':
-				PC->ls=LS_VAR_SQUARE;
+				PC.ls=LS_VAR_SQUARE;
 				lexical_brackets_nestage=1;
 				RC;
 			case '{':
 				if(begin==end) { // ${name}, no need of EON, switching LS
-					PC->ls=LS_VAR_NAME_CURLY; 
+					PC.ls=LS_VAR_NAME_CURLY; 
 				} else {
-					PC->ls=LS_VAR_CURLY;
+					PC.ls=LS_VAR_CURLY;
 					lexical_brackets_nestage=1;
 				}
 
 				RC;
 			case '(':
-				PC->ls=LS_VAR_ROUND;
+				PC.ls=LS_VAR_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
 			case '.': // name part delim
@@ -921,15 +951,15 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		case LS_METHOD_NAME:
 			switch(c) {
 			case '[':
-				PC->ls=LS_METHOD_SQUARE;
+				PC.ls=LS_METHOD_SQUARE;
 				lexical_brackets_nestage=1;
 				RC;
 			case '{':
-				PC->ls=LS_METHOD_CURLY;
+				PC.ls=LS_METHOD_CURLY;
 				lexical_brackets_nestage=1;
 				RC;
 			case '(':
-				PC->ls=LS_METHOD_ROUND;
+				PC.ls=LS_METHOD_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
 			case '.': // name part delim 
@@ -951,7 +981,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				RC;
 			case ']':
 				if(--lexical_brackets_nestage==0) {
-					PC->ls=LS_METHOD_AFTER;
+					PC.ls=LS_METHOD_AFTER;
 					RC;
 				}
 				break;
@@ -973,7 +1003,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				RC;
 			case '}':
 				if(--lexical_brackets_nestage==0) {
-					PC->ls=LS_METHOD_AFTER;
+					PC.ls=LS_METHOD_AFTER;
 					RC;
 				}
 				break;
@@ -985,22 +1015,22 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 
 		case LS_METHOD_AFTER:
 			if(c=='[') {/* ][ }[ )[ */
-				PC->ls=LS_METHOD_SQUARE;
+				PC.ls=LS_METHOD_SQUARE;
 				lexical_brackets_nestage=1;
 				RC;
 			}					   
 			if(c=='{') {/* ]{ }{ ){ */
-				PC->ls=LS_METHOD_CURLY;
+				PC.ls=LS_METHOD_CURLY;
 				lexical_brackets_nestage=1;
 				RC;
 			}					   
 			if(c=='(') {/* ]( }( )( */
-				PC->ls=LS_METHOD_ROUND;
+				PC.ls=LS_METHOD_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
 			}					   
 			pop_LS(PC);
-			PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
+			PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
 			result=EON;
 			goto break2;
 		}
@@ -1018,25 +1048,25 @@ break2:
 		}
 		if(end!=begin) { // last piece still alive?
 			// append it
-			PC->string->APPEND(begin, end-begin, PC->file, begin_line/*, start_col*/);
+			PC.string->APPEND(begin, end-begin, PC.file, begin_line/*, start_col*/);
 		}
 	}
-	if(PC->string->size()) { // something accumulated?
+	if(PC.string->size()) { // something accumulated?
 		// create STRING value: array of OP_VALUE+vstring
-		*lvalp=VL(NEW VString(*PC->string));
+		*lvalp=VL(NEW VString(*PC.string));
 		// new pieces storage
-		PC->string=NEW String(POOL);
+		PC.string=NEW String(POOL);
 		// make current result be pending for next call, return STRING for now
-		PC->pending_state=result;  result=STRING;
+		PC.pending_state=result;  result=STRING;
 	}
 	if(skip_analized) {
-		PC->source+=skip_analized;  PC->col+=skip_analized;
+		PC.source+=skip_analized;  PC.col+=skip_analized;
 	}
 	return result;
 }
 
 static int real_yyerror(parse_control *pc, char *s) {  // Called by yyparse on error
-	   strncpy(pc->error, s, MAX_STRING);
+	   strncpy(PC.error, s, MAX_STRING);
 	   return 1;
 }
 

@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcookie.h,v 1.6 2001/03/19 22:11:11 paf Exp $
+	$Id: pa_vcookie.h,v 1.7 2001/03/25 08:52:38 paf Exp $
 */
 
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
 
+#include "pa_hash.h"
 #include "pa_common.h"
 #include "pa_value.h"
 

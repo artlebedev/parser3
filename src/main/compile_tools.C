@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.C,v 1.30 2001/03/19 17:42:15 paf Exp $
+	$Id: compile_tools.C,v 1.31 2001/03/25 08:52:36 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -71,15 +71,15 @@ void change_string_literal_to_write_string_literal(Array *literal_string_array) 
 	literal_string_array->put(0, op.cast);
 }
 
-void push_LS(struct parse_control *pc, lexical_state new_state) {
-	if(pc->sp<MAX_LEXICAL_STATES) {
-		pc->stack[pc->sp++]=pc->ls;  pc->ls=new_state;
+void push_LS(parse_control& pc, lexical_state new_state) { 
+	if(pc.sp<MAX_LEXICAL_STATES) {
+		pc.stack[pc.sp++]=pc.ls;  pc.ls=new_state;
 	} else
-		pc->pool->THROW(0, 0, 0, "push_LS: stack overflow");
+		pc.pool->THROW(0, 0, 0, "push_LS: stack overflow");
 }
-void pop_LS(struct parse_control *pc) {
-	if(--pc->sp>=0)
-		pc->ls=pc->stack[pc->sp];
+void pop_LS(parse_control& pc) {
+	if(--pc.sp>=0)
+		pc.ls=pc.stack[pc.sp];
 	else
-		pc->pool->THROW(0, 0, 0, "push_LS: stack underflow");
+		pc.pool->THROW(0, 0, 0, "push_LS: stack underflow");
 }

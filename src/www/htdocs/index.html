@@ -1,12 +1,20 @@
 @auto[]
-$html-typo[^table:set{user	html
+$html-typo[^table:set{user	html	comment
+\n\n	<p>	эти есть в таблице по умолчанию
+\n	<br>	но т.к. заменяем, надо повторить
 _	&nbsp^;
 &lt^;&lt^;	&laquo^;
 &gt^;&gt^;	&raquo^;
+^#AB	&laquo^;	windows коды ёлочек
+^#BB	&raquo^;	windows коды ёлочек
 }]
 
 @main[]
-^taint[html-typo;<<]<HR>
+^taint[html-typo;не знаю
+я ничего
+
+<<слово длинное>>
+]<HR>
 $t[^table:load[/test.cfg]]
 ^process[@b[]
 f
@@ -38,7 +46,7 @@ $response:location[http://parser3/123]
 
 <form method=post>
 <table border=1 width=250><tr><td>$form:name</td></tr></table>
-<textarea name=name rows=5 cols=40>^untaint[html]{^default[$form:name;не знаю]}</textarea><BR>
+<textarea name=name rows=5 cols=40>^untaint[html]{^default[$form:name;не знаі]}</textarea><BR>
 <input type=submit>
 </form>
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.78 2001/03/24 19:12:20 paf Exp $
+	$Id: pa_request.C,v 1.79 2001/03/25 08:52:36 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -176,9 +176,11 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		default_content_type=defaults?
 			defaults->get_element(*content_type_name)
 			:NEW VString(*NEW String(pool(), "text/html"));
+		Table *typo_table=0;
 		if(Value *element=main_class->get_element(*html_typo_name))
 			if(VTable *vtable=element->get_vtable())
-				pool().set_tag(&vtable->table());
+				typo_table=&vtable->table();
+		pool().set_tag(typo_table?typo_table:default_typo_table);
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);
@@ -186,6 +188,9 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			THROW(0,0,
 			0, 
 			"'"MAIN_METHOD_NAME"' method not found");
+
+		// post-process
+		// todo
 
 		// extract response body
 		Value *body_value=static_cast<Value *>(

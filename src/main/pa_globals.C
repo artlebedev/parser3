@@ -5,10 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.31 2001/03/24 19:12:20 paf Exp $
+	$Id: pa_globals.C,v 1.32 2001/03/25 08:52:36 paf Exp $
 */
 
 #include "pa_globals.h"
+#include "pa_string.h"
+#include "pa_hash.h"
+#include "pa_table.h"
 #include "_string.h"
 #include "_double.h"
 #include "_int.h"
@@ -53,6 +56,8 @@ String *defaults_name;
 
 Hash *untaint_lang_name2enum;
 
+Table *default_typo_table;
+
 short hex_value[0x100];
 
 static void setup_hex_value() {
@@ -85,47 +90,50 @@ static void setup_hex_value() {
 }
 
 void pa_globals_init(Pool& pool) {
+	#undef NEW
+	#define NEW new(pool)
+
 	// hex value
 	setup_hex_value();
 
 	// names
-	html_typo_name=new(pool) String(pool, HTML_TYPO_NAME);
-	content_type_name=new(pool) String(pool, CONTENT_TYPE_NAME);
-	body_name=new(pool) String(pool, BODY_NAME);
-	value_name=new(pool) String(pool, VALUE_NAME);
-	expires_name=new(pool) String(pool, EXPIRES_NAME);
-	path_name=new(pool) String(pool, PATH_NAME);
-	name_name=new(pool) String(pool, NAME_NAME);
-	size_name=new(pool) String(pool, SIZE_NAME);
-	text_name=new(pool) String(pool, TEXT_NAME);
+	html_typo_name=NEW String(pool, HTML_TYPO_NAME);
+	content_type_name=NEW String(pool, CONTENT_TYPE_NAME);
+	body_name=NEW String(pool, BODY_NAME);
+	value_name=NEW String(pool, VALUE_NAME);
+	expires_name=NEW String(pool, EXPIRES_NAME);
+	path_name=NEW String(pool, PATH_NAME);
+	name_name=NEW String(pool, NAME_NAME);
+	size_name=NEW String(pool, SIZE_NAME);
+	text_name=NEW String(pool, TEXT_NAME);
 
-	exception_method_name=new(pool) String(pool, EXCEPTION_METHOD_NAME);
+	exception_method_name=NEW String(pool, EXCEPTION_METHOD_NAME);
 
-	unnamed_name=new(pool) String(pool, UNNAMED_NAME);
-	empty_string=new(pool) String(pool); 
+	unnamed_name=NEW String(pool, UNNAMED_NAME);
+	empty_string=NEW String(pool); 
 
-	auto_method_name=new(pool) String(pool, AUTO_METHOD_NAME);
-	main_method_name=new(pool) String(pool, MAIN_METHOD_NAME);
+	auto_method_name=NEW String(pool, AUTO_METHOD_NAME);
+	main_method_name=NEW String(pool, MAIN_METHOD_NAME);
 
-	root_class_name=new(pool) String(pool, ROOT_CLASS_NAME);
-	main_class_name=new(pool) String(pool, MAIN_CLASS_NAME);
-	table_class_name=new(pool) String(pool, TABLE_CLASS_NAME);
-	env_class_name=new(pool) String(pool, ENV_CLASS_NAME);	
-	form_class_name=new(pool) String(pool, FORM_CLASS_NAME);	
-	request_class_name=new(pool) String(pool, REQUEST_CLASS_NAME);	
-	response_class_name=new(pool) String(pool, RESPONSE_CLASS_NAME);
-	cookie_class_name=new(pool) String(pool, COOKIE_CLASS_NAME);
+	root_class_name=NEW String(pool, ROOT_CLASS_NAME);
+	main_class_name=NEW String(pool, MAIN_CLASS_NAME);
+	table_class_name=NEW String(pool, TABLE_CLASS_NAME);
+	env_class_name=NEW String(pool, ENV_CLASS_NAME);	
+	form_class_name=NEW String(pool, FORM_CLASS_NAME);	
+	request_class_name=NEW String(pool, REQUEST_CLASS_NAME);	
+	response_class_name=NEW String(pool, RESPONSE_CLASS_NAME);
+	cookie_class_name=NEW String(pool, COOKIE_CLASS_NAME);
 
-	result_var_name=new(pool) String(pool, RESULT_VAR_NAME);
+	result_var_name=NEW String(pool, RESULT_VAR_NAME);
 
 
-	limits_name=new(pool) String(pool, LIMITS_NAME);
-	post_max_size_name=new(pool) String(pool, POST_MAX_SIZE_NAME);
+	limits_name=NEW String(pool, LIMITS_NAME);
+	post_max_size_name=NEW String(pool, POST_MAX_SIZE_NAME);
 
-	defaults_name=new(pool) String(pool, DEFAULTS_NAME);
+	defaults_name=NEW String(pool, DEFAULTS_NAME);
 
 	// hashes
-	untaint_lang_name2enum=new(pool) Hash(pool);
+	untaint_lang_name2enum=NEW Hash(pool);
 	String as_is(pool, "as-is");  
 	untaint_lang_name2enum->put(as_is, (int)String::UL_AS_IS);
 	String file_name(pool, "file-name");  
@@ -145,14 +153,29 @@ void pa_globals_init(Pool& pool) {
 	String html_typo(pool, "html-typo");
 	untaint_lang_name2enum->put(html_typo, (int)String::UL_HTML_TYPO);
 
+	// tables
+	default_typo_table=NEW Table(pool, 0);
+	{
+		// \n\n -> <p>
+		Array *row1=NEW Array(pool);
+		*row1+=NEW String(pool, "\\n\\n");	
+		*row1+=NEW String(pool, "<p>");
+		*default_typo_table+=row1;
+		// \n -> <br>
+		Array *row2=NEW Array(pool);
+		*row2+=NEW String(pool, "\\n");	
+		*row2+=NEW String(pool, "<br>");
+		*default_typo_table+=row2;
+	}
+
 	// stateless classes
-	initialize_string_class(pool, *(string_class=new(pool) VStateless_class(pool)));
-	initialize_double_class(pool, *(double_class=new(pool) VStateless_class(pool)));
-	initialize_int_class(pool, *(int_class=new(pool) VStateless_class(pool)));
-	initialize_table_class(pool, *(table_class=new(pool) VStateless_class(pool)));
-	initialize_file_class(pool, *(file_class=new(pool) VStateless_class(pool)));
-	initialize_response_class(pool, *(response_class=new(pool) VStateless_class(pool)));
+	initialize_string_class(pool, *(string_class=NEW VStateless_class(pool)));
+	initialize_double_class(pool, *(double_class=NEW VStateless_class(pool)));
+	initialize_int_class(pool, *(int_class=NEW VStateless_class(pool)));
+	initialize_table_class(pool, *(table_class=NEW VStateless_class(pool)));
+	initialize_file_class(pool, *(file_class=NEW VStateless_class(pool)));
+	initialize_response_class(pool, *(response_class=NEW VStateless_class(pool)));
 
 	// stateless base classes
-	initialize_form_base_class(pool, *(form_base_class=new(pool) VStateless_class(pool)));  form_base_class->set_name(*form_class_name);
+	initialize_form_base_class(pool, *(form_base_class=NEW VStateless_class(pool)));  form_base_class->set_name(*form_class_name);
 }

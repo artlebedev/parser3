@@ -5,14 +5,17 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.26 2001/03/24 19:12:18 paf Exp $
+	$Id: pa_globals.h,v 1.27 2001/03/25 08:52:34 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-#include "pa_string.h"
-#include "pa_hash.h"
+#include "pa_pool.h"
+
+class String;
+class Hash;
+class Table;
 
 //@{
 /// constant string. class name, predefined method & co
@@ -97,5 +100,8 @@ extern String *result_var_name;
 
 /// global hash
 extern Hash *untaint_lang_name2enum;
+
+/// global table
+extern Table *default_typo_table;
 
 #endif

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.14 2001/03/24 19:30:07 paf Exp $
+	$Id: untaint.C,v 1.15 2001/03/25 08:52:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -122,6 +122,7 @@ char *String::store_to(char *dest) const {
 				);
 				break;
 			case UL_TABLE: 
+				// tainted, untaint language: table
 				escape(
 					to_char('\t', ' ');
 					to_char('\n', ' ');
@@ -139,7 +140,6 @@ char *String::store_to(char *dest) const {
 					to_string('"', "\\\"", 2);
 					to_string('\'', "\\'", 2);
 					to_string('\n', "\\n", 2);
-					to_string('\r', "\\r", 2);
 					to_string('\\', "\\\\", 2);
 					to_string('\xFF', "\\\xFF", 2);
 					_default;
@@ -147,7 +147,7 @@ char *String::store_to(char *dest) const {
 				break;
 			case UL_HTML:
 				escape(
-					to_string('&', "&amp;", 5); // BEFORE consequent relpaces yelding '&'
+					to_string('&', "&amp;", 5);
 					to_string('>', "&gt;", 4);
 					to_string('<', "&lt;",4);
 					to_string('"', "&quot;",6);
@@ -163,11 +163,14 @@ char *String::store_to(char *dest) const {
 				{ // local dest
 					char *dest=html;
 					escape(
-						to_string('&', "&amp;", 5); // BEFORE consequent relpaces yelding '&'
+						to_string('&', "&amp;", 5);
 						to_string('>', "&gt;", 4);
 						to_string('<', "&lt;",4);
 						to_string('"', "&quot;",6);
 						to_char('\t', ' ');
+						to_string('\r', "", 0); // todo: check  mac & linux browsers' textarea
+						to_string('\n', "\\n", 2);  // convinient name for typo match
+						//TODO: XSLT to_string('\'', "&apos;", 6)
 						_default;
 					);
 					*dest=0;

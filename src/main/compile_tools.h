@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.34 2001/03/24 16:29:09 paf Exp $
+	$Id: compile_tools.h,v 1.35 2001/03/25 08:52:36 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -102,7 +102,7 @@ const String *SLA2S(Array *literal_string_array, int offset=0);
 void change_string_literal_to_double_literal(Array *literal_string_array);
 void change_string_literal_to_write_string_literal(Array *literal_string_array);
 
-void push_LS(struct parse_control *pc, lexical_state new_state);
-void pop_LS(struct parse_control *pc);
+void push_LS(parse_control& pc, lexical_state new_state);
+void pop_LS(parse_control& pc);
 
 #endif

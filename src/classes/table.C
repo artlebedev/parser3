@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.25 2001/03/24 15:57:57 paf Exp $
+	$Id: table.C,v 1.26 2001/03/25 08:52:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -69,7 +69,7 @@ static void set_or_load(
 	}
 
 	// parse cells
-	Table& table=*new(pool) Table(pool, method_name, columns);
+	Table& table=*new(pool) Table(pool, columns);
 	char *row_chars;
 	while(row_chars=getrow(&data)) {
 		Array *row=new(pool) Array(pool);
