@@ -273,7 +273,7 @@ APU_DECLARE(apr_status_t) apr_sdbm_delete(apr_sdbm_t *db,
     if ((status = getpage(db, exhash(key))) == APR_SUCCESS) {
         if (!delpair(db->pagbuf, key))
             /* ### should we define some APRUTIL codes? */
-            status = APR_EGENERAL;
+			status = APR_SUCCESS; /* PAF: were APR_EGENERAL, contradicting comment in .h file :( */
         else
             status = write_page(db, db->pagbuf, db->pagbno);
     }
