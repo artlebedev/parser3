@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2003/11/25 15:04:21 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2004/01/22 08:28:55 $";
 
 
 #include "pa_string.h"
@@ -72,8 +72,8 @@ extern "C" { // author forgot to do that
 		CORD_ec_append(info->result, hex[((unsigned char)c)%0x10]); \
 	} else \
 		CORD_ec_append(info->result, otherwise);
-#define to_char(c)  CORD_ec_append(info->result, c)
-#define to_string(s)  CORD_ec_append_cord(info->result, s)
+#define to_char(c)  { CORD_ec_append(info->result, c); whitespace=false; }
+#define to_string(s)  { CORD_ec_append_cord(info->result, s); whitespace=false; }
 
 inline bool need_file_encode(unsigned char c){
 	// russian letters and space ENABLED
