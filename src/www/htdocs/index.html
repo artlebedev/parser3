@@ -13,7 +13,17 @@ $method[$$name]
 @test1[]
 test1 result
 
+@odbc_test[]
+^connect[odbc://dsn=voz7^;uid=voz^;pwd=pwd]{
+	$пресса[^table:sql{select * from press}]
+	$пресса{^menu{
+		$id, $date_row, $header, $short_text^rem{, $full_text}, $mode
+	}[<br>]}
+}
+<hr>
+
 @main[]
+^odbc_test[]
 $a_1[a_1 value]
 $a_1<hr>
 

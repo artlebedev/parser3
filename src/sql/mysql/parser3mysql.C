@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3mysql.C,v 1.25 2001/07/23 11:19:25 parser Exp $"; 
+static const char *RCSId="$Id: parser3mysql.C,v 1.26 2001/07/23 13:59:52 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -46,7 +46,8 @@ public:
 	int api_version() { return SQL_DRIVER_API_VERSION; }
 	/// initialize driver by loading sql dynamic link library
 	const char *initialize(const char *dlopen_file_spec) {
-		return dlink(dlopen_file_spec);
+		return dlopen_file_spec?
+			dlink(dlopen_file_spec):"client library column is empty";
 	}
 	/**	connect
 		@param used_only_in_connect_url
@@ -148,14 +149,14 @@ public:
 		if(!res) // empty result: insert|delete|update|...
 			return;
 		
-		unsigned int column_count=mysql_num_fields(res);
+		int column_count=mysql_num_fields(res);
 		if(!column_count) // old client
 			column_count=mysql_field_count(mysql);
 
 		if(!column_count)
 			services._throw("result contains no columns");
 
-		for(unsigned int i=0; i<column_count; i++){
+		for(int i=0; i<column_count; i++){
 			MYSQL_FIELD *field=mysql_fetch_field(res);
 			size_t size=strlen(field->name);
 			void *ptr=services.malloc(size);
@@ -170,7 +171,7 @@ public:
 				if(MYSQL_ROW mysql_row=mysql_fetch_row(res)) { // never false..
 					handlers.add_row();
 					unsigned long *lengths=mysql_fetch_lengths(res);
-					for(unsigned int i=0; i<column_count; i++){
+					for(int i=0; i<column_count; i++){
 						size_t size=(size_t)lengths[i];
 						void *ptr;
 						if(size) {

@@ -17,7 +17,7 @@ _	&nbsp^;
 #$if(!($SQL is hash)){$SQL[$z[z]]}
 $SQL[
 	$drivers[^table:set{protocol	driver	client
-mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll	Y:\parser3\src\sql\mysql\mySQL32\lib\opt\libmySQL.dll
+mysql	d:/y/parser3\src\sql\mysql\release\parser3mysql.dll	d:/y/parser3\src\sql\mysql\mySQL32\lib\opt\libmySQL.dll
 }]
 ]
 

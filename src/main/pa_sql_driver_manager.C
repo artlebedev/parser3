@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.22 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.23 2001/07/23 13:59:52 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -109,11 +109,7 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 						protocol2driver_and_client->origin_string(),
 						"driver library column for protocol '%s' is empty", 
 							request_protocol_cstr);
-				if(!(dlopen_file_spec=protocol2driver_and_client->item(2)) || dlopen_file_spec->size()==0)
-					PTHROW(0, 0,
-						protocol2driver_and_client->origin_string(),
-						"client library column for protocol '%s' is empty", 
-							request_protocol_cstr);
+				dlopen_file_spec=protocol2driver_and_client->item(2);
 			} else
 				PTHROW(0, 0,
 					&request_url,
@@ -146,13 +142,17 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 						driver_api_version, SQL_DRIVER_API_VERSION);
 
 			// initialise by connecting to sql client dynamic link library
-			const char *dlopen_file_spec_cstr=dlopen_file_spec->cstr(String::UL_FILE_NAME);
+			bool specified_dlopen_file_spec=dlopen_file_spec && dlopen_file_spec->size();
+			const char *dlopen_file_spec_cstr=
+				specified_dlopen_file_spec?
+				dlopen_file_spec->cstr(String::UL_FILE_NAME):0;
 			if(const char *error=driver->initialize(
 				dlopen_file_spec_cstr))
 				PTHROW(0, 0,
 					library,
 					"driver failed to initialize client library '%s', %s",
-						dlopen_file_spec_cstr, error);
+						specified_dlopen_file_spec?dlopen_file_spec_cstr:"unspeciifed", 
+						error);
 
 			// cache it
 			put_driver_to_cache(global_protocol, *driver);
