@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/07/24 06:49:22 $";
+static const char* IDENT_MATH_C="$Date: 2003/07/24 08:19:20 $";
 
 #include "pa_common.h"
 #include "pa_vint.h"
@@ -260,7 +260,7 @@ static void _crypt(Request& r, const String& method_name, MethodParams *params) 
 		const size_t sample_size=120;
 		char *sample_buf=(char *)pool.malloc(sample_size);
 		PA_MD5Encode((const unsigned char *)password,
-			(const unsigned char *)normal_salt, 1/*TRUE: mix in magic string*/,
+			(const unsigned char *)normal_salt,
 			sample_buf, sample_size);
 		r.write_pass_lang(*new(pool) String(pool, sample_buf));
     } else {

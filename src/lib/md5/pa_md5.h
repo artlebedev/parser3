@@ -96,7 +96,7 @@
 #ifndef PA_MD5_H
 #define PA_MD5_H
 
-static const char* IDENT_MD5_H="$Date: 2003/04/15 07:17:42 $";
+static const char* IDENT_MD5_H="$Date: 2003/07/24 08:19:21 $";
 
 #define PA_API_EXPORT(rtype) rtype
 
@@ -135,7 +135,7 @@ PA_API_EXPORT(void) PA_MD5Update(PA_MD5_CTX *context, const unsigned char *input
 PA_API_EXPORT(void) PA_MD5Final(unsigned char digest[MD5_DIGESTSIZE],
 			     PA_MD5_CTX *context);
 PA_API_EXPORT(void) PA_MD5Encode(const unsigned char *password,
-			      const unsigned char *salt, int mix_in_magic_string,
+			      const unsigned char *salt,
 			      char *result_base64, size_t result_base64_size);
 PA_API_EXPORT(void) PA_to64(char *s, unsigned long v, int n);
 

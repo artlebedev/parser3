@@ -107,7 +107,7 @@
  * ----------------------------------------------------------------------------
  */
 
-static const char* IDENT_MD5_C="$Date: 2003/04/25 10:54:54 $";
+static const char* IDENT_MD5_C="$Date: 2003/07/24 08:19:21 $";
 
 #include <string.h>
 
@@ -432,7 +432,7 @@ PA_API_EXPORT(void) PA_to64(char *s, unsigned long v, int n)
 }
 
 PA_API_EXPORT(void) PA_MD5Encode(const unsigned char *pw,
-			      const unsigned char *salt, int mix_in_magic_string,
+			      const unsigned char *salt,
 			      char* result_base64, size_t result_base64_size)
 {
     /*
@@ -488,12 +488,10 @@ PA_API_EXPORT(void) PA_MD5Encode(const unsigned char *pw,
      */
     PA_MD5Update(&ctx, pw, pwlen);
 
-    if(mix_in_magic_string) {
-	    /*
-	     * Then our magic string
-	     */
-	    PA_MD5Update(&ctx, (const unsigned char *) PA_MD5PW_ID, PA_MD5PW_IDLEN);
-    }
+    /*
+    * Then our magic string
+    */
+    PA_MD5Update(&ctx, (const unsigned char *) PA_MD5PW_ID, PA_MD5PW_IDLEN);
 
     /*
      * Then the raw salt
