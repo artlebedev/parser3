@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2004/07/30 10:02:31 $";
+static const char * const IDENT_PARSER3_C="$Date: 2004/07/30 10:55:22 $";
 
 #include "pa_config_includes.h"
 
@@ -27,7 +27,7 @@ static const char * const IDENT_PARSER3_C="$Date: 2004/07/30 10:02:31 $";
 #	include <getopt.h>
 #endif
 
-//#define _DEBUG
+// defines
 
 #if _MSC_VER && !defined(_DEBUG)
 #	define PA_SUPPRESS_SYSTEM_EXCEPTION
@@ -519,7 +519,7 @@ static void call_real_parser_handler__supress_system_exception(
 	__try {
 		parser_exception=call_real_parser_handler__do_PEH_return_it(
 			filespec_to_process,
-			request_method, header_only);		
+			request_method, header_only);
 	} __except (
 		(system_exception=GetExceptionInformation()), 
 		EXCEPTION_EXECUTE_HANDLER) 
@@ -694,9 +694,8 @@ int main(int argc, char *argv[]) {
 		//   possible pool' exception not catch-ed now
 		//   and there could be out-of-memory exception
 		char buf[MAX_STRING];
-		snprintf(buf, MAX_STRING, "Exception %s [%s]",
-			e.comment(),
-			e.type());
+		snprintf(buf, MAX_STRING, "Unhandled exception %s",
+			e.comment());
 		// log it
 		SAPI::log(SAPI_info, "%s", buf);
 

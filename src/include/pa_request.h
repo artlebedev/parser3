@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2004/02/26 14:37:30 $";
+static const char * const IDENT_REQUEST_H="$Date: 2004/07/30 10:55:21 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -160,6 +160,7 @@ public:
 			VHash& avhash): trace(atrace), problem_source(aproblem_source), vhash(avhash) {}
 	};
 	Exception_details get_details(const Exception& e);
+	const char* get_exception_cstr(const Exception& e, Exception_details& details);
 
 	/// @see Stack::wipe_unused
 	void wipe_unused_execution_stack() {

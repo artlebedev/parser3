@@ -5,7 +5,9 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2004/07/26 10:44:21 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2004/07/30 10:55:22 $";
+
+#include "pa_config_includes.h"
 
 #include "pa_globals.h"
 
@@ -18,6 +20,10 @@ static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2004/07/26 10:44:21 $
 #include "pa_version.h"
 #include "pa_socks.h"
 
+#if _MSC_VER && !defined(_DEBUG)
+#	include <windows.h>
+#	define PA_SUPPRESS_SYSTEM_EXCEPTION
+#endif
 
 // generals
 
@@ -179,7 +185,6 @@ void SAPI::send_header(SAPI_Info& SAPI_info) {
 }
 
 size_t SAPI::send_body(SAPI_Info& SAPI_info, const void *buf, size_t size) {
-	size_t size;
 	pa_ap_hard_timeout("Send body", SAPI_info.r);
 	size = (size_t)pa_ap_rwrite(buf, size, SAPI_info.r);
 	pa_ap_kill_timeout(SAPI_info.r);
@@ -237,30 +242,52 @@ static void real_parser_handler(SAPI_Info& SAPI_info, Parser_module_config *dcfg
 		SAPI_info.r->header_only!=0);
 }
 
-void call_real_parser_handler__do_SEH(SAPI_Info& SAPI_info, Parser_module_config *dcfg) {
-#if _MSC_VER & !defined(_DEBUG)
-	LPEXCEPTION_POINTERS system_exception=0;
-	__try {
-#endif
+#ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
+static const Exception 
+call_real_parser_handler__do_PEH_return_it(
+	SAPI_Info& SAPI_info, Parser_module_config *dcfg) 
+{
+	try {
 		real_parser_handler(SAPI_info, dcfg);
-		
-#if _MSC_VER & !defined(_DEBUG)
+	} catch(const Exception& e) {
+		return e;
+	}
+
+	return Exception();
+}
+static void call_real_parser_handler__supress_system_exception(
+	SAPI_Info& SAPI_info, Parser_module_config *dcfg) 
+{
+	Exception parser_exception;
+	LPEXCEPTION_POINTERS system_exception=0;
+
+	__try {
+		parser_exception=call_real_parser_handler__do_PEH_return_it(
+			SAPI_info, dcfg);
 	} __except (
 		(system_exception=GetExceptionInformation()), 
-		EXCEPTION_EXECUTE_HANDLER) {
-		
+		EXCEPTION_EXECUTE_HANDLER) 
+	{
+
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
-				throw Exception(0,
-				0,
-				"Exception 0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
+				throw Exception("system",
+					0,
+					"0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
 			else
-				throw Exception(0, 0, "Exception <no exception record>");
-			else
-				throw Exception(0, 0, "Exception <no exception information>");
+				throw Exception("system", 
+					0, 
+					"<no exception record>");
+		else
+			throw Exception("system", 
+				0, 
+				"<no exception information>");
 	}
-#endif
+
+	if(parser_exception)
+		throw Exception(parser_exception);
 }
+#endif
 
 /// @test r->finfo.st_mode check seems to work only on win32
 int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
@@ -279,18 +306,26 @@ int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
 	//	r->no_cache=1;
 	
 	try { // global try
-		call_real_parser_handler__do_SEH(SAPI_info, dcfg);
+#ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
+		call_real_parser_handler__supress_system_exception(
+#else
+		real_parser_handler(
+#endif
+			SAPI_info, dcfg);
+
 		// successful finish
 	} catch(const Exception& e) { // global problem 
 		// don't allocate anything on pool here:
 		//   possible pool' exception not catch-ed now
 		//   and there could be out-of-memory exception
-		const char* body=e.comment();
+		char buf[MAX_STRING];
+		snprintf(buf, MAX_STRING, "Unhandled exception %s",
+			e.comment());
 		// log it
-		SAPI::log(SAPI_info, "exception in request exception handler: %s", body);
+		SAPI::log(SAPI_info, "%s", buf);
 		
 		//
-		int content_length=strlen(body);
+		int content_length=strlen(buf);
 		
 		// prepare header
 		SAPI::add_header_attribute(SAPI_info, "content-type", "text/plain");
@@ -303,7 +338,7 @@ int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
 		
 		// send body
 		if(!r->header_only)
-			SAPI::send_body(SAPI_info, body, content_length);
+			SAPI::send_body(SAPI_info, buf, content_length);
 		
 		// unsuccessful finish
 	}

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2004/07/30 10:02:31 $";
+static const char * const IDENT_REQUEST_C="$Date: 2004/07/30 10:55:22 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -36,7 +36,7 @@ static const char * const IDENT_REQUEST_C="$Date: 2004/07/30 10:02:31 $";
 
 // consts
 
-const char* UNHANDLED_EXCEPTION_METHOD_NAME="unhandled_exception";
+#define UNHANDLED_EXCEPTION_METHOD_NAME "unhandled_exception"
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char* UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
@@ -232,6 +232,45 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	methoded_array().configure_admin(*this);
 }
 
+const char* Request::get_exception_cstr(
+										const Exception& e,
+										Request::Exception_details& details) {
+#define PA_URI_FORMAT "%s: "
+#define PA_ORIGIN_FILE_POS_FORMAT "%s(%d:%d): "
+#define PA_SOURCE_FORMAT "'%s' "
+#define PA_COMMENT_TYPE_FORMAT "%s [%s]"
+	char* result=new(PointerFreeGC) char[MAX_STRING];
+
+	if(details.problem_source) { // do we know the guy?
+		if(details.trace) { // do whe know where he came from?
+			Operation::Origin origin=details.trace.origin();
+			snprintf(result, MAX_STRING, 
+				PA_URI_FORMAT 
+				PA_ORIGIN_FILE_POS_FORMAT 
+				PA_SOURCE_FORMAT PA_COMMENT_TYPE_FORMAT,
+				request_info.uri,
+				file_list[origin.file_no].cstr(), 1+origin.line, 1+origin.col,
+				details.problem_source->cstr(),
+				e.comment(), e.type()
+			);
+		} else
+			snprintf(result, MAX_STRING, 
+				PA_URI_FORMAT 
+				PA_SOURCE_FORMAT PA_COMMENT_TYPE_FORMAT,
+				request_info.uri,
+				details.problem_source->cstr(),
+				e.comment(), e.type()
+			);
+	} else
+		snprintf(result, MAX_STRING, 
+			PA_URI_FORMAT 
+			PA_COMMENT_TYPE_FORMAT,
+			request_info.uri,
+			e.comment(), e.type()
+		);
+
+	return result;
+}
 /**
 	load MAIN class, execute @main.
 	MAIN class consists of all the auto.p files we'd manage to find
@@ -387,40 +426,11 @@ t[9]-t[3]
 	} catch(const Exception& e) { // request handling problem
 		try {
 		// we're returning not result, but error explanation
-#define PA_URI_FORMAT "%s: "
-#define PA_ORIGIN_FILE_POS_FORMAT "%s(%d:%d): "
-#define PA_SOURCE_FORMAT "'%s' "
-#define PA_COMMENT_TYPE_FORMAT "%s [%s]"
-		// log the beast
-		Request::Exception_details details=get_details(e);
 
-		if(details.problem_source) { // do we know the guy?
-			if(details.trace) { // do whe know where he came from?
-				Operation::Origin origin=details.trace.origin();
-				SAPI::log(sapi_info,
-					PA_URI_FORMAT 
-					PA_ORIGIN_FILE_POS_FORMAT 
-					PA_SOURCE_FORMAT PA_COMMENT_TYPE_FORMAT,
-					request_info.uri,
-					file_list[origin.file_no].cstr(), 1+origin.line, 1+origin.col,
-					details.problem_source->cstr(),
-					e.comment(), e.type()
-				);
-			} else
-				SAPI::log(sapi_info,
-					PA_URI_FORMAT 
-					PA_SOURCE_FORMAT PA_COMMENT_TYPE_FORMAT,
-					request_info.uri,
-					details.problem_source->cstr(),
-					e.comment(), e.type()
-				);
-		} else
-			SAPI::log(sapi_info,
-				PA_URI_FORMAT 
-				PA_COMMENT_TYPE_FORMAT,
-				request_info.uri,
-				e.comment(), e.type()
-			);
+		Request::Exception_details details=get_details(e);
+		const char* exception_cstr=get_exception_cstr(e, details);
+		// log the beast
+		SAPI::log(sapi_info, "%s", exception_cstr);
 
 		// reset language to default
 		flang=fdefault_lang;
@@ -479,22 +489,11 @@ body_string=&execute_method(frame, *method).as_string();
 		if(!body_string) {  // couldn't report an error beautifully?
 			// doing that ugly
 
-			// make up result: $origin $source $comment $type $code
-			char *buf=new(PointerFreeGC) char[MAX_STRING];
-			size_t printed=0;
-			if(const String* problem_source=e.problem_source())
-				printed+=snprintf(buf+printed, MAX_STRING-printed, "'%s' ", 
-					problem_source->cstr());
-			if(const char* comment=e.comment(true))
-				printed+=snprintf(buf+printed, MAX_STRING-printed, "%s", comment);
-			if(const char* type=e.type(true)) 
-				printed+=snprintf(buf+printed, MAX_STRING-printed, "  type: %s",  type);
-
 			// future $response:content-type
 			response.fields().put(content_type_name, 
 				new VString(*new String(UNHANDLED_EXCEPTION_CONTENT_TYPE)));
 			// future $response:body
-			body_string=new String(buf);
+			body_string=new String(exception_cstr);
 		}
 
 		VString body_vstring(*body_string);
@@ -503,10 +502,13 @@ body_string=&execute_method(frame, *method).as_string();
 		// ERROR. write it out
 		output_result(body_file, header_only, false);
 		} catch(const Exception& e) {
-			throw Exception(e.type(),
-				e.problem_source(),
-				"in request exception handler: %s", 
-					e.comment());
+			Request::Exception_details details=get_details(e);
+			const char* exception_cstr=get_exception_cstr(e, details);
+
+			throw Exception(0,
+				0,
+				"in %s", 
+					exception_cstr);
 		}
 	}
 }

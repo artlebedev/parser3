@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/07/26 10:44:21 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/07/30 10:55:22 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -23,6 +23,13 @@ static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/07/26 10:44:21 $";
 #include <process.h>
 
 #include <httpext.h>
+
+// defines
+
+#if _MSC_VER && !defined(_DEBUG)
+#	define PA_SUPPRESS_SYSTEM_EXCEPTION
+#endif
+
 
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
 
@@ -148,7 +155,7 @@ const char* const *SAPI::environment(SAPI_Info& info) {
 	char* all_http_vars=SAPI::get_env(info, "ALL_HTTP");
 	const int http_var_count=grep_char(all_http_vars, '\n')+1/*\n for theoretical(never saw) this \0*/;
 
-	const char* *result=new const char*[IIS51var_count+http_var_count+1/*0*/];
+	const char* *result=new(PointerFreeGC) const char*[IIS51var_count+http_var_count+1/*0*/];
 	const char* *cur=result;
 
 	// IIS5.1 vars
@@ -391,30 +398,52 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 		header_only);
 }
 
-void call_real_parser_handler__do_SEH(SAPI_Info& SAPI_info, bool header_only) {
-#if _MSC_VER & !defined(_DEBUG)
-	LPEXCEPTION_POINTERS system_exception=0;
-	__try {
-#endif
+#ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
+static const Exception 
+call_real_parser_handler__do_PEH_return_it(
+	SAPI_Info& SAPI_info, bool header_only) 
+{
+	try {
 		real_parser_handler(SAPI_info, header_only);
-		
-#if _MSC_VER & !defined(_DEBUG)
+	} catch(const Exception& e) {
+		return e;
+	}
+
+	return Exception();
+}
+static void call_real_parser_handler__supress_system_exception(
+	SAPI_Info& SAPI_info, bool header_only) 
+{
+	Exception parser_exception;
+	LPEXCEPTION_POINTERS system_exception=0;
+
+	__try {
+		parser_exception=call_real_parser_handler__do_PEH_return_it(
+			SAPI_info, header_only);
 	} __except (
 		(system_exception=GetExceptionInformation()), 
-		EXCEPTION_EXECUTE_HANDLER) {
-		
+		EXCEPTION_EXECUTE_HANDLER) 
+	{
+
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
-				throw Exception(0,
-				0,
-				"Exception 0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
+				throw Exception("system",
+					0,
+					"0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
 			else
-				throw Exception(0, 0, "Exception <no exception record>");
-			else
-				throw Exception(0, 0, "Exception <no exception information>");
+				throw Exception("system", 
+					0, 
+					"<no exception record>");
+		else
+			throw Exception("system", 
+				0, 
+				"<no exception information>");
 	}
-#endif
+
+	if(parser_exception)
+		throw Exception(parser_exception);
 }
+#endif
 
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	//_asm int 3;
@@ -426,7 +455,12 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 
 	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;
 	try { // global try
-		call_real_parser_handler__do_SEH(SAPI_info, header_only);
+#ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
+		call_real_parser_handler__supress_system_exception(
+#else
+		real_parser_handler(
+#endif
+			SAPI_info, header_only);
 		// successful finish
 	} catch(const Exception& e) { // global problem
 		// don't allocate anything on pool here:
