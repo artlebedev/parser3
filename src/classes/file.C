@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/08/20 14:20:36 $";
+static const char* IDENT_FILE_C="$Date: 2002/09/10 10:55:32 $";
 
 #include "pa_config_includes.h"
 
@@ -328,8 +328,6 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 		self.fields().put(
 			*new(pool) String(pool, "stderr"),
 			new(pool) VString(err));
-
-		SAPI::log(pool, "file:%s: %s", cgi?"cgi":"exec", err.cstr());
 	}
 }
 static void _exec(Request& r, const String& method_name, MethodParams *params) {
