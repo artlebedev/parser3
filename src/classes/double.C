@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.13 2001/03/12 22:21:01 paf Exp $
+	$Id: double.C,v 1.14 2001/03/13 11:52:44 paf Exp $
 */
 
 #include "pa_request.h"
@@ -32,15 +32,30 @@ static void _double(Request& r, const String&, Array *) {
 	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
 }
 
-static void _inc(Request& r, const String&, Array *params) {
+typedef void (*vdouble_op_func_ptr)(VDouble& vdouble, double param);
+
+static void __inc(VDouble& vdouble, double param) { vdouble.inc(param); }
+static void __dec(VDouble& vdouble, double param) { vdouble.inc(-param); }
+static void __mul(VDouble& vdouble, double param) { vdouble.mul(param); }
+static void __div(VDouble& vdouble, double param) { vdouble.div(param); }
+static void __mod(VDouble& vdouble, double param) { vdouble.mod((int)param); }
+
+static void vdouble_op(Request& r, Array *params, 
+					   vdouble_op_func_ptr func) {
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
-	double increment=params->size()?
+	double param=params->size()?
 		r.process(
 			*static_cast<Value *>(params->get(0)),
 			0/*no name*/,
-			false/*don't intercept string*/).get_double():1;
-	vdouble->inc(increment);
+			false/*don't doubleercept string*/).get_double():1;
+	(*func)(*vdouble, param);
 }
+
+static void _inc(Request& r, const String&, Array *params) { vdouble_op(r, params, &__inc); }
+static void _dec(Request& r, const String&, Array *params) { vdouble_op(r, params, &__dec); }
+static void _mul(Request& r, const String&, Array *params) { vdouble_op(r, params, &__mul); }
+static void _div(Request& r, const String&, Array *params) { vdouble_op(r, params, &__div); }
+static void _mod(Request& r, const String&, Array *params) { vdouble_op(r, params, &__mod); }
 
 void initialize_double_class(Pool& pool, VClass& vclass) {
 	// ^double.int[]
@@ -49,9 +64,18 @@ void initialize_double_class(Pool& pool, VClass& vclass) {
 	// ^double.double[]
 	vclass.add_native_method("double", _double, 0, 0);
 	
-	// ^double.inc[]
+	// ^double.inc[] 
 	// ^double.inc[offset]
 	vclass.add_native_method("inc", _inc, 0, 1);
+	// ^double.dec[] 
+	// ^double.dec[offset]
+	vclass.add_native_method("dec", _dec, 0, 1);
+	// ^double.mul[k] 
+	vclass.add_native_method("mul", _mul, 1, 1);
+	// ^double.div[d]
+	vclass.add_native_method("div", _div, 1, 1);
+	// ^double.mod[offset]
+	vclass.add_native_method("mod", _mod, 1, 1);
 
 	// ^double.format[]
 	vclass.add_native_method("format", _string_format, 1, 1);

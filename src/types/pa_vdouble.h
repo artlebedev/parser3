@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.6 2001/03/12 21:54:21 paf Exp $
+	$Id: pa_vdouble.h,v 1.7 2001/03/13 11:52:45 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -41,6 +41,9 @@ public: // usage
 	}
 
 	void inc(double increment) { fdouble+=increment; }
+	void mul(double k) { fdouble*=k; }
+	void div(double d) { fdouble/=d; }
+	void mod(int d) { fdouble=((int)fdouble)%d; }
 
 private:
 

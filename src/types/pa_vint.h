@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.7 2001/03/12 21:54:21 paf Exp $
+	$Id: pa_vint.h,v 1.8 2001/03/13 11:52:45 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -41,8 +41,12 @@ public: // usage
 	}
 
 	int get_int() { return finteger; }
+	void set_int(int ainteger) { finteger=ainteger; }
 
-	void inc(int increment=1) { finteger+=increment; }
+	void inc(int increment) { finteger+=increment; }
+	void mul(double k) { finteger=(int)(finteger*k); }
+	void div(double d) { finteger=(int)(finteger/d); }
+	void mod(int d) { finteger%=d; }
 
 private:
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.36 2001/03/13 11:19:29 paf Exp $
+	$Id: root.C,v 1.37 2001/03/13 11:52:44 paf Exp $
 */
 
 #include <string.h>
@@ -155,12 +155,14 @@ static void _for(Request& r, const String& method_name, Array *params) {
 	Value *delim_code=params->size()==3+1+1?static_cast<Value *>(params->get(3+1)):0;
 
 	bool need_delim=false;
+	VInt *vint=new(pool) VInt(pool, 0);
 	int endless_loop_count=0;
-	for(VInt *vint=new(pool) VInt(pool, from); vint->get_int()<=to; vint->inc()) {
+	for(int i=from; i<=to; i++) {
 		if(++endless_loop_count>=2001) // endless loop?
 			R_THROW(0, 0,
 				&method_name,
 				"endless loop detected");
+		vint->set_int(i);
 		r.wcontext->put_element(var_name, vint);
 
 		Value& processed_body=r.process(body_code);
@@ -201,7 +203,7 @@ typedef double (*math_one_double_op_func_ptr)(double);
 static double round(double op) { return floor(op+0.5); }
 static double sign(double op) { return op > 0 ? 1 : ( op < 0 ? -1 : 0 ); }
 
-static void _math_one_double_op(
+static void double_one_op(
 								Request& r, 
 								const String& method_name, Array *params,
 								math_one_double_op_func_ptr func) {
@@ -217,23 +219,23 @@ static void _math_one_double_op(
 }
 
 static void _round(Request& r, const String& method_name, Array *params) {
-	_math_one_double_op(r, method_name, params,	&round);
+	double_one_op(r, method_name, params,	&round);
 }
 
 static void _floor(Request& r, const String& method_name, Array *params) {
-	_math_one_double_op(r, method_name, params,	&floor);
+	double_one_op(r, method_name, params,	&floor);
 }
 
 static void _ceiling(Request& r, const String& method_name, Array *params) {
-	_math_one_double_op(r, method_name, params,	&ceil);
+	double_one_op(r, method_name, params,	&ceil);
 }
 
 static void _abs(Request& r, const String& method_name, Array *params) {
-	_math_one_double_op(r, method_name, params,	&fabs);
+	double_one_op(r, method_name, params,	&fabs);
 }
 
 static void _sign(Request& r, const String& method_name, Array *params) {
-	_math_one_double_op(r, method_name, params,	&sign);
+	double_one_op(r, method_name, params,	&sign);
 }
 
 void initialize_root_class(Pool& pool, VClass& vclass) {
