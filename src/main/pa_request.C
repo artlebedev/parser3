@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2004/10/05 11:07:48 $";
+static const char * const IDENT_REQUEST_C="$Date: 2004/12/23 15:50:27 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -438,8 +438,6 @@ t[9]-t[3]
 
 		Request::Exception_details details=get_details(e);
 		const char* exception_cstr=get_exception_cstr(e, details);
-		// log the beast
-		SAPI::log(sapi_info, "%s", exception_cstr);
 
 		// reset language to default
 		flang=fdefault_lang;
@@ -508,11 +506,19 @@ body_string=&execute_method(frame, *method).as_string();
 		VString body_vstring(*body_string);
 		VFile* body_file=body_vstring.as_vfile(String::L_UNSPECIFIED, &charsets);
 
+		// conditionally log it
+		Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
+		if(!vhandled || !vhandled->as_bool()) {
+			SAPI::log(sapi_info, "%s", exception_cstr);
+		}
+
 		// ERROR. write it out
 		output_result(body_file, header_only, false);
-		} catch(const Exception& e) {
+		} catch(const Exception& e) { // exception in unhandled exception
 			Request::Exception_details details=get_details(e);
 			const char* exception_cstr=get_exception_cstr(e, details);
+			// unconditionally log the beast
+			SAPI::log(sapi_info, "%s", exception_cstr);
 
 			throw Exception(0,
 				0,

@@ -1,8 +1,7 @@
-^connect[$SQL.connect-string]{
-	$f[^file::sql{select 2*2, 'this is name.doc', 'app/paf'}[
-#		$.name[that is name.zip]
-		$.content-type[app/pif]
-	]]
-	$f.name
-	$f.content-type
-}
+@main[]
+^bug[]
+
+@unhandled_exception[exception;stack]
+unhandled_exception
+#do not log it
+$exception.handled(1)
