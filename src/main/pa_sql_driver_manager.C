@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.26 2001/08/24 07:04:52 parser Exp $"; 
+static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.27 2001/08/24 08:16:15 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -229,7 +229,7 @@ static void expire_connection(Array::Item *value, void *info) {
 	SQL_Connection& connection=*static_cast<SQL_Connection *>(value);
 	time_t older_dies=reinterpret_cast<time_t>(info);
 
-	//if(connection.expired(older_dies))
+	if(connection.connected() && connection.expired(older_dies))
 		connection.disconnect();
 }
 static void expire_connections(const Hash::Key& key, Hash::Val *value, void *info) {
