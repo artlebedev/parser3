@@ -1,7 +1,8 @@
 @main[]
+^ifassignhash[]
 #^tintdefault[]
 #$response:status[404]
-^ifpasshash[]
+#^ifpasshash[]
 #^movedir[]
 #^replace[]
 #^set[]
@@ -36,6 +37,10 @@ OK
 $abc[33]
 ^abc.int[z]
 #^abc.int(123)
+
+@ifassignhash[]
+$h[^if(1){$.a(1);$.a(2)}]
+$h.a
 
 @ifpasshash[]
 $a[$.e[a]]
