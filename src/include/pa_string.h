@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.107 2001/10/11 14:00:10 parser Exp $
+	$Id: pa_string.h,v 1.108 2001/10/24 09:03:42 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -129,6 +129,10 @@ public:
 		*eol=0;
 		return result;
 	}
+	/// puts pieces to buf
+	void serialize(size_t prolog_size,  void *& buf, size_t& buf_size) const;
+	/// appends pieces from buf to self
+	void deserialize(size_t prolog_size, void *buf, size_t buf_size, const char *file);
 	/** append fragment
 		@see APPEND_AS_IS, APPEND_CLEAN, APPEND_TAINTED, APPEND_CONST
 	*/

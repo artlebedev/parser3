@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.h,v 1.3 2001/10/23 14:43:44 parser Exp $
+	$Id: pa_db_connection.h,v 1.4 2001/10/24 09:03:42 parser Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
@@ -104,7 +104,14 @@ private:
 	void check(const char *operation, const String *source, int error);
 	void *malloc(size_t size) { return fservices_pool->malloc(size); }
 	void *calloc(size_t size) { return fservices_pool->calloc(size); }
-	void dbt_to_string(DBT& dbt, String& result);
+	/// pass empty dbt, would fill it from string
+	void key_string_to_dbt(const String& key_string, DBT& key_result);
+	/// pass empty dbt, would fill it from string
+	void key_dbt_to_string(const DBT& key_dbt, String& key_result);
+	/// pass empty dbt, would fill it from string
+	void data_string_to_dbt(const String& data_string, DBT& data_result);
+	/// pass empty string, would fill it from dbt
+	void data_dbt_to_string(const DBT& data_dbt, String& data_result);
 
 };
 
@@ -136,6 +143,7 @@ private:
 	DB_Cursor(DB_Connection& aconnection, const String *asource);
 public:
 	~DB_Cursor();
+	/// pass empty strings to key&data, would fill them
 	bool get(String& key, String& data, u_int32_t flags);
 private:
 	const String *fsource;
@@ -145,8 +153,13 @@ private:
 	void check(const char *operation, const String *source, int error) {
 		fconnection.check(operation, source, error);
 	}
-	void dbt_to_string(DBT& dbt, String& result) {
-		fconnection.dbt_to_string(dbt, result);
+	/// pass empty string, would fill it from dbt
+	void key_dbt_to_string(DBT& dbt, String& result) {
+		fconnection.key_dbt_to_string(dbt, result);
+	}
+	/// pass empty string, would fill it from dbt
+	void data_dbt_to_string(DBT& dbt, String& result) {
+		fconnection.data_dbt_to_string(dbt, result);
 	}
 };
 

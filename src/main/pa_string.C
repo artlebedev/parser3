@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.112 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_string.C,v 1.113 2001/10/24 09:03:42 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -840,3 +840,69 @@ int String::as_int() const {
 
 	return result;
 }
+
+/* @todo maybe network order worth spending some effort?
+	don't bothering myself with network byte order,
+	am not planning to be able to move resulting file across platforms
+	for now
+*/
+void String::serialize(size_t prolog_size, void *& buf, size_t& buf_size) const {
+	buf_size=
+		prolog_size
+		+fused_rows*(sizeof(Untaint_lang)+sizeof(size_t))
+		+size();
+	buf=malloc(buf_size);
+	char *cur=(char *)buf+prolog_size;
+
+	const Chunk *chunk=&head; 
+	do {
+		const Chunk::Row *row=chunk->rows;
+		for(size_t i=0; i<chunk->count; i++) {
+			if(row==append_here)
+				goto break2;
+
+			// lang
+			memcpy(cur, &row->item.lang, sizeof(Untaint_lang));
+			cur+=sizeof(Untaint_lang);
+			// size
+			memcpy(cur, &row->item.size, sizeof(size_t));
+			cur+=sizeof(size_t);
+			// bytes
+			memcpy(cur, row->item.ptr, row->item.size);
+			cur+=row->item.size;
+
+			row++;
+		}
+		chunk=row->link;
+	} while(chunk);
+break2:
+	;
+}
+
+/* @todo maybe network order worth spending some effort?
+	don't bothering myself with network byte order,
+	am not planning to be able to move resulting file across platforms
+	for now
+*/
+#ifndef DOXYGEN
+struct Serialized_piece {
+	String::Untaint_lang lang;
+	size_t size;
+	char ptr[1];
+};
+#endif
+
+void String::deserialize(size_t prolog_size, void *buf, size_t buf_size, const char *file) {
+	char *cur=((char *)buf)+prolog_size;
+	buf_size-=prolog_size;
+
+	while(buf_size) {
+		Serialized_piece& p=*(Serialized_piece *)cur;
+		APPEND(p.ptr, p.size, p.lang, file, 0);
+
+		size_t piece_size=sizeof(p.lang)+sizeof(p.size)+p.size;
+		cur+=piece_size;
+		buf_size-=piece_size;
+	}
+}
+
