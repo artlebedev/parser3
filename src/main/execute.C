@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.128 2001/03/27 16:35:54 paf Exp $
+	$Id: execute.C,v 1.129 2001/03/27 17:12:23 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -58,7 +58,7 @@ char *opcode_name[]={
 };
 
 void va_log_printf(Pool& pool, const char *fmt,va_list args) {
-	return;
+//	return;
 	char buf[MAX_STRING];
 	vsnprintf(buf, MAX_STRING, fmt, args);
 	SAPI::log(pool, "%s", buf);
@@ -93,7 +93,7 @@ void dump(Pool& pool, int level, const Array& ops) {
 			Value *value=static_cast<Value *>(ops.quick_get(++i));
 			log_printf(pool, " \"%s\" %s", value->get_string()->cstr(), value->type());
 		}
-		log_printf(pool, "\n");
+		//\log_printf(pool, "\n");
 
 		if(op.code==OP_CURLY_CODE__STORE_PARAM || op.code==OP_EXPR_CODE__STORE_PARAM) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
@@ -139,7 +139,7 @@ void Request::execute(const Array& ops) {
 				// does not need to be written into calling frame
 				// it must go into any expressions using that parameter
 				// hence, zeroing junction.wcontext being created
-				// later, in .process would test that field 
+				// later, in .process we would test that field 
 				// in decision "which wwrapper to use"
 				Junction& j=*NEW Junction(pool(), 
 					*self, 0, 0,
@@ -617,7 +617,7 @@ void Request::execute(const Array& ops) {
 				0,
 				"unhandled '%s' opcode", opcode_name[op.code]); 
 		}
-		log_printf(pool(), "\n");
+		//\log_printf(pool(), "\n");
 	}
 }
 
@@ -655,7 +655,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 		PUSH(self);  
 		PUSH(root);  
 		PUSH(rcontext);  
-			PUSH(wcontext);
+		PUSH(wcontext);
 		
 		WContext *frame;
 		// for expression method params

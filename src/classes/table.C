@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.34 2001/03/27 16:35:52 paf Exp $
+	$Id: table.C,v 1.35 2001/03/27 17:12:22 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -271,10 +271,10 @@ static void _sort(Request& r, const String& method_name, Array *params) {
 
 	bool reverse;
 	if(params->size()==2) { // ..[asc|desc]
-		Value& sequence=*(Value *)params->get(1);
+		Value& order=*(Value *)params->get(1);
 		// forcing ..[this param-type]
-		r.fail_if_junction_(true, sequence, method_name, "sequence must not be junction");
-		reverse=sequence.as_string()=="desc";
+		r.fail_if_junction_(true, order, method_name, "order must not be junction");
+		reverse=order.as_string()=="desc";
 	} else
 		reverse=false;
 

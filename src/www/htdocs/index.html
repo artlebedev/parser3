@@ -18,7 +18,12 @@ _	&nbsp^;
 @dump[t]
 ^t.menu{$n<BR>}
 <HR>
+@func[n2]
+$n2
 @main[]
+$n3[234]
+^func{$n3}
+
 $t[^table:set{n
 3
 01.3
@@ -28,13 +33,16 @@ $t[^table:set{n
 ^$t:<BR>
 ^dump[$t]
 ^t.sort($n)
-^$t:<BR>
+^^t.sort(^$n):<BR>
+^dump[$t]
+^t.sort{^:func($n)}
+^^t.sort{^^:func(^$n)}:<BR>
 ^dump[$t]
 ^t.sort{$n}
-^$t:<BR>
+^^t.sort{^$n}:<BR>
 ^dump[$t]
 ^t.sort{$n}[desc]
-^$t desc:<BR>
+^^t.sort{^$n}[desc]:<BR>
 ^dump[$t]
 <HR>
 
