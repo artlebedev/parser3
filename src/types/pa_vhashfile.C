@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 11:53:54 $";
+static const char* IDENT="$Date: 2003/11/06 12:07:11 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -147,14 +147,20 @@ void VHashfile::for_each(void callback(const String::Body, const String&, void*)
 	for_each(for_each_string_callback, &info);
 }
 
-void clear_callback(apr_sdbm_datum_t key, void* adb) {
-	check("apr_sdbm_delete", apr_sdbm_delete(static_cast<apr_sdbm_t *>(adb), key));
+typedef Array<apr_sdbm_datum_t> apr_sdbm_datum_array_t;
+static void clear_collect_key(apr_sdbm_datum_array_t::element_type key, 
+							  void* aapr_sdbm_datum_array) {
+	*static_cast<apr_sdbm_datum_array_t *>(aapr_sdbm_datum_array)+=key;
 }
-
+static void clear_delete_key(apr_sdbm_datum_t key, apr_sdbm_t *db) {
+	check("apr_sdbm_delete", apr_sdbm_delete(db, key));
+}
 void VHashfile::clear() {
 	make_writable();
 
-	for_each(clear_callback, db);
+	apr_sdbm_datum_array_t keys;
+	for_each(clear_collect_key, &keys);
+	keys.for_each(clear_delete_key, db);
 }
 
 
