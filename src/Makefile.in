@@ -88,7 +88,8 @@ host_os = @host_os@
 rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
-SUBDIRS = libltdl pcre main types classes targets
+SUBDIRS = libltdl pcre include main patches sql types classes targets
+EXTRA_DIST = ident.awk
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 

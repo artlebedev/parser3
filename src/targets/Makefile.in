@@ -88,8 +88,8 @@ host_os = @host_os@
 rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 #don't compile apache
-@COMPILE_APACHE13_MODULE_TRUE@SUBDIRS = cgi apache13
-@COMPILE_APACHE13_MODULE_FALSE@SUBDIRS = cgi
+@COMPILE_APACHE13_MODULE_TRUE@SUBDIRS = cgi isapi apache13
+@COMPILE_APACHE13_MODULE_FALSE@SUBDIRS = cgi isapi
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -100,7 +100,7 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DIST_SUBDIRS =  cgi apache13 cgi
+DIST_SUBDIRS =  cgi isapi apache13 cgi isapi
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 

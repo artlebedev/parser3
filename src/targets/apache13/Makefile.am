@@ -26,3 +26,5 @@ apache_build_instruction:
 	@echo
 	@echo "3. make"
 	@echo "******************************************************"
+
+EXTRA_DIST = ApacheModuleParser3.dsp

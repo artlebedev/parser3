@@ -13,4 +13,7 @@ CLEANFILES = auto_part.p chartables.c
 pcre.c: chartables.c
 
 noinst_LIBRARIES = libpcre.a
+noinst_HEADERS = pcre.h internal.h
 libpcre_a_SOURCES = get.c pcre.c study.c maketables.c
+
+EXTRA_DIST = pcre.3.html pcre.3.txt pcre.dsp pcre_dftables.dsp pcre_parser_ctype.dsp

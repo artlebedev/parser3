@@ -98,6 +98,8 @@ noinst_DATA = apache_build_instruction
 
 IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.C
+
+EXTRA_DIST = ApacheModuleParser3.dsp
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =  p3runConfigure

@@ -89,6 +89,8 @@ rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
 SUBDIRS = src etc
+
+EXTRA_DIST = asm.txt form.txt lang.txt operators.txt sql.txt types.txt parser3.dsw 
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ./src/include/pa_config_auto.h

@@ -1,6 +1,6 @@
 if COMPILE_APACHE13_MODULE
-SUBDIRS = cgi apache13
+SUBDIRS = cgi isapi apache13
 else
 #don't compile apache
-SUBDIRS = cgi
+SUBDIRS = cgi isapi
 endif
