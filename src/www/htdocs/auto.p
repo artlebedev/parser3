@@ -20,6 +20,7 @@ mysql	d:\Y\parser3\src\sql\mysql\debug\parser3mysql.dll	d:\y\parser3\src\sql\mys
 odbc	d:\y\parser3\src\sql\odbc\Debug\parser3odbc.dll
 pgsql	d:\y\parser3\src\sql\pgsql\Debug\parser3pgsql.dll	d:\Y\parser3\src\sql\pgsql\PgSQL32\lib\release\libpq.dll
 oracle	d:\Y\parser3\src\sql\oracle\Debug\parser3oracle.dll	D:\Oracle\Ora2000\BIN\oci.dll
+oracleSOLARIS28	/export/home/paf/parser3/src/sql/oracle/.libs/parser3oracle.so	/u01/app/oracle/product/8.1.5/lib/libclntsh.so
 }]
 ]
 

@@ -23,9 +23,8 @@ OK
 ^connect[oracle://mts_admin:admin_pwd@ORACLE.PAF.OFFICE.DESIGN.RU]{
 #^void:sql{create table lobtest(test clob)}
 ^void:sql{insert into lobtest values (/**test**/'бу''квы')}
-OK
 $table[^table::sql{select * from lobtest}]
-#^table.menu{^table.line[] <!--. $table.test -->}
+^table.menu{^table.line[] <!--. $table.test -->}
 }
 
 @oratestread[]
