@@ -727,7 +727,8 @@ xdoc(xnode)
     кучи auto.p и запрашиваемого документа:
         !parser3.conf 
             cgi: 
-                1) configure sysconfdir|windows directory 
+                1.0) полный путь из переменной окружения PARSER_ROOT_CONFIG
+                1.1) configure sysconfdir|windows directory 
                 2)рядом с бинарником parser'а 
             isapi: windows directory
             apache module: 

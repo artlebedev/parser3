@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.158 2002/02/18 08:45:45 paf Exp $
+	$Id: parser3.C,v 1.159 2002/02/18 12:45:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -51,6 +51,8 @@ const char **RCSIds[]={
 	parser3_RCSIds,
 	0
 };
+
+const char *PARSER_ROOT_CONFIG_ENV_NAME="PARSER_ROOT_CONFIG";
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
@@ -293,22 +295,29 @@ void real_parser_handler(
 		true /* status_allowed */);
 	
 	// some root-controlled location
+	const char *root_config_filespec;
+	if(const char *root_config_by_env=getenv(PARSER_ROOT_CONFIG_ENV_NAME))
+		root_config_filespec=root_config_by_env;
+	else {
 #ifdef ROOT_CONFIG_DIR
-	const char *root_config_filespec=ROOT_CONFIG_DIR "/" CONFIG_FILE_NAME;
+		root_config_filespec=ROOT_CONFIG_DIR "/" CONFIG_FILE_NAME;
 #else
 #	ifdef WIN32
-	// c:\windows
-	char root_config_path[MAX_STRING];
-	GetWindowsDirectory(root_config_path, MAX_STRING);
-	
-	char root_config_filespec[MAX_STRING];
-	snprintf(root_config_filespec, MAX_STRING, 
-		"%s/%s", 
-		root_config_path, CONFIG_FILE_NAME);
+		// c:\windows
+		char windows_dir[MAX_STRING];
+		GetWindowsDirectory(windows_dir, MAX_STRING);
+
+		char buf[MAX_STRING];
+		snprintf(buf, MAX_STRING, 
+			"%s/%s", 
+			windows_dir, CONFIG_FILE_NAME);
+		
+		root_config_filespec=buf;
 #	else
 #error must be compiled either configure/make or MSVC++
 #	endif
 #endif
+	}
 	
 	// beside by binary
 	// @todo full path, not ./!
