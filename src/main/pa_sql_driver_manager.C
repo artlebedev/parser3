@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.18 2001/05/17 18:36:33 parser Exp $
+	$Id: pa_sql_driver_manager.C,v 1.19 2001/05/17 18:43:06 parser Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -203,6 +203,8 @@ void SQL_Driver_manager::put_driver_to_cache(const String& protocol,
 SQL_Connection *SQL_Driver_manager::get_connection_from_cache(const String& url) { 
 	SYNCHRONIZED;
 
+	maybe_expire_connection_cache();
+
 	if(Stack *connections=static_cast<Stack *>(connection_cache.get(url)))
 		while(connections->top_index()>=0) { // there are cached connections to that 'url'
 			SQL_Connection *result=static_cast<SQL_Connection *>(connections->pop());
@@ -216,8 +218,6 @@ SQL_Connection *SQL_Driver_manager::get_connection_from_cache(const String& url)
 void SQL_Driver_manager::put_connection_to_cache(const String& url, 
 												 SQL_Connection& connection) { 
 	SYNCHRONIZED;
-
-	maybe_expire_connection_cache();
 
 	Stack *connections=static_cast<Stack *>(connection_cache.get(url));
 	if(!connections) { // there are no cached connections to that 'url' yet?
