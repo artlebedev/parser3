@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.8 2001/02/22 09:14:46 paf Exp $
+  $Id: compile_tools.h,v 1.9 2001/02/22 13:52:26 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -9,6 +9,7 @@
 #include "pa_types.h"
 #include "pa_pool.h"
 #include "pa_array.h"
+#include "pa_string.h"
 #include "pa_value.h"
 
 enum lexical_state {
@@ -82,7 +83,7 @@ inline void P(Array/*<op>*/ *result, Array *code_array) {
 // first: OP_STRING instruction
 // second op: string itself
 */
-Array *L(String *string);
+Array *L(Value *string);
 /* Literal Array to(2) String // return string value from literal array OP+string array */
 String *LA2S(Array *literal_string_array, int offset=0);
 /* Literal Array String2VString fix // return literal array with string changed to VString */

@@ -1,39 +1,29 @@
 /*
-  $Id: compile_tools.C,v 1.7 2001/02/22 10:43:45 paf Exp $
+  $Id: compile_tools.C,v 1.8 2001/02/22 13:52:26 paf Exp $
 */
 
 #include "compile_tools.h"
 #include "pa_string.h"
 #include "pa_array.h"
 #include "pa_exception.h"
-#include "pa_vstring.h"
+#include "pa_value.h"
 
-Array *L(String *string) {
+Array *L(Value *value) {
 	// empty ops array
-	Array *result=N(string->pool());
+	Array *result=N(value->pool());
 
 	// append OP_STRING
-	Operation op; op.code=OP_STRING;
+	Operation op; op.code=OP_VALUE;
 	*result+=op.cast;
 
-	// append 'string'
-	*result+=string;
+	// append 'value'
+	*result+=value;
 
 	return result;
 }
 
 String *LA2S(Array *literal_string_array, int offset) {
-	return static_cast<String *>(literal_string_array->get(offset+1));
-}
-Array *LAS2LAVS(Array *literal_array) {
-	Operation op; op.code=OP_VSTRING;
-	literal_array->put(0, op.cast);
-
-	Value *value=new(literal_array->pool()) 
-		VString(static_cast<String *>(literal_array->get(1)));
-	literal_array->put(1, value);
-
-	return literal_array;
+	return static_cast<Value *>(literal_string_array->get(offset+1))->get_string();
 }
 
 

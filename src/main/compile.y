@@ -87,7 +87,7 @@ action: get | put | with | call;
 
 get: '$' any_name {
 	$$=$2; /* stack: resulting value */
-	OP($$, OP_WRITE_VALUE); /* value=pop; write(value) */
+	OP($$, OP_WRITE); /* value=pop; write(value) */
 };
 
 any_name: name_without_curly_rdive EON | name_in_curly_rdive;
@@ -128,12 +128,9 @@ constructor_value:
 ;
 constructor_one_param_value: 
 	empty /* optimized $var() case */
-|	string_value /* optimized $var(STRING) case */
+|	STRING /* optimized $var(STRING) case */
 |	complex_constructor_param_value /* $var(something complex) */
 ;
-string_value: STRING {
-	$$=LAS2LAVS($1);
-};
 complex_constructor_param_value: complex_constructor_param_body {
 	$$=N(pool); 
 	OP($$, OP_CREATE_EWPOOL); /* stack: empty write context */
@@ -237,7 +234,7 @@ name_expr_with_subvar_value: STRING subvar_get_writes {
 	$$=N(pool); 
 	OP($$, OP_CREATE_EWPOOL);
 	P($$, $1);
-	OP($$, OP_WRITE_STRING);
+	OP($$, OP_WRITE);
 	P($$, $2);
 	OP($$, OP_REDUCE_EWPOOL);
 };
@@ -252,7 +249,7 @@ subvar_ref_name_rdive: STRING {
 subvar_get_writes: subvar__get_write | subvar_get_writes subvar__get_write { $$=$1; P($$, $2) };
 subvar__get_write: '$' subvar_ref_name_rdive {
 	$$=$2;
-	OP($$, OP_GET_ELEMENT__WRITE_VALUE);
+	OP($$, OP_GET_ELEMENT__WRITE);
 };
 
 
@@ -263,7 +260,7 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 	OP($$, OP_CREATE_RWPOOL);
 	P($$, $4);
 	OP($$, OP_REDUCE_RWPOOL);
-	OP($$, OP_WRITE_VALUE);
+	OP($$, OP_WRITE);
 };
 
 /* codes_in_brackets */
@@ -283,7 +280,7 @@ codes__excluding_sole_str_literal:
 ;
 write_str_literal: STRING {
 	$$=$1;
-	OP($$, OP_WRITE_STRING);
+	OP($$, OP_WRITE);
 };
 
 /* */
@@ -612,8 +609,8 @@ break2:
 			end--;
 		// append last piece
 		PC->string->APPEND(begin, end-begin, PC->file, begin_line/*, start_col*/);
-		// create STRING value: array of OP_STRING+string
-		*lvalp=L(PC->string);
+		// create STRING value: array of OP_VALUE+vstring
+		*lvalp=L(new(pool) VString(PC->string));
 		// new pieces storage
 		PC->string=new(pool) String(pool);
 		// go!

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.17 2001/02/22 13:33:28 paf Exp $
+  $Id: execute.C,v 1.18 2001/02/22 13:52:26 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -11,12 +11,12 @@
 
 
 char *opcode_name[]={
-	"STRING",  "VSTRING",  "CODE_ARRAY",
+	"VALUE",  "CODE_ARRAY",
 	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
 	"CONSTRUCT",
 	"EXPRESSION_EVAL",	"MODIFY_EVAL",
-	"WRITE_STRING",  "WRITE_VALUE",
-	"GET_ELEMENT",	"GET_ELEMENT__WRITE_VALUE",
+	"WRITE",
+	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
 	"CREATE_RWPOOL",	"REDUCE_RWPOOL",
 	"GET_METHOD_FRAME",
@@ -31,11 +31,7 @@ void dump(int level, const Array& ops) {
 		int code=reinterpret_cast<int>(ops.quick_get(i));
 		printf("%*s%s", level*4, "", opcode_name[code]);
 
-		if(code==OP_STRING) {
-			String *string=static_cast<String *>(ops.quick_get(++i));
-			printf(" \"%s\"", string->cstr());
-		}
-		if(code==OP_VSTRING) {
+		if(code==OP_VALUE) {
 			Value *value=static_cast<Value *>(ops.quick_get(++i));
 			printf(" \"%s\"", value->get_string()->cstr());
 		}
@@ -77,15 +73,7 @@ void Request::execute(Array& ops) {
 				break;
 			}
 			
-		case OP_STRING:
-			{
-				String *string=static_cast<String *>(ops.quick_get(++i));
-				printf(" \"%s\"", string->cstr());
-				stack.push(string);
-				break;
-			}
-			
-		case OP_VSTRING:
+		case OP_VALUE:
 			{
 				Value *value=static_cast<Value *>(ops.quick_get(++i));
 				printf(" \"%s\"", value->get_string()->cstr());
@@ -96,20 +84,13 @@ void Request::execute(Array& ops) {
 		case OP_CONSTRUCT:
 			{
 				Value *value=static_cast<Value *>(stack.pop());
-				String *name=static_cast<String *>(stack.pop());
+				VString *name=static_cast<VString *>(stack.pop());
 				Value *ncontext=static_cast<Value *>(stack.pop());
 				ncontext->put_element(*name, value);
 				break;
 			}
 			
-		case OP_WRITE_STRING:
-			{
-				String *string=static_cast<String *>(stack.pop());
-				wcontext->write(string);
-				break;
-			}
-			
-		case OP_WRITE_VALUE:
+		case OP_WRITE:
 			{
 				Value *value=static_cast<Value *>(stack.pop());
 				wcontext->write(value);
@@ -123,7 +104,7 @@ void Request::execute(Array& ops) {
 				break;
 			}
 
-		case OP_GET_ELEMENT__WRITE_VALUE:
+		case OP_GET_ELEMENT__WRITE:
 			{
 				Value *value=get_element();
 				wcontext->write(value);
@@ -153,7 +134,7 @@ void Request::execute(Array& ops) {
 }
 
 Value *Request::get_element() {
-	String *name=static_cast<String *>(stack.pop());
+	VString *name=static_cast<VString *>(stack.pop());
 	Value *ncontext=static_cast<Value *>(stack.pop());
 	Value *value=ncontext->get_element(*name); // name бывает method, тогда выдаЄт new junction(ј¬“ќ¬џ„»—Ћя“№=false, root,self,rcontext,wcontext,code)
 	// name бывает им€ junction, тогда или оставл€ет в покое, или вычисл€ет в зависимости от флага ј¬“ќ¬џ„»—Ћя“№

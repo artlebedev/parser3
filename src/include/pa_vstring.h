@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vstring.h,v 1.1 2001/02/22 09:36:18 paf Exp $
+  $Id: pa_vstring.h,v 1.2 2001/02/22 13:52:25 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -11,17 +11,23 @@ class VString : public Value {
 public: // Value
 
 	// all: for error reporting after fail(), etc
-	/*virtual*/ const char *type() const { return "VString"; }
+	const char *type() const { return "VString"; }
 	// string: value
-	/*virtual*/ String *get_string() { return string; };
+	String *get_string() { return string; };
 	// string: value
 	void put_string(String *astring) { string=astring; }
 
 public: // usage
 
+	VString(Pool& apool) : Value(apool), 
+		string(new(apool) String(apool)) {
+	}
+
 	VString(String *astring) : Value(astring->pool()), 
 		string(astring) {
 	}
+
+	operator String() { return *string; }
 
 private:
 	String *string;
