@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2004/02/11 15:33:12 $";
+static const char * const IDENT_OP_C="$Date: 2004/02/26 14:37:30 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -27,6 +27,9 @@ static const char * const IDENT_OP_C="$Date: 2004/02/11 15:33:12 $";
 // defines
 
 #define CASE_DEFAULT_VALUE "DEFAULT"
+#define PROCESS_MAIN_OPTION_NAME "main"
+#define PROCESS_FILE_OPTION_NAME "file"
+#define PROCESS_LINENO_OPTION_NAME "lineno"
 
 // class
 
@@ -163,22 +166,53 @@ static void _process(Request& r, MethodParams& params) {
 		// temporary zero @auto so it wouldn't be auto-called in Request::use_buf
 		Temp_method temp_method_auto(*target_class, auto_method_name, 0);
 
-		size_t main_alias_index=index+1;
-		const String* main_alias=0;
-		if(main_alias_index<params.count())
-			main_alias=&params.as_string(main_alias_index, "main alias must be string");
-
-		if(const String* file_name=params[index].get_string()) { // ^process...[file]
-			r.use_file(*target_class, r.absolute(*file_name), main_alias, true/*ignore_class_path*/);
-		} else { // process...{string}
-			Value& vjunction=params.as_junction(index, "body must be code");
-			// evaluate source to process
-			const String& source=r.process_to_string(vjunction);
-			r.use_buf(*target_class,
-				source.cstr(String::L_UNSPECIFIED, r.connection(false)),
-				main_alias,
-				pseudo_file_no__process);		
+		size_t options_index=index+1;
+		HashStringValue* options=0;
+		if(options_index<params.count()) {
+			Value& voptions=params.as_no_junction(options_index, "options must not be code");
+			options=voptions.get_hash();
+			if(!options)
+				throw Exception("parser.runtime",
+					0,
+					"options must be hash");
 		}
+
+		const String* main_alias=0;
+		const String* file_alias=0;
+		int line_no_alias_offset=0;
+		if(options) {
+			int valid_options=0;
+			if(Value* vmain_alias=options->get(PROCESS_MAIN_OPTION_NAME)) {
+				valid_options++;
+				main_alias=&vmain_alias->as_string();
+			}
+			if(Value* vfile_alias=options->get(PROCESS_FILE_OPTION_NAME)) {
+				valid_options++;
+				file_alias=&vfile_alias->as_string();
+			}
+			if(Value* vline_no_alias_offset=options->get(PROCESS_LINENO_OPTION_NAME)) {
+				valid_options++;
+				line_no_alias_offset=vline_no_alias_offset->as_int();
+			}
+	
+			if(valid_options!=options->count())
+				throw Exception("parser.runtime",
+					0,
+					"called with invalid option");
+		}
+
+		uint processe_file_no=file_alias?
+			r.register_file(r.absolute(*file_alias))
+			: pseudo_file_no__process;
+		// process...{string}
+		Value& vjunction=params.as_junction(index, "body must be code");
+		// evaluate source to process
+		const String& source=r.process_to_string(vjunction);
+		r.use_buf(*target_class,
+			source.cstr(String::L_UNSPECIFIED, r.connection(false)),
+			main_alias,
+			processe_file_no,
+			line_no_alias_offset);
 
 		// main_method
 		main_method=target_class->get_method(main_method_name);
@@ -756,7 +790,7 @@ VClassMAIN::VClassMAIN(): VClass() {
 	add_native_method("taint", Method::CT_ANY, _taint, 1, 2);
 
 	// ^process[code]
-	add_native_method("process", Method::CT_ANY, _process, 1, 2);
+	add_native_method("process", Method::CT_ANY, _process, 1, 3);
 
 	// ^rem{code}
 	add_native_method("rem", Method::CT_ANY, _rem, 1, 10000);

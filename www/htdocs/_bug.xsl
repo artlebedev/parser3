@@ -24,6 +24,7 @@
 		с переносом строки"/>
 		<tag attribute_from_xml="{@attribute}"/>
 		<br/>-->
+		?<xsl:value-of select="concat(document('parser://method/'),@attribute)"/>?
 		<tag2>
 			<xsl:attribute name="attribute_created_by_xsl_attribute">
 							value
@@ -33,6 +34,13 @@
 	<xsl:attribute name="создать_атрибут">
 		значение
 	</xsl:attribute>
+	        <div>
+			<xsl:attribute name="style">
+							<xsl:text>color:red;</xsl:text>
+							font-weight:bold
+			</xsl:attribute>
+	
+	sdkfjsdkfj</div>
 </создать_тег>
 		</html>
 	</xsl:template>

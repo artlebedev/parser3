@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2004/02/11 15:33:14 $";
+static const char * const IDENT_REQUEST_H="$Date: 2004/02/26 14:37:30 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -147,7 +147,7 @@ public:
 	bool finterrupted;
 
 public:
-	size_t register_file(String::Body file_spec);
+	uint register_file(String::Body file_spec);
 
 	struct Exception_details {
 		const Trace trace;
@@ -217,7 +217,8 @@ public:
 	void use_buf(VStateless_class& aclass,
 		const char* source, 
 		const String* main_alias,
-		uint file_no); // pa_request.C
+		uint file_no,
+		int line_no_offset=0); // pa_request.C
 
 	/// processes any code-junction there may be inside of @a value
 	StringOrValue process(Value& input_value, bool intercept_string=true); // execute.C
@@ -378,7 +379,8 @@ private: // compile.C
 
 	VStateless_class& compile(VStateless_class* aclass, 
 		const char* source, const String* main_alias, 
-		uint file_no);
+		uint file_no,
+		int line_no_offset);
 
 private: // execute.C
 

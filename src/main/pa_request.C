@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2004/02/11 15:33:16 $";
+static const char * const IDENT_REQUEST_C="$Date: 2004/02/26 14:37:30 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -502,7 +502,7 @@ body_string=&execute_method(frame, *method).as_string();
 	}
 }
 
-size_t Request::register_file(String::Body file_spec) {
+uint Request::register_file(String::Body file_spec) {
 	file_list+=file_spec;
 	return file_list.count()-1;
 }
@@ -560,14 +560,15 @@ void Request::use_file(VStateless_class& aclass,
 
 void Request::use_buf(VStateless_class& aclass,
 		      const char* source, const String* main_alias, 
-		      uint file_no) {
+		      uint file_no,
+			  int line_no_offset) {
 	// temporary zero @conf so to maybe-replace it in compiled code
 	Temp_method temp_method_conf(aclass, conf_method_name, 0);
 	// temporary zero @auto so to maybe-replace it in compiled code
 	Temp_method temp_method_auto(aclass, auto_method_name, 0);
 
 	// compile loaded class
-	VStateless_class& cclass=compile(&aclass, source, main_alias, file_no);
+	VStateless_class& cclass=compile(&aclass, source, main_alias, file_no, line_no_offset);
 
 	// locate and execute possible @conf[] static
 	VString* vfilespec=

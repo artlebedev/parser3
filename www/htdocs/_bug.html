@@ -1,17 +1,6 @@
-﻿@main[]
-$request:charset[UTF-8]
-#$response:charset[UTF-8]
-$response:charset[windows-1251]
-$response:content-type[$.value[text/html]$.charset[$response:charset]]
-$xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
-<doc attribute="a
-	 b">
-исходный
-</doc>
-}]
-$xdoc[^xdoc.transform[_bug.xsl]]
-^xdoc.string[]
-#^xdoc.save[_bug-koi.xml;$.encoding[koi8-r]]
-#^xdoc.save[_bug-in-request-charset.xml]
-<hr>
-$request:charset/$response:charset
+@main[]
+$file[^file::load[text;_bug.p]]
+^process[$self]{$file.text}[
+	$.file[$file.name]
+	$.lineno(-1)
+]

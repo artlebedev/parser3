@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2004/02/26 14:37:30 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -43,9 +43,9 @@ enum lexical_state {
 };
 
 struct Pos {
-	uint line;
-	uint col;
-	//Pos(uint aline, uint acol): line(aline), col(acol) {}
+	int line;
+	int col;
+	Pos(int aline, int acol): line(aline), col(acol) {}
 	Pos(): line(0), col(0) {}
 
 	void clear() { line=col=0; }
@@ -88,7 +88,8 @@ public:
 	Parse_control(Request& arequest, 
 		VStateless_class* aclass,
 		const char* asource, const String* amain_alias, 
-		uint afile_no):
+		uint afile_no,
+		int line_no_offset):
 		main_alias(amain_alias),
 		last_line_end_col(0),
 
@@ -98,6 +99,7 @@ public:
 		cclass(aclass), // until changed with @CLASS would consider operators loading
 		source(asource), 
 		file_no(afile_no),
+		pos(line_no_offset, 0),
 
 		// initialize state
 		trim_bof(true),
