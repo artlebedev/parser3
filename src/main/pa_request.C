@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.189 2001/12/21 12:50:18 paf Exp $
+	$Id: pa_request.C,v 1.190 2001/12/26 08:46:13 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -33,11 +33,7 @@ Methoded *MOP_create(Pool&);
 
 static void load_charset(const Hash::Key& akey, Hash::Val *avalue, 
 										  void *) {
-	Value& value=*static_cast<Value *>(avalue);
-
-	if(!charsets->get(akey)) // don't we know that charset?
-		charsets->put(akey, 
-			new(charsets->pool()) Charset(charsets->pool(), akey, &value.as_string()));
+	charsets->load_charset(akey, static_cast<Value *>(avalue)->as_string());
 }
 
 //

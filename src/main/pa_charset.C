@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.6 2001/12/19 16:41:02 paf Exp $
+	$Id: pa_charset.C,v 1.7 2001/12/26 08:46:13 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -137,16 +137,14 @@ private:
 // methods
 
 extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
-Charset::Charset(Pool& apool, const String& aname, const String *file_spec): Pooled(apool),
-	fname(apool) {
-	// fname
-	char *name_cstr=(char *)malloc(aname.size()+1);
-	memcpy(name_cstr, aname.cstr(String::UL_AS_IS), aname.size()+1);
-	fname.APPEND_CLEAN(name_cstr, aname.size(), 0, 0);
+Charset::Charset(Pool& apool, const String& aname, const String *request_file_spec): Pooled(apool),
+	fname(aname) {
 
-	if(file_spec) {
+	const char *name_cstr=fname.cstr();
+
+	if(request_file_spec) {
 		fisUTF8=false;
-		loadDefinition(*file_spec);
+		loadDefinition(*request_file_spec);
 #ifdef XML
 		addEncoding(name_cstr);
 #endif
@@ -167,7 +165,7 @@ Charset::~Charset() {
 #endif
 }
 
-void Charset::loadDefinition(const String& file_spec) {
+void Charset::loadDefinition(const String& request_file_spec) {
 	// pcre_tables
 	// lowcase, flipcase, bits digit+word+whitespace, masks
 
@@ -187,7 +185,7 @@ void Charset::loadDefinition(const String& file_spec) {
 	toTableSize++;
 
 	// loading text
-	char *data=file_read_text(pool(), file_spec);
+	char *data=file_read_text(pool(), request_file_spec);
 
 	// ignore header
 	getrow(&data);
@@ -217,7 +215,7 @@ void Charset::loadDefinition(const String& file_spec) {
 				// charset
 				if(toTableSize>MAX_CHARSET_UNI_CODES)
 					throw Exception(0, 0,
-						&file_spec,
+						&request_file_spec,
 						"charset must contain not more then %d unicode values", MAX_CHARSET_UNI_CODES);
 
 				XMLCh unicode=(XMLCh)to_wchar_code(cell);

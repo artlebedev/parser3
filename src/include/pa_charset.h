@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.h,v 1.1 2001/12/15 21:51:43 paf Exp $
+	$Id: pa_charset.h,v 1.2 2001/12/26 08:46:12 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
@@ -46,7 +46,7 @@ namespace PCRE {
 class Charset : public Pooled {
 public:
 
-	Charset(Pool& apool, const String& request_name, const String *file_spec);
+	Charset(Pool& apool, const String& aname, const String *request_file_spec);
 	Charset::~Charset();
 	
 	const String& name() const { return fname; }
@@ -64,7 +64,7 @@ public:
 
 private:
 
-	void loadDefinition(const String& file_spec);
+	void loadDefinition(const String& request_file_spec);
 	void sort_ToTable();
 
 	XMLByte xlatOneTo(const XMLCh toXlat) const;
@@ -81,7 +81,7 @@ private:
 
 private:
 
-	String fname;
+	const String& fname;
 	bool fisUTF8;
 	XMLCh fromTable[0x100];
 	Charset_TransRec *toTable;
