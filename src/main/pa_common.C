@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2003/11/24 12:21:02 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2003/12/17 10:12:34 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -504,7 +504,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 
 	// output response
 	String::C real_body=String::C(raw_body.cstrm()/*must be modifiable*/, raw_body.length());
-	if(as_text)
+	if(as_text && raw_body.length()) // must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
 		real_body=Charset::transcode(real_body, *real_remote_charset, charsets.source());
 
 	result.str=const_cast<char *>(real_body.str); // hacking a little
@@ -582,8 +582,6 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 		}
 
 		fix_line_breaks((char *)(result.str), result.length); 
-		// note: after fixing
-		((char*&)(result.str))[result.length]=0;
 	}
 
 	return result;
