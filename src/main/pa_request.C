@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.160 2001/09/30 12:27:59 parser Exp $
+	$Id: pa_request.C,v 1.161 2001/09/30 13:28:15 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -31,6 +31,7 @@ extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 #	include <util/TransENameMap.hpp>
 #	include <util/XML256TableTranscoder.hpp>
 #	include <util/PlatformUtils.hpp>
+#	include <PlatformSupport/XalanTranscodingServices.hpp>
 #endif
 
 /// content type of exception response, when no @MAIN:exception handler defined
@@ -204,6 +205,25 @@ private :
 };
 #endif
 
+#ifdef XALAN_HACK_DIGITAL_ENTITIES
+static void hack_s_maximumCharacterValues(const XalanDOMString& encoding) {
+/*
+	open:
+		xml-xalan/c/src/PlatformSupport/XalanTranscodingServices.hpp 
+	find: 
+		static const MaximumCharacterValueMapType&	s_maximumCharacterValues;
+	paste to next line:
+		friend static void hack_s_maximumCharacterValues(const XalanDOMString& encoding); // hack by paf
+*/
+
+	/*
+	const_cast<XalanTranscodingServices::MaximumCharacterValueMapType &>(
+		XalanTranscodingServices::s_maximumCharacterValues).insert(
+		XalanTranscodingServices::MaximumCharacterValueMapType::value_type(encoding, 0xFFFF));
+		*/
+}
+#endif
+
 static void load_charset(const Hash::Key& akey, Hash::Val *avalue, 
 										  void *info) {
 	Hash& CTYPE=*static_cast<Hash *>(info);
@@ -246,9 +266,12 @@ static void load_charset(const Hash::Key& akey, Hash::Val *avalue,
 
 #ifdef XML
 	// charset->transcoder
-	XalanDOMString skey(akey.cstr());
-	const XMLCh* const auto_encoding_cstr=skey.c_str();
-	int size=sizeof(XMLCh)*(skey.size()+1);
+	XalanDOMString sencoding(akey.cstr());
+#ifdef XALAN_HACK_DIGITAL_ENTITIES
+	hack_s_maximumCharacterValues(sencoding);
+#endif
+	const XMLCh* const auto_encoding_cstr=sencoding.c_str();
+	int size=sizeof(XMLCh)*(sencoding.size()+1);
 	XMLCh* pool_encoding_cstr=(XMLCh*)malloc(size);
 	memcpy(pool_encoding_cstr, auto_encoding_cstr, size);
     XMLString::upperCase(pool_encoding_cstr);
@@ -261,7 +284,6 @@ static void load_charset(const Hash::Key& akey, Hash::Val *avalue,
 			, tables.toTable
 			, tables.toTableSz
 		));
-	// delete sencoding; somehow
 #endif
 }
 
