@@ -43,6 +43,7 @@ mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll	Y:\parser3\src\sql\mysql\m
 ]
 $MAIL[
 	$SMTP[mail.office.design.ru]
+	$SMTP[194.85.21.1:2500]
 #	$prog1[/usr/sbin/sendmail -t]
 #	$prog2[/usr/lib/sendmail -t]
 ]
