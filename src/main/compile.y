@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.112 2001/03/24 16:29:09 paf Exp $
+	$Id: compile.y,v 1.113 2001/03/24 16:30:42 paf Exp $
 */
 
 /**
@@ -569,8 +569,6 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		} else
 			PC->col++;
 
-		// todo: # in 0+1 column comment
-
 		// escaping: ^^ ^$ ^; ^) ^} ^( ^{ ^"
 		if(c=='^') 
 			switch(*PC->source) {
@@ -590,14 +588,12 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				// skip analysis = forced literal
 				continue;
 			}
+		// #comment  start skipping
 		if(c=='#' && PC->col==1) {
 			if(end!=begin) {
 				// append piece till #
 				PC->string->APPEND(begin, end-begin, PC->file, begin_line);
 			}
-			// reset piece 'begin' position & line
-			begin=PC->source;
-			begin_line=PC->line;
 			// fall into COMMENT lexical state [wait for \n]
 			push_LS(PC, LS_COMMENT);
 		}
