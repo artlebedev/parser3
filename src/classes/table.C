@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.56 2001/04/05 18:22:57 paf Exp $
+	$Id: table.C,v 1.57 2001/04/06 08:55:18 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -423,7 +423,7 @@ static void _join(Request& r, const String& method_name, Array *params) {
 	}
 }
 
-/// ^table:sql{query}[(count[;offset])] @test limit/offset
+/// ^table:sql{query}[(count[;offset])]
 static void _sql(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 

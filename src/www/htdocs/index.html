@@ -34,12 +34,15 @@ $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 ^connect[$SQL.connect-string]{
 	$random_age(^random:generate(10000))
 	$shit[^taint[our's]]
-#	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
-	$paf[^table:sql{select * from paf}(10;1)]
+	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
+	$paf[^table:sql{select * from paf order by id desc}(5)]
+	$paf{
+	^empty{query result is empty}{
 	<table border=1>
 		<tr><td>id</td><td>name</td><td>age</td></tr>
-		^paf.menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
+		^menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
 	</table>
+	}}
 }
 
 <HR>
