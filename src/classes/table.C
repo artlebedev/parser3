@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/11/04 10:49:34 $";
+static const char* IDENT_TABLE_C="$Date: 2003/11/04 12:04:39 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -290,6 +290,7 @@ static void skip_empty_and_comment_lines( char** data_ref ) {
 struct TableSeparators {
 	char column;
 	char encloser;
+	const String* sencloser;
 
 	TableSeparators() {
 		column='\t';
@@ -307,12 +308,12 @@ struct TableSeparators {
 		}
 		if(Value* vencloser=options.get(COLUMN_ENCLOSER_NAME)) {
 			options.remove(COLUMN_ENCLOSER_NAME);
-			const String& sencloser=vencloser->as_string();
-			if(sencloser.length()!=1)
+			sencloser=&vencloser->as_string();
+			if(sencloser->length()!=1)
 				throw Exception("parser.runtime",
-					&sencloser,
+					sencloser,
 					"encloser must be one character long");
-			encloser=sencloser.first_char();
+			encloser=sencloser->first_char();
 		}
 	}
 };
@@ -379,23 +380,73 @@ static void _load(Request& r, MethodParams& params) {
 	GET_SELF(r, VTable).set_table(table);
 }
 
-/// @todo "x\nx" "xxx""xx"
+static void maybe_enclose( String& to, const String& from, char encloser, const String* sencloser ) {
+	if(encloser) {
+		to<<*sencloser;
+		// while we have 'encloser'...
+		for( size_t pos_before, pos_after=0; (pos_before=from.pos( encloser, pos_after ))!=STRING_NOT_FOUND; ) {
+            to<<from.mid(pos_before+1/*+found encloser*/, pos_after-pos_before);
+			to<<*sencloser; // doubling encloser
+			pos_after=pos_before+1;
+		}
+		// last piece
+		size_t from_length=from.length();
+		if(pos_after<from_length)
+			to<<from.mid(pos_after, from_length);
+
+		to<<*sencloser;
+	} else
+		to.append(from, String::L_TABLE);
+}
+
+
 static void _save(Request& r, MethodParams& params) {
-	Value& vfile_name=params.as_no_junction(params.count()-1, "file name must not be code");
+	const String& first_arg=params.as_string(0, "first argument must not be code");
+	size_t param_index=1;
+
+	bool do_append=false;
+	bool output_column_names=true;
+
+	// mode?
+	if(first_arg=="append")
+		do_append=true;
+	else if(first_arg=="nameless")
+		output_column_names=false;
+	else
+		--param_index;
+
+	const String& file_name=params.as_string(param_index++, "file name must not be code");
+
+	TableSeparators separators;
+	if(param_index<params.count()) {
+		if(HashStringValue *options=params.as_no_junction(param_index++, "additional params must be hash").get_hash()) {
+			separators.load(*options);
+			if(options->count())
+				throw Exception("parser.runtime",
+					0,
+					"invalid option passed");
+		} else
+			throw Exception("parser.runtime",
+				0,
+				"additional params must be hash (did you spell mode parameter correctly?)");
+		
+	}
+	if(param_index<params.count())
+		throw Exception("parser.runtime",
+			0,
+			"bad mode (must be nameless or append)");
 
 	Table& table=GET_SELF(r, VTable).table();
 
-	bool do_append=false;
 	String sdata;
-	if(params.count()==1) { // named output
-		// write out names line
+	if(output_column_names) {
 		if(table.columns()) { // named table
 			for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
-				sdata.append(*i.next(), String::L_TABLE);
+				maybe_enclose( sdata, *i.next(), separators.encloser, separators.sencloser );
 				if(i.has_next())
 					sdata.append_know_length("\t", 1, String::L_CLEAN);
 			}
-		} else { // nameless table
+		} else { // nameless table [we were asked to output column names]
 			if(int lsize=table.count()?table[0]->count():0)
 				for(int column=0; column<lsize; column++) {
 					char *cindex_tab=new(PointerFreeGC) char[MAX_NUMBER];
@@ -408,23 +459,13 @@ static void _save(Request& r, MethodParams& params) {
 				sdata.append_help_length("empty nameless table", 0, String::L_CLEAN);
 		}
 		sdata.append_know_length("\n", 1, String::L_CLEAN);
-	} else { // mode specified
-		const String&  mode=params.as_string(0, "mode must be string");
-		if(mode=="append")
-			do_append=true;
-		else if(mode=="nameless")
-			/*ok, already skipped names output*/;
-		else
-			throw Exception("parser.runtime",
-				&mode,
-				"unknown mode, must be 'append'");
-
 	}
+
 	// data lines
 	Array_iterator<ArrayString*> i(table);
 	while(i.has_next()) {
 		for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
-			sdata.append(*c.next(), String::L_TABLE);
+			maybe_enclose( sdata, *c.next(), separators.encloser, separators.sencloser );
 			if(c.has_next())
 				sdata.append_know_length("\t", 1, String::L_CLEAN);
 		}
@@ -432,7 +473,7 @@ static void _save(Request& r, MethodParams& params) {
 	}
 
 	// write
-	file_write(r.absolute(vfile_name.as_string()), 
+	file_write(r.absolute(file_name), 
 		sdata.cstr(), sdata.length(), true, do_append);
 }
 
@@ -991,7 +1032,7 @@ MTable::MTable(): Methoded("table") {
 
 	// ^table.save[file]  
 	// ^table.save[nameless;file]
-	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
+	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 3);
 
 	// ^table.count[]
 	add_native_method("count", Method::CT_DYNAMIC, _count, 0, 0);

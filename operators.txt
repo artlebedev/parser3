@@ -312,7 +312,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         !$.separator[^#09]
         !$.encloser["] по-умолчанию, нет.
     !^table::sql{query}[[$.limit(2) $.offset(4) todo:$.default{ ^table::create[...] }]]
-    !^таблица.save[[nameless|append;]путь]
+    !^таблица.save[[nameless|append;]путь[;опции, см. load]]
     !$таблица.поле
     !$таблица.fields  из named таблицы выдаёт текущую запись как Hash
     !^таблица.menu{тело}[разделитель]

@@ -31,3 +31,14 @@ $c[^t.columns[]]
 	<br>
 
 }
+
+
+---------------
+
+$t[^table::create{a	b
+^taint[av	av]	^taint[b
+v]}]
+
+^t.save[t.cfg;
+	$.encloser["]
+]

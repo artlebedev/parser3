@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/10/21 05:11:00 $";
+static const char* IDENT_STRING_C="$Date: 2003/11/04 12:04:39 $";
 
 #include "pcre.h"
 
@@ -194,7 +194,7 @@ void String::split(ArrayString& result,
 		   Language lang, int limit) const {
 	size_t self_length=length();
 	if(size_t delim_length=strlen(delim)) {
-		int pos_before;
+		size_t pos_before;
 		// while we have 'delim'...
 		for(; (pos_before=pos(delim, pos_after, lang))!=STRING_NOT_FOUND && limit; limit--) {
 			result+=&mid(pos_after, pos_before);
@@ -216,7 +216,7 @@ void String::split(ArrayString& result,
 		   const String& delim, Language lang, 
 		   int limit) const {
 	if(!delim.is_empty()) {
-		int pos_before;
+		size_t pos_before;
 		// while we have 'delim'...
 		for(; (pos_before=pos(delim, pos_after, lang))!=STRING_NOT_FOUND && limit; limit--) {
 			result+=&mid(pos_after, pos_before);
