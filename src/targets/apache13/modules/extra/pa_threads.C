@@ -5,19 +5,26 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_threads.C,v 1.1 2001/05/17 10:49:56 parser Exp $
+	$Id: pa_threads.C,v 1.2 2001/05/17 12:51:05 parser Exp $
 */
 
 #include "pa_threads.h"
 
-#ifdef MULTITHREAD
-
-#include "ap_config.h"
-
 Mutex global_mutex;
 
-Mutex::Mutex() {
-	handle=reinterpret_cast<mutex *>(ap_create_mutex(0));
+#include "ap_config.h"
+#include "multithread.h"
+// defined in ap_config
+#ifdef MULTITHREAD
+
+Mutex::Mutex() : 
+	handle(reinterpret_cast<uint>(ap_create_mutex(0))) {
+		if(!handle) {
+			__asm {
+				int 3;
+			};
+		}
+			
 }
 
 Mutex::~Mutex() {
@@ -25,11 +32,22 @@ Mutex::~Mutex() {
 }
 
 void Mutex::acquire() {
+	if(!handle)
+			__asm {
+				int 3;
+			};
 	ap_acquire_mutex(reinterpret_cast<mutex *>(handle));
 }
 
 void Mutex::release() {
 	ap_release_mutex(reinterpret_cast<mutex *>(handle));
 }
+
+#else
+
+Mutex::Mutex() {}
+Mutex::~Mutex() {}
+void Mutex::acquire() {}
+void Mutex::release() {}
 
 #endif

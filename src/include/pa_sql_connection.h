@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.7 2001/05/17 10:22:24 parser Exp $
+	$Id: pa_sql_connection.h,v 1.8 2001/05/17 12:51:05 parser Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -27,18 +27,15 @@ public:
 
 	SQL_Connection(Pool& pool,
 		const String& aurl, 
-		SQL_Driver& adriver, SQL_Driver_services& services, 
+		SQL_Driver& adriver,
 		char *used_only_in_constructor_url_cstr) : Pooled(pool),
 		furl(aurl),
 		fdriver(adriver) {
-
-		set_services(&services); // associate with services[request]
 		fdriver.connect(used_only_in_constructor_url_cstr, &connection);
 	}
 
-	void close() {
-		set_services(0); // deassociate from services[request]
-		SQL_driver_manager->close_connection(furl, *this);
+	void close(Pool& pool) {
+		SQL_driver_manager->close_connection(furl, *this, pool);
 	}
 
 	void disconnect() { fdriver.disconnect(connection); }
