@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.25 2002/02/08 08:31:31 paf Exp $
+	$Id: pa_exec.C,v 1.26 2002/02/26 13:45:12 paf Exp $
 
 
 	@todo setrlimit
@@ -27,7 +27,7 @@
 #ifdef WIN32
 
 /// this func from http://www.ccas.ru/~posp/popov/spawn.htm
-static BOOL WINAPI CreateHiddenConsoleProcess(LPCTSTR szChildName,
+static BOOL WINAPI CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
 										char *szEnv,
                                         PROCESS_INFORMATION* ppi, 
                                         LPHANDLE phInWrite,
@@ -72,7 +72,7 @@ static BOOL WINAPI CreateHiddenConsoleProcess(LPCTSTR szChildName,
 
     // Create a child process (suspended)
     fCreated=CreateProcess(NULL,
-                              (LPTSTR)szChildName,
+                              (LPTSTR)szCmdLine,
                               NULL,
                               NULL,
                               TRUE,
@@ -352,7 +352,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
             
 		throw Exception(0, 0,
 			&file_spec,
-			"(real filename=\"%s\") exec failed - %s (%ld)",
+			"(real command line=\"%s\") exec failed - %s (%ld)",
 				cmd,
 				szErrorDesc, (long)error);
 	}
