@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.36 2001/03/15 09:04:06 paf Exp $
+	$Id: pa_request.C,v 1.37 2001/03/15 09:37:56 paf Exp $
 */
 
 #include <string.h>
@@ -69,16 +69,16 @@ char *Request::core(const char *sys_auto_path1,
 			strcat(auto_filespec, AUTO_FILE_NAME);
 			main_class=use_file(
 				auto_filespec, false/*ignore possible read problem*/,
-				main_class_name);
+				main_class_name, main_class);
 		}
 
 		// loading system auto.p 2
 		if(sys_auto_path2) {
 			strncpy(auto_filespec, sys_auto_path2, MAX_STRING-strlen(AUTO_FILE_NAME));
 			strcat(auto_filespec, AUTO_FILE_NAME);
-			VStateless_class *main_class=use_file(
+			main_class=use_file(
 				auto_filespec, false/*ignore possible read problem*/,
-				main_class_name);
+				main_class_name, main_class);
 		}
 
 		// $MAIN:limits hash used here,

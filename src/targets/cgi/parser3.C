@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.12 2001/03/15 09:04:07 paf Exp $
+	$Id: parser3.C,v 1.13 2001/03/15 09:37:56 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -89,8 +89,7 @@ int main(int argc, char *argv[]) {
 	if(!cgi) {
 		if(argc<2) {
 			char *binary=argv[0];
-			char *name=rsplit(binary, PATH_DELIMITER_CHAR);
-			printf("Usage: %s <file>\n", name?name:"parser3");
+			printf("Usage: %s <file>\n", binary?binary:"parser3");
 			exit(1);
 		}
 	}
@@ -110,10 +109,22 @@ int main(int argc, char *argv[]) {
 		// init global variables
 		globals_init(pool);
 
+		if(!filespec_to_process)
+			PTHROW(0, 0,
+				0,
+				"no file to process");
+
 		// Request info
 		// TODO: ifdef WIN32 flip \\ to /
 		Request::Info request_info;
-		request_info.document_root="Y:/parser3/src/";
+		const char *document_root=getenv("DOCUMENT_ROOT");
+		if(!document_root) {
+			static char fake_document_root[MAX_STRING];
+			strncpy(fake_document_root, filespec_to_process, MAX_STRING);
+			rsplit(fake_document_root, '/');  rsplit(fake_document_root, '\\');// strip filename
+			document_root=fake_document_root;
+		}
+		request_info.document_root=document_root;
 		request_info.path_translated=filespec_to_process;
 		request_info.request_method=getenv("REQUEST_METHOD");
 		request_info.query_string=getenv("QUERY_STRING");
@@ -143,7 +154,8 @@ int main(int argc, char *argv[]) {
 		// beside by binary
 		char *sys_auto_path2=(char *)pool.malloc(MAX_STRING);
 		strncpy(sys_auto_path2, argv[0], MAX_STRING);  // filespec of my binary
-		rsplit(sys_auto_path2, PATH_DELIMITER_CHAR);  // strip filename
+		rsplit(sys_auto_path2, '/');  rsplit(sys_auto_path2, '\\');// strip filename
+		strcat(sys_auto_path2, PATH_DELIMITER_STRING);
 		
 		// process the request
 		result=request.core(

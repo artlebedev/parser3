@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.6 2001/03/14 17:09:22 paf Exp $
+	$Id: pa_vstring.h,v 1.7 2001/03/15 09:37:57 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -35,7 +35,7 @@ public: // Value
 		else
 			result=strtod(cstr, &error_pos);
 
-		return error_pos?0:result;
+		return error_pos&&*error_pos?0:result;
 	}
 	// string: empty or not
 	bool get_bool() { return fvalue.size()!=0; };
