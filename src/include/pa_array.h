@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.11 2001/01/29 20:10:31 paf Exp $
+  $Id: pa_array.h,v 1.12 2001/01/29 20:46:21 paf Exp $
 */
 
 /*
@@ -40,12 +40,16 @@ public:
 	void *operator new(size_t size, Pool& apool);
 	Array(Pool& apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
-	int size() { return fused_rows; }
-	Array& operator += (Item *src);
-	Array& append_array(Array& src);
-	Item *get(int index);
-	char *get_cstr(int index) { return static_cast<char *>(get(index)); }
-	String *get_string(int index) { return static_cast<String *>(get(index)); }
+	int size() const { return fused_rows; }
+	Array& operator += (const Item *src);
+	Array& append_array(const Array& src);
+	const Item *get(int index) const;
+	const char *get_cstr(int index) const { 
+		return static_cast<const char *>(get(index)); 
+	}
+	const String *get_string(int index) const { 
+		return static_cast<const String *>(get(index)); 
+	}
 
 protected:
 
@@ -58,7 +62,7 @@ private:
 		// the number of rows in chunk
 		int count;
 		union Row {
-			Item *item;
+			const Item *item;
 			Chunk *link;  // link to the next chunk in chain
 		} rows[1];
 		// next rows are here
@@ -81,8 +85,8 @@ private:
 	// array size
 	int fused_rows;
 
-	int cache_chunk_base;
-	Chunk *cache_chunk;
+	mutable int cache_chunk_base;
+	mutable Chunk *cache_chunk;
 	
 private:
 
@@ -94,7 +98,7 @@ private:
 private: //disabled
 
 	//Array(Array&) { }
-	Array& operator = (Array&) { return *this; }
+	Array& operator = (const Array&) { return *this; }
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_table.C,v 1.2 2001/01/29 20:10:32 paf Exp $
+  $Id: pa_table.C,v 1.3 2001/01/29 20:46:22 paf Exp $
 */
 
 #include <stdlib.h>
@@ -29,21 +29,21 @@ Table::Table(Request& arequest,
 		}
 }
 
-Array *Table::at(int index) {
+const Array *Table::at(int index) {
 	if(index<0 || index>=size())
 		request.error.raise(0, 
 			"table column index %d is out of range [0..%d]", 
 			index, size()-1);
 	
-	return static_cast<Array *>(get(index));
+	return static_cast<const Array *>(get(index));
 }
 
-char *Table::item(int index) {
-	Array *row=at(current);
+const char *Table::item(int index) {
+	const Array *row=at(current);
 	return row->get_cstr(index);
 }
 
-char *Table::item(String column_name) {
+const char *Table::item(String column_name) {
 	int column_index;
 	if(columns) {
 		int found_index=name2number.get_int(column_name);
@@ -53,7 +53,7 @@ char *Table::item(String column_name) {
 			request.error.raise(&column_name, "column not found");
 	} else {
 		column_index=atoi(column_name.cstr());
-		Array *row=at(current);
+		const Array *row=at(current);
 		if(column_index<0 || column_index>=row->size())
 			request.error.raise(&column_name, 
 				"table column index %d is out of range [0..%d]", 

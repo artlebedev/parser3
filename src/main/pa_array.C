@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.10 2001/01/29 20:10:32 paf Exp $
+  $Id: pa_array.C,v 1.11 2001/01/29 20:46:22 paf Exp $
 */
 
 #include <string.h>
@@ -37,7 +37,7 @@ void Array::expand(int chunk_rows) {
 }
 
 
-Array& Array::operator += (Item *src) {
+Array& Array::operator += (const Item *src) {
 	if(chunk_is_full())
 		expand(tail->count*CR_GROW_PERCENT/100);
 
@@ -47,7 +47,7 @@ Array& Array::operator += (Item *src) {
 	return *this;
 }
 
-Array::Item *Array::get(int index) {
+const Array::Item *Array::get(int index) const {
 	if(!(index>=0 && index<size())) {
 		Error::die("Array::get out of range");
 		return 0;
@@ -69,7 +69,7 @@ Array::Item *Array::get(int index) {
 	return cache_chunk->rows[index-cache_chunk_base].item;
 }
 
-Array& Array::append_array(Array& src) {
+Array& Array::append_array(const Array& src) {
 	int src_used_rows=src.fused_rows;
 	int last_chunk_rows_left=link_row-append_here;
 	

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.8 2001/01/29 20:10:32 paf Exp $
+  $Id: pa_hash.C,v 1.9 2001/01/29 20:46:22 paf Exp $
 */
 
 /*
@@ -64,9 +64,9 @@ void Hash::expand() {
 		}
 }
 
-uint Hash::generic_code(uint aresult, char *start, uint size) {
+uint Hash::generic_code(uint aresult, const char *start, uint size) {
 	uint result=aresult, g;
-	char *end=start+size;
+	const char *end=start+size;
 
 	while (start<end) {
 		result=(result<<4)+*start++;

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.15 2001/01/29 20:10:32 paf Exp $
+  $Id: pa_pool.h,v 1.16 2001/01/29 20:46:22 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -41,7 +41,7 @@ public:
 private: //disabled
 
 	Pool(Pool&) {}
-	Pool& operator = (Pool&) { return *this; }
+	Pool& operator = (const Pool&) { return *this; }
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.11 2001/01/29 20:10:32 paf Exp $
+  $Id: pa_string.h,v 1.12 2001/01/29 20:46:22 paf Exp $
 */
 
 /*
@@ -29,10 +29,10 @@
 class Pool;
 
 #ifndef NO_STRING_ORIGIN
-#	define STRING_APPEND_PARAMS char *src, char *file, uint line
+#	define STRING_APPEND_PARAMS const char *src, char *file, uint line
 #	define APPEND(src, file, line) real_append(src, file, line)
 #else
-#	define STRING_APPEND_PARAMS char *src
+#	define STRING_APPEND_PARAMS const char *src
 #	define APPEND(src, file, line) real_append(src)
 #endif
 
@@ -70,7 +70,7 @@ private:
 		union Row {
 			// chunk item
 			struct {
-				char *ptr;  // pointer to the start of string fragment
+				const char *ptr;  // pointer to the start of string fragment
 				size_t size;  // length of the fragment
 				Origin origin;  // origin of this fragment
 			} item;
@@ -107,7 +107,7 @@ private:
 
 private: //disabled
 
-	String& operator = (String&) { return *this; }
+	String& operator = (const String&) { return *this; }
 
 };
 

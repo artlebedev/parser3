@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.11 2001/01/29 20:10:31 paf Exp $
+  $Id: pa_hash.h,v 1.12 2001/01/29 20:46:22 paf Exp $
 */
 
 /*
@@ -29,7 +29,7 @@ public:
 	Hash(Pool& apool, bool athread_safe);
 
 	// useful generic hash function
-	static uint generic_code(uint aresult, char *start, uint size);
+	static uint generic_code(uint aresult, const char *start, uint size);
 
 	// put a [value] under the [key]
 	/*SYNCHRONIZED*/ void put(Key& key, Value *value);
@@ -101,7 +101,7 @@ private:
 private: //disabled
 
 	//Hash(Hash&) {}
-	Hash& operator = (Hash&) { return *this; }
+	Hash& operator = (const Hash&) { return *this; }
 };
 
 #endif

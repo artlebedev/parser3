@@ -1,5 +1,5 @@
 /*
-  $Id: pa_table.h,v 1.2 2001/01/29 20:10:32 paf Exp $
+  $Id: pa_table.h,v 1.3 2001/01/29 20:46:22 paf Exp $
 */
 
 /*
@@ -35,15 +35,15 @@ public:
 		Array *acolumns,
 		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
-	char *item(int column_index);
-	char *item(String column_name);
+	const char *item(int column_index);
+	const char *item(String column_name);
 
 protected:
 
 	// column name->number lookup table
 	Hash name2number;
 
-	Array *at(int index);
+	const Array *at(int index);
 
 };
 
