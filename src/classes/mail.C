@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.24 2001/04/28 10:58:26 paf Exp $
+	$Id: mail.C,v 1.25 2001/04/28 13:24:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -23,6 +23,12 @@
 
 #define MAIL_CLASS_NAME "mail"
 
+#define MAIL_NAME "MAIL"
+
+// global variable
+
+Methoded *mail_class;
+
 // class
 
 class MMail : public Methoded {
@@ -31,6 +37,10 @@ public:
 public: // Methoded
 	bool used_directly() { return true; }
 	void configure_user(Request& r);
+private:
+	String mail_name;
+	String content_disposition_name;
+	String content_disposition_filename_name;
 };
 
 // helpers
@@ -308,6 +318,7 @@ static void sendmail(Request& r, const String& method_name,
 	Pool& pool=r.pool();
 
 	char *letter_cstr=letter.cstr();
+	Hash *mail_conf=static_cast<Hash *>(r.classes_conf.get(mail_class->name()));
 
 #ifdef _MSC_VER
 	if(!from)
@@ -322,8 +333,8 @@ static void sendmail(Request& r, const String& method_name,
 	SMTP& smtp=*new(pool) SMTP(pool, method_name);
 	Value *server_port;
 	// $MAIN:MAIL.SMTP[mail.design.ru]
-	if(r.mail && 
-		(server_port=static_cast<Value *>(r.mail->get(
+	if(mail_conf && 
+		(server_port=static_cast<Value *>(mail_conf->get(
 			*new(pool) String(pool, "SMTP"))))) {
 		char *server=server_port->as_string().cstr();
 		const char *port=rsplit(server, ':');
@@ -339,7 +350,7 @@ static void sendmail(Request& r, const String& method_name,
 	// unix
 	// $MAIN:MAIL.prog1["/usr/sbin/sendmail -t"] default
 	// $MAIN:MAIL.prog2["/usr/lib/sendmail -t"] default
-	if(r.mail) {
+	if(mail_conf) {
 		char no_cstr[MAX_NUMBER];
 		for(int no=-2; ; no++) {
 			const String *prog_string;
@@ -351,7 +362,7 @@ static void sendmail(Request& r, const String& method_name,
 					String prog_key(pool, "prog");
 					snprintf(no_cstr, MAX_NUMBER, "%d", no);
 					prog_key << no_cstr;
-					if(Value *prog_value=static_cast<Value *>(r.mail->get(prog_key)))
+					if(Value *prog_value=static_cast<Value *>(mail_conf->get(prog_key)))
 						prog_string=&prog_value->as_string();
 					else
 						if(no==0)
@@ -423,7 +434,11 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 
 // constructor & configurator
 
-MMail::MMail(Pool& apool) : Methoded(apool) {
+MMail::MMail(Pool& apool) : Methoded(apool),
+	mail_name(apool, MAIL_NAME),
+	content_disposition_name(apool, CONTENT_DISPOSITION_NAME),
+	content_disposition_filename_name(apool, CONTENT_DISPOSITION_FILENAME_NAME)
+{
 	set_name(*NEW String(pool(), MAIL_CLASS_NAME));
 
 	/// ^mail:send{hash}
@@ -434,16 +449,14 @@ void MMail::configure_user(Request& r) {
 	Pool& pool=r.pool();
 
 	// $MAIN:MAIL[$SMTP[mail.design.ru]]
-	if(Value *mail_element=r.main_class->get_element(*mail_name))
-		if(!(r.mail=mail_element->get_hash()))
+	if(Value *mail_element=r.main_class->get_element(mail_name))
+		if(Hash *mail_conf=mail_element->get_hash())
+			r.classes_conf.put(name(), mail_conf);
+		else
 			PTHROW(0, 0,
 				0,
 				"$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
 }
-
-// global variable
-
-Methoded *mail_class;
 
 // creator
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.125 2001/04/28 12:58:44 paf Exp $
+	$Id: pa_request.C,v 1.126 2001/04/28 13:25:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -52,9 +52,9 @@ Request::Request(Pool& apool,
 	default_content_type(0),
 	mime_types(0),
 	main_class(0),
-	connection(0), protocol2library(0),
-	mail(0), 
-	pcre_tables(0)
+	connection(0),
+	pcre_tables(0),
+	classes_conf(apool) 
 {
 	/// directly used
 	// operators
@@ -229,11 +229,6 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		if(Value *element=main_class->get_element(*user_html_name))
 			if(Table *table=element->get_table())
 				pool().set_tag(table);
-
-		// $MAIN:SQL.drivers
-		if(Value *sql=main_class->get_element(*main_sql_name))
-			if(Value *element=sql->get_element(*main_sql_drivers_name))
-				protocol2library=element->get_table();		
 
 		// $MAIN:MIME-TYPES
 		if(Value *element=main_class->get_element(*mime_types_name))

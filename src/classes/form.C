@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: form.C,v 1.6 2001/04/28 12:58:37 paf Exp $
+	$Id: form.C,v 1.7 2001/04/28 13:24:57 paf Exp $
 */
 
 #include "classes.h"
@@ -19,6 +19,8 @@ const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
 
 #define FORM_CLASS_NAME "form"
 
+#define MAX_POST_SIZE_NAME "post_max_size"
+
 // class
 
 class MForm : public Methoded {
@@ -27,13 +29,17 @@ public:
 protected: // Methoded
 	bool used_directly() { return false; }
 	void configure_admin(Request& r);
+private:
+	String max_post_size_name;
 };
 
 // methods
 
 // constructor & configurator
 
-MForm::MForm(Pool& apool) : Methoded(apool) {
+MForm::MForm(Pool& apool) : Methoded(apool),
+	max_post_size_name(apool, MAX_POST_SIZE_NAME)
+{
 	set_name(*NEW String(pool(), FORM_CLASS_NAME));
 }
 
@@ -43,7 +49,7 @@ void MForm::configure_admin(Request& r) {
 	Value *limits=r.main_class?r.main_class->get_element(*limits_name):0;
 	if(r.info.method && StrEqNc(r.info.method, "post", true)) {
 		// $limits.max_post_size default 10M
-		Value *element=limits?limits->get_element(*max_post_size_name):0;
+		Value *element=limits?limits->get_element(max_post_size_name):0;
 		size_t value=element?(size_t)element->as_double():0;
 		size_t max_post_size=value?value:MAX_POST_SIZE_DEFAULT;
 		

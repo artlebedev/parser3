@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.10 2001/04/28 08:43:47 paf Exp $
+	$Id: op.C,v 1.11 2001/04/28 13:24:57 paf Exp $
 */
 
 #include "classes.h"
@@ -19,12 +19,24 @@
 
 #define OP_CLASS_NAME "OP"
 
+#define MAIN_SQL_NAME "SQL"
+#define MAIN_SQL_DRIVERS_NAME "drivers"
+
+// local variable
+
+static Methoded *OP;
+
 // class
 
 class MOP : public Methoded {
 public:
 	MOP(Pool& pool);
+public: // Methoded
 	bool used_directly() { return true; }
+	void configure_user(Request& r);
+private:
+	String main_sql_name;
+	String main_sql_drivers_name;
 };
 
 // methods
@@ -251,9 +263,11 @@ static void _connect(Request& r, const String&, MethodParams *params) {
 	Value& url=params->get_no_junction(0, "url must not be code");
 	Value& body_code=params->get_junction(1, "body must be code");
 
+	Table *protocol2library=static_cast<Table *>(r.classes_conf.get(OP->name()));
+
 	// connect
 	SQL_Connection& connection=SQL_driver_manager->get_connection(
-		url.as_string(), r.protocol2library);
+		url.as_string(), protocol2library);
 
 	Exception rethrow_me;
 	// remember/set current connection
@@ -293,7 +307,10 @@ static void _connect(Request& r, const String&, MethodParams *params) {
 
 // constructor
 
-MOP::MOP(Pool& apool) : Methoded(apool) {
+MOP::MOP(Pool& apool) : Methoded(apool),
+	main_sql_name(apool, MAIN_SQL_NAME),
+	main_sql_drivers_name(apool, MAIN_SQL_DRIVERS_NAME)
+{
 	set_name(*NEW String(pool(), OP_CLASS_NAME));
 
 	// ^if(condition){code-when-true}
@@ -350,8 +367,20 @@ MOP::MOP(Pool& apool) : Methoded(apool) {
 	add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
 
 }
-// creator
+
+// constructor & configurator
 
 Methoded *MOP_create(Pool& pool) {
-	return new(pool) MOP(pool);
+	return OP=new(pool) MOP(pool);
+}
+
+
+void MOP::configure_user(Request& r) {
+	Pool& pool=r.pool();
+
+	// $MAIN:SQL.drivers
+	if(Value *sql=r.main_class->get_element(main_sql_name))
+		if(Value *element=sql->get_element(main_sql_drivers_name))
+			if(Table *protocol2library=element->get_table())
+				r.classes_conf.put(name(), protocol2library);
 }

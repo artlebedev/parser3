@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.57 2001/04/28 08:43:57 paf Exp $
+	$Id: pa_globals.C,v 1.58 2001/04/28 13:25:03 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -133,9 +133,6 @@ void pa_globals_init(Pool& pool) {
 	string_post_match_name=NEW String(pool, STRING_POST_MATCH_NAME);
 
 
-	limits_name=NEW String(pool, LIMITS_NAME);
-	post_max_size_name=NEW String(pool, POST_MAX_SIZE_NAME);
-
 	defaults_name=NEW String(pool, DEFAULTS_NAME);
 	ctype_name=NEW String(pool, CTYPE_NAME);
 	ctype_white_space_name=NEW String(pool, CTYPE_WHITE_SPACE_NAME);
@@ -146,12 +143,7 @@ void pa_globals_init(Pool& pool) {
 	ctype_lowercase_name=NEW String(pool, CTYPE_LOWERCASE_NAME);
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
 	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
-	mail_name=NEW String(pool, MAIL_NAME);
 	
-
-	main_sql_name=NEW String(pool, MAIN_SQL_NAME);
-	main_sql_drivers_name=NEW String(pool, MAIN_SQL_DRIVERS_NAME);
-
 	// hashes
 	untaint_lang_name2enum=NEW Hash(pool);
 	String as_is(pool, "as-is");  

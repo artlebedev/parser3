@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.51 2001/04/28 08:43:53 paf Exp $
+	$Id: pa_globals.h,v 1.52 2001/04/28 13:25:00 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -36,9 +36,6 @@ class Table;
 #define EXCEPTION_METHOD_NAME "exception"
 #define POST_PROCESS_METHOD_NAME "postprocess"
 
-#define CONTENT_DISPOSITION_NAME "content-disposition"
-#define CONTENT_DISPOSITION_FILENAME_NAME "filename"
-
 #define UNNAMED_NAME "unnamed"
 
 #define MAIN_METHOD_NAME "main"
@@ -46,8 +43,6 @@ class Table;
 
 #define MAIN_CLASS_NAME "MAIN"
 
-#define LIMITS_NAME "LIMITS"
-#define POST_MAX_SIZE_NAME "post_max_size"
 #define DEFAULTS_NAME "DEFAULTS"
 #define CTYPE_NAME "CTYPE"
 #	define CTYPE_WHITE_SPACE_NAME "white-space"
@@ -58,16 +53,18 @@ class Table;
 #	define CTYPE_LOWERCASE_NAME "lowercase"
 #define MIME_TYPES_NAME "MIME-TYPES"
 #define VFILE_MIME_TYPE_NAME "mime-type"
-#define MAIL_NAME "MAIL"
-
-#define MAIN_SQL_NAME "SQL"
-#define MAIN_SQL_DRIVERS_NAME "drivers"
 
 #define RESULT_VAR_NAME "result"
 
 #define STRING_PRE_MATCH_NAME "prematch"
 #define STRING_MATCH_NAME "match"
 #define STRING_POST_MATCH_NAME "postmatch"
+
+#define CONTENT_DISPOSITION_NAME "content-disposition"
+#define CONTENT_DISPOSITION_FILENAME_NAME "filename"
+
+#define LIMITS_NAME "LIMITS"
+
 //@}
 
 /// core func
@@ -91,9 +88,6 @@ extern String *text_name;
 extern String *exception_method_name;
 extern String *post_process_method_name;
 
-extern String *content_disposition_name;
-extern String *content_disposition_filename_name;
-
 extern String *unnamed_name;
 extern String *empty_string;
 
@@ -102,8 +96,6 @@ extern String *main_method_name;
 
 extern String *main_class_name;
 
-extern String *limits_name;
-extern String *post_max_size_name;
 
 extern String *defaults_name;
 extern String *ctype_name;
@@ -116,15 +108,16 @@ extern String *ctype_lowercase_name;
 
 extern String *mime_types_name;
 extern String *vfile_mime_type_name;
-extern String *mail_name;
-
-extern String *main_sql_name;
-extern String *main_sql_drivers_name;
 
 extern String *result_var_name;
 extern String *string_pre_match_name;
 extern String *string_match_name;
 extern String *string_post_match_name;
+
+extern String *content_disposition_name;
+extern String *content_disposition_filename_name;
+
+extern String *limits_name;
 //@}
 
 /// global hash
