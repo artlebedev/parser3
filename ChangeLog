@@ -1,3 +1,242 @@
+2004-03-23  paf
+	* src/targets/cgi/parser3.C 1.224:
+		debug helper added
+
+	* src/classes/op.C 1.147:
+	* src/types/pa_value.C 1.17:
+	* src/types/pa_wcontext.C 1.30:
+	* www/htdocs/_bug.html 1.33:
+		bugfix: junction reattach now actually reattaches a junction to new wcontext [were only assigning it to junction,
+		which caused junction tracking to loose junction, and it's context were not killed, and it tried to process in invalid context, gpf]
+
+2004-03-19  paf
+	* src/types/pa_wcontext.C 1.29:
+	* www/htdocs/_bug.html 1.32:
+		beauty: error messages removed duplicate "type(type)" in braces
+
+2004-03-10  paf
+	* operators.txt 1.169:
+	* src/classes/xdoc.C 1.144:
+	* src/classes/xnode.C 1.67:
+	* src/classes/xnode.h 1.22:
+	* src/types/pa_vxdoc.C 1.28:
+	* src/types/pa_vxdoc.h 1.39:
+	* src/types/pa_vxnode.C 1.38:
+	* src/types/pa_vxnode.h 1.30:
+	* www/htdocs/_bug.html 1.31:
+		new: refined solution to search-in-namespaces problem:
+		$xdoc.search-namespaces.x[http://pif.design.ru/]
+		$nodes[^xdoc.select[//x:second]]
+
+	* operators.txt 1.168:
+	* src/classes/xnode.C 1.66:
+	* www/htdocs/_bug.html 1.30:
+	* www/htdocs/_bug.xml 1.2:
+		new: xnode.select*[xpath expression][[NAMESPACES HASH]]
+		allows to search for info in namespaces
+		
+		$nodes[^xdoc.select[//x:second][
+			$.x[http://pif.design.ru/]
+		]]
+
+2004-03-09  paf
+	* operators.txt 1.167:
+	* src/main/pa_common.C 1.181:
+	* www/htdocs/.htaccess 1.28:
+	* www/htdocs/_bug.html 1.29:
+	* www/htdocs/_bug.txt 1.3:
+	* www/htdocs/_bug.xsl 1.12:
+		new: ^file::load[...][options]
+		        $.form[
+		            !$.field1[string]
+		            !$.field2[^table::create{one_column_only^#0Avalue1^#0Avalue2}]
+		        ]
+		        !$.body[string]
+		
+		GET ?here
+		notGET(POST, HEAD, others) in content-type: application/x-www-form-urlencoded
+		
+		todo: upload files ability
+
+	* src/lib/cord/cordxtra.c 1.5:
+		bugfix: CORD_pos were not fixed properly, done
+
+2004-03-05  paf
+	* etc/parser3.charsets/windows-1251.cfg 1.11:
+		typo
+
+	* operators.txt 1.164:
+	* operators.txt 1.165:
+	* src/include/pa_common.h 1.99:
+	* src/main/pa_common.C 1.178:
+	* www/htdocs/_bug.html 1.28:
+		new: http:// options $.user $.password basic authorization
+
+	* src/main/pa_common.C 1.177:
+		beauty: removed needless vars
+
+	* operators.txt 1.166:
+	* src/main/pa_common.C 1.180:
+		new: file::load[;http:// GET/POST $.form[$.fields
+		started, not tested yet
+		todo:$.field[table] for multiple values
+
+	* src/sql/pa_sql_driver.h 1.39:
+		beauty: important warning added
+
+	* etc/parser3.charsets/koi8-r.cfg 1.7:
+		there's special code for grad char!
+
+	* operators.txt 1.163:
+		new: pgsql option [like that recently added to oracle driver]
+		            ClientCharset=parser-charset << charset in which parser thinks client works
+
+	* operators.txt 1.162:
+	* www/htdocs/_bug.html 1.27:
+		new: odbc option [like that recently added to oracle driver]
+		            ClientCharset=parser-charset << charset in which parser thinks client works
+
+	* src/main/pa_common.C 1.179:
+		beauty: link to rtf added
+
+2004-03-04  paf
+	* operators.txt 1.161:
+	* www/htdocs/_bug.html 1.26:
+	* www/htdocs/_bug.txt 1.2:
+		new: mysql option [like that recently added to oracle driver]
+		            ClientCharset=parser-charset << charset in which parser thinks client works
+
+	* src/main/pa_sql_driver_manager.C 1.83:
+		speedup: charset lookups cached, sql transcoding now goes faster
+
+	* etc/parser3.charsets/koi8-r.cfg 1.5:
+	* etc/parser3.charsets/windows-1251.cfg 1.9:
+		typograph chars commented
+
+	* etc/parser3.charsets/koi8-r.cfg 1.6:
+	* etc/parser3.charsets/windows-1251.cfg 1.10:
+		keyboard typo error
+
+2004-03-03  paf
+	* INSTALL 1.38:
+		note: added on libgc on FreeBSD,
+		thanks to Andrey N. Pazychev <135@ugtel.ru> and Goor <goor@hotbox.ru>
+
+2004-03-02  paf
+	* operators.txt 1.160:
+		new[update typo]:
+		    !^void.left(n)
+		       nothing
+		    !^void.right(n)
+		       nothing
+		    !^void.mid(p[;n])
+		       nothing
+
+	* www/htdocs/_bug.html 1.22:
+		feature: oracle?..&LowerCaseColumnNames=0&ClientCharset
+		something column names got transcoded to $request:charset too [
+		were only column data]
+
+	* operators.txt 1.157:
+	* src/classes/file.C 1.121:
+	* www/htdocs/_bug.gif 1.1:
+	* www/htdocs/_bug.html 1.23:
+		^file.sql-string[] inside ^connect gets properly escaped string, which can be passed to request
+		now this for mysql only. it's up to parser sql driver to fix zeros properly
+
+	* operators.txt 1.158:
+	* src/classes/file.C 1.122:
+	* src/include/pa_string.h 1.158:
+	* www/htdocs/_bug.html 1.24:
+		new: ^file::sql[[name_to_become_$.name]]{}
+		query result must be one row with columns:
+		  first: data
+		  second: file name
+		  third: content-type
+
+	* operators.txt 1.159:
+	* src/classes/void.C 1.32:
+	* www/htdocs/_bug.html 1.25:
+		new:
+		    !^void.left(n)
+		       nothing
+		    !^void.right(n)
+		       nothing
+		    !^void.pos(p[;n])
+		       nothing
+
+	* src/targets/apache13/p3runConfigure.in 1.16:
+		@LIBS@ mainly to include -lm to apache
+
+	* INSTALL 1.37:
+		note: added on building apache with this option: --enable-shared=max
+		thanks to Victor Fedoseev <vvf_ru@mail.ru>
+
+2004-03-01  paf
+	* operators.txt 1.156:
+	* src/classes/hash.C 1.68:
+	* www/htdocs/_bug.html 1.21:
+		new: ^hash._keys[>>name<<] to call sole column of result
+
+	* src/classes/xdoc.C 1.143:
+	* src/types/pa_vxdoc.h 1.38:
+	* www/htdocs/_bug.html 1.17:
+	* www/htdocs/_bug.xsl 1.11:
+		bugfix: boolean output options now have unified defaults [after
+		transform indent/omit-xml-declaration/standalone 'default' 
+		erroreously meant 'true']
+
+	* src/targets/apache13core/mod_parser3_core.C 1.4:
+	* src/targets/isapi/parser3isapi.C 1.88:
+		new: apache module & isapi extension memory:compact befor processingrequest
+
+	* src/classes/string.C 1.138:
+	* www/htdocs/_bug.html 1.18:
+		bugfix: ^string.left/right/mid with negative values now
+		considered bad
+
+	* src/lib/smtp/comms.C 1.5:
+		bugfix: use SO_LINGER if no SO_DONTLINGER exist
+
+	* src/classes/string.C 1.136:
+		check: trim 'chars' must not be empty, exception if it is
+
+	* src/classes/string.C 1.137:
+		feature: ^string.trim both parameters may be empty-strings, meaning
+		kind=both
+		chars=whitespaces
+
+	* src/classes/image.C 1.108:
+	* src/types/pa_vimage.C 1.30:
+	* src/types/pa_vimage.h 1.40:
+	* www/htdocs/_bug.html 1.19:
+		beauty: image -- less checks [were ugly impl]
+
+	* src/classes/string.C 1.135:
+		changed: ^string.trim
+		[] << both, whitespaces
+		[start|both|end] << kind, whitespaces
+		[start|both|end;chars]  full
+
+	* operators.txt 1.155:
+	* src/classes/image.C 1.109:
+	* src/lib/gd/gif.C 1.3:
+	* src/lib/gd/gif.h 1.3:
+	* www/htdocs/_bug.html 1.20:
+		new: ^image.pixel(x;y)[(color)]
+		        get/set pixel color
+
+	* src/main/pa_common.C 1.175:
+	* www/htdocs/_bug.html 1.16:
+		bugfix: http://i.p.a.ddress gethostbyaddr added [on some
+		platforms gethostbyname failed with such 'domains']
+
+	* src/main/pa_common.C 1.176:
+		bugfix: INADDR_NONE not everywhere defined
+
+	* src/include/pa_config_auto.h.in 1.40:
+		no select check, no define
+
 2004-02-27  paf
 	* www/htdocs/_bug.html 1.12:
 	* www/htdocs/_bug.txt 1.1:
@@ -11499,7 +11738,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2004/02/27 15:37:40 $
+		$Date: 2004/03/23 11:21:39 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -18659,7 +18898,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.34 2004/02/27 15:37:40 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.35 2004/03/23 11:21:39 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -18702,7 +18941,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.34 2004/02/27 15:37:40 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.35 2004/03/23 11:21:39 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -24065,7 +24304,7 @@
 	* src/main/pa_pool.C 1.2:
 	* src/main/pa_string.C 1.3:
 	* src/main/pa_string.C 1.4:
-		$Id: ChangeLog,v 1.34 2004/02/27 15:37:40 paf Exp $ check
+		$Id: ChangeLog,v 1.35 2004/03/23 11:21:39 paf Exp $ check
 
 	* src/include/pa_pool.h 1.5:
 	* src/include/pa_string.h 1.2:
