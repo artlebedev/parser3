@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.10 2001/03/19 16:06:17 paf Exp $
+	$Id: pa_vint.h,v 1.11 2001/03/26 08:27:28 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -31,6 +31,10 @@ public: // Value
 	double get_double() { return finteger; }
 	// integer: 0 or !0
 	bool get_bool() { return finteger!=0; }
+
+protected: // VAliased
+
+	VStateless_class *get_class_alias() { return 0; }
 
 public: // usage
 

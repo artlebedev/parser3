@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.11 2001/03/21 14:06:54 paf Exp $
+	$Id: pa_vstring.h,v 1.12 2001/03/26 08:27:28 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -52,6 +52,10 @@ public: // Value
 		// bad $string.field
 		bark("(%s) does not have fields");  return 0;
 	}
+
+protected: // VAliased
+
+	VStateless_class *get_class_alias() { return 0; }
 
 public: // usage
 

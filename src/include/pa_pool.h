@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.44 2001/03/24 19:12:18 paf Exp $
+	$Id: pa_pool.h,v 1.45 2001/03/26 08:27:25 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -78,7 +78,7 @@ private:
 
 private: // exception handling
 
-	// exception replacement mechanism is 'protected' from direct usage
+	// exception replacement mechanism is 'private'zed from direct usage
 	// Temp_exception object enforces paired set/restore
 	Exception *set_exception(Exception *e){
 		Exception *r=fexception;

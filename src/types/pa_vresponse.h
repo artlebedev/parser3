@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vresponse.h,v 1.3 2001/03/19 22:48:38 paf Exp $
+	$Id: pa_vresponse.h,v 1.4 2001/03/26 08:27:28 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -41,6 +41,10 @@ public: // Value
 	void put_element(const String& name, Value *value) { 
 		ffields.put(name, value);
 	}
+
+protected: // VAliased
+
+	VStateless_class *get_class_alias() { return 0; }
 
 public: // usage
 

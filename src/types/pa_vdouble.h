@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.9 2001/03/19 16:06:16 paf Exp $
+	$Id: pa_vdouble.h,v 1.10 2001/03/26 08:27:28 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -31,6 +31,10 @@ public: // Value
 	double get_double() { return fdouble; }
 	// double: 0 or !0
 	bool get_bool() { return fdouble!=0; }
+
+protected: // VAliased
+
+	VStateless_class *get_class_alias() { return 0; }
 
 public: // usage
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.6 2001/03/24 19:12:23 paf Exp $
+	$Id: pa_vtable.h,v 1.7 2001/03/26 08:27:28 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -36,6 +36,10 @@ public: // Value
 
 		return NEW VUnknown(pool());
 	}
+
+protected: // VAliased
+
+	VStateless_class *get_class_alias() { return 0; }
 
 public: // usage
 

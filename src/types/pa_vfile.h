@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.6 2001/03/24 15:58:03 paf Exp $
+	$Id: pa_vfile.h,v 1.7 2001/03/26 08:27:28 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -40,6 +40,10 @@ public: // Value
 		// $element
 		return static_cast<Value *>(fields.get(aname));
 	}
+
+protected: // VAliased
+
+	VStateless_class *get_class_alias() { return 0; }
 
 public: // usage
 

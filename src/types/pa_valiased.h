@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.h,v 1.8 2001/03/20 06:45:20 paf Exp $
+	$Id: pa_valiased.h,v 1.9 2001/03/26 08:27:27 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -57,15 +57,42 @@ public: // creation
 		fclass_alias(&aclass_alias) {
 	}
 
-	// valiased: this
+	/// VAliased: this
 	VAliased *get_aliased() { return this; }
 
-	// VAliased: $CLASS, $BASE
+	/// VAliased: $CLASS, $BASE
 	Value *get_element(const String& aname);
+
+protected: // VAliased
+
+/**
+	used in get_element for getting $CLASS and $BASE @returns current class alias.
+
+	some classes have only dynamic method calls
+	and don't want to deal with static method calls:
+	they don't want to check for @c self validity [whether it is 'object' or a 'class'],
+	they want to assume they just called with 'object' @c self.
+
+	more that that - they even have no name in Parser -
+	they are not registered in in Request::classes.
+
+	so the only way to get to the class having no ability 
+	to use @c $CLASS_NAME: or @c ^CLASS_NAME: syntax is to use something like this:
+
+	ex: VInt
+		this is nonsense:
+		@verbatim
+			$a(123) $ac[$a.CLASS] ^ac.inc[48]
+		@endverbatim
+
+	to disable that and to enable no 'self' checks in methods realisations
+	such classes can override it with @c {return0;}
+*/
+	virtual VStateless_class *get_class_alias() { return fclass_alias; }
 
 private: // alias handling
 
-	// VAliased replacement mechanism is 'protected' from direct usage
+	// VAliased replacement mechanism is 'private'zed from direct usage
 	// Temp_alias object enforces paired set/restore
 	VStateless_class *set_alias(VStateless_class *aclass_alias) {
 		VStateless_class *result=fclass_alias;
