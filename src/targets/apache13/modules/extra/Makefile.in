@@ -10,7 +10,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#  $Id: Makefile.in,v 1.2 2001/05/10 17:28:29 paf Exp $
+#  $Id: Makefile.in,v 1.3 2001/05/18 12:59:36 parser Exp $
 
 
 SHELL = @SHELL@
@@ -80,10 +80,13 @@ VERSION = @VERSION@
 WIN32_ADDITIONAL_LIBS = @WIN32_ADDITIONAL_LIBS@
 YACC = @YACC@
 host_os = @host_os@
+
 APACHE13_SRC = ../../../../../../apache-1.3/src/
+
 INCLUDES = -I../../../../include -I../../../../classes -I../../../../types $(INCLTDL) -I../../../../sql -I$(APACHE13_SRC)/include -I$(APACHE13_SRC)/os/unix
+
 noinst_LIBRARIES = libmod_parser3.a
-libmod_parser3_a_SOURCES = pa_pool.C mod_parser3.C
+libmod_parser3_a_SOURCES = pa_pool.C pa_threads.C mod_parser3.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../../include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -95,7 +98,7 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 libmod_parser3_a_LIBADD = 
-libmod_parser3_a_OBJECTS =  pa_pool.o mod_parser3.o
+libmod_parser3_a_OBJECTS =  pa_pool.o pa_threads.o mod_parser3.o
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -107,9 +110,9 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/mod_parser3.P .deps/pa_pool.P
+DEP_FILES =  .deps/mod_parser3.P .deps/pa_pool.P .deps/pa_threads.P
 SOURCES = $(libmod_parser3_a_SOURCES)
 OBJECTS = $(libmod_parser3_a_OBJECTS)
 
@@ -216,7 +219,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
@@ -349,10 +352,6 @@ install-data-am install-data install-am install uninstall-am uninstall \
 all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
-
-
-
-
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

@@ -1,158 +1,392 @@
-# Make file for PCRE (Perl-Compatible Regular Expression) library.
+# Generated automatically from Makefile.in by configure.
+# Makefile.in generated automatically by automake 1.4 from Makefile.am
 
-# If you are using a Unix system, see below. I am a Unix person, so that is
-# the stuff I really know about. PCRE is developed on a Unix box.
+# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
 
-# To build mingw32 DLL uncomment the next two lines. This addition for mingw32
-# was contributed by  Paul Sokolovsky <Paul.Sokolovsky@technologist.com>. I
-# (Philip Hazel) don't know anything about it! There are some additional
-# targets at the bottom of this Makefile.
-#
-# include dll.mk
-# DLL_LDFLAGS=-s
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
 
-
-######## NON-UNIX ############ NON-UNIX ############## NON-UNIX ##############
-# If you want to compile PCRE for a non-Unix system, note that it consists
-# entirely of code written in Standard C, and so should compile successfully
-# using normal compiling commands to do the following:
-#
-# (1) Compile dftables.c as a stand-alone program, and then run it with
-# output sent to chartables.c. This generates a set of standard character
-# tables.
-#
-# (2) Compile maketables.c, get.c, study.c and pcre.c and link them all
-# together. This is the pcre library (chartables.c gets included by means of
-# an #include directive).
-#
-# (3) Compile pcreposix.c and link it as the pcreposix library.
-#
-# (4) Compile the test program pcretest.c. This needs the functions in the
-# pcre and pcreposix libraries when linking.
-#
-# (5) Run pcretest on the testinput files, and check that the output matches
-# the corresponding testoutput files. You must use the -i option with
-# testinput2.
+#  $Id: Makefile,v 1.2 2001/05/18 12:59:36 parser Exp $
 
 
-######## UNIX ################## UNIX ################## UNIX ################
-# On a Unix system:
-#
-# Edit CC, CFLAGS, and RANLIB for your system.
-#
-# It is believed that RANLIB=ranlib is required for AIX, BSDI, FreeBSD, Linux,
-# MIPS RISCOS, NetBSD, OpenBSD, Digital Unix, and Ultrix.
-#
-# Use CFLAGS = -DUSE_BCOPY on SunOS4 and any other system that lacks the
-# memmove() function, but has bcopy().
-#
-# Use CFLAGS = -DSTRERROR_FROM_ERRLIST on SunOS4 and any other system that
-# lacks the strerror() function, but can provide the equivalent by indexing
-# into errlist.
+SHELL = /bin/sh
 
-AR = ar cq
-CC = gcc -O2 -Wall
-CFLAGS =
-RANLIB = @true
+srcdir = .
+top_srcdir = ..
+prefix = /usr/local
+exec_prefix = ${prefix}
 
-# If you are going to obey "make install", edit these settings for your
-# system. BINDIR is the directory in which the pgrep command is installed.
-# INCDIR is the directory in which the public header file pcre.h is installed.
-# LIBDIR is the directory in which the libraries are installed. MANDIR is the
-# directory in which the man pages are installed. The pcretest program, as it
-# is a test program, does not get installed anywhere.
+bindir = ${exec_prefix}/bin
+sbindir = ${exec_prefix}/sbin
+libexecdir = ${exec_prefix}/libexec
+datadir = ${prefix}/share
+sysconfdir = ${prefix}/etc
+sharedstatedir = ${prefix}/com
+localstatedir = ${prefix}/var
+libdir = ${exec_prefix}/lib
+infodir = ${prefix}/info
+mandir = ${prefix}/man
+includedir = ${prefix}/include
+oldincludedir = /usr/include
 
-BINDIR = /usr/local/bin
-INCDIR = /usr/local/include
-LIBDIR = /usr/local/lib
-MANDIR = /usr/local/man
+DESTDIR =
+
+pkgdatadir = $(datadir)/parser
+pkglibdir = $(libdir)/parser
+pkgincludedir = $(includedir)/parser
+
+top_builddir = ..
+
+ACLOCAL = aclocal
+AUTOCONF = autoconf
+AUTOMAKE = automake
+AUTOHEADER = autoheader
+
+INSTALL = /usr/bin/install -c
+INSTALL_PROGRAM = ${INSTALL} $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = ${INSTALL} -m 644
+INSTALL_SCRIPT = ${INSTALL_PROGRAM}
+transform = s,x,x,
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+host_alias = i686-pc-linux
+host_triplet = i686-pc-linux-gnu
+AS = @AS@
+AWK = gawk
+CC = gcc
+CXX = c++
+DLLTOOL = @DLLTOOL@
+INCLTDL = -I${top_srcdir}/libltdl
+LIBADD_DL = 
+LIBLTDL = ${top_builddir}/libltdl/libltdlc.la
+LIBTOOL = $(SHELL) $(top_builddir)/libtool
+LIBTOOL_DEPS = ./ltconfig ./ltmain.sh
+LN_S = ln -s
+MAKEINFO = makeinfo
+OBJDUMP = @OBJDUMP@
+PACKAGE = parser
+RANLIB = ranlib
+VERSION = 3.0g
+WIN32_ADDITIONAL_LIBS = 
+YACC = bison -y
+host_os = linux-gnu
+
+bin_PROGRAMS = dftables pcre_parser_ctype
+dftables_SOURCES = dftables.c 
+pcre_parser_ctype_SOURCES = pcre_parser_ctype.c
+
+noinst_LIBRARIES = libpcre.a
+libpcre_a_SOURCES = chartables.c get.c pcre.c study.c  chartables.c maketables.c
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../include/pa_config_auto.h
+CONFIG_CLEAN_FILES = 
+LIBRARIES =  $(noinst_LIBRARIES)
 
 
-##############################################################################
+DEFS = -DHAVE_CONFIG_H -I. -I$(srcdir) -I../include
+CPPFLAGS = 
+LDFLAGS = 
+LIBS = 
+libpcre_a_LIBADD = 
+libpcre_a_OBJECTS =  chartables.o get.o pcre.o study.o chartables.o \
+maketables.o
+AR = ar
+PROGRAMS =  $(bin_PROGRAMS)
+
+dftables_OBJECTS =  dftables.o
+dftables_LDADD = $(LDADD)
+dftables_DEPENDENCIES = 
+dftables_LDFLAGS = 
+pcre_parser_ctype_OBJECTS =  pcre_parser_ctype.o
+pcre_parser_ctype_LDADD = $(LDADD)
+pcre_parser_ctype_DEPENDENCIES = 
+pcre_parser_ctype_LDFLAGS = 
+CFLAGS = -g -O2
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+DIST_COMMON =  README Makefile.am Makefile.in
 
 
-OBJ = maketables.o get.o study.o pcre.o
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-all:            libpcre.a libpcreposix.a pcretest pgrep
+TAR = gtar
+GZIP_ENV = --best
+DEP_FILES =  .deps/chartables.P .deps/dftables.P .deps/get.P \
+.deps/maketables.P .deps/pcre.P .deps/pcre_parser_ctype.P .deps/study.P
+SOURCES = $(libpcre_a_SOURCES) $(dftables_SOURCES) $(pcre_parser_ctype_SOURCES)
+OBJECTS = $(libpcre_a_OBJECTS) $(dftables_OBJECTS) $(pcre_parser_ctype_OBJECTS)
 
-pgrep:          libpcre.a pgrep.o
-		$(CC) $(CFLAGS) -o pgrep pgrep.o libpcre.a
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .lo .o .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu pcre/Makefile
 
-pcretest:       libpcre.a libpcreposix.a pcretest.o
-		$(PURIFY) $(CC) $(CFLAGS) -o pcretest pcretest.o libpcre.a libpcreposix.a
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-libpcre.a:      $(OBJ)
-		-rm -f libpcre.a
-		$(AR) libpcre.a $(OBJ)
-		$(RANLIB) libpcre.a
 
-libpcreposix.a: pcreposix.o
-		-rm -f libpcreposix.a
-		$(AR) libpcreposix.a pcreposix.o
-		$(RANLIB) libpcreposix.a
+mostlyclean-noinstLIBRARIES:
 
-pcre.o:         chartables.c pcre.c pcre.h internal.h Makefile
-		$(CC) -c $(CFLAGS) pcre.c
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 
-pcreposix.o:    pcreposix.c pcreposix.h internal.h pcre.h Makefile
-		$(CC) -c $(CFLAGS) pcreposix.c
+distclean-noinstLIBRARIES:
 
-maketables.o:   maketables.c pcre.h internal.h Makefile
-		$(CC) -c $(CFLAGS) maketables.c
+maintainer-clean-noinstLIBRARIES:
 
-get.o:          get.c pcre.h internal.h Makefile
-		$(CC) -c $(CFLAGS) get.c
+.s.o:
+	$(COMPILE) -c $<
 
-study.o:        study.c pcre.h internal.h Makefile
-		$(CC) -c $(CFLAGS) study.c
+.S.o:
+	$(COMPILE) -c $<
 
-pcretest.o:     pcretest.c pcre.h Makefile
-		$(CC) -c $(CFLAGS) pcretest.c
+mostlyclean-compile:
+	-rm -f *.o core *.core
 
-pgrep.o:        pgrep.c pcre.h Makefile
-		$(CC) -c $(CFLAGS) pgrep.c
+clean-compile:
 
-# An auxiliary program makes the default character table source
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+libpcre.a: $(libpcre_a_OBJECTS) $(libpcre_a_DEPENDENCIES)
+	-rm -f libpcre.a
+	$(AR) cru libpcre.a $(libpcre_a_OBJECTS) $(libpcre_a_LIBADD)
+	$(RANLIB) libpcre.a
+
+mostlyclean-binPROGRAMS:
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+distclean-binPROGRAMS:
+
+maintainer-clean-binPROGRAMS:
+
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	done
+
+dftables: $(dftables_OBJECTS) $(dftables_DEPENDENCIES)
+	@rm -f dftables
+	$(LINK) $(dftables_LDFLAGS) $(dftables_OBJECTS) $(dftables_LDADD) $(LIBS)
+
+pcre_parser_ctype: $(pcre_parser_ctype_OBJECTS) $(pcre_parser_ctype_DEPENDENCIES)
+	@rm -f pcre_parser_ctype
+	$(LINK) $(pcre_parser_ctype_LDFLAGS) $(pcre_parser_ctype_OBJECTS) $(pcre_parser_ctype_LDADD) $(LIBS)
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = pcre
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu pcre/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+	-rm -rf .deps
+
+maintainer-clean-depend:
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am: install-binPROGRAMS
+install-exec: install-exec-am
+
+install-data-am:
+install-data: install-data-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am: uninstall-binPROGRAMS
+uninstall: uninstall-am
+all-am: Makefile $(LIBRARIES) $(PROGRAMS)
+all-redirect: all-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs:
+	$(mkinstalldirs)  $(DESTDIR)$(bindir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+mostlyclean-am:  mostlyclean-noinstLIBRARIES mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-binPROGRAMS \
+		mostlyclean-tags mostlyclean-depend mostlyclean-generic
+
+mostlyclean: mostlyclean-am
+
+clean-am:  clean-noinstLIBRARIES clean-compile clean-libtool \
+		clean-binPROGRAMS clean-tags clean-depend clean-generic \
+		mostlyclean-am
+
+clean: clean-am
+
+distclean-am:  distclean-noinstLIBRARIES distclean-compile \
+		distclean-libtool distclean-binPROGRAMS distclean-tags \
+		distclean-depend distclean-generic clean-am
+	-rm -f libtool
+
+distclean: distclean-am
+
+maintainer-clean-am:  maintainer-clean-noinstLIBRARIES \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-binPROGRAMS maintainer-clean-tags \
+		maintainer-clean-depend maintainer-clean-generic \
+		distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-am
+
+.PHONY: mostlyclean-noinstLIBRARIES distclean-noinstLIBRARIES \
+clean-noinstLIBRARIES maintainer-clean-noinstLIBRARIES \
+mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile mostlyclean-libtool distclean-libtool \
+clean-libtool maintainer-clean-libtool mostlyclean-binPROGRAMS \
+distclean-binPROGRAMS clean-binPROGRAMS maintainer-clean-binPROGRAMS \
+uninstall-binPROGRAMS install-binPROGRAMS tags mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir \
+mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info-am info dvi-am dvi check check-am \
+installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
+
+
+auto_part.p:   pcre_parser_ctype
+	./pcre_parser_ctype Russian_Russia.1251 > auto_part.p
 
 chartables.c:   dftables
-		./dftables >chartables.c
+	./dftables >chartables.c
 
-dftables:       dftables.c maketables.c pcre.h internal.h Makefile
-		$(CC) -o dftables $(CFLAGS) dftables.c
-
-install:        all
-		cp libpcre.a libpcreposix.a $(LIBDIR)
-		cp pcre.h $(INCDIR)
-		cp pgrep $(BINDIR)
-		cp pcre.3 pcreposix.3 $(MANDIR)/man3
-		cp pgrep.1 $(MANDIR)/man1
-
-# We deliberately omit dftables and chartables.c from 'make clean'; once made
-# chartables.c shouldn't change, and if people have edited the tables by hand,
-# you don't want to throw them away.
-
-clean:;         -rm -f *.o *.a pcretest pgrep
-
-runtest:        all
-		./RunTest
-
-######## MINGW32 ############### MINGW32 ############### MINGW32 #############
-
-# This addition for mingw32 was contributed by  Paul Sokolovsky
-# <Paul.Sokolovsky@technologist.com>. I (PH) don't know anything about it!
-
-dll:            _dll libpcre.dll.a pgrep_d pcretest_d
-
-_dll:
-		$(MAKE) CFLAGS=-DSTATIC pcre.dll
-
-pcre.dll:       $(OBJ) pcreposix.o pcre.def
-libpcre.dll.a:  pcre.def
-
-pgrep_d:        libpcre.dll.a pgrep.o
-		$(CC) $(CFLAGS) -L. -o pgrep pgrep.o -lpcre.dll
-
-pcretest_d:     libpcre.dll.a pcretest.o
-		$(PURIFY) $(CC) $(CFLAGS) -L. -o pcretest pcretest.o -lpcre.dll
-
-# End
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

@@ -10,7 +10,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#  $Id: Makefile.in,v 1.2 2001/05/10 17:28:19 paf Exp $
+#  $Id: Makefile.in,v 1.3 2001/05/18 12:59:36 parser Exp $
 
 
 SHELL = @SHELL@
@@ -80,9 +80,11 @@ VERSION = @VERSION@
 WIN32_ADDITIONAL_LIBS = @WIN32_ADDITIONAL_LIBS@
 YACC = @YACC@
 host_os = @host_os@
+
 bin_PROGRAMS = dftables pcre_parser_ctype
 dftables_SOURCES = dftables.c 
 pcre_parser_ctype_SOURCES = pcre_parser_ctype.c
+
 noinst_LIBRARIES = libpcre.a
 libpcre_a_SOURCES = chartables.c get.c pcre.c study.c  chartables.c maketables.c
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -119,7 +121,7 @@ DIST_COMMON =  README Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/chartables.P .deps/dftables.P .deps/get.P \
 .deps/maketables.P .deps/pcre.P .deps/pcre_parser_ctype.P .deps/study.P
@@ -258,7 +260,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
@@ -379,15 +381,11 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
-
-
 auto_part.p:   pcre_parser_ctype
 	./pcre_parser_ctype Russian_Russia.1251 > auto_part.p
 
 chartables.c:   dftables
 	./dftables >chartables.c
-
-
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.10 2001/05/16 17:10:34 parser Exp $
+	$Id: pa_pool.C,v 1.11 2001/05/18 12:59:36 parser Exp $
 */
 
 #include <stdlib.h>
@@ -14,7 +14,7 @@
 
 #include "pa_sapi.h"
 #include "pa_common.h"
-#include <typeinfo.h>
+//#include <typeinfo.h>
 #include "pa_value.h"
 
 #include "pa_array.h"

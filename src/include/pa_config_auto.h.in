@@ -27,11 +27,20 @@
 /* Define if you have the <math.h> header file.  */
 #undef HAVE_MATH_H
 
+/* Define if you have the <memory.h> header file.  */
+#undef HAVE_MEMORY_H
+
 /* Define if you have the <process.h> header file.  */
 #undef HAVE_PROCESS_H
 
+/* Define if you have the <setjmp.h> header file.  */
+#undef HAVE_SETJMP_H
+
 /* Define if you have the <stdarg.h> header file.  */
 #undef HAVE_STDARG_H
+
+/* Define if you have the <stddef.h> header file.  */
+#undef HAVE_STDDEF_H
 
 /* Define if you have the <stdio.h> header file.  */
 #undef HAVE_STDIO_H
