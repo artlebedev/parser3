@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vmethod_frame.h,v 1.19 2001/11/05 11:46:33 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.20 2001/12/21 12:47:56 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -22,6 +22,15 @@ class VMethodFrame : public WContext {
 public: // Value
 
 	const char *type() const { return "method_frame"; }
+
+	/// VMethodFrame: $result | parent get_string(=accumulated fstring)
+	const String *get_string() { 
+		// check the $result value
+		Value *result=get_result_variable();
+		// if we have one, return it's string value, else return as usual: accumulated fstring or fvalue
+		return result ? result->get_string() : WContext::get_string();
+	}
+	
 	/// VMethodFrame: my or self_transparent
 	Value *get_element(const String& name) { 
 		if(my) {
@@ -45,11 +54,11 @@ public: // Value
 
 public: // wcontext
 
-	Value *result() {
+	Value& result() {
 		// check the $result value
-		Value *result=my?static_cast<Value*>(my->get(*result_var_name)):0;
+		Value *result=get_result_variable();
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue
-		return result && (result!=fresult_initial_void) ?result:WContext::result();
+		return result ? *result : WContext::result();
 	}
 
 public: // usage
@@ -135,6 +144,11 @@ private:
 	void set_my_variable(const String& name, Value *value) {
 		my->put(name, value); // remember param
 		value->set_name(name); // set param's 'name'
+	}
+
+	Value *get_result_variable() {
+		Value *result=my?static_cast<Value*>(my->get(*result_var_name)):0;
+		return result && result!=fresult_initial_void ? result : 0;
 	}
 
 public:

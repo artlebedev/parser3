@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.115 2001/12/15 21:28:19 paf Exp $
+	$Id: pa_request.h,v 1.116 2001/12/21 12:47:56 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -49,6 +49,7 @@
 
 class Temp_lang;
 class Methoded;
+class VMethodFrame;
 
 /// Main workhorse.
 class Request : public Pooled {
@@ -220,12 +221,13 @@ private: // compile.C
 
 private: // execute.C
 
-	const String *execute_method(Value& aself, 
-		const Method& method, bool return_cstr=true);
-	const String *execute_virtual_method(Value& aself, 
-		const String& method_name, bool return_cstr=true);
+	const String *execute_method(Value& aself, const Method& method,
+		bool return_cstr);
+	const String& execute_method(VMethodFrame& amethodFrame, const Method& method);
+	const String *execute_virtual_method(Value& aself, const String& method_name);
 	const String *execute_nonvirtual_method(VStateless_class& aclass, 
-		const String& method_name, bool return_cstr=true);
+		const String& method_name,
+		bool return_cstr);
 
 	Value *get_element();
 

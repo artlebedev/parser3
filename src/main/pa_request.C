@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.187 2001/12/19 16:24:07 paf Exp $
+	$Id: pa_request.C,v 1.188 2001/12/21 12:47:56 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -254,7 +254,7 @@ gettimeofday(&mt[2],NULL);
 					frame.store_param(method->name, 
 						&body_vstring_before_post_process);
 					body_vstring_after_post_process=
-						NEW VString(*execute_method(frame, *method));
+						NEW VString(execute_method(frame, *method));
 				}
 
 		bool origins_mode=main_class->get_element(*origins_mode_name)!=0;
@@ -427,7 +427,7 @@ t[9]-t[3]
 
 							// future $response:body=
 							//   execute ^exception[origin;source;comment;type;code;stack]
-							body_string=execute_method(frame, *method);
+							body_string=&execute_method(frame, *method);
 						}
 			}
 			

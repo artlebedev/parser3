@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.h,v 1.22 2001/11/19 12:17:07 paf Exp $
+	$Id: pa_wcontext.h,v 1.23 2001/12/21 12:47:57 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -53,8 +53,8 @@ public: // WContext
 		that can be VString if value==0 or the Value object
 		wmethod_frame first checks for $result and if there is one, returns it instead
 	*/
-	virtual Value *result() {
-		return fvalue?fvalue:NEW VString(fstring);
+	virtual Value& result() {
+		return *(fvalue?fvalue:NEW VString(fstring));
 	}
 
 public: // usage

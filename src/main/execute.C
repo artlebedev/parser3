@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.207 2001/12/21 11:17:25 paf Exp $
+	$Id: execute.C,v 1.208 2001/12/21 12:47:56 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -292,7 +292,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_REDUCE_EWPOOL:
 			{
-				value=wcontext->result();
+				value=&wcontext->result();
 				flang=static_cast<String::Untaint_lang>(reinterpret_cast<int>(POP()));
 				wcontext=static_cast<WContext *>(POP());
 				PUSH(value);
@@ -448,7 +448,7 @@ void Request::execute(const Array& ops) {
 								call_type==Method::CT_STATIC?"statically":"dynamically");
 
 				}
-				value=wcontext->result();
+				value=&wcontext->result();
 
 				wcontext=static_cast<WContext *>(POP());  
 				rcontext=POP();  
@@ -835,7 +835,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 			//   returning them as the result of getting code-junction
 			result=NEW VString(*frame->get_string());
 		} else 
-			result=frame->result();
+			result=&frame->result();
 		
 		wcontext=static_cast<WContext *>(POP());  
 		rcontext=POP();  
@@ -853,8 +853,8 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 	return *result;
 }
 
-const String *Request::execute_method(Value& aself, const Method& method, 
-									  bool return_cstr) {
+const String *Request::execute_method(Value& aself, const Method& method,
+		bool return_cstr) {
 	PUSH(self);  
 	PUSH(root);  
 	PUSH(rcontext);  
@@ -868,11 +868,32 @@ const String *Request::execute_method(Value& aself, const Method& method,
 	execute(*method.parser_code);
 	
 	// result
-	const String *result;
-	if(return_cstr)
-		result=&wcontext->as_string();
-	else
-		result=0; // ignore result
+	const String *result=return_cstr ? &wcontext->as_string() : 0;
+	
+	wcontext=static_cast<WContext *>(POP());  
+	rcontext=POP();  
+	root=POP();  
+	self=static_cast<VAliased *>(POP());
+	
+	// return
+	return result;
+}
+
+const String& Request::execute_method(VMethodFrame& amethodFrame, const Method& method) {
+	PUSH(self);  
+	PUSH(root);  
+	PUSH(rcontext);  
+	PUSH(wcontext);
+	
+	// initialize contexts
+	root=rcontext=self=&amethodFrame;
+	wcontext=&amethodFrame;
+	
+	// execute!	
+	execute(*method.parser_code);
+	
+	// result
+	const String& result=wcontext->as_string();
 	
 	wcontext=static_cast<WContext *>(POP());  
 	rcontext=POP();  
@@ -884,18 +905,17 @@ const String *Request::execute_method(Value& aself, const Method& method,
 }
 
 const String *Request::execute_virtual_method(Value& aself, 
-											  const String& method_name, 
-											  bool return_cstr) {
+											  const String& method_name) {
 	if(Value *value=aself.get_element(method_name))
 		if(Junction *junction=value->get_junction())
 			if(const Method *method=junction->method) 
-				return execute_method(aself, *method, return_cstr);
+				return execute_method(aself, *method, true /*return_cstr*/);
 			
 	return 0;
 }
 
 const String *Request::execute_nonvirtual_method(VStateless_class& aclass, 
-												 const String& method_name, 
+												 const String& method_name,
 												 bool return_cstr) {
 	if(const Method *method=aclass.get_method(method_name))
 		return execute_method(aclass, *method, return_cstr);
