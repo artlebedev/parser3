@@ -1,4 +1,5 @@
 @main[]
+^filelist[]
 #^connect[mysql://user:pass@host]{ }
 #^безнадёжна_попытка_поправить_непоправимое[]
 #^tcache[]
@@ -8,7 +9,7 @@
 #j^hashfile[]
 #^formclass[]
 #^hren[]
-^domedit[]
+#^domedit[]
 #^domxslt[]
 #^lsplit2[]
 #^faceesize[]
@@ -45,6 +46,13 @@
 #^xml[]
 #^header[]
 OK
+
+@filelist[]
+$html[^file:list[.;\.html^$]]
+^html.menu{
+	$html.name<br>
+}
+<hr>
 
 @безнадёжна_попытка_поправить_непоправимое[]
 $dom_from_disk[^xdoc::load[input.xml]]
