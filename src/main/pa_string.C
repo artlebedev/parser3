@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.124 2001/11/21 08:26:55 paf Exp $
+	$Id: pa_string.C,v 1.125 2001/11/21 08:33:56 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -189,7 +189,8 @@ break2:
 int String::cmp(int& partial, const String& src, 
 				size_t this_offset, Untaint_lang lang) const {
 	partial=-1;
-	this_offset=min(this_offset, size()-1);
+	size_t a_size=size();
+	this_offset=min(this_offset, a_size-1);
 
 	const Chunk *a_chunk=&head;
 	const Chunk *b_chunk=&src.head;
@@ -204,7 +205,7 @@ int String::cmp(int& partial, const String& src,
 	int result;
 	size_t pos=0; 
 
-	bool a_break=size()==0;
+	bool a_break=a_size==0;
 	bool b_break=src.size()==0;
 	if(!(a_break || b_break)) while(true) {
 		if(pos+a_row->item.size > this_offset) {
@@ -277,8 +278,9 @@ int String::cmp(int& partial, const String& src,
 int String::cmp(int& partial, const char* b_ptr, size_t src_size, 
 				size_t this_offset, Untaint_lang lang) const {
 	partial=-1;
+	size_t a_size=size();
 	size_t b_size=src_size?src_size:b_ptr?strlen(b_ptr):0;
-	this_offset=min(this_offset, size()-1);
+	this_offset=min(this_offset, a_size-1);
 
 	const Chunk *a_chunk=&head;
 	const Chunk::Row *a_row=a_chunk->rows;
@@ -288,7 +290,7 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 	uint a_countdown=a_chunk->count;
 	size_t pos=0;
 
-	bool a_break=size()==0;
+	bool a_break=a_size==0;
 	bool b_break=b_size==0;
 	if(!(a_break || b_break)) while(true) {
 		if(pos+a_row->item.size > this_offset) {
@@ -395,7 +397,8 @@ break2:
 
 int String::pos(const String& substr, 
 				int result, Untaint_lang lang) const {
-	for(; result<size(); result++) {
+	size_t self_size=size();
+	for(; result<self_size; result++) {
 		int partial; cmp(partial, substr, result, lang);
 		if(
 			partial==0 || // full match
@@ -408,7 +411,8 @@ int String::pos(const String& substr,
 
 int String::pos(const char *substr, size_t substr_size, 
 				int result, Untaint_lang lang) const {
-	for(; result<size(); result++) {
+	size_t self_size=size();
+	for(; result<self_size; result++) {
 		int partial; cmp(partial, substr, substr_size, result, lang);
 		if(
 			partial==0 || // full match
@@ -423,7 +427,7 @@ void String::split(Array& result,
 				   size_t* pos_after_ref, 
 				   const char *delim, size_t delim_size, 
 				   Untaint_lang lang, int limit) const {
-	int self_size=size();
+	size_t self_size=size();
 	if(delim_size) {
 		size_t pos_after=pos_after_ref?*pos_after_ref:0;
 		int pos_before;

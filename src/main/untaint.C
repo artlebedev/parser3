@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.78 2001/11/21 08:26:55 paf Exp $
+	$Id: untaint.C,v 1.79 2001/11/21 08:33:56 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -258,6 +258,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 	// WARNING:
 	//	 before any changes check cstr_bufsize first!!!
 	bool whitespace=true;
+	// expanded STRING_FOREACH_ROW here for debugging purposes
 	const Chunk *chunk=&head;  \
 	do { \
 		const Chunk::Row *row=chunk->rows; \
