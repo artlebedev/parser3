@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.69 2001/04/23 10:35:16 paf Exp $
+	$Id: parser3.C,v 1.70 2001/04/23 10:44:36 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -202,8 +202,10 @@ int main(int argc, char *argv[]) {
 		} else {
 			static char buf[MAX_STRING];
 			strncpy(buf, filespec_to_process, MAX_STRING);
-			rsplit(buf, '/');  rsplit(buf, '\\');// strip filename
-			request_info.document_root=buf;
+			if(rsplit(buf, '/') || rsplit(buf, '\\')) // strip filename
+				request_info.document_root=buf;
+			else
+				request_info.document_root="";
 		}
 		request_info.path_translated=filespec_to_process;
 		request_info.method=request_method;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.119 2001/04/23 09:38:53 paf Exp $
+	$Id: pa_request.C,v 1.120 2001/04/23 10:44:31 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -542,12 +542,12 @@ VStateless_class *Request::use_buf(const char *source, const char *file,
 	return &cclass;
 }
 
-/// @test with commandline start "parser3 a.html" so that ^load[a.cfg] worked! [now doesnt]
 const String& Request::relative(const char *apath, const String& relative_name) {
 	int lpath_buf_size=strlen(apath)+1;
     char *lpath=(char *)malloc(lpath_buf_size);
 	memcpy(lpath, apath, lpath_buf_size);
-    rsplit(lpath, '/');
+    if(!rsplit(lpath, '/'))
+		strcpy(lpath, ".");
 	String& result=*NEW String(pool(), lpath);
     result << "/" << relative_name;
     return result;
