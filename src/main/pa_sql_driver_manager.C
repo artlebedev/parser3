@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.39 2001/10/13 17:42:52 parser Exp $
+	$Id: pa_sql_driver_manager.C,v 1.40 2001/10/15 11:48:04 parser Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -30,12 +30,12 @@ public:
 	SQL_Driver_services_impl(Pool& apool, const String& aurl) : Pooled(apool),
 		furl(aurl) {
 	}
-/*
+
 	/// allocates some bytes on pool
 	void *malloc(size_t size) { return Pooled::malloc(size); }
 	/// allocates some bytes clearing them with zeros
 	void *calloc(size_t size) { return Pooled::calloc(size); }
-	*/
+
 	/// throw exception
 	void _throw(const char *comment) { 
 		THROW(0, 0, 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxdoc.h,v 1.5 2001/10/09 14:25:30 parser Exp $
+	$Id: pa_vxdoc.h,v 1.6 2001/10/15 11:48:04 parser Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -30,21 +30,17 @@ class VXdoc : public VXnode {
 	friend void VXdoc_cleanup(void *);
 public: // Value
 
+	const char *type() const { return "xdoc"; }
+
 	/// VXdoc: true
 	bool as_bool() const { return true; }
 
 	/// VXdoc: true
 	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), as_bool()); }
 
-	const char *type() const { return "xdoc"; }
-/*
-	/// VXdoc: CLASS,method
-	Value *get_element(const String& aname) {
-		// VStateless_object $CLASS,$method
-		if(Value *result=VStateless_object::get_element(aname))
-			return result;
-	}
-*/
+	/// VXnode: $CLASS,$method, fields
+	Value *get_element(const String& name);
+
 protected: // VAliased
 
 	/// disable .CLASS element. @see VAliased::get_element

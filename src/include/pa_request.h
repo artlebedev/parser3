@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.102 2001/10/08 16:42:06 parser Exp $
+	$Id: pa_request.h,v 1.103 2001/10/15 11:48:04 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -287,6 +287,10 @@ public:
 	/// handy expression auto-processing to int
 	int as_int(int index, const char *msg, Request& r) { 
 		return get_processed(index, msg, r).as_int(); 
+	}
+	/// handy expression auto-processing to bool
+	bool as_bool(int index, const char *msg, Request& r) { 
+		return get_processed(index, msg, r).as_bool(); 
 	}
 	/// handy string ensurer
 	const String& as_string(int index, const char *msg) { 

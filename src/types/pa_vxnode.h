@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxnode.h,v 1.3 2001/10/09 14:25:30 parser Exp $
+	$Id: pa_vxnode.h,v 1.4 2001/10/15 11:48:04 parser Exp $
 */
 
 #ifndef PA_VXNODE_H
@@ -17,6 +17,12 @@
 #include <XalanDOM/XalanNode.hpp>
 #include <PlatformSupport/XSLException.hpp>
 
+// defines
+
+#define VXNODE_TYPE "xnode"
+
+// externals
+
 extern Methoded *Xnode_class;
 
 //void VXnode_cleanup(void *);
@@ -26,7 +32,7 @@ class VXnode : public VStateless_object {
 	//friend void VXnode_cleanup(void *);
 public: // Value
 
-	const char *type() const { return "xnode"; }
+	const char *type() const { return VXNODE_TYPE; }
 
 	/// VXnode: true
 	bool as_bool() const { return true; }
@@ -35,7 +41,7 @@ public: // Value
 	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), as_bool()); }
 
 	/// VXnode: $CLASS,$method, fields
-	Value *get_element(const String& aname);
+	Value *get_element(const String& name);
 
 protected: // VAliased
 

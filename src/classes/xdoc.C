@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.15 2001/10/12 12:15:32 parser Exp $
+	$Id: xdoc.C,v 1.16 2001/10/15 11:48:04 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -35,6 +35,9 @@
 #include <PlatformSupport/DOMStringPrintWriter.hpp>
 #include <XalanDOM/XalanElement.hpp>
 #include <XalanDOM/XalanNodeList.hpp>
+#include <XalanDOM/XalanDocumentFragment.hpp>
+#include <XalanDOM/XalanCDATASection.hpp>
+#include <XalanDOM/XalanEntityReference.hpp>
 
 // defines
 
@@ -65,6 +68,201 @@ public: // Methoded
 
 // methods
 
+// Element createElement(in DOMString tagName) raises(DOMException);
+static void _createElement(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	const char *tagName=params->as_string(0, "tagName must not be code").cstr(String::UL_AS_IS);
+
+	try {
+		XalanNode *node=
+			vdoc.get_document(pool, &method_name).
+			createElement(XalanDOMString(tagName));
+		// write out result
+		VXnode& result=*new(pool) VXnode(pool, node);
+		r.write_no_lang(result);
+	} catch(const XalanDOMException& e)	{
+		pool.exception()._throw(pool, &method_name, e);
+	}
+}
+
+// DocumentFragment createDocumentFragment()
+static void _createDocumentFragment(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	XalanNode *node=
+		vdoc.get_document(pool, &method_name).
+		createDocumentFragment();
+	// write out result
+	VXnode& result=*new(pool) VXnode(pool, node);
+	r.write_no_lang(result);
+}
+
+// Text createTextNode(in DOMString data);
+static void _createTextNode(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	const char *data=params->as_string(0, "data must not be code").cstr(String::UL_AS_IS);
+
+	XalanNode *node=
+		vdoc.get_document(pool, &method_name).
+		createTextNode(XalanDOMString(data));
+	// write out result
+	VXnode& result=*new(pool) VXnode(pool, node);
+	r.write_no_lang(result);
+}
+
+// Comment createComment(in DOMString data)
+static void _createComment(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	const char *data=params->as_string(0, "data must not be code").cstr(String::UL_AS_IS);
+
+	XalanNode *node=
+		vdoc.get_document(pool, &method_name).
+		createComment(XalanDOMString(data));
+	// write out result
+	VXnode& result=*new(pool) VXnode(pool, node);
+	r.write_no_lang(result);
+}
+
+// CDATASection createCDATASection(in DOMString data) raises(DOMException);
+static void _createCDATASection(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	const char *data=params->as_string(0, "data must not be code").cstr(String::UL_AS_IS);
+
+	try {
+		XalanNode *node=
+			vdoc.get_document(pool, &method_name).
+			createCDATASection(XalanDOMString(data));
+		// write out result
+		VXnode& result=*new(pool) VXnode(pool, node);
+		r.write_no_lang(result);
+	} catch(const XalanDOMException& e)	{
+		pool.exception()._throw(pool, &method_name, e);
+	}
+}
+
+// ProcessingInstruction createProcessingInstruction(in DOMString target,in DOMString data) raises(DOMException);
+static void _createProcessingInstruction(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	const char *target=params->as_string(0, "target must not be code").cstr(String::UL_AS_IS);
+	const char *data=params->as_string(1, "data must not be code").cstr(String::UL_AS_IS);
+
+	try {
+		XalanNode *node=
+			vdoc.get_document(pool, &method_name).
+			createProcessingInstruction(XalanDOMString(target), XalanDOMString(data));
+		// write out result
+		VXnode& result=*new(pool) VXnode(pool, node);
+		r.write_no_lang(result);
+	} catch(const XalanDOMException& e)	{
+		pool.exception()._throw(pool, &method_name, e);
+	}
+}
+
+// Attr createAttribute(in DOMString name) raises(DOMException);
+static void _createAttribute(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	const char *name=params->as_string(0, "name must not be code").cstr(String::UL_AS_IS);
+
+	try {
+		XalanNode *node=
+			vdoc.get_document(pool, &method_name).
+			createAttribute(XalanDOMString(name));
+		// write out result
+		VXnode& result=*new(pool) VXnode(pool, node);
+		r.write_no_lang(result);
+	} catch(const XalanDOMException& e)	{
+		pool.exception()._throw(pool, &method_name, e);
+	}
+}
+// EntityReference createEntityReference(in DOMString name) raises(DOMException);
+static void _createEntityReference(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	const char *name=params->as_string(0, "name must not be code").cstr(String::UL_AS_IS);
+
+	try {
+		XalanNode *node=
+			vdoc.get_document(pool, &method_name).
+			createEntityReference(XalanDOMString(name));
+		// write out result
+		VXnode& result=*new(pool) VXnode(pool, node);
+		r.write_no_lang(result);
+	} catch(const XalanDOMException& e)	{
+		pool.exception()._throw(pool, &method_name, e);
+	}
+}
+
+/*
+static void _getElementsByTagName(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	// tagname
+	const char *name=params->as_string(0, "name must not be code").cstr(String::UL_AS_IS);
+
+	VHash& result=*new(pool) VHash(pool);
+	if(const XalanNodeList *nodes=
+		vdoc.get_document(pool, &method_name).getElementsByTagName(XalanDOMString(name))) {
+		for(int i=0; i<nodes->getLength(); i++) {
+			String& skey=*new(pool) String(pool);
+			{
+				char *buf=(char *)pool.malloc(MAX_NUMBER);
+				snprintf(buf, MAX_NUMBER, "%d", i);
+				skey << buf;
+			}
+
+			result.hash().put(skey, new(pool) VXnode(pool, nodes->item(i)));
+		}
+	}
+
+	// write out result
+	r.write_no_lang(result);
+}
+
+static void _getElementsByTagNameNS(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	// namespaceURI;localName
+	const char *namespaceURI=params->as_string(0, "namespaceURI must not be code").cstr(String::UL_AS_IS);
+	const char *localName=params->as_string(0, "localName must not be code").cstr(String::UL_AS_IS);
+
+	VHash& result=*new(pool) VHash(pool);
+	if(const XalanNodeList *nodes=
+		vdoc.get_document(pool, &method_name).getElementsByTagNameNS(
+			XalanDOMString(namespaceURI), XalanDOMString(localName))) {
+		for(int i=0; i<nodes->getLength(); i++) {
+			String& skey=*new(pool) String(pool);
+			{
+				char *buf=(char *)pool.malloc(MAX_NUMBER);
+				snprintf(buf, MAX_NUMBER, "%d", i);
+				skey << buf;
+			}
+
+			result.hash().put(skey, new(pool) VXnode(pool, nodes->item(i)));
+		}
+	}
+
+	// write out result
+	r.write_no_lang(result);
+}
+*/
+
+
 class ParserStringXalanOutputStream: public XalanOutputStream {
 public:
 	
@@ -88,13 +286,13 @@ private:
 
 class XalanSourceTreeParserLiaison2: public XalanSourceTreeParserLiaison {
 public:
-	XalanSourceTreeParserLiaison2(XalanSourceTreeDOMSupport&		theSupport) : XalanSourceTreeParserLiaison(theSupport), 
+	XalanSourceTreeParserLiaison2(XalanSourceTreeDOMSupport& 	theSupport) : XalanSourceTreeParserLiaison(theSupport), 
 		ferror_handler(new HandlerBase) {
 	}
 
 	XalanDocument*
 	parseXMLStream2(
-				const InputSource&		inputSource) {
+				const InputSource& 	inputSource) {
 		XalanSourceTreeContentHandler	theContentHandler(createXalanSourceTreeDocument());
 		XalanAutoPtr<SAX2XMLReader>		theReader(XMLReaderFactory::createXMLReader());
 		theReader->setContentHandler(&theContentHandler);
@@ -120,7 +318,7 @@ class XalanDefaultParsedSource2 : public XalanParsedSource
 {
 public:
 
-	XalanDefaultParsedSource2(const XSLTInputSource&		theInputSource);
+	XalanDefaultParsedSource2(const XSLTInputSource& 	theInputSource);
 
 	virtual XalanDocument*
 	getDocument() const;
@@ -137,7 +335,7 @@ private:
 	XalanSourceTreeDocument* const	m_parsedSource;
 };
 
-XalanDefaultParsedSource2::XalanDefaultParsedSource2(const XSLTInputSource&	theInputSource):
+XalanDefaultParsedSource2::XalanDefaultParsedSource2(const XSLTInputSource& theInputSource):
 	XalanParsedSource(),
 	m_domSupport(),
 	m_parserLiaison2(m_domSupport),
@@ -348,7 +546,7 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	catch (XMLException& e) {
 		pool.exception()._throw(pool, &method_name, e);
 	}
-	catch(const XalanDOMException&	e)	{
+	catch(const XalanDOMException& e)	{
 		pool.exception()._throw(pool, &method_name, e);
 	}
 
@@ -380,7 +578,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	catch (XMLException& e) {
 		pool.exception()._throw(pool, &method_name, e);
 	}
-	catch(const XalanDOMException&	e)	{
+	catch(const XalanDOMException& e)	{
 		pool.exception()._throw(pool, &method_name, e);
 	}
 
@@ -449,7 +647,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		connection.close();
 		pool.exception()._throw(pool, &stylesheet_file_name, e);
 	}
-	catch(const XalanDOMException&	e)	{
+	catch(const XalanDOMException& e)	{
 		connection.close();
 		pool.exception()._throw(pool, &stylesheet_file_name, e);
 	}
@@ -467,73 +665,54 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 	// elementId
 	const char *elementId=params->as_string(0, "elementID must not be code").cstr(String::UL_AS_IS);
 
-	if(XalanElement *element=
+	if(XalanNode *node=
 		vdoc.get_document(pool, &method_name).getElementById(XalanDOMString(elementId))) {
 		// write out result
-		VXnode& result=*new(pool) VXnode(pool, element);
+		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
 	}
 }
-/*
-static void _getElementsByTagName(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-
-	// tagname
-	const char *tagname=params->as_string(0, "tagname must not be code").cstr(String::UL_AS_IS);
-
-	VHash& result=*new(pool) VHash(pool);
-	if(const XalanNodeList *nodes=
-		vdoc.get_document(pool, &method_name).getElementsByTagName(XalanDOMString(tagname))) {
-		for(int i=0; i<nodes->getLength(); i++) {
-			String& skey=*new(pool) String(pool);
-			{
-				char *buf=(char *)pool.malloc(MAX_NUMBER);
-				snprintf(buf, MAX_NUMBER, "%d", i);
-				skey << buf;
-			}
-
-			result.hash().put(skey, new(pool) VXnode(pool, nodes->item(i)));
-		}
-	}
-
-	// write out result
-	r.write_no_lang(result);
-}
-
-static void _getElementsByTagNameNS(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-
-	// namespaceURI;localName
-	const char *namespaceURI=params->as_string(0, "namespaceURI must not be code").cstr(String::UL_AS_IS);
-	const char *localName=params->as_string(0, "localName must not be code").cstr(String::UL_AS_IS);
-
-	VHash& result=*new(pool) VHash(pool);
-	if(const XalanNodeList *nodes=
-		vdoc.get_document(pool, &method_name).getElementsByTagNameNS(
-			XalanDOMString(namespaceURI), XalanDOMString(localName))) {
-		for(int i=0; i<nodes->getLength(); i++) {
-			String& skey=*new(pool) String(pool);
-			{
-				char *buf=(char *)pool.malloc(MAX_NUMBER);
-				snprintf(buf, MAX_NUMBER, "%d", i);
-				skey << buf;
-			}
-
-			result.hash().put(skey, new(pool) VXnode(pool, nodes->item(i)));
-		}
-	}
-
-	// write out result
-	r.write_no_lang(result);
-}
-*/
 // constructor
 
 MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 	set_name(*NEW String(pool(), XDOC_CLASS_NAME));
 
+	/// @test how to create empty type html?
+
+	/// DOM1
+
+	// Element createElement(in DOMString tagName) raises(DOMException);
+	add_native_method("createElement", Method::CT_DYNAMIC, _createElement, 1, 1);
+	// DocumentFragment createDocumentFragment(); 
+	add_native_method("createDocumentFragment", Method::CT_DYNAMIC, _createDocumentFragment, 0, 0);
+	// Text createTextNode(in DOMString data);
+	add_native_method("createTextNode", Method::CT_DYNAMIC, _createTextNode, 1, 1);
+	// Comment createComment(in DOMString data);
+	add_native_method("createComment", Method::CT_DYNAMIC, _createComment, 1, 1);
+	// CDATASection createCDATASection(in DOMString data) raises(DOMException);
+	add_native_method("createCDATASection", Method::CT_DYNAMIC, _createCDATASection, 1, 1);
+	// ProcessingInstruction createProcessingInstruction(in DOMString target, in DOMString data) raises(DOMException);
+	add_native_method("createProcessingInstruction", Method::CT_DYNAMIC, _createProcessingInstruction, 2, 2);
+	// Attr createAttribute(in DOMString name) raises(DOMException);
+	add_native_method("createAttribute", Method::CT_DYNAMIC, _createAttribute, 1, 1);
+	// EntityReference createEntityReference(in DOMString name) raises(DOMException);
+	add_native_method("createEntityReference", Method::CT_DYNAMIC, _createEntityReference, 1, 1);
+	// NodeList getElementsByTagName(in DOMString tagname);
+	/*	
+		// ^xdoc.getElementsByTagName[tagname]
+		add_native_method("getElementsByTagName", Method::CT_DYNAMIC, _getElementsByTagName, 1, 1);
+
+		// ^xdoc.getElementsByTagNameNS[namespaceURI;localName] = array of nodes
+		add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
+	*/
+
+	/// DOM2(?)
+
+	// ^xdoc.getElementById[elementId]
+	add_native_method("getElementById", Method::CT_DYNAMIC, _getElementById, 1, 1);
+
+	/// parser
+	
 	// ^xdoc.save[some.xml]
 	// ^xdoc.save[some.xml;options hash]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
@@ -556,15 +735,6 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 	// ^xdoc.transform[stylesheet file_name;params hash]
 	add_native_method("transform", Method::CT_DYNAMIC, _transform, 1, 2);
 
-	// ^xdoc.getElementById[elementId]
-	add_native_method("getElementById", Method::CT_DYNAMIC, _getElementById, 1, 1);
-/*	
-	// ^xdoc.getElementsByTagName[tagname]
-	add_native_method("getElementsByTagName", Method::CT_DYNAMIC, _getElementsByTagName, 1, 1);
-
-	// ^xdoc.getElementsByTagNameNS[namespaceURI;localName] = array of nodes
-	add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
-*/
 }
 
 void MXdoc::configure_admin(Request& r) {
