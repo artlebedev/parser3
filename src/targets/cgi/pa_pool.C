@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.29 2001/10/29 16:29:08 paf Exp $
+	$Id: pa_pool.C,v 1.30 2001/10/29 17:01:37 paf Exp $
 */
 
 #include <stdlib.h>
@@ -12,7 +12,7 @@
 #include "pa_pool.h"
 #include "pool_storage.h"
 
-#define DEBUG_POOL_MALLOC
+//#define DEBUG_POOL_MALLOC
 
 #ifdef DEBUG_POOL_MALLOC
 #include "pa_sapi.h"

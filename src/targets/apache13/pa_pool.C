@@ -4,14 +4,14 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.1 2001/10/11 08:29:21 parser Exp $
+	$Id: pa_pool.C,v 1.2 2001/10/29 17:01:37 paf Exp $
 */
 
 #include "httpd.h"
 
 #include "pa_pool.h"
 
-void *Pool::real_malloc(size_t size) {
+void *Pool::real_malloc(size_t size, int place) {
 	return ap_palloc((pool*)fstorage, size);
 }
 
