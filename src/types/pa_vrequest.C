@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: request class.
+
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vrequest.C,v 1.1 2001/03/16 12:30:26 paf Exp $
+	$Id: pa_vrequest.C,v 1.2 2001/03/19 22:56:45 paf Exp $
 */
 
 #include "pa_vrequest.h"
@@ -12,7 +14,7 @@
 // request: CLASS,BASE,method,field
 Value *VRequest::get_element(const String& aname) {
 	// $CLASS,$BASE,$method
-	if(Value *result=VStateless_class::get_element(aname))
+	if(Value *result=VStateless_object::get_element(aname))
 		return result;
 	
 	// $query $uri 
