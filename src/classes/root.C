@@ -3,10 +3,11 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.28 2001/03/12 18:19:36 paf Exp $
+	$Id: root.C,v 1.29 2001/03/12 18:34:33 paf Exp $
 */
 
 #include <string.h>
+#include <math.h>
 
 #include "pa_request.h"
 #include "_root.h"
@@ -129,6 +130,46 @@ static void _use(Request& r, const String& method_name, Array *params) {
 	r.use_file(r.absolute(file));
 }
 
+typedef double (*math_one_double_op_func_ptr)(double);
+static double round(double op) { return floor(op+0.5); }
+static double sign(double op) { return op > 0 ? 1 : ( op < 0 ? -1 : 0 ); }
+
+static void _math_one_double_op(
+									 Request& r, 
+									 const String& method_name, Array *params,
+									 math_one_double_op_func_ptr func) {
+	Pool& pool=r.pool();
+	Value& param=*static_cast<Value *>(params->get(0));
+
+	// forcing ^round(this param type)
+	r.fail_if_junction_(false, param, 
+		method_name, "parameter must be expression");
+
+	Value& result=*new(pool) VDouble(pool, (*func)(r.process(param).get_double()));
+	r.wcontext->write(result, String::Untaint_lang::NO /*always object, not string*/);
+}
+
+
+static void _round(Request& r, const String& method_name, Array *params) {
+	_math_one_double_op(r, method_name, params,	&round);
+}
+
+static void _floor(Request& r, const String& method_name, Array *params) {
+	_math_one_double_op(r, method_name, params,	&floor);
+}
+
+static void _ceiling(Request& r, const String& method_name, Array *params) {
+	_math_one_double_op(r, method_name, params,	&ceil);
+}
+
+static void _abs(Request& r, const String& method_name, Array *params) {
+	_math_one_double_op(r, method_name, params,	&fabs);
+}
+
+static void _sign(Request& r, const String& method_name, Array *params) {
+	_math_one_double_op(r, method_name, params,	&sign);
+}
+
 void initialize_root_class(Pool& pool, VClass& vclass) {
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
@@ -148,4 +189,23 @@ void initialize_root_class(Pool& pool, VClass& vclass) {
 
 	// ^use[file]
 	vclass.add_native_method("use", _use, 1, 1);
+
+
+	// math functions
+
+	// ^round(expr)	
+	vclass.add_native_method("round", _round, 1, 1);
+
+	// ^floor(expr)	
+	vclass.add_native_method("floor", _floor, 1, 1);
+
+	// ^ceiling(expr)	
+	vclass.add_native_method("ceiling", _ceiling, 1, 1);
+
+	// ^abs(expr)	
+	vclass.add_native_method("abs", _abs, 1, 1);
+
+	// ^sign(expr)
+	vclass.add_native_method("sign", _sign, 1, 1);
+
 }
