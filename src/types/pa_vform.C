@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2004/02/12 08:11:39 $";
+static const char * const IDENT_VFORM_C="$Date: 2004/03/25 14:36:26 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -165,7 +165,7 @@ void VForm::ParseFormInput(const char* data, size_t length) {
 
 static char *pa_tolower(char *s) {
 	for(char *p=s; *p; p++)
-		*p=tolower(*p);
+		*p=(char)tolower(*p);
 	return s;
 }
 void VForm::ParseMimeInput(
