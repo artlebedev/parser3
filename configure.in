@@ -232,7 +232,8 @@ round \
 sign \
 flock \
 _locking \
-lockf
+lockf \
+getrusage
 )
 
 dnl We require qsort(3) and select(2).

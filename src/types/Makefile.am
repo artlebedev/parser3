@@ -1,7 +1,7 @@
 INCLUDES = -I../classes -I../sql -I../pcre -I../classes/gd @XML_INCLUDES@ @DB2_INCLUDES@
 
 noinst_LIBRARIES = libtypes.a
-libtypes_a_SOURCES = pa_valiased.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vresponse.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vhashfile.C ident.C
+libtypes_a_SOURCES = pa_valiased.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vresponse.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vhashfile.C pa_vstatus.C ident.C
 
 IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.h *.C
