@@ -2,5 +2,5 @@
 
 P3S=@P3S@
 
-P3LIBS="$P3S/main/libmain.a $P3S/classes/libclasses.a $P3S/types/libtypes.a $P3S/main/libmain.a $P3S/lib/ltdl/libltdlc.a $P3S/lib/gd/libgd.a $P3S/lib/cord/libcord.a $P3S/lib/pcre/libpcre.a $P3S/lib/md5/libmd5.a $P3S/lib/sdbm/libsdbm.a $P3S/targets/apache13core/libmod_parser3core.a"
+P3LIBS="$P3S/main/libmain.a $P3S/classes/libclasses.a $P3S/types/libtypes.a $P3S/main/libmain.a $P3S/lib/ltdl/libltdlc.a $P3S/lib/gd/libgd.a $P3S/lib/cord/libcord.a $P3S/lib/pcre/libpcre.a $P3S/lib/md5/libmd5.a $P3S/lib/sdbm/libsdbm.a $P3S/lib/smtp/libsmtp.a $P3S/targets/apache13core/libmod_parser3core.a"
 LIBS="$LIBS $P3LIBS $P3LIBS @LIBADD_DL@ @GC_LIBS@ @XML_LIBS@ @MIME_LIBS@ @CPP_LIBS@ @LIBS@" ./configure --add-module=$P3S/targets/apache13/mod_parser3.c $*
