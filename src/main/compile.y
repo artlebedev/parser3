@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.35 2001/02/24 15:35:28 paf Exp $
+  $Id: compile.y,v 1.36 2001/02/24 16:05:48 paf Exp $
 */
 
 %{
@@ -57,9 +57,9 @@ method: control_method | code_method;
 
 control_method: '@' STRING '\n' 
 				control_strings {
-	String *name=LA2S($2);
+	String& name=*LA2S($2);
 	YYSTYPE strings_code=$4;
-	if(*name==CLASS_NAME) {
+	if(name==CLASS_NAME) {
 		if(strings_code->size()==1*2) 
 			PC->vclass->set_name(*LA2S(strings_code));
 		else {
@@ -67,26 +67,26 @@ control_method: '@' STRING '\n'
 			YYERROR;
 		}
 	} else {
-		if(*name==USES_NAME) {
+		if(name==USES_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) {
 				String *file=LA2S(strings_code, i);
 				file->APPEND_CONST(".p");
 				PC->request->use(file->cstr(), 0);
 			}
-		} else if(*name==PARENTS_NAME) {
+		} else if(name==PARENTS_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) {
-				String *parent_name=LA2S(strings_code, i);
+				String& parent_name=*LA2S(strings_code, i);
 				VClass *parent=static_cast<VClass *>(
-					PC->request->classes().get(*parent_name));
+					PC->request->classes().get(parent_name));
 				if(!parent) {
-					strcpy(PC->error, parent_name->cstr());
+					strcpy(PC->error, parent_name.cstr());
 					strcat(PC->error, ": undefined class");
 					YYERROR;
 				}
 				PC->vclass->add_parent(*parent);
 			}
 		} else {
-			strcpy(PC->error, name->cstr());
+			strcpy(PC->error, name.cstr());
 			strcat(PC->error, ": invalid special name. valid names are "
 				CLASS_NAME", "USES_NAME" and "PARENTS_NAME);
 			YYERROR;
