@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.167 2002/04/04 08:04:28 paf Exp $
+	$Id: parser3.C,v 1.168 2002/04/09 08:10:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -145,7 +145,7 @@ void SAPI::die(const char *fmt, ...) {
 	SAPI::add_header_attribute(pool, "status", "500");
 	SAPI::add_header_attribute(pool, "content-type", "text/plain");
 	char content_length_cstr[MAX_NUMBER];
-	snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
+	snprintf(content_length_cstr, sizeof(content_length_cstr), "%u", content_length);
 	SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
 
 	// send header

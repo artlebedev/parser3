@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vint.h,v 1.31 2002/02/08 08:30:19 paf Exp $
+	$Id: pa_vint.h,v 1.32 2002/04/09 08:10:37 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -26,10 +26,15 @@ public: // Value
 
 	/// VInt: finteger
 	const String *get_string() {
-		char *buf=(char *)pool().malloc(MAX_NUMBER);
+		char local_buf[MAX_NUMBER];
+		size_t size=snprintf(local_buf, MAX_NUMBER, "%d", finteger);
+
+		char *pool_buf=(char *)pool().malloc(size);
+		memcpy(pool_buf, local_buf, size);
+		
 		String *result=NEW String(pool());
 		result->APPEND_CLEAN(
-			buf, snprintf(buf, MAX_NUMBER, "%d", finteger), 
+			pool_buf, size, 
 			name().origin().file, name().origin().line);
 		return result;
 	}

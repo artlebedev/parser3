@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.107 2002/03/28 11:50:14 paf Exp $
+	$Id: pa_common.C,v 1.108 2002/04/09 08:10:37 paf Exp $
 */
 
 #include "pa_common.h"
@@ -411,19 +411,23 @@ char *rsplit(char *string, char delim) {
 
 /// @todo less stupid type detection
 char *format(Pool& pool, double value, char *fmt) {
-	char *result=(char *)pool.malloc(MAX_NUMBER, 4);
+	char local_buf[MAX_NUMBER];
+	size_t size;
+	
 	if(fmt)
 		if(strpbrk(fmt, "diouxX"))
 			if(strpbrk(fmt, "ouxX"))
-				snprintf(result, MAX_NUMBER, fmt, (uint)value );
+				size=snprintf(local_buf, sizeof(local_buf), fmt, (uint)value);
 			else
-				snprintf(result, MAX_NUMBER, fmt, (int)value );
+				size=snprintf(local_buf, sizeof(local_buf), fmt, (int)value);
 		else
-			snprintf(result, MAX_NUMBER, fmt, value);
+			size=snprintf(local_buf, sizeof(local_buf), fmt, value);
 	else
-		snprintf(result, MAX_NUMBER, "%d", (int)value);
+		size=snprintf(local_buf, sizeof(local_buf), "%d", (int)value);
 	
-	return result;
+	char *pool_buf=(char *)pool.malloc(size+1, 4);
+	memcpy(pool_buf, local_buf, size+1);
+	return pool_buf;
 }
 
 size_t stdout_write(const void *buf, size_t size) {
