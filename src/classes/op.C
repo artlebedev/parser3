@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/15 09:42:41 $";
+static const char* IDENT_OP_C="$Date: 2002/10/15 10:09:51 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -212,7 +212,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 
 	bool need_delim=false;
 	VInt *vint=new(pool) VInt(pool, 0);
-	r.get_method_frame()->put_element(var_name, vint, false);
+	r.get_method_frame()->caller()->put_element(var_name, vint, false);
 	for(int i=from; i<=to; i++) {
 		vint->set_int(i);
 

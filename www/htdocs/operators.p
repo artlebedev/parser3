@@ -17,5 +17,5 @@ $i[after]
 ^$a=$a
 
 @include[filename][f]
-$f[^file::load[text;$filename]]^process[$caller]{^untaint{$f.text}}
+$f[^file::load[text;$filename]]^process[$caller.CLASS]{^untaint{$f.text}}
 
