@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.89 2001/07/02 14:03:35 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.90 2001/07/07 16:38:01 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -42,7 +42,7 @@ public: // Methoded
 static void _set(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// data is last parameter
-	Value& vdata=params->get_junction(params->size()-1, "body must be code");
+	Value& vdata=params->as_junction(params->size()-1, "body must be code");
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	const String& data=r.process(vdata).as_string();
@@ -84,7 +84,7 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// filename is last parameter
-	Value& vfilename=params->get_no_junction(params->size()-1, 
+	Value& vfilename=params->as_no_junction(params->size()-1, 
 		"file name must not be code");
 
 	// loading text
@@ -132,7 +132,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vtable_name=params->get_no_junction(params->size()-1, 
+	Value& vtable_name=params->as_no_junction(params->size()-1, 
 		"file name must not be code");
 
 	Table& table=static_cast<VTable *>(r.self)->table();
@@ -193,7 +193,7 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(params->size()) {
-		Value& offset_expr=params->get_junction(0, "offset must be expression");
+		Value& offset_expr=params->as_junction(0, "offset must be expression");
 		table.shift(r.process(offset_expr).as_int());
 	} else {
 		Value& value=*new(pool) VInt(pool, table.current());
@@ -202,7 +202,7 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 }
 
 static void _menu(Request& r, const String& method_name, MethodParams *params) {
-	Value& body_code=params->get_junction(0, "body must be code");
+	Value& body_code=params->as_junction(0, "body must be code");
 	
 	Value *delim_code=params->size()==2?&params->get(1):0;
 
@@ -292,7 +292,7 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 		if(columns->size()>1) {
 			Pool& pool=r.pool();
 
-			const String& key_field_name=params->get_no_junction(0, 
+			const String& key_field_name=params->as_no_junction(0, 
 				"key field name must not be code").as_string();
 			int key_field=table.column_name2index(key_field_name, true);
 			int value_fields_count=params->size()-1;
@@ -302,7 +302,7 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 			Array value_fields(pool, value_fields_count);
 			if(value_fields_by_params) {
 				for(int i=1; i<params->size(); i++) {
-					const String& value_field_name=params->get_no_junction(i,
+					const String& value_field_name=params->as_no_junction(i,
 						"value field name must not be code").as_string();
 					value_fields+=table.column_name2index(value_field_name, true);
 				}
@@ -346,10 +346,10 @@ static int sort_cmp_double(const void *a, const void *b) {
 		return 0;
 }
 static void _sort(Request& r, const String& method_name, MethodParams *params) {
-	Value& key_maker=params->get_junction(0, "key-maker must be code");
+	Value& key_maker=params->as_junction(0, "key-maker must be code");
 
 	bool reverse=params->size()==2/*..[asc|desc]*/?
-		reverse=params->get_no_junction(1, "order must not be code").as_string()=="desc":
+		reverse=params->as_no_junction(1, "order must not be code").as_string()=="desc":
 		false;
 
 	Table& table=static_cast<VTable *>(r.self)->table();
@@ -424,7 +424,7 @@ static void _append(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 	// data is last parameter
 	const String& string=
-		r.process(params->get_junction(0, "body must be code")).as_string();
+		r.process(params->as_junction(0, "body must be code")).as_string();
 
 	// parse cells
 	Array& row=*new(pool) Array(pool);
@@ -440,7 +440,7 @@ static void _append(Request& r, const String& method_name, MethodParams *params)
 static void _join(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Table *maybe_src=params->get_no_junction(0, "table ref must not be code").get_table();
+	Table *maybe_src=params->as_no_junction(0, "table ref must not be code").get_table();
 	if(!maybe_src)
 		PTHROW(0, 0,
 			&method_name,
@@ -477,17 +477,17 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			&method_name,
 			"without connect");
 
-	Value& statement=params->get_junction(0, "statement must be code");
+	Value& statement=params->as_junction(0, "statement must be code");
 
 	ulong limit=0;
 	if(params->size()>1) {
-		Value& limit_code=params->get_junction(1, "limit must be expression");
+		Value& limit_code=params->as_junction(1, "limit must be expression");
 		limit=(uint)r.process(limit_code).as_double();
 	}
 
 	ulong offset=0;
 	if(params->size()>2) {
-		Value& offset_code=params->get_junction(2, "offset must be expression");
+		Value& offset_code=params->as_junction(2, "offset must be expression");
 		offset=(ulong)r.process(offset_code).as_double();
 	}
 
@@ -546,14 +546,14 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 static void _dir(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& relative_path=params->get_no_junction(0, "path must not be code");
+	Value& relative_path=params->as_no_junction(0, "path must not be code");
 
 	const String *regexp;
 	pcre *regexp_code;
 	int ovecsize;
 	int *ovector;
 	if(params->size()>1) {
-		regexp=&params->get_no_junction(1, "regexp must not be code").as_string();
+		regexp=&params->as_no_junction(1, "regexp must not be code").as_string();
 
 		const char *pattern=regexp->cstr(String::UL_AS_IS);
 		const char *errptr;

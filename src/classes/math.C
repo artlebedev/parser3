@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: math.C,v 1.2 2001/07/06 11:13:35 parser Exp $"; 
+static const char *RCSId="$Id: math.C,v 1.3 2001/07/07 16:38:01 parser Exp $"; 
 
 #include "pa_config_includes.h"
 #include "pa_common.h"
@@ -15,6 +15,7 @@ static const char *RCSId="$Id: math.C,v 1.2 2001/07/06 11:13:35 parser Exp $";
 
 // defines
 
+#define PI 3.1415926535
 #define MATH_CLASS_NAME "math"
 
 // class
@@ -31,7 +32,7 @@ public: // Methoded
 static void _random(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& range=params->get_junction(0, "range must be expression");
+	Value& range=params->as_junction(0, "range must be expression");
     uint max=(uint)r.process(range).as_double();
     if(max<=1)
 		PTHROW(0, 0,
@@ -45,13 +46,16 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
 typedef double (*math1_func_ptr)(double);
 static double round(double param) { return floor(param+0.5); }
 static double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 ); }
-
+static double trunc(double param) { return param > 0? floor(param) : ceil(param); }
+static double frac(double param) { return param-trunc(param); }
+static double degrees(double param) { return param /PI *180; }
+static double radians(double param) { return param /180 *PI; }
 
 static void math1(Request& r, 
 				  const String& method_name, MethodParams *params,
 				  math1_func_ptr func) {
 	Pool& pool=r.pool();
-	Value& param=params->get_junction(0, "parameter must be expression");
+	Value& param=params->as_junction(0, "parameter must be expression");
 
 	Value& result=*new(pool) VDouble(pool, (*func)(r.process(param).as_double()));
 	result.set_name(method_name);
@@ -67,11 +71,13 @@ static void math1(Request& r,
 		math1(r, method_name, params, &name_c);\
 	}
 MATH1(round);	MATH1(floor);	MATH1P(ceiling, ceil);
+MATH1(trunc);	MATH1(frac);
 MATH1P(abs, fabs);	MATH1(sign);
 MATH1(exp);	MATH1(log);	
 MATH1(sin);	MATH1(asin);	
 MATH1(cos);	MATH1(acos);	
 MATH1(tan);	MATH1(atan);
+MATH1(degrees);	MATH1(radians);
 MATH1(sqrt);
 
 
@@ -80,8 +86,8 @@ static void math2(Request& r,
 				  const String& method_name, MethodParams *params,
 				  math2_func_ptr func) {
 	Pool& pool=r.pool();
-	Value& a=params->get_junction(0, "parameter must be expression");
-	Value& b=params->get_junction(1, "parameter must be expression");
+	Value& a=params->as_junction(0, "parameter must be expression");
+	Value& b=params->as_junction(1, "parameter must be expression");
 
 	Value& result=*new(pool) VDouble(pool, (*func)(
 		r.process(a).as_double(),
@@ -109,14 +115,16 @@ MMath::MMath(Pool& apool) : Methoded(apool) {
 #define ADD1(name) \
 	add_native_method(#name, Method::CT_STATIC, _##name, 1, 1)
 
-	ADD1(random);
 	ADD1(round);	ADD1(floor);	ADD1(ceiling);
+	ADD1(trunc);	ADD1(frac);
 	ADD1(abs);	ADD1(sign);
 	ADD1(exp);	ADD1(log);	
 	ADD1(sin);	ADD1(asin);	
 	ADD1(cos);	ADD1(acos);	
 	ADD1(tan);	ADD1(atan);
+	ADD1(degrees);	ADD1(radians);
 	ADD1(sqrt);
+	ADD1(random);
 
 #define ADD2(name) \
 	add_native_method(#name, Method::CT_STATIC, _##name, 2, 2)
@@ -137,7 +145,7 @@ Methoded *MMath_create(Pool& pool) {
 	math_consts=new(pool) Hash(pool);
 	math_consts->put(
 		*new(pool) String(pool, "PI"), 
-		new(pool) VDouble(pool, 3.1415926535));
+		new(pool) VDouble(pool, PI));
 
 	return math_base_class=new(pool) MMath(pool);
 }

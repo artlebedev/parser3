@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.63 2001/06/27 12:44:33 parser Exp $
+	$Id: pa_value.h,v 1.64 2001/07/07 16:38:01 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -26,6 +26,7 @@ class Junction;
 class Method;
 class Hash;
 class VFile;
+class MethodParams;
 
 ///	grandfather of all @a values in @b Parser
 class Value : public Pooled {
@@ -59,6 +60,7 @@ public: // Value
 		- VVoid: this
 		- VFile: this
 		- VImage: this
+		- VDate: ftime -> float days
 	*/
 	virtual Value *as_expr_result(bool return_string_as_is=false) { 
 		bark("(%s) can not be used in expression"); return 0; 
@@ -89,6 +91,7 @@ public: // Value
 		- VInt: value
 		- VBool: value
 		- VVoid: 0
+		- VDate: ftime -> float days
 	*/
 	virtual double as_double() { bark("(%s) does not have numerical (double) value"); return 0; }
 	
@@ -108,6 +111,7 @@ public: // Value
 		- VInt: 0 or !0
 		- VDouble: 0 or !0
 		- VFile: true
+		- VDate: 0 or !0
 	*/
 	virtual bool as_bool() { bark("(%s) does not have logical value"); return 0; }
 	
@@ -144,6 +148,7 @@ public: // Value
 		- VResponse: method,fields
 		- VCookie: field
 		- VFile: method,field
+		- VDate: CLASS,BASE,method,field
 		*/
 	virtual Value *get_element(const String& name) { bark("(%s) has no elements"); return 0; }
 	
@@ -253,42 +258,6 @@ public:
 	WContext *wcontext;
 	const Array *code;
 	//@}
-};
-
-/**
-	@b method parameters passed in this array.
-	contains handy typecast ad junction/not junction ensurers
-
-*/
-class MethodParams : public Array {
-public:
-	MethodParams(Pool& pool, const String& amethod_name) : Array(pool),
-		fmethod_name(amethod_name) {
-	}
-
-	/// handy typecast. I long for templates
-	Value& get(int index) { return *static_cast<Value *>(Array::get(index)); }
-	/// handy is-value-a-junction ensurer
-	Value& get_junction(int index, const char *msg) { return get_as(index, true, msg); }
-	/// handy value-is-not-a-junction ensurer
-	Value& get_no_junction(int index, const char *msg) { return get_as(index, false, msg); }
-
-private:
-
-	/// handy value-is/not-a-junction ensurer
-	Value& get_as(int index, bool as_junction, const char *msg) { 
-		Value& result=get(index);
-		if((result.get_junction()!=0) ^ as_junction)
-			THROW(0, 0,
-				&fmethod_name,
-				"%s (parameter #%d)", msg, 1+index);
-		return result;
-	}
-
-private:
-
-	const String& fmethod_name;
-
 };
 
 /**

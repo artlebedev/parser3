@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.90 2001/07/06 11:13:35 parser Exp $
+	$Id: pa_request.h,v 1.91 2001/07/07 16:38:01 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -250,6 +250,66 @@ public:
 	~Temp_lang() { 
 		frequest.restore_lang(saved_lang); 
 	}
+};
+
+/**
+	@b method parameters passed in this array.
+	contains handy typecast ad junction/not junction ensurers
+
+*/
+class MethodParams : public Array {
+public:
+	MethodParams(Pool& pool, const String& amethod_name) : Array(pool),
+		fmethod_name(amethod_name) {
+	}
+
+	/// handy typecast. I long for templates
+	Value& get(int index) { 
+		return *static_cast<Value *>(Array::get(index)); 
+	}
+	/// handy is-value-a-junction ensurer
+	Value& as_junction(int index, const char *msg) { 
+		return get_as(index, true, msg); 
+	}
+	/// handy value-is-not-a-junction ensurer
+	Value& as_no_junction(int index, const char *msg) { 
+		return get_as(index, false, msg); 
+	}
+	/// handy expression auto-processing to double
+	double as_double(int index, Request& r) { 
+		return get_processed(index, r).as_double(); 
+	}
+	/// handy expression auto-processing to int
+	int as_int(int index, Request& r) { 
+		return get_processed(index, r).as_int(); 
+	}
+	/// handy string ensurer
+	const String& as_string(int index, const char *msg) { 
+		return as_no_junction(index, msg).as_string(); 
+	}
+
+private:
+
+	/// handy value-is/not-a-junction ensurer
+	Value& get_as(int index, bool as_junction, const char *msg) { 
+		Value& result=get(index);
+		if((result.get_junction()!=0) ^ as_junction)
+			THROW(0, 0,
+				&fmethod_name,
+				"%s (parameter #%d)", msg, 1+index);
+		return result;
+	}
+
+	Value& get_processed(int index, Request& r) {
+		return r.process(get(index),
+			0/*no name*/,
+			false/*don't intercept string*/);
+	}
+
+private:
+
+	const String& fmethod_name;
+
 };
 
 #endif

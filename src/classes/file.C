@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.38 2001/06/28 07:44:17 parser Exp $
+	$Id: file.C,v 1.39 2001/07/07 16:38:01 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.38 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.39 2001/07/07 16:38:01 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -44,7 +44,7 @@ const int FIND_MONKEY_MAX_HOPS=10;
 // methods
 
 static void _save(Request& r, const String&, MethodParams *params) {
-	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
+	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
 
 	// save
 	static_cast<VFile *>(r.self)->save(r.absolute(vfile_name.as_string()));
@@ -52,7 +52,7 @@ static void _save(Request& r, const String&, MethodParams *params) {
 
 static void _delete(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
+	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
 
 	// unlink
 	file_delete(pool, r.absolute(vfile_name.as_string()));
@@ -60,7 +60,7 @@ static void _delete(Request& r, const String&, MethodParams *params) {
 
 static void _find(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
+	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
 
 	const String &lfile_name=vfile_name.as_string();
 
@@ -84,14 +84,14 @@ static void _find(Request& r, const String& method_name, MethodParams *params) {
 
 	// not found
 	if(params->size()==2) {
-		Value& not_found_code=params->get_junction(1, "not-found param must be code");
+		Value& not_found_code=params->as_junction(1, "not-found param must be code");
 		r.write_pass_lang(r.process(not_found_code));
 	}
 }
 
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
+	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
 
 	const String& lfile_name=vfile_name.as_string();
 
@@ -107,7 +107,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 
 static void _stat(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
+	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
 
 	const String& lfile_name=vfile_name.as_string();
 
@@ -133,7 +133,7 @@ static void pass_cgi_header_attribute(Array::Item *value, void *info) {
 static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
+	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
 
 	const String& script_name=r.absolute(vfile_name.as_string());
 
@@ -182,7 +182,7 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 #endif
 
 	if(params->size()>1) {
-		Value& venv=params->get_no_junction(1, "env must not be code");
+		Value& venv=params->as_no_junction(1, "env must not be code");
 		if(Hash *user_env=venv.get_hash())
 			user_env->for_each(append_env_pair, &env);
 		else

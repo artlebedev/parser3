@@ -1,4 +1,39 @@
 @main[]
+before $время[^date:now[]]^время.string[]<br>
+year+^время.roll[year](1)^время.string[]<br>
+month+^время.roll[month](1)^время.string[]<br>
+year-^время.roll[year](-1)^время.string[]<br>
+month-^время.roll[month](-1)^время.string[]<br>
+day+^время.roll[day](1)^время.string[]<br>
+day-^время.roll[day](-1)^время.string[]<br>
+<hr>
+$русский_день_недели[
+	$0[Воскресенье]
+	$1[Понедельник]
+	$2[Вторник]
+	$3[Среда]
+	$4[Четверг]
+	$5[Пятница]
+	$6[Суббота]
+]
+
+$время[^date:set(0;1;1;3;30;4)]
+$время{
+	^string[]<br>
+	${year}.${month}.${day} ${hour}:${minute}:${second}
+}
+<hr>
+$время[^date:set(1.5)]
+^время.string[]
+<hr>
+$сейчас[^date:now[]]
+^^сейчас.string[]=^сейчас.string[] $день_недели($сейчас.weekday) $русский_день_недели.$день_недели<br>
+$floatdays($сейчас) ^floatdays.format{%.20f}<br>
+^eval(^math:frac($floatdays)*24)<br>
+^eval(^math:frac($floatdays*24)*60)<br>
+^eval(^math:frac($floatdays*24*60)*60)
+<hr>
+
 PI=^math:PI.format{%.40f}
 <hr>
 ^math:random(10)

@@ -319,6 +319,10 @@ SOURCE=..\types\pa_vcookie.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vdate.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vdouble.h
 # End Source File
 # Begin Source File
@@ -465,6 +469,10 @@ SOURCE=..\classes\classes.C
 # Begin Source File
 
 SOURCE=..\classes\classes.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\date.C
 # End Source File
 # Begin Source File
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.58 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.59 2001/07/07 16:38:01 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -55,7 +55,7 @@ static void _double(Request& r, const String& method_name, MethodParams *) {
 /*not static*/void _string_format(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& fmt=params->get_junction(0, "fmt must be code");
+	Value& fmt=params->as_junction(0, "fmt must be code");
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	char *buf=format(pool, r.self->as_double(), r.process(fmt).as_string().cstr());
@@ -94,7 +94,7 @@ static void _mid(Request& r, const String&, MethodParams *params) {
 static void _pos(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& substr=params->get_no_junction(0, "substr must not be code");
+	Value& substr=params->as_no_junction(0, "substr must not be code");
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
@@ -103,7 +103,7 @@ static void _pos(Request& r, const String& method_name, MethodParams *params) {
 static void split_list(Request& r, const String& method_name, MethodParams *params,
 					   const String& string, 
 					   Array& result) {
-	Value& delim_value=params->get_no_junction(0, "delimiter must not be code");
+	Value& delim_value=params->as_no_junction(0, "delimiter must not be code");
 
 	string.split(result, 0, delim_value.as_string());
 }
@@ -190,11 +190,11 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 	Pool& pool=r.pool();
 	const String& src=*static_cast<VString *>(r.self)->get_string();
 
-	Value& regexp=params->get_no_junction(0, "regexp must not be code");
+	Value& regexp=params->as_no_junction(0, "regexp must not be code");
 
 	const String *options=
 		params->size()>1?
-		&params->get_no_junction(1, "options must not be code").as_string():0;
+		&params->as_no_junction(1, "options must not be code").as_string():0;
 
 	Value *result;
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
@@ -214,7 +214,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 		} else // not matched [not global]
 			result=new(pool) VBool(pool, false);
 	} else { // replace
-		Value& replacement_code=params->get_junction(2, "replacement code must be code");
+		Value& replacement_code=params->as_junction(2, "replacement code must be code");
 
 		String& dest=*new(pool) String(pool);
 		Replace_action_info replace_action_info={
@@ -257,11 +257,11 @@ String& sql_result_string(Request& r, const String& method_name, MethodParams *p
 			&method_name,
 			"without connect");
 
-	Value& statement=params->get_junction(0, "statement must be code");
+	Value& statement=params->as_junction(0, "statement must be code");
 
 	ulong offset=0;
 	if(params->size()>1) {
-		Value& offset_code=params->get_junction(1, "offset must be expression");
+		Value& offset_code=params->as_junction(1, "offset must be expression");
 		offset=(ulong)r.process(offset_code).as_double();
 	}
 

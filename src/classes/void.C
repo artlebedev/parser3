@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: void.C,v 1.3 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: void.C,v 1.4 2001/07/07 16:38:01 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -51,7 +51,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			&method_name,
 			"without connect");
 
-	Value& statement=params->get_junction(0, "statement must be code");
+	Value& statement=params->as_junction(0, "statement must be code");
 
 	Temp_lang temp_lang(r, String::UL_SQL);
 	const String& statement_string=r.process(statement).as_string();

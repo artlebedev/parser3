@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.29 2001/06/28 07:44:17 parser Exp $
+	$Id: image.C,v 1.30 2001/07/07 16:38:01 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.29 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.30 2001/07/07 16:38:01 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -258,7 +258,7 @@ static size_t read_disk(void*& buf, size_t limit, void *info) {
 static void _measure(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& data=params->get_no_junction(0, "data must not be code");
+	Value& data=params->as_no_junction(0, "data must not be code");
 
 	void *info;Measure_reader::Func read_func;
 	Read_mem_info read_mem_info;
@@ -351,7 +351,7 @@ static gdImage *load(Request& r, const String& method_name,
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
+	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
 	const String& file_name=vfile_name.as_string();
 
 	gdImage& image=*load(r, method_name, file_name);
@@ -607,8 +607,8 @@ public:
 static void _font(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& valphabet=params->get_no_junction(0, "alphabet must not be code");
-	Value& file_name=params->get_no_junction(1, "file_name must not be code");
+	Value& valphabet=params->as_no_junction(0, "alphabet must not be code");
+	Value& file_name=params->as_no_junction(1, "file_name must not be code");
 	int height=r.process(params->get(2)).as_int();
 
 	int width=params->size()>3?r.process(params->get(3)).as_int():0;

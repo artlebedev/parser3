@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: op.C,v 1.33 2001/07/03 10:10:21 parser Exp $"; 
+static const char *RCSId="$Id: op.C,v 1.34 2001/07/07 16:38:01 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -54,9 +54,9 @@ static void _if(Request& r, const String&, MethodParams *params) {
 		0/*no name*/,
 		false/*don't intercept string*/).as_bool();
 	if(condition)
-		r.write_pass_lang(r.process(params->get_junction(1, "'then' parameter must be code")));
+		r.write_pass_lang(r.process(params->as_junction(1, "'then' parameter must be code")));
 	else if(params->size()==3)
-		r.write_pass_lang(r.process(params->get_junction(2, "'else' parameter must be code")));
+		r.write_pass_lang(r.process(params->as_junction(2, "'else' parameter must be code")));
 }
 
 static void _untaint(Request& r, const String& method_name, MethodParams *params) {
@@ -71,7 +71,7 @@ static void _untaint(Request& r, const String& method_name, MethodParams *params
 			"invalid untaint language");
 
 	{
-		Value& vbody=params->get_junction(1, "body must be code");
+		Value& vbody=params->as_junction(1, "body must be code");
 		
 		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
 		r.write_pass_lang(r.process(vbody)); // process marking tainted with that lang
@@ -96,7 +96,7 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 	}
 
 	{
-		Value& vbody=params->get_no_junction(params->size()-1, "body must not be code");
+		Value& vbody=params->as_no_junction(params->size()-1, "body must not be code");
 		
 		String result(r.pool());
 		result.append(
@@ -143,14 +143,14 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 }
 	
 static void _rem(Request& r, const String&, MethodParams *params) {
-	params->get_junction(0, "body must be code");
+	params->as_junction(0, "body must be code");
 }
 
 static void _while(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& vcondition=params->get_junction(0, "condition must be expression");
-	Value& body=params->get_junction(1, "body must be code");
+	Value& vcondition=params->as_junction(0, "condition must be expression");
+	Value& body=params->as_junction(1, "body must be code");
 
 	// while...
 	int endless_loop_count=0;
@@ -174,7 +174,7 @@ static void _while(Request& r, const String& method_name, MethodParams *params) 
 }
 
 static void _use(Request& r, const String& method_name, MethodParams *params) {
-	Value& vfile=params->get_no_junction(0, "file name must not be code");
+	Value& vfile=params->as_no_junction(0, "file name must not be code");
 	r.use_file(r.absolute(vfile.as_string()));
 }
 
@@ -183,7 +183,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 	const String& var_name=r.process(params->get(0)).as_string();
 	int from=r.process(params->get(1)).as_int();
 	int to=r.process(params->get(2)).as_int();
-	Value& body_code=params->get_junction(3, "body must be code");
+	Value& body_code=params->as_junction(3, "body must be code");
 	Value *delim_code=params->size()==3+1+1?&params->get(3+1):0;
 
 	bool need_delim=false;
@@ -209,13 +209,13 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 }
 
 static void _eval(Request& r, const String& method_name, MethodParams *params) {
-	Value& expr=params->get_junction(0, "need expression");
+	Value& expr=params->as_junction(0, "need expression");
 	// evaluate expresion
 	Value *result=r.process(expr, 
 		0/*no name YET*/,
 		true/*don't intercept string*/).as_expr_result();
 	if(params->size()==2) {
-		Value& fmt=params->get_no_junction(1, "fmt must not be code");
+		Value& fmt=params->as_no_junction(1, "fmt must not be code");
 
 		Pool& pool=r.pool();
 		String& string=*new(pool) String(pool);
@@ -230,8 +230,8 @@ static void _eval(Request& r, const String& method_name, MethodParams *params) {
 static void _connect(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& url=params->get_no_junction(0, "url must not be code");
-	Value& body_code=params->get_junction(1, "body must be code");
+	Value& url=params->as_no_junction(0, "url must not be code");
+	Value& body_code=params->as_junction(1, "body must be code");
 
 	Table *protocol2driver_and_client=
 		static_cast<Table *>(r.classes_conf.get(OP->name()));
@@ -290,7 +290,7 @@ static void _switch(Request& r, const String&, MethodParams *params) {
 	Switch_data data={&r.process(params->get(0))};	
 	r.classes_conf.put(*switch_data_name, &data);
 
-	r.process(params->get_junction(1, "switch cases must be code")); // and ignore result
+	r.process(params->as_junction(1, "switch cases must be code")); // and ignore result
 
 	r.classes_conf.put(*switch_data_name, backup);
 
@@ -302,7 +302,7 @@ static void _case(Request& r, const String&, MethodParams *params) {
 	Switch_data& data=*static_cast<Switch_data *>(r.classes_conf.get(*switch_data_name));
 
 	int count=params->size();
-	Value *code=&params->get_junction(--count, "case result must be code");
+	Value *code=&params->as_junction(--count, "case result must be code");
 	for(int i=0; i<count; i++) {
 		Value& value=r.process(params->get(i));
 

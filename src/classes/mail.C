@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.31 2001/06/28 07:44:17 parser Exp $
+	$Id: mail.C,v 1.32 2001/07/07 16:38:01 parser Exp $
 */
-static const char *RCSId="$Id: mail.C,v 1.31 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: mail.C,v 1.32 2001/07/07 16:38:01 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -418,7 +418,7 @@ static void sendmail(Request& r, const String& method_name,
 static void _send(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& vhash=params->get_no_junction(0, "message must not be code");
+	Value& vhash=params->as_no_junction(0, "message must not be code");
 	Hash *hash=vhash.get_hash();
 	if(!hash)
 		PTHROW(0, 0,

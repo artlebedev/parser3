@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.9 2001/07/02 13:59:59 parser Exp $
+	$Id: hash.C,v 1.10 2001/07/07 16:38:01 parser Exp $
 */
-static const char *RCSId="$Id: hash.C,v 1.9 2001/07/02 13:59:59 parser Exp $"; 
+static const char *RCSId="$Id: hash.C,v 1.10 2001/07/07 16:38:01 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -54,17 +54,17 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			&method_name,
 			"without connect");
 
-	Value& statement=params->get_junction(0, "statement must be code");
+	Value& statement=params->as_junction(0, "statement must be code");
 
 	ulong limit=0;
 	if(params->size()>1) {
-		Value& limit_code=params->get_junction(1, "limit must be expression");
+		Value& limit_code=params->as_junction(1, "limit must be expression");
 		limit=(uint)r.process(limit_code).as_double();
 	}
 
 	ulong offset=0;
 	if(params->size()>2) {
-		Value& offset_code=params->get_junction(2, "offset must be expression");
+		Value& offset_code=params->as_junction(2, "offset must be expression");
 		offset=(ulong)r.process(offset_code).as_double();
 	}
 
