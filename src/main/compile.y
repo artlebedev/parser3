@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.115 2001/03/25 10:14:39 paf Exp $
+	$Id: compile.y,v 1.116 2001/03/26 09:59:38 paf Exp $
 */
 
 /**
@@ -359,6 +359,10 @@ store_square_param: '[' store_code_param_parts ']' {$$=$2};
 store_round_param: '(' store_expr_param_parts ')' {$$=$2};
 store_curly_param: '{' store_curly_param_parts '}' {$$=$2};
 store_code_param_parts:
+	empty /* optimized [] case */
+|	store_code_param_parts_not_empty
+;
+store_code_param_parts_not_empty:
 	store_code_param_part
 |	store_code_param_parts ';' store_code_param_part { $$=$1; P($$, $3) }
 ;
@@ -371,8 +375,7 @@ store_curly_param_parts:
 |	store_curly_param_parts ';' store_curly_param_part { $$=$1; P($$, $3) }
 ;
 store_code_param_part: 
-	empty /* optimized [] case */
-|	STRING { /* optimized [STRING] case */
+	STRING { /* optimized [STRING] case */
 	$$=$1;
 	O($$, OP_STORE_PARAM);
 }
