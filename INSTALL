@@ -66,8 +66,9 @@
 
 3a. In case you wish XML(xdoc and xnode classes) support, you need libraries
       libxml2 >= 2.6.5 [ftp://xmlsoft.org/libxml2-2.6.17.tar.gz]
-      libxslt >= 1.1.2 [ftp://xmlsoft.org/libxslt-1.1.10-1.src.rpm]
-      glib >= 1.2.10 [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz]
+      libxslt >= 1.1.2 [ftp://xmlsoft.org/libxslt-1.1.10.tar.gz]
+      glib >= 1.2.10 [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz] 
+      on freebsd5 this is reported to work: ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
       gdome2 >= 0.7.4 [http://gdome2.cs.unibo.it/tarball/gdome2-0.8.1.tar.gz]
     on your system, and specify path to them to Parser3 configure script.
 
@@ -90,7 +91,7 @@
     glib:
 
     cd glib-x.x.x
-    ./configure --prefix=$HOME/gnome 
+    ./configure --prefix=$HOME/gnome --silent
     make install
 
     gdome2:
@@ -212,4 +213,4 @@
   
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.39 2005/01/31 08:51:32 paf Exp $
+$Id: INSTALL,v 1.40 2005/03/16 14:37:03 paf Exp $

@@ -1,3 +1,4 @@
-$a[$form:a]
-$b(^a.int(0))
-$b
+$url[http://www.parser.ru]
+$url[^taint[$url]]
+$f[^file::load[text;^untaint{$url}]]
+$f.text
