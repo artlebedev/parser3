@@ -7,12 +7,13 @@
 	Win32 rusage author: Victor Fedoseev <vvf_ru@mail.ru>
 */
 
-static const char * const IDENT_VSTATUS_C="$Date: 2003/12/11 10:25:52 $";
+static const char * const IDENT_VSTATUS_C="$Date: 2003/12/11 11:53:04 $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"
 #include "pa_vhash.h"
 #include "pa_vdouble.h"
+#include "pa_threads.h"
 
 #ifdef HAVE_SYS_RESOURCE_H
 // rusage
@@ -216,12 +217,20 @@ Value* VStatus::get_element(const String& aname, Value& /*aself*/, bool /*lookin
 	if(Cache_manager* manager=cache_managers->get(aname))
 		return manager->get_status();
 
-	// rusage
+	// $pid
+	if(aname=="pid")
+		return new VInt(getpid());
+
+	// $tid
+	if(aname=="tid")
+		return new VInt(pa_get_thread_id());
+
+	// $rusage
 	if(aname=="rusage")
 		return &rusage_element();
 
 #ifndef PA_DEBUG_DISABLE_GC
-	// memory
+	// $memory
 	if(aname=="memory")
 		return &memory_element();
 #endif

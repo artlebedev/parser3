@@ -953,6 +953,9 @@ xdoc(xnode)
             Return the total number of bytes [EVER(c)PAF] allocated in this process.		
             Never decreases.							
 
+    !$status:pid process id
+    !$status:tid thread id
+
 console
     $console:timeout
     !$console:line
