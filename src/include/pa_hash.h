@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.3 2001/01/27 15:00:04 paf Exp $
+  $Id: pa_hash.h,v 1.4 2001/01/27 15:21:05 paf Exp $
 */
 
 /*
@@ -83,6 +83,11 @@ public:
 	static uint generic_code(uint aresult, char *start, uint size);
 	void put(Key& key, Value *value);
 	Value* get(Key& key);
+
+private: //disabled
+
+	Hash& operator = (Hash& src) { return *this; }
+	Hash(Hash& src) {}
 };
 
 #endif

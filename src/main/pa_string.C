@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.10 2001/01/27 15:00:05 paf Exp $
+  $Id: pa_string.C,v 1.11 2001/01/27 15:21:05 paf Exp $
 */
 
 #include <string.h>
@@ -159,8 +159,8 @@ bool String::operator == (String& src) {
 	int b_offset=0;
 	Chunk::Row *a_end=append_here;
 	Chunk::Row *b_end=src.append_here;
-	int a_count=a_chunk->count;
-	int b_count=b_chunk->count;
+	int a_countdown=a_chunk->count;
+	int b_countdown=b_chunk->count;
 	bool a_break=false;
 	bool b_break=false;
 	while(true) {
@@ -171,18 +171,18 @@ bool String::operator == (String& src) {
 		if(size_diff==0) { // a has same size as b
 			if(memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset)!=0)
 				return false;
-			a_row++; a_count--; a_offset=0;
-			b_row++; b_count--; b_offset=0;
+			a_row++; a_countdown--; a_offset=0;
+			b_row++; b_countdown--; b_offset=0;
 		} else if (size_diff>0) { // a longer
 			if(memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, b_row->item.size-b_offset)!=0)
 				return false;
 			a_offset+=b_row->item.size-b_offset;
-			b_row++; b_count--; b_offset=0;
+			b_row++; b_countdown--; b_offset=0;
 		} else { // b longer
 			if(memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset)!=0)
 				return false;
 			b_offset+=a_row->item.size-a_offset;
-			a_row++; a_count--; a_offset=0;
+			a_row++; a_countdown--; a_offset=0;
 		}
 
 		a_break=a_row==a_end;
@@ -190,15 +190,15 @@ bool String::operator == (String& src) {
 		if(a_break || b_break)
 			break;
 
-		if(!a_count) {
+		if(!a_countdown) {
 			a_chunk=a_row->link;
 			a_row=a_chunk->rows;
-			a_count=a_chunk->count;
+			a_countdown=a_chunk->count;
 		}
-		if(!b_count) {
+		if(!b_countdown) {
 			b_chunk=b_row->link;
 			b_row=b_chunk->rows;
-			b_count=b_chunk->count;
+			b_countdown=b_chunk->count;
 		}
 	}
 	return a_break==b_break;

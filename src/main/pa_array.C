@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.1 2001/01/27 15:00:04 paf Exp $
+  $Id: pa_array.C,v 1.2 2001/01/27 15:21:05 paf Exp $
 */
 
 #include <string.h>
@@ -19,6 +19,11 @@ void Array::construct(Pool *apool, int initial_rows) {
 	link_row=&head->rows[curr_chunk_rows];
 	link_row->link=0;
 	fused_rows=0;
+
+	cache_index=0;
+	cache_row=0;
+	cache_countdown=curr_chunk_rows;
+	cache_link_row=link_row;
 }
 
 void Array::expand() {
@@ -66,3 +71,23 @@ break2:
 	return result;
 }
 */
+/*
+void Array::put(int index, Item item) {
+}
+
+Array::Item Array::get(int index) {
+}
+*/
+
+Array::Item& Array::operator [] (int index) {
+	// we have cached row&index?
+	if(index>=cache_index && index<cache_index+cache_countdown) {
+	}
+
+	int cache_index;
+	Chunk::Row *cache_row;
+	int cache_countdown;
+	Chunk::Row *cache_link_row;
+	
+	return 0;
+}

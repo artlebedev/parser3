@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.7 2001/01/27 15:00:04 paf Exp $
+  $Id: pa_pool.h,v 1.8 2001/01/27 15:21:05 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -33,6 +33,11 @@ public:
 	Array *make_array(int initial_rows) {
 		return new(this) Array(this, initial_rows);
 	}
+
+private: //disabled
+
+	Pool& operator = (Pool& src) { return *this; }
+	Pool(Pool& src) {}
 };
 
 #endif

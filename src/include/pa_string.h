@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.6 2001/01/27 15:00:04 paf Exp $
+  $Id: pa_string.h,v 1.7 2001/01/27 15:21:05 paf Exp $
 */
 
 /*
@@ -88,10 +88,6 @@ private:
 	}
 	void expand();
 
-private: //disabled
-
-	String& operator = (String& src) { return *this; }
-
 public:
 
 	String(String& src);
@@ -102,6 +98,11 @@ public:
 	bool operator == (String& src);
 
 	uint hash_code();
+
+private: //disabled
+
+	String& operator = (String& src) { return *this; }
+
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.1 2001/01/27 15:00:04 paf Exp $
+  $Id: pa_array.h,v 1.2 2001/01/27 15:21:05 paf Exp $
 */
 
 /*
@@ -64,6 +64,11 @@ private:
 	// array size
 	int fused_rows;
 
+	int cache_index;
+	Chunk::Row *cache_row;
+	int cache_countdown;
+	Chunk::Row *cache_link_row;
+	
 private:
 	// new&constructors made private to enforce factory manufacturing at pool
 	void *operator new(size_t size, Pool *apool);
@@ -82,15 +87,21 @@ private:
 	}
 	void expand();
 
-private: //disabled
-
-	Array& operator = (Array& src) { return *this; }
-	Array(Array& src) {}
-
 public:
 
 	int size() { return fused_rows; }
 	Array& operator += (Item src);
+
+	/*
+	void put(int index, Item item);
+	Item get(int index);
+	*/
+	Item& operator [] (int index);
+
+private: //disabled
+
+	Array& operator = (Array& src) { return *this; }
+	Array(Array& src) {}
 };
 
 #endif
