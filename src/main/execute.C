@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.25 2001/02/23 11:39:58 paf Exp $
+  $Id: execute.C,v 1.26 2001/02/23 11:53:06 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -155,6 +155,25 @@ void Request::execute(Array& ops) {
 				break;
 			}
 			
+		case OP_CREATE_RWPOOL:
+			{
+				Value *ncontext=POP();
+				PUSH(rcontext);
+				rcontext=ncontext;
+				PUSH(wcontext);
+				wcontext=NEW WContext(pool(), ncontext);
+				break;
+			}
+		case OP_REDUCE_RWPOOL:
+			{
+				String *string=wcontext->get_string();
+				Value *value=NEW VString(string);
+				wcontext=static_cast<WContext *>(POP());
+				rcontext=POP();
+				PUSH(value);
+				break;
+			}
+
 		default:
 			printf("\tTODO");
 			break;
@@ -170,8 +189,6 @@ Value *Request::get_element() {
 	// name бывает им€ junction, тогда или оставл€ет в покое, или вычисл€ет в зависимости от флага ј¬“ќ¬џ„»—Ћя“№
 
 	if(!value) {
-//		value=NEW VHash(pool());
-//		ncontext->put_element(*name, value);
 		value=NEW VUnknown(pool());
 		value->set_name(name);
 	}
