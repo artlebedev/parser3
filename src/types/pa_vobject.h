@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/08/13 13:02:42 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/08/13 14:14:44 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
@@ -71,7 +71,7 @@ public: // Value
 	}
 
 	/// VObject: (field)=value
-	bool put_element(const String& aname, Value *avalue, bool replace) {
+	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace) {
 		// replaces element to last_derivate upwards or stores it in self
 		// speed1:
 		//   will not check for '$CLASS(subst)' trick
@@ -87,8 +87,10 @@ public: // Value
 
 		// upwards: copied from VClass::put_element...
 
-		if(fbase && fbase->put_element(aname, avalue, true))
-			return true; // replaced in base
+		try {
+			if(fbase && fbase->put_element(aname, avalue, true))
+				return true; // replaced in base
+		} catch(Exception) { /* ignore "can not store to table&co errors */ }
 
 		if(replace)
 			return ffields.put_replace(aname, avalue);
