@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.70 2001/04/23 10:44:36 paf Exp $
+	$Id: parser3.C,v 1.71 2001/04/23 13:29:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -20,8 +20,6 @@
 #include "pa_request.h"
 #include "pa_socks.h"
 #include "pa_version.h"
-
-/// @test scripting #!/path/to/parser
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: random.C,v 1.7 2001/04/17 19:00:27 paf Exp $
+	$Id: random.C,v 1.8 2001/04/23 13:29:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -20,7 +20,6 @@ VStateless_class *random_class;
 
 // methods
 
-/// @test noticed series in isapi, check how initialize_random_class is called! [must be called only once]
 static void _generate(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
