@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.2 2001/04/04 11:47:29 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.3 2001/04/05 08:09:24 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -23,6 +23,31 @@ SQL_Driver_manager *SQL_driver_manager;
 
 const int MAX_PROTOCOL=20;
 const char *LIBRARY_CREATE_FUNC_NAME="create";
+
+
+/// Services_for_SQL_driver implementation
+class Services_for_SQL_driver_impl : public Services_for_SQL_driver, public Pooled {
+public:
+	Services_for_SQL_driver_impl(Pool& apool, const String& aurl) : Pooled(apool),
+		furl(aurl) {
+	}
+
+	/// allocates some bytes on pool
+	void *malloc(size_t size) { return Pooled::malloc(size); }
+	/// allocates some bytes clearing them with zeros
+	void *calloc(size_t size) { return Pooled::calloc(size); }
+	/// throw exception
+	void _throw(const char *comment) { 
+		THROW(0, 0, 
+			&furl, 
+			comment); 
+	}
+
+private:
+	const String& furl;
+};
+
+// SQL_Driver_manager
 
 // url:
 //   protocol://user:pass@host:port/database
@@ -95,25 +120,31 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& url,
 
 		// validate driver api version
 		int driver_api_version=driver->api_version();
-		if(driver_api_version<SQL_API_VERSION)
+		if(driver_api_version<SQL_DRIVER_API_VERSION)
 			PTHROW(0, 0,
 				library,
 				"driver API version is 0x%04X while current minimum is 0x%04X",
-					driver_api_version, SQL_API_VERSION);
+					driver_api_version, SQL_DRIVER_API_VERSION);
 
 		// cache it
 		put_driver_to_cache(protocol, *driver);
 	}
 	
-	return *new(this->pool()) SQL_Connection(url.pool(), //< associate with request
-		*driver, url_cstr, url);
+	// associate with request
+	Services_for_SQL_driver_impl& services=
+		*new(pool) Services_for_SQL_driver_impl(pool, url);
+
+	// allocate in global pool. associate with services[request]
+	SQL_Connection& result=
+		*new(this->pool()) SQL_Connection(this->pool(), url, *driver, services, url_cstr);
+	
+	return result;
 }
 
 void SQL_Driver_manager::close_connection(const String& url, 
 										  SQL_Connection& connection) {
 	SYNCHRONIZED(true);
 
-	connection.set_pool(0); // deassociate from request
 	put_connection_to_cache(url, connection);
 }
 

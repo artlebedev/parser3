@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.5 2001/04/04 12:54:59 paf Exp $
+	$Id: parser3mysql.C,v 1.6 2001/04/05 08:09:26 paf Exp $
 */
 
 #include <stdlib.h>
@@ -32,7 +32,14 @@ char *lsplit(char **string_ref, char delim) {
     return result;
 }
 
-/// MySQL server driver
+/**
+	MySQL server driver
+	
+	@todo 
+		figure out about memory for errors:
+		- static=add multithread locks
+		- dynamic=who should free it up?
+*/
 class MySQL_Driver : public SQL_Driver {
 public:
 
@@ -40,11 +47,11 @@ public:
 	}
 
 	/// get api version
-	int api_version() { return SQL_API_VERSION; }
+	int api_version() { return SQL_DRIVER_API_VERSION; }
 	/// connect
-	const char *connect(
+	void connect(
 		char *url, ///< @b user:pass@host[:port]/database
-		void **info ///< MYSQL *
+		void **connection ///< output: MYSQL *
 		) {
 		char *user=url;
 		char *host=lsplit(user, '@');
@@ -57,21 +64,15 @@ public:
 	    MYSQL *mysql=mysql_init(NULL);
 		if(!mysql_real_connect(mysql, 
 			host, user, pwd, db, port?port:MYSQL_PORT, NULL, 0))
-			return "mysql connect failed";
+			fservices->_throw(mysql_error(mysql));
 
-		*(MYSQL **)info=mysql;
-		return 0;
+		*(MYSQL **)connection=mysql;
 	}
-	const char *disconnect(void *info) {
-	    mysql_close((MYSQL *)info);
-		return 0;
+	void disconnect(void *connection) {
+	    mysql_close((MYSQL *)connection);
 	}
-	const char *commit(void *info) {
-		return 0;//"mysql commit failed";
-	}
-	const char *rollback(void *info) {
-		return 0;//"mysql rollback failed";
-	}
+	void commit(void *connection) {}
+	void rollback(void *connection) {}
 };
 
 extern "C" SQL_Driver *create() {

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.58 2001/04/04 11:47:27 paf Exp $
+	$Id: root.C,v 1.59 2001/04/05 08:09:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -292,6 +292,7 @@ static void _connect(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(false, body_code, 
 		method_name, "body must be junction");
 
+	// connect
 	SQL_Connection& connection=SQL_driver_manager->get_connection(
 		url.as_string(), r.protocol2library);
 
