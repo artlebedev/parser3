@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.23 2001/02/22 10:43:42 paf Exp $
+  $Id: pa_pool.h,v 1.24 2001/02/22 11:08:06 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -9,14 +9,13 @@
 
 //class String;
 class Exception;
-class Local_exception;
+class Temp_exception_change;
 
 class Pool {
-	friend Local_exception;
+	friend Temp_exception_change;
 public:
 
-	// Exception to report pool errors 
-	Pool(Exception& aexception) : fexception(&aexception) {}
+	Pool() : fexception(0) {}
 	~Pool() {}
 
 	Exception& exception() const { return *fexception; }
@@ -45,13 +44,13 @@ private:
 		// never reached
 		return 0;
 	}
-	// raises proper exception
+	// throws proper exception
 	void fail(size_t size) const;
 
 protected: // exception handling
 
 	// exception replacement mechanism is 'protected' from direct usage
-	// Local_exception object enforces paired set/restore
+	// Temp_exception_change object enforces paired set/restore
 	Exception *set_exception(Exception *e){
 		Exception *r=fexception;
 		fexception=e;
@@ -92,24 +91,34 @@ public:
 };
 #define NEW new(pool())
 
-class Local_exception {
+class Temp_exception_change {
 	Pool pool;
 	Exception *saved_exception;
 public:
-	Local_exception(Pool& apool, Exception& exception) : 
+	Temp_exception_change(Pool& apool, Exception& exception) : 
 		pool(apool),
 		saved_exception(apool.set_exception(&exception)) {
 	}
-	~Local_exception() { 
+	~Temp_exception_change() { 
 		pool.restore_exception(saved_exception); 
 	}
 };
 
-#define TRY if(setjmp((exception()).mark)==0){
+#define TRY \
+	{ \
+		Exception temp_exception; \
+		Temp_exception_change le(pool(), temp_exception); \
+		if(setjmp(temp_exception.mark)==0)
+
 #define THROW exception()._throw
-#define CATCH(e) }else{ Exception& e=exception();
-#define END_CATCH }
+#define CATCH(e) \
+		else{ \
+			Exception& e=temp_exception;
+
+#define END_CATCH \
+		} \
+	}
 // usage:
-//   TRY { ...; if(?) RAISE(?); ...; } CATCH { catch-code EXCEPTION.comment() }
+//   TRY { ...; if(?) RAISE(?); ...; } CATCH(e) { catch-code e.comment() } END_CATCH
 
 #endif

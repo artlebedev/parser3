@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.24 2001/02/22 10:43:45 paf Exp $
+$Id: core.C,v 1.25 2001/02/22 11:08:25 paf Exp $
 */
 
 #include "pa_request.h"
@@ -10,8 +10,7 @@ $Id: core.C,v 1.24 2001/02/22 10:43:45 paf Exp $
 #include <stdio.h>
 
 void core() {
-	Exception exception;
-	Pool pool(exception);
+	Pool pool;
 	Request request(pool);
 	request.core();
 }
@@ -23,7 +22,7 @@ void Request::core() {
 		printf("-----------------\n%s\n----------------\n", result);
 	} 
 	CATCH(e) {
-		printf("operator error occured: %s\n", e.comment());
+		printf("error occured: %s\n", e.comment());
 		const String *type=e.type();
 		if(type) {
 			printf("  type: %s", type->cstr());
@@ -58,7 +57,7 @@ VClass *Request::construct_class(String& name, Array& compiled_methods) {
 	Array immediate_parents(pool());
 	// TODO: immediate_parents=@PARENTS
 
-	VClass *result=new(pool()) VClass(pool(), name, immediate_parents);
+	VClass *result=NEW VClass(pool(), name, immediate_parents);
 	classes().put(name, result);
 		
 	for(int i=0; i<compiled_methods.size(); i++) {
@@ -73,7 +72,7 @@ VClass *Request::construct_class(String& name, Array& compiled_methods) {
 char *Request::execute_MAIN(VClass *class_RUN) {
 	// initialize contexts
 	root=self=rcontext=class_RUN;
-	wcontext=new(pool()) WContext(pool(), class_RUN);
+	wcontext=NEW WContext(pool(), class_RUN);
 
 	// locate @main code
 	String name_main(pool());

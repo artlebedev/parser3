@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.4 2001/02/22 09:14:25 paf Exp $
+  $Id: pa_vclass.h,v 1.5 2001/02/22 11:08:06 paf Exp $
 */
 
 /*
@@ -26,14 +26,14 @@ public: // Value
 	Value *get_element(const String& name) {
 		// $STATIC=STATIC hash
 		if(name==STATIC_NAME)
-			return 0;//TODO:new(pool()) VHash(pool(), STATIC);
+			return 0;//TODO:NEW VHash(pool(), STATIC);
 
 		// $field=STATIC.field
 		Value *result=static_cast<Value *>(STATIC.get(name));
 		if(!result) {
 			// $method=VMethod_ref
 			if(Method *method=get_method(name))
-				result=0;///new(pool()) VMethod_ref(this, method);
+				result=0;///NEW VMethod_ref(this, method);
 		}
 
 		return result;
