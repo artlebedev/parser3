@@ -4,8 +4,19 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.101 2002/01/21 12:10:08 paf Exp $
+	$Id: pa_globals.C,v 1.102 2002/01/21 13:04:03 paf Exp $
 */
+
+#include "pa_config_includes.h"
+
+#ifdef XML
+//#include "libxml/parser.h"
+//#include "libxslt/xslt.h"
+//#include "libxslt/libxslt.h"
+#include "libxslt/extensions.h"
+#include "libxslt/xsltutils.h"
+#include "libexslt/exslt.h"
+#endif
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -21,14 +32,6 @@
 
 #ifdef DB2
 #include "pa_db_manager.h"
-#endif
-
-#ifdef XML
-//#include "libxml/parser.h"
-//#include "libxslt/xslt.h"
-//#include "libxslt/libxslt.h"
-#include "libxslt/extensions.h"
-#include "libexslt/exslt.h"
 #endif
 
 String *content_type_name;
@@ -146,6 +149,7 @@ xmlParserGenericErrorFunc(void *ctx, const char *msg, ...) {
 				continue;
 		}
 
+		p->thread_id=thread_id;
 		size_t offset=p->message?strlen(p->message):0;
 		p->message=(char *)realloc(p->message, offset+MAX_STRING);
 		if(!p->message)
@@ -160,6 +164,14 @@ xmlParserGenericErrorFunc(void *ctx, const char *msg, ...) {
 
 		break;
 	}
+}
+
+bool xmlHaveGenericErrors() {
+    pa_thread_t thread_id=pa_get_thread_id();
+
+	SYNCHRONIZED;  // find blocked
+
+	return xml_generic_error_info(thread_id)!=0;
 }
 
 const char *xmlGenericErrors() {
@@ -326,6 +338,7 @@ void pa_globals_init(Pool& pool) {
 
 	memset(xml_generic_error_infos, 0, sizeof(xml_generic_error_infos));
 	xmlSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
+	xsltSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
 
 	// XSLT stylesheet manager
 	cache_managers->put(*NEW String(pool, "stylesheet"), 

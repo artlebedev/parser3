@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.65 2002/01/16 10:28:34 paf Exp $
+	$Id: xdoc.C,v 1.66 2002/01/21 13:04:02 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -362,7 +362,7 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
-	} else if(exc)
+	} else if(exc || xmlHaveGenericErrors())
 		throw Exception(0, 0, 
 			&method_name, 
 			exc);
@@ -389,7 +389,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		0/*publicId* /, 
 		0/*systemId* /, 
 		&exc);
-	if(!documentType || exc)
+	if(!documentType || exc || xmlHaveGenericErrors())
 		throw Exception(0, 0, 
 			&method_name, 
 			exc);
@@ -399,7 +399,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		pool.transcode(qualifiedName).get(), 
 		0/*doctype*/, 
 		&exc);
-	if(!document || exc)
+	if(!document || exc || xmlHaveGenericErrors())
 		throw Exception(0, 0, 
 			&method_name, 
 			exc);
@@ -427,7 +427,7 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 		/* GDOME_LOAD_VALIDATING  pending until kill warning of no-dtd*/ 
 		/*|GDOME_LOAD_SUBSTITUTE_ENTITIES */,
 		&exc);
-	if(!document || exc)
+	if(!document || exc || xmlHaveGenericErrors())
 		throw Exception(0, 0, 
 			&method_name, 
 			exc);
@@ -451,7 +451,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 		/* GDOME_LOAD_VALIDATING  pending until kill warning of no-dtd*/ 
 		/*|GDOME_LOAD_SUBSTITUTE_ENTITIES */,
 		&exc);
-	if(!document || exc)
+	if(!document || exc || xmlHaveGenericErrors())
 		throw Exception(0, 0, 
 			&method_name, 
 			exc);
@@ -714,10 +714,12 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		0/*const char *output*/,
 		0/*FILE *profile*/,
 		transformContext.get());
-	if(!transformed)
+	if(!transformed || xmlHaveGenericErrors()) {
+		GdomeException exc=0;
 		throw Exception(0, 0,
 			&method_name, 
-			"transform failed. TODO: show errors");
+			exc);
+	}
 
 	//gdome_xml_doc_mkref dislikes XML_HTML_DOCUMENT_NODE  type, fixing
 	transformed->type=XML_DOCUMENT_NODE;

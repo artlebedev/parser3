@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.32 2002/01/21 12:33:26 paf Exp $
+	$Id: pa_exception.C,v 1.33 2002/01/21 13:04:03 paf Exp $
 */
 
 #include "pa_common.h"
@@ -46,6 +46,34 @@ Exception::Exception(const String *atype, const String *acode,
 	initialize(atype, acode, aproblem_source, comment_fmt, args);
 	va_end(args);
 }
+Exception::Exception(const Exception& src) : 
+	ftype(src.ftype),
+	fcode(src.fcode),
+	fproblem_source(src.fproblem_source),
+	fcomment(src.fcomment),
+	owns_comment(src.owns_comment) {
+	// that ugly string got from STL, along with principal ideal
+	const_cast<Exception *>(&src)->owns_comment=false;
+}
+Exception& Exception::operator =(const Exception& src) {
+	ftype=src.ftype;
+	fcode=src.fcode;
+	fproblem_source=src.fproblem_source;
+
+	if(owns_comment)
+		free(fcomment);
+	fcomment=src.fcomment;
+	// that ugly string got from STL, along with principal ideal
+	owns_comment=src.owns_comment;  ((Exception*)&src)->owns_comment=false;
+	
+	return *this;
+}
+Exception::~Exception() {
+	if(owns_comment)
+		free(fcomment);
+}
+
+#ifdef XML
 Exception::Exception(
 	const String *atype, const String *acode,
 	const String *aproblem_source, 
@@ -100,88 +128,4 @@ Exception::Exception(
 	} else
 		fcomment=0;
 }
-
-
-Exception::Exception(const Exception& src) : 
-	ftype(src.ftype),
-	fcode(src.fcode),
-	fproblem_source(src.fproblem_source),
-	fcomment(src.fcomment),
-	owns_comment(src.owns_comment) {
-	// that ugly string got from STL, along with principal ideal
-	const_cast<Exception *>(&src)->owns_comment=false;
-}
-Exception& Exception::operator =(const Exception& src) {
-	ftype=src.ftype;
-	fcode=src.fcode;
-	fproblem_source=src.fproblem_source;
-
-	if(owns_comment)
-		free(fcomment);
-	fcomment=src.fcomment;
-	// that ugly string got from STL, along with principal ideal
-	owns_comment=src.owns_comment;  ((Exception*)&src)->owns_comment=false;
-	
-	return *this;
-}
-Exception::~Exception() {
-	if(owns_comment)
-		free(fcomment);
-}
-
-#ifdef XML
-/*
-void Exception::provide_source(Pool& pool, const String *source, const XSLException& e) {
-	if(e.getURI().empty())
-		throw Exception(0, 0,
-			source,
-			"%s (%s)",
-				pool.transcode_cstr(e.getMessage()),  // message for exception
-				pool.transcode_cstr(e.getType()) // type of exception
-		);
-	else
-		throw Exception(0, 0,
-			source,
-			"%s (%s). %s(%d:%d)'", 
-				pool.transcode_cstr(e.getMessage()),  // message for exception
-				pool.transcode_cstr(e.getType()), // type of exception
-				
-				pool.transcode_cstr(e.getURI()),  // URI for the associated document, if any
-				e.getLineNumber(),  // line number, or -1 if unknown
-				e.getColumnNumber() // column number, or -1 if unknown
-		);
-}
-
-void Exception::provide_source(Pool& pool, const String *source, const SAXException& e) {
-	throw Exception(0, 0,
-		source,
-		"%s",
-			pool.transcode_cstr(XalanDOMString(e.getMessage()))  // message for exception
-	);
-}
-void Exception::provide_source(Pool& pool, const String *source, const SAXParseException& e) {
-	throw Exception(0, 0,
-		source,
-		"%s. %s(%d:%d)",
-			pool.transcode_cstr(XalanDOMString(e.getMessage())),  // message for exception
-			e.getSystemId()?pool.transcode_cstr(XalanDOMString(e.getSystemId())):"block", // file of exception
-			e.getLineNumber(), e.getColumnNumber() // line:col
-	);
-}
-
-
-void Exception::provide_source(Pool& pool, const String *source, const XMLException& e) {
-	throw Exception(0, 0,
-		source,
-		"%s (%s). %s(%d)'", 
-			pool.transcode_cstr(XalanDOMString(e.getMessage())),  // message for exception
-			pool.transcode_cstr(XalanDOMString(e.getType())), // type of exception
-			
-			e.getSrcFile()?e.getSrcFile():"block", // file of exception
-			e.getSrcLine()  // line number
-			//e.getCode()
-	);
-}
-
-*/
 #endif

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.27 2002/01/10 15:41:49 paf Exp $
+	$Id: pa_exception.h,v 1.28 2002/01/21 13:04:02 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -30,27 +30,15 @@ public:
 		const String *atype, const String *acode,
 		const String *aproblem_source, 
 		const char *comment_fmt, va_list args);	
-	Exception(
-		const String *atype, const String *acode,
-		const String *aproblem_source, 
-		GdomeException& exc);
 	Exception(const Exception& src);
 	Exception& operator =(const Exception& src);
 	~Exception();
 
 #ifdef XML
-	/*
-	/// converts XSL exception to parser exception
-	static void provide_source(Pool& pool, const String *source, const XSLException& e);
-	/// converts SAX exception to parser exception
-	static void provide_source(Pool& pool, const String *source, const SAXException& e);
-	/// converts SAX parse exception to parser exception
-	static void provide_source(Pool& pool, const String *source, const SAXParseException& e);
-	/// converts XML exception to parser exception
-	static void provide_source(Pool& pool, const String *source, const XMLException& e);
-	/// converts Xalan DOM exception to parser exception
-	static void provide_source(Pool& pool, const String *source, const XalanDOMException& e);
-	*/
+	Exception(
+		const String *atype, const String *acode,
+		const String *aproblem_source, 
+		GdomeException& exc);
 #endif
 
 	/// extracts exception type

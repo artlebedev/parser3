@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_connection.h,v 1.20 2002/01/21 12:33:26 paf Exp $
+	$Id: pa_stylesheet_connection.h,v 1.21 2002/01/21 13:04:03 paf Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -81,7 +81,7 @@ private:
 
 		xsltStylesheet *nstylesheet;
 		nstylesheet=xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr(String::UL_FILE_SPEC));
-		if(!nstylesheet) {
+		if(!nstylesheet || xmlHaveGenericErrors()) {
 			GdomeException exc=0;
 			throw Exception(0, 0,
 				&ffile_spec,

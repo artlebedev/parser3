@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.27 2002/01/14 17:48:56 paf Exp $
+	$Id: xnode.C,v 1.28 2002/01/21 13:04:02 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -404,6 +404,13 @@ static void _selectX(Request& r, const String& method_name, MethodParams *params
 	/*error to stderr for now*/
 	xmlXPathObject_auto_ptr res(
 		xmlXPathEvalExpression(BAD_CAST pool.transcode(expression)->str, ctxt.get()));
+
+	if(xmlHaveGenericErrors()) {
+		GdomeException exc=0;
+		throw Exception(0, 0,
+			&expression, 
+			exc);
+	}
 
 	Value *result=0;
    	if(res.get())
