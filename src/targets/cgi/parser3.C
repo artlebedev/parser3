@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.182 2002/06/12 14:18:05 paf Exp $
+	$Id: parser3.C,v 1.183 2002/06/20 13:39:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -339,7 +339,7 @@ void real_parser_handler(
 		}
 		snprintf(config_filespec_buf, MAX_STRING, 
 			"%s/%s", 
-			beside_binary_path, CONFIG_FILE_NAME);
+			beside_binary_path, AUTO_FILE_NAME);
 		config_filespec_cstr=config_filespec_buf;
 	}
 	

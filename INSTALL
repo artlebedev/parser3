@@ -34,8 +34,8 @@
   Installation layout:
     $prefix/bin/
       parser3             -- CGI and command line Parser3 interpreter
-      parser3.conf.dist   -- configuration file sample, 
-                             copy it to parser3.conf and adjust to your needs
+      auto.p.dist         -- configuration file sample, 
+                             copy it to auto.p and adjust to your needs
     $prefix/etc/
       parser3.charsets/   -- charset definition files
         koi8-r.cfg        -- cyrillic charset [KOI8-R encoding]
@@ -157,4 +157,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.21 2002/06/18 15:16:15 paf Exp $
+$Id: INSTALL,v 1.22 2002/06/20 13:39:56 paf Exp $

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.22 2002/06/12 14:09:49 paf Exp $
+	$Id: mod_parser3.C,v 1.23 2002/06/20 13:39:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -650,7 +650,7 @@ static const command_rec parser_cmds[] =
         (void*)0,                   /* argument to include in call */
         (int)(OR_OPTIONS),             /* where available */
         TAKE1,                /* arguments */
-        "Parser site config filespec" // directive description
+        "Parser config filespec" // directive description
     },
 	{
 		"ParserStatusAllowed",              /* directive name */

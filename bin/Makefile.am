@@ -1,2 +1,2 @@
 confdir=@bindir@
-conf_DATA=parser3.conf.dist
+conf_DATA=auto.p.dist
