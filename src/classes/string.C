@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.18 2001/03/29 17:23:18 paf Exp $
+	$Id: string.C,v 1.19 2001/03/29 17:32:57 paf Exp $
 */
 
 #include "pa_request.h"
@@ -87,7 +87,8 @@ static void _pos(Request& r, const String& method_name, Array *params) {
 	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
 }
 
-static void _lsplit(Request& r, const String& method_name, Array *params) {
+static void split_list(Request& r, const String& method_name, Array *params,
+					   const String& string, Array& list) {
 	Pool& pool=r.pool();
 
 	Value& delim_value=*static_cast<Value *>(params->get(0));
@@ -95,29 +96,52 @@ static void _lsplit(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, delim_value, method_name, "delimiter must not be junction");
 	const String& delim=delim_value.as_string();
 	
-	const String& string=*static_cast<VString *>(r.self)->get_string();
-
-	Table& result=*new(pool) Table(pool, &string, 0);
-
 	if(delim.size()) {
 		size_t pos_after=0;
 		int pos_before;
 		while((pos_before=string.pos(delim, pos_after))>=0) { // we have 'delim' in 'string'?
-			Array& row=*new(pool) Array(pool, 1);
-			result+=&(row+=&string.piece(pos_after, pos_before));
+			list+=&string.piece(pos_after, pos_before);
 			pos_after=pos_before+delim.size();
 		}
 		// last piece
-		if(pos_after<string.size()) {
-			Array& row=*new(pool) Array(pool, 1);
-			result+=&(row+=&string.piece(pos_after, string.size()));
-		} 
+		if(pos_after<string.size()) 
+			list+=&string.piece(pos_after, string.size());
 	} else { // empty delim
+		list+=&string;
+	}
+}
+
+static void _lsplit(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+	const String& string=*static_cast<VString *>(r.self)->get_string();
+
+	Array list(pool);
+	split_list(r, method_name, params, string, list);
+	Table& table=*new(pool) Table(pool, &string, 0);
+
+	int size=list.size();
+	for(int i=0; i<size; i++) {
 		Array& row=*new(pool) Array(pool, 1);
-		result+=&(row+=&string);
+		table+=&(row+=list.quick_get(i));
 	}
 
-	r.write_no_lang(*new(pool) VTable(pool, &result));
+	r.write_no_lang(*new(pool) VTable(pool, &table));
+}
+
+static void _rsplit(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+	const String& string=*static_cast<VString *>(r.self)->get_string();
+
+	Array list(pool);
+	split_list(r, method_name, params, string, list);
+	Table& table=*new(pool) Table(pool, &string, 0);
+
+	for(int i=list.size(); --i>=0; ) {
+		Array& row=*new(pool) Array(pool, 1);
+		table+=&(row+=list.get(i));
+	}
+
+	r.write_no_lang(*new(pool) VTable(pool, &table));
 }
 
 // initialize
@@ -147,5 +171,7 @@ void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^string.lsplit[delim]
 	vclass.add_native_method("lsplit", _lsplit, 1, 1);
+	// ^string.rsplit[delim]
+	vclass.add_native_method("rsplit", _rsplit, 1, 1);
 }	
 
