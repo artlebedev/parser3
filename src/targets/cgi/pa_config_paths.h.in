@@ -1,3 +1,0 @@
-/* @configure_input@ */
-
-#define ROOT_CONFIG_DIR "@rootconfigdir@"
