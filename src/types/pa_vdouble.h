@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char* IDENT_VDOUBLE_H="$Date: 2002/08/01 11:41:22 $";
+static const char* IDENT_VDOUBLE_H="$Date: 2002/08/12 10:32:53 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -47,11 +47,6 @@ public: // Value
 	int as_int() const { return (int)fdouble; }
 	/// VDouble: 0 or !0
 	bool as_bool() const { return fdouble!=0; }
-
-protected: // VAliased
-
-	/// disable .CLASS element. @see VAliased::get_element
-	bool hide_class() { return true; }
 
 public: // usage
 

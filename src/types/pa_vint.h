@@ -8,7 +8,7 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-static const char* IDENT_VINT_H="$Date: 2002/08/01 11:41:23 $";
+static const char* IDENT_VINT_H="$Date: 2002/08/12 10:32:53 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -46,11 +46,6 @@ public: // Value
 	int as_int() const { return finteger; }
 	/// VInt: 0 or !0
 	bool as_bool() const { return finteger!=0; }
-
-protected: // VAliased
-
-	/// disable .CLASS element. @see VAliased::get_element
-	bool hide_class() { return true; }
 
 public: // usage
 

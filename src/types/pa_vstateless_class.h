@@ -8,9 +8,8 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/08/01 11:41:24 $";
+static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/08/12 10:32:53 $";
 
-#include "pa_valiased.h"
 #include "pa_hash.h"
 #include "pa_vjunction.h"
 
@@ -23,7 +22,7 @@ class Temp_method;
 
 	@see VStateless_object, Temp_method
 */
-class VStateless_class : public VAliased {
+class VStateless_class : public Value {
 	friend class Temp_method;
 public: // Value
 	
@@ -34,10 +33,6 @@ public: // Value
 	
 	/// VStateless_class: +$method
 	Value *get_element(const String& aname) {
-		// $CLASS
-		if(Value *result=VAliased::get_element(aname))
-			return result;
-
 		// $method=junction(self+class+method)
 		if(Junction *junction=get_junction(*this, aname))
 			return new(junction->pool()) VJunction(*junction);
@@ -49,7 +44,7 @@ public: // usage
 
 	VStateless_class(Pool& apool, 
 		const String *aname=0, 
-		VStateless_class *abase=0) : VAliased(apool), 
+		VStateless_class *abase=0) : Value(apool), 
 		fname(aname),
 		fbase(abase),
 		fmethods(apool) {
@@ -99,7 +94,7 @@ public: // usage
 			fbase && fbase->is_or_derived_from(vclass);
 	}
 
-	Junction *get_junction(VAliased& self, const String& name) {
+	Junction *get_junction(Value& self, const String& name) {
 		if(Method *method=static_cast<Method *>(fmethods.get(name)))
 			return 
 				new(name.pool()) Junction(name.pool(), self, this, method, 0,0,0,0);

@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char* IDENT_VFILE_H="$Date: 2002/08/06 09:08:00 $";
+static const char* IDENT_VFILE_H="$Date: 2002/08/12 10:32:53 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -48,11 +48,6 @@ public: // Value
 		// $name, $size, $text
 		return static_cast<Value *>(ffields.get(aname));
 	}
-
-protected: // VAliased
-
-	/// disable .CLASS element. @see VAliased::get_element
-	bool hide_class() { return true; }
 
 public: // usage
 

@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/08/07 13:24:31 $";
+static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/08/12 10:32:53 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -48,9 +48,6 @@ public: // Value
 
 	/// VMethodFrame: self_transparent
 	VStateless_class* get_class() { return fself->get_class(); }
-
-	/// VMethodFrame: self_transparent
-	VAliased *get_aliased() { return fself->get_aliased(); }
 
 public: // WContext
 

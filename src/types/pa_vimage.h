@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char* IDENT_VIMAGE_H="$Date: 2002/08/01 11:41:23 $";
+static const char* IDENT_VIMAGE_H="$Date: 2002/08/12 10:32:53 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -53,11 +53,6 @@ public: // Value
 
 	/// VImage: field
 	void put_element(const String& aname, Value *avalue);
-
-protected: // VAliased
-
-	/// disable .CLASS element. @see VAliased::get_element
-	bool hide_class() { return true; }
 
 public: // usage
 

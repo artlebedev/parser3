@@ -8,7 +8,7 @@
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-static const char* IDENT_VRESPONSE_H="$Date: 2002/08/01 11:41:24 $";
+static const char* IDENT_VRESPONSE_H="$Date: 2002/08/12 10:32:53 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
@@ -37,11 +37,6 @@ public: // Value
 
 	/// Response: (attribute)=value
 	void put_element(const String& name, Value *value);
-
-protected: // VAliased
-
-	/// disable .CLASS element. @see VAliased::get_element
-	bool hide_class() { return true; }
 
 public: // usage
 

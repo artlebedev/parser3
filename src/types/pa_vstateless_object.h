@@ -8,9 +8,8 @@
 #ifndef PA_VSTATELESS_OBJECT_H
 #define PA_VSTATELESS_OBJECT_H
 
-static const char* IDENT_VSTATELESS_OBJECT_H="$Date: 2002/08/01 11:41:25 $";
+static const char* IDENT_VSTATELESS_OBJECT_H="$Date: 2002/08/12 10:32:54 $";
 
-#include "pa_valiased.h"
 #include "pa_vjunction.h"
 #include "pa_vstateless_class.h"
 
@@ -18,15 +17,11 @@ static const char* IDENT_VSTATELESS_OBJECT_H="$Date: 2002/08/01 11:41:25 $";
 	
 	"of some class" means "with some set of methods".
 */
-class VStateless_object : public VAliased {
+class VStateless_object : public Value {
 public: // Value
 	
 	/// VStateless_object: +$method
 	Value *get_element(const String& name) {
-		// $CLASS
-		if(Value *result=VAliased::get_element(name))
-			return result;
-
 		// $method=junction(self+class+method)
 		if(Junction *junction=get_class()->get_junction(*this, name))
 			return NEW VJunction(*junction);
@@ -36,7 +31,7 @@ public: // Value
 
 public: // creation
 
-	VStateless_object(Pool& apool) : VAliased(apool) {}
+	VStateless_object(Pool& apool) : Value(apool) {}
 
 };
 

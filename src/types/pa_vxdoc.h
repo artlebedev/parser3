@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char* IDENT_VXDOC_H="$Date: 2002/08/09 14:18:40 $";
+static const char* IDENT_VXDOC_H="$Date: 2002/08/12 10:32:54 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -25,7 +25,7 @@ extern Methoded *Xdoc_class;
 
 void VXdoc_cleanup(void *);
 
-/// value of type 'xdoc'. implemented with XalanDocument & co
+/// value of type 'xdoc'. implemented with libxml & co
 class VXdoc : public VXnode {
 	friend void VXdoc_destructor(void *);
 public: // Value
@@ -49,14 +49,8 @@ public: // Value
 	/// VXnode: $CLASS,$method, fields
 	Value *get_element(const String& name);
 
-protected: // VAliased
+public: // VXNode
 
-	/// disable .CLASS element. @see VAliased::get_element
-	bool hide_class() { return true; }
-
-public: // VDNode
-
-	/// @test conv validity
 	virtual GdomeNode *get_node(const String *source) { 
 		return (GdomeNode *)get_document(source);
 	}
@@ -66,10 +60,8 @@ public: // usage
 	VXdoc(Pool& apool, GdomeDocument *adocument) : 
 		VXnode(apool, 0), 
 		fdocument(adocument/*not adding ref, owning a doc*/) {
-//		ftransformer(0) 
 
 		register_cleanup(VXdoc_destructor, this);
-//		ftransformer=new XalanTransformer2;
 		memset(&output_options, 0, sizeof(output_options));
 	}
 protected:
@@ -77,12 +69,9 @@ protected:
 		GdomeException exc;
 		if(fdocument)			
 			gdome_doc_unref(fdocument, &exc);
-
-//		delete ftransformer;
 	}
 public:
 
-	//XalanTransformer2& transformer() {return *ftransformer; }
 	void set_document(GdomeDocument *adocument) { 
 		GdomeException exc;
 		if(fdocument)			

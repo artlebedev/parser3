@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/08/09 14:18:39 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/08/12 10:32:52 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -504,10 +504,6 @@ void Request::execute(const Array& ops) {
 				
 				rcontext=wcontext=&frame;
 				{
-					// take object or class from any wrappers
-					// and substitute class alias to the class they are called AS
-					Temp_alias temp_alias(*self->get_aliased(), *frame.junction.vclass);
-
 					const Method& method=*frame.junction.method;
 					Method::Call_type call_type=
 						called_class==self ? Method::CT_STATIC : Method::CT_DYNAMIC;
@@ -545,7 +541,7 @@ void Request::execute(const Array& ops) {
 				wcontext=static_cast<WContext *>(POP());  
 				rcontext=POP();  
 				root=POP();  
-				self=static_cast<VAliased *>(POP());
+				self=static_cast<Value *>(POP());
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
 				if(const String *s=value->get_string())
@@ -949,7 +945,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 		wcontext=static_cast<WContext *>(POP());  
 		rcontext=POP();  
 		root=POP();  
-		self=static_cast<VAliased *>(POP());
+		self=static_cast<Value *>(POP());
 		
 #ifdef DEBUG_EXECUTE
 		debug_printf(pool(), "<-ja returned");
@@ -979,7 +975,7 @@ const String& Request::execute_method(VMethodFrame& amethodFrame, const Method& 
 	wcontext=static_cast<WContext *>(POP());  
 	rcontext=POP();  
 	root=POP();  
-	self=static_cast<VAliased *>(POP());
+	self=static_cast<Value *>(POP());
 	
 	// return
 	return result;
@@ -1022,7 +1018,7 @@ void Request::execute_method(Value& aself,
 	wcontext=static_cast<WContext *>(POP());  
 	rcontext=POP();  
 	root=POP();  
-	self=static_cast<VAliased *>(POP());
+	self=static_cast<Value *>(POP());
 }
 
 void Request::execute_nonvirtual_method(VStateless_class& aclass, 

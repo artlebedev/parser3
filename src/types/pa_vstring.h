@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-static const char* IDENT_VSTRING_H="$Date: 2002/08/01 11:41:25 $";
+static const char* IDENT_VSTRING_H="$Date: 2002/08/12 10:32:54 $";
 
 #include <stdlib.h>
 
@@ -57,11 +57,6 @@ public: // Value
 		bark("(%s) does not have fields",
 			"%s method not found", &name);  return 0;
 	}
-
-protected: // VAliased
-
-	/// disable .CLASS element. @see VAliased::get_element
-	bool hide_class() { return true; }
 
 public: // usage
 

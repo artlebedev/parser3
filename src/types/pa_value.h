@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/09 14:18:39 $";
+static const char* IDENT_VALUE_H="$Date: 2002/08/12 10:32:53 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -18,7 +18,6 @@ static const char* IDENT_VALUE_H="$Date: 2002/08/09 14:18:39 $";
 
 class VStateless_class;
 class WContext;
-class VAliased;
 class Request;
 class Table;
 class Junction;
@@ -150,7 +149,6 @@ public: // Value
 	/** extract Value element
 		@return for
 		- VHash: (key)=value
-		- VAliased: sometimes $CLASS [see VAliased::hide_class()]
 		- VStateless_class: +$method
 		- VStateless_object: +$method
 		- VClass: (field)=STATIC value;(method)=method_ref with self=object_class
@@ -201,14 +199,6 @@ public: // Value
 		- VCookie: 0
 	*/
 	virtual VStateless_class *get_class()=0;
-	
-	/** extract VAliased
-		@return for
-		- VAliased: this
-		- WContext: transparent
-		- VMethodFrame: self_transparent
-	*/
-	virtual VAliased *get_aliased() { return 0; }
 
 	/** extract VTable
 		@return for

@@ -75,7 +75,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"Debug\types.lib"
+# ADD LIB32 /nologo
 
 !ELSEIF  "$(CFG)" == "types - Win32 Profile"
 
@@ -109,14 +109,6 @@ LIB32=link.exe -lib
 # Name "types - Win32 Release"
 # Name "types - Win32 Debug"
 # Name "types - Win32 Profile"
-# Begin Source File
-
-SOURCE=.\pa_valiased.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_valiased.h
-# End Source File
 # Begin Source File
 
 SOURCE=.\pa_value.C

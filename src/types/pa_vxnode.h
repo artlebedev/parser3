@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char* IDENT_VXNODE_H="$Date: 2002/08/01 11:41:25 $";
+static const char* IDENT_VXNODE_H="$Date: 2002/08/12 10:32:54 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -40,11 +40,6 @@ public: // Value
 
 	/// VXnode: $CLASS,$method, fields
 	Value *get_element(const String& name);
-
-protected: // VAliased
-
-	/// disable .CLASS element. @see VAliased::get_element
-	bool hide_class() { return true; }
 
 public: // usage
 

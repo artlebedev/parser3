@@ -8,7 +8,7 @@
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-static const char* IDENT_VTABLE_H="$Date: 2002/08/01 11:41:25 $";
+static const char* IDENT_VTABLE_H="$Date: 2002/08/12 10:32:54 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
@@ -39,11 +39,6 @@ public: // Value
 	Table *get_table() { return ftable; }
 	/// VTable: columns,methods
 	Value *get_element(const String& name);
-
-protected: // VAliased
-
-	/// disable .CLASS element. @see VAliased::get_element
-	bool hide_class() { return true; }
 
 public: // usage
 

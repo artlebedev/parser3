@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char* IDENT_VDATE_H="$Date: 2002/08/08 12:02:21 $";
+static const char* IDENT_VDATE_H="$Date: 2002/08/12 10:32:53 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -62,11 +62,6 @@ public: // Value
 		else return 0;
 		return NEW VInt(pool(), result);
 	}
-
-protected: // VAliased
-
-	/// disable .CLASS element. @see VAliased::get_element
-	bool hide_class() { return true; }
 
 public: // usage
 

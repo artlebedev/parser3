@@ -8,11 +8,16 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/08/09 14:18:40 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/08/12 10:32:53 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
 #include "pa_vstateless_object.h"
+
+// defines
+
+#define CLASS_NAME "CLASS"
+#define BASE_NAME "BASE"
 
 /**	parser class instance,
 	stores class VObject::fclass_real;
@@ -37,7 +42,11 @@ public: // Value
 		if(Value *result=static_cast<Value *>(ffields.get(name)))
 			return result;
 
-		// $CLASS,$method
+		// $CLASS
+		if(name==CLASS_NAME)
+			return get_class();
+
+		// $method
 		return VStateless_object::get_element(name);
 	}
 
@@ -57,13 +66,15 @@ public: // creation
 
 	VObject(Pool& apool, VStateless_class& aclass_real) : VStateless_object(apool), 
 		fclass_real(aclass_real),
-		ffields(apool) {
+		ffields(apool) {//,
+		//zz fbase(fclass_real.base()?fclass_real.base()->create_new_value(apool):0) {
 	}
 
 private:
 
 	VStateless_class& fclass_real;
 	Hash ffields;
+	//Value *fbase;
 };
 
 #endif

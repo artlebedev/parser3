@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char* IDENT_WCONTEXT_H="$Date: 2002/08/07 13:24:31 $";
+static const char* IDENT_WCONTEXT_H="$Date: 2002/08/12 10:32:54 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -51,8 +51,6 @@ public: // Value
 
 	/// WContext: none yet | transparent
 	VStateless_class *get_class() { return fvalue?fvalue->get_class():0; }
-	/// WContext: transparent
-	VAliased *get_aliased() { return fvalue?fvalue->get_aliased():0; }
 
 public: // WContext
 

@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char* IDENT_VCLASS_H="$Date: 2002/08/09 14:18:39 $";
+static const char* IDENT_VCLASS_H="$Date: 2002/08/12 10:32:53 $";
 
 #include "pa_vstateless_class.h"
 //#include "pa_vhash.h"
@@ -56,15 +56,6 @@ public: // Value
 		return NEW VObject(pool(), *this);
 	}
 
-protected: // VAliased
-
-	void set_alias(VStateless_class *aclass_alias) {
-		fclass_alias=aclass_alias;
-	}
-	VStateless_class *get_alias() {
-		return fclass_alias;
-	}
-
 public: // usage
 
 	VClass(Pool& apool) : VStateless_class(apool), 
@@ -99,7 +90,7 @@ private: // self
 
 	Hash ffields;
 
-private: // VAliased
+private: // Value
 	
 	VStateless_class *fclass_alias;
 

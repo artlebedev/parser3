@@ -1,5 +1,5 @@
 @USE
-/t.p
+/derived.p
 
 @auto[filespec]
 $selffilespec[$filespec]
@@ -207,10 +207,15 @@ $selffilespec[$filespec]
 #^badconstructor[]
 #^calendar[]
 #^monthdays(8)
-^xtabletest[]
 #^xdoctypetest[]
+#^xtabletest[]
+^staticstest[]
 <hr>
 OK
+
+@staticstest[]
+$derived[^derived::create[]]
+^derived.test[]
 
 @xdoctypetest[]
 $xdoc[^xdoc::create[x]]
@@ -219,6 +224,7 @@ $xdoc[^xdoc::create[x]]
 @xtabletest[]
 $xtableo[^xtable::create[]]
 ^if($xtableo is table){y}{n}
+#^xtableo.columns[]
 
 @monthdays[month]
 $from[^date::create(2000;$month;1)]
