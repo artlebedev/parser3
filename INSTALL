@@ -166,9 +166,9 @@
   option to configure.
   file::exec, file::cgi and mail:send (unix version) methods would be disabled.
 
-  You can disable reading and executing files, belonging to group 
-  other then current by setting
-  --disable-foreign-group-files
+  You can enable reading and executing files, not belonging to group+user 
+  other then effective by setting
+  --disable-safe-mode
   option to configure.
   
   You can disable user-configured sendmail commands by forcing it, setting
@@ -193,4 +193,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.28 2002/12/19 11:21:05 paf Exp $
+$Id: INSTALL,v 1.29 2002/12/26 12:27:27 paf Exp $
