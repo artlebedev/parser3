@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b table parser class decl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vtable.h,v 1.35 2001/11/05 11:46:34 paf Exp $
+	$Id: pa_vtable.h,v 1.36 2002/02/08 07:27:55 paf Exp $
 */
 
 #ifndef PA_VTABLE_H

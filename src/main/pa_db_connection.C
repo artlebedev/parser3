@@ -1,10 +1,10 @@
 /** @file
 	Parser: sql driver connection implementation.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_connection.C,v 1.35 2002/01/24 17:18:49 paf Exp $
+	$Id: pa_db_connection.C,v 1.36 2002/02/08 07:27:47 paf Exp $
 
 	developed with LIBDB 2.7.4
 */

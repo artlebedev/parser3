@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b dnode methods class - MDnode class decl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.h,v 1.7 2002/01/28 10:33:52 paf Exp $
+	$Id: xnode.h,v 1.8 2002/02/08 07:27:41 paf Exp $
 */
 
 #ifndef XNODE_H

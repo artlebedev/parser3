@@ -1,10 +1,10 @@
 /** @file
 	Parser: CGI memory manager impl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.34 2001/12/13 15:19:56 paf Exp $
+	$Id: pa_pool.C,v 1.35 2002/02/08 07:27:50 paf Exp $
 */
 
 #include "pa_pool.h"

@@ -1,10 +1,10 @@
 /** @file
 	Parser: string class decl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.122 2001/12/25 09:00:28 paf Exp $
+	$Id: pa_string.h,v 1.123 2002/02/08 07:27:45 paf Exp $
 */
 
 #ifndef PA_STRING_H

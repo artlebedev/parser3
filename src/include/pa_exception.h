@@ -1,10 +1,10 @@
 /** @file
 	Parser: exception decls.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.29 2002/01/23 10:38:17 paf Exp $
+	$Id: pa_exception.h,v 1.30 2002/02/08 07:27:43 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H

@@ -1,10 +1,10 @@
 /** @file
 	Parser: compiler support helper functions.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.C,v 1.43 2002/02/07 11:16:28 paf Exp $
+	$Id: compile_tools.C,v 1.44 2002/02/08 07:27:46 paf Exp $
 */
 
 #include "compile_tools.h"

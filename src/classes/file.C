@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b file parser class.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.70 2002/02/05 12:09:22 paf Exp $
+	$Id: file.C,v 1.71 2002/02/08 07:27:40 paf Exp $
 */
 
 #include "pa_config_includes.h"

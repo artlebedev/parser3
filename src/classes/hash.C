@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b hash parser class.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hash.C,v 1.33 2002/01/25 12:18:13 paf Exp $
+	$Id: hash.C,v 1.34 2002/02/08 07:27:40 paf Exp $
 */
 
 #include "classes.h"

@@ -1,10 +1,10 @@
 /** @node
 	Parser: @b dnode parser type.
 
-	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_vxnode.C,v 1.13 2001/12/28 14:06:52 paf Exp $
+	$Id: pa_vxnode.C,v 1.14 2002/02/08 07:27:55 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML

@@ -1,10 +1,10 @@
 /**	@file
 	Parser: write context class decl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.h,v 1.25 2002/01/31 16:39:01 paf Exp $
+	$Id: pa_wcontext.h,v 1.26 2002/02/08 07:27:55 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H

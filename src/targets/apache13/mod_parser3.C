@@ -1,10 +1,10 @@
 /** @file
 	Parser: apache 1.3 module.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.15 2001/12/17 19:36:37 paf Exp $
+	$Id: mod_parser3.C,v 1.16 2002/02/08 07:27:50 paf Exp $
 */
 
 #include "httpd.h"

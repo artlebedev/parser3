@@ -1,10 +1,10 @@
 /** @file
 	Parser: Apache module memory manager impl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.3 2001/11/05 11:46:29 paf Exp $
+	$Id: pa_pool.C,v 1.4 2002/02/08 07:27:50 paf Exp $
 */
 
 #include "httpd.h"

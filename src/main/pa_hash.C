@@ -1,10 +1,10 @@
 /** @file
 	Parser: hash class.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_hash.C,v 1.48 2001/11/12 10:00:32 paf Exp $
+	$Id: pa_hash.C,v 1.49 2002/02/08 07:27:48 paf Exp $
 */
 
 /*

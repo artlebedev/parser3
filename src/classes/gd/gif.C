@@ -1,10 +1,10 @@
 /** @file
 	Parser: image manipulations impl1.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: gif.C,v 1.24 2002/01/22 09:26:57 paf Exp $
+	$Id: gif.C,v 1.25 2002/02/08 07:27:42 paf Exp $
 
 	based on: gd
 

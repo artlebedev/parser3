@@ -1,10 +1,10 @@
 /** @file
 	Parser: aliased class.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_valiased.C,v 1.11 2001/11/05 11:46:31 paf Exp $
+	$Id: pa_valiased.C,v 1.12 2002/02/08 07:27:51 paf Exp $
 */
 
 #include "pa_valiased.h"

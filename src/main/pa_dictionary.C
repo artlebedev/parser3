@@ -1,10 +1,10 @@
 /**	@file
 	Parser: dictionary class  impl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_dictionary.C,v 1.10 2001/11/12 10:00:32 paf Exp $
+	$Id: pa_dictionary.C,v 1.11 2002/02/08 07:27:47 paf Exp $
 */
 
 #include "pa_dictionary.h"

@@ -1,10 +1,10 @@
 /** @file
 	Parser: SMTP sender decl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: smtp.h,v 1.6 2001/12/28 14:52:40 paf Exp $
+	$Id: smtp.h,v 1.7 2002/02/08 07:27:42 paf Exp $
 */
 
 #include "pa_pool.h"

@@ -1,10 +1,10 @@
 /**	@file
 	Parser: @b class parser class decl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vclass.h,v 1.22 2001/11/14 07:46:42 paf Exp $
+	$Id: pa_vclass.h,v 1.23 2002/02/08 07:27:51 paf Exp $
 */
 
 #ifndef PA_VCLASS_H

@@ -1,10 +1,10 @@
 /** @file
 	Parser: global decls.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.76 2002/01/29 08:45:37 paf Exp $
+	$Id: pa_globals.h,v 1.77 2002/02/08 07:27:44 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H

@@ -1,10 +1,10 @@
 /** @file
 	Parser: mutex & helpers decls.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_threads.h,v 1.21 2002/01/21 12:10:07 paf Exp $
+	$Id: pa_threads.h,v 1.22 2002/02/08 07:27:45 paf Exp $
 */
 
 #ifndef PA_THREADS_H

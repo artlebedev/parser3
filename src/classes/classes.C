@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b Methoded and Methoded_array classes.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: classes.C,v 1.13 2001/11/13 15:56:39 paf Exp $
+	$Id: classes.C,v 1.14 2002/02/08 07:27:39 paf Exp $
 */
 
 #include "classes.h"

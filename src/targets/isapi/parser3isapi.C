@@ -1,10 +1,10 @@
 /** @file
 	Parser: IIS extension.
 
-	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.61 2001/12/13 10:37:04 paf Exp $
+	$Id: parser3isapi.C,v 1.62 2002/02/08 07:27:51 paf Exp $
 */
 
 #ifndef _MSC_VER

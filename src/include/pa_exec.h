@@ -1,10 +1,10 @@
 /** @file
 	Parser: program executing for different OS-es decls.
 
-	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.h,v 1.5 2001/12/15 21:28:19 paf Exp $
+	$Id: pa_exec.h,v 1.6 2002/02/08 07:27:44 paf Exp $
 */
 
 #ifndef PA_EXEC_H

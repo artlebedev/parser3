@@ -35,10 +35,10 @@
 /** @file
 	Parser: compiler(lexical parser and grammar).
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.39 2002/02/07 15:48:59 paf Exp $
+	$Id: compile.tab.C,v 1.40 2002/02/08 07:27:46 paf Exp $
 */
 
 /**

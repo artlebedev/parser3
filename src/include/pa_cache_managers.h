@@ -1,10 +1,10 @@
 /** @file
 	Parser: cache managers center decl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_cache_managers.h,v 1.4 2001/12/15 21:28:18 paf Exp $
+	$Id: pa_cache_managers.h,v 1.5 2002/02/08 07:27:42 paf Exp $
 */
 
 #ifndef PA_CACHE_MANAGERS_H

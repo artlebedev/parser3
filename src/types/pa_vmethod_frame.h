@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b method_frame write context
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vmethod_frame.h,v 1.20 2001/12/21 12:47:56 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.21 2002/02/08 07:27:53 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H

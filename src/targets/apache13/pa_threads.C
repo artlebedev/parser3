@@ -1,10 +1,10 @@
 /** @file
 	Parser: Mutex realization class.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_threads.C,v 1.5 2002/01/21 13:04:03 paf Exp $
+	$Id: pa_threads.C,v 1.6 2002/02/08 07:27:50 paf Exp $
 */
 
 #include "pa_threads.h"

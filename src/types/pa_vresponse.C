@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b response class.
 
-	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_vresponse.C,v 1.2 2001/12/17 18:44:51 paf Exp $
+	$Id: pa_vresponse.C,v 1.3 2002/02/08 07:27:54 paf Exp $
 */
 
 #include "pa_vresponse.h"

@@ -1,10 +1,10 @@
 /** @file
 	Parser: pool class.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.49 2002/01/14 17:48:57 paf Exp $
+	$Id: pa_pool.C,v 1.50 2002/02/08 07:27:48 paf Exp $
 */
 
 #include "pa_pool.h"

@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b xnode parser class decl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxnode.h,v 1.10 2001/12/28 14:06:52 paf Exp $
+	$Id: pa_vxnode.h,v 1.11 2002/02/08 07:27:55 paf Exp $
 */
 
 #ifndef PA_VXNODE_H

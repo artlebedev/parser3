@@ -2,10 +2,10 @@
 	Parser: @b form class.
 	based on The CGI_C library, by Thomas Boutell.
 
-	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vform.C,v 1.50 2001/12/15 21:28:22 paf Exp $
+	$Id: pa_vform.C,v 1.51 2002/02/08 07:27:52 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */

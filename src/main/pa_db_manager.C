@@ -1,10 +1,10 @@
 /** @file
 	Parser: sql driver manager implementation.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.C,v 1.19 2001/12/13 11:29:21 paf Exp $
+	$Id: pa_db_manager.C,v 1.20 2002/02/08 07:27:47 paf Exp $
 */
 
 #include "pa_config_includes.h"

@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b request class.
 
-	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_vrequest.C,v 1.14 2001/12/17 18:44:51 paf Exp $
+	$Id: pa_vrequest.C,v 1.15 2002/02/08 07:27:54 paf Exp $
 */
 
 #include "pa_vrequest.h"

@@ -1,10 +1,10 @@
 /** @file
 	Parser: sql db decl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.h,v 1.13 2002/01/24 17:18:48 paf Exp $
+	$Id: pa_db_table.h,v 1.14 2002/02/08 07:27:43 paf Exp $
 */
 
 #ifndef PA_DB_TABLE_H

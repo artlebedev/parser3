@@ -1,10 +1,10 @@
 /** @file
 	Parser: SMTP sender.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: smtp.C,v 1.7 2001/12/28 14:06:50 paf Exp $
+	$Id: smtp.C,v 1.8 2002/02/08 07:27:42 paf Exp $
 
 	Parts of the code here is based upon an early gensock and blat
 */

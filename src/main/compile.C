@@ -1,10 +1,10 @@
 /** @file
 	Parser: compiler part of request class.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile.C,v 1.56 2002/02/07 15:48:59 paf Exp $
+	$Id: compile.C,v 1.57 2002/02/08 07:27:46 paf Exp $
 */
 
 #include "pa_opcode.h"

@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b double parser class decl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vdouble.h,v 1.30 2002/01/23 13:32:11 paf Exp $
+	$Id: pa_vdouble.h,v 1.31 2002/02/08 07:27:52 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H

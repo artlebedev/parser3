@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b table parser class.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.142 2002/02/07 11:55:30 paf Exp $
+	$Id: table.C,v 1.143 2002/02/08 07:27:41 paf Exp $
 */
 
 #include "classes.h"

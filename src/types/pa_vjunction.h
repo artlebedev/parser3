@@ -1,10 +1,10 @@
 /**	@file
 	Parser: @b junction class decl.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vjunction.h,v 1.10 2001/11/05 11:46:33 paf Exp $
+	$Id: pa_vjunction.h,v 1.11 2002/02/08 07:27:53 paf Exp $
 */
 
 #ifndef PA_VJUNCTION_H
