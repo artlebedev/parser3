@@ -7,12 +7,13 @@
 */
 #include "pa_config_includes.h"
 #ifdef XML
-static const char *RCSId="$Id: pa_vdnode.C,v 1.6 2001/09/21 14:46:09 parser Exp $"; 
+static const char *RCSId="$Id: pa_vdnode.C,v 1.7 2001/09/24 15:13:54 parser Exp $"; 
 
 #include "pa_vdnode.h"
 #include "pa_vdom.h"
 #include "pa_vstring.h"
 #include "pa_vbool.h"
+#include "pa_vhash.h"
 
 #include <util/XMLString.hpp>
 #include <util/PlatformUtils.hpp>

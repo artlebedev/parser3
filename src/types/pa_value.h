@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.72 2001/09/24 14:34:25 parser Exp $
+	$Id: pa_value.h,v 1.73 2001/09/24 15:10:22 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -107,6 +107,8 @@ public: // Value
 		- VInt: value
 		- VBool: value
 		- VVoid: 0
+		- VTable: count
+		- VHash: count
 	*/
 	virtual int as_int () const { bark("(%s) does not have numerical (int) value"); return 0; }
 
@@ -118,6 +120,8 @@ public: // Value
 		- VDouble: 0 or !0
 		- VFile: true
 		- VDate: 0 or !0
+		- VTable: count
+		- VHash: count
 	*/
 	virtual bool as_bool() const { bark("(%s) does not have logical value"); return 0; }
 	

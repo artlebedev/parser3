@@ -5,10 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_vtable.C,v 1.4 2001/09/21 14:46:09 parser Exp $"; 
+static const char *RCSId="$Id: pa_vtable.C,v 1.5 2001/09/24 15:15:46 parser Exp $"; 
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
+#include "pa_vhash.h"
 
 #ifndef DOXYGEN
 struct Record_info {

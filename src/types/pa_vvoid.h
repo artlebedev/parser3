@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vvoid.h,v 1.2 2001/09/24 14:34:25 parser Exp $
+	$Id: pa_vvoid.h,v 1.3 2001/09/24 15:15:26 parser Exp $
 */
 
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
+#include "classes.h"
 #include "pa_vstateless_object.h"
 #include "pa_globals.h"
 
