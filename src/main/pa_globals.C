@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.109 2002/01/23 13:58:05 paf Exp $
+	$Id: pa_globals.C,v 1.110 2002/01/25 11:22:51 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -193,6 +193,93 @@ const char *xmlGenericErrors() {
 	// it is up to caller to free it
 	return result;
 }
+
+/**
+ * xmlFileMatchWithLocalhostEqDocumentRoot:
+ * filename:  the URI for matching
+ *
+ * check if the URI matches an HTTP one
+ *
+ * Returns 1 if matches, 0 otherwise
+ */
+static int
+xmlFileMatchLocalhost(const char *filename) {
+    if (!strncmp(filename, "http://localhost", 16))
+	return(1);
+    return(0);
+}
+
+
+/**
+ * xmlFileOpenHttpLocalhost :
+ * filename:  the URI for matching
+ *
+ * http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
+ *
+ * input from FILE *, supports compressed input
+ * if filename is " " then the standard input is used
+ *
+ * Returns an I/O context or NULL in case of error
+ */
+static void *
+xmlFileOpenLocalhost (const char *filename) {
+    FILE *fd;
+    const char* documentRoot;
+    char path[1000];
+
+	path[0]=0;
+	strcat(path, (documentRoot=getenv("DOCUMENT_ROOT"))?documentRoot:".");
+	strcat(path, &filename[16]);
+
+#ifdef WIN32
+    fd = fopen(path, "rb");
+#else
+    fd = fopen(path, "r");
+#endif /* WIN32 */
+    return((void *) fd);
+}
+
+/**
+ * xmlFileRead:
+ * @context:  the I/O context
+ * @buffer:  where to drop data
+ * @len:  number of bytes to write
+ *
+ * Read @len bytes to @buffer from the I/O channel.
+ *
+ * Returns the number of bytes written
+ */
+static int
+xmlFileRead (void * context, char * buffer, int len) {
+    return(fread(&buffer[0], 1,  len, (FILE *) context));
+}
+
+/**
+ * xmlFileWrite:
+ * @context:  the I/O context
+ * @buffer:  where to drop data
+ * @len:  number of bytes to write
+ *
+ * Write @len bytes from @buffer to the I/O channel.
+ *
+ * Returns the number of bytes written
+ */
+static int
+xmlFileWrite (void * context, const char * buffer, int len) {
+    return(fwrite(&buffer[0], 1,  len, (FILE *) context));
+}
+
+/**
+ * xmlFileClose:
+ * @context:  the I/O context
+ *
+ * Close an I/O channel
+ */
+static int
+xmlFileClose (void * context) {
+    return ( ( fclose((FILE *) context) == EOF ) ? -1 : 0 );
+}
+
 #endif
 
 void pa_globals_destroy(void *) {
@@ -356,6 +443,11 @@ void pa_globals_init(Pool& pool) {
 	xsltSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
 //	FILE *f=fopen("y:\\xslt.log", "wt");
 //	xsltSetGenericDebugFunc(f/*stderr*/, 0);
+
+	// http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
+	xmlRegisterInputCallbacks(
+		xmlFileMatchLocalhost, xmlFileOpenLocalhost,
+		xmlFileRead, xmlFileClose);
 
 	// XSLT stylesheet manager
 	cache_managers->put(*NEW String(pool, "stylesheet"), 

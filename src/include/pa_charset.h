@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.h,v 1.10 2002/01/25 09:32:06 paf Exp $
+	$Id: pa_charset.h,v 1.11 2002/01/25 11:22:51 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
@@ -30,7 +30,7 @@ namespace PCRE {
 		typedef unsigned int XMLCh;
 #	endif
 #	ifndef XMLByte
-#		typedef unsigned char XMLByte;
+		typedef unsigned char XMLByte;
 #	endif
 
 struct Charset_TransRec {
