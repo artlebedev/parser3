@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.166 2001/10/03 12:20:58 parser Exp $
+	$Id: pa_request.C,v 1.167 2001/10/03 12:55:15 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -201,13 +201,11 @@ void Request::core(
 		// value must be allocated on request's pool for that pool used on
 		// meaning constructing @see attributed_meaning_to_string
 		default_content_type=defaults?defaults->get_element(*content_type_name):0;
-#ifdef XML
 		// record default charset
 		if(default_content_type)
 			if(Hash *hash=default_content_type->get_hash())
 				if(Value *vcharset=(Value *)hash->get(*charset_name))
 					pool().set_charset(vcharset->as_string());		
-#endif
 
 		if(Value *element=main_class->get_element(*user_html_name))
 			if(Table *table=element->get_table())
