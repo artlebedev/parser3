@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.13 2001/08/06 09:33:19 parser Exp $
+	$Id: hash.C,v 1.14 2001/08/09 14:28:36 parser Exp $
 */
-static const char *RCSId="$Id: hash.C,v 1.13 2001/08/06 09:33:19 parser Exp $"; 
+static const char *RCSId="$Id: hash.C,v 1.14 2001/08/09 14:28:36 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -176,14 +176,14 @@ static void _keys(Request& r, const String& method_name, MethodParams *) {
 MHash::MHash(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), HASH_CLASS_NAME));
 
-	// ^hash.default[]
-	// ^hash.default[hash]
-	add_native_method("default", Method::CT_DYNAMIC, _default, 0, 1);
+	// ^hash._default[]
+	// ^hash._default[hash]
+	add_native_method("_default", Method::CT_DYNAMIC, _default, 0, 1);
 
 	// ^hash:sql[query][(count[;offset])]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);
 
-	// ^hash.keys[]
+	// ^hash._keys[]
 	add_native_method("_keys", Method::CT_DYNAMIC, _keys, 0, 0);	
 }
 
