@@ -460,6 +460,10 @@ case $basic_machine in
 		basic_machine=`echo $1 | sed -e 's/86.*/86-pc/'`
 		os=-solaris2
 		;;
+#paf@design.ru don't know how configure invented this:"i1586", hacking
+	i1586-pc)
+		basic_machine=i586-pc
+		;;
 	i386mach)
 		basic_machine=i386-mach
 		os=-mach
