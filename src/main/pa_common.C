@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/12/05 12:53:48 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/12/15 13:53:31 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -27,6 +27,16 @@ static const char* IDENT_COMMON_C="$Date: 2002/12/05 12:53:48 $";
 #endif
 #ifndef _O_BINARY
 #	define _O_BINARY 0
+#endif
+
+#ifdef HAVE_FTRUNCATE
+#	define PA_O_TRUNC 0
+#else
+#	ifdef _O_TRUNC
+#		define PA_O_TRUNC _O_TRUNC
+#	else
+#		error you must have either ftruncate function or _O_TRUNC bit declared
+#	endif
 #endif
 
 // locking constants
@@ -509,7 +519,7 @@ bool file_write_action_under_lock(
 	if((f=open(fname, 
 		O_CREAT|O_RDWR
 		|(as_text?_O_TEXT:_O_BINARY)
-		|(do_append?O_APPEND:0), 0664))>=0) {
+		|(do_append?O_APPEND:PA_O_TRUNC), 0664))>=0) {
 		if((do_block?lock_exclusive_blocking(f):lock_exclusive_nonblocking(f))!=0) {
 			Exception e("file.lock", 
 				&file_spec, 
@@ -524,14 +534,18 @@ bool file_write_action_under_lock(
 		try {
 			action(f, context); 
 		} catch(...) {
+#ifdef HAVE_FTRUNCATE
 			if(!do_append)
 				ftruncate(f, lseek(f, 0, SEEK_CUR)); // one can not use O_TRUNC, read lower
+#endif
 			unlock(f);close(f); 
 			/*re*/throw;
 		}
 		
+#ifdef HAVE_FTRUNCATE
 		if(!do_append)
 			ftruncate(f, lseek(f, 0, SEEK_CUR)); // O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
+#endif
 		unlock(f);close(f); 
 		return true;
 	} else
