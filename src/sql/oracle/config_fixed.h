@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: config_fixed.h,v 1.2 2001/08/23 10:37:46 parser Exp $
+	$Id: config_fixed.h,v 1.3 2001/08/24 09:09:45 parser Exp $
 
 
 	tested only with MS Visual C++ V6

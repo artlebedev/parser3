@@ -35,7 +35,9 @@ dnl Checks for header files.
 AC_CHECK_HEADERS(
 stdio.h \
 stdlib.h \
-string.h
+string.h \
+setjmp.h \
+ctype.h
 )
 
 dnl Checks for typedefs, structures, and compiler characteristics.
