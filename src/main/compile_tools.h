@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.30 2001/03/13 13:43:30 paf Exp $
+	$Id: compile_tools.h,v 1.31 2001/03/16 09:52:59 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -84,9 +84,10 @@ inline void P(Array/*<Operation>*/ *result, Array *code_array, int offset) {
 }
 // aPpend 'vstring' to 'result'
 void PV(Array/*<Operation>*/ *result, VString *vstring);
-// aPpend 'Code_Array' to result
+// aPpend 'simple Code_Array' to result
 void PCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
-
+// aPpend 'expression Code_Array' to result
+void PEA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
 
 // Value Literal // returns array with 
 // first: OP_VALUE instruction

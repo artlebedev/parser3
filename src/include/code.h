@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: code.h,v 1.22 2001/03/16 09:26:42 paf Exp $
+	$Id: code.h,v 1.23 2001/03/16 09:52:58 paf Exp $
 */
 
 #ifndef CODE_H
@@ -14,7 +14,7 @@
 
 enum OPCODE {
 	// literals
-	OP_VALUE,  OP_CODE__STORE_PARAM,
+	OP_VALUE,  OP_CURLY_CODE__STORE_PARAM,  OP_EXPR_CODE__STORE_PARAM,
 
 	// actions
 	OP_WITH_SELF,	OP_WITH_ROOT,	OP_WITH_READ,	OP_WITH_WRITE,

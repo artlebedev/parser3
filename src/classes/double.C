@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.16 2001/03/13 17:17:25 paf Exp $
+	$Id: double.C,v 1.17 2001/03/16 09:52:57 paf Exp $
 */
 
 #include "pa_request.h"
@@ -47,7 +47,7 @@ static void vdouble_op(Request& r, Array *params,
 		r.process(
 			*static_cast<Value *>(params->get(0)),
 			0/*no name*/,
-			false/*don't doubleercept string*/).get_double():1;
+			false/*don't intercept string*/).get_double():1/*used in inc/dec*/;
 	(*func)(*vdouble, param);
 }
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.108 2001/03/16 09:26:43 paf Exp $
+	$Id: execute.C,v 1.109 2001/03/16 09:52:59 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -28,7 +28,7 @@
 
 char *opcode_name[]={
 	// literals
-	"VALUE",  "CODE__STORE_PARAM",
+	"VALUE",  "CURLY_CODE__STORE_PARAM",  "EXPR_CODE__STORE_PARAM",
 
 	// actions
 	"WITH_SELF",	"WITH_ROOT",	"WITH_READ",	"WITH_WRITE",
@@ -90,7 +90,7 @@ void dump(int level, const Array& ops) {
 		}
 		log_printf("\n");
 
-		if(op.code==OP_CODE__STORE_PARAM) {
+		if(op.code==OP_CURLY_CODE__STORE_PARAM || op.code==OP_EXPR_CODE__STORE_PARAM) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 			dump(level+1, *local_ops);
 		}
@@ -120,7 +120,8 @@ void Request::execute(const Array& ops) {
 				PUSH(value);
 				break;
 			}
-		case OP_CODE__STORE_PARAM:
+		case OP_CURLY_CODE__STORE_PARAM:
+		case OP_EXPR_CODE__STORE_PARAM:
 			{
 				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
 				// code
@@ -128,9 +129,16 @@ void Request::execute(const Array& ops) {
 				log_printf(" (%d)\n", local_ops->size());
 				dump(1, *local_ops);
 				
+				// when they evaluate expression parameter,
+				// the object expression result
+				// does not need to be written into calling frame
+				// it must go into any expressions using that parameter
+				// hence, zeroing junction.wcontext being created
+				// later, in .process would test that field 
+				// in decision "which wwrapper to use"
 				Junction& j=*NEW Junction(pool(), 
 					*self, 0, 0,
-					root, frame, frame, local_ops);
+					root, frame, op.code==OP_EXPR_CODE__STORE_PARAM?0:frame, local_ops);
 				
 				Value *value=NEW VJunction(j);
 
@@ -639,7 +647,11 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 		PUSH(wcontext);
 		
 		WContext *frame;
-		if(intercept_string) {
+		// for expression method params
+		// wcontext is set 0
+		// using the fact in decision "which wwrapper to use"
+		bool using_code_frame=intercept_string && junction->wcontext;
+		if(using_code_frame) {
 			// almost plain wwrapper about junction wcontext, 
 			// BUT intercepts string writes
 			frame=NEW VCodeFrame(pool(), *junction->wcontext);  
@@ -653,7 +665,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 		root=junction->root;
 		rcontext=junction->rcontext;
 		execute(*junction->code);
-		if(intercept_string) {
+		if(using_code_frame) {
 			// CodeFrame soul:
 			//   string writes were intercepted
 			//   returning them as the result of getting code-junction

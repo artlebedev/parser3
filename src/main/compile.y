@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.102 2001/03/16 09:26:43 paf Exp $
+	$Id: compile.y,v 1.103 2001/03/16 09:52:59 paf Exp $
 */
 
 /*
@@ -377,7 +377,7 @@ store_code_param_part:
 ;
 store_expr_param_part: write_expr_value {
 	$$=N(POOL); 
-	PCA($$, $1);
+	PEA($$, $1);
 };
 store_curly_param_part: maybe_codes {
 	$$=N(POOL); 

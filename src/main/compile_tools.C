@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.C,v 1.27 2001/03/11 09:30:45 paf Exp $
+	$Id: compile_tools.C,v 1.28 2001/03/16 09:52:59 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -24,13 +24,21 @@ void PV(Array/*<Operation>*/ *result, Value *value) {
 
 void PCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
 	// append OP_CODE
-	Operation op; op.code=OP_CODE__STORE_PARAM;
+	Operation op; op.code=OP_CURLY_CODE__STORE_PARAM;
 	*result+=op.cast;
 
 	// append 'vstring'
 	*result+=code_array;
 }
 
+void PEA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
+	// append OP_CODE
+	Operation op; op.code=OP_EXPR_CODE__STORE_PARAM;
+	*result+=op.cast;
+
+	// append 'vstring'
+	*result+=code_array;
+}
 
 Array *VL(Value *value) {
 	// empty ops array
