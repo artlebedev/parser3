@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.72 2002/01/23 13:07:53 paf Exp $
+	$Id: xdoc.C,v 1.73 2002/01/23 13:58:05 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -423,17 +423,16 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	Temp_lang temp_lang(r, String::UL_XML);
 	const String& xml=r.process(vxml).as_string();
 
-	GdomeException exc;
-	GdomeDocument *document=gdome_di_createDocFromMemory(domimpl,
-		xml.cstr(String::UL_UNSPECIFIED, r.connection(0)),
-		GDOME_LOAD_PARSING
-		/* GDOME_LOAD_VALIDATING  pending until kill warning of no-dtd*/ 
-		/*|GDOME_LOAD_SUBSTITUTE_ENTITIES */,
-		&exc);
-	if(!document || exc || xmlHaveGenericErrors())
+	GdomeDocument *document=(GdomeDocument *)
+		gdome_xml_n_mkref((xmlNode *)xmlParseMemory(
+			xml.cstr(String::UL_AS_IS), xml.size()
+		));
+	if(!document || xmlHaveGenericErrors()) {
+		GdomeException exc=0;
 		throw Exception(0, 0, 
 			&method_name, 
 			exc);
+	}
 
 	// replace any previous parsed source
 	vdoc.set_document(document);
@@ -447,17 +446,14 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	const String& file_name=params->as_string(0, "uri must be string");
 	const String& uri=r.absolute(file_name);
 	
-	GdomeException exc;
-	GdomeDocument *document=gdome_di_createDocFromURI(domimpl,
-		uri.cstr(),
-		GDOME_LOAD_PARSING
-		/* GDOME_LOAD_VALIDATING  pending until kill warning of no-dtd*/ 
-		/*|GDOME_LOAD_SUBSTITUTE_ENTITIES */,
-		&exc);
-	if(!document || exc || xmlHaveGenericErrors())
+	GdomeDocument *document=(GdomeDocument *)
+		gdome_xml_n_mkref((xmlNode *)xmlParseFile(uri.cstr()));
+	if(!document || xmlHaveGenericErrors()) {
+		GdomeException exc=0;
 		throw Exception(0, 0, 
 			&uri, 
 			exc);
+	}
 
 	// replace any previous parsed source
 	vdoc.set_document(document);

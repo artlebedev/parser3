@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.108 2002/01/23 13:07:53 paf Exp $
+	$Id: pa_globals.C,v 1.109 2002/01/23 13:58:05 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -338,6 +338,7 @@ void pa_globals_init(Pool& pool) {
 	// doc says "you sould turn it on on stylesheet load" without deepening into details
 	// 2. when dom tree with entites goes under transform text nodes 
 	// got [erroreosly] cut on first entity occurance
+	// --
 	// that is why this is:
 	xmlSubstituteEntitiesDefault(1);
 	
