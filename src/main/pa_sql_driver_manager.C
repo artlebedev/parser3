@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.47 2001/10/31 14:42:05 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.48 2001/10/31 14:58:10 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -43,7 +43,7 @@ public:
 	virtual void _throw(const char *comment) { 
 		String& protocol=*NEW String(pool());
 		/// hiding passwords and addresses from accidental show [imagine user forgot @exception]
-		protocol << furl.mid(0, furl.pos(":")) << "...";
+		protocol << furl.mid(0, furl.pos(":")) << "://****";
 		e=Exception(0, 0, 
 			&protocol,
 			comment); 
