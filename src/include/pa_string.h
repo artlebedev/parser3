@@ -8,10 +8,9 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2004/05/26 08:20:58 $";
+static const char * const IDENT_STRING_H="$Date: 2004/10/07 09:22:07 $";
 
 // includes
-
 #include "pa_types.h"
 #include "pa_array.h"
 
@@ -19,6 +18,8 @@ extern "C" { // cord's author forgot to do that
 #define CORD_NO_IO
 #include "cord.h"
 };
+
+// defines
 
 // cord extension
 /* Returns true if x does contain                                       */
@@ -152,6 +153,7 @@ public:
 	public:
 
 		const char* v() const;
+		void dump() const;
 
 		Languages(): langs(0) {}
 		Languages(Language alang) {
@@ -240,7 +242,7 @@ public:
 				callback(opt.lang, get_length(current), info);
 		}
 
-		bool invariant(size_t current_length) {
+		bool invariant(size_t current_length) const {
 			if(!langs)
 				return current_length==0;
 			if(opt.is_not_just_lang)
@@ -256,6 +258,7 @@ public:
 	public:
 
 		const char* v() const;
+		void dump() const;
 
 		Body(): body(CORD_EMPTY) {}
 		Body(CORD abody): body(abody) {
@@ -373,9 +376,9 @@ private:
 	Languages langs; ///< string characters lang
 
 	const char* v() const;
-
-#define ASSERT_STRING_INVARIANT(string) \
-	assert((string).langs.invariant((string).body.length()))
+	void dump() const;
+	#define ASSERT_STRING_INVARIANT(string) \
+		assert((string).langs.invariant((string).body.length()))
 
 public:
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/09/13 10:39:17 $";
+static const char * const IDENT_STRING_C="$Date: 2004/10/07 09:22:01 $";
 
 #include "pcre.h"
 
@@ -295,8 +295,6 @@ String& String::mid(size_t substr_begin, size_t substr_end) const {
 	// next: letters themselves
 	result.body=body.mid(substr_begin, substr_length);
 
-//	SAPI::log("piece of '%s' from %d to %d is '%s'",
-		//cstr(), substr_begin, substr_end, result.cstr());
 	ASSERT_STRING_INVARIANT(result);
 	return result;
 }
@@ -686,11 +684,21 @@ bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
 const char* String::Body::v() const {
 	return CORD_to_const_char_star(body);
 }
+void String::Body::dump() const {
+	CORD_dump(body);
+}
+
 const char* String::Languages::v() const {
 	if(opt.is_not_just_lang)
 		return CORD_to_const_char_star(langs);
 	else
 		return (const char*)&langs;
+}
+void String::Languages::dump() const {
+	if(opt.is_not_just_lang)
+		CORD_dump(langs);
+	else
+		puts((const char*)&langs);
 }
 const char* String::v() const {
 	const uint LIMIT_VIEW=20;
@@ -706,7 +714,10 @@ const char* String::v() const {
 
 	return buf;
 }
-
+void String::dump() const {
+	body.dump();
+	langs.dump();
+}
 const String& String::trim(String::Trim_kind kind, const char* chars) const {
 	if(!length())
 		return *this;
