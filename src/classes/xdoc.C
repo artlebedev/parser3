@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.77 2002/01/25 11:33:46 paf Exp $
+	$Id: xdoc.C,v 1.78 2002/01/28 08:20:33 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -423,9 +423,10 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	Temp_lang temp_lang(r, String::UL_XML);
 	const String& xml=r.process(vxml).as_string();
 
+	const char *cstr=xml.cstr(String::UL_UNSPECIFIED);
 	GdomeDocument *document=(GdomeDocument *)
 		gdome_xml_n_mkref((xmlNode *)xmlParseMemory(
-			xml.cstr(String::UL_AS_IS), xml.size()
+			cstr, strlen(cstr)
 		));
 	if(!document || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
