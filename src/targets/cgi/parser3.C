@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.106 2001/09/04 15:57:51 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.107 2001/09/04 19:03:23 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -87,8 +87,13 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 		fflush(f);
 }
 
+static char *_getenv(const char *name) {
+ 	char *result=getenv(name);
+	return result && *result ? result : 0;
+}
+
 const char *SAPI::get_env(Pool& pool, const char *name) {
- 	return getenv(name);
+	return _getenv(name);
 }
 
 size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
@@ -150,10 +155,10 @@ int main(int argc, char *argv[]) {
 
 	// were we started as CGI?
 	cgi=
-		getenv("SERVER_SOFTWARE") || 
-		getenv("SERVER_NAME") || 
-		getenv("GATEWAY_INTERFACE") || 
-		getenv("REQUEST_METHOD");
+		_getenv("SERVER_SOFTWARE") || 
+		_getenv("SERVER_NAME") || 
+		_getenv("GATEWAY_INTERFACE") || 
+		_getenv("REQUEST_METHOD");
 	
 	if(!cgi) {
 		if(argc<2) {
@@ -174,13 +179,13 @@ int main(int argc, char *argv[]) {
 	setmode(fileno(stderr), _O_BINARY);
 #endif
 
-	char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
+	char *filespec_to_process=cgi?_getenv("PATH_TRANSLATED"):argv[1];
 #ifdef WIN32
 	back_slashes_to_slashes(filespec_to_process);
 #endif
 	filespec_to_process=full_file_spec(filespec_to_process);
 
-	const char *request_method=getenv("REQUEST_METHOD");
+	const char *request_method=_getenv("REQUEST_METHOD");
 	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
@@ -225,7 +230,7 @@ int main(int argc, char *argv[]) {
 				request_info.document_root="";
 		}
 		request_info.path_translated=filespec_to_process;
-		request_info.method=request_method;
+		request_info.method=request_method ? request_method : "GET";
 		const char *query_string=SAPI::get_env(pool, "QUERY_STRING");
 		request_info.query_string=query_string;
 		if(cgi) {

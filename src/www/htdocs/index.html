@@ -3,9 +3,11 @@ t.p
 dtf.p
 
 @main[]
+^timghtmlyu[]
+#^timghtml[]
 #^tresult[]
 #^voidtest[]
-^ttext[]
+#^ttext[]
 #^tdoubledefault[]
 #^tintdefault[]
 #^t3partycookie[]
@@ -24,6 +26,21 @@ dtf.p
 #^list[]
 #^tests[]
 #^func(0)<hr>
+
+
+@timghtmlyu[]
+^img[/i/commons_22_prev.gif][$.vspace(100)]
+@img[filename;params]
+^if(-f $filename){$thisImage[^image::measure[$filename]]^thisImage.html[$params]}
+
+@timghtml[]
+$картинка[^image::measure[i/commons_22_prev.gif]]
+#$hash[$.alt[222]]
+#^timghtml-nested[$hash]
+^timghtml-nested[$.alt[222]]
+
+@timghtml-nested[params]
+^картинка.html[$params]
 
 @tresult[]
 44
