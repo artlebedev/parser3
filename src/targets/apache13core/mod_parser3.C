@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MOD_PARSER3_MAIN_C="$Date: 2003/07/24 11:31:25 $";
+static const char* IDENT_MOD_PARSER3_MAIN_C="$Date: 2003/08/19 13:52:18 $";
 
 #include "pa_globals.h"
 
@@ -148,7 +148,7 @@ size_t SAPI::read_post(SAPI_Info& SAPI_info, char *buf, size_t max_bytes) {
 void SAPI::add_header_attribute(SAPI_Info& SAPI_info,
 				const char* dont_store_key, const char* dont_store_value) {
 	if(strcasecmp(dont_store_key, "location")==0) 
-		SAPI_info.r->status=302;
+		*SAPI_info.r->status=302;
 	
 	if(strcasecmp(dont_store_key, "content-type")==0) {
 	/* r->content_type, *not* r->headers_out("Content-type").  If you don't
@@ -158,7 +158,7 @@ void SAPI::add_header_attribute(SAPI_Info& SAPI_info,
 		*/
 		SAPI_info.r->content_type = pa_ap_pstrdup(SAPI_info.r->pool, dont_store_value);
 	} else if(strcasecmp(dont_store_key, "status")==0) 
-		SAPI_info.r->status=atoi(dont_store_value);
+		*SAPI_info.r->status=atoi(dont_store_value);
 	else
 		pa_ap_table_addn(SAPI_info.r->headers_out, 
 		pa_ap_pstrdup(SAPI_info.r->pool, dont_store_key), 

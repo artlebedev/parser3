@@ -8,7 +8,7 @@
 #ifndef PA_HTTPD_H
 #define PA_HTTPD_H
 
-static const char* IDENT_HTTPD_H="$Date: 2003/07/24 11:36:34 $";
+static const char* IDENT_HTTPD_H="$Date: 2003/08/19 13:52:18 $";
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,7 +25,7 @@ typedef struct pa_request_rec_tag {
 
 	pa_pool* pool;
 	int header_only;		/* HEAD request, as opposed to GET */
-	int status;
+	int* status;
 	const char *method;		/* GET, HEAD, POST, etc. */
 
 	pa_table *headers_out;
