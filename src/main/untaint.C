@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.66 2001/10/08 09:04:08 parser Exp $
+	$Id: untaint.C,v 1.67 2001/10/08 14:09:18 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -160,7 +160,6 @@ char *String::store_to(char *dest, Untaint_lang lang,
 	Dictionary *typo_dict=user_typo_dict?user_typo_dict:default_typo_dict;
 
 	bool whitespace=true;
-	bool need_to_close_http_header_quote=false;
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
@@ -195,7 +194,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					const char *src=row->item.ptr; 
 					for(int size=row->item.size; size--; src++)
 						switch(*src) {
-						case ' ': case '\n': case '\r': case '\t':
+						case ' ': case '\n': case '\t':
 							if(!whitespace) {
 								*dest++=*src;
 								whitespace=true;
@@ -232,18 +231,11 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				});
 				break;
 			case UL_HTTP_HEADER:
-				// tainted, untaint language: http-header
-				if(need_quote_http_header(row->item.ptr, row->item.size)) {
-					*dest++='\"';
-					escape(switch(*src) {
-						case '\"': to_string("\\\"", 2);  break;
-						_default;
-					});
-					need_to_close_http_header_quote=true;
-				} else {
-					memcpy(dest, row->item.ptr, row->item.size); 
-					dest+=row->item.size;
-				}
+				// tainted, untaint language: http-field-content-text
+				escape(switch(*src) {
+					case ' ': to_char('+');  break;
+					encode(need_uri_encode, '%');
+				});
 				break;
 			case UL_MAIL_HEADER:
 				// tainted, untaint language: mail-header
@@ -335,12 +327,6 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					char *dest=html_for_typo;
 					escape(switch(*src) {
 						// convinient name for typo match "\n"
-						case '\r': 
-							to_string("\\n", 2); // \r -> "\n"
-							if(size && src[1]=='\n') { // \r\n -> remove \n
-								size--; src++;
-							}
-							break;
 						case '\n': 
 							to_string("\\n", 2);
 							break;
@@ -405,8 +391,6 @@ char *String::store_to(char *dest, Untaint_lang lang,
 		chunk=row->link;
 	} while(chunk);
 
-	if(need_to_close_http_header_quote)
-		*dest++='\"';
 break2:
 	return dest;
 }

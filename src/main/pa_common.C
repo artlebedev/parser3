@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.69 2001/10/08 09:04:08 parser Exp $
+	$Id: pa_common.C,v 1.70 2001/10/08 14:09:18 parser Exp $
 */
 
 #include "pa_common.h"
@@ -363,9 +363,9 @@ static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *aval
 
 	// ...; charset=windows1251
 	*ami.header << "; ";
-	ami.header->append(akey, ami.lang, true);
+	ami.header->append(akey, ami.lang);
 	*ami.header << "=";
-	ami.header->append(static_cast<Value *>(avalue)->as_string(), ami.lang, true);
+	ami.header->append(static_cast<Value *>(avalue)->as_string(), ami.lang);
 }
 const String& attributed_meaning_to_string(Value& meaning, 
 										   String::Untaint_lang lang) {

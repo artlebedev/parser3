@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: form.C,v 1.16 2001/09/26 10:32:25 parser Exp $
+	$Id: form.C,v 1.17 2001/10/08 14:09:18 parser Exp $
 */
 
 #include "classes.h"
@@ -61,10 +61,17 @@ void MForm::configure_admin(Request& r) {
 				0,
 				"posted content_length(%u) > max_post_size(%u)",
 					r.post_size, max_post_size);
+		if(r.info.content_length<0)
+			PTHROW(0, 0,
+				0,
+				"posted content_length(%u) < 0",
+					r.post_size);
 
 		// read POST data
-		r.post_data=(char *)pool.malloc(r.info.content_length);
-		r.post_size=SAPI::read_post(pool, r.post_data, r.info.content_length);
+		if(r.info.content_length) {
+			r.post_data=(char *)pool.malloc(r.info.content_length);
+			r.post_size=SAPI::read_post(pool, r.post_data, r.info.content_length);
+		}
 		if(r.post_size!=r.info.content_length)
 			PTHROW(0, 0, 
 				0, 

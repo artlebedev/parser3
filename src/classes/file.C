@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.56 2001/09/30 09:56:43 parser Exp $
+	$Id: file.C,v 1.57 2001/10/08 14:09:18 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -226,7 +226,8 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			*argv+=&params->get(i).as_string();
 	}
 
-	const String in(pool, r.post_data, r.post_size);
+	String in(pool);
+	in.APPEND(r.post_data, r.post_size, String::UL_CLEAN, "passing post data", 0);
 	String out(pool);
 	//out.APPEND_CONST("content-type:text/plain\nheader:test-header\n\ntest-body");
 	//out<<in;

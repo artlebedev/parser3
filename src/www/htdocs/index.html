@@ -1,4 +1,5 @@
 @main[]
+#^response[]
 #^regexp2[]
 #^ttablerem[]
 #^pcre[]
@@ -7,10 +8,15 @@
 #^exec[]
 #^fori[]
 #^tconnect[]
-^xslt[]
-#^xml[]
+#^xslt[]
+^xml[]
 #^header[]
 OK
+
+@response[]
+#^if($form:reload){
+	$response:refresh[$.value[0] $.url[./t.html?uri=$env:SERVER_NAME]]
+#}
 
 @xslt[]
 ^xdata[]
