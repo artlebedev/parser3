@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.25 2001/02/25 16:36:11 paf Exp $
+  $Id: pa_pool.h,v 1.26 2001/03/10 15:44:30 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -111,6 +111,7 @@ public:
 		if(setjmp(temp_exception.mark)==0)
 
 #define THROW exception()._throw
+#define POOL_THROW pool.exception()._throw
 #define CATCH(e) \
 		else{ \
 			Exception& e=temp_exception;

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.86 2001/03/10 15:17:47 paf Exp $
+  $Id: execute.C,v 1.87 2001/03/10 15:44:31 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -116,7 +116,6 @@ void Request::execute(const Array& ops) {
 					root, frame, frame, local_ops);
 				
 				Value *value=NEW VJunction(j);
-				///value->set_name(frame->name());
 
 				// store param
 				frame->store_param(value);
@@ -625,7 +624,7 @@ Value& Request::autocalc(Value& value, const String *name, bool make_string) {
 		return value;
 }
 
-char *Request::execute_static(VClass& vclass, String& method_name, bool return_cstr) {
+char *Request::execute_static_method(VClass& vclass, String& method_name, bool return_cstr) {
 	Value *value=vclass.get_element(method_name);
 	if(value) { // found some 'METHOD_NAME' element
 		Junction *junction=value->get_junction();

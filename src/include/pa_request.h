@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.28 2001/03/10 15:17:44 paf Exp $
+  $Id: pa_request.h,v 1.29 2001/03/10 15:44:30 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -15,10 +15,11 @@
 
 #define MAIN_METHOD_NAME "main"
 #define AUTO_METHOD_NAME "auto"
-#define RUN_NAME "RUN"
+#define RUN_METHOD_NAME "RUN"
+#define AUTO_CLASS_NAME "AUTO"
 
-#define ROOT_NAME "ROOT"
-#define ENV_NAME "ENV"
+#define ROOT_CLASS_NAME "ROOT"
+#define ENV_CLASS_NAME "ENV"
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS char *source, String *name, char *file
@@ -43,7 +44,7 @@ public:
 	// core request processing
 	void core();
 
-	void use(char *file, String *alias); // core.C
+	VClass *use(char *file, String *name, bool fail_on_read_problem=true); // core.C
 	Value& autocalc(Value& value, const String *name=0, bool make_string=true); // execute.C
 
 	void write(const String& astring) {
@@ -85,7 +86,7 @@ private: // compile.C
 
 private: // execute.C
 
-	char *execute_static(VClass& vclass, String& method_name, bool return_cstr);
+	char *execute_static_method(VClass& vclass, String& method_name, bool return_cstr);
 	void execute(const Array& ops);
 
 	Value *get_element();

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_common.h,v 1.2 2001/02/20 18:45:51 paf Exp $
+  $Id: pa_common.h,v 1.3 2001/03/10 15:44:30 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -16,6 +16,6 @@ int __vsnprintf(char *, size_t, const char *, va_list);
 int __snprintf(char *, size_t, const char *, ...);
 #endif
 
-char *file_read(Pool& pool, char *fname);
+char *file_read(Pool& pool, char *fname, bool fail_on_read_problem);
 
 #endif
