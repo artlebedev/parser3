@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.68 2001/04/23 10:31:56 paf Exp $
+	$Id: parser3.C,v 1.69 2001/04/23 10:35:16 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -20,6 +20,8 @@
 #include "pa_request.h"
 #include "pa_socks.h"
 #include "pa_version.h"
+
+/// @test scripting #!/path/to/parser
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
@@ -146,7 +148,13 @@ int main(int argc, char *argv[]) {
 	
 	if(!cgi) {
 		if(argc<2) {
-			printf("Usage: %s <file>\n", argv0?argv0:"parser3");
+			printf(
+				"Parser/%s Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)\n"
+				"Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)\n"
+				"\n"
+				"Usage: %s <file>\n",
+				PARSER_VERSION, 
+				argv0?argv0:"parser3");
 			return 1;
 		}
 	}
