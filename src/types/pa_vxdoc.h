@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxdoc.h,v 1.8 2001/10/18 13:43:24 parser Exp $
+	$Id: pa_vxdoc.h,v 1.9 2001/10/19 14:15:23 parser Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -86,7 +86,7 @@ public:
 	}
 	const XalanParsedSource& get_parsed_source(Pool& pool, const String *source) { 
 		if(!fparsed_source)
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				source,
 				"can not be performed on this instance (xslt[xslt] not supported, use save+xslt[load])");
 		return *fparsed_source; 
@@ -103,7 +103,7 @@ public:
 		if(fparsed_source)
 			return *fparsed_source->getDocument();
 		if(!fdocument)
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				source,
 				"can not be applied to uninitialized instance");
 		return *fdocument; 

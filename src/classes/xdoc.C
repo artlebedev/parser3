@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.28 2001/10/18 13:43:24 parser Exp $
+	$Id: xdoc.C,v 1.29 2001/10/19 14:15:23 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -86,7 +86,7 @@ static void _createElement(Request& r, const String& method_name, MethodParams *
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -148,7 +148,7 @@ static void _createCDATASection(Request& r, const String& method_name, MethodPar
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -168,7 +168,7 @@ static void _createProcessingInstruction(Request& r, const String& method_name, 
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -187,7 +187,7 @@ static void _createAttribute(Request& r, const String& method_name, MethodParams
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 // EntityReference createEntityReference(in DOMString name) raises(DOMException);
@@ -205,7 +205,7 @@ static void _createEntityReference(Request& r, const String& method_name, Method
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -420,7 +420,7 @@ static void create_optioned_listener(
 			xalan_encoding  // encoding
 		);
 	} else
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			method,
 			XDOC_OUTPUT_METHOD_OPTION_NAME " option is invalid; valid methods are: "
 				"'" XDOC_OUTPUT_METHOD_OPTION_VALUE_XML "', "
@@ -451,7 +451,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&node); // Walk that node and produce the XML...
 	} catch(const XSLException& e) {
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -462,7 +462,7 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 	// node
 	XalanNode *node=&vdoc.get_document(pool, &method_name);//.getDocumentElement();
 	if(!node)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"no documentElement");
 
@@ -480,7 +480,7 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 		// write out result
 		r.write_no_lang(parserString);
 	} catch(const XSLException& e) {
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -519,7 +519,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*file_name*/, vcontent_type);
 		r.write_no_lang(vfile);
 	} catch(const XSLException& e) {
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -539,19 +539,19 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 		parsedSource = new XalanDefaultParsedSource2(&stream);
 	}
 	catch (XSLException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 	catch (SAXParseException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 	catch (SAXException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 	catch (XMLException& e) {
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 	catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 
 	// replace any previous parsed source
@@ -591,19 +591,19 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 		parsedSource = new XalanDefaultParsedSource2(filespec);
 	}
 	catch (XSLException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 	catch (SAXParseException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 	catch (SAXException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 	catch (XMLException& e) {
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 	catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 
 	// replace any previous parsed source
@@ -632,7 +632,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 			if(Hash *params=vparams.get_hash())
 				params->for_each(add_xslt_param, &vdoc.transformer());
 			else
-				PTHROW(0, 0,
+				throw Exception(0, 0,
 					&method_name,
 					"transform parameters parameter must be hash");
 	}
@@ -658,23 +658,23 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	}
 	catch (XSLException& e)	{
 		connection.close();
-		pool.exception()._throw(pool, &stylesheet_file_name, e);
+		Exception::convert(pool, &stylesheet_file_name, e);
 	}
 	catch (SAXParseException& e)	{
 		connection.close();
-		pool.exception()._throw(pool, &stylesheet_file_name, e);
+		Exception::convert(pool, &stylesheet_file_name, e);
 	}
 	catch (SAXException& e)	{
 		connection.close();
-		pool.exception()._throw(pool, &stylesheet_file_name, e);
+		Exception::convert(pool, &stylesheet_file_name, e);
 	}
 	catch (XMLException& e) {
 		connection.close();
-		pool.exception()._throw(pool, &stylesheet_file_name, e);
+		Exception::convert(pool, &stylesheet_file_name, e);
 	}
 	catch(const XalanDOMException& e)	{
 		connection.close();
-		pool.exception()._throw(pool, &stylesheet_file_name, e);
+		Exception::convert(pool, &stylesheet_file_name, e);
 	}
 
 	// write out result
@@ -694,7 +694,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 			if(Hash *params=vparams.get_hash())
 				params->for_each(add_xslt_param, &vdoc.transformer());
 			else
-				PTHROW(0, 0,
+				throw Exception(0, 0,
 					&method_name,
 					"transform parameters parameter must be hash");
 	}
@@ -720,23 +720,23 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	}
 	catch (XSLException& e)	{
 		connection.close();
-		pool.exception()._throw(pool, &stylesheet_file_name, e);
+		Exception::convert(pool, &stylesheet_file_name, e);
 	}
 	catch (SAXParseException& e)	{
 		connection.close();
-		pool.exception()._throw(pool, &stylesheet_file_name, e);
+		Exception::convert(pool, &stylesheet_file_name, e);
 	}
 	catch (SAXException& e)	{
 		connection.close();
-		pool.exception()._throw(pool, &stylesheet_file_name, e);
+		Exception::convert(pool, &stylesheet_file_name, e);
 	}
 	catch (XMLException& e) {
 		connection.close();
-		pool.exception()._throw(pool, &stylesheet_file_name, e);
+		Exception::convert(pool, &stylesheet_file_name, e);
 	}
 	catch(const XalanDOMException& e)	{
 		connection.close();
-		pool.exception()._throw(pool, &stylesheet_file_name, e);
+		Exception::convert(pool, &stylesheet_file_name, e);
 	}
 
 	// write out result

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxnode.h,v 1.5 2001/10/17 15:44:48 parser Exp $
+	$Id: pa_vxnode.h,v 1.6 2001/10/19 14:15:23 parser Exp $
 */
 
 #ifndef PA_VXNODE_H
@@ -64,7 +64,7 @@ public:
 public: // VXnode
 	virtual XalanNode &get_node(Pool& pool, const String *source) { 
 		if(!fnode)
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				source,
 				"can not be applied to uninitialized instance");
 

@@ -4,11 +4,11 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vxdoc.C,v 1.2 2001/10/15 11:48:04 parser Exp $
+	$Id: pa_vxdoc.C,v 1.3 2001/10/19 14:15:23 parser Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
-static const char *RCSId="$Id: pa_vxdoc.C,v 1.2 2001/10/15 11:48:04 parser Exp $"; 
+static const char *RCSId="$Id: pa_vxdoc.C,v 1.3 2001/10/19 14:15:23 parser Exp $"; 
 
 #include "pa_vxdoc.h"
 
@@ -42,7 +42,7 @@ Value *VXdoc::get_element(const String& name) {
 		} 	
 	
 	} catch(const XalanDOMException& e)	{
-		exception()._throw(pool(), &name, e);
+		Exception::convert(pool(), &name, e);
 	}
 
 	return 0;

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.C,v 1.19 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_exception.C,v 1.20 2001/10/19 14:15:23 parser Exp $
 */
 
 #include "pa_common.h"
@@ -28,16 +28,16 @@ Exception::Exception(const String *atype, const String *acode,
 }
 
 #ifdef XML
-void Exception::_throw(Pool& pool, const String *source, const XSLException& e) {
+void Exception::convert(Pool& pool, const String *source, const XSLException& e) {
 	if(e.getURI().empty())
-		_throw(0, 0,
+		throw Exception(0, 0,
 			source,
 			"%s (%s)",
 				pool.transcode_cstr(e.getMessage()),  // message for exception
 				pool.transcode_cstr(e.getType()) // type of exception
 		);
 	else
-		_throw(0, 0,
+		throw Exception(0, 0,
 			source,
 			"%s (%s). %s(%d:%d)'", 
 				pool.transcode_cstr(e.getMessage()),  // message for exception
@@ -49,15 +49,15 @@ void Exception::_throw(Pool& pool, const String *source, const XSLException& e) 
 		);
 }
 
-void Exception::_throw(Pool& pool, const String *source, const SAXException& e) {
-	_throw(0, 0,
+void Exception::convert(Pool& pool, const String *source, const SAXException& e) {
+	throw Exception(0, 0,
 		source,
 		"%s",
 			pool.transcode_cstr(XalanDOMString(e.getMessage()))  // message for exception
 	);
 }
-void Exception::_throw(Pool& pool, const String *source, const SAXParseException& e) {
-	_throw(0, 0,
+void Exception::convert(Pool& pool, const String *source, const SAXParseException& e) {
+	throw Exception(0, 0,
 		source,
 		"%s. %s(%d:%d)",
 			pool.transcode_cstr(XalanDOMString(e.getMessage())),  // message for exception
@@ -67,12 +67,12 @@ void Exception::_throw(Pool& pool, const String *source, const SAXParseException
 }
 
 
-void Exception::_throw(Pool& pool, const String *source, const XMLException& e) {
-	_throw(0, 0,
+void Exception::convert(Pool& pool, const String *source, const XMLException& e) {
+	throw Exception(0, 0,
 		source,
 		"%s (%s). %s(%d)'", 
 			pool.transcode_cstr(XalanDOMString(e.getMessage())),  // message for exception
-			pool.transcode_cstr(XalanDOMString((e.getType()))), // type of exception
+			pool.transcode_cstr(XalanDOMString(e.getType())), // type of exception
 			
 			e.getSrcFile()?e.getSrcFile():"block", // file of exception
 			e.getSrcLine()  // line number
@@ -80,7 +80,7 @@ void Exception::_throw(Pool& pool, const String *source, const XMLException& e) 
 	);
 }
 
-void Exception::_throw(Pool& pool, const String *source, const XalanDOMException& e) {
+void Exception::convert(Pool& pool, const String *source, const XalanDOMException& e) {
 	const char *s;
 	int code=(int)e.getExceptionCode();
 	switch(code) {
@@ -103,7 +103,7 @@ void Exception::_throw(Pool& pool, const String *source, const XalanDOMException
 	case 202: s="TRANSCODING_ERR"; break;
 	default: s="<UNKNOWN CODE>"; break;
 	}
-	_throw(0, 0,
+	throw Exception(0, 0,
 		source,
 		"XalanDOMException %s (%d)",
 			s,  // decoded code of exception

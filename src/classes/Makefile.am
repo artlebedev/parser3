@@ -1,4 +1,8 @@
+if COMPILE_XML
 SUBDIRS = gd xalan-patched
+else
+SUBDIRS = gd
+endif
 
 INCLUDES = -I../types -I../sql -I../pcre -Igd -Ixalan-patched @XML_INCLUDES@
 

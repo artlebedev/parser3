@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_connection.C,v 1.9 2001/10/05 10:37:26 parser Exp $
+	$Id: pa_charset_connection.C,v 1.10 2001/10/19 14:15:23 parser Exp $
 */
 
 #include "pa_charset_connection.h"
@@ -198,7 +198,7 @@ void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 			case 8:
 				// transcoder
 				if(toTableSz>MAX_CHARSET_UNI_CODES)
-					PTHROW(0, 0,
+					throw Exception(0, 0,
 						&ffile_spec,
 						"charset must contain not more then %d unicode values", MAX_CHARSET_UNI_CODES);
 

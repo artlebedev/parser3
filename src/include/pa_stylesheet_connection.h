@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.12 2001/10/18 08:09:44 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.13 2001/10/19 14:15:23 parser Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -86,19 +86,19 @@ private:
 			fstylesheet=nstylesheet;
 		}
 		catch (XSLException& e)	{
-			pool.exception()._throw(pool, &ffile_spec, e);
+			Exception::convert(pool, &ffile_spec, e);
 		}
 		catch (SAXParseException& e)	{
-			pool.exception()._throw(pool, &ffile_spec, e);
+			Exception::convert(pool, &ffile_spec, e);
 		}
 		catch (SAXException& e)	{
-			pool.exception()._throw(pool, &ffile_spec, e);
+			Exception::convert(pool, &ffile_spec, e);
 		}
 		catch (XMLException& e) {
-			pool.exception()._throw(pool, &ffile_spec, e);
+			Exception::convert(pool, &ffile_spec, e);
 		}
 		catch(const XalanDOMException&	e)	{
-			pool.exception()._throw(pool, &ffile_spec, e);
+			Exception::convert(pool, &ffile_spec, e);
 		}
 
 		prev_disk_time=new_disk_time;

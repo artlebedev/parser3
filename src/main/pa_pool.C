@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.34 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_pool.C,v 1.35 2001/10/19 14:15:23 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -63,7 +63,7 @@ void Pool::update_transcoder() {
 	XMLTransService::Codes resValue;
 	transcoder=XMLPlatformUtils::fgTransService->makeNewTranscoderFor(charset->cstr(), resValue, 60);
 	if(!transcoder)
-		THROW(0, 0,
+		throw Exception(0, 0,
 			charset,
 			"unsupported encoding");
 }
@@ -87,7 +87,7 @@ const char *Pool::transcode_cstr(const XalanDOMString& s) {
 			error=false;
 		}
 	} catch(XMLException& e) {
-		exception()._throw(*this, 0, e);
+		Exception::convert(*this, 0, e);
 	}
 	return (const char *)dest;
 }
@@ -116,7 +116,7 @@ XalanDOMString& Pool::transcode_buf(const char *buf, size_t buf_size) {
 			result=new XalanDOMString(dest, dest_size);
 		}
 	} catch(XMLException& e) {
-		exception()._throw(*this, 0, e);
+		Exception::convert(*this, 0, e);
 	}
 	
 	return *result;

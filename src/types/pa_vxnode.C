@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vxnode.C,v 1.5 2001/10/18 13:43:24 parser Exp $
+	$Id: pa_vxnode.C,v 1.6 2001/10/19 14:15:23 parser Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -145,7 +145,7 @@ Value *VXnode::get_element(const String& name) {
 		}
 		
 	} catch(const XalanDOMException& e)	{
-		exception()._throw(pool(), &name, e);
+		Exception::convert(pool(), &name, e);
 	}
 
 	return 0;

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.11 2001/10/18 13:09:37 parser Exp $
+	$Id: xnode.C,v 1.12 2001/10/19 14:15:23 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -32,7 +32,7 @@ XalanNode& as_node(Pool& pool, const String& method_name, MethodParams *params,
 						int index, const char *msg) {
 	Value& value=params->as_no_junction(index, msg);
 	if(strcmp(value.type(), VXNODE_TYPE)!=0)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			msg);
 
@@ -47,7 +47,7 @@ XalanAttr& as_attr(Pool& pool, const String& method_name, MethodParams *params,
 	XalanNode& node=as_node(pool, method_name, params, index, msg);
 
 	if(node.getNodeType()!=XalanNode::ATTRIBUTE_NODE)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name,
 			msg);
 
@@ -74,7 +74,7 @@ static void _insertBefore(Request& r, const String& method_name, MethodParams *p
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -94,7 +94,7 @@ static void _replaceChild(Request& r, const String& method_name, MethodParams *p
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -113,7 +113,7 @@ static void _removeChild(Request& r, const String& method_name, MethodParams *pa
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -132,7 +132,7 @@ static void _appendChild(Request& r, const String& method_name, MethodParams *pa
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -171,7 +171,7 @@ XalanElement& get_self_element(Request& r, const String& method_name) {
 	XalanNode& node=vnode.get_node(pool, &method_name);
 
 	if(node.getNodeType()!=XalanNode::ELEMENT_NODE)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name,
 			"method can be called on node of ELEMENT type");
 
@@ -201,7 +201,7 @@ static void _setAttribute(Request& r, const String& method_name, MethodParams *p
 			pool.transcode(name), 
 			pool.transcode(attribute_value));
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -214,7 +214,7 @@ static void _removeAttribute(Request& r, const String& method_name, MethodParams
 	try {
 		element.removeAttribute(pool.transcode(name));
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }
 
@@ -244,7 +244,7 @@ static void _setAttributeNode(Request& r, const String& method_name, MethodParam
 			r.write_no_lang(result);
 		}
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }	
 
@@ -257,7 +257,7 @@ static void _removeAttributeNode(Request& r, const String& method_name, MethodPa
 	try {
 		/*XalanAttr *returnAttr*/element.removeAttributeNode(&oldAttr);
 	} catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
+		Exception::convert(pool, &method_name, e);
 	}
 }	
 
@@ -329,7 +329,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 		result.set_name(method_name);
 		r.write_no_lang(result);
 	} catch(const XSLException& e) {
-		pool.exception()._throw(pool, &expression, e);
+		Exception::convert(pool, &expression, e);
 	}
 }
 
@@ -360,7 +360,7 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 			r.write_no_lang(result);
 		}
 	} catch(const XSLException& e) {
-		pool.exception()._throw(pool, &expression, e);
+		Exception::convert(pool, &expression, e);
 	}
 }
 
