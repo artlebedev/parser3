@@ -1,3 +1,7 @@
+/*
+  $Id: pool.h,v 1.2 2001/01/30 11:55:42 paf Exp $
+*/
+
 #ifndef POOL_H
 #define POOL_H
 
