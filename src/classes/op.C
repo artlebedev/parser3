@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.26 2001/05/23 07:37:01 parser Exp $
+	$Id: op.C,v 1.27 2001/05/24 10:17:06 parser Exp $
 */
 
 #include "classes.h"
@@ -260,6 +260,14 @@ static void _sign(Request& r, const String& method_name, MethodParams *params) {
 	double_one_op(r, method_name, params,	&sign);
 }
 
+static void _log(Request& r, const String& method_name, MethodParams *params) {
+	double_one_op(r, method_name, params,	&log);
+}
+
+static void _exp(Request& r, const String& method_name, MethodParams *params) {
+	double_one_op(r, method_name, params,	&exp);
+}
+
 static void _connect(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -363,6 +371,12 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 
 	// ^sign(expr)
 	add_native_method("sign", Method::CT_ANY, _sign, 1, 1);
+
+	// ^log(expr)
+	add_native_method("log", Method::CT_ANY, _log, 1, 1);
+
+	// ^exp(expr)
+	add_native_method("exp", Method::CT_ANY, _exp, 1, 1);
 
 	
 	// connect

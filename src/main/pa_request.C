@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.136 2001/05/24 09:29:52 parser Exp $
+	$Id: pa_request.C,v 1.137 2001/05/24 10:17:06 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -343,7 +343,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			// reset language to default
 			flang=fdefault_lang;
 			if(flang==String::UL_USER_HTML)
-				flang=String::UL_HTML; // no _ conversions in @exception[params]
+				flang=String::UL_HTML; // no _ & Co conversions in @exception[params]
 			
 			// reset response
 			response.fields().clear();
