@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.79 2001/04/23 15:12:06 paf Exp $
+	$Id: pa_string.C,v 1.80 2001/04/26 11:37:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -336,7 +336,11 @@ const Origin& String::origin() const {
 	// determining origin by last appended piece
 	// because first one frequently constant. 
 	// ex: ^load[/file] "document_root" + "/file"
-	return append_here[-1].item.origin; 
+	// when last peice is constant, 
+	// ex: parser_root_auto_path{dynamic} / auto.p{const}
+	// using first piece
+	Origin& last_origin=append_here[-1].item.origin;
+	return last_origin.file ? last_origin : head.rows[0].item.origin;
 }
 #endif
 

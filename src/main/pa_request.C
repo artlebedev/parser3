@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.120 2001/04/23 10:44:31 paf Exp $
+	$Id: pa_request.C,v 1.121 2001/04/26 11:37:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -160,6 +160,7 @@ static void element2case(unsigned char *tables, Value& ctype, const String& name
 void Request::core(const char *root_auto_path, bool root_auto_fail,
 				   const char *site_auto_path, bool site_auto_fail,
 				   bool header_only) {
+	//_asm { int 3 }
 	VStateless_class *main_class=0;
 	bool need_rethrow=false;  Exception rethrow_me;
 	TRY {
