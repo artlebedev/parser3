@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_OBJECT_H
 #define PA_VSTATELESS_OBJECT_H
 
-static const char* IDENT_VSTATELESS_OBJECT_H="$Date: 2002/08/12 14:21:52 $";
+static const char* IDENT_VSTATELESS_OBJECT_H="$Date: 2002/08/12 14:45:15 $";
 
 #include "pa_vjunction.h"
 #include "pa_vstateless_class.h"
@@ -22,7 +22,7 @@ public: // Value
 	
 	/// VStateless_object: class.get_junction
 	/*override*/ Junction *get_junction(const String& name, bool looking_down) {
-		return get_class()->get_junction(name, looking_down);
+		return get_class()->get_junction(name, *this);
 	}
 
 	/// VStateless_object: +$method
