@@ -385,14 +385,9 @@ AC_SUBST(LIBLTDL)
 
 dnl Configure libltdl
 AC_CONFIG_SUBDIRS(src/lib/ltdl)
-dnl copied from lib/libltdl/configure.in [can not move, they need this info to detect other vitals, ex. NEED_USCORE]
-LIBADD_DL=
-AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1) LIBADD_DL="-ldl"],
-[AC_CHECK_FUNC(dlopen, [AC_DEFINE(HAVE_LIBDL, 1)])])
-AC_CHECK_FUNC(shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1)],
-[AC_CHECK_LIB(dld, shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1) LIBADD_DL="$LIBADD_DL -ldld"])])
-AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1)dnl
-test "x$ac_cv_lib_dld_shl_load" = yes || LIBADD_DL="$LIBADD_DL -ldld"])
+
+dnl detecting which libraries are needed to dynamic open
+AC_LTDL_DLLIB
 AC_SUBST(LIBADD_DL)
 
 if test "x$ac_cv_func_dlopen" = xyes || test "x$ac_cv_lib_dl_dlopen" = xyes; then
