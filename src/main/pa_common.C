@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/20 09:44:43 $";
+static const char* IDENT_COMMON_C="$Date: 2002/11/21 07:26:29 $";
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -22,9 +22,6 @@ static const char* IDENT_COMMON_C="$Date: 2002/11/20 09:44:43 $";
 #endif
 #ifndef _O_BINARY
 #	define _O_BINARY 0
-#endif
-#ifndef O_TRUNC
-#	define O_TRUNC 0
 #endif
 
 // locking constants
@@ -231,7 +228,7 @@ bool file_write_action_under_lock(
 	if((f=open(fname, 
 		O_CREAT|O_RDWR
 		|(as_text?_O_TEXT:_O_BINARY)
-		|(do_append?O_APPEND:O_TRUNC), 0664))>=0) {
+		|(do_append?O_APPEND:0), 0664))>=0) {
 		if((do_block?lock_exclusive_blocking(f):lock_exclusive_nonblocking(f))!=0) {
 			Exception e("file.lock",
 				&file_spec, 
@@ -246,19 +243,15 @@ bool file_write_action_under_lock(
 		try {
 			action(f, context);
 		} catch(...) {
-#if O_TRUNC==0
 			if(!do_append)
-				ftruncate(f, tell(f));
-#endif
+				ftruncate(f, tell(f)); // one can not use O_TRUNC, read lower
 			unlock(f);
 			close(f);
 			/*re*/throw;
 		}
 		
-#if O_TRUNC==0
 		if(!do_append)
-			ftruncate(f, tell(f));
-#endif
+			ftruncate(f, tell(f)); // O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
 		unlock(f);
 		close(f);
 		return true;
