@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.72 2001/05/08 06:00:34 paf Exp $
+	$Id: table.C,v 1.73 2001/05/08 06:42:54 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -242,9 +242,8 @@ struct Record_info {
 static void store_column_item_to_hash(Array::Item *item, void *info) {
 	Record_info& ri=*static_cast<Record_info *>(info);
 	String& column_name=*static_cast<String *>(item);
-	const String *column_item=ri.table->item(column_name);
 	Value *value;
-	if(column_item)
+	if(const String *column_item=ri.table->item(column_name))
 		value=new(*ri.pool) VString(*column_item);
 	else
 		value=new(*ri.pool) VUnknown(*ri.pool);
@@ -254,11 +253,11 @@ static void _record(Request& r, const String& method_name, MethodParams *params)
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(const Array *columns=table.columns()) {
 		Pool& pool=r.pool();
-		Value& value=*new(pool) VHash(pool);
-		Record_info record_info={&pool, &table, value.get_hash()};
+		Value& result=*new(pool) VHash(pool);
+		Record_info record_info={&pool, &table, result.get_hash()};
 		columns->for_each(store_column_item_to_hash, &record_info);
-		
-		r.write_no_lang(value);
+		result.set_name(method_name);
+		r.write_no_lang(result);
 	}
 }
 
