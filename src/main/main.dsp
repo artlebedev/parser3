@@ -126,6 +126,10 @@ SOURCE=..\include\pa_hash.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_methoded.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_pool.h
 # End Source File
 # Begin Source File
@@ -186,25 +190,27 @@ SOURCE=.\compile.y
 
 !IF  "$(CFG)" == "main - Win32 Release"
 
-# Begin Custom Build
+# Begin Custom Build - Compiling grammar...
+InputDir=.
 InputPath=.\compile.y
 InputName=compile
 
 "compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	call VCVARS32 
-	d:\cygwin\bin\bison -v $(InputName).y -o compile.tab.C 
+	cd $(InputDir) 
+	bison -v $(InputName).y -o compile.tab.C 
 	
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
 
-# Begin Custom Build
+# Begin Custom Build - Compiling grammar...
+InputDir=.
 InputPath=.\compile.y
 InputName=compile
 
 "compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	call VCVARS32 
-	d:\cygwin\bin\bison -v $(InputName).y -o compile.tab.C 
+	cd $(InputDir) 
+	bison -v $(InputName).y -o compile.tab.C 
 	
 # End Custom Build
 
@@ -250,6 +256,10 @@ SOURCE=.\pa_globals.C
 # Begin Source File
 
 SOURCE=.\pa_hash.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_methoded.C
 # End Source File
 # Begin Source File
 
@@ -425,7 +435,32 @@ SOURCE=..\types\pa_wwrapper.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\classes\classes.inc
+SOURCE=..\classes\classes.awk
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+# Begin Custom Build - Creating classes.inc...
+InputPath=..\classes\classes.awk
+
+"..\classes\classes.inc" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	cd ..\classes 
+	classes 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# Begin Custom Build - Creating classes.inc...
+InputPath=..\classes\classes.awk
+
+"..\classes\classes.inc" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	cd ..\classes 
+	classes 
+	
+# End Custom Build
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
