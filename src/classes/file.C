@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.78 2002/04/15 13:17:03 paf Exp $
+	$Id: file.C,v 1.79 2002/04/16 09:38:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -254,7 +254,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			delim_size=0; // calm down, compiler
 			throw Exception(0,
 				&method_name,
-				"output does not contain CGI header; exit code=%d; outsize=%u; out: \"%s\"; errsize=%u; err: \"%s\"", 
+				"output does not contain CGI header; exit status=%d; stdoutsize=%u; stdout: \"%s\"; stderrsize=%u; stderr: \"%s\"", 
 					status, 
 					(uint)out.size(), out.cstr(),
 					(uint)err.size(), err.cstr());

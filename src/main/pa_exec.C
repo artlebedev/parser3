@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.34 2002/03/27 15:30:36 paf Exp $
+	$Id: pa_exec.C,v 1.35 2002/04/16 09:38:49 paf Exp $
 
 
 	@todo setrlimit
@@ -106,13 +106,14 @@ error:
     return FALSE;
 }
 
-static void read_pipe(String& result, HANDLE hOutRead, const char *file_spec){
+static void read_pipe(String& result, HANDLE hOutRead, const char *file_spec, 
+					  String::Untaint_lang lang){
 	while(true) {
 		char *buf=(char *)result.pool().malloc(MAX_STRING);
 		unsigned long size;
 		if(!ReadFile(hOutRead, buf, MAX_STRING, &size, NULL) || !size) 
 			break;
-		result.APPEND_AS_IS(buf, size, file_spec, 0);
+		result.APPEND(buf, size, lang, file_spec, 0);
     }
 }
 
@@ -274,13 +275,13 @@ static int get_exit_status(int pid) {
 		WEXITSTATUS(status) : -2;
 }
 
-static void read_pipe(String& result, int file, const char *file_spec){
+static void read_pipe(String& result, int file, const char *file_spec, String::Untaint_lang lang){
 	while(true) {
 		char *buf=(char *)result.pool().malloc(MAX_STRING);
 		size_t size=read(file, buf, MAX_STRING);
 		if(!size)
 			break;
-		result.APPEND_AS_IS(buf, size, file_spec, 0);
+		result.APPEND(buf, size, lang, file_spec, 0);
     }
 }
 
@@ -338,9 +339,9 @@ int pa_exec(
 		// without this char
 		WriteFile(hInWrite, "\x1A", 1, &written_size, NULL);
 		CloseHandle(hInWrite);
-		read_pipe(out, hOutRead, file_spec_cstr);
+		read_pipe(out, hOutRead, file_spec_cstr, String::UL_AS_IS);
 		CloseHandle(hOutRead);
-		read_pipe(err, hErrRead, file_spec_cstr);		
+		read_pipe(err, hErrRead, file_spec_cstr, String::UL_TAINTED);		
 		CloseHandle(hErrRead);
 /*	
 from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?rev=1.151&content-type=text/vnd.viewcvs-markup
@@ -419,9 +420,9 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		const char *in_cstr=in.cstr();
 		write(pipe_write, in_cstr, in.size());
 		close(pipe_write);
-		read_pipe(out, pipe_read, file_spec_cstr);
+		read_pipe(out, pipe_read, file_spec_cstr, String::UL_AS_IS);
 		close(pipe_read);
-		read_pipe(err, pipe_err, file_spec_cstr);
+		read_pipe(err, pipe_err, file_spec_cstr, String::UL_TAINTED);
 		close(pipe_err);
 
 		return get_exit_status(pid); // negative may mean "-errno[execl()]"
