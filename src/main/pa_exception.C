@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.C,v 1.20 2001/10/19 14:15:23 parser Exp $
+	$Id: pa_exception.C,v 1.21 2001/10/22 08:27:44 parser Exp $
 */
 
 #include "pa_common.h"
@@ -21,10 +21,11 @@ Exception::Exception(const String *atype, const String *acode,
 	if(comment_fmt) {
 		va_list args;
 		va_start(args, comment_fmt);
+		fcomment=(char *)malloc(MAX_STRING);
 		vsnprintf(fcomment, MAX_STRING, comment_fmt, args);
 		va_end(args);
 	} else 
-		fcomment[0]=0;
+		fcomment=0;
 }
 
 #ifdef XML

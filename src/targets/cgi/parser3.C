@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.122 2001/10/19 12:43:30 parser Exp $
+	$Id: parser3.C,v 1.123 2001/10/22 08:27:44 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -308,7 +308,7 @@ void real_parser_handler(
 void call_real_parser_handler__do_SEH(
 								 const char *filespec_to_process,
 								 const char *request_method, bool header_only) {
-#ifdef WIN32
+#if _MSC_VER & !defined(_DEBUG)
 	LPEXCEPTION_POINTERS system_exception=0;
 	__try {
 #endif
@@ -316,7 +316,7 @@ void call_real_parser_handler__do_SEH(
 			filespec_to_process,
 			request_method, header_only);
 		
-#if _MSC_VER
+#if _MSC_VER & !defined(_DEBUG)
 	} __except (
 		(system_exception=GetExceptionInformation()), 
 		EXCEPTION_EXECUTE_HANDLER) {

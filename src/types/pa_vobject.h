@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vobject.h,v 1.11 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vobject.h,v 1.12 2001/10/22 08:27:44 parser Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -23,6 +23,11 @@ class VObject : public VStateless_object {
 public: // Value
 	
 	const char *type() const { return "object"; }
+
+	/// VObject : true
+	Value *as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
+	/// VObject : true
+	bool as_bool() const { return true; }
 
 	/// VObject : (field)=value;(CLASS)=vclass;(method)=method_ref
 	Value *get_element(const String& name) {

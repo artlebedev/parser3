@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.19 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vclass.h,v 1.20 2001/10/22 08:27:44 parser Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -22,6 +22,11 @@ class VClass : public VStateless_class {
 public: // Value
 	
 	const char *type() const { return "class"; }
+
+	/// VClass: true
+	Value *as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
+	/// VClass: true
+	bool as_bool() const { return true; }
 
 	// VClass: (field)=STATIC value;(method)=method_ref with self=object_class
 	Value *get_element(const String& aname) {

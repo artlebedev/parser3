@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.170 2001/10/19 13:43:59 parser Exp $
+	$Id: pa_request.C,v 1.171 2001/10/22 08:27:44 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -70,7 +70,8 @@ Request::Request(Pool& apool,
 	main_class(0),
 	connection(0),
 	classes_conf(apool),
-	anti_endless_execute_recoursion(0)	
+	anti_endless_execute_recoursion(0),
+	trace(apool)
 {
 	/// directly used
 	// operators
@@ -263,8 +264,7 @@ void Request::core(
 
 		// OK. write out the result
 		output_result(*body_file, header_only);
-	} 
-	catch(const Exception& e) { // request handling problem
+	} catch(const Exception& e) { // request handling problem
 		// we're returning not result, but error explanation
 		try {
 			// log the beast
@@ -292,6 +292,8 @@ void Request::core(
 					e.code()?e.code()->cstr(String::UL_AS_IS):"-"
 					);
 
+			/// @test log stack trace
+
 			// reset language to default
 			flang=fdefault_lang;
 			if(flang==String::UL_USER_HTML)
@@ -310,7 +312,7 @@ void Request::core(
 					if(Junction *junction=value->get_junction())
 						if(const Method *method=junction->method) {
 		 					// preparing to pass parameters to 
-							//	@exception[origin;source;comment;type;code]
+							//	@exception[origin;source;comment;type;code;stack]
 							VMethodFrame frame(pool(), value->name(), *junction);
 							frame.set_self(*main_class);
 
@@ -324,9 +326,8 @@ void Request::core(
 									char *buf=(char *)malloc(MAX_STRING);
 									size_t buf_size=snprintf(buf, MAX_STRING, "%s(%d)", 
 										origin.file, 1+origin.line);
-									String *origin_file_line=NEW String(pool(),
-										buf, buf_size, true);
-									origin_value=NEW VString(*origin_file_line);
+									origin_value=NEW VString(*NEW String(pool(),
+										buf, buf_size, true));
 								}
 							}
 #endif
@@ -370,8 +371,33 @@ void Request::core(
 								code_value=NEW VVoid(pool());
 							frame.store_param(method->name, code_value);
 
+							// $stack[^table::set{name	origin}]
+							Array& stack_trace_columns=*NEW Array(pool());
+							stack_trace_columns+=NEW String(pool(), "name");
+							stack_trace_columns+=NEW String(pool(), "origin");
+							Table& stack_trace=*NEW Table(pool(), 0, &stack_trace_columns);
+							Array_iter tracei(trace);
+							while(tracei.has_next()) {
+								Array& row=*NEW Array(pool());
+
+								const String *name=(const String *)tracei.next();
+								row+=name; // name column
+#ifndef NO_STRING_ORIGIN
+								const Origin& origin=name->origin();
+								if(origin.file) {
+									char *buf=(char *)malloc(MAX_STRING);
+									size_t buf_size=snprintf(buf, MAX_STRING, "%s(%d)", 
+										origin.file, 1+origin.line);
+									row+=NEW String(pool(), buf, buf_size, true); // origin column
+								}
+#endif
+								stack_trace+=&row;
+							}
+							frame.store_param(method->name, 
+								NEW VTable(pool(), &stack_trace));
+
 							// future $response:body=
-							//   execute ^exception[origin;source;comment;type;code]
+							//   execute ^exception[origin;source;comment;type;code;stack]
 							body_string=execute_method(frame, *method);
 						}
 			}

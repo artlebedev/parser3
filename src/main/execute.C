@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.196 2001/10/19 12:43:30 parser Exp $
+	$Id: execute.C,v 1.197 2001/10/22 08:27:44 parser Exp $
 */
 
 #include "pa_opcode.h"
@@ -25,7 +25,7 @@
 
 //#define DEBUG_EXECUTE
 
-const uint ANTI_ENDLESS_EXECUTE_RECOURSION=400;
+const uint ANTI_ENDLESS_EXECUTE_RECOURSION=1000;
 
 #ifdef DEBUG_EXECUTE
 char *opcode_name[]={
@@ -101,6 +101,7 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 #define POP_NAME() static_cast<Value *>(stack.pop())->as_string()
 
 void Request::execute(const Array& ops) {
+//	_asm int 3;
 #ifdef DEBUG_EXECUTE
 	debug_printf(pool(), "source----------------------------\n");
 	debug_dump(pool(), 0, ops);
@@ -115,11 +116,13 @@ void Request::execute(const Array& ops) {
 		debug_printf(pool(), "%d:%s", stack.top_index()+1, opcode_name[op.code]);
 #endif
 
+		Value *value;
+		Value *a; Value *b;
 		switch(op.code) {
 		// param in next instruction
 		case OP_VALUE:
 			{
-				Value *value=static_cast<Value *>(i.next());
+				value=static_cast<Value *>(i.next());
 #ifdef DEBUG_EXECUTE
 				debug_printf(pool(), " \"%s\" %s", value->get_string()->cstr(), value->type());
 #endif
@@ -150,7 +153,7 @@ void Request::execute(const Array& ops) {
 					op.code==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
 					local_ops);
 				
-				Value *value=NEW VJunction(j);
+				value=NEW VJunction(j);
 
 				// store param
 				frame->store_param(frame->name(), value);
@@ -162,7 +165,7 @@ void Request::execute(const Array& ops) {
 				wcontext->set_somebody_entered_some_class();
 
 				const String& name=POP_NAME();
-				Value *value=static_cast<Value *>(classes().get(name));
+				value=static_cast<Value *>(classes().get(name));
 				if(!value) 
 					throw Exception(0,0,
 						&name,
@@ -197,7 +200,7 @@ void Request::execute(const Array& ops) {
 		// OTHER ACTIONS BUT WITHs
 		case OP_CONSTRUCT_VALUE:
 			{
-				Value *value=POP();
+				value=POP();
 				const String& name=POP_NAME();
 				Value *ncontext=POP();
 				ncontext->put_element(name, value);
@@ -206,7 +209,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_CONSTRUCT_EXPR:
 			{
-				Value *value=POP();
+				value=POP();
 				const String& name=POP_NAME();
 				Value *ncontext=POP();
 				ncontext->put_element(name, value->as_expr_result());
@@ -227,7 +230,7 @@ void Request::execute(const Array& ops) {
 					wcontext, 
 					local_ops);
 				
-				Value *value=NEW VJunction(j);
+				value=NEW VJunction(j);
 				const String& name=POP_NAME();
 				Value *ncontext=POP();
 				ncontext->put_element(name, value);
@@ -236,7 +239,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_WRITE_VALUE:
 			{
-				Value *value=POP();
+				value=POP();
 				write_assign_lang(*value);
 
 				// forget the fact they've entered some ^object.method[].
@@ -246,7 +249,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_WRITE_EXPR_RESULT:
 			{
-				Value *value=POP();
+				value=POP();
 				write_expr_result(*value->as_expr_result());
 				break;
 			}
@@ -266,14 +269,14 @@ void Request::execute(const Array& ops) {
 				wcontext->inc_somebody_entered_some_object();
 
 				//_asm int 3;
-				Value *value=get_element();
+				value=get_element();
 				PUSH(value);
 				break;
 			}
 
 		case OP_GET_ELEMENT__WRITE:
 			{
-				Value *value=get_element();
+				value=get_element();
 				write_assign_lang(*value);
 				break;
 			}
@@ -289,7 +292,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_REDUCE_EWPOOL:
 			{
-				Value *value=wcontext->result();
+				value=wcontext->result();
 				flang=static_cast<String::Untaint_lang>(reinterpret_cast<int>(POP()));
 				wcontext=static_cast<WContext *>(POP());
 				PUSH(value);
@@ -320,7 +323,7 @@ void Request::execute(const Array& ops) {
 		// CALL
 		case OP_GET_METHOD_FRAME:
 			{
-				Value *value=POP();
+				value=POP();
 
 				// info: 
 				//	code compiled so that this one's always method-junction, 
@@ -338,7 +341,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_STORE_PARAM:
 			{
-				Value *value=POP();
+				value=POP();
 				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
 				frame->store_param(frame->name(), value);
 				break;
@@ -408,33 +411,39 @@ void Request::execute(const Array& ops) {
 						called_class==self ? Method::CT_STATIC : Method::CT_DYNAMIC;
 					if(
 						method.call_type==Method::CT_ANY ||
-						method.call_type==call_type) // allowed call type?
-						if(method.native_code) { // native code?
-							method.check_actual_numbered_params(
-								frame->junction.self, 
-								frame->name(), frame->numbered_params());
-							method.native_code(
-								*this, 
-								frame->name(), frame->numbered_params()); // execute it
-						} else { // parser code
-							if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
-								anti_endless_execute_recoursion=0; // give @exception a chance
-								throw Exception(0, 0,
-									&frame->name(),
-									"endless recursion detected");
+						method.call_type==call_type) { // allowed call type?
+						try {
+							if(method.native_code) { // native code?
+								method.check_actual_numbered_params(
+									frame->junction.self, 
+									frame->name(), frame->numbered_params());
+								method.native_code(
+									*this, 
+									frame->name(), frame->numbered_params()); // execute it
+							} else { // parser code
+								if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
+									anti_endless_execute_recoursion=0; // give @exception a chance
+									throw Exception(0, 0,
+										&frame->name(),
+										"endless recursion detected");
+								}
+								
+								execute(*method.parser_code); // execute it
+								anti_endless_execute_recoursion--;
 							}
-							
-							execute(*method.parser_code); // execute it
-							anti_endless_execute_recoursion--;
+						} catch(...) {
+							// record it to stack trace
+							trace.push((void *)&frame->name());
+							/*re*/throw;
 						}
-					else
+					} else
 						throw Exception(0, 0,
 							&frame->name(),
 							"is not allowed to be called %s", 
 								call_type==Method::CT_STATIC?"statically":"dynamically");
 
 				}
-				Value *value=wcontext->result();
+				value=wcontext->result();
 
 				wcontext=static_cast<WContext *>(POP());  
 				rcontext=POP();  
@@ -452,28 +461,28 @@ void Request::execute(const Array& ops) {
 		case OP_NEG:
 			{
 				Value *operand=POP();
-				Value *value=NEW VDouble(pool(), -operand->as_double());
+				value=NEW VDouble(pool(), -operand->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_INV:
 			{
 				Value *operand=POP();
-				Value *value=NEW VDouble(pool(), ~operand->as_int());
+				value=NEW VDouble(pool(), ~operand->as_int());
 				PUSH(value);
 				break;
 			}
 		case OP_NOT:
 			{
 				Value *operand=POP();
-				Value *value=NEW VBool(pool(), !operand->as_bool());
+				value=NEW VBool(pool(), !operand->as_bool());
 				PUSH(value);
 				break;
 			}
 		case OP_DEF:
 			{
 				Value *operand=POP();
-				Value *value=NEW VBool(pool(), operand->is_defined());
+				value=NEW VBool(pool(), operand->is_defined());
 				PUSH(value);
 				break;
 			}
@@ -481,7 +490,7 @@ void Request::execute(const Array& ops) {
 			{
 				Value *operand=POP();
 				const char *path=operand->as_string().cstr();
-				Value *value=NEW VBool(pool(), 
+				value=NEW VBool(pool(), 
 					info.uri && strncmp(path, info.uri, strlen(path))==0);
 				PUSH(value);
 				break;
@@ -489,7 +498,7 @@ void Request::execute(const Array& ops) {
 		case OP_FEXISTS:
 			{
 				Value *operand=POP();
-				Value *value=NEW VBool(pool(), 
+				value=NEW VBool(pool(), 
 					file_readable(absolute(operand->as_string())));
 				PUSH(value);
 				break;
@@ -497,7 +506,7 @@ void Request::execute(const Array& ops) {
 		case OP_DEXISTS:
 			{
 				Value *operand=POP();
-				Value *value=NEW VBool(pool(), 
+				value=NEW VBool(pool(), 
 					dir_readable(absolute(operand->as_string())));
 				PUSH(value);
 				break;
@@ -506,28 +515,28 @@ void Request::execute(const Array& ops) {
 		// expression ops: binary
 		case OP_SUB: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->as_double() - b->as_double());
+				b=POP();  a=POP();
+				value=NEW VDouble(pool(), a->as_double() - b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_ADD: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->as_double() + b->as_double());
+				b=POP();  a=POP();
+				value=NEW VDouble(pool(), a->as_double() + b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_MUL: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->as_double() * b->as_double());
+				b=POP();  a=POP();
+				value=NEW VDouble(pool(), a->as_double() * b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_DIV: 
 			{
-				Value *b=POP();  Value *a=POP();
+				b=POP();  a=POP();
 
 				double a_double=a->as_double();
 				double b_double=b->as_double();
@@ -543,13 +552,13 @@ void Request::execute(const Array& ops) {
 						"Division by zero");
 				}
 
-				Value *value=NEW VDouble(pool(), a_double / b_double);
+				value=NEW VDouble(pool(), a_double / b_double);
 				PUSH(value);
 				break;
 			}
 		case OP_MOD: 
 			{
-				Value *b=POP();  Value *a=POP();
+				b=POP();  a=POP();
 
 				double a_double=a->as_double();
 				double b_double=b->as_double();
@@ -565,14 +574,14 @@ void Request::execute(const Array& ops) {
 						"Modulus by zero");
 				}
 
-				Value *value=NEW VDouble(pool(), fmod(a_double, b_double));
+				value=NEW VDouble(pool(), fmod(a_double, b_double));
 				PUSH(value);
 				break;
 			}
 		case OP_BIN_AND:
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
+				b=POP();  a=POP();
+				value=NEW VDouble(pool(), 
 					a->as_int() &
 					b->as_int());
 				PUSH(value);
@@ -580,8 +589,8 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_BIN_OR:
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
+				b=POP();  a=POP();
+				value=NEW VDouble(pool(), 
 					a->as_int() |
 					b->as_int());
 				PUSH(value);
@@ -589,8 +598,8 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_BIN_XOR:
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
+				b=POP();  a=POP();
+				value=NEW VDouble(pool(), 
 					a->as_int() ^
 					b->as_int());
 				PUSH(value);
@@ -598,114 +607,114 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_LOG_AND:
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_bool() && b->as_bool());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_bool() && b->as_bool());
 				PUSH(value);
 				break;
 			}
 		case OP_LOG_OR:
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_bool() || b->as_bool());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_bool() || b->as_bool());
 				PUSH(value);
 				break;
 			}
 		case OP_LOG_XOR:
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_bool() ^ b->as_bool());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_bool() ^ b->as_bool());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_LT: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_double() < b->as_double());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_double() < b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GT: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_double() > b->as_double());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_double() > b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_LE: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_double() <= b->as_double());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_double() <= b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GE: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_double() >= b->as_double());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_double() >= b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_EQ: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_double() == b->as_double());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_double() == b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_NE: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_double() != b->as_double());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_double() != b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_STR_LT: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() < b->as_string());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_string() < b->as_string());
 				PUSH(value);
 				break;
 			}
 		case OP_STR_GT: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() > b->as_string());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_string() > b->as_string());
 				PUSH(value);
 				break;
 			}
 		case OP_STR_LE: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() <= b->as_string());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_string() <= b->as_string());
 				PUSH(value);
 				break;
 			}
 		case OP_STR_GE: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() >= b->as_string());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_string() >= b->as_string());
 				PUSH(value);
 				break;
 			}
 		case OP_STR_EQ: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() == b->as_string());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_string() == b->as_string());
 				PUSH(value);
 				break;
 			}
 		case OP_STR_NE: 
 			{
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() != b->as_string());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), a->as_string() != b->as_string());
 				PUSH(value);
 				break;
 			}
 		case OP_IS:
 			{
 				//_asm int 3;
-				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), b->as_string() == a->type());
+				b=POP();  a=POP();
+				value=NEW VBool(pool(), b->as_string() == a->type());
 				PUSH(value);
 				break;
 			}
