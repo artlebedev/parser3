@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MOD_PARSER3_C="$Date: 2002/08/01 11:41:20 $";
+static const char* IDENT_MOD_PARSER3_C="$Date: 2002/12/09 13:02:36 $";
 
 #include "pa_config_includes.h"
 
@@ -117,7 +117,8 @@ void SAPI::die(const char *fmt, ...) {
 	ap_log_error(APLOG_MARK, APLOG_EMERG, 0, "%s", buf);
     va_end(args);
 
-	exit(1);
+	// exit & try to produce core dump
+	abort();
 }
 
 const char *SAPI::get_env(Pool& pool, const char *name) {

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3ISAPI_C="$Date: 2002/10/29 11:28:19 $";
+static const char* IDENT_PARSER3ISAPI_C="$Date: 2002/12/09 13:05:45 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -91,7 +91,8 @@ void SAPI::die(const char *fmt, ...) {
 		vfprintf(log, fmt, args);
 		fclose(log);
 	}
-	exit(1);
+	// exit & try to produce core dump
+	abort();
 }
 
 const char *SAPI::get_env(Pool& pool, const char *name) {
