@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.4 2001/09/10 08:23:49 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.5 2001/09/10 09:02:20 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -18,6 +18,7 @@ static const char *RCSId="$Id: dom.C,v 1.4 2001/09/10 08:23:49 parser Exp $";
 
 #include <Include/PlatformDefinitions.hpp>
 #include <util/PlatformUtils.hpp>
+#include <util/XMLString.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
 #include <XalanTransformer/XalanParsedSource.hpp>
 //#include <DOMSupport/DOMServices.hpp> 
@@ -70,6 +71,31 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	vDOM.setParsedSource(parsedSource);
 }
 
+const char *strX(const XalanDOMString& s) {
+	return XMLString::transcode(s.c_str());
+}
+
+static void _throw(Pool& pool, const String *source, const XSLException& e) {
+	if(e.getURI().empty())
+		PTHROW(0, 0,
+			source,
+			"%s (%s)",
+				strX(e.getMessage()),  // message for exception
+				strX(e.getType()) // type of exception
+		);
+	else
+		PTHROW(0, 0,
+			source,
+			"%s (%s) %s(%d:%d)'", 
+				strX(e.getMessage()),  // message for exception
+				strX(e.getType()), // type of exception
+				
+				strX(e.getURI()),  // URI for the associated document, if any
+				e.getLineNumber(),  // line number, or -1 if unknown
+				e.getColumnNumber() // column number, or -1 if unknown
+		);
+}
+
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDOM& vDOM=*static_cast<VDOM *>(r.self);
@@ -86,42 +112,16 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 			&method_name,
 			"on empty document");
 
-	XalanDocument *document=parsedSource->getDocument();
-
-/*
-	XalanDOMString data;
-	DOMServices::getNodeData(*document, data);
-	const XalanDOMChar *cstr=data.c_str();
-^^^^^^^^^^^just a text from one node
-*/
-
-	  //const XalanDOMString & theFileName
-	XalanFileOutputStream fileOutputStream(XalanDOMString(filespec, strlen(filespec)));
-	XalanOutputStreamPrintWriter outputStreamPrintWriter(fileOutputStream);
-	FormatterToXML formatterListener(outputStreamPrintWriter);
-/*
-	// Sends the data for a node to a FormatterListener
-	DOMServices::getNodeData(*document, formatterListener, 
-		(DOMServices::MemberFunctionPtr)formatterListener.characters);
-	formatterListener.endDocument();
-*/
-	// Create a FormatterTreeWalker with the the
-	// new formatter...
-	FormatterTreeWalker theTreeWalker(formatterListener);
-
-	// Walk the document and produce the XML...
-	theTreeWalker.traverse(document);
-/*
-	// Set up a XercesParserLiaison and use it to wrap the DOM_Document
-	// in a XalanDocument.
-	XercesDOMSupport   theDOMSupport;
-	XercesParserLiaison	theParserLiaison(theDOMSupport);
-
-	// You can also convert the XalanDocument to a Xerces DOM_Document.
-	DOM_Document xercesDocument = theParserLiaison.mapXercesDocument(xalanDocument);
-	//DOMPrint sample
-*/
-	// TODO error handling ...
+	try {
+		XalanDocument *document=parsedSource->getDocument();
+		XalanFileOutputStream fileOutputStream(XalanDOMString(filespec, strlen(filespec)));
+		XalanOutputStreamPrintWriter outputStreamPrintWriter(fileOutputStream);
+		FormatterToXML formatterListener(outputStreamPrintWriter);
+		FormatterTreeWalker theTreeWalker(formatterListener);
+		theTreeWalker.traverse(document); // Walk the document and produce the XML...
+	} catch(const XSLException& e) {
+		_throw(pool, &method_name, e);
+	}
 }
 
 // constructor
