@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.13 2001/03/19 15:29:37 paf Exp $
+	$Id: pa_globals.h,v 1.14 2001/03/19 15:53:14 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -12,6 +12,8 @@
 #include "pa_string.h"
 #include "pa_hash.h"
 
+//@{
+/// constant string. class name, predefined method & co
 #define AUTO_FILE_NAME "auto.p"
 
 #define CONTENT_TYPE_NAME "content-type"
@@ -41,24 +43,30 @@
 #define DEFAULTS_NAME "defaults"
 
 #define RESULT_VAR_NAME "result"
+//@}
 
+/// target-specific service functions
 struct Service_funcs {
+	/// read POST request bytes
 	int (*read_post)(char *buf, int max_bytes);
+	/// output response header attribute
 	void (*output_header_attribute)(const char *key, const char *value);
+	/// output body bytes
 	void (*output_body)(const char *buf, size_t size);
 };
 
 
-// core func
+/// core func
 void globals_init(Pool& pool);
 
-// hex_value[c] = hex value of c
+/// hex_value[c] = hex value of c
 extern short hex_value[0x100];
 
-//
+/// target-specific service functions
 extern Service_funcs service_funcs;
 
-// global strings
+//@{
+/// global string
 extern String *content_type_name;
 extern String *body_name;
 extern String *value_name;
@@ -88,8 +96,9 @@ extern String *post_max_size_name;
 extern String *defaults_name;
 
 extern String *result_var_name;
+//@}
 
-// global hashes
+/// global hash
 extern Hash *untaint_lang_name2enum;
 
 #endif
