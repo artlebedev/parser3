@@ -218,9 +218,15 @@ $selffilespec[$filespec]
 #^cookieexpirestest[]
 #^postest[]
 #^voidpostest[]
-^virtualtest[]
+#^virtualtest[]
+^badcolumntest[]
 <hr>
 OK
+
+@badcolumntest[]
+$table[^table::load[ext.cfg]]
+$table.b
+
 
 @virtualtest[]
 $derived[^derived::create[derived create actual param]]

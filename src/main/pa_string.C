@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/08/08 08:43:38 $";
+static const char* IDENT_STRING_C="$Date: 2002/08/21 10:52:49 $";
 
 #include "pcre.h"
 
@@ -57,7 +57,7 @@ String::String(const String& src) :
 	head.chunk.count=CR_PREALLOCATED_COUNT;
 	append_here=head.chunk.rows;
 
-	append(src, UL_UNSPECIFIED);
+	append(src, UL_PASS_APPENDED);
 }
 
 size_t  String::size() const {
