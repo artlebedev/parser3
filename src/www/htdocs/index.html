@@ -1,4 +1,12 @@
 @main[]
+$env:REMOTE_ADDR<BR>
+
+^rem{
+$response:body[]
+$response:location[http://parser3/123]
+}
+
+
 ^$root_test=$root_test !<BR>
 ^$site_test=$site_test !<BR>
 ^${cookie:вот}=${cookie:вот}?<BR>

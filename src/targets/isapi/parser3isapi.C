@@ -17,13 +17,20 @@
 
 //@{
 /// service func decl
+
+struct Service_func_context {
+	LPEXTENSION_CONTROL_BLOCK lpECB;
+	String *header;
+	DWORD http_response_code;
+};
+
 static const char *get_env(Pool& pool, const char *name) {
-	LPEXTENSION_CONTROL_BLOCK lpECB=static_cast<LPEXTENSION_CONTROL_BLOCK>(pool.context());
+	Service_func_context& ctx=*static_cast<Service_func_context *>(pool.context());
 
 	char *variable_buf=(char *)pool.malloc(MAX_STRING);
 	DWORD variable_len = MAX_STRING-1;
 
-	if(lpECB->GetServerVariable(lpECB->ConnID, const_cast<char *>(name), 
+	if(ctx.lpECB->GetServerVariable(ctx.lpECB->ConnID, const_cast<char *>(name), 
 		variable_buf, &variable_len)) {
 		variable_buf[variable_len]=0;
 		return variable_buf;
@@ -31,7 +38,7 @@ static const char *get_env(Pool& pool, const char *name) {
 
 	variable_buf=(char *)pool.malloc(variable_len+1);
 	
-	if(lpECB->GetServerVariable(lpECB->ConnID, const_cast<char *>(name), 
+	if(ctx.lpECB->GetServerVariable(ctx.lpECB->ConnID, const_cast<char *>(name), 
 		variable_buf, &variable_len)) {
 		variable_buf[variable_len]=0;
 		return variable_buf;
@@ -41,24 +48,26 @@ static const char *get_env(Pool& pool, const char *name) {
 }
 
 static uint read_post(Pool& pool, char *buf, uint max_bytes) {
-	LPEXTENSION_CONTROL_BLOCK lpECB=static_cast<LPEXTENSION_CONTROL_BLOCK>(pool.context());
+	Service_func_context& ctx=*static_cast<Service_func_context *>(pool.context());
 
 	DWORD read_from_buf=0;
 	DWORD read_from_input=0;
 	DWORD total_read=0;
 
-	read_from_buf=min(lpECB->cbAvailable, max_bytes);
-	memcpy(buf, lpECB->lpbData, read_from_buf);
+	read_from_buf=min(ctx.lpECB->cbAvailable, max_bytes);
+	memcpy(buf, ctx.lpECB->lpbData, read_from_buf);
 	total_read+=read_from_buf;
 
 	if(read_from_buf<max_bytes &&
-		read_from_buf<lpECB->cbTotalBytes) {
+		read_from_buf<ctx.lpECB->cbTotalBytes) {
 		DWORD cbRead=0, cbSize;
 
-		read_from_input=min(max_bytes-read_from_buf, lpECB->cbTotalBytes-read_from_buf);
+		read_from_input=min(max_bytes-read_from_buf, 
+			ctx.lpECB->cbTotalBytes-read_from_buf);
 		while(cbRead < read_from_input) {
 			cbSize=read_from_input - cbRead;
-			if(!lpECB->ReadClient(lpECB->ConnID, buf+read_from_buf+cbRead, &cbSize) || 
+			if(!ctx.lpECB->ReadClient(ctx.lpECB->ConnID, 
+				buf+read_from_buf+cbRead, &cbSize) || 
 				cbSize==0) 
 				break;
 			cbRead+=cbSize;
@@ -69,59 +78,62 @@ static uint read_post(Pool& pool, char *buf, uint max_bytes) {
 }
 
 static void add_header_attribute(Pool& pool, const char *key, const char *value) {
-	LPEXTENSION_CONTROL_BLOCK lpECB=static_cast<LPEXTENSION_CONTROL_BLOCK>(pool.context());
-	String *header=static_cast<String *>(pool.tag());
-	if(!header) 
-		pool.set_tag(header=new(pool) String(pool));
+	Service_func_context& ctx=*static_cast<Service_func_context *>(pool.context());
 
-	header->APPEND_CONST(key);
-	header->APPEND_CONST(": ");
-	header->APPEND_CONST(value);
-	header->APPEND_CONST("\r\n");
+	if(strcasecmp(key, "location")==0) 
+		ctx.http_response_code=302;
+
+	if(strcasecmp(key, "status")==0) 
+		ctx.http_response_code=atoi(value);
+	else {
+		ctx.header->APPEND_CONST(key);
+		ctx.header->APPEND_CONST(": ");
+		ctx.header->APPEND_CONST(value);
+		ctx.header->APPEND_CONST("\n");
+	}
 }
 
+/// @todo intelligent cache-control
 static void send_header(Pool& pool) {
-	LPEXTENSION_CONTROL_BLOCK lpECB=static_cast<LPEXTENSION_CONTROL_BLOCK>(pool.context());
-	String *header=static_cast<String *>(pool.tag());
-	if(!header) // never
-		return;
+	Service_func_context& ctx=*static_cast<Service_func_context *>(pool.context());
 
-	header->APPEND_CONST("\r\n");
+	ctx.header->APPEND_CONST("Cache-Control: no-cache\n");
+	ctx.header->APPEND_CONST("\n");
 	HSE_SEND_HEADER_EX_INFO header_info;
 
-	int http_response_code=200; // todo: dig from headers
-
 	char status_buf[MAX_STATUS_LENGTH];
-	switch(http_response_code) {
+	switch(ctx.http_response_code) {
 		case 200:
 			header_info.pszStatus="200 OK";
 			break;
 		case 302:
 			header_info.pszStatus="302 Moved Temporarily";
 			break;
-		case 401:
+		/*case 401:
 			header_info.pszStatus="401 Authorization Required";
-			break;
+			break;*/
 		default:
-			snprintf(status_buf, MAX_STATUS_LENGTH, "%d Undescribed", http_response_code);
+			snprintf(status_buf, MAX_STATUS_LENGTH, 
+				"%d Undescribed", ctx.http_response_code);
 			header_info.pszStatus=status_buf;
 			break;
 	}
 	header_info.cchStatus=strlen(header_info.pszStatus);
-	header_info.pszHeader=header->cstr();
-	header_info.cchHeader=header->size();
+	header_info.pszHeader=ctx.header->cstr();
+	header_info.cchHeader=ctx.header->size();
 
-	lpECB->dwHttpStatusCode=http_response_code;
+	ctx.lpECB->dwHttpStatusCode=ctx.http_response_code;
 
-	lpECB->ServerSupportFunction(lpECB->ConnID, HSE_REQ_SEND_RESPONSE_HEADER_EX, 
-		&header_info, NULL, NULL);
+	ctx.lpECB->ServerSupportFunction(ctx.lpECB->ConnID, 
+		HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
 }
 
 static void send_body(Pool& pool, const char *buf, size_t size) {
-	LPEXTENSION_CONTROL_BLOCK lpECB=static_cast<LPEXTENSION_CONTROL_BLOCK>(pool.context());
+	Service_func_context& ctx=*static_cast<Service_func_context *>(pool.context());
 
 	DWORD num_bytes=size;
-	lpECB->WriteClient(lpECB->ConnID, const_cast<char *>(buf), &num_bytes, HSE_IO_SYNC);
+	ctx.lpECB->WriteClient(ctx.lpECB->ConnID, 
+		const_cast<char *>(buf), &num_bytes, HSE_IO_SYNC);
 }
 //@}
 
@@ -165,13 +177,18 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 /// ISAPI // main workhorse
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	Pool pool;
-	pool.set_context(lpECB);
-	
 	// TODO r->no_cache=1;
 	
 	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
+		
+		Service_func_context ctx={
+			lpECB,
+			new(pool) String(pool),
+			200
+		};
+		pool.set_context(&ctx);
 		
 		const char *filespec_to_process=lpECB->lpszPathTranslated;
 		
@@ -202,6 +219,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		request_info.content_type=lpECB->lpszContentType;
 		request_info.content_length=lpECB->cbTotalBytes;
 		// cookie
+		request_info.cookie=0;
 		char cookie_buf[MAX_STRING];
 		{
 			DWORD cookie_len = MAX_STRING-1;
@@ -215,8 +233,6 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 				if (lpECB->GetServerVariable(lpECB->ConnID, "HTTP_COOKIE", tmp_cookie_buf, &cookie_len)) {
 					tmp_cookie_buf[cookie_len]=0;
 					request_info.cookie=tmp_cookie_buf;
-				} else {
-					request_info.cookie=0;
 				}
 			}
 		}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.32 2001/03/22 16:38:22 paf Exp $
+	$Id: parser3.C,v 1.33 2001/03/22 17:13:51 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -95,9 +95,14 @@ static void add_header_attribute(const char *key, const char *value) {
 		printf("%s: %s\n", key, value);
 }
 
+/// @todo intelligent cache-control
 static void send_header(const char *buf, size_t size) {
-	if(cgi) // header | body  delimiter
+	if(cgi) {
+		puts("Cache-Control: no-cache");
+
+		// header | body  delimiter
 		puts("");
+	}
 }
 
 static void send_body(const char *buf, size_t size) {

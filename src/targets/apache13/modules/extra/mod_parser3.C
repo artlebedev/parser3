@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.10 2001/03/22 15:30:46 paf Exp $
+	$Id: mod_parser3.C,v 1.11 2001/03/22 17:13:49 paf Exp $
 */
 
 #include "httpd.h"
@@ -500,7 +500,11 @@ Service_funcs service_funcs={
 	send_body
 };
 
-/// main workhorse
+/**
+	main workhorse
+	
+	@todo intelligent cache-control
+*/
 static int parser_handler(request_rec *r)
 {
 	Pool pool;
