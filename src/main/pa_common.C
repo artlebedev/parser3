@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.103 2002/02/13 11:59:29 paf Exp $
+	$Id: pa_common.C,v 1.104 2002/02/13 12:05:17 paf Exp $
 */
 
 #include "pa_common.h"
@@ -212,7 +212,7 @@ bool file_write_action_under_lock(
 	if((f=open(fname, 
 		O_CREAT|O_RDWR
 		|(as_text?_O_TEXT:_O_BINARY)
-		|(do_append?O_APPEND:0), 0664))>=0) {
+		|(do_append?O_APPEND:O_TRUNC), 0664))>=0) {
 		if((do_block?lock_exclusive_blocking(f):lock_exclusive_nonblocking(f))!=0) {
 			close(f);
 			return false;
@@ -222,7 +222,8 @@ bool file_write_action_under_lock(
 			action(f, context);
 		} catch(...) {
 #if O_TRUNC==0
-			ftruncate(f, tell(f));
+			if(!do_append)
+				ftruncate(f, tell(f));
 #endif
 			unlock(f);
 			close(f);
@@ -230,7 +231,8 @@ bool file_write_action_under_lock(
 		}
 		
 #if O_TRUNC==0
-		ftruncate(f, tell(f));
+		if(!do_append)
+			ftruncate(f, tell(f));
 #endif
 		unlock(f);
 		close(f);
