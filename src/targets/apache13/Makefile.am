@@ -13,4 +13,4 @@ apache_build_instruction: p3runConfigure
 	@echo "3. make"
 	@echo "******************************************************"
 
-EXTRA_DIST = ApacheModuleParser3.dsp
+EXTRA_DIST = ApacheModuleParser3.dsp mod_parser3.c pa_httpd.h
