@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.2 2001/09/07 12:46:19 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.3 2001/09/07 16:51:24 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -64,13 +64,39 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	vDOM.setParsedSource(parsedSource);
 }
 
+static void _save(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VDOM& vDOM=*static_cast<VDOM *>(r.self);
+
+	// filename
+	const String& filename=params->as_string(0, "file name must not be code");
+
+	// filespec
+	const char *filespec=r.absolute(filename).cstr(String::UL_FILE_NAME);
+	
+	XSLTInputSource inputSource(filespec);
+	XalanParsedSource* parsedSource;
+	int error=vDOM.getXalanTransformer().parseSource(inputSource, parsedSource);
+
+	if(error)
+		PTHROW(0, 0,
+			&filename,
+			vDOM.getXalanTransformer().getLastError());
+
+	// replace any previous node value
+	vDOM.setParsedSource(parsedSource);
+}
+
 // constructor
 
 MDom::MDom(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), Dom_CLASS_NAME));
 
-	// ^dom::load[]
+	// ^dom::load[some.xml]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
+
+	// ^dom.save[some.xml]
+	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 1);
 
 }
 // global variable
