@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.67 2001/03/07 11:14:12 paf Exp $
+  $Id: compile.y,v 1.68 2001/03/07 11:19:42 paf Exp $
 */
 
 %{
@@ -72,12 +72,12 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %left "||"
 %left "&&"
 %left "def" "in" "-f"
-%left NOT     /* not: unary ! */
+%left '!'
 
 /* bitwise */
 %left '#'
 %left '&' '|'
-%left INV     /* invertion: unary ~ */
+%left '~'
 
 /* numerical */
 %left '-' '+'
@@ -410,11 +410,11 @@ expr:
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
 |	'-' expr %prec NEG { $$=$2;  O($$, OP_NEG) }
-|	'~' expr %prec INV { $$=$2;	 O($$, OP_INV) }
-|	'!' expr %prec NOT { $$=$2;  O($$, OP_NOT) }
-|	"def" expr %prec DEF { $$=$2;  O($$, OP_DEF) }
-|	"in" expr %prec IN { $$=$2;  O($$, OP_IN) }
-|	"-f" expr %prec FEXISTS { $$=$2;  O($$, OP_FEXISTS) }
+|	'~' expr { $$=$2;	 O($$, OP_INV) }
+|	'!' expr { $$=$2;  O($$, OP_NOT) }
+|	"def" expr { $$=$2;  O($$, OP_DEF) }
+|	"in" expr { $$=$2;  O($$, OP_IN) }
+|	"-f" expr { $$=$2;  O($$, OP_FEXISTS) }
 /* stack: a,b // stack: a@b */
 |	expr '-' expr {	$$=$1;  P($$, $3);  O($$, OP_SUB) }
 |	expr '+' expr { $$=$1;  P($$, $3);  O($$, OP_ADD) }
