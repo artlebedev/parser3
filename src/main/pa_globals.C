@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.98 2001/12/28 14:52:40 paf Exp $
+	$Id: pa_globals.C,v 1.99 2001/12/29 08:39:05 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -111,6 +111,20 @@ static void setup_hex_value() {
 	hex_value['f'] = 15;
 }
 
+/*
+#ifdef XML
+static void
+xmlGenericErrorDefaultFunc2(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...) {
+    va_list args;
+    va_start(args, msg);
+    throw Exception(0, 0,
+		0,
+		msg, args);
+    va_end(args);
+}
+#endif
+*/
+
 void pa_globals_destroy(void *) {
 	try {
 #ifdef XML
@@ -126,7 +140,6 @@ void pa_globals_destroy(void *) {
 		SAPI::die("pa_globals_destroy failed: %s", e.comment());
 	}
 }
-
 
 void pa_globals_init(Pool& pool) {
 	pool.register_cleanup(pa_globals_destroy, 0);
@@ -240,6 +253,15 @@ void pa_globals_init(Pool& pool) {
      * disable CDATA from being built in the document tree
      */
     xmlDefaultSAXHandler.cdataBlock = NULL;
+
+	/*
+	 * Initialization function for the XML parser.
+	 * This is not reentrant. Call once before processing in case of
+	 * use in multithreaded programs.
+	*/
+	xmlInitParser();
+
+///	xmlSetGenericErrorFunc(0, xmlGenericErrorDefaultFunc2);
 
 /*
 	// XSLT stylesheet manager

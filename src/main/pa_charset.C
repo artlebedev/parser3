@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.10 2001/12/28 18:12:30 paf Exp $
+	$Id: pa_charset.C,v 1.11 2001/12/29 08:39:05 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -287,14 +287,14 @@ static const XMLByte gFirstByteMark[7] = {
     0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
 };
 
-static size_t transcodeToUTF8(
-							const void *source_body, size_t source_content_length,
-							XMLByte *dest_body, size_t dest_buf_length,
+static int transcodeToUTF8(
+							const XMLByte* srcData, size_t& srcLen,
+							XMLByte *toFill, size_t& toFillLen,
 							const Charset::Tables& tables) {
-	const XMLByte* srcPtr=(const XMLByte*)source_body;
-	const XMLByte* srcEnd=(const XMLByte*)source_body+source_content_length;
-	XMLByte* outPtr=dest_body;
-	XMLByte* outEnd=dest_body+dest_buf_length;
+	const XMLByte* srcPtr=srcData;
+	const XMLByte* srcEnd=srcData+srcLen;
+	XMLByte* outPtr=toFill;
+	XMLByte* outEnd=toFill+toFillLen;
 
     while(srcPtr<srcEnd) {
         uint curVal = tables.fromTable[*srcPtr];
@@ -354,17 +354,22 @@ static size_t transcodeToUTF8(
         outPtr+= encodedBytes;
     }
 
-	// eaten
-	return outPtr-dest_body;
+    // Update the bytes eaten
+    srcLen = srcPtr - srcData;
+
+    // Return the characters read
+    toFillLen = outPtr - toFill;
+
+	return srcPtr==srcEnd?toFillLen:-1;
 }
 static size_t transcodeFromUTF8(
-								   const void *source_body, size_t source_content_length,
-								   XMLByte* dest_body, size_t dest_buf_length,
-									const Charset::Tables& tables) {
-	const XMLByte* srcPtr=(const XMLByte*)source_body;
-	const XMLByte* srcEnd=(const XMLByte*)source_body+source_content_length;
-	XMLByte* outPtr=dest_body;
-	XMLByte* outEnd=dest_body+dest_buf_length;
+								const XMLByte *srcData, size_t& srcLen,
+								XMLByte* toFill, size_t& toFillLen,
+								const Charset::Tables& tables) {
+	const XMLByte* srcPtr=srcData;
+	const XMLByte* srcEnd=srcData+srcLen;
+	XMLByte* outPtr=toFill;
+	XMLByte* outEnd=toFill+toFillLen;
 
     //  We now loop until we either run out of input data, or room to store
     while ((srcPtr < srcEnd) && (outPtr < outEnd)) {
@@ -416,51 +421,50 @@ static size_t transcodeFromUTF8(
 				"transcodeFromUTF8 error: too big tmpVal(0x%08X)", tmpVal);
 	}
 
-	// eaten
-	return outPtr-dest_body;
+    // Update the bytes eaten
+    srcLen = srcPtr - srcData;
+
+    // Return the characters read
+    toFillLen = outPtr - toFill;
+
+	return srcPtr==srcEnd?toFillLen:-1;
 }
 
 /// @todo not so memory-hungry with prescan
-/// @test buf overflow
 void Charset::transcodeToUTF8(Pool& pool,
 								 const void *source_body, size_t source_content_length,
-								 const void *& adest_body, size_t& adest_content_length) const {
-	size_t dest_buf_length=source_content_length*6/*so that surly enough*/;
-	XMLByte *dest_body=(XMLByte*)pool.malloc(dest_buf_length);
+								 const void *& adest_body, size_t& dest_content_length) const {
+	dest_content_length=source_content_length*6/*so that surly enough*/;
+	XMLByte *dest_body=(XMLByte*)pool.malloc(dest_content_length);
 
-	size_t dest_content_length=::transcodeToUTF8(
-		source_body, source_content_length,
-		dest_body, dest_buf_length,
-		tables);
-	/*if(dest_content_length<dest_buf_length)
+	if(::transcodeToUTF8(
+		(XMLByte *)source_body, source_content_length,
+		dest_body, dest_content_length,
+		tables)<0)
 		throw(0, 0,
 			0,
-			"Charset::transcodeToUTF8 error");*/
+			"Charset::transcodeToUTF8 buffer overflow");
 
 	// return
 	adest_body=dest_body;
-	adest_content_length=dest_content_length;
 }
 /// @test buf overflow
 void Charset::transcodeFromUTF8(Pool& pool,
 								   const void *source_body, size_t source_content_length,
-								   const void *& adest_body, size_t& adest_content_length) const {
-	size_t dest_buf_length=source_content_length/*surly enough*/;
-	XMLByte *dest_body=(XMLByte*)pool.malloc(dest_buf_length);
+								   const void *& adest_body, size_t& dest_content_length) const {
+	dest_content_length=source_content_length/*surly enough*/;
+	XMLByte *dest_body=(XMLByte*)pool.malloc(dest_content_length);
 
-	size_t dest_content_length=::transcodeFromUTF8(
-		source_body, source_content_length,
-		dest_body, dest_buf_length,
-		tables);
-/*	if(dest_content_length!=dest_buf_length)
+	if(::transcodeFromUTF8(
+		(XMLByte *)source_body, source_content_length,
+		dest_body, dest_content_length,
+		tables)<0)
 		throw(0, 0,
 			0,
-			"Charset::transcodeToUTF8 error");*/
-
+			"Charset::transcodeToUTF8 buffer overflow");
 
 	// return
 	adest_body=dest_body;
-	adest_content_length=dest_content_length;
 }
 
 /// transcode using both charsets
@@ -475,8 +479,8 @@ void Charset::transcodeToCharset(Pool& pool,
 		size_t dest_content_length=source_content_length;
 		unsigned char *dest_body=(unsigned char *)pool.malloc(dest_content_length);
 
-		const XMLByte* srcPtr=(const XMLByte*)source_body;
-		const XMLByte* srcEnd=(const XMLByte*)source_body+source_content_length;
+		const XMLByte* srcPtr=(XMLByte *)source_body;
+		const XMLByte* srcEnd=(XMLByte *)source_body+source_content_length;
 
 		for(XMLByte* outPtr=dest_body; srcPtr<srcEnd; srcPtr++) {
 			XMLCh curVal = tables.fromTable[*srcPtr];
@@ -501,7 +505,7 @@ static int         xml256CharEncodingInputFunc     (
 													int *inlen, 
 													void *info) {
 	return transcodeToUTF8(
-							in, *inlen,
+							in, *(unsigned int*)inlen,
 							out, *(unsigned int*)outlen,
 							*(const Charset::Tables *)info);
 }
@@ -513,8 +517,8 @@ static int         xml256CharEncodingOutputFunc    (
 													int *inlen, 
 													void *info) {
 	return transcodeFromUTF8(
-							in, *inlen,
-							out, *outlen,
+							in, *(unsigned int*)inlen,
+							out, *(unsigned int*)outlen,
 							*(const Charset::Tables *)info);
 }
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.25 2001/12/28 14:06:51 paf Exp $
+	$Id: pa_exception.h,v 1.26 2001/12/29 08:39:04 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -38,6 +38,10 @@ public:
 	Exception(
 		const String *atype, const String *acode,
 		const String *aproblem_source, 
+		const char *comment_fmt, va_list args);	
+	Exception(
+		const String *atype, const String *acode,
+		const String *aproblem_source, 
 		GdomeException& exc);
 	Exception(const Exception& src);
 	Exception& operator =(const Exception& src);
@@ -66,6 +70,12 @@ public:
 	const String *problem_source() const { return fproblem_source; }
 	/// extracts exception comment
 	const char *comment() const { return fcomment; }
+
+private:
+
+	void initialize(const String *atype, const String *acode,
+		const String *aproblem_source, 
+		const char *comment_fmt, va_list args);
 
 private:
 

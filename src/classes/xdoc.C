@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.55 2001/12/28 18:12:30 paf Exp $
+	$Id: xdoc.C,v 1.56 2001/12/29 08:39:04 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -306,6 +306,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	vdoc.set_document(document);
 }
 
+/// @test xmlSAXParseMemory(NULL<<error handler subst, buffer, size, 0)
 static void _set(Request& r, const String& method_name, MethodParams *params) {
 //	_asm int 3;
 	Pool& pool=r.pool();
