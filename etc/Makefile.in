@@ -86,13 +86,13 @@ sqldriversdir = @sqldriversdir@
 SUBDIRS = parser3.charsets
 
 rootconfigdir = @rootconfigdir@
-rootconfig_DATA = parser3.conf
+rootconfig_DATA = parser3.conf.sample
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../src/include/pa_config_auto.h
-CONFIG_CLEAN_FILES =  parser3.conf
+CONFIG_CLEAN_FILES =  parser3.conf.sample
 DATA =  $(rootconfig_DATA)
 
-DIST_COMMON =  Makefile.am Makefile.in parser3.conf.in
+DIST_COMMON =  Makefile.am Makefile.in parser3.conf.sample.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -108,7 +108,7 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-parser3.conf: $(top_builddir)/config.status parser3.conf.in
+parser3.conf.sample: $(top_builddir)/config.status parser3.conf.sample.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 install-rootconfigDATA: $(rootconfig_DATA)

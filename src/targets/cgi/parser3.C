@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.181 2002/06/12 14:09:50 paf Exp $
+	$Id: parser3.C,v 1.182 2002/06/12 14:18:05 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -12,8 +12,6 @@
 #if _MSC_VER
 #	include <new.h>
 #	include <crtdbg.h>
-#else
-#	include "pa_config_paths.h"
 #endif
 
 #include "pa_sapi.h"

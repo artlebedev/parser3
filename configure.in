@@ -460,11 +460,6 @@ test "x$e_prefix" = xNONE && e_prefix=$ac_default_prefix
 e_sysconfdir=$sysconfdir
 test "$e_sysconfdir" = "\${prefix}/etc" && e_sysconfdir="${e_prefix}/etc"
 
-dnl this is used in targets/cgi/parser3.C to load root config
-
-rootconfigdir=$e_sysconfdir
-AC_SUBST(rootconfigdir)
-
 dnl these are used to fill in etc/parser3.conf
 
 charsetsdir=$e_sysconfdir/parser3.charsets

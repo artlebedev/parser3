@@ -80,7 +80,6 @@ host_os = @host_os@
 mysql_client = @mysql_client@
 oracle_client = @oracle_client@
 pgsql_client = @pgsql_client@
-rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
 charsetsdir = @charsetsdir@

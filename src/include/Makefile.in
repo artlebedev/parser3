@@ -81,7 +81,6 @@ host_os = @host_os@
 mysql_client = @mysql_client@
 oracle_client = @oracle_client@
 pgsql_client = @pgsql_client@
-rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
 noinst_HEADERS = pa_array.h pa_cache_managers.h pa_charset.h pa_charsets.h pa_common.h pa_config_auto.h pa_config_fixed.h pa_config_includes.h pa_dictionary.h pa_dir.h pa_exception.h pa_exec.h pa_globals.h pa_hash.h pa_opcode.h pa_pool.h pa_pragma_pack_begin.h pa_pragma_pack_end.h pa_request.h pa_sapi.h pa_socks.h pa_sql_connection.h pa_sql_driver_manager.h pa_stack.h pa_string.h pa_stylesheet_connection.h pa_stylesheet_manager.h pa_table.h pa_threads.h pa_types.h pa_version.h
