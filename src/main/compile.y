@@ -5,7 +5,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.209 2004/04/06 09:01:21 paf Exp $
+	$Id: compile.y,v 1.210 2004/04/06 14:08:41 paf Exp $
 */
 
 /**
@@ -412,7 +412,12 @@ store_param:
 |	store_round_param
 |	store_curly_param
 ;
-store_square_param: '[' store_code_param_parts ']' {$$=$2};
+store_square_param: '[' {
+	// allow ^call[ whitespace here any time ]
+	*reinterpret_cast<bool*>(&$$)=PC.explicit_result; PC.explicit_result=false;
+} store_code_param_parts {
+	PC.explicit_result=reinterpret_cast<bool>($2);
+} ']' {$$=$3};
 store_round_param: '(' store_expr_param_parts ')' {$$=$2};
 store_curly_param: '{' store_curly_param_parts '}' {$$=$2};
 store_code_param_parts:
