@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/08/30 09:36:41 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/09/09 13:57:27 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -393,6 +393,25 @@ struct File_read_http_result {
 	HashStringValue* headers;
 }; 
 #endif
+static void find_headers_end(char* p,
+		char*& headers_end_at,
+		char*& raw_body)
+{
+	raw_body=p;
+	// \n\n
+	// \r\n\r\n
+	while((p=strchr(p, '\n'))) {
+		headers_end_at=++p; // \n>.<
+		if(*p=='\r')  // \r\n>\r?<\n
+			p++;
+		if(*p=='\n') { // \r\n\r>\n?<
+			raw_body=p+1;
+			return;			
+		}
+	}
+	headers_end_at=0;
+}
+
 /// @todo build .cookies field. use ^file.tables.SET-COOKIES.menu{ for now
 static File_read_http_result file_read_http(Request_charsets& charsets, 
 					    const String& file_spec, 
@@ -564,79 +583,67 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	
 	//processing results	
 	char* raw_body; size_t raw_body_size;
-	char* headers_end_at=strstr(response, "\n\n"  /*change '2' below along!*/);
-	if(headers_end_at)
-		raw_body=headers_end_at+2;
-	else {
-		headers_end_at=strstr(response, CRLF CRLF /*change '4' below along!*/); 
-		if(headers_end_at)
-			raw_body=headers_end_at+4;
-		else {
-			// yandex web server (http://localhost:17000) 
-			// returns "\n\r\n"
-			headers_end_at=strstr(response, "\n\r\n" /*change '3' below along!*/); 
-			if(!headers_end_at)
-				throw Exception("http.response", 
-					&connect_string,
-					"bad response from host - no headers found"); 
-
-			raw_body=headers_end_at+3;
-		}
-	}
+	char* headers_end_at;
+	find_headers_end(response, 
+		headers_end_at,
+		raw_body);
 	raw_body_size=response_size-(raw_body-response);
 	
-	*headers_end_at=0;
-	const String header_block(response, headers_end_at-response, true);
-	
-	ArrayString aheaders;
 	result.headers=new HashStringValue;
 	VHash* vtables=new VHash;
 	result.headers->put(HTTP_TABLES_NAME, vtables);
-	HashStringValue& tables=vtables->hash();
-
-	size_t pos_after=0;
-	header_block.split(aheaders, pos_after, CRLF); 
-	
-	//processing headers
-	size_t aheaders_count=aheaders.count();
 	Charset* real_remote_charset=0; // undetected, yet
-	for(size_t i=1; i<aheaders_count; i++) {
-		const String& line=*aheaders.get(i);
-		size_t pos=line.pos(": ", 2); 
-		if(pos==STRING_NOT_FOUND || pos<1)
-			throw Exception("http.response", 
-				&connect_string,
-				"bad response from host - bad header \"%s\"", line.cstr());
-		const String::Body HEADER_NAME=
-			line.mid(0, pos).change_case(charsets.source(), String::CC_UPPER);
-		const String& header_value=line.mid(pos+2, line.length());
-		if(as_text && HEADER_NAME=="CONTENT-TYPE")
-			real_remote_charset=detect_charset(charsets.source(), header_value);
 
-		// tables
-		{
-			Value *valready=(Value *)tables.get(HEADER_NAME);
-			bool existed=valready!=0;
-			Table *table;
-			if(existed) {
-				// second+ appearence
-				table=valready->get_table();
-			} else {
-				// first appearence
-				Table::columns_type columns =new ArrayString(1);
-				*columns+=new String("value");
-				table=new Table(columns);
+	if(headers_end_at) {
+		*headers_end_at=0;
+		const String header_block(String::C(response, headers_end_at-response), true);
+		
+		ArrayString aheaders;
+		HashStringValue& tables=vtables->hash();
+
+		size_t pos_after=0;
+		header_block.split(aheaders, pos_after, "\n"); 
+		
+		//processing headers
+		size_t aheaders_count=aheaders.count();
+		for(size_t i=1; i<aheaders_count; i++) {
+			const String& line=*aheaders.get(i);
+			size_t pos=line.pos(':'); 
+			if(pos==STRING_NOT_FOUND || pos<1)
+				throw Exception("http.response", 
+					&connect_string,
+					"bad response from host - bad header \"%s\"", line.cstr());
+			const String::Body HEADER_NAME=
+				line.mid(0, pos).change_case(charsets.source(), String::CC_UPPER);
+			const String& header_value=line.mid(pos+1, line.length()).trim(String::TRIM_BOTH, " \t\r");
+			if(as_text && HEADER_NAME=="CONTENT-TYPE")
+				real_remote_charset=detect_charset(charsets.source(), header_value);
+
+			// tables
+			{
+				Value *valready=(Value *)tables.get(HEADER_NAME);
+				bool existed=valready!=0;
+				Table *table;
+				if(existed) {
+					// second+ appearence
+					table=valready->get_table();
+				} else {
+					// first appearence
+					Table::columns_type columns =new ArrayString(1);
+					*columns+=new String("value");
+					table=new Table(columns);
+				}
+				// this string becomes next row
+				ArrayString& row=*new ArrayString(1);
+				row+=&header_value;
+				*table+=&row;
+				// not existed before? add it
+				if(!existed)
+					tables.put(HEADER_NAME, new VTable(table));
 			}
-			// this string becomes next row
-			ArrayString& row=*new ArrayString(1);
-			row+=&header_value;
-			*table+=&row;
-			// not existed before? add it
-			if(!existed)
-				tables.put(HEADER_NAME, new VTable(table));
-		}
 
-		result.headers->put(HEADER_NAME, new VString(header_value));
+			result.headers->put(HEADER_NAME, new VString(header_value));
+		}
 	}
 
 	// output response
