@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2003/07/24 11:31:25 $";
+static const char* IDENT_PARSER3_C="$Date: 2003/11/03 11:24:53 $";
 
 #include "pa_config_includes.h"
 
@@ -241,12 +241,11 @@ static void full_file_spec(const char* file_name, char *buf, size_t buf_size) {
 
 static void log_signal(const char* signal_name) {
 	if(request_info)
-		SAPI::log(SAPI_info, "%s received while %s. uri=%s, method=%s, qs=%s, cl=%u",
+		SAPI::log(SAPI_info, "%s received while %s. uri=%s, method=%s, cl=%u",
 			signal_name,
 			request?"executing code":"reading data",
 			request_info->uri,
 			request_info->method,
-			request_info->query_string,
 			request_info->content_length);
 	else
 		SAPI::log(SAPI_info, "%s received before or after processing request",
