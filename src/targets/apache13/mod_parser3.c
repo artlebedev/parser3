@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by Apache.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MOD_PARSER3_C="$Date: 2003/08/19 14:16:28 $";
+static const char* IDENT_MOD_PARSER3_C="$Date: 2003/08/19 14:28:29 $";
 
 #if _MSC_VER
 #include <winsock2.h>
@@ -131,7 +131,7 @@ static int parser_handler(request_rec *ar) {
 
 	// config
 	Parser_module_config *dcfg=our_dconfig(ar);
-	
+
 	return pa_parser_handler(&lr, dcfg);
 }
 
