@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/08/12 10:32:53 $";
+static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/08/12 14:21:52 $";
 
 #include "pa_hash.h"
 #include "pa_vjunction.h"
@@ -16,11 +16,11 @@ static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/08/12 10:32:53 $";
 class Temp_method;
 
 /**
-	object' class. 
-	
-	basically collection of methods [VStateless_class::fmethods, Method]
+	object' class. stores
+	- base: VClass::base()
+	- methods: VStateless_class::fmethods
 
-	@see VStateless_object, Temp_method
+	@see Method, VStateless_object, Temp_method
 */
 class VStateless_class : public Value {
 	friend class Temp_method;
@@ -31,10 +31,20 @@ public: // Value
 	/// VStateless_class: this
 	VStateless_class *get_class() { return this; }
 	
+	/// VStateless_class: self or parent method junction
+	/*override*/ Junction *get_junction(const String& name, bool looking_down) {
+		if(Method *method=static_cast<Method *>(fmethods.get(name)))
+			return 
+				new(name.pool()) Junction(name.pool(), *this, this, method, 0,0,0,0);
+		if(!looking_down && fbase)
+			return fbase->get_junction(name, looking_down);
+		return 0; 
+	}
+
 	/// VStateless_class: +$method
 	Value *get_element(const String& aname) {
 		// $method=junction(self+class+method)
-		if(Junction *junction=get_junction(*this, aname))
+		if(Junction *junction=get_junction(aname, false))
 			return new(junction->pool()) VJunction(*junction);
 		
 		return 0;
@@ -86,21 +96,12 @@ public: // usage
 		// remember the guy
 		fbase=&abase;
 	}
-	VStateless_class *base() { return fbase; }
+	VStateless_class *base_class() { return fbase; }
 
-	bool is_or_derived_from(VStateless_class& vclass) {
+	bool derived_from(VStateless_class& vclass) {
 		return 
-			this==&vclass || 
-			fbase && fbase->is_or_derived_from(vclass);
-	}
-
-	Junction *get_junction(Value& self, const String& name) {
-		if(Method *method=static_cast<Method *>(fmethods.get(name)))
-			return 
-				new(name.pool()) Junction(name.pool(), self, this, method, 0,0,0,0);
-		if(fbase)
-			return fbase->get_junction(self, name);
-		return 0; 
+			fbase==&vclass || 
+			fbase && fbase->derived_from(vclass);
 	}
 
 	//@{

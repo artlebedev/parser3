@@ -38,7 +38,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Date: 2002/08/01 11:41:17 $
+	$Id: compile.tab.C,v 1.59 2002/08/12 14:21:51 paf Exp $
 */
 
 /**
@@ -1034,7 +1034,7 @@ case 8:
 		YYERROR;
 	}
 	if(command==CLASS_NAME) {
-		if(PC.cclass->base()) { // already changed from default?
+		if(PC.cclass->base_class()) { // already changed from default?
 			strcpy(PC.error, "class already have a name '");
 			strncat(PC.error, PC.cclass->name().cstr(), 100);
 			strcat(PC.error, "'");
@@ -1056,9 +1056,9 @@ case 8:
 		for(int i=0; i<strings_code->size(); i+=2) 
 			PC.request->use_file(*LA2S(strings_code, i));
 	} else if(command==BASE_NAME) {
-		if(PC.cclass->base()) { // already changed from default?
+		if(PC.cclass->base_class()) { // already changed from default?
 			strcpy(PC.error, "class already have a base '");
-			strncat(PC.error, PC.cclass->base()->name().cstr(), 100);
+			strncat(PC.error, PC.cclass->base_class()->name().cstr(), 100);
 			strcat(PC.error, "'");
 			YYERROR;
 		}

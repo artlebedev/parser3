@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/08/12 10:32:52 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/08/12 14:24:58 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -304,9 +304,6 @@ void Request::execute(const Array& ops) {
 			
 		case OP_GET_ELEMENT_OR_OPERATOR:
 			{
-				// maybe they do ^object.method[] call, remember the fact
-				wcontext->set_somebody_entered_some_object(true);
-
 				//_asm int 3;
 				value=get_element(last_get_element_name, true);
 				PUSH(value);
@@ -314,9 +311,6 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_GET_ELEMENT:
 			{
-				// maybe they do ^object.method[] call, remember the fact
-				wcontext->set_somebody_entered_some_object(true);
-
 				//_asm int 3;
 				value=get_element(last_get_element_name, false);
 				PUSH(value);
@@ -482,20 +476,8 @@ void Request::execute(const Array& ops) {
 						throw Exception("parser.runtime",
 							&frame.name(),
 							"method is static and can not be used as constructor");
-				} else {
-					// this is not constructor call
-
-					// not ^name.method call, name:method call; and
-					// is context object or class & is it my class or my parent's class and?
-					VStateless_class *read_class=rcontext->get_class();
-					if(
-						!(wcontext->get_somebody_entered_some_object() &&
-						!wcontext->get_somebody_entered_some_class()) && 
-						read_class && read_class->is_or_derived_from(*called_class)) // yes
-						self=rcontext; // dynamic call
-					else // no, not me or relative of mine (=total stranger)
-						self=&frame.junction.self; // static call
-				}
+				} else
+					self=&frame.junction.self;
 
 				frame.set_self(*self);
 
@@ -550,9 +532,6 @@ void Request::execute(const Array& ops) {
 
 				if(op.code==OP_CALL__WRITE) {
 					write_assign_lang(result, last_get_element_name);
-					// forget the fact they've entered some ^object.method[].
-					// see OP_GET_ELEMENT
-					wcontext->set_somebody_entered_some_object(false);
 				} else { // OP_CALL
 					PUSH(&result.as_value());
 				}
@@ -863,15 +842,30 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 	const String& name=POP_NAME();  remember_name=&name;
 	Value *ncontext=POP();
 	Value *value=0;
-	if(can_call_operator)
+	if(can_call_operator) {
 		if(Method* method=OP.get_method(name)) { // looking operator of that name FIRST
 			// as if that method were in self and we have normal dynamic method here
 			Junction& junction=*NEW Junction(pool(), 
 				*root, self->get_class(), method, 0,0,0,0);
 			value=NEW VJunction(junction);
 		}
+	}
+	if(!value) {
+		if(!wcontext->get_constructing() // not constructing
+			&& wcontext->get_somebody_entered_some_class() ) // ^class:method
+			if(VStateless_class *called_class=ncontext->get_class())
+				if(VStateless_class *read_class=rcontext->get_class())
+					if(read_class->derived_from(*called_class)) // current derived from called
+						if(Value *base_object=self->base_object()) { // doing DYNAMIC call
+							Temp_derived(*base_object, 0); // temporarily prevent go-back-down virtual calls
+							value=base_object->get_element(name); // virtual-up lookup starting from parent
+							goto _void;
+						}
+	}
 	if(!value)
 		value=ncontext->get_element(name);
+
+_void:
 	if(value)
 		value=&process_to_value(*value); // process possible code-junction
 	else

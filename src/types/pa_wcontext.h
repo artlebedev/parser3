@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char* IDENT_WCONTEXT_H="$Date: 2002/08/12 10:32:54 $";
+static const char* IDENT_WCONTEXT_H="$Date: 2002/08/12 14:21:52 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -99,11 +99,6 @@ public: // usage
 
 	void set_somebody_entered_some_class() { flags.entered_class=1; }
 	bool get_somebody_entered_some_class() { return flags.entered_class!=0; }
-
-	void set_somebody_entered_some_object(bool aentered_object) {   
-		flags.entered_object=aentered_object?1:0; 
-	}
-	bool get_somebody_entered_some_object() { return flags.entered_object!=0; }
 
 protected:
 	String& fstring;

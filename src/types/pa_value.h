@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/12 11:22:55 $";
+static const char* IDENT_VALUE_H="$Date: 2002/08/12 14:21:52 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -36,7 +36,7 @@ public: // Value
 	/** remember derived class instance 
 	    - VObject: the only client
 	*/
-	virtual void set_derived(Value& /*aderived*/) { /*do nothing*/ }
+	virtual Value *set_derived(Value * /*aderived*/) { return 0; }
 
 	/**
 		all except derived class: this if @atype eq type()
@@ -170,6 +170,19 @@ public: // Value
 		- VDate: CLASS,method,field
 		*/
 	virtual Value *get_element(const String& /*name*/) { bark("(%s) has no elements"); return 0; }
+
+	/** extract Value junction of name @a name, when @a looking_down looks only down
+		@return for
+		- VStateless_class: self or parent method junction
+		- VObject: child or self or parent method junction
+	*/
+	virtual Junction *get_junction(const String& /*name*/, bool /*looking_down*/) { bark("(%s) has no junctions"); return 0; }
+
+	/** extract base object of Value
+		@return for
+		- VObject: fbase
+	*/
+	virtual Value *base_object() { bark("(%s) has no base object"); return 0; }
 	
 	/** store Value element under @a name
 		@return for
@@ -194,7 +207,7 @@ public: // Value
 		@return for
 		- VX: x_class
 		- VStateless_class: this
-		- VObject: class of derived  or  fclass
+		- VObject: fclass
 		- WContext: none yet | transparent
 		these are methodless classes:
 		- VBool: 0

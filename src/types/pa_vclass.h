@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char* IDENT_VCLASS_H="$Date: 2002/08/12 11:22:55 $";
+static const char* IDENT_VCLASS_H="$Date: 2002/08/12 14:21:52 $";
 
 #include "pa_vstateless_class.h"
 //#include "pa_vhash.h"
@@ -16,7 +16,6 @@ static const char* IDENT_VCLASS_H="$Date: 2002/08/12 11:22:55 $";
 #include "pa_vobject.h"
 
 /**	stores 
-- base: VClass::base()
 - static fields: VClass::ffields
 */
 class VClass : public VStateless_class {
@@ -89,10 +88,6 @@ protected:
 private: // self
 
 	Hash ffields;
-
-private: // Value
-	
-	VStateless_class *fclass_alias;
 
 };
 

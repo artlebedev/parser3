@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/08/12 07:59:06 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/08/12 14:21:52 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -101,11 +101,11 @@ Request::Request(Pool& apool,
 
 	/// bases used
 	// form class
-	classes().put(form.get_class()->base()->name(), &form);	
+	classes().put(form.get_class()->base_class()->name(), &form);	
 	// mail class
-	classes().put(mail.get_class()->base()->name(), &mail);	
+	classes().put(mail.get_class()->base_class()->name(), &mail);	
 	// math class
-	classes().put(math.get_class()->base()->name(), &math);	
+	classes().put(math.get_class()->base_class()->name(), &math);	
 }
 
 Request::~Request() {
