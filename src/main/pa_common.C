@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/12/10 07:58:36 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/12/10 08:37:53 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -257,23 +257,17 @@ static int http_request(char*& response, size_t& response_size,
 					"can not make socket: %s (%d)", pa_socks_strerr(no), no); 
 			}
 
-#ifdef SO_DONTLINGER
-			int dont_linger = 0;
-			setsockopt(sock, SOL_SOCKET, SO_DONTLINGER, (const char *)&dont_linger, sizeof(dont_linger));
-#else
 			// To enable SO_DONTLINGER (that is, disable SO_LINGER) 
 			// l_onoff should be set to zero and setsockopt should be called
 			linger dont_linger={0,0};
 			setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *)&dont_linger, sizeof(dont_linger));
-#endif
 
-#if defined(SO_SNDTIMEO) || defined(SO_RCVTIMEO)
+#ifdef WIN32
+// SO_*TIMEO can be defined in .h but not implemlemented in protocol,
+// failing subsequently with Option not supported by protocol (99) message
+// could not suppress that, so leaving this only for win32
 			int timeout_ms=timeout_secs*1000;
-#endif
-#ifdef SO_SNDTIMEO
 			setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
-#endif
-#ifdef SO_RCVTIMEO
 			setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
 #endif
 
