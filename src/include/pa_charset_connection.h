@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_connection.h,v 1.2 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_charset_connection.h,v 1.3 2001/11/05 10:56:46 paf Exp $
 */
 
 #ifndef PA_CHARSET_CONNECTION_H
@@ -32,6 +32,7 @@ public:
 		prev_disk_time(0) {
 	}
 	~Charset_connection() {}
+	const String& get_file_spec() { return ffile_spec; }
 	
 	void up_to_date(Pool& pool) { 
 		time_t new_disk_time=get_new_disk_time();
