@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.8 2001/04/07 15:42:15 paf Exp $
+	$Id: mail.C,v 1.9 2001/04/07 17:33:04 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,7 +25,7 @@ VStateless_class *mail_class;
 
 // helpers
 
-///
+/// @test uuencode
 static void uuencode(String& result, const char *file_name_cstr, const VFile& vfile) {
 	// content-transfer-encoding: x-uuencode
 	result+="content-transfer-encoding: x-uuencode\n";
@@ -160,7 +160,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 	if(Value *body_element=static_cast<Value *>(letter_hash.get(*body_name))) {
 		if(Hash *body_hash=body_element->get_hash()) {
 			char *boundary=(char *)pool.malloc(MAX_NUMBER);
-			snprintf(boundary, MAX_NUMBER, "%d", level);
+			snprintf(boundary, MAX_NUMBER-5/*lEvEl*/, "lEvEl%d", level);
 			// multi-part
 			((result+=
 				"content-type: multipart/mixed; boundary=\"")+=boundary)+="\"\n"
