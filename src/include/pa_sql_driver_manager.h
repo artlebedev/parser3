@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.h,v 1.7 2001/05/17 18:26:22 parser Exp $
+	$Id: pa_sql_driver_manager.h,v 1.8 2001/09/05 09:02:52 parser Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -21,6 +21,14 @@
 #include "pa_stack.h"
 #include "pa_table.h"
 #include "pa_string.h"
+
+
+// defines
+
+#define MAIN_SQL_NAME "SQL"
+#define MAIN_SQL_DRIVERS_NAME "drivers"
+
+// forwards
 
 class SQL_Connection;
 

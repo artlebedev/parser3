@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: op.C,v 1.39 2001/08/28 10:30:28 parser Exp $"; 
+static const char *RCSId="$Id: op.C,v 1.40 2001/09/05 09:02:52 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -21,9 +21,6 @@ static const char *RCSId="$Id: op.C,v 1.39 2001/08/28 10:30:28 parser Exp $";
 // defines
 
 #define OP_CLASS_NAME "OP"
-
-#define MAIN_SQL_NAME "SQL"
-#define MAIN_SQL_DRIVERS_NAME "drivers"
 
 // class
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.30 2001/09/05 08:57:43 parser Exp $"; 
+static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.31 2001/09/05 09:02:52 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -59,7 +59,7 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 	if(!protocol2driver_and_client)
 		PTHROW(0, 0,
 			&request_url,
-			"$SQL:drivers table must be defined");
+			"$"MAIN_SQL_NAME":"MAIN_SQL_DRIVERS_NAME" table must be defined");
 
 	// first trying to get cached connection
 	SQL_Connection *result=get_connection_from_cache(request_url);
