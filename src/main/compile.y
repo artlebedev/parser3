@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.71 2001/03/08 09:42:22 paf Exp $
+  $Id: compile.y,v 1.72 2001/03/08 10:07:10 paf Exp $
 */
 
 %{
@@ -22,7 +22,7 @@
 #include "pa_vdouble.h"
 
 #define SELF_NAME "self"
-#define USES_NAME "USES"
+#define USE_NAME "USE"
 
 int real_yyerror(parse_control *pc, char *s);
 static void yyprint(FILE *file, int type, YYSTYPE value);
@@ -120,7 +120,7 @@ control_method: '@' STRING '\n'
 			YYERROR;
 		}
 	} else {
-		if(name==USES_NAME) {
+		if(name==USE_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) {
 				String *file=SLA2S(strings_code, i);
 				file->APPEND_CONST(".p");
@@ -144,7 +144,7 @@ control_method: '@' STRING '\n'
 		} else {
 			strcpy(PC->error, name.cstr());
 			strcat(PC->error, ": invalid special name. valid names are "
-				CLASS_NAME", "USES_NAME" and "BASE_NAME);
+				CLASS_NAME", "USE_NAME" and "BASE_NAME);
 			YYERROR;
 		}
 	}
@@ -383,16 +383,8 @@ subvar__get_write: '$' subvar_ref_name_rdive {
 };
 
 class_prefix: STRING ':' {
-	String& name=*SLA2S($1);
-	VClass *vclass=static_cast<VClass *>(PC->request->classes().get(name));
-	if(!vclass) {
-		strcpy(PC->error, "'");
-		strcat(PC->error, name.cstr());
-		strcat(PC->error, "' class is undefined in call");
-		YYERROR;
-	}
-	//TODO: убрать зависимость от статических @USE, сделать имя, а не ссылку
-	$$=CL(vclass); // vclass
+	$$=$1; // stack: class name string
+	O($$, OP_GET_CLASS);
 };
 
 

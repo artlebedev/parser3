@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.65 2001/03/08 09:31:48 paf Exp $
+  $Id: execute.C,v 1.66 2001/03/08 10:07:10 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -23,10 +23,11 @@
 
 char *opcode_name[]={
 	// literals
-	"VALUE",  "CODE__STORE_PARAM",  "CLASS",
+	"VALUE",  "CODE__STORE_PARAM",
 
 	// actions
 	"WITH_SELF",	"WITH_ROOT",	"WITH_READ",	"WITH_WRITE",
+	"GET_CLASS",
 	"CONSTRUCT",
 	"WRITE",
 	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
@@ -68,10 +69,6 @@ void dump(int level, const Array& ops) {
 		if(op.code==OP_VALUE) {
 			Value *value=static_cast<Value *>(ops.quick_get(++i));
 			fprintf(stderr, " \"%s\" %s", value->get_string()->cstr(), value->type());
-		}
-		if(op.code==OP_CLASS) {
-			VClass *vclass=static_cast<VClass *>(ops.quick_get(++i));
-			fprintf(stderr, " \"%s\"", vclass->name().cstr());
 		}
 		fprintf(stderr, "\n");
 
@@ -125,11 +122,16 @@ void Request::execute(const Array& ops) {
 				frame->store_param(value);
 				break;
 			}
-		case OP_CLASS:
+		case OP_GET_CLASS:
 			{
-				VClass *vclass=static_cast<VClass *>(ops.quick_get(++i));
-				fprintf(stderr, " \"%s\"", vclass->name().cstr());
-		        PUSH(vclass);
+				String& name=POP_NAME();
+				VClass *vclass=static_cast<VClass *>(classes().get(name));
+				if(!vclass) 
+					THROW(0,0,
+						&name,
+						": undefined class"); 
+
+				PUSH(vclass);
 				break;
 			}
 			

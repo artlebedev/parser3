@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.22 2001/03/07 12:11:29 paf Exp $
+  $Id: compile_tools.h,v 1.23 2001/03/08 10:07:10 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -92,12 +92,6 @@ Array *VL(Value *value);
 String *SLA2S(Array *literal_string_array, int offset=0);
 
 void change_string_literal_to_double_literal(Array *literal_string_array);
-
-// Class Literal // returns array with 
-// first: OP_CLASS instruction
-// second op: vclass itself
-Array *CL(VClass *vclass);
-
 
 void push_LS(struct parse_control *pc, lexical_state new_state);
 void pop_LS(struct parse_control *pc);

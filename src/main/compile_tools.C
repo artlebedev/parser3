@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.18 2001/03/08 09:31:47 paf Exp $
+  $Id: compile_tools.C,v 1.19 2001/03/08 10:07:10 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -34,19 +34,6 @@ Array *VL(Value *value) {
 
 	// append 'value' to 'result'
 	PV(result, value);
-
-	return result;
-}
-Array *CL(VClass *vclass) {
-	// empty ops array
-	Array *result=N(vclass->pool());
-
-	// append OP_CLASS
-	Operation op; op.code=OP_CLASS;
-	*result+=op.cast;
-
-	// append 'vclass'
-	*result+=vclass;
 
 	return result;
 }
