@@ -88,6 +88,10 @@ Project: "gnu"=.\gnu.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    gnu
+    .
+    end source code control
 }}}
 
 Package=<4>
@@ -314,6 +318,10 @@ Global:
 
 Package=<5>
 {{{
+    begin source code control
+    parser3
+    .
+    end source code control
 }}}
 
 Package=<3>
