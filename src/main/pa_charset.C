@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2003/12/10 14:17:45 $";
+static const char * const IDENT_CHARSET_C="$Date: 2003/12/19 10:39:05 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -671,7 +671,7 @@ void Charset::addEncoding(char *name_cstr) {
 			"already allocated %d handlers, no space for new encoding '%s'",
 				MAX_CHARSETS, name_cstr);
 
-	xmlCharEncodingHandler* handler=new(PointerFreeGC) xmlCharEncodingHandler;
+	xmlCharEncodingHandler* handler=new(UseGC) xmlCharEncodingHandler;
 	{
 		handler->name=name_cstr;
 		handler->input=inputFuncs[handlers_count]; 
