@@ -408,11 +408,11 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^foreach[key|value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
 
     пример:
-    $uids[^hashfile::open[/db/uids]]
-    
-    $random[23847387taduigh345XGHWElxjgdjg]
-    $uids.$random[$.value[$uid] $.expires(1)]
-    $uid[$persistent.logins.$random]
+    $sessions[^hashfile::open[/db/sessions]]
+   
+    $sid[^math:uuid[]]
+    $sessions.$sid[$.value[$uid] $.expires(1)]
+    $uid[$sessions.$sid]
 
 !form
     [берётся первый элемент из одноимённых из GET, потом первый из POST]
