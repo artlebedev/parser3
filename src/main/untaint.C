@@ -1,10 +1,10 @@
 /** @file
 	Parser: String class part: untaint mechanizm.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: untaint.C,v 1.90 2002/02/08 08:32:34 paf Exp $
+	$Id: untaint.C,v 1.89 2002/02/08 08:31:32 paf Exp $
 */
 
 #include "pa_pool.h"

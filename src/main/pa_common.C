@@ -1,10 +1,10 @@
 /** @file
 	Parser: commonly functions.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.102 2002/02/08 08:32:34 paf Exp $
+	$Id: pa_common.C,v 1.101 2002/02/08 08:31:31 paf Exp $
 */
 
 #include "pa_common.h"

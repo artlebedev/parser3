@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b table class.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vhashfile.C,v 1.20 2002/02/08 08:32:34 paf Exp $
+	$Id: pa_vhashfile.C,v 1.19 2002/02/08 08:31:32 paf Exp $
 */
 
 #include "pa_config_includes.h"
