@@ -20,6 +20,7 @@ $body
 OK
 
 @main[]
+#$form:a=
 #$a(123)
 #^a.format[%.10u]
 #$result[111]
@@ -304,7 +305,20 @@ OK
 #^datecreatecolon[]
 #^exifdocsample[]
 #^rusagetv[]
-^varmethnameconflict[]
+#^varmethnameconflict[]
+^smtptest[]
+
+@smtptest[]
+^mail:send[
+	$.from[paf@design.ru]
+	$.to[paf@design.ru]
+	$.body[1
+	
+	2
+	
+	
+		3]
+]
 
 @varmethnameconflict[]
 $varmethnameconflict[1]

@@ -7,7 +7,7 @@
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char* IDENT_SMTP_C="$Date: 2002/08/01 11:41:14 $";
+static const char* IDENT_SMTP_C="$Date: 2002/12/05 08:08:59 $";
 
 #include "pa_exception.h"
 #include "smtp.h"
@@ -342,8 +342,6 @@ transform_and_send_edit_data(const char * editptr )
 	send_len = lstrlen(editptr);
 	index = editptr;
 
-	header_end = strstr(editptr, "\r\n\r\n");
-
 	while( !done )
 	{
 		// room for extra char for double dot on end case
@@ -353,22 +351,17 @@ transform_and_send_edit_data(const char * editptr )
 			{
 				case '.':
 					if( previous_char == '\n' )
-                    {
-					    /* send _two_ dots... */
-    					SendBuffer(index, 1);
-                    }
+    					SendBuffer(index, 1); // send _two_ dots...
 	  				SendBuffer(index, 1);
 					break;
 
-				case '\r':
-					// watch for soft-breaks in the header, and ignore them
-					if( index < header_end && (strncmp(index, "\r\r\n", 3) == 0) )
-						index += 2;
-					else
-						if( previous_char != '\r' )
-							SendBuffer(index, 1);
-					// soft line-break (see EM_FMTLINES), skip extra CR */
+				case '\n': // x\n -> \r\n
+					if( previous_char != '\r' ) {
+						SendBuffer("\r", 1);
+						SendBuffer(index, 1);
+					}
 					break;
+
 				default:
 					SendBuffer(index, 1);
 					break;
