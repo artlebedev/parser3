@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2004/02/19 15:38:00 $";
+static const char * const IDENT_DATE_C="$Date: 2004/04/08 11:26:54 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -88,7 +88,8 @@ static int to_tm_year(int iyear) {
 		cur=cstr;
 	const char* hour=lsplit(&cur, ':');
 	const char* min=lsplit(&cur, ':');
-	const char* sec=cur;
+	const char* sec=lsplit(&cur, '.');
+	const char* msec=cur;
 
 	tm tmIn;  memset(&tmIn, 0, sizeof(tmIn));
 	tmIn.tm_isdst=-1;
@@ -102,7 +103,7 @@ static int to_tm_year(int iyear) {
 			tmIn.tm_mday=tmNow->tm_mday;
 			goto date_part_set;
 		} else
-			hour=min=sec=0; // not YYYY- & not HH: = just YYYY					
+			hour=min=sec=msec=0; // not YYYY- & not HH: = just YYYY					
 	tmIn.tm_year=to_tm_year(pa_atoi(year));
 	tmIn.tm_mon=month?pa_atoi(month)-1:0;
 	tmIn.tm_mday=mday?pa_atoi(mday):1;
@@ -110,6 +111,7 @@ date_part_set:
 	tmIn.tm_hour=hour?pa_atoi(hour):0;
 	tmIn.tm_min=min?pa_atoi(min):0;
 	tmIn.tm_sec=sec?pa_atoi(sec):0;	
+	//tmIn.tm_[msec<<no such, waits reimplementation of the class]=f(msec);
 	return tmIn;
 }
 
