@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.84 2001/12/15 21:28:22 paf Exp $
+	$Id: untaint.C,v 1.85 2001/12/15 21:37:43 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -16,6 +16,7 @@
 #include "pa_sql_connection.h"
 #include "pa_dictionary.h"
 #include "pa_common.h"
+#include "pa_charset.h"
 
 #define escape(action) \
 	{ \
@@ -296,10 +297,19 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			break;
 		case UL_URI:
 			// tainted, untaint language: uri
-			escape(switch(*src) {
-				case ' ': to_char('+');  break;
-				default: encode(need_uri_encode, '%');
-			});
+			const void *client_ptr;
+			size_t client_size;
+			Charset::transcode(pool(), 
+				pool().get_source_charset(), row->item.ptr, row->item.size,
+				pool().get_client_charset(), client_ptr, client_size);
+			{
+				const char *src=(const char *)client_ptr;
+				for(int size=client_size; size--; src++) 
+					switch(*src) {
+						case ' ': to_char('+');  break;
+						default: encode(need_uri_encode, '%');
+					};
+			}
 			break;
 		case UL_HTTP_HEADER:
 			// tainted, untaint language: http-field-content-text
