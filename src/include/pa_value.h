@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.7 2001/02/14 14:15:36 paf Exp $
+  $Id: pa_value.h,v 1.8 2001/02/15 14:18:49 paf Exp $
 */
 
 /*
@@ -29,14 +29,22 @@ public:
 	Method& method;
 };
 
+class Junction {
+	Value *self;
+	String code;
+};
+
 class Value {
 public:
 	// text: value
 	virtual String *get_string() const =0;
 	virtual String *put_string(const String *astring)=0;
 
-	// method_ref: "self" part, method
+	// method_ref: self, method
 	virtual Method_ref *get_method_ref() const =0;
+
+	// junction: self, code
+	virtual Junction *get_junction() const =0;
 
 	// hash: (key)=value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
@@ -64,8 +72,7 @@ descendants:
     object_instance:+ object_class, fields:Hash
     method_ref:+ self:Value/object_class, method:String
     method_self_n_params_n_locals:+ self:Value/object_class[1st try], params_locals&values:Hash[2nd try]
-
-
+	junction:+ self:Value, code:String
 */
 
 #endif

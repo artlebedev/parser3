@@ -1,7 +1,32 @@
 /*
-  $Id: core.C,v 1.18 2001/02/14 16:13:28 paf Exp $
+  $Id: core.C,v 1.19 2001/02/15 14:18:50 paf Exp $
 */
 
+/*
+	${name.subname}.notsubname
+	${:name.subname}.notsubname
+
+	$:name...
+	$name.subname
+	$name.subname(constructor-code in current context)
+	$name.subname{usage-code, in $name context}
+
+	^:name...
+	^name.field.subfield.method -- plain call
+	^name.field.subfield.method_ref -- method ref call, when .get_method()!=0
+	^class:method  -- no dotted path allowed before/after
+	1: wcontext.object_class == 0?  -- constructor
+	2: wcontext.object_class.has_parent('class')? -- dynamic call
+	3: not -------------------------------------? -- static call
+	parameters, any combination of:
+		(arg1;arg2) -- calculated before the call, in current context
+		{arg1}{arg2} -- calculated inside a call, when $arg1 substituted. in object context
+
+
+
+
+
+*/
 
 // TODO: 
 //   $RESULT
@@ -46,7 +71,7 @@ void prepare() {
 	var_or_method_start_or_constructor_stop.set(')', STOP_TYPE);
 
 	var_or_method_start_or_block_stop=var_or_method_start;
-	var_or_method_start_or_block_stop.set(']', STOP_TYPE);
+	var_or_method_start_or_block_stop.set('}', STOP_TYPE);
 
 	var_or_method_start_or_block_stop_or_param_stop_normal=var_or_method_start_or_block_stop;
 	var_or_method_start_or_block_stop_or_param_stop_normal.set(';', PARAM_STOP_NORMAL_TYPE);
