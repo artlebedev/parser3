@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.16 2001/02/23 09:43:13 paf Exp $
+  $Id: pa_value.h,v 1.17 2001/02/23 10:17:28 paf Exp $
 */
 
 /*
@@ -65,11 +65,7 @@ class Junction {
 };
 
 class Value : public Pooled {
-public:
-
-	Value(Pool& apool) : Pooled(apool) {}
-
-public:
+public: // Value
 
 	// all: for error reporting after fail(), etc
 	virtual const char *type() const =0;
@@ -106,6 +102,17 @@ public:
 
 	// object_class: true when this class is this or derived from 'ancestor'
 	virtual bool is_or_derived_from(VClass& ancestor) { failed("thoghts of ancestors of %s"); return false; }
+
+public: // usage
+
+	Value(Pool& apool) : Pooled(apool) {}
+
+	operator String() { 
+		String *result=get_string(); 
+		if(!result)
+			failed("getting string of %s");
+		return *result;
+	}
 
 private: 
 

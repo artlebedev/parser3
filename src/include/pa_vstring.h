@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vstring.h,v 1.3 2001/02/22 16:21:49 paf Exp $
+  $Id: pa_vstring.h,v 1.4 2001/02/23 10:17:28 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -26,8 +26,6 @@ public: // usage
 	VString(String *astring) : Value(astring->pool()), 
 		string(astring) {
 	}
-
-	operator String() { return *string; }
 
 private:
 	String *string;
