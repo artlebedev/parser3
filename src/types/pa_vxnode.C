@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vxnode.C,v 1.3 2001/10/15 11:48:04 parser Exp $
+	$Id: pa_vxnode.C,v 1.4 2001/10/15 14:13:22 parser Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -23,6 +23,8 @@
 #include <XalanDOM/XalanProcessingInstruction.hpp>
 #include <XalanDOM/XalanNodeList.hpp>
 #include <XalanDOM/XalanElement.hpp>
+#include <XalanDOM/XalanDocumentType.hpp>
+#include <XalanDOM/XalanNotation.hpp>
 
 /*
 void VXnode_cleanup(void *vxnode) {
@@ -109,22 +111,37 @@ Value *VXnode::get_element(const String& name) {
 				if(name=="target")
 					return NEW VString(transcode(static_cast<XalanProcessingInstruction *>(&node)->getTarget()));
 				break;
-	/*
 			case XalanNode::DOCUMENT_TYPE_NODE: 
-				readonly attribute DOMString name;
-				readonly attribute NamedNodeMap entities;
-				readonly attribute NamedNodeMap notations;
-	virtual const XalanDOMString& getName () const = 0 
-		The name of DTD; i.e., the name immediately following the DOCTYPE keyword in an XML source document.
-	virtual const XalanNamedNodeMap* getEntities () const = 0 
-		This function returns a NamedNodeMap containing the general entities, both external and internal, declared in the DTD. More...
-	virtual const XalanNamedNodeMap* getNotations () const = 0 
-		This function returns a named node map containing an entry for each notation declared in a document's DTD. More...*/
-/*
-			case XalanNode::NOTATION_NODE;
-				readonly attribute DOMString publicId;
-				readonly attribute DOMString systemId;
-*/
+				{
+					XalanDocumentType& doctype=*static_cast<XalanDocumentType *>(&node);
+					if(name=="name") {
+						// readonly attribute DOMString name;
+						// The name of DTD; i.e., the name immediately following 
+						// the DOCTYPE keyword in an XML source document.
+						return NEW VString(transcode(doctype.getName()));
+					}
+					/*
+					readonly attribute NamedNodeMap entities;
+					readonly attribute NamedNodeMap notations;
+					virtual const XalanNamedNodeMap* getEntities () const = 0 
+					This function returns a NamedNodeMap containing the general entities, both external and internal, declared in the DTD. More...
+					virtual const XalanNamedNodeMap* getNotations () const = 0 
+					This function returns a named node map containing an entry for each notation declared in a document's DTD. More...
+					*/
+				}
+				break;
+			case XalanNode::NOTATION_NODE:
+				{
+					XalanNotation& notation=*static_cast<XalanNotation *>(&node);
+					if(name=="publicId") {
+						// readonly attribute DOMString publicId;
+						return NEW VString(transcode(notation.getPublicId()));
+					} else if(name=="systemId") {
+						// readonly attribute DOMString systemId;
+						return NEW VString(transcode(notation.getSystemId()));
+					}
+				}
+				break;
 		}
 		
 	} catch(const XalanDOMException& e)	{
