@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.42 2001/11/16 11:07:58 paf Exp $
+	$Id: pa_pool.C,v 1.43 2001/11/16 11:51:25 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -17,7 +17,8 @@
 #endif
 
 Pool::Pool(void *astorage) : 
-	fstorage(astorage), fcontext(0), ftag(0)
+	fstorage(astorage), fcontext(0), 
+	ftotal_allocated(0), ftotal_times(0)
 #ifdef XML
 	, transcoder(0) 
 #endif

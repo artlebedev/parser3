@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.h,v 1.70 2001/11/16 11:03:34 paf Exp $
+	$Id: pa_pool.h,v 1.71 2001/11/16 11:51:32 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -45,9 +45,6 @@ public:
 	void set_context(void *acontext) { fcontext=acontext; }
 	void *get_context() { return fcontext; }
 
-	void set_tag(void *atag) { ftag=atag; }
-	void *tag() { return ftag; }
-
 	/// allocates some bytes on pool
 	void *malloc(size_t size, int place=0) {
 		return check(real_malloc(size, place), size);
@@ -72,7 +69,6 @@ private:
 
 	void *fstorage;
 	void *fcontext;
-	void *ftag;
 	const String *charset;
 
 private: 
