@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2003/11/20 17:40:06 $";
+static const char * const IDENT_STRING_C="$Date: 2003/11/20 17:46:02 $";
 
 #include "pcre.h"
 
@@ -410,7 +410,7 @@ String& String::change_case(Charset& source_charset, Change_case_kind kind) cons
 		}	
 
 		unsigned char index;
-		for(const char* current=new_cstr; index=(unsigned char)*current; current++) {
+		for(const char* current=new_cstr; (index=(unsigned char)*current); current++) {
 			unsigned char c=a[index];
 			if(b)
 				c=b[c];

@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2003/11/20 17:40:05 $";
+static const char * const IDENT_CHARSET_C="$Date: 2003/11/20 17:46:01 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -439,7 +439,7 @@ const String::C Charset::transcodeToUTF8(const String::C src) const {
 		(XMLByte *)src.str, src_length,
 		dest_body, dest_length,
 		tables)<0)
-		throw(0,
+		throw Exception(0,
 			0,
 			"Charset::transcodeToUTF8 buffer overflow");
 
@@ -583,7 +583,7 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 		(XMLByte *)src.str, src_length,
 		dest_body, dest_length,
 		tables)<0)
-		throw(0, 
+		throw Exception(0, 
 			0,
 			"Charset::transcodeFromUTF8 buffer overflow");
 

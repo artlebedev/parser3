@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2003/11/20 16:34:27 $";
+static const char * const IDENT_TABLE_C="$Date: 2003/11/20 17:48:28 $";
 
 #include "pa_table.h"
 
@@ -52,7 +52,7 @@ int Table::column_name2index(const String& column_name, bool bark) const {
 const String* Table::item(size_t column) {
 	if(valid(fcurrent)) {
 		element_type row=get(fcurrent);
-		if(column>=0 && column<row->count()) // proper index?
+		if(column<row->count()) // proper index?
 			return row->get(column);
 	}
 	return 0; // it's OK we don't have row|column, just return nothing

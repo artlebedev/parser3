@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2003/11/20 17:07:44 $";
+static const char * const IDENT_OP_C="$Date: 2003/11/20 17:46:01 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -609,7 +609,7 @@ static void _cache(Request& r, MethodParams& params) {
 	// file_spec, expires, body code
 	const String& file_spec=r.absolute(params.as_string(0, "filespec must be string"));
 
-	Cache_scope scope={as_expires(r, params, 1, now)};
+	Cache_scope scope={as_expires(r, params, 1, now), 0};
 
 	Temp_hash_value<const String::Body, void*> 
 		cache_scope_setter(r.classes_conf, cache_data_name, &scope);

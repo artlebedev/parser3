@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DICTIONARY_C="$Date: 2003/11/20 16:34:26 $";
+static const char * const IDENT_DICTIONARY_C="$Date: 2003/11/20 17:46:02 $";
 
 #include "pa_dictionary.h"
 #include "pa_exception.h"
@@ -61,7 +61,7 @@ static bool starts(Dictionary::Subst subst, First_that_begins_info* info) {
 }
 Dictionary::Subst Dictionary::first_that_begins(const char* str) const {
 	First_that_begins_info info;
-	if(info.line=starting_line_of[(unsigned char)*str]) {
+	if((info.line=starting_line_of[(unsigned char)*str])) {
 		info.str=str;
 		return substs.first_that(starts, &info);
 	} else

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DIR_C="$Date: 2003/11/20 16:34:26 $";
+static const char * const IDENT_DIR_C="$Date: 2003/11/20 17:48:28 $";
 
 #include "pa_common.h"
 #include "pa_dir.h"
@@ -29,7 +29,7 @@ void findclose(struct ffblk *_ffblk) {
 
 #else
 
-bool findfirst(const char* _pathname, struct ffblk *_ffblk, int _attrib) {
+bool findfirst(const char* _pathname, struct ffblk *_ffblk, int /*_attrib*/) {
     strncpy(_ffblk->filePath, _pathname, MAXPATH-1); _ffblk->filePath[MAXPATH-1]=0;
 	if(!(_ffblk->dir=opendir(_ffblk->filePath)))
         return true;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2003/11/20 16:34:28 $";
+static const char * const IDENT_VALUE_C="$Date: 2003/11/20 17:46:02 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -161,7 +161,7 @@ const String& attributed_meaning_to_string(Value& meaning,
 		if(Value* value=hash->get(value_name))
 			append_attribute_meaning(result, *value, lang, forced);
 
-		Attributed_meaning_info attributed_meaning_info={&result, lang};
+		Attributed_meaning_info attributed_meaning_info={&result, lang, false};
 		hash->for_each(append_attribute_subattribute, &attributed_meaning_info);
 	} else // result value
 		append_attribute_meaning(result, meaning, lang, forced);

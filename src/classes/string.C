@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2003/11/20 17:07:44 $";
+static const char * const IDENT_STRING_C="$Date: 2003/11/20 17:46:01 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -203,7 +203,7 @@ static Table& split_horizontal(ArrayString& pieces, bool right) {
 	Table& table=*new Table(Table::columns_type(0) /* nameless */);
 	Table::element_type row(new ArrayString(pieces.count()));
 	if(right) { // right
-		for(size_t i=pieces.count(); --i>=0; )
+		for(int i=pieces.count(); --i>=0; )
 			*row+=pieces[i];
 	} else { // left
 		for(Array_iterator<const String*> i(pieces); i.has_next(); )
