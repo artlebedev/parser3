@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/11/20 14:05:34 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/11/20 14:14:17 $";
 
 #include "pa_config_includes.h"
 
@@ -225,13 +225,13 @@ static void full_file_spec(const char *file_name, char *buf, size_t buf_size) {
 
 #ifdef SIGUSR1
 void SIGUSR1_Handler(int /*sig*/){
-	SAPI::log(global_pool, "SIGUSR1 received. url=", request?request->info.uri:"<no request>");
+	SAPI::log(global_pool, "SIGUSR1 received. url=%s", request?request->info.uri:"<no request>");
 }
 #endif
 
 #ifdef SIGPIPE
 void SIGPIPE_Handler(int /*sig*/){
-	SAPI::log(global_pool, "SIGPIPE received. url=", request?request->info.uri:"<no request>");
+	SAPI::log(global_pool, "SIGPIPE received. url=%s", request?request->info.uri:"<no request>");
 	if(request)
 		request->interrupt();
 }
@@ -336,14 +336,6 @@ static void real_parser_handler(
 
 	// get request ptr for signal handlers
 	::request=&request;
-#ifdef SIGUSR1
-    if(signal(SIGUSR1, SIGUSR1_Handler)==SIG_ERR)
-		SAPI::die("Can not set handler for SIGUSR1");
-#endif
-#ifdef SIGPIPE
-    if(signal(SIGPIPE, SIGPIPE_Handler)==SIG_ERR)
-		SAPI::die("Can not set handler for SIGPIPE");
-#endif
 
 	char config_filespec_buf[MAX_STRING];
 	if(!config_filespec_cstr) {
@@ -378,12 +370,6 @@ static void real_parser_handler(
 
 	// no request [prevent signal handlers from accessing invalid memory]
 	::request=0;
-#ifdef SIGUSR1
-    signal(SIGUSR1, SIG_DFL);
-#endif
-#ifdef SIGPIPE
-	signal(SIGPIPE, SIG_DFL);
-#endif
 	
 	//
 	done_socks();
@@ -464,6 +450,16 @@ static void usage(const char *program) {
 }
 
 int main(int argc, char *argv[]) {
+#ifdef SIGUSR1
+    if(signal(SIGUSR1, SIGUSR1_Handler)==SIG_ERR)
+		SAPI::die("Can not set handler for SIGUSR1");
+#endif
+#ifdef SIGPIPE
+    if(signal(SIGPIPE, SIGPIPE_Handler)==SIG_ERR)
+		SAPI::die("Can not set handler for SIGPIPE");
+#endif
+
+
 #ifdef DEBUG_MAILRECEIVE
 	if(FILE *fake_in=fopen(DEBUG_MAILRECEIVE, "rt")) {
 		dup2(fake_in->_file, 0/*STDIN_FILENO*/);
@@ -579,6 +575,7 @@ int main(int argc, char *argv[]) {
 	if(!cgi)
 		SAPI::send_body(global_pool, "\n", 1);
 #endif
-//_asm int 3;
+
+	//_asm int 3;
 	return 0;
 }
