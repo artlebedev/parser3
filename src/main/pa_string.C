@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.144 2002/02/22 12:14:11 paf Exp $
+	$Id: pa_string.C,v 1.145 2002/02/22 12:20:27 paf Exp $
 */
 
 #include "pcre.h"
@@ -650,8 +650,10 @@ void String::join_chain(Pool& pool,
 			}
 		);
 		
-		// set pointers after joined piece & one step back, see String::reconstruct
-		achunk=chunk;  arow=row-1;  acountdown=countdown-1;
+		// set pointers after joined piece
+		achunk=chunk;  arow=row;  acountdown=countdown;
+		// & one step back, see String::reconstruct
+		--row;  ++countdown;
 	}
 }
 
