@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.12 2001/01/29 15:56:03 paf Exp $
+  $Id: pa_pool.h,v 1.13 2001/01/29 16:37:58 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -9,8 +9,8 @@
 
 #include "pa_string.h"
 #include "pa_hash.h"
-#include "pa_array.h"
-#include "pa_table.h"
+//#include "pa_array.h"
+//#include "pa_table.h"
 
 class Pool {
 public:
@@ -28,15 +28,15 @@ public:
 	Hash& make_thread_safe_hash() {
 		return *new(this) Hash(this, true);
 	}
-	Array& make_array() {
+/*	Array& make_array() {
 		return *new(this) Array(this);
 	}
 	Array& make_array(int initial_rows) {
 		return *new(this) Array(this, initial_rows);
-	}
-	Table& make_table(char *afile, uint aline, Array *acolumns, int initial_rows) {
+	}*/
+	/*Table& make_table(char *afile, uint aline, Array *acolumns, int initial_rows) {
 		return *new(this) Table(this, afile, aline, acolumns, initial_rows);
-	}
+	}*/
 
 private: //disabled
 

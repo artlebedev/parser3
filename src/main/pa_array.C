@@ -1,16 +1,19 @@
 /*
-  $Id: pa_array.C,v 1.7 2001/01/29 15:56:04 paf Exp $
+  $Id: pa_array.C,v 1.8 2001/01/29 16:37:58 paf Exp $
 */
 
 #include <string.h>
 
 #include "pa_pool.h"
+#include "pa_array.h"
 
-void *Array::operator new(size_t size, Pool *apool) {
+template<class Item>
+void *Array<Item>::operator new(size_t size, Pool *apool) {
 	return apool->malloc(size);
 }
 
-Array::Array(Pool *apool, int initial_rows) :
+template<class Item>
+Array<Item>::Array(Pool *apool, int initial_rows) :
 	pool(apool) {
 	head=tail=static_cast<Chunk *>(
 		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
@@ -24,7 +27,8 @@ Array::Array(Pool *apool, int initial_rows) :
 	cache_chunk=head;
 }
 
-void Array::expand(int chunk_rows) {
+template<class Item>
+void Array<Item>::expand(int chunk_rows) {
 	Chunk *chunk=tail=static_cast<Chunk *>(
 		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *)));
 	chunk->count=chunk_rows;
@@ -35,7 +39,8 @@ void Array::expand(int chunk_rows) {
 }
 
 
-Array& Array::operator += (Item src) {
+template<class Item>
+Array<Item>& Array<Item>::operator += (Item src) {
 	if(chunk_is_full())
 		expand(tail->count*CR_GROW_PERCENT/100);
 
@@ -45,7 +50,8 @@ Array& Array::operator += (Item src) {
 	return *this;
 }
 
-Array::Item& Array::operator [] (int index) {
+template<class Item>
+Item& Array<Item>::operator [] (int index) {
 	if(!(index>=0 && index<size())) {
 		// FIX: some sort of thread-global error
 		Item *result=0;
@@ -68,7 +74,8 @@ Array::Item& Array::operator [] (int index) {
 	return cache_chunk->rows[index-cache_chunk_base].item;
 }
 
-Array& Array::operator += (Array& src) {
+template<class Item>
+Array<Item>& Array<Item>::operator += (Array& src) {
 	int src_used_rows=src.fused_rows;
 	int last_chunk_rows_left=link_row-append_here;
 	

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.7 2001/01/29 15:56:03 paf Exp $
+  $Id: pa_array.h,v 1.8 2001/01/29 16:37:57 paf Exp $
 */
 
 /*
@@ -24,10 +24,8 @@
 
 class Pool;
 
-class Array {
+template<class Item> class Array {
 public:
-
-	typedef void *Item;
 
 	enum {
 		CR_INITIAL_ROWS_DEFAULT=10,
@@ -90,6 +88,7 @@ private:
 
 private: //disabled
 
+	Array() {}
 	Array(Array&) {}
 	Array& operator = (Array&) { return *this; }
 };

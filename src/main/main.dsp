@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /W3 /O2 /I ".." /I "../include" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /Za /W3 /O2 /I ".." /I "../include" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /Zi /Od /I ".." /I "../include" /D "_DEBUG" /D "_LIB" /D "WIN32" /FR /FD /TP /GZ /c
+# ADD CPP /nologo /Za /W3 /Gm /Zi /Od /I ".." /I "../include" /D "_DEBUG" /D "_LIB" /D "WIN32" /FR /FD /TP /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -104,6 +104,15 @@ SOURCE=.\pa_string.C
 # Begin Source File
 
 SOURCE=.\pa_table.C
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
