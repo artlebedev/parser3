@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2003/01/21 15:51:07 $";
+static const char* IDENT_OP_C="$Date: 2003/04/04 09:59:56 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -402,9 +402,9 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 		info.data->expires=0; // flag it so that could be easily checked by caller
 }
 const String *locked_process_and_cache_put(Request& r, 
-									Value& body_code,
-									Cache_data& data,
-									const String& file_spec) {
+					   Value& body_code,
+					   Cache_data& data,
+					   const String& file_spec) {
 	Locked_process_and_cache_put_action_info info={
 		&r,
 		&data,
