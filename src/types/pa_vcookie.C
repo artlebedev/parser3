@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.21 2001/05/17 19:33:33 parser Exp $
+	$Id: pa_vcookie.C,v 1.22 2001/08/09 08:20:32 parser Exp $
 */
 
 #include "pa_sapi.h"
@@ -60,12 +60,16 @@ void VCookie::fill_fields(Request& request) {
 	char *cookies=(char *)malloc(strlen(request.info.cookie)+1);
 	strcpy(cookies, request.info.cookie);
     char *current=cookies;
+	uint line=0;
     do {
 		if(char *attribute=unquote(current, '='))
 			if(char *meaning=unquote(current, ';')) {
-				String& sattribute=*NEW String(pool(), attribute, 0, true);
-				String& smeaning=*NEW String(pool(), meaning, 0, true);
+				String& sattribute=*NEW String(pool());
+				String& smeaning=*NEW String(pool());
+				sattribute.APPEND_TAINTED(attribute, 0, "cookie_name", line);
+				smeaning.APPEND_TAINTED(meaning, 0, "cookie_value", line);
 				before.put(sattribute, NEW VString(smeaning));
+				line++;
 			}
 	} while(current);
 }

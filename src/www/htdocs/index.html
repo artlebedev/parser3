@@ -22,6 +22,7 @@ document.write('');
 <!-- BannerBank advertising end: new -->
 
 @main[]
+#$ORIGINS(0)
 ^math:random(3686)
 <hr>
 
@@ -1633,7 +1634,7 @@ $tt.0<br>
 приветприветприветприветприветприветприветприветприветприветприветприветпривет321
 ')}
 }
-	$проверка[^table::sql{select test from lotest}(6)]
+	$проверка[^table::sql{select test from lotest}[$.limit(6)]]
 	^проверка.menu{
 #		^проверка.line[]:<pre>^untaint[as-is]{$проверка.test}</pre>
 #		^проверка.line[]:<pre>^untaint[html]{$проверка.test}</pre>
@@ -1653,8 +1654,8 @@ $tt.0<br>
 	}[<br>]
 }
 <hr>
-$cookie:reg0[$.value[8reg0]$.expires[session]]
-$cookie:reg1[$.value[8reg1]$.expires[session]]
+#$cookie:reg0[$.value[8reg0]$.expires[session]]
+#$cookie:reg1[$.value[8reg1]$.expires[session]]
 $cookie:reg0
 $cookie:reg1
 
