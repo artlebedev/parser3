@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_value.h,v 1.85 2002/04/18 15:33:32 paf Exp $
+	$Id: pa_value.h,v 1.86 2002/04/19 08:54:36 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -358,6 +358,23 @@ public:
 	/// call this before invoking to ensure proper actual numbered params count
 	void check_actual_numbered_params(
 		Value& self, const String& actual_name, Array *actual_numbered_params) const;
+};
+
+///	Auto-object used for temporarily substituting/removing elements
+class Temp_value_element {
+	Value& fwhere;
+	const String& fname;
+	Value *saved;
+public:
+	Temp_value_element(Value& awhere, const String& aname, Value *awhat) : 
+		fwhere(awhere),
+		fname(aname),
+		saved(awhere.get_element(aname)) {
+		fwhere.put_element(aname, awhat);
+	}
+	~Temp_value_element() { 
+		fwhere.put_element(fname, saved);
+	}
 };
 
 #endif

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.104 2002/04/19 08:28:35 paf Exp $
+	$Id: string.C,v 1.105 2002/04/19 08:54:35 paf Exp $
 */
 
 #include "classes.h"
@@ -181,9 +181,11 @@ static void search_action(Table& table, Array *row, int, int, int, int, void *) 
 struct Replace_action_info {
 	Request *request;  const String *origin;
 	const String *src;  String *dest;
+	VTable *vtable;
 	Value *replacement_code;
 };
 #endif
+/// @todo they can do $global[$result] there, getting pointer to later-invalid local var, kill this
 static void replace_action(Table& table, Array *row, 
 						   int prestart, int prefinish, 
 						   int poststart, int postfinish,
@@ -199,20 +201,9 @@ static void replace_action(Table& table, Array *row,
 		else // begin
 			table+=row;
 		{ // execute 'replacement_code' in 'table' context
-			VTable& vtable=*new(table.pool()) VTable(table.pool(), &table);
+			ai.vtable->set_table(table);
 
-			Junction *junction=ai.replacement_code->get_junction();
-			Value *saved_match_var_value=junction->root->get_element(*match_var_name);
-			junction->root->put_element(*match_var_name, &vtable);
-			const String& replaced=ai.request->process_to_string(*ai.replacement_code);
-			junction->root->put_element(*match_var_name, saved_match_var_value);
-
-			/*
-			ai.dest->APPEND_CONST("(");
-				*ai.dest << *(String *)row->get(1/*match* /);
-			ai.dest->APPEND_CONST(")");
-			*/
-			*ai.dest << replaced;
+			*ai.dest << ai.request->process_to_string(*ai.replacement_code);
 		}
 	} else // end
 		*ai.dest << ai.src->mid(poststart, postfinish);
@@ -243,7 +234,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 		// matched
 		// not (just matched[3=pre/match/post], no substrings) or Global search
 		if(table->columns()->size()>3 || was_global) 
-			result=new(pool) VTable(pool, table); // table of pre/match/post+substrings
+			result=new(pool) VTable(pool, table/*TODO: clone this when table would be stacked!*/); // table of pre/match/post+substrings
 		else 
 			result=new(pool) VBool(pool, matched);			
 		r.write_assign_lang(*result);
@@ -251,11 +242,16 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 		Value& replacement_code=params->as_junction(2, "replacement param must be code");
 
 		String& result=*new(pool) String(pool);
+		VTable vtable(pool);
 		Replace_action_info replace_action_info={
 			&r, &method_name,
 			&src, &result,
+			&vtable,
 			&replacement_code
 		};
+		Temp_value_element temp_match_var(
+			*replacement_code.get_junction()->root, 
+			*match_var_name, &vtable);
 		src.match(
 			&method_name, 
 			r.process_to_string(regexp), options,

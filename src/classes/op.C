@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.92 2002/04/18 14:00:54 paf Exp $
+	$Id: op.C,v 1.93 2002/04/19 08:54:35 paf Exp $
 */
 
 #include "classes.h"
@@ -196,9 +196,9 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 
 	bool need_delim=false;
 	VInt *vint=new(pool) VInt(pool, 0);
+	r.root->put_element(var_name, vint);
 	for(int i=from; i<=to; i++) {
 		vint->set_int(i);
-		r.root->put_element(var_name, vint);
 
 		StringOrValue processed_body=r.process(body_code);
 		if(delim_maybe_code) { // delimiter set?
