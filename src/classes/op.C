@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: op.C,v 1.37 2001/08/06 16:18:26 parser Exp $"; 
+static const char *RCSId="$Id: op.C,v 1.38 2001/08/09 14:27:49 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -289,8 +289,14 @@ static void _switch(Request& r, const String&, MethodParams *params) {
 		r.write_pass_lang(r.process(*code));
 }
 
-static void _case(Request& r, const String&, MethodParams *params) {
-	Switch_data& data=*static_cast<Switch_data *>(r.classes_conf.get(*switch_data_name));
+static void _case(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	Switch_data *data=static_cast<Switch_data *>(r.classes_conf.get(*switch_data_name));
+	if(!data)
+		PTHROW(0, 0,
+			&method_name,
+			"without switch");
 
 	int count=params->size();
 	Value *code=&params->as_junction(--count, "case result must be code");
@@ -298,18 +304,18 @@ static void _case(Request& r, const String&, MethodParams *params) {
 		Value& value=r.process(params->get(i));
 
 		if(value.as_string() == *case_default_value) {
-			data._default=code;
+			data->_default=code;
 			break;
 		}
 
 		bool matches;
-		if(data.searching->is_string())
-			matches=data.searching->as_string() == value.as_string();
+		if(data->searching->is_string())
+			matches=data->searching->as_string() == value.as_string();
 		else
-			matches=data.searching->as_double() == value.as_double();
+			matches=data->searching->as_double() == value.as_double();
 
 		if(matches) {
-			data.found=code;
+			data->found=code;
 			break;
 		}
 	}
