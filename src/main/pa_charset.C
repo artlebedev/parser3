@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSET_C="$Date: 2002/09/11 11:11:06 $";
+static const char* IDENT_CHARSET_C="$Date: 2002/10/15 15:12:57 $";
 
 #include "pa_charset.h"
 
@@ -592,14 +592,26 @@ const char *Charset::transcode_cstr(xmlChar *s) {
 	out[outlen/*surely would be less then on input*/]=0;
 	return out;
 }
-String& Charset::transcode(xmlChar *s) { 
-	return *NEW String(pool(), transcode_cstr(s)); 
+String& Charset::transcode(xmlChar *s
+#ifndef NO_STRING_ORIGIN
+		, const String *origin
+#endif
+						   ) { 
+	String& result=*NEW String(pool());
+	result.APPEND_CLEAN(transcode_cstr(s), 0/*auto-size*/, origin->origin().file, origin->origin().line);
+	return result; 
 }
 const char *Charset::transcode_cstr(GdomeDOMString *s) { 
 	return s?transcode_cstr(BAD_CAST s->str):"";
 }
-String& Charset::transcode(GdomeDOMString *s) { 
-	return *NEW String(pool(), transcode_cstr(s)); 
+String& Charset::transcode(GdomeDOMString *s
+#ifndef NO_STRING_ORIGIN
+		, const String *origin
+#endif
+						   ) { 
+	String& result=*NEW String(pool());
+	result.APPEND_CLEAN(transcode_cstr(s), 0/*auto-size*/, origin->origin().file, origin->origin().line);
+	return result; 
 }
 
 /// @test less memory using -maybe- xmlParserInputBufferCreateMem

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_POOL_C="$Date: 2002/08/15 10:13:19 $";
+static const char* IDENT_POOL_C="$Date: 2002/10/15 15:12:57 $";
 
 #include "pa_pool.h"
 #include "pa_exception.h"
@@ -74,16 +74,24 @@ const char *Pool::transcode_cstr(xmlChar *s) {
 	return get_source_charset().transcode_cstr(s); 
 }
 
-String& Pool::transcode(xmlChar *s) {
-	return get_source_charset().transcode(s); 
+String& Pool::transcode(xmlChar *s
+#ifndef NO_STRING_ORIGIN
+		, const String *origin
+#endif
+						) {
+	return get_source_charset().transcode(s, origin); 
 }
 
 const char *Pool::transcode_cstr(GdomeDOMString *s) { 
 	return get_source_charset().transcode_cstr(s); 
 }
 
-String& Pool::transcode(GdomeDOMString *s) { 
-	return get_source_charset().transcode(s); 
+String& Pool::transcode(GdomeDOMString *s
+#ifndef NO_STRING_ORIGIN
+		, const String *origin
+#endif
+	) { 
+	return get_source_charset().transcode(s, origin);
 }
 
 xmlChar *Pool::transcode_buf2xchar(const char *buf, size_t buf_size) {

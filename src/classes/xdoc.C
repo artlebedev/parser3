@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2002/09/20 13:09:49 $";
+static const char* IDENT_XDOC_C="$Date: 2002/10/15 15:12:56 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -765,13 +765,13 @@ static VXdoc& _transform(Pool& pool, const String *doc_source, const String *sty
 	memset(&result.output_options, 0, sizeof(result.output_options));
 	VXdoc::Output_options& oo=result.output_options;
 
-	oo.method=stylesheet->method?&pool.transcode(stylesheet->method):0;
-	oo.encoding=stylesheet->encoding?&pool.transcode(stylesheet->encoding):0;
-	oo.mediaType=stylesheet->mediaType?&pool.transcode(stylesheet->mediaType):0;
-	oo.doctypeSystem=stylesheet->doctypeSystem?&pool.transcode(stylesheet->doctypeSystem):0;
-	oo.doctypePublic=stylesheet->doctypePublic?&pool.transcode(stylesheet->doctypePublic):0;
+	oo.method=stylesheet->method?&pool.transcode(stylesheet->method, stylesheet_source):0;
+	oo.encoding=stylesheet->encoding?&pool.transcode(stylesheet->encoding, stylesheet_source):0;
+	oo.mediaType=stylesheet->mediaType?&pool.transcode(stylesheet->mediaType, stylesheet_source):0;
+	oo.doctypeSystem=stylesheet->doctypeSystem?&pool.transcode(stylesheet->doctypeSystem, stylesheet_source):0;
+	oo.doctypePublic=stylesheet->doctypePublic?&pool.transcode(stylesheet->doctypePublic, stylesheet_source):0;
 	oo.indent=stylesheet->indent!=0;
-	oo.version=stylesheet->version?&pool.transcode(stylesheet->version):0;
+	oo.version=stylesheet->version?&pool.transcode(stylesheet->version, stylesheet_source):0;
 	oo.standalone=stylesheet->standalone!=0;
 	oo.omitXmlDeclaration=stylesheet->omitXmlDeclaration!=0;
 

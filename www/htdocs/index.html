@@ -266,7 +266,16 @@ $response:charset[windows-1251]
 #^includet[]
 #^derived:includet[]
 #^fortestsep[]
-^derived:inclass_process_test[]
+#^derived:inclass_process_test[]
+#$derived[^derived::create[]]^derived.inclass_process_test[]
+^domorigint[]
+
+@domorigint[]
+$xdoc[^xdoc::create[вася]]
+^xdoc.firstChild.setAttribute[name;значение]
+$var[$xdoc.firstChild.nodeName]
+^throw[paf;$var]
+
 
 @fortestsep[][i]
 ^for[i](1;3){$i}[,]

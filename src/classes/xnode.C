@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2002/09/18 08:52:50 $";
+static const char* IDENT_XNODE_C="$Date: 2002/10/15 15:12:57 $";
 
 #include "pa_charset.h"
 #include "pa_request.h"
@@ -245,7 +245,7 @@ static void _getAttribute(Request& r, const String& method_name, MethodParams *p
 	GdomeDOMString *attribute_value=
 		gdome_el_getAttribute(element, pool.transcode(name).get(), &exc);
 	// write out result
-	r.write_no_lang(pool.transcode(attribute_value));
+	r.write_no_lang(pool.transcode(attribute_value, &name));
 }
 
 // void setAttribute(in DOMString name, in DOMString value) raises(DOMException);
@@ -502,7 +502,7 @@ static void selectNodeHandler(Pool& pool,
 		result=new(pool) VString(
 			pool.transcode(
 				GdomeDOMString_auto_ptr(
-					gdome_str_mkref_dup((const gchar *)res->stringval)).get()));
+					gdome_str_mkref_dup((const gchar *)res->stringval)).get(), &expression));
 		break;
 	default: 
 		throw Exception("parser.runtime",
@@ -563,7 +563,7 @@ static void selectStringHandler(Pool& pool,
 		result=new(pool) VString(
 			pool.transcode(
 				GdomeDOMString_auto_ptr(
-					gdome_str_mkref_dup((const gchar *)res->stringval)).get()));
+					gdome_str_mkref_dup((const gchar *)res->stringval)).get(), &expression));
 		break;
 	case XPATH_NODESET: 
 		if(!(res->nodesetval && res->nodesetval->nodeNr))

@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char* IDENT_CHARSET_H="$Date: 2002/08/01 11:41:14 $";
+static const char* IDENT_CHARSET_H="$Date: 2002/10/15 15:12:57 $";
 
 #include "pa_pool.h"
 #include "pa_exception.h"
@@ -105,11 +105,19 @@ public:
 	/// converts GdomeDOMString string to char *
 	const char *transcode_cstr(GdomeDOMString *s);
 	/// converts GdomeDOMString string to parser String
-	String& transcode(GdomeDOMString *s);
+	String& transcode(GdomeDOMString *s
+#ifndef NO_STRING_ORIGIN
+		, const String *origin
+#endif
+		);
 	/// converts xmlChar* null-terminated string to char *
 	const char *transcode_cstr(xmlChar *s);
 	/// converts xmlChar* null-terminated string to parser String
-	String& transcode(xmlChar *s);
+	String& transcode(xmlChar *s
+#ifndef NO_STRING_ORIGIN
+		, const String *origin
+#endif
+		);
 	/** converts sized char * to xmlChar*
 		@returns xmlChar * which caller should free
 	*/

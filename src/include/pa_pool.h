@@ -9,7 +9,7 @@
 #ifndef PA_POOL_H
 #define PA_POOL_H
 
-static const char* IDENT_POOL_H="$Date: 2002/08/15 10:13:19 $";
+static const char* IDENT_POOL_H="$Date: 2002/10/15 15:12:57 $";
 
 #include "pa_config_includes.h"
 
@@ -81,11 +81,19 @@ public:
 	/// @see Charset::transcode_cstr(xmlChar *s);
 	const char *transcode_cstr(xmlChar *s);
 	/// @see Charset::transcode(xmlChar *s);
-	String& transcode(xmlChar *s);
+	String& transcode(xmlChar *s
+#ifndef NO_STRING_ORIGIN
+		, const String *origin
+#endif
+		);
 	/// @see Charset::transcode_cstr(GdomeDOMString *s);
 	const char *transcode_cstr(GdomeDOMString *s);
 	/// @see Charset::transcode(GdomeDOMString *s);
-	String& transcode(GdomeDOMString *s);
+	String& transcode(GdomeDOMString *s
+#ifndef NO_STRING_ORIGIN
+		, const String *origin
+#endif
+		);
 	/// @see Charset::transcode_cstr(const char *buf, size_t buf_size=0);
 	xmlChar *transcode_buf2xchar(const char *buf, size_t buf_size=0);
 	/// @see Charset::transcode(const String& s)
@@ -183,7 +191,17 @@ public:
 #ifdef XML
 
 	const char *transcode_cstr(GdomeDOMString *s) { return fpool->transcode_cstr(s); }
-	String& transcode(GdomeDOMString *s) { return fpool->transcode(s); }
+	String& transcode(GdomeDOMString *s
+#ifndef NO_STRING_ORIGIN
+		, const String *origin
+#endif
+		) { 
+		return fpool->transcode(s
+#ifndef NO_STRING_ORIGIN
+			, origin
+#endif		
+			); 
+	}
 
 #endif
 	//}
