@@ -1,5 +1,3 @@
-APACHE13_SRC=../../../../../../apache-1.3/src
-
 INCLUDES = -I../../../../include -I../../../../classes -I../../../../types $(INCLTDL) -I../../../../sql -I$(APACHE13_SRC)/include -I$(APACHE13_SRC)/os/unix
 
 noinst_LIBRARIES = libmod_parser3.a
