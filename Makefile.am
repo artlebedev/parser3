@@ -9,4 +9,4 @@ update:
 	cvs update
 	$(MAKE)
 
-happy: update install
+happy: update install-exec
