@@ -1,0 +1,64 @@
+/** @file
+	Parser: @b table class.
+
+	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
+
+	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+
+	$Id: pa_vtable.C,v 1.1 2001/07/25 10:43:14 parser Exp $
+*/
+
+#include "pa_vtable.h"
+#include "pa_vstring.h"
+
+/// used by table: _record / store_column_item_to_hash
+struct Record_info {
+	Pool *pool;
+	Table *table;
+	Hash *hash;
+};
+static void store_column_item_to_hash(Array::Item *item, void *info) {
+	Record_info& ri=*static_cast<Record_info *>(info);
+	String& column_name=*static_cast<String *>(item);
+	Value *value;
+	if(const String *column_item=ri.table->item(column_name))
+		value=new(*ri.pool) VString(*column_item);
+	else
+		value=new(*ri.pool) VVoid(*ri.pool);
+	ri.hash->put(column_name, value);
+}
+Value *VTable::fields_element() {
+	if(const Array *columns=table().columns()) {
+		Value *result=NEW VHash(pool());
+		Record_info record_info={&pool(), &table(), result->get_hash()};
+		columns->for_each(store_column_item_to_hash, &record_info);
+		return result;
+	}
+	return 0;
+}
+
+
+Value *VTable::get_element(const String& name) {
+	// fields
+	if(name==TABLE_FIELDS_ELEMENT_NAME)
+		return fields_element();
+
+	// columns
+	if(ftable) {
+		int index=ftable->column_name2index(name, false);
+		if(index>=0) // column name|number valid
+			if(const String *string=ftable->item(index)) // there is such column
+				return NEW VString(*string);
+			else
+				return NEW VVoid(pool());
+	}
+
+	// methods
+	if(Value *result=VStateless_object::get_element(name))
+		return result;
+
+	THROW(0, 0,
+		&name, 
+		"column not found");
+	return 0; //unreached
+}

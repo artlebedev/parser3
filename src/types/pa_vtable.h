@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.26 2001/06/27 12:44:33 parser Exp $
+	$Id: pa_vtable.h,v 1.27 2001/07/25 10:43:14 parser Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -14,6 +14,8 @@
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
 #include "pa_vvoid.h"
+
+#define TABLE_FIELDS_ELEMENT_NAME "fields"
 
 extern Methoded *table_class;
 
@@ -25,26 +27,7 @@ public: // Value
 	/// extract VTable
 	Table *get_table() { return ftable; }
 	/// VTable: columns,methods
-	Value *get_element(const String& name) {
-		// columns
-		if(ftable) {
-			int index=ftable->column_name2index(name, false);
-			if(index>=0) // column name|number valid
-				if(const String *string=ftable->item(index)) // there is such column
-					return NEW VString(*string);
-				else
-					return NEW VVoid(pool());
-		}
-
-		// methods
-		if(Value *result=VStateless_object::get_element(name))
-			return result;
-
-		THROW(0, 0,
-			&name, 
-			"column not found");
-		return 0; //unreached
-	}
+	Value *get_element(const String& name);
 
 protected: // VAliased
 
@@ -73,6 +56,8 @@ public: // usage
 	}
 
 private:
+
+	Value *fields_element();
 
 	void check_lock() {
 		if(locked)

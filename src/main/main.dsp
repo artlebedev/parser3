@@ -411,6 +411,10 @@ SOURCE=..\types\pa_vstring.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vtable.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vtable.h
 # End Source File
 # Begin Source File

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.94 2001/07/23 11:19:25 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.95 2001/07/25 10:43:14 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -347,34 +347,6 @@ static void _empty(Request& r, const String& method_name, MethodParams *params) 
 	Table& table=static_cast<VTable *>(r.self)->table();
 	
 	r.write_no_lang(*new(pool) VBool(pool, table.size()==0));
-}
-
-/// used by table: _record / store_column_item_to_hash
-struct Record_info {
-	Pool *pool;
-	Table *table;
-	Hash *hash;
-};
-static void store_column_item_to_hash(Array::Item *item, void *info) {
-	Record_info& ri=*static_cast<Record_info *>(info);
-	String& column_name=*static_cast<String *>(item);
-	Value *value;
-	if(const String *column_item=ri.table->item(column_name))
-		value=new(*ri.pool) VString(*column_item);
-	else
-		value=new(*ri.pool) VVoid(*ri.pool);
-	ri.hash->put(column_name, value);
-}
-static void _record(Request& r, const String& method_name, MethodParams *) {
-	Table& table=static_cast<VTable *>(r.self)->table();
-	if(const Array *columns=table.columns()) {
-		Pool& pool=r.pool();
-		Value& result=*new(pool) VHash(pool);
-		Record_info record_info={&pool, &table, result.get_hash()};
-		columns->for_each(store_column_item_to_hash, &record_info);
-		result.set_name(method_name);
-		r.write_no_lang(result);
-	}
 }
 
 /// used by table: _hash / table_row_to_hash
@@ -820,9 +792,6 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 
 	// ^table.empty[]
 	add_native_method("empty", Method::CT_DYNAMIC, _empty, 0, 0);
-
-	// ^table.record[]
-	add_native_method("record", Method::CT_DYNAMIC, _record, 0, 0);
 
 	// ^table:hash[key field name]
 	// ^table:hash[key field name][value field name;...]
