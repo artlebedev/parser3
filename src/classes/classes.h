@@ -7,7 +7,7 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-static const char* IDENT_CLASSES_H="$Date: 2002/08/01 11:41:11 $";
+static const char* IDENT_CLASSES_H="$Date: 2002/08/15 13:49:15 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_array.h"
@@ -16,6 +16,12 @@ static const char* IDENT_CLASSES_H="$Date: 2002/08/01 11:41:11 $";
 	@see Methoded_array
 */
 class Methoded : public VStateless_class {
+public: // Value
+
+	/*override*/ bool put_element(const String& /*name*/, Value * /*value*/, bool /*replace*/) { 
+		return false; // fewer useless Exceptions
+	}
+
 public: // Methoded
 
 	/** should Methoded_array::register_directly_used register this class in
