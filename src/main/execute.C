@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.106 2001/03/15 11:00:40 paf Exp $
+	$Id: execute.C,v 1.107 2001/03/16 08:31:21 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -54,8 +54,16 @@ char *opcode_name[]={
 	"IS"
 };
 
+void va_log_printf(const char *fmt,va_list args) {
+	vfprintf(stderr, fmt, args);
+}
+
 void log_printf(const char *fmt, ...) {
 	// TODO: куда-нибудь пристроить
+    va_list args;
+    va_start(args,fmt);
+    va_log_printf(fmt,args);
+    va_end(args);
 }
 
 void dump(int level, const Array& ops) {

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.8 2001/03/15 11:00:42 paf Exp $
+	$Id: pa_vstring.h,v 1.9 2001/03/16 08:31:25 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -43,8 +43,18 @@ public: // Value
 		//return error_pos&&*error_pos?0:result;
 		return result;
 	}
-	// string: empty or not
-	bool get_bool() { return fvalue.size()!=0; };
+	// string: double!=0
+	bool get_bool() { zreturn fvalue.size()!=0 && get_double()!=0; };
+
+	// string: $CLASS,$BASE,$method
+	Value *get_element(const String& name) {
+		// $CLASS,$BASE,$method
+		if(Value *result=VStateless_object::get_element(name))
+			return result;
+
+		// bad $string.field
+		bark("(%s) does not have fields");  return 0;
+	}
 
 public: // usage
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_object.h,v 1.2 2001/03/13 13:43:33 paf Exp $
+	$Id: pa_vstateless_object.h,v 1.3 2001/03/16 08:31:24 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_OBJECT_H
@@ -26,7 +26,7 @@ public: // Value
 			return fclass_alias->base();
 		// $method=junction(self+class+method)
 		if(Junction *junction=fclass_real.get_junction(*this, name))
-			return NEW VJunction(*junction);;
+			return NEW VJunction(*junction);
 		return 0;
 	}
 
