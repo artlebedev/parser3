@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile.C,v 1.58 2002/02/08 08:30:14 paf Exp $
+	$Id: compile.C,v 1.59 2002/02/19 14:14:01 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -43,8 +43,9 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 	pc.source=source;
 #ifndef NO_STRING_ORIGIN
 	pc.file=file;
-	pc.line=pc.col=0;
 #endif
+	pc.line=pc.col=0; // off the check, 'col' used in compile
+
 	// initialise state
 	pc.trim_bof=true;
 	pc.pending_state=0;
@@ -54,7 +55,7 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 	pc.in_call_value=false;
 	
 	// parse=compile! 
-	//yydebug=1;
+	yydebug=1;
 	if(yyparse(&pc)) { // error?
 		if(pc.col==0) { // expecting something after EOL means they've expected it BEFORE
 			// step back.  -1 col means EOL
