@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.88 2001/07/02 13:24:32 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.89 2001/07/02 14:03:35 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -622,7 +622,7 @@ static void _columns(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 
 	Array& result_columns=*new(pool) Array(pool);
-	result_columns+=new(pool) String(pool, "name");
+	result_columns+=new(pool) String(pool, "column");
 	Table& result_table=*new(pool) Table(pool, &method_name, &result_columns);
 
 	Table& source_table=static_cast<VTable *>(r.self)->table();
