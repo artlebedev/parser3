@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.5 2001/01/29 12:13:15 paf Exp $
+  $Id: pa_hash.C,v 1.6 2001/01/29 12:16:08 paf Exp $
 */
 
 /*
@@ -78,9 +78,7 @@ uint Hash::generic_code(uint aresult, char *start, uint size) {
 	return result;
 }
 
-void Hash::put(Key& key, Value *value) {
-	SYNCHRONIZED(thread_safe);
-
+void Hash::put(Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
 	if(full()) 
 		expand();
 
@@ -98,9 +96,7 @@ void Hash::put(Key& key, Value *value) {
 	*ref=new(pool) Pair(code, key, value, *ref);
 }
 
-Hash::Value* Hash::get(Key& key) {
-	SYNCHRONIZED(thread_safe);
-
+Hash::Value* Hash::get(Key& key) {  SYNCHRONIZED(thread_safe);
 	uint code=key.hash_code();
 	uint index=code%size;
 	for(Pair *pair=refs[index]; pair; pair=pair->link)

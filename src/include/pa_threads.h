@@ -1,5 +1,5 @@
 /*
-  $Id: pa_threads.h,v 1.3 2001/01/29 12:13:14 paf Exp $
+  $Id: pa_threads.h,v 1.4 2001/01/29 12:16:07 paf Exp $
 */
 
 #ifndef PA_THREADS_H
@@ -38,12 +38,12 @@ public:
 	}
 }
 
-#define SYNCHRONIZED(thread_safe) AutoSYNCHRONIZED autoSYNCHRONIZED(thread_safe)
+#define SYNCHRONIZED(athread_safe) AutoSYNCHRONIZED autoSYNCHRONIZED(athread_safe)
 
 
 #else // not MULTITHREAD-ed
 
-#define SYNCHRONIZED(thread_safe) /* do nothing */
+#define SYNCHRONIZED(athread_safe) /* do nothing */
 
 #endif
 
