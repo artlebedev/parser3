@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.20 2002/03/26 08:51:00 paf Exp $
+	$Id: date.C,v 1.21 2002/03/26 12:19:06 paf Exp $
 */
 
 #include "classes.h"
@@ -105,22 +105,23 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 			"must be year|month|day");
 	
 	*offset=params->as_int(1, "offset must be int", r);
-	if(!(*offset==1 || *offset==-1))
-		throw Exception(0, 0,
-			&method_name,
-			"offset must be +/- 1");
 
 	time_t self_time=vdate->get_time();
 	tm tmIn=*localtime(&self_time);
-	// we will preserve daytime from day-light-saving shifts across roll
 	tm tmSaved=tmIn;
-	tmIn.tm_hour=24/2; tmIn.tm_min=tmIn.tm_sec=0;
 
-    tmIn.tm_year+=oyear;
-    time_t t=mktime(&tmIn);
-    t+=omonth*getMonthDays(tmIn.tm_year, (tmIn.tm_mon+(omonth<0?-1:0)+12)%12)*SECS_PER_DAY;
-    t+=oday*SECS_PER_DAY;
-    
+	tmIn.tm_year+=oyear;
+	tmIn.tm_mon+=omonth;
+	tmIn.tm_mday+=oday;
+	tmIn.tm_hour=24/2; 
+	tmIn.tm_min=0;
+	tmIn.tm_sec=0;
+	time_t t=mktime/*normalizetime*/(&tmIn);
+	if(t<0)
+		throw Exception(0, 0,
+		&method_name,
+		"bad resulting time (after roll)");
+
     tm *tmOut=localtime(&t);
 	if(!tmOut)
 		throw Exception(0, 0,
@@ -132,11 +133,18 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
     tmOut->tm_sec=tmSaved.tm_sec;
 	tmOut->tm_isdst=-1; 
 	{
-		time_t t=mktime(tmOut);
+		time_t t=mktime/*normalizetime*/(tmOut);
+		if(
+			tmOut->tm_hour!=tmSaved.tm_hour
+			||tmOut->tm_min!=tmSaved.tm_min)
+			throw Exception(0, 0,
+				&method_name,
+				"bad resulting time (timeline hole)");
+
 		if(t<0)
 			throw Exception(0, 0,
-			&method_name,
-			"bad resulting time (after reconstruction)");
+				&method_name,
+				"bad resulting time (after reconstruction)");
 		
 		vdate->set_time(t);
 	}

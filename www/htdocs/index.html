@@ -7,6 +7,7 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
+#^roll2[]
 ^rolls[]
 #^exceptions1[]
 #^locate_by_expr[]
@@ -109,6 +110,11 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@roll2[]
+$d[^date::create(2002;4;2;2;2;3)] ^d.sql-string[]<br>
+^d.roll[day](-2) ^d.sql-string[]<br>
+
 
 @rolls[]
 $d[^date::create(2002;4;4)]
