@@ -15,7 +15,6 @@ $selffilespec[$filespec]
 #$result[123]
 
 @main[]
-$request:hren
 #$a(123)
 #^a.format[%.10u]
 #$result[111]
@@ -212,10 +211,17 @@ $request:hren
 #^monthdays(8)
 #^xdoctypetest[]
 #^xtabletest[]
-^staticstest[]
+#^staticstest[]
 #^staticstest2[]
+^rbodytest[]
 <hr>
 OK
+
+@rbodytest[]
+$request:body=
+<form method=post>
+<input type=submit name=paf value=123>
+</form>
 
 @staticstest2[]
 ^$derived:derived_var=$derived:derived_var<br>

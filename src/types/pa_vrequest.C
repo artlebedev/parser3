@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VREQUEST_C="$Date: 2002/08/15 10:21:43 $";
+static const char* IDENT_VREQUEST_C="$Date: 2002/08/15 10:26:05 $";
 
 #include "pa_vrequest.h"
 #include "pa_request.h"
@@ -19,16 +19,20 @@ Value *VRequest::get_element(const String& aname, Value * /*aself*/, bool /*look
 		return NEW VString(pool().get_source_charset().name());
 	else {	
 		// $query $uri $body
-		const char *cstr;
+		const char *buf;
+		size_t size=0;
 		if(aname=="query")
-			cstr=frequest.info.query_string;
+			buf=frequest.info.query_string;
 		else if(aname=="uri")
-			cstr=frequest.info.uri;
-		else
+			buf=frequest.info.uri;
+		else if(aname=="body") {
+			buf=frequest.post_data;
+			size=frequest.post_size;
+		} else
 			bark("%s field not found", 0, &aname);
 
 		String& string=*NEW String(pool());
-		string.APPEND_TAINTED(cstr?cstr:"", 0, "request", 0);
+		string.APPEND_TAINTED(buf?buf:"", size, "request", 0);
 		return NEW VString(string);
 	}
 }
