@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.16 2001/02/22 14:45:27 paf Exp $
+  $Id: compile.C,v 1.17 2001/02/23 22:22:08 paf Exp $
 */
 
 #include "pa_request.h"
@@ -45,7 +45,7 @@ Array& Request::real_compile(COMPILE_PARAMS) {
 		} 
 		THROW(0,0,
 			0,
-			"%s [%s:%d:%d]", pc.error, file, 1+pc.line, pc.col);
+			"%s(%d:%d): %s", file, 1+pc.line, pc.col, pc.error);
 	}
 
 	// result

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.21 2001/02/23 21:59:07 paf Exp $
+  $Id: pa_value.h,v 1.22 2001/02/23 22:22:07 paf Exp $
 */
 
 /*
@@ -89,7 +89,7 @@ public: // Value
 	virtual void put_string(String *astring) { failed("storing string to %s:%s"); }
 
 	// junction: auto_calc,root,self,rcontext,wcontext, code
-	virtual Junction *get_junction() { failed("can not call '%s', is not a method or a junction (it is '%s')"); return 0; }
+	virtual Junction *get_junction() { failed("is not a method or a junction (it is '%s'), can not call it"); return 0; }
 
 	// hash: (key)=value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
