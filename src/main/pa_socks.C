@@ -5,12 +5,12 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_SOCKS_C="$Date: 2002/08/01 11:41:19 $";
+static const char* IDENT_SOCKS_C="$Date: 2002/09/13 11:08:18 $";
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"
 
-#ifndef HAVE_SYS_SELECT_H
+#ifdef HAVE_WINSOCK_H
 #include "pa_exception.h"
 #include "pa_socks.h"
 
