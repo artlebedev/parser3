@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.3 2001/02/12 11:44:41 paf Exp $
+  $Id: pa_value.h,v 1.4 2001/02/13 12:59:57 paf Exp $
 */
 
 /*
@@ -14,6 +14,7 @@
 class Method {
 public:
 	Array param_names;
+	Array local_names;
 	String code;
 };
 
@@ -50,7 +51,7 @@ descendants:
     object_class:+ STATIC:Hash, methods:Hash
     object_instance:+ object_class, fields:Hash
     method_ref:+ self:Value/object_class, method:String
-    method_self_n_params:+ self:Value/object_class[1st try], params&values:Hash[2nd try]
+    method_self_n_params_n_locals:+ self:Value/object_class[1st try], params_locals&values:Hash[2nd try]
 
 
 */

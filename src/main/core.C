@@ -1,21 +1,19 @@
-void process(Method_self_n_params& root, Value& self,
-			 RContext& rcontext, WContext& wcontext, 
+void process(method_self_n_params_n_locals& root, Value& self,
+			 arcontext& arcontext, WContext& awcontext, 
 			 String_iterator& code, char char_to_stop_before) {
 	
 	// $ on code?
-	process_dollar(root, self, rcontext, wcontext, code, char_to_stop_before);
+	process_dollar(root, self, arcontext, awcontext, code, char_to_stop_before);
 
 	// ^ on code?
-	process_bird(root, self, rcontext, wcontext, code, char_to_stop_before);
+	process_bird(root, self, arcontext, awcontext, code, char_to_stop_before);
 
 	// TODO
-	// 1! случаи : и self. в начале 
 	// 2. вызовы статических методов
-	// 3! вызовы операторов
 }
 
-void process_dollar(Method_self_n_params& root, Value& self,
-					RContext& rcontext, WContext& wcontext, 
+void process_dollar(method_self_n_params_n_locals& root, Value& self,
+					arcontext& arcontext, WContext& awcontext, 
 					String_iterator& iter, char char_to_stop_before) {
 
 	// $name.field.subfield -- read
@@ -33,7 +31,7 @@ void process_dollar(Method_self_n_params& root, Value& self,
 	Value *context=
 		prefix?
 			prefix==ROOT?root:self:
-		read_mode?rcontext:wcontext;
+		read_mode?arcontext:awcontext;
 	
 	if(read_mode) {
 		// 'context' dive into dotted path
@@ -42,7 +40,7 @@ void process_dollar(Method_self_n_params& root, Value& self,
 			if(!context) // no such object field, nothing bad, just ignore that
 				return;
 		}
-		wcontext.write(context);
+		awcontext.write(context);
 	} else { // write mode
 		iter++; // skip '(' '['
 
@@ -63,26 +61,26 @@ void process_dollar(Method_self_n_params& root, Value& self,
 		}
 
 		if(construct_mode) {  
-			// .name(construct-code), processing on rcontext in empty temp wcontext
-			// pure side effect, no wcontext.write here
+			// .name(construct-code), processing on arcontext in empty temp awcontext
+			// pure side effect, no awcontext.write here
 			// last .name
 			String& name=static_cast<String&>(names.get[steps]);
 			WContext local_wcontext(pool /* empty */);
-			process(root, self, rcontext, local_wcontext, iter, ')');
+			process(root, self, arcontext, local_wcontext, iter, ')');
 			context->put_element(name, local_wcontext.value());
 		} else { // =='['
 			// .name[with-code], processing on 'context'
 			WContext local_context(pool, context);
 			process(root, self, local_context, local_context, iter, ']');
-			wcontext.write(local_context);
+			awcontext.write(local_context);
 		}
 		
 		iter++; // skip ')' ']'
 	}
 }
 
-void process_bird(Method_self_n_params& root, Value& self,
-				  RContext& rcontext, WContext& wcontext, 
+void process_bird(method_self_n_params_n_locals& root, Value& self,
+				  arcontext& arcontext, WContext& awcontext, 
 				  String_iterator& iter, char char_to_stop_before) {
 	
 	// ^name.field.subfield.method[..] -- plain call
@@ -98,7 +96,7 @@ void process_bird(Method_self_n_params& root, Value& self,
 	Value *context=
 		prefix?
 			prefix==ROOT?root:self:
-		rcontext;
+		arcontext;
 	iter++; // skip '['
 
 	// 'context' dive into dotted path, excluding last .name
@@ -138,13 +136,14 @@ void process_bird(Method_self_n_params& root, Value& self,
 		&param_values);
 	iter++; // skip ']'
 
-	Method_self_n_params local_rcontext(pool, 
+	method_self_n_params_n_locals local_rcontext(pool, 
 		context,
-		method->param_names, param_values);
+		method->param_names, param_values,
+		method->local_names);
 	WContext local_wcontext(pool, local_self);
 	process(
 		context, local_rcontext, 
 		local_rcontext, local_wcontext, 
 		iter, ']');
-	wcontext.write(local_wcontext);
+	awcontext.write(local_wcontext);
 }
