@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.h,v 1.10 2001/11/08 14:47:31 paf Exp $
+	$Id: pa_db_manager.h,v 1.11 2001/12/13 11:09:46 paf Exp $
 */
 
 #ifndef PA_DB_MANAGER_H
@@ -26,7 +26,7 @@ class DB_Manager : public Cache_manager {
 public:
 
 	DB_Manager(Pool& apool);
-	~DB_Manager();
+	virtual ~DB_Manager();
 
 	/** 
 		connect to specified db_home, 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.92 2001/11/19 12:17:06 paf Exp $
+	$Id: pa_globals.C,v 1.93 2001/12/13 11:09:47 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -101,26 +101,9 @@ static void setup_hex_value() {
 
 void pa_globals_destroy(void *) {
 	try {
-		// SQL driver manager
-		if(SQL_driver_manager)
-			SQL_driver_manager->~SQL_Driver_manager();
+		if(cache_managers)
+			cache_managers->~Cache_managers();
 		
-#ifdef DB2
-		// DB driver manager
-		if(DB_manager)
-			DB_manager->~DB_Manager();
-#endif
-		
-#ifdef XML
-		// XSLT stylesheet driver manager
-		if(stylesheet_manager)
-			stylesheet_manager->~Stylesheet_manager();
-#endif
-		
-		// Charset manager 
-		if(charset_manager)
-			charset_manager->~Charset_manager();
-
 	} catch(const Exception& e) {
 		SAPI::die("pa_globals_destroy failed: %s", e.comment());
 	}

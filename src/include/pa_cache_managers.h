@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_cache_managers.h,v 1.2 2001/11/08 14:47:31 paf Exp $
+	$Id: pa_cache_managers.h,v 1.3 2001/12/13 11:09:46 paf Exp $
 */
 
 #ifndef PA_CACHE_MANAGERS_H
@@ -24,6 +24,8 @@ public:
 	Cache_managers(Pool& apool) : Hash(apool) {
 	}
 
+	~Cache_managers();
+
 	/// maybe-expires all caches it contains, each cache manager desides it itself
 	void maybe_expire();
 
@@ -33,6 +35,7 @@ public:
 class Cache_manager : public Pooled {
 public:
 	Cache_manager(Pool& apool) : Pooled(apool) {}
+	virtual ~Cache_manager() {}
 
 	/// if filter_server_id not null, returns status only Cachable -s with matching cacheable_item_server_id()
 	virtual Value& get_status(Pool& pool, const String *source) =0;

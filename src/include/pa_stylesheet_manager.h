@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.h,v 1.7 2001/11/08 14:47:32 paf Exp $
+	$Id: pa_stylesheet_manager.h,v 1.8 2001/12/13 11:09:46 paf Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -34,7 +34,7 @@ class Stylesheet_manager : public Cache_manager {
 public:
 
 	Stylesheet_manager(Pool& apool);
-	~Stylesheet_manager();
+	virtual ~Stylesheet_manager();
 	/** 
 		check for disk update of "{file_spec}" or "{file_spec}.stamp",
 		if not updated return cached version[if any] otherwise load/compile/return

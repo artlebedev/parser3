@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_fixed.h,v 1.32 2001/12/13 10:47:34 paf Exp $
+	$Id: pa_config_fixed.h,v 1.33 2001/12/13 11:09:46 paf Exp $
 
 
 	tested only with MS Visual C++ V6
@@ -32,6 +32,6 @@
 #define HAVE__LOCKING
 
 #define USE_SMTP
-//#define XML
-//#define DB2
+#define XML
+#define DB2
 #define HAVE_PRAGMA_PACK
