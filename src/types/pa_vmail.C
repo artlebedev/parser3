@@ -6,7 +6,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vmail.C,v 1.2 2002/06/24 14:27:42 paf Exp $
+	$Id: pa_vmail.C,v 1.3 2002/06/24 15:04:23 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -20,7 +20,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-#ifdef WITH_MAIL_RECEIVE
+#ifdef WITH_MAILRECEIVE
 #include "gmime-config.h"
 #include "gmime.h"
 #endif
@@ -50,7 +50,7 @@ VMail::VMail(Pool& apool) : VStateless_class(apool, 0, mail_base_class),
 	vreceived(apool) {
 }
 
-#ifdef WITH_MAIL_RECEIVE
+#ifdef WITH_MAILRECEIVE
 
 static const String& maybeUpperCase(Pool& pool, const String& src, bool toUpperCase) {
 	return toUpperCase?src.change_case(pool, String::CC_UPPER):src;
@@ -276,7 +276,7 @@ static void parse(GMimeStream *stream, Hash& received) {
 
 void VMail::fill_received(Request& request) {
 	// store letter to received
-#ifdef WITH_MAIL_RECEIVE
+#ifdef WITH_MAILRECEIVE
 	if(request.info.mail_received) {
 		// init
 		g_mime_init(GMIME_INIT_FLAG_UTF8);
@@ -569,7 +569,7 @@ const String& VMail::message_hash_to_string(Request& r, const String *source,
 
 Value *VMail::get_element(const String& aname) {
 	// $fields
-#ifdef WITH_MAIL_RECEIVE
+#ifdef WITH_MAILRECEIVE
 	if(aname==MAIL_RECEIVED_ELEMENT_NAME)
 		return &vreceived;
 #endif
@@ -581,7 +581,7 @@ Value *VMail::get_element(const String& aname) {
 	return 0;
 }
 
-#if defined(WITH_MAIL_RECEIVE) && defined(_MSC_VER)
+#if defined(WITH_MAILRECEIVE) && defined(_MSC_VER)
 #	define GNOME_LIBS "/parser3project/win32mailreceive/win32/gnome"
 #	pragma comment(lib, GNOME_LIBS "/glib/lib/libglib-1.3-11.lib")
 #	ifdef _DEBUG
