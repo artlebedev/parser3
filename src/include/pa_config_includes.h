@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_config_includes.h,v 1.5 2001/04/26 15:09:05 paf Exp $
+	$Id: pa_config_includes.h,v 1.6 2001/05/10 17:28:11 paf Exp $
 
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
@@ -16,6 +16,11 @@
 #	include "pa_config_auto.h"
 #else
 #	include "pa_config_fixed.h"
+#endif
+
+#ifndef inline
+/* there must be 'inline' to compile parser */
+#	define	inline inline
 #endif
 
 #ifdef HAVE_CTYPE_H

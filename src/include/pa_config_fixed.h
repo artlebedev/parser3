@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_config_fixed.h,v 1.5 2001/04/26 15:09:05 paf Exp $
+	$Id: pa_config_fixed.h,v 1.6 2001/05/10 17:28:11 paf Exp $
 
 
 	tested only with MS Visual C++ V6
 */
 
+#define inline  __inline
 #define HAVE_STDARG_H
 #define HAVE_PROCESS_H
 #define HAVE_FCNTL_H

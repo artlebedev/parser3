@@ -12,6 +12,9 @@
 /* Define if you have the <ctype.h> header file.  */
 #undef HAVE_CTYPE_H
 
+/* Define if you have the <direct.h> header file.  */
+#undef HAVE_DIRECT_H
+
 /* Define if you have the <errno.h> header file.  */
 #undef HAVE_ERRNO_H
 
@@ -48,17 +51,11 @@
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
 
-/* this host is Windows32 */
-#undef WIN32
-
 /* some test var */
 #undef test_var
 
-/* mysql home */
-#undef mysql
-
-/* mysql home */
-#undef mysql
+/* Windows32 target platform */
+#undef WIN32
 
 /* no 'first' module */
 #undef WITHOUT_FIRST

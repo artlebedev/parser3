@@ -10,7 +10,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#  $Id: Makefile.in,v 1.1 2001/04/23 15:16:08 paf Exp $
+#  $Id: Makefile.in,v 1.2 2001/05/10 17:28:19 paf Exp $
 
 
 SHELL = @SHELL@
@@ -77,13 +77,14 @@ OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
+WIN32_ADDITIONAL_LIBS = @WIN32_ADDITIONAL_LIBS@
 YACC = @YACC@
 host_os = @host_os@
-mysql = @mysql@
-bin_PROGRAMS = dftables
-dftables_SOURCES = dftables.c
+bin_PROGRAMS = dftables pcre_parser_ctype
+dftables_SOURCES = dftables.c 
+pcre_parser_ctype_SOURCES = pcre_parser_ctype.c
 noinst_LIBRARIES = libpcre.a
-libpcre_a_SOURCES = get.c pcre.c study.c  chartables.c maketables.c
+libpcre_a_SOURCES = chartables.c get.c pcre.c study.c  chartables.c maketables.c
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -95,7 +96,8 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 libpcre_a_LIBADD = 
-libpcre_a_OBJECTS =  get.o pcre.o study.o chartables.o maketables.o
+libpcre_a_OBJECTS =  chartables.o get.o pcre.o study.o chartables.o \
+maketables.o
 AR = ar
 PROGRAMS =  $(bin_PROGRAMS)
 
@@ -103,6 +105,10 @@ dftables_OBJECTS =  dftables.o
 dftables_LDADD = $(LDADD)
 dftables_DEPENDENCIES = 
 dftables_LDFLAGS = 
+pcre_parser_ctype_OBJECTS =  pcre_parser_ctype.o
+pcre_parser_ctype_LDADD = $(LDADD)
+pcre_parser_ctype_DEPENDENCIES = 
+pcre_parser_ctype_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -116,9 +122,9 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/chartables.P .deps/dftables.P .deps/get.P \
-.deps/maketables.P .deps/pcre.P .deps/study.P
-SOURCES = $(libpcre_a_SOURCES) $(dftables_SOURCES)
-OBJECTS = $(libpcre_a_OBJECTS) $(dftables_OBJECTS)
+.deps/maketables.P .deps/pcre.P .deps/pcre_parser_ctype.P .deps/study.P
+SOURCES = $(libpcre_a_SOURCES) $(dftables_SOURCES) $(pcre_parser_ctype_SOURCES)
+OBJECTS = $(libpcre_a_OBJECTS) $(dftables_OBJECTS) $(pcre_parser_ctype_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -205,6 +211,10 @@ uninstall-binPROGRAMS:
 dftables: $(dftables_OBJECTS) $(dftables_DEPENDENCIES)
 	@rm -f dftables
 	$(LINK) $(dftables_LDFLAGS) $(dftables_OBJECTS) $(dftables_LDADD) $(LIBS)
+
+pcre_parser_ctype: $(pcre_parser_ctype_OBJECTS) $(pcre_parser_ctype_DEPENDENCIES)
+	@rm -f pcre_parser_ctype
+	$(LINK) $(pcre_parser_ctype_LDFLAGS) $(pcre_parser_ctype_OBJECTS) $(pcre_parser_ctype_LDADD) $(LIBS)
 
 tags: TAGS
 
@@ -371,10 +381,11 @@ mostlyclean distclean maintainer-clean
 
 
 
+auto_part.p:   pcre_parser_ctype
+	./pcre_parser_ctype Russian_Russia.1251 > auto_part.p
+
 chartables.c:   dftables
 	./dftables >chartables.c
-
-
 
 
 

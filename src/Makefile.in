@@ -10,7 +10,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#  $Id: Makefile.in,v 1.1 2001/04/23 15:16:52 paf Exp $
+#  $Id: Makefile.in,v 1.2 2001/05/10 17:28:04 paf Exp $
 
 
 SHELL = @SHELL@
@@ -76,10 +76,12 @@ OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
+WIN32_ADDITIONAL_LIBS = @WIN32_ADDITIONAL_LIBS@
 YACC = @YACC@
 host_os = @host_os@
-mysql = @mysql@
+
 SUBDIRS = classes types main libltdl pcre targets
+
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -363,12 +365,8 @@ uninstall-am uninstall all-redirect all-am all installdirs-am \
 installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
-
-
-
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
-
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

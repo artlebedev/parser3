@@ -10,7 +10,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#  $Id: Makefile.in,v 1.1 2001/04/23 15:16:15 paf Exp $
+#  $Id: Makefile.in,v 1.2 2001/05/10 17:28:32 paf Exp $
 
 
 SHELL = @SHELL@
@@ -77,15 +77,13 @@ OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
+WIN32_ADDITIONAL_LIBS = @WIN32_ADDITIONAL_LIBS@
 YACC = @YACC@
 host_os = @host_os@
-mysql = @mysql@
 INCLUDES = -I../../include -I../../classes -I../../types -I$(INCLTDL) -I../../sql
 bin_PROGRAMS = parser3
 parser3_SOURCES = pa_pool.C parser3.C
-parser_common_libs = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../pcre/libpcre.a 
-parser_libs = $(parser_common_libs) /lib/libwsock32.a 
-parser3_LDADD = $(parser_libs)
+parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../pcre/libpcre.a $(WIN32_ADDITIONAL_LIBS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -99,7 +97,7 @@ LIBS = @LIBS@
 parser3_OBJECTS =  pa_pool.o parser3.o
 parser3_DEPENDENCIES =  ../../main/libmain.a ../../classes/libclasses.a \
 ../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a \
-../../pcre/libpcre.a /lib/libwsock32.a
+../../pcre/libpcre.a
 parser3_LDFLAGS = 
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -372,11 +370,6 @@ mostlyclean distclean maintainer-clean
 
 
 
-
-
-
-ifeq (${host_os},"cygwin")
-endif
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
