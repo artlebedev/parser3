@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/12/10 07:31:27 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/12/10 07:34:05 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -167,7 +167,7 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 		ssize_t received_size=recv(sock, buf, sizeof(buf), 0); 
 		if(received_size<=0) {
 			if(int no=pa_socks_errno())
-				throw Exception("http.connect", 
+				throw Exception("http.timeout", 
 					0, 
 					"error receiving response: %s (%d)", pa_socks_strerr(no), no); 
 			break;
@@ -281,7 +281,7 @@ static int http_request(char*& response, size_t& response_size,
 			size_t request_size=strlen(request);
 			if(send(sock, request, request_size, 0)!=(ssize_t)request_size) {
 				int no=pa_socks_errno();
-				throw Exception("http.connect", 
+				throw Exception("http.timeout", 
 					0, 
 					"error sending request: %s (%d)", pa_socks_strerr(no), no); 
 			}
