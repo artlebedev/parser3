@@ -5,12 +5,13 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2003/10/21 04:45:18 $";
+static const char* IDENT_OP_C="$Date: 2003/11/06 09:16:33 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
 
 #include "pa_common.h"
+#include "pa_os.h"
 #include "pa_request.h"
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
