@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.181 2002/02/18 12:05:02 paf Exp $
+	$Id: compile.y,v 1.182 2002/02/18 15:21:01 paf Exp $
 */
 
 /**
@@ -319,8 +319,10 @@ construct_square: '[' any_constructor_code_value ']' {
 }
 ;
 construct_round: '(' expr_value ')' { 
+	$$=N(POOL); 
+	O($$, OP_PREPARE_TO_EXPRESSION);
 	// stack: context, name
-	$$=$2; // stack: context, name, value
+	P($$, $2); // stack: context, name, value
 	O($$, OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
 }
 ;
@@ -411,7 +413,9 @@ code_param_value:
 |	constructor_code_value /* [something complex] */
 ;
 write_expr_value: expr_value {
-	$$=$1;
+	$$=N(POOL); 
+	O($$, OP_PREPARE_TO_EXPRESSION);
+	P($$, $1);
 	O($$, OP_WRITE_EXPR_RESULT);
 };
 
@@ -492,6 +496,7 @@ class_constructor_prefix: class_static_prefix ':' {
 /* expr */
 
 expr_value: expr {
+	// see OP_PREPARE_TO_EXPRESSION!!
 	if(($$=$1)->size()==2) // only one string literal in there?
 		change_string_literal_to_double_literal($$); // make that string literal Double
 };

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.h,v 1.27 2002/02/08 08:30:21 paf Exp $
+	$Id: pa_wcontext.h,v 1.28 2002/02/18 15:21:01 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -70,6 +70,9 @@ public: // usage
 	void set_constructing(bool aconstructing) { flags.constructing=aconstructing?1:0; }
 	bool get_constructing() { return flags.constructing!=0; }
 
+	void set_in_expression(bool ain_expression) { flags.in_expression=ain_expression?1:0; }
+	bool get_in_expression() { return flags.in_expression!=0; }
+
 	void set_somebody_entered_some_class() { flags.entered_class=1; }
 	bool get_somebody_entered_some_class() { return flags.entered_class!=0; }
 
@@ -84,6 +87,7 @@ protected:
 private:
 	struct {
 		int constructing:1;
+		int in_expression:1;
 		int entered_object:1;
 		int entered_class:1;
 	} flags;

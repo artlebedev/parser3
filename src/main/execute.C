@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.218 2002/02/08 08:30:15 paf Exp $
+	$Id: execute.C,v 1.219 2002/02/18 15:21:01 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -43,7 +43,7 @@ char *opcode_name[]={
   	"CREATE_SWPOOL",	"REDUCE_SWPOOL",
 	"GET_METHOD_FRAME",
 	"STORE_PARAM",
-	"PREPARE_TO_CONSTRUCT_OBJECT",	"CALL",
+	"PREPARE_TO_CONSTRUCT_OBJECT",	"PREPARE_TO_EXPRESSION", "CALL",
 
 	// expression ops: unary
 	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS",
@@ -213,6 +213,9 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_CONSTRUCT_EXPR:
 			{
+				// see OP_PREPARE_TO_EXPRESSION
+				wcontext->set_in_expression(false);
+
 				value=POP();
 				const String& name=POP_NAME();
 				Value *ncontext=POP();
@@ -263,6 +266,9 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_WRITE_EXPR_RESULT:
 			{
+				// see OP_PREPARE_TO_EXPRESSION
+				wcontext->set_in_expression(false);
+
 				value=POP();
 				write_expr_result(*value->as_expr_result());
 				break;
@@ -376,6 +382,13 @@ void Request::execute(const Array& ops) {
 				wcontext->set_constructing(true);
 				break;
 			}
+
+		case OP_PREPARE_TO_EXPRESSION:
+			{
+				wcontext->set_in_expression(true);
+				break;
+			}
+
 		case OP_CALL:
 			{
 #ifdef DEBUG_EXECUTE
@@ -426,6 +439,10 @@ void Request::execute(const Array& ops) {
 				}
 
 				frame->set_self(*self);
+
+				// see OP_PREPARE_TO_EXPRESSION
+				frame->set_in_expression(wcontext->get_in_expression());
+				
 				rcontext=wcontext=frame;
 				{
 					// take object or class from any wrappers

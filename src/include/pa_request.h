@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.121 2002/02/08 08:30:13 paf Exp $
+	$Id: pa_request.h,v 1.122 2002/02/18 15:21:00 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -142,8 +142,11 @@ public:
 	}
 	/// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
-		wcontext->write(avalue, 
-			String::UL_CLEAN | flang&String::UL_OPTIMIZE_BIT);
+		if(wcontext->get_in_expression())
+			wcontext->write(avalue);
+		else
+			wcontext->write(avalue, 
+				String::UL_CLEAN | flang&String::UL_OPTIMIZE_BIT);
 	}
 	/// appending sure value, not VString
 	void write_expr_result(Value& avalue) {
