@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2004/12/08 08:45:13 $";
+static const char * const IDENT_MAIL_C="$Date: 2004/12/08 08:47:35 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -23,7 +23,7 @@ static const char * const IDENT_MAIL_C="$Date: 2004/12/08 08:45:13 $";
 
 // debug switches
 
-#define DEBUG_JUST_SEE_MESSAGE
+//#define DEBUG_JUST_SEE_MESSAGE
 
 // defines
 
