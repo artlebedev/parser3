@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/11/20 09:44:44 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/11/20 13:37:23 $";
 
 #include "pa_config_includes.h"
 
@@ -57,6 +57,9 @@ static Pool_storage global_pool_storage; ///< global pool storage
 static Pool global_pool(&global_pool_storage); ///< global pool
 static bool cgi; ///< we were started as CGI?
 static bool mail_received=false; ///< we were started with -m option? [asked to parse incoming message to $mail:received]
+
+// for signal handlers
+Request *request=0;
 
 // SAPI
 
@@ -220,6 +223,20 @@ static void full_file_spec(const char *file_name, char *buf, size_t buf_size) {
 #endif
 }
 
+#ifdef SIGUSR1
+void SIGUSR1_Handler(int /*sig*/){
+	SAPI::log(global_pool, "SIGUSR1 received. url=", request?request->info.uri:"<no request>");
+}
+#endif
+
+#ifdef SIGPIPE
+void SIGPIPE_Handler(int /*sig*/){
+	SAPI::log(global_pool, "SIGPIPE received. url=", request?request->info.uri:"<no request>");
+	if(request)
+		request->interrupt();
+}
+#endif
+
 /**
 main workhorse
 
@@ -316,7 +333,18 @@ static void real_parser_handler(
 /*#endif*/
 		,
 		true /* status_allowed */);
-	
+
+	// get request ptr for signal handlers
+	::request=&request;
+#ifdef SIGUSR1
+    if(signal(SIGUSR1, SIGUSR1_Handler)==SIG_ERR)
+		SAPI::die("Can not set handler for SIGUSR1");
+#endif
+#ifdef SIGPIPE
+    if(signal(SIGPIPE, SIGPIPE_Handler)==SIG_ERR)
+		SAPI::die("Can not set handler for SIGPIPE");
+#endif
+
 	char config_filespec_buf[MAX_STRING];
 	if(!config_filespec_cstr) {
 		const char *config_by_env=getenv(PARSER_CONFIG_ENV_NAME);
@@ -347,6 +375,9 @@ static void real_parser_handler(
 	request.core(
 		config_filespec_cstr, fail_on_config_read_problem,
 		header_only);
+
+	// no request [prevent signal handlers from accessing invalid memory]
+	::request=0;
 	
 	//
 	done_socks();

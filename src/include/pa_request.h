@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/10/16 08:22:14 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/11/20 13:37:23 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -216,6 +216,9 @@ public:
 
 	bool origins_mode();
 
+	void interrupt() { finterrupted=true; }
+	bool interrupted() { return finterrupted; }
+
 public:
 	
 	/// info from web server
@@ -264,6 +267,8 @@ private:
 	/// current connection
 	SQL_Connection *fconnection;
 	//@}
+	/// interrupted flag, raised on signals [SIGPIPE]
+	bool finterrupted;
 
 public: // status read methods
 

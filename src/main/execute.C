@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/11/01 06:18:06 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/11/20 13:37:23 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -123,6 +123,11 @@ void Request::execute(const Array& ops) {
 
 	Array_iter i(ops);
 	while(i.has_next()) {
+		if(interrupted())
+			throw Exception("parser.interrupted",
+				0,
+				"execution stopped");
+
 		Operation op;
 		op.cast=i.next();
 #ifdef DEBUG_EXECUTE
