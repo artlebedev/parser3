@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.53 2001/10/16 06:46:25 parser Exp $
+	$Id: image.C,v 1.54 2001/10/16 08:18:09 parser Exp $
 */
 
 /*
@@ -801,9 +801,9 @@ static void _copy(Request& r, const String& method_name, MethodParams *params) {
 		int dw=params->as_int(1+2+2+2, "dest_w must be int", r);
 		int dh=params->size()>1+2+2+2+1?params->as_int(1+2+2+2+1, "dest_h must be int", r):dw;
 
-		src.CopyResized(*dest, sx, sy, sw, sh, dx, dy, dw, dh);
+		src.CopyResized(*dest, dx, dy, sx, sy, dw, dh, sw, sh);
 	} else
-		src.Copy(*dest, sx, sy, sw, sh, dx, dy);
+		src.Copy(*dest, dx, dy, sx, sy, sw, sh);
 }
 
 
