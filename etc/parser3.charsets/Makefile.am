@@ -1,2 +1,3 @@
 charsetsdir=@charsetsdir@
-charsets_DATA=windows-1251.cfg koi8-r.cfg windows-1250.cfg
+charsets_DATA=koi8-r.cfg windows-1250.cfg windows-1251.cfg windows-1257.cfg 
+EXTRA_DIST=$(charsets_DATA)
