@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/08/05 13:45:53 $";
+static const char* IDENT_COMMON_C="$Date: 2002/08/05 13:47:37 $";
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -287,7 +287,7 @@ static void file_write_action(int f, void *context) {
 		if(written!=info.size)
 			throw Exception(0,
 				0,
-				"write failed: %s (%d), number of bytes written not equal to requested(%u!=%u), %s", 
+				"write failed: %s (%d), number of bytes written not equal to requested (%u!=%u)", 
 					strerror(errno), errno,
 					written, info.size);
 	}
