@@ -296,9 +296,25 @@ OK
 #^http_prefix[]
 #^http_prefix_table[]
 #^http_prefix_xml[]
-^imagefont[]
+#^imagefont[]
 #^downloadtest[]
 #^cachebug[]
+^quickregexatend[]
+
+@quickregexatend[]
+#$subject[xxxabcd]
+#^if(^subject.match[^(?>.*)(?<=abcd)]){y;n}
+$subject[^for[i](0;1000){xxxxxyyyyy}   ]
+^for[j](0;1000){
+#$trimmed[^subject.match[\s+^$][]{}]
+#$table[^subject.match[^(.*\S)\s+^$]]
+$table[^subject.match[^(.*\S)\s+^$]]
+$trimmed[$table.1]
+}
+^untaint[html]{"$trimmed"}
+#$table[^subject.match[^(.*?)\s+^$]]
+#^untaint[html]{"$table.1"}
+
 
 @cachebug[]
 ^cache[test](10){body}
