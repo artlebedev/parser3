@@ -4,18 +4,18 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.70 2001/12/14 13:02:32 paf Exp $
+	$Id: pa_globals.h,v 1.71 2001/12/15 21:28:19 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-#include "pa_config_includes.h"
 #include "pa_pool.h"
 
 class String;
 class Hash;
 class Dictionary;
+class Charset;
 
 //@{
 /// constant string. class name, predefined method & co
@@ -67,6 +67,8 @@ class Dictionary;
 #define SQL_LIMIT_NAME "limit"
 #define SQL_OFFSET_NAME "offset"
 #define SQL_DEFAULT_NAME "default"
+
+#define CHARSET_UTF8_NAME "UTF-8"
 
 #define HASH_DEFAULT_ELEMENT_NAME "_default"
 
@@ -128,14 +130,16 @@ extern String *sql_limit_name;
 extern String *sql_offset_name;
 extern String *sql_default_name;
 
+extern String *charset_UTF8_name;
+
 extern String *hash_default_element_name;
 
 //@}
 
-/// global hash
+/// name to enum language table
 extern Hash *untaint_lang_name2enum;
 
-/// global table
-extern Dictionary *default_typo_dict;
+/// UTF8 charset
+extern Charset *utf8_charset;
 
 #endif

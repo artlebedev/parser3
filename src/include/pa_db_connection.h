@@ -5,13 +5,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_connection.h,v 1.17 2001/11/05 11:46:23 paf Exp $
+	$Id: pa_db_connection.h,v 1.18 2001/12/15 21:28:19 paf Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
 #define PA_DB_CONNECTION_H
 
-#include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_hash.h"
 #include "pa_db_table.h"

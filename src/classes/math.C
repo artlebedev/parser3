@@ -4,10 +4,9 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: math.C,v 1.10 2001/12/10 13:51:30 paf Exp $
+	$Id: math.C,v 1.11 2001/12/15 21:28:17 paf Exp $
 */
 
-#include "pa_config_includes.h"
 #include "pa_common.h"
 #include "pa_vint.h"
 #include "pa_vmath.h"

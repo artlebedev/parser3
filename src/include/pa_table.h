@@ -4,13 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_table.h,v 1.37 2001/11/22 15:47:12 paf Exp $
+	$Id: pa_table.h,v 1.38 2001/12/15 21:28:20 paf Exp $
 */
 
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-#include "pa_config_includes.h"
 #include "pa_types.h"
 #include "pa_array.h"
 #include "pa_hash.h"

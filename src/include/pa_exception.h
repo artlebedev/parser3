@@ -4,13 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.22 2001/11/15 20:26:34 paf Exp $
+	$Id: pa_exception.h,v 1.23 2001/12/15 21:28:19 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-#include "pa_config_includes.h"
 #include "pa_types.h"
 #include "pa_string.h"
 

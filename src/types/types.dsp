@@ -257,6 +257,10 @@ SOURCE=.\pa_vrequest.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_vresponse.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_vresponse.h
 # End Source File
 # Begin Source File

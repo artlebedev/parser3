@@ -4,11 +4,10 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.63 2001/12/07 15:24:46 paf Exp $
+	$Id: op.C,v 1.64 2001/12/15 21:28:17 paf Exp $
 */
 
 #include "classes.h"
-#include "pa_config_includes.h"
 #include "pa_common.h"
 #include "pa_request.h"
 #include "pa_vint.h"

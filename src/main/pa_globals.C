@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.94 2001/12/14 13:02:32 paf Exp $
+	$Id: pa_globals.C,v 1.95 2001/12/15 21:28:21 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -13,9 +13,10 @@
 #include "pa_sql_driver_manager.h"
 #include "pa_dictionary.h"
 #include "pa_stylesheet_manager.h"
-#include "pa_charset_manager.h"
 #include "pa_sapi.h"
 #include "pa_cache_managers.h"
+#include "pa_charsets.h"
+#include "pa_charset.h"
 
 #ifdef DB2
 #include "pa_db_manager.h"
@@ -64,11 +65,13 @@ String *sql_limit_name;
 String *sql_offset_name;
 String *sql_default_name;
 
+String *charset_UTF8_name;
+
 String *hash_default_element_name;
 
 Hash *untaint_lang_name2enum;
 
-Dictionary *default_typo_dict;
+Charset *utf8_charset;
 
 short hex_value[0x100];
 
@@ -102,6 +105,8 @@ void pa_globals_destroy(void *) {
 	try {
 		if(cache_managers)
 			cache_managers->~Cache_managers();
+
+		charsets->~Charsets();
 		
 	} catch(const Exception& e) {
 		SAPI::die("pa_globals_destroy failed: %s", e.comment());
@@ -165,6 +170,9 @@ void pa_globals_init(Pool& pool) {
 	sql_offset_name=NEW String(pool, SQL_OFFSET_NAME);
 	sql_default_name=NEW String(pool, SQL_DEFAULT_NAME);
 
+	// charsets
+	charset_UTF8_name=NEW String(pool, CHARSET_UTF8_NAME);
+
 	// hash
 	hash_default_element_name=NEW String(pool, HASH_DEFAULT_ELEMENT_NAME);
 
@@ -185,21 +193,10 @@ void pa_globals_init(Pool& pool) {
 	ULN("html", HTML);
 	ULN("optimized-html", HTML|String::UL_OPTIMIZE_BIT);
 
-	// tables
-	Table *default_typo_table=NEW Table(pool, 0, 0);
-	#define DT_ROW(from, to) { \
-			Array *row=NEW Array(pool); \
-			*row+=NEW String(pool, from); \
-			*row+=NEW String(pool, to); \
-			*default_typo_table+=row; \
-		}
-	DT_ROW("<", "&lt;");
-	DT_ROW(">", "&gt;");
-	DT_ROW("\"", "&quot;");
-	DT_ROW("&", "&amp;");
-	DT_ROW("\\n\\n", "<p>");
-	DT_ROW("\\n", "<br>");
-	default_typo_dict=NEW Dictionary(*default_typo_table);
+	// charsets
+	charsets=NEW Charsets(pool);
+	charsets->put(*charset_UTF8_name, 
+		utf8_charset=NEW Charset(pool, *charset_UTF8_name, 0/*no file=system*/));
 
 	// Status registration, must be initialized before all registrants
 	cache_managers=NEW Cache_managers(pool);
@@ -219,10 +216,6 @@ void pa_globals_init(Pool& pool) {
 	cache_managers->put(*NEW String(pool, "stylesheet"), 
 		stylesheet_manager=NEW Stylesheet_manager(pool));
 #endif
-
-	// Charset manager 
-	cache_managers->put(*NEW String(pool, "charset"), 
-		charset_manager=NEW Charset_manager(pool));
 }
 
 #if defined(XML) && defined(_MSC_VER)

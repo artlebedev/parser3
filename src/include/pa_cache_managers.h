@@ -4,13 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_cache_managers.h,v 1.3 2001/12/13 11:09:46 paf Exp $
+	$Id: pa_cache_managers.h,v 1.4 2001/12/15 21:28:18 paf Exp $
 */
 
 #ifndef PA_CACHE_MANAGERS_H
 #define PA_CACHE_MANAGERS_H
 
-#include "pa_config_includes.h"
 #include "pa_hash.h"
 #include "pa_value.h"
 

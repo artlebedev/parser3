@@ -4,13 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.67 2001/12/07 15:24:46 paf Exp $
+	$Id: pa_common.h,v 1.68 2001/12/15 21:28:18 paf Exp $
 */
 
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_string.h"
 

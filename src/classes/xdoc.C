@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.52 2001/12/13 15:17:34 paf Exp $
+	$Id: xdoc.C,v 1.53 2001/12/15 21:28:18 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -14,6 +14,7 @@
 #include "pa_vxdoc.h"
 #include "pa_stylesheet_manager.h"
 #include "pa_stylesheet_connection.h"
+#include "pa_charset.h"
 #include "pa_vfile.h"
 #include "xnode.h"
 
@@ -459,7 +460,7 @@ static std::auto_ptr<FormatterListener> create_optioned_listener(
 
 	// default encoding from pool
 	if(oo.encoding.empty())
-		oo.encoding.append(pool.get_charset().cstr());
+		oo.encoding.append(pool.get_source_charset().name().cstr());
 	// default method=xml
 	if(!oo.method)
 		oo.method=XDOC_OUTPUT_METHOD_OPTION_VALUE_XML;

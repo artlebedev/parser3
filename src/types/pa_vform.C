@@ -5,7 +5,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vform.C,v 1.49 2001/12/14 15:25:50 paf Exp $
+	$Id: pa_vform.C,v 1.50 2001/12/15 21:28:22 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -18,6 +18,7 @@
 #include "pa_vfile.h"
 #include "pa_common.h"
 #include "pa_vtable.h"
+#include "pa_charset.h"
 
 // parse helper funcs
 
@@ -51,6 +52,11 @@ static char *searchAttribute(char *data, const char *attr, size_t len){
 
 // VForm
 
+VForm::VForm(Pool& apool) : VStateless_class(apool, form_base_class),
+	fields(apool),
+	tables(apool) {
+}
+
 char *VForm::strpart(const char *str, size_t len) {
     char *result=(char *)malloc(len+1);
     if (!result) return NULL;
@@ -78,9 +84,9 @@ char *VForm::getAttributeValue(char *data, char *attr, size_t len) {
 void VForm::transcode(
 	const void *client_body, size_t client_content_length,
 	const void *& source_body, size_t& source_content_length) {
-	::transcode(pool(),
-		client_transcoder, client_body, client_content_length,
-		source_transcoder, source_body, source_content_length);
+	Charset::transcode(pool(),
+		pool().get_client_charset(), client_body, client_content_length,
+		pool().get_source_charset(), source_body, source_content_length);
 }
 
 void VForm::ParseGetFormInput(char *query_string, size_t length) {
@@ -220,9 +226,6 @@ void VForm::AppendFormEntry(
 
 /// @todo parse input letter if some switch is on
 void VForm::fill_fields_and_tables(Request& request) {
-	client_transcoder=request.client_transcoder();
-	source_transcoder=request.source_transcoder();
-
 	// parsing QS [GET and ?name=value from uri rewrite)]
 	if(request.info.query_string) {
 		size_t length=strlen(request.info.query_string);

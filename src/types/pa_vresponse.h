@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vresponse.h,v 1.18 2001/12/14 12:53:48 paf Exp $
+	$Id: pa_vresponse.h,v 1.19 2001/12/15 21:28:22 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -12,14 +12,15 @@
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
-
-// externals
-
-extern Methoded *response_class;
+#include "classes.h"
 
 // forwards
 
 class Response;
+
+// externals
+
+extern Methoded *response_class;
 
 /// value of type 'response'
 class VResponse : public VStateless_object {
@@ -31,19 +32,10 @@ public: // Value
 	Hash *get_hash(const String * /*source*/) { return &ffields; }
 
 	/// Response: method,fields
-	Value *get_element(const String& name) {
-		// $method
-		if(Value *result=VStateless_object::get_element(name))
-			return result;
-		
-		// $field
-		return static_cast<Value *>(ffields.get(name));
-	}
+	Value *get_element(const String& name);
 
 	/// Response: (attribute)=value
-	void put_element(const String& name, Value *value) { 
-		ffields.put(name, value);
-	}
+	void put_element(const String& name, Value *value);
 
 protected: // VAliased
 

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.83 2001/12/10 10:20:24 paf Exp $
+	$Id: untaint.C,v 1.84 2001/12/15 21:28:22 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -199,7 +199,7 @@ size_t String::cstr_bufsize(Untaint_lang lang,
 			break;
 		case UL_URI:
 			// tainted, untaint language: uri
-			dest+=row->item.size*3/* worst: Z->%XX */;
+			dest+=row->item.size*6*3/* worst utf8 x worst Z->%XX */;
 			break;
 		case UL_HTTP_HEADER:
 			// tainted, untaint language: http-field-content-text

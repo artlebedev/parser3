@@ -5,13 +5,12 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_hash.h,v 1.51 2001/11/12 10:00:31 paf Exp $
+	$Id: pa_hash.h,v 1.52 2001/12/15 21:28:19 paf Exp $
 */
 
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_types.h"
 #include "pa_string.h"

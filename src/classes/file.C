@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.66 2001/12/13 09:32:06 paf Exp $
+	$Id: file.C,v 1.67 2001/12/15 21:28:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -20,6 +20,7 @@
 #include "pa_vdate.h"
 #include "pa_dir.h"
 #include "pa_vtable.h"
+#include "pa_charset.h"
 
 // consts
 
@@ -312,7 +313,7 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 		int erroffset;
 		regexp_code=pcre_compile(pattern, PCRE_EXTRA | PCRE_DOTALL, 
 			&errptr, &erroffset, 
-			r.pcre_tables());
+			pool.get_client_charset().pcre_tables);
 
 		if(!regexp_code)
 			throw Exception(0, 0, 

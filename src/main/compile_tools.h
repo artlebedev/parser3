@@ -4,13 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.h,v 1.51 2001/11/05 11:46:26 paf Exp $
+	$Id: compile_tools.h,v 1.52 2001/12/15 21:28:20 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#include "pa_config_includes.h"
 #include "pa_opcode.h"
 #include "pa_types.h"
 #include "pa_vstring.h"

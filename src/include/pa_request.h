@@ -4,13 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.114 2001/12/14 15:25:50 paf Exp $
+	$Id: pa_request.h,v 1.115 2001/12/15 21:28:19 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_hash.h"
 #include "pa_wcontext.h"
@@ -26,7 +25,6 @@
 #include "pa_vresponse.h"
 #include "pa_vcookie.h"
 #include "pa_sql_driver_manager.h"
-#include "pa_transcoder.h"
 
 #ifdef RESOURCES_DEBUG
 #include <sys/resource.h>
@@ -159,15 +157,6 @@ public:
 	/// returns the mime type of 'user_file_name_cstr'
 	const String& mime_type_of(const char *user_file_name_cstr);
 
-	/// transcoder for source encoding [pcre_tables + byte->unicode & back]
-	const Transcoder* source_transcoder();
-
-	/// transcoder for client encoding [pcre_tables + byte->unicode & back]
-	const Transcoder* client_transcoder();
-
-	/// pcre_tables [up/low case & co]
-	const unsigned char *pcre_tables();
-
 public:
 	
 	/// info from web server
@@ -221,9 +210,6 @@ private: // core data
 		@see ANTI_ENDLESS_EXECUTE_RECOURSION
 	*/
 	uint anti_endless_execute_recoursion;
-
-	/// charset->transcoder
-	Hash CTYPE;	
 
 	/// stack trace
 	Stack trace;

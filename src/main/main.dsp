@@ -233,19 +233,19 @@ SOURCE=..\include\pa_cache_managers.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\pa_charset_connection.C
+SOURCE=.\pa_charset.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\include\pa_charset_connection.h
+SOURCE=..\include\pa_charset.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\pa_charset_manager.C
+SOURCE=.\pa_charsets.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\include\pa_charset_manager.h
+SOURCE=..\include\pa_charsets.h
 # End Source File
 # Begin Source File
 
@@ -423,14 +423,6 @@ SOURCE=..\include\pa_table.h
 # Begin Source File
 
 SOURCE=..\include\pa_threads.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_transcoder.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_transcoder.h
 # End Source File
 # Begin Source File
 

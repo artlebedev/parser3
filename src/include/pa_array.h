@@ -4,13 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_array.h,v 1.47 2001/11/05 11:46:23 paf Exp $
+	$Id: pa_array.h,v 1.48 2001/12/15 21:28:18 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_types.h"
 #include "pa_string.h"

@@ -4,12 +4,8 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.185 2001/12/14 15:25:50 paf Exp $
+	$Id: pa_request.C,v 1.186 2001/12/15 21:28:21 paf Exp $
 */
-
-#include "pa_config_includes.h"
-
-extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -23,8 +19,8 @@ extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 #include "pa_vtable.h"
 #include "pa_vfile.h"
 #include "pa_dictionary.h"
-#include "pa_charset_manager.h"
-#include "pa_charset_connection.h"
+#include "pa_charsets.h"
+#include "pa_charset.h"
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
@@ -36,15 +32,12 @@ const char *ORIGINS_CONTENT_TYPE="text/plain";
 Methoded *MOP_create(Pool&);
 
 static void load_charset(const Hash::Key& akey, Hash::Val *avalue, 
-										  void *info) {
+										  void *) {
 	Value& value=*static_cast<Value *>(avalue);
-	Hash& CTYPE=*static_cast<Hash *>(info);
 
-	Charset_connection& connection=
-		charset_manager->get_connection(akey, value.as_string());
-
-	// charset->transcoder 
-	CTYPE.put(akey, &connection.transcoder());
+	if(!charsets->get(akey)) // don't we know that charset?
+		charsets->put(akey, 
+			new(charsets->pool()) Charset(charsets->pool(), akey, &value.as_string()));
 }
 
 //
@@ -62,7 +55,6 @@ Request::Request(Pool& apool,
 	response(apool),
 	cookie(apool),
 	fclasses(apool),
-	CTYPE(apool),
 	fdefault_lang(adefault_lang), flang(adefault_lang),
 	info(ainfo),
 	post_data(0), post_size(0),
@@ -78,6 +70,10 @@ Request::Request(Pool& apool,
 	,sql_connect_time(0),sql_request_time(0)
 #endif
 {
+	// default charsets
+	pool().set_source_charset(*utf8_charset);
+	pool().set_client_charset(*utf8_charset);
+
 	// maybe expire old caches
 	cache_managers->maybe_expire();
 	
@@ -144,7 +140,8 @@ gettimeofday(&mt[0],NULL);
 				true/*ignore class_path*/, root_config_fail_on_read_problem,
 				main_class_name, main_class);
 		}
-
+		// charsets must only be specified in root config
+		// so that users would not interfere
 		if(main_class) {
 			/* $MAIN:CHARSETS[
 					$.charsetname1[/full/path/to/charset/file.cfg]
@@ -153,14 +150,13 @@ gettimeofday(&mt[0],NULL);
 			*/
 			if(Value *vcharsets=main_class->get_element(*charsets_name)) {
 				if(Hash *charsets=vcharsets->get_hash(0))
-					charsets->for_each(load_charset, &CTYPE);
+					charsets->for_each(load_charset);
 				else
 					throw Exception(0, 0,
 						&vcharsets->name(),
 						"must be hash");
 			}
 		}
-
 		// configure root options
 		//	until someone with less privileges have overriden them
 		OP.configure_admin(*this);
@@ -609,9 +605,9 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	// transcode
 	const void *client_body;
 	size_t client_content_length;
-	::transcode(pool(),
-		source_transcoder(), body_file.value_ptr(), body_file.value_size(),
-		client_transcoder(), client_body, client_content_length
+	Charset::transcode(pool(),
+		pool().get_source_charset(), body_file.value_ptr(), body_file.value_size(),
+		pool().get_client_charset(), client_body, client_content_length
 	);
 
 	// prepare header: content-length
@@ -642,21 +638,4 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 						"MIME-TYPE table column elements must not be empty");
 		}
 	return *NEW String(pool(), "application/octet-stream");
-}
-
-const Transcoder* Request::source_transcoder() {
-	return (Transcoder *)CTYPE.get(pool().get_charset());
-}
-const Transcoder* Request::client_transcoder() {
-	Value *vclient_charset=static_cast<Value *>(response.fields().get(*charset_name));
-	return vclient_charset?(Transcoder *)CTYPE.get(vclient_charset->as_string()):0;
-}
-
-const unsigned char *Request::pcre_tables() {
-	if(const Transcoder *transcoder=source_transcoder())
-		return transcoder->pcre_tables;
-
-	// this is not for pcre itself, 
-	// it can do default, it's for string.lower&co
-	return pcre_default_tables;
 }

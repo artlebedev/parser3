@@ -4,13 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.119 2001/11/19 12:17:06 paf Exp $
+	$Id: pa_string.h,v 1.120 2001/12/15 21:28:20 paf Exp $
 */
 
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_types.h"
 
@@ -208,7 +207,7 @@ public:
 			prematch/match/postmatch/1/2/3/...
 		@endverbatim
 	*/
-	bool match(const unsigned char *pcre_tables,
+	bool match(
 		const String *aorigin,		
 		const String& regexp, 
 		const String *options,
@@ -219,7 +218,7 @@ public:
 		CC_UPPER,
 		CC_LOWER
 	};
-	String& change_case(Pool& pool, const unsigned char *pcre_tables, 
+	String& change_case(Pool& pool,
 		Change_case_kind kind) const;
 	String& replace(Pool& pool, Dictionary& dict) const;
 	double as_double() const;

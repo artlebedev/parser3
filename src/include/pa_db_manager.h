@@ -5,13 +5,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.h,v 1.11 2001/12/13 11:09:46 paf Exp $
+	$Id: pa_db_manager.h,v 1.12 2001/12/15 21:28:19 paf Exp $
 */
 
 #ifndef PA_DB_MANAGER_H
 #define PA_DB_MANAGER_H
 
-#include "pa_config_includes.h"
 #include "pa_hash.h"
 #include "pa_db_connection.h"
 #include "pa_cache_managers.h"

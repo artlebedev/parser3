@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.h,v 1.72 2001/12/14 12:53:47 paf Exp $
+	$Id: pa_pool.h,v 1.73 2001/12/15 21:28:19 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -23,6 +23,7 @@
 
 class Exception;
 class String;
+class Charset;
 
 /** 
 	Pool mechanizm allows users not to free up allocated memory,
@@ -35,7 +36,6 @@ class Pool {
 public:
 
 	Pool(void *astorage);
-	~Pool();
 
 	///{@ statistics
 	size_t total_allocated() { return ftotal_allocated; }
@@ -60,16 +60,29 @@ public:
 			fail_register_cleanup();
 	}
 
-	/// resets transcoder if they change charset 
-	void set_charset(const String &charset);
-	/// returns current charset
-	const String& get_charset() { return *charset; }
+	///{@ source charset
+	void set_source_charset(Charset& acharset);
+	Charset& get_source_charset();
+	///}@
+
+	///{@ client charset
+	void set_client_charset(Charset& charset);
+	Charset& get_client_charset();
+	///}@
+
+#ifdef XML
+	const char *transcode_cstr(const XalanDOMString& s);
+	String& transcode(const XalanDOMString& s);
+	/// @see Charset::transcode(const String& s)
+	std::auto_ptr<XalanDOMString> transcode(const String& s);
+#endif
 
 private:
 
 	void *fstorage;
 	void *fcontext;
-	const String *charset;
+	Charset *source_charset;
+	Charset *client_charset;
 
 private: 
 	
@@ -100,28 +113,6 @@ private:
 
 	/// throws register cleanup exception
 	void fail_register_cleanup() const;
-
-#ifdef XML
-
-public:
-	/// converts Xalan string to char *
-	const char *transcode_cstr(const XalanDOMString& s);
-	/// converts Xalan string to parser String
-	String& transcode(const XalanDOMString& s);
-	/// converts char * to Xalan string
-	std::auto_ptr<XalanDOMString> transcode_buf(const char *buf, size_t buf_size);
-	/// converts parser String to Xalan string
-	std::auto_ptr<XalanDOMString> transcode(const String& s);
-
-private:
-
-	void update_transcoder();
-
-private:
-
-	XMLTranscoder *transcoder;
-
-#endif
 
 private: // statistics
 	

@@ -4,13 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_connection.h,v 1.16 2001/11/05 11:46:25 paf Exp $
+	$Id: pa_stylesheet_connection.h,v 1.17 2001/12/15 21:28:20 paf Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-#include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_stylesheet_manager.h"
 #include "pa_exception.h"

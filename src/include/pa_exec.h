@@ -4,13 +4,12 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.h,v 1.4 2001/11/05 11:46:24 paf Exp $
+	$Id: pa_exec.h,v 1.5 2001/12/15 21:28:19 paf Exp $
 */
 
 #ifndef PA_EXEC_H
 #define PA_EXEC_H
 
-#include "pa_config_includes.h"
 #include "pa_string.h"
 #include "pa_hash.h"
 #include "pa_array.h"

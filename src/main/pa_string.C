@@ -4,13 +4,10 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.131 2001/12/13 10:47:34 paf Exp $
+	$Id: pa_string.C,v 1.132 2001/12/15 21:28:21 paf Exp $
 */
 
-#include "pa_config_includes.h"
-
 #include "pcre.h"
-#include "internal.h"
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -21,6 +18,7 @@
 #include "pa_globals.h"
 #include "pa_table.h"
 #include "pa_dictionary.h"
+#include "pa_charset.h"
 
 String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	Pooled(apool) {
@@ -503,7 +501,7 @@ static void regex_options(char *options, int *result){
 }
 
 /// @todo maybe need speedup: some option to remove pre/match/post string generation
-bool String::match(const unsigned char *pcre_tables,
+bool String::match(
 				   const String *aorigin,
 				   const String& regexp, 
 				   const String *options,
@@ -523,7 +521,7 @@ bool String::match(const unsigned char *pcre_tables,
 		*was_global=option_bits[1]!=0;
 	pcre *code=pcre_compile(pattern, option_bits[0], 
 		&errptr, &erroffset,
-		pcre_tables);
+		pool().get_source_charset().pcre_tables);
 
 	if(!code)
 		throw Exception(0, 0,
@@ -605,8 +603,9 @@ bool String::match(const unsigned char *pcre_tables,
 	}
 }
 
-String& String::change_case(Pool& pool, const unsigned char *tables, 
+String& String::change_case(Pool& pool, 
 							Change_case_kind kind) const {
+	const unsigned char *tables=pool.get_source_charset().pcre_tables;
 	String& result=*new(pool) String(pool);
 
 	const unsigned char *a;

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vform.h,v 1.30 2001/12/14 15:25:51 paf Exp $
+	$Id: pa_vform.h,v 1.31 2001/12/15 21:28:22 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -19,7 +19,6 @@
 extern Methoded *form_base_class;
 
 class Request;
-struct Transcoder;
 
 /**
 	derivates from VStateless_class so that :CLASS element referred to @a this.
@@ -46,12 +45,8 @@ public: // Value
 
 public: // usage
 
-	VForm(Pool& apool) : VStateless_class(apool, form_base_class),
-		fields(apool),
-		tables(apool),
-		client_transcoder(0), source_transcoder(0) {
-	}
-
+	VForm(Pool& apool);
+	
 	void fill_fields_and_tables(Request& request);
 
 private:
@@ -77,11 +72,6 @@ private:
 	void transcode(
 		const void *source_body, size_t source_content_length,
 		const void *& dest_body, size_t& dest_content_length);
-
-private:
-
-	const Transcoder *client_transcoder;
-	const Transcoder *source_transcoder;
 
 };
 

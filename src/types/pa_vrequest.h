@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vrequest.h,v 1.13 2001/12/14 12:53:48 paf Exp $
+	$Id: pa_vrequest.h,v 1.14 2001/12/15 21:28:22 paf Exp $
 */
 
 #ifndef PA_VREQUEST_H
@@ -12,7 +12,6 @@
 
 #include "pa_common.h"
 #include "pa_value.h"
-#include "pa_string.h"
 
 class Request;
 
