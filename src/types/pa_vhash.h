@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhash.h,v 1.21 2001/09/24 15:09:23 parser Exp $
+	$Id: pa_vhash.h,v 1.22 2001/10/11 11:52:55 parser Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -49,7 +49,7 @@ public: // value
 			return result;
 
 		// default value
-		return static_cast<Value *>(fhash.get(*hash_default_element_name));
+		return get_default();
 	}
 	
 	/// VHash: (key)=value
@@ -60,24 +60,25 @@ public: // value
 public: // usage
 
 	VHash(Pool& apool) : VStateless_class(apool, hash_base_class), 
-		fhash(apool), 
-		fdefault(0) {
+		fhash(apool) {
 	}
 
 	VHash(Pool& apool, const Hash& source) : VStateless_class(apool, hash_base_class), 
-		fhash(source), 
-		fdefault(0) {
+		fhash(source) {
 	}
 
 	Hash& hash() { return fhash; }
 
-	void set_default(Value& adefault) { fdefault=&adefault; }
-	Value *get_default() { return fdefault; }
+	void set_default(Value& adefault) { 
+		fhash.put(*hash_default_element_name, &adefault);
+	}
+	Value *get_default() { 
+		return static_cast<Value *>(fhash.get(*hash_default_element_name)); 
+	}
 
 private:
 
 	Hash fhash;
-	Value *fdefault;
 
 };
 
