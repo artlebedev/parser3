@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.56 2002/03/25 11:55:26 paf Exp $
+	$Id: mail.C,v 1.57 2002/03/25 12:04:15 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -423,7 +423,7 @@ static void sendmail(Request& r, const String& method_name,
 #else
 		false
 #endif
-		*file_spec,
+		, *file_spec,
 		0/*default env*/,
 		&argv,
 		in, out, err);

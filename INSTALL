@@ -41,7 +41,7 @@
   --disable-execs
   option to configure.
   file::exec, file::cgi and mail:send (unix version) methods would be disabled.
-  
+
   NOTE:
   You can disable reading and executing files, belonging to group 
   other then current by setting
@@ -154,4 +154,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.16 2002/03/25 11:41:26 paf Exp $
+$Id: INSTALL,v 1.17 2002/03/25 12:02:57 paf Exp $
