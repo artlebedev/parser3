@@ -1,5 +1,5 @@
 /*
-$Id: env.C,v 1.1 2001/03/10 11:18:13 paf Exp $
+$Id: env.C,v 1.2 2001/03/10 11:46:55 paf Exp $
 */
 
 #include "pa_request.h"
@@ -8,7 +8,9 @@ $Id: env.C,v 1.1 2001/03/10 11:18:13 paf Exp $
 void initialize_env_class(Pool& pool, VClass& vclass) {
 	String& name=*new(pool) String(pool);
 	String& string=*new(pool) String(pool);
-	name.APPEND_CONST("test");
-	string.APPEND_TAINTED("<value>", 0, "environment", 0);
+	char *file="environment";
+	int line=3;
+	name.APPEND("test", 0, file, line);
+	string.APPEND_TAINTED("<value>", 0, file, line);
 	vclass.set_field(name, new(pool) VString(string));
 }
