@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/09/18 08:52:49 $";
+static const char* IDENT_TABLE_C="$Date: 2002/10/23 09:32:17 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -304,11 +304,14 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 
 #ifndef DOXYGEN
 struct Row_info {
+	Request *r;
 	Table *table;
+	Value *key_code;
 	int key_field;
 	Array *value_fields;
 	Hash *hash;
 	bool distinct;
+	int index;
 };
 #endif
 static void table_row_to_hash(Array::Item *value, void *info) {
@@ -316,24 +319,32 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 	Row_info& ri=*static_cast<Row_info *>(info);
 	Pool& pool=ri.table->pool();
 
-	if(ri.key_field<row.size()) {
-		VHash& result=*new(pool) VHash(pool);
-		Hash& hash=*result.get_hash(0);
-		for(int i=0; i<ri.value_fields->size(); i++) {
-			int value_field=ri.value_fields->get_int(i);
-			if(value_field<row.size())
-				hash.put(
-					*ri.table->columns()->get_string(value_field), 
-					new(pool) VString(*row.get_string(value_field)));
-		}
+	const String *key;
+	if(ri.key_code) {
+		ri.table->set_current(ri.index++); // change context row
+		StringOrValue sv_processed=ri.r->process(*ri.key_code);
+		key=&sv_processed.as_string();
+	} else
+		key=ri.key_field<row.size()?row.get_string(ri.key_field):0;
+
+	if(!key)
+		return; // ignore rows without key [too-short-record_array if-indexed]
 		
-		const String& key=*row.get_string(ri.key_field);
-		if(ri.hash->put_dont_replace(key, &result)) // put. existed?
-			if(!ri.distinct)
-				throw Exception("parser.runtime",
-					&key,
-					"duplicate key");
+	VHash& result=*new(pool) VHash(pool);
+	Hash& hash=*result.get_hash(0);
+	for(int i=0; i<ri.value_fields->size(); i++) {
+		int value_field=ri.value_fields->get_int(i);
+		if(value_field<row.size())
+			hash.put(
+				*ri.table->columns()->get_string(value_field), 
+				new(pool) VString(*row.get_string(value_field)));
 	}
+
+	if(ri.hash->put_dont_replace(*key, &result)) // put. existed?
+		if(!ri.distinct)
+			throw Exception("parser.runtime",
+				key,
+				"duplicate key");
 }
 static void _hash(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -341,24 +352,22 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 	Value& result=*new(pool) VHash(pool);
 	if(const Array *columns=self_table.columns())
 		if(columns->size()>0) {
-			const String& key_field_name=params->as_no_junction(0, 
-				"key field name must not be code").as_string();
-			int key_field=self_table.column_name2index(key_field_name, true);
-
 			bool distinct=false;
 			int param_index=params->size()-1;
-			if(Hash *options=
-				params->as_no_junction(param_index, "param must not be code").get_hash(0)) {
-				--param_index;
-				int valid_options=0;
-				if(Value *vdistinct=(Value *)options->get(*sql_distinct_name)) {
-					valid_options++;
-					distinct=r.process_to_value(*vdistinct).as_bool();
+			if(param_index>0) {
+				if(Hash *options=
+					params->as_no_junction(param_index, "param must not be code").get_hash(0)) {
+					--param_index;
+					int valid_options=0;
+					if(Value *vdistinct=(Value *)options->get(*sql_distinct_name)) {
+						valid_options++;
+						distinct=r.process_to_value(*vdistinct).as_bool();
+					}
+					if(valid_options!=options->size())
+						throw Exception("parser.runtime",
+							&method_name,
+							"called with invalid option");
 				}
-				if(valid_options!=options->size())
-					throw Exception("parser.runtime",
-						&method_name,
-						"called with invalid option");
 			}
 			if(param_index==2) // bad options param type
 				throw Exception("parser.runtime",
@@ -386,9 +395,16 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 					value_fields+=i;
 			}
 
-			// integers: key_field & value_fields
-			Row_info row_info={&self_table, key_field, &value_fields, result.get_hash(0), distinct};
+			Value& key_param=params->get(0);
+			Value *key_code=key_param.get_junction()?&key_param:0;
+			int key_field=key_code?-1
+				:self_table.column_name2index(key_param.as_string(), true);
+
+			Row_info row_info={&r, &self_table, key_code, key_field, &value_fields, result.get_hash(0), distinct};
+
+			int saved_current=self_table.current();
 			self_table.for_each(table_row_to_hash, &row_info);
+			self_table.set_current(saved_current);
 		}
 	r.write_no_lang(result);
 }
