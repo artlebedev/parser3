@@ -210,6 +210,9 @@ $s[[^now.sql-string[]] $rusage.utime $rusage.stime $rusage.maxrss $rusage.ixrss 
 }}
 #end @rusage[]
 
+@rusage[xxx]
+
+
 @musage[comment][v;now;prefix;message;line;usec]
 $v[$status:memory]
 $now[^date::now[]]
