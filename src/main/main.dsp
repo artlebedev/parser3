@@ -243,7 +243,7 @@ SOURCE=..\include\pa_wcontext.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\include\pa_wvalue.h
+SOURCE=..\include\pa_wwrapper.h
 # End Source File
 # End Group
 # End Target

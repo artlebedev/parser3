@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.28 2001/02/23 14:18:27 paf Exp $
+  $Id: execute.C,v 1.29 2001/02/23 17:12:58 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -9,6 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vunknown.h"
 #include "pa_vframe.h"
+#include "pa_wwrapper.h"
 
 #include <stdio.h>
 
@@ -146,7 +147,7 @@ void Request::execute(Array& ops) {
 		case OP_CREATE_EWPOOL:
 			{
 				PUSH(wcontext);
-				wcontext=NEW WContext(pool(), 0 /* empty */);
+				wcontext=NEW WWrapper(pool(), 0 /* empty */);
 				break;
 			}
 		case OP_REDUCE_EWPOOL:
@@ -163,7 +164,7 @@ void Request::execute(Array& ops) {
 				PUSH(rcontext);
 				rcontext=ncontext;
 				PUSH(wcontext);
-				wcontext=NEW WContext(pool(), ncontext);
+				wcontext=NEW WWrapper(pool(), ncontext);
 				break;
 			}
 		case OP_REDUCE_RWPOOL:
@@ -196,6 +197,26 @@ void Request::execute(Array& ops) {
 				Value *value=POP();
 				VFrame *frame=static_cast<VFrame *>(stack[0]);
 				frame->store_param(value);
+				break;
+			}
+
+		case OP_CALL:
+			{
+				printf("->\n");
+				VFrame *frame=static_cast<VFrame *>(POP());
+				Value *ncontext=POP();
+				PUSH(root);  PUSH(self);  PUSH(rcontext);  PUSH(wcontext);
+				//left_class=ncontext.get_class()
+				//right_class=frame.self.get_class()
+				//self=f(left_class[thoughts' food], right_self[junction], right_class[static], wcontext.value()[dynamic], new(right_class)[construct])
+				self=rcontext;
+				frame->set_self(self);
+				root=rcontext=wcontext=frame;
+				execute(frame->method.code);
+				Value *value=wcontext->value();
+				wcontext=static_cast<WContext *>(POP());  rcontext=POP();  self=POP();  root=POP();
+				wcontext->write(value);
+				printf("<-returned");
 				break;
 			}
 

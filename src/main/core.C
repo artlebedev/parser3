@@ -1,9 +1,9 @@
 /*
-$Id: core.C,v 1.28 2001/02/23 14:18:27 paf Exp $
+$Id: core.C,v 1.29 2001/02/23 17:12:58 paf Exp $
 */
 
 #include "pa_request.h"
-#include "pa_wcontext.h"
+#include "pa_wwrapper.h"
 #include "pa_common.h"
 #include "pa_vclass.h"
 
@@ -73,7 +73,7 @@ VClass *Request::construct_class(String& name, Array& compiled_methods) {
 char *Request::execute_MAIN(VClass *class_RUN) {
 	// initialize contexts
 	root=self=rcontext=class_RUN;
-	wcontext=NEW WContext(pool(), class_RUN);
+	wcontext=NEW WWrapper(pool(), class_RUN);
 
 	// locate @main code
 	String name_main(pool());
