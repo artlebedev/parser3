@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sapi.h,v 1.4 2001/04/04 10:50:34 paf Exp $
+	$Id: pa_sapi.h,v 1.5 2001/04/09 08:55:28 paf Exp $
 */
 
 #ifndef PA_SAPI_H
@@ -14,9 +14,15 @@
 #include "pa_pool.h"
 #include "pa_types.h"
 
+class Array;
+class String;
+class Hash;
+
 /// target web-Server API
 struct SAPI {
-	/// get env
+	/// log error message
+	static void log(Pool& pool, const char *fmt, ...);
+	/// 
 	static const char *get_env(Pool& pool, const char *name);
 	/// read POST request bytes
 	static uint read_post(Pool& pool, char *buf, uint max_bytes);
@@ -26,8 +32,11 @@ struct SAPI {
 	static void send_header(Pool& pool);
 	/// output body bytes
 	static void send_body(Pool& pool, const void *buf, size_t size);
-	/// log error message
-	static void log(Pool& pool, const char *fmt, ...);
+	/// @return exit_status
+	static int execute(const String& file_spec, 
+		const Hash *env,
+		const Array *argv,
+		const String& in, String& out, String& err);
 };
 
 #endif

@@ -86,6 +86,14 @@ LINK32=link.exe
 # Name "parser3 - Win32 Debug"
 # Begin Source File
 
+SOURCE=..\pa_exec.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\pa_exec.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_pool.C
 # End Source File
 # Begin Source File

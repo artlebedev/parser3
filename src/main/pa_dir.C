@@ -1,11 +1,11 @@
 /** @file
 	Parser: directory scanning for different OS-es.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_dir.C,v 1.1 2001/04/06 12:34:54 paf Exp $
+	$Id: pa_dir.C,v 1.2 2001/04/09 08:55:30 paf Exp $
 */
 
 #include "pa_config_includes.h"
