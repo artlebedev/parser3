@@ -1,6 +1,6 @@
 @main[]
-#^domedit[]
-#^domxslt[]
+^domedit[]
+^domxslt[]
 #^lsplit2[]
 #^faceesize[]
 #^imageresize[]
@@ -22,7 +22,7 @@
 #^tif[]
 #^image[]
 #^mail2[]
-^cookie[]
+#^cookie[]
 #^response[]
 #^regexp2[]
 #^ttablerem[]
@@ -371,7 +371,8 @@ $file[^xdoc.file[
 	$.method[html]
 ]]
 ^file.save[text;save_file.html]
-<pre>^taint[^xdoc.string[]]</pre>
+<pre>^taint[^xdoc.string[]]
 #	$.encoding[windows-1251]
-#	$.method[xml]
+#	$.method[html]
 #]]
+</pre>
