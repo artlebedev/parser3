@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.26 2001/09/20 07:31:51 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.27 2001/09/20 09:17:55 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -90,24 +90,26 @@ static void create_optioned_listener(
 	const String *method=0;
 	XalanDOMString xalan_encoding;
 
-	Value& voptions=params->as_no_junction(index, "options must not be code");
-	if(voptions.is_defined()) {
-		if(Hash *options=voptions.get_hash()) {
-			// $.method[xml|html|text]
-			if(Value *vmethod=static_cast<Value *>(options->get(*new(pool) 
-				String(pool, DOM_OUTPUT_METHOD_OPTION_NAME))))
-				method=&vmethod->as_string();
+	if(params->size()>index) {
+		Value& voptions=params->as_no_junction(index, "options must not be code");
+		if(voptions.is_defined()) {
+			if(Hash *options=voptions.get_hash()) {
+				// $.method[xml|html|text]
+				if(Value *vmethod=static_cast<Value *>(options->get(*new(pool) 
+					String(pool, DOM_OUTPUT_METHOD_OPTION_NAME))))
+					method=&vmethod->as_string();
 
-			// $.encoding[windows-1251|...]
-			if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 
-				String(pool, DOM_OUTPUT_ENCODING_OPTION_NAME)))) {
-				charset=vencoding->as_string().cstr();
-				xalan_encoding.append(charset, strlen(charset));
-			}
-		} else
-			PTHROW(0, 0,
-				&method_name,
-				"options must be hash");
+				// $.encoding[windows-1251|...]
+				if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 
+					String(pool, DOM_OUTPUT_ENCODING_OPTION_NAME)))) {
+					charset=vencoding->as_string().cstr();
+					xalan_encoding.append(charset, strlen(charset));
+				}
+			} else
+				PTHROW(0, 0,
+					&method_name,
+					"options must be hash");
+		}
 	}
 
 	if(!method/*default='xml'*/ || *method == DOM_OUTPUT_METHOD_OPTION_VALUE_XML) {
@@ -149,7 +151,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	VDnode& vnode=*static_cast<VDnode *>(r.self);
 
 	// filespec
-	const String& file_name=params->as_string(1, "file name must not be code");
+	const String& file_name=params->as_string(0, "file name must not be code");
 	const char *filespec=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
 	
 	// node
@@ -161,7 +163,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		const char *content_type, *charset;
 		FormatterListener *formatterListener;
 		create_optioned_listener(content_type, charset, formatterListener, 
-			pool, method_name, params, 0, writer);
+			pool, method_name, params, 1, writer);
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&node); // Walk that node and produce the XML...
 	} catch(const XSLException& e) {
@@ -335,14 +337,17 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 MDom::MDom(Pool& apool) : MDnode(apool) {
 	set_name(*NEW String(pool(), DOM_CLASS_NAME));
 
-	// ^dom.save[options hash;some.xml]
-	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 2);
+	// ^dom.save[some.xml]
+	// ^dom.save[some.xml;options hash]
+	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
 
+	// ^dom.string[] <doc/>
 	// ^dom.string[options hash] <doc/>
-	add_native_method("string", Method::CT_DYNAMIC, _string, 1, 1);
+	add_native_method("string", Method::CT_DYNAMIC, _string, 0, 1);
 
+	// ^dom.file[] file with "<doc/>"
 	// ^dom.file[options hash] file with "<doc/>"
-	add_native_method("file", Method::CT_DYNAMIC, _file, 1, 1);
+	add_native_method("file", Method::CT_DYNAMIC, _file, 0, 1);
 
 	// ^dom::set[<some>xml</some>]
 	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 1);

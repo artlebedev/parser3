@@ -15,14 +15,14 @@ $dom[^dom::set{<?xml version="1.0" encoding="windows-1251"?>
 </people>
 }]
 
+^show-dom2[$dom]<hr>
 #^show-dnode1[$dom]<hr>
-#^show-dnode2[$dom]<hr>
 $people[^dom.select[*/man]]
 #^show1[]
 ^show-dnodes1[$people]<hr>
 #^people.0.owner.hren[]
 
-#^show-dnode1[^dom.select-single[*/man];0;1]<hr>
+^show-dnode1[^dom.select-single[*/man[2]/name];0;1]<hr>
 
 @show1[]
 ^for[i](0;^people._count[]-1){
@@ -66,3 +66,15 @@ $people[^dom.select[*/man]]
     ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$dnode.name&gt^;<br>
     }
 }
+
+@show-dom2[dom]
+^dom.save[save.xml;
+	$.encoding[windows-1251]
+	$.method[html]
+]
+$file[^dom.file[]]
+^file.save[text;save2.xml]
+^taint[^dom.string[
+	$.encoding[windows-1251]
+	$.method[html]
+]]
