@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.13 2001/10/08 16:06:49 parser Exp $
+	$Id: gif.C,v 1.14 2001/10/10 12:22:17 parser Exp $
 
 	based on: gd
 
@@ -273,7 +273,63 @@ void gdImage::Line(int x1, int y1, int x2, int y2, int color)
 
 void gdImage::Arc(int cx, int cy, int w, int h, int s, int e, int color)
 {
-	if(w!=h) {
+	if(s==0 && e==360) { // full 
+		if(w==h) { // circle?
+			/* Bresenham octant code, which I should use eventually */
+			int x, y, d;
+			x = 0;
+			y = w/2;
+			d = 3-w;
+			while (x <= y) {
+				SetPixel(cx+x, cy+y, color);
+				SetPixel(cx+x, cy-y, color);
+				SetPixel(cx-x, cy+y, color);
+				SetPixel(cx-x, cy-y, color);
+				SetPixel(cx+y, cy+x, color);
+				SetPixel(cx+y, cy-x, color);
+				SetPixel(cx-y, cy+x, color);
+				SetPixel(cx-y, cy-x, color);
+				if (d < 0) {
+					d += 4 * x + 6;
+				} else {
+					d += 4 * (x - y) + 10;
+					y--;
+				}
+				x++;
+			}
+		} else { // full ellipse
+			w/=2;
+			h/=2;
+			int elx, ely;
+			long aa, aa2, bb, bb2, d, dx, dy;
+			
+			elx = 0; ely = h; aa = (long)w * w; aa2 = 2 * aa;
+			bb = (long)h * h; bb2 = 2 * bb;
+			d = bb - aa * h + aa/4; dx = 0; dy = aa2 * h;
+			SetPixel(cx, cy - ely, color); SetPixel(cx, cy + ely, color);
+			SetPixel(cx - w, cy, color); SetPixel(cx + w, cy, color);
+			
+			while (dx < dy)
+			{
+				if (d > 0) { ely--; dy-=aa2; d-=dy;}
+				elx++; dx+=bb2; d+=bb+dx;
+				SetPixel(cx + elx, cy + ely, color);
+				SetPixel(cx - elx, cy + ely, color);
+				SetPixel(cx + elx, cy - ely, color);
+				SetPixel(cx - elx, cy - ely, color);
+			};
+			d+=(3 * (aa - bb)/2 - (dx + dy))/2;
+			while (ely > 0)
+			{
+				if (d < 0) {elx++; dx+=bb2; d+=bb + dx;}
+				ely--; dy-=aa2; d+=aa - dy;
+				SetPixel(cx + elx, cy + ely, color);
+				SetPixel(cx - elx, cy + ely, color);
+				SetPixel(cx + elx, cy - ely, color);
+				SetPixel(cx - elx, cy - ely, color);
+			};
+		}
+	} else {
 		int i;
 		int lx = 0, ly = 0;
 		int w2, h2;
@@ -292,31 +348,47 @@ void gdImage::Arc(int cx, int cy, int w, int h, int s, int e, int color)
 			lx = x;
 			ly = y;
 		}
-	} else {
-		/* Bresenham octant code, which I should use eventually */
-		int x, y, d;
-		x = 0;
-		y = w/2;
-		d = 3-w;
-		while (x <= y) {
-			SetPixel(cx+x, cy+y, color);
-			SetPixel(cx+x, cy-y, color);
-			SetPixel(cx-x, cy+y, color);
-			SetPixel(cx-x, cy-y, color);
-			SetPixel(cx+y, cy+x, color);
-			SetPixel(cx+y, cy-x, color);
-			SetPixel(cx-y, cy+x, color);
-			SetPixel(cx-y, cy-x, color);
-			if (d < 0) {
-				d += 4 * x + 6;
-			} else {
-				d += 4 * (x - y) + 10;
-				y--;
-			}
-			x++;
-		}
 	}
 }
+
+/*
+
+// http://firststeps.narod.ru/cgi/18.html
+
+int CGIScreen::Ellipse(int exc, int eyc, int ea, int eb , unsigned char Color)
+{
+  int elx, ely;
+  long aa, aa2, bb, bb2, d, dx, dy;
+
+  elx = 0; ely = eb; aa = (long)ea * ea; aa2 = 2 * aa;
+  bb = (long)eb * eb; bb2 = 2 * bb;
+  d = bb - aa * eb + aa/4; dx = 0; dy = aa2 * eb;
+  PutPixel(exc, eyc - ely, Color); PutPixel(exc, eyc + ely, Color);
+  PutPixel(exc - ea, eyc, Color); PutPixel(exc + ea, eyc, Color);
+
+  while (dx < dy)
+  {
+    if (d > 0) { ely--; dy-=aa2; d-=dy;}
+    elx++; dx+=bb2; d+=bb+dx;
+    PutPixel(exc + elx, eyc + ely, Color);
+    PutPixel(exc - elx, eyc + ely, Color);
+    PutPixel(exc + elx, eyc - ely, Color);
+    PutPixel(exc - elx, eyc - ely, Color);
+  };
+  d+=(3 * (aa - bb)/2 - (dx + dy))/2;
+  while (ely > 0)
+  {
+    if (d < 0) {elx++; dx+=bb2; d+=bb + dx;}
+    ely--; dy-=aa2; d+=aa - dy;
+    PutPixel(exc + elx, eyc + ely, Color);
+    PutPixel(exc - elx, eyc + ely, Color);
+    PutPixel(exc + elx, eyc - ely, Color);
+    PutPixel(exc - elx, eyc - ely, Color);
+  };
+  return 0;
+};
+
+*/
 
 
 void gdImage::Sector(int cx, int cy, int w, int h, int s, int e, int color)

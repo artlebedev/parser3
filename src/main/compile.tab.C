@@ -37,7 +37,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.18 2001/10/08 08:21:04 parser Exp $
+	$Id: compile.tab.C,v 1.19 2001/10/10 12:22:17 parser Exp $
 */
 
 /**
@@ -2372,6 +2372,8 @@ default:
 			case '.': // name part delim 
 			case '$': // name part subvar
 			case ':': // ':name' or 'class:name'
+			case '^': // ^abc^xxx wrong. bailing out
+			case ']': case '}': case ')': // ^abc]}) wrong. bailing out
 				RC;
 			}
 			break;
