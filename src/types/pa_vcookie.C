@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCOOKIE_C="$Date: 2002/10/31 15:01:55 $";
+static const char* IDENT_VCOOKIE_C="$Date: 2002/12/02 10:07:40 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -202,7 +202,7 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 			new(pool) VString(*new(pool) String(pool, "/")));
 
 	// append meaning
-	string << attributed_meaning_to_string(*meaning, String::UL_HTTP_HEADER);
+	string << attributed_meaning_to_string(*meaning, String::UL_HTTP_HEADER, true);
 
 	// output
 	SAPI::add_header_attribute(pool, "set-cookie", string.cstr(String::UL_UNSPECIFIED));

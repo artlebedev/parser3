@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/29 08:06:59 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/12/02 10:07:39 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -254,7 +254,7 @@ static void http_pass_header(const Hash::Key& key, Hash::Val *value, void *info)
 	Pool& pool=i.request->pool();
     
     *(i.request)<<key<<": "
-		<< attributed_meaning_to_string(*static_cast<Value *>(value), String::UL_URI)
+		<< attributed_meaning_to_string(*static_cast<Value *>(value), String::UL_HTTP_HEADER, false)
 		<<"\n"; 
 	
 	if(key.change_case(pool, String::CC_UPPER)=="USER-AGENT")
@@ -964,9 +964,9 @@ static size_t date_attribute(const VDate& vdate, char *buf, size_t buf_size) {
 		tms->tm_hour,tms->tm_min,tms->tm_sec);
 }
 static void append_attribute_meaning(String& result,
-									 Value& value, String::Untaint_lang lang) {
+									 Value& value, String::Untaint_lang lang, bool forced) {
 	if(const String *string=value.get_string())
-		result.append(string->join_chains(result.pool(), 0), lang, true);
+		result.append(string->join_chains(result.pool(), 0), lang, forced);
 	else
 		if(Value *vdate=value.as(VDATE_TYPE, false)) {
 			char *buf=(char *)result.malloc(MAX_STRING);
@@ -984,6 +984,7 @@ static void append_attribute_meaning(String& result,
 struct Attributed_meaning_info {
 	String *header; // header line being constructed
 	String::Untaint_lang lang; // language in which to append to that line
+	bool forced; // do they force that lang?
 };
 #endif
 static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *avalue, 
@@ -995,22 +996,22 @@ static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *aval
 
 	// ...; charset=windows1251
 	*ami.header << "; ";
-	ami.header->append(akey, ami.lang, true);
+	ami.header->append(akey, ami.lang, ami.forced);
 	*ami.header << "=";
-	append_attribute_meaning(*ami.header, *static_cast<Value *>(avalue), ami.lang);
+	append_attribute_meaning(*ami.header, *static_cast<Value *>(avalue), ami.lang, ami.forced);
 }
 const String& attributed_meaning_to_string(Value& meaning, 
-										   String::Untaint_lang lang) {
+										   String::Untaint_lang lang, bool forced) {
 	String &result=*new(meaning.pool()) String(meaning.pool());
 	if(Hash *hash=meaning.get_hash(0)) {
 		// $value(value) $subattribute(subattribute value)
 		if(Value *value=static_cast<Value *>(hash->get(*value_name)))
-			append_attribute_meaning(result, *value, lang);
+			append_attribute_meaning(result, *value, lang, forced);
 
 		Attributed_meaning_info attributed_meaning_info={&result, lang};
 		hash->for_each(append_attribute_subattribute, &attributed_meaning_info);
 	} else // result value
-		append_attribute_meaning(result, meaning, lang);
+		append_attribute_meaning(result, meaning, lang, forced);
 
 	return result;
 }

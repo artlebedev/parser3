@@ -1,3 +1,81 @@
+2002-11-29  paf
+	* src/include/pa_common.h 1.87:
+	* src/main/pa_common.C 1.135:
+	* src/types/pa_vresponse.C 1.16:
+	* src/types/pa_vresponse.h 1.31:
+	* www/htdocs/index.html 1.192:
+		http:// param values now handled exactly like $response:header values.
+		e.g. can be hash [can have subattributes] & contain date values.
+
+	* operators.txt 1.104:
+	* src/classes/date.C 1.41:
+	* src/classes/image.C 1.89:
+	* www/htdocs/index.html 1.193:
+		exif dates now objects of type date
+
+	* src/main/pa_common.C 1.133:
+	* www/htdocs/index.html 1.190:
+		http:// tainted partes now %xx
+
+	* src/main/pa_common.C 1.134:
+	* www/htdocs/index.html 1.191:
+		http:// param values lang forced URI
+
+	* src/classes/image.C 1.88:
+		file.seek removed [it were used in image.C only, and for parser user this  means that jpeg image has bad size in fragment's header]
+		now used image.format
+
+2002-11-28  paf
+	* src/classes/op.C 1.126:
+	* www/htdocs/index.html 1.185:
+		^cache bug fixed.
+		stupid compiler allowed 'false' to go into (Hash *) parameter
+
+	* src/classes/image.C 1.85:
+	* www/htdocs/index.html 1.186:
+		image.text now outputs one pixel HIGHER chars [one top
+		horizontal line of 1pixel height were missing]
+
+	* www/htdocs/index.html 1.187:
+		regexp syntax xxx$ speed-up  experiments
+
+	* operators.txt 1.102:
+		http.timeout
+
+	* www/htdocs/font.gif 1.1:
+		*** empty log message ***
+
+	* configure.in 1.50:
+	* src/lib/libltdl/configure 1.2:
+	* src/lib/libltdl/configure.in 1.2:
+		stopped double libltdl/Makefile generation
+
+	* src/classes/image.C 1.87:
+	* www/htdocs/index.html 1.188:
+		image.length now counts interchar space. plus space after last char
+
+	* www/htdocs/index.html 1.189:
+		doc samples
+
+	* src/main/pa_string.C 1.171:
+		PCRE_DOLLAR_ENDONLY
+
+	* src/classes/image.C 1.86:
+		^image.font width measurer now scans full height [were -1]
+
+2002-11-27  paf
+	* src/classes/image.C 1.84:
+	* www/htdocs/index.html 1.183:
+		^image.font << bad font file-size now properly reported
+
+	* src/include/pa_globals.h 1.98:
+	* src/main/pa_globals.C 1.145:
+	* src/main/pa_request.C 1.242:
+	* src/types/pa_vmail.C 1.35:
+	* www/htdocs/index.html 1.184:
+		response:body[file]  if file nows it's name
+		now returns content-disposition: >>attachment<<
+
 2002-11-26  paf
 	* operators.txt 1.101:
 	* src/main/pa_common.C 1.130:
@@ -1938,7 +2016,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2002/11/27 07:59:15 $
+		$Date: 2002/12/02 10:07:38 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -9253,7 +9331,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.18 2002/11/27 07:59:15 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.19 2002/12/02 10:07:38 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -9296,7 +9374,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.18 2002/11/27 07:59:15 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.19 2002/12/02 10:07:38 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -14742,7 +14820,7 @@
 	* src/targets/parser.C 1.3:
 	* src/targets/parser.dsp 1.2:
 	* src/targets/parser.dsp 1.3:
-		$Id: ChangeLog,v 1.18 2002/11/27 07:59:15 paf Exp $ check
+		$Id: ChangeLog,v 1.19 2002/12/02 10:07:38 paf Exp $ check
 
 	* src/targets/parser.C 1.2:
 		$id$ check

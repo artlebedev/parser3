@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2002/10/31 15:01:53 $";
+static const char* IDENT_MAIL_C="$Date: 2002/12/02 10:07:38 $";
 
 #include "pa_config_includes.h"
 
@@ -124,7 +124,7 @@ static void add_header_attribute(const Hash::Key& raw_element_name, Hash::Val *a
 	// append header line
 	*mi.header << 
 		low_element_name << ":" << 
-		attributed_meaning_to_string(element_value, String::UL_MAIL_HEADER).
+		attributed_meaning_to_string(element_value, String::UL_MAIL_HEADER, true).
 			cstr(String::UL_UNSPECIFIED, 0, mi.charset, mi.content_charset_name) << 
 		"\n";
 }

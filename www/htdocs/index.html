@@ -292,7 +292,7 @@ OK
 #^includet2overridestatic[]
 #^virtualtest2[]
 #^message-id-test[]
-^test_exif[jpg]
+#^test_exif[jpg]
 #^http_prefix[]
 #^http_prefix_table[]
 #^http_prefix_xml[]
@@ -302,6 +302,34 @@ OK
 #^quickregexatend[]
 #^docsamplehttpfileload[]
 #^datecreatecolon[]
+^exifdocsample[]
+
+@exifdocsample[]
+$image[^image::measure[jpg/DSC00003.JPG]]
+$exif[$image.exif]
+^if($exif){
+    Производитель фотоаппарата, модель: $exif.Make $exif.Model<br>
+    Время съемки: ^exif.DateTimeOriginal.sql-string[]<br>
+    Выдержка: $exif.ExposureTime секунды<br>
+    Диафрагма: F$exif.FNumber<br>
+    Использовалась вспышка: ^if(def $exif.Flash){^if($exif.Flash){да;нет};неизвестно}<br>
+}{
+    нет EXIF информации<br>
+}
+
+@exif_value[value][i]
+^if($value is date){
+	^value.sql-string[]
+}{
+	^if($value is hash){
+		^for[i](0;$value-1){$value.$i}[,]
+	}{
+		$value
+	}
+}
+
+
+
 
 @datecreatecolon[]
 #$date[^date::create[2002-12-02 14:30]]

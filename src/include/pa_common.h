@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2002/11/29 08:06:59 $";
+static const char* IDENT_COMMON_H="$Date: 2002/12/02 10:07:39 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -85,7 +85,7 @@ inline double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 )
 	$content-type[$value[text/html] charset[windows-1251]] -> 
 		content-type: text/html; charset=windows-1251
 */
-const String& attributed_meaning_to_string(Value& meaning, String::Untaint_lang lang);
+const String& attributed_meaning_to_string(Value& meaning, String::Untaint_lang lang, bool forced);
 
 /// yields to OS for secs secs and usecs milliseconds
 int pa_sleep(unsigned long secs, unsigned long usecs);

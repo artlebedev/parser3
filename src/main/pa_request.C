@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/11/27 12:44:35 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/12/02 10:07:39 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -556,7 +556,8 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 
 	SAPI::add_header_attribute(pool,
 		aattribute.cstr(), 
-		attributed_meaning_to_string(lmeaning, String::UL_HTTP_HEADER).cstr(String::UL_UNSPECIFIED));
+		attributed_meaning_to_string(lmeaning, String::UL_HTTP_HEADER, false)
+			.cstr(String::UL_UNSPECIFIED));
 }
 void Request::output_result(const VFile& body_file, bool header_only) {
 	// header: cookies
