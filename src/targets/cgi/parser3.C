@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.98 2001/08/28 10:30:29 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.99 2001/08/31 15:35:34 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -19,6 +19,12 @@ static const char *RCSId="$Id: parser3.C,v 1.98 2001/08/28 10:30:29 parser Exp $
 #include "pa_request.h"
 #include "pa_socks.h"
 #include "pa_version.h"
+
+#ifdef WIN32
+#	define EOL "\r\n"
+#else
+#	define EOL "\n"
+#endif
 
 //#define DEBUG_POOL_MALLOC
 
@@ -164,10 +170,10 @@ int main(int argc, char *argv[]) {
 	if(!cgi) {
 		if(argc<2) {
 			printf(
-				"Parser/%s Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)\n"
-				"Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)\n"
-				"\n"
-				"Usage: %s <file>\n",
+				"Parser/%s Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)"EOL
+				"Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)"EOL
+				EOL
+				"Usage: %s <file>"EOL,
 				PARSER_VERSION, 
 				argv0?argv0:"parser3");
 			return 1;
@@ -311,7 +317,7 @@ int main(int argc, char *argv[]) {
 #endif
 		// 
 		if(!cgi)
-			SAPI::send_body(pool, "\n", 1);
+			SAPI::send_body(pool, EOL, strlen(EOL));
 
 		// successful finish
 		return 0;
@@ -346,7 +352,7 @@ int main(int argc, char *argv[]) {
 
 		// 
 		if(!cgi)
-			SAPI::send_body(pool, "\n", 1);
+			SAPI::send_body(pool, EOL, strlen(EOL));
 
 		// unsuccessful finish
 		return 1;

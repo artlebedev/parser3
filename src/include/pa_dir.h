@@ -5,11 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_dir.h,v 1.3 2001/04/26 14:55:25 paf Exp $
+	$Id: pa_dir.h,v 1.4 2001/08/31 15:35:34 parser Exp $
 */
 
 #ifndef PA_DIR_H
 #define PA_DIR_H
+
+#include "pa_config_includes.h"
 
 /** @struct ffblk 
 	win32/unix unified directory entry structure name
