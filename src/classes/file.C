@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2003/11/07 13:59:21 $";
+static const char* IDENT_FILE_C="$Date: 2003/11/20 15:35:29 $";
 
 #include "pa_config_includes.h"
 
@@ -36,7 +36,7 @@ static const char* IDENT_FILE_C="$Date: 2003/11/07 13:59:21 $";
 class MFile: public Methoded {
 public: // VStateless_class
 	
-	Value* create_new_value(Pool& apool) { return new VFile(); }
+	Value* create_new_value(Pool&) { return new VFile(); }
 
 public: // Methoded
 	bool used_directly() { return true; }
@@ -348,7 +348,6 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	VFile& self=GET_SELF(r, VFile);
 
 	const String* body=real_out; // ^file:exec
-	Value* content_type=0;
 	const char* eol_marker=0; size_t eol_marker_size;
 	const String* header=0;
 	if(cgi) { // ^file:cgi
@@ -444,8 +443,10 @@ static void _list(Request& r, MethodParams& params) {
 			throw Exception(0, 
 				&regexp->mid(erroffset, regexp->length()), 
 				"regular expression syntax error - %s", errptr);
-	} else 
+	} else {
+		regexp=0; // not used, just to calm down compiler
 		regexp_code=0;
+	}
 
 
 	const char* absolute_path_cstr=r.absolute(relative_path.as_string()).cstr(String::L_FILE_SPEC);
@@ -509,7 +510,7 @@ static void _lock(Request& r, MethodParams& params) {
 }
 
 static int lastposafter(const String& s, size_t after, const char* substr, size_t substr_size, bool beforelast=false) {
-	size_t size;
+	size_t size=0; // just to calm down compiler
 	if(beforelast)
 		size=s.length();
 	int at;

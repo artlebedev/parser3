@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char* IDENT_SQL_CONNECTION_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_SQL_CONNECTION_H="$Date: 2003/11/20 15:35:30 $";
 
 
 #include "pa_sql_driver.h"
@@ -120,7 +120,6 @@ public:
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
 			return fdriver.ping(fservices, fconnection)
 		);
-		return 0; // never reached
 	}
 	const char* quote(const char* str, unsigned int length) {
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(

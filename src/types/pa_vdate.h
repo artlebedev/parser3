@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char* IDENT_VDATE_H="$Date: 2003/10/30 13:16:53 $";
+static const char* IDENT_VDATE_H="$Date: 2003/11/20 15:35:32 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -37,7 +37,7 @@ public: // Value
 	override VStateless_class *get_class() { return date_class; }
 	
 	/// VDate: ftime -> float days
-	override Value& as_expr_result(bool return_string_as_is=false) { return *new VDouble(as_double()); }
+	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VDouble(as_double()); }
 
 	/// VDate: ftime -> float days
 	override double as_double() const { return ((double)ftime)/ SECS_PER_DAY; }

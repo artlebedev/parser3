@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 14:04:41 $";
+static const char* IDENT="$Date: 2003/11/20 15:35:30 $";
 
 #include "apr_file_io.h"
 
@@ -18,7 +18,7 @@ struct apr_file_t {
 
 APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **new_file, const char *fname,
                                    apr_int32_t flag, apr_fileperms_t perm,
-								   apr_pool_t *cont)
+								   apr_pool_t *)
 {
     int oflags = 0;
 #if APR_HAS_THREADS
@@ -90,7 +90,7 @@ APR_DECLARE(apr_status_t) apr_file_unlock(apr_file_t *file)
 }
 
 APR_DECLARE(apr_status_t) apr_file_info_get(apr_finfo_t *finfo, 
-                                          apr_int32_t wanted,
+                                          apr_int32_t /*wanted*/,
                                           apr_file_t *file)
 {
     struct stat info;
@@ -115,13 +115,16 @@ APR_DECLARE(apr_status_t) apr_file_seek(apr_file_t *file,
 
 APR_DECLARE(apr_status_t) apr_file_read_full(apr_file_t *file, void *buf,
                                         apr_size_t nbytes,
-                                        apr_size_t *bytes_read)
+                                        apr_size_t *p_bytes_read)
 {
-	int bytesread = read(file->handle, buf, nbytes);
-    if (bytesread == 0)
+	int l_bytes_read = read(file->handle, buf, nbytes);
+    if (l_bytes_read == 0)
         return APR_EOF;
-    else if (bytesread == -1)
+    else if (l_bytes_read == -1)
         return errno;
+
+	if(p_bytes_read)
+		*p_bytes_read=(apr_size_t)l_bytes_read;
 
 	return APR_SUCCESS;
 }

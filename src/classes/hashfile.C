@@ -6,7 +6,7 @@
 */
 
 
-static const char* IDENT="$Id: hashfile.C,v 1.30 2003/11/10 06:51:05 paf Exp $";
+static const char* IDENT="$Id: hashfile.C,v 1.31 2003/11/20 15:35:29 paf Exp $";
 
 #include "classes.h"
 
@@ -39,7 +39,7 @@ static void _open(Request& r, MethodParams& params) {
 	self.open(r.absolute(params.as_string(0, "filename must be string")));
 }
 
-static void _hash(Request& r, MethodParams& params) {
+static void _hash(Request& r, MethodParams&) {
 	VHashfile& self=GET_SELF(r, VHashfile);
 	
 	// write out result

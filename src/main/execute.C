@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2003/11/07 13:59:21 $";
+static const char* IDENT_EXECUTE_C="$Date: 2003/11/20 15:35:31 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -105,7 +105,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 void Request::execute(ArrayOperation& ops) {
 	register Stack<StackItem>& stack=this->stack; // helps a lot on MSVC: 'esi'
 
-	const String* debug_name=0;  Operation::Origin debug_origin;  //bool is_debug_junction=false;
+	const String* debug_name=0;  Operation::Origin debug_origin={0};
 	try{
 #ifdef DEBUG_EXECUTE
 	debug_printf(sapi_info, "source----------------------------\n");
@@ -814,9 +814,8 @@ void Request::execute(ArrayOperation& ops) {
 	}
 	} catch(...) {
 		// record it to stack trace
-		//if(is_debug_junction)
-			if(debug_name)
-				exception_trace.push(Trace(debug_name, debug_origin));
+		if(debug_name)
+			exception_trace.push(Trace(debug_name, debug_origin));
 		rethrow;
 	}
 }

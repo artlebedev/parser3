@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2003/11/07 13:59:21 $";
+static const char* IDENT_XDOC_C="$Date: 2003/11/20 15:35:30 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -42,13 +42,11 @@ static const char* IDENT_XDOC_C="$Date: 2003/11/07 13:59:21 $";
 
 class MXdoc: public MXnode {
 public: // VStateless_class
-	Value* create_new_value(Pool& apool) { return new VXdoc(0, 0); }
+	Value* create_new_value(Pool&) { return new VXdoc(0, 0); }
 
 public:
 	MXdoc();
 
-public: // Methoded
-	void configure_admin(Request& r);
 };
 
 // global variable
@@ -663,14 +661,15 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 		gnome_str=(char *)outputBuffer->buffer->content;
 	}
 
+	if(result.length=gnome_length) {
+		result.str=pa_strdup(gnome_str, gnome_length);
+	} else
+		result.str=0;
+
 	if(file_spec)
 		file_write(*file_spec,
 			gnome_str, gnome_length, 
 			true/*as_text*/);
-	else if(result.length=gnome_length) {
-		result.str=pa_strdup(gnome_str, gnome_length);
-	} else
-		result.str=0;
 
 	return result;
 }
@@ -929,9 +928,6 @@ MXdoc::MXdoc(): MXnode(XDOC_CLASS_NAME, xnode_class) {
 	// ^xdoc.transform[stylesheet file_name/xdoc;params hash]
 	add_native_method("transform", Method::CT_DYNAMIC, _transform, 1, 2);
 
-}
-
-void MXdoc::configure_admin(Request& r) {
 }
 
 # else

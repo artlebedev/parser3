@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2003/11/19 11:00:33 $";
+static const char* IDENT_REQUEST_C="$Date: 2003/11/20 15:35:32 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -269,7 +269,6 @@ gettimeofday(&mt[0],NULL);
 					--after;
 			}
 			
-			int step=0;
 			while(const char* before=strchr(after, '/')) {
 				String& sfile_spec=*new String;
 				if(after!=request_info.path_translated) {

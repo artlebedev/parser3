@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/10 07:06:13 $";
+static const char* IDENT="$Date: 2003/11/20 15:35:32 $";
 
 #include "pa_globals.h"
 #include "pa_threads.h"
@@ -226,8 +226,6 @@ static void for_each_string_callback(apr_sdbm_datum_t apkey, void* ainfo) {
 	}
 }
 void VHashfile::for_each(void callback(const String::Body, const String&, void*), void* ainfo) {
-	apr_sdbm_t *db=get_db_for_reading();
-
 	For_each_string_callback_info info;
 	
 	info.self=this;

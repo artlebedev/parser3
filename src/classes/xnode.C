@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2003/11/12 05:46:49 $";
+static const char* IDENT_XNODE_C="$Date: 2003/11/20 15:35:30 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -111,7 +111,6 @@ GdomeNode* as_node(MethodParams& params,
 		throw Exception("parser.runtime",
 			0,
 			msg);
-		result=0; // calm, compiler
 	}
 
 	return result;
@@ -575,7 +574,7 @@ static void selectNodeHandler(Request& r,
 	}
 }
 
-static void selectBoolHandler(Request& r,
+static void selectBoolHandler(Request&,
 			      const String& expression,
 			      xmlXPathObject_auto_ptr res,
 			      Value*& result) {
@@ -595,7 +594,7 @@ static void selectBoolHandler(Request& r,
 	}
 }
 
-static void selectNumberHandler(Request& r,
+static void selectNumberHandler(Request&,
 				const String& expression,
 				xmlXPathObject_auto_ptr res,
 				Value*& result) {

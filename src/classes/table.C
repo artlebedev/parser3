@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/11/07 13:59:21 $";
+static const char* IDENT_TABLE_C="$Date: 2003/11/20 15:35:30 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -21,7 +21,7 @@ static const char* IDENT_TABLE_C="$Date: 2003/11/07 13:59:21 $";
 
 class MTable: public Methoded {
 public: // VStateless_class
-	Value* create_new_value(Pool& apool) { return new VTable(); }
+	Value* create_new_value(Pool&) { return new VTable(); }
 
 public:
 	MTable();
@@ -761,9 +761,8 @@ struct Expression_is_true_info {
 	Value* expression_code;
 };
 #endif
-static bool expression_is_true(Table& self, void* ainfo) {
-	Expression_is_true_info& info=*static_cast<Expression_is_true_info*>(ainfo);
-	return info.r->process_to_value(*info.expression_code).as_bool();
+static bool expression_is_true(Table&, Expression_is_true_info* info) {
+	return info->r->process_to_value(*info->expression_code).as_bool();
 }
 static bool _locate_expression(Table& table, Table::Action_options o,
 			       Request& r, MethodParams& params) {
@@ -775,7 +774,7 @@ static bool _locate_expression(Table& table, Table::Action_options o,
 	return table.table_first_that(expression_is_true, &info, o);
 }
 static bool _locate_name_value(Table& table, Table::Action_options o,
-			       Request& r, MethodParams& params) {
+			       Request&, MethodParams& params) {
 	check_option_param(o.defined, params, 2,
 		"locate by locate by name has parameters: name, value and, maybe, options");
 	const String& name=params.as_string(0, "column name must be string");
@@ -794,7 +793,7 @@ static void _locate(Request& r, MethodParams& params) {
 }
 
 
-static void _flip(Request& r, MethodParams& params) {
+static void _flip(Request& r, MethodParams&) {
 	Table& old_table=GET_SELF(r, VTable).table();
 	Table& new_table=*new Table(0);
 	if(size_t old_count=old_table.count())

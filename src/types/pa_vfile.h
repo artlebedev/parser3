@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char* IDENT_VFILE_H="$Date: 2003/07/24 11:31:26 $";
+static const char* IDENT_VFILE_H="$Date: 2003/11/20 15:35:32 $";
 
 // include
 
@@ -45,7 +45,7 @@ public: // Value
 	override bool as_bool() const { return true; }
 
 	/// VFile: true
-	override Value& as_expr_result(bool return_string_as_is=false) { return *new VBool(as_bool()); }
+	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VBool(as_bool()); }
 
 	/// VFile: this
 	override VFile* as_vfile(String::Language /*lang*/, 

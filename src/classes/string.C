@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/09/29 10:09:35 $";
+static const char* IDENT_STRING_C="$Date: 2003/11/20 15:35:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -132,8 +132,7 @@ static void _pos(Request& r, MethodParams& params) {
 	r.write_assign_lang(*new VInt((int)string.pos(substr.as_string())));
 }
 
-static void split_list(Request& r, 
-		       MethodParams& params, int paramIndex,
+static void split_list(MethodParams& params, int paramIndex,
 		       const String& string, 
 		       ArrayString& result) {
 	Value& delim_value=params.as_no_junction(paramIndex, "delimiter must not be code");
@@ -177,8 +176,7 @@ static int split_options(const String* options) {
 	return result;
 }
 
-static Table& split_vertical(Request& r, ArrayString& pieces, bool right) {
-
+static Table& split_vertical(ArrayString& pieces, bool right) {
 	Table::columns_type columns(new ArrayString);
 	*columns+=new String("piece");
 
@@ -201,7 +199,7 @@ static Table& split_vertical(Request& r, ArrayString& pieces, bool right) {
 	return table;
 }
 
-static Table& split_horizontal(Request& r, ArrayString& pieces, bool right) {
+static Table& split_horizontal(ArrayString& pieces, bool right) {
 	Table& table=*new Table(Table::columns_type(0) /* nameless */);
 	Table::element_type row(new ArrayString(pieces.count()));
 	if(right) { // right
@@ -221,7 +219,7 @@ static void split_with_options(Request& r, MethodParams& params,
 	const String& string=GET_SELF(r, VString).string();
 
 	ArrayString pieces;
-	split_list(r, params, 0, string, pieces);
+	split_list(params, 0, string, pieces);
 
 	if(!bits) {
 		const String* options=0;
@@ -233,8 +231,8 @@ static void split_with_options(Request& r, MethodParams& params,
 
 	bool right=(bits & SPLIT_RIGHT) != 0;
 	bool horizontal=(bits & SPLIT_HORIZONTAL) !=0;
-	Table& table=horizontal?split_horizontal(r, pieces, right)
-		:split_vertical(r, pieces, right);
+	Table& table=horizontal?split_horizontal(pieces, right)
+		:split_vertical(pieces, right);
 
 	r.write_no_lang(*new VTable(&table));
 }
@@ -329,7 +327,7 @@ static void _match(Request& r, MethodParams& params) {
 	}
 }
 
-static void change_case(Request& r, MethodParams& params, 
+static void change_case(Request& r, MethodParams&, 
 						String::Change_case_kind kind) {
 	const String& src=GET_SELF(r, VString).string();
 
@@ -357,7 +355,7 @@ public:
 		got_cell(false),
 		result(*new String) {}
 
-	bool add_column(SQL_Error& error, const char* str, size_t /*length*/) {
+	bool add_column(SQL_Error& error, const char* /*str*/, size_t /*length*/) {
 		if(got_column) {
 			error=SQL_Error("parser.runtime",
 				//statement_string,

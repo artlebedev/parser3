@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-const char* IDENT_COMMON_C="$Date: 2003/11/06 09:16:33 $"; 
+const char* IDENT_COMMON_C="$Date: 2003/11/20 15:35:31 $"; 
 
 #include "pa_config_includes.h"
 #include "pa_os.h"
@@ -63,10 +63,10 @@ int pa_unlock(int fd) { FLOCK(F_TLOCK); }
 #endif
 
 #else
-int pa_lock_shared_blocking(int fd) { return 0; }
-int pa_lock_exclusive_blocking(int fd) { return 0; }
-int pa_lock_exclusive_nonblocking(int fd) { return 0; }
-int pa_unlock(int fd) { return 0; }
+int pa_lock_shared_blocking(int /*fd*/) { return 0; }
+int pa_lock_exclusive_blocking(int /*fd*/) { return 0; }
+int pa_lock_exclusive_nonblocking(int /*fd*/) { return 0; }
+int pa_unlock(int /*fd*/) { return 0; }
 
 #endif
 

@@ -7,7 +7,7 @@
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char* IDENT_SMTP_C="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_SMTP_C="$Date: 2003/11/20 15:35:30 $";
 
 #include "pa_exception.h"
 #include "smtp.h"
@@ -39,14 +39,14 @@ void SMTP::
 ConnectToHost(const char* hostname, const char* service)
 {
     struct sockaddr_in	sa_in;
-    int			        our_port;
+    u_short our_port;
 
     if( !ResolveService(service, &our_port) )
     {
         if( !ResolveHostname(hostname, &sa_in) )
         {
 			sa_in.sin_family = AF_INET;
-            sa_in.sin_port   = our_port;
+            sa_in.sin_port   = (unsigned short)our_port;
 
             if( !GetAndSetTheSocket(&the_socket) )
             {
@@ -75,7 +75,6 @@ GetBuffer(int wait)
 {
     int             retval;
     int             bytes_read = 0;
-    unsigned long   ready_to_read = 0;
 
     // Use select to see if data is waiting...
     FD_ZERO(&fds);
@@ -272,9 +271,6 @@ SendLine(const char* data, unsigned long length)
 void SMTP:: 
 SendBuffer(const char* data, unsigned long length)
 {
-    DWORD             retval = 0;
-    unsigned int    sorta_sent = 0;
-
     while( length )
     {
         if( (out_index + length) < SOCKET_BUFFER_SIZE ) 

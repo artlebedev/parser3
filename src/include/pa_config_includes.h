@@ -175,4 +175,45 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 
 #endif
 
+
+#if _MSC_VER
+// using this in calls to parent constructors
+#pragma warning(disable:4355)   
+
+//#	pragma warning(disable:4065)   // switch statement contains 'default' 
+								   // but no 'case' labels
+//#	pragma warning(disable:4800)   // (bool)(1&2)
+
+// assignment operator could not be generated
+//#pragma warning(disable:4512) 
+
+// identifier was truncated to '255' characters in the debug information
+#pragma warning(disable:4786)
+
+// copy constructor could not be generated
+#pragma warning(disable:4511)
+
+// assignment operator could not be generated
+#pragma warning(disable:4512)
+
+// unreferenced local function has been removed
+#pragma warning(disable:4505)
+
+// conditional expression is constant; while(true) OK
+#pragma warning(disable:4127)
+
+// assignment within conditional expression if(type var=somethig) OK
+#pragma warning(disable:4706)
+
+
+#if 0
+#ifdef _DEBUG
+#	define _CRTDBG_MAP_ALLOC
+// When the _CRTDBG_MAP_ALLOC flag is defined in the debug version of an application, 
+// the base version of the heap functions are directly mapped to their debug versions
+#endif
+#endif
+
+#endif
+
 #endif

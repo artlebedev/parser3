@@ -5,14 +5,14 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DIR_C="$Date: 2003/07/24 11:31:23 $";
+static const char* IDENT_DIR_C="$Date: 2003/11/20 15:35:31 $";
 
 #include "pa_common.h"
 #include "pa_dir.h"
 
 #ifdef WIN32
 
-bool findfirst(const char* _pathname, struct ffblk *_ffblk, int _attrib) {
+bool findfirst(const char* _pathname, struct ffblk *_ffblk, int /*_attrib*/) {
 	char mask[MAXPATH];
 	snprintf(mask, MAXPATH, "%s/*.*", _pathname);
 

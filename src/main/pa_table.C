@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/07/24 11:31:24 $";
+static const char* IDENT_TABLE_C="$Date: 2003/11/20 15:35:32 $";
 
 #include "pa_table.h"
 
@@ -19,7 +19,6 @@ Table::Table(columns_type acolumns, size_t initial_rows):
 	name2number(new name2number_hash_class) {
 
 	if(fcolumns) {
-		size_t fcolumns_count=fcolumns->count();
 		size_t number=1;
 		for(Array_iterator<const String*> i(*fcolumns); i.has_next(); ) {
 			const String& name=*i.next();
@@ -65,11 +64,9 @@ struct Locate_int_string_info {
 	const String* value;
 };
 #endif
-bool locate_int_string(Table& self, void* ainfo) {
-	Locate_int_string_info& info=*static_cast<Locate_int_string_info*>(ainfo);
-
-	const String *item_value=self.item(info.column);
-	return item_value && *item_value==*info.value;
+bool locate_int_string(Table& self, Locate_int_string_info* info) {
+	const String *item_value=self.item(info->column);
+	return item_value && *item_value==*info->value;
 }
 
 bool Table::locate(int column, const String& value,

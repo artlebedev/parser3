@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2003/11/19 11:14:32 $";
+static const char* IDENT_OP_C="$Date: 2003/11/20 15:35:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -193,7 +193,7 @@ static void _process(Request& r, MethodParams& params) {
 	}
 }
 	
-static void _rem(Request& r, MethodParams& params) {
+static void _rem(Request&, MethodParams& params) {
 	params.as_junction(0, "body must be code");
 }
 
@@ -700,7 +700,7 @@ static void _try_operator(Request& r, MethodParams& params) {
 	r.write_pass_lang(result.processed_code);
 }
 
-static void _throw_operator(Request& r, MethodParams& params) {
+static void _throw_operator(Request&, MethodParams& params) {
 	if(params.count()==1) {
 		if(HashStringValue *hash=params[0].get_hash()) {
 			const char* type=0;
@@ -709,7 +709,7 @@ static void _throw_operator(Request& r, MethodParams& params) {
 			const String* source=0;
 			if(Value* value=hash->get(exception_source_part_name))
 				source=&value->as_string();
-			const char* comment;
+			const char* comment=0;
 			if(Value* value=hash->get(exception_comment_part_name))
 				comment=value->as_string().cstr();
 
@@ -731,7 +731,7 @@ static void _throw_operator(Request& r, MethodParams& params) {
 
 #if defined(WIN32) && defined(_DEBUG)
 #	define PA_BPT
-static void _bpt(Request& r, MethodParams& params) {
+static void _bpt(Request&, MethodParams&) {
 	_asm int 3;
 }
 #endif

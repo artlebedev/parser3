@@ -18,7 +18,7 @@
 #ifndef GIF_H
 #define GIF_H
 
-static const char* IDENT_GIF_H="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_GIF_H="$Date: 2003/11/20 15:35:30 $";
 
 #include "pa_config_includes.h"
 
@@ -256,7 +256,7 @@ inline int gdImage::BoundsSafe(int x, int y){
 }
 
 inline /*paf int*/void gdImage::DoSetPixel(int x, int y, int color){
-    if(BoundsSafe(x, y)) pixels[x][y] = color;
+    if(BoundsSafe(x, y)) pixels[x][y] = (unsigned char)color;
 }
 
 #endif

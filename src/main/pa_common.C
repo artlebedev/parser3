@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/11/19 08:20:02 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/11/20 15:35:31 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -198,7 +198,11 @@ static void timeout_handler(int sig){
 static int http_request(String& response,
 			const char* host, int port, 
 			const char* request, 
-			int timeout,
+			int 
+#ifdef PA_USE_ALARM
+			timeout
+#endif
+			,
 			bool fail_on_status_ne_200) {
 	if(!host)
 		throw Exception("http.host", 
@@ -520,7 +524,7 @@ struct File_read_action_info {
 static void file_read_action(
 			     struct stat& finfo, 
 			     int f, 
-			     const String& file_spec, const char* fname, bool as_text, 
+			     const String& file_spec, const char* /*fname*/, bool as_text, 
 			     void *context) {
 	File_read_action_info& info=*static_cast<File_read_action_info *>(context); 
 	if(size_t to_read_size=(size_t)finfo.st_size) { 

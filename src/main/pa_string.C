@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/11/04 12:04:39 $";
+static const char* IDENT_STRING_C="$Date: 2003/11/20 15:35:32 $";
 
 #include "pcre.h"
 
@@ -43,7 +43,7 @@ int CORD_range_contains_chr_greater_then(CORD x, size_t i, size_t n, int c)
     return(CORD_block_iter(x, i, CORD_range_contains_chr_greater_then_proc, &d) == 1/*alternatives: 0 normally ended, 2=struck 'n'*/);
 }
 
-static int CORD_block_count_proc(char c, size_t size, void* client_data)
+static int CORD_block_count_proc(char /*c*/, size_t /*size*/, void* client_data)
 {
     int* result=(int*)client_data;
     (*result)++;

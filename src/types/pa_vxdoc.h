@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char* IDENT_VXDOC_H="$Date: 2003/07/24 11:31:27 $";
+static const char* IDENT_VXDOC_H="$Date: 2003/11/20 15:35:33 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -36,7 +36,7 @@ public: // Value
 	override bool as_bool() const { return true; }
 
 	/// VXdoc: true
-	override Value& as_expr_result(bool return_string_as_is=false) { return *new VBool(as_bool()); }
+	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VBool(as_bool()); }
 
 	/// VXnode: $CLASS,$method, fields
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);

@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char* IDENT_VXNODE_H="$Date: 2003/11/06 09:15:16 $";
+static const char* IDENT_VXNODE_H="$Date: 2003/11/20 15:35:33 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -45,7 +45,7 @@ public: // Value
 	override bool as_bool() const { return true; }
 
 	/// VXnode: true
-	override Value& as_expr_result(bool return_string_as_is=false) { return *new VBool(as_bool()); }
+	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VBool(as_bool()); }
 
 	/// VXnode: $CLASS,$method, fields
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
@@ -64,9 +64,8 @@ public: // usage
 	}
 
 public: // VXnode
-
-	/// @todo register disappearing link to parent object?
-	void set_node(Request_charsets* acharsets, GdomeNode* anode, bool aowns_node) { 
+/*
+	void set_node(Request_charsets* acharsets, GdomeNode* anode) { 
 		fcharsets=acharsets;
 
 		GdomeException exc;
@@ -75,7 +74,7 @@ public: // VXnode
 
 		gdome_n_ref(fnode=anode, &exc);
 	}
-
+*/
 	virtual GdomeNode* get_node() { 
 		if(!fnode)
 			throw Exception(0,

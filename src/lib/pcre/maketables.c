@@ -75,11 +75,11 @@ p = yield;
 
 /* First comes the lower casing table */
 
-for (i = 0; i < 256; i++) *p++ = tolower(i);
+for (i = 0; i < 256; i++) *p++ = (unsigned char)tolower(i);
 
 /* Next the case-flipping table */
 
-for (i = 0; i < 256; i++) *p++ = islower(i)? toupper(i) : tolower(i);
+for (i = 0; i < 256; i++) *p++ = (unsigned char)(islower(i)? toupper(i) : tolower(i));
 
 /* Then the character class tables */
 
@@ -104,7 +104,7 @@ for (i = 0; i < 256; i++)
   if (isxdigit(i)) x += ctype_xdigit;
   if (isalnum(i) || i == '_') x += ctype_word;
   if (strchr("*+?{^.$|()[", i) != 0) x += ctype_meta;
-  *p++ = x;
+  *p++ = (unsigned char)x;
   }
 
 return yield;

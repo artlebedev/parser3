@@ -40,12 +40,6 @@ typedef void DIR;
 
 #define LT_D_NAMLEN(dirent) (0)
 
-inline DIR              *opendir(const char *name) {
-	return 0;
-}
-inline struct dirent    *readdir(DIR *dir) {
-	return 0;
-}
-inline int              closedir(DIR *dir) {
-	return 0;
-}
+#define opendir(name) 0
+#define readdir(dir) 0
+#define closedir(dir) 0

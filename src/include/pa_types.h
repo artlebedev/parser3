@@ -8,31 +8,9 @@
 #ifndef PA_TYPES_H
 #define PA_TYPES_H
 
-static const char* IDENT_TYPES_H="$Date: 2003/07/24 11:31:22 $";
+static const char* IDENT_TYPES_H="$Date: 2003/11/20 15:35:30 $";
 
 #include "pa_config_includes.h"
-
-#if _MSC_VER
-// using this in calls to parent constructors
-#pragma warning(disable:4355)   
-
-//#	pragma warning(disable:4065)   // switch statement contains 'default' 
-								   // but no 'case' labels
-//#	pragma warning(disable:4800)   // (bool)(1&2)
-
-// assignment operator could not be generated
-//#pragma warning(disable:4512) 
-
-// identifier was truncated to '255' characters in the debug information
-#pragma warning(disable:4786)
-
-#ifdef _DEBUG
-#	define _CRTDBG_MAP_ALLOC
-// When the _CRTDBG_MAP_ALLOC flag is defined in the debug version of an application, 
-// the base version of the heap functions are directly mapped to their debug versions
-#endif
-
-#endif
 
 /// for rare cases of undefined length using this-sized strings
 #define MAX_STRING 0x400

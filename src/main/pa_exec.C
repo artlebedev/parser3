@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Date: 2003/09/25 09:15:03 $";
+static const char* IDENT_EXEC_C="$Date: 2003/11/20 15:35:31 $";
 
 #include "pa_config_includes.h"
 
@@ -316,7 +316,11 @@ static void append_env_pair(HashStringString::key_type key, HashStringString::va
 
 /// @todonow unix part to smart_ptr
 PA_exec_result pa_exec(
-			bool forced_allow, 
+			bool 
+#ifdef NO_PA_EXEC
+			forced_allow
+#endif
+			, 
 			const String& file_spec, 
 			const HashStringString* env, 
 			const ArrayString& argv, 
@@ -330,14 +334,12 @@ PA_exec_result pa_exec(
 			"parser execs are disabled [recompile parser without --disable-execs configure option]");
 #endif
 
-	// execve needs non const
-	char* file_spec_cstr=file_spec.cstrm(String::L_FILE_SPEC); 
 #ifdef WIN32
 
 	PROCESS_INFORMATION pi;	
 	HANDLE hInWrite, hOutRead, hErrRead;
 	const char* cmd=buildCommand(file_spec.cstr(String::L_FILE_SPEC), argv);
-	char* env_cstr;
+	char* env_cstr=0;
 	if(env) {
 		String string;
 		Append_env_pair_info info(string);
@@ -385,6 +387,9 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	}
 
 #else
+
+	// execve needs non const
+	char* file_spec_cstr=file_spec.cstrm(String::L_FILE_SPEC); 
 
 	int pipe_write, pipe_read, pipe_err;
 

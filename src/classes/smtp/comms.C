@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMS_C="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_COMMS_C="$Date: 2003/11/20 15:35:30 $";
 
 #include "smtp.h"
 #include <winsock.h>
@@ -27,7 +27,7 @@ IsAddressARawIpaddress(const char*  string)
 
 //---------------------------------------------------------------------------
 int SMTP:: 
-ResolveService(const char* service, int *our_port)
+ResolveService(const char* service, u_short *our_port)
 {
     struct servent FAR  *serventry = NULL;
     int                 retval = 0;
@@ -36,7 +36,7 @@ ResolveService(const char* service, int *our_port)
     {
         char * tail;
 
-        *our_port = (int)strtol(service, &tail, 10);
+        *our_port = (u_short)strtol(service, &tail, 10);
         
         if( tail == service ) 
         {

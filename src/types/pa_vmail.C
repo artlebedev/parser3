@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2003/11/04 12:29:16 $";
+static const char* IDENT_VMAIL_C="$Date: 2003/11/20 15:35:32 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -321,7 +321,11 @@ static void parse(Request& r, GMimeStream *stream, HashStringValue& received) {
 
 
 
-void VMail::fill_received(Request& r) {
+void VMail::fill_received(Request& 
+#ifdef WITH_MAILRECEIVE
+						  r
+#endif
+						  ) {
 	// store letter to received
 #ifdef WITH_MAILRECEIVE
 	if(r.request_info.mail_received) {
@@ -643,13 +647,18 @@ static const String& text_value_to_string(Request& r,
 			Temp_lang temp_lang(r, String::Language(String::L_HTML | String::L_OPTIMIZE_BIT));
 			if(Junction* junction=text_value->get_junction())
 				body=&r.process_to_string(*text_value);
-			else
+			else {
 				throw Exception("parser.runtime",
 					0,
 					"html part value must be code");
+			}
 
 			break;
 		}
+	default:
+		throw Exception(0,
+			0,
+			"unhandled part type #%d", pt);
 	}
 	if(body) {
 		const char* body_cstr=strdup(body->cstr(String::L_UNSPECIFIED));  // body

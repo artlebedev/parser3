@@ -9,7 +9,7 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-static const char* IDENT_OPERATION_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_OPERATION_H="$Date: 2003/11/20 15:35:30 $";
 
 #include "pa_array.h"
 #include "pa_opcode.h"
@@ -40,10 +40,7 @@ union Operation {
 
 		static Origin create(uint afile_no, uint aline, uint acol) {
 			Origin result={afile_no, aline, acol};
-			return result;/*
-			result.file_no=afile_no;
-			result.line=aline;
-			result.col=acol;*/
+			return result;
 		}
 	};
 

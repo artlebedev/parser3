@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2003/11/06 09:56:17 $";
+static const char* IDENT_VALUE_H="$Date: 2003/11/20 15:35:32 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -140,7 +140,6 @@ protected:
 		throw Exception("parser.runtime",
 			problem_source, 
 			reason, type());
-		return 0; // useful for calming down compiler
 	}
 
 };

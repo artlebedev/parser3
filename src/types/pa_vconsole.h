@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char* IDENT_VCONSOLE_H="$Date: 2003/11/10 10:24:14 $";
+static const char* IDENT_VCONSOLE_H="$Date: 2003/11/20 15:35:32 $";
 
 // includes
 
@@ -46,7 +46,6 @@ public: // Value
 		throw Exception("parser.runtime",
 			&aname,
 			"reading of invalid field");
-		return 0; // calm, compiler
 	}
 
 	/// VConsole: $line
@@ -63,7 +62,6 @@ public: // Value
 		throw Exception("parser.runtime",
 			&aname,
 			"writing to invalid field");
-		return true; // calm, compiler
 	}
 
 public: // usage

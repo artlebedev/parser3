@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_INT_C="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_INT_C="$Date: 2003/11/20 15:35:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -89,7 +89,6 @@ static void _sql(Request& r, MethodParams& params) {
 			throw Exception("parser.runtime",
 				0,
 				"produced no result, but no default option specified");
-			val=0; //calm, compiler
 		}
 	r.write_no_lang(*new VInt(val));
 }

@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_MATH_C="$Date: 2003/11/20 15:35:29 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -294,7 +294,6 @@ static const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
 
 	static const char *hex=upcase?"0123456789ABCDEF":"0123456789abcdef";
 
-	const char *format=upcase?"%02X":"%02x";
 	for(; src<end; src++) {
                 *dest++=hex[*src/0x10];
                 *dest++=hex[*src%0x10];

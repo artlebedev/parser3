@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_CACHE_MANAGERS_C="$Date: 2003/07/24 11:31:23 $";
+static const char* IDENT_CACHE_MANAGERS_C="$Date: 2003/11/20 15:35:31 $";
 
 #include "pa_cache_managers.h"
 
@@ -15,7 +15,7 @@ Cache_managers cache_managers;
 
 // methods
 
-static void maybe_expire_one(Cache_managers::key_type akey, Cache_managers::value_type avalue, 
+static void maybe_expire_one(Cache_managers::key_type /*akey*/, Cache_managers::value_type avalue, 
 										  int) {
 	avalue->maybe_expire_cache();
 }

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2003/11/04 12:46:49 $";
+static const char* IDENT_MAIL_C="$Date: 2003/11/20 15:35:29 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -61,7 +61,11 @@ static const String mail_sendmail_name(SENDMAIL_NAME);
 static void sendmail(Request& r, 
 		     const String& message, 
 		     const String* from, const String* to,
-			 const String* options) {
+			 const String* 
+#ifndef _MSC_VER
+			 options
+#endif
+			 ) {
 	const char* message_cstr=message.cstr(String::L_UNSPECIFIED);
 	Value* vmail_conf=static_cast<Value*>(r.classes_conf.get(mail_base_class->name()));
 

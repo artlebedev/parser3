@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-static const char* IDENT_TABLE_H="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_TABLE_H="$Date: 2003/11/20 15:35:30 $";
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -89,7 +89,7 @@ public:
 	}
 
 	template<typename I>
-	bool table_first_that(bool (*func)(Table& self, I* info), void* info, Action_options& o) {
+	bool table_first_that(bool (*func)(Table& self, I info), I info, Action_options& o) {
 		if(!o.adjust(count()))
 			return false;
 

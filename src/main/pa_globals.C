@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2003/09/22 09:19:18 $";
+static const char* IDENT_GLOBALS_C="$Date: 2003/11/20 15:35:31 $";
 
 #include "pa_config_includes.h"
 
@@ -99,7 +99,7 @@ XML_Generic_error_info *xml_generic_error_info(pa_thread_t thread_id) {
 }
 
 static void
-xmlParserGenericErrorFunc(void *ctx, const char* msg, ...) { 
+xmlParserGenericErrorFunc(void *  /*ctx*/, const char* msg, ...) { 
 	//_asm int 3;
 	pa_thread_t thread_id=pa_get_thread_id();
 
@@ -225,9 +225,10 @@ void pa_globals_destroy(void *) {
 #ifdef XML
 		GdomeException exc;
 		gdome_di_unref (domimpl, &exc);
+		// uncomment SAPI::abort below if adding potential-throw code here
 #endif
 	} catch(const Exception& e) {
-		SAPI::abort("pa_globals_destroy failed: %s", e.comment());
+//		SAPI::abort("pa_globals_destroy failed: %s", e.comment());
 	}
 }
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2003/11/07 13:59:21 $";
+static const char* IDENT_DATE_C="$Date: 2003/11/20 15:35:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -19,7 +19,7 @@ static const char* IDENT_DATE_C="$Date: 2003/11/07 13:59:21 $";
 
 class MDate: public Methoded {
 public: // VStateless_class
-	Value* create_new_value(Pool& apool) { return new VDate(0); }
+	Value* create_new_value(Pool&) { return new VDate(0); }
 
 public:
 	MDate();
@@ -273,9 +273,9 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 	for(int _day=1-weekDay1; _day<=monthDays;) {
 		Table::element_type row(new ArrayString(7));
 		// calculating year week no [1..54]
-		char *weekno_buf;
-		size_t weekno_size;
-		int weekyear;
+		char *weekno_buf=0; // surely would be assigned to, but to calm down compiler
+		size_t weekno_size=0; // same
+		int weekyear=0; // same
 		// 0..6 week days-cells fill with month days
 		for(int wday=0; wday<7; wday++, _day++) {
 			String* cell=new String;

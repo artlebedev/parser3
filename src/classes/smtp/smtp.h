@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_SMTP_H="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_SMTP_H="$Date: 2003/11/20 15:35:30 $";
 
 
 #include "pa_string.h"
@@ -78,7 +78,7 @@ public:
 
     // comms.C
     int      IsAddressARawIpaddress(const char* );
-    int      ResolveService(const char* , int *);
+    int      ResolveService(const char* , u_short *);
     int      ResolveHostname(const char* , struct sockaddr_in *);
     int      GetAndSetTheSocket(SOCKET *);
     int      GetConnection(SOCKET, struct sockaddr_in *);

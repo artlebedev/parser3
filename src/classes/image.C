@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2003/11/07 13:59:21 $";
+static const char* IDENT_IMAGE_C="$Date: 2003/11/20 15:35:29 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -33,7 +33,7 @@ static const char* IDENT_IMAGE_C="$Date: 2003/11/07 13:59:21 $";
 
 class MImage: public Methoded {
 public: // VStateless_class
-	Value* create_new_value(Pool& apool) { return new VImage(); }
+	Value* create_new_value(Pool&) { return new VImage(); }
 
 public:
 	MImage();
@@ -687,8 +687,8 @@ struct File_measure_action_info {
 };
 #endif
 static void file_measure_action(
-								struct stat& finfo, int f, 
-								const String& file_spec, const char* fname, bool as_text,
+								struct stat& /*finfo*/, int f, 
+								const String& /*file_spec*/, const char* fname, bool /*as_text*/,
 								void *context) {
 	File_measure_action_info& info=*static_cast<File_measure_action_info *>(context);
 
@@ -792,7 +792,6 @@ static gdImage* load(Request& r,
 		throw Exception("file.missing", 
 			0, 
 			"can not open '%s'", file_name_cstr);
-		return 0;
 	}
 }
 
