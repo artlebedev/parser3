@@ -8,7 +8,7 @@
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-static const char * const IDENT_STYLESHEET_CONNECTION_H="$Date: 2003/11/20 17:07:44 $";
+static const char * const IDENT_STYLESHEET_CONNECTION_H="$Date: 2003/11/28 10:27:00 $";
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"
@@ -31,24 +31,28 @@ class Stylesheet_connection: public PA_Object {
 
 private:
 
-	const String& ffile_spec;
+	String::Body ffile_spec;
+	bool uncachable;
 	xsltStylesheet *fstylesheet;
 	time_t time_used;
 	time_t prev_disk_time;
 
 public:
 
-	Stylesheet_connection(const String& afile_spec):
+	Stylesheet_connection(String::Body afile_spec):
 		ffile_spec(afile_spec),
 		fstylesheet(0),
 		time_used(0),
 		prev_disk_time(0),
-		used(0)  {}
+		used(0)  
+	{
+		uncachable=ffile_spec.pos("://")!=CORD_NOT_FOUND;
+	}
 	
-	const String& file_spec() { return ffile_spec; }
+	String::Body file_spec() { return ffile_spec; }
 
 	bool expired(time_t older_dies) {
-		return !used && time_used<older_dies;
+		return uncachable || !used && time_used<older_dies;
 	}
 	time_t get_time_used() { return time_used; }
 
@@ -58,9 +62,9 @@ public:
 
 	bool connected() { return fstylesheet!=0; }
 
-	xsltStylesheet *stylesheet(bool nocache) { 
-		time_t new_disk_time=get_new_disk_time();
-		if(nocache || new_disk_time)
+	xsltStylesheet *stylesheet() { 
+		time_t new_disk_time=0;
+		if(uncachable || (new_disk_time=get_new_disk_time()))
 			load(new_disk_time);
 		return fstylesheet; 
 	}
@@ -80,16 +84,15 @@ private:
 	void load(time_t new_disk_time) {
 		int saved=xmlDoValidityCheckingDefaultValue;//
 		xmlDoValidityCheckingDefaultValue=0;//
-		xsltStylesheet *nstylesheet=
-			xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr(String::L_FILE_SPEC));
+		xsltStylesheet *nstylesheet=xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr());
 		xmlDoValidityCheckingDefaultValue = saved;//
 		if(xmlHaveGenericErrors()) {
 			GdomeException exc=0;
-			throw XmlException(&ffile_spec, exc);
+			throw XmlException(new String(ffile_spec, String::L_TAINTED), exc);
 		}
 		if(!nstylesheet)
 			throw Exception("file.missing",
-				&ffile_spec,
+				new String(ffile_spec, String::L_TAINTED),
 				"stylesheet failed to load");
 
 		xsltFreeStylesheet(fstylesheet);  
@@ -100,10 +103,10 @@ private:
 	time_t get_disk_time() {
 		size_t size;
 		time_t atime, mtime, ctime;
-		String stamp_file_spec(ffile_spec);
+		String stamp_file_spec(ffile_spec, String::L_AS_IS);
 		stamp_file_spec << STYLESHEET_FILENAME_STAMP_SUFFIX;
 		// {file_spec}.stamp modification time OR {file_spec}
-		const String& stat_file_spec=file_readable(stamp_file_spec)?stamp_file_spec:ffile_spec;
+		const String& stat_file_spec=file_readable(stamp_file_spec)?stamp_file_spec:*new String(ffile_spec, String::L_AS_IS);
 		file_stat(stat_file_spec, 
 			size,
 			atime, mtime, ctime,

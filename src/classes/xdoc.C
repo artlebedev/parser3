@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2003/11/20 17:19:27 $";
+static const char * const IDENT_XDOC_C="$Date: 2003/11/28 10:27:00 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -483,19 +483,19 @@ static void _load(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
 	// filespec
-	const String& file_name=params.as_string(0, "uri must be string");
-	const String& uri=r.absolute(file_name);
+	const String* uri=&params.as_string(0, "uri must be string");
+	const char* uri_cstr;
+	if(uri->pos("://")==STRING_NOT_FOUND) // disk path
+		uri_cstr=r.absolute(*uri).cstr(String::L_FILE_SPEC);
+	else // xxx:// 
+		uri_cstr=uri->cstr(String::L_AS_IS); // leave as-is for xmlParseFile to handle
 
-	File_read_result file=file_read(r.charsets, uri, false/*not text*/,
-		params.count()>1?params.as_no_junction(1, "additional params must be hash")
-			.get_hash()
-			:0);
-
+	/// todo!! add SAFE MODE!!
 	GdomeDocument *document=(GdomeDocument *)
-		gdome_xml_n_mkref((xmlNode *)xmlParseMemory(file.str, file.length));
+		gdome_xml_n_mkref((xmlNode *)xmlParseFile(uri->cstr()));
 	if(!document || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
-		throw XmlException(&uri, exc);
+		throw XmlException(uri, exc);
 	}
 	// must be first action after if}
 	// replace any previous parsed source
@@ -504,12 +504,12 @@ static void _load(Request& r, MethodParams& params) {
 		GdomeException exc;
 		gdome_doc_unref(document, &exc);
 	}
-
-	const char* URI_cstr=uri.cstr();
+/* xmlParseFile does that itself. old peace for xmlParseMemory
+	const char* URI_cstr=uri->cstr();
 	xmlDoc *doc=gdome_xml_doc_get_xmlDoc(document);
 	if(URI_cstr)
 		doc->URL=r.charsets.source().transcode_buf2xchar(URI_cstr, strlen(URI_cstr));
-
+*/
 }
 
 static void param_option_over_output_option(
@@ -661,7 +661,7 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 		gnome_str=(char *)outputBuffer->buffer->content;
 	}
 
-	if(result.length=gnome_length) {
+	if((result.length=gnome_length)) {
 		result.str=pa_strdup(gnome_str, gnome_length);
 	} else
 		result.str=0;
@@ -849,8 +849,7 @@ static void _transform(Request& r, MethodParams& params) {
 
 		// load and compile file to stylesheet [or get cached if any]
 		// transform!
-		result=&_transform(r, &stylesheet_filespec,
-			vdoc, connection->stylesheet(false/*nocache*/),
+		result=&_transform(r, &stylesheet_filespec, vdoc, connection->stylesheet(),
 			transform_params);
 	}
 
@@ -910,7 +909,7 @@ MXdoc::MXdoc(): MXnode(XDOC_CLASS_NAME, xnode_class) {
 	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 1);
 
 	// ^xdoc::load[some.xml]
-	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
+	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
 
 	// ^xdoc.save[some.xml]
 	// ^xdoc.save[some.xml;options hash]
@@ -939,4 +938,3 @@ MXdoc::MXdoc(): MXnode(XDOC_CLASS_NAME, xnode_class) {
 DECLARE_CLASS_VAR(xdoc, 0, 0); // fictive
 
 #endif
-

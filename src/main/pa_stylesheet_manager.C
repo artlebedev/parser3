@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2003/11/20 16:34:27 $";
+static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2003/11/28 10:27:00 $";
 
 #include "pa_stylesheet_manager.h"
 #include "pa_exception.h"
@@ -58,21 +58,20 @@ Stylesheet_manager::~Stylesheet_manager() {
 	connection_cache.for_each(expire_connections, time(0)+SECOND/*=in future=expire all*/);
 }
 
-Stylesheet_connection_ptr Stylesheet_manager::get_connection(const String& file_spec) {
+Stylesheet_connection_ptr Stylesheet_manager::get_connection(String::Body file_spec) {
 	Stylesheet_connection* result=get_connection_from_cache(file_spec);
 	if(!result)
 		result=new Stylesheet_connection(file_spec);
 	return Stylesheet_connection_ptr(result);
 }
 
-void Stylesheet_manager::close_connection(const String& file_spec, 
-										  Stylesheet_connection& connection) {
+void Stylesheet_manager::close_connection(String::Body file_spec, Stylesheet_connection& connection) {
 	put_connection_to_cache(file_spec, connection);
 }
 
 // stylesheet cache
 /// @todo get rid of memory spending Stack [zeros deep inside got accumulated]
-Stylesheet_connection* Stylesheet_manager::get_connection_from_cache(const String& file_spec) { 
+Stylesheet_connection* Stylesheet_manager::get_connection_from_cache(String::Body file_spec) { 
 	SYNCHRONIZED;
 
 	if(connection_cache_type::value_type connections=connection_cache.get(file_spec))
@@ -85,7 +84,7 @@ Stylesheet_connection* Stylesheet_manager::get_connection_from_cache(const Strin
 	return 0;
 }
 
-void Stylesheet_manager::put_connection_to_cache(const String& file_spec, 
+void Stylesheet_manager::put_connection_to_cache(String::Body file_spec, 
 						 Stylesheet_connection& connection) { 
 	SYNCHRONIZED;
 

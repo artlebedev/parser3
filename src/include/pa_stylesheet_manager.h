@@ -10,7 +10,7 @@
 #ifndef PA_STYLESHEET_MANAGER_H
 #define PA_STYLESHEET_MANAGER_H
 
-static const char * const IDENT_STYLESHEET_MANAGER_H="$Date: 2003/11/20 16:34:25 $";
+static const char * const IDENT_STYLESHEET_MANAGER_H="$Date: 2003/11/28 10:27:00 $";
 
 
 #include "pa_hash.h"
@@ -33,19 +33,19 @@ public:
 		check for disk update of "{file_spec}" or "{file_spec}.stamp",
 		if not updated return cached version[if any] otherwise load/compile/return
 	*/
-	Stylesheet_connection_ptr get_connection(const String& file_spec);
+	Stylesheet_connection_ptr get_connection(String::Body file_spec);
 
 private: // cache
 
-	Stylesheet_connection* get_connection_from_cache(const String& file_spec);
-	void put_connection_to_cache(const String& file_spec, Stylesheet_connection& connection);
+	Stylesheet_connection* get_connection_from_cache(String::Body file_spec);
+	void put_connection_to_cache(String::Body file_spec, Stylesheet_connection& connection);
 private:
 	time_t prev_expiration_pass_time;
 
 private: // for stylesheet
 
 	/// caches connection
-	void close_connection(const String& file_spec, Stylesheet_connection& connection);
+	void close_connection(String::Body file_spec, Stylesheet_connection& connection);
 
 public:
 	typedef Stack<Stylesheet_connection*> connection_cache_value_type;
