@@ -5,7 +5,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.211 2004/04/06 14:12:45 paf Exp $
+	$Id: compile.y,v 1.212 2004/04/06 14:15:22 paf Exp $
 */
 
 /**
@@ -501,9 +501,14 @@ name_expr_with_subvar_value: STRING subvar_get_writes {
 	$$=N(); 
 	OA(*$$, OP_STRING_POOL, code);
 };
-name_square_code_value: '[' codes ']' {
+name_square_code_value: '[' {
+	// allow $result_or_other_variable[ letters here any time ]
+	*reinterpret_cast<bool*>(&$$)=PC.explicit_result; PC.explicit_result=false;
+} codes {
+	PC.explicit_result=reinterpret_cast<bool>($2);
+} ']' {
 	$$=N(); 
-	OA(*$$, OP_OBJECT_POOL, $2); /* stack: empty write context */
+	OA(*$$, OP_OBJECT_POOL, $3); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.value() */
 };
