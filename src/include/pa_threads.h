@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_threads.h,v 1.14 2001/05/17 10:22:24 parser Exp $
+	$Id: pa_threads.h,v 1.15 2001/05/17 10:42:56 parser Exp $
 */
 
 #ifndef PA_THREADS_H
@@ -54,11 +54,12 @@ public:
 	@endverbatim
 
 	WARNING: don't use THROW or PTHROW with such thread safety mechanizm -
-	longjump would leave global_mutex acquired, which is wrong!
+	longjmp would leave global_mutex acquired, which is wrong!
 */
-#	define SYNCHRONIZED AutoSYNCHRONIZED autoSYNCHRONIZED()
-#else // not MULTITHREAD-ed
-#	define SYNCHRONIZED /* do nothing */
+#	define SYNCHRONIZED AutoSYNCHRONIZED autoSYNCHRONIZED
+#else
+	// not MULTITHREAD-ed, do nothing
+#	define SYNCHRONIZED
 #endif
 
 

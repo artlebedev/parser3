@@ -104,5 +104,9 @@ SOURCE=..\..\modules\extra\mod_parser3.C
 
 SOURCE=..\..\modules\extra\pa_pool.C
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\modules\extra\pa_threads.C
+# End Source File
 # End Target
 # End Project
