@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2002/08/19 09:36:08 $";
+static const char* IDENT_XNODE_C="$Date: 2002/08/19 09:37:05 $";
 
 #include "pa_charset.h"
 #include "pa_request.h"
@@ -227,10 +227,10 @@ GdomeElement *get_self_element(Request& r, const String& method_name) {
 	GdomeNode *node=vnode.get_node(&method_name);
 
 	GdomeException exc;
-	/*if(gdome_n_nodeType(node, &exc)!=GDOME_ELEMENT_NODE)
+	if(gdome_n_nodeType(node, &exc)!=GDOME_ELEMENT_NODE)
 		throw Exception("parser.runtime",
 			&method_name,
-			"method can be called on node of ELEMENT type");*/
+			"method can only be called on nodes of ELEMENT type");
 
 	return GDOME_EL(node);
 }
