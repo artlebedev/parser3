@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.104 2002/02/13 12:05:17 paf Exp $
+	$Id: pa_common.C,v 1.105 2002/03/11 10:39:07 paf Exp $
 */
 
 #include "pa_common.h"
@@ -149,6 +149,19 @@ bool file_read(Pool& pool, const String& file_spec,
 				throw e;
 			return false;
 		}
+#ifdef NO_FOREIGN_GROUP_FILES
+		if(finfo.st_gid/*foreign?*/!=getegid()) {
+			Exception e(0, 0,
+				&file_spec,
+				"parser reading files of foreign group disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
+					fname);
+			unlock(f);
+			close(f);
+			if(fail_on_read_problem)
+				throw e;
+			return false;
+		}
+#endif
 		size_t max_size=limit?min(offset+limit, (size_t)finfo.st_size)-offset:finfo.st_size;
 		if(!max_size) { // eof
 			if(as_text) {
