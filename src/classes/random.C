@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: random.C,v 1.1 2001/04/02 08:43:41 paf Exp $
+	$Id: random.C,v 1.2 2001/04/02 08:49:38 paf Exp $
 */
 
 #include <process.h>
@@ -28,8 +28,10 @@ static void _generate(Request& r, const String& method_name, Array *params) {
 
     uint max=params->size()?
 		(uint)(r.process(*static_cast<Value *>(params->get(0)))).as_double():0;
-    if(max<=0) 
-		max=1000000;
+    if(max<=1)
+		RTHROW(0, 0,
+			&method_name,
+			"bad range [0..%u]", max);
 	
 	r.write_no_lang(*new(pool) VInt(pool, rand()%max));
 }
