@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.125 2002/03/27 15:30:35 paf Exp $
+	$Id: pa_request.h,v 1.126 2002/04/10 09:53:14 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -113,12 +113,23 @@ public:
 		const char *source, const char *file,
 		VStateless_class *aclass=0, const String *name=0, 
 		VStateless_class *base_class=0); // core.C
-	/// processes any code-junction there may be inside of @a value
-	Value& process(
-		Value& value, 
-		const String *name=0,
-		bool intercept_string=true); // execute.C
 
+	//@{ convinient inline helpers @see Request::process
+	const String& process_to_string(Value& input_value, 
+		const String *result_name=0) {
+		const String *result;
+		process_internal(input_value, result_name, true/*intercept_string*/, &result, 0);
+		return *result;
+	}
+	Value& process_to_value(Value& input_value, 
+		const String *result_name=0, 
+		bool intercept_string=true) {
+		Value *result;
+		process_internal(input_value, result_name, intercept_string, 0, &result);
+		return *result;
+	}
+	//@}
+	
 	/// appending, sure of clean string inside
 	void write_no_lang(const String& astring) {
 		wcontext->write(astring, 
@@ -287,6 +298,12 @@ private:
 
 private:
 
+	/// processes any code-junction there may be inside of @a value
+	void process_internal(
+		Value& input_value, const String *result_name, 
+		bool intercept_string,
+		const String **string_result, Value **value_result); // execute.C
+
 	void output_result(const VFile& body_file, bool header_only);
 };
 
@@ -372,9 +389,7 @@ private:
 	}
 
 	Value& get_processed(int index, const char *msg, Request& r) {
-		return r.process(as_junction(index, msg),
-			0/*no name*/,
-			false/*don't intercept string*/);
+		return r.process_to_value(as_junction(index, msg), 0/*no name*/);
 	}
 
 private:

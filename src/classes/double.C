@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: double.C,v 1.45 2002/04/09 06:47:05 paf Exp $
+	$Id: double.C,v 1.46 2002/04/10 09:53:13 paf Exp $
 */
 
 #include "classes.h"
@@ -90,7 +90,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		val=string->as_double();
 	else
 		if(default_code)
-			val=r.process(*default_code).as_double();
+			val=r.process_to_value(*default_code).as_double();
 		else {
 			throw Exception("parser.runtime",
 				&method_name,

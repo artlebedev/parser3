@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.151 2002/04/10 08:53:55 paf Exp $
+	$Id: pa_string.C,v 1.152 2002/04/10 09:53:15 paf Exp $
 */
 
 #include "pcre.h"
@@ -70,8 +70,7 @@ void String::expand() {
 	if(new_chunk_count>max_integral(Chunk::count_type))
 		new_chunk_count=max_integral(Chunk::count_type);
 
-	Chunk *new_chunk=static_cast<Chunk *>(
-		malloc(
+	Chunk *new_chunk=static_cast<Chunk *>(malloc(
 			sizeof(Chunk)// count+interpadding(?)+rows[CR_PREALLOCATED_COUNT]+tailpadding(??)
 			-sizeof(Chunk::rows_type) // PREALLOCATED rows
 			+sizeof(Chunk::Row)*new_chunk_count // neaded rows

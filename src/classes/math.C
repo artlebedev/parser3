@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: math.C,v 1.16 2002/03/27 15:30:34 paf Exp $
+	$Id: math.C,v 1.17 2002/04/10 09:53:14 paf Exp $
 */
 
 #include "pa_common.h"
@@ -38,7 +38,7 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 
 	Value& range=params->as_junction(0, "range must be expression");
-    double top=r.process(range).as_double();
+    double top=r.process_to_value(range).as_double();
     if(top<=1)
 		throw Exception("parser.runtime",
 			&method_name,
@@ -62,7 +62,7 @@ static void math1(Request& r,
 	Pool& pool=r.pool();
 	Value& param=params->as_junction(0, "parameter must be expression");
 
-	Value& result=*new(pool) VDouble(pool, (*func)(r.process(param).as_double()));
+	Value& result=*new(pool) VDouble(pool, (*func)(r.process_to_value(param).as_double()));
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
@@ -95,8 +95,8 @@ static void math2(Request& r,
 	Value& b=params->as_junction(1, "parameter must be expression");
 
 	Value& result=*new(pool) VDouble(pool, (*func)(
-		r.process(a).as_double(),
-		r.process(b).as_double()));
+		r.process_to_value(a).as_double(),
+		r.process_to_value(b).as_double()));
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }

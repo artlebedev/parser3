@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.74 2002/03/27 15:30:33 paf Exp $
+	$Id: file.C,v 1.75 2002/04/10 09:53:13 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -104,7 +104,7 @@ static void _find(Request& r, const String& method_name, MethodParams *params) {
 	// not found
 	if(params->size()==2) {
 		Value& not_found_code=params->as_junction(1, "not-found param must be code");
-		r.write_pass_lang(r.process(not_found_code));
+		r.write_pass_lang(r.process_to_value(not_found_code));
 	}
 }
 
@@ -381,7 +381,7 @@ static void lock_execute_body(int , void *context) {
 	Lock_execute_body_info& info=*static_cast<Lock_execute_body_info *>(context);
 
 	// execute body
-	info.r->write_assign_lang(info.r->process(*info.body_code));
+	info.r->write_assign_lang(info.r->process_to_string(*info.body_code));
 };
 static void _lock(Request& r, const String& method_name, MethodParams *params) {
 	const String& file_spec=r.absolute(params->as_string(0, "file name must be string"));

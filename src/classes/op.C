@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.80 2002/03/29 11:28:40 paf Exp $
+	$Id: op.C,v 1.81 2002/04/10 09:53:14 paf Exp $
 */
 
 #include "classes.h"
@@ -41,13 +41,13 @@ private:
 static void _if(Request& r, const String&, MethodParams *params) {
 	Value& condition_code=params->as_junction(0, "condition must be expression");
 
-	bool condition=r.process(condition_code, 
+	bool condition=r.process_to_value(condition_code, 
 		0/*no name*/,
 		false/*don't intercept string*/).as_bool();
 	if(condition)
-		r.write_pass_lang(r.process(params->as_junction(1, "'then' parameter must be code")));
+		r.write_pass_lang(r.process_to_value(params->as_junction(1, "'then' parameter must be code")));
 	else if(params->size()>2)
-		r.write_pass_lang(r.process(params->as_junction(2, "'else' parameter must be code")));
+		r.write_pass_lang(r.process_to_value(params->as_junction(2, "'else' parameter must be code")));
 }
 
 static void _untaint(Request& r, const String& method_name, MethodParams *params) {
@@ -69,7 +69,7 @@ static void _untaint(Request& r, const String& method_name, MethodParams *params
 		Value& vbody=params->as_junction(params->size()-1, "body must be code");
 		
 		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
-		r.write_pass_lang(r.process(vbody)); // process marking tainted with that lang
+		r.write_pass_lang(r.process_to_value(vbody)); // process marking tainted with that lang
 	}
 }
 
@@ -124,7 +124,7 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 		
 		// evaluate source to process
 		const String& source=
-			r.process(params->as_junction(0, "body must be code")).as_string();
+			r.process_to_string(params->as_junction(0, "body must be code"));
 
 		// process source code, append processed methods to 'self' class
 		// maybe-define new @main
@@ -163,7 +163,7 @@ static void _while(Request& r, const String& method_name, MethodParams *params) 
 				"endless loop detected");
 
 		bool condition=
-			r.process(
+			r.process_to_value(
 				vcondition, 
 				0/*no name*/,
 				false/*don't intercept string*/).as_bool();
@@ -171,7 +171,7 @@ static void _while(Request& r, const String& method_name, MethodParams *params) 
 			break;
 
 		// write processed body
-		r.write_pass_lang(r.process(body));
+		r.write_pass_lang(r.process_to_value(body));
 	}
 }
 
@@ -199,11 +199,11 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 		vint->set_int(i);
 		r.root->put_element(var_name, vint);
 
-		Value& processed_body=r.process(body_code);
+		Value& processed_body=r.process_to_value(body_code);
 		if(delim_maybe_code) { // delimiter set?
 			const String *string=processed_body.get_string();
 			if(need_delim && string && string->size()) // need delim & iteration produced string?
-				r.write_pass_lang(r.process(*delim_maybe_code));
+				r.write_pass_lang(r.process_to_string(*delim_maybe_code));
 			need_delim=true;
 		}
 		r.write_pass_lang(processed_body);
@@ -213,7 +213,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 static void _eval(Request& r, const String& method_name, MethodParams *params) {
 	Value& expr=params->as_junction(0, "need expression");
 	// evaluate expresion
-	Value *result=r.process(expr, 
+	Value *result=r.process_to_value(expr, 
 		0/*no name YET*/,
 		true/*don't intercept string*/).as_expr_result();
 	if(params->size()>1) {
@@ -260,7 +260,7 @@ r.sql_connect_time+=t[1]-t[0];
 	Temp_connection temp_connection(r, connection.get());
 	// execute body
 	try {
-		r.write_assign_lang(r.process(body_code));
+		r.write_assign_lang(r.process_to_value(body_code));
 	} catch(...) { // process problem
 		connection->mark_to_rollback();
 		/*re*/throw; 
@@ -275,13 +275,13 @@ struct Switch_data {
 };
 #endif
 static void _switch(Request& r, const String&, MethodParams *params) {
-	Switch_data data={&r.process(params->get(0))};	
+	Switch_data data={&r.process_to_value(params->get(0))};	
 	Temp_hash_value switch_data_setter(r.classes_conf, *switch_data_name, &data);
 
-	r.process(params->as_junction(1, "switch cases must be code")); // and ignore result
+	r.process_to_string(params->as_junction(1, "switch cases must be code")); // and ignore result
 
 	if(Value *code=data.found ? data.found : data._default)
-		r.write_pass_lang(r.process(*code));
+		r.write_pass_lang(r.process_to_value(*code));
 }
 
 static void _case(Request& r, const String& method_name, MethodParams *params) {
@@ -296,7 +296,7 @@ static void _case(Request& r, const String& method_name, MethodParams *params) {
 	int count=params->size();
 	Value *code=&params->as_junction(--count, "case result must be code");
 	for(int i=0; i<count; i++) {
-		Value& value=r.process(params->get(i));
+		Value& value=r.process_to_value(params->get(i));
 
 		if(value.as_string() == *case_default_value) {
 			data->_default=code;
@@ -341,8 +341,8 @@ struct Cache_data {
 };
 struct Locked_process_and_cache_put_action_info {
 	Request *r;
-	Value *body;
 	Cache_data *data;
+	Value *body_code; const String *evaluated_body;
 };
 #endif
 static void locked_process_and_cache_put_action(int f, void *context) {
@@ -350,16 +350,13 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 		*static_cast<Locked_process_and_cache_put_action_info *>(context);
 	
 	// body->process 
-	info.body=&info.r->process(*info.body);
+	info.evaluated_body=&info.r->process_to_string(*info.body_code);
 
 	// expiration time not spoiled by ^cache(0) or something?
 	if(info.data->expires > time(0)) {
-		// result->string
-		const String& data_string=info.body->as_string();
-
 		// string -serialize> buffer
 		void *data; size_t data_size;
-		data_string.serialize(
+		info.evaluated_body->serialize(
 			sizeof(Data_string_serialized_prolog), 
 			data, data_size);
 		Data_string_serialized_prolog& prolog=
@@ -372,22 +369,22 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 	} else // expired!
 		info.data->expires=0; // flag it so that could be easily checked by caller
 }
-Value *locked_process_and_cache_put(Request& r, 
+const String *locked_process_and_cache_put(Request& r, 
 									Value& body_code,
 									Cache_data& data,
 									const String& file_spec) {
 	Locked_process_and_cache_put_action_info info={
 		&r,
-		&body_code,
-		&data
+		&data,
+		&body_code
 	};
 
-	Value *result=file_write_action_under_lock(
+	const String *result=file_write_action_under_lock(
 		file_spec, 
 		"cache_put", locked_process_and_cache_put_action, &info,
 		false/*as_text*/,
 		false/*do_append*/,
-		false/*block*/) ? info.body : 0;
+		false/*block*/) ? info.evaluated_body: 0;
 	if(data.expires==0)
 		cache_delete(file_spec);
 	return result;
@@ -489,7 +486,8 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 			}
 
 			// non-blocked lock; process; cache it
-			if(Value *processed_body=locked_process_and_cache_put(r, body_code, data, file_spec)) {
+			if(const String*processed_body=
+				locked_process_and_cache_put(r, body_code, data, file_spec)) {
 				// write it out 
 				r.write_assign_lang(*processed_body);
 				// happy with it
@@ -506,7 +504,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 		// instructed not to cache; forget cached copy
 		cache_delete(file_spec);
 		// process
-		Value& processed_body=r.process(body_code);
+		const String& processed_body=r.process_to_string(body_code);
 		// write it out 
 		r.write_assign_lang(processed_body);
 		// happy with it
@@ -562,7 +560,7 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 	Value *sself=r.self, *sroot=r.root, *srcontext=r.rcontext;  
 	WContext *swcontext=r.wcontext;	
 	try {
-		result=&r.process(body_code);
+		result=&r.process_to_value(body_code);
 	} catch(const Exception& e) {
 		// restoring request processing status
 		//r.exception_trace.top_index(ssexception_trace);
@@ -575,7 +573,7 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 		Junction *junction=catch_code.get_junction();
 		Value *saved_exception_var_value=junction->root->get_element(*exception_var_name);
 		junction->root->put_element(*exception_var_name, &vhash);
-		result=&r.process(catch_code);
+		result=&r.process_to_value(catch_code);
 		bool handled=false;
 		if(Value *value=static_cast<Value *>(vhash.hash(0).get(*exception_handled_part_name)))
 			handled=value->as_bool();		

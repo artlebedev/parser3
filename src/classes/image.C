@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: image.C,v 1.68 2002/03/27 15:30:34 paf Exp $
+	$Id: image.C,v 1.69 2002/04/10 09:53:14 paf Exp $
 */
 
 /*
@@ -314,7 +314,8 @@ static void _html(Request& r, const String& method_name, MethodParams *params) {
 	Hash *attribs=0;
 
 	if(params->size()) {
-		Value &vattribs=r.process(params->get(0),
+		// for backward compatibility: someday was ^html{}
+		Value &vattribs=r.process_to_value(params->get(0),
 			0/*no name*/,
 			false/*don't intercept string*/);
 		if(vattribs.is_defined()) // allow 'void'

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.146 2002/03/27 15:30:34 paf Exp $
+	$Id: table.C,v 1.147 2002/04/10 09:53:14 paf Exp $
 */
 
 #include "classes.h"
@@ -46,7 +46,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	// data is last parameter
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	const String& data=
-		r.process(params->as_junction(params->size()-1, "body must be code")).as_string();
+		r.process_to_string(params->as_junction(params->size()-1, "body must be code"));
 
 	size_t pos_after=0;
 	// parse columns
@@ -233,7 +233,7 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 		}		    
 		
 		Value& offset_expr=params->as_junction(params->size()-1, "offset must be expression");
-		table.offset(absolute, r.process(offset_expr).as_int());
+		table.offset(absolute, r.process_to_value(offset_expr).as_int());
 	} else {
 		Value& value=*new(pool) VInt(pool, table.current());
 		value.set_name(method_name);
@@ -254,11 +254,11 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	for(int row=0; row<size; row++) {
 		table.set_current(row);
 
-		Value& processed_body=r.process(body_code);
+		Value& processed_body=r.process_to_value(body_code);
 		if(delim_maybe_code) { // delimiter set?
 			const String *string=processed_body.get_string();
 			if(need_delim && string && string->size()) // need delim & iteration produced string?
-				r.write_pass_lang(r.process(*delim_maybe_code));
+				r.write_pass_lang(r.process_to_string(*delim_maybe_code));
 			need_delim=true;
 		}
 		r.write_pass_lang(processed_body);
@@ -379,7 +379,7 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 		old_table.set_current(i);
 		// calculate key value
 		seq[i].row=(MethodParams *)old_table.get(i);
-		Value& value=*r.process(key_maker).as_expr_result(true/*return string as-is*/);
+		Value& value=*r.process_to_value(key_maker).as_expr_result(true/*return string as-is*/);
 		if(i==0) // determining key values type by first one
 			key_values_are_strings=value.is_string();
 
@@ -417,7 +417,7 @@ static bool _locate_expression(Request& r, const String& method_name, MethodPara
 	for(int row=0; row<size; row++) {
 		table.set_current(row);
 
-		if(r.process(expression_code).as_bool())
+		if(r.process_to_value(expression_code).as_bool())
 			return true;
 	}
 	table.set_current(saved_current);
@@ -471,7 +471,7 @@ static void _append(Request& r, const String& method_name, MethodParams *params)
 	// data
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	const String& string=
-		r.process(params->as_junction(0, "body must be code")).as_string();
+		r.process_to_string(params->as_junction(0, "body must be code"));
 
 	// parse cells
 	Array& row=*new(pool) Array(pool);
@@ -574,9 +574,9 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		if(voptions.is_defined())
 			if(Hash *options=voptions.get_hash(&method_name)) {
 				if(Value *vlimit=(Value *)options->get(*sql_limit_name))
-					limit=(ulong)r.process(*vlimit).as_double();
+					limit=(ulong)r.process_to_value(*vlimit).as_double();
 				if(Value *voffset=(Value *)options->get(*sql_offset_name))
-					offset=(ulong)r.process(*voffset).as_double();
+					offset=(ulong)r.process_to_value(*voffset).as_double();
 			} else
 				throw Exception("parser.runtime",
 					&method_name,
@@ -584,7 +584,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	}
 
 	Temp_lang temp_lang(r, String::UL_SQL);
-	const String& statement_string=r.process(statement).as_string();
+	const String& statement_string=r.process_to_string(statement);
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
 	Table_sql_event_handlers handlers(pool, method_name,

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.90 2002/04/09 15:56:35 paf Exp $
+	$Id: xdoc.C,v 1.91 2002/04/10 09:53:14 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -343,7 +343,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	GdomeDocument *document;
 	if(param.get_junction()) { // {<tag/>}
 		Temp_lang temp_lang(r, String::UL_XML);
-		const String& xml=r.process(param).as_string();
+		const String& xml=r.process_to_string(param);
 
 		const char *cstr=xml.cstr(String::UL_UNSPECIFIED);
 		document=(GdomeDocument *)

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.223 2002/03/27 15:30:35 paf Exp $
+	$Id: execute.C,v 1.224 2002/04/10 09:53:15 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -838,7 +838,7 @@ Value *Request::get_element(bool can_call_operator) {
 	if(!value)
 		value=ncontext->get_element(name);
 	if(value)
-		value=&process(*value, &name); // process possible code-junction
+		value=&process_to_value(*value, &name); // process possible code-junction
 	else {
 		value=NEW VVoid(pool());
 		value->set_name(name);
@@ -855,10 +855,14 @@ Value *Request::get_element(bool can_call_operator) {
 		they want any result[string|object]
 		nothing goes to wcontext.
 		used in @c (expression) params evaluation
+
+    using the fact it's either string_ or value_ result requested to speed up checkes
 */
-Value& Request::process(Value& value, const String *name, bool intercept_string) {
-	Value *result;
-	Junction *junction=value.get_junction();
+void Request::process_internal(
+							   Value& input_value, const String *result_name, 
+							   bool intercept_string,
+							   const String **string_result, Value **value_result) {
+	Junction *junction=input_value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
 		// process it
 #ifdef DEBUG_EXECUTE
@@ -893,7 +897,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 			if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
 				anti_endless_execute_recoursion=0; // give @exception a chance
 				throw Exception("parser.runtime",
-					name,
+					result_name,
 					"junction evaluation canceled - endless recursion detected");
 			}
 			execute(*junction->code);
@@ -904,9 +908,19 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 			// CodeFrame soul:
 			//   string writes were intercepted
 			//   returning them as the result of getting code-junction
-			result=NEW VString(*frame->get_string());
-		} else 
-			result=&frame->result();
+			if(string_result)
+				*string_result=frame->get_string();
+			else
+				*value_result=NEW VString(*frame->get_string());
+		} else {
+			if(string_result)
+				*string_result=&frame->result().as_string();
+			else {
+				*value_result=&frame->result();
+				if(result_name)
+					(*value_result)->set_name(*result_name);
+			}
+		}
 		
 		wcontext=static_cast<WContext *>(POP());  
 		rcontext=POP();  
@@ -916,12 +930,15 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 #ifdef DEBUG_EXECUTE
 		debug_printf(pool(), "<-ja returned");
 #endif
-	} else
-		result=&value;
-
-	if(name)
-		result->set_name(*name);
-	return *result;
+	} else {
+		if(string_result) // they asked for string_result
+			*string_result=&input_value.as_string();
+		else {// they asked for value_result
+			*value_result=&input_value;
+			if(result_name)
+				(*value_result)->set_name(*result_name);
+		}
+	}
 }
 
 const String *Request::execute_method(Value& aself, const Method& method,

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.98 2002/03/27 15:30:34 paf Exp $
+	$Id: string.C,v 1.99 2002/04/10 09:53:14 paf Exp $
 */
 
 #include "classes.h"
@@ -50,7 +50,7 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 		if(!default_code) // we have a problem when no default
 			/*re*/throw;
 		else
-			converted=r.process(*default_code).as_int();
+			converted=r.process_to_value(*default_code).as_int();
 	}
 
 	Value& result=*new(pool) VInt(pool, converted);
@@ -69,7 +69,7 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 		if(!default_code) // we have a problem when no default
 			/*re*/throw;  
 		else
-			converted=r.process(*default_code).as_double();
+			converted=r.process_to_value(*default_code).as_double();
 	}
 
 	Value& result=*new(pool) VDouble(pool, converted);
@@ -82,8 +82,7 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 
 	Value& fmt_maybe_code=params->get(0);
 	// for some time due to stupid {} in original design
-	const String& fmt=
-		(fmt_maybe_code.get_junction()?r.process(fmt_maybe_code):fmt_maybe_code).as_string();
+	const String& fmt=r.process_to_string(fmt_maybe_code);
 
 	char *buf=format(pool, r.self->as_double(), fmt.cstr());
 
@@ -215,7 +214,7 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 			Junction *junction=ai.replacement_code->get_junction();
 			Value *saved_match_var_value=junction->root->get_element(*match_var_name);
 			junction->root->put_element(*match_var_name, &vtable);
-			Value& replaced=ai.request->process(*ai.replacement_code, ai.origin, false);
+			const String& replaced=ai.request->process_to_string(*ai.replacement_code, ai.origin);
 			junction->root->put_element(*match_var_name, saved_match_var_value);
 
 			/*
@@ -223,7 +222,7 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 				*ai.dest << *(String *)row->get(1/*match* /);
 			ai.dest->APPEND_CONST(")");
 			*/
-			*ai.dest << replaced.as_string();
+			*ai.dest << replaced;
 		}
 		ai.post_match=(String *)row->get(2/*post_match*/);
 	} else // end
@@ -270,7 +269,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 		};
 		src.match(
 			&method_name, 
-			r.process(regexp).as_string(), options,
+			r.process_to_string(regexp), options,
 			&table,
 			replace_action, &replace_action_info);
 		result=new(pool) VString(dest);
@@ -348,9 +347,9 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 		if(voptions.is_defined())
 			if(options=voptions.get_hash(&method_name)) {
 				if(Value *vlimit=(Value *)options->get(*sql_limit_name))
-					limit=(ulong)r.process(*vlimit).as_double();
+					limit=(ulong)r.process_to_value(*vlimit).as_double();
 				if(Value *voffset=(Value *)options->get(*sql_offset_name))
-					offset=(ulong)r.process(*voffset).as_double();
+					offset=(ulong)r.process_to_value(*voffset).as_double();
 				if(default_code=(Value *)options->get(*sql_default_name)) {
 					if(!default_code->get_junction())
 						throw Exception("parser.runtime",
@@ -365,7 +364,7 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 		options=0;
 
 	Temp_lang temp_lang(r, String::UL_SQL);
-	const String& statement_string=r.process(statement).as_string();
+	const String& statement_string=r.process_to_string(statement);
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
 	String_sql_event_handlers handlers(pool, statement_string, statement_cstr);
@@ -394,7 +393,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	const String *string=sql_result_string(r, method_name, params, options, default_code);
 	if(!string) {
 		if(default_code) {
-			string=r.process(*default_code).get_string();
+			string=&r.process_to_string(*default_code);
 			if(!string)
 				string=new(pool) String(pool);
 		} else

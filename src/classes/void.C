@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: void.C,v 1.17 2002/03/27 15:30:34 paf Exp $
+	$Id: void.C,v 1.18 2002/04/10 09:53:14 paf Exp $
 */
 
 #include "classes.h"
@@ -70,7 +70,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Value& statement=params->as_junction(0, "statement must be code");
 
 	Temp_lang temp_lang(r, String::UL_SQL);
-	const String& statement_string=r.process(statement).as_string();
+	const String& statement_string=r.process_to_string(statement);
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
 	Void_sql_event_handlers handlers(pool, statement_string);
