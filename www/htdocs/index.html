@@ -293,9 +293,21 @@ OK
 #^virtualtest2[]
 #^message-id-test[]
 #^test_exif[jpg]
-^http_prefix[]
+#^http_prefix[]
 #^http_prefix_table[]
 #^http_prefix_xml[]
+^imagefont[]
+
+@imagefont[]
+$image[^image::create(200;30)]
+height(font)=1950<br>
+$alph[ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ0123456789-+=!\"%:,.^;<>?@()^[^]'&*/]
+^^alph.length[]=^alph.length[]<br>
+^eval(1950/^alph.length[])[%.10f]
+
+^image.font[$alph;0/font.gif](20)
+^image.text(0;0)[Ïğèâåò*]
+$response:body[^image.gif[]]
 
 @http_prefix_xml[]
  $xdoc[^xdoc::load[http://www.cbr.ru/scripts/XML_daily.asp?date_req=02/03/2002;

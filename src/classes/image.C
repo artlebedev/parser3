@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/11/25 15:37:12 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/27 09:43:53 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -976,6 +976,12 @@ static void _font(Request& r, const String& method_name, MethodParams *params) {
 		throw Exception("parser.runtime",
 			&method_name,
 			"alphabet must not be empty");
+
+	if(int remainder=image.SY() % alphabet.size())
+		throw Exception("parser.runtime",
+			&method_name,
+			"font-file height(%d) not divisable by alphabet size(%d), remainder=%d",
+				image.SY(), alphabet.size(), remainder);
 	
 	static_cast<VImage *>(r.get_self())->font=new(pool) Font(pool, 
 		alphabet, 
