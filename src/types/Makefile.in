@@ -60,10 +60,10 @@ POST_UNINSTALL = :
 host_alias = @host_alias@
 host_triplet = @host@
 APACHE13 = @APACHE13@
+APACHE_LIBS = @APACHE_LIBS@
 AS = @AS@
 AWK = @AWK@
 CC = @CC@
-CPP_LIBS = @CPP_LIBS@
 CXX = @CXX@
 DLLTOOL = @DLLTOOL@
 INCLTDL = @INCLTDL@
@@ -73,7 +73,6 @@ LIBTOOL = @LIBTOOL@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
-MATH_LIBS = @MATH_LIBS@
 OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
@@ -87,7 +86,7 @@ host_os = @host_os@
 INCLUDES = -I../classes -I../classes/xalan-patched -I../sql -I../classes/gd @XML_INCLUDES@
 
 noinst_LIBRARIES = libtypes.a
-libtypes_a_SOURCES = pa_valiased.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C ident.C
+libtypes_a_SOURCES = ident.C pa_valiased.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vhashfile.C
 
 IDENT_AWK = ../ident.awk
 IDENT_DEPS = *.h *.C
@@ -102,9 +101,9 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 libtypes_a_LIBADD = 
-libtypes_a_OBJECTS =  pa_valiased.o pa_vcookie.o pa_vfile.o pa_vform.o \
-pa_vimage.o pa_vrequest.o pa_vstateless_class.o pa_vstring.o \
-pa_wcontext.o pa_vtable.o pa_vxnode.o pa_vxdoc.o ident.o
+libtypes_a_OBJECTS =  ident.o pa_valiased.o pa_vcookie.o pa_vfile.o \
+pa_vform.o pa_vimage.o pa_vrequest.o pa_vstateless_class.o pa_vstring.o \
+pa_wcontext.o pa_vtable.o pa_vxnode.o pa_vxdoc.o pa_vhashfile.o
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -119,9 +118,10 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/ident.P .deps/pa_valiased.P .deps/pa_vcookie.P \
-.deps/pa_vfile.P .deps/pa_vform.P .deps/pa_vimage.P .deps/pa_vrequest.P \
-.deps/pa_vstateless_class.P .deps/pa_vstring.P .deps/pa_vtable.P \
-.deps/pa_vxdoc.P .deps/pa_vxnode.P .deps/pa_wcontext.P
+.deps/pa_vfile.P .deps/pa_vform.P .deps/pa_vhashfile.P \
+.deps/pa_vimage.P .deps/pa_vrequest.P .deps/pa_vstateless_class.P \
+.deps/pa_vstring.P .deps/pa_vtable.P .deps/pa_vxdoc.P .deps/pa_vxnode.P \
+.deps/pa_wcontext.P
 SOURCES = $(libtypes_a_SOURCES)
 OBJECTS = $(libtypes_a_OBJECTS)
 

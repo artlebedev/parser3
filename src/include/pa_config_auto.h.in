@@ -12,6 +12,9 @@
 /* Define if you have the <ctype.h> header file.  */
 #undef HAVE_CTYPE_H
 
+/* Define if you have the <db.h> header file.  */
+#undef HAVE_DB_H
+
 /* Define if you have the <direct.h> header file.  */
 #undef HAVE_DIRECT_H
 
@@ -59,6 +62,9 @@
 
 /* Define if you have the <unistd.h> header file.  */
 #undef HAVE_UNISTD_H
+
+/* Define if you have the db library (-ldb).  */
+#undef HAVE_LIBDB
 
 /* Define if you have the m library (-lm).  */
 #undef HAVE_LIBM

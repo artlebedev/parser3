@@ -1,7 +1,7 @@
 INCLUDES = -I../classes -I../classes/xalan-patched -I../sql -I../classes/gd @XML_INCLUDES@
 
 noinst_LIBRARIES = libtypes.a
-libtypes_a_SOURCES = pa_valiased.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C ident.C
+libtypes_a_SOURCES = ident.C pa_valiased.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vhashfile.C
 
 IDENT_AWK = ../ident.awk
 IDENT_DEPS = *.h *.C
