@@ -48,7 +48,6 @@
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Release/parser3.pdb"
-				GenerateMapFile="TRUE"
 				MapFileName=".\Release/parser3.map"
 				SubSystem="1"
 				TargetMachine="1"/>
@@ -110,8 +109,11 @@
 				OutputFile=".\ProfileRelease/parser3.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				GenerateDebugInformation="TRUE"
+				GenerateMapFile="TRUE"
 				SubSystem="1"
-				TargetMachine="1"/>
+				TargetMachine="1"
+				FixedBaseAddress="1"/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\ProfileRelease/parser3.tlb"
@@ -167,13 +169,15 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib"
 				OutputFile="ProfileDebug/parser3.exe "
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				IgnoreDefaultLibraryNames="msvcrt"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\ProfileDebug/parser3.pdb"
+				GenerateMapFile="TRUE"
 				SubSystem="1"
-				TargetMachine="1"/>
+				TargetMachine="1"
+				FixedBaseAddress="1"/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\ProfileDebug/parser3.tlb"
