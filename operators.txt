@@ -669,6 +669,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^file:justname[/a/some.tar.gz]=some.tar
     !^file:justext[/a/some.tar.gz]=gz
     !/some/page.html: ^file:fullpath[a.gif] => /some/a.gif
+    !^file.sql-string[] внутри ^connect даст правильно escaped строку, которую можно в запрос отдать
+    ^file::sql{}[[options]] результат запроса должен быть "одна строка,одна колонка"
 
 
 !math

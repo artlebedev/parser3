@@ -1,10 +1,9 @@
-$request:charset[koi8-r]
-#$request:charset[windows-1251]
-$request:charset/$response:charset<br>
+$request:charset[windows-1251]
+$response:charset[windows-1251]
 
 ^connect[$SQL.connect-string]{
-$t[^table::sql{select * from paf}]
-$c[^t.columns[]]
-^c.menu{$c.column<br>
-}
+#$f[^file::sql{select 2*2 from dual}]
+#^f.save[binary;file_sql.dat]
+$f[^file::load[binary;_bug.gif]]
+=^f.sql-string[]=
 }

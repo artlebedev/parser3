@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2004/02/11 15:33:12 $";
+static const char * const IDENT_FILE_C="$Date: 2004/03/02 14:56:42 $";
 
 #include "pa_config_includes.h"
 
@@ -24,6 +24,7 @@ static const char * const IDENT_FILE_C="$Date: 2004/02/11 15:33:12 $";
 #include "pa_vtable.h"
 #include "pa_charset.h"
 #include "pa_charsets.h"
+#include "pa_sql_connection.h"
 
 // defines
 
@@ -615,6 +616,12 @@ static void _fullpath(Request& r, MethodParams& params) {
 	r.write_assign_lang(*result);
 }
 
+static void _sql_string(Request& r, MethodParams&) {
+	VFile& self=GET_SELF(r, VFile);
+
+	const char *quoted=r.connection()->quote(self.value_ptr(), self.value_size());
+	r.write_assign_lang(*new String(quoted));
+}
 
 // constructor
 
@@ -667,4 +674,7 @@ MFile::MFile(): Methoded("file") {
 	add_native_method("justext", Method::CT_STATIC, _justext, 1, 1);
     // /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
 	add_native_method("fullpath", Method::CT_STATIC, _fullpath, 1, 1);
+
+    // ^file.sql-string[]
+	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 0);
 }
