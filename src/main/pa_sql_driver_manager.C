@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.C,v 1.56 2001/12/13 11:29:22 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.57 2001/12/13 15:13:57 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.50 2001/12/13 13:05:10 paf Exp $
+	$Id: xdoc.C,v 1.51 2001/12/13 15:13:57 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -395,7 +395,7 @@ static void param_option_over_output_option(Pool& pool,
 static void create_optioned_listener(
 									 Pool& pool, const String& method_name, MethodParams *params, int index,
 									 VXdoc::Output_options& oo, Writer& writer,
-									 std::auto_ptr<FormatterListener> & listener) {
+									 std::auto_ptr<FormatterListener> *listener) {
 /*
 	XalanDOMString encoding;
 	XalanDOMString mediaType;
@@ -468,7 +468,7 @@ static void create_optioned_listener(
 	if(strcmp(oo.method, XDOC_OUTPUT_METHOD_OPTION_VALUE_XML)==0) {
 		if(oo.mediaType.empty())
 			oo.mediaType.append("text/xml");
-		listener=std::auto_ptr<FormatterListener>(new FormatterToXML(writer,
+		*listener=std::auto_ptr<FormatterListener>(new FormatterToXML(writer,
 			oo.version,  
 			oo.doIndent,
 			XDOC_OUTPUT_DEFAULT_INDENT, // indent 
@@ -482,7 +482,7 @@ static void create_optioned_listener(
 	} else if(strcmp(oo.method, XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML)==0) {
 		if(oo.mediaType.empty())
 			oo.mediaType.append("text/html");
-		listener=std::auto_ptr<FormatterListener>(new FormatterToHTML(writer,
+		*listener=std::auto_ptr<FormatterListener>(new FormatterToHTML(writer,
 			oo.encoding,
 			oo.mediaType,
 			oo.doctypeSystem,
@@ -496,7 +496,7 @@ static void create_optioned_listener(
 	} else if(strcmp(oo.method, XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT)==0) {
 		if(oo.mediaType.empty())
 			oo.mediaType.append("text/plain");
-		listener=std::auto_ptr<FormatterListener>(new FormatterToText(writer,
+		*listener=std::auto_ptr<FormatterListener>(new FormatterToText(writer,
 			oo.encoding
 		));
 	} else
@@ -526,7 +526,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		XalanOutputStreamPrintWriter writer(stream);
 		std::auto_ptr<FormatterListener> formatterListener;
 		create_optioned_listener(pool, method_name, params, 1, 
-			oo, writer, formatterListener);
+			oo, writer, &formatterListener);
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&node); // Walk that node and produce the XML...
 	} catch(const XSLException& e) {
@@ -552,7 +552,7 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 		XalanOutputStreamPrintWriter writer(stream);
 		std::auto_ptr<FormatterListener> formatterListener;
 		create_optioned_listener(pool, method_name, params, 0, 
-			oo, writer, formatterListener);
+			oo, writer, &formatterListener);
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(node); // Walk that node and produce the XML...
 
@@ -579,7 +579,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 		XalanOutputStreamPrintWriter writer(stream);
 		std::auto_ptr<FormatterListener> formatterListener;
 		create_optioned_listener(pool, method_name, params, 0, 
-			oo, writer, formatterListener);
+			oo, writer, &formatterListener);
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&node); // Walk that node and produce the XML...
 
