@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.168 2001/09/26 10:32:25 parser Exp $
+	$Id: compile.y,v 1.169 2001/10/05 10:06:28 parser Exp $
 */
 
 /**
@@ -584,7 +584,19 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		} else
 			PC.col++;
 
-		if(c=='^' && PC.ls!=LS_COMMENT && PC.ls!=LS_DEF_COMMENT) 
+		if(c=='^')
+			switch(PC.ls) {
+case LS_EXPRESSION_VAR_NAME_WITH_COLON:
+case LS_EXPRESSION_VAR_NAME_WITHOUT_COLON:
+case LS_VAR_NAME_SIMPLE_WITH_COLON:
+case LS_VAR_NAME_SIMPLE_WITHOUT_COLON:
+case LS_VAR_NAME_CURLY:
+case LS_METHOD_NAME:
+case LS_COMMENT:
+case LS_DEF_COMMENT:
+	// no literals in names, please
+	break;
+default:
 			switch(*PC.source) {
 			// ^escaping some punctuators
 			case '^': case '$': case ';':
@@ -639,6 +651,8 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				}
 				break;
 			}
+			break;
+		}
 		// #comment  start skipping
 		if(c=='#' && PC.col==1) {
 			if(end!=begin) {

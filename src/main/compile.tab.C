@@ -37,7 +37,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.14 2001/09/26 11:24:07 parser Exp $
+	$Id: compile.tab.C,v 1.15 2001/10/05 10:06:28 parser Exp $
 */
 
 /**
@@ -464,7 +464,7 @@ static const short yycheck[] = {     0,
 #define YYPURE 1
 
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "D:/cygwin/usr/share/bison.simple"
+#line 3 "/usr/share/bison.simple"
 /* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
@@ -678,7 +678,7 @@ __yy_memcpy (char *to, char *from, unsigned int count)
 #endif
 #endif
 
-#line 217 "D:/cygwin/usr/share/bison.simple"
+#line 217 "/usr/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -1595,7 +1595,7 @@ case 157:
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 543 "D:/cygwin/usr/share/bison.simple"
+#line 543 "/usr/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -1862,7 +1862,19 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		} else
 			PC.col++;
 
-		if(c=='^' && PC.ls!=LS_COMMENT && PC.ls!=LS_DEF_COMMENT) 
+		if(c=='^')
+			switch(PC.ls) {
+case LS_EXPRESSION_VAR_NAME_WITH_COLON:
+case LS_EXPRESSION_VAR_NAME_WITHOUT_COLON:
+case LS_VAR_NAME_SIMPLE_WITH_COLON:
+case LS_VAR_NAME_SIMPLE_WITHOUT_COLON:
+case LS_VAR_NAME_CURLY:
+case LS_METHOD_NAME:
+case LS_COMMENT:
+case LS_DEF_COMMENT:
+	// no literals in names, please
+	break;
+default:
 			switch(*PC.source) {
 			// ^escaping some punctuators
 			case '^': case '$': case ';':
@@ -1917,6 +1929,8 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				}
 				break;
 			}
+			break;
+		}
 		// #comment  start skipping
 		if(c=='#' && PC.col==1) {
 			if(end!=begin) {
