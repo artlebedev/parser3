@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.78 2001/04/09 14:31:40 paf Exp $
+	$Id: pa_string.h,v 1.79 2001/04/09 15:48:56 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -114,9 +114,6 @@ public:
 	String(Pool& apool, const char *src=0, size_t src_size=0, bool tainted=false);
 	String(const String& src);
 	size_t size() const { return fsize; }
-	/// convert to C string, store to 'dest' which must be big enough for proper untaint
-	char *store_to(char *dest, 
-		Untaint_lang lang=UL_UNSPECIFIED, SQL_Connection *connection=0) const;
 	/// convert to C string. if 'lang' known, forcing 'lang' to it
 	char *cstr(Untaint_lang lang=UL_UNSPECIFIED, SQL_Connection *connection=0) const {
 		char *result=(char *)malloc(size()*UNTAINT_TIMES_BIGGER+1);
@@ -250,6 +247,10 @@ private:
 		return append_here == link_row;
 	}
 	void expand();
+
+	/// convert to C string, store to 'dest' which must be big enough for proper untaint
+	char *store_to(char *dest, 
+		Untaint_lang lang=UL_UNSPECIFIED, SQL_Connection *connection=0) const;
 
 private: //disabled
 

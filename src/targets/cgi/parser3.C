@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.60 2001/04/09 14:02:05 paf Exp $
+	$Id: parser3.C,v 1.61 2001/04/09 15:49:01 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -55,6 +55,39 @@ static LONG WINAPI TopLevelExceptionFilter(struct _EXCEPTION_POINTERS *Exception
 #endif
 
 // SAPI
+// appends to parser3.log located beside my binary
+void SAPI::log(Pool& pool, const char *fmt, ...) {
+	bool opened;
+	FILE *f=0;
+
+	if(argv0) {
+		// beside by binary
+		char file_spec[MAX_STRING];
+		strncpy(file_spec, argv0, MAX_STRING);  // filespec of my binary
+		rsplit(file_spec, '/');  rsplit(file_spec, '\\');// strip filename
+		strcat(file_spec, "/parser3.log");
+		f=fopen(file_spec, "at");
+	}
+	opened=f!=0;
+	if(!opened)
+		f=stderr;
+
+	// prefix
+	time_t t=time(0);
+	const char *stamp=ctime(&t);
+	fprintf(f, "[%.*s] ", strlen(stamp)-1, stamp);
+	// message
+    va_list args;
+	va_start(args,fmt);
+	vfprintf(f, fmt, args);
+	va_end(args);
+	// newline
+	fprintf(f, "\n");
+
+	if(opened)
+		fclose(f);
+}
+
 const char *SAPI::get_env(Pool& pool, const char *name) {
  	return getenv(name);
 }
@@ -89,39 +122,6 @@ void SAPI::send_header(Pool& pool) {
 
 void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 	stdout_write(buf, size);
-}
-
-// appends to parser3.log located beside my binary
-void SAPI::log(Pool& pool, const char *fmt, ...) {
-	bool opened;
-	FILE *f=0;
-
-	if(argv0) {
-		// beside by binary
-		char file_spec[MAX_STRING];
-		strncpy(file_spec, argv0, MAX_STRING);  // filespec of my binary
-		rsplit(file_spec, '/');  rsplit(file_spec, '\\');// strip filename
-		strcat(file_spec, "/parser3.log");
-		f=fopen(file_spec, "at");
-	}
-	opened=f!=0;
-	if(!opened)
-		f=stderr;
-
-	// prefix
-	time_t t=time(0);
-	const char *stamp=ctime(&t);
-	fprintf(f, "[%.*s] ", strlen(stamp)-1, stamp);
-	// message
-    va_list args;
-	va_start(args,fmt);
-	vfprintf(f, fmt, args);
-	va_end(args);
-	// newline
-	fprintf(f, "\n");
-
-	if(opened)
-		fclose(f);
 }
 
 int SAPI::execute(const String& file_spec, 

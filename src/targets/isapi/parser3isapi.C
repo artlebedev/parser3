@@ -13,6 +13,7 @@
 #include "pa_version.h"
 #include "pool_storage.h"
 #include "pa_socks.h"
+#include "pa_exec.h"
 
 /// @todo init_socks
 
@@ -30,6 +31,21 @@ struct SAPI_func_context {
 	String *header;
 	DWORD http_response_code;
 };
+
+// goes to 'cs-uri-query' log file field. webmaster: switch it ON[default OFF].
+void SAPI::log(Pool& pool, const char *fmt, ...) {
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
+	
+	va_list args;
+	va_start(args,fmt);
+	char buf[MAX_STRING];
+	const char *prefix="PARSER_ERROR:";
+	strcpy(buf, prefix);
+	DWORD size=vsnprintf(buf+strlen(prefix), MAX_STRING-strlen(prefix), fmt, args);
+	
+	ctx.lpECB->ServerSupportFunction(ctx.lpECB->ConnID, 
+		HSE_APPEND_LOG_PARAMETER, buf, &size, 0);
+}
 
 const char *SAPI::get_env(Pool& pool, const char *name) {
 	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
@@ -54,7 +70,7 @@ const char *SAPI::get_env(Pool& pool, const char *name) {
 	return 0;
 }
 
-size_t SAPI::read_post(Pool& pool, void *buf, size_t max_bytes) {
+size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
 	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
 	DWORD read_from_buf=0;
@@ -145,19 +161,11 @@ void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 		const_cast<void *>(buf), &num_bytes, HSE_IO_SYNC);
 }
 
-// goes to 'cs-uri-query' log file field. webmaster: switch it ON[default OFF].
-void SAPI::log(Pool& pool, const char *fmt, ...) {
-	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
-	
-	va_list args;
-	va_start(args,fmt);
-	char buf[MAX_STRING];
-	const char *prefix="PARSER_ERROR:";
-	strcpy(buf, prefix);
-	DWORD size=vsnprintf(buf+strlen(prefix), MAX_STRING-strlen(prefix), fmt, args);
-	
-	ctx.lpECB->ServerSupportFunction(ctx.lpECB->ConnID, 
-		HSE_APPEND_LOG_PARAMETER, buf, &size, 0);
+int SAPI::execute(const String& file_spec, 
+	const Hash *env,
+	const Array *argv,
+	const String& in, String& out, String& err) {
+	return pa_exec(file_spec, env, argv, in,  out, err);
 }
 
 // 

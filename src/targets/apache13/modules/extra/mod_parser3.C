@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.25 2001/04/09 14:02:03 paf Exp $
+	$Id: mod_parser3.C,v 1.26 2001/04/09 15:48:59 paf Exp $
 */
 
 #include "httpd.h"
@@ -82,6 +82,17 @@ static const char *cmd_parser_auto_path(cmd_parms *cmd, void *mconfig, char *fil
 
 //@{
 /// SAPI func decl
+void SAPI::log(Pool& pool, const char *fmt, ...) {
+	request_rec *r=static_cast<request_rec *>(pool.context());
+
+    va_list args;
+    va_start(args,fmt);
+	char buf[MAX_STRING];
+	vsnprintf(buf, MAX_STRING, fmt, args);
+	ap_log_rerror(0, 0, APLOG_ERR | APLOG_NOERRNO, r, "%s", buf);
+    va_end(args);
+}
+
 const char *SAPI::get_env(Pool& pool, const char *name) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
  	return (const char *)ap_table_get(r->subprocess_env, name);
@@ -144,16 +155,29 @@ void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 	ap_kill_timeout(r);
 }
 
-void SAPI::log(Pool& pool, const char *fmt, ...) {
+int SAPI::execute(Pool& pool,
+				  const String& file_spec, 
+				  const Hash *env,
+				  const Array *argv,
+				  const String& in, String& out, String& err) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
-    va_list args;
-    va_start(args,fmt);
-	char buf[MAX_STRING];
-	vsnprintf(buf, MAX_STRING, fmt, args);
-	ap_log_rerror(0, 0, APLOG_ERR | APLOG_NOERRNO, r, "%s", buf);
-    va_end(args);
+    /*
+     * we spawn out of r->main if it's there so that we can avoid
+     * waiting for free_proc_chain to cleanup in the middle of an
+     * SSI request -djg
+     */
+    if(!ap_bspawn_child(r->main ? r->main->pool : r->pool, cgi_child,
+		(void *) &cld, kill_after_timeout,
+		&script_out, &script_in, &script_err))
+		PTHROW(0, 0,
+			&file_spec,
+			"could not spawn child process");
+	
+	
+	return pa_exec(file_spec, env, argv, in,  out, err);
 }
+
 //@}
 
 /**
