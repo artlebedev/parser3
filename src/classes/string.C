@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.12 2001/03/18 13:38:45 paf Exp $
+	$Id: string.C,v 1.13 2001/03/27 16:35:52 paf Exp $
 */
 
 #include "pa_request.h"
@@ -25,13 +25,13 @@ static void _length(Request& r, const String&, Array *) {
 
 static void _int(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VInt(pool, (int)r.self->get_double());
+	Value& value=*new(pool) VInt(pool, (int)r.self->as_double());
 	r.write_no_lang(value);
 }
 
 static void _double(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VDouble(pool, r.self->get_double());
+	Value& value=*new(pool) VDouble(pool, r.self->as_double());
 	r.write_no_lang(value);
 }
 
@@ -43,7 +43,7 @@ void _string_format(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, fmt, 
 		method_name, "fmt must not be junction");
 
-	char *buf=format(pool, r.self->get_double(), fmt.as_string().cstr());
+	char *buf=format(pool, r.self->as_double(), fmt.as_string().cstr());
 	
 	r.write_no_lang(String(pool, buf));
 }

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.50 2001/03/26 10:36:52 paf Exp $
+	$Id: root.C,v 1.51 2001/03/27 16:35:52 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -22,7 +22,7 @@ static void _if(Request& r, const String& method_name, Array *params) {
 
 	bool condition=r.process(condition_code, 
 		0/*no name*/,
-		false/*don't intercept string*/).get_bool();
+		false/*don't intercept string*/).as_bool();
 	if(condition) {
 		Value& then_code=*static_cast<Value *>(params->get(1));
 		// forcing ^if(this param type)
@@ -148,7 +148,7 @@ static void _while(Request& r, const String& method_name, Array *params) {
 			r.process(
 				vcondition, 
 				0/*no name*/,
-				false/*don't intercept string*/).get_bool();
+				false/*don't intercept string*/).as_bool();
 		if(!condition) // ...condition is true
 			break;
 
@@ -171,8 +171,8 @@ static void _for(Request& r, const String& method_name, Array *params) {
 
 	Pool& pool=r.pool();
 	const String& var_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
-	int from=(int)r.process(*static_cast<Value *>(params->get(1))).get_double();
-	int to=(int)r.process(*static_cast<Value *>(params->get(2))).get_double();
+	int from=(int)r.process(*static_cast<Value *>(params->get(1))).as_double();
+	int to=(int)r.process(*static_cast<Value *>(params->get(2))).as_double();
 	Value& body_code=*static_cast<Value *>(params->get(3));
 	// forcing ^menu{this param type}
 	r.fail_if_junction_(false, body_code, 
@@ -208,7 +208,7 @@ static void _eval(Request& r, const String& method_name, Array *params) {
 	// evaluate expresion
 	Value *result=r.process(expr, 
 		0/*no name*/,
-		true/*don't intercept string*/).get_expr_result();
+		true/*don't intercept string*/).as_expr_result();
 	if(params->size()==2) {
 		Value& fmt=*static_cast<Value *>(params->get(1));
 		// forcing ^format[this param type]
@@ -217,7 +217,7 @@ static void _eval(Request& r, const String& method_name, Array *params) {
 
 		Pool& pool=r.pool();
 		String& string=*new(pool) String(pool);
-		string.APPEND_CONST(format(pool, result->get_double(), fmt.as_string().cstr()));
+		string.APPEND_CONST(format(pool, result->as_double(), fmt.as_string().cstr()));
 		result=new(pool) VString(string);
 	}
 	r.write_no_lang(*result);
@@ -239,7 +239,7 @@ static void double_one_op(
 	r.fail_if_junction_(false, param, 
 		method_name, "parameter must be expression");
 
-	Value& result=*new(pool) VDouble(pool, (*func)(r.process(param).get_double()));
+	Value& result=*new(pool) VDouble(pool, (*func)(r.process(param).as_double()));
 	r.write_no_lang(result);
 }
 

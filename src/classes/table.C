@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.33 2001/03/27 15:37:50 paf Exp $
+	$Id: table.C,v 1.34 2001/03/27 16:35:52 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -169,7 +169,7 @@ static void _offset(Request& r, const String&, Array *params) {
 	if(params->size()) {
 		if(int size=table.size()) {
 			int offset=
-				(int)r.process(*static_cast<Value *>(params->get(0))).get_double();
+				(int)r.process(*static_cast<Value *>(params->get(0))).as_double();
 			table.set_current((table.get_current()+offset+size)%size);
 		}
 	} else {
@@ -241,10 +241,29 @@ static void _record(Request& r, const String&, Array *params) {
 	}
 }
 
-struct Order_item {
-	int index;
-	Value *value;
+struct Seq_item {
+	Array *row;
+	union {
+		char *c_str;
+		double d;
+	} value;
 };
+static int sort_cmp_string(const void *a, const void *b) {
+	return strcmp(
+		static_cast<const Seq_item *>(a)->value.c_str, 
+		static_cast<const Seq_item *>(b)->value.c_str
+	);
+}
+static int sort_cmp_double(const void *a, const void *b) {
+	double va=static_cast<const Seq_item *>(a)->value.d;
+	double vb=static_cast<const Seq_item *>(b)->value.d;
+	if(va<vb)
+		return -1;
+	else if(va>vb)
+		return +1;
+	else 
+		return 0;
+}
 static void _sort(Request& r, const String& method_name, Array *params) {
 	Value& key_maker=*(Value *)params->get(0);
 	// forcing ^sort{this} ^sort(or this) param type
@@ -252,30 +271,46 @@ static void _sort(Request& r, const String& method_name, Array *params) {
 
 	bool reverse;
 	if(params->size()==2) { // ..[asc|desc]
-		Value& order=*(Value *)params->get(1);
+		Value& sequence=*(Value *)params->get(1);
 		// forcing ..[this param-type]
-		r.fail_if_junction_(false, order, method_name, "order must not be junction");
-		reverse=order.as_string()=="asc";
+		r.fail_if_junction_(true, sequence, method_name, "sequence must not be junction");
+		reverse=sequence.as_string()=="desc";
 	} else
 		reverse=false;
 
-	// calculating key values
 	Table& table=static_cast<VTable *>(r.self)->table();
-	Order_item *order=(Order_item *)malloc(sizeof(Order_item)*table.size());
-	Order_item *current=order;
-	for(int i=0; i<table.size(); i++) {
+
+	// anything to sort?
+	if(!table.size())
+		return;
+
+	Seq_item *seq=(Seq_item *)malloc(sizeof(Seq_item)*table.size());
+	int i;
+
+	// calculate key values
+	bool key_values_are_strings=true;
+	for(i=0; i<table.size(); i++) {
 		table.set_current(i);
 		// calculate key value
-		current->index=i;
-		current->value=r.process(key_maker).get_expr_result(true/*return string as-is*/);
-		current++;
+		seq[i].row=(Array *)table.get(i);
+		Value& value=*r.process(key_maker).as_expr_result(true/*return string as-is*/);
+		if(i==0) // determining key values type by first one
+			key_values_are_strings=value.is_string();
+
+		if(key_values_are_strings)
+			seq[i].value.c_str=value.as_string().cstr();
+		else
+			seq[i].value.d=value.as_double();
 	}
 	// sort keys
-	//\ todo
+	_qsort(seq, table.size(), sizeof(Seq_item), 
+		key_values_are_strings?sort_cmp_string:sort_cmp_double);
 
-	// reorder table as they require in 'order'
-	//\ todo
+	// reorder table as they require in 'seq'
+	for(i=0; i<table.size(); i++)
+		table.put(i, seq[reverse?table.size()-1-i:i].row);
 
+	// reset 'current'
 	table.set_current(0);
 }
 

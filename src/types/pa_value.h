@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.34 2001/03/27 15:37:54 paf Exp $
+	$Id: pa_value.h,v 1.35 2001/03/27 16:35:56 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -21,7 +21,7 @@ class VStateless_class;
 class WContext;
 class VAliased;
 class Request;
-class VTable;
+class Table;
 class Junction;
 class Method;
 class Hash;
@@ -39,7 +39,13 @@ public: // Value
 		- VUnknown: false
 		- others: true
 	*/
-	virtual bool get_defined() { return true; }
+	virtual bool is_defined() { return true; }
+	/** is this value string?
+		@return for
+		- VString: true
+		- others: false
+	*/
+	virtual bool is_string() { return false; }
 	/** what's the meaning of this value in context of expression?
 		@return for
 		- VString: fstring as VDouble or this depending on return_string_as_is
@@ -49,7 +55,7 @@ public: // Value
 		- VUnknown: this
 		- VFile: this
 	*/
-	virtual Value *get_expr_result(bool return_string_as_is=false) { 
+	virtual Value *as_expr_result(bool return_string_as_is=false) { 
 		bark("(%s) can not be used in expression"); return 0; 
 	}
 	/** extract Hash
@@ -75,7 +81,7 @@ public: // Value
 		- VInt: finteger
 		- VBool: value
 	*/
-	virtual double get_double() { bark("(%s) does not have numerical value"); return 0; }
+	virtual double as_double() { bark("(%s) does not have numerical value"); return 0; }
 	/** extract bool
 		@return for
 		- VUnknown: false
@@ -84,7 +90,7 @@ public: // Value
 		- VDouble: 0 or !0
 		- VFile: true
 	*/
-	virtual bool get_bool() { bark("(%s) does not have logical value"); return 0; }
+	virtual bool as_bool() { bark("(%s) does not have logical value"); return 0; }
 	/** extract Junction
 		@return for
 		- junction: itself
@@ -137,9 +143,9 @@ public: // Value
 
 	/** extract VTable
 		@return for
-		- VTable: this
+		- VTable: ftable
 	*/
-	virtual VTable *get_vtable() { return 0; }
+	virtual Table *get_table() { return 0; }
 
 public: // usage
 
@@ -153,7 +159,7 @@ public: // usage
 	const String& as_string() {
 		const String *result=get_string(); 
 		if(!result)
-			bark("(%s) not a string");
+			bark("(%s) has no string representation");
 
 		return *result;
 	}

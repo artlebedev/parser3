@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.15 2001/03/13 17:17:25 paf Exp $
+	$Id: int.C,v 1.16 2001/03/27 16:35:52 paf Exp $
 */
 
 #include "pa_request.h"
@@ -28,7 +28,7 @@ static void _int(Request& r, const String&, Array *) {
 static void _double(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	VInt *vint=static_cast<VInt *>(r.self);
-	Value& value=*new(pool) VDouble(pool, vint->get_double());
+	Value& value=*new(pool) VDouble(pool, vint->as_double());
 	r.write_no_lang(value);
 }
 
@@ -47,7 +47,7 @@ static void vint_op(Request& r, Array *params,
 		r.process(
 			*static_cast<Value *>(params->get(0)),
 			0/*no name*/,
-			false/*don't intercept string*/).get_double():1;
+			false/*don't intercept string*/).as_double():1;
 	(*func)(*vint, param);
 }
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmframe.h,v 1.8 2001/03/16 11:10:21 paf Exp $
+	$Id: pa_vmframe.h,v 1.9 2001/03/27 16:35:57 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -45,7 +45,7 @@ public: // wcontext
 		// check the $result value
 		Value *result=my?static_cast<Value*>(my->get(*result_var_name)):0;
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue
-		return result && result->get_defined()?result:WContext::result();
+		return result && result->is_defined()?result:WContext::result();
 	}
 
 public: // usage

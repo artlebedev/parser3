@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.17 2001/03/16 09:52:57 paf Exp $
+	$Id: double.C,v 1.18 2001/03/27 16:35:52 paf Exp $
 */
 
 #include "pa_request.h"
@@ -21,14 +21,14 @@ VStateless_class *double_class;
 static void _int(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
-	Value& value=*new(pool) VInt(pool, (int)vdouble->get_double());
+	Value& value=*new(pool) VInt(pool, (int)vdouble->as_double());
 	r.write_no_lang(value);
 }
 
 static void _double(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
-	Value& value=*new(pool) VDouble(pool, vdouble->get_double());
+	Value& value=*new(pool) VDouble(pool, vdouble->as_double());
 	r.write_no_lang(value);
 }
 
@@ -47,7 +47,7 @@ static void vdouble_op(Request& r, Array *params,
 		r.process(
 			*static_cast<Value *>(params->get(0)),
 			0/*no name*/,
-			false/*don't intercept string*/).get_double():1/*used in inc/dec*/;
+			false/*don't intercept string*/).as_double():1/*used in inc/dec*/;
 	(*func)(*vdouble, param);
 }
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vbool.h,v 1.5 2001/03/27 15:37:54 paf Exp $
+	$Id: pa_vbool.h,v 1.6 2001/03/27 16:35:56 paf Exp $
 */
 
 #ifndef PA_VBOOL_H
@@ -21,11 +21,11 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "bool"; }
 	// bool: this
-	Value *get_expr_result(bool return_string_as_is=false) { return this; }
+	Value *as_expr_result(bool return_string_as_is=false) { return this; }
 	// bool: fbool
-	bool get_bool() { return fbool; }
+	bool as_bool() { return fbool; }
 	// bool: fbool
-	double get_double() { return fbool; }
+	double as_double() { return fbool; }
 
 public: // usage
 

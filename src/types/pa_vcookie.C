@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.13 2001/03/26 09:09:48 paf Exp $
+	$Id: pa_vcookie.C,v 1.14 2001/03/27 16:35:56 paf Exp $
 */
 
 #include <string.h>
@@ -118,7 +118,7 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 				} else {
 					// $expires(days)
 					hash->put(*expires_name, 
-						expires_timestamp(pool, expires->get_double()));
+						expires_timestamp(pool, expires->as_double()));
 				}
 			} else // $expires not assigned, defaulting
 				hash->put(*expires_name, expires_timestamp(pool, DEFAULT_EXPIRES_DAYS));

@@ -15,14 +15,27 @@ _	&nbsp^;
 ^#A9	&copy^;	windows (c)
 }]
 
+@dump[t]
+^t.menu{$n<BR>}
+<HR>
 @main[]
 $t[^table:set{n
 3
-1
+01.3
+1.2
 2
 }]
+^$t:<BR>
+^dump[$t]
+^t.sort($n)
+^$t:<BR>
+^dump[$t]
 ^t.sort{$n}
-$t.n
+^$t:<BR>
+^dump[$t]
+^t.sort{$n}[desc]
+^$t desc:<BR>
+^dump[$t]
 <HR>
 
 ^if(-f index.html){y}{n}<BR>

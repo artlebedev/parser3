@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.22 2001/03/26 09:09:44 paf Exp $
+	$Id: untaint.C,v 1.23 2001/03/27 16:35:55 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -91,7 +91,7 @@ char *String::store_to(char *dest) const {
 				// clean piece
 			case UL_YES:
 				// tainted piece, but undefined untaint language
-				// for VString.get_double of tainted values
+				// for VString.as_double of tainted values
 				// for ^process{body} evaluation
 			case UL_AS_IS:
 				// tainted, untaint language: as-is

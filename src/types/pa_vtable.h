@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.9 2001/03/27 15:43:21 paf Exp $
+	$Id: pa_vtable.h,v 1.10 2001/03/27 16:35:57 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -23,7 +23,7 @@ public: // Value
 	/// all: for error reporting after fail(), etc
 	const char *type() const { return "table"; }
 	/// extract VTable
-	VTable *get_vtable() { return this; }
+	Table *get_table() { return ftable; }
 	/// VTable: column
 	Value *get_element(const String& name) {
 		// methods

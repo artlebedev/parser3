@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.127 2001/03/27 13:47:31 paf Exp $
+	$Id: execute.C,v 1.128 2001/03/27 16:35:54 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -204,7 +204,7 @@ void Request::execute(const Array& ops) {
 				Value *value=POP();
 				const String& name=POP_NAME();
 				Value *ncontext=POP();
-				ncontext->put_element(name, value->get_expr_result());
+				ncontext->put_element(name, value->as_expr_result());
 				value->set_name(name);
 				break;
 			}
@@ -217,7 +217,7 @@ void Request::execute(const Array& ops) {
 		case OP_WRITE_EXPR_RESULT:
 			{
 				Value *value=POP();
-				write_expr_result(*value->get_expr_result());
+				write_expr_result(*value->as_expr_result());
 				break;
 			}
 		case OP_STRING__WRITE:
@@ -392,28 +392,28 @@ void Request::execute(const Array& ops) {
 		case OP_NEG:
 			{
 				Value *operand=POP();
-				Value *value=NEW VDouble(pool(), -operand->get_double());
+				Value *value=NEW VDouble(pool(), -operand->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_INV:
 			{
 				Value *operand=POP();
-				Value *value=NEW VDouble(pool(), ~(int)operand->get_double());
+				Value *value=NEW VDouble(pool(), ~(int)operand->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_NOT:
 			{
 				Value *operand=POP();
-				Value *value=NEW VBool(pool(), !operand->get_bool());
+				Value *value=NEW VBool(pool(), !operand->as_bool());
 				PUSH(value);
 				break;
 			}
 		case OP_DEF:
 			{
 				Value *operand=POP();
-				Value *value=NEW VBool(pool(), operand->get_defined());
+				Value *value=NEW VBool(pool(), operand->is_defined());
 				PUSH(value);
 				break;
 			}
@@ -438,28 +438,28 @@ void Request::execute(const Array& ops) {
 		case OP_SUB: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->get_double() - b->get_double());
+				Value *value=NEW VDouble(pool(), a->as_double() - b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_ADD: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->get_double() + b->get_double());
+				Value *value=NEW VDouble(pool(), a->as_double() + b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_MUL: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->get_double() * b->get_double());
+				Value *value=NEW VDouble(pool(), a->as_double() * b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_DIV: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->get_double() / b->get_double());
+				Value *value=NEW VDouble(pool(), a->as_double() / b->as_double());
 				PUSH(value);
 				break;
 			}
@@ -467,8 +467,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					(int)a->get_double() %
-					(int)b->get_double());
+					(int)a->as_double() %
+					(int)b->as_double());
 				PUSH(value);
 				break;
 			}
@@ -476,8 +476,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					(int)a->get_double() &
-					(int)b->get_double());
+					(int)a->as_double() &
+					(int)b->as_double());
 				PUSH(value);
 				break;
 			}
@@ -485,8 +485,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					(int)a->get_double() |
-					(int)b->get_double());
+					(int)a->as_double() |
+					(int)b->as_double());
 				PUSH(value);
 				break;
 			}
@@ -494,71 +494,71 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					(int)a->get_double() ^
-					(int)b->get_double());
+					(int)a->as_double() ^
+					(int)b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_LOG_AND:
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_bool() && b->get_bool());
+				Value *value=NEW VBool(pool(), a->as_bool() && b->as_bool());
 				PUSH(value);
 				break;
 			}
 		case OP_LOG_OR:
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_bool() || b->get_bool());
+				Value *value=NEW VBool(pool(), a->as_bool() || b->as_bool());
 				PUSH(value);
 				break;
 			}
 		case OP_LOG_XOR:
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_bool() ^ b->get_bool());
+				Value *value=NEW VBool(pool(), a->as_bool() ^ b->as_bool());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_LT: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() < b->get_double());
+				Value *value=NEW VBool(pool(), a->as_double() < b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GT: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() > b->get_double());
+				Value *value=NEW VBool(pool(), a->as_double() > b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_LE: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() <= b->get_double());
+				Value *value=NEW VBool(pool(), a->as_double() <= b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GE: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() >= b->get_double());
+				Value *value=NEW VBool(pool(), a->as_double() >= b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_EQ: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() == b->get_double());
+				Value *value=NEW VBool(pool(), a->as_double() == b->as_double());
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_NE: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() != b->get_double());
+				Value *value=NEW VBool(pool(), a->as_double() != b->as_double());
 				PUSH(value);
 				break;
 			}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.83 2001/03/27 15:37:52 paf Exp $
+	$Id: pa_request.C,v 1.84 2001/03/27 16:35:55 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -118,7 +118,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			Value *limits=main_class?main_class->get_element(*limits_name):0;
 			// $limits.post_max_size default 10M
 			Value *element=limits?limits->get_element(*post_max_size_name):0;
-			size_t value=element?(size_t)element->get_double():0;
+			size_t value=element?(size_t)element->as_double():0;
 			size_t post_max_size=value?value:MAX_POST_SIZE_DEFAULT;
 			
 			form.fill_fields(*this, post_max_size);
@@ -186,8 +186,8 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// meaning constructing @see attributed_meaning_to_string
 		default_content_type=defaults?defaults->get_element(*content_type_name):0;
 		if(Value *element=main_class->get_element(*html_typo_name))
-			if(VTable *vtable=element->get_vtable())
-				pool().set_tag(&vtable->table());
+			if(Table *table=element->get_table())
+				pool().set_tag(table);
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);

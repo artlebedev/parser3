@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.C,v 1.31 2001/03/25 08:52:36 paf Exp $
+	$Id: compile_tools.C,v 1.32 2001/03/27 16:35:54 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -63,7 +63,7 @@ const String *SLA2S(Array *literal_string_array, int offset) {
 
 void change_string_literal_to_double_literal(Array *literal_string_array) {
 	VString *vstring=static_cast<VString *>(literal_string_array->get(1));
-	Value *value=vstring->get_expr_result();
+	Value *value=vstring->as_expr_result();
 	literal_string_array->put(1, value);
 }
 void change_string_literal_to_write_string_literal(Array *literal_string_array) {
