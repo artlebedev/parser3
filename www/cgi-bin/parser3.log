@@ -200,3 +200,7 @@
 [Tue Jun 25 17:26:04 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(284): 'crypt' salt must start with '$apr1$' [parser.runtime]
 [Tue Jun 25 17:26:15 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(284): 'crypt' salt must start with '$apr1$' [parser.runtime]
 [Tue Jun 25 17:26:16 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(284): 'crypt' salt must start with '$apr1$' [parser.runtime]
+[Tue Jun 25 18:56:38 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1750:16): parse error, expecting `STRING' or `'['' or `'$'' [parser.compile]
+[Tue Jun 25 18:56:40 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(235): 'transform' Error Y:\gnome\libxml2-2.4.12\xpath.c:7165: Invalid expression||^|Error Y:\gnome\libxml2-2.4.12\xpath.c:7165: Invalid expression||^|Error Y:\gnome\libxml2-2.4.12\xpath.c:7165: Invalid expression||^| [xml]
+[Tue Jun 25 18:57:11 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(200): 'create' Entity: line 33: error: End tag : expected '>'||^| [xml]
+[Tue Jun 25 18:57:16 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(235): 'transform' Error Y:\gnome\libxml2-2.4.12\xpath.c:7165: Invalid expression||^|Error Y:\gnome\libxml2-2.4.12\xpath.c:7165: Invalid expression||^|Error Y:\gnome\libxml2-2.4.12\xpath.c:7165: Invalid expression||^| [xml]

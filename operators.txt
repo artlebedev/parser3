@@ -679,7 +679,7 @@ xdoc(xnode)
     !::create{<?xml?><string/>} старое имя 'set'
     !::create[qualifiedName]
     !::load[file.xml]
-    !.transform[rules.xsl][[params hash]] выдаёт dom
+    !.transform[rules.xsl|xdoc][[params hash]] выдаёт dom
         шаблон кэшируется, кэш обновляется при изменении даты файла шаблона,
         или изменении даты файла "имя шаблона.stamp"[проверка даты stamp приоритетнее]
         <xsl:output

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.92 2002/04/18 15:54:39 paf Exp $
+	$Id: xdoc.C,v 1.93 2002/06/25 15:08:09 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -630,34 +630,9 @@ static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning,
 	*current_transform_param++=pool.transcode(aattribute)->str;
 	*current_transform_param++=pool.transcode(meaning->as_string())->str;
 }
-static void _transform(Request& r, const String& method_name, MethodParams *params) {
-	//_asm int 3;
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-
-	// params
-	const char **transform_params=0;
-	if(params->size()>1) {
-		Value& vparams=params->as_no_junction(1, "transform parameters must be hash");
-		if(vparams.is_defined())
-			if(Hash *params=vparams.get_hash(&method_name)) {
-				const char **current_transform_param=transform_params=
-					(const char **)pool.malloc(sizeof(const char *)*(params->size()*2+1));
-				params->for_each(add_xslt_param, &current_transform_param);
-				transform_params[params->size()*2]=0;				
-			} else
-				throw Exception("parser.runtime",
-					&method_name,
-					"transform parameters parameter must be hash");
-	}
-
-	// stylesheet
-	const String& stylesheet_filespec=r.absolute(params->as_string(0, "file name must be string"));
-	Stylesheet_connection_ptr connection=stylesheet_manager->get_connection(stylesheet_filespec);
-
-	// prepare to transform
-	xsltStylesheet *stylesheet=connection->stylesheet(false/*nocache*/);
-	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document(&method_name));
+static VXdoc& _transform(Pool& pool, const String *doc_source, const String *stylesheet_source, 
+						 VXdoc& vdoc, xsltStylesheetPtr stylesheet, const char **transform_params) {
+	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document(doc_source));
 	xsltTransformContext_auto_ptr transformContext(
 		xsltNewTransformContext(stylesheet, document));
 	// make params literal
@@ -675,7 +650,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	if(!transformed || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
 		throw Exception(
-			&stylesheet_filespec, 
+			stylesheet_source, 
 			exc);
 	}
 
@@ -685,7 +660,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	GdomeDocument *gdomeDocument=gdome_xml_doc_mkref(transformed);
 	if(!gdomeDocument)
 		throw Exception(0,
-			&method_name,
+			doc_source,
 			"gdome_xml_doc_mkref failed");
 	VXdoc& result=*new(pool) VXdoc(pool, gdomeDocument);
 	/* grabbing options
@@ -716,8 +691,64 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	oo.standalone=stylesheet->standalone!=0;
 	oo.omitXmlDeclaration=stylesheet->omitXmlDeclaration!=0;
 
+	// return
+	return result;
+}
+static void _transform(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	// params
+	const char **transform_params=0;
+	if(params->size()>1) {
+		Value& vparams=params->as_no_junction(1, "transform parameters must be hash");
+		if(vparams.is_defined())
+			if(Hash *params=vparams.get_hash(&method_name)) {
+				const char **current_transform_param=transform_params=
+					(const char **)pool.malloc(sizeof(const char *)*(params->size()*2+1));
+				params->for_each(add_xslt_param, &current_transform_param);
+				transform_params[params->size()*2]=0;				
+			} else
+				throw Exception("parser.runtime",
+					&method_name,
+					"transform parameters parameter must be hash");
+	}
+
+	VXdoc *result;
+	Value& vmaybe_xdoc=params->get(0);
+	if(strcmp(vmaybe_xdoc.type(), VXDOC_TYPE)==0) { // stylesheet (xdoc)
+		xmlDoc *document=gdome_xml_doc_get_xmlDoc(
+			static_cast<VXdoc *>(&vmaybe_xdoc)->get_document(&method_name));
+		// compile xdoc stylesheet
+		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(document));
+		if(xmlHaveGenericErrors()) {
+			GdomeException exc=0;
+			throw Exception(&method_name, exc);
+		}
+		if(!stylesheet_ptr.get())
+			throw Exception("xml",
+				&method_name,
+				"stylesheet failed to compile");
+
+		// transform!
+		result=&_transform(pool, &method_name, &method_name,
+			vdoc, stylesheet_ptr.get(),
+			transform_params);
+	} else { // stylesheet (file name)
+		// extablish stylesheet connection
+		const String& stylesheet_filespec=
+			r.absolute(params->as_string(0, "stylesheet must be file name (string) or DOM document (xdoc)"));
+		Stylesheet_connection_ptr connection=stylesheet_manager->get_connection(stylesheet_filespec);
+
+		// load and compile file to stylesheet [or get cached if any]
+		// transform!
+		result=&_transform(pool, &method_name, &stylesheet_filespec,
+			vdoc, connection->stylesheet(false/*nocache*/),
+			transform_params);
+	}
+
 	// write out result
-	r.write_no_lang(result);
+	r.write_no_lang(*result);
 }
 
 // constructor
