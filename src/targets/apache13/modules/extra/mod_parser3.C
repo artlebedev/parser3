@@ -1,11 +1,11 @@
 /** @file
-	Parser: apache module.
+	Parser: apache 1.3 module.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.6 2001/03/21 16:59:05 paf Exp $
+	$Id: mod_parser3.C,v 1.7 2001/03/21 17:16:34 paf Exp $
 */
 
 #include "httpd.h"
@@ -554,7 +554,8 @@ static int parser3_handler(request_rec *r)
 		const char *content_length = 
 			(const char *)ap_table_get(r->subprocess_env, "CONTENT_LENGTH");
 		request_info.content_length=(content_length?atoi(content_length):0);
-		request_info.cookie=(const char *)ap_table_get(r->subprocess_env, "HTTP_COOKIE");
+		request_info.cookie=
+			(const char *)ap_table_get(r->subprocess_env, "HTTP_COOKIE");
 
 		// prepare to process request
 		Request request(pool,
@@ -665,9 +666,6 @@ static int parser3_handler(request_rec *r)
  */
 static void parser3_init(server_rec *s, pool *p)
 {
-
-    char *sname = s->server_hostname;
-
 	static bool globals_inited=false;
 	if(globals_inited)
 		return;
@@ -692,37 +690,6 @@ static void parser3_init(server_rec *s, pool *p)
 		// somehow report that error
 	}
 	PEND_CATCH
-}
-
-/* 
- * This function is called during server initialisation when an heavy-weight
- * process (such as a child) is being initialised.  As with the
- * module-initialisation function, any information that needs to be recorded
- * must be in static cells, since there's no configuration record.
- *
- * There is no return value.
- */
-
-/*
- * All our process-initialiser does is add its trace to the log.
- */
-static void parser3_child_init(server_rec *s, pool *p)
-{
-
-    char *note;
-    char *sname = s->server_hostname;
-
-    /*
-     * Set up any module cells that ought to be initialised.
-     */
-    setup_module_cells();
-    /*
-     * The arbitrary text we add to our trace entry indicates for which server
-     * we're being called.
-     */
-    sname = (sname != NULL) ? sname : "";
-    note = ap_pstrcat(p, "parser3_child_init(", sname, ")", NULL);
-    trace_add(s, NULL, NULL, note);
 }
 
 /* 
@@ -1102,7 +1069,7 @@ module MODULE_VAR_EXPORT parser3_module =
     ,0                          /* [3] header parser */
 #endif
 #if MODULE_MAGIC_NUMBER >= 19970719
-    ,parser3_child_init         /* process initializer */
+    ,0                          /* process initializer */
 #endif
 #if MODULE_MAGIC_NUMBER >= 19970728
     ,parser3_child_exit         /* process exit/cleanup */
