@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.186 2001/12/15 21:28:21 paf Exp $
+	$Id: pa_request.C,v 1.187 2001/12/19 16:24:07 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -499,12 +499,12 @@ VStateless_class *Request::use_file(const String& file_name,
 		if(main_class)
 			if(Value *element=main_class->get_element(*class_path_name)) {
 				if(element->is_string()) {
-					file_spec=file_readable(element->as_string(), file_name); // found at class_path?
+					file_spec=file_readable(absolute(element->as_string()), file_name); // found at class_path?
 				} else if(Table *table=element->get_table()) {
 					int size=table->size();
 					for(int i=size; i--; ) {
 						const String& path=*static_cast<Array *>(table->get(i))->get_string(0);
-						if(file_spec=file_readable(path, file_name))
+						if(file_spec=file_readable(absolute(path), file_name))
 							break; // found along class_path
 					}
 				} else

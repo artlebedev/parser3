@@ -1,3 +1,6 @@
+@USE
+t.p
+
 @main[]
 ^eval(100/6)[%.2f]
 $request:charset[windows-1251]
@@ -5,7 +8,7 @@ $response:charset[windows-1251]
 #^tupper[]
 #^treplace[]
 #^xslt2[]
-^tcache2[]
+#^tcache2[]
 #$ORIGINS(1)
 #$t[^table::set{a b} ^table::set{c d}]
 #^ttaintuntaint[]
@@ -308,13 +311,11 @@ $dom_created_in_air[^xdoc::create[doc]]
 
 
 @tcache[]
-^rem{
 #^hashfile:clear[cache]
 $code[^hashfile::open[$DB_HOME;cache]]
 ^code.cache[key](2){
 	^math:random(100)
 #	^code.delete[]
-}
 }
 
 @thashfileexp[]
