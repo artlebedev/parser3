@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.5 2001/03/12 12:00:09 paf Exp $
+	$Id: pa_vstring.h,v 1.6 2001/03/14 17:09:22 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -25,7 +25,18 @@ public: // Value
 	// string: fvalue
 	const String *get_string() { return &fvalue; };
 	// string: fvalue
-	double get_double() { return atof(fvalue.cstr()); }
+	double get_double() { 
+		double result;
+		const char *cstr=fvalue.cstr();
+		char *error_pos=0;
+		// 0123 or 0xABC
+		if(cstr[0]=='0')
+			result=(double)strtoul(cstr, &error_pos, 0);
+		else
+			result=strtod(cstr, &error_pos);
+
+		return error_pos?0:result;
+	}
 	// string: empty or not
 	bool get_bool() { return fvalue.size()!=0; };
 

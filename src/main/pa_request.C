@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.33 2001/03/14 16:47:33 paf Exp $
+	$Id: pa_request.C,v 1.34 2001/03/14 17:09:18 paf Exp $
 */
 
 #include <string.h>
@@ -81,8 +81,16 @@ char *Request::core(const char *sys_auto_path1,
 				main_class_name);
 		}
 
-		// TODO: использовать $MAIN:limits здесь, пока их не сломали враги
-		form_class.fill_fields(*this, 0/*todo: max post buf*/);
+		// $MAIN:limits hash used here,
+		//	until someone with less privileges have overriden them
+		Value *limits=main_class?main_class->get_element(*limits_name):0;
+		Value *element;
+		// $limits.max_post default 10M
+		element=limits?limits->get_element(*post_max_size_name):0;
+		size_t value=element?(size_t)element->get_double():0;
+		size_t post_max_size=value?value:10*0x400*400;
+
+		form_class.fill_fields(*this, post_max_size);
 
 		// TODO: load site auto.p files, all assigned bases from upper dir
 		char *site_auto_file="Y:\\parser3\\src\\auto.p";

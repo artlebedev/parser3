@@ -106,32 +106,6 @@ SOURCE=.\pa_vform.C
 
 SOURCE=.\parser3.C
 # End Source File
-# Begin Source File
-
-SOURCE=.\vform_fields_fill.C
-
-!IF  "$(CFG)" == "parser3 - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3 - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\vform_fields_fill.h
-
-!IF  "$(CFG)" == "parser3 - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3 - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
 # End Group
 # End Target
 # End Project
