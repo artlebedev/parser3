@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.53 2001/05/21 16:38:46 parser Exp $
+	$Id: string.C,v 1.54 2001/05/21 16:55:52 parser Exp $
 */
 
 #include "classes.h"
@@ -24,9 +24,6 @@
 // class
 
 class MString : public Methoded {
-public: // VStateless_class
-	Value *create_new_value(Pool& pool) { return new(pool) VString(pool); }
-
 public:
 	MString(Pool& pool);
 public: // Methoded
@@ -362,7 +359,7 @@ MString::MString(Pool& apool) : Methoded(apool) {
 
 	// ^string:sql[query]
 	// ^string:sql[query](offset)
-	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
+	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 }	
 
 // global variable

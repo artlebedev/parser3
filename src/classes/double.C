@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.28 2001/05/11 17:45:10 parser Exp $
+	$Id: double.C,v 1.29 2001/05/21 16:55:52 parser Exp $
 */
 
 #include "classes.h"
@@ -73,6 +73,20 @@ static void _mul(Request& r, const String&, MethodParams *params) { vdouble_op(r
 static void _div(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__div); }
 static void _mod(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__mod); }
 
+// from string.C
+extern 
+String& sql_result_string(Request& r, const String& method_name, MethodParams *params);
+
+static void _sql(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	double val=sql_result_string(r, method_name, params).as_double();
+
+	VDouble& result=*new(pool) VDouble(pool, val);
+	result.set_name(method_name);
+	r.write_assign_lang(result);
+}
+
 // constructor
 
 MDouble::MDouble(Pool& apool) : Methoded(apool) {
@@ -99,6 +113,10 @@ MDouble::MDouble(Pool& apool) : Methoded(apool) {
 
 	// ^double.format{format}
 	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
+	
+	// ^double:sql[query]
+	// ^double:sql[query](offset)
+	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 }
 // global variable
 
