@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.33 2001/03/19 17:42:15 paf Exp $
+	$Id: compile_tools.h,v 1.34 2001/03/24 16:29:09 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -18,6 +18,7 @@
 
 enum lexical_state {
 	LS_USER,
+	LS_COMMENT,
 	LS_DEF_NAME,
 	LS_DEF_PARAMS,
 	LS_DEF_LOCALS,

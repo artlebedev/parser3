@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.111 2001/03/24 15:58:00 paf Exp $
+	$Id: compile.y,v 1.112 2001/03/24 16:29:09 paf Exp $
 */
 
 /**
@@ -590,6 +590,17 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				// skip analysis = forced literal
 				continue;
 			}
+		if(c=='#' && PC->col==1) {
+			if(end!=begin) {
+				// append piece till #
+				PC->string->APPEND(begin, end-begin, PC->file, begin_line);
+			}
+			// reset piece 'begin' position & line
+			begin=PC->source;
+			begin_line=PC->line;
+			// fall into COMMENT lexical state [wait for \n]
+			push_LS(PC, LS_COMMENT);
+		}
 		switch(PC->ls) {
 
 		// USER'S = NOT OURS
@@ -607,6 +618,18 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 					RC;
 				}
 				break;
+			}
+			break;
+			
+		// #COMMENT
+		case LS_COMMENT:
+			if(c=='\n') {
+				// skip comment
+				begin=PC->source;
+				begin_line=PC->line;
+
+				pop_LS(PC);
+				continue;
 			}
 			break;
 			
