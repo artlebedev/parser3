@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.19 2002/03/05 12:29:49 paf Exp $
+	$Id: date.C,v 1.20 2002/03/26 08:51:00 paf Exp $
 */
 
 #include "classes.h"
@@ -130,6 +130,7 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
     tmOut->tm_hour=tmSaved.tm_hour;
     tmOut->tm_min=tmSaved.tm_min;
     tmOut->tm_sec=tmSaved.tm_sec;
+	tmOut->tm_isdst=-1; 
 	{
 		time_t t=mktime(tmOut);
 		if(t<0)
