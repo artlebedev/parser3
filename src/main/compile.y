@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.57 2001/03/06 15:55:35 paf Exp $
+  $Id: compile.y,v 1.58 2001/03/06 17:03:18 paf Exp $
 */
 
 %{
@@ -41,6 +41,23 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %token EON
 %token STRING
 %token BOGUS
+
+%token BAD_STRING_COMPARISON_OPERATOR
+
+%token LOR "||"
+%token LAND "&&"
+
+%token NLE "<="
+%token NGE ">="
+%token NEQ "=="
+%token NNE "!="
+
+%token SLT "lt"
+%token SGT "gt"
+%token SLE "le"
+%token SGE "ge"
+%token SEQ "eq"
+%token SNE "ne"
 
 /* logical */
 %left '<' '>' "<=" ">="
@@ -462,7 +479,6 @@ expr:
 |	'(' expr ')' { $$ = $2; }
 ;
 
-
 /*
 complex_expr_value: complex_expr {
 	$$=N(POOL); 
@@ -525,6 +541,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 	char *begin=PC->source;
 	char *end;
 	int begin_line=PC->line;
+	bool skip_analized_char=false;
 	while(true) {
 		c=*(end=(PC->source++));
 
@@ -662,33 +679,53 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				lexical_brackets_nestage++;
 				RC;
 			case '+': case '-': case '*': case '/': case '%': 
-			case '!': case '~':
-			case '&': case '|': 
-			case '<': case '>': case '=': 
+			case '~':
 			case ';':
 				RC;
+			case '&': case '|': 
+				if(*PC->source==c) { // && ||
+					result='&'?LAND:LOR;
+					skip_analized_char=true;
+				} else
+					result=c;
+				goto break2;
+			case '<': case '>': case '=': case '!': 
+				if(*PC->source=='=') { // <= >= == !=
+					skip_analized_char=true;
+					switch(c) {
+					case '<': result=NLE; break;
+					case '>': result=NGE; break;
+					case '=': result=NEQ; break;
+					case '!': result=NNE; break;
+					}
+				} else
+					result=c;
+				goto break2;
 			case '"':
 				push_LS(PC, LS_EXPRESSION_STRING);
 				RC;
 			case 'l': case 'g': case 'e': case 'n':
 				if(end==begin) // right after whitespace
-					switch(char next_c=*PC->source) {
+					switch(*PC->source) {
 //					case '?': // ok [and bad cases, yacc would bark at them]
 					case 't': // lt gt [et nt]
+						result=c=='l'?SLT:c=='g'?SGT:BAD_STRING_COMPARISON_OPERATOR; 
+						goto break2;
 					case 'e': // le ge ne [ee]
+						result=c=='l'?SLE:c=='g'?SGE:c=='n'?SNE:BAD_STRING_COMPARISON_OPERATOR;
+						goto break2;
 					case 'q': // eq [lq gq nq]
-						PC->source++;  PC->col++;
-						PC->pending_state=next_c;
-						return c;
+						result=c=='e'?SEQ:BAD_STRING_COMPARISON_OPERATOR;
+						goto break2;
 					}
 				break;
 			case ' ': case '\t': case '\n':
 				if(end!=begin) {
-					// append piece till whitespace
+					// append piece till whitespace char
 					PC->string->APPEND(begin, end-begin, PC->file, begin_line);
 				}
 				// reset piece 'start' position & line
-				begin=PC->source; // after whitespace
+				begin=PC->source; // after whitespace char
 				begin_line=PC->line;
 				continue;
 			}
@@ -879,10 +916,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 	}
 
 break2:
-	if(begin==end)
-		return result;
-	else {
-		PC->pending_state=result;
+	if(end!=begin) {
 		// strip last \n before LS_DEF_NAME or EOF
 		if((c=='@' || c==0) && end[-1]=='\n')
 			end--;
@@ -894,9 +928,13 @@ break2:
 		*lvalp=VL(NEW VString(*PC->string));
 		// new pieces storage
 		PC->string=NEW String(POOL);
-		// go!
-		return STRING;
+		// make current result be pending for next call, return STRING for now
+		PC->pending_state=result;  result=STRING;
 	}
+	if(skip_analized_char) {
+		PC->source++;  PC->col++;
+	}
+	return result;
 }
 
 int real_yyerror(parse_control *pc, char *s)  /* Called by yyparse on error */
