@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.66 2001/04/03 15:07:33 paf Exp $
+	$Id: pa_string.h,v 1.67 2001/04/03 15:25:08 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -184,7 +184,7 @@ public:
 		const String& delim, 
 		Untaint_lang lang, int limit=-1) const;
 
-	typedef void (*Row_action)(Table& table, Array& row, void *info);
+	typedef void (*Row_action)(Table& table, Array *row, void *info);
 	bool match(const String *aorigin,
 		const String& regexp, 
 		const String *options,

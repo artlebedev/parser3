@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.64 2001/04/03 15:07:34 paf Exp $
+	$Id: pa_string.C,v 1.65 2001/04/03 15:25:09 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -526,7 +526,7 @@ bool String::match(const String *aorigin,
 	int length=strlen(subject);
 	int ovecsize;
 	int *ovector=(int *)malloc(sizeof(int)*
-		(ovecsize=(3/*pre/match/post*/+info_substrings)*3));
+		(ovecsize=(1/*match*/+info_substrings)*3));
 
 	{ // create table
 		Array& columns=*NEW Array(pool());
@@ -549,6 +549,7 @@ bool String::match(const String *aorigin,
 		
 		if(exec_substrings==PCRE_ERROR_NOMATCH) {
 			(*pcre_free)(code);
+			(*row_action)(**table, 0/*last time, no row*/, info);
 			return option_bits[1]!=0; // global=true+table, not global=false
 		}
 
@@ -561,19 +562,20 @@ bool String::match(const String *aorigin,
 		}
 
 		Array& row=*NEW Array(pool());
-		row+=&piece(0, ovector[0]); // pre-match
-		row+=&piece(ovector[0], ovector[1]); // match
-		row+=&piece(ovector[1], size()); // post-match
+		row+=&piece(0, ovector[0]); // .pre-match column value
+		row+=&piece(ovector[0], ovector[1]); // .match
+		row+=&piece(ovector[1], size()); // .post-match
 		
 		for(int i=1; i<exec_substrings; i++) {
 			// -1:-1 case handled peacefully by piece() itself
 			row+=&piece(ovector[i*2+0], ovector[i*2+1]); // .i column value
 		}
 		
-		(*row_action)(**table, row, info);
+		(*row_action)(**table, &row, info);
 
 		if(!option_bits[1]) { // not global
 			(*pcre_free)(code);
+			(*row_action)(**table, 0/*last time, no row*/, info);
 			return true;
 		}
 

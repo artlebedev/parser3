@@ -30,6 +30,10 @@ $n
 $m ^if(^s.match{$:m}[i]){matches}{do not match} $s<BR>
 
 @main[]
+$r[1223]
+^^"$r".match{2}[i]{!}=^r.match{2}[i]{!}<BR>
+^^"$r".match{2}[g]{!}=^r.match{2}[g]{!}<BR>
+<HR>
 $s[abcﬂ]
 $sm[^s.match{(.)}[g]]
 ^^"$s".match{(.)}[g]:<BR>

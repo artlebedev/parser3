@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.27 2001/04/03 15:07:31 paf Exp $
+	$Id: string.C,v 1.28 2001/04/03 15:25:07 paf Exp $
 */
 
 #include "pa_request.h"
@@ -137,18 +137,27 @@ static void _rsplit(Request& r, const String& method_name, Array *params) {
 	r.write_no_lang(*new(pool) VTable(pool, &table));
 }
 
-static void search_row_action(Table& table, Array& row, void *) {
-	table+=&row;
+static void search_row_action(Table& table, Array *row, void *) {
+	if(row)
+		table+=row;
 }
 
 struct Replace_action_info {
-	String *string;
+	String *dest;
 	Value *replacement_code;
+	bool first_time;
 };
-static void replace_row_action(Table& table, Array& row, void *info) {
+static void replace_row_action(Table& table, Array *row, void *info) {
 	Replace_action_info& ai=*static_cast<Replace_action_info *>(info);
 	//table+=&row;
-	ai.string->APPEND_CONST("R!");
+	if(ai.first_time) { // begin
+		ai.first_time=false;
+		ai.dest->APPEND_CONST("B");
+	}
+	if(row) // middle
+		ai.dest->APPEND_CONST("M");
+	else // end
+		ai.dest->APPEND_CONST("E");
 }
 
 /** search/replace
@@ -157,7 +166,7 @@ static void replace_row_action(Table& table, Array& row, void *info) {
 */
 static void _match(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
-	const String& string=*static_cast<VString *>(r.self)->get_string();
+	const String& src=*static_cast<VString *>(r.self)->get_string();
 
 	Value& regexp=*static_cast<Value *>(params->get(0));
 	// forcing {this param type}
@@ -175,7 +184,7 @@ static void _match(Request& r, const String& method_name, Array *params) {
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	Table *table;
 	if(params->size()<3) { // search
-		if(string.match(&method_name, 
+		if(src.match(&method_name, 
 			r.process(regexp).as_string(), options,
 			&table,
 			search_row_action, 0)) {
@@ -193,16 +202,17 @@ static void _match(Request& r, const String& method_name, Array *params) {
 		r.fail_if_junction_(false, replacement_code, 
 			method_name, "replacement code must be junction");
 
-		String& string=*new(pool) String(pool);
+		String& dest=*new(pool) String(pool);
 		Replace_action_info replace_action_info={
-			&string,
-			&replacement_code
+			&dest,
+			&replacement_code,
+			true
 		};
-		string.match(&method_name, 
+		src.match(&method_name, 
 			r.process(regexp).as_string(), options,
 			&table,
 			replace_row_action, &replace_action_info);
-		result=new(pool) VString(string);
+		result=new(pool) VString(dest);
 	}
 	result->set_name(method_name);
 	r.write_no_lang(*result);
@@ -240,6 +250,6 @@ void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^string.match{regexp}[options]
 	// ^string.match{regexp}[options]{replacement-code}
-	vclass.add_native_method("match", Method::CT_DYNAMIC, _match, 1, 2);
+	vclass.add_native_method("match", Method::CT_DYNAMIC, _match, 1, 3);
 }	
 
