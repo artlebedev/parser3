@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.133 2001/12/24 07:25:43 paf Exp $
+	$Id: pa_string.C,v 1.134 2001/12/24 07:26:44 paf Exp $
 */
 
 #include "pcre.h"
@@ -695,7 +695,7 @@ break21:;
 		if(ai==achunk->count) {
 			if(achunk=arow->link) {
 				ai=0;
-				arow=chunk->rows;
+				arow=achunk->rows;
 			}
 		}
 	} else {
