@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/11/21 09:47:34 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/21 11:04:39 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -45,7 +45,8 @@ public: // Methoded
 class Measure_reader {
 public:
 	virtual size_t read(const void *&buf, size_t limit)=0;
-	virtual void seek(long delta)=0;
+	virtual void seek(long value, int whence)=0;
+	virtual long tell()=0;
 };
 
 class Measure_file_reader: public Measure_reader {
@@ -69,13 +70,15 @@ public:
 		return read_size;
 	}
 
-	/*override*/void seek(long delta) {
-		if(lseek(f, delta, SEEK_CUR)<0)
+	/*override*/void seek(long value, int whence) {
+		if(lseek(f, value, whence)<0)
 			throw Exception("file.seek",
 				&file_name, 
-				"seek(delta=%ld) failed: %s (%d), actual filename '%s'", 
-					delta, strerror(errno), errno, fname);
+				"seek(value=%ld, whence=%d) failed: %s (%d), actual filename '%s'", 
+					value, whence, strerror(errno), errno, fname);
 	}
+
+	/*override*/long tell() { return ::tell(f); }
 
 private:
 	Pool& pool;
@@ -96,15 +99,23 @@ public:
 		return to_read;
 	}
 
-	/*override*/void seek(long delta) {
-		size_t new_offset=offset+delta;
+	/*override*/void seek(long value, int whence) {
+		size_t new_offset;
+		switch(whence) {
+		case SEEK_CUR: new_offset=offset+value; break;
+		case SEEK_SET: new_offset=(size_t)value; break;
+		default: throw Exception("file.seek", 0, "whence #%d not supported", 0, whence); break;
+		}
+		
 		if((ssize_t)new_offset<0 || new_offset>size)
 			throw Exception("file.seek",
 				&file_name, 
-				"seek(offset=%l) failed: out of buffer, new_offset>size (%l>%l) or new_offset<0", 
-					delta, new_offset, size);
+				"seek(value=%l, whence=%d) failed: out of buffer, new_offset>size (%l>%l) or new_offset<0", 
+					value, whence, new_offset, size);
 		offset=new_offset;
 	}
+
+	/*override*/long tell() { return offset; }
 
 private:
 
@@ -151,6 +162,11 @@ struct JPG_Size_segment_body {
 	char numComponents;           //< number of color components
 };
 
+/// JPEG frame header
+struct JPG_Exif_segment_start {
+	char signature[6]; // Exif\0\0
+};
+
 //
 
 inline ushort x_endian_to_ushort(unsigned char L, unsigned char H) {
@@ -190,8 +206,11 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 			 Measure_reader& reader, ushort& width, ushort& height) {
 	// JFIF format markers
 	const unsigned char MARKER=0xFF;
-	const unsigned char CODE_SIZE_FIRST=0xC0;
-	const unsigned char CODE_SIZE_LAST=0xC3;
+	const unsigned char CODE_SIZE_A=0xC0;
+	const unsigned char CODE_SIZE_B=0xC1;
+	const unsigned char CODE_SIZE_C=0xC2;
+	const unsigned char CODE_SIZE_D=0xC3;
+	const unsigned char CODE_EXIF=0xE1;
 
 	void *buf;
 	const size_t prefix_size=2;
@@ -206,39 +225,59 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 			origin_string, 
 			"not JPEG file - wrong signature");
 
-	bool found=false;
 	while(true) {
-		void *buf;
-        // Extract the segment header.
+		long segment_base_offset=reader.tell()+2/*marker,code*/;
 		if(reader.read(buf, sizeof(JPG_Segment_head))<sizeof(JPG_Segment_head))
-			break;		
+			break;
 		JPG_Segment_head *head=(JPG_Segment_head *)buf;
 
         // Verify that it's a valid segment.
 		if(head->marker!=MARKER)
+			throw Exception("image.format", 
+				origin_string, 
+				"not JPEG file - marker not found");
+
+		switch(head->code) {
+		// http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html
+		case CODE_EXIF:
+			{
+				if(reader.read(buf, sizeof(JPG_Exif_segment_start))<sizeof(JPG_Exif_segment_start))
+					throw Exception("image.format", 
+						origin_string, 
+						"not JPEG file - can not fully read Exif segment start");
+
+				JPG_Exif_segment_start *start=(JPG_Exif_segment_start *)buf;
+				if(memcmp(start->signature, "Exif\0\0", 4+2)!=0) //signature invalid?
+					break; // ignore invalid block
+
+				// parse Exif block
+			}
 			break;
 
-		if(head->code >= CODE_SIZE_FIRST && head->code  <= CODE_SIZE_LAST) {
-            // Segments that contain size info
-			if(reader.read(buf, sizeof(JPG_Size_segment_body))<sizeof(JPG_Size_segment_body))
-				break;
-			JPG_Size_segment_body *body=(JPG_Size_segment_body *)buf;
-			
-			width=big_endian_to_ushort(body->width);
-			height=big_endian_to_ushort(body->height);
-			found=true;
-			break;
-		} else {
-            // Dummy read to skip over data
-            long offset=big_endian_to_ushort(head->length) - 2;
-			reader.seek(offset);
-        }
+		case CODE_SIZE_A:
+		case CODE_SIZE_B:
+		case CODE_SIZE_C:
+		case CODE_SIZE_D:
+			{
+				// Segments that contain size info
+				if(reader.read(buf, sizeof(JPG_Size_segment_body))<sizeof(JPG_Size_segment_body))
+					throw Exception("image.format", 
+						origin_string, 
+						"not JPEG file - can not fully read Size segment");
+				JPG_Size_segment_body *body=(JPG_Size_segment_body *)buf;
+				
+				width=big_endian_to_ushort(body->width);
+				height=big_endian_to_ushort(body->height);
+				return;
+			}			
+		};
+
+		reader.seek(segment_base_offset+big_endian_to_ushort(head->length), SEEK_SET);
 	}
 
-	if(!found)
-		throw Exception("image.format", 
-			origin_string, 
-			"broken JPEG file - size frame not found");
+	throw Exception("image.format", 
+		origin_string, 
+		"broken JPEG file - size frame not found");
 }
 
 void measure_png(Pool& pool, const String *origin_string, 
