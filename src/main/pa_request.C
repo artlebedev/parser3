@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2003/11/20 16:34:26 $";
+static const char * const IDENT_REQUEST_C="$Date: 2003/11/20 16:39:49 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -113,8 +113,8 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 #endif	
 
 	// public
-	sapi_info(asapi_info),
 	request_info(arequest_info),
+	sapi_info(asapi_info),
 	charsets(UTF8_charset, UTF8_charset, UTF8_charset), // default charsets
 
 	main_class(VClassMAIN_create()),
@@ -481,17 +481,9 @@ body_string=&execute_method(frame, *method).as_string();
 				// make up result: $origin $source $comment $type $code
 				char *buf=new(PointerFreeGC) char[MAX_STRING];
 				size_t printed=0;
-				if(const String* problem_source=e.problem_source()) {
-					/*const String_fragment::Origin& origin=problem_source->origin();
-					if(origin.file)
-						printed+=snprintf(buf+printed, MAX_STRING-printed, 
-							PA_ORIGIN_FILE_POS_FORMAT, 
-							origin.file, 1+origin.line
-						);
+				if(const String* problem_source=e.problem_source())
 					printed+=snprintf(buf+printed, MAX_STRING-printed, "'%s' ", 
-						problem_source->cstr().get());
-						*/
-				}
+						problem_source->cstr());
 				if(const char* comment=e.comment(true))
 					printed+=snprintf(buf+printed, MAX_STRING-printed, "%s", comment);
 				if(const char* type=e.type(true)) 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2003/11/20 16:34:26 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2003/11/20 16:39:49 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -907,7 +907,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 			wcontext=&local;
 
 			// execute it
-			recoursion_checked_execute(/*0/*result_name* /, */ *junction->code);
+			recoursion_checked_execute(*junction->code);
 			
 			// CodeFrame soul:
 			//   string writes were intercepted
@@ -919,7 +919,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 			wcontext=&local;
 		
 			// execute it
-			recoursion_checked_execute(/*0/*result_name* /, */ *junction->code);
+			recoursion_checked_execute(*junction->code);
 		
 			result=wcontext->result();
 		}
