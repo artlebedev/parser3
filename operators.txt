@@ -970,6 +970,7 @@ xdoc(xnode)
     !email.send           $MAIL.sendmail[/shit]                       sendmail not executable
     !http.host            ^file::load[http://notfound/there]          host not found
     !http.connect         ^file::load[http://not_accepting/there]     host found, but do not accept connections
+    !http.timeout         ^file::load[http://host/doc]                whole load operation failed to complete in # seconds
     !http.response        ^file::load[http://ok/there]                host found, connection accepted, bad answer
     !http.status          ^file::load[http://ok/there]                host found, connection accepted, status!=200
     
