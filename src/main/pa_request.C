@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.49 2001/03/18 17:39:29 paf Exp $
+	$Id: pa_request.C,v 1.50 2001/03/18 17:45:49 paf Exp $
 */
 
 #include <string.h>
@@ -380,16 +380,17 @@ void Request::output_result(const String& body_string) {
 	// set default content-type
 	response.fields().put_dont_replace(*content_type_name, fdefault_content_type);
 
-	// header: response fields 
+	// header: $response:fields without :body
 	response.fields().foreach(output_response_attribute, /*excluding*/ body_name);
+
+	// prepare
 	const char *body=body_string.cstr();
-	if(size_t content_length=strlen(body)) {
-		// header: content-length
-		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%d", content_length);
-		(*service_funcs.output_header_attribute)("content-length", 
-			content_length_cstr);
-		// body
-		(*service_funcs.output_body)(body, content_length);
-	}
+	size_t content_length=strlen(body);
+
+	// header: content-length
+	char content_length_cstr[MAX_NUMBER];
+	snprintf(content_length_cstr, MAX_NUMBER, "%d", content_length);
+	(*service_funcs.output_header_attribute)("content-length", content_length_cstr);
+	// body
+	(*service_funcs.output_body)(body, content_length);
 }
