@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/03/01 14:27:41 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/04/01 11:43:54 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -258,7 +258,7 @@ static bool parser_init() {
 
 	try {
 		// init socks
-		pa_init_socks();
+		pa_socks_init();
 		// init global variables
 		pa_globals_init();
 
@@ -272,12 +272,29 @@ static bool parser_init() {
 	}
 }
 
+static void parser_done() {
+	// finalize global variables
+	pa_globals_done();
+
+	// 
+	pa_socks_done();
+}
+
 /// ISAPI //
 BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 	pVer->dwExtensionVersion = HSE_VERSION;
 	strncpy(pVer->lpszExtensionDesc, "Parser "PARSER_VERSION, HSE_MAX_EXT_DLL_NAME_LEN-1);
 	pVer->lpszExtensionDesc[HSE_MAX_EXT_DLL_NAME_LEN-1]=0;
 	return parser_init();
+}
+// dwFlags & HSE_TERM_MUST_UNLOAD means we can't return false
+BOOL WINAPI TerminateExtension(
+  DWORD /*dwFlags*/
+)
+{
+	parser_done();
+
+	return TRUE;
 }
 
 /** 

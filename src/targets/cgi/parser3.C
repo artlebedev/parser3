@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2004/03/23 09:42:14 $";
+static const char * const IDENT_PARSER3_C="$Date: 2004/04/01 11:43:54 $";
 
 #include "pa_config_includes.h"
 
@@ -276,7 +276,7 @@ main workhorse
 static void real_parser_handler(const char* filespec_to_process,
 				const char* request_method, bool header_only) {
 	// init socks
-	pa_init_socks();
+	pa_socks_init();
 	
 	// init global variables
 	pa_globals_init();
@@ -423,8 +423,11 @@ static void real_parser_handler(const char* filespec_to_process,
 	// no request [prevent signal handlers from accessing invalid memory]
 	::request=0;
 	
+	// finalize global variables
+	pa_globals_done();
+
 	//
-	pa_done_socks();
+	pa_socks_done();
 }
 
 #if _MSC_VER && !defined(_DEBUG)

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2004/02/16 11:20:05 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2004/04/01 11:43:54 $";
 
 #include "pa_config_includes.h"
 
@@ -339,6 +339,10 @@ void pa_globals_init() {
 
 	pa_xml_io_init();
 #endif
+}
+
+void pa_globals_done() {
+	delete cache_managers;  cache_managers=0;
 }
 
 #ifdef _MSC_VER

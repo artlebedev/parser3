@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by Apache.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2004/02/11 15:33:16 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2004/04/01 11:43:54 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -143,7 +143,7 @@ static int parser_handler(request_rec *ar) {
 * There is no return value.
 */
 
-static void parser_server_init(server_rec *s, pool *p) {
+static void parser_module_init(server_rec *s, pool *p) {
 #if MODULE_MAGIC_NUMBER >= 19980527
 	ap_add_version_component(pa_version());
 #endif	
@@ -152,6 +152,22 @@ static void parser_server_init(server_rec *s, pool *p) {
 	* Set up any module cells that ought to be initialised.
 	*/
 	pa_setup_module_cells();
+}
+
+/* 
+ * This function is called when an heavy-weight process (such as a child) is
+ * being run down or destroyed.  As with the child-initialisation function,
+ * any information that needs to be recorded must be in static cells, since
+ * there's no configuration record.
+ *
+ * There is no return value.
+ */
+
+/*
+ * All our process-death routine does is add its trace to the log.
+ */
+static void parser_module_done(server_rec *s, pool *p) {
+	pa_destroy_module_cells();
 }
 
 /*
@@ -407,7 +423,7 @@ static const handler_rec parser_handlers[] =
 module MODULE_VAR_EXPORT parser3_module =
 {
 	STANDARD_MODULE_STUFF,
-	parser_server_init,          /* module initializer */
+	parser_module_init,          /* module initializer */
 	parser_create_dir_config,    /* per-directory config creator */
 	parser_merge_dir_config,     /* dir config merger */
 	parser_create_server_config, /* server config creator */
@@ -421,6 +437,18 @@ module MODULE_VAR_EXPORT parser3_module =
 	0,                           /* [7] MIME type checker/setter */
 	0,                           /* [8] fixups */
 	0                            /* [10] logger */
+#if MODULE_MAGIC_NUMBER >= 19970103
+    ,0      /* [3] header parser */
+#endif
+#if MODULE_MAGIC_NUMBER >= 19970719
+    ,0         /* process initializer */
+#endif
+#if MODULE_MAGIC_NUMBER >= 19970728
+    ,parser_module_done         /* process exit/cleanup */
+#endif
+#if MODULE_MAGIC_NUMBER >= 19970902
+    ,0   /* [1] post read_request handling */
+#endif
 };
 
 #if defined(_MSC_VER)

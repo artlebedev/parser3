@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char * const IDENT_GLOBALS_H="$Date: 2004/02/11 15:33:14 $";
+static const char * const IDENT_GLOBALS_H="$Date: 2004/04/01 11:43:53 $";
 
 
 #include "pa_hash.h"
@@ -24,8 +24,11 @@ class Charset;
 class Table;
 class Request;
 
-/// core func
+/// initialize global variables
 void pa_globals_init();
+
+/// finalize global variables
+void pa_globals_done();
 
 /// hex_value[c] = hex value of c
 extern short hex_value[0x100];

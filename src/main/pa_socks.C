@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SOCKS_C="$Date: 2004/02/11 15:33:16 $";
+static const char * const IDENT_SOCKS_C="$Date: 2004/04/01 11:43:54 $";
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"
@@ -40,7 +40,7 @@ int PASCAL WSACleanup(void);
 
 WSADATA wsaData;
 
-void pa_init_socks() {
+void pa_socks_init() {
 	WORD wVersionRequested;
 	int err; 
 	wVersionRequested = MAKEWORD( 1, 1 ); 
@@ -56,7 +56,7 @@ void pa_init_socks() {
 	} 
 }
 
-void pa_done_socks() {
+void pa_socks_done() {
 	/* Confirm that the WinSock DLL supports 2.2.*/
 	/* Note that if the DLL supports versions greater    */
 	/* than 2.2 in addition to 2.2, it will still return */
@@ -71,7 +71,7 @@ void pa_done_socks() {
 
 #else
 
-void pa_init_socks() {}
-void pa_done_socks() {}
+void pa_socks_init() {}
+void pa_socks_done() {}
 
 #endif

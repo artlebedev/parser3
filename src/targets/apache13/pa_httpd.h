@@ -8,7 +8,7 @@
 #ifndef PA_HTTPD_H
 #define PA_HTTPD_H
 
-static const char * const IDENT_HTTPD_H="$Date: 2003/11/20 16:34:27 $";
+static const char * const IDENT_HTTPD_H="$Date: 2004/04/01 11:43:54 $";
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,6 +47,7 @@ typedef struct Parser_module_config_tag {
 
 const char* pa_version();
 void pa_setup_module_cells();
+void pa_destroy_module_cells();
 int pa_parser_handler(pa_request_rec*, Parser_module_config*);
 
 // export from c to c++

@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2004/03/01 14:27:41 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2004/04/01 11:43:54 $";
 
 #include "pa_globals.h"
 
@@ -34,7 +34,7 @@ void pa_setup_module_cells() {
 	/// no trying to __try here [yet]
 	try {
 		// init socks
-		pa_init_socks();
+		pa_socks_init();
 		
 		// init global variables
 		pa_globals_init();
@@ -42,6 +42,13 @@ void pa_setup_module_cells() {
 		SAPI::abort("setup_module_cells failed: %s", e.comment());
 	}
 }
+
+void pa_destroy_module_cells() {
+	pa_globals_done();
+
+	pa_socks_done();
+}
+
 
 //@{
 /// SAPI func decl
