@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char* IDENT_COMPILE_TOOLS_H="$Date: 2002/08/01 11:41:17 $";
+static const char* IDENT_COMPILE_TOOLS_H="$Date: 2002/08/21 11:47:25 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -134,6 +134,8 @@ void changetail_or_append(Array *opcodes,
 						  OPCODE find, bool with_argument, OPCODE replace, OPCODE notfound);
 
 void change_string_literal_to_double_literal(Array *literal_string_array);
+
+void change_string_literal_value(Array *literal_string_array, const String& new_value);
 
 void push_LS(parse_control& pc, lexical_state new_state);
 void pop_LS(parse_control& pc);

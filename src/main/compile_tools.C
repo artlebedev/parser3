@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMPILE_TOOLS_C="$Date: 2002/08/01 11:41:17 $";
+static const char* IDENT_COMPILE_TOOLS_C="$Date: 2002/08/21 11:47:25 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -40,6 +40,16 @@ void change_string_literal_to_double_literal(Array *literal_string_array) {
 		literal_string_array->put(1, value);
 	}
 }
+
+void change_string_literal_value(Array *literal_string_array, const String& new_value) {
+	Operation op;
+	op.cast=literal_string_array->get(0);
+	if(op.code==OP_VALUE) { // extra safety
+		VString *vstring=static_cast<VString *>(literal_string_array->get(1));
+		vstring->set_string(new_value);
+	}
+}
+
 void changetail_or_append(Array *opcodes, 
 						  OPCODE find, bool with_argument, OPCODE replace, OPCODE notfound) {
 	int tail=opcodes->size()-(with_argument?2:1);

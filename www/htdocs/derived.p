@@ -5,15 +5,15 @@
 derived
 
 @BASE
-base
+zbase
 
 @create[aderived_param]
-^base:create[base create actual param]
+^BASE:create[base create actual param]
 $derived_var[$aderived_param]
 
 @test[]
 ^$derived_var=$derived_var<br>
-^base:test[]
+^BASE:test[]
 
 @test2[]
 derived_test2

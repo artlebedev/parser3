@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.188 2002/08/12 14:21:51 paf Exp $
+	$Id: compile.y,v 1.189 2002/08/21 11:47:25 paf Exp $
 */
 
 /**
@@ -162,19 +162,20 @@ control_method: '@' STRING '\n'
 		}
 		if(strings_code->size()==1*2) {
 			const String& base_name=*LA2S(strings_code);
-			VClass *base=static_cast<VClass *>(
+			Value *vbase_class=static_cast<VClass *>(
 				PC.request->classes().get(base_name));
-			if(!base) {
+			VStateless_class *base_class=vbase_class?vbase_class->get_class():0;
+			if(!base_class) {
 				strcpy(PC.error, base_name.cstr());
 				strcat(PC.error, ": undefined class in @"BASE_NAME);
 				YYERROR;
 			}
 			// @CLASS == @BASE sanity check
-			if(PC.cclass==base) {
+			if(PC.cclass==base_class) {
 				strcpy(PC.error, "@"CLASS_NAME" equals @"BASE_NAME);
 				YYERROR;
 			}
-			PC.cclass->set_base(*base);
+			PC.cclass->set_base(base_class);
 		} else {
 			strcpy(PC.error, "@"BASE_NAME" must contain sole name");
 			YYERROR;
@@ -486,6 +487,14 @@ class_prefix:
 ;
 class_static_prefix: STRING ':' {
 	$$=$1; // stack: class name string
+	if(*LA2S($$) == BASE_NAME) { // pseude BASE class
+		if(VStateless_class *base=PC.cclass->base_class()) {
+			change_string_literal_value($$, base->name());
+		} else {
+			strcpy(PC.error, "no base class declared");
+			YYERROR;
+		}
+	}
 	O($$, OP_GET_CLASS);
 };
 class_constructor_prefix: class_static_prefix ':' {
