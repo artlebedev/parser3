@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2004/03/30 08:33:05 $";
+static const char * const IDENT_TABLE_C="$Date: 2004/03/30 08:41:13 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -336,8 +336,6 @@ static void _load(Request& r, MethodParams& params) {
 	Table::element_type row(new ArrayString);
 	skip_empty_and_comment_lines(&data);
 	while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
-		if(!sr.delim && !row->count()) // append last empty column [if without \n]
-			break;
 		*row+=new String(sr.piece, 0, true);
 		if(sr.delim=='\n') {
 			table+=row;
