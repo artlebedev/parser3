@@ -36,20 +36,20 @@ $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 	    $value[text/plain]
     	$charset[windows-1251]
 	]
-    $to[paul]
-    $from[paf]
-	$body[hi, paul.
+    $to[paf@design.ru]
+    $from[paf@design.ru]
+	$body[привет, PAF.
 
 sincerily yours,
 PAF
 ]
 ]</pre>
 <HR>
-
+^rem{
 
 <pre>^mail:send[
-    $to[sdsfsdf]
-    $from[sdfsdf]
+    $to[paf@design.ru]
+    $from[paf@design.ru]
     $body[
     	$2[
     		$content-type[$value[message/rfc822] $name[letter.eml]]
@@ -71,6 +71,7 @@ subject: 2
 ]</pre>
 
 <HR>
+}
 
 ^^table:dir[/]:<BR>
 $d[^table:dir[/]]

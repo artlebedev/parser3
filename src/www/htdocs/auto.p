@@ -20,7 +20,7 @@ mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll
 }]
 ]
 $MAIL[
-	$SMTP[moko]
+	$SMTP[mail.office.design.ru]
 ]
 #for ^file:load[name;user-name;mime-type << autodetection]
 $MIME-TYPES[^table:set{ext	mime-type

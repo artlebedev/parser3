@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.102 2001/04/07 13:48:42 paf Exp $
+	$Id: pa_request.C,v 1.103 2001/04/07 13:56:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -55,7 +55,8 @@ Request::Request(Pool& apool,
 	used_files(apool),
 	default_content_type(0),
 	mime_types(0),
-	connection(0), protocol2library(0)
+	connection(0), protocol2library(0),
+	mail(0)
 {
 	// root superclass, 
 	//   parent of all classes, 

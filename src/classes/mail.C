@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.4 2001/04/07 13:48:35 paf Exp $
+	$Id: mail.C,v 1.5 2001/04/07 13:56:44 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -159,13 +159,15 @@ static void sendmail(Request& r, const String& method_name,
 
 	char *letter_cstr=letter.cstr();
 	SMTP& smtp=*new(pool) SMTP(pool, method_name);
-	const String *server_port;
+	Value *server_port;
 	// $MAIN:MAIL.SMTP[mail.design.ru]
-	if(r.mail && (server_port=r.mail->get_string(*new(pool) String(pool, "SMTP")))) {
-		char *server=server_port->cstr();
+	if(r.mail && 
+		(server_port=static_cast<Value *>(r.mail->get(
+			*new(pool) String(pool, "SMTP"))))) {
+		char *server=server_port->as_string().cstr();
 		char *port=rsplit(server, ':');
 		if(!port)
-			port="25";
+			port=const_cast<char *>("25");
 
 		smtp.Send(server, port, letter_cstr, from->cstr(), to->cstr());
 	} else
