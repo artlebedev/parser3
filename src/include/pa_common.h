@@ -8,11 +8,12 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2002/12/02 10:07:39 $";
+static const char* IDENT_COMMON_H="$Date: 2003/04/15 06:44:34 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
 
+class Request;
 class Hash;
 class Value;
 
@@ -124,7 +125,8 @@ bool file_read_action_under_lock(Pool& pool, const String& file_spec,
 char *file_read_text(Pool& pool, 
 					 const String& file_spec, 
 					 bool fail_on_read_problem=true,
-					 Hash *options=0, Hash** out_fields=0);
+					 Hash* options=0, Request* r=0,
+					 Hash** out_fields=0);
 
 /**
 	read specified file using pool, 
@@ -135,7 +137,8 @@ char *file_read_text(Pool& pool,
 bool file_read(Pool& pool, const String& file_spec, 
 			   void*& data, size_t& size, 
 			   bool as_text,
-			   Hash *options=0, Hash** out_fields=0,
+			   Hash* options=0, Request* r=0,
+			   Hash** out_fields=0,
 			   bool fail_on_read_problem=true);
 
 typedef void (*File_write_action)(int f, void *context);

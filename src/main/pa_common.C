@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/02/25 12:27:17 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/04/15 06:44:34 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -13,6 +13,7 @@ static const char* IDENT_COMMON_C="$Date: 2003/02/25 12:27:17 $";
 #include "pa_hash.h"
 #include "pa_vstring.h"
 #include "pa_vdate.h"
+#include "pa_request.h"
 
 #ifdef WIN32
 #	include <windows.h>
@@ -117,9 +118,10 @@ void fix_line_breaks(char* buf, size_t& size) {
 
 char* file_read_text(Pool& pool, const String& file_spec, 
 					 bool fail_on_read_problem,
-					 Hash *params, Hash** out_fields) {
+					 Hash* options, Request* r,
+					 Hash** out_fields) {
 	void *result;  size_t size;
-	return file_read(pool, file_spec, result, size, true, params, out_fields, fail_on_read_problem)?(char *)result:0;
+	return file_read(pool, file_spec, result, size, true, options, r, out_fields, fail_on_read_problem)?(char *)result:0;
 }
 
 //http request stuff
@@ -382,6 +384,7 @@ static void file_read_http(Pool& pool, const String& file_spec,
 #ifndef DOXYGEN
 struct File_read_action_info {
 	void **data; size_t *data_size;
+	Hash* options; Request* r;
 }; 
 #endif
 static void file_read_action(Pool& pool, 
@@ -390,16 +393,27 @@ static void file_read_action(Pool& pool,
 							 const String& file_spec, const char* fname, bool as_text, 
 							 void *context) {
 	File_read_action_info& info=*static_cast<File_read_action_info *>(context); 
-	if(size_t to_read_size=(size_t)finfo.st_size) { 
-		*info.data=pool.malloc(to_read_size+(as_text?1:0), 3); 
-		*info.data_size=(size_t)read(f, *info.data, to_read_size); 
 
-		if(ssize_t(*info.data_size)<0 || *info.data_size>to_read_size)
-			throw Exception(0, 
-				&file_spec, 
-				"read failed: actually read %lu bytes count not in [0..%lu] valid range", 
-					*info.data_size, to_read_size); 
-	} else { // empty file
+	int offset=0;
+	int limit=-1;
+	if(info.options) {
+		int valid_options=0;
+		if(Value *voffset=(Value *)info.options->get(*sql_offset_name)) {
+			valid_options++;
+			offset=info.r->process_to_value(*voffset).as_int();
+		}
+		if(Value *vlimit=(Value *)info.options->get(*sql_limit_name)) {
+			valid_options++;
+			limit=info.r->process_to_value(*vlimit).as_int();
+		}
+		if(valid_options!=info.options->size())
+			throw Exception("parser.runtime",
+				&file_spec,
+				"load called with invalid option");
+	}
+
+	int m=finfo.st_size;
+	if(offset<0 || offset>=m || limit==0) { // bad options/empty file: returning empty file
 		if(as_text) {
 			*info.data=pool.malloc(1); 
 			*(char*)(*info.data)=0;
@@ -408,18 +422,38 @@ static void file_read_action(Pool& pool,
 		*info.data_size=0;
 		return;
 	}
+	if(limit<0 || limit>m)
+		limit=m;
+
+	if(offset)
+		if(lseek(f, offset, SEEK_SET)<0)
+			throw Exception("file.read", 
+				&file_spec, 
+				"seek to %d position failed: %s (%d), actual filename '%s'", 
+				offset, strerror(errno), errno, fname); 
+
+	*info.data=pool.malloc(limit+(as_text?1:0), 3); 
+	*info.data_size=(size_t)read(f, *info.data, limit); 
+
+	if((ssize_t)*info.data_size<0)
+		throw Exception(0, 
+			&file_spec, 
+			"failed to read %d bytes from %d offset of %d size (stat)",  // may be in text mode...
+				limit, offset, m); 
 }
 bool file_read(Pool& pool, const String& file_spec, 
 			   void*& data, size_t& data_size, 
-			   bool as_text, Hash *params, Hash** out_fields, 
+			   bool as_text, 
+			   Hash* options, Request* r,
+			   Hash** out_fields, 
 			   bool fail_on_read_problem) {
 	bool result;
 	if(file_spec.starts_with("http://", 7)) {
 		// fail on read problem
-		file_read_http(pool, file_spec, data, data_size, params, out_fields); 
+		file_read_http(pool, file_spec, data, data_size, options, out_fields); 
 		result=true;
 	} else {
-		File_read_action_info info={&data, &data_size}; 
+		File_read_action_info info={&data, &data_size, options, r}; 
 		result=file_read_action_under_lock(pool, file_spec, 
 			"read", file_read_action, &info, 
 			as_text, fail_on_read_problem); 
@@ -445,8 +479,7 @@ bool file_read(Pool& pool, const String& file_spec,
 
 bool file_read_action_under_lock(Pool& pool, const String& file_spec, 
 				const char* action_name, File_read_action action, void *context, 
-				bool as_text, 
-				bool fail_on_read_problem) {
+				bool as_text, bool fail_on_read_problem) {
 	const char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
 	int f;
 

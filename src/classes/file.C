@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/12/26 12:39:25 $";
+static const char* IDENT_FILE_C="$Date: 2003/04/15 06:44:33 $";
 
 #include "pa_config_includes.h"
 
@@ -134,7 +134,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Hash *fields=0;
 	file_read(pool, lfile_name, data, size, 
 		vmode_name.as_string()==TEXT_MODE_NAME,
-		third_param_hash,
+		third_param_hash, &r,
 		&fields
 	);
 
