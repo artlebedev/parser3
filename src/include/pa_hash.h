@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.16 2001/02/22 16:21:48 paf Exp $
+  $Id: pa_hash.h,v 1.17 2001/02/23 14:18:26 paf Exp $
 */
 
 /*
@@ -35,6 +35,9 @@ public:
 
 	// get associated [value] by the [key]
 	/*SYNCHRONIZED*/ Value *get(const Key& key) const;
+
+	// put a [value] under the [key] if that [key] existed, return existed or not
+	/*SYNCHRONIZED*/ bool replace(const Key& key, Value *value);
 
 	void put(const Key& key, int     value) { put(key, reinterpret_cast<Value *>(value)); }
 	void put(const Key& key, String *value) { put(key, static_cast<Value *>(value)); }

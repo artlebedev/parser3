@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.15 2001/02/22 11:08:25 paf Exp $
+  $Id: pa_hash.C,v 1.16 2001/02/23 14:18:27 paf Exp $
 */
 
 /*
@@ -101,3 +101,18 @@ Hash::Value *Hash::get(const Key& key) const {  SYNCHRONIZED(thread_safe);
 	
 	return 0;
 }
+
+bool Hash::replace(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
+	uint code=key.hash_code();
+	uint index=code%size;
+	for(Pair *pair=refs[index]; pair; pair=pair->link)
+		if(pair->code==code && pair->key==key) {
+			// found a pair with the same key, replacing
+			pair->value=value;
+			return true;
+		}
+
+	// proper pair not found 
+	return false;
+}
+

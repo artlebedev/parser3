@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.27 2001/02/23 12:03:51 paf Exp $
+  $Id: execute.C,v 1.28 2001/02/23 14:18:27 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -8,11 +8,13 @@
 #include "pa_vstring.h"
 #include "pa_vhash.h"
 #include "pa_vunknown.h"
+#include "pa_vframe.h"
 
 #include <stdio.h>
 
 #define PUSH(value) stack.push(value)
 #define POP() static_cast<Value *>(stack.pop())
+#define POP_SR() static_cast<Value *>(stack.pop())->as_string()
 
 
 char *opcode_name[]={
@@ -113,7 +115,7 @@ void Request::execute(Array& ops) {
 		case OP_CONSTRUCT:
 			{
 				Value *value=POP();
-				String& name=POP()->as_string();
+				String& name=POP_SR();
 				Value *ncontext=POP();
 				value->set_name(name);
 				ncontext->put_element(name, value);
@@ -174,6 +176,30 @@ void Request::execute(Array& ops) {
 				break;
 			}
 
+		case OP_GET_METHOD_FRAME:
+			{
+				String& name=POP_SR();  // это бывает junction, не name
+				Value *ncontext=static_cast<Value *>(stack[0]);
+				// [self/class?;params;local;code/native_code](name)
+				Method *method=ncontext->get_method(name);
+				if(!method)
+					THROW(0,0,
+						&name,
+						"method not found in %s", ncontext->name()->cstr());
+				//unless(method) method=operators.get_method[...;code/native_code](name)
+				VFrame *frame=NEW VFrame(pool(), *method);
+				PUSH(frame);
+				break;
+			}
+		case OP_STORE_PARAM:
+			{
+				Value *value=POP();
+				VFrame *frame=static_cast<VFrame *>(stack[0]);
+				frame->store_param(value);
+				break;
+			}
+
+
 		default:
 			printf("\tTODO");
 			break;
@@ -183,7 +209,7 @@ void Request::execute(Array& ops) {
 }
 
 Value *Request::get_element() {
-	String& name=POP()->as_string();
+	String& name=POP_SR();
 	Value *ncontext=POP();
 	Value *value=ncontext->get_element(name); // name бывает method, тогда выдаЄт new junction(ј¬“ќ¬џ„»—Ћя“№=false, root,self,rcontext,wcontext,code)
 	// name бывает им€ junction, тогда или оставл€ет в покое, или вычисл€ет в зависимости от флага ј¬“ќ¬џ„»—Ћя“№

@@ -1,25 +1,20 @@
 /*
-  $Id: pa_wcontext.h,v 1.11 2001/02/23 12:47:08 paf Exp $
+  $Id: pa_wcontext.h,v 1.12 2001/02/23 14:18:26 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-#include "pa_value.h"
-#include "pa_vstring.h"
-#include "pa_vhash.h"
+#include "pa_wvalue.h"
 
-class WContext : public Value {
+class WContext : public WValue {
 public: // Value
 
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "WContext"; }
-	// wcontext: accumulated string
-	String *get_string() { return string; };
 	// wcontext: transparent
 	Value *get_element(const String& name) { return check_value()->get_element(name); }
 	// wcontext: transparent
-//	void put_element(const String& name, Value *avalue){ check_value()->put_element(name, avalue); }
 	void put_element(const String& name, Value *avalue){ 
 		if(!fvalue)
 			fvalue=NEW VHash(pool());
@@ -35,46 +30,9 @@ public: // Value
 
 public: // usage
 
-	WContext(Pool& apool, Value *avalue) : Value(apool), 
-		fvalue(avalue),
-		string(new(apool) String(apool)) {
-	}
-
-	// appends a string to result
-	void write(String *astring) {
-		if(!astring)
-			return;
-
-		*string+=*astring;
-	}
-	// if value is VString writes string,
-	// else writes Value; raises an error if already
-	void write(Value *avalue) {
-		if(!avalue)
-			return;
-
-		String *string=avalue->get_string();
-		if(string)
-			write(string);
-		else
-			if(fvalue) // already have value?
-				THROW(0,0,  // don't need to construct twice
-					fvalue->name(),
-					"value already assigned, use constructor to reassign it");
-			else
-				fvalue=avalue;
-	}
-
-	// retrives the resulting value
-	// that can be VString if value==0 or the Value object
-	Value *value() const {
-		return fvalue?fvalue:NEW VString(string);
+	WContext(Pool& apool, Value *avalue) : WValue(apool, avalue) {
 	}
 	
-private:
-	String *string;
-	Value *fvalue;
-
 private:
 	// raises an exception on 0 value
 	Value *check_value() const {

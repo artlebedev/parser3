@@ -223,6 +223,10 @@ SOURCE=..\include\pa_vclass.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_vframe.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_vhash.h
 # End Source File
 # Begin Source File
@@ -236,6 +240,10 @@ SOURCE=..\include\pa_vunknown.h
 # Begin Source File
 
 SOURCE=..\include\pa_wcontext.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_wvalue.h
 # End Source File
 # End Group
 # End Target

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.18 2001/02/23 11:39:57 paf Exp $
+  $Id: pa_value.h,v 1.19 2001/02/23 14:18:26 paf Exp $
 */
 
 /*
@@ -33,6 +33,7 @@ public:
 		Array& aparams_names,
 		Array& alocals_names,
 		Array& acode) : 
+
 		Pooled(apool),
 		name(aname),
 		params_names(aparams_names),
@@ -88,19 +89,29 @@ public: // Value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	// object_instance: (field)=value;(STATIC)=hash;(method)=method_ref
 	// operator_class: (field)=value - static values only
+	// wcontext: transparent
+	// frame: my or self_transparent
 	virtual Value *get_element(const String& name) { failed("getting element from %s"); return 0; }
 	
 	// hash: (key)=value
 	// object_class, operator_class: (field)=value - static values only
+	// wcontext: transparent
+	// frame: my or self_transparent
 	virtual void put_element(const String& name, Value *value) { failed("putting element to %s"); }
 
 	// object_instance, object_class: method
+	// frame: transparent
+	// wcontext: transparent
 	virtual Method *get_method(const String& name) const { return 0; }
 
 	// object_class, object_instance: object_class
+	// frame: transparent
+	// wcontext: transparent
 	virtual VClass *get_class() { return 0; }
 
 	// object_class: true when this class is this or derived from 'ancestor'
+	// frame: transparent
+	// wcontext: transparent
 	virtual bool is_or_derived_from(VClass& ancestor) { failed("thoghts of ancestors of %s"); return false; }
 
 public: // usage

@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.27 2001/02/23 11:39:58 paf Exp $
+$Id: core.C,v 1.28 2001/02/23 14:18:27 paf Exp $
 */
 
 #include "pa_request.h"
@@ -58,6 +58,7 @@ VClass *Request::construct_class(String& name, Array& compiled_methods) {
 	// TODO: immediate_parents=@PARENTS
 
 	VClass *result=NEW VClass(pool(), name, immediate_parents);
+	result->set_name(name);
 	classes().put(name, result);
 		
 	for(int i=0; i<compiled_methods.size(); i++) {
