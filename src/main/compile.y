@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.64 2001/03/07 10:27:10 paf Exp $
+  $Id: compile.y,v 1.65 2001/03/07 10:35:41 paf Exp $
 */
 
 %{
@@ -429,20 +429,12 @@ expr:
 |	expr "ne" expr { $$=$1;  P($$, $3);  O($$, OP_STR_NE) }
 ;
 
-string_inside_quotes_value: maybe_codes/*string_inside_quotes*/ {
+string_inside_quotes_value: maybe_codes {
 	$$=N(POOL);
 	O($$, OP_CREATE_SWPOOL); /* stack: empty write context */
-	P($$, $1); /* some codes to that context */
+	P($$, $1); /* some code that write to that context */
 	O($$, OP_REDUCE_SWPOOL); /* context=pop; stack: context.get_string() */
 };
-/*string_inside_quotes: 
-	string_inside_quotes_part
-|	string_inside_quotes string_inside_quotes_part { 
-		$$=$1; P($$, $2) 
-}
-;
-string_inside_quotes_part: STRING | get_value;
-*/
 
 /* basics */
 

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.59 2001/03/07 10:10:50 paf Exp $
+  $Id: execute.C,v 1.60 2001/03/07 10:35:41 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -80,6 +80,7 @@ void dump(int level, const Array& ops) {
 			dump(level+1, *local_ops);
 		}
 	}
+	fflush(stderr);
 }
 
 void Request::execute(const Array& ops) {
@@ -94,7 +95,7 @@ void Request::execute(const Array& ops) {
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
-		fprintf(stderr, "%d:%s", stack.top(), opcode_name[op.code]);
+		fprintf(stderr, "%d:%s", stack.top(), opcode_name[op.code]); fflush(stderr);
 
 		switch(op.code) {
 		// param in next instruction

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.32 2001/03/07 09:29:54 paf Exp $
+  $Id: pa_string.C,v 1.33 2001/03/07 10:35:41 paf Exp $
 */
 
 #include <string.h>
@@ -218,6 +218,11 @@ int String::cmp(const String& src) const {
 	bool b_break=false;
 	int result;
 	while(true) {
+		a_break=a_row==a_end;
+		b_break=b_row==b_end;
+		if(a_break || b_break)
+			break;
+
 		int size_diff=
 			(a_row->item.size-a_offset)-
 			(b_row->item.size-b_offset);
@@ -241,11 +246,6 @@ int String::cmp(const String& src) const {
 			b_offset+=a_row->item.size-a_offset;
 			a_row++; a_countdown--; a_offset=0;
 		}
-
-		a_break=a_row==a_end;
-		b_break=b_row==b_end;
-		if(a_break || b_break)
-			break;
 
 		if(!a_countdown) {
 			a_chunk=a_row->link;
