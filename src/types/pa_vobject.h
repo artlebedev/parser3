@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vobject.h,v 1.8 2001/05/07 14:00:54 paf Exp $
+	$Id: pa_vobject.h,v 1.9 2001/05/10 12:42:39 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -27,11 +27,12 @@ public: // Value
 
 	/// VObject : (field)=value;(CLASS)=vclass;(method)=method_ref
 	Value *get_element(const String& name) {
-		// $CLASS,$BASE,$method
-		if(Value *result=VStateless_object::get_element(name))
-			return result;
 		// $field=ffields.field
-		return static_cast<Value *>(ffields.get(name));
+		if(Value *result=static_cast<Value *>(ffields.get(name)))
+			return result;
+
+		// $CLASS,$BASE,$method
+		return VStateless_object::get_element(name);
 	}
 
 	/// VObject : (field)=value

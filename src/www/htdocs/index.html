@@ -1,4 +1,39 @@
 @main[]
+$t[^table:set{key	value
+1	v1
+2	v2}]
+$h[^t.hash[key]]
+
+
+^rem{
+^connect[$SQL.connect-string]{
+	$shit[^taint[our's]]
+#	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
+	$paf[^table:sql{select * from paf order by id desc}(5)]
+	$paf{
+	^empty{query result is empty}{
+	<table border=1>
+		<tr><td>id</td><td>name</td><td>age</td></tr>
+		^menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
+	</table>
+	}}
+}
+}
+
+<HR>
+$abc{}
+$tn[^table:set[nameless]{a1	b1
+a2	b2
+}]
+$x[^tn.locate[0;a2]]
+^$tn.1=$tn.1
+<hr>
+$t0[^table:set{key	a	b
+1	a1
+2	a2	b2
+}]
+^if(^t0.locate[key;2] && "a" ne "b"){y;n}
+<hr>
 $currentFolder[/a/b]
 $path[^currentFolder.lsplit[/]]
 ^path.flip[]

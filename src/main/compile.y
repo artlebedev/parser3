@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.130 2001/05/07 07:46:43 paf Exp $
+	$Id: compile.y,v 1.131 2001/05/10 12:42:34 paf Exp $
 */
 
 /**
@@ -87,19 +87,18 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 %token IS "is"
 
 /* logical */
-%left "is"
-%left "lt" "gt" "le" "ge"
-%left "eq" "ne"
-%left '<' '>' "<=" ">=" "##"
-%left "==" "!="
+%left "##"
 %left "||"
 %left "&&"
-%left "def" "in" "-f" "-d"
+%left '<' '>' "<=" ">="   "lt" "gt" "le" "ge"
+%left "==" "!="  "eq" "ne"
+%left "is" "def" "in" "-f" "-d"
 %left '!'
 
 /* bitwise */
 %left '#'
-%left '&' '|'
+%left '|'
+%left '&' 
 %left '~'
 
 /* numerical */
@@ -460,7 +459,7 @@ class_prefix: STRING ':' {
 
 /* with */
 
-with: '$' name_without_curly_rdive '{' codes '}' {
+with: '$' name_without_curly_rdive '{' maybe_codes '}' {
 	$$=$2;
 	O($$, OP_CREATE_RWPOOL);
 	P($$, $4);
