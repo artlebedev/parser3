@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.4 2001/10/24 09:03:42 parser Exp $
+	$Id: pa_db_connection.C,v 1.5 2001/10/24 09:34:26 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -12,6 +12,19 @@
 
 #include "pa_db_connection.h"
 #include "pa_exception.h"
+
+// consts
+
+const int DATA_STRING_SERIALIZED_VERSION=0x0100;
+
+// helper types
+
+#ifndef DOXYGEN
+struct Data_string_serialized_prolog {
+	int version;
+	time_t time_to_die;
+};
+#endif
 
 // DB_Connection
 
@@ -48,21 +61,49 @@ void DB_Connection::key_string_to_dbt(const String& key_string, DBT& key_result)
 	key_result.size=key_string.size();
 }
 
-void DB_Connection::key_dbt_to_string(const DBT& key_dbt, String& key_result) {
+String& DB_Connection::key_dbt_to_string(const DBT& key_dbt) {
+	String& result=*new(*fservices_pool) String(*fservices_pool);
 	if(key_dbt.size) {
 		char *request_data=(char *)malloc(key_dbt.size);
 		memcpy(request_data, key_dbt.data, key_dbt.size);
-		key_result.APPEND_TAINTED(request_data, key_dbt.size, file_spec_cstr, 0/*line*/);
+		result.APPEND_TAINTED(request_data, key_dbt.size, file_spec_cstr, 0/*line*/);
 	}
+	return result;
 }
 
-void DB_Connection::data_string_to_dbt(const String& data_string, DBT& data_result) {
+void DB_Connection::data_string_to_dbt(const String& data_string, time_t time_to_die, 
+									   DBT& data_result) {
 	memset(&data_result, 0, sizeof(data_result));
-	data_string.serialize(sizeof(time_t), data_result.data, data_result.size);
+
+	data_string.serialize(
+		sizeof(Data_string_serialized_prolog), 
+		data_result.data, data_result.size);
+
+	Data_string_serialized_prolog& prolog=
+		*static_cast<Data_string_serialized_prolog *>(data_result.data);
+
+	prolog.version=DATA_STRING_SERIALIZED_VERSION;
+	prolog.time_to_die=time_to_die;
 }
 
-void DB_Connection::data_dbt_to_string(const DBT& data_dbt, String& data_result) {
-	data_result.deserialize(sizeof(time_t), data_dbt.data, data_dbt.size, file_spec_cstr);
+String *DB_Connection::data_dbt_to_string(const DBT& data_dbt) {
+	Data_string_serialized_prolog& prolog=
+		*static_cast<Data_string_serialized_prolog *>(data_dbt.data);
+
+	if(prolog.version!=DATA_STRING_SERIALIZED_VERSION)
+		throw Exception(0, 0,
+			&ffile_spec,
+			"data string version 0x%04X not equal to 0x%04X, recreate file",
+				prolog.version, DATA_STRING_SERIALIZED_VERSION);
+
+	if(prolog.time_to_die/*specified*/ && prolog.time_to_die >= time(0)/*expired*/)
+		return 0;
+
+	String& result=*new(*fservices_pool) String(*fservices_pool);
+	result.deserialize(
+		sizeof(Data_string_serialized_prolog), 
+		data_dbt.data, data_dbt.size, file_spec_cstr);
+	return &result;
 }
 
 DB_Connection::DB_Connection(Pool& pool, const String& afile_spec, DB_ENV& adbenv) : Pooled(pool),
@@ -89,9 +130,9 @@ void DB_Connection::disconnect() {
 }
 
 ///	@test string pieces [get/put preserve lang]
-void DB_Connection::put(const String& key, const String& data) {
+void DB_Connection::put(const String& key, const String& data, time_t time_to_die) {
 	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
-	DBT dbt_data;  data_string_to_dbt(data, dbt_data);
+	DBT dbt_data;  data_string_to_dbt(data, time_to_die, dbt_data);
 	check("put", &key, db->put(db, ftid, &dbt_key, &dbt_data, 0/*flags*/));
 }
 
@@ -104,10 +145,7 @@ String *DB_Connection::get(const String& key) {
 		return 0;
 	else {
 		check("get", &key, error);
-
-		String *result=new(*fservices_pool) String(*fservices_pool);
-		data_dbt_to_string(dbt_data, *result);
-		return result;
+		return data_dbt_to_string(dbt_data);
 	}		
 }
 
@@ -138,7 +176,7 @@ DB_Cursor::~DB_Cursor() {
 	}
 }
 
-bool DB_Cursor::get(String& key, String& data, u_int32_t flags) {
+bool DB_Cursor::get(String *& key, String *& data, u_int32_t flags) {
 	DBT dbt_key={0}; // must be zeroed
 	DBT dbt_data={0}; // must be zeroed
 	
@@ -148,8 +186,8 @@ bool DB_Cursor::get(String& key, String& data, u_int32_t flags) {
 
 	check("c_get", fsource, error);
 
-	key_dbt_to_string(dbt_key, key);
-	data_dbt_to_string(dbt_data, data);
+	key=&key_dbt_to_string(dbt_key);
+	data=data_dbt_to_string(dbt_data);
 	return true;
 }
 

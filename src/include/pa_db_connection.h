@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.h,v 1.4 2001/10/24 09:03:42 parser Exp $
+	$Id: pa_db_connection.h,v 1.5 2001/10/24 09:34:26 parser Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
@@ -57,7 +57,7 @@ public:
 	void disconnect();	
 	bool ping() { return !needs_recovery; }
 
-	void put(const String& key, const String& data);
+	void put(const String& key, const String& data, time_t time_to_die);
 	String *get(const String& key);
 	void _delete(const String& key);
 
@@ -106,12 +106,13 @@ private:
 	void *calloc(size_t size) { return fservices_pool->calloc(size); }
 	/// pass empty dbt, would fill it from string
 	void key_string_to_dbt(const String& key_string, DBT& key_result);
+	/// @returns new string
+	String& key_dbt_to_string(const DBT& key_dbt);
 	/// pass empty dbt, would fill it from string
-	void key_dbt_to_string(const DBT& key_dbt, String& key_result);
-	/// pass empty dbt, would fill it from string
-	void data_string_to_dbt(const String& data_string, DBT& data_result);
-	/// pass empty string, would fill it from dbt
-	void data_dbt_to_string(const DBT& data_dbt, String& data_result);
+	void data_string_to_dbt(const String& data_string,  time_t time_to_die, 
+		DBT& data_result);
+	/// @returns new string if it not expired
+	String *data_dbt_to_string(const DBT& data_dbt);
 
 };
 
@@ -144,7 +145,7 @@ private:
 public:
 	~DB_Cursor();
 	/// pass empty strings to key&data, would fill them
-	bool get(String& key, String& data, u_int32_t flags);
+	bool get(String *& key, String *& data, u_int32_t flags);
 private:
 	const String *fsource;
 	DB_Connection& fconnection;
@@ -153,13 +154,13 @@ private:
 	void check(const char *operation, const String *source, int error) {
 		fconnection.check(operation, source, error);
 	}
-	/// pass empty string, would fill it from dbt
-	void key_dbt_to_string(DBT& dbt, String& result) {
-		fconnection.key_dbt_to_string(dbt, result);
+	/// @returns new string
+	String& key_dbt_to_string(DBT& key_dbt) {
+		return fconnection.key_dbt_to_string(key_dbt);
 	}
-	/// pass empty string, would fill it from dbt
-	void data_dbt_to_string(DBT& dbt, String& result) {
-		fconnection.data_dbt_to_string(dbt, result);
+	/// @returns new string if it not expired
+	String *data_dbt_to_string(const DBT& data_dbt) {	
+		return fconnection.data_dbt_to_string(data_dbt);
 	}
 };
 

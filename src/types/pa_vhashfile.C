@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vhashfile.C,v 1.4 2001/10/23 14:43:44 parser Exp $
+	$Id: pa_vhashfile.C,v 1.5 2001/10/24 09:34:26 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -23,9 +23,14 @@ void VHashfile_cleanup(void *vhashfile) {
 	static_cast<VHashfile *>(vhashfile)->cleanup();
 }
 
-void VHashfile::put_field(const String& name, Value *value) {
+void VHashfile::put_element(const String& name, Value *value) {
+	put_field(name, value, 0);
+}
+
+
+void VHashfile::put_field(const String& name, Value *value, time_t time_to_die) {
 	DB_Connection& connection=get_connection(&name);
-	connection.put(name, value->as_string());
+	connection.put(name, value->as_string(), time_to_die);
 }
 
 Value *VHashfile::get_field(const String& name) {
@@ -42,12 +47,12 @@ Hash *VHashfile::get_hash(const String *source) {
 	DB_Cursor cursor=connection.cursor(source);
 
 	while(true) {
-		String& key=*NEW String(pool());
-		String& data=*NEW String(pool());
+		String *key;
+		String *data;
 		if(!cursor.get(key, data, DB_NEXT))
 			break;
 
-		result.put(key, NEW VString(data));
+		result.put(*key, NEW VString(*data));
 	}
 
 	return &result;
