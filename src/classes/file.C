@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.62 2001/10/29 14:13:14 paf Exp $
+	$Id: file.C,v 1.63 2001/10/29 17:49:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -189,8 +189,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 		}
 
 	// const
-	String gateway_interface(pool, "CGI/1.1");
-	env.put(String(pool, "GATEWAY_INTERFACE"), &gateway_interface);
+	ECSTR(GATEWAY_INTERFACE, "CGI/1.1");
 	// from Request.info
 	ECSTR(DOCUMENT_ROOT, r.info.document_root);
 	ECSTR(PATH_TRANSLATED, r.info.path_translated);
@@ -212,7 +211,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	EPASS(REMOTE_HOST);
 	EPASS(REMOTE_USER);
 	// SCRIPT_NAME
-	env.put(String(pool, "SCRIPT_NAME"), &script_name);
+	env.put(*new(pool) String(pool, "SCRIPT_NAME"), &script_name);
 #ifdef WIN32
 	// WIN32 shell
 	EPASS(COMSPEC);
