@@ -2,11 +2,11 @@ dnl acinclude.m4(
 
 AC_DEFUN(CALC_ARGS,[
 
-AC_ARG_WITH(pgsql_inc,[  --with-pgsql_inc[=DIR]      DIR is the PgSQL includes directory],,
-	withval="/usr/local/pgsql/include"
+AC_ARG_WITH(oracleoci_inc,[  --with-oracleoci_inc[=DIR]      DIR is the Oracle OCI includes directory],,
+	withval="/usr/local/oracleoci/include"
 )
-PGSQL_INC=$withval
-AC_SUBST(PGSQL_INC)
+ORACLEOCI_INC=$withval
+AC_SUBST(ORACLEOCI_INC)
 
 ])
 
