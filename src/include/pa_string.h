@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.87 2001/05/14 13:18:07 parser Exp $
+	$Id: pa_string.h,v 1.88 2001/05/15 10:48:53 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -27,7 +27,7 @@ class Table;
 	- first for buffer length
 	- second for replacements themselves
 */
-#define UNTAINT_TIMES_BIGGER 10
+#define UNTAINT_TIMES_BIGGER 20
 
 #ifndef NO_STRING_ORIGIN
 #	define STRING_APPEND_PARAMS \
@@ -121,6 +121,7 @@ public:
 	char *cstr(Untaint_lang lang=UL_UNSPECIFIED, 
 		SQL_Connection *connection=0,
 		const char *charset=0) const {
+
 		char *result=(char *)malloc(size()*UNTAINT_TIMES_BIGGER+1);
 		char *eol=store_to(result, lang, connection, charset);
 		*eol=0;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.76 2001/04/28 15:22:47 paf Exp $
+	$Id: parser3.C,v 1.77 2001/05/15 10:48:53 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -277,6 +277,13 @@ int main(int argc, char *argv[]) {
 
 		//
 		done_socks();
+
+		extern size_t malloc_total, calloc_total;
+		extern size_t malloc_times, calloc_times;
+		SAPI::log(pool, 
+			"malloc %d/%d, calloc %d/%d", 
+			malloc_total, malloc_times,
+			calloc_total, calloc_times);
 
 		// must be last in PTRY{}PCATCH
 #ifdef WIN32
