@@ -6,8 +6,15 @@
 #^exec[]
 #^fori[]
 #^tconnect[]
-^xslt[]
+#^xslt[]
+^header[]
 OK
+
+@header[]
+$response:refresh[
+	$.value[0] 
+	$.url[http://design.ru]
+]
 
 @ttablerem[]
 $table[^table::load[a.cfg]]
