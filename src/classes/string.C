@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.50 2001/05/17 19:33:32 parser Exp $
+	$Id: string.C,v 1.51 2001/05/19 16:37:39 parser Exp $
 */
 
 #include "classes.h"
@@ -159,7 +159,7 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 		// piece from last match['start'] to beginning of this match['finish']
 		if(start!=finish)
 			*ai.dest << ai.src->mid(start, finish);//ai.dest->APPEND_CONST("-");
-		// store found parts in one-record Vtable
+		// store found parts in one-record VTable
 		if(table.size()) // middle
 			table.put(0, row);
 		else // begin
