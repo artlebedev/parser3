@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.17 2001/02/25 13:23:01 paf Exp $
+  $Id: pa_vclass.h,v 1.18 2001/02/25 14:47:12 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -73,6 +73,12 @@ public: // usage
 		fmethods.merge_dont_replace(abase.methods());
 	}
 	VClass *base() { return fbase; }
+
+	bool is_or_derived_from(VClass& vclass) {
+		return 
+			this==&vclass || 
+			fbase && fbase->is_or_derived_from(vclass);
+	}
 
 private:
 

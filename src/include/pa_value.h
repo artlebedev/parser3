@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.31 2001/02/25 13:23:01 paf Exp $
+  $Id: pa_value.h,v 1.32 2001/02/25 14:47:12 paf Exp $
 */
 
 /*
@@ -112,8 +112,7 @@ public: // Value
 	virtual void put_element(const String& name, Value *value) { failed("type is '%s', can not put element to it"); }
 
 	// object_class, object_instance: object_class
-	// codeframe: wcontext_transparent
-	// methodframe: transparent
+	// wcontext: none yet | transparent
 	virtual VClass *get_class() { return 0; }
 
 public: // usage

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.17 2001/02/25 14:23:31 paf Exp $
+  $Id: pa_wcontext.h,v 1.18 2001/02/25 14:47:12 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -16,6 +16,9 @@ public: // Value
 	const char *type() const { return "WContext"; }
 	// WContext: accumulated string
 	String *get_string() { return &string; };
+
+	// WContext: none yet | transparent
+	VClass *get_class() { return fvalue?fvalue->get_class():0; }
 
 public: // WContext
 

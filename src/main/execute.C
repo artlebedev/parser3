@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.43 2001/02/25 14:23:32 paf Exp $
+  $Id: execute.C,v 1.44 2001/02/25 14:47:13 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -239,8 +239,12 @@ void Request::execute(const Array& ops) {
 					self=NEW VObject(pool(), *called_class);
 					frame->write(self);
 				} else {  // no
-					// static or dynamic call
-					self=&frame->junction.self;
+					// is it my class or my parent's class?
+					VClass *read_class=rcontext->get_class();
+					if(read_class && read_class->is_or_derived_from(*called_class)) // yes
+						self=rcontext; // class dynamic call
+					else // no
+						self=&frame->junction.self; // static or simple dynamic call
 				}
 				frame->set_self(self);
 

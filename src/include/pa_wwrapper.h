@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wwrapper.h,v 1.7 2001/02/25 14:23:31 paf Exp $
+  $Id: pa_wwrapper.h,v 1.8 2001/02/25 14:47:12 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -21,9 +21,6 @@ public: // Value
 			fvalue=NEW VHash(pool());
 		fvalue->put_element(name, avalue); 
 	}
-
-	// wwrapper: none yet | transparent
-	VClass *get_class() { return fvalue?fvalue->get_class():0; }
 
 public: // usage
 

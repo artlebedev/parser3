@@ -240,10 +240,6 @@ SOURCE=..\include\pa_vclass.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\include\pa_vfielded.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\include\pa_vhash.h
 # End Source File
 # Begin Source File
