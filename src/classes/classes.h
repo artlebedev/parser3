@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: classes.h,v 1.8 2001/05/17 18:26:22 parser Exp $
+	$Id: classes.h,v 1.9 2001/08/02 06:54:12 parser Exp $
 */
 
 #ifndef CLASSES_H
@@ -30,6 +30,8 @@ public: // Methoded
 	virtual void configure_admin(Request& r) {}
 	/// use this method to read parameters from 'MAIN' class; access r.main_class
 	virtual void configure_user(Request& r) {}
+	/// use it to construct static variables. check some static so that would be only ONCE!
+	virtual void construct_statics() {}
 
 public: // usage
 

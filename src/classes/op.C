@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: op.C,v 1.35 2001/07/26 16:16:57 parser Exp $"; 
+static const char *RCSId="$Id: op.C,v 1.36 2001/08/02 06:54:12 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -25,9 +25,6 @@ static const char *RCSId="$Id: op.C,v 1.35 2001/07/26 16:16:57 parser Exp $";
 #define MAIN_SQL_NAME "SQL"
 #define MAIN_SQL_DRIVERS_NAME "drivers"
 
-#define SWITCH_DATA_NAME "SWITCH-DATA"
-#define DEFAULT_VALUE "DEFAULT"
-
 // class
 
 class MOP : public Methoded {
@@ -36,6 +33,7 @@ public:
 public: // Methoded
 	bool used_directly() { return true; }
 	void configure_user(Request& r);
+
 private:
 	String main_sql_name;
 	String main_sql_drivers_name;
@@ -272,9 +270,6 @@ static void _connect(Request& r, const String&, MethodParams *params) {
 			rethrow_me.comment());
 }
 
-static String *switch_data_name;
-static String *default_value;
-
 struct Switch_data {
 	Value *searching;
 	Value *found;
@@ -302,7 +297,7 @@ static void _case(Request& r, const String&, MethodParams *params) {
 	for(int i=0; i<count; i++) {
 		Value& value=r.process(params->get(i));
 
-		if(value.as_string() == *default_value) {
+		if(value.as_string() == *case_default_value) {
 			data._default=code;
 			break;
 		}
@@ -327,9 +322,6 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	main_sql_drivers_name(apool, MAIN_SQL_DRIVERS_NAME)
 {
 	set_name(*NEW String(pool(), OP_CLASS_NAME));
-
-	switch_data_name=NEW String(pool(), SWITCH_DATA_NAME);
-	default_value=NEW String(pool(), DEFAULT_VALUE);
 
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.66 2001/08/02 06:54:12 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.67 2001/08/02 06:55:53 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -54,6 +54,10 @@ String *ctype_lowercase_name;
 String *mime_types_name;
 String *vfile_mime_type_name;
 String *origins_mode_name;
+
+String *switch_data_name;
+String *case_default_value;
+
 
 Hash *untaint_lang_name2enum;
 

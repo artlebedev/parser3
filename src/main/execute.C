@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.187 2001/07/26 14:15:45 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.188 2001/08/02 06:54:12 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -24,7 +24,7 @@ static const char *RCSId="$Id: execute.C,v 1.187 2001/07/26 14:15:45 parser Exp 
 
 //#define DEBUG_EXECUTE
 
-const uint ANTI_ENDLESS_EXECUTE_RECOURSION=500;
+const uint ANTI_ENDLESS_EXECUTE_RECOURSION=400;
 
 #ifdef DEBUG_EXECUTE
 char *opcode_name[]={
@@ -852,7 +852,7 @@ const String *Request::execute_virtual_method(Value& aself,
 		if(Junction *junction=value->get_junction())
 			if(const Method *method=junction->method) 
 				return execute_method(aself, *method, return_cstr);
-
+			
 	return 0;
 }
 
