@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.209 2002/01/24 17:18:48 paf Exp $
+	$Id: execute.C,v 1.210 2002/01/31 12:00:42 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -279,11 +279,13 @@ void Request::execute(const Array& ops) {
 			
 		case OP_GET_ELEMENT:
 			{
-				// maybe they do ^object.method[] call, remember the fact
-				wcontext->set_somebody_entered_some_object(true);
-
 				//_asm int 3;
 				value=get_element();
+
+				// maybe they do ^object.method[] call, remember the fact
+				// must be below get_element() call, it checks it
+				wcontext->set_somebody_entered_some_object(true);
+
 				PUSH(value);
 				break;
 			}
@@ -788,7 +790,11 @@ Value *Request::get_element() {
 	const String& name=POP_NAME();
 	Value *ncontext=POP();
 	Value *value=ncontext->get_element(name);
-	if(!value)
+	// operators can not be in form...
+	if(!value && 
+		!wcontext->get_somebody_entered_some_class () && // $class:xxx
+		!wcontext->get_somebody_entered_some_object()) // $object.xxx
+		// they can only be in form ^xxx or $xxx
 		if(Method* method=OP.get_method(name)) { // maybe operator?
 			// as if that method were in self and we have normal dynamic method here
 			Junction& junction=*NEW Junction(pool(), 

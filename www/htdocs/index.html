@@ -4,7 +4,10 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
+^if(1){y}{n}
 $form:if
+$a[$.n[1]]
+$a.if
 #^xoutputrusattr[]
 #^xdocset1[]
 #^regexp3[]
