@@ -1,5 +1,5 @@
 #!/bin/sh
 
 P3S=@P3S@
-P3LIBS="$P3S/main/libmain.a $P3S/classes/libclasses.a $P3S/main/libmain.a $P3S/types/libtypes.a $P3S/libltdl/.libs/libltdlc.al -ldl $P3S/classes/gd/libgd.a $P3S/classes/xalan-patched/libxalan_patched.a $P3S/pcre/libpcre.a $P3S/targets/apache13/modules/extra/libmod_parser3.a @XML_LIBS@"
-LIBS="$P3LIBS $P3LIBS" ./configure --add-module=$P3S/targets/apache13/modules/extra/hook/mod_parser3.c $*
+P3LIBS="$P3S/main/libmain.a $P3S/classes/libclasses.a $P3S/main/libmain.a $P3S/types/libtypes.a $P3S/libltdl/.libs/libltdlc.al -ldl $P3S/classes/gd/libgd.a $P3S/classes/xalan-patched/libxalan_patched.a $P3S/pcre/libpcre.a $P3S/targets/apache13/libmod_parser3.a @XML_LIBS@"
+LIBS="$P3LIBS $P3LIBS" ./configure --add-module=$P3S/targets/apache13/hook/mod_parser3.c $*
