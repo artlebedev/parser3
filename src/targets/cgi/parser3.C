@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.44 2001/03/24 14:31:01 paf Exp $
+	$Id: parser3.C,v 1.45 2001/03/24 14:56:09 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <time.h>
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -27,6 +28,7 @@
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
 
+const char *argv0;
 Pool pool(0); // global pool [dont describe to doxygen: it confuses it with param names]
 bool cgi; ///< we were started as CGI?
 
@@ -88,30 +90,37 @@ void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 	stdout_write(buf, size);
 }
 
+/// appends to parser3.log located beside my binary
 void SAPI::log(Pool& pool, const char *fmt, ...) {
-#if 1 //winnt
-	if(HANDLE elh=OpenEventLog(0, "Application")) {
-		va_list args;
-		va_start(args,fmt);
-		char buf[MAX_STRING];
-		vsnprintf(buf, MAX_STRING, fmt, args);
-		
-		const char *strings[]={buf};
-		ReportEvent(elh, EVENTLOG_ERROR_TYPE, 0, 
-			1234, 0, 1, 0, strings, 0);
+	bool opened;
+	FILE *f=0;
 
-		va_end(args);
-		CloseEventLog(elh);
-	} else {
-		DWORD id=GetLastError();
-		if(FILE *f=fopen("c:\\temp\\a", "wt")) {
-		fprintf(f, "%d",id);
-		fclose(f);
-		}
+	if(argv0) {
+		// beside by binary
+		char file_spec[MAX_STRING];
+		strncpy(file_spec, argv0, MAX_STRING);  // filespec of my binary
+		rsplit(file_spec, '/');  rsplit(file_spec, '\\');// strip filename
+		strcat(file_spec, "/parser3.log");
+		f=fopen(file_spec, "at");
 	}
-#else
-	// todo: file
-#endif
+	opened=f!=0;
+	if(!opened)
+		f=stderr;
+
+	// prefix
+	time_t t=time(0);
+	const char *stamp=ctime(&t);
+	fprintf(f, "[%.*s] ", strlen(stamp)-1, stamp);
+	// message
+    va_list args;
+	va_start(args,fmt);
+	vfprintf(f, fmt, args);
+	va_end(args);
+	// newline
+	fprintf(f, "\n");
+
+	if(opened)
+		fclose(f);
 }
 //@}
 
@@ -124,6 +133,8 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 		wich is tested but seems slow.
 */
 int main(int argc, char *argv[]) {
+	argv0=argv[0];
+
 	umask(2);
 
 #ifdef WIN32
@@ -141,8 +152,7 @@ int main(int argc, char *argv[]) {
 	
 	if(!cgi) {
 		if(argc<2) {
-			char *binary=argv[0];
-			printf("Usage: %s <file>\n", binary?binary:"parser3");
+			printf("Usage: %s <file>\n", argv0?argv0:"parser3");
 			exit(1);
 		}
 	}

@@ -94,34 +94,6 @@ PostBuild_Cmds=istart
 # Name "parser3isapi - Win32 Debug"
 # Begin Source File
 
-SOURCE=.\nt_log_events.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\nt_log_events.mc
-
-!IF  "$(CFG)" == "parser3isapi - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3isapi - Win32 Debug"
-
-# Begin Custom Build - Compiling messages...
-InputPath=.\nt_log_events.mc
-InputName=nt_log_events
-
-"nt_log_events.rc" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	mc $(InputName)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\nt_log_events.rc
-# End Source File
-# Begin Source File
-
 SOURCE=.\pa_pool.C
 # End Source File
 # Begin Source File
@@ -142,10 +114,6 @@ SOURCE=.\parser3isapi.C
 # Begin Source File
 
 SOURCE=.\parser3isapi.def
-# End Source File
-# Begin Source File
-
-SOURCE=.\pool_storage.h
 # End Source File
 # End Target
 # End Project
