@@ -1,1 +1,1 @@
-EXTRA_DIST = libgdome_cpp_syntax1.patch libgdome_cpp_syntax2.patch libgdome_morestatic.patch libxml_error_column_tab.patch libxml_htmloutput_of_xslemptyattr_emptyquotes.patch libxml_transcoder_context1.patch libxml_transcoder_context2.patch libxml_transcoder_context3.patch libxml_transcoder_context4.patch libxslt_html_output_no_charset_meta.patch
+EXTRA_DIST = gdome2.patch libxml2.patch libxslt.patch
