@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/12/02 10:07:39 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/12/19 10:17:42 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -286,7 +286,12 @@ gettimeofday(&mt[2],NULL);
 
 		// extract response body
 		Value *body_value=static_cast<Value *>(
-			response.fields().get(*body_name));
+			response.fields().get(*download_name));
+		bool as_attachment=body_value!=0;
+		if(!body_value)
+			body_value=static_cast<Value *>(
+				response.fields().get(*body_name));
+
 		if(body_value) // there is some $response:body
 			body_file=body_value->as_vfile();
 		else if(lorigins_mode)
@@ -299,7 +304,7 @@ gettimeofday(&mt[3],NULL);
 #endif
 
 		// OK. write out the result
-		output_result(*body_file, header_only);
+		output_result(*body_file, header_only, as_attachment);
 
 #ifdef RESOURCES_DEBUG
 		//measure:after output_result
@@ -437,7 +442,7 @@ t[9]-t[3]
 			const VFile *body_file=body_vstring.as_vfile();
 
 			// ERROR. write it out
-			output_result(*body_file, header_only);
+			output_result(*body_file, header_only, false);
 		} catch(const Exception& ) {
 			/*re*/throw;
 		}
@@ -548,6 +553,7 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 								 void *info) {
 	Request& r=*static_cast<Request *>(info);
 	if(aattribute==BODY_NAME
+		|| aattribute==DOWNLOAD_NAME
 		|| aattribute==CHARSET_NAME)
 		return;
 
@@ -559,7 +565,7 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 		attributed_meaning_to_string(lmeaning, String::UL_HTTP_HEADER, false)
 			.cstr(String::UL_UNSPECIFIED));
 }
-void Request::output_result(const VFile& body_file, bool header_only) {
+void Request::output_result(const VFile& body_file, bool header_only, bool as_attachment) {
 	// header: cookies
 	cookie.output_result();
 	
@@ -581,7 +587,8 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 		if(vfile_name->string()!=NONAME_DAT) {
 			VHash& vhash=*NEW VHash(pool());
 			Hash& hash=vhash.hash(0);
-			hash.put(*value_name, NEW VString(*content_disposition_value));
+			if(as_attachment)
+				hash.put(*value_name, NEW VString(*content_disposition_value));
 			hash.put(*content_disposition_filename_name, vfile_name);
 			response.fields().put(*content_disposition_name, &vhash);
 		}

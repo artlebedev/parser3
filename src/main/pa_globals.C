@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/11/27 12:44:35 $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/12/19 10:17:41 $";
 
 #include "pa_config_includes.h"
 
@@ -32,6 +32,7 @@ extern "C" {
 String *content_type_name;
 String *charset_name;
 String *body_name;
+String *download_name;
 String *value_name;
 String *expires_name;
 String *path_name;
@@ -319,6 +320,7 @@ void pa_globals_init(Pool& pool) {
 	content_type_name=NEW String(pool, CONTENT_TYPE_NAME);
 	charset_name=NEW String(pool, CHARSET_NAME);
 	body_name=NEW String(pool, BODY_NAME);
+	download_name=NEW String(pool, DOWNLOAD_NAME);
 	value_name=NEW String(pool, VALUE_NAME);
 	expires_name=NEW String(pool, EXPIRES_NAME);
 	path_name=NEW String(pool, PATH_NAME);

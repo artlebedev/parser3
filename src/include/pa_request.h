@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/11/20 13:37:23 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/12/19 10:17:41 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -351,7 +351,7 @@ private: // connection manipulation
 
 private:
 
-	void output_result(const VFile& body_file, bool header_only);
+	void output_result(const VFile& body_file, bool header_only, bool as_attachment);
 };
 
 /// Auto-object used to save request context across ^try body

@@ -403,6 +403,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         !значение поля или атрибута может быть string или date
         ! если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
     !$response:body[DATA]  замещает стандартный ответ
+    !$response:download[DATA]  замещает стандартный ответ, 
+    	выставляет флаг, заставляющий browser предложить download
     !$response:status
     !^response:clear[] забыть все заданные response поля
     !$response:charset

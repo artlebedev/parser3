@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2002/11/27 12:44:35 $";
+static const char* IDENT_GLOBALS_H="$Date: 2002/12/19 10:17:41 $";
 
 #include "pa_pool.h"
 
@@ -25,6 +25,7 @@ class Table;
 #define CONTENT_TYPE_NAME "content-type"
 #define CHARSET_NAME "charset"
 #define BODY_NAME "body"
+#define DOWNLOAD_NAME "download"
 #define VALUE_NAME "value"
 #define EXPIRES_NAME "expires"
 #define PATH_NAME "path"
@@ -98,6 +99,7 @@ extern String *optimized_html_name;
 extern String *content_type_name;
 extern String *charset_name;
 extern String *body_name;
+extern String *download_name;
 extern String *value_name;
 extern String *expires_name;
 extern String *path_name;
