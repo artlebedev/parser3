@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.11 2001/02/21 17:50:02 paf Exp $
+  $Id: compile.C,v 1.12 2001/02/22 09:36:23 paf Exp $
 */
 
 #include "pa_request.h"
@@ -35,8 +35,8 @@ Array& Request::real_compile(COMPILE_PARAMS) {
 	pc.ls=LS_USER;
 	pc.sp=0;
 	
-	// parse! 
-	yydebug=1;
+	// parse=compile! 
+	///yydebug=1;
 	if(yyparse(&pc)) { // error?
 		if(pc.col==1) {
 			// step back from last char.  -1 col means EOL
