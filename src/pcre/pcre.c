@@ -1663,7 +1663,7 @@ int oldoptions = options & PCRE_IMS;
 int branchreqchar, branchcountlits;
 
 *reqchar = -1;
-*countlits = INT_MAX;
+*countlits = PCRE_MAX_POS;
 code += 3;
 
 /* At the start of a reference-based conditional group, insert the reference
@@ -3484,7 +3484,7 @@ for (;;)
         minimize = (c & 1) != 0;
         min = rep_min[c];                 /* Pick up values from tables; */
         max = rep_max[c];                 /* zero for max => infinity */
-        if (max == 0) max = INT_MAX;
+        if (max == 0) max = PCRE_MAX_POS;
         break;
 
         case OP_CRRANGE:
@@ -3492,7 +3492,7 @@ for (;;)
         minimize = (*ecode == OP_CRMINRANGE);
         min = (ecode[1] << 8) + ecode[2];
         max = (ecode[3] << 8) + ecode[4];
-        if (max == 0) max = INT_MAX;
+        if (max == 0) max = PCRE_MAX_POS;
         ecode += 5;
         break;
 
@@ -3581,7 +3581,7 @@ for (;;)
         minimize = (c & 1) != 0;
         min = rep_min[c];                 /* Pick up values from tables; */
         max = rep_max[c];                 /* zero for max => infinity */
-        if (max == 0) max = INT_MAX;
+        if (max == 0) max = PCRE_MAX_POS;
         break;
 
         case OP_CRRANGE:
@@ -3589,7 +3589,7 @@ for (;;)
         minimize = (*ecode == OP_CRMINRANGE);
         min = (ecode[1] << 8) + ecode[2];
         max = (ecode[3] << 8) + ecode[4];
-        if (max == 0) max = INT_MAX;
+        if (max == 0) max = PCRE_MAX_POS;
         ecode += 5;
         break;
 
@@ -3710,7 +3710,7 @@ for (;;)
     minimize = (c & 1) != 0;
     min = rep_min[c];                 /* Pick up values from tables; */
     max = rep_max[c];                 /* zero for max => infinity */
-    if (max == 0) max = INT_MAX;
+    if (max == 0) max = PCRE_MAX_POS;
 
     /* Common code for all repeated single-character matches. We can give
     up quickly if there are fewer than the minimum number of characters left in
@@ -3841,7 +3841,7 @@ for (;;)
     minimize = (c & 1) != 0;
     min = rep_min[c];                 /* Pick up values from tables; */
     max = rep_max[c];                 /* zero for max => infinity */
-    if (max == 0) max = INT_MAX;
+    if (max == 0) max = PCRE_MAX_POS;
 
     /* Common code for all repeated single-character matches. We can give
     up quickly if there are fewer than the minimum number of characters left in
@@ -3956,7 +3956,7 @@ for (;;)
     minimize = (c & 1) != 0;
     min = rep_min[c];                 /* Pick up values from tables; */
     max = rep_max[c];                 /* zero for max => infinity */
-    if (max == 0) max = INT_MAX;
+    if (max == 0) max = PCRE_MAX_POS;
 
     /* Common code for all repeated single character type matches */
 
