@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_request.h,v 1.33 2001/03/10 16:58:56 paf Exp $
+	$Id: pa_request.h,v 1.34 2001/03/10 17:10:38 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -20,7 +20,6 @@
 #define MAIN_METHOD_NAME "main"
 #define AUTO_METHOD_NAME "auto"
 #define RUN_CLASS_NAME "RUN"
-#define AUTO_CLASS_NAME "AUTO"
 
 #define ROOT_CLASS_NAME "ROOT"
 #define ENV_CLASS_NAME "ENV"

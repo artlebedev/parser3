@@ -106,6 +106,14 @@ SOURCE=..\..\include\core.h
 
 SOURCE=..\..\include\pa_pool.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\include\pa_string.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\pa_types.h
+# End Source File
 # End Group
 # End Target
 # End Project

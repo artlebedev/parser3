@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_request.C,v 1.9 2001/03/10 16:34:39 paf Exp $
+	$Id: pa_request.C,v 1.10 2001/03/10 17:10:39 paf Exp $
 */
 
 #include "pa_request.h"
@@ -40,29 +40,29 @@ void Request::core() {
 	TRY {
 		// loading system auto.p
 		char *sys_auto_file="C:\\temp\\auto.p";
-		VClass *sys_auto_class=use(
+		VClass *auto_class=use(
 			sys_auto_file, 
-			auto_class_name, 0, 
+			run_class_name, 0, 
 			false/*ignore possible error*/);
 
 		// TODO: использовать AUTO:limits здесь, пока их не сломали враги
 
 		// TODO: load site auto.p files, all assigned bases from upper dir
 		char *site_auto_file="Y:\\parser3\\src\\auto.p";
-		VClass *site_auto_class=use(
+		auto_class=use(
 			site_auto_file, 
-			auto_class_name, sys_auto_class, 
+			run_class_name, auto_class, 
 			false/*ignore possible error*/);
 
 		// there must be some auto.p
-		if(!sys_auto_class && !site_auto_class)
+		if(!auto_class)
 			THROW(0,0,
 				0,
 				"'auto.p' not found");
 
 		// compiling requested file
 		char *test_file="Y:\\parser3\\src\\test.p";
-		use(test_file, run_class_name);
+		use(test_file, run_class_name, auto_class);
 
 		// executing some @main[]
 		char *result=execute_MAIN();
