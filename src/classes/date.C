@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2003/04/09 10:58:43 $";
+static const char* IDENT_DATE_C="$Date: 2003/04/09 11:18:33 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -177,7 +177,7 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 		tmIn.tm_hour=24/2; 
 		tmIn.tm_min=0;
 		tmIn.tm_sec=0;
-		int saved_mon=tmIn.tm_mon;
+		int saved_mon=(tmIn.tm_mon+12*100)%12; // crossing year boundary backwards
 		t_changed_date=mktime/*normalizetime*/(&tmIn);
 		if(t_changed_date<0)
 			throw Exception(0,
