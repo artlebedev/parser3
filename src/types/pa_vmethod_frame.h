@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.14 2001/07/26 12:25:37 parser Exp $
+	$Id: pa_vmethod_frame.h,v 1.15 2001/09/01 14:23:42 parser Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -50,7 +50,7 @@ public: // wcontext
 		// check the $result value
 		Value *result=my?static_cast<Value*>(my->get(*result_var_name)):0;
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue
-		return result && result->is_defined()?result:WContext::result();
+		return result && (result!=fresult_initial_void) ?result:WContext::result();
 	}
 
 public: // usage
@@ -62,7 +62,8 @@ public: // usage
 
 		junction(ajunction),
 		store_param_index(0),
-		fself(0) {
+		fself(0),
+		fresult_initial_void(0) {
 		set_name(name);
 
 		const Method &method=*junction.method;
@@ -86,9 +87,9 @@ public: // usage
 				}
 			}
 			{ // always there is one local: $result
-				Value *result_value=NEW VVoid(pool());
-				my->put(*result_var_name, result_value);
-				result_value->set_name(*result_var_name);
+				fresult_initial_void=NEW VVoid(pool());
+				my->put(*result_var_name, fresult_initial_void);
+				fresult_initial_void->set_name(*result_var_name);
 			}
 		}
 	}
@@ -141,6 +142,9 @@ private:
 	int store_param_index;
 	Hash *my;/*OR*/MethodParams *fnumbered_params;
 	Value *fself;
+
+private:
+	Value *fresult_initial_void;
 
 };
 
