@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/08/01 11:41:17 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/08/07 13:24:30 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -1013,13 +1013,8 @@ void Request::execute_method(Value& aself,
 	
 	// result
 	const String *result=0;
-	if(return_string) {
-		/*if(Value *result_var_value=wcontext->get_element(*result_var_name))
-			*return_string=&result_var_value->as_string();
-		else
-			*return_string=&wcontext->as_string();*/
+	if(return_string)
 		*return_string=&wcontext->result().as_string();
-	}
 	
 	wcontext=static_cast<WContext *>(POP());  
 	rcontext=POP();  

@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char* IDENT_WCONTEXT_H="$Date: 2002/08/01 11:41:26 $";
+static const char* IDENT_WCONTEXT_H="$Date: 2002/08/07 13:24:31 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -57,28 +57,17 @@ public: // Value
 public: // WContext
 
 	/// appends a fstring to result
-	virtual void write(const String& astring, uchar lang);
-
-	/// writes Value; raises an error if already
-	virtual void write(Value& avalue);
-	/// writes Value; raises an error if already, providing origin
-	virtual void write(Value& avalue, const String* origin);
-
-	/**
-		if value is VString writes fstring,
-		else writes Value; raises an error if already
-	*/
-	virtual void write(Value& avalue, uchar lang) {
-		if(const String *fstring=avalue.get_string())
-			write(*fstring, lang);
-		else
-			write(avalue);
+	virtual void write(const String& astring, uchar lang) {
+		fstring.append(astring, lang);
 	}
+	/// writes Value; raises an error if already, providing origin
+	virtual void write(Value& avalue, const String* origin=0);
+
 	/**
 		if value is VString writes fstring,
 		else writes Value; raises an error if already, providing origin
 	*/
-	virtual void write(Value& avalue, uchar lang, const String* origin) {
+	void write(Value& avalue, uchar lang, const String* origin=0) {
 		if(const String *fstring=avalue.get_string())
 			write(*fstring, lang);
 		else

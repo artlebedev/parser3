@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char* IDENT_WWRAPPER_H="$Date: 2002/08/01 11:41:26 $";
+static const char* IDENT_WWRAPPER_H="$Date: 2002/08/07 13:24:31 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"
@@ -28,9 +28,9 @@ public: // Value
 			// so to allow method calls after real constructor-method call
 			// sample:
 			//	$hash[
-			//		$key1[$i]
+			//		$.key1[$i]
 			//		^i.inc[]  ^rem{allow such calls}
-			//		$key2[$1]
+			//		$.key2[$1]
 			set_constructing(false);
 		}
 

@@ -5,29 +5,13 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_WCONTEXT_C="$Date: 2002/08/01 11:41:25 $";
+static const char* IDENT_WCONTEXT_C="$Date: 2002/08/07 13:24:31 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"
 #include "pa_request.h"
 
 // appends a fstring to result
-void WContext::write(const String& astring, uchar lang) {
-	fstring.append(astring, lang);
-}
-
-void WContext::write(Value& avalue) {
-	if(fvalue) { // already have value?
-		// must not construct twice
-		throw Exception("parser.runtime",
-			fvalue->get_class()?&fvalue->get_class()->name():0,
-			"%s may not be overwritten with '%s' %s, use constructor",
-			fvalue->type(), 
-				avalue.get_class()->name_cstr(), avalue.type());
-	} else 
-		fvalue=&avalue;
-}
-
 void WContext::write(Value& avalue, const String* origin) {
 	if(fvalue) { // already have value?
 		// must not construct twice

@@ -191,12 +191,23 @@ $selffilespec[$filespec]
 #^calendar[]
 #^mimet[]
 #^cgit[]
-^joinlimit[]
+#^joinlimit[]
 #^tableclonelimit[]
 #^transparams[]
 #^sendtests[]
+^wwrapperpass[]
 <hr>
 OK
+
+@wwrapperpass[]
+$h[^hash::create[]]
+$h.a(1)
+^my_method[^if(1){$h}]
+работает. так и должно быть?
+
+@my_method[p]
+^p._count[]
+
 
 @tableclonelimit[]
 $source[^table::create{a

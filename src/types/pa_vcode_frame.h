@@ -8,7 +8,7 @@
 #ifndef PA_VCODE_FRAME_H
 #define PA_VCODE_FRAME_H
 
-static const char* IDENT_VCODE_FRAME_H="$Date: 2002/08/07 13:24:30 $";
+static const char* IDENT_VCODE_FRAME_H="$Date: 2002/08/07 13:27:16 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -30,7 +30,7 @@ public: // Value
 public: // WContext
 
 	/// VCodeFrame: intercepting string writes 
-	void write(const String& string, String::Untaint_lang lang) {
+	void write(const String& string, uchar lang) {
 		fstring.append(string, lang);
 	}
 
