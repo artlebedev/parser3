@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.73 2001/03/08 15:15:46 paf Exp $
+  $Id: execute.C,v 1.74 2001/03/08 15:19:37 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -274,18 +274,19 @@ void Request::execute(const Array& ops) {
 				PUSH(wcontext); 
 				
 				VClass *called_class=frame->junction.self.get_class();
-				// constructing?
-				if(wcontext->constructing()) {  // yes
-					// constructor call: $some(^class:method(..))
-					self=NEW VObject(pool(), *called_class);
-					frame->write(*self);
-				} else {  // no
-					// context is object or class & is it my class or my parent's class?
-					VClass *read_class=rcontext->get_class();
-					if(read_class && read_class->is_or_derived_from(*called_class)) // yes
-						self=rcontext; // class dynamic call
-					else // no
+				// is context object or class & is it my class or my parent's class?
+				VClass *read_class=rcontext->get_class();
+				if(read_class && read_class->is_or_derived_from(*called_class)) // yes
+					self=rcontext; // class dynamic call
+				else { // no, not me or relative of mine (total stranger)
+					// constructing?
+					if(wcontext->constructing()) {  // yes
+						// constructor call: $some(^class:method(..))
+						self=NEW VObject(pool(), *called_class);
+						frame->write(*self);
+					} else {  // no
 						self=&frame->junction.self; // static or simple dynamic call
+					}
 				}
 				frame->set_self(*self);
 				root=rcontext=wcontext=frame;
