@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.51 2001/10/09 12:49:01 parser Exp $
+	$Id: op.C,v 1.52 2001/10/10 12:52:13 parser Exp $
 */
 
 #include "classes.h"
@@ -216,6 +216,15 @@ static void _eval(Request& r, const String& method_name, MethodParams *params) {
 	r.write_no_lang(*result);
 }
 
+static void _error(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	const String& serror=params->as_string(0, "message must be string");
+	PTHROW(0, 0,
+		&method_name,
+		"%s", serror.cstr());
+}
+
 
 static void _connect(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -354,6 +363,9 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	// ^eval(expr)
 	// ^eval(expr)[format]
 	add_native_method("eval", Method::CT_ANY, _eval, 1, 2);
+
+	// ^error[msg]
+	add_native_method("error", Method::CT_ANY, _error, 1, 1);
 
 
 	// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
