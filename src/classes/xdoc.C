@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/03/10 10:42:11 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/09/13 08:12:57 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -727,7 +727,7 @@ static void _string(Request& r, MethodParams& params) {
 		0/*not to file, to memory*/,
 		true/*use source charset to render, client charset to put to header*/);
 	// write out result
-	r.write_no_lang(String(buf.str, buf.length));
+	r.write_no_lang(String(String::Body(buf.str), String::L_AS_IS));
 }
 
 #ifndef DOXYGEN
