@@ -914,6 +914,7 @@ xdoc(xnode)
     !smtp.connect                                                     not found/timeout
     !smtp.execute                                                     communication error
     !email.format         hren tam@null.ru                            wrong email format(bad chars/empty)
+    !email.send           $MAIL.sendmail[/shit]                       sendmail not executable
     
 !нужно выключить русский apache: CharsetDisable on
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2002/08/01 11:41:12 $";
+static const char* IDENT_MAIL_C="$Date: 2002/08/07 07:35:45 $";
 
 #include "pa_config_includes.h"
 
@@ -274,12 +274,13 @@ static void sendmail(Request& r, const String& method_name,
 	char *message_cstr=message.cstr();
 	Hash *mail_conf=static_cast<Hash *>(r.classes_conf.get(mail_base_class->name()));
 
+	const char *exception_type="email.format";
 	if(!from)
-		throw Exception("parser.runtime",
+		throw Exception(exception_type,
 			&method_name,
 			"parameter does not specify 'from' header field");
 	if(!to)
-		throw Exception("parser.runtime",
+		throw Exception(exception_type,
 			&method_name,
 			"parameter does not specify 'to' header field");
 #ifdef _MSC_VER
@@ -349,7 +350,7 @@ static void sendmail(Request& r, const String& method_name,
 	}
 
 	if(!file_executable(*file_spec))
-		throw Exception(0,
+		throw Exception("email.send",
 			file_spec, 
 			"is not executable."
 #ifdef PA_FORCED_SENDMAIL
@@ -374,7 +375,7 @@ static void sendmail(Request& r, const String& method_name,
 		&argv,
 		in, out, err);
 	if(exit_status || err.size())
-		throw Exception(0,
+		throw Exception("email.send",
 			&method_name,
 			"'%s' reported problem: %s (%d)",
 				file_spec->cstr(),
