@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.48 2001/03/13 16:38:22 paf Exp $
+	$Id: pa_request.h,v 1.49 2001/03/13 17:17:26 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -80,6 +80,10 @@ public:
 	void write(const String& astring) {
 		wcontext->write(astring, String::Untaint_lang::NO);  // write(const) = clean
 	}
+	void write_no_lang(String& astring) {
+		// appending, sure of clean string inside
+		wcontext->write(astring, String::Untaint_lang::NO);
+	}
 
 	void write_assign_lang(Value& avalue) {
 		// appending possible string, assigning untaint language
@@ -88,6 +92,10 @@ public:
 	void write_pass_lang(Value& avalue) {
 		// appending possible string, passing language built into string being written
 		wcontext->write(avalue, String::Untaint_lang::PASS_APPENDED); 
+	}
+	void write_no_lang(Value& avalue) {
+		// appending sure value, no strings inside
+		wcontext->write(avalue, String::Untaint_lang::NO); 
 	}
 
 	void fail_if_junction_(bool is, Value& value, const String& method_name, char *msg);

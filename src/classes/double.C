@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.15 2001/03/13 13:43:28 paf Exp $
+	$Id: double.C,v 1.16 2001/03/13 17:17:25 paf Exp $
 */
 
 #include "pa_request.h"
@@ -22,14 +22,14 @@ static void _int(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
 	Value& value=*new(pool) VInt(pool, (int)vdouble->get_double());
-	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(value);
 }
 
 static void _double(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
 	Value& value=*new(pool) VDouble(pool, vdouble->get_double());
-	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(value);
 }
 
 typedef void (*vdouble_op_func_ptr)(VDouble& vdouble, double param);
@@ -56,6 +56,8 @@ static void _dec(Request& r, const String&, Array *params) { vdouble_op(r, param
 static void _mul(Request& r, const String&, Array *params) { vdouble_op(r, params, &__mul); }
 static void _div(Request& r, const String&, Array *params) { vdouble_op(r, params, &__div); }
 static void _mod(Request& r, const String&, Array *params) { vdouble_op(r, params, &__mod); }
+
+// initialize
 
 void initialize_double_class(Pool& pool, VStateless_class& vclass) {
 	// ^double.int[]

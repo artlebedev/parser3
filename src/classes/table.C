@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.14 2001/03/13 13:43:28 paf Exp $
+	$Id: table.C,v 1.15 2001/03/13 17:17:25 paf Exp $
 */
 
 #include "pa_request.h"
@@ -86,13 +86,13 @@ static void _load(Request& r, const String& method_name, Array *params) {
 static void _count(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, r.self->as_vtable().table().size());
-	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(value);
 }
 
 static void _line(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, 1+r.self->as_vtable().table().get_current());
-	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(value);
 }
 
 static void _offset(Request& r, const String&, Array *params) {
@@ -106,7 +106,7 @@ static void _offset(Request& r, const String&, Array *params) {
 		}
 	} else {
 		Value& value=*new(pool) VInt(pool, table.get_current());
-		r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+		r.write_no_lang(value);
 	}
 }
 
@@ -144,6 +144,8 @@ static void _empty(Request& r, const String&, Array *params) {
 		r.write_pass_lang(value);
 	}
 }
+
+// initialize
 
 void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 	// ^table.set[data]  

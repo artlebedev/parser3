@@ -116,6 +116,10 @@ SOURCE=.\pa_pool.C
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_vform.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\parser.C
 # End Source File
 # End Group

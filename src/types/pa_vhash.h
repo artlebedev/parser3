@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhash.h,v 1.3 2001/03/11 08:16:38 paf Exp $
+	$Id: pa_vhash.h,v 1.4 2001/03/13 17:17:29 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -33,11 +33,11 @@ public: // value
 
 public: // usage
 
-	VHash(Pool& apool) : Value(apool), 
-		fvalue(apool) {}
+	VHash(Pool& apool, Hash *ahash=0) : Value(apool), 
+		fvalue(ahash?*ahash:*new(apool) Hash(apool)) {}
 
 private:
-	Hash fvalue;
+	Hash& fvalue;
 };
 
 #endif

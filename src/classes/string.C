@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.10 2001/03/13 13:43:28 paf Exp $
+	$Id: string.C,v 1.11 2001/03/13 17:17:25 paf Exp $
 */
 
 #include "pa_request.h"
@@ -20,19 +20,19 @@ VStateless_class *string_class;
 static void _length(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VDouble(pool, r.self->as_string().size());
-	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(value);
 }
 
 static void _int(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, (int)r.self->get_double());
-	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(value);
 }
 
 static void _double(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VDouble(pool, r.self->get_double());
-	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(value);
 }
 
 void _string_format(Request& r, const String& method_name, Array *params) {
@@ -46,9 +46,10 @@ void _string_format(Request& r, const String& method_name, Array *params) {
 	char *buf=format(pool, r.self->get_double(), fmt.as_string().cstr());
 	
 	String *string=new(pool) String(pool);
-	r.wcontext->write(string->APPEND_CONST(buf), 
-		String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(string->APPEND_CONST(buf));
 }
+
+// initialize
 
 void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 	// ^string.length[]

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.39 2001/03/13 16:38:21 paf Exp $
+	$Id: root.C,v 1.40 2001/03/13 17:17:25 paf Exp $
 */
 
 #include <string.h>
@@ -195,7 +195,7 @@ static void _eval(Request& r, const String& method_name, Array *params) {
 		string->APPEND_CONST(format(pool, result->get_double(), fmt.as_string().cstr()));
 		result=new(pool) VString(*string);
 	}
-	r.wcontext->write(*result,  String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(*result);
 }
 
 
@@ -215,7 +215,7 @@ static void double_one_op(
 		method_name, "parameter must be expression");
 
 	Value& result=*new(pool) VDouble(pool, (*func)(r.process(param).get_double()));
-	r.wcontext->write(result, String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(result);
 }
 
 static void _round(Request& r, const String& method_name, Array *params) {
@@ -237,6 +237,8 @@ static void _abs(Request& r, const String& method_name, Array *params) {
 static void _sign(Request& r, const String& method_name, Array *params) {
 	double_one_op(r, method_name, params,	&sign);
 }
+
+// initialize
 
 void initialize_root_class(Pool& pool, VStateless_class& vclass) {
 	// ^if(condition){code-when-true}

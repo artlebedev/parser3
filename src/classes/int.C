@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.14 2001/03/13 13:43:28 paf Exp $
+	$Id: int.C,v 1.15 2001/03/13 17:17:25 paf Exp $
 */
 
 #include "pa_request.h"
@@ -22,14 +22,14 @@ static void _int(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	VInt *vint=static_cast<VInt *>(r.self);
 	Value& value=*new(pool) VInt(pool, vint->get_int());
-	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(value);
 }
 
 static void _double(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
 	VInt *vint=static_cast<VInt *>(r.self);
 	Value& value=*new(pool) VDouble(pool, vint->get_double());
-	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+	r.write_no_lang(value);
 }
 
 typedef void (*vint_op_func_ptr)(VInt& vint, double param);
@@ -56,6 +56,8 @@ static void _dec(Request& r, const String&, Array *params) { vint_op(r, params, 
 static void _mul(Request& r, const String&, Array *params) { vint_op(r, params, &__mul); }
 static void _div(Request& r, const String&, Array *params) { vint_op(r, params, &__div); }
 static void _mod(Request& r, const String&, Array *params) { vint_op(r, params, &__mod); }
+
+// initialize
 
 void initialize_int_class(Pool& pool, VStateless_class& vclass) {
 	// ^int.int[]
