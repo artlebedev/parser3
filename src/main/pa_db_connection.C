@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.22 2001/10/28 14:24:26 paf Exp $
+	$Id: pa_db_connection.C,v 1.23 2001/10/28 14:47:20 paf Exp $
 
 	developed with LIBDB 2.7.4
 */
@@ -20,10 +20,6 @@
 #include "pa_common.h"
 
 // defines
-
-#define DB_ERROR_PREFIX "db_err: "
-#define DB_EXCEPTION_NO_LOG_MESSAGE1 DB_ERROR_PREFIX"Ignoring log file"
-#define DB_EXCEPTION_NO_LOG_MESSAGE2 DB_ERROR_PREFIX"log_get: unable to find checkpoint record"
 
 // consts
 
@@ -45,7 +41,7 @@ static void db_paniccall(DB_ENV *dbenv, int error) {
 static void db_errcall(const char *, char *buffer) {
 	throw Exception(0, 0, 
 		0, 
-		DB_ERROR_PREFIX "%s", 
+		"db_err: %s", 
 		buffer);
 }
 
