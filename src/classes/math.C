@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: math.C,v 1.7 2001/10/19 12:43:29 parser Exp $
+	$Id: math.C,v 1.8 2001/11/01 16:41:52 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -53,9 +53,6 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
 
 
 typedef double (*math1_func_ptr)(double);
-static double round(double param) { return floor(param+0.5); }
-static double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 ); }
-static double trunc(double param) { return param > 0? floor(param) : ceil(param); }
 static double frac(double param) { return param-trunc(param); }
 static double degrees(double param) { return param /PI *180; }
 static double radians(double param) { return param /180 *PI; }

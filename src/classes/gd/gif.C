@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.20 2001/10/19 12:43:30 parser Exp $
+	$Id: gif.C,v 1.21 2001/11/01 16:41:52 paf Exp $
 
 	based on: gd
 
@@ -20,6 +20,7 @@
 #include "gif.h"
 
 #include "mtables.h"
+#include "pa_common.h"
 
 //static void BrushApply(int x, int y);
 //static void TileApply(int x, int y);
@@ -642,7 +643,6 @@ void gdImage::Copy(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int w, 
 	}
 }			
 
-static double round(double param) { return floor(param+0.5); }
 void gdImage::CopyResampled(gdImage& dst,
 		      int dstX, int dstY,
 		      int srcX, int srcY,

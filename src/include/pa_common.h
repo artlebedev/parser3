@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.58 2001/10/31 14:01:45 paf Exp $
+	$Id: pa_common.h,v 1.59 2001/11/01 16:41:52 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -56,6 +56,17 @@ int __snprintf(char *, size_t, const char *, ...);
 #endif
 
 #endif
+
+#ifndef HAVE_TRUNC
+inline double trunc(double param) { return param > 0? floor(param) : ceil(param); }
+#endif
+#ifndef HAVE_ROUND
+inline double round(double param) { return floor(param+0.5); }
+#endif
+#ifndef HAVE_SIGN
+inline double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 ); }
+#endif
+
 
 /** under WIN32 "t" mode fixes DOS chars OK, 
 	can't say that about other systems/ line break styles
