@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/11/29 08:17:52 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/29 12:13:42 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -24,6 +24,7 @@ static const char* IDENT_IMAGE_C="$Date: 2002/11/29 08:17:52 $";
 #include "pa_request.h"
 #include "pa_vfile.h"
 #include "pa_vimage.h"
+#include "pa_vdate.h"
 
 // class
 
@@ -189,6 +190,8 @@ struct JPG_Exif_IFD_entry {
 
 #define JPG_IFD_TAG_EXIF_OFFSET 0x8769
 
+#define JPEG_EXIF_DATE_CHARS 20
+
 //
 
 inline ushort x_endian_to_ushort(uchar b0, uchar b1) {
@@ -275,6 +278,9 @@ static Value *parse_IFD_entry_formatted_one_value(Pool& pool,
 	return 0;
 }
 
+// date.C
+time_t cstr_to_time_t(char *cstr, const String *report_error_origin);
+
 static Value *parse_IFD_entry_formatted_value(Pool& pool,
 											  bool is_big, ushort format, 
 											  size_t component_size, uint components_count, 
@@ -282,6 +288,18 @@ static Value *parse_IFD_entry_formatted_value(Pool& pool,
 	if(format==2) { // ascii string, exception: the only type with varying size
 		const char *cstr=(const char *)value;
 		size_t size=components_count;
+		// Data format is "YYYY:MM:DD HH:MM:SS"+0x00, total 20bytes
+		if(size==JPEG_EXIF_DATE_CHARS 
+			&& isdigit(cstr[0])
+			&& cstr[JPEG_EXIF_DATE_CHARS-1]==0) {
+			char cstr_writable[JPEG_EXIF_DATE_CHARS]; 
+			strcpy(cstr_writable, cstr);
+
+			time_t t=cstr_to_time_t(cstr_writable, 0/* do not throw exception, just return bad result */);
+			if(t>=0)
+				return new(pool) VDate(pool, t);
+		}
+
 		if(const char *premature_zero_pos=(const char *)memchr(cstr, 0, size))
 			size=premature_zero_pos-cstr;
 		return new(pool) VString(*new(pool) String(pool, cstr, size, true/*tainted*/));

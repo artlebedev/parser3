@@ -292,15 +292,24 @@ OK
 #^includet2overridestatic[]
 #^virtualtest2[]
 #^message-id-test[]
-#^test_exif[jpg]
+^test_exif[jpg]
 #^http_prefix[]
 #^http_prefix_table[]
-^http_prefix_xml[]
+#^http_prefix_xml[]
 #^imagefont[]
 #^downloadtest[]
 #^cachebug[]
 #^quickregexatend[]
 #^docsamplehttpfileload[]
+#^datecreatecolon[]
+
+@datecreatecolon[]
+#$date[^date::create[2002-12-02 14:30]]
+#$date[^date::create[2002-12-02]]
+#$date[^date::create[2002:12:02 13:30]]
+$date[^date::create[2002:12:02]]
+#$date[^date::create[12:02]]
+^date.sql-string[]
 
 @docsamplehttpfileload[]
 $file[^file::load[text;http://parser.ru/]]
@@ -407,12 +416,15 @@ $file[^file:list[$dir;\.(jpe?g|JPE?G)^$]]
 </table>
 
 @show_exif_value[value][i]
-^if($value is hash){
-	^for[i](0;$value-1){$value.$i}[,]
+^if($value is date){
+	^value.sql-string[]
 }{
-	$value
+	^if($value is hash){
+		^for[i](0;$value-1){$value.$i}[,]
+	}{
+		$value
+	}
 }
-
 
 @message-id-test[]
 ^mail:send[

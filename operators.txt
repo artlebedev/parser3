@@ -571,6 +571,7 @@ Xhashfile
         !$image.exif.DateTime & co 
             [полный список см. http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html]
         !числа типа int/double,
+        !даты типа date
         !перечисления в виде hash с ключами 0..count-1
     !$картинка.src .width .height
     !$картинка.line-width  число=ширина линий

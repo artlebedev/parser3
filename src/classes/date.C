@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2002/10/08 06:57:04 $";
+static const char* IDENT_DATE_C="$Date: 2002/11/29 12:13:42 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -46,7 +46,52 @@ static int NN_year_to_NNNN(int year) {
 	return year;
 }
 
-/// @test 09 ok? [octal maybe]
+// 2002-04-25 18:14:00
+// 18:14:00
+// 2002:04:25 [+maybe time]
+time_t cstr_to_time_t(char *cstr, const String *report_error_origin) { // used in image.C
+	char *cur=cstr;
+	int date_delim=isdigit(cur[0])&&isdigit(cur[1])&&isdigit(cur[2])&&isdigit(cur[3])&&cur[4]==':'?':'
+		:'-';
+	const char *year=lsplit(&cur, date_delim);
+	const char *month=lsplit(&cur, date_delim);
+	const char *mday=lsplit(&cur, ' ');
+	if(!month)
+		cur=cstr;
+	const char *hour=lsplit(&cur, ':');
+	const char *min=lsplit(&cur, ':');
+	const char *sec=cur;
+
+	tm tmIn={0};
+	tmIn.tm_isdst=-1;
+	if(!month)
+		if(min) {
+			year=mday=0; // HH:MM
+			time_t t=time(0);
+			tm *tmNow=localtime(&t);
+			tmIn.tm_year=tmNow->tm_year;
+			tmIn.tm_mon=tmNow->tm_mon;
+			tmIn.tm_mday=tmNow->tm_mday;
+			goto date_part_set;
+		} else
+			hour=min=sec=0; // not YYYY- & not HH: = just YYYY					
+	tmIn.tm_year=NN_year_to_NNNN(atoi(year));
+	tmIn.tm_mon=month?atoi(month)-1:0;
+	tmIn.tm_mday=mday?atoi(mday):1;
+date_part_set:
+	tmIn.tm_hour=hour?atoi(hour):0;
+	tmIn.tm_min=min?atoi(min):0;
+	tmIn.tm_sec=sec?atoi(sec):0;
+	time_t result=mktime(&tmIn);
+	if(result<0)
+		if(report_error_origin)
+			throw Exception(0,
+				report_error_origin,
+				"invalid datetime");
+
+	return result;
+}
+
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDate *vdate=static_cast<VDate *>(r.get_self());
@@ -55,44 +100,9 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	if(params->size()==1) { 
 		// ^create[2002-04-25 18:14:00]
 		// ^create[18:14:00]
-		if(const String *sdate=params->get(0).get_string()) {
-			char *cstr=sdate->cstr();
-			char *cur=cstr;
-			const char *year=lsplit(&cur, '-');
-			const char *month=lsplit(&cur, '-');
-			const char *mday=lsplit(&cur, ' ');
-			if(!month)
-				cur=cstr;
-			const char *hour=lsplit(&cur, ':');
-			const char *min=lsplit(&cur, ':');
-			const char *sec=cur;
-
-			tm tmIn={0};
-			tmIn.tm_isdst=-1;
-			if(!month)
-				if(min) {
-					year=mday=0; // HH:MM
-					time_t t=time(0);
-					tm *tmNow=localtime(&t);
-					tmIn.tm_year=tmNow->tm_year;
-					tmIn.tm_mon=tmNow->tm_mon;
-					tmIn.tm_mday=tmNow->tm_mday;
-					goto date_part_set;
-				} else
-					hour=min=sec=0; // not YYYY- & not HH: = just YYYY					
-			tmIn.tm_year=NN_year_to_NNNN(atoi(year));
-			tmIn.tm_mon=month?atoi(month)-1:0;
-			tmIn.tm_mday=mday?atoi(mday):1;
-date_part_set:
-			tmIn.tm_hour=hour?atoi(hour):0;
-			tmIn.tm_min=min?atoi(min):0;
-			tmIn.tm_sec=sec?atoi(sec):0;
-			t=mktime(&tmIn);
-			if(t<0)
-				throw Exception(0,
-					sdate,
-					"invalid datetime");
-		} else { // ^create(float days)
+		if(const String *sdate=params->get(0).get_string())
+			t=cstr_to_time_t(sdate->cstr(), sdate);
+		else { // ^create(float days)
 			t=(time_t)round(params->as_double(0, "float days must be double", r)*SECS_PER_DAY);
 			if(t<0 || !localtime(&t))
 				throw Exception(0,
