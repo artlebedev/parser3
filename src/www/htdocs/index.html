@@ -24,7 +24,7 @@ OK
 #^void:sql{create table lobtest(test clob)}
 ^void:sql{insert into lobtest values (/**test**/'бу''квы')}
 $table[^table::sql{select * from lobtest}]
-^table.menu{<hr>$table.test}
+^table.menu{^table.line[] <!--. $table.test -->}
 }
 
 @oratestread[]

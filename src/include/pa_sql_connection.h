@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.11 2001/07/23 11:19:25 parser Exp $
+	$Id: pa_sql_connection.h,v 1.12 2001/08/24 07:04:52 parser Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -27,6 +27,9 @@ public:
 		fconnection(0),
 		time_stamp(0) {
 	}
+	
+	const String& url() { return furl; }
+
 	void set_services(SQL_Driver_services *aservices) {
 		time_stamp=time(0); // they started to use at this time
 		fservices=aservices;
@@ -43,7 +46,7 @@ public:
 	void connect(char *used_only_in_connect_url_cstr) { 
 		fdriver.connect(used_only_in_connect_url_cstr, *fservices, &fconnection);
 	}
-	void disconnect() { fdriver.disconnect(*fservices, fconnection); fconnection=0; }
+	void disconnect() { fdriver.disconnect(fconnection); fconnection=0; }
 	void commit() { fdriver.commit(*fservices, fconnection); }
 	void rollback() { fdriver.rollback(*fservices, fconnection); }
 	bool ping() { return fdriver.ping(*fservices, fconnection); }
