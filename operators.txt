@@ -390,7 +390,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^foreach[key|value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
 
     пример:
-    $uids[^hashfile::assign[/db/uids]]
+    $uids[^hashfile::open[/db/uids]]
     
     $random[23847387taduigh345XGHWElxjgdjg]
     $uids.$random[$.value[$uid] $.expires(1)]
