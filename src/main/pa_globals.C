@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2004/02/11 11:31:39 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2004/02/11 14:03:10 $";
 
 #include "pa_config_includes.h"
 
@@ -165,11 +165,14 @@ static char *pa_GC_strdup(const char *s) {
 		return 0;
 
 	size_t size=strlen(s)+1;
-	char *result=(char *)GC_malloc_atomic(size);
+	char *result=(char *)GC_MALLOC_ATOMIC(size);
 	if(!result)
 		SAPI::abort("out of memory (while duplicating XML string [size=%d])", size);
 
 	memcpy(result, s, size);
+#ifdef PA_DEBUG_XML_GC_MEMORY
+	fprintf(stderr, "pa_GC_strdup(%p=%s, length=%d)=0x%p\n", s, s, size, result);
+#endif
 	return result;
 }
 
