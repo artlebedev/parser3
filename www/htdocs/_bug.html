@@ -1,8 +1,5 @@
-$b[^date::now[]]
-$f[^file::load[text;http://mts.ru:9090;
-	$.timeout(2)
-]]
-$a[^date::now[]]
-$f.status
-<hr>
-^eval(^a.unix-timestamp[]-^b.unix-timestamp[])
+$hf[^hashfile::open[/test]]
+$hf.key[]
+$s[$hf.key]
+#$s[$nothing]
+$t[^s.split[-;lh]]
