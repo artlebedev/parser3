@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.45 2001/12/17 18:44:51 paf Exp $
+	$Id: mail.C,v 1.46 2001/12/19 09:53:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -127,11 +127,7 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 										   Hash& attach_hash) {
 	Pool& pool=r.pool();
 
-	Value *vtype=static_cast<Value *>(attach_hash.get(*new(pool) String(pool, "type")));
-	if(!vtype)
-		throw Exception(0, 0,
-			&origin_string,
-			"has no $type");
+	Value *vformat=static_cast<Value *>(attach_hash.get(*new(pool) String(pool, "format")));
 
 	const VFile *vfile;
 	if(Value *value=static_cast<Value *>(attach_hash.get(*value_name)))
@@ -156,13 +152,13 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 	// content-disposition: attachment; filename="user_file_name"
 	result << "content-disposition: attachment; filename=\"" << file_name_cstr << "\"\n";
 
-	const String& type=vtype->as_string();
-	if(type=="uue") {
+	const String *type=vformat?&vformat->as_string():0;
+	if(!type/*default = uue*/ || *type=="uue") {
 		uuencode(result, file_name_cstr, *vfile);
-	} else 
+	} else // for now
 		throw Exception(0, 0,
-			&type,
-			"unknown encode type");
+			type,
+			"unknown attachment encode format");
 	
 	return result;
 }
@@ -249,7 +245,10 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 	else
 		charset=&pool.get_source_charset();
 
-	*from=*to=0;
+	if(from)
+		*from=0;
+	if(to)
+		*to=0;
 	Mail_info mail_info={
 		charset,
 		&result,
