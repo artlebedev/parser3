@@ -1,51 +1,245 @@
-@auto[]
-$form_id[19]
-$branch_id[]
-
 @main[]
-$SQL.connect-string[mysql://intranet:pwd@moko/intranet/cp1251_koi8]
-^connect[$SQL.connect-string]{
-^content[]
+$one(1)
+$z(0)
+^eval(^one.int[]%0)
+<hr>
+
+$form:id:
+<hr>
+
+^switch(2){
+	^case(1;4;3){143}
+	^case[DEFAULT]{default}
+}
+<hr>
+^switch(2){
+	^case(1;2;3){143}
+	^case[DEFAULT]{default}
+}
+<hr>
+^switch(2){
+	^case(1;5;3){143}
 }
 
-@heading[]
-^if(def $form_id){Изменение}{Добавление} документа
-
-@help[]
-article_help.html
-
-@content[]
-$branches[^table:sql{select id, name from kb_branches}]
-^if(def $form_id){
-	$article[^table:sql{select id, name, txt, keywords, kb_branches_id from kb_documents where id='$form_id'}]
-	$branch_id[$:article.kb_branches_id]
-}{
-	$branch_id[$branch_id]
+<hr>
+^switch(2){
+	^case(2){2}
 }
 
-<form method=post action=article_save.html>
-	<p />Рубрика:<br>
-	<select name="kb_branches_id" style="width:100%">
-		$branches{
-			^menu{
-				<option value="$id" ^if($id eq $:branch_id){selected}>^if($id eq $:branch_id){&#149^;}{&nbsp^;}$name</option>
-			}
-		}
-	</select>
-	
-	<p />Название:<br>
-	<input type=text name=name style="width:100%" value="$:article.name">
-			
-	<p />Текст:<br>
-	<textarea name=text style="width:100%" cols=80 rows=30>^untaint[html]{$:article.txt}</textarea>
-	
-	<p />Ключевые слова:<br>
-	<input type=text name=keywords style="width:100%" value="$:article.keywords">
-	<input type=hidden name=id value="$form_id">
-	
-	<p />
-	<table cellspacing=0 cellpadding=0 border=0 width=100%>
-#		<td>^submit[save]</td>
-#		^if(def $form_id){<td align=right>^submit[delete]</td>}
-	</table>
+<hr>
+^switch[2]{
+	^case(2){![2]}
+}
+<hr>
+
+
+$hash[$a[1]]
+^hash.default[0]
+^rem{
+$target[targetval]
+$form_admin[formadminval]
+^if(def $target){<head><base target=$target^if(def $form_admin){_a}></head>}
+^if(def $target){<head><base target=${target}^if(def $form_admin){_a}></head>}
+
+если $target и $form_admin defined получаем
+<head><base target={_a}></head>
+<hr>
+}
+
+#$string:a(1)
+#<hr>
+#^if(^log(11)){y}{n}
+#<hr>
+
+#@my_func[arg;z]
+#2
+
+#@z[]
+#^exp(^log(10))
+#<hr>
+#$a[^table:load[a<b]]
+^rem{
+^mail:send[
+	$from[paf@design.ru]
+	$to[paf@design.ru]
+	$subject[test]
+	$body[here]
+]
+<hr>
+}
+-^eol[]-
+<hr>
+^if(1<2){$a[1]}
+^$a=$a
+<hr>
+
+<form method=post>
+<input type=hidden name=a value=123>
+<table border=1 width=250><tr><td>$form:name</td></tr></table>
+<textarea name=name rows=5 cols=40>^untaint[html]{^default[$form:name;Пробный текст: А.Ф._Петросян <<Жизнь в Аду>>
+нажми Submit]}</textarea><BR>
+<input type=submit>
 </form>
+<hr>
+
+#^main[]
+#^use[$form:file]
+
+$строка[вася ЗдЕсЬ]
+^^строка.upper[]=^строка.upper[]<br>
+^^строка.lower[]=^строка.lower[]<br>
+<hr>
+
+
+$a[12]
+^a.int[]
+
+<hr>
+
+
+$t[^table:set{key	value
+1	v1
+2	v2}]
+$h[^t.hash[key]]
+
+^sql_test[$SQL.connect-string]
+#^sql_test[mysql://test:test@localhost/test/cp1251_koi8]
+
+<HR>
+$abc{}
+$tn[^table:set[nameless]{a1	b1
+a2	b2
+}]
+$x[^tn.locate[0;a2]]
+^$tn.1=$tn.1
+<hr>
+$t0[^table:set{key	a	b
+1	a1
+2	a2	b2
+}]
+^if(^t0.locate[key;2] && "a" ne "b"){y;n}
+<hr>
+$currentFolder[/a/b]
+$path[^currentFolder.lsplit[/]]
+^path.flip[]
+$path{
+^menu{$0}{,}
+}
+<hr>
+$t1[^table:set{key	value
+1	v1
+2	v2}]
+$h1[^t1.hash[key]]
+^h1.default[$value[nothing]]
+^$h1.2.value=$h1.2.value<br>
+^$h1.2x.value=$h1.2x.value<br>
+<hr>
+$t2[^table:set{key	a	b
+1	a1
+2	a2	b2
+}]
+t2 ^if(^t2.empty[]){empty}{not empty}<br>
+^t2.offset(1)
+$t2.b
+$r[^t2.record[]]
+<hr>
+$th[^t2.hash[b]]
+^$th.b2.a=$th.b2.a<br>
+<hr>
+$th[^t2.hash[key;a]]
+^$th.2.a=$th.2.a<br>
+<hr>
+#^OP:eval(1<2)
+
+$filelist[^table:dir[.]]
+<hr>
+$path[/news/tululu/]
+#^path.flip[]
+<hr>
+$branches[^table:set{name	val
+index.cgihtml	123
+}]
+$splitURI[^request:uri.lsplit[/]]
+name ^if(^branches.locate[name;$splitURI.1]){found;not found}:
+$branches.name
+<HR>
+$splitURI[^request:uri.lsplit[/]]
+$splitURI.0!$splitURI.1
+<HR>
+
+$t2[^table:set{dir	title
+/here	Here
+}]
+$t2{^menu{${dir}-$title}[,]}
+<HR>
+$dir[news]
+$list[^table:dir[$dir]]
+^list.menu{
+    $subdir[$dir/$list.name]
+	$sublist[^table:dir[$subdir]]
+	${list.name}/ $sublist{^menu{$name}[,]}<br>
+}
+<HR>
+^if(in "/otherdeeper"){y;n}
+<HR>
+
+^^table:dir[/]:<BR>
+$d[^table:dir[/]]
+$d{^menu{$name &nbsp^;&nbsp^;&nbsp^;&nbsp^;^if(-f $name){-f} ^if(-d $name){-d};<BR>}}
+<HR>
+
+$files[^table:set{name}]
+$d{^menu{
+    ^if(-d "$name"){
+        ^:files.append{$name}
+    }
+}}
+
+$files{^menu{$name}[,]}
+<HR>
+
+@exception[origin;source;comment;type;code][i;j]
+<body bgcolor=black>
+<font color=white>
+ERROR:
+^if(def $source){$origin '$source'}
+${comment}.
+^if(def $type){type=$type}
+^if(def $code){code=$code}
+
+@auto_test[]
+^BASE.auto_test[]
+<li>${request:uri}!
+@end
+
+
+@sql_test[connect-string]
+#^rem{
+#^for[i](1;2){
+^connect[$connect-string]{
+	$shit[^taint[our's]]
+#	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
+	^void:sql{update paf set age=age+1}
+	$paf[^table:sql{select * from paf order by id desc}(5)]
+	$paf{
+	^if(^empty[]){query result is empty}{
+	<table border=1>
+		<tr><td>id</td><td>name</td><td>age</td></tr>
+		^menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
+	</table>
+	}}
+	^^string:sql{select name from paf where id=1}=^string:sql{select name from paf where id=1}<br>
+	^^int:sql{select age from paf where id=1}=^int:sql{select age from paf where id=1}<br>
+	^^double:sql{select age from paf where id=1}=^double:sql{select age from paf where id=1}<br>
+
+	$paf[^hash:sql{select id,age from paf}]
+	^$paf.2.age=$paf.2.age<br>
+}
+#}
+#}
+
+@eol[]
+eol
+
+@default[test;def]
+$result[^if(^test.length[]){$test}{$def}]

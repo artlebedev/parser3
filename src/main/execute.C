@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.169 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.170 2001/06/29 13:53:23 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -529,16 +529,32 @@ void Request::execute(const Array& ops) {
 		case OP_DIV: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->as_double() / b->as_double());
+
+				double a_double=a->as_double();
+				double b_double=b->as_double();
+
+				if(b_double == 0)
+					THROW(0, 0,
+						&b->name(),
+						"Division by zero");
+
+				Value *value=NEW VDouble(pool(), a_double/b_double);
 				PUSH(value);
 				break;
 			}
 		case OP_MOD: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
-					a->as_int() %
-					b->as_int());
+
+				int a_int=a->as_int();
+				int b_int=b->as_int();
+
+				if(b_int == 0)
+					THROW(0, 0,
+						&b->name(),
+						"Modulus by zero");
+
+				Value *value=NEW VDouble(pool(), a_int % b_int);
 				PUSH(value);
 				break;
 			}
