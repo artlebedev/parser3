@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2003/12/01 14:20:44 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2003/12/11 10:25:52 $";
 
 #include "pa_config_includes.h"
 
@@ -26,6 +26,8 @@ extern "C" {
 #include "pa_threads.h"
 #include "pa_xml_io.h"
 #include "pa_common.h"
+
+#include "pa_cache_managers.h"
 
 // defines
 
@@ -279,6 +281,10 @@ static void gc_substitute_memory_management_functions() {
 	@test hint on one should call this for each thread xmlSubstituteEntitiesDefault(1);
 */
 void pa_globals_init() {
+	// global variables 
+	cache_managers=new Cache_managers;
+
+
 	// in various libraries
 	gc_substitute_memory_management_functions();
 

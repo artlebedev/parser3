@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_CACHE_MANAGERS_C="$Date: 2003/12/11 09:22:09 $";
+static const char * const IDENT_CACHE_MANAGERS_C="$Date: 2003/12/11 10:25:52 $";
 
 #include "pa_cache_managers.h"
 
@@ -14,7 +14,7 @@ static const char * const IDENT_CACHE_MANAGERS_C="$Date: 2003/12/11 09:22:09 $";
 
 // globals
 
-Cache_managers cache_managers;
+Cache_managers* cache_managers=0;
 
 Cache_managers::Cache_managers() {
 	put("sql", (SQL_driver_manager=new SQL_Driver_manager));

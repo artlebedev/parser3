@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2003/12/11 09:36:51 $";
+static const char * const IDENT_REQUEST_C="$Date: 2003/12/11 10:25:52 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -138,7 +138,7 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	file_list+=String::Body("-body of process-"); // pseudo_file_no__process
 
 	// maybe expire old caches
-	cache_managers.maybe_expire();
+	cache_managers->maybe_expire();
 	
 	/// directly used
 	// MAIN class, operators

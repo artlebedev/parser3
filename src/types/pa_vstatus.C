@@ -7,7 +7,7 @@
 	Win32 rusage author: Victor Fedoseev <vvf_ru@mail.ru>
 */
 
-static const char * const IDENT_VSTATUS_C="$Date: 2003/12/11 09:36:51 $";
+static const char * const IDENT_VSTATUS_C="$Date: 2003/12/11 10:25:52 $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"
@@ -213,7 +213,7 @@ Value& memory_element() {
 
 Value* VStatus::get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
 	// getstatus
-	if(Cache_manager* manager=cache_managers.get(aname))
+	if(Cache_manager* manager=cache_managers->get(aname))
 		return manager->get_status();
 
 	// rusage
