@@ -18,9 +18,9 @@ commit:
 
 	cvs commit -m "no message" -f acinclude.m4
 	cvs commit -m "no message" -f acconfig.h
+	cvs commit -m "no message" -f aclocal.m4
 	cvs commit -m "no message" -f Makefile.am
 	cvs commit -m "no message" -f Makefile.in
-	cvs commit -m "no message" -f aclocal.m4
 	cvs commit -m "no message" -f configure
 
 	cvs commit
