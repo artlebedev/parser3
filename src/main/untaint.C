@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.44 2001/04/23 09:38:53 paf Exp $
+	$Id: untaint.C,v 1.45 2001/04/23 09:46:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -201,23 +201,19 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				{
 					// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
 					const char *src=row->item.ptr; 
-					bool down=false;
+					bool to_base_64=false;
 					for(int size=row->item.size; size--; src++) {
 						if(*src & 0x80) {
-							if(!down) {
+							if(!to_base_64) {
 								dest+=sprintf(dest, "=?%.15s?Q?", charset);
-								down=true;
+								to_base_64=true;
 							}
-							dest+=sprintf(dest, "=%02X", *src & 0xFF);						
+							dest+=sprintf(dest, "=%02X", *src & 0xFF);
 						} else {
-							if(down) {
-								down=false;
-								dest+=sprintf(dest, "?=");
-							}
 							*dest++=*src;						
 						}
 					}
-					if(down) // close unclosed
+					if(to_base_64) // close
 						dest+=sprintf(dest, "?=");
 				}
 				break;
