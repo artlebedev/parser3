@@ -7,7 +7,7 @@
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char* IDENT_SMTP_C="$Date: 2002/12/05 15:00:01 $";
+static const char* IDENT_SMTP_C="$Date: 2002/12/15 14:25:22 $";
 
 #include "pa_exception.h"
 #include "smtp.h"
@@ -336,7 +336,6 @@ void SMTP::
 transform_and_send_edit_data(const char * editptr )
 {
 	const char      *index;
-	const char      *header_end;
 	char            previous_char = 'x';
 	unsigned int    send_len;
 	BOOL            done = 0;

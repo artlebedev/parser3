@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMPILE_C="$Date: 2002/10/14 15:22:42 $";
+static const char* IDENT_COMPILE_C="$Date: 2002/12/15 14:25:22 $";
 
 #include "pa_opcode.h"
 #include "pa_request.h"
@@ -24,7 +24,6 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 	// input 
 	pc.pool=&pool();
 	pc.request=this;
-	VStateless_class *cclass;
 	// we were told the class to compile to?
 	pc.cclass=&aclass; // until changed with @CLASS would consider operators loading
 
