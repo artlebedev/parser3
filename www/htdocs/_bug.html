@@ -1,8 +1,10 @@
-$hash[
-	$.a[1]
-	$.b[2]
-]
-$table[^hash._keys[]]
-$table[^hash._keys[column_name]]
-$columns[^table.columns[]]
-$columns.column
+$request:charset[koi8-r]
+#$request:charset[windows-1251]
+$request:charset/$response:charset<br>
+
+^connect[$SQL.connect-string]{
+$t[^table::sql{select * from paf}]
+$c[^t.columns[]]
+^c.menu{$c.column<br>
+}
+}
