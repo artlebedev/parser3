@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2003/11/25 15:50:58 $";
+static const char * const IDENT_VMAIL_C="$Date: 2003/12/02 15:04:25 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -563,7 +563,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	if(HashStringValue *send_hash=send_value->get_hash()) { // hash
 		// $.value
 		if(Value* value=send_hash->get(value_name))
-			vfile=value->as_vfile(String::L_AS_IS);
+			vfile=value->as_vfile(String::L_UNSPECIFIED);
 		else
 			throw Exception("parser.runtime",
 				0,
