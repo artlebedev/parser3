@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/04/25 10:54:54 $";
+static const char* IDENT_TABLE_C="$Date: 2003/04/25 12:32:31 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -643,7 +643,7 @@ static void _join(Request& r, const String& method_name, MethodParams *params) {
 	if(const Array *dest_columns=dest.columns()) { // dest is named
 		int saved_src_current=src.current();
 		int m=src.size()-o.offset;
-		if(!o.limit || o.limit>m)
+		if(o.limit<0 || o.limit>m)
 			o.limit=m;
 		int end=o.offset+o.limit;
 		for(int src_row=o.offset; src_row<end; src_row++) {
