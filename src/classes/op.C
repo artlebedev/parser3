@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/15 10:58:34 $";
+static const char* IDENT_OP_C="$Date: 2002/10/15 14:00:43 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -96,20 +96,13 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 static void _process(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const Method *main_method;
-	VStateless_class *target_class;
+	Value& target_self=params->size()>1?
+		params->as_no_junction(0, "target must not be code")
+		:r.get_method_frame()->caller()->self();
 	{
 		Value& vjunction=params->as_junction(params->size()-1, "body must be code");
 
-		Value *vtarget;
-		vtarget=params->size()>1?
-			&params->as_no_junction(0, "target must not be code")
-			:r.get_method_frame()->caller();
-		if(!vtarget)
-			throw Exception("parser.runtime",
-				&method_name,
-				"no caller"); // can't be, somebody really called ^process
-
-		target_class=vtarget->get_class();
+		VStateless_class *target_class=target_self.get_class();
 		if(!target_class)
 			throw Exception("parser.runtime",
 				&method_name,
@@ -159,10 +152,10 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 	// after restoring current-request-lang
 	// maybe-execute @main[]
 	if(main_method) {
-		// temporarily set request's self to target_class
-		Temp_request_self trs(r, *target_class);
-		// temporarily set method_frame's self to target_class
-		Temp_method_frame_self tmfs(*r.get_method_frame(), *target_class);
+		// temporarily set request's self to target_self
+		Temp_request_self trs(r, target_self);
+		// temporarily set method_frame's self to target_self
+		Temp_method_frame_self tmfs(*r.get_method_frame(), target_self);
 		// execute!	
 		r.execute(*main_method->parser_code);
 	}

@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/10/15 10:58:34 $";
+static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/10/15 14:00:45 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -17,8 +17,8 @@ static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/10/15 10:58:34 $";
 
 // defines
 
-#define CALLER_NAME "caller"
-
+#define CALLER_ELEMENT_NAME "caller"
+#define SELF_ELEMENT_NAME "self"
 
 /**	Method frame write context
 	accepts values written by method code
@@ -46,8 +46,11 @@ public: // Value
 		if(Value *result=self().get_element(aname, aself, looking_up))
 			return result;
 
-		if(aname==CALLER_NAME)
+		if(aname==CALLER_ELEMENT_NAME)
 			return caller();
+
+		if(aname==SELF_ELEMENT_NAME)
+			return &self();
 
 		return 0;
 	}

@@ -43,7 +43,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.71 2002/10/15 08:31:56 paf Exp $
+	$Id: compile.tab.C,v 1.72 2002/10/15 14:00:44 paf Exp $
 */
 
 /**
@@ -72,8 +72,8 @@
 #include "pa_vdouble.h"
 #include "pa_globals.h"
 #include "pa_vvoid.h"
+#include "pa_vmethod_frame.h"
 
-#define SELF_ELEMENT_NAME "self"
 #define USE_CONTROL_METHOD_NAME "USE"
 
 static int real_yyerror(parse_control *pc, char *s);
