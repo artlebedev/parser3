@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.62 2001/04/03 05:23:40 paf Exp $
+	$Id: pa_string.h,v 1.63 2001/04/03 08:23:07 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -17,6 +17,8 @@
 
 #include "pa_pool.h"
 #include "pa_types.h"
+
+class Table;
 
 /**
 	$MAIN:html-typo table elements must enlarge string not more that that
@@ -182,6 +184,8 @@ public:
 		const String& delim, 
 		Untaint_lang lang, int limit=-1) const;
 
+	Table& match(const String *aorigin,
+		const String& regexp, const String& options) const;
 
 #ifndef NO_STRING_ORIGIN
 	/// origin of string. calculated by first row

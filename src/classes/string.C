@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: @b string parser class.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.23 2001/04/03 05:23:37 paf Exp $
+	$Id: string.C,v 1.24 2001/04/03 08:23:06 paf Exp $
 */
 
 #include "pa_request.h"
@@ -36,14 +38,16 @@ static void _double(Request& r, const String&, Array *) {
 	r.write_no_lang(value);
 }
 
+/// ^string.format{format}
 /*not static*/void _string_format(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
 	Value& fmt=*static_cast<Value *>(params->get(0));
-	// forcing [this param type]
-	r.fail_if_junction_(true, fmt, method_name, "fmt must not be junction");
+	// forcing {this param type}
+	r.fail_if_junction_(false, fmt, method_name, "fmt must be junction");
 
-	char *buf=format(pool, r.self->as_double(), fmt.as_string().cstr());
+	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
+	char *buf=format(pool, r.self->as_double(), r.process(fmt).as_string().cstr());
 	
 	r.write_no_lang(String(pool, buf));
 }
@@ -131,6 +135,26 @@ static void _rsplit(Request& r, const String& method_name, Array *params) {
 	r.write_no_lang(*new(pool) VTable(pool, &table));
 }
 
+/// ^string.match{regexp}[options]
+static void _match(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+	const String& string=*static_cast<VString *>(r.self)->get_string();
+
+	Value& regexp=*static_cast<Value *>(params->get(0));
+	// forcing {this param type}
+	r.fail_if_junction_(false, regexp, method_name, "regexp must be junction");
+
+	Value& options=*static_cast<Value *>(params->get(1));
+	// forcing {this param type}
+	r.fail_if_junction_(true, options, method_name, "options must not be junction");
+
+	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
+	Table& table=string.match(&method_name, 
+		r.process(regexp).as_string(), options.as_string());
+
+	r.write_no_lang(*new(pool) VTable(pool, &table));
+}
+
 // initialize
 
 void initialize_string_class(Pool& pool, VStateless_class& vclass) {
@@ -143,7 +167,7 @@ void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 	// ^string.double[]
 	vclass.add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
 
-	// ^string.format[]
+	// ^string.format{format}
 	vclass.add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
 
 	// ^string.left(n)
@@ -160,5 +184,8 @@ void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 	vclass.add_native_method("lsplit", Method::CT_DYNAMIC, _lsplit, 1, 1);
 	// ^string.rsplit[delim]
 	vclass.add_native_method("rsplit", Method::CT_DYNAMIC, _rsplit, 1, 1);
+
+	// ^string.match{regexp}[options]
+	vclass.add_native_method("match", Method::CT_DYNAMIC, _match, 2, 2);
 }	
 

@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: @b double parser class.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.19 2001/03/30 05:51:11 paf Exp $
+	$Id: double.C,v 1.20 2001/04/03 08:23:05 paf Exp $
 */
 
 #include "pa_request.h"
@@ -79,6 +81,6 @@ void initialize_double_class(Pool& pool, VStateless_class& vclass) {
 	// ^double.mod[offset]
 	vclass.add_native_method("mod", Method::CT_DYNAMIC, _mod, 1, 1);
 
-	// ^double.format[]
+	// ^double.format{format}
 	vclass.add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
 }

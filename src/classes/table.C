@@ -1,11 +1,11 @@
 /** @file
-	Parser: table parser class.
+	Parser: @b table parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.46 2001/04/03 05:32:02 paf Exp $
+	$Id: table.C,v 1.47 2001/04/03 08:23:06 paf Exp $
 */
 
 #include "pa_config_includes.h"

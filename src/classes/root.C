@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: @b ROOT parser class.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.54 2001/04/03 05:23:37 paf Exp $
+	$Id: root.C,v 1.55 2001/04/03 08:23:06 paf Exp $
 */
 
 #include "pa_config_includes.h"

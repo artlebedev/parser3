@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: @b file parser class.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.16 2001/04/03 07:54:24 paf Exp $
+	$Id: file.C,v 1.17 2001/04/03 08:23:05 paf Exp $
 */
 
 #include "pa_request.h"

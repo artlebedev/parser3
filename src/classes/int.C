@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: @b int parser class.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.17 2001/03/30 05:51:12 paf Exp $
+	$Id: int.C,v 1.18 2001/04/03 08:23:06 paf Exp $
 */
 
 #include "pa_request.h"
@@ -80,6 +82,6 @@ void initialize_int_class(Pool& pool, VStateless_class& vclass) {
 	vclass.add_native_method("mod", Method::CT_DYNAMIC, _mod, 1, 1);
 
 
-	// ^int.format[]
+	// ^int.format{format}
 	vclass.add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
 }

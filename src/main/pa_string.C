@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.60 2001/04/03 05:23:41 paf Exp $
+	$Id: pa_string.C,v 1.61 2001/04/03 08:23:08 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -17,6 +17,7 @@
 #include "pa_common.h"
 #include "pa_array.h"
 #include "pa_globals.h"
+#include "pa_table.h"
 
 //#include "pa_sapi.h"
 
@@ -450,4 +451,11 @@ void String::split(Array& result,
 		if(pos_after_ref)
 			*pos_after_ref+=size();
 	}
+}
+
+Table& String::match(const String *aorigin,
+					 const String& regexp, const String& options) const {
+	Array *columns=0;
+	Table& result=*NEW Table(pool(), aorigin, columns);
+	return result;
 }
