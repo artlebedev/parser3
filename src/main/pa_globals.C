@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/08/01 11:41:18 $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/08/05 11:28:10 $";
 
 #include "pa_config_includes.h"
 
@@ -76,6 +76,8 @@ String *charset_UTF8_name;
 String *hash_default_element_name;
 
 Table *string_match_table_template;
+
+Table *date_calendar_table_template;
 
 Hash *untaint_lang_name2enum;
 
@@ -372,18 +374,30 @@ void pa_globals_init(Pool& pool) {
 	ULN("html", HTML);
 	ULN("optimized-html", HTML|String::UL_OPTIMIZE_BIT);
 
-	// table
-	{ // create table
-		Array *string_match_table_columns=NEW Array(pool);
-		*string_match_table_columns+=NEW String(pool, STRING_PRE_MATCH_NAME);
-		*string_match_table_columns+=NEW String(pool, STRING_MATCH_NAME);
-		*string_match_table_columns+=NEW String(pool, STRING_POST_MATCH_NAME);
+	// string_match_table_template
+	{
+		Array *columns=NEW Array(pool);
+		*columns+=NEW String(pool, STRING_PRE_MATCH_NAME);
+		*columns+=NEW String(pool, STRING_MATCH_NAME);
+		*columns+=NEW String(pool, STRING_POST_MATCH_NAME);
 		for(int i=1; i<=MAX_STRING_MATCH_TABLE_COLUMNS; i++) {
 			char *column=(char *)pool.malloc(MAX_NUMBER);
 			snprintf(column, MAX_NUMBER, "%d", i);
-			*string_match_table_columns+=NEW String(pool, column); // .i column name
+			*columns+=NEW String(pool, column); // .i column name
 		}
-		string_match_table_template=NEW Table(pool, 0, string_match_table_columns);
+		string_match_table_template=NEW Table(pool, 0, columns);
+	}
+
+	// date_calendar_table_template
+	{
+		Array *columns=NEW Array(pool);
+		for(int i=0; i<=6; i++) {
+			char *column=(char *)pool.malloc(MAX_NUMBER);
+			snprintf(column, MAX_NUMBER, "%d", i);
+			*columns+=NEW String(pool, column); // .i column name
+		}
+		*columns+=NEW String(pool, DATE_CALENDAR_WEEKNO_NAME);
+		date_calendar_table_template=NEW Table(pool, 0, columns);
 	}
 
 	// charsets

@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2002/08/01 11:41:15 $";
+static const char* IDENT_GLOBALS_H="$Date: 2002/08/05 11:28:09 $";
 
 #include "pa_pool.h"
 
@@ -57,6 +57,8 @@ class Table;
 #define STRING_PRE_MATCH_NAME "prematch"
 #define STRING_MATCH_NAME "match"
 #define STRING_POST_MATCH_NAME "postmatch"
+
+#define DATE_CALENDAR_WEEKNO_NAME "week"
 
 #define CONTENT_DISPOSITION_NAME "content-disposition"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"
@@ -141,6 +143,8 @@ extern String *hash_default_element_name;
 /// String::match uses this as replace & global search table columns
 const int MAX_STRING_MATCH_TABLE_COLUMNS=100;
 extern Table *string_match_table_template;
+
+extern Table *date_calendar_table_template;
 
 /// name to enum language table
 extern Hash *untaint_lang_name2enum;

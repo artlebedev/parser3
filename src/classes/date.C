@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2002/08/01 11:41:12 $";
+static const char* IDENT_DATE_C="$Date: 2002/08/05 11:28:09 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -206,7 +206,7 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 static Table *fill_month_days(Request& r, 
 							  const String& method_name, MethodParams *params, bool rus){
 	Pool& pool=r.pool();
-	Table *result=new(pool) Table(pool, &method_name, 0/*&columns*/);
+	Table *result=new(pool) Table(pool, *date_calendar_table_template);
 
     int year=params->as_int(1, "year must be int", r);
     int month=max(1, min(params->as_int(2, "month must be int", r), 12)) -1;
@@ -226,15 +226,40 @@ static Table *fill_month_days(Request& r,
     
     for(int _day=1-weekDay1; _day<=monthDays;) {
 		Array& row=*new(pool) Array(pool, 7);
+		// calculating year week no [1..54]
+		char *weekno_buf;
+		size_t weekno_size;
+		// 0..6 week days-cells fill with month days
     	for(int wday=0; wday<7; wday++, _day++) {
-        	String *cell=new(pool) String(pool);
+			String *cell=new(pool) String(pool);
 			if(_day>=1 && _day<=monthDays) {
 				char *buf=(char *)pool.malloc(2+1); 
 				cell->APPEND_CLEAN(buf, sprintf(buf, "%02d", _day), 
 					method_name.origin().file, method_name.origin().line);
             }
 			row+=cell;            
+
+			if(wday==(rus?3:4)/*thursday*/) {
+				tm tms={0,0,0,  _day, month, year-1900};
+				/*normalize*/mktime(&tms);
+
+				const int weekno_buf_size=2+1;
+
+				// http://www.merlyn.demon.co.uk/weekinfo.htm
+				const int FirstThurs[] = {7,5,4,3,2,7,6,5,4,2,1,7,6,4,3,2,1,6,5,4,3,1,7,6,5,3,2,1};
+				int n=1 + (tms.tm_yday-(FirstThurs[(tms.tm_year+1900) % 28]-3))/7;
+				weekno_buf=(char *)pool.malloc(weekno_buf_size);
+				weekno_size=snprintf(weekno_buf, weekno_buf_size, "%02d", n);
+			}
+		
         }
+		// appending year week no
+		{
+        	String *cell=new(pool) String(pool);
+			cell->APPEND_CLEAN(weekno_buf, weekno_size, 
+				method_name.origin().file, method_name.origin().line);
+			row+=cell;
+		}
     	*result+=&row;
     }
     
