@@ -780,7 +780,8 @@ xdoc(xnode)
 
 	!если на документ ссылаются так:
 	    parser://method/param/to/that/method
-	    то в качетве документа используется ^MAIN:method[/param/to/that/method]
+	    то в качестве документа используется ^MAIN:method[/param/to/that/method]
+	    [примечание: в параметр всегда приходит лидирующая /, даже, если параметров вообще не было]
 
 !xnode
     DOM1 attributes:

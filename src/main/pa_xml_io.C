@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/11/28 09:24:52 $";
+static const char * const IDENT="$Date: 2003/11/28 09:33:20 $";
 
 #include "libxslt/extensions.h"
 
@@ -128,11 +128,15 @@ xmlFileOpenMethod (const char* afilename) {
 	char* s=pa_strdup(afilename+9 /*strlen("parser://")*/);
 	const char* method_cstr=lsplit(&s, '/');
 	const String* method=new String(method_cstr);
-	VString* param=s?new VString(*new String(s)):0;
+	String::Body param_body("/");  
+	if(s)
+		param_body.append_know_length(s, strlen(s));
+
+	VString* vparam=new VString(*new String(param_body, String::L_TAINTED));
 	{
 		Temp_lang temp_lang(r, String::L_XML); // default language: XML
 		Request::Execute_nonvirtual_method_result body=
-			r.execute_nonvirtual_method(r.main_class, *method, param, true);
+			r.execute_nonvirtual_method(r.main_class, *method, vparam, true);
 		if(body.string) {
 			MemoryStream *stream=new(UseGC) MemoryStream;
 			stream->m_buf=body.string->cstr(String::L_UNSPECIFIED);
