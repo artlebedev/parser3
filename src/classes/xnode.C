@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2002/08/01 11:41:13 $";
+static const char* IDENT_XNODE_C="$Date: 2002/08/15 09:07:49 $";
 
 #include "pa_charset.h"
 #include "pa_request.h"
@@ -97,14 +97,12 @@ private:
 GdomeNode *as_node(const String& method_name, MethodParams *params, 
 						int index, const char *msg) {
 	Value& value=params->as_no_junction(index, msg);
-	if(!(strcmp(value.type(), VXNODE_TYPE)==0 
-		|| strcmp(value.type(), VXDOC_TYPE)==0))
+	if(Value *vxnode=value.as(VXNODE_TYPE, false))
+		return static_cast<VXnode *>(vxnode)->get_node(&method_name);
+	else
 		throw Exception("parser.runtime",
 			&method_name,
 			msg);
-
-	VXnode& vnode=*static_cast<VXnode *>(&value);
-	return vnode.get_node(&method_name);
 }
 
 // helpers

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/08/13 15:55:41 $";
+static const char* IDENT_OP_C="$Date: 2002/08/15 09:07:48 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -441,8 +441,8 @@ static time_t as_expires(Request& r, const String& method_name, MethodParams *pa
 						int index, time_t now) {
 	time_t result;
 	Value& vlifespan_or_expires=params->get(index);
-	if(strcmp(vlifespan_or_expires.type(), VDATE_TYPE)==0)
-		result=static_cast<VDate&>(vlifespan_or_expires).get_time();
+	if(Value *vdate=vlifespan_or_expires.as(VDATE_TYPE, false))
+		result=static_cast<VDate *>(vdate)->get_time();
 	else
 		result=now+(time_t)params->as_double(index, "lifespan must be date or number", r);
 	

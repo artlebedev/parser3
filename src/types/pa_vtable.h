@@ -8,14 +8,19 @@
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-static const char* IDENT_VTABLE_H="$Date: 2002/08/14 14:18:31 $";
+static const char* IDENT_VTABLE_H="$Date: 2002/08/15 09:07:50 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
 #include "pa_vvoid.h"
 #include "pa_vint.h"
 
+// defines
+
+#define VTABLE_TYPE "table"
 #define TABLE_FIELDS_ELEMENT_NAME "fields"
+
+// externs
 
 extern Methoded *table_class;
 
@@ -23,7 +28,7 @@ extern Methoded *table_class;
 class VTable : public VStateless_object {
 public: // Value
 
-	const char *type() const { return "table"; }
+	const char *type() const { return VTABLE_TYPE; }
 	VStateless_class *get_class() { return table_class; }
 	/// VTable: count
 	int as_int() const { return table(0).size(); }

@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2002/08/01 11:41:13 $";
+static const char* IDENT_XDOC_C="$Date: 2002/08/15 09:07:49 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -727,9 +727,9 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 
 	VXdoc *result;
 	Value& vmaybe_xdoc=params->get(0);
-	if(strcmp(vmaybe_xdoc.type(), VXDOC_TYPE)==0) { // stylesheet (xdoc)
+	if(Value *vxdoc=vmaybe_xdoc.as(VXDOC_TYPE, false)) { // stylesheet (xdoc)
 		xmlDoc *document=gdome_xml_doc_get_xmlDoc(
-			static_cast<VXdoc *>(&vmaybe_xdoc)->get_document(&method_name));
+			static_cast<VXdoc *>(vxdoc)->get_document(&method_name));
 		// compile xdoc stylesheet
 		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(document)); 
 		// strange thing - xsltParseStylesheetDoc records document and destroys it in stylesheet destructor
@@ -820,8 +820,8 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool, XDOC_CLASS_NAME, Xnode_class) {
 	// ^xdoc.file[options hash] file with "<doc/>"
 	add_native_method("file", Method::CT_DYNAMIC, _file, 0, 1);
 
-	// ^xdoc.transform[stylesheet file_name]
-	// ^xdoc.transform[stylesheet file_name;params hash]
+	// ^xdoc.transform[stylesheet file_name/xdoc]
+	// ^xdoc.transform[stylesheet file_name/xdoc;params hash]
 	add_native_method("transform", Method::CT_DYNAMIC, _transform, 1, 2);
 
 }

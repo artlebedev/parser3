@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/08/15 07:53:06 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/08/15 09:07:49 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -824,7 +824,7 @@ void Request::execute(const Array& ops) {
 		case OP_IS:
 			{
 				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as(b->as_string().cstr(), false)!=0);
+				value=NEW VBool(pool(), a->is(b->as_string().cstr()));
 				PUSH(value);
 				break;
 			}

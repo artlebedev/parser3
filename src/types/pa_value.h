@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/15 07:53:07 $";
+static const char* IDENT_VALUE_H="$Date: 2002/08/15 09:07:49 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -46,6 +46,8 @@ public: // Value
 	virtual Value *as(const char *atype, bool looking_up) {
 		return atype && strcmp(type(), atype)==0?this:0;
 	}
+	/// type checking helper, uses Value::as
+	bool is(const char *atype) { return as(atype, false)!=0; }
 	
 	/** is this value defined?
 		@return for
@@ -224,6 +226,7 @@ public: // Value
 	/** extract VTable
 		@return for
 		- VTable: ftable
+		- VObject: from possible 'table' parent
 	*/
 	virtual Table *get_table() { return 0; }
 

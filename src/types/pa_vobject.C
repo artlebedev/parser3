@@ -6,8 +6,10 @@
 */
 
 #include "pa_vobject.h"
+#include "pa_vhash.h"
+#include "pa_vtable.h"
 
-static const char* IDENT_VOBJECT_C="$Date: 2002/08/15 07:53:07 $";
+static const char* IDENT_VOBJECT_C="$Date: 2002/08/15 09:07:49 $";
 
 Value *VObject::as(const char *atype, bool looking_up) { 
 	if(!looking_up)
@@ -27,10 +29,45 @@ Value *VObject::as(const char *atype, bool looking_up) {
 	return 0;
 }
 
-/// VObject: true, todo: z base table can be 33
-Value *VObject::as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
-/// VObject: true, todo: z base table can be false	
-bool VObject::as_bool() const { return true; }
+/// VObject: from possible parent, if any
+bool VObject::is_defined() const {
+	return fbase?fbase->is_defined():Value::is_defined();
+}
+/// VObject: from possible parent, if any
+Value *VObject::as_expr_result(bool) { 
+	return fbase?fbase->as_expr_result():Value::as_expr_result();
+}
+/// VObject: from possible parent, if any
+int VObject::as_int() const {
+	return fbase?fbase->as_int():Value::as_int();
+}
+/// VObject: from possible parent, if any
+double VObject::as_double() {
+	return fbase?fbase->as_double():Value::as_double();
+}
+/// VObject: from possible parent, if any
+bool VObject::as_bool() const { 
+	return fbase?fbase->as_bool():Value::as_bool();
+}
+/// VObject: from possible parent, if any
+VFile *VObject::as_vfile(String::Untaint_lang lang, bool origins_mode) {
+	return fbase?fbase->as_vfile(lang, origins_mode):Value::as_vfile(lang, origins_mode);
+}
+
+/// VObject: from possible parent, if any
+Hash *VObject::get_hash(const String *source) {
+	if(Value *vhash=get_last_derived()->as(VHASH_TYPE, false))
+		return vhash->get_hash(source);
+
+	return 0;
+}
+/// VObject: from possible 'table' parent
+Table *VObject::get_table() {
+	if(Value *vtable=get_last_derived()->as(VTABLE_TYPE, false))
+		return vtable->get_table();
+
+	return 0;
+}
 
 /// VObject: (field)=value;(CLASS)=vclass;(method)=method_ref
 Value *VObject::get_element(const String& aname, Value * /*aself*/, bool looking_up) {

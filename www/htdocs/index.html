@@ -221,7 +221,6 @@ $derived:a[changed] ^$derived:a=$derived:a<br>
 $derived:derived_var[changed] 
 ^$derived:derived_var=$derived:derived_var<br>
 
-
 @staticstest[]
 $derived[^derived::create[]]
 ^derived.test[]
@@ -231,6 +230,9 @@ $derived[^derived::create[]]
 <hr>
 ^if($derived is derived){derived is derived}{error: derived is not derived}<br>
 ^if($derived is table){derived is table}{error:derived is not table}<br>
+<hr>
+^^eval(^$derived)=^eval($derived)<br>
+^^if(^$derived)=^if($derived){y}{n}<br>
 
 
 @xdoctypetest[]

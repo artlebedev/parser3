@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/08/01 11:41:12 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/08/15 09:07:48 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -792,15 +792,17 @@ static void _circle(Request& r, const String& method_name, MethodParams *params)
 
 gdImage& as_image(Pool& pool, const String& method_name, MethodParams *params, 
 						int index, const char *msg) {
+	gdImage *src=0;
+
 	Value& value=params->as_no_junction(index, msg);
 
-	if(strcmp(value.type(), VIMAGE_TYPE)!=0)
-		throw Exception("parser.runtime", 
-			&method_name, 
-			msg);
-
-	gdImage *src=static_cast<VImage *>(&value)->image;
-	if(!src)
+	if(Value *vimage=value.as(VIMAGE_TYPE, false)) {
+		src=static_cast<VImage *>(vimage)->image;
+		if(!src)
+			throw Exception("parser.runtime", 
+				&method_name, 
+				msg);
+	} else
 		throw Exception("parser.runtime", 
 			&method_name, 
 			msg);

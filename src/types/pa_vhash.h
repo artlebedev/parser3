@@ -8,12 +8,16 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char* IDENT_VHASH_H="$Date: 2002/08/14 14:18:30 $";
+static const char* IDENT_VHASH_H="$Date: 2002/08/15 09:07:49 $";
 
 #include "classes.h"
 #include "pa_value.h"
 #include "pa_hash.h"
 #include "pa_vint.h"
+
+// defines
+
+#define VHASH_TYPE "hash"
 
 // externs
 
@@ -28,7 +32,7 @@ class VHash : public VStateless_object {
 	friend class VHash_lock;
 public: // value
 
-	const char *type() const { return "hash"; }
+	const char *type() const { return VHASH_TYPE; }
 	VStateless_class *get_class() { return hash_class; }
 
 	/// VHash: finteger

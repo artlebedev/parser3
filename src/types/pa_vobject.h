@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/08/15 07:53:07 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/08/15 09:07:49 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
@@ -32,10 +32,18 @@ public: // Value
 
 	/// VObject: fclass
 	VStateless_class *get_class() { return &fclass; }
-	/// VObject: fbase
 	/*override*/ Value *base_object() { return fbase; }
-	Value *as_expr_result(bool);
-	bool as_bool() const;
+
+	/*override*/ bool is_defined() const;
+	/*override*/ Value *as_expr_result(bool);
+	/*override*/ int as_int() const;
+	/*override*/ double as_double();
+	/*override*/ bool as_bool() const;
+	/*override*/ VFile *as_vfile(String::Untaint_lang /*lang*/=String::UL_UNSPECIFIED, bool /*origins_mode*/=false);
+	
+	/*override*/ Hash *get_hash(const String *source);
+	/*override*/ Table *get_table();
+
 	/*override*/ Value *get_element(const String& aname, Value *aself, bool /*looking_up*/);
 	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace);
 
