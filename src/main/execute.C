@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.101 2001/03/13 14:02:51 paf Exp $
+	$Id: execute.C,v 1.102 2001/03/13 14:06:55 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -331,9 +331,8 @@ void Request::execute(const Array& ops) {
 				root=rcontext=wcontext=frame;
 				{
 					// take object or class from any wrappers
-					VAliased *aliased=self->get_aliased();
-					// substitute class alias to the class they are called AS
-					Temp_alias temp_alias(*aliased, *frame->junction.vclass);
+					// and substitute class alias to the class they are called AS
+					Temp_alias temp_alias(*self->get_aliased(), *frame->junction.vclass);
 
 					const Method& method=*frame->junction.method;
 					if(method.native_code) { // native code?
