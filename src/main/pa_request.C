@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.41 2001/03/18 11:37:52 paf Exp $
+	$Id: pa_request.C,v 1.42 2001/03/18 11:58:20 paf Exp $
 */
 
 #include <string.h>
@@ -88,10 +88,10 @@ void Request::core(Exception& system_exception,
 				main_class_name, main_class);
 		}
 
+		Value *element;
 		// $MAIN:limits hash used here,
 		//	until someone with less privileges have overriden them
 		Value *limits=main_class?main_class->get_element(*limits_name):0;
-		Value *element;
 		// $limits.post_max_size default 10M
 		element=limits?limits->get_element(*post_max_size_name):0;
 		int value=element?(size_t)element->get_double():0;
@@ -106,6 +106,13 @@ void Request::core(Exception& system_exception,
 		main_class=use_file(
 			site_auto_file, false/*ignore possible read problem* /,
 			main_class_name, main_class);*/
+
+		// $MAIN:defaults
+		Value *defaults=main_class?main_class->get_element(*defaults_name):0;
+		// $defaults.content-type
+		element=defaults?defaults->get_element(*content_type_name):0;
+		if(element)
+			response.fields().put(*content_type_name, element);
 
 		// there must be some auto.p
 		if(!main_class)
@@ -152,7 +159,7 @@ void Request::core(Exception& system_exception,
 								const Origin& origin=problem_source->origin();
 								if(origin.file) {
 									char *buf=(char *)malloc(MAX_STRING);
-									snprintf(buf, MAX_STRING, "%s(%d): ", 
+									snprintf(buf, MAX_STRING, "%s(%d):", 
 										origin.file, 1+origin.line);
 									String *NEW_STRING(origin_file_line, buf);
 									origin_value=NEW VString(*origin_file_line);

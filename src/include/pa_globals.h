@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.8 2001/03/18 11:37:50 paf Exp $
+	$Id: pa_globals.h,v 1.9 2001/03/18 11:58:18 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -34,6 +34,7 @@
 
 #define LIMITS_NAME "limits"
 #define POST_MAX_SIZE_NAME "post_max_size"
+#define DEFAULTS_NAME "defaults"
 
 #define RESULT_VAR_NAME "result"
 
@@ -73,6 +74,8 @@ extern String *response_class_name;
 
 extern String *limits_name;
 extern String *post_max_size_name;
+
+extern String *defaults_name;
 
 extern String *result_var_name;
 

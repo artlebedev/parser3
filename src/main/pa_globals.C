@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.8 2001/03/18 11:37:52 paf Exp $
+	$Id: pa_globals.C,v 1.9 2001/03/18 11:58:19 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -41,6 +41,8 @@ String *result_var_name;
 
 String *limits_name;
 String *post_max_size_name;
+
+String *defaults_name;
 
 Hash *untaint_lang_name2enum;
 
@@ -107,6 +109,8 @@ void globals_init(Pool& pool) {
 
 	NEW_STRING(limits_name, LIMITS_NAME);
 	NEW_STRING(post_max_size_name, POST_MAX_SIZE_NAME);
+
+	NEW_STRING(defaults_name, DEFAULTS_NAME);
 
 	// hashes
 	untaint_lang_name2enum=new(pool) Hash(pool);
