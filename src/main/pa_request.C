@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.105 2001/04/09 09:48:20 paf Exp $
+	$Id: pa_request.C,v 1.106 2001/04/09 10:08:31 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -28,6 +28,7 @@
 #include "_random.h"
 #include "pa_vfile.h"
 #include "_mail.h"
+#include "_exec.h"
 
 /// $limits.post_max_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
@@ -81,7 +82,9 @@ Request::Request(Pool& apool,
 	// cookie class
 	classes().put(*cookie_class_name, &cookie);
 	// mail class
-	classes().put(*mail_class_name, mail_class);	
+	classes().put(*mail_class_name, mail_class);
+	// exec class
+	classes().put(*exec_class_name, exec_class);
 }
 
 /**
@@ -116,7 +119,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		//	until someone with less privileges have overriden them
 		{
 			Value *limits=main_class?main_class->get_element(*limits_name):0;
-			if(StrEqNc(info.method, "post", true)) {
+			if(info.method && StrEqNc(info.method, "post", true)) {
 				// $limits.post_max_size default 10M
 				Value *element=limits?limits->get_element(*post_max_size_name):0;
 				size_t value=element?(size_t)element->as_double():0;
@@ -124,6 +127,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				
 				size_t post_size=max(0, min(info.content_length, post_max_size));
 				if(post_size) {
+					// read POST data
 					post_data=(char *)malloc(post_size);
 					size_t read_size=SAPI::read_post(pool(), post_data, post_size);
 					if(read_size!=post_size)
@@ -330,10 +334,10 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 								const Origin& origin=problem_source->origin();
 								if(origin.file) {
 									char *buf=(char *)malloc(MAX_STRING);
-									snprintf(buf, MAX_STRING, "%s(%d):", 
+									size_t buf_size=snprintf(buf, MAX_STRING, "%s(%d):", 
 										origin.file, 1+origin.line);
 									String *origin_file_line=NEW String(pool(),
-										buf, true);
+										buf, buf_size, true);
 									origin_value=NEW VString(*origin_file_line);
 								}
 							}
@@ -354,7 +358,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 							// comment
 							String *comment_value=NEW String(pool(),
-								e.comment(), true);
+								e.comment(), 0, true);
 							frame.store_param(method->name, 
 								NEW VString(*comment_value));
 

@@ -31,6 +31,9 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
+^exec:cgi[envNT.pl]
+<HR>
+
 ^rem{^mail:send[
     $to[paf@design.ru]
     $from[paf@design.ru]

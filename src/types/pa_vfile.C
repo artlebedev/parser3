@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.11 2001/04/03 07:20:56 paf Exp $
+	$Id: pa_vfile.C,v 1.12 2001/04/09 10:08:33 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -29,7 +29,7 @@ void VFile::set(const void *avalue_ptr, size_t avalue_size,
 			lfile_name=after_slash;
 		if(char *after_slash=rsplit(lfile_name, '/'))
 			lfile_name=after_slash;
-		ffields.put(*name_name, NEW VString(*NEW String(pool(), lfile_name, true)));
+		ffields.put(*name_name, NEW VString(*NEW String(pool(), lfile_name, 0, true)));
 	}
 	// $size
 	ffields.put(*size_name, NEW VInt(pool(), fvalue_size));
