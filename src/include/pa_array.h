@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.5 2001/01/29 10:15:14 paf Exp $
+  $Id: pa_array.h,v 1.6 2001/01/29 12:00:45 paf Exp $
 */
 
 /*
@@ -32,6 +32,13 @@ public:
 		CR_PREALLOCATED_COUNT=10,
 		CR_GROW_PERCENT=60
 	};
+
+public:
+
+	int size() { return fused_rows; }
+	Array& operator += (Item src);
+	Item& operator [] (int index);
+	Array& operator += (Array& src);
 
 private:
 	friend Pool;
@@ -85,13 +92,6 @@ private:
 		return append_here == link_row;
 	}
 	void expand(int chunk_rows);
-
-public:
-
-	int size() { return fused_rows; }
-	Array& operator += (Item src);
-	Item& operator [] (int index);
-	Array& operator += (Array& src);
 
 private: //disabled
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.7 2001/01/27 15:21:05 paf Exp $
+  $Id: pa_string.h,v 1.8 2001/01/29 12:00:45 paf Exp $
 */
 
 /*
@@ -30,6 +30,17 @@ public:
 		CR_PREALLOCATED_COUNT=5,
 		CR_GROW_PERCENT=60
 	};
+
+public:
+
+	String(String& src);
+	size_t size() { return fsize; }
+	int used_rows() { return fused_rows; }
+	char *c_str();
+	String& operator += (char *src);
+	bool operator == (String& src);
+
+	uint hash_code();
 
 private:
 	friend Pool;
@@ -87,17 +98,6 @@ private:
 		return append_here == link_row;
 	}
 	void expand();
-
-public:
-
-	String(String& src);
-	size_t size() { return fsize; }
-	int used_rows() { return fused_rows; }
-	char *c_str();
-	String& operator += (char *src);
-	bool operator == (String& src);
-
-	uint hash_code();
 
 private: //disabled
 

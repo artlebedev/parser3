@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.7 2001/01/29 11:53:42 paf Exp $
+  $Id: pa_hash.h,v 1.8 2001/01/29 12:00:45 paf Exp $
 */
 
 /*
@@ -22,6 +22,17 @@ public:
 
 	typedef String Key;
 	typedef void Value;
+
+public:
+
+	// useful generic hash function
+	static uint generic_code(uint aresult, char *start, uint size);
+
+	// put a [value] under the [key]
+	/*SYNCHRONIZED*/ void put(Key& key, Value *value);
+
+	// get associated [value] by the [key]
+	/*SYNCHRONIZED*/ Value* get(Key& key);
 
 private:
 	friend Pool;
@@ -78,17 +89,6 @@ private:
 
 	// allocate larger buffer & rehash
 	void expand();
-
-public:
-
-	// useful generic hash function
-	static uint generic_code(uint aresult, char *start, uint size);
-
-	// put a [value] under the [key]
-	/*SYNCHRONIZED*/ void put(Key& key, Value *value);
-
-	// get associated [value] by the [key]
-	/*SYNCHRONIZED*/ Value* get(Key& key);
 
 private: //disabled
 
