@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2004/02/13 14:01:08 $";
+static const char * const IDENT="$Date: 2004/04/08 08:46:16 $";
 
 #include "libxslt/extensions.h"
 
@@ -85,6 +85,14 @@ struct MemoryStream {
 
 static void *
 xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_to_root_from_document_root=false) {
+#ifdef PA_SAFE_MODE
+//copied from libxml/catalog.c
+#	define XML_XML_DEFAULT_CATALOG "file:///etc/xml/catalog"
+	// disable attempts to consult default catalog [usually, that file belongs to other user/group]
+	if(strcmp(do_not_store_filename, XML_XML_DEFAULT_CATALOG)==0)
+		return 0;
+#endif
+
 	Request& r=pa_thread_request();
 	char adjust_buf[MAX_STRING];	
 	if(adjust_path_to_root_from_document_root) {
