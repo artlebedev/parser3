@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.18 2001/11/05 11:46:22 paf Exp $
+	$Id: xnode.C,v 1.19 2001/12/28 14:06:50 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -14,13 +14,7 @@
 
 #include "xnode.h"
 
-#include <util/XMLString.hpp>
-#include <XalanSourceTree/XalanSourceTreeDOMSupport.hpp>
-#include <XPath/XPathEvaluator.hpp>
-#include <XPath/NodeRefList.hpp>
-#include <XalanDOM/XalanElement.hpp>
-#include <XalanDOM/XalanAttr.hpp>
-#include <XalanDOM/XalanNodeList.hpp>
+#include "gdome.h"
 
 // defines
 
@@ -28,7 +22,7 @@
 
 // helpers
 
-XalanNode& as_node(Pool& pool, const String& method_name, MethodParams *params, 
+GdomeNode *as_node(Pool& pool, const String& method_name, MethodParams *params, 
 						int index, const char *msg) {
 	Value& value=params->as_no_junction(index, msg);
 	if(strcmp(value.type(), VXNODE_TYPE)!=0)
@@ -37,21 +31,21 @@ XalanNode& as_node(Pool& pool, const String& method_name, MethodParams *params,
 			msg);
 
 	VXnode& vnode=*static_cast<VXnode *>(&value);
-	return vnode.get_node(pool, &method_name);
+	return vnode.get_node(&method_name);
 }
 
 // helpers
 
-XalanAttr& as_attr(Pool& pool, const String& method_name, MethodParams *params, 
+GdomeAttr * as_attr(Pool& pool, const String& method_name, MethodParams *params, 
 						int index, const char *msg) {
-	XalanNode& node=as_node(pool, method_name, params, index, msg);
-
-	if(node.getNodeType()!=XalanNode::ATTRIBUTE_NODE)
+	GdomeNode *node=as_node(pool, method_name, params, index, msg);
+	GdomeException exc;
+	if(gdome_n_nodeType(node, &exc)!=GDOME_ATTRIBUTE_NODE)
 		throw Exception(0, 0, 
 			&method_name,
 			msg);
 
-	return *reinterpret_cast<XalanAttr *>(&node);
+	return GDOME_A(node);
 }
 
 // methods
@@ -62,88 +56,82 @@ XalanAttr& as_attr(Pool& pool, const String& method_name, MethodParams *params,
 static void _insertBefore(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
-	XalanNode& selfNode=vnode.get_node(pool, &method_name);
-
-	XalanNode& newChild=as_node(pool, method_name, params, 0, "newChild must be node");
-	XalanNode& refChild=as_node(pool, method_name, params, 1, "refChild must be node");
+	GdomeNode *selfNode=vnode.get_node(&method_name);
+	GdomeNode *newChild=as_node(pool, method_name, params, 0, "newChild must be node");
+	GdomeNode *refChild=as_node(pool, method_name, params, 1, "refChild must be node");
 	
-	try {
-		if(XalanNode *retNode=selfNode.insertBefore(&newChild, &refChild)) {
-			// write out result
-			VXnode& result=*new(pool) VXnode(pool, retNode, false);
-			r.write_no_lang(result);		
-		}
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	if(GdomeNode *retNode=gdome_n_insertBefore(selfNode, newChild, refChild, &exc)) {
+		// write out result
+		VXnode& result=*new(pool) VXnode(pool, retNode);
+		r.write_no_lang(result);		
+	} else
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 }
 
 // Node replaceChild(in Node newChild,in Node oldChild) raises(DOMException);
 static void _replaceChild(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
-	XalanNode& selfNode=vnode.get_node(pool, &method_name);
-
-	XalanNode& newChild=as_node(pool, method_name, params, 0, "newChild must be node");
-	XalanNode& refChild=as_node(pool, method_name, params, 1, "refChild must be node");
+	GdomeNode *selfNode=vnode.get_node(&method_name);
+	GdomeNode *newChild=as_node(pool, method_name, params, 0, "newChild must be node");
+	GdomeNode *refChild=as_node(pool, method_name, params, 1, "refChild must be node");
 	
-	try {
-		if(XalanNode *retNode=selfNode.replaceChild(&newChild, &refChild)) {
-			// write out result
-			VXnode& result=*new(pool) VXnode(pool, retNode, false);
-			r.write_no_lang(result);		
-		}
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	if(GdomeNode *retNode=gdome_n_replaceChild(selfNode, newChild, refChild, &exc)) {
+		// write out result
+		r.write_no_lang(*new(pool) VXnode(pool, retNode));		
+	} else
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 }
 
 // Node removeChild(in Node oldChild) raises(DOMException);
 static void _removeChild(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
-	XalanNode& selfNode=vnode.get_node(pool, &method_name);
-
-	XalanNode& oldChild=as_node(pool, method_name, params, 0, "oldChild must be node");
+	GdomeNode *selfNode=vnode.get_node(&method_name);
+	GdomeNode *oldChild=as_node(pool, method_name, params, 0, "oldChild must be node");
 	
-	try {
-		if(XalanNode *retNode=selfNode.removeChild(&oldChild)) {
-			// write out result
-			VXnode& result=*new(pool) VXnode(pool, retNode, false);
-			r.write_no_lang(result);		
-		}
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	if(GdomeNode *retNode=gdome_n_removeChild(selfNode, oldChild, &exc)) {
+		// write out result
+		r.write_no_lang(*new(pool) VXnode(pool, retNode));
+	} else
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 }
 
 // Node appendChild(in Node newChild) raises(DOMException);
 static void _appendChild(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
-	XalanNode& selfNode=vnode.get_node(pool, &method_name);
-
-	XalanNode& newChild=as_node(pool, method_name, params, 0, "newChild must be node");
+	GdomeNode *selfNode=vnode.get_node(&method_name);
+	GdomeNode *newChild=as_node(pool, method_name, params, 0, "newChild must be node");
 	
-	try {
-		if(XalanNode *retNode=selfNode.appendChild(&newChild)) {
-			// write out result
-			VXnode& result=*new(pool) VXnode(pool, retNode, false);
-			r.write_no_lang(result);		
-		}
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	if(GdomeNode *retNode=gdome_n_appendChild(selfNode, newChild, &exc)) {
+		// write out result
+		r.write_no_lang(*new(pool) VXnode(pool, retNode));		
+	}  else
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 }
 
 // boolean hasChildNodes();
 static void _hasChildNodes(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
-	XalanNode& node=vnode.get_node(pool, &method_name);
+	GdomeNode *node=vnode.get_node(&method_name);
 
+	GdomeException exc;
 	// write out result
-	VBool& result=*new(pool) VBool(pool, node.hasChildNodes());
+	VBool& result=*new(pool) VBool(pool, gdome_n_hasChildNodes(node, &exc)!=0);
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
@@ -153,38 +141,42 @@ static void _hasChildNodes(Request& r, const String& method_name, MethodParams *
 static void _cloneNode(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
-	XalanNode& node=vnode.get_node(pool, &method_name);
+	GdomeNode *node=vnode.get_node(&method_name);
 
 	bool deep=params->as_bool(0, "deep must be bool", r);
 
+	GdomeException exc;
 	// write out result
-	VXnode& result=*new(pool) VXnode(pool, node.cloneNode(deep), true/*all sense goes here*/);
+	VXnode& result=*new(pool) VXnode(pool, gdome_n_cloneNode(node, deep, &exc));
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
 
 // DOM1 element
 
-XalanElement& get_self_element(Request& r, const String& method_name) {
+GdomeElement *get_self_element(Request& r, const String& method_name) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
-	XalanNode& node=vnode.get_node(pool, &method_name);
+	GdomeNode *node=vnode.get_node(&method_name);
 
-	if(node.getNodeType()!=XalanNode::ELEMENT_NODE)
+	GdomeException exc;
+	if(gdome_n_nodeType(node, &exc)!=GDOME_ELEMENT_NODE)
 		throw Exception(0, 0, 
 			&method_name,
 			"method can be called on node of ELEMENT type");
 
-	return *reinterpret_cast<XalanElement *>(&node);
+	return GDOME_EL(node);
 }
 
 // DOMString getAttribute(in DOMString name);
 static void _getAttribute(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	XalanElement& element=get_self_element(r, method_name);
+	GdomeElement *element=get_self_element(r, method_name);
 	const String& name=params->as_string(0, "name must be string");
 
-	const XalanDOMString& attribute_value=element.getAttribute(*pool.transcode(name));
+	GdomeException exc;
+	GdomeDOMString *attribute_value=
+		gdome_el_getAttribute(element, pool.transcode(name), &exc);
 	// write out result
 	r.write_no_lang(*new(pool) VString(pool.transcode(attribute_value)));
 }
@@ -192,86 +184,96 @@ static void _getAttribute(Request& r, const String& method_name, MethodParams *p
 // void setAttribute(in DOMString name, in DOMString value) raises(DOMException);
 static void _setAttribute(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	XalanElement& element=get_self_element(r, method_name);
+	GdomeElement *element=get_self_element(r, method_name);
 	const String& name=params->as_string(0, "name must be string");
 	const String& attribute_value=params->as_string(1, "value must be string");
 
-	try {
-		element.setAttribute(
-			*pool.transcode(name), 
-			*pool.transcode(attribute_value));
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	gdome_el_setAttribute(element,
+		pool.transcode(name), 
+		pool.transcode(attribute_value),
+		&exc);
+	if(exc)
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 }
 
 // void removeAttribute(in DOMString name) raises(DOMException);
 static void _removeAttribute(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	XalanElement& element=get_self_element(r, method_name);
+	GdomeElement *element=get_self_element(r, method_name);
 	const String& name=params->as_string(0, "name must be string");
 
-	try {
-		element.removeAttribute(*pool.transcode(name));
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	gdome_el_removeAttribute(element, pool.transcode(name), &exc);
+	if(exc)
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 }
 
 // Attr getAttributeNode(in DOMString name);
 static void _getAttributeNode(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	XalanElement& element=get_self_element(r, method_name);
+	GdomeElement *element=get_self_element(r, method_name);
 	const String& name=params->as_string(0, "name must be string");
 
-	if(XalanAttr *attr=element.getAttributeNode(*pool.transcode(name))) {
+	GdomeException exc;
+	if(GdomeAttr *attr=gdome_el_getAttributeNode(element, pool.transcode(name), &exc)) {
 		// write out result
-		VXnode& result=*new(pool) VXnode(pool, attr, false);
+		VXnode& result=*new(pool) VXnode(pool, (GdomeNode *)attr);
 		r.write_no_lang(result);
-	}
+	} else if(exc)
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 }	
 
 // Attr setAttributeNode(in Attr newAttr) raises(DOMException);
 static void _setAttributeNode(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	XalanElement& element=get_self_element(r, method_name);
-	XalanAttr& newAttr=as_attr(pool, method_name, params, 0, "newAttr must be ATTRIBUTE node");
+	GdomeElement *element=get_self_element(r, method_name);
+	GdomeAttr * newAttr=as_attr(pool, method_name, params, 0, "newAttr must be ATTRIBUTE node");
 
-	try {
-		if(XalanAttr *returnAttr=element.setAttributeNode(&newAttr)) {
-			// write out result
-			VXnode& result=*new(pool) VXnode(pool, returnAttr, false);
-			r.write_no_lang(result);
-		}
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	if(GdomeAttr *returnAttr=gdome_el_setAttributeNode(element, newAttr, &exc)) {
+		// write out result
+		VXnode& result=*new(pool) VXnode(pool, (GdomeNode *)returnAttr);
+		r.write_no_lang(result);
+	} else
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 }	
 
 // Attr removeAttributeNode(in Attr oldAttr) raises(DOMException);
 static void _removeAttributeNode(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	XalanElement& element=get_self_element(r, method_name);
-	XalanAttr& oldAttr=as_attr(pool, method_name, params, 0, "oldAttr must be ATTRIBUTE node");
+	GdomeElement *element=get_self_element(r, method_name);
+	GdomeAttr * oldAttr=as_attr(pool, method_name, params, 0, "oldAttr must be ATTRIBUTE node");
 
-	try {
-		/*XalanAttr *returnAttr*/element.removeAttributeNode(&oldAttr);
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	gdome_el_removeAttributeNode(element, oldAttr, &exc);
+	if(exc)
+		throw Exception(0, 0, 
+		&method_name, 
+		exc);
 }	
 
 // NodeList getElementsByTagName(in DOMString name);
 static void _getElementsByTagName(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	XalanElement& element=get_self_element(r, method_name);
+	GdomeElement *element=get_self_element(r, method_name);
 
 	const String& name=params->as_string(0, "name must be string");
 
 	VHash& result=*new(pool) VHash(pool);
-	if(const XalanNodeList *nodes=
-		element.getElementsByTagName(*pool.transcode(name))) {
-		for(int i=0; i<nodes->getLength(); i++) {
+	GdomeException exc;
+	if(GdomeNodeList *nodes=
+		gdome_el_getElementsByTagName(element, pool.transcode(name), &exc)) {
+		gulong length=gdome_nl_length(nodes, &exc);
+		for(gulong i=0; i<length; i++) {
 			String& skey=*new(pool) String(pool);
 			{
 				char *buf=(char *)pool.malloc(MAX_NUMBER);
@@ -279,9 +281,12 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 				skey << buf;
 			}
 
-			result.hash(0).put(skey, new(pool) VXnode(pool, nodes->item(i), false));
+			result.hash(0).put(skey, new(pool) VXnode(pool, gdome_nl_item(nodes, i, &exc)));
 		}
-	}
+	} else if(exc)
+		throw Exception(0, 0, 
+		&method_name, 
+		exc);
 
 	// write out result
 	r.write_no_lang(result);
@@ -289,12 +294,20 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 
 // void normalize();
 static void _normalize(Request& r, const String& method_name, MethodParams *) {
-	XalanElement& element=get_self_element(r, method_name);
+	Pool& pool=r.pool();
+	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	GdomeNode *selfNode=vnode.get_node(&method_name);
 
-	element.normalize();
+	GdomeException exc;
+	gdome_n_normalize(selfNode, &exc);
+	if(exc)
+		throw Exception(0, 0, 
+		&method_name, 
+		exc);
 }
 
 
+	/*
 static void _select(Request& r, const String& method_name, MethodParams *params) {
 //	_asm int 3;
 	Pool& pool=r.pool();
@@ -312,7 +325,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 
 	try {
 		NodeRefList list=evaluator.selectNodeList(dom_support, 
-			&vnode.get_node(pool, &method_name), 
+			&vnode.get_node(&method_name), 
 			expression_dcstr);
 
 		VHash& result=*new(pool) VHash(pool);
@@ -351,8 +364,8 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 	XalanSourceTreeDOMSupport dom_support;
 
 	try {
-		 if(XalanNode *node=evaluator.selectSingleNode(dom_support, 
-			&vnode.get_node(pool, &method_name), 
+		 if(GdomeNode *node=evaluator.selectSingleNode(dom_support, 
+			&vnode.get_node(&method_name), 
 			expression_dcstr)) {
 
 			VXnode& result=*new(pool) VXnode(pool, node, false);
@@ -363,7 +376,7 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 		Exception::provide_source(pool, &expression, e);
 	}
 }
-
+*/
 // constructor
 
 MXnode::MXnode(Pool& apool) : Methoded(apool), 
@@ -405,30 +418,30 @@ MXnode::MXnode(Pool& apool) : Methoded(apool),
 	add_native_method("normalize", Method::CT_DYNAMIC, _normalize, 0, 0);
 
 	/// parser
-
+/*
 	// ^node.select[/some/xpath/query] = hash $.#[dnode]
 	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
 
 	// ^node.selectSingle[/some/xpath/query] = first dnode
 	add_native_method("selectSingle", Method::CT_DYNAMIC, _selectSingle, 1, 1);
-
+*/
 	// consts
 
-#define CONST(name, value) \
-	consts.put(*new(pool()) String(pool(), #name), new(pool()) VInt(pool(), value))
+#define CONST(name) \
+	consts.put(*new(pool()) String(pool(), #name), new(pool()) VInt(pool(), GDOME_##name))
 
-	CONST(ELEMENT_NODE, 1);
-    CONST(ATTRIBUTE_NODE,  2);
-    CONST(TEXT_NODE,  3);
-    CONST(CDATA_SECTION_NODE,  4);
-    CONST(ENTITY_REFERENCE_NODE,  5);
-    CONST(ENTITY_NODE,  6);
-    CONST(PROCESSING_INSTRUCTION_NODE,  7);
-    CONST(COMMENT_NODE,  8);
-    CONST(DOCUMENT_NODE,  9);
-    CONST(DOCUMENT_TYPE_NODE,  10);
-    CONST(DOCUMENT_FRAGMENT_NODE,  11);
-    CONST(NOTATION_NODE,  12);
+	CONST(ELEMENT_NODE);
+    CONST(ATTRIBUTE_NODE);
+    CONST(TEXT_NODE);
+    CONST(CDATA_SECTION_NODE);
+    CONST(ENTITY_REFERENCE_NODE);
+    CONST(ENTITY_NODE);
+    CONST(PROCESSING_INSTRUCTION_NODE);
+    CONST(COMMENT_NODE);
+    CONST(DOCUMENT_NODE);
+    CONST(DOCUMENT_TYPE_NODE);
+    CONST(DOCUMENT_FRAGMENT_NODE);
+    CONST(NOTATION_NODE);
 
 }
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.72 2001/12/27 19:57:08 paf Exp $
+	$Id: pa_globals.h,v 1.73 2001/12/28 14:06:51 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -141,7 +141,7 @@ extern Hash *untaint_lang_name2enum;
 
 
 /// DOMImplementation
-GdomeDOMImplementation *domimpl;
+extern GdomeDOMImplementation *domimpl;
 
 /// UTF8 charset
 extern Charset *utf8_charset;

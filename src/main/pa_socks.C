@@ -4,11 +4,14 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_socks.C,v 1.8 2001/11/05 11:46:28 paf Exp $
+	$Id: pa_socks.C,v 1.9 2001/12/28 14:06:52 paf Exp $
 */
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"
+
+#include "pa_exception.h"
+#include "pa_socks.h"
 
 #ifdef WIN32
 #include <winsock.h>
@@ -19,8 +22,6 @@
 //#include <signal.h>
 #endif
 
-#include "pa_socks.h"
-#include "pa_exception.h"
 
 
 /* ************************ Common stuff *********************** */

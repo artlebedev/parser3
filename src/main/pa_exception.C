@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.27 2001/11/20 17:58:47 paf Exp $
+	$Id: pa_exception.C,v 1.28 2001/12/28 14:06:51 paf Exp $
 */
 
 #include "pa_common.h"
@@ -16,14 +16,13 @@ Exception::Exception() {
 }
 Exception::Exception(const String *atype, const String *acode,
 					  const String *aproblem_source, 
-					  const char *comment_fmt, ...) {
+					  const char *comment_fmt, ...) : 
+	ftype(atype),
+	fcode(acode),
+	fproblem_source(aproblem_source),
+	owns_comment(true) {
 	//_asm int 3;
 //__asm__("int3");
-
-	ftype=atype;
-	fcode=acode;
-	fproblem_source=aproblem_source;
-	owns_comment=true;
 
 	if(comment_fmt) {
 		va_list args;
@@ -34,6 +33,49 @@ Exception::Exception(const String *atype, const String *acode,
 	} else
 		fcomment=0;
 }
+Exception::Exception(
+	const String *atype, const String *acode,
+	const String *aproblem_source, 
+	GdomeException& exc) :
+	ftype(atype),
+	fcode(acode),
+	fproblem_source(aproblem_source),
+	owns_comment(true) {
+
+	if(exc) {
+		const char *s;
+		switch((GdomeExceptionCode)exc) {
+		case GDOME_NOEXCEPTION_ERR: s="NOEXCEPTION_ERR"; break;
+		case GDOME_INDEX_SIZE_ERR: s="INDEX_SIZE_ERR"; break;
+		case GDOME_DOMSTRING_SIZE_ERR: s="DOMSTRING_SIZE_ERR"; break;
+		case GDOME_HIERARCHY_REQUEST_ERR: s="HIERARCHY_REQUEST_ERR"; break;
+		case GDOME_WRONG_DOCUMENT_ERR: s="WRONG_DOCUMENT_ERR"; break;
+		case GDOME_INVALID_CHARACTER_ERR: s="INVALID_CHARACTER_ERR"; break;
+		case GDOME_NO_DATA_ALLOWED_ERR: s="NO_DATA_ALLOWED_ERR"; break;
+		case GDOME_NO_MODIFICATION_ALLOWED_ERR: s="NO_MODIFICATION_ALLOWED_ERR"; break;
+		case GDOME_NOT_FOUND_ERR: s="NOT_FOUND_ERR"; break;
+		case GDOME_NOT_SUPPORTED_ERR: s="NOT_SUPPORTED_ERR"; break;
+		case GDOME_INUSE_ATTRIBUTE_ERR: s="INUSE_ATTRIBUTE_ERR"; break;
+		case GDOME_INVALID_STATE_ERR: s="INVALID_STATE_ERR"; break;
+		case GDOME_SYNTAX_ERR: s="SYNTAX_ERR"; break;
+		case GDOME_INVALID_MODIFICATION_ERR: s="INVALID_MODIFICATION_ERR"; break;
+		case GDOME_NAMESPACE_ERR: s="NAMESPACE_ERR"; break;
+		case GDOME_INVALID_ACCESS_ERR: s="INVALID_ACCESS_ERR"; break;
+		case GDOME_NULL_POINTER_ERR: s="NULL_POINTER_ERR"; break;
+		default: s="<UNKNOWN CODE>"; break;
+		}
+		
+		fcomment=(char *)malloc(MAX_STRING);
+		snprintf(fcomment, MAX_STRING, 
+			"DOMException %s (%d)", 
+				s,  // decoded code of exception
+				exc // code of exception
+		);
+	} else
+		fcomment="no DOMException";
+}
+
+
 Exception::Exception(const Exception& src) : 
 	ftype(src.ftype),
 	fcode(src.fcode),
@@ -62,6 +104,7 @@ Exception::~Exception() {
 }
 
 #ifdef XML
+/*
 void Exception::provide_source(Pool& pool, const String *source, const XSLException& e) {
 	if(e.getURI().empty())
 		throw Exception(0, 0,
@@ -114,34 +157,5 @@ void Exception::provide_source(Pool& pool, const String *source, const XMLExcept
 	);
 }
 
-void Exception::provide_source(Pool& pool, const String *source, const XalanDOMException& e) {
-	const char *s;
-	int code=(int)e.getExceptionCode();
-	switch(code) {
-	case 1: s="INDEX_SIZE_ERR"; break;
-	case 2: s="DOMSTRING_SIZE_ERR"; break;
-	case 3: s="HIERARCHY_REQUEST_ERR"; break;
-	case 4: s="WRONG_DOCUMENT_ERR"; break;
-	case 5: s="INVALID_CHARACTER_ERR"; break;
-	case 6: s="NO_DATA_ALLOWED_ERR"; break;
-	case 7: s="NO_MODIFICATION_ALLOWED_ERR"; break;
-	case 8: s="NOT_FOUND_ERR"; break;
-	case 9: s="NOT_SUPPORTED_ERR"; break;
-	case 10: s="INUSE_ATTRIBUTE_ERR"; break;
-	case 11: s="INVALID_STATE_ERR"; break;
-	case 12: s="SYNTAX_ERR"; break;
-	case 13: s="INVALID_MODIFICATION_ERR"; break;
-	case 14: s="NAMESPACE_ERR"; break;
-	case 15: s="INVALID_ACCESS_ERR"; break;
-	case 201: s="UNKNOWN_ERR"; break;
-	case 202: s="TRANSCODING_ERR"; break;
-	default: s="<UNKNOWN CODE>"; break;
-	}
-	throw Exception(0, 0,
-		source,
-		"XalanDOMException %s (%d)",
-			s,  // decoded code of exception
-			code // code of exception
-	);
-}
+*/
 #endif

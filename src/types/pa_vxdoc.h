@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxdoc.h,v 1.14 2001/12/27 19:57:10 paf Exp $
+	$Id: pa_vxdoc.h,v 1.15 2001/12/28 14:06:52 paf Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -50,17 +50,16 @@ protected: // VAliased
 public: // VDNode
 
 	/// @test conv validity
-	GdomeNode *get_node(Pool& pool, const String *source) { 
-		return (GdomeNode *)get_document(pool, source);
+	virtual GdomeNode *get_node(const String *source) { 
+		return (GdomeNode *)get_document(source);
 	}
 
 public: // usage
 
-	VXdoc(Pool& apool, GdomeDocument *adocument) : VXnode(apool, 0, *Xdoc_class) {
+	VXdoc(Pool& apool, GdomeDocument *adocument) : 
+		VXnode(apool, 0, *Xdoc_class), 
+		fdocument(adocument/*not adding ref, owning a doc*/) {
 //		ftransformer(0) 
-		GdomeException exc;
-		if(fdocument=adocument)
-			gdome_doc_ref(fdocument, &exc);
 
 		register_cleanup(VXdoc_destructor, this);
 //		ftransformer=new XalanTransformer2;
@@ -84,7 +83,7 @@ public:
 
 		gdome_doc_ref(fdocument=adocument, &exc);
 	}
-	GdomeDocument *get_document(Pool& pool, const String *source) { 
+	GdomeDocument *get_document(const String *source) { 
 		if(!fdocument)
 			throw Exception(0, 0,
 				source,

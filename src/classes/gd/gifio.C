@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: gifio.C,v 1.15 2001/11/05 11:46:22 paf Exp $
+	$Id: gifio.C,v 1.16 2001/12/28 14:06:50 paf Exp $
 
 	based on: gd
 
@@ -85,8 +85,12 @@ colorstobpp(int colors)
 *
 *****************************************************************************/
 
+#ifndef TRUE
 #define TRUE 1
+#endif
+#ifndef FALSE
 #define FALSE 0
+#endif
 
 /*
 * Bump the 'curx' and 'cury' to point to the next pixel
@@ -723,8 +727,12 @@ gdGifEncoder::gdGifEncoder(Pool& pool, gdImage& aim, String& afp) : Pooled(pool)
 
 #define        MAXCOLORMAPSIZE         256
 	
+#ifndef TRUE
 #define        TRUE    1
+#endif
+#ifndef FALSE
 #define        FALSE   0
+#endif
 	
 #define CM_RED         0
 #define CM_GREEN       1

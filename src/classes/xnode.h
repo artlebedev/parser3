@@ -4,13 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.h,v 1.4 2001/11/05 11:46:22 paf Exp $
+	$Id: xnode.h,v 1.5 2001/12/28 14:06:50 paf Exp $
 */
 
 #ifndef XNODE_H
 #define XNODE_H
 
-#include <util/XMLString.hpp>
 
 class MXnode : public Methoded {
 public: // Value
@@ -30,7 +29,7 @@ public: // Value
 
 
 public: // VStateless_class
-	Value *create_new_value(Pool& pool) { return new(pool) VXnode(pool, 0, false); }
+	Value *create_new_value(Pool& pool) { return new(pool) VXnode(pool, 0); }
 
 public:
 	MXnode(Pool& pool);

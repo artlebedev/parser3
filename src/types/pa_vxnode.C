@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_vxnode.C,v 1.12 2001/12/27 19:57:10 paf Exp $
+	$Id: pa_vxnode.C,v 1.13 2001/12/28 14:06:52 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -27,7 +27,7 @@ Value *VXnode::get_element(const String& name) {
 
 	// fields
 
-	GdomeNode *selfNode=get_node(pool(), &name);
+	GdomeNode *selfNode=get_node(&name);
 	GdomeException exc;
 
 	if(name=="nodeName") {
@@ -37,8 +37,8 @@ Value *VXnode::get_element(const String& name) {
 	} else if(name=="nodeType") {
 		return NEW VInt(pool(), gdome_n_nodeType(selfNode, &exc));
 	} else if(name=="parentNode") {
-		if(XalanNode *result_node=getParentNode(selfNode, &exc))
-			return NEW VXnode(pool(), result_node, false);
+		if(GdomeNode *result_node=gdome_n_parentNode(selfNode, &exc))
+			return NEW VXnode(pool(), result_node);
 	} else if(name=="childNodes") {	
 		if(GdomeNode *currentNode=gdome_n_firstChild(selfNode, &exc)) {
 			VHash *result=NEW VHash(pool());
@@ -50,57 +50,58 @@ Value *VXnode::get_element(const String& name) {
 					snprintf(buf, MAX_NUMBER, "%d", ++i);
 					skey << buf;
 				}
-				result->hash(&name).put(skey, NEW VXnode(pool(), currentNode, false));
+				result->hash(&name).put(skey, NEW VXnode(pool(), currentNode));
 			} while(currentNode=gdome_n_nextSibling(currentNode, &exc));
 			return result;
 		}
 	} else if(name=="firstChild") {
-		if(XalanNode *result_node=gdome_n_firstChild(selfNode, &exc))
-			return NEW VXnode(pool(), result_node, false);
+		if(GdomeNode *result_node=gdome_n_firstChild(selfNode, &exc))
+			return NEW VXnode(pool(), result_node);
 	} else if(name=="lastChild") {
-		if(XalanNode *result_node=gdome_n_lastChild(selfNode, &exc))
-			return NEW VXnode(pool(), result_node, false);
+		if(GdomeNode *result_node=gdome_n_lastChild(selfNode, &exc))
+			return NEW VXnode(pool(), result_node);
 	} else if(name=="previousSibling") {
-		if(XalanNode *result_node=gdome_n_previousSibling(selfNode, &exc))
-			return NEW VXnode(pool(), result_node, false);
+		if(GdomeNode *result_node=gdome_n_previousSibling(selfNode, &exc))
+			return NEW VXnode(pool(), result_node);
 	} else if(name=="nextSibling") {
-		if(XalanNode *result_node=gdome_n_nextSibling(selfNode, &exc))
-			return NEW VXnode(pool(), result_node, false);
+		if(GdomeNode *result_node=gdome_n_nextSibling(selfNode, &exc))
+			return NEW VXnode(pool(), result_node);
 	} else if(name=="ownerDocument") {
 		if(GdomeDocument *document=gdome_n_ownerDocument(selfNode, &exc))
 			return NEW VXdoc(pool(), document);
-	} else switch(gdome_n_nodeType(selfNodem, &exc)) {
-		case XalanNode::ELEMENT_NODE: 
+	} else switch(gdome_n_nodeType(selfNode, &exc)) {
+		case GDOME_ELEMENT_NODE: 
 			if(name=="attributes") {
-				if(const GdomeNamedNodeMap *attributes=gdome_n_attributes(selfNode, &exc)) {
+				if(GdomeNamedNodeMap *attributes=gdome_n_attributes(selfNode, &exc)) {
 					VHash *result=NEW VHash(pool());
-					for(int i=0; i<attributes->getLength(); i++) {
-						XalanNode *attr_node=attributes->item(i);
+					gulong length=gdome_nnm_length(attributes, &exc);
+					for(gulong i=0; i<length; i++) {
+						GdomeNode *attr_node=gdome_nnm_item(attributes, i, &exc);
 						result->hash(0).put(
 							transcode(gdome_n_nodeName(attr_node, &exc)), 
-							NEW VXnode(pool(), attr_node, false));
+							NEW VXnode(pool(), attr_node));
 					}
 					return result;
 				}
 			} else if(name=="tagName") {
-				return NEW VString(transcode(gdome_el_tagName((GdomeElement*)selfNode, &exc)));
+				return NEW VString(transcode(gdome_el_tagName(GDOME_EL(selfNode), &exc)));
 			}
 			break;
-		case XalanNode::ATTRIBUTE_NODE: 
+		case GDOME_ATTRIBUTE_NODE: 
 			if(name=="specified")
-				return NEW VBool(pool(), gdome_a_specified((GdomeAttr *)selfNode, &exc));
+				return NEW VBool(pool(), gdome_a_specified(GDOME_A(selfNode), &exc)!=0);
 			break;
 /*
-		case XalanNode::COMMENT_NODE: 
+		case GDOME_COMMENT_NODE: 
 			substringData(unsigned int offset, unsigned int count)
 */
-		case XalanNode::PROCESSING_INSTRUCTION_NODE: 
+		case GDOME_PROCESSING_INSTRUCTION_NODE: 
 			if(name=="target")
-				return NEW VString(transcode(gdome_pi_target((GdomeProcessingInstruction*)selfNode)));
+				return NEW VString(transcode(gdome_pi_target(GDOME_PI(selfNode), &exc)));
 			break;
-		case XalanNode::DOCUMENT_TYPE_NODE: 
+		case GDOME_DOCUMENT_TYPE_NODE: 
 			{
-				GdomeDocumentType *doctype=(GdomeDocumentType*)selfNode;
+				GdomeDocumentType *doctype=GDOME_DT(selfNode);
 				if(name=="name") {
 					// readonly attribute DOMString name;
 					// The name of DTD; i.e., the name immediately following 
@@ -117,9 +118,9 @@ Value *VXnode::get_element(const String& name) {
 				*/
 			}
 			break;
-		case XalanNode::NOTATION_NODE:
+		case GDOME_NOTATION_NODE:
 			{
-				GdomeNotation *notation=(GdomeNotation*)selfNode;
+				GdomeNotation *notation=GDOME_NOT(selfNode);
 				if(name=="publicId") {
 					// readonly attribute DOMString publicId;
 					return NEW VString(transcode(gdome_not_publicId(notation, &exc)));

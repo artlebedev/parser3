@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxnode.h,v 1.9 2001/12/27 19:57:10 paf Exp $
+	$Id: pa_vxnode.h,v 1.10 2001/12/28 14:06:52 paf Exp $
 */
 
 #ifndef PA_VXNODE_H
@@ -48,10 +48,9 @@ protected: // VAliased
 public: // usage
 
 	VXnode(Pool& apool, GdomeNode *anode, VStateless_class& abase=*Xnode_class) : 
-		VStateless_object(apool, abase) {
+		VStateless_object(apool, abase),
+		fnode(anode/*not adding ref, owning a node*/) {
 		GdomeException exc;
-		if(fnode=anode)
-			gdome_n_ref(fnode, &exc);
 
 		register_cleanup(VXnode_cleanup, this);
 	}
@@ -72,7 +71,7 @@ public:
 	}
 
 public: // VXnode
-	virtual GdomeNode *get_node(Pool& pool, const String *source) { 
+	virtual GdomeNode *get_node(const String *source) { 
 		if(!fnode)
 			throw Exception(0, 0,
 				source,

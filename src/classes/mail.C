@@ -4,14 +4,10 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.49 2001/12/25 09:00:28 paf Exp $
+	$Id: mail.C,v 1.50 2001/12/28 14:06:50 paf Exp $
 */
 
 #include "pa_config_includes.h"
-
-#ifdef _MSC_VER
-#	include "smtp/smtp.h"
-#endif
 
 #include "pa_common.h"
 #include "pa_request.h"
@@ -19,6 +15,10 @@
 #include "pa_exec.h"
 #include "pa_charsets.h"
 #include "pa_charset.h"
+
+#ifdef _MSC_VER
+#	include "smtp/smtp.h"
+#endif
 
 // defines
 

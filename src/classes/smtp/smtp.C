@@ -4,13 +4,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: smtp.C,v 1.6 2001/11/05 11:46:23 paf Exp $
+	$Id: smtp.C,v 1.7 2001/12/28 14:06:50 paf Exp $
 
 	Parts of the code here is based upon an early gensock and blat
 */
 
-#include "smtp.h"
 #include "pa_exception.h"
+#include "smtp.h"
 
 SMTP::SMTP(Pool& pool, const String& aorigin_string) : Pooled(pool),
 	origin_string(aorigin_string) {

@@ -4,13 +4,17 @@
 	Copyright(c) 2000,2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.18 2001/11/10 16:11:33 paf Exp $
+	$Id: pa_exec.C,v 1.19 2001/12/28 14:06:52 paf Exp $
 
 
 	@todo setrlimit
 */
 
 #include "pa_config_includes.h"
+
+#include "pa_exec.h"
+#include "pa_exception.h"
+#include "pa_common.h"
 
 #ifdef WIN32
 #	include <windows.h>
@@ -19,14 +23,6 @@
 #	include <sys/types.h>
 #	include <sys/wait.h>
 #endif
-
-#include <stdio.h>
-#include <errno.h>
-
-#include "pa_exec.h"
-#include "pa_exception.h"
-#include "pa_common.h"
-
 
 #ifdef WIN32
 

@@ -4,12 +4,11 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: comms.C,v 1.5 2001/11/05 11:46:22 paf Exp $
+	$Id: comms.C,v 1.6 2001/12/28 14:06:50 paf Exp $
 */
 
-#include <winsock.h>
-
 #include "smtp.h"
+#include <winsock.h>
 
 // ---------------------------------------------------------------------------
 int SMTP:: 

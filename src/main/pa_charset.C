@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.8 2001/12/27 19:57:09 paf Exp $
+	$Id: pa_charset.C,v 1.9 2001/12/28 14:06:51 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -158,7 +158,7 @@ Charset::Charset(Pool& apool, const String& aname, const String *request_file_sp
 
 Charset::~Charset() {
 #ifdef XML
-	delete transcoder;
+	// not deleting transcoder, that's not our business
 #endif
 }
 

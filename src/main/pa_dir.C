@@ -4,11 +4,11 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_dir.C,v 1.8 2001/11/05 11:46:27 paf Exp $
+	$Id: pa_dir.C,v 1.9 2001/12/28 14:06:51 paf Exp $
 */
 
-#include "pa_dir.h"
 #include "pa_common.h"
+#include "pa_dir.h"
 
 #ifdef WIN32
 

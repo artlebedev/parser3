@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.53 2001/12/15 21:28:18 paf Exp $
+	$Id: xdoc.C,v 1.54 2001/12/28 14:06:50 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -12,39 +12,11 @@
 
 #include "pa_request.h"
 #include "pa_vxdoc.h"
-#include "pa_stylesheet_manager.h"
-#include "pa_stylesheet_connection.h"
+//#include "pa_stylesheet_manager.h"
+//#include "pa_stylesheet_connection.h"
 #include "pa_charset.h"
 #include "pa_vfile.h"
 #include "xnode.h"
-
-#include <strstream>
-#include <Include/PlatformDefinitions.hpp>
-#include <util/PlatformUtils.hpp>
-#include <util/TransENameMap.hpp>
-#include "XalanTransformer2.hpp"
-#include <XalanTransformer/XalanParsedSource.hpp>
-#	include <XalanTransformer/XalanDefaultParsedSource.hpp>
-#	include <XalanSourceTree/XalanSourceTreeDocument.hpp>
-#	include <XalanSourceTree/XalanSourceTreeContentHandler.hpp>
-#	include <sax2/XMLReaderFactory.hpp>
-#include <XMLSupport/FormatterToXML.hpp>
-#include <XMLSupport/FormatterToHTML.hpp>
-#include <XMLSupport/FormatterToText.hpp>
-#include <XMLSupport/FormatterTreeWalker.hpp>
-#include <PlatformSupport/XalanFileOutputStream.hpp>
-#include <PlatformSupport/XalanOutputStreamPrintWriter.hpp>
-#include <PlatformSupport/DOMStringPrintWriter.hpp>
-#include <XalanDOM/XalanElement.hpp>
-#include <XalanDOM/XalanNodeList.hpp>
-#include <XalanDOM/XalanDocumentFragment.hpp>
-#include <XalanDOM/XalanCDATASection.hpp>
-#include <XalanDOM/XalanEntityReference.hpp>
-#include <dom/DOM_Document.hpp>
-#include <XercesParserLiaison/XercesDocumentBridge.hpp>
-#include <XalanTransformer/XercesDOMParsedSource.hpp>
-#include <XSLT/StylesheetRoot.hpp>
-#include <XalanTransformer/XalanCompiledStylesheet.hpp>
 
 // defines
 
@@ -60,7 +32,7 @@
 
 class MXdoc : public MXnode {
 public: // VStateless_class
-	Value *create_new_value(Pool& pool) { return new(pool) VXdoc(pool, 0, false); }
+	Value *create_new_value(Pool& pool) { return new(pool) VXdoc(pool, 0); }
 
 public:
 	MXdoc(Pool& pool);
@@ -72,6 +44,20 @@ public: // Methoded
 
 // methods
 
+static void writeNode(Request& r,  const String& method_name, GdomeNode *node, 
+					  GdomeException exc) {
+	if(!node || exc)
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
+
+	Pool& pool=r.pool();
+
+	// write out result
+	VXnode& result=*new(pool) VXnode(pool, node);
+	r.write_no_lang(result);
+}
+
 // Element createElement(in DOMString tagName) raises(DOMException);
 static void _createElement(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -79,16 +65,12 @@ static void _createElement(Request& r, const String& method_name, MethodParams *
 
 	const String& tagName=params->as_string(0, "tagName must be string");
 
-	try {
-		XalanNode *node=
-			vdoc.get_document(pool, &method_name).
-			createElement(*pool.transcode(tagName));
-		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node, false);
-		r.write_no_lang(result);
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	GdomeNode *node=
+		(GdomeNode *)gdome_doc_createElement(vdoc.get_document(&method_name), 
+		pool.transcode(tagName),
+		&exc);
+	writeNode(r, method_name, node, exc);
 }
 
 // DocumentFragment createDocumentFragment()
@@ -96,12 +78,12 @@ static void _createDocumentFragment(Request& r, const String& method_name, Metho
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	XalanNode *node=
-		vdoc.get_document(pool, &method_name).
-		createDocumentFragment();
-	// write out result
-	VXnode& result=*new(pool) VXnode(pool, node, false);
-	r.write_no_lang(result);
+	GdomeException exc;
+	GdomeNode *node=
+		(GdomeNode *)gdome_doc_createDocumentFragment(
+		vdoc.get_document(&method_name),
+		&exc);
+	writeNode(r, method_name, node, exc);
 }
 
 // Text createTextNode(in DOMString data);
@@ -111,12 +93,12 @@ static void _createTextNode(Request& r, const String& method_name, MethodParams 
 
 	const String& data=params->as_string(0, "data must be string");
 
-	XalanNode *node=
-		vdoc.get_document(pool, &method_name).
-		createTextNode(*pool.transcode(data));
-	// write out result
-	VXnode& result=*new(pool) VXnode(pool, node, false);
-	r.write_no_lang(result);
+	GdomeException exc;
+	GdomeNode *node=(GdomeNode *)gdome_doc_createTextNode(
+		vdoc.get_document(&method_name),
+		pool.transcode(data),
+		&exc);
+	writeNode(r, method_name, node, exc);
 }
 
 // Comment createComment(in DOMString data)
@@ -126,12 +108,12 @@ static void _createComment(Request& r, const String& method_name, MethodParams *
 
 	const String& data=params->as_string(0, "data must be string");
 
-	XalanNode *node=
-		vdoc.get_document(pool, &method_name).
-		createComment(*pool.transcode(data));
-	// write out result
-	VXnode& result=*new(pool) VXnode(pool, node, false);
-	r.write_no_lang(result);
+	GdomeException exc;
+	GdomeNode *node=(GdomeNode *)gdome_doc_createComment(
+		vdoc.get_document(&method_name),
+		pool.transcode(data),
+		&exc);
+	writeNode(r, method_name, node, exc);
 }
 
 // CDATASection createCDATASection(in DOMString data) raises(DOMException);
@@ -141,16 +123,12 @@ static void _createCDATASection(Request& r, const String& method_name, MethodPar
 
 	const String& data=params->as_string(0, "data must be string");
 
-	try {
-		XalanNode *node=
-			vdoc.get_document(pool, &method_name).
-			createCDATASection(*pool.transcode(data));
-		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node, false);
-		r.write_no_lang(result);
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	GdomeNode *node=(GdomeNode *)gdome_doc_createCDATASection(
+		vdoc.get_document(&method_name),
+		pool.transcode(data),
+		&exc);
+	writeNode(r, method_name, node, exc);
 }
 
 // ProcessingInstruction createProcessingInstruction(in DOMString target,in DOMString data) raises(DOMException);
@@ -161,16 +139,13 @@ static void _createProcessingInstruction(Request& r, const String& method_name, 
 	const String& target=params->as_string(0, "data must be string");
 	const String& data=params->as_string(1, "data must be string");
 
-	try {
-		XalanNode *node=
-			vdoc.get_document(pool, &method_name).
-			createProcessingInstruction(*pool.transcode(target), *pool.transcode(data));
-		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node, false);
-		r.write_no_lang(result);
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	GdomeNode *node=(GdomeNode *)gdome_doc_createProcessingInstruction(
+		vdoc.get_document(&method_name),
+		pool.transcode(target), 
+		pool.transcode(data),
+		&exc);
+	writeNode(r, method_name, node, exc);
 }
 
 // Attr createAttribute(in DOMString name) raises(DOMException);
@@ -180,16 +155,12 @@ static void _createAttribute(Request& r, const String& method_name, MethodParams
 
 	const String& name=params->as_string(0, "name must be string");
 
-	try {
-		XalanNode *node=
-			vdoc.get_document(pool, &method_name).
-			createAttribute(*pool.transcode(name));
-		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node, false);
-		r.write_no_lang(result);
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	GdomeNode *node=(GdomeNode *)gdome_doc_createAttribute(
+		vdoc.get_document(&method_name),
+		pool.transcode(name),
+		&exc);
+	writeNode(r, method_name, node, exc);
 }
 // EntityReference createEntityReference(in DOMString name) raises(DOMException);
 static void _createEntityReference(Request& r, const String& method_name, MethodParams *params) {
@@ -198,30 +169,29 @@ static void _createEntityReference(Request& r, const String& method_name, Method
 
 	const String& name=params->as_string(0, "name must be string");
 
-	try {
-		XalanNode *node=
-			vdoc.get_document(pool, &method_name).
-			createEntityReference(*pool.transcode(name));
-		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node, false);
-		r.write_no_lang(result);
-	} catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	GdomeNode *node=(GdomeNode *)gdome_doc_createEntityReference(
+		vdoc.get_document(&method_name),
+		pool.transcode(name),
+		&exc);
+	writeNode(r, method_name, node, exc);
 }
 
-/*
 static void _getElementsByTagName(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	// tagname
-	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
+	const String& name=params->as_string(0, "name must be string");
 
+	GdomeException exc;
 	VHash& result=*new(pool) VHash(pool);
-	if(const XalanNodeList *nodes=
-		vdoc.get_document(pool, &method_name).getElementsByTagName(XalanDOMString(name))) {
-		for(int i=0; i<nodes->getLength(); i++) {
+	if(GdomeNodeList *nodes=
+		gdome_doc_getElementsByTagName(
+			vdoc.get_document(&method_name), 
+			pool.transcode(name),
+			&exc)) {
+		gulong length=gdome_nl_length(nodes, &exc);
+		for(gulong i=0; i<length; i++) {
 			String& skey=*new(pool) String(pool);
 			{
 				char *buf=(char *)pool.malloc(MAX_NUMBER);
@@ -229,7 +199,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 				skey << buf;
 			}
 
-			result.hash().put(skey, new(pool) VXnode(pool, nodes->item(i)));
+			result.hash(0).put(skey, new(pool) VXnode(pool, gdome_nl_item(nodes, i, &exc)));
 		}
 	}
 
@@ -242,14 +212,19 @@ static void _getElementsByTagNameNS(Request& r, const String& method_name, Metho
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
 	// namespaceURI;localName
-	const char *namespaceURI=params->as_string(0, "namespaceURI must be string").cstr(String::UL_XML);
-	const char *localName=params->as_string(0, "localName must be string").cstr(String::UL_XML);
+	const String& namespaceURI=params->as_string(0, "namespaceURI must be string");
+	const String& localName=params->as_string(0, "localName must be string");
 
+	GdomeException exc;
 	VHash& result=*new(pool) VHash(pool);
-	if(const XalanNodeList *nodes=
-		vdoc.get_document(pool, &method_name).getElementsByTagNameNS(
-			XalanDOMString(namespaceURI), XalanDOMString(localName))) {
-		for(int i=0; i<nodes->getLength(); i++) {
+	if(GdomeNodeList *nodes=
+		gdome_doc_getElementsByTagNameNS(
+			vdoc.get_document(&method_name), 
+			pool.transcode(namespaceURI),
+			pool.transcode(localName),
+			&exc)) {
+		gulong length=gdome_nl_length(nodes, &exc);
+		for(gulong i=0; i<length; i++) {
 			String& skey=*new(pool) String(pool);
 			{
 				char *buf=(char *)pool.malloc(MAX_NUMBER);
@@ -257,116 +232,130 @@ static void _getElementsByTagNameNS(Request& r, const String& method_name, Metho
 				skey << buf;
 			}
 
-			result.hash().put(skey, new(pool) VXnode(pool, nodes->item(i)));
+			result.hash(0).put(skey, new(pool) VXnode(pool, gdome_nl_item(nodes, i, &exc)));
 		}
 	}
+
 
 	// write out result
 	r.write_no_lang(result);
 }
+
+static void _getElementById(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	// elementId
+	const String& elementId=params->as_string(0, "elementID must be string");
+
+	GdomeException exc;
+	if(GdomeNode *node=(GdomeNode *)gdome_doc_getElementById(
+		vdoc.get_document(&method_name),
+		pool.transcode(elementId),
+		&exc)) {
+		// write out result
+		VXnode& result=*new(pool) VXnode(pool, node);
+		r.write_no_lang(result);
+	} else if(exc)
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
+}
+/*
+GdomeNode *gdome_doc_importNode (GdomeDocument *self, GdomeNode *importedNode, GdomeBoolean deep, GdomeException *exc);
+GdomeElement *gdome_doc_createElementNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
+GdomeAttr *gdome_doc_createAttributeNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
+GdomeNodeList *gdome_doc_getElementsByTagNameNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *localName, GdomeException *exc);
 */
 
 
-class ParserStringXalanOutputStream: public XalanOutputStream {
-public:
-	
-	explicit ParserStringXalanOutputStream(String& astring) : fstring(astring) {}
+static void _create(Request& r, const String& method_name, MethodParams *params) {
+	//_asm int 3;
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-protected: // XalanOutputStream
+	const String& qualifiedName=params->as_string(0, "qualifiedName must be string");
 
-	virtual void writeData(const char *theBuffer, unsigned long theBufferLength) {
-		char *copy=(char *)fstring.malloc((size_t)theBufferLength);
-		memcpy(copy, theBuffer, (size_t)theBufferLength);
-		fstring.APPEND_CLEAN(copy, (size_t)theBufferLength, "xdoc", 0);
-	}
+	GdomeException exc;
+	/*
+	GdomeDocumentType *documentType=gdome_di_createDocumentType (
+		docimpl, 
+		pool.transcode(qualifiedName), 
+		0/*publicId* /, 
+		0/*systemId* /, 
+		&exc);
+	if(!documentType || exc)
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
+	*/
+	GdomeDocument *document=gdome_di_createDocument (domimpl, 
+		0/*namespaceURI*/, 
+		pool.transcode(qualifiedName), 
+		0/*doctype*/, 
+		&exc);
+	if(!document || exc)
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 
-	virtual void doFlush() {}
+	/// +createXMLDecl ?
+	//document.appendChild(document.createElement(*pool.transcode(qualifiedName)));
 
-private:
-
-	String& fstring;
-	
-};
-
-class XalanSourceTreeParserLiaison2: public XalanSourceTreeParserLiaison {
-public:
-	XalanSourceTreeParserLiaison2(XalanSourceTreeDOMSupport& 	theSupport) : XalanSourceTreeParserLiaison(theSupport), 
-		ferror_handler(new HandlerBase) {
-	}
-
-	XalanDocument*
-	parseXMLStream2(
-				const InputSource& 	inputSource) {
-		XalanSourceTreeContentHandler	theContentHandler(createXalanSourceTreeDocument());
-		XalanAutoPtr<SAX2XMLReader>		theReader(XMLReaderFactory::createXMLReader());
-		theReader->setContentHandler(&theContentHandler);
-		theReader->setDTDHandler(&theContentHandler);
-		theReader->setErrorHandler(ferror_handler); // disable stderr output
-		theReader->setLexicalHandler(&theContentHandler);
-		EntityResolver* const	theResolver = getEntityResolver();
-		if (theResolver != 0) {
-			theReader->setEntityResolver(theResolver);
-		}
-		theReader->parse(inputSource);
-		return theContentHandler.getDocument();
-	}
-	
-	~XalanSourceTreeParserLiaison2() {
-		delete ferror_handler;
-	}
-private:
-	ErrorHandler *ferror_handler;
-};
-
-class XalanDefaultParsedSource2 : public XalanParsedSource
-{
-public:
-
-	XalanDefaultParsedSource2(const XSLTInputSource& 	theInputSource);
-
-	virtual XalanDocument*
-	getDocument() const;
-
-	virtual XalanParsedSourceHelper*
-	createHelper() const;
-
-private:
-
-	XalanSourceTreeDOMSupport		m_domSupport;
-
-	XalanSourceTreeParserLiaison2	m_parserLiaison2;
-
-	XalanSourceTreeDocument* const	m_parsedSource;
-};
-
-XalanDefaultParsedSource2::XalanDefaultParsedSource2(const XSLTInputSource& theInputSource):
-	XalanParsedSource(),
-	m_domSupport(),
-	m_parserLiaison2(m_domSupport),
-	m_parsedSource(m_parserLiaison2.mapDocument(m_parserLiaison2.parseXMLStream2(theInputSource)))
-{
-	assert(m_parsedSource != 0);
-
-	m_domSupport.setParserLiaison(&m_parserLiaison2);
+	// replace any previous parsed source
+	vdoc.set_document(document);
 }
 
+static void _set(Request& r, const String& method_name, MethodParams *params) {
+//	_asm int 3;
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
+	Value& vxml=params->as_junction(0, "xml must be code");
+	Temp_lang temp_lang(r, String::UL_XML);
+	const String& xml=r.process(vxml).as_string();
 
-XalanDocument*	
-XalanDefaultParsedSource2::getDocument() const
-{
-	return m_parsedSource;
+	GdomeException exc;
+	GdomeDocument *document=gdome_di_createDocFromMemory(domimpl,
+		xml.cstr(String::UL_UNSPECIFIED, r.connection),
+		GDOME_LOAD_VALIDATING 
+		/*GDOME_LOAD_PARSING */ 
+		/*|GDOME_LOAD_SUBSTITUTE_ENTITIES */,
+		&exc);
+	if(!document || exc)
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
+
+	// replace any previous parsed source
+	vdoc.set_document(document);
 }
 
+static void _load(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
+	// filespec
+	const String& file_name=params->as_string(0, "uri must be string");
+	const String& uri=r.absolute(file_name);
+	
+	GdomeException exc;
+	GdomeDocument *document=gdome_di_createDocFromURI(domimpl,
+		uri.cstr(),
+		GDOME_LOAD_VALIDATING 
+		/*GDOME_LOAD_PARSING */ 
+		/*|GDOME_LOAD_SUBSTITUTE_ENTITIES */,
+		&exc);
+	if(!document || exc)
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 
-XalanParsedSourceHelper*
-XalanDefaultParsedSource2::createHelper() const
-{
-	return new XalanDefaultParsedSourceHelper(m_domSupport);
+	// replace any previous parsed source
+	vdoc.set_document(document);
 }
 
-
+/*
 static void param_option_over_output_option(Pool& pool, 
 											Hash *param_options, const char *option_name,
 											XalanDOMString& output_option) {
@@ -393,7 +382,7 @@ static void param_option_over_output_option(Pool& pool,
 	}
 }
 
-static std::auto_ptr<FormatterListener> create_optioned_listener(
+ static std::auto_ptr<FormatterListener> create_optioned_listener(
 									 Pool& pool, const String& method_name, MethodParams *params, int index,
 									 VXdoc::Output_options& oo, Writer& writer) {
 /*
@@ -405,7 +394,7 @@ static std::auto_ptr<FormatterListener> create_optioned_listener(
 	XalanDOMString version;
 	XalanDOMString standalone;
 	bool xmlDecl;
-*/
+* /
 
 /*
 <xsl:output
@@ -419,12 +408,12 @@ static std::auto_ptr<FormatterListener> create_optioned_listener(
   cdata-section-elements = qnames 
   !indent = "yes" | "no"
   !media-type = string /> 
-*/
+* /
 
 	/*
 		fToXML->setStripCData(stripCData);
 		fToXML->setEscapeCData(escapeCData);
-	*/
+	* /
 
 	// configuring with options from parameter...
 	if(params->size()>index) {
@@ -509,70 +498,58 @@ static std::auto_ptr<FormatterListener> create_optioned_listener(
 
 	// never reached
 }
+*/
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
-	// filespec
 	const String& file_name=params->as_string(0, "file name must be string");
-	const char *filespec=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
+	const String& filespec=r.absolute(file_name);
 	
-	// node
-	XalanNode& node=vnode.get_node(pool, &method_name);
-
-	try {
-		VXdoc::Output_options oo(vdoc.output_options);
-		XalanFileOutputStream stream(XalanDOMString(filespec, strlen(filespec)));
-		XalanOutputStreamPrintWriter writer(stream);
-		std::auto_ptr<FormatterListener> formatterListener=
-			create_optioned_listener(pool, method_name, params, 1, 
-				oo, writer);
-		FormatterTreeWalker treeWalker(*formatterListener);
-		treeWalker.traverse(&node); // Walk that node and produce the XML...
-	} catch(const XSLException& e) {
-		Exception::provide_source(pool, &method_name, e);
-	}
+	GdomeException exc;
+	if(!gdome_di_saveDocToFile(domimpl,
+		vdoc.get_document(&method_name),
+		filespec.cstr(String::UL_FILE_SPEC),
+		GDOME_SAVE_LIBXML_INDENT /*GDOME_SAVE_STANDARD */,
+		&exc))
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 }
 
 static void _string(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	// node
-	XalanNode *node=&vdoc.get_document(pool, &method_name);//.getDocumentElement();
-	if(!node)
-		throw Exception(0, 0,
-			&method_name,
-			"no documentElement");
+	char *mem;
+	GdomeException exc;
+	if(!gdome_di_saveDocToMemory(domimpl,
+		vdoc.get_document(&method_name),
+		&mem,
+		GDOME_SAVE_LIBXML_INDENT /*GDOME_SAVE_STANDARD */,
+		&exc))
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 
-	try {
-		VXdoc::Output_options oo(vdoc.output_options);
-		String& parserString=*new(pool) String(pool);
-		ParserStringXalanOutputStream stream(parserString);
-		XalanOutputStreamPrintWriter writer(stream);
-		std::auto_ptr<FormatterListener> formatterListener=
-			create_optioned_listener(pool, method_name, params, 0, 
-				oo, writer);
-		FormatterTreeWalker treeWalker(*formatterListener);
-		treeWalker.traverse(node); // Walk that node and produce the XML...
-
-		// write out result
-		r.write_no_lang(parserString);
-	} catch(const XSLException& e) {
-		Exception::provide_source(pool, &method_name, e);
-	}
+	// move to pool memory
+	size_t size=strlen(mem);
+	char *buf=(char *)pool.malloc(size);
+	memcpy(buf, mem, size);
+	g_free(mem);
+	// write out result
+	r.write_no_lang(*new(pool) String(pool, buf, size));
 }
 
-
+/*
 static void _file(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
 	// node
-	XalanNode& node=vnode.get_node(pool, &method_name);
+	GdomeNode *node=vnode.get_node(pool, &method_name);
 
 	try {
 		VXdoc::Output_options oo(vdoc.output_options);
@@ -600,101 +577,14 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 			vcontent_type=vhcontent_type;
 		}
 		
-		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*file_name*/, vcontent_type);
+		vfile.set(false/*tainted* /, cstr, strlen(cstr), 0/*file_name* /, vcontent_type);
 		r.write_no_lang(vfile);
 	} catch(const XSLException& e) {
 		Exception::provide_source(pool, &method_name, e);
 	}
 }
-
-static void _set(Request& r, const String& method_name, MethodParams *params) {
-//	_asm int 3;
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-
-	Value& vxml=params->as_junction(0, "xml must be code");
-	Temp_lang temp_lang(r, String::UL_XML);
-	const String& xml=r.process(vxml).as_string();
-
-	std::istrstream stream(
-		xml.cstr(String::UL_UNSPECIFIED, r.connection));
-	const XalanParsedSource* parsedSource;
-
-	try {
-		parsedSource = new XalanDefaultParsedSource2(&stream);
-	}
-	catch (XSLException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
-	catch (SAXParseException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
-	catch (SAXException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
-	catch (XMLException& e) {
-		Exception::provide_source(pool, &method_name, e);
-	}
-	catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
-
-	// replace any previous parsed source
-	vdoc.set_parsed_source(*parsedSource);
-}
-
-static void _create(Request& r, const String& method_name, MethodParams *params) {
-	//_asm int 3;
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-
-	const String& qualifiedName=params->as_string(0, "qualifiedName must be string");
-
-	XalanDocument& document=*new XercesDocumentBridge(
-		DOM_Document::createDocument(),
-		0,
-		false /*threadSafe*/,
-		false /*don' buildBridge -- too early, empty document*/);
-
-	/// +createXMLDecl ?
-	document.appendChild(document.createElement(*pool.transcode(qualifiedName)));
-
-	// replace any previous document
-	vdoc.set_document(document, true/*owns*/);
-}
-
-static void _load(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-
-	// filespec
-	const String& file_name=params->as_string(0, "file name must be string");
-	const char *filespec=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
-	
-	const XalanParsedSource* parsedSource;
-	try {
-		parsedSource = new XalanDefaultParsedSource2(filespec);
-	}
-	catch (XSLException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
-	catch (SAXParseException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
-	catch (SAXException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
-	catch (XMLException& e) {
-		Exception::provide_source(pool, &method_name, e);
-	}
-	catch(const XalanDOMException& e)	{
-		Exception::provide_source(pool, &method_name, e);
-	}
-
-	// replace any previous parsed source
-	vdoc.set_parsed_source(*parsedSource);
-}
-
+*/
+/*
 /// @test lang=String::UL_UNSPECIFIED?
 static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning, 
 						   void *info) {
@@ -739,7 +629,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		//   wich were originally "xalan"
 		//   not daring to change that
 
-		const XalanCompiledStylesheet& stylesheet=connection.stylesheet(false/*nocache*/);
+		const XalanCompiledStylesheet& stylesheet=connection.stylesheet(false/*nocache* /);
 		if(vdoc.has_parsed_source()) { // set|load, not create?
 			vdoc.transformer().transform2(
 				vdoc.get_parsed_source(pool, &method_name), 
@@ -748,11 +638,11 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		} else {
 			target=vdoc.parser_xerces_liaison().createDocument();
 			vdoc.transformer().transform2(
-				vdoc.get_document(pool, &method_name), 
+				vdoc.get_document(&method_name), 
 				&stylesheet, 
 				target);
 		}
-		VXdoc& result=*new(pool) VXdoc(pool, target, false/*owns not*/);
+		VXdoc& result=*new(pool) VXdoc(pool, target, false/*owns not* /);
 		// write out result
 		r.write_no_lang(result);
 		//
@@ -770,7 +660,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 			cdata-section-elements = qnames 
 			!indent = "yes" | "no"
 			!media-type = string /> 
-			*/
+			* /
 
 			VXdoc::Output_options& oo=result.output_options;
 			oo.encoding=stylesheetRoot->m_encoding;
@@ -822,21 +712,8 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	// close
 	connection.close();
 }
+*/
 
-static void _getElementById(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-
-	// elementId
-	const String& elementId=params->as_string(0, "elementID must be string");
-
-	if(XalanNode *node=
-		vdoc.get_document(pool, &method_name).getElementById(*pool.transcode(elementId))) {
-		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node, false);
-		r.write_no_lang(result);
-	}
-}
 // constructor
 
 MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
@@ -863,13 +740,9 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 	// EntityReference createEntityReference(in DOMString name) raises(DOMException);
 	add_native_method("createEntityReference", Method::CT_DYNAMIC, _createEntityReference, 1, 1);
 	// NodeList getElementsByTagName(in DOMString tagname);
-	/*	
-		// ^xdoc.getElementsByTagName[tagname]
-		add_native_method("getElementsByTagName", Method::CT_DYNAMIC, _getElementsByTagName, 1, 1);
-
-		// ^xdoc.getElementsByTagNameNS[namespaceURI;localName] = array of nodes
-		add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
-	*/
+	add_native_method("getElementsByTagName", Method::CT_DYNAMIC, _getElementsByTagName, 1, 1);
+	// ^xdoc.getElementsByTagNameNS[namespaceURI;localName] = array of nodes
+	add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
 
 	/// DOM2(?)
 
@@ -878,6 +751,14 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 
 	/// parser
 	
+	// ^xdoc::create{qualifiedName}
+	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 1);	
+	// ^xdoc::set[<some>xml</some>]
+	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 1);
+
+	// ^xdoc::load[some.xml]
+	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
+
 	// ^xdoc.save[some.xml]
 	// ^xdoc.save[some.xml;options hash]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
@@ -888,19 +769,11 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 
 	// ^xdoc.file[] file with "<doc/>"
 	// ^xdoc.file[options hash] file with "<doc/>"
-	add_native_method("file", Method::CT_DYNAMIC, _file, 0, 1);
-
-	// ^xdoc::set[<some>xml</some>]
-	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 1);
-	// ^xdoc::create{qualifiedName}
-	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 1);	
-
-	// ^xdoc::load[some.xml]
-	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
+//	add_native_method("file", Method::CT_DYNAMIC, _file, 0, 1);
 
 	// ^xdoc.transform[stylesheet file_name]
 	// ^xdoc.transform[stylesheet file_name;params hash]
-	add_native_method("transform", Method::CT_DYNAMIC, _transform, 1, 2);
+//	add_native_method("transform", Method::CT_DYNAMIC, _transform, 1, 2);
 
 }
 

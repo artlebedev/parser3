@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.96 2001/12/27 19:57:09 paf Exp $
+	$Id: pa_globals.C,v 1.97 2001/12/28 14:06:52 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -12,7 +12,7 @@
 #include "pa_hash.h"
 #include "pa_sql_driver_manager.h"
 #include "pa_dictionary.h"
-#include "pa_stylesheet_manager.h"
+//#include "pa_stylesheet_manager.h"
 #include "pa_sapi.h"
 #include "pa_cache_managers.h"
 #include "pa_charsets.h"
@@ -78,6 +78,8 @@ String *charset_UTF8_name;
 String *hash_default_element_name;
 
 Hash *untaint_lang_name2enum;
+
+GdomeDOMImplementation *domimpl;
 
 Charset *utf8_charset;
 
@@ -239,10 +241,11 @@ void pa_globals_init(Pool& pool) {
      */
     xmlDefaultSAXHandler.cdataBlock = NULL;
 
-
+/*
 	// XSLT stylesheet manager
 	cache_managers->put(*NEW String(pool, "stylesheet"), 
 		stylesheet_manager=NEW Stylesheet_manager(pool));
+		*/
 #endif
 }
 
