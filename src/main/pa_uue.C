@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_UUE_C="$Date: 2004/02/11 15:33:16 $";
+static const char * const IDENT_UUE_C="$Date: 2004/02/17 10:37:20 $";
 
 #include "pa_config_includes.h"
 
@@ -81,6 +81,6 @@ void pa_uuencode(String& result, const String& file_name, const VFile& vfile) {
 	}
 	
 	//footer
-	result.append_know_length((const char* )uue_table, 1/* one char */, String::L_AS_IS) << "\n"
+	result<< "`\n"
 		"end\n";
 }
