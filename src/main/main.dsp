@@ -126,10 +126,6 @@ SOURCE=..\include\pa_hash.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\include\pa_methoded.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\include\pa_pool.h
 # End Source File
 # Begin Source File
@@ -256,10 +252,6 @@ SOURCE=.\pa_globals.C
 # Begin Source File
 
 SOURCE=.\pa_hash.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_methoded.C
 # End Source File
 # Begin Source File
 
@@ -461,6 +453,14 @@ InputPath=..\classes\classes.awk
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\classes.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\classes.h
 # End Source File
 # Begin Source File
 

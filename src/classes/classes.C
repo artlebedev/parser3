@@ -5,10 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_methoded.C,v 1.1 2001/04/28 13:49:19 paf Exp $
+	$Id: classes.C,v 1.5 2001/04/28 15:22:38 paf Exp $
 */
 
-#include "pa_methoded.h"
+#include "classes.h"
 #include "pa_request.h"
 
 // Methoded

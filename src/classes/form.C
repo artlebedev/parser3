@@ -5,10 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: form.C,v 1.9 2001/04/28 13:49:13 paf Exp $
+	$Id: form.C,v 1.10 2001/04/28 15:22:38 paf Exp $
 */
 
-#include "pa_methoded.h"
+#include "classes.h"
 #include "pa_request.h"
 #include "pa_vform.h"
 

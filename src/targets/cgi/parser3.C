@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.75 2001/04/28 13:49:24 paf Exp $
+	$Id: parser3.C,v 1.76 2001/04/28 15:22:47 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,8 +15,8 @@
 #endif
 
 #include "pa_sapi.h"
+#include "classes.h"
 #include "pa_common.h"
-#include "pa_methoded.h"
 #include "pa_request.h"
 #include "pa_socks.h"
 #include "pa_version.h"

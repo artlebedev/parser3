@@ -5,10 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.23 2001/04/28 13:49:13 paf Exp $
+	$Id: double.C,v 1.24 2001/04/28 15:22:38 paf Exp $
 */
 
-#include "pa_methoded.h"
+#include "classes.h"
 #include "pa_request.h"
 #include "pa_vdouble.h"
 #include "pa_vint.h"

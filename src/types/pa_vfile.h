@@ -5,13 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.24 2001/04/28 13:49:26 paf Exp $
+	$Id: pa_vfile.h,v 1.25 2001/04/28 15:22:50 paf Exp $
 */
 
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#include "pa_methoded.h"
+#include "classes.h"
 #include "pa_common.h"
 #include "pa_globals.h"
 #include "pa_vstateless_object.h"

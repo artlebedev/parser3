@@ -5,11 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_methoded.h,v 1.1 2001/04/28 13:49:17 paf Exp $
+	$Id: classes.h,v 1.5 2001/04/28 15:22:38 paf Exp $
 */
 
-#ifndef PA_METHODED_H
-#define PA_METHODED_H
+#ifndef CLASSES_H
+#define CLASSES_H
 
 #include "pa_vstateless_class.h"
 #include "pa_array.h"
