@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6 [@test tested with Oracle 7.x.x]
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.11 2001/08/24 07:04:25 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.12 2001/08/24 07:14:36 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -221,19 +221,19 @@ public:
 	    OracleSQL_connection_struct &cs=*(OracleSQL_connection_struct *)connection;
 		// Terminate a user session
 		OCISessionEnd(
-			cs.svchp, cs.errhp, cs.usrhp, (ub4)OCI_DEFAULT)!=OCI_SUCCESS);
+			cs.svchp, cs.errhp, cs.usrhp, (ub4)OCI_DEFAULT);
 		// Detach from a server; uninitialize server context handle
 		OCIServerDetach(
-			cs.srvhp, cs.errhp, (ub4)OCI_DEFAULT)!=OCI_SUCCESS);
+			cs.srvhp, cs.errhp, (ub4)OCI_DEFAULT);
 		// Free a previously allocated handles
 		OCIHandleFree(
-			(dvoid *)cs.srvhp, (ub4)OCI_HTYPE_SERVER)!=OCI_SUCCESS);
+			(dvoid *)cs.srvhp, (ub4)OCI_HTYPE_SERVER);
 		OCIHandleFree(
-			(dvoid *)cs.svchp, (ub4)OCI_HTYPE_SVCCTX)!=OCI_SUCCESS);
+			(dvoid *)cs.svchp, (ub4)OCI_HTYPE_SVCCTX);
 		OCIHandleFree(
-			(dvoid *)cs.errhp, (ub4)OCI_HTYPE_ERROR)!=OCI_SUCCESS);
+			(dvoid *)cs.errhp, (ub4)OCI_HTYPE_ERROR);
 		OCIHandleFree(
-			(dvoid *)cs.envhp, (ub4)OCI_HTYPE_ENV)!=OCI_SUCCESS);
+			(dvoid *)cs.envhp, (ub4)OCI_HTYPE_ENV);
 
 		// connections are cross-request, do not use services._alloc [linked with request]
 		::free(&cs);
