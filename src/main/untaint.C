@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.70 2001/10/29 13:04:47 paf Exp $
+	$Id: untaint.C,v 1.71 2001/10/29 16:29:08 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -172,7 +172,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(size_t i=0; i<chunk->count; i++, row++) {
+		for(uint i=0; i<chunk->count; i++, row++) {
 			if(row==append_here)
 				goto break2;
 

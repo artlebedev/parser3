@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.28 2001/10/29 16:07:36 paf Exp $
+	$Id: pa_pool.C,v 1.29 2001/10/29 16:29:08 paf Exp $
 */
 
 #include <stdlib.h>
@@ -162,7 +162,7 @@ void *Pool::real_malloc(size_t size, int place) {
 	int index=min(MALLOC_STAT_MAXSIZE-1, size);
 	malloc_times[place][index]++;
 	malloc_places[place]++;
-/*	if(size==880 && place==1)
+/*	if(size==208 && place==10)
 		__asm int 3;*/
 #endif
 	return ::malloc(size);

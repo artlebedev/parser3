@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.111 2001/10/29 15:15:11 paf Exp $
+	$Id: pa_string.h,v 1.112 2001/10/29 16:29:07 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -195,10 +195,10 @@ public:
 
 	/// @return position of substr in string, -1 means "not found" [String version]
 	int pos(const String& substr, 
-		size_t this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
+		int this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
 	/// @return position of substr in string, -1 means "not found" [const char* version]
 	int pos(const char *substr, size_t substr_size=0, 
-		size_t this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
+		int this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
 
 	void split(Array& result, 
 		size_t *pos_after_ref, 
@@ -244,7 +244,7 @@ private:
 
 	/// several String fragments
 	struct Chunk {
-		size_t count; ///< the number of rows in chunk
+		uint count; ///< the number of rows in chunk
 		/// string fragment or a link to next chunk union
 		union Row {
 			/// fragment
@@ -296,7 +296,7 @@ private:
 
 	String& reconstruct(Pool& pool) const;
 	void join_chain(Pool& pool, 
-					   size_t& ai, const Chunk*& achunk, const Chunk::Row*& arow,
+					   uint& ai, const Chunk*& achunk, const Chunk::Row*& arow,
 					   Untaint_lang& joined_lang, const char *& joined_ptr, size_t& joined_size) const;
 	String& replace_in_reconstructed(Pool& pool, Dictionary& dict) const;
 

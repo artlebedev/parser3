@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.115 2001/10/29 15:15:11 paf Exp $
+	$Id: pa_string.C,v 1.116 2001/10/29 16:29:08 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -44,11 +44,11 @@ String::String(const String& src) :
 	forigins_mode(false) {
 	head.count=CR_PREALLOCATED_COUNT;
 	
-	size_t src_used_rows=src.used_rows();
+	uint src_used_rows=src.used_rows();
 	if(src_used_rows<=head.count) {
 		// all new rows fit size_to preallocated area
 		last_chunk=&head;
-		size_t curr_chunk_rows=head.count;
+		uint curr_chunk_rows=head.count;
 		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
 		append_here=&head.rows[src_used_rows];
 		link_row=&head.rows[curr_chunk_rows];
@@ -65,18 +65,18 @@ String::String(const String& src) :
 		// preallocated chunk src to constructing head
 		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*head.count);
 		// remaining rows size_to new_chunk
-		size_t curr_chunk_rows=src_used_rows-head.count;
+		uint curr_chunk_rows=src_used_rows-head.count;
 		last_chunk=static_cast<Chunk *>(
-			malloc(sizeof(size_t)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *), 9));
+			malloc(sizeof(uint)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *), 9));
 		last_chunk->count=curr_chunk_rows;
 		head.preallocated_link=last_chunk;
 		append_here=link_row=&last_chunk->rows[last_chunk->count];
 
 		Chunk *old_chunk=src.head.preallocated_link; 
 		Chunk::Row *new_rows=last_chunk->rows;
-		size_t rows_left_to_copy=last_chunk->count;
+		uint rows_left_to_copy=last_chunk->count;
 		while(true) {
-			size_t old_count=old_chunk->count;
+			uint old_count=old_chunk->count;
 			Chunk *next_chunk=old_chunk->rows[old_count].link;
 			if(next_chunk) {
 				// not last source chunk
@@ -105,7 +105,7 @@ uint String::used_rows() const {
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(size_t i=0; i<chunk->count; i++, row++) {
+		for(uint i=0; i<chunk->count; i++, row++) {
 			if(row==append_here)
 				goto break2;
 
@@ -118,9 +118,9 @@ break2:
 	return result;
 }
 void String::expand() {
-	size_t new_chunk_count=last_chunk->count+CR_GROW_COUNT;
+	uint new_chunk_count=last_chunk->count+CR_GROW_COUNT;
 	last_chunk=static_cast<Chunk *>(
-		malloc(sizeof(size_t)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *), 10));
+		malloc(sizeof(uint)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *), 10));
 	last_chunk->count=new_chunk_count;
 	link_row->link=last_chunk;
 	append_here=last_chunk->rows;
@@ -132,7 +132,7 @@ String& String::append(const String& src, Untaint_lang lang, bool forced) {
 	const Chunk *chunk=&src.head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(size_t i=0; i<chunk->count; i++, row++) {
+		for(uint i=0; i<chunk->count; i++, row++) {
 			if(row==src.append_here)
 				goto break2;
 			
@@ -184,7 +184,7 @@ uint String::hash_code() const {
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(size_t i=0; i<chunk->count; i++) {
+		for(uint i=0; i<chunk->count; i++) {
 			if(row==append_here)
 				goto break2;
 
@@ -211,9 +211,9 @@ int String::cmp(int& partial, const String& src,
 	size_t b_offset=0;
 	Chunk::Row *a_end=append_here;
 	Chunk::Row *b_end=src.append_here;
-	size_t a_countdown=a_chunk->count;
-	size_t b_countdown=b_chunk->count;
-	size_t result;
+	uint a_countdown=a_chunk->count;
+	uint b_countdown=b_chunk->count;
+	int result;
 	size_t pos=0; 
 
 	bool a_break=size()==0;
@@ -297,7 +297,7 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 	size_t a_offset=this_offset;
 	size_t b_offset=0;
 	Chunk::Row *a_end=append_here;
-	size_t a_countdown=a_chunk->count;
+	uint a_countdown=a_chunk->count;
 	size_t pos=0;
 
 	bool a_break=size()==0;
@@ -312,20 +312,20 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 				(b_size-b_offset);
 			
 			if(size_diff==0) { // a has same size as b
-				if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
+				if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
 					a_row->item.size-a_offset)!=0)
 					return result;
 				pos+=a_row->item.size;
 				a_row++; a_countdown--; a_offset=0;
 				b_break=true;
 			} else if (size_diff>0) { // a longer
-				if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
+				if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
 					b_size-b_offset)!=0)
 					return result;
 				a_offset+=b_size-b_offset;
 				b_break=true;
 			} else { // b longer
-				if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
+				if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
 					a_row->item.size-a_offset)!=0)
 					return result;
 				b_offset+=a_row->item.size-a_offset;
@@ -386,7 +386,7 @@ String& String::mid(size_t start, size_t finish) const {
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(size_t i=0; i<chunk->count; pos+=row->item.size, i++, row++) {
+		for(uint i=0; i<chunk->count; pos+=row->item.size, i++, row++) {
 			if(row==append_here)
 				goto break2;
 
@@ -413,7 +413,7 @@ break2:
 }
 
 int String::pos(const String& substr, 
-				size_t result, Untaint_lang lang) const {
+				int result, Untaint_lang lang) const {
 	for(; result<size(); result++) {
 		int partial; cmp(partial, substr, result, lang);
 		if(
@@ -426,7 +426,7 @@ int String::pos(const String& substr,
 }
 
 int String::pos(const char *substr, size_t substr_size, 
-				size_t result, Untaint_lang lang) const {
+				int result, Untaint_lang lang) const {
 	for(; result<size(); result++) {
 		int partial; cmp(partial, substr, substr_size, result, lang);
 		if(
@@ -646,7 +646,7 @@ String& String::change_case(Pool& pool, const unsigned char *tables,
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(size_t i=0; i<chunk->count; i++, row++) {
+		for(uint i=0; i<chunk->count; i++, row++) {
 			if(row==append_here)
 				goto break2;
 
@@ -673,19 +673,19 @@ break2:
 }
 
 void String::join_chain(Pool& pool, 
-					   size_t& ai, const Chunk*& achunk, const Chunk::Row*& arow,
+					   uint& ai, const Chunk*& achunk, const Chunk::Row*& arow,
 					   Untaint_lang& joined_lang, const char *& joined_ptr, size_t& joined_size) const {
 	joined_lang=arow->item.lang;
 	
 	// calc size
 	joined_size=0;
 	{
-		size_t start_i=ai;
+		uint start_i=ai;
 		const Chunk::Row *start_row=arow;
 		const Chunk *chunk=achunk;
 		do {
 			const Chunk::Row *row=start_row;
-			for(size_t i=start_i; i<chunk->count; i++, row++) {
+			for(uint i=start_i; i<chunk->count; i++, row++) {
 				if(row==append_here)
 					goto break21;
 				
@@ -713,10 +713,10 @@ break21:;
 		// join adjacent rows
 		char *ptr=(char *)pool.malloc(joined_size,13);
 		joined_ptr=ptr;
-		size_t start_i=ai;
+		uint start_i=ai;
 		const Chunk::Row *start_row=arow;
 		const Chunk *chunk=achunk;
-		size_t i;
+		uint i;
 		const Chunk::Row *row;
 		do {
 			row=start_row;
@@ -751,7 +751,7 @@ String& String::reconstruct(Pool& pool) const {
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(size_t i=0; i<chunk->count; ) {
+		for(uint i=0; i<chunk->count; ) {
 			if(row==append_here)
 				goto break2;
 
@@ -779,7 +779,7 @@ String& String::replace_in_reconstructed(Pool& pool, Dictionary& dict) const {
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(size_t i=0; i<chunk->count; i++, row++) {
+		for(uint i=0; i<chunk->count; i++, row++) {
 			if(row==append_here)
 				goto break2;
 
@@ -891,7 +891,7 @@ void String::serialize(size_t prolog_size, void *& buf, size_t& buf_size) const 
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(size_t i=0; i<chunk->count; i++) {
+		for(uint i=0; i<chunk->count; i++) {
 			if(row==append_here)
 				goto break2;
 
