@@ -3,6 +3,20 @@
 	^case(1;4;3){143}
 	^case[DEFAULT]{default}
 }
+<hr>
+^switch(2){
+	^case(1;2;3){143}
+	^case[DEFAULT]{default}
+}
+<hr>
+^switch(2){
+	^case(1;5;3){143}
+}
+
+<hr>
+^switch(2){
+	^case(2){2}
+}
 
 <hr>
 
@@ -193,7 +207,7 @@ ${comment}.
 ^connect[$connect-string]{
 	$shit[^taint[our's]]
 #	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
-	^nothing:sql{update paf set age=age+1}
+	^void:sql{update paf set age=age+1}
 	$paf[^table:sql{select * from paf order by id desc}(5)]
 	$paf{
 	^if(^empty[]){query result is empty}{
