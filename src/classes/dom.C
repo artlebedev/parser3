@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.5 2001/09/10 09:02:20 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.6 2001/09/10 09:34:51 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -21,11 +21,12 @@ static const char *RCSId="$Id: dom.C,v 1.5 2001/09/10 09:02:20 parser Exp $";
 #include <util/XMLString.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
 #include <XalanTransformer/XalanParsedSource.hpp>
-//#include <DOMSupport/DOMServices.hpp> 
 #include <PlatformSupport/XalanFileOutputStream.hpp>
 #include <PlatformSupport/XalanOutputStreamPrintWriter.hpp>
+#include <PlatformSupport/DOMStringPrintWriter.hpp>
 #include <XMLSupport/FormatterToXML.hpp>
 #include <XMLSupport/FormatterTreeWalker.hpp>
+
 
 // defines
 
@@ -96,6 +97,37 @@ static void _throw(Pool& pool, const String *source, const XSLException& e) {
 		);
 }
 
+class ParserStringOutputStream: public XalanOutputStream {
+public:
+	
+	explicit
+		ParserStringOutputStream(String& astring) : fstring(astring) {}
+/*	
+	virtual
+		~XalanNullOutputStream() {}
+*/	
+protected:
+	
+	// These are inherited from XalanOutputStream...
+	virtual void
+		writeData(
+		const char*     theBuffer,
+		unsigned long   theBufferLength) {
+		char *copy=(char *)fstring.malloc((size_t)theBufferLength);
+		memcpy(copy, theBuffer, (size_t)theBufferLength);
+		fstring.APPEND_CLEAN(copy, (size_t)theBufferLength, "dom", -1);
+	}
+
+	virtual void
+		doFlush() {}
+
+private:
+
+	String& fstring;
+	
+};
+
+
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDOM& vDOM=*static_cast<VDOM *>(r.self);
@@ -114,11 +146,37 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 
 	try {
 		XalanDocument *document=parsedSource->getDocument();
-		XalanFileOutputStream fileOutputStream(XalanDOMString(filespec, strlen(filespec)));
-		XalanOutputStreamPrintWriter outputStreamPrintWriter(fileOutputStream);
-		FormatterToXML formatterListener(outputStreamPrintWriter);
-		FormatterTreeWalker theTreeWalker(formatterListener);
-		theTreeWalker.traverse(document); // Walk the document and produce the XML...
+		XalanFileOutputStream stream(XalanDOMString(filespec, strlen(filespec)));
+		XalanOutputStreamPrintWriter writer(stream);
+		FormatterToXML formatterListener(writer);
+		FormatterTreeWalker treeWalker(formatterListener);
+		treeWalker.traverse(document); // Walk the document and produce the XML...
+	} catch(const XSLException& e) {
+		_throw(pool, &method_name, e);
+	}
+}
+
+static void _string(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VDOM& vDOM=*static_cast<VDOM *>(r.self);
+
+	XalanParsedSource* parsedSource=vDOM.getParsedSource();
+	if(!parsedSource)
+		PTHROW(0, 0,
+			&method_name,
+			"on empty document");
+
+	try {
+		XalanDocument *document=parsedSource->getDocument();
+		String *parserString=new(pool) String(pool);
+		ParserStringOutputStream stream(*parserString);
+		XalanOutputStreamPrintWriter writer(stream);
+		FormatterToXML formatterListener(writer);
+		FormatterTreeWalker treeWalker(formatterListener);
+		treeWalker.traverse(document); // Walk the document and produce the XML...
+
+		// write out result
+		r.write_no_lang(*parserString);
 	} catch(const XSLException& e) {
 		_throw(pool, &method_name, e);
 	}
@@ -135,6 +193,9 @@ MDom::MDom(Pool& apool) : Methoded(apool) {
 	// ^dom.save[some.xml]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 1);
 
+	// ^dom.string[] <doc/>
+	add_native_method("string", Method::CT_DYNAMIC, _string, 0, 0);
+
 }
 // global variable
 
@@ -147,8 +208,6 @@ Methoded *MDom_create(Pool& pool) {
 	// You must initialize Xerces-C++ once per process
 	XMLPlatformUtils::Initialize();
 	XalanTransformer::initialize();
-	// Must be called before any other functions are called. 
-//	DOMServices::initialize (); 
 
 
 	return Dom_class=new(pool) MDom(pool);
