@@ -6,7 +6,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vmail.C,v 1.6 2002/06/25 13:36:44 paf Exp $
+	$Id: pa_vmail.C,v 1.6.2.1 2002/06/26 13:36:51 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -407,7 +407,6 @@ static const String& text_value_to_string(Request& r, const String *source,
 	String& result=*new(pool) String(pool);
 
 	Value *text_value;
-	bool has_content_type;
 	if(Hash *send_hash=send_value.get_hash(source)) {
 		// $.USER-HEADERS
 		info.has_content_type=false; // reset
