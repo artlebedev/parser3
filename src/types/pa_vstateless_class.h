@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/10/14 15:22:42 $";
+static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/10/15 10:05:01 $";
 
 #include "pa_hash.h"
 #include "pa_vjunction.h"
@@ -72,9 +72,8 @@ public: // usage
 		return static_cast<Method *>(fmethods.get(name)); 
 	}
 
-	void add_method(const String& name, Method& method) {
-		put_method(name, &method);
-	}
+	void add_method(const String& name, Method& method);
+	
 	void add_native_method(
 		const char *cstr_name,
 		Method::Call_type call_type,

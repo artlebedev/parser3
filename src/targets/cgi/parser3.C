@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/08/23 07:32:24 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/10/15 10:05:01 $";
 
 #include "pa_config_includes.h"
 
@@ -53,7 +53,8 @@ static const char *argv0;
 static const char *config_filespec_cstr=0;
 static bool fail_on_config_read_problem=true;
 
-static Pool *pool; // global pool [dont describe to doxygen: it confuses it with param names]
+static Pool_storage global_pool_storage; ///< global pool storage
+static Pool global_pool(&global_pool_storage); ///< global pool
 static bool cgi; ///< we were started as CGI?
 static bool mail_received=false; ///< we were started with -m option? [asked to parse incoming message to $mail:received]
 
@@ -116,7 +117,7 @@ void SAPI::log(Pool& , const char *fmt, ...) {
 void SAPI::die(const char *fmt, ...) {
 #ifdef DEBUG_POOL_MALLOC
 	extern void log_pool_stats(Pool& pool);
-	log_pool_stats(*pool);
+	log_pool_stats(global_pool);
 #endif
 
     va_list args;
@@ -137,17 +138,17 @@ void SAPI::die(const char *fmt, ...) {
 
 	// prepare header
 	// let's be honest, that's bad we couldn't produce valid output
-	SAPI::add_header_attribute(*pool, "status", "500");
-	SAPI::add_header_attribute(*pool, "content-type", "text/plain");
+	SAPI::add_header_attribute(global_pool, "status", "500");
+	SAPI::add_header_attribute(global_pool, "content-type", "text/plain");
 	char content_length_cstr[MAX_NUMBER];
 	snprintf(content_length_cstr, sizeof(content_length_cstr), "%u", content_length);
-	SAPI::add_header_attribute(*pool, "content-length", content_length_cstr);
+	SAPI::add_header_attribute(global_pool, "content-length", content_length_cstr);
 
 	// send header
-	SAPI::send_header(*pool);
+	SAPI::send_header(global_pool);
 
 	// body
-	SAPI::send_body(*pool, body, content_length);
+	SAPI::send_body(global_pool, body, content_length);
 
 	exit(1);
 }
@@ -232,13 +233,16 @@ static void real_parser_handler(
 					const char *filespec_to_process,
 					const char *request_method, bool header_only) {
 	// init socks
-	init_socks(*pool);
+	init_socks(global_pool);
 	
 	// init global classes
-	init_methoded_array(*pool);
+	init_methoded_array(global_pool);
 	// init global variables
-	pa_globals_init(*pool);
+	pa_globals_init(global_pool);
 	
+	// request pool, must be different ptr from global [used in VStateless_class.add_method]
+	Pool request_pool(&global_pool_storage);
+
 	if(!filespec_to_process || !*filespec_to_process)
 		SAPI::die("Parser/%s", PARSER_VERSION);
 	
@@ -246,9 +250,9 @@ static void real_parser_handler(
 	Request::Info request_info;
 	char document_root_buf[MAX_STRING];
 	if(cgi) {
-		if(const char *env_document_root=SAPI::get_env(*pool, "DOCUMENT_ROOT"))
+		if(const char *env_document_root=SAPI::get_env(request_pool, "DOCUMENT_ROOT"))
 			request_info.document_root=env_document_root;
-		else if(const char *path_info=SAPI::get_env(*pool, "PATH_INFO")) {
+		else if(const char *path_info=SAPI::get_env(request_pool, "PATH_INFO")) {
 			// IIS
 			size_t len=min(sizeof(document_root_buf)-1, strlen(filespec_to_process)-strlen(path_info));
 			memcpy(document_root_buf, filespec_to_process, len); document_root_buf[len]=0;
@@ -263,14 +267,14 @@ static void real_parser_handler(
 	}
 	request_info.path_translated=filespec_to_process;
 	request_info.method=request_method ? request_method : "GET";
-	const char *query_string=SAPI::get_env(*pool, "QUERY_STRING");
+	const char *query_string=SAPI::get_env(request_pool, "QUERY_STRING");
 	request_info.query_string=query_string;
 	if(cgi) {
-		if(const char *env_request_uri=SAPI::get_env(*pool, "REQUEST_URI"))
+		if(const char *env_request_uri=SAPI::get_env(request_pool, "REQUEST_URI"))
 			request_info.uri=env_request_uri;
-		else if(const char *path_info=SAPI::get_env(*pool, "PATH_INFO"))
+		else if(const char *path_info=SAPI::get_env(request_pool, "PATH_INFO"))
 			if(query_string) {
-				char *reconstructed_uri=(char *)pool->malloc(
+				char *reconstructed_uri=(char *)request_pool.malloc(
 					strlen(path_info)+1/*'?'*/+
 					strlen(query_string)+1/*0*/);
 				strcpy(reconstructed_uri, path_info);
@@ -286,7 +290,7 @@ static void real_parser_handler(
 			
 #ifndef WIN32
 			// they've changed this under IIS5.
-			if(const char *script_name=SAPI::get_env(*pool, "SCRIPT_NAME")) {
+			if(const char *script_name=SAPI::get_env(request_pool, "SCRIPT_NAME")) {
 				size_t script_name_len=strlen(script_name);
 				size_t uri_len=strlen(request_info.uri);
 				if(strncmp(request_info.uri,script_name, script_name_len)==0 &&
@@ -297,14 +301,15 @@ static void real_parser_handler(
 	} else
 		request_info.uri="";
 	
-	request_info.content_type=SAPI::get_env(*pool, "CONTENT_TYPE");
-	const char *content_length=SAPI::get_env(*pool, "CONTENT_LENGTH");
+	request_info.content_type=SAPI::get_env(request_pool, "CONTENT_TYPE");
+	const char *content_length=SAPI::get_env(request_pool, "CONTENT_LENGTH");
 	request_info.content_length=(content_length?atoi(content_length):0);
-	request_info.cookie=SAPI::get_env(*pool, "HTTP_COOKIE");
+	request_info.cookie=SAPI::get_env(request_pool, "HTTP_COOKIE");
 	request_info.mail_received=mail_received;
 
+
 	// prepare to process request
-	Request request(*pool,
+	Request request(request_pool,
 		request_info,
 /*#ifdef _DEBUG
 		String::UL_HTML|String::UL_OPTIMIZE_BIT
@@ -350,11 +355,11 @@ static void real_parser_handler(
 	
 #ifdef DEBUG_POOL_MALLOC
 	extern void log_pool_stats(Pool& pool);
-	log_pool_stats(*pool);
+	log_pool_stats(request_pool);
 #endif
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
-	SAPI::log(*pool, 
+	SAPI::log(global_pool, 
 		"string piece appends=%lu, wcontext_result_size=%lu, string_string_shortcut_economy_closer=%lu, total_alloc_size=%lu", 
 		string_piece_appends,
 		wcontext_result_size,
@@ -424,10 +429,6 @@ static void usage(const char *program) {
 }
 
 int main(int argc, char *argv[]) {
-	Pool_storage global_pool_storage;
-	Pool global_pool(&global_pool_storage);
-	pool=&global_pool;
-
 #ifdef DEBUG_MAILRECEIVE
 	if(FILE *fake_in=fopen(DEBUG_MAILRECEIVE, "rt")) {
 		dup2(fake_in->_file, 0/*STDIN_FILENO*/);
@@ -541,7 +542,7 @@ int main(int argc, char *argv[]) {
 #ifndef WIN32
 	// 
 	if(!cgi)
-		SAPI::send_body(*pool, "\n", 1);
+		SAPI::send_body(global_pool, "\n", 1);
 #endif
 //_asm int 3;
 	return 0;

@@ -5,10 +5,18 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char* IDENT_VSTATELESS_CLASS_C="$Date: 2002/10/14 11:24:00 $";
+static const char* IDENT_VSTATELESS_CLASS_C="$Date: 2002/10/15 10:05:01 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"
+
+void VStateless_class::add_method(const String& name, Method& method) {
+	if(&pool()!=&name.pool())
+		throw Exception("parser.runtime",
+			&name,
+			"can not add method to system class (maybe you have forgotten .CLASS in ^process[$caller.CLASS]{...}?)");
+	put_method(name, &method);
+}
 
 void VStateless_class::add_native_method(
 	const char *cstr_name,

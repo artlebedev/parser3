@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/10/15 08:31:56 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/10/15 10:05:00 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -462,19 +462,16 @@ void Request::execute(const Array& ops) {
 						method.call_type==Method::CT_ANY ||
 						method.call_type==call_type) { // allowed call type?
 						try {
+							method_frame=&frame;
 							if(method.native_code) { // native code?
-								// method_frame unchanged, so that ^for ^foreach & co may write to locals
 								method.check_actual_numbered_params(
 									frame.junction.self, 
 									frame.name(), frame.numbered_params());
 								method.native_code(
 									*this, 
 									frame.name(), frame.numbered_params()); // execute it
-							} else { // parser code
-								method_frame=&frame;
-								// execute it
+							} else // parser code, execute it
 								recoursion_checked_execute(&frame.name(), *method.parser_code);
-							}
 						} catch(...) {
 							// record it to stack trace
 							exception_trace.push((void *)&frame.name());
