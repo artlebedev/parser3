@@ -1,0 +1,7 @@
+$year(2002)
+$month(12)
+${year}-${month}:<br>
+$week_days[^date:calendar[rus]($year;$month)]
+<pre>
+^week_days.menu{^for[wday](0;6){^if($week_days.$wday){$week_days.$wday;&nbsp^;&nbsp^;} }=$week_days.week,$week_days.year=<br>}
+</pre>

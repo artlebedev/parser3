@@ -1,0 +1,29 @@
+@main[]
+^setdata[]
+^a.add[$b]
+add:$a.3<br>
+
+^setdata[]
+^a.sub[$b]
+sub2:$a.2<br>
+sub1:$a.1<br>
+
+^setdata[]
+$c[^a.union[$b]]
+union3:$c.3<br>
+union2:$c.2<br>
+
+^setdata[]
+$c[^a.intersection[$b]]
+intersection3:$c.3<br>
+intersection2:$c.2<br>
+
+^setdata[]
+intersects:^if(^a.intersects[$b]){y;n}<br>
+intersects2:^if(^a.intersects[ ]){y;n}<br>
+
+<hr>
+
+@setdata[]
+$a[$.1[a1] $.2[a2]]
+$b[        $.2[b2] $.3[b3]]

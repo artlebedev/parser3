@@ -1,0 +1,7 @@
+content-type: text/paf; charset=WINDOWS-1251
+content-length: 91
+
+<?xml version="1.0" encoding="WINDOWS-1251" standalone="no"?>
+<document>
+текст
+</document>

@@ -1,0 +1,8 @@
+content-type: text/html; charset=WINDOWS-1251
+content-length: 111
+
+<?xml version="1.0" encoding="WINDOWS-1251" standalone="no"?>
+<document>
+строка1<br/>
+строка2<br/>
+</document>

@@ -1,0 +1,82 @@
+@main[]
+^xdata[]
+
+^show_xdoc2[$xdoc]<hr>
+^show_xnode1[$xdoc]<hr>
+
+XPath1:<br>
+$people[^xdoc.select[*/man]]
+^show_xnodes1[$people]<hr>
+
+XPath2:<br>
+^show_xnode1[^xdoc.selectSingle[*/man[2]/name];0;1]<hr>
+
+@xdata[]
+#$response:content-type[$.value[text/html] $.charset[windows-1251]]
+$xdoc[^xdoc::create{<?xml version="1.0" encoding="windows-1251"?>
+<!--for getByID to work we need to enable doctype checking in pa_global.C :( <?DOCTYPE people SYSTEM "107.dtd"?>-->
+<people>
+	<man id="1" имя="word слово">
+		<name>P&#171^;AF	B</name>
+	</man>
+	   	<man id="2">
+            <name>ПИФ^taint[&]</name>
+	   	</man>
+</people>
+}]
+
+@show1[array]
+^for[i](0;$array-1){
+    $x[$array.$i]
+	$x.firstChild.nodeValue: 
+		$pattributes[$x.parentNode.attributes]
+		^if(^pattributes._count[]){
+			$pattributes.id.name=$pattributes.id.nodeValue
+		}
+	<br>
+}
+	
+@show_xnodes1[array][i]
+^for[i](0;^array._count[]-1){
+	^show_xnode1[$array.$i;0;1]
+}
+
+@show_xnode1[x;level;single][l]
+^if(def $x){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    	&lt^;$x.nodeName
+	    $pairs[$x.attributes]
+	    ^if(def $pairs){
+	    	$names[^pairs._keys[]]
+	    	^names.menu{ $names.key="$pairs.[$names.key].nodeValue"}
+	    }
+	    &gt^;
+    }{
+    	[$x.nodeType]
+    }
+    
+    ^if(def $x.nodeValue){$x.nodeValue}<br>
+    ^show_xnode1[$x.firstChild]($level+1)
+    ^if(!$single){
+	    ^show_xnode1[$x.nextSibling]($level)
+    }
+
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
+    }
+}
+
+@show_xdoc2[xdoc]
+#$response:body[^xdoc.file[	$.media-type[text/paf]  ]]
+<pre>^taint[html][^xdoc.string[
+	$.method[html]
+#	$.encoding[utF-8]
+#  	$.omit-xml-declaration[yes]
+#	$.standalone[no]
+#	-$.doctype-public[-//W3C//DTD XHTML]
+#	-$.doctype-system[/a/b/c/]
+#	$.indent[yes]
+#	$.media-type[text/paf]
+]]
+</pre>

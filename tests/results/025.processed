@@ -1,0 +1,9 @@
+content-type: text/html; charset=WINDOWS-1251
+content-length: 57
+
+was:<br>
+count=2<br>
+b='2'<br>
+now:<br>
+count=1<br>
+b='' 

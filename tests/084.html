@@ -1,0 +1,8 @@
+$t[^table::create{a	b
+1	2
+1	3
+}]
+#^t.hash[a]
+#^t.hash[a;b]
+$d[^t.hash[a][$.distinct(1)]]
+^d._count[]

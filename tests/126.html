@@ -1,0 +1,18 @@
+$table[^table::create{group	name
+first	a
+first	b
+second	c
+third	d
+third	e
+}]
+
+^try{	
+        $bad2[^table.hash[group;name][
+        	$.distinct[bad2]
+        ]]
+}{
+	^if($exception.type eq parser.runtime){
+		failed, that's OK
+		$exception.handled(1)
+	}
+}

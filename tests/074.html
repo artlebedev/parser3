@@ -1,0 +1,11 @@
+@main[]
+^monthdays(2000;1)
+^monthdays(2000;2)
+^monthdays(2003;1)
+^monthdays(2003;2)
+
+@monthdays[year;month]
+$from[^date::create($year;$month;1)]
+$to[^date::create($from)] ^to.roll[month](+1)
+^eval($to-$from)<br>
+

@@ -1,0 +1,13 @@
+content-type: text/html; charset=WINDOWS-1251
+content-length: 140
+
+add:b3<br>
+sub2:<br>
+sub1:a1<br>
+union3:b3<br>
+union2:a2<br>
+intersection3:<br>
+intersection2:a2<br>
+intersects:y<br>
+intersects2:n<br>
+<hr>

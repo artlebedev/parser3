@@ -1,0 +1,19 @@
+content-type: text/html; charset=WINDOWS-1251
+content-length: 286
+
+&lt;doc
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;name
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+петросян&amp;coz<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
+&lt;/doc&gt;<br>
+<hr>
+<pre>&lt;doc&gt;&lt;name&gt;петросян&amp;amp;coz&lt;/name&gt;&lt;/doc&gt;
+
+</pre><hr>

@@ -1,0 +1,20 @@
+@main[]
+$from[^table::create{name
+1
+2
+3}]
+
+^for[reverse](0;1){
+        reverse=$reverse<br>
+	^for[limit](0;4){
+		limit=$limit<br>
+		^for[offset](0;4){
+      			$to[^table::create[$from;
+      				$.offset($offset)
+      				$.limit($limit)
+      				$.reverse($reverse)
+      			]]
+			starts from: $to.name, o=$offset (^to.count[])<br>
+		}
+	}
+}[<hr>]

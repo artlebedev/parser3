@@ -1,0 +1,14 @@
+@main[]
+...^oneOf[a;a,b,c]...<br>
+#...^oneOf[a;ax,b,c]...<br>
+...^oneWord[word]...<br>
+#...^oneWord[wo rd]...<br>
+
+
+@oneOf[s;list][t] выдаёт строку, если строка она есть в списке(разделенном запятыми)
+$t[^list.lsplit[,]]
+^if(!^t.locate[piece;$s]){^throw[user;$s;unknown]}
+$result[$s]
+
+@oneWord[s]
+^if(^s.match[\W]){^throw[user.data;$s;not word]}{$s}

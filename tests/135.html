@@ -1,0 +1,14 @@
+@main[]
+^try{	
+	^mustfail[]
+}{
+	^if($exception.type eq parser.runtime){
+		failed, that's OK
+		$exception.handled(1)
+	}
+}
+
+@mustfail[]
+^process[$string:CLASS]{@a[]
+}
+

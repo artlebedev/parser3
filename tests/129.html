@@ -1,0 +1,15 @@
+$table[^table::create{group	name
+first	a
+first	b
+second	c
+third	d
+third	e
+}]
+	
+$distinct_tables[^table.hash[group][
+	$.distinct[tables]
+]]
+
+^distinct_tables.foreach[key;table]{
+	$key ^table.menu{$table.name}[,]<br>
+}

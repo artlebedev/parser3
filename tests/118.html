@@ -1,0 +1,10 @@
+$input[^xdoc::create[docBad]]
+$sheet[^xdoc::create{<?xml version="1.0"?> 
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+	<xsl:template match="doc">
+		output
+	</xsl:template>
+</xsl:stylesheet>
+}]
+$output[^input.transform[$sheet]]
+$response:body[^output.file[$.method[html]]]

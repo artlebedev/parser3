@@ -1,0 +1,8 @@
+$t[^table::create{a	b
+1	11
+2	22
+}]
+$c[^table::create[$t]]
+^c.append{2	33}
+^t.count[]
+^c.count[]

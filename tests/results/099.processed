@@ -1,0 +1,5 @@
+content-type: text/html
+content-disposition: ; filename=099.html
+content-length: 43
+
+$response:body[^file::load[text;099.html]]

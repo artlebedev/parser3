@@ -1,0 +1,17 @@
+$productList[^table::create{id	name
+1	носки
+2	валенки
+3	ушанка
+}]
+
+#скажем, у первого дилера
+$firstPriceList[^table::create{id	price
+1	0.3
+3	1000
+}]
+
+$firstPriceHash[^firstPriceList.hash[id]]
+
+^productList.menu{
+    продукт "$productList.name" | цена у first: $firstPriceHash.[$productList.id].price<br>
+}

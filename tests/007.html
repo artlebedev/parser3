@@ -1,0 +1,6 @@
+$pict[^image::create(400;200)]
+^pict.arc($pict.width/2;$pict.height/2;$pict.width-1;$pict.height-1;0;360;0x000000)
+^pict.arc($pict.width/2;$pict.height/2;$pict.width-10;$pict.height-10;0+10;360-10;0xff0000)
+^pict.circle($pict.width/2;$pict.height/2;$pict.height/2-10;0x0000ff)
+^pict.arc($pict.width/2;$pict.height/2;$pict.height-26;$pict.height-26;0+10;360-10;0xff0000)
+$response:body[^pict.gif[]]

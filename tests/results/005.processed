@@ -1,0 +1,5 @@
+set-cookie: name=value; expires=Fri, 31 Dec 1999 21:00:00 GMT; path=/
+content-type: text/html; charset=WINDOWS-1251
+content-length: 6
+
+value!

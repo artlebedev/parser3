@@ -1,0 +1,7 @@
+$t[^table::create{a	b
+1	a
+2	b
+3	c
+}]
+^if(^t.locate($t.a==2)){$t.b}{n}
+

@@ -1,0 +1,9 @@
+@main[][key;value]
+^user-foreach[key;value]{$key=$value<br>}
+
+@user-foreach[key;value;code]
+^for[i](1;10){
+	$caller.$key($i)
+	$caller.$value($i*2)
+	$code
+}

@@ -1,0 +1,13 @@
+$image[^image::create(200;30;0x00FFFF)]
+height(font)=1950<br>
+$alph[ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ0123456789-+=!\"%:,.^;<>?@()^[^]'&*/]
+^^alph.length[]=^alph.length[]<br>
+^eval(1950/^alph.length[])[%.10f]
+
+^image.font[$alph;098font.gif](20)
+$text[AÏğèâåò*]
+^image.text(0;0)[$text]
+$length[^image.length[$text]]
+#^image.rectangle(0;50)(2;2)(0x000000)
+^image.rectangle(0;0)($length-1;5)(0x000000)
+$response:body[^image.gif[]]

@@ -1,0 +1,7 @@
+content-type: text/html; charset=WINDOWS-1251
+content-length: 91
+
+type=test<br>
+source=this is the cause of error<br>
+lineno=2<br>
+comment=comment value<br>

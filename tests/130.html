@@ -1,0 +1,14 @@
+@main[]
+^try{	
+	^mustfail[]
+}{
+	^if($exception.type eq ''){
+		failed, that's OK
+		$exception.handled(1)
+	}
+}
+
+@mustfail[]
+$s[abcÄÅÇ]
+^if(^s.match[][i]){y}{n}
+

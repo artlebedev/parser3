@@ -1,0 +1,9 @@
+@main[]
+^method_junction_params{...}
+
+@method_junction_params[param]
+#should be string
+^if($param is junction){is junction}{is not junction}<br>
+^if($param is string){is string}{is not string}<br>
+^if($param is double){is double}{is not double}<br>
+

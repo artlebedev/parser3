@@ -1,0 +1,12 @@
+#$new_after[^date::now(-3)]
+$new_after[^date::create[2002-07-01]]
+$articles[^table::create{id	title	last_update
+1	солнце	2002-06-30
+2	наяривает	2002-07-03
+}]
+^articles.menu{
+    $last_update[^date::create[$articles.last_update]]
+    <a href=${articles.id}.html>$articles.title</a>
+    ^if($last_update > $new_after){новая;старая}
+    <br>
+}

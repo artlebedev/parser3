@@ -1,0 +1,10 @@
+content-type: text/html; charset=WINDOWS-1251
+content-length: 67
+
+t.test=ct<br>
+base.test=ct<br>
+class.test=ct<br><br>
+tm2
+<hr>
+bm
+cm

@@ -1,0 +1,6 @@
+content-type: text/html; charset=WINDOWS-1251
+content-length: 51
+
+is not junction<br>
+is string<br>
+is not double<br>

@@ -1,0 +1,5 @@
+content-type: text/html; charset=WINDOWS-1251
+content-length: 29
+
+abcABCàáâÀÁÂ<br>
+ABCABCÀÁÂÀÁÂ

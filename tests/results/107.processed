@@ -1,0 +1,122 @@
+content-type: text/html; charset=WINDOWS-1251
+content-length: 2692
+
+<pre>&lt;!--for getByID to work we need to enable doctype checking in pa_global.C :( &lt;?DOCTYPE people SYSTEM &quot;107.dtd&quot;?&gt;--&gt;&lt;people&gt;
+	&lt;man id=&quot;1&quot; èìÿ=&quot;word ñëîâî&quot;&gt;
+		&lt;name&gt;P«AF	B&lt;/name&gt;
+	&lt;/man&gt;
+	   	&lt;man id=&quot;2&quot;&gt;
+            &lt;name&gt;ÏÈÔ&amp;amp;&lt;/name&gt;
+	   	&lt;/man&gt;
+&lt;/people&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[8]
+for getByID to work we need to enable doctype checking in pa_global.C :( &lt;?DOCTYPE people SYSTEM &quot;107.dtd&quot;?&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;people
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;man
+id="1" èìÿ="word ñëîâî"
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;name
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+P«AF	B<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;man
+id="2"
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;name
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+ÏÈÔ&amp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/man&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/man&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/people&gt;<br>
+<hr>
+XPath1:<br>
+&lt;man
+id="1" èìÿ="word ñëîâî"
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;name
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+P«AF	B<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
+&lt;/man&gt;<br>
+&lt;man
+id="2"
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;name
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+ÏÈÔ&amp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
+&lt;/man&gt;<br>
+<hr>
+XPath2:<br>
+&lt;name
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+ÏÈÔ&amp;<br>
+&lt;/name&gt;<br>
+<hr>

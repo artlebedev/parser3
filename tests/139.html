@@ -1,0 +1,13 @@
+@main[]
+^try{	
+	^mustfail[]
+}{
+	^if($exception.type eq xml){
+		failed, that's OK
+		$exception.handled(1)
+	}
+}
+
+@mustfail[]
+$d[^xdoc::create[doc]]
+$element[^d.selectSingle[$nothing]]

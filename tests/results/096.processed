@@ -1,0 +1,127 @@
+content-type: text/html; charset=WINDOWS-1251
+content-length: 1502
+
+<table border=1>
+<tr valign=top>
+<td><img height="100" width="100" border="0" src="096_dir/163.jpg" /></td>
+<td>
+163.jpg<hr>
+ColorSpace: <b>
+1
+</b><br>
+CompressedBitsPerPixel: <b>
+4
+</b><br>
+DateTime: <b>
+1999-11-30 00:00:00
+</b><br>
+DateTimeDigitized: <b>
+1999-11-30 00:00:00
+</b><br>
+DateTimeOriginal: <b>
+1999-11-30 00:00:00
+</b><br>
+ExifImageHeight: <b>
+1536
+</b><br>
+ExifImageWidth: <b>
+2048
+</b><br>
+ExifInteroperabilityOffset: <b>
+886
+</b><br>
+ExposureBiasValue: <b>
+0
+</b><br>
+ExposureProgram: <b>
+2
+</b><br>
+ExposureTime: <b>
+0.00790514
+</b><br>
+FNumber: <b>
+3.8
+</b><br>
+Flash: <b>
+1
+</b><br>
+FocalLength: <b>
+19.1
+</b><br>
+ISOSpeedRatings: <b>
+100
+</b><br>
+ImageDescription: <b>
+</b><br>
+LightSource: <b>
+0
+</b><br>
+Make: <b>
+NIKON
+</b><br>
+MaxApertureValue: <b>
+0
+</b><br>
+MeteringMode: <b>
+5
+</b><br>
+Model: <b>
+E995
+</b><br>
+Orientation: <b>
+1
+</b><br>
+ResolutionUnit: <b>
+2
+</b><br>
+Software: <b>
+E995v1.6
+</b><br>
+XResolution: <b>
+300
+</b><br>
+YCbCrPositioning: <b>
+2
+</b><br>
+YResolution: <b>
+300
+</b><br>
+</td>
+</tr>
+<tr valign=top>
+<td><img height="100" width="100" border="0" src="096_dir/188.jpg" /></td>
+<td>
+188.jpg<hr>
+ColorSpace: <b>
+65535
+</b><br>
+DateTime: <b>
+2002-07-25 08:16:45
+</b><br>
+ExifImageHeight: <b>
+134
+</b><br>
+ExifImageWidth: <b>
+100
+</b><br>
+ImageDescription: <b>
+5.1.2
+</b><br>
+Orientation: <b>
+1
+</b><br>
+ResolutionUnit: <b>
+2
+</b><br>
+Software: <b>
+Adobe Photoshop 7.0
+</b><br>
+XResolution: <b>
+72
+</b><br>
+YResolution: <b>
+72
+</b><br>
+</td>
+</tr>
+</table>

@@ -1,0 +1,12 @@
+@main[]
+^try{	
+	^mustfail[]
+}{
+	^if($exception.type eq ''){
+		failed, that's OK
+		$exception.handled(1)
+	}
+}
+
+@mustfail[]
+$d[^date::create(1018946575/60/60)] ^d.sql-string[]

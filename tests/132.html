@@ -1,0 +1,24 @@
+@main[]
+^try{	
+	^mustfail[]
+}{
+	^if($exception.type eq parser.runtime){
+		failed, that's OK
+		$exception.handled(1)
+	}
+}
+
+@mustfail[]
+$var[aaa]
+^if(1){
+^tcrashlocaljunctions1[]
+}
+
+$j
+
+@tcrashlocaljunctions1[][var]
+$var[varvalue]
+	$j{
+		$var
+	}
+$j

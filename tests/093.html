@@ -1,0 +1,10 @@
+@main[]
+^steppedfor[i](1;10;2){$i }
+
+@steppedfor[name;from;to;step;code]
+$caller.$name($from)
+^while($caller.$name<=$to){
+	$code
+	^caller.$name.inc($step)
+}
+

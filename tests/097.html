@@ -1,0 +1,10 @@
+$file[^file::load[text;http://www.parser.ru/none/;
+	$.headers[
+		$.USER-AGENT[paf]
+	]
+	$.any-status(1)
+]]
+#server: $file.SERVER<br>
+$file.status
+<hr>
+#<pre>$file.text</pre>

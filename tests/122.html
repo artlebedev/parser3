@@ -1,0 +1,10 @@
+@main[]
+$cd[^date::create[2003-03-21]]
+$td[^date::create[2003-03-31]]
+^while($cd < $td){
+    $cdstr[^cd.sql-string[]]
+    ^cdstr.left(10)<br>
+    ^cd.roll[day](+1)
+}
+<p>
+'^cd.sql-string[] (^eval($cd))' ^if($cd == $td){==}{!=} '^td.sql-string[] (^eval($td))'

@@ -1,0 +1,17 @@
+@main[]
+^try{	
+	^mustfail[]
+}{
+	^if($exception.type eq parser.runtime){
+		failed, that's OK
+		$exception.handled(1)
+	}
+}
+
+@mustfail[]
+^switch[1]{
+	^badswitchtestcase[]
+}
+@badswitchtestcase[][local]
+$local[local value]
+	^case[1]{1code $local}

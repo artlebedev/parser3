@@ -1,0 +1,13 @@
+$a-tab-b[a	b
+1	2]
+
+$t[^table::create{$a-tab-b}]
+=$t.a=
+<hr>
+
+$t[^table::create[nameless]{^taint[$a-tab-b]}]
+=$t.0=
+<hr>
+
+$t[^table::create{^untaint{^taint[$a-tab-b]}}]
+=$t.a=

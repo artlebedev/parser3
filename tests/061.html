@@ -1,0 +1,7 @@
+$f[^file::stat[061.dat]]
+Размер в байтах: $f.size<br>
+#Год создания: $f.cdate.year<br>
+#$now[^date::now[]]
+#$DAYS_CONSIDERED_NEW(3)
+#Статус: ^if($f.mdate >= $now-$DAYS_CONSIDERED_NEW){новый;старый}
+

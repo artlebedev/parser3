@@ -1,0 +1,5 @@
+content-type: text/html; charset=WINDOWS-1251
+content-length: 25
+
+if 0=n<br>
+if def 0=y<br>

@@ -1,0 +1,10 @@
+@main[]
+^test[2003-01-31]
+^test[2003-05-31]
+
+@test[date_str]
+$date[^date::create[$date_str]]
+^date.sql-string[]
+^date.roll[month](+1)
+^date.sql-string[]
+

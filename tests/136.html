@@ -1,0 +1,15 @@
+@main[]
+^try{	
+	^mustfail[]
+}{
+	^if($exception.type eq parser.runtime){
+		failed, that's OK
+		$exception.handled(1)
+	}
+}
+
+@mustfail[]
+$hash[
+	$.ok[1]
+]
+$.bad[1]

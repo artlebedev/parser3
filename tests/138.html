@@ -1,0 +1,12 @@
+@main[]
+^try{	
+	^mustfail[]
+}{
+	^if($exception.type eq xml){
+		failed, that's OK
+		$exception.handled(1)
+	}
+}
+
+@mustfail[]
+^xdoc::create{<?xml version="1.0" encoding="windows-1251z" ?>}
