@@ -389,10 +389,15 @@ AC_TRY_COMPILE(
 #pragma pack(1)
 struct must_be_1_byte {
 	char c;
-};
+	int i;
+} s;
 #pragma pack()
 if(sizeof(must_be_1_byte)!=1)
 	return 1;
+/* must not hang here: seen on sparc arch -- compiler generated even address-accessing instructions here */
+s.i=123; /* asm:st /*
+if(s.i!=123) /* asm:lduh */
+    return 1;
 ,[
     AC_MSG_RESULT(yes)
 	AC_DEFINE(HAVE_PRAGMA_PACK,,compiler supports pragma pack)
