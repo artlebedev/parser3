@@ -296,10 +296,10 @@ OK
 #^http_prefix[]
 #^http_prefix_table[]
 #^http_prefix_xml[]
-#^imagefont[]
+^imagefont[]
 #^downloadtest[]
 #^cachebug[]
-^quickregexatend[]
+#^quickregexatend[]
 
 @quickregexatend[]
 #$subject[xxxabcd]
@@ -331,7 +331,11 @@ $alph[ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔ
 ^eval(1950/^alph.length[])[%.10f]
 
 ^image.font[$alph;font.gif](20)
-^image.text(0;0)[AÏğèâåò*]
+$text[AÏğèâåò*]
+^image.text(0;0)[$text]
+$length[^image.length[$text]]
+#^image.rectangle(0;50)(2;2)(0x000000)
+^image.rectangle(0;0)($length-1;5)(0x000000)
 $response:body[^image.gif[]]
 
 @http_prefix_xml[]

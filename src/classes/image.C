@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/11/28 09:12:27 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/28 12:23:39 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -938,11 +938,16 @@ public:
 	
 	/* ******************************** string ********************************** */
 	
+	int step_width(int index) {
+		return letter_spacing + (monospace ? monospace : index_width(index));
+	}
+
+	// counts trailing letter_spacing, consider this OK. useful for contiuations
 	int string_width(const String& s){
 		const char *cstr=s.cstr();
 		int result=0;
 		for(; *cstr; cstr++)
-			result+=index_width(index_of(*cstr));
+			result+=step_width(index_of(*cstr));
 		return result;
 	}
 	
@@ -951,7 +956,7 @@ public:
 		if(cstr) for(; *cstr; cstr++) {
 			int index=index_of(*cstr);
 			index_display(image, x, y, index);
-			x+=letter_spacing + (monospace ? monospace : index_width(index));
+			x+=step_width(index);
 		}
 	}
 	
