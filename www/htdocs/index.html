@@ -11,8 +11,11 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #$result[123]
 
 @main[]
+#^tcrashlocaljunctionsv2[]
+^tcrashlocaljunctions[]
+#^tjunctions[]
 #^replacetest[]
-^matchoptionpp[]
+#^matchoptionpp[]
 #^txdocxnodechild[]
 #^tclasses[]
 #$math:PI
@@ -137,6 +140,38 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@tcrashlocaljunctionsv2[]
+$a[
+	$b{  $c[1] }
+]
+$b
+$c
+
+@tcrashlocaljunctions[]
+$var[aaa]
+^if(1){
+^tcrashlocaljunctions1[]
+}
+
+$j
+
+@tcrashlocaljunctions1[]
+	$j{
+		$var
+	}
+
+@tjunctions[][tl]
+$t[^t::create[]]
+^tjunctionsi[]
+
+@tjunctionsi[][tl]
+$tl[12345]
+^t.tjunctionsm[
+	$.key{
+		$tl
+	}
+]
 
 @replacetest[]
 $b[b]
