@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.89 2001/05/15 14:31:58 parser Exp $
+	$Id: pa_string.h,v 1.90 2001/05/15 15:41:19 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -272,7 +272,6 @@ private:
 	bool chunk_is_full() {
 		return append_here == link_row;
 	}
-	int expand_times;
 	void expand();
 
 	/// convert to C string, store to 'dest' which must be big enough for proper untaint

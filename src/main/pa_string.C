@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.83 2001/05/15 14:31:58 parser Exp $
+	$Id: pa_string.C,v 1.84 2001/05/15 15:41:20 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -23,20 +23,8 @@
 #include "pa_table.h"
 #include "pa_threads.h"
 
-#include "pa_sapi.h"
-#define STRING_STAT_MAX_PIECES 1000
-int string_stat_pieces[STRING_STAT_MAX_PIECES];
-void log_string_stats(Pool& pool) {
-	for(int i=0; i<STRING_STAT_MAX_PIECES; i++)
-		if(int v=string_stat_pieces[i])
-			SAPI::log(pool, "%i: %10d",	
-				i, v);
-}
-
-
 String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
-	Pooled(apool),expand_times(0) {
-		string_stat_pieces[0]++;
+	Pooled(apool) {
 	last_chunk=&head;
 	head.count=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
@@ -52,13 +40,6 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 }
 
 void String::expand() {
-	{
-		int index=min(++expand_times, STRING_STAT_MAX_PIECES-1);
-		if(index)
-			string_stat_pieces[index-1]++;
-		string_stat_pieces[index]++;
-	}
-
 	size_t new_chunk_count=last_chunk->count+last_chunk->count*CR_GROW_PERCENT/100;
 	last_chunk=static_cast<Chunk *>(
 		malloc(sizeof(size_t)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *)));
@@ -70,7 +51,6 @@ void String::expand() {
 }
 
 String::String(const String& src) :	Pooled(src.pool()) {
-	string_stat_pieces[0]++;
 	head.count=CR_PREALLOCATED_COUNT;
 	
 	size_t src_used_rows=src.fused_rows;
