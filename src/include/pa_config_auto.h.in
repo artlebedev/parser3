@@ -75,11 +75,20 @@
 /* Define if you have the select function.  */
 #undef HAVE_SELECT
 
+/* Define if you have the siglongjmp function.  */
+#undef HAVE_SIGLONGJMP
+
 /* Define if you have the sign function.  */
 #undef HAVE_SIGN
 
+/* Define if you have the sigsetjmp function.  */
+#undef HAVE_SIGSETJMP
+
 /* Define if you have the trunc function.  */
 #undef HAVE_TRUNC
+
+/* Define if you have the <arpa/inet.h> header file.  */
+#undef HAVE_ARPA_INET_H
 
 /* Define if you have the <crypt.h> header file.  */
 #undef HAVE_CRYPT_H
@@ -104,6 +113,12 @@
 
 /* Define if you have the <memory.h> header file.  */
 #undef HAVE_MEMORY_H
+
+/* Define if you have the <netdb.h> header file.  */
+#undef HAVE_NETDB_H
+
+/* Define if you have the <netinet/in.h> header file.  */
+#undef HAVE_NETINET_IN_H
 
 /* Define if you have the <new> header file.  */
 #undef HAVE_NEW
@@ -143,6 +158,9 @@
 
 /* Define if you have the <sys/select.h> header file.  */
 #undef HAVE_SYS_SELECT_H
+
+/* Define if you have the <sys/socket.h> header file.  */
+#undef HAVE_SYS_SOCKET_H
 
 /* Define if you have the <sys/stat.h> header file.  */
 #undef HAVE_SYS_STAT_H

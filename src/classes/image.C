@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/11/25 14:57:32 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/25 15:37:12 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -212,7 +212,7 @@ inline uint endian_to_uint(bool is_big, const uchar *b /* [4] */) {
 static void measure_gif(Pool& pool, const String *origin_string, 
 			 Measure_reader& reader, ushort& width, ushort& height) {
 
-	void *buf;
+	const void *buf;
 	const int head_size=sizeof(GIF_Header);
 	if(reader.read(buf, head_size)<head_size)
 		throw Exception("image.format", 
@@ -456,7 +456,7 @@ static void measure_jpeg(Pool& pool, const String *origin_string,
 	const uchar CODE_SIZE_D=0xC3;
 	const uchar CODE_EXIF=0xE1;
 
-	void *buf;
+	const void *buf;
 	const size_t prefix_size=2;
 	if(reader.read(buf, prefix_size)<prefix_size)
 		throw Exception("image.format", 
@@ -517,7 +517,7 @@ static void measure_jpeg(Pool& pool, const String *origin_string,
 static void measure_png(Pool& pool, const String *origin_string, 
 			 Measure_reader& reader, ushort& width, ushort& height) {
 
-	void *buf;
+	const void *buf;
 	const int head_size=sizeof(PNG_Header);
 	if(reader.read(buf, head_size)<head_size)
 		throw Exception("image.format", 

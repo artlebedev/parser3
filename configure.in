@@ -423,7 +423,11 @@ sys/locking.h \
 sys/types.h \
 sys/select.h \
 sys/resource.h \
-winsock.h
+winsock.h \
+sys/socket.h \
+netinet/in.h \
+arpa/inet.h \
+netdb.h
 )
 
 dnl Checks for libraries.
@@ -467,7 +471,8 @@ fcntl \
 lockf \
 getrusage \
 gettimeofday \
-crypt
+crypt \
+sigsetjmp siglongjmp
 )
 
 dnl We require qsort(3) and select(2).

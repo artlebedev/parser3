@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/11/25 14:10:52 $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/11/25 15:37:12 $";
 
 #include "pa_config_includes.h"
 
@@ -395,7 +395,7 @@ void pa_globals_init(Pool& pool) {
 		{ \
 			char *buf=(char *)malloc(MAX_NUMBER); \
 			snprintf(buf, MAX_NUMBER, "%u", tag); \
-			exif_tag_value2name->put(*NEW String(pool, buf), #name); \
+			exif_tag_value2name->put(*NEW String(pool, buf), (void *)#name); \
 		}
 	// Tags used by IFD0 (main image)
 	EXIF_TAG(0x010e,	ImageDescription);

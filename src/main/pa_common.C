@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/25 15:03:41 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/11/25 15:37:12 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -242,7 +242,7 @@ static void file_read_http(Pool& pool, const String& file_spec,
 					void*& data, size_t& data_size, 
 					Hash *options=0, Hash** out_fields=0) {
 	char host[MAX_STRING]; 
-	char* uri; 
+	const char* uri; 
 	int port;
 	const char* method="GET"; 
 	int timeout=2;
