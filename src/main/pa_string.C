@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.120 2001/11/16 13:51:14 paf Exp $
+	$Id: pa_string.C,v 1.121 2001/11/16 13:58:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -172,6 +172,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 		expand();
 
 	append_here->item.ptr=src;
+	append_here->item.size=size;
 	append_here->item.lang=lang;
 #ifndef NO_STRING_ORIGIN
 	append_here->item.origin.file=file;
