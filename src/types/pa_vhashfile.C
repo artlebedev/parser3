@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/10 06:51:06 $";
+static const char* IDENT="$Date: 2003/11/10 07:06:13 $";
 
 #include "pa_globals.h"
 #include "pa_threads.h"
@@ -79,7 +79,7 @@ struct Hashfile_value_serialized_prolog {
 	time_t time_to_die;
 };
 
-static apr_sdbm_datum_t serialize_value(const String& string, time_t time_to_die) {
+apr_sdbm_datum_t VHashfile::serialize_value(const String& string, time_t time_to_die) const {
 	apr_sdbm_datum_t result;
 
 	size_t length=string.length();
@@ -96,20 +96,22 @@ static apr_sdbm_datum_t serialize_value(const String& string, time_t time_to_die
 	return result;
 }
 
-static const String* deserialize_value(const apr_sdbm_datum_t datum) {
-	if(!datum.dptr || datum.dsize<sizeof(Hashfile_value_serialized_prolog))
-		return 0;
+const String* VHashfile::deserialize_value(apr_sdbm_datum_t key, const apr_sdbm_datum_t value) {
+	// key not found || it's surely not in our format
+	if(!value.dptr || value.dsize<sizeof(Hashfile_value_serialized_prolog))
+		return 0; 
 
-	Hashfile_value_serialized_prolog& prolog=*reinterpret_cast<Hashfile_value_serialized_prolog*>(datum.dptr);
-	if(prolog.version!=HASHFILE_VALUE_SERIALIZED_VERSION)
+	Hashfile_value_serialized_prolog& prolog=*reinterpret_cast<Hashfile_value_serialized_prolog*>(value.dptr);
+	if(prolog.version!=HASHFILE_VALUE_SERIALIZED_VERSION
+		|| (prolog.time_to_die/*specified*/ 
+			&& (prolog.time_to_die <= time(0)/*expired*/))) {
+		// old format || exipred value
+		remove(key);
 		return 0;
+	}
 	
-	if(prolog.time_to_die/*specified*/ 
-		&& (prolog.time_to_die <= time(0)/*expired*/))
-		return 0;
-	
-	char *input_cstr=datum.dptr+sizeof(Hashfile_value_serialized_prolog);
-	size_t input_length=datum.dsize-sizeof(Hashfile_value_serialized_prolog);
+	char *input_cstr=value.dptr+sizeof(Hashfile_value_serialized_prolog);
+	size_t input_length=value.dsize-sizeof(Hashfile_value_serialized_prolog);
 
 	return new String(pa_strdup(input_length?input_cstr:0, input_length), true);
 }
@@ -162,18 +164,22 @@ Value *VHashfile::get_field(const String& aname) {
 
 	check("apr_sdbm_fetch", apr_sdbm_fetch(db, &value, key));
 
-	const String *sresult=deserialize_value(value);
+	const String *sresult=deserialize_value(key, value);
 	return sresult? new VString(*sresult): 0;
 }
 
-void VHashfile::remove(const String& aname) {
+void VHashfile::remove(const apr_sdbm_datum_t key) {
 	apr_sdbm_t *db=get_db_for_writing();
 
+	check("apr_sdbm_delete", apr_sdbm_delete(db, key));
+}
+
+void VHashfile::remove(const String& aname) {
 	apr_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
 	key.dsize=aname.length();
 
-	check("apr_sdbm_delete", apr_sdbm_delete(db, key));
+	remove(key);
 }
 
 void VHashfile::for_each(void callback(apr_sdbm_datum_t, void*), void* info) const {
@@ -201,27 +207,30 @@ void VHashfile::for_each(void callback(apr_sdbm_datum_t, void*), void* info) con
 
 #ifndef DOXYGEN
 struct For_each_string_callback_info {
-	apr_sdbm_t *db;
+	VHashfile* self;
 	void* nested_info;
 	void (*nested_callback)(const String::Body, const String&, void*);
 };
 #endif
 static void for_each_string_callback(apr_sdbm_datum_t apkey, void* ainfo) {
 	For_each_string_callback_info& info=*static_cast<For_each_string_callback_info *>(ainfo);
+	apr_sdbm_t *db=info.self->get_db_for_reading();
 
 	apr_sdbm_datum_t apvalue;
-	check("apr_sdbm_fetch", apr_sdbm_fetch(info.db, &apvalue, apkey));
+	check("apr_sdbm_fetch", apr_sdbm_fetch(db, &apvalue, apkey));
 
-	const char *clkey=pa_strdup(apkey.dptr, apkey.dsize);
-	if(const String* svalue=deserialize_value(apvalue))
+	if(const String* svalue=info.self->deserialize_value(apkey, apvalue)) {
+		const char *clkey=pa_strdup(apkey.dptr, apkey.dsize);
+
 		info.nested_callback(clkey, *svalue, info.nested_info);
+	}
 }
-void VHashfile::for_each(void callback(const String::Body, const String&, void*), void* ainfo) const {
+void VHashfile::for_each(void callback(const String::Body, const String&, void*), void* ainfo) {
 	apr_sdbm_t *db=get_db_for_reading();
 
 	For_each_string_callback_info info;
 	
-	info.db=db;
+	info.self=this;
 	info.nested_info=ainfo;
 	info.nested_callback=callback;
 

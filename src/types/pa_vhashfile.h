@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char* IDENT_VHASHFILE_H="$Date: 2003/11/10 06:51:06 $";
+static const char* IDENT_VHASHFILE_H="$Date: 2003/11/10 07:06:13 $";
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -70,7 +70,14 @@ public: // usage
 	void remove(const String& aname);
 
 	void for_each(void callback(apr_sdbm_datum_t, void*), void* info) const;
-	void for_each(void callback(const String::Body, const String&, void*), void* info) const;
+	void for_each(void callback(const String::Body, const String&, void*), void* info);
+
+public:
+
+	void remove(const apr_sdbm_datum_t key);
+
+	apr_sdbm_datum_t serialize_value(const String& string, time_t time_to_die) const;
+	const String* deserialize_value(const apr_sdbm_datum_t key, const apr_sdbm_datum_t value);
 
 private:
 
