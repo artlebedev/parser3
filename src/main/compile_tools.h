@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.40 2001/05/17 19:33:33 parser Exp $
+	$Id: compile_tools.h,v 1.41 2001/06/28 07:33:38 parser Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -29,6 +29,7 @@ enum lexical_state {
 	LS_EXPRESSION_VAR_NAME,
 	LS_VAR_NAME_SIMPLE,
 	LS_VAR_NAME_CURLY,
+	LS_VAR_NAME_NO_COLON,
 	LS_VAR_ROUND,
 	LS_VAR_SQUARE,
 	LS_VAR_CURLY,

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.141 2001/06/27 12:47:44 parser Exp $
+	$Id: compile.y,v 1.142 2001/06/28 07:33:38 parser Exp $
 */
 
 /**
@@ -857,10 +857,21 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		// VARIABLE GET/PUT/WITH
 		case LS_VAR_NAME_SIMPLE:
 		case LS_EXPRESSION_VAR_NAME:
+		case LS_VAR_NAME_NO_COLON:
 			if(PC.ls==LS_EXPRESSION_VAR_NAME) {
 				// name in expr ends also before binary operators 
 				switch(c) {
 				case '-': 
+					pop_LS(PC);
+					PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
+					result=EON;
+					goto break2;
+				}
+			}
+			if(PC.ls==LS_VAR_NAME_NO_COLON) {
+				// name already has ':', stop before next 
+				switch(c) {
+				case ':': 
 					pop_LS(PC);
 					PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
 					result=EON;
@@ -905,6 +916,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case '.': // name part delim
 			case '$': // name part subvar
 			case ':': // ':name' or 'class:name'
+				PC.ls=LS_VAR_NAME_NO_COLON; // stop before next ':'
 				RC;
 			}
 			break;
