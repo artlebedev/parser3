@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.44 2001/04/06 08:55:21 paf Exp $
+	$Id: pa_globals.C,v 1.45 2001/04/06 10:32:20 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -44,7 +44,7 @@ String *empty_string;
 String *auto_method_name;
 String *main_method_name;
 
-String *root_class_name;
+String *op_class_name;
 String *main_class_name;
 String *env_class_name;
 String *table_class_name;
@@ -138,7 +138,7 @@ void pa_globals_init(Pool& pool) {
 	auto_method_name=NEW String(pool, AUTO_METHOD_NAME);
 	main_method_name=NEW String(pool, MAIN_METHOD_NAME);
 
-	root_class_name=NEW String(pool, ROOT_CLASS_NAME);
+	op_class_name=NEW String(pool, OP_CLASS_NAME);
 	main_class_name=NEW String(pool, MAIN_CLASS_NAME);
 	table_class_name=NEW String(pool, TABLE_CLASS_NAME);
 	file_class_name=NEW String(pool, FILE_CLASS_NAME);

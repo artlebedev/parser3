@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.38 2001/04/05 18:18:38 paf Exp $
+	$Id: pa_globals.h,v 1.39 2001/04/06 10:32:18 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -43,7 +43,7 @@ class Table;
 #define MAIN_METHOD_NAME "main"
 #define AUTO_METHOD_NAME "auto"
 
-#define ROOT_CLASS_NAME "ROOT"
+#define OP_CLASS_NAME "OP"
 #define MAIN_CLASS_NAME "MAIN"
 #define TABLE_CLASS_NAME "table"
 #define FILE_CLASS_NAME "file"
@@ -102,7 +102,7 @@ extern String *empty_string;
 extern String *auto_method_name;
 extern String *main_method_name;
 
-extern String *root_class_name;
+extern String *op_class_name;
 extern String *main_class_name;
 extern String *env_class_name;
 extern String *table_class_name;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.99 2001/04/05 20:01:22 paf Exp $
+	$Id: pa_request.C,v 1.100 2001/04/06 10:32:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -17,7 +17,7 @@
 #include "pa_request.h"
 #include "pa_wwrapper.h"
 #include "pa_vclass.h"
-#include "_root.h"
+#include "_op.h"
 #include "_table.h"
 #include "_file.h"
 #include "pa_globals.h"
@@ -42,7 +42,7 @@ Request::Request(Pool& apool,
 				 Info& ainfo,
 				 String::Untaint_lang adefault_lang) : Pooled(apool),
 	stack(apool),
-	ROOT(apool),
+	OP(apool),
 	env(apool),
 	form(apool),
 	request(apool, *this),
@@ -59,8 +59,8 @@ Request::Request(Pool& apool,
 	// root superclass, 
 	//   parent of all classes, 
 	//   operators holder
-	initialize_root_class(pool(), ROOT);
-	classes().put(*root_class_name, &ROOT);
+	initialize_op_class(pool(), OP);
+	classes().put(*op_class_name, &OP);
 	// table class
 	classes().put(*table_class_name, table_class);	
 	// file class

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.77 2001/04/04 10:50:34 paf Exp $
+	$Id: pa_request.h,v 1.78 2001/04/06 10:32:18 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -143,8 +143,8 @@ public:
 	/// info from web server
 	Info& info;
 
-	/// default base
-	VClass ROOT;
+	/// operators are methods of this class
+	VClass OP;
 	/// $env:fields here
 	VEnv env;
 	/// $form:elements here

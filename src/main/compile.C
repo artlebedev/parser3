@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.34 2001/04/06 10:20:36 paf Exp $
+	$Id: compile.C,v 1.35 2001/04/06 10:32:20 paf Exp $
 */
 
 #include "code.h"
@@ -39,7 +39,7 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 		classes().put(*name, cclass);
 		cclass->set_name(*name);
 	} else
-		cclass=&ROOT; // until changed with @CLASS would consider operators loading
+		cclass=&OP; // until changed with @CLASS would consider operators loading
 	pc.cclass=cclass;
 
 	pc.source=source;

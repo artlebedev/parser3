@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.1 2001/04/06 10:29:06 paf Exp $
+	$Id: op.C,v 1.2 2001/04/06 10:32:16 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -13,7 +13,7 @@
 
 #include "pa_common.h"
 #include "pa_request.h"
-#include "_root.h"
+#include "_op.h"
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
 
@@ -332,7 +332,7 @@ static void _connect(Request& r, const String& method_name, Array *params) {
 
 // initialize
 
-void initialize_root_class(Pool& pool, VStateless_class& vclass) {
+void initialize_op_class(Pool& pool, VStateless_class& vclass) {
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
 	vclass.add_native_method("if", Method::CT_ANY, _if, 2, 3);
