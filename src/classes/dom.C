@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.30 2001/09/21 08:57:30 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.31 2001/09/21 09:03:10 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -81,7 +81,8 @@ static void create_optioned_listener(
 									 const char *& content_type, const char *& charset, FormatterListener *& listener, 
 									 Pool& pool, 
 									 const String& method_name, MethodParams *params, int index, Writer& writer) {
-	charset=0;
+	// default encoding from pool
+	scharset=pool.get_charset();
 	const String *method=0;
 	XalanDOMString xalan_encoding;
 
@@ -97,10 +98,8 @@ static void create_optioned_listener(
 				// $.encoding[windows-1251|...]
 				if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 
 					String(pool, DOM_OUTPUT_ENCODING_OPTION_NAME)))) {
-					charset=vencoding->as_string().cstr();
-					xalan_encoding.append(charset);
-				} else // default encoding from pool
-					xalan_encoding.append(pool.get_charset().cstr());
+					charset=vencoding->as_string();
+				}
 			} else
 				PTHROW(0, 0,
 					&method_name,
@@ -108,6 +107,7 @@ static void create_optioned_listener(
 		}
 	}
 
+	xalan_encoding.append(charset=scharset.cstr());
 	if(!method/*default='xml'*/ || *method == DOM_OUTPUT_METHOD_OPTION_VALUE_XML) {
 		content_type="text/xml";
 		listener=new FormatterToXML(writer,
