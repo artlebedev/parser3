@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.19 2001/02/23 14:18:26 paf Exp $
+  $Id: pa_value.h,v 1.20 2001/02/23 18:12:44 paf Exp $
 */
 
 /*
@@ -49,19 +49,28 @@ class Operator : public Method {
 };
 */
 
-class Method_ref {
+class Junction : Pooled {
 public:
-	Value *self;
-	Method& method;
-};
 
-class Junction {
-	bool auto_calc;
-	Value& root;
-	Value *self;
-	Value& rcontext;
-	WContext& wcontext;
-	Array& code;
+	Junction(Pool& apool,
+		Method *amethod,
+		Value *aroot,
+		Value *aself,
+		Value *arcontext,
+		Array *acode) : Pooled(apool),
+		
+		method(amethod),
+		root(aroot),
+		self(aself),
+		rcontext(arcontext),
+		code(acode) {
+	}
+
+	const Method *method;
+	const Value *root;
+	const Value *self;
+	const Value *rcontext;
+	const Array *code;
 };
 
 class Value : public Pooled {
@@ -79,9 +88,6 @@ public: // Value
 	// string: value
 	virtual void put_string(String *astring) { failed("storing string to %s"); }
 
-	// method_ref: self, method
-	virtual Method_ref *get_method_ref() { failed("extracting method reference from %s"); return 0; }
-
 	// junction: auto_calc,root,self,rcontext,wcontext, code
 	virtual Junction *get_junction() { failed("getting junction from %s"); return 0; }
 
@@ -98,11 +104,6 @@ public: // Value
 	// wcontext: transparent
 	// frame: my or self_transparent
 	virtual void put_element(const String& name, Value *value) { failed("putting element to %s"); }
-
-	// object_instance, object_class: method
-	// frame: transparent
-	// wcontext: transparent
-	virtual Method *get_method(const String& name) const { return 0; }
 
 	// object_class, object_instance: object_class
 	// frame: transparent

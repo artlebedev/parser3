@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.6 2001/02/22 16:21:49 paf Exp $
+  $Id: pa_vclass.h,v 1.7 2001/02/23 18:12:44 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -18,27 +18,25 @@ public: // Value
 	Value *get_element(const String& name) {
 		// $STATIC=STATIC hash
 		if(name==STATIC_NAME)
-			return 0;//TODO:NEW VHash(pool(), STATIC);
+			return &STATIC;
 
-		// $field=STATIC.field
-		Value *result=static_cast<Value *>(STATIC.get(name));
-		if(!result) {
-			// $method=VMethod_ref
-			if(Method *method=get_method(name))
-				result=0;///NEW VMethod_ref(this, method);
+		// $method=junction(this+method)
+		if(Method *method=static_cast<Method *>(methods.get(name))) {
+			Pool& p=pool();
+			Junction *j=new(p) Junction(p, 
+				method,
+				this,this,this,0);
+
+			return NEW VJunction(j);
 		}
 
-		return result;
+		// $field=STATIC.field
+		return STATIC.get_element(name);
 	}
 
 	// object_class, operator_class: (field)=value - static values only
 	void put_element(const String& name, Value *value) {
-		STATIC.put(name, value);
-	}
-
-	// object_instance, object_class: method
-	Method *get_method(const String& name) const {
-		return static_cast<Method *>(methods.get(name));
+		STATIC.put_element(name, value);
 	}
 
 	// object_class, object_instance: object_class
@@ -82,7 +80,7 @@ public: // creation
 private:
 
 	String *fname;
-	Hash STATIC;
+	VHash STATIC;
 	Hash methods;
 	Array parents;  Hash parents_hash;
 };

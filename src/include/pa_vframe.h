@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vframe.h,v 1.1 2001/02/23 17:12:57 paf Exp $
+  $Id: pa_vframe.h,v 1.2 2001/02/23 18:12:44 paf Exp $
 */
 
 #ifndef PA_VFRAME_H
@@ -26,8 +26,6 @@ public: // Value
 			self->put_element(name, value);
 	}
 
-	// frame: transparent
-	Method *get_method(const String& name) const { return self->get_method(name); }
 	// frame: none yet | transparent
 	VClass *get_class() const { return self->get_class(); }
 	// frame: none yet | transparent

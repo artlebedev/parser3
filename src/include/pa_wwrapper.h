@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wwrapper.h,v 1.1 2001/02/23 17:12:58 paf Exp $
+  $Id: pa_wwrapper.h,v 1.2 2001/02/23 18:12:44 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -21,8 +21,6 @@ public: // Value
 		fvalue->put_element(name, avalue); 
 	}
 
-	// wcontext: transparent
-	Method *get_method(const String& name) const { return check_value()->get_method(name); }
 	// wcontext: none yet | transparent
 	VClass *get_class() const { return fvalue?fvalue->get_class():0; }
 	// wcontext: none yet | transparent
