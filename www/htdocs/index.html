@@ -237,9 +237,27 @@ $response:charset[windows-1251]
 #^exec[]
 #^passpost[]
 #^menudelim[]
-^fordelim[]
+#^fordelim[]
+#^duplicatetable2hashkey[]
+^duplicatehashsqlkey[]
 <hr>
 OK
+
+@duplicatehashsqlkey[]
+^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
+	$t[^table::sql{select * from news}]
+	$c[^t.columns[]]
+	^c.menu{$c.column}[,]
+
+	$h[^hash::sql{select news_type_id, name from news}]
+}
+
+@duplicatetable2hashkey[]
+$t[^table::create{a	b
+1	2
+1	3
+}]
+^t.hash[a;b]
 
 @menudelim[]
 $t[^table::create{a

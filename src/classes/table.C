@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/09/17 08:44:45 $";
+static const char* IDENT_TABLE_C="$Date: 2002/09/17 09:30:06 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -317,7 +317,11 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 					new(pool) VString(*row.get_string(value_field)));
 		}
 		
-		ri.hash->put(*row.get_string(ri.key_field), &result);
+		const String& key=*row.get_string(ri.key_field);
+		if(ri.hash->put_dont_replace(key, &result)) // put. existed?
+			throw Exception("parser.runtime",
+				&key,
+				"duplicate key");
 	}
 }
 static void _hash(Request& r, const String& method_name, MethodParams *params) {

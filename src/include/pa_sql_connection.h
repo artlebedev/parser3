@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char* IDENT_SQL_CONNECTION_H="$Date: 2002/09/04 14:59:54 $";
+static const char* IDENT_SQL_CONNECTION_H="$Date: 2002/09/17 09:30:07 $";
 
 #include "pa_pool.h"
 #include "pa_sql_driver.h"
@@ -85,10 +85,13 @@ public:
 					handlers)
 			);	
 		} catch(const Exception& e) { // query problem
-			// give more specific source [were url]
-			throw Exception("sql.execute",
-				&source, 
-				"%s", e.comment());
+			if(strcmp(e.type(), "sql.connect")==0) { // if it is _throw exception, 
+				// give more specific source [were url]
+				throw Exception("sql.execute",
+					&source, 
+					"%s", e.comment());
+			} else
+				/*re*/throw;
 		}
 	}
 

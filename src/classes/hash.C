@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2002/09/17 08:48:35 $";
+static const char* IDENT_HASH_C="$Date: 2002/09/17 09:30:06 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -69,7 +69,10 @@ public:
 		if(column_index==0) {
 			VHash *row_vhash=new(pool) VHash(pool);
 			row_hash=row_vhash->get_hash(0);
-			rows_hash.put(*cell, row_vhash);
+			if(rows_hash.put_dont_replace(*cell, row_vhash)) // put. existed?
+				throw Exception("parser.runtime",
+					cell,
+					"duplicate key");
 		} else
 			row_hash->put(*columns.get_string(column_index), new(pool) VString(*cell));
 		column_index++;
