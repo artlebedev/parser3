@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/08/14 11:37:14 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/08/14 12:19:03 $";
 
 #include "pa_config_includes.h"
 
@@ -28,8 +28,6 @@ static const char* IDENT_PARSER3_C="$Date: 2002/08/14 11:37:14 $";
 #else
 #	include <getopt.h>
 #endif
-
-#include "fixopt.h"
 
 //#define DEBUG_POOL_MALLOC
 //#define DEBUG_STRING_APPENDS_VS_EXPANDS
@@ -425,13 +423,7 @@ static void usage(const char *program) {
 	exit(EINVAL);
 }
 
-int main(int raw_argc, char *raw_argv[]) {
-	int argc;
-	char **argv;
-	fixopt(
-		raw_argc, raw_argv, 
-		argc, argv);
-
+int main(int argc, char *argv[]) {
 	Pool_storage global_pool_storage;
 	Pool global_pool(&global_pool_storage);
 	pool=&global_pool;
