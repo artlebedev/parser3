@@ -33,7 +33,7 @@
 
   NOTE:
   You can disable libstdc++ linkage by setting
-  --disable-link-libstdc++
+  --disable-link-libstdcpp
   option to configure.  
 
   NOTE:
@@ -149,4 +149,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.12 2002/03/25 10:14:13 paf Exp $
+$Id: INSTALL,v 1.13 2002/03/25 10:17:35 paf Exp $
