@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/20 09:26:32 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/20 14:21:29 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -392,14 +392,18 @@ void Request::execute(const Array& ops) {
 #endif
 				value=POP();
 
-				// info: 
-				//	code compiled so that this one's always method-junction, 
-				//	not a code-junction
 				Junction *junction=value->get_junction();
 				if(!junction)
 					throw Exception("parser.runtime",
 						last_get_element_name, 
 						"(%s) not a method or junction, can not call it",
+							value->type());
+				// check: 
+				//	that this is method-junction, not a code-junction
+				if(!junction->method)
+					throw Exception("parser.runtime",
+						last_get_element_name, 
+						"(%s) is code junction, can not call it",
 							value->type());
 
 				VMethodFrame frame(pool(), *last_get_element_name, *junction);

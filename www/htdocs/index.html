@@ -254,10 +254,16 @@ $response:charset[windows-1251]
 #^hashselfmodification[]
 #^emptyTransformResult[]
 #^badxdoccreate[]
-^if(-d "CVS"){y}{n}
+#^if(-d "CVS"){y}{n}
+^badjunctioncall[]
 <hr>
 OK
 
+@badjunctioncall[]
+^badjunctioncallinside{code}
+
+@badjunctioncallinside[code]
+^code[]
 
 @badxdoccreate[]
 $xdoc[^xdoc::create[вася]]
