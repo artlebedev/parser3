@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.163 2001/08/20 13:22:05 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.164 2001/08/22 07:31:54 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -595,12 +595,18 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 					PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
 				}
 				// reset piece 'begin' position & line
-				begin=PC.source; // ^
+				end=begin=PC.source; // ^
 				begin_line=PC.line;
-				// skip over ^ and _
-				PC.source++;  PC.col++;
-				// skip analysis = forced literal
-				continue;
+				if(PC.ls==LS_METHOD_AFTER) {
+					pop_LS(PC);
+					result=EON;
+					goto break2;
+				} else {
+					// skip over _ after ^
+					PC.source++;  PC.col++;
+					// skip analysis = forced literal
+					continue;
+				}
 
 			// converting ^#HH into char(hex(HH))
 			case '#':

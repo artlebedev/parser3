@@ -3,10 +3,15 @@ t.p
 dtf.p
 
 @main[]
+^ffcheck[]^[^]
+
 #$ORIGINS(1)
-#^func(0)<hr>
+#^list[]
 #^tests[]
-^list[]
+#^func(0)<hr>
+
+@ffcheck[]
+^file:find[bug/index.html]{not found}
 
 @list[]
 $list[^file:list[.;.*\.html^$]]
