@@ -229,6 +229,10 @@ SOURCE=.\pa_string.C
 
 SOURCE=.\pa_table.C
 # End Source File
+# Begin Source File
+
+SOURCE=.\untaint.C
+# End Source File
 # End Group
 # Begin Group "types"
 

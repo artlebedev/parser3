@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.37 2001/03/11 08:16:35 paf Exp $
+	$Id: pa_string.C,v 1.38 2001/03/11 10:54:39 paf Exp $
 */
 
 #include <string.h>
@@ -170,7 +170,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 
 	append_here->item.ptr=src;
 	fsize+=append_here->item.size=size;
-	append_here->item.lang=tainted?/*Untaint_lang::*/YES:Untaint_lang::NO;
+	append_here->item.lang=tainted?YES:NO;
 #ifndef NO_STRING_ORIGIN
 	append_here->item.origin.file=file;
 	append_here->item.origin.line=line;
@@ -178,43 +178,6 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 	append_here++; fused_rows++;
 
 	return *this;
-}
-
-char *String::cstr() const {
-	char *result=static_cast<char *>(malloc(size()+1));
-
-	char *copy_here=result;
-	const Chunk *chunk=&head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(int i=0; i<chunk->count; i++) {
-			if(row==append_here)
-				goto break2;
-
-			switch(row->item.lang) {
-			case NO:
-			case YES: // for VString.get_double of tainted values
-			case AS_IS: 
-				memcpy(copy_here, row->item.ptr, row->item.size); 
-				break;
-			case HTML_TYPO: 
-				memset(copy_here, '?', row->item.size); 
-				break;
-			default:
-				THROW(0,0,
-					this,
-					"unknown untaint language #%d of %d piece", 
-						static_cast<int>(row->item.lang),
-						i);
-			}
-			copy_here+=row->item.size;
-			row++;
-		}
-		chunk=row->link;
-	} while(chunk);
-break2:
-	*copy_here=0;
-	return result;
 }
 
 uint String::hash_code() const {
