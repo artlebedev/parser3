@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hashfile.C,v 1.17 2001/12/07 15:24:46 paf Exp $
+	$Id: hashfile.C,v 1.18 2001/12/19 16:19:11 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -38,7 +38,7 @@ static void _open(Request& r, const String& method_name, MethodParams *params) {
 	VHashfile& self=*static_cast<VHashfile *>(r.self);
 	
 	self.assign(
-		params->as_string(0, "DB_HOME must be string"), 
+		r.absolute(params->as_string(0, "DB_HOME must be string")), 
 		params->as_string(1, "filename must be string")
 	);
 }
