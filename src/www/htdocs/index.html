@@ -1,4 +1,10 @@
 @main[]
+#$cookie:reg0[8reg0]
+#$cookie:reg1[8reg1]
+$cookie:reg0
+$cookie:reg1
+
+<hr>
 ^connect[odbc://dsn=voz7^;uid=voz^;pwd=pwd]{
 #    ^void::sql{insert into хрен (a) values (1)}
 	$id(^int:sql{select 5})

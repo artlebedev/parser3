@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: mod_parser3.C,v 1.37 2001/07/25 10:57:58 parser Exp $"; 
+static const char *RCSId="$Id: mod_parser3.C,v 1.38 2001/07/30 12:29:11 parser Exp $"; 
 
 #include "httpd.h"
 #include "http_config.h"
@@ -149,7 +149,7 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 	} else if(strcasecmp(key, "status")==0) 
 		r->status=atoi(value);
 	else
-		ap_table_merge(r->headers_out, key, value);
+		ap_table_addn(r->headers_out, key, value);
 }
 
 void SAPI::send_header(Pool& pool) {
