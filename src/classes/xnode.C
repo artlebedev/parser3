@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.10 2001/10/18 09:49:58 parser Exp $
+	$Id: xnode.C,v 1.11 2001/10/18 13:09:37 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -182,9 +182,9 @@ XalanElement& get_self_element(Request& r, const String& method_name) {
 static void _getAttribute(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	XalanElement& element=get_self_element(r, method_name);
-	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
+	const String& name=params->as_string(0, "name must be string");
 
-	const XalanDOMString& attribute_value=element.getAttribute(XalanDOMString(name));
+	const XalanDOMString& attribute_value=element.getAttribute(pool.transcode(name));
 	// write out result
 	r.write_no_lang(*new(pool) VString(pool.transcode(attribute_value)));
 }
@@ -193,13 +193,13 @@ static void _getAttribute(Request& r, const String& method_name, MethodParams *p
 static void _setAttribute(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	XalanElement& element=get_self_element(r, method_name);
-	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
-	const char *attribute_value=params->as_string(1, "value must be string").cstr(String::UL_XML);
+	const String& name=params->as_string(0, "name must be string");
+	const String& attribute_value=params->as_string(1, "value must be string");
 
 	try {
 		element.setAttribute(
-			XalanDOMString(name), 
-			XalanDOMString(attribute_value));
+			pool.transcode(name), 
+			pool.transcode(attribute_value));
 	} catch(const XalanDOMException& e)	{
 		pool.exception()._throw(pool, &method_name, e);
 	}
@@ -209,10 +209,10 @@ static void _setAttribute(Request& r, const String& method_name, MethodParams *p
 static void _removeAttribute(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	XalanElement& element=get_self_element(r, method_name);
-	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
+	const String& name=params->as_string(0, "name must be string");
 
 	try {
-		element.removeAttribute(XalanDOMString(name));
+		element.removeAttribute(pool.transcode(name));
 	} catch(const XalanDOMException& e)	{
 		pool.exception()._throw(pool, &method_name, e);
 	}
@@ -222,9 +222,9 @@ static void _removeAttribute(Request& r, const String& method_name, MethodParams
 static void _getAttributeNode(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	XalanElement& element=get_self_element(r, method_name);
-	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
+	const String& name=params->as_string(0, "name must be string");
 
-	if(XalanAttr *attr=element.getAttributeNode(XalanDOMString(name))) {
+	if(XalanAttr *attr=element.getAttributeNode(pool.transcode(name))) {
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, attr);
 		r.write_no_lang(result);
@@ -266,11 +266,11 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 	Pool& pool=r.pool();
 	XalanElement& element=get_self_element(r, method_name);
 
-	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
+	const String& name=params->as_string(0, "name must be string");
 
 	VHash& result=*new(pool) VHash(pool);
 	if(const XalanNodeList *nodes=
-		element.getElementsByTagName(XalanDOMString(name))) {
+		element.getElementsByTagName(pool.transcode(name))) {
 		for(int i=0; i<nodes->getLength(); i++) {
 			String& skey=*new(pool) String(pool);
 			{

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.31 2001/10/11 14:57:53 parser Exp $
+	$Id: pa_pool.C,v 1.32 2001/10/18 13:09:37 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -86,16 +86,46 @@ const char *Pool::transcode_cstr(const XalanDOMString& s) {
 			dest[size]=0;
 			error=false;
 		}
-	} catch(...) {
-	}
-	if(error) {
-		memset(dest, '?', s.size());
-		((char *)dest)[s.size()]=0;
+	} catch(XMLException& e) {
+		exception()._throw(*this, 0, e);
 	}
 	return (const char *)dest;
 }
 String& Pool::transcode(const XalanDOMString& s) { 
 	return *new(*this) String(*this, transcode_cstr(s)); 
+}
+
+/// @test who would free up result?
+XalanDOMString& Pool::transcode_buf(const char *buf, size_t buf_size) { 
+	update_transcoder();
+
+	unsigned int dest_size=0;
+	XMLCh* dest=(XMLCh *)malloc((buf_size+1)*sizeof(XMLCh));
+	unsigned char *charSizes=(unsigned char *)malloc(buf_size*sizeof(unsigned char));
+	XalanDOMString *result;
+	try {
+		if(transcoder) {
+			unsigned int bytesEaten;
+			unsigned int dest_size=transcoder->transcodeFrom(
+				(unsigned char *)buf,
+				(const unsigned int)buf_size,
+				dest, (const unsigned int)buf_size,
+				bytesEaten,
+				charSizes
+			);
+			result=new XalanDOMString(dest, dest_size);
+		}
+	} catch(XMLException& e) {
+		exception()._throw(*this, 0, e);
+	}
+	free(charSizes);
+	
+	return *result;
+}
+XalanDOMString& Pool::transcode(const String& s) { 
+	const char *cstr=s.cstr(String::UL_XML);
+
+	return transcode_buf(cstr, strlen(cstr)); 
 }
 
 #endif

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.25 2001/10/18 11:59:42 parser Exp $
+	$Id: xdoc.C,v 1.26 2001/10/18 13:09:37 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -76,12 +76,12 @@ static void _createElement(Request& r, const String& method_name, MethodParams *
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *tagName=params->as_string(0, "tagName must be string").cstr(String::UL_XML);
+	const String& tagName=params->as_string(0, "tagName must be string");
 
 	try {
 		XalanNode *node=
 			vdoc.get_document(pool, &method_name).
-			createElement(XalanDOMString(tagName));
+			createElement(pool.transcode(tagName));
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
@@ -91,7 +91,7 @@ static void _createElement(Request& r, const String& method_name, MethodParams *
 }
 
 // DocumentFragment createDocumentFragment()
-static void _createDocumentFragment(Request& r, const String& method_name, MethodParams *params) {
+static void _createDocumentFragment(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
@@ -108,11 +108,11 @@ static void _createTextNode(Request& r, const String& method_name, MethodParams 
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *data=params->as_string(0, "data must be string").cstr(String::UL_XML);
+	const String& data=params->as_string(0, "data must be string");
 
 	XalanNode *node=
 		vdoc.get_document(pool, &method_name).
-		createTextNode(XalanDOMString(data));
+		createTextNode(pool.transcode(data));
 	// write out result
 	VXnode& result=*new(pool) VXnode(pool, node);
 	r.write_no_lang(result);
@@ -123,11 +123,11 @@ static void _createComment(Request& r, const String& method_name, MethodParams *
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *data=params->as_string(0, "data must be string").cstr(String::UL_XML);
+	const String& data=params->as_string(0, "data must be string");
 
 	XalanNode *node=
 		vdoc.get_document(pool, &method_name).
-		createComment(XalanDOMString(data));
+		createComment(pool.transcode(data));
 	// write out result
 	VXnode& result=*new(pool) VXnode(pool, node);
 	r.write_no_lang(result);
@@ -138,12 +138,12 @@ static void _createCDATASection(Request& r, const String& method_name, MethodPar
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *data=params->as_string(0, "data must be string").cstr(String::UL_XML);
+	const String& data=params->as_string(0, "data must be string");
 
 	try {
 		XalanNode *node=
 			vdoc.get_document(pool, &method_name).
-			createCDATASection(XalanDOMString(data));
+			createCDATASection(pool.transcode(data));
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
@@ -157,13 +157,13 @@ static void _createProcessingInstruction(Request& r, const String& method_name, 
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *target=params->as_string(0, "target must be string").cstr(String::UL_XML);
-	const char *data=params->as_string(1, "data must be string").cstr(String::UL_XML);
+	const String& target=params->as_string(0, "data must be string");
+	const String& data=params->as_string(1, "data must be string");
 
 	try {
 		XalanNode *node=
 			vdoc.get_document(pool, &method_name).
-			createProcessingInstruction(XalanDOMString(target), XalanDOMString(data));
+			createProcessingInstruction(pool.transcode(target), pool.transcode(data));
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
@@ -177,12 +177,12 @@ static void _createAttribute(Request& r, const String& method_name, MethodParams
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
+	const String& name=params->as_string(0, "name must be string");
 
 	try {
 		XalanNode *node=
 			vdoc.get_document(pool, &method_name).
-			createAttribute(XalanDOMString(name));
+			createAttribute(pool.transcode(name));
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
@@ -195,12 +195,12 @@ static void _createEntityReference(Request& r, const String& method_name, Method
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
+	const String& name=params->as_string(0, "name must be string");
 
 	try {
 		XalanNode *node=
 			vdoc.get_document(pool, &method_name).
-			createEntityReference(XalanDOMString(name));
+			createEntityReference(pool.transcode(name));
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
@@ -562,8 +562,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *qualifiedName=
-		params->as_string(0, "qualifiedName must be string").cstr(String::UL_XML);
+	const String& qualifiedName=params->as_string(0, "qualifiedName must be string");
 
 	XalanDocument& document=*new XercesDocumentBridge(
 		DOM_Document::createDocument(),
@@ -572,7 +571,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		false /*don' buildBridge -- too early, empty document*/);
 
 	/// +createXMLDecl ?
-	document.appendChild(document.createElement(XalanDOMString(qualifiedName)));
+	document.appendChild(document.createElement(pool.transcode(qualifiedName)));
 
 	// replace any previous document
 	vdoc.set_document(document);
@@ -750,10 +749,10 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
 	// elementId
-	const char *elementId=params->as_string(0, "elementID must be string").cstr(String::UL_XML);
+	const String& elementId=params->as_string(0, "elementID must be string");
 
 	if(XalanNode *node=
-		vdoc.get_document(pool, &method_name).getElementById(XalanDOMString(elementId))) {
+		vdoc.get_document(pool, &method_name).getElementById(pool.transcode(elementId))) {
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
