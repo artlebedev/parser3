@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.127 2002/04/11 13:33:39 paf Exp $
+	$Id: pa_request.h,v 1.128 2002/04/15 06:45:56 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -29,6 +29,12 @@
 #ifdef RESOURCES_DEBUG
 #include <sys/resource.h>
 #endif
+
+// consts
+
+const uint ANTI_ENDLESS_EXECUTE_RECOURSION=500;
+
+// defines
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \
@@ -102,7 +108,17 @@ public:
 	/// executes ops
 	void execute(const Array& ops); // execute.C
 	/// execute ops with anti-recoursion check
-	void recoursion_checked_execute(const String *name, const Array& ops);
+	void recoursion_checked_execute(const String *name, const Array& ops) {
+		// anti_endless_execute_recoursion
+		if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
+			anti_endless_execute_recoursion=0; // give @exception a chance
+			throw Exception("parser.runtime",
+				name,
+				"call canceled - endless recursion detected");
+		}
+		execute(ops); // execute it
+		anti_endless_execute_recoursion--;
+	}
 
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
 	VStateless_class *use_file(
@@ -117,6 +133,12 @@ public:
 		VStateless_class *base_class=0); // core.C
 
 	//@{ convinient inline helpers @see Request::process
+	void process_to_nothing(Value& input_value, 
+		void (*postexecute)(void *info)=0, void *postexecute_info=0) {
+		const String *junk_string;
+		process_internal(input_value, 0/*result_name*/, true/*intercept_string*/, &junk_string, 0,
+			postexecute, postexecute_info);
+	}
 	const String& process_to_string(Value& input_value, 
 		const String *result_name=0) {
 		const String *result;
@@ -304,7 +326,8 @@ private:
 	void process_internal(
 		Value& input_value, const String *result_name, 
 		bool intercept_string,
-		const String **string_result, Value **value_result); // execute.C
+		const String **string_result, Value **value_result,
+		void (*postexecute)(void *info)=0, void *postexecute_info=0); // execute.C
 
 	void output_result(const VFile& body_file, bool header_only);
 };

@@ -7,7 +7,9 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^tableselect0[]
+^casehashtext[]
+#^subjvaltest[]
+#^tableselect0[]
 #^memnotest1[]
 #^transparams[]
 #^voidparams[]
@@ -120,6 +122,26 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 <hr>
 OK
 
+@casehashtext[]
+$tt[1]
+$tmp[
+        ^switch[$tt]{
+                ^case[1]{
+                        $.aaa[123]
+                }
+                ^case[DEFAULT]{
+                        $.bbb[456]
+                }
+        }
+]
+
+$tmp.aaa
+
+@subjvaltest[]
+$a12[val]
+$b[12]
+$a$b
+
 @tableselect0[]
 $person[^table::create{name	height
 paf	1.77
@@ -148,19 +170,19 @@ $odoc[^idoc.transform[global.xsl;
 @memnotest1notes[]
 одна итерация цикла:
 [Mon Apr  8 20:12:02 2002] execution-------------------------|
-'469641+=28 wcodeframe -> 0 optimized[3]''469669+=49 string от {} -> 0 optimized[3]'
+'469641+=28 wcodeframe -> 0 !optimize[3]''469669+=49 string от {} -> 0 optimize[3]'
 [Mon Apr  8 20:12:02 2002] 12:STRING__WRITE
 [Mon Apr  8 20:12:02 2002]  "|| "
 [Mon Apr  8 20:12:02 2002] 12:WITH_ROOT
 [Mon Apr  8 20:12:02 2002] 13:VALUE
 [Mon Apr  8 20:12:02 2002]  "xxxx" string
-[Mon Apr  8 20:12:02 2002] 14:CREATE_EWPOOL'469377+=24 wcodeframe -> 0 stacked[1]''469401+=49 string -> 41 optimized[7]'
+[Mon Apr  8 20:12:02 2002] 14:CREATE_EWPOOL'469377+=24 wcodeframe -> 0 !optimize[1]''469401+=49 string -> 41 !optimize[7]'
 [Mon Apr  8 20:12:02 2002] 16:WITH_READ
 [Mon Apr  8 20:12:02 2002] 17:VALUE
 [Mon Apr  8 20:12:02 2002]  "i" string
 [Mon Apr  8 20:12:02 2002] 18:GET_ELEMENT
-[Mon Apr  8 20:12:02 2002] 17:WRITE_VALUE'469452+=40 MAX_NUMBER -> ~2 actual digits''469492+=49 -> 41'
-[Mon Apr  8 20:12:02 2002] 16:REDUCE_EWPOOL'469541+=24 VString -> 0 optimized[5]'
+[Mon Apr  8 20:12:02 2002] 17:WRITE_VALUE'469452+=40 MAX_NUMBER -> !~2 actual digits''469492+=49 -> 41 !'
+[Mon Apr  8 20:12:02 2002] 16:REDUCE_EWPOOL'469541+=24 VString -> 0 optimize[5]'
 [Mon Apr  8 20:12:02 2002] 15:CONSTRUCT_VALUE
 [Mon Apr  8 20:12:02 2002] 12:STRING__WRITE
 [Mon Apr  8 20:12:02 2002]  "| "
@@ -170,7 +192,7 @@ $odoc[^idoc.transform[global.xsl;
 [Mon Apr  8 20:12:02 2002] 14:GET_ELEMENT
 [Mon Apr  8 20:12:02 2002] 13:WRITE_VALUE'469573+=41 string expand nothing for now'
 [Mon Apr  8 20:12:02 2002] 12:STRING__WRITE
-[Mon Apr  8 20:12:02 2002]  "||"'469617+=24 VString -> 0 optimized[6]'
+[Mon Apr  8 20:12:02 2002]  "||"'469617+=24 VString -> 0 !optimize[6]'
 [Mon Apr  8 20:12:02 2002] <-ja returned
 [Mon Apr  8 20:12:02 2002] ja->
 

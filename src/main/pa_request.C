@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.197 2002/03/27 15:30:36 paf Exp $
+	$Id: pa_request.C,v 1.198 2002/04/15 06:46:00 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -65,8 +65,9 @@ Request::Request(Pool& apool,
 	anti_endless_execute_recoursion(0),
 	exception_trace(apool)
 #ifdef RESOURCES_DEBUG
-	,sql_connect_time(0),sql_request_time(0)
+	, sql_connect_time(0),sql_request_time(0)
 #endif
+	, self(0), root(0), rcontext(0), wcontext(0)
 {
 	// default charsets
 	pool().set_source_charset(*utf8_charset);

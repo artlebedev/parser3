@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.C,v 1.46 2002/03/27 15:30:35 paf Exp $
+	$Id: compile_tools.C,v 1.47 2002/04/15 06:45:58 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -58,6 +58,25 @@ void PNC(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
 	// append 'vstring'
 	*result+=code_array;
 }
+
+void PJP(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
+	// append OP_CODE
+	Operation op; op.code=OP_OBJECT_POOL;
+	*result+=op.cast;
+
+	// append 'vstring'
+	*result+=code_array;
+}
+
+void PSP(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
+	// append OP_CODE
+	Operation op; op.code=OP_STRING_POOL;
+	*result+=op.cast;
+
+	// append 'vstring'
+	*result+=code_array;
+}
+
 
 
 Array *VL(Value *value) {

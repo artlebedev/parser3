@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.h,v 1.58 2002/02/08 08:30:14 paf Exp $
+	$Id: compile_tools.h,v 1.59 2002/04/15 06:45:58 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -99,6 +99,10 @@ void PEA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
 void CCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
 /// aPpend Nested Code
 void PNC(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
+/// aPpend obJect Pool
+void PJP(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
+/// aPpend String Pool
+void PSP(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
 
 /**
 	Value Literal // returns array with 

@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.182 2002/02/18 15:21:01 paf Exp $
+	$Id: compile.y,v 1.183 2002/04/15 06:45:58 paf Exp $
 */
 
 /**
@@ -339,9 +339,9 @@ any_constructor_code_value:
 ;
 constructor_code_value: constructor_code {
 	$$=N(POOL); 
-	O($$, OP_CREATE_EWPOOL); /* stack: empty write context */
-	P($$, $1); /* some code that writes to that context */
-	O($$, OP_REDUCE_EWPOOL); /* context=pop; stack: context.value() */
+	PJP($$, $1); /* stack: empty write context */
+	/* some code that writes to that context */
+	/* context=pop; stack: context.value() */
 };
 constructor_code: codes__excluding_sole_str_literal;
 codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
@@ -451,18 +451,19 @@ name_expr_subvar_value: '$' subvar_ref_name_rdive {
 	O($$, OP_GET_ELEMENT);
 };
 name_expr_with_subvar_value: STRING subvar_get_writes {
+	Array *code;
+	{
+		change_string_literal_to_write_string_literal(code=$1);
+		P(code, $2);
+	}
 	$$=N(POOL); 
-	O($$, OP_CREATE_EWPOOL);
-	P($$, $1);
-	O($$, OP_WRITE_VALUE);
-	P($$, $2);
-	O($$, OP_REDUCE_EWPOOL);
+	PSP($$, code);
 };
 name_square_code_value: '[' codes ']' {
 	$$=N(POOL); 
-	O($$, OP_CREATE_EWPOOL);
-	P($$, $2);
-	O($$, OP_REDUCE_EWPOOL);
+	PJP($$, $2); /* stack: empty write context */
+	/* some code that writes to that context */
+	/* context=pop; stack: context.value() */
 };
 subvar_ref_name_rdive: STRING {
 	$$=N(POOL); 
@@ -546,9 +547,9 @@ expr:
 
 string_inside_quotes_value: maybe_codes {
 	$$=N(POOL);
-	O($$, OP_CREATE_SWPOOL); /* stack: empty write context */
-	P($$, $1); /* some code that writes to that context */
-	O($$, OP_REDUCE_SWPOOL); /* context=pop; stack: context.get_string() */
+	PSP($$, $1); /* stack: empty write context */
+	/* some code that writes to that context */
+	/* context=pop; stack: context.get_string() */
 };
 
 /* basics */

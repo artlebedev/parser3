@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.225 2002/04/11 13:33:39 paf Exp $
+	$Id: execute.C,v 1.226 2002/04/15 06:45:59 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -23,7 +23,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-//#define DEBUG_EXECUTE
+#define DEBUG_EXECUTE
 //#define DEBUG_STRING_APPENDS_VS_EXPANDS
 
 
@@ -32,8 +32,6 @@ ulong wcontext_result_size=0;
 #endif
 
 
-
-const uint ANTI_ENDLESS_EXECUTE_RECOURSION=500;
 
 #ifdef DEBUG_EXECUTE
 char *opcode_name[]={
@@ -47,8 +45,8 @@ char *opcode_name[]={
 	"CONSTRUCT_VALUE", "CONSTRUCT_EXPR", "CURLY_CODE__CONSTRUCT",
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
 	"GET_ELEMENT_OR_OPERATOR", "GET_ELEMENT",	"GET_ELEMENT__WRITE",
-	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
-  	"CREATE_SWPOOL",	"REDUCE_SWPOOL",
+	"OBJECT_POOL",	
+  	"STRING_POOL",
 	"GET_METHOD_FRAME",
 	"STORE_PARAM",
 	"PREPARE_TO_CONSTRUCT_OBJECT",	"PREPARE_TO_EXPRESSION", "CALL",
@@ -99,6 +97,8 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 		case OP_EXPR_CODE__STORE_PARAM:
 		case OP_CURLY_CODE__CONSTRUCT:
 		case OP_NESTED_CODE:
+		case OP_OBJECT_POOL:  
+		case OP_STRING_POOL:
 			const Array *local_ops=reinterpret_cast<const Array *>(i.next());
 			debug_dump(pool, level+1, *local_ops);
 		}
@@ -110,18 +110,6 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 #define POP() static_cast<Value *>(stack.pop())
 #define POP_NAME() static_cast<Value *>(stack.pop())->as_string()
 #define POP_CODE() static_cast<Array *>(stack.pop())
-
-void Request::recoursion_checked_execute(const String *name, const Array& ops) {
-	// anti_endless_execute_recoursion
-	if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
-		anti_endless_execute_recoursion=0; // give @exception a chance
-		throw Exception("parser.runtime",
-			name,
-			"call canceled - endless recursion detected");
-	}
-	execute(ops); // execute it
-	anti_endless_execute_recoursion--;
-}
 
 void Request::execute(const Array& ops) {
 //	_asm int 3;
@@ -332,16 +320,18 @@ void Request::execute(const Array& ops) {
 			}
 
 
-		case OP_CREATE_EWPOOL:
+		case OP_OBJECT_POOL:
 			{
+				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
+				
 				PUSH(wcontext);
 				PUSH((void *)flang);
 				flang=String::UL_PASS_APPENDED;
-				wcontext=NEW WWrapper(pool(), 0 /*empty*/);
-				break;
-			}
-		case OP_REDUCE_EWPOOL:
-			{
+				WWrapper local(pool(), 0 /*empty*/);
+				wcontext=&local;
+
+				execute(*local_ops);
+
 				value=&wcontext->result();
 				flang=static_cast<String::Untaint_lang>(reinterpret_cast<int>(POP()));
 				wcontext=static_cast<WContext *>(POP());
@@ -349,14 +339,17 @@ void Request::execute(const Array& ops) {
 				break;
 			}
 			
-		case OP_CREATE_SWPOOL:
+		case OP_STRING_POOL:
 			{
+				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
+				
+
 				PUSH(wcontext);
-				wcontext=NEW WWrapper(pool(), 0 /*empty*/);
-				break;
-			}
-		case OP_REDUCE_SWPOOL:
-			{
+				WWrapper local(pool(), 0 /*empty*/);
+				wcontext=&local;
+
+				execute(*local_ops);
+
 				// from "$a $b" part of expression taking only string value,
 				// ignoring any other content of wcontext
 				const String *string=wcontext->get_string();
@@ -865,7 +858,8 @@ Value *Request::get_element(bool can_call_operator) {
 void Request::process_internal(
 							   Value& input_value, const String *result_name, 
 							   bool intercept_string,
-							   const String **string_result, Value **value_result) {
+							   const String **string_result, Value **value_result,
+							   void (*postexecute)(void *info), void *postexecute_info) {
 	Junction *junction=input_value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
 		// process it
@@ -893,6 +887,10 @@ void Request::process_internal(
 
 			// execute it
 			recoursion_checked_execute(result_name, *junction->code);
+			
+			// maybe-postexecute something
+			if(postexecute)
+				postexecute(postexecute_info);
 		
 			// CodeFrame soul:
 			//   string writes were intercepted
@@ -911,6 +909,10 @@ void Request::process_internal(
 		
 			// execute it
 			recoursion_checked_execute(result_name, *junction->code);
+		
+			// maybe-postexecute something
+			if(postexecute)
+				postexecute(postexecute_info);
 		
 			if(string_result)
 				*string_result=&wcontext->result().as_string();
@@ -949,7 +951,8 @@ const String *Request::execute_method(Value& aself, const Method& method,
 	
 	// initialize contexts
 	root=rcontext=self=&aself;
-	wcontext=NEW WWrapper(pool(), &aself);
+	WWrapper local(pool(), &aself);
+	wcontext=&local; 
 	
 	// execute!	
 	execute(*method.parser_code);

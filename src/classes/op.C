@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.81 2002/04/10 09:53:14 paf Exp $
+	$Id: op.C,v 1.82 2002/04/15 06:45:55 paf Exp $
 */
 
 #include "classes.h"
@@ -21,6 +21,7 @@
 // defines
 
 #define OP_CLASS_NAME "OP"
+#define CASE_DEFAULT_VALUE "DEFAULT"
 
 // class
 
@@ -269,19 +270,32 @@ r.sql_connect_time+=t[1]-t[0];
 
 #ifndef DOXYGEN
 struct Switch_data {
+	Request *r;
 	Value *searching;
 	Value *found;
 	Value *_default;
+	Value *result;
 };
 #endif
-static void _switch(Request& r, const String&, MethodParams *params) {
-	Switch_data data={&r.process_to_value(params->get(0))};	
-	Temp_hash_value switch_data_setter(r.classes_conf, *switch_data_name, &data);
-
-	r.process_to_string(params->as_junction(1, "switch cases must be code")); // and ignore result
+static void switch_postexecute(void *info) {
+	Switch_data& data=*static_cast<Switch_data *>(info);
 
 	if(Value *code=data.found ? data.found : data._default)
-		r.write_pass_lang(r.process_to_value(*code));
+		data.result=&data.r->process_to_value(*code);
+}
+static void _switch(Request& r, const String&, MethodParams *params) {
+	Switch_data data={&r, &r.process_to_value(params->get(0))};	
+	Temp_hash_value switch_data_setter(r.classes_conf, *switch_data_name, &data);
+
+	// execution of found ^case[...]{code} must be in context of ^switch[...]{code}
+	// because of stacked WWrapper used there as wcontext
+	r.process_to_nothing(
+		params->as_junction(1, "switch cases must be code"),
+		switch_postexecute, &data
+	);
+
+	if(data.result)
+		r.write_pass_lang(*data.result);
 }
 
 static void _case(Request& r, const String& method_name, MethodParams *params) {
@@ -298,7 +312,7 @@ static void _case(Request& r, const String& method_name, MethodParams *params) {
 	for(int i=0; i<count; i++) {
 		Value& value=r.process_to_value(params->get(i));
 
-		if(value.as_string() == *case_default_value) {
+		if(value.as_string() == CASE_DEFAULT_VALUE) {
 			data->_default=code;
 			break;
 		}
@@ -310,6 +324,11 @@ static void _case(Request& r, const String& method_name, MethodParams *params) {
 			matches=data->searching->as_double() == value.as_double();
 
 		if(matches) {
+			if(data->found)
+				throw Exception("parser.runtime",
+					&method_name,
+					"duplicate found");
+
 			data->found=code;
 			break;
 		}
