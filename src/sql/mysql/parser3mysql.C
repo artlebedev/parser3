@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.12 2001/04/07 14:23:35 paf Exp $
+	$Id: parser3mysql.C,v 1.13 2001/04/09 14:02:02 paf Exp $
 */
 
 #include <stdlib.h>
@@ -120,9 +120,9 @@ public:
 			memcpy(cur, astatement, statement_size); cur+=statement_size;
 			cur+=sprintf(cur, " limit ");
 			if(offset)
-				cur+=snprintf(cur, MAX_NUMBER+1, "%lu,", offset);
+				cur+=snprintf(cur, MAX_NUMBER+1, "%u,", offset);
 			if(limit)
-				cur+=snprintf(cur, MAX_NUMBER, "%lu", limit);
+				cur+=snprintf(cur, MAX_NUMBER, "%u", limit);
 			statement=statement_limited;
 		} else
 			statement=astatement;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.107 2001/04/09 11:30:40 paf Exp $
+	$Id: pa_request.C,v 1.108 2001/04/09 14:01:58 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -551,7 +551,7 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	// prepare header: content-length
 	if(content_length) { // useful for redirecting [header "location: http://..."]
 		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
+		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
 		SAPI::add_header_attribute(pool(), "content-length", content_length_cstr);
 	}
 

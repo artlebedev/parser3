@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.59 2001/04/09 09:48:26 paf Exp $
+	$Id: parser3.C,v 1.60 2001/04/09 14:02:05 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -297,7 +297,7 @@ int main(int argc, char *argv[]) {
 		// prepare header
 		SAPI::add_header_attribute(pool, "content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
+		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
 		SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
 
 		// send header

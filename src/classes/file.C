@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.22 2001/04/09 13:21:08 paf Exp $
+	$Id: file.C,v 1.23 2001/04/09 14:01:54 paf Exp $
 */
 
 #include "pa_request.h"
@@ -122,16 +122,56 @@ static void _cgi(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, vfile_name, 
 		method_name, "file name must not be code");
 
-	Hash *env=0; 
+	const String& script_name=r.absolute(vfile_name.as_string());
+
+	Hash env(pool);
+	#define PASS(key) \
+		String key(pool); \
+		if(const char *value=SAPI::get_env(pool, #key)) { \
+			key.APPEND_CONST(value); \
+			env.put(String(pool, #key), &key); \
+		}
+	#define INFO(key, value) \
+		String value(pool); \
+		if(r.info.value) { \
+			value.APPEND_CONST(r.info.value); \
+			env.put(String(pool, key), &value); \
+		}
+
+	// const
+	String gateway_interface(pool, "CGI/1.1");
+	env.put(String(pool, "GATEWAY_INTERFACE"), &gateway_interface);
+	// from Request.info
+	INFO("DOCUMENT_ROOT", document_root);
+	INFO("PATH_TRANSLATED", path_translated);
+	INFO("SERVER_PROTOCOL", method);
+	INFO("QUERY_STRING", query_string);
+	INFO("REQUEST_URI", uri);
+	INFO("CONTENT_TYPE", content_type);
+	char content_length_cstr[MAX_NUMBER];  
+	snprintf(content_length_cstr, MAX_NUMBER, "%u", r.info.content_length);
+	String content_length(pool, content_length_cstr);
+	env.put(String(pool, "CONTENT_LENGTH"), &content_length);
+	INFO("HTTP_COOKIE", cookie);
+	INFO("HTTP_USER_AGENT", user_agent);
+	// passing some SAPI:get_env-s
+	PASS(SERVER_NAME);
+	PASS(SERVER_PORT);
+	PASS(HTTP_REFERER);
+	PASS(REMOTE_ADDR);
+	PASS(REMOTE_HOST);
+	PASS(REMOTE_USER);
+	// SCRIPT_NAME
+	env.put(String(pool, "SCRIPT_NAME"), &script_name);
+
 	if(params->size()>1) {
 		Value& venv=*static_cast<Value *>(params->get(1));
 		// forcing [this param type]
 		r.fail_if_junction_(true, venv, 
 			method_name, "env must not be code");
-		if(Hash *user_env=venv.get_hash()) {
-			env=new(pool) Hash(pool);
-			user_env->for_each(append_env_pair, env);
-		} else
+		if(Hash *user_env=venv.get_hash())
+			user_env->for_each(append_env_pair, &env);
+		else
 			PTHROW(0, 0,
 				&method_name,
 				"env must be hash");
@@ -147,7 +187,7 @@ static void _cgi(Request& r, const String& method_name, Array *params) {
 	const String in(pool, r.post_data, r.post_size);
 	String out(pool);
 	String err(pool);
-	int exit_code=SAPI::execute(r.absolute(vfile_name.as_string()), env, argv,
+	int exit_code=SAPI::execute(script_name, &env, argv,
 		in, out, err);
 
 	VFile& self=*static_cast<VFile *>(r.self);

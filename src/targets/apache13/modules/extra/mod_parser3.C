@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.24 2001/04/09 13:21:16 paf Exp $
+	$Id: mod_parser3.C,v 1.25 2001/04/09 14:02:03 paf Exp $
 */
 
 #include "httpd.h"
@@ -221,7 +221,7 @@ static int parser_handler(request_rec *r)
 		// prepare header
 		SAPI::add_header_attribute(pool, "content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
+		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
 		SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
 
 		// send header

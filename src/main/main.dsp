@@ -237,6 +237,10 @@ SOURCE=.\pa_exception.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\targets\pa_exec.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_globals.C
 # End Source File
 # Begin Source File
