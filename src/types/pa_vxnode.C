@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vxnode.C,v 1.1 2001/09/26 11:24:07 parser Exp $
+	$Id: pa_vxnode.C,v 1.2 2001/09/26 15:43:59 parser Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -21,6 +21,7 @@
 #include <XalanDOM/XalanNamedNodeMap.hpp>
 #include <XalanDOM/XalanAttr.hpp>
 #include <XalanDOM/XalanProcessingInstruction.hpp>
+#include <XalanDOM/XalanNodeList.hpp>
 
 /*
 void VXnode_cleanup(void *vxnode) {
@@ -39,36 +40,43 @@ Value *VXnode::get_element(const String& aname) {
 
 	XalanNode *self=&get_node(pool(), &aname);
 
-	if(aname=="name") {
+	if(aname=="nodeName") {
 		return NEW VString(transcode(self->getNodeName()));
-	} else if(aname=="value") {
+	} else if(aname=="nodeValue") {
 		return NEW VString(transcode(self->getNodeValue()));
-	} else if(aname=="type") {
-		static const char *type_names[]={
-			"unknown", "element", "attribute", "text", "cdata", "entityref",    
-			"entity", "pi", "comment", "document", "doctype", "docfragment", 
-			"notation"
-		};
-		XalanNode::NodeType node_type=self->getNodeType();
-		if(node_type > sizeof(type_names)/sizeof(type_names[0]))
-			node_type=XalanNode::UNKNOWN_NODE;
-		return NEW VString(*NEW String(pool(), type_names[node_type]));
-	} else if(aname=="parent") {
+	} else if(aname=="nodeType") {
+		return NEW VInt(pool(), self->getNodeType());
+	} else if(aname=="parentNode") {
 		if(XalanNode *result_node=self->getParentNode())
 			return NEW VXnode(pool(), result_node);
-	} else if(aname=="first-child") {
+	} else if(aname=="childNodes") {	
+		if(const XalanNodeList *nodes=self->getChildNodes()) {
+			VHash *result=NEW VHash(pool());
+			for(int i=0; i<nodes->getLength(); i++) {
+				String& skey=*NEW String(pool());
+				{
+					char *buf=(char *)malloc(MAX_NUMBER);
+					snprintf(buf, MAX_NUMBER, "%d", i);
+					skey << buf;
+				}
+
+				result->hash().put(skey, NEW VXnode(pool(), nodes->item(i)));
+			}
+			return result;
+		}
+	} else if(aname=="firstChild") {
 		if(XalanNode *result_node=self->getFirstChild())
 			return NEW VXnode(pool(), result_node);
-	} else if(aname=="last-child") {
+	} else if(aname=="lastChild") {
 		if(XalanNode *result_node=self->getLastChild())
 			return NEW VXnode(pool(), result_node);
-	} else if(aname=="previous-sibling") {
+	} else if(aname=="previousSibling") {
 		if(XalanNode *result_node=self->getPreviousSibling())
 			return NEW VXnode(pool(), result_node);
-	} else if(aname=="next-sibling") {
+	} else if(aname=="nextSibling") {
 		if(XalanNode *result_node=self->getNextSibling())
 			return NEW VXnode(pool(), result_node);
-	} else if(aname=="owner") {
+	} else if(aname=="ownerDocument") {
 		if(XalanDocument *document=self->getOwnerDocument())
 			return NEW VXdoc(pool(), document);
 	} else switch(self->getNodeType()) {

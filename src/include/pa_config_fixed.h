@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_config_fixed.h,v 1.14 2001/09/26 11:45:00 parser Exp $
+	$Id: pa_config_fixed.h,v 1.15 2001/09/26 15:43:59 parser Exp $
 
 
 	tested only with MS Visual C++ V6
@@ -27,5 +27,5 @@
 #define HAVE_DIRECT_H
 #define HAVE_SETJMP_H
 #define HAVE_MEMORY_H
-#define SMTP
+#define USE_SMTP
 #define XML

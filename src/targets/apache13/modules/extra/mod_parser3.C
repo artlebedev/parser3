@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.45 2001/09/26 11:45:00 parser Exp $
+	$Id: mod_parser3.C,v 1.46 2001/09/26 15:43:59 parser Exp $
 */
 
 #include "httpd.h"
@@ -35,7 +35,7 @@
 // consts
 
 extern const char *main_RCSIds[];
-#ifdef SMTP
+#ifdef USE_SMTP
 extern const char *smtp_RCSIds[];
 #endif
 extern const char *gd_RCSIds[];
@@ -44,7 +44,7 @@ extern const char *types_RCSIds[];
 extern const char *ApacheModuleParser3_RCSIds[];
 const char **RCSIds[]={
 	main_RCSIds,
-#ifdef SMTP
+#ifdef USE_SMTP
 	smtp_RCSIds,
 #endif
 	gd_RCSIds,

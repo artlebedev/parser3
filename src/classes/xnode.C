@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.1 2001/09/26 11:24:07 parser Exp $
+	$Id: xnode.C,v 1.2 2001/09/26 15:43:59 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -39,8 +39,6 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 	const XalanDOMChar *expression_dcstr=dstring.c_str();
 
 	XPathEvaluator evaluator;
-	// Initialize the XalanSourceTree subsystem...
-//	XalanSourceTreeInit		theSourceTreeInit;
 	// We'll use these to parse the XML file.
 	XalanSourceTreeDOMSupport dom_support;
 
@@ -100,7 +98,8 @@ static void _select_single(Request& r, const String& method_name, MethodParams *
 
 // constructor
 
-MXnode::MXnode(Pool& apool) : Methoded(apool) {
+MXnode::MXnode(Pool& apool) : Methoded(apool), 
+	consts(apool) {
 	set_name(*NEW String(pool(), XNODE_CLASS_NAME));
 
 	// ^node.select[/some/xpath/query] = hash $.#[dnode]
@@ -108,6 +107,24 @@ MXnode::MXnode(Pool& apool) : Methoded(apool) {
 
 	// ^node.select-single[/some/xpath/query] = first dnode
 	add_native_method("select-single", Method::CT_DYNAMIC, _select_single, 1, 1);
+
+	// consts
+
+#define CONST(name, value) \
+	consts.put(*new(pool()) String(pool(), #name), new(pool()) VInt(pool(), value))
+
+	CONST(ELEMENT_NODE, 1);
+    CONST(ATTRIBUTE_NODE,  2);
+    CONST(TEXT_NODE,  3);
+    CONST(CDATA_SECTION_NODE,  4);
+    CONST(ENTITY_REFERENCE_NODE,  5);
+    CONST(ENTITY_NODE,  6);
+    CONST(PROCESSING_INSTRUCTION_NODE,  7);
+    CONST(COMMENT_NODE,  8);
+    CONST(DOCUMENT_NODE,  9);
+    CONST(DOCUMENT_TYPE_NODE,  10);
+    CONST(DOCUMENT_FRAGMENT_NODE,  11);
+    CONST(NOTATION_NODE,  12);
 
 }
 // global variable

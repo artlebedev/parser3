@@ -58,7 +58,7 @@ LINK32=link.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Stopping apache...
-PreLink_Cmds=net stop apache_release
+PreLink_Cmds=rem net stop apache_release
 PostBuild_Desc=Starting apache...
 PostBuild_Cmds=net start apache_release
 # End Special Build Tool
@@ -93,7 +93,7 @@ LINK32=link.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Stopping apache...
-PreLink_Cmds=net stop apache_debug
+PreLink_Cmds=rem net stop apache_debug
 PostBuild_Desc=Starting apache...
 PostBuild_Cmds=net start apache_debug
 # End Special Build Tool
@@ -113,7 +113,7 @@ SOURCE=..\..\..\..\ident.awk
 
 !IF  "$(CFG)" == "ApacheModuleParser3 - Win32 Release"
 
-# Begin Custom Build - Collecting $Id: ApacheModuleParser3.dsp,v 1.36 2001/09/26 11:45:00 parser Exp $, creating ident.C...
+# Begin Custom Build - Collecting $Id: ApacheModuleParser3.dsp,v 1.37 2001/09/26 15:43:59 parser Exp $, creating ident.C...
 InputPath=..\..\..\..\ident.awk
 
 "ident.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -128,7 +128,7 @@ InputPath=..\..\..\..\ident.awk
 
 !ELSEIF  "$(CFG)" == "ApacheModuleParser3 - Win32 Debug"
 
-# Begin Custom Build - Collecting $Id: ApacheModuleParser3.dsp,v 1.36 2001/09/26 11:45:00 parser Exp $, creating ident.C...
+# Begin Custom Build - Collecting $Id: ApacheModuleParser3.dsp,v 1.37 2001/09/26 15:43:59 parser Exp $, creating ident.C...
 InputPath=..\..\..\..\ident.awk
 
 "ident.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"

@@ -340,8 +340,7 @@ SOURCE=..\ident.awk
 
 !IF  "$(CFG)" == "main - Win32 Release"
 
-USERDEP__IDENT="*.C"	
-# Begin Custom Build - Collecting $Id: main.dsp,v 1.124 2001/09/26 10:32:26 parser Exp $, creating ident.C...
+# Begin Custom Build - Collecting $Id: main.dsp,v 1.125 2001/09/26 15:43:59 parser Exp $, creating ident.C...
 InputPath=..\ident.awk
 
 "ident.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -356,7 +355,7 @@ InputPath=..\ident.awk
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
 
-# Begin Custom Build - Collecting $Id: main.dsp,v 1.124 2001/09/26 10:32:26 parser Exp $, creating ident.C...
+# Begin Custom Build - Collecting $Id: main.dsp,v 1.125 2001/09/26 15:43:59 parser Exp $, creating ident.C...
 InputPath=..\ident.awk
 
 "ident.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"

@@ -1,8 +1,8 @@
 @main[]
-^fori[]
+#^fori[]
 #^connect[mysql://hren]{^void:sql{nothing}}
 #$response:content-type[$.value[text/html] $.charset[utf-8]]
-#^xslt[]
+^xslt[]
 OK
 
 @fori[][i]
@@ -12,7 +12,7 @@ OK
 $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 
 <people>
-	<man id="1"><![CDATA[ ment here]]>
+	<man id="1">
 		<name>PAF</name>
 	</man>
 	<man id="2">
@@ -32,11 +32,11 @@ $people[^xdoc.select[*/man]]
 
 @show1[]
 ^for[i](0;^people._count[]-1){
-    $node[$people.$i]
-	$node.first-child.value: 
-		$pattributes[$node.parent.attributes]
+    $x[$people.$i]
+	$x.firstChild.nodeValue: 
+		$pattributes[$x.parentNode.attributes]
 		^if(^pattributes._count[]){
-			$pattributes.id.name=$pattributes.id.value
+			$pattributes.id.name=$pattributes.id.nodeValue
 		}
 	<br>
 }
@@ -47,29 +47,29 @@ $people[^xdoc.select[*/man]]
 	^show-xnode1[$array.$i;0;1]
 }
 
-@show-xnode1[xnode;level;single][l]
-^if(def $xnode){
+@show-xnode1[x;level;single][l]
+^if(def $x){
     ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
-    ^if($xnode.type eq element){
-    	&lt^;$xnode.name
-	    $pairs[$xnode.attributes]
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    	&lt^;$x.nodeName
+	    $pairs[$x.attributes]
 	    ^if(def $pairs){
 	    	$names[^pairs._keys[]]
-	    	^names.menu{$names.key=$pairs.[$names.key].value }
+	    	^names.menu{$names.key=$pairs.[$names.key].nodeValue }
 	    }
 	    &gt^;
     }{
-    	[$xnode.type]
+    	[$x.nodeType]
     }
     
-    ^if(def $xnode.value){$xnode.value}<br>
-    ^show-xnode1[$xnode.first-child]($level+1)
+    ^if(def $x.nodeValue){$x.nodeValue}<br>
+    ^show-xnode1[$x.firstChild]($level+1)
     ^if(!$single){
-	    ^show-xnode1[$xnode.next-sibling]($level)
+	    ^show-xnode1[$x.nextSibling]($level)
     }
 
-    ^if($xnode.type eq element){
-    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$xnode.name&gt^;<br>
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
     }
 }
 

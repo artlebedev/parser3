@@ -1,10 +1,10 @@
 /** @file
-	Parser: @b dom parser class.
+	Parser: @b xdoc parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.1 2001/09/26 11:24:07 parser Exp $
+	$Id: xdoc.C,v 1.2 2001/09/26 15:43:59 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -28,6 +28,8 @@
 #include <PlatformSupport/XalanFileOutputStream.hpp>
 #include <PlatformSupport/XalanOutputStreamPrintWriter.hpp>
 #include <PlatformSupport/DOMStringPrintWriter.hpp>
+#include <XalanDOM/XalanElement.hpp>
+#include <XalanDOM/XalanNodeList.hpp>
 
 // defines
 
@@ -67,7 +69,7 @@ protected: // XalanOutputStream
 	virtual void writeData(const char *theBuffer, unsigned long theBufferLength) {
 		char *copy=(char *)fstring.malloc((size_t)theBufferLength);
 		memcpy(copy, theBuffer, (size_t)theBufferLength);
-		fstring.APPEND_CLEAN(copy, (size_t)theBufferLength, "dom", 0);
+		fstring.APPEND_CLEAN(copy, (size_t)theBufferLength, "xdoc", 0);
 	}
 
 	virtual void doFlush() {}
@@ -329,32 +331,110 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 	r.write_no_lang(result);
 }
 
+static void _getElementById(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	// elementId
+	const char *elementId=params->as_string(0, "elementID must not be code").cstr(String::UL_AS_IS);
+
+	if(XalanElement *element=
+		vdoc.get_document(pool, &method_name).getElementById(XalanDOMString(elementId))) {
+		// write out result
+		VXnode& result=*new(pool) VXnode(pool, element);
+		r.write_no_lang(result);
+	}
+}
+
+static void _getElementsByTagName(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	// tagname
+	const char *tagname=params->as_string(0, "tagname must not be code").cstr(String::UL_AS_IS);
+
+	VHash& result=*new(pool) VHash(pool);
+	if(const XalanNodeList *nodes=
+		vdoc.get_document(pool, &method_name).getElementsByTagName(XalanDOMString(tagname))) {
+		for(int i=0; i<nodes->getLength(); i++) {
+			String& skey=*new(pool) String(pool);
+			{
+				char *buf=(char *)pool.malloc(MAX_NUMBER);
+				snprintf(buf, MAX_NUMBER, "%d", i);
+				skey << buf;
+			}
+
+			result.hash().put(skey, new(pool) VXnode(pool, nodes->item(i)));
+		}
+	}
+
+	// write out result
+	r.write_no_lang(result);
+}
+
+static void _getElementsByTagNameNS(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	// namespaceURI;localName
+	const char *namespaceURI=params->as_string(0, "namespaceURI must not be code").cstr(String::UL_AS_IS);
+	const char *localName=params->as_string(0, "localName must not be code").cstr(String::UL_AS_IS);
+
+	VHash& result=*new(pool) VHash(pool);
+	if(const XalanNodeList *nodes=
+		vdoc.get_document(pool, &method_name).getElementsByTagNameNS(
+			XalanDOMString(namespaceURI), XalanDOMString(localName))) {
+		for(int i=0; i<nodes->getLength(); i++) {
+			String& skey=*new(pool) String(pool);
+			{
+				char *buf=(char *)pool.malloc(MAX_NUMBER);
+				snprintf(buf, MAX_NUMBER, "%d", i);
+				skey << buf;
+			}
+
+			result.hash().put(skey, new(pool) VXnode(pool, nodes->item(i)));
+		}
+	}
+
+	// write out result
+	r.write_no_lang(result);
+}
+
 // constructor
 
 MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 	set_name(*NEW String(pool(), XDOC_CLASS_NAME));
 
-	// ^dom.save[some.xml]
-	// ^dom.save[some.xml;options hash]
+	// ^xdoc.save[some.xml]
+	// ^xdoc.save[some.xml;options hash]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
 
-	// ^dom.string[] <doc/>
-	// ^dom.string[options hash] <doc/>
+	// ^xdoc.string[] <doc/>
+	// ^xdoc.string[options hash] <doc/>
 	add_native_method("string", Method::CT_DYNAMIC, _string, 0, 1);
 
-	// ^dom.file[] file with "<doc/>"
-	// ^dom.file[options hash] file with "<doc/>"
+	// ^xdoc.file[] file with "<doc/>"
+	// ^xdoc.file[options hash] file with "<doc/>"
 	add_native_method("file", Method::CT_DYNAMIC, _file, 0, 1);
 
-	// ^dom::set[<some>xml</some>]
+	// ^xdoc::set[<some>xml</some>]
 	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 1);
 
-	// ^dom::load[some.xml]
+	// ^xdoc::load[some.xml]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
 
-	// ^dom.xslt[stylesheet file_name]
-	// ^dom.xslt[stylesheet file_name;params hash]
+	// ^xdoc.xslt[stylesheet file_name]
+	// ^xdoc.xslt[stylesheet file_name;params hash]
 	add_native_method("xslt", Method::CT_DYNAMIC, _xslt, 1, 2);
+
+	// ^xdoc.getElementById[elementId]
+	add_native_method("getElementById", Method::CT_DYNAMIC, _getElementById, 1, 1);
+	
+	// ^xdoc.getElementById[tagname]
+	add_native_method("getElementsByTagName", Method::CT_DYNAMIC, _getElementsByTagName, 1, 1);
+
+	// ^xdoc.getElementsByTagNameNS[namespaceURI;localName] = array of nodes
+	add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
 
 }
 // global variable
