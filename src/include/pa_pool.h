@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.36 2001/03/19 17:42:12 paf Exp $
+	$Id: pa_pool.h,v 1.37 2001/03/19 18:00:26 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -96,7 +96,8 @@ class Pooled {
 	// the pool i'm allocated on
 	Pool& fpool;
 public:
-	
+
+	/// the Pooled-sole: Pooled instances can be allocated in Pool rather then on heap
 	static void *operator new(size_t size, Pool& apool) { 
 		return apool.malloc(size);
 	}
