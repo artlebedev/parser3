@@ -599,6 +599,26 @@ SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XMLSupportD.lib"
 # Begin Source File
 
 SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XercesParserLiaisonD.lib"
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XalanSourceTreeD.lib"
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # End Target
 # End Project

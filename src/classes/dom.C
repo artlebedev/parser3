@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.10 2001/09/10 13:13:55 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.11 2001/09/10 14:24:37 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -22,14 +22,13 @@ static const char *RCSId="$Id: dom.C,v 1.10 2001/09/10 13:13:55 parser Exp $";
 #include <util/XMLString.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
 #include <XalanTransformer/XalanParsedSource.hpp>
-#include <XalanTransformer/XercesDOMParsedSource.hpp>
+//#include <XalanTransformer/XercesDOMParsedSource.hpp>
 #include <PlatformSupport/XalanFileOutputStream.hpp>
 #include <PlatformSupport/XalanOutputStreamPrintWriter.hpp>
 #include <PlatformSupport/DOMStringPrintWriter.hpp>
 #include <XMLSupport/FormatterToXML.hpp>
 #include <XMLSupport/FormatterTreeWalker.hpp>
-#include <XercesParserLiaison/XercesDOMSupport.hpp>
-#include <XercesParserLiaison/XercesParserLiaison.hpp>
+//#include <XercesParserLiaison/XercesDOMSupport.hpp>
 
 // defines
 
@@ -39,7 +38,7 @@ static const char *RCSId="$Id: dom.C,v 1.10 2001/09/10 13:13:55 parser Exp $";
 
 class MDom : public Methoded {
 public: // VStateless_class
-	Value *create_new_value(Pool& pool) { return new(pool) VDom(pool, 0); }
+	Value *create_new_value(Pool& pool) { return new(pool) VDom(pool); }
 
 public:
 	MDom(Pool& pool);
@@ -68,7 +67,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 			vDom.get_transformer().getLastError());
 
 	// replace any previous node value
-	vDom.set_document(parsedSource->getDocument());
+	vDom.set_parsed_source(*parsedSource);
 }
 
 const char *strX(const XalanDOMString& s) {
@@ -129,11 +128,8 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	const String& filename=params->as_string(1, "file name must not be code");
 	const char *filespec=r.absolute(filename).cstr(String::UL_FILE_NAME);
 	
-	XalanDocument *document=vDom.get_document();
-	if(!document)
-		PTHROW(0, 0,
-			&method_name,
-			"on empty document");
+	// document
+	XalanDocument& document=vDom.get_document(pool, &method_name);
 
 	try {
 		XalanFileOutputStream stream(XalanDOMString(filespec, strlen(filespec)));
@@ -145,7 +141,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 			XalanDOMString(encoding, strlen(encoding))  // encoding
 		);
 		FormatterTreeWalker treeWalker(formatterListener);
-		treeWalker.traverse(document); // Walk the document and produce the XML...
+		treeWalker.traverse(&document); // Walk the document and produce the XML...
 	} catch(const XSLException& e) {
 		_throw(pool, &method_name, e);
 	}
@@ -158,11 +154,8 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 	// encoding
 	const char *encoding=params->as_string(0, "encoding must not be code").cstr();
 
-	XalanDocument *document=vDom.get_document();
-	if(!document)
-		PTHROW(0, 0,
-			&method_name,
-			"on empty document");
+	// document
+	XalanDocument& document=vDom.get_document(pool, &method_name);
 
 	try {
 		String parserString=*new(pool) String(pool);
@@ -179,7 +172,7 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 			false // xmlDecl 
 		);
 		FormatterTreeWalker treeWalker(formatterListener);
-		treeWalker.traverse(document); // Walk the document and produce the XML...
+		treeWalker.traverse(&document); // Walk the document and produce the XML...
 
 		// write out result
 		r.write_no_lang(parserString);
@@ -196,11 +189,8 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 	// encoding
 	const char *encoding=params->as_string(0, "encoding must not be code").cstr();
 
-	XalanDocument *document=vDom.get_document();
-	if(!document)
-		PTHROW(0, 0,
-			&method_name,
-			"on empty document");
+	// document
+	XalanDocument& document=vDom.get_document(pool, &method_name);
 
 	try {
 		String& parserString=*new(pool) String(pool);
@@ -213,7 +203,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 			XalanDOMString(encoding, strlen(encoding))  // encoding
 		);
 		FormatterTreeWalker treeWalker(formatterListener);
-		treeWalker.traverse(document); // Walk the document and produce the XML...
+		treeWalker.traverse(&document); // Walk the document and produce the XML...
 
 		// write out result
 		VFile& vfile=*new(pool) VFile(pool);
@@ -231,32 +221,30 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 	VDom& vDom=*static_cast<VDom *>(r.self);
 
 	// source
-	XalanDocument *source_document=vDom.get_document();
-	if(!source_document)
-		PTHROW(0, 0,
-			&method_name,
-			"on empty document");
+	XalanParsedSource &parsed_source=vDom.get_parsed_source(pool, &method_name);
 
 	// stylesheet
 	const String& stylesheet_filename=params->as_string(0, "file name must not be code");
 	const char *stylesheet_filespec=r.absolute(stylesheet_filename).cstr(String::UL_FILE_NAME);
 
 	// target
-	XercesDOMSupport domSupport;
-	XercesParserLiaison	parserLiaison(domSupport);
-	XalanDocument* target=parserLiaison.createDocument();
+//	XercesDOMSupport domSupport;
+//	XercesParserLiaison	parserLiaison(domSupport);
+//	XalanDocument* target=parserLiaison.createDocument();
+	XalanDocument* target=vDom.get_parser_liaison().createDocument();
 	XSLTResultTarget domResultTarget(target);
 
 	// transform
-	int error=vDom.get_transformer().transform(
-		source_document, stylesheet_filespec, domResultTarget);
+	int error=vDom.get_transformer().transform(parsed_source, stylesheet_filespec, domResultTarget);
 	if(error)
 		PTHROW(0, 0,
 			&stylesheet_filename,
 			vDom.get_transformer().getLastError());
 
 	// write out result
-	r.write_no_lang(*new(pool) VDom(pool, target));
+	VDom& result=*new(pool) VDom(pool);
+	result.set_document(*target);
+	r.write_no_lang(result);
 }
 
 // constructor

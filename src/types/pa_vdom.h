@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.3 2001/09/10 13:13:55 parser Exp $
+	$Id: pa_vdom.h,v 1.4 2001/09/10 14:24:37 parser Exp $
 */
 
 #ifndef PA_VDOM_H
@@ -15,7 +15,10 @@
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
 
+#include <XercesParserLiaison/XercesParserLiaison.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
+#include <XalanTransformer/XalanParsedSource.hpp>
+#include <XalanSourceTree/XalanSourceTreeParserLiaison.hpp>
 
 extern Methoded *Dom_class;
 
@@ -34,21 +37,48 @@ protected: // VAliased
 
 public: // usage
 
-	/// @test XalanTransformer free somehow
-	VDom(Pool& apool, XalanDocument* adocument) : VStateless_object(apool, *Dom_class), 
+	/** 
+		@test XalanTransformer free somehow
+		@test XercesParserLiaison free somehow
+	*/
+	
+	VDom(Pool& apool) : VStateless_object(apool, *Dom_class), 
 		ftransformer(new XalanTransformer),
-		fdocument(adocument) {
+		fparser_liaison(new XercesParserLiaison),
+		fparsed_source(0),
+		fdocument(0) {
 	}
 
 	XalanTransformer& get_transformer() {return *ftransformer; }
+	XercesParserLiaison& get_parser_liaison() { return *fparser_liaison; }
 
-	XalanDocument* get_document() { return fdocument; }
-	void set_document(XalanDocument* adocument) { fdocument=adocument; }
+	void set_parsed_source(XalanParsedSource& aparsed_source) { fparsed_source=&aparsed_source; }
+	XalanParsedSource& get_parsed_source(Pool& pool, const String *source) { 
+		if(!fparsed_source)
+			PTHROW(0, 0,
+				source,
+				"this instance can not be used for this purpose");
+		return *fparsed_source; 
+	}
+
+	void set_document(XalanDocument& adocument) { fdocument=&adocument; }
+	XalanDocument &get_document(Pool& pool, const String *source) { 
+		if(fparsed_source)
+			return *fparsed_source->getDocument();
+		if(!fdocument)
+			PTHROW(0, 0,
+				source,
+				"this instance does not contain document");
+		return *fdocument; 
+	}
 
 private:
 
 	XalanTransformer *ftransformer;
-	XalanDocument* fdocument;
+	XercesParserLiaison	*fparser_liaison;
+
+	XalanParsedSource *fparsed_source;
+	XalanDocument *fdocument;
 
 };
 
