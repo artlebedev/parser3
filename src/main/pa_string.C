@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/09/29 11:15:40 $";
+static const char* IDENT_STRING_C="$Date: 2003/09/30 05:20:16 $";
 
 #include "pcre.h"
 
@@ -167,11 +167,18 @@ String& String::mid(size_t substr_begin, size_t substr_end) const {
 }
 
 size_t String::pos(const String::Body substr, size_t this_offset, Language lang) const {
-	size_t substr_begin=body.pos(substr, this_offset);
-	if(substr_begin==CORD_NOT_FOUND || !langs.check_lang(lang, substr_begin, substr.length()))
-		return STRING_NOT_FOUND;
+	size_t substr_length=substr.length();
+	while(true) {
+		size_t substr_begin=body.pos(substr, this_offset);
+		
+		if(substr_begin==CORD_NOT_FOUND)
+			return STRING_NOT_FOUND;
 
-	return substr_begin;
+		if(langs.check_lang(lang, substr_begin, substr_length))
+			return substr_begin;
+
+		this_offset=substr_begin+substr_length;
+	}
 }
 
 size_t String::pos(const String& substr, 
