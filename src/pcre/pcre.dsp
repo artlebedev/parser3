@@ -87,13 +87,6 @@ LIB32=link.exe -lib
 # Begin Source File
 
 SOURCE=.\chartables.c
-
-!IF  "$(CFG)" == "pcre - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "pcre - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -139,10 +132,11 @@ SOURCE=.\dftables.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Creating chartables.c...
+OutDir=.\Release
 InputPath=.\dftables.c
 
 "chartables.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	dftables>chartables.c
+	$(OutDir)\pcre_dftables>chartables.c
 
 # End Custom Build
 
@@ -150,10 +144,11 @@ InputPath=.\dftables.c
 
 # PROP Ignore_Default_Tool 1
 # Begin Custom Build - Creating chartables.c...
+OutDir=.\Debug
 InputPath=.\dftables.c
 
 "chartables.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	dftables>chartables.c
+	$(OutDir)\pcre_dftables>chartables.c
 
 # End Custom Build
 

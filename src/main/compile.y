@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.127 2001/04/25 11:02:56 paf Exp $
+	$Id: compile.y,v 1.128 2001/04/27 15:56:32 paf Exp $
 */
 
 /**
@@ -138,7 +138,7 @@ control_method: '@' STRING '\n'
 		YYERROR;
 	}
 	if(command==CLASS_NAME) {
-		if(PC.cclass) { // already changed from default?
+		if(PC.cclass!=&PC.request->OP) { // already changed from default[OP]?
 			strcpy(PC.error, "class already have a name '");
 			strncat(PC.error, PC.cclass->name().cstr(), 100);
 			strcat(PC.error, "'");
