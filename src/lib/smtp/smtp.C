@@ -7,10 +7,15 @@
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char * const IDENT_SMTP_C="$Date: 2004/02/24 10:36:16 $";
+static const char * const IDENT_SMTP_C="$Date: 2004/02/24 11:10:05 $";
 
 #include "pa_exception.h"
 #include "smtp.h"
+
+#undef snprintf
+// pa_common.C
+extern int __snprintf(char *, size_t, const char* , ...);
+#define snprintf __snprintf
 
 //#define DEBUG_SHOW
 
