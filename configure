@@ -38,7 +38,7 @@ ac_help="$ac_help
   --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)"
 ac_help="$ac_help
-  --with-sjlj-exceptions    enable simple throw from dynamic library"
+  --with-sjlj-exceptions  enable simple 'throw' from dynamic library"
 ac_help="$ac_help
   --with-glib-config=FILE FILE is glib library
                           configuration file (search for glib*-config)"
