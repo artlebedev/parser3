@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.9 2001/01/27 13:09:45 paf Exp $
+  $Id: pa_string.C,v 1.10 2001/01/27 15:00:05 paf Exp $
 */
 
 #include <string.h>
@@ -23,7 +23,7 @@ void String::construct(Pool *apool) {
 void String::expand() {
 	curr_chunk_rows+=curr_chunk_rows*CR_GROW_PERCENT/100;
 	Chunk *chunk=static_cast<Chunk *>(
-		pool->malloc(sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
+		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
 	chunk->count=curr_chunk_rows;
 	link_row->link=chunk;
 	append_here=chunk->rows;
@@ -37,15 +37,15 @@ String::String(String& src) {
 	
 	int src_used_rows=src.used_rows();
 	if(src_used_rows<=head.count) {
-		// new rows fit into preallocated area
+		// all new rows fit into preallocated area
 		curr_chunk_rows=head.count;
 		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
 		append_here=&head.rows[src_used_rows];
 		link_row=&head.rows[curr_chunk_rows];
 	} else {
 		// warning: 
-		//   heavy relies on the fact 
-		//   that preallocated area is the same for all strings
+		//   heavily relies on the fact 
+		//   "preallocated area is the same for all strings"
 		//
 		// info:
 		//   allocating only enough mem to fit src string rows
@@ -57,7 +57,7 @@ String::String(String& src) {
 		// remaining rows into new_chunk
 		curr_chunk_rows=src_used_rows-head.count;
 		Chunk *new_chunk=static_cast<Chunk *>(
-			pool->malloc(sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
+			pool->malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
 		new_chunk->count=curr_chunk_rows;
 		head.preallocated_link=new_chunk;
 		append_here=link_row=&new_chunk->rows[curr_chunk_rows];

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.2 2001/01/27 12:04:53 paf Exp $
+  $Id: pa_hash.h,v 1.3 2001/01/27 15:00:04 paf Exp $
 */
 
 /*
@@ -17,16 +17,16 @@
 
 class Pool;
 
-typedef String Key;
-typedef void Value;
-
 class Hash {
 public:
+
+	typedef String Key;
+	typedef void Value;
 
 private:
 	friend Pool;
 
-	// expand when there would be used this %% of size
+	// expand when used these %% of size
 	enum {
 		THRESHOLD_PERCENT=75
 	};

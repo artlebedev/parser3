@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.5 2001/01/27 12:04:53 paf Exp $
+  $Id: pa_string.h,v 1.6 2001/01/27 15:00:04 paf Exp $
 */
 
 /*
@@ -38,7 +38,7 @@ private:
 	Pool *pool;
 
 	struct Chunk {
-		// the number of rows per chunk
+		// the number of rows in chunk
 		int count;
 		union Row {
 			// chunk item

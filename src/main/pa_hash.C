@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.2 2001/01/27 12:04:43 paf Exp $
+  $Id: pa_hash.C,v 1.3 2001/01/27 15:00:04 paf Exp $
 */
 
 /*
@@ -95,7 +95,7 @@ void Hash::put(Key& key, Value *value) {
 	*ref=new(pool) Pair(code, key, value, *ref);
 }
 
-Value* Hash::get(Key& key) {
+Hash::Value* Hash::get(Key& key) {
 	uint code=key.hash_code();
 	uint index=code%size;
 	for(Pair *pair=refs[index]; pair; pair=pair->link)
