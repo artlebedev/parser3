@@ -96,15 +96,29 @@ PA_SUBSTCHARSET(windows-1257,windows1257)
 PA_SUBSTCHARSET(koi8-r,koi8r)
 
 
+AC_MSG_CHECKING(for dynamic-link library extension)
+case "$host_os" in
+hpux9* | hpux10* | hpux11*)
+    dll_extension=sl
+    ;;
+cygwin)
+    dll_extension=dll
+    ;;
+*)
+    dll_extension=so
+esac
+AC_MSG_RESULT($dll_extension)
+AC_SUBST(dll_extension)
+
 AC_ARG_WITH(mysql-client,[  --with-mysql-client=mysqlclientlib?withparams
                           MySQL client dynamic library to root config],
 	mysql_client=$withval
 ,
 	AC_MSG_CHECKING(for mysql client)
 	for lib in \
-		/usr/local/lib/mysql/libmysqlclient.so \
-		/usr/local/lib/libmysqlclient.so \
-		/usr/lib/libmysqlclient.so; do
+		/usr/local/lib/mysql/libmysqlclient.$dll_extension \
+		/usr/local/lib/libmysqlclient.$dll_extension \
+		/usr/lib/libmysqlclient.$dll_extension; do
 		if test -f $lib; then mysql_client=$lib; fi
 	done
 
@@ -124,9 +138,9 @@ AC_ARG_WITH(pgsql-client,[  --with-pgsql-client=pgsqlclientlib?withparams
 ,
 	AC_MSG_CHECKING(for pgsql client)
 	for lib in \
-		/usr/local/pgsql/lib/libpq.so \
-		/usr/local/lib/libpq.so \
-		/usr/lib/libpq.so; do
+		/usr/local/pgsql/lib/libpq.$dll_extension \
+		/usr/local/lib/libpq.$dll_extension \
+		/usr/lib/libpq.$dll_extension; do
 		if test -f $lib; then pgsql_client=$lib; fi
 	done
 
@@ -145,7 +159,7 @@ AC_ARG_WITH(oracle-client,[  --with-oracle-client=oracleclientlib?withparams
 	oracle_client=$withval
 ,
 	AC_MSG_CHECKING(for oracle client)
-	lib=$ORACLE_HOME/lib/libclntsh.so
+	lib=$ORACLE_HOME/lib/libclntsh.$dll_extension
 	if test -f $lib; then oracle_client=$lib; fi
 
 	if test -z "$oracle_client"; then
