@@ -105,95 +105,7 @@ PostBuild_Cmds=net start apache_debug
 # Name "ApacheModuleParser3 - Win32 Debug"
 # Begin Source File
 
-SOURCE=..\..\..\..\acinclude.m4
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\aclocal.m4
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\asm.txt
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\AUTHORS
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\ChangeLog
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\config.guess
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\config.sub
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\configure
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\configure.in
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\COPYING
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\form.txt
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\INSTALL
-# End Source File
-# Begin Source File
-
-SOURCE="..\..\..\..\install-sh"
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\lang.txt
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\ltconfig
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\ltmain.sh
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\Makefile.am
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\Makefile.in
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\missing
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\mkinstalldirs
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\modules\extra\mod_parser3.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\NEWS
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\operators.txt
 # End Source File
 # Begin Source File
 
@@ -202,22 +114,6 @@ SOURCE=..\..\modules\extra\pa_pool.C
 # Begin Source File
 
 SOURCE=..\..\modules\extra\pa_threads.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\parser3.dsw
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\README
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\sql.txt
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\..\types.txt
 # End Source File
 # End Target
 # End Project
