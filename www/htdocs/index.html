@@ -281,7 +281,8 @@ $htpasswd[^table::create[nameless]{}]
 
 
 @tcrypt[]
-^math:crypt[123;^$apr1^$94......]<br>
+#^math:crypt[123;^$apr1^$1234567890abcdef]<br>
+^math:crypt[123;^$apr1^$]<br>
 
 @tfilespec[]
 src=$selffilespec<br>

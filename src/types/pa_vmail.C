@@ -6,7 +6,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vmail.C,v 1.5 2002/06/24 19:11:43 paf Exp $
+	$Id: pa_vmail.C,v 1.6 2002/06/25 13:36:44 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -370,9 +370,9 @@ static const String& file_value_to_string(Request& r, const String *source,
 		// $.format
 		vformat=static_cast<Value *>(send_hash->get(*new(pool) String(pool, "format")));
 
-		// $.file-name
+		// $.name
 		if(Value *vfile_name=static_cast<Value *>(send_hash->get(
-			*new(pool) String(pool, "file-name")))) // specified $file-name
+			*new(pool) String(pool, "name")))) // specified $name
 			file_name=&vfile_name->as_string();
 	} else {  // must be VFile
 		vfile=send_value.as_vfile(String::UL_AS_IS);

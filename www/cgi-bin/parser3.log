@@ -195,3 +195,8 @@
 [Mon Jun 24 22:30:54 2002] /index.cgihtml: happened [shit]
 [Mon Jun 24 22:31:37 2002] /index.cgihtml: happened [shit]
 [Mon Jun 24 22:31:59 2002] /index.cgihtml: happened [shit]
+[Tue Jun 25 17:25:52 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1742:12): parse error, expecting `']'' or `';'' [parser.compile]
+[Tue Jun 25 17:25:53 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(284): 'crypt' salt must start with '$apr1$' [parser.runtime]
+[Tue Jun 25 17:26:04 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(284): 'crypt' salt must start with '$apr1$' [parser.runtime]
+[Tue Jun 25 17:26:15 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(284): 'crypt' salt must start with '$apr1$' [parser.runtime]
+[Tue Jun 25 17:26:16 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(284): 'crypt' salt must start with '$apr1$' [parser.runtime]

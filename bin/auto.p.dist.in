@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.2 2002/06/20 14:06:21 paf Exp $
+#$Id: auto.p.dist.in,v 1.3 2002/06/25 13:36:43 paf Exp $
 
 @conf[]
 $charsetsdir[@charsetsdir@]
@@ -61,15 +61,21 @@ $LIMITS[
 #]
 
 @unhandled_exception[exception;stack]
-<noindex>
-$response:content-type[
-        $.value[text/html]
-        $.charset[$response:charset]
+^fatal_error[Unhandled Exception;
+
+<p>The server encountered an unhandled exception 
+and was unable to complete your request.</p>
+<p>Please contact the server administrator,
+$env:SERVER_ADMIN
+and inform them of the time the error occurred, 
+and anything you might have done that may have caused the error.</p>
+<p>More information about this error may be available in the Parser error log.</p>
+
 ]
 
-<title>UNHANDLED EXCEPTION (root)</title>
-<body bgcolor=white>
-<font color=black>
+@unhandled_exception_debug[exception;stack]
+^fatal_error[Unhandled Exception (Debug);
+
 <pre>^untaint[html]{$exception.comment}</pre>
 ^if(def $exception.source){
 <b>$exception.source</b><br>
@@ -82,7 +88,23 @@ $response:content-type[
 		<tt>$stack.name</tt> $stack.file^($stack.lineno^)<br>
 	}
 }
-</noindex>
+
+]
+
+@fatal_error[title;body]
+$response:status(500)
+$response:content-type[
+        $.value[text/html]
+        $.charset[$response:charset]
+]
+<html>
+<head><title>$title</title></head>
+<body>
+<H1>$title</H1>
+$body
+#for [x] MSIE friendly
+^for[i](0;512/8){<!-- -->}
+</body>
 
 @auto[]
 #source/client charsets

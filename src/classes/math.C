@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b math parser class.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 
-	$Id: math.C,v 1.19 2002/06/21 12:42:19 paf Exp $
+	$Id: math.C,v 1.20 2002/06/25 13:36:44 paf Exp $
 */
 
 #include "pa_common.h"
@@ -18,9 +18,14 @@
 #	include <windows.h>
 #endif
 
+#ifdef HAVE_CRYPT_H
+#include <crypt.h>
+#endif
+
 // defines
 
 #define PI 3.1415926535
+#define MAX_SALT 8
 
 // class
 
@@ -35,6 +40,9 @@ public: // Methoded
 
 // methods
 static unsigned int randomizer=0;
+static inline int _random(uint top) {
+	return (int)(((double)((randomizer=rand())% RAND_MAX)) / RAND_MAX * top );
+}
 static void _random(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -43,14 +51,13 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
     if(top<=1)
 		throw Exception("parser.runtime",
 			&method_name,
-			"top must be above 1 (%g)", top);
+			"top must be above 1(%g)", top);
 	
-	int result=(int)( ((double)((randomizer=rand())% RAND_MAX)) / RAND_MAX * uint(top) );
-	r.write_no_lang(*new(pool) VInt(pool, result));
+	r.write_no_lang(*new(pool) VInt(pool, _random(uint(top))));
 }
 
 
-typedef double (*math1_func_ptr)(double);
+typedef double(*math1_func_ptr)(double);
 static double frac(double param) { return param-trunc(param); }
 static double degrees(double param) { return param /PI *180; }
 static double radians(double param) { return param /180 *PI; }
@@ -104,23 +111,67 @@ static void math2(Request& r,
 	}
 MATH2(pow);
 
+inline bool is_salt_body_char(int c) {
+	return isalnum(c) || c == '.' || c=='/';
+}
+static size_t calc_prefix_size(const char *salt) {
+	if(size_t salt_size=strlen(salt)) {
+		if(!is_salt_body_char(salt[0])) { // $...  {...
+			const char *cur=salt+1; // skip
+			while(is_salt_body_char(*cur++)) // ...$  ...}
+				;
+			return cur-salt;
+		} else
+			return 0;
+	} else
+		return 0;
+}
 static void _crypt(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const char *password=params->as_string(0, "password must be string").cstr();
-	const char *salt=params->as_string(1, "salt must be string").cstr();
+	const char *maybe_bodyless_salt=params->as_string(1, "salt must be string").cstr();
+
+	size_t prefix_size=calc_prefix_size(maybe_bodyless_salt);
+	const char *normal_salt;
+	char normalize_buf[MAX_STRING];
+	if(prefix_size==strlen(maybe_bodyless_salt)) { // bodyless?
+		strncpy(normalize_buf, maybe_bodyless_salt, MAX_STRING-MAX_SALT-1);
+		char *cur=normalize_buf+strlen(normalize_buf);
+		// sould add up MAX_SALT random chars
+		static unsigned char itoa64[] =         /* 0 ... 63 => ASCII - 64 */
+		"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+		for(int i=0; i<MAX_SALT; i++)
+			*cur++=itoa64[_random(64)];
+		*cur=0;
+		normal_salt=normalize_buf;
+	} else
+		normal_salt=maybe_bodyless_salt;
 
     /* FreeBSD style MD5 string 
      */
-    if (strncmp(salt, PA_MD5PW_ID, PA_MD5PW_IDLEN) == 0) {
+    if(strncmp(normal_salt, PA_MD5PW_ID, PA_MD5PW_IDLEN) == 0) {
 		const size_t sample_size=120;
 		char *sample_buf=(char *)pool.malloc(sample_size);
 		pa_MD5Encode((const unsigned char *)password,
-				 (const unsigned char *)salt, sample_buf, sample_size);
+				(const unsigned char *)normal_salt, sample_buf, sample_size);
 		r.write_pass_lang(*new(pool) String(pool, sample_buf));
-    } else
+    } else {
+#ifdef HAVE_CRYPT
+		const char *sample_buf=crypt(password, normal_salt);
+		if(!sample_buf  // nothing generated
+			|| !sample_buf[0] // generated nothing
+			|| strncmp(sample_buf, normal_salt, prefix_size)!=0) // salt prefix not preserved
+			throw Exception("parser.runtime",
+				&method_name,
+				"this platform does not support '%*s' salt prefix", prefix_size, normal_salt);
+		
+		r.write_pass_lang(*new(pool) String(pool, sample_buf));
+#else
 		throw Exception("parser.runtime",
 			&method_name,
 			"salt must start with '" PA_MD5PW_ID "'");
+#endif
+	}
 }
 
 // constructor
@@ -163,7 +214,7 @@ void MMath::configure_admin(Request&) {
 #else
 		^ getpid()
 #endif
-		^ (unsigned int)time(NULL)
+		^(unsigned int)time(NULL)
 	);
 	if(!randomizer)
 		randomizer=rand();

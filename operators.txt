@@ -616,7 +616,11 @@ math
     !^math:pow sqrt
     !^math:random(ширина диапазона)
     ^math:GUID {C2C0983C-E26E-4169-BD07-77ECE9405BA5}
-    !^math:crypt[password;$apr1$salt]
+    !^math:crypt[password;salt]
+       salt prefix $apr1$ вызывает встроенный MD5 алгоритм, 
+         если нет тела salt, оно создаётся случайным
+       $1$ вызывает MD5 алгоритм функции OS 'crypt', если поддерживается [заведомо нет на solaris].
+       другие salt читайте документацию по функции OS 'crypt'.
 
 !date
     !время типа time можно использовать в выражениях, подставляет 
