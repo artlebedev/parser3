@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.2 2001/09/07 12:46:19 parser Exp $
+	$Id: pa_vdom.h,v 1.3 2001/09/10 13:13:55 parser Exp $
 */
 
 #ifndef PA_VDOM_H
@@ -20,11 +20,11 @@
 extern Methoded *Dom_class;
 
 /// value of type 'DOM'. implemented with @c DOM
-class VDOM : public VStateless_object {
+class VDom : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "dom"; }
-	/// VDOM: clone
+	/// VDom: clone
 	Value *as_expr_result(bool return_string_as_is=false) { return this; }
 
 protected: // VAliased
@@ -35,20 +35,20 @@ protected: // VAliased
 public: // usage
 
 	/// @test XalanTransformer free somehow
-	VDOM(Pool& apool, XalanParsedSource* aparsedSource) : VStateless_object(apool, *Dom_class), 
-		theXalanTransformer(new XalanTransformer),
-		fparsedSource(aparsedSource) {
+	VDom(Pool& apool, XalanDocument* adocument) : VStateless_object(apool, *Dom_class), 
+		ftransformer(new XalanTransformer),
+		fdocument(adocument) {
 	}
 
-	XalanTransformer& getXalanTransformer() {return *theXalanTransformer; }
+	XalanTransformer& get_transformer() {return *ftransformer; }
 
-	XalanParsedSource* getParsedSource() { return fparsedSource; }
-	void setParsedSource(XalanParsedSource* aparsedSource) { fparsedSource=aparsedSource; }
+	XalanDocument* get_document() { return fdocument; }
+	void set_document(XalanDocument* adocument) { fdocument=adocument; }
 
 private:
 
-	XalanTransformer *theXalanTransformer;
-	XalanParsedSource* fparsedSource;
+	XalanTransformer *ftransformer;
+	XalanDocument* fdocument;
 
 };
 
