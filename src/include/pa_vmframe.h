@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.13 2001/03/07 13:55:45 paf Exp $
+  $Id: pa_vmframe.h,v 1.14 2001/03/08 12:13:35 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -43,12 +43,14 @@ public: // usage
 		my(apool),
 		self(0) {
 		if(Method* method=junction.method) { // method junction?
-			// remember local var names
-			// those are flags that name is local == to be looked up in 'my'
-			for(int i=0; i<method->locals_names.size(); i++) {
-				my.put(
-					*static_cast<String *>(method->locals_names.get(i)), 
-					NEW VUnknown(pool()));
+			if(method->locals_names) { // there are any local var names?
+				// remember them
+				// those are flags that name is local == to be looked up in 'my'
+				for(int i=0; i<method->locals_names->size(); i++) {
+					my.put(
+						*static_cast<String *>(method->locals_names->get(i)), 
+						NEW VUnknown(pool()));
+				}
 			}
 		}
 	}
@@ -57,24 +59,26 @@ public: // usage
 
 	void store_param(Value *value) {
 		Method *method=junction.method;
-		if(store_param_index==method->params_names.size())
+		int max_params=method->params_names?method->params_names->size():0;
+		if(store_param_index==max_params)
 			THROW(0,0,
 				&junction.self.name(),
 				"%s method '%s' accepts maximum %d parameters", 
 					junction.self.type(),
 					method->name.cstr(),
-					method->params_names.size());
+					max_params);
 		
-		String& name=*static_cast<String *>(method->params_names.get(store_param_index++));
+		String& name=*static_cast<String *>(method->params_names->get(store_param_index++));
 		my.put(name, value);
 		value->set_name(name);
 	}
 	void fill_unspecified_params() {
-		Method *method=junction.method;
-		for(; store_param_index<method->params_names.size(); store_param_index++)
-			my.put(
-				*static_cast<String *>(method->params_names.get(store_param_index)), 
-				NEW VUnknown(pool()));
+		Array *params_names=junction.method->params_names;
+		if(params_names) // there are any parameters might need filling?
+			for(; store_param_index<params_names->size(); store_param_index++)
+				my.put(
+					*static_cast<String *>(params_names->get(store_param_index)), 
+					NEW VUnknown(pool()));
 	}
 
 public:

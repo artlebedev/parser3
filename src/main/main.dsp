@@ -294,8 +294,6 @@ SOURCE=..\classes\root.C
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
 
-# PROP Exclude_From_Build 1
-
 !ENDIF 
 
 # End Source File

@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.74 2001/03/08 11:34:22 paf Exp $
+  $Id: compile.y,v 1.75 2001/03/08 12:13:36 paf Exp $
 */
 
 %{
@@ -88,12 +88,13 @@ int yylex(YYSTYPE *lvalp, void *pc);
 
 all: /* TODO: у ^execute непременно задать какой-то name, см. 'RUN' */
 	one_big_piece {
-	String& name_main=*NEW String(POOL);
-	name_main.APPEND_CONST(MAIN_METHOD_NAME);
-	Array& param_names=*NEW Array(POOL);
-	Array& local_names=*NEW Array(POOL);
-	Method& method=*NEW Method(POOL, name_main, param_names, local_names, *$1);
-	PC->vclass->add_method(name_main, method);
+	String& MAIN=*NEW String(POOL);
+	MAIN.APPEND_CONST(MAIN_METHOD_NAME);
+	Method& method=*NEW Method(POOL, 
+		MAIN, 
+		0/*param_names*/, 0/*local_names*/, 
+		$1/*parser_code*/, 0/*native_code*/);
+	PC->vclass->add_method(MAIN, method);
 }
 |	methods;
 
@@ -178,16 +179,22 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 	const String *name=SLA2S($2);
 
 	YYSTYPE params_names_code=$3;
-	Array& params_names=*NEW Array(POOL);
-	for(int i=0; i<params_names_code->size(); i+=2)
-		params_names+=SLA2S(params_names_code, i);
+	Array *params_names=0;
+	if(int size=params_names_code->size()) {
+		params_names=NEW Array(POOL);
+		for(int i=0; i<size; i+=2)
+			*params_names+=SLA2S(params_names_code, i);
+	}
 
 	YYSTYPE locals_names_code=$4;
-	Array& locals_names=*NEW Array(POOL);
-	for(int i=0; i<locals_names_code->size(); i+=2)
-		locals_names+=SLA2S(locals_names_code, i);
+	Array *locals_names=0;
+	if(int size=locals_names_code->size()) {
+		locals_names=NEW Array(POOL);
+		for(int i=0; i<size; i+=2)
+			*locals_names+=SLA2S(locals_names_code, i);
+	}
 
-	Method& method=*NEW Method(POOL, *name, params_names, locals_names, *$7);
+	Method& method=*NEW Method(POOL, *name, params_names, locals_names, $7, 0);
 	PC->vclass->add_method(*name, method);
 };
 

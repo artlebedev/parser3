@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.42 2001/03/07 13:55:45 paf Exp $
+  $Id: pa_value.h,v 1.43 2001/03/08 12:13:35 paf Exp $
 */
 
 /*
@@ -12,45 +12,39 @@
 #include "pa_pool.h"
 #include "pa_string.h"
 #include "pa_array.h"
-//#include "pa_voperator.h"
 
 #define NAME_NAME "NAME"
 
 class Value;
 class VClass;
-//class VOperator;
 class Junction;
 class WContext;
 class VAliased;
+class Request;
+
+typedef void (*Native_code_ptr)(Request& request);
 
 class Method : public Pooled {
 public:
 	const String& name;
-	Array& params_names;
-	Array& locals_names;
-	const Array& code;
+	Array *params_names;
+	Array *locals_names;
+	const Array *parser_code;/*OR*/Native_code_ptr native_code;
 
 	Method(
 		Pool& apool,
 		const String& aname,
-		Array& aparams_names,
-		Array& alocals_names,
-		const Array& acode) : 
+		Array *aparams_names,
+		Array *alocals_names,
+		const Array *aparser_code, Native_code_ptr anative_code) : 
 
 		Pooled(apool),
 		name(aname),
 		params_names(aparams_names),
 		locals_names(alocals_names),
-		code(acode) {
+		parser_code(aparser_code), native_code(anative_code) {
 	}
 };
-
-/*
-class Operator : public Method {
-	// operator module static vars stored in there
-	VOperator_class *self;
-};
-*/
 
 class Junction : public Pooled {
 public:
@@ -71,8 +65,11 @@ public:
 		code(acode) {
 	}
 
+	// always present
 	Value& self;
+	// either these // so called 'method-junction'
 	VClass *vclass;  Method *method;
+	// or these are present // so called 'code-junction'
 	Value *root;
 	Value *rcontext;
 	WContext *wcontext;
@@ -84,7 +81,7 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	virtual const char *type() const =0;
-	/*const*/ String& name() const { return *fname; }
+	String& name() const { return *fname; }
 
 	// unknown: false
 	// others: true

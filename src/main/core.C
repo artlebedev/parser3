@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.43 2001/03/08 11:27:49 paf Exp $
+$Id: core.C,v 1.44 2001/03/08 12:13:36 paf Exp $
 */
 
 #include "pa_request.h"
@@ -21,6 +21,14 @@ Request::Request(Pool& apool) : Pooled(apool),
 	fclasses(apool),
 	fclasses_array(apool)
 {
+	// construct_root_class
+	void construct_root_class(Request& request); // classes/root
+	construct_root_class(*this);
+
+	// TODO: construct other classes, 
+	// для встроенных какая-то табличка
+	// для внешних - конфиг с @CLASSES файлы с классами/ворохами операторов
+
 	// adding root superclass, 
 	//   parent of all classes, 
 	//   operators holder
@@ -95,7 +103,7 @@ char *Request::execute_MAIN() {
 					wcontext=NEW WWrapper(pool(), vclass, false /* not constructing */);
 					
 					// execute!	
-					execute(method->code);
+					execute(*method->parser_code);
 					
 					// return chars
 					return wcontext->get_string()->cstr();
