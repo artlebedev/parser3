@@ -1,5 +1,5 @@
 /*
-  $Id: pool.h,v 1.3 2001/01/30 13:07:31 paf Exp $
+  $Id: pool.h,v 1.4 2001/01/30 14:51:56 paf Exp $
 */
 
 #ifndef POOL_H
@@ -10,6 +10,8 @@
 class parser_Pool : public Pool {
 public:
 	parser_Pool(Exception& aexception) : Pool(aexception) {}
+
+protected:
 
 	void *real_malloc(size_t size) {
 		return ::malloc(size);
