@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: void.C,v 1.6 2001/08/09 06:44:04 parser Exp $"; 
+static const char *RCSId="$Id: void.C,v 1.7 2001/08/09 06:48:45 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -32,15 +32,13 @@ public: // Methoded
 static void _int(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	VVoid *vvoid=static_cast<VVoid *>(r.self);
-	Value& value=*new(pool) VVoid(pool, vvoid->as_int());
-	r.write_no_lang(value);
+	r.write_no_lang(*new(pool) VInt(pool, vvoid->as_int()));
 }
 
 static void _double(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	VVoid *vvoid=static_cast<VVoid *>(r.self);
-	Value& value=*new(pool) VDouble(pool, vvoid->as_double());
-	r.write_no_lang(value);
+	r.write_no_lang(*new(pool) VDouble(pool, vvoid->as_double()));
 }
 
 #ifndef DOXYGEN
