@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.7 2001/04/07 15:34:56 paf Exp $
+	$Id: mail.C,v 1.8 2001/04/07 15:42:15 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,6 +25,14 @@ VStateless_class *mail_class;
 
 // helpers
 
+///
+static void uuencode(String& result, const char *file_name_cstr, const VFile& vfile) {
+	// content-transfer-encoding: x-uuencode
+	result+="content-transfer-encoding: x-uuencode\n";
+	result+="\n";
+	result+="todo";
+}
+
 /// ^mail:send[$attach[$type[uue|mime64] $value[DATA]]] 
 static const String& attach_hash_to_string(Request& r, const String& origin_string, 
 										   Hash& attach_hash) {
@@ -36,32 +44,35 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 			&origin_string,
 			"has no $type");
 
-	Value *value=static_cast<Value *>(attach_hash.get(*value_name));
-	if(!value)
+	const VFile *vfile;
+	if(Value *value=static_cast<Value *>(attach_hash.get(*value_name)))
+		vfile=value->as_vfile();
+	else
 		PTHROW(0, 0,
 			&origin_string,
 			"has no $value");
 
 	const String *file_name;
 	if(Value *vfile_name=static_cast<Value *>(attach_hash.get(
-		*new(pool) String(pool, "file-name"))))
+		*new(pool) String(pool, "file-name")))) // specified $file-name
 		file_name=&vfile_name->as_string();
-	else
-		file_name=new(pool) String(pool, "noname.dat");
+	else // no $file-name
+		if(Value *vfile_name=static_cast<Value *>(vfile->fields().get(*name_name)))
+			file_name=&vfile_name->as_string(); // VFile knows name
+		else // vfile doesn't know name
+			file_name=new(pool) String(pool, "noname.dat");
+	const char *file_name_cstr=file_name->cstr(String::UL_FILE_NAME);
 
 	String& result=*new(pool) String(pool);
 
 	// content-disposition: attachment; filename="user_file_name"
 	result+="content-disposition: attachment; filename=\"";
-	result+=file_name->cstr(String::UL_FILE_NAME);
+	result+=file_name_cstr;
 	result+="\"\n";
 
 	const String& type=vtype->as_string();
 	if(type=="uue") {
-		// content-transfer-encoding: x-uuencode
-		result+="content-transfer-encoding: x-uuencode\n";
-		result+="\n";
-		result+="todo";
+		uuencode(result, file_name_cstr, *vfile);
 	} else 
 		PTHROW(0, 0,
 			&type,
