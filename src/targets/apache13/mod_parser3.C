@@ -4,8 +4,16 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.17 2002/02/08 08:30:17 paf Exp $
+	$Id: mod_parser3.C,v 1.18 2002/02/28 14:31:48 paf Exp $
 */
+
+#include "pa_config_includes.h"
+
+#if _MSC_VER
+#	include <new.h>
+#endif
+
+#include "pa_globals.h"
 
 #include "httpd.h"
 #include "http_config.h"
@@ -15,23 +23,13 @@
 #include "http_protocol.h"
 #include "util_script.h"
 
-#include "pa_config_includes.h"
-
-#if _MSC_VER
-#	include <new.h>
-#endif
-
+#include "pa_common.h"
 #include "pa_sapi.h"
 #include "classes.h"
-#include "pa_common.h"
-#include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_version.h"
 #include "pa_socks.h"
 
-#ifdef XML
-#include <XalanTransformer/XalanCAPI.h>
-#endif
 
 // consts
 
@@ -43,9 +41,6 @@ extern const char *gd_RCSIds[];
 extern const char *classes_RCSIds[];
 extern const char *types_RCSIds[];
 extern const char *ApacheModuleParser3_RCSIds[];
-#ifdef XML
-extern const char *xalan_patched_RCSIds[];
-#endif
 const char **RCSIds[]={
 	main_RCSIds,
 #ifdef USE_SMTP
@@ -55,9 +50,6 @@ const char **RCSIds[]={
 	classes_RCSIds,
 	types_RCSIds,
 	ApacheModuleParser3_RCSIds,
-#ifdef XML
-	xalan_patched_RCSIds,
-#endif
 	0
 };
 
@@ -68,24 +60,6 @@ struct Parser_module_config {
     const char* parser_site_config_filespec; ///< filespec of site's config file
 	bool parser_status_allowed;
 };
-
-#ifdef XML
-/**
- * Terminate Xalan and Xerces.
- *
- * Should be called only once per process after deleting all
- * instances of XalanTransformer.  Once a process has called
- * this function, it cannot use the API for the remaining
- * lifetime of the process.
-
-	
-	this requirement is fullfilled by using Pool::register_cleanup
- */
-void callXalanTerminate(void *) {
-	//_asm int 3;
-	XalanTerminate();
-}
-#endif
 
 /*
  * Declare ourselves so the configuration routines can find and know us.
@@ -315,18 +289,6 @@ static int parser_handler(request_rec *r) {
 	Pool pool(r->pool);
 	pool.set_context(r);
 
-#ifdef XML
-	/**
-	 * Initialize Xerces and Xalan.
-	 *
-	 * Should be called only once per process before making
-	 * any other API calls.
-	 */
-	//_asm int 3;
-	XalanInitialize();
-	pool.register_cleanup(callXalanTerminate, 0);
-#endif
-
 	/* A flag which modules can set, to indicate that the data being
 	 * returned is volatile, and clients should be told not to cache it.
 	 */
@@ -441,17 +403,6 @@ static void setup_module_cells() {
 	try {
 		// init socks
 		init_socks(pool);
-
-#ifdef XML
-		/**
-		* Initialize Xerces and Xalan.
-		*
-		* Should be called only once per process before making
-		* any other API calls.
-		*/
-		XalanInitialize();
-		pool.register_cleanup(callXalanTerminate, 0);
-#endif
 
 		// init global classes
 		init_methoded_array(pool);
