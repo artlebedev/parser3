@@ -309,7 +309,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^table::sql{query}[[$.limit(2) $.offset(4) todo:$.default{ ^table::create[...] }]]
     !^таблица.save[[nameless|append;]путь]
     !$таблица.поле
-    !$таблица.fields+  из named таблицы выдаёт текущую запись как Hash
+    !$таблица.fields  из named таблицы выдаёт текущую запись как Hash
     !^таблица.menu{тело}[разделитель]
     !^таблица.offset[[whence]](5) сдвигает; без параметра - печатает offset
         !whence=cur|set
@@ -344,6 +344,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !$hash.ключ
         !_default - специальный ключ, если задан, 
         то при обращении по ключу, которому нет соответствия, выдаётся _default значение 
+    !$hash.fields выдает $hash. чтобы класс hash был чуть больше похож на класс table
     !^hash::create[[!copy_from_hash|Xcopy_from_hashfile]]
         создаёт новый hash, копию старого
     !^hash.add[слагаемое]

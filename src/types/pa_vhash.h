@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char* IDENT_VHASH_H="$Date: 2002/10/31 15:01:55 $";
+static const char* IDENT_VHASH_H="$Date: 2002/12/06 17:27:35 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -18,6 +18,7 @@ static const char* IDENT_VHASH_H="$Date: 2002/10/31 15:01:55 $";
 // defines
 
 #define VHASH_TYPE "hash"
+#define HASH_FIELDS_NAME "fields"
 
 // externs
 
@@ -54,6 +55,10 @@ public: // value
 		// $method
 		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
 			return result;
+
+		// $fields -- pseudo field to make 'hash' more like 'table'
+		if(aname == HASH_FIELDS_NAME)
+			return this;
 
 		// $element
 		if(Value *result=static_cast<Value *>(fhash.get(aname)))
