@@ -3,13 +3,22 @@ t.p
 dtf.p
 
 @main[]
-^process_check[]
+^oratest[]
+#^process_check[]
 #^ffcheck[]^[xxx]
 
 #$ORIGINS(1)
 #^list[]
 #^tests[]
 #^func(0)<hr>
+	
+@oratest[]
+^connect[oracle://mts_admin:admin_pwd@ORACLE.PAF.OFFICE.DESIGN.RU]{
+$tables[^table::sql{select table_name from user_tables}]
+^tables.menu{
+	$tables.table_name<br>
+}
+}
 
 @process_check[]
 $f[^file::load[text;process.tpl]]

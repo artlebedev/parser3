@@ -19,6 +19,7 @@ $SQL[
 mysql	d:\Y\parser3\src\sql\mysql\debug\parser3mysql.dll	d:\y\parser3\src\sql\mysql\mySQL32\lib\opt\libmySQL.dll
 odbc	d:\y\parser3\src\sql\odbc\Debug\parser3odbc.dll
 pgsql	d:\y\parser3\src\sql\pgsql\Debug\parser3pgsql.dll	d:\Y\parser3\src\sql\pgsql\PgSQL32\lib\release\libpq.dll
+oracle	d:\Y\parser3\src\sql\oracle\Debug\parser3oracle.dll
 }]
 ]
 
