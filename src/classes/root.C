@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.12 2001/03/11 08:16:31 paf Exp $
+	$Id: root.C,v 1.13 2001/03/11 08:44:39 paf Exp $
 */
 
 #include "pa_request.h"
@@ -25,15 +25,5 @@ static void _if(Request& r, Array *params) {
 }
 
 void initialize_root_class(Pool& pool, VClass& vclass) {
-	String& IF_NAME=*new(pool) String(pool);
-	IF_NAME.APPEND_CONST("if");
-
-	Method& IF_METHOD=*new(pool) Method(pool,
-		IF_NAME,
-		2, 3, // min,max numbered_params_count
-		0/*params_names*/, 0/*locals_names*/,
-		0/*parser_code*/, _if
-	);
-
-	vclass.add_method(IF_NAME, IF_METHOD);
+	vclass.add_native_method("if", _if, 2, 3); // ^if(c){t} ^if(c){t}{f}
 }

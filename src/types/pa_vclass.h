@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.2 2001/03/11 08:16:38 paf Exp $
+	$Id: pa_vclass.h,v 1.3 2001/03/11 08:44:42 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -42,6 +42,10 @@ public: // usage
 	void add_method(const String& name, Method& method) {
 		fmethods.put(name, &method);
 	}
+	void add_native_method(
+		const char *cstr_name,
+		Native_code_ptr native_code,
+		int min_numbered_params_count, int max_numbered_params_count);
 //	Hash& methods() { return fmethods; }
 	
 	void set_base(VClass& abase) {

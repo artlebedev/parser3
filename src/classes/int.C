@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.6 2001/03/11 08:28:40 paf Exp $
+	$Id: int.C,v 1.7 2001/03/11 08:44:39 paf Exp $
 */
 
 #include "pa_request.h"
@@ -42,40 +42,7 @@ static void _inc(Request& r, Array *params) {
 }
 
 void initialize_int_class(Pool& pool, VClass& vclass) {
-	// ^int.int[]
-	String& INT_NAME=*new(pool) String(pool);
-	INT_NAME.APPEND_CONST("int");
-
-	Method& INT_METHOD=*new(pool) Method(pool,
-		INT_NAME,
-		0, 0, // min,max numbered_params_count
-		0/*params_names*/, 0/*locals_names*/,
-		0/*parser_code*/, _int
-	);
-	vclass.add_method(INT_NAME, INT_METHOD);
-
-	// ^int.int[]
-	String& DOUBLE_NAME=*new(pool) String(pool);
-	DOUBLE_NAME.APPEND_CONST("int");
-
-	Method& DOUBLE_METHOD=*new(pool) Method(pool,
-		DOUBLE_NAME,
-		0, 0, // min,max numbered_params_count
-		0/*params_names*/, 0/*locals_names*/,
-		0/*parser_code*/, _int
-	);
-	vclass.add_method(DOUBLE_NAME, DOUBLE_METHOD);
-
-	// ^int.inc[] ^int.inc[offset]
-	String& INC_NAME=*new(pool) String(pool);
-	INC_NAME.APPEND_CONST("inc");
-
-	Method& INC_METHOD=*new(pool) Method(pool,
-		INC_NAME,
-		0, 1, // min,max numbered_params_count
-		0/*params_names*/, 0/*locals_names*/,
-		0/*parser_code*/, _inc
-	);
-	vclass.add_method(INC_NAME, INC_METHOD);
+	vclass.add_native_method("int", _int, 0, 0); // ^int.int[]
+	vclass.add_native_method("double", _double, 0, 0); // ^int.double[]
+	vclass.add_native_method("inc", _inc, 0, 1); // ^int.inc[] ^int.inc[offset]
 }
-
