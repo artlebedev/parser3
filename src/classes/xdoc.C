@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.20 2001/10/18 06:47:20 parser Exp $
+	$Id: xdoc.C,v 1.21 2001/10/18 09:49:58 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -38,6 +38,9 @@
 #include <XalanDOM/XalanDocumentFragment.hpp>
 #include <XalanDOM/XalanCDATASection.hpp>
 #include <XalanDOM/XalanEntityReference.hpp>
+#include <DOM/DOM_Document.hpp>
+#include <XercesParserLiaison/XercesDocumentBridge.hpp>
+#include <XalanTransformer/XercesDOMParsedSource.hpp>
 
 // defines
 
@@ -454,21 +457,27 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 
 static void _string(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
 	// node
-	XalanNode& node=vnode.get_node(pool, &method_name);
+	XalanNode *node=&vdoc.get_document(pool, &method_name);//.getDocumentElement();
+	if(!node)
+		PTHROW(0, 0,
+			&method_name,
+			"no documentElement");
 
 	try {
 		String parserString=*new(pool) String(pool);
 		ParserStringXalanOutputStream stream(parserString);
-		XalanOutputStreamPrintWriter writer(stream);
-		const char *content_type, *charset;
-		FormatterListener *formatterListener;
-		create_optioned_listener(content_type, charset, formatterListener, 
-			pool, method_name, params, 0, writer);
-		FormatterTreeWalker treeWalker(*formatterListener);
-		treeWalker.traverse(&node); // Walk that node and produce the XML...
+		{ // for writer flushing
+			XalanOutputStreamPrintWriter writer(stream);
+			const char *content_type, *charset;
+			FormatterListener *formatterListener;
+			create_optioned_listener(content_type, charset, formatterListener, 
+				pool, method_name, params, 0, writer);
+			FormatterTreeWalker treeWalker(*formatterListener);
+			treeWalker.traverse(node); // Walk that node and produce the XML...
+		}
 
 		// write out result
 		r.write_no_lang(parserString);
@@ -551,40 +560,29 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	vdoc.set_parsed_source(*parsedSource);
 }
 
+/// @test free dom_document, xalan_document
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
+	DOM_Document *dom_document=new DOM_Document();
+	*dom_document=DOM_Document::createDocument();
+	/*
 	const String& squalifiedName=params->as_string(0, "qualifiedName must be string");
 
+	/// +createXMLDecl ?
 	String xml(pool, "<?xml version=\"1.0\"?>\n");
 	xml << "<" << squalifiedName.cstr(String::UL_XML) << " />";
+	*/
 
-	std::istrstream stream(xml.cstr());
+	XalanDocument& xalan_document=*new XercesDocumentBridge(
+		*dom_document,
+		0,
+		false /*threadSafe*/,
+		false /*buildBridge, too early, empty document*/);
 
-	const XalanParsedSource* parsedSource;
-
-	try {
-		parsedSource = new XalanDefaultParsedSource2(&stream);
-	}
-	catch (XSLException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
-	}
-	catch (SAXParseException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
-	}
-	catch (SAXException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
-	}
-	catch (XMLException& e) {
-		pool.exception()._throw(pool, &method_name, e);
-	}
-	catch(const XalanDOMException& e)	{
-		pool.exception()._throw(pool, &method_name, e);
-	}
-
-	// replace any previous parsed source
-	vdoc.set_parsed_source(*parsedSource);
+	// replace any previous document
+	vdoc.set_document(xalan_document);
 }
 
 static void _load(Request& r, const String& method_name, MethodParams *params) {

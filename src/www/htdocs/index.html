@@ -38,7 +38,15 @@ OK
 
 @domedit[]
 $doc[^xdoc::create[doc]]
-$paf[^doc.createElement[paf]]
+$paf[^doc.appendChild[^doc.createElement[paf]]]
+$name[^paf.appendChild[^doc.createElement[name]]]
+$text[^name.appendChild[^doc.createTextNode[петросян petrosian]]]
+#$paf.nodeName<br>
+#$doc.documentElement.nodeName<br>
+
+^show-xdoc2[$doc]
+#^show-xnode1[$doc.documentElement;0;1]
+<hr>
 
 @lsplit2[]
 $path[/optics/]

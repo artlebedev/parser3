@@ -7,7 +7,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: XalanTransformer2.cpp,v 1.3 2001/10/09 14:35:34 parser Exp $
+	$Id: XalanTransformer2.cpp,v 1.4 2001/10/18 09:49:58 parser Exp $
 
 	based on:
 */
@@ -883,14 +883,14 @@ XalanTransformer2::parseSource(
 
 	try
 	{
-		if(useXercesDOM == true)
+		//if(useXercesDOM == true)
 		{
 			theParsedSource = new XercesDOMParsedSource(theInputSource);
 		}
-		else
+		/*else
 		{
 			theParsedSource = new XalanDefaultParsedSource(theInputSource);
-		}
+		}*/
 
 		// Store it in a vector.
 		m_parsedSources.push_back(theParsedSource);

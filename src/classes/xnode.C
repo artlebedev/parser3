@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.9 2001/10/18 06:47:20 parser Exp $
+	$Id: xnode.C,v 1.10 2001/10/18 09:49:58 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -62,13 +62,17 @@ XalanAttr& as_attr(Pool& pool, const String& method_name, MethodParams *params,
 static void _insertBefore(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
-	XalanNode& node=vnode.get_node(pool, &method_name);
+	XalanNode& selfNode=vnode.get_node(pool, &method_name);
 
 	XalanNode& newChild=as_node(pool, method_name, params, 0, "newChild must be node");
 	XalanNode& refChild=as_node(pool, method_name, params, 1, "refChild must be node");
 	
 	try {
-		node.insertBefore(&newChild, &refChild);
+		if(XalanNode *retNode=selfNode.insertBefore(&newChild, &refChild)) {
+			// write out result
+			VXnode& result=*new(pool) VXnode(pool, retNode);
+			r.write_no_lang(result);		
+		}
 	} catch(const XalanDOMException& e)	{
 		pool.exception()._throw(pool, &method_name, e);
 	}
@@ -78,13 +82,17 @@ static void _insertBefore(Request& r, const String& method_name, MethodParams *p
 static void _replaceChild(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
-	XalanNode& node=vnode.get_node(pool, &method_name);
+	XalanNode& selfNode=vnode.get_node(pool, &method_name);
 
 	XalanNode& newChild=as_node(pool, method_name, params, 0, "newChild must be node");
 	XalanNode& refChild=as_node(pool, method_name, params, 1, "refChild must be node");
 	
 	try {
-		node.replaceChild(&newChild, &refChild);
+		if(XalanNode *retNode=selfNode.replaceChild(&newChild, &refChild)) {
+			// write out result
+			VXnode& result=*new(pool) VXnode(pool, retNode);
+			r.write_no_lang(result);		
+		}
 	} catch(const XalanDOMException& e)	{
 		pool.exception()._throw(pool, &method_name, e);
 	}
@@ -94,12 +102,16 @@ static void _replaceChild(Request& r, const String& method_name, MethodParams *p
 static void _removeChild(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
-	XalanNode& node=vnode.get_node(pool, &method_name);
+	XalanNode& selfNode=vnode.get_node(pool, &method_name);
 
 	XalanNode& oldChild=as_node(pool, method_name, params, 0, "oldChild must be node");
 	
 	try {
-		node.removeChild(&oldChild);
+		if(XalanNode *retNode=selfNode.removeChild(&oldChild)) {
+			// write out result
+			VXnode& result=*new(pool) VXnode(pool, retNode);
+			r.write_no_lang(result);		
+		}
 	} catch(const XalanDOMException& e)	{
 		pool.exception()._throw(pool, &method_name, e);
 	}
@@ -109,12 +121,16 @@ static void _removeChild(Request& r, const String& method_name, MethodParams *pa
 static void _appendChild(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
-	XalanNode& node=vnode.get_node(pool, &method_name);
+	XalanNode& selfNode=vnode.get_node(pool, &method_name);
 
 	XalanNode& newChild=as_node(pool, method_name, params, 0, "newChild must be node");
 	
 	try {
-		node.appendChild(&newChild);
+		if(XalanNode *retNode=selfNode.appendChild(&newChild)) {
+			// write out result
+			VXnode& result=*new(pool) VXnode(pool, retNode);
+			r.write_no_lang(result);		
+		}
 	} catch(const XalanDOMException& e)	{
 		pool.exception()._throw(pool, &method_name, e);
 	}

@@ -38,7 +38,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.23 2001/10/18 06:52:04 parser Exp $
+	$Id: compile.tab.C,v 1.24 2001/10/18 09:49:58 parser Exp $
 */
 
 /**
