@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.C,v 1.30 2001/03/29 17:11:41 paf Exp $
+	$Id: pa_array.C,v 1.31 2001/04/23 15:50:02 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -167,6 +167,22 @@ void Array::for_each(For_each_func func, void *info) const {
 	}
 }
 
+/*void Array::for_each(For_each_func_const func, const void *info) const {
+	Chunk *chunk=head;
+	while(true) {
+		if(chunk==tail) { // last chunk?
+			for(Chunk::Row *row=chunk->rows; row!=append_here; row++)
+				(*func)(row->item, info);
+			break;
+		} else {
+			int count=chunk->count;
+			for(int i=0; i<count; i++)
+				(*func)(chunk->rows[i].item, info);
+			chunk=chunk->rows[count].link;
+		}
+	}
+}
+*/
 Array::Item* Array::first_that(First_that_func_const func, const void *info) const {
 	Chunk *chunk=head;
 	while(true) {

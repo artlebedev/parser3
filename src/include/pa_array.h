@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.34 2001/04/03 05:23:40 paf Exp $
+	$Id: pa_array.h,v 1.35 2001/04/23 15:49:58 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -38,6 +38,10 @@ public:
 
 	/// Array item type
 	typedef void Item;
+
+	/*/// for_each iterator function type, const info
+	typedef void (*For_each_func_const)(Item *value, const void *info);
+	*/
 
 	/// for_each iterator function type
 	typedef void (*For_each_func)(Item *value, void *info);
@@ -112,6 +116,10 @@ public:
 	const String *quick_get_string(int index) const { 
 		return const_cast<const String *>(static_cast<String *>(quick_get(index))); 
 	}
+
+	/*/// iterate over all elements, const info
+	void for_each(For_each_func_const func, const void *info=0) const;
+	/*/
 
 	/// iterate over all elements
 	void for_each(For_each_func func, void *info=0) const;
