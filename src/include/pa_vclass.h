@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.13 2001/02/24 14:17:08 paf Exp $
+  $Id: pa_vclass.h,v 1.14 2001/02/24 15:26:02 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -59,14 +59,12 @@ public: // Value
 
 public: // usage
 
-	VClass(Pool& apool, const Array& immediate_parents) : 
+	VClass(Pool& apool) : 
 		Value(apool), 
 		STATICS(apool),
 		methods(apool),
 		parents(apool),
 		parents_hash(apool) {
-		// TODO: monkey immediate_parents 
-			// fill parents & parents_hash
 	}
 
 	void add_method(const String& name, Method& method) {
@@ -75,6 +73,8 @@ public: // usage
 	void add_parent(VClass& parent) {
 		parents+=&parent;
 		parents_hash.put(*parent.name(), &parent);
+		// TODO: monkey immediate_parent
+			// fill parents & parents_hash
 	}
 
 public: //usage

@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.13 2001/02/24 08:28:37 paf Exp $
+  $Id: compile_tools.h,v 1.14 2001/02/24 15:26:03 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -7,10 +7,10 @@
 
 #include "code.h"
 #include "pa_types.h"
-#include "pa_pool.h"
-#include "pa_array.h"
-#include "pa_string.h"
 #include "pa_vstring.h"
+#include "pa_request.h"
+
+#define CLASS_NAME "CLASS"
 
 enum lexical_state {
 	LS_USER,
@@ -30,7 +30,8 @@ enum lexical_state {
 struct parse_control {
 	// input
 	Pool *pool;
-	Array *methods;
+	Request *request;
+	VClass *vclass;
 #ifndef NO_CSTRING_ORIGIN
 	char *source;
 	char *file;

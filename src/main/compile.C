@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.17 2001/02/23 22:22:08 paf Exp $
+  $Id: compile.C,v 1.18 2001/02/24 15:26:03 paf Exp $
 */
 
 #include "pa_request.h"
@@ -14,15 +14,16 @@
 extern int yydebug;
 extern int yyparse (void *);
 
-Array& Request::real_compile(COMPILE_PARAMS) {
+VClass& Request::real_compile(COMPILE_PARAMS) {
 	// prepare to parse
 	struct parse_control pc;
 
 	// input 
 	pc.pool=&pool();
-	pc.methods=NEW Array(pool());
+	pc.request=this;
+	pc.vclass=NEW VClass(pool());
 	if(!source)
-		return *pc.methods;
+		return *pc.vclass;
 
 	pc.source=source;
 #ifndef NO_STRING_ORIGIN
@@ -49,5 +50,5 @@ Array& Request::real_compile(COMPILE_PARAMS) {
 	}
 
 	// result
-	return *pc.methods;
+	return *pc.vclass;
 }

@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.34 2001/02/24 14:20:51 paf Exp $
+$Id: core.C,v 1.35 2001/02/24 15:26:03 paf Exp $
 */
 
 #include "pa_request.h"
@@ -17,8 +17,11 @@ void core() {
 
 void Request::core() {
 	TRY {
-		String name_RUN(pool()); name_RUN.APPEND_CONST("RUN");
-		char *result=execute_MAIN(construct_class(name_RUN, load_and_compile_RUN()));
+		char *file="Y:\\parser3\\src\\test.p";
+		String RUN(pool()); RUN.APPEND_CONST(NAME_RUN);
+		use(file, &RUN);
+
+		char *result=execute_MAIN();
 		printf("result-----------------\n%sEOF----------------\n", result);
 	} 
 	CATCH(e) {
@@ -45,56 +48,46 @@ void Request::core() {
 	END_CATCH
 }
 
-Array& Request::load_and_compile_RUN() {
-	char *file="Y:\\parser3\\src\\test.p";
+void Request::use(char *file, String *name) {
 	char *source=file_read(pool(), file);
-	Array& compiled_methods=COMPILE(source, file);
-	return compiled_methods;
+	VClass& vclass=COMPILE(source, file);
+	if(name) // they forced some name?
+		vclass.set_name(*name);
+	name=vclass.name();
+	if(!name)
+		return; //TODO: add operators 
+	classes_array()+=&vclass;
+	classes().put(*name, &vclass);
 }
 
-VClass *Request::construct_class(String& name, Array& compiled_methods) {
-	// create new 'name' vclass, add it to request's classes
-	Array immediate_parents(pool());
-	// TODO: immediate_parents=@PARENTS
-
-	VClass *result=NEW VClass(pool(), immediate_parents);
-	result->set_name(name);
-	classes().put(name, result);
-		
-	for(int i=0; i<compiled_methods.size(); i++) {
-		// TODO: filter out @PARENTS & @CLASS & ?co?
-		Method &method=*static_cast<Method *>(compiled_methods.quick_get(i));
-		result->add_method(method.name, method);
-	}
-
-	return result;
-}
-
-char *Request::execute_MAIN(VClass *class_RUN) {
-	// initialize contexts
-	self=root=rcontext=class_RUN;
-	wcontext=NEW WWrapper(pool(), class_RUN);
-
-	// locate @main code
+char *Request::execute_MAIN() {
+	// locate class with @main & it's code
 	String name_main(pool());
 	name_main.APPEND_CONST(MAIN_METHOD_NAME);
 
-	Value *value_main=class_RUN->get_element(name_main);
-	if(!value_main)
-		THROW(0,0,
-			class_RUN->name(), "class does not contain method '"MAIN_METHOD_NAME"'");
+	// looking for latest known @main
+	for(int i=classes_array().size(); --i>=0;) {
+		VClass *vclass=static_cast<VClass *>(classes_array().get(i));
+		Value *main=vclass->get_element(name_main);
+		if(main) { // found some 'main' element
+			Junction *junction=main->get_junction();
+			const Method *method=junction->method;
+			if(method) { // that element is a method, call it
+				// initialize contexts
+				self=root=rcontext=vclass;
+				wcontext=NEW WWrapper(pool(), vclass);
 
-	Junction *junction_main=value_main->get_junction();
-	const Method *method_main=junction_main->method;
-
-	if(!method_main)
-		THROW(0,0,
-			class_RUN->name(), 
-			"class does contain '"MAIN_METHOD_NAME"' but it is not a method");
-
-	// execute!	
-	execute(method_main->code);
-
-	// return chars
-	return wcontext->get_string()->cstr();
+				// execute!	
+				execute(method->code);
+				
+				// return chars
+				return wcontext->get_string()->cstr();
+			}
+		}
+	}
+	
+	THROW(0,0,
+		0, 
+		"'"MAIN_METHOD_NAME"' method not found");
+	return 0;
 }

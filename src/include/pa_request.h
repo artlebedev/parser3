@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.11 2001/02/24 08:28:35 paf Exp $
+  $Id: pa_request.h,v 1.12 2001/02/24 15:26:02 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -11,9 +11,12 @@
 #include "pa_wcontext.h"
 #include "pa_value.h"
 #include "pa_stack.h"
+#include "pa_vclass.h"
 
 #define MAIN_METHOD_NAME "main"
 #define SELF_NAME "self"
+#define USES_NAME "USES"
+#define NAME_RUN "RUN"
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS char *source, char *file
@@ -30,13 +33,15 @@ public:
 	
 	Request(Pool& apool) : Pooled(apool),
 		stack(apool),
-		fclasses(apool)
+		fclasses(apool),
+		fclasses_array(apool)
 		{
 	}
 	~Request() {}
 
 	// global classes
 	Hash& classes() { return fclasses; }
+	Array& classes_array() { return fclasses_array; }
 
 	// core request processing
 	void core();
@@ -45,6 +50,7 @@ private: // core data
 
 	// classes
 	Hash fclasses;
+	Array fclasses_array;
 
 	// contexts
 	Value *self, *root, *rcontext;
@@ -53,15 +59,17 @@ private: // core data
 	// execution stack
 	Stack stack;
 
+public: // core.C
+
+	void use(char *file, String *name);
+
 private: // core.C
 
-	Array& load_and_compile_RUN();
-	VClass *construct_class(String& name, Array& compiled_methods);
-	char *execute_MAIN(VClass *class_RUN);
+	char *execute_MAIN();
 
 private: // compile.C
 
-	Array& real_compile(COMPILE_PARAMS);
+	VClass& real_compile(COMPILE_PARAMS);
 
 private: // execute.C
 

@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.33 2001/02/24 09:56:02 paf Exp $
+  $Id: compile.y,v 1.34 2001/02/24 15:26:03 paf Exp $
 */
 
 %{
@@ -45,15 +45,59 @@ all:
 	name_main.APPEND_CONST(MAIN_METHOD_NAME);
 	Array& param_names=*NEW Array(POOL);
 	Array& local_names=*NEW Array(POOL);
-	Method *method=NEW Method(POOL, name_main, param_names, local_names, *$1);
-	*PC->methods+=method;
+	Method& method=*NEW Method(POOL, name_main, param_names, local_names, *$1);
+	PC->vclass->add_method(name_main, method);
 }
 |	methods;
 
 methods: method | methods method;
 one_big_piece: maybe_codes;
 
-method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' 
+method: control_method | code_method;
+
+control_method: '@' STRING '\n' 
+				control_strings {
+	String *name=LA2S($2);
+	YYSTYPE strings_code=$4;
+	if(*name==CLASS_NAME) {
+		if(strings_code->size()==1*2) 
+			PC->vclass->set_name(*LA2S(strings_code));
+		else {
+			strcpy(PC->error, "@"CLASS_NAME" must contain sole name");
+			YYERROR;
+		}
+	} else {
+		if(*name==USES_NAME) {
+			for(int i=0; i<strings_code->size(); i+=2) {
+				char file[MAX_STRING];
+				strcpy(file, LA2S(strings_code, i)->cstr());
+				strcat(file, ".p");
+				PC->request->use(file, 0);
+			}
+		} else if(*name==PARENTS_NAME) {
+			for(int i=0; i<strings_code->size(); i+=2) {
+				String *parent_name=LA2S(strings_code, i);
+				VClass *parent=static_cast<VClass *>(
+					PC->request->classes().get(*parent_name));
+				if(!parent) {
+					strcpy(PC->error, parent_name->cstr());
+					strcat(PC->error, ": undefined class");
+					YYERROR;
+				}
+				PC->vclass->add_parent(*parent);
+			}
+		} else {
+			strcpy(PC->error, name->cstr());
+			strcat(PC->error, ": invalid special name. valid names are "
+				CLASS_NAME", "USES_NAME" and "PARENTS_NAME);
+			YYERROR;
+		}
+	}
+};
+control_strings: control_string | control_strings '\n' control_string { $$=$1; P($$, $3) };
+control_string: STRING;
+
+code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' 
 			maybe_codes {
 	const String *name=LA2S($2);
 
@@ -67,8 +111,8 @@ method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment
 	for(int i=0; i<locals_names_code->size(); i+=2)
 		locals_names+=LA2S(locals_names_code, i);
 
-	Method *method=NEW Method(POOL, *name, params_names, locals_names, *$7);
-	*PC->methods+=method;
+	Method& method=*NEW Method(POOL, *name, params_names, locals_names, *$7);
+	PC->vclass->add_method(*name, method);
 };
 
 maybe_bracketed_strings: empty | bracketed_maybe_strings;
@@ -388,7 +432,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				PC->ls=LS_DEF_PARAMS;
 				goto break2;
 			}
-			if(c=='\n') { // wrong. bailing out
+			if(c=='\n') { // special @NAME or wrong
 				result=c;
 				pop_LS(PC);
 				goto break2;
