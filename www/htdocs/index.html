@@ -156,7 +156,6 @@ $response:charset[windows-1251]
 #^fori[]
 #^tconnect[]
 #^xslt[]
-#^xml[]
 #^header[]
 #^tablehasht[]
 #^datecreatestring[]
@@ -206,7 +205,6 @@ $response:charset[windows-1251]
 #^badpos[]
 #^processtest[]
 #^mail3[]
-#^mail4[]
 #^datesaving[]
 #^badconstructor[]
 #^calendar[]
@@ -220,7 +218,6 @@ $response:charset[windows-1251]
 #^cookieexpirestest[]
 #^postest[]
 #^voidpostest[]
-#^virtualtest[]
 #^badcolumntest[]
 #^delimiters[]
 #^новый-split[]
@@ -256,9 +253,19 @@ $response:charset[windows-1251]
 #^badxdoccreate[]
 #^if(-d "CVS"){y}{n}
 #^badjunctioncall[]
-^russianindex[]
+#^russianindex[]
+#^virtualtest[]
+#^xml[]
+#^mail4[]
+^voidconstructorpass[]
 <hr>
 OK
+
+@voidconstructorpass[]
+$a[$form:a]
+=^form:a.int(1)=
+=^a.int(1)=
+
 
 @russianindex[]
 #dir with files with russian-lang names
@@ -590,7 +597,7 @@ $date.yearday
 ^mail:send[
 	$.from[paf@mail.design.ru]
 	$.to[paf@mail.design.ru]
-	$.subject[^taint[uri][москва]=2]
+	$.subject[^taint[uri][москва=E0_+ ]=2]
 	$.text[^taint[uri][москва]=]
 	$.html{<a href=http://there.ru/?city=^taint[uri][Москва]>link</a>}
 ]
@@ -2201,7 +2208,7 @@ $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 
 @xdata[]
 #$response:content-type[$.value[text/html] $.charset[windows-1251]]
-$xdoc[^xdoc::set{^process{<?xml version="1.0" encoding="windows-1251"?>
+$xdoc[^xdoc::create{<?xml version="1.0" encoding="windows-1251"?>
 <!--DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd"-->
 <people>
 	<man id="1" имя="word слово">
@@ -2211,7 +2218,7 @@ $xdoc[^xdoc::set{^process{<?xml version="1.0" encoding="windows-1251"?>
             <name>ПИФ^taint[&]</name>
 	   	</man>
 </people>
-}}]
+}]
 
 @xml[]
 ^xdata[]

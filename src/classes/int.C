@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_INT_C="$Date: 2002/09/18 08:52:48 $";
+static const char* IDENT_INT_C="$Date: 2002/10/09 11:49:14 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -29,7 +29,7 @@ public: // Methoded
 
 static void _int(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	 // just checking (default) syntax validity, never really using it  here, just for string.int compatibility
+	// just checking (default) syntax validity, never really using it  here, just for string.int compatibility
 	if(params->size()>0)
 		params->as_junction(0, "default must be int");
 
@@ -39,7 +39,7 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 
 static void _double(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	 // just checking (default) syntax validity, never really using it  here, just for string.doube compatibility
+	// just checking (default) syntax validity, never really using it  here, just for string.doube compatibility
 	if(params->size()>0)
 		params->as_junction(0, "default must be double");
 

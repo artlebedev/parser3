@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/09/18 08:52:49 $";
+static const char* IDENT_STRING_C="$Date: 2002/10/09 11:49:14 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -37,11 +37,15 @@ static void _length(Request& r, const String& method_name, MethodParams *) {
 
 static void _int(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
+	const String *self_string=r.get_self()->get_string();
 	int converted;
-	Value *default_code=params->size()>0?
-		default_code=&params->as_junction(0, "default must be int"):0; // (default)
+	Value *default_code=params->size()>0?&params->as_junction(0, "default must be int"):0; // (default)
 	try {
-		converted=r.get_self()->as_int();
+		if(!self_string || self_string->is_empty())
+			throw Exception("parser.runtime",
+				&method_name,
+				"parameter is empty string, error converting");
+		converted=self_string->as_int();
 	} catch(...) { // convert problem
 		if(!default_code) // we have a problem when no default
 			/*re*/throw;
@@ -53,11 +57,15 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 
 static void _double(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
+	const String *self_string=r.get_self()->get_string();
 	double converted;
-	Value *default_code=params->size()>0?
-		default_code=&params->as_junction(0, "default must be double"):0; // (default)
+	Value *default_code=params->size()>0?&params->as_junction(0, "default must be double"):0; // (default)
 	try {
-		converted=r.get_self()->as_double();
+		if(!self_string || self_string->is_empty())
+			throw Exception("parser.runtime",
+				&method_name,
+				"parameter is empty string, error converting");
+		converted=self_string->as_double();
 	} catch(...) { // convert problem
 		if(!default_code) // we have a problem when no default
 			/*re*/throw;  

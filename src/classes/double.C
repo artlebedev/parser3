@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DOUBLE_C="$Date: 2002/09/18 08:52:47 $";
+static const char* IDENT_DOUBLE_C="$Date: 2002/10/09 11:49:14 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -29,8 +29,9 @@ public: // Methoded
 
 static void _int(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value *default_code=params->size()>0?
-		default_code=&params->as_junction(0, "default must be int"):0; // (default)
+	// just checking (default) syntax validity, never really using it  here, just for string.int compatibility
+	if(params->size()>0)
+		params->as_junction(0, "default must be int");
 
 	VDouble *vdouble=static_cast<VDouble *>(r.get_self());
 	Value& result=*new(pool) VInt(pool, vdouble->as_int());
@@ -39,8 +40,9 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 
 static void _double(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value *default_code=params->size()>0?
-		default_code=&params->as_junction(0, "default must be double"):0; // (default)
+	// just checking (default) syntax validity, never really using it  here, just for string.doube compatibility
+	if(params->size()>0)
+		params->as_junction(0, "default must be double");
 
 	VDouble *vdouble=static_cast<VDouble *>(r.get_self());
 	Value& result=*new(pool) VDouble(pool, vdouble->as_double());
