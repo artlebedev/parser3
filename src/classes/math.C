@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/04/15 14:30:14 $";
+static const char* IDENT_MATH_C="$Date: 2003/04/25 11:56:36 $";
 
 #include "pa_common.h"
 #include "pa_vint.h"
@@ -287,9 +287,15 @@ static const char* hex_string(Pool& pool, unsigned char* bytes, size_t size, boo
 	unsigned char *src=bytes;
 	unsigned char *end=bytes+size;
 	char *dest=bytes_hex;
+
+	static const char *hex=upcase?"0123456789ABCDEF":"0123456789abcdef";
+
 	const char *format=upcase?"%02X":"%02x";
-	while(src<end)
-		dest+=snprintf(dest, 3, format, *src++);
+	for(; src<end; src++) {
+                *dest++=hex[*src/0x10];
+                *dest++=hex[*src%0x10];
+	}
+	*dest=0;
 
 	return bytes_hex;
 }
