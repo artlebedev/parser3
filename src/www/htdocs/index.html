@@ -1,6 +1,5 @@
 @main[]
-^connect[mysql://user:pass@host]{
-}
+#^connect[mysql://user:pass@host]{ }
 #^безнадёжна_попытка_поправить_непоправимое[]
 #^tcache[]
 #^thashfileexp[]
@@ -73,15 +72,16 @@ $hash[^hf.hash[]]
 <hr>
 
 @tcounter[]
-#^tcounterone[$DB_HOME]
-other root:
-^tcounterone[${DB_HOME}2]
+$DB_HOME[/home/paf]
+^tcounterone[$DB_HOME]
+#other root:
+#^tcounterone[${DB_HOME}2]
 #again, first:
 #^tcounterone[$DB_HOME]
 
 @tcounterone[DB_HOME]
 $counter[^hashfile::open[$DB_HOME;counter]]
-^counter.clear[]
+#^counter.clear[]
 ^counter.transaction{
 #	$counter.value(10)
 	$counter.value($counter.value+1)
