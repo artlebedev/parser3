@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.158 2002/04/22 14:25:41 paf Exp $
+	$Id: pa_string.C,v 1.159 2002/06/10 13:50:03 paf Exp $
 */
 
 #include "pcre.h"
@@ -704,10 +704,11 @@ double String::as_double() const {
 	else
 		result=(double)strtod(cstr, &error_pos);
 
-	if(*error_pos/*not EOS*/)
-		throw Exception("number.format",
-			this,
-			"invalid number (double)");
+	while(char c=*error_pos++)
+		if(!isspace(c))
+			throw Exception("number.format",
+				this,
+				"invalid number (double)");
 
 	return result;
 }
@@ -732,10 +733,11 @@ int String::as_int() const {
 	else
 		result=(int)strtol(cstr, &error_pos, 0);
 
-	if(*error_pos/*not EOS*/)
-		throw Exception("number.format",
-			this,
-			"invalid number (int)");
+	while(char c=*error_pos++)
+		if(!isspace(c))
+			throw Exception("number.format",
+				this,
+				"invalid number (int)");
 
 	return result;
 }

@@ -85,3 +85,7 @@
 [Wed May 15 17:47:13 2002] : Y:/parser3project/parser3/www/htdocs/index.html(162): 'exec pafvoid' CDBException: Invalid cursor state| [sql.execute]
 [Wed May 15 17:47:38 2002] : Y:/parser3project/parser3/www/htdocs/index.html(162): 'exec pafvoid' CDBException: Invalid cursor state| [sql.execute]
 [Wed May 15 19:19:06 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1447:18): parse error, expecting `']'' or `';'' [parser.compile]
+[Mon Jun 10 17:32:01 2002] /index.cgihtml: user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' [file.missing]
+[Mon Jun 10 17:32:02 2002] /index.cgihtml: user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' [file.missing]
+[Mon Jun 10 17:42:27 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(168:1): parse error, expecting `'\"'' [parser.compile]
+[Mon Jun 10 17:47:08 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(165): ' 2 z' invalid number (double) [number.format]

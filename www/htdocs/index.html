@@ -1,8 +1,8 @@
 #@USE
 #t.p
 
-@auto[]
-$form:here
+@autoZ[]
+#$form:here
 $request:charset[windows-1251]
 $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
@@ -159,7 +159,15 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^forkeys[]
 #^pngsize[]
 #^checkList[]
-^datetest[]
+#^datetest[]
+^tserge[]
+
+@tserge[]
+$a[ 2 ]
+^tsergesub($a)
+
+@tsergesub[i]
+=$i=
 
 @datetest[]
 	$f[^file::stat[some.zip]]
