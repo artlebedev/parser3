@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2003/11/20 16:34:26 $";
+static const char * const IDENT_CHARSET_C="$Date: 2003/11/20 17:40:05 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -126,7 +126,7 @@ void Charset::load_definition(Request_charsets& charsets, const String& afile_sp
 
 	// parse cells
 	char *row;
-	while(row=getrow(&data)) {
+	while((row=getrow(&data))) {
 		// remove empty&comment lines
 		if(!*row || *row=='#')
 			continue;
@@ -134,7 +134,7 @@ void Charset::load_definition(Request_charsets& charsets, const String& afile_sp
 		// char	white-space	digit	hex-digit	letter	word	lowercase	unicode1	unicode2	
 		unsigned int c=0;
 		char *cell;
-		for(int column=0; cell=lsplit(&row, '\t'); column++) {
+		for(int column=0; (cell=lsplit(&row, '\t')); column++) {
 			switch(column) {
 			case 0: c=to_wchar_code(cell); break;
 			// pcre_tables
@@ -439,7 +439,7 @@ const String::C Charset::transcodeToUTF8(const String::C src) const {
 		(XMLByte *)src.str, src_length,
 		dest_body, dest_length,
 		tables)<0)
-		throw(0, 0,
+		throw(0,
 			0,
 			"Charset::transcodeToUTF8 buffer overflow");
 
@@ -583,7 +583,7 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 		(XMLByte *)src.str, src_length,
 		dest_body, dest_length,
 		tables)<0)
-		throw(0, 0,
+		throw(0, 
 			0,
 			"Charset::transcodeFromUTF8 buffer overflow");
 

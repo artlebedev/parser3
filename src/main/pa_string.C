@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2003/11/20 16:34:27 $";
+static const char * const IDENT_STRING_C="$Date: 2003/11/20 17:40:06 $";
 
 #include "pcre.h"
 
@@ -241,13 +241,13 @@ static void regex_options(const String* options, int *result, bool& need_pre_pos
 		int *result;
 		bool *flag;
     } regex_option[]={
-		{"i", "I", 0, PCRE_CASELESS, result}, // a=A
-		{"s", "S", 0, PCRE_DOTALL, result}, // \n\n$ [default]
-		{"x", "U", 0, PCRE_EXTENDED, result}, // whitespace in regex ignored
-		{"m", "M", PCRE_DOTALL, PCRE_MULTILINE, result}, // ^aaa\n$^bbb\n$
-		{"g", "G", 0, true, result+1}, // many rows
+		{"i", "I", 0, PCRE_CASELESS, result, 0}, // a=A
+		{"s", "S", 0, PCRE_DOTALL, result, 0}, // \n\n$ [default]
+		{"x", "U", 0, PCRE_EXTENDED, result, 0}, // whitespace in regex ignored
+		{"m", "M", PCRE_DOTALL, PCRE_MULTILINE, result, 0}, // ^aaa\n$^bbb\n$
+		{"g", "G", 0, 1, result+1, 0}, // many rows
 		{"'", 0, 0, 0, 0, &need_pre_post_match},
-		{0}
+		{0, 0, 0, 0, 0, 0}
     };
 	result[0]=PCRE_EXTRA | PCRE_DOTALL | PCRE_DOLLAR_ENDONLY;
 	result[1]=0;
