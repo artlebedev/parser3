@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.C,v 1.12 2001/11/05 12:08:11 paf Exp $
+	$Id: pa_db_table.C,v 1.13 2001/11/23 10:38:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,7 +25,7 @@
 
 // consts
 
-const int DATA_STRING_SERIALIZED_VERSION=0x0100;
+const int DATA_STRING_SERIALIZED_VERSION=0x0001;
 
 // helper types
 

@@ -28,7 +28,7 @@
 #^filelist[]
 #^connect[mysql://user:pass@host]{ }
 #^безнадёжна_попытка_поправить_непоправимое[]
-#^tcache[]
+^tcache[]
 #^thashfileexp[]
 #^tcounter[]
 #^tablehash[]
@@ -68,7 +68,7 @@
 #^exec[]
 #^fori[]
 #^tconnect[]
-^xslt[]
+#^xslt[]
 #^xml[]
 #^header[]
 <hr>
@@ -265,7 +265,7 @@ $dom_created_in_air[^xdoc::create[doc]]
 @tcache[]
 #^hashfile:clear[cache]
 $code[^hashfile::open[$DB_HOME;cache]]
-^code.cache[key](2){
+^code.cache[key](100){
 	^math:random(100)
 #	^code.delete[]
 }

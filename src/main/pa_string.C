@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.125 2001/11/21 08:33:56 paf Exp $
+	$Id: pa_string.C,v 1.126 2001/11/23 10:38:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -860,18 +860,18 @@ int String::as_int() const {
 void String::serialize(size_t prolog_size, void *& buf, size_t& buf_size) const {
 	buf_size=
 		prolog_size
-		+used_rows()*(sizeof(Untaint_lang)+sizeof(size_t))
+		+used_rows()*(sizeof(uchar)+sizeof(ushort))
 		+size();
 	buf=malloc(buf_size,15);
 	char *cur=(char *)buf+prolog_size;
 
 	STRING_FOREACH_ROW(
 		// lang
-		memcpy(cur, &row->item.lang, sizeof(Untaint_lang));
-		cur+=sizeof(Untaint_lang);
+		memcpy(cur, &row->item.lang, sizeof(uchar));
+		cur+=sizeof(uchar);
 		// size
-		memcpy(cur, &row->item.size, sizeof(size_t));
-		cur+=sizeof(size_t);
+		memcpy(cur, &row->item.size, sizeof(ushort));
+		cur+=sizeof(ushort);
 		// bytes
 		memcpy(cur, row->item.ptr, row->item.size);
 		cur+=row->item.size;
@@ -879,31 +879,18 @@ void String::serialize(size_t prolog_size, void *& buf, size_t& buf_size) const 
 break2:
 	;
 }
-
-/* @todo maybe network order worth spending some effort?
-	don't bothering myself with network byte order,
-	am not planning to be able to move resulting file across platforms
-	for now
-*/
-#ifndef DOXYGEN
-struct Serialized_piece {
-	String::Untaint_lang lang;
-	size_t size;
-	char ptr[1];
-};
-#endif
-
 void String::deserialize(size_t prolog_size, void *buf, size_t buf_size, const char *file) {
-	char *cur=((char *)buf)+prolog_size;
+	char *cur=(char *)buf+prolog_size;
 	buf_size-=prolog_size;
 
 	while(buf_size) {
-		Serialized_piece& p=*(Serialized_piece *)cur;
-		APPEND(p.ptr, p.size, p.lang, file, 0);
+		uchar lang=*(const uchar*)((const char*)cur+0);
+		ushort size=*(const ushort*)((const char*)cur+sizeof(uchar));
+		const char *ptr=(const char*)cur+sizeof(uchar)+sizeof(ushort);
+		APPEND(ptr, size, lang, file, 0);
 
-		size_t piece_size=sizeof(p.lang)+sizeof(p.size)+p.size;
+		size_t piece_size=sizeof(uchar)+sizeof(ushort)+size;
 		cur+=piece_size;
 		buf_size-=piece_size;
 	}
 }
-
