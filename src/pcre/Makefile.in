@@ -10,7 +10,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#  $Id: Makefile.in,v 1.4 2001/05/21 08:01:56 parser Exp $
+#  $Id: Makefile.in,v 1.5 2001/05/21 08:27:23 parser Exp $
 
 
 SHELL = @SHELL@
@@ -88,7 +88,7 @@ pcre_parser_ctype_SOURCES = pcre_parser_ctype.c
 CHARTABLES_C = chartables.c
 
 noinst_LIBRARIES = libpcre.a
-libpcre_a_SOURCES = get.c pcre.c study.c  chartables.c maketables.c
+libpcre_a_SOURCES = get.c pcre.c study.c maketables.c
 CLEANFILES = $(CHARTABLES_C)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../include/pa_config_auto.h
@@ -101,7 +101,7 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 libpcre_a_LIBADD = 
-libpcre_a_OBJECTS =  get.o pcre.o study.o chartables.o maketables.o
+libpcre_a_OBJECTS =  get.o pcre.o study.o maketables.o
 AR = ar
 PROGRAMS =  $(bin_PROGRAMS)
 
@@ -125,8 +125,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/chartables.P .deps/dftables.P .deps/get.P \
-.deps/maketables.P .deps/pcre.P .deps/pcre_parser_ctype.P .deps/study.P
+DEP_FILES =  .deps/dftables.P .deps/get.P .deps/maketables.P \
+.deps/pcre.P .deps/pcre_parser_ctype.P .deps/study.P
 SOURCES = $(libpcre_a_SOURCES) $(dftables_SOURCES) $(pcre_parser_ctype_SOURCES)
 OBJECTS = $(libpcre_a_OBJECTS) $(dftables_OBJECTS) $(pcre_parser_ctype_OBJECTS)
 
@@ -389,6 +389,8 @@ auto_part.p:   pcre_parser_ctype
 
 $(CHARTABLES_C):   dftables
 	./dftables >$(CHARTABLES_C)
+
+pcre.c: $(CHARTABLES_C)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
