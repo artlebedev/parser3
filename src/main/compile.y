@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.129 2001/04/28 08:43:56 paf Exp $
+	$Id: compile.y,v 1.130 2001/05/07 07:46:43 paf Exp $
 */
 
 /**
@@ -40,6 +40,7 @@
 
 #define SELF_ELEMENT_NAME "self"
 #define USE_CONTROL_METHOD_NAME "USE"
+#define END_CONTROL_METHOD_NAME "end"
 
 static int real_yyerror(parse_control *pc, char *s);
 static void yyprint(FILE *file, int type, YYSTYPE value);
@@ -128,6 +129,8 @@ control_method: '@' STRING '\n'
 				control_strings {
 	const String& command=*LA2S($2);
 	YYSTYPE strings_code=$4;
+	if(command==END_CONTROL_METHOD_NAME && strings_code->size()==0)
+		break;
 	if(strings_code->size()<1*2) {
 		strcpy(PC.error, "@");
 		strcat(PC.error, command.cstr());
@@ -153,44 +156,42 @@ control_method: '@' STRING '\n'
 			strcpy(PC.error, "@"CLASS_NAME" must contain sole name");
 			YYERROR;
 		}
-	} else {
-		if(command==USE_CONTROL_METHOD_NAME) {
-			for(int i=0; i<strings_code->size(); i+=2) 
-				PC.request->use_file(
-					PC.request->absolute(*LA2S(strings_code, i)));
-		} else if(command==BASE_NAME) {
-			if(PC.cclass->base()) { // already changed from default?
-				strcpy(PC.error, "class already have a base '");
-				strncat(PC.error, PC.cclass->base()->name().cstr(), 100);
-				strcat(PC.error, "'");
-				YYERROR;
-			}
-			if(strings_code->size()==1*2) {
-				const String& base_name=*LA2S(strings_code);
-				VClass *base=static_cast<VClass *>(
-					PC.request->classes().get(base_name));
-				if(!base) {
-					strcpy(PC.error, base_name.cstr());
-					strcat(PC.error, ": undefined class in @"BASE_NAME);
-					YYERROR;
-				}
-				// @CLASS == @BASE sanity check
-				if(PC.cclass==base) {
-					strcpy(PC.error, "@"CLASS_NAME" equals @"BASE_NAME);
-					YYERROR;
-				}
-				PC.cclass->set_base(*base);
-			} else {
-				strcpy(PC.error, "@"BASE_NAME" must contain sole name");
-				YYERROR;
-			}
-		} else {
-			strcpy(PC.error, "'");
-			strncat(PC.error, command.cstr(), MAX_STRING/2);
-			strcat(PC.error, "' invalid special name. valid names are "
-				"'"CLASS_NAME"', '"USE_CONTROL_METHOD_NAME"' and '"BASE_NAME"'");
+	} else if(command==USE_CONTROL_METHOD_NAME) {
+		for(int i=0; i<strings_code->size(); i+=2) 
+			PC.request->use_file(
+			PC.request->absolute(*LA2S(strings_code, i)));
+	} else if(command==BASE_NAME) {
+		if(PC.cclass->base()) { // already changed from default?
+			strcpy(PC.error, "class already have a base '");
+			strncat(PC.error, PC.cclass->base()->name().cstr(), 100);
+			strcat(PC.error, "'");
 			YYERROR;
 		}
+		if(strings_code->size()==1*2) {
+			const String& base_name=*LA2S(strings_code);
+			VClass *base=static_cast<VClass *>(
+				PC.request->classes().get(base_name));
+			if(!base) {
+				strcpy(PC.error, base_name.cstr());
+				strcat(PC.error, ": undefined class in @"BASE_NAME);
+				YYERROR;
+			}
+			// @CLASS == @BASE sanity check
+			if(PC.cclass==base) {
+				strcpy(PC.error, "@"CLASS_NAME" equals @"BASE_NAME);
+				YYERROR;
+			}
+			PC.cclass->set_base(*base);
+		} else {
+			strcpy(PC.error, "@"BASE_NAME" must contain sole name");
+			YYERROR;
+		}
+	} else {
+		strcpy(PC.error, "'");
+		strncat(PC.error, command.cstr(), MAX_STRING/2);
+		strcat(PC.error, "' invalid special name. valid names are "
+			"'"CLASS_NAME"', '"USE_CONTROL_METHOD_NAME"' and '"BASE_NAME"'");
+		YYERROR;
 	}
 };
 control_strings: control_string | control_strings control_string { $$=$1; P($$, $2) };
