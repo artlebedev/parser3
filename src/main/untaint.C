@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2002/09/24 10:24:23 $";
+static const char* IDENT_UNTAINT_C="$Date: 2002/10/08 12:55:25 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -332,6 +332,39 @@ size_t String::cstr_bufsize(Untaint_lang lang,
 	return dest;
 }
 
+/** http://www.ietf.org/rfc/rfc2047.txt
+RFC
+(3) As a replacement for a 'word' entity within a 'phrase', for example,
+    one that precedes an address in a From, To, or Cc header.  The ABNF
+    definition for 'phrase' from RFC 822 thus becomes:
+
+    phrase = 1*( encoded-word / word )
+
+    In this case the set of characters that may be used in a "Q"-encoded
+    'encoded-word' is restricted to: <upper and lower case ASCII
+    letters, decimal digits, "!", "*", "+", "-", "/", "=", and "_"
+    (underscore, ASCII 95.)>.  An 'encoded-word' that appears within a
+    'phrase' MUST be separated from any adjacent 'word', 'text' or
+    'special' by 'linear-white-space'.
+...
+   (2) The 8-bit hexadecimal value 20 (e.g., ISO-8859-1 SPACE) may be
+       represented as "_" (underscore, ASCII 95.).  (This character may
+       not pass through some internetwork mail gateways, but its use
+       will greatly enhance readability of "Q" encoded data with mail
+       readers that do not support this encoding.)  Note that the "_"
+       always represents hexadecimal 20, even if the SPACE character
+       occupies a different code position in the character set in use.
+
+	paf: obviously, 
+		without "=", or one could not differ "=E0" and "russian letter a"
+		and without "_", or in would mean 0x20
+*/
+static bool mail_header_char_valid_within_Qencoded(char c) {
+	return c>='A' && c<='Z'
+		|| c>='a' && c<='Z'
+		|| c>='0' && c<='9'
+		|| strchr("!*+-/", c);
+}
 char *String::store_to(char *dest, Untaint_lang lang, 
 					   SQL_Connection *connection,
 					   Charset *store_to_charset,
@@ -410,32 +443,26 @@ char *String::store_to(char *dest, Untaint_lang lang,
 
 				bool closed=false;
 				for(int size=mail_size; size--; src++) {
-/*RFC
-(3) 8-bit values which correspond to printable ASCII characters other
-   than "=", "?", and "_" (underscore), MAY be represented as those
-   characters.  (But see section 5 for restrictions.)  In
-   particular, SPACE and TAB MUST NOT be represented as themselves
-   within encoded words.
-*/
 					if(src==stop && to_quoted_printable) {
 						dest+=sprintf(dest, "?=");
 						closed=true;
 						to_quoted_printable=false;
 					}
 					if((!stop || src<stop) && (
-						(*src & 0x80)  // starting quote-printable-encoding on first 8bit char
-						|| (to_quoted_printable 
-							&& (*src==' ' || *src=='=' || *src=='?') || *src=='_')
+						!to_quoted_printable && (*src & 0x80)  // starting quote-printable-encoding on first 8bit char
+						|| to_quoted_printable && !mail_header_char_valid_within_Qencoded(*src)
 						)) {
 						if(!to_quoted_printable) {
 							dest+=sprintf(dest, "=?%s?Q?", store_to_charset_name);
 							to_quoted_printable=true;
-
 						}
 						//RFC Upper case should be used for hexadecimal digits "A" through "F"
-						dest+=sprintf(dest, "=%02X", *src & 0xFF);
+						if(*src == 0x20) // RFC The 8-bit hexadecimal value 20 (e.g., ISO-8859-1 SPACE) 
+							*dest++='_'; // RFC may be represented as "_" 
+						else
+							dest+=sprintf(dest, "=%02X", *src & 0xFF);
 					} else
-						*dest++=*src;						
+						*dest++=*src;
 				}
 				if(to_quoted_printable && !closed) // close
 					dest+=sprintf(dest, "?=");
