@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_connection.C,v 1.30 2001/11/05 14:19:55 paf Exp $
+	$Id: pa_db_connection.C,v 1.31 2001/11/05 16:07:16 paf Exp $
 
 	developed with LIBDB 2.7.4
 */
@@ -27,7 +27,7 @@
 /// @test increase
 const int DB_CHECKPOINT_MINUTES=1; 
 
-const int EXPIRE_UNUSED_TABLE_SECONDS=60;
+const int EXPIRE_UNUSED_TABLE_SECONDS=3; //60;
 const int CHECK_EXPIRED_TABLES_SECONDS=EXPIRE_UNUSED_TABLE_SECONDS*2;
 
 // callbacks
@@ -116,7 +116,7 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 DB_Connection::~DB_Connection() {
 	// close tables
 	table_cache.for_each(expire_table, 
-		reinterpret_cast<void *>(0/* =in the past = expire[close] all*/));
+		reinterpret_cast<void *>(time(0)/* =now= expire[close] all*/));
 	
 	// destroy connection data
 	check("db_appexit", &fdb_home, db_appexit(&dbenv));

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.176 2001/11/05 11:46:28 paf Exp $
+	$Id: pa_request.C,v 1.177 2001/11/05 16:07:16 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -114,7 +114,6 @@ void Request::core(
 				   const char *root_config_filespec, bool root_config_fail_on_read_problem,
 				   const char *site_config_filespec, bool site_config_fail_on_read_problem,
 				   bool header_only) {
-	//_asm { int 3 }
 	try {
 		char *auto_filespec=(char *)malloc(MAX_STRING);
 		
