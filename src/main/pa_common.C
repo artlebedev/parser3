@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/08/30 09:33:13 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/08/30 09:36:41 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -207,7 +207,7 @@ static void timeout_handler(int sig){
 #endif
 
 static int http_request(char*& response, size_t& response_size,
-			const char* host, int port, 
+			const char* host, short port, 
 			const char* request, 
 			int 
 #ifdef PA_USE_ALARM
@@ -401,7 +401,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	File_read_http_result result;
 	char host[MAX_STRING]; 
 	const char* uri; 
-	int port;
+	short port;
 	const char* method="GET"; bool method_is_get;
 	HashStringValue* form=0;
 	const char* body_cstr=0;
@@ -489,7 +489,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		uri=host_uri?current+(host_uri-1-host):"/"; 
 		char* port_cstr=lsplit(host, ':'); 
 		char* error_pos=0;
-		port=port_cstr?strtol(port_cstr, &error_pos, 0):80;
+		port=port_cstr?(short)strtol(port_cstr, &error_pos, 0):80;
 
 		if(strchr(uri, '?') && form)
 			throw Exception("parser.runtime",
@@ -1093,11 +1093,11 @@ char* unescape_chars(const char* cp, int len) {
 		EscapeFirst, 
 		EscapeSecond
 	} escapeState=EscapeRest;
-	int escapedValue=0;
+	uchar escapedValue=0;
 	int srcPos=0;
 	int dstPos=0;
 	while(srcPos < len) {
-		int ch=cp[srcPos]; 
+		uchar ch=(uchar)cp[srcPos]; 
 		switch(escapeState) {
 			case EscapeRest:
 			if(ch=='%') {
@@ -1109,7 +1109,7 @@ char* unescape_chars(const char* cp, int len) {
 			}
 			break;
 			case EscapeFirst:
-			escapedValue=hex_value[ch] << 4;	
+			escapedValue=(uchar)(hex_value[ch] << 4);
 			escapeState=EscapeSecond;
 			break;
 			case EscapeSecond:
