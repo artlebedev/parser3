@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.121 2001/04/26 11:37:40 paf Exp $
+	$Id: pa_request.C,v 1.122 2001/04/26 15:19:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -29,7 +29,6 @@
 #include "_random.h"
 #include "pa_vfile.h"
 #include "_mail.h"
-#include "_exec.h"
 #include "_image.h"
 
 /// $LIMITS.post_max_size default 10M

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.21 2001/04/23 15:50:06 paf Exp $
+	$Id: pa_vfile.h,v 1.22 2001/04/26 15:19:31 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -16,7 +16,7 @@
 #include "pa_vstateless_object.h"
 #include "_file.h"
 
-/** holds received file.
+/** holds received from user or read from disk file.
 
 	@see VForm
 */
