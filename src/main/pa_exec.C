@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Date: 2002/11/20 10:04:36 $";
+static const char* IDENT_EXEC_C="$Date: 2002/11/20 11:11:11 $";
 
 #include "pa_config_includes.h"
 
@@ -235,7 +235,8 @@ static int execve_piped(const char *file_spec_cstr,
 			close(err_fds[1]);
 		}
 		
-		/* HP-UX SIGCHLD fix goes here, if someone will remind me what it is... */
+		/* grabbed this from Apache source: */
+		/*  HP-UX SIGCHLD fix goes here, if someone will remind me what it is... */
 		signal(SIGCHLD, SIG_DFL);	/* Was that it? */
 	
 		// chdir to script's directory
