@@ -114,19 +114,27 @@ name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; 
 
 put: '$' name_expr_dive '(' constructor_value ')' {
 /*
-	TODO: подсмотреть в $3, и если там в первом элементе первая буква ":"
-		то выкинуть её и делать не OP_WITH_OP_WRITE, а WITH_ROOT
 	TODO: подсмотреть в $3, и если там первым элементом self,
 		то выкинуть его и делать не OP_WITH_OP_WRITE, а WITH_SELF
 		если ничего не осталось - $self(xxx)
 			обругать
 */
-	$$=N(pool); 
-	OP($$, OP_WITH_WRITE); /* stack: starting context */
-	P($$, $2); /* diving code; stack: context,name */
+	$$=$2; /* stack: context,name */
 	P($$, $4); /* stack: context,name,constructor_value */
 	OP($$, OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 };
+name_expr_dive: name_expr_dive_write | name_expr_dive_root;
+name_expr_dive_write: name_expr_dive_code {
+	$$=N(pool); 
+	OP($$, OP_WITH_WRITE); /* stack: starting context */
+	P($$, $1); /* diving code; stack: context,name */
+};
+name_expr_dive_root: ':' name_expr_dive_code {
+	$$=N(pool); 
+	OP($$, OP_WITH_ROOT); /* stack: starting context */
+	P($$, $2); /* diving code; stack: context,name */
+};
+
 constructor_value: 
 	constructor_one_param_value
 |	constructor_two_params_value /* $var(=;2*2) $var(%d;2*2) $var(+;1) */
@@ -210,7 +218,7 @@ store_curly_param: '{' maybe_codes '}' {
 
 /* name */
 
-name_expr_dive: name_expr_value | name_path name_expr_value { $$=$1; P($$, $2) };
+name_expr_dive_code: name_expr_value | name_path name_expr_value { $$=$1; P($$, $2) };
 
 name_path: name_step | name_path name_step { $$=$1; P($$, $2) };
 name_step: name_advance1 '.';
