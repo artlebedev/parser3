@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.157 2001/05/16 16:48:56 parser Exp $
+	$Id: execute.C,v 1.158 2001/05/17 09:21:55 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -60,50 +60,50 @@ char *opcode_name[]={
 	"IS"
 };
 
-void va_log_printf(Pool& pool, const char *fmt,va_list args) {
+void va_debug_printf(Pool& pool, const char *fmt,va_list args) {
 	char buf[MAX_STRING];
 	vsnprintf(buf, MAX_STRING, fmt, args);
 	SAPI::log(pool, "%s", buf);
 }
 
-void log_printf(Pool& pool, const char *fmt, ...) {
+void debug_printf(Pool& pool, const char *fmt, ...) {
     va_list args;
     va_start(args,fmt);
-    va_log_printf(pool,fmt,args);
+    va_debug_printf(pool,fmt,args);
     va_end(args);
 }
 
-void dump(Pool& pool, int level, const Array& ops) {
+void debug_dump(Pool& pool, int level, const Array& ops) {
 	{
 		int size=ops.quick_size();
-		//log_printf(pool, "size=%d\n", size);
+		//debug_printf(pool, "size=%d\n", size);
 		for(int i=0; i<size; i++) {
 			Operation op;
 			op.cast=ops.quick_get(i);
-			log_printf(pool, "%8X\n", op.cast);
+			debug_printf(pool, "%8X\n", op.cast);
 		}
 	}
 
 	int size=ops.quick_size();
-	//log_printf(pool, "size=%d\n", size);
+	//debug_printf(pool, "size=%d\n", size);
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
 
 		if(op.code==OP_VALUE || op.code==OP_STRING__WRITE) {
 			Value *value=static_cast<Value *>(ops.quick_get(++i));
-			log_printf(pool, 
+			debug_printf(pool, 
 				"%*s%s"
 				" \"%s\" %s", 
 				level*4, "", opcode_name[op.code],
 				value->get_string()->cstr(), value->type());
 			continue;
 		}
-		log_printf(pool, "%*s%s", level*4, "", opcode_name[op.code]);
+		debug_printf(pool, "%*s%s", level*4, "", opcode_name[op.code]);
 
 		if(op.code==OP_CURLY_CODE__STORE_PARAM || op.code==OP_EXPR_CODE__STORE_PARAM) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
-			dump(pool, level+1, *local_ops);
+			debug_dump(pool, level+1, *local_ops);
 		}
 	}
 }
@@ -111,18 +111,18 @@ void dump(Pool& pool, int level, const Array& ops) {
 
 void Request::execute(const Array& ops) {
 #ifdef DEBUG_EXECUTE
-	log_printf(pool(), "source----------------------------\n");
-	dump(pool(), 0, ops);
-	log_printf(pool(), "execution-------------------------\n");
+	debug_printf(pool(), "source----------------------------\n");
+	debug_dump(pool(), 0, ops);
+	debug_printf(pool(), "execution-------------------------\n");
 #endif
 
 	int size=ops.quick_size();
-	//log_printf(pool(), "size=%d\n", size);
+	//debug_printf(pool(), "size=%d\n", size);
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
 #ifdef DEBUG_EXECUTE
-		log_printf(pool(), "%d:%s", stack.top_index()+1, opcode_name[op.code]);
+		debug_printf(pool(), "%d:%s", stack.top_index()+1, opcode_name[op.code]);
 #endif
 
 		switch(op.code) {
@@ -131,7 +131,7 @@ void Request::execute(const Array& ops) {
 			{
 				Value *value=static_cast<Value *>(ops.quick_get(++i));
 #ifdef DEBUG_EXECUTE
-				log_printf(pool(), " \"%s\" %s", value->get_string()->cstr(), value->type());
+				debug_printf(pool(), " \"%s\" %s", value->get_string()->cstr(), value->type());
 #endif
 				PUSH(value);
 				break;
@@ -143,8 +143,8 @@ void Request::execute(const Array& ops) {
 				// code
 				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 #ifdef DEBUG_EXECUTE
-				log_printf(pool(), " (%d)\n", local_ops->size());
-				dump(pool(), 1, *local_ops);
+				debug_printf(pool(), " (%d)\n", local_ops->size());
+				debug_dump(pool(), 1, *local_ops);
 #endif				
 				// when they evaluate expression parameter,
 				// the object expression result
@@ -243,7 +243,7 @@ void Request::execute(const Array& ops) {
 			{
 				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
 #ifdef DEBUG_EXECUTE
-				log_printf(pool(), " \"%s\"", vstring->string().cstr());
+				debug_printf(pool(), " \"%s\"", vstring->string().cstr());
 #endif
 				write_no_lang(vstring->string());
 				break;
@@ -363,7 +363,7 @@ void Request::execute(const Array& ops) {
 		case OP_CALL:
 			{
 #ifdef DEBUG_EXECUTE
-				log_printf(pool(), "->\n");
+				debug_printf(pool(), "->\n");
 #endif
 				VMethodFrame *frame=static_cast<VMethodFrame *>(POP());
 				frame->fill_unspecified_params();
@@ -436,7 +436,7 @@ void Request::execute(const Array& ops) {
 
 				PUSH(value);
 #ifdef DEBUG_EXECUTE
-				log_printf(pool(), "<-returned");
+				debug_printf(pool(), "<-returned");
 #endif
 				break;
 			}
@@ -719,7 +719,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 	if(junction && junction->code) { // is it a code-junction?
 		// process it
 #ifdef DEBUG_EXECUTE
-		log_printf(pool(), "ja->\n");
+		debug_printf(pool(), "ja->\n");
 #endif
 		PUSH(self);  
 		PUSH(root);  
@@ -759,7 +759,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 		self=static_cast<VAliased *>(POP());
 		
 #ifdef DEBUG_EXECUTE
-		log_printf(pool(), "<-ja returned");
+		debug_printf(pool(), "<-ja returned");
 #endif
 	} else
 		result=&value;

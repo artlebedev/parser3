@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.39 2001/05/07 13:30:00 paf Exp $
+	$Id: pa_hash.h,v 1.40 2001/05/17 09:21:55 parser Exp $
 */
 
 #ifndef PA_HASH_H
@@ -45,24 +45,24 @@ public:
 	static uint generic_code(uint aresult, const char *start, uint allocated);
 
 	/// put a [value] under the [key], return existed or not
-	/*SYNCHRONIZED*/ bool put(const Key& key, Val *value);
+	bool put(const Key& key, Val *value);
 /*
 	/// dirty hack to allow constant items storage. I long for Hash<const Val*>
-	/*SYNCHRONIZED* / bool put(const Key& key, const Val *value) {
+	bool put(const Key& key, const Val *value) {
 		return put(key, const_cast<Val *>(value)); 
 	}
 */
 	/// get associated [value] by the [key]
-	/*SYNCHRONIZED*/ Val *get(const Key& key) const;
+	Val *get(const Key& key) const;
 
 	/// put a [value] under the [key] if that [key] existed, return existed or not
-	/*SYNCHRONIZED*/ bool put_replace(const Key& key, Val *value);
+	bool put_replace(const Key& key, Val *value);
 
 	/// put a [value] under the [key] if that [key] NOT existed, return existed or not
-	/*SYNCHRONIZED*/ bool put_dont_replace(const Key& key, Val *value);
+	bool put_dont_replace(const Key& key, Val *value);
 
 	/// put all 'src' values if NO with same key existed
-	/*SYNCHRONIZED*/ void merge_dont_replace(const Hash& src);
+	void merge_dont_replace(const Hash& src);
 
 	void put(const Key& key, int     value) { put(key, reinterpret_cast<Val *>(value)); }
 	void put(const Key& key, const String *value) { 
