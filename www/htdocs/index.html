@@ -11,7 +11,8 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #$result[123]
 
 @main[]
-^txdocxnodechild[]
+^matchoptionpp[]
+#^txdocxnodechild[]
 #^tclasses[]
 #$math:PI
 #^b:method[]
@@ -135,6 +136,14 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@matchoptionpp[]
+$s[
+aaaaaaaaaabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+]
+^s.match[b;g']{($match.prematch|$match.match|$match.postmatch)}
+
 
 @txdocxnodechild[]
 $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251" ?><d/>}]

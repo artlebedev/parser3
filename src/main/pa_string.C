@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.153 2002/04/19 07:59:51 paf Exp $
+	$Id: pa_string.C,v 1.154 2002/04/19 08:28:35 paf Exp $
 */
 
 #include "pcre.h"
@@ -441,30 +441,35 @@ void String::split(Array& result,
 	}
 }
 
-static void regex_options(const String *options, int *result){
+static void regex_options(const String *options, int *result, bool& need_pre_post_match){
     struct Regex_option {
 		const char *keyL;
 		const char *keyU;
 		int clear, set;
 		int *result;
+		bool *flag;
     } regex_option[]={
 		{"i", "I", 0, PCRE_CASELESS, result}, // a=A
 		{"s", "S", 0, PCRE_DOTALL, result}, // \n\n$ [default]
 		{"x", "U", 0, PCRE_EXTENDED, result}, // whitespace in regex ignored
 		{"m", "M", PCRE_DOTALL, PCRE_MULTILINE, result}, // ^aaa\n$^bbb\n$
 		{"g", "G", 0, true, result+1}, // many rows
-		{0},
+		{"'", 0, 0, 0, 0, &need_pre_post_match},
+		{0}
     };
 	result[0]=PCRE_EXTRA | PCRE_DOTALL;
 	result[1]=0;
 
     if(options) 
 		for(Regex_option *o=regex_option; o->keyL; o++) 
-			if(
-				options->pos(o->keyL)>=0 || 
-				options->pos(o->keyU)>=0) {
-				*(o->result)&=~o->clear;
-				*(o->result)|=o->set;
+			if(options->pos(o->keyL)>=0
+				|| (o->keyU && options->pos(o->keyU)>=0)) {
+				if(o->flag)
+					*o->flag=true;
+				else { // result
+					*o->result &= ~o->clear;
+					*o->result |= o->set;
+				}
 			}
 }
 
@@ -481,10 +486,12 @@ bool String::match(
 		throw Exception(0,
 			aorigin,
 			"regexp is empty");
+
 	const char *pattern=regexp.cstr();
 	const char *errptr;
 	int erroffset;
-    int option_bits[2];  regex_options(options, option_bits);
+    bool need_pre_post_match=false;
+	int option_bits[2];  regex_options(options, option_bits, need_pre_post_match);
 	if(was_global)
 		*was_global=option_bits[1]!=0;
 	pcre *code=pcre_compile(pattern, option_bits[0], 
@@ -505,7 +512,6 @@ bool String::match(
 				info_substrings);
 	}
 
-	int startoffset=0;
 	const char *subject=cstr();
 	int length=strlen(subject);
 	int ovecsize;
@@ -526,14 +532,17 @@ bool String::match(
 	}
 
 	int exec_option_bits=0;
+	int prestart=0;
+	int poststart=0;
+	int postfinish=size();
 	while(true) {
 		int exec_substrings=pcre_exec(code, 0,
-			subject, length, startoffset,
+			subject, length, prestart,
 			exec_option_bits, ovector, ovecsize);
 		
 		if(exec_substrings==PCRE_ERROR_NOMATCH) {
 			pcre_free(code);
-			row_action(**table, 0/*last time, no row*/, 0, 0, info);
+			row_action(**table, 0/*last time, no row*/, 0, 0, poststart, postfinish, info);
 			return option_bits[1]!=0; // global=true+table, not global=false
 		}
 
@@ -545,24 +554,26 @@ bool String::match(
 					exec_substrings);
 		}
 
+		int prefinish=ovector[0];
+		poststart=ovector[1];
 		Array& row=*NEW Array(pool());
-		row+=&mid(0, ovector[0]); // .prematch column value
-		row+=&mid(ovector[0], ovector[1]); // .match
-		row+=&mid(ovector[1], size()); // .postmatch
+		row+=need_pre_post_match?&mid(0, prefinish):0; // .prematch column value
+		row+=need_pre_post_match?&mid(prefinish, poststart):0; // .match
+		row+=need_pre_post_match?&mid(poststart, postfinish):0; // .postmatch
 		
 		for(int i=1; i<exec_substrings; i++) {
 			// -1:-1 case handled peacefully by mid() itself
 			row+=&mid(ovector[i*2+0], ovector[i*2+1]); // .i column value
 		}
 		
-		row_action(**table, &row, startoffset, ovector[0], info);
+		row_action(**table, &row, prestart, prefinish, poststart, postfinish, info);
 
-		if(!option_bits[1] || startoffset==ovector[1]) { // not global | going to hang
+		if(!option_bits[1] || prestart==poststart) { // not global | going to hang
 			pcre_free(code);
-			row_action(**table, 0/*last time, no row*/, 0, 0, info);
+			row_action(**table, 0/*last time, no row*/, 0, 0, poststart, postfinish, info);
 			return true;
 		}
-		startoffset=ovector[1];
+		prestart=poststart;
 
 /*
 		if(option_bits[0] & PCRE_MULTILINE)

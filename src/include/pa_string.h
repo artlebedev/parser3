@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.135 2002/04/10 08:53:54 paf Exp $
+	$Id: pa_string.h,v 1.136 2002/04/19 08:28:35 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -194,7 +194,9 @@ public:
 		const String& delim, 
 		Untaint_lang lang=UL_UNSPECIFIED, int limit=-1) const;
 
-	typedef void (*Row_action)(Table& table, Array *row, int start, int finish, 
+	typedef void (*Row_action)(Table& table, Array *row, 
+		int prestart, int prefinish, 
+		int poststart, int postfinish,
 		void *info);
 	/**
 		@return true if fills table.

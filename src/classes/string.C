@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.103 2002/04/18 10:51:00 paf Exp $
+	$Id: string.C,v 1.104 2002/04/19 08:28:35 paf Exp $
 */
 
 #include "classes.h"
@@ -172,7 +172,7 @@ static void _rsplit(Request& r, const String& method_name, MethodParams *params)
 	r.write_no_lang(*new(pool) VTable(pool, &table));
 }
 
-static void search_action(Table& table, Array *row, int, int, void *) {
+static void search_action(Table& table, Array *row, int, int, int, int, void *) {
 	if(row)
 		table+=row;
 }
@@ -182,16 +182,17 @@ struct Replace_action_info {
 	Request *request;  const String *origin;
 	const String *src;  String *dest;
 	Value *replacement_code;
-	const String *post_match;
 };
 #endif
-static void replace_action(Table& table, Array *row, int start, int finish, 
-							   void *info) {
+static void replace_action(Table& table, Array *row, 
+						   int prestart, int prefinish, 
+						   int poststart, int postfinish,
+						   void *info) {
 	Replace_action_info& ai=*static_cast<Replace_action_info *>(info);
 	if(row) { // begin&middle
-		// piece from last match['start'] to beginning of this match['finish']
-		if(start!=finish)
-			*ai.dest << ai.src->mid(start, finish);//ai.dest->APPEND_CONST("-");
+		// piece from last match['prestart'] to beginning of this match['prefinish']
+		if(prestart!=prefinish)
+			*ai.dest << ai.src->mid(prestart, prefinish);//ai.dest->APPEND_CONST("-");
 		// store found parts in one-record VTable
 		if(table.size()) // middle
 			table.put(0, row);
@@ -213,9 +214,8 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 			*/
 			*ai.dest << replaced;
 		}
-		ai.post_match=(String *)row->get(2/*post_match*/);
 	} else // end
-		*ai.dest << *ai.post_match;
+		*ai.dest << ai.src->mid(poststart, postfinish);
 }
 
 /// @todo use pcre:study somehow
@@ -254,8 +254,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 		Replace_action_info replace_action_info={
 			&r, &method_name,
 			&src, &result,
-			&replacement_code,
-			&src
+			&replacement_code
 		};
 		src.match(
 			&method_name, 
