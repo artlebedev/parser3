@@ -99,7 +99,7 @@
  * ----------------------------------------------------------------------------
  */
 
-#include <strings.h>
+#include <string.h>
 
 #include "pa_md5.h"
 //#include "ap.h"

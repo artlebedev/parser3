@@ -3,8 +3,8 @@
 #setenv HTTP_PARSER_SITE_CONFIG /foo/bin3!
 #setenv DOCUMENT_ROOT /test/3
 
-addhandler parser3-handler html
-addhandler parser3-cgi-handler cgihtml
+addhandler parser3-handler .html
+addhandler parser3-cgi-handler .cgihtml
 action parser3-cgi-handler /cgi-bin/parser3
 
 order deny,allow
