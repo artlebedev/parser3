@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2004/11/12 11:34:46 $";
+static const char * const IDENT_VMAIL_C="$Date: 2004/12/08 08:45:13 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -688,7 +688,8 @@ static const String& text_value_to_string(Request& r,
 			"unhandled part type #%d", pt);
 	}
 	if(body) {
-		const char* body_cstr=strdup(body->cstr(String::L_UNSPECIFIED));  // body
+		Request_charsets charsets(r.charsets.source(), r.charsets.mail()/*uri!*/, r.charsets.mail());
+		const char* body_cstr=strdup(body->cstr(String::L_UNSPECIFIED, 0, &charsets));  // body
 		String::C mail=Charset::transcode(
 			String::C(body_cstr, strlen(body_cstr)),
 			r.charsets.source(),
