@@ -8,7 +8,7 @@
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
 
-static const char * const IDENT_VMAIL_H="$Date: 2004/02/11 15:33:18 $";
+static const char * const IDENT_VMAIL_H="$Date: 2004/02/24 11:25:38 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -44,7 +44,7 @@ public: // usage
 	void fill_received(Request& r);
 	const String& message_hash_to_string(Request& r,
 		HashStringValue* message_hash, int level, 
-		const String* & from, bool extract_to, String* & to);
+		const String* & from, String* & to);
 
 };
 
