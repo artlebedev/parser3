@@ -7,7 +7,8 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^memnotest1[]
+^tableselect0[]
+#^memnotest1[]
 #^transparams[]
 #^voidparams[]
 #^rolls2[]
@@ -118,6 +119,15 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@tableselect0[]
+$person[^table::create{name	height
+paf	1.77
+шохин	2.07
+moko	1.77
+}]
+$nottoohigh[^person.select($person.height<2)]
+^nottoohigh.menu{$nottoohigh.name<br>}
 
 @transparams[]
 $idoc[^xdoc::create{<?xml version="1.0" ?><doc/>}]

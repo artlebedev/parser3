@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.147 2002/04/10 09:53:14 paf Exp $
+	$Id: table.C,v 1.148 2002/04/12 11:44:27 paf Exp $
 */
 
 #include "classes.h"
@@ -246,8 +246,7 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	
 	Value *delim_maybe_code=params->size()>1?&params->get(1):0;
 
-	VTable& vtable=*static_cast<VTable *>(r.self);
-	Table& table=vtable.table();
+	Table& table=static_cast<VTable *>(r.self)->table();
 	bool need_delim=false;
 	int saved_current=table.current();
 	int size=table.size();
@@ -410,8 +409,7 @@ static bool _locate_expression(Request& r, const String& method_name, MethodPara
 
 	Value& expression_code=params->as_junction(0, "must be expression");
 
-	VTable& vtable=*static_cast<VTable *>(r.self);
-	Table& table=vtable.table();
+	Table& table=static_cast<VTable *>(r.self)->table();
 	int saved_current=table.current();
 	int size=table.size();
 	for(int row=0; row<size; row++) {
@@ -429,8 +427,7 @@ static bool _locate_name_value(Request& r, const String& method_name, MethodPara
 			&method_name,
 			"locate by name and value has only two parameters - name and value");
 
-	VTable& vtable=*static_cast<VTable *>(r.self);
-	Table& table=vtable.table();
+	Table& table=static_cast<VTable *>(r.self)->table();
 	return table.locate(
 		params->as_string(0, "column name must be string"),
 		params->as_string(1, "value must be string")
@@ -448,9 +445,7 @@ static void _locate(Request& r, const String& method_name, MethodParams *params)
 
 static void _flip(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VTable& vtable=*static_cast<VTable *>(r.self);
-
-	Table& old_table=*vtable.get_table();
+	Table& old_table=static_cast<VTable *>(r.self)->table();
 	Table& new_table=*new(pool) Table(pool, &method_name, 0/*nameless*/);
 	if(old_table.size())
 		if(int old_cols=old_table.at(0).size()) 
@@ -477,8 +472,7 @@ static void _append(Request& r, const String& method_name, MethodParams *params)
 	Array& row=*new(pool) Array(pool);
 	string.split(row, 0, "\t", 1, String::UL_AS_IS);
 
-	VTable& vtable=*static_cast<VTable *>(r.self);
-	vtable.table()+=&row;
+	static_cast<VTable *>(r.self)->table()+=&row;
 }
 
 static void _join(Request& r, const String& method_name, MethodParams *params) {
@@ -646,6 +640,38 @@ static void _columns(Request& r, const String& method_name, MethodParams *) {
 	r.write_no_lang(result);
 }
 
+static void _select(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	Value& vcondition=params->as_junction(0, "condition must be expression");
+
+	Table& source_table=static_cast<VTable *>(r.self)->table();
+	Table& result_table=*new(pool) Table(pool, 
+		source_table.origin_string(), 
+		source_table.columns()
+	);
+
+	int saved_current=source_table.current();
+	int size=source_table.size();
+	for(int row=0; row<size; row++) {
+		source_table.set_current(row);
+
+		bool condition=
+			r.process_to_value(
+				vcondition, 
+				0/*no name*/,
+				false/*don't intercept string*/).as_bool();
+
+		if(condition) // ...condition is true=
+			result_table+=&source_table.at(row); // =green light to go to result
+	}
+	source_table.set_current(saved_current);
+
+	VTable& result=*new(pool) VTable(pool, &result_table);
+	result.set_name(method_name);
+	r.write_no_lang(result);
+}
+
 // constructor
 
 MTable::MTable(Pool& apool) : Methoded(apool) {
@@ -708,6 +734,9 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 
 	// ^table:columns[]
 	add_native_method("columns", Method::CT_DYNAMIC, _columns, 0, 0);
+
+	// ^table.select(expression) = table
+	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
 }
 
 // global variable

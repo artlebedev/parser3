@@ -41,3 +41,8 @@
 [Tue Apr 09 20:15:35 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
 [Tue Apr 09 20:17:38 2002] root_config(0): 'C:\WINNT/parser3.conf' read failed: No such file or directory (2), actual filename 'C:\WINNT/parser3.conf' [file.missing]
 [Wed Apr 10 12:47:43 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1146:23): parse error, expecting `']'' or `';'' [parser.compile]
+[Thu Apr 11 16:41:46 2002] global(0): 'unnamed' (junction) has no string representation [parser.runtime]
+[Thu Apr 11 16:41:56 2002] global(0): 'unnamed' (junction) has no string representation [parser.runtime]
+[Thu Apr 11 17:04:10 2002] Y:/parser3project/parser3/www/htdocs/index.cgihtml(130): '|| | 0||' string growth stopped (append string) [-]
+[Thu Apr 11 17:04:12 2002] Y:/parser3project/parser3/www/htdocs/index.cgihtml(130): '|| | 0||' string growth stopped (append string) [-]
+[Fri Apr 12 15:39:25 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1150:16): parse error, expecting `']'' or `';'' [parser.compile]
