@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.24 2001/10/18 11:49:02 parser Exp $
+	$Id: xdoc.C,v 1.25 2001/10/18 11:59:42 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -558,29 +558,24 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	vdoc.set_parsed_source(*parsedSource);
 }
 
-/// @test free dom_document, xalan_document
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	DOM_Document *dom_document=new DOM_Document();
-	*dom_document=DOM_Document::createDocument();
-	/*
-	const String& squalifiedName=params->as_string(0, "qualifiedName must be string");
+	const char *qualifiedName=
+		params->as_string(0, "qualifiedName must be string").cstr(String::UL_XML);
 
-	/// +createXMLDecl ?
-	String xml(pool, "<?xml version=\"1.0\"?>\n");
-	xml << "<" << squalifiedName.cstr(String::UL_XML) << " />";
-	*/
-
-	XalanDocument& xalan_document=*new XercesDocumentBridge(
-		*dom_document,
+	XalanDocument& document=*new XercesDocumentBridge(
+		DOM_Document::createDocument(),
 		0,
 		false /*threadSafe*/,
 		false /*don' buildBridge -- too early, empty document*/);
 
+	/// +createXMLDecl ?
+	document.appendChild(document.createElement(XalanDOMString(qualifiedName)));
+
 	// replace any previous document
-	vdoc.set_document(xalan_document);
+	vdoc.set_document(document);
 }
 
 static void _load(Request& r, const String& method_name, MethodParams *params) {

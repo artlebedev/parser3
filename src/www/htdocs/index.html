@@ -38,9 +38,9 @@
 OK
 
 @domdata[]
-$xdoc[^xdoc::create[@todo doc]]
-$paf[^xdoc.appendChild[^xdoc.createElement[paf]]]
-$name[^paf.appendChild[^xdoc.createElement[name]]]
+$xdoc[^xdoc::create[doc]]
+$doc[$xdoc.documentElement]
+$name[^doc.appendChild[^xdoc.createElement[name]]]
 $text[^name.appendChild[^xdoc.createTextNode[петросян petrosian]]]
 
 @domedit[]

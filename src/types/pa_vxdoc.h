@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxdoc.h,v 1.6 2001/10/15 11:48:04 parser Exp $
+	$Id: pa_vxdoc.h,v 1.7 2001/10/18 11:59:42 parser Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -67,6 +67,7 @@ public: // usage
 	}
 private:
 	void cleanup() {
+		delete fdocument;
 		delete fparsed_source;
 		delete ftransformer;
 		delete fparser_liaison;
