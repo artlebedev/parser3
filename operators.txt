@@ -216,6 +216,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 
 
 !void
+	!^имя.length[]
+		0
     !^имя.int[]  (default) 
         0 или default
     !^имя.double[] (default)

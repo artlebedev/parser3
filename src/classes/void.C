@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VOID_C="$Date: 2002/08/15 10:38:18 $";
+static const char* IDENT_VOID_C="$Date: 2002/08/20 08:19:00 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -24,6 +24,11 @@ public: // Methoded
 };
 
 // methods
+
+static void _length(Request& r, const String&, MethodParams *params) {
+	Pool& pool=r.pool();
+	r.write_no_lang(*new(pool) VInt(pool, 0));
+}
 
 static void _int(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -79,6 +84,9 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 // constructor
 
 MVoid::MVoid(Pool& apool) : Methoded(apool, "void") {
+	// ^void.length[] 
+	add_native_method("length", Method::CT_DYNAMIC, _length, 0, 0);
+
 	// ^void.int[] 
 	// ^void.int(default)
 	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
