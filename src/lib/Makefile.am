@@ -1,1 +1,1 @@
-SUBDIRS = patches cord ltdl pcre md5 gc
+SUBDIRS = patches cord ltdl pcre md5 gc sdbm

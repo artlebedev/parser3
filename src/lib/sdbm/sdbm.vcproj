@@ -158,7 +158,7 @@
 			Name="apr-impl"
 			Filter="">
 			<File
-				RelativePath=".\apr-impl\apr_file_io.C">
+				RelativePath=".\apr_file_io.C">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -173,7 +173,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\apr-impl\apr_strings.C">
+				RelativePath=".\apr_strings.C">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
