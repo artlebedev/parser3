@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.96 2001/08/24 09:27:53 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.97 2001/08/27 13:27:26 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -123,6 +123,18 @@ void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 	stdout_write(buf, size);
 }
 
+//
+
+char *full_file_spec(char *file_name) {
+	if(!strchr(file_name, '/')) {
+		static char cwd[MAX_STRING];  getcwd(cwd, MAX_STRING);
+		static char buf[MAX_STRING];
+		snprintf(buf, MAX_STRING, "%s/%s", cwd, file_name);
+		return buf;
+	}
+	return file_name;
+}
+
 /**
 	main workhorse
 
@@ -166,6 +178,7 @@ int main(int argc, char *argv[]) {
 #ifdef WIN32
 	back_slashes_to_slashes(filespec_to_process);
 #endif
+	filespec_to_process=full_file_spec(filespec_to_process);
 
 	const char *request_method=getenv("REQUEST_METHOD");
 	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;

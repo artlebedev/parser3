@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.151 2001/08/10 08:59:25 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.152 2001/08/27 13:27:26 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -166,7 +166,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		if(root_auto_path) {
 			String& filespec=*NEW String(pool());
 			filespec.APPEND_CLEAN(root_auto_path, 0, "root_auto", 0);
-			filespec.APPEND_CONST("/" AUTO_FILE_NAME);
+			filespec << "/" AUTO_FILE_NAME;
 			main_class=use_file(
 				filespec, 
 				true/*ignore class_path*/, root_auto_fail,
@@ -182,7 +182,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		if(site_auto_path) {
 			String& filespec=*NEW String(pool());
 			filespec.APPEND_CLEAN(site_auto_path, 0, "site_auto", 0);
-			filespec.APPEND_CONST("/" AUTO_FILE_NAME);
+			filespec << "/" AUTO_FILE_NAME;
 			main_class=use_file(
 				filespec, 
 				true/*ignore class_path*/, site_auto_fail,
@@ -193,7 +193,6 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// to the one beside requested file.
 		// all assigned bases from upper dir
 		{
-			Array ladder(pool());
 			const char *after=info.path_translated;
 			size_t drlen=strlen(info.document_root);
 			if(memcmp(after, info.document_root, drlen)==0) {
@@ -202,22 +201,20 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 					--after;
 			}
 			
+			int step=0;
 			while(const char *before=strchr(after, '/')) {
-				String& step=*NEW String(pool());
+				String& sfile_spec=*NEW String(pool());
 				if(after!=info.path_translated) {
-					step.APPEND_CLEAN(
-						info.path_translated, before+1/* / */-info.path_translated,
-						"path-translated-scanned", ladder.size());
-					step << AUTO_FILE_NAME;
-					ladder+=&step;
+					sfile_spec.APPEND_CLEAN(
+						info.path_translated, before-info.path_translated,
+						"path-translated-scanned", step++);
+					sfile_spec << "/" AUTO_FILE_NAME;
+
+					main_class=use_file(sfile_spec, 
+						true/*ignore class_path*/, false/*ignore read problem*/,
+						main_class_name, main_class);
 				}
 				after=before+1;
-			}
-			for(int i=0; i<ladder.size(); i++) {
-				const String& sfile_spec=*ladder.get_string(i);
-				main_class=use_file(sfile_spec, 
-					true/*ignore class_path*/, false/*ignore read problem*/,
-					main_class_name, main_class);
 			}
 		}
 
