@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxdoc.h,v 1.1 2001/09/26 11:24:07 parser Exp $
+	$Id: pa_vxdoc.h,v 1.2 2001/10/05 16:12:40 parser Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -15,6 +15,7 @@
 #include "pa_vstateless_object.h"
 #include "pa_vxnode.h"
 
+#include <sax/HandlerBase.hpp>
 #include <XercesParserLiaison/XercesParserLiaison.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
 #include <XalanTransformer/XalanParsedSource.hpp>
@@ -53,17 +54,20 @@ public: // usage
 
 	VXdoc(Pool& apool, XalanDocument *adocument=0) : VXnode(apool, 0, *Xdoc_class), 
 		ftransformer(0),
-		fparser_liaison(0),
+		fparser_liaison(0), ferror_handler(0),
 		fparsed_source(0),
 		fdocument(adocument) {
 		register_cleanup(VXdoc_cleanup, this);
 		ftransformer=new XalanTransformer;
 		fparser_liaison=new XercesParserLiaison;
+		ferror_handler=new HandlerBase;
+		fparser_liaison->setErrorHandler(ferror_handler); // disable stderr output
 	}
 private:
 	void cleanup() {
 		delete ftransformer;
 		delete fparser_liaison;
+		delete ferror_handler;
 	}
 public:
 
@@ -94,6 +98,7 @@ private:
 
 	XalanTransformer *ftransformer;
 	XercesParserLiaison	*fparser_liaison;
+	ErrorHandler *ferror_handler;
 
 	const XalanParsedSource *fparsed_source;
 	XalanDocument *fdocument;

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.8 2001/10/05 11:21:10 parser Exp $
+	$Id: xdoc.C,v 1.9 2001/10/05 16:12:40 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -22,6 +22,8 @@
 #include <util/TransENameMap.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
 #include <XalanTransformer/XalanParsedSource.hpp>
+#	include <XalanTransformer/XalanDefaultParsedSource.hpp>
+#	include <XalanSourceTree/XalanSourceTreeDocument.hpp>
 #include <XMLSupport/FormatterToXML.hpp>
 #include <XMLSupport/FormatterToHTML.hpp>
 #include <XMLSupport/FormatterToText.hpp>
@@ -81,6 +83,80 @@ private:
 	String& fstring;
 	
 };
+
+class XalanSourceTreeParserLiaison2: public XalanSourceTreeParserLiaison {
+public:
+	XalanSourceTreeParserLiaison2(XalanSourceTreeDOMSupport&		theSupport) : XalanSourceTreeParserLiaison(theSupport), 
+		ferror_handler(new HandlerBase) {
+		setErrorHandler(ferror_handler); // disable stderr output
+	}
+//	virtual fatal?error!!
+
+	~XalanSourceTreeParserLiaison2() {
+	}
+private:
+	ErrorHandler *ferror_handler;
+};
+
+class XalanDefaultParsedSource2 : public XalanParsedSource
+{
+public:
+
+	XalanDefaultParsedSource2(const XSLTInputSource&		theInputSource);
+
+	virtual
+	~XalanDefaultParsedSource2();
+
+	virtual XalanDocument*
+	getDocument() const;
+
+	virtual XalanParsedSourceHelper*
+	createHelper() const;
+
+private:
+
+	XalanSourceTreeDOMSupport		m_domSupport;
+
+	XalanSourceTreeParserLiaison2	m_parserLiaison;
+
+	XalanSourceTreeDocument* const	m_parsedSource;
+};
+
+XalanDefaultParsedSource2::XalanDefaultParsedSource2(const XSLTInputSource&	theInputSource):
+	XalanParsedSource(),
+	m_domSupport(),
+	m_parserLiaison(m_domSupport),
+	m_parsedSource(m_parserLiaison.mapDocument(m_parserLiaison.parseXMLStream(theInputSource)))
+{
+	assert(m_parsedSource != 0);
+
+	m_domSupport.setParserLiaison(&m_parserLiaison);
+}
+
+
+
+XalanDefaultParsedSource2::~XalanDefaultParsedSource2()
+{
+}
+
+
+
+XalanDocument*	
+XalanDefaultParsedSource2::getDocument() const
+{
+	return m_parsedSource;
+}
+
+
+
+XalanParsedSourceHelper*
+XalanDefaultParsedSource2::createHelper() const
+{
+	return new XalanDefaultParsedSourceHelper(m_domSupport);
+}
+
+
+
 
 static void create_optioned_listener(
 									 const char *& content_type, const char *& charset, FormatterListener *& listener, 
@@ -246,12 +322,59 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 
 	std::istrstream stream(xml.cstr());
 	const XalanParsedSource* parsedSource;
-	int error=vdoc.transformer().parseSource(&stream, parsedSource);
+/*	int error=vdoc.transformer().parseSource(&stream, parsedSource);
 
 	if(error)
 		PTHROW(0, 0,
 			&method_name,
 			vdoc.transformer().getLastError());
+*/
+
+	int error;
+	CharVectorType							m_errorMessage;
+	m_errorMessage.push_back(0);
+	try
+	{
+			parsedSource = new XalanDefaultParsedSource2(&stream);
+			error=0;
+
+		//todo free parsedSource
+	}
+	catch (XSLException& e)
+	{
+		TranscodeToLocalCodePage(e.getMessage(), m_errorMessage, true);
+
+		error = -1;
+	}
+	catch (SAXException& e)
+	{
+		TranscodeToLocalCodePage(e.getMessage(), m_errorMessage, true);
+
+		error = -2;
+	}
+	catch (XMLException& e)
+	{
+		TranscodeToLocalCodePage(e.getMessage(), m_errorMessage, true);
+
+		error = -3;
+	}
+	catch(const XalanDOMException&	e)
+	{
+		XalanDOMString theMessage("XalanDOMException caught.  The code is ");
+			
+		append(theMessage,	LongToDOMString(long(e.getExceptionCode())));
+
+		append(theMessage,	XalanDOMString("."));						 
+
+		TranscodeToLocalCodePage(theMessage, m_errorMessage, true);
+
+		error = -3;
+	}
+
+	if(error)
+		PTHROW(0, 0,
+			&method_name,
+			&m_errorMessage[0]);
 
 	// replace any previous parsed source
 	vdoc.set_parsed_source(*parsedSource);

@@ -7,14 +7,14 @@
 #^exec[]
 #^fori[]
 #^tconnect[]
-^xslt[]
+#^xslt[]
 #^xml[]
-#^header[]
+^header[]
 OK
 
 @xslt[]
 ^xdata[]
-$xdoc.xslt[]
+^show-xdoc2[^xdoc.transform[global.xsl]]
 
 @regexp2[]
 $s[  select]
@@ -22,7 +22,10 @@ $s[^s.match[^^\s*][]{!}]
 $s
 
 @header[]
-$response:refresh[0^; url=http://design.ru?a=0]
+$response:refresh[
+	$.value[0]
+	$.url[http://design.ru?a=$form:a]
+]
 
 @ttablerem[]
 $table[^table::load[a.cfg]]
@@ -74,7 +77,7 @@ $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 #<!DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd">
 
 <people>
-	<man id="1" имя="word слово">
+	<man id="1" имя="word слово"
 		<name>P&#171^;AF	B</name>
 	</man>
 	^for[i](2;3){

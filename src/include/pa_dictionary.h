@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_dictionary.h,v 1.5 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_dictionary.h,v 1.6 2001/10/05 16:12:40 parser Exp $
 */
 
 #ifndef PA_DICTIONARY_H
@@ -24,7 +24,7 @@ public:
 	double max_ratio() { return fmax_ratio; }
 
 	/// find first row that contains string in first column which starts @b src
-	void* first_that_starts(const char *src) const;
+	void* first_that_starts(const char *src, size_t src_size=0) const;
 
 	/// where this table came from, may be NULL. proxy to Table
 	const String *origin_string() { return table.origin_string(); }

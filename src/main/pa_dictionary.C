@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_dictionary.C,v 1.6 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_dictionary.C,v 1.7 2001/10/05 16:12:40 parser Exp $
 */
 
 #include "pa_dictionary.h"
@@ -27,7 +27,7 @@ void Dictionary::add_first(Array::Item *value, void *info) {
 	if(!self.starting_line_of[c])
 		self.starting_line_of[c]=self.constructor_line;
 
-	double ratio=b.size()/a.size();
+	double ratio=((double)b.size())/a.size();
 	if(ratio>self.fmax_ratio)
 		self.fmax_ratio=ratio;
 
@@ -47,7 +47,7 @@ Dictionary::Dictionary(Table& atable, double amin_ratio) : Pooled(atable.pool())
 #ifndef DOXYGEN
 struct First_that_starts_info {
 	int line;
-	const char *src;
+	const char *src;  size_t src_size;
 };
 #endif
 static void *starts(Array::Item *value, void *info) {
@@ -60,17 +60,18 @@ static void *starts(Array::Item *value, void *info) {
 	Array *row=static_cast<Array *>(value);
 
 	int partial;
-	row->get_string(0)->cmp(partial, i.src);
+	row->get_string(0)->cmp(partial, i.src, i.src_size);
 	return (
 		partial==0 || // full match
 		partial==1) // typo left column starts 'src'
 		?value:0;
 }
 
-void* Dictionary::first_that_starts(const char *src) const {
+void* Dictionary::first_that_starts(const char *src, size_t src_size) const {
 	First_that_starts_info info;
 	if(info.line=starting_line_of[(unsigned char)*src]) {
 		info.src=src;
+		info.src_size=src_size;
 		return table.first_that(starts, &info);
 	} else
 		return 0;

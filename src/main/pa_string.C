@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.105 2001/10/05 14:48:58 parser Exp $
+	$Id: pa_string.C,v 1.106 2001/10/05 16:12:40 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -654,8 +654,9 @@ break2:
 	return result;
 }
 
+/// @test restructure string to link pieces of same language together prior to this.
 String& String::replace(Pool& pool, Dictionary& dict) const {
-	
+	//_asm int 3;
 	String& result=*new(pool) String(pool);
 	const Chunk *chunk=&head; 
 	do {
@@ -670,7 +671,7 @@ String& String::replace(Pool& pool, Dictionary& dict) const {
 			char *dest=new_cstr;
 			while(src_size) {
 				// there is a row where first column starts 'src'
-				if(Table::Item *item=dict.first_that_starts(src)) {
+				if(Table::Item *item=dict.first_that_starts(src, src_size)) {
 					// get a=>b values
 					const String& a=*static_cast<Array *>(item)->get_string(0);
 					const String& b=*static_cast<Array *>(item)->get_string(1);
