@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2003/01/21 15:51:13 $";
+static const char* IDENT_EXECUTE_C="$Date: 2003/04/07 12:39:32 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -726,48 +726,54 @@ void Request::execute(const Array& ops) {
 		case OP_NUM_LT: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), result < 0.0);
+				volatile double a_double=a->as_double(); 
+				volatile double b_double=b->as_double();
+				value=NEW VBool(pool(), a_double<b_double);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GT: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), result > 0.0);
+				volatile double a_double=a->as_double(); 
+				volatile double b_double=b->as_double();
+				value=NEW VBool(pool(), a_double>b_double);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_LE: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), result <= 0.0);
+				volatile double a_double=a->as_double(); 
+				volatile double b_double=b->as_double();
+				value=NEW VBool(pool(), a_double<=b_double);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GE: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), result >= 0.0);
+				volatile double a_double=a->as_double(); 
+				volatile double b_double=b->as_double();
+				value=NEW VBool(pool(), a_double>=b_double);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_EQ: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), result == 0.0);
+				volatile double a_double=a->as_double(); 
+				volatile double b_double=b->as_double();
+				value=NEW VBool(pool(), a_double==b_double);
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_NE: 
 			{
 				b=POP();  a=POP();
-				double result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), result != 0.0);
+				volatile double a_double=a->as_double(); 
+				volatile double b_double=b->as_double();
+				value=NEW VBool(pool(), a_double!=b_double);
 				PUSH(value);
 				break;
 			}
