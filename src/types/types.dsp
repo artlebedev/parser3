@@ -123,6 +123,10 @@ SOURCE=.\pa_vbool.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_vclass.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_vclass.h
 # End Source File
 # Begin Source File
@@ -200,6 +204,10 @@ SOURCE=.\pa_vmath.h
 # Begin Source File
 
 SOURCE=.\pa_vmethod_frame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vobject.C
 # End Source File
 # Begin Source File
 
