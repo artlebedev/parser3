@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.25 2001/02/22 11:08:25 paf Exp $
+$Id: core.C,v 1.26 2001/02/22 12:43:55 paf Exp $
 */
 
 #include "pa_request.h"
@@ -61,7 +61,7 @@ VClass *Request::construct_class(String& name, Array& compiled_methods) {
 	classes().put(name, result);
 		
 	for(int i=0; i<compiled_methods.size(); i++) {
-		// TODO: filter out @PARENTS & ?co?
+		// TODO: filter out @PARENTS & @CLASS & ?co?
 		Method &method=*static_cast<Method *>(compiled_methods.quick_get(i));
 		result->add_method(method.name, method);
 	}

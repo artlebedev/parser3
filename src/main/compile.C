@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.13 2001/02/22 10:43:45 paf Exp $
+  $Id: compile.C,v 1.14 2001/02/22 12:43:55 paf Exp $
 */
 
 #include "pa_request.h"
@@ -36,16 +36,16 @@ Array& Request::real_compile(COMPILE_PARAMS) {
 	pc.sp=0;
 	
 	// parse=compile! 
-	///yydebug=1;
+	yydebug=1;
 	if(yyparse(&pc)) { // error?
-		if(pc.col==1) {
+		if(pc.col==0) {
 			// step back from last char.  -1 col means EOL
 			pc.line--;
-			pc.col=-1;
+			pc.col=-2;
 		}
 		THROW(0,0,
 			0,
-			"%s [%s:%d:%d]", pc.error, file, 1+pc.line, pc.col);
+			"%s [%s:%d:%d]", pc.error, file, 1+pc.line, 1+pc.col);
 	}
 
 	// result

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.30 2001/02/22 10:43:46 paf Exp $
+  $Id: pa_string.C,v 1.31 2001/02/22 12:43:55 paf Exp $
 */
 
 #include <string.h>
@@ -99,7 +99,7 @@ String& String::operator += (const String& src) {
 		memcpy(append_here, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
 		append_here+=src_used_rows;
 	} else {
-		// not all new rows don't fit into last chunk: shrinking it to used part,
+		// not all new rows fit into last chunk: shrinking it to used part,
 		int used_rows=last_chunk->count-dst_free_rows;
 		//int *countp=append_here
 		link_row=&last_chunk->rows[last_chunk->count=used_rows];
@@ -111,7 +111,7 @@ String& String::operator += (const String& src) {
 		link_row->link=last_chunk;
 		append_here=link_row=&last_chunk->rows[src_used_rows];
 
-		Chunk *old_chunk=src.head.preallocated_link; 
+		const Chunk *old_chunk=&src.head; 
 		Chunk::Row *new_rows=last_chunk->rows;
 		int rows_left_to_copy=src_used_rows;
 		while(true) {

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.15 2001/02/22 09:14:46 paf Exp $
+  $Id: execute.C,v 1.16 2001/02/22 12:43:55 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -49,7 +49,7 @@ void dump(int level, const Array& ops) {
 }
 
 void Request::execute(Array& ops) {
-	if(1) {
+	if(0) {
 		puts("---------------------------");
 		dump(0, ops);
 		puts("---------------------------");
@@ -58,7 +58,7 @@ void Request::execute(Array& ops) {
 	int size=ops.size();
 	for(int i=0; i<size; i++) {
 		int code=reinterpret_cast<int>(ops.quick_get(i));
-		printf("%s\n", opcode_name[code]);
+		printf("%s", opcode_name[code]);
 
 		if(code==OP_CODE_ARRAY) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
@@ -80,6 +80,7 @@ void Request::execute(Array& ops) {
 		case OP_STRING:
 			{
 				String *string=static_cast<String *>(ops.quick_get(++i));
+				printf(" \"%s\"", string->cstr());
 				stack.push(string);
 				break;
 			}
@@ -87,6 +88,7 @@ void Request::execute(Array& ops) {
 		case OP_VSTRING:
 			{
 				Value *value=static_cast<Value *>(ops.quick_get(++i));
+				printf(" \"%s\"", value->get_string()->cstr());
 				stack.push(value);
 				break;
 			}
@@ -125,8 +127,9 @@ void Request::execute(Array& ops) {
 			}
 			
 		default:
-			printf("\tTODO\n");
+			printf("\tTODO");
 			break;
 		}
+		printf("\n");
 	}
 }
