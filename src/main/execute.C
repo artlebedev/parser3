@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.233 2002/04/16 08:42:35 paf Exp $
+	$Id: execute.C,v 1.234 2002/04/16 14:26:12 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -962,7 +962,7 @@ const String& Request::execute_method(VMethodFrame& amethodFrame, const Method& 
 	execute(*method.parser_code);
 	
 	// result
-	const String& result=wcontext->as_string();
+	const String& result=wcontext->result().as_string();
 	
 	wcontext=static_cast<WContext *>(POP());  
 	rcontext=POP();  

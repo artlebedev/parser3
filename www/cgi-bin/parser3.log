@@ -2,3 +2,5 @@
 [Tue Apr 16 13:34:27 2002] file:exec: No comma allowed after filehandle at c:/drives/y/parser3project/parser3/www/htdocs/test.pl line 6. |
 [Tue Apr 16 13:34:46 2002] file:exec: No comma allowed after filehandle at c:/drives/y/parser3project/parser3/www/htdocs/test.pl line 6. |
 [Tue Apr 16 13:34:56 2002] file:exec: <privet>
+[Tue Apr 16 17:32:11 2002] file:exec: <privet>
+[Tue Apr 16 18:20:41 2002] /: user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/_doc.cgihtml' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/_doc.cgihtml' [file.missing]

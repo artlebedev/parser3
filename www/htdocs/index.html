@@ -6,6 +6,10 @@ $request:charset[windows-1251]
 $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
+@postprocess[body]
+<b>$body</b>
+$result[123]
+
 @main[]
 #^invaliddate2[]
 #^process2[]
@@ -26,7 +30,7 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^locate_by_expr[]
 #^method_junction_params{...}
 #^verifyCookie[paf]
-^execlangs[]
+#^execlangs[]
 #$t[^tobjeresult[]]$t.a
 #^xmlprobs[]
 #^doubleprobs[]
