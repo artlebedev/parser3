@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.95 2001/08/24 09:26:11 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.96 2001/08/24 09:27:53 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -297,6 +297,10 @@ int main(int argc, char *argv[]) {
 #ifdef WIN32
 		SetUnhandledExceptionFilter(0);
 #endif
+		// 
+		if(!cgi)
+			SAPI::send_body(pool, "\n", 1);
+
 		// successful finish
 		return 0;
 	} PCATCH(e) { // global problem 
@@ -328,11 +332,12 @@ int main(int argc, char *argv[]) {
 		if(!header_only)
 			SAPI::send_body(pool, body, content_length);
 
+		// 
+		if(!cgi)
+			SAPI::send_body(pool, "\n", 1);
+
 		// unsuccessful finish
 		return 1;
 	}
 	PEND_CATCH
-
-	if(!cgi)
-		SAPI::send_body(pool, "\n", 1);
 }
