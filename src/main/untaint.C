@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2002/12/05 13:00:53 $";
+static const char* IDENT_UNTAINT_C="$Date: 2002/12/15 15:58:34 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -414,7 +414,14 @@ char *String::store_to(char *dest, Untaint_lang lang,
 		case UL_FILE_SPEC:
 			// tainted, untaint language: file [name]
 			escape(
-				encode(need_file_encode, '_');
+				// Macintosh has problems with small Russian letter 'r'
+				if( *src=='\xF0' && pool().get_source_charset().name()=="windows-1251" ) {
+					// fixing that letter for most common charset
+					to_char('p');  
+					continue; 
+				}
+				// fallback to default
+				encode(need_file_encode, '_'); 
 			);
 			break;
 		case UL_URI:
