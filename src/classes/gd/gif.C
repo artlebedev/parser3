@@ -14,7 +14,7 @@
 	can incorporate them into new versions. 
 */
 
-static const char * const IDENT_GIF_C="$Date: 2003/11/20 16:34:24 $";
+static const char * const IDENT_GIF_C="$Date: 2003/11/20 17:07:44 $";
 
 #include "gif.h"
 
@@ -650,7 +650,7 @@ void gdImage::Copy(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int w, 
 
 void gdImage::CopyResampled(gdImage& dst,
 		      int dstX, int dstY,
-		      int srcX, int srcY,
+		      int /*srcX*/, int /*srcY*/,
 		      int dstW, int dstH,
 			  int srcW, int srcH,
 			  int tolerance)
@@ -777,39 +777,6 @@ void gdImage::CopyResampled(gdImage& dst,
 			dst.SetPixel(x, y, nc);
 		}
     }
-}
-
-static int gdGetWord(int *result, FILE *in)
-{
-	int r;
-	r = getc(in);
-	if (r == EOF) {
-		return 0;
-	}
-	*result = r << 8;
-	r = getc(in);	
-	if (r == EOF) {
-		return 0;
-	}
-	*result += r;
-	return 1;
-}
-
-static void gdPutWord(int w, FILE *out)
-{
-	putc((unsigned char)(w >> 8), out);
-	putc((unsigned char)(w & 0xFF), out);
-}
-
-static int gdGetByte(int *result, FILE *in)
-{
-	int r;
-	r = getc(in);
-	if (r == EOF) {
-		return 0;
-	}
-	*result = r;
-	return 1;
 }
 
 void gdImage::Polygon(Point *p, int n, int c, bool closed)

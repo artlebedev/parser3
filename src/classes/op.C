@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2003/11/20 16:34:23 $";
+static const char * const IDENT_OP_C="$Date: 2003/11/20 17:07:44 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -83,7 +83,6 @@ static void _if(Request& r, MethodParams& params) {
 	Value& condition_code=params.as_junction(0, "condition must be expression");
 
 	bool condition=r.process_to_value(condition_code, 
-		/*0/*no name* /,*/
 		false/*don't intercept string*/).as_bool();
 	if(condition)
 		r.write_pass_lang(r.process(params.as_junction(1, "'then' parameter must be code")));
@@ -210,7 +209,6 @@ static void _while(Request& r, MethodParams& params) {
 				"endless loop detected");
 
 		bool condition=r.process_to_value(vcondition, 
-				/*0/*no name* /,*/
 				false/*don't intercept string*/).as_bool();
 		if(!condition) // ...condition is true
 			break;
@@ -258,7 +256,6 @@ static void _eval(Request& r, MethodParams& params) {
 	Value& expr=params.as_junction(0, "need expression");
 	// evaluate expresion
 	Value& value_result=r.process_to_value(expr, 
-		/*0/*no name YET* /,*/
 		true/*don't intercept string*/).as_expr_result();
 	if(params.count()>1) {
 		Value& fmt=params.as_no_junction(1, "fmt must not be code");
@@ -526,7 +523,7 @@ const String* locked_process_and_cache_put(Request& r,
 					   Cache_scope& scope,
 					   const String& file_spec) 
 {
-	Locked_process_and_cache_put_action_info info={&r, &scope, &body_code, catch_code};
+	Locked_process_and_cache_put_action_info info={&r, &scope, &body_code, catch_code, 0};
 
 	const String* result=file_write_action_under_lock(
 		file_spec, 
@@ -547,7 +544,7 @@ struct Cache_get_result {
 };
 #endif
 static Cache_get_result cache_get(Request_charsets& charsets, const String& file_spec, time_t now) {
-	Cache_get_result result={0};
+	Cache_get_result result={0, false};
 
 	File_read_result file=file_read(charsets, file_spec, 
 			   false/*as_text*/, 

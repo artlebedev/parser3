@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2003/11/20 16:34:30 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2003/11/20 17:07:44 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -31,13 +31,15 @@ VMethodFrame::VMethodFrame(
 	VMethodFrame *acaller) : 
 	WContext(0/*empty*/, 0 /* no parent, junctions can be reattached only up to VMethodFrame */),
 
-	junction(ajunction), fcaller(acaller),
+	fcaller(acaller),
 
 	store_param_index(0),
 	my(0), fnumbered_params(0),
 	fself(0),
 
-	fresult_initial_void(0) {
+	fresult_initial_void(0),
+	
+	junction(ajunction) {
 
 	if(junction.method->max_numbered_params_count) // this method uses numbered params?
 		fnumbered_params=new MethodParams;

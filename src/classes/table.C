@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2003/11/20 16:34:23 $";
+static const char * const IDENT_TABLE_C="$Date: 2003/11/20 17:07:44 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -178,34 +178,6 @@ static void _create(Request& r, MethodParams& params) {
 	GET_SELF(r, VTable).set_table(table);
 }
 
-static char* remove_encloser(char* cstr, char encloser) {
-	if(cstr[0]!=encloser)
-		return cstr;
-
-	size_t length=strlen(cstr);
-	if(length<2 || cstr[length-1]!=encloser)
-		return cstr;
-
-	// 'string'
-
-	cstr[length-1]=0;
-	cstr++;
-
-	// double-encloser stands for encloser
-	char *read;
-	char *write;
-	write=read=cstr;
-	while(char c=*read++) {
-		if(c==encloser && *read==encloser)
-			read++;
-
-		*write++=c;
-	}
-	*write=0; // terminate
-
-	return cstr;
-}
-
 struct lsplit_result {
 	char* piece;
 	char delim;
@@ -249,7 +221,7 @@ static lsplit_result lsplit(char** string_ref, char delim1, char delim2, char en
 			char *write;
 			write=read=string;
 			char c;
-			while(c=*read++) {
+			while((c=*read++)) {
 				if(c==encloser) {
 					char n=*read;
 					if(n==encloser) // double-encloser stands for encloser
@@ -667,17 +639,18 @@ static void _hash(Request& r, MethodParams& params) {
 
 
 			{
-				Row_info info={0};
-				info.r=&r;
-				info.table=&self_table;
 				Value* key_param=&params[0];
-				info.key_code=key_param->get_junction()?key_param:0;
-				info.key_field=info.key_code?-1
-					:self_table.column_name2index(key_param->as_string(), true);
-				info.value_fields=&value_fields;
-				info.hash=&result.hash();
-				info.distinct=distinct;
-				info.row=0;
+				Row_info info={
+					&r,
+					&self_table,
+					/*key_code=*/key_param->get_junction()?key_param:0,
+					/*key_field=*/info.key_code?-1
+						:self_table.column_name2index(key_param->as_string(), true),
+					&value_fields,
+					&result.hash(),
+					distinct,
+					/*row=*/0
+				};
 
 				int saved_current=self_table.current();
 				self_table.for_each(table_row_to_hash, &info);
@@ -854,7 +827,7 @@ static void _join(Request& r, MethodParams& params) {
 			0, 
 			"source and destination are same table");
 
-	if(Table::columns_type dest_columns=dest.columns()) // dest is named
+	if(dest.columns()) // dest is named
 		src.table_for_each(join_named_row, &dest, o);
 	else // dest is nameless
 		src.table_for_each(join_nameless_row, &dest, o);
@@ -1004,7 +977,6 @@ static void _select(Request& r, MethodParams& params) {
 		source_table.set_current(row);
 
 		bool condition=r.process_to_value(vcondition, 
-				/*0/*no name* /,*/
 				false/*don't intercept string*/).as_bool();
 
 		if(condition) // ...condition is true=

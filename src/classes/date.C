@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2003/11/20 17:07:43 $";
+static const char * const IDENT_DATE_C="$Date: 2003/11/20 17:09:35 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -91,7 +91,7 @@ static int NN_year_to_NNNN(int year) {
 	const char* min=lsplit(&cur, ':');
 	const char* sec=cur;
 
-	tm tmIn;  memset(tmIn, 0, sizeof(tmIn));
+	tm tmIn;  memset(&tmIn, 0, sizeof(tmIn));
 	tmIn.tm_isdst=-1;
 	if(!month)
 		if(min) {
@@ -138,7 +138,7 @@ static void _create(Request& r, MethodParams& params) {
 					"invalid datetime");
 		}
 	} else if(params.count()>=2) { // ^create(y;m;d[;h[;m[;s]]])
-		tm tmIn; memset(tmIn, 0, sizeof(tmIn));
+		tm tmIn; memset(&tmIn, 0, sizeof(tmIn));
 		tmIn.tm_isdst=-1;
 		tmIn.tm_year=NN_year_to_NNNN(params.as_int(0, "year must be int", r));
 		tmIn.tm_mon=params.as_int(1, "month must be int", r)-1;
@@ -258,7 +258,7 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 	int month=max(1, min(params.as_int(2, "month must be int", r), 12)) -1;
 	
 	tm tmIn;  
-	memset(tmIn, 0, sizeof(tmIn)); 
+	memset(&tmIn, 0, sizeof(tmIn)); 
 	tmIn.tm_mday=1;
 	tmIn.tm_mon=month; 
 	tmIn.tm_yday=year-1900;
@@ -332,7 +332,7 @@ static Table& fill_week_days(Request& r, MethodParams& params, bool rus){
 	int day=params.as_int(3, "day must be int", r);
 	
 	tm tmIn;
-	memset(tmIn, 0, sizeof(tmIn)); 
+	memset(&tmIn, 0, sizeof(tmIn)); 
 	tmIn.tm_hour=18;
 	tmIn.tm_mday=day;
 	tmIn.tm_mon=month; 

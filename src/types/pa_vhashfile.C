@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2003/11/20 16:34:29 $";
+static const char * const IDENT="$Date: 2003/11/20 17:07:44 $";
 
 #include "pa_globals.h"
 #include "pa_threads.h"
@@ -98,7 +98,7 @@ apr_sdbm_datum_t VHashfile::serialize_value(const String& string, time_t time_to
 
 const String* VHashfile::deserialize_value(apr_sdbm_datum_t key, const apr_sdbm_datum_t value) {
 	// key not found || it's surely not in our format
-	if(!value.dptr || value.dsize<sizeof(Hashfile_value_serialized_prolog))
+	if(!value.dptr || (size_t)value.dsize<sizeof(Hashfile_value_serialized_prolog))
 		return 0; 
 
 	Hashfile_value_serialized_prolog& prolog=*reinterpret_cast<Hashfile_value_serialized_prolog*>(value.dptr);

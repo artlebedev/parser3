@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2003/11/20 16:34:30 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2003/11/20 17:07:44 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -81,8 +81,6 @@ private:
 	also handles method parameters and local variables
 */
 class VMethodFrame: public WContext {
-
-//	const String& fname;
 	VMethodFrame *fcaller;
 
 	size_t store_param_index;

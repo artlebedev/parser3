@@ -35,7 +35,7 @@
  ** CompuServe Incorporated.
 */
 
-static const char * const IDENT_GIFIO_C="$Date: 2003/11/20 16:34:24 $";
+static const char * const IDENT_GIFIO_C="$Date: 2003/11/20 17:07:44 $";
 
 #include "gif.h"
 
@@ -769,7 +769,6 @@ struct Gif89 {
 };
 #endif
 static int ReadColorMap(FILE *fd, int number, unsigned char(*buffer)[256]);
-static int GetCode(FILE *fd, int code_size, int flag);
 
 bool gdImage::CreateFromGif(FILE *fd)
 {

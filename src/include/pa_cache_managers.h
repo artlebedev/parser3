@@ -4,13 +4,13 @@
 	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Date: 2003/11/20 16:34:24 $
+	$Date: 2003/11/20 17:07:44 $
 */
 
 #ifndef PA_CACHE_MANAGERS_H
 #define PA_CACHE_MANAGERS_H
 
-static const char * const IDENT_CACHE_MANAGERS_H="$Date: 2003/11/20 16:34:24 $";
+static const char * const IDENT_CACHE_MANAGERS_H="$Date: 2003/11/20 17:07:44 $";
 
 #include "pa_hash.h"
 #include "pa_value.h"
@@ -23,6 +23,7 @@ public:
 	/// if filter_server_id not null, returns status only Cachable -s with matching cacheable_item_server_id()
 	virtual Value* get_status() =0;
 	virtual void maybe_expire_cache() {}
+	virtual ~Cache_manager() {}
 };
 
 /// maintains name=>Cache_manager association, can expire its contents

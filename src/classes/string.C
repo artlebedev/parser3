@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2003/11/20 16:34:23 $";
+static const char * const IDENT_STRING_C="$Date: 2003/11/20 17:07:44 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -157,7 +157,7 @@ static int split_options(const String* options) {
 		{"r", "R", SPLIT_RIGHT, SPLIT_LEFT},
 		{"h", "H", SPLIT_HORIZONTAL, SPLIT_VERTICAL},
 		{"v", "V", SPLIT_VERTICAL, SPLIT_HORIZONTAL},
-		{0}
+		{0, 0, 0, 0}
     };
 
 	int result=0;
@@ -310,12 +310,13 @@ static void _match(Request& r, MethodParams& params) {
 
 		String result;
 		VTable* vtable=new VTable;
-		Replace_action_info info={0};
-		info.request=&r;
-		info.src=&src;
-		info.dest=&result;
-		info.vtable=vtable;
-		info.replacement_code=&replacement_code;
+		Replace_action_info info={
+			&r,
+			&src,
+			&result,
+			vtable,
+			&replacement_code
+		};
 		Temp_value_element temp_match_var(
 			*replacement_code.get_junction()->method_frame, 
 			match_var_name, vtable);
@@ -400,15 +401,13 @@ const String* sql_result_string(Request& r, MethodParams& params,
 	if(params.count()>1) {
 		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
 		if(!voptions.is_string())
-			if(options=voptions.get_hash()) {
+			if((options=voptions.get_hash())) {
 				if(Value* vlimit=options->get(sql_limit_name))
 					limit=(ulong)r.process_to_value(*vlimit).as_double();
 				if(Value* voffset=options->get(sql_offset_name))
 					offset=(ulong)r.process_to_value(*voffset).as_double();
-				if(default_code=options->get(sql_default_name)) {
-					if(Junction* default_junction=default_code->get_junction())
-						;//default_junction->change_context(statement.get_junction());
-					else
+				if((default_code=options->get(sql_default_name))) {
+					if(!default_code->get_junction())
 						throw Exception("parser.runtime",
 							0,
 							"default option must be code");

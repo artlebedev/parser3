@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char * const IDENT_VIMAGE_H="$Date: 2003/11/20 16:34:30 $";
+static const char * const IDENT_VIMAGE_H="$Date: 2003/11/20 17:07:44 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -27,14 +27,14 @@ class gdImage;
 class Font: public PA_Object {
 public:
 	
-	const static int letter_spacing;
+	static const int letter_spacing;
 	int height;	    ///< Font heigth
 	int monospace;	    ///< Default char width
 	int spacebarspace; ///< spacebar width
 	gdImage* ifont;
 	const String& alphabet;
 	
-	Font(//
+	Font(
 		const String& aalphabet, 
 		gdImage* aifont, int aheight, int amonospace, int aspacebarspace);
 

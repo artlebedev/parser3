@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2003/11/20 17:07:43 $";
+static const char * const IDENT_FILE_C="$Date: 2003/11/20 17:09:35 $";
 
 #include "pa_config_includes.h"
 
@@ -504,7 +504,7 @@ static void _lock(Request& r, MethodParams& params) {
 	const String& file_spec=r.absolute(params.as_string(0, "file name must be string"));
 	Lock_execute_body_info info={
 		&r, 
-		&params.as_junction(1, "body must be code");
+		&params.as_junction(1, "body must be code")
 	};
 
 	file_write_action_under_lock(file_spec, "lock", lock_execute_body, &info);

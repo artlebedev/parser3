@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2003/11/20 16:34:23 $";
+static const char * const IDENT_IMAGE_C="$Date: 2003/11/20 17:07:43 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -703,12 +703,12 @@ static void _measure(Request& r, MethodParams& params) {
 	ushort height=0;
 	Value* exif=0;
 	const String* file_name;
-	if(file_name=data.get_string()) {
-		File_measure_action_info info={0};
-		info.width=&width;
-		info.height=&height;
-		info.exif=&exif;
-		info.file_name=file_name;
+	if((file_name=data.get_string())) {
+		File_measure_action_info info={
+			&width, &height,
+			&exif,
+			file_name
+		};
 		file_read_action_under_lock(r.absolute(*file_name), 
 			"measure", file_measure_action, &info);
 	} else {
@@ -755,11 +755,10 @@ static void _html(Request& r, MethodParams& params) {
 	if(params.count()) {
 		// for backward compatibility: someday was ^html{}
 		Value& vattribs=r.process_to_value(params[0],
-			/*0/*no name* /,*/
 			false/*don't intercept string*/);
 		if(!vattribs.is_string()) // allow empty
-			if(attribs=vattribs.get_hash()) {
-				Attrib_info info={&tag};
+			if((attribs=vattribs.get_hash())) {
+				Attrib_info info={&tag, 0};
 				attribs->for_each(append_attrib_pair, &info);
 			} else
 				throw Exception("parser.runtime", 
@@ -997,9 +996,9 @@ const int Font::letter_spacing=1;
 Font::Font(//, 
 	const String& aalphabet, 
 	gdImage* aifont, int aheight, int amonospace, int aspacebarspace):
-	alphabet(aalphabet), 
 	height(aheight), monospace(amonospace),  spacebarspace(aspacebarspace),
-	ifont(aifont) {
+	ifont(aifont),
+	alphabet(aalphabet)	{
 }
 
 /* ******************************** char ********************************** */

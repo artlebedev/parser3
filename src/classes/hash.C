@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2003/11/20 17:07:43 $";
+static const char * const IDENT_HASH_C="$Date: 2003/11/20 17:09:35 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -313,7 +313,7 @@ static void _foreach(Request& r, MethodParams& params) {
 		&params.as_string(1, "value-var name must be string"),
 		&params.as_junction(2, "body must be code"),
 		params.count()>3?params.get(3):0,
-		vkey=new VString,
+		/*vkey=*/new VString,
 		false
 	};
 

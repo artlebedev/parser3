@@ -8,7 +8,7 @@
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-static const char * const IDENT_STYLESHEET_CONNECTION_H="$Date: 2003/11/20 16:34:25 $";
+static const char * const IDENT_STYLESHEET_CONNECTION_H="$Date: 2003/11/20 17:07:44 $";
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"
@@ -40,9 +40,10 @@ public:
 
 	Stylesheet_connection(const String& afile_spec):
 		ffile_spec(afile_spec),
-		prev_disk_time(0),
 		fstylesheet(0),
-		time_used(0), used(0)  {}
+		time_used(0),
+		prev_disk_time(0),
+		used(0)  {}
 	
 	const String& file_spec() { return ffile_spec; }
 
