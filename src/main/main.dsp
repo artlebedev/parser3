@@ -287,7 +287,7 @@ SOURCE=..\types\pa_vobject.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\types\pa_vobject_base.h
+SOURCE=..\types\pa_vstateless_object.h
 # End Source File
 # Begin Source File
 

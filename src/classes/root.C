@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.16 2001/03/11 12:10:42 paf Exp $
+	$Id: root.C,v 1.17 2001/03/11 21:41:03 paf Exp $
 */
 
 #include "pa_request.h"
@@ -34,8 +34,15 @@ static void _untaint(Request& r, Array *params) {
 			"invalid language");
 
 	Temp_lang temp_lang(r, lang);
-	Value& value=r.autocalc(*static_cast<Value *>(params->get(1)));
-	r.wcontext->write(value, String::Untaint_lang::PASS_APPENDED);
+	Value *value=static_cast<Value *>(params->get(1));
+	// forcing ^untaint[]{param type}
+	if(!value->get_junction())
+		R_THROW(0, 0,
+			&value->as_string(),
+			"untaint body must be junction");
+
+	value=&r.autocalc(*value);
+	r.wcontext->write(*value, String::Untaint_lang::PASS_APPENDED);
 }
 	
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.90 2001/03/11 09:24:43 paf Exp $
+	$Id: execute.C,v 1.91 2001/03/11 21:41:04 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -591,6 +591,7 @@ Value& Request::autocalc(Value& value, const String *name, bool intercept_string
 	//		nothing goes to wcontext.
 	//		used in (expression) params evaluation
 
+	Value *result;
 	Junction *junction=value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
 		// autocalc it
@@ -615,7 +616,6 @@ Value& Request::autocalc(Value& value, const String *name, bool intercept_string
 		root=junction->root;
 		rcontext=junction->rcontext;
 		execute(*junction->code);
-		Value *result;
 		if(intercept_string) {
 			// CodeFrame soul:
 			//   string writes were intercepted
@@ -623,8 +623,6 @@ Value& Request::autocalc(Value& value, const String *name, bool intercept_string
 			result=NEW VString(*frame->get_string());
 		} else 
 			result=frame->result();
-		if(name)
-			result->set_name(*name);
 		
 		wcontext=static_cast<WContext *>(POP());  
 		rcontext=POP();  
@@ -632,9 +630,12 @@ Value& Request::autocalc(Value& value, const String *name, bool intercept_string
 		self=static_cast<VAliased *>(POP());
 		
 		fprintf(stderr, "<-ja returned");
-		return *result;
 	} else
-		return value;
+		result=&value;
+
+	if(name)
+		result->set_name(*name);
+	return *result;
 }
 
 char *Request::execute_static_method(VClass& vclass, String& method_name, bool return_cstr) {
