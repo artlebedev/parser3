@@ -6,7 +6,7 @@
 
 @showMessage[message]
 ^message.foreach[key;value]{
-	$key= 
+	$key=((
 	^if($value is hash){
 		^if($value.value is file){
 			^showFile[$value.value]
@@ -19,7 +19,7 @@
 		}{
 			^showString[$value]
 		}
-	}
+	}))
 }
 
 @showString[string]
