@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.36 2002/07/11 08:12:17 paf Exp $
+	$Id: pa_exec.C,v 1.37 2002/07/11 08:16:24 paf Exp $
 
 
 	@todo setrlimit
@@ -142,9 +142,6 @@ static const char *buildCommand(Pool& pool,
 					string.APPEND_AS_IS(begin, end-begin, 
 						origin_string.origin().file, 0);
 					string << " " << file_spec_cstr;
-					if(argv)
-						for(int i=0; i<argv->size(); i++)
-							string << argv->get_string(i)->cstr();
 					result=string.cstr();
 				}
 			}
