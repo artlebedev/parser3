@@ -41,7 +41,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.65 2002/09/13 13:41:48 paf Exp $
+	$Id: compile.tab.C,v 1.66 2002/09/13 14:11:43 paf Exp $
 */
 
 /**
@@ -1932,7 +1932,7 @@ case LS_VAR_NAME_SIMPLE_WITH_COLON:
 case LS_VAR_NAME_SIMPLE_WITHOUT_COLON:
 case LS_VAR_NAME_CURLY:
 case LS_METHOD_NAME:
-case LS_COMMENT:
+case LS_USER_COMMENT:
 case LS_DEF_COMMENT:
 	// no literals in names, please
 	break;
@@ -2000,7 +2000,7 @@ default:
 				PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
 			}
 			// fall into COMMENT lexical state [wait for \n]
-			push_LS(PC, LS_COMMENT);
+			push_LS(PC, LS_USER_COMMENT);
 			continue;
 		}
 		switch(PC.ls) {
@@ -2039,7 +2039,7 @@ default:
 			break;
 			
 		// #COMMENT
-		case LS_COMMENT:
+		case LS_USER_COMMENT:
 			if(c=='\n') {
 				// skip comment
 				begin=PC.source;
@@ -2137,6 +2137,15 @@ default:
 					else // PC.ls==LS_VAR_ROUND // variable constructor ended
 						pop_LS(PC); // return to normal life
 				RC;
+			case '#': // comment start skipping
+				if(end!=begin) {
+					// append piece till #
+					PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
+				}
+				// fall into COMMENT lexical state [wait for \n]
+				push_LS(PC, LS_EXPRESSION_COMMENT);
+				lexical_brackets_nestage=1;
+				continue;
 			case '$':
 				push_LS(PC, LS_EXPRESSION_VAR_NAME_WITH_COLON);				
 				RC;
@@ -2165,7 +2174,6 @@ default:
 			case '~':
 			case ';':
 				RC;
-			//case '#': // comment start
 			case '&': case '|':
 				if(*PC.source==c) { // && ||
 					result=c=='&'?LAND:LOR;
@@ -2259,6 +2267,24 @@ default:
 				// reset piece 'begin' position & line
 				begin=PC.source; // after whitespace char
 				begin_line=PC.line;
+				continue;
+			}
+			break;
+		case LS_EXPRESSION_COMMENT:
+			if(c=='(')
+				lexical_brackets_nestage++;
+			
+			switch(*PC.source) {
+			case '\n': case ')':
+				if(*PC.source==')')
+					if(--lexical_brackets_nestage!=0)
+						continue;
+
+				// skip comment
+				begin=PC.source;
+				begin_line=PC.line;
+
+				pop_LS(PC);
 				continue;
 			}
 			break;
@@ -2525,7 +2551,7 @@ break2:
 			if(end!=begin && end[-1]=='\n') // allow one empty line before LS_DEF_NAME
 				end--;
 		}
-		if(end!=begin && PC.ls!=LS_COMMENT) { // last piece still alive and not comment?
+		if(end!=begin && PC.ls!=LS_USER_COMMENT) { // last piece still alive and not comment?
 			// append it
 			PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line/*, start_col*/);
 		}
