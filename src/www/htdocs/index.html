@@ -4,6 +4,14 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
+$wl(10)
+^while($wl>0){
+	<br>$wl негритят пошли купаться в море. Один из них утоп,  ему срубили гроб,  и вот вам результат -
+	^wl.dec(1)
+	$wl негритят.
+}
+<hr>
+
 #^ttablesetlang[]
 #^mail3[]
 #^ttime[]
@@ -151,10 +159,10 @@ $cache[^file:list[.;\.cache^$]]
 
 @xslt2[]
 $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251" ?>
-<document><block><p>hi</p></block></document>
+<document><block><p>привет</p></block></document>
 }]
-#^show-xdoc2[$xdoc]
-^show-xdoc2[^xdoc.transform[templates/_document.xslt]]
+^show-xdoc2[$xdoc]
+#^show-xdoc2[^xdoc.transform[templates/_document.xslt]]
 <hr>
 
 
@@ -778,6 +786,7 @@ by id:
 }
 
 @show-xdoc2[xdoc]
+^rem{
 ^xdoc.save[out/save.xml;
 #	$.encoding[windows-1251]
 	$.method[xml]
@@ -787,6 +796,7 @@ $file[^xdoc.file[
 	$.method[html]
 ]]
 ^file.save[text;out/save_file.html]
+}
 #$response:body[^xdoc.file[	$.media-type[text/paf]  ]]
 <pre>^taint[html][^xdoc.string[
 	$.method[html]

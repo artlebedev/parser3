@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.56 2001/12/29 08:39:04 paf Exp $
+	$Id: xdoc.C,v 1.57 2002/01/10 15:41:49 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -12,8 +12,6 @@
 
 #include "pa_request.h"
 #include "pa_vxdoc.h"
-//#include "pa_stylesheet_manager.h"
-//#include "pa_stylesheet_connection.h"
 #include "pa_charset.h"
 #include "pa_vfile.h"
 #include "xnode.h"
@@ -68,7 +66,7 @@ static void _createElement(Request& r, const String& method_name, MethodParams *
 	GdomeException exc;
 	GdomeNode *node=
 		(GdomeNode *)gdome_doc_createElement(vdoc.get_document(&method_name), 
-		pool.transcode(tagName),
+		pool.transcode(tagName).get(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -96,7 +94,7 @@ static void _createTextNode(Request& r, const String& method_name, MethodParams 
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createTextNode(
 		vdoc.get_document(&method_name),
-		pool.transcode(data),
+		pool.transcode(data).get(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -111,7 +109,7 @@ static void _createComment(Request& r, const String& method_name, MethodParams *
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createComment(
 		vdoc.get_document(&method_name),
-		pool.transcode(data),
+		pool.transcode(data).get(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -126,7 +124,7 @@ static void _createCDATASection(Request& r, const String& method_name, MethodPar
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createCDATASection(
 		vdoc.get_document(&method_name),
-		pool.transcode(data),
+		pool.transcode(data).get(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -142,8 +140,8 @@ static void _createProcessingInstruction(Request& r, const String& method_name, 
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createProcessingInstruction(
 		vdoc.get_document(&method_name),
-		pool.transcode(target), 
-		pool.transcode(data),
+		pool.transcode(target).get(), 
+		pool.transcode(data).get(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -158,7 +156,7 @@ static void _createAttribute(Request& r, const String& method_name, MethodParams
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createAttribute(
 		vdoc.get_document(&method_name),
-		pool.transcode(name),
+		pool.transcode(name).get(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -172,7 +170,7 @@ static void _createEntityReference(Request& r, const String& method_name, Method
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createEntityReference(
 		vdoc.get_document(&method_name),
-		pool.transcode(name),
+		pool.transcode(name).get(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -188,7 +186,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 	if(GdomeNodeList *nodes=
 		gdome_doc_getElementsByTagName(
 			vdoc.get_document(&method_name), 
-			pool.transcode(name),
+			pool.transcode(name).get(),
 			&exc)) {
 		gulong length=gdome_nl_length(nodes, &exc);
 		for(gulong i=0; i<length; i++) {
@@ -220,8 +218,8 @@ static void _getElementsByTagNameNS(Request& r, const String& method_name, Metho
 	if(GdomeNodeList *nodes=
 		gdome_doc_getElementsByTagNameNS(
 			vdoc.get_document(&method_name), 
-			pool.transcode(namespaceURI),
-			pool.transcode(localName),
+			pool.transcode(namespaceURI).get(),
+			pool.transcode(localName).get(),
 			&exc)) {
 		gulong length=gdome_nl_length(nodes, &exc);
 		for(gulong i=0; i<length; i++) {
@@ -251,7 +249,7 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 	GdomeException exc;
 	if(GdomeNode *node=(GdomeNode *)gdome_doc_getElementById(
 		vdoc.get_document(&method_name),
-		pool.transcode(elementId),
+		pool.transcode(elementId).get(),
 		&exc)) {
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
@@ -265,7 +263,6 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 GdomeNode *gdome_doc_importNode (GdomeDocument *self, GdomeNode *importedNode, GdomeBoolean deep, GdomeException *exc);
 GdomeElement *gdome_doc_createElementNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
 GdomeAttr *gdome_doc_createAttributeNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
-GdomeNodeList *gdome_doc_getElementsByTagNameNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *localName, GdomeException *exc);
 */
 
 
@@ -291,7 +288,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	*/
 	GdomeDocument *document=gdome_di_createDocument (domimpl, 
 		0/*namespaceURI*/, 
-		pool.transcode(qualifiedName), 
+		pool.transcode(qualifiedName).get(), 
 		0/*doctype*/, 
 		&exc);
 	if(!document || exc)
@@ -299,8 +296,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 			&method_name, 
 			exc);
 
-	/// +createXMLDecl ?
-	//document.appendChild(document.createElement(*pool.transcode(qualifiedName)));
+	/// +xalan createXMLDecl ?
 
 	// replace any previous parsed source
 	vdoc.set_document(document);

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.h,v 1.4 2001/12/28 18:12:30 paf Exp $
+	$Id: pa_charset.h,v 1.5 2002/01/10 15:41:49 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
@@ -122,9 +122,9 @@ public:
 	/// converts GdomeDOMString string to parser String
 	String& transcode(GdomeDOMString *s);
 	/// converts char * to GdomeDOMString
-	GdomeDOMString *transcode_buf(const char *buf, size_t buf_size);
+	GdomeDOMString_auto_ptr transcode_buf(const char *buf, size_t buf_size);
 	/// converts parser String to GdomeDOMString
-	GdomeDOMString *transcode(const String& s);
+	GdomeDOMString_auto_ptr transcode(const String& s);
 
 private:
 
@@ -132,6 +132,43 @@ private:
 
 #endif
 
+};
+
+/// Auto-object used to track GdomeDOMString usage
+class GdomeDOMString_auto_ptr {
+	GdomeDOMString *fstring;
+public:
+	explicit GdomeDOMString_auto_ptr(gchar *astring) : fstring(gdome_str_mkref_own(astring)) {}
+	explicit GdomeDOMString_auto_ptr(GdomeDOMString *astring) : fstring(astring) {
+		gdome_str_ref(fstring);
+	}
+	~GdomeDOMString_auto_ptr() {
+		gdome_str_unref(fstring);
+	}
+	GdomeDOMString* get() {
+		return fstring;
+	}
+	GdomeDOMString* operator->() {
+		return fstring;
+	}
+	GdomeDOMString& operator*() {
+		return *fstring;
+	}
+
+	// copying
+	GdomeDOMString_auto_ptr(const GdomeDOMString_auto_ptr& src) : fstring(src.fstring) {
+		gdome_str_ref(fstring);
+	}
+	GdomeDOMString_auto_ptr& operator =(const GdomeDOMString_auto_ptr& src) {
+		if(this == &src)
+			return *this;
+
+		gdome_str_unref(fstring);
+		fstring=src.fstring;
+		gdome_str_ref(fstring);
+
+		return *this;
+	}
 };
 
 #endif

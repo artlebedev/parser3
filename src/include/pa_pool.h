@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.h,v 1.74 2001/12/27 19:57:08 paf Exp $
+	$Id: pa_pool.h,v 1.75 2002/01/10 15:41:49 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -14,7 +14,7 @@
 #include "pa_config_includes.h"
 
 #ifdef XML
-#include "gdome.h"
+#	include "gdome.h"
 #endif
 
 // forwards
@@ -22,6 +22,7 @@
 class Exception;
 class String;
 class Charset;
+class GdomeDOMString_auto_ptr;
 
 /** 
 	Pool mechanizm allows users not to free up allocated memory,
@@ -73,7 +74,7 @@ public:
 	const char *transcode_cstr(GdomeDOMString *s);
 	String& transcode(GdomeDOMString *s);
 	/// @see Charset::transcode(const String& s)
-	GdomeDOMString *transcode(const String& s);
+	GdomeDOMString_auto_ptr transcode(const String& s);
 
 #endif
 

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.11 2001/12/29 08:39:05 paf Exp $
+	$Id: pa_charset.C,v 1.12 2002/01/10 15:41:49 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -568,7 +568,7 @@ String& Charset::transcode(GdomeDOMString *s) {
 }
 
 /// @test less memory using -maybe- xmlParserInputBufferCreateMem
-GdomeDOMString *Charset::transcode_buf(const char *buf, size_t buf_size) { 
+GdomeDOMString_auto_ptr Charset::transcode_buf(const char *buf, size_t buf_size) { 
 	if(!transcoder)
 		throw Exception(0, 0,
 			0,
@@ -586,9 +586,9 @@ GdomeDOMString *Charset::transcode_buf(const char *buf, size_t buf_size) {
 			"transcode_buf failed (%d)", size);
 
 	out[size]=0;
-	return gdome_str_mkref_own((gchar*)out);
+	return (gchar*)out;
 }
-GdomeDOMString *Charset::transcode(const String& s) { 
+GdomeDOMString_auto_ptr Charset::transcode(const String& s) { 
 	const char *cstr=s.cstr(String::UL_UNSPECIFIED);
 
 	return transcode_buf(cstr, strlen(cstr)); 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.26 2001/12/29 08:39:04 paf Exp $
+	$Id: pa_exception.h,v 1.27 2002/01/10 15:41:49 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -12,15 +12,6 @@
 
 #include "pa_types.h"
 #include "pa_string.h"
-
-#ifdef XML
-/*
-#include <PlatformSupport/XSLException.hpp>
-#include <sax/SAXException.hpp>
-#include <sax/SAXParseException.hpp>
-#include <util/XMLException.hpp>
-*/
-#endif
 
 class Pool;
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.19 2001/12/28 14:06:50 paf Exp $
+	$Id: xnode.C,v 1.20 2002/01/10 15:41:49 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -306,8 +306,6 @@ static void _normalize(Request& r, const String& method_name, MethodParams *) {
 		exc);
 }
 
-
-	/*
 static void _select(Request& r, const String& method_name, MethodParams *params) {
 //	_asm int 3;
 	Pool& pool=r.pool();
@@ -353,6 +351,26 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 
 	// expression
 	const String& expression=params->as_string(0, "expression must be string");
+
+	GdomeException exc;
+	GdomeDocument *document=gdome_n_ownerDocument(vnode, &exc);
+    xmlXPathContext *ctxt=xmlXPathNewContext(document);
+	ctxt->node = xmlDocGetRootElement(document);
+	xmlXPathObject *res = xmlXPathEvalExpression(BAD_CAST str, ctxt);
+    if(ctxt->error) {
+		if(res)
+			xmlXPathFreeObject(res);
+		xmlXPathFreeContext(ctxt);
+
+		throw Exception(0, 0,
+			expression,
+			"bad xpath expression (%d)", ctxt->error);
+	}
+
+	xmlXPathFreeObject(res);
+    xmlXPathFreeContext(ctxt);
+zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz	
+	
 	const char *expression_cstr=expression.cstr();
 	XalanDOMString dstring(expression_cstr);
 	const XalanDOMChar *expression_dcstr=dstring.c_str();
@@ -376,7 +394,7 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 		Exception::provide_source(pool, &expression, e);
 	}
 }
-*/
+
 // constructor
 
 MXnode::MXnode(Pool& apool) : Methoded(apool), 
@@ -418,13 +436,12 @@ MXnode::MXnode(Pool& apool) : Methoded(apool),
 	add_native_method("normalize", Method::CT_DYNAMIC, _normalize, 0, 0);
 
 	/// parser
-/*
 	// ^node.select[/some/xpath/query] = hash $.#[dnode]
 	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
 
 	// ^node.selectSingle[/some/xpath/query] = first dnode
 	add_native_method("selectSingle", Method::CT_DYNAMIC, _selectSingle, 1, 1);
-*/
+
 	// consts
 
 #define CONST(name) \
