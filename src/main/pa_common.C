@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.71 2001/10/08 15:14:07 parser Exp $
+	$Id: pa_common.C,v 1.72 2001/10/16 07:51:07 parser Exp $
 */
 
 #include "pa_common.h"
@@ -42,12 +42,33 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
 
 #endif
 
+// under WIN32 "t" mode fixes DOS chars OK, can't say that about other systems/ line break styles
+static void fix_line_breaks(char *src, size_t& size) {
+	char *dest=src;
+	// fix DOS: \r\n -> \n
+	// fix Macintosh: \r -> \n
+	char *bol=src;
+	while(char *eol=strchr(bol, '\r')) {
+		size_t len=eol-bol;
+		if(dest!=bol)
+			memcpy(dest, bol, len);
+		dest+=len;
+		*dest++='\n';
+
+		if(eol[1]=='\n') { // \r,\n = DOS
+			bol=eol+2;
+			size--;
+		} else // \r,not \n = Macintosh
+			bol=eol+1;
+	}
+	// last piece without \r, including terminating 0
+	if(dest!=bol)
+		strcpy(dest, bol);
+}
 
 char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_problem) {
-	void *result;
-	size_t size;
-	return file_read(pool, file_spec, result, size, true, 
-		fail_on_read_problem)?(char *)result:0;
+	void *result;  size_t size;
+	return file_read(pool, file_spec, result, size, true, fail_on_read_problem)?(char *)result:0;
 }
 bool file_read(Pool& pool, const String& file_spec, 
 			   void*& data, size_t& read_size, bool as_text,
@@ -67,7 +88,7 @@ bool file_read(Pool& pool, const String& file_spec,
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
     if(
-		(f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0 && 
+		(f=open(fname, O_RDONLY|(as_text?_O_BINARY/*_O_TEXT*/:_O_BINARY)))>=0 && 
 		stat(fname, &finfo)==0) {
 		/*if(exclusive)
 			flock(f, LOCK_EX);*/
@@ -96,7 +117,9 @@ bool file_read(Pool& pool, const String& file_spec,
 				"read failed: actually read %d bytes count not in [0..%lu] valid range", 
 					read_size, (unsigned long)max_size); //never
 		
-		return true;//prepare_config(result, remove_empty_lines);
+		if(as_text)
+			fix_line_breaks((char *)data, read_size);
+		return true;
     }
 	if(fail_on_read_problem)
 		PTHROW(0, 0, 
