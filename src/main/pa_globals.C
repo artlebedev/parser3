@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2003/04/04 08:16:20 $";
+static const char* IDENT_GLOBALS_C="$Date: 2003/04/04 09:08:24 $";
 
 #include "pa_config_includes.h"
 
@@ -386,7 +386,7 @@ void pa_globals_init(Pool& pool) {
 	exif_tag_value2name=NEW Hash(pool);
 	#define EXIF_TAG(tag, name) \
 		{ \
-			char *buf=(char *)malloc(MAX_NUMBER); \
+			char *buf=(char *)pool.malloc(MAX_NUMBER); \
 			snprintf(buf, MAX_NUMBER, "%u", tag); \
 			exif_tag_value2name->put(*NEW String(pool, buf), (void *)#name); \
 		}
