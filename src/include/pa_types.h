@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_types.h,v 1.34 2001/11/19 12:17:06 paf Exp $
+	$Id: pa_types.h,v 1.35 2001/12/13 13:02:23 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -25,6 +25,12 @@
 
 // identifier was truncated to '255' characters in the debug information
 #pragma warning(disable:4786)
+
+#ifdef _DEBUG
+#	define _CRTDBG_MAP_ALLOC
+// When the _CRTDBG_MAP_ALLOC flag is defined in the debug version of an application, 
+// the base version of the heap functions are directly mapped to their debug versions
+#endif
 
 #endif
 
