@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: void.C,v 1.7 2001/08/09 06:48:45 parser Exp $"; 
+static const char *RCSId="$Id: void.C,v 1.8 2001/08/31 13:25:34 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -29,16 +29,18 @@ public: // Methoded
 
 // methods
 
-static void _int(Request& r, const String&, MethodParams *) {
+static void _int(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 	VVoid *vvoid=static_cast<VVoid *>(r.self);
-	r.write_no_lang(*new(pool) VInt(pool, vvoid->as_int()));
+	r.write_no_lang(*new(pool) VInt(pool, 
+		params->size()==0?vvoid->as_int():params->as_int(0, r)/*default*/));
 }
 
-static void _double(Request& r, const String&, MethodParams *) {
+static void _double(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 	VVoid *vvoid=static_cast<VVoid *>(r.self);
-	r.write_no_lang(*new(pool) VDouble(pool, vvoid->as_double()));
+	r.write_no_lang(*new(pool) VDouble(pool, 
+		params->size()==0?vvoid->as_double():params->as_double(0, r)/*default*/));
 }
 
 #ifndef DOXYGEN
@@ -100,10 +102,10 @@ MVoid::MVoid(Pool& apool) : Methoded(apool) {
 
 
 	// ^VOID.int[]
-	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
+	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
 
 	// ^VOID.double[]
-	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
+	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 1);
 
 	// ^sql[query]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 1);
