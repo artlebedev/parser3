@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.11 2001/10/25 13:17:53 paf Exp $
+	$Id: pa_db_connection.C,v 1.12 2001/10/26 07:07:01 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -93,7 +93,7 @@ void DB_Connection::connect() {
 		DB_CREATE 
 		| DB_INIT_MPOOL | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_TXN;
 
-	try {
+/*	try {
 		// 1: trying to open with SOFT RECOVER option set
 		check("db_appinit soft recover", &fdb_home, db_appinit(
 			db_home_cstr,
@@ -102,7 +102,7 @@ void DB_Connection::connect() {
 			flags | DB_RECOVER
 		));
 	} catch(...) {
-		try {
+		try {*/
 			// 2: trying to open WITHOUT SOFT RECOVER option set
 			check("db_appinit no recover", &fdb_home, db_appinit(
 				db_home_cstr,
@@ -110,7 +110,7 @@ void DB_Connection::connect() {
 				&dbenv, 
 				flags
 			));
-		} catch(...) {
+/*		} catch(...) {
 			// 3: trying to open with FATAL RECOVER option set
 			check("db_appinit fatal recover", &fdb_home, db_appinit(
 				db_home_cstr,
@@ -119,7 +119,7 @@ void DB_Connection::connect() {
 				flags | DB_RECOVER_FATAL
 			));
 		}
-	}
+	}*/
 
 	fconnected=true;
 }
