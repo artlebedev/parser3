@@ -11,7 +11,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#  $Id: Makefile,v 1.5 2001/05/21 08:55:32 parser Exp $
+#  $Id: Makefile,v 1.6 2001/05/21 09:01:48 parser Exp $
 
 
 SHELL = /bin/sh
