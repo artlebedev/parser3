@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2004/07/30 10:01:14 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -812,7 +812,7 @@ void Request::execute(ArrayOperation& ops) {
 				"invalid opcode %d", opcode); 
 		}
 	}
-	} catch(...) {
+	} catch(const Exception&) {
 		// record it to stack trace
 		if(debug_name)
 			exception_trace.push(Trace(debug_name, debug_origin));
