@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char* IDENT_VDATE_H="$Date: 2002/09/02 12:20:57 $";
+static const char* IDENT_VDATE_H="$Date: 2002/09/02 12:21:36 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -18,7 +18,6 @@ static const char* IDENT_VDATE_H="$Date: 2002/09/02 12:20:57 $";
 // defines
 
 #define VDATE_TYPE "date"
-#define VDATE_EPSILON (1.0/1073741621)
 
 
 // externs
@@ -38,7 +37,7 @@ public: // Value
 	}
 
 	/// VDate: ftime -> float days
-	double as_double() const { return trunc(((double)ftime)/ SECS_PER_DAY/VDATE_EPSILON)*VDATE_EPSILON; }
+	double as_double() const { return (double)ftime)/ SECS_PER_DAY; }
 	/// VDate: 0 or !0
 	bool as_bool() const { return ftime!=0; }
 
