@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.4 2001/04/04 12:45:47 paf Exp $
+	$Id: parser3mysql.C,v 1.5 2001/04/04 12:54:59 paf Exp $
 */
 
 #include <stdlib.h>
@@ -42,7 +42,10 @@ public:
 	/// get api version
 	int api_version() { return SQL_API_VERSION; }
 	/// connect
-	const char *connect(char *url, void **info) {
+	const char *connect(
+		char *url, ///< @b user:pass@host[:port]/database
+		void **info ///< MYSQL *
+		) {
 		char *user=url;
 		char *host=lsplit(user, '@');
 		char *db=lsplit(host, '/');
@@ -69,7 +72,6 @@ public:
 	const char *rollback(void *info) {
 		return 0;//"mysql rollback failed";
 	}
-	;
 };
 
 extern "C" SQL_Driver *create() {
