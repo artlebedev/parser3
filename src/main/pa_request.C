@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.27 2001/03/13 16:38:24 paf Exp $
+	$Id: pa_request.C,v 1.28 2001/03/13 17:54:14 paf Exp $
 */
 
 #include <string.h>
@@ -19,13 +19,18 @@
 
 #include <stdio.h>
 
-Request::Request(Pool& apool) : Pooled(apool),
+Request::Request(Pool& apool,
+				 String::Untaint_lang alang,
+				 char *adocument_root,
+				 char *apage_filespec) : Pooled(apool),
 	stack(apool),
 	root_class(apool),
 	env_class(apool),
 	form_class(apool),
 	fclasses(apool),
-	flang(String::Untaint_lang::HTML_TYPO)
+	flang(alang),
+	fdocument_root(adocument_root),
+	fpage_filespec(apage_filespec)
 {
 	// root superclass, 
 	//   parent of all classes, 
@@ -40,14 +45,11 @@ Request::Request(Pool& apool) : Pooled(apool),
 	classes().put(*env_class_name, &env_class);
 	// form class
 	classes().put(*form_class_name, &form_class);	
-
-	// web
-	// TODO: ifdef WIN32 flip \\ to /
-	document_root="Y:/parser3/src/";
-	page_filespec="Y:/parser3/src/test.p";
 }
 
-void Request::core() {
+char *Request::core(bool& error) {
+	error=false;
+	char *result;
 	TRY {
 		// loading system auto.p
 		char *sys_auto_file="C:\\temp\\auto.p";
@@ -70,43 +72,50 @@ void Request::core() {
 				"no 'auto.p' found (nither system nor any site's)");
 
 		// compiling requested file
-		main_class=use_file(page_filespec, true/*don't ignore read problem*/,
+		main_class=use_file(fpage_filespec, true/*don't ignore read problem*/,
 			main_class_name, main_class);
 
 		// execute @main[]
-		char *result=execute_method(*main_class, *main_method_name, 
+		result=execute_method(*main_class, *main_method_name, 
 			true /*result needed*/);
 		if(!result)
 			THROW(0,0,
 			0, 
 			"'"MAIN_METHOD_NAME"' method not found");
-
-		printf("result-----------------\n%sEOF----------------\n", result);
 	} 
 	CATCH(e) {
-		printf("\nERROR: ");
+		// we're returning not result, but error explanation
+		error=true;
+		result=(char *)malloc(MAX_STRING);
+		result[0]=0;
+		size_t printed=0;
+
 		const String *problem_source=e.problem_source();
-#ifndef NO_STRING_ORIGIN
 		if(problem_source) {
+#ifndef NO_STRING_ORIGIN
 			const Origin& origin=problem_source->origin();
 			if(origin.file)
-				printf("%s(%d): ",
-				origin.file, 1+origin.line);
-			printf("'%s' ", 
+				printed+=snprintf(result+printed, MAX_STRING-printed, "%s(%d): ", 
+					origin.file, 1+origin.line);
+#endif
+			printed+=snprintf(result+printed, MAX_STRING-printed, "'%s' ", 
 				problem_source->cstr());
 		}
-#endif
-		printf("%s", e.comment());
+		printed+=snprintf(result+printed, MAX_STRING-printed, "%s", 
+			e.comment());
 		const String *type=e.type();
 		if(type) {
-			printf("  type: %s", type->cstr());
+			printed+=snprintf(result+printed, MAX_STRING-printed, "  type: %s", 
+				type->cstr());
 			const String *code=e.code();
 			if(code)
-				printf(", code: %s", code->cstr());
+				printed+=snprintf(result+printed, MAX_STRING-printed, ", code: %s", 
+					code->cstr());
 		}
-		printf("\n");
 	}
 	END_CATCH
+
+	return result;
 }
 
 VStateless_class *Request::use_file(
@@ -155,10 +164,10 @@ char *Request::relative(const char *path, const char *file) {
 
 char *Request::absolute(const char *name) {
 	if(name[0]=='/') {
-		char *result=(char *)malloc(strlen(document_root)+strlen(name)+1);
-		strcpy(result, document_root);
+		char *result=(char *)malloc(strlen(fdocument_root)+strlen(name)+1);
+		strcpy(result, fdocument_root);
 		strcat(result, name);
 		return result;
 	} else 
-		return relative(page_filespec, name);
+		return relative(fpage_filespec, name);
 }

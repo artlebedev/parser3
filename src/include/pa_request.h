@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.49 2001/03/13 17:17:26 paf Exp $
+	$Id: pa_request.h,v 1.50 2001/03/13 17:54:13 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -18,17 +18,6 @@
 #include "pa_vobject.h"
 #include "pa_venv.h"
 #include "pa_vform.h"
-
-#define UNNAMED_NAME "unnamed"
-
-#define MAIN_METHOD_NAME "main"
-#define AUTO_METHOD_NAME "auto"
-
-#define ROOT_CLASS_NAME "ROOT"
-#define MAIN_CLASS_NAME "MAIN"
-#define TABLE_CLASS_NAME "table"
-#define ENV_CLASS_NAME "env"
-#define FORM_CLASS_NAME "form"
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \
@@ -53,14 +42,19 @@ class Request : public Pooled {
 	friend Temp_lang;
 public:
 	
-	Request(Pool& apool);
+	Request(Pool& apool,
+		String::Untaint_lang alang,
+
+		char *adocument_root,
+		char *apage_filespec		
+	);
 	~Request() {}
 
 	// global classes
 	Hash& classes() { return fclasses; }
 
 	// core request processing
-	void core();
+	char *core(bool& error);
 
 	void execute(const Array& ops);
 
@@ -152,8 +146,8 @@ private: // lang manipulation
 
 private: // web
 
-	const char *document_root;
-	const char *page_filespec;
+	const char *fdocument_root;
+	const char *fpage_filespec;
 
 };
 

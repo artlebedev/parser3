@@ -8,12 +8,12 @@ CFG=parser3 - Win32 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "parser.mak".
+!MESSAGE NMAKE /f "parser3.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "parser.mak" CFG="parser3 - Win32 Debug"
+!MESSAGE NMAKE /f "parser3.mak" CFG="parser3 - Win32 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
@@ -89,22 +89,6 @@ LINK32=link.exe
 # Begin Source File
 
 SOURCE=..\..\include\core.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\pa_hash.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\pa_pool.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\pa_string.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\pa_types.h
 # End Source File
 # End Group
 # Begin Group "targets"

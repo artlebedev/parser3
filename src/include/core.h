@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.h,v 1.12 2001/03/13 16:38:22 paf Exp $
+	$Id: core.h,v 1.13 2001/03/13 17:54:12 paf Exp $
 */
 
 #ifndef CORE_H
@@ -12,8 +12,19 @@
 #include "pa_string.h"
 #include "pa_hash.h"
 
+#define UNNAMED_NAME "unnamed"
+
+#define MAIN_METHOD_NAME "main"
+#define AUTO_METHOD_NAME "auto"
+
+#define ROOT_CLASS_NAME "ROOT"
+#define MAIN_CLASS_NAME "MAIN"
+#define TABLE_CLASS_NAME "table"
+#define ENV_CLASS_NAME "env"
+#define FORM_CLASS_NAME "form"
+
 // core func
-void core();
+void core(Pool& pool);
 
 // global strings
 extern String *unnamed_name;

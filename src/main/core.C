@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.C,v 1.65 2001/03/13 16:38:23 paf Exp $
+	$Id: core.C,v 1.66 2001/03/13 17:54:13 paf Exp $
 */
 
 #include "core.h"
@@ -11,8 +11,8 @@
 #include "_double.h"
 #include "_int.h"
 #include "_table.h"
-#include "pa_request.h"
 #include "_form.h"
+#include "_env.h"
 
 #define NEW_STRING(name, value)  name=new(pool) String(pool); name->APPEND_CONST(value)
 #define LOCAL_STRING(name, value)  String name(pool); name.APPEND_CONST(value)
@@ -32,9 +32,7 @@ String *form_class_name;
 Hash *untaint_lang_name2enum;
 
 
-void core() {
-	Pool pool;
-	
+void core(Pool& pool) {
 	// names
 	NEW_STRING(unnamed_name, UNNAMED_NAME);
 	empty_string=new(pool) String(pool); 
@@ -72,9 +70,4 @@ void core() {
 	// read-only stateless base classes
 	initialize_env_base_class(pool, *(env_base_class=new(pool) VStateless_class(pool)));  env_base_class->freeze();
 	initialize_form_base_class(pool, *(form_base_class=new(pool) VStateless_class(pool)));  form_base_class->freeze();
-
-	// request
-	Request request(pool);
-	request.core();
 }
-
