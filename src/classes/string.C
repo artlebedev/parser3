@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/08/06 12:48:14 $";
+static const char* IDENT_STRING_C="$Date: 2002/08/07 13:54:23 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -105,9 +105,9 @@ static void _mid(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 	const String& string=*r.self->get_string();
 
-	size_t p=(size_t)params->as_int(0, "p must be int", r);
+	size_t p=(size_t)max(0, params->as_int(0, "p must be int", r));
 	size_t n=params->size()>1?
-		(size_t)params->as_int(1, "n must be int", r):string.size();
+		(size_t)max(0, params->as_int(1, "n must be int", r)):string.size();
 	
 	r.write_assign_lang(string.mid(p, p+n));
 }
