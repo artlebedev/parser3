@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2003/11/06 11:12:44 $";
+static const char* IDENT_HASH_C="$Date: 2003/11/06 11:13:24 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -277,7 +277,7 @@ static void _delete(Request& r, MethodParams& params) {
 }
 
 #ifndef DOXYGEN
-struct Hash_foreach_info {
+struct Foreach_info {
 	Request *r;
 	const String* key_var_name;
 	const String* value_var_name;
@@ -291,7 +291,7 @@ struct Hash_foreach_info {
 static void one_foreach_cycle(						   
 			      HashStringValue::key_type akey, 
 			      HashStringValue::value_type avalue, 
-			      Hash_foreach_info *info) {
+			      Foreach_info *info) {
 	info->vkey->set_string(*new String(akey, String::L_TAINTED));
 	Value& ncontext=*info->r->get_method_frame()->caller();
 	ncontext.put_element(*info->key_var_name, info->vkey, false);
@@ -307,7 +307,7 @@ static void one_foreach_cycle(
 	info->r->write_pass_lang(sv_processed);
 }
 static void _foreach(Request& r, MethodParams& params) {
-	Hash_foreach_info info={0};
+	Foreach_info info={0};
 	info.r=&r;
 	info.key_var_name=&params.as_string(0, "key-var name must be string");
 	info.value_var_name=&params.as_string(1, "value-var name must be string");

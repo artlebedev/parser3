@@ -6,7 +6,7 @@
 */
 
 
-static const char* IDENT="$Id: hashfile.C,v 1.27 2003/11/06 11:12:44 paf Exp $";
+static const char* IDENT="$Id: hashfile.C,v 1.28 2003/11/06 11:13:24 paf Exp $";
 
 #include "classes.h"
 
@@ -62,7 +62,7 @@ static void _clear(Request& r, MethodParams&) {
 }
 
 #ifndef DOXYGEN
-struct Hashfile_foreach_info {
+struct Foreach_info {
 	Request* r;
 	const String* key_var_name;
 	const String* value_var_name;
@@ -76,7 +76,7 @@ struct Hashfile_foreach_info {
 };
 #endif
 static void one_foreach_cycle(const String::Body key, const String& value, void* ainfo) {
-	Hashfile_foreach_info& info=*static_cast<Hashfile_foreach_info*>(ainfo);
+	Foreach_info& info=*static_cast<Foreach_info*>(ainfo);
 	info.vkey->set_string(*new String(key, String::L_TAINTED));
 	info.vvalue->set_string(value);
 	info.var_context->put_element(*info.key_var_name, info.vkey, false);
@@ -94,7 +94,7 @@ static void one_foreach_cycle(const String::Body key, const String& value, void*
 static void _foreach(Request& r, MethodParams& params) {
 	VHashfile& self=GET_SELF(r, VHashfile);
 
-	Hashfile_foreach_info info;
+	Foreach_info info;
 	
 	info.r=&r;
 	info.key_var_name=&params.as_string(0, "key-var name must be string");

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 10:25:40 $";
+static const char* IDENT="$Date: 2003/11/06 11:12:44 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -84,7 +84,7 @@ Value *VHashfile::get_field(const String& aname) {
 	check("apr_sdbm_fetch", apr_sdbm_fetch(db, &value, key));
 
 	if(value.dptr)
-		return new VString(*new String(pa_strdup(value.dptr, value.dsize)));
+		return new VString(*new String(pa_strdup(value.dptr, value.dsize), true));
 	else
 		return 0;
 }
@@ -97,9 +97,7 @@ void VHashfile::remove(const String& aname) {
 	check("apr_sdbm_delete", apr_sdbm_delete(db, key));
 }
 
-HashStringValue *VHashfile::get_hash() {
-	HashStringValue& result=*new HashStringValue();
-
+void VHashfile::for_each(void callback(const String::Body, const String&, void*), void* info) const {
 	check("apr_sdbm_lock", apr_sdbm_lock(db, APR_FLOCK_SHARED));
 	try {
 		apr_sdbm_datum_t apkey;
@@ -111,14 +109,24 @@ HashStringValue *VHashfile::get_hash() {
 
 				const char *clkey=pa_strdup(apkey.dptr, apkey.dsize);
 				const char *clvalue=pa_strdup(apvalue.dptr, apvalue.dsize);
-				result.put(clkey, new VString(*new String(clvalue)));
+				const String& svalue=*new String(clvalue, true);
+				callback(clkey, svalue, info);
 			} while(apr_sdbm_nextkey(db, &apkey)==APR_SUCCESS);
-
-		return &result;
 	} catch(...) {
 			check("apr_sdbm_unlock", apr_sdbm_unlock(db));
 			rethrow;
 	}
 
 	check("apr_sdbm_unlock", apr_sdbm_unlock(db));
+}
+
+static void get_hash__put(const String::Body key, const String& value, void* aresult) {
+	static_cast<HashStringValue*>(aresult)->put(key, new VString(value));
+}
+
+HashStringValue *VHashfile::get_hash() {
+	HashStringValue& result=*new HashStringValue();
+
+	for_each(get_hash__put, &result);
+	return &result;
 }
