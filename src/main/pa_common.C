@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_common.C,v 1.61 2001/08/27 12:02:24 parser Exp $"; 
+static const char *RCSId="$Id: pa_common.C,v 1.62 2001/08/27 13:29:07 parser Exp $"; 
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -54,7 +54,7 @@ bool file_read(Pool& pool, const String& file_spec,
 			   bool fail_on_read_problem,
 			   size_t offset, size_t limit) {
 	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
-printf("file_read(%s)\n", fname);
+//printf("file_read(%s)\n", fname);
 	int f;
     struct stat finfo;
 
