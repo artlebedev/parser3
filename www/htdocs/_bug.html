@@ -1,6 +1,3 @@
 @main[]
-$file[^file::load[text;_bug.p]]
-^process[$self]{$file.text}[
-	$.file[$file.name]
-	$.lineno(-1)
-]
+$file[^file::load[text;http://parser3/_bug.txt]]
+=$file.text=
