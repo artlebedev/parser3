@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.29 2001/05/17 19:33:33 parser Exp $
+	$Id: pa_vform.C,v 1.30 2001/09/06 16:48:44 parser Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
@@ -18,6 +18,7 @@
 #include "pa_request.h"
 #include "pa_vfile.h"
 #include "pa_common.h"
+#include "pa_vtable.h"
 
 // parse helper funcs
 
@@ -165,7 +166,30 @@ void VForm::AppendFormEntry(const char *aname,
 	} else {
 		String& string=*NEW String(pool());
 		string.APPEND_TAINTED(value_ptr, value_size, "form", 0);
-		value=NEW VString(string);
+		
+		if(Value *valready=(Value *)fields.get(sname)) {
+			Table *table=valready->get_table(); // already table?
+			bool existed=table!=0;
+			if(!existed) { // no
+				Array& columns=*NEW Array(pool(), 1);
+				columns+=NEW String(pool(), "element");
+				table=NEW Table(pool(), 0, &columns);
+				if(valready->is_string()) { // previously constructed string becomes first row
+					Array& row=*NEW Array(pool(), 1);
+					row+=&valready->as_string();
+					*table+=&row;
+				}
+			}
+			// this string becomes next row
+			Array& row=*NEW Array(pool(), 1);
+			row+=&string;
+			*table+=&row;
+			if(existed)
+				return; // table already existed, we've just added one line & we're through
+			value=NEW VTable(pool(), table);
+		} else { // first appearence
+			value=NEW VString(string);
+		}
 	}
 
 	fields.put(sname, value);
@@ -174,6 +198,7 @@ void VForm::AppendFormEntry(const char *aname,
 /// @todo parse input letter if some switch is on
 void VForm::fill_fields(Request& request) {
 	//AppendFormEntry("fs", "<1!2>", 5, 0);
+//	AppendFormEntry("a", "1", 1, 0); AppendFormEntry("a", "2", 1, 0);
 	// parsing QS [GET and ?name=value from uri rewrite)]
 	if(request.info.query_string)
 		ParseGetFormInput(request.info.query_string);
