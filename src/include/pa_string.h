@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.106 2001/10/11 10:21:44 parser Exp $
+	$Id: pa_string.h,v 1.107 2001/10/11 14:00:10 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -291,6 +291,12 @@ private:
 	char *store_to(char *dest, Untaint_lang lang=UL_UNSPECIFIED, 
 		SQL_Connection *connection=0,
 		const char *charset=0) const;
+
+	String& reconstruct(Pool& pool) const;
+	void join_chain(Pool& pool, 
+					   size_t& ai, const Chunk*& achunk, const Chunk::Row*& arow,
+					   Untaint_lang& joined_lang, const char *& joined_ptr, size_t& joined_size) const;
+	String& replace_in_reconstructed(Pool& pool, Dictionary& dict) const;
 
 private: //disabled
 

@@ -1,5 +1,6 @@
 @main[]
-^set[]
+^replace[]
+#^set[]
 #^hash[]<hr>
 #$t[^methresult[]] ->$t
 #^terror[]
@@ -25,6 +26,13 @@
 #^xml[]
 #^header[]
 OK
+
+@replace[]
+$a[12^;3]
+^a.replace[^table::set{from	to
+2^;	!
+}]
+
 
 @set[]
 ^setdata[]

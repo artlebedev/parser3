@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.107 2001/10/11 10:21:44 parser Exp $
+	$Id: pa_string.C,v 1.108 2001/10/11 14:00:10 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -654,8 +654,108 @@ break2:
 	return result;
 }
 
-/// @test restructure string to link pieces of same language together prior to this.
-String& String::replace(Pool& pool, Dictionary& dict) const {
+void String::join_chain(Pool& pool, 
+					   size_t& ai, const Chunk*& achunk, const Chunk::Row*& arow,
+					   Untaint_lang& joined_lang, const char *& joined_ptr, size_t& joined_size) const {
+	joined_lang=arow->item.lang;
+	
+	// calc size
+	joined_size=0;
+	{
+		size_t start_i=ai;
+		const Chunk::Row *start_row=arow;
+		const Chunk *chunk=achunk;
+		do {
+			const Chunk::Row *row=start_row;
+			for(size_t i=start_i; i<chunk->count; i++, row++) {
+				if(row==append_here)
+					goto break21;
+				
+				if(row->item.lang==joined_lang)
+					joined_size+=row->item.size;
+				else
+					break;
+			}
+			if(chunk=row->link) {
+				start_i=0;
+				start_row=chunk->rows;
+			} else
+				break;
+		} while(true);
+break21:;
+	}
+
+	// if one row, return simply itself
+	if(joined_size==arow->item.size) {
+		joined_ptr=arow->item.ptr;
+		ai++; arow++;
+		if(ai==achunk->count)
+			achunk=arow->link;		
+	} else {
+		// join adjacent rows
+		char *ptr=(char *)pool.malloc(joined_size);
+		joined_ptr=ptr;
+		size_t start_i=ai;
+		const Chunk::Row *start_row=arow;
+		const Chunk *chunk=achunk;
+		size_t i;
+		const Chunk::Row *row;
+		do {
+			row=start_row;
+			for(i=start_i; i<chunk->count; i++, row++) {
+				if(row==append_here)
+					goto break22;
+				
+				if(row->item.lang==joined_lang) {
+					memcpy(ptr, row->item.ptr, row->item.size);
+					ptr+=row->item.size;
+				} else
+					break;
+			}
+			if(chunk=row->link) {
+				start_i=0;
+				start_row=chunk->rows;
+			} else
+				break;
+		} while(true);
+break22:;
+		
+		// return joined rows
+		ai=i;
+		arow=row;
+		achunk=chunk;
+	}
+}
+
+String& String::reconstruct(Pool& pool) const {
+	//_asm int 3;
+	String& result=*new(pool) String(pool);
+	const Chunk *chunk=&head; 
+	do {
+		const Chunk::Row *row=chunk->rows;
+		for(size_t i=0; i<chunk->count; ) {
+			if(row==append_here)
+				goto break2;
+
+			Untaint_lang joined_lang;
+			char *joined_ptr;
+			size_t joined_size;
+			join_chain(pool, i, chunk, row,
+				joined_lang, joined_ptr, joined_size);
+
+			result.APPEND(joined_ptr, joined_size, 
+				joined_lang,
+				row->item.origin.file, row->item.origin.line);
+			if(!chunk)
+				goto break2;
+		}
+	} while(true);
+break2:
+
+	return result;
+};
+
+String& String::replace_in_reconstructed(Pool& pool, Dictionary& dict) const {
 	//_asm int 3;
 	String& result=*new(pool) String(pool);
 	const Chunk *chunk=&head; 
@@ -694,6 +794,10 @@ String& String::replace(Pool& pool, Dictionary& dict) const {
 
 break2:
 	return result;
+}
+
+String& String::replace(Pool& pool, Dictionary& dict) const {
+	return reconstruct(pool).replace_in_reconstructed(pool, dict);
 }
 
 double String::as_double() const { 
