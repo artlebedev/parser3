@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.30 2001/02/24 08:43:52 paf Exp $
+  $Id: compile.y,v 1.31 2001/02/24 09:00:11 paf Exp $
 */
 
 %{
@@ -152,14 +152,20 @@ name_expr_wdive_root: ':' name_expr_dive_code {
 };
 
 constructor_value: 
-	constructor_one_param_value
-|	constructor_two_params_value /* $var(=;2*2) $var(%d;2*2) $var(+;1) */
+	store_constructor_one_param_value
+|	store_constructor_two_params_value /* $var(=;2*2) $var(%d;2*2) $var(+;1) */
 ;
 
-constructor_one_param_value: 
-	empty_value /* optimized $var() case */
-|	STRING /* optimized $var(STRING) case */
-|	complex_constructor_param_value /* $var(something complex) */
+store_constructor_one_param_value: 
+	empty /* optimized $var() case */
+|	STRING { /* optimized $var(STRING) case */
+	$$=$1;
+	OP($$, OP_STORE_PARAM);
+}
+|	complex_constructor_param_value { /* $var(something complex) */
+	$$=$1;
+	OP($$, OP_STORE_PARAM);
+}
 ;
 complex_constructor_param_value: complex_constructor_param_body {
 	$$=N(POOL); 
@@ -170,7 +176,7 @@ complex_constructor_param_value: complex_constructor_param_body {
 complex_constructor_param_body: codes__excluding_sole_str_literal;
 codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
 
-constructor_two_params_value: STRING ';' constructor_one_param_value {
+store_constructor_two_params_value: STRING ';' store_constructor_one_param_value {
 	char *operator_or_fmt=LA2S($1)->cstr();
 	$$=N(POOL);
 	P($$, $1); /* stack: ncontext name operator_or_fmt */
@@ -201,11 +207,10 @@ call: '^' name_without_curly_rdive store_params EON { /* ^field.$method{vasya} *
 store_params: store_param | store_params store_param { $$=$1; P($$, $2) };
 store_param: store_round_param | store_curly_param;
 store_round_param: '(' store_param_parts ')' {$$=$2};
-store_param_parts: store_param_part | store_param_parts ';' store_param_part { $$=$1; P($$, $3) };
-store_param_part: constructor_one_param_value {
-	$$=$1;
-	OP($$, OP_STORE_PARAM);
-}
+store_param_parts:
+	store_constructor_one_param_value
+|	store_param_parts ';' store_constructor_one_param_value { $$=$1; P($$, $3) }
+;
 store_curly_param: '{' maybe_codes '}' {
 	$$=N(POOL); 
 	PCA($$, $2);
@@ -285,10 +290,6 @@ write_str_literal: STRING {
 		// optimized case of special end of macro. see yylex
 		$$=N(POOL);
 	}
-};
-empty_value: empty {
-	$$=$1;
-	PVS($$, NEW VString(POOL));
 };
 empty: /* empty */ { $$=N(POOL) };
 

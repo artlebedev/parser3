@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.32 2001/02/24 08:28:37 paf Exp $
+  $Id: execute.C,v 1.33 2001/02/24 09:00:11 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -257,7 +257,7 @@ Value *Request::get_element() {
 			wcontext=&frame;
 			execute(*junction->code);
 			value=wcontext->value();
-			//value=wcontext->get_string();
+			//value=NEW VString(wcontext->get_string());
 			wcontext=static_cast<WContext *>(POP());  rcontext=POP();  root=POP();  self=POP();
 			printf("<-ja returned");
 		}
