@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char* IDENT_VDATE_H="$Date: 2003/09/01 12:27:27 $";
+static const char* IDENT_VDATE_H="$Date: 2003/09/02 07:26:01 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -88,7 +88,9 @@ public: // Value
 public: // usage
 
 	VDate(Pool& apool, time_t adate) : VStateless_object(apool), 
-		ftime(adate) {
+		ftime(adate),
+		ftz(0),
+		ftz_cstr(0) {
 	}
 
 	time_t get_time() const { return ftime; }
