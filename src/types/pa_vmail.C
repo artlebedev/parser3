@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/09/24 11:45:38 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/09/24 11:41:05 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -225,7 +225,7 @@ static void MimePart2body(GMimePart *part,
 
 int gmt_offset() {
 #if defined(HAVE_TIMEZONE) && defined(HAVE_DAYLIGHT)
-	return timezone+(daylight?60*60*(timezone<0?-1:timezone>0?+1:0):0);
+	return timezone+(daylight?60*60*sign(timezone):0);
 #else
 	time_t t=time(0);
 	tm *tm=localtime(&t);
