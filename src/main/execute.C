@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.104 2001/03/13 19:35:06 paf Exp $
+	$Id: execute.C,v 1.105 2001/03/15 09:58:18 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -54,58 +54,61 @@ char *opcode_name[]={
 	"IS"
 };
 
+void log_printf(const char *fmt, ...) {
+	// TODO: куда-нибудь пристроить
+}
+
 void dump(int level, const Array& ops) {
 	if(0){
 		int size=ops.size();
-		//fprintf(stderr, "size=%d\n", size);
+		//log_printf("size=%d\n", size);
 		for(int i=0; i<size; i++) {
 			Operation op;
 			op.cast=ops.quick_get(i);
-			fprintf(stderr, "%8X\n", op.cast);
+			log_printf("%8X\n", op.cast);
 		}
 	}
 
 	int size=ops.size();
-	//fprintf(stderr, "size=%d\n", size);
+	//log_printf("size=%d\n", size);
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
-		fprintf(stderr, "%*s%s", level*4, "", opcode_name[op.code]);
+		log_printf("%*s%s", level*4, "", opcode_name[op.code]);
 
 		if(op.code==OP_VALUE || op.code==OP_STRING__WRITE) {
 			Value *value=static_cast<Value *>(ops.quick_get(++i));
-			fprintf(stderr, " \"%s\" %s", value->get_string()->cstr(), value->type());
+			log_printf(" \"%s\" %s", value->get_string()->cstr(), value->type());
 		}
-		fprintf(stderr, "\n");
+		log_printf("\n");
 
 		if(op.code==OP_CODE__STORE_PARAM) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 			dump(level+1, *local_ops);
 		}
 	}
-	fflush(stderr);
 }
 
 void Request::execute(const Array& ops) {
 	if(1) {
-		fputs("source----------------------------\n", stderr);
+		log_printf("source----------------------------\n");
 		dump(0, ops);
-		fputs("execution-------------------------\n", stderr);
+		log_printf("execution-------------------------\n");
 	}
 
 	int size=ops.size();
-	//fprintf(stderr, "size=%d\n", size);
+	//log_printf("size=%d\n", size);
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
-		fprintf(stderr, "%d:%s", stack.top_index()+1, opcode_name[op.code]); fflush(stderr);
+		log_printf("%d:%s", stack.top_index()+1, opcode_name[op.code]);
 
 		switch(op.code) {
 		// param in next instruction
 		case OP_VALUE:
 			{
 				Value *value=static_cast<Value *>(ops.quick_get(++i));
-				fprintf(stderr, " \"%s\" %s", value->get_string()->cstr(), value->type());
+				log_printf(" \"%s\" %s", value->get_string()->cstr(), value->type());
 				PUSH(value);
 				break;
 			}
@@ -114,7 +117,7 @@ void Request::execute(const Array& ops) {
 				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
 				// code
 				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
-				fprintf(stderr, " (%d)\n", local_ops->size());
+				log_printf(" (%d)\n", local_ops->size());
 				dump(1, *local_ops);
 				
 				Junction& j=*NEW Junction(pool(), 
@@ -193,7 +196,7 @@ void Request::execute(const Array& ops) {
 		case OP_STRING__WRITE:
 			{
 				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
-				fprintf(stderr, " \"%s\"", vstring->value().cstr());
+				log_printf(" \"%s\"", vstring->value().cstr());
 				write(vstring->value());
 				break;
 			}
@@ -297,7 +300,7 @@ void Request::execute(const Array& ops) {
 
 		case OP_CALL:
 			{
-				fprintf(stderr, "->\n");
+				log_printf("->\n");
 				VMethodFrame *frame=static_cast<VMethodFrame *>(POP());
 				frame->fill_unspecified_params();
 				PUSH(self);  
@@ -351,7 +354,7 @@ void Request::execute(const Array& ops) {
 				self=static_cast<VAliased *>(POP());
 
 				PUSH(value);
-				fprintf(stderr, "<-returned");
+				log_printf("<-returned");
 				break;
 			}
 
@@ -582,7 +585,7 @@ void Request::execute(const Array& ops) {
 				0,
 				"unhandled '%s' opcode", opcode_name[op.code]); 
 		}
-		fprintf(stderr, "\n");
+		log_printf("\n");
 	}
 }
 
@@ -615,7 +618,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 	Junction *junction=value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
 		// process it
-		fprintf(stderr, "ja->\n");
+		log_printf("ja->\n");
 		PUSH(self);  
 		PUSH(root);  
 		PUSH(rcontext);  
@@ -649,7 +652,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 		root=POP();  
 		self=static_cast<VAliased *>(POP());
 		
-		fprintf(stderr, "<-ja returned");
+		log_printf("<-ja returned");
 	} else
 		result=&value;
 

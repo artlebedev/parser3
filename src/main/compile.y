@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.99 2001/03/15 09:37:55 paf Exp $
+	$Id: compile.y,v 1.100 2001/03/15 09:58:18 paf Exp $
 */
 
 /*
@@ -1012,8 +1012,6 @@ break2:
 
 int real_yyerror(parse_control *pc, char *s)  /* Called by yyparse on error */
      {
-       //fprintf(stderr, "[%s]\n", s);
-
 	   strncpy(pc->error, s, MAX_STRING); // TODO: перепроверить с треклятым последним байтом
 	   return 1;
      }
