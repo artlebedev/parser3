@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.117 2001/04/20 14:18:43 paf Exp $
+	$Id: pa_request.C,v 1.118 2001/04/23 08:52:24 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -109,7 +109,7 @@ static void element2ctypes(unsigned char *tables,
 		ctypes_table[c]|=bit;
 
 		if(group_offset>=0)
-			tables[cbits_offset+group_offset+c/8] |= 1 << (c&7);
+			tables[cbits_offset+group_offset+c/8] |= 1 << (c%8);
 	}				
 }
 static void cstr2ctypes(unsigned char *tables, const unsigned char *cstr, 

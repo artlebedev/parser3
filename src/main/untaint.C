@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.42 2001/04/20 09:05:24 paf Exp $
+	$Id: untaint.C,v 1.43 2001/04/23 08:52:24 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -122,9 +122,10 @@ inline bool need_quote_http_header(const char *ptr, size_t size) {
 /**
 	@test optimize whitespaces for all but 'html'
 	@todo fix theoretical \n mem overrun in TYPO replacements
-	@test mail-header
 */
-char *String::store_to(char *dest, Untaint_lang lang, SQL_Connection *connection) const {
+char *String::store_to(char *dest, Untaint_lang lang, 
+					   SQL_Connection *connection,
+					   const char *charset) const {
 	// $MAIN:html-typo table
 	Table *user_typo_table=static_cast<Table *>(pool().tag());
 	Table *typo_table=user_typo_table?user_typo_table:default_typo_table;
@@ -180,8 +181,28 @@ char *String::store_to(char *dest, Untaint_lang lang, SQL_Connection *connection
 				break;
 			case UL_MAIL_HEADER:
 				// tainted, untaint language: mail-header
-				memcpy(dest, row->item.ptr, row->item.size); 
-				dest+=row->item.size;
+				{
+					// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
+					const char *src=row->item.ptr; 
+					bool down=false;
+					for(int size=row->item.size; size--; src++) {
+						if(*src & 0x80) {
+							if(!down) {
+								dest+=sprintf(dest, "=?%.15s?Q?", charset);
+								down=true;
+							}
+							dest+=sprintf(dest, "=%02X", *src & 0xFF);						
+						} else {
+							if(down) {
+								down=false;
+								dest+=sprintf(dest, "?=");
+							}
+							*dest++=*src;						
+						}
+					}
+					if(down) // close unclosed
+						dest+=sprintf(dest, "?=");
+				}
 				break;
 			case UL_TABLE: 
 				// tainted, untaint language: table

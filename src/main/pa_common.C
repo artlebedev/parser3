@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.48 2001/04/19 15:38:00 paf Exp $
+	$Id: pa_common.C,v 1.49 2001/04/23 08:52:24 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -295,7 +295,8 @@ static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *aval
 	*ami.header << "=";
 	ami.header->append(static_cast<Value *>(avalue)->as_string(), ami.lang, true);
 }
-const String& attributed_meaning_to_string(Value& meaning, String::Untaint_lang lang) {
+const String& attributed_meaning_to_string(Value& meaning, 
+										   String::Untaint_lang lang) {
 	String &result=*new(meaning.pool()) String(meaning.pool());
 	if(Hash *hash=meaning.get_hash()) {
 		// $value(value) $subattribute(subattribute value)

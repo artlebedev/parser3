@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.19 2001/04/17 19:00:27 paf Exp $
+	$Id: mail.C,v 1.20 2001/04/23 08:52:15 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -146,8 +146,18 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 }
 
 
+static bool find_content_type(const Hash::Key& aattribute, Hash::Val *ameaning, 
+							  void *) {
+	return StrEqNc(aattribute.cstr(), CONTENT_TYPE_NAME);
+}
+static bool find_content_type_charset(const Hash::Key& aattribute, Hash::Val *ameaning, 
+									  void *) {
+	return StrEqNc(aattribute.cstr(), "charset");
+}
+
 struct Mail_info {
 	String *attribute_to_exclude;
+	const char *charset;
 	String *header;
 	const String **from, **to;
 };
@@ -170,7 +180,8 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 	// append header line
 	*mi.header << 
 		aattribute << ":" << 
-		attributed_meaning_to_string(lmeaning, String::UL_MAIL_HEADER) << 
+		attributed_meaning_to_string(lmeaning, String::UL_MAIL_HEADER).
+			cstr(String::UL_UNSPECIFIED, 0, mi.charset) << 
 		"\n";
 }
 struct Seq_item {
@@ -213,9 +224,23 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 
 	// prepare header: 'hash' without "body"
 	String& result=*new(pool) String(pool);
+
+	const char *charset=0;
+	if(Value *content_type=
+		static_cast<Value *>(letter_hash.first_that(find_content_type)))
+		if(Hash *hash=content_type->get_hash())
+			if(Value *content_type_charset=
+				static_cast<Value *>(hash->first_that(find_content_type_charset)))
+				charset=content_type_charset->as_string().cstr();
+
+//		if(Hash *hash=ameaning)->get_hash()))
+//			if(VString *vcharset=hash->get_string(String(pool, "charset
+
+
 	*from=*to=0;
 	Mail_info mail_info={
 		/*excluding*/ body_name,
+		charset,
 		&result,
 		from, to
 	};
@@ -383,8 +408,8 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 	const String *from, *to;
 	const String& letter=letter_hash_to_string(r, method_name, *hash, 0, &from, &to);
 
-	//r.write_assign_lang(*new(pool) VString(letter));
-	sendmail(r, method_name, letter, from, to);
+	r.write_assign_lang(*new(pool) VString(letter));
+	//sendmail(r, method_name, letter, from, to);
 }
 
 // initialize

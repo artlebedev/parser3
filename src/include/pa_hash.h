@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.37 2001/04/17 19:00:35 paf Exp $
+	$Id: pa_hash.h,v 1.38 2001/04/23 08:52:19 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -31,6 +31,9 @@ public:
 
 	/// for_each iterator function type
 	typedef void (*For_each_func)(const Key& key, Val *value, void *info);
+
+	/// first_that iterator function type
+	typedef bool (*First_that_func)(const Key& key, Val *value, void *info);
 
 public:
 
@@ -77,6 +80,9 @@ public:
 
 	/// iterate over all not zero elements
 	void for_each(For_each_func func, void *info=0) const;
+
+	/// iterate over all elements until condition
+	Val* first_that(First_that_func func, void *info=0) const;
 
 	/// remove all elements
 	void clear();

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.33 2001/04/12 14:50:29 paf Exp $
+	$Id: pa_hash.C,v 1.34 2001/04/23 08:52:24 paf Exp $
 */
 
 /*
@@ -158,6 +158,16 @@ void Hash::for_each(For_each_func func, void *info) const {
 		for(Pair *pair=*ref++; pair; pair=pair->link)
 			if(pair->value)
 				(*func)(pair->key, pair->value, info);
+}
+
+Hash::Val* Hash::first_that(First_that_func func, void *info) const {
+	Pair **ref=refs;
+	for(int index=0; index<allocated; index++)
+		for(Pair *pair=*ref++; pair; pair=pair->link)
+			if(pair->value)
+				if((*func)(pair->key, pair->value, info))
+					return pair->value;
+	return 0;
 }
 
 void Hash::clear() {

@@ -98,14 +98,17 @@ $face[^image:measure[001004paf(c)lena_karin.jpg]]
 <a href=$request:uri>^^face.html[^$border(1) ^$ismap(-1)]=^face.html[$border(1) $ismap(-1)]</a>
 <HR>
 
-^rem{
+#^rem{
+<pre>
 ^mail:send[
 	$to[paf@design.ru]
-	$subject[test]
+	$subject[test проверка]
 	$body[test]
+	$content-type[$charset[windows-1251]]
 ]
+</pre>
 <HR>
-}
+#}
 
 env.pl<BR>
 $e[^file:cgi[env.pl;$t[<b>1</b>]]]
