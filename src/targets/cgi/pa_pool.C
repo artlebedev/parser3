@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.33 2001/12/13 13:02:43 paf Exp $
+	$Id: pa_pool.C,v 1.34 2001/12/13 15:19:56 paf Exp $
 */
 
 #include "pa_pool.h"
