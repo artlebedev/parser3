@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2004/04/02 13:48:09 $";
+static const char * const IDENT_PARSER3_C="$Date: 2004/06/16 15:56:19 $";
 
 #include "pa_config_includes.h"
 
@@ -274,6 +274,49 @@ static void SIGPIPE_handler(int /*sig*/){
 }
 #endif
 
+#ifdef WIN32
+const char* maybe_reconstruct_IIS_status_in_qs(const char* original) 
+{
+	// 404;http://servername/page?param=value...
+	// ';' should be urlencoded by HTTP standard, so we shouldn't get it from browser 
+	// and can consider that as an indication that this is IIS way to report errors
+	const char* qmark_at;
+
+	if(original && (qmark_at=strchr(original, '?')) 
+		&& isdigit(original[0])
+		&& isdigit(original[1])
+		&& isdigit(original[2])
+		&& original[3]==';') 
+	{
+		size_t original_len=strlen(original);
+        char* reconstructed=new(PointerFreeGC) char[original_len
+			+12/*IIS-STATUS=&*/
+			+14/*IIS-DOCUMENT=&*/
+			+1];
+		char* cur=reconstructed;
+		memcpy(cur, "IIS-STATUS=", 11);	 cur+=11;
+		memcpy(cur, original, 3); cur+=3;
+		*cur++='&';
+
+		memcpy(cur, "IIS-DOCUMENT=", 13);  cur+=13;
+		{
+			size_t value_len=(qmark_at? qmark_at-original: original_len)-4;
+			memcpy(cur, original+4, value_len);  cur+=value_len;
+		}
+
+		if(qmark_at) {
+			*cur++='&';
+			strcpy(cur, qmark_at+1/*skip ? itself*/);
+		} else
+			*cur=0;
+
+		return reconstructed;
+	}
+	
+	return original;
+}
+#endif
+
 /**
 main workhorse
 
@@ -314,7 +357,11 @@ static void real_parser_handler(const char* filespec_to_process,
 	}
 	request_info.path_translated=filespec_to_process;
 	request_info.method=request_method ? request_method : "GET";
-	const char* query_string=getenv("QUERY_STRING");
+	const char* query_string=
+#ifdef WIN32
+		maybe_reconstruct_IIS_status_in_qs
+#endif
+		(getenv("QUERY_STRING"));
 	request_info.query_string=query_string;
 	if(cgi) {
 		// few absolute obligatory
