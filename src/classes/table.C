@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.124 2001/10/09 13:17:45 parser Exp $
+	$Id: table.C,v 1.125 2001/10/09 13:23:25 parser Exp $
 */
 
 #include "classes.h"
@@ -80,11 +80,11 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// filename is last parameter
-	Value& vfilename=params->as_no_junction(params->size()-1, 
+	Value& vfile_name=params->as_no_junction(params->size()-1, 
 		"file name must not be code");
 
 	// loading text
-	char *data=file_read_text(pool, r.absolute(vfilename.as_string()));
+	char *data=file_read_text(pool, r.absolute(vfile_name.as_string()));
 
 	// parse columns
 	Array *columns;
@@ -131,7 +131,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vtable_name=params->as_no_junction(params->size()-1, 
+	Value& vfile_name=params->as_no_junction(params->size()-1, 
 		"file name must not be code");
 
 	Table& table=static_cast<VTable *>(r.self)->table();
@@ -173,7 +173,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	}
 
 	// write
-	file_write(pool, r.absolute(vtable_name.as_string()), 
+	file_write(pool, r.absolute(vfile_name.as_string()), 
 		sdata.cstr(), sdata.size(), true);
 }
 

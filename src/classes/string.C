@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.78 2001/10/09 07:06:00 parser Exp $
+	$Id: string.C,v 1.79 2001/10/09 13:23:25 parser Exp $
 */
 
 #include "classes.h"
@@ -438,6 +438,19 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 	Dictionary dict(*table);
 	r.write_assign_lang(*new(pool) VString(src.replace(pool, dict)));
 }
+
+static void _save(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	Value& vfile_name=params->as_no_junction(0, 
+		"file name must not be code");
+
+	const String& src=*static_cast<VString *>(r.self)->get_string();
+
+	// write
+	file_write(pool, r.absolute(vfile_name.as_string()), 
+		src.cstr(String::UL_AS_IS), src.size(), true);
+}
+
 // constructor
 
 MString::MString(Pool& apool) : Methoded(apool) {
@@ -487,6 +500,9 @@ MString::MString(Pool& apool) : Methoded(apool) {
 
 	// ^string.replace[table]
 	add_native_method("replace", Method::CT_DYNAMIC, _replace, 1, 1);
+
+	// ^string.save[file]  
+	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 1);
 }	
 
 // global variable
