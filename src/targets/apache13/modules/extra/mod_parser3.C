@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: mod_parser3.C,v 1.39 2001/08/07 13:23:33 parser Exp $"; 
+static const char *RCSId="$Id: mod_parser3.C,v 1.40 2001/08/09 08:45:17 parser Exp $"; 
 
 #include "httpd.h"
 #include "http_config.h"
@@ -175,8 +175,11 @@ void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 	
 	@todo intelligent cache-control
 */
-static int parser_handler(request_rec *r)
-{
+static int parser_handler(request_rec *r) {
+//	_asm int 3;
+    if(r->finfo.st_mode == 0) 
+		return NOT_FOUND;
+	
 	Pool pool(r->pool);
 	pool.set_context(r);
 
