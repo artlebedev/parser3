@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.28 2001/03/21 15:53:28 paf Exp $
+	$Id: parser3.C,v 1.29 2001/03/21 16:59:07 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -34,7 +34,7 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 
-Pool pool; ///< global pool
+Pool pool; // global pool
 bool cgi; ///< we were started as CGI?
 
 #ifdef WIN32

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.5 2001/03/21 16:48:17 paf Exp $
+	$Id: mod_parser3.C,v 1.6 2001/03/21 16:59:05 paf Exp $
 */
 
 #include "httpd.h"
@@ -673,7 +673,7 @@ static void parser3_init(server_rec *s, pool *p)
 		return;
 	globals_inited=true;
 
-	static Pool pool; ///< global pool
+	static Pool pool; // global pool
 	pool.set_storage(p);
 	PTRY {
 		// init global variables
