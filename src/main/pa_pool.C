@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_pool.C,v 1.23 2001/09/20 14:34:42 parser Exp $"; 
+static const char *RCSId="$Id: pa_pool.C,v 1.24 2001/09/21 07:30:25 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_exception.h"
@@ -16,13 +16,11 @@ static const char *RCSId="$Id: pa_pool.C,v 1.23 2001/09/20 14:34:42 parser Exp $
 
 Pool::Pool(void *astorage) : 
 	fstorage(astorage), fcontext(0), ftag(0), fexception(0),
-	charset("UTF-8"), transcoder(0) {
-	register_cleanup(Pool_cleanup, this);
+	scharset(0), charset("UTF-8"), transcoder(0) {
 }
 
-void Pool_cleanup(void *pool) {
-	//_asm int 3;
-	static_cast<Pool *>(pool)->cleanup();
+Pool::~Pool() {
+	delete transcoder;
 }
 
 void Pool::fail_alloc(size_t size) const {
@@ -37,13 +35,11 @@ void Pool::fail_register_cleanup() const {
 		"failed to register cleanup");
 }
 
-void Pool::set_charset(const String &new_charset) {
-	set_charset(new_charset.cstr());
-}
-void Pool::set_charset(const char *new_charset) {
-	if(charset && strcasecmp(new_charset, charset)!=0) {
-		delete transcoder;  transcoder=0;
-		charset=new_charset;
+void Pool::set_charset(const String &new_scharset) {
+	if(new_scharset!=charset) {
+		delete transcoder;  transcoder=0; // flag "we need new transcoder"
+		scharset=&new_scharset; // for this charset
+		charset=new_scharset.cstr();
 	}
 }
 
@@ -52,14 +48,18 @@ void Pool::update_transcoder() {
 		return;
 
 	XMLTransService::Codes resValue;
-	transcoder=XMLPlatformUtils::fgTransService->makeNewTranscoderFor(charset, resValue, 100);
+	transcoder=XMLPlatformUtils::fgTransService->makeNewTranscoderFor(charset, resValue, 60);
+	if(!transcoder)
+		THROW(0, 0,
+			scharset,
+			"unsupported encoding");
 }
 
 
 const char *Pool::transcode(const XalanDOMString& s) { 
 	update_transcoder();
 
-	const unsigned int len=s.size(); // multibyte-char languages not supported for now
+	const unsigned int len=s.size()*2;
 	XMLByte* dest=(XMLByte *)malloc((len+1)*sizeof(XMLByte));
 	bool error=true;
 	try {
@@ -67,10 +67,9 @@ const char *Pool::transcode(const XalanDOMString& s) {
 			unsigned int charsEaten;
 			unsigned int size=transcoder->transcodeTo(
 				s.c_str(), s.length(),
-				dest,
-				len,
+				dest, len,
 				charsEaten,
-				XMLTranscoder::UnRep_Throw
+				XMLTranscoder::UnRep_RepChar //UnRep_Throw
 			);
 			dest[size]=0;
 			error=false;
@@ -78,8 +77,8 @@ const char *Pool::transcode(const XalanDOMString& s) {
 	} catch(...) {
 	}
 	if(error) {
-		memset(dest, '?', len-1);
-		((char *)dest)[len]=0;
+		memset(dest, '?', s.size());
+		((char *)dest)[s.size()]=0;
 	}
 	return (const char *)dest;
 }

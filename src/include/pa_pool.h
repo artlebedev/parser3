@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.55 2001/09/20 14:25:06 parser Exp $
+	$Id: pa_pool.h,v 1.56 2001/09/21 07:30:25 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -24,8 +24,6 @@ class Exception;
 class Temp_exception;
 class String;
 
-void Pool_cleanup(void *);
-
 /** 
 	Pool mechanizm allows users not to free up allocated memory,
 	leaving that problem to 'pools'.
@@ -38,16 +36,11 @@ void Pool_cleanup(void *);
 
 class Pool {
 	friend Temp_exception;
-	friend void Pool_cleanup(void *);
 public:
 
 	Pool(void *astorage);
+	~Pool();
 
-private:
-	void cleanup() {
-		delete transcoder;
-	}
-public:
 	void set_context(void *acontext) { fcontext=acontext; }
 	void *context() { return fcontext; }
 
@@ -81,7 +74,7 @@ public:
 
 private:
 
-	void set_charset(const char *charset);
+	void set_charset(const char *new_scharset);
 	void update_transcoder();
 
 private:
@@ -89,7 +82,7 @@ private:
 	void *fstorage;
 	void *fcontext;
 	void *ftag;
-	const char *charset;
+	const String *scharset; const char *charset;
 	XMLTranscoder *transcoder;
 
 private: 
