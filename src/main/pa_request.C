@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2004/07/30 10:55:22 $";
+static const char * const IDENT_REQUEST_C="$Date: 2004/08/18 08:58:31 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -651,139 +651,6 @@ static void add_header_attribute(
 		info->add_last_modified = false;
 }
 
-/*
-		if(v = opts->get("mdate")){
-			++valid_options;
-			if(Value* vdate=v->as(VDATE_TYPE, false))
-				date=static_cast<VDate*>(vdate);
-			else throw Exception("parser.runtime", 0, "mdate must be a date");
-		}
-		if(v = opts->get("disposition")){
-			++valid_options;
-			if(!v->is("string")) throw Exception("parser.runtime", 0, "disposition must be a string");
-			disposition = v->get_string()->cstr();
-			if(strcmp(disposition, "inline") && strcmp(disposition, "attachment")) throw Exception("parser.runtime", 0, "disposition can be only 'inline' or 'attachment'");
-		}
-		if(valid_options != opts->count())
-			throw Exception("parser.runtime", 0, "invalid option passed");
-	}
-
-	auto_file f = fopen(c_from_file_name, "rb");
-	if(f == 0)
-		throw Exception("parser.runtime", 0, "Can't open file");
-
-	if(fseek(f, 0, SEEK_END)!=0)
-		throw Exception("parser.runtime", 0, "Can't seek file");
-
-	size_t file_length = (size_t)ftell(f);
-	if(file_length == (size_t)-1)
-		throw Exception("parser.runtime", 0, "can't get file size");
-	if(file_length <= offset)
-		throw Exception("parser.runtime", 0, "offset too big");
-	
-	size_t content_length = file_length-offset;
-	if(limit != (size_t)-1)
-		content_length = limit<content_length?limit:content_length;
-
-	size_t part_length = content_length;
-
-	const size_t BUFSIZE = 4096;
-	unsigned char buf[BUFSIZE];
-	const char *range = SAPI::get_env(r.sapi_info, "HTTP_RANGE");
-	if(range){
-		Array<Range> ar;
-		parse_range(new String(range), ar);
-		size_t count = ar.count();
-		if(count == 1){
-			Range &rg = ar.get_ref(0);
-			if(rg.start == (size_t)-1 && rg.end == (size_t)-1){
-				SAPI::add_header_attribute(r.sapi_info, "status", "416 Requested Range Not Satisfiable");
-				return;
-			}
-			if(rg.start == (size_t)-1 && rg.end != (size_t)-1){
-				rg.start = content_length - rg.end;
-				rg.end = content_length;
-				offset += rg.start;
-				part_length = rg.end-rg.start;
-			}else if(rg.start != (size_t)-1 && rg.end == (size_t)-1){
-				rg.end = content_length-1;
-				offset += rg.start;
-				part_length -= rg.start;
-			}
-			if(part_length == 0){
-				SAPI::add_header_attribute(r.sapi_info, "status", "204 No Content");
-				return;
-			}
-			SAPI::add_header_attribute(r.sapi_info, "status", "206 Partial Content");
-			snprintf((char*)buf, BUFSIZE, "bytes %u-%u/%u", rg.start, rg.end, content_length);
-			SAPI::add_header_attribute(r.sapi_info, "Content-Range", (char*)buf);
-		}else if(count != 0){
-			SAPI::add_header_attribute(r.sapi_info, "status", "501 Not Implemented");
-			return;
-		}
-	}
-
-	fseek(f, offset, SEEK_SET);
-	snprintf((char*)buf, BUFSIZE, "%u", part_length);
-	SAPI::add_header_attribute(r.sapi_info, "Content-Length", (char*)buf);
-
-	if(info.add_content_disposition && disposition){
-		const char *fname = 0;
-		if(to_file_name){
-			fname = to_file_name->as_string().cstr();
-		}else{
-			const char *fname = c_from_file_name;
-			const char *p1 = strrchr(fname, '/');
-			const char *p2 = strrchr(fname, '\\');
-			if(p1 || p2)
-				fname = max(p1, p2)+1;
-		}
-
-		snprintf((char*)buf, BUFSIZE, "%s; filename=\"%s\"", disposition, fname);
-		SAPI::add_header_attribute(r.sapi_info, "Content-Disposition", (char*)buf);
-	}
-	if(info.add_content_type)
-		SAPI::add_header_attribute(r.sapi_info, "Content-Type", r.mime_type_of(c_from_file_name).cstr());
-	if(info.add_last_modified){
-		if(date == 0){
-			struct stat st;	
-			if(stat(c_from_file_name, &st)!=0) throw Exception("parser.runtime", 0, "can't get file stat");
-			date = new VDate(st.st_mtime);
-		}
-		const String &s = attributed_meaning_to_string(*date, String::L_AS_IS, true);
-		SAPI::add_header_attribute(r.sapi_info, "Last-Modified", s.cstr());
-	}
-	r.cookie.output_result(r.sapi_info);
-	SAPI::send_header(r.sapi_info);
-
-	const char* request_method=getenv("REQUEST_METHOD");
-	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
-	size_t sent = 0;
-	if(!header_only){
-		size_t to_read = 0;
-		size_t size = 0;
-		do{
-			to_read = part_length<BUFSIZE?part_length:BUFSIZE;
-			to_read = fread(buf, 1, to_read, f);
-			if(to_read == 0)
-				break;
-			size = SAPI::send_body(r.sapi_info, buf, to_read);
-			sent += size;
-			if(size != to_read)
-				break;
-			part_length -= to_read;
-		}while(part_length);
-	}
-	// set flag to bypass other outputs
-	r.response.fields().put("ignore", new VString(*new String("y")));
-	r.write_no_lang(*new VInt(sent));
-}
-
-
-*/
-
-
-
 static void output_sole_piece(Request& r,
 							  bool header_only, 
 							  VFile& body_file,
@@ -845,6 +712,8 @@ static void output_pieces(Request& r,
 						  Value& date,
 						  bool add_last_modified) 
 {
+	SAPI::add_header_attribute(r.sapi_info, "Accept-Ranges", "bytes");
+
 	const size_t BUFSIZE = 10*0x400;
 	char buf[BUFSIZE];
 	const char *range = SAPI::get_env(r.sapi_info, "HTTP_RANGE");
