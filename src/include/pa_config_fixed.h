@@ -10,7 +10,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-static const char* IDENT_CONFIG_FIXED_H="$Id: pa_config_fixed.h,v 1.47 2002/08/01 11:26:46 paf Exp $";
+static const char* IDENT_CONFIG_FIXED_H="$Date: 2002/08/01 11:41:15 $";
 
 #define inline  __inline
 #define HAVE_STDARG_H

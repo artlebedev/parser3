@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char* IDENT_VXNODE_H="$Id: pa_vxnode.h,v 1.15 2002/08/01 11:26:57 paf Exp $";
+static const char* IDENT_VXNODE_H="$Date: 2002/08/01 11:41:25 $";
 
 #include "classes.h"
 #include "pa_common.h"

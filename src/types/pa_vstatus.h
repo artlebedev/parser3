@@ -8,7 +8,7 @@
 #ifndef PA_VSTATUS_H
 #define PA_VSTATUS_H
 
-static const char* IDENT_VSTATUS_H="$Id: pa_vstatus.h,v 1.9 2002/08/01 11:26:57 paf Exp $";
+static const char* IDENT_VSTATUS_H="$Date: 2002/08/01 11:41:25 $";
 
 #define STATUS_CLASS_NAME "status"
 

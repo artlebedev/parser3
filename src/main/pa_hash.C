@@ -13,7 +13,7 @@
 	For more information about Zend please visit http://www.zend.com/
 */
 
-static const char* IDENT_HASH_C="$Id: pa_hash.C,v 1.51 2002/08/01 11:26:50 paf Exp $";
+static const char* IDENT_HASH_C="$Date: 2002/08/01 11:41:19 $";
 
 #include "pa_hash.h"
 

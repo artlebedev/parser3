@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char* IDENT_VDOUBLE_H="$Id: pa_vdouble.h,v 1.38 2002/08/01 11:26:54 paf Exp $";
+static const char* IDENT_VDOUBLE_H="$Date: 2002/08/01 11:41:22 $";
 
 #include "classes.h"
 #include "pa_common.h"

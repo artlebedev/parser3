@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char* IDENT_VCLASS_H="$Id: pa_vclass.h,v 1.26 2002/08/01 11:26:54 paf Exp $";
+static const char* IDENT_VCLASS_H="$Date: 2002/08/01 11:41:22 $";
 
 #include "pa_vstateless_class.h"
 //#include "pa_vhash.h"

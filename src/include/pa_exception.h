@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char* IDENT_EXCEPTION_H="$Id: pa_exception.h,v 1.36 2002/08/01 11:26:47 paf Exp $";
+static const char* IDENT_EXCEPTION_H="$Date: 2002/08/01 11:41:15 $";
 
 #include "pa_types.h"
 #include "pa_string.h"

@@ -8,7 +8,7 @@
 #ifndef PA_VBOOL_H
 #define PA_VBOOL_H
 
-static const char* IDENT_VBOOL_H="$Id: pa_vbool.h,v 1.19 2002/08/01 11:26:54 paf Exp $";
+static const char* IDENT_VBOOL_H="$Date: 2002/08/01 11:41:22 $";
 
 #include "pa_common.h"
 #include "pa_value.h"

@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Id: pa_vmail.C,v 1.13 2002/08/01 11:26:56 paf Exp $";
+static const char* IDENT_VMAIL_C="$Date: 2002/08/01 11:41:24 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"

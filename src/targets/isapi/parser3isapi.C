@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.77 2002/08/01 11:26:53 paf Exp $";
+static const char* IDENT_PARSER3ISAPI_C="$Date: 2002/08/01 11:41:21 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]

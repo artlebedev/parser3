@@ -8,7 +8,7 @@
 #ifndef PA_VCODE_FRAME_H
 #define PA_VCODE_FRAME_H
 
-static const char* IDENT_VCODE_FRAME_H="$Id: pa_vcode_frame.h,v 1.15 2002/08/01 11:26:54 paf Exp $";
+static const char* IDENT_VCODE_FRAME_H="$Date: 2002/08/01 11:41:22 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"

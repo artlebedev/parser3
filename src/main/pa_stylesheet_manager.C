@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.14 2002/08/01 11:26:51 paf Exp $";
+static const char* IDENT_STYLESHEET_MANAGER_C="$Date: 2002/08/01 11:41:19 $";
 
 #include "pa_stylesheet_manager.h"
 #include "pa_stylesheet_connection.h"

@@ -8,7 +8,7 @@
 #ifndef PA_SOCKS_H
 #define PA_SOCKS_H
 
-static const char* IDENT_SOCKS_H="$Id: pa_socks.h,v 1.9 2002/08/01 11:26:47 paf Exp $";
+static const char* IDENT_SOCKS_H="$Date: 2002/08/01 11:41:16 $";
 
 #include "pa_pool.h"
 

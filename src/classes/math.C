@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_MATH_C="$Id: math.C,v 1.22 2002/08/01 11:26:44 paf Exp $";
+static const char* IDENT_MATH_C="$Date: 2002/08/01 11:41:12 $";
 
 #include "pa_common.h"
 #include "pa_vint.h"

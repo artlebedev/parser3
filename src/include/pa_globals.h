@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Id: pa_globals.h,v 1.90 2002/08/01 11:26:47 paf Exp $";
+static const char* IDENT_GLOBALS_H="$Date: 2002/08/01 11:41:15 $";
 
 #include "pa_pool.h"
 

@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-static const char* IDENT_VSTRING_H="$Id: pa_vstring.h,v 1.47 2002/08/01 11:26:57 paf Exp $";
+static const char* IDENT_VSTRING_H="$Date: 2002/08/01 11:41:25 $";
 
 #include <stdlib.h>
 

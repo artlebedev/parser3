@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_SMTP_H="$Id: smtp.h,v 1.9 2002/08/01 11:26:46 paf Exp $";
+static const char* IDENT_SMTP_H="$Date: 2002/08/01 11:41:14 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"

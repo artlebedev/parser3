@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_ARRAY_C="$Id: pa_array.C,v 1.49 2002/08/01 11:26:49 paf Exp $";
+static const char* IDENT_ARRAY_C="$Date: 2002/08/01 11:41:18 $";
 
 #include "pa_pool.h"
 #include "pa_array.h"

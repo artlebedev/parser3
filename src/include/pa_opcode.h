@@ -9,7 +9,7 @@
 #ifndef CODE_H
 #define CODE_H
 
-static const char* IDENT_OPCODE_H="$Id: pa_opcode.h,v 1.19 2002/08/01 11:26:47 paf Exp $";
+static const char* IDENT_OPCODE_H="$Date: 2002/08/01 11:41:15 $";
 
 #include "pa_string.h"
 #include "pa_array.h"

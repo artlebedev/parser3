@@ -107,7 +107,7 @@
  * ----------------------------------------------------------------------------
  */
 
-static const char* IDENT_MD5_C="$Id: pa_md5c.c,v 1.4 2002/08/01 11:26:49 paf Exp $";
+static const char* IDENT_MD5_C="$Date: 2002/08/01 11:41:17 $";
 
 #include <string.h>
 

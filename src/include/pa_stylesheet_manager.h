@@ -10,7 +10,7 @@
 #ifndef PA_STYLESHEET_MANAGER_H
 #define PA_STYLESHEET_MANAGER_H
 
-static const char* IDENT_STYLESHEET_MANAGER_H="$Id: pa_stylesheet_manager.h,v 1.13 2002/08/01 11:26:48 paf Exp $";
+static const char* IDENT_STYLESHEET_MANAGER_H="$Date: 2002/08/01 11:41:16 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"

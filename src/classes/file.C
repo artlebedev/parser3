@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Id: file.C,v 1.91 2002/08/01 11:26:43 paf Exp $";
+static const char* IDENT_FILE_C="$Date: 2002/08/01 11:41:12 $";
 
 #include "pa_config_includes.h"
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMPILE_C="$Id: compile.C,v 1.64 2002/08/01 11:26:49 paf Exp $";
+static const char* IDENT_COMPILE_C="$Date: 2002/08/01 11:41:17 $";
 
 #include "pa_opcode.h"
 #include "pa_request.h"

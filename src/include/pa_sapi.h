@@ -8,7 +8,7 @@
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-static const char* IDENT_SAPI_H="$Id: pa_sapi.h,v 1.20 2002/08/01 11:26:47 paf Exp $";
+static const char* IDENT_SAPI_H="$Date: 2002/08/01 11:41:15 $";
 
 #include "pa_pool.h"
 #include "pa_types.h"

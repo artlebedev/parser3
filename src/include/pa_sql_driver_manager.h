@@ -9,7 +9,7 @@
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
 
-static const char* IDENT_SQL_DRIVER_MANAGER_H="$Id: pa_sql_driver_manager.h,v 1.24 2002/08/01 11:26:48 paf Exp $";
+static const char* IDENT_SQL_DRIVER_MANAGER_H="$Date: 2002/08/01 11:41:16 $";
 
 #include "pa_pool.h"
 #include "pa_sql_driver.h"

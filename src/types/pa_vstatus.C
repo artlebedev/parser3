@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VSTATUS_C="$Id: pa_vstatus.C,v 1.8 2002/08/01 11:26:57 paf Exp $";
+static const char* IDENT_VSTATUS_C="$Date: 2002/08/01 11:41:25 $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"

@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Id: pa_exec.C,v 1.38 2002/08/01 11:26:50 paf Exp $";
+static const char* IDENT_EXEC_C="$Date: 2002/08/01 11:41:18 $";
 
 #include "pa_config_includes.h"
 

@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char* IDENT_SQL_DRIVER_H="$Id: pa_sql_driver.h,v 1.27 2002/08/01 11:26:51 paf Exp $";
+static const char* IDENT_SQL_DRIVER_H="$Date: 2002/08/01 11:41:20 $";
 
 #include <sys/types.h>
 

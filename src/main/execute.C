@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Id: execute.C,v 1.243 2002/08/01 11:26:49 paf Exp $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/08/01 11:41:17 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 

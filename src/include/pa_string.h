@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char* IDENT_STRING_H="$Id: pa_string.h,v 1.140 2002/08/01 11:26:48 paf Exp $";
+static const char* IDENT_STRING_H="$Date: 2002/08/01 11:41:16 $";
 
 #include "pa_pool.h"
 #include "pa_types.h"

@@ -8,7 +8,7 @@
 #ifndef PA_TYPES_H
 #define PA_TYPES_H
 
-static const char* IDENT_TYPES_H="$Id: pa_types.h,v 1.42 2002/08/01 11:26:48 paf Exp $";
+static const char* IDENT_TYPES_H="$Date: 2002/08/01 11:41:16 $";
 
 #include "pa_config_includes.h"
 

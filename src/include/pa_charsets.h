@@ -11,7 +11,7 @@
 #ifndef PA_CHARSETS_H
 #define PA_CHARSETS_H
 
-static const char* IDENT_CHARSETS_H="$Id: pa_charsets.h,v 1.6 2002/08/01 11:26:46 paf Exp $";
+static const char* IDENT_CHARSETS_H="$Date: 2002/08/01 11:41:15 $";
 
 #include "pa_hash.h"
 

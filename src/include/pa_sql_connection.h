@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char* IDENT_SQL_CONNECTION_H="$Id: pa_sql_connection.h,v 1.25 2002/08/01 11:26:47 paf Exp $";
+static const char* IDENT_SQL_CONNECTION_H="$Date: 2002/08/01 11:41:16 $";
 
 #include "pa_pool.h"
 #include "pa_sql_driver.h"

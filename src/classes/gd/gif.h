@@ -18,7 +18,7 @@
 #ifndef GIF_H
 #define GIF_H
 
-static const char* IDENT_GIF_H="$Id: gif.h,v 1.21 2002/08/01 11:26:45 paf Exp $";
+static const char* IDENT_GIF_H="$Date: 2002/08/01 11:41:13 $";
 
 #include "pa_config_includes.h"
 

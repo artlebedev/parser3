@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VRESPONSE_C="$Id: pa_vresponse.C,v 1.6 2002/08/01 11:26:56 paf Exp $";
+static const char* IDENT_VRESPONSE_C="$Date: 2002/08/01 11:41:24 $";
 
 #include "pa_vresponse.h"
 #include "pa_charsets.h"

@@ -8,7 +8,7 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-static const char* IDENT_VINT_H="$Id: pa_vint.h,v 1.35 2002/08/01 11:26:55 paf Exp $";
+static const char* IDENT_VINT_H="$Date: 2002/08/01 11:41:23 $";
 
 #include "classes.h"
 #include "pa_common.h"

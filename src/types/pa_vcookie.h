@@ -8,7 +8,7 @@
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
 
-static const char* IDENT_VCOOKIE_H="$Id: pa_vcookie.h,v 1.17 2002/08/01 11:26:54 paf Exp $";
+static const char* IDENT_VCOOKIE_H="$Date: 2002/08/01 11:41:22 $";
 
 #include "pa_hash.h"
 #include "pa_common.h"

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Id: parser3.C,v 1.189 2002/08/01 11:26:52 paf Exp $";
+static const char* IDENT_PARSER3_C="$Date: 2002/08/01 11:41:21 $";
 
 #include "pa_config_includes.h"
 

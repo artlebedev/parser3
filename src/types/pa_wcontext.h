@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char* IDENT_WCONTEXT_H="$Id: pa_wcontext.h,v 1.33 2002/08/01 11:26:58 paf Exp $";
+static const char* IDENT_WCONTEXT_H="$Date: 2002/08/01 11:41:26 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"

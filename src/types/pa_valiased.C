@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VALIASED_C="$Id: pa_valiased.C,v 1.15 2002/08/01 11:26:53 paf Exp $";
+static const char* IDENT_VALIASED_C="$Date: 2002/08/01 11:41:21 $";
 
 #include "pa_valiased.h"
 #include "pa_vstateless_class.h"

@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-static const char* IDENT_DIR_H="$Id: pa_dir.h,v 1.11 2002/08/01 11:26:46 paf Exp $";
+static const char* IDENT_DIR_H="$Date: 2002/08/01 11:41:15 $";
 
 #include "pa_config_includes.h"
 

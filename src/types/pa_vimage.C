@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VIMAGE_C="$Id: pa_vimage.C,v 1.18 2002/08/01 11:26:55 paf Exp $";
+static const char* IDENT_VIMAGE_C="$Date: 2002/08/01 11:41:23 $";
 
 #include "pa_vimage.h"
 #include "pa_vint.h"

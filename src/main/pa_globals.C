@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Id: pa_globals.C,v 1.133 2002/08/01 11:26:50 paf Exp $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/08/01 11:41:18 $";
 
 #include "pa_config_includes.h"
 

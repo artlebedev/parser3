@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char* IDENT_COMPILE_TOOLS_H="$Id: compile_tools.h,v 1.62 2002/08/01 11:26:49 paf Exp $";
+static const char* IDENT_COMPILE_TOOLS_H="$Date: 2002/08/01 11:41:17 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"

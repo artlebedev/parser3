@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Id: untaint.C,v 1.103 2002/08/01 11:26:51 paf Exp $";
+static const char* IDENT_UNTAINT_C="$Date: 2002/08/01 11:41:19 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"

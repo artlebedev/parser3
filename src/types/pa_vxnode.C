@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXNODE_C="$Id: pa_vxnode.C,v 1.18 2002/08/01 11:26:57 paf Exp $";
+static const char* IDENT_VXNODE_C="$Date: 2002/08/01 11:41:25 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"

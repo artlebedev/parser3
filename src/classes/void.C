@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VOID_C="$Id: void.C,v 1.20 2002/08/01 11:26:44 paf Exp $";
+static const char* IDENT_VOID_C="$Date: 2002/08/01 11:41:13 $";
 
 #include "classes.h"
 #include "pa_request.h"

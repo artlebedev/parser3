@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXDOC="$Id: pa_vxdoc.C,v 1.14 2002/08/01 11:26:57 paf Exp $";
+static const char* IDENT_VXDOC="$Date: 2002/08/01 11:41:25 $";
 
 #include "pa_vxdoc.h"
 

@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Id: pa_vobject.h,v 1.19 2002/08/01 11:26:56 paf Exp $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/08/01 11:41:24 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"

@@ -8,7 +8,7 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-static const char* IDENT_VREQUEST_H="$Id: pa_vrequest.h,v 1.18 2002/08/01 11:26:56 paf Exp $";
+static const char* IDENT_VREQUEST_H="$Date: 2002/08/01 11:41:24 $";
 
 #include "pa_common.h"
 #include "pa_value.h"

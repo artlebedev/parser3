@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Id: xdoc.C,v 1.96 2002/08/01 11:26:44 paf Exp $";
+static const char* IDENT_XDOC_C="$Date: 2002/08/01 11:41:13 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"

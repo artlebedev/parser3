@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char* IDENT_VFILE_H="$Id: pa_vfile.h,v 1.43 2002/08/01 11:26:54 paf Exp $";
+static const char* IDENT_VFILE_H="$Date: 2002/08/01 11:41:22 $";
 
 #include "classes.h"
 #include "pa_common.h"

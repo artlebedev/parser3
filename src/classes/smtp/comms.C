@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMS_C="$Id: comms.C,v 1.9 2002/08/01 11:26:45 paf Exp $";
+static const char* IDENT_COMMS_C="$Date: 2002/08/01 11:41:14 $";
 
 #include "smtp.h"
 #include <winsock.h>

@@ -8,7 +8,7 @@
 #ifndef PA_VALIASED_H
 #define PA_VALIASED_H
 
-static const char* IDENT_VALIASED_H="$Id: pa_valiased.h,v 1.21 2002/08/01 11:26:53 paf Exp $";
+static const char* IDENT_VALIASED_H="$Date: 2002/08/01 11:41:21 $";
 
 #include "pa_globals.h"
 #include "pa_value.h"

@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_OBJECT_H
 #define PA_VSTATELESS_OBJECT_H
 
-static const char* IDENT_VSTATELESS_OBJECT_H="$Id: pa_vstateless_object.h,v 1.18 2002/08/01 11:26:57 paf Exp $";
+static const char* IDENT_VSTATELESS_OBJECT_H="$Date: 2002/08/01 11:41:25 $";
 
 #include "pa_valiased.h"
 #include "pa_vjunction.h"

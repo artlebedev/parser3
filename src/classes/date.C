@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Id: date.C,v 1.32 2002/08/01 11:26:43 paf Exp $";
+static const char* IDENT_DATE_C="$Date: 2002/08/01 11:41:12 $";
 
 #include "classes.h"
 #include "pa_request.h"

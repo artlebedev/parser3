@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VTABLE_C="$Id: pa_vtable.C,v 1.14 2002/08/01 11:26:57 paf Exp $";
+static const char* IDENT_VTABLE_C="$Date: 2002/08/01 11:41:25 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"

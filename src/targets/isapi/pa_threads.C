@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_THREADS_C="$Id: pa_threads.C,v 1.11 2002/08/01 11:26:53 paf Exp $";
+static const char* IDENT_THREADS_C="$Date: 2002/08/01 11:41:21 $";
 
 #include "pa_threads.h"
 

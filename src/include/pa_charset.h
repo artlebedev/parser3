@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char* IDENT_CHARSET_H="$Id: pa_charset.h,v 1.17 2002/08/01 11:26:46 paf Exp $";
+static const char* IDENT_CHARSET_H="$Date: 2002/08/01 11:41:14 $";
 
 #include "pa_pool.h"
 #include "pa_exception.h"

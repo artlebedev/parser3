@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Id: mail.C,v 1.73 2002/08/01 11:26:44 paf Exp $";
+static const char* IDENT_MAIL_C="$Date: 2002/08/01 11:41:12 $";
 
 #include "pa_config_includes.h"
 

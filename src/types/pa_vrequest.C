@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VREQUEST_C="$Id: pa_vrequest.C,v 1.18 2002/08/01 11:26:56 paf Exp $";
+static const char* IDENT_VREQUEST_C="$Date: 2002/08/01 11:41:24 $";
 
 #include "pa_vrequest.h"
 #include "pa_request.h"

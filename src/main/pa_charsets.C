@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSETS_C="$Id: pa_charsets.C,v 1.9 2002/08/01 11:26:49 paf Exp $";
+static const char* IDENT_CHARSETS_C="$Date: 2002/08/01 11:41:18 $";
 
 #include "pa_charsets.h"
 #include "pa_charset.h"

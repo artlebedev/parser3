@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char* IDENT_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.14 2002/08/01 11:26:56 paf Exp $";
+static const char* IDENT_VSTATELESS_CLASS_C="$Date: 2002/08/01 11:41:24 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"

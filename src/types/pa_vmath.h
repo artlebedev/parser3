@@ -8,7 +8,7 @@
 #ifndef PA_VMATH_H
 #define PA_VMATH_H
 
-static const char* IDENT_VMATH_H="$Id: pa_vmath.h,v 1.8 2002/08/01 11:26:56 paf Exp $";
+static const char* IDENT_VMATH_H="$Date: 2002/08/01 11:41:24 $";
 
 #include "classes.h"
 #include "pa_common.h"

@@ -8,7 +8,7 @@
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-static const char* IDENT_VTABLE_H="$Id: pa_vtable.h,v 1.39 2002/08/01 11:26:57 paf Exp $";
+static const char* IDENT_VTABLE_H="$Date: 2002/08/01 11:41:25 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"

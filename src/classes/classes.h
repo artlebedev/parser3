@@ -7,7 +7,7 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-static const char* IDENT_CLASSES_H="$Id: classes.h,v 1.20 2002/08/01 11:26:43 paf Exp $";
+static const char* IDENT_CLASSES_H="$Date: 2002/08/01 11:41:11 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_array.h"

@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char* IDENT_VFORM_H="$Id: pa_vform.h,v 1.36 2002/08/01 11:26:55 paf Exp $";
+static const char* IDENT_VFORM_H="$Date: 2002/08/01 11:41:23 $";
 
 #include "classes.h"
 #include "pa_common.h"

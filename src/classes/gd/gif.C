@@ -14,7 +14,7 @@
 	can incorporate them into new versions. 
 */
 
-static const char* IDENT_GIF_C="$Id: gif.C,v 1.27 2002/08/01 11:26:45 paf Exp $";
+static const char* IDENT_GIF_C="$Date: 2002/08/01 11:41:13 $";
 
 #include "gif.h"
 

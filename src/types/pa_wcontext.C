@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_WCONTEXT_C="$Id: pa_wcontext.C,v 1.20 2002/08/01 11:26:58 paf Exp $";
+static const char* IDENT_WCONTEXT_C="$Date: 2002/08/01 11:41:25 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"

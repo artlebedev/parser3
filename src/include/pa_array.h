@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char* IDENT_ARRAY_Y="$Id: pa_array.h,v 1.54 2002/08/01 11:26:46 paf Exp $";
+static const char* IDENT_ARRAY_Y="$Date: 2002/08/01 11:41:14 $";
 
 #include "pa_pool.h"
 #include "pa_types.h"

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DICTIONARY_C="$Id: pa_dictionary.C,v 1.15 2002/08/01 11:26:50 paf Exp $";
+static const char* IDENT_DICTIONARY_C="$Date: 2002/08/01 11:41:18 $";
 
 #include "pa_dictionary.h"
 #include "pa_exception.h"

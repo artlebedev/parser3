@@ -9,7 +9,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char* IDENT_HASH_H="$Id: pa_hash.h,v 1.56 2002/08/01 11:26:47 paf Exp $";
+static const char* IDENT_HASH_H="$Date: 2002/08/01 11:41:15 $";
 
 #include "pa_pool.h"
 #include "pa_types.h"

@@ -35,7 +35,7 @@
  ** CompuServe Incorporated.
 */
 
-static const char* IDENT_GIFIO_C="$Id: gifio.C,v 1.19 2002/08/01 11:26:45 paf Exp $";
+static const char* IDENT_GIFIO_C="$Date: 2002/08/01 11:41:14 $";
 
 #include "gif.h"
 

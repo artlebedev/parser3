@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VALUE_C="$Id: pa_value.C,v 1.2 2002/08/01 11:26:53 paf Exp $";
+static const char* IDENT_VALUE_C="$Date: 2002/08/01 11:41:21 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_POOL_C="$Id: pa_pool.C,v 1.39 2002/08/01 11:26:52 paf Exp $";
+static const char* IDENT_POOL_C="$Date: 2002/08/01 11:41:20 $";
 
 #include "pa_pool.h"
 #include "pool_storage.h"

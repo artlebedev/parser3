@@ -8,7 +8,7 @@
 #ifndef PA_VENV_H
 #define PA_VENV_H
 
-static const char* IDENT_VENV_H="$Id: pa_venv.h,v 1.22 2002/08/01 11:26:54 paf Exp $";
+static const char* IDENT_VENV_H="$Date: 2002/08/01 11:41:22 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"

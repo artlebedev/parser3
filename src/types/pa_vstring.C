@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VSTRING_C="$Id: pa_vstring.C,v 1.20 2002/08/01 11:26:57 paf Exp $";
+static const char* IDENT_VSTRING_C="$Date: 2002/08/01 11:41:25 $";
 
 #include "pa_vstring.h"
 #include "pa_vfile.h"

@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char* IDENT_VIMAGE_H="$Id: pa_vimage.h,v 1.26 2002/08/01 11:26:55 paf Exp $";
+static const char* IDENT_VIMAGE_H="$Date: 2002/08/01 11:41:23 $";
 
 #include "classes.h"
 #include "pa_common.h"
