@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2004/05/25 06:20:48 $";
+static const char * const IDENT_EXEC_C="$Date: 2004/07/06 12:55:16 $";
 
 #include "pa_config_includes.h"
 
@@ -312,7 +312,7 @@ static void append_env_pair(HashStringString::key_type key, HashStringString::va
 	String::Body body;
 	body << key << "=" << value;
 
-	*(info->env_ref++)=body.cstrm();
+	*(info->env_ref++)=body.cstrm(String::L_UNSPECIFIED);
 #endif
 }
 
