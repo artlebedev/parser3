@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2003/04/18 10:12:05 $";
+static const char* IDENT_UNTAINT_C="$Date: 2003/08/15 11:22:05 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -373,6 +373,14 @@ static bool mail_header_char_valid_within_Qencoded(char c) {
 		|| c>='0' && c<='9'
 		|| strchr("!*+-/", c);
 }
+static bool addr_spec_soon(const char *src, const char* end) {
+	for(; src<end; src++)
+		if(*src=='<')
+			return true;
+		else if(!(*src==' ' || *src=='\t'))
+			return false;
+	return false;
+}
 char *String::store_to(char *dest, Untaint_lang lang, 
 					   SQL_Connection *connection,
 					   Charset *store_to_charset,
@@ -458,7 +466,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				bool email=false;
 				for(const char *end=src+mail_size; src<end; src++) {
 					//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
-					if(to_quoted_printable && (*src==',' || *src=='<')) {
+					if(to_quoted_printable && (*src==',' || addr_spec_soon(src, end) || *src=='"')) {
 						email=*src=='<';
 						dest+=sprintf(dest, "?=");
 						to_quoted_printable=false;
