@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.50 2001/10/12 12:15:32 parser Exp $
+	$Id: parser3isapi.C,v 1.51 2001/10/12 14:28:48 parser Exp $
 */
 
 #ifndef _MSC_VER
@@ -24,6 +24,10 @@
 #include "pa_version.h"
 #include "pool_storage.h"
 #include "pa_socks.h"
+
+#ifdef XML
+#include <XalanTransformer/XalanCAPI.h>
+#endif
 
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
 
@@ -97,7 +101,7 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 	const char *prefix="PARSER_ERROR:";
 	strcpy(buf, prefix);
 	char *start=buf+strlen(prefix);
-	size_t size=vsnprintf(start, MAX_STRING-strlen(prefix), fmt, args);
+	DWORD size=vsnprintf(start, MAX_STRING-strlen(prefix), fmt, args);
 	remove_crlf(start, start+size);
 
 	ctx.lpECB->ServerSupportFunction(ctx.lpECB->ConnID, 
