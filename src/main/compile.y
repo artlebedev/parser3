@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.177 2002/01/31 16:39:01 paf Exp $
+	$Id: compile.y,v 1.178 2002/01/31 17:12:04 paf Exp $
 */
 
 /**
@@ -471,6 +471,9 @@ class_prefix:
 |	class_constructor_prefix
 ;
 class_static_prefix: STRING ':' {
+	// drop allow code after "name:"
+	PC.operator_call_allowed=false; 
+	
 	$$=$1; // stack: class name string
 	O($$, OP_GET_CLASS);
 };
