@@ -1,18 +1,3 @@
-dnl acinclude.m4(
-
-AC_DEFUN(CALC_ARGS,[
-
-AC_ARG_WITH(pgsql_inc,[  --with-pgsql_inc[=DIR]      DIR is the PgSQL includes directory],,
-	withval="/usr/local/pgsql/include"
-)
-PGSQL_INC=$withval
-AC_SUBST(PGSQL_INC)
-
-])
-
-dnl acinclude.m4)
-
-
 ## libtool.m4 - Configure libtool for the target system. -*-Shell-script-*-
 ## Copyright (C) 1996-1999, 2000 Free Software Foundation, Inc.
 ## Originally by Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996

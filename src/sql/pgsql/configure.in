@@ -4,6 +4,15 @@ AM_INIT_AUTOMAKE(parser3pgsqlclient, 3.0g, nodefine)
 
 AM_CONFIG_HEADER(config_auto.h)
 
+dnl Arguments
+
+AC_ARG_WITH(pgsql_inc,[  --with-pgsql_inc[=DIR]      DIR is the PgSQL includes directory],,
+	withval="/usr/local/pgsql/include"
+)
+PGSQL_INC=$withval
+AC_SUBST(PGSQL_INC)
+
+
 dnl Checks for programs.
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET

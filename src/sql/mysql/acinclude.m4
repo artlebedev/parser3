@@ -1,18 +1,3 @@
-dnl acinclude.m4(
-
-AC_DEFUN(CALC_ARGS,[
-
-AC_ARG_WITH(mysql_inc,[  --with-mysql_inc[=DIR]      DIR is the MySQL includes directory],,
-	withval="/usr/include/mysql"
-)
-MYSQL_INC=$withval
-AC_SUBST(MYSQL_INC)
-
-])
-
-dnl acinclude.m4)
-
-
 ## libtool.m4 - Configure libtool for the target system. -*-Shell-script-*-
 ## Copyright (C) 1996-1999, 2000 Free Software Foundation, Inc.
 ## Originally by Gordon Matzigkeit <gord@gnu.ai.mit.edu>, 1996

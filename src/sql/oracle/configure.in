@@ -4,6 +4,21 @@ AM_INIT_AUTOMAKE(parser3oracleclient, 3.0g, nodefine)
 
 AM_CONFIG_HEADER(config_auto.h)
 
+dnl Arguments
+
+AC_ARG_WITH(oracleoci_inc,[  --with-oracleoci_inc[=DIR]      DIR is the Oracle OCI includes directory],,
+	withval="$ORACLE_HOME/rdbms/demo"
+)
+ORACLEOCI_INC=$withval
+AC_SUBST(ORACLEOCI_INC)
+
+AC_ARG_WITH(oraclepublic_inc,[  --with-oraclepublic_inc[=DIR]      DIR is the Oracle public includes directory],,
+	withval="$ORACLE_HOME/network/public"
+)
+ORACLEPUBLIC_INC=$withval
+AC_SUBST(ORACLEPUBLIC_INC)
+
+
 dnl Checks for programs.
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -25,8 +40,6 @@ dnl Configure libtool
 AM_PROG_LIBTOOL
 dnl Configure libltdl
 AC_CONFIG_SUBDIRS(libltdl)
-
-CALC_ARGS
 
 dnl Checks for libraries.
 

@@ -4,6 +4,15 @@ AM_INIT_AUTOMAKE(parser3mysqlclient, 3.0g, nodefine)
 
 AM_CONFIG_HEADER(config_auto.h)
 
+dnl Arguments
+
+AC_ARG_WITH(mysql_inc,[  --with-mysql_inc[=DIR]      DIR is the MySQL includes directory],,
+	withval="/usr/include/mysql"
+)
+MYSQL_INC=$withval
+AC_SUBST(MYSQL_INC)
+
+
 dnl Checks for programs.
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -25,8 +34,6 @@ dnl Configure libtool
 AM_PROG_LIBTOOL
 dnl Configure libltdl
 AC_CONFIG_SUBDIRS(libltdl)
-
-CALC_ARGS
 
 dnl Checks for libraries.
 
