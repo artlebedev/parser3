@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.3 2001/01/30 13:43:43 paf Exp $
+  $Id: parser.C,v 1.4 2001/01/30 14:57:42 paf Exp $
 */
 
 #include <stdio.h>
@@ -9,7 +9,7 @@
 #include "pa_array.h"
 #include "pa_table.h"
 #include "pa_common.h"
-#include "pool.h"
+#include "pa_pool.h"
 
 char *itoa(int n, char *buf){
     snprintf(buf,MAX_STRING,"%d",n);
@@ -19,7 +19,7 @@ char *itoa(int n, char *buf){
 int main(int argc, char *argv[]) {
 	Exception fatal_exception;
 	if(EXCEPTION_TRY(fatal_exception)) {
-		parser_Pool pool(fatal_exception);
+		Pool pool(fatal_exception);
 		
 		char *file="file1";
 		String& string=pool.make_string();
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 			asum.get_cstr(0), 
 			asum.get_cstr(1));
 
-		parser_Pool request_pool(fatal_exception);
+		Pool request_pool(fatal_exception);
 		Request request(request_pool);
 
 		Exception operator_exception;

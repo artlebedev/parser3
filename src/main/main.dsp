@@ -103,19 +103,11 @@ SOURCE=.\pa_hash.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\pa_pool.C
-# End Source File
-# Begin Source File
-
 SOURCE=.\pa_string.C
 # End Source File
 # Begin Source File
 
 SOURCE=.\pa_table.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_threads.C
 # End Source File
 # End Group
 # Begin Group "include"

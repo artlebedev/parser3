@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.19 2001/01/30 13:43:42 paf Exp $
+  $Id: pa_pool.h,v 1.20 2001/01/30 14:57:41 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -48,10 +48,10 @@ public:
 		return *new(this) Table(this, afile, aline, acolumns, initial_rows);
 	}*/
 
-protected: // pure virtuals
+protected: // implementation defined
 
-    virtual void *real_malloc(size_t size)=0;
-    virtual void *real_calloc(size_t size)=0;
+    void *real_malloc(size_t size);
+    void *real_calloc(size_t size);
 
 protected:
 
