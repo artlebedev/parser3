@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.29 2001/07/18 10:06:04 parser Exp $
+	$Id: pa_vstring.h,v 1.30 2001/08/10 10:24:09 parser Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -23,6 +23,8 @@ class VString : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "string"; }
+	/// - VString: eq ''=false, ne ''=true
+	bool is_defined() const { return size()!=0; }
 	/// VString: true
 	bool is_string() const { return true; }
 	/// VString: fstring as VDouble or this depending on return_string_as_is
