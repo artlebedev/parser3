@@ -1,5 +1,5 @@
 #this read configure.in comment on stdc++ about next line
-#CXXLD=$(CC)
+CXXLD=$(CC)
 
 INCLUDES = -I../../classes -I../../types -I../../sql -I../../pcre -I$(INCLTDL) @XML_INCLUDES@
 

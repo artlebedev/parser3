@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.157 2002/02/18 08:39:17 paf Exp $
+	$Id: parser3.C,v 1.158 2002/02/18 08:45:45 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -28,7 +28,7 @@
 #	include <windows.h>
 #endif
 
-#define DEBUG_POOL_MALLOC
+//#define DEBUG_POOL_MALLOC
 
 // consts
 

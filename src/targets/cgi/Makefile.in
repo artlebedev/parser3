@@ -11,7 +11,6 @@
 # PARTICULAR PURPOSE.
 
 #this read configure.in comment on stdc++ about next line
-#CXXLD=$(CC)
 
 
 SHELL = @SHELL@
@@ -85,6 +84,8 @@ host_os = @host_os@
 rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
+CXXLD = $(CC)
+
 INCLUDES = -I../../classes -I../../types -I../../sql -I../../pcre -I$(INCLTDL) @XML_INCLUDES@
 
 bin_PROGRAMS = parser3
@@ -113,7 +114,6 @@ parser3_DEPENDENCIES =  ../../main/libmain.a ../../classes/libclasses.a \
 parser3_LDFLAGS = 
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
 HEADERS =  $(noinst_HEADERS)
 
