@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.130 2001/12/13 10:24:12 paf Exp $
+	$Id: pa_string.C,v 1.131 2001/12/13 10:47:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -398,7 +398,7 @@ break2:
 int String::pos(const String& substr, 
 				int result, Untaint_lang lang) const {
 	size_t self_size=size();
-	for(; result<self_size; result++) {
+	for(; size_t(result)<self_size; result++) {
 		int partial; cmp(partial, substr, result, lang);
 		if(
 			partial==0 || // full match
@@ -412,7 +412,7 @@ int String::pos(const String& substr,
 int String::pos(const char *substr, size_t substr_size, 
 				int result, Untaint_lang lang) const {
 	size_t self_size=size();
-	for(; result<self_size; result++) {
+	for(; size_t(result)<self_size; result++) {
 		int partial; cmp(partial, substr, substr_size, result, lang);
 		if(
 			partial==0 || // full match

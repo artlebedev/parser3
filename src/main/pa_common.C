@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.93 2001/12/07 15:24:47 paf Exp $
+	$Id: pa_common.C,v 1.94 2001/12/13 10:47:34 paf Exp $
 */
 
 #include "pa_common.h"
@@ -174,7 +174,7 @@ bool file_read(Pool& pool, const String& file_spec,
 		if(!max_size) // eof
 			return true;
 
-		if(read_size<0 || read_size>max_size)
+		if(read_size<0 || size_t(read_size)>max_size)
 			throw Exception(0, 0, 
 				&file_spec, 
 				"read failed: actually read %d bytes count not in [0..%lu] valid range", 
