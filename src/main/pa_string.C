@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.145 2002/02/22 12:20:27 paf Exp $
+	$Id: pa_string.C,v 1.146 2002/02/22 12:25:45 paf Exp $
 */
 
 #include "pcre.h"
@@ -644,16 +644,14 @@ void String::join_chain(Pool& pool,
 		STRING_PREPARED_FOREACH_ROW(*this, 
 			if(row->item.lang==joined_lang) {
 				memcpy(ptr, row->item.ptr, row->item.size);  ptr+=row->item.size;
-			} else {
-				--row;  ++countdown; // step back from not-ours
-				break;
-			}
+			} else
+				break; // before non-ours
 		);
 		
 		// set pointers after joined piece
 		achunk=chunk;  arow=row;  acountdown=countdown;
 		// & one step back, see String::reconstruct
-		--row;  ++countdown;
+		--arow;  ++acountdown;
 	}
 }
 
