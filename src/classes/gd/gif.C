@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.15 2001/10/10 12:35:51 parser Exp $
+	$Id: gif.C,v 1.16 2001/10/16 07:47:16 parser Exp $
 
 	based on: gd
 
@@ -641,6 +641,95 @@ void gdImage::Copy(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int w, 
 		toy++;
 	}
 }			
+
+void gdImage::CopyResized(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int dstW, int dstH, int srcW, int srcH)
+{
+	gdImage& src=*this;
+	int c;
+	int x, y;
+	int tox, toy;
+	int ydest;
+	int i;
+	int colorMap[gdMaxColors];
+	/* Stretch vectors */
+	int *stx;
+	int *sty;
+	/* We only need to use floating point to determine the correct
+		stretch vector for one line's worth. */
+	double accum;
+	stx = (int *) malloc(sizeof(int) * srcW);
+	sty = (int *) malloc(sizeof(int) * srcH);
+	accum = 0;
+	for (i=0; (i < srcW); i++) {
+		int got;
+		accum += (double)dstW/(double)srcW;
+		got = floor(accum);
+		stx[i] = got;
+		accum -= got;
+	}
+	accum = 0;
+	for (i=0; (i < srcH); i++) {
+		int got;
+		accum += (double)dstH/(double)srcH;
+		got = floor(accum);
+		sty[i] = got;
+		accum -= got;
+	}
+	for (i=0; (i<gdMaxColors); i++) {
+		colorMap[i] = (-1);
+	}
+	toy = dstY;
+	for (y=srcY; (y < (srcY + srcH)); y++) {
+		for (ydest=0; (ydest < sty[y-srcY]); ydest++) {
+			tox = dstX;
+			for (x=srcX; (x < (srcX + srcW)); x++) {
+				int nc;
+				if (!stx[x - srcX]) {
+					continue;
+				}
+				c = src.GetPixel(x, y);
+				/* Added 7/24/95: support transparent copies */
+				if (src.GetTransparent() == c) {
+					tox += stx[x-srcX];
+					continue;
+				}
+				/* Have we established a mapping for this color? */
+				if (colorMap[c] == (-1)) {
+					/* If it's the same image, mapping is trivial */
+					if (&dst == &src) {
+						nc = c;
+					} else { 
+						/* First look for an exact match */
+						nc = dst.ColorExact(
+							src.red[c], src.green[c],
+							src.blue[c]);
+					}	
+					if (nc == (-1)) {
+						/* No, so try to allocate it */
+						nc = dst.ColorAllocate(
+							src.red[c], src.green[c],
+							src.blue[c]);
+						/* If we're out of colors, go for the
+							closest color */
+						if (nc == (-1)) {
+							nc = dst.ColorClosest(
+								src.red[c], src.green[c],
+								src.blue[c]);
+						}
+					}
+					colorMap[c] = nc;
+				}
+				for (i=0; (i < stx[x - srcX]); i++) {
+					dst.SetPixel(tox, toy, colorMap[c]);
+					tox++;
+				}
+			}
+			toy++;
+		}
+	}
+	free(stx);
+	free(sty);
+}
 
 static int gdGetWord(int *result, FILE *in)
 {
