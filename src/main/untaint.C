@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: untaint.C,v 1.56 2001/07/18 13:18:00 parser Exp $"; 
+static const char *RCSId="$Id: untaint.C,v 1.57 2001/07/28 12:01:50 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -306,6 +306,11 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				break;
 			case UL_USER_HTML: {
 				// tainted, untaint language: html-typo
+				if(!typo_table) // never, always has default
+					THROW(0, 0,
+						this,
+						"untaint to user-html lang failed, no typo table");
+
 				char *html_for_typo=
 					(char *)malloc(row->item.size*2/* '\n' -> '\' 'n' */+1);
 				// note:
@@ -320,16 +325,13 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					escape(switch(*src) {
 						// convinient name for typo match "\n"
 						case '\r': 
-							if(typo_table) {
-								*dest++='\\';  *dest++='n'; // \r -> \n
-								if(src[1]=='\n') { // \r\n -> remove \n
-									size--; src++;
-								}
+							to_string("\\n", 2); // \r -> "\n"
+							if(size && src[1]=='\n') { // \r\n -> remove \n
+								size--; src++;
 							}
 							break;
 						case '\n': 
-							if(typo_table)
-								to_string("\\n", 2);
+							to_string("\\n", 2);
 							break;
 						//TODO: XSLT case '\'': to_string("&apos;", 6);  break;
 						_default;

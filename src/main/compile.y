@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.157 2001/07/26 14:38:22 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.158 2001/07/28 12:01:50 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -914,7 +914,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case '&': case '|': 
 			case '=': case '!':
 			// common delimiters
-			case ',':
+			case ',': case '?':
 			// before call
 			case '^': 
 				pop_LS(PC);
