@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2003/11/20 17:19:27 $";
+static const char * const IDENT_DATE_C="$Date: 2003/11/27 10:20:32 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -261,7 +261,7 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 	memset(&tmIn, 0, sizeof(tmIn)); 
 	tmIn.tm_mday=1;
 	tmIn.tm_mon=month; 
-	tmIn.tm_yday=year-1900;
+	tmIn.tm_year=year-1900;
 
 	time_t t=mktime(&tmIn);
 	if(t<0)
@@ -295,7 +295,7 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 				memset(&tms, 0, sizeof(tmIn)); 
 				tms.tm_mday=_day;
 				tms.tm_mon=month; 
-				tms.tm_yday=year-1900;
+				tms.tm_year=year-1900;
 				
 				/*normalize*/mktime(&tms);
 
@@ -341,7 +341,7 @@ static Table& fill_week_days(Request& r, MethodParams& params, bool rus){
 	tmIn.tm_hour=18;
 	tmIn.tm_mday=day;
 	tmIn.tm_mon=month; 
-	tmIn.tm_yday=year-1900;
+	tmIn.tm_year=year-1900;
 		
 	time_t t=mktime(&tmIn);
 	if(t<0)
