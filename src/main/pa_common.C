@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/12/10 07:41:06 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/12/10 07:55:22 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -207,7 +207,7 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 
 #ifdef PA_USE_ALARM
 static sigjmp_buf timeout_env;
-static void timeout_handler(int sig){
+static void timeout_handler(int /*sig*/){
     siglongjmp(timeout_env, 1); 
 }
 #endif
@@ -222,19 +222,19 @@ static int http_request(char*& response, size_t& response_size,
 			0, 
 			"zero hostname");  //never
 
+	volatile int sock=-1;
 #ifdef PA_USE_ALARM
 	signal(SIGALRM, timeout_handler); 
 #endif
-	int sock=-1;
 #ifdef PA_USE_ALARM
 	if(sigsetjmp(timeout_env, 1)) {
 		// stupid gcc [2.95.4] generated bad code
 		// which failed to handle sigsetjmp+throw: crashed inside of pre-throw code.
-		// rewritten simplier [though duplicating closesocket code]
+		// rewritten simplier [athough duplicating closesocket code]
 		if(sock>=0) 
 			closesocket(sock); 
 		throw Exception("http.timeout", 
-			origin_string, 
+			0, 
 			"timeout occured while retrieving document"); 
 		return 0; // never
 	} else {
