@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.6 2001/10/24 10:26:16 parser Exp $
+	$Id: hashfile.C,v 1.7 2001/10/24 10:49:47 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -103,6 +103,46 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 	r.write_no_lang(result);
 }
 
+static void _cache(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VHashfile& self=*static_cast<VHashfile *>(r.self);
+	
+	// key, expires, body code
+	const String &key=params->as_string(0, "key must be string");
+	double expires=params->as_double(1, "expires must be number", r);
+	Value& body_code=params->as_junction(2, "body must be code");
+
+	// connection
+	DB_Connection& connection=self.get_connection(&method_name);
+
+	// transaction
+	Auto_transaction transaction(connection);
+
+	// execute body
+	try {
+		if(expires) { // 'expires' specified? try cached copy...
+			if(String *cached_body=connection.get(key)) { // have cached copy?
+				r.write_assign_lang(*cached_body);
+				// happy with it
+				return;
+			}
+		} else // 'expires'=0, forget cached copy
+			connection.remove(key);
+
+		// process
+		Value& processed_body=r.process(body_code);
+		r.write_assign_lang(processed_body);
+		
+		// put it to cache if 'expires' specified
+		if(expires)
+			connection.put(key, processed_body.as_string(), time(0)+(time_t)expires);
+	} catch(...) { // process/commit problem
+		transaction.mark_to_rollback();
+		
+		/*re*/throw; 
+	}
+}
+
 // constructor
 
 MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
@@ -118,12 +158,8 @@ MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
 	add_native_method("clear", Method::CT_STATIC, _clear, 1, 1);
 	// ^hash[]
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
-/*
 	// ^cache[key](seconds){code}
 	add_native_method("cache", Method::CT_DYNAMIC, _cache, 3, 3);
-	// ^cancel[]
-	add_native_method("cancel", Method::CT_DYNAMIC, _cancel, 0, 0);
-	*/
 }
 
 // global variable

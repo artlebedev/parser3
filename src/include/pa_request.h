@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.105 2001/10/22 08:27:44 parser Exp $
+	$Id: pa_request.h,v 1.106 2001/10/24 10:49:47 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -117,6 +117,10 @@ public:
 	/// appending possible string, assigning untaint language
 	void write_assign_lang(Value& avalue) {
 		wcontext->write(avalue, flang); 
+	}
+	/// appending string, assigning untaint language
+	void write_assign_lang(const String& astring) {
+		wcontext->write(astring, flang); 
 	}
 	/// appending possible string, passing language built into string being written
 	void write_pass_lang(Value& avalue) {

@@ -1,5 +1,6 @@
 @main[]
-^thashfileexp[]
+^tcache[]
+#^thashfileexp[]
 #^tcounter[]
 #^tablehash[]
 #^hashfile[]
@@ -43,10 +44,18 @@
 #^header[]
 OK
 
+@tcache[]
+#^hashfile:clear[cache]
+$code[^hashfile::open[cache]]
+^code.cache[key](10){
+	^eval(2*3)
+}
+
+
 @thashfileexp[]
 $hf[^hashfile::open[hashfile]]
-#$hf.paf[$.value[крут] $.expires(3)]
-#paf=$hf.paf
+$hf.paf[$.value[крут] $.expires(3)]
+paf=$hf.paf
 <hr>
 $hash[^hf.hash[]]
 =$hash.paf=
