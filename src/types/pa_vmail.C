@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2005/01/31 08:53:22 $";
+static const char * const IDENT_VMAIL_C="$Date: 2005/01/31 11:30:35 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -156,17 +156,19 @@ static void MimePart2body(GMimePart *part, gpointer data) {
 			partType=P_FILE;
 		
 		// partName
-		const char* partName;
+		const char* partNameNumbered;
 		char partNameBuf[MAX_STRING];
 		const char* partNameStart=part_name_begins[partType];
-		if(int partNo=info.partCounts[partType]++) {
-			snprintf(partNameBuf, MAX_STRING, "%s%d", partNameStart, partNo);
-			partName=partNameBuf;
-		} else
-			partName=partNameStart;
+		int partNo=++info.partCounts[partType];
+		snprintf(partNameBuf, MAX_STRING, "%s%d", partNameStart, partNo);
+		partNameNumbered=partNameBuf;
 		
 		// $.partX[ 
-		VHash* vpartX(new VHash);  putReceived(source_charset, *info.body, partName, vpartX);
+		VHash* vpartX(new VHash);  
+		putReceived(source_charset, *info.body, partNameNumbered, vpartX);
+		if(partNo==1)
+			putReceived(source_charset, *info.body, partNameStart, vpartX);
+			
 		HashStringValue& partX=vpartX->hash();
 		{
 			// $.raw[
