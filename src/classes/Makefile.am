@@ -1,4 +1,3 @@
-SUBDIRS = gd smtp
 INCLUDES = -I../types -I../sql -I../lib/pcre -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/apr-include -Igd @XML_INCLUDES@ -I../lib/md5
 
 noinst_LIBRARIES = libclasses.a

@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="smtp"
-	SccProjectName="smtp"
+	Name="gd"
+	ProjectGUID="{B95DF5BC-85D8-4B4C-AF72-113B99592D38}"
+	SccProjectName="gd"
 	SccAuxPath=""
 	SccLocalPath="."
 	SccProvider="MSSCCI:Jalindi Igloo"
@@ -13,6 +14,56 @@
 			Name="Win32"/>
 	</Platforms>
 	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory=".\Debug"
+			IntermediateDirectory=".\Debug"
+			ConfigurationType="4"
+			UseOfMFC="2"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\..\include;..\..\types;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\gnome-xml\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				PrecompiledHeaderFile=".\Debug/gd.pch"
+				AssemblerListingLocation=".\Debug/"
+				ObjectFile=".\Debug/"
+				ProgramDataBaseFileName=".\Debug/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
+				CompileAs="2"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile=".\Debug\gd.lib"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1049"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
 		<Configuration
 			Name="Profile Release|Win32"
 			OutputDirectory=".\ProfileRelease"
@@ -25,12 +76,12 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\gnome-xml\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
+				AdditionalIncludeDirectories="..\..\include;..\..\types;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\gnome-xml\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
-				PrecompiledHeaderFile=".\ProfileRelease/smtp.pch"
+				PrecompiledHeaderFile=".\ProfileRelease/gd.pch"
 				AssemblerListingLocation=".\ProfileRelease/"
 				ObjectFile=".\ProfileRelease/"
 				ProgramDataBaseFileName=".\ProfileRelease/"
@@ -42,7 +93,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\ProfileRelease\smtp.lib"
+				OutputFile=".\ProfileRelease\gd.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -77,16 +128,16 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\gnome-xml\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
+				AdditionalIncludeDirectories="..\..\include;..\..\types;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\gnome-xml\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
-				PrecompiledHeaderFile=".\Release/smtp.pch"
+				PrecompiledHeaderFile=".\Release/gd.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
-				WarningLevel="4"
+				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
 				CompileAs="2"/>
@@ -94,7 +145,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\Release\smtp.lib"
+				OutputFile=".\Release\gd.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -118,56 +169,6 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
-			IntermediateDirectory=".\Debug"
-			ConfigurationType="4"
-			UseOfMFC="2"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\gnome-xml\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\Debug/smtp.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
-				WarningLevel="4"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="2"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\Debug\smtp.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1049"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
 			Name="Profile Debug|Win32"
 			OutputDirectory=".\ProfileDebug"
 			IntermediateDirectory=".\ProfileDebug"
@@ -178,11 +179,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\gnome-xml\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
+				AdditionalIncludeDirectories="..\..\include;..\..\types;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\gnome-xml\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\ProfileDebug/smtp.pch"
+				PrecompiledHeaderFile=".\ProfileDebug/gd.pch"
 				AssemblerListingLocation=".\ProfileDebug/"
 				ObjectFile=".\ProfileDebug/"
 				ProgramDataBaseFileName=".\ProfileDebug/"
@@ -194,7 +195,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\ProfileDebug\smtp.lib"
+				OutputFile=".\ProfileDebug\gd.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -225,7 +226,17 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="comms.C">
+				RelativePath="gif.C">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						CompileAs="2"/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Profile Release|Win32">
 					<Tool
@@ -242,16 +253,6 @@
 						Optimization="2"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						CompileAs="2"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
 						CompileAs="2"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -266,7 +267,17 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="smtp.C">
+				RelativePath="gifio.C">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+						AdditionalIncludeDirectories=""
+						PreprocessorDefinitions=""
+						BasicRuntimeChecks="3"
+						CompileAs="2"/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Profile Release|Win32">
 					<Tool
@@ -286,16 +297,6 @@
 						CompileAs="2"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						CompileAs="2"/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Profile Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
@@ -305,13 +306,16 @@
 						BasicRuntimeChecks="3"
 						CompileAs="2"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="mtables.h">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
-				RelativePath="smtp.h">
+				RelativePath="gif.h">
 			</File>
 		</Filter>
 	</Files>

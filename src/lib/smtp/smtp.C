@@ -7,7 +7,7 @@
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char * const IDENT_SMTP_C="$Date: 2003/11/20 16:34:24 $";
+static const char * const IDENT_SMTP_C="$Date: 2003/11/21 12:35:50 $";
 
 #include "pa_exception.h"
 #include "smtp.h"

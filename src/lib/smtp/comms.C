@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMS_C="$Date: 2003/11/20 16:34:24 $";
+static const char * const IDENT_COMMS_C="$Date: 2003/11/21 12:35:50 $";
 
 #include "smtp.h"
 #include <winsock.h>
