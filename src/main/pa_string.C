@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/09/26 13:36:35 $";
+static const char* IDENT_STRING_C="$Date: 2003/09/29 09:42:12 $";
 
 #include "pcre.h"
 
@@ -365,37 +365,49 @@ String& String::change_case(Charset& source_charset, Change_case_kind kind) cons
 	if(is_empty())
 		return result;
 
-	const unsigned char *tables=source_charset.pcre_tables;
-
-	const unsigned char *a;
-	const unsigned char *b;
-	switch(kind) {
-	case CC_UPPER:
-		a=tables+lcc_offset;
-		b=tables+fcc_offset;
-		break;
-	case CC_LOWER:
-		a=tables+lcc_offset;
-		b=0;
-		break;
-	default:
-		throw Exception(0, 
-			this, 
-			"unknown change case kind #%d", 
-				static_cast<int>(kind)); // never
-		a=b=0; // calm, compiler
-		break; // never
-	}	
-
 	char* new_cstr=cstrm();
 	char *dest=new_cstr;
-	unsigned char index;
-	for(const char* current=new_cstr; index=(unsigned char)*current; current++) {
-		unsigned char c=a[index];
-		if(b)
-			c=b[c];
+	if(source_charset.isUTF8()) {
+		switch(kind) {
+		case CC_UPPER:
+			change_case_UTF8((const XMLByte*)new_cstr, (XMLByte*)new_cstr, UTF8CaseToUpper);
+			break;
+		case CC_LOWER:
+			change_case_UTF8((const XMLByte*)new_cstr, (XMLByte*)new_cstr, UTF8CaseToLower);
+			break;
+		default:
+			assert(!"unknown change case kind");
+			break; // never
+		}	
+		
+	} else {
+		const unsigned char *tables=source_charset.pcre_tables;
 
-		*dest++=(char)c;
+		const unsigned char *a;
+		const unsigned char *b;
+		switch(kind) {
+		case CC_UPPER:
+			a=tables+lcc_offset;
+			b=tables+fcc_offset;
+			break;
+		case CC_LOWER:
+			a=tables+lcc_offset;
+			b=0;
+			break;
+		default:
+			assert(!"unknown change case kind");
+			a=b=0; // calm, compiler
+			break; // never
+		}	
+
+		unsigned char index;
+		for(const char* current=new_cstr; index=(unsigned char)*current; current++) {
+			unsigned char c=a[index];
+			if(b)
+				c=b[c];
+
+			*dest++=(char)c;
+		}
 	}
 	result.langs=langs;
 	result.body=new_cstr;

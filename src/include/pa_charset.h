@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char* IDENT_CHARSET_H="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_CHARSET_H="$Date: 2003/09/29 09:42:12 $";
 
 
 #include "pa_exception.h"
@@ -44,11 +44,6 @@ namespace PCRE {
 class GdomeDOMString_auto_ptr;
 
 // helpers
-
-struct Charset_TransRec {
-	XMLCh intCh;
-	XMLByte extCh;
-};
 
 typedef Hash<const String::Body, String::Body> HashStringString;
 
@@ -107,9 +102,23 @@ private:
 public:
 
 	struct Tables {
+		struct Rec {
+			XMLCh intCh;
+			XMLByte extCh;
+		};
+
 		XMLCh fromTable[0x100];
-		Charset_TransRec toTable[MAX_CHARSET_UNI_CODES];
+		Rec toTable[MAX_CHARSET_UNI_CODES];
 		uint toTableSize;
+	};
+
+	struct UTF8CaseTable {
+		struct Rec {
+			XMLCh from, to;
+		};
+
+		uint size;
+		Rec* records;
 	};
 
 private:
@@ -153,6 +162,15 @@ private:
 #endif
 
 };
+
+
+// externs
+
+extern Charset::UTF8CaseTable UTF8CaseToUpper;
+extern Charset::UTF8CaseTable UTF8CaseToLower;
+void change_case_UTF8(const XMLByte* srcData, XMLByte* toFill, 
+					  const Charset::UTF8CaseTable& table);
+
 
 #ifdef XML
 /// Auto-object used to track GdomeDOMString usage

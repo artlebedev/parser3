@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSET_C="$Date: 2003/09/25 09:15:03 $";
+static const char* IDENT_CHARSET_C="$Date: 2003/09/29 09:42:12 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -13,6 +13,22 @@ static const char* IDENT_CHARSET_C="$Date: 2003/09/25 09:15:03 $";
 #ifdef XML
 #include "libxml/encoding.h"
 #endif
+
+// globals
+
+Charset::UTF8CaseTable::Rec UTF8CaseToUpperRecords[]={
+#include "utf8-to-upper.inc"
+};
+Charset::UTF8CaseTable UTF8CaseToUpper={
+	sizeof(UTF8CaseToUpperRecords)/sizeof(Charset::UTF8CaseTable::Rec),
+	UTF8CaseToUpperRecords};
+
+Charset::UTF8CaseTable::Rec UTF8CaseToLowerRecords[]={
+#include "utf8-to-lower.inc"
+};
+Charset::UTF8CaseTable UTF8CaseToLower={
+	sizeof(UTF8CaseToLowerRecords)/sizeof(Charset::UTF8CaseTable::Rec),
+	UTF8CaseToLowerRecords};
 
 // helpers
 
@@ -161,8 +177,8 @@ void Charset::load_definition(Request_charsets& charsets, const String& afile_sp
 
 static int sort_cmp_Trans_rec_intCh(const void *a, const void *b) {
 	return 
-		static_cast<const Charset_TransRec *>(a)->intCh-
-		static_cast<const Charset_TransRec *>(b)->intCh;
+		static_cast<const Charset::Tables::Rec *>(a)->intCh-
+		static_cast<const Charset::Tables::Rec *>(b)->intCh;
 }
 
 void Charset::sort_ToTable() {
@@ -178,7 +194,6 @@ static XMLByte xlatOneTo(const XMLCh toXlat,
 			 XMLByte not_found) {
 	unsigned int    lowOfs = 0;
 	unsigned int    hiOfs = tables.toTableSize - 1;
-	XMLByte         curByte = 0;
 	do {
 		// Calc the mid point of the low and high offset.
 		const unsigned int midOfs =((hiOfs - lowOfs) / 2)+lowOfs;
@@ -437,6 +452,132 @@ const String::C Charset::transcodeToUTF8(const String::C src) const {
 	assert(dest_length<=saved_dest_length); dest_body[dest_length]=0; // terminator
 	return String::C((char*)dest_body, dest_length);
 }
+
+static XMLCh change_case_UTF8(const XMLCh src, const Charset::UTF8CaseTable& table) {
+	unsigned int    lowOfs = 0;
+	unsigned int    hiOfs = table.size - 1;
+	do {
+		// Calc the mid point of the low and high offset.
+		const unsigned int midOfs =((hiOfs - lowOfs) / 2)+lowOfs;
+		
+		//  If our test char is greater than the mid point char, then
+		//  we move up to the upper half. Else we move to the lower
+		//  half. If its equal, then its our guy.
+		if(src>table.records[midOfs].from)
+			lowOfs = midOfs;
+		else if(src<table.records[midOfs].from)
+			hiOfs = midOfs;
+		else
+			return table.records[midOfs].to;
+	} while(lowOfs+1<hiOfs);
+	
+	return src;
+}
+
+static void store_UTF8(XMLCh src, XMLByte*& outPtr ) {
+	if(!src) {
+		// use the replacement character
+		*outPtr++= '?';
+		return;
+	}
+
+	// Figure out how many bytes we need
+	unsigned int encodedBytes;
+	if(src<0x80)
+		encodedBytes = 1;
+	else if(src<0x800)
+		encodedBytes = 2;
+	else if(src<0x10000)
+		encodedBytes = 3;
+	else if(src<0x200000)
+		encodedBytes = 4;
+	else if(src<0x4000000)
+		encodedBytes = 5;
+	else if(src<= 0x7FFFFFFF)
+		encodedBytes = 6;
+	else {
+		// use the replacement character
+		*outPtr++= '?';
+		return;
+	}
+
+	//  And spit out the bytes. We spit them out in reverse order
+	//  here, so bump up the output pointer and work down as we go.
+	outPtr+= encodedBytes;
+	switch(encodedBytes) {
+	case 6: *--outPtr = XMLByte((src | 0x80UL) & 0xBFUL);
+		src>>= 6;
+	case 5: *--outPtr = XMLByte((src | 0x80UL) & 0xBFUL);
+		src>>= 6;
+	case 4: *--outPtr = XMLByte((src | 0x80UL) & 0xBFUL);
+		src>>= 6;
+	case 3: *--outPtr = XMLByte((src | 0x80UL) & 0xBFUL);
+		src>>= 6;
+	case 2: *--outPtr = XMLByte((src | 0x80UL) & 0xBFUL);
+		src>>= 6;
+	case 1: *--outPtr = XMLByte(src | gFirstByteMark[encodedBytes]);
+	}
+	
+	// Add the encoded bytes back in again to indicate we've eaten them
+	outPtr+= encodedBytes;
+}
+
+static void change_case_UTF8(XMLCh src, XMLByte*& outPtr, 
+						const Charset::UTF8CaseTable& table) {
+	store_UTF8(change_case_UTF8(src, table), outPtr);
+};
+void change_case_UTF8(const XMLByte* srcData, XMLByte* toFill, 
+							const Charset::UTF8CaseTable& table) {
+	const XMLByte* srcPtr=srcData;
+	XMLByte* outPtr=toFill;
+
+	// Get the next leading byte out
+	while (const XMLByte firstByte = *srcPtr) {
+		if(firstByte<= 127) {
+			change_case_UTF8(firstByte, outPtr, table);
+			srcPtr++;
+			continue;
+		}
+		
+		// See how many trailing src bytes this sequence is going to require
+		const unsigned int trailingBytes = gUTFBytes[firstByte];
+		
+		// Looks ok, so lets build up the value
+		uint tmpVal=0;
+		switch(trailingBytes) {
+		case 5: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 4: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 3: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 2: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 1: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 0: tmpVal+=*srcPtr++;
+			break;
+			
+		default:
+			throw Exception(0,
+				0,
+				"change_case_UTF8 error: wrong trailingBytes value(%d)", trailingBytes);
+		}
+		tmpVal-=gUTFOffsets[trailingBytes];
+		
+		//  If it will fit into a single char, then put it in. Otherwise
+		//  fail [*encode it as a surrogate pair. If its not valid, use the
+		//  replacement char.*]
+		if(!(tmpVal & 0xFFFF0000))
+			change_case_UTF8(tmpVal, outPtr, table);
+		else
+			throw Exception(0,
+				0,
+				"change_case_UTF8 error: too big tmpVal(0x%08X)", tmpVal);
+	}
+	
+	if(srcPtr!=outPtr)
+		throw Exception(0,  
+			0,
+			"change_case_UTF8 error: end pointers do not match");
+}
+
+
 const String::C Charset::transcodeFromUTF8(const String::C src) const {
 	size_t src_length=src.length;
 	size_t dest_length=src.length*6/*so that surly enough, "&#255;" has max ratio */;

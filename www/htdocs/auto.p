@@ -145,7 +145,7 @@ footer
 ^if(!in "/admin/"){
 $rusage[$status:rusage]
 $now[^date::now[]]
-$s[[^now.sql-string[]]	$rusage.utime	$rusage.stime	$rusage.maxrss	$rusage.ixrss	$rusage.idrss	$rusage.isrss	[$status:memory.used/$status:memory.free/$status:memory.since_compact/$status:memory.process]	$env:REMOTE_ADDR	$request:uri^if(def $msg){ $msg}^#0A]
+$s[[^now.sql-string[]]	$rusage.utime	$rusage.maxrss	[$status:memory.used/$status:memory.free/$status:memory.since_compact/$status:memory.process]	$env:REMOTE_ADDR	$request:uri^if(def $msg){ $msg}^#0A]
 ^s.save[append;/../data/rusage.log]
 }
 #end @rusage[]
