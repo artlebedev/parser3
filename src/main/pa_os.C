@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/02/11 15:33:16 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/02/24 12:17:55 $"; 
 
 #include "pa_config_includes.h"
 #include "pa_os.h"
@@ -80,6 +80,6 @@ int pa_sleep(unsigned long secs, unsigned long usecs) {
 	struct timeval t;
 	t.tv_sec = secs;
 	t.tv_usec = usecs;
-	return (select(0, NULL, NULL, NULL, &t) == -1 ? errno : 0); 
+	return (select(0, NULL, NULL, NULL, &t)<0 ? errno : 0); 
 #endif
 }
