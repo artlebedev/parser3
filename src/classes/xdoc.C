@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/02/18 11:47:04 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/02/18 11:54:08 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -626,7 +626,10 @@ pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
     XSLT_GET_IMPORT_INT(indent, style, indent);
 
     if ((method == NULL) && (result->type == XML_HTML_DOCUMENT_NODE))
-	method = BAD_CAST "html";
+		method = BAD_CAST "html";
+
+	int omitXmlDecl;
+	XSLT_GET_IMPORT_INT(omitXmlDecl, style, omitXmlDeclaration);
 
     if ((method != NULL) &&
 	(xmlStrEqual(method, (const xmlChar *) "html"))) {
@@ -654,6 +657,7 @@ pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 		}
 
 		method = BAD_CAST "xml";
+		omitXmlDecl = 0;
 	} else {
 		htmlDocContentDumpFormatOutput(buf, result, (const char *) encoding,
 		                       indent);
@@ -661,7 +665,7 @@ pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 		goto finish;
 	}
 	}
-    
+
 	if ((method != NULL) &&
 	       (xmlStrEqual(method, (const xmlChar *) "text"))) {
 	xmlNodePtr cur;
@@ -703,10 +707,8 @@ pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 	}
 	xmlOutputBufferFlush(buf);
     } else {
-	int omitXmlDecl;
 	int standalone;
 
-	XSLT_GET_IMPORT_INT(omitXmlDecl, style, omitXmlDeclaration);
 	XSLT_GET_IMPORT_INT(standalone, style, standalone);
 
 	if (omitXmlDecl != 1) {

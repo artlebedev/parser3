@@ -6,7 +6,6 @@
 
 <xsl:output 
 	method="html"
-	omit-xml-declaration="no"
 	doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
 	doctype-system="DTD/xhtml1-strict.dtd"
 	/>
