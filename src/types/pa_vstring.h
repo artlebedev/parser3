@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.36 2001/10/02 11:07:45 parser Exp $
+	$Id: pa_vstring.h,v 1.37 2001/10/29 13:04:47 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -75,7 +75,7 @@ public: // usage
 	const String& string() { return fstring; }
 
 private:
-	const String fstring;
+	const String& fstring;
 
 };
 

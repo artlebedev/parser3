@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.29 2001/10/23 14:43:44 parser Exp $
+	$Id: pa_vcookie.C,v 1.30 2001/10/29 13:04:47 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -187,7 +187,7 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 	string << attributed_meaning_to_string(*meaning, String::UL_HTTP_HEADER);
 
 	// output
-	SAPI::add_header_attribute(pool, "set-cookie", string.cstr());
+	SAPI::add_header_attribute(pool, "set-cookie", string.cstr(String::UL_UNSPECIFIED));
 }
 static void output_after(const Hash::Key& aattribute, Hash::Val *ameaning, void *) {
 	output_set_cookie(aattribute, ameaning);

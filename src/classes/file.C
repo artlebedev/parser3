@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.60 2001/10/23 14:43:44 parser Exp $
+	$Id: file.C,v 1.61 2001/10/29 13:04:45 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -120,7 +120,8 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	file_read(pool, r.absolute(lfile_name), data, size, 
 		vmode_name.as_string()==TEXT_MODE_NAME);
 
-	char *user_file_name=params->size()>2?params->as_string(2, "filename must be string").cstr()
+	char *user_file_name=params->size()>2?
+		params->as_string(2, "filename must be string").cstr(String::UL_FILE_SPEC)
 		:lfile_name.cstr(String::UL_FILE_SPEC);
 	
 	static_cast<VFile *>(r.self)->set(true/*tainted*/, data, size, 

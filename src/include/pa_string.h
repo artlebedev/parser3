@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.108 2001/10/24 09:03:42 parser Exp $
+	$Id: pa_string.h,v 1.109 2001/10/29 13:04:46 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -120,7 +120,7 @@ public:
 	/// makes store_to produce origin:text\n output
 	void set_origins_mode(bool aorigins_mode) const { forigins_mode=aorigins_mode; }
 	/// convert to C string. if 'lang' known, forcing 'lang' to it
-	char *cstr(Untaint_lang lang=UL_UNSPECIFIED, 
+	char *cstr(Untaint_lang lang=UL_AS_IS, 
 		SQL_Connection *connection=0,
 		const char *charset=0) const {
 

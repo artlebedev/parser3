@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.85 2001/10/23 14:43:44 parser Exp $
+	$Id: string.C,v 1.86 2001/10/29 13:04:46 paf Exp $
 */
 
 #include "classes.h"
@@ -83,7 +83,8 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 	Value& fmt=params->as_junction(0, "fmt must be code");
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
-	char *buf=format(pool, r.self->as_double(), r.process(fmt).as_string().cstr());
+	char *buf=format(pool, r.self->as_double(), 
+		r.process(fmt).as_string().cstr(String::UL_UNSPECIFIED));
 
 	String result(pool);
 	result.APPEND_CLEAN(buf, 0, 

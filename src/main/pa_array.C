@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.C,v 1.40 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_array.C,v 1.41 2001/10/29 13:04:46 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -17,7 +17,7 @@ Array::Array(Pool& apool, int initial_rows) :
 	initial_rows=max(initial_rows, CR_INITIAL_ROWS_DEFAULT);
 
 	head=tail=static_cast<Chunk *>(
-		malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
+		malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *), 19));
 	head->count=initial_rows;
 	append_here=head->rows;
 	link_row=&head->rows[initial_rows];
@@ -30,7 +30,7 @@ Array::Array(Pool& apool, int initial_rows) :
 
 void Array::expand(int chunk_rows) {
 	Chunk *chunk=tail=static_cast<Chunk *>(
-		malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *)));
+		malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *), 2));
 	chunk->count=chunk_rows;
 	link_row->link=chunk;
 	append_here=chunk->rows;

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.59 2001/10/23 14:43:44 parser Exp $
+	$Id: image.C,v 1.60 2001/10/29 13:04:45 paf Exp $
 */
 
 /*
@@ -203,7 +203,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 
 void measure(Pool& pool, const String& file_name, 
 			 Measure_reader& reader, int& width, int& height) {
-	if(const char *cext=strrchr(file_name.cstr(), '.')) {
+	if(const char *cext=strrchr(file_name.cstr(String::UL_FILE_SPEC), '.')) {
 		cext++;
 		if(strcasecmp(cext, "GIF")==0)
 			measure_gif(pool, &file_name, reader, width, height);

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.24 2001/10/22 17:16:14 parser Exp $
+	$Id: pa_pool.C,v 1.25 2001/10/29 13:04:47 paf Exp $
 */
 
 #include <stdlib.h>
@@ -12,7 +12,7 @@
 #include "pa_pool.h"
 #include "pool_storage.h"
 
-//#define DEBUG_POOL_MALLOC
+#define DEBUG_POOL_MALLOC
 
 #ifdef DEBUG_POOL_MALLOC
 #include "pa_sapi.h"
@@ -68,7 +68,7 @@
 
 
 #define MALLOC_STAT_MAXSIZE (0x400*0x400)
-#define MALLOC_STAT_PLACES 10
+#define MALLOC_STAT_PLACES 20
 
 int malloc_times[MALLOC_STAT_PLACES][MALLOC_STAT_MAXSIZE];
 int malloc_places[MALLOC_STAT_PLACES];
@@ -102,7 +102,6 @@ ST(Stack);
 ST(String);
 ST(Table);
 ST(Temp_alias);
-ST(Temp_exception);
 ST(Temp_lang);
 ST(Temp_method);
 ST(VAliased);
@@ -157,13 +156,13 @@ ST(WWrapper);
 }
 #endif
 
-void *Pool::real_malloc(size_t size/*, int place*/) {
+void *Pool::real_malloc(size_t size, int place) {
 #ifdef DEBUG_POOL_MALLOC
+place=0;
 	int index=min(MALLOC_STAT_MAXSIZE-1, size);
-	int place=0;
 	malloc_times[place][index]++;
 	malloc_places[place]++;
-/*	if(size==9271)
+/*	if(size<5 && place==0)
 		__asm int 3;*/
 #endif
 	return ::malloc(size);

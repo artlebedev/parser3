@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.113 2001/10/24 09:03:42 parser Exp $
+	$Id: pa_string.C,v 1.114 2001/10/29 13:04:47 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -67,7 +67,7 @@ String::String(const String& src) :
 		// remaining rows size_to new_chunk
 		size_t curr_chunk_rows=src_used_rows-head.count;
 		last_chunk=static_cast<Chunk *>(
-			malloc(sizeof(size_t)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
+			malloc(sizeof(size_t)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *), 9));
 		last_chunk->count=curr_chunk_rows;
 		head.preallocated_link=last_chunk;
 		append_here=link_row=&last_chunk->rows[last_chunk->count];
@@ -102,7 +102,7 @@ String::String(const String& src) :
 void String::expand() {
 	size_t new_chunk_count=last_chunk->count+CR_GROW_COUNT;
 	last_chunk=static_cast<Chunk *>(
-		malloc(sizeof(size_t)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *)));
+		malloc(sizeof(size_t)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *), 10));
 	last_chunk->count=new_chunk_count;
 	link_row->link=last_chunk;
 	append_here=last_chunk->rows;
@@ -540,7 +540,7 @@ bool String::match(const unsigned char *pcre_tables,
 	int length=strlen(subject);
 	int ovecsize;
 	int *ovector=(int *)malloc(sizeof(int)*
-		(ovecsize=(1/*match*/+info_substrings)*3));
+		(ovecsize=(1/*match*/+info_substrings)*3), 11);
 
 	{ // create table
 		Array& columns=*NEW Array(pool());
@@ -632,7 +632,7 @@ String& String::change_case(Pool& pool, const unsigned char *tables,
 			if(row==append_here)
 				goto break2;
 
-			char *new_cstr=(char *)pool.malloc(row->item.size);
+			char *new_cstr=(char *)pool.malloc(row->item.size, 12);
 			char *dest=new_cstr;
 			const char *src=row->item.ptr; 
 			for(int size=row->item.size; size--; src++) {
@@ -693,7 +693,7 @@ break21:;
 			achunk=arow->link;		
 	} else {
 		// join adjacent rows
-		char *ptr=(char *)pool.malloc(joined_size);
+		char *ptr=(char *)pool.malloc(joined_size,13);
 		joined_ptr=ptr;
 		size_t start_i=ai;
 		const Chunk::Row *start_row=arow;
@@ -767,7 +767,7 @@ String& String::replace_in_reconstructed(Pool& pool, Dictionary& dict) const {
 
 			const char *src=row->item.ptr; 
 			size_t src_size=row->item.size;
-			char *new_cstr=(char *)pool.malloc((size_t)ceil(src_size*dict.max_ratio()));
+			char *new_cstr=(char *)pool.malloc((size_t)ceil(src_size*dict.max_ratio()), 14);
 			char *dest=new_cstr;
 			while(src_size) {
 				// there is a row where first column starts 'src'
@@ -802,7 +802,15 @@ String& String::replace(Pool& pool, Dictionary& dict) const {
 
 double String::as_double() const { 
 	double result;
-	const char *cstr=this->cstr();
+	const char *cstr;
+	char buf[MAX_NUMBER];
+	if(fused_rows==1) {
+		int size=min(head.rows[0].item.size, MAX_NUMBER-1);
+		memcpy(buf, head.rows[0].item.ptr, size);
+		buf[size]=0;
+		cstr=buf;
+	} else
+		cstr=this->cstr();
 	char *error_pos;
 	// 0xABC
 	if(cstr[0]=='0')
@@ -822,7 +830,15 @@ double String::as_double() const {
 }
 int String::as_int() const { 
 	int result;
-	const char *cstr=this->cstr();
+	const char *cstr;
+	char buf[MAX_NUMBER];
+	if(fused_rows==1) {
+		int size=min(head.rows[0].item.size, MAX_NUMBER-1);
+		memcpy(buf, head.rows[0].item.ptr, size);
+		buf[size]=0;
+		cstr=buf;
+	} else
+		cstr=this->cstr();
 	char *error_pos;
 	// 0xABC
 	if(cstr[0]=='0')
@@ -851,7 +867,7 @@ void String::serialize(size_t prolog_size, void *& buf, size_t& buf_size) const 
 		prolog_size
 		+fused_rows*(sizeof(Untaint_lang)+sizeof(size_t))
 		+size();
-	buf=malloc(buf_size);
+	buf=malloc(buf_size,15);
 	char *cur=(char *)buf+prolog_size;
 
 	const Chunk *chunk=&head; 

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.77 2001/10/24 16:33:02 parser Exp $
+	$Id: pa_common.C,v 1.78 2001/10/29 13:04:46 paf Exp $
 */
 
 #include "pa_common.h"
@@ -96,7 +96,7 @@ bool file_read(Pool& pool, const String& file_spec,
 			data=0;
 			read_size=0;
 		} else {
-			data=pool.malloc(max_size+(as_text?1:0));
+			data=pool.malloc(max_size+(as_text?1:0), 3);
 			if(offset)
 				lseek(f, offset, SEEK_SET);
 			read_size=read(f, data, max_size);
@@ -302,7 +302,7 @@ char *rsplit(char *string, char delim) {
 
 /// @todo less stupid type detection
 char *format(Pool& pool, double value, char *fmt) {
-	char *result=(char *)pool.malloc(MAX_NUMBER);
+	char *result=(char *)pool.malloc(MAX_NUMBER, 4);
 	if(fmt)
 		if(strpbrk(fmt, "diouxX"))
 			if(strpbrk(fmt, "ouxX"))
@@ -334,7 +334,7 @@ size_t stdout_write(const void *buf, size_t size) {
 }
 
 char *unescape_chars(Pool& pool, const char *cp, int len) {
-	char *s=(char *)pool.malloc(len + 1);
+	char *s=(char *)pool.malloc(len + 1, 5);
 	enum EscapeState {
 		EscapeRest, 
 		EscapeFirst, 

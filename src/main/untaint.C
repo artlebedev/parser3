@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.69 2001/10/19 12:43:30 parser Exp $
+	$Id: untaint.C,v 1.70 2001/10/29 13:04:47 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -148,7 +148,15 @@ inline bool need_quote_http_header(const char *ptr, size_t size) {
 	@todo fix potential forigins_mode buf overrun
 */
 size_t String::cstr_bufsize(Untaint_lang lang) const {
-	return (lang==UL_AS_IS?size():size()*UNTAINT_TIMES_BIGGER*(forigins_mode?10:1)) +1;
+	return  (
+			lang==UL_AS_IS?
+				size()
+			:
+				size()
+				*UNTAINT_TIMES_BIGGER
+				*(forigins_mode?10:1)
+		) 
+		+1;
 }
 
 /** @todo fix theoretical \n mem overrun in TYPO replacements
@@ -195,12 +203,12 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					const char *src=row->item.ptr; 
 					for(int size=row->item.size; size--; src++)
 						switch(*src) {
-						case ' ': case '\n': case '\t':
+						/***case ' ': case '\n': case '\t':
 							if(!whitespace) {
 								*dest++=*src;
 								whitespace=true;
 							}
-							break;
+							break;*/
 						default:
 							whitespace=false;
 							*dest++=*src;
@@ -316,7 +324,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 						"untaint to user-html lang failed, no typo table");
 
 				char *html_for_typo=
-					(char *)malloc(row->item.size*2/* '\n' -> '\' 'n' */+1);
+					(char *)malloc(row->item.size*2/* '\n' -> '\' 'n' */+1,16);
 				// note:
 				//   there still is a possibility that user 
 				//   would not replace \n as she supposed to

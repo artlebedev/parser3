@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.37 2001/10/26 15:55:20 paf Exp $
+	$Id: xdoc.C,v 1.38 2001/10/29 13:04:46 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -615,11 +615,12 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	vdoc.set_parsed_source(*parsedSource);
 }
 
+/// @test lang=String::UL_UNSPECIFIED?
 static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning, 
 						   void *info) {
 	XalanTransformer2& transformer=*static_cast<XalanTransformer2 *>(info);
-	const char *attribute_cstr=aattribute.cstr();
-	const char *meaning_cstr=static_cast<Value *>(ameaning)->as_string().cstr();
+	const char *attribute_cstr=aattribute.cstr(String::UL_UNSPECIFIED);
+	const char *meaning_cstr=static_cast<Value *>(ameaning)->as_string().cstr(String::UL_UNSPECIFIED);
 
 	transformer.setStylesheetParam(
 		XalanDOMString(attribute_cstr),  

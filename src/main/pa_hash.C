@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.42 2001/10/26 13:48:19 paf Exp $
+	$Id: pa_hash.C,v 1.43 2001/10/29 13:04:46 paf Exp $
 */
 
 /*
@@ -18,7 +18,7 @@
 #include "pa_hash.h"
 
 void *Hash::Pair::operator new(size_t size, Pool& apool) {
-	return apool.malloc(size);
+	return apool.malloc(size, 6);
 }
 
 /* Zend comment: Generated on an Octa-ALPHA 300MHz CPU & 2.5GB RAM monster */
@@ -45,7 +45,7 @@ void Hash::construct_copy(const Hash& source) {
 	used=source.used;
 	count=source.count;
 	size_t size=sizeof(Pair *)*allocated;
-	refs=static_cast<Pair **>(malloc(size));  memcpy(refs, source.refs, size);
+	refs=static_cast<Pair **>(malloc(size, 7));  memcpy(refs, source.refs, size);
 }
 
 void Hash::expand() {

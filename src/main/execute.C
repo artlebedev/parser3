@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.198 2001/10/22 12:30:24 parser Exp $
+	$Id: execute.C,v 1.199 2001/10/29 13:04:46 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -488,6 +488,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_IN:
 			{
+				/// @test String::cmp
 				Value *operand=POP();
 				const char *path=operand->as_string().cstr();
 				value=NEW VBool(pool(), 

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.125 2001/10/22 17:16:14 parser Exp $
+	$Id: parser3.C,v 1.126 2001/10/29 13:04:47 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,7 +25,7 @@
 #include <XalanTransformer/XalanCAPI.h>
 #endif
 
-//#define DEBUG_POOL_MALLOC
+#define DEBUG_POOL_MALLOC
 
 // consts
 

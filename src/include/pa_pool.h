@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.67 2001/10/19 15:34:39 parser Exp $
+	$Id: pa_pool.h,v 1.68 2001/10/29 13:04:46 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -22,7 +22,6 @@
 // forwards
 
 class Exception;
-class Temp_exception;
 class String;
 
 /** 
@@ -45,8 +44,8 @@ public:
 	void *tag() { return ftag; }
 
 	/// allocates some bytes on pool
-	void *malloc(size_t size/*, int place=0*/) {
-		return check(real_malloc(size/*, place*/), size);
+	void *malloc(size_t size, int place=0) {
+		return check(real_malloc(size, place), size);
 	}
 	/// allocates some bytes clearing them with zeros
 	void *calloc(size_t size) {
@@ -75,7 +74,7 @@ private:
 	
 	//{
 	/// @name implementation defined
-    void *real_malloc(size_t size/*, int place*/);
+    void *real_malloc(size_t size, int place);
     void *real_calloc(size_t size);
 	bool real_register_cleanup(void (*cleanup) (void *), void *data);
 	//}
@@ -141,7 +140,7 @@ public:
 
 	/// the Pooled-sole: Pooled instances can be allocated in Pool rather then on heap
 	static void *operator new(size_t size, Pool& apool) { 
-		return apool.malloc(size/*, 1*/);
+		return apool.malloc(size, 1);
 	}
 
 	Pooled(Pool& apool) : fpool(&apool) {}
@@ -157,7 +156,7 @@ public:
 
 	//{
 	/// @name useful wrapper around pool
-	void *malloc(size_t size) const { return fpool->malloc(size); }
+	void *malloc(size_t size, int place=0) const { return fpool->malloc(size, place); }
 	void *calloc(size_t size) const { return fpool->calloc(size); }
 	void register_cleanup(void (*cleanup) (void *), void *data) { fpool->register_cleanup(cleanup, data); }
 #ifdef XML

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.44 2001/10/29 10:06:36 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.45 2001/10/29 13:04:46 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -32,7 +32,7 @@ public:
 		furl(aurl) {
 	}
 
-	virtual void *malloc(size_t size) { return Pooled::malloc(size); }
+	virtual void *malloc(size_t size) { return Pooled::malloc(size, 8); }
 	virtual void *calloc(size_t size) { return Pooled::calloc(size); }
 
 	/**
