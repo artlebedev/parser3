@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_threads.h,v 1.18 2001/10/29 08:23:49 paf Exp $
+	$Id: pa_threads.h,v 1.19 2001/10/31 11:23:38 paf Exp $
 */
 
 #ifndef PA_THREADS_H
@@ -28,6 +28,7 @@ private: // for AutoSYNCHRONIZED
 	void release();
 };
 
+extern const bool parser_multithreaded;
 extern Mutex global_mutex;
 
 /** 

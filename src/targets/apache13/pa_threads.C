@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_threads.C,v 1.1 2001/10/11 08:29:21 parser Exp $
+	$Id: pa_threads.C,v 1.2 2001/10/31 11:23:39 paf Exp $
 */
 
 #include "pa_threads.h"
@@ -15,6 +15,8 @@ Mutex global_mutex;
 // defined in ap_config
 #ifdef MULTITHREAD
 #include "multithread.h"
+
+const bool parser_multithreaded=true;
 
 Mutex::Mutex() : 
 	handle(reinterpret_cast<uint>(ap_create_mutex(0))) {
@@ -33,6 +35,8 @@ void Mutex::release() {
 }
 
 #else
+
+const bool parser_multithreaded=false;
 
 Mutex::Mutex() {}
 Mutex::~Mutex() {}
