@@ -295,8 +295,11 @@ AC_SUBST(APACHE_LIBS)
 dnl install directories
 
 # expand apostrophed
+e_prefix=$prefix
+test "x$e_prefix" = xNONE && e_prefix=$ac_default_prefix
+
 e_sysconfdir=$sysconfdir
-test "$e_sysconfdir" = "\${prefix}/etc" && e_sysconfdir="${prefix}/etc"
+test "$e_sysconfdir" = "\${prefix}/etc" && e_sysconfdir="${e_prefix}/etc"
 
 dnl this is used in targets/cgi/parser3.C to load root config
 

@@ -2990,8 +2990,11 @@ fi
 
 
 # expand apostrophed
+e_prefix=$prefix
+test "x$e_prefix" = xNONE && e_prefix=$ac_default_prefix
+
 e_sysconfdir=$sysconfdir
-test "$e_sysconfdir" = "\${prefix}/etc" && e_sysconfdir="${prefix}/etc"
+test "$e_sysconfdir" = "\${prefix}/etc" && e_sysconfdir="${e_prefix}/etc"
 
 
 rootconfigdir=$e_sysconfdir
