@@ -45,11 +45,10 @@
 
 3.What other libraries are needed to compile/install parser? 
 
-  * You can compile and use parser without any additional libraries.
+3a. You can compile and use parser without any additional libraries.
     That would be 'basic' version of it.
 
-
-  * In case you wish xml(xdoc and xnode classes) support you need libraries
+3b. In case you wish xml(xdoc and xnode classes) support you need libraries
       libxml2 >= 2.4.11
       libxslt >= 1.0.9
       glib >= 1.2.10
@@ -90,9 +89,9 @@
     gdome2:  [http://phd.cs.unibo.it/gdome2/tarball/gdome2-0.7.0.tar.gz]
 
     cd gdome2-x.x.x
-	patch -p0 < $D/parser3project/parser3/src/lib/patches/libgdome_cpp_syntax1.patch
-	patch -p0 < $D/parser3project/parser3/src/lib/patches/libgdome_cpp_syntax2.patch
-	patch -p0 < $D/parser3project/parser3/src/lib/patches/libgdome_morestatic.patch
+    patch -p0 < $D/parser3project/parser3/src/lib/patches/libgdome_cpp_syntax1.patch
+    patch -p0 < $D/parser3project/parser3/src/lib/patches/libgdome_cpp_syntax2.patch
+    patch -p0 < $D/parser3project/parser3/src/lib/patches/libgdome_morestatic.patch
     ./configure --with-glib-prefix=$D/gnome --disable-glibtest --with-libxml-prefix=$D/gnome --prefix=$D/gnome
     make install
 
@@ -111,8 +110,41 @@
     In case your glib as installed into some other prefix,
     specify it's configuration file with
         --with-glib-config=/path/to/your/glib-config
-	NOTE:
-	In case you are using SHARED xml libraries, you may want to link in direct path to them,
+    NOTE:
+    In case you are using SHARED xml libraries, you may want to link in direct path to them,
+    use this key to specify which linker key to use do do that:
+        --with-pathlink=LKEY    put dynamic libraries paths to binary
+                                using linker key (-R, -rpath-link)
+
+3c. In case you wish $mail:receive support you need libraries
+      glib >= 1.2.10
+      gmime >= 1.0.1
+    on your system, and specify path to them to Parser3 configure script.
+
+    You may have already installed glib at 3b step.
+
+    glib:  [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz]
+
+    cd glib-x.x.x
+    ./configure --prefix=$D/gnome 
+    make install
+
+    gmime:  [http://spruce.sourceforge.net/gmime/sources/gmime-1.0.1.tar.gz]
+
+    cd gmime-x.x.x
+    ./configure --prefix=$D/gnome
+    make install
+
+    Parser3 configure options, choose whether you need static or dynamic linkage with xml libs:
+        --with-static-mailreceive=$D/gnome
+        --with-shared-mailreceive=$D/gnome
+
+    NOTE:
+    In case your glib as installed into some other prefix,
+    specify it's configuration file with
+        --with-glib-config=/path/to/your/glib-config
+    NOTE:
+    In case you are using SHARED mime library, you may want to link in direct path to it,
     use this key to specify which linker key to use do do that:
         --with-pathlink=LKEY    put dynamic libraries paths to binary
                                 using linker key (-R, -rpath-link)
@@ -157,4 +189,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.23 2002/06/21 12:42:18 paf Exp $
+$Id: INSTALL,v 1.24 2002/06/24 15:26:34 paf Exp $
