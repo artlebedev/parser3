@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.42 2001/03/12 17:00:47 paf Exp $
+	$Id: pa_request.h,v 1.43 2001/03/12 17:16:49 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -85,6 +85,8 @@ public:
 		// appending possible string, passing language built into string being written
 		wcontext->write(avalue, String::Untaint_lang::PASS_APPENDED); 
 	}
+
+	void fail_if_junction_(bool is, Value& value, const String& method_name, char *msg);
 
 	char *relative(const char *path, const char *file);
 	char *absolute(const char *name);

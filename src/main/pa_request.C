@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.19 2001/03/12 17:00:48 paf Exp $
+	$Id: pa_request.C,v 1.20 2001/03/12 17:16:50 paf Exp $
 */
 
 #include <string.h>
@@ -143,6 +143,17 @@ char *Request::execute_MAIN() {
 		0, 
 		"'"MAIN_METHOD_NAME"' method not found");
 	return 0;
+}
+
+void Request::fail_if_junction_(bool is, 
+							   Value& value, const String& method_name, char *msg) {
+
+	// fail_if_junction(true, junction = fail
+	// fail_if_junction(false, not junction = fail
+	if((value.get_junction()!=0) ^ !is)
+		THROW(0, 0,
+			&method_name,
+			msg);
 }
 
 char *Request::relative(const char *path, const char *file) {

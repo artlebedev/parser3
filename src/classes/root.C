@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.25 2001/03/12 17:00:46 paf Exp $
+	$Id: root.C,v 1.26 2001/03/12 17:16:48 paf Exp $
 */
 
 #include <string.h>
@@ -39,10 +39,8 @@ static void _untaint(Request& r, const String& method_name, Array *params) {
 		Temp_lang temp_lang(r, lang);
 		Value *vbody=static_cast<Value *>(params->get(1));
 		// forcing ^untaint[]{this param type}
-		if(!vbody->get_junction())
-			R_THROW(0, 0,
-			&method_name,
-			"body must be junction");
+		r.fail_if_junction_(false, *vbody, 
+			method_name, "body must be junction");
 		
 		r.write_pass_lang(r.process(*vbody));
 	}
@@ -83,6 +81,10 @@ static void _process(Request& r, const String& method_name, Array *params) {
 	}
 }
 	
+static void _rem(Request& r, const String& method_name, Array *params) {
+	r.fail_if_junction_(false, *static_cast<Value *>(params->get(0)), 
+		method_name, "body must be junction");
+}
 
 void initialize_root_class(Pool& pool, VClass& vclass) {
 	// ^if(condition){code-when-true}
@@ -94,4 +96,7 @@ void initialize_root_class(Pool& pool, VClass& vclass) {
 
 	// ^process[code]
 	vclass.add_native_method("process", _process, 1, 1);
+
+	// ^rem{code}
+	vclass.add_native_method("rem", _rem, 1, 1);
 }
