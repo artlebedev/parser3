@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.6 2001/05/07 14:00:54 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.7 2001/05/08 10:39:23 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -105,10 +105,9 @@ public: // usage
 		if(store_param_index==max_params)
 			THROW(0,0,
 				&actual_method_name,
-				"method of %s (%s) accepts maximum %d parameter(s) (%d present)", 
+				"method of %s (%s) accepts maximum %d parameter(s)", 
 					junction.self.name().cstr(),
 					junction.self.type(),
-					max_params,
 					max_params);
 		
 		if(method.max_numbered_params_count) { // are this method params numbered?

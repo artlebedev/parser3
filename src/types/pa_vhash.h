@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhash.h,v 1.13 2001/05/08 10:24:03 paf Exp $
+	$Id: pa_vhash.h,v 1.14 2001/05/08 10:39:23 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -24,6 +24,9 @@ public: // value
 
 	/// VHash: fhash
 	Hash *get_hash() { return &fhash; }
+
+	/// VHash: 0
+	VStateless_class *get_class() { return 0; }
 
 	/// VHash: (key)=value
 	Value *get_element(const String& name) { 

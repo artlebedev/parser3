@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.78 2001/05/08 10:23:50 paf Exp $
+	$Id: table.C,v 1.79 2001/05/08 10:39:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -657,10 +657,8 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 	// ^table.record[]
 	add_native_method("record", Method::CT_DYNAMIC, _record, 0, 0);
 
-	/** @fn _hash
-		^table:hash[key field name]
-		^table:hash[key field name][value field name;...]
-	*/
+	// ^table:hash[key field name]
+	// ^table:hash[key field name][value field name;...]
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 1, 1000);
 
 	// ^table.sort{string-key-maker} ^table.sort{string-key-maker}[asc|desc]

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.56 2001/05/08 08:15:00 paf Exp $
+	$Id: pa_value.h,v 1.57 2001/05/08 10:39:23 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -142,6 +142,7 @@ public: // Value
 		- VStateless_class: this
 		- VStateless_object: fclass_real
 		- WContext: none yet | transparent
+		- VHash: 0
 	*/
 	virtual VStateless_class *get_class() { return 0; }
 	/** extract VAliased
