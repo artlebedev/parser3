@@ -2,9 +2,9 @@
 
 	String				Chunk0
 	======				========
-	head_chunk--------->[ptr, size]
+	head--------->[ptr, size]
 	append_here-------->[ptr, size]
-	chunk_link_row      ........
+	link_row      ........
 			.			.
 			.			[ptr, size]
 			...........>[link to the next chunk]
@@ -19,19 +19,23 @@
 class Pool;
 
 class String {
+public:
+	enum {
+		CR_PREALLOCATED_COUNT=5,
+		CR_GROW_PERCENT=60
+	};
+
+private:
 	friend Pool;
 
 	// the pool I'm allocated on
 	Pool *pool;
 
-	// the number of records per chunk
-	int chunk_items;
-	enum {
-		CI_CONST_STRING_GROW=5,
-		CI_DYNAMIC_STRING_GROW_DEFAULT=10
-	};
-
+	// last chank allocated count cache
+	int curr_chunk_rows;
 	struct Chunk {
+		// the number of rows per chunk
+		int count;
 		union Row {
 			// chunk item
 			struct {
@@ -39,32 +43,33 @@ class String {
 				size_t size;  // length of the fragment
 			} item;
 			Chunk *link;  // link to the next chunk in chain
-		} first;
+		} first[CR_PREALLOCATED_COUNT];
 		// next rows are here
+		Chunk *preallocated_link;
 	}
-		*head_chunk;  // the head chunk of the chunk chain
+		head;  // the head chunk of the chunk chain
 
 	// next append would write to this record
 	Chunk::Row *append_here;
 	
 	// the address of place where lies address 
 	// of the link to the next chunk to allocate
-	Chunk::Row *chunk_link_row;
+	Chunk::Row *link_row;
 
 	// new&constructors made private to enforce factory manufacturing at pool
 	void *operator new(size_t size, Pool *apool);
 
-	void construct(Pool *apool, int achunk_items);
-	String(Pool *apool, int achunk_items=CI_DYNAMIC_STRING_GROW_DEFAULT) { 
-		construct(apool, achunk_items); 
+	void construct(Pool *apool);
+	String(Pool *apool) { 
+		construct(apool); 
 	}
 	String(Pool *apool, char *src) {
-		construct(apool, CI_CONST_STRING_GROW);
+		construct(apool);
 		*this+=src;
 	}
 
 	bool chunk_is_full() {
-		return append_here == chunk_link_row;
+		return append_here == link_row;
 	}
 	void expand();
 
@@ -84,9 +89,6 @@ public:
 
 	String *makeString() { 
 		return new(this) String(this);
-	}
-	String *makeString(int chunk_items) {
-		return new(this) String(this, chunk_items);
 	}
 	String *makeString(char *src) {
 		return new(this) String(this, src);

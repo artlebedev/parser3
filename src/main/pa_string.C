@@ -6,21 +6,22 @@ void *String::operator new(size_t size, Pool *apool) {
 	return apool->alloc(size);
 }
 
-void String::construct(Pool *apool, int achunk_items) {
+void String::construct(Pool *apool) {
 	pool=apool;
-	chunk_items=achunk_items;
-
-	head_chunk=static_cast<Chunk *>(
-		pool->calloc(sizeof(Chunk::Row)*chunk_items+sizeof(Chunk *)));
-	append_here=&head_chunk->first;
-	chunk_link_row=&head_chunk->first+chunk_items;
+	head.count=curr_chunk_rows=CR_PREALLOCATED_COUNT;
+	append_here=head.first;
+	head.preallocated_link=0;
+	link_row=&head.first[curr_chunk_rows];
 }
 
 void String::expand() {
-	chunk_link_row->link=static_cast<Chunk *>(
-		pool->calloc(sizeof(Chunk::Row)*chunk_items+sizeof(Chunk *)));
-	append_here=&chunk_link_row->link->first;
-	chunk_link_row=&chunk_link_row->link->first+chunk_items;
+	curr_chunk_rows=curr_chunk_rows*100/CR_GROW_PERCENT;
+	Chunk *chunk=static_cast<Chunk *>(
+		pool->calloc(sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
+	chunk->count=curr_chunk_rows;
+	link_row->link=chunk;
+	append_here=chunk->first;
+	link_row=&chunk->first[curr_chunk_rows];
 }
 
 String& String::operator += (char *src) {
@@ -36,14 +37,18 @@ String& String::operator += (char *src) {
 
 size_t String::size() {
 	int result=0;
-	for(Chunk::Row *row=&head_chunk->first; row; row=&row->link->first)
-		for(int i=0; i<chunk_items; i++) {
+	Chunk *chunk=&head; 
+	do {
+		Chunk::Row *row=chunk->first;
+		for(int i=0; i<chunk->count; i++) {
 			if(row==append_here)
 				goto break2;
 
 			result+=row->item.size;
 			row++;
 		}
+		chunk=row->link;
+	} while(chunk);
 break2:
 	return result;
 }
@@ -52,8 +57,10 @@ char *String::c_str() {
 	char *result=static_cast<char *>(pool->alloc(size()+1));
 
 	char *copy_here=result;
-	for(Chunk::Row *row=&head_chunk->first; row; row=&row->link->first)
-		for(int i=0; i<chunk_items; i++) {
+	Chunk *chunk=&head; 
+	do {
+		Chunk::Row *row=chunk->first;
+		for(int i=0; i<chunk->count; i++) {
 			if(row==append_here)
 				goto break2;
 
@@ -61,6 +68,8 @@ char *String::c_str() {
 			copy_here+=row->item.size;
 			row++;
 		}
+		chunk=row->link;
+	} while(chunk);
 break2:
 	*copy_here=0;
 	return result;
