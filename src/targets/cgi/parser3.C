@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.143 2001/11/21 10:02:13 paf Exp $
+	$Id: parser3.C,v 1.144 2001/12/05 11:24:55 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -119,20 +119,21 @@ void SAPI::die(const char *fmt, ...) {
 	log_pool_stats(pool);
 #endif
 
+    va_list args;
+	va_start(args,fmt);
 	// log
 
 	// logging is more important than user 
 	// she can cancel download, we'd get SIG_PIPE, 
 	// nothing would be logged then
-    va_list args;
-	va_start(args,fmt);
 	::log(fmt, args);
-	va_end(args);
 
 	// inform user
 
 	char body[MAX_STRING];
 	int content_length=vsnprintf(body, MAX_STRING, fmt, args);
+
+	va_end(args);
 
 	// prepare header
 	// let's be honest, that's bad we couldn't produce valid output
@@ -206,6 +207,7 @@ main workhorse
 		IIS: remove trailing default-document[index.html] from $request.uri.
 		to do that we need to consult metabase,
 		wich is tested but seems slow.
+		IIS5 todo find out proper 'illegal call' check 
 */
 void real_parser_handler(
 					const char *filespec_to_process,
@@ -230,9 +232,7 @@ void real_parser_handler(
 	pa_globals_init(pool);
 	
 	if(!filespec_to_process)
-		throw Exception(0, 0,
-		0,
-		"Parser/%s", PARSER_VERSION);
+		SAPI::die("Parser/%s", PARSER_VERSION);
 	
 	// Request info
 	Request::Info request_info;
@@ -279,16 +279,16 @@ void real_parser_handler(
 				throw Exception(0, 0,
 				0,
 				"CGI: no PATH_INFO defined(in reinventing REQUEST_URI)");
-			
+			/*
+			they've changed this under IIS5.
 			if(const char *script_name=SAPI::get_env(pool, "SCRIPT_NAME")) {
 				size_t script_name_len=strlen(script_name);
 				size_t uri_len=strlen(request_info.uri);
 				if(strncmp(request_info.uri,script_name, script_name_len)==0 &&
 					script_name_len != uri_len) // under IIS they are the same
-					throw Exception(0, 0,
-					0,
-					"CGI: illegal call");
+					SAPI::die("CGI: illegal call");
 			}
+			*/
 	} else
 		request_info.uri=0;
 	
@@ -401,12 +401,13 @@ void failed_new() {
 #endif
 
 int main(int argc, char *argv[]) {
+//	_asm int 3;
 	argv0=argv[0];
 
 	umask(2);
 
 	// were we started as CGI?
-	cgi=
+	cgi=1||
 		getenv("SERVER_SOFTWARE") || 
 		getenv("SERVER_NAME") || 
 		getenv("GATEWAY_INTERFACE") || 
@@ -457,7 +458,7 @@ int main(int argc, char *argv[]) {
 		//   possible pool' exception not catch-ed now
 		//   and there could be out-of-memory exception
 
-		SAPI::die("exception in request exception handler: ", e.comment());
+		SAPI::die("exception in request exception handler: %s", e.comment());
 #ifndef _DEBUG
 	} catch(...) { 
 		SAPI::die("<unknown exception>");
