@@ -190,7 +190,20 @@
   --with-pgsql-client=pgsqlclientlib?params
   --with-oracle-client=oracleclientlib?params
   
- 
+5.
+  If you need to build apache 1.3 parser module, get source distribution of apache 1.3,
+  run configure there, then run parser configure with one more option:
+  --with-apache13=Apache13 source distribution directory
+  after 'make' go to that directory and run
+
+  ./p3runConfigure <any additional options to apache configure to pass>
+  
+  example:
+  ./p3runConfigure --prefix=$D/apache13install --enable-module=rewrite
+
+  WARNING: if you want to use apache configure option --enable-shared=max, do this:
+  ./p3runConfigure --enable-shared=max --disable-shared=mod_parser3.c
+  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.36 2004/02/12 07:10:11 paf Exp $
+$Id: INSTALL,v 1.37 2004/03/02 14:05:08 paf Exp $
