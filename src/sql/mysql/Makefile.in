@@ -10,8 +10,6 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#  $Id: Makefile.in,v 1.2 2001/05/21 08:01:56 parser Exp $
-
 
 SHELL = @SHELL@
 
