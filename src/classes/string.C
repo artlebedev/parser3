@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.111 2002/04/24 13:17:13 paf Exp $
+	$Id: string.C,v 1.112 2002/06/25 14:28:57 paf Exp $
 */
 
 #include "classes.h"
@@ -427,7 +427,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		buf, strlen(buf), true, do_append);
 }
 
-static void _optimize(Request& r, const String& method_name, MethodParams * /*params*/) {
+static void _normalize(Request& r, const String& method_name, MethodParams * /*params*/) {
  	r.write_assign_lang(r.self->get_string()->join_chains(r.pool(), 0/*cstr*/));
 }
 
@@ -481,8 +481,8 @@ MString::MString(Pool& apool) : Methoded(apool, "string") {
 	// ^string.save[file]  
 	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
 
-	// ^string.optimize[]  
-	add_native_method("optimize", Method::CT_DYNAMIC, _optimize, 0, 0);
+	// ^string.normalize[]  
+	add_native_method("normalize", Method::CT_DYNAMIC, _normalize, 0, 0);
 }	
 
 // global variable
