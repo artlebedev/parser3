@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/12/01 09:38:26 $";
+static const char * const IDENT="$Date: 2003/12/01 14:20:50 $";
 
 #include "libxslt/extensions.h"
 
@@ -28,7 +28,7 @@ struct MemoryStream {
 			return 0;
 
 		size_t to_read=min(a_size, left);
-		memcpy(a_buffer, m_buf, to_read);
+		memcpy(a_buffer, m_buf+m_position, to_read);
 		m_position+=to_read;
 		return to_read;
 	}
