@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6, tested with Oracle 7.x.x
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.9 2001/08/23 12:21:31 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.10 2001/08/23 14:15:44 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -168,7 +168,7 @@ public:
 			think, this is some sort of backward compatibility wonder.
 			leaving as it is, and without check()
 		*/
-		OCIHandleAlloc((dvoid *) NULL, (dvoid **) &cs.envhp, (ub4)OCI_HTYPE_ENV, 0, 0);
+		OCIHandleAlloc((dvoid *)NULL, (dvoid **) &cs.envhp, (ub4)OCI_HTYPE_ENV, 0, 0);
 		// Initialize an environment handle, attempt #2
 		check(services, cs, "EnvInit", OCIEnvInit(
 			&cs.envhp, (ub4)OCI_DEFAULT, 0, 0));		
@@ -180,7 +180,7 @@ public:
 			(dvoid *)cs.envhp, (dvoid **) &cs.srvhp, (ub4)OCI_HTYPE_SERVER, 0, 0));		
 		// Attach to a 'service'; initialize server context handle  
 		check(services, cs, "ServerAttach", OCIServerAttach( 
-			cs.srvhp, cs.errhp, (text *) service, (sb4) strlen(service), (ub4)OCI_DEFAULT));
+			cs.srvhp, cs.errhp, (text *)service, (sb4)strlen(service), (ub4)OCI_DEFAULT));
 		// Allocate and initialize OCISvcCtx handle
 		check(services, cs, "HandleAlloc svchp", OCIHandleAlloc( 
 			(dvoid *)cs.envhp, (dvoid **) &cs.svchp, (ub4)OCI_HTYPE_SVCCTX, 0, 0));		
@@ -280,7 +280,7 @@ public:
 		SQL_Driver_services& services, void *connection, 
 		const char *astatement, unsigned long offset, unsigned long limit, 
 		SQL_Driver_query_event_handlers& handlers) {
-//		_asm int 3;
+		
 		OracleSQL_connection_struct &cs=*(OracleSQL_connection_struct *)connection;
 		OracleSQL_query_lobs lobs={{0}, 0};
 		OCIStmt *stmthp=0;
@@ -297,7 +297,7 @@ public:
 				(dvoid *)cs.envhp, (dvoid **) &stmthp, (ub4)OCI_HTYPE_STMT, 0, 0));
 			check(services, cs, "syntax", 
 				OCIStmtPrepare(stmthp, cs.errhp, (unsigned char *)statement, 
-				(ub4) strlen((char *) statement), 
+				(ub4)strlen((char *)statement), 
 				(ub4)OCI_NTV_SYNTAX, (ub4)OCI_DEFAULT));
 			{
 				for(int i=0; i<lobs.count; i++) {
@@ -329,17 +329,17 @@ cleanup: // no check call after this point!
 		{
 			for(int i=0; i<lobs.count; i++) {
 				/* free var locator */
-				OCIDescriptorFree((dvoid *) lobs.items[i].locator, (ub4)OCI_DTYPE_LOB);
+				if(OCILobLocator *locator=lobs.items[i].locator)
+					OCIDescriptorFree((dvoid *)locator, (ub4)OCI_DTYPE_LOB);
 
-				OracleSQL_query_lobs::return_rows *rows=&lobs.items[i].rows;
-				for(int r=0; r<rows->count; r++) {
-					/* free var locator */
-					OCIDescriptorFree((dvoid *) rows->row[r].locator, (ub4)OCI_DTYPE_LOB);
-				}
+				/* free rows descriptors */
+				OracleSQL_query_lobs::return_rows &rows=lobs.items[i].rows;
+				for(int r=0; r<rows.count; r++)
+					OCIDescriptorFree((dvoid *)rows.row[r].locator, (ub4)OCI_DTYPE_LOB);
 			}
 		}
 		if(stmthp)
-			OCIHandleFree((dvoid *) stmthp, (ub4)OCI_HTYPE_STMT);
+			OCIHandleFree((dvoid *)stmthp, (ub4)OCI_HTYPE_STMT);
 
 		if(failed)
 			services._throw(cs.error);
@@ -454,9 +454,9 @@ private: // private funcs
 			stmt_type=OCI_STMT_UPDATE;
 
 		sword status=OCIStmtExecute(cs.svchp, stmthp, cs.errhp, 
-			(ub4) stmt_type==OCI_STMT_SELECT?0:1, (ub4)0, 
-			(OCISnapshot *) NULL, 
-			(OCISnapshot *) NULL, (ub4)OCI_DEFAULT);
+			(ub4)stmt_type==OCI_STMT_SELECT?0:1, (ub4)0, 
+			(OCISnapshot *)NULL, 
+			(OCISnapshot *)NULL, (ub4)OCI_DEFAULT);
 
 		if(status!=OCI_NO_DATA)
 			check(services, cs, "execute", status);
@@ -470,7 +470,7 @@ private: // private funcs
 						check(services, cs, "lobwrite", OCILobWrite (
 							cs.svchp, cs.errhp, 
 							locator, &bytes_to_write, 1, 
-							(dvoid *) lobs.items[i].data_ptr, (ub4)bytes_to_write, OCI_ONE_PIECE, 
+							(dvoid *)lobs.items[i].data_ptr, (ub4)bytes_to_write, OCI_ONE_PIECE, 
 							(dvoid *)0, 0, (ub2)0, 
 							(ub1) SQLCS_IMPLICIT));
 					}
@@ -802,8 +802,8 @@ void check(
 	case OCI_ERROR:
 		{
 		sb4 errcode;
-		if(OracleSQL_driver->OCIErrorGet((dvoid *)cs.errhp, (ub4)1, (text *) NULL, &errcode, 
-			(text *) reason, (ub4) sizeof(reason), OCI_HTYPE_ERROR)==OCI_SUCCESS)
+		if(OracleSQL_driver->OCIErrorGet((dvoid *)cs.errhp, (ub4)1, (text *)NULL, &errcode, 
+			(text *)reason, (ub4)sizeof(reason), OCI_HTYPE_ERROR)==OCI_SUCCESS)
 			msg=reason;
 		else
 			msg="[can not get error description]";
@@ -898,5 +898,6 @@ void tolower(char *out, const char *in, size_t size) {
 }
 
 extern "C" SQL_Driver *create() {
+	//_asm int 3;
 	return OracleSQL_driver=new OracleSQL_Driver();
 }
