@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.45 2001/07/25 12:18:23 parser Exp $
+	$Id: compile_tools.h,v 1.46 2001/07/26 10:47:02 parser Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -64,6 +64,8 @@ struct parse_control {
 	int sp; ///< =0
 	enum lexical_state stack[MAX_LEXICAL_STATES];
 	int brackets_nestages[MAX_LEXICAL_STATES]; ///< brackets nestage on each state
+
+	bool object_constructor_allowed, object_constructing;
 	//@}
 	
 	/// output: filled input 'methods' and 'error' if any

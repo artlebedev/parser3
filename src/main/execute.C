@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.184 2001/07/25 10:12:13 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.185 2001/07/26 10:47:02 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -32,7 +32,7 @@ char *opcode_name[]={
 	"VALUE",  "CURLY_CODE__STORE_PARAM",  "EXPR_CODE__STORE_PARAM",
 
 	// actions
-	"WITH_SELF",	"WITH_ROOT",	"WITH_READ",	"WITH_WRITE",
+	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
 	"GET_CLASS",
 	"CONSTRUCT_VALUE", "CONSTRUCT_EXPR", "CURLY_CODE__CONSTRUCT",
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
@@ -41,7 +41,7 @@ char *opcode_name[]={
   	"CREATE_SWPOOL",	"REDUCE_SWPOOL",
 	"GET_METHOD_FRAME",
 	"STORE_PARAM",
-	"CALL",
+	"CALL_CONSTRUCTOR",	"OP_CALL_METHOD",
 
 	// expression ops: unary
 	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS",
@@ -189,11 +189,6 @@ void Request::execute(const Array& ops) {
 				PUSH(self);
 				break;
 			}
-		case OP_WITH_ROOT: 
-			{
-				PUSH(root);
-				break;
-			}
 		case OP_WITH_READ: 
 			{
 				PUSH(rcontext);
@@ -338,18 +333,12 @@ void Request::execute(const Array& ops) {
 				//	not a code-junction
 				Junction *junction=value->get_junction();
 				if(!junction)
-					THROW(0,0,
+					THROW(0, 0,
 						&value->name(),
 						"(%s) not a method or junction, can not call it",
 							value->type()); 
 
-				bool is_constructor=
-					wcontext->constructing() && // constructing?
-					wcontext->somebody_entered_some_class(); // ^class:method[..]?
-				if(is_constructor)
-					wcontext->constructing(false);
-
-				VMethodFrame *frame=NEW VMethodFrame(pool(), value->name(), *junction, is_constructor);
+				VMethodFrame *frame=NEW VMethodFrame(pool(), value->name(), *junction);
 				PUSH(frame);
 				break;
 			}
@@ -361,7 +350,8 @@ void Request::execute(const Array& ops) {
 				break;
 			}
 
-		case OP_CALL:
+		case OP_CALL_METHOD:
+		case OP_CALL_CONSTRUCTOR:
 			{
 #ifdef DEBUG_EXECUTE
 				debug_printf(pool(), "->\n");
@@ -374,32 +364,38 @@ void Request::execute(const Array& ops) {
 				PUSH(wcontext); 
 				
 				VStateless_class *called_class=frame->junction.self.get_class();
-				// not ^name.method call, name:method call; and
-				// is context object or class & is it my class or my parent's class and?
-				VStateless_class *read_class=rcontext->get_class();
-				if(
-					!(wcontext->somebody_entered_some_object() &&
-					!wcontext->somebody_entered_some_class()) && 
-					read_class && read_class->is_or_derived_from(*called_class)) // yes
-					self=rcontext; // class dynamic call
-				else // no, not me or relative of mine (total stranger)
-					// were are constructing something and
-					// our constructor is just method call and
-					// not static-only-method call
-					if(frame->is_constructor && 
-						wcontext->somebody_entered_some_object()==1 &&
-						frame->junction.method->call_type!=Method::CT_STATIC) {
+				if(op.code==OP_CALL_CONSTRUCTOR) {
+					if(frame->junction.method->call_type!=Method::CT_STATIC) {
 						// this is a constructor call
-						// some stateless_object creatable derivates
-						if(Value *value=called_class->create_new_value(pool()))
+
+						if(Value *value=called_class->create_new_value(pool())) {
+							// some stateless_object creatable derivates
 							self=value;
-						else // stateful object
+						} else {
+							// stateful object
 							self=NEW VObject(pool(), *called_class);
+						}
 						frame->write(*self, 
 							String::UL_CLEAN  // not used, always an object, not string
 						);
-					} else 
-						self=&frame->junction.self; // no, static or simple dynamic call
+					} else
+						THROW(0, 0,
+							&frame->name(),
+							"method is static and can not be used as constructor");
+				} else {
+					// this is not constructor call
+
+					// not ^name.method call, name:method call; and
+					// is context object or class & is it my class or my parent's class and?
+					VStateless_class *read_class=rcontext->get_class();
+					if(
+						!(wcontext->somebody_entered_some_object() &&
+						!wcontext->somebody_entered_some_class()) && 
+						read_class && read_class->is_or_derived_from(*called_class)) // yes
+						self=rcontext; // dynamic call
+					else // no, not me or relative of mine (=total stranger)
+						self=&frame->junction.self; // static call
+				}
 
 				frame->set_self(*self);
 				root=rcontext=wcontext=frame;

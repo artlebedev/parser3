@@ -1,13 +1,13 @@
 @auto[]
 $SQL[
-	$drivers[^table:set{protocol	driver	client
+	$drivers[^table::set{protocol	driver	client
 mysql	d:\Y\parser3\src\sql\mysql\debug\parser3mysql.dll	d:\y\parser3\src\sql\mysql\mySQL32\lib\opt\libmySQL.dll
 odbc	d:\y\parser3\src\sql\odbc\Debug\parser3odbc.dll
 }]
 ]
 
 #$ORIGINS(1)
-$user-html[^table:set{user	html	comment
+$user-html[^table::set{user	html	comment
 <<	&laquo^;	длинные user вперёд
 >>	&raquo^;
 \n\n	<p>	!эти есть в таблице по умолчанию
@@ -25,8 +25,8 @@ _	&nbsp^;
 #$if(!($SQL is hash)){$SQL[$z[z]]}
 $SQL.connect-string[mysql://test:test@localhost/test/cp1251_koi8]
 $SQL.connect-string[mysql://test:test@[/a/b]/test/cp1251_koi8]
-#for ^file:load[name;user-name;mime-type << autodetection]
-$MIME-TYPES[^table:set{ext	mime-type
+#for ^file::load[name;user-name;mime-type << autodetection]
+$MIME-TYPES[^table::set{ext	mime-type
 zip	application/zip
 doc	application/msword
 xls	application/vnd.ms-excel

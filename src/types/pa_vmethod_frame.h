@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.12 2001/06/27 12:44:33 parser Exp $
+	$Id: pa_vmethod_frame.h,v 1.13 2001/07/26 10:47:03 parser Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -57,12 +57,10 @@ public: // usage
 
 	VMethodFrame(Pool& apool, 
 		const String& name,
-		const Junction& ajunction/*info: always method-junction*/, 
-		bool ais_constructor) : 
+		const Junction& ajunction/*info: always method-junction*/) : 
 		WContext(apool, 0 /* empty */, false /* not constructing */),
 
 		junction(ajunction),
-		is_constructor(ais_constructor),
 		store_param_index(0),
 		fself(0) {
 		set_name(name);
@@ -138,7 +136,6 @@ public: // usage
 public:
 	
 	const Junction& junction;
-	bool is_constructor;
 
 private:
 	int store_param_index;

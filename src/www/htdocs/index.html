@@ -1,7 +1,7 @@
 @main[]
 ^connect[odbc://dsn=voz7^;uid=voz^;pwd=pwd]{
-#    ^void:sql{insert into хрен (a) values (1)}
-	$пресса[^table:sql{select * from press where header='$form:h'}]
+#    ^void::sql{insert into хрен (a) values (1)}
+	$пресса[^table::sql{select * from press where header='$form:h'}]
 	^пресса.menu{
 		$пресса.id, $пресса.date_row, $пресса.header, $пресса.short_text^rem{, $пресса.full_text}, $пресса.mode
 	}[<br>]
@@ -10,7 +10,7 @@
 #$response:status[404]
 #$response:location[/inh.html]
 #<hr>
-$таблица[^table:set{a	b
+$таблица[^table::set{a	b
 1	2
 11	22
 }]

@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.153 2001/07/25 12:18:23 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.154 2001/07/26 10:47:02 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -247,7 +247,6 @@ get_name_value: name_without_curly_rdive EON | name_in_curly_rdive;
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
 name_without_curly_rdive: 
 	name_without_curly_rdive_read 
-|	name_without_curly_rdive_root
 |	name_without_curly_rdive_class;
 name_without_curly_rdive_read: name_without_curly_rdive_code {
 	$$=N(POOL); 
@@ -264,12 +263,7 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 	}
 	/* diving code; stack: current context */
 };
-name_without_curly_rdive_root: ':' name_without_curly_rdive_code {
-	$$=N(POOL); 
-	O($$, OP_WITH_ROOT); /* stack: starting context */
-	P($$, $2); /* diving code; stack: current context */
-};
-name_without_curly_rdive_class: class_prefix name_without_curly_rdive_code { $$=$1; P($$, $2) };
+name_without_curly_rdive_class: class_prefix_get name_without_curly_rdive_code { $$=$1; P($$, $2) };
 name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; P($$, $2) };
 
 /* put */
@@ -280,7 +274,6 @@ put: '$' name_expr_wdive construct {
 };
 name_expr_wdive: 
 	name_expr_wdive_write
-|	name_expr_wdive_root
 |	name_expr_wdive_class;
 name_expr_wdive_write: name_expr_dive_code {
 	$$=N(POOL);
@@ -297,12 +290,7 @@ name_expr_wdive_write: name_expr_dive_code {
 	}
 	/* diving code; stack: current context */
 };
-name_expr_wdive_root: ':' name_expr_dive_code {
-	$$=N(POOL); 
-	O($$, OP_WITH_ROOT); /* stack: starting context */
-	P($$, $2); /* diving code; stack: context,name */
-};
-name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
+name_expr_wdive_class: class_prefix_get name_expr_dive_code { $$=$1; P($$, $2) };
 
 construct: 
 	construct_square | 
@@ -347,18 +335,22 @@ call: call_value {
 	$$=$1; /* stack: value */
 	O($$, OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 };
-call_value: '^' call_name store_params EON { /* ^field.$method{vasya} */
-	$$=$2; /* with_xxx,diving code; stack: context,method_junction */
+call_value: '^' { PC.object_constructor_allowed=true } 
+			call_name { PC.object_constructor_allowed=false } 
+			store_params EON { /* ^field.$method{vasya} */
+	$$=$3; /* with_xxx,diving code; stack: context,method_junction */
 	O($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
 
-	YYSTYPE params_code=$3;
+	YYSTYPE params_code=$5;
 	if(params_code->size()==3) // probably [] case. [OP_VALUE + Void + STORE_PARAM]
 		if(Value *value=LA2V(params_code)) // it is OP_VALUE + value?
 			if(!value->is_defined()) // value is VVoid?
 				params_code=0; // ^zzz[] case. don't append lone empty param.
 	if(params_code)
 		P($$, params_code); // filling method_frame.store_params
-	O($$, OP_CALL); // method_frame=pop; ncontext=pop; call(ncontext,method_frame) stack: value
+	O($$, 
+		PC.object_constructing?(PC.object_constructing=false),OP_CALL_CONSTRUCTOR:
+		OP_CALL_METHOD); // method_frame=pop; ncontext=pop; call(ncontext,method_frame) stack: value
 };
 
 call_name: name_without_curly_rdive;
@@ -441,16 +433,10 @@ name_expr_with_subvar_value: STRING subvar_get_writes {
 	P($$, $2);
 	O($$, OP_REDUCE_EWPOOL);
 };
-subvar_ref_name_rdive: subvar_ref_name_rdive_read | subvar_ref_name_rdive_root;
-subvar_ref_name_rdive_read: STRING {
+subvar_ref_name_rdive: STRING {
 	$$=N(POOL); 
 	O($$, OP_WITH_READ);
 	P($$, $1);
-};
-subvar_ref_name_rdive_root: ':' STRING {
-	$$=N(POOL); 
-	O($$, OP_WITH_ROOT);
-	P($$, $2);
 };
 subvar_get_writes: subvar__get_write | subvar_get_writes subvar__get_write { $$=$1; P($$, $2) };
 subvar__get_write: '$' subvar_ref_name_rdive {
@@ -458,9 +444,22 @@ subvar__get_write: '$' subvar_ref_name_rdive {
 	O($$, OP_GET_ELEMENT__WRITE);
 };
 
-class_prefix: STRING ':' {
+class_prefix_get: class_prefix {
 	$$=$1; // stack: class name string
 	O($$, OP_GET_CLASS);
+};
+class_prefix:
+	class_static_prefix
+|	class_constructor_prefix
+;
+class_static_prefix: STRING ':';
+class_constructor_prefix: STRING ':' ':' {
+	$$=$1;
+	if(!PC.object_constructor_allowed) {
+		strcpy(PC.error, ":: not allowed here");
+		YYERROR;
+	}
+	PC.object_constructing=true;
 };
 
 

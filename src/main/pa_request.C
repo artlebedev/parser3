@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.145 2001/07/18 13:18:00 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.146 2001/07/26 10:47:02 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -296,7 +296,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
 					//	@postprocess[data]
-					VMethodFrame frame(pool(), value->name(), *junction, false);
+					VMethodFrame frame(pool(), value->name(), *junction);
 					frame.set_self(*main_class);
 
 					frame.store_param(method->name, 
@@ -369,7 +369,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 						if(const Method *method=junction->method) {
 							// preparing to pass parameters to 
 							//	@exception[origin;source;comment;type;code]
-							VMethodFrame frame(pool(), value->name(), *junction, false);
+							VMethodFrame frame(pool(), value->name(), *junction);
 							frame.set_self(*main_class);
 
 							const String *problem_source=e.problem_source();
