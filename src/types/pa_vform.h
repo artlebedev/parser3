@@ -1,11 +1,11 @@
 /** @file
-	Parser: form class decls.
+	Parser: @b form class decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.15 2001/04/09 09:48:30 paf Exp $
+	$Id: pa_vform.h,v 1.16 2001/04/26 15:01:51 paf Exp $
 */
 
 #ifndef PA_VFORM_H

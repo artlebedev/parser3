@@ -1,11 +1,11 @@
 /** @file
-	Parser: random parser class.
+	Parser: @b random parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: random.C,v 1.8 2001/04/23 13:29:49 paf Exp $
+	$Id: random.C,v 1.9 2001/04/26 15:01:48 paf Exp $
 */
 
 #include "pa_config_includes.h"

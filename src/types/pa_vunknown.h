@@ -1,11 +1,11 @@
 /** @file
-	Parser: unknown Parser class.
+	Parser: @b unknown parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vunknown.h,v 1.9 2001/04/12 15:02:43 paf Exp $
+	$Id: pa_vunknown.h,v 1.10 2001/04/26 15:01:52 paf Exp $
 */
 
 #ifndef PA_VUNKNOWN_H

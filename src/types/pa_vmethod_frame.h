@@ -1,11 +1,11 @@
 /** @file
-	Parser: type used for wcontext when executing method.
+	Parser: @b method_frame write context
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.4 2001/04/26 14:55:35 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.5 2001/04/26 15:01:52 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H

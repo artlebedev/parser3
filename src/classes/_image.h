@@ -1,11 +1,11 @@
 /** @file
-	Parser: image parser class decls.
+	Parser: @b image parser class decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _image.h,v 1.2 2001/04/17 19:00:26 paf Exp $
+	$Id: _image.h,v 1.3 2001/04/26 15:01:47 paf Exp $
 */
 
 #ifndef CLASSES_IMAGE_H

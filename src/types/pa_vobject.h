@@ -1,9 +1,11 @@
 /**	@file
-	Parser: object class decl.
+	Parser: @b object class decl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vobject.h,v 1.6 2001/04/26 14:55:35 paf Exp $
+	$Id: pa_vobject.h,v 1.7 2001/04/26 15:01:52 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H

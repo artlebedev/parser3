@@ -1,11 +1,11 @@
 /** @file
-	Parser: string class.
+	Parser: @b string class.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vstring.C,v 1.4 2001/04/11 08:36:22 paf Exp $
+	$Id: pa_vstring.C,v 1.5 2001/04/26 15:01:52 paf Exp $
 */
 
 #include "pa_vstring.h"

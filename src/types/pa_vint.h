@@ -1,11 +1,11 @@
 /** @file
-	Parser: int parser class decl.
+	Parser: @b int parser class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.16 2001/04/02 16:00:17 paf Exp $
+	$Id: pa_vint.h,v 1.17 2001/04/26 15:01:51 paf Exp $
 */
 
 #ifndef PA_VINT_H

@@ -1,11 +1,11 @@
 /**	@file
-	Parser: write wrapper write context
+	Parser: @b write_wrapper write context
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wwrapper.h,v 1.7 2001/04/26 14:55:35 paf Exp $
+	$Id: pa_wwrapper.h,v 1.8 2001/04/26 15:01:53 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H

@@ -1,11 +1,11 @@
 /** @file
-	Parser: @b ROOT parser class.
+	Parser: parser @b operators.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.8 2001/04/17 19:00:27 paf Exp $
+	$Id: op.C,v 1.9 2001/04/26 15:01:48 paf Exp $
 */
 
 #include "pa_config_includes.h"

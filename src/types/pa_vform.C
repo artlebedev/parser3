@@ -1,11 +1,11 @@
-/**
-	Parser: form class.
+/**	@file
+	Parser: @b form class.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.26 2001/04/23 10:58:32 paf Exp $
+	$Id: pa_vform.C,v 1.27 2001/04/26 15:01:51 paf Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.

@@ -1,9 +1,11 @@
-/*
-	Parser
+/**	@file
+	Parser: stateless class.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.C,v 1.7 2001/03/30 05:53:04 paf Exp $
+	$Id: pa_vstateless_class.C,v 1.8 2001/04/26 15:01:52 paf Exp $
 */
 
 #include "pa_vstateless_class.h"

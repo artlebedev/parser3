@@ -1,11 +1,11 @@
 /** @file
-	Parser: bool class decls.
+	Parser: @b bool class decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vbool.h,v 1.7 2001/04/26 14:55:34 paf Exp $
+	$Id: pa_vbool.h,v 1.8 2001/04/26 15:01:50 paf Exp $
 */
 
 #ifndef PA_VBOOL_H

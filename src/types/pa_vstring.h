@@ -1,11 +1,11 @@
-/*
-	Parser: string parser class decl.
+/**	@file
+	Parser: @b string parser class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.22 2001/04/11 08:13:43 paf Exp $
+	$Id: pa_vstring.h,v 1.23 2001/04/26 15:01:52 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
