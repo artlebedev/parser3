@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.99 2002/04/10 09:53:14 paf Exp $
+	$Id: string.C,v 1.100 2002/04/11 13:33:39 paf Exp $
 */
 
 #include "classes.h"
@@ -401,6 +401,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 				&method_name,
 				"produced no result, but no default option specified");
 	}
+
 	VString& result=*new(pool) VString(*string);
 	result.set_name(method_name);
 	r.write_assign_lang(result);

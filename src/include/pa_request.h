@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.126 2002/04/10 09:53:14 paf Exp $
+	$Id: pa_request.h,v 1.127 2002/04/11 13:33:39 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -101,6 +101,8 @@ public:
 
 	/// executes ops
 	void execute(const Array& ops); // execute.C
+	/// execute ops with anti-recoursion check
+	void recoursion_checked_execute(const String *name, const Array& ops);
 
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
 	VStateless_class *use_file(

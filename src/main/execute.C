@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.224 2002/04/10 09:53:15 paf Exp $
+	$Id: execute.C,v 1.225 2002/04/11 13:33:39 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -110,6 +110,18 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 #define POP() static_cast<Value *>(stack.pop())
 #define POP_NAME() static_cast<Value *>(stack.pop())->as_string()
 #define POP_CODE() static_cast<Array *>(stack.pop())
+
+void Request::recoursion_checked_execute(const String *name, const Array& ops) {
+	// anti_endless_execute_recoursion
+	if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
+		anti_endless_execute_recoursion=0; // give @exception a chance
+		throw Exception("parser.runtime",
+			name,
+			"call canceled - endless recursion detected");
+	}
+	execute(ops); // execute it
+	anti_endless_execute_recoursion--;
+}
 
 void Request::execute(const Array& ops) {
 //	_asm int 3;
@@ -474,16 +486,8 @@ void Request::execute(const Array& ops) {
 									frame->name(), frame->numbered_params()); // execute it
 							} else { // parser code
 								root=frame;
-								{ // anti_endless_execute_recoursion
-									if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
-										anti_endless_execute_recoursion=0; // give @exception a chance
-										throw Exception("parser.runtime",
-											&frame->name(),
-											"call canceled - endless recursion detected");
-									}
-									execute(*method.parser_code); // execute it
-									anti_endless_execute_recoursion--;
-								}
+								// execute it
+								recoursion_checked_execute(&frame->name(), *method.parser_code);
 							}
 						} catch(...) {
 							// record it to stack trace
@@ -873,7 +877,10 @@ void Request::process_internal(
 		PUSH(rcontext);  
 		PUSH(wcontext);
 		
-		WContext *frame;
+		self=&junction->self;
+		root=junction->root;
+		rcontext=junction->rcontext;
+
 		// for expression method params
 		// wcontext is set 0
 		// using the fact in decision "which wwrapper to use"
@@ -881,42 +888,34 @@ void Request::process_internal(
 		if(using_code_frame) {
 			// almost plain wwrapper about junction wcontext, 
 			// BUT intercepts string writes
-			frame=NEW VCodeFrame(pool(), *junction->wcontext);  
-		} else {
-			// plain wwrapper
-			frame=NEW WWrapper(pool(), 0/*empty*/);
-		}
-		
-		//frame->set_name(value.name());
-		wcontext=frame;
-		self=&junction->self;
-		root=junction->root;
-		rcontext=junction->rcontext;
+			VCodeFrame local(pool(), *junction->wcontext);  
+			wcontext=&local;
 
-		{ // anti_endless_execute_recoursion
-			if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
-				anti_endless_execute_recoursion=0; // give @exception a chance
-				throw Exception("parser.runtime",
-					result_name,
-					"junction evaluation canceled - endless recursion detected");
-			}
-			execute(*junction->code);
-			anti_endless_execute_recoursion--;
-		}
+			// execute it
+			recoursion_checked_execute(result_name, *junction->code);
 		
-		if(using_code_frame) {
 			// CodeFrame soul:
 			//   string writes were intercepted
 			//   returning them as the result of getting code-junction
 			if(string_result)
-				*string_result=frame->get_string();
-			else
-				*value_result=NEW VString(*frame->get_string());
-		} else {
-			if(string_result)
-				*string_result=&frame->result().as_string();
+				*string_result=wcontext->get_string();
 			else {
-				*value_result=&frame->result();
+				*value_result=NEW VString(*wcontext->get_string());
+				if(result_name)
+					(*value_result)->set_name(*result_name);
+			}
+		} else {
+			// plain wwrapper
+			WWrapper local(pool(), 0/*empty*/);
+			wcontext=&local;
+		
+			// execute it
+			recoursion_checked_execute(result_name, *junction->code);
+		
+			if(string_result)
+				*string_result=&wcontext->result().as_string();
+			else {
+				*value_result=&wcontext->result();
 				if(result_name)
 					(*value_result)->set_name(*result_name);
 			}
