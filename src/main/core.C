@@ -10,7 +10,6 @@ enum CHAR_TYPE {
 	METHOD_START_TYPE,
 	STOP_TYPE,///=-1 // same as EOF type(-1), see String::skip_to
 	DOT_TYPE,
-	COLON_TYPE,
 	CONSTRUCTOR_BODY_START_TYPE,
 	CONSTRUCTOR_BODY_FINISH_TYPE,
 	BLOCK_START_TYPE,
@@ -23,6 +22,7 @@ Char_types var_or_method_start;
 Char_types var_or_method_start_or_constructor_stop;
 Char_types var_or_method_start_or_block_stop;
 Char_types common_names_breaks, var_names_breaks, method_names_breaks;
+String SELF;
 
 void prepare() {
 	var_or_method_start.set('$', VAR_START_TYPE);
@@ -36,7 +36,6 @@ void prepare() {
 
 	common_names_breaks.set(0, ' ', STOP_TYPE);
 	common_names_breaks.set('.', DOT_TYPE);
-	common_names_breaks.set(':', COLON_TYPE);
 	common_names_breaks.set(')', STOP_TYPE); // var_or_method_start_or_constructor_stop
 	common_names_breaks.set(']', STOP_TYPE); // var_or_method_start_or_block_stop
 
@@ -45,11 +44,13 @@ void prepare() {
 
 	method_names_breaks=common_names_breaks;
 	method_names_breaks.set('[', BLOCK_START_TYPE);
+
+	SELF.APPEND("self", 0, 0);
 }
 
-void process(method_self_n_params_n_locals& root, Value& self,
-			 arcontext& arcontext, WContext& awcontext, 
-			 String_iterator& iter, Char_types& breaks) {
+CHAR_TYPE process(method_self_n_params_n_locals& root, Value& self,
+				  arcontext& arcontext, WContext& awcontext, 
+				  String_iterator& iter, Char_types& breaks) {
 	while(!iter.eof()) {
 		String_iterator start(iter);
 		CHAR_TYPE type=iter.skip_to(breaks);
@@ -62,10 +63,11 @@ void process(method_self_n_params_n_locals& root, Value& self,
 		case METHOD_START_TYPE:
 			process_method(root, self, arcontext, awcontext, iter, breaks);
 			break;
-		case STOP_TYPE:
-			return;
+		default:
+			return type;
 		}
 	}
+	return -1;
 }
 
 void process_var(method_self_n_params_n_locals& root, Value& self,
@@ -78,10 +80,10 @@ void process_var(method_self_n_params_n_locals& root, Value& self,
 	
 	Prefix prefix;
 	Array/*<String&>*/ names(pool);  // what.they.refer.to left-to-right list
-	CHAR_TYPE names_ended_before; // the char type after long name
-	get_names(
+	// the char type after long name
+	CHAR_TYPE names_ended_before=get_names( 
 		iter, var_names_breaks,
-		&prefix, &names, &names_ended_before); // can return count()=0 when $self alone
+		&prefix, &names); // can return size()=0 when $self alone
 
 	bool read_mode=name_ended_before==' ';
 	Value *context=
@@ -91,7 +93,7 @@ void process_var(method_self_n_params_n_locals& root, Value& self,
 	
 	if(read_mode) {
 		// 'context' dive into dotted path
-		for(int i=0; i<names.count(); i++) {
+		for(int i=0; i<names.size(); i++) {
 			context=context->get_element(static_cast<Value *>(names.get[i]));
 			if(!context) // no such object field, nothing bad, just ignore that
 				return;
@@ -103,7 +105,7 @@ void process_var(method_self_n_params_n_locals& root, Value& self,
 		bool construct_mode=names_ended_before=='(';
 
 		// 'context' dive into dotted path, 
-		int steps=names.count();
+		int steps=names.size();
 		// if constructing then "excluding last .name"
 		if(construct_mode)
 			if(!steps--) // bad: "$self("; now we can safely do ".get[steps]" below
@@ -148,10 +150,10 @@ void process_method(method_self_n_params_n_locals& root, Value& self,
 	
 	Prefix prefix;
 	Array/*<String&>*/ names(pool);  // what.they.refer.to left-to-right list
-	CHAR_TYPE names_ended_before; // the char type after long name
-	get_names(
+	// the char type after long name
+	CHAR_TYPE names_ended_before=get_names(
 		iter, method_names_breaks,
-		&prefix, &names, &names_ended_before); // can return count()=0 when ^self alone
+		&prefix, &names); // can return size()=0 when ^self alone
 
 	Value *context=
 		prefix?
@@ -160,7 +162,7 @@ void process_method(method_self_n_params_n_locals& root, Value& self,
 	iter++; // skip '['
 
 	// 'context' dive into dotted path, excluding last .name
-	int steps=names.count()-1;
+	int steps=names.size()-1;
 	if(steps<0) // bad: "^self["; now we can safely do ".get[steps]" below
 		pool.exception().raise("call: calling method named 'self'");
 	for(int i=0; i<steps; i++) {
@@ -224,7 +226,7 @@ void process_method(method_self_n_params_n_locals& root, Value& self,
 	iter++; // skip ']'
 
 	// preparing contexts
-	method_self_n_params_n_locals local_rcontext(pool, 
+	Method_self_n_params_n_locals local_rcontext(pool, 
 		context,
 		method->param_names, param_values,
 		method->local_names);
@@ -244,11 +246,47 @@ enum Prefix {
 	ROOT_PREFIX,
 	SELF_PREFIX
 };
-void get_names(
+CHAR_TYPE get_names(
 		String_iterator& iter, Char_types& breaks,
-		Prefix prefix, Array& names, CHAR_TYPE& names_ended_before) {
+		Prefix& prefix, Array& names) {
+	// $name.subname white-space
+	// $name.subname( $name.subname[
+	// $name.subname) $name.subname]
+	// $:name... $self...
 
-	// can return count()=0 when $self alone
+	if(iter()==':') {
+		prefix=ROOT_PREFIX;
+		iter++; // skip ':'
+	} else
+		prefix=NO_PREFIX;
+
+	CHAR_TYPE result=-1;
+	while(!iter.eof()) {
+		// preparing context
+		WContext local_wcontext(pool /* empty */);
+		// executing code until separator, writing to that context
+		result=process(root, self,
+			arcontext, local_wcontext, 
+			iter, breaks);
+		// reading resulting name
+		String *name=local_wcontext.get_string();
+		if(*name==SELF) // is it "self"?
+			if(prefix || names.size()) // already $: or $self.  or $name.
+				pool.exception().raise("names: 'self' not first on chain");
+			else // $self.
+				prefix=SELF_PREFIX;
+		else // simple $name or .name, emiting
+			names+=name;
+
+		if(result!=DOT_TYPE) // not "name." ?
+			break;
+	}
+
+	// can only return size()=0 when $self alone
+	if(names.size()==0 && prefix!=SELF_PREFIX)
+		pool.exception().raise("names: empty chain");
+
+	return result;
 }
 
 void get_params(

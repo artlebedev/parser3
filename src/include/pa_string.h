@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.20 2001/02/14 13:40:54 paf Exp $
+  $Id: pa_string.h,v 1.21 2001/02/14 15:19:02 paf Exp $
 */
 
 /*
@@ -128,6 +128,7 @@ private:
 class String_iterator {
 public:
 	String_iterator(String& astring);
+	String_iterator(String_iterator& asi);
 
 	void operator ++() { skip(); }
 	void operator ++(int) { skip(); }

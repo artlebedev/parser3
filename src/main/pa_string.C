@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.24 2001/02/14 14:15:37 paf Exp $
+  $Id: pa_string.C,v 1.25 2001/02/14 15:19:02 paf Exp $
 */
 
 #include <string.h>
@@ -234,6 +234,10 @@ String_iterator::String_iterator(String& astring) :	string(astring) {
 	read_here=string.head.rows;
 	position=string.size()==0?0:read_here->item.ptr;
 	link_row=reinterpret_cast<String::Chunk::Row*>(string.head.preallocated_link);
+}
+
+String_iterator::String_iterator(String_iterator& asi) {
+	//TODO
 }
 
 char String_iterator::operator()() const {
