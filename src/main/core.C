@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.31 2001/02/23 22:22:08 paf Exp $
+$Id: core.C,v 1.32 2001/02/24 08:28:37 paf Exp $
 */
 
 #include "pa_request.h"
@@ -19,7 +19,7 @@ void Request::core() {
 	TRY {
 		String name_RUN(pool()); name_RUN.APPEND_CONST("RUN");
 		char *result=execute_MAIN(construct_class(name_RUN, load_and_compile_RUN()));
-		printf("-----------------\n%s\n----------------\n", result);
+		printf("result-----------------\n%s\nEOF----------------\n", result);
 	} 
 	CATCH(e) {
 		printf("\nERROR: ");
@@ -29,7 +29,7 @@ void Request::core() {
 			if(origin.file)
 				printf("%s(%d): ",
 				origin.file, 1+origin.line);
-			printf("%s ", 
+			printf("'%s' ", 
 				problem_source->cstr());
 		}
 		printf("%s", e.comment());
@@ -72,7 +72,7 @@ VClass *Request::construct_class(String& name, Array& compiled_methods) {
 
 char *Request::execute_MAIN(VClass *class_RUN) {
 	// initialize contexts
-	root=self=rcontext=class_RUN;
+	self=root=rcontext=class_RUN;
 	wcontext=NEW WWrapper(pool(), class_RUN);
 
 	// locate @main code

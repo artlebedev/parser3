@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.12 2001/02/23 12:37:58 paf Exp $
+  $Id: compile_tools.h,v 1.13 2001/02/24 08:28:37 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -28,7 +28,7 @@ enum lexical_state {
 	LS_METHOD_AFTER
 };
 struct parse_control {
-	/* input */
+	// input
 	Pool *pool;
 	Array *methods;
 #ifndef NO_CSTRING_ORIGIN
@@ -36,36 +36,32 @@ struct parse_control {
 	char *file;
 	int line, col;
 #endif
-	/* state */
-	int pending_state/*=0*/;
-	String *string/*=new(pool) String(pool)*/;
+	// state
+	int pending_state; //=0
+	String *string; //=new(pool) String(pool)
 	
 #define MAX_LEXICAL_STATES 100
-	enum lexical_state ls/*=LS_USER*/;
-	int sp/*=0*/;
+	enum lexical_state ls; //=LS_USER;
+	int sp; //=0
 	enum lexical_state stack[MAX_LEXICAL_STATES];
 	int brackets_nestages[MAX_LEXICAL_STATES];
 	
-	/* output: filled input 'methods' and 'error' if any */
+	// output: filled input 'methods' and 'error' if any
 	char error[MAX_STRING];
 };
 
-/* New array // return empty array */
+// New array // return empty array
 inline Array/*<op>*/ *N(Pool& pool) {
 	return new(pool) Array/*<op>*/(pool);
 }
 
-/* Assembler instruction // append ordinary instruction to ops */
+// Assembler instruction // append ordinary instruction to ops
 inline void OP(Array/*<op>*/ *result, enum OPCODE code) {
 	Operation op; op.code=code;
 	*result+=op.cast;
 }
 
-/* Argument Array // append Array to ops */
-inline void AA(Array/*<op>*/ *result, Array/*<op>*/ *array) {
-	*result+=array;
-}
-/* Argument Eval_expression // append eval_expression to ops */
+// Argument Eval_expression // append eval_expression to ops
 inline void AE(Array/*<op>*/ *result, char *eval_expression) {
 	*result+=eval_expression;
 }
@@ -80,14 +76,16 @@ inline void P(Array/*<op>*/ *result, Array *code_array, int offset) {
 }
 // aPpend 'vstring' to 'result'
 void PVS(Array/*<op>*/ *result, VString *vstring);
+// aPpend 'Code_Array' to result
+void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array);
 
 
-/* Literal // returns array with 
+// Literal // returns array with 
 // first: OP_STRING instruction
 // second op: string itself
-*/
+
 Array *L(VString *vstring);
-/* Literal Array to(2) String // return string value from literal array OP+string array */
+// Literal Array to(2) String // return string value from literal array OP+string array
 String *LA2S(Array *literal_string_array, int offset=0);
 
 void push_LS(struct parse_control *pc, lexical_state new_state);

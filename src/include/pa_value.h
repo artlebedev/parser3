@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.22 2001/02/23 22:22:07 paf Exp $
+  $Id: pa_value.h,v 1.23 2001/02/24 08:28:35 paf Exp $
 */
 
 /*
@@ -25,14 +25,14 @@ public:
 	const String& name;
 	Array& params_names;
 	Array& locals_names;
-	Array& code;
+	const Array& code;
 
 	Method(
 		Pool& apool,
 		const String& aname,
 		Array& aparams_names,
 		Array& alocals_names,
-		Array& acode) : 
+		const Array& acode) : 
 
 		Pooled(apool),
 		name(aname),
@@ -54,23 +54,23 @@ public:
 
 	Junction(Pool& apool,
 		Method *amethod,
-		Value *aroot,
 		Value *aself,
+		Value *aroot,
 		Value *arcontext,
-		Array *acode) : Pooled(apool),
+		const Array *acode) : Pooled(apool),
 		
 		method(amethod),
-		root(aroot),
 		self(aself),
+		root(aroot),
 		rcontext(arcontext),
 		code(acode) {
 	}
 
 	Method *method;
-	Value *root;
 	Value *self;
+	Value *root;
 	Value *rcontext;
-	Array *code;
+	const Array *code;
 };
 
 class Value : public Pooled {
@@ -89,7 +89,7 @@ public: // Value
 	virtual void put_string(String *astring) { failed("storing string to %s:%s"); }
 
 	// junction: auto_calc,root,self,rcontext,wcontext, code
-	virtual Junction *get_junction() { failed("is not a method or a junction (it is '%s'), can not call it"); return 0; }
+	virtual Junction *get_junction() { return 0; }
 
 	// hash: (key)=value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class

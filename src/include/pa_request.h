@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.10 2001/02/22 15:21:22 paf Exp $
+  $Id: pa_request.h,v 1.11 2001/02/24 08:28:35 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -47,7 +47,7 @@ private: // core data
 	Hash fclasses;
 
 	// contexts
-	Value *root, *self, *rcontext;
+	Value *self, *root, *rcontext;
 	WContext *wcontext;
 	
 	// execution stack
@@ -65,7 +65,7 @@ private: // compile.C
 
 private: // execute.C
 
-	void execute(Array& ops);
+	void execute(const Array& ops);
 
 	Value *get_element();
 

@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.28 2001/02/23 17:48:00 paf Exp $
+  $Id: compile.y,v 1.29 2001/02/24 08:28:37 paf Exp $
 */
 
 %{
@@ -214,9 +214,7 @@ store_param_part: constructor_one_param_value {
 }
 store_curly_param: '{' maybe_codes '}' {
 	$$=N(POOL); 
-	OP($$, OP_CODE_ARRAY);
-	AA($$, $2);
-	OP($$, OP_CREATE_JUNCTION);
+	PCA($$, $2);
 	OP($$, OP_STORE_PARAM);
 };
 

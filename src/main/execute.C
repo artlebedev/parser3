@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.31 2001/02/23 21:59:07 paf Exp $
+  $Id: execute.C,v 1.32 2001/02/24 08:28:37 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -10,16 +10,17 @@
 #include "pa_vunknown.h"
 #include "pa_vframe.h"
 #include "pa_wwrapper.h"
+#include "pa_vjunction.h"
 
 #include <stdio.h>
 
 #define PUSH(value) stack.push(value)
 #define POP() static_cast<Value *>(stack.pop())
-#define POP_SR() static_cast<Value *>(stack.pop())->as_string()
+#define POP_NAME() static_cast<Value *>(stack.pop())->as_string()
 
 
 char *opcode_name[]={
-	"STRING",  "CODE_ARRAY",
+	"STRING",  "CODE",
 	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
 	"CONSTRUCT",
 	"EXPRESSION_EVAL",	"MODIFY_EVAL",
@@ -28,7 +29,6 @@ char *opcode_name[]={
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
 	"CREATE_RWPOOL",	"REDUCE_RWPOOL",
 	"GET_METHOD_FRAME",
-	"CREATE_JUNCTION",
 	"STORE_PARAM",
 	"CALL"
 };
@@ -57,18 +57,18 @@ void dump(int level, const Array& ops) {
 		}
 		printf("\n");
 
-		if(op.code==OP_CODE_ARRAY) {
+		if(op.code==OP_CODE) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 			dump(level+1, *local_ops);
 		}
 	}
 }
 
-void Request::execute(Array& ops) {
+void Request::execute(const Array& ops) {
 	if(1) {
-		puts("---------------------------");
+		puts("source----------------------------");
 		dump(0, ops);
-		puts("---------------------------");
+		puts("execution-------------------------");
 	}
 
 	int size=ops.size();
@@ -78,12 +78,29 @@ void Request::execute(Array& ops) {
 		op.cast=ops.quick_get(i);
 		printf("%d:%s", stack.top(), opcode_name[op.code]);
 
-		if(op.code==OP_CODE_ARRAY) {
-			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
-			//dump(level+1, *local_ops);
-		}
-		
 		switch(op.code) {
+			// param in next instruction
+		case OP_STRING:
+			{
+				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
+				printf(" \"%s\"", vstring->get_string()->cstr());
+				PUSH(vstring);
+				break;
+			}
+		case OP_CODE:
+			{
+				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
+				printf(" (%d)", local_ops->size());
+				Junction& j=*NEW Junction(pool(), 
+					0,
+					root,self,rcontext,local_ops);
+				
+				Value *value=NEW VJunction(j);
+				PUSH(value);
+				break;
+			}
+			
+			// OP_WITH
 		case OP_WITH_WRITE: 
 			{
 				PUSH(wcontext);
@@ -105,24 +122,7 @@ void Request::execute(Array& ops) {
 				break;
 			}
 			
-		case OP_STRING:
-			{
-				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
-				printf(" \"%s\"", vstring->get_string()->cstr());
-				PUSH(vstring);
-				break;
-			}
-			
-		case OP_CONSTRUCT:
-			{
-				Value *value=POP();
-				String& name=POP_SR();
-				Value *ncontext=POP();
-				value->set_name(name);
-				ncontext->put_element(name, value);
-				break;
-			}
-			
+			// ...
 		case OP_WRITE:
 			{
 				Value *value=POP();
@@ -141,6 +141,16 @@ void Request::execute(Array& ops) {
 			{
 				Value *value=get_element();
 				wcontext->write(value);
+				break;
+			}
+
+		case OP_CONSTRUCT:
+			{
+				Value *value=POP();
+				String& name=POP_NAME();
+				Value *ncontext=POP();
+				value->set_name(name);
+				ncontext->put_element(name, value);
 				break;
 			}
 
@@ -179,15 +189,14 @@ void Request::execute(Array& ops) {
 
 		case OP_GET_METHOD_FRAME:
 			{
-				Value *vjunction=POP();
+				Value *value=POP();
 				// [self/class?;params;local;code/native_code](name)
-				Junction *junction=vjunction->get_junction();
-
+				Junction *junction=value->get_junction();
 				if(!junction)
 					THROW(0,0,
-						vjunction->name(),
-						"not a method");
-
+						value->name(),
+						"is not a method or a junction (it is '%s'), can not call it",
+						value->type()); 
 				//unless(method) method=operators.get_method[...;code/native_code](name)
 				VFrame *frame=NEW VFrame(pool(), *junction);
 				PUSH(frame);
@@ -205,16 +214,17 @@ void Request::execute(Array& ops) {
 			{
 				printf("->\n");
 				VFrame *frame=static_cast<VFrame *>(POP());
-				PUSH(root);  PUSH(self);  PUSH(rcontext);  PUSH(wcontext);
+				frame->fill_empty_params();
+				PUSH(self);  PUSH(root);  PUSH(rcontext);  PUSH(wcontext);
 				//left_class=ncontext.get_class()
 				//right_class=frame.self.get_class()
 				//self=f(left_class[thoughts' food], right_self[junction], right_class[static], wcontext.value()[dynamic], new(right_class)[construct])
-				self=frame->junction.self;
+				self=frame->junction.self; // TODO: не всегда frame..self
 				frame->set_self(self);
 				root=rcontext=wcontext=frame;
 				execute(frame->junction.method->code);
 				Value *value=wcontext->value();
-				wcontext=static_cast<WContext *>(POP());  rcontext=POP();  self=POP();  root=POP();
+				wcontext=static_cast<WContext *>(POP());  rcontext=POP();  root=POP();  self=POP();
 				wcontext->write(value);
 				printf("<-returned");
 				break;
@@ -230,12 +240,28 @@ void Request::execute(Array& ops) {
 }
 
 Value *Request::get_element() {
-	String& name=POP_SR();
+	String& name=POP_NAME();
 	Value *ncontext=POP();
-	Value *value=ncontext->get_element(name); // name бывает method, тогда выдаЄт new junction(ј¬“ќ¬џ„»—Ћя“№=false, root,self,rcontext,wcontext,code)
-	// name бывает им€ junction, тогда или оставл€ет в покое, или вычисл€ет в зависимости от флага ј¬“ќ¬џ„»—Ћя“№
+	Value *value=ncontext->get_element(name);
 
-	if(!value) {
+	if(value) {
+		Junction *junction=value->get_junction();
+		if(junction && junction->code) { // is it a code junction?
+			// autocalc it
+			printf("ja->\n");
+			VFrame frame(pool(), *junction);
+			PUSH(self);  PUSH(root);  PUSH(rcontext);  PUSH(wcontext);
+			frame.set_self(self=junction->self);
+			root=junction->root;
+			rcontext=junction->rcontext;
+			wcontext=&frame;
+			execute(*junction->code);
+			value=wcontext->value();
+			//value=wcontext->get_string();
+			wcontext=static_cast<WContext *>(POP());  rcontext=POP();  root=POP();  self=POP();
+			printf("<-ja returned");
+		}
+	} else {
 		value=NEW VUnknown(pool());
 		value->set_name(name);
 	}

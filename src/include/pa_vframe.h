@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vframe.h,v 1.3 2001/02/23 21:59:07 paf Exp $
+  $Id: pa_vframe.h,v 1.4 2001/02/24 08:28:35 paf Exp $
 */
 
 #ifndef PA_VFRAME_H
@@ -38,26 +38,34 @@ public: // usage
 		store_param_index(0),
 		my(apool),
 		self(0) {
-		// those are flags that name is local == to be looked up in 'my'
-		for(int i=0; i<junction.method->locals_names.size(); i++) {
-			my.put(
-				*static_cast<String *>(junction.method->locals_names.get(i)), 
-				NEW VUnknown(pool()));
+		if(Method* method=junction.method) { // method junction?
+			// remember local var names
+			// those are flags that name is local == to be looked up in 'my'
+			for(int i=0; i<method->locals_names.size(); i++) {
+				my.put(
+					*static_cast<String *>(method->locals_names.get(i)), 
+					NEW VUnknown(pool()));
+			}
 		}
 	}
 
 	void set_self(Value *aself) { self=aself; }
 
 	void store_param(Value *value) {
-		if(params_filled())
+		Method *method=junction.method;
+		if(store_param_index==method->params_names.size())
 			THROW(0,0,
 				name(),
-				"call: too many params (max=%d)", junction.method->params_names.size());
+				"call: too many params (max=%d)", method->params_names.size());
 		
-		my.put(*static_cast<String *>(junction.method->params_names.get(store_param_index++)), value);
+		my.put(*static_cast<String *>(method->params_names.get(store_param_index++)), value);
 	}
-	bool params_filled() {
-		return store_param_index==junction.method->params_names.size();
+	void fill_empty_params() {
+		Method *method=junction.method;
+		for(; store_param_index<method->locals_names.size(); store_param_index++)
+			my.put(
+				*static_cast<String *>(method->params_names.get(store_param_index)), 
+				NEW VUnknown(pool()));
 	}
 
 public:
