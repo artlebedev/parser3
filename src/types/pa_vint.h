@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.25 2001/08/20 13:22:05 parser Exp $
+	$Id: pa_vint.h,v 1.26 2001/09/24 14:34:25 parser Exp $
 */
 
 #ifndef PA_VINT_H
@@ -35,11 +35,11 @@ public: // Value
 		return result;
 	}
 	/// VInt: finteger
-	double as_double() { return as_int(); }
+	double as_double() const { return as_int(); }
 	/// VInt: finteger
-	int as_int() { return finteger; }
+	int as_int() const { return finteger; }
 	/// VInt: 0 or !0
-	bool as_bool() { return finteger!=0; }
+	bool as_bool() const { return finteger!=0; }
 
 protected: // VAliased
 

@@ -44,6 +44,7 @@ RSC=rc.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /I "..\..\..\..\sql" /I "..\..\..\..\include" /I "..\..\..\.." /I "..\..\..\..\types" /I "..\..\..\..\classes" /I "\parser3project\win32xml\xml-xerces\c\src" /I "\parser3project\win32xml\xml-xalan\c\src" /I "\parser3project\win32apache13\src\include" /I "\parser3project\win32apache13\src\os\win32" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "SHARED_MODULE" /FD /TP /c
+# SUBTRACT CPP /Z<none>
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x809 /d "NDEBUG"
@@ -54,13 +55,13 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
 # ADD LINK32 user32.lib kernel32.lib wsock32.lib /nologo /subsystem:windows /dll /machine:I386
-# SUBTRACT LINK32 /pdb:none
+# SUBTRACT LINK32 /pdb:none /debug
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Stopping apache...
-PreLink_Cmds=net stop apache_release
+PreLink_Cmds=rem net stop apache_release
 PostBuild_Desc=Starting apache...
-PostBuild_Cmds=net start apache_release
+PostBuild_Cmds=rem net start apache_release
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "ApacheModuleParser3 - Win32 Debug"
@@ -92,9 +93,9 @@ LINK32=link.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Stopping apache...
-PreLink_Cmds=net stop apache_debug_xslt
+PreLink_Cmds=net stop apache_debug
 PostBuild_Desc=Starting apache...
-PostBuild_Cmds=net start apache_debug_xslt
+PostBuild_Cmds=net start apache_debug
 # End Special Build Tool
 
 !ENDIF 

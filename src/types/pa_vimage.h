@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.15 2001/09/18 16:05:43 parser Exp $
+	$Id: pa_vimage.h,v 1.16 2001/09/24 14:34:25 parser Exp $
 */
 
 #ifndef PA_VIMAGE_H

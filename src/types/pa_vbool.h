@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vbool.h,v 1.11 2001/08/20 13:22:05 parser Exp $
+	$Id: pa_vbool.h,v 1.12 2001/09/24 14:34:25 parser Exp $
 */
 
 #ifndef PA_VBOOL_H
@@ -24,11 +24,11 @@ public: // Value
 	/// VBool: clone
 	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), fbool); }
 	/// VBool: fbool
-	bool as_bool() { return fbool; }
+	bool as_bool() const { return fbool; }
 	/// VBool: fbool
-	double as_double() { return fbool; }
+	double as_double() const { return fbool; }
 	/// VBool: fbool
-	int as_int() { return fbool; }
+	int as_int() const { return fbool; }
 
 public: // usage
 

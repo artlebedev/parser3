@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.71 2001/09/18 16:05:43 parser Exp $
+	$Id: pa_value.h,v 1.72 2001/09/24 14:34:25 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -41,8 +41,8 @@ public: // Value
 		@return for
 		- VVoid: false
 		- VString: eq ''=false, ne ''=true
-		- VTable: count!=0
 		- VHash: count!=0
+		- VTable: count!=0
 		- others: true
 	*/
 	virtual bool is_defined() const { return true; }
@@ -64,6 +64,8 @@ public: // Value
 		- VFile: this
 		- VImage: this
 		- VDate: ftime -> float days
+		- VTable: count
+		- VHash: count
 	*/
 	virtual Value *as_expr_result(bool return_string_as_is=false) { 
 		bark("(%s) can not be used in expression"); return 0; 
@@ -97,7 +99,7 @@ public: // Value
 		- VVoid: 0
 		- VDate: ftime -> float days
 	*/
-	virtual double as_double() { bark("(%s) does not have numerical (double) value"); return 0; }
+	virtual double as_double() const { bark("(%s) does not have numerical (double) value"); return 0; }
 	
 	/**	extract integer
 		- VString: value
@@ -106,7 +108,7 @@ public: // Value
 		- VBool: value
 		- VVoid: 0
 	*/
-	virtual int as_int () { bark("(%s) does not have numerical (int) value"); return 0; }
+	virtual int as_int () const { bark("(%s) does not have numerical (int) value"); return 0; }
 
 	/** extract bool
 		@return for
@@ -117,7 +119,7 @@ public: // Value
 		- VFile: true
 		- VDate: 0 or !0
 	*/
-	virtual bool as_bool() { bark("(%s) does not have logical value"); return 0; }
+	virtual bool as_bool() const { bark("(%s) does not have logical value"); return 0; }
 	
 	/** extract file
 		@return for

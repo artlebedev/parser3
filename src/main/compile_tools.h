@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.48 2001/09/18 16:05:42 parser Exp $
+	$Id: compile_tools.h,v 1.49 2001/09/24 14:34:25 parser Exp $
 */
 
 #ifndef COMPILE_TOOLS

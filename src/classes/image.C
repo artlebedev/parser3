@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: image.C,v 1.44 2001/09/18 16:05:42 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.45 2001/09/24 14:34:25 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -48,7 +48,7 @@ public: // Methoded
 #ifndef DOXYGEN
 class Measure_reader {
 public:
-	enum { READ_CHUNK_SIZE=0x400*10 };// 10K
+	enum { READ_CHUNK_SIZE=0x400*20 };// 20K
 	typedef size_t(*Func)(void *& buf, size_t limit, void *info);
 
 	Measure_reader(Func afunc, void *ainfo) : 

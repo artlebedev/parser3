@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhash.h,v 1.18 2001/09/18 16:05:43 parser Exp $
+	$Id: pa_vhash.h,v 1.19 2001/09/24 14:34:25 parser Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -22,8 +22,12 @@ public: // value
 
 	const char *type() const { return "hash"; }
 
+	/// VHash: finteger
+	int as_int() const { return fhash.size(); }
+	/// VHash: finteger
+	double as_double() const { return as_int(); }
 	/// VHash: count!=0
-	bool is_defined() const { return fhash.size()!=0; }
+	bool is_defined() const { return as_int()!=0; }
 
 	/// VHash: fhash
 	Hash *get_hash() { return &fhash; }

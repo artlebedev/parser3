@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sapi.h,v 1.11 2001/09/21 15:35:45 parser Exp $
+	$Id: pa_sapi.h,v 1.12 2001/09/24 14:34:25 parser Exp $
 */
 
 #ifndef PA_SAPI_H
@@ -23,13 +23,13 @@ class Hash;
 struct SAPI {
 	/// log error message
 	static void log(Pool& pool, const char *fmt, ...);
-	/// 
+	/// get environment string
 	static const char *get_env(Pool& pool, const char *name);
 	/// read POST request bytes
 	static size_t read_post(Pool& pool, char *buf, size_t max_bytes);
-	/// add response header attribute
+	/// add response header attribute [but do not send it to client]
 	static void add_header_attribute(Pool& pool, const char *key, const char *value);
-	/// add response header attribute
+	/// send collected header attributes to client
 	static void send_header(Pool& pool);
 	/// output body bytes
 	static void send_body(Pool& pool, const void *buf, size_t size);

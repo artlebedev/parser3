@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vvoid.h,v 1.1 2001/06/27 14:24:18 parser Exp $
+	$Id: pa_vvoid.h,v 1.2 2001/09/24 14:34:25 parser Exp $
 */
 
 #ifndef PA_VVOID_H
@@ -25,16 +25,16 @@ public: // Value
 	/// VVoid: ""
 	const String *get_string() { return empty_string; }
 	/// VVoid: false
+	bool as_bool() const { return false; }
+	/// VVoid: false
 	bool is_defined() const { return false; }
 	/// VVoid: 0
-	double as_double() { return 0; }
+	double as_double() const { return 0; }
 	/// VVoid: 0
-	int as_int() { return 0; }
+	int as_int() const { return 0; }
 	/// VVoid: this
 	Value *as_expr_result(bool return_string_as_is=false) { return this; }
 
-	/// VVoid: false
-	bool as_bool() { return false; }
 
 	/// VVoid: methods
 	Value *get_element(const String& name) {

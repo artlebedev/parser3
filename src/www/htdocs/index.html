@@ -1,5 +1,6 @@
 @main[]
-$response:content-type[$.value[text/html] $.charset[windows-1251]]
+#^connect[mysql://hren]{^void:sql{nothing}}
+#$response:content-type[$.value[text/html] $.charset[utf-8]]
 ^xslt[]
 OK
 

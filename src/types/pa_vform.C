@@ -5,8 +5,10 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+	
+	based on The CGI_C library, by Thomas Boutell.
 */
-static const char *RCSId="$Id: pa_vform.C,v 1.37 2001/09/21 14:46:09 parser Exp $"; 
+static const char *RCSId="$Id: pa_vform.C,v 1.38 2001/09/24 14:34:25 parser Exp $"; 
 
 #include "pa_sapi.h"
 #include "pa_vform.h"

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_common.C,v 1.66 2001/09/21 15:35:45 parser Exp $"; 
+static const char *RCSId="$Id: pa_common.C,v 1.67 2001/09/24 14:34:25 parser Exp $"; 
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -224,10 +224,10 @@ bool file_stat(const String& file_spec,
     struct stat finfo;
 	if(stat(fname, &finfo)!=0)
 		if(fail_on_read_problem)
-		PTHROW(0, 0, 
-			&file_spec, 
-			"getting file size failed: %s (%d), real filename '%s'", 
-				strerror(errno), errno, fname);
+			PTHROW(0, 0, 
+				&file_spec, 
+				"getting file size failed: %s (%d), real filename '%s'", 
+					strerror(errno), errno, fname);
 		else
 			return false;
 	rsize=finfo.st_size;

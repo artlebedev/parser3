@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdate.h,v 1.3 2001/07/20 09:40:46 parser Exp $
+	$Id: pa_vdate.h,v 1.4 2001/09/24 14:34:25 parser Exp $
 */
 
 #ifndef PA_VDATE_H
@@ -29,9 +29,9 @@ public: // Value
 	}
 
 	/// VDate: ftime -> float days
-	double as_double() { return ((double)ftime)/ SECS_PER_DAY; }
+	double as_double() const { return ((double)ftime)/ SECS_PER_DAY; }
 	/// VDate: 0 or !0
-	bool as_bool() { return ftime!=0; }
+	bool as_bool() const { return ftime!=0; }
 
 
 	/// VDate: CLASS,method,field

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.96 2001/09/21 15:35:45 parser Exp $
+	$Id: pa_request.h,v 1.97 2001/09/24 14:34:25 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
