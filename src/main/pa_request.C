@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.213 2002/06/24 11:59:32 paf Exp $
+	$Id: pa_request.C,v 1.214 2002/06/25 13:55:14 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -220,6 +220,10 @@ gettimeofday(&mt[0],NULL);
 		main_class=use_file(spath_translated, 
 			true/*ignore class_path*/, true/*don't ignore read problem*/,
 			main_class_name, main_class);
+
+		// configure root options if not configured yet
+		if(!configure_admin_done)
+			configure_admin(*main_class, 0);
 
 		// configure not-root=user options
 		OP.configure_user(*this);
