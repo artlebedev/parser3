@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.27 2001/10/08 15:50:22 parser Exp $
+	$Id: pa_vcookie.C,v 1.28 2001/10/18 14:35:32 parser Exp $
 */
 
 #include "pa_sapi.h"
@@ -18,12 +18,16 @@
 
 // VCookie
 
-Value *VCookie::get_element(const String& aname) {
+Value *VCookie::get_element(const String& name) {
+	// $CLASS
+	if(name==CLASS_NAME)
+		return this;
+
 	// $cookie
-	if(deleted.get(aname)) // deleted?
+	if(deleted.get(name)) // deleted?
 		return 0;
 	
-	if(Value *after_meaning=static_cast<Value *>(after.get(aname))) // assigned 'after'?
+	if(Value *after_meaning=static_cast<Value *>(after.get(name))) // assigned 'after'?
 		if(Hash *hash=after_meaning->get_hash())
 			return static_cast<Value *>(hash->get(*value_name));
 		else
@@ -31,19 +35,19 @@ Value *VCookie::get_element(const String& aname) {
 	
 	// neither deleted nor assigned 
 	// return any value it had 'before'
-	return static_cast<Value *>(before.get(aname));
+	return static_cast<Value *>(before.get(name));
 }
 
-void VCookie::put_element(const String& aname, Value *avalue) {
+void VCookie::put_element(const String& name, Value *value) {
 	// $cookie
 	bool remove;
-	if(Hash *hash=avalue->get_hash())
+	if(Hash *hash=value->get_hash())
 		remove=hash->size()==0;
 	else
-		remove=avalue->as_string().size()==0;
+		remove=value->as_string().size()==0;
 
-	(remove?deleted:after).put(aname, avalue);
-	(remove?after:deleted).put(aname, 0);
+	(remove?deleted:after).put(name, value);
+	(remove?after:deleted).put(name, 0);
 }
 
 static char *search_stop(char*& current, char cstop_at) {
