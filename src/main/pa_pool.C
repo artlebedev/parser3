@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_POOL_C="$Date: 2002/10/15 15:12:57 $";
+static const char* IDENT_POOL_C="$Date: 2002/12/24 09:55:34 $";
 
 #include "pa_pool.h"
 #include "pa_exception.h"
@@ -21,6 +21,9 @@ Pool::Pool(void *astorage) :
 }
 
 void *Pool::copy(const void *buf, const size_t size) {
+	if(!buf || !size)
+		return 0;
+
 	void *result=malloc(size);
 	memcpy(result, buf, size);
 	return result;

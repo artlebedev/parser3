@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/12/15 14:25:22 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/12/24 09:55:33 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -88,6 +88,9 @@ static int unlock(int fd) { FLOCK(F_TLOCK); }
 
 
 void fix_line_breaks(char* buf, size_t& size) {
+	if(size==0)
+		return;
+
 	//_asm int 3;
 	const char* const eob=buf+size;
 	char* dest=buf;
