@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.122 2002/04/18 10:51:01 paf Exp $
+	$Id: pa_globals.C,v 1.123 2002/04/19 09:36:51 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -52,9 +52,6 @@ String *main_class_name;
 
 String *result_var_name;
 String *match_var_name;
-String *string_pre_match_name;
-String *string_match_name;
-String *string_post_match_name;
 
 String *exception_var_name;
 String *exception_type_part_name;
@@ -80,6 +77,8 @@ String *sql_default_name;
 String *charset_UTF8_name;
 
 String *hash_default_element_name;
+
+Array *string_match_table_columns;
 
 Hash *untaint_lang_name2enum;
 
@@ -332,9 +331,6 @@ void pa_globals_init(Pool& pool) {
 
 	result_var_name=NEW String(pool, RESULT_VAR_NAME);
 	match_var_name=NEW String(pool, MATCH_VAR_NAME);
-	string_pre_match_name=NEW String(pool, STRING_PRE_MATCH_NAME);
-	string_match_name=NEW String(pool, STRING_MATCH_NAME);
-	string_post_match_name=NEW String(pool, STRING_POST_MATCH_NAME);
 
 	exception_var_name=NEW String(pool, EXCEPTION_VAR_NAME);
 	exception_type_part_name=NEW String(pool, EXCEPTION_TYPE_PART_NAME);
@@ -366,7 +362,6 @@ void pa_globals_init(Pool& pool) {
 	// hash
 	hash_default_element_name=NEW String(pool, HASH_DEFAULT_ELEMENT_NAME);
 
-
 	// hashes
 	untaint_lang_name2enum=NEW Hash(pool);
 	#define ULN(cstr, LANG) \
@@ -382,6 +377,19 @@ void pa_globals_init(Pool& pool) {
 	ULN("xml", XML);
 	ULN("html", HTML);
 	ULN("optimized-html", HTML|String::UL_OPTIMIZE_BIT);
+
+	// table
+	{ // create table
+		string_match_table_columns=NEW Array(pool);
+		*string_match_table_columns+=NEW String(pool, STRING_PRE_MATCH_NAME);
+		*string_match_table_columns+=NEW String(pool, STRING_MATCH_NAME);
+		*string_match_table_columns+=NEW String(pool, STRING_POST_MATCH_NAME);
+		for(int i=1; i<=MAX_STRING_MATCH_TABLE_COLUMNS; i++) {
+			char *column=(char *)malloc(MAX_NUMBER);
+			snprintf(column, MAX_NUMBER, "%d", i);
+			*string_match_table_columns+=NEW String(pool, column); // .i column name
+		}
+	}
 
 	// charsets
 	charsets=NEW Charsets(pool);

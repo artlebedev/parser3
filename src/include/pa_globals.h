@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.82 2002/04/18 10:51:00 paf Exp $
+	$Id: pa_globals.h,v 1.83 2002/04/19 09:36:50 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -16,6 +16,7 @@ class String;
 class Hash;
 class Dictionary;
 class Charset;
+class Array;
 
 //@{
 /// constant string. class name, predefined method & co
@@ -116,9 +117,6 @@ extern String *origins_mode_name;
 
 extern String *result_var_name;
 extern String *match_var_name;
-extern String *string_pre_match_name;
-extern String *string_match_name;
-extern String *string_post_match_name;
 
 extern String *exception_var_name;
 extern String *exception_type_part_name;
@@ -146,6 +144,10 @@ extern String *charset_UTF8_name;
 extern String *hash_default_element_name;
 
 //@}
+
+/// String::match uses this as replace & global search table columns
+const int MAX_STRING_MATCH_TABLE_COLUMNS=100;
+extern Array *string_match_table_columns;
 
 /// name to enum language table
 extern Hash *untaint_lang_name2enum;

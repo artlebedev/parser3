@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.154 2002/04/19 08:28:35 paf Exp $
+	$Id: pa_string.C,v 1.155 2002/04/19 09:36:51 paf Exp $
 */
 
 #include "pcre.h"
@@ -473,7 +473,7 @@ static void regex_options(const String *options, int *result, bool& need_pre_pos
 			}
 }
 
-/// @todo maybe need speedup: some option to remove pre/match/post string generation
+/// @todo make replacement Table stacked
 bool String::match(
 				   const String *aorigin,
 				   const String& regexp, 
@@ -514,22 +514,11 @@ bool String::match(
 
 	const char *subject=cstr();
 	int length=strlen(subject);
-	int ovecsize;
-	int *ovector=(int *)malloc(sizeof(int)*
-		(ovecsize=(1/*match*/+info_substrings)*3), 11);
+	const int ovecsize=(1/*match*/+MAX_STRING_MATCH_TABLE_COLUMNS)*3;
+	int ovector[ovecsize];
 
-	{ // create table
-		Array& columns=*NEW Array(pool());
-		columns+=string_pre_match_name;
-		columns+=string_match_name;
-		columns+=string_post_match_name;
-		for(int i=1; i<=info_substrings; i++) {
-			char *column=(char *)malloc(MAX_NUMBER);
-			snprintf(column, MAX_NUMBER, "%d", i);
-			columns+=NEW String(pool(), column); // .i column name
-		}
-		*table=NEW Table(pool(), aorigin, &columns);
-	}
+	// create table
+	*table=NEW Table(pool(), 0, string_match_table_columns);		
 
 	int exec_option_bits=0;
 	int prestart=0;
