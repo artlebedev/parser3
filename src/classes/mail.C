@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.65 2002/06/12 12:50:32 paf Exp $
+	$Id: mail.C,v 1.66 2002/06/12 13:35:25 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -390,7 +390,7 @@ static void sendmail(Request& r, const String& method_name,
 		String *test=new(pool) String(pool, "/usr/sbin/sendmail");
 		if(!file_executable(*test))
 			test=new(pool) String(pool, "/usr/lib/sendmail");
-		test->APPEND_CONST(" -t");
+		test->APPEND_CONST(" -ti");
 		sendmail_command=test;
 	}
 #endif
