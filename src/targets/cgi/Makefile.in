@@ -82,7 +82,7 @@ host_os = @host_os@
 rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
-CXXLD = $(CC)
+@DO_NOT_LINK_LIBSTDCPP_TRUE@CXXLD = $(CC)
 
 INCLUDES = -I../../classes -I../../types -I../../sql -I../../pcre -I$(INCLTDL) @XML_INCLUDES@
 
