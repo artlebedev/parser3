@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.50 2001/08/24 06:26:13 parser Exp $
+	$Id: file.C,v 1.51 2001/08/28 09:39:30 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.50 2001/08/24 06:26:13 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.51 2001/08/28 09:39:30 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -74,7 +74,7 @@ static void _move(Request& r, const String&, MethodParams *params) {
 	Value& vfrom_file_name=params->as_no_junction(0, "from file name must not be code");
 	Value& vto_file_name=params->as_no_junction(1, "to file name must not be code");
 
-	// unlink
+	// move
 	file_move(pool, 
 		r.absolute(vfrom_file_name.as_string()),
 		r.absolute(vto_file_name.as_string()));

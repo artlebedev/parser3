@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_common.C,v 1.62 2001/08/27 13:29:07 parser Exp $"; 
+static const char *RCSId="$Id: pa_common.C,v 1.63 2001/08/28 09:39:30 parser Exp $"; 
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -106,6 +106,15 @@ bool file_read(Pool& pool, const String& file_spec,
     return false;
 }
 
+static void create_dir_for_file(const String& file_spec) {
+	size_t pos_after=1;
+	int pos_before;
+	while((pos_before=file_spec.pos("/", 1, pos_after))>=0) {
+		mkdir(file_spec.mid(0, pos_before).cstr(String::UL_FILE_NAME), 0775);
+		pos_after=pos_before+1;
+	}
+}
+
 void file_write(Pool& pool, 
 				const String& file_spec, 
 				const void *data, size_t size, 
@@ -114,12 +123,7 @@ void file_write(Pool& pool,
 	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
 	int f;
 	if(access(fname, W_OK)!=0) {/*no*/
-		size_t pos_after=1;
-		int pos_before;
-		while((pos_before=file_spec.pos("/", 1, pos_after))>=0) {
-			mkdir(file_spec.mid(0, pos_before).cstr(String::UL_FILE_NAME), 0775);
-			pos_after=pos_before+1;
-		}
+		create_dir_for_file(file_spec);
 
 		if((f=open(fname, O_WRONLY|O_CREAT|_O_BINARY, 0666))>0)
 			close(f);
@@ -150,6 +154,7 @@ void file_write(Pool& pool,
 			strerror(errno), errno, fname);
 }
 
+// throws nothing! [this is required in file_move & file_delete]
 static void rmdir(const String& file_spec, size_t pos_after) {
 	int pos_before;
 	if((pos_before=file_spec.pos("/", 1, pos_after))>=0)
@@ -170,11 +175,16 @@ void file_delete(Pool& pool, const String& file_spec) {
 void file_move(Pool& pool, const String& old_spec, const String& new_spec) {
 	const char *old_spec_cstr=old_spec.cstr(String::UL_FILE_NAME);
 	const char *new_spec_cstr=new_spec.cstr(String::UL_FILE_NAME);
+	
+	create_dir_for_file(new_spec);
+
 	if(rename(old_spec_cstr, new_spec_cstr)!=0)
 		PTHROW(0, 0, 
 			&old_spec, 
 			"rename failed: %s (%d), actual filename '%s' to '%s'", 
 				strerror(errno), errno, old_spec_cstr, new_spec_cstr);
+
+	rmdir(old_spec, 1);
 }
 
 
