@@ -64,7 +64,8 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Za /W3 /Gm /Zi /Od /I ".." /I "..\include" /D "_DEBUG" /D "_LIB" /D "WIN32" /FR /FD /TP /GZ /c
+# ADD CPP /nologo /Za /W3 /Gm /Zi /Od /I ".." /I "..\include" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
+# SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -244,6 +245,10 @@ SOURCE=..\include\pa_vjunction.h
 # Begin Source File
 
 SOURCE=..\include\pa_vmframe.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_vobject.h
 # End Source File
 # Begin Source File
 

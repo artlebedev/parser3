@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.25 2001/02/24 11:46:03 paf Exp $
+  $Id: pa_value.h,v 1.26 2001/02/24 13:18:19 paf Exp $
 */
 
 /*
@@ -105,6 +105,7 @@ public: // Value
 	
 	// hash: (key)=value
 	// object_class, operator_class: (field)=value - static values only
+	// object_instance: (field)=value
 	// wcontext: transparent
 	// frame: my or self_transparent
 	// codeframe: wcontext_transparent
