@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/21 12:36:10 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/10/14 11:37:37 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -400,6 +400,9 @@ void Request::execute(const Array& ops) {
 							value->type());
 				// check: 
 				//	that this is method-junction, not a code-junction
+				// [disabling these contstructions:]
+				// $junction{code}
+				//  ^junction[]
 				if(!junction->method)
 					throw Exception("parser.runtime",
 						last_get_element_name, 
