@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.40 2001/07/11 15:02:09 parser Exp $
+	$Id: file.C,v 1.41 2001/07/18 16:11:11 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.40 2001/07/11 15:02:09 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.41 2001/07/18 16:11:11 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -140,7 +140,8 @@ static void pass_cgi_header_attribute(Array::Item *value, void *info) {
 		new(string.pool()) VString(string.mid(colon_pos+1, string.size())));
 }
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
-static void _cgi(Request& r, const String& method_name, MethodParams *params) {
+static void _exec_cgi(Request& r, const String& method_name, MethodParams *params,
+					  bool cgi) {
 	Pool& pool=r.pool();
 
 	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
@@ -195,10 +196,6 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 		Value& venv=params->as_no_junction(1, "env must not be code");
 		if(Hash *user_env=venv.get_hash())
 			user_env->for_each(append_env_pair, &env);
-		else
-			PTHROW(0, 0,
-				&method_name,
-				"env must be hash");
 	}
 
 	Array *argv=0;
@@ -216,34 +213,37 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	int exit_code=pa_exec(script_name, &env, argv, in, out, err);
 
 	VFile& self=*static_cast<VFile *>(r.self);
-	// construct with 'out' body and header
-	int delim_size;
-	const char *eol_marker="\r\n"; size_t eol_marker_size=2;
-	int pos=out.pos("\r\n\r\n", delim_size=4);
-	if(pos<0) {
-		eol_marker="\n"; eol_marker_size=1;
-		pos=out.pos("\n\n", delim_size=2);
-	}
-	if(pos<0) {
-		delim_size=0; // calm down, compiler
-		PTHROW(0, 0,
-			&method_name,
-			"output does not contain CGI header; exit code=%d; size=%u; text: \"%s\"", 
-				exit_code, (uint)out.size(), out.cstr());
-	}
 
-	const String& header=out.mid(0, pos);
-	const String& body=out.mid(pos+delim_size, out.size());
+	const String *body=&out; // ^file:exec
+	if(cgi) { // ^file:cgi
+		// construct with 'out' body and header
+		int delim_size;
+		const char *eol_marker="\r\n"; size_t eol_marker_size=2;
+		int pos=out.pos("\r\n\r\n", delim_size=4);
+		if(pos<0) {
+			eol_marker="\n"; eol_marker_size=1;
+			pos=out.pos("\n\n", delim_size=2);
+		}
+		if(pos<0) {
+			delim_size=0; // calm down, compiler
+			PTHROW(0, 0,
+				&method_name,
+				"output does not contain CGI header; exit code=%d; size=%u; text: \"%s\"", 
+					exit_code, (uint)out.size(), out.cstr());
+		}
 
+		const String& header=out.mid(0, pos);
+		body=&out.mid(pos+delim_size, out.size());
+
+		// header to $fields
+		{
+			Array rows(pool);
+			header.split(rows, 0, eol_marker, eol_marker_size, String::UL_CLEAN);
+			rows.for_each(pass_cgi_header_attribute, &self.fields());
+		}
+	}
 	// body
-	self.set(false/*not tainted*/, body.cstr(String::UL_AS_IS), body.size());
-
-	// header to $fields
-	{
-		Array rows(pool);
-		header.split(rows, 0, eol_marker, eol_marker_size, String::UL_CLEAN);
-		rows.for_each(pass_cgi_header_attribute, &self.fields());
-	}
+	self.set(false/*not tainted*/, body->cstr(String::UL_AS_IS), body->size());
 
 	// $exit-code
 	self.fields().put(
@@ -256,9 +256,16 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 			*new(pool) String(pool, "stderr"),
 			new(pool) VString(err));
 
-		SAPI::log(pool, "cgi: %s", err.cstr());
+		SAPI::log(pool, "file:cgi: %s", err.cstr());
 	}
 }
+static void _exec(Request& r, const String& method_name, MethodParams *params) {
+	_exec_cgi(r, method_name, params, false);
+}
+static void _cgi(Request& r, const String& method_name, MethodParams *params) {
+	_exec_cgi(r, method_name, params, true);
+}
+
 
 // constructor
 
@@ -286,7 +293,12 @@ MFile::MFile(Pool& apool) : Methoded(apool) {
 	// ^cgi[file-name]
 	// ^cgi[file-name;env hash]
 	// ^cgi[file-name;env hash;1cmd;2line;3ar;4g;5s]
-	add_native_method("cgi", Method::CT_DYNAMIC, _cgi, 1, 2+5);
+	add_native_method("cgi", Method::CT_DYNAMIC, _cgi, 1, 2+10);
+
+	// ^exec[file-name]
+	// ^exec[file-name;env hash]
+	// ^exec[file-name;env hash;1cmd;2line;3ar;4g;5s]
+	add_native_method("exec", Method::CT_DYNAMIC, _exec, 1, 2+10);
 }
 
 // global variable

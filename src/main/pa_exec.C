@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_exec.C,v 1.7 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: pa_exec.C,v 1.8 2001/07/18 16:11:11 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -115,6 +115,7 @@ static void read_pipe(String& result, HANDLE hOutRead, const char *file_spec){
 static const char *buildCommand(Pool& pool, 
 								const String& origin_string,
 								const char *file_spec_cstr, const Array *argv) {
+	const char *result=file_spec_cstr;
 	if(FILE *f=fopen(file_spec_cstr, "r")) {
 		char buf[MAX_STRING];
 		size_t size=fread(buf, 1, MAX_STRING-1, f);
@@ -132,23 +133,34 @@ static const char *buildCommand(Pool& pool,
 					if(argv)
 						for(int i=0; i<argv->size(); i++)
 							string << argv->get_string(i)->cstr(String::UL_AS_IS);
-					file_spec_cstr=string.cstr();
+					result=string.cstr();
 				}
 			}
 		}
 		fclose(f);
 	}
-	return file_spec_cstr;
+	if(argv) {
+		String buf(pool);
+		buf << result;
+		for(int i=0; i<argv->size(); i++) {
+			buf << " ";
+			buf << *argv->get_string(i);
+		}
+
+		result=buf.cstr(String::UL_AS_IS);
+	}
+
+	return result;
 }
 
 #else
 
 static int execle_piped(const char *path, 
-						const char *arg1,
-						const char *arg2,
-						const char *arg3,
-						const char *arg4,
-						const char *arg5,
+						const char *arg1, const char *arg2,
+						const char *arg3, const char *arg4,
+						const char *arg5, const char *arg6,
+						const char *arg7, const char *arg8,
+						const char *arg9, const char *arg10,
 						char * const env[],
 						int *pipe_in, int *pipe_out, int *pipe_err) {
 	int pid;
@@ -367,6 +379,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	if(int pid=execle_piped(
 		file_spec_cstr,
 		argv_cstrs[0], argv_cstrs[1], argv_cstrs[2], argv_cstrs[3], argv_cstrs[4],
+		argv_cstrs[5], argv_cstrs[6], argv_cstrs[7], argv_cstrs[8], argv_cstrs[9],
 		env_cstrs,
 		&pipe_write, &pipe_read, &pipe_err)) {
 
