@@ -83,7 +83,9 @@ extern int pcre_exec(const pcre *, const pcre_extra *, const char *,
 extern int pcre_get_substring(const char *, int *, int, int, const char **);
 extern int pcre_get_substring_list(const char *, int *, int, const char ***);
 extern int pcre_info(const pcre *, int *, int *);
+#ifndef DFTABLES
 extern unsigned const char *pcre_maketables(void);
+#endif
 extern pcre_extra *pcre_study(const pcre *, int, const char **);
 extern const char *pcre_version(void);
 

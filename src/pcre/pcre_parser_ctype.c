@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pcre_parser_ctype.c,v 1.1 2001/04/20 14:18:49 paf Exp $
+	$Id: pcre_parser_ctype.c,v 1.2 2001/04/23 16:13:05 paf Exp $
 
 
 Perl-Compatible Regular ExpressionsThis is a support program to generate part of auto.p, containing
@@ -50,9 +50,8 @@ and semantics are as close as possible to those of the Perl 5 language.
 #include <string.h>
 #include <locale.h>
 
+#define DFTABLES
 #include "internal.h"
-
-#define DFTABLES          /* maketables.c notices this */
 #include "maketables.c"
 
 #define TABLE_WRAP_COL 62
