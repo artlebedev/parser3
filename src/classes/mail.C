@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.17 2001/04/11 08:13:37 paf Exp $
+	$Id: mail.C,v 1.18 2001/04/15 13:12:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -370,13 +370,10 @@ static void sendmail(Request& r, const String& method_name,
 
 // methods
 
-static void _send(Request& r, const String& method_name, Array *params) {
+static void _send(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& vhash=*static_cast<Value *>(params->get(0));
-	// forcing [this body type]
-	r.fail_if_junction_(true, vhash, method_name, "message must not be code");
-
+	Value& vhash=params->get_no_junction(0, "message must not be code");
 	Hash *hash=vhash.get_hash();
 	if(!hash)
 		PTHROW(0, 0,

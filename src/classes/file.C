@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.25 2001/04/10 10:32:04 paf Exp $
+	$Id: file.C,v 1.26 2001/04/15 13:12:17 paf Exp $
 */
 
 #include "pa_request.h"
@@ -25,37 +25,24 @@ VStateless_class *file_class;
 
 // methods
 
-static void _save(Request& r, const String& method_name, Array *params) {
-	Pool& pool=r.pool();
-	Value& vfile_name=*static_cast<Value *>(params->get(0));
-	// forcing
-	// ^save[this body type]
-	r.fail_if_junction_(true, vfile_name, 
-		method_name, "file name must not be code");
+static void _save(Request& r, const String&, MethodParams *params) {
+	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
 
 	// save
 	static_cast<VFile *>(r.self)->save(r.absolute(vfile_name.as_string()));
 }
 
-static void _delete(Request& r, const String& method_name, Array *params) {
+static void _delete(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vfile_name=*static_cast<Value *>(params->get(0));
-	// forcing
-	// ^delete[this body type]
-	r.fail_if_junction_(true, vfile_name, 
-		method_name, "file name must not be code");
+	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
 
 	// unlink
 	file_delete(pool, r.absolute(vfile_name.as_string()));
 }
 
-static void _find(Request& r, const String& method_name, Array *params) {
+static void _find(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vfile_name=*static_cast<Value *>(params->get(0));
-	// forcing
-	// ^delete[this body type]
-	r.fail_if_junction_(true, vfile_name, 
-		method_name, "file name must not be code");
+	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
 
 	const String &lfile_name=vfile_name.as_string();
 
@@ -79,21 +66,14 @@ static void _find(Request& r, const String& method_name, Array *params) {
 
 	// not found
 	if(params->size()==2) {
-		// forcing ..{this body type}
-		Value& not_found_code=*static_cast<Value *>(params->get(1));
-		r.fail_if_junction_(false, not_found_code, 
-			method_name, "not-found param must be code");
+		Value& not_found_code=params->get_junction(1, "not-found param must be code");
 		r.write_pass_lang(r.process(not_found_code));
 	}
 }
 
-static void _load(Request& r, const String& method_name, Array *params) {
+static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vfile_name=*static_cast<Value *>(params->get(0));
-
-	// forcing ^load[this body type]
-	r.fail_if_junction_(true, vfile_name, 
-		method_name, "file name must not be code");
+	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
 
 	const String& lfile_name=vfile_name.as_string();
 
@@ -101,19 +81,15 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	file_read(pool, r.absolute(lfile_name), data, size, false/*binary*/);
 
 	char *user_file_name=params->size()==1?lfile_name.cstr(String::UL_FILE_NAME)
-		:static_cast<Value *>(params->get(1))->as_string().cstr();
+		:params->get(1).as_string().cstr();
 	
 	static_cast<VFile *>(r.self)->set(true/*tainted*/, data, size, 
 		user_file_name, &r.mime_type_of(user_file_name));
 }
 
-static void _stat(Request& r, const String& method_name, Array *params) {
+static void _stat(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vfile_name=*static_cast<Value *>(params->get(0));
-
-	// forcing ^load[this body type]
-	r.fail_if_junction_(true, vfile_name, 
-		method_name, "file name must not be code");
+	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
 
 	const String& lfile_name=vfile_name.as_string();
 
@@ -130,13 +106,10 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 /// ^exec[file-name;env hash]
 /// ^exec[file-name;env hash;cmd;line;arg;s]
 /// @test header to $fields. waits for header '\' tricks
-static void _cgi(Request& r, const String& method_name, Array *params) {
+static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& vfile_name=*static_cast<Value *>(params->get(0));
-	// forcing [this param type]
-	r.fail_if_junction_(true, vfile_name, 
-		method_name, "file name must not be code");
+	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
 
 	const String& script_name=r.absolute(vfile_name.as_string());
 
@@ -181,10 +154,7 @@ static void _cgi(Request& r, const String& method_name, Array *params) {
 	env.put(String(pool, "SCRIPT_NAME"), &script_name);
 
 	if(params->size()>1) {
-		Value& venv=*static_cast<Value *>(params->get(1));
-		// forcing [this param type]
-		r.fail_if_junction_(true, venv, 
-			method_name, "env must not be code");
+		Value& venv=params->get_no_junction(1, "env must not be code");
 		if(Hash *user_env=venv.get_hash())
 			user_env->for_each(append_env_pair, &env);
 		else
@@ -197,7 +167,7 @@ static void _cgi(Request& r, const String& method_name, Array *params) {
 	if(params->size()>2) {
 		argv=new(pool) Array(pool, params->size()-2);
 		for(int i=2; i<params->size(); i++)
-			*argv+=&static_cast<Value *>(params->get(i))->as_string();
+			*argv+=&params->get(i).as_string();
 	}
 
 	const String in(pool, r.post_data, r.post_size);

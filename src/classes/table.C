@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.60 2001/04/10 11:23:54 paf Exp $
+	$Id: table.C,v 1.61 2001/04/15 13:12:18 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,15 +25,13 @@
 VStateless_class *table_class;
 
 // methods
-static void _set(Request& r, const String& method_name, Array *params) {
+static void _set(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// data is last parameter
-	Value *vdata=static_cast<Value *>(params->get(params->size()-1));
-	// forcing {this body type}
-	r.fail_if_junction_(false, *vdata, method_name, "body must be code");
+	Value& vdata=params->get_junction(params->size()-1, "body must be code");
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
-	const String& data=r.process(*vdata).as_string();
+	const String& data=r.process(vdata).as_string();
 
 	size_t pos_after=0;
 	// parse columns
@@ -69,16 +67,14 @@ static void _set(Request& r, const String& method_name, Array *params) {
 	static_cast<VTable *>(r.self)->set_table(table);
 }
 
-static void _load(Request& r, const String& method_name, Array *params) {
+static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// filename is last parameter
-	Value *vfilename=static_cast<Value *>(params->get(params->size()-1));
-	// forcing [this file name type]
-	r.fail_if_junction_(true, *vfilename, 
-		method_name, "file name must not be code");
+	Value& vfilename=params->get_no_junction(params->size()-1, 
+		"file name must not be code");
 
 	// loading text
-	char *data=file_read_text(pool, r.absolute(vfilename->as_string()));
+	char *data=file_read_text(pool, r.absolute(vfilename.as_string()));
 
 	// parse columns
 	Array *columns;
@@ -120,12 +116,10 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	static_cast<VTable *>(r.self)->set_table(table);
 }
 
-static void _save(Request& r, const String& method_name, Array *params) {
+static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value *vtable_name=static_cast<Value *>(params->get(params->size()-1));
-	// forcing this body type]
-	r.fail_if_junction_(true, *vtable_name, 
-		method_name, "file name must not be code");
+	Value& vtable_name=params->get_no_junction(params->size()-1, 
+		"file name must not be code");
 
 	Table& table=static_cast<VTable *>(r.self)->table();
 
@@ -165,27 +159,27 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	}
 
 	// write
-	file_write(pool, r.absolute(vtable_name->as_string()), 
+	file_write(pool, r.absolute(vtable_name.as_string()), 
 		sdata.cstr(), sdata.size(), true);
 }
 
-static void _count(Request& r, const String&method_name, Array *) {
+static void _count(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, static_cast<VTable *>(r.self)->table().size());
 	r.write_no_lang(value);
 }
 
-static void _line(Request& r, const String& method_name, Array *) {
+static void _line(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, 1+static_cast<VTable *>(r.self)->table().current());
 	r.write_no_lang(value);
 }
 
-static void _offset(Request& r, const String& method_name, Array *params) {
+static void _offset(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(params->size())
-		table.shift((int)r.process(*static_cast<Value *>(params->get(0))).as_double());
+		table.shift((int)r.process(params->get(0)).as_double());
 	else {
 		Value& value=*new(pool) VInt(pool, table.current());
 		r.write_no_lang(value);
@@ -193,13 +187,10 @@ static void _offset(Request& r, const String& method_name, Array *params) {
 }
 
 /// @test $a.menu{ $a[123] }
-static void _menu(Request& r, const String& method_name, Array *params) {
-	Value& body_code=*static_cast<Value *>(params->get(0));
-	// forcing ^menu{this param type}
-	r.fail_if_junction_(false, body_code, 
-		method_name, "body must be code");
+static void _menu(Request& r, const String& method_name, MethodParams *params) {
+	Value& body_code=params->get_junction(0, "body must be code");
 	
-	Value *delim_code=params->size()==2?static_cast<Value *>(params->get(1)):0;
+	Value *delim_code=params->size()==2?&params->get(1):0;
 
 	Table& table=static_cast<VTable *>(r.self)->table();
 	bool need_delim=false;
@@ -219,15 +210,12 @@ static void _menu(Request& r, const String& method_name, Array *params) {
 	table.set_current(saved_current);
 }
 
-static void _empty(Request& r, const String& method_name, Array *params) {
+static void _empty(Request& r, const String& method_name, MethodParams *params) {
 	Table& table=static_cast<VTable *>(r.self)->table();
-	if(table.size()==0) {
-		Value& value=r.process(*static_cast<Value *>(params->get(0)));
-		r.write_pass_lang(value);
-	} else if(params->size()==2) {
-		Value& value=r.process(*static_cast<Value *>(params->get(1)));
-		r.write_pass_lang(value);
-	}
+	if(table.size()==0)
+		r.write_pass_lang(params->get(0));
+	else if(params->size()==2)
+		r.write_pass_lang(params->get(1));
 }
 
 struct Record_info {
@@ -246,7 +234,7 @@ static void store_column_item_to_hash(Array::Item *item, void *info) {
 		value=new(*ri.pool) VUnknown(*ri.pool);
 	ri.hash->put(column_name, value);
 }
-static void _record(Request& r, const String& method_name, Array *params) {
+static void _record(Request& r, const String& method_name, MethodParams *params) {
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(const Array *columns=table.columns()) {
 		Pool& pool=r.pool();
@@ -281,19 +269,12 @@ static int sort_cmp_double(const void *a, const void *b) {
 	else 
 		return 0;
 }
-static void _sort(Request& r, const String& method_name, Array *params) {
-	Value& key_maker=*(Value *)params->get(0);
-	// forcing ^sort{this} ^sort(or this) param type
-	r.fail_if_junction_(false, key_maker, method_name, "key-maker must be code");
+static void _sort(Request& r, const String& method_name, MethodParams *params) {
+	Value& key_maker=params->get_junction(0, "key-maker must be code");
 
-	bool reverse;
-	if(params->size()==2) { // ..[asc|desc]
-		Value& order=*(Value *)params->get(1);
-		// forcing ..[this param-type]
-		r.fail_if_junction_(true, order, method_name, "order must not be code");
-		reverse=order.as_string()=="desc";
-	} else
-		reverse=false;
+	bool reverse=params->size()==2/*..[asc|desc]*/?
+		reverse=params->get_no_junction(1, "order must not be code").as_string()=="desc":
+		false;
 
 	Table& table=static_cast<VTable *>(r.self)->table();
 
@@ -309,7 +290,7 @@ static void _sort(Request& r, const String& method_name, Array *params) {
 	for(i=0; i<table.size(); i++) {
 		table.set_current(i);
 		// calculate key value
-		seq[i].row=(Array *)table.get(i);
+		seq[i].row=(MethodParams *)table.get(i);
 		Value& value=*r.process(key_maker).as_expr_result(true/*return string as-is*/);
 		if(i==0) // determining key values type by first one
 			key_values_are_strings=value.is_string();
@@ -331,31 +312,22 @@ static void _sort(Request& r, const String& method_name, Array *params) {
 	table.set_current(0);
 }
 
-static void _locate(Request& r, const String& method_name, Array *params) {
+static void _locate(Request& r, const String& method_name, MethodParams *params) {
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	Table& table=vtable.table();
 	vtable.last_locate_was_successful=table.locate(
-		static_cast<Value *>(params->get(0))->as_string(),
-		static_cast<Value *>(params->get(1))->as_string());
+		params->get(0).as_string(),
+		params->get(1).as_string());
 }
 
-static void _found(Request& r, const String& method_name, Array *params) {
-	if(static_cast<VTable *>(r.self)->last_locate_was_successful) {
-		Value& then_code=*static_cast<Value *>(params->get(0));
-		// forcing ^found{this param type}
-		r.fail_if_junction_(false, then_code, 
-			method_name, "found-parameter must be code");
-		r.write_pass_lang(r.process(then_code));
-	} else if(params->size()==2) {
-		Value& else_code=*static_cast<Value *>(params->get(1));
-		// forcing ^found{this param type}
-		r.fail_if_junction_(false, else_code, 
-			method_name, "not found-parameter must be code");
-		r.write_pass_lang(r.process(else_code));
-	}
+static void _found(Request& r, const String& method_name, MethodParams *params) {
+	if(static_cast<VTable *>(r.self)->last_locate_was_successful)
+		r.write_pass_lang(r.process(params->get_junction(0, "found-parameter must be code")));
+	else if(params->size()==2)
+		r.write_pass_lang(r.process(params->get_junction(0, "else-parameter must be code")));
 }
 
-static void _flip(Request& r, const String& method_name, Array *params) {
+static void _flip(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VTable& vtable=*static_cast<VTable *>(r.self);
 
@@ -375,14 +347,11 @@ static void _flip(Request& r, const String& method_name, Array *params) {
 	vtable.set_table(new_table);
 }
 
-static void _append(Request& r, const String& method_name, Array *params) {
+static void _append(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// data is last parameter
-	Value *value=static_cast<Value *>(params->get(0));
-	// forcing {this body type}
-	r.fail_if_junction_(false, *value, method_name, "body must be code");
-
-	const String& string=r.process(*value).as_string();
+	const String& string=
+		r.process(params->get_junction(0, "body must be code")).as_string();
 
 	// parse cells
 	Array& row=*new(pool) Array(pool);
@@ -391,14 +360,10 @@ static void _append(Request& r, const String& method_name, Array *params) {
 	static_cast<VTable *>(r.self)->table()+=&row;
 }
 
-static void _join(Request& r, const String& method_name, Array *params) {
+static void _join(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value *value=static_cast<Value *>(params->get(0));
-	// forcing [this table ref type]
-	r.fail_if_junction_(true, *value, method_name, "table ref must not be code");
-
-	Table *maybe_src=value->get_table();
+	Table *maybe_src=params->get_no_junction(0, "table ref must not be code").get_table();
 	if(!maybe_src)
 		PTHROW(0, 0,
 			&method_name,
@@ -428,7 +393,7 @@ static void _join(Request& r, const String& method_name, Array *params) {
 }
 
 /// ^table:sql{query}[(count[;offset])]
-static void _sql(Request& r, const String& method_name, Array *params) {
+static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	if(!r.connection)
@@ -436,23 +401,17 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 			&method_name,
 			"without connect");
 
-	Value& statement=*static_cast<Value *>(params->get(0));
-	// forcing {this query param type}
-	r.fail_if_junction_(false, statement, method_name, "statement must be code");
+	Value& statement=params->get_junction(0, "statement must be code");
 
 	ulong limit=0;
 	if(params->size()>1) {
-		Value& limit_code=*static_cast<Value *>(params->get(1));
-		// forcing (this limit param type)
-		r.fail_if_junction_(false, limit_code, method_name, "limit must be expression");
+		Value& limit_code=params->get_junction(1, "limit must be expression");
 		limit=(uint)r.process(limit_code).as_double();
 	}
 
 	ulong offset=0;
 	if(params->size()>2) {
-		Value& offset_code=*static_cast<Value *>(params->get(2));
-		// forcing (this limit param type)
-		r.fail_if_junction_(false, offset_code, method_name, "offset must be expression");
+		Value& offset_code=params->get_junction(2, "offset must be expression");
 		offset=(ulong)r.process(offset_code).as_double();
 	}
 
@@ -511,22 +470,17 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 
 /// ^table:dir[path]
 /// ^table:dir[path][regexp]
-static void _dir(Request& r, const String& method_name, Array *params) {
+static void _dir(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& relative_path=*static_cast<Value *>(params->get(0));
-	// forcing [path]
-	r.fail_if_junction_(true, relative_path, method_name, "path must not be code");
+	Value& relative_path=params->get_no_junction(0, "path must not be code");
 
 	const String *regexp;
 	pcre *regexp_code;
 	int ovecsize;
 	int *ovector;
 	if(params->size()>1) {
-		Value& regexp_value=*static_cast<Value *>(params->get(1));
-		// forcing [regexp]
-		r.fail_if_junction_(true, regexp_value, method_name, "regexp must not be code");
-		regexp=&regexp_value.as_string();
+		regexp=&params->get_no_junction(1, "regexp must not be code").as_string();
 
 		const char *pattern=regexp->cstr(String::UL_AS_IS);
 		const char *errptr;

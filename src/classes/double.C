@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.20 2001/04/03 08:23:05 paf Exp $
+	$Id: double.C,v 1.21 2001/04/15 13:12:17 paf Exp $
 */
 
 #include "pa_request.h"
@@ -20,14 +20,14 @@ VStateless_class *double_class;
 
 // methods
 
-static void _int(Request& r, const String&, Array *) {
+static void _int(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
 	Value& value=*new(pool) VInt(pool, (int)vdouble->as_double());
 	r.write_no_lang(value);
 }
 
-static void _double(Request& r, const String&, Array *) {
+static void _double(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
 	Value& value=*new(pool) VDouble(pool, vdouble->as_double());
@@ -42,22 +42,22 @@ static void __mul(VDouble& vdouble, double param) { vdouble.mul(param); }
 static void __div(VDouble& vdouble, double param) { vdouble.div(param); }
 static void __mod(VDouble& vdouble, double param) { vdouble.mod((int)param); }
 
-static void vdouble_op(Request& r, Array *params, 
+static void vdouble_op(Request& r, MethodParams *params, 
 					   vdouble_op_func_ptr func) {
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
 	double param=params->size()?
 		r.process(
-			*static_cast<Value *>(params->get(0)),
+			params->get(0),
 			0/*no name*/,
 			false/*don't intercept string*/).as_double():1/*used in inc/dec*/;
 	(*func)(*vdouble, param);
 }
 
-static void _inc(Request& r, const String&, Array *params) { vdouble_op(r, params, &__inc); }
-static void _dec(Request& r, const String&, Array *params) { vdouble_op(r, params, &__dec); }
-static void _mul(Request& r, const String&, Array *params) { vdouble_op(r, params, &__mul); }
-static void _div(Request& r, const String&, Array *params) { vdouble_op(r, params, &__div); }
-static void _mod(Request& r, const String&, Array *params) { vdouble_op(r, params, &__mod); }
+static void _inc(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__inc); }
+static void _dec(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__dec); }
+static void _mul(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__mul); }
+static void _div(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__div); }
+static void _mod(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__mod); }
 
 // initialize
 

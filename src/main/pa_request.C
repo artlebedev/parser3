@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.112 2001/04/11 15:45:51 paf Exp $
+	$Id: pa_request.C,v 1.113 2001/04/15 13:12:22 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -471,19 +471,6 @@ VStateless_class *Request::use_buf(const char *source, const char *file,
 	// locate and execute possible @auto[] static method
 	execute_method(cclass, *auto_method_name, false /*no result needed*/);
 	return &cclass;
-}
-
-/**
-	- fail_if_junction(true, junction = fail
-	- fail_if_junction(false, not junction = fail
-*/
-void Request::fail_if_junction_(bool is, Value& value, 
-								const String& method_name, const char *msg) {
-
-	if((value.get_junction()!=0) ^ !is)
-		THROW(0, 0,
-			&method_name,
-			msg);
 }
 
 const String& Request::relative(const char *apath, const String& relative_name) {

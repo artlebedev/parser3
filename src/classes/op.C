@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.5 2001/04/15 12:32:57 paf Exp $
+	$Id: op.C,v 1.6 2001/04/15 13:12:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -23,11 +23,10 @@ static void _if(Request& r, const String&, MethodParams *params) {
 	bool condition=r.process(condition_code, 
 		0/*no name*/,
 		false/*don't intercept string*/).as_bool();
-	if(condition) {
+	if(condition)
 		r.write_pass_lang(r.process(params->get(1)));
-	} else if(params->size()==3) {
+	else if(params->size()==3)
 		r.write_pass_lang(r.process(params->get(2)));
-	}
 }
 
 static void _untaint(Request& r, const String& method_name, MethodParams *params) {

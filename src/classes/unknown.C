@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: unknown.C,v 1.1 2001/04/12 15:02:37 paf Exp $
+	$Id: unknown.C,v 1.2 2001/04/15 13:12:18 paf Exp $
 */
 
 #include "pa_request.h"
@@ -20,14 +20,14 @@ VStateless_class *unknown_class;
 
 // methods
 
-static void _int(Request& r, const String&, Array *) {
+static void _int(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	VInt *vunknown=static_cast<VInt *>(r.self);
 	Value& value=*new(pool) VInt(pool, (int)vunknown->as_double());
 	r.write_no_lang(value);
 }
 
-static void _double(Request& r, const String&, Array *) {
+static void _double(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	VInt *vunknown=static_cast<VInt *>(r.self);
 	Value& value=*new(pool) VDouble(pool, vunknown->as_double());

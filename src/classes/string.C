@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.37 2001/04/08 13:11:15 paf Exp $
+	$Id: string.C,v 1.38 2001/04/15 13:12:18 paf Exp $
 */
 
 #include "pa_request.h"
@@ -22,31 +22,29 @@ VStateless_class *string_class;
 
 // methods
 
-static void _length(Request& r, const String&, Array *) {
+static void _length(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VDouble(pool, r.self->get_string()->size());
 	r.write_no_lang(value);
 }
 
-static void _int(Request& r, const String&, Array *) {
+static void _int(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, (int)r.self->as_double());
 	r.write_no_lang(value);
 }
 
-static void _double(Request& r, const String&, Array *) {
+static void _double(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VDouble(pool, r.self->as_double());
 	r.write_no_lang(value);
 }
 
 /// ^string.format{format}
-/*not static*/void _string_format(Request& r, const String& method_name, Array *params) {
+/*not static*/void _string_format(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& fmt=*static_cast<Value *>(params->get(0));
-	// forcing {this param type}
-	r.fail_if_junction_(false, fmt, method_name, "fmt must be code");
+	Value& fmt=params->get_junction(0, "fmt must be code");
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	char *buf=format(pool, r.self->as_double(), r.process(fmt).as_string().cstr());
@@ -54,58 +52,54 @@ static void _double(Request& r, const String&, Array *) {
 	r.write_no_lang(String(pool, buf));
 }
 
-static void _left(Request& r, const String&, Array *params) {
+static void _left(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
+	size_t n=(size_t)r.process(params->get(0)).as_double();
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VString(string.mid(0, n)));
 }
 
-static void _right(Request& r, const String&, Array *params) {
+static void _right(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
+	size_t n=(size_t)r.process(params->get(0)).as_double();
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VString(string.mid(string.size()-n, string.size())));
 }
 
-static void _mid(Request& r, const String&, Array *params) {
+static void _mid(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	size_t p=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
-	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(1))).as_double();
+	size_t p=(size_t)r.process(params->get(0)).as_double();
+	size_t n=(size_t)r.process(params->get(1)).as_double();
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VString(string.mid(p, p+n)));
 }
 
-static void _pos(Request& r, const String& method_name, Array *params) {
+static void _pos(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& substr=*static_cast<Value *>(params->get(0));
-	// forcing [this param type]
-	r.fail_if_junction_(true, substr, method_name, "substr must not be code");
+	Value& substr=params->get_no_junction(0, "substr must not be code");
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
 }
 
-static void split_list(Request& r, const String& method_name, Array *params,
+static void split_list(Request& r, const String& method_name, MethodParams *params,
 					   const String& string, 
 					   Array& result) {
 	Pool& pool=r.pool();
 
-	Value& delim_value=*static_cast<Value *>(params->get(0));
-	// forcing [this param type]
-	r.fail_if_junction_(true, delim_value, method_name, "delimiter must not be code");
+	Value& delim_value=params->get_no_junction(0, "delimiter must not be code");
 
 	string.split(result, 0, delim_value.as_string(), String::UL_CLEAN, -1);
 }
 
-static void _lsplit(Request& r, const String& method_name, Array *params) {
+static void _lsplit(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 
@@ -119,7 +113,7 @@ static void _lsplit(Request& r, const String& method_name, Array *params) {
 	r.write_no_lang(*new(pool) VTable(pool, &table));
 }
 
-static void _rsplit(Request& r, const String& method_name, Array *params) {
+static void _rsplit(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 
@@ -184,21 +178,15 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 	^string.match[regexp][options]
 	^string.match[regexp][options]{replacement-code}
 */
-static void _match(Request& r, const String& method_name, Array *params) {
+static void _match(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const String& src=*static_cast<VString *>(r.self)->get_string();
 
-	Value& regexp=*static_cast<Value *>(params->get(0));
-	// forcing [this param type]
-	r.fail_if_junction_(true, regexp, method_name, "regexp must not be code");
+	Value& regexp=params->get_no_junction(0, "regexp must not be code");
 
-	const String *options=0;
-	if(params->size()>1) {
-		Value& value=*static_cast<Value *>(params->get(1));
-		// forcing {this param type}
-		r.fail_if_junction_(true, value, method_name, "options must not be code");
-		options=&value.as_string();
-	}
+	const String *options=
+		params->size()>1?
+		&params->get_no_junction(1, "options must not be code").as_string():0;
 
 	Value *result;
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
@@ -217,10 +205,7 @@ static void _match(Request& r, const String& method_name, Array *params) {
 		} else // not matched [not global]
 			result=new(pool) VBool(pool, false);
 	} else { // replace
-		Value& replacement_code=*static_cast<Value *>(params->get(2));
-		// forcing {this param type}
-		r.fail_if_junction_(false, replacement_code, 
-			method_name, "replacement code must be code");
+		Value& replacement_code=params->get_junction(2, "replacement code must be code");
 
 		String& dest=*new(pool) String(pool);
 		Replace_action_info replace_action_info={

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.16 2001/04/12 16:26:20 paf Exp $
+	$Id: image.C,v 1.17 2001/04/15 13:12:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -245,12 +245,10 @@ static size_t read_disk(void*& buf, size_t limit, void *info) {
 // methods
 
 /// ^image:measure[DATA]
-static void _measure(Request& r, const String& method_name, Array *params) {
+static void _measure(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& data=*static_cast<Value *>(params->get(0));
-	// forcing [this body type]
-	r.fail_if_junction_(true, data, method_name, "data must not be code");
+	Value& data=params->get_no_junction(0, "data must not be code");
 
 	void *info;Measure_reader::Func read_func;
 	Read_mem_info read_mem_info;
@@ -294,7 +292,7 @@ static void append_attrib_pair(const Hash::Key& key, Hash::Val *val, void *info)
 }
 /// ^image.html[]
 /// ^image.html[hash]
-static void _html(Request& r, const String& method_name, Array *params) {
+static void _html(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	String tag(pool);
@@ -304,7 +302,7 @@ static void _html(Request& r, const String& method_name, Array *params) {
 	Hash *attribs=0;
 
 	if(params->size())
-		if(attribs=static_cast<Value *>(params->get(0))->get_hash()) {
+		if(attribs=params->get(0).get_hash()) {
 			Attrib_info attrib_info={&tag, 0};
 			attribs->for_each(append_attrib_pair, &attrib_info);
 		} else
@@ -338,12 +336,10 @@ static gdImage *load(Request& r, const String& method_name,
 
 
 /// ^image.load[background.gif]
-static void _load(Request& r, const String& method_name, Array *params) {
+static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& vfile_name=*static_cast<Value *>(params->get(0));
-	// forcing [this body type]
-	r.fail_if_junction_(true, vfile_name, method_name, "file name must not be code");
+	Value& vfile_name=params->get_no_junction(0, "file name must not be code");
 	const String& file_name=vfile_name.as_string();
 
 	gdImage& image=*load(r, method_name, file_name);
@@ -354,15 +350,14 @@ static void _load(Request& r, const String& method_name, Array *params) {
 
 /// ^image.create[width;height] bgcolor=white
 /// ^image.create[width;height;bgcolor]
-static void _create(Request& r, const String& method_name, Array *params) {
+static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	int width=(int)r.process(*static_cast<Value *>(params->get(0))).as_double();
-	int height=(int)r.process(*static_cast<Value *>(params->get(1))).as_double();
+	int width=(int)r.process(params->get(0)).as_double();
+	int height=(int)r.process(params->get(1)).as_double();
 	int bgcolor_value=0xffFFff;
 	if(params->size()>2)
-		bgcolor_value=
-			(int)r.process(*static_cast<Value *>(params->get(2))).as_double();
+		bgcolor_value=(int)r.process(params->get(2)).as_double();
 	gdImage& image=*new(pool) gdImage(pool);
 	image.Create(width, height);
 	image.FilledRectangle(0, 0, width-1, height-1, image.Color(bgcolor_value));
@@ -370,7 +365,7 @@ static void _create(Request& r, const String& method_name, Array *params) {
 }
 
 /// ^image.gif[]
-static void _gif(Request& r, const String& method_name, Array *params) {
+static void _gif(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
@@ -391,7 +386,7 @@ static void _gif(Request& r, const String& method_name, Array *params) {
 }
 
 /// ^image.line(x0;y0;x1;y1;color)
-static void _line(Request& r, const String& method_name, Array *params) {
+static void _line(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
@@ -401,15 +396,15 @@ static void _line(Request& r, const String& method_name, Array *params) {
 			"does not contain an image");
 
 	image->Line(
-		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(), 
-		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(), 
-		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(), 
-		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(), 
-		image->Color((int)r.process(*static_cast<Value *>(params->get(4))).as_double()));
+		(int)r.process(params->get(0)).as_double(), 
+		(int)r.process(params->get(1)).as_double(), 
+		(int)r.process(params->get(2)).as_double(), 
+		(int)r.process(params->get(3)).as_double(), 
+		image->Color((int)r.process(params->get(4)).as_double()));
 }
 
 /// ^image.fill(x;y;color)
-static void _fill(Request& r, const String& method_name, Array *params) {
+static void _fill(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
@@ -419,13 +414,13 @@ static void _fill(Request& r, const String& method_name, Array *params) {
 			"does not contain an image");
 
 	image->Fill(
-		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(), 
-		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(), 
-		image->Color((int)r.process(*static_cast<Value *>(params->get(2))).as_double()));
+		(int)r.process(params->get(0)).as_double(), 
+		(int)r.process(params->get(1)).as_double(), 
+		image->Color((int)r.process(params->get(2)).as_double()));
 }
 
 /// ^image.rectangle(x0;y0;x1;y1;color)
-static void _rectangle(Request& r, const String& method_name, Array *params) {
+static void _rectangle(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
@@ -435,15 +430,15 @@ static void _rectangle(Request& r, const String& method_name, Array *params) {
 			"does not contain an image");
 
 	image->Rectangle(
-		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(), 
-		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(), 
-		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(), 
-		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(), 
-		image->Color((int)r.process(*static_cast<Value *>(params->get(4))).as_double()));
+		(int)r.process(params->get(0)).as_double(), 
+		(int)r.process(params->get(1)).as_double(), 
+		(int)r.process(params->get(2)).as_double(), 
+		(int)r.process(params->get(3)).as_double(), 
+		image->Color((int)r.process(params->get(4)).as_double()));
 }
 
 /// ^image.bar(x0;y0;x1;y1;color)
-static void _bar(Request& r, const String& method_name, Array *params) {
+static void _bar(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
@@ -453,15 +448,15 @@ static void _bar(Request& r, const String& method_name, Array *params) {
 			"does not contain an image");
 
 	image->FilledRectangle(
-		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(), 
-		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(), 
-		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(), 
-		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(), 
-		image->Color((int)r.process(*static_cast<Value *>(params->get(4))).as_double()));
+		(int)r.process(params->get(0)).as_double(), 
+		(int)r.process(params->get(1)).as_double(), 
+		(int)r.process(params->get(2)).as_double(), 
+		(int)r.process(params->get(3)).as_double(), 
+		image->Color((int)r.process(params->get(4)).as_double()));
 }
 
 /// ^image.replace(color-source;color-dest)(x;y)... point coord pairs
-static void _replace(Request& r, const String& method_name, Array *params) {
+static void _replace(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
@@ -479,16 +474,16 @@ static void _replace(Request& r, const String& method_name, Array *params) {
 	
 	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
 	for(int i=0; i<n; i++) {
-		p[i].x=(int)r.process(*static_cast<Value *>(params->get(2+i*2+0))).as_double();
-		p[i].y=(int)r.process(*static_cast<Value *>(params->get(2+i*2+1))).as_double();
+		p[i].x=(int)r.process(params->get(2+i*2+0)).as_double();
+		p[i].y=(int)r.process(params->get(2+i*2+1)).as_double();
 	}
 	image->FilledPolygonReplaceColor(p, n, 
-		image->Color((int)r.process(*static_cast<Value *>(params->get(0))).as_double()), // src color
-		image->Color((int)r.process(*static_cast<Value *>(params->get(1))).as_double()));// dest color
+		image->Color((int)r.process(params->get(0)).as_double()), // src color
+		image->Color((int)r.process(params->get(1)).as_double()));// dest color
 }
 
 /// ^image.polygon(color)(x;y)... point coord pairs
-static void _polygon(Request& r, const String& method_name, Array *params) {
+static void _polygon(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
@@ -506,15 +501,15 @@ static void _polygon(Request& r, const String& method_name, Array *params) {
 	
 	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
 	for(int i=0; i<n; i++) {
-		p[i].x=(int)r.process(*static_cast<Value *>(params->get(1+i*2+0))).as_double();
-		p[i].y=(int)r.process(*static_cast<Value *>(params->get(1+i*2+1))).as_double();
+		p[i].x=(int)r.process(params->get(1+i*2+0)).as_double();
+		p[i].y=(int)r.process(params->get(1+i*2+1)).as_double();
 	}
 	image->Polygon(p, n, 
-		image->Color((int)r.process(*static_cast<Value *>(params->get(0))).as_double()));
+		image->Color((int)r.process(params->get(0)).as_double()));
 }
 
 /// ^image.polybar(color)(x;y)... point coord pairs
-static void _polybar(Request& r, const String& method_name, Array *params) {
+static void _polybar(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
@@ -532,11 +527,11 @@ static void _polybar(Request& r, const String& method_name, Array *params) {
 	
 	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
 	for(int i=0; i<n; i++) {
-		p[i].x=(int)r.process(*static_cast<Value *>(params->get(1+i*2+0))).as_double();
-		p[i].y=(int)r.process(*static_cast<Value *>(params->get(1+i*2+1))).as_double();
+		p[i].x=(int)r.process(params->get(1+i*2+0)).as_double();
+		p[i].y=(int)r.process(params->get(1+i*2+1)).as_double();
 	}
 	image->FilledPolygon(p, n, 
-		image->Color((int)r.process(*static_cast<Value *>(params->get(0))).as_double()));
+		image->Color((int)r.process(params->get(0)).as_double()));
 }
 
 // font
@@ -606,25 +601,14 @@ public:
 };
 /// ^image.font[alPHAbet;font-file-name.gif](height)
 /// ^image.font[alPHAbet;font-file-name.gif](height;width)
-static void _font(Request& r, const String& method_name, Array *params) {
+static void _font(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& valphabet=*static_cast<Value *>(params->get(0));
-	// forcing [this body type]
-	r.fail_if_junction_(true, valphabet, method_name, "alphabet must not be code");
+	Value& valphabet=params->get_no_junction(0, "alphabet must not be code");
+	Value& file_name=params->get_no_junction(1, "file_name must not be code");
+	int height=(int)r.process(params->get(2)).as_double();
 
-	Value& file_name=*static_cast<Value *>(params->get(1));
-	// forcing [this body type]
-	r.fail_if_junction_(true, file_name, method_name, "file_name must not be code");
-
-	Value& vheight=*static_cast<Value *>(params->get(2));
-	int height=(int)r.process(vheight).as_double();
-
-	int width=0;
-	if(params->size()>3) {
-		Value& vwidth=*static_cast<Value *>(params->get(3));
-		width=(int)r.process(vwidth).as_double();
-	}
+	int width=params->size()>3?(int)r.process(params->get(3)).as_double():0;
 
 	static_cast<VImage *>(r.self)->font=new(pool) Font(pool, 
 		valphabet.as_string(), 
@@ -633,13 +617,12 @@ static void _font(Request& r, const String& method_name, Array *params) {
 }
 
 /// ^image.text(x;y)[text]
-static void _text(Request& r, const String& method_name, Array *params) {
+static void _text(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	int x=(int)r.process(*static_cast<Value *>(params->get(0))).as_double();
-	int y=(int)r.process(*static_cast<Value *>(params->get(1))).as_double();
-	const String& s=
-		r.process(*static_cast<Value *>(params->get(2))).as_string();
+	int x=(int)r.process(params->get(0)).as_double();
+	int y=(int)r.process(params->get(1)).as_double();
+	const String& s=r.process(params->get(2)).as_string();
 
 	VImage& vimage=*static_cast<VImage *>(r.self);
 	if(vimage.image)

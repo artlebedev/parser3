@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: response.C,v 1.6 2001/04/03 08:23:06 paf Exp $
+	$Id: response.C,v 1.7 2001/04/15 13:12:18 paf Exp $
 */
 
 #include "pa_request.h"
@@ -17,7 +17,7 @@ VStateless_class *response_class;
 
 // methods
 
-static void _clear(Request& r, const String& method_name, Array *params) {
+static void _clear(Request& r, const String&, MethodParams *) {
 	r.self/*VResponse*/->get_hash()/*sure not 0*/->clear();
 }
 

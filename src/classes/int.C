@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.18 2001/04/03 08:23:06 paf Exp $
+	$Id: int.C,v 1.19 2001/04/15 13:12:17 paf Exp $
 */
 
 #include "pa_request.h"
@@ -20,14 +20,14 @@ VStateless_class *int_class;
 
 // methods
 
-static void _int(Request& r, const String&, Array *) {
+static void _int(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	VInt *vint=static_cast<VInt *>(r.self);
 	Value& value=*new(pool) VInt(pool, vint->get_int());
 	r.write_no_lang(value);
 }
 
-static void _double(Request& r, const String&, Array *) {
+static void _double(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	VInt *vint=static_cast<VInt *>(r.self);
 	Value& value=*new(pool) VDouble(pool, vint->as_double());
@@ -42,22 +42,22 @@ static void __mul(VInt& vint, double param) { vint.mul(param); }
 static void __div(VInt& vint, double param) { vint.div(param); }
 static void __mod(VInt& vint, double param) { vint.mod((int)param); }
 
-static void vint_op(Request& r, Array *params, 
+static void vint_op(Request& r, MethodParams *params, 
 					 vint_op_func_ptr func) {
 	VInt *vint=static_cast<VInt *>(r.self);
 	double param=params->size()?
 		r.process(
-			*static_cast<Value *>(params->get(0)),
+			params->get(0),
 			0/*no name*/,
 			false/*don't intercept string*/).as_double():1;
 	(*func)(*vint, param);
 }
 
-static void _inc(Request& r, const String&, Array *params) { vint_op(r, params, &__inc); }
-static void _dec(Request& r, const String&, Array *params) { vint_op(r, params, &__dec); }
-static void _mul(Request& r, const String&, Array *params) { vint_op(r, params, &__mul); }
-static void _div(Request& r, const String&, Array *params) { vint_op(r, params, &__div); }
-static void _mod(Request& r, const String&, Array *params) { vint_op(r, params, &__mod); }
+static void _inc(Request& r, const String&, MethodParams *params) { vint_op(r, params, &__inc); }
+static void _dec(Request& r, const String&, MethodParams *params) { vint_op(r, params, &__dec); }
+static void _mul(Request& r, const String&, MethodParams *params) { vint_op(r, params, &__mul); }
+static void _div(Request& r, const String&, MethodParams *params) { vint_op(r, params, &__div); }
+static void _mod(Request& r, const String&, MethodParams *params) { vint_op(r, params, &__mod); }
 
 // initialize
 
