@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.1 2002/06/20 13:39:56 paf Exp $
+#$Id: auto.p.dist.in,v 1.2 2002/06/20 14:06:21 paf Exp $
 
 @conf[]
 $charsetsdir[@charsetsdir@]
@@ -61,6 +61,7 @@ $LIMITS[
 #]
 
 @unhandled_exception[exception;stack]
+<noindex>
 $response:content-type[
         $.value[text/html]
         $.charset[$response:charset]
@@ -81,6 +82,7 @@ $response:content-type[
 		<tt>$stack.name</tt> $stack.file^($stack.lineno^)<br>
 	}
 }
+</noindex>
 
 @auto[]
 #source/client charsets
