@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.14 2001/09/11 08:39:04 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.15 2001/09/11 08:49:22 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -68,16 +68,15 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	const String& filename=params->as_string(0, "file name must not be code");
 	const char *filespec=r.absolute(filename).cstr(String::UL_FILE_NAME);
 	
-	XSLTInputSource inputSource(filespec);
 	XalanParsedSource* parsedSource;
-	int error=vDom.get_transformer().parseSource(inputSource, parsedSource);
+	int error=vDom.get_transformer().parseSource(filespec, parsedSource);
 
 	if(error)
 		PTHROW(0, 0,
 			&filename,
 			vDom.get_transformer().getLastError());
 
-	// replace any previous node value
+	// replace any previous parsed source
 	vDom.set_parsed_source(*parsedSource);
 }
 
@@ -138,8 +137,9 @@ FormatterListener *create_optioned_listener(Pool& pool,
 	if(voptions.is_defined()) {
 		if(Hash *options=voptions.get_hash()) {
 			// $.method[xml|html|text]
-			method=&static_cast<Value *>(options->get(*new(pool) 
-				String(pool, DOM_OUTPUT_METHOD_OPTION_NAME)))->as_string();
+			if(Value *vmethod=static_cast<Value *>(options->get(*new(pool) 
+				String(pool, DOM_OUTPUT_METHOD_OPTION_NAME))))
+				method=&vmethod->as_string();
 
 			// $.encoding[windows-1251|...]
 			if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 

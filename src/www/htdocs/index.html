@@ -1,8 +1,8 @@
 @main[]
-^testdom3[]
+#^testdom3[]
 #^testdom2[]
 #^testdom1[]
-#^testdom0[]
+^testdom0[]
 OK
 
 @testdom3[]
@@ -25,9 +25,9 @@ $response:body[^dom.file[windows-1251]]
 
 @testdom0[]
 $dom[^dom::load[test.xml]]
-^dom.save[windows-1251;write.xml]
-^dom.string[windows-1251]
-$פאיכ[^dom.file[windows-1251]]
+^dom.save[$.encoding[windows-1251];write.xml]
+^dom.string[$.encoding[windows-1251]]
+$פאיכ[^dom.file[$.encoding[windows-1251]]]
 ^פאיכ.save[binary;writefile.xml]
 $response:body[$פאיכ]
 OK
