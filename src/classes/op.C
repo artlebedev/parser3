@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.83 2002/04/15 10:35:21 paf Exp $
+	$Id: op.C,v 1.84 2002/04/15 10:36:43 paf Exp $
 */
 
 #include "classes.h"
@@ -283,10 +283,7 @@ static void _switch(Request& r, const String&, MethodParams *params) {
 	Value& cases_code=params->as_junction(1, "switch cases must be code");
 	// execution of found ^case[...]{code} must be in context of ^switch[...]{code}
 	// because of stacked WWrapper used there as wcontext
-	r.process(
-		cases_code,
-		true/*intercept_string*/
-	);
+	r.process(cases_code, true/*intercept_string*/);
 	if(Value *selected_code=data.found ? data.found : data._default) {
 		// setting code context, would execute in ^switch[...]{>>context<<}
 		selected_code->get_junction()->change_context(cases_code.get_junction());
