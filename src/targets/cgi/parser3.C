@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.30 2001/03/22 11:19:15 paf Exp $
+	$Id: parser3.C,v 1.31 2001/03/22 15:30:47 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -45,15 +45,10 @@ static LONG WINAPI TopLevelExceptionFilter (
 									 ) {
 	char buf[MAX_STRING];
 	if(ExceptionInfo && ExceptionInfo->ExceptionRecord) {
-		struct _EXCEPTION_RECORD *r=ExceptionInfo->ExceptionRecord;
-		
-		int printed=0;
-		printed+=snprintf(buf+printed, MAX_STRING-printed, "Exception 0x%X at 0x%p", 
-			r->ExceptionCode, 
-			r->ExceptionAddress);
-		for(unsigned int i=0; i<r->NumberParameters; i++)
-			printed+=snprintf(buf+printed, MAX_STRING-printed, ", 0x%X", 
-				r->ExceptionInformation[i]);
+		struct _EXCEPTION_RECORD *rr=ExceptionInfo->ExceptionRecord;
+		snprintf(buf, MAX_STRING, "Exception %#X at %p", 
+			er->ExceptionCode, 
+			er->ExceptionAddress);
 	} else 
 		strcpy(buf, "Exception <unknown>");
 	
@@ -213,10 +208,8 @@ int main(int argc, char *argv[]) {
 		// process the request
 		request.core(pool.exception(),
 			root_auto_path, false,
-			site_auto_path, false);
-		// no actions with request' data past this point
-		// request.exception not not handled here, but all
-		// request' data are associated with it's pool=exception
+			site_auto_path, false,
+			strcasecmp(request_info.method, "HEAD")==0);
 
 		// must be last in PTRY{}PCATCH
 #ifdef WIN32

@@ -83,17 +83,6 @@ LINK32=link.exe
 
 # Name "parser3 - Win32 Release"
 # Name "parser3 - Win32 Debug"
-# Begin Group "include"
-
-# PROP Default_Filter "h;hpp;hxx;hm;inl"
-# Begin Source File
-
-SOURCE=..\..\include\pa_globals.h
-# End Source File
-# End Group
-# Begin Group "targets"
-
-# PROP Default_Filter "C;cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
 SOURCE=.\pa_pool.C
@@ -102,6 +91,5 @@ SOURCE=.\pa_pool.C
 
 SOURCE=.\parser3.C
 # End Source File
-# End Group
 # End Target
 # End Project

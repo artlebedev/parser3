@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.9 2001/03/22 12:10:01 paf Exp $
+	$Id: mod_parser3.C,v 1.10 2001/03/22 15:30:46 paf Exp $
 */
 
 #include "httpd.h"
@@ -429,12 +429,12 @@ static const char *cmd_parser_auto_path(cmd_parms *cmd, void *mconfig, char *fil
 //@{
 /// service func decl
 static const char *get_env(Pool& pool, const char *name) {
-	request_rec *r=static_cast<request_rec *>(pool.info());
+	request_rec *r=static_cast<request_rec *>(pool.context());
  	return (const char *)ap_table_get(r->subprocess_env, name);
 }
 
 static uint read_post(Pool& pool, char *buf, uint max_bytes) {
-	request_rec *r=static_cast<request_rec *>(pool.info());
+	request_rec *r=static_cast<request_rec *>(pool.context());
 
 /*    ap_log_error(APLOG_MARK, APLOG_DEBUG, r->server, 
 		"mod_parser3: read_post(max=%u)", max_bytes);
@@ -461,7 +461,7 @@ static uint read_post(Pool& pool, char *buf, uint max_bytes) {
 }
 
 static void add_header_attribute(Pool& pool, const char *key, const char *value) {
-	request_rec *r=static_cast<request_rec *>(pool.info());
+	request_rec *r=static_cast<request_rec *>(pool.context());
 
 	if(strcasecmp(key, "content-type")==0) {
 		/* r->content_type, *not* r->headers_out("Content-type").  If you don't
@@ -475,7 +475,7 @@ static void add_header_attribute(Pool& pool, const char *key, const char *value)
 }
 
 static void send_header(Pool& pool) {
-	request_rec *r=static_cast<request_rec *>(pool.info());
+	request_rec *r=static_cast<request_rec *>(pool.context());
 
     ap_hard_timeout("Send header", r);
     ap_send_http_header(r);
@@ -483,7 +483,7 @@ static void send_header(Pool& pool) {
 }
 
 static void send_body(Pool& pool, const char *buf, size_t size) {
-	request_rec *r=static_cast<request_rec *>(pool.info());
+	request_rec *r=static_cast<request_rec *>(pool.context());
 
     ap_hard_timeout("Send body", r);
 	ap_rwrite(buf, size, r);
@@ -505,7 +505,7 @@ static int parser_handler(request_rec *r)
 {
 	Pool pool;
 	pool.set_storage(r->pool);
-	pool.set_info(r);
+	pool.set_context(r);
 
     Parser_module_config *dcfg=our_dconfig(r);
 
@@ -647,7 +647,7 @@ static void parser_init(server_rec *s, pool *p)
 		//...
 	} PCATCH(e) { // global problem 
 		const char *body=e.comment();
-		// somehow report that error
+		// TODO: somehow report that error
 	}
 	PEND_CATCH
 }
