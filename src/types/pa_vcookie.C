@@ -1,10 +1,10 @@
 /** @file
 	Parser: cookie class.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vcookie.C,v 1.34 2002/02/08 08:31:32 paf Exp $
+	$Id: pa_vcookie.C,v 1.36 2002/02/08 15:07:47 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -70,6 +70,7 @@ static char *search_stop(char*& current, char cstop_at) {
 //#include <stdio.h>
 void VCookie::fill_fields(Request& request) {
 	//request.info.cookie="test-session=value%3D5; test-default1=value%3D1; test-default2=value%3D2; test-tomorrow=value%3D3";
+	//mdm request.info.cookie="enabled=yes; auth.uid=196325308053599810; enabled=yes; msnames; msuri";
 	if(!request.info.cookie)
 		return;
 /*
@@ -83,16 +84,17 @@ void VCookie::fill_fields(Request& request) {
 	//_asm int 3;
     do {
 		if(char *attribute=search_stop(current, '='))
-			if(char *meaning=search_stop(current, ';')) {
-				String& sattribute=*NEW String(pool());
-				String& smeaning=*NEW String(pool());
-				sattribute.APPEND_TAINTED(unescape_chars(pool(), attribute, strlen(attribute)), 0, 
-					"cookie_name", line);
-				smeaning.APPEND_TAINTED(unescape_chars(pool(), meaning, strlen(meaning)), 0, 
-					"cookie_value", line);
-				before.put(sattribute, NEW VString(smeaning));
-				line++;
-			}
+			if(current) // not "name" without =
+				if(char *meaning=search_stop(current, ';')) {
+					String& sattribute=*NEW String(pool());
+					String& smeaning=*NEW String(pool());
+					sattribute.APPEND_TAINTED(unescape_chars(pool(), attribute, strlen(attribute)), 0, 
+						"cookie_name", line);
+					smeaning.APPEND_TAINTED(unescape_chars(pool(), meaning, strlen(meaning)), 0, 
+						"cookie_value", line);
+					before.put(sattribute, NEW VString(smeaning));
+					line++;
+				}
 	} while(current);
 }
 
