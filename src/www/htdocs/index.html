@@ -4,7 +4,7 @@
 
 @testdom1[]
 $dom[^dom::load[test.xml]]
-$dom[^dom.xslt[test.xsl]]
+$dom[^dom.xslt[test.xsl;$.param1(48)]]
 $response:body[^dom.file[windows-1251]]
 
 @testdom0[]
