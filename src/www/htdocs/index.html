@@ -1,5 +1,7 @@
 @main[]
-^if(1<2)[$a[1]]
+-^eol[]-
+<hr>
+^if(1<2){$a[1]}
 ^$a=$a
 <hr>
 
@@ -166,6 +168,9 @@ ${comment}.
 }
 #}
 #}
+
+@eol[]
+eol
 
 @default[test;def]
 $result[^if(^test.length[]){$test}{$def}]

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.136 2001/05/21 17:12:58 parser Exp $
+	$Id: compile.y,v 1.137 2001/05/23 06:54:47 parser Exp $
 */
 
 /**
@@ -1059,6 +1059,8 @@ break2:
 		if((c=='@' || c==0) && end[-1]=='\n') { // we are before LS_DEF_NAME or EOF?
 			// strip last \n
 			end--;
+			if(end!=begin && end[-1]=='\n') // allow one empty line before LS_DEF_NAME
+				end--;
 		}
 		if(end!=begin && PC.ls!=LS_COMMENT) { // last piece still alive and not comment?
 			// append it
