@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2003/12/17 10:12:34 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2003/12/25 07:31:13 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -151,17 +151,23 @@ static bool set_addr(struct sockaddr_in *addr, const char* host, const short por
     return true;
 }
 
-static int http_read_response(String& response, int sock, bool fail_on_status_ne_200){
+static int http_read_response(char*& response, size_t& response_size, int sock, bool fail_on_status_ne_200){
+	response=(char*)pa_malloc_atomic(1/*terminator*/); // setting memory block type
+	response[(response_size=0)]=0;
 	int result=0;
-	size_t EOLat=0;
+	char* EOLat=0;
 	while(true) {
-		char *buf=new(PointerFreeGC) char[MAX_STRING]; 
-		ssize_t size=recv(sock, buf, MAX_STRING, 0); 
-		if(size<=0)
+		char buf[MAX_STRING*10]; 
+		ssize_t received_size=recv(sock, buf, sizeof(buf), 0); 
+		if(received_size<=0)
 			break;
-		response.append_strdup(buf, size, String::L_TAINTED); 
-		if(!result && (EOLat=response.pos(CRLF, 2))!=STRING_NOT_FOUND) { // checking status in first response
-			const String& status_line=response.mid(0, (size_t)EOLat);
+		response=(char*)pa_realloc(response, response_size+received_size+1/*terminator*/);
+		memcpy(response+response_size, buf, received_size);
+		response_size+=received_size;
+		response[response_size]=0;
+
+		if(!result && (EOLat=strstr(response, CRLF))) { // checking status in first response
+			const String status_line(pa_strdup(response, EOLat-response));
 			ArrayString astatus; 
 			size_t pos_after=0;
 			status_line.split(astatus, pos_after, " "); 
@@ -179,7 +185,7 @@ static int http_read_response(String& response, int sock, bool fail_on_status_ne
 	else
 		throw Exception("http.response",
 			0,
-			"bad response from host - no status found (size=%lu)", response.length()); 
+			"bad response from host - no status found (size=%lu)", response_size); 
 }
 
 /* ********************** request *************************** */
@@ -195,7 +201,7 @@ static void timeout_handler(int sig){
 }
 #endif
 
-static int http_request(String& response,
+static int http_request(char*& response, size_t& response_size,
 			const char* host, int port, 
 			const char* request, 
 			int 
@@ -250,7 +256,7 @@ static int http_request(String& response,
 					0, 
 					"error sending request: %s (%d)", strerror(errno), errno); 
 
-			result=http_read_response(response, sock, fail_on_status_ne_200); 
+			result=http_read_response(response, response_size, sock, fail_on_status_ne_200); 
 			closesocket(sock); 
 #ifdef PA_USE_ALARM
 			alarm(0); 
@@ -433,20 +439,25 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		*asked_remote_charset);
 	
 	//sending request
-	String response;
-	int status_code=http_request(response,
+	char* response;
+	size_t response_size;
+	int status_code=http_request(response, response_size,
 		host, port, request_cstr, 
 		timeout, fail_on_status_ne_200); 
 	
 	//processing results	
-	size_t pos=response.pos(CRLF CRLF, 4); 
-	if(pos==STRING_NOT_FOUND || pos<1) {
+	char* raw_body; size_t raw_body_size;
+	char* headers_end_at=strstr(response, CRLF CRLF /*change '4' below along!*/); 
+	if(headers_end_at) {
+		raw_body=headers_end_at+4;
+		raw_body_size=response_size-(raw_body-response);
+	} else
 		throw Exception("http.response", 
 			&connect_string,
 			"bad response from host - no headers found"); 
-	}
-	const String& header_block=response.mid(0, pos); 
-	const String& raw_body=response.mid(pos+4, response.length()); 
+	
+	*headers_end_at=0;
+	const String header_block(response, headers_end_at-response, true);
 	
 	ArrayString aheaders;
 	result.headers=new HashStringValue;
@@ -462,7 +473,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	Charset* real_remote_charset=0; // undetected, yet
 	for(size_t i=1; i<aheaders_count; i++) {
 		const String& line=*aheaders.get(i);
-		pos=line.pos(": ", 2); 
+		size_t pos=line.pos(": ", 2); 
 		if(pos==STRING_NOT_FOUND || pos<1)
 			throw Exception("http.response", 
 				&connect_string,
@@ -503,8 +514,8 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		real_remote_charset=asked_remote_charset;
 
 	// output response
-	String::C real_body=String::C(raw_body.cstrm()/*must be modifiable*/, raw_body.length());
-	if(as_text && raw_body.length()) // must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
+	String::C real_body=String::C(raw_body, raw_body_size);
+	if(as_text && raw_body_size) // must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
 		real_body=Charset::transcode(real_body, *real_remote_charset, charsets.source());
 
 	result.str=const_cast<char *>(real_body.str); // hacking a little
