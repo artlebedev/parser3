@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.5 2001/03/12 10:21:24 paf Exp $
+	$Id: pa_value.h,v 1.6 2001/03/12 12:00:06 paf Exp $
 */
 
 /*
@@ -27,6 +27,7 @@ class Junction;
 class WContext;
 class VAliased;
 class Request;
+class Table;
 
 typedef void (*Native_code_ptr)(Request& request, const String& method_name, Array *params);
 
@@ -111,7 +112,7 @@ public: // Value
 	// bool: this
 	// double: this
 	// int: this
-	virtual Value *get_expr_result() { failed("getting expression result of '%s'"); return 0; }
+	virtual Value *get_expr_result() { failed("(%s) can not be used in expression"); return 0; }
 
 	// string: value
 	// unknown: ""
@@ -124,19 +125,22 @@ public: // Value
 	// double: value
 	// integer: finteger
 	// bool: value
-	virtual double get_double() { failed("getting numerical value of '%s'"); return 0; }
+	virtual double get_double() { failed("(%s) does not have numerical value"); return 0; }
 
 	// unknown: false
 	// bool: value
 	// double: 0 or !0
 	// string: empty or not
 	// hash: size!=0
-	// TODO table: count!=0
+	// table: empty or not
 	// others: true
 	virtual bool get_bool() { return true; }
 
 	// junction: auto_calc,root,self,rcontext,wcontext, code
 	virtual Junction *get_junction() { return 0; }
+
+	// table: itself
+	virtual Table *get_table() { return 0; }
 
 	// hash: (key)=value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
@@ -145,14 +149,15 @@ public: // Value
 	// operator_class: (field)=value - static values only
 	// codeframe: wcontext_transparent
 	// methodframe: my or self_transparent
-	virtual Value *get_element(const String& name) { failed("type is '%s', can not get element from it"); return 0; }
+	// table: column
+	virtual Value *get_element(const String& name) { failed("(%s) does not have elements"); return 0; }
 	
 	// hash: (key)=value
 	// object_class, operator_class: (field)=value - static values only
 	// object_instance: (field)=value
 	// codeframe: wcontext_transparent
 	// methodframe: my or self_transparent
-	virtual void put_element(const String& name, Value *value) { failed("type is '%s', can not put element to it"); }
+	virtual void put_element(const String& name, Value *value) { failed("(%s) does not accept elements"); }
 
 	// object_class, object_instance: object_class
 	// wcontext: none yet | transparent
@@ -174,6 +179,15 @@ public: // usage
 		const String *result=get_string(); 
 		if(!result)
 			failed("getting string of '%s'");
+
+		return *result;
+	}
+
+	Table& as_table() {
+		Table *result=get_table(); 
+		if(!result)
+			failed("getting table of '%s'");
+
 		return *result;
 	}
 
@@ -181,7 +195,7 @@ private:
 
 	const String *fname;
 
-private: 
+protected: 
 
 	void failed(char *action) const {
 		THROW(0,0,

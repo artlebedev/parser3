@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.C,v 1.3 2001/03/11 08:44:42 paf Exp $
+	$Id: pa_vclass.C,v 1.4 2001/03/12 12:00:06 paf Exp $
 */
 
 #include "pa_vclass.h"
@@ -27,8 +27,14 @@ Value *VClass::get_element(const String& aname) {
 }
 
 // object_class, operator_class: (field)=value - static values only
-void VClass::put_element(const String& name, Value *value) {
-	set_field(name, value);
+void VClass::put_element(const String& aname, Value *avalue) {
+	if(read_only)
+		THROW(0, 0,
+			&aname,
+			"can not put element into read-only '%s' class",
+				name().cstr());
+	
+	set_field(aname, avalue);
 }
 
 void VClass::add_native_method(
@@ -45,4 +51,14 @@ void VClass::add_native_method(
 		0/*parser_code*/, native_code
 		);
 	add_method(name, method);
+}
+
+void VClass::put_method(const String& aname, Method *amethod) {
+	if(read_only)
+		THROW(0, 0,
+			&aname,
+			"can not add method to read-only '%s' class",
+				name().cstr());
+	
+	fmethods.put(aname, amethod); 
 }

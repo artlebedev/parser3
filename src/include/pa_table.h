@@ -3,11 +3,11 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.10 2001/03/11 08:16:33 paf Exp $
+	$Id: pa_table.h,v 1.11 2001/03/12 12:00:05 paf Exp $
 */
 
 /*
-	hence most of tables are "named", no need to uptimize unnamed onces
+	hence most of tables are "named", no need to uptimize nameless onces
 */
 
 
@@ -23,7 +23,7 @@
 class Table : public Array {
 public:
 
-	Table(Request& arequest,
+	Table(Pool& apool,
 		char *afile, uint aline,
 		Array *acolumns,
 		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
@@ -37,14 +37,9 @@ public:
 	int get_current() { return fcurrent; }
 	void inc_current() { fcurrent++; }
 
-	void read_item(String& result, const String& column_name) {
-		result.APPEND(item(column_name), 0/*TODO:think about*/, forigin.file, forigin.line+fcurrent);
-	}
+	const String *item(const String& column_name);
 
 protected:
-
-	// the request I'm processed on. for error reporting
-	Request& request;
 
 	// the base origin of table's data
 	Origin forigin;
@@ -60,8 +55,9 @@ protected:
 
 	const Array& at(int index);
 
-	const char *item(int column_index);
-	const char *item(const String& column_name);
+	const String *item(int column_index) {
+		return at(fcurrent).get_string(column_index);
+	}
 };
 
 #endif

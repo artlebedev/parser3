@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmframe.h,v 1.3 2001/03/12 09:08:52 paf Exp $
+	$Id: pa_vmframe.h,v 1.4 2001/03/12 12:00:08 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -61,7 +61,7 @@ public: // usage
 			// those are flags that name is local == to be looked up in 'my'
 			for(int i=0; i<method.locals_names->size(); i++) {
 				Value *value=NEW VUnknown(pool());
-				String& name=*static_cast<String *>(method.locals_names->get(i));
+				const String& name=*method.locals_names->get_string(i);
 				my->put(name, value);
 				value->set_name(name);
 			}
@@ -87,8 +87,7 @@ public: // usage
 		if(method.max_numbered_params_count) { // are this method params numbered?
 			*fnumbered_params+=value;
 		} else { // named param
-			String& name=*static_cast<String *>(
-				method.params_names->get(store_param_index++));
+			const String& name=*method.params_names->get_string(store_param_index++);
 			my->put(name, value); // remember param
 			value->set_name(name); // set param's 'name'
 		}
@@ -98,8 +97,7 @@ public: // usage
 		if(method.params_names) // there are any named parameters might need filling?
 			for(; store_param_index<method.params_names->size(); store_param_index++) {
 				Value *value=NEW VUnknown(pool());
-				String& name=*static_cast<String *>(
-					method.params_names->get(store_param_index));
+				const String& name=*method.params_names->get_string(store_param_index);
 				my->put(name, value);
 				value->set_name(name);
 			}

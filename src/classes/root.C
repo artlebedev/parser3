@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.22 2001/03/12 10:21:23 paf Exp $
+	$Id: root.C,v 1.23 2001/03/12 12:00:03 paf Exp $
 */
 
 #include <string.h>
@@ -29,7 +29,7 @@ static void _if(Request& r, const String&, Array *params) {
 static void _untaint(Request& r, const String& method_name, Array *params) {
 	const String& lang_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
 	String::Untaint_lang lang=static_cast<String::Untaint_lang>(
-		untaint_lang_name_to_enum->get_int(lang_name));
+		untaint_lang_name2enum->get_int(lang_name));
 	if(!lang)
 		R_THROW(0, 0,
 			&lang_name,

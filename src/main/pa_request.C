@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.16 2001/03/12 09:08:51 paf Exp $
+	$Id: pa_request.C,v 1.17 2001/03/12 12:00:06 paf Exp $
 */
 
 #include "pa_request.h"
@@ -12,6 +12,7 @@
 #include "pa_vclass.h"
 #include "_root.h"
 #include "_env.h"
+#include "_table.h"
 #include "core.h"
 
 #include <stdio.h>
@@ -34,6 +35,9 @@ Request::Request(Pool& apool) : Pooled(apool),
 	// env class
 	initialize_env_class(pool(), env_class);
 	classes().put(*env_class_name, &env_class);
+
+	// table class
+	classes().put(*table_class_name, &table_class);	
 }
 
 void Request::core() {

@@ -295,6 +295,10 @@ SOURCE=..\types\pa_vstring.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vtable.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vunknown.h
 # End Source File
 # Begin Source File
@@ -352,6 +356,10 @@ SOURCE=..\classes\root.C
 # Begin Source File
 
 SOURCE=..\classes\string.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\table.C
 # End Source File
 # End Group
 # End Target

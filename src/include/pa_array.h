@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.22 2001/03/11 08:16:32 paf Exp $
+	$Id: pa_array.h,v 1.23 2001/03/12 12:00:04 paf Exp $
 */
 
 /*
@@ -70,9 +70,6 @@ public:
 
 	Item *get(int index) const;
 	void put(int index, Item *item);
-	const char *get_cstr(int index) const { 
-		return static_cast<const char *>(get(index)); 
-	}
 	const String *get_string(int index) const { 
 		return static_cast<const String *>(get(index)); 
 	}

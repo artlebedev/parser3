@@ -3,13 +3,14 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.C,v 1.59 2001/03/11 12:10:43 paf Exp $
+	$Id: core.C,v 1.60 2001/03/12 12:00:05 paf Exp $
 */
 
 #include "core.h"
 #include "_string.h"
 #include "_double.h"
 #include "_int.h"
+#include "_table.h"
 #include "pa_request.h"
 
 #define GLOBAL_STRING(name, value)  name=new(pool) String(pool); name->APPEND_CONST(value)
@@ -24,8 +25,9 @@ String *main_method_name;
 String *main_class_name;
 String *root_class_name;
 String *env_class_name;
+String *table_class_name;
 
-Hash *untaint_lang_name_to_enum;
+Hash *untaint_lang_name2enum;
 
 
 void core() {
@@ -41,29 +43,31 @@ void core() {
 	GLOBAL_STRING(main_class_name, MAIN_CLASS_NAME);
 	GLOBAL_STRING(root_class_name, ROOT_CLASS_NAME);
 	GLOBAL_STRING(env_class_name, ENV_CLASS_NAME);	
+	GLOBAL_STRING(table_class_name, TABLE_CLASS_NAME);
 
 	// hashes
-	untaint_lang_name_to_enum=new(pool) Hash(pool);
+	untaint_lang_name2enum=new(pool) Hash(pool);
 	LOCAL_STRING(as_is, "as-is");  
-	untaint_lang_name_to_enum->put(as_is, 
+	untaint_lang_name2enum->put(as_is, 
 		static_cast<int>(String::Untaint_lang::AS_IS));
 	LOCAL_STRING(sql, "sql");
-	untaint_lang_name_to_enum->put(sql, 
+	untaint_lang_name2enum->put(sql, 
 		static_cast<int>(String::Untaint_lang::SQL));
 	LOCAL_STRING(js, "js");
-	untaint_lang_name_to_enum->put(js, 
+	untaint_lang_name2enum->put(js, 
 		static_cast<int>(String::Untaint_lang::JS));
 	LOCAL_STRING(html, "html");
-	untaint_lang_name_to_enum->put(html, 
+	untaint_lang_name2enum->put(html, 
 		static_cast<int>(String::Untaint_lang::HTML));
 	LOCAL_STRING(html_typo, "html-typo");
-	untaint_lang_name_to_enum->put(html_typo, 
+	untaint_lang_name2enum->put(html_typo, 
 		static_cast<int>(String::Untaint_lang::HTML_TYPO));
 
-	// classes
-	initialize_string_class(pool, *(string_class=new(pool) VClass(pool)));
-	initialize_double_class(pool, *(double_class=new(pool) VClass(pool)));
-	initialize_int_class(pool, *(int_class=new(pool) VClass(pool)));
+	// read-only classes
+	initialize_string_class(pool, *(string_class=new(pool) VClass(pool)));  string_class->freeze();
+	initialize_double_class(pool, *(double_class=new(pool) VClass(pool)));  double_class->freeze();
+	initialize_int_class(pool, *(int_class=new(pool) VClass(pool)));  int_class->freeze();
+	initialize_table_class(pool, *(table_class=new(pool) VClass(pool)));  table_class->freeze();
 
 	// request
 	Request request(pool);

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.5 2001/03/12 09:41:00 paf Exp $
+	$Id: pa_vclass.h,v 1.6 2001/03/12 12:00:07 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -37,6 +37,7 @@ public: // Value
 public: // usage
 
 	VClass(Pool& apool) : VAliased(apool, *this), 
+		read_only(false),
 		fbase(0),
 		ffields(apool),
 		fmethods(apool) {
@@ -46,14 +47,19 @@ public: // usage
 		return static_cast<Method *>(fmethods.get(name)); 
 	}
 
+	// make class read-only
+	//	this blocks 
+	//		put_method  // which could be done with ^process
+	//		put_element  // - - - - - CLASS:static_field
+	void freeze() { read_only=true; }
+
 	void add_method(const String& name, Method& method) {
-		fmethods.put(name, &method);
+		put_method(name, &method);
 	}
 	void add_native_method(
 		const char *cstr_name,
 		Native_code_ptr native_code,
 		int min_numbered_params_count, int max_numbered_params_count);
-//	Hash& methods() { return fmethods; }
 	
 	void set_base(VClass& abase) {
 		// remember the guy
@@ -101,10 +107,11 @@ private:
 
 private: // Temp_method
 
-	void put_method(const String& name, Method *method) { fmethods.put(name, method); }
+	void put_method(const String& aname, Method *amethod);
 	
 private:
 
+	bool read_only;
 	VClass *fbase;
 	Hash ffields;
 	Hash fmethods;

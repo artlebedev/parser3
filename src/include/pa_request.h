@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.40 2001/03/12 09:08:47 paf Exp $
+	$Id: pa_request.h,v 1.41 2001/03/12 12:00:04 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -23,6 +23,7 @@
 
 #define ROOT_CLASS_NAME "ROOT"
 #define ENV_CLASS_NAME "ENV"
+#define TABLE_CLASS_NAME "table"
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \

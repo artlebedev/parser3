@@ -3,13 +3,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.4 2001/03/11 21:23:59 paf Exp $
+	$Id: pa_vdouble.h,v 1.5 2001/03/12 12:00:07 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#include "pa_value.h"
+#include "pa_vstateless_object.h"
 #include "pa_common.h"
 #include "_double.h"
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.11 2001/03/11 08:16:35 paf Exp $
+	$Id: pa_table.C,v 1.12 2001/03/12 12:00:06 paf Exp $
 */
 
 #include <stdlib.h>
@@ -11,15 +11,14 @@
 #include "pa_table.h"
 #include "pa_pool.h"
 
-Table::Table(Request& arequest, 
+Table::Table(Pool& apool, 
 			 char *afile, uint aline, 
 			 Array *acolumns, 
 			 int initial_rows) :
-	Array(arequest.pool(), initial_rows),
-	request(arequest),
+	Array(apool, initial_rows),
 	fcurrent(0),
 	fcolumns(acolumns), 
-	name2number(arequest.pool(), false) {
+	name2number(pool(), false) {
 #ifndef NO_STRING_ORIGIN
 	forigin.file=afile;
 	forigin.line=aline;
@@ -27,8 +26,7 @@ Table::Table(Request& arequest,
 
 	if(fcolumns)
 		for(int i=0; i<fcolumns->size(); i++) {
-			String name(arequest.pool());
-			name.APPEND(fcolumns->get_cstr(i), 0, 0, 0);
+			const String& name=*fcolumns->get_string(i);
 			name2number.put(name, i+1);
 		}
 }
@@ -43,14 +41,9 @@ const Array &Table::at(int index) {
 	return *static_cast<const Array *>(get(index));
 }
 
-const char *Table::item(int index) {
-	const Array& row=at(fcurrent);
-	return row.get_cstr(index);
-}
-
-const char *Table::item(const String& column_name) {
+const String *Table::item(const String& column_name) {
 	int column_index;
-	if(fcolumns) {
+	if(fcolumns) { // named
 		int found_index=name2number.get_int(column_name);
 		if(found_index)
 			column_index=found_index-1;
@@ -58,17 +51,11 @@ const char *Table::item(const String& column_name) {
 			THROW(0, 0,
 				&column_name, 
 				"column not found");
-	} else {
+	} else { // nameless
 		column_index=atoi(column_name.cstr());
 		const Array& row=at(fcurrent);
-		if(column_index<0 || column_index>=row.size())
-			return 0;
-		/*
-			request.exception().raise(0, 0,
-				&column_name, 
-				"table column index %d is out of range [0..%d]", 
-				column_index, row->size()-1);
-				*/
+		if(column_index<0 || column_index>=row.size()) // read past proper index?
+			return 0; // it's OK, just return nothing
 	}
 
 	return item(column_index);
