@@ -2,4 +2,3 @@
 #^throw[user;$a]
 @main[]
 /auto.p main
-

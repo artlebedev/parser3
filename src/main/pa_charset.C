@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.24 2002/06/28 09:59:01 paf Exp $
+	$Id: pa_charset.C,v 1.25 2002/07/30 14:09:23 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -191,7 +191,8 @@ void Charset::sort_ToTable() {
 }
 
 static XMLByte xlatOneTo(const XMLCh toXlat,
-						 const Charset::Tables& tables) {
+						 const Charset::Tables& tables,
+						 XMLByte not_found) {
     unsigned int    lowOfs = 0;
     unsigned int    hiOfs = tables.toTableSize - 1;
     XMLByte         curByte = 0;
@@ -210,7 +211,7 @@ static XMLByte xlatOneTo(const XMLCh toXlat,
 			return tables.toTable[midOfs].extCh;
 	} while(lowOfs+1<hiOfs);
 
-    return '?';
+    return not_found;
 }
 
 void Charset::transcode(Pool& pool,
@@ -413,9 +414,12 @@ static size_t transcodeFromUTF8(
         //  If it will fit into a single char, then put it in. Otherwise
         //  fail [*encode it as a surrogate pair. If its not valid, use the
         //  replacement char.*]
-        if(!(tmpVal & 0xFFFF0000))
-            *outPtr++= xlatOneTo(tmpVal, tables);
-		else
+        if(!(tmpVal & 0xFFFF0000)) {
+			if(XMLByte xlat=xlatOneTo(tmpVal, tables, 0))
+				*outPtr++=xlat;
+			else 
+				outPtr+=sprintf((char *)outPtr, "&#%d;", tmpVal); // &#decimal;
+		} else
 			throw Exception(0,
 				0,
 				"transcodeFromUTF8 error: too big tmpVal(0x%08X)", tmpVal);
@@ -434,7 +438,7 @@ static size_t transcodeFromUTF8(
 void Charset::transcodeToUTF8(Pool& pool,
 								 const void *source_body, size_t source_content_length,
 								 const void *& adest_body, size_t& dest_content_length) const {
-	dest_content_length=source_content_length*6/*so that surly enough*/;
+	dest_content_length=source_content_length*6/*so that surly enough, max utf8 seq len=6*/;
 	XMLByte *dest_body=(XMLByte*)pool.malloc(dest_content_length);
 
 	if(::transcodeToUTF8(
@@ -451,7 +455,7 @@ void Charset::transcodeToUTF8(Pool& pool,
 void Charset::transcodeFromUTF8(Pool& pool,
 								   const void *source_body, size_t source_content_length,
 								   const void *& adest_body, size_t& dest_content_length) const {
-	dest_content_length=source_content_length/*surly enough*/;
+	dest_content_length=source_content_length*6/*so that surly enough, "&#255;" has max ratio */;
 	XMLByte *dest_body=(XMLByte*)pool.malloc(dest_content_length);
 
 	if(::transcodeFromUTF8(
@@ -484,7 +488,7 @@ void Charset::transcodeToCharset(Pool& pool,
 		for(XMLByte* outPtr=dest_body; srcPtr<srcEnd; srcPtr++) {
 			XMLCh curVal = tables.fromTable[*srcPtr];
 			if(curVal) 
-				*outPtr++=xlatOneTo(curVal, dest_charset.tables);
+				*outPtr++=xlatOneTo(curVal, dest_charset.tables, '?');
 			else {
 				// use the replacement character
 				*outPtr++= '?';
