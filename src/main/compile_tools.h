@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.43 2001/07/25 08:16:21 parser Exp $
+	$Id: compile_tools.h,v 1.44 2001/07/25 11:16:57 parser Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -50,11 +50,12 @@ struct parse_control {
 #ifndef NO_CSTRING_ORIGIN
 	const char *source;
 	const char *file;
-	int line, col;
 #endif
+	int line, col;
 	//@}
 	//@{
 	/// @name state; initially
+	bool skipping_bof_empty_lines;
 	int pending_state; ///< i=0
 	String *string; ///< =new(pool) String(pool)
 	

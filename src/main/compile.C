@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: compile.C,v 1.42 2001/07/24 15:43:56 parser Exp $"; 
+static const char *RCSId="$Id: compile.C,v 1.43 2001/07/25 11:16:57 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_request.h"
@@ -48,6 +48,7 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 	pc.line=pc.col=0;
 #endif
 	// initialise state
+	pc.skipping_bof_empty_lines=true;
 	pc.pending_state=0;
 	pc.string=NEW String(pool());	
 	pc.ls=LS_USER;
