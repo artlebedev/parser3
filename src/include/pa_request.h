@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/01/21 15:51:11 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/03/11 08:53:03 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -34,7 +34,7 @@ static const char* IDENT_REQUEST_H="$Date: 2003/01/21 15:51:11 $";
 // consts
 
 #define MAIN_METHOD_NAME "main"
-const uint ANTI_ENDLESS_EXECUTE_RECOURSION=500;
+const uint ANTI_ENDLESS_EXECUTE_RECOURSION=1000;
 
 // defines
 
