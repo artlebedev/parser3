@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.72 2002/06/11 12:20:42 paf Exp $
+	$Id: parser3isapi.C,v 1.73 2002/06/11 14:14:16 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -49,6 +49,24 @@ const char **RCSIds[]={
 	parser3isapi_RCSIds,
 	0
 };
+
+const char *IIS51vars[]={
+	"APPL_MD_PATH", "APPL_PHYSICAL_PATH",
+	"AUTH_PASSWORD", "AUTH_TYPE", "AUTH_USER",
+	"CERT_COOKIE", "CERT_FLAGS", "CERT_ISSUER", "CERT_KEYSIZE", "CERT_SECRETKEYSIZE",
+	"CERT_SERIALNUMBER", "CERT_SERVER_ISSUER", "CERT_SERVER_SUBJECT", "CERT_SUBJECT",
+	"CONTENT_LENGTH", "CONTENT_TYPE",
+	"LOGON_USER",
+	"HTTPS", "HTTPS_KEYSIZE", "HTTPS_SECRETKEYSIZE", "HTTPS_SERVER_ISSUER", "HTTPS_SERVER_SUBJECT",
+	"INSTANCE_ID", 	"INSTANCE_META_PATH",
+	"PATH_INFO", 	"PATH_TRANSLATED",
+	"QUERY_STRING",
+	"REMOTE_ADDR", "REMOTE_HOST", "REMOTE_USER", "REQUEST_METHOD",
+	"SCRIPT_NAME",
+	"SERVER_NAME", "SERVER_PORT", "SERVER_PORT_SECURE", "SERVER_PROTOCOL", "SERVER_SOFTWARE",
+	"URL",
+};
+const int IIS51var_count=sizeof(IIS51vars)/sizeof(*IIS51vars);
 
 // globals
 
@@ -104,15 +122,19 @@ const char *SAPI::get_env(Pool& pool, const char *name) {
 
 	if(ctx.lpECB->GetServerVariable(ctx.lpECB->ConnID, const_cast<char *>(name), 
 		variable_buf, &variable_len)) {
-		variable_buf[variable_len]=0;
-		return variable_buf;
+		if(*variable_buf) { // saw returning len=1 && *buf=0 :(
+			variable_buf[variable_len]=0;
+			return variable_buf;
+		}
 	} else if (GetLastError()==ERROR_INSUFFICIENT_BUFFER) {
 		variable_buf=(char *)pool.malloc(variable_len+1);
 		
 		if(ctx.lpECB->GetServerVariable(ctx.lpECB->ConnID, const_cast<char *>(name), 
 			variable_buf, &variable_len)) {
-			variable_buf[variable_len]=0;
-			return variable_buf;
+			if(*variable_buf) {
+				variable_buf[variable_len]=0;
+				return variable_buf;
+			}
 		}
 	}
 		
@@ -135,24 +157,6 @@ static const char *mk_env_pair(Pool& pool, const char *key, const char *value) {
 	return result;
 }
 const char *const *SAPI::environment(Pool& pool) {
-	const char *IIS51vars[]={
-		"APPL_MD_PATH", "APPL_PHYSICAL_PATH",
-		"AUTH_PASSWORD", "AUTH_TYPE", "AUTH_USER",
-		"CERT_COOKIE", "CERT_FLAGS", "CERT_ISSUER", "CERT_KEYSIZE", "CERT_SECRETKEYSIZE",
-		"CERT_SERIALNUMBER", "CERT_SERVER_ISSUER", "CERT_SERVER_SUBJECT", "CERT_SUBJECT",
-		"CONTENT_LENGTH", "CONTENT_TYPE",
-		"LOGON_USER",
-		"HTTPS", "HTTPS_KEYSIZE", "HTTPS_SECRETKEYSIZE", "HTTPS_SERVER_ISSUER", "HTTPS_SERVER_SUBJECT",
-		"INSTANCE_ID", 	"INSTANCE_META_PATH",
-		"PATH_INFO", 	"PATH_TRANSLATED",
-		"QUERY_STRING",
-		"REMOTE_ADDR", "REMOTE_HOST", "REMOTE_USER", "REQUEST_METHOD",
-		"SCRIPT_NAME",
-		"SERVER_NAME", "SERVER_PORT", "SERVER_PORT_SECURE", "SERVER_PROTOCOL", "SERVER_SOFTWARE",
-		"URL",
-	};
-	const int IIS51var_count=sizeof(IIS51vars)/sizeof(*IIS51vars);
-
 	// we know this buf is writable
 	char *all_http_vars=const_cast<char *>(SAPI::get_env(pool, "ALL_HTTP"));
 	const int http_var_count=grep_char(all_http_vars, '\n')+1/*\n for theoretical(never saw) this \0*/;

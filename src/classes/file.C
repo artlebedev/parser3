@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.82 2002/06/11 12:20:41 paf Exp $
+	$Id: file.C,v 1.83 2002/06/11 14:14:15 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -22,11 +22,55 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-// consts
-
 // defines
 
 #define TEXT_MODE_NAME "text"
+
+// consts
+
+/// from apache-1.3|src|support|suexec.c 
+static const char *suexec_safe_env_lst[]={
+    "AUTH_TYPE",
+    "CONTENT_LENGTH",
+    "CONTENT_TYPE",
+    "DATE_GMT",
+    "DATE_LOCAL",
+    "DOCUMENT_NAME",
+    "DOCUMENT_PATH_INFO",
+    "DOCUMENT_ROOT",
+    "DOCUMENT_URI",
+    "FILEPATH_INFO",
+    "GATEWAY_INTERFACE",
+    "LAST_MODIFIED",
+    "PATH_INFO",
+    "PATH_TRANSLATED",
+    "QUERY_STRING",
+    "QUERY_STRING_UNESCAPED",
+    "REMOTE_ADDR",
+    "REMOTE_HOST",
+    "REMOTE_IDENT",
+    "REMOTE_PORT",
+    "REMOTE_USER",
+    "REDIRECT_QUERY_STRING",
+    "REDIRECT_STATUS",
+    "REDIRECT_URL",
+    "REQUEST_METHOD",
+    "REQUEST_URI",
+    "SCRIPT_FILENAME",
+    "SCRIPT_NAME",
+    "SCRIPT_URI",
+    "SCRIPT_URL",
+    "SERVER_ADMIN",
+    "SERVER_NAME",
+    "SERVER_ADDR",
+    "SERVER_PORT",
+    "SERVER_PROTOCOL",
+    "SERVER_SOFTWARE",
+    "UNIQUE_ID",
+    "USER_NAME",
+    "TZ",
+    NULL
+};
 
 // class
 
@@ -145,11 +189,22 @@ static void _stat(Request& r, const String& method_name, MethodParams *params) {
 	ff.put(*new(pool) String(pool, "cdate"), new(pool) VDate(pool, ctime));
 }
 
+static bool is_safe_env_key(const char *key) {
+	if(strncmp(key, "HTTP_", 5)==0)
+		return true;
+	if(strncmp(key, "CGI_", 4)==0)
+		return true;
+	for(int i=0; suexec_safe_env_lst[i]; i++) {
+		if(strncmp(key, suexec_safe_env_lst[i], strlen(suexec_safe_env_lst[i]))==0)
+			return true;
+	}
+	return false;
+}
 static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) {
 	Hash& hash=*static_cast<Hash *>(info);
-	hash.put(key, &static_cast<Value *>(value)->as_string());
+	if(is_safe_env_key(key.cstr()))
+		hash.put(key, &static_cast<Value *>(value)->as_string());
 }
-
 static void pass_cgi_header_attribute(Array::Item *value, void *info) {
 	String& string=*static_cast<String *>(value);
 	Hash& hash=*static_cast<Hash *>(info);
@@ -159,7 +214,6 @@ static void pass_cgi_header_attribute(Array::Item *value, void *info) {
 		new(string.pool()) VString(string.mid(colon_pos+1, string.size())));
 }
 /** @todo fix `` in perl - they produced flipping consoles and no output to perl
-	@test EPASS, ECSTR [touched them when optimized hash]
 */
 static void _exec_cgi(Request& r, const String& method_name, MethodParams *params,
 					  bool cgi) {
@@ -178,25 +232,6 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			env.put(name##key, &name##value); \
 		}
 	// passing SAPI::environment
-	/*
-	#define EPASS(name) \
-		String name##key(pool, #name); \
-		String name##value(pool); \
-		if(const char *value_cstr=SAPI::get_env(pool, #name)) { \
-			name##value.APPEND_CONST(value_cstr); \
-			env.put(name##key, &name##value); \
-		}
-
-	EPASS(SERVER_PROTOCOL);
-	EPASS(SERVER_NAME);
-	EPASS(SERVER_PORT);
-	EPASS(REMOTE_ADDR);
-	EPASS(REMOTE_HOST);
-	EPASS(REMOTE_USER);
-	EPASS(HTTP_REFERER);
-	EPASS(HTTP_USER_AGENT);
-	EPASS(HTTP_COOKIE);
-	*/
 	if(const char *const *pairs=SAPI::environment(pool)) {
 		while(const char *pair=*pairs++)
 			if(const char *eq_at=strchr(pair, '=')) {
