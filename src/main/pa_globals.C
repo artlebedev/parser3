@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.131 2002/06/24 11:59:32 paf Exp $
+	$Id: pa_globals.C,v 1.132 2002/06/24 13:06:39 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -458,7 +458,7 @@ void pa_globals_init(Pool& pool) {
 }
 
 #if defined(XML) && defined(_MSC_VER)
-#	define GNOME_LIBS "/parser3project/win32/gnome"
+#	define GNOME_LIBS "/parser3project/win32xml/win32/gnome"
 #	pragma comment(lib, GNOME_LIBS "/glib/lib/libglib-1.3-11.lib")
 #	ifdef _DEBUG
 #		pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/dsp/libxml2_so_debug/libxml2.lib")

@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "PARSER3ISAPI_EXPORTS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\..\..\..\sql" /I "..\..\..\..\include" /I "..\..\..\.." /I "..\..\..\..\types" /I "..\..\..\..\classes" /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\lib\pcre" /I "\parser3project\win32\xml\glib\include" /I "\parser3project\win32\xml\glib\include\glib" /I "\parser3project\win32\xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32\xml\libxml2-x.x.x\include" /I "\parser3project\win32\xml\libxslt-x.x.x" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\..\..\..\sql" /I "..\..\..\..\include" /I "..\..\..\.." /I "..\..\..\..\types" /I "..\..\..\..\classes" /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\lib\pcre" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\libxml2-x.x.x\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /D "WIN32" /FD /TP /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
@@ -76,7 +76,7 @@ PostBuild_Cmds=CD \parser3project\win32\tools	istart
 # PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "PARSER3ISAPI_EXPORTS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\lib\pcre" /I "\parser3project\win32\xml\glib\include" /I "\parser3project\win32\xml\glib\include\glib" /I "\parser3project\win32\xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32\xml\libxml2-x.x.x\include" /I "\parser3project\win32\xml\libxslt-x.x.x" /D "_DEBUG" /D "WIN32" /D "_WINDLL" /D "_AFXDLL" /FD /GZ /TP /c
+# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\lib\pcre" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\libxml2-x.x.x\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /D "_DEBUG" /D "WIN32" /D "_WINDLL" /D "_AFXDLL" /FD /GZ /TP /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
