@@ -11,7 +11,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "pa_exception.h"
 #include "compile_tools.h"
 
 int real_yyerror (parse_control *pc, char *s);
@@ -115,9 +114,8 @@ constructor_two_params_value: STRING ';' constructor_one_param_value {
 		OP($$, OP_MODIFY_EVAL);
 		break;
 	default:
-		PC->pool->exception().raise(0,0, 
-			operator_or_fmtS, 
-			"invalid modification operator");
+		strcpy(PC->error, "invalid modification operator");
+		YYERROR;
 	}
 	/* stack: ncontext name value */
 };
@@ -520,11 +518,8 @@ break2:
 int real_yyerror (parse_control *pc, char *s)  /* Called by yyparse on error */
      {
        fprintf (stderr, "[%s]\n", s);
-	   
-		pc->exception->raise(0,0,
-			0,
-			"%s @%s[%d:%d]", s, pc->file, pc->line, pc->col-1);
-		// never returns
+
+	   s[MAX_STRING-1]=0; strcpy(pc->error, s);
 	   return 1;
      }
 

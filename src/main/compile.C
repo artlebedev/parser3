@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.5 2001/02/21 07:19:40 paf Exp $
+  $Id: compile.C,v 1.6 2001/02/21 07:31:41 paf Exp $
 */
 
 #include "pa_string.h"
@@ -24,7 +24,6 @@ Array *real_compile(COMPILE_PARAMS) {
 	struct parse_control pc;
 	/* input */
 	pc.pool=&pool;
-	pc.exception=&request.exception();
 	pc.source=source;
 #ifndef NO_STRING_ORIGIN
 	pc.file=file;
@@ -36,7 +35,10 @@ Array *real_compile(COMPILE_PARAMS) {
 	pc.ls=LS_USER;
 	pc.sp=0;
 	/* parse! */
-	yyparse(&pc);
+	if(yyparse(&pc)) // parse, error?
+		request.exception().raise(0,0,
+			0,
+			"%s @%s[%d:%d]", pc.error, file, pc.line, pc.col-1);
 	
 	/* result */
 	return pc.result;
