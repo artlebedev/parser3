@@ -1,6 +1,5 @@
-if WITHOUT_APACHE13
-#don't compile apache
-SUBDIRS =
-else
+if COMPILE_APACHE13_MODULE
 SUBDIRS = modules
+else
+#don't compile apache
 endif
