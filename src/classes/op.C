@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.23 2001/05/21 17:17:11 parser Exp $
+	$Id: op.C,v 1.24 2001/05/22 09:23:00 parser Exp $
 */
 
 #include "classes.h"
@@ -52,9 +52,9 @@ static void _if(Request& r, const String&, MethodParams *params) {
 		0/*no name*/,
 		false/*don't intercept string*/).as_bool();
 	if(condition)
-		r.write_pass_lang(r.process(params->get(1)));
+		r.write_pass_lang(r.process(params->get_junction(1, "then parameter must be code")));
 	else if(params->size()==3)
-		r.write_pass_lang(r.process(params->get(2)));
+		r.write_pass_lang(r.process(params->get_junction(2, "else parameter must be code")));
 }
 
 static void _untaint(Request& r, const String& method_name, MethodParams *params) {
