@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char * const IDENT_VXNODE_H="$Date: 2003/11/20 16:34:30 $";
+static const char * const IDENT_VXNODE_H="$Date: 2003/11/24 12:04:58 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -50,6 +50,9 @@ public: // Value
 	/// VXnode: $CLASS,$method, fields
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 
+	/// VXnode: $nodeValue
+	override bool put_element(const String& aname, Value* avalue, bool /*replace*/);
+
 public: // usage
 
 	VXnode(Request_charsets* acharsets, GdomeNode* anode) : 
@@ -64,17 +67,7 @@ public: // usage
 	}
 
 public: // VXnode
-/*
-	void set_node(Request_charsets* acharsets, GdomeNode* anode) { 
-		fcharsets=acharsets;
 
-		GdomeException exc;
-		if(fnode)			
-			gdome_n_unref(fnode, &exc);
-
-		gdome_n_ref(fnode=anode, &exc);
-	}
-*/
 	virtual GdomeNode* get_node() { 
 		if(!fnode)
 			throw Exception(0,

@@ -782,6 +782,8 @@ xdoc(xnode)
     DOM1 attributes:
     !$node.nodeName
     !$node.nodeValue
+    	!read
+    	!write
     !$node.nodeType = int
       ELEMENT_NODE                   = 1 
       ATTRIBUTE_NODE                 = 2 

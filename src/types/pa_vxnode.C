@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXNODE_C="$Date: 2003/11/20 17:40:06 $";
+static const char * const IDENT_VXNODE_C="$Date: 2003/11/24 12:04:58 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -16,8 +16,8 @@ static const char * const IDENT_VXNODE_C="$Date: 2003/11/20 17:40:06 $";
 #include "pa_vhash.h"
 #include "pa_request_charsets.h"
 #include "pa_charset.h"
+#include "pa_xml_exception.h"
 
-/// @todo strdup properties [now can be: $nodeName[$xdoc.nodeName], free(xdoc), >>print $nodeName<<GPF
 Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) { 
 	// $CLASS,$method
 	if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
@@ -143,4 +143,22 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 	return bark("%s field not found", &aname);
 }
 
+bool VXnode::put_element(const String& aname, Value* avalue, bool /*replace*/)
+{ 
+	GdomeNode* selfNode=get_node();
+	GdomeException exc;
+
+	if(aname=="nodeValue") {
+		gdome_n_set_nodeValue(selfNode, 
+			fcharsets->source().transcode(avalue->as_string()).use(), 
+			&exc);
+		if(exc)
+			throw XmlException(&aname, exc);
+
+		return true;
+	}
+
+	bark("element can not be stored to %s (field is read only)", &aname);
+	return false;
+}
 #endif
