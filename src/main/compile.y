@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.42 2001/02/25 10:11:50 paf Exp $
+  $Id: compile.y,v 1.43 2001/02/25 10:22:34 paf Exp $
 */
 
 %{
@@ -149,12 +149,9 @@ get: '$' get_name {
 	$$=$2; /* stack: resulting value */
 	OP($$, OP_WRITE); /* value=pop; write(value) */
 };
-
-get_name: get_name_before_EON EON | name_in_curly_rdive;
-get_name_before_EON: name_without_curly_rdive | class_element;
-
+get_name: name_without_curly_rdive EON | name_in_curly_rdive;
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
-name_without_curly_rdive: name_without_curly_rdive_read | name_without_curly_rdive_root;
+name_without_curly_rdive: class_element | name_without_curly_rdive_read | name_without_curly_rdive_root;
 name_without_curly_rdive_read: name_without_curly_rdive_code {
 	$$=N(POOL); 
 	Array *diving_code=$1;
@@ -184,7 +181,7 @@ put: '$' name_expr_wdive '(' constructor_value ')' {
 	P($$, $4); /* stack: context,name,constructor_value */
 	OP($$, OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 };
-name_expr_wdive: name_expr_wdive_write | name_expr_wdive_root;
+name_expr_wdive: class_element | name_expr_wdive_write | name_expr_wdive_root;
 name_expr_wdive_write: name_expr_dive_code {
 	$$=N(POOL); 
 	Array *diving_code=$1;
@@ -253,7 +250,7 @@ call: '^' call_name store_params EON { /* ^field.$method{vasya} */
 	OP($$, OP_CALL); /* method_frame=pop; ncontext=pop; call(ncontext,method_frame) */
 };
 
-call_name: name_without_curly_rdive | class_element;
+call_name: name_without_curly_rdive;
 
 store_params: store_param | store_params store_param { $$=$1; P($$, $2) };
 store_param: store_round_param | store_curly_param;
