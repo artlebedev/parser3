@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SMTP_H="$Date: 2004/02/25 11:14:22 $";
+static const char * const IDENT_SMTP_H="$Date: 2004/02/27 10:32:45 $";
 
 
 #include "pa_string.h"
@@ -97,7 +97,8 @@ int PASCAL closesocket(SOCKET);
 #define ERR_CLOSING			4012
 #define WAIT_A_BIT			4013
 
-#define MAXOUTLINE 255
+/// must be >=SOCKET_BUFFER_SIZE, thanks to Lev Walkin <vlm@netli.com> for pointing that out
+#define MAXOUTLINE (SOCKET_BUFFER_SIZE*2)
 
 //////////////////////////////////////////////////////////////////////////////
 
