@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/04/04 09:42:04 $";
+static const char* IDENT_MATH_C="$Date: 2003/04/14 14:59:29 $";
 
 #include "pa_common.h"
 #include "pa_vint.h"
@@ -153,7 +153,9 @@ static void _crypt(Request& r, const String& method_name, MethodParams *params) 
 		const size_t sample_size=120;
 		char *sample_buf=(char *)pool.malloc(sample_size);
 		pa_MD5Encode((const unsigned char *)password,
-				(const unsigned char *)normal_salt, sample_buf, sample_size);
+			(const unsigned char *)normal_salt, 1/*TRUE: mix in magic string*/,
+			sample_buf, sample_size,
+			0, 0);
 		r.write_pass_lang(*new(pool) String(pool, sample_buf));
     } else {
 #ifdef HAVE_CRYPT
@@ -172,6 +174,27 @@ static void _crypt(Request& r, const String& method_name, MethodParams *params) 
 			"salt must start with '" PA_MD5PW_ID "'");
 #endif
 	}
+}
+
+static void _md5(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	const char *string=params->as_string(0, "parameter must be string").cstr();
+	const size_t sample_size=120;
+	char sample_buf[sample_size];
+	const int sample_bytes_count=12;
+	unsigned char sample_bytes[sample_bytes_count];
+	pa_MD5Encode((const unsigned char *)string,
+		(const unsigned char *)"",  0/*FALSE: mix in magic string*/,
+		sample_buf, sample_size,
+		sample_bytes, sample_bytes_count);
+	char *sample_bytes_hex=(char *)pool.malloc(sample_bytes_count*2/*byte->hh*/+1/*for zero-teminator*/);
+	unsigned char *src=sample_bytes;
+	unsigned char *end=sample_bytes+sample_bytes_count;
+	char *dest=sample_bytes_hex;
+	while(src<end)
+		dest+=snprintf(dest, 3, "%02x", *src++);
+
+	r.write_pass_lang(*new(pool) String(pool, sample_bytes_hex));
 }
 
 // constructor
@@ -200,6 +223,9 @@ MMath::MMath(Pool& apool) : Methoded(apool, "math") {
 
 	// ^crypt[password;salt]
 	ADD2(crypt);
+
+	// ^md5[string]
+	ADD1(md5);
 }
 
 // in MSVC each thread has it's own pseudo-random sequence

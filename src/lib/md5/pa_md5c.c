@@ -107,7 +107,7 @@
  * ----------------------------------------------------------------------------
  */
 
-static const char* IDENT_MD5_C="$Date: 2003/01/21 15:51:12 $";
+static const char* IDENT_MD5_C="$Date: 2003/04/14 14:59:29 $";
 
 #include <string.h>
 
@@ -120,7 +120,7 @@ static const char* IDENT_MD5_C="$Date: 2003/01/21 15:51:12 $";
 //#include <crypt.h>
 //#endif
 
-#define pa_pa_cpystrn(strDest, strSource, count) strncpy(strDest, strSource, count)
+#define pa_cpystrn(strDest, strSource, count) strncpy(strDest, strSource, count)
 
 /* Constants for MD5Transform routine.
  */
@@ -439,8 +439,9 @@ PA_API_EXPORT(void) pa_to64(char *s, unsigned long v, int n)
 }
 
 PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *pw,
-			      const unsigned char *salt,
-			      char *result, size_t nbytes)
+			      const unsigned char *salt, int mix_in_magic_string,
+			      char* result_base64, size_t result_base64_size,
+			      unsigned char* result_raw, size_t result_raw_size)
 {
     /*
      * Minimum size is 8 bytes for salt, plus 1 for the trailing NUL,
@@ -495,10 +496,12 @@ PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *pw,
      */
     pa_MD5Update(&ctx, pw, pwlen);
 
-    /*
-     * Then our magic string
-     */
-    pa_MD5Update(&ctx, (const unsigned char *) PA_MD5PW_ID, PA_MD5PW_IDLEN);
+    if(mix_in_magic_string) {
+	    /*
+	     * Then our magic string
+	     */
+	    pa_MD5Update(&ctx, (const unsigned char *) PA_MD5PW_ID, PA_MD5PW_IDLEN);
+    }
 
     /*
      * Then the raw salt
@@ -538,8 +541,8 @@ PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *pw,
      * Now make the output string.  We know our limitations, so we
      * can use the string routines without bounds checking.
      */
-    pa_pa_cpystrn(passwd, PA_MD5PW_ID, PA_MD5PW_IDLEN + 1);
-    pa_pa_cpystrn(passwd + PA_MD5PW_IDLEN, (char *)sp, sl + 1);
+    pa_cpystrn(passwd, PA_MD5PW_ID, PA_MD5PW_IDLEN + 1);
+    pa_cpystrn(passwd + PA_MD5PW_IDLEN, (char *)sp, sl + 1);
     passwd[PA_MD5PW_IDLEN + sl]     = '$';
     passwd[PA_MD5PW_IDLEN + sl + 1] = '\0';
 
@@ -585,10 +588,13 @@ PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *pw,
     l =                    final[11]                ; pa_to64(p, l, 2); p += 2;
     *p = '\0';
 
+    pa_cpystrn(result_base64, passwd, result_base64_size - 1);
+    if(result_raw)
+	memcpy(result_raw, final, result_raw_size);
+
     /*
      * Don't leave anything around in vm they could use.
      */
     memset(final, 0, sizeof(final));
-
-    pa_pa_cpystrn(result, passwd, nbytes - 1);
+    
 }
