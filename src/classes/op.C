@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.60 2001/11/19 12:17:05 paf Exp $
+	$Id: op.C,v 1.61 2001/11/22 12:13:43 paf Exp $
 */
 
 #include "classes.h"
@@ -121,11 +121,11 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 		
 		// evaluate source to process
 		const String& source=
-			r.process(params->as_no_junction(0, "body must be string")).as_string();
+			r.process(params->as_junction(0, "body must be code")).as_string();
 
 		// process source code, append processed methods to 'self' class
 		// maybe-define new @main
-		r.use_buf(source.cstr(), place, &self_class);
+		r.use_buf(source.cstr(String::UL_UNSPECIFIED), place, &self_class);
 		
 		// maybe-execute @main[]
 		if(const Method *method=self_class.get_method(*main_method_name)) {

@@ -1,5 +1,5 @@
 @main[]
-$ORIGINS(1)
+#$ORIGINS(1)
 #$t[^table::set{a b} ^table::set{c d}]
 #^ttaintuntaint[]
 #^tappend2[]
@@ -602,7 +602,7 @@ $a.status|$a.stderr<hr>
 @fori[][i]
 ^for[i](1;3){... =$i= ...}
 
-@xdata[]
+@xdata0[]
 #$response:content-type[$.value[text/html] $.charset[windows-1251]]
 $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 <!--DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd"-->
@@ -615,6 +615,20 @@ $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 	   	</man>
 </people>
 }]
+
+@xdata[]
+#$response:content-type[$.value[text/html] $.charset[windows-1251]]
+$xdoc[^xdoc::set{^process{^taint[&]<?xml version="1.0" encoding="windows-1251"?>
+<!--DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd"-->
+<people>
+	<man id="1" имя="word слово">
+		<name>P&#171^;AF	B</name>
+	</man>
+	   	<man id="2">
+            <name>ПИФ^taint[&]</name>
+	   	</man>
+</people>
+}}]
 
 @xml[]
 ^xdata[]
