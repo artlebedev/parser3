@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.32 2001/08/27 15:47:13 parser Exp $
+	$Id: image.C,v 1.33 2001/08/28 14:39:50 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.32 2001/08/27 15:47:13 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.33 2001/08/28 14:39:50 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -111,8 +111,16 @@ struct JPG_Size_segment_body {
 
 //
 
-inline short big_endian_to_int(unsigned char chars[2]) {
-	return(short)((chars[0]<<8) + chars[1]);
+inline short x_endian_to_int(unsigned char L, unsigned char H) {
+	return(short)((H<<8) + L);
+}
+
+inline short big_endian_to_int(unsigned char b[2]) {
+	return x_endian_to_int(b[1], b[0]);
+}
+
+inline short little_endian_to_int(unsigned char b[2]) {
+	return x_endian_to_int(b[0], b[1]);
 }
 
 void measure_gif(Pool& pool, const String *origin_string, 
@@ -131,8 +139,8 @@ void measure_gif(Pool& pool, const String *origin_string,
 			origin_string, 
 			"bad image file - GIF signature not found");	
 
-	width=big_endian_to_int(head->width);
-	height=big_endian_to_int(head->height);
+	width=little_endian_to_int(head->width);
+	height=little_endian_to_int(head->height);
 }
 
 void measure_jpeg(Pool& pool, const String *origin_string, 
