@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.2 2001/01/30 13:07:31 paf Exp $
+  $Id: parser.C,v 1.3 2001/01/30 13:43:43 paf Exp $
 */
 
 #include <stdio.h>
@@ -79,43 +79,50 @@ int main(int argc, char *argv[]) {
 		Exception operator_exception;
 		Local_request_exception subst(request, operator_exception);
 		if(EXCEPTION_TRY(request.exception())) {
+			/*
 			Array acolumns(request.pool());
 			acolumns+="id";
 			acolumns+="name";
 			acolumns+="age";
-			Table named_table(request, "_file.cfg", 1, &acolumns);
+			Table table(request, "_file.cfg", 1, &acolumns);
+			*/
+			Table table(request, "_file.cfg", 1, 0);
 			for(int n=1; n<=5; n++) {
-				Array& row=request.pool().make_array(named_table.columns()->size());
+				Array& row=request.pool().make_array(3/*table.columns()->size()*/);
 				char *buf=static_cast<char *>(request.pool().malloc(MAX_STRING));
 				row+=itoa(n, buf);
 				row+="paf";
 				row+="99";
 				
-				named_table+=&row;
+				table+=&row;
 			}
-			
-			for(int i=0; i<named_table.columns()->size(); i++) 
-				printf("%s\t", named_table.columns()->get_cstr(i));
+			/*
+			for(int i=0; i<table.columns()->size(); i++) 
+				printf("%s\t", table.columns()->get_cstr(i));
 			printf("\n");
-			for(named_table.set_current(0); named_table.get_current()<named_table.size(); named_table.inc_current()) {
+			*/
+			for(table.set_current(0); table.get_current()<table.size(); table.inc_current()) {
 				String line(request.pool());
-				for(int i=0; i<named_table.columns()->size(); i++) {
-					//String name(request.pool());
-					//char *buf=static_cast<char *>(request.pool().malloc(MAX_STRING));
-					//name.APPEND(itoa(i, buf), "names file", 0);
+				for(int i=0; i<5/*table.columns()->size()*/; i++) {
+					/**/
+					String name(request.pool());
+					char *buf=static_cast<char *>(request.pool().malloc(MAX_STRING));
+					name.APPEND(itoa(i, buf), "names file", 0);
 					//name.APPEND("id", "names file", 0);
-					//named_table.read_item(line, name);
-					const char *cstr_name=named_table.columns()->get_cstr(i);
+					table.read_item(line, name);
+					/*
+					const char *cstr_name=table.columns()->get_cstr(i);
 					String name(request.pool());
 					name.APPEND(cstr_name, 0, 0);
-					named_table.read_item(line, name);
+					table.read_item(line, name);
+					/**/
 					line.APPEND("\t", 0, 0);
 				}
 				printf("%s\n", line.cstr());
 			}
 		} else {
-			printf("operator_error occured: \n");
 			Exception& e=request.exception();
+			printf("operator_error occured: %s\n", e.comment());
 			const String *type=e.type();
 			if(type) {
 				printf("  type: %s", type->cstr());
@@ -127,11 +134,10 @@ int main(int argc, char *argv[]) {
 			const String *problem_source=e.problem_source();
 			if(problem_source) {
 				const Origin& origin=problem_source->origin();
-				printf("  origin: '%s', file '%s', line %d\n", 
+				printf("  '%s' [%s:%d]\n", 
 					problem_source->cstr(),
 					origin.file, origin.line);
 			}
-			printf("  comment: %s\n", e.comment());
 		}
 	} else {
 		printf("fatal exception occured: %s\n", fatal_exception.comment());

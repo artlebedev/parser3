@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.18 2001/01/30 13:07:31 paf Exp $
+  $Id: pa_pool.h,v 1.19 2001/01/30 13:43:42 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -62,7 +62,7 @@ protected:
 		if(!ptr)
 			fexception.raise(0, 0,
 				0,
-				"allocating %ud bytes", size);
+				"Pool::_alloc(%u) returned NULL", size);
 		
 		return ptr;
 	}

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_table.h,v 1.6 2001/01/30 13:07:31 paf Exp $
+  $Id: pa_table.h,v 1.7 2001/01/30 13:43:43 paf Exp $
 */
 
 /*
@@ -54,7 +54,7 @@ protected:
 	// columns
 	Array *fcolumns;
 
-	const Array *at(int index);
+	const Array& at(int index);
 
 	const char *item(int column_index);
 	const char *item(const String& column_name);

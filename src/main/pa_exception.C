@@ -1,5 +1,5 @@
 /*
-  $Id: pa_exception.C,v 1.2 2001/01/30 13:07:31 paf Exp $
+  $Id: pa_exception.C,v 1.3 2001/01/30 13:43:43 paf Exp $
 */
 
 #include <stdio.h>
@@ -7,19 +7,6 @@
 
 #include "pa_exception.h"
 #include "pa_common.h"
-
-Exception::Exception()/* : 
-	ftype(0),
-	fcode(0),
-	fproblem_source(0),
-	fcomment("")*/ {
-}
-
-void Exception::die(char *acomment) {
-	// FIX: log(LOG_ERROR, acomment)
-	fprintf(stderr, "die: %s\n", acomment);
-	exit(1);
-}
 
 void Exception::raise(const String *atype, const String *acode,
 					  const String *aproblem_source, 

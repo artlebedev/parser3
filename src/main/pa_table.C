@@ -1,5 +1,5 @@
 /*
-  $Id: pa_table.C,v 1.6 2001/01/30 13:07:31 paf Exp $
+  $Id: pa_table.C,v 1.7 2001/01/30 13:43:43 paf Exp $
 */
 
 #include <stdlib.h>
@@ -29,19 +29,19 @@ Table::Table(Request& arequest,
 		}
 }
 
-const Array *Table::at(int index) {
+const Array &Table::at(int index) {
 	if(index<0 || index>=size())
 		request.exception().raise(0, 0, 
 			0,
-			"table column index %d is out of range [0..%d]", 
+			"table row index %d is out of range [0..%d]", 
 			index, size()-1);
 	
-	return static_cast<const Array *>(get(index));
+	return *static_cast<const Array *>(get(index));
 }
 
 const char *Table::item(int index) {
-	const Array *row=at(fcurrent);
-	return row->get_cstr(index);
+	const Array& row=at(fcurrent);
+	return row.get_cstr(index);
 }
 
 const char *Table::item(const String& column_name) {
@@ -56,14 +56,16 @@ const char *Table::item(const String& column_name) {
 				"column not found");
 	} else {
 		column_index=atoi(column_name.cstr());
-		const Array *row=at(fcurrent);
-		if(column_index<0 || column_index>=row->size())
+		const Array& row=at(fcurrent);
+		if(column_index<0 || column_index>=row.size())
+			return 0;
+		/*
 			request.exception().raise(0, 0,
 				&column_name, 
 				"table column index %d is out of range [0..%d]", 
 				column_index, row->size()-1);
+				*/
 	}
 
 	return item(column_index);
 }
-
