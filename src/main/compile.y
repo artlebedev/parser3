@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.29 2001/02/24 08:28:37 paf Exp $
+  $Id: compile.y,v 1.30 2001/02/24 08:43:52 paf Exp $
 */
 
 %{
@@ -125,12 +125,6 @@ name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; 
 /* put */
 
 put: '$' name_expr_wdive '(' constructor_value ')' {
-/*
-	TODO: подсмотреть в $3, и если там первым элементом self,
-		то выкинуть его и делать не WITH_WRITE, а WITH_SELF
-		если ничего не осталось - $self(xxx)
-			обругать
-*/
 	$$=$2; /* stack: context,name */
 	P($$, $4); /* stack: context,name,constructor_value */
 	OP($$, OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
@@ -284,8 +278,13 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 /* basics */
 
 write_str_literal: STRING {
-	$$=$1;
-	OP($$, OP_WRITE);
+	if(LA2S($1)->size()) {
+		$$=$1;
+		OP($$, OP_WRITE);
+	} else {
+		// optimized case of special end of macro. see yylex
+		$$=N(POOL);
+	}
 };
 empty_value: empty {
 	$$=$1;
@@ -621,8 +620,10 @@ break2:
 		// strip last \n before LS_DEF_NAME or EOF
 		if((c=='@' || c==0) && end[-1]=='\n')
 			end--;
-		// append last piece
-		PC->string->APPEND(begin, end-begin, PC->file, begin_line/*, start_col*/);
+		if(end!=begin) {
+			// append last piece
+			PC->string->APPEND(begin, end-begin, PC->file, begin_line/*, start_col*/);
+		}
 		// create STRING value: array of OP_VALUE+vstring
 		*lvalp=L(NEW VString(PC->string));
 		// new pieces storage
