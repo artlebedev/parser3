@@ -1,6 +1,6 @@
 SUBDIRS = gd
 
-INCLUDES = -I../types -I../sql -I../pcre -Igd -Ixalan-patched @XML_INCLUDES@ @DB2_INCLUDES@
+INCLUDES = -I../types -I../sql -I../pcre -Igd @XML_INCLUDES@ @DB2_INCLUDES@
 
 noinst_LIBRARIES = libclasses.a
 libclasses_a_SOURCES = double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C hashfile.C ident.C classes.C
