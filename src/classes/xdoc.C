@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.60 2002/01/14 18:26:56 paf Exp $
+	$Id: xdoc.C,v 1.61 2002/01/15 13:18:42 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -22,6 +22,7 @@ extern "C" {
 #include "gdomecore/gdome-xml-document.h"
 };
 #include "libxslt/transform.h"
+#include "libxslt/xsltutils.h"
 
 // defines
 
@@ -46,6 +47,43 @@ public: // Methoded
 	bool used_directly() { return true; }
 	void configure_admin(Request& r);
 };
+
+// helper classes
+
+class xmlOutputBuffer_auto_ptr {
+public:
+	explicit xmlOutputBuffer_auto_ptr(xmlOutputBuffer *_P = 0) 
+		: _Owns(_P != 0), _Ptr(_P) {}
+	xmlOutputBuffer_auto_ptr(const xmlOutputBuffer_auto_ptr& _Y) 
+		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
+	xmlOutputBuffer_auto_ptr& operator=(const xmlOutputBuffer_auto_ptr& _Y) 
+		{if (this != &_Y)
+			{if (_Ptr != _Y.get())
+				{if (_Owns && _Ptr)
+					xmlOutputBufferClose(_Ptr);
+				_Owns = _Y._Owns; }
+			else if (_Y._Owns)
+				_Owns = true;
+			_Ptr = _Y.release(); }
+		return (*this); }
+	~xmlOutputBuffer_auto_ptr()
+		{if (_Owns && _Ptr)
+			xmlOutputBufferClose(_Ptr); }
+	xmlOutputBuffer& operator*() const 
+		{return (*get()); }
+	xmlOutputBuffer *operator->() const 
+		{return (get()); }
+	xmlOutputBuffer *get() const 
+		{return (_Ptr); }
+	xmlOutputBuffer *release() const 
+		{((xmlOutputBuffer_auto_ptr *)this)->_Owns = false;
+		return (_Ptr); }
+private:
+	bool _Owns;
+	xmlOutputBuffer *_Ptr;
+};
+
+
 
 // methods
 
@@ -323,7 +361,7 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	GdomeDocument *document=gdome_di_createDocFromMemory(domimpl,
 		xml.cstr(String::UL_UNSPECIFIED, r.connection),
 		GDOME_LOAD_PARSING
-		/* GDOME_LOAD_VALIDATING */ 
+		/* GDOME_LOAD_VALIDATING  pending until kill warning of no-dtd*/ 
 		/*|GDOME_LOAD_SUBSTITUTE_ENTITIES */,
 		&exc);
 	if(!document || exc)
@@ -347,7 +385,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	GdomeDocument *document=gdome_di_createDocFromURI(domimpl,
 		uri.cstr(),
 		GDOME_LOAD_PARSING
-		/*GDOME_LOAD_VALIDATING */ 
+		/* GDOME_LOAD_VALIDATING  pending until kill warning of no-dtd*/ 
 		/*|GDOME_LOAD_SUBSTITUTE_ENTITIES */,
 		&exc);
 	if(!document || exc)
@@ -359,15 +397,12 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	vdoc.set_document(document);
 }
 
-/*
 static void param_option_over_output_option(Pool& pool, 
 											Hash *param_options, const char *option_name,
-											XalanDOMString& output_option) {
-	if(Value *value=static_cast<Value *>(param_options->get(*new(pool) 
-		String(pool, option_name)))) {
-		output_option.clear();
-		output_option.append(value->as_string().cstr());
-	}
+											const String *& output_option) {
+	if(Value *value=static_cast<Value *>(param_options->get(*new(pool) String(pool, 
+		option_name))))
+		output_option=&value->as_string();
 }
 static void param_option_over_output_option(Pool& pool, 
 											Hash *param_options, const char *option_name,
@@ -386,20 +421,9 @@ static void param_option_over_output_option(Pool& pool,
 	}
 }
 
- static std::auto_ptr<FormatterListener> create_optioned_listener(
-									 Pool& pool, const String& method_name, MethodParams *params, int index,
-									 VXdoc::Output_options& oo, Writer& writer) {
-/*
-	XalanDOMString encoding;
-	XalanDOMString mediaType;
-	XalanDOMString doctypeSystem;
-	XalanDOMString doctypePublic;
-	bool doIndent;
-	XalanDOMString version;
-	XalanDOMString standalone;
-	bool xmlDecl;
-* /
-
+static void prepare_output_options(
+								   Pool& pool, const String& method_name, MethodParams *params, int index,
+								   VXdoc::Output_options& oo) {
 /*
 <xsl:output
   !method = "xml" | "html" | "text" | qname-but-not-ncname 
@@ -412,12 +436,7 @@ static void param_option_over_output_option(Pool& pool,
   cdata-section-elements = qnames 
   !indent = "yes" | "no"
   !media-type = string /> 
-* /
-
-	/*
-		fToXML->setStripCData(stripCData);
-		fToXML->setEscapeCData(escapeCData);
-	* /
+*/
 
 	// configuring with options from parameter...
 	if(params->size()>index) {
@@ -427,16 +446,14 @@ static void param_option_over_output_option(Pool& pool,
 				// $.method[xml|html|text]
 				if(Value *vmethod=static_cast<Value *>(options->get(*new(pool) 
 					String(pool, XDOC_OUTPUT_METHOD_OPTION_NAME))))
-					oo.method=vmethod->as_string().cstr();
+					oo.method=&vmethod->as_string();
 
 				// $.version[1.0]
 				param_option_over_output_option(pool, options, "version", oo.version);
 				// $.encoding[windows-1251|...]
 				param_option_over_output_option(pool, options, "encoding", oo.encoding);
 				// $.omit-xml-declaration[yes|no]
-				bool omit_xml_declaration=!oo.xmlDecl;
-				param_option_over_output_option(pool, options, "omit-xml-declaration", omit_xml_declaration);
-				oo.xmlDecl=!omit_xml_declaration;
+				param_option_over_output_option(pool, options, "omit-xml-declaration", oo.omitXmlDeclaration);
 				// $.standalone[yes|no]
 				param_option_over_output_option(pool, options, "standalone", oo.standalone);
 				// $.doctype-public[?]
@@ -444,7 +461,7 @@ static void param_option_over_output_option(Pool& pool,
 				// $.doctype-system[?]
 				param_option_over_output_option(pool, options, "doctype-system", oo.doctypeSystem);
 				// $.indent[yes|no]
-				param_option_over_output_option(pool, options, "indent", oo.doIndent);
+				param_option_over_output_option(pool, options, "indent", oo.indent);
 				// $.media-type[text/{html|xml|plain}]
 				param_option_over_output_option(pool, options, "media-type", oo.mediaType);				 
 			}
@@ -452,57 +469,22 @@ static void param_option_over_output_option(Pool& pool,
 	}
 
 	// default encoding from pool
-	if(oo.encoding.empty())
-		oo.encoding.append(pool.get_source_charset().name().cstr());
+	if(!oo.encoding)
+		oo.encoding=&pool.get_source_charset().name();
 	// default method=xml
 	if(!oo.method)
-		oo.method=XDOC_OUTPUT_METHOD_OPTION_VALUE_XML;
-
-	if(strcmp(oo.method, XDOC_OUTPUT_METHOD_OPTION_VALUE_XML)==0) {
-		if(oo.mediaType.empty())
-			oo.mediaType.append("text/xml");
-		return std::auto_ptr<FormatterListener>(new FormatterToXML(writer,
-			oo.version,  
-			oo.doIndent,
-			XDOC_OUTPUT_DEFAULT_INDENT, // indent 
-			oo.encoding,
-			oo.mediaType,
-			oo.doctypeSystem,
-			oo.doctypePublic,
-			oo.xmlDecl,
-			oo.standalone
-		));
-	} else if(strcmp(oo.method, XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML)==0) {
-		if(oo.mediaType.empty())
-			oo.mediaType.append("text/html");
-		return std::auto_ptr<FormatterListener>(new FormatterToHTML(writer,
-			oo.encoding,
-			oo.mediaType,
-			oo.doctypeSystem,
-			oo.doctypePublic,
-			oo.doIndent,
-			XDOC_OUTPUT_DEFAULT_INDENT, // indent 
-			oo.version,
-			oo.standalone,
-			oo.xmlDecl
-		));
-	} else if(strcmp(oo.method, XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT)==0) {
-		if(oo.mediaType.empty())
-			oo.mediaType.append("text/plain");
-		return std::auto_ptr<FormatterListener>(new FormatterToText(writer,
-			oo.encoding
-		));
-	} else
-		throw Exception(0, 0,
-			&method_name,
-			XDOC_OUTPUT_METHOD_OPTION_NAME " option is invalid; valid methods are: "
-				"'" XDOC_OUTPUT_METHOD_OPTION_VALUE_XML "', "
-				"'" XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML "', "
-				"'" XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT "'");			
-
-	// never reached
+		oo.method=new(pool) String(pool, XDOC_OUTPUT_METHOD_OPTION_VALUE_XML);
+	// default mediaType = depending on method
+	if(!oo.mediaType) {
+		if(*oo.method==XDOC_OUTPUT_METHOD_OPTION_VALUE_XML)
+			oo.mediaType=new(pool) String(pool, "text/xml");
+		else if(*oo.method==XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML)
+			oo.mediaType=new(pool) String(pool, "text/html");
+		else // XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT & all others
+			oo.mediaType=new(pool) String(pool, "text/plain");
+	}
 }
-*/
+
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -522,16 +504,73 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 			exc);
 }
 
+int xmlOutputWriteToParserString(void *context, const char *buffer, int len) {
+	String& string=*static_cast<String *>(context);
+	char *copy=(char *)string.malloc((size_t)len);
+	memcpy(copy, buffer, (size_t)len);
+	string.APPEND_CLEAN(copy, (size_t)len, "xdoc", 0);
+	return len;
+}
+
 static void _string(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
+	VXdoc::Output_options oo(vdoc.output_options);
+	prepare_output_options(pool, method_name, params, 0,
+		oo);
+
+	xmlCharEncodingHandler *encoder=0;
+	if(oo.encoding) {
+		const char *encoding_cstr=oo.encoding->cstr();
+		encoder=xmlFindCharEncodingHandler(encoding_cstr);
+		if(!encoder)
+			throw Exception(0, 0,
+				&method_name,
+				"encoding '%s' not supported", encoding_cstr);
+	}
+	// UTF-8 encoder contains empty input/output converters, 
+	// which is wrong for xmlOutputBufferCreateIO
+	// while zero encoder goes perfectly 
+	if(encoder && strcmp(encoder->name, "UTF-8")==0)
+		encoder=0;
+
+	String& result=*new(pool) String(pool);
+	xmlOutputBuffer_auto_ptr outputBuffer(xmlOutputBufferCreateIO(
+		xmlOutputWriteToParserString,
+		0/*xmlOutputCloseCallback*/,
+		&result,
+		encoder));
+
+	xsltStylesheet *stylesheet=xsltNewStylesheet();
+	if(!stylesheet)
+		throw Exception(0, 0,
+			&method_name,
+			"xsltNewStylesheet failed");
+
+	#define OO2STYLE(name) \
+		stylesheet->name=oo.name?BAD_CAST g_strdup(pool.transcode(*oo.name)->str):0
+
+	OO2STYLE(method);
+	OO2STYLE(encoding);
+	OO2STYLE(mediaType);
+	OO2STYLE(doctypeSystem);
+	OO2STYLE(doctypePublic);
+	stylesheet->indent=oo.indent;
+	OO2STYLE(version);
+	stylesheet->standalone=oo.standalone;
+	stylesheet->omitXmlDeclaration=oo.omitXmlDeclaration;
+
+	xmlDoc *document=((Gdome_xml_Document*)vdoc.get_document(&method_name))->n;
+	xsltSaveResultTo(outputBuffer.get(), document, stylesheet);
+	xsltFreeStylesheet(stylesheet);
+/*
 	char *mem;
 	GdomeException exc;
 	if(!gdome_di_saveDocToMemory(domimpl,
 		vdoc.get_document(&method_name),
 		&mem,
-		GDOME_SAVE_LIBXML_INDENT /*GDOME_SAVE_STANDARD */,
+		vdoc.output_options.indent?GDOME_SAVE_LIBXML_INDENT:GDOME_SAVE_STANDARD,
 		&exc))
 		throw Exception(0, 0, 
 			&method_name, 
@@ -541,9 +580,10 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 	size_t buf_size=strlen(mem);
 	char *buf=(char *)pool.malloc(buf_size);
 	memcpy(buf, mem, buf_size);
-	g_free(mem);
+	g_free(mem);*/
+
 	// write out result
-	r.write_no_lang(*new(pool) String(pool, buf, buf_size));
+	r.write_no_lang(result);
 }
 
 /// @test remove text/xml const. <output method+mediatype / ^file[method+mediatype
@@ -582,7 +622,6 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 	r.write_no_lang(vfile);
 }
 
-/// @test lang=String::UL_UNSPECIFIED?
 static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning, 
 						   void *info) {
 	Value *meaning=static_cast<Value *>(ameaning);
@@ -628,6 +667,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		0/*FILE *profile*/,
 		transformContext);
 	if(!transformed) {
+		xsltFreeTransformContext(transformContext);
 		// close
 		connection.close();
 		throw Exception(0, 0,
@@ -635,8 +675,8 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 			"transform failed. TODO: show errors");
 	}
 
-	//gdome_xml_doc_mkref: invalid node type
-	transformed->type=XML_DOCUMENT_NODE; //XML_HTML_DOCUMENT_NODE actuall
+	//gdome_xml_doc_mkref dislikes XML_HTML_DOCUMENT_NODE  type, fixing
+	transformed->type=XML_DOCUMENT_NODE;
 	// constructing result
 	GdomeDocument *gdomeDocument=gdome_xml_doc_mkref(transformed);
 	if(!gdomeDocument)
@@ -644,20 +684,20 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 			&method_name,
 			"gdome_xml_doc_mkref failed");
 	VXdoc& result=*new(pool) VXdoc(pool, gdomeDocument);
-	// grabbing <output> options
-	/*
-	<xsl:output
-	!method = "xml" | "html" | "text"
-		X| qname-but-not-ncname 
-	!version = nmtoken 
-	!encoding = string 
-	!omit-xml-declaration = "yes" | "no"
-	!standalone = "yes" | "no"
-	!doctype-public = string 
-	!doctype-system = string 
-	cdata-section-elements = qnames 
-	!indent = "yes" | "no"
-	!media-type = string /> 
+	/* grabbing options
+
+		<xsl:output
+		!method = "xml" | "html" | "text"
+			X| qname-but-not-ncname 
+		!version = nmtoken 
+		!encoding = string 
+		!omit-xml-declaration = "yes" | "no"
+		!standalone = "yes" | "no"
+		!doctype-public = string 
+		!doctype-system = string 
+		Xcdata-section-elements = qnames 
+		!indent = "yes" | "no"
+		!media-type = string /> 
 	*/
 	memset(&result.output_options, 0, sizeof(result.output_options));
 	VXdoc::Output_options& oo=result.output_options;
@@ -675,17 +715,6 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	xsltFreeTransformContext(transformContext);
 	// close
 	connection.close();
-
-	// exceptions now allowed
-
-	// check method
-	if(oo.method && (
-		*oo.method!=XDOC_OUTPUT_METHOD_OPTION_VALUE_XML
-		|| *oo.method!=XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML
-		|| *oo.method!=XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT))
-		throw Exception(0, 0,
-			&method_name,
-			"unsupported output method specified"); 
 
 	// write out result
 	r.write_no_lang(result);

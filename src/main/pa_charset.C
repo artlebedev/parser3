@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.14 2002/01/14 17:48:57 paf Exp $
+	$Id: pa_charset.C,v 1.15 2002/01/15 13:18:43 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -534,18 +534,19 @@ void Charset::addEncoding(char *name_cstr) {
 }
 
 void Charset::initTranscoder(const String *source, const char *name_cstr) {
-	transcoder=xmlFindCharEncodingHandler(name_cstr);
-	if(!transcoder)
+	ftranscoder=xmlFindCharEncodingHandler(name_cstr);
+	transcoder(source); // check right way
+}
+
+xmlCharEncodingHandler *Charset::transcoder(const String *source) {
+	if(!ftranscoder)
 		throw Exception(0, 0,
 			source,
 			"unsupported encoding");
+	return ftranscoder;
 }
 
 const char *Charset::transcode_cstr(xmlChar *s) {
-	if(!transcoder)
-		throw Exception(0, 0,
-			0,
-			"transcode_cstr no transcoder");
 	if(!s)
 		return "";
 
@@ -553,10 +554,10 @@ const char *Charset::transcode_cstr(xmlChar *s) {
 	int outlen=inlen+1; // max
 	char *out=(char *)malloc(outlen*sizeof(char));
 	
-	int size=transcoder->output(
+	int size=transcoder(0)->output(
 		(unsigned char*)out, &outlen,
 		(const unsigned char*)s, &inlen,
-		transcoder->outputInfo);
+		transcoder(0)->outputInfo);
 	if(size<0)
 		throw Exception(0, 0,
 			0,
@@ -577,17 +578,12 @@ String& Charset::transcode(GdomeDOMString *s) {
 
 /// @test less memory using -maybe- xmlParserInputBufferCreateMem
 GdomeDOMString_auto_ptr Charset::transcode_buf(const char *buf, size_t buf_size) { 
-	if(!transcoder)
-		throw Exception(0, 0,
-			0,
-			"transcode_buf no transcoder");
-
 	int outlen=buf_size*6/*max*/+1;
 	unsigned char *out=(unsigned char*)malloc(outlen*sizeof(unsigned char));
-	int size=transcoder->input(
+	int size=transcoder(0)->input(
 		out, &outlen,
 		(const unsigned char *)buf,  (int *)&buf_size,
-		transcoder->inputInfo);
+		transcoder(0)->inputInfo);
 	if(size<0)
 		throw Exception(0, 0,
 			0,

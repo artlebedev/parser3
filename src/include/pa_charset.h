@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.h,v 1.8 2002/01/14 17:48:56 paf Exp $
+	$Id: pa_charset.h,v 1.9 2002/01/15 13:18:43 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
@@ -76,6 +76,10 @@ public:
 		const Charset& dest_transcoder, const void *& dest_body, size_t& dest_content_length
 	);
 
+#ifdef XML
+	xmlCharEncodingHandler *transcoder(const String *source);
+#endif
+
 public:
 
 	unsigned char pcre_tables[tables_length];
@@ -115,7 +119,7 @@ private:
 private:
 	void addEncoding(char *name_cstr);
 	void initTranscoder(const String *source, const char *name_cstr);
-
+	
 public:
 	/// converts GdomeDOMString string to char *
 	const char *transcode_cstr(GdomeDOMString *s);
@@ -132,7 +136,7 @@ public:
 
 private:
 
-	xmlCharEncodingHandler *transcoder;
+	xmlCharEncodingHandler *ftranscoder;
 
 #endif
 
