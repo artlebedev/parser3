@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2004/07/14 08:36:40 $";
+static const char * const IDENT_TABLE_C="$Date: 2004/07/29 18:02:38 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -263,23 +263,22 @@ static void skip_empty_and_comment_lines( char** data_ref ) {
 }
 
 struct TableSeparators {
-	char column;
-	char encloser;
-	const String* sencloser;
+	char column;  const String* scolumn;
+	char encloser; const String* sencloser;
 
-	TableSeparators() {
-		column='\t';
-		encloser=0;
-	}
+	TableSeparators():
+		column('\t'), scolumn(new String("\t", false)),
+		encloser(0), sencloser(0)
+	{}
 	void load( HashStringValue& options ) {
 		if(Value* vseparator=options.get(COLUMN_SEPARATOR_NAME)) {
 			options.remove(COLUMN_SEPARATOR_NAME);
-			const String& sseparator=vseparator->as_string();
-			if(sseparator.length()!=1)
+			scolumn=&vseparator->as_string();
+			if(scolumn->length()!=1)
 				throw Exception("parser.runtime",
-					&sseparator,
+					scolumn,
 					"separator must be one character long");
-			column=sseparator.first_char();
+			column=scolumn->first_char();
 		}
 		if(Value* vencloser=options.get(COLUMN_ENCLOSER_NAME)) {
 			options.remove(COLUMN_ENCLOSER_NAME);
@@ -419,7 +418,7 @@ static void _save(Request& r, MethodParams& params) {
 			for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
 				maybe_enclose( sdata, *i.next(), separators.encloser, separators.sencloser );
 				if(i.has_next())
-					sdata.append_know_length("\t", 1, String::L_CLEAN);
+					sdata<<*separators.scolumn;
 			}
 		} else { // nameless table [we were asked to output column names]
 			if(int lsize=table.count()?table[0]->count():0)
@@ -427,7 +426,7 @@ static void _save(Request& r, MethodParams& params) {
 					char *cindex_tab=new(PointerFreeGC) char[MAX_NUMBER];
 					sdata.append_know_length(cindex_tab, 
 						snprintf(cindex_tab, MAX_NUMBER, 
-							column<lsize-1?"%d\t":"%d", column),
+							column<lsize-1?"%d%c":"%d", column, separators.column),
 							String::L_CLEAN);
 				}
 			else
@@ -442,7 +441,7 @@ static void _save(Request& r, MethodParams& params) {
 		for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
 			maybe_enclose( sdata, *c.next(), separators.encloser, separators.sencloser );
 			if(c.has_next())
-				sdata.append_know_length("\t", 1, String::L_CLEAN);
+				sdata<<*separators.scolumn;
 		}
 		sdata.append_know_length("\n", 1, String::L_CLEAN);
 	}
