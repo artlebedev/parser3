@@ -1,8 +1,8 @@
 /*
-  $Id: execute.C,v 1.6 2001/02/21 07:40:52 paf Exp $
+  $Id: execute.C,v 1.7 2001/02/21 07:41:56 paf Exp $
 */
 
-#include "pa_array.h" 
+#include "pa_array.h"
 #include "code.h"
 
 #include <stdio.h>
