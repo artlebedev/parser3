@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.12 2001/09/10 14:42:05 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.13 2001/09/10 15:51:41 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -27,12 +27,23 @@ static const char *RCSId="$Id: dom.C,v 1.12 2001/09/10 14:42:05 parser Exp $";
 #include <PlatformSupport/XalanOutputStreamPrintWriter.hpp>
 #include <PlatformSupport/DOMStringPrintWriter.hpp>
 #include <XMLSupport/FormatterToXML.hpp>
+#include <XMLSupport/FormatterToHTML.hpp>
+#include <XMLSupport/FormatterToText.hpp>
 #include <XMLSupport/FormatterTreeWalker.hpp>
 //#include <XercesParserLiaison/XercesDOMSupport.hpp>
 
 // defines
 
 #define DOM_CLASS_NAME "dom"
+
+#define DOM_OUTPUT_METHOD_OPTION_NAME "method"
+#define DOM_OUTPUT_METHOD_OPTION_VALUE_XML "xml"
+#define DOM_OUTPUT_METHOD_OPTION_VALUE_HTML "html"
+#define DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT "text"
+
+#define DOM_OUTPUT_ENCODING_OPTION_NAME "encoding"
+
+#define DOM_OUTPUT_DEFAULT_INDENT 4
 
 // class
 
@@ -117,12 +128,65 @@ private:
 };
 
 
+FormatterListener *create_optioned_listener(Pool& pool, 
+								   const String& method_name, MethodParams *params, int index,
+								   Writer& writer) {
+	const String *method=0;
+	XalanDOMString xalan_encoding;
+
+	Value& voptions=params->as_no_junction(index, "options must not be code");
+	if(voptions.is_defined()) {
+		if(Hash *options=voptions.get_hash()) {
+			// $.method[xml|html|text]
+			method=options->get_string(*new(pool) String(pool, DOM_OUTPUT_METHOD_OPTION_NAME));
+
+			// $.encoding[windows-1251|...]
+			if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 
+				String(pool, DOM_OUTPUT_ENCODING_OPTION_NAME)))) {
+				const char *cstr=vencoding->as_string().cstr();
+				xalan_encoding.append(cstr, strlen(cstr));
+			}
+		} else
+			PTHROW(0, 0,
+				&method_name,
+				"params must be hash");
+	}
+
+	if(!method/*default='xml'*/ || *method == DOM_OUTPUT_METHOD_OPTION_VALUE_XML)
+		return new FormatterToXML(writer,
+			XalanDOMString(),  // version
+			true, // doIndent
+			DOM_OUTPUT_DEFAULT_INDENT, // indent 
+			xalan_encoding  // encoding
+		);
+	else if(*method == DOM_OUTPUT_METHOD_OPTION_VALUE_HTML)
+		return new FormatterToHTML(writer,
+			xalan_encoding,  // encoding
+			XalanDOMString(),  // mediaType 
+			XalanDOMString(),  // doctypeSystem; String to be printed at the top of the document 
+			XalanDOMString(),  // doctypePublic  
+			true, // doIndent 
+			DOM_OUTPUT_DEFAULT_INDENT // indent 
+		);
+	else if(*method == DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT)
+		return new FormatterToText(writer,
+			xalan_encoding  // encoding
+		);
+	else
+		PTHROW(0, 0,
+			method,
+			DOM_OUTPUT_METHOD_OPTION_NAME "option must be "
+				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_XML "' or "
+				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_HTML "' or "
+				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT "'");			
+
+	// never reached
+	return 0; // calm, compiler
+}
+
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDom& vDom=*static_cast<VDom *>(r.self);
-
-	// encoding
-	const char *encoding=params->as_string(0, "encoding must not be code").cstr();
 
 	// filespec
 	const String& filename=params->as_string(1, "file name must not be code");
@@ -134,12 +198,8 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	try {
 		XalanFileOutputStream stream(XalanDOMString(filespec, strlen(filespec)));
 		XalanOutputStreamPrintWriter writer(stream);
-		FormatterToXML formatterListener(writer,
-			XalanDOMString(),  // version
-			true , // doIndent
-			4, // indent 
-			XalanDOMString(encoding, strlen(encoding))  // encoding
-		);
+		FormatterListener& formatterListener=*create_optioned_listener(pool, method_name, params, 0,
+			writer);
 		FormatterTreeWalker treeWalker(formatterListener);
 		treeWalker.traverse(&document); // Walk the document and produce the XML...
 	} catch(const XSLException& e) {
@@ -151,9 +211,6 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 	VDom& vDom=*static_cast<VDom *>(r.self);
 
-	// encoding
-	const char *encoding=params->as_string(0, "encoding must not be code").cstr();
-
 	// document
 	XalanDocument& document=vDom.get_document(pool, &method_name);
 
@@ -161,16 +218,8 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 		String parserString=*new(pool) String(pool);
 		ParserStringOutputStream stream(parserString);
 		XalanOutputStreamPrintWriter writer(stream);
-		FormatterToXML formatterListener(writer,
-			XalanDOMString(),  // version
-			true , // doIndent
-			4, // indent 
-			XalanDOMString(encoding, strlen(encoding)),  // encoding
-			XalanDOMString(),  // mediaType
-			XalanDOMString(),  // doctypeSystem
-			XalanDOMString(),  // doctypePublic
-			false // xmlDecl 
-		);
+		FormatterListener& formatterListener=*create_optioned_listener(pool, method_name, params, 0,
+			writer);
 		FormatterTreeWalker treeWalker(formatterListener);
 		treeWalker.traverse(&document); // Walk the document and produce the XML...
 
@@ -186,9 +235,6 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDom& vDom=*static_cast<VDom *>(r.self);
 
-	// encoding
-	const char *encoding=params->as_string(0, "encoding must not be code").cstr();
-
 	// document
 	XalanDocument& document=vDom.get_document(pool, &method_name);
 
@@ -196,12 +242,8 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 		String& parserString=*new(pool) String(pool);
 		ParserStringOutputStream stream(parserString);
 		XalanOutputStreamPrintWriter writer(stream);
-		FormatterToXML formatterListener(writer,
-			XalanDOMString(),  // version
-			true , // doIndent
-			4, // indent 
-			XalanDOMString(encoding, strlen(encoding))  // encoding
-		);
+		FormatterListener& formatterListener=*create_optioned_listener(pool, method_name, params, 0,
+			writer);
 		FormatterTreeWalker treeWalker(formatterListener);
 		treeWalker.traverse(&document); // Walk the document and produce the XML...
 
@@ -274,13 +316,13 @@ MDom::MDom(Pool& apool) : Methoded(apool) {
 	// ^dom::load[some.xml]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
 
-	// ^dom.save[encoding;some.xml]
+	// ^dom.save[options hash;some.xml]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 2);
 
-	// ^dom.string[encoding] <doc/>
+	// ^dom.string[options hash] <doc/>
 	add_native_method("string", Method::CT_DYNAMIC, _string, 1, 1);
 
-	// ^dom.file[encoding] file with "<doc/>"
+	// ^dom.file[options hash] file with "<doc/>"
 	add_native_method("file", Method::CT_DYNAMIC, _file, 1, 1);
 
 	// ^dom.xslt[stylesheet filename]

@@ -1,6 +1,13 @@
 @main[]
+^testdom2[]
+#^testdom1[]
 #^testdom0[]
-^testdom1[]
+
+@testdom2[]
+$dom[^dom::load[test.xml]]
+#^dom.save[$.encoding[windows-1251];write.xml]
+#^dom.save[;write.xml]
+^dom.save[$.encoding[windows-1251];write.xml]
 
 @testdom1[]
 $dom[^dom::load[test.xml]]
