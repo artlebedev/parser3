@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6, tested with Oracle 7.x.x
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.4 2001/08/23 11:08:52 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.5 2001/08/23 11:13:53 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -122,9 +122,9 @@ public:
 			dlink(dlopen_file_spec):"client library column is empty";
 		if(!error) {*/
 			OCIInitialize((ub4)OCI_THREADED, (dvoid *)0, 
-				(dvoid * (*)(void *, unsigned int)) 0, 
-				(dvoid * (*)(void*, void*, unsigned int)) 0,  
-				(void (*)(void*, void*)) 0 );
+				(dvoid * (*)(void *, unsigned int))0, 
+				(dvoid * (*)(void*, void*, unsigned int))0,  
+				(void (*)(void*, void*))0 );
 		/*}
 
 		return error;*/
@@ -188,7 +188,7 @@ public:
 		// set attribute server context in the service context
 		check(services, cs, "AttrSet server-service", OCIAttrSet( 
 			(dvoid *)cs.svchp, (ub4)OCI_HTYPE_SVCCTX, 
-			(dvoid *)cs.srvhp, (ub4) 0, 
+			(dvoid *)cs.srvhp, (ub4)0, 
 			(ub4)OCI_ATTR_SERVER, (OCIError *)cs.errhp));		
 		// allocate a user context handle
 		check(services, cs, "HandleAlloc usrhp", OCIHandleAlloc(
@@ -308,10 +308,10 @@ public:
 
 					check(services, cs, "bind output", OCIBindByPos(stmthp, 
 						&lobs.items[i].bind, cs.errhp, 
-						(ub4) 1+i, 
+						(ub4)1+i, 
 						(dvoid *)&lobs.items[i].locator, 
-						(sword)sizeof (lobs.items[i].locator), SQLT_CLOB, (dvoid *) 0, 
-						(ub2 *) 0, (ub2 *) 0, (ub4) 0, (ub4 *) 0, OCI_DATA_AT_EXEC));
+						(sword)sizeof (lobs.items[i].locator), SQLT_CLOB, (dvoid *)0, 
+						(ub2 *)0, (ub2 *)0, (ub4)0, (ub4 *)0, OCI_DATA_AT_EXEC));
 
 					lobs.items[i].rows.count=0;
 					OracleSQL_query_lobs::cbf_context_struct cbf_context={
@@ -446,7 +446,7 @@ private: // private funcs
 		//Zanyway, this is needed before. 
 		check(services, cs, "get stmt type", OCIAttrGet(
 			(dvoid *)stmthp, (ub4)OCI_HTYPE_STMT, (ub1 *)&stmt_type, 
-			(ub4 *) 0, OCI_ATTR_STMT_TYPE, cs.errhp));
+			(ub4 *)0, OCI_ATTR_STMT_TYPE, cs.errhp));
 	*/
 		if(strncasecmp(statement, "select", 6)==0) 
 			stmt_type=OCI_STMT_SELECT;
@@ -456,7 +456,7 @@ private: // private funcs
 			stmt_type=OCI_STMT_UPDATE;
 
 		int status=OCIStmtExecute(cs.svchp, stmthp, cs.errhp, 
-			(ub4) stmt_type==OCI_STMT_SELECT?0:1, (ub4) 0, 
+			(ub4) stmt_type==OCI_STMT_SELECT?0:1, (ub4)0, 
 			(OCISnapshot *) NULL, 
 			(OCISnapshot *) NULL, (ub4)OCI_DEFAULT);
 
@@ -473,7 +473,7 @@ private: // private funcs
 							cs.svchp, cs.errhp, 
 							locator, &bytes_to_write, 1, 
 							(dvoid *) lobs.items[i].data_ptr, (ub4)bytes_to_write, OCI_ONE_PIECE, 
-							(dvoid *)0, 0, (ub2) 0, 
+							(dvoid *)0, 0, (ub2)0, 
 							(ub1) SQLCS_IMPLICIT));
 					}
 				}
@@ -485,9 +485,8 @@ private: // private funcs
 				stmthp, offset, limit, 
 				handlers);
 			break;
-		case OCI_STMT_INSERT:
-			break;
 		default:/*
+		case OCI_STMT_INSERT:
 		case OCI_STMT_UPDATE:
 		case OCI_STMT_DELETE:
 		case OCI_STMT_CREATE:
@@ -520,12 +519,11 @@ private: // private funcs
 		jmp_buf saved_mark; memcpy(saved_mark, cs.mark, sizeof(jmp_buf));
 		if(setjmp(cs.mark)) {
 			failed=true;
-			memcpy(cs.mark, saved_mark, sizeof(jmp_buf));
 			goto cleanup;
 		}
 		{
 			// idea of preincrementing is that at error time all handles would free up
-			for(; ++column_count<=MAX_COLS; ) {
+			while(++column_count<=MAX_COLS) {
 				/* get next descriptor, if there is one */
 				if(OCIParamGet(stmthp, OCI_HTYPE_STMT, cs.errhp, (void **)&mypard, 
 					(ub4) column_count)!=OCI_SUCCESS)
@@ -534,7 +532,7 @@ private: // private funcs
 				/* Retrieve the data type attribute */
 				check(services, cs, "get type", OCIAttrGet(
 					(dvoid*) mypard, (ub4)OCI_DTYPE_PARAM, 
-					(dvoid*) &dtype, (ub4 *) 0, (ub4)OCI_ATTR_DATA_TYPE, 
+					(dvoid*) &dtype, (ub4 *)0, (ub4)OCI_ATTR_DATA_TYPE, 
 					(OCIError *)cs.errhp));
 				
 				/* Retrieve the column name attribute */
@@ -561,7 +559,7 @@ private: // private funcs
 						check(services, cs, "alloc output var desc", OCIDescriptorAlloc(
 							(dvoid *)cs.envhp, (dvoid **)(ptr=&cols[column_count-1].var), 
 							(ub4)OCI_DTYPE_LOB, 
-							0, (dvoid **) 0));
+							0, (dvoid **)0));
 						
 						size=0;
 						break;
@@ -579,13 +577,13 @@ private: // private funcs
 					stmthp, &cols[column_count-1].def, cs.errhp, 
 					column_count, (ub1 *) ptr, size, 
 					coerce_type, (dvoid *) &cols[column_count-1].indicator, 
-					(ub2 *) 0, (ub2 *) 0, OCI_DEFAULT));
+					(ub2 *)0, (ub2 *)0, OCI_DEFAULT));
 			}
 			
 			handlers.before_rows();
 			
-			for(unsigned long row=0;!limit||row<limit+offset;row++) {
-				sword status=OCIStmtFetch(stmthp, cs.errhp, (ub4) 1,  (ub4)OCI_FETCH_NEXT, 
+			for(unsigned long row=0; !limit||row<limit+offset; row++) {
+				sword status=OCIStmtFetch(stmthp, cs.errhp, (ub4)1,  (ub4)OCI_FETCH_NEXT, 
 					(ub4)OCI_DEFAULT);
 				if(status!=OCI_SUCCESS) {
 					if(status!=OCI_NO_DATA)
@@ -616,7 +614,7 @@ private: // private funcs
 											var, &amtp, offset, (dvoid *) ptr, 
 											loblen, (dvoid *)0, 
 											0, 
-											(ub2) 0, (ub1) SQLCS_IMPLICIT));
+											(ub2)0, (ub1) SQLCS_IMPLICIT));
 									}
 									break;
 								}
@@ -646,7 +644,7 @@ cleanup: // no check call after this point!
 		}
 
 		if(failed) // need rethrow?
-			longjmp(cs.mark, 1);
+			longjmp(saved_mark, 1);
 	}
 
 private: // conn client library funcs
@@ -687,7 +685,7 @@ void check(
 	case OCI_ERROR:
 		{
 		sb4 errcode;
-		if(OCIErrorGet((dvoid *)cs.errhp, (ub4) 1, (text *) NULL, &errcode, 
+		if(OCIErrorGet((dvoid *)cs.errhp, (ub4)1, (text *) NULL, &errcode, 
 			(text *) reason, (ub4) sizeof(reason), OCI_HTYPE_ERROR)==OCI_SUCCESS)
 			msg=reason;
 		else
@@ -726,7 +724,7 @@ static sb4 cbf_no_data(
 				ub4 *alenpp, 
 				ub1 *piecep, 
 				dvoid **indpp) {
-	*bufpp=(dvoid *) 0;
+	*bufpp=(dvoid *)0;
 	*alenpp=0;
 	static sb2 null_ind=-1;
 	*indpp=(dvoid *) &null_ind;
@@ -763,7 +761,7 @@ static sb4 cbf_get_data(dvoid *ctxp,
 	check(*context.services, *context.cs, "alloc output var desc dynamic", OCIDescriptorAlloc(
 		(dvoid *) context.cs->envhp, (dvoid **)&var.locator, 
 		(ub4)OCI_DTYPE_LOB, 
-		0, (dvoid **) 0));
+		0, (dvoid **)0));
 
 	*bufpp=var.locator;
 	*alenp=&var.len;
