@@ -61,15 +61,20 @@ host_alias = @host_alias@
 host_triplet = @host@
 APACHE13 = @APACHE13@
 APACHE_LIBS = @APACHE_LIBS@
+AS = @AS@
 AWK = @AWK@
 CC = @CC@
 CXX = @CXX@
+DLLTOOL = @DLLTOOL@
 INCLTDL = @INCLTDL@
 LIBADD_DL = @LIBADD_DL@
 LIBLTDL = @LIBLTDL@
+LIBTOOL = @LIBTOOL@
+LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
 MIME_INCLUDES = @MIME_INCLUDES@
 MIME_LIBS = @MIME_LIBS@
+OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
@@ -126,7 +131,7 @@ all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --foreign src/lib/libltdl/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign src/lib/ltdl/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) \
@@ -197,7 +202,7 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = src/lib/libltdl
+subdir = src/lib/ltdl
 
 distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \

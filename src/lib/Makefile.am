@@ -1,1 +1,1 @@
-SUBDIRS = patches libltdl pcre md5
+SUBDIRS = patches ltdl pcre md5

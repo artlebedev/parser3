@@ -343,8 +343,10 @@ if test x"$libltdl_cv_need_uscore" = xyes; then
     [Define if dlsym() requires a leading underscode in symbol names. ])
 fi
 
-dnl Output the makefile
-AC_OUTPUT(Makefile)
+dnl [PAF: DO NOT, do that in /configure.in, effectively unlinking from libtool]  Output the makefile
+dnl [PAF] AC_OUTPUT(Makefile)
+dnl [PAF:]
+AC_OUTPUT
 
 # Local Variables:
 # mode:shell-script

@@ -29,7 +29,7 @@ AC_DEFUN(AC_PROG_LIBTOOL,
 [AC_REQUIRE([AC_LIBTOOL_SETUP])dnl
 
 # Always use rootdir libtool.
-LIBTOOL=../../libtool
+LIBTOOL=paf-dont-use-libtool
 AC_SUBST(LIBTOOL)dnl
 ])
 
