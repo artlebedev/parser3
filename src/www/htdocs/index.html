@@ -31,7 +31,7 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
-<pre>^mail:send[
+^rem{^mail:send[
     $to[paf@design.ru]
     $from[paf@design.ru]
 	$body[
@@ -49,10 +49,11 @@ PAF
 		$attach[
 			$value[^file:load[test.zip]]
 			$type[uue]
+			$file-name[retest.zip]
 		]
 	]
-]</pre>
-<HR>
+]
+}
 
 ^rem{^mail:send[
 	$content-type[
