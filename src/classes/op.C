@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.58 2001/11/05 11:46:21 paf Exp $
+	$Id: op.C,v 1.59 2001/11/14 09:30:08 paf Exp $
 */
 
 #include "classes.h"
@@ -53,16 +53,21 @@ static void _if(Request& r, const String&, MethodParams *params) {
 static void _untaint(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	const String& lang_name=params->as_string(0, "lang must be string");
-	String::Untaint_lang lang=static_cast<String::Untaint_lang>(
-		untaint_lang_name2enum->get_int(lang_name));
-	if(!lang)
-		throw Exception(0, 0,
-			&lang_name,
-			"invalid untaint language");
+	String::Untaint_lang lang;
+	if(params->size()==1)
+		lang=String::UL_AS_IS; // mark as simply 'tainted'. useful in html from sql 
+	else {
+		const String& lang_name=params->as_string(0, "lang must be string");
+		lang=static_cast<String::Untaint_lang>(
+			untaint_lang_name2enum->get_int(lang_name));
+		if(!lang)
+			throw Exception(0, 0,
+				&lang_name,
+				"invalid taint language");
+	}
 
 	{
-		Value& vbody=params->as_junction(1, "body must be code");
+		Value& vbody=params->as_junction(params->size()-1, "body must be code");
 		
 		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
 		r.write_pass_lang(r.process(vbody)); // process marking tainted with that lang
@@ -336,7 +341,7 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	add_native_method("if", Method::CT_ANY, _if, 2, 3);
 
 	// ^untaint[as-is|uri|sql|js|html|html-typo]{code}
-	add_native_method("untaint", Method::CT_ANY, _untaint, 2, 2);
+	add_native_method("untaint", Method::CT_ANY, _untaint, 1, 2);
 
 	// ^taint[as-is|uri|sql|js|html|html-typo]{code}
 	add_native_method("taint", Method::CT_ANY, _taint, 1, 2);

@@ -1,5 +1,6 @@
 @main[]
-^badconstructors[]
+^badoracequoting[]
+#^badconstructors[]
 #^xloadwrongtable[]
 #^xsetwrongtable[]
 #^if($form:test){y}{n}
@@ -65,7 +66,26 @@
 #^xslt[]
 #^xml[]
 #^header[]
+<hr>
 OK
+
+@badoracequoting[]
+$SQL.connect-string[oracle://webspb:webpwd@mts?NLS_LANG=RUSSIAN_AMERICA.CL8MSWIN1251&NLS_DATE_FORMAT=YYYY-MM-DD HH24:MI:SS]
+^connect[$SQL.connect-string]{
+$tables[^table::sql{select table_name from user_tables}]
+^tables.menu{
+$tables.table_name<br>
+}
+
+<hr>
+$news[^table::sql{select description from news}[$.limit(3)]]
+^news.menu{
+	^untaint{$news.description}<hr>
+
+}
+}
+<hr>
+$env:PATH
 
 @badconstructors[]
 $bred[^string::length[]]
