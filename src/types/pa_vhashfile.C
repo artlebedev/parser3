@@ -4,11 +4,11 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vhashfile.C,v 1.11 2001/10/26 13:48:19 paf Exp $
+	$Id: pa_vhashfile.C,v 1.12 2001/10/27 13:00:10 paf Exp $
 */
 
 #include "pa_config_includes.h"
-#ifdef HAVE_LIBDB
+#ifdef DB2
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"

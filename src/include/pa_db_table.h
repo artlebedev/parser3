@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_table.h,v 1.4 2001/10/27 10:14:45 paf Exp $
+	$Id: pa_db_table.h,v 1.5 2001/10/27 13:00:09 paf Exp $
 */
 
 #ifndef PA_DB_TABLE_H
@@ -14,7 +14,7 @@
 #include "pa_globals.h"
 #include "pa_pool.h"
 
-#ifdef HAVE_DB_H
+#ifdef DB2
 #	include <db.h>
 #endif
 

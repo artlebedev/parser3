@@ -4,12 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.12 2001/10/27 10:14:45 paf Exp $
+	$Id: hashfile.C,v 1.13 2001/10/27 13:00:09 paf Exp $
 */
 
 #include "pa_config_includes.h"
 #include "classes.h"
-#ifdef HAVE_LIBDB
+#ifdef DB2
 
 #include "pa_request.h"
 #include "pa_vhashfile.h"
@@ -174,7 +174,7 @@ Methoded *hashfile_base_class;
 
 Methoded *MHashfile_create(Pool& pool) {
 	return 
-#ifdef HAVE_LIBDB
+#ifdef DB2
 		hashfile_base_class=new(pool) MHashfile(pool)
 #else
 		0

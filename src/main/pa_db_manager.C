@@ -4,11 +4,11 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.C,v 1.8 2001/10/27 09:35:12 paf Exp $
+	$Id: pa_db_manager.C,v 1.9 2001/10/27 13:00:09 paf Exp $
 */
 
 #include "pa_config_includes.h"
-#ifdef HAVE_LIBDB
+#ifdef DB2
 
 #include "pa_db_manager.h"
 #include "pa_db_connection.h"
