@@ -1,92 +1,58 @@
-@main[]
-^header[]
-^print_path[]
-^print_menu[]
-^body[]
-^hr[]
-^footer[]
-
-
-@header[]
-<!-- Copyright 2001 (c) Vladimir Eltchinov | elik@elik.ru | http://www.elik.ru/ -->
-
-<html><head>
-#^macro[load_config]
-<title>^print_header[]</title><base target="_top"></head>
-<body bgcolor=#$config.bg-color.value link=#$config.link-color.value vlink=#$config.vlink-color.value alink=#$config.alink-color.value text=#$config.text-color.value topmargin=5 leftmargin=5 rightmargin=5 marginwidth=5 marginheight=5 background=$config.bg-image.value>
-<table width=100% height=100% align=center valign=top><tr><td width=50%></td><td width=600 valign=top>
-
-@body[]
-
-@footer[]
-</td><td width=50%></td></tr><tr><td colspan=3 valign=bottom align=right><font size=-1><b>The matrix has you ...</b></font></td></tr></table>
-</body>
-</html>
-
-
-@i[]
-$result[$config.images.value]
-
-@hr[]
-<br><img src=^i[]hr.gif width=600 height=1><br><br>
-
 @auto[]
-$DEFAULTS[
-	$content-type[
-		$value[text/html]
-		$charset[koi8-r]
-	]
+$user-html[^table:set{user	html	comment
+<<	&laquo^;	длинные user вперЄд
+>>	&raquo^;
+\n\n	<p>	!эти есть в таблице по умолчанию
+\n	<br>	!но т.к. замен€ем, надо повторить.
+<	&lt^;	!можно этим воспользоватьс€,
+>	&gt^;	!и что-то сделать ƒќ обычных замен
+"	&quot^;	!например из << и >>
+&	&amp^;	!сделать Єлочки-кавычки.
+_	&nbsp^;
+^#AB	&laquo^;	windows коды Єлочек
+^#BB	&raquo^;	windows коды Єлочек
+(c)	&copy^;
+^#A9	&copy^;	windows (c)
+}]
+#$if(!($SQL is hash)){$SQL[$z[z]]}
+$SQL[
+	$drivers[^table:set{protocol	driver	client
+mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll	Y:\parser3\src\sql\mysql\mySQL32\lib\opt\libmySQL.dll
+}]
 ]
+$SQL.connect-string[mysql://test:test@localhost/test/cp1251_koi8]
+$SQL.connect-string[mysql://test:test@[/a/b]/test/cp1251_koi8]
+#for ^file:load[name;user-name;mime-type << autodetection]
+$MIME-TYPES[^table:set{ext	mime-type
+zip	application/zip
+doc	application/msword
+xls	application/vnd.ms-excel
+pdf	application/pdf
+ppt	application/powerpoint
+rtf	application/rtf
+gif	image/gif
+jpg	image/jpeg
+png	image/png
+tif	image/tiff
+html	text/html
+htm	text/html
+txt	text/plain
+mts	application/metastream
+mid	audio/midi
+midi	audio/midi
+mp3	audio/mpeg
+ram	audio/x-pn-realaudio
+rpm	audio/x-pn-realaudio-plugin
+ra	audio/x-realaudio
+wav	audio/x-wav
+au	audio/basic
+mpg	video/mpeg
+avi	video/x-msvideo
+mov	video/quicktime
+swf	application/x-shockwave-flash
+}]
 
-#$config_table[^table:load[/layout.cfg]]
-#$config[^config_table.hash[name][value]]
-
-@print_path[][p;path;links;prefix;location] р≈ёЅ‘Ѕ≈‘ ”‘“ѕЋ’ ќЅ„…«Ѕ√…… "лѕ“≈ќЎ / “ЅЏƒ≈ћ / “ЅЏƒ≈ћ"
-$p[$request:uri]
-$path[^p.lsplit[/]]
-^path.flip[]
-^path.menu{
-	^if("$prefix" eq ""){
-        	^if($p eq "/"){<b>Elik.Ru</b>}{<a href=/><b>Elik.Ru</b></a>}
-        }{
-		^if(-f "${prefix}links.cfg"){
-
-	       		$links[^table:load[${prefix}links.cfg]]
-			$links[^links.hash[location;description]]
-        	
-			$location[$path.0]
-			^if($p eq "${prefix}$location/"){$links.$location.description}{<a href=${prefix}$location>$links.$location.description</a>}
-        	}
-        }
-	$prefix[${prefix}$location/]
-}[&nbsp^;/&nbsp^;]<br>^hr[]
-
-@print_header[][p;path;links;prefix;location] р≈ёЅ‘Ѕ≈‘ ”‘“ѕЋ’ ЏЅ«ѕћѕ„ЋЅ "лѕ“≈ќЎ | “ЅЏƒ≈ћ | “ЅЏƒ≈ћ"
-$p[$request:uri]
-$path[^p.lsplit[/]]
-^path.flip[]
-^path.menu{
-	^if("$prefix" eq ""){
-        	Elik.Ru
-        }{
-		^if(-f "${prefix}links.cfg"){
-
-	       		$links[^table:load[${prefix}links.cfg]]
-			$links[^links.hash[location;description]]
-        	
-			$location[$path.0]
-			$links.$location.description
-        	}
-        }
-	$prefix[${prefix}$location/]
-}[&nbsp^;|&nbsp^;]
-
-@print_menu[][links]
-^if(-f links.cfg){
-	$links[^table:load[links.cfg]]
-	$links{^menu{
-		<a href=$location>$description</a>^if($:menu_separator ne ""){$:menu_separator}{<br>}
-	}}
-	^hr[]
-}
+@auto_test[]
+^BASE.auto_test[]
+<li>DR
 
