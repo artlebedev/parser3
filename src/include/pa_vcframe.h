@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vcframe.h,v 1.2 2001/02/25 14:23:31 paf Exp $
+  $Id: pa_vcframe.h,v 1.3 2001/03/06 15:02:46 paf Exp $
 */
 
 #ifndef PA_VCFRAME_H
@@ -12,7 +12,7 @@ class VCodeFrame : public WWrapper {
 public: // Value
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "CodeFrame"; }
+	const char *type() const { return "code_frame"; }
 
 	// codeframe: accumulated string
 	String *get_string() { return string_wcontext.get_string(); };

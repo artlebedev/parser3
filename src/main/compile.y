@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.54 2001/03/06 14:28:35 paf Exp $
+  $Id: compile.y,v 1.55 2001/03/06 15:02:48 paf Exp $
 */
 
 %{
@@ -41,7 +41,11 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %token EON
 %token STRING
 %token BOGUS
-%token LOGICAL_AND LOGICAL_OR
+
+%left '-' '+'
+%left '*' '/'
+%left NEG     /* negation--unary minus */
+/*%right '^'    /* exponentiation        */
 
 %%
 
@@ -217,21 +221,21 @@ name_expr_wdive_root: ':' name_expr_dive_code {
 name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
 
 constructor_value: 
-	'[' constructor_code_value ']' { $$=$2 }
-|	'(' expression_value ')' { $$=$2 }
+	'[' any_constructor_code_value ']' { $$=$2 }
+|	'(' any_expression ')' { $$=$2 }
 ;
-constructor_code_value: 
-	empty_value /* optimized $var[] case */
+any_constructor_code_value: 
+	empty_string_value /* optimized $var[] case */
 |	STRING /* optimized $var[STRING] case */
-|	complex_constructor_code_value /* $var[something complex] */
+|	constructor_code_value /* $var[something complex] */
 ;
-complex_constructor_code_value: complex_constructor_code {
+constructor_code_value: constructor_code {
 	$$=N(POOL); 
 	O($$, OP_CREATE_EWPOOL); /* stack: empty write context */
 	P($$, $1); /* some codes to that context */
 	O($$, OP_REDUCE_EWPOOL); /* context=pop; stack: context.value() */
 };
-complex_constructor_code: codes__excluding_sole_str_literal;
+constructor_code: codes__excluding_sole_str_literal;
 codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
 
 /* call */
@@ -263,7 +267,7 @@ store_param_part:
 	$$=$1;
 	O($$, OP_STORE_PARAM);
 }
-|	complex_constructor_code_value { /* (something complex) */
+|	constructor_code_value { /* (something complex) */
 	$$=$1;
 	O($$, OP_STORE_PARAM);
 }
@@ -347,17 +351,34 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 
 /* expression */
 
-expression_value:
-	empty_value /* optimized $var() case */
-|	number /* optimized $var(STRING) case */
-|	complex_expression /* $var(something complex) */
+any_expression:
+	empty_double_value /* optimized $var() case */
+/*|	number /* optimized $var(number) case */
+|	expression /* $var(something complex) */
 ;
-complex_expression: expression_operand '*' expression_operand {
+expression: 
+	number
+|	expression '+' expression {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_ADD); // value=first*second; stack: value
+}
+|	expression '-' expression {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_SUB); // value=first*second; stack: value
+}
+|	expression '*' expression {
 	$$=$1; // stack: first operand
 	P($$, $3); // stack: first,second operands
 	O($$, OP_MUL); // value=first*second; stack: value
+}
+|	expression '/' expression {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_DIV); // value=first*second; stack: value
 };
-expression_operand: number;
+
 
 /*
 complex_expression_value: complex_expression {
@@ -383,7 +404,8 @@ number: STRING {
 	change_string_literal_to_double_literal($$=$1);
 };
 
-empty_value: /* empty */ { $$=SL(NEW VString(POOL)) };
+empty_double_value: /* empty */ { $$=VL(NEW VDouble(POOL)) };
+empty_string_value: /* empty */ { $$=VL(NEW VString(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%
@@ -785,7 +807,7 @@ break2:
 			PC->string->APPEND(begin, end-begin, PC->file, begin_line/*, start_col*/);
 		}
 		// create STRING value: array of OP_VALUE+vstring
-		*lvalp=SL(NEW VString(*PC->string));
+		*lvalp=VL(NEW VString(*PC->string));
 		// new pieces storage
 		PC->string=NEW String(POOL);
 		// go!

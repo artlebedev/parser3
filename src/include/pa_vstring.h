@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vstring.h,v 1.6 2001/03/06 12:22:57 paf Exp $
+  $Id: pa_vstring.h,v 1.7 2001/03/06 15:02:47 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -13,7 +13,7 @@ class VString : public Value {
 public: // Value
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "String"; }
+	const char *type() const { return "string"; }
 	// string: value
 	String *get_string() { return &string; };
 	// string: value

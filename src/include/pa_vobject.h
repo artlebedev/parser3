@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vobject.h,v 1.7 2001/02/25 16:36:11 paf Exp $
+  $Id: pa_vobject.h,v 1.8 2001/03/06 15:02:47 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -15,7 +15,7 @@ class VObject : public VAliased {
 public: // Value
 	
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "Object"; }
+	const char *type() const { return "object"; }
 
 	// object_instance: (field)=value;(CLASS)=vclass;(method)=method_ref
 	Value *get_element(const String& name) {

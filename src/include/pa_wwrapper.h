@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wwrapper.h,v 1.8 2001/02/25 14:47:12 paf Exp $
+  $Id: pa_wwrapper.h,v 1.9 2001/03/06 15:02:47 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -12,7 +12,7 @@ class WWrapper : public WContext {
 public: // Value
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "WWrapper"; }
+	const char *type() const { return "wwrapper"; }
 	// wwrapper: transparent
 	Value *get_element(const String& name) { return check_value()->get_element(name); }
 	// wwrapper: transparent

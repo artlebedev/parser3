@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.20 2001/02/25 18:02:12 paf Exp $
+  $Id: pa_wcontext.h,v 1.21 2001/03/06 15:02:47 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -13,7 +13,7 @@ class WContext : public Value {
 public: // Value
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "WContext"; }
+	const char *type() const { return "wcontext"; }
 	// WContext: accumulated string
 	String *get_string() { return &string; };
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vdouble.h,v 1.3 2001/03/06 14:28:34 paf Exp $
+  $Id: pa_vdouble.h,v 1.4 2001/03/06 15:02:46 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -14,7 +14,7 @@ class VDouble : public Value {
 public: // Value
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "Double"; }
+	const char *type() const { return "double"; }
 	// double: value
 	String *get_string() {
 		char *buf=static_cast<char *>(pool().malloc(MAX_DOUBLE_AS_STRING));

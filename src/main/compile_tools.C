@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.16 2001/03/06 14:32:18 paf Exp $
+  $Id: compile_tools.C,v 1.17 2001/03/06 15:02:48 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -9,13 +9,13 @@
 #include "pa_vstring.h"
 #include "pa_vdouble.h"
 
-void PVS(Array/*<op>*/ *result, VString *vstring) {
+void PV(Array/*<op>*/ *result, Value *value) {
 	// append OP_VALUE
 	Operation op; op.code=OP_VALUE;
 	*result+=op.cast;
 
-	// append 'vstring'
-	*result+=vstring;
+	// append 'value'
+	*result+=value;
 }
 
 void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array) {
@@ -28,12 +28,12 @@ void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array) {
 }
 
 
-Array *SL(VString *vstring) {
+Array *VL(Value *value) {
 	// empty ops array
-	Array *result=N(vstring->pool());
+	Array *result=N(value->pool());
 
-	// append 'vstring' to 'result'
-	PVS(result, vstring);
+	// append 'value' to 'result'
+	PV(result, value);
 
 	return result;
 }

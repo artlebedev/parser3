@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.52 2001/03/06 14:32:19 paf Exp $
+  $Id: execute.C,v 1.53 2001/03/06 15:02:48 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -297,12 +297,42 @@ void Request::execute(const Array& ops) {
 			}
 
 		// EXPRESSION
+		case OP_ADD: 
+			{
+				Value *b=POP();
+				Value *a=POP();
+				Value *value=NEW VDouble(pool(), 
+					a->get_double() +
+					b->get_double());
+				PUSH(value);
+				break;
+			}
+		case OP_SUB: 
+			{
+				Value *b=POP();
+				Value *a=POP();
+				Value *value=NEW VDouble(pool(), 
+					a->get_double() -
+					b->get_double());
+				PUSH(value);
+				break;
+			}
 		case OP_MUL: 
 			{
 				Value *b=POP();
 				Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
 					a->get_double() *
+					b->get_double());
+				PUSH(value);
+				break;
+			}
+		case OP_DIV: 
+			{
+				Value *b=POP();
+				Value *a=POP();
+				Value *value=NEW VDouble(pool(), 
+					a->get_double() /
 					b->get_double());
 				PUSH(value);
 				break;

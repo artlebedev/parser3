@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vunknown.h,v 1.1 2001/02/23 17:12:57 paf Exp $
+  $Id: pa_vunknown.h,v 1.2 2001/03/06 15:02:47 paf Exp $
 */
 
 #ifndef PA_VUNKNOWN_H
@@ -11,7 +11,7 @@ class VUnknown : public Value {
 public: // Value
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "Unknown"; }
+	const char *type() const { return "unknown"; }
 
 	// unknown: ""
 	virtual String *get_string() { return &empty; }

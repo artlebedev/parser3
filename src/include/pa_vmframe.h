@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.10 2001/03/01 13:52:59 paf Exp $
+  $Id: pa_vmframe.h,v 1.11 2001/03/06 15:02:47 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -13,7 +13,7 @@ class VMethodFrame : public WContext {
 public: // Value
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "MethodFrame"; }
+	const char *type() const { return "method_frame"; }
 	// frame: my or self_transparent
 	Value *get_element(const String& name) { 
 		Value *result=static_cast<Value *>(my.get(name));

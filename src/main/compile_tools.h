@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.20 2001/03/06 14:32:18 paf Exp $
+  $Id: compile_tools.h,v 1.21 2001/03/06 15:02:48 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -78,15 +78,15 @@ inline void P(Array/*<op>*/ *result, Array *code_array, int offset) {
 	result->append_array(*code_array, offset);
 }
 // aPpend 'vstring' to 'result'
-void PVS(Array/*<op>*/ *result, VString *vstring);
+void PV(Array/*<op>*/ *result, VString *vstring);
 // aPpend 'Code_Array' to result
 void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array);
 
 
-// String Literal // returns array with 
+// Value Literal // returns array with 
 // first: OP_VALUE instruction
 // second op: string itself
-Array *SL(VString *vstring);
+Array *VL(Value *value);
 // Literal Array to(2) String // return string value from literal array OP+string array
 String *SLA2S(Array *literal_string_array, int offset=0);
 
