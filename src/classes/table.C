@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2004/06/22 14:12:57 $";
+static const char * const IDENT_TABLE_C="$Date: 2004/07/14 08:36:40 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -897,7 +897,7 @@ static void marshal_bind(
 {
 	SQL_Driver::Placeholder& ph=**pptr;
 	ph.name=aname.cstr();
-	ph.value=avalue->as_string().cstr();
+	ph.value=avalue->as_string().cstr(String::L_UNSPECIFIED);
 	ph.is_null=avalue->get_class()==void_class;
 	ph.were_updated=false;
 
