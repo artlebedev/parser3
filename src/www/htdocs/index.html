@@ -1,4 +1,15 @@
 @main[]
+^rem{
+$target[targetval]
+$form_admin[formadminval]
+^if(def $target){<head><base target=$target^if(def $form_admin){_a}></head>}
+^if(def $target){<head><base target=${target}^if(def $form_admin){_a}></head>}
+
+если $target и $form_admin defined получаем
+<head><base target={_a}></head>
+<hr>
+}
+
 #$string:a(1)
 #<hr>
 #^if(^log(11)){y}{n}
@@ -46,6 +57,7 @@ $строка[вас€ «д≈с№]
 
 $a[12]
 ^a.int[]
+
 <hr>
 
 

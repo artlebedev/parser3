@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.138 2001/05/28 06:10:06 parser Exp $
+	$Id: compile.y,v 1.139 2001/06/27 10:07:53 parser Exp $
 */
 
 /**
@@ -873,12 +873,14 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case ';':
 			case ']': case '}': case ')': 
 			case '"': case '\'':
-			case '<': case '>':  // these stand for HTML brackets and expression binary ops
+			case '<': case '>':  // these stand for HTML brackets AND expression binary ops
 			case '+': case '*': case '/': case '%': 
 			case '&': case '|': 
 			case '=': case '!':
 			// common delimiters
 			case ',':
+			// before call
+			case '^': 
 				pop_LS(PC);
 				PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
 				result=EON;
