@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.40 2001/02/25 09:42:04 paf Exp $
+  $Id: execute.C,v 1.41 2001/02/25 10:11:50 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -235,15 +235,12 @@ void Request::execute(const Array& ops) {
 				VClass *called_class=frame->junction.self.get_class();
 				// variable already constructed?
 				if(wcontext->get_class()) { // yes
-					VClass *read_class=rcontext->get_class();
-					// is it me or one of my parents? 
-					if(read_class->is_or_derived_from(*called_class)) // yes
-						self=&frame->junction.self; // dynamic call
-					else // no
-						self=called_class; // static call
-				} else { // no, we have constructor call here: $some(^class:method(..))
+					// static or dynamic call
+					self=&frame->junction.self;
+				} else { // no
+					// constructor call: $some(^class:method(..))
 					self=NEW VObject(pool(), *called_class);
-					frame->write(self);
+					frame->write(self); 
 				}
 				frame->set_self(self);
 

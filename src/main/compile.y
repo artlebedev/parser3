@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.41 2001/02/25 09:42:04 paf Exp $
+  $Id: compile.y,v 1.42 2001/02/25 10:11:50 paf Exp $
 */
 
 %{
@@ -145,12 +145,13 @@ action: get | put | with | call;
 
 /* get */
 
-get: '$' any_name {
+get: '$' get_name {
 	$$=$2; /* stack: resulting value */
 	OP($$, OP_WRITE); /* value=pop; write(value) */
 };
 
-any_name: name_without_curly_rdive EON | name_in_curly_rdive;
+get_name: get_name_before_EON EON | name_in_curly_rdive;
+get_name_before_EON: name_without_curly_rdive | class_element;
 
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
 name_without_curly_rdive: name_without_curly_rdive_read | name_without_curly_rdive_root;
@@ -246,26 +247,13 @@ constructor_two_params_value: STRING ';' constructor_one_param_value {
 /* call */
 
 call: '^' call_name store_params EON { /* ^field.$method{vasya} */
-	$$=$2; /* with_xxx,diving code; stack: context,method_name */
+	$$=$2; /* with_xxx,diving code; stack: context,method_junction */
 	OP($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
 	P($$, $3); /* filling method_frame.store_params */
 	OP($$, OP_CALL); /* method_frame=pop; ncontext=pop; call(ncontext,method_frame) */
 };
 
-call_name: name_without_curly_rdive | class_method_name;
-
-class_method_name: STRING ':' name_advance1 {
-	String& name=*SLA2S($1);
-	VClass *vclass=static_cast<VClass *>(PC->request->classes().get(name));
-	if(!vclass) {
-		strcat(PC->error, "'");
-		strcat(PC->error, name.cstr());
-		strcat(PC->error, "' class is undefined in call");
-		YYERROR;
-	}
-	$$=CL(vclass);
-	P($$, $3);
-};
+call_name: name_without_curly_rdive | class_element;
 
 store_params: store_param | store_params store_param { $$=$1; P($$, $2) };
 store_param: store_round_param | store_curly_param;
@@ -341,6 +329,22 @@ subvar_get_writes: subvar__get_write | subvar_get_writes subvar__get_write { $$=
 subvar__get_write: '$' subvar_ref_name_rdive {
 	$$=$2;
 	OP($$, OP_GET_ELEMENT__WRITE);
+};
+
+class_element: class ':' name_advance1 {
+	$$=$1; // stack: vclass
+	P($$, $3); // stack: element
+};
+class: STRING {
+	String& name=*SLA2S($1);
+	VClass *vclass=static_cast<VClass *>(PC->request->classes().get(name));
+	if(!vclass) {
+		strcpy(PC->error, "'");
+		strcat(PC->error, name.cstr());
+		strcat(PC->error, "' class is undefined in call");
+		YYERROR;
+	}
+	$$=CL(vclass); // vclass
 };
 
 

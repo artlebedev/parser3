@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.15 2001/02/25 08:12:21 paf Exp $
+  $Id: pa_vclass.h,v 1.16 2001/02/25 10:11:49 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -70,7 +70,7 @@ public: // usage
 		// TODO: monkey immediate_parent
 			// fill parents & parents_hash
 	}
-
+/*
 	// true when me_or_ancestor is me or my ancestor
 	bool is_or_derived_from(VClass& me_or_ancestor) {
 		if(this==&me_or_ancestor)
@@ -78,7 +78,7 @@ public: // usage
 
 		return parents_hash.get(*me_or_ancestor.name())!=0;
 	}
-
+*/
 public: //usage
 
 	VHash STATICS;
