@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.49 2001/04/23 08:52:24 paf Exp $
+	$Id: pa_common.C,v 1.50 2001/04/23 10:19:02 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -104,7 +104,6 @@ bool file_read(Pool& pool, const String& file_spec,
     return false;
 }
 
-/// @test mkdirs
 void file_write(Pool& pool, 
 				const String& file_spec, 
 				const void *data, size_t size, 
@@ -112,7 +111,14 @@ void file_write(Pool& pool,
 				bool exclusive*/) {
 	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
 	int f;
-	if(access(fname, F_OK)!=0) {/*no*/
+	if(access(fname, W_OK)!=0) {/*no*/
+		size_t pos_after=1;
+		int pos_before;
+		while((pos_before=file_spec.pos("/", 1, pos_after))>=0) {
+			mkdir(file_spec.mid(0, pos_before).cstr(String::UL_FILE_NAME), 0775);
+			pos_after=pos_before+1;
+		}
+
 		if((f=open(fname, O_WRONLY|O_CREAT|_O_BINARY, 0666))>0)
 			close(f);
 	}
@@ -141,11 +147,20 @@ void file_write(Pool& pool,
 		"write failed: %s (%d)", strerror(errno), errno);
 }
 
+static void rmdir(const String& file_spec, size_t pos_after) {
+	int pos_before;
+	if((pos_before=file_spec.pos("/", 1, pos_after))>=0)
+		rmdir(file_spec, pos_before+1);
+	
+	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::UL_FILE_NAME));
+}
 void file_delete(Pool& pool, const String& file_spec) {
 	if(unlink(file_spec.cstr(String::UL_FILE_NAME))!=0)
 		PTHROW(0, 0, 
 			&file_spec, 
 			"unlink failed: %s (%d)", strerror(errno), errno);
+
+	rmdir(file_spec, 1);
 }
 
 bool file_readable(const String& file_spec) {

@@ -27,8 +27,10 @@ $itext{
 ^text(10;30)[ПАФ сделал это fixed]
 }
 $ff[^itext.gif[]]
-^ff.save[itext.gif]
-^itext.html[$src[itext.gif]]
+^ff.save[i/itext.gif]
+^ff.save[i2/itext.gif]
+^file:delete[i2/itext.gif]
+^itext.html[$src[i/itext.gif]]
 
 
 <HR>

@@ -14,3 +14,4 @@
 #define HAVE_TIME_H
 #define HAVE_STDLIB_H
 #define HAVE_STRING_H
+#define HAVE_DIRECT_H

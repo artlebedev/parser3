@@ -56,3 +56,6 @@
 #	include <string.h>
 #endif
 
+#ifdef HAVE_DIRECT_H
+#	include <direct.h>
+#endif
