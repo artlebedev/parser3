@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.90 2001/05/15 15:41:19 parser Exp $
+	$Id: pa_string.h,v 1.91 2001/05/15 15:51:05 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -86,7 +86,7 @@ public:
 
 	enum {
 		CR_PREALLOCATED_COUNT=2, ///< default preallocated item count
-		CR_GROW_PERCENT=60 ///< each time the String chunk_is_full() string expanded()
+		CR_GROW_COUNT=2 ///< each time the String chunk_is_full() string expanded()
 	};
 
 	/// piece is tainted or not. the language to use when detaint 

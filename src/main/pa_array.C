@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.C,v 1.31 2001/04/23 15:50:02 paf Exp $
+	$Id: pa_array.C,v 1.32 2001/05/15 15:51:05 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -47,7 +47,7 @@ void Array::expand(int chunk_rows) {
 
 Array& Array::operator += (Item *src) {
 	if(chunk_is_full())
-		expand(tail->count*CR_GROW_PERCENT/100);
+		expand(tail->count+CR_GROW_COUNT);
 
 	append_here->item=src;
 	append_here++; fused_rows++;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.37 2001/05/08 08:14:53 paf Exp $
+	$Id: pa_array.h,v 1.38 2001/05/15 15:51:05 parser Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -54,7 +54,7 @@ public:
 
 	enum {
 		CR_INITIAL_ROWS_DEFAULT=10, ///< default preallocated row count
-		CR_GROW_PERCENT=60 ///< each time the Array chunk_is_full() array expanded()
+		CR_GROW_COUNT=10 ///< each time the Array chunk_is_full() array expanded()
 	};
 
 public:

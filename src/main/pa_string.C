@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.84 2001/05/15 15:41:20 parser Exp $
+	$Id: pa_string.C,v 1.85 2001/05/15 15:51:05 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -40,7 +40,7 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 }
 
 void String::expand() {
-	size_t new_chunk_count=last_chunk->count+last_chunk->count*CR_GROW_PERCENT/100;
+	size_t new_chunk_count=last_chunk->count+CR_GROW_COUNT;
 	last_chunk=static_cast<Chunk *>(
 		malloc(sizeof(size_t)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *)));
 	last_chunk->count=new_chunk_count;
