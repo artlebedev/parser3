@@ -1,4 +1,4 @@
-SUBDIRS = gd
+SUBDIRS = gd xalan-patched
 
 INCLUDES = -I../types -I../sql -I../pcre -Igd @XML_INCLUDES@
 
