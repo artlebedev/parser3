@@ -1,5 +1,5 @@
 /*
-  $Id: pa_exception.h,v 1.1 2001/01/30 11:51:07 paf Exp $
+  $Id: pa_exception.h,v 1.2 2001/01/30 13:07:31 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -26,7 +26,7 @@ public:
 	const String *type() { return ftype; }
 	const String *code() { return fcode; }
 	const String *problem_source() { return fproblem_source; }
-	const char *comment() { return fcomment; }
+	const char *comment() { return fcomment[0]?fcomment:0; }
 
 private:
 

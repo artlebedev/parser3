@@ -1,12 +1,11 @@
 /*
-  $Id: pa_array.C,v 1.11 2001/01/29 20:46:22 paf Exp $
+  $Id: pa_array.C,v 1.12 2001/01/30 13:07:31 paf Exp $
 */
 
 #include <string.h>
 
 #include "pa_pool.h"
 #include "pa_array.h"
-#include "pa_error.h"
 
 void *Array::operator new(size_t size, Pool& apool) {
 	return apool.malloc(size);
@@ -49,7 +48,8 @@ Array& Array::operator += (const Item *src) {
 
 const Array::Item *Array::get(int index) const {
 	if(!(index>=0 && index<size())) {
-		Error::die("Array::get out of range");
+		pool.exception().raise(0, 0, 0, 
+			"Array::get(%d) out of range [0..%d]", index, size()-1);
 		return 0;
 	}
 

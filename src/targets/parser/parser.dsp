@@ -95,42 +95,6 @@ SOURCE=.\parser.C
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\include\pa_array.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_common.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_error.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_hash.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_pool.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_request.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_string.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_table.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_types.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\pool.h
 # End Source File
 # End Group

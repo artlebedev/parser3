@@ -1,5 +1,5 @@
 /*
-  $Id: pa_table.h,v 1.5 2001/01/29 22:34:57 paf Exp $
+  $Id: pa_table.h,v 1.6 2001/01/30 13:07:31 paf Exp $
 */
 
 /*
@@ -19,7 +19,7 @@
 class Table : public Array {
 public:
 
-	Table(Request& request,
+	Table(Request& arequest,
 		char *afile, uint aline,
 		Array *acolumns,
 		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
@@ -39,7 +39,7 @@ public:
 
 protected:
 
-	// request I'm processed on
+	// the request I'm processed on. for error reporting
 	Request& request;
 
 	// the base origin of table's data
