@@ -1,4 +1,15 @@
 @auto[]
+$limits[
+	$.post_max_size(10*0x400*0x400)
+]	
+$defaults[
+	$.content-type0[text/html]
+	$.content-type[
+		$.value[text/html]
+		$.charset[windows-1251]
+	]
+]
+
 $SQL[
 	$.drivers[^table::set{protocol	driver	client
 mysql	d:\Y\parser3\src\sql\mysql\debug\parser3mysql.dll	d:\y\parser3\src\sql\mysql\mySQL32\lib\opt\libmySQL.dll
@@ -22,9 +33,8 @@ _	&nbsp^;
 (c)	&copy^;
 ^#A9	&copy^;	windows (c)
 }]
-#$if(!($SQL is hash)){$SQL[$z[z]]}
-$SQL.connect-string[mysql://test:test@localhost/test/cp1251_koi8]
-$SQL.connect-string[mysql://test:test@[/a/b]/test/cp1251_koi8]
+
+
 #for ^file::load[name;user-name;mime-type << autodetection]
 $MIME-TYPES[^table::set{ext	mime-type
 zip	application/zip
@@ -55,9 +65,9 @@ mov	video/quicktime
 swf	application/x-shockwave-flash
 }]
 
-@auto_test[]
-^BASE.auto_test[]
-<li>DR
-
-@main[]
-/auto.p main
+@exception[origin;source;comment;type;code]
+ROOT_ERROR:
+^if(def $source){$origin '$source'}
+${comment}.
+^if(def $type){type=$type}
+^if(def $code){code=$code}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: op.C,v 1.34 2001/07/07 16:38:01 parser Exp $"; 
+static const char *RCSId="$Id: op.C,v 1.35 2001/07/26 16:16:57 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -27,10 +27,6 @@ static const char *RCSId="$Id: op.C,v 1.34 2001/07/07 16:38:01 parser Exp $";
 
 #define SWITCH_DATA_NAME "SWITCH-DATA"
 #define DEFAULT_VALUE "DEFAULT"
-
-// local variable
-
-static Methoded *OP;
 
 // class
 
@@ -234,7 +230,7 @@ static void _connect(Request& r, const String&, MethodParams *params) {
 	Value& body_code=params->as_junction(1, "body must be code");
 
 	Table *protocol2driver_and_client=
-		static_cast<Table *>(r.classes_conf.get(OP->name()));
+		static_cast<Table *>(r.classes_conf.get(r.OP.name()));
 
 	// connect
 	SQL_Connection& connection=SQL_driver_manager->get_connection(
@@ -380,7 +376,7 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 // constructor & configurator
 
 Methoded *MOP_create(Pool& pool) {
-	return OP=new(pool) MOP(pool);
+	return new(pool) MOP(pool);
 }
 
 
