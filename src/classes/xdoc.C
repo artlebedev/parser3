@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2002/09/20 11:23:33 $";
+static const char* IDENT_XDOC_C="$Date: 2002/09/20 13:09:49 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -446,6 +446,10 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 			throw Exception(
 				&method_name, 
 				exc);
+
+		xmlDoc *doc=gdome_xml_doc_get_xmlDoc(document);
+		const char *source_charset_name=pool.get_source_charset().name().cstr();
+		doc->encoding=pool.get_source_charset().transcode_buf2xchar(source_charset_name, strlen(source_charset_name));
 
 		/// +xalan createXMLDecl ?
 	}

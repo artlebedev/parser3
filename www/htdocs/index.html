@@ -249,14 +249,58 @@ $response:charset[windows-1251]
 #^zeroinstdin[]
 #^shifts[]
 #^jspace[]
-^user-foreach[key;value]{$key=$value<br>}
+#^user-foreach-test[]
+#^touchittest[]
+#^hashselfmodification[]
+#^emptyTransformResult[]
+#^badxdoccreate[]
+^if(-d "/"){y}{n}
 <hr>
 OK
 
+
+@badxdoccreate[]
+$xdoc[^xdoc::create[вася]]
+#$xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?><doc>вася</doc>}]
+
+^xdoc.firstChild.setAttribute[name;значение]
+^xdoc.string[]
+
+
+@emptyTransformResult[]
+$input[^xdoc::create[docBad]]
+$sheet[^xdoc::create{<?xml version="1.0"?> 
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+	<xsl:template match="doc">
+		output
+	</xsl:template>
+</xsl:stylesheet>
+}]
+$output[^input.transform[$sheet]]
+$response:body[^output.file[]]
+
+@hashselfmodification[]
+$hash[
+	$.a[1]
+	$.b[2]
+]
+^hash.foreach[key;value]{
+#	$hash.c[1]
+	$hash.a[1]
+}	
+
+@touchittest[][i]
+^touchit[]
+$i
+
+
+@user-foreach-test[][key;value]
+^user-foreach[key;value]{$key=$value<br>}
+
 @user-foreach[key;value;code]
 ^for[i](1;10){
-	$code.key($i)
-	$code.value($i*2)
+	$code.$key($i)
+	$code.$value($i*2)
 	$code
 }
 
