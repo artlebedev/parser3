@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.41 2001/11/01 15:45:27 paf Exp $
+	$Id: xdoc.C,v 1.42 2001/11/05 10:42:59 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -688,6 +688,9 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		connection.close();
 		Exception::provide_source(pool, &stylesheet_file_name, e);
 	}
+
+	// close
+	connection.close();
 
 	// write out result
 	VXdoc& result=*new(pool) VXdoc(pool, target, false/*owns not*/);

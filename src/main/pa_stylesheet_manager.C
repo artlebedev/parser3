@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_manager.C,v 1.2 2001/11/05 10:21:28 paf Exp $
+	$Id: pa_stylesheet_manager.C,v 1.3 2001/11/05 10:42:59 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -17,6 +17,7 @@
 #include "pa_threads.h"
 #include "pa_stack.h"
 #include "pa_vhash.h"
+#include "pa_vtable.h"
 
 // globals
 
@@ -44,9 +45,11 @@ static void expire_connections(const Hash::Key& key, Hash::Val *value, void *inf
 
 // Stylesheet_manager
 
-Stylesheet_manager::Stylesheet_manager(Pool& pool) : Pooled(pool),
-	connection_cache(pool),
+Stylesheet_manager::Stylesheet_manager(Pool& apool) : Pooled(apool),
+	connection_cache(apool),
 	prev_expiration_pass_time(0) {
+	
+	status_providers->put(*NEW String(pool(), "stylesheet"), this);
 }
 Stylesheet_manager::~Stylesheet_manager() {
 	connection_cache.for_each(expire_connections, 
@@ -124,22 +127,47 @@ void Stylesheet_manager::maybe_expire_connection_cache() {
 	}
 }
 
+static void add_connection_to_status_cache_table(Array::Item *value, void *info) {
+	Stylesheet_connection& connection=*static_cast<Stylesheet_connection *>(value);
+	Table& table=*static_cast<Table *>(info);
+
+	if(connection.connected()) {
+		Pool& pool=table.pool();
+		Array& row=*new(pool) Array(pool, 3);
+
+		row+=&connection.file_spec();
+		time_t time_stamp=connection.get_time_used();
+		const char *unsafe_time_cstr=ctime(&time_stamp);
+		int time_buf_size=strlen(unsafe_time_cstr);
+		char *safe_time_buf=(char *)pool.malloc(time_buf_size);
+		memcpy(safe_time_buf, unsafe_time_cstr, time_buf_size);
+		row+=new(pool) String(pool, safe_time_buf, time_buf_size);
+
+		table+=&row;
+	}
+}
+static void add_connections_to_status_cache_table(const Hash::Key& key, Hash::Val *value, void *info) {
+	Stack& stack=*static_cast<Stack *>(value);
+	Array_iter iter(stack);
+	for(int countdown=stack.top_index(); countdown-->=0; )
+		add_connection_to_status_cache_table(iter.next(), info);
+}
+
 Value& Stylesheet_manager::get_status(Pool& pool, const String *source) {
 	VHash& result=*new(pool) VHash(pool);
-/*	
+
 	// cache
 	{
 		Array& columns=*new(pool) Array(pool, 3);
-		columns+=new(pool) String(pool, "protocol");
+		columns+=new(pool) String(pool, "file");
 		columns+=new(pool) String(pool, "time");
-		columns+=new(pool) String(pool, "times");
 		Table& table=*new(pool) Table(pool, 0, &columns, connection_cache.size());
 
 		connection_cache.for_each(add_connections_to_status_cache_table, &table);
 
 		result.hash(source).put(*new(pool) String(pool, "cache"), new(pool) VTable(pool, &table));
 	}
-*/
+
 	return result;
 }
 

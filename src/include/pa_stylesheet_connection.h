@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.14 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.15 2001/11/05 10:42:59 paf Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -48,6 +48,7 @@ public:
 	bool expired(time_t older_dies) {
 		return time_used<older_dies;
 	}
+	time_t get_time_used() { return time_used; }
 
 	void close() {
 		stylesheet_manager->close_connection(ffile_spec, *this);

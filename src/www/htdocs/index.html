@@ -1,4 +1,6 @@
 @main[]
+^status[]
+<hr>
 #^xchildren[]
 #^thashforeach3[]
 #^thashforeach2[]
@@ -53,10 +55,11 @@
 #^exec[]
 #^fori[]
 ^tconnect[]
-^status[]
-#^xslt[]
+^xslt[]
 #^xml[]
 #^header[]
+<hr>
+^status[]
 OK
 
 @status[]
@@ -76,6 +79,24 @@ $c[$status:sql.cache]
 </tr>
 }
 </table>
+
+$c[$status:stylesheet.cache]
+<table border=1>
+<tr>
+	<td colspan=3>
+	stylesheet.cache
+	</td>
+</tr>
+	<td>file</td>
+	<td>time</td>
+^c.menu{
+<tr>
+	<td>$c.file</td>
+	<td>$c.time</td>
+</tr>
+}
+</table>
+
 
 @xchildren[]
 $constructor[
@@ -590,7 +611,7 @@ $file[^xdoc.file[
 	$.method[html]
 ]]
 ^file.save[text;save_file.html]
-<pre>taint[^xdoc.string[]]
+<pre>^taint[^xdoc.string[]]
 #	$.encoding[windows-1251]
 #	$.method[html]
 #]]

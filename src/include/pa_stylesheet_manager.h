@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_manager.h,v 1.3 2001/11/05 10:21:27 paf Exp $
+	$Id: pa_stylesheet_manager.h,v 1.4 2001/11/05 10:42:59 paf Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -33,7 +33,7 @@ class Stylesheet_manager : public Pooled, public Status_provider {
 	friend class Stylesheet_connection;
 public:
 
-	Stylesheet_manager(Pool& pool);
+	Stylesheet_manager(Pool& apool);
 	~Stylesheet_manager();
 	/** 
 		check for disk update of "{file_spec}" or "{file_spec}.stamp",

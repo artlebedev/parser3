@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstatus.h,v 1.1 2001/11/05 10:21:28 paf Exp $
+	$Id: pa_vstatus.h,v 1.2 2001/11/05 10:42:59 paf Exp $
 */
 
 #ifndef PA_VSTATUS_H
@@ -23,8 +23,10 @@ public: // Value
 	// VStatus: field
 	Value *get_element(const String& aname) {
 		// getstatus
-		return &static_cast<Status_provider *>(status_providers->get(aname))->
-			get_status(pool(), &aname);
+		if(Status_provider *provider=static_cast<Status_provider *>(status_providers->get(aname)))
+			return &provider->get_status(pool(), &aname);
+
+		return 0;
 	}
 
 public: // usage

@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.h,v 1.15 2001/10/29 08:23:49 paf Exp $
+	$Id: pa_db_connection.h,v 1.16 2001/11/05 10:42:59 paf Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
@@ -35,11 +35,11 @@ public:
 	bool expired(time_t older_dies) {
 		return !used && time_used<older_dies;
 	}
+	time_t get_time_used() { return time_used; }
+	int get_users_count() { return used; }
 
 	/**
-		connect to specified file_name, 
-		using driver dynamic library found in table, if not loaded yet
-		checks driver version
+		connect to specified file_name
 	*/
 	DB_Table_ptr get_table_ptr(const String& file_name, const String *source);
 
