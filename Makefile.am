@@ -8,3 +8,5 @@ EXTRA_DIST = operators.txt parser3.dsw
 update:
 	cvs update
 	$(MAKE)
+
+happy: update install
