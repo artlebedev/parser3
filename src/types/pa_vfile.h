@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.15 2001/04/02 16:00:16 paf Exp $
+	$Id: pa_vfile.h,v 1.16 2001/04/03 06:23:08 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -32,6 +32,9 @@ public: // Value
 	/// VFile: true
 	bool as_bool() { return true; }
 
+	/// VFile: this
+	const VFile *as_vfile() const { return this; }
+
 	/// VFile: CLASS,BASE,method,field
 	Value *VFile::get_element(const String& aname) {
 		// $CLASS,$BASE,$method
@@ -39,7 +42,7 @@ public: // Value
 			return result;
 
 		// $name, $size, $text
-		return static_cast<Value *>(fields.get(aname));
+		return static_cast<Value *>(ffields.get(aname));
 	}
 
 protected: // VAliased
@@ -52,10 +55,10 @@ public: // usage
 	VFile::VFile(Pool& apool) : VStateless_object(apool, *file_class),
 		fvalue_ptr(0),
 		fvalue_size(0),
-		fields(apool) {
+		ffields(apool) {
 	}
 
-	void set(const void *avalue_ptr, size_t avalue_size, const char *afile_name,
+	void set(const void *avalue_ptr, size_t avalue_size, const char *afile_name=0,
 		const String *amime_type=0);
 	
 	void save(const String& file_spec) {
@@ -67,11 +70,15 @@ public: // usage
 				"saving unassigned file"); //never
 	}
 
+	const void *value_ptr() const { return fvalue_ptr; }
+	size_t value_size() const { return fvalue_size; }
+	const Hash fields() const { return ffields; }
+
 private:
 
 	const void *fvalue_ptr;
 	size_t fvalue_size;
-	Hash fields;
+	Hash ffields;
 
 };
 

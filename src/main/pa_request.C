@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.89 2001/04/02 08:44:57 paf Exp $
+	$Id: pa_request.C,v 1.90 2001/04/03 06:23:05 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -24,6 +24,7 @@
 #include "pa_types.h"
 #include "pa_vtable.h"
 #include "_random.h"
+#include "pa_vfile.h"
 
 /// $limits.post_max_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
@@ -97,6 +98,8 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 	the file user requested us to process
 	all located classes become children of one another,
 	composing class we name 'MAIN'
+
+	@test post-process
 */
 void Request::core(const char *root_auto_path, bool root_auto_fail,
 				   const char *site_auto_path, bool site_auto_fail,
@@ -205,17 +208,19 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			0, 
 			"'"MAIN_METHOD_NAME"' method not found");
 
-		// post-process
-		// todo
+		const VString body_vstring(*body_string);
+		//\ post-process
+
+		const VFile *body_file=body_vstring.as_vfile();
 
 		// extract response body
 		Value *body_value=static_cast<Value *>(
 			response.fields().get(*body_name));
 		if(body_value) // there is some $request.body
-			body_string=&body_value->as_string();// TODO: IMAGE&FILE
+			body_file=body_value->as_vfile();
 
 		// OK. write out the result
-		output_result(*body_string, header_only);
+		output_result(*body_file, header_only);
 	} 
 	CATCH(e) { // request handling problem
 		// we're returning not result, but error explanation
@@ -368,8 +373,11 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				body_string=NEW String(pool(), buf);
 			}
 
+			const VString body_vstring(*body_string);
+			const VFile *body_file=body_vstring.as_vfile();
+
 			// ERROR. write it out
-			output_result(*body_string, header_only);
+			output_result(*body_file, header_only);
 		}
 		CATCH(e) {
 			// exception in request exception handler
@@ -449,21 +457,28 @@ const String& Request::absolute(const String& relative_name) {
 		return relative(info.path_translated, relative_name);
 }
 
-void Request::output_result(const String& body_string, bool header_only) {
+void Request::output_result(const VFile& body_file, bool header_only) {
 	// header: cookies
 	cookie.output_result();
 	
-	// set default content-type
-	response.fields().put_dont_replace(*content_type_name, 
-		default_content_type?default_content_type
-		:NEW VString(*NEW String(pool(), DEFAULT_CONTENT_TYPE)));
+	// set content-type
+	if(String *body_file_content_type=static_cast<String *>(
+		body_file.fields().get(*vfile_mime_type_name))) {
+		// body file content type
+		response.fields().put(*content_type_name, body_file_content_type);
+	} else {
+		// default content type
+		response.fields().put_dont_replace(*content_type_name, 
+			default_content_type?default_content_type
+			:NEW VString(*NEW String(pool(), DEFAULT_CONTENT_TYPE)));
+	}
 
 	// prepare header: $response:fields without :body
 	response.fields().for_each(add_header_attribute, /*excluding*/ body_name);
 
 	// prepare...
-	const char *body=body_string.cstr();
-	size_t content_length=strlen(body);
+	const void *body=body_file.value_ptr();
+	size_t content_length=body_file.value_size();
 
 	// prepare header: content-length
 	if(content_length) { // useful for redirecting [header "location: http://..."]

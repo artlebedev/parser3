@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.35 2001/03/28 13:21:30 paf Exp $
+	$Id: pa_common.C,v 1.36 2001/04/03 06:23:05 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -198,14 +198,14 @@ char *format(Pool& pool, double value, char *fmt) {
 	return result;
 }
 
-size_t stdout_write(const char *buf, size_t size) {
+size_t stdout_write(const void *buf, size_t size) {
 #ifdef WIN32
 	do{
 		int chunk_written=fwrite(buf, 1, min(8*0x400, size), stdout);
 		if(chunk_written<=0)
 			break;
 		size-=chunk_written;
-		buf+=chunk_written;
+		buf=((const char*)buf)+chunk_written;
 	} while(size>0);
 
 	return size;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.74 2001/04/03 05:23:40 paf Exp $
+	$Id: pa_request.h,v 1.75 2001/04/03 06:23:04 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -209,7 +209,7 @@ private: // lang manipulation
 
 private:
 
-	void output_result(const String& body_string, bool header_only);
+	void output_result(const VFile& body_file, bool header_only);
 };
 
 ///	Auto-object used for temporary changing Request::flang.

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.29 2001/03/28 09:38:07 paf Exp $
+	$Id: pa_common.h,v 1.30 2001/04/03 06:23:04 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -120,7 +120,7 @@ inline int max(int a,int b) { return a>b?a:b; }
 inline int min(int a,int b){ return a<b?a:b; }
 #endif
 
-size_t stdout_write(const char *buf, size_t size);
+size_t stdout_write(const void *buf, size_t size);
 
 const char *unescape_chars(Pool& pool, const char *cp, int len);
 

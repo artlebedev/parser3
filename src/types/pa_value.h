@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.41 2001/04/02 09:29:20 paf Exp $
+	$Id: pa_value.h,v 1.42 2001/04/03 06:23:07 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -25,6 +25,7 @@ class Table;
 class Junction;
 class Method;
 class Hash;
+class VFile;
 
 ///	grandfather of all @a values in @b Parser
 class Value : public Pooled {
@@ -92,6 +93,15 @@ public: // Value
 		- VFile: true
 	*/
 	virtual bool as_bool() { bark("(%s) does not have logical value"); return 0; }
+	/** extract file
+		@return for
+		- VFile: this
+		- VString: vfile
+		- VImage: vfile
+	*/
+	virtual const VFile *as_vfile() const { 
+		bark("(%s) does not have file value"); return 0; 
+	}
 	/** extract Junction
 		@return for
 		- junction: itself

@@ -78,6 +78,8 @@ $a[vasya,fedya,kolya]
 ^$request:browser.version=$request:browser.version<BR>
 
 $tf[^file:load[test.zip;abc.zip]]
+$response:body[$tf]
+
 ^$tf.name=$tf.name<BR>
 ^$tf.size=$tf.size<BR>
 ^$tf.mime-type=$tf.mime-type<BR>

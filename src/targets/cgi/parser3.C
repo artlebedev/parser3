@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.52 2001/04/03 05:23:43 paf Exp $
+	$Id: parser3.C,v 1.53 2001/04/03 06:23:06 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -85,7 +85,7 @@ void SAPI::send_header(Pool& pool) {
 	}
 }
 
-void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
+void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 	stdout_write(buf, size);
 }
 

@@ -349,6 +349,10 @@ SOURCE=..\types\pa_vstateless_object.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vstring.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vstring.h
 # End Source File
 # Begin Source File
