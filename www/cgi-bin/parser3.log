@@ -123,3 +123,4 @@
 [Mon Apr 22 13:54:15 2002] /index.cgihtml: global(0): 'MAIN' class may not be overwritten with 'double' double, use constructor [parser.runtime]
 [Mon Apr 22 13:54:20 2002] /index.cgihtml: global(0): 'MAIN' class may not be overwritten with 'double' double, use constructor [parser.runtime]
 [Mon Apr 22 14:00:13 2002] /index.cgihtml: global(0): 'MAIN' class may not be overwritten with 'double' double, use constructor [parser.runtime]
+[Mon Apr 22 14:27:36 2002] /index.cgihtml: junction used outside of context [parser.runtime]
