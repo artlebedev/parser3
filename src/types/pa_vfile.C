@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b file parser type.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vfile.C,v 1.26 2002/02/08 08:31:32 paf Exp $
+	$Id: pa_vfile.C,v 1.28 2002/03/04 14:51:10 paf Exp $
 */
 
 #include "pa_vfile.h"
@@ -45,7 +45,7 @@ void VFile::set(bool tainted,
 		if(premature_zero_pos!=fvalue_ptr)
 			text.APPEND((char *)fvalue_ptr, 
 				premature_zero_pos?premature_zero_pos-(char *)fvalue_ptr:fvalue_size, 
-				tainted? String::UL_TAINTED : String::UL_CLEAN,
+				tainted? String::UL_TAINTED : String::UL_AS_IS,
 				origin_file, 0);
 		ffields.put(*text_name, NEW VString(text));
 	}

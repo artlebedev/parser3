@@ -7,7 +7,9 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^xmlprobs[]
+^execlangs[]
+#$t[^tobjeresult[]]$t.a
+#^xmlprobs[]
 #^doubleprobs[]
 #^math:random(-10)
 #^divnamestop[]
@@ -102,6 +104,19 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@execlangs[]
+$f[^file::exec[test.pl]]
+^process{$f.text}
+#$c[^t.columns[]]
+#^c.menu{
+#* $c.column<br>
+#}
+=$t.c=
+
+@tobjeresult[]
+^table::create{a
+12}
 
 @xmlprobs[]
 $xmlDataType[^xdoc::load[program.xml]]
