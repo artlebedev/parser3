@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char* IDENT_VHASHFILE_H="$Date: 2003/11/06 11:12:44 $";
+static const char* IDENT_VHASHFILE_H="$Date: 2003/11/06 11:53:06 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -64,9 +64,11 @@ public: // usage
 	override ~VHashfile();
 
 	void open(const String& afile_name);
+	void make_writable();
 	void clear();
 	void remove(const String& aname);
 
+	void for_each(void callback(apr_sdbm_datum_t, void*), void* info) const;
 	void for_each(void callback(const String::Body, const String&, void*), void* info) const;
 
 private:
@@ -76,6 +78,7 @@ private:
 
 private:
 
+	const char* file_name;
 	apr_sdbm_t *db;
 
 };

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 11:12:44 $";
+static const char* IDENT="$Date: 2003/11/06 11:53:06 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -25,9 +25,18 @@ void check(const char *step, apr_status_t status) {
 }
 
 void VHashfile::open(const String& afile_name) {
-	check("apr_sdbm_open", apr_sdbm_open(&db, afile_name.cstr(String::L_FILE_SPEC), 
-                                        APR_WRITE|APR_CREATE|APR_SHARELOCK, 
+	check("apr_sdbm_open(shared)", apr_sdbm_open(&db, file_name=afile_name.cstr(String::L_FILE_SPEC), 
+                                        APR_CREATE|APR_READ|APR_SHARELOCK, 
                                         0664, 0));
+}
+
+void VHashfile::make_writable() {
+	if(db && apr_sdbm_rdonly(db)) {
+		check("apr_sdbm_close", apr_sdbm_close(db));
+		check("apr_sdbm_open(exclusive)", apr_sdbm_open(&db, file_name, 
+											APR_WRITE, 
+											0664, 0));
+	}
 }
 
 VHashfile::~VHashfile() {
@@ -35,10 +44,9 @@ VHashfile::~VHashfile() {
 		check("apr_sdbm_close", apr_sdbm_close(db));
 }
 
-void VHashfile::clear() {
-}
-
 void VHashfile::put_field(const String& aname, Value *avalue) {
+	make_writable();
+
 	time_t time_to_die=0;
 	const String *value_string;
 
@@ -90,6 +98,8 @@ Value *VHashfile::get_field(const String& aname) {
 }
 
 void VHashfile::remove(const String& aname) {
+	make_writable();
+
 	apr_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
 	key.dsize=aname.length();
@@ -97,20 +107,13 @@ void VHashfile::remove(const String& aname) {
 	check("apr_sdbm_delete", apr_sdbm_delete(db, key));
 }
 
-void VHashfile::for_each(void callback(const String::Body, const String&, void*), void* info) const {
+void VHashfile::for_each(void callback(apr_sdbm_datum_t, void*), void* info) const {
 	check("apr_sdbm_lock", apr_sdbm_lock(db, APR_FLOCK_SHARED));
 	try {
 		apr_sdbm_datum_t apkey;
-		apr_status_t status;
 		if(apr_sdbm_firstkey(db, &apkey)==APR_SUCCESS)
 			do {
-				apr_sdbm_datum_t apvalue;
-				check("apr_sdbm_fetch", apr_sdbm_fetch(db, &apvalue, apkey));
-
-				const char *clkey=pa_strdup(apkey.dptr, apkey.dsize);
-				const char *clvalue=pa_strdup(apvalue.dptr, apvalue.dsize);
-				const String& svalue=*new String(clvalue, true);
-				callback(clkey, svalue, info);
+				callback(apkey, info);
 			} while(apr_sdbm_nextkey(db, &apkey)==APR_SUCCESS);
 	} catch(...) {
 			check("apr_sdbm_unlock", apr_sdbm_unlock(db));
@@ -119,6 +122,45 @@ void VHashfile::for_each(void callback(const String::Body, const String&, void*)
 
 	check("apr_sdbm_unlock", apr_sdbm_unlock(db));
 }
+
+#ifndef DOXYGEN
+struct For_each_string_callback_info {
+	apr_sdbm_t *db;
+	void* nested_info;
+	void (*nested_callback)(const String::Body, const String&, void*);
+};
+#endif
+static void for_each_string_callback(apr_sdbm_datum_t apkey, void* ainfo) {
+	For_each_string_callback_info& info=*static_cast<For_each_string_callback_info *>(ainfo);
+
+	apr_sdbm_datum_t apvalue;
+	check("apr_sdbm_fetch", apr_sdbm_fetch(info.db, &apvalue, apkey));
+
+	const char *clkey=pa_strdup(apkey.dptr, apkey.dsize);
+	const char *clvalue=pa_strdup(apvalue.dptr, apvalue.dsize);
+	const String& svalue=*new String(clvalue, true);
+	info.nested_callback(clkey, svalue, info.nested_info);
+}
+void VHashfile::for_each(void callback(const String::Body, const String&, void*), void* ainfo) const {
+	For_each_string_callback_info info;
+	
+	info.db=db;
+	info.nested_info=ainfo;
+	info.nested_callback=callback;
+
+	for_each(for_each_string_callback, &info);
+}
+
+void clear_callback(apr_sdbm_datum_t key, void* adb) {
+	check("apr_sdbm_delete", apr_sdbm_delete(static_cast<apr_sdbm_t *>(adb), key));
+}
+
+void VHashfile::clear() {
+	make_writable();
+
+	for_each(clear_callback, db);
+}
+
 
 static void get_hash__put(const String::Body key, const String& value, void* aresult) {
 	static_cast<HashStringValue*>(aresult)->put(key, new VString(value));

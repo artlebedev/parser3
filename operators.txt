@@ -372,6 +372,24 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
     !^delete[ключ]  удалить ключ
 
+hashfile
+    !^hashfile::open[filename]
+    ^hashfile.clear[]  забыть всё
+    !.ключ[значение]  положить значение
+    .ключ[$.value[значение] $.expires(секунд)}  положить значение на expires секунд
+    !.ключ  достать
+    !^delete[ключ]  удалить ключ
+    !^hash[]
+        преобразовать в обычный hash
+    !^foreach[key|value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
+
+    пример:
+    $uids[^hashfile::assign[/db/uids]]
+    
+    $random[23847387taduigh345XGHWElxjgdjg]
+    $uids.$random[$.value[$uid] $.expires(60*30)]
+    $uid[$persistent.logins.$random]
+
 !form
     [берётся первый элемент из одноимённых из GET, потом первый из POST]
     !$form:поле = string/file 
@@ -429,24 +447,6 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         не добавляет к content-type ничего, если хочется, это надо сделать вручную
         ПРЕДУПРЕЖДЕНИЕ: класс form получает свои поля после обработки всех auto класса MAIN
         поэтому необходимо задать $request/response:charset в одном из них. не после.
-
-hashfile
-    !^hashfile::open[filename]
-    ^hashfile.clear[]  забыть всё
-    !.ключ[значение]  положить значение
-    .ключ[$.value[значение] $.expires(секунд)}  положить значение на expires секунд
-    !.ключ  достать
-    !^delete[ключ]  удалить ключ
-    !^hash[]
-        преобразовать в обычный hash
-    !^foreach[key|value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
-
-    пример:
-    $uids[^hashfile::assign[/db/uids]]
-    
-    $random[23847387taduigh345XGHWElxjgdjg]
-    $uids.$random[$.value[$uid] $.expires(60*30)]
-    $uid[$persistent.logins.$random]
 
 !mail
     !$mail.received=MESSAGE:
