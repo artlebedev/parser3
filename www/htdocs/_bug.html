@@ -4,7 +4,8 @@ $request:charset[UTF-8]
 $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 $xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
-<doc>
+<doc attribute="a
+	 b">
 исходный
 </doc>
 }]
