@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.31 2001/09/06 16:54:14 parser Exp $
+	$Id: pa_vform.C,v 1.32 2001/09/07 10:21:59 parser Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
@@ -192,7 +192,7 @@ void VForm::AppendFormEntry(const char *aname,
 		}
 	}
 
-	fields.put(sname, value);
+	fields.put_dont_replace(sname, value);
 }
 
 /// @todo parse input letter if some switch is on
