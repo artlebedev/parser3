@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/14 15:22:41 $";
+static const char* IDENT_OP_C="$Date: 2002/10/14 15:44:22 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -95,18 +95,27 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 
 static void _process(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VStateless_class& self_class=*r.get_self()->get_class();
 	const Method *main_method;
 	{
+		Value& vjunction=params->as_junction(0, "body must be code");
+
+		//VStateless_class& self_class=*r.get_self()->get_class();
+		VStateless_class *self_class=vjunction.get_junction()->self.get_class();
+		if(!self_class)
+			throw Exception(0,
+				&method_name,
+				"has no self class");
+
+		// evaluate source to process
+		const String& source=r.process_to_string(vjunction);
+
 		// temporary remove language change
 		Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 		// temporary zero @main so to maybe-replace it in processed code
-		Temp_method temp_method_main(self_class, r.main_method_name, 0);
+		Temp_method temp_method_main(*self_class, r.main_method_name, 0);
 		// temporary zero @auto so it wouldn't be auto-called in Request::use_buf
-		Temp_method temp_method_auto(self_class, *auto_method_name, 0);
+		Temp_method temp_method_auto(*self_class, *auto_method_name, 0);
 		
-		// evaluate source to process
-		const String& source=r.process_to_string(params->as_junction(0, "body must be code"));
 		// calculate pseudo file name of processed chars
 		// would be something like "/some/file(4) process"
 		char local_place[MAX_STRING];
@@ -130,13 +139,13 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 
 		// process source code, append processed methods to 'self' class
 		// maybe-define new @main
-		r.use_buf(self_class,
+		r.use_buf(*self_class,
 			source.cstr(String::UL_UNSPECIFIED, r.connection(0)), 
 			*new(pool) String(pool, heap_place, place_size, true /*tainted*/),
 			heap_place);
 		
 		// main_method
-		main_method=self_class.get_method(r.main_method_name);
+		main_method=self_class->get_method(r.main_method_name);
 	}
 	// after restoring current-request-lang
 	// maybe-execute @main[]
