@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.42 2001/04/26 10:16:02 paf Exp $
+	$Id: pa_common.h,v 1.43 2001/05/10 17:59:24 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -17,7 +17,6 @@
 #include "pa_pool.h"
 #include "pa_string.h"
 
-//class String;
 class Value;
 
 #if _MSC_VER
