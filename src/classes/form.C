@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: form.C,v 1.25 2002/07/01 14:26:19 paf Exp $
+	$Id: form.C,v 1.26 2002/07/01 14:33:36 paf Exp $
 */
 
 #include "classes.h"
@@ -56,12 +56,12 @@ void MForm::configure_admin(Request& r) {
 			throw Exception("parser.runtime",
 				0,
 				"posted content_length(%u) > max_post_size(%u)",
-					r.content_length, max_post_size);
+					r.info.content_length, max_post_size);
 		if(r.info.content_length<0)
 			throw Exception(0,
 				0,
 				"posted content_length(%u) < 0",
-					r.content_length);
+					r.info.content_length);
 
 		// read POST data
 		if(r.info.content_length) {

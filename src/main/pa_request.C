@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.214 2002/06/25 13:55:14 paf Exp $
+	$Id: pa_request.C,v 1.215 2002/07/01 14:33:37 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -502,8 +502,11 @@ VStateless_class *Request::use_buf(const char *source,
 	execute_nonvirtual_method(cclass, 
 		*conf_method_name, vfilespec,
 		0/*no result needed*/, &method_called);
-	if(method_called)
+	if(method_called) {
+		if(!main_class)
+			main_class=&cclass; // for root auto.p, when main_class not assigned yet
 		configure_admin(cclass, &method_called->name);
+	}
 
 	// locate and execute possible @auto[] static
 	execute_nonvirtual_method(cclass, 
