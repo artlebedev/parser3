@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/31 15:01:53 $";
+static const char* IDENT_OP_C="$Date: 2002/11/28 07:17:37 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -428,6 +428,7 @@ String *cache_get(Pool& pool, const String& file_spec, time_t now) {
 	if(file_read(pool, file_spec, 
 			   data, data_size, 
 			   false/*as_text*/, 
+			   0, 0, //no params&out_fields
 			   false/*fail_on_read_problem*/)
 	    && data_size/* ignore reads which are empty due to 
 			non-unary open+lockEX conflict with lockSH */) {

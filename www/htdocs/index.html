@@ -297,7 +297,11 @@ OK
 #^http_prefix_table[]
 #^http_prefix_xml[]
 #^imagefont[]
-^downloadtest[]
+#^downloadtest[]
+^cachebug[]
+
+@cachebug[]
+^cache[test](10){body}
 
 @downloadtest[]
 $response:body[^file::load[binary;index.html]]
