@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.65 2001/11/05 11:46:20 paf Exp $
+	$Id: file.C,v 1.66 2001/12/13 09:32:06 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -193,7 +193,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	// from Request.info
 	ECSTR(DOCUMENT_ROOT, r.info.document_root);
 	ECSTR(PATH_TRANSLATED, r.info.path_translated);
-	ECSTR(SERVER_PROTOCOL, r.info.method);
+	ECSTR(REQUEST_METHOD, r.info.method);
 	ECSTR(QUERY_STRING, r.info.query_string);
 	ECSTR(REQUEST_URI, r.info.uri);
 	ECSTR(CONTENT_TYPE, r.info.content_type);
@@ -204,6 +204,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	ECSTR(HTTP_COOKIE, r.info.cookie);
 	ECSTR(HTTP_USER_AGENT, r.info.user_agent);
 	// passing some SAPI:get_env-s
+	EPASS(SERVER_PROTOCOL);
 	EPASS(SERVER_NAME);
 	EPASS(SERVER_PORT);
 	EPASS(HTTP_REFERER);
