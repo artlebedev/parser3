@@ -16,7 +16,7 @@ $dom[^dom::set{<?xml version="1.0" encoding="windows-1251"?>
 }]
 
 ^show-dnode[$dom]<hr>
-$people[^dom.xpath[*/man/*]]
+$people[^dom.xpath[*/man[@id=1]]]
 #^show1[]
 ^show-dnodes[$people]<hr>
 
@@ -31,12 +31,27 @@ $people[^dom.xpath[*/man/*]]
 	<br>
 }
 
-@show-dnodes[array2]
-^for[i](0;^array2._count[]-1){
-	^show-dnode[$array2.$i]
+@show-dnodes[array][i]
+^for[i](0;^array._count[]-1){
+	^show-dnode[$array.$i]
 }
 
-@show-dnode[dnode]
-[$dnode.type] $dnode.name ^if(def $dnode.value){'$dnode.value'}<br>
-^if(def ${dnode.first-child}){^show-dnode[$dnode.first-child]}
-^if(def ${dnode.next-sibling}){^show-dnode[$dnode.next-sibling]}
+@show-dnode[dnode;level]
+$level
+^if($dnode.type eq element){
+	&lt^;$dnode.name
+$pairs[$dnode.attributes]
+^if(def $pairs){
+	$names[^pairs._keys[]]
+	^names.menu{$names.key=$pairs.[$names.key].value }
+}
+&gt^;
+}{[$dnode.type]}
+ 
+^if(def $dnode.value){'$dnode.value'}<br>
+^if(def ${dnode.first-child}){^show-dnode[$dnode.first-child]($level+1)}
+^if(def ${dnode.next-sibling}){^show-dnode[$dnode.next-sibling]($level)}
+
+^if($dnode.type eq element){
+$level&lt^;/$dnode.name&gt^;<br>
+}
