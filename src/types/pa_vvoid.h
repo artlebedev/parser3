@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-static const char* IDENT_VVOID_H="$Date: 2002/10/31 15:01:57 $";
+static const char* IDENT_VVOID_H="$Date: 2002/12/09 15:34:19 $";
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -44,6 +44,11 @@ public: // Value
 			return result;
 
 		return NEW VVoid(pool());
+	}
+
+	/// VVoid: bark
+	bool put_element(const String& aname, Value *avalue, bool areplace) { 
+		return Value::put_element(aname, avalue, areplace);
 	}
 
 public: // usage
