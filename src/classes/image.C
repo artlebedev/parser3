@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.22 2001/04/28 08:43:47 paf Exp $
+	$Id: image.C,v 1.23 2001/05/02 11:49:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -334,8 +334,12 @@ static gdImage *load(Request& r, const String& method_name,
 	const char *file_name_cstr=r.absolute(file_name).cstr(String::UL_FILE_NAME);
 	if(FILE *f=fopen(file_name_cstr, "rb")) {
 		gdImage& image=*new(pool) gdImage(pool);
-		image.CreateFromGif(f);
+		bool ok=image.CreateFromGif(f);
 		fclose(f);
+		if(!ok)
+			PTHROW(0, 0, 
+				&file_name,
+				"is not in GIF format");
 		return &image;
 	} else {
 		PTHROW(0, 0, 

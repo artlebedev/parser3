@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.68 2001/04/28 15:22:39 paf Exp $
+	$Id: table.C,v 1.69 2001/05/02 11:49:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -548,7 +548,7 @@ static void _dir(Request& r, const String& method_name, MethodParams *params) {
 			char *file_name_cstr=(char *)r.malloc(file_name_size);
 			memcpy(file_name_cstr, ffblk.ff_name, file_name_size);
 			String &file_name=*new(pool) String(pool);
-			file_name.APPEND_TAINTED(file_name_cstr, file_name_size, 
+			file_name.APPEND(file_name_cstr, file_name_size, String::UL_FILE_NAME,
 				method_name.origin().file, method_name.origin().line);
 		
 			Array& row=*new(pool) Array(pool);
