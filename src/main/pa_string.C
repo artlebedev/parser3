@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.132 2001/12/15 21:28:21 paf Exp $
+	$Id: pa_string.C,v 1.133 2001/12/24 07:25:43 paf Exp $
 */
 
 #include "pcre.h"
@@ -692,8 +692,12 @@ break21:;
 	if(joined_size==arow->item.size) {
 		joined_ptr=arow->item.ptr;
 		ai++; arow++;
-		if(ai==achunk->count)
-			achunk=arow->link;		
+		if(ai==achunk->count) {
+			if(achunk=arow->link) {
+				ai=0;
+				arow=chunk->rows;
+			}
+		}
 	} else {
 		// join adjacent rows
 		char *ptr=(char *)pool.malloc(joined_size,13);
@@ -734,29 +738,27 @@ String& String::reconstruct(Pool& pool) const {
 	//_asm int 3;
 	String& result=*new(pool) String(pool);
 	const Chunk *chunk=&head; 
-	while(true) {
-		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; ) {
-			if(row==append_here)
-				goto break2;
+	const Chunk::Row *row=chunk->rows;
+	for(uint i=0; i<chunk->count; ) {
+		if(row==append_here)
+			break;
 
-			uchar joined_lang;
-			const char *joined_ptr;
-			size_t joined_size;
+		uchar joined_lang;
+		const char *joined_ptr;
+		size_t joined_size;
 #ifndef NO_STRING_ORIGIN
-			const char *joined_origin_file=row->item.origin.file;
-			const size_t joined_origin_line=row->item.origin.line;
+		const char *joined_origin_file=row->item.origin.file;
+		const size_t joined_origin_line=row->item.origin.line;
 #endif
-			join_chain(pool, i, chunk, row,
-				joined_lang, joined_ptr, joined_size);
+		join_chain(pool, i, chunk, row,
+			joined_lang, joined_ptr, joined_size);
 
-			result.APPEND(joined_ptr, joined_size, joined_lang,
-				joined_origin_file, joined_origin_line);
-			if(!chunk)
-				goto break2;
-		}
+		result.APPEND(joined_ptr, joined_size, joined_lang,
+			joined_origin_file, joined_origin_line);
+
+		if(!chunk)
+			break;
 	}
-break2:
 
 	return result;
 };
