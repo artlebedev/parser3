@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.20 2001/03/25 10:29:40 paf Exp $
+	$Id: untaint.C,v 1.21 2001/03/25 10:30:43 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -185,46 +185,41 @@ char *String::store_to(char *dest) const {
 					html_for_typo_size=dest-html_for_typo;
 				}
 				// typo table replacements
-				if(typo_table) {
-					const char *src=html_for_typo;
-					do {
-						// there is a row where first column starts 'src'
-						if(Table::Item *item=typo_table->first_that(typo_present, src)) {
-							// get a=>b values
-							const String& a=*static_cast<Array *>(item)->get_string(0);
-							const String& b=*static_cast<Array *>(item)->get_string(1);
-							// empty 'a' | 'b' checks
-							if(a.size()==0 || b.size()==0) {
-								pool().set_tag(default_typo_table); // avoid recursion
-								THROW(0, 0, 
-									typo_table->origin_string(), 
-									"typo table column elements must not be empty");
-							}
-							// overflow check:
-							//   b allowed to be max UNTAINT_TIMES_BIGGER then a
-							if(b.size()>UNTAINT_TIMES_BIGGER*a.size()) {
-								pool().set_tag(default_typo_table); // avoid recursion
-								THROW(0, 0, 
-									&b, 
-									"is %g times longer then '%s', "
-									"while maximum, handled by Parser, is %d", 
-										((double)b.size())/a.size(), 
-										a.cstr(), 
-										UNTAINT_TIMES_BIGGER);
-							}
-
-							// skip 'a' in 'src'
-							src+=a.size();
-							// write 'b' to 'dest'
-							b.store_to(dest);
-							dest+=b.size();
-						} else
-							*dest++=*src++;
-					} while(*src);
-				} else {
-					memcpy(dest, html_for_typo, html_for_typo_size);
-					dest+=html_for_typo_size;
-				}
+				const char *src=html_for_typo;
+				do {
+					// there is a row where first column starts 'src'
+					if(Table::Item *item=typo_table->first_that(typo_present, src)) {
+						// get a=>b values
+						const String& a=*static_cast<Array *>(item)->get_string(0);
+						const String& b=*static_cast<Array *>(item)->get_string(1);
+						// empty 'a' | 'b' checks
+						if(a.size()==0 || b.size()==0) {
+							pool().set_tag(default_typo_table); // avoid recursion
+							THROW(0, 0, 
+								typo_table->origin_string(), 
+								"typo table column elements must not be empty");
+						}
+						// overflow check:
+						//   b allowed to be max UNTAINT_TIMES_BIGGER then a
+						if(b.size()>UNTAINT_TIMES_BIGGER*a.size()) {
+							pool().set_tag(default_typo_table); // avoid recursion
+							THROW(0, 0, 
+								&b, 
+								"is %g times longer then '%s', "
+								"while maximum, handled by Parser, is %d", 
+								((double)b.size())/a.size(), 
+								a.cstr(), 
+								UNTAINT_TIMES_BIGGER);
+						}
+						
+						// skip 'a' in 'src'
+						src+=a.size();
+						// write 'b' to 'dest'
+						b.store_to(dest);
+						dest+=b.size();
+					} else
+						*dest++=*src++;
+				} while(*src);
 				break;
 				}
 			default:
