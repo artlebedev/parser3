@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.18 2001/10/15 14:23:10 parser Exp $
+	$Id: xdoc.C,v 1.19 2001/10/18 06:38:11 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -388,10 +388,7 @@ static void create_optioned_listener(
 					String(pool, XDOC_OUTPUT_ENCODING_OPTION_NAME)))) {
 					scharset=&vencoding->as_string();
 				}
-			} else
-				PTHROW(0, 0,
-					&method_name,
-					"options must be hash");
+			}
 		}
 	}
 
@@ -766,7 +763,7 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 	// ^xdoc::set[<some>xml</some>]
 	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 1);
 	// ^xdoc::create{qualifiedName}
-	add_native_method("create", Method::CT_DYNAMIC, _create, 0, 0);	
+	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 1);	
 
 	// ^xdoc::load[some.xml]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);

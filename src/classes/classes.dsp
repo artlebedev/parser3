@@ -143,15 +143,7 @@ SOURCE=.\hash.C
 # Begin Source File
 
 SOURCE=.\hashfile.C
-
-!IF  "$(CFG)" == "classes - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "classes - Win32 Debug"
-
 # PROP Exclude_From_Build 1
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 

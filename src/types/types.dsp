@@ -104,15 +104,7 @@ SOURCE=.\pa_vform.C
 # Begin Source File
 
 SOURCE=.\pa_vhashfile.C
-
-!IF  "$(CFG)" == "types - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "types - Win32 Debug"
-
 # PROP Exclude_From_Build 1
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
