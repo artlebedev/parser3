@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2003/08/19 08:22:13 $";
+static const char* IDENT_VMAIL_C="$Date: 2003/08/19 08:30:52 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -69,14 +69,6 @@ static const String& maybeUpperCase(Charset& source_charset,
 	return toUpperCase?src.change_case(source_charset, String::CC_UPPER):src;
 }
 
-static String::C UTF8toSource(Charset& source_charset, const char* source_body) {
-	if(source_body)
-		return Charset::transcode(String::C(source_body, strlen(source_body)),
-			UTF8_charset, source_charset);
-	else
-		return String::C(0, 0);
-}
-
 static void putReceived(Charset& source_charset, 
 			HashStringValue& received, 
 			const char* must_clone_name, Value* value, 
@@ -95,12 +87,14 @@ static void putReceived(Charset& source_charset,
 			const char* must_clone_name, const char* must_clone_value, 
 			bool nameToUpperCase=false) {
 	if(must_clone_name && must_clone_value) {
-		String::C cloned_value=UTF8toSource(source_charset, must_clone_value);
-		
+
+		String::C must_clone_value_cstr(must_clone_value, strlen(must_clone_value));
+		//must_clone_value_cstr=Charset::transcode(must_clone_value_cstr, UTF8_charset, source_charset);
+
 		putReceived(source_charset,
 			received, 
 			pa_strdup(must_clone_name), 
-			new VString(*new String(pa_strdup(cloned_value.str))),
+			new VString(*new String(pa_strdup(must_clone_value_cstr.str))),
 			nameToUpperCase
 		);
 	}
