@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.11 2001/02/22 15:17:40 paf Exp $
+  $Id: compile_tools.h,v 1.12 2001/02/23 12:37:58 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -61,10 +61,6 @@ inline void OP(Array/*<op>*/ *result, enum OPCODE code) {
 	*result+=op.cast;
 }
 
-/* Argument String // append String to ops*/
-inline void AS(Array/*<op>*/ *result, String *string) {
-	*result+=string;
-}
 /* Argument Array // append Array to ops */
 inline void AA(Array/*<op>*/ *result, Array/*<op>*/ *array) {
 	*result+=array;
@@ -74,12 +70,16 @@ inline void AE(Array/*<op>*/ *result, char *eval_expression) {
 	*result+=eval_expression;
 }
 
+// aPpend 'code_array' to 'result'
 inline void P(Array/*<op>*/ *result, Array *code_array) {
 	result->append_array(*code_array);
 }
+// aPpend part of 'code_array', starting from offset, to 'result'
 inline void P(Array/*<op>*/ *result, Array *code_array, int offset) {
 	result->append_array(*code_array, offset);
 }
+// aPpend 'vstring' to 'result'
+void PVS(Array/*<op>*/ *result, VString *vstring);
 
 
 /* Literal // returns array with 

@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.26 2001/02/23 12:03:51 paf Exp $
+  $Id: compile.y,v 1.27 2001/02/23 12:37:58 paf Exp $
 */
 
 %{
@@ -161,6 +161,7 @@ constructor_value:
 	constructor_one_param_value
 |	constructor_two_params_value /* $var(=;2*2) $var(%d;2*2) $var(+;1) */
 ;
+
 constructor_one_param_value: 
 	empty_value /* optimized $var() case */
 |	STRING /* optimized $var(STRING) case */
@@ -172,10 +173,9 @@ complex_constructor_param_value: complex_constructor_param_body {
 	P($$, $1); /* some codes to that context */
 	OP($$, OP_REDUCE_EWPOOL); /* context=pop; stack: context.value() */
 };
-complex_constructor_param_body:
-	codes__excluding_sole_str_literal
-|	codes__str__followed_by__excluding_sole_str_literal
-;
+complex_constructor_param_body: codes__excluding_sole_str_literal;
+codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
+
 constructor_two_params_value: STRING ';' constructor_one_param_value {
 	char *operator_or_fmt=LA2S($1)->cstr();
 	$$=N(POOL);
@@ -194,7 +194,6 @@ constructor_two_params_value: STRING ';' constructor_one_param_value {
 	}
 	/* stack: ncontext name value */
 };
-
 
 /* call */
 
@@ -301,30 +300,15 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 	OP($$, OP_WRITE);
 };
 
-/* codes_in_brackets */
+/* basics */
 
-codes__str__followed_by__excluding_sole_str_literal:
-	write_str_literal codes__excluding_sole_str_literal {
-		$$=$1;
-		P($$, $2);
-}
-;
-codes__excluding_sole_str_literal:
-	action
-|	codes__excluding_sole_str_literal write_str_literal {
-		$$=$1;
-		P($$, $2);
-}
-;
 write_str_literal: STRING {
 	$$=$1;
 	OP($$, OP_WRITE);
 };
-
-/* */
-
 empty_value: empty {
-	$$=L(NEW VString(POOL));
+	$$=$1;
+	PVS($$, NEW VString(POOL));
 };
 empty: /* empty */ { $$=N(POOL) };
 

@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.11 2001/02/22 15:17:40 paf Exp $
+  $Id: compile_tools.C,v 1.12 2001/02/23 12:37:58 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -8,16 +8,21 @@
 #include "pa_exception.h"
 #include "pa_vstring.h"
 
-Array *L(VString *vstring) {
-	// empty ops array
-	Array *result=N(vstring->pool());
-
+void PVS(Array/*<op>*/ *result, VString *vstring) {
 	// append OP_STRING
 	Operation op; op.code=OP_STRING;
 	*result+=op.cast;
 
 	// append 'vstring'
 	*result+=vstring;
+}
+
+Array *L(VString *vstring) {
+	// empty ops array
+	Array *result=N(vstring->pool());
+
+	// append 'vstring' to 'result'
+	PVS(result, vstring);
 
 	return result;
 }
