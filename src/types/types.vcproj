@@ -130,246 +130,61 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath="pa_junction.h">
+			RelativePath=".\pa_junction.h">
 		</File>
 		<File
-			RelativePath="pa_method.h">
+			RelativePath=".\pa_method.h">
 		</File>
 		<File
-			RelativePath="pa_value.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_value.C">
 		</File>
 		<File
-			RelativePath="pa_value.h">
+			RelativePath=".\pa_value.h">
 		</File>
 		<File
-			RelativePath="pa_vbool.h">
+			RelativePath=".\pa_vbool.h">
 		</File>
 		<File
-			RelativePath="pa_vclass.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vclass.C">
 		</File>
 		<File
-			RelativePath="pa_vclass.h">
+			RelativePath=".\pa_vclass.h">
 		</File>
 		<File
-			RelativePath="pa_vcode_frame.h">
+			RelativePath=".\pa_vcode_frame.h">
 		</File>
 		<File
 			RelativePath=".\pa_vconsole.h">
 		</File>
 		<File
-			RelativePath="pa_vcookie.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vcookie.C">
 		</File>
 		<File
-			RelativePath="pa_vcookie.h">
+			RelativePath=".\pa_vcookie.h">
 		</File>
 		<File
-			RelativePath="pa_vdate.h">
+			RelativePath=".\pa_vdate.h">
 		</File>
 		<File
-			RelativePath="pa_vdouble.h">
+			RelativePath=".\pa_vdouble.h">
 		</File>
 		<File
-			RelativePath="pa_venv.h">
+			RelativePath=".\pa_venv.h">
 		</File>
 		<File
-			RelativePath="pa_vfile.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vfile.C">
 		</File>
 		<File
-			RelativePath="pa_vfile.h">
+			RelativePath=".\pa_vfile.h">
 		</File>
 		<File
-			RelativePath="pa_vform.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vform.C">
 		</File>
 		<File
-			RelativePath="pa_vform.h">
+			RelativePath=".\pa_vform.h">
 		</File>
 		<File
-			RelativePath="pa_vhash.h">
+			RelativePath=".\pa_vhash.h">
 		</File>
 		<File
 			RelativePath=".\pa_vhashfile.C">
@@ -378,624 +193,106 @@
 			RelativePath=".\pa_vhashfile.h">
 		</File>
 		<File
-			RelativePath="pa_vimage.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vimage.C">
 		</File>
 		<File
-			RelativePath="pa_vimage.h">
+			RelativePath=".\pa_vimage.h">
 		</File>
 		<File
-			RelativePath="pa_vint.h">
+			RelativePath=".\pa_vint.h">
 		</File>
 		<File
-			RelativePath="pa_vjunction.h">
+			RelativePath=".\pa_vjunction.h">
 		</File>
 		<File
-			RelativePath="pa_vmail.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vmail.C">
 		</File>
 		<File
-			RelativePath="pa_vmail.h">
+			RelativePath=".\pa_vmail.h">
 		</File>
 		<File
-			RelativePath="pa_vmath.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vmath.C">
 		</File>
 		<File
-			RelativePath="pa_vmath.h">
+			RelativePath=".\pa_vmath.h">
 		</File>
 		<File
-			RelativePath="pa_vmemory.h">
+			RelativePath=".\pa_vmemory.h">
 		</File>
 		<File
-			RelativePath="pa_vmethod_frame.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vmethod_frame.C">
 		</File>
 		<File
-			RelativePath="pa_vmethod_frame.h">
+			RelativePath=".\pa_vmethod_frame.h">
 		</File>
 		<File
-			RelativePath="pa_vobject.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vobject.C">
 		</File>
 		<File
-			RelativePath="pa_vobject.h">
+			RelativePath=".\pa_vobject.h">
 		</File>
 		<File
-			RelativePath="pa_vrequest.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vrequest.C">
 		</File>
 		<File
-			RelativePath="pa_vrequest.h">
+			RelativePath=".\pa_vrequest.h">
 		</File>
 		<File
-			RelativePath="pa_vresponse.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vresponse.C">
 		</File>
 		<File
-			RelativePath="pa_vresponse.h">
+			RelativePath=".\pa_vresponse.h">
 		</File>
 		<File
-			RelativePath="pa_vstateless_class.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vstateless_class.C">
 		</File>
 		<File
-			RelativePath="pa_vstateless_class.h">
+			RelativePath=".\pa_vstateless_class.h">
 		</File>
 		<File
-			RelativePath="pa_vstateless_object.h">
+			RelativePath=".\pa_vstateless_object.h">
 		</File>
 		<File
-			RelativePath="pa_vstatus.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vstatus.C">
 		</File>
 		<File
-			RelativePath="pa_vstatus.h">
+			RelativePath=".\pa_vstatus.h">
 		</File>
 		<File
-			RelativePath="pa_vstring.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vstring.C">
 		</File>
 		<File
-			RelativePath="pa_vstring.h">
+			RelativePath=".\pa_vstring.h">
 		</File>
 		<File
-			RelativePath="pa_vtable.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vtable.C">
 		</File>
 		<File
-			RelativePath="pa_vtable.h">
+			RelativePath=".\pa_vtable.h">
 		</File>
 		<File
-			RelativePath="pa_vvoid.h">
+			RelativePath=".\pa_vvoid.h">
 		</File>
 		<File
-			RelativePath="pa_vxdoc.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vxdoc.C">
 		</File>
 		<File
-			RelativePath="pa_vxdoc.h">
+			RelativePath=".\pa_vxdoc.h">
 		</File>
 		<File
-			RelativePath="pa_vxnode.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_vxnode.C">
 		</File>
 		<File
-			RelativePath="pa_vxnode.h">
+			RelativePath=".\pa_vxnode.h">
 		</File>
 		<File
-			RelativePath="pa_wcontext.C">
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_wcontext.C">
 		</File>
 		<File
-			RelativePath="pa_wcontext.h">
+			RelativePath=".\pa_wcontext.h">
 		</File>
 		<File
-			RelativePath="pa_wwrapper.h">
+			RelativePath=".\pa_wwrapper.h">
 		</File>
 	</Files>
 	<Globals>

@@ -126,116 +126,14 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath="compile.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\compile.C">
 		</File>
 		<File
-			RelativePath="compile.tab.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\compile.tab.C">
 		</File>
 		<File
 			RelativePath="compile.y">
 			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCustomBuildTool"
-					Description="Compiling grammar..."
-					CommandLine="cd &quot;$(InputDir)&quot;
-set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
-..\..\..\win32\tools\bison -v &quot;$(InputName)&quot;.y -o compile.tab.C
-"
-					Outputs="compile.tab.C"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCustomBuildTool"
-					Description="Compiling grammar..."
-					CommandLine="cd &quot;$(InputDir)&quot;
-set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
-..\..\..\win32\tools\bison -v &quot;$(InputName)&quot;.y -o compile.tab.C
-"
-					Outputs="compile.tab.C"/>
-			</FileConfiguration>
-			<FileConfiguration
 				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
@@ -247,7 +145,7 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 					Outputs="compile.tab.C"/>
 			</FileConfiguration>
 			<FileConfiguration
-				Name="Profile Debug|Win32">
+				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling grammar..."
@@ -259,277 +157,37 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="compile_tools.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\compile_tools.C">
 		</File>
 		<File
-			RelativePath="compile_tools.h">
+			RelativePath=".\compile_tools.h">
 		</File>
 		<File
-			RelativePath="execute.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\execute.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_array.h">
 		</File>
 		<File
-			RelativePath="pa_cache_managers.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_cache_managers.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_cache_managers.h">
 		</File>
 		<File
-			RelativePath="pa_charset.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_charset.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_charset.h">
 		</File>
 		<File
-			RelativePath="pa_charsets.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_charsets.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_charsets.h">
 		</File>
 		<File
-			RelativePath="pa_common.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_common.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_common.h">
@@ -541,231 +199,31 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_config_includes.h">
 		</File>
 		<File
-			RelativePath="pa_dictionary.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_dictionary.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_dictionary.h">
 		</File>
 		<File
-			RelativePath="pa_dir.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_dir.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_dir.h">
 		</File>
 		<File
-			RelativePath="pa_exception.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_exception.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_exception.h">
 		</File>
 		<File
-			RelativePath="pa_exec.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_exec.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_exec.h">
 		</File>
 		<File
-			RelativePath="pa_globals.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_globals.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_globals.h">
@@ -774,47 +232,7 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_hash.h">
 		</File>
 		<File
-			RelativePath="pa_memory.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_memory.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_memory.h">
@@ -838,47 +256,7 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_pool.h">
 		</File>
 		<File
-			RelativePath="pa_request.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_request.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_request.h">
@@ -893,47 +271,7 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_sapi.h">
 		</File>
 		<File
-			RelativePath="pa_socks.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_socks.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_socks.h">
@@ -942,47 +280,7 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_sql_connection.h">
 		</File>
 		<File
-			RelativePath="pa_sql_driver_manager.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_sql_driver_manager.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_sql_driver_manager.h">
@@ -991,47 +289,7 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_stack.h">
 		</File>
 		<File
-			RelativePath="pa_string.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_string.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_string.h">
@@ -1040,93 +298,13 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_stylesheet_connection.h">
 		</File>
 		<File
-			RelativePath="pa_stylesheet_manager.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_stylesheet_manager.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_stylesheet_manager.h">
 		</File>
 		<File
-			RelativePath="pa_table.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_table.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_table.h">
@@ -1138,47 +316,7 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_types.h">
 		</File>
 		<File
-			RelativePath="pa_uue.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_uue.C">
 		</File>
 		<File
 			RelativePath="..\include\pa_uue.h">
@@ -1196,47 +334,10 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath=".\pa_xml_io.C">
 		</File>
 		<File
-			RelativePath="untaint.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath="..\include\pa_xml_io.h">
+		</File>
+		<File
+			RelativePath=".\untaint.C">
 		</File>
 	</Files>
 	<Globals>

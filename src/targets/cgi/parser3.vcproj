@@ -143,143 +143,16 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="getopt.c">
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BrowseInformation="1"
-					WarningLevel="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					WarningLevel="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					WarningLevel="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					WarningLevel="3"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\getopt.c">
 		</File>
 		<File
-			RelativePath="getopt.h">
+			RelativePath=".\getopt.h">
 		</File>
 		<File
-			RelativePath="pa_threads.C">
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\pa_threads.C">
 		</File>
 		<File
-			RelativePath="parser3.C">
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\parser3.C">
 		</File>
 	</Files>
 	<Globals>
