@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2003/08/18 08:27:41 $";
+static const char* IDENT_VMAIL_C="$Date: 2003/08/19 07:16:23 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -67,18 +67,17 @@ static const String& maybeUpperCase(Charset& source_charset,
 	return toUpperCase?src.change_case(source_charset, String::CC_UPPER):src;
 }
 
-static void UTF8toSource(Charset& source_charset, 
-			 const char* source_body, size_t source_content_length,
-			 const void *& dest_body, size_t& dest_content_length) {
+static String::C UTF8toSource(Charset& source_charset, 
+			 const char* source_body, size_t source_content_length) {
+	String::C result(0, 0);
 	if(source_body) {
 		if(!source_content_length)
 			source_content_length=strlen(source_body);
-		String::C dest=Charset::transcode(String::C(source_body, source_content_length),
-			UTF8_charset, source_charset, dest_body, dest_content_length);
-	} else {
-		dest_body=0;
-		dest_content_length=0;
+		result=Charset::transcode(String::C(source_body, source_content_length),
+			UTF8_charset, source_charset);
 	}
+
+	return result;
 }
 
 static void putReceived(Charset& source_charset, 
@@ -89,52 +88,47 @@ static void putReceived(Charset& source_charset,
 	if(name && value) {
 		received.put(
 			maybeUpperCase(source_charset, 
-				String* (new String(pool.copy(name), 0, true/*tainted*/)), nameToUpperCase),
+				*new String(pa_strdup(name), 0, true/*tainted*/), nameToUpperCase),
 			value);
 	}
 }
 
 static void putReceived(Charset& source_charset, 
 			HashStringValue& received, 
-			const char* name, const char* value, size_t value_size=0, 
+			const char* must_clone_name, const char* must_clone_value, size_t help_must_clone_value_size=0, 
 			bool nameToUpperCase=false) {
-	if(value) {
-		const void *value_dest_body;
-		size_t value_dest_content_length;
-		// UTF8toSource(value, value_size, value_dest_body, value_dest_content_length);
-		value_dest_body=value;
-		value_dest_content_length=value_size;
+	if(must_clone_name && must_clone_value) {
+		String::C cloned_value=UTF8toSource(source_charset,
+			must_clone_value, help_must_clone_value_size);
 		
 		putReceived(source_charset,
 			received, 
-			name, 
-			*new VString(*new String( !remember string invariant!
-				pool.copy((const char* )value_dest_body), value_dest_content_length, true/*tainted*/))))
+			pa_strdup(must_clone_name), 
+			new VString(*new String(pa_strdup(cloned_value.str, cloned_value.length), true/*tainted*/))
 		);
 	}
 }
 
-static void putReceivedHashStringValue& received, const char* name, time_t value) {
-	if(name)
+static void putReceived(HashStringValue& received, const char* must_clone_name, time_t value) {
+	if(must_clone_name)
 		received.put(
-			String* (new String(pool.copy(name), 0, true/*tainted*/)), 
-			Value*(new VDate(value))
+			*new StringBody(pa_strdup(must_clone_name)), 
+			new VDate(value)
 		);
 }
 
 #ifndef DOXYGEN
 struct MimeHeaderField2received_info {
-	;
 	Charset* source_charset;
 	HashStringValue* received;
 };
 #endif
-static void MimeHeaderField2received(const char* name, const char* value, gpointer data) {
+static void MimeHeaderField2received(const char* must_clone_name, const char* must_clone_value, gpointer data) {
 	MimeHeaderField2received_info& info=*static_cast<MimeHeaderField2received_info *>(data);
 
-	putReceived(*info.*info.source_charset, 
+	putReceived(*info.source_charset, 
 		*info.received, 
-		name, value, 0, true/*nameInUpperCase*/);
+		must_clone_name, must_clone_value, 0, true/*nameInUpperCase*/);
 }
 
 static void parse(Request& r, GMimeStream *stream, HashStringValue& received);
@@ -147,10 +141,8 @@ struct MimePart2body_info {
 };
 #endif
 /// @test why no copy to global in P_HTML putReceived?
-static void MimePart2body(GMimePart *part,
-						  gpointer data) {
+static void MimePart2body(GMimePart *part, gpointer data) {
 	MimePart2body_info& info=*static_cast<MimePart2body_info *>(data);
-	=info.r->pool();
 	Charset& source_charset=info.r->charsets.source();
 
 	if(const GMimeContentType *type=g_mime_part_get_content_type(part)) {
@@ -178,19 +170,19 @@ static void MimePart2body(GMimePart *part,
 			partName=partNameStart;
 		
 		// $.partX[ 
-		VHash* vpartX(new VHash);  putReceived(*info.body, partName, vpartX);
+		VHash* vpartX(new VHash);  putReceived(source_charset, *info.body, partName, vpartX);
 		HashStringValue& partX=vpartX->hash();
 		{
 			// $.raw[
-			VHash* vraw(new VHash);  putReceived(partX, RAW_NAME, vraw);
+			VHash* vraw(new VHash);  putReceived(source_charset, partX, RAW_NAME, vraw);
 			MimeHeaderField2received_info hfr_info={
-				&&source_charset, &vraw->hash()};
+				&source_charset, &vraw->hash()};
 			g_mime_header_foreach(part->headers, MimeHeaderField2received, &hfr_info);
 		}
 		const char* content_filename=0;
 		{
 			// $.content-type[ 
-			VHash* vcontent_type(new VHash);  putReceived(partX, "content-type", vcontent_type);
+			VHash* vcontent_type(new VHash);  putReceived(source_charset, partX, "content-type", vcontent_type);
 			HashStringValue& content_type=vcontent_type->hash(); 
 			{
 				// $.value[text/plain] 
@@ -242,11 +234,11 @@ static void MimePart2body(GMimePart *part,
 			const char* local_buf=(const char*)g_mime_part_get_content(part, &buf_len);
 			if(partType==P_FILE) {
 				VFile* vfile(new VFile);
-				char *pooled_buf=pool.copy(local_buf, buf_len);
-				const VString& vcontent_type(content_filename?
-					new VString(info.r->mime_type_of(content_filename)):0);
+				char *pooled_buf=pa_strdup(local_buf, buf_len);
+				VString* vcontent_type=content_filename?
+					new VString(info.r->mime_type_of(content_filename)):0;
 				vfile->set(true/*tainted*/, pooled_buf, buf_len, content_filename, vcontent_type);
-				putReceived(partX, VALUE_NAME, vfile);
+				putReceived(source_charset, partX, VALUE_NAME, vfile);
 			} else {
 				// P_TEXT, P_HTML
 				putReceived(source_charset, partX, VALUE_NAME,(const char*)local_buf, buf_len);
@@ -284,9 +276,9 @@ static void parse(Request& r, GMimeStream *stream, HashStringValue& received) {
 		//  user headers
 		{
 			// $.raw[
-			VHash* vraw(new VHash);  putReceived(received, RAW_NAME, vraw);
+			VHash* vraw(new VHash);  putReceived(source_charset, received, RAW_NAME, vraw);
 			MimeHeaderField2received_info hfr_info={
-				&&source_charset, &vraw->hash()};
+				&source_charset, &vraw->hash()};
 			g_mime_header_foreach(messageHeader->headers, MimeHeaderField2received, &hfr_info);
 		}
 
