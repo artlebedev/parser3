@@ -1,6 +1,6 @@
 SUBDIRS = gd
 
-INCLUDES = -I../include -I../types -I../sql -Igd -I../pcre
+INCLUDES = -I../types -I../sql -I../pcre -Igd
 
 CLASSES_INC=classes.inc
 CLASSES_C=classes.C
