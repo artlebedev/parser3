@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/09/29 11:03:21 $";
+static const char* IDENT_TABLE_C="$Date: 2003/11/03 13:20:30 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -49,6 +49,12 @@ String sql_offset_name(SQL_OFFSET_NAME);
 String sql_default_name(SQL_DEFAULT_NAME);
 String sql_distinct_name(SQL_DISTINCT_NAME);
 String table_reverse_name(TABLE_REVERSE_NAME);
+
+// local defines
+
+#define COLUMN_SEPARATOR_NAME "column-separator"
+#define COLUMN_ENCLOSER_NAME "column-encloser"
+
 
 // methods
 
@@ -172,6 +178,34 @@ static void _create(Request& r, MethodParams& params) {
 	GET_SELF(r, VTable).set_table(table);
 }
 
+inline char* remove_encloser(char* cstr, char encloser) {
+	if(cstr[0]!=encloser)
+		return cstr;
+
+	size_t length=strlen(cstr);
+	if(length<2 || cstr[length-1]!=encloser)
+		return cstr;
+
+	// 'string'
+
+	cstr[length-1]=0;
+	cstr++;
+
+	// double-encloser stands for encloser
+	char *read;
+	char *write;
+	write=read=cstr;
+	while(char c=*read++) {
+		if(c==encloser && *read==encloser)
+			read++;
+
+		*write++=c;
+	}
+	*write=0; // terminate
+
+	return cstr;
+}
+
 static void _load(Request& r, MethodParams& params) {
 	const String&  first_param=params.as_string(0, "file name must be string");
 	int filename_param_index=0;
@@ -179,12 +213,39 @@ static void _load(Request& r, MethodParams& params) {
 	if(nameless)
 		filename_param_index++;
 	size_t options_param_index=filename_param_index+1;
-	
+
+	HashStringValue *options=0;
+	char column_separator='\t';
+	char column_encloser=0;
+	if(options_param_index<params.count()
+		&& (options=params.as_no_junction(options_param_index, "additional params must be hash").get_hash())) {
+		// cloning, so that we could change [to simplify checks on params inside file_read_text
+		options=new HashStringValue(*options);
+		if(Value* vseparator=options->get(COLUMN_SEPARATOR_NAME)) {
+			options->remove(COLUMN_SEPARATOR_NAME);
+			const String& sseparator=vseparator->as_string();
+			if(sseparator.length()!=1)
+				throw Exception("parser.runtime",
+					&sseparator,
+					"separator must be one character long");
+			column_separator=sseparator.first_char();
+		}
+		if(Value* vencloser=options->get(COLUMN_ENCLOSER_NAME)) {
+			options->remove(COLUMN_ENCLOSER_NAME);
+			const String& sencloser=vencloser->as_string();
+			if(sencloser.length()!=1)
+				throw Exception("parser.runtime",
+					&sencloser,
+					"encloser must be one character long");
+			column_encloser=sencloser.first_char();
+		}
+	}
+
 	// loading text
 	char *data=file_read_text(r.charsets,
 		r.absolute(params.as_string(filename_param_index, "file name must be string")),
 		true,
-		options_param_index<params.count()?params.as_no_junction(options_param_index, "additional params must be hash").get_hash():0
+		options
 	);
 
 	// parse columns
@@ -199,7 +260,10 @@ static void _load(Request& r, MethodParams& params) {
 			if(!*row_chars || *row_chars == '#')
 				continue;
 			do {
-				*columns+=new String(lsplit(&row_chars, '\t'), 0, true);
+				char *column_chars=lsplit(&row_chars, column_separator);
+				if(column_encloser)
+					column_chars=remove_encloser(column_chars, column_encloser);
+				*columns+=new String(column_chars, 0, true);
 			} while(row_chars);
 
 			break;
@@ -216,6 +280,8 @@ static void _load(Request& r, MethodParams& params) {
 			continue;
 		Table::element_type row(new ArrayString);
 		while(char *cell_chars=lsplit(&row_chars, '\t')) {
+			if(column_encloser)
+				cell_chars=remove_encloser(cell_chars, column_encloser);
 			*row+=new String(cell_chars, 0, true);
 			cells++;
 		}

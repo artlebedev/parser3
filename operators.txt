@@ -309,6 +309,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^table::load[[nameless;]путь[;опции]]
         !если не nameless, названия колонок берутся из первой строки
         !пустые строки, и строки в первой колонке содержащие '#', игнорируются        
+        !$.column-separator[^#09]
+        !$.column-encloser["]
     !^table::sql{query}[[$.limit(2) $.offset(4) todo:$.default{ ^table::create[...] }]]
     !^таблица.save[[nameless|append;]путь]
     !$таблица.поле

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/10/30 12:13:44 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/11/03 13:20:30 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -611,6 +611,11 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 		result.headers=http.headers; 
 	} else {
 #endif
+		if(params && params->count())
+			throw Exception("parser.runtime",
+				0,
+				"invalid option passed");
+
 		File_read_action_info info={&result.str, &result.length}; 
 		result.success=file_read_action_under_lock(file_spec, 
 			"read", file_read_action, &info, 
