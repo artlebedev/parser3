@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.8 2001/03/12 13:13:21 paf Exp $
+	$Id: pa_common.C,v 1.9 2001/03/12 17:00:48 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -93,4 +93,15 @@ char *lsplit(char **string_ref, char delim) {
 	char *next=lsplit(*string_ref, delim);
     *string_ref=next;
     return result;
+}
+
+char *rsplit(char *string, char delim) {
+    if(string){
+		char *v=strrchr(string, delim);
+		if (v){
+			*v=0;
+			return v+1;
+		}
+    }
+    return NULL;	
 }

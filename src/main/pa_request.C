@@ -3,8 +3,10 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.18 2001/03/12 13:13:21 paf Exp $
+	$Id: pa_request.C,v 1.19 2001/03/12 17:00:48 paf Exp $
 */
+
+#include <string.h>
 
 #include "pa_request.h"
 #include "pa_wwrapper.h"
@@ -40,6 +42,12 @@ Request::Request(Pool& apool) : Pooled(apool),
 	// table class
 	classes().put(*table_class_name, table_class);	
 	table_class->set_name(*table_class_name);
+
+
+	// web
+	// todo: ifdef WIN32 flip \\ to /
+	document_root="Y:/parser3/src/";
+	page_filespec="Y:/parser3/src/test.p";
 }
 
 void Request::core() {
@@ -65,8 +73,7 @@ void Request::core() {
 				"'auto.p' not found");
 
 		// compiling requested file
-		char *test_file="Y:\\parser3\\src\\test.p";
-		use_file(test_file, true/*don't ignore read problem*/,
+		use_file(page_filespec, true/*don't ignore read problem*/,
 			0/*new class*/, main_class_name, main_class);
 
 		// executing some @main[]
@@ -136,4 +143,23 @@ char *Request::execute_MAIN() {
 		0, 
 		"'"MAIN_METHOD_NAME"' method not found");
 	return 0;
+}
+
+char *Request::relative(const char *path, const char *file) {
+    char *result=static_cast<char *>(malloc(strlen(path)+strlen(file)+1));
+	strcpy(result, path);
+    rsplit(result,'/');
+    strcat(result, "/");
+    strcat(result, file);
+    return result;
+}
+
+char *Request::absolute(const char *name) {
+	if(name[0]=='/') {
+		char *result=static_cast<char *>(malloc(strlen(document_root)+strlen(name)+1));
+		strcpy(result, document_root);
+		strcat(result, name);
+		return result;
+	} else 
+		return relative(page_filespec, name);
 }

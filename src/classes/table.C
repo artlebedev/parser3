@@ -3,12 +3,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.1 2001/03/12 13:40:01 paf Exp $
+	$Id: table.C,v 1.2 2001/03/12 17:00:46 paf Exp $
 */
 
 #include "pa_request.h"
 #include "_table.h"
 #include "pa_vtable.h"
+#include "pa_common.h"
 
 // global var
 
@@ -19,7 +20,10 @@ VClass *table_class;
 
 // TODO: проверить ^set в ^menu & co
 
-static void _set(Request& r, const String& method_name, Array *params) {
+static void set_or_load(
+						Request& r, 
+						const String& method_name, Array *params, 
+						bool is_load) {
 	Pool& pool=r.pool();
 	// data is last parameter
 	Value *vdata=static_cast<Value *>(params->get(params->size()-1));
@@ -28,14 +32,16 @@ static void _set(Request& r, const String& method_name, Array *params) {
 			&method_name,
 			"body must not be a junction");
 
-	// data string
-	char *data=vdata->as_string().cstr();
+	// data or file_name
+	char *data_or_filename=vdata->as_string().cstr();
+	// data
+	char *data=is_load?file_read(pool, r.absolute(data_or_filename)):data_or_filename;
 
 	// parse columns
 	Array *columns;
 #ifndef NO_STRING_ORIGIN
 	const Origin& origin=method_name.origin();
-	const char *file=0;//origin.file;
+	const char *file=origin.file;
 	uint line=origin.line;
 #endif
 	if(params->size()==2) {
@@ -69,7 +75,19 @@ static void _set(Request& r, const String& method_name, Array *params) {
 	r.self->as_vtable().set_table(table);
 }
 
+
+static void _set(Request& r, const String& method_name, Array *params) {
+	set_or_load(r, method_name, params, false);
+}
+
+static void _load(Request& r, const String& method_name, Array *params) {
+	set_or_load(r, method_name, params, true);
+}
+
 void initialize_table_class(Pool& pool, VClass& vclass) {
-	// ^table.create[data]  ^table.create[nameless;data]
+	// ^table.set[data]  ^table.set[nameless;data]
 	vclass.add_native_method("set", _set, 1, 2);
+
+	// ^table.load[data]  ^table.load[nameless;data]
+	vclass.add_native_method("load", _load, 1, 2);
 }	

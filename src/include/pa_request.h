@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.41 2001/03/12 12:00:04 paf Exp $
+	$Id: pa_request.h,v 1.42 2001/03/12 17:00:47 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -86,6 +86,9 @@ public:
 		wcontext->write(avalue, String::Untaint_lang::PASS_APPENDED); 
 	}
 
+	char *relative(const char *path, const char *file);
+	char *absolute(const char *name);
+
 public:
 	
 	// default base
@@ -134,6 +137,11 @@ private: // lang manipulation
 	void restore_lang(String::Untaint_lang alang) {
 		flang=alang;
 	}
+
+private: // web
+
+	const char *document_root;
+	const char *page_filespec;
 
 };
 

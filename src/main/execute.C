@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.94 2001/03/12 13:13:21 paf Exp $
+	$Id: execute.C,v 1.95 2001/03/12 17:00:47 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -275,7 +275,7 @@ void Request::execute(const Array& ops) {
 				if(!junction)
 					THROW(0,0,
 						&value->name(),
-						"type is '%s', can not call it (must be method or junction)",
+						"(%s) uncallable, must be method or junction",
 							value->type()); 
 
 				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);
