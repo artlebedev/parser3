@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.h,v 1.60 2002/04/15 08:13:10 paf Exp $
+	$Id: compile_tools.h,v 1.61 2002/04/18 11:41:29 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -90,26 +90,32 @@ inline void P(Array/*<Operation>*/ *result, Array *code_array, int offset) {
 }
 
 /// aPpend 'vstring' to 'result'
-void PV(Array/*<Operation>*/ *result, VString *vstring);
-/// Parameter 'simple Code_Array'
-void PCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
-/// Parameter 'Expression code_Array'
-void PEA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
-/// Construct 'simple Code_Array'
-void CCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
-/// aPpend Nested Code
-void PNC(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
-/// aPpend obJect Pool
-void PJP(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
-/// aPpend String Pool
-void PSP(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
+void PV(Array/*<Operation>*/ *result, Value *value);
+
+inline void OA(Array/*<Operation>*/ *result, OPCODE opcode, Array/*<Operation>*/ *code_array) {
+	// append OP_CODE
+	Operation op; op.code=opcode;
+	*result+=op.cast;
+
+	// append 'vstring'
+	*result+=code_array;
+}
 
 /**
 	Value Literal // returns array with 
 	- first: OP_VALUE instruction
 	- second op: string itself
 */
-Array *VL(Value *value);
+inline Array *VL(Value *value) {
+	// empty ops array
+	Array *result=N(value->pool());
+
+	// append 'value' to 'result'
+	PV(result, value);
+
+	return result;
+}
+
 /// Literal Array to(2) Value @return Value from literal Array OP+Value
 Value *LA2V(Array *literal_string_array, int offset=0);
 /// Literal Array to(2) String  @return String value from literal Array OP+String array
@@ -118,9 +124,16 @@ inline const String *LA2S(Array *literal_string_array, int offset=0) {
 		return value->get_string();
 	return 0;
 }
+
+inline void change_string_literal_to_write_string_literal(Array *literal_string_array) {
+	Operation op; op.code=OP_STRING__WRITE;
+	literal_string_array->put(0, op.cast);
+}
+
+void changetail_or_append(Array *opcodes, 
+						  OPCODE find, bool with_argument, OPCODE replace, OPCODE notfound);
+
 void change_string_literal_to_double_literal(Array *literal_string_array);
-void change_string_literal_to_write_string_literal(Array *literal_string_array);
-void changetail_or_append(Array *opcodes, OPCODE find, OPCODE replace, OPCODE notfound);
 
 void push_LS(parse_control& pc, lexical_state new_state);
 void pop_LS(parse_control& pc);

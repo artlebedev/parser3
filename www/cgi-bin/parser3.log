@@ -25,3 +25,7 @@
 [Thu Apr 18 14:45:24 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(13): 'errort' has illegal assignment attempt of xdoc to 'MAIN' (class), use constructor instead [parser.runtime]
 [Thu Apr 18 14:45:31 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(13): 'errort' has illegal assignment attempt of xdoc to 'MAIN' (class), use constructor instead [parser.runtime]
 [Thu Apr 18 14:45:36 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(13): 'errort' contains illegal assignment attempt of xdoc to 'MAIN' (class), use constructor instead [parser.runtime]
+[Thu Apr 18 14:47:18 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(135): 'here' this [user]
+[Thu Apr 18 14:47:22 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(134): 'createz' (void) not a method or junction, can not call it [parser.runtime]
+[Thu Apr 18 15:33:50 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(13): 'errort' contains illegal assignment attempt of xdoc to 'MAIN' (class), use constructor [parser.runtime]
+[Thu Apr 18 15:34:30 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(13): 'main' call canceled - endless recursion detected [parser.runtime]

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.236 2002/04/18 10:51:01 paf Exp $
+	$Id: execute.C,v 1.237 2002/04/18 11:41:29 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -46,7 +46,6 @@ char *opcode_name[]={
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
 	"GET_ELEMENT_OR_OPERATOR", "GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"OBJECT_POOL",	"STRING_POOL",
-	"GET_METHOD_FRAME",
 	"STORE_PARAM",
 	"PREPARE_TO_CONSTRUCT_OBJECT",	"PREPARE_TO_EXPRESSION", 
 	"CALL", "CALL__WRITE",
@@ -99,6 +98,7 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 		case OP_NESTED_CODE:
 		case OP_OBJECT_POOL:  
 		case OP_STRING_POOL:
+		case OP_CALL:
 			const Array *local_ops=reinterpret_cast<const Array *>(i.next());
 			debug_dump(pool, level+1, *local_ops);
 		}
@@ -141,36 +141,6 @@ void Request::execute(const Array& ops) {
 				debug_printf(pool(), " \"%s\" %s", value->get_string()->cstr(), value->type());
 #endif
 				PUSH(value);
-				break;
-			}
-		case OP_CURLY_CODE__STORE_PARAM:
-		case OP_EXPR_CODE__STORE_PARAM:
-			{
-				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
-				// code
-				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
-#ifdef DEBUG_EXECUTE
-				debug_printf(pool(), " (%d)\n", local_ops->size());
-				debug_dump(pool(), 1, *local_ops);
-#endif				
-				// when they evaluate expression parameter,
-				// the object expression result
-				// does not need to be written into calling frame
-				// it must go into any expressions using that parameter
-				// hence, we zero junction.wcontext here, and later
-				// in .process we would test that field 
-				// in decision "which wwrapper to use"
-				Junction& j=*NEW Junction(pool(), 
-					*self, 0, 0,
-					root, 
-					rcontext, 
-					op.code==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
-					local_ops);
-				
-				value=NEW VJunction(j);
-
-				// store param
-				frame->store_param(frame->name(), value);
 				break;
 			}
 		case OP_GET_CLASS:
@@ -359,29 +329,43 @@ void Request::execute(const Array& ops) {
 			}
 
 		// CALL
-		case OP_GET_METHOD_FRAME:
-			{
-				value=POP();
-
-				// info: 
-				//	code compiled so that this one's always method-junction, 
-				//	not a code-junction
-				Junction *junction=value->get_junction();
-				if(!junction)
-					throw Exception("parser.runtime",
-						last_get_element_name, 
-						"(%s) not a method or junction, can not call it",
-							value->type()); 
-
-				VMethodFrame *frame=NEW VMethodFrame(pool(), *last_get_element_name, *junction);
-				PUSH(frame);
-				break;
-			}
 		case OP_STORE_PARAM:
 			{
 				value=POP();
 				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
-				frame->store_param(frame->name(), value);
+				// this op is executed from CALL local_ops only, so can not check method_frame_to_fill==0
+				frame->store_param(value);
+				break;
+			}
+		case OP_CURLY_CODE__STORE_PARAM:
+		case OP_EXPR_CODE__STORE_PARAM:
+			{
+				// code
+				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
+				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
+#ifdef DEBUG_EXECUTE
+				debug_printf(pool(), " (%d)\n", local_ops->size());
+				debug_dump(pool(), 1, *local_ops);
+#endif				
+				// when they evaluate expression parameter,
+				// the object expression result
+				// does not need to be written into calling frame
+				// it must go into any expressions using that parameter
+				// hence, we zero junction.wcontext here, and later
+				// in .process we would test that field 
+				// in decision "which wwrapper to use"
+				Junction& j=*NEW Junction(pool(), 
+					*self, 0, 0,
+					root, 
+					rcontext, 
+					op.code==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
+					local_ops);
+				
+				value=NEW VJunction(j);
+
+				// store param
+				// this op is executed from CALL local_ops only, so can not check method_frame_to_fill==0
+				frame->store_param(value);
 				break;
 			}
 
@@ -400,20 +384,41 @@ void Request::execute(const Array& ops) {
 		case OP_CALL:
 		case OP_CALL__WRITE:
 			{
+				Array *local_ops=static_cast<Array *>(i.next());
 #ifdef DEBUG_EXECUTE
+				debug_printf(pool(), " (%d)\n", local_ops->size());
+				debug_dump(pool(), 1, *local_ops);
+
 				debug_printf(pool(), "->\n");
 #endif
-				VMethodFrame *frame=static_cast<VMethodFrame *>(POP());
-				frame->fill_unspecified_params();
+				value=POP();
+
+				// info: 
+				//	code compiled so that this one's always method-junction, 
+				//	not a code-junction
+				Junction *junction=value->get_junction();
+				if(!junction)
+					throw Exception("parser.runtime",
+						last_get_element_name, 
+						"(%s) not a method or junction, can not call it",
+							value->type());
+
+				VMethodFrame frame(pool(), *last_get_element_name, *junction);
+				if(local_ops){ // store param code goes here
+					PUSH(&frame); // argument for *STORE_PARAM ops
+					execute(*local_ops);
+					POP();
+				}
+				frame.fill_unspecified_params();
 				PUSH(self);  
 				PUSH(root);  
 				PUSH(rcontext);  
 				PUSH(wcontext); 
 				
-				VStateless_class *called_class=frame->junction.self.get_class();
+				VStateless_class *called_class=frame.junction.self.get_class();
 				if(wcontext->get_constructing()) {
 					wcontext->set_constructing(false);
-					if(frame->junction.method->call_type!=Method::CT_STATIC) {
+					if(frame.junction.method->call_type!=Method::CT_STATIC) {
 						// this is a constructor call
 
 						if(Value *value=called_class->create_new_value(pool())) {
@@ -421,16 +426,16 @@ void Request::execute(const Array& ops) {
 							self=value;
 						} else 
 							throw Exception("parser.runtime",
-								&frame->name(),
+								&frame.name(),
 								"is not a constructor, system class '%s' can be constructed only implicitly", 
 								called_class->name().cstr());
 
-						frame->write(*self, 
+						frame.write(*self, 
 							String::UL_CLEAN  // not used, always an object, not string
 						);
 					} else
 						throw Exception("parser.runtime",
-							&frame->name(),
+							&frame.name(),
 							"method is static and can not be used as constructor");
 				} else {
 					// this is not constructor call
@@ -444,21 +449,21 @@ void Request::execute(const Array& ops) {
 						read_class && read_class->is_or_derived_from(*called_class)) // yes
 						self=rcontext; // dynamic call
 					else // no, not me or relative of mine (=total stranger)
-						self=&frame->junction.self; // static call
+						self=&frame.junction.self; // static call
 				}
 
-				frame->set_self(*self);
+				frame.set_self(*self);
 
 				// see OP_PREPARE_TO_EXPRESSION
-				frame->set_in_expression(wcontext->get_in_expression());
+				frame.set_in_expression(wcontext->get_in_expression());
 				
-				rcontext=wcontext=frame;
+				rcontext=wcontext=&frame;
 				{
 					// take object or class from any wrappers
 					// and substitute class alias to the class they are called AS
-					Temp_alias temp_alias(*self->get_aliased(), *frame->junction.vclass);
+					Temp_alias temp_alias(*self->get_aliased(), *frame.junction.vclass);
 
-					const Method& method=*frame->junction.method;
+					const Method& method=*frame.junction.method;
 					Method::Call_type call_type=
 						called_class==self ? Method::CT_STATIC : Method::CT_DYNAMIC;
 					if(
@@ -468,24 +473,24 @@ void Request::execute(const Array& ops) {
 							if(method.native_code) { // native code?
 								// root unchanged, so that ^for ^foreach & co may write to locals
 								method.check_actual_numbered_params(
-									frame->junction.self, 
-									frame->name(), frame->numbered_params());
+									frame.junction.self, 
+									frame.name(), frame.numbered_params());
 								method.native_code(
 									*this, 
-									frame->name(), frame->numbered_params()); // execute it
+									frame.name(), frame.numbered_params()); // execute it
 							} else { // parser code
-								root=frame;
+								root=&frame;
 								// execute it
-								recoursion_checked_execute(&frame->name(), *method.parser_code);
+								recoursion_checked_execute(&frame.name(), *method.parser_code);
 							}
 						} catch(...) {
 							// record it to stack trace
-							exception_trace.push((void *)&frame->name());
+							exception_trace.push((void *)&frame.name());
 							/*re*/throw;
 						}
 					} else
 						throw Exception("parser.runtime",
-							&frame->name(),
+							&frame.name(),
 							"is not allowed to be called %s", 
 								call_type==Method::CT_STATIC?"statically":"dynamically");
 

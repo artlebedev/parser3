@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.201 2002/04/18 10:51:01 paf Exp $
+	$Id: pa_request.C,v 1.202 2002/04/18 11:41:29 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -260,8 +260,7 @@ gettimeofday(&mt[2],NULL);
 					VMethodFrame frame(pool(), method->name, *junction);
 					frame.set_self(*main_class);
 
-					frame.store_param(method->name, 
-						&body_vstring_before_post_process);
+					frame.store_param(&body_vstring_before_post_process);
 					body_vstring_after_post_process=
 						NEW VString(execute_method(frame, *method));
 				}
@@ -357,7 +356,7 @@ t[9]-t[3]
 							frame.set_self(*main_class);
 
 							// $exception
-							frame.store_param(method->name, &exception2vhash(pool(), e));
+							frame.store_param(&exception2vhash(pool(), e));
 							// $stack[^table::set{name	origin}]
 							Array& stack_trace_columns=*NEW Array(pool());
 							stack_trace_columns+=NEW String(pool(), "name");
@@ -381,8 +380,7 @@ t[9]-t[3]
 #endif
 								stack_trace+=&row;
 							}
-							frame.store_param(method->name, 
-								NEW VTable(pool(), &stack_trace));
+							frame.store_param(NEW VTable(pool(), &stack_trace));
 
 							// future $response:body=
 							//   execute ^exception[origin;source;comment;type;code;stack]

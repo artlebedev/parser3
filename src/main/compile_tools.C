@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.C,v 1.48 2002/04/15 08:13:10 paf Exp $
+	$Id: compile_tools.C,v 1.49 2002/04/18 11:41:29 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -23,72 +23,6 @@ void PV(Array/*<Operation>*/ *result, Value *value) {
 	*result+=value;
 }
 
-void PCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
-	// append OP_CODE
-	Operation op; op.code=OP_CURLY_CODE__STORE_PARAM;
-	*result+=op.cast;
-
-	// append 'vstring'
-	*result+=code_array;
-}
-
-void PEA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
-	// append OP_CODE
-	Operation op; op.code=OP_EXPR_CODE__STORE_PARAM;
-	*result+=op.cast;
-
-	// append 'vstring'
-	*result+=code_array;
-}
-
-void CCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
-	// append OP_CODE
-	Operation op; op.code=OP_CURLY_CODE__CONSTRUCT;
-	*result+=op.cast;
-
-	// append 'vstring'
-	*result+=code_array;
-}
-
-void PNC(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
-	// append OP_CODE
-	Operation op; op.code=OP_NESTED_CODE;
-	*result+=op.cast;
-
-	// append 'vstring'
-	*result+=code_array;
-}
-
-void PJP(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
-	// append OP_CODE
-	Operation op; op.code=OP_OBJECT_POOL;
-	*result+=op.cast;
-
-	// append 'vstring'
-	*result+=code_array;
-}
-
-void PSP(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
-	// append OP_CODE
-	Operation op; op.code=OP_STRING_POOL;
-	*result+=op.cast;
-
-	// append 'vstring'
-	*result+=code_array;
-}
-
-
-
-Array *VL(Value *value) {
-	// empty ops array
-	Array *result=N(value->pool());
-
-	// append 'value' to 'result'
-	PV(result, value);
-
-	return result;
-}
-
 Value *LA2V(Array *literal_string_array, int offset) {
 	Operation op;
 	op.cast=literal_string_array->get(offset+0);
@@ -102,13 +36,10 @@ void change_string_literal_to_double_literal(Array *literal_string_array) {
 	Value *value=vstring->as_expr_result();
 	literal_string_array->put(1, value);
 }
-void change_string_literal_to_write_string_literal(Array *literal_string_array) {
-	Operation op; op.code=OP_STRING__WRITE;
-	literal_string_array->put(0, op.cast);
-}
-void changetail_or_append(Array *opcodes, OPCODE find, OPCODE replace, OPCODE notfound) {
-	if(int tail=opcodes->size()) {
-		--tail;
+void changetail_or_append(Array *opcodes, 
+						  OPCODE find, bool with_argument, OPCODE replace, OPCODE notfound) {
+	int tail=opcodes->size()-(with_argument?2:1);
+	if(tail>=0) {
 		Operation op;
 		op.cast=opcodes->get(tail);
 		if(op.code==find) {

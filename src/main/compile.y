@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.185 2002/04/16 08:41:05 paf Exp $
+	$Id: compile.y,v 1.186 2002/04/18 11:41:29 paf Exp $
 */
 
 /**
@@ -241,8 +241,8 @@ action: get | put | call;
 get: get_value {
 	$$=$1; /* stack: resulting value */ 
 	changetail_or_append($$, 
-		OP_GET_ELEMENT, OP_GET_ELEMENT__WRITE,
-		OP_WRITE_VALUE
+		OP_GET_ELEMENT, false,  /*->*/OP_GET_ELEMENT__WRITE,
+		/*or */OP_WRITE_VALUE
 		); /* value=pop; wcontext.write(value) */
 };
 get_value: '$' get_name_value { $$=$2 };
@@ -332,7 +332,7 @@ construct_round: '(' expr_value ')' {
 construct_curly: '{' maybe_codes '}' {
 	// stack: context, name
 	$$=N(POOL); 
-	CCA($$, $2); /* code=pop; name=pop; context=pop; construct(context,name,junction(code)) */
+	OA($$, OP_CURLY_CODE__CONSTRUCT, $2); /* code=pop; name=pop; context=pop; construct(context,name,junction(code)) */
 };
 
 any_constructor_code_value: 
@@ -342,7 +342,7 @@ any_constructor_code_value:
 ;
 constructor_code_value: constructor_code {
 	$$=N(POOL); 
-	PJP($$, $1); /* stack: empty write context */
+	OA($$, OP_OBJECT_POOL, $1); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.value() */
 };
@@ -354,9 +354,8 @@ codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
 call: call_value {
 	$$=$1; /* stack: value */
 	changetail_or_append($$, 
-		OP_CALL, OP_CALL__WRITE,
-		OP_WRITE_VALUE
-		); /* value=pop; wcontext.write(value) */
+		OP_CALL, true,  /*->*/ OP_CALL__WRITE,
+		/*or */OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 };
 call_value: '^' { 
 					PC.in_call_value=true; 
@@ -366,16 +365,15 @@ call_value: '^' {
 			} 
 			store_params EON { /* ^field.$method{vasya} */
 	$$=$3; /* with_xxx,diving code; stack: context,method_junction */
-	O($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
 
 	YYSTYPE params_code=$5;
-	if(params_code->size()==3) // probably [] case. [OP_VALUE + Void + STORE_PARAM]
+	if(params_code->size()==3) { // probably [] case. [OP_VALUE + Void + STORE_PARAM]
 		if(Value *value=LA2V(params_code)) // it is OP_VALUE + value?
 			if(!value->is_defined()) // value is VVoid?
 				params_code=0; // ^zzz[] case. don't append lone empty param.
-	if(params_code)
-		P($$, params_code); // filling method_frame.store_params
-	O($$, OP_CALL); // method_frame=pop; ncontext=pop; call(ncontext,method_frame) stack: value
+	}
+	/* stack: context, method_junction */
+	OA($$, OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value
 };
 
 call_name: name_without_curly_rdive;
@@ -407,11 +405,11 @@ store_code_param_part: code_param_value {
 };
 store_expr_param_part: write_expr_value {
 	$$=N(POOL); 
-	PEA($$, $1);
+	OA($$, OP_EXPR_CODE__STORE_PARAM, $1);
 };
 store_curly_param_part: maybe_codes {
 	$$=N(POOL); 
-	PCA($$, $1);
+	OA($$, OP_CURLY_CODE__STORE_PARAM, $1);
 };
 code_param_value:
 	void_value /* optimized [;...] case */
@@ -463,11 +461,11 @@ name_expr_with_subvar_value: STRING subvar_get_writes {
 		P(code, $2);
 	}
 	$$=N(POOL); 
-	PSP($$, code);
+	OA($$, OP_STRING_POOL, code);
 };
 name_square_code_value: '[' codes ']' {
 	$$=N(POOL); 
-	PJP($$, $2); /* stack: empty write context */
+	OA($$, OP_OBJECT_POOL, $2); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.value() */
 };
@@ -533,8 +531,8 @@ expr:
 |	expr '&' expr { $$=$1; 	P($$, $3);  O($$, OP_BIN_AND) }
 |	expr '|' expr { $$=$1;  P($$, $3);  O($$, OP_BIN_OR) }
 |	expr '#' expr { $$=$1;  P($$, $3);  O($$, OP_BIN_XOR) }
-|	expr "&&" expr { $$=$1;  PNC($$, $3);  O($$, OP_LOG_AND) }
-|	expr "||" expr { $$=$1;  PNC($$, $3);  O($$, OP_LOG_OR) }
+|	expr "&&" expr { $$=$1;  OA($$, OP_NESTED_CODE, $3);  O($$, OP_LOG_AND) }
+|	expr "||" expr { $$=$1;  OA($$, OP_NESTED_CODE, $3);  O($$, OP_LOG_OR) }
 |	expr "##" expr { $$=$1;  P($$, $3);  O($$, OP_LOG_XOR) }
 |	expr '<' expr { $$=$1;  P($$, $3);  O($$, OP_NUM_LT) }
 |	expr '>' expr { $$=$1;  P($$, $3);  O($$, OP_NUM_GT) }
@@ -553,7 +551,7 @@ expr:
 
 string_inside_quotes_value: maybe_codes {
 	$$=N(POOL);
-	PSP($$, $1); /* stack: empty write context */
+	OA($$, OP_STRING_POOL, $1); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.get_string() */
 };

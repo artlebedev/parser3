@@ -5,7 +5,7 @@
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_opcode.h,v 1.17 2002/04/16 08:41:04 paf Exp $
+	$Id: pa_opcode.h,v 1.18 2002/04/18 11:41:28 paf Exp $
 */
 
 #ifndef CODE_H
@@ -33,7 +33,6 @@ enum OPCODE {
 	OP_WRITE_VALUE,  OP_WRITE_EXPR_RESULT, OP_STRING__WRITE,
 	OP_GET_ELEMENT_OR_OPERATOR, OP_GET_ELEMENT,	OP_GET_ELEMENT__WRITE,
 	OP_OBJECT_POOL,	OP_STRING_POOL,
-	OP_GET_METHOD_FRAME,
 	OP_STORE_PARAM,
 	OP_PREPARE_TO_CONSTRUCT_OBJECT, OP_PREPARE_TO_EXPRESSION, 
 	OP_CALL, OP_CALL__WRITE,

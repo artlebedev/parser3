@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vmethod_frame.h,v 1.25 2002/04/18 10:51:02 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.26 2002/04/18 11:41:30 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -102,7 +102,7 @@ public: // usage
 	void set_self(Value& aself) { fself=&aself; }
 	Value *self() { return fself; }
 
-	void store_param(const String& actual_method_name, Value *value) {
+	void store_param(Value *value) {
 		const Method& method=*junction.method;
 		int max_params=
 			method.max_numbered_params_count?method.max_numbered_params_count:
@@ -110,7 +110,7 @@ public: // usage
 			0;
 		if(store_param_index==max_params)
 			throw Exception("parser.runtime",
-				&actual_method_name,
+				&name(),
 				"method of %s (%s) accepts maximum %d parameter(s)", 
 					junction.self.get_class()->name_cstr(),
 					junction.self.type(),
