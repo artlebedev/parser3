@@ -145,12 +145,12 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 SUBDIRS = gd smtp
-INCLUDES = -I../types -I../sql -I../lib/pcre -I../lib/gc/include -I../lib/cord/include -Igd @XML_INCLUDES@ -I../lib/md5
+INCLUDES = -I../types -I../sql -I../lib/pcre -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/apr-include -Igd @XML_INCLUDES@ -I../lib/md5
 
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h
 
-CLASSES_SOURCE_FILES = classes.awk double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C memory.C
+CLASSES_SOURCE_FILES = classes.awk double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C hashfile.C date.C xnode.C xdoc.C memory.C
 libclasses_a_SOURCES = $(CLASSES_SOURCE_FILES) classes.C
 CLEANFILES = classes.inc
 
@@ -166,8 +166,9 @@ libclasses_a_LIBADD =
 am__objects_1 = double.$(OBJEXT) file.$(OBJEXT) form.$(OBJEXT) \
 	image.$(OBJEXT) int.$(OBJEXT) mail.$(OBJEXT) op.$(OBJEXT) \
 	math.$(OBJEXT) response.$(OBJEXT) string.$(OBJEXT) \
-	table.$(OBJEXT) void.$(OBJEXT) hash.$(OBJEXT) date.$(OBJEXT) \
-	xnode.$(OBJEXT) xdoc.$(OBJEXT) memory.$(OBJEXT)
+	table.$(OBJEXT) void.$(OBJEXT) hash.$(OBJEXT) \
+	hashfile.$(OBJEXT) date.$(OBJEXT) xnode.$(OBJEXT) \
+	xdoc.$(OBJEXT) memory.$(OBJEXT)
 am_libclasses_a_OBJECTS = $(am__objects_1) classes.$(OBJEXT)
 libclasses_a_OBJECTS = $(am_libclasses_a_OBJECTS)
 
@@ -177,12 +178,13 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/classes.Po ./$(DEPDIR)/date.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/double.Po ./$(DEPDIR)/file.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/form.Po ./$(DEPDIR)/hash.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/image.Po ./$(DEPDIR)/int.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/mail.Po ./$(DEPDIR)/math.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/memory.Po ./$(DEPDIR)/op.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/response.Po ./$(DEPDIR)/string.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/table.Po ./$(DEPDIR)/void.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/xdoc.Po ./$(DEPDIR)/xnode.Po
+@AMDEP_TRUE@	./$(DEPDIR)/hashfile.Po ./$(DEPDIR)/image.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/int.Po ./$(DEPDIR)/mail.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/math.Po ./$(DEPDIR)/memory.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/op.Po ./$(DEPDIR)/response.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/string.Po ./$(DEPDIR)/table.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/void.Po ./$(DEPDIR)/xdoc.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/xnode.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -232,6 +234,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/form.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hash.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hashfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/image.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/int.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mail.Po@am__quote@

@@ -148,7 +148,7 @@ INCLUDES = -I../types -I../classes -I../sql -I../lib/pcre -I../lib/gc/include -I
 
 noinst_HEADERS = compile_tools.h utf8-to-lower.inc utf8-to-upper.inc
 noinst_LIBRARIES = libmain.a
-libmain_a_SOURCES = pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_exception.C pa_globals.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_sql_driver_manager.C pa_dictionary.C pa_stylesheet_manager.C pa_cache_managers.C pa_charset.C pa_charsets.C pa_uue.C
+libmain_a_SOURCES = pa_os.C pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_exception.C pa_xml_exception.C pa_globals.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_sql_driver_manager.C pa_dictionary.C pa_stylesheet_manager.C pa_cache_managers.C pa_charset.C pa_charsets.C pa_uue.C
 
 EXTRA_DIST = compile.y main.vcproj
 subdir = src/main
@@ -159,15 +159,16 @@ LIBRARIES = $(noinst_LIBRARIES)
 
 libmain_a_AR = $(AR) cru
 libmain_a_LIBADD =
-am_libmain_a_OBJECTS = pa_common.$(OBJEXT) compile.tab.$(OBJEXT) \
-	compile.$(OBJEXT) compile_tools.$(OBJEXT) execute.$(OBJEXT) \
-	pa_exception.$(OBJEXT) pa_globals.$(OBJEXT) pa_memory.$(OBJEXT) \
-	pa_request.$(OBJEXT) pa_string.$(OBJEXT) pa_table.$(OBJEXT) \
-	untaint.$(OBJEXT) pa_dir.$(OBJEXT) pa_exec.$(OBJEXT) \
-	pa_socks.$(OBJEXT) pa_sql_driver_manager.$(OBJEXT) \
-	pa_dictionary.$(OBJEXT) pa_stylesheet_manager.$(OBJEXT) \
-	pa_cache_managers.$(OBJEXT) pa_charset.$(OBJEXT) \
-	pa_charsets.$(OBJEXT) pa_uue.$(OBJEXT)
+am_libmain_a_OBJECTS = pa_os.$(OBJEXT) pa_common.$(OBJEXT) \
+	compile.tab.$(OBJEXT) compile.$(OBJEXT) compile_tools.$(OBJEXT) \
+	execute.$(OBJEXT) pa_exception.$(OBJEXT) \
+	pa_xml_exception.$(OBJEXT) pa_globals.$(OBJEXT) \
+	pa_memory.$(OBJEXT) pa_request.$(OBJEXT) pa_string.$(OBJEXT) \
+	pa_table.$(OBJEXT) untaint.$(OBJEXT) pa_dir.$(OBJEXT) \
+	pa_exec.$(OBJEXT) pa_socks.$(OBJEXT) \
+	pa_sql_driver_manager.$(OBJEXT) pa_dictionary.$(OBJEXT) \
+	pa_stylesheet_manager.$(OBJEXT) pa_cache_managers.$(OBJEXT) \
+	pa_charset.$(OBJEXT) pa_charsets.$(OBJEXT) pa_uue.$(OBJEXT)
 libmain_a_OBJECTS = $(am_libmain_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/src/include
@@ -182,11 +183,13 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/pa_dictionary.Po ./$(DEPDIR)/pa_dir.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_exception.Po ./$(DEPDIR)/pa_exec.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_globals.Po ./$(DEPDIR)/pa_memory.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/pa_request.Po ./$(DEPDIR)/pa_socks.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/pa_os.Po ./$(DEPDIR)/pa_request.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/pa_socks.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_sql_driver_manager.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_string.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_stylesheet_manager.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_table.Po ./$(DEPDIR)/pa_uue.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/pa_xml_exception.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/untaint.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -238,6 +241,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_exec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_globals.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_memory.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_os.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_request.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_socks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_sql_driver_manager.Po@am__quote@
@@ -245,6 +249,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_stylesheet_manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_table.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_uue.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_xml_exception.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/untaint.Po@am__quote@
 
 distclean-depend:
