@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2003/11/21 12:22:23 $";
+static const char * const IDENT_EXEC_C="$Date: 2004/02/03 16:45:25 $";
 
 #include "pa_config_includes.h"
 
@@ -361,8 +361,8 @@ PA_exec_result pa_exec(
             
 		throw Exception(0,
 			&file_spec,
-			"exec failed - %s (%ld). Consider adding shbang line (#!x:\\interpreter\\command line)", 
-				error_size?szErrorDesc:"<unknown>", (long)error);
+			"exec failed - %s (%u). Consider adding shbang line (#!x:\\interpreter\\command line)", 
+				error_size?szErrorDesc:"<unknown>", error);
 	} else {
 		const char* in_cstr=in.cstr();
 		DWORD written_size;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MEMORY_C="$Date: 2003/11/20 16:34:26 $";
+static const char * const IDENT_MEMORY_C="$Date: 2004/02/03 16:45:25 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -15,7 +15,7 @@ void *pa_fail_alloc(const char* what, size_t size) {
 	SAPI::die("out of memory (in pa_fail_alloc)");
 #else
 	SAPI::die("out of memory: failed to %s %u bytes. "
-		"heap_used=%lu, heap_free=%lu, bytes_since_gc=%lu, total_bytes=%lu",
+		"heap_used=%u, heap_free=%u, bytes_since_gc=%u, total_bytes=%u",
 		what, size,
 		GC_get_heap_size(),
 		GC_get_free_bytes(),

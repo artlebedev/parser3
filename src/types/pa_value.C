@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2003/11/20 17:46:02 $";
+static const char * const IDENT_VALUE_C="$Date: 2004/02/03 16:45:25 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -110,7 +110,7 @@ static String::C date_attribute(const VDate& vdate) {
 	if(!tms)
 		throw Exception(0,
 			0,
-			"bad time in attribute value (seconds from epoch=%ld)", when);
+			"bad time in attribute value (seconds from epoch=%u)", when);
 
 	char *buf=new(PointerFreeGC) char[MAX_STRING];
 	return String::C(buf, 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2003/12/02 11:55:46 $";
+static const char * const IDENT_IMAGE_C="$Date: 2004/02/03 16:45:24 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -178,7 +178,7 @@ public:
 		if(ssize_t(read_size)<0 || read_size>limit)
 			throw Exception(0,
 				&file_name, 
-				"measure failed: actually read %lu bytes count not in [0..%lu] valid range", 
+				"measure failed: actually read %u bytes count not in [0..%u] valid range", 
 			read_size, limit);
 
 		return read_size;
