@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_connection.C,v 1.5 2001/10/02 11:11:47 parser Exp $
+	$Id: pa_charset_connection.C,v 1.6 2001/10/02 13:32:38 parser Exp $
 */
 
 #include "pa_charset_connection.h"
@@ -175,15 +175,16 @@ void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 	getrow(&data);
 
 	// parse cells
-	char *row_chars;
-	while(row_chars=getrow(&data)) {
-		if(!*row_chars) // remove empty lines
+	char *row;
+	while(row=getrow(&data)) {
+		// remove empty&comment lines
+		if(!*row || *row=='#')
 			continue;
 
 		// char	white-space	digit	hex-digit	letter	word	lowercase	unicode1	unicode2	
 		unsigned int c=0;
 		char *cell;
-		for(int column=0; cell=lsplit(&row_chars, '\t'); column++) {
+		for(int column=0; cell=lsplit(&row, '\t'); column++) {
 			switch(column) {
 			case 0: c=to_wchar_code(cell); break;
 			// fpcre_tables
