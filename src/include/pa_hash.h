@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.32 2001/03/28 08:01:41 paf Exp $
+	$Id: pa_hash.h,v 1.33 2001/04/03 07:20:52 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -46,7 +46,12 @@ public:
 
 	/// put a [value] under the [key], return existed or not
 	/*SYNCHRONIZED*/ bool put(const Key& key, Val *value);
-
+/*
+	/// dirty hack to allow constant items storage. I long for Hash<const Val*>
+	/*SYNCHRONIZED* / bool put(const Key& key, const Val *value) {
+		return put(key, const_cast<Val *>(value)); 
+	}
+*/
 	/// get associated [value] by the [key]
 	/*SYNCHRONIZED*/ Val *get(const Key& key) const;
 

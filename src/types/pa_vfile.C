@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.10 2001/04/03 06:23:07 paf Exp $
+	$Id: pa_vfile.C,v 1.11 2001/04/03 07:20:56 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -45,4 +45,3 @@ void VFile::set(const void *avalue_ptr, size_t avalue_size,
 	if(mime_type)
 		ffields.put(*vfile_mime_type_name, NEW VString(*mime_type));
 }
-
