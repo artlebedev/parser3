@@ -1,5 +1,6 @@
 @main[]
-^faceesize[]
+^lsplit2[]
+#^faceesize[]
 #^imageresize[]
 #^ifassignhash[]
 #^tintdefault[]
@@ -33,6 +34,16 @@
 #^xml[]
 #^header[]
 OK
+
+@lsplit2[]
+$path[/optics/]
+$pathTable[^path.lsplit[/]]
+^pathTable.menu{
+	^if(def $pathTable.piece){
+		=$pathTable.piece=
+	}
+}
+
 
 @faceesize[]
 $k(2)

@@ -103,6 +103,19 @@ SOURCE=.\pa_vform.C
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_vhashfile.C
+
+!IF  "$(CFG)" == "types - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "types - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_vimage.C
 # End Source File
 # Begin Source File
@@ -184,6 +197,10 @@ SOURCE=.\pa_vform.h
 # Begin Source File
 
 SOURCE=.\pa_vhash.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vhashfile.h
 # End Source File
 # Begin Source File
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxnode.h,v 1.4 2001/10/15 11:48:04 parser Exp $
+	$Id: pa_vxnode.h,v 1.5 2001/10/17 15:44:48 parser Exp $
 */
 
 #ifndef PA_VXNODE_H
@@ -67,6 +67,7 @@ public: // VXnode
 			PTHROW(0, 0,
 				source,
 				"can not be applied to uninitialized instance");
+
 		return *fnode; 
 	}
 

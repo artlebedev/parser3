@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.110 2001/10/16 14:49:16 parser Exp $
+	$Id: pa_string.C,v 1.111 2001/10/17 15:44:47 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -360,10 +360,7 @@ String& String::mid(size_t start, size_t finish) const {
 	String& result=*NEW String(pool());
 
 	start=max(0, start);
-	if(finish)
-		finish=min(size(), finish);
-	else
-		finish=size();
+	finish=min(size(), finish);
 	if(start==finish)
 		return result;
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.82 2001/10/16 14:49:16 parser Exp $
+	$Id: string.C,v 1.83 2001/10/17 15:44:47 parser Exp $
 */
 
 #include "classes.h"
@@ -129,10 +129,12 @@ static void _right(Request& r, const String&, MethodParams *params) {
 static void _mid(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	size_t p=(size_t)params->as_int(0, "p must be int", r);
-	size_t n=params->size()>1?(size_t)params->as_int(1, "n must be int", r):0;
-	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
+
+	size_t p=(size_t)params->as_int(0, "p must be int", r);
+	size_t n=params->size()>1?
+		(size_t)params->as_int(1, "n must be int", r):string.size();
+	
 	r.write_assign_lang(*new(pool) VString(string.mid(p, p+n)));
 }
 
