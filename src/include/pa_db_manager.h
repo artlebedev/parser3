@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.h,v 1.1 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_db_manager.h,v 1.2 2001/10/23 12:41:05 parser Exp $
 */
 
 #ifndef PA_DB_DRIVER_MANAGER_H
@@ -39,6 +39,7 @@ public:
 		checks driver version
 	*/
 	DB_Connection& get_connection(const String& file_spec, const String& request_origin);
+	void clear_dbfile(const String& file_spec);
 
 private: // connection cache
 
@@ -60,7 +61,7 @@ private:
 
 private:
 
-	void check(const char *operation, int error);
+	void check(const char *operation, const String *source, int error);
 };
 
 /// global

@@ -4,14 +4,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.C,v 1.1 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_db_manager.C,v 1.2 2001/10/23 12:41:05 parser Exp $
 */
 
 #include "pa_db_manager.h"
 #include "ltdl.h"
-#include "pa_DB_connection.h"
+#include "pa_db_connection.h"
 #include "pa_exception.h"
-#include "pa_common.h"
 #include "pa_threads.h"
 #include "pa_stack.h"
 
@@ -33,7 +32,7 @@ DB_Manager::DB_Manager(Pool& pool) : Pooled(pool),
 	prev_expiration_pass_time(0) {
 
 	memset(&dbenv, 0, sizeof(dbenv));
-	check("db_appinit", db_appinit(
+	check("db_appinit", 0/*global*/, db_appinit(
 		0/*db_home*/,
 		0/*db_config*/, 
 		&dbenv, 
@@ -41,11 +40,11 @@ DB_Manager::DB_Manager(Pool& pool) : Pooled(pool),
 }
 
 DB_Manager::~DB_Manager() {
-	check("db_appexit", db_appexit(&dbenv));
+	check("db_appexit", 0/*global*/, db_appexit(&dbenv));
 }
 
 
-void DB_Manager::check(const char *operation, int error) {
+void DB_Manager::check(const char *operation, const String *source, int error) {
 	switch(error) {
 	case 0: 
 		// no error
@@ -53,7 +52,7 @@ void DB_Manager::check(const char *operation, int error) {
 	
 	default:
 		throw Exception(0, 0, 
-			0/*source*/, 
+			source, 
 			"db %s error: %s (%d)", 
 			operation, strerror(errno), errno);
 	}
@@ -94,6 +93,20 @@ DB_Connection& DB_Manager::get_connection(const String& request_file_spec,
 		result->connect();
 	// return it
 	return *result;
+}
+void DB_Manager::clear_dbfile(const String& file_spec) {
+	// open&clear
+	DB *db;
+	DB_INFO dbinfo;
+	memset(&dbinfo, 0, sizeof(dbinfo));
+	check("open(clear)", &file_spec, db_open(
+		file_spec.cstr(String::UL_FILE_SPEC), 
+		PA_DB_ACCESS_METHOD, 
+		DB_CREATE | DB_TRUNCATE/* used in single thread, no need for |DB_THREAD*/,
+		0666, 
+		&dbenv, &dbinfo, &db));
+
+	check("close", &file_spec, db->close(db, 0/*flags*/));  db=0; 
 }
 
 void DB_Manager::close_connection(const String& file_spec, 

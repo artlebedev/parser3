@@ -1,5 +1,8 @@
 @main[]
-^hashfile[]
+^tcounter[]
+#^tablehash[]
+#^hashfile[]
+#^hashfile[]
 #^formclass[]
 #^hren[]
 #^domedit[]
@@ -40,9 +43,39 @@
 #^header[]
 OK
 
+@tcounter[]
+#^hashfile:clear[counter]
+$counter[^hashfile::open[counter]]
+^counter.transaction{
+#	$counter.value(10)
+	$counter.value($counter.value+1)
+#	^counter.delete[value]
+	$counter.value
+}
+
+@tablehash[]
+$productList[^table::set{id	name
+1	носки
+2	валенки
+3	ушанка
+}]
+
+#скажем, у первого дилера
+$firstPriceList[^table::set{id	price
+1	0.3
+3	1000
+}]
+
+$firstPriceHash[^firstPriceList.hash[id]]
+
+^productList.menu{
+    продукт "$productList.name" | цена у first: $firstPriceHash.[$productList.id].price<br>
+}
+
+
 @hashfile[]
 $hf[^hashfile::assign[hashfile]]
-$hf.paf[крут]
+#$hf.paf[крут5]
 paf=$hf.paf
 
 @formclass[]

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhashfile.h,v 1.2 2001/10/22 16:44:43 parser Exp $
+	$Id: pa_vhashfile.h,v 1.3 2001/10/23 12:41:05 parser Exp $
 */
 
 #ifndef PA_VHASHFILE_H
@@ -16,7 +16,7 @@
 #include "pa_vint.h"
 #include "pa_db_connection.h"
 
-extern Methoded *hash_base_class;
+extern Methoded *hashfile_base_class;
 
 /// value of type 'hashfile', implemented with GDBM library
 class VHashfile : public VStateless_class {
@@ -52,7 +52,7 @@ public: // value
 
 public: // usage
 
-	VHashfile(Pool& apool) : VStateless_class(apool, hash_base_class),
+	VHashfile(Pool& apool) : VStateless_class(apool, hashfile_base_class),
 		fconnection(0) {
 		register_cleanup(VHashfile_cleanup, this);
 	}
@@ -63,9 +63,7 @@ private:
 	}
 public:
 
-	void assign(const String& file_spec, const String& request_origin) {
-		fconnection=&DB_manager->get_connection(file_spec, request_origin);
-	}
+	void set_connection(DB_Connection& aconnection) { fconnection=&aconnection; }
 	DB_Connection& get_connection(const String *source) const { 
 		if(!fconnection)
 			throw Exception(0, 0,

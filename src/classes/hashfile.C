@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.2 2001/10/22 16:44:42 parser Exp $
+	$Id: hashfile.C,v 1.3 2001/10/23 12:41:05 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -33,36 +33,88 @@ public: // Methoded
 
 // methods
 
-static void _assign(Request& r, const String& method_name, MethodParams *params) {
+static void _open(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VHashfile& self=*static_cast<VHashfile *>(r.self);
 	
-	const String &sfile_spec=params->as_string(0, "filename must be string");
+	// file_spec
+	const String &file_spec=params->as_string(0, "filename must be string");
 
-	self.assign(r.absolute(sfile_spec), method_name);
+	self.set_connection(
+		DB_manager->get_connection(
+			r.absolute(file_spec), 
+			method_name)
+	);
 }
-//static_cast<VHashfile *>(r.self)	const String& file_spec=->file_spec();
+
+
+static void _transaction(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VHashfile& self=*static_cast<VHashfile *>(r.self);
+	
+	// body code
+	Value& body_code=params->as_junction(0, "body must be code");
+
+	// connection
+	DB_Connection& connection=self.get_connection(&method_name);
+
+	// transaction
+	Auto_transaction transaction(connection);
+
+	// execute body
+	try {
+		r.write_assign_lang(r.process(body_code));
+	} catch(...) { // process/commit problem
+		transaction.mark_to_rollback();
+		
+		/*re*/throw; 
+	}
+}
+
+static void _delete(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VHashfile& self=*static_cast<VHashfile *>(r.self);
+	
+	// key
+	const String &key=params->as_string(0, "key must be string");
+
+	// connection
+	DB_Connection& connection=self.get_connection(&method_name);
+
+	connection._delete(key);
+}
+
+static void _clear(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	
+	// file_spec
+	const String &file_spec=params->as_string(0, "filename must be string");
+
+	DB_manager->clear_dbfile(r.absolute(file_spec));
+}
 
 // constructor
 
 MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), HASH_CLASS_NAME));
 
-	// ^hashfile::assign[filename]
-	add_native_method("assign", Method::CT_DYNAMIC, _assign, 1, 1);
-/*
+	// ^hashfile::open[filename]
+	add_native_method("open", Method::CT_DYNAMIC, _open, 1, 1);
+	// ^transaction{code}
+	add_native_method("transaction", Method::CT_DYNAMIC, _transaction, 1, 1);
 	// ^hashfile.delete[key]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
-	// ^hashfile.clear[]
-	add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
+	// ^hashfile:clear[filename]
+	add_native_method("clear", Method::CT_STATIC, _clear, 1, 1);
+/*
 	// ^cache[key](seconds){code}
 	add_native_method("cache", Method::CT_DYNAMIC, _cache, 3, 3);
 	// ^cancel[]
 	add_native_method("cancel", Method::CT_DYNAMIC, _cancel, 0, 0);
-	// ^lock{code}
-	add_native_method("lock", Method::CT_DYNAMIC, _lock, 1, 1);
 	// ^pack[]
 	add_native_method("pack", Method::CT_DYNAMIC, _pack, 0, 0);
+	// ^hash[]
+	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
 	*/
 }
 
