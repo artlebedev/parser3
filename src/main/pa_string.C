@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.87 2001/05/17 10:12:28 parser Exp $
+	$Id: pa_string.C,v 1.88 2001/05/19 19:55:45 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -485,6 +485,7 @@ static void regex_options(char *options, int *result){
 			}
 }
 
+/// @todo maybe need speedup: some option to remove pre/match/post string generation
 bool String::match(const unsigned char *pcre_tables,
 				   const String *aorigin,
 				   const String& regexp, 
