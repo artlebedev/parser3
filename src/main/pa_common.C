@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/09/25 09:15:03 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/09/26 13:36:35 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -744,16 +744,16 @@ bool file_write_action_under_lock(
 			return false;
 		}
 
-		try {
+///		try {
 			action(f, context); 
-		} catch(...) {
+		/*} catch(...) {
 #ifdef HAVE_FTRUNCATE
 			if(!do_append)
 				ftruncate(f, lseek(f, 0, SEEK_CUR)); // one can not use O_TRUNC, read lower
 #endif
 			unlock(f);close(f); 
 			rethrow;
-		}
+		}*/
 		
 #ifdef HAVE_FTRUNCATE
 		if(!do_append)

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/09/26 09:06:21 $";
+static const char* IDENT_STRING_C="$Date: 2003/09/26 13:36:35 $";
 
 #include "pcre.h"
 
@@ -496,6 +496,10 @@ int String::as_int() const {
 	return result;
 }
 
+static int serialize_body_char(char c, char** cur) {
+	*((*cur)++)=c;
+	return 0; // 0=continue
+};
 static int serialize_body_piece(const char* s, char** cur) {
 	size_t length=strlen(s);
 	memcpy(*cur, s, length);  *cur+=length;
@@ -526,7 +530,7 @@ String::Cm String::serialize(size_t prolog_length) const {
 	// 3: lang info
 	langs.for_each(body, serialize_lang_piece, &cur);
 	// 4: letters
-	body.for_each(serialize_body_piece, &cur);
+	body.for_each(serialize_body_char, serialize_body_piece, &cur);
 	// 5: zero terminator already there put by new(PointerFreeGC)
 
 	return result;

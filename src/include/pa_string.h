@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char* IDENT_STRING_H="$Date: 2003/09/26 06:53:27 $";
+static const char* IDENT_STRING_H="$Date: 2003/09/26 13:36:35 $";
 
 // includes
 
@@ -305,8 +305,11 @@ public:
 			return CORD_chr(body, offset, c);
 		}
 
-		template<typename I> void for_each(int (*callback)(const char* s, I), I info) const {
-			CORD_iter5(body, 0, 0, (CORD_batched_iter_fn)callback, info);
+		template<typename I> void for_each(
+			int (*f1)(char c, I), 
+			int (*f2)(const char* s, I), 
+			I info) const {
+			CORD_iter5(body, 0, (CORD_iter_fn)f1, (CORD_batched_iter_fn)f2, info);
 		}
 
 		void set_pos(CORD_pos& pos, size_t index) const { CORD_set_pos(pos, body, index); }
