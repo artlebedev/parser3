@@ -1,5 +1,6 @@
 @main[]
-^cookie[]
+^mail[]
+#^cookie[]
 #^response[]
 #^regexp2[]
 #^ttablerem[]
@@ -14,11 +15,19 @@
 #^header[]
 OK
 
+@mail[]
+^mail:send[
+	$.to[Александр Петросян <paf@design.ru>]
+	..
+]
+
 @cookie[]
-$cookie:переменная[test тест ТЕСТ2]
-=$cookie:переменная=
-$cookie:переменная2[test тест ТЕСТ3]
-=$cookie:переменная2=
+$env:HTTP_COOKIE<br>
+
+#$cookie:переменная[test тест ТЕСТ2]
+=$cookie:переменная=<br>
+#$cookie:переменная2[test тест ТЕСТ3]
+=$cookie:переменная2=<br>
 
 @response[]
 #^if($form:reload){

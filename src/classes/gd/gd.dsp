@@ -91,6 +91,10 @@ SOURCE=.\gif.C
 
 SOURCE=.\gifio.C
 # End Source File
+# Begin Source File
+
+SOURCE=.\mtables.h
+# End Source File
 # End Group
 # Begin Group "Header Files"
 

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.48 2001/10/08 15:14:07 parser Exp $
+	$Id: image.C,v 1.49 2001/10/08 15:50:22 parser Exp $
 */
 
 /*
@@ -293,7 +293,8 @@ struct Attrib_info {
 static void append_attrib_pair(const Hash::Key& key, Hash::Val *val, void *info) {
 	Attrib_info& ai=*static_cast<Attrib_info *>(info);
 
-	if(ai.skip && ai.skip->get(key))
+	// skip user-specified and internal(starting with "line-") attributes 
+	if(ai.skip && ai.skip->get(key) || key.pos("line-")==0)
 		return;
 
 	Value& value=*static_cast<Value *>(val);
@@ -314,7 +315,7 @@ static void _html(Request& r, const String& method_name, MethodParams *params) {
 	if(params->size()) {
 		Value &vattribs=params->get(0);
 		if(vattribs.is_defined()) // allow 'void'
-			if(Hash *attribs=vattribs.get_hash()) {
+			if(attribs=vattribs.get_hash()) {
 				Attrib_info attrib_info={&tag, 0};
 				attribs->for_each(append_attrib_pair, &attrib_info);
 			} else
@@ -719,6 +720,25 @@ static void _arc(Request& r, const String& method_name, MethodParams *params) {
 		image->Color(params->as_int(6, r)));
 }
 
+static void _sector(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	gdImage *image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0, 
+			&method_name, 
+			"does not contain an image");
+
+	image->Sector(
+		params->as_int(0, r), //cx
+		params->as_int(1, r), //cy
+		params->as_int(2, r), //w
+		params->as_int(3, r), //h
+		params->as_int(4, r), //s
+		params->as_int(5, r), //e
+		image->Color(params->as_int(6, r)));
+}
+
 static void _circle(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -798,6 +818,9 @@ MImage::MImage(Pool& apool) : Methoded(apool) {
 	
 	// ^image.arc(center x;center y;width;height;start in degrees;end in degrees;color)
 	add_native_method("arc", Method::CT_DYNAMIC, _arc, 7, 7);
+
+	// ^image.sector(center x;center y;width;height;start in degrees;end in degrees;color)
+	add_native_method("sector", Method::CT_DYNAMIC, _sector, 7, 7);
 
 	// ^image.circle(center x;center y;r;color)
 	add_native_method("circle", Method::CT_DYNAMIC, _circle, 4, 4);

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.h,v 1.14 2001/09/26 10:32:25 parser Exp $
+	$Id: gif.h,v 1.15 2001/10/08 15:50:22 parser Exp $
 
 	based on:
 	gd.h: declarations file for the gifdraw module.
@@ -75,6 +75,7 @@ public:
 	
 	void Gif(String& out);
 	void Arc(int cx, int cy, int w, int h, int s, int e, int color);
+	void Sector(int cx, int cy, int w, int h, int s, int e, int color);
 	void FillToBorder(int x, int y, int border, int color);
 	void Fill(int x, int y, int color);
 	void Copy(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int w, int h);

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.26 2001/10/08 15:14:07 parser Exp $
+	$Id: pa_vcookie.C,v 1.27 2001/10/08 15:50:22 parser Exp $
 */
 
 #include "pa_sapi.h"
@@ -66,7 +66,6 @@ static char *search_stop(char*& current, char cstop_at) {
 //#include <stdio.h>
 void VCookie::fill_fields(Request& request) {
 	//request.info.cookie="test-session=value%3D5; test-default1=value%3D1; test-default2=value%3D2; test-tomorrow=value%3D3";
-	//request.info.cookie="\"вот\"=\"прислал \\\"browser\\\"\"";
 	if(!request.info.cookie)
 		return;
 /*
@@ -110,7 +109,7 @@ static VString *expires_timestamp(Pool& pool, double days_till_expire) {
 }
 
 /*
-	@test http://www.netscape.com/newsref/std/cookie_spec.html
+	@todo http://www.netscape.com/newsref/std/cookie_spec.html
 	When sending cookies to a server, 
 	all cookies with a more specific path mapping should be sent before cookies 
 	with less specific path mappings. 

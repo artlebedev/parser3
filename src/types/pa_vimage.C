@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vimage.C,v 1.10 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vimage.C,v 1.11 2001/10/08 15:50:22 parser Exp $
 */
 
 #include "pa_vimage.h"
@@ -29,6 +29,8 @@ void VImage::set(const String *src, int width, int height,
 	// defaults
 	// $border(0)
 	ffields.put(String(pool(), "border"), NEW VInt(pool(), 0));
+
+	// internals
 	// $line-width(1) 
 	ffields.put(String(pool(), "line-width"), NEW VInt(pool(), 1));
 }
