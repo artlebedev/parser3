@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.117 2001/10/02 13:32:38 parser Exp $
+	$Id: table.C,v 1.118 2001/10/02 15:40:32 parser Exp $
 */
 
 #include "classes.h"
@@ -65,8 +65,8 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	while(i.has_next()) {
 		Array& row=*new(pool) Array(pool);
 		const String& string=*i.next_string();
-		// remove empty&comment lines
-		if(!string.size() || string.first_char() == '#')
+		// remove comment lines
+		if(!string.size())
 			continue;
 
 		string.split(row, 0, "\t", 1, String::UL_CLEAN);
@@ -110,7 +110,8 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Table& table=*new(pool) Table(pool, &method_name, columns);
 	char *row_chars;
 	while(row_chars=getrow(&data)) {
-		if(!*row_chars) // remove empty lines
+		// remove empty&comment lines
+		if(!*row_chars || *row_chars == '#')
 			continue;
 		Array *row=new(pool) Array(pool);
 		while(char *cell_chars=lsplit(&row_chars, '\t')) {

@@ -1,11 +1,20 @@
 @main[]
-#$response:content-type[$.value[text/html] $.charset[windows-1251]]
+^ttablerem[]
 #^pcre[]
 #^regexp[]<hr>
 #^mail[]
 #^exec[]
 #^fori[]
-^connect[mysql://test:test@paf/test?charset=cp1251_koi8&compress=1&named_pipe=1]{
+#^tconnect[]
+#^xslt[]
+OK
+
+@ttablerem[]
+$table[^table::load[a.cfg]]
+^table.menu{$table.a}
+
+@tconnect[]
+^connect[mysql://test:test@paf/test?charset=cp1251_koi8&compress=1&timeout=1]{
 $tables[^table::sql{show tables}]
 #$cols[^tables.columns[]]
 #$cols.column
@@ -13,8 +22,6 @@ $tables[^table::sql{show tables}]
 	$tables.[Tables_in_test]<br>
 }
 }
-#^xslt[]
-OK
 
 @pcre[]
 $s[1 2]
@@ -47,6 +54,7 @@ $a.status|$a.stderr<hr>
 ^for[i](1;3){... =$i= ...}
 
 @xslt[]
+#$response:content-type[$.value[text/html] $.charset[windows-1251]]
 $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 #<!DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd">
 
