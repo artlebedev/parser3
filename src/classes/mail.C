@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.67 2002/06/24 11:59:31 paf Exp $
+	$Id: mail.C,v 1.68 2002/06/30 08:52:36 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -42,6 +42,7 @@ public:
 	MMail(Pool& pool);
 public: // Methoded
 	bool used_directly() { return false; }
+	void configure_user(Request& r);
 private:
 	String mail_name;
 };
@@ -395,6 +396,19 @@ MMail::MMail(Pool& apool) : Methoded(apool, MAIL_CLASS_NAME),
 {
 	// ^mail:send{hash}
 	add_native_method("send", Method::CT_STATIC, _send, 1, 1);
+}
+
+void MMail::configure_user(Request& r) {
+	Pool& pool=r.pool();
+
+	// $MAIN:MAIL[$SMTP[mail.design.ru]]
+	if(Value *mail_element=r.main_class->get_element(mail_name))
+		if(Hash *mail_conf=mail_element->get_hash(0))
+			r.classes_conf.put(name(), mail_conf);
+		else
+			throw Exception("parser.runtime",
+				0,
+				"$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
 }
 
 // creator
