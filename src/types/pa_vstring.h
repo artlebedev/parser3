@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.17 2001/03/29 09:31:45 paf Exp $
+	$Id: pa_vstring.h,v 1.18 2001/03/29 20:53:05 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -45,7 +45,7 @@ public: // Value
 		else
 			result=strtod(cstr, &error_pos);
 
-		if(error_pos&&*error_pos)
+		if(error_pos && *error_pos)
 			THROW(0, 0,
 				&fstring,
 				"invalid number");

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.38 2001/03/29 15:00:19 paf Exp $
+	$Id: table.C,v 1.39 2001/03/29 20:53:02 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,6 +25,11 @@ static void set_or_load(
 						Request& r, 
 						const String& method_name, Array *params, 
 						bool is_load) {
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
 	Pool& pool=r.pool();
 	// data is last parameter
 	Value *vdata_or_filename=static_cast<Value *>(params->get(params->size()-1));
@@ -34,14 +39,14 @@ static void set_or_load(
 	r.fail_if_junction_(is_load, *vdata_or_filename, 
 		method_name, is_load?"file name must not be junction":"body must be junction");
 
-	// data or file_name
+	// data or table_name
 	char *data;
 	if(is_load) {
 		// forcing untaint language
-		String lfile_name(pool);
-		lfile_name.append(vdata_or_filename->as_string(), String::UL_FILE_NAME, true);
+		String ltable_name(pool);
+		ltable_name.append(vdata_or_filename->as_string(), String::UL_FILE_NAME, true);
 		// loading text
-		data=file_read_text(pool, r.absolute(lfile_name));
+		data=file_read_text(pool, r.absolute(ltable_name));
 	} else {
 		// suggesting untaint language
 		Temp_lang temp_lang(r, String::UL_TABLE);
@@ -98,16 +103,21 @@ static void _load(Request& r, const String& method_name, Array *params) {
 }
 
 static void _save(Request& r, const String& method_name, Array *params) {
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
 	Pool& pool=r.pool();
-	Value *vfile_name=static_cast<Value *>(params->get(params->size()-1));
+	Value *vtable_name=static_cast<Value *>(params->get(params->size()-1));
 	// forcing
 	// ^save[this body type]
-	r.fail_if_junction_(true, *vfile_name, 
+	r.fail_if_junction_(true, *vtable_name, 
 		method_name, "file name must not be junction");
 
 	// forcing untaint language
-	String lfile_name(pool);
-	lfile_name.append(vfile_name->as_string(),
+	String ltable_name(pool);
+	ltable_name.append(vtable_name->as_string(),
 		String::UL_FILE_NAME, true);
 
 	Table& table=static_cast<VTable *>(r.self)->table();
@@ -148,22 +158,37 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	}
 
 	// write
-	file_write(pool, r.absolute(lfile_name), sdata.cstr(), sdata.size(), true);
+	file_write(pool, r.absolute(ltable_name), sdata.cstr(), sdata.size(), true);
 }
 
-static void _count(Request& r, const String&, Array *) {
+static void _count(Request& r, const String&method_name, Array *) {
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, static_cast<VTable *>(r.self)->table().size());
 	r.write_no_lang(value);
 }
 
-static void _line(Request& r, const String&, Array *) {
+static void _line(Request& r, const String& method_name, Array *) {
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, 1+static_cast<VTable *>(r.self)->table().current());
 	r.write_no_lang(value);
 }
 
-static void _offset(Request& r, const String&, Array *params) {
+static void _offset(Request& r, const String& method_name, Array *params) {
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
 	Pool& pool=r.pool();
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(params->size())
@@ -175,6 +200,11 @@ static void _offset(Request& r, const String&, Array *params) {
 }
 
 static void _menu(Request& r, const String& method_name, Array *params) {
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
 	Value& body_code=*static_cast<Value *>(params->get(0));
 	// forcing ^menu{this param type}
 	r.fail_if_junction_(false, body_code, 
@@ -200,7 +230,12 @@ static void _menu(Request& r, const String& method_name, Array *params) {
 	table.set_current(saved_current);
 }
 
-static void _empty(Request& r, const String&, Array *params) {
+static void _empty(Request& r, const String& method_name, Array *params) {
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(table.size()==0) {
 		Value& value=r.process(*static_cast<Value *>(params->get(0)));
@@ -227,7 +262,12 @@ static void store_column_item_to_hash(Array::Item *item, void *info) {
 		value=new(*ri.pool) VUnknown(*ri.pool);
 	ri.hash->put(column_name, value);
 }
-static void _record(Request& r, const String&, Array *params) {
+static void _record(Request& r, const String& method_name, Array *params) {
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(const Array *columns=table.columns()) {
 		Pool& pool=r.pool();
@@ -263,6 +303,11 @@ static int sort_cmp_double(const void *a, const void *b) {
 		return 0;
 }
 static void _sort(Request& r, const String& method_name, Array *params) {
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
 	Value& key_maker=*(Value *)params->get(0);
 	// forcing ^sort{this} ^sort(or this) param type
 	r.fail_if_junction_(false, key_maker, method_name, "key-maker must be junction");
@@ -312,7 +357,12 @@ static void _sort(Request& r, const String& method_name, Array *params) {
 	table.set_current(0);
 }
 
-static void _locate(Request& r, const String&, Array *params) {
+static void _locate(Request& r, const String& method_name, Array *params) {
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	Table& table=vtable.table();
 	vtable.last_locate_was_successful=table.locate(
@@ -321,6 +371,11 @@ static void _locate(Request& r, const String&, Array *params) {
 }
 
 static void _found(Request& r, const String& method_name, Array *params) {
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
 	if(static_cast<VTable *>(r.self)->last_locate_was_successful) {
 		Value& then_code=*static_cast<Value *>(params->get(0));
 		// forcing ^found{this param type}
@@ -334,6 +389,32 @@ static void _found(Request& r, const String& method_name, Array *params) {
 			method_name, "not found-parameter must be junction");
 		r.write_pass_lang(r.process(else_code));
 	}
+}
+
+static void _flip(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	if(r.self==table_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'table' is not static");
+
+	VTable& vtable=*static_cast<VTable *>(r.self);
+
+	Table& old_table=*vtable.get_table();
+	Table& new_table=*new(pool) Table(pool, &method_name, 0/*nameless*/);
+	if(old_table.size())
+		if(int old_cols=old_table.at(0).size()) 
+			for(int column=0; column<old_cols; column++) {
+				Array& new_row=*new(pool) Array(pool, old_table.size());
+				for(int i=0; i<old_table.size(); i++) {
+					const Array& old_row=old_table.at(i);
+					new_row+=column<old_row.size()?old_row.get(column):empty_string;
+				}
+				new_table+=&new_row;
+			}
+
+	vtable.set_table(new_table);
 }
 
 // initialize
@@ -381,4 +462,7 @@ void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 	// ^table.found{when-found}
 	// ^table.found{when-found}{when-not-found}
 	vclass.add_native_method("found", _found, 1, 2);
+
+	// ^table.flip[]
+	vclass.add_native_method("flip", _flip, 0, 0);
 }	

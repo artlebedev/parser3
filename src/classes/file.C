@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.12 2001/03/28 14:41:27 paf Exp $
+	$Id: file.C,v 1.13 2001/03/29 20:53:02 paf Exp $
 */
 
 #include "pa_request.h"
@@ -23,6 +23,11 @@ VStateless_class *file_class;
 
 /// @test mkdirs
 static void _save(Request& r, const String& method_name, Array *params) {
+	if(r.self==file_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'file' is not static");
+
 	Pool& pool=r.pool();
 	Value& vfile_name=*static_cast<Value *>(params->get(0));
 	// forcing
@@ -98,6 +103,11 @@ static void _find(Request& r, const String& method_name, Array *params) {
 }
 
 static void _load(Request& r, const String& method_name, Array *params) {
+	if(r.self==file_class)
+		RTHROW(0, 0,
+			&method_name,
+			"method of 'file' is not static");
+
 	Pool& pool=r.pool();
 	Value& vfile_name=*static_cast<Value *>(params->get(0));
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.23 2001/03/28 14:07:17 paf Exp $
+	$Id: pa_table.C,v 1.24 2001/03/29 20:53:04 paf Exp $
 */
 
 #include <stdlib.h>
@@ -42,8 +42,15 @@ int Table::column_name2index(const String& column_name) const {
 				"column not found");
 			return 0; // unreached
 		}
-	} else // nameless
-		return atoi(column_name.cstr());
+	} else { // nameless
+		char *error_pos=0;
+		int result=(int)strtol(column_name.cstr(), &error_pos, 0);
+		if(error_pos && *error_pos)
+			THROW(0, 0,
+				&column_name,
+				"invalid column number");
+		return result;
+	}
 }
 
 const String *Table::item(int column) const {

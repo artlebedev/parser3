@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.26 2001/03/28 14:07:16 paf Exp $
+	$Id: pa_table.h,v 1.27 2001/03/29 20:53:03 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -64,6 +64,11 @@ public:
 		return locate(column_name2index(column), value);
 	}
 
+	const Array& at(int index) const {
+		// force @c const result
+		return *const_cast<const Array *>(static_cast<Array *>(get(index)));
+	}
+
 private:
 	
 	// where this table came from, may be NULL
@@ -79,11 +84,6 @@ private:
 	Array *fcolumns;
 
 	bool valid(int index) const { return index>=0 && index<size(); }
-
-	const Array& at(int index) const {
-		// force @c const result
-		return *const_cast<const Array *>(static_cast<Array *>(get(index)));
-	}
 
 	/// @return column index from @a column_name
 	int column_name2index(const String& column) const;

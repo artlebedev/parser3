@@ -16,13 +16,22 @@ _	&nbsp^;
 }]
 
 @dump[t]
-#^t.menu{$n<BR>}
+^t.menu{$n<BR>}
 <HR>
 @func[n]
 $n
 @twop[a;b]
 ($a,$b)
 @main[]
+$t[^table:load[/test.cfg]]
+$t{
+^menu{$a $b $c<BR>}
+<HR>
+^flip[]
+^menu{$0 $1 $2<BR>}
+<HR>
+}
+
 $a[vasya,fedya,kolya]
 ^^"$a".lsplit[,]=$as[^a.lsplit[,]]$as.0|$as.1|$as.2|$as.3<BR>
 ^^"$a".rsplit[,]=$as[^a.rsplit[,]]$as.0|$as.1|$as.2|$as.3<BR>
@@ -53,20 +62,20 @@ $t[^table:set{n
 1.2
 2
 }]
-#$t{^locate[n;2z]^found{$n}{not found}}<BR>
-#$t{^locate[n;3]^found{found:$n}{not found}}<BR>
+$t{^locate[n;2z]^found{$n}{not found}}<BR>
+$t{^locate[n;3]^found{found:$n}{not found}}<BR>
 ^$t:<BR>
 ^dump[$t]
-#^t.sort($n)
+^t.sort($n)
 ^^t.sort(^$n):<BR>
 ^dump[$t]
-#^t.sort{^:func($n)}
+^t.sort{^:func($n)}
 ^^t.sort{^^:func(^$n)}:<BR>
 ^dump[$t]
-#^t.sort{$n}
+^t.sort{$n}
 ^^t.sort{^$n}:<BR>
 ^dump[$t]
-#^t.sort{$n}[desc]
+^t.sort{$n}[desc]
 ^^t.sort{^$n}[desc]:<BR>
 ^dump[$t]
 <HR>
