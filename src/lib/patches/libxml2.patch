@@ -1,0 +1,367 @@
+*** ../0/libxml2-2.5.1//HTMLparser.c	Tue Dec 10 17:59:13 2002
+--- ./HTMLparser.c	Thu Jan  9 21:07:15 2003
+***************
+*** 1431,1437 ****
+   */
+  int
+  UTF8ToHtml(unsigned char* out, int *outlen,
+!               const unsigned char* in, int *inlen) {
+      const unsigned char* processed = in;
+      const unsigned char* outend;
+      const unsigned char* outstart = out;
+--- 1431,1438 ----
+   */
+  int
+  UTF8ToHtml(unsigned char* out, int *outlen,
+!               const unsigned char* in, int *inlen,
+! 			  void *info) {
+      const unsigned char* processed = in;
+      const unsigned char* outend;
+      const unsigned char* outstart = out;
+*** ../0/libxml2-2.5.1//encoding.c	Tue Dec 10 17:59:37 2002
+--- ./encoding.c	Thu Jan  9 21:07:00 2003
+***************
+*** 423,429 ****
+   */
+  static int
+  asciiToUTF8(unsigned char* out, int *outlen,
+!               const unsigned char* in, int *inlen) {
+      unsigned char* outstart = out;
+      const unsigned char* base = in;
+      const unsigned char* processed = in;
+--- 423,430 ----
+   */
+  static int
+  asciiToUTF8(unsigned char* out, int *outlen,
+!               const unsigned char* in, int *inlen,
+! 			  void *info) {
+      unsigned char* outstart = out;
+      const unsigned char* base = in;
+      const unsigned char* processed = in;
+***************
+*** 475,481 ****
+   */
+  static int
+  UTF8Toascii(unsigned char* out, int *outlen,
+!               const unsigned char* in, int *inlen) {
+      const unsigned char* processed = in;
+      const unsigned char* outend;
+      const unsigned char* outstart = out;
+--- 476,483 ----
+   */
+  static int
+  UTF8Toascii(unsigned char* out, int *outlen,
+!               const unsigned char* in, int *inlen,
+! 			  void *info) {
+      const unsigned char* processed = in;
+      const unsigned char* outend;
+      const unsigned char* outstart = out;
+***************
+*** 557,563 ****
+   */
+  int
+  isolat1ToUTF8(unsigned char* out, int *outlen,
+!               const unsigned char* in, int *inlen) {
+      unsigned char* outstart = out;
+      const unsigned char* base = in;
+      unsigned char* outend = out + *outlen;
+--- 559,566 ----
+   */
+  int
+  isolat1ToUTF8(unsigned char* out, int *outlen,
+!               const unsigned char* in, int *inlen,
+! 	      void *info) {
+      unsigned char* outstart = out;
+      const unsigned char* base = in;
+      unsigned char* outend = out + *outlen;
+***************
+*** 609,615 ****
+   */
+  int
+  UTF8Toisolat1(unsigned char* out, int *outlen,
+!               const unsigned char* in, int *inlen) {
+      const unsigned char* processed = in;
+      const unsigned char* outend;
+      const unsigned char* outstart = out;
+--- 612,619 ----
+   */
+  int
+  UTF8Toisolat1(unsigned char* out, int *outlen,
+!               const unsigned char* in, int *inlen,
+! 			  void *info) {
+      const unsigned char* processed = in;
+      const unsigned char* outend;
+      const unsigned char* outstart = out;
+***************
+*** 699,705 ****
+   */
+  static int
+  UTF16LEToUTF8(unsigned char* out, int *outlen,
+!             const unsigned char* inb, int *inlenb)
+  {
+      unsigned char* outstart = out;
+      const unsigned char* processed = inb;
+--- 703,710 ----
+   */
+  static int
+  UTF16LEToUTF8(unsigned char* out, int *outlen,
+!             const unsigned char* inb, int *inlenb, 
+! 			void *info)
+  {
+      unsigned char* outstart = out;
+      const unsigned char* processed = inb;
+***************
+*** 783,789 ****
+   */
+  static int
+  UTF8ToUTF16LE(unsigned char* outb, int *outlen,
+!             const unsigned char* in, int *inlen)
+  {
+      unsigned short* out = (unsigned short*) outb;
+      const unsigned char* processed = in;
+--- 788,795 ----
+   */
+  static int
+  UTF8ToUTF16LE(unsigned char* outb, int *outlen,
+!             const unsigned char* in, int *inlen,
+! 			void *info)
+  {
+      unsigned short* out = (unsigned short*) outb;
+      const unsigned char* processed = in;
+***************
+*** 906,912 ****
+   */
+  static int
+  UTF16BEToUTF8(unsigned char* out, int *outlen,
+!             const unsigned char* inb, int *inlenb)
+  {
+      unsigned char* outstart = out;
+      const unsigned char* processed = inb;
+--- 912,919 ----
+   */
+  static int
+  UTF16BEToUTF8(unsigned char* out, int *outlen,
+!             const unsigned char* inb, int *inlenb,
+! 			void *info)
+  {
+      unsigned char* outstart = out;
+      const unsigned char* processed = inb;
+***************
+*** 994,1000 ****
+   */
+  static int
+  UTF8ToUTF16BE(unsigned char* outb, int *outlen,
+!             const unsigned char* in, int *inlen)
+  {
+      unsigned short* out = (unsigned short*) outb;
+      const unsigned char* processed = in;
+--- 1001,1008 ----
+   */
+  static int
+  UTF8ToUTF16BE(unsigned char* outb, int *outlen,
+!             const unsigned char* in, int *inlen,
+! 			void *info)
+  {
+      unsigned short* out = (unsigned short*) outb;
+      const unsigned char* processed = in;
+***************
+*** 1985,1991 ****
+  
+      if (handler->input != NULL) {
+  	ret = handler->input(&out->content[out->use], &written,
+! 	                     in->content, &toconv);
+  	xmlBufferShrink(in, toconv);
+  	out->use += written;
+  	out->content[out->use] = 0;
+--- 1993,1999 ----
+  
+      if (handler->input != NULL) {
+  	ret = handler->input(&out->content[out->use], &written,
+! 	                     in->content, &toconv, handler->inputInfo);
+  	xmlBufferShrink(in, toconv);
+  	out->use += written;
+  	out->content[out->use] = 0;
+***************
+*** 2069,2075 ****
+      }
+      if (handler->input != NULL) {
+          ret = handler->input(&out->content[out->use], &written,
+!                              in->content, &toconv);
+          xmlBufferShrink(in, toconv);
+          out->use += written;
+          out->content[out->use] = 0;
+--- 2077,2083 ----
+      }
+      if (handler->input != NULL) {
+          ret = handler->input(&out->content[out->use], &written,
+!                              in->content, &toconv, handler->inputInfo);
+          xmlBufferShrink(in, toconv);
+          out->use += written;
+          out->content[out->use] = 0;
+***************
+*** 2164,2170 ****
+          toconv = 0;
+  	if (handler->output != NULL) {
+  	    ret = handler->output(&out->content[out->use], &written,
+! 				  NULL, &toconv);
+  	    out->use += written;
+  	    out->content[out->use] = 0;
+  	}
+--- 2172,2178 ----
+          toconv = 0;
+  	if (handler->output != NULL) {
+  	    ret = handler->output(&out->content[out->use], &written,
+! 				  NULL, &toconv, handler->outputInfo);
+  	    out->use += written;
+  	    out->content[out->use] = 0;
+  	}
+***************
+*** 2195,2201 ****
+      }
+      if (handler->output != NULL) {
+  	ret = handler->output(&out->content[out->use], &written,
+! 	                      in->content, &toconv);
+  	xmlBufferShrink(in, toconv);
+  	out->use += written;
+  	writtentot += written;
+--- 2203,2209 ----
+      }
+      if (handler->output != NULL) {
+  	ret = handler->output(&out->content[out->use], &written,
+! 	                      in->content, &toconv, handler->outputInfo);
+  	xmlBufferShrink(in, toconv);
+  	out->use += written;
+  	writtentot += written;
+*** ../0/libxml2-2.5.1//error.c	Tue Sep 10 13:47:41 2002
+--- ./error.c	Thu Jan  9 20:51:22 2003
+***************
+*** 151,156 ****
+--- 151,157 ----
+      int n;
+      xmlChar  content[81];
+      xmlChar *ctnt;
++     xmlChar curCh;
+  
+      if (input == NULL) return;
+      cur = input->cur;
+***************
+*** 168,174 ****
+      n = 0;
+      ctnt = content;
+      while ((*cur != 0) && (*cur != '\n') && (*cur != '\r') && (n < 79)) {
+! 		*ctnt++ = *cur++;
+  	n++;
+      }
+      *ctnt = 0;
+--- 169,175 ----
+      n = 0;
+      ctnt = content;
+      while ((*cur != 0) && (*cur != '\n') && (*cur != '\r') && (n < 79)) {
+! 		*ctnt++ = ((curCh=*cur++)=='\t')?' ':curCh;
+  	n++;
+      }
+      *ctnt = 0;
+*** ../0/libxml2-2.5.1//include/libxml/HTMLparser.h	Mon May 27 18:41:18 2002
+--- ./include/libxml/HTMLparser.h	Thu Jan  9 21:03:55 2003
+***************
+*** 88,94 ****
+  int			UTF8ToHtml	(unsigned char *out,
+  					 int *outlen,
+  					 const unsigned char *in,
+! 					 int *inlen);
+  int			htmlEncodeEntities(unsigned char *out,
+  					 int *outlen,
+  					 const unsigned char *in,
+--- 88,95 ----
+  int			UTF8ToHtml	(unsigned char *out,
+  					 int *outlen,
+  					 const unsigned char *in,
+! 					 int *inlen,
+! 					 void *info);
+  int			htmlEncodeEntities(unsigned char *out,
+  					 int *outlen,
+  					 const unsigned char *in,
+*** ../0/libxml2-2.5.1//include/libxml/encoding.h	Tue Nov 12 12:40:18 2002
+--- ./include/libxml/encoding.h	Thu Jan  9 21:03:11 2003
+***************
+*** 92,98 ****
+   * The value of @outlen after return is the number of octets consumed.
+   */
+  typedef int (* xmlCharEncodingInputFunc)(unsigned char *out, int *outlen,
+!                                          const unsigned char *in, int *inlen);
+  
+  
+  /**
+--- 92,99 ----
+   * The value of @outlen after return is the number of octets consumed.
+   */
+  typedef int (* xmlCharEncodingInputFunc)(unsigned char *out, int *outlen,
+!                                          const unsigned char *in, int *inlen,
+! 					 void *info);
+  
+  
+  /**
+***************
+*** 114,120 ****
+   * The value of @outlen after return is the number of ocetes consumed.
+   */
+  typedef int (* xmlCharEncodingOutputFunc)(unsigned char *out, int *outlen,
+!                                           const unsigned char *in, int *inlen);
+  
+  
+  /*
+--- 115,122 ----
+   * The value of @outlen after return is the number of ocetes consumed.
+   */
+  typedef int (* xmlCharEncodingOutputFunc)(unsigned char *out, int *outlen,
+!                                           const unsigned char *in, int *inlen,
+! 					  void *info);
+  
+  
+  /*
+***************
+*** 126,133 ****
+  typedef xmlCharEncodingHandler *xmlCharEncodingHandlerPtr;
+  struct _xmlCharEncodingHandler {
+      char                       *name;
+!     xmlCharEncodingInputFunc   input;
+!     xmlCharEncodingOutputFunc  output;
+  #ifdef LIBXML_ICONV_ENABLED
+      iconv_t                    iconv_in;
+      iconv_t                    iconv_out;
+--- 128,135 ----
+  typedef xmlCharEncodingHandler *xmlCharEncodingHandlerPtr;
+  struct _xmlCharEncodingHandler {
+      char                       *name;
+!     xmlCharEncodingInputFunc   input;	void *inputInfo;
+!     xmlCharEncodingOutputFunc  output;	void *outputInfo;
+  #ifdef LIBXML_ICONV_ENABLED
+      iconv_t                    iconv_in;
+      iconv_t                    iconv_out;
+***************
+*** 196,206 ****
+  int	UTF8Toisolat1			(unsigned char *out,
+  					 int *outlen,
+  					 const unsigned char *in,
+! 					 int *inlen);
+  int	isolat1ToUTF8			(unsigned char *out,
+  					 int *outlen,
+  					 const unsigned char *in,
+! 					 int *inlen);
+  int	xmlGetUTF8Char			(const unsigned char *utf,
+  					 int *len);
+  /*
+--- 198,210 ----
+  int	UTF8Toisolat1			(unsigned char *out,
+  					 int *outlen,
+  					 const unsigned char *in,
+! 					 int *inlen,
+! 					 void *info);
+  int	isolat1ToUTF8			(unsigned char *out,
+  					 int *outlen,
+  					 const unsigned char *in,
+! 					 int *inlen,
+! 					 void *info);
+  int	xmlGetUTF8Char			(const unsigned char *utf,
+  					 int *len);
+  /*
