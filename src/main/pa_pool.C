@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.36 2001/10/19 14:42:53 parser Exp $
+	$Id: pa_pool.C,v 1.37 2001/10/19 15:27:42 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -101,7 +101,7 @@ std::auto_ptr<XalanDOMString> Pool::transcode_buf(const char *buf, size_t buf_si
 	unsigned int dest_size=0;
 	XMLCh* dest=(XMLCh *)malloc((buf_size+1)*sizeof(XMLCh));
 	unsigned char *charSizes=(unsigned char *)malloc(buf_size*sizeof(unsigned char));
-	std::auto_ptr<XalanDOMString> result;
+	XalanDOMString *result;
 	try {
 		if(transcoder) {
 			unsigned int bytesEaten;
@@ -112,13 +112,14 @@ std::auto_ptr<XalanDOMString> Pool::transcode_buf(const char *buf, size_t buf_si
 				bytesEaten,
 				charSizes
 			);
-			result=std::auto_ptr<XalanDOMString>(new XalanDOMString(dest, dest_size));
+			result=new XalanDOMString(dest, dest_size);
 		}
 	} catch(XMLException& e) {
 		Exception::convert(*this, 0, e);
+		result=0; //calm, compiler
 	}
 	
-	return result;
+	return std::auto_ptr<XalanDOMString>(result);
 }
 std::auto_ptr<XalanDOMString> Pool::transcode(const String& s) { 
 	const char *cstr=s.cstr(String::UL_XML);
