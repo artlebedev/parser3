@@ -90,7 +90,7 @@ INCLUDES = -I../classes -I../sql -I../lib/pcre -I../classes/gd @XML_INCLUDES@ @M
 noinst_LIBRARIES = libtypes.a
 noinst_HEADERS = pa_value.h pa_vbool.h pa_vclass.h pa_vcode_frame.h pa_vcookie.h pa_vdate.h pa_vdouble.h pa_venv.h pa_vfile.h pa_vform.h pa_vhash.h pa_vimage.h pa_vint.h pa_vjunction.h pa_vmath.h pa_vmethod_frame.h pa_vobject.h pa_vrequest.h pa_vresponse.h pa_vstateless_class.h pa_vstateless_object.h pa_vstatus.h pa_vstring.h pa_vtable.h pa_vvoid.h pa_vxdoc.h pa_vxnode.h pa_wcontext.h pa_wwrapper.h pa_vmail.h
 
-libtypes_a_SOURCES = pa_value.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vresponse.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vstatus.C pa_vmail.C
+libtypes_a_SOURCES = pa_value.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vresponse.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vstatus.C pa_vmail.C pa_vobject.C pa_vclass.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -105,7 +105,7 @@ libtypes_a_LIBADD =
 libtypes_a_OBJECTS =  pa_value.o pa_vcookie.o pa_vfile.o pa_vform.o \
 pa_vimage.o pa_vrequest.o pa_vresponse.o pa_vstateless_class.o \
 pa_vstring.o pa_wcontext.o pa_vtable.o pa_vxnode.o pa_vxdoc.o \
-pa_vstatus.o pa_vmail.o
+pa_vstatus.o pa_vmail.o pa_vobject.o pa_vclass.o
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -120,10 +120,11 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DEP_FILES =  .deps/pa_value.P .deps/pa_vcookie.P .deps/pa_vfile.P \
-.deps/pa_vform.P .deps/pa_vimage.P .deps/pa_vmail.P .deps/pa_vrequest.P \
-.deps/pa_vresponse.P .deps/pa_vstateless_class.P .deps/pa_vstatus.P \
-.deps/pa_vstring.P .deps/pa_vtable.P .deps/pa_vxdoc.P .deps/pa_vxnode.P \
+DEP_FILES =  .deps/pa_value.P .deps/pa_vclass.P .deps/pa_vcookie.P \
+.deps/pa_vfile.P .deps/pa_vform.P .deps/pa_vimage.P .deps/pa_vmail.P \
+.deps/pa_vobject.P .deps/pa_vrequest.P .deps/pa_vresponse.P \
+.deps/pa_vstateless_class.P .deps/pa_vstatus.P .deps/pa_vstring.P \
+.deps/pa_vtable.P .deps/pa_vxdoc.P .deps/pa_vxnode.P \
 .deps/pa_wcontext.P
 SOURCES = $(libtypes_a_SOURCES)
 OBJECTS = $(libtypes_a_OBJECTS)
