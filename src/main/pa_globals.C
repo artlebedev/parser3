@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.70 2001/08/07 13:54:13 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.71 2001/09/06 08:25:08 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -64,7 +64,7 @@ String *sql_limit_name;
 String *sql_offset_name;
 String *sql_default_name;
 
-
+String *hash_default_element_name;
 
 Hash *untaint_lang_name2enum;
 
@@ -159,6 +159,9 @@ void pa_globals_init(Pool& pool) {
 	sql_limit_name=NEW String(pool, SQL_LIMIT_NAME);
 	sql_offset_name=NEW String(pool, SQL_OFFSET_NAME);
 	sql_default_name=NEW String(pool, SQL_DEFAULT_NAME);
+
+	// hash
+	hash_default_element_name=NEW String(pool, HASH_DEFAULT_ELEMENT_NAME);
 
 
 	// hashes

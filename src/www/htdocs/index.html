@@ -3,7 +3,9 @@ t.p
 dtf.p
 
 @main[]
-^tlsplit2[]
+^thashdefault2[]
+#^tcase2[]
+#^tlsplit2[]
 #^tconnect[]
 #^timghtmlyu[]
 #^timghtml[]
@@ -28,6 +30,21 @@ dtf.p
 #^list[]
 #^tests[]
 #^func(0)<hr>
+
+@thashdefault2[]
+$hash[
+	$.a[1]
+	$.b[2]
+	$._default[xx]
+]
+$hash.c
+
+@tcase2[]
+$hash[
+	$.1{^load[code1]}
+	$.2{code2}
+]	
+$hash.1
 
 @tlsplit2[]
 $splitURI[^request:uri.mid(1;^request:uri.length[]-1).lsplit[/]]

@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.14 2001/08/09 14:28:36 parser Exp $
+	$Id: hash.C,v 1.15 2001/09/06 08:25:08 parser Exp $
 */
-static const char *RCSId="$Id: hash.C,v 1.14 2001/08/09 14:28:36 parser Exp $"; 
+static const char *RCSId="$Id: hash.C,v 1.15 2001/09/06 08:25:08 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -33,18 +33,6 @@ public: // Methoded
 };
 
 // methods
-
-static void _default(Request& r, const String&, MethodParams *params) { 
-	Pool& pool=r.pool();
-
-	VHash& vhash=*static_cast<VHash *>(r.self);
-	if(params->size())
-		vhash.set_default(params->get(0)); // info: may be code..
-	else {
-		Value *default_value=vhash.get_default();
-		r.write_assign_lang(default_value?*default_value:*new(pool) VVoid(pool));
-	}
-}
 
 #ifndef DOXYGEN
 class Hash_sql_event_handlers : public SQL_Driver_query_event_handlers {
@@ -175,10 +163,6 @@ static void _keys(Request& r, const String& method_name, MethodParams *) {
 
 MHash::MHash(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), HASH_CLASS_NAME));
-
-	// ^hash._default[]
-	// ^hash._default[hash]
-	add_native_method("_default", Method::CT_DYNAMIC, _default, 0, 1);
 
 	// ^hash:sql[query][(count[;offset])]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);

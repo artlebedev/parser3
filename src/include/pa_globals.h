@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.60 2001/08/07 13:54:13 parser Exp $
+	$Id: pa_globals.h,v 1.61 2001/09/06 08:25:08 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -75,6 +75,8 @@ class Dictionary;
 #define SQL_OFFSET_NAME "offset"
 #define SQL_DEFAULT_NAME "default"
 
+#define HASH_DEFAULT_ELEMENT_NAME "_default"
+
 //@}
 
 /// core func
@@ -139,6 +141,8 @@ extern String *case_default_value;
 extern String *sql_limit_name;
 extern String *sql_offset_name;
 extern String *sql_default_name;
+
+extern String *hash_default_element_name;
 
 //@}
 

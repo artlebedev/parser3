@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhash.h,v 1.15 2001/07/20 09:40:46 parser Exp $
+	$Id: pa_vhash.h,v 1.16 2001/09/06 08:25:08 parser Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -35,8 +35,11 @@ public: // value
 			return result;
 
 		// $element
-		Value *result=static_cast<Value *>(fhash.get(name));
-		return result?result:fdefault;
+		if(Value *result=static_cast<Value *>(fhash.get(name)))
+			return result;
+
+		// default value
+		return static_cast<Value *>(fhash.get(*hash_default_element_name));
 	}
 	
 	/// VHash: (key)=value
