@@ -86,8 +86,10 @@ YACC = @YACC@
 host_os = @host_os@
 
 INCLUDES = -I../../types @XML_INCLUDES@
+
 noinst_LIBRARIES = libxalan_patched.a
 libxalan_patched_a_SOURCES = XalanTransformer2.cpp ident.C
+
 IDENT_AWK = ../../ident.awk
 IDENT_DEPS = *.hpp *.cpp
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -378,8 +380,6 @@ install-data-am install-data install-am install uninstall-am uninstall \
 all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
-
-
 
 
 ident.C: $(IDENT_AWK) $(IDENT_DEPS) Makefile.am

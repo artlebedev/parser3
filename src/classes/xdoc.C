@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.46 2001/11/21 14:00:27 paf Exp $
+	$Id: xdoc.C,v 1.47 2001/11/22 09:59:38 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -739,7 +739,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		//   wich were originally "xalan"
 		//   not daring to change that
 
-		const XalanCompiledStylesheet& stylesheet=connection.stylesheet(true/*nocache*/);
+		const XalanCompiledStylesheet& stylesheet=connection.stylesheet(false/*nocache*/);
 		if(vdoc.has_parsed_source()) { // set|load, not create?
 			vdoc.transformer().transform2(
 				vdoc.get_parsed_source(pool, &method_name), 
