@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Date: 2002/11/20 11:11:11 $";
+static const char* IDENT_EXEC_C="$Date: 2002/11/20 13:41:54 $";
 
 #include "pa_config_includes.h"
 
@@ -302,7 +302,7 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 	string << key << "=" << *static_cast<String *>(value);
 
 	char ***env_ref=static_cast<char ***>(info);
-	**env_ref=string.cstr(String::UL_PASSAPPENED);  (*env_ref)++;
+	**env_ref=string.cstr(String::UL_PASS_APPENDED);  (*env_ref)++;
 #endif
 }
 
@@ -420,7 +420,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	if(pid) {
 		// in child
 		const char *in_cstr=in.cstr();
-		if(*in) // there is some in data
+		if(*in_cstr) // there is some in data
 			write(pipe_write, in_cstr, in.size());
 		close(pipe_write);
 		read_pipe(out, pipe_read, file_spec_cstr, String::UL_AS_IS);
