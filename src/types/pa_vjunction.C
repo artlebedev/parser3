@@ -5,6 +5,8 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
+static const char* IDENT_VJUNCTION_C="$Date: 2002/10/15 07:44:45 $";
+
 #include "pa_vjunction.h"
 #include "pa_wcontext.h"
 
