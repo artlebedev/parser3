@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2004/07/28 13:25:41 $";
+static const char * const IDENT_EXEC_C="$Date: 2004/12/23 16:34:50 $";
 
 #include "pa_config_includes.h"
 
@@ -27,6 +27,7 @@ static const char * const IDENT_EXEC_C="$Date: 2004/07/28 13:25:41 $";
 
 /// this func from http://www.ccas.ru/~posp/popov/spawn.htm
 static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
+										LPCTSTR szScriptFileSpec,
 										char *szEnv,
                                         PROCESS_INFORMATION* ppi, 
                                         LPHANDLE phInWrite,
@@ -72,7 +73,7 @@ static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
 	
 	// calculating script's directory
 	char dir[MAX_STRING];
-	strncpy(dir, szCmdLine, MAX_STRING-1); dir[MAX_STRING-1]=0;
+	strncpy(dir, szScriptFileSpec, MAX_STRING-1); dir[MAX_STRING-1]=0;
 	lsplit(dir,' '); // trim arguments
 	rsplit(dir,'/'); rsplit(dir,'\\'); // trim filename
 	
@@ -131,7 +132,7 @@ static const char* buildCommand(const char* file_spec_cstr, const ArrayString& a
 			buf[size]=0;
 			if(strncmp(buf, "#!", 2)==0) {
 				const char* begin=buf+2;
-				if(*begin==' ') // alx: were an old magic for some linux-es
+				while(*begin==' ') // alx: were an old magic for some linux-es
 					begin++;
 				if(char *end=strchr(begin, '\n')) {
 					String string(pa_strdup(begin, end-begin));
@@ -338,7 +339,8 @@ PA_exec_result pa_exec(
 
 	PROCESS_INFORMATION pi;	
 	HANDLE hInWrite, hOutRead, hErrRead;
-	const char* cmd=buildCommand(file_spec.cstr(String::L_FILE_SPEC), argv);
+	const char* script_spec_cstr=file_spec.cstr(String::L_FILE_SPEC);
+	const char* cmd=buildCommand(script_spec_cstr, argv);
 	char* env_cstr=0;
 	if(env) {
 		String::Body body;
@@ -349,7 +351,7 @@ PA_exec_result pa_exec(
 			if(*replacer=='\1')
 				*replacer=0;
 	}
-	if(DWORD error=CreateHiddenConsoleProcess(cmd, env_cstr, &pi, &hInWrite, &hOutRead, &hErrRead)) {
+	if(DWORD error=CreateHiddenConsoleProcess(cmd, script_spec_cstr, env_cstr, &pi, &hInWrite, &hOutRead, &hErrRead)) {
 		char szErrorDesc[MAX_STRING];
 		const char* param="the file you tried to run";
 		size_t error_size=FormatMessage(
