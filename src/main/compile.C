@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile.C,v 1.62 2002/03/27 15:30:35 paf Exp $
+	$Id: compile.C,v 1.63 2002/04/02 13:50:48 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -62,7 +62,7 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 			pc.line--;
 			pc.col=-1;
 		} 
-		throw Exception("parser.syntax",
+		throw Exception("parser.compile",
 			0,
 			"%s(%d:%d): %s",  file, 1+pc.line, pc.col,  pc.error);
 	}
