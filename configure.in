@@ -183,7 +183,7 @@ AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
     	AC_MSG_ERROR($GNOME_XML does not seem to be valid Gnome installation directory)
     fi
 
-    AC_DEFINE(XML,,xml-abled parser)
+    AC_DEFINE(XML,,xml-abled parser (uses shared library))
     
     LIBXML2_SO_NAME=`cd $XMLLIB ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
     LIBGDOME_SO_NAME=`cd $XMLLIB ; ls libgdome.?? libgdome.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
@@ -205,7 +205,6 @@ AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
 	XML_LIBS="$XML_LIBS -Wl,$LD_PATHLINK -Wl,$XMLLIB"
     fi
 ])
-
 AC_ARG_WITH(static-xml,[  --with-static-xml=D     D is the directory where
                           Gnome XML libraries are installed (static libs)],[
     GNOME_XML=$withval
@@ -217,7 +216,7 @@ AC_ARG_WITH(static-xml,[  --with-static-xml=D     D is the directory where
     	AC_MSG_ERROR($GNOME_XML does not seem to be valid Gnome installation directory)
     fi
 
-    AC_DEFINE(XML,,xml-abled parser)
+    AC_DEFINE(XML,,xml-abled parser (uses static library))
 
     if test -z "$GLIB_CONFIG"; then
 	    GLIB_CONFIG=$XMLBIN/glib-config
@@ -237,6 +236,68 @@ changequote([, ])dnl
 ])
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
+
+AC_ARG_WITH(shared-mailreceive,[  --with-shared-mailreceive=D is the directory where
+                               Gnome MIME library is installed (shared lib)],[
+    GNOME_MIME=$withval
+    MIMEBIN="$GNOME_MIME/bin"
+    MIMEINC="$GNOME_MIME/include"
+    MIMELIB="$GNOME_MIME/lib"
+
+    if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
+    	AC_MSG_ERROR($GNOME_MIME does not seem to be valid Gnome installation directory)
+    fi
+
+    AC_DEFINE(WITH_MAILRECEIVE,,has $mail:received (uses shared library))
+    
+    LIBMIME_SO_NAME=`cd $MIMELIB ; ls libgmime.?? libgmime.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+
+    if test -z "$GLIB_CONFIG"; then
+	    GLIB_CONFIG=$MIMEBIN/glib-config
+	    if test \! -x $GLIB_CONFIG; then
+	        GLIB_CONFIG=glib-config
+	    fi
+    fi
+    GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+    GLIB_LIBS=`$GLIB_CONFIG --libs`
+
+    MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
+    MIME_LIBS="$GLIB_LIBS -L$MIMELIB -l$LIBMIME_SO_NAME"
+    if test \! -z "$LD_PATHLINK"; then
+	MIME_LIBS="$MIME_LIBS -Wl,$LD_PATHLINK -Wl,$MIMELIB"
+    fi
+])
+AC_ARG_WITH(static-mailreceive,[  --with-static-mailreceive=D is the directory where
+                          Gnome MIME library is installed (static lib)],[
+    GNOME_MIME=$withval
+    MIMEBIN="$GNOME_MIME/bin"
+    MIMEINC="$GNOME_MIME/include"
+    MIMELIB="$GNOME_MIME/lib"
+
+    if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
+    	AC_MSG_ERROR($GNOME_MIME does not seem to be valid Gnome installation directory)
+    fi
+
+    AC_DEFINE(WITH_MAILRECEIVE,,has $mail:received (uses static library))
+
+    if test -z "$GLIB_CONFIG"; then
+	    GLIB_CONFIG=$MIMEBIN/glib-config
+	    if test \! -x $GLIB_CONFIG; then
+	        GLIB_CONFIG=glib-config
+	    fi
+    fi
+    GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+
+dnl  '-L/usr/local/lib -lglib' -> /usr/local/lib
+changequote(, )dnl
+    GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
+    GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
+changequote([, ])dnl
+    MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
+    MIME_LIBS="$MIMELIB/libgmime.a $GLIB_DIR/lib$GLIB_NAME.a"
+])
+AC_SUBST(MIME_INCLUDES)
+AC_SUBST(MIME_LIBS)
 
 
 AC_ARG_WITH(sendmail,[  \"--with-sendmail=COMMAND\" forces this command to send mail.

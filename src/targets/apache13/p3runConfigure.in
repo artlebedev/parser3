@@ -3,4 +3,4 @@
 P3S=@P3S@
 
 P3LIBS="$P3S/main/libmain.a $P3S/classes/libclasses.a $P3S/main/libmain.a $P3S/types/libtypes.a $P3S/lib/libltdl/libltdlc.a $P3S/classes/gd/libgd.a $P3S/lib/pcre/libpcre.a $P3S/lib/md5/libmd5.a $P3S/targets/apache13/libmod_parser3.a"
-LIBS="$P3LIBS $P3LIBS @XML_LIBS@ @APACHE_LIBS@" ./configure --add-module=$P3S/targets/apache13/hook/mod_parser3.c $*
+LIBS="$P3LIBS $P3LIBS @XML_LIBS@ @MIME_LIBS@ @APACHE_LIBS@" ./configure --add-module=$P3S/targets/apache13/hook/mod_parser3.c $*

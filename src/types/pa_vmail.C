@@ -6,7 +6,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vmail.C,v 1.3 2002/06/24 15:04:23 paf Exp $
+	$Id: pa_vmail.C,v 1.4 2002/06/24 15:10:21 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -21,8 +21,9 @@
 #include "pa_uue.h"
 
 #ifdef WITH_MAILRECEIVE
-#include "gmime-config.h"
+extern "C" {
 #include "gmime.h"
+}
 #endif
 
 // defines
