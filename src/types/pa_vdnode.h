@@ -2,10 +2,9 @@
 	Parser: @b DOM parser class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdnode.h,v 1.2 2001/09/20 14:25:06 parser Exp $
+	$Id: pa_vdnode.h,v 1.3 2001/09/26 10:32:26 parser Exp $
 */
 
 #ifndef PA_VDNODE_H

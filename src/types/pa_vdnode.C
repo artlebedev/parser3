@@ -2,12 +2,12 @@
 	Parser: @b dnode parser type.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+
+	$Id: pa_vdnode.C,v 1.8 2001/09/26 10:32:26 parser Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
-static const char *RCSId="$Id: pa_vdnode.C,v 1.7 2001/09/24 15:13:54 parser Exp $"; 
 
 #include "pa_vdnode.h"
 #include "pa_vdom.h"

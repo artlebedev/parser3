@@ -2,10 +2,9 @@
 	Parser: @b table parser class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.32 2001/09/24 15:07:42 parser Exp $
+	$Id: pa_vtable.h,v 1.33 2001/09/26 10:32:26 parser Exp $
 */
 
 #ifndef PA_VTABLE_H

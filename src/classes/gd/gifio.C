@@ -1,7 +1,20 @@
 /** @file
 	Parser: image manipulations impl2.
 
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: gifio.C,v 1.13 2001/09/26 10:32:25 parser Exp $
+
+	based on: gd
+
+	Written by Tom Boutell, 5/94.
+	Copyright 1994, Cold Spring Harbor Labs.
+	Permission granted to use this code in any fashion provided
+	that this notice is retained and any alterations are
+	labeled as such. It is requested, but not required, that
+	you share extensions to this module with us so that we
+	can incorporate them into new versions. 
 
 	based on:
  **
@@ -23,7 +36,7 @@
  ** CompuServe Incorporated.  GIF(sm) is a Service Mark property of
  ** CompuServe Incorporated.
 */
-static const char *RCSId="$Id: gifio.C,v 1.12 2001/09/21 14:46:09 parser Exp $"; 
+static const char *RCSId="$Id: gifio.C,v 1.13 2001/09/26 10:32:25 parser Exp $"; 
 
 #include "gif.h"
 

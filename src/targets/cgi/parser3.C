@@ -2,10 +2,10 @@
 	Parser: scripting and CGI main.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+
+	$Id: parser3.C,v 1.113 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: parser3.C,v 1.112 2001/09/24 14:34:25 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -23,6 +23,22 @@ static const char *RCSId="$Id: parser3.C,v 1.112 2001/09/24 14:34:25 parser Exp 
 //#define DEBUG_POOL_MALLOC
 
 // consts
+
+extern const char *main_RCSIds[];
+extern const char *smtp_RCSIds[];
+extern const char *gd_RCSIds[];
+extern const char *classes_RCSIds[];
+extern const char *types_RCSIds[];
+extern const char *parser_RCSIds[];
+const char **RCSIds[]={
+	main_RCSIds,
+	smtp_RCSIds,
+	gd_RCSIds,
+	classes_RCSIds,
+	types_RCSIds,
+	parser_RCSIds,
+	0
+};
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 

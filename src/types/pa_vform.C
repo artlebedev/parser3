@@ -3,12 +3,12 @@
 	based on The CGI_C library, by Thomas Boutell.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 	
+	$Id: pa_vform.C,v 1.39 2001/09/26 10:32:26 parser Exp $
+
 	based on The CGI_C library, by Thomas Boutell.
 */
-static const char *RCSId="$Id: pa_vform.C,v 1.38 2001/09/24 14:34:25 parser Exp $"; 
 
 #include "pa_sapi.h"
 #include "pa_vform.h"

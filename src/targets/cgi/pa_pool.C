@@ -2,10 +2,10 @@
 	Parser: CGI memory manager impl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: pa_pool.C,v 1.23 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_pool.C,v 1.22 2001/09/24 16:41:09 parser Exp $"; 
 
 #include <stdlib.h>
 

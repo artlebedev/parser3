@@ -2,10 +2,9 @@
 	Parser: mutex & helpers decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_threads.h,v 1.16 2001/05/17 10:49:56 parser Exp $
+	$Id: pa_threads.h,v 1.17 2001/09/26 10:32:25 parser Exp $
 */
 
 #ifndef PA_THREADS_H

@@ -2,10 +2,10 @@
 	Parser: String class part: untaint mechanizm.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+
+	$Id: untaint.C,v 1.63 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: untaint.C,v 1.62 2001/09/14 15:41:59 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"

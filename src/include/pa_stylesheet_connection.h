@@ -2,10 +2,9 @@
 	Parser: stylesheet fstylesheet decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.4 2001/09/25 09:36:51 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.5 2001/09/26 10:32:25 parser Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H

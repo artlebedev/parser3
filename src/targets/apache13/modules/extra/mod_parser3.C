@@ -2,10 +2,10 @@
 	Parser: apache 1.3 module.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: mod_parser3.C,v 1.44 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: mod_parser3.C,v 1.43 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "httpd.h"
 #include "http_config.h"
@@ -31,6 +31,24 @@ static const char *RCSId="$Id: mod_parser3.C,v 1.43 2001/09/21 14:46:09 parser E
 #	define DEBUG_PREFIX
 #	define PARSER3_MODULE parser3_module
 #endif
+
+// consts
+
+extern const char *main_RCSIds[];
+extern const char *smtp_RCSIds[];
+extern const char *gd_RCSIds[];
+extern const char *classes_RCSIds[];
+extern const char *types_RCSIds[];
+extern const char *ApacheModuleParser3_RCSIds[];
+const char **RCSIds[]={
+	main_RCSIds,
+	smtp_RCSIds,
+	gd_RCSIds,
+	classes_RCSIds,
+	types_RCSIds,
+	ApacheModuleParser3_RCSIds,
+	0
+};
 
 
 /// apache parser module configuration [httpd.conf + .htaccess-es]

@@ -2,10 +2,9 @@
 	Parser: @b form class decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.24 2001/09/18 16:05:43 parser Exp $
+	$Id: pa_vform.h,v 1.25 2001/09/26 10:32:26 parser Exp $
 */
 
 #ifndef PA_VFORM_H

@@ -2,10 +2,9 @@
 	Parser: sql driver interface.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.16 2001/09/05 09:32:40 parser Exp $
+	$Id: pa_sql_driver.h,v 1.17 2001/09/26 10:32:26 parser Exp $
 
 
 	driver dynamic library must look like this:

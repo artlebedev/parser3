@@ -2,10 +2,10 @@
 	Parser: @b request class.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+
+	$Id: pa_vrequest.C,v 1.10 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_vrequest.C,v 1.9 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_vrequest.h"
 #include "pa_request.h"

@@ -2,10 +2,9 @@
 	Parser: @b request class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vrequest.h,v 1.10 2001/05/07 14:00:54 paf Exp $
+	$Id: pa_vrequest.h,v 1.11 2001/09/26 10:32:26 parser Exp $
 */
 
 #ifndef PA_VREQUEST_H

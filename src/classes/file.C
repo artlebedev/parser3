@@ -2,10 +2,10 @@
 	Parser: @b file parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: file.C,v 1.55 2001/09/26 10:32:25 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.54 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_config_includes.h"
 

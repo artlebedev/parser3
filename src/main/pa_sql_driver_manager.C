@@ -2,10 +2,10 @@
 	Parser: sql driver manager implementation.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: pa_sql_driver_manager.C,v 1.38 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.37 2001/09/24 14:34:25 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"

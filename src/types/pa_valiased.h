@@ -2,10 +2,9 @@
 	Parser: aliased class decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.h,v 1.13 2001/07/20 09:40:46 parser Exp $
+	$Id: pa_valiased.h,v 1.14 2001/09/26 10:32:26 parser Exp $
 */
 
 #ifndef PA_VALIASED_H

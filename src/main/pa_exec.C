@@ -2,10 +2,10 @@
 	Parser: program executing for different OS-es.
 
 	Copyright(c) 2000,2001 ArtLebedev Group(http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+
+	$Id: pa_exec.C,v 1.14 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_exec.C,v 1.13 2001/09/21 15:35:45 parser Exp $"; 
 
 #include "pa_config_includes.h"
 

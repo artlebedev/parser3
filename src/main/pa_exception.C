@@ -2,10 +2,10 @@
 	Parser: exception class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: pa_exception.C,v 1.16 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_exception.C,v 1.15 2001/09/07 10:21:59 parser Exp $"; 
 
 #include <stdio.h>
 #include <stdlib.h>

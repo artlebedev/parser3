@@ -2,10 +2,10 @@
 	Parser: @b string class.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+
+	$Id: pa_vstring.C,v 1.11 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_vstring.C,v 1.10 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_vstring.h"
 #include "pa_vfile.h"

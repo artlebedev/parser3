@@ -2,10 +2,10 @@
 	Parser: Mutex realization class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: pa_threads.C,v 1.5 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_threads.C,v 1.4 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_threads.h"
 

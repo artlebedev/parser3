@@ -2,10 +2,10 @@
 	Parser: IIS extension.
 
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: parser3isapi.C,v 1.44 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: parser3isapi.C,v 1.43 2001/09/20 14:25:06 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -26,6 +26,24 @@ static const char *RCSId="$Id: parser3isapi.C,v 1.43 2001/09/20 14:25:06 parser 
 #include "pa_socks.h"
 
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
+
+// consts
+
+extern const char *main_RCSIds[];
+extern const char *smtp_RCSIds[];
+extern const char *gd_RCSIds[];
+extern const char *classes_RCSIds[];
+extern const char *types_RCSIds[];
+extern const char *parser3isapi_RCSIds[];
+const char **RCSIds[]={
+	main_RCSIds,
+	smtp_RCSIds,
+	gd_RCSIds,
+	classes_RCSIds,
+	types_RCSIds,
+	parser3isapi_RCSIds,
+	0
+};
 
 // SAPI
 

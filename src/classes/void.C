@@ -2,10 +2,10 @@
 	Parser: @b VOID parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: void.C,v 1.10 2001/09/26 10:32:25 parser Exp $
 */
-static const char *RCSId="$Id: void.C,v 1.9 2001/09/06 14:55:06 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"

@@ -2,10 +2,10 @@
 	Parser: string class. @see untasize_t.C.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: pa_string.C,v 1.104 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_string.C,v 1.103 2001/09/18 16:05:42 parser Exp $"; 
 
 #include "pa_config_includes.h"
 

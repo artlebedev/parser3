@@ -2,10 +2,10 @@
 	Parser: array class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: pa_array.C,v 1.39 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_array.C,v 1.38 2001/08/06 16:18:26 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_array.h"

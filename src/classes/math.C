@@ -2,10 +2,10 @@
 	Parser: @b math parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: math.C,v 1.6 2001/09/26 10:32:25 parser Exp $
 */
-static const char *RCSId="$Id: math.C,v 1.5 2001/08/07 13:23:33 parser Exp $"; 
 
 #include "pa_config_includes.h"
 #include "pa_common.h"

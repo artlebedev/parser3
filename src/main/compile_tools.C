@@ -2,10 +2,10 @@
 	Parser: compiler support helper functions.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: compile_tools.C,v 1.38 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: compile_tools.C,v 1.37 2001/07/25 08:16:21 parser Exp $"; 
 
 #include "compile_tools.h"
 #include "pa_string.h"

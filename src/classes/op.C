@@ -2,10 +2,10 @@
 	Parser: parser @b operators.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: op.C,v 1.45 2001/09/26 10:32:25 parser Exp $
 */
-static const char *RCSId="$Id: op.C,v 1.44 2001/09/24 14:34:25 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"

@@ -2,10 +2,9 @@
 	Parser: @b Methoded class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: classes.h,v 1.11 2001/09/21 15:35:45 parser Exp $
+	$Id: classes.h,v 1.12 2001/09/26 10:32:25 parser Exp $
 */
 
 #ifndef CLASSES_H

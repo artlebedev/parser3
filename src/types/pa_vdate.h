@@ -2,10 +2,9 @@
 	Parser: @b date parser class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdate.h,v 1.4 2001/09/24 14:34:25 parser Exp $
+	$Id: pa_vdate.h,v 1.5 2001/09/26 10:32:26 parser Exp $
 */
 
 #ifndef PA_VDATE_H

@@ -2,10 +2,9 @@
 	Parser: @b env class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_venv.h,v 1.16 2001/05/07 14:00:53 paf Exp $
+	$Id: pa_venv.h,v 1.17 2001/09/26 10:32:26 parser Exp $
 */
 
 #ifndef PA_VENV_H

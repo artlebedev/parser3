@@ -2,10 +2,10 @@
 	Parser: directory scanning for different OS-es.
 
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: pa_dir.C,v 1.7 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_dir.C,v 1.6 2001/08/28 10:30:28 parser Exp $"; 
 
 #include "pa_dir.h"
 #include "pa_common.h"

@@ -2,10 +2,9 @@
 	Parser: includes all Configure-d headers
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_config_includes.h,v 1.10 2001/09/20 14:25:06 parser Exp $
+	$Id: pa_config_includes.h,v 1.11 2001/09/26 10:32:25 parser Exp $
 
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,

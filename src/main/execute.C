@@ -2,10 +2,10 @@
 	Parser: executor part of request class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: execute.C,v 1.192 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: execute.C,v 1.191 2001/09/18 16:05:42 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 

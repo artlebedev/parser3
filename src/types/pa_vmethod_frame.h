@@ -2,10 +2,9 @@
 	Parser: @b method_frame write context
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.15 2001/09/01 14:23:42 parser Exp $
+	$Id: pa_vmethod_frame.h,v 1.16 2001/09/26 10:32:26 parser Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H

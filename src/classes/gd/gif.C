@@ -1,10 +1,21 @@
 /** @file
 	Parser: image manipulations impl1.
 
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
+	$Id: gif.C,v 1.9 2001/09/26 10:32:25 parser Exp $
+
+	based on: gd
+
+	Written by Tom Boutell, 5/94.
+	Copyright 1994, Cold Spring Harbor Labs.
+	Permission granted to use this code in any fashion provided
+	that this notice is retained and any alterations are
+	labeled as such. It is requested, but not required, that
+	you share extensions to this module with us so that we
+	can incorporate them into new versions. 
 */
-static const char *RCSId="$Id: gif.C,v 1.8 2001/09/24 14:34:25 parser Exp $"; 
 
 #include "gif.h"
 

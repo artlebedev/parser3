@@ -2,10 +2,10 @@
 	Parser: stateless class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)\
 
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	$Id: pa_vstateless_class.C,v 1.10 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_vstateless_class.C,v 1.9 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"

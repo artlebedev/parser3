@@ -2,10 +2,9 @@
 	Parser: sql driver manager decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_xslt_stylesheet_manager.h,v 1.1 2001/09/14 15:41:59 parser Exp $
+	$Id: pa_xslt_stylesheet_manager.h,v 1.2 2001/09/26 10:32:25 parser Exp $
 
 
 	global sql driver manager, must be thread-safe

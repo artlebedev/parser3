@@ -2,13 +2,12 @@
 	Parser: @b dom parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: dom.C,v 1.35 2001/09/26 10:32:25 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
-
-static const char *RCSId="$Id: dom.C,v 1.34 2001/09/25 09:36:51 parser Exp $"; 
 
 #include "pa_request.h"
 #include "pa_vdom.h"

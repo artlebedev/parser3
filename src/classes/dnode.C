@@ -2,13 +2,12 @@
 	Parser: @b dom parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: dnode.C,v 1.6 2001/09/26 10:32:25 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
-
-static const char *RCSId="$Id: dnode.C,v 1.5 2001/09/21 14:46:09 parser Exp $"; 
 
 #include "pa_request.h"
 #include "pa_vdnode.h"

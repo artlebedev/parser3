@@ -2,10 +2,9 @@
 	Parser: @b DOM parser class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.13 2001/09/25 09:36:51 parser Exp $
+	$Id: pa_vdom.h,v 1.14 2001/09/26 10:32:26 parser Exp $
 */
 
 #ifndef PA_VDOM_H

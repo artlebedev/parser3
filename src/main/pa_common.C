@@ -2,10 +2,10 @@
 	Parser: commonly functions.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+
+	$Id: pa_common.C,v 1.68 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_common.C,v 1.67 2001/09/24 14:34:25 parser Exp $"; 
 
 #include "pa_common.h"
 #include "pa_types.h"

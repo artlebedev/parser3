@@ -2,10 +2,10 @@
 	Parser: globals.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: pa_globals.C,v 1.78 2001/09/26 10:32:26 parser Exp $
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.77 2001/09/21 15:35:45 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"

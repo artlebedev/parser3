@@ -2,10 +2,9 @@
 	Parser: response class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vresponse.h,v 1.13 2001/09/21 14:46:09 parser Exp $
+	$Id: pa_vresponse.h,v 1.14 2001/09/26 10:32:26 parser Exp $
 */
 
 #ifndef PA_VRESPONSE_H

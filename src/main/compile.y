@@ -1,12 +1,12 @@
+%{
 /** @file
 	Parser: compiler(lexical parser and grammar).
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: compile.y,v 1.168 2001/09/26 10:32:25 parser Exp $
 */
-%{
-static char *RCSId="$Id: compile.y,v 1.167 2001/09/24 14:34:25 parser Exp $"; 
 
 /**
 	@todo parser4: 

@@ -2,10 +2,9 @@
 	Parser: dictionary class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_dictionary.h,v 1.4 2001/08/28 10:43:33 parser Exp $
+	$Id: pa_dictionary.h,v 1.5 2001/09/26 10:32:25 parser Exp $
 */
 
 #ifndef PA_DICTIONARY_H

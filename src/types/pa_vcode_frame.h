@@ -2,10 +2,9 @@
 	Parser: @b code_frame write wrapper write context
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcode_frame.h,v 1.7 2001/07/26 12:25:37 parser Exp $
+	$Id: pa_vcode_frame.h,v 1.8 2001/09/26 10:32:26 parser Exp $
 */
 
 #ifndef PA_VCODE_FRAME_H
