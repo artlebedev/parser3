@@ -3,10 +3,10 @@
 <xsl:param name="param1">defparam1</xsl:param>
 
   <xsl:template match="people">
-    <html>
-    	<title><xsl:copy-of select="$param1"/></title>
+     <z>
+   		para1=<xsl:copy-of select="$param1"/>
     	<xsl:apply-templates/>
-    </html>
+     </z>	
   </xsl:template>
 
   <xsl:template match="name">

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.79 2001/11/21 08:33:56 paf Exp $
+	$Id: untaint.C,v 1.80 2001/11/21 10:02:13 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -390,7 +390,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			for(char *src=start; src<stop; src++)
 				switch(*src) {
 				// of all consequent white space chars leaving only first one
-				case ' ': case '\n': case '\t':
+				case ' ': case '\r': case '\n': case '\t':
 					if(!whitespace) {
 						*dest++=*src;
 						whitespace=true;

@@ -1,5 +1,6 @@
 @main[]
-^tappend2[]
+#^ttaintuntaint[]
+#^tappend2[]
 #^badvsnprintf[]
 #^badoracequoting[]
 #^badconstructors[]
@@ -65,11 +66,19 @@
 #^exec[]
 #^fori[]
 #^tconnect[]
-#^xslt[]
+^xslt[]
 #^xml[]
 #^header[]
 <hr>
 OK
+
+@ttaintuntaint[]
+<!-- некий панковский заголовок с буковкой C в круглых скобках -->^taint[html][
+
+]zz
+<hr>
+^untaint[html]{1^taint[  ]2  3}
+
 
 @tappend2[]
 $t[^table::set{a	b}]^t.append{1	2}$t.a
@@ -595,7 +604,6 @@ $a.status|$a.stderr<hr>
 #$response:content-type[$.value[text/html] $.charset[windows-1251]]
 $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 <!--DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd"-->
-
 <people>
 	<man id="1" имя="word слово">
 		<name>P&#171^;AF	B</name>
@@ -674,9 +682,10 @@ $file[^xdoc.file[
 	$.method[html]
 ]]
 ^file.save[text;out/save_file.html]
-<pre>^taint[html][^xdoc.string[]]
-#	$.encoding[windows-1251]
-#	$.method[html]
+<pre>^taint[^xdoc.string[
 #]]
+#	$.encoding[windows-1251]
+	$.method[html]
+]]
 </pre>
 
