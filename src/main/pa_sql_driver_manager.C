@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.16 2001/05/17 13:23:28 parser Exp $
+	$Id: pa_sql_driver_manager.C,v 1.17 2001/05/17 18:26:22 parser Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -23,8 +23,9 @@ SQL_Driver_manager *SQL_driver_manager;
 
 // consts
 
-const int MAX_PROTOCOL=20;
 const char *LIBRARY_CREATE_FUNC_NAME="create";
+const int EXPIRE_UNUSED_CONNECTION_SECONDS=60;
+const int CHECK_EXPIRED_CONNECTIONS_SECONDS=60*2;
 
 
 /// SQL_Driver_services Pooled implementation
@@ -72,7 +73,7 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 
 	char *request_url_cstr;
 	if(result)
-		request_url_cstr=0; // no need to connect, just reassign services & they can use
+		request_url_cstr=0; // calm, compiler
 	else { // no cached connection or it were unpingabe: connect/reconnect
 		int pos=request_url.pos("://", 3);
 		if(pos<0)
@@ -161,13 +162,14 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 	
 		// allocate in global pool 
 		// associate with services[request]
+		// NOTE: never freed up!
 		result=new(this->pool()) SQL_Connection(this->pool(), global_url, *driver);
 	}
 
 	// associate with services[request]  (deassociates at close)
 	result->set_services(new(pool) SQL_Driver_services_impl(pool, request_url)); 
 	// if not connected yet, do that now, when result has services
-	if(request_url_cstr)
+	if(!result->connected())
 		result->connect(request_url_cstr);
 	// return it
 	return *result;
@@ -202,16 +204,20 @@ SQL_Connection *SQL_Driver_manager::get_connection_from_cache(const String& url)
 	SYNCHRONIZED;
 
 	if(Stack *connections=static_cast<Stack *>(connection_cache.get(url)))
-		if(connections->top_index()>=0) // there are cached connections to that 'url'
-			return static_cast<SQL_Connection *>(connections->pop());
+		while(connections->top_index()>=0) { // there are cached connections to that 'url'
+			SQL_Connection *result=static_cast<SQL_Connection *>(connections->pop());
+			if(result->connected()) // not expired?
+				return result;
+		}
 
 	return 0;
 }
 
-/// @todo cache expiration[use SQL_Driver::disconnect]
 void SQL_Driver_manager::put_connection_to_cache(const String& url, 
 												 SQL_Connection& connection) { 
 	SYNCHRONIZED;
+
+	maybe_expire_connection_cache();
 
 	Stack *connections=static_cast<Stack *>(connection_cache.get(url));
 	if(!connections) { // there are no cached connections to that 'url' yet?
@@ -219,4 +225,24 @@ void SQL_Driver_manager::put_connection_to_cache(const String& url,
 		connection_cache.put(url, connections);
 	}	
 	connections->push(&connection);
+}
+
+static void expire_connection(Array::Item *value, void *info) {
+	SQL_Connection& connection=*static_cast<SQL_Connection *>(value);
+	time_t older_dies=reinterpret_cast<time_t>(info);
+	if(connection.expired(older_dies))
+		connection.disconnect();
+}
+static void expire_connections(const Hash::Key& key, Hash::Val *value, void *info) {
+	static_cast<Stack *>(value)->for_each(expire_connection, info);
+}
+void SQL_Driver_manager::maybe_expire_connection_cache() {
+	time_t now=time(0);
+
+	if(prev_expiration_pass_time<now-CHECK_EXPIRED_CONNECTIONS_SECONDS) {
+		connection_cache.for_each(expire_connections, 
+			reinterpret_cast<void *>(now-EXPIRE_UNUSED_CONNECTION_SECONDS));
+
+		prev_expiration_pass_time=now;
+	}
 }

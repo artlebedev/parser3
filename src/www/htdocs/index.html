@@ -20,6 +20,7 @@ $h[^t.hash[key]]
 
 
 #^rem{
+^for[i](1;2){
 ^connect[$SQL.connect-string]{
 	$shit[^taint[our's]]
 #	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
@@ -31,6 +32,7 @@ $h[^t.hash[key]]
 		^menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
 	</table>
 	}}
+}
 }
 #}
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.h,v 1.6 2001/05/17 13:23:28 parser Exp $
+	$Id: pa_sql_driver_manager.h,v 1.7 2001/05/17 18:26:22 parser Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -31,7 +31,8 @@ public:
 
 	SQL_Driver_manager(Pool& pool) : Pooled(pool),
 		driver_cache(pool),
-		connection_cache(pool) {
+		connection_cache(pool),
+		prev_expiration_pass_time(0) {
 	}
 
 	/** 
@@ -50,6 +51,9 @@ private: // connection cache
 
 	SQL_Connection *get_connection_from_cache(const String& url);
 	void put_connection_to_cache(const String& url, SQL_Connection& connection);
+	void maybe_expire_connection_cache();
+private:
+	time_t prev_expiration_pass_time;
 
 private: // for SQL_Connection
 

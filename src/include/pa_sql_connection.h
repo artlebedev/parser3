@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.9 2001/05/17 13:23:28 parser Exp $
+	$Id: pa_sql_connection.h,v 1.10 2001/05/17 18:26:22 parser Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -23,20 +23,27 @@ public:
 
 	SQL_Connection(Pool& pool, const String& aurl, SQL_Driver& adriver) : Pooled(pool),
 		furl(aurl),
-		fdriver(adriver) {
+		fdriver(adriver),
+		fconnection(0),
+		time_stamp(0) {
 	}
 	void set_services(SQL_Driver_services *aservices) {
+		time_stamp=time(0); // they started to use at this time
 		fservices=aservices;
+	}
+	bool expired(time_t older_dies) {
+		return time_stamp<older_dies;
 	}
 
 	void close() {
 		SQL_driver_manager->close_connection(furl, *this);
 	}
 
+	bool connected() { return fconnection!=0; }
 	void connect(char *used_only_in_connect_url_cstr) { 
 		fdriver.connect(used_only_in_connect_url_cstr, *fservices, &fconnection);
 	}
-	void disconnect() { fdriver.disconnect(*fservices, fconnection); }
+	void disconnect() { fdriver.disconnect(*fservices, fconnection); fconnection=0; }
 	void commit() { fdriver.commit(*fservices, fconnection); }
 	void rollback() { fdriver.rollback(*fservices, fconnection); }
 	bool ping() { return fdriver.ping(*fservices, fconnection); }
@@ -61,6 +68,7 @@ private:
 	SQL_Driver& fdriver;
 	SQL_Driver_services *fservices;
 	void *fconnection;
+	time_t time_stamp;
 };
 
 #endif
