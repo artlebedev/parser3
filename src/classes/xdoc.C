@@ -4,11 +4,17 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.81 2002/01/30 09:43:12 paf Exp $
+	$Id: xdoc.C,v 1.82 2002/01/31 11:51:46 paf Exp $
 */
-#include "pa_types.h"
 #include "classes.h"
 #ifdef XML
+
+#include "pa_stylesheet_connection.h"
+#include "pa_request.h"
+#include "pa_vxdoc.h"
+#include "pa_charset.h"
+#include "pa_vfile.h"
+#include "xnode.h"
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -19,14 +25,6 @@ extern "C" {
 #include "libxslt/xsltInternals.h"
 #include "libxslt/transform.h"
 #include "libxslt/xsltutils.h"
-
-#include "pa_stylesheet_connection.h"
-#include "pa_request.h"
-#include "pa_vxdoc.h"
-#include "pa_charset.h"
-#include "pa_vfile.h"
-#include "xnode.h"
-
 
 // defines
 
