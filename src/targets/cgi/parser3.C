@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.99 2001/08/31 15:35:34 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.100 2001/08/31 15:56:46 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -19,12 +19,6 @@ static const char *RCSId="$Id: parser3.C,v 1.99 2001/08/31 15:35:34 parser Exp $
 #include "pa_request.h"
 #include "pa_socks.h"
 #include "pa_version.h"
-
-#ifdef WIN32
-#	define EOL "\r\n"
-#else
-#	define EOL "\n"
-#endif
 
 //#define DEBUG_POOL_MALLOC
 
@@ -154,12 +148,6 @@ int main(int argc, char *argv[]) {
 
 	umask(2);
 
-#ifdef WIN32
-	setmode(fileno(stdin), _O_BINARY);
-	setmode(fileno(stdout), _O_BINARY);
-	setmode(fileno(stderr), _O_BINARY);
-#endif
-
 	// were we started as CGI?
 	cgi=
 		getenv("SERVER_SOFTWARE") || 
@@ -170,15 +158,21 @@ int main(int argc, char *argv[]) {
 	if(!cgi) {
 		if(argc<2) {
 			printf(
-				"Parser/%s Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)"EOL
-				"Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)"EOL
-				EOL
-				"Usage: %s <file>"EOL,
+				"Parser/%s Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)\n"
+				"Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)\n"
+				"\n"
+				"Usage: %s <file>\n",
 				PARSER_VERSION, 
 				argv0?argv0:"parser3");
 			return 1;
 		}
 	}
+
+#ifdef WIN32
+	setmode(fileno(stdin), _O_BINARY);
+	setmode(fileno(stdout), _O_BINARY);
+	setmode(fileno(stderr), _O_BINARY);
+#endif
 
 	char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
 #ifdef WIN32
@@ -315,9 +309,12 @@ int main(int argc, char *argv[]) {
 #ifdef WIN32
 		SetUnhandledExceptionFilter(0);
 #endif
+
+#ifndef WIN32
 		// 
 		if(!cgi)
-			SAPI::send_body(pool, EOL, strlen(EOL));
+			SAPI::send_body(pool, "\n", 1);
+#endif
 
 		// successful finish
 		return 0;
@@ -350,9 +347,11 @@ int main(int argc, char *argv[]) {
 		if(!header_only)
 			SAPI::send_body(pool, body, content_length);
 
+#ifndef WIN32
 		// 
 		if(!cgi)
-			SAPI::send_body(pool, EOL, strlen(EOL));
+			SAPI::send_body(pool, "\n", 1);
+#endif
 
 		// unsuccessful finish
 		return 1;
