@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.198 2002/04/15 06:46:00 paf Exp $
+	$Id: pa_request.C,v 1.199 2002/04/16 09:32:00 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -313,10 +313,12 @@ t[9]-t[3]
 			const String *problem_source=e.problem_source();
 			if(problem_source && problem_source->size())
 				SAPI::log(pool(),
+					"%s: "
 #ifndef NO_STRING_ORIGIN
 					ORIGIN_FILE_LINE_FORMAT": "
 #endif
 					"'%s' %s [%s]",
+					info.uri,
 #ifndef NO_STRING_ORIGIN
 					problem_source->origin().file?problem_source->origin().file:"global",
 					problem_source->origin().line,
@@ -327,7 +329,9 @@ t[9]-t[3]
 				);
 			else
 				SAPI::log(pool(),
+					"%s: "
 					"%s [%s]",
+					info.uri,
 					e.comment(),
 					e.type()?e.type():"-"
 				);
