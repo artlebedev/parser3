@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.151 2002/04/18 10:51:00 paf Exp $
+	$Id: table.C,v 1.152 2002/04/25 09:39:45 paf Exp $
 */
 
 #include "classes.h"
@@ -287,8 +287,8 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	Table& self_table=static_cast<VTable *>(r.self)->table();
 	Value& result=*new(pool) VHash(pool);
-	if(const Array *columns=self_table.columns()) 
-		if(columns->size()>1) {
+	if(const Array *columns=self_table.columns())
+		if(columns->size()>0) {
 			const String& key_field_name=params->as_no_junction(0, 
 				"key field name must not be code").as_string();
 			int key_field=self_table.column_name2index(key_field_name, true);

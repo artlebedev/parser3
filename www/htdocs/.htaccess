@@ -1,0 +1,11 @@
+addhandler parser3-handler html
+addhandler parser3-cgi-handler cgihtml
+action parser3-cgi-handler /cgi-bin/parser3
+
+order deny,allow
+deny from all
+
+#design network
+allow from 195.218.200 
+allow from 192.168
+allow from 213.152.135
