@@ -1,43 +1,52 @@
 /**	@page String String
 
-В памяти строки[String] хранятся в виде букв, и списка фрагментов[String::Fragment] язык фрагмента+его длина.
-Фрагменты, полученные из stdout скриптов считаются чистыми(String::Language ::L_CLEAN),
-а от пользователя - из stderr скриптов, из environment, из form, с диска[table:load] или из sql сервера[table:sql] 
-считаются испачканными(String::Language ::UL_TAINTED), 
-при операциях со строкой её могут расделять на части, но получающиеся части по-прежнему помнят языки своих фрагментов.
-Строку могут записать в Request::wcontext, задав ей язык. 
-При этом язык задаётся всем её испачканным частям, они становятся не неопределённо грязными[L_TAINTED], 
-а "грязными, но известно, что нужно с ними сделать, чтобы стали чистыми, т.е. известен их язык".
-скажем
+In memory strings[String] are stored as letters[actually, cord objects from libgd cord library, see cord.h file] 
+plus list of fragments[String::Fragment] which contain language of fragment+it's length.
+
+Fragments that are received from stdout of scripts are considered clean(String::Language ::L_CLEAN),
+but those from visitor - from stderr of scripts, from environment, from form, 
+from dist[table:load] or from sql server[table:sql] 
+are considered tainted(String::Language ::UL_TAINTED), 
+when string involved in different operations, it can be split, but all resulting parts 
+still remember languages of their fragments.
+String can be written to Request::wcontext, then part of fragments can change their language. 
+Language is set to those fragments, which were not in particular language, but just tainted[L_TAINTED], 
+they become "dirty, but we need what to do to make them clean, that is we know their language".
+Say,
 @verbatim
 ^void:sql{insert into news (title) values ('$form:title')]
 @endverbatim
-при обработке параметра посредством Temp_lang выставляется "текущий язык"[Request::flang],
-и при записи[Request::write_assign_lang] L_TAINTED строки из $form:title фрагмента параметра
-метода sql, находящегося в кавычках, получает язык L_SQL.
+when parameter of sql is processed, with help of Temp_lang 
+we set "current language"[Request::flang],
+and when string got written[Request::write_assign_lang] 
+L_TAINTED string from $form:title part of parameter of sql-method, 
+the one in apostrophes, got assigned an L_SQL language.
 
-String можно преобразовать в обычную С-строку, используя String::cstr().
-Если задать String::cstr(String::L_UNSPECIFIED), то
-при преобразовании будут учтены языки фрагментов и произведены соответствующие вычищения.
-Также можно воспользоваться String::cstr(String::Language) [по-умолчанию =L_AS_IS], 
-при этом будет все фрагменты строки насильно будут считаться написанными на этом языке 
-безотносительно к указанному во фрагменте языку.
-Такое используется, например, для работы с именами файлов 
-[ВНИМАНИЕ: никогда и нигде не используйте эту конструкцию, если вам дороги ваши секретные файлы, 
-используется только для примера]:
+String can be converted to normal С-string by String::cstr().
+If it is called with this parameter String::cstr(String::L_UNSPECIFIED) then
+when it will be converted, fragment languages would be taken into consideration, and 
+corresponding cleansing performed.
+Particular language can also be specified String::cstr(String::Language) [by default =L_AS_IS], 
+then all string fragments would forcibly considered to be in that language, 
+regardles of the language inside fragment.
+
+This is used, for instance, in work with file names
+[ATTENTION: never ever use this construction if you care about your secret files,
+it is used only as an example]:
 @verbatim
 $file[^table::load[$form:file_name]]
 @endverbatim
-здесь при обычной обработке $form:file_name вышел бы L_HTML|L_OPTIMIZE_BIT, а нужен L_FILE_SPEC,
-при этом глупо всё время подобное делать, как для table:sql, настаивая на {} параметрах.
+here with normal $form:file_name processing would be L_HTML|L_OPTIMIZE_BIT, while we need L_FILE_SPEC,
+and it would be stupid everywhere to do like we do in table:sql, insisting on {} parameters.
 
-Обычным языком вывода является String::Language::L_HTML|String::Language::L_OPTIMIZE_BIT, 
-исключение составляет CGI скрипт, который запускают вне веб-сервера,
-в этом случае используется язык String::Language::L_AS_IS.
+Usual language of output is String::Language::L_HTML|String::Language::L_OPTIMIZE_BIT, 
+exception is CGI script, which got started outside of web-server,
+in that case language String::Language::L_AS_IS is used.
 
-В фрагментах, язык которых помечен как OPTIMIZED (String::Language::L_OPTIMIZE_BIT), 
-при преобразовании в строку String::cstr  будут оптимизированы whitespace символы: 
-из нескольких идущих подряд символов будет оставлен первый, остальные в результат не попадут.
+In fragments where language is marked as OPTIMIZED (String::Language::L_OPTIMIZE_BIT), 
+when they are converted into string String::cstr white spaces would be optimized:
+out of several consequent characters would be left only first, others would be wiped off the result.
 
-При работе с char* считается, что он никогда не может быть 0.
+When code works with char* it is assumed it is can never be 0.
+k
 */

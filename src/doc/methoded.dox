@@ -1,19 +1,18 @@
-/**	@page Methoded  Methoded: конфигурируемый класс
+/**	@page Methoded  Methoded: configurable class
 
-Классы[mail, string, ...], это или напрямую используемый,
-или используемый в качестве базового класса потомок Methoded.
+Classes[mail, string, ...], are direct and indirect decendants of Methoded.
 
-Methoded могут быть испольнованы напрямую [Methoded::used_directly()=true],
-тогда в начале обработки запроса Methoded_array::register_directly_used 
-регистрирует их в Request::classes().
-Пример: класс mail [MMail].
+Methoded can be used directly [Methoded::used_directly()=true],
+then at the request processing stat method Methoded_array::register_directly_used 
+whould register them in Request::classes().
+Example: class mail [MMail].
 
-Или не напрямую, тогда они[глобальная переменная] используются в
-Value::get_class для указания класса производной от Value сущности.
-Пример: класс string [экземпляр MString в VString::get_class].
+Or indirectly, then they[global instance] are used in
+Value::get_class to specify a class of Value descendant.
+Excample: class string [instance of MString in VString::get_class].
 
-Класс также может иметь параметры определяемые Главным конфигурационным файлом (системным parser3.conf), 
-для работы с ними следует переопределить Methoded::configure_admin.
-Класс также может иметь параметры, задаваемые пользователем: Methoded::configure_user.
+Any class can also can parameters defined in @conf in global auto.p file,
+to work with those one should override Methoded::configure_admin.
+Class can also can user-defined parameters: Methoded::configure_user.
 
 */

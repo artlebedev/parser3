@@ -1,13 +1,13 @@
-/**	@page Exceptions Exceptions: работа с ошибками
+/**	@page Exceptions Exceptions: work with errors
 
-Все исключения в Parser имеют тип Exception. Если возникает проблема, 
-следует бросить C++ исключение этого типа
+All exceptions in Parser have type Exception. If a problem arises,
+one should throw C++ exception of that type
 @code
-	throw Exception("класс ошибки",
-		&string, // адрес String, содержащей текст/место ошибки
-		"проблема %d", error_code);
+	throw Exception("exception class",
+		&string, // address of String, containing text/source of error
+		"problem %d", error_code);
 @endcode
 
-"Класс ошибки" следует задать один из <a href="http://parser.ru/docs/lang/parserexceptions.htm">системных</a>, 
-придумать хороших свой, или не задавать вовсе.
+"exception class" should be one of <a href="http://parser.ru/en/docs/lang/parserexceptions.htm">system</a>, 
+or your own (invent a good one!), or 0.
 */

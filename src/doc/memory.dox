@@ -1,14 +1,19 @@
-/**	@page Memory  Memory: работа с памятью
+/**	@page Memory  Memory: work with memory
 
-Parser при работе с памятью целиком полагается на сборку мусора. См. http://www.hpl.hp.com/personal/Hans_Boehm/gc
+Parser in it's work with memory relies on garbage collection. See  http://www.hpl.hp.com/personal/Hans_Boehm/gc
 
-Работа с памятью происходит так: все выделения происходят через pa_malloc pa_malloc_atomic, pa_realloc, pa_free, 
-А для C++ перегружены соответствующие new. Для выделения памяти в C++ стиле не для объектов необходимо указать, будет ли выделяемый блок хранить указатели,
-или нет: new(UseGC) означает "будет". new(PointerFreeGC) означает "не будет".
+Work with memory goes like this:
+all allocations are in the end get to  pa_malloc pa_malloc_atomic, pa_realloc, pa_free functions; 
+For C++ corresponding new operators are overloaded.
+To allocate a memory in C++ style not for objects one should specify,
+will the block to-be-allocated contain pointers,
+new(UseGC) when "it will". new(PointerFreeGC) when "it will not".
 
-Для удобства выделения памяти для объектов имеется прародитель PA_Object, 
-реализующий свой new через pa_malloc, и предоставляющий обёртки для malloc/malloc_atomic/realloc/free.
-Рекомендуется, где возможно, выделять память в стиле C++ [через new], исключение допустимо для случая,
-когда необходимо использовать realloc: на многих платформах new меняет указатель, выделенный распределителем, 
-т.о. недопустимы new+realloc / realloc+delete.
+For convinient memory allocation for objects there is root class PA_Object, 
+overriding new operator, implementing it with pa_malloc, 
+and providing wrappers for malloc/malloc_atomic/realloc/free.
+It is recommended, where it is possible, to allocate memory in C++ style [using new operator],
+exception can be made for a case where realloc is needed:
+on many platforms new-operator changes the pointer, returned by new-operator-implementation allocator.
+that is new+realloc / realloc+delete are not allowed.
 */

@@ -1,6 +1,6 @@
 /** @mainpage
 
-@section Part1  Часть 1
+@section Part1  Part 1
 
 - @ref Targets
 - @ref Memory
@@ -13,7 +13,7 @@
 - @ref Object
 - @ref Methoded
 
-@section Part2  Часть 2
+@section Part2  Part 2
 
 - @ref ClassExample1
 - @ref ClassExample2

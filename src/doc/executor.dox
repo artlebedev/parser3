@@ -1,9 +1,10 @@
 /**	@page Executor Executor
 
- од во внутреннем формате затем исполн€етс€.
-ћетоды[Method] могут быть 
-- native: добавл€ютс€ VStateless_class::add_native_method, и имеют непустой Method::native_code
-- parser: добавл€ютс€ VStateless_class::add_method, и имеют непустой Method::parser_code
+Code in internal form then got executed.
+
+Methods[Method] can be 
+- native: registered by VStateless_class::add_native_method, and nave nonempty Method::native_code
+- parser: registered by VStateless_class::add_method, and nave nonempty Method::parser_code
 
 @see execute.C
 
