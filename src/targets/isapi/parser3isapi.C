@@ -11,6 +11,7 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_version.h"
+#include "pool_storage.h"
 
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
 
@@ -145,7 +146,7 @@ static void parser_init() {
 		return;
 	globals_inited=true;
 
-	static Pool pool; // global pool
+	static Pool pool(0); // global pool
 	PTRY {
 		// init global variables
 		pa_globals_init(pool);
@@ -175,7 +176,8 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 		and not could-be-quickly-implemented if prepared.
 */
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
-	Pool pool;
+	Pool_storage pool_storage;
+	Pool pool(&pool_storage);
 	
 	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;
 	PTRY { // global try
@@ -239,7 +241,6 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 			root_auto_path, false/*may be abcent*/, // /path/to/admin/auto.p
 			0/*parser_site_auto_path*/, false, // /path/to/site/auto.p
 			header_only);
-		
 		// successful finish
 	} PCATCH(e) { // global problem
 		// don't allocate anything on pool here:

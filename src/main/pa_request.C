@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.70 2001/03/23 13:08:11 paf Exp $
+	$Id: pa_request.C,v 1.71 2001/03/23 19:25:16 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -373,7 +373,7 @@ void Request::output_result(const String& body_string, bool header_only) {
 
 	// send header
 	SAPI::send_header(pool());
-
+	
 	// send body
 	if(!header_only)
 		SAPI::send_body(pool(), body, content_length);

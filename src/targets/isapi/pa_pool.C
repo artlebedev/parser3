@@ -5,23 +5,20 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.2 2001/03/23 18:08:54 paf Exp $
+	$Id: pa_pool.C,v 1.3 2001/03/23 19:25:18 paf Exp $
 */
 
 #include <stdlib.h>
 
 #include "pa_pool.h"
+#include "pool_storage.h"
 
 void *Pool::real_malloc(size_t size) {
-	// todo: log
-	return ::malloc(size);
+	return fstorage?
+		static_cast<Pool_storage *>(fstorage)->malloc(size): ::malloc(size);
 }
 
 void *Pool::real_calloc(size_t size) {
-	// todo: log
-	return ::calloc(size, 1);
-}
-
-Pool::~Pool() {
-	// todo: free 
+	return fstorage?
+		static_cast<Pool_storage *>(fstorage)->calloc(size): ::calloc(size, 1);
 }
