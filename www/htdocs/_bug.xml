@@ -1,4 +1,8 @@
 <?xml version="1.0" ?>
 <doc>
-hi
+<x:first xmlns:x="http://paf.design.ru/">
+	<x:second xmlns:x="http://pif.design.ru/">
+		content
+	</x:second>
+</x:first>
 </doc>

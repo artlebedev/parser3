@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2004/02/11 15:33:13 $";
+static const char * const IDENT_XNODE_C="$Date: 2004/03/10 10:04:30 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -26,6 +26,7 @@ extern "C" {
 };
 #include "gdome.h"
 #include "libxml/xpath.h"
+#include "libxml/xpathInternals.h"
 
 // global variable
 
@@ -475,6 +476,25 @@ static void _normalize(Request& r, MethodParams&) {
 		throw XmlException(0, exc);
 }
 
+#ifndef DOXYGEN
+struct Register_one_ns_info {
+	Request* r;
+	xmlXPathContextPtr ctxt;
+};
+#endif
+static void register_one_ns(
+								  HashStringValue::key_type key, 
+								  HashStringValue::value_type value, 
+								  Register_one_ns_info* info) {
+	if(const String* svalue=value->get_string())
+		xmlXPathRegisterNs(info->ctxt, 
+			BAD_CAST info->r->transcode(key)->str, 
+			BAD_CAST info->r->transcode(*svalue)->str);
+	else
+		throw Exception("parser.runtime",
+			new String(key, String::L_TAINTED),
+			"value is %s, must be string or number", value->type());
+}
 static void _selectX(Request& r, MethodParams& params,
 					 void (*handler)(Request& r,
 							  const String& expression, 
@@ -484,6 +504,15 @@ static void _selectX(Request& r, MethodParams& params,
 
 	// expression
 	const String& expression=params.as_string(0, "expression must be string");
+	HashStringValue* namespaces=0;
+	if(params.count()>1) {
+		Value* vnamespaces=params.get(1);
+		namespaces=vnamespaces->get_hash();
+		if(!namespaces && !vnamespaces->is_string())
+			throw Exception("parser.runtime",
+				0,
+				"namespaces parameter must be hash");
+	}
 
 	GdomeException exc;
 	GdomeNode* dome_node=vnode.get_node();
@@ -492,6 +521,10 @@ static void _selectX(Request& r, MethodParams& params,
 		dome_document=GDOME_DOC(dome_node); // and we need downcast
 	xmlDoc *xml_document=gdome_xml_doc_get_xmlDoc(dome_document);
 	xmlXPathContext_auto_ptr ctxt(xmlXPathNewContext(xml_document));
+	if(namespaces) {
+		Register_one_ns_info info={&r, ctxt.get()};
+		namespaces->for_each(register_one_ns, &info);
+	}
 	ctxt->node=gdome_xml_n_get_xmlNode(dome_node);
 	/*error to stderr for now*/
 	xmlXPathObject_auto_ptr res(
@@ -722,16 +755,16 @@ MXnode::MXnode(const char* aname, VStateless_class *abase):
 
 	/// parser
 	// ^node.select[/some/xpath/query] = hash $.#[dnode]
-	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
+	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 2);
 
 	// ^node.selectSingle[/some/xpath/query] = first node [if any]
-	add_native_method("selectSingle", Method::CT_DYNAMIC, _selectSingle, 1, 1);
+	add_native_method("selectSingle", Method::CT_DYNAMIC, _selectSingle, 1, 2);
 	// ^node.selectBool[/some/xpath/query] = bool value [if any]
-	add_native_method("selectBool", Method::CT_DYNAMIC, _selectBool, 1, 1);
+	add_native_method("selectBool", Method::CT_DYNAMIC, _selectBool, 1, 2);
 	// ^node.selectNumber[/some/xpath/query] = double value [if any]
-	add_native_method("selectNumber", Method::CT_DYNAMIC, _selectNumber, 1, 1);
+	add_native_method("selectNumber", Method::CT_DYNAMIC, _selectNumber, 1, 2);
 	// ^node.selectString[/some/xpath/query] = strinv value [if any]
-	add_native_method("selectString", Method::CT_DYNAMIC, _selectString, 1, 1);
+	add_native_method("selectString", Method::CT_DYNAMIC, _selectString, 1, 2);
 
 	// consts
 
