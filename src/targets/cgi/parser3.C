@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.88 2001/05/21 08:05:15 parser Exp $
+	$Id: parser3.C,v 1.90 2001/05/24 09:29:52 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -257,7 +257,7 @@ int main(int argc, char *argv[]) {
 		// prepare to process request
 		Request request(pool,
 			request_info,
-			cgi ? String::UL_USER_HTML : String::UL_AS_IS
+			cgi||1 ? String::UL_USER_HTML : String::UL_AS_IS
 			);
 		
 		// some root-controlled location
@@ -275,7 +275,7 @@ int main(int argc, char *argv[]) {
 		strncpy(site_auto_path, argv0, MAX_STRING);  // filespec of my binary
 		if(!(
 			rsplit(site_auto_path, '/') || 
-			rsplit(site_auto_path, '\\')) { // strip filename
+			rsplit(site_auto_path, '\\'))) { // strip filename
 			// no path, just filename
 			site_auto_path[0]='.'; site_auto_path[1]=0;
 		}

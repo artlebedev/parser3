@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.135 2001/05/24 09:13:23 parser Exp $
+	$Id: pa_request.C,v 1.136 2001/05/24 09:29:52 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -215,7 +215,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 		// compile requested file
 		String& spath_translated=*NEW String(pool());
-		spath_translated.APPEND_CLEAN(info.path_translated, 0, "user-request", 0);
+		spath_translated.APPEND_TAINTED(info.path_translated, 0, "user-request", 0);
 		main_class=use_file(spath_translated, true/*don't ignore read problem*/,
 			main_class_name, main_class);
 
