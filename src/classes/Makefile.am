@@ -11,7 +11,7 @@ SUBDIRS = gd $(PATCHES_SUBDIR)
 INCLUDES = -I../types -I../sql -I../pcre -Igd $(PATCHES_INCLUDES) @XML_INCLUDES@
 
 noinst_LIBRARIES = libclasses.a
-libclasses_a_SOURCES = classes.C double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C ident.C
+libclasses_a_SOURCES = ident.C classes.C double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C hashfile.C
 CLEANFILES = classes.inc
 
 CLASSES_INC_DEPS = *.C
