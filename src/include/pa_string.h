@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.86 2001/05/07 13:30:00 paf Exp $
+	$Id: pa_string.h,v 1.87 2001/05/14 13:18:07 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -201,12 +201,25 @@ public:
 
 	typedef void (*Row_action)(Table& table, Array *row, int start, int finish, 
 		void *info);
+	/**
+		@return true if fills table.
+		table format is defined and fixed[can be used by others]: 
+		@verbatim
+			prematch/match/postmatch/1/2/3/...
+		@endverbatim
+	*/
 	bool match(const unsigned char *pcre_tables,
 		const String *aorigin,		
 		const String& regexp, 
 		const String *options,
 		Table **table,
 		Row_action row_action, void *info) const;
+	enum Change_case_kind {
+		CC_UPPER,
+		CC_LOWER
+	};
+	String& change_case(Pool& pool, const unsigned char *pcre_tables, 
+		Change_case_kind kind) const;
 
 #ifndef NO_STRING_ORIGIN
 	/// origin of string. calculated by first row

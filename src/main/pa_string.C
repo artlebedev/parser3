@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.81 2001/05/04 10:42:46 paf Exp $
+	$Id: pa_string.C,v 1.82 2001/05/14 13:18:07 parser Exp $
 */
 
 #include "pa_config_includes.h"
 
 #include "pcre.h"
+#include "internal.h"
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -486,13 +487,6 @@ static void regex_options(char *options, int *result){
 			}
 }
 
-/**
-	returns true if fills table.
-	table format is defined and fixed[can be used by others]: 
-	@verbatim
-		prematch/match/postmatch/1/2/3/...
-	@endverbatim
-*/
 bool String::match(const unsigned char *pcre_tables,
 				   const String *aorigin,
 				   const String& regexp, 
@@ -589,4 +583,57 @@ bool String::match(const unsigned char *pcre_tables,
 			exec_option_bits|=PCRE_NOTBOL; // start of subject+startoffset not BOL
 */
 	}
+}
+
+String& String::change_case(Pool& pool, const unsigned char *tables, 
+							Change_case_kind kind) const {
+	String& result=*new(pool) String(pool);
+
+	const unsigned char *a;
+	const unsigned char *b;
+	switch(kind) {
+	case CC_UPPER:
+		a=tables+lcc_offset;
+		b=tables+fcc_offset;
+		break;
+	case CC_LOWER:
+		a=tables+lcc_offset;
+		b=0;
+		break;
+	default:
+		PTHROW(0, 0, 
+			this, 
+			"unknown change case kind #%d", 
+				static_cast<int>(kind)); // never
+		a=b=0; // calm, compiler
+		break; // never
+	}	
+
+	const Chunk *chunk=&head; 
+	do {
+		const Chunk::Row *row=chunk->rows;
+		for(size_t i=0; i<chunk->count; i++, row++) {
+			if(row==append_here)
+				goto break2;
+
+			char *new_cstr=(char *)pool.malloc(row->item.size);
+			char *dest=new_cstr;
+			const char *src=row->item.ptr; 
+			for(int size=row->item.size; size--; src++) {
+				unsigned char c=a[(unsigned char)*src];
+				if(b)
+					c=b[c];
+
+				*dest++=(char)c;
+			}
+			
+			result.APPEND(new_cstr, row->item.size, 
+				row->item.lang,
+				row->item.origin.file, row->item.origin.line);
+		}
+		chunk=row->link;
+	} while(chunk);
+break2:
+
+	return result;
 }

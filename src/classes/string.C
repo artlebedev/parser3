@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.48 2001/05/11 17:45:10 parser Exp $
+	$Id: string.C,v 1.49 2001/05/14 13:18:07 parser Exp $
 */
 
 #include "classes.h"
@@ -184,6 +184,7 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 		*ai.dest << *ai.post_match;
 }
 
+/// @todo use pcre:study!
 static void _match(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const String& src=*static_cast<VString *>(r.self)->get_string();
@@ -232,6 +233,21 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 	r.write_assign_lang(*result);
 }
 
+static void change_case(Request& r, const String& method_name, MethodParams *params, 
+						String::Change_case_kind kind) {
+	Pool& pool=r.pool();
+	const String& src=*static_cast<VString *>(r.self)->get_string();
+
+	r.write_assign_lang(*new(pool) VString(src.change_case(pool, r.pcre_tables,
+		kind)));
+}
+static void _upper(Request& r, const String& method_name, MethodParams *params) {
+	change_case(r, method_name, params, String::CC_UPPER);
+}
+static void _lower(Request& r, const String& method_name, MethodParams *params) {
+	change_case(r, method_name, params, String::CC_LOWER);
+}
+
 // constructor
 
 MString::MString(Pool& apool) : Methoded(apool) {
@@ -268,6 +284,11 @@ MString::MString(Pool& apool) : Methoded(apool) {
 	// ^string.match[regexp][options]
 	// ^string.match[regexp][options]{replacement-code}
 	add_native_method("match", Method::CT_DYNAMIC, _match, 1, 3);
+
+	// ^string.toupper[]
+	add_native_method("upper", Method::CT_DYNAMIC, _upper, 0, 0);
+	// ^string.tolower[]
+	add_native_method("lower", Method::CT_DYNAMIC, _lower, 0, 0);
 }	
 
 // global variable

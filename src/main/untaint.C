@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.47 2001/04/28 13:38:15 paf Exp $
+	$Id: untaint.C,v 1.48 2001/05/14 13:18:07 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -333,6 +333,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					"unknown untaint language #%d of %d piece", 
 						static_cast<int>(row->item.lang), 
 						i); // never
+				break; // never
 			}
 
 			if((lang==UL_UNSPECIFIED?row->item.lang:lang)!=UL_CLEAN)
