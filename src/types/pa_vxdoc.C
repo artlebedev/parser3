@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXDOC="$Date: 2002/08/01 11:41:25 $";
+static const char* IDENT_VXDOC="$Date: 2002/08/13 13:02:43 $";
 
 #include "pa_vxdoc.h"
 
@@ -17,22 +17,22 @@ void VXdoc_destructor(void *vxdoc) {
 }
 
 /// VXdoc: $CLASS,$method
-Value *VXdoc::get_element(const String& name) { 
+Value *VXdoc::get_element(const String& aname, Value *aself) { 
 	// up
-	if(Value *result=VXnode::get_element(name))
+	if(Value *result=VXnode::get_element(aname, aself))
 		return result;
 
 	// fields
-	GdomeDocument *document=get_document(&name);
+	GdomeDocument *document=get_document(&aname);
 	GdomeException exc;
 
-	if(name=="doctype") {
+	if(aname=="doctype") {
 		// readonly attribute DocumentType doctype;
 		return NEW VXnode(pool(), (GdomeNode *)gdome_doc_doctype(document, &exc));
-	} else if(name=="implementation") {
+	} else if(aname=="implementation") {
 		// readonly attribute DOMImplementation implementation;
 		return 0;
-	} else if(name=="documentElement") {
+	} else if(aname=="documentElement") {
 		// readonly attribute Element documentElement;
 		return NEW VXnode(pool(), (GdomeNode *)gdome_doc_documentElement(document, &exc));
 	} 	

@@ -8,7 +8,7 @@
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
 
-static const char* IDENT_VMAIL_H="$Date: 2002/08/01 11:41:24 $";
+static const char* IDENT_VMAIL_H="$Date: 2002/08/13 13:02:42 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -31,7 +31,7 @@ public: // Value
 	const char *type() const { return "mail"; }
 	
 	// mail: CLASS,methods,received field
-	Value *get_element(const String& aname);
+	Value *get_element(const String& aname, Value *aself);
 
 public: // usage
 

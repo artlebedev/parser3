@@ -8,15 +8,15 @@
 #ifndef XNODE_H
 #define XNODE_H
 
-static const char* IDENT_XNODE_H="$Date: 2002/08/01 11:41:13 $";
+static const char* IDENT_XNODE_H="$Date: 2002/08/13 13:02:39 $";
 
 class MXnode : public Methoded {
 public: // Value
 
 	/// MXnode: +$const
-	Value *get_element(const String& aname) {
-		// $CLASS, $method
-		if(Value *result=Methoded::get_element(aname))
+	Value *get_element(const String& aname, Value *aself) {
+		// $method
+		if(Value *result=Methoded::get_element(aname, aself))
 			return result;
 
 		// $const

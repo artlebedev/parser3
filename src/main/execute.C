@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/08/12 14:21:52 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/08/13 13:02:40 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -231,7 +231,7 @@ void Request::execute(const Array& ops) {
 				value=POP();
 				const String& name=POP_NAME();
 				Value *ncontext=POP();
-				ncontext->put_element(name, value);
+				ncontext->put_element(name, value, false);
 				break;
 			}
 		case OP_CONSTRUCT_EXPR:
@@ -242,7 +242,7 @@ void Request::execute(const Array& ops) {
 				value=POP();
 				const String& name=POP_NAME();
 				Value *ncontext=POP();
-				ncontext->put_element(name, value->as_expr_result());
+				ncontext->put_element(name, value->as_expr_result(), false);
 				break;
 			}
 		case OP_CURLY_CODE__CONSTRUCT:
@@ -263,7 +263,7 @@ void Request::execute(const Array& ops) {
 				value=NEW VJunction(j);
 				const String& name=POP_NAME();
 				Value *ncontext=POP();
-				ncontext->put_element(name, value);
+				ncontext->put_element(name, value, false);
 				break;
 			}
 		case OP_NESTED_CODE:
@@ -477,7 +477,7 @@ void Request::execute(const Array& ops) {
 							&frame.name(),
 							"method is static and can not be used as constructor");
 				} else
-					self=&frame.junction.self; // static call
+					self=&frame.junction.self;
 
 				frame.set_self(*self);
 
@@ -858,12 +858,12 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 					if(read_class->derived_from(*called_class)) // current derived from called
 						if(Value *base_object=self->base_object()) { // doing DYNAMIC call
 							Temp_derived(*base_object, 0); // temporarily prevent go-back-down virtual calls
-							value=base_object->get_element(name); // virtual-up lookup starting from parent
+							value=base_object->get_element(name, base_object); // virtual-up lookup starting from parent
 							goto _void;
 						}
 	}
 	if(!value)
-		value=ncontext->get_element(name);
+		value=ncontext->get_element(name, ncontext);
 
 _void:
 	if(value)
@@ -1032,7 +1032,7 @@ void Request::execute_nonvirtual_method(VStateless_class& aclass,
 
 const String *Request::execute_virtual_method(Value& aself, 
 											  const String& method_name) {
-	if(Value *value=aself.get_element(method_name))
+	if(Value *value=aself.get_element(method_name, &aself))
 		if(Junction *junction=value->get_junction())
 			if(const Method *method=junction->method) {
 				const String *result;

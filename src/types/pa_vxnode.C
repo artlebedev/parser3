@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXNODE_C="$Date: 2002/08/05 14:19:10 $";
+static const char* IDENT_VXNODE_C="$Date: 2002/08/13 13:02:43 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -20,26 +20,26 @@ void VXnode_cleanup(void *vxnode) {
 	static_cast<VXnode *>(vxnode)->~VXnode();
 }
 
-Value *VXnode::get_element(const String& name) { 
+Value *VXnode::get_element(const String& aname, Value *aself) { 
 	// $CLASS,$method
-	if(Value *result=VStateless_object::get_element(name))
+	if(Value *result=VStateless_object::get_element(aname, aself))
 		return result;
 
 	// fields
 
-	GdomeNode *selfNode=get_node(&name);
+	GdomeNode *selfNode=get_node(&aname);
 	GdomeException exc;
 
-	if(name=="nodeName") {
+	if(aname=="nodeName") {
 		return NEW VString(transcode(gdome_n_nodeName(selfNode, &exc)));
-	} else if(name=="nodeValue") {
+	} else if(aname=="nodeValue") {
 		return NEW VString(transcode(gdome_n_nodeValue(selfNode, &exc)));
-	} else if(name=="nodeType") {
+	} else if(aname=="nodeType") {
 		return NEW VInt(pool(), gdome_n_nodeType(selfNode, &exc));
-	} else if(name=="parentNode") {
+	} else if(aname=="parentNode") {
 		if(GdomeNode *result_node=gdome_n_parentNode(selfNode, &exc))
 			return NEW VXnode(pool(), result_node);
-	} else if(name=="childNodes") {	
+	} else if(aname=="childNodes") {	
 		if(GdomeNode *currentNode=gdome_n_firstChild(selfNode, &exc)) {
 			VHash *result=NEW VHash(pool());
 			int i=0;
@@ -50,28 +50,28 @@ Value *VXnode::get_element(const String& name) {
 					snprintf(buf, MAX_NUMBER, "%d", i++);
 					skey << buf;
 				}
-				result->hash(&name).put(skey, NEW VXnode(pool(), currentNode));
+				result->hash(&aname).put(skey, NEW VXnode(pool(), currentNode));
 			} while(currentNode=gdome_n_nextSibling(currentNode, &exc));
 			return result;
 		}
-	} else if(name=="firstChild") {
+	} else if(aname=="firstChild") {
 		if(GdomeNode *result_node=gdome_n_firstChild(selfNode, &exc))
 			return NEW VXnode(pool(), result_node);
-	} else if(name=="lastChild") {
+	} else if(aname=="lastChild") {
 		if(GdomeNode *result_node=gdome_n_lastChild(selfNode, &exc))
 			return NEW VXnode(pool(), result_node);
-	} else if(name=="previousSibling") {
+	} else if(aname=="previousSibling") {
 		if(GdomeNode *result_node=gdome_n_previousSibling(selfNode, &exc))
 			return NEW VXnode(pool(), result_node);
-	} else if(name=="nextSibling") {
+	} else if(aname=="nextSibling") {
 		if(GdomeNode *result_node=gdome_n_nextSibling(selfNode, &exc))
 			return NEW VXnode(pool(), result_node);
-	} else if(name=="ownerDocument") {
+	} else if(aname=="ownerDocument") {
 		if(GdomeDocument *document=gdome_n_ownerDocument(selfNode, &exc))
 			return NEW VXdoc(pool(), document);
 	} else switch(gdome_n_nodeType(selfNode, &exc)) {
 		case GDOME_ELEMENT_NODE: 
-			if(name=="attributes") {
+			if(aname=="attributes") {
 				if(GdomeNamedNodeMap *attributes=gdome_n_attributes(selfNode, &exc)) {
 					VHash *result=NEW VHash(pool());
 					gulong length=gdome_nnm_length(attributes, &exc);
@@ -83,16 +83,16 @@ Value *VXnode::get_element(const String& name) {
 					}
 					return result;
 				}
-			} else if(name=="tagName") {
+			} else if(aname=="tagName") {
 				return NEW VString(transcode(gdome_el_tagName(GDOME_EL(selfNode), &exc)));
 			}
 			break;
 		case GDOME_ATTRIBUTE_NODE: 
-			if(name=="specified")
+			if(aname=="specified")
 				return NEW VBool(pool(), gdome_a_specified(GDOME_A(selfNode), &exc)!=0);
-			else if(name=="name")
+			else if(aname=="aname")
 				return NEW VString(transcode(gdome_a_name(GDOME_A(selfNode), &exc)));
-			else if(name=="value")
+			else if(aname=="value")
 				return NEW VString(transcode(gdome_a_value(GDOME_A(selfNode), &exc)));			
 			break;
 /*
@@ -100,17 +100,17 @@ Value *VXnode::get_element(const String& name) {
 			substringData(unsigned int offset, unsigned int count)
 */
 		case GDOME_PROCESSING_INSTRUCTION_NODE: 
-			if(name=="target")
+			if(aname=="target")
 				return NEW VString(transcode(gdome_pi_target(GDOME_PI(selfNode), &exc)));
-			else if(name=="data")
+			else if(aname=="data")
 				return NEW VString(transcode(gdome_pi_data(GDOME_PI(selfNode), &exc)));				
 			break;
 		case GDOME_DOCUMENT_TYPE_NODE: 
 			{
 				GdomeDocumentType *doctype=GDOME_DT(selfNode);
-				if(name=="name") {
-					// readonly attribute DOMString name;
-					// The name of DTD; i.e., the name immediately following 
+				if(aname=="aname") {
+					// readonly attribute DOMString aname;
+					// The aname of DTD; i.e., the aname immediately following 
 					// the DOCTYPE keyword in an XML source document.
 					return NEW VString(transcode(gdome_dt_name(doctype, &exc)));
 				}
@@ -127,10 +127,10 @@ Value *VXnode::get_element(const String& name) {
 		case GDOME_NOTATION_NODE:
 			{
 				GdomeNotation *notation=GDOME_NOT(selfNode);
-				if(name=="publicId") {
+				if(aname=="publicId") {
 					// readonly attribute DOMString publicId;
 					return NEW VString(transcode(gdome_not_publicId(notation, &exc)));
-				} else if(name=="systemId") {
+				} else if(aname=="systemId") {
 					// readonly attribute DOMString systemId;
 					return NEW VString(transcode(gdome_not_systemId(notation, &exc)));
 				}

@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char* IDENT_VDATE_H="$Date: 2002/08/12 10:32:53 $";
+static const char* IDENT_VDATE_H="$Date: 2002/08/13 13:02:41 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -41,10 +41,10 @@ public: // Value
 	bool as_bool() const { return ftime!=0; }
 
 
-	/// VDate: CLASS,method,field
-	Value *get_element(const String& aname) {
-		// $CLASS,$method
-		if(Value *result=VStateless_object::get_element(aname))
+	/// VDate: method,field
+	Value *get_element(const String& aname, Value *aself) {
+		// $method
+		if(Value *result=VStateless_object::get_element(aname, aself))
 			return result;
 
 		// $year month day  hour minute second  weekday

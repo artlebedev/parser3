@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/08/08 09:35:22 $";
+static const char* IDENT_OP_C="$Date: 2002/08/13 13:02:39 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -202,7 +202,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 
 	bool need_delim=false;
 	VInt *vint=new(pool) VInt(pool, 0);
-	r.root->put_element(var_name, vint);
+	r.root->put_element(var_name, vint, false);
 	for(int i=from; i<=to; i++) {
 		vint->set_int(i);
 
@@ -594,13 +594,14 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 		VHash& vhash=exception2vhash(pool, e);
 
 		Junction *junction=catch_code.get_junction();
-		Value *saved_exception_var_value=junction->root->get_element(*exception_var_name);
-		junction->root->put_element(*exception_var_name, &vhash);
+		Value *root=junction->root;
+		Value *saved_exception_var_value=root->get_element(*exception_var_name, root);
+		junction->root->put_element(*exception_var_name, &vhash, false);
 		result=r.process(catch_code);
 		bool handled=false;
 		if(Value *value=static_cast<Value *>(vhash.hash(0).get(*exception_handled_part_name)))
 			handled=value->as_bool();		
-		junction->root->put_element(*exception_var_name, saved_exception_var_value);
+		junction->root->put_element(*exception_var_name, saved_exception_var_value, false);
 
 		if(!handled)
 			throw(e); // rethrow
@@ -712,8 +713,8 @@ void MOP::configure_user(Request& r) {
 	Pool& pool=r.pool();
 
 	// $MAIN:SQL.drivers
-	if(Value *sql=r.main_class->get_element(main_sql_name))
-		if(Value *element=sql->get_element(main_sql_drivers_name))
+	if(Value *sql=r.main_class->get_element(main_sql_name, r.main_class))
+		if(Value *element=sql->get_element(main_sql_drivers_name, sql))
 			if(Table *protocol2library=element->get_table())
 				r.classes_conf.put(name(), protocol2library);
 }

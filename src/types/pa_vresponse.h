@@ -8,7 +8,7 @@
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-static const char* IDENT_VRESPONSE_H="$Date: 2002/08/12 10:32:53 $";
+static const char* IDENT_VRESPONSE_H="$Date: 2002/08/13 13:02:42 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
@@ -33,10 +33,10 @@ public: // Value
 	Hash *get_hash(const String * /*source*/) { return &ffields; }
 
 	/// Response: method,fields
-	Value *get_element(const String& name);
+	Value *get_element(const String& aname, Value *aself);
 
 	/// Response: (attribute)=value
-	void put_element(const String& name, Value *value);
+	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace);
 
 public: // usage
 

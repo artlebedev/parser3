@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCOOKIE_C="$Date: 2002/08/01 11:41:22 $";
+static const char* IDENT_VCOOKIE_C="$Date: 2002/08/13 13:02:41 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -18,36 +18,38 @@ static const char* IDENT_VCOOKIE_C="$Date: 2002/08/01 11:41:22 $";
 
 // VCookie
 
-Value *VCookie::get_element(const String& name) {
+Value *VCookie::get_element(const String& aname, Value * /*aself*/) {
 	// $CLASS
-	if(name==CLASS_NAME)
+	if(aname==CLASS_NAME)
 		return this;
 
 	// $cookie
-	if(deleted.get(name)) // deleted?
+	if(deleted.get(aname)) // deleted?
 		return 0;
 	
-	if(Value *after_meaning=static_cast<Value *>(after.get(name))) // assigned 'after'?
-		if(Hash *hash=after_meaning->get_hash(&name))
+	if(Value *after_meaning=static_cast<Value *>(after.get(aname))) // assigned 'after'?
+		if(Hash *hash=after_meaning->get_hash(&aname))
 			return static_cast<Value *>(hash->get(*value_name));
 		else
 			return after_meaning;
 	
 	// neither deleted nor assigned 
 	// return any value it had 'before'
-	return static_cast<Value *>(before.get(name));
+	return static_cast<Value *>(before.get(aname));
 }
 
-void VCookie::put_element(const String& name, Value *value) {
+bool VCookie::put_element(const String& aname, Value *avalue, bool /*replace*/) {
 	// $cookie
 	bool remove;
-	if(Hash *hash=value->get_hash(&name))
+	if(Hash *hash=avalue->get_hash(&aname))
 		remove=hash->size()==0;
 	else
-		remove=value->as_string().is_empty();
+		remove=avalue->as_string().is_empty();
 
-	(remove?deleted:after).put(name, value);
-	(remove?after:deleted).put(name, 0);
+	(remove?deleted:after).put(aname, avalue);
+	(remove?after:deleted).put(aname, 0);
+	
+	return true;
 }
 
 static char *search_stop(char*& current, char cstop_at) {

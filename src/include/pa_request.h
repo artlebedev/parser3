@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/08/01 11:41:15 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/08/13 13:02:39 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -219,7 +219,7 @@ public:
 	}
 
 	bool origins_mode() {
-		return main_class->get_element(*origins_mode_name)!=0;  // $ORIGINS mode
+		return main_class->get_element(*origins_mode_name, main_class)!=0;  // $ORIGINS mode
 	}
 
 public:

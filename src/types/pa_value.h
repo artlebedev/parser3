@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/12 14:21:52 $";
+static const char* IDENT_VALUE_H="$Date: 2002/08/13 13:02:40 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -25,6 +25,7 @@ class Method;
 class Hash;
 class VFile;
 class MethodParams;
+class VObject;
 
 ///	grandfather of all @a values in @b Parser
 class Value : public Pooled {
@@ -36,7 +37,7 @@ public: // Value
 	/** remember derived class instance 
 	    - VObject: the only client
 	*/
-	virtual Value *set_derived(Value * /*aderived*/) { return 0; }
+	virtual VObject *set_derived(VObject * /*aderived*/) { return 0; }
 
 	/**
 		all except derived class: this if @atype eq type()
@@ -151,7 +152,21 @@ public: // Value
 	*/
 	virtual Junction *get_junction() { return 0; }
 	
+	/** extract Value junction of name @a name, when @a looking_down looks only down
+		@return for
+		- VStateless_class: self or parent method junction
+		- VObject: child or self or parent method junction
+	virtual Junction *get_junction(const String& /*name* /, bool /*looking_down* /) { bark("(%s) has no junctions"); return 0; }
+	*/
+
+	/** extract base object of Value
+		@return for
+		- VObject: fbase
+	*/
+	virtual Value *base_object() { bark("(%s) has no base object"); return 0; }
+	
 	/** extract Value element
+		@a self =0 means =this
 		@return for
 		- VHash: (key)=value
 		- VStateless_class: +$method
@@ -169,21 +184,8 @@ public: // Value
 		- VFile: method,field
 		- VDate: CLASS,method,field
 		*/
-	virtual Value *get_element(const String& /*name*/) { bark("(%s) has no elements"); return 0; }
+	virtual Value *get_element(const String& /*aname*/, Value * /*aself*/) { bark("(%s) has no elements"); return 0; }
 
-	/** extract Value junction of name @a name, when @a looking_down looks only down
-		@return for
-		- VStateless_class: self or parent method junction
-		- VObject: child or self or parent method junction
-	*/
-	virtual Junction *get_junction(const String& /*name*/, bool /*looking_down*/) { bark("(%s) has no junctions"); return 0; }
-
-	/** extract base object of Value
-		@return for
-		- VObject: fbase
-	*/
-	virtual Value *base_object() { bark("(%s) has no base object"); return 0; }
-	
 	/** store Value element under @a name
 		@return for
 		- VHash: (key)=value
@@ -195,12 +197,13 @@ public: // Value
 		- VResponse: (attribute)=value
 		- VCookie: field
 	*/
-	virtual void put_element(const String& name, Value * /*value*/) { 
+	virtual bool put_element(const String& name, Value * /*value*/, bool /*replace*/) { 
 		// to prevent modification of system classes,
 		// created at system startup, and not having exception
 		// handler installed, we neet to bark using request.pool
 		bark("(%s) does not accept elements", 
 			"element can not be stored to %s", &name); 
+		return false;
 	}
 	
 	/** extract VStateless_class
@@ -385,11 +388,11 @@ public:
 	Temp_value_element(Value& awhere, const String& aname, Value *awhat) : 
 		fwhere(awhere),
 		fname(aname),
-		saved(awhere.get_element(aname)) {
-		fwhere.put_element(aname, awhat);
+		saved(awhere.get_element(aname, &awhere)) {
+		fwhere.put_element(aname, awhat, false);
 	}
 	~Temp_value_element() { 
-		fwhere.put_element(fname, saved);
+		fwhere.put_element(fname, saved, false);
 	}
 };
 

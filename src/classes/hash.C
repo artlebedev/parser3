@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2002/08/06 12:48:14 $";
+static const char* IDENT_HASH_C="$Date: 2002/08/13 13:02:39 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -271,8 +271,8 @@ static void one_foreach_cycle(const Hash::Key& akey, Hash::Val *avalue,
 	Foreach_info& i=*static_cast<Foreach_info *>(info);
 
 	i.vkey->set_string(akey);
-	i.r->root->put_element(*i.key_var_name, i.vkey);
-	i.r->root->put_element(*i.value_var_name, static_cast<Value *>(avalue));
+	i.r->root->put_element(*i.key_var_name, i.vkey, false);
+	i.r->root->put_element(*i.value_var_name, static_cast<Value *>(avalue), false);
 
 	StringOrValue processed_body=i.r->process(*i.body_code);
 	if(i.delim_maybe_code) { // delimiter set?

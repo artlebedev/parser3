@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/08/12 14:45:15 $";
+static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/08/13 13:02:42 $";
 
 #include "pa_hash.h"
 #include "pa_vjunction.h"
@@ -31,12 +31,14 @@ public: // Value
 	/// VStateless_class: this
 	VStateless_class *get_class() { return this; }
 	
-	/// VStateless_class: +$method
-	Value *get_element(const String& aname) {
+	/// VStateless_class: $method
+	Value *get_element(const String& aname, Value *aself) {
 		// $method=junction(self+class+method)
-		if(Junction *junction=get_junction(aname, *this))
-			return new(junction->pool()) VJunction(*junction);
-		
+		if(Method *method=static_cast<Method *>(fmethods.get(aname)))
+			return new(aname.pool()) VJunction(
+				*new(aname.pool()) Junction(aname.pool(), *aself, this, method, 0,0,0,0));
+		if(fbase)
+			return fbase->get_element(aname, aself);
 		return 0;
 	}
 
@@ -82,9 +84,11 @@ public: // usage
 		Native_code_ptr native_code,
 		int min_numbered_params_count, int max_numbered_params_count);
 	
-	void set_base(VStateless_class& abase) {
+	VStateless_class *set_base(VStateless_class *abase) {
+		VStateless_class *result=fbase;
 		// remember the guy
-		fbase=&abase;
+		fbase=abase;
+		return result;
 	}
 	VStateless_class *base_class() { return fbase; }
 
@@ -92,14 +96,6 @@ public: // usage
 		return 
 			fbase==&vclass || 
 			fbase && fbase->derived_from(vclass);
-	}
-
-	Junction *get_junction(const String& name, Value& self) {
-		if(Method *method=static_cast<Method *>(fmethods.get(name)))
-			return new(name.pool()) Junction(name.pool(), self, this, method, 0,0,0,0);
-		if(fbase)
-			return fbase->get_junction(name, self);
-		return 0; 
 	}
 
 	//@{
@@ -143,6 +139,16 @@ public:
 	~Temp_method() { 
 		fclass.put_method(fname, saved_method);
 	}
+};
+
+///	Auto-object used for temporarily substituting/removing class base
+class Temp_base {
+	VStateless_class& fclass;
+	VStateless_class *fbase;
+public:
+	Temp_base(VStateless_class& aclass, VStateless_class *abase) : fclass(aclass), fbase(aclass.set_base(abase)) {}
+	~Temp_base() { fclass.set_base(fbase); }
+
 };
 
 #endif

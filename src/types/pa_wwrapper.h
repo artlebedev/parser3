@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char* IDENT_WWRAPPER_H="$Date: 2002/08/07 13:24:31 $";
+static const char* IDENT_WWRAPPER_H="$Date: 2002/08/13 13:02:43 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"
@@ -19,9 +19,11 @@ public: // Value
 
 	const char *type() const { return "wwrapper"; }
 	/// WWrapper: transparent
-	Value *get_element(const String& name) { return check_value()->get_element(name); }
+	Value *get_element(const String& aname, Value *aself) { 
+		return check_value()->get_element(aname, aself); 
+	}
 	/// WWrapper: transparent
-	void put_element(const String& aname, Value *avalue){ 
+	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace) { 
 		if(!fvalue) {
 			fvalue=NEW VHash(pool());
 			// not constructing anymore [if were constructing]
@@ -34,7 +36,7 @@ public: // Value
 			set_constructing(false);
 		}
 
-		fvalue->put_element(aname, avalue); 
+		return fvalue->put_element(aname, avalue, replace); 
 	}
 
 public: // usage

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VTABLE_C="$Date: 2002/08/01 11:41:25 $";
+static const char* IDENT_VTABLE_C="$Date: 2002/08/13 13:02:43 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -39,19 +39,19 @@ Value *VTable::fields_element() {
 }
 
 
-Value *VTable::get_element(const String& name) {
+Value *VTable::get_element(const String& aname, Value *aself) {
 	// fields
-	if(name==TABLE_FIELDS_ELEMENT_NAME)
+	if(aname==TABLE_FIELDS_ELEMENT_NAME)
 		return fields_element();
 
 	// methods
-	if(Value *result=VStateless_object::get_element(name))
+	if(Value *result=VStateless_object::get_element(aname, aself))
 		return result;
 
 	// columns
 	if(ftable) {
-		int index=ftable->column_name2index(name, false);
-		if(index>=0) // column name|number valid
+		int index=ftable->column_name2index(aname, false);
+		if(index>=0) // column aname|number valid
 			if(const String *string=ftable->item(index)) // there is such column
 				return NEW VString(*string);
 			else
@@ -59,7 +59,7 @@ Value *VTable::get_element(const String& name) {
 	}
 
 	throw Exception("parser.runtime",
-		&name, 
+		&aname, 
 		"column not found");
 	return 0; //unreached
 }

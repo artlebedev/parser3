@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMPILE_C="$Date: 2002/08/01 11:41:17 $";
+static const char* IDENT_COMPILE_C="$Date: 2002/08/13 13:02:40 $";
 
 #include "pa_opcode.h"
 #include "pa_request.h"
@@ -33,7 +33,7 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 		// defaulting base. may change with @BASE
 		// dont use ?: for there would be getting & of temp object
 		if(base_class)
-			cclass->set_base(*base_class);
+			cclass->set_base(base_class);
 		classes().put(*name, cclass);
 		cclass->set_name(*name);
 	} else

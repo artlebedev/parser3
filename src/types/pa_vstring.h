@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-static const char* IDENT_VSTRING_H="$Date: 2002/08/12 10:32:54 $";
+static const char* IDENT_VSTRING_H="$Date: 2002/08/13 13:02:43 $";
 
 #include <stdlib.h>
 
@@ -48,14 +48,14 @@ public: // Value
 		bool origins_mode=false);
 
 	/// VString: $method
-	Value *get_element(const String& name) {
+	Value *get_element(const String& aname, Value *aself) {
 		// $method
-		if(Value *result=VStateless_object::get_element(name))
+		if(Value *result=VStateless_object::get_element(aname, aself))
 			return result;
 
 		// bad $string.field
 		bark("(%s) does not have fields",
-			"%s method not found", &name);  return 0;
+			"%s method not found", &aname);  return 0;
 	}
 
 public: // usage

@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/08/12 14:21:52 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/08/13 13:02:42 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
@@ -19,9 +19,10 @@ static const char* IDENT_VOBJECT_H="$Date: 2002/08/12 14:21:52 $";
 #define CLASS_NAME "CLASS"
 #define BASE_NAME "BASE"
 
-/**	parser class instance,
-	stores class VObject::fclass;
-	stores fields VObject::ffields (dynamic, not static, which are stored in class).
+/**	parser class instance, stores 
+	- class VObject::fclass;
+	- fields VObject::ffields (dynamic, not static, which are stored in class).
+	- links to base/derived instances [VObject::fbase, VObject::fderived]
 */
 class VObject: public VStateless_object {
 public: // Value
@@ -33,41 +34,45 @@ public: // Value
 	VStateless_class *get_class() { return &fclass; }
 	/// VObject: fbase
 	/*override*/ Value *base_object() { return fbase; }
-	/// VObject : true
+	/// VObject: true, todo: z base table can be 33
 	Value *as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
-	/// VObject : true
+	/// VObject: true, todo: z base table can be false	
 	bool as_bool() const { return true; }
 
-	/// VObject: child or self or parent method junction
-	/*override*/ Junction *get_junction(const String& name, bool looking_down) {
-		if(fderived) {
-			if(Junction *result=fderived->get_junction(name, true))
+	/// VObject: (field)=value;(CLASS)=vclass;(method)=method_ref
+	Value *get_element(const String& aname, Value *aself) {
+		// gets element from last_derivate upwards
+		if(aself) {
+			// $CLASS
+			if(aname==CLASS_NAME)
+				return get_class();
+
+			// for first call, pass call to last derived VObject
+			return get_last_derived()->get_element(aname, 0/*mark this call as 'not first'*/);
+		}
+
+		// $method, $CLASS_field
+		{
+			Temp_base temp_base(*get_class(), 0);
+			if(Value *result=VStateless_object::get_element(aname, this))
 				return result;
 		}
-		if(Method *method=static_cast<Method *>(get_class()->get_method(name)))
-			return new(name.pool()) Junction(name.pool(), *this, get_class(), method, 0,0,0,0);
-		if(!looking_down && fbase)
-			return fbase->get_junction(name, false);
-		return 0; 
-	}
 
-	/// VObject : (field)=value;(CLASS)=vclass;(method)=method_ref
-	Value *get_element(const String& name) {
 		// $field=ffields.field
-		if(Value *result=static_cast<Value *>(ffields.get(name)))
+		if(Value *result=static_cast<Value *>(ffields.get(aname)))
 			return result;
 
-		// $CLASS
-		if(name==CLASS_NAME)
-			return get_class();
+		// up the tree...
+		if(fbase)
+			if(Value *result=fbase->get_element(aname, fbase))
+				return result;
 
-		// $method of last child or upper
-		return 
-			VStateless_object::get_element(name);
+		return 0;
 	}
 
-	/// VObject : (field)=value
-	void put_element(const String& name, Value *value) {
+	/// VObject: (field)=value
+	bool put_element(const String& aname, Value *avalue, bool replace) {
+		// replaces element to last_derivate upwards or stores it in self
 		// speed1:
 		//   will not check for '$CLASS(subst)' trick
 		//   will hope that user ain't THAT self-hating person
@@ -75,12 +80,27 @@ public: // Value
 		//   will not check for '$method_name(subst)' trick
 		//   -same-
 
-		ffields.put(name, value);
+		// downwards: same as upwards
+
+		if(fderived && fderived->put_element(aname, avalue, true))
+			return true; // replaced in derived
+
+		// upwards: copied from VClass::put_element...
+
+		if(fbase && fbase->put_element(aname, avalue, true))
+			return true; // replaced in base
+
+		if(replace)
+			return ffields.put_replace(aname, avalue);
+		else {
+			ffields.put(aname, avalue);
+			return false;
+		}
 	}
 
 	/// VObject: remember derived [the only client] */
-	/*override*/ Value *set_derived(Value *aderived) { 
-		Value *result=fderived;
+	/*override*/ VObject *set_derived(VObject *aderived) { 
+		VObject *result=fderived;
 		fderived=aderived;
 		return fderived;
 	}
@@ -98,17 +118,23 @@ public: // creation
 
 private:
 
+	Value *get_last_derived() {
+		return fderived?fderived->get_last_derived():this;
+	}
+
+private:
+
 	VStateless_class& fclass;
 	Hash ffields;
-	Value *fderived;
+	VObject *fderived;
 	Value *fbase;
 };
 
 class Temp_derived {
 	Value& fvalue;
-	Value *fsaved_derived;
+	VObject *fsaved_derived;
 public:
-	Temp_derived(Value& avalue, Value *aderived) : 
+	Temp_derived(Value& avalue, VObject *aderived) : 
 		fvalue(avalue),
 		fsaved_derived(avalue.set_derived(aderived)) {}
 	~Temp_derived() { fvalue.set_derived(fsaved_derived); }

@@ -5,32 +5,33 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VRESPONSE_C="$Date: 2002/08/01 11:41:24 $";
+static const char* IDENT_VRESPONSE_C="$Date: 2002/08/13 13:02:42 $";
 
 #include "pa_vresponse.h"
 #include "pa_charsets.h"
 #include "pa_charset.h"
 #include "pa_vstring.h"
 
-Value *VResponse::get_element(const String& name) {
+Value *VResponse::get_element(const String& aname, Value *aself) {
 	// $charset
-	if(name==CHARSET_NAME)
+	if(aname==CHARSET_NAME)
 		return NEW VString(pool().get_client_charset().name());
-	else {
-		// $method
-		if(Value *result=VStateless_object::get_element(name))
-			return result;
-		
-		// $field
-		return static_cast<Value *>(ffields.get(name));
-	}
+
+	// $method
+	if(Value *result=VStateless_object::get_element(aname, aself))
+		return result;
+	
+	// $field
+	return static_cast<Value *>(ffields.get(aname));
 }
 
-void VResponse::put_element(const String& name, Value *value) { 
+bool VResponse::put_element(const String& aname, Value *avalue, bool /*replace*/) { 
 	// guard charset change
-	if(name==CHARSET_NAME)
-		pool().set_client_charset(charsets->get_charset(value->as_string()));
+	if(aname==CHARSET_NAME)
+		pool().set_client_charset(charsets->get_charset(avalue->as_string()));
 	else
-		ffields.put(name, value);		
+		ffields.put(aname, avalue);
+
+	return true;
 }
 

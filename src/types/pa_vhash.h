@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char* IDENT_VHASH_H="$Date: 2002/08/01 11:41:23 $";
+static const char* IDENT_VHASH_H="$Date: 2002/08/13 13:02:41 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -46,13 +46,13 @@ public: // value
 	Hash *get_hash(const String *source) { return &hash(source); }
 
 	/// VHash: (key)=value
-	Value *get_element(const String& name) { 
-		// $CLASS,$method
-		if(Value *result=VStateless_object::get_element(name))
+	Value *get_element(const String& aname, Value *aself) { 
+		// $method
+		if(Value *result=VStateless_object::get_element(aname, aself))
 			return result;
 
 		// $element
-		if(Value *result=static_cast<Value *>(fhash.get(name)))
+		if(Value *result=static_cast<Value *>(fhash.get(aname)))
 			return result;
 
 		// default value
@@ -60,8 +60,10 @@ public: // value
 	}
 	
 	/// VHash: (key)=value
-	void put_element(const String& name, Value *value) { 
-		hash(&name).put(name, value);
+	/*override*/ bool put_element(const String& aname, Value *avalue, bool /*replace*/) { 
+		hash(&aname).put(aname, avalue);
+
+		return true;
 	}
 
 public: // usage

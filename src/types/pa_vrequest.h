@@ -8,7 +8,7 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-static const char* IDENT_VREQUEST_H="$Date: 2002/08/01 11:41:24 $";
+static const char* IDENT_VREQUEST_H="$Date: 2002/08/13 13:02:42 $";
 
 #include "pa_common.h"
 #include "pa_value.h"
@@ -26,10 +26,10 @@ public: // Value
 	VStateless_class *get_class() { return 0; }
 
 	/// request: fields
-	Value *get_element(const String& name);
+	Value *get_element(const String& name, Value& aself);
 
 	/// request: (key)=value
-	void put_element(const String& name, Value *value);
+	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace);
 
 public: // usage
 

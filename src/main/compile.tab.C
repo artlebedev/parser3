@@ -38,7 +38,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.59 2002/08/12 14:21:51 paf Exp $
+	$Id: compile.tab.C,v 1.60 2002/08/13 13:02:40 paf Exp $
 */
 
 /**
@@ -1076,7 +1076,7 @@ case 8:
 				strcpy(PC.error, "@"CLASS_NAME" equals @"BASE_NAME);
 				YYERROR;
 			}
-			PC.cclass->set_base(*base);
+			PC.cclass->set_base(base);
 		} else {
 			strcpy(PC.error, "@"BASE_NAME" must contain sole name");
 			YYERROR;

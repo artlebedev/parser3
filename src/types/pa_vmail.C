@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/08/08 10:04:38 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/08/13 13:02:41 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -636,7 +636,7 @@ const String& VMail::message_hash_to_string(Request& r, const String *source,
 }
 
 
-Value *VMail::get_element(const String& aname) {
+Value *VMail::get_element(const String& aname, Value *aself) {
 	// $fields
 #ifdef WITH_MAILRECEIVE
 	if(aname==MAIL_RECEIVED_ELEMENT_NAME)
@@ -644,7 +644,7 @@ Value *VMail::get_element(const String& aname) {
 #endif
 
 	// $CLASS,$method
-	if(Value *result=VStateless_class::get_element(aname))
+	if(Value *result=VStateless_class::get_element(aname, aself))
 		return result;
 
 	return 0;
