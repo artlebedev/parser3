@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2003/10/30 12:46:23 $";
+static const char* IDENT_DATE_C="$Date: 2003/10/30 13:16:53 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -168,7 +168,6 @@ static void _sql_string(Request& r, MethodParams&) {
 	r.write_assign_lang(String(buf, size));
 }
 
-
 static void _roll(Request& r, MethodParams& params) {
 	VDate& vdate=GET_SELF(r, VDate);
 
@@ -180,10 +179,14 @@ static void _roll(Request& r, MethodParams& params) {
 	if(what=="year") offset=&oyear;
 	else if(what=="month") offset=&omonth;
 	else if(what=="day") offset=&oday;
-	else
+	else if(what=="TZ") {
+		const String& argument_tz=params.as_string(1, "'TZ' must be string");
+		vdate.set_tz(&argument_tz);
+		return;
+	} else
 		throw Exception("parser.runtime",
 			&what,
-			"must be year|month|day");
+			"must be year|month|day|TZ");
 	
 	*offset=params.as_int(1, "offset must be int", r);
 
