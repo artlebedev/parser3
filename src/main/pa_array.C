@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.17 2001/02/22 10:43:45 paf Exp $
+  $Id: pa_array.C,v 1.18 2001/02/22 15:17:40 paf Exp $
 */
 
 #include <string.h>
@@ -89,43 +89,51 @@ void Array::put(int index, Item *item) {
 	cache_chunk->rows[index-cache_chunk_base].item=item;
 }
 
-Array& Array::append_array(const Array& src) {
-	int src_used_rows=src.fused_rows;
+Array& Array::append_array(const Array& src, int offset) {
+	int src_rows_to_copy=src.fused_rows-offset;
 	int last_chunk_rows_left=link_row-append_here;
 	
 	// our last chunk too small for src to fit?
-	if(src_used_rows>last_chunk_rows_left) {
+	if(src_rows_to_copy>last_chunk_rows_left) {
 		// shrink last chunk to used rows
 		tail->count-=last_chunk_rows_left;
 		link_row=append_here;
 
 		// append new src_used_rows-ed chunk 
-		expand(src_used_rows);
+		expand(src_rows_to_copy);
 	}
 
-	Chunk *src_chunk=src.head; 
+	Chunk *src_chunk=src.head;
 	Chunk::Row *dest_rows=append_here;
-	int rows_left_to_copy=src_used_rows;
+	int rows_left_to_copy=src.fused_rows;
+	int rows_left_to_skip=offset;
 	while(true) {
 		int src_count=src_chunk->count;
 		Chunk *next_chunk=src_chunk->rows[src_count].link;
 		if(next_chunk) {
 			// not last source chunk
 			// taking it all
-			memcpy(dest_rows, src_chunk->rows, sizeof(Chunk::Row)*src_count);
-			dest_rows+=src_count;
+			int rows_to_copy_now=src_count-rows_left_to_skip;
+			if(rows_to_copy_now>0)
+				memcpy(dest_rows, src_chunk->rows+rows_left_to_skip, 
+					sizeof(Chunk::Row)*rows_to_copy_now);
+			dest_rows+=rows_to_copy_now;
 			rows_left_to_copy-=src_count;
+			rows_left_to_skip-=src_count;
 			
 			src_chunk=next_chunk;
 		} else {
 			// the last source chunk
 			// taking only those rows of chunk that _left_to_copy
-			memcpy(dest_rows, src_chunk->rows, sizeof(Chunk::Row)*rows_left_to_copy);
+			int rows_to_copy_now=rows_left_to_copy-rows_left_to_skip;
+			if(rows_to_copy_now>0)
+				memcpy(dest_rows, src_chunk->rows+rows_left_to_skip, 
+					sizeof(Chunk::Row)*rows_to_copy_now);
 			break;
 		}
 	}
-	append_here+=src_used_rows;
-	fused_rows+=src_used_rows;
+	append_here+=src_rows_to_copy;
+	fused_rows+=src_rows_to_copy;
 
 	return *this;
 }

@@ -95,13 +95,19 @@ any_name: name_without_curly_rdive EON | name_in_curly_rdive;
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
 name_without_curly_rdive: name_without_curly_rdive_read | name_without_curly_rdive_root;
 name_without_curly_rdive_read: name_without_curly_rdive_code {
-/*
-	TODO: подсмотреть в $1, и если там первым элементом self,
-		то выкинуть его и делать не OP_WITH_READ, а WITH_SELF
-		*/
 	$$=N(pool); 
-	OP($$, OP_WITH_READ); /* stack: starting context */
-	P($$, $1); /* diving code; stack: current context */
+	Array *diving_code=$1;
+	String *first_name=LA2S(diving_code);
+	if(first_name && *first_name=="self") {
+		OP($$, OP_WITH_SELF); /* stack: starting context */
+		P($$, diving_code, 
+			/* skip over... */
+			diving_code->size()>2?3/*OP_+string+get_element*/:2/*OP_+string*/);
+	} else {
+		OP($$, OP_WITH_READ); /* stack: starting context */
+		P($$, diving_code);
+	}
+	/* diving code; stack: current context */
 };
 name_without_curly_rdive_root: ':' name_without_curly_rdive_code {
 	$$=N(pool); 

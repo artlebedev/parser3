@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.18 2001/02/22 08:25:51 paf Exp $
+  $Id: pa_array.h,v 1.19 2001/02/22 15:17:39 paf Exp $
 */
 
 /*
@@ -45,7 +45,7 @@ public:
 		return fused_rows; 
 	}
 	Array& operator += (Item *src);
-	Array& append_array(const Array& src);
+	Array& append_array(const Array& src, int offset=0);
 	Item *quick_get(int index) const {
 		// considering these true:
 		//   index increments from 0 to size()-1

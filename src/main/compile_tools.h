@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.10 2001/02/22 13:58:43 paf Exp $
+  $Id: compile_tools.h,v 1.11 2001/02/22 15:17:40 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -76,6 +76,9 @@ inline void AE(Array/*<op>*/ *result, char *eval_expression) {
 
 inline void P(Array/*<op>*/ *result, Array *code_array) {
 	result->append_array(*code_array);
+}
+inline void P(Array/*<op>*/ *result, Array *code_array, int offset) {
+	result->append_array(*code_array, offset);
 }
 
 
