@@ -9,6 +9,15 @@
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS
 
+/* Define if you have the round function.  */
+#undef HAVE_ROUND
+
+/* Define if you have the sign function.  */
+#undef HAVE_SIGN
+
+/* Define if you have the trunc function.  */
+#undef HAVE_TRUNC
+
 /* Define if you have the <ctype.h> header file.  */
 #undef HAVE_CTYPE_H
 
