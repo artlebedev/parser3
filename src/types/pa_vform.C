@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2004/02/11 15:33:18 $";
+static const char * const IDENT_VFORM_C="$Date: 2004/02/12 08:11:39 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -194,7 +194,11 @@ void VForm::ParseMimeInput(
 
 			if(attr) {
 				/* OK, we have a new pair, add it to the list. */
-				AppendFormEntry(attr, valueSize? &dataStart[headerSize+1]: "", valueSize, fName);
+				// fName checks are because MSIE passes unassigned <input type=file> as filename="" and empty body 
+				AppendFormEntry(attr, 
+						valueSize? &dataStart[headerSize+1]: "", 
+						valueSize, 
+						fName && (strlen(fName) || valueSize)? fName: 0); 
 			}
 		}
 		data=(dataEnd-strlen(boundary));
@@ -261,12 +265,11 @@ void VForm::refill_fields_and_tables() {
 #ifdef DEBUG_POST
 	frequest_info.method="POST";
 	void *data;
-	file_read(*new String("opera.stdin"),  //"ie.stdin"), //
+	file_read(*new String("test.stdin"),
 			   data, request.post_size, 
 			   false/*as_text*/);	
 	request.post_data=(char*)data;
 	frequest_info.content_type="multipart/form-data; boundary=----------mcqY2UDNcdEAoN1mLmne2i";
-	//frequest_info.content_type="multipart/form-data; boundary=---------------------------7d23111f44403a4";
 
 #endif
 
