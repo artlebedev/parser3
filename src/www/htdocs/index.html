@@ -17,14 +17,12 @@ $dom[^dom::set{<?xml version="1.0" encoding="windows-1251"?>
 
 #^show-dnode1[$dom]<hr>
 #^show-dnode2[$dom]<hr>
-$people[^dom.select[*/man/name]]
-^show1[]
-#^show-dnodes2[$people]<hr>
+$people[^dom.select[*/man]]
+#^show1[]
+^show-dnodes1[$people]<hr>
 #^people.0.owner.hren[]
 
-$man[^dom.select-single[*/man]]
-	^show-dnode1[$man;0;1]
-<hr>
+#^show-dnode1[^dom.select-single[*/man];0;1]<hr>
 
 @show1[]
 ^for[i](0;^people._count[]-1){
@@ -40,7 +38,7 @@ $man[^dom.select-single[*/man]]
 	
 @show-dnodes1[array][i]
 ^for[i](0;^array._count[]-1){
-	^show-dnode1[$array.$i]
+	^show-dnode1[$array.$i;0;1]
 }
 
 @show-dnode1[dnode;level;single][l]
@@ -55,12 +53,12 @@ $man[^dom.select-single[*/man]]
 	    }
 	    &gt^;
     }{
-    	[$dnode.type]
+    	$dnode.name
     }
     
     ^if(def $dnode.value){$dnode.value}<br>
+    ^show-dnode1[$dnode.first-child]($level+1)
     ^if(!$single){
-	    ^show-dnode1[$dnode.first-child]($level+1)
 	    ^show-dnode1[$dnode.next-sibling]($level)
     }
 
@@ -68,20 +66,3 @@ $man[^dom.select-single[*/man]]
     ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$dnode.name&gt^;<br>
     }
 }
-
-@show-dnodes2[array][i]
-^for[i](0;^array._count[]-1){
-	^show-dnode2[$array.$i]
-}
-<hr>
-
-@show-dnode2[dnode]
-^if(def $dnode){
-^taint[^dnode.string[
-	$.method[html]
-	$.encoding[windows-1251]
-]]
-;
-	no dnode here
-}
-<hr>
