@@ -5,17 +5,13 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2004/03/23 09:43:44 $";
+static const char * const IDENT_VALUE_C="$Date: 2004/09/01 09:16:58 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
 #include "pa_vmethod_frame.h"
 #include "pa_vdate.h"
 #include "pa_vobject.h"
-
-// defines for globals
-
-#define NAME_NAME "name"
 
 // globals
 

@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2004/02/11 15:33:17 $";
+static const char * const IDENT_VALUE_H="$Date: 2004/09/01 09:16:58 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -165,6 +165,7 @@ const String& attributed_meaning_to_string(Value& meaning,
 #define VALUE_NAME "value"
 #define EXPIRES_NAME "expires"
 #define CONTENT_TYPE_NAME "content-type"
+#define NAME_NAME "name"
 //@}
 
 ///@{common field names

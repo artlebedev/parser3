@@ -1,2 +1,14 @@
-$t[^table::load[_bug.cfg]]
-^eval($t)
+$s[^mail:send[
+	$.from[paf@design.ru]
+	$.to[paf@design.ru]
+	$.html{
+	<b>ok</b>
+	}
+	$.file[
+		$.xxxx[vvv]
+		$.from[bug]
+		$.value[^file::load[binary;_bug.html]]
+	]
+]]
+^s.save[a.eml]
+OK

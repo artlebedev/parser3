@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2004/07/28 14:38:21 $";
+static const char * const IDENT_VMAIL_C="$Date: 2004/09/01 09:16:58 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -492,6 +492,8 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 		|| low_element_name==CHARSET_NAME
 		|| low_element_name==VALUE_NAME
 		|| low_element_name==RAW_NAME
+		|| low_element_name==FORMAT_NAME
+		|| low_element_name==NAME_NAME
 		|| low_element_name=="date")
 		return;
 
@@ -570,10 +572,18 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 }
 
 static const String& file_value_to_string(Request& r, Value* send_value) {
+	String& result=*new String;
+
 	VFile* vfile;
 	const String* file_name=0;
 	Value* vformat=0;
 	if(HashStringValue *send_hash=send_value->get_hash()) { // hash
+		String* dummy_from;
+		String* dummy_to;
+		Store_message_element_info info(r.charsets, 
+			result, dummy_from, false, dummy_to);
+		send_hash->for_each(store_message_element, &info);
+
 		// $.value
 		if(Value* value=send_hash->get(value_name))
 			vfile=value->as_vfile(String::L_UNSPECIFIED);
@@ -595,8 +605,6 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 		file_name=&vfile->fields().get(name_name)->as_string();
 
 	const char* file_name_cstr=file_name->cstr();
-
-	String& result=*new String;
 
 	// content-type: application/octet-stream
 	result << "content-type: " << r.mime_type_of(file_name_cstr) 
