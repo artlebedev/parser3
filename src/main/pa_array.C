@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_ARRAY_C="$Date: 2003/04/11 15:00:05 $";
+static const char* IDENT_ARRAY_C="$Date: 2003/04/14 11:22:53 $";
 
 #include "pa_pool.h"
 #include "pa_array.h"
@@ -92,7 +92,7 @@ Array& Array::append_array(const Array& src, int offset, int limit, bool reverse
 			"not implemented in this version, please upgrade");
 	// fix limit
 	{
-		if(offset<0 || offset>src.fused_rows)
+		if(offset<0 || offset>=src.fused_rows)
 			return *this;
 
 		int m=src.fused_rows-offset;

@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-static const char* IDENT_TABLE_H="$Date: 2003/04/11 15:00:05 $";
+static const char* IDENT_TABLE_H="$Date: 2003/04/14 11:22:53 $";
 
 #include "pa_types.h"
 #include "pa_array.h"
@@ -56,7 +56,9 @@ public:
 	void set_columns(const Array *acolumns) { fcolumns=acolumns; }
 
 	/// moves @a current pointer
-	void set_current(int acurrent);	/// @return current pointer
+	void set_current(int acurrent) {  fcurrent=acurrent; }
+	
+	/// @return current pointer
 	int current() const { return fcurrent; }
 	void offset(bool absolute, int offset);
 

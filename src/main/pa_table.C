@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/04/11 15:00:05 $";
+static const char* IDENT_TABLE_C="$Date: 2003/04/14 11:22:53 $";
 
 //#include <stdlib.h>
 
@@ -74,20 +74,20 @@ const String *Table::item(int column) const {
 	return 0; // it's OK we don't have row|column, just return nothing
 }
 
-void Table::set_current(int acurrent) { 
-	if(acurrent<0 || acurrent>size())
-		throw Exception(0,
-			0,
-			"table row (%d) out of range [0..%d]", acurrent, size()-1);
-	fcurrent=acurrent; 
-}
 bool Table::locate(Table::locate_func func, void *info, Table::Action_options& o) {
 	int size=this->size();
-	if(!size || !o.limit)
-		return false;
-	if(o.limit<0)
-		o.limit=size;
 	int row=o.offset;
+	if(!size || !o.limit || row>=size)
+		return false;
+	// max(limit)
+	int m=o.reverse?
+		row
+		:size-row;
+	if(!m)
+		return false;
+	// fix o.limit
+	if(o.limit<0 || o.limit>m)
+		o.limit=m;
 
 	int saved_current=current();
 	if(o.reverse) { // reverse
