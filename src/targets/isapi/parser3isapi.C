@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3isapi.C,v 1.39 2001/09/15 13:20:22 parser Exp $"; 
+static const char *RCSId="$Id: parser3isapi.C,v 1.40 2001/09/15 13:34:33 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -224,7 +224,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		0, // filling later: so that if there would be error pool would have ctx
 		200 // default http_response_code
 	};
-	_asm int 3;
+	//_asm int 3;
 	pool.set_context(&ctx);// no allocations before this line!
 	
 	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;

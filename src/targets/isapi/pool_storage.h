@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pool_storage.h,v 1.6 2001/09/15 13:20:22 parser Exp $
+	$Id: pool_storage.h,v 1.7 2001/09/15 13:34:33 parser Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
@@ -20,38 +20,39 @@
 */
 class Pool_storage {
 
-	class List {
+	template<typename T> class List {
 		friend Pool_storage;
 	public:
-		List(int preallocate_elements, size_t aitem_size) : 
-			items((char *)::malloc(preallocate_elements*aitem_size)), item_size(aitem_size),
-			allocated_elements(0),
-			used_elements(0) {
+		List(int preallocate) : 
+			items((T *)::malloc(preallocate*sizeof(T))),
+			allocated(0),
+			used(0) {
 			if(items) // successfully preallocated?
-				allocated_elements=preallocate_elements;
+				allocated=preallocate;
 		}
 
 		~List() {
-			free(items);
+			::free(items);
 		}
 
-		void *add(void *item) {
+		bool add(T item) {
 			if(full())
 				if(!expand())
-					return 0;
+					return false;
 
-			return memcpy(&items[(used_elements++)*item_size], item, item_size);
+			items[used++]=item;
+			return true;
 		}
 
 	private:
 
-		bool full() { return used_elements==allocated_elements; }
+		bool full() { return used==allocated; }
 		bool expand() {
-			size_t new_allocated=allocated_elements*3/2;
-			char *new_items=(char *)::realloc(items, new_allocated*item_size);
+			size_t new_allocated=allocated*3/2;
+			T *new_items=(T *)::realloc(items, new_allocated*sizeof(T));
 			if(new_items) {
 				items=new_items;
-				allocated_elements=new_allocated;
+				allocated=new_allocated;
 				return true;
 			} else
 				return false;			
@@ -59,9 +60,9 @@ class Pool_storage {
 
 	private:
 
-		char *items; size_t item_size;
-		size_t allocated_elements;
-		size_t used_elements;
+		T *items;
+		size_t allocated;
+		size_t used;
 
 	};
 
@@ -74,36 +75,48 @@ class Pool_storage {
 public:
 
 	Pool_storage() : 
-		allocations(10*0x400, sizeof(void *)),
-		cleanups(100, sizeof(Cleanup_struct)) {
+		allocations(10*0x400),
+		cleanups(100) {
 	}
 
-	void *malloc(size_t size) { return allocations.add(::malloc(size)); }
-	void *calloc(size_t size) { return allocations.add(::calloc(size, 1)); }
+	void *malloc(size_t size) { 
+		void *result=::malloc(size);
+		if(result && !allocations.add(result)) {
+			::free(result); result=0;
+		}
+		return result;
+	}
+	void *calloc(size_t size) { 
+		void *result=::calloc(size, 1);
+		if(result && !allocations.add(result)) {
+			::free(result); result=0;
+		}
+		return result;
+	}
 
 	bool register_cleanup(void (*cleanup) (void *), void *data) {
 		Cleanup_struct item={cleanup, data};
-		return cleanups.add(&item)!=0;
+		return cleanups.add(item)!=0;
 	}
 
 	~Pool_storage() {
 		size_t i;
 
 		// allocations
-		for(i=0; i<allocations.used_elements; i++)
-			free((void *)allocations.items[i*allocations.item_size]);
+		for(i=0; i<allocations.used; i++)
+			free(allocations.items[i]);
 
 		// Cleanup_structs
-		for(i=0; i<cleanups.used_elements; i++) {
-			Cleanup_struct *item=(Cleanup_struct *)cleanups.items[i*cleanups.item_size];
-			item->cleanup(item->data);
+		for(i=0; i<cleanups.used; i++) {
+			Cleanup_struct& item=cleanups.items[i];
+			item.cleanup(item.data);
 		}
 	}
 
 private:
 
-	List allocations; // void *
-	List cleanups; // Cleanup_struct
+	List<void *> allocations;
+	List<Cleanup_struct> cleanups;
 
 };
 
