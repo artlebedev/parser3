@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.48 2001/11/01 10:59:26 paf Exp $
+	$Id: pa_hash.h,v 1.49 2001/11/01 15:45:27 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -15,7 +15,6 @@
 #include "pa_pool.h"
 #include "pa_types.h"
 #include "pa_string.h"
-
 
 /** 
 	Pooled hash.
@@ -158,5 +157,6 @@ private: //disabled
 
 	Hash& operator = (const Hash&) { return *this; }
 };
+
 
 #endif

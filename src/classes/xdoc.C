@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.40 2001/10/30 14:51:14 paf Exp $
+	$Id: xdoc.C,v 1.41 2001/11/01 15:45:27 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -511,9 +511,9 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 		Value *vcontent_type;
 		if(charset) {
 			VHash *vhcontent_type=new(pool) VHash(pool);
-			vhcontent_type->hash().put(*value_name, new(pool) VString(*scontent_type));
+			vhcontent_type->hash(&method_name).put(*value_name, new(pool) VString(*scontent_type));
 			String *scharset=new(pool) String(pool, charset);
-			vhcontent_type->hash().put(*new(pool) String(pool, "charset"), new(pool) VString(*scharset));
+			vhcontent_type->hash(&method_name).put(*new(pool) String(pool, "charset"), new(pool) VString(*scharset));
 			vcontent_type=vhcontent_type;
 		} else
 			vcontent_type=new(pool) VString(*scontent_type);

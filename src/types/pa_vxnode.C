@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vxnode.C,v 1.8 2001/10/22 16:44:43 parser Exp $
+	$Id: pa_vxnode.C,v 1.9 2001/11/01 15:45:28 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -61,7 +61,7 @@ Value *VXnode::get_element(const String& name) {
 						skey << buf;
 					}
 
-					result->hash().put(skey, NEW VXnode(pool(), nodes->item(i), false));
+					result->hash(0).put(skey, NEW VXnode(pool(), nodes->item(i), false));
 				}
 				return result;
 			}
@@ -87,7 +87,7 @@ Value *VXnode::get_element(const String& name) {
 						VHash *result=NEW VHash(pool());
 						for(int i=0; i<attributes->getLength(); i++) {
 							XalanNode *attr_node=attributes->item(i);
-							result->hash().put(
+							result->hash(0).put(
 								transcode(attr_node->getNodeName()), 
 								NEW VXnode(pool(), attr_node, false));
 						}

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhash.h,v 1.25 2001/10/23 14:43:44 parser Exp $
+	$Id: pa_vhash.h,v 1.26 2001/11/01 15:45:28 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -15,10 +15,17 @@
 #include "pa_hash.h"
 #include "pa_vint.h"
 
+// externs
+
 extern Methoded *hash_base_class;
+
+// forwards
+
+class VHash_lock;
 
 /// value of type 'hash', implemented with Hash
 class VHash : public VStateless_class {
+	friend class VHash_lock;
 public: // value
 
 	const char *type() const { return "hash"; }
@@ -35,7 +42,7 @@ public: // value
 	Value *as_expr_result(bool ) { return NEW VInt(pool(), as_int()); }
 
 	/// VHash: fhash
-	Hash *get_hash(const String * /*source*/) { return &fhash; }
+	Hash *get_hash(const String *source) { return &hash(source); }
 
 	/// VHash: 0
 	VStateless_class *get_class() { return 0; }
@@ -56,31 +63,56 @@ public: // value
 	
 	/// VHash: (key)=value
 	void put_element(const String& name, Value *value) { 
-		fhash.put(name, value);
+		hash(&name).put(name, value);
 	}
 
 public: // usage
 
 	VHash(Pool& apool) : VStateless_class(apool, hash_base_class), 
-		fhash(apool) {
+		fhash(apool), locked(false) {
 	}
 
 	VHash(Pool& apool, const Hash& source) : VStateless_class(apool, hash_base_class), 
-		fhash(source) {
+		fhash(source), locked(false) {
 	}
 
-	Hash& hash() { return fhash; }
+	Hash& hash(const String *source) { 
+		check_lock(source);
+		return fhash; 
+	}
 
 	void set_default(Value& adefault) { 
-		fhash.put(*hash_default_element_name, &adefault);
+		hash(&adefault.name()).put(*hash_default_element_name, &adefault);
 	}
 	Value *get_default() { 
 		return static_cast<Value *>(fhash.get(*hash_default_element_name)); 
 	}
 
+	void check_lock(const String *source) {
+		if(locked)
+			throw Exception(0, 0,
+				source,
+				"can not modify hash (locked)");
+	}
+
 private:
 
+	bool locked;
 	Hash fhash;
+
+};
+
+class VHash_lock {
+	VHash& fhash;
+	bool saved;
+public:
+	VHash_lock(VHash& ahash) : fhash(ahash) {
+		saved=fhash.locked;
+		fhash.locked=true;
+	}
+	~VHash_lock() {
+		fhash.locked=saved;
+	}
 
 };
 

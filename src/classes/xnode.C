@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.16 2001/10/31 14:01:44 paf Exp $
+	$Id: xnode.C,v 1.17 2001/11/01 15:45:27 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -279,7 +279,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 				skey << buf;
 			}
 
-			result.hash().put(skey, new(pool) VXnode(pool, nodes->item(i), false));
+			result.hash(0).put(skey, new(pool) VXnode(pool, nodes->item(i), false));
 		}
 	}
 
@@ -324,7 +324,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 				skey << buf;
 			}
 
-			result.hash().put(skey, new(pool) VXnode(pool, list.item(i), false));
+			result.hash(0).put(skey, new(pool) VXnode(pool, list.item(i), false));
 		}
 		result.set_name(method_name);
 		r.write_no_lang(result);

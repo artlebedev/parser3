@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.173 2001/10/30 15:08:20 paf Exp $
+	$Id: pa_request.C,v 1.174 2001/11/01 15:45:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -563,7 +563,7 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	if(VString *vfile_name=static_cast<VString *>(body_file.fields().get(*name_name)))
 		if(vfile_name->string()!=NONAME_DAT) {
 			VHash& vhash=*NEW VHash(pool());
-			vhash.hash().put(*content_disposition_filename_name, vfile_name);
+			vhash.hash(0).put(*content_disposition_filename_name, vfile_name);
 			response.fields().put(*content_disposition_name, &vhash);
 		}
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.44 2001/11/01 10:59:26 paf Exp $
+	$Id: pa_hash.C,v 1.45 2001/11/01 15:45:27 paf Exp $
 */
 
 /*
@@ -16,6 +16,7 @@
 */
 
 #include "pa_hash.h"
+#include "pa_exception.h"
 
 void *Hash::Pair::operator new(size_t size, Pool& apool) {
 	return apool.malloc(size, 6);
