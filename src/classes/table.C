@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.4 2001/03/12 18:13:48 paf Exp $
+	$Id: table.C,v 1.5 2001/03/12 18:19:36 paf Exp $
 */
 
 #include "pa_request.h"
@@ -89,6 +89,6 @@ void initialize_table_class(Pool& pool, VClass& vclass) {
 	// ^table.set[data]  ^table.set[nameless;data]
 	vclass.add_native_method("set", _set, 1, 2);
 
-	// ^table.load[data]  ^table.load[nameless;data]
+	// ^table.load[file]  ^table.load[nameless;file]
 	vclass.add_native_method("load", _load, 1, 2);
 }	

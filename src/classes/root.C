@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.27 2001/03/12 18:13:48 paf Exp $
+	$Id: root.C,v 1.28 2001/03/12 18:19:36 paf Exp $
 */
 
 #include <string.h>
@@ -87,8 +87,6 @@ static void _rem(Request& r, const String& method_name, Array *params) {
 		method_name, "body must be junction");
 }
 
-
-// TODO: отловить бесконечный цикл
 static void _while(Request& r, const String& method_name, Array *params) {
 	Value& vcondition=*static_cast<Value *>(params->get(0));
 	// forcing ^while(this param type){}
@@ -121,6 +119,16 @@ static void _while(Request& r, const String& method_name, Array *params) {
 	}
 }
 
+static void _use(Request& r, const String& method_name, Array *params) {
+	Value& vfile=*static_cast<Value *>(params->get(0));
+	// forcing ^rem{this param type}
+	r.fail_if_junction_(true, vfile, 
+		method_name, "file name must not be junction");
+
+	char *file=vfile.as_string().cstr();
+	r.use_file(r.absolute(file));
+}
+
 void initialize_root_class(Pool& pool, VClass& vclass) {
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
@@ -137,4 +145,7 @@ void initialize_root_class(Pool& pool, VClass& vclass) {
 
 	// ^while(condition){code}
 	vclass.add_native_method("while", _while, 2, 2);
+
+	// ^use[file]
+	vclass.add_native_method("use", _use, 1, 1);
 }
