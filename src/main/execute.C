@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.100 2001/03/13 13:43:30 paf Exp $
+	$Id: execute.C,v 1.101 2001/03/13 14:02:51 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -317,6 +317,8 @@ void Request::execute(const Array& ops) {
 						// yes, this is a constructor call
 						if(called_class->name()==TABLE_CLASS_NAME)
 							self=NEW VTable(pool());
+						else if(called_class->name()==ENV_CLASS_NAME)
+							self=NEW VEnv(pool());
 						else
 							self=NEW VObject(pool(), *called_class);
 						frame->write(*self, 

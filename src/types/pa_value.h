@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.9 2001/03/13 13:43:32 paf Exp $
+	$Id: pa_value.h,v 1.10 2001/03/13 14:02:51 paf Exp $
 */
 
 /*
@@ -158,7 +158,6 @@ public: // Value
 	// object_instance: (field)=value
 	// codeframe: wcontext_transparent
 	// methodframe: my or self_transparent
-	// env: read-only
 	virtual void put_element(const String& name, Value *value) { bark("(%s) does not accept elements"); }
 
 	// object_class, object_instance: object_class

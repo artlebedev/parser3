@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_venv.h,v 1.3 2001/03/13 13:53:37 paf Exp $
+	$Id: pa_venv.h,v 1.4 2001/03/13 14:02:51 paf Exp $
 */
 
 #ifndef PA_VENV_H
@@ -31,11 +31,6 @@ public: // Value
 		char *value="<value>";// TODO: getenv
 		string.APPEND_TAINTED(value, 0, file, line);
 		return NEW VString(string);
-	}
-
-	// env: read-only
-	void put_element(const String& name, Value *value) {
-		bark("(%s) is read-only");
 	}
 
 public: // usage
