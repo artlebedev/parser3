@@ -3,17 +3,17 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_venv.h,v 1.2 2001/03/13 13:43:32 paf Exp $
+	$Id: pa_venv.h,v 1.3 2001/03/13 13:53:37 paf Exp $
 */
 
 #ifndef PA_VENV_H
 #define PA_VENV_H
 
-#include "pa_vstateless_object.h"
-#include "pa_vhash.h"
-#include "pa_vjunction.h"
+#include "pa_vstateless_class.h"
+#include "pa_string.h"
+#include "_env.h"
 
-class VEnv : public VClass {
+class VEnv : public VStateless_class {
 public: // Value
 	
 	// all: for error reporting after fail(), etc
@@ -22,15 +22,15 @@ public: // Value
 	// env: CLASS,BASE,method,field
 	Value *get_element(const String& aname) {
 		// $CLASS,$BASE,$method
-		if(Value *result=VStateless_object::get_element(aname))
+		if(Value *result=VStateless_class::get_element(aname))
 			return result;
 
-		String& string=*new(pool) String(pool);
+		String& string=*NEW String(pool());
 		char *file="environment";
 		int line=3;
 		char *value="<value>";// TODO: getenv
 		string.APPEND_TAINTED(value, 0, file, line);
-		return new(pool) VString(string));
+		return NEW VString(string);
 	}
 
 	// env: read-only
@@ -40,7 +40,7 @@ public: // Value
 
 public: // usage
 
-	VEnv(Pool& apool) : VStateless_object(apool, *env_class) {
+	VEnv(Pool& apool) : VStateless_class(apool) {
 	}
 
 private:

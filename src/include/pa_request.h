@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.46 2001/03/13 13:43:29 paf Exp $
+	$Id: pa_request.h,v 1.47 2001/03/13 13:53:36 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -17,6 +17,7 @@
 #include "pa_stack.h"
 #include "pa_vclass.h"
 #include "pa_vobject.h"
+#include "pa_venv.h"
 
 #define UNNAMED_NAME "unnamed"
 
@@ -99,7 +100,7 @@ public:
 	// default base
 	VClass root_class;
 	// $ENV:fields here
-	VStateless_class env_class;
+	VEnv env_class;
 
 	// contexts
 	Value *self, *root, *rcontext;
