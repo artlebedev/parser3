@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.57 2001/10/19 12:43:29 parser Exp $
+	$Id: image.C,v 1.58 2001/10/19 15:20:40 parser Exp $
 */
 
 /*
@@ -142,6 +142,7 @@ void measure_gif(Pool& pool, const String *origin_string,
 	height=little_endian_to_int(head->height);
 }
 
+/// @test remove ugly mech in reader - 20K limit
 void measure_jpeg(Pool& pool, const String *origin_string, 
 			 Measure_reader& reader, int& width, int& height) {
 	// JFIF format markers
