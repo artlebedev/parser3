@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/08/06 14:23:23 $";
+static const char* IDENT_TABLE_C="$Date: 2002/12/05 11:23:53 $";
 
 //#include <stdlib.h>
 
@@ -35,7 +35,7 @@ Table::Table(Pool& apool, const Table& source, int offset, int limit) :
 	Array(apool, limit/*may be more than needed, no harm done*/),
 
 	forigin_string(source.forigin_string),
-	fcurrent(source.fcurrent),
+	fcurrent(0),
 	fcolumns(source.fcolumns),
 	name2number(source.name2number) {
 

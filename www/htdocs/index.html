@@ -307,7 +307,27 @@ OK
 #^rusagetv[]
 #^varmethnameconflict[]
 #^mimeold[]
-^zmimenew[]
+#^mimenew[]
+^doctableclonesample[]
+
+@doctableclonesample[]
+$orig[^table::create{name
+Вася
+Коля
+Лена
+Маша
+}]
+
+#сдвигает текущую запись таблицы from на <Коля>
+^orig.offset(1)
+
+#копирует начиная стекущей записи во from, 10 записей максимум
+$copy[^table::create[$orig;
+    $.offset[cur]
+    $.limit(10)
+]]
+
+^copy.menu{$copy.name}[,]
 
 @mimeold[]
 ^mail:send[

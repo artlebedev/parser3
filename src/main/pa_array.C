@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_ARRAY_C="$Date: 2002/08/07 10:25:56 $";
+static const char* IDENT_ARRAY_C="$Date: 2002/12/05 11:23:53 $";
 
 #include "pa_pool.h"
 #include "pa_array.h"
@@ -126,6 +126,7 @@ Array& Array::append_array(const Array& src, int offset, int limit) {
 			if(rows_to_copy_now>0) {
 				memcpy(dest_rows, src_chunk->rows+offset, 
 					sizeof(Chunk::Row)*rows_to_copy_now);
+				offset=0;
 				if(!(limit-=rows_to_copy_now))
 					break;
 			} else
