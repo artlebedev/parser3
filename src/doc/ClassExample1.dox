@@ -32,7 +32,7 @@ static void _test(Request& r, const String& method_name, MethodParams *params) {
 3. ¬ конструкторе задать им€ класса и зарегистрировать методы:
 
 @code
-MExample1::MExample1(Pool& apool) : Methoded(apool) {
+MExample1::MExample1(Pool& apool) : Methoded(apool, "example1") {
 	set_name(*NEW String(pool(), "example1"));
 
 
@@ -50,7 +50,7 @@ Methoded *MExample1_create(Pool& pool) {
 }
 @endcode
 
-5. ≈сли дл€ работы классу необходимы какие-то настройки, то их можно прин€ть из системного auto.p,
+5. ≈сли дл€ работы классу необходимы какие-то настройки, то их можно прин€ть из системного parser3.conf,
 или из пользовательского MAIN класса, переопределив Methoded::configure_admin и/или Methoded::configure_user.
 
 ѕользователь сможет вызвать метод так:
