@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.36 2001/03/28 08:01:40 paf Exp $
+	$Id: table.C,v 1.37 2001/03/28 09:01:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -159,21 +159,17 @@ static void _count(Request& r, const String&, Array *) {
 
 static void _line(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VInt(pool, 1+static_cast<VTable *>(r.self)->table().get_current());
+	Value& value=*new(pool) VInt(pool, 1+static_cast<VTable *>(r.self)->table().current());
 	r.write_no_lang(value);
 }
 
 static void _offset(Request& r, const String&, Array *params) {
 	Pool& pool=r.pool();
 	Table& table=static_cast<VTable *>(r.self)->table();
-	if(params->size()) {
-		if(int size=table.size()) {
-			int offset=
-				(int)r.process(*static_cast<Value *>(params->get(0))).as_double();
-			table.set_current((table.get_current()+offset+size)%size);
-		}
-	} else {
-		Value& value=*new(pool) VInt(pool, table.get_current());
+	if(params->size())
+		table.shift((int)r.process(*static_cast<Value *>(params->get(0))).as_double());
+	else {
+		Value& value=*new(pool) VInt(pool, table.current());
 		r.write_no_lang(value);
 	}
 }
@@ -188,6 +184,7 @@ static void _menu(Request& r, const String& method_name, Array *params) {
 
 	Table& table=static_cast<VTable *>(r.self)->table();
 	bool need_delim=false;
+	int saved_current=table.current();
 	for(int row=0; row<table.size(); row++) {
 		table.set_current(row);
 
@@ -200,6 +197,7 @@ static void _menu(Request& r, const String& method_name, Array *params) {
 		}
 		r.write_pass_lang(processed_body);
 	}
+	table.set_current(saved_current);
 }
 
 static void _empty(Request& r, const String&, Array *params) {
@@ -322,6 +320,22 @@ static void _locate(Request& r, const String&, Array *params) {
 		static_cast<Value *>(params->get(1))->as_string());
 }
 
+static void _found(Request& r, const String& method_name, Array *params) {
+	if(static_cast<VTable *>(r.self)->last_locate_was_successful) {
+		Value& then_code=*static_cast<Value *>(params->get(0));
+		// forcing ^found{this param type}
+		r.fail_if_junction_(false, then_code, 
+			method_name, "found-parameter must be junction");
+		r.write_pass_lang(r.process(then_code));
+	} else if(params->size()==2) {
+		Value& else_code=*static_cast<Value *>(params->get(1));
+		// forcing ^found{this param type}
+		r.fail_if_junction_(false, else_code, 
+			method_name, "not found-parameter must be junction");
+		r.write_pass_lang(r.process(else_code));
+	}
+}
+
 // initialize
 
 void initialize_table_class(Pool& pool, VStateless_class& vclass) {
@@ -364,4 +378,7 @@ void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^table.locate[field;value]
 	vclass.add_native_method("locate", _locate, 2, 2);
+	// ^table.found{when-found}
+	// ^table.found{when-found}{when-not-found}
+	vclass.add_native_method("found", _found, 1, 2);
 }	

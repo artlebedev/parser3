@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.51 2001/03/27 16:35:52 paf Exp $
+	$Id: root.C,v 1.52 2001/03/28 09:01:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,13 +25,13 @@ static void _if(Request& r, const String& method_name, Array *params) {
 		false/*don't intercept string*/).as_bool();
 	if(condition) {
 		Value& then_code=*static_cast<Value *>(params->get(1));
-		// forcing ^if(this param type)
+		// forcing ^if{this param type}
 		r.fail_if_junction_(false, then_code, 
 			method_name, "then-parameter must be junction");
 		r.write_pass_lang(r.process(then_code));
 	} else if(params->size()==3) {
 		Value& else_code=*static_cast<Value *>(params->get(2));
-		// forcing ^if(this param type)
+		// forcing ^if{this param type}
 		r.fail_if_junction_(false, else_code, 
 			method_name, "else-parameter must be junction");
 		r.write_pass_lang(r.process(else_code));

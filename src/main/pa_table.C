@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.21 2001/03/28 08:01:42 paf Exp $
+	$Id: pa_table.C,v 1.22 2001/03/28 09:01:22 paf Exp $
 */
 
 #include <stdlib.h>
@@ -32,33 +32,32 @@ Table::Table(Pool& apool,
 }
 
 int Table::column_name2index(const String& column_name) const {
-	int result;
 	if(fcolumns) { // named
-		int column_index=name2number.get_int(column_name);
-		if(column_index)
-			result=column_index-1;
-		else
+		int column_number=name2number.get_int(column_name);
+		if(column_number)
+			return column_number-1;
+		else {
 			THROW(0, 0,
 				&column_name, 
 				"column not found");
-	} else { // nameless
-		result=atoi(column_name.cstr());
-	}
-	return result;
+			return 0; // unreached
+		}
+	} else // nameless
+		return atoi(column_name.cstr());
 }
 
-const String *Table::item(int column_index) const {
+const String *Table::item(int column) const {
 	if(valid(fcurrent)) {
 		const Array& row=at(fcurrent);
-		if(column_index>=0 && column_index<row.size()) // proper index?
-			return row.get_string(column_index);
+		if(column>=0 && column<row.size()) // proper index?
+			return row.get_string(column);
 	}
 	return 0; // it's OK we don't have row|column, just return nothing
 }
 
-bool Table::locate(const String& column, const String& value) const {
+bool Table::locate(const String& column, const String& value) {
 	int key_index=column_name2index(column);
-	for(int fcurrent=0; fcurrent<size(); fcurrent++) {
+	for(fcurrent=0; fcurrent<size(); fcurrent++) {
 		const String *item_value=item(key_index);
 		if(item_value && *item_value==value)
 			return true;
@@ -66,4 +65,9 @@ bool Table::locate(const String& column, const String& value) const {
 
 	fcurrent=0;
 	return false;
+}
+
+void Table::shift(int offset) {
+	if(size())
+		fcurrent=(fcurrent+offset+size())%size();
 }

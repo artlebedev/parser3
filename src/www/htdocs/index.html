@@ -21,12 +21,18 @@ _	&nbsp^;
 @func[n]
 $n
 @main[]
+^file:find[test.cfg]<BR>
+^file:find[tes.cfg]{not found}<BR>
+<HR>
+
 $t[^table:set{n
 3
 01.3
 1.2
 2
 }]
+$t{^locate[n;2z]^found{$n}{not found}}<BR>
+$t{^locate[n;3]^found{found:$n}{not found}}<BR>
 ^$t:<BR>
 ^dump[$t]
 ^t.sort($n)

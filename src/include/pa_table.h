@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.24 2001/03/28 08:01:41 paf Exp $
+	$Id: pa_table.h,v 1.25 2001/03/28 09:01:21 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -46,7 +46,8 @@ public:
 	/// moves @a current pointer
 	void set_current(int acurrent) { fcurrent=acurrent; }
 	/// @return current pointer
-	int get_current() { return fcurrent; }
+	int current() { return fcurrent; }
+	void shift(int offset);
 
 	/// @return item from @a column_name
 	const String *item(const String& column) const { 
@@ -56,7 +57,7 @@ public:
 	/// saves to text file
 	void save(bool nameless_save, const String& file_spec);
 
-	bool locate(const String& column, const String& value) const;
+	bool locate(const String& column, const String& value);
 
 private:
 	
@@ -80,9 +81,9 @@ private:
 	}
 
 	/// @return column index from @a column_name
-	int column_name2index(const String& column_name) const;
+	int column_name2index(const String& column) const;
 
-	const String *item(int column_index) const;
+	const String *item(int column) const;
 
 };
 
