@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.174.2.1 2002/04/25 15:37:34 paf Exp $
+	$Id: parser3.C,v 1.174.2.2 2002/05/06 10:50:23 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -71,8 +71,7 @@ const char **RCSIds[]={
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
 
 const char *argv0;
-Pool_storage pool_storage;
-Pool pool(&pool_storage); // global pool [dont describe to doxygen: it confuses it with param names]
+Pool *pool; // global pool [dont describe to doxygen: it confuses it with param names]
 bool cgi; ///< we were started as CGI?
 
 // SAPI
@@ -126,7 +125,7 @@ void SAPI::log(Pool& , const char *fmt, ...) {
 void SAPI::die(const char *fmt, ...) {
 #ifdef DEBUG_POOL_MALLOC
 	extern void log_pool_stats(Pool& pool);
-	log_pool_stats(pool);
+	log_pool_stats(*pool);
 #endif
 
     va_list args;
@@ -147,17 +146,17 @@ void SAPI::die(const char *fmt, ...) {
 
 	// prepare header
 	// let's be honest, that's bad we couldn't produce valid output
-	SAPI::add_header_attribute(pool, "status", "500");
-	SAPI::add_header_attribute(pool, "content-type", "text/plain");
+	SAPI::add_header_attribute(*pool, "status", "500");
+	SAPI::add_header_attribute(*pool, "content-type", "text/plain");
 	char content_length_cstr[MAX_NUMBER];
 	snprintf(content_length_cstr, sizeof(content_length_cstr), "%u", content_length);
-	SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
+	SAPI::add_header_attribute(*pool, "content-length", content_length_cstr);
 
 	// send header
-	SAPI::send_header(pool);
+	SAPI::send_header(*pool);
 
 	// body
-	SAPI::send_body(pool, body, content_length);
+	SAPI::send_body(*pool, body, content_length);
 
 	exit(1);
 }
@@ -232,12 +231,12 @@ void real_parser_handler(
 					const char *filespec_to_process,
 					const char *request_method, bool header_only) {
 	// init socks
-	init_socks(pool);
+	init_socks(*pool);
 	
 	// init global classes
-	init_methoded_array(pool);
+	init_methoded_array(*pool);
 	// init global variables
-	pa_globals_init(pool);
+	pa_globals_init(*pool);
 	
 	if(!filespec_to_process)
 		SAPI::die("Parser/%s", PARSER_VERSION);
@@ -246,9 +245,9 @@ void real_parser_handler(
 	Request::Info request_info;
 	char document_root_buf[MAX_STRING];
 	if(cgi) {
-		if(const char *env_document_root=SAPI::get_env(pool, "DOCUMENT_ROOT"))
+		if(const char *env_document_root=SAPI::get_env(*pool, "DOCUMENT_ROOT"))
 			request_info.document_root=env_document_root;
-		else if(const char *path_info=SAPI::get_env(pool, "PATH_INFO")) {
+		else if(const char *path_info=SAPI::get_env(*pool, "PATH_INFO")) {
 			// IIS
 			size_t len=min(sizeof(document_root_buf)-1, strlen(filespec_to_process)-strlen(path_info));
 			memcpy(document_root_buf, filespec_to_process, len); document_root_buf[len]=0;
@@ -263,14 +262,14 @@ void real_parser_handler(
 	}
 	request_info.path_translated=filespec_to_process;
 	request_info.method=request_method ? request_method : "GET";
-	const char *query_string=SAPI::get_env(pool, "QUERY_STRING");
+	const char *query_string=SAPI::get_env(*pool, "QUERY_STRING");
 	request_info.query_string=query_string;
 	if(cgi) {
-		if(const char *env_request_uri=SAPI::get_env(pool, "REQUEST_URI"))
+		if(const char *env_request_uri=SAPI::get_env(*pool, "REQUEST_URI"))
 			request_info.uri=env_request_uri;
-		else if(const char *path_info=SAPI::get_env(pool, "PATH_INFO"))
+		else if(const char *path_info=SAPI::get_env(*pool, "PATH_INFO"))
 			if(query_string) {
-				char *reconstructed_uri=(char *)pool.malloc(
+				char *reconstructed_uri=(char *)pool->malloc(
 					strlen(path_info)+1/*'?'*/+
 					strlen(query_string)+1/*0*/);
 				strcpy(reconstructed_uri, path_info);
@@ -286,7 +285,7 @@ void real_parser_handler(
 			
 #ifndef WIN32
 			// they've changed this under IIS5.
-			if(const char *script_name=SAPI::get_env(pool, "SCRIPT_NAME")) {
+			if(const char *script_name=SAPI::get_env(*pool, "SCRIPT_NAME")) {
 				size_t script_name_len=strlen(script_name);
 				size_t uri_len=strlen(request_info.uri);
 				if(strncmp(request_info.uri,script_name, script_name_len)==0 &&
@@ -297,14 +296,14 @@ void real_parser_handler(
 	} else
 		request_info.uri=0;
 	
-	request_info.content_type=SAPI::get_env(pool, "CONTENT_TYPE");
-	const char *content_length=SAPI::get_env(pool, "CONTENT_LENGTH");
+	request_info.content_type=SAPI::get_env(*pool, "CONTENT_TYPE");
+	const char *content_length=SAPI::get_env(*pool, "CONTENT_LENGTH");
 	request_info.content_length=(content_length?atoi(content_length):0);
-	request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
-	request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
+	request_info.cookie=SAPI::get_env(*pool, "HTTP_COOKIE");
+	request_info.user_agent=SAPI::get_env(*pool, "HTTP_USER_AGENT");
 	
 	// prepare to process request
-	Request request(pool,
+	Request request(*pool,
 		request_info,
 #ifdef _DEBUG
 		String::UL_HTML|String::UL_OPTIMIZE_BIT
@@ -378,11 +377,11 @@ void real_parser_handler(
 	
 #ifdef DEBUG_POOL_MALLOC
 	extern void log_pool_stats(Pool& pool);
-	log_pool_stats(pool);
+	log_pool_stats(*pool);
 #endif
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
-	SAPI::log(pool, 
+	SAPI::log(*pool, 
 		"string piece appends=%lu, wcontext_result_size=%lu, string_string_shortcut_economy_closer=%lu, total_alloc_size=%lu", 
 		string_piece_appends,
 		wcontext_result_size,
@@ -435,6 +434,13 @@ void failed_new() {
 #endif
 
 int main(int argc, char *argv[]) {
+	Pool_storage global_pool_storage;
+	Pool global_pool(&global_pool_storage);
+	pool=&global_pool;
+
+#ifdef _DEBUG
+//	_crtBreakAlloc=33112;
+#endif
 //	_asm int 3;
 	argv0=argv[0];
 
@@ -515,7 +521,7 @@ int main(int argc, char *argv[]) {
 #ifndef WIN32
 	// 
 	if(!cgi)
-		SAPI::send_body(pool, "\n", 1);
+		SAPI::send_body(*pool, "\n", 1);
 #endif
 //_asm int 3;
 	return 0;

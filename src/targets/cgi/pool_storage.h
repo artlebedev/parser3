@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pool_storage.h,v 1.9 2002/02/08 08:30:18 paf Exp $
+	$Id: pool_storage.h,v 1.9.2.1 2002/05/06 10:50:24 paf Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
@@ -118,7 +118,8 @@ public:
 	}
 
 	~Pool_storage() {
-//	__asm__("int3");
+	//__asm__("int3");
+//		_asm int 3;
 //fprintf(stderr, "cleanups: %d\n", cleanups.size());
 		// cleanups first, because they use some object's memory pointers
 		cleanups.for_each_reverse(cleanup);
