@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2002/09/17 10:58:24 $";
+static const char* IDENT_GLOBALS_H="$Date: 2002/11/22 16:16:33 $";
 
 #include "pa_pool.h"
 
@@ -149,6 +149,9 @@ extern Table *date_calendar_table_template;
 
 /// name to enum language table
 extern Hash *untaint_lang_name2enum;
+
+/// value of exif tag -> it's value
+extern Hash *exif_tag_value2name;
 
 
 /// UTF8 charset

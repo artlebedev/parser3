@@ -292,16 +292,41 @@ OK
 #^includet2overridestatic[]
 #^virtualtest2[]
 #^message-id-test[]
-^bad-jpeg-measure[]
+^test_exif[jpg]
 
-@bad-jpeg-measure[]
-$dir[jpg]
-$file[^file:list[$dir;\.jpe?g^$]]
+@test_exif[dir]
+$file[^file:list[$dir;\.(jpe?g|JPE?G)^$]]
+<table border=1>
 ^file.menu{
+<tr valign=top>
 	$image[^image::measure[$dir/$file.name]]
-	^image.html[]
-	<br>
+	<td>^image.html[$.width(100)$.height(100)]</td>
+	<td>
+		$file.name<hr>
+     	$exif[$image.exif]
+     	^if($exif){
+     		$keys[^exif._keys[]] ^keys.sort{$keys.key}
+     		^keys.menu{
+     			$key[$keys.key]
+     			$value[$exif.$key]
+
+     			${key}: <b>^show_exif_value[$value]</b><br>
+     		}
+     	}{
+     		no EXIF info<br>
+     	}
+    </td>
+</tr>
 }
+</table>
+
+@show_exif_value[value][i]
+^if($value is hash){
+	^for[i](0;$value-1){$value.$i}[,]
+}{
+	$value
+}
+
 
 @message-id-test[]
 ^mail:send[

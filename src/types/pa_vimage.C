@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VIMAGE_C="$Date: 2002/08/13 13:02:41 $";
+static const char* IDENT_VIMAGE_C="$Date: 2002/11/22 16:16:34 $";
 
 #include "pa_vimage.h"
 #include "pa_vint.h"
@@ -13,8 +13,10 @@ static const char* IDENT_VIMAGE_C="$Date: 2002/08/13 13:02:41 $";
 #include "gif.h"
 
 void VImage::set(const String *src, int width, int height,
-				 gdImage* aimage) {
+				 gdImage* aimage,
+				 Value* aexif) {
 	image=aimage;
+	fexif=aexif;
 
 	// $src
 	if(src)
@@ -35,6 +37,19 @@ void VImage::set(const String *src, int width, int height,
 	ffields.put(*NEW String(pool(), "line-width"), NEW VInt(pool(), 1));
 }
 
+
+Value *VImage::get_element(const String& aname, Value& aself, bool looking_up) {
+	// $method
+	if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
+		return result;
+
+	// $exif
+	if(aname==EXIF_ELEMENT_NAME)
+		return fexif;
+
+	// $src, $size
+	return static_cast<Value *>(ffields.get(aname));
+}
 
 bool VImage::put_element(const String& aname, Value *avalue, bool replace) {
 	ffields.put(aname, avalue);

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/09/17 10:58:24 $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/11/22 16:16:33 $";
 
 #include "pa_config_includes.h"
 
@@ -76,11 +76,13 @@ String *charset_UTF8_name;
 
 String *hash_default_element_name;
 
+
 Table *string_match_table_template;
 
 Table *date_calendar_table_template;
 
 Hash *untaint_lang_name2enum;
+Hash *exif_tag_value2name;
 
 Charset *utf8_charset;
 
@@ -374,6 +376,106 @@ void pa_globals_init(Pool& pool) {
 	ULN("xml", XML);
 	ULN("html", HTML);
 	ULN("optimized-html", HTML|String::UL_OPTIMIZE_BIT);
+
+	// image JPEG Exif
+	exif_tag_value2name=NEW Hash(pool);
+	#define EXIF_TAG(tag, name) \
+		{ \
+			char *buf=(char *)malloc(MAX_NUMBER); \
+			snprintf(buf, MAX_NUMBER, "%u", tag); \
+			exif_tag_value2name->put(*NEW String(pool, buf), #name); \
+		}
+	// Tags used by IFD0 (main image)
+	EXIF_TAG(0x010e,	ImageDescription);
+	EXIF_TAG(0x010f,	Make);
+	EXIF_TAG(0x0110,	Model);
+	EXIF_TAG(0x0112,	Orientation);
+	EXIF_TAG(0x011a,	XResolution);
+	EXIF_TAG(0x011b,	YResolution);
+	EXIF_TAG(0x0128,	ResolutionUnit);
+	EXIF_TAG(0x0131,	Software);
+	EXIF_TAG(0x0132,	DateTime);
+	EXIF_TAG(0x013e,	WhitePoint);
+	EXIF_TAG(0x013f,	PrimaryChromaticities);
+	EXIF_TAG(0x0211,	YCbCrCoefficients);
+	EXIF_TAG(0x0213,	YCbCrPositioning);
+	EXIF_TAG(0x0214,	ReferenceBlackWhite);
+	EXIF_TAG(0x8298,	Copyright);
+	EXIF_TAG(0x8769,	ExifOffset);
+	// Tags used by Exif SubIFD
+	EXIF_TAG(0x829a,	ExposureTime);
+	EXIF_TAG(0x829d,	FNumber);
+	EXIF_TAG(0x8822,	ExposureProgram);
+	EXIF_TAG(0x8827,	ISOSpeedRatings);
+	EXIF_TAG(0x9000,	ExifVersion);
+	EXIF_TAG(0x9003,	DateTimeOriginal);
+	EXIF_TAG(0x9004,	DateTimeDigitized);
+	EXIF_TAG(0x9101,	ComponentsConfiguration);
+	EXIF_TAG(0x9102,	CompressedBitsPerPixel);
+	EXIF_TAG(0x9201,	ShutterSpeedValue);
+	EXIF_TAG(0x9202,	ApertureValue);
+	EXIF_TAG(0x9203,	BrightnessValue);
+	EXIF_TAG(0x9204,	ExposureBiasValue);
+	EXIF_TAG(0x9205,	MaxApertureValue);
+	EXIF_TAG(0x9206,	SubjectDistance);
+	EXIF_TAG(0x9207,	MeteringMode);
+	EXIF_TAG(0x9208,	LightSource);
+	EXIF_TAG(0x9209,	Flash);
+	EXIF_TAG(0x920a,	FocalLength);
+	EXIF_TAG(0x927c,	MakerNote);
+	EXIF_TAG(0x9286,	UserComment);
+	EXIF_TAG(0x9290,	SubsecTime);
+	EXIF_TAG(0x9291,	SubsecTimeOriginal);
+	EXIF_TAG(0x9292,	SubsecTimeDigitized);
+	EXIF_TAG(0xa000,	FlashPixVersion);
+	EXIF_TAG(0xa001,	ColorSpace);
+	EXIF_TAG(0xa002,	ExifImageWidth);
+	EXIF_TAG(0xa003,	ExifImageHeight);
+	EXIF_TAG(0xa004,	RelatedSoundFile);
+	EXIF_TAG(0xa005,	ExifInteroperabilityOffset);
+	EXIF_TAG(0xa20e,	FocalPlaneXResolution);
+	EXIF_TAG(0xa20f,	FocalPlaneYResolution);
+	EXIF_TAG(0xa210,	FocalPlaneResolutionUnit);
+	EXIF_TAG(0xa215,	ExposureIndex);
+	EXIF_TAG(0xa217,	SensingMethod);
+	EXIF_TAG(0xa300,	FileSource);
+	EXIF_TAG(0xa301,	SceneType);
+	EXIF_TAG(0xa302,	CFAPattern);
+	// Misc Tags
+	EXIF_TAG(0x00fe,	NewSubfileType);
+	EXIF_TAG(0x00ff,	SubfileType);
+	EXIF_TAG(0x012d,	TransferFunction);
+	EXIF_TAG(0x013b,	Artist);
+	EXIF_TAG(0x013d,	Predictor);
+	EXIF_TAG(0x0142,	TileWidth);
+	EXIF_TAG(0x0143,	TileLength);
+	EXIF_TAG(0x0144,	TileOffsets);
+	EXIF_TAG(0x0145,	TileByteCounts);
+	EXIF_TAG(0x014a,	SubIFDs);
+	EXIF_TAG(0x015b,	JPEGTables);
+	EXIF_TAG(0x828d,	CFARepeatPatternDim);
+	EXIF_TAG(0x828e,	CFAPattern);
+	EXIF_TAG(0x828f,	BatteryLevel);
+	EXIF_TAG(0x83bb,	IPTC/NAA);
+	EXIF_TAG(0x8773,	InterColorProfile);
+	EXIF_TAG(0x8824,	SpectralSensitivity);
+	EXIF_TAG(0x8825,	GPSInfo);
+	EXIF_TAG(0x8828,	OECF);
+	EXIF_TAG(0x8829,	Interlace);
+	EXIF_TAG(0x882a,	TimeZoneOffset);
+	EXIF_TAG(0x882b,	SelfTimerMode);
+	EXIF_TAG(0x920b,	FlashEnergy);
+	EXIF_TAG(0x920c,	SpatialFrequencyResponse);
+	EXIF_TAG(0x920d,	Noise);
+	EXIF_TAG(0x9211,	ImageNumber);
+	EXIF_TAG(0x9212,	SecurityClassification);
+	EXIF_TAG(0x9213,	ImageHistory);
+	EXIF_TAG(0x9214,	SubjectLocation);
+	EXIF_TAG(0x9215,	ExposureIndex);
+	EXIF_TAG(0x9216,	TIFF/EPStandardID);
+	EXIF_TAG(0xa20b,	FlashEnergy);
+	EXIF_TAG(0xa20c,	SpatialFrequencyResponse);
+	EXIF_TAG(0xa214,	SubjectLocation);
 
 	// string_match_table_template
 	{

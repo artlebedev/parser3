@@ -567,6 +567,11 @@ Xhashfile
     !$картинка[^image::measure[DATA]]
         смотрит на .ext case insensitive, 
         умеет мерить пока только .gif и .jpg .jpeg
+    !$image.exif << hash после measure jpeg с exif информацией 
+		!$image.exif.DateTime & co 
+			[полный список см. http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html]
+		!числа типа int/double,
+		!перечисления в виде hash с ключами 0..count-1
     !$картинка.src .width .height
     !$картинка.line-width  число=ширина линий
        !$картинка.line-style строка=стиль линий '*** * '='*** * *** * *** * '

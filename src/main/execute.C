@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/11/20 13:37:23 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/11/22 16:16:33 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -869,7 +869,7 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 
 value_ready:
 	if(value)
-			value=&process_to_value(*value); // process possible code-junction
+		value=&process_to_value(*value); // process possible code-junction
 	else
 		value=NEW VVoid(pool());
 

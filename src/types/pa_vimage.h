@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char* IDENT_VIMAGE_H="$Date: 2002/10/31 15:01:55 $";
+static const char* IDENT_VIMAGE_H="$Date: 2002/11/22 16:16:34 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -17,6 +17,7 @@ static const char* IDENT_VIMAGE_H="$Date: 2002/10/31 15:01:55 $";
 // defines
 
 #define VIMAGE_TYPE "image"
+#define EXIF_ELEMENT_NAME "exif"
 
 // forwards
 
@@ -42,14 +43,7 @@ public: // Value
 	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), as_bool()); }
 
 	/// VImage: method,field
-	Value *get_element(const String& aname, Value& aself, bool looking_up) {
-		// $method
-		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
-			return result;
-
-		// $src, $size
-		return static_cast<Value *>(ffields.get(aname));
-	}
+	/*override*/ Value *get_element(const String& aname, Value& aself, bool looking_up);
 
 	/// VImage: field
 	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace);
@@ -58,13 +52,14 @@ public: // usage
 
 	VImage::VImage(Pool& apool) : VStateless_object(apool),
 		ffields(apool),
-		image(0), font(0) {
+		fexif(0), image(0), font(0) {
 	}
 
 	void set(const String *src, int width, int height,
-		gdImage *aimage=0);
+		gdImage *aimage=0,
+		Value *aexif=0);
 
-	Hash fields() const { return ffields; }
+	Hash& fields() { return ffields; }
 
 public:
 
@@ -73,6 +68,7 @@ public:
 private:
 
 	Hash ffields;
+	Value *fexif;
 
 };
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/11/21 11:04:39 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/22 16:16:33 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -131,18 +131,18 @@ private:
 struct PNG_Header {
 	char dummy[12];
 	char signature[4]; //< must be "IHDR"
-	unsigned char high_width[2]; //< image width high bytes [we ignore for now]
-	unsigned char width[2]; //< image width low bytes
-	unsigned char high_height[2]; //< image height high bytes [we ignore for now]
-	unsigned char height[4]; //< image height
+	uchar high_width[2]; //< image width high bytes [we ignore for now]
+	uchar width[2]; //< image width low bytes
+	uchar high_height[2]; //< image height high bytes [we ignore for now]
+	uchar height[4]; //< image height
 };
 
 /// GIF file header
 struct GIF_Header {
 	char       signature[3];         // 'GIF'
 	char       version[3];
-	unsigned char       width[2];
-	unsigned char       height[2];
+	uchar       width[2];
+	uchar       height[2];
 	char       dif;
 	char       fonColor;
 	char       nulls;
@@ -150,15 +150,15 @@ struct GIF_Header {
 
 /// JPEG record head
 struct JPG_Segment_head {
-	unsigned char marker;
-	unsigned char code;
-	unsigned char length[2];
+	uchar marker;
+	uchar code;
+	uchar length[2];
 };
 /// JPEG frame header
 struct JPG_Size_segment_body {
 	char data;                    //< data precision of bits/sample
-	unsigned char height[2];               //< image height
-	unsigned char width[2];                //< image width
+	uchar height[2];               //< image height
+	uchar width[2];                //< image width
 	char numComponents;           //< number of color components
 };
 
@@ -167,21 +167,49 @@ struct JPG_Exif_segment_start {
 	char signature[6]; // Exif\0\0
 };
 
+/// JPEG Exif TIFF Header
+struct JPG_Exif_TIFF_header {
+	uchar byte_align_identifier[2];
+	char dummy[2]; // always 000A [or 0A00]
+	uchar first_IFD_offset[4]; // Usually the first IFD starts immediately next to TIFF header, so this offset has value '0x00000008'.
+};
+
+// JPEG Exif IFD start
+struct JPG_Exif_IFD_start {
+	uchar directory_entry_count[2]; // the number of directory entry contains in this IFD
+};
+
+// TTTT ffff NNNNNNNN DDDDDDDD 
+struct JPG_Exif_IFD_entry {
+	uchar tag[2]; // Tag number, this shows a kind of data
+	uchar format[2]; // data format
+	uchar components_count[4]; // number of components
+	uchar value_or_offset_to_it[4]; // data value or offset to data value
+};
+
+#define JPG_IFD_TAG_EXIF_OFFSET 0x8769
+
 //
 
-inline ushort x_endian_to_ushort(unsigned char L, unsigned char H) {
-	return(short)((H<<8) + L);
+inline ushort x_endian_to_ushort(uchar b0, uchar b1) {
+	return (ushort)((b1<<8) + b0);
 }
 
-inline ushort big_endian_to_ushort(unsigned char b[2]) {
-	return x_endian_to_ushort(b[1], b[0]);
+inline uint x_endian_to_uint(uchar b0, uchar b1, uchar b2, uchar b3) {
+	return (uint)(((((b3<<8) + b2)<<8)+b1)<<8)+b0;
 }
 
-inline ushort little_endian_to_ushort(unsigned char b[2]) {
-	return x_endian_to_ushort(b[0], b[1]);
+inline ushort endian_to_ushort(bool is_big, const uchar *b/* [2] */) {
+	return is_big?x_endian_to_ushort(b[1], b[0]):
+		x_endian_to_ushort(b[0], b[1]);
 }
 
-void measure_gif(Pool& pool, const String *origin_string, 
+inline uint endian_to_uint(bool is_big, const uchar *b /* [4] */) {
+	return is_big?x_endian_to_uint(b[3], b[2], b[1], b[0]):
+		x_endian_to_uint(b[0], b[1], b[2], b[3]);
+}
+
+static void measure_gif(Pool& pool, const String *origin_string, 
 			 Measure_reader& reader, ushort& width, ushort& height) {
 
 	void *buf;
@@ -197,20 +225,236 @@ void measure_gif(Pool& pool, const String *origin_string,
 			origin_string, 
 			"not GIF file - wrong signature");	
 
-	width=little_endian_to_ushort(head->width);
-	height=little_endian_to_ushort(head->height);
+	width=endian_to_ushort(false, head->width);
+	height=endian_to_ushort(false, head->height);
 }
 
-/// @test remove ugly mech in reader - 20K limit
-void measure_jpeg(Pool& pool, const String *origin_string, 
-			 Measure_reader& reader, ushort& width, ushort& height) {
+static Value *parse_IFD_entry_formatted_one_value(Pool& pool,
+												  bool is_big,
+												  ushort format, 
+												  size_t component_size, 
+												  const uchar *value) {
+	switch(format) {
+	case 1: // unsigned byte
+		return new(pool) VInt(pool, (uchar)value[0]);
+	case 3: // unsigned short
+		return new(pool) VInt(pool, endian_to_ushort(is_big, value));
+	case 4: // unsigned long
+		 // 'double' because parser's Int is signed
+		return new(pool) VDouble(pool, endian_to_uint(is_big, value));
+	case 5: // unsigned rational
+		{
+			uint numerator=endian_to_uint(is_big, value); value+=component_size/2;
+			uint denominator=endian_to_uint(is_big, value);
+			if(!denominator)
+				return 0;
+			return new(pool) VDouble(pool, ((double)numerator)/denominator);
+		}
+	case 6: // signed byte
+		return new(pool) VInt(pool, (signed char)value[0]);
+	case 8: // signed short
+		return new(pool) VInt(pool, (signed short)endian_to_ushort(is_big, value));
+	case 9: // signed long
+		return new(pool) VInt(pool, (signed int)endian_to_uint(is_big, value));
+	case 10: // signed rational
+		{
+			signed int numerator=(signed int)endian_to_uint(is_big, value); value+=component_size/2;
+			uint denominator=endian_to_uint(is_big, value);
+			if(!denominator)
+				return 0;
+			return new(pool) VDouble(pool, numerator/denominator);
+		}
+		/*
+	case 11: // single float
+		todo
+	case 12: // double float
+		todo
+		*/
+	};	
+	
+	return 0;
+}
+
+static Value *parse_IFD_entry_formatted_value(Pool& pool,
+											  bool is_big, ushort format, 
+											  size_t component_size, uint components_count, 
+											  const uchar *value) {
+	if(format==2) { // ascii string, exception: the only type with varying size
+		const char *cstr=(const char *)value;
+		size_t size=components_count;
+		if(const char *premature_zero_pos=(const char *)memchr(cstr, 0, size))
+			size=premature_zero_pos-cstr;
+		return new(pool) VString(*new(pool) String(pool, cstr, size, true/*tainted*/));
+	}
+
+	if(components_count==1)
+		return parse_IFD_entry_formatted_one_value(pool, is_big, format, component_size, value);
+
+	VHash& result=*new(pool) VHash(pool);
+	Hash& hash=result.hash(0);
+	for(uint i=0; i<components_count; i++, value+=component_size) {
+		String& skey=*new(pool) String(pool);
+		{
+			char *buf=(char *)pool.malloc(MAX_NUMBER);
+			snprintf(buf, MAX_NUMBER, "%d", i);
+			skey << buf;
+		}
+		hash.put(skey, parse_IFD_entry_formatted_one_value(pool, is_big, format, component_size, value));
+	}
+
+	return &result;
+}
+
+static Value *parse_IFD_entry_value(Pool& pool,
+									bool is_big, Measure_reader& reader, long tiff_base,
+									JPG_Exif_IFD_entry& entry) {
+	size_t format2component_size[]={
+		0, // undefined
+		1, // unsigned byte
+		1, // ascii string
+		2, // unsigned short
+		4, // unsigned long
+		8, // unsigned rational
+		1, // signed byte
+		0, // undefined
+		2, // signed short
+		4, // signed long
+		8, // signed rational
+		/*
+		4, // single float
+		8, // double float
+		*/
+	};
+
+	ushort format=endian_to_ushort(is_big, entry.format);
+	if(format>=sizeof(format2component_size)/sizeof(format2component_size[0]))
+		return 0; // format out of range, ignoring
+
+	size_t component_size=format2component_size[format];
+	if(component_size==0)
+		return 0; // undefined format
+
+	// You can get the total data byte length by multiplies 
+	// a 'bytes/components' value (see above chart) by number of components stored 'NNNNNNNN' area
+	uint components_count=endian_to_uint(is_big, entry.components_count);
+	size_t value_size=component_size*components_count;
+	// If its size is over 4bytes, 'DDDDDDDD' contains the offset to data stored address
+	Value *result;
+
+	if(value_size<=4)
+		result=parse_IFD_entry_formatted_value(pool,
+			is_big, format, 
+			component_size, components_count, 
+			entry.value_or_offset_to_it);
+	else {
+		long remembered=reader.tell();
+		{
+			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it), SEEK_SET);
+			const void *value;
+			if(reader.read(value, value_size)<sizeof(value_size))
+				return 0;
+			result=parse_IFD_entry_formatted_value(pool,
+				is_big, format, 
+				component_size, components_count, 
+				(const uchar*)value);
+		}
+		reader.seek(remembered, SEEK_SET);
+	}
+
+	return result;
+}
+
+static void parse_IFD(Pool& pool,
+					  Hash& hash,
+					  bool is_big, Measure_reader& reader, long tiff_base);
+
+static void parse_IFD_entry(Pool& pool, Hash& hash,
+							bool is_big, Measure_reader& reader, long tiff_base,
+							JPG_Exif_IFD_entry& entry) {
+	ushort tag=endian_to_ushort(is_big, entry.tag);
+	if(tag==JPG_IFD_TAG_EXIF_OFFSET) {
+		long remembered=reader.tell();
+		{
+			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it), SEEK_SET);
+			parse_IFD(pool, hash, is_big, reader, tiff_base);
+		}
+		reader.seek(remembered, SEEK_SET);
+		return;
+	}
+	
+	if(Value *value=parse_IFD_entry_value(pool, is_big, reader, tiff_base, entry)) {
+		String& skey=*new(pool) String(pool);
+		{
+			char *buf=(char *)pool.malloc(MAX_NUMBER);
+			snprintf(buf, MAX_NUMBER, "%u", tag);
+			skey << buf;
+		}
+
+		if(const char *name=(const char *)exif_tag_value2name->get(skey))
+			hash.put(*new(pool) String(pool, name), value);
+		else
+			hash.put(skey, value);
+	}
+}
+
+static void parse_IFD(Pool& pool,
+					  Hash& hash,
+					  bool is_big, Measure_reader& reader, long tiff_base) {
+	const void *buf;
+	if(reader.read(buf, sizeof(JPG_Exif_IFD_start))<sizeof(JPG_Exif_IFD_start))
+		return;
+	JPG_Exif_IFD_start *start=(JPG_Exif_IFD_start *)buf;
+
+	ushort directory_entry_count=endian_to_ushort(is_big, start->directory_entry_count);
+	for(int i=0; i<directory_entry_count; i++) {
+		if(reader.read(buf, sizeof(JPG_Exif_IFD_entry))<sizeof(JPG_Exif_IFD_entry))
+			return;
+
+		parse_IFD_entry(pool, hash, is_big, reader, tiff_base, *(JPG_Exif_IFD_entry *)buf);
+	}
+	// then goes: LLLLLLLL Offset to next IFD [not going there]
+}
+
+static Value *parse_exif(Pool& pool,
+					   Measure_reader& reader,
+					   const String *origin_string) {
+	const void *buf;
+	if(reader.read(buf, sizeof(JPG_Exif_segment_start))<sizeof(JPG_Exif_segment_start))
+		throw Exception("image.format", 
+			origin_string, 
+			"not JPEG file - can not fully read Exif segment start");
+
+	JPG_Exif_segment_start *start=(JPG_Exif_segment_start *)buf;
+	if(memcmp(start->signature, "Exif\0\0", 4+2)!=0) //signature invalid?
+		return 0; // ignore invalid block
+
+	uint tiff_base=reader.tell();
+	if(reader.read(buf, sizeof(JPG_Exif_TIFF_header))<sizeof(JPG_Exif_TIFF_header))
+		return 0;
+
+	JPG_Exif_TIFF_header *head=(JPG_Exif_TIFF_header *)buf;
+	bool is_big=head->byte_align_identifier[0]=='M'; // [M]otorola vs [I]ntel
+
+	uint first_IFD_offset=endian_to_uint(is_big, head->first_IFD_offset);
+	reader.seek(tiff_base+first_IFD_offset, SEEK_SET);
+
+	VHash& vhash=*new(pool) VHash(pool);
+
+	// IFD
+	parse_IFD(pool, vhash.hash(0), is_big, reader, tiff_base);
+
+	return &vhash;
+}
+
+static void measure_jpeg(Pool& pool, const String *origin_string, 
+			 Measure_reader& reader, ushort& width, ushort& height, Value ** exif) {
 	// JFIF format markers
-	const unsigned char MARKER=0xFF;
-	const unsigned char CODE_SIZE_A=0xC0;
-	const unsigned char CODE_SIZE_B=0xC1;
-	const unsigned char CODE_SIZE_C=0xC2;
-	const unsigned char CODE_SIZE_D=0xC3;
-	const unsigned char CODE_EXIF=0xE1;
+	const uchar MARKER=0xFF;
+	const uchar CODE_SIZE_A=0xC0;
+	const uchar CODE_SIZE_B=0xC1;
+	const uchar CODE_SIZE_C=0xC2;
+	const uchar CODE_SIZE_D=0xC3;
+	const uchar CODE_EXIF=0xE1;
 
 	void *buf;
 	const size_t prefix_size=2;
@@ -218,7 +462,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 		throw Exception("image.format", 
 			origin_string, 
 			"not JPEG file - too small");
-	unsigned char *signature=(unsigned char *)buf;
+	uchar *signature=(uchar *)buf;
 	
 	if(!(signature[0]==0xFF && signature[1]==0xD8)) 
 		throw Exception("image.format", 
@@ -226,7 +470,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 			"not JPEG file - wrong signature");
 
 	while(true) {
-		long segment_base_offset=reader.tell()+2/*marker,code*/;
+		uint segment_base=reader.tell()+2/*marker,code*/;
 		if(reader.read(buf, sizeof(JPG_Segment_head))<sizeof(JPG_Segment_head))
 			break;
 		JPG_Segment_head *head=(JPG_Segment_head *)buf;
@@ -240,18 +484,8 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 		switch(head->code) {
 		// http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html
 		case CODE_EXIF:
-			{
-				if(reader.read(buf, sizeof(JPG_Exif_segment_start))<sizeof(JPG_Exif_segment_start))
-					throw Exception("image.format", 
-						origin_string, 
-						"not JPEG file - can not fully read Exif segment start");
-
-				JPG_Exif_segment_start *start=(JPG_Exif_segment_start *)buf;
-				if(memcmp(start->signature, "Exif\0\0", 4+2)!=0) //signature invalid?
-					break; // ignore invalid block
-
-				// parse Exif block
-			}
+			if(exif && !*exif) // seen .jpg with some xml under EXIF tag, after real exif block :)
+				*exif=parse_exif(pool, reader, origin_string);
 			break;
 
 		case CODE_SIZE_A:
@@ -266,13 +500,13 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 						"not JPEG file - can not fully read Size segment");
 				JPG_Size_segment_body *body=(JPG_Size_segment_body *)buf;
 				
-				width=big_endian_to_ushort(body->width);
-				height=big_endian_to_ushort(body->height);
-				return;
+				width=endian_to_ushort(true, body->width);
+				height=endian_to_ushort(true, body->height);
 			}			
+			return;
 		};
 
-		reader.seek(segment_base_offset+big_endian_to_ushort(head->length), SEEK_SET);
+		reader.seek(segment_base+endian_to_ushort(true, head->length), SEEK_SET);
 	}
 
 	throw Exception("image.format", 
@@ -280,7 +514,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 		"broken JPEG file - size frame not found");
 }
 
-void measure_png(Pool& pool, const String *origin_string, 
+static void measure_png(Pool& pool, const String *origin_string, 
 			 Measure_reader& reader, ushort& width, ushort& height) {
 
 	void *buf;
@@ -296,20 +530,20 @@ void measure_png(Pool& pool, const String *origin_string,
 			origin_string, 
 			"not PNG file - wrong signature");	
 
-	width=big_endian_to_ushort(head->width);
-	height=big_endian_to_ushort(head->height);
+	width=endian_to_ushort(true, head->width);
+	height=endian_to_ushort(true, head->height);
 }
 
 // measure center
 
-void measure(Pool& pool, const String& file_name, 
-			 Measure_reader& reader, ushort& width, ushort& height) {
+static void measure(Pool& pool, const String& file_name, 
+			 Measure_reader& reader, ushort& width, ushort& height, Value ** exif) {
 	if(const char *cext=strrchr(file_name.cstr(String::UL_FILE_SPEC), '.')) {
 		cext++;
 		if(strcasecmp(cext, "GIF")==0)
 			measure_gif(pool, &file_name, reader, width, height);
 		else if(strcasecmp(cext, "JPG")==0 || strcasecmp(cext, "JPEG")==0) 
-			measure_jpeg(pool, &file_name, reader, width, height);
+			measure_jpeg(pool, &file_name, reader, width, height, exif);
 		else if(strcasecmp(cext, "PNG")==0)
 			measure_png(pool, &file_name, reader, width, height);
 		else
@@ -328,17 +562,18 @@ void measure(Pool& pool, const String& file_name,
 struct File_measure_action_info {
 	ushort *width;
 	ushort *height;
+	Value ** exif;
 	const String *file_name;
 };
 #endif
 static void file_measure_action(Pool& pool,
-								int f, 
+								struct stat& finfo, int f, 
 								const String& file_spec, const char *fname, bool as_text,
 								void *context) {
 	File_measure_action_info& info=*static_cast<File_measure_action_info *>(context);
 
 	Measure_file_reader reader(pool, f, *info.file_name, fname);
-	measure(pool, *info.file_name, reader, *info.width, *info.height);
+	measure(pool, *info.file_name, reader, *info.width, *info.height, info.exif);
 }
 
 static void _measure(Request& r, const String& method_name, MethodParams *params) {
@@ -348,9 +583,10 @@ static void _measure(Request& r, const String& method_name, MethodParams *params
 
 	ushort width=0;
 	ushort height=0;
+	Value *exif=0;
 	const String *file_name;
 	if(file_name=data.get_string()) {
-		File_measure_action_info info={&width, &height, file_name};
+		File_measure_action_info info={&width, &height, &exif, file_name};
 		file_read_action_under_lock(pool, r.absolute(*file_name), 
 			"measure", file_measure_action, &info);
 	} else {
@@ -361,10 +597,11 @@ static void _measure(Request& r, const String& method_name, MethodParams *params
 			vfile.value_size(),
 			*file_name
 		);
-		measure(pool, *file_name, reader, width, height);
+		measure(pool, *file_name, reader, width, height, &exif);
 	}
 
-	static_cast<VImage *>(r.get_self())->set(file_name, width, height);
+	VImage &vimage=*static_cast<VImage *>(r.get_self());
+	vimage.set(file_name, width, height, 0, exif);
 }
 
 #ifndef DOXYGEN
