@@ -66,21 +66,21 @@ if test x"$libltdl_cv_preloaded_symbols" = x"yes"; then
     [Define if libtool can extract symbol lists from object files. ])
 fi
 
-dnl LIBADD_DL=
-dnl AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1) LIBADD_DL="-ldl"],
-dnl [AC_CHECK_FUNC(dlopen, [AC_DEFINE(HAVE_LIBDL, 1)])])
-dnl AC_CHECK_FUNC(shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1)],
-dnl [AC_CHECK_LIB(dld, shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1) LIBADD_DL="$LIBADD_DL -ldld"])])
-dnl AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1)dnl
-dnl test "x$ac_cv_lib_dld_shl_load" = yes || LIBADD_DL="$LIBADD_DL -ldld"])
-dnl AC_SUBST(LIBADD_DL)
-dnl 
-dnl if test "x$ac_cv_func_dlopen" = xyes || test "x$ac_cv_lib_dl_dlopen" = xyes; then
-dnl  LIBS_SAVE="$LIBS"
-dnl  LIBS="$LIBS $LIBADD_DL"
-dnl  AC_CHECK_FUNCS(dlerror)
-dnl  LIBS="$LIBS_SAVE"
-dnl fi
+LIBADD_DL=
+AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1) LIBADD_DL="-ldl"],
+[AC_CHECK_FUNC(dlopen, [AC_DEFINE(HAVE_LIBDL, 1)])])
+AC_CHECK_FUNC(shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1)],
+[AC_CHECK_LIB(dld, shl_load, [AC_DEFINE(HAVE_SHL_LOAD, 1) LIBADD_DL="$LIBADD_DL -ldld"])])
+AC_CHECK_LIB(dld, dld_link, [AC_DEFINE(HAVE_DLD, 1)dnl
+test "x$ac_cv_lib_dld_shl_load" = yes || LIBADD_DL="$LIBADD_DL -ldld"])
+AC_SUBST(LIBADD_DL)
+
+if test "x$ac_cv_func_dlopen" = xyes || test "x$ac_cv_lib_dl_dlopen" = xyes; then
+ LIBS_SAVE="$LIBS"
+ LIBS="$LIBS $LIBADD_DL"
+ AC_CHECK_FUNCS(dlerror)
+ LIBS="$LIBS_SAVE"
+fi
 
 dnl Check for command to grab the raw symbol name followed
 dnl by C symbol name from nm.
