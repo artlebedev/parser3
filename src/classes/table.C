@@ -3,13 +3,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.15 2001/03/13 17:17:25 paf Exp $
+	$Id: table.C,v 1.16 2001/03/19 16:06:13 paf Exp $
 */
 
+#include "pa_common.h"
 #include "pa_request.h"
 #include "_table.h"
 #include "pa_vtable.h"
-#include "pa_common.h"
 #include "pa_vint.h"
 
 // global var

@@ -3,14 +3,14 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.C,v 1.6 2001/03/11 08:16:35 paf Exp $
+	$Id: pa_exception.C,v 1.7 2001/03/19 16:06:14 paf Exp $
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "pa_exception.h"
 #include "pa_common.h"
+#include "pa_exception.h"
 
 void Exception::_throw(const String *atype, const String *acode,
 					  const String *aproblem_source, 

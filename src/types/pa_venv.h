@@ -3,16 +3,16 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_venv.h,v 1.7 2001/03/13 20:02:11 paf Exp $
+	$Id: pa_venv.h,v 1.8 2001/03/19 16:06:17 paf Exp $
 */
 
 #ifndef PA_VENV_H
 #define PA_VENV_H
 
+#include "pa_common.h"
 #include "pa_vstateless_class.h"
 #include "pa_string.h"
 #include "_env.h"
-#include "pa_common.h"
 
 class VEnv : public VStateless_class {
 public: // Value

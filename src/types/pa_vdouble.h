@@ -3,14 +3,14 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.8 2001/03/18 13:38:48 paf Exp $
+	$Id: pa_vdouble.h,v 1.9 2001/03/19 16:06:16 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#include "pa_vstateless_object.h"
 #include "pa_common.h"
+#include "pa_vstateless_object.h"
 #include "_double.h"
 
 class VDouble : public VStateless_object {

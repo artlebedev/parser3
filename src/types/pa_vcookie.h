@@ -3,15 +3,15 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcookie.h,v 1.2 2001/03/18 20:44:41 paf Exp $
+	$Id: pa_vcookie.h,v 1.3 2001/03/19 16:06:16 paf Exp $
 */
 
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
 
+#include "pa_common.h"
 #include "pa_vstateless_class.h"
 #include "_cookie.h"
-#include "pa_common.h"
 
 class Request;
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.23 2001/03/19 15:29:41 paf Exp $
+	$Id: parser3.C,v 1.24 2001/03/19 16:06:15 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -20,9 +20,9 @@
 #include <string.h>
 #include <fcntl.h>
 
+#include "pa_common.h"
 #include "pa_globals.h"
 #include "pa_request.h"
-#include "pa_common.h"
 
 Pool pool; // global pool
 bool cgi;

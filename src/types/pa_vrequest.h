@@ -3,16 +3,16 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vrequest.h,v 1.3 2001/03/18 11:37:54 paf Exp $
+	$Id: pa_vrequest.h,v 1.4 2001/03/19 16:06:17 paf Exp $
 */
 
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
+#include "pa_common.h"
 #include "pa_vstateless_class.h"
 #include "pa_string.h"
 #include "_request.h"
-#include "pa_common.h"
 
 class Request;
 

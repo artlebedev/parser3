@@ -3,15 +3,15 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.7 2001/03/18 20:31:30 paf Exp $
+	$Id: pa_vform.h,v 1.8 2001/03/19 16:06:17 paf Exp $
 */
 
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
+#include "pa_common.h"
 #include "pa_vstateless_class.h"
 #include "_form.h"
-#include "pa_common.h"
 
 class Request;
 

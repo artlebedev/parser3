@@ -3,14 +3,14 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.9 2001/03/18 13:38:49 paf Exp $
+	$Id: pa_vint.h,v 1.10 2001/03/19 16:06:17 paf Exp $
 */
 
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-#include "pa_vstateless_object.h"
 #include "pa_common.h"
+#include "pa_vstateless_object.h"
 #include "_int.h"
 
 class VInt : public VStateless_object {

@@ -3,16 +3,16 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.45 2001/03/18 17:24:54 paf Exp $
+	$Id: root.C,v 1.46 2001/03/19 16:06:13 paf Exp $
 */
 
 #include <string.h>
 #include <math.h>
 
+#include "pa_common.h"
 #include "pa_request.h"
 #include "_root.h"
 #include "pa_vint.h"
-#include "pa_common.h"
 
 static void _if(Request& r, const String& method_name, Array *params) {
 	Value& condition_code=*static_cast<Value *>(params->get(0));
