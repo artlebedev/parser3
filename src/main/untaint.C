@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2003/11/20 17:15:12 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2003/11/25 15:04:21 $";
 
 
 #include "pa_string.h"
@@ -258,6 +258,7 @@ inline bool addr_spec_soon(const char *src) {
 inline bool mail_header_nonspace_char(char c) {
 	return c != 0x20;
 }
+
 inline void ec_append(CORD_ec& result, bool& optimize, bool& whitespace, CORD_pos pos, size_t size) {
 	while(size--) {
 		CORD_ec_append(result, CORD_pos_fetch(pos));
@@ -266,12 +267,12 @@ inline void ec_append(CORD_ec& result, bool& optimize, bool& whitespace, CORD_po
 }
 inline void pa_CORD_pos_advance(CORD_pos pos, size_t n) {
 	while(true) {
-		size_t avail=CORD_pos_chars_left(pos);
-		if(avail==0) {
+		long avail=CORD_pos_chars_left(pos);
+		if(avail<=0) {
 			CORD_next(pos);
 			if(!--n)
 				break;
-		} else if(avail<n) {
+		} else if((size_t)avail<n) {
 			CORD_pos_advance(pos, avail);
 			n-=avail;
 		} else { // avail>=n
