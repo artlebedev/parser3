@@ -24,35 +24,8 @@
 	* xml(xdoc and xnode classes)
   Read section (3) on getting xml-abled parser.
 
-  NOTE:	
-  In case you're not root on machine you're installing Parser,
-  we recommend you to do:
-  ./configure --prefix=/your/home/parser3install
-  and afterwards copy parser3install/bin/parser3 to your CGI directory
-  or make a symlink [if your web server configured to follow symlinks].
 
-  NOTE:
-  You can disable libstdc++ linkage by setting
-  --disable-link-libstdcpp
-  option to configure.  
-
-  NOTE:
-  You can disable any exec operations by setting
-  --disable-execs
-  option to configure.
-  file::exec, file::cgi and mail:send (unix version) methods would be disabled.
-
-  NOTE:
-  You can disable reading and executing files, belonging to group 
-  other then current by setting
-  --disable-foreign-group-files
-  option to configure.
-  
-  NOTE:
-  You can disable user-configured sendmail commands by forcing it, setting
-  "--with=sendmail=COMMAND"
-  option to configure.
-  
+  Read section (4) on configure options.
 
 2.What is the process to install Parser3?
 
@@ -151,7 +124,44 @@
         --with-pathlink=LKEY    put dynamic libraries paths to binary
                                 using linker key (-R, -rpath-link)
 
+4.
+
+  In case you're not root on machine you're installing Parser,
+  we recommend you to do:
+  ./configure --prefix=/your/home/parser3install
+  and afterwards copy parser3install/bin/parser3 to your CGI directory
+  or make a symlink [if your web server configured to follow symlinks].
+
+  You can disable libstdc++ linkage by setting
+  --disable-link-libstdcpp
+  option to configure.  
+
+  You can disable any exec operations by setting
+  --disable-execs
+  option to configure.
+  file::exec, file::cgi and mail:send (unix version) methods would be disabled.
+
+  You can disable reading and executing files, belonging to group 
+  other then current by setting
+  --disable-foreign-group-files
+  option to configure.
+  
+  You can disable user-configured sendmail commands by forcing it, setting
+  "--with=sendmail=COMMAND"
+  option to configure.
+  
+
+  Some root config options can be specified at configure time, and would override autodetects.
+
+  List of enabled charsets:
+  --with-charsets=CHARSET[,CHARSET,...]  Enables charsets in root config (windows-1251,
+                          windows-1250 windows-1257 koi8-r; Default is windows-1251)
+  SQL clients:
+  --with-mysql-client=mysqlclientlib?withparams
+  --with-pgsql-client=pgsqlclientlib?withparams
+  --with-oracle-client=oracleclientlib?withparams
+  
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.17 2002/03/25 12:02:57 paf Exp $
+$Id: INSTALL,v 1.18 2002/04/03 14:52:56 paf Exp $

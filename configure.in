@@ -66,6 +66,97 @@ if test "$enableval" = "no"; then
 fi
 ]
 )
+sourcecharsetsdir=$srcdir/etc/parser3.charsets
+CHARSETS_REQUESTED="windows-1251"
+AC_ARG_WITH(charsets, [  --with-charsets=CHARSET[,CHARSET,...]  Enables charsets in root config (windows-1251,
+                          windows-1250 windows-1257 koi8-r; Default is windows-1251)],
+[CHARSETS_REQUESTED=`echo $withval | sed -e 's/,/ /g'`])
+
+AC_DEFUN(PA_SUBSTCHARSET, [
+	commentcharset_$2='#'
+  	for c in $CHARSETS_REQUESTED; do
+		if test "$1" = "$c"; then
+			if test -f $sourcecharsetsdir/$1.cfg; then
+				AC_MSG_WARN(Enabling charset $1)
+				commentcharset_$2=
+			else
+				AC_MSG_ERROR(bad charset requested "$1" - file $sourcecharsetsdir/$1.cfg not found)
+			fi
+		fi
+	done
+	AC_SUBST(commentcharset_$2)
+])
+
+PA_SUBSTCHARSET(windows-1251,windows1251)
+PA_SUBSTCHARSET(windows-1250,windows1250)
+PA_SUBSTCHARSET(windows-1257,windows1257)
+PA_SUBSTCHARSET(koi8-r,koi8r)
+
+
+AC_ARG_WITH(mysql-client,[  --with-mysql-client=mysqlclientlib?withparams
+                          MySQL client dynamic library to root config],
+	mysql_client=$withval
+,
+	AC_MSG_CHECKING(for mysql client)
+	for lib in \
+		/usr/local/lib/mysql/libmysqlclient.so \
+		/usr/local/lib/libmysqlclient.so \
+		/usr/lib/libmysqlclient.so; do
+		if test -f $lib; then mysql_client=$lib; fi
+	done
+
+	if test -z "$mysql_client"; then
+		mysql_client="-configure could not guess-"
+		AC_MSG_WARN(could not guess mysql client)
+	else
+		AC_MSG_RESULT($mysql_client)
+	fi
+
+)
+AC_SUBST(mysql_client)
+
+AC_ARG_WITH(pgsql-client,[  --with-pgsql-client=pgsqlclientlib?withparams
+                          PgSQL client dynamic library to root config],
+	mysql_client=$withval
+,
+	AC_MSG_CHECKING(for pgsql client)
+	for lib in \
+		/usr/local/pgsql/lib/libpq.so \
+		/usr/local/lib/libpq.so \
+		/usr/lib/libpq.so; do
+		if test -f $lib; then pgsql_client=$lib; fi
+	done
+
+	if test -z "$pgsql_client"; then
+		pgsql_client="-configure could not guess-"
+		AC_MSG_WARN(could not guess pgsql client)
+	else
+		AC_MSG_RESULT($pgsql_client)
+	fi
+
+)
+AC_SUBST(pgsql_client)
+
+AC_ARG_WITH(oracle-client,[  --with-oracle-client=oracleclientlib?withparams
+                          Oracle client dynamic library],
+	oracle_client=$withval
+,
+	AC_MSG_CHECKING(for oracle client)
+	lib=$ORACLE_HOME/lib/libclntsh.so
+	if test -f $lib; then oracle_client=$lib; fi
+
+	if test -z "$oracle_client"; then
+		oracle_client="-configure could not guess-"
+		AC_MSG_WARN(could not guess oracle client)
+	else
+		oracle_client="$oracle_client?ORACLE_HOME=$ORACLE_HOME&ORA_NLS33=$ORACLE_HOME/ocommon/nls/admin/data"
+		AC_MSG_RESULT($oracle_client)
+	fi
+
+)
+AC_SUBST(oracle_client)
+
+
 
 AC_ARG_WITH(pathlink,[  --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)],
