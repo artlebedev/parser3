@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.19 2001/02/13 10:00:27 paf Exp $
+  $Id: pa_string.C,v 1.20 2001/02/13 10:09:53 paf Exp $
 */
 
 #include <string.h>
@@ -266,9 +266,29 @@ void String_iterator::skip() {
 }
 
 bool String_iterator::skip_to(char c) {
-	for(; !feof; skip())
-		if(operator()==c)
+	while(!feof) {
+		void *pos=memchr(read_here->ptr+offset, c, read_here->size-offset);
+		if(pos) {
+			offset=pos-read_here->ptr;
 			return true;
+		}
+
+		if(++read_here==string.append_here) {
+			feof=true;
+			return false;
+		}
+		offset=0;
+		if(read_here==link_row) {
+			Chunk *chunk=link_row->link;
+			if(!chunk)
+				string.pool.exception().raise(
+					"String_iterator::skip_to(char) missed "
+					"read_here==string.append_here check");
+
+			read_here=chunk->rows;
+			link_row=chunk->rows[chunk->count];
+		}
+	}
 	return false;
 }
 
