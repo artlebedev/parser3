@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vtable.C,v 1.6 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vtable.C,v 1.7 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "pa_vtable.h"
@@ -58,7 +58,7 @@ Value *VTable::get_element(const String& name) {
 				return NEW VVoid(pool());
 	}
 
-	THROW(0, 0,
+	throw Exception(0, 0,
 		&name, 
 		"column not found");
 	return 0; //unreached

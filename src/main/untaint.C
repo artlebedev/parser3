@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.68 2001/10/11 10:21:44 parser Exp $
+	$Id: untaint.C,v 1.69 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -275,7 +275,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				if(connection)
 					dest+=connection->quote(dest, row->item.ptr, row->item.size);
 				else
-					THROW(0, 0,
+					throw Exception(0, 0,
 						this,
 						"untaint in SQL language failed - no connection specified");
 				break;
@@ -311,7 +311,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			case UL_USER_HTML: {
 				// tainted, untaint language: html-typo
 				if(!typo_dict) // never, always has default
-					THROW(0, 0,
+					throw Exception(0, 0,
 						this,
 						"untaint to user-html lang failed, no typo table");
 
@@ -348,7 +348,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 						//   b allowed to be max UNTAINT_TIMES_BIGGER then a
 						if(b.size()>UNTAINT_TIMES_BIGGER*a.size()) {
 							pool().set_tag(0); // avoid recursion
-							THROW(0, 0, 
+							throw Exception(0, 0, 
 								&b, 
 								"is %g times longer then '%s', "
 								"while maximum, handled by Parser, is %d", 
@@ -369,7 +369,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				break;
 				}
 			default:
-				THROW(0, 0, 
+				throw Exception(0, 0, 
 					this, 
 					"unknown untaint language #%d of %d piece", 
 						static_cast<int>(row->item.lang), 

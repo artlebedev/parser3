@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.52 2001/10/10 12:52:13 parser Exp $
+	$Id: op.C,v 1.53 2001/10/19 12:43:29 parser Exp $
 */
 
 #include "classes.h"
@@ -57,7 +57,7 @@ static void _untaint(Request& r, const String& method_name, MethodParams *params
 	String::Untaint_lang lang=static_cast<String::Untaint_lang>(
 		untaint_lang_name2enum->get_int(lang_name));
 	if(!lang)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&lang_name,
 			"invalid untaint language");
 
@@ -80,7 +80,7 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 		lang=static_cast<String::Untaint_lang>(
 			untaint_lang_name2enum->get_int(lang_name));
 		if(!lang)
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&lang_name,
 				"invalid taint language");
 	}
@@ -146,7 +146,7 @@ static void _while(Request& r, const String& method_name, MethodParams *params) 
 	int endless_loop_count=0;
 	while(true) {
 		if(++endless_loop_count>=MAX_LOOPS) // endless loop?
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&method_name,
 				"endless loop detected");
 
@@ -181,7 +181,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 	int endless_loop_count=0;
 	for(int i=from; i<=to; i++) {
 		if(++endless_loop_count>=MAX_LOOPS) // endless loop?
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&method_name,
 				"endless loop detected");
 		vint->set_int(i);
@@ -220,12 +220,13 @@ static void _error(Request& r, const String& method_name, MethodParams *params) 
 	Pool& pool=r.pool();
 
 	const String& serror=params->as_string(0, "message must be string");
-	PTHROW(0, 0,
+	throw Exception(0, 0,
 		&method_name,
 		"%s", serror.cstr());
 }
 
 
+/// @todo rewrite ugly code with try/try to autoobject TempConnection
 static void _connect(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -239,40 +240,35 @@ static void _connect(Request& r, const String& method_name, MethodParams *params
 	SQL_Connection& connection=SQL_driver_manager->get_connection(
 		url.as_string(), method_name, protocol2driver_and_client);
 
-	Exception rethrow_me;
 	// remember/set current connection
 	SQL_Connection *saved_connection=r.connection;
 	r.connection=&connection;
 	// execute body
-	bool body_failed=false;  
-	PTRY
-		r.write_assign_lang(r.process(body_code));
-	PCATCH(e) { // connect/process problem
-		rethrow_me=e;  body_failed=true; 
-	}
-	PEND_CATCH
-
-	bool finalizer_failed=false;
-	PTRY
-		// FINALLY
-		if(body_failed)
-			connection.rollback();
-		else
+	try {
+		try {
+			r.write_assign_lang(r.process(body_code));
+			
 			connection.commit();
-	PCATCH(e) { // commit/rollback problem
-		rethrow_me=e;  finalizer_failed=true; 
-	}
-	PEND_CATCH
+		} catch(...) { // process/commit problem
+			connection.rollback();
+			
+			/*re*/throw; 
+		}
 
+	} catch(...) {
+		// close connection [cache it]
+		connection.close();
+		// recall current connection from remembered
+		r.connection=saved_connection;
+
+		/*re*/throw;
+	}
+
+	// and anyway
 	// close connection [cache it]
 	connection.close();
 	// recall current connection from remembered
 	r.connection=saved_connection;
-
-	if(body_failed || finalizer_failed) // were there an exception for us to rethrow?
-		PTHROW(rethrow_me.type(), rethrow_me.code(),
-			rethrow_me.problem_source(),
-			rethrow_me.comment());
 }
 
 #ifndef DOXYGEN
@@ -300,7 +296,7 @@ static void _case(Request& r, const String& method_name, MethodParams *params) {
 
 	Switch_data *data=static_cast<Switch_data *>(r.classes_conf.get(*switch_data_name));
 	if(!data)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"without switch");
 

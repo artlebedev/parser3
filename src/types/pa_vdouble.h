@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.26 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vdouble.h,v 1.27 2001/10/19 12:43:30 parser Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -22,7 +22,7 @@ public: // Value
 
 	const char *type() const { return "double"; }
 	/// VDouble: clone
-	Value *as_expr_result(bool return_string_as_is=false) { return NEW VDouble(pool(), fdouble); }
+	Value *as_expr_result(bool ) { return NEW VDouble(pool(), fdouble); }
 
 	/// VDouble: fdouble
 	const String *get_string() {

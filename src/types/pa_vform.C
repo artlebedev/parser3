@@ -5,7 +5,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 	
-	$Id: pa_vform.C,v 1.39 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vform.C,v 1.40 2001/10/19 12:43:30 parser Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -127,7 +127,7 @@ void VForm::ParseMimeInput(const char *content_type,
 		*boundary=getAttributeValue(content_type, "boundary=", strlen(content_type)), 
 	    *lastData=&data[length];
 	if(!boundary) 
-		THROW(0, 0, 
+		throw Exception(0, 0, 
 			0, 
 			"VForm::ParseMimeInput no boundary attribute of Content-Type");
 

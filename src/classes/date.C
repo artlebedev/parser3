@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: date.C,v 1.10 2001/10/09 13:17:45 parser Exp $
+	$Id: date.C,v 1.11 2001/10/19 12:43:29 parser Exp $
 */
 
 #include "classes.h"
@@ -60,11 +60,11 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 		if(params->size()>5) tmIn.tm_sec=params->as_int(5, "seconds must be int", r);
 		time=mktime(&tmIn);
 		if(time<0)
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&method_name,
 				"invalid datetime");
 	} else
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"invalid params count, must be 1 or >=3");
 	vdate->set_time(time);
@@ -100,13 +100,13 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	else if(what=="month") offset=&omonth;
 	else if(what=="day") offset=&oday;
 	else
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&what,
 			"must be year|month|day");
 	
 	*offset=params->as_int(1, "offset must be int", r);
 	if(!(*offset==1 || *offset==-1))
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"offset must be +/- 1");
 
@@ -115,7 +115,7 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	tmIn->tm_year+=oyear;
 	time_t t=mktime(tmIn);
 	if(t<0)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"invalid datetime");
 	t+=omonth*getMonthDays(tmIn->tm_year, (tmIn->tm_mon+(omonth<0?-1:0)+12)%12)*SECS_PER_DAY;
@@ -134,7 +134,7 @@ static Table *fill_month_days(Request& r,
     tm tmIn={0, 0, 0, 1, month, year-1900};
     time_t t=mktime(&tmIn);
 	if(t<0)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"invalid date");
     tm *tmOut=localtime(&t);
@@ -174,7 +174,7 @@ static Table *fill_week_days(Request& r,
     tm tmIn={0, 0, 18, day, month, year-1900};
     time_t t=mktime(&tmIn);
 	if(t<0)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"invalid date");
     tm *tmOut=localtime(&t);
@@ -216,7 +216,7 @@ static void _calendar(Request& r, const String& method_name, MethodParams *param
 	else if(what=="eng")
 		rus=false;
 	else
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&what, 
 			"must be rus|eng");
 

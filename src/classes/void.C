@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: void.C,v 1.11 2001/10/08 16:42:06 parser Exp $
+	$Id: void.C,v 1.12 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "classes.h"
@@ -52,7 +52,7 @@ public:
 	void add_column(void *ptr, size_t size) { /* ignore */ }
 	void before_rows() {
 		// there are some result rows, which is wrong
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&statement_string,
 			"must return nothing");
 	}
@@ -68,7 +68,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	if(!r.connection)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"without connect");
 
@@ -79,20 +79,16 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
 	Void_sql_event_handlers handlers(pool, statement_string);
-	bool need_rethrow=false; Exception rethrow_me;
-	PTRY {
+	try {
 		r.connection->query(
 			statement_cstr, 0, 0,
 			handlers);
+	} catch(const Exception& e) {
+		// more specific source [were url]
+		throw Exception(e.type(), e.code(),
+			&statement_string, 
+			"%s", e.comment());
 	}
-	PCATCH(e) {
-		rethrow_me=e;  need_rethrow=true;
-	}
-	PEND_CATCH
-	if(need_rethrow)
-		PTHROW(rethrow_me.type(), rethrow_me.code(),
-			&statement_string, // setting more specific source [were url]
-			rethrow_me.comment());
 }
 
 // constructor

@@ -4,15 +4,15 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.C,v 1.18 2001/10/13 15:12:50 parser Exp $
+	$Id: pa_exception.C,v 1.19 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "pa_common.h"
 #include "pa_exception.h"
 
-void Exception::_throw(const String *atype, const String *acode,
+Exception::Exception(const String *atype, const String *acode,
 					  const String *aproblem_source, 
-					  const char *comment_fmt, ...) const {
+					  const char *comment_fmt, ...) {
 	//_asm int 3;
 	ftype=atype;
 	fcode=acode;
@@ -25,8 +25,6 @@ void Exception::_throw(const String *atype, const String *acode,
 		va_end(args);
 	} else 
 		fcomment[0]=0;
-
-	longjmp(mark, 1);
 }
 
 #ifdef XML

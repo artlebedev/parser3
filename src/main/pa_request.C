@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.168 2001/10/18 06:52:05 parser Exp $
+	$Id: pa_request.C,v 1.169 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -111,8 +111,7 @@ void Request::core(
 				   const char *site_config_filespec, bool site_config_fail_on_read_problem,
 				   bool header_only) {
 	//_asm { int 3 }
-	bool need_rethrow=false;  Exception rethrow_me;
-	TRY {
+	try {
 		char *auto_filespec=(char *)malloc(MAX_STRING);
 		
 		// loading root config
@@ -135,7 +134,7 @@ void Request::core(
 				if(Hash *charsets=vcharsets->get_hash())
 					charsets->for_each(load_charset, &CTYPE);
 				else
-					THROW(0, 0,
+					throw Exception(0, 0,
 						&vcharsets->name(),
 						"must be hash");
 			}
@@ -226,7 +225,7 @@ void Request::core(
 		const String *body_string=execute_virtual_method(
 			*main_class, *main_method_name);
 		if(!body_string)
-			THROW(0,0,
+			throw Exception(0,0,
 				0, 
 				"'"MAIN_METHOD_NAME"' method not found");
 
@@ -265,9 +264,9 @@ void Request::core(
 		// OK. write out the result
 		output_result(*body_file, header_only);
 	} 
-	CATCH(e) { // request handling problem
+	catch(const Exception& e) { // request handling problem
 		// we're returning not result, but error explanation
-		TRY {
+		try {
 			// log the beast
 			const String *problem_source=e.problem_source();
 			if(problem_source && problem_source->size())
@@ -310,7 +309,7 @@ void Request::core(
 				if(Value *value=main_class->get_element(*exception_method_name))
 					if(Junction *junction=value->get_junction())
 						if(const Method *method=junction->method) {
-							// preparing to pass parameters to 
+		 					// preparing to pass parameters to 
 							//	@exception[origin;source;comment;type;code]
 							VMethodFrame frame(pool(), value->name(), *junction);
 							frame.set_self(*main_class);
@@ -418,21 +417,10 @@ void Request::core(
 
 			// ERROR. write it out
 			output_result(*body_file, header_only);
+		} catch(const Exception& e) {
+			/*re*/throw;
 		}
-		CATCH(e) {
-			// exception in request exception handler
-			// remember to rethrow it
-			rethrow_me=e;  need_rethrow=true; 
-		}
-		END_CATCH
 	}
-	END_CATCH // do not use pool() after this point - no exception handler set
-	          // any throw() would try to use zero exception() pointer 
-
-	if(need_rethrow) // were there an exception for us to rethrow?
-		THROW(rethrow_me.type(), rethrow_me.code(),
-			rethrow_me.problem_source(),
-			rethrow_me.comment());
 }
 
 VStateless_class *Request::use_file(const String& file_name, 
@@ -463,16 +451,16 @@ VStateless_class *Request::use_file(const String& file_name,
 							break; // found along class_path
 					}
 				} else
-					THROW(0, 0,
+					throw Exception(0, 0,
 						&element->name(),
 						"must be string or table");
 				if(!file_spec)
-					THROW(0, 0,
+					throw Exception(0, 0,
 						&file_name,
 						"not found along " MAIN_CLASS_NAME ":" CLASS_PATH_NAME);
 			}
 		if(!file_spec)
-			THROW(0, 0,
+			throw Exception(0, 0,
 				&file_name,
 				"usage failed - no " MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
 	}
@@ -583,7 +571,7 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 				if(const String *result=mime_types->item(1))
 					return *result;
 				else
-					THROW(0, 0,
+					throw Exception(0, 0,
 						mime_types->origin_string(),
 						"MIME-TYPE table column elements must not be empty");
 		}

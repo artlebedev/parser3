@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.126 2001/10/11 10:21:44 parser Exp $
+	$Id: table.C,v 1.127 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "classes.h"
@@ -278,7 +278,7 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 						value_fields+=self_table.column_name2index(value_field_name, true);
 					}
 				} else
-					PTHROW(0, 0,
+					throw Exception(0, 0,
 						&method_name,
 						"value field(s) must be string or self_table"
 					);
@@ -417,14 +417,14 @@ static void _join(Request& r, const String& method_name, MethodParams *params) {
 
 	Table *maybe_src=params->as_no_junction(0, "table ref must not be code").get_table();
 	if(!maybe_src)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"source is not a table");
 
 	Table& src=*maybe_src;
 	Table& dest=static_cast<VTable *>(r.self)->table();
 	if(&src == &dest)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"source and destination are same table");
 
@@ -496,7 +496,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	if(!r.connection)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"without connect");
 
@@ -513,7 +513,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 				if(Value *voffset=(Value *)options->get(*sql_offset_name))
 					offset=(ulong)r.process(*voffset).as_double();
 			} else
-				PTHROW(0, 0,
+				throw Exception(0, 0,
 					&method_name,
 					"options must be hash");
 	}
@@ -524,20 +524,16 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
 	Table_sql_event_handlers handlers(pool, method_name,
 		statement_string, statement_cstr);
-	bool need_rethrow=false; Exception rethrow_me;
-		PTRY {
+	try {
 		r.connection->query(
 			statement_cstr, offset, limit, 
 			handlers);
+	} catch(const Exception& e) { // query problem
+		// more specific source [were url]
+		throw Exception(e.type(), e.code(), 
+			&statement_string, 
+			"%s", e.comment());
 	}
-	PCATCH(e) { // query problem
-		rethrow_me=e;  need_rethrow=true;
-	}
-	PEND_CATCH
-	if(need_rethrow)
-		PTHROW(rethrow_me.type(), rethrow_me.code(), 
-			&statement_string, // setting more specific source [were url]
-			rethrow_me.comment());
 
 	Table *result=
 		handlers.table?handlers.table: // query resulted in table? return it

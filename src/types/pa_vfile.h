@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.35 2001/10/09 08:13:04 parser Exp $
+	$Id: pa_vfile.h,v 1.36 2001/10/19 12:43:30 parser Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -69,14 +69,14 @@ public: // usage
 		if(fvalue_ptr)
 			file_write(pool(), file_spec, fvalue_ptr, fvalue_size, is_text);
 		else
-			THROW(0, 0,
+			throw Exception(0, 0,
 				&file_spec,
 				"saving stat-ed file");
 	}
 
 	const void *value_ptr() const { 
 		if(!fvalue_ptr)
-			THROW(0, 0,
+			throw Exception(0, 0,
 				0,
 				"getting value of stat-ed file");
 

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.72 2001/10/16 07:51:07 parser Exp $
+	$Id: pa_common.C,v 1.73 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "pa_common.h"
@@ -112,7 +112,7 @@ bool file_read(Pool& pool, const String& file_spec,
 			if(as_text)
 				((char*&)data)[read_size]=0;
 		} else
-			PTHROW(0, 0, 
+			throw Exception(0, 0, 
 				&file_spec, 
 				"read failed: actually read %d bytes count not in [0..%lu] valid range", 
 					read_size, (unsigned long)max_size); //never
@@ -122,7 +122,7 @@ bool file_read(Pool& pool, const String& file_spec,
 		return true;
     }
 	if(fail_on_read_problem)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&file_spec, 
 			"read failed: %s (%d), actual filename '%s'", 
 				strerror(errno), errno, fname);
@@ -171,7 +171,7 @@ void file_write(Pool& pool,
 			return;
 		}
 	}
-	PTHROW(0, 0, 
+	throw Exception(0, 0, 
 		&file_spec, 
 		"write failed: %s (%d), actual filename '%s'", 
 			strerror(errno), errno, fname);
@@ -188,7 +188,7 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 void file_delete(Pool& pool, const String& file_spec) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	if(unlink(fname)!=0)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&file_spec, 
 			"unlink failed: %s (%d), actual filename '%s'", 
 				strerror(errno), errno, fname);
@@ -202,7 +202,7 @@ void file_move(Pool& pool, const String& old_spec, const String& new_spec) {
 	create_dir_for_file(new_spec);
 
 	if(rename(old_spec_cstr, new_spec_cstr)!=0)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&old_spec, 
 			"rename failed: %s (%d), actual filename '%s' to '%s'", 
 				strerror(errno), errno, old_spec_cstr, new_spec_cstr);
@@ -215,7 +215,7 @@ static bool entry_readable(const String& file_spec, bool need_dir) {
     const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	struct stat finfo;
 	if(access(fname, R_OK)==0 && stat(fname, &finfo)==0) {
-		bool is_dir=(bool)(finfo.st_mode&S_IFDIR);
+		bool is_dir=finfo.st_mode&S_IFDIR != 0;
 		return is_dir==need_dir;
 	}
 	return false;
@@ -247,7 +247,7 @@ bool file_stat(const String& file_spec,
     struct stat finfo;
 	if(stat(fname, &finfo)!=0)
 		if(fail_on_read_problem)
-			PTHROW(0, 0, 
+			throw Exception(0, 0, 
 				&file_spec, 
 				"getting file size failed: %s (%d), real filename '%s'", 
 					strerror(errno), errno, fname);

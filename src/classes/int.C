@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.36 2001/10/12 12:48:22 parser Exp $
+	$Id: int.C,v 1.37 2001/10/19 12:43:29 parser Exp $
 */
 
 #include "classes.h"
@@ -85,7 +85,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		if(default_code)
 			val=r.process(*default_code).as_int();
 		else {
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&method_name,
 				"produced no result, but no default option specified");
 			val=0; //calm, compiler

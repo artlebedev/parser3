@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.33 2001/10/18 13:18:53 parser Exp $
+	$Id: pa_pool.C,v 1.34 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -16,7 +16,7 @@
 #endif
 
 Pool::Pool(void *astorage) : 
-	fstorage(astorage), fcontext(0), ftag(0), fexception(0)
+	fstorage(astorage), fcontext(0), ftag(0)
 #ifdef XML
 	, transcoder(0) 
 #endif
@@ -35,13 +35,13 @@ Pool::~Pool() {
 }
 
 void Pool::fail_alloc(size_t size) const {
-	fexception->_throw(0, 0,
+	throw Exception(0, 0,
 		0,
 		"failed to allocate %u bytes", size);
 }
 
 void Pool::fail_register_cleanup() const {
-	fexception->_throw(0, 0,
+	throw Exception(0, 0,
 		0,
 		"failed to register cleanup");
 }

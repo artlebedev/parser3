@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.195 2001/10/15 15:11:18 parser Exp $
+	$Id: execute.C,v 1.196 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "pa_opcode.h"
@@ -164,7 +164,7 @@ void Request::execute(const Array& ops) {
 				const String& name=POP_NAME();
 				Value *value=static_cast<Value *>(classes().get(name));
 				if(!value) 
-					THROW(0,0,
+					throw Exception(0,0,
 						&name,
 						"class is undefined"); 
 
@@ -327,7 +327,7 @@ void Request::execute(const Array& ops) {
 				//	not a code-junction
 				Junction *junction=value->get_junction();
 				if(!junction)
-					THROW(0, 0,
+					throw Exception(0, 0,
 						&value->name(),
 						"(%s) not a method or junction, can not call it",
 							value->type()); 
@@ -378,7 +378,7 @@ void Request::execute(const Array& ops) {
 							String::UL_CLEAN  // not used, always an object, not string
 						);
 					} else
-						THROW(0, 0,
+						throw Exception(0, 0,
 							&frame->name(),
 							"method is static and can not be used as constructor");
 				} else {
@@ -410,7 +410,7 @@ void Request::execute(const Array& ops) {
 						method.call_type==Method::CT_ANY ||
 						method.call_type==call_type) // allowed call type?
 						if(method.native_code) { // native code?
-							method.check_actual_numbered_params(pool(),
+							method.check_actual_numbered_params(
 								frame->junction.self, 
 								frame->name(), frame->numbered_params());
 							method.native_code(
@@ -419,7 +419,7 @@ void Request::execute(const Array& ops) {
 						} else { // parser code
 							if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
 								anti_endless_execute_recoursion=0; // give @exception a chance
-								THROW(0, 0,
+								throw Exception(0, 0,
 									&frame->name(),
 									"endless recursion detected");
 							}
@@ -428,7 +428,7 @@ void Request::execute(const Array& ops) {
 							anti_endless_execute_recoursion--;
 						}
 					else
-						THROW(0, 0,
+						throw Exception(0, 0,
 							&frame->name(),
 							"is not allowed to be called %s", 
 								call_type==Method::CT_STATIC?"statically":"dynamically");
@@ -538,7 +538,7 @@ void Request::execute(const Array& ops) {
 					if(!problem_source->origin().file)
 						problem_source=&b->name();
 #endif
-					THROW(0, 0,
+					throw Exception(0, 0,
 						problem_source,
 						"Division by zero");
 				}
@@ -560,7 +560,7 @@ void Request::execute(const Array& ops) {
 					if(!problem_source->origin().file)
 						problem_source=&b->name();
 #endif
-					THROW(0, 0,
+					throw Exception(0, 0,
 						problem_source,
 						"Modulus by zero");
 				}
@@ -711,7 +711,7 @@ void Request::execute(const Array& ops) {
 			}
 
 		default:
-			THROW(0,0,
+			throw Exception(0,0,
 				0,
 				"invalid opcode %d", op.code); 
 		}

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.h,v 1.14 2001/10/11 14:57:53 parser Exp $
+	$Id: pa_exception.h,v 1.15 2001/10/19 12:43:30 parser Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -27,19 +27,10 @@ class Pool;
 class Exception {
 public:
 
-	/**
-		address for long jump to jump to 
-		regretfully public:
-		can't make local unless sure of inlining
-		for to-die stack frame ruins it all
-	*/
-	mutable jmp_buf mark;
-
-	/// throws an exception[really goes to mark-ed position
-	void _throw(
+	Exception(
 		const String *atype, const String *acode,
 		const String *aproblem_source, 
-		const char *comment_fmt, ...) const;
+		const char *comment_fmt, ...);
 
 #ifdef XML
 	/// converts XSL exception to parser exception
@@ -65,8 +56,9 @@ public:
 
 private:
 
-	mutable const String *ftype, *fcode, *fproblem_source;
-	mutable char fcomment[MAX_STRING];
+	const String *ftype, *fcode, *fproblem_source;
+	char fcomment[MAX_STRING];
+
 };
 
 #endif

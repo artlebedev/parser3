@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_exec.C,v 1.14 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_exec.C,v 1.15 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -351,7 +351,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		if(error_size>3) // ".\r\n"
 			szErrorDesc[error_size-3]=0;
             
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&file_spec,
 			"(real filename=\"%s\") exec failed - %s (%ld)",
 				cmd,
@@ -393,7 +393,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 
 		return get_exit_status(pid); // negative may mean "-errno[execl()]"
 	} else 
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&file_spec,
 			"pipe error");
 #endif

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.111 2001/10/17 15:44:47 parser Exp $
+	$Id: pa_string.C,v 1.112 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -153,7 +153,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 
 char String::first_char() const {
 	if(!fused_rows)
-		THROW(0, 0,
+		throw Exception(0, 0,
 			this,
 			"getting first char of empty string");
 
@@ -508,7 +508,7 @@ bool String::match(const unsigned char *pcre_tables,
 				   bool *was_global) const { 
 
 	if(!regexp.size())
-		THROW(0, 0,
+		throw Exception(0, 0,
 			aorigin,
 			"regexp is empty");
 	const char *pattern=regexp.cstr(UL_AS_IS);
@@ -522,14 +522,14 @@ bool String::match(const unsigned char *pcre_tables,
 		pcre_tables);
 
 	if(!code)
-		THROW(0, 0,
+		throw Exception(0, 0,
 			&regexp.mid(erroffset, regexp.size()),
 			"regular expression syntax error - %s", errptr);
 	
 	int info_substrings=pcre_info(code, 0, 0);
 	if(info_substrings<0) {
 		pcre_free(code);
-		THROW(0, 0,
+		throw Exception(0, 0,
 			aorigin,
 			"pcre_info error (%d)", 
 				info_substrings);
@@ -569,7 +569,7 @@ bool String::match(const unsigned char *pcre_tables,
 
 		if(exec_substrings<0) {
 			pcre_free(code);
-			THROW(0, 0,
+			throw Exception(0, 0,
 				aorigin,
 				"regular expression execute error (%d)", 
 					exec_substrings);
@@ -617,7 +617,7 @@ String& String::change_case(Pool& pool, const unsigned char *tables,
 		b=0;
 		break;
 	default:
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			this, 
 			"unknown change case kind #%d", 
 				static_cast<int>(kind)); // never
@@ -814,7 +814,7 @@ double String::as_double() const {
 		result=(double)strtod(cstr, &error_pos);
 
 	if(*error_pos/*not EOS*/)
-		THROW(0, 0,
+		throw Exception(0, 0,
 			this,
 			"invalid number (double)");
 
@@ -834,7 +834,7 @@ int String::as_int() const {
 		result=(int)strtol(cstr, &error_pos, 0);
 
 	if(*error_pos/*not EOS*/)
-		THROW(0, 0,
+		throw Exception(0, 0,
 			this,
 			"invalid number (int)");
 

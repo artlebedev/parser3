@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: math.C,v 1.6 2001/09/26 10:32:25 parser Exp $
+	$Id: math.C,v 1.7 2001/10/19 12:43:29 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -41,7 +41,7 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
 	Value& range=params->as_junction(0, "range must be expression");
     uint max=(uint)r.process(range).as_double();
     if(max<=1)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"bad range [0..%u]", max);
 	

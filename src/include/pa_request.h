@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.103 2001/10/15 11:48:04 parser Exp $
+	$Id: pa_request.h,v 1.104 2001/10/19 12:43:30 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -303,9 +303,10 @@ private:
 	Value& get_as(int index, bool as_junction, const char *msg) { 
 		Value& result=get(index);
 		if((result.get_junction()!=0) ^ as_junction)
-			THROW(0, 0,
+			throw Exception(0, 0,
 				&fmethod_name,
 				"%s (parameter #%d)", msg, 1+index);
+
 		return result;
 	}
 

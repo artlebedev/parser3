@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.38 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_table.C,v 1.39 2001/10/19 12:43:30 parser Exp $
 */
 
 #include <stdlib.h>
@@ -35,7 +35,7 @@ int Table::column_name2index(const String& column_name, bool bark) const {
 	if(fcolumns) {// named
 		int result=name2number.get_int(column_name)-1; // -1 = column not found
 		if(bark && result<0)
-			THROW(0, 0,
+			throw Exception(0, 0,
 				&column_name,
 				"column not found");
 		return result;
@@ -46,7 +46,7 @@ int Table::column_name2index(const String& column_name, bool bark) const {
 		if(*error_pos/*not EOS*/) {
 			result=-1;
 			if(bark)
-				THROW(0, 0,
+				throw Exception(0, 0,
 					&column_name,
 					"invalid column number");
 		}

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_socks.C,v 1.6 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_socks.C,v 1.7 2001/10/19 12:43:30 parser Exp $
 */
 
 #define NO_UNISTD_H
@@ -38,7 +38,7 @@ void init_socks(Pool& pool) {
 	if ( err != 0 ) {
 	    /* Tell the user that we could not find a usable */
 		/* WinSock DLL.                                  */    
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			0,
 			"can not WSAStartup, err=%d", 
 				err);

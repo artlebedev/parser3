@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.27 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vint.h,v 1.28 2001/10/19 12:43:30 parser Exp $
 */
 
 #ifndef PA_VINT_H
@@ -22,7 +22,7 @@ public: // Value
 
 	const char *type() const { return "int"; }
 	/// VInt: clone
-	Value *as_expr_result(bool return_string_as_is=false) { return NEW VInt(pool(), finteger); }
+	Value *as_expr_result(bool ) { return NEW VInt(pool(), finteger); }
 
 	/// VInt: finteger
 	const String *get_string() {

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.56 2001/10/16 10:26:09 parser Exp $
+	$Id: image.C,v 1.57 2001/10/19 12:43:29 parser Exp $
 */
 
 /*
@@ -128,13 +128,13 @@ void measure_gif(Pool& pool, const String *origin_string,
 	void *buf;
 	const int head_size=sizeof(GIF_Header);
 	if(reader.read(buf, head_size)<head_size)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			origin_string, 
 			"not GIF file - too small");
 	GIF_Header *head=(GIF_Header *)buf;
 
 	if(strncmp(head->type, "GIF", 3)!=0)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			origin_string, 
 			"not GIF file - wrong signature");	
 
@@ -152,13 +152,13 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 	void *buf;
 	const size_t prefix_size=2;
 	if(reader.read(buf, prefix_size)<prefix_size)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			origin_string, 
 			"not JPEG file - too small");
 	unsigned char *signature=(unsigned char *)buf;
 	
 	if(!(signature[0]==0xFF && signature[1]==0xD8)) 
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			origin_string, 
 			"not JPEG file - wrong signature");
 
@@ -193,7 +193,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 	}
 
 	if(!found)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			origin_string, 
 			"broken JPEG file - size frame not found");
 }
@@ -209,11 +209,11 @@ void measure(Pool& pool, const String& file_name,
 		else if(strcasecmp(cext, "JPG")==0 || strcasecmp(cext, "JPEG")==0) 
 			measure_jpeg(pool, &file_name, reader, width, height);
 		else
-			PTHROW(0, 0, 
+			throw Exception(0, 0, 
 				&file_name, 
 				"unhandled image file name extension '%s'", cext);
 	} else
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&file_name, 
 			"can not determine image type - no file name extension");
 }
@@ -321,7 +321,7 @@ static void _html(Request& r, const String& method_name, MethodParams *params) {
 				Attrib_info attrib_info={&tag, 0};
 				attribs->for_each(append_attrib_pair, &attrib_info);
 			} else
-				PTHROW(0, 0, 
+				throw Exception(0, 0, 
 					&method_name, 
 					"attributes must be hash");
 	}
@@ -342,12 +342,12 @@ static gdImage *load(Request& r, const String& method_name,
 		bool ok=image.CreateFromGif(f);
 		fclose(f);
 		if(!ok)
-			PTHROW(0, 0, 
+			throw Exception(0, 0, 
 				&file_name,
 				"is not in GIF format");
 		return &image;
 	} else {
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"can not open '%s'", file_name_cstr);
 		return 0;
@@ -385,7 +385,7 @@ static void _gif(Request& r, const String& method_name, MethodParams *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
@@ -406,7 +406,7 @@ static void _line(Request& r, const String& method_name, MethodParams *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
@@ -423,7 +423,7 @@ static void _fill(Request& r, const String& method_name, MethodParams *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
@@ -438,7 +438,7 @@ static void _rectangle(Request& r, const String& method_name, MethodParams *para
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
@@ -455,7 +455,7 @@ static void _bar(Request& r, const String& method_name, MethodParams *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
@@ -482,13 +482,13 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
 	Table *table=params->as_no_junction(2, "coordinates must not be code").get_table();
 	if(!table) 
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"coordinates must be table");
 
@@ -505,13 +505,13 @@ static void _polyline(Request& r, const String& method_name, MethodParams *param
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
 	Table *table=params->as_no_junction(1, "coordinates must not be code").get_table();
 	if(!table) 
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"coordinates must be table");
 
@@ -528,13 +528,13 @@ static void _polygon(Request& r, const String& method_name, MethodParams *params
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
 	Table *table=params->as_no_junction(1, "coordinates must not be code").get_table();
 	if(!table) 
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"coordinates must be table");
 
@@ -550,13 +550,13 @@ static void _polybar(Request& r, const String& method_name, MethodParams *params
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
 	Table *table=params->as_no_junction(1, "coordinates must not be code").get_table();
 	if(!table) 
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"coordinates must be table");
 
@@ -651,7 +651,7 @@ static void _font(Request& r, const String& method_name, MethodParams *params) {
 		monospace_width=0;
 
 	if(!alphabet.size())
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"alphabet must not be empty");
 	
@@ -673,11 +673,11 @@ static void _text(Request& r, const String& method_name, MethodParams *params) {
 		if(vimage.font)
 			vimage.font->string_display(*vimage.image, x, y, s);
 		else
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&method_name,
 				"set the font first");
 	else
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 }
@@ -694,11 +694,11 @@ static void _length(Request& r, const String& method_name, MethodParams *params)
 			result.set_name(method_name);
 			r.write_assign_lang(result);
 		} else
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&method_name,
 				"set the font first");
 	else
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 }
@@ -708,7 +708,7 @@ static void _arc(Request& r, const String& method_name, MethodParams *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
@@ -727,7 +727,7 @@ static void _sector(Request& r, const String& method_name, MethodParams *params)
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
@@ -746,7 +746,7 @@ static void _circle(Request& r, const String& method_name, MethodParams *params)
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"does not contain an image");
 
@@ -766,13 +766,13 @@ gdImage& as_image(Pool& pool, const String& method_name, MethodParams *params,
 	Value& value=params->as_no_junction(index, msg);
 
 	if(strcmp(value.type(), VIMAGE_TYPE)!=0)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			msg);
 
 	gdImage *src=static_cast<VImage *>(&value)->image;
 	if(!src)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			msg);
 
@@ -784,7 +784,7 @@ static void _copy(Request& r, const String& method_name, MethodParams *params) {
 
 	gdImage *dest=static_cast<VImage *>(r.self)->image;
 	if(!dest)
-		PTHROW(0, 0, 
+		throw Exception(0, 0, 
 			&method_name, 
 			"self does not contain an image");
 

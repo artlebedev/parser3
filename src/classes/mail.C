@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.40 2001/09/28 15:58:26 parser Exp $
+	$Id: mail.C,v 1.41 2001/10/19 12:43:29 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -127,7 +127,7 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 
 	Value *vtype=static_cast<Value *>(attach_hash.get(*new(pool) String(pool, "type")));
 	if(!vtype)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&origin_string,
 			"has no $type");
 
@@ -135,7 +135,7 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 	if(Value *value=static_cast<Value *>(attach_hash.get(*value_name)))
 		vfile=value->as_vfile(String::UL_AS_IS); // bad with html attaches. todo: solve
 	else
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&origin_string,
 			"has no $value");
 
@@ -158,7 +158,7 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 	if(type=="uue") {
 		uuencode(result, file_name_cstr, *vfile);
 	} else 
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&type,
 			"unknown encode type");
 	
@@ -295,7 +295,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 						result << letter_hash_to_string(r, method_name, *part_hash, 
 							level+1, 0, 0);
 				else
-					PTHROW(0, 0,
+					throw Exception(0, 0,
 						seq[i].part_name,
 						"part is not hash");
 			}
@@ -308,7 +308,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 				body_element->as_string().cstr(String::UL_AS_IS);  // body
 		}
 	} else 
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"has no $body");
 
@@ -325,11 +325,11 @@ static void sendmail(Request& r, const String& method_name,
 
 #ifdef _MSC_VER
 	if(!from)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"has no 'from' header specified");
 	if(!to)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"has no 'to' header specified");
 
@@ -346,7 +346,7 @@ static void sendmail(Request& r, const String& method_name,
 
 		smtp.Send(server, port, letter_cstr, from->cstr(), to->cstr());
 	} else
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"$"MAIN_CLASS_NAME":"MAIL_NAME".SMTP not defined");
 #else
@@ -371,12 +371,12 @@ static void sendmail(Request& r, const String& method_name,
 						if(no==0)
 							continue;
 						else
-							PTHROW(0, 0,
+							throw Exception(0, 0,
 								&method_name,
 								"$"MAIN_CLASS_NAME":"MAIL_NAME".%s not defined", 
 								prog_key.cstr());
 				} else
-					PTHROW(0, 0,
+					throw Exception(0, 0,
 						&method_name,
 						"$" MAIN_CLASS_NAME ":" MAIL_NAME " not defined");
 			}
@@ -403,7 +403,7 @@ static void sendmail(Request& r, const String& method_name,
 			&argv,
 			in, out, err);
 		if(exit_status || err.size())
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&method_name,
 				"'%s' reported problem: %s (%d)",
 					file_spec->cstr(),
@@ -423,7 +423,7 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 	Value& vhash=params->as_no_junction(0, "message must not be code");
 	Hash *hash=vhash.get_hash();
 	if(!hash)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"message must be hash");
 
@@ -455,7 +455,7 @@ void MMail::configure_user(Request& r) {
 		if(Hash *mail_conf=mail_element->get_hash())
 			r.classes_conf.put(name(), mail_conf);
 		else
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				0,
 				"$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
 }

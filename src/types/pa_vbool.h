@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vbool.h,v 1.13 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vbool.h,v 1.14 2001/10/19 12:43:30 parser Exp $
 */
 
 #ifndef PA_VBOOL_H
@@ -21,7 +21,7 @@ public: // Value
 
 	const char *type() const { return "bool"; }
 	/// VBool: clone
-	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), fbool); }
+	Value *as_expr_result(bool) { return NEW VBool(pool(), fbool); }
 	/// VBool: fbool
 	bool as_bool() const { return fbool; }
 	/// VBool: fbool

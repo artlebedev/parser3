@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: smtp.C,v 1.4 2001/09/26 10:32:25 parser Exp $
+	$Id: smtp.C,v 1.5 2001/10/19 12:43:30 parser Exp $
 
 	Parts of the code here is based upon an early gensock and blat
 */
@@ -56,7 +56,7 @@ ConnectToHost(const char *hostname, const char *service)
 
     CloseConnect();
 
-    THROW(0, 0,
+    throw Exception(0, 0,
 		&origin_string,
 		"connect to %s:%s failed", 
 			hostname, service);
@@ -222,7 +222,7 @@ SendLine(const char *data, unsigned long length)
     while( length > 0 ) 
     {
         if( SOCKET_ERROR == select(0, NULL, &fds, NULL, &timeout) ) 
-            THROW(0, 0,
+            throw Exception(0, 0,
 				&origin_string,
 		        "connection::put_data() unexpected error from select: %d",
 					WSAGetLastError());
@@ -247,7 +247,7 @@ SendLine(const char *data, unsigned long length)
 	                break;
 
                 default:
-					THROW(0, 0,
+					throw Exception(0, 0,
 						&origin_string,
 		                "connection::put_data() unexpected error from send(): %d",
 							ws_error);
@@ -321,7 +321,7 @@ SendSmtpError(const char * message)
 	SendLine("QUIT\r\n", 6);
 	CloseConnect();
 
-	THROW(0, 0,
+	throw Exception(0, 0,
 		&origin_string,
 		"failed: %s", message);
 }
@@ -413,7 +413,7 @@ open_socket( const char *server, const char *service )
 	ConnectToHost(server, service);
 
     if( gethostname(my_hostname, sizeof(my_hostname)) )
-		THROW(0, 0,
+		throw Exception(0, 0,
 			&origin_string,
 			"lookup of '%s' failed", my_hostname);
 }
@@ -464,7 +464,7 @@ prepare_message(char *from, char *to, const char *server, const char *service)
 		SendLine(out_data, lstrlen(out_data) );
 
 		if( 250 != get_line() )
-			THROW(0, 0,
+			throw Exception(0, 0,
 				&origin_string,
 				"The mail server doesn't like the name %s. Have you set the 'To: ' field correctly?", 
 					ptr);

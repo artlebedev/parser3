@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.50 2001/09/26 10:32:25 parser Exp $
+	$Id: compile.C,v 1.51 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "pa_opcode.h"
@@ -63,7 +63,7 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 			pc.line--;
 			pc.col=-1;
 		} 
-		THROW(0,0,
+		throw Exception(0,0,
 			0,
 #ifndef NO_STRING_ORIGIN
 			"%s(%d:%d): "

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.26 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_types.h,v 1.27 2001/10/19 12:43:30 parser Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -13,11 +13,16 @@
 #include "pa_config_includes.h"
 
 #if _MSC_VER
-#	pragma warning(disable:4355)   // disable C4355 warning about using this
-	                               // in calls to parent constructors
-#	pragma warning(disable:4065)   // switch statement contains 'default' 
+// using this in calls to parent constructors
+#pragma warning(disable:4355)   
+
+//#	pragma warning(disable:4065)   // switch statement contains 'default' 
 								   // but no 'case' labels
-#	pragma warning(disable:4800)   // disable warning about (bool)(1&2)
+//#	pragma warning(disable:4800)   // (bool)(1&2)
+
+// assignment operator could not be generated
+//#pragma warning(disable:4512) 
+
 #endif
 
 /// for rare cases of undefined length using this-sized strings

@@ -77,7 +77,7 @@ PostBuild_Cmds=net start apache_release
 # PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\..\sql" /I "..\..\include" /I "..\.." /I "..\..\types" /I "..\..\classes" /I "\parser3project\win32xml\xml-xerces\c\src" /I "\parser3project\win32xml\xml-xalan\c\src" /I "\parser3project\win32apache13\src\include" /I "\parser3project\win32apache13\src\os\win32" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "SHARED_MODULE" /FD /TP /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "..\..\sql" /I "..\..\include" /I "..\.." /I "..\..\types" /I "..\..\classes" /I "\parser3project\win32xml\xml-xerces\c\src" /I "\parser3project\win32xml\xml-xalan\c\src" /I "\parser3project\win32apache13\src\include" /I "\parser3project\win32apache13\src\os\win32" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "SHARED_MODULE" /FD /TP /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.83 2001/10/17 15:44:47 parser Exp $
+	$Id: string.C,v 1.84 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "classes.h"
@@ -41,25 +41,17 @@ static void _length(Request& r, const String& method_name, MethodParams *) {
 
 static void _int(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	bool convert_problem=false; Exception rethrow_me;
 	int converted;
 	Value *default_code=params->size()>0?
 		default_code=&params->as_junction(0, "default must be int"):0; // (default)
-	PTRY {
+	try {
 		converted=r.self->as_int();
-	}
-	PCATCH(e) { // convert problem
-		if(convert_problem=!default_code) { // we have a problem when no default
-			rethrow_me=e;  
-			converted=0;
-		} else
+	} catch(...) { // convert problem
+		if(!default_code) // we have a problem when no default
+			/*re*/throw;
+		else
 			converted=r.process(*default_code).as_int();
 	}
-	PEND_CATCH
-	if(convert_problem)
-		PTHROW(rethrow_me.type(), rethrow_me.code(), 
-			rethrow_me.problem_source(),
-			rethrow_me.comment());
 
 	Value& result=*new(pool) VInt(pool, converted);
 	result.set_name(method_name);
@@ -68,25 +60,17 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 
 static void _double(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	bool convert_problem=false; Exception rethrow_me;
 	double converted;
 	Value *default_code=params->size()>0?
 		default_code=&params->as_junction(0, "default must be double"):0; // (default)
-	PTRY {
+	try {
 		converted=r.self->as_double();
-	}
-	PCATCH(e) { // convert problem
-		if(convert_problem=!default_code) { // we have a problem when no default
-			rethrow_me=e;  
-			converted=0;
-		} else
+	} catch(...) { // convert problem
+		if(!default_code) // we have a problem when no default
+			/*re*/throw;  
+		else
 			converted=r.process(*default_code).as_double();
 	}
-	PEND_CATCH
-	if(convert_problem)
-		PTHROW(rethrow_me.type(), rethrow_me.code(), 
-			rethrow_me.problem_source(),
-			rethrow_me.comment());
 
 	Value& result=*new(pool) VDouble(pool, converted);
 	result.set_name(method_name);
@@ -322,7 +306,7 @@ public:
 
 	void add_column(void *ptr, size_t size) {
 		if(got_column)
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&statement_string,
 				"result must contain exactly one column");
 		got_column=true;
@@ -331,7 +315,7 @@ public:
 	void add_row() { /* ignore */ }
 	void add_row_cell(void *ptr, size_t size) {
 		if(got_cell)
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&statement_string,
 				"result must not contain more then one row");
 		got_cell=true;
@@ -353,7 +337,7 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 	Pool& pool=r.pool();
 
 	if(!r.connection)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"without connect");
 
@@ -372,12 +356,12 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 					offset=(ulong)r.process(*voffset).as_double();
 				if(default_code=(Value *)options->get(*sql_default_name)) {
 					if(!default_code->get_junction())
-						PTHROW(0, 0,
+						throw Exception(0, 0,
 							&method_name,
 							"default option must be code");
 				}
 			} else
-				PTHROW(0, 0,
+				throw Exception(0, 0,
 					&method_name,
 					"options must be hash");
 	} else
@@ -388,20 +372,16 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
 	String_sql_event_handlers handlers(pool, statement_string, statement_cstr);
-	bool need_rethrow=false; Exception rethrow_me;
-	PTRY {
+	try {
 		r.connection->query(
 			statement_cstr, offset, limit, 
 			handlers);
+	} catch(const Exception& e) { // query problem
+		// give more specific source [were url]
+		throw Exception(e.type(), e.code(),
+			&statement_string, 
+			"%s", e.comment());
 	}
-	PCATCH(e) { // query problem
-		rethrow_me=e;  need_rethrow=true;
-	}
-	PEND_CATCH
-	if(need_rethrow)
-		PTHROW(rethrow_me.type(), rethrow_me.code(),
-			&statement_string, // setting more specific source [were url]
-			rethrow_me.comment());
 	
 	if(!handlers.got_cell)
 		return 0; // no lines, caller should return second param[default value]
@@ -421,7 +401,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			if(!string)
 				string=new(pool) String(pool);
 		} else
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&method_name,
 				"produced no result, but no default option specified");
 	}
@@ -436,7 +416,7 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 
 	Table *table=params->as_no_junction(0, "parameter must not be code").get_table();
 	if(!table)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"parameter must be table");
 

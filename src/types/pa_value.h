@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.74 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_value.h,v 1.75 2001/10/19 12:43:30 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -66,7 +66,7 @@ public: // Value
 		- VTable: count
 		- VHash: count
 	*/
-	virtual Value *as_expr_result(bool return_string_as_is=false) { 
+	virtual Value *as_expr_result(bool /*return_string_as_is*/=false) { 
 		bark("(%s) can not be used in expression"); return 0; 
 	}
 	
@@ -130,8 +130,8 @@ public: // Value
 		- VString: vfile
 		- VImage: true
 	*/
-	virtual VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED,
-		bool origins_mode=false) { 
+	virtual VFile *as_vfile(String::Untaint_lang /*lang*/=String::UL_UNSPECIFIED,
+		bool /*origins_mode*/=false) { 
 		bark("(%s) does not have file value"); return 0; 
 	}
 	
@@ -160,7 +160,7 @@ public: // Value
 		- VFile: method,field
 		- VDate: CLASS,method,field
 		*/
-	virtual Value *get_element(const String& name) { bark("(%s) has no elements"); return 0; }
+	virtual Value *get_element(const String& /*name*/) { bark("(%s) has no elements"); return 0; }
 	
 	/** store Value element under @a name
 		@return for
@@ -173,7 +173,7 @@ public: // Value
 		- VResponse: (attribute)=value
 		- VCookie: field
 	*/
-	virtual void put_element(const String& name, Value *value) { 
+	virtual void put_element(const String& name, Value * /*value*/) { 
 		// to prevent modification of system classes,
 		// created at system startup, and not having exception
 		// handler installed, we neet to bark using request.pool
@@ -232,8 +232,7 @@ protected:
 	/// throws exception specifying bark-reason and name() type() of problematic value
 	void bark(char *reason, 
 		const char *alt_reason=0, const String *problem_source=0) const {
-		Pool& pool=problem_source?problem_source->pool():this->pool();
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			problem_source?problem_source:&name(),
 			problem_source?alt_reason:reason, type());
 	}
@@ -351,12 +350,12 @@ public:
 	}
 
 	/// call this before invoking to ensure proper actual numbered params count
-	void check_actual_numbered_params(Pool& pool,
+	void check_actual_numbered_params(
 		Value& self, const String& actual_name, Array *actual_numbered_params) const {
 
 		int actual_count=actual_numbered_params?actual_numbered_params->size():0;
 		if(actual_count<min_numbered_params_count) // not proper count? bark
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&actual_name,
 				"native method of %s (%s) accepts minimum %d parameter(s) (%d present)", 
 					self.name().cstr(),

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: classes.h,v 1.12 2001/09/26 10:32:25 parser Exp $
+	$Id: classes.h,v 1.13 2001/10/19 12:43:29 parser Exp $
 */
 
 #ifndef CLASSES_H
@@ -26,9 +26,9 @@ public: // Methoded
 	*/
 	virtual bool used_directly() =0;
 	/// use this method to read parameters from root "auto.p"; access r.main_class
-	virtual void configure_admin(Request& r) {}
+	virtual void configure_admin(Request& ) {}
 	/// use this method to read parameters from 'MAIN' class; access r.main_class
-	virtual void configure_user(Request& r) {}
+	virtual void configure_user(Request& ) {}
 	/// use it to construct static variables. check some static so that would be only ONCE!
 	virtual void construct_statics() {}
 

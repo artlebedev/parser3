@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.19 2001/10/16 10:26:09 parser Exp $
+	$Id: gif.C,v 1.20 2001/10/19 12:43:30 parser Exp $
 
 	based on: gd
 
@@ -659,18 +659,18 @@ void gdImage::CopyResampled(gdImage& dst,
 			if (src.GetTransparent() == pd)
 				continue;
 			
-			float sy1, sy2, sx1, sx2;
-			float sx, sy;
-			float spixels = 0;
-			float red = 0.0, green = 0.0, blue = 0.0;
-			sy1 = ((float) y - (float) dstY) * (float) srcH /
-				(float) dstH;
-			sy2 = ((float) (y + 1) - (float) dstY) * (float) srcH /
-				(float) dstH;
+			double sy1, sy2, sx1, sx2;
+			double sx, sy;
+			double spixels = 0;
+			double red = 0.0, green = 0.0, blue = 0.0;
+			sy1 = ((double) y - (double) dstY) * (double) srcH /
+				(double) dstH;
+			sy2 = ((double) (y + 1) - (double) dstY) * (double) srcH /
+				(double) dstH;
 			sy = sy1;
 			do
 			{
-				float yportion;
+				double yportion;
 				if (floor (sy) == floor (sy1))
 				{
 					yportion = 1.0 - (sy - floor (sy));
@@ -688,15 +688,15 @@ void gdImage::CopyResampled(gdImage& dst,
 				{
 					yportion = 1.0;
 				}
-				sx1 = ((float) x - (float) dstX) * (float) srcW /
+				sx1 = ((double) x - (double) dstX) * (double) srcW /
 					dstW;
-				sx2 = ((float) (x + 1) - (float) dstX) * (float) srcW /
+				sx2 = ((double) (x + 1) - (double) dstX) * (double) srcW /
 					dstW;
 				sx = sx1;
 				do
 				{
-					float xportion;
-					float pcontribution;
+					double xportion;
+					double pcontribution;
 					int p;
 					if (floor (sx) == floor (sx1))
 					{
@@ -744,17 +744,17 @@ void gdImage::CopyResampled(gdImage& dst,
 			green=round(green);
 			blue=round(blue);
 			/* First look for an exact match */
-			int nc = dst.ColorExact(red, green, blue);
+			int nc = dst.ColorExact((int)red, (int)green, (int)blue);
 			if (nc == (-1)) {
 				/* No, so go for the closest color with high tolerance */
-				nc = dst.ColorClosest(red, green, blue,  tolerance);
+				nc = dst.ColorClosest((int)red, (int)green, (int)blue,  tolerance);
 				if (nc == (-1)) {
 					/* Not found with even high tolerance, so try to allocate it */
-					nc = dst.ColorAllocate(red, green,blue);
+					nc = dst.ColorAllocate((int)red, (int)green, (int)blue);
 
 					/* If we're out of colors, go for the closest color */
 					if (nc == (-1))
-						nc = dst.ColorClosest(red, green, blue);
+						nc = dst.ColorClosest((int)red, (int)green, (int)blue);
 				}
 			}
 			dst.SetPixel(x, y, nc);

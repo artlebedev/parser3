@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.17 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vstateless_class.h,v 1.18 2001/10/19 12:43:30 parser Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -88,10 +88,10 @@ public: // usage
 
 	//@{
 	/// @name just stubs, real onces defined below the hierarchy
-	virtual Value *get_field(const String& name) { return 0; }
-	virtual bool replace_field(const String& name, Value *value) { return false; }
+	virtual Value *get_field(const String& ) { return 0; }
+	virtual bool replace_field(const String& , Value *) { return false; }
 	
-	virtual Value *create_new_value(Pool& pool) { return 0; }
+	virtual Value *create_new_value(Pool& ) { return 0; }
 	//@}
 
 private: // Temp_method

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.22 2001/10/11 12:43:28 parser Exp $
+	$Id: hash.C,v 1.23 2001/10/19 12:43:29 parser Exp $
 */
 
 #include "classes.h"
@@ -56,7 +56,7 @@ public:
 	}
 	void before_rows() { 
 		if(columns.size()<=1)
-			PTHROW(0, 0,
+			throw Exception(0, 0,
 				&method_name,
 				"column count must be more than 1 to create a hash");
 	}
@@ -201,7 +201,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	if(!r.connection)
-		PTHROW(0, 0,
+		throw Exception(0, 0,
 			&method_name,
 			"without connect");
 
@@ -227,20 +227,10 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	hash.clear();	
 	Hash_sql_event_handlers handlers(pool, method_name,
 		statement_string, statement_cstr, hash);
-	bool need_rethrow=false; Exception rethrow_me;
-	PTRY {
-		r.connection->query(
-			statement_cstr, offset, limit,
-			handlers);
-	}
-	PCATCH(e) { // query problem
-		rethrow_me=e;  need_rethrow=true;
-	}
-	PEND_CATCH
-	if(need_rethrow)
-		PTHROW(rethrow_me.type(), rethrow_me.code(),
-			&statement_string, // setting more specific source [were url]
-			rethrow_me.comment());
+
+	r.connection->query(
+		statement_cstr, offset, limit,
+		handlers);
 }
 
 static void keys_collector(const Hash::Key& key, Hash::Val *value, void *info) {

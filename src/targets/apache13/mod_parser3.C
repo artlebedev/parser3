@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.2 2001/10/12 12:15:32 parser Exp $
+	$Id: mod_parser3.C,v 1.3 2001/10/19 12:43:30 parser Exp $
 */
 
 #include "httpd.h"
@@ -226,6 +226,63 @@ void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 	
 	@todo intelligent cache-control
 */
+static void real_parser_handler(Pool& pool, request_rec *r) {
+	ap_add_common_vars(r);
+	ap_add_cgi_vars(r);
+
+	// Request info
+	Request::Info request_info;
+	request_info.document_root=SAPI::get_env(pool, "DOCUMENT_ROOT");
+	request_info.path_translated=r->filename;
+	request_info.method=r->method;
+	request_info.query_string=r->args;
+	request_info.uri=SAPI::get_env(pool, "REQUEST_URI");
+	request_info.content_type=SAPI::get_env(pool, "CONTENT_TYPE");
+	const char *content_length=SAPI::get_env(pool, "CONTENT_LENGTH");
+	request_info.content_length=content_length?atoi(content_length):0;
+	request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
+	request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
+
+	//_asm int 3;
+	// prepare to process request
+	Request request(pool,
+		request_info,
+		String::UL_USER_HTML
+		);
+	
+	// process the request
+    Parser_module_config *dcfg=our_dconfig(r);
+	request.core(
+		dcfg->parser_root_config_filespec, true, // /path/to/admin/config
+		dcfg->parser_site_config_filespec, true, // /path/to/site/config
+		r->header_only!=0);
+}
+
+void call_real_parser_handler__do_SEH(Pool& pool, request_rec *r) {
+#ifdef WIN32
+	LPEXCEPTION_POINTERS system_exception=0;
+	__try {
+#endif
+		real_parser_handler(pool, r);
+		
+#if _MSC_VER
+	} __except (
+		(system_exception=GetExceptionInformation()), 
+		EXCEPTION_EXECUTE_HANDLER) {
+		
+		if(system_exception)
+			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
+				throw Exception(0, 0,
+				0,
+				"Exception 0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
+			else
+				throw Exception(0, 0, 0, "Exception <no exception record>");
+			else
+				throw Exception(0, 0, 0, "Exception <no exception information>");
+	}
+#endif
+}
+
 static int parser_handler(request_rec *r) {
 //	_asm int 3;
     if(r->finfo.st_mode == 0) 
@@ -246,49 +303,15 @@ static int parser_handler(request_rec *r) {
 	pool.register_cleanup(callXalanTerminate, 0);
 #endif
 
-    Parser_module_config *dcfg=our_dconfig(r);
-
-
 	/* A flag which modules can set, to indicate that the data being
 	 * returned is volatile, and clients should be told not to cache it.
 	 */
 	r->no_cache=1;
 
-	PTRY { // global try
-		ap_add_common_vars(r);
-		ap_add_cgi_vars(r);
-
-		// Request info
-		Request::Info request_info;
-		request_info.document_root=SAPI::get_env(pool, "DOCUMENT_ROOT");
-		request_info.path_translated=r->filename;
-		request_info.method=r->method;
-		request_info.query_string=r->args;
-		request_info.uri=SAPI::get_env(pool, "REQUEST_URI");
-		request_info.content_type=SAPI::get_env(pool, "CONTENT_TYPE");
-		const char *content_length=SAPI::get_env(pool, "CONTENT_LENGTH");
-		request_info.content_length=content_length?atoi(content_length):0;
-		request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
-		request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
-
-		//_asm int 3;
-		// prepare to process request
-		Request request(pool,
-			request_info,
-			String::UL_USER_HTML
-			);
-		
-		// process the request
-		request.core(
-			dcfg->parser_root_config_filespec, true, // /path/to/admin/config
-			dcfg->parser_site_config_filespec, true, // /path/to/site/config
-			r->header_only!=0);
-		// no actions with request' data past this point
-		// request.exception not not handled here, but all
-		// request' data are associated with it's pool=exception
-
+	try { // global try
+		call_real_parser_handler__do_SEH(pool, r);
 		// successful finish
-	} PCATCH(e) { // global problem 
+	} catch(const Exception& e) { // global problem 
 		// don't allocate anything on pool here:
 		//   possible pool' exception not catch-ed now
 		//   and there could be out-of-memory exception
@@ -314,7 +337,6 @@ static int parser_handler(request_rec *r) {
 
 		// unsuccessful finish
 	}
-	PEND_CATCH
 
     /*
      * We did what we wanted to do, so tell the rest of the server we
@@ -370,7 +392,8 @@ static void setup_module_cells() {
      * allocate our module-private pool.
      */
 	static Pool pool(ap_make_sub_pool(NULL)); // global pool
-	PTRY {
+	/// no trying to __try here [yet]
+	try {
 		// init socks
 		init_socks(pool);
 
@@ -389,12 +412,11 @@ static void setup_module_cells() {
 		init_methoded_array(pool);
 		// init global variables
 		pa_globals_init(pool);
-	} PCATCH(e) { // global problem 
+	} catch(const Exception& e) { // global problem 
 		ap_log_error(APLOG_MARK, APLOG_EMERG, 0, 
 			"setup_module_cells failed: ", e.comment());
 		exit(1);
 	}
-	PEND_CATCH
 }
 
 static void parser_server_init(server_rec *s, pool *p) {

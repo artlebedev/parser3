@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.52 2001/10/13 17:42:52 parser Exp $
+	$Id: parser3isapi.C,v 1.53 2001/10/19 12:43:30 parser Exp $
 */
 
 #ifndef _MSC_VER
@@ -93,7 +93,7 @@ void callXalanTerminate(void *) {
 
 // goes to 'cs-uri-query' log file field. webmaster: switch it ON[default OFF].
 void SAPI::log(Pool& pool, const char *fmt, ...) {
-	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.get_context());
 	
 	va_list args;
 	va_start(args,fmt);
@@ -109,7 +109,7 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 }
 
 const char *SAPI::get_env(Pool& pool, const char *name) {
-	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.get_context());
 
 	char *variable_buf=(char *)pool.malloc(MAX_STRING);
 	DWORD variable_len = MAX_STRING-1;
@@ -132,7 +132,7 @@ const char *SAPI::get_env(Pool& pool, const char *name) {
 }
 
 size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
-	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.get_context());
 
 	DWORD read_from_buf=0;
 	DWORD read_from_input=0;
@@ -162,7 +162,7 @@ size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
 }
 
 void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) {
-	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.get_context());
 
 	if(strcasecmp(key, "location")==0) 
 		ctx.http_response_code=302;
@@ -179,7 +179,7 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 
 /// @todo intelligent cache-control
 void SAPI::send_header(Pool& pool) {
-	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.get_context());
 
 	ctx.header->APPEND_CONST(
 		"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
@@ -215,7 +215,7 @@ void SAPI::send_header(Pool& pool) {
 }
 
 void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
-	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.get_context());
 
 	DWORD num_bytes=size;
 	ctx.lpECB->WriteClient(ctx.lpECB->ConnID, 
@@ -231,7 +231,7 @@ static bool parser_init() {
 	globals_inited=true;
 
 	static Pool pool(0); // global pool
-	PTRY {
+	try {
 		// init socks
 		init_socks(pool);
 
@@ -254,13 +254,12 @@ static bool parser_init() {
 		
 		// successful finish
 		return true;
-	} PCATCH(e) { // global problem 
-		//const char *body=e.comment();
+	} catch(const Exception& e) { // global problem 
+		const char *body=e.comment();
 		
 		// unsuccessful finish
 		return false;
 	}
-	PEND_CATCH
 }
 
 /// ISAPI //
@@ -282,6 +281,103 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 	@test
 		PARSER_VERSION from outside
 */
+
+void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool header_only) {
+	static_cast<SAPI_func_context *>(pool.get_context())->header=new(pool) String(pool);
+	
+	// Request info
+	Request::Info request_info;
+
+	size_t path_translated_buf_size=strlen(lpECB->lpszPathTranslated)+1;
+	char *filespec_to_process=(char *)pool.malloc(path_translated_buf_size);
+	memcpy(filespec_to_process, lpECB->lpszPathTranslated, path_translated_buf_size);
+#ifdef WIN32
+	back_slashes_to_slashes(filespec_to_process);
+#endif
+
+	if(const char *path_info=SAPI::get_env(pool, "PATH_INFO")) {
+		// IIS
+		size_t len=strlen(filespec_to_process)-strlen(path_info);
+		char *buf=(char *)pool.malloc(len+1);
+		strncpy(buf, filespec_to_process, len); buf[len]=0;
+		request_info.document_root=buf;
+	} else
+		throw Exception(0, 0,
+			0,
+			"ISAPI: no PATH_INFO defined (in reinventing DOCUMENT_ROOT)");
+
+	request_info.path_translated=filespec_to_process;
+	request_info.method=lpECB->lpszMethod;
+	request_info.query_string=lpECB->lpszQueryString;
+	if(lpECB->lpszQueryString && *lpECB->lpszQueryString) {
+		char *reconstructed_uri=(char *)pool.malloc(
+			strlen(lpECB->lpszPathInfo)+1/*'?'*/+
+			strlen(lpECB->lpszQueryString)+1/*0*/);
+		strcpy(reconstructed_uri, lpECB->lpszPathInfo);
+		strcat(reconstructed_uri, "?");
+		strcat(reconstructed_uri, lpECB->lpszQueryString);
+		request_info.uri=reconstructed_uri;
+	} else
+		request_info.uri=lpECB->lpszPathInfo;
+	
+	request_info.content_type=lpECB->lpszContentType;
+	request_info.content_length=lpECB->cbTotalBytes;
+	request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
+	request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
+
+	
+	// prepare to process request
+	Request request(pool,
+		request_info,
+		String::UL_USER_HTML
+		);
+
+	// some root-controlled location
+	//   c:\windows
+	char root_config_path[MAX_STRING];
+	GetWindowsDirectory(root_config_path, MAX_STRING);
+	// must be dynamic: rethrowing from request.core 
+	//   may return 'source' which can be inside of 'root auto.p@exeception'
+	char *root_config_filespec=(char *)pool.malloc(MAX_STRING);
+	snprintf(root_config_filespec, MAX_STRING, 
+		"%s/%s", 
+		root_config_path, CONFIG_FILE_NAME);
+
+	// process the request
+	request.core(
+		root_config_filespec, false/*may be abcent*/, // /path/to/admin/auto.p
+		0/*parser_site_auto_path*/, false, // /path/to/site/auto.p
+		header_only);
+}
+
+void call_real_parser_handler__do_SEH(Pool& pool, 
+									  LPEXTENSION_CONTROL_BLOCK lpECB,
+									  bool header_only) {
+#ifdef WIN32
+	LPEXCEPTION_POINTERS system_exception=0;
+	__try {
+#endif
+		real_parser_handler(pool, lpECB, header_only);
+		
+#if _MSC_VER
+	} __except (
+		(system_exception=GetExceptionInformation()), 
+		EXCEPTION_EXECUTE_HANDLER) {
+		
+		if(system_exception)
+			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
+				throw Exception(0, 0,
+				0,
+				"Exception 0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
+			else
+				throw Exception(0, 0, 0, "Exception <no exception record>");
+			else
+				throw Exception(0, 0, 0, "Exception <no exception information>");
+	}
+#endif
+}
+
+
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	Pool_storage pool_storage;
 	Pool pool(&pool_storage); // no allocations until assigned context [for reporting]
@@ -290,7 +386,6 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		0, // filling later: so that if there would be error pool would have ctx
 		200 // default http_response_code
 	};
-	_asm nop; // int 3;
 	pool.set_context(&ctx);// no allocations before this line!
 	
 #ifdef XML
@@ -307,74 +402,10 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 
 
 	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;
-	PTRY { // global try
-		ctx.header=new(pool) String(pool);
-		
-		// Request info
-		Request::Info request_info;
-
-		size_t path_translated_buf_size=strlen(lpECB->lpszPathTranslated)+1;
-		char *filespec_to_process=(char *)pool.malloc(path_translated_buf_size);
-		memcpy(filespec_to_process, lpECB->lpszPathTranslated, path_translated_buf_size);
-#ifdef WIN32
-		back_slashes_to_slashes(filespec_to_process);
-#endif
-
-		if(const char *path_info=SAPI::get_env(pool, "PATH_INFO")) {
-			// IIS
-			size_t len=strlen(filespec_to_process)-strlen(path_info);
-			char *buf=(char *)pool.malloc(len+1);
-			strncpy(buf, filespec_to_process, len); buf[len]=0;
-			request_info.document_root=buf;
-		} else
-			PTHROW(0, 0,
-				0,
-				"ISAPI: no PATH_INFO defined (in reinventing DOCUMENT_ROOT)");
-
-		request_info.path_translated=filespec_to_process;
-		request_info.method=lpECB->lpszMethod;
-		request_info.query_string=lpECB->lpszQueryString;
-		if(lpECB->lpszQueryString && *lpECB->lpszQueryString) {
-			char *reconstructed_uri=(char *)pool.malloc(
-				strlen(lpECB->lpszPathInfo)+1/*'?'*/+
-				strlen(lpECB->lpszQueryString)+1/*0*/);
-			strcpy(reconstructed_uri, lpECB->lpszPathInfo);
-			strcat(reconstructed_uri, "?");
-			strcat(reconstructed_uri, lpECB->lpszQueryString);
-			request_info.uri=reconstructed_uri;
-		} else
-			request_info.uri=lpECB->lpszPathInfo;
-		
-		request_info.content_type=lpECB->lpszContentType;
-		request_info.content_length=lpECB->cbTotalBytes;
-		request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
-		request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
-
-		
-		// prepare to process request
-		Request request(pool,
-			request_info,
-			String::UL_USER_HTML
-			);
-
-		// some root-controlled location
-		//   c:\windows
-		char root_config_path[MAX_STRING];
-		GetWindowsDirectory(root_config_path, MAX_STRING);
-		// must be dynamic: rethrowing from request.core 
-		//   may return 'source' which can be inside of 'root auto.p@exeception'
-		char *root_config_filespec=(char *)pool.malloc(MAX_STRING);
-		snprintf(root_config_filespec, MAX_STRING, 
-			"%s/%s", 
-			root_config_path, CONFIG_FILE_NAME);
-
-		// process the request
-		request.core(
-			root_config_filespec, false/*may be abcent*/, // /path/to/admin/auto.p
-			0/*parser_site_auto_path*/, false, // /path/to/site/auto.p
-			header_only);
+	try { // global try
+		call_real_parser_handler__do_SEH(pool, lpECB, header_only);
 		// successful finish
-	} PCATCH(e) { // global problem
+	} catch(const Exception& e) { // global problem
 		// don't allocate anything on pool here:
 		//   possible pool' exception not catch-ed now
 			//   and there could be out-of-memory exception
@@ -412,7 +443,6 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 
 		// unsuccessful finish
 	}
-	PEND_CATCH
 	
 	return HSE_STATUS_SUCCESS_AND_KEEP_CONN;
 }
