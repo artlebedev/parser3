@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 08:22:49 $";
+static const char* IDENT="$Date: 2003/11/06 14:04:41 $";
 
 #include "apr_strings.h"
 #include "pa_memory.h"
