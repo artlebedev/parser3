@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.80 2001/03/25 10:25:10 paf Exp $
+	$Id: pa_request.C,v 1.81 2001/03/25 10:29:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -174,11 +174,9 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// value must be allocated on request's pool for that pool used on
 		// meaning constructing @see attributed_meaning_to_string
 		default_content_type=defaults?defaults->get_element(*content_type_name):0;
-		Table *user_typo_table=0;
 		if(Value *element=main_class->get_element(*html_typo_name))
 			if(VTable *vtable=element->get_vtable())
-				user_typo_table=&vtable->table();
-		pool().set_tag(user_typo_table?user_typo_table:default_typo_table);
+				pool().set_tag(&vtable->table());
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);

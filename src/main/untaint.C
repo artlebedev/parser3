@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.19 2001/03/25 09:57:11 paf Exp $
+	$Id: untaint.C,v 1.20 2001/03/25 10:29:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -74,7 +74,8 @@ static bool typo_present(Array::Item *value, const void *info) {
 /// @todo optimize whitespaces for all but 'html'
 char *String::store_to(char *dest) const {
 	// $MAIN:html-typo table
-	Table *typo_table=static_cast<Table *>(pool().tag());
+	Table *user_typo_table=static_cast<Table *>(pool().tag());
+	Table *typo_table=user_typo_table?user_typo_table:default_typo_table;
 
 	const Chunk *chunk=&head; 
 	do {
@@ -194,7 +195,7 @@ char *String::store_to(char *dest) const {
 							const String& b=*static_cast<Array *>(item)->get_string(1);
 							// empty 'a' | 'b' checks
 							if(a.size()==0 || b.size()==0) {
-								pool().set_tag(0); // avoid recursion
+								pool().set_tag(default_typo_table); // avoid recursion
 								THROW(0, 0, 
 									typo_table->origin_string(), 
 									"typo table column elements must not be empty");
@@ -202,7 +203,7 @@ char *String::store_to(char *dest) const {
 							// overflow check:
 							//   b allowed to be max UNTAINT_TIMES_BIGGER then a
 							if(b.size()>UNTAINT_TIMES_BIGGER*a.size()) {
-								pool().set_tag(0); // avoid recursion
+								pool().set_tag(default_typo_table); // avoid recursion
 								THROW(0, 0, 
 									&b, 
 									"is %g times longer then '%s', "
