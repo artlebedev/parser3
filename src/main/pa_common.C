@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2003/11/20 16:34:26 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2003/11/24 12:21:02 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -330,7 +330,8 @@ struct File_read_http_result {
 /// @todo build .cookies field. use ^file.tables.SET-COOKIES.menu{ for now
 static File_read_http_result file_read_http(Request_charsets& charsets, 
 					    const String& file_spec, 
-					    HashStringValue *options=0) {
+					    bool as_text,
+						HashStringValue *options=0) {
 	File_read_http_result result;
 	char host[MAX_STRING]; 
 	const char* uri; 
@@ -501,12 +502,10 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	if(!real_remote_charset)
 		real_remote_charset=asked_remote_charset;
 
-	// todo: do that only if ^file::load[text
 	// output response
-	String::C real_body=Charset::transcode(
-		String::C(raw_body.cstrm()/*must be modifiable*/, raw_body.length()),
-		*real_remote_charset,
-		charsets.source());
+	String::C real_body=String::C(raw_body.cstrm()/*must be modifiable*/, raw_body.length());
+	if(as_text)
+		real_body=Charset::transcode(real_body, *real_remote_charset, charsets.source());
 
 	result.str=const_cast<char *>(real_body.str); // hacking a little
 	result.length=real_body.length;
@@ -553,7 +552,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 #ifdef PA_HTTP
 	if(file_spec.starts_with("http://")) {
 		// fail on read problem
-		File_read_http_result http=file_read_http(charsets, file_spec, params);
+		File_read_http_result http=file_read_http(charsets, file_spec, as_text, params);
 		result.success=true;
 		result.str=http.str;
 		result.length=http.length;
