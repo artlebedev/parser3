@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vbool.h,v 1.3 2001/03/19 16:06:16 paf Exp $
+	$Id: pa_vbool.h,v 1.4 2001/03/19 16:57:24 paf Exp $
 */
 
 #ifndef PA_VBOOL_H
@@ -14,6 +14,7 @@
 
 #define MAX_BOOL_AS_STRING 20
 
+/// VBool
 class VBool : public Value {
 public: // Value
 
