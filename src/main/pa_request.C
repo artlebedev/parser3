@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.84 2001/03/27 16:35:55 paf Exp $
+	$Id: pa_request.C,v 1.85 2001/03/28 14:07:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -47,8 +47,9 @@ Request::Request(Pool& apool,
 	fclasses(apool),
 	fdefault_lang(adefault_lang), flang(adefault_lang),
 	info(ainfo),
+	used_files(apool),
 	default_content_type(0),
-	used_files(apool)
+	mime_types(0)
 {
 	// root superclass, 
 	//   parent of all classes, 
@@ -112,7 +113,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				main_class_name, main_class);
 		}
 
-		// $MAIN:limits hash used here,
+		// $MAIN:LIMITS hash used here,
 		//	until someone with less privileges have overriden them
 		{
 			Value *limits=main_class?main_class->get_element(*limits_name):0;
@@ -180,7 +181,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		main_class=use_file(spath_translated, true/*don't ignore read problem*/,
 			main_class_name, main_class);
 
-		// $MAIN:defaults
+		// $MAIN:DEFAULTS
 		Value *defaults=main_class->get_element(*defaults_name);
 		// value must be allocated on request's pool for that pool used on
 		// meaning constructing @see attributed_meaning_to_string
@@ -188,6 +189,11 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		if(Value *element=main_class->get_element(*html_typo_name))
 			if(Table *table=element->get_table())
 				pool().set_tag(table);
+
+		// $MAIN:MIME-TYPES
+		if(Value *element=main_class->get_element(*mime_types_name))
+			if(Table *table=element->get_table())
+				mime_types=table;			
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.13 2001/03/28 13:21:32 paf Exp $
+	$Id: pa_vfile.h,v 1.14 2001/03/28 14:07:19 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -55,7 +55,8 @@ public: // usage
 		fields(apool) {
 	}
 
-	void set(const void *avalue_ptr, size_t avalue_size, const char *afile_name);
+	void set(const void *avalue_ptr, size_t avalue_size, const char *afile_name,
+		const String *amime_type=0);
 	
 	void save(const String& file_spec) {
 		if(fvalue_ptr)

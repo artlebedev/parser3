@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.69 2001/03/24 15:57:59 paf Exp $
+	$Id: pa_request.h,v 1.70 2001/03/28 14:07:15 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -153,6 +153,9 @@ public:
 	VResponse response;
 	/// $cookie:
 	VCookie cookie;
+
+	/// $MAIN:MIME-TYPES
+	Table *mime_types;
 
 	/// contexts
 	Value *self, *root, *rcontext;

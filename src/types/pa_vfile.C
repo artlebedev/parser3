@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.8 2001/03/28 13:21:32 paf Exp $
+	$Id: pa_vfile.C,v 1.9 2001/03/28 14:07:18 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,7 +15,8 @@
 #include "pa_vint.h"
 
 void VFile::set(const void *avalue_ptr, size_t avalue_size,
-				const char *afile_name) {
+				const char *afile_name,
+				const String *mime_type) {
 	fvalue_ptr=avalue_ptr;
 	fvalue_size=avalue_size;
 
@@ -38,5 +39,8 @@ void VFile::set(const void *avalue_ptr, size_t avalue_size,
 			premature_zero_pos?premature_zero_pos-(char *)fvalue_ptr:fvalue_size, 
 			"user <input type=file>", 0);
 	fields.put(*text_name, NEW VString(text));
+	// $mime-type
+	if(mime_type)
+		fields.put(*vfile_mime_type_name, NEW VString(*mime_type));
 }
 

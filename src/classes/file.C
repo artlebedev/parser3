@@ -3,12 +3,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.10 2001/03/28 13:21:27 paf Exp $
+	$Id: file.C,v 1.11 2001/03/28 14:07:14 paf Exp $
 */
 
 #include "pa_request.h"
 #include "_file.h"
 #include "pa_vfile.h"
+#include "pa_table.h"
 
 // consts
 
@@ -116,7 +117,26 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	char *user_file_name=params->size()==1?lfile_name.cstr()
 		:static_cast<Value *>(params->get(1))->as_string().cstr();
 	
-	static_cast<VFile *>(r.self)->set(data, size, user_file_name);
+	const String *mime_type=0;
+	if(params->size()==3)
+		mime_type=&static_cast<Value *>(params->get(2))->as_string();
+	else {
+		if(r.mime_types) {
+			if(char *cext=strrchr(user_file_name, '.')) {
+				cext++;
+				String sext(pool, cext);
+				if(r.mime_types->locate(0, sext))
+					if(!(mime_type=r.mime_types->item(1)))
+						PTHROW(0, 0,
+							r.mime_types->origin_string(),
+							"MIME-TYPE table column elements must not be empty");
+			}
+		}
+	}
+	if(!mime_type)
+		mime_type=new(pool) String(pool, "application/octet-stream");
+
+	static_cast<VFile *>(r.self)->set(data, size, user_file_name, mime_type);
 }
 
 // initialize
@@ -134,6 +154,6 @@ void initialize_file_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^load[disk-name]
 	// ^load[disk-name;user-name]
-	// TODO:^load[disk-name;user-name;content-type]
-	vclass.add_native_method("load", _load, 1, 2);
+	// ^load[disk-name;user-name;mime-type]
+	vclass.add_native_method("load", _load, 1, 3);
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.28 2001/03/26 10:36:53 paf Exp $
+	$Id: pa_globals.h,v 1.29 2001/03/28 14:07:15 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -49,9 +49,12 @@ class Table;
 #define RESPONSE_CLASS_NAME "response"
 #define COOKIE_CLASS_NAME "cookie"
 
-#define LIMITS_NAME "limits"
+#define LIMITS_NAME "LIMITS"
 #define POST_MAX_SIZE_NAME "post_max_size"
-#define DEFAULTS_NAME "defaults"
+#define DEFAULTS_NAME "DEFAULTS"
+#define MIME_TYPES_NAME "MIME_TYPES"
+#define VFILE_MIME_TYPE_NAME "mime-type"
+
 
 #define RESULT_VAR_NAME "result"
 //@}
@@ -96,6 +99,8 @@ extern String *limits_name;
 extern String *post_max_size_name;
 
 extern String *defaults_name;
+extern String *mime_types_name;
+extern String *vfile_mime_type_name;
 
 extern String *result_var_name;
 //@}

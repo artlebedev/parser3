@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.22 2001/03/28 09:01:22 paf Exp $
+	$Id: pa_table.C,v 1.23 2001/03/28 14:07:17 paf Exp $
 */
 
 #include <stdlib.h>
@@ -55,10 +55,9 @@ const String *Table::item(int column) const {
 	return 0; // it's OK we don't have row|column, just return nothing
 }
 
-bool Table::locate(const String& column, const String& value) {
-	int key_index=column_name2index(column);
+bool Table::locate(int column, const String& value) {
 	for(fcurrent=0; fcurrent<size(); fcurrent++) {
-		const String *item_value=item(key_index);
+		const String *item_value=item(column);
 		if(item_value && *item_value==value)
 			return true;
 	}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.35 2001/03/26 10:36:55 paf Exp $
+	$Id: pa_globals.C,v 1.36 2001/03/28 14:07:16 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -54,6 +54,8 @@ String *limits_name;
 String *post_max_size_name;
 
 String *defaults_name;
+String *mime_types_name;
+String *vfile_mime_type_name;
 
 Hash *untaint_lang_name2enum;
 
@@ -133,6 +135,8 @@ void pa_globals_init(Pool& pool) {
 	post_max_size_name=NEW String(pool, POST_MAX_SIZE_NAME);
 
 	defaults_name=NEW String(pool, DEFAULTS_NAME);
+	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
+	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
 
 	// hashes
 	untaint_lang_name2enum=NEW Hash(pool);
