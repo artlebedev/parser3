@@ -44,3 +44,11 @@ z
 [Fri Feb 22 15:05:26 2002] c:/drives/y/parser3project/parser3/www/htdocs/family/our_baby/inner.html(86): 'image_id' column not found [- -]
 [Fri Feb 22 15:16:46 2002] c:/drives/y/parser3project/parser3/www/htdocs/family/our_baby/inner.html(86): 'image_id' column not found [- -]
 [Fri Feb 22 15:19:17 2002] user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/t.html' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/t.html' [- -]
+[Fri Feb 22 16:16:25 2002] c:/drives/y/parser3project/parser3/www/htdocs/t.html(8): 'append' (void) not a method or junction, can not call it [- -]
+[Mon Feb 25 19:56:16 2002] c:/drives/y/parser3project/parser3/www/htdocs/z2/auto.p(1): 'common/lib.p' not found along MAIN:CLASS_PATH [- -]
+[Tue Feb 26 15:26:42 2002] exception in request exception handler: Exception 0xC0000005 at 0x00420E03
+[Tue Feb 26 15:27:16 2002] user-request(0): 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' read failed: No such file or directory (2), actual filename 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' [- -]
+[Tue Feb 26 15:27:24 2002] user-request(0): 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' read failed: No such file or directory (2), actual filename 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' [- -]
+[Tue Feb 26 15:30:07 2002] user-request(0): 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' read failed: No such file or directory (2), actual filename 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' [- -]
+[Tue Feb 26 15:41:34 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.html(108): 'zzz' (void) not a method or junction, can not call it [- -]
+[Tue Feb 26 15:41:42 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.html(108): 'xmlDataTypes' (hash) not a method or junction, can not call it [- -]

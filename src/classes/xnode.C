@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.39 2002/02/19 15:03:10 paf Exp $
+	$Id: xnode.C,v 1.40 2002/02/26 12:49:45 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -464,20 +464,21 @@ static void selectNodesHandler(Pool& pool,
 	case XPATH_UNDEFINED: 
 		break;
 	case XPATH_NODESET:
-		if(int size=res->nodesetval->nodeNr) {
-			Hash& hash=vhash->hash(0);
-			for(int i=0; i<size; i++) {
-				String& skey=*new(pool) String(pool);
-				{
-					char *buf=(char *)pool.malloc(MAX_NUMBER);
-					snprintf(buf, MAX_NUMBER, "%d", i);
-					skey << buf;
-				}
+		if(res->nodesetval)
+			if(int size=res->nodesetval->nodeNr) {
+				Hash& hash=vhash->hash(0);
+				for(int i=0; i<size; i++) {
+					String& skey=*new(pool) String(pool);
+					{
+						char *buf=(char *)pool.malloc(MAX_NUMBER);
+						snprintf(buf, MAX_NUMBER, "%d", i);
+						skey << buf;
+					}
 
-				hash.put(skey, new(pool) VXnode(pool, 
-					gdome_xml_n_mkref(res->nodesetval->nodeTab[i])));
+					hash.put(skey, new(pool) VXnode(pool, 
+						gdome_xml_n_mkref(res->nodesetval->nodeTab[i])));
+				}
 			}
-		}
 		break;
 	default: 
 		throw Exception(0, 0,
@@ -495,7 +496,7 @@ static void selectNodeHandler(Pool& pool,
 	case XPATH_UNDEFINED: 
 		break;
 	case XPATH_NODESET: 
-		if(res->nodesetval->nodeNr) { // empty result strangly has NODESET  res->type
+		if(res->nodesetval && res->nodesetval->nodeNr) { // empty result strangly has NODESET  res->type
 			if(res->nodesetval->nodeNr>1)
 				throw Exception(0, 0,
 				&expression,
@@ -533,7 +534,7 @@ static void selectBoolHandler(Pool& pool,
 		result=new(pool) VBool(pool, res->boolval!=0);
 		break;
 	case XPATH_NODESET: 
-		if(!res->nodesetval->nodeNr)
+		if(!(res->nodesetval && res->nodesetval->nodeNr))
 			break;
 		// else[nodeset] fall down to default
 	default: 
@@ -553,7 +554,7 @@ static void selectNumberHandler(Pool& pool,
 		result=new(pool) VDouble(pool, res->floatval);
 		break;
 	case XPATH_NODESET:
-		if(!res->nodesetval->nodeNr)
+		if(!(res->nodesetval && res->nodesetval->nodeNr))
 			break;
 		// else[nodeset] fall down to default
 	default: 
@@ -578,7 +579,7 @@ static void selectStringHandler(Pool& pool,
 					gdome_str_mkref_dup((const gchar *)res->stringval)).get()));
 		break;
 	case XPATH_NODESET: 
-		if(!res->nodesetval->nodeNr)
+		if(!(res->nodesetval && res->nodesetval->nodeNr))
 			break;
 		// else[nodeset] fall down to default
 	default: 
