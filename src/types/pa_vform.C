@@ -5,7 +5,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 	
-	$Id: pa_vform.C,v 1.40 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_vform.C,v 1.41 2001/10/24 14:39:44 parser Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -153,8 +153,10 @@ void VForm::ParseMimeInput(const char *content_type,
 }
 
 void VForm::AppendFormEntry(const char *aname, 
-							const char *value_ptr, size_t value_size, 
+							char *value_ptr, size_t value_size, 
 							const char *file_name) {
+	fix_line_breaks(value_ptr, value_size);
+
 	String& sname=*NEW String(pool(), aname);
 
 	Value *value;

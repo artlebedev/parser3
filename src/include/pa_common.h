@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.53 2001/10/08 15:14:07 parser Exp $
+	$Id: pa_common.h,v 1.54 2001/10/24 14:39:44 parser Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -67,6 +67,11 @@ int __snprintf(char *, size_t, const char *, ...);
 #endif
 
 #endif
+
+/** under WIN32 "t" mode fixes DOS chars OK, 
+	can't say that about other systems/ line break styles
+*/
+void fix_line_breaks(char *src, size_t& size);
 
 /**
 	read specified text file using pool, 

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.75 2001/10/23 14:43:44 parser Exp $
+	$Id: pa_common.C,v 1.76 2001/10/24 14:39:44 parser Exp $
 */
 
 #include "pa_common.h"
@@ -42,8 +42,7 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
 
 #endif
 
-// under WIN32 "t" mode fixes DOS chars OK, can't say that about other systems/ line break styles
-static void fix_line_breaks(char *src, size_t& size) {
+void fix_line_breaks(char *src, size_t& size) {
 	char *dest=src;
 	// fix DOS: \r\n -> \n
 	// fix Macintosh: \r -> \n
