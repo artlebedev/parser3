@@ -112,15 +112,17 @@ OK
 @exceptions1[]
 ^try{
 	aaa
-	^throw[user;paf;is stupid]
+	^throw[custom1;paf;is stupid]
 }{
-$exception.handled(1)
-#^throw[$exception]
-	type=$exception.type<br>
-    source=$exception.source<br>
-    file=$exception.file<br>
-    lineno=$exception.lineno<br>
-    comment=$exception.comment<br>
+	^if($exception.type eq custom1){
+		$exception.handled(1)
+#	^throw[$exception]
+		type=$exception.type<br>
+	    source=$exception.source<br>
+	    file=$exception.file<br>
+	    lineno=$exception.lineno<br>
+    	comment=$exception.comment<br>
+	}
 }
 
 @locate_by_expr[]
