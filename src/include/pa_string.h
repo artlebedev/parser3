@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.45 2001/03/19 20:46:36 paf Exp $
+	$Id: pa_string.h,v 1.46 2001/03/19 23:12:48 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -27,21 +27,21 @@
 		const char *src, size_t size,  \
 		bool tainted, \
 		const char *file, uint line
-/// appends clean piece to String
+/// appends clean piece to String @see String::real_append
 #	define APPEND(src, size, file, line) real_append(src, size, false, file, line)
-/// appends tainted piece to String
+/// appends tainted piece to String @see String::real_append
 #	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true, file, line)
 #else
 #	define STRING_APPEND_PARAMS \
 		const char *src, \
 		size_t size, \
 		bool tainted
-/// appends clean piece to String
+/// appends clean piece to String @see String::real_append
 #	define APPEND(src, size, file, line) real_append(src, size, false)
-/// appends tainted piece to String
+/// appends tainted piece to String @see String::real_append
 #	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true)
 #endif
-/// handy: appends const char* piece to String
+/// handy: appends const char* piece to String @see String::real_append
 #define	APPEND_CONST(src) APPEND(src, 0, 0, 0)
 
 /** 
@@ -101,6 +101,9 @@ public:
 	size_t size() const { return fsize; }
 	/// convert to C string
 	char *cstr() const;
+	/** append fragment
+		@see APPEND, APPEND_TAINTED, APPEND_CONST
+	*/
 	String& real_append(STRING_APPEND_PARAMS);
 	/// @return <0 ==0 or >0 depending on comparison result
 	int cmp (const String& src) const;
