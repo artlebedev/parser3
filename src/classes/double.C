@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.5 2001/03/11 08:16:31 paf Exp $
+	$Id: double.C,v 1.6 2001/03/11 08:28:40 paf Exp $
 */
 
 #include "pa_request.h"
@@ -33,7 +33,11 @@ static void _double(Request& r, Array *) {
 
 static void _inc(Request& r, Array *params) {
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
-	double increment=params->size()?static_cast<Value *>(params->get(0))->get_double():1;
+	double increment=params->size()?
+		r.autocalc(
+			*static_cast<Value *>(params->get(0)),
+			0/*no name*/,
+			false/*don't make it string*/).get_double():1;
 	vdouble->inc(increment);
 }
 
