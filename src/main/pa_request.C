@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.75 2001/03/24 11:33:27 paf Exp $
+	$Id: pa_request.C,v 1.76 2001/03/24 14:30:59 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -24,7 +24,6 @@
 
 /// $limits.post_max_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
-const char *DEFAULT_CONTENT_TYPE="text/html";
 
 //
 Request::Request(Pool& apool,
@@ -166,7 +165,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// meaning constructing @see attributed_meaning_to_string
 		default_content_type=defaults?
 			defaults->get_element(*content_type_name)
-			:NEW VString(*NEW String(pool(), DEFAULT_CONTENT_TYPE));
+			:NEW VString(*NEW String(pool(), "text/html"));
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);
@@ -184,9 +183,33 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// OK. write out the result
 		output_result(*body_string, header_only);
 	} 
-	CATCH(e) {
+	CATCH(e) { // request handling problem
+		// we're returning not result, but error explanation
 		TRY {
-			// we're returning not result, but error explanation
+			// log the beast
+			const String *problem_source=e.problem_source();
+			if(problem_source)
+				SAPI::log(pool(),
+#ifndef NO_STRING_ORIGIN
+					"%s(%d): "
+#endif
+					"'%s' %s [%s %s]",
+#ifndef NO_STRING_ORIGIN
+					problem_source->origin().file?problem_source->origin().file:"global",
+					problem_source->origin().line,
+#endif
+					problem_source->cstr(),
+					e.comment(),
+					e.type()?e.type()->cstr():"-",
+					e.code()?e.code()->cstr():"-"
+				);
+			else
+				SAPI::log(pool(),
+					"%s [%s %s]",
+					e.comment(),
+					e.type()?e.type()->cstr():"-",
+					e.code()?e.code()->cstr():"-"
+					);
 
 			// reset language to default
 			flang=fdefault_lang;

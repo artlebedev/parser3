@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.43 2001/03/24 09:24:45 paf Exp $
+	$Id: parser3.C,v 1.44 2001/03/24 14:31:01 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -86,6 +86,32 @@ void SAPI::send_header(Pool& pool) {
 
 void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 	stdout_write(buf, size);
+}
+
+void SAPI::log(Pool& pool, const char *fmt, ...) {
+#if 1 //winnt
+	if(HANDLE elh=OpenEventLog(0, "Application")) {
+		va_list args;
+		va_start(args,fmt);
+		char buf[MAX_STRING];
+		vsnprintf(buf, MAX_STRING, fmt, args);
+		
+		const char *strings[]={buf};
+		ReportEvent(elh, EVENTLOG_ERROR_TYPE, 0, 
+			1234, 0, 1, 0, strings, 0);
+
+		va_end(args);
+		CloseEventLog(elh);
+	} else {
+		DWORD id=GetLastError();
+		if(FILE *f=fopen("c:\\temp\\a", "wt")) {
+		fprintf(f, "%d",id);
+		fclose(f);
+		}
+	}
+#else
+	// todo: file
+#endif
 }
 //@}
 
@@ -233,8 +259,15 @@ int main(int argc, char *argv[]) {
 #ifdef WIN32
 		SetUnhandledExceptionFilter(0);
 #endif
+		// don't allocate anything on pool here:
+		//   possible pool' exception not catch-ed now
+		//   and there could be out-of-memory exception
 
 		const char *body=e.comment();
+		// log it
+		SAPI::log(pool, "exception in request exception handler: %s", body);
+
+		//
 		int content_length=strlen(body);
 
 		// prepare header

@@ -13,6 +13,8 @@
 #include "pa_version.h"
 #include "pool_storage.h"
 
+#include "nt_log_events.h"
+
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
 
 //@{
@@ -136,6 +138,21 @@ void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 	ctx.lpECB->WriteClient(ctx.lpECB->ConnID, 
 		const_cast<char *>(buf), &num_bytes, HSE_IO_SYNC);
 }
+
+/// goes to 'cs-uri-query' log file field. webmaster: switch it ON[default OFF].
+void SAPI::log(Pool& pool, const char *fmt, ...) {
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
+	
+	va_list args;
+	va_start(args,fmt);
+	char buf[MAX_STRING];
+	const char *prefix="PARSER_ERROR:";
+	strcpy(buf, prefix);
+	DWORD size=vsnprintf(buf+strlen(prefix), MAX_STRING-strlen(prefix), fmt, args);
+	
+	ctx.lpECB->ServerSupportFunction(ctx.lpECB->ConnID, 
+		HSE_APPEND_LOG_PARAMETER, buf, &size, 0);
+}
 //@}
 
 // 
@@ -256,6 +273,10 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		//   possible pool' exception not catch-ed now
 		//   and there could be out-of-memory exception
 		const char *body=e.comment();
+		// log it
+		SAPI::log(pool, "exception in request exception handler: %s", body);
+
+		//
 		int content_length=strlen(body);
 
 		// prepare header // not using SAPI func wich allocates on pool
@@ -289,22 +310,3 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	
 	return HSE_STATUS_SUCCESS_AND_KEEP_CONN;
 }
-
-/*
-BOOL APIENTRY DllMain(HANDLE hModule, 
-					  DWORD  ul_reason_for_call, 
-					  LPVOID lpReserved
-					  ) {
-    switch (ul_reason_for_call) {
-		case DLL_PROCESS_ATTACH:
-			break;
-		case DLL_THREAD_ATTACH:
-			break;
-		case DLL_THREAD_DETACH:
-			break;
-		case DLL_PROCESS_DETACH:
-			break;
-    }
-    return TRUE;
-}
-*/

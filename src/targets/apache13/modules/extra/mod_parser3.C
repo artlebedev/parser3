@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.17 2001/03/24 11:33:28 paf Exp $
+	$Id: mod_parser3.C,v 1.18 2001/03/24 14:31:00 paf Exp $
 */
 
 #include "httpd.h"
@@ -140,6 +140,17 @@ void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 	ap_rwrite(buf, size, r);
 	ap_kill_timeout(r);
 }
+
+void SAPI::log(Pool& pool, const char *fmt, ...) {
+	request_rec *r=static_cast<request_rec *>(pool.context());
+
+    va_list args;
+    va_start(args,fmt);
+	char buf[MAX_STRING];
+	vsnprintf(buf, MAX_STRING, fmt, args);
+	ap_log_rerror(0, 0, APLOG_ERR | APLOG_NOERRNO, r, "%s", buf);
+    va_end(args);
+}
 //@}
 
 /**
@@ -198,7 +209,14 @@ static int parser_handler(request_rec *r)
 
 		// successful finish
 	} PCATCH(e) { // global problem 
+		// don't allocate anything on pool here:
+		//   possible pool' exception not catch-ed now
+		//   and there could be out-of-memory exception
 		const char *body=e.comment();
+		// log it
+		SAPI::log(pool, "exception in request exception handler: %s", body);
+
+		//
 		int content_length=strlen(body);
 
 		// prepare header
@@ -275,11 +293,10 @@ static void setup_module_cells() {
 	PTRY {
 		// init global variables
 		pa_globals_init(pool);
-		
-		//...
 	} PCATCH(e) { // global problem 
-		const char *body=e.comment();
-		// TODO: somehow report that error
+		ap_log_error(APLOG_MARK, APLOG_EMERG, 0, 
+			"setup_module_cells failed: ", e.comment());
+		exit(1);
 	}
 	PEND_CATCH
 }

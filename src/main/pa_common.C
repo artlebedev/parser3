@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.26 2001/03/24 11:33:26 paf Exp $
+	$Id: pa_common.C,v 1.27 2001/03/24 14:30:59 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -65,9 +65,15 @@ char *file_read_text(Pool& pool, const char *fname, bool fail_on_read_problem) {
 		return result;//prepare_config(result, remove_empty_lines);
     }
 	if(fail_on_read_problem)
-		PTHROW(0,0,
-			0,
-			"can not read '%s' file", fname);
+		if(fname)
+			PTHROW(0, 0,
+				0,
+				"file_read('%s'): %s (#%d)", 
+					fname, strerror(errno), errno);
+		else
+			PTHROW(0, 0,
+				0,
+				"file_read: no filename specified");
     return 0;
 }
 
