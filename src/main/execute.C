@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/17 17:14:32 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/18 13:15:43 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -628,10 +628,28 @@ void Request::execute(const Array& ops) {
 				PUSH(value);
 				break;
 			}
+		case OP_BIN_SL:
+			{
+				b=POP();  a=POP();
+				value=NEW VInt(pool(), 
+					a->as_int() <<
+					b->as_int());
+				PUSH(value);
+				break;
+			}
+		case OP_BIN_SR:
+			{
+				b=POP();  a=POP();
+				value=NEW VInt(pool(), 
+					a->as_int() >>
+					b->as_int());
+				PUSH(value);
+				break;
+			}
 		case OP_BIN_AND:
 			{
 				b=POP();  a=POP();
-				value=NEW VDouble(pool(), 
+				value=NEW VInt(pool(), 
 					a->as_int() &
 					b->as_int());
 				PUSH(value);
@@ -640,7 +658,7 @@ void Request::execute(const Array& ops) {
 		case OP_BIN_OR:
 			{
 				b=POP();  a=POP();
-				value=NEW VDouble(pool(), 
+				value=NEW VInt(pool(), 
 					a->as_int() |
 					b->as_int());
 				PUSH(value);
@@ -649,7 +667,7 @@ void Request::execute(const Array& ops) {
 		case OP_BIN_XOR:
 			{
 				b=POP();  a=POP();
-				value=NEW VDouble(pool(), 
+				value=NEW VInt(pool(), 
 					a->as_int() ^
 					b->as_int());
 				PUSH(value);

@@ -84,6 +84,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "gnu"=.\gnu.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "libltdl"=.\src\lib\libltdl\libltdl.dsp - Package Owner=<4>
 
 Package=<5>

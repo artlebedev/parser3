@@ -9,7 +9,7 @@
 #ifndef CODE_H
 #define CODE_H
 
-static const char* IDENT_OPCODE_H="$Date: 2002/08/01 11:41:15 $";
+static const char* IDENT_OPCODE_H="$Date: 2002/09/18 13:15:43 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -46,6 +46,7 @@ enum OPCODE {
 	//@{
 	/// @name expression ops: binary
 	OP_SUB, OP_ADD, OP_MUL, OP_DIV, OP_MOD, OP_INTDIV,
+	OP_BIN_SL, OP_BIN_SR,
 	OP_BIN_AND, OP_BIN_OR, OP_BIN_XOR,
 	OP_LOG_AND, OP_LOG_OR, OP_LOG_XOR,
 	OP_NUM_LT, OP_NUM_GT, OP_NUM_LE, OP_NUM_GE, OP_NUM_EQ, OP_NUM_NE,

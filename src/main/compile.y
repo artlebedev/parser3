@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.194 2002/09/13 14:11:43 paf Exp $
+	$Id: compile.y,v 1.195 2002/09/18 13:15:43 paf Exp $
 */
 
 /**
@@ -72,6 +72,8 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 %token NGE ">="
 %token NEQ "=="
 %token NNE "!="
+%token NSL "<<"
+%token NSR ">>"
 
 %token SLT "lt"
 %token SGT "gt"
@@ -100,6 +102,8 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 %left '|'
 %left '&' 
 %left '~'
+%left ">>"
+%left "<<" 
 
 /* numerical */
 %left '-' '+'
@@ -107,7 +111,7 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 %left NEG     /* negation: unary - */
 
 %%
-all: 
+all:
 	one_big_piece {
 	Method& method=*NEW Method(POOL, 
 		PC.request->main_method_name, 
@@ -540,6 +544,8 @@ expr:
 |	expr '/' expr { $$=$1;  P($$, $3);  O($$, OP_DIV) }
 |	expr '%' expr { $$=$1;  P($$, $3);  O($$, OP_MOD) }
 |	expr '\\' expr { $$=$1;  P($$, $3);  O($$, OP_INTDIV) }
+|	expr "<<" expr { $$=$1;  P($$, $3);  O($$, OP_BIN_SL) }
+|	expr ">>" expr { $$=$1;  P($$, $3);  O($$, OP_BIN_SR) }
 |	expr '&' expr { $$=$1; 	P($$, $3);  O($$, OP_BIN_AND) }
 |	expr '|' expr { $$=$1;  P($$, $3);  O($$, OP_BIN_OR) }
 |	expr "!|" expr { $$=$1;  P($$, $3);  O($$, OP_BIN_XOR) }
@@ -910,17 +916,36 @@ default:
 					goto break2;
 				}
 				RC;
-			case '<': case '>': case '=': 
-				if(*PC.source=='=') { // <= >= ==
-					skip_analized=1;
-					switch(c) {
-					case '<': result=NLE; break;
-					case '>': result=NGE; break;
-					case '=': result=NEQ; break;
-					}
-				} else
-					result=c;
+
+			case '<': // <<, <=, <
+				switch(*PC.source) {
+				case '<': // <[<]
+					skip_analized=1; result=NSL; break;
+				case '=': // <[=]
+					skip_analized=1; result=NLE; break;
+				default: // <[]
+					result=c; break;
+				}
 				goto break2;
+			case '>': // >>, >=, >
+				switch(*PC.source) {
+				case '>': // >[>]
+					skip_analized=1; result=NSR; break;
+				case '=': // >[=]
+					skip_analized=1; result=NGE; break;
+				default: // >[]
+					result=c; break;
+				}
+				goto break2;
+			case '=': // ==
+				switch(*PC.source) {
+				case '=': // =[=]
+					skip_analized=1; result=NEQ; break;
+				default: // =[]
+					result=c; break; // not used now
+				}
+				goto break2;
+
 			case '"':
 				push_LS(PC, LS_EXPRESSION_STRING_QUOTED);
 				RC;
