@@ -4,8 +4,10 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+
+	2001.07.30 using MySQL 3.23.22b
 */
-static const char *RCSId="$Id: parser3mysql.C,v 1.26 2001/07/23 13:59:52 parser Exp $"; 
+static const char *RCSId="$Id: parser3mysql.C,v 1.27 2001/07/30 15:32:42 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -153,8 +155,10 @@ public:
 		if(!column_count) // old client
 			column_count=mysql_field_count(mysql);
 
-		if(!column_count)
+		if(!column_count) {
+			mysql_free_result(res);
 			services._throw("result contains no columns");
+		}
 
 		for(int i=0; i<column_count; i++){
 			MYSQL_FIELD *field=mysql_fetch_field(res);

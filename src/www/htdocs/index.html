@@ -1,4 +1,16 @@
 @main[]
+^connect[pgsql://paf:paf123@six/paf]{
+#    ^void::sql{insert into хрен (a) values (1)}
+	$id(^int:sql{select 2*2})
+	$id<br>
+
+	$пресса[^table::sql{select * from aaa}]
+#	$a[^пресса.columns[]]^a.menu{$a.column}
+	^пресса.menu{
+		$пресса.val
+	}[<br>]
+}
+<hr>
 #$cookie:reg0[8reg0]
 #$cookie:reg1[8reg1]
 $cookie:reg0
