@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.133 2001/11/22 15:47:12 paf Exp $
+	$Id: table.C,v 1.134 2001/11/23 12:56:37 paf Exp $
 */
 
 #include "classes.h"
@@ -38,10 +38,9 @@ public: // Methoded
 static void _set(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// data is last parameter
-	Value& vdata=params->as_junction(params->size()-1, "body must be code");
-
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
-	const String& data=r.process(vdata).as_string();
+	const String& data=
+		r.process(params->as_junction(params->size()-1, "body must be code")).as_string();
 
 	size_t pos_after=0;
 	// parse columns
@@ -212,15 +211,14 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 		if(params->size()>1) {
 		    const String& whence=params->as_string(0, "whence must be string");
 		    if(whence=="cur")
-			absolute=false;
+				absolute=false;
 		    else if(whence=="set")
-			absolute=true;
+				absolute=true;
 		    else
-			throw Exception(0, 0,
-			    &whence,
-			    "is invalid whence, valid are 'cur' or 'set'");
-		}
-		    
+				throw Exception(0, 0,
+					&whence,
+					"is invalid whence, valid are 'cur' or 'set'");
+		}		    
 		
 		Value& offset_expr=params->as_junction(params->size()-1, "offset must be expression");
 		table.offset(absolute, r.process(offset_expr).as_int());
@@ -427,7 +425,8 @@ static void _flip(Request& r, const String& method_name, MethodParams *params) {
 
 static void _append(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	// data is last parameter
+	// data
+	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	const String& string=
 		r.process(params->as_junction(0, "body must be code")).as_string();
 
@@ -481,7 +480,7 @@ public:
 		statement_string(astatement_string),
 		statement_cstr(astatement_cstr),
 		columns(*new(pool) Array(pool)),
-		row(0), row_index(0),
+		row(0), 
 		table(0)
 	{
 	}
@@ -504,7 +503,7 @@ public:
 		if(size)
 			cell->APPEND_TAINTED(
 				(const char *)ptr, size, 
-				statement_cstr, row_index++);
+				statement_cstr, table->size()-1);
 		(*row)+=cell;
 	}
 
@@ -514,7 +513,6 @@ private:
 	const String& statement_string; const char *statement_cstr;
 	Array& columns;
 	Array *row;
-	uint row_index;
 public:
 	Table *table;
 };

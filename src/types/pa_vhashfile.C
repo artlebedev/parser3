@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_vhashfile.C,v 1.14 2001/11/05 11:46:33 paf Exp $
+	$Id: pa_vhashfile.C,v 1.15 2001/11/23 12:56:38 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -44,7 +44,7 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 }
 
 Value *VHashfile::get_field(const String& aname) {
-	if(String *string=get_table_ptr(&aname)->get(current_transaction, pool(), aname))
+	if(String *string=get_table_ptr(&aname)->get(current_transaction, pool(), aname, 0))
 		return NEW VString(*string);
 	else
 		return 0;

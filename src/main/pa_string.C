@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.126 2001/11/23 10:38:53 paf Exp $
+	$Id: pa_string.C,v 1.127 2001/11/23 12:56:38 paf Exp $
 */
 
 #include "pa_config_includes.h"

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.h,v 1.8 2001/11/05 11:46:24 paf Exp $
+	$Id: pa_db_table.h,v 1.9 2001/11/23 12:56:37 paf Exp $
 */
 
 #ifndef PA_DB_TABLE_H
@@ -53,8 +53,8 @@ public:
 	time_t get_time_used() { return time_used; }
 	int get_users_count() { return used; }
 
-	void put(DB_Transaction *t, const String& key, const String& data, time_t time_to_die);
-	String *get(DB_Transaction *t, Pool& pool, const String& key);
+	void put(DB_Transaction *t, const String& key, const String& data, time_t lifespan);
+	String *get(DB_Transaction *t, Pool& pool, const String& key, time_t lifespan);
 	void remove(DB_Transaction *t, const String& key);
 
 private: // table usage methods
@@ -85,10 +85,10 @@ private:
 	/// @returns new string
 	String& key_dbt_to_string(Pool& pool, const DBT& key_dbt);
 	/// pass empty dbt, would fill it from string
-	void data_string_to_dbt(const String& data_string,  time_t time_to_die, 
+	void data_string_to_dbt(const String& data_string,  time_t lifespan, 
 		DBT& data_result);
 	/// @returns new string if it not expired
-	String *data_dbt_to_string(Pool& pool, const DBT& data_dbt);
+	String *data_dbt_to_string(Pool& pool, const DBT& data_dbt, time_t lifespan);
 
 };
 
@@ -132,11 +132,11 @@ public:
 	DB_TXN *id() { return fid; }
 	void mark_to_rollback();
 
-	void put(const String& key, const String& data, time_t time_to_die) {
-		ftable.put(this, key, data, time_to_die);
+	void put(const String& key, const String& data, time_t lifespan) {
+		ftable.put(this, key, data, lifespan);
 	}
-	String *get(const String& key) {
-		return ftable.get(this, fpool, key);
+	String *get(const String& key, time_t lifespan) {
+		return ftable.get(this, fpool, key, lifespan);
 	}
 	void remove(const String& key) {
 		ftable.remove(this, key);
@@ -181,8 +181,8 @@ private:
 		return ftable.key_dbt_to_string(pool, key_dbt);
 	}
 	/// @returns new string if it not expired
-	String *data_dbt_to_string(Pool& pool, const DBT& data_dbt) {	
-		return ftable.data_dbt_to_string(pool, data_dbt);
+	String *data_dbt_to_string(Pool& pool, const DBT& data_dbt, time_t lifespan) {	
+		return ftable.data_dbt_to_string(pool, data_dbt, lifespan);
 	}
 };
 

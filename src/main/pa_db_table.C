@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.C,v 1.13 2001/11/23 10:38:53 paf Exp $
+	$Id: pa_db_table.C,v 1.14 2001/11/23 12:56:38 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,14 +25,15 @@
 
 // consts
 
-const int DATA_STRING_SERIALIZED_VERSION=0x0001;
+const int DATA_STRING_SERIALIZED_VERSION=0x0002;
 
 // helper types
 
 #ifndef DOXYGEN
 struct Data_string_serialized_prolog {
 	int version;
-	time_t time_to_die;
+	time_t time_of_creating;
+	time_t lifespan;
 };
 
 struct DBT_auto : public DBT {
@@ -67,7 +68,7 @@ DB_Table::DB_Table(Pool& pool, const String& afile_name, DB_Connection& aconnect
 		PA_DB_ACCESS_METHOD, 
 		(parser_multithreaded?DB_THREAD:0)
 		| DB_CREATE,
-		0666, 
+		0664, 
 		&dbenv, &dbinfo, &db));
 }
 /// @todo this one of reasons of not having ^try for now
@@ -139,7 +140,7 @@ String& DB_Table::key_dbt_to_string(Pool& pool, const DBT& key_dbt) {
 	return result;
 }
 
-void DB_Table::data_string_to_dbt(const String& data_string, time_t time_to_die, 
+void DB_Table::data_string_to_dbt(const String& data_string, time_t lifespan, 
 									   DBT& data_result) {
 	memset(&data_result, 0, sizeof(data_result));
 
@@ -151,10 +152,11 @@ void DB_Table::data_string_to_dbt(const String& data_string, time_t time_to_die,
 		*static_cast<Data_string_serialized_prolog *>(data_result.data);
 
 	prolog.version=DATA_STRING_SERIALIZED_VERSION;
-	prolog.time_to_die=time_to_die;
+	prolog.time_of_creating=time(0)/*now*/;
+	prolog.lifespan=lifespan;
 }
 
-String *DB_Table::data_dbt_to_string(Pool& pool, const DBT& data_dbt) {
+String *DB_Table::data_dbt_to_string(Pool& pool, const DBT& data_dbt, time_t lifespan) {
 	Data_string_serialized_prolog& prolog=
 		*static_cast<Data_string_serialized_prolog *>(data_dbt.data);
 
@@ -164,7 +166,12 @@ String *DB_Table::data_dbt_to_string(Pool& pool, const DBT& data_dbt) {
 			"data string version 0x%04X not equal to 0x%04X, recreate file",
 				prolog.version, DATA_STRING_SERIALIZED_VERSION);
 
-	if(prolog.time_to_die/*specified*/ && prolog.time_to_die <= time(0)/*expired*/)
+	if(lifespan/*specified*/ 
+		&& prolog.lifespan!=lifespan) // lifespan changed from storing to getting
+		return 0; // considering this 'expired'
+
+	if(prolog.lifespan/*specified*/ 
+		&& ((prolog.time_of_creating+prolog.lifespan) <= time(0)/*expired*/))
 		return 0;
 
 	String& result=*new(pool) String(pool);
@@ -184,7 +191,7 @@ void DB_Table::put(DB_Transaction *t, const String& key, const String& data, tim
 	check("put", &key, db->put(db, t?t->id():0, &dbt_key, &dbt_data, 0/*flags*/));
 }
 
-String *DB_Table::get(DB_Transaction *t, Pool& pool, const String& key) {
+String *DB_Table::get(DB_Transaction *t, Pool& pool, const String& key, time_t lifespan) {
 	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
 	DBT_auto dbt_data;
 	int error=db->get(db, t?t->id():0, &dbt_key, &dbt_data, 
@@ -193,7 +200,7 @@ String *DB_Table::get(DB_Transaction *t, Pool& pool, const String& key) {
 		return 0;
 	else {
 		check("get", &key, error);
-		String *result=data_dbt_to_string(pool, dbt_data);
+		String *result=data_dbt_to_string(pool, dbt_data, lifespan);
 		if(!result) // save efforts by deleting expired keys
 			check("del expired", &key, db->del(db, t?t->id():0, &dbt_key, 0/*flags*/));
 		return result;
@@ -272,7 +279,7 @@ bool DB_Cursor::get(Pool& pool, String *& key, String *& data, u_int32_t flags) 
 
 	check("c_get", fsource, error);
 
-	if(data=data_dbt_to_string(pool, dbt_data)) // not expired
+	if(data=data_dbt_to_string(pool, dbt_data, 0)) // not expired
 		key=&key_dbt_to_string(pool, dbt_key);
 	else {
 		// save efforts by deleting expired keys

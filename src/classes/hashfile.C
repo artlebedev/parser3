@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hashfile.C,v 1.15 2001/11/05 11:46:20 paf Exp $
+	$Id: hashfile.C,v 1.16 2001/11/23 12:56:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -82,7 +82,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	
 	// key, expires, body code
 	const String &key=params->as_string(0, "key must be string");
-	double expires=params->as_double(1, "expires must be number", r);
+	time_t lifespan=(time_t)params->as_double(1, "lifespan must be number", r);
 	Value& body_code=params->as_junction(2, "body must be code");
 
 	// transaction
@@ -90,13 +90,13 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 
 	// execute body
 	try {
-		if(expires) { // 'expires' specified? try cached copy...
-			if(String *cached_body=transaction.get(key)) { // have cached copy?
+		if(lifespan) { // 'lifespan' specified? try cached copy...
+			if(String *cached_body=transaction.get(key, lifespan)) { // have cached copy?
 				r.write_assign_lang(*cached_body);
 				// happy with it
 				return;
 			}
-		} else // 'expires'=0, forget cached copy
+		} else // 'lifespan'=0, forget cached copy
 			transaction.remove(key);
 
 		// save
@@ -106,9 +106,9 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 		Value& processed_body=r.process(body_code);
 		r.write_assign_lang(processed_body);
 		
-		// put it to cache if 'expires' specified & never called ^delete[]
-		if(expires && !self.marked_to_cancel_cache())
-			transaction.put(key, processed_body.as_string(), time(0)+(time_t)expires);
+		// put it to cache if 'lifespan' specified & never called ^delete[]
+		if(lifespan && !self.marked_to_cancel_cache())
+			transaction.put(key, processed_body.as_string(), lifespan);
 	} catch(...) { // process/commit problem
 		transaction.mark_to_rollback();
 		

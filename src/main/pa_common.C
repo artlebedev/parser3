@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.91 2001/11/14 13:23:50 paf Exp $
+	$Id: pa_common.C,v 1.92 2001/11/23 12:56:37 paf Exp $
 */
 
 #include "pa_common.h"
@@ -152,7 +152,7 @@ void file_write(Pool& pool,
 	if((f=open(fname, 
 		O_CREAT|O_RDWR
 		|(as_text?_O_TEXT:_O_BINARY)
-		|(do_append?O_APPEND:O_TRUNC), 0666))>=0) {
+		|(do_append?O_APPEND:O_TRUNC), 0664))>=0) {
 		/*if(exclusive)
 			flock(f, LOCK_EX);*/
 		
