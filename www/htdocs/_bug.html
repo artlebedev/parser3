@@ -1,3 +1,4 @@
-@main[]
-$file[^file::load[text;http://parser3/_bug.txt]]
-=$file.text=
+$xdoc[^xdoc::load[_bug.xml]]
+$xdoc[^xdoc.transform[_bug.xsl]]
+^xdoc.save[_bug_saved.xml]
+OK?

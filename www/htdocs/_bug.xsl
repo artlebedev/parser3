@@ -7,41 +7,11 @@
 
 <xsl:output 
     omit-xml-declaration="no"
-	doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
-	doctype-system="DTD/xhtml1-strict.dtd"
 	/>
-<!--	encoding="koi8-r" <<influences .save encoding-->
-
-<!--<xsl:strip-space
-	elements = "xsl:attribute" /> -->
-<!--<xsl:strip-space elements="*"/>-->
 	
 	<xsl:template match="/doc">
 		<html>
-<!--		<head/>
-		<xsl:value-of select="."/> - в шаблоне<br/>
-		<тег атрибут="значение
-		с переносом строки"/>
-		<tag attribute_from_xml="{@attribute}"/>
-		<br/>-->
-		?<xsl:value-of select="concat(document('parser://method/'),@attribute)"/>?
-		<tag2>
-			<xsl:attribute name="attribute_created_by_xsl_attribute">
-							value
-			</xsl:attribute>
-		</tag2>
-<создать_тег>
-	<xsl:attribute name="создать_атрибут">
-		значение
-	</xsl:attribute>
-	        <div>
-			<xsl:attribute name="style">
-							<xsl:text>color:red;</xsl:text>
-							font-weight:bold
-			</xsl:attribute>
-	
-	sdkfjsdkfj</div>
-</создать_тег>
+			<xsl:copy-of select="."/>
 		</html>
 	</xsl:template>
 	
