@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_exec.C,v 1.8 2001/07/18 16:11:11 parser Exp $"; 
+static const char *RCSId="$Id: pa_exec.C,v 1.9 2001/08/02 09:58:34 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -28,12 +28,12 @@ static const char *RCSId="$Id: pa_exec.C,v 1.8 2001/07/18 16:11:11 parser Exp $"
 #ifdef WIN32
 
 /// this func from http://www.ccas.ru/~posp/popov/spawn.htm
-static BOOL WINAPI CreateHiddenConsoleProcess( LPCTSTR szChildName,
+static BOOL WINAPI CreateHiddenConsoleProcess(LPCTSTR szChildName,
 										char *szEnv,
                                         PROCESS_INFORMATION* ppi, 
                                         LPHANDLE phInWrite,
                                         LPHANDLE phOutRead,
-                                        LPHANDLE phErrRead )
+                                        LPHANDLE phErrRead)
 {
     BOOL fCreated;
     STARTUPINFO si;
@@ -44,58 +44,58 @@ static BOOL WINAPI CreateHiddenConsoleProcess( LPCTSTR szChildName,
 
     // Create pipes
     // initialize security attributes for handle inheritance (for WinNT)
-    sa.nLength = sizeof( sa );
-    sa.bInheritHandle = TRUE;
-    sa.lpSecurityDescriptor  = NULL;
+    sa.nLength=sizeof(sa);
+    sa.bInheritHandle=TRUE;
+    sa.lpSecurityDescriptor=NULL;
 
     // create STDIN pipe
-    if( !CreatePipe( &hInRead, phInWrite, &sa, 0 ))
+    if(!CreatePipe(&hInRead, phInWrite, &sa, 0))
         goto error;
 
     // create STDOUT pipe
-    if( !CreatePipe( phOutRead, &hOutWrite, &sa, 0 ))
+    if(!CreatePipe(phOutRead, &hOutWrite, &sa, 0))
         goto error;
 
     // create STDERR pipe
-    if( !CreatePipe( phErrRead, &hErrWrite, &sa, 0 ))
+    if(!CreatePipe(phErrRead, &hErrWrite, &sa, 0))
         goto error;
 
     // process startup information
-    memset( &si, 0, sizeof( si ));
-    si.cb = sizeof( si ); 
-    si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+    memset(&si, 0, sizeof(si));
+    si.cb=sizeof(si); 
+    si.dwFlags=STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
     // child process' console must be hidden for Win95 compatibility
-    si.wShowWindow = SW_HIDE;
+    si.wShowWindow=SW_HIDE;
     // assign "other" sides of pipes
-    si.hStdInput = hInRead;
-    si.hStdOutput = hOutWrite;
-    si.hStdError = hErrWrite;
+    si.hStdInput=hInRead;
+    si.hStdOutput=hOutWrite;
+    si.hStdError=hErrWrite;
 
     // Create a child process (suspended)
-    fCreated = CreateProcess( NULL,
+    fCreated=CreateProcess(NULL,
                               (LPTSTR)szChildName,
                               NULL,
                               NULL,
                               TRUE,
-                              DETACHED_PROCESS,
+                              0, //todo CREATE_NO_WINDOW,
                               szEnv,
                               NULL,
                               &si,
-                              ppi );
+                              ppi);
 
-    CloseHandle( hInRead );
-    CloseHandle( hOutWrite );
-    CloseHandle( hErrWrite );
+    CloseHandle(hInRead);
+    CloseHandle(hOutWrite);
+    CloseHandle(hErrWrite);
 
-    if( !fCreated )
+    if(!fCreated)
         goto error;
 
     return TRUE;
 
 error:
-    CloseHandle( *phInWrite );
-    CloseHandle( *phOutRead );
-    CloseHandle( *phErrRead );
+    CloseHandle(*phInWrite);
+    CloseHandle(*phOutRead);
+    CloseHandle(*phErrRead);
 
     return FALSE;
 }
@@ -104,7 +104,7 @@ static void read_pipe(String& result, HANDLE hOutRead, const char *file_spec){
 	while(true) {
 		char *buf=(char *)result.pool().malloc(MAX_STRING);
 		unsigned long size;
-		ReadFile( hOutRead, buf, MAX_STRING, &size, NULL );
+		ReadFile(hOutRead, buf, MAX_STRING, &size, NULL);
 		if(!size) 
 			break;
 		result.APPEND_AS_IS(buf, size, file_spec, 0);
@@ -316,7 +316,7 @@ int pa_exec(const String& file_spec,
 		env->for_each(append_env_pair, &string);
 		env_cstr=string.cstr(String::UL_AS_IS);
 	}
-	if( CreateHiddenConsoleProcess(cmd, env_cstr, &pi, &hInWrite, &hOutRead, &hErrRead )) {
+	if(CreateHiddenConsoleProcess(cmd, env_cstr, &pi, &hInWrite, &hOutRead, &hErrRead)) {
 		SetCurrentDirectory(pwd);
 
 		const char *in_cstr=in.cstr(String::UL_AS_IS);
@@ -326,11 +326,11 @@ int pa_exec(const String& file_spec,
 		// normally they should read CONTENT_LENGTH bytes,
 		// without this char
 		WriteFile(hInWrite, "\x1A", 1, &written_size, NULL);
-		CloseHandle( hInWrite );
+		CloseHandle(hInWrite);
 		read_pipe(out, hOutRead, file_spec_cstr);
-		CloseHandle( hOutRead );
+		CloseHandle(hOutRead);
 		read_pipe(err, hErrRead, file_spec_cstr);		
-		CloseHandle( hErrRead );
+		CloseHandle(hErrRead);
 /*	
 from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?rev=1.151&content-type=text/vnd.viewcvs-markup
 

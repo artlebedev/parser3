@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.68 2001/07/27 12:59:36 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.69 2001/08/02 09:58:33 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -124,10 +124,10 @@ static void _lsplit(Request& r, const String& method_name, MethodParams *params)
 
 	Table& table=*new(pool) Table(pool, &string, 
 		&columns, pieces.size());
-	int size=pieces.quick_size();
-	for(int i=0; i<size; i++) {
+	Array_iter i(pieces);
+	while(i.has_next()) {
 		Array& row=*new(pool) Array(pool);
-		row+=pieces.quick_get(i);
+		row+=i.next();
 		table+=&row;
 	}
 	r.write_no_lang(*new(pool) VTable(pool, &table));

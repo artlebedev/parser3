@@ -1,11 +1,11 @@
 /** @file
-	Parser: array class decl.
+	Parser: Array & Array_iter classes decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.41 2001/05/17 10:22:24 parser Exp $
+	$Id: pa_array.h,v 1.42 2001/08/02 09:58:34 parser Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -15,6 +15,8 @@
 #include "pa_pool.h"
 #include "pa_types.h"
 #include "pa_string.h"
+
+class Array_iter;
 
 /**	
 	Pooled Array.
@@ -33,6 +35,7 @@
 */
 
 class Array : public Pooled {
+	friend Array_iter;
 public:
 
 	/// Array item type
@@ -60,22 +63,6 @@ public:
 
 	Array(Pool& apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
-	/**
-		size Array. how many items are in it. 
-		must be used with quick_get like this:
-		@code
-			int size=src.quick_size();
-			for(int i=0; i<size; i++) {
-				z=src.quick_get(i);
-			}
-		@endcode
-	*/
-	int quick_size() const { 
-		// for quick_get
-		cache_chunk_base=0;
-		cache_chunk=head;
-		return size(); 
-	}
 	/// size Array. how many items are in it
 	int size() const { return fused_rows; }
 	/// append Item to array
@@ -89,25 +76,6 @@ public:
 	/// append other Array portion to this one. starting from offset
 	Array& append_array(const Array& src, int offset=0);
 
-	/** 
-		quickly gets some item considering...
-
-		these true:
-			- index increments from 0 to size()-1
-			- index>=0 && index<size()
-			- index>=cache_chunk_base
-	*/
-	Item *quick_get(int index) const {
-		// next chunk will be with "index" row
-		if(!(index<cache_chunk_base+cache_chunk->count)) {
-			int count=cache_chunk->count;
-			cache_chunk_base+=count;
-			cache_chunk=cache_chunk->rows[count].link;
-		}
-		
-		return cache_chunk->rows[index-cache_chunk_base].item;
-	}
-
 	Item *get(int index) const;
 	int get_int(int index) const { return reinterpret_cast<int>(get(index)); }
 
@@ -115,9 +83,6 @@ public:
 	/// convinient way to get strings from Array. I long for Array<const String *>
 	const String *get_string(int index) const { 
 		return const_cast<const String *>(static_cast<String *>(get(index))); 
-	}
-	const String *quick_get_string(int index) const { 
-		return const_cast<const String *>(static_cast<String *>(quick_get(index))); 
 	}
 
 	/*/// iterate over all elements, const info
@@ -179,6 +144,48 @@ private: //disabled
 
 	//Array(Array&) { }
 	Array& operator = (const Array&) { return *this; }
+};
+
+
+/// handy array iterator
+class Array_iter {
+public:
+
+	Array_iter(const Array& aarray) : array(aarray),
+		chunk(aarray.head),
+		row(chunk->rows),
+		countdown(chunk->count) {
+	}
+
+	/// there are still elements
+	bool has_next() {
+		return !(chunk==array.tail && row==array.append_here);
+	}
+
+	/// quickly extracts next Array::Item
+	Array::Item *next() {
+		// assuming: never called after has_next()!
+		if(countdown==0) { // end of chunk?
+			chunk=row->link;
+			row=chunk->rows;
+			countdown=chunk->count;
+		}
+		Array::Item *result=row->item;
+		row++;  countdown--;
+		return result;
+	}
+
+	/// quickly extracts next Array::Item as const String
+	const String *next_string() { 
+		return const_cast<const String *>(static_cast<String *>(next())); 
+	}
+
+private:
+	const Array& array;
+	const Array::Chunk *chunk;
+	const Array::Chunk::Row *row;
+	int countdown;	
+
 };
 
 #endif

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.189 2001/08/02 08:58:59 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.190 2001/08/02 09:58:34 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -68,24 +68,13 @@ void debug_printf(Pool& pool, const char *fmt, ...) {
 }
 
 void debug_dump(Pool& pool, int level, const Array& ops) {
-/*	{
-		int size=ops.quick_size();
-		//debug_printf(pool, "size=%d\n", size);
-		for(int i=0; i<size; i++) {
-			Operation op;
-			op.cast=ops.quick_get(i);
-			debug_printf(pool, "%8X\n", op.cast);
-		}
-	}*/
-
-	int size=ops.quick_size();
-	//debug_printf(pool, "size=%d\n", size);
-	for(int i=0; i<size; i++) {
+	Array_iter i(ops);
+	while(i.has_next()) {
 		Operation op;
-		op.cast=ops.quick_get(i);
+		op.cast=i.next();
 
 		if(op.code==OP_VALUE || op.code==OP_STRING__WRITE) {
-			Value *value=static_cast<Value *>(ops.quick_get(++i));
+			Value *value=static_cast<Value *>(i.next());
 			debug_printf(pool, 
 				"%*s%s"
 				" \"%s\" %s", 
@@ -99,7 +88,7 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 		case OP_CURLY_CODE__STORE_PARAM: 
 		case OP_EXPR_CODE__STORE_PARAM:
 		case OP_CURLY_CODE__CONSTRUCT:
-			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
+			const Array *local_ops=reinterpret_cast<const Array *>(i.next());
 			debug_dump(pool, level+1, *local_ops);
 		}
 	}
@@ -117,12 +106,10 @@ void Request::execute(const Array& ops) {
 	debug_printf(pool(), "execution-------------------------\n");
 #endif
 
-	//int size=ops.quick_size();
-	//debug_printf(pool(), "size=%d\n", size);
-	for(int i=0; i<ops.size(); i++) {
+	Array_iter i(ops);
+	while(i.has_next()) {
 		Operation op;
-		//op.cast=ops.quick_get(i);
-		op.cast=ops.get(i);
+		op.cast=i.next();
 #ifdef DEBUG_EXECUTE
 		debug_printf(pool(), "%d:%s", stack.top_index()+1, opcode_name[op.code]);
 #endif
@@ -131,7 +118,7 @@ void Request::execute(const Array& ops) {
 		// param in next instruction
 		case OP_VALUE:
 			{
-				Value *value=static_cast<Value *>(ops.quick_get(++i));
+				Value *value=static_cast<Value *>(i.next());
 #ifdef DEBUG_EXECUTE
 				debug_printf(pool(), " \"%s\" %s", value->get_string()->cstr(), value->type());
 #endif
@@ -143,7 +130,7 @@ void Request::execute(const Array& ops) {
 			{
 				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
 				// code
-				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
+				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
 #ifdef DEBUG_EXECUTE
 				debug_printf(pool(), " (%d)\n", local_ops->size());
 				debug_dump(pool(), 1, *local_ops);
@@ -227,7 +214,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_CURLY_CODE__CONSTRUCT:
 			{
-				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
+				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
 #ifdef DEBUG_EXECUTE
 				debug_printf(pool(), " (%d)\n", local_ops->size());
 				debug_dump(pool(), 1, *local_ops);
@@ -264,7 +251,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_STRING__WRITE:
 			{
-				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
+				VString *vstring=static_cast<VString *>(i.next());
 #ifdef DEBUG_EXECUTE
 				debug_printf(pool(), " \"%s\"", vstring->string().cstr());
 #endif

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.97 2001/07/28 12:07:26 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.98 2001/08/02 09:58:33 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -65,10 +65,10 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	// parse cells
 	Array rows(pool);
 	data.split(rows, &pos_after, "\n", 1, String::UL_CLEAN);
-	int size=rows.quick_size();
-	for(int i=0; i<size; i++) {
+	Array_iter i(rows);
+	while(i.has_next()) {
 		Array& row=*new(pool) Array(pool);
-		const String& string=*rows.quick_get_string(i);
+		const String& string=*i.next_string();
 		// remove empty lines
 		if(!string.size())
 			continue;
@@ -255,15 +255,15 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	if(params->size()==1) { // not nameless=named output
 		// write out names line
 		if(table.columns()) { // named table
-			for(int column=0; column<table.columns()->size(); column++) {
-				if(column)
-					sdata.APPEND_CONST("\t");
-				sdata.append(*static_cast<String *>(table.columns()->quick_get(column)), 
+			Array_iter i(*table.columns());
+			while(i.has_next()) {
+				sdata.append(*i.next_string(), //*static_cast<String *>(table.columns()->quick_get(column)), 
 					String::UL_TABLE);
+				if(i.has_next())
+					sdata.APPEND_CONST("\t");
 			}
 		} else { // nameless table
-			int lsize=table.size()?static_cast<Array *>(table.get(0))->size():0;
-			if(lsize)
+			if(int lsize=table.size()?static_cast<Array *>(table.get(0))->size():0)
 				for(int column=0; column<lsize; column++) {
 					char *cindex_tab=(char *)malloc(MAX_NUMBER);
 					snprintf(cindex_tab, MAX_NUMBER, "%d\t", column);
@@ -275,13 +275,14 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		sdata.APPEND_CONST("\n");
 	}
 	// data lines
-	for(int index=0; index<table.size(); index++) {
-		Array *row=static_cast<Array *>(table.quick_get(index));
-		for(int column=0; column<row->size(); column++) {
-			if(column)
-				sdata.APPEND_CONST("\t");
-			sdata.append(*static_cast<String *>(row->quick_get(column)), 
+	Array_iter i(table);
+	while(i.has_next()) {
+		Array_iter c(*static_cast<Array *>(i.next()));
+		while(c.has_next()) {
+			sdata.append(*c.next_string(), //*static_cast<String *>(row->quick_get(column)), 
 				String::UL_TABLE);
+			if(c.has_next())
+				sdata.APPEND_CONST("\t");
 		}
 		sdata.APPEND_CONST("\n");
 	}
@@ -741,10 +742,10 @@ static void _columns(Request& r, const String& method_name, MethodParams *) {
 
 	Table& source_table=static_cast<VTable *>(r.self)->table();
 	if(const Array *source_columns=source_table.columns()) {
-		int size=source_columns->quick_size();
-		for(int i=0; i<size; i++) {
+		Array_iter i(*source_columns);
+		while(i.has_next()) {
 			Array& result_row=*new(pool) Array(pool);
-			result_row+=source_columns->quick_get(i);
+			result_row+=i.next();
 			result_table+=&result_row;
 		}
 	}
