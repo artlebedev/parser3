@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/11/28 10:40:19 $";
+static const char * const IDENT="$Date: 2003/11/28 10:41:11 $";
 
 #include "libxslt/extensions.h"
 
@@ -86,7 +86,6 @@ xmlFileMatchLocalhost(const char* filename) {
 static void *
 xmlFileOpenLocalhost (const char* filename) {
 	Request& r=pa_thread_request();
-	FILE *fd;
 	const char* document_root=r.request_info.document_root;
 	if(!document_root)
 		document_root=".";
