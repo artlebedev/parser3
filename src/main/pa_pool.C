@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_pool.C,v 1.22 2001/09/20 14:25:06 parser Exp $"; 
+static const char *RCSId="$Id: pa_pool.C,v 1.23 2001/09/20 14:34:42 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_exception.h"
@@ -68,7 +68,7 @@ const char *Pool::transcode(const XalanDOMString& s) {
 			unsigned int size=transcoder->transcodeTo(
 				s.c_str(), s.length(),
 				dest,
-				len-1,
+				len,
 				charsEaten,
 				XMLTranscoder::UnRep_Throw
 			);
