@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.41 2001/07/18 16:11:11 parser Exp $
+	$Id: file.C,v 1.42 2001/07/18 16:28:46 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.41 2001/07/18 16:11:11 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.42 2001/07/18 16:28:46 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -210,7 +210,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	//out.APPEND_CONST("content-type:text/plain\nheader:test-header\n\ntest-body");
 	//out<<in;
 	String& err=*new(pool) String(pool);
-	int exit_code=pa_exec(script_name, &env, argv, in, out, err);
+	int status=pa_exec(script_name, &env, argv, in, out, err);
 
 	VFile& self=*static_cast<VFile *>(r.self);
 
@@ -229,7 +229,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			PTHROW(0, 0,
 				&method_name,
 				"output does not contain CGI header; exit code=%d; size=%u; text: \"%s\"", 
-					exit_code, (uint)out.size(), out.cstr());
+					status, (uint)out.size(), out.cstr());
 		}
 
 		const String& header=out.mid(0, pos);
@@ -245,10 +245,10 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	// body
 	self.set(false/*not tainted*/, body->cstr(String::UL_AS_IS), body->size());
 
-	// $exit-code
+	// $status
 	self.fields().put(
-		*new(pool) String(pool, "exit-code"),
-		new(pool) VInt(pool, exit_code));
+		*new(pool) String(pool, "status"),
+		new(pool) VInt(pool, status));
 	
 	// $stderr
 	if(err.size()) {
