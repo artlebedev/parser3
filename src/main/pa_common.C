@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/04/07 07:03:05 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/04/11 12:29:19 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -453,7 +453,7 @@ bool file_read(Pool& pool, const String& file_spec,
 }
 
 #ifdef PA_SAFE_MODE
-void check_safe_mode(stat finfo, const String& file_spec, const char* fname) {
+void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname) {
 	if(finfo.st_uid/*foreign?*/!=geteuid()
 		&& finfo.st_gid/*foreign?*/!=getegid())
 		throw Exception("parser.runtime", 

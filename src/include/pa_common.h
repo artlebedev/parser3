@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2003/04/07 07:03:05 $";
+static const char* IDENT_COMMON_H="$Date: 2003/04/11 12:29:19 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -232,7 +232,7 @@ int getMonthDays(int year, int month);
 void remove_crlf(char *start, char *end);
 
 #ifdef PA_SAFE_MODE
-void check_safe_mode(stat finfo, const String& file_spec, const char* fname);
+void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname);
 #endif
 
 #endif
