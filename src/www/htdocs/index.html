@@ -1,6 +1,7 @@
 @main[]
 $request:charset[windows-1251]
 $response:charset[windows-1251]
+^tupper[]
 #^treplace[]
 #^xslt2[]
 #^tcache2[]
@@ -73,11 +74,16 @@ $response:charset[windows-1251]
 #^exec[]
 #^fori[]
 #^tconnect[]
-^xslt[]
+#^xslt[]
 #^xml[]
 #^header[]
 <hr>
 OK
+
+@tupper[]
+$t[abcABC‡·‚¿¡¬]
+$t<br>
+^t.upper[]
 
 @treplace[]
 $copy-paste-clean[^table::set{a b
