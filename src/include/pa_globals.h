@@ -8,11 +8,15 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_GLOBALS_H="$Date: 2003/11/06 08:22:49 $";
 
 
 #include "pa_hash.h"
 #include "pa_string.h"
+
+#ifdef XML
+#	include "libxml/tree.h"
+#endif
 
 class Dictionary;
 class Charset;

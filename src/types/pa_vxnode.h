@@ -8,13 +8,15 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char* IDENT_VXNODE_H="$Date: 2003/07/24 11:31:27 $";
+static const char* IDENT_VXNODE_H="$Date: 2003/11/06 08:22:50 $";
 
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
 
 extern "C" {
+#include "libxml/tree.h"
+
 #include "gdomecore/gdome-xml-node.h"
 #include "gdomecore/gdome-xml-document.h"
 };

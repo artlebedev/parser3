@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by Apache.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MOD_PARSER3_C="$Date: 2003/09/30 08:38:04 $";
+static const char* IDENT_MOD_PARSER3_C="$Date: 2003/11/06 08:22:49 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -424,7 +424,7 @@ module MODULE_VAR_EXPORT parser3_module =
 };
 
 #if defined(_MSC_VER)
-#	define APACHE_WIN32_SRC "/parser3project/win32/apache13/src"
+#	define APACHE_WIN32_SRC "../../../../win32/apache13/src"
 #	ifdef _DEBUG
 #		pragma comment(lib, APACHE_WIN32_SRC "/CoreD/ApacheCore.lib")
 #	else

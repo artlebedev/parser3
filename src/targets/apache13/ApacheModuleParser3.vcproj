@@ -22,7 +22,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="\parser3project\win32\apache13\src\include,\parser3project\win32\apache13\src\os\win32"
+				AdditionalIncludeDirectories="..\..\..\..\win32\apache13\src\include;..\..\..\..\win32\apache13\src\os\win32"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;SHARED_MODULE"
 				RuntimeLibrary="3"
 				PrecompiledHeaderFile=".\Debug/ApacheModuleParser3.pch"
@@ -95,7 +95,7 @@ dir&gt;nul
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..,\parser3project\win32\apache13\src\include,\parser3project\win32\apache13\src\os\win32"
+				AdditionalIncludeDirectories="..\..\..\..\win32\apache13\src\include;..\..\..\..\win32\apache13\src\os\win32"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;SHARED_MODULE"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"

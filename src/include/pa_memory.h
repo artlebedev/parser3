@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-static const char* IDENT_MEMORY_H="$Date: 2003/09/22 14:56:19 $";
+static const char* IDENT_MEMORY_H="$Date: 2003/11/06 08:22:49 $";
 
 // include
 
@@ -18,13 +18,6 @@ static const char* IDENT_MEMORY_H="$Date: 2003/09/22 14:56:19 $";
 /// to debug backtrace pointers switch this on:
 //#define GC_DEBUG
 #include "gc.h"
-
-
-#ifdef XML
-#	include "gdome.h"
-// for xmlChar
-#	include "libxml/tree.h"
-#endif
 
 // defines
 

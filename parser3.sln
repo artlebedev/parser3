@@ -32,7 +32,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gnu", "gnu.vcproj", "{02438
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libltdl", "src\lib\ltdl\libltdl.vcproj", "{EB565D67-9950-4F5E-926F-63DAC8F7F314}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ltdl", "src\lib\ltdl\ltdl.vcproj", "{EB565D67-9950-4F5E-926F-63DAC8F7F314}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -46,6 +46,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "md5", "src\lib\md5\md5.vcpr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parser3", "src\targets\cgi\parser3.vcproj", "{33B3FF55-1BB6-4F22-A448-04065AC10AFB}"
 	ProjectSection(ProjectDependencies) = postProject
+		{AE697E13-B86D-4408-B76D-EC54D2BEEFE0} = {AE697E13-B86D-4408-B76D-EC54D2BEEFE0}
 		{0E757818-9946-4CDC-9334-4831B824B341} = {0E757818-9946-4CDC-9334-4831B824B341}
 		{09C0531B-9B8F-443A-A16B-BD9134712613} = {09C0531B-9B8F-443A-A16B-BD9134712613}
 		{2FBFAD1C-76EE-4EA4-82B5-204B2671A05D} = {2FBFAD1C-76EE-4EA4-82B5-204B2671A05D}
@@ -91,81 +92,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "types", "src\types\types.vc
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sdbm", "src\lib\sdbm\sdbm.vcproj", "{AE697E13-B86D-4408-B76D-EC54D2BEEFE0}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
-	GlobalSection(SourceCodeControl) = preSolution
-		SccNumberOfProjects = 17
-		SccProjectName0 = parser3
-		SccLocalPath0 = .
-		SccProvider0 = MSSCCI:Jalindi\u0020Igloo
-		CanCheckoutShared = true
-		SolutionUniqueID = {7D05EE1C-E7B5-4C7C-AF88-87B1F1DE2202}
-		SccProjectUniqueName1 = src\\targets\\apache13\\ApacheModuleParser3.vcproj
-		SccProjectName1 = ApacheModuleParser3
-		SccLocalPath1 = src
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection1 = targets\\apache13\\
-		SccProjectUniqueName2 = SRC\\TARGETS\\APACHE13CORE\\ApacheModuleParser3Core.vcproj
-		SccProjectName2 = ApacheModuleParser3Core
-		SccLocalPath2 = SRC
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection2 = TARGETS\\APACHE13CORE\\
-		SccProjectUniqueName3 = src\\classes\\classes.vcproj
-		SccProjectName3 = classes
-		SccLocalPath3 = src\\classes
-		CanCheckoutShared = true
-		SccProjectUniqueName4 = src\\lib\\cord\\cord.vcproj
-		SccProjectName4 = parser3/src/lib/cord
-		SccLocalPath4 = src\\lib\\cord
-		CanCheckoutShared = true
-		SccProjectUniqueName5 = src\\classes\\gd\\gd.vcproj
-		SccProjectName5 = gd
-		SccLocalPath5 = src\\classes\\gd
-		CanCheckoutShared = true
-		SccProjectUniqueName6 = gnu.vcproj
-		SccProjectName6 = gnu
-		SccLocalPath6 = .
-		CanCheckoutShared = true
-		SccProjectUniqueName7 = src\\lib\\ltdl\\libltdl.vcproj
-		SccProjectName7 = libltdl
-		SccLocalPath7 = src\\lib\\ltdl
-		CanCheckoutShared = true
-		SccProjectUniqueName8 = src\\main\\main.vcproj
-		SccProjectName8 = main
-		SccLocalPath8 = src
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection8 = main\\
-		SccProjectUniqueName9 = src\\lib\\md5\\md5.vcproj
-		SccProjectName9 = md5
-		SccLocalPath9 = src\\lib\\md5
-		CanCheckoutShared = true
-		SccProjectUniqueName10 = src\\targets\\cgi\\parser3.vcproj
-		SccLocalPath10 = src\\targets\\cgi
-		CanCheckoutShared = true
-		SccProjectUniqueName11 = src\\targets\\isapi\\parser3isapi.vcproj
-		SccProjectName11 = parser3isapi
-		SccLocalPath11 = src\\targets\\isapi
-		CanCheckoutShared = true
-		SccProjectUniqueName12 = src\\lib\\pcre\\pcre.vcproj
-		SccProjectName12 = pcre
-		SccLocalPath12 = src\\lib\\pcre
-		CanCheckoutShared = true
-		SccProjectUniqueName13 = src\\lib\\pcre\\pcre_parser_ctype.vcproj
-		SccProjectName13 = pcre_parser_ctype
-		SccLocalPath13 = src\\lib\\pcre
-		CanCheckoutShared = true
-		SccProjectUniqueName14 = src\\lib\\pcre\\pcre_dftables.vcproj
-		SccProjectName14 = pcre_dftables
-		SccLocalPath14 = src\\lib\\pcre
-		CanCheckoutShared = true
-		SccProjectUniqueName15 = src\\classes\\smtp\\smtp.vcproj
-		SccProjectName15 = smtp
-		SccLocalPath15 = src\\classes\\smtp
-		CanCheckoutShared = true
-		SccProjectUniqueName16 = src\\types\\types.vcproj
-		SccProjectName16 = types
-		SccLocalPath16 = src\\types
-		CanCheckoutShared = true
-	EndGlobalSection
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Profile Debug = Profile Debug
@@ -287,6 +218,14 @@ Global
 		{09C0531B-9B8F-443A-A16B-BD9134712613}.Profile Release.Build.0 = Profile Release|Win32
 		{09C0531B-9B8F-443A-A16B-BD9134712613}.Release.ActiveCfg = Release|Win32
 		{09C0531B-9B8F-443A-A16B-BD9134712613}.Release.Build.0 = Release|Win32
+		{AE697E13-B86D-4408-B76D-EC54D2BEEFE0}.Debug.ActiveCfg = Debug|Win32
+		{AE697E13-B86D-4408-B76D-EC54D2BEEFE0}.Debug.Build.0 = Debug|Win32
+		{AE697E13-B86D-4408-B76D-EC54D2BEEFE0}.Profile Debug.ActiveCfg = Debug|Win32
+		{AE697E13-B86D-4408-B76D-EC54D2BEEFE0}.Profile Debug.Build.0 = Debug|Win32
+		{AE697E13-B86D-4408-B76D-EC54D2BEEFE0}.Profile Release.ActiveCfg = Release|Win32
+		{AE697E13-B86D-4408-B76D-EC54D2BEEFE0}.Profile Release.Build.0 = Release|Win32
+		{AE697E13-B86D-4408-B76D-EC54D2BEEFE0}.Release.ActiveCfg = Release|Win32
+		{AE697E13-B86D-4408-B76D-EC54D2BEEFE0}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

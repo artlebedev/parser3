@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_XDOC_C="$Date: 2003/11/06 08:22:48 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -26,6 +26,7 @@ static const char* IDENT_XDOC_C="$Date: 2003/09/25 09:15:02 $";
 #include "pa_vxdoc.h"
 #include "pa_charset.h"
 #include "pa_vfile.h"
+#include "pa_xml_exception.h"
 #include "xnode.h"
 
 // defines
@@ -160,7 +161,7 @@ private:
 static void writeNode(Request& r, GdomeNode *node, 
 					  GdomeException exc) {
 	if(!node || exc)
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 
 	// write out result
 	r.write_no_lang(*new VXnode(&r.charsets, node));

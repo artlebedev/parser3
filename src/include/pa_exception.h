@@ -8,11 +8,15 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char* IDENT_EXCEPTION_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_EXCEPTION_H="$Date: 2003/11/06 08:22:48 $";
 
 // includes
 
 #include "pa_memory.h"
+
+#ifdef XML
+#	include "gdome.h"
+#endif
 
 // forwards
 
@@ -55,7 +59,7 @@ public:
 			return result?result:"<no comment>";
 	}
 
-private:
+protected:
 
 	const char* ftype;
 	const String* fproblem_source;

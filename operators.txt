@@ -354,7 +354,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         !_default - специальный ключ, если задан, 
         то при обращении по ключу, которому нет соответствия, выдаётся _default значение 
     !$hash.fields выдает $hash. чтобы класс hash был чуть больше похож на класс table
-    !^hash::create[[!copy_from_hash|Xcopy_from_hashfile]]
+    !^hash::create[[!copy_from_hash|copy_from_hashfile]]
         создаёт новый hash, копию старого
     !^hash.add[слагаемое]
         перезаписывает одноимённые
@@ -430,35 +430,23 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         ПРЕДУПРЕЖДЕНИЕ: класс form получает свои поля после обработки всех auto класса MAIN
         поэтому необходимо задать $request/response:charset в одном из них. не после.
 
-Xhashfile
-    !^hashfile::open[$DB_HOME;filename]
-    !^hashfile.clear[]
-        забыть всё
-    !.ключ[значение]  положить значение навечно
-    !.ключ[$.value[значение] $.expires(секунд)}  положить значение на expires секунд
-    !.ключ  достать
-    !^cache[ключ](секунд){код}
-        !суть то же, что и "положить+достать", но за один раз и компактнее
-        !если 0секунд, значит не кэшировать, а старый такой стереть
-        !внутри {кода} может быть вызван ^delete[]
-    !^delete[[ключ]]  удалить ключ
-        !буде вызван без параметра изнутри cache, отменяет кэширование блока:
-        !блок не будет скэширован, его старое значение будет стёрто
-    !^hash[]
+hashfile
+    ^hashfile::open[filename]
+    ^hashfile.clear[]  забыть всё
+    .ключ[значение]  положить значение
+    .ключ[$.value[значение] $.expires(секунд)}  положить значение на expires секунд
+    .ключ  достать
+    ^delete[[ключ]]  удалить ключ
+    ^hash[]
         преобразовать в обычный hash
-    !^foreach[key|value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
+    ^foreach[key|value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
 
-
-    примеры:
+    пример:
     $uids[^hashfile::assign[/db/uids]]
-    $code:clear[/db/cache]]
-    $code[^hashfile::assign[/db/cache]]
     
     $random[23847387taduigh345XGHWElxjgdjg]
     $uids.$random[$.value[$uid] $.expires(60*30)]
     $uid[$persistent.logins.$random]
-
-    ^code.cache[заголовки новостей](35){....}
 
 !mail
     !$mail.received=MESSAGE:
