@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wwrapper.h,v 1.10 2001/03/07 13:54:47 paf Exp $
+  $Id: pa_wwrapper.h,v 1.11 2001/03/07 13:55:46 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -14,7 +14,7 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "wwrapper"; }
 	// wwrapper: transparent
-	Value *get_element(String& name) { return check_value()->get_element(name); }
+	Value *get_element(const String& name) { return check_value()->get_element(name); }
 	// wwrapper: transparent
 	void put_element(const String& name, Value *avalue){ 
 		if(!fvalue)

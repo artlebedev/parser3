@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.41 2001/03/07 13:54:46 paf Exp $
+  $Id: pa_value.h,v 1.42 2001/03/07 13:55:45 paf Exp $
 */
 
 /*
@@ -119,7 +119,7 @@ public: // Value
 	// operator_class: (field)=value - static values only
 	// codeframe: wcontext_transparent
 	// methodframe: my or self_transparent
-	virtual Value *get_element(String& name) { failed("type is '%s', can not get element from it"); return 0; }
+	virtual Value *get_element(const String& name) { failed("type is '%s', can not get element from it"); return 0; }
 	
 	// hash: (key)=value
 	// object_class, operator_class: (field)=value - static values only

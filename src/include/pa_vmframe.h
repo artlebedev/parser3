@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.12 2001/03/07 13:54:47 paf Exp $
+  $Id: pa_vmframe.h,v 1.13 2001/03/07 13:55:45 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -15,7 +15,7 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "method_frame"; }
 	// frame: my or self_transparent
-	Value *get_element(String& name) { 
+	Value *get_element(const String& name) { 
 		Value *result=static_cast<Value *>(my.get(name));
 		if(!result)
 			result=self->get_element(name);

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vhash.h,v 1.5 2001/03/07 13:54:46 paf Exp $
+  $Id: pa_vhash.h,v 1.6 2001/03/07 13:55:45 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -15,7 +15,7 @@ public: // value
 	const char *type() const { return "hash"; }
 
 	// hash: (key)=value
-	Value *get_element(String& name) { 
+	Value *get_element(const String& name) { 
 		return static_cast<Value *>(hash.get(name));
 	}
 	
