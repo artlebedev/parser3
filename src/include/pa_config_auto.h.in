@@ -201,14 +201,14 @@
 /* Define if you have the xnet library (-lxnet).  */
 #undef HAVE_LIBXNET
 
-/* no string origin tracking */
-#undef NO_STRING_ORIGIN
+/* reading of files belonging to group+user other then effective */
+#undef PA_SAFE_MODE
 
 /* pa_exec disabled */
 #undef NO_PA_EXECS
 
-/* disabled reading and executing files of non-process-effective-group */
-#undef NO_FOREIGN_GROUP_FILES
+/* no string origin tracking */
+#undef NO_STRING_ORIGIN
 
 /* one can throw from dynamic library */
 #undef PA_WITH_SJLJ_EXCEPTIONS
