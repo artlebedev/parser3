@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/17 15:53:45 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/17 16:00:46 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -810,7 +810,7 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 		if(Method* method=OP.get_method(name)) { // looking operator of that name FIRST
 			// as if that method were in self and we have normal dynamic method here
 			Junction& junction=*NEW Junction(pool(), 
-				method->parser_code?method_frame/*for ^process*/:0, method, 0,0,0,0);
+				method->native_code?method_frame/*for ^process*/:0, method, 0,0,0,0);
 			value=NEW VJunction(junction);
 		}
 	}
