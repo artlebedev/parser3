@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.3 2001/03/21 14:24:54 paf Exp $
+	$Id: mod_parser3.C,v 1.4 2001/03/21 15:53:26 paf Exp $
 */
 
 #include "httpd.h"
@@ -448,6 +448,11 @@ static const char *cmd_example(cmd_parms *cmd, void *mconfig)
 
 // service funcs
 
+const char *get_env(Pool& pool, const char *name) {
+	request_rec *r=static_cast<request_rec *>(pool.info());
+ 	return (const char *)ap_table_get(r->subprocess_env, name);
+}
+
 int read_post(Pool& pool, char *buf, int max_bytes) {
 	return 0;/* @todo
 	int read_size=0;
@@ -507,6 +512,9 @@ static int parser3_handler(request_rec *r)
 	PTRY { // global try
 		const char *filespec_to_process=r->filename;
 
+		ap_add_common_vars(r);
+		ap_add_cgi_vars(r);
+
 		// Request info
 		Request::Info request_info;
 		const char *document_root=
@@ -521,7 +529,8 @@ static int parser3_handler(request_rec *r)
 		request_info.path_translated=filespec_to_process;
 		request_info.method=r->method;
 		request_info.query_string=r->args;
-		request_info.uri=r->uri;
+		request_info.uri=
+			(const char *)ap_table_get(r->subprocess_env, "REQUEST_URI");
 		request_info.content_type=r->content_type;
 		const char *content_length = 
 			(const char *)ap_table_get(r->subprocess_env, "CONTENT_LENGTH");
@@ -545,7 +554,7 @@ static int parser3_handler(request_rec *r)
 		strcat(sys_auto_path1, PATH_DELIMITER_STRING);
 #else
 		// ~nobody
-		sys_auto_path1=getenv("HOME");
+		sys_auto_path1=zgetenv("HOME");
 #endif
 		
 		// beside by binary
@@ -653,6 +662,7 @@ static void parser3_init(server_rec *s, pool *p)
 		globals_init(pool);
 
 		// Service funcs 
+		service_funcs.get_env=get_env;
 		service_funcs.read_post=read_post;
 		service_funcs.add_header_attribute=add_header_attribute;
 		service_funcs.send_header=send_header;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_venv.h,v 1.10 2001/03/19 22:11:11 paf Exp $
+	$Id: pa_venv.h,v 1.11 2001/03/21 15:53:29 paf Exp $
 */
 
 #ifndef PA_VENV_H
@@ -26,7 +26,8 @@ public: // Value
 	Value *get_element(const String& aname) {
 		// getenv
 		String& string=*NEW String(pool());
-		string.APPEND_TAINTED(getenv(aname.cstr()), 0, "environment", 0);
+		const char *val=(*service_funcs.get_env)(pool(), aname.cstr());
+		string.APPEND_TAINTED(val, 0, "environment", 0);
 		return NEW VString(string);
 	}
 

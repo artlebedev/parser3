@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.27 2001/03/21 14:06:52 paf Exp $
+	$Id: parser3.C,v 1.28 2001/03/21 15:53:28 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -78,6 +78,10 @@ void fix_slashes(char *s) {
 
 // service funcs
 
+const char *get_env(Pool& pool, const char *name) {
+ 	return getenv(name);
+}
+
 int read_post(char *buf, int max_bytes) {
 	int read_size=0;
 	do {
@@ -114,6 +118,7 @@ int main(int argc, char *argv[]) {
 //\#endif
 
 	// Service funcs 
+	service_funcs.get_env=get_env;
 	service_funcs.read_post=read_post;
 	service_funcs.output_header_attribute=output_header_attribute;
 	service_funcs.output_body=output_body;

@@ -1,5 +1,10 @@
 @exception[origin;source;comment;type;code]
-ERROR: ^if($source){$origin '$source' }${comment}. ^if($type){type=$type }^if($code){code=$code}
+CGI_BIN_ERROR:
+^if(def $source){$origin '$source'}
+${comment}.
+^if(def $type){type=$type}
+^if(def $code){code=$code}
+
 
 @auto[]
 $limits[

@@ -1,6 +1,18 @@
-^$form:a=$form:a<BR>
+@main[]
+$href[${request:uri}.]
+<a href=$href>$href</a>
+<HR>
 
-^$env:DOCUMENT_ROOT={$env:DOCUMENT_ROOT}
+^$cookie:a={$cookie:a}<BR>
+$cookie:a[123]
+^$form:a={$form:a}<BR>
+$env:CONTENT_LENGTH ?<BR>
 
-$t[^table:load[nameless;test.cfg]]
-^t.save[test2.cfg]
+^$env:REQUEST_URI={$env:REQUEST_URI}<BR>
+
+@exception[origin;source;comment;type;code]
+ERROR:
+^if(def $source){$origin '$source'}
+${comment}.
+^if(def $type){type=$type}
+^if(def $code){code=$code}
