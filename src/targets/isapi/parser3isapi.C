@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.65 2002/03/05 07:48:07 paf Exp $
+	$Id: parser3isapi.C,v 1.66 2002/03/05 09:31:08 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -189,6 +189,7 @@ void SAPI::send_header(Pool& pool) {
 			break;
 	}
 	header_info.cchStatus=strlen(header_info.pszStatus);
+	*ctx.header << "\r\n"; // ISAPI v<5 did quite well without it
 	header_info.pszHeader=ctx.header->cstr();
 	header_info.cchHeader=ctx.header->size();
 	header_info.fKeepConn=true;
@@ -339,7 +340,7 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 
 	// process the request
 	request.core(
-		root_config_filespec, false /*don't fail_on_read_problem*/, // /path/to/admin/parser3.conf
+		root_config_filespec, false /*don't fail_on_read_problem*/, // /path/to/root/parser3.conf
 		site_config_filespec, false /*don't fail_on_read_problem*/, // /path/to/site/parser3.conf
 		header_only);
 }
@@ -455,6 +456,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	lpECB->WriteClient(lpECB->ConnID, 
 		(void *)body, &num_bytes, HSE_IO_SYNC);
 */
+
 	return HSE_STATUS_SUCCESS_AND_KEEP_CONN;
 }
 
