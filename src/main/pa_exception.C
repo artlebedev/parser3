@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.33 2002/01/21 13:04:03 paf Exp $
+	$Id: pa_exception.C,v 1.34 2002/01/23 10:38:18 paf Exp $
 */
 
 #include "pa_common.h"
@@ -15,10 +15,9 @@ Exception::Exception() {
 	ftype=fcode=fproblem_source=0;
 	owns_comment=false; fcomment=0;
 }
-void Exception::initialize(
-	const String *atype, const String *acode,
-	const String *aproblem_source, 
-	const char *comment_fmt, va_list args) {
+Exception::Exception(const String *atype, const String *acode,
+					  const String *aproblem_source, 
+					  const char *comment_fmt, ...) {
 	//_asm int 3;
 //__asm__("int3");
 	ftype=atype;
@@ -28,23 +27,12 @@ void Exception::initialize(
 
 	if(comment_fmt) {
 		fcomment=(char *)malloc(MAX_STRING);
+		va_list args;
+		va_start(args, comment_fmt);
 		vsnprintf(fcomment, MAX_STRING, comment_fmt, args);
+		va_end(args);
 	} else
 		fcomment=0;
-}
-Exception::Exception(
-	const String *atype, const String *acode,
-	const String *aproblem_source, 
-	const char *comment_fmt, va_list args) {
-	initialize(atype, acode, aproblem_source, comment_fmt, args);
-}
-Exception::Exception(const String *atype, const String *acode,
-					  const String *aproblem_source, 
-					  const char *comment_fmt, ...) {
-	va_list args;
-    va_start(args, comment_fmt);
-	initialize(atype, acode, aproblem_source, comment_fmt, args);
-	va_end(args);
 }
 Exception::Exception(const Exception& src) : 
 	ftype(src.ftype),

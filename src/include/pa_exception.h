@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.28 2002/01/21 13:04:02 paf Exp $
+	$Id: pa_exception.h,v 1.29 2002/01/23 10:38:17 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -26,10 +26,6 @@ public:
 		const String *atype, const String *acode,
 		const String *aproblem_source, 
 		const char *comment_fmt, ...);
-	Exception(
-		const String *atype, const String *acode,
-		const String *aproblem_source, 
-		const char *comment_fmt, va_list args);	
 	Exception(const Exception& src);
 	Exception& operator =(const Exception& src);
 	~Exception();
@@ -49,12 +45,6 @@ public:
 	const String *problem_source() const { return fproblem_source; }
 	/// extracts exception comment
 	const char *comment() const { return fcomment; }
-
-private:
-
-	void initialize(const String *atype, const String *acode,
-		const String *aproblem_source, 
-		const char *comment_fmt, va_list args);
 
 private:
 
