@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: compile_tools.C,v 1.36 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: compile_tools.C,v 1.37 2001/07/25 08:16:21 parser Exp $"; 
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -35,6 +35,15 @@ void PCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
 void PEA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
 	// append OP_CODE
 	Operation op; op.code=OP_EXPR_CODE__STORE_PARAM;
+	*result+=op.cast;
+
+	// append 'vstring'
+	*result+=code_array;
+}
+
+void CCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
+	// append OP_CODE
+	Operation op; op.code=OP_CURLY_CODE__CONSTRUCT;
 	*result+=op.cast;
 
 	// append 'vstring'

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.181 2001/07/24 15:43:56 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.182 2001/07/25 08:16:21 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -34,11 +34,10 @@ char *opcode_name[]={
 	// actions
 	"WITH_SELF",	"WITH_ROOT",	"WITH_READ",	"WITH_WRITE",
 	"GET_CLASS",
-	"CONSTRUCT_VALUE",  "CONSTRUCT_EXPR",
+	"CONSTRUCT_VALUE", "CONSTRUCT_EXPR", "CURLY_CODE__CONSTRUCT",
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
 	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
-	"CREATE_RWPOOL",	"REDUCE_RWPOOL",
   	"CREATE_SWPOOL",	"REDUCE_SWPOOL",
 	"GET_METHOD_FRAME",
 	"STORE_PARAM",
@@ -222,6 +221,27 @@ void Request::execute(const Array& ops) {
 				value->set_name(name);
 				break;
 			}
+		case OP_CURLY_CODE__CONSTRUCT:
+			{
+				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
+#ifdef DEBUG_EXECUTE
+				debug_printf(pool(), " (%d)\n", local_ops->size());
+				debug_dump(pool(), 1, *local_ops);
+#endif				
+				Junction& j=*NEW Junction(pool(), 
+					*self, 0, 0,
+					root, 
+					rcontext, 
+					wcontext, 
+					local_ops);
+				
+				Value *value=NEW VJunction(j);
+				const String& name=POP_NAME();
+				Value *ncontext=POP();
+				ncontext->put_element(name, value);
+				value->set_name(name);
+				break;
+			}
 		case OP_WRITE_VALUE:
 			{
 				Value *value=POP();
@@ -284,28 +304,6 @@ void Request::execute(const Array& ops) {
 				break;
 			}
 			
-		case OP_CREATE_RWPOOL:
-			{
-				Value *ncontext=POP();
-				PUSH(rcontext);
-				PUSH(wcontext);
-				rcontext=ncontext;
-				wcontext=NEW WWrapper(pool(), ncontext, false /*not constructing*/);
-				break;
-			}
-		case OP_REDUCE_RWPOOL:
-			{
-				const String *string=wcontext->get_string();
-				Value *value;
-				if(string)
-					value=NEW VString(*string);
-				else
-					value=NEW VVoid(pool());
-				wcontext=static_cast<WContext *>(POP());
-				rcontext=POP();
-				PUSH(value);
-				break;
-			}
 		case OP_CREATE_SWPOOL:
 			{
 				PUSH(wcontext);

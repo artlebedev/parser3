@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.42 2001/07/02 12:56:33 parser Exp $
+	$Id: compile_tools.h,v 1.43 2001/07/25 08:16:21 parser Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -95,10 +95,12 @@ inline void P(Array/*<Operation>*/ *result, Array *code_array, int offset) {
 }
 /// aPpend 'vstring' to 'result'
 void PV(Array/*<Operation>*/ *result, VString *vstring);
-/// aPpend 'simple Code_Array' to result
+/// Parameter 'simple Code_Array'
 void PCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
-/// aPpend 'expression Code_Array' to result
+/// Parameter 'Expression code_Array'
 void PEA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
+/// Construct 'simple Code_Array'
+void CCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
 
 /**
 	Value Literal // returns array with 

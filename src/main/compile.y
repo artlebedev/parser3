@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.148 2001/07/24 12:26:38 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.149 2001/07/25 08:16:21 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -234,7 +234,7 @@ maybe_codes: empty | codes;
 
 codes: code | codes code { $$=$1; P($$, $2) };
 code: write_string | action;
-action: get | put | with | call;
+action: get | put | call;
 
 /* get */
 
@@ -304,17 +304,29 @@ name_expr_wdive_root: ':' name_expr_dive_code {
 };
 name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
 
-construct: construct_by_code | construct_by_expr;
-construct_by_code: '[' any_constructor_code_value ']' {
-	$$=$2; /* stack: context, name, value */
+construct: 
+	construct_square | 
+	construct_round |
+	construct_curly
+;
+construct_square: '[' any_constructor_code_value ']' {
+	// stack: context, name
+	$$=$2; // stack: context, name, value
 	O($$, OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 }
 ;
-construct_by_expr: '(' expr_value ')' { 
-	$$=$2; /* stack: context, name, value */
+construct_round: '(' expr_value ')' { 
+	// stack: context, name
+	$$=$2; // stack: context, name, value
 	O($$, OP_CONSTRUCT_EXPR); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 }
 ;
+construct_curly: '{' maybe_codes '}' {
+	// stack: context, name
+	$$=N(POOL); 
+	CCA($$, $2); /* code=pop; name=pop; context=pop; construct(context,name,junction(code)) */
+};
+
 any_constructor_code_value: 
 	unknown_value /* optimized $var[] case */
 |	STRING /* optimized $var[STRING] case */
@@ -451,16 +463,6 @@ class_prefix: STRING ':' {
 	O($$, OP_GET_CLASS);
 };
 
-
-/* with */
-
-with: '$' name_without_curly_rdive '{' maybe_codes '}' {
-	$$=$2;
-	O($$, OP_CREATE_RWPOOL);
-	P($$, $4);
-	O($$, OP_REDUCE_RWPOOL);
-	O($$, OP_WRITE_VALUE);
-};
 
 /* expr */
 
