@@ -5,14 +5,13 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VHASH_C="$Date: 2003/07/24 11:31:26 $";
+static const char* IDENT_VHASH_C="$Date: 2003/08/19 11:04:28 $";
 
 #include "pa_vhash.h"
 
 // defines for globals
 
-#define HASH_DEFAULT_ELEMENT_NAME "_default"
 
 // globals
 
-const String hash_default_element_name(HASH_DEFAULT_ELEMENT_NAME);
+

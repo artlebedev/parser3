@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char* IDENT_VHASH_H="$Date: 2003/07/24 11:31:26 $";
+static const char* IDENT_VHASH_H="$Date: 2003/08/19 11:04:32 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -21,10 +21,11 @@ static const char* IDENT_VHASH_H="$Date: 2003/07/24 11:31:26 $";
 #define VHASH_TYPE "hash"
 #define HASH_FIELDS_NAME "fields"
 
+#define HASH_DEFAULT_ELEMENT_NAME "_default"
+
 // externs
 
 extern Methoded* hash_class;
-extern const String hash_default_element_name;
 
 // forwards
 
@@ -72,22 +73,25 @@ public: // value
 	
 	/// VHash: (key)=value
 	override bool put_element(const String& aname, Value* avalue, bool /*replace*/) { 
-		if(flocked) {
-			if(!fhash.put_replace(aname, avalue))
-				throw Exception("parser.runtime",
-					&aname,
-					"can not insert new hash key (hash flocked)");
-		} else
-			fhash.put(aname, avalue);
+		if(aname==HASH_DEFAULT_ELEMENT_NAME)
+			set_default(avalue);
+		else 
+			if(flocked) {
+				if(!fhash.put_replace(aname, avalue))
+					throw Exception("parser.runtime",
+						&aname,
+						"can not insert new hash key (hash flocked)");
+			} else
+					fhash.put(aname, avalue);
 
 		return true;
 	}
 
 public: // usage
 
-	VHash(): flocked(false) {}
+	VHash(): flocked(false), _default(0) {}
 
-	VHash(const HashStringValue& source): fhash(source), flocked(false) {}
+	VHash(const HashStringValue& source): fhash(source), flocked(false), _default(0) {}
 
 	HashStringValue& hash() { 
 		check_lock();
@@ -95,10 +99,10 @@ public: // usage
 	}
 
 	void set_default(Value* adefault) { 
-		fhash.put(hash_default_element_name, adefault);
+		_default=adefault;
 	}
 	Value* get_default() { 
-		return fhash.get(hash_default_element_name); 
+		return _default;
 	}
 
 	void check_lock() {
@@ -112,6 +116,7 @@ private:
 
 	bool flocked;
 	HashStringValue fhash;
+	Value* _default;
 
 };
 
