@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2003/01/21 15:51:08 $";
+static const char* IDENT_XDOC_C="$Date: 2003/04/04 09:43:10 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -617,7 +617,7 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 			"xsltNewStylesheet failed");
 
 	#define OOS2STYLE(name) \
-		stylesheet->name=oo.name?BAD_CAST g_strdup(pool.transcode(*oo.name)->str):0
+		stylesheet->name=oo.name?BAD_CAST xmlMemStrdup(pool.transcode(*oo.name)->str):0
 	#define OOE2STYLE(name) \
 		stylesheet->name=oo.name
 
