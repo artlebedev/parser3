@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2004/02/03 13:09:52 $";
+static const char * const IDENT_CHARSET_C="$Date: 2004/02/03 15:35:56 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -782,7 +782,7 @@ xmlChar* Charset::transcode_buf2xchar(const char* buf, size_t buf_size) {
 #ifndef NDEBUG
 		saved_outlen=outlen;
 #endif
-		out=(xmlChar*)g_malloc(outlen+1);
+		out=(xmlChar*)xmlMalloc(outlen+1);
 		error=input(
 			out, &outlen,
 			(const unsigned char*)buf, (int*)&buf_size
