@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.30 2001/10/19 14:42:53 parser Exp $
+	$Id: xdoc.C,v 1.31 2001/10/19 14:56:16 parser Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -84,7 +84,7 @@ static void _createElement(Request& r, const String& method_name, MethodParams *
 			vdoc.get_document(pool, &method_name).
 			createElement(*pool.transcode(tagName));
 		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node);
+		VXnode& result=*new(pool) VXnode(pool, node, false);
 		r.write_no_lang(result);
 	} catch(const XalanDOMException& e)	{
 		Exception::convert(pool, &method_name, e);
@@ -100,7 +100,7 @@ static void _createDocumentFragment(Request& r, const String& method_name, Metho
 		vdoc.get_document(pool, &method_name).
 		createDocumentFragment();
 	// write out result
-	VXnode& result=*new(pool) VXnode(pool, node);
+	VXnode& result=*new(pool) VXnode(pool, node, false);
 	r.write_no_lang(result);
 }
 
@@ -115,7 +115,7 @@ static void _createTextNode(Request& r, const String& method_name, MethodParams 
 		vdoc.get_document(pool, &method_name).
 		createTextNode(*pool.transcode(data));
 	// write out result
-	VXnode& result=*new(pool) VXnode(pool, node);
+	VXnode& result=*new(pool) VXnode(pool, node, false);
 	r.write_no_lang(result);
 }
 
@@ -130,7 +130,7 @@ static void _createComment(Request& r, const String& method_name, MethodParams *
 		vdoc.get_document(pool, &method_name).
 		createComment(*pool.transcode(data));
 	// write out result
-	VXnode& result=*new(pool) VXnode(pool, node);
+	VXnode& result=*new(pool) VXnode(pool, node, false);
 	r.write_no_lang(result);
 }
 
@@ -146,7 +146,7 @@ static void _createCDATASection(Request& r, const String& method_name, MethodPar
 			vdoc.get_document(pool, &method_name).
 			createCDATASection(*pool.transcode(data));
 		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node);
+		VXnode& result=*new(pool) VXnode(pool, node, false);
 		r.write_no_lang(result);
 	} catch(const XalanDOMException& e)	{
 		Exception::convert(pool, &method_name, e);
@@ -166,7 +166,7 @@ static void _createProcessingInstruction(Request& r, const String& method_name, 
 			vdoc.get_document(pool, &method_name).
 			createProcessingInstruction(*pool.transcode(target), *pool.transcode(data));
 		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node);
+		VXnode& result=*new(pool) VXnode(pool, node, false);
 		r.write_no_lang(result);
 	} catch(const XalanDOMException& e)	{
 		Exception::convert(pool, &method_name, e);
@@ -185,7 +185,7 @@ static void _createAttribute(Request& r, const String& method_name, MethodParams
 			vdoc.get_document(pool, &method_name).
 			createAttribute(*pool.transcode(name));
 		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node);
+		VXnode& result=*new(pool) VXnode(pool, node, false);
 		r.write_no_lang(result);
 	} catch(const XalanDOMException& e)	{
 		Exception::convert(pool, &method_name, e);
@@ -203,7 +203,7 @@ static void _createEntityReference(Request& r, const String& method_name, Method
 			vdoc.get_document(pool, &method_name).
 			createEntityReference(*pool.transcode(name));
 		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node);
+		VXnode& result=*new(pool) VXnode(pool, node, false);
 		r.write_no_lang(result);
 	} catch(const XalanDOMException& e)	{
 		Exception::convert(pool, &method_name, e);
@@ -755,7 +755,7 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 	if(XalanNode *node=
 		vdoc.get_document(pool, &method_name).getElementById(*pool.transcode(elementId))) {
 		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node);
+		VXnode& result=*new(pool) VXnode(pool, node, false);
 		r.write_no_lang(result);
 	}
 }

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vxnode.C,v 1.6 2001/10/19 14:15:23 parser Exp $
+	$Id: pa_vxnode.C,v 1.7 2001/10/19 14:56:17 parser Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -26,12 +26,10 @@
 #include <XalanDOM/XalanDocumentType.hpp>
 #include <XalanDOM/XalanNotation.hpp>
 
-/*
 void VXnode_cleanup(void *vxnode) {
 	//_asm int 3;
 	static_cast<VXnode *>(vxnode)->cleanup();
 }
-*/
 
 Value *VXnode::get_element(const String& name) { 
 	try {
@@ -51,7 +49,7 @@ Value *VXnode::get_element(const String& name) {
 			return NEW VInt(pool(), node.getNodeType());
 		} else if(name=="parentNode") {
 			if(XalanNode *result_node=node.getParentNode())
-				return NEW VXnode(pool(), result_node);
+				return NEW VXnode(pool(), result_node, false);
 		} else if(name=="childNodes") {	
 			if(const XalanNodeList *nodes=node.getChildNodes()) {
 				VHash *result=NEW VHash(pool());
@@ -63,22 +61,22 @@ Value *VXnode::get_element(const String& name) {
 						skey << buf;
 					}
 
-					result->hash().put(skey, NEW VXnode(pool(), nodes->item(i)));
+					result->hash().put(skey, NEW VXnode(pool(), nodes->item(i), false));
 				}
 				return result;
 			}
 		} else if(name=="firstChild") {
 			if(XalanNode *result_node=node.getFirstChild())
-				return NEW VXnode(pool(), result_node);
+				return NEW VXnode(pool(), result_node, false);
 		} else if(name=="lastChild") {
 			if(XalanNode *result_node=node.getLastChild())
-				return NEW VXnode(pool(), result_node);
+				return NEW VXnode(pool(), result_node, false);
 		} else if(name=="previousSibling") {
 			if(XalanNode *result_node=node.getPreviousSibling())
-				return NEW VXnode(pool(), result_node);
+				return NEW VXnode(pool(), result_node, false);
 		} else if(name=="nextSibling") {
 			if(XalanNode *result_node=node.getNextSibling())
-				return NEW VXnode(pool(), result_node);
+				return NEW VXnode(pool(), result_node, false);
 		} else if(name=="ownerDocument") {
 			if(XalanDocument *document=node.getOwnerDocument())
 				return NEW VXdoc(pool(), document, false/*owns not*/);
@@ -91,7 +89,7 @@ Value *VXnode::get_element(const String& name) {
 							XalanNode *attr_node=attributes->item(i);
 							result->hash().put(
 								transcode(attr_node->getNodeName()), 
-								NEW VXnode(pool(), attr_node));
+								NEW VXnode(pool(), attr_node, false));
 						}
 						return result;
 					}

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxnode.h,v 1.6 2001/10/19 14:15:23 parser Exp $
+	$Id: pa_vxnode.h,v 1.7 2001/10/19 14:56:17 parser Exp $
 */
 
 #ifndef PA_VXNODE_H
@@ -29,7 +29,7 @@ extern Methoded *Xnode_class;
 
 /// value of type 'xnode'. implemented with XalanNode
 class VXnode : public VStateless_object {
-	//friend void VXnode_cleanup(void *);
+	friend void VXnode_cleanup(void *);
 public: // Value
 
 	const char *type() const { return VXNODE_TYPE; }
@@ -50,16 +50,25 @@ protected: // VAliased
 
 public: // usage
 
-	VXnode(Pool& apool, XalanNode *anode=0, VStateless_class& abase=*Xnode_class) : 
+	VXnode(Pool& apool, XalanNode *anode, bool aowns_node, VStateless_class& abase=*Xnode_class) : 
 		VStateless_object(apool, abase), 
-		fnode(anode) {
-		//register_cleanup(VXnode_cleanup, this);
+		fnode(anode), fowns_node(aowns_node) {
+		register_cleanup(VXnode_cleanup, this);
 	}
 private:
-	//void cleanup() {}
+	void cleanup() {
+		if(fowns_node)
+			delete fnode;
+	}
 public:
 
-	void set_node(XalanNode& anode) { fnode=&anode; }
+	void set_node(XalanNode& anode, bool aowns_node) { 
+		if(fowns_node)
+			delete fnode;
+
+		fnode=&anode; 
+		fowns_node=aowns_node;
+	}
 
 public: // VXnode
 	virtual XalanNode &get_node(Pool& pool, const String *source) { 
@@ -73,6 +82,7 @@ public: // VXnode
 
 private:
 
+	bool fowns_node;
 	XalanNode *fnode;
 
 };

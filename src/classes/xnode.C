@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.13 2001/10/19 14:42:53 parser Exp $
+	$Id: xnode.C,v 1.14 2001/10/19 14:56:16 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -70,7 +70,7 @@ static void _insertBefore(Request& r, const String& method_name, MethodParams *p
 	try {
 		if(XalanNode *retNode=selfNode.insertBefore(&newChild, &refChild)) {
 			// write out result
-			VXnode& result=*new(pool) VXnode(pool, retNode);
+			VXnode& result=*new(pool) VXnode(pool, retNode, false);
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
@@ -90,7 +90,7 @@ static void _replaceChild(Request& r, const String& method_name, MethodParams *p
 	try {
 		if(XalanNode *retNode=selfNode.replaceChild(&newChild, &refChild)) {
 			// write out result
-			VXnode& result=*new(pool) VXnode(pool, retNode);
+			VXnode& result=*new(pool) VXnode(pool, retNode, false);
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
@@ -109,7 +109,7 @@ static void _removeChild(Request& r, const String& method_name, MethodParams *pa
 	try {
 		if(XalanNode *retNode=selfNode.removeChild(&oldChild)) {
 			// write out result
-			VXnode& result=*new(pool) VXnode(pool, retNode);
+			VXnode& result=*new(pool) VXnode(pool, retNode, false);
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
@@ -128,7 +128,7 @@ static void _appendChild(Request& r, const String& method_name, MethodParams *pa
 	try {
 		if(XalanNode *retNode=selfNode.appendChild(&newChild)) {
 			// write out result
-			VXnode& result=*new(pool) VXnode(pool, retNode);
+			VXnode& result=*new(pool) VXnode(pool, retNode, false);
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
@@ -149,7 +149,7 @@ static void _hasChildNodes(Request& r, const String& method_name, MethodParams *
 }
 
 // Node cloneNode(in boolean deep);
-/// @test 1. who frees it up? 2. ownerDocument=?
+/// @test ownerDocument=?
 static void _cloneNode(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
@@ -158,7 +158,7 @@ static void _cloneNode(Request& r, const String& method_name, MethodParams *para
 	bool deep=params->as_bool(0, "deep must be bool", r);
 
 	// write out result
-	VXnode& result=*new(pool) VXnode(pool, node.cloneNode(deep));
+	VXnode& result=*new(pool) VXnode(pool, node.cloneNode(deep), true/*all sense goes here*/);
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
@@ -226,7 +226,7 @@ static void _getAttributeNode(Request& r, const String& method_name, MethodParam
 
 	if(XalanAttr *attr=element.getAttributeNode(*pool.transcode(name))) {
 		// write out result
-		VXnode& result=*new(pool) VXnode(pool, attr);
+		VXnode& result=*new(pool) VXnode(pool, attr, false);
 		r.write_no_lang(result);
 	}
 }	
@@ -240,7 +240,7 @@ static void _setAttributeNode(Request& r, const String& method_name, MethodParam
 	try {
 		if(XalanAttr *returnAttr=element.setAttributeNode(&newAttr)) {
 			// write out result
-			VXnode& result=*new(pool) VXnode(pool, returnAttr);
+			VXnode& result=*new(pool) VXnode(pool, returnAttr, false);
 			r.write_no_lang(result);
 		}
 	} catch(const XalanDOMException& e)	{
@@ -279,7 +279,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 				skey << buf;
 			}
 
-			result.hash().put(skey, new(pool) VXnode(pool, nodes->item(i)));
+			result.hash().put(skey, new(pool) VXnode(pool, nodes->item(i), false));
 		}
 	}
 
@@ -324,7 +324,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 				skey << buf;
 			}
 
-			result.hash().put(skey, new(pool) VXnode(pool, list.item(i)));
+			result.hash().put(skey, new(pool) VXnode(pool, list.item(i), false));
 		}
 		result.set_name(method_name);
 		r.write_no_lang(result);
@@ -355,7 +355,7 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 			&vnode.get_node(pool, &method_name), 
 			expression_dcstr)) {
 
-			VXnode& result=*new(pool) VXnode(pool, node);
+			VXnode& result=*new(pool) VXnode(pool, node, false);
 			result.set_name(method_name);
 			r.write_no_lang(result);
 		}

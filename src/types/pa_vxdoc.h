@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxdoc.h,v 1.9 2001/10/19 14:15:23 parser Exp $
+	$Id: pa_vxdoc.h,v 1.10 2001/10/19 14:56:17 parser Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -54,11 +54,11 @@ public: // VDNode
 
 public: // usage
 
-	VXdoc(Pool& apool, XalanDocument *adocument, bool aowns) : VXnode(apool, 0, *Xdoc_class), 
+	VXdoc(Pool& apool, XalanDocument *adocument, bool aowns_document) : VXnode(apool, 0, false, *Xdoc_class), 
 		ftransformer(0),
 		fparser_liaison(0), ferror_handler(0),
 		fparsed_source(0),
-		fdocument(adocument), fowns_document(aowns) {
+		fdocument(adocument), fowns_document(aowns_document) {
 		register_cleanup(VXdoc_cleanup, this);
 		ftransformer=new XalanTransformer2;
 		fparser_liaison=new XercesParserLiaison;
@@ -92,12 +92,12 @@ public:
 		return *fparsed_source; 
 	}
 
-	void set_document(XalanDocument& adocument, bool aowns) { 
+	void set_document(XalanDocument& adocument, bool aowns_document) { 
 		if(fowns_document)
 			delete fdocument;
 
 		fdocument=&adocument; 
-		fowns_document=aowns;
+		fowns_document=aowns_document;
 	}
 	XalanDocument &get_document(Pool& pool, const String *source) { 
 		if(fparsed_source)

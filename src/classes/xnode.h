@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.h,v 1.2 2001/09/26 15:43:59 parser Exp $
+	$Id: xnode.h,v 1.3 2001/10/19 14:56:16 parser Exp $
 */
 
 #ifndef XNODE_H
@@ -30,7 +30,7 @@ public: // Value
 
 
 public: // VStateless_class
-	Value *create_new_value(Pool& pool) { return new(pool) VXnode(pool); }
+	Value *create_new_value(Pool& pool) { return new(pool) VXnode(pool, 0, false); }
 
 public:
 	MXnode(Pool& pool);
