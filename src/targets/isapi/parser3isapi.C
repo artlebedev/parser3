@@ -6,8 +6,6 @@
 #include <process.h>
 
 #include <httpext.h>
-#include <httpfilt.h>
-#include <httpext.h>
 
 #include "pa_globals.h"
 #include "pa_request.h"
@@ -121,6 +119,7 @@ static void send_header(Pool& pool) {
 	header_info.cchStatus=strlen(header_info.pszStatus);
 	header_info.pszHeader=ctx.header->cstr();
 	header_info.cchHeader=ctx.header->size();
+	header_info.fKeepConn=true;
 
 	ctx.lpECB->dwHttpStatusCode=ctx.http_response_code;
 
