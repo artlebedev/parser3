@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMS_C="$Date: 2004/02/24 12:04:16 $";
+static const char * const IDENT_COMMS_C="$Date: 2004/03/01 09:14:15 $";
 
 #include "smtp.h"
 
@@ -102,14 +102,20 @@ ResolveHostname(const char* hostname, struct sockaddr_in *sa_in)
 int SMTP:: 
 GetAndSetTheSocket(SOCKET *the_socket)
 {
-    int _not = 0;
-
     if( INVALID_SOCKET == (*the_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*был 0, вложенно не работал*/)) )
     {
 		return WSAESOCKTNOSUPPORT;
     }
 
-    setsockopt(*the_socket, SOL_SOCKET, SO_DONTLINGER, (char *)&_not, sizeof(_not));
+#ifdef SO_DONTLINGER
+    int dont_linger = 0;
+    setsockopt(*the_socket, SOL_SOCKET, SO_DONTLINGER, (const char *)&dont_linger, sizeof(dont_linger));
+#else
+	// To enable SO_DONTLINGER (that is, disable SO_LINGER) 
+	// l_onoff should be set to zero and setsockopt should be called
+	linger dont_linger={0,0};
+    setsockopt(*the_socket, SOL_SOCKET, SO_LINGER, (const char *)&dont_linger, sizeof(dont_linger));
+#endif
 
     return 0;
 }
