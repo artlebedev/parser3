@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.1 2001/02/20 18:45:52 paf Exp $
+  $Id: compile.C,v 1.2 2001/02/20 19:21:13 paf Exp $
 */
 
 #include "pa_array.h"
@@ -13,6 +13,9 @@ extern int yydebug;
 extern int yyparse (void *);
 
 Array *real_compile(COMPILE_PARAMS) {
+	if(!source)
+		return 0;
+
 	yydebug=1;
 	struct parse_control pc;
 	/* input */
@@ -28,7 +31,7 @@ Array *real_compile(COMPILE_PARAMS) {
 	pc.ls=LS_USER;
 	pc.sp=0;
 	/* parse! */
-	printf("[yyparse returned %d]", yyparse(&pc));
+	int parse_error=yyparse(&pc);
 	/* result */
-	return static_cast<Array *>(pc.result);
+	return parse_error?0:static_cast<Array *>(pc.result);
 }

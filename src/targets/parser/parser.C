@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.7 2001/02/20 18:45:53 paf Exp $
+  $Id: parser.C,v 1.8 2001/02/20 19:21:13 paf Exp $
 */
 
 #include <stdio.h>
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 			si++;
 */
 			// compile
-			char *file="test.p";
+			char *file="c:\\temp\\test.p";
 			char *source=file_read(pool, file);
 			Array *ops=COMPILE(&pool, source, file);
 			execute(&pool, ops);

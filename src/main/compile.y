@@ -102,7 +102,7 @@ complex_constructor_param_body:
 constructor_two_params_value: STR_LITERAL ';' constructor_one_param_value {
 	char *operator_or_fmt=string_cstr(LS($1));
 	$$=N(PC->pool);
-	P(&$$, operator_or_fmt);/* stack: ncontext name char*operator_or_fmt */
+	G(&$$, operator_or_fmt);/* stack: ncontext name char*operator_or_fmt */
 	P(&$$, $3); /* stack: ncontext name char*operator_or_fmt expr */
 	switch(operator_or_fmt[0]) {
 	case '=': case '%':
@@ -155,7 +155,7 @@ store_param_part: constructor_one_param_value {
 store_curly_param: '{' input '}' {
 	$$=N(PC->pool); 
 	A(&$$, OP_CODE_ARRAY);
-	P(&$$,$2);
+	G(&$$,$2);
 	A(&$$,OP_CREATE_JUNCTION);
 	A(&$$,OP_STORE_PARAM);
 };
@@ -493,14 +493,12 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 	}
 
 break2:
-	if(PC->source==start)
+	if(PC->source-1<=start)
 		return result;
 	else {
 		PC->pending_state=result;
 		/* append last piece */
-		if(c==0)
-			PC->source--; /* return from past-EOL voyage */
-		CSTRING_APPEND(PC->string, start, PC->source-start, PC->file, start_line);
+		CSTRING_APPEND(PC->string, start, PC->source-start-1, PC->file, start_line);
 		/* create STR_LITERAL value: array of OP_STRING+string */
 		*lvalp=L(PC->string);
 		/* new pieces storage */

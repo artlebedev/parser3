@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.1 2001/02/20 18:45:52 paf Exp $
+  $Id: compile_tools.C,v 1.2 2001/02/20 19:21:13 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -17,9 +17,7 @@ void A(void **result, enum OPCODE acode) {
 	(*static_cast<Array *>(*result))+=reinterpret_cast<Array::Item *>(code);
 }
 
-void AP(void **result, enum OPCODE acode, void *param) {
-	int code=acode;
-	(*static_cast<Array *>(*result))+=reinterpret_cast<Array::Item *>(code);
+void G(void **result, void *param) {
 	(*static_cast<Array *>(*result))+=param;
 }
 
@@ -44,7 +42,7 @@ void *LS(void *literal) {
 }
 
 void P(void **result, void *code_array) {
-	*(static_cast<Array *>(*result))+=code_array;
+	(*(static_cast<Array *>(*result))).append_array(*static_cast<Array *>(code_array));
 }
 
 

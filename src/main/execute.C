@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.1 2001/02/20 18:45:52 paf Exp $
+  $Id: execute.C,v 1.2 2001/02/20 19:21:13 paf Exp $
 */
 
 #include "pa_array.h"
@@ -25,6 +25,9 @@ char *opcode_name[]={
 };
 
 void dump(int level, const Array *ops) {
+	if(!ops)
+		return;
+
 	int size=ops->size();
 	for(int i=0; i<size; i++) {
 		int code=reinterpret_cast<int>(ops->raw_get(i));
@@ -46,5 +49,7 @@ void execute(Pool *pool, const Array *ops) {
 	if(!ops)
 		return;
 
+	puts("---------------------------");
 	dump(0, ops);
+	puts("---------------------------");
 }

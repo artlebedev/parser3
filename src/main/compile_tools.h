@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.1 2001/02/20 18:45:52 paf Exp $
+  $Id: compile_tools.h,v 1.2 2001/02/20 19:21:13 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -50,8 +50,8 @@ extern "C" {
 	/* Assembler instruction // append ordinary instruction to result */
 	void A(void **result, enum OPCODE acode);
 
-	/* Assembler parametrized instruction // append instruction; append param */
-	void AP(void **result, enum OPCODE acode, void *param);
+	/* Assembler arGument // append instruction; append param */
+	void G(void **result, void *param);
 
 	/* Literal // returns array with 
 		// first: OP_STRING instruction
