@@ -1,8 +1,12 @@
 <?xml version="1.0"?> 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-<xsl:output doctype-public ="-//W3C//DTD XHTML" indent="yes"/>
+<!--<xsl:output doctype-public ="-//W3C//DTD XHTML" indent="yes"/>-->
 
 <xsl:param name="param1">defparam1</xsl:param>
+
+	<xsl:template match="doc">
+		test return <something background=""/>
+	</xsl:template>
 
 	<xsl:template name="test">
 		test return

@@ -91,9 +91,9 @@ OK
 
 @xmloutattrwithoutvalue[]
 #$ORIGINS(1)
-$doc[^xdoc::set{<?xml version="1.0"?><doc background=""><br/></doc>}]
+$doc[^xdoc::set{<?xml version="1.0"?><doc background="">zz</doc>}]
 $doc[^doc.transform[global.xsl]]
-=^taint[html][^doc.string[$.method[xhtml]]]=
+=^taint[html][^doc.string[$.method[html]]]=
 
 
 
