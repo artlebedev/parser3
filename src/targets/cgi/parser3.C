@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.174 2002/04/24 09:53:03 paf Exp $
+	$Id: parser3.C,v 1.174.2.1 2002/04/25 15:37:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -63,8 +63,9 @@ const char **RCSIds[]={
 };
 #endif
 
-const char *PARSER_ROOT_CONFIG_ENV_NAME="HTTP_PARSER_ROOT_CONFIG";
-const char *PARSER_SITE_CONFIG_ENV_NAME="HTTP_PARSER_SITE_CONFIG";
+#define REDIRECT_PREFIX "REDIRECT_"
+#define PARSER_ROOT_CONFIG_ENV_NAME "HTTP_PARSER_ROOT_CONFIG"
+#define PARSER_SITE_CONFIG_ENV_NAME "HTTP_PARSER_SITE_CONFIG"
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
@@ -316,7 +317,10 @@ void real_parser_handler(
 	// some root-controlled location
 	const char *root_config_filespec_cstr;
 	char root_config_filespec_buf[MAX_STRING];
-	if(const char *root_config_by_env=getenv(PARSER_ROOT_CONFIG_ENV_NAME))
+	const char *root_config_by_env=getenv(PARSER_ROOT_CONFIG_ENV_NAME);
+	if(!root_config_by_env)
+		root_config_by_env=getenv(REDIRECT_PREFIX PARSER_ROOT_CONFIG_ENV_NAME);
+	if(root_config_by_env)
 		root_config_filespec_cstr=root_config_by_env;
 	else {
 #ifdef ROOT_CONFIG_DIR
@@ -341,7 +345,10 @@ void real_parser_handler(
 	
 	const char *site_config_filespec_cstr;
 	char site_config_filespec_buf[MAX_STRING];
-	if(const char *site_config_by_env=getenv(PARSER_SITE_CONFIG_ENV_NAME))
+	const char *site_config_by_env=getenv(PARSER_SITE_CONFIG_ENV_NAME);
+	if(!site_config_by_env)
+		site_config_by_env=getenv(REDIRECT_PREFIX PARSER_SITE_CONFIG_ENV_NAME);
+	if(site_config_by_env)
 		site_config_filespec_cstr=site_config_by_env;
 	else {
 	// beside by binary
