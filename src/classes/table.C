@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.39 2001/03/29 20:53:02 paf Exp $
+	$Id: table.C,v 1.40 2001/03/30 05:51:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,11 +25,6 @@ static void set_or_load(
 						Request& r, 
 						const String& method_name, Array *params, 
 						bool is_load) {
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	Pool& pool=r.pool();
 	// data is last parameter
 	Value *vdata_or_filename=static_cast<Value *>(params->get(params->size()-1));
@@ -103,11 +98,6 @@ static void _load(Request& r, const String& method_name, Array *params) {
 }
 
 static void _save(Request& r, const String& method_name, Array *params) {
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	Pool& pool=r.pool();
 	Value *vtable_name=static_cast<Value *>(params->get(params->size()-1));
 	// forcing
@@ -162,33 +152,18 @@ static void _save(Request& r, const String& method_name, Array *params) {
 }
 
 static void _count(Request& r, const String&method_name, Array *) {
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, static_cast<VTable *>(r.self)->table().size());
 	r.write_no_lang(value);
 }
 
 static void _line(Request& r, const String& method_name, Array *) {
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	Pool& pool=r.pool();
 	Value& value=*new(pool) VInt(pool, 1+static_cast<VTable *>(r.self)->table().current());
 	r.write_no_lang(value);
 }
 
 static void _offset(Request& r, const String& method_name, Array *params) {
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	Pool& pool=r.pool();
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(params->size())
@@ -200,11 +175,6 @@ static void _offset(Request& r, const String& method_name, Array *params) {
 }
 
 static void _menu(Request& r, const String& method_name, Array *params) {
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	Value& body_code=*static_cast<Value *>(params->get(0));
 	// forcing ^menu{this param type}
 	r.fail_if_junction_(false, body_code, 
@@ -231,11 +201,6 @@ static void _menu(Request& r, const String& method_name, Array *params) {
 }
 
 static void _empty(Request& r, const String& method_name, Array *params) {
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(table.size()==0) {
 		Value& value=r.process(*static_cast<Value *>(params->get(0)));
@@ -263,11 +228,6 @@ static void store_column_item_to_hash(Array::Item *item, void *info) {
 	ri.hash->put(column_name, value);
 }
 static void _record(Request& r, const String& method_name, Array *params) {
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(const Array *columns=table.columns()) {
 		Pool& pool=r.pool();
@@ -303,11 +263,6 @@ static int sort_cmp_double(const void *a, const void *b) {
 		return 0;
 }
 static void _sort(Request& r, const String& method_name, Array *params) {
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	Value& key_maker=*(Value *)params->get(0);
 	// forcing ^sort{this} ^sort(or this) param type
 	r.fail_if_junction_(false, key_maker, method_name, "key-maker must be junction");
@@ -358,11 +313,6 @@ static void _sort(Request& r, const String& method_name, Array *params) {
 }
 
 static void _locate(Request& r, const String& method_name, Array *params) {
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	Table& table=vtable.table();
 	vtable.last_locate_was_successful=table.locate(
@@ -371,11 +321,6 @@ static void _locate(Request& r, const String& method_name, Array *params) {
 }
 
 static void _found(Request& r, const String& method_name, Array *params) {
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	if(static_cast<VTable *>(r.self)->last_locate_was_successful) {
 		Value& then_code=*static_cast<Value *>(params->get(0));
 		// forcing ^found{this param type}
@@ -393,12 +338,6 @@ static void _found(Request& r, const String& method_name, Array *params) {
 
 static void _flip(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
-
-	if(r.self==table_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'table' is not static");
-
 	VTable& vtable=*static_cast<VTable *>(r.self);
 
 	Table& old_table=*vtable.get_table();
@@ -422,47 +361,47 @@ static void _flip(Request& r, const String& method_name, Array *params) {
 void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 	// ^table.set{data}
 	// ^table.set[nameless]{data}
-	vclass.add_native_method("set", _set, 1, 2);
+	vclass.add_native_method("set", Method::CT_DYNAMIC, _set, 1, 2);
 
 	// ^table.load[file]  
 	// ^table.load[nameless;file]
-	vclass.add_native_method("load", _load, 1, 2);
+	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
 
 	// ^table.save[file]  
 	// ^table.save[nameless;file]
-	vclass.add_native_method("save", _save, 1, 2);
+	vclass.add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
 
 	// ^table.count[]
-	vclass.add_native_method("count", _count, 0, 0);
+	vclass.add_native_method("count", Method::CT_DYNAMIC, _count, 0, 0);
 
 	// ^table.line[]
-	vclass.add_native_method("line", _line, 0, 0);
+	vclass.add_native_method("line", Method::CT_DYNAMIC, _line, 0, 0);
 
 	// ^table.offset[]  
 	// ^table.offset[offset]
-	vclass.add_native_method("offset", _offset, 0, 1);
+	vclass.add_native_method("offset", Method::CT_DYNAMIC, _offset, 0, 1);
 
 	// ^table.menu{code}  
 	// ^table.menu{code}[delim]
-	vclass.add_native_method("menu", _menu, 1, 2);
+	vclass.add_native_method("menu", Method::CT_DYNAMIC, _menu, 1, 2);
 
 	// ^table.empty{code-when-empty}  
 	// ^table.empty{code-when-empty}{code-when-not}
-	vclass.add_native_method("empty", _empty, 1, 2);
+	vclass.add_native_method("empty", Method::CT_DYNAMIC, _empty, 1, 2);
 
 	// ^table.record[]
-	vclass.add_native_method("record", _record, 0, 0);
+	vclass.add_native_method("record", Method::CT_DYNAMIC, _record, 0, 0);
 
 	// ^table.sort{string-key-maker} ^table.sort{string-key-maker}[asc|desc]
 	// ^table.sort(numeric-key-maker) ^table.sort(numeric-key-maker)[asc|desc]
-	vclass.add_native_method("sort", _sort, 1, 2);
+	vclass.add_native_method("sort", Method::CT_DYNAMIC, _sort, 1, 2);
 
 	// ^table.locate[field;value]
-	vclass.add_native_method("locate", _locate, 2, 2);
+	vclass.add_native_method("locate", Method::CT_DYNAMIC, _locate, 2, 2);
 	// ^table.found{when-found}
 	// ^table.found{when-found}{when-not-found}
-	vclass.add_native_method("found", _found, 1, 2);
+	vclass.add_native_method("found", Method::CT_DYNAMIC, _found, 1, 2);
 
 	// ^table.flip[]
-	vclass.add_native_method("flip", _flip, 0, 0);
-}	
+	vclass.add_native_method("flip", Method::CT_DYNAMIC, _flip, 0, 0);
+}

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: response.C,v 1.4 2001/03/19 22:48:35 paf Exp $
+	$Id: response.C,v 1.5 2001/03/30 05:51:12 paf Exp $
 */
 
 #include "pa_request.h"
@@ -23,5 +23,5 @@ static void _clear(Request& r, const String& method_name, Array *params) {
 
 void initialize_response_class(Pool& pool, VStateless_class& vclass) {
 	// ^clear[]
-	vclass.add_native_method("clear", _clear, 0, 0);
+	vclass.add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
 }

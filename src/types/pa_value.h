@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.38 2001/03/29 09:31:45 paf Exp $
+	$Id: pa_value.h,v 1.39 2001/03/30 05:53:04 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -180,10 +180,6 @@ protected:
 
 };
 
-/// native code method
-typedef void (*Native_code_ptr)(Request& request, 
-								const String& method_name, Array *params);
-
 /** \b junction is some code joined with context of it's evaluation.
 
 	there are code-junctions and method-junctions
@@ -224,6 +220,11 @@ public:
 	//@}
 };
 
+/// native code method
+typedef void (*Native_code_ptr)(Request& request, 
+								const String& method_name, 
+								Array *params);
+
 /** 
 	class method.
 
@@ -242,8 +243,19 @@ public:
 */
 class Method : public Pooled {
 public:
-	/// method name for error reporting
+
+	/// bits of allowed call types
+	enum Call_type {
+		CT_ANY=0,
+		CT_STATIC,
+		CT_DYNAMIC		
+	};
+
+	
+	/// name for error reporting
 	const String& name;
+	///
+	Call_type call_type;
 	//@{
 	/// @name either numbered params // for native-code methods = operators
 	int min_numbered_params_count, max_numbered_params_count;
@@ -260,12 +272,14 @@ public:
 	Method(
 		Pool& apool,
 		const String& aname,
+		Call_type call_type,
 		int amin_numbered_params_count, int amax_numbered_params_count,
 		Array *aparams_names, Array *alocals_names,
 		const Array *aparser_code, Native_code_ptr anative_code) : 
 
 		Pooled(apool),
 		name(aname),
+		call_type(call_type),
 		min_numbered_params_count(amin_numbered_params_count),
 		max_numbered_params_count(amax_numbered_params_count),
 		params_names(aparams_names), locals_names(alocals_names),

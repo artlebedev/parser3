@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.18 2001/03/27 16:35:52 paf Exp $
+	$Id: double.C,v 1.19 2001/03/30 05:51:11 paf Exp $
 */
 
 #include "pa_request.h"
@@ -61,24 +61,24 @@ static void _mod(Request& r, const String&, Array *params) { vdouble_op(r, param
 
 void initialize_double_class(Pool& pool, VStateless_class& vclass) {
 	// ^double.int[]
-	vclass.add_native_method("int", _int, 0, 0);
+	vclass.add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
 
 	// ^double.double[]
-	vclass.add_native_method("double", _double, 0, 0);
+	vclass.add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
 	
 	// ^double.inc[] 
 	// ^double.inc[offset]
-	vclass.add_native_method("inc", _inc, 0, 1);
+	vclass.add_native_method("inc", Method::CT_DYNAMIC, _inc, 0, 1);
 	// ^double.dec[] 
 	// ^double.dec[offset]
-	vclass.add_native_method("dec", _dec, 0, 1);
+	vclass.add_native_method("dec", Method::CT_DYNAMIC, _dec, 0, 1);
 	// ^double.mul[k] 
-	vclass.add_native_method("mul", _mul, 1, 1);
+	vclass.add_native_method("mul", Method::CT_DYNAMIC, _mul, 1, 1);
 	// ^double.div[d]
-	vclass.add_native_method("div", _div, 1, 1);
+	vclass.add_native_method("div", Method::CT_DYNAMIC, _div, 1, 1);
 	// ^double.mod[offset]
-	vclass.add_native_method("mod", _mod, 1, 1);
+	vclass.add_native_method("mod", Method::CT_DYNAMIC, _mod, 1, 1);
 
 	// ^double.format[]
-	vclass.add_native_method("format", _string_format, 1, 1);
+	vclass.add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
 }

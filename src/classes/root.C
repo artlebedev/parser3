@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.52 2001/03/28 09:01:20 paf Exp $
+	$Id: root.C,v 1.53 2001/03/30 05:51:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -268,48 +268,48 @@ static void _sign(Request& r, const String& method_name, Array *params) {
 void initialize_root_class(Pool& pool, VStateless_class& vclass) {
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
-	vclass.add_native_method("if", _if, 2, 3);
+	vclass.add_native_method("if", Method::CT_ANY, _if, 2, 3);
 
 	// ^untaint[as-is|uri|sql|js|html|html-typo]{code}
-	vclass.add_native_method("untaint", _untaint, 2, 2);
+	vclass.add_native_method("untaint", Method::CT_ANY, _untaint, 2, 2);
 
 	// ^taint[as-is|uri|sql|js|html|html-typo]{code}
-	vclass.add_native_method("taint", _taint, 2, 2);
+	vclass.add_native_method("taint", Method::CT_ANY, _taint, 2, 2);
 
 	// ^process[code]
-	vclass.add_native_method("process", _process, 1, 1);
+	vclass.add_native_method("process", Method::CT_ANY, _process, 1, 1);
 
 	// ^rem{code}
-	vclass.add_native_method("rem", _rem, 1, 1);
+	vclass.add_native_method("rem", Method::CT_ANY, _rem, 1, 1);
 
 	// ^while(condition){code}
-	vclass.add_native_method("while", _while, 2, 2);
+	vclass.add_native_method("while", Method::CT_ANY, _while, 2, 2);
 
 	// ^use[file]
-	vclass.add_native_method("use", _use, 1, 1);
+	vclass.add_native_method("use", Method::CT_ANY, _use, 1, 1);
 
 	// ^for[i;from-number;to-number-inclusive]{code}[delim]
-	vclass.add_native_method("for", _for, 3+1, 3+1+1);
+	vclass.add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1);
 
 	// ^eval(expr)
 	// ^eval(expr)[format]
-	vclass.add_native_method("eval", _eval, 1, 2);
+	vclass.add_native_method("eval", Method::CT_ANY, _eval, 1, 2);
 
 
 	// math functions
 
 	// ^round(expr)	
-	vclass.add_native_method("round", _round, 1, 1);
+	vclass.add_native_method("round", Method::CT_ANY, _round, 1, 1);
 
 	// ^floor(expr)	
-	vclass.add_native_method("floor", _floor, 1, 1);
+	vclass.add_native_method("floor", Method::CT_ANY, _floor, 1, 1);
 
 	// ^ceiling(expr)	
-	vclass.add_native_method("ceiling", _ceiling, 1, 1);
+	vclass.add_native_method("ceiling", Method::CT_ANY, _ceiling, 1, 1);
 
 	// ^abs(expr)	
-	vclass.add_native_method("abs", _abs, 1, 1);
+	vclass.add_native_method("abs", Method::CT_ANY, _abs, 1, 1);
 
 	// ^sign(expr)
-	vclass.add_native_method("sign", _sign, 1, 1);
+	vclass.add_native_method("sign", Method::CT_ANY, _sign, 1, 1);
 }

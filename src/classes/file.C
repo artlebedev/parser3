@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.13 2001/03/29 20:53:02 paf Exp $
+	$Id: file.C,v 1.14 2001/03/30 05:51:12 paf Exp $
 */
 
 #include "pa_request.h"
@@ -23,11 +23,6 @@ VStateless_class *file_class;
 
 /// @test mkdirs
 static void _save(Request& r, const String& method_name, Array *params) {
-	if(r.self==file_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'file' is not static");
-
 	Pool& pool=r.pool();
 	Value& vfile_name=*static_cast<Value *>(params->get(0));
 	// forcing
@@ -103,11 +98,6 @@ static void _find(Request& r, const String& method_name, Array *params) {
 }
 
 static void _load(Request& r, const String& method_name, Array *params) {
-	if(r.self==file_class)
-		RTHROW(0, 0,
-			&method_name,
-			"method of 'file' is not static");
-
 	Pool& pool=r.pool();
 	Value& vfile_name=*static_cast<Value *>(params->get(0));
 
@@ -153,17 +143,17 @@ static void _load(Request& r, const String& method_name, Array *params) {
 
 void initialize_file_class(Pool& pool, VStateless_class& vclass) {
 	// ^save[file-name]
-	vclass.add_native_method("save", _save, 1, 1);
+	vclass.add_native_method("save", Method::CT_DYNAMIC, _save, 1, 1);
 
 	// ^delete[file-name]
-	vclass.add_native_method("delete", _delete, 1, 1);
+	vclass.add_native_method("delete", Method::CT_STATIC, _delete, 1, 1);
 
 	// ^find[file-name]
 	// ^find[file-name]{when-not-found}
-	vclass.add_native_method("find", _find, 1, 2);
+	vclass.add_native_method("find", Method::CT_STATIC, _find, 1, 2);
 
 	// ^load[disk-name]
 	// ^load[disk-name;user-name]
 	// ^load[disk-name;user-name;mime-type]
-	vclass.add_native_method("load", _load, 1, 3);
+	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 3);
 }

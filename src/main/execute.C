@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.133 2001/03/29 17:11:41 paf Exp $
+	$Id: execute.C,v 1.134 2001/03/30 05:52:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -387,15 +387,26 @@ void Request::execute(const Array& ops) {
 					Temp_alias temp_alias(*self->get_aliased(), *frame->junction.vclass);
 
 					const Method& method=*frame->junction.method;
-					if(method.native_code) { // native code?
-						method.check_actual_numbered_params(
-							frame->junction.self, 
-							frame->name(), frame->numbered_params());
-						(*method.native_code)(
-							*this, 
-							frame->name(), frame->numbered_params()); // execute it
-					} else // parser code
-						execute(*method.parser_code); // execute it
+					Method::Call_type call_type=
+						called_class==self ? Method::CT_STATIC : Method::CT_DYNAMIC;
+					if(
+						method.call_type==Method::CT_ANY ||
+						method.call_type==call_type) // allowed call type?
+						if(method.native_code) { // native code?
+							method.check_actual_numbered_params(
+								frame->junction.self, 
+								frame->name(), frame->numbered_params());
+							(*method.native_code)(
+								*this, 
+								frame->name(), frame->numbered_params()); // execute it
+						} else // parser code
+							execute(*method.parser_code); // execute it
+					else
+						THROW(0, 0,
+							&frame->name(),
+							"is not allowed to be called %s", 
+								call_type==Method::CT_STATIC?"statically":"dynamically");
+
 				}
 				Value *value=wcontext->result();
 

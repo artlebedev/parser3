@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.21 2001/03/29 17:44:38 paf Exp $
+	$Id: string.C,v 1.22 2001/03/30 05:51:12 paf Exp $
 */
 
 #include "pa_request.h"
@@ -148,30 +148,30 @@ static void _rsplit(Request& r, const String& method_name, Array *params) {
 
 void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 	// ^string.length[]
-	vclass.add_native_method("length", _length, 0, 0);
+	vclass.add_native_method("length", Method::CT_DYNAMIC, _length, 0, 0);
 	
 	// ^string.int[]
-	vclass.add_native_method("int", _int, 0, 0);
+	vclass.add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
 	
 	// ^string.double[]
-	vclass.add_native_method("double", _double, 0, 0);
+	vclass.add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
 
 	// ^string.format[]
-	vclass.add_native_method("format", _string_format, 1, 1);
+	vclass.add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
 
 	// ^string.left(n)
-	vclass.add_native_method("left", _left, 1, 1);
+	vclass.add_native_method("left", Method::CT_DYNAMIC, _left, 1, 1);
 	// ^string.right(n)
-	vclass.add_native_method("right", _right, 1, 1);
+	vclass.add_native_method("right", Method::CT_DYNAMIC, _right, 1, 1);
 	// ^string.mid(p;n)
-	vclass.add_native_method("mid", _mid, 2, 2);
+	vclass.add_native_method("mid", Method::CT_DYNAMIC, _mid, 2, 2);
 
 	// ^string.pos[substr]
-	vclass.add_native_method("pos", _pos, 1, 1);
+	vclass.add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 1);
 
 	// ^string.lsplit[delim]
-	vclass.add_native_method("lsplit", _lsplit, 1, 1);
+	vclass.add_native_method("lsplit", Method::CT_DYNAMIC, _lsplit, 1, 1);
 	// ^string.rsplit[delim]
-	vclass.add_native_method("rsplit", _rsplit, 1, 1);
+	vclass.add_native_method("rsplit", Method::CT_DYNAMIC, _rsplit, 1, 1);
 }	
 

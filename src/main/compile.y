@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.121 2001/03/29 15:00:21 paf Exp $
+	$Id: compile.y,v 1.122 2001/03/30 05:52:17 paf Exp $
 */
 
 /**
@@ -113,6 +113,7 @@ all:
 	one_big_piece {
 	Method& method=*NEW Method(POOL, 
 		*main_method_name, 
+		Method::CT_ANY,
 		0, 0, /*min, max numbered_params_count*/
 		0/*param_names*/, 0/*local_names*/, 
 		$1/*parser_code*/, 0/*native_code*/);
@@ -222,6 +223,7 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 
 	Method& method=*NEW Method(POOL, 
 		*name, 
+		Method::CT_ANY,
 		0, 0/*min,max numbered_params_count*/, 
 		params_names, locals_names, 
 		$7, 0);

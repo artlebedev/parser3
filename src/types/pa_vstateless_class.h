@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.8 2001/03/24 09:44:20 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.9 2001/03/30 05:53:04 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -62,6 +62,7 @@ public: // usage
 	}
 	void add_native_method(
 		const char *cstr_name,
+		Method::Call_type call_type,
 		Native_code_ptr native_code,
 		int min_numbered_params_count, int max_numbered_params_count);
 	
