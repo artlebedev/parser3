@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSET_C="$Date: 2002/08/01 11:41:18 $";
+static const char* IDENT_CHARSET_C="$Date: 2002/09/10 08:41:00 $";
 
 #include "pa_charset.h"
 
@@ -361,7 +361,15 @@ static int transcodeToUTF8(
     // Return the characters read
     toFillLen = outPtr - toFill;
 
-	return srcPtr==srcEnd?(int)toFillLen:-1;
+	//return srcPtr==srcEnd?(int)toFillLen:-1;
+/*
+xmlCharEncodingInputFunc
+Returns :
+the number of byte written, or -1 by lack of space, or -2 if the transcoding failed. The value of inlen after return is the
+number of octets consumed as the return value is positive, else unpredictiable. The value of outlen after return is the number
+of ocetes consumed.
+*/
+	return 0;
 }
 /// @todo digital entites only when xml/html output [at output in html/xml mode, in html part of a letter]
 static size_t transcodeFromUTF8(
@@ -432,7 +440,15 @@ static size_t transcodeFromUTF8(
     // Return the characters read
     toFillLen = outPtr - toFill;
 
-	return srcPtr==srcEnd?(int)toFillLen:-1;
+	//return srcPtr==srcEnd?(int)toFillLen:-1;
+/*
+xmlCharEncodingOutputFunc
+Returns :
+the number of byte written, or -1 by lack of space, or -2 if the transcoding failed. The value of inlen after return is the
+number of octets consumed as the return value is positive, else unpredictiable. The value of outlen after return is the number
+of ocetes consumed.
+*/
+	return 0;
 }
 
 /// @todo not so memory-hungry with prescan

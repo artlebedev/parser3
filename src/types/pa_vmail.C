@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/08/29 12:22:48 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/09/10 08:41:00 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -116,6 +116,7 @@ struct MimePart2bodyInfo {
 	int partCounts[P_TYPES_COUNT];
 };
 #endif
+/// @test why no copy to global in P_HTML putReceived?
 static void MimePart2body(GMimePart *part,
 						  gpointer data) {
 	MimePart2bodyInfo& i=*static_cast<MimePart2bodyInfo *>(data);

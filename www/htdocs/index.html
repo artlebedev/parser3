@@ -4,11 +4,11 @@
 @auto[filespec]
 $selffilespec[$filespec]
 #$form:here
-$request:charset[UTF-8]
-#$response:charset[windows-1251]
-#$request:charset[windows-1251]
+#$request:charset[UTF-8]
+$request:charset[windows-1251]
+$response:charset[windows-1251]
 #$response:charset[UTF-8]
-$response:charset[empty]
+#$response:charset[empty]
 #$response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 #@postprocess[body]
@@ -20,7 +20,7 @@ $response:charset[empty]
 #^a.format[%.10u]
 #$result[111]
 #^f[a]
-^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
+#^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
 #	^int:sql{select news_id from news where news_id=-1}[
 ##	$.default{2}
 #	]<br>
@@ -31,8 +31,8 @@ $response:charset[empty]
 #	^process{	^^h[]}
 #	^process{^string:sql{select '1
 #	^^hello[]' }]	}
-	^double:sql{select '2*' ^; }
-}
+#	^double:sql{select '2*' ^; }
+#}
 #^eval(2)
 #^tcrashlocaljunctionsv2[]
 #^tcrashlocaljunctions[]
@@ -227,9 +227,15 @@ $response:charset[empty]
 #^html-почта[]
 #^badswitchtest[]
 #^okswitchtest[]
-^cgit[]
+#^cgit[]
+^ttransformsep[]
 <hr>
 OK
+
+@ttransformsep[]
+$input[^xdoc::load[20020909131046.xml]]
+$output[^input.transform[generated.xsl]]
+^output.string[]
 
 @okswitchtest[]
 $local[local value]
