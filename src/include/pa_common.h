@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2004/03/05 11:38:12 $";
+static const char * const IDENT_COMMON_H="$Date: 2004/07/26 14:43:08 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -117,7 +117,8 @@ File_read_result file_read(Request_charsets& charsets,
 			   const String& file_spec, 
 			   bool as_text,
 			   HashStringValue* options=0,
-			   bool fail_on_read_problem=true);
+			   bool fail_on_read_problem=true,
+			   char* buf=0, size_t offset=0, size_t size=0);
 
 typedef void (*File_write_action)(int f, void *context);
 

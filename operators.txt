@@ -994,7 +994,14 @@ console
     !$console:line
         read/write строку
 
-!DATA::=string | file
+DATA::=string | file | hash
+
+!hash вида
+[
+	$.file[имя файла на диске]
+	$.name[имя файла для пользователя]
+	$.mdate[date]
+]
 
 !MAIN
     это класс, загружаемый на автомате из parser3.conf, 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/07/26 10:44:21 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/07/26 14:43:08 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -646,6 +646,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 #ifndef DOXYGEN
 struct File_read_action_info {
 	char **data; size_t *data_size;
+	char* buf; size_t offset; size_t count;
 }; 
 #endif
 static void file_read_action(
@@ -654,8 +655,16 @@ static void file_read_action(
 			     const String& file_spec, const char* /*fname*/, bool as_text, 
 			     void *context) {
 	File_read_action_info& info=*static_cast<File_read_action_info *>(context); 
-	if(size_t to_read_size=(size_t)finfo.st_size) { 
-		*info.data=new(PointerFreeGC) char[to_read_size+(as_text?1:0)]; 
+	size_t to_read_size=info.count;
+	if(!to_read_size)
+		to_read_size=(size_t)finfo.st_size;
+	assert( !(info.buf && as_text) );
+	if(to_read_size) { 
+		if(info.offset)
+			lseek(f, info.offset, SEEK_SET);
+		*info.data=info.buf
+			? info.buf
+			: new(PointerFreeGC) char[to_read_size+(as_text?1:0)]; 
 		*info.data_size=(size_t)read(f, *info.data, to_read_size); 
 
 		if(ssize_t(*info.data_size)<0 || *info.data_size>to_read_size)
@@ -675,7 +684,8 @@ static void file_read_action(
 }
 File_read_result file_read(Request_charsets& charsets, const String& file_spec, 
 			   bool as_text, HashStringValue *params,
-			   bool fail_on_read_problem) {
+			   bool fail_on_read_problem,
+			   char* buf, size_t offset, size_t count) {
 	File_read_result result={false, 0, 0, 0};
 #ifdef PA_HTTP
 	if(file_spec.starts_with("http://")) {
@@ -692,7 +702,8 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 				0,
 				"invalid option passed");
 
-		File_read_action_info info={&result.str, &result.length}; 
+		File_read_action_info info={&result.str, &result.length,
+			buf, offset, count}; 
 		result.success=file_read_action_under_lock(file_spec, 
 			"read", file_read_action, &info, 
 			as_text, fail_on_read_problem); 

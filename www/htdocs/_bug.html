@@ -1,6 +1,11 @@
-^mail:send[
-	$.from[paf@design.ru]
-	$.to[paf@design.ru]
-	$.subject[^for[i](1;100){привет$i}]
+^if(1){
+$response:download[
+#	$.file[ptic.gif]
+	$.file[empty]
+	$.name[ptic2.gif]
+	$.mdate[^date::now(-1)]
 ]
+}{
+	$response:download[^file::load[binary;ptic.gif]]
+}
 OK

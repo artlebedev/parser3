@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2004/02/26 14:37:30 $";
+static const char * const IDENT_REQUEST_C="$Date: 2004/07/26 14:43:09 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -32,6 +32,7 @@ static const char * const IDENT_REQUEST_C="$Date: 2004/02/26 14:37:30 $";
 #include "pa_vresponse.h"
 #include "pa_vmemory.h"
 #include "pa_vconsole.h"
+#include "pa_vdate.h"
 
 // consts
 
@@ -52,6 +53,7 @@ const char* ORIGINS_CONTENT_TYPE="text/plain";
 #define EXCEPTION_TYPE_PART_NAME "type"
 #define EXCEPTION_SOURCE_PART_NAME "source"
 #define EXCEPTION_COMMENT_PART_NAME "comment"
+#define RESPONSE_BODY_FILE_NAME "file"
 
 // globals
 
@@ -65,6 +67,7 @@ const String exception_type_part_name(EXCEPTION_TYPE_PART_NAME);
 const String exception_source_part_name(EXCEPTION_SOURCE_PART_NAME);
 const String exception_comment_part_name(EXCEPTION_COMMENT_PART_NAME);
 const String exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
+const String response_body_file_name(RESPONSE_BODY_FILE_NAME);
 
 // defines for statics
 
@@ -612,27 +615,338 @@ const String& Request::absolute(const String& relative_name) {
 			return relative(request_info.path_translated, relative_name);
 }
 
+#ifndef DOXYGEN
+class Add_header_attribute_info
+{
+public:
+	Add_header_attribute_info(Request& ar) : r(ar), add_last_modified(true) {}
+	Request& r;
+	bool add_last_modified;
+};
+#endif
 static void add_header_attribute(
 				 HashStringValue::key_type aattribute, 
 				 HashStringValue::value_type ameaning, 
-				 Request *r) {
+				 Add_header_attribute_info* info) {
 	if(aattribute==BODY_NAME
 		|| aattribute==DOWNLOAD_NAME
 		|| aattribute==CHARSET_NAME)
 		return;
 
-	SAPI::add_header_attribute(r->sapi_info,
-		aattribute.cstr(), 
+	const char* a=aattribute.cstr();
+	SAPI::add_header_attribute(info->r.sapi_info,
+		a, 
 		attributed_meaning_to_string(*ameaning, String::L_HTTP_HEADER, false).
 			cstr(String::L_UNSPECIFIED));
+
+	if(strcasecmp(a, "last-modified")==0)
+		info->add_last_modified = false;
 }
+
+/*
+		if(v = opts->get("mdate")){
+			++valid_options;
+			if(Value* vdate=v->as(VDATE_TYPE, false))
+				date=static_cast<VDate*>(vdate);
+			else throw Exception("parser.runtime", 0, "mdate must be a date");
+		}
+		if(v = opts->get("disposition")){
+			++valid_options;
+			if(!v->is("string")) throw Exception("parser.runtime", 0, "disposition must be a string");
+			disposition = v->get_string()->cstr();
+			if(strcmp(disposition, "inline") && strcmp(disposition, "attachment")) throw Exception("parser.runtime", 0, "disposition can be only 'inline' or 'attachment'");
+		}
+		if(valid_options != opts->count())
+			throw Exception("parser.runtime", 0, "invalid option passed");
+	}
+
+	auto_file f = fopen(c_from_file_name, "rb");
+	if(f == 0)
+		throw Exception("parser.runtime", 0, "Can't open file");
+
+	if(fseek(f, 0, SEEK_END)!=0)
+		throw Exception("parser.runtime", 0, "Can't seek file");
+
+	size_t file_length = (size_t)ftell(f);
+	if(file_length == (size_t)-1)
+		throw Exception("parser.runtime", 0, "can't get file size");
+	if(file_length <= offset)
+		throw Exception("parser.runtime", 0, "offset too big");
+	
+	size_t content_length = file_length-offset;
+	if(limit != (size_t)-1)
+		content_length = limit<content_length?limit:content_length;
+
+	size_t part_length = content_length;
+
+	const size_t BUFSIZE = 4096;
+	unsigned char buf[BUFSIZE];
+	const char *range = SAPI::get_env(r.sapi_info, "HTTP_RANGE");
+	if(range){
+		Array<Range> ar;
+		parse_range(new String(range), ar);
+		size_t count = ar.count();
+		if(count == 1){
+			Range &rg = ar.get_ref(0);
+			if(rg.start == (size_t)-1 && rg.end == (size_t)-1){
+				SAPI::add_header_attribute(r.sapi_info, "status", "416 Requested Range Not Satisfiable");
+				return;
+			}
+			if(rg.start == (size_t)-1 && rg.end != (size_t)-1){
+				rg.start = content_length - rg.end;
+				rg.end = content_length;
+				offset += rg.start;
+				part_length = rg.end-rg.start;
+			}else if(rg.start != (size_t)-1 && rg.end == (size_t)-1){
+				rg.end = content_length-1;
+				offset += rg.start;
+				part_length -= rg.start;
+			}
+			if(part_length == 0){
+				SAPI::add_header_attribute(r.sapi_info, "status", "204 No Content");
+				return;
+			}
+			SAPI::add_header_attribute(r.sapi_info, "status", "206 Partial Content");
+			snprintf((char*)buf, BUFSIZE, "bytes %u-%u/%u", rg.start, rg.end, content_length);
+			SAPI::add_header_attribute(r.sapi_info, "Content-Range", (char*)buf);
+		}else if(count != 0){
+			SAPI::add_header_attribute(r.sapi_info, "status", "501 Not Implemented");
+			return;
+		}
+	}
+
+	fseek(f, offset, SEEK_SET);
+	snprintf((char*)buf, BUFSIZE, "%u", part_length);
+	SAPI::add_header_attribute(r.sapi_info, "Content-Length", (char*)buf);
+
+	if(info.add_content_disposition && disposition){
+		const char *fname = 0;
+		if(to_file_name){
+			fname = to_file_name->as_string().cstr();
+		}else{
+			const char *fname = c_from_file_name;
+			const char *p1 = strrchr(fname, '/');
+			const char *p2 = strrchr(fname, '\\');
+			if(p1 || p2)
+				fname = max(p1, p2)+1;
+		}
+
+		snprintf((char*)buf, BUFSIZE, "%s; filename=\"%s\"", disposition, fname);
+		SAPI::add_header_attribute(r.sapi_info, "Content-Disposition", (char*)buf);
+	}
+	if(info.add_content_type)
+		SAPI::add_header_attribute(r.sapi_info, "Content-Type", r.mime_type_of(c_from_file_name).cstr());
+	if(info.add_last_modified){
+		if(date == 0){
+			struct stat st;	
+			if(stat(c_from_file_name, &st)!=0) throw Exception("parser.runtime", 0, "can't get file stat");
+			date = new VDate(st.st_mtime);
+		}
+		const String &s = attributed_meaning_to_string(*date, String::L_AS_IS, true);
+		SAPI::add_header_attribute(r.sapi_info, "Last-Modified", s.cstr());
+	}
+	r.cookie.output_result(r.sapi_info);
+	SAPI::send_header(r.sapi_info);
+
+	const char* request_method=getenv("REQUEST_METHOD");
+	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
+	size_t sent = 0;
+	if(!header_only){
+		size_t to_read = 0;
+		size_t size = 0;
+		do{
+			to_read = part_length<BUFSIZE?part_length:BUFSIZE;
+			to_read = fread(buf, 1, to_read, f);
+			if(to_read == 0)
+				break;
+			size = SAPI::send_body(r.sapi_info, buf, to_read);
+			sent += size;
+			if(size != to_read)
+				break;
+			part_length -= to_read;
+		}while(part_length);
+	}
+	// set flag to bypass other outputs
+	r.response.fields().put("ignore", new VString(*new String("y")));
+	r.write_no_lang(*new VInt(sent));
+}
+
+
+*/
+
+
+
+static void output_sole_piece(Request& r,
+							  bool header_only, 
+							  VFile& body_file,
+							  Value* body_file_content_type) {
+	// transcode text body when "text/*" or simple result
+	String::C output(body_file.value_ptr(), body_file.value_size());
+	if(!body_file_content_type/*vstring.as_vfile*/ || body_file_content_type->as_string().pos("text/")==0)
+		output=Charset::transcode(output, 
+			r.charsets.source(), 
+			r.charsets.client());
+
+	// prepare header: content-length
+	char content_length_cstr[MAX_NUMBER];
+	snprintf(content_length_cstr, MAX_NUMBER, "%u", output.length);
+	SAPI::add_header_attribute(r.sapi_info, "content-length", content_length_cstr);
+
+	// send header
+	SAPI::send_header(r.sapi_info);
+	
+	// send body
+	if(!header_only)
+		SAPI::send_body(r.sapi_info, output.str, output.length);
+}
+
+#ifndef DOXYGEN
+struct Range
+{
+	size_t start;
+	size_t end;
+};
+#endif
+static void parse_range(const String* s, Array<Range> &ar)
+{
+	const char *p = s->cstr();
+	if(s->starts_with("bytes="))
+		p += 6;
+	Range r;
+	while(*p){
+		r.start = (size_t)-1;
+		r.end = (size_t)-1;
+		if(*p >= '0' && *p <= '9'){
+			r.start = atol(p);
+			while(*p>='0' && *p<='9') ++p;
+		}
+		if(*p++ != '-') break;
+		if(*p >= '0' && *p <= '9'){
+			r.end = atol(p);
+			while(*p>='0' && *p<='9') ++p;
+		}
+		if(*p == ',') ++p;
+		ar += r;
+	}
+}
+
+static void output_pieces(Request& r,
+						  bool header_only, 
+						  const String& filename,
+						  size_t content_length,
+						  Value& date,
+						  bool add_last_modified) 
+{
+	const size_t BUFSIZE = 10*0x400;
+	char buf[BUFSIZE];
+	const char *range = SAPI::get_env(r.sapi_info, "HTTP_RANGE");
+	size_t offset=0;
+	size_t part_length=content_length;
+	if(range){
+		Array<Range> ar;
+		parse_range(new String(range), ar);
+		size_t count = ar.count();
+		if(count == 1){
+			Range &rg = ar.get_ref(0);
+			if(rg.start == (size_t)-1 && rg.end == (size_t)-1){
+				SAPI::add_header_attribute(r.sapi_info, "status", "416 Requested Range Not Satisfiable");
+				return;
+			}
+			if(rg.start == (size_t)-1 && rg.end != (size_t)-1){
+				rg.start = content_length - rg.end;
+				rg.end = content_length;
+				offset += rg.start;
+				part_length = rg.end-rg.start;
+			}else if(rg.start != (size_t)-1 && rg.end == (size_t)-1){
+				rg.end = content_length-1;
+				offset += rg.start;
+				part_length -= rg.start;
+			}
+			if(part_length == 0){
+				SAPI::add_header_attribute(r.sapi_info, "status", "204 No Content");
+				return;
+			}
+			SAPI::add_header_attribute(r.sapi_info, "status", "206 Partial Content");
+			snprintf(buf, BUFSIZE, "bytes %u-%u/%u", rg.start, rg.end, content_length);
+			SAPI::add_header_attribute(r.sapi_info, "Content-Range", buf);
+		}else if(count != 0){
+			SAPI::add_header_attribute(r.sapi_info, "status", "501 Not Implemented");
+			return;
+		}
+	}
+
+
+	snprintf(buf, BUFSIZE, "%u", part_length);
+	SAPI::add_header_attribute(r.sapi_info, "Content-Length", buf);
+
+	if(add_last_modified){
+		const String &s = attributed_meaning_to_string(date, String::L_AS_IS, true);
+		SAPI::add_header_attribute(r.sapi_info, "Last-Modified", s.cstr());
+	}
+	SAPI::send_header(r.sapi_info);
+
+	const String& filespec=r.absolute(filename);
+
+	size_t sent = 0;
+	if(!header_only){
+		size_t to_read = 0;
+		size_t size = 0;
+		do{
+			to_read = part_length<BUFSIZE?part_length:BUFSIZE;
+			File_read_result read_result=file_read(r.charsets, filespec, 
+				false /*as text*/,  0/*params*/, true/*fail on problem*/,
+				buf, offset, to_read);
+			to_read=read_result.length;
+			if(to_read == 0)
+				break;
+			offset += to_read;
+
+			size = SAPI::send_body(r.sapi_info, read_result.str, to_read);
+			sent += size;
+			if(size != to_read)
+				break;
+			part_length -= to_read;
+		}while(part_length);
+	}
+}
+
 void Request::output_result(VFile* body_file, bool header_only, bool as_attachment) {
 	// header: cookies
 	cookie.output_result(sapi_info);
 	
-	Value* body_file_content_type;
+	// may be specified
+	Value* body_file_content_type=body_file->fields().get(content_type_name);
+
+	// content-disposition
+	Value* vfile_name=body_file->fields().get(name_name);
+	if(!vfile_name) {
+		vfile_name=body_file->fields().get(response_body_file_name);
+		const String& sfile_name=vfile_name->as_string();
+
+		char* name_cstr=sfile_name.cstrm();
+		if(char *after_slash=rsplit(name_cstr, '\\'))
+			name_cstr=after_slash;
+		if(char *after_slash=rsplit(name_cstr, '/'))
+			name_cstr=after_slash;
+		vfile_name=new VString(*new String(name_cstr));	
+	}
+	if(vfile_name) {
+		const String& sfile_name=vfile_name->as_string();
+		if(sfile_name!=NONAME_DAT) {
+			VHash& hash=*new VHash();
+			HashStringValue &h=hash.hash();
+			if(as_attachment)
+				h.put(value_name, new VString(content_disposition_value));
+			h.put(content_disposition_filename_name, vfile_name);
+			response.fields().put(content_disposition_name, &hash);
+
+			if(!body_file_content_type)
+				body_file_content_type=new VString(mime_type_of(sfile_name.cstr()));
+		}
+	}
+
 	// set content-type
-	if((body_file_content_type=body_file->fields().get(content_type_name))) {
+	if(body_file_content_type) {
 		// body file content type
 		response.fields().put(content_type_name, body_file_content_type);
 	} else {
@@ -641,41 +955,41 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 			new VString(*new String(DEFAULT_CONTENT_TYPE)));
 	}
 
-	// content-disposition
-	if(Value* vfile_name=body_file->fields().get(name_name))
-		if(*vfile_name->get_string()!=NONAME_DAT) {
-			VHash& hash=*new VHash();
-			HashStringValue &h=hash.hash();
-			if(as_attachment)
-				h.put(value_name, new VString(content_disposition_value));
-			h.put(content_disposition_filename_name, vfile_name);
-			response.fields().put(content_disposition_name, &hash);
-		}
-
 	// prepare header: $response:fields without :body
-	response.fields().for_each(add_header_attribute, this);
+	Add_header_attribute_info info(*this);
+	response.fields().for_each(add_header_attribute, &info);
 
-	// transcode text body when "text/*" or simple result
 	if(body_file_content_type)
 		if(HashStringValue *hash=body_file_content_type->get_hash())
 			body_file_content_type=hash->get(value_name);
-	String::C output(body_file->value_ptr(), body_file->value_size());
-	if(!body_file_content_type/*vstring.as_vfile*/ || body_file_content_type->as_string().pos("text/")==0)
-		output=Charset::transcode(output, 
-			charsets.source(), 
-			charsets.client());
 
-	// prepare header: content-length
-	char content_length_cstr[MAX_NUMBER];
-	snprintf(content_length_cstr, MAX_NUMBER, "%u", output.length);
-	SAPI::add_header_attribute(sapi_info, "content-length", content_length_cstr);
+	if(Value* vresponse_body_file=body_file->fields().get(response_body_file_name)) {
+		const String& sresponse_body_file=vresponse_body_file->as_string();
+		size_t content_length=0;
+		time_t atime=0, mtime=0, ctime=0;
+		file_stat(absolute(sresponse_body_file),
+			content_length,
+			atime, mtime, ctime);
 
-	// send header
-	SAPI::send_header(sapi_info);
-	
-	// send body
-	if(!header_only)
-		SAPI::send_body(sapi_info, output.str, output.length);
+		VDate* vdate=0;
+		if(Value* v=body_file->fields().get("mdate")) {
+			if(Value* vdatep=v->as(VDATE_TYPE, false))
+				vdate=static_cast<VDate*>(vdatep);
+			else 
+				throw Exception("parser.runtime", 0, "mdate must be a date");
+		}
+		if(!vdate)
+			vdate=new VDate(mtime);
+
+		output_pieces(*this, header_only, 
+			sresponse_body_file,
+			content_length,
+			*vdate,
+			info.add_last_modified);
+	} else {
+		output_sole_piece(*this, header_only, 
+			*body_file, body_file_content_type);
+	}
 }
 
 const String& Request::mime_type_of(const char* user_file_name_cstr) {

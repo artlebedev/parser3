@@ -23,7 +23,8 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				optimization="2" GlobalOptimizations="TRUE" 				
+				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\lib\gd;..\include;..\classes;..\sql;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;..\lib\sdbm\apr-include;..\..\..\win32\psapi;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;..\..\..\win32\gnome\gmime-x.x.x;..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
@@ -184,6 +185,9 @@
 		</File>
 		<File
 			RelativePath=".\pa_vform.h">
+		</File>
+		<File
+			RelativePath=".\pa_vhash.C">
 		</File>
 		<File
 			RelativePath=".\pa_vhash.h">
