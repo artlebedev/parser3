@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.22 2001/10/18 10:07:10 parser Exp $
+	$Id: xdoc.C,v 1.23 2001/10/18 10:24:25 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -469,15 +469,13 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 	try {
 		String parserString=*new(pool) String(pool);
 		ParserStringXalanOutputStream stream(parserString);
-		{ // for writer flushing
-			XalanOutputStreamPrintWriter writer(stream);
-			const char *content_type, *charset;
-			FormatterListener *formatterListener;
-			create_optioned_listener(content_type, charset, formatterListener, 
-				pool, method_name, params, 0, writer);
-			FormatterTreeWalker treeWalker(*formatterListener);
-			treeWalker.traverse(node); // Walk that node and produce the XML...
-		}
+		XalanOutputStreamPrintWriter writer(stream);
+		const char *content_type, *charset;
+		FormatterListener *formatterListener;
+		create_optioned_listener(content_type, charset, formatterListener, 
+			pool, method_name, params, 0, writer);
+		FormatterTreeWalker treeWalker(*formatterListener);
+		treeWalker.traverse(node); // Walk that node and produce the XML...
 
 		// write out result
 		r.write_no_lang(parserString);

@@ -7,7 +7,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: XalanTransformer2.cpp,v 1.4 2001/10/18 09:49:58 parser Exp $
+	$Id: XalanTransformer2.cpp,v 1.5 2001/10/18 10:22:57 parser Exp $
 
 	based on:
 */
@@ -1189,4 +1189,90 @@ XalanTransformer2::transform2(
 				tempResultTarget,					
 				*m_stylesheetExecutionContext);
 }
+/*
+void
+XalanTransformer2::transformXerces(
+			const XalanDocument&		theDocument, 
+			const XalanCompiledStylesheet*	theCompiledStylesheet,
+			const XSLTResultTarget& 		theResultTarget)
+{
+#if !defined(XALAN_NO_NAMESPACES)
+	using std::for_each;
+#endif
+
+	// Create the helper object that is necessary for running the processor...
+	XalanAutoPtr<XalanParsedSourceHelper>	theHelper(theParsedXML.createHelper());
+	assert(theHelper.get() != 0);
+
+	DOMSupport& 					theDOMSupport = theHelper->getDOMSupport();
+
+	XMLParserLiaison&				theParserLiaison = theHelper->getParserLiaison();
+
+	// Create some more support objects...
+	XSLTProcessorEnvSupportDefault	theXSLTProcessorEnvSupport;
+
+	XObjectFactoryDefault			theXObjectFactory;
+
+	XPathFactoryDefault 			theXPathFactory;
+
+	// Create a processor...
+	XSLTEngineImpl	theProcessor(
+			theParserLiaison,
+			theXSLTProcessorEnvSupport,
+			theDOMSupport,
+			theXObjectFactory,
+			theXPathFactory);
+
+	theXSLTProcessorEnvSupport.setProcessor(&theProcessor);
+
+	// Create a problem listener and send output to a XalanDOMString.
+	//DOMStringPrintWriter	thePrintWriter(theErrorMessage);
+	
+	//ProblemListenerDefault	theProblemListener(&thePrintWriter);
+
+	//theProcessor.setProblemListener(&theProblemListener);
+
+	// Since the result target is not const in our
+	// internal intefaces, we'll pass in a local copy
+	// of the one provided...
+	XSLTResultTarget	tempResultTarget(theResultTarget);
+
+	const EnsureReset	theReset(*this);
+
+	// Set up the stylesheet execution context.
+	m_stylesheetExecutionContext->setXPathEnvSupport(&theXSLTProcessorEnvSupport);
+
+	m_stylesheetExecutionContext->setDOMSupport(&theDOMSupport);
+
+	m_stylesheetExecutionContext->setXObjectFactory(&theXObjectFactory);
+
+	m_stylesheetExecutionContext->setXSLTProcessor(&theProcessor);
+	
+	// Set the compiled stylesheet.
+	m_stylesheetExecutionContext->setStylesheetRoot(theCompiledStylesheet->getStylesheetRoot());
+
+	// Set the parameters if any.
+	for (ParamPairVectorType::size_type i = 0; i < m_paramPairs.size(); ++i)
+	{
+		theProcessor.setStylesheetParam(
+				m_paramPairs[i].first,
+				theXObjectFactory.createString(m_paramPairs[i].second)); /// PAF
+	}
+
+	// Set the functions if any.
+	for (FunctionParamPairVectorType::size_type f = 0; f < m_functionPairs.size(); ++f)
+	{
+		theXSLTProcessorEnvSupport.installExternalFunctionLocal(
+				m_functionPairs[f].first.getNamespace(),
+				m_functionPairs[f].first.getLocalPart(),
+				*(m_functionPairs[f].second));
+	}
+
+	// Do the transformation...
+	theProcessor.process(
+				theParsedXML.getDocument(), 	
+				tempResultTarget,					
+				*m_stylesheetExecutionContext);
+}
+*/
 #endif

@@ -1,5 +1,6 @@
 @main[]
-#^domedit[]
+^domedit[]
+#^domxslt[]
 #^lsplit2[]
 #^faceesize[]
 #^imageresize[]
@@ -31,23 +32,29 @@
 #^exec[]
 #^fori[]
 #^tconnect[]
-^xslt[]
+#^xslt[]
 #^xml[]
 #^header[]
 OK
 
-@domedit[]
+@domdata[]
 $xdoc[^xdoc::create[@todo doc]]
 $paf[^xdoc.appendChild[^xdoc.createElement[paf]]]
 $name[^paf.appendChild[^xdoc.createElement[name]]]
 $text[^name.appendChild[^xdoc.createTextNode[петросян petrosian]]]
+
+@domedit[]
+^domdata[]
 #$paf.nodeName<br>
 #$doc.documentElement.nodeName<br>
 
-#^show-xnode1[$xdoc.documentElement;0;1]
-#^show-xdoc2[$xdoc]
-^show-xdoc2[^xdoc.transform[global.xsl;$.param1[123/]]]
+^show-xnode1[$xdoc.documentElement;0;1]
 <hr>
+^show-xdoc2[$xdoc]
+
+@domxslt[]
+^domdata[]
+^show-xdoc2[^xdoc.transform[global.xsl;$.param1[123/]]]
 
 @lsplit2[]
 $path[/optics/]
