@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.C,v 1.17 2001/10/11 14:57:53 parser Exp $
+	$Id: pa_exception.C,v 1.18 2001/10/13 15:12:50 parser Exp $
 */
 
 #include "pa_common.h"
@@ -29,6 +29,7 @@ void Exception::_throw(const String *atype, const String *acode,
 	longjmp(mark, 1);
 }
 
+#ifdef XML
 void Exception::_throw(Pool& pool, const String *source, const XSLException& e) {
 	if(e.getURI().empty())
 		_throw(0, 0,
@@ -111,4 +112,4 @@ void Exception::_throw(Pool& pool, const String *source, const XalanDOMException
 			code // code of exception
 	);
 }
-
+#endif
