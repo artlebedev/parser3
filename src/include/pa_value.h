@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.6 2001/02/14 12:20:48 paf Exp $
+  $Id: pa_value.h,v 1.7 2001/02/14 14:15:36 paf Exp $
 */
 
 /*
@@ -16,6 +16,11 @@ public:
 	Array param_names;
 	Array local_names;
 	String code;
+};
+
+class Operator : public Method {
+	// operator module static vars stored in there
+	Operator_class *self;
 };
 
 class Method_ref {
@@ -36,6 +41,7 @@ public:
 	// hash: (key)=value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	// object_instance: (field)=value;(STATIC)=hash;(method)=method_ref
+	// operator_class: (field)=value - static values only
 	virtual Value *get_element(const String& name) const =0;
 	virtual Value *put_element(const String& name, const Value *avalue)=0;
 

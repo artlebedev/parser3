@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.23 2001/02/14 13:40:55 paf Exp $
+  $Id: pa_string.C,v 1.24 2001/02/14 14:15:37 paf Exp $
 */
 
 #include <string.h>
@@ -225,7 +225,7 @@ Char_types::Char_types() {
 }
 
 void Char_types::set(char from, char to, int type) {
-	memset(&types[static_cast<unsigned int>(from)], type, to-from);
+	memset(&types[static_cast<unsigned int>(from)], type, to-from+1);
 }
 
 // String_iterator 

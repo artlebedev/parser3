@@ -6,22 +6,45 @@ enum Prefix {
 
 enum CHAR_TYPE {
 	NO_TYPE=0, // these got skipped by String::skip_to
-	DOLLAR_TYPE,
-	BIRD_TYPE,
-	STOP_TYPE///=-1 // same as EOF type(-1), see String::skip_to
+	VAR_START_TYPE,
+	METHOD_START_TYPE,
+	STOP_TYPE,///=-1 // same as EOF type(-1), see String::skip_to
+	DOT_TYPE,
+	COLON_TYPE,
+	CONSTRUCTOR_BODY_START_TYPE,
+	CONSTRUCTOR_BODY_FINISH_TYPE,
+	BLOCK_START_TYPE,
+	BLOCK_FINISH_TYPE,
+	
+	Z_TYPE
 };
 
-Char_types dollar_or_bird;
-Char_types dollar_or_bird_or_close_round_bracket;
-Char_types dollar_or_bird_or_close_square_bracket;
+Char_types var_or_method_start;
+Char_types var_or_method_start_or_constructor_stop;
+Char_types var_or_method_start_or_block_stop;
+Char_types common_names_breaks, var_names_breaks, method_names_breaks;
 
 void prepare() {
-	dollar_or_bird.set('$', DOLLAR_TYPE);
-	dollar_or_bird.set('^', BIRD_TYPE);
-	dollar_or_bird_or_close_round_bracket=dollar_or_bird;
-	dollar_or_bird_or_close_round_bracket.set(')', STOP_TYPE);
-	dollar_or_bird_or_close_square_bracket=dollar_or_bird;
-	dollar_or_bird_or_close_square_bracket.set(']', STOP_TYPE);
+	var_or_method_start.set('$', VAR_START_TYPE);
+	var_or_method_start.set('^', METHOD_START_TYPE);
+
+	var_or_method_start_or_constructor_stop=var_or_method_start;
+	var_or_method_start_or_constructor_stop.set(')', STOP_TYPE);
+
+	var_or_method_start_or_block_stop=var_or_method_start;
+	var_or_method_start_or_block_stop.set(']', STOP_TYPE);
+
+	common_names_breaks.set(0, ' ', STOP_TYPE);
+	common_names_breaks.set('.', DOT_TYPE);
+	common_names_breaks.set(':', COLON_TYPE);
+	common_names_breaks.set(')', STOP_TYPE); // var_or_method_start_or_constructor_stop
+	common_names_breaks.set(']', STOP_TYPE); // var_or_method_start_or_block_stop
+
+	var_names_breaks=common_names_breaks;
+	var_names_breaks.set('(', CONSTRUCTOR_BODY_START_TYPE);
+
+	method_names_breaks=common_names_breaks;
+	method_names_breaks.set('[', BLOCK_START_TYPE);
 }
 
 void process(method_self_n_params_n_locals& root, Value& self,
@@ -33,11 +56,11 @@ void process(method_self_n_params_n_locals& root, Value& self,
 		awcontext.write(start, iter);
 
 		switch(type) {
-		case DOLLAR_TYPE: 
-			process_dollar(root, self, arcontext, awcontext, iter, breaks);
+		case VAR_START_TYPE: 
+			process_var(root, self, arcontext, awcontext, iter, breaks);
 			break;
-		case BIRD_TYPE:
-			process_bird(root, self, arcontext, awcontext, iter, breaks);
+		case METHOD_START_TYPE:
+			process_method(root, self, arcontext, awcontext, iter, breaks);
 			break;
 		case STOP_TYPE:
 			return;
@@ -45,19 +68,19 @@ void process(method_self_n_params_n_locals& root, Value& self,
 	}
 }
 
-void process_dollar(method_self_n_params_n_locals& root, Value& self,
-					arcontext& arcontext, WContext& awcontext, 
-					String_iterator& iter, Char_types& breaks) {
+void process_var(method_self_n_params_n_locals& root, Value& self,
+				 arcontext& arcontext, WContext& awcontext, 
+				 String_iterator& iter, Char_types& breaks) {
 
 	// $name.field.subfield -- read
 	// $name.field.subfield(constructor code) -- construct
 	// $name.field.subfield[usage code & if none existed autoconstructed as VHash] -- use OR auto-VHash construct
 	
-	Array/*<String&>*/ names(pool);  // what.they.refer.to left-to-right list
-	char names_ended_before; // the char after long name
 	Prefix prefix;
+	Array/*<String&>*/ names(pool);  // what.they.refer.to left-to-right list
+	CHAR_TYPE names_ended_before; // the char type after long name
 	get_names(
-		iter, " ([",
+		iter, var_names_breaks,
 		&prefix, &names, &names_ended_before); // can return count()=0 when $self alone
 
 	bool read_mode=name_ended_before==' ';
@@ -112,9 +135,9 @@ void process_dollar(method_self_n_params_n_locals& root, Value& self,
 	}
 }
 
-void process_bird(method_self_n_params_n_locals& root, Value& self,
-				  arcontext& arcontext, WContext& awcontext, 
-				  String_iterator& iter, char char_to_stop_before) {
+void process_method(method_self_n_params_n_locals& root, Value& self,
+					arcontext& arcontext, WContext& awcontext, 
+					String_iterator& iter, char char_to_stop_before) {
 	
 	// ^name.field.subfield.method[..] -- plain call
 	// ^name.field.subfield.method_ref[..] -- method ref call, when .get_method()!=0
@@ -123,11 +146,11 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 	//  2: wcontext.object_class.has_parent('class')? -- dynamic call
 	//  3: not -------------------------------------? -- static call
 	
-	Array/*<String&>*/ names(pool);  // what.they.refer.to left-to-right list
-	char names_ended_before; // the char after long name
 	Prefix prefix;
+	Array/*<String&>*/ names(pool);  // what.they.refer.to left-to-right list
+	CHAR_TYPE names_ended_before; // the char type after long name
 	get_names(
-		iter, "[",
+		iter, method_names_breaks,
 		&prefix, &names, &names_ended_before); // can return count()=0 when ^self alone
 
 	Value *context=
@@ -180,16 +203,19 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 			Method_ref *method_ref=value->get_method_ref();
 			if(!method_ref) // bad: that field wasn't method_ref
 				pool.exception().raise(name, "call: this field is not a method reference");
-			method=method_ref->method;
 			context=method_ref->self;
+			method=method_ref->method;
 		} else { // no element of that 'name', that must be operator then
-			method=operators.get(name);
-			if(!method) // bad: that 'name' is neither method nor field nor operator
+			Operator *op=operators.get(name);
+			if(!op) // bad: that 'name' is neither method nor field nor operator
 				pool.exception().raise(name, "call: neither method nor field nor operator");
+			context=op->self;
+			method=op;
 		}
 	}
 
 
+	// evaluating param values
 	Array/*<Value&>*/ param_values(pool);
 	get_params(
 		iter,
@@ -197,12 +223,14 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 		&param_values);
 	iter++; // skip ']'
 
+	// preparing contexts
 	method_self_n_params_n_locals local_rcontext(pool, 
 		context,
 		method->param_names, param_values,
 		method->local_names);
 	WContext local_wcontext(pool, context);
 	String_iterator local_iter(method->code);
+	// calling method/operator
 	process(
 		local_rcontext/* $:vars */, context /* $self.vars */,
 		local_rcontext, local_wcontext, 
@@ -211,9 +239,14 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 }
 
 
+enum Prefix {
+	NO_PREFIX,
+	ROOT_PREFIX,
+	SELF_PREFIX
+};
 void get_names(
-		String_iterator& iter, Char_types& stop_chars,
-		Prefix prefix, Array& names, char& names_ended_before) {
+		String_iterator& iter, Char_types& breaks,
+		Prefix prefix, Array& names, CHAR_TYPE& names_ended_before) {
 
 	// can return count()=0 when $self alone
 }
