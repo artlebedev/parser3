@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.C,v 1.21 2002/02/08 08:30:15 paf Exp $
+	$Id: pa_db_manager.C,v 1.22 2002/02/20 10:40:08 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -53,7 +53,7 @@ DB_Manager::~DB_Manager() {
 /// @test subpools mechanizm. one connection, one subpool. ~connection destructs it
 DB_Connection_ptr DB_Manager::get_connection_ptr(const String& request_db_home,
 												   const String *source) {
-	if(request_db_home.size()==0)
+	if(request_db_home.is_empty())
 		throw Exception(0, 0,
 			source,
 			"empty DB_HOME specified");

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstring.h,v 1.41 2002/02/08 08:30:20 paf Exp $
+	$Id: pa_vstring.h,v 1.42 2002/02/20 10:40:08 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -23,7 +23,7 @@ public: // Value
 
 	const char *type() const { return "string"; }
 	/// VString: eq ''=false, ne ''=true
-	bool is_defined() const { return fstring->size()!=0; }
+	bool is_defined() const { return !fstring->is_empty(); }
 	/// VString: 0 or !0
 	bool as_bool() const { return as_double()!=0; }
 	/// VString: true

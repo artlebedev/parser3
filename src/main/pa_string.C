@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.139 2002/02/20 09:13:08 paf Exp $
+	$Id: pa_string.C,v 1.140 2002/02/20 10:40:08 paf Exp $
 */
 
 #include "pcre.h"
@@ -32,7 +32,7 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	last_chunk=&head;
 	head.count=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
-	head_link=0;
+	initial_head_link=0;
 	link_row=&head.rows[head.count];
 
 	if(src)
@@ -41,7 +41,7 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 		else
 			APPEND_CLEAN(src, src_size, 0, 0);
 }
-
+/*
 String::String(const String& src) :	
 	Pooled(src.pool()) {
 	head.count=CR_PREALLOCATED_COUNT;
@@ -71,10 +71,9 @@ String::String(const String& src) :
 		last_chunk=static_cast<Chunk *>(
 			malloc(sizeof(Chunk::count_type)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *), 9));
 		last_chunk->count=curr_chunk_rows;
-		head_link=last_chunk;
 		append_here=link_row=&last_chunk->rows[last_chunk->count];
 
-		Chunk *old_chunk=src.head_link; 
+		Chunk *old_chunk=src.head.rows[src.head.count].link; 
 		Chunk::Row *new_rows=last_chunk->rows;
 		uint rows_left_to_copy=last_chunk->count;
 		while(true) {
@@ -97,7 +96,18 @@ String::String(const String& src) :
 		}
 	}
 	link_row->link=0;
-	src_used_rows;
+}
+*/
+
+String::String(const String& src) :	
+	Pooled(src.pool()) {
+	last_chunk=&head;
+	head.count=CR_PREALLOCATED_COUNT;
+	append_here=head.rows;
+	initial_head_link=0;
+	link_row=&head.rows[head.count];
+
+	append(src, UL_UNSPECIFIED);
 }
 
 size_t  String::size() const {
@@ -183,7 +193,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 }
 
 char String::first_char() const {
-	if(!used_rows())
+	if(is_empty())
 		throw Exception(0, 0,
 			this,
 			"getting first char of empty string");
@@ -221,7 +231,7 @@ int String::cmp(int& partial, const String& src,
 	size_t pos=0; 
 
 	bool a_break=a_size==0;
-	bool b_break=src.size()==0;
+	bool b_break=src.is_empty();
 	if(!(a_break || b_break)) while(true) {
 		if(pos+a_row->item.size > this_offset) {
 			if(lang!=UL_UNSPECIFIED && a_row->item.lang>lang) 
@@ -363,7 +373,7 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 
 #ifndef NO_STRING_ORIGIN
 const Origin& String::origin() const { 
-	if(!used_rows()) {
+	if(is_empty()) {
 		static const Origin empty_origin={"empty string"};
 		return empty_origin;
 	}
@@ -391,7 +401,7 @@ String& String::mid(size_t start, size_t finish) const {
 	STRING_FOREACH_ROW(
 		size_t item_finish=pos+row->item.size;
 		if(item_finish > start) { // started now or already?
-			bool started=result.size()==0; // started now?
+			bool started=result.is_empty(); // started now?
 			bool finished=finish <= item_finish; // finished now?
 			size_t offset=started?start-pos:0;
 			size_t size=finished?finish-pos:row->item.size;
@@ -469,7 +479,7 @@ void String::split(Array& result,
 				   size_t* pos_after_ref, 
 				   const String& delim, Untaint_lang lang, 
 				   int limit) const {
-	if(delim.size()) {
+	if(!delim.is_empty()) {
 		size_t pos_after=pos_after_ref?*pos_after_ref:0;
 		int pos_before;
 		// while we have 'delim'...
@@ -526,7 +536,7 @@ bool String::match(
 				   Row_action row_action, void *info,
 				   bool *was_global) const { 
 
-	if(!regexp.size())
+	if(regexp.is_empty())
 		throw Exception(0, 0,
 			aorigin,
 			"regexp is empty");

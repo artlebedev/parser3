@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_connection.h,v 1.26 2002/02/08 08:30:14 paf Exp $
+	$Id: pa_stylesheet_connection.h,v 1.27 2002/02/20 10:40:07 paf Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -96,7 +96,7 @@ private:
 	time_t get_disk_time() {
 		size_t size;
 		time_t atime, mtime, ctime;
-		String stamp_file_spec(ffile_spec); 
+		String stamp_file_spec(ffile_spec);
 		stamp_file_spec << STYLESHEET_FILENAME_STAMP_SUFFIX;
 		// {file_spec}.stamp modification time OR {file_spec}
 		const String& stat_file_spec=file_readable(stamp_file_spec)?stamp_file_spec:ffile_spec;

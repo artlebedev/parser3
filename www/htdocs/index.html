@@ -1,27 +1,3 @@
-@results[]
-[Tue Feb 19 14:36:30 2002] string piece appends=35945, string string appends=45113
-[Tue Feb 19 14:38:35 2002] string piece appends=307971[including string append-pieces], string string appends=45116
-[Tue Feb 19 15:12:43 2002] string piece appends=36025, string string appends=45113, wcontext_result_size=1454388
-[Tue Feb 19 15:14:00 2002] string piece appends=36025, string string appends=45113, wcontext_result_size=111876[pieces count, not size. 13bytes per piece]
-[Tue Feb 19 15:19:55 2002] string piece appends=36032, string string appends=45116, wcontext_result_size=9010[calls with string results] 36M total
-[Tue Feb 19 16:40:09 2002] string piece appends=36025, string string appends=3535584[bytes], wcontext_result_size=1454388, total_alloc_size=12266869
-
-[Tue Feb 19 17:05:07 2002] string piece appends=36025, string string appends=1903776, wcontext_result_size=783132, total_alloc_size=9922292 [no origins]
-[Tue Feb 19 17:35:41 2002] string piece appends=35981, string string appends=3532334, wcontext_result_size=1452958, total_alloc_size=12263593 /stopped random
-[Tue Feb 19 17:38:41 2002] string piece appends=35981, string string appends=3532334, wcontext_result_size=1452958, total_alloc_size=12153191 /рост строки +1 от пред [1%
-[Tue Feb 19 18:08:59 2002] string piece appends=36225, string string appends=3327900, wcontext_result_size=1373304, total_alloc_size=11813837 /Row.item size ushort, 3% 
-[Tue Feb 19 18:51:24 2002] string piece appends=36021, string string appends=3286488, wcontext_result_size=1354164, total_alloc_size=11758725 /don't remember :(
-[Wed Feb 20 11:21:57 2002] string piece appends=36025, string string appends=3286572, wcontext_result_size=1354188, total_alloc_size=11672569
-[Wed Feb 20 11:30:11 2002] string piece appends=36025, string string appends=3286572, wcontext_result_size=1354188, total_alloc_size=11672569
-[Wed Feb 20 11:36:51 2002] string piece appends=36025, string string appends=3286572, wcontext_result_size=1354188, double_appends=45107, total_alloc_size=11672569
-[Wed Feb 20 11:37:32 2002] string piece appends=36025, string string appends=45107, wcontext_result_size=1354188, double_appends=45107, total_alloc_size=11672569
-[Wed Feb 20 11:38:07 2002] string piece appends=36025, string string appends=45107[count], wcontext_result_size=1354188, double_appends=22465[count], total_alloc_size=11672569
-[Wed Feb 20 11:39:29 2002] string piece appends=36025, string string appends=3286572[size], wcontext_result_size=1354188, double_appends=295140[size], total_alloc_size=11672569
-[Wed Feb 20 11:52:36 2002] string piece appends=36025, string string appends=3286572, wcontext_result_size=1354188, double_appends=47568[double append of non-modified-lang strings], total_alloc_size=11672569
-[Wed Feb 20 11:56:33 2002] string piece appends=36025, string string appends=3286572, wcontext_result_size=1354188, double_appends=47568, string_string_shortcut_economy=2538024[77% of all string to string appends; 21% of total_alloc], total_alloc_size=11672569
-z
-
-
 @main[][l]
 $request[^trim[$form:request;/]]
 $request[^trim[/branches/moscow/tariff/;/]]

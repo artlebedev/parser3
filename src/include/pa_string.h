@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.125 2002/02/20 09:13:07 paf Exp $
+	$Id: pa_string.h,v 1.126 2002/02/20 10:40:07 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -109,6 +109,7 @@ public:
 
 	String(Pool& apool, const char *src=0, size_t src_size=0, bool tainted=false);
 	String(const String& src);
+	bool is_empty() const { return append_here==head.rows; }
 	size_t size() const;
 	/// convert to C string. if 'lang' known, forcing 'lang' to it
 	char *cstr(Untaint_lang lang=UL_AS_IS, 
@@ -247,7 +248,7 @@ public: // debug private:
 		} rows[CR_PREALLOCATED_COUNT];
 	}
 		head;  ///< the head chunk of the chunk chain
-	Chunk *head_link; ///< next rows are here must go right after 'head'
+	Chunk *initial_head_link; ///< next rows initially are here[can shrink! @see String::append]. must go right after 'head'
 
 	/// next append would write to this record
 	Chunk::Row *append_here;

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_dictionary.C,v 1.12 2002/02/08 08:30:15 paf Exp $
+	$Id: pa_dictionary.C,v 1.13 2002/02/20 10:40:08 paf Exp $
 */
 
 #include "pa_dictionary.h"
@@ -17,7 +17,7 @@ void Dictionary::add_first(Array::Item *value, void *info) {
 	const String& a=*row->get_string(0);
 	const String& b=*row->get_string(1);
 	// empty 'a' check
-	if(a.size()==0) {
+	if(a.is_empty()) {
 		Pool& pool=self.pool();
 		throw Exception(0, 0, 
 			&a, 

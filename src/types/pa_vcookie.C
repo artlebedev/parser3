@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vcookie.C,v 1.39 2002/02/08 15:20:07 paf Exp $
+	$Id: pa_vcookie.C,v 1.40 2002/02/20 10:40:08 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -44,7 +44,7 @@ void VCookie::put_element(const String& name, Value *value) {
 	if(Hash *hash=value->get_hash(&name))
 		remove=hash->size()==0;
 	else
-		remove=value->as_string().size()==0;
+		remove=value->as_string().is_empty();
 
 	(remove?deleted:after).put(name, value);
 	(remove?after:deleted).put(name, 0);
