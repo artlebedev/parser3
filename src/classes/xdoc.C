@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/01/30 14:35:11 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/02/03 16:29:45 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -615,7 +615,8 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 	// UTF-8 encoder contains empty input/output converters, 
 	// which is wrong for xmlOutputBufferCreateIO
 	// while zero encoder goes perfectly 
-	if(encoder && strcmp(encoder->name, "UTF-8")==0)
+	const char* encoder_name=encoder->name;
+	if(strcmp(encoder_name, "UTF-8")==0)
 		encoder=0;
 
 	xmlOutputBuffer_auto_ptr outputBuffer(xmlAllocOutputBuffer(encoder));
@@ -635,15 +636,14 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 	OOS2STYLE(encoding);
 	OOS2STYLE(mediaType);
 //	OOS2STYLE(doctypeSystem);
-	//OOS2STYLE(doctypePublic);
+//	OOS2STYLE(doctypePublic);
 	OOE2STYLE(indent);
 	OOS2STYLE(version);
 	OOE2STYLE(standalone);
 	OOE2STYLE(omitXmlDeclaration);
 
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
-	if(encoder)
-		document->encoding=BAD_CAST xmlMemStrdup(encoder->name);
+	document->encoding=BAD_CAST xmlMemStrdup(encoder_name);
 	if(xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0) {
 		GdomeException exc=0;
 		throw XmlException(0, exc);
