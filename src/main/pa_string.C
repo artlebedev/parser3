@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.72 2001/04/05 18:18:41 paf Exp $
+	$Id: pa_string.C,v 1.73 2001/04/05 19:35:16 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -500,6 +500,12 @@ bool String::match(const String *aorigin,
 		if(!tables)
 			tables=pcre_maketables();
 	}
+
+
+	if(!regexp.size())
+		THROW(0, 0,
+			aorigin,
+			"regexp is empty");
 	const char *pattern=regexp.cstr(UL_AS_IS);
 	const char *errptr;
 	int erroffset;
@@ -517,9 +523,9 @@ bool String::match(const String *aorigin,
 	if(info_substrings<0) {
 		(*pcre_free)(code);
 		THROW(0, 0,
-		aorigin,
-		"pcre_info error #%d", 
-			info_substrings);
+			aorigin,
+			"pcre_info error #%d", 
+				info_substrings);
 	}
 
 	int startoffset=0;

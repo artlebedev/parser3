@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.97 2001/04/05 18:23:00 paf Exp $
+	$Id: pa_request.C,v 1.98 2001/04/05 19:35:16 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -243,7 +243,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
 					//	@post-process[data]
-					VMethodFrame frame(pool(), *junction);
+					VMethodFrame frame(pool(), *junction, false);
 					frame.set_self(*main_class);
 
 					frame.store_param(method->name, 
@@ -308,7 +308,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 						if(const Method *method=junction->method) {
 							// preparing to pass parameters to 
 							//	@exception[origin;source;comment;type;code]
-							VMethodFrame frame(pool(), *junction);
+							VMethodFrame frame(pool(), *junction, false);
 							frame.set_self(*main_class);
 
 							const String *problem_source=e.problem_source();

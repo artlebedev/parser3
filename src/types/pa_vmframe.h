@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmframe.h,v 1.11 2001/04/05 13:19:47 paf Exp $
+	$Id: pa_vmframe.h,v 1.12 2001/04/05 19:35:18 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -50,10 +50,13 @@ public: // wcontext
 
 public: // usage
 
-	VMethodFrame(Pool& apool, const Junction& ajunction/*info: always method-junction*/) : 
+	VMethodFrame(Pool& apool, 
+		const Junction& ajunction/*info: always method-junction*/, 
+		bool ais_constructor) : 
 		WContext(apool, 0 /* empty */, false /* not constructing */),
 
 		junction(ajunction),
+		is_constructor(ais_constructor),
 		store_param_index(0),
 		my(0), fnumbered_params(0),
 		fself(0) {
@@ -127,6 +130,7 @@ public: // usage
 public:
 	
 	const Junction& junction;
+	bool is_constructor;
 
 private:
 	int store_param_index;

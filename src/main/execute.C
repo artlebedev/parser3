@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.137 2001/04/05 13:19:43 paf Exp $
+	$Id: execute.C,v 1.138 2001/04/05 19:35:16 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -155,10 +155,10 @@ void Request::execute(const Array& ops) {
 					*self, 0, 0,
 					root, 
 					wcontext->somebody_entered_some_object()>1?
-						&frame->junction.self /* ^t.menu{} */:rcontext/* ^if() */, 
+						&frame->junction.self /*^t.menu{}*/:rcontext/*^if()*/, 
 					op.code==OP_EXPR_CODE__STORE_PARAM?
 						0:wcontext->somebody_entered_some_object()>1?
-							frame/* ^t.menu{} */:wcontext/* ^if() */, 
+							frame/*^t.menu{}*/:wcontext/*^if()*/, 
 					local_ops);
 				
 				Value *value=NEW VJunction(j);
@@ -267,7 +267,7 @@ void Request::execute(const Array& ops) {
 				PUSH(wcontext);
 				PUSH((void *)flang);
 				flang=String::UL_PASS_APPENDED;
-				wcontext=NEW WWrapper(pool(), 0 /* empty */, true /* constructing */);
+				wcontext=NEW WWrapper(pool(), 0 /*empty*/, true /*constructing*/);
 				break;
 			}
 		case OP_REDUCE_EWPOOL:
@@ -285,7 +285,7 @@ void Request::execute(const Array& ops) {
 				PUSH(rcontext);
 				rcontext=ncontext;
 				PUSH(wcontext);
-				wcontext=NEW WWrapper(pool(), ncontext, false /* not constructing */);
+				wcontext=NEW WWrapper(pool(), ncontext, false /*not constructing*/);
 				break;
 			}
 		case OP_REDUCE_RWPOOL:
@@ -304,7 +304,7 @@ void Request::execute(const Array& ops) {
 		case OP_CREATE_SWPOOL:
 			{
 				PUSH(wcontext);
-				wcontext=NEW WWrapper(pool(), 0 /* empty */, false /* not constructing */);
+				wcontext=NEW WWrapper(pool(), 0 /*empty*/, false /*not constructing*/);
 				break;
 			}
 		case OP_REDUCE_SWPOOL:
@@ -326,6 +326,7 @@ void Request::execute(const Array& ops) {
 		case OP_GET_METHOD_FRAME:
 			{
 				Value *value=POP();
+
 				// info: 
 				//	code compiled so that this one's always method-junction, 
 				//	not a code-junction
@@ -336,7 +337,13 @@ void Request::execute(const Array& ops) {
 						"(%s) not a method or junction, can not call it",
 							value->type()); 
 
-				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);
+				bool is_constructor=
+					wcontext->constructing() && // constructing?
+					wcontext->somebody_entered_some_class(); // ^class:method[..]?
+				if(is_constructor)
+					wcontext->constructing(false);
+
+				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction, is_constructor);
 				frame->set_name(value->name());
 				PUSH(frame);
 				break;
@@ -365,10 +372,8 @@ void Request::execute(const Array& ops) {
 				if(read_class && read_class->is_or_derived_from(*called_class)) // yes
 					self=rcontext; // class dynamic call
 				else // no, not me or relative of mine (total stranger)
-					if(
-						wcontext->constructing() && // constructing?
-						wcontext->somebody_entered_some_class()) { // ^class:method[..]?
-						// yes, this is a constructor call
+					if(frame->is_constructor) {
+						// this is a constructor call
 						// some stateless_object derivates with constructors
 						if(called_class==table_class)
 							self=NEW VTable(pool());
@@ -740,7 +745,7 @@ const String *Request::execute_method(Value& aself, const Method& method, bool r
 	
 	// initialize contexts
 	root=rcontext=self=&aself;
-	wcontext=NEW WWrapper(pool(), &aself, false /* not constructing */);
+	wcontext=NEW WWrapper(pool(), &aself, false /*not constructing*/);
 	
 	// execute!	
 	execute(*method.parser_code);

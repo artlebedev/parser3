@@ -28,13 +28,13 @@ $n
 #^data.match[1][g]{X}
 
 @mt[s;m]
-$m ^if[(^s.match[$:m;i])]{matches}{does not match} $s<BR>
+$m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
 ^connect[$SQL.connect-string]{
 	$random_age(^random:generate(10000))
 	$shit[^taint[our's]]
-#	$paf[^table:sql{insert into paf (name, age) values ('$shit', $random_age)}(1;4)]
+	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}(1;4)]
 	$paf[^table:sql{select * from paf}(1;4)]
 	<table border=1>
 		<tr><td>id</td><td>name</td><td>age</td></tr>

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.43 2001/04/03 07:02:47 paf Exp $
+	$Id: pa_value.h,v 1.44 2001/04/05 19:35:18 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -182,7 +182,7 @@ protected:
 
 	/// throws exception specifying bark-reason and name() type() of problematic value
 	void bark(char *reason) const {
-		THROW(0,0,
+		THROW(0, 0,
 			&name(),
 			reason, type());
 	}
