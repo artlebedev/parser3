@@ -174,6 +174,7 @@ InputName=compile
 
 "compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	cd $(InputDir) 
+	set BISON_SIMPLE=..\..\..\win32tools\usr\share\bison.simple 
 	..\..\..\win32tools\bison -v $(InputName).y -o compile.tab.C 
 	
 # End Custom Build
@@ -187,6 +188,7 @@ InputName=compile
 
 "compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	cd $(InputDir) 
+	set BISON_SIMPLE=..\..\..\win32tools\usr\share\bison.simple 
 	..\..\..\win32tools\bison -v $(InputName).y -o compile.tab.C 
 	
 # End Custom Build
@@ -407,35 +409,14 @@ SOURCE=..\include\pa_string.h
 # Begin Source File
 
 SOURCE=..\include\pa_stylesheet_connection.h
-
-!IF  "$(CFG)" == "main - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "main - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\pa_stylesheet_manager.C
-
-!IF  "$(CFG)" == "main - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "main - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=..\include\pa_stylesheet_manager.h
-
-!IF  "$(CFG)" == "main - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "main - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
