@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/12/10 07:34:05 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/12/10 07:41:06 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -266,9 +266,13 @@ static int http_request(char*& response, size_t& response_size,
 			setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *)&dont_linger, sizeof(dont_linger));
 #endif
 
-#ifndef PA_USE_ALARM
+#if defined(SO_SNDTIMEO) || defined(SO_RCVTIMEO)
 			int timeout_ms=timeout_secs*1000;
+#endif
+#ifdef SO_SNDTIMEO
 			setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
+#endif
+#ifdef SO_RCVTIMEO
 			setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
 #endif
 
