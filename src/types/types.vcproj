@@ -25,7 +25,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\lib\gd;..\include;..\classes;..\sql;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;..\lib\sdbm\apr-include;..\..\..\win32\psapi;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;..\..\..\win32\gnome\gmime-x.x.x;..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
+				AdditionalIncludeDirectories="..\lib\gd;..\include;..\classes;..\sql;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;..\lib\sdbm\apr-include;..\..\..\win32\psapi;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;..\..\..\win32\gnome\gmime-x.x.x;..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -76,7 +76,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\lib\gd;..\include;..\classes;..\sql;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;..\lib\sdbm\apr-include;..\..\..\win32\psapi;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;..\..\..\win32\gnome\gmime-x.x.x;..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include\libxml;..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include"
+				AdditionalIncludeDirectories="..\lib\gd;..\include;..\classes;..\sql;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;..\lib\sdbm\apr-include;..\..\..\win32\psapi;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;..\..\..\win32\gnome\gmime-x.x.x;..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
