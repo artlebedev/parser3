@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Date: 2002/12/24 08:31:31 $";
+static const char* IDENT_EXEC_C="$Date: 2002/12/26 11:47:59 $";
 
 #include "pa_config_includes.h"
 
@@ -375,7 +375,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	int pipe_write, pipe_read, pipe_err;
 	char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC);
 
-#ifdef NO_FOREIGN_GROUP_FILES
+#ifdef PA_SAFE_MODE
 	if(!forced_allow) {
 		struct stat finfo;
 		if(stat(file_spec_cstr, &finfo)!=0)
@@ -384,10 +384,11 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 					"stat failed: %s (%d), actual filename '%s'", 
 						strerror(errno), errno, file_spec_cstr);
 
-		if(finfo.st_gid/*foreign?*/!=getegid())
-			throw Exception("parser.runtime",
-				&file_spec,
-				"parser executing files of foreign group is	disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
+		if(finfo.st_uid/*foreign?*/!=geteuid()
+			&& finfo.st_gid/*foreign?*/!=getegid())
+			throw Exception("parser.runtime", 
+				&file_spec, 
+				"parser is in safe mode: executing files of foreign group and user disabled [recompile parser with --disable-safe-mode configure option], actual filename '%s'", 
 					file_spec_cstr);
 	}
 #endif
