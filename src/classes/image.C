@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2003/11/03 11:22:06 $";
+static const char* IDENT_IMAGE_C="$Date: 2003/11/03 11:25:35 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -805,7 +805,6 @@ static void _load(Request& r, MethodParams& params) {
 }
 
 static void _create(Request& r, MethodParams& params) {
-
 	int width=params.as_int(0, "width must be int", r);
 	int height=params.as_int(1, "height must be int", r);
 	int bgcolor_value=0xffFFff;
@@ -818,7 +817,6 @@ static void _create(Request& r, MethodParams& params) {
 }
 
 static void _gif(Request& r, MethodParams& params) {
-
 	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
@@ -842,7 +840,6 @@ static void _gif(Request& r, MethodParams& params) {
 }
 
 static void _line(Request& r, MethodParams& params) {
-
 	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
@@ -858,7 +855,6 @@ static void _line(Request& r, MethodParams& params) {
 }
 
 static void _fill(Request& r, MethodParams& params) {
-
 	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
@@ -872,7 +868,6 @@ static void _fill(Request& r, MethodParams& params) {
 }
 
 static void _rectangle(Request& r, MethodParams& params) {
-
 	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
@@ -888,7 +883,6 @@ static void _rectangle(Request& r, MethodParams& params) {
 }
 
 static void _bar(Request& r, MethodParams& params) {
-
 	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
@@ -912,7 +906,6 @@ static void add_point(Table::element_type row,
 }
 #endif
 static void _replace(Request& r, MethodParams& params) {
-
 	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
@@ -934,7 +927,6 @@ static void _replace(Request& r, MethodParams& params) {
 }
 
 static void _polyline(Request& r, MethodParams& params) {
-
 	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
@@ -956,7 +948,6 @@ static void _polyline(Request& r, MethodParams& params) {
 }
 
 static void _polygon(Request& r, MethodParams& params) {
-
 	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
@@ -977,7 +968,6 @@ static void _polygon(Request& r, MethodParams& params) {
 }
 
 static void _polybar(Request& r, MethodParams& params) {
-
 	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
