@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/08/01 11:41:13 $";
+static const char* IDENT_STRING_C="$Date: 2002/08/06 12:48:14 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -327,7 +327,7 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 	default_code=0;
 	if(params->size()>1) {
 		Value& voptions=params->as_no_junction(1, "options must be hash, not code");
-		if(voptions.is_defined())
+		if(!voptions.is_string())
 			if(options=voptions.get_hash(&method_name)) {
 				if(Value *vlimit=(Value *)options->get(*sql_limit_name))
 					limit=(ulong)r.process_to_value(*vlimit).as_double();

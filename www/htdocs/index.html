@@ -17,10 +17,12 @@ $selffilespec[$filespec]
 #^a.format[%.10u]
 #$result[111]
 #^f[a]
-#^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
-#	^int:sql{select news_id from news where news_id=-1}[$.default{2}]<br>
-#    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
-#}
+^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
+	^int:sql{select news_id from news where news_id=-1}[
+#	$.default{2}
+	]<br>
+    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
+}
 #^eval(2)
 #^tcrashlocaljunctionsv2[]
 #^tcrashlocaljunctions[]
