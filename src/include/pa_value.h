@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.29 2001/02/25 08:50:12 paf Exp $
+  $Id: pa_value.h,v 1.30 2001/02/25 09:42:03 paf Exp $
 */
 
 /*
@@ -103,23 +103,20 @@ public: // Value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	// object_instance: (field)=value;(CLASS)=vclass;(method)=method_ref
 	// operator_class: (field)=value - static values only
-	// wcontext: transparent
-	// frame: my or self_transparent
 	// codeframe: wcontext_transparent
+	// methodframe: my or self_transparent
 	virtual Value *get_element(const String& name) { failed("type is '%s', can not get element from it"); return 0; }
 	
 	// hash: (key)=value
 	// object_class, operator_class: (field)=value - static values only
 	// object_instance: (field)=value
-	// wcontext: transparent
-	// frame: my or self_transparent
 	// codeframe: wcontext_transparent
+	// methodframe: my or self_transparent
 	virtual void put_element(const String& name, Value *value) { failed("type is '%s', can not put element to it"); }
 
 	// object_class, object_instance: object_class
-	// frame: transparent
-	// wcontext: transparent
 	// codeframe: wcontext_transparent
+	// methodframe: transparent
 	virtual VClass *get_class() { return 0; }
 
 public: // usage

@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.40 2001/02/25 09:03:17 paf Exp $
+  $Id: compile.y,v 1.41 2001/02/25 09:42:04 paf Exp $
 */
 
 %{
@@ -258,8 +258,9 @@ class_method_name: STRING ':' name_advance1 {
 	String& name=*SLA2S($1);
 	VClass *vclass=static_cast<VClass *>(PC->request->classes().get(name));
 	if(!vclass) {
-		strcpy(PC->error, name.cstr());
-		strcat(PC->error, ": undefined class in call");
+		strcat(PC->error, "'");
+		strcat(PC->error, name.cstr());
+		strcat(PC->error, "' class is undefined in call");
 		YYERROR;
 	}
 	$$=CL(vclass);

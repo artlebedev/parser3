@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.2 2001/02/25 08:12:21 paf Exp $
+  $Id: pa_vmframe.h,v 1.3 2001/02/25 09:42:03 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -26,9 +26,6 @@ public: // Value
 		if(!my.replace(name, value))
 			self->put_element(name, value);
 	}
-
-	// frame: none yet | transparent
-	VClass *get_class() const { return self->get_class(); }
 
 public: // usage
 

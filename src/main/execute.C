@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.39 2001/02/25 08:50:14 paf Exp $
+  $Id: execute.C,v 1.40 2001/02/25 09:42:04 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -232,12 +232,12 @@ void Request::execute(const Array& ops) {
 				frame->fill_unspecified_params();
 				PUSH(self);  PUSH(root);  PUSH(rcontext);  PUSH(wcontext); 
 
-				VClass *context_class=wcontext->get_class();
 				VClass *called_class=frame->junction.self.get_class();
-				// context is some class? [variable already constructed?]
-				if(context_class) { // yes
+				// variable already constructed?
+				if(wcontext->get_class()) { // yes
+					VClass *read_class=rcontext->get_class();
 					// is it me or one of my parents? 
-					if(context_class->is_or_derived_from(*called_class)) // yes
+					if(read_class->is_or_derived_from(*called_class)) // yes
 						self=&frame->junction.self; // dynamic call
 					else // no
 						self=called_class; // static call

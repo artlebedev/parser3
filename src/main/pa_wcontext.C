@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.C,v 1.1 2001/02/24 11:20:33 paf Exp $
+  $Id: pa_wcontext.C,v 1.2 2001/02/25 09:42:04 paf Exp $
 */
 
 #include "pa_wcontext.h"
@@ -24,7 +24,7 @@ void WContext::write(Value *avalue) {
 		write(string);
 	else
 		if(fvalue) // already have value?
-			THROW(0,0,  // don't need to construct twice
+			THROW(0,0,  // must not construct twice
 			fvalue->name(),
 			"value already assigned, use constructor to reassign it");
 		else

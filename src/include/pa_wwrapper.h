@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wwrapper.h,v 1.5 2001/02/25 08:12:21 paf Exp $
+  $Id: pa_wwrapper.h,v 1.6 2001/02/25 09:42:03 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -23,7 +23,7 @@ public: // Value
 	}
 
 	// wwrapper: none yet | transparent
-	VClass *get_class() const { return fvalue?fvalue->get_class():0; }
+	VClass *get_class() { return fvalue?fvalue->get_class():0; }
 
 public: // usage
 
