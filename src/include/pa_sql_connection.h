@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.3 2001/04/05 11:50:08 paf Exp $
+	$Id: pa_sql_connection.h,v 1.4 2001/04/05 13:19:41 paf Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -13,9 +13,9 @@
 
 #include "pa_pool.h"
 #include "pa_sql_driver.h"
-#include "pa_exception.h"
+#include "pa_sql_driver_manager.h"
 
-/// sql connection
+/// SQL connection. handy wrapper around low level SQL_Driver
 class SQL_Connection : public Pooled {
 
 public:
@@ -44,6 +44,10 @@ public:
 	void commit() { fdriver.commit(connection); }
 	void rollback() { fdriver.rollback(connection); }
 	bool ping() { return fdriver.ping(connection); }
+	uint quote(char *to, const char *from, unsigned int length) {
+		return fdriver.quote(connection, to, from, length);
+	}
+
 	void query(
 		const char *statement, unsigned long offset, unsigned long limit,
 		unsigned int *column_count, SQL_Driver::Cell **columns,

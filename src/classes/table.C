@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.53 2001/04/05 11:50:06 paf Exp $
+	$Id: table.C,v 1.54 2001/04/05 13:19:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -188,6 +188,7 @@ static void _offset(Request& r, const String& method_name, Array *params) {
 	}
 }
 
+/// @test $a.menu{ $a[123] }
 static void _menu(Request& r, const String& method_name, Array *params) {
 	Value& body_code=*static_cast<Value *>(params->get(0));
 	// forcing ^menu{this param type}
@@ -433,7 +434,7 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 
 	Value& statement=*static_cast<Value *>(params->get(0));
 	// forcing {this query param type}
-	r.fail_if_junction_(true, statement, method_name, "statement must not be junction");
+	r.fail_if_junction_(false, statement, method_name, "statement must be junction");
 
 	ulong limit=0;
 	if(params->size()>1) {
@@ -451,8 +452,9 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 		offset=(ulong)r.process(offset_code).as_double();
 	}
 
-	const String& statement_string=statement.as_string();
-	const char *statement_cstr=statement_string.cstr(String::UL_SQL);
+	Temp_lang temp_lang(r, String::UL_SQL);
+	const String& statement_string=r.process(statement).as_string();
+	const char *statement_cstr=statement_string.cstr(String::UL_UNKNOWN, r.connection);
 	unsigned int sql_column_count; SQL_Driver::Cell *sql_columns;
 	unsigned long sql_row_count; SQL_Driver::Cell **sql_rows;
 	bool need_rethrow=false; Exception rethrow_me;

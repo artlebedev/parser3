@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.C,v 1.4 2001/03/16 09:26:45 paf Exp $
+	$Id: pa_wcontext.C,v 1.5 2001/04/05 13:19:47 paf Exp $
 */
 
 #include "pa_wcontext.h"
@@ -27,17 +27,8 @@ void WContext::write(Value& avalue) {
 			&avalue.name(),
 			"(%s) illegal assignment attempt to '%s' (%s), use constructor instead",
 			avalue.type(), fvalue->name().cstr(), fvalue->type());
-	} else {
+	} else 
 		fvalue=&avalue;
-		// not constructing anymore [if were constructing]
-		// so to allow method calls after real constructor-method call
-		// sample:
-		//	$complex[
-		//		$class:constructor[$i]
-		//		^i.inc[]  ^rem{allow such calls}
-		//		$field[$1]
-		fconstructing=false;
-	}
 }
 
 // if value is VString writes fstring,

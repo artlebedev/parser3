@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.136 2001/04/03 05:23:41 paf Exp $
+	$Id: execute.C,v 1.137 2001/04/05 13:19:43 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -265,12 +265,15 @@ void Request::execute(const Array& ops) {
 		case OP_CREATE_EWPOOL:
 			{
 				PUSH(wcontext);
+				PUSH((void *)flang);
+				flang=String::UL_PASS_APPENDED;
 				wcontext=NEW WWrapper(pool(), 0 /* empty */, true /* constructing */);
 				break;
 			}
 		case OP_REDUCE_EWPOOL:
 			{
 				Value *value=wcontext->result();
+				flang=static_cast<String::Untaint_lang>(reinterpret_cast<int>(POP()));
 				wcontext=static_cast<WContext *>(POP());
 				PUSH(value);
 				break;

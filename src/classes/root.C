@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.59 2001/04/05 08:09:17 paf Exp $
+	$Id: root.C,v 1.60 2001/04/05 13:19:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -80,15 +80,13 @@ static void _taint(Request& r, const String& method_name, Array *params) {
 	}
 
 	{
-		Value *vbody=static_cast<Value *>(params->get(params->size()-1));
-		// forcing {this param type}
-		r.fail_if_junction_(true, *vbody, method_name, "body must not be junction");
+		Value& vbody=*static_cast<Value *>(params->get(params->size()-1));
+		// forcing [this param type]
+		r.fail_if_junction_(true, vbody, method_name, "body must not be junction");
 		
-		// set temporarily as-is language
-		Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 		String result(r.pool());
 		result.append(
-			r.process(*vbody).as_string(),  // process marking tainted with that lang
+			vbody.as_string(),  // process marking tainted with that lang
 			lang, true);  // force result language to specified
 		r.write_pass_lang(result);
 	}

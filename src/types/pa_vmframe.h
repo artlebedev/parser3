@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmframe.h,v 1.10 2001/03/27 18:06:11 paf Exp $
+	$Id: pa_vmframe.h,v 1.11 2001/04/05 13:19:47 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -41,7 +41,7 @@ public: // Value
 
 public: // wcontext
 
-	Value *result() const {
+	Value *result() {
 		// check the $result value
 		Value *result=my?static_cast<Value*>(my->get(*result_var_name)):0;
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue

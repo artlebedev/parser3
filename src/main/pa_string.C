@@ -5,12 +5,14 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.69 2001/04/04 10:50:36 paf Exp $
+	$Id: pa_string.C,v 1.70 2001/04/05 13:19:43 paf Exp $
 */
 
 #include "pa_config_includes.h"
 
 #include <locale.h>
+
+#include "pcre.h"
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -21,8 +23,6 @@
 #include "pa_globals.h"
 #include "pa_table.h"
 #include "pa_threads.h"
-
-#include "pcre.h"
 
 //#include "pa_sapi.h"
 

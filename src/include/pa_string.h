@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.70 2001/04/04 10:50:34 paf Exp $
+	$Id: pa_string.h,v 1.71 2001/04/05 13:19:42 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -55,6 +55,7 @@ class Table;
 #define	APPEND_CONST(src) APPEND_CLEAN(src, 0, 0, 0)
 
 class Array;
+class SQL_Connection;
 
 /** 
 	Pooled string.
@@ -112,9 +113,9 @@ public:
 	String(const String& src);
 	size_t size() const { return fsize; }
 	/// convert to C string. if 'lang' known, forcing 'lang' to it
-	char *cstr(Untaint_lang lang=UL_UNKNOWN) const {
+	char *cstr(Untaint_lang lang=UL_UNKNOWN, SQL_Connection *connection=0) const {
 		char *result=(char *)malloc(size()*UNTAINT_TIMES_BIGGER+1);
-		char *eol=store_to(result, lang);
+		char *eol=store_to(result, lang, connection);
 		*eol=0;
 		return result;
 	}
@@ -242,7 +243,8 @@ private:
 		return append_here == link_row;
 	}
 	void expand();
-	char *String::store_to(char *dest, Untaint_lang lang=UL_UNKNOWN) const;
+	char *String::store_to(char *dest, 
+		Untaint_lang lang=UL_UNKNOWN, SQL_Connection *connection=0) const;
 
 private: //disabled
 

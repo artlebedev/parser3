@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.8 2001/04/05 11:50:11 paf Exp $
+	$Id: parser3mysql.C,v 1.9 2001/04/05 13:19:45 paf Exp $
 */
 
 #include <stdlib.h>
@@ -13,6 +13,8 @@
 #include "pa_sql_driver.h"
 #include "mysql.h"
 #include "pa_common.h" //
+
+#define MAX_STRING 0x400
 
 char *lsplit(char *string, char delim) {
     if(string) {
@@ -43,7 +45,9 @@ public:
 	int api_version() { return SQL_DRIVER_API_VERSION; }
 	/// connect
 	void connect(
-		char *url, ///< @b user:pass@host[:port]/database
+		char *url, /**< @b user:pass@host[:port]/database/charset 
+				   3.23.22b
+				   Currently the only option for character_set_name is cp1251_koi8 */
 		void **connection ///< output: MYSQL *
 		) {
 		char *user=url;
@@ -53,11 +57,22 @@ public:
 		char *error_pos=0;
 		char *port_cstr=lsplit(host, ':');
 		int port=port_cstr?strtol(port_cstr, &error_pos, 0):0;
+		char *charset=lsplit(db, '/');
 
 	    MYSQL *mysql=mysql_init(NULL);
 		if(!mysql_real_connect(mysql, 
 			host, user, pwd, db, port?port:MYSQL_PORT, NULL, 0))
 			fservices->_throw(mysql_error(mysql));
+
+		if(charset) { 
+			// set charset
+			char statement[MAX_STRING]="set CHARACTER SET "; // cp1251_koi8
+			strncat(statement, charset, MAX_STRING);
+			
+			if(mysql_query(mysql, statement)) 
+				fservices->_throw(mysql_error(mysql));
+			mysql_store_result(mysql); // throw out the result [don't need but must call]
+		}
 
 		*(MYSQL **)connection=mysql;
 	}
@@ -72,6 +87,18 @@ public:
 		return mysql_ping((MYSQL *)connection)==0;
 	}
 
+	unsigned int quote(void *connection,
+		char *to, const char *from, unsigned int length) {
+		/*
+			3.23.22b
+			You must allocate the to buffer to be at least length*2+1 bytes long. 
+			(In the worse case, each character may need to be encoded as using two bytes, 
+			and you need room for the terminating null byte.)
+
+			it's already UNTAINT_TIMES_BIGGER
+		*/
+		return mysql_escape_string(to, from, length);
+	}
 	void query(void *connection, 
 		const char *statement, unsigned long offset, unsigned long limit,
 		unsigned int *column_count, Cell **columns, 
@@ -80,10 +107,6 @@ public:
 		MYSQL *mysql=(MYSQL *)connection;
 		MYSQL_RES *res=NULL;
 
-		//mysql_character_set_name
-		//mysql_real_escape_string
-		//mysql_escape_string
-		
 		if(mysql_query(mysql, statement)) 
 			fservices->_throw(mysql_error(mysql));
 		if(!(res=mysql_store_result(mysql)) && mysql_field_count(mysql)) 

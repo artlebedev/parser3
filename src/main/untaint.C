@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.33 2001/04/05 11:01:57 paf Exp $
+	$Id: untaint.C,v 1.34 2001/04/05 13:19:43 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -16,6 +16,7 @@
 #include "pa_exception.h"
 #include "pa_table.h"
 #include "pa_globals.h"
+#include "pa_sql_connection.h"
 
 #define escape(action) \
 	{ \
@@ -80,7 +81,7 @@ static bool typo_present(Array::Item *value, const void *info) {
 	@test optimize whitespaces for all but 'html'
 	@todo fix theoretical \n mem overrun in TYPO replacements
 */
-char *String::store_to(char *dest, Untaint_lang lang) const {
+char *String::store_to(char *dest, Untaint_lang lang, SQL_Connection *connection) const {
 	// $MAIN:html-typo table
 	Table *user_typo_table=static_cast<Table *>(pool().tag());
 	Table *typo_table=user_typo_table?user_typo_table:default_typo_table;
@@ -136,10 +137,12 @@ char *String::store_to(char *dest, Untaint_lang lang) const {
 				break;
 			case UL_SQL:
 				// tainted, untaint language: sql
-				// TODO: зависимость от sql сервера
-				memcpy(dest, row->item.ptr, row->item.size); 
-				//memset(dest, '?', row->item.size); 
-				dest+=row->item.size;
+				if(connection)
+					dest+=connection->quote(dest, row->item.ptr, row->item.size);
+				else
+					THROW(0, 0,
+						this,
+						"untaint in SQL language failed - no connection specified");
 				break;
 			case UL_JS:
 				escape(switch(*src) {

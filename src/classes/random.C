@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: random.C,v 1.3 2001/04/04 06:16:18 paf Exp $
+	$Id: random.C,v 1.4 2001/04/05 13:19:39 paf Exp $
 */
 
 #include <process.h>
@@ -26,8 +26,11 @@ VStateless_class *random_class;
 static void _generate(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
-    uint max=params->size()?
-		(uint)(r.process(*static_cast<Value *>(params->get(0)))).as_double():0;
+	Value& range=*static_cast<Value *>(params->get(0));
+	// (this body type)
+	r.fail_if_junction_(false, range, method_name, "range must be expression");
+
+    uint max=params->size()?(uint)r.process(range).as_double():0;
     if(max<=1)
 		PTHROW(0, 0,
 			&method_name,
@@ -44,5 +47,5 @@ void initialize_random_class(Pool& pool, VStateless_class& vclass) {
 	
 	// ^random.generate[]
 	// ^random.generate(range)
-	vclass.add_native_method("generate", Method::CT_STATIC, _generate, 0, 1);
+	vclass.add_native_method("generate", Method::CT_STATIC, _generate, 1, 1);
 }

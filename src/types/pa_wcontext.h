@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.8 2001/03/27 18:06:11 paf Exp $
+	$Id: pa_wcontext.h,v 1.9 2001/04/05 13:19:47 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -44,7 +44,15 @@ public: // WContext
 	// retrives the resulting value
 	// that can be VString if value==0 or the Value object
 	// wmethod_frame first checks for $result and if there is one, returns it instead
-	virtual Value *result() const {
+	virtual Value *result() {
+		// not constructing anymore [if were constructing]
+		// so to allow method calls after real constructor-method call
+		// sample:
+		//	$complex[
+		//		$class:constructor[$i]
+		//		^i.inc[]  ^rem{allow such calls}
+		//		$field[$1]
+		fconstructing=false;
 		return fvalue?fvalue:NEW VString(fstring);
 	}
 

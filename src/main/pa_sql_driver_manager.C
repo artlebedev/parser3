@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.5 2001/04/05 11:50:09 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.6 2001/04/05 13:19:43 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -62,7 +62,7 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& url,
 	if(!protocol2library)
 		PTHROW(0, 0,
 			&url,
-			"SQL:drivers table must be defined");
+			"$SQL:drivers table must be defined");
 
 	// first trying to get cached connection
 	if(SQL_Connection *result=get_connection_from_cache(url))

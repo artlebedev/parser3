@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.3 2001/04/05 11:50:10 paf Exp $
+	$Id: pa_sql_driver.h,v 1.4 2001/04/05 13:19:44 paf Exp $
 
 
 	driver dynamic library must look like this:
@@ -70,6 +70,9 @@ public:
 	virtual void rollback(void *connection) =0;
 	/// @returns true to indicate that connection still alive 
 	virtual bool ping(void *connection) =0;
+	/// encodes the string in 'from' to an escaped SQL string
+	virtual unsigned int quote(void *connection,
+		char *to, const char *from, unsigned int length) =0;
 	virtual void query(void *connection,
 		const char *statement, unsigned long offset, unsigned long limit,
 		unsigned int *column_count, Cell **columns,

@@ -10,7 +10,7 @@ $DEFAULTS[
 	]
 ]
 $SQL[
-	$connect-string[mysql://test:test@localhost/test]
+	$connect-string[mysql://test:test@localhost/test/cp1251_koi8]
 	$drivers[^table:set{protocol	library
 mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll
 }]
