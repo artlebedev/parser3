@@ -145,8 +145,29 @@ OK
 #^xml[]
 #^header[]
 #^tablehasht[]
+
 #^datecreatestring[]
-^mssqltypes1[]
+#^mssqltypes1[]
+#^badthrows[]
+^xmlspace[]
+
+@xmlspace[]
+$xdoc[^xdoc::set{^process{<?xml version="1.0" encoding="windows-1251"?>
+<!--DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd"-->
+<people>
+	<man id="1" имя="word слово">
+		<name>1  2</name>
+	</man>
+</people>
+}}]
+$xdoc[^xdoc.transform[global.xsl]]
+$string[^xdoc.string[$.method[html]]]
+^string.save[a]
+^untaint[html]{$string}
+
+@badthrows[]
+#^throw[a;b;]
+^throw[a;]
 
 @mssqltypes1[]
 ^connect[odbc://DSN=nestle^;UID=nestle^;PWD=mbm32]{

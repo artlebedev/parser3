@@ -19,7 +19,7 @@
   <xsl:template match="people">
      <html>
      <head>z</head>
-   		para1=<xsl:copy-of select="$param1"/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+   		para1=<xsl:copy-of select="$param1"/>
     	<xsl:apply-templates/>
     	<hr/>
     	<xsl:call-template name="test"/>

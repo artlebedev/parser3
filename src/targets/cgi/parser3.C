@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.176 2002/04/29 05:59:34 paf Exp $
+	$Id: parser3.C,v 1.177 2002/04/30 10:40:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -295,7 +295,7 @@ void real_parser_handler(
 			}
 #endif
 	} else
-		request_info.uri=0;
+		request_info.uri="";
 	
 	request_info.content_type=SAPI::get_env(pool, "CONTENT_TYPE");
 	const char *content_length=SAPI::get_env(pool, "CONTENT_LENGTH");
