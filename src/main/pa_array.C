@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.4 2001/01/29 09:38:33 paf Exp $
+  $Id: pa_array.C,v 1.5 2001/01/29 09:57:22 paf Exp $
 */
 
 #include <string.h>
@@ -11,6 +11,7 @@ void *Array::operator new(size_t size, Pool *apool) {
 }
 
 void Array::construct(Pool *apool, int initial_rows) {
+	tail
 	pool=apool;
 	curr_chunk_rows=initial_rows;
 	head=static_cast<Chunk *>(
@@ -26,6 +27,7 @@ void Array::construct(Pool *apool, int initial_rows) {
 }
 
 void Array::expand() {
+	tail
 	curr_chunk_rows+=curr_chunk_rows*CR_GROW_PERCENT/100;
 	Chunk *chunk=static_cast<Chunk *>(
 		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
@@ -74,8 +76,22 @@ Array& Array::operator += (Array& src) {
 	int src_size=src.size();
 	int last_chunk_rows_left=link_row-append_here;
 	
-	// src fits into our lask chunk?
-	if(src_size<=last_chunk_rows_left) {
+	// our last chunk too small for src to fit?
+	if(src_size>last_chunk_rows_left) {
+		// shrink last chunk to used rows
+		tail->count-=last_chunk_rows_left;
+		link_row=append_here;
+
+		// append new src_size-ed chunk 
+		Chunk *chunk=static_cast<Chunk *>(
+			pool->malloc(sizeof(int)+sizeof(Chunk::Row)*src_size+sizeof(Chunk *)));
+		chunk->count=src_size;
+		tail=link_row->link=chunk;
+		append_here=chunk->rows;
+		link_row=&chunk->rows[curr_chunk_rows];
+		link_row->link=0;
+	}
+
 		Chunk *src_chunk=src.head; 
 		Chunk::Row *dest_rows=append_here;
 		int rows_left_to_copy=src_size;
