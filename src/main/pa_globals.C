@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.119 2002/03/18 15:29:46 paf Exp $
+	$Id: pa_globals.C,v 1.120 2002/03/28 14:26:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -73,6 +73,8 @@ String *class_path_name;
 
 String *switch_data_name;
 String *case_default_value;
+
+String *cache_data_name;
 
 String *sql_limit_name;
 String *sql_offset_name;
@@ -355,6 +357,9 @@ void pa_globals_init(Pool& pool) {
 	//^switch ^case
 	switch_data_name=NEW String(pool, SWITCH_DATA_NAME);
 	case_default_value=NEW String(pool, CASE_DEFAULT_VALUE);
+
+	//^cache
+	cache_data_name=NEW String(pool, CACHE_DATA_NAME);
 
 	// sql
 	sql_limit_name=NEW String(pool, SQL_LIMIT_NAME);

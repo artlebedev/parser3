@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vdate.h,v 1.8 2002/02/08 08:30:19 paf Exp $
+	$Id: pa_vdate.h,v 1.9 2002/03/28 14:26:49 paf Exp $
 */
 
 #ifndef PA_VDATE_H
@@ -15,13 +15,19 @@
 #include "pa_vstateless_object.h"
 #include "pa_vint.h"
 
+// defines
+
+#define VDATE_TYPE "date"
+
+// externs
+
 extern Methoded *date_class;
 
 /// value of type 'date'. implemented with @c time_t
 class VDate : public VStateless_object {
 public: // Value
 
-	const char *type() const { return "date"; }
+	const char *type() const { return VDATE_TYPE; }
 	/// VDate: ftime -> float days
 	Value *as_expr_result(bool return_string_as_is=false) {
 		return NEW VDouble(pool(), as_double());

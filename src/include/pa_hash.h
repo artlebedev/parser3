@@ -5,7 +5,7 @@
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_hash.h,v 1.54 2002/02/08 08:30:13 paf Exp $
+	$Id: pa_hash.h,v 1.55 2002/03/28 14:26:48 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -160,5 +160,21 @@ private: //disabled
 	Hash& operator = (const Hash&) { return *this; }
 };
 
+///	Auto-object used for temporarily substituting/removing hash values
+class Temp_hash_value {
+	Hash& fhash;
+	const Hash::Key& fname;
+	Hash::Val *saved_value;
+public:
+	Temp_hash_value(Hash& ahash, const Hash::Key& aname, Hash::Val *avalue) : 
+		fhash(ahash),
+		fname(aname),
+		saved_value(ahash.get(aname)) {
+		fhash.put(aname, avalue);
+	}
+	~Temp_hash_value() { 
+		fhash.put(fname, saved_value);
+	}
+};
 
 #endif

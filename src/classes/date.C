@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.22 2002/03/27 15:30:33 paf Exp $
+	$Id: date.C,v 1.23 2002/03/28 14:26:48 paf Exp $
 */
 
 #include "classes.h"
@@ -31,19 +31,24 @@ public: // Methoded
 
 // methods
 
-static void _now(Request& r, const String& method_name, MethodParams *) {
+static void _now(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDate *vdate=static_cast<VDate *>(r.self);
-	vdate->set_time(time(0));
+
+	time_t t=time(0);
+	if(params->size()==1) // ^now(offset)
+		t+=(time_t)(params->as_double(0, "offset must be double", r)*SECS_PER_DAY);
+	
+	vdate->set_time(t);
 }
 
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDate *vdate=static_cast<VDate *>(r.self);
 
-	time_t time;
+	time_t t;
 	if(params->size()==1) // ^set(float days)
-		time=(time_t)(params->as_double(0, "float days must be double", r)*SECS_PER_DAY);
+		t=(time_t)(params->as_double(0, "float days must be double", r)*SECS_PER_DAY);
 	else if(params->size()>=3) { // ^set(y;m;d[;h[;m[;s]]])
 		tm tmIn={0};
 		tmIn.tm_isdst=-1;
@@ -58,8 +63,8 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		if(params->size()>3) tmIn.tm_hour=params->as_int(3, "hour must be int", r);
 		if(params->size()>4) tmIn.tm_min=params->as_int(4, "minutes must be int", r);
 		if(params->size()>5) tmIn.tm_sec=params->as_int(5, "seconds must be int", r);
-		time=mktime(&tmIn);
-		if(time<0)
+		t=mktime(&tmIn);
+		if(t<0)
 			throw Exception(0,
 				&method_name,
 				"invalid datetime");
@@ -67,7 +72,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		throw Exception("parser.runtime",
 			&method_name,
 			"invalid params count, must be 1 or >=3");
-	vdate->set_time(time);
+	vdate->set_time(t);
 }
 
 static void _sql_string(Request& r, const String& method_name, MethodParams *) {
@@ -269,7 +274,7 @@ MDate::MDate(Pool& apool) : Methoded(apool) {
 
 
 	// ^now[]
-	add_native_method("now", Method::CT_DYNAMIC, _now, 0, 0);
+	add_native_method("now", Method::CT_DYNAMIC, _now, 0, 1);
 
 	// ^set(float days)
 	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 6);

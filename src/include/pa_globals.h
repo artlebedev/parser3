@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.79 2002/03/18 15:29:45 paf Exp $
+	$Id: pa_globals.h,v 1.80 2002/03/28 14:26:48 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -68,6 +68,8 @@ class Charset;
 
 #define SWITCH_DATA_NAME "SWITCH-DATA"
 #define CASE_DEFAULT_VALUE "DEFAULT"
+
+#define CACHE_DATA_NAME "CACHE-DATA"
 
 #define CLASS_PATH_NAME "CLASS_PATH"
 
@@ -138,6 +140,8 @@ extern String *class_path_name;
 
 extern String *switch_data_name;
 extern String *case_default_value;
+
+extern String *cache_data_name;
 
 extern String *sql_limit_name;
 extern String *sql_offset_name;

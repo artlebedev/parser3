@@ -7,7 +7,10 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^exceptionTypes[]
+^cacheexpireschanging[]
+#^cacheexpiresfixed[]
+#^dateoffsets[]
+#^exceptionTypes[]
 #^roll2[]
 #^rolls[]
 #^exceptions1[]
@@ -111,6 +114,27 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@cacheexpireschanging[]
+^cache[$DB_HOME/keyключ][^date::now(+1)]{ ^rem{1 day}
+    ^cache[^date::now(+4/24/60/60)]
+#    ^cache(2)
+    ^cache(0)
+	^math:random(100)
+}
+
+
+
+@cacheexpiresfixed[]
+^cache[$DB_HOME/keyключ][^date::now(+2/24/60/60)]{
+	^math:random(100)
+}
+
+@dateoffsets[]
+$d[^date::create(^date::now[]+1/24/60)]
+#$d[^date::now(+1/24/60)]
+^d.sql-string[]
+#$d
 
 @exceptionTypes[]
 #    parser.compile       ^test[}                компиляция (непарная скобка, ...)

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.78 2002/03/27 15:30:34 paf Exp $
+	$Id: op.C,v 1.79 2002/03/28 14:26:48 paf Exp $
 */
 
 #include "classes.h"
@@ -12,6 +12,7 @@
 #include "pa_request.h"
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
+#include "pa_vdate.h"
 
 // limits
 
@@ -274,13 +275,10 @@ struct Switch_data {
 };
 #endif
 static void _switch(Request& r, const String&, MethodParams *params) {
-	void *backup=r.classes_conf.get(*switch_data_name);
 	Switch_data data={&r.process(params->get(0))};	
-	r.classes_conf.put(*switch_data_name, &data);
+	Temp_hash_value switch_data_setter(r.classes_conf, *switch_data_name, &data);
 
 	r.process(params->as_junction(1, "switch cases must be code")); // and ignore result
-
-	r.classes_conf.put(*switch_data_name, backup);
 
 	if(Value *code=data.found ? data.found : data._default)
 		r.write_pass_lang(r.process(*code));
@@ -322,13 +320,14 @@ static void _case(Request& r, const String& method_name, MethodParams *params) {
 
 // consts
 
-const int DATA_STRING_SERIALIZED_VERSION=0x0001;
+const int DATA_STRING_SERIALIZED_VERSION=0x0002;
 
 // helper types
 
 #ifndef DOXYGEN
 struct Data_string_serialized_prolog {
 	int version;
+	time_t expires;
 };
 #endif
 
@@ -337,9 +336,13 @@ void cache_delete(const String& file_spec) {
 }
 
 #ifndef DOXYGEN
+struct Cache_data {
+	time_t expires;
+};
 struct Locked_process_and_cache_put_action_info {
 	Request *r;
 	Value *body;
+	Cache_data *data;
 };
 #endif
 static void locked_process_and_cache_put_action(int f, void *context) {
@@ -349,37 +352,47 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 	// body->process 
 	info.body=&info.r->process(*info.body);
 
-	// result->string
-	const String& data_string=info.body->as_string();
+	// expiration time not spoiled by ^cache(0) or something?
+	if(info.data->expires > time(0)) {
+		// result->string
+		const String& data_string=info.body->as_string();
 
-	// string -serialize> buffer
-	void *data; size_t data_size;
-	data_string.serialize(
-		sizeof(Data_string_serialized_prolog), 
-		data, data_size);
-	Data_string_serialized_prolog& prolog=
-		*static_cast<Data_string_serialized_prolog *>(data);
-	prolog.version=DATA_STRING_SERIALIZED_VERSION;
-	
-	// buffer -write> file
-	write(f, data, data_size);
+		// string -serialize> buffer
+		void *data; size_t data_size;
+		data_string.serialize(
+			sizeof(Data_string_serialized_prolog), 
+			data, data_size);
+		Data_string_serialized_prolog& prolog=
+			*static_cast<Data_string_serialized_prolog *>(data);
+		prolog.version=DATA_STRING_SERIALIZED_VERSION;
+		prolog.expires=info.data->expires;
+		
+		// buffer -write> file
+		write(f, data, data_size);
+	} else // expired!
+		info.data->expires=0; // flag it so that could be easily checked by caller
 }
 Value *locked_process_and_cache_put(Request& r, 
 									Value& body_code,
+									Cache_data& data,
 									const String& file_spec) {
 	Locked_process_and_cache_put_action_info info={
 		&r,
 		&body_code,
+		&data
 	};
 
-	return file_write_action_under_lock(
+	Value *result=file_write_action_under_lock(
 		file_spec, 
 		"cache_put", locked_process_and_cache_put_action, &info,
 		false/*as_text*/,
 		false/*do_append*/,
 		false/*block*/) ? info.body : 0;
+	if(data.expires==0)
+		cache_delete(file_spec);
+	return result;
 }
-String *cache_get(Pool& pool, const String& file_spec) {
+String *cache_get(Pool& pool, const String& file_spec, time_t now) {
 	void* data; size_t data_size;
 	if(file_read(pool, file_spec, 
 			   data, data_size, 
@@ -395,6 +408,7 @@ String *cache_get(Pool& pool, const String& file_spec) {
 		if(
 			data_size>=sizeof(Data_string_serialized_prolog)
 			&& prolog.version==DATA_STRING_SERIALIZED_VERSION
+			&& prolog.expires > now
 			&& result->deserialize(
 				sizeof(Data_string_serialized_prolog),  data, data_size, file_spec.cstr()))
 			return result;
@@ -402,20 +416,54 @@ String *cache_get(Pool& pool, const String& file_spec) {
 
 	return 0;
 }
+static time_t as_expires(Request& r, const String& method_name, MethodParams *params, 
+						int index, time_t now) {
+	time_t result;
+	Value& vlifespan_or_expires=params->get(index);
+	if(strcmp(vlifespan_or_expires.type(), VDATE_TYPE)==0)
+		result=static_cast<VDate&>(vlifespan_or_expires).get_time();
+	else
+		result=now+(time_t)params->as_double(index, "lifespan must be date or number", r);
+	
+	return result;
+}
+static const String as_file_spec(Request&r, MethodParams *params, int index) {
+	return r.absolute(params->as_string(index, "filespec must be string"));
+}
 static void _cache(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
+	time_t now=time(0);
+
+	// ^cache[filename] ^cache(seconds) ^cache[expires date]
+	if(params->size()==1) {
+		if(params->get(0).is_string()) { // filename?
+			cache_delete(as_file_spec(r, params, 0));
+			return;
+		}
+
+		// secods|expires date
+		Cache_data *data=static_cast<Cache_data *>(r.classes_conf.get(*cache_data_name));
+		if(!data)
+			throw Exception("parser.runtime",
+				&method_name,
+				"expire-time reducing instruction without cache");
+		
+		time_t expires=as_expires(r, method_name, params, 0, now);
+		if(expires < data->expires)
+			data->expires=expires;
+
+		return;
+	}
 	
 	// file_spec, expires, body code
 	const String &file_spec=r.absolute(params->as_string(0, "filespec must be string"));
-	if(params->size()==1) { // delete
-		cache_delete(file_spec);
-		return;
-	}
 
-	time_t lifespan=(time_t)params->as_double(1, "lifespan must be number", r);
+	Cache_data data;
+	Temp_hash_value cache_data_setter(r.classes_conf, *cache_data_name, &data);
+	data.expires=as_expires(r, method_name, params, 1, now);
 	Value& body_code=params->as_junction(2, "body must be code");
 
-	if(lifespan) { // 'lifespan' specified? try cached copy...
+	if(data.expires>now) { // valid 'expires' specified? try cached copy...
 		size_t size;
 		time_t atime, mtime, ctime;
 
@@ -435,21 +483,16 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 		// ...
 		//          |lockSH succeeds; ...
 
-		// {file_spec} modification time
 		for(int retry=0; retry<2; retry++) {
-			if(file_stat(file_spec, size, atime, mtime, ctime, false/*no exception on error*/)) // exists?
-				if(time(0)-mtime > lifespan) // expired
-					cache_delete(file_spec);
-				else // not expired
-					if(String *cached_body=cache_get(pool, file_spec)) { // have cached copy?
-						// write it out 
-						r.write_assign_lang(*cached_body);
-						// happy with it
-						return;
-					}
+			if(String *cached_body=cache_get(pool, file_spec, now)) { // have cached copy?
+				// write it out 
+				r.write_assign_lang(*cached_body);
+				// happy with it
+				return;
+			}
 
 			// non-blocked lock; process; cache it
-			if(Value *processed_body=locked_process_and_cache_put(r, body_code, file_spec)) {
+			if(Value *processed_body=locked_process_and_cache_put(r, body_code, data, file_spec)) {
 				// write it out 
 				r.write_assign_lang(*processed_body);
 				// happy with it
@@ -463,7 +506,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 			&file_spec,
 			"locking problem");
 	} else { 
-		// 'lifespan'=0, forget cached copy
+		// instructed not to cache; forget cached copy
 		cache_delete(file_spec);
 		// process
 		Value& processed_body=r.process(body_code);
