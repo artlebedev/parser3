@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.h,v 1.9 2001/11/08 11:04:12 paf Exp $
+	$Id: pa_db_manager.h,v 1.10 2001/11/08 14:47:31 paf Exp $
 */
 
 #ifndef PA_DB_MANAGER_H
@@ -21,7 +21,7 @@
 // forwards
 
 /// sql driver manager
-class DB_Manager : public Pooled, public Cache_manager {
+class DB_Manager : public Cache_manager {
 	friend class DB_Connection;
 public:
 

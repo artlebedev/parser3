@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.C,v 1.51 2001/11/08 11:04:13 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.52 2001/11/08 14:47:32 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -88,7 +88,7 @@ static void expire_connections(const Hash::Key& key, Hash::Val *value, void *inf
 
 // SQL_Driver_manager
 
-SQL_Driver_manager::SQL_Driver_manager(Pool& apool) : Pooled(apool),
+SQL_Driver_manager::SQL_Driver_manager(Pool& apool) : Cache_manager(apool),
 		driver_cache(apool),
 		connection_cache(apool),
 		prev_expiration_pass_time(0) {

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.h,v 1.6 2001/11/08 11:04:12 paf Exp $
+	$Id: pa_stylesheet_manager.h,v 1.7 2001/11/08 14:47:32 paf Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -29,7 +29,7 @@ class Stylesheet_connection;
 		maintains 
 		stylesheet cache expiring unused stylesheets
 */
-class Stylesheet_manager : public Pooled, public Cache_manager {
+class Stylesheet_manager : public Cache_manager {
 	friend class Stylesheet_connection;
 public:
 

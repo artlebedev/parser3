@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.C,v 1.16 2001/11/08 11:04:12 paf Exp $
+	$Id: pa_db_manager.C,v 1.17 2001/11/08 14:47:32 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -40,7 +40,7 @@ static void expire_connection(const Hash::Key& key, Hash::Val *& value, void *in
 
 // DB_Manager
 
-DB_Manager::DB_Manager(Pool& apool) : Pooled(apool),
+DB_Manager::DB_Manager(Pool& apool) : Cache_manager(apool),
 	connection_cache(apool),
 	prev_expiration_pass_time(0) {
 }

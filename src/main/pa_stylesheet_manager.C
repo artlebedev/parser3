@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.C,v 1.5 2001/11/08 11:04:13 paf Exp $
+	$Id: pa_stylesheet_manager.C,v 1.6 2001/11/08 14:47:32 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -45,7 +45,7 @@ static void expire_connections(const Hash::Key& key, Hash::Val *value, void *inf
 
 // Stylesheet_manager
 
-Stylesheet_manager::Stylesheet_manager(Pool& apool) : Pooled(apool),
+Stylesheet_manager::Stylesheet_manager(Pool& apool) : Cache_manager(apool),
 	connection_cache(apool),
 	prev_expiration_pass_time(0) {
 	}

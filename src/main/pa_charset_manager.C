@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset_manager.C,v 1.7 2001/11/08 11:04:12 paf Exp $
+	$Id: pa_charset_manager.C,v 1.8 2001/11/08 14:47:32 paf Exp $
 */
 #include "pa_config_includes.h"
 
@@ -25,7 +25,7 @@ Charset_manager *charset_manager;
 
 // Charset_manager
 
-Charset_manager::Charset_manager(Pool& apool) : Pooled(apool),
+Charset_manager::Charset_manager(Pool& apool) : Cache_manager(apool),
 	cache(apool) {
 }
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_cache_managers.h,v 1.1 2001/11/08 11:04:12 paf Exp $
+	$Id: pa_cache_managers.h,v 1.2 2001/11/08 14:47:31 paf Exp $
 */
 
 #ifndef PA_CACHE_MANAGERS_H
@@ -30,8 +30,10 @@ public:
 };
 
 /// can return status and can expire it contents
-class Cache_manager {
+class Cache_manager : public Pooled {
 public:
+	Cache_manager(Pool& apool) : Pooled(apool) {}
+
 	/// if filter_server_id not null, returns status only Cachable -s with matching cacheable_item_server_id()
 	virtual Value& get_status(Pool& pool, const String *source) =0;
 	virtual void maybe_expire_cache() {}

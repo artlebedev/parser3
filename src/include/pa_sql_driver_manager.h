@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.h,v 1.17 2001/11/08 11:04:12 paf Exp $
+	$Id: pa_sql_driver_manager.h,v 1.18 2001/11/08 14:47:31 paf Exp $
 */
 
 #ifndef PA_SQL_DRIVER_MANAGER_H
@@ -29,7 +29,7 @@
 class SQL_Connection;
 
 /// sql driver manager
-class SQL_Driver_manager : public Pooled, public Cache_manager {
+class SQL_Driver_manager : public Cache_manager {
 	friend class SQL_Connection;
 public:
 
