@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.24 2001/11/05 11:46:28 paf Exp $
+	$Id: pa_exception.C,v 1.25 2001/11/15 18:21:31 paf Exp $
 */
 
 #include "pa_common.h"
@@ -12,7 +12,7 @@
 
 Exception::Exception() {
 	ftype=fcode=fproblem_source=0;
-	fcomment=0;
+	fcomment[0]=0;
 }
 Exception::Exception(const String *atype, const String *acode,
 					  const String *aproblem_source, 
@@ -25,11 +25,10 @@ Exception::Exception(const String *atype, const String *acode,
 	if(comment_fmt) {
 		va_list args;
 		va_start(args, comment_fmt);
-		fcomment=(char *)malloc(MAX_STRING);
 		vsnprintf(fcomment, MAX_STRING, comment_fmt, args);
 		va_end(args);
 	} else 
-		fcomment=0;
+		fcomment[0]=0;
 }
 
 #ifdef XML

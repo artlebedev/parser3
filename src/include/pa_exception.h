@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.20 2001/11/05 11:46:24 paf Exp $
+	$Id: pa_exception.h,v 1.21 2001/11/15 18:21:31 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -53,12 +53,12 @@ public:
 	/// extracts exception problem_source
 	const String *problem_source() const { return fproblem_source; }
 	/// extracts exception comment
-	const char *comment() const { return fcomment; }
+	const char *comment() const { return *fcomment?fcomment:0; }
 
 private:
 
 	const String *ftype, *fcode, *fproblem_source;
-	char *fcomment;
+	char fcomment[MAX_STRING];
 
 };
 
