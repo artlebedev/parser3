@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.121 2001/10/09 08:13:04 parser Exp $
+	$Id: table.C,v 1.122 2001/10/09 09:17:43 parser Exp $
 */
 
 #include "classes.h"
@@ -321,7 +321,7 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	Value& body_code=params->as_junction(0, "body must be code");
 	
-	Value *delim_maybe_code=params->size()==2?&params->get(1):0;
+	Value *delim_maybe_code=params->size()>1?&params->get(1):0;
 
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	Table& table=vtable.table();
@@ -434,7 +434,7 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	Value& key_maker=params->as_junction(0, "key-maker must be code");
 
-	bool reverse=params->size()==2/*..[desc|asc|]*/?
+	bool reverse=params->size()>1/*..[desc|asc|]*/?
 		reverse=params->as_no_junction(1, "order must not be code").as_string()=="desc":
 		false; // default=asc
 

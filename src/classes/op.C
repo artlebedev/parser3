@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.49 2001/10/09 08:13:04 parser Exp $
+	$Id: op.C,v 1.50 2001/10/09 09:17:43 parser Exp $
 */
 
 #include "classes.h"
@@ -46,7 +46,7 @@ static void _if(Request& r, const String&, MethodParams *params) {
 		false/*don't intercept string*/).as_bool();
 	if(condition)
 		r.write_pass_lang(r.process(params->as_junction(1, "'then' parameter must be code")));
-	else if(params->size()==3)
+	else if(params->size()>2)
 		r.write_pass_lang(r.process(params->as_junction(2, "'else' parameter must be code")));
 }
 
@@ -174,7 +174,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 	int from=params->as_int(1, "from must be int", r);
 	int to=params->as_int(2, "to must be int", r);
 	Value& body_code=params->as_junction(3, "body must be code");
-	Value *delim_maybe_code=params->size()==3+1+1?&params->get(3+1):0;
+	Value *delim_maybe_code=params->size()>4?&params->get(4):0;
 
 	bool need_delim=false;
 	VInt *vint=new(pool) VInt(pool, 0);
@@ -204,7 +204,7 @@ static void _eval(Request& r, const String& method_name, MethodParams *params) {
 	Value *result=r.process(expr, 
 		0/*no name YET*/,
 		true/*don't intercept string*/).as_expr_result();
-	if(params->size()==2) {
+	if(params->size()>1) {
 		Value& fmt=params->as_no_junction(1, "fmt must not be code");
 
 		Pool& pool=r.pool();
