@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.50 2001/03/13 17:54:13 paf Exp $
+	$Id: pa_request.h,v 1.51 2001/03/13 18:32:46 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -54,7 +54,9 @@ public:
 	Hash& classes() { return fclasses; }
 
 	// core request processing
-	char *core(bool& error);
+	char *core(
+		const char *sys_auto_path1,
+		const char *sys_auto_path2);
 
 	void execute(const Array& ops);
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.28 2001/03/13 17:54:14 paf Exp $
+	$Id: pa_request.C,v 1.29 2001/03/13 18:32:47 paf Exp $
 */
 
 #include <string.h>
@@ -47,15 +47,37 @@ Request::Request(Pool& apool,
 	classes().put(*form_class_name, &form_class);	
 }
 
-char *Request::core(bool& error) {
-	error=false;
+char *Request::core(const char *sys_auto_path1,
+					const char *sys_auto_path2) {
 	char *result;
+	VStateless_class *main_class=0;
 	TRY {
-		// loading system auto.p
-		char *sys_auto_file="C:\\temp\\auto.p";
-		VStateless_class *main_class=use_file(
-			sys_auto_file, false/*ignore possible read problem*/,
-			main_class_name);
+		char *auto_filespec=(char *)malloc(MAX_STRING);
+		
+		// load MAIN class,
+		//	it consists of all the auto.p files we'd manage to find
+		//	plus
+		//	the file user requested us to process
+		//	all located classes become children of one another,
+		//	composing class we name 'MAIN'
+
+		// loading system auto.p 1
+		if(sys_auto_path1) {
+			strncpy(auto_filespec, MAX_STRING-strlen(AUTO_FILE_NAME), sys_auto_path1);
+			strcat(auto_filespec, AUTO_FILE_NAME);
+			main_class=use_file(
+				auto_filespec, false/*ignore possible read problem*/,
+				main_class_name);
+		}
+
+		// loading system auto.p 2
+		if(sys_auto_path2) {
+			strncpy(auto_filespec, MAX_STRING-strlen(AUTO_FILE_NAME), sys_auto_path2);
+			strcat(auto_filespec, AUTO_FILE_NAME);
+			VStateless_class *main_class=use_file(
+				auto_filespec, false/*ignore possible read problem*/,
+				main_class_name);
+		}
 
 		// TODO: использовать $MAIN:limits здесь, пока их не сломали враги
 
@@ -85,7 +107,6 @@ char *Request::core(bool& error) {
 	} 
 	CATCH(e) {
 		// we're returning not result, but error explanation
-		error=true;
 		result=(char *)malloc(MAX_STRING);
 		result[0]=0;
 		size_t printed=0;

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.h,v 1.13 2001/03/13 17:54:12 paf Exp $
+	$Id: core.h,v 1.14 2001/03/13 18:32:46 paf Exp $
 */
 
 #ifndef CORE_H
@@ -11,6 +11,8 @@
 
 #include "pa_string.h"
 #include "pa_hash.h"
+
+#define AUTO_FILE_NAME "auto.p"
 
 #define UNNAMED_NAME "unnamed"
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.9 2001/03/12 21:54:19 paf Exp $
+	$Id: pa_common.h,v 1.10 2001/03/13 18:32:46 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -26,5 +26,11 @@ char *getrow(char **row_ref,char delim='\n');
 char *lsplit(char **string_ref,char delim);
 char *rsplit(char *string, char delim);
 char *format(Pool& pool, double value, char *fmt);
+
+#ifndef max
+inline int max(int a,int b) { return a>b?a:b; }
+inline int min(int a,int b){ return a<b?a:b; }
+#endif
+
 
 #endif
