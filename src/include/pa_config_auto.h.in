@@ -201,7 +201,7 @@
 /* Define if you have the xnet library (-lxnet).  */
 #undef HAVE_LIBXNET
 
-/* reading of files belonging to group+user other then effective */
+/* disabled reading of files belonging to group+user other then effective */
 #undef PA_SAFE_MODE
 
 /* pa_exec disabled */
