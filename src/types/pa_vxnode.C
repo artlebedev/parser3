@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXNODE_C="$Date: 2002/10/08 12:13:37 $";
+static const char* IDENT_VXNODE_C="$Date: 2002/10/14 09:51:30 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -98,7 +98,7 @@ Value *VXnode::get_element(const String& aname, Value *aself, bool looking_up) {
 		case GDOME_ATTRIBUTE_NODE: 
 			if(aname=="specified")
 				return NEW VBool(pool(), gdome_a_specified(GDOME_A(selfNode), &exc)!=0);
-			else if(aname=="aname")
+			else if(aname=="name")
 				return NEW VString(transcode(gdome_a_name(GDOME_A(selfNode), &exc)));
 			else if(aname=="value")
 				return NEW VString(transcode(gdome_a_value(GDOME_A(selfNode), &exc)));			
