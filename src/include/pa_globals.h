@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.4 2001/03/14 17:09:16 paf Exp $
+	$Id: pa_globals.h,v 1.5 2001/03/15 09:04:02 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -31,12 +31,15 @@
 #define POST_MAX_SIZE_NAME "post_max_size"
 
 struct Service_funcs {
-	size_t (*read_post)(char *&buf, size_t max_bytes);
+	int (*read_post)(char *buf, int max_bytes);
 };
 
 
 // core func
 void globals_init(Pool& pool);
+
+// hex_value[c] = hex value of c
+extern short hex_value[0x100];
 
 //
 extern Service_funcs service_funcs;

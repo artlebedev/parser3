@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.4 2001/03/14 17:09:17 paf Exp $
+	$Id: pa_globals.C,v 1.5 2001/03/15 09:04:06 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -35,8 +35,41 @@ String *post_max_size_name;
 
 Hash *untaint_lang_name2enum;
 
+short hex_value[0x100];
+
+static void setup_hex_value() {
+	int i;
+	for (i=0; (i < 0x100); i++) {
+		hex_value[i] = 0;
+	}
+	hex_value['0'] = 0;	
+	hex_value['1'] = 1;	
+	hex_value['2'] = 2;	
+	hex_value['3'] = 3;	
+	hex_value['4'] = 4;	
+	hex_value['5'] = 5;	
+	hex_value['6'] = 6;	
+	hex_value['7'] = 7;	
+	hex_value['8'] = 8;	
+	hex_value['9'] = 9;
+	hex_value['A'] = 10;
+	hex_value['B'] = 11;
+	hex_value['C'] = 12;
+	hex_value['D'] = 13;
+	hex_value['E'] = 14;
+	hex_value['F'] = 15;
+	hex_value['a'] = 10;
+	hex_value['b'] = 11;
+	hex_value['c'] = 12;
+	hex_value['d'] = 13;
+	hex_value['e'] = 14;
+	hex_value['f'] = 15;
+}
 
 void globals_init(Pool& pool) {
+	// hex value
+	setup_hex_value();
+
 	#define NEW_STRING(name, value)  name=new(pool) String(pool); name->APPEND_CONST(value)
 	#define LOCAL_STRING(name, value)  String name(pool); name.APPEND_CONST(value)
 

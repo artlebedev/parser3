@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.11 2001/03/14 17:15:08 paf Exp $
+	$Id: parser3.C,v 1.12 2001/03/15 09:04:07 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -55,11 +55,27 @@ LONG WINAPI TopLevelExceptionFilter (
 #	endif
 #endif
 
-size_t read_post(char *&buf, size_t max_bytes) {
-	return 0;
+int read_post(char *buf, int max_bytes) {
+	int read_size=0;
+	do {
+		int chunk_size=read
+			(fileno(stdin), buf+read_size, min(0x400*0x400, max_bytes-read_size));
+		if(chunk_size<0)
+			break;
+		read_size+=chunk_size;
+	} while(read_size<max_bytes);
+
+	return read_size;
 }
 
 int main(int argc, char *argv[]) {
+	//TODO: umask(2);
+#ifdef WIN32
+	_setmode(fileno(stdin), _O_BINARY);
+	_setmode(fileno(stdout), _O_BINARY);
+	_setmode(fileno(stderr), _O_BINARY);
+#endif
+
 	// Service funcs 
 	service_funcs.read_post=read_post;
 	

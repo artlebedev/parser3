@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.35 2001/03/14 17:15:07 paf Exp $
+	$Id: pa_request.C,v 1.36 2001/03/15 09:04:06 paf Exp $
 */
 
 #include <string.h>
@@ -87,8 +87,8 @@ char *Request::core(const char *sys_auto_path1,
 		Value *element;
 		// $limits.post_max_size default 10M
 		element=limits?limits->get_element(*post_max_size_name):0;
-		size_t value=element?(size_t)element->get_double():0;
-		size_t post_max_size=value?value:10*0x400*400;
+		int value=element?(size_t)element->get_double():0;
+		int post_max_size=value?value:10*0x400*400;
 
 		form_class.fill_fields(*this, post_max_size);
 

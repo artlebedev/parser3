@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.5 2001/03/14 17:09:21 paf Exp $
+	$Id: pa_vform.h,v 1.6 2001/03/15 09:04:08 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -46,8 +46,30 @@ public: // usage
 
 	void fill_fields(
 		Request& request,
-		size_t post_max_size
+		int post_max_size
 		);
+
+private:
+
+	enum EscapeState {
+		EscapeRest,
+		EscapeFirst,
+		EscapeSecond
+	};
+	
+private:
+
+	char *strpart(const char *str, int len);
+	char *getAttributeValue(const char *data,char *attr,int len);
+	void UnescapeChars(char **sp, const char *cp, int len);
+	void ParseGetFormInput(const char *query_string);
+	void ParsePostFormInput(const char *content_type, int post_size, bool mime_mode);
+	void ParseFormInput(const char *data, int length);
+	void ParseMimeInput(const char *content_type, const char *data, int length);
+	void AppendFormEntry(
+		const char *name, 
+		const char *value_ptr, int value_size=0,
+		const char *file_name=0);
 
 private:
 
