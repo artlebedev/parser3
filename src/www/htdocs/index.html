@@ -3,6 +3,19 @@
 @end
 
 @main[]
+$t2[^table:set{dir	title
+/here	Here
+}]
+$t2{^menu{${dir}-$title}[,]}
+<HR>
+$dir[news]
+$list[^table:dir[$dir]]
+^list.menu{
+    $subdir[$dir/$list.name]
+	$sublist[^table:dir[$subdir]]
+	${list.name}/ $sublist{^menu{$name}[,]}<br>
+}
+<HR>
 ^t[x]
 <HR>
 ^if(in "/otherdeeper"){y;n}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.16 2001/04/28 08:44:17 paf Exp $
+	$Id: pa_vtable.h,v 1.17 2001/05/07 08:11:58 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -25,15 +25,16 @@ public: // Value
 	const char *type() const { return "table"; }
 	/// extract VTable
 	Table *get_table() { return ftable; }
-	/// VTable: column
+	/// VTable: column/method
 	Value *get_element(const String& name) {
-		// methods
-		if(Value *result=VStateless_object::get_element(name))
-			return result;
-
+		// columns
 		if(ftable)
 			if(const String *string=ftable->item(name))
 				return NEW VString(*string);
+
+		// methods
+		if(Value *result=VStateless_object::get_element(name))
+			return result;
 
 		return NEW VUnknown(pool());
 	}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.50 2001/04/28 08:44:15 paf Exp $
+	$Id: pa_value.h,v 1.51 2001/05/07 08:11:58 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -114,9 +114,9 @@ public: // Value
 		- VAliased: sometimes $CLASS, $BASE [@see VAliased::hide_class()]
 		- VStateless_class: +$method
 		- VStateless_object: +$method
-		- VCode_frame: wcontext_transparent
-		- VMethod_frame: my or self_transparent
-		- VTable: column
+		- VCodeFrame: wcontext_transparent
+		- VMethodFrame: my or self_transparent
+		- VTable: column/method
 		- VEnv: field
 		- VForm: CLASS,BASE,method,field
 		- VString: $method
@@ -132,8 +132,8 @@ public: // Value
 		- VStateless_object: (CLASS)=vclass;(BASE)=base;(method)=method_ref
 		- VStateless_class: (field)=value - static values only
 		- VStateless_object: (field)=value
-		- VCode_frame: wcontext_transparent
-		- VMethod_frame: my or self_transparent
+		- VCodeFrame: wcontext_transparent
+		- VMethodFrame: my or self_transparent
 		- VResponse: (attribute)=value
 		- VCookie: field
 	*/
@@ -149,7 +149,7 @@ public: // Value
 		@return for
 		- VAliased: this
 		- WContext: transparent
-		- VMethod_frame: self_transparent
+		- VMethodFrame: self_transparent
 	*/
 	virtual VAliased *get_aliased() { return 0; }
 
