@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2004/08/17 10:00:33 $";
+static const char * const IDENT_FILE_C="$Date: 2004/09/17 11:56:51 $";
 
 #include "pa_config_includes.h"
 
@@ -252,10 +252,10 @@ static void pass_cgi_header_attribute(
 				      ArrayString::element_type astring, 
 				      Pass_cgi_header_attribute_info* info) {
 	size_t colon_pos=astring->pos(':');
-	if(colon_pos==STRING_NOT_FOUND) {
+	if(colon_pos!=STRING_NOT_FOUND) {
 		const String& key=astring->mid(0, colon_pos).change_case(
 			*info->charset, String::CC_UPPER);
-		Value* value=new VString(astring->mid(colon_pos+1, astring->length()));
+		Value* value=new VString(astring->mid(colon_pos+1, astring->length()).trim());
 		info->fields->put(key, value);
 		if(key=="CONTENT-TYPE")
 			info->content_type=value;
