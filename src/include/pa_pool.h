@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.57 2001/09/21 08:38:28 parser Exp $
+	$Id: pa_pool.h,v 1.58 2001/09/21 08:41:28 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -68,7 +68,7 @@ public:
 	/// resets transcoder if they change charset 
 	void set_charset(const String &charset);
 	/// returns current charset
-	const String *get_charset() { return charset; }
+	const String& get_charset() { return *charset; }
 	/// converts Xalan string to char *
 	const char *transcode_cstr(const XalanDOMString& s);
 	/// converts Xalan string to parser String

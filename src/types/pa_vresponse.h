@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vresponse.h,v 1.11 2001/09/20 14:25:06 parser Exp $
+	$Id: pa_vresponse.h,v 1.12 2001/09/21 08:38:28 parser Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -63,10 +63,8 @@ public: // usage
 		ffields(apool) {
 	}
 public:	
-	Hash& fields() { return ffields; }
 
-	/// recodes using charset of 'content-type'
-	const char *transcode(const XalanDOMString& s);
+	Hash& fields() { return ffields; }
 
 private:
 

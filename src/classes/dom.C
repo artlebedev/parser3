@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.28 2001/09/20 14:25:06 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.29 2001/09/21 08:38:28 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -98,8 +98,9 @@ static void create_optioned_listener(
 				if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 
 					String(pool, DOM_OUTPUT_ENCODING_OPTION_NAME)))) {
 					charset=vencoding->as_string().cstr();
-					xalan_encoding.append(charset, strlen(charset));
-				}
+					xalan_encoding.append(charset); //, strlen(charset)
+				} else // default encoding from pool
+					xalan_encoding.append(pool.get_charset().cstr());
 			} else
 				PTHROW(0, 0,
 					&method_name,

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_pool.C,v 1.24 2001/09/21 07:30:25 parser Exp $"; 
+static const char *RCSId="$Id: pa_pool.C,v 1.25 2001/09/21 08:38:28 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_exception.h"
@@ -16,7 +16,8 @@ static const char *RCSId="$Id: pa_pool.C,v 1.24 2001/09/21 07:30:25 parser Exp $
 
 Pool::Pool(void *astorage) : 
 	fstorage(astorage), fcontext(0), ftag(0), fexception(0),
-	scharset(0), charset("UTF-8"), transcoder(0) {
+	transcoder(0) {
+	charset=new(*this) String(*this, "UTF-8");
 }
 
 Pool::~Pool() {
@@ -35,11 +36,10 @@ void Pool::fail_register_cleanup() const {
 		"failed to register cleanup");
 }
 
-void Pool::set_charset(const String &new_scharset) {
-	if(new_scharset!=charset) {
+void Pool::set_charset(const String &new_charset) {
+	if(new_charset!=*charset) {
 		delete transcoder;  transcoder=0; // flag "we need new transcoder"
-		scharset=&new_scharset; // for this charset
-		charset=new_scharset.cstr();
+		charset=&new_charset; // for this charset
 	}
 }
 
@@ -48,15 +48,15 @@ void Pool::update_transcoder() {
 		return;
 
 	XMLTransService::Codes resValue;
-	transcoder=XMLPlatformUtils::fgTransService->makeNewTranscoderFor(charset, resValue, 60);
+	transcoder=XMLPlatformUtils::fgTransService->makeNewTranscoderFor(charset->cstr(), resValue, 60);
 	if(!transcoder)
 		THROW(0, 0,
-			scharset,
+			charset,
 			"unsupported encoding");
 }
 
 
-const char *Pool::transcode(const XalanDOMString& s) { 
+const char *Pool::transcode_cstr(const XalanDOMString& s) { 
 	update_transcoder();
 
 	const unsigned int len=s.size()*2;
@@ -81,6 +81,9 @@ const char *Pool::transcode(const XalanDOMString& s) {
 		((char *)dest)[s.size()]=0;
 	}
 	return (const char *)dest;
+}
+String& Pool::transcode(const XalanDOMString& s) { 
+	return *new(*this) String(*this, transcode_cstr(s)); 
 }
 
 void Pool::_throw(const String *source, const XSLException& e) {

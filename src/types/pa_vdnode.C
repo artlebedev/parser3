@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vdnode.C,v 1.4 2001/09/20 14:25:06 parser Exp $
+	$Id: pa_vdnode.C,v 1.5 2001/09/21 08:38:28 parser Exp $
 */
 
 #if _MSC_VER
@@ -43,13 +43,9 @@ Value *VDnode::get_element(const String& aname) {
 	XalanNode *self=&get_node(pool(), &aname);
 
 	if(aname=="name") {
-		const char *name_cstr=transcode(self->getNodeName());
-		String& name=*NEW String(pool(), name_cstr);
-		return NEW VString(name);
+		return NEW VString(transcode(self->getNodeName()));
 	} else if(aname=="value") {
-		const char *value_cstr=transcode(self->getNodeValue());
-		String& value=*NEW String(pool(), value_cstr);
-		return NEW VString(value);
+		return NEW VString(transcode(self->getNodeValue()));
 	} else if(aname=="type") {
 		static const char *type_names[]={
 			"unknown", "element", "attribute", "text", "cdata", "entityref",    
@@ -86,7 +82,7 @@ Value *VDnode::get_element(const String& aname) {
 					for(int i=0; i<attributes->getLength(); i++) {
 						XalanNode *attr_node=attributes->item(i);
 						result->hash().put(
-							*NEW String(pool(), transcode(attr_node->getNodeName())), 
+							transcode(attr_node->getNodeName()), 
 							NEW VDnode(pool(), attr_node));
 					}
 					return result;
@@ -107,8 +103,7 @@ Value *VDnode::get_element(const String& aname) {
 		//case XalanNode::ENTITY_NODE: 
 		case XalanNode::PROCESSING_INSTRUCTION_NODE: 
 			if(aname=="target")
-				return NEW VString(*NEW String(pool(), 
-					transcode(static_cast<XalanProcessingInstruction *>(self)->getTarget())));
+				return NEW VString(transcode(static_cast<XalanProcessingInstruction *>(self)->getTarget()));
 			break;
 /*
 		case XalanNode::DOCUMENT_NODE: 
