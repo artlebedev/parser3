@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.33 2001/04/03 17:15:06 paf Exp $
+	$Id: string.C,v 1.34 2001/04/03 17:43:49 paf Exp $
 */
 
 #include "pa_request.h"
@@ -165,13 +165,15 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 			vtable.set_name(*ai.origin);
 
 			Junction *junction=ai.replacement_code->get_junction();
-			junction->rcontext/*=junction->self*/=&vtable;
+			junction->rcontext=junction->root=&vtable;
 			Value& replaced=ai.request->process(*ai.replacement_code, ai.origin, false);
 
+			/*
 			ai.dest->APPEND_CONST("(");
-				ai.dest->append(*(String *)row->get(1/*match*/), String::UL_PASS_APPENDED);
+				ai.dest->append(*(String *)row->get(1/*match* /), String::UL_PASS_APPENDED);
 			ai.dest->APPEND_CONST(")");
-			//ai.dest->append(replaced.as_string(), String::UL_PASS_APPENDED);
+			*/
+			ai.dest->append(replaced.as_string(), String::UL_PASS_APPENDED);
 		}
 		ai.post_match=(String *)row->get(2/*post_match*/);
 	} else // end
@@ -234,7 +236,7 @@ static void _match(Request& r, const String& method_name, Array *params) {
 		result=new(pool) VString(dest);
 	}
 	result->set_name(method_name);
-	r.write_no_lang(*result);
+	r.write_assign_lang(*result);
 }
 
 // initialize

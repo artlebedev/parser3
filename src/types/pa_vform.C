@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.18 2001/03/28 14:07:19 paf Exp $
+	$Id: pa_vform.C,v 1.19 2001/04/03 17:43:50 paf Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
@@ -212,6 +212,7 @@ void VForm::AppendFormEntry(const char *aname,
 }
 
 void VForm::fill_fields(Request& request, size_t post_max_size) {
+	AppendFormEntry("fs", "<1!2>", 5, 0);
 	// parsing QS [GET and ?name=value from uri rewrite)]
 	if(request.info.query_string)
 		ParseGetFormInput(request.info.query_string);
