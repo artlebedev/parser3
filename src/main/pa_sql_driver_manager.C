@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.3 2001/04/05 08:09:24 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.4 2001/04/05 11:01:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -130,11 +130,12 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& url,
 		put_driver_to_cache(protocol, *driver);
 	}
 	
-	// associate with request
+	// services associated with request
 	Services_for_SQL_driver_impl& services=
 		*new(pool) Services_for_SQL_driver_impl(pool, url);
 
-	// allocate in global pool. associate with services[request]
+	// allocate in global pool 
+	// associate with services[request], deassociates at close
 	SQL_Connection& result=
 		*new(this->pool()) SQL_Connection(this->pool(), url, *driver, services, url_cstr);
 	

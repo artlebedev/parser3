@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.32 2001/04/04 10:50:36 paf Exp $
+	$Id: untaint.C,v 1.33 2001/04/05 11:01:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -137,7 +137,8 @@ char *String::store_to(char *dest, Untaint_lang lang) const {
 			case UL_SQL:
 				// tainted, untaint language: sql
 				// TODO: зависимость от sql сервера
-				memset(dest, '?', row->item.size); 
+				memcpy(dest, row->item.ptr, row->item.size); 
+				//memset(dest, '?', row->item.size); 
 				dest+=row->item.size;
 				break;
 			case UL_JS:

@@ -1,18 +1,18 @@
 /** @file
 	Parser: MySQL driver.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.6 2001/04/05 08:09:26 paf Exp $
+	$Id: parser3mysql.C,v 1.7 2001/04/05 11:01:59 paf Exp $
 */
 
 #include <stdlib.h>
 
 #include "pa_sql_driver.h"
 #include "mysql.h"
-#include "pa_common.h"
+#include "pa_common.h" //
 
 char *lsplit(char *string, char delim) {
     if(string) {
@@ -23,13 +23,6 @@ char *lsplit(char *string, char delim) {
 		}
     }
     return 0;
-}
-
-char *lsplit(char **string_ref, char delim) {
-    char *result=*string_ref;
-	char *next=lsplit(*string_ref, delim);
-    *string_ref=next;
-    return result;
 }
 
 /**
@@ -73,6 +66,55 @@ public:
 	}
 	void commit(void *connection) {}
 	void rollback(void *connection) {}
+
+	void query(void *connection, 
+		const char *statement, 
+		unsigned int *column_count, Cell **columns, 
+		unsigned long *row_count, Cell ***rows) {
+
+		MYSQL *mysql=(MYSQL *)connection;
+		MYSQL_RES *res=NULL;
+		
+		if(mysql_query(mysql, statement)) 
+			fservices->_throw(mysql_error(mysql));
+		if(!(res=mysql_store_result(mysql)) && mysql_field_count(mysql)) 
+			fservices->_throw(mysql_error(mysql));
+		if(!res) {
+			// empty result
+			*row_count=0;
+			*column_count=0;
+			return;
+		}
+		
+		*column_count=mysql_num_fields(res);
+		*columns=(Cell *)fservices->malloc(sizeof(Cell)*(*column_count));
+
+		*row_count=(unsigned long)mysql_num_rows(res);
+		*rows=(Cell **)fservices->malloc(sizeof(Cell *)*(*row_count));
+		
+		for(unsigned int i=0; i<(*column_count); i++){
+			MYSQL_FIELD *field=mysql_fetch_field(res);
+			size_t size=strlen(field->name);
+			(*columns)[i].size=size;
+			(*columns)[i].ptr=fservices->malloc(size);
+			memcpy((*columns)[i].ptr, field->name, size);
+		}
+		
+		for(unsigned long r=0; r<(*row_count); r++) 
+			if(MYSQL_ROW mysql_row=mysql_fetch_row(res)) { // never false..
+				unsigned long *lengths=mysql_fetch_lengths(res);
+				Cell *row=(Cell *)malloc(sizeof(Cell)*(*column_count));
+				(*rows)[r]=row;
+				for(unsigned int i=0; i<(*column_count); i++){
+					size_t size=(size_t)lengths[i];
+					row[i].size=size;
+					row[i].ptr=fservices->malloc(size);
+					memcpy(row[i].ptr, mysql_row[i], size);
+				}
+		}
+		
+		mysql_free_result(res);
+	}
 };
 
 extern "C" SQL_Driver *create() {

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.1 2001/04/05 08:09:25 paf Exp $
+	$Id: pa_sql_driver.h,v 1.2 2001/04/05 11:01:58 paf Exp $
 
 
 	driver dynamic library must look like this:
@@ -29,7 +29,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-#include "pa_pool.h"
+#include <sys/types.h>
 
 /// service functions for SQL driver to use
 class Services_for_SQL_driver {
@@ -48,6 +48,13 @@ public:
 class SQL_Driver {
 public:
 
+	struct Cell {
+		void *ptr;
+		size_t size;
+	};
+
+public:
+
 	/// assignes services to driver. you can not use driver until this
 	void set_services(Services_for_SQL_driver *aservices) { fservices=aservices; }
 
@@ -61,6 +68,10 @@ public:
 	virtual void disconnect(void *connection) =0;
 	virtual void commit(void *connection) =0;
 	virtual void rollback(void *connection) =0;
+	virtual void query(void *connection,
+		const char *statement, 
+		unsigned int *column_count, Cell **columns,
+		unsigned long *row_count, Cell ***rows) =0;
 	/// log error message
 	//static void log(Pool& pool, const char *fmt, ...);
 

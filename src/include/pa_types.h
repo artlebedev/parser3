@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.23 2001/03/23 13:08:09 paf Exp $
+	$Id: pa_types.h,v 1.24 2001/04/05 11:01:55 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -28,6 +28,9 @@
 #undef uint
 /// handy type
 typedef unsigned int uint;
+#undef ulong
+/// handy type
+typedef unsigned long ulong;
 
 #ifndef NO_STRING_ORIGIN
 /// all String pieces hold information of where they come from

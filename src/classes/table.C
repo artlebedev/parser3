@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.50 2001/04/04 10:50:33 paf Exp $
+	$Id: table.C,v 1.51 2001/04/05 11:01:54 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -14,6 +14,7 @@
 #include "_table.h"
 #include "pa_vtable.h"
 #include "pa_vint.h"
+#include "pa_sql_connection.h"
 
 // global var
 
@@ -421,7 +422,7 @@ static void _join(Request& r, const String& method_name, Array *params) {
 	}
 }
 
-// ^table:sql{query}[(count[;offset])]
+/// ^table:sql{query}[(count[;offset])] @test limit/offset
 static void _sql(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
@@ -430,40 +431,61 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 			&method_name,
 			"without connect");
 
-	Value& query=*static_cast<Value *>(params->get(0));
+	Value& statement=*static_cast<Value *>(params->get(0));
 	// forcing {this query param type}
-	r.fail_if_junction_(false, query, method_name, "query must be junction");
+	r.fail_if_junction_(true, statement, method_name, "statement must not be junction");
 
-	int count=0;
+	ulong count=0;
 	if(params->size()>1) {
 		Value& count_code=*static_cast<Value *>(params->get(1));
 		// forcing (this count param type)
 		r.fail_if_junction_(false, count_code, method_name, "count must be expression");
-		count=(int)r.process(count_code).as_double();
+		count=(uint)r.process(count_code).as_double();
 	}
 
-	int limit=0;
+	ulong offset=0;
 	if(params->size()>2) {
-		Value& limit_code=*static_cast<Value *>(params->get(2));
+		Value& offset_code=*static_cast<Value *>(params->get(2));
 		// forcing (this limit param type)
-		r.fail_if_junction_(false, limit_code, method_name, "limit must be expression");
-		limit=(int)r.process(limit_code).as_double();
+		r.fail_if_junction_(false, offset_code, method_name, "offset must be expression");
+		offset=(ulong)r.process(offset_code).as_double();
 	}
 
-	Table& table=*new(pool) Table(pool, &method_name, 0);
-/*
-	Array& row=*new(pool) Array(pool);
+	const char *statement_cstr=statement.as_string().cstr(String::UL_SQL);
+	unsigned int sql_column_count; SQL_Driver::Cell *sql_columns;
+	unsigned long sql_row_count; SQL_Driver::Cell **sql_rows;
+	r.connection->query(
+		statement_cstr, 
+		&sql_column_count, &sql_columns,
+		&sql_row_count, &sql_rows);
+	
+	Array& table_columns=*new(pool) Array(pool);
+	for(unsigned int i=0; i<sql_column_count; i++) {
+		String& table_column=*new(pool) String(pool);
+		table_column.APPEND_TAINTED(
+			(const char *)sql_columns[i].ptr, sql_columns[i].size,
+			statement_cstr, 0);
+		table_columns+=&table_column;
+	}
 
-	Temp_lang temp_lang(r, String::UL_SQL);
-	char *buf=(char *)malloc(MAX_STRING);
-	snprintf(buf, MAX_STRING, "[sql %s,%s,%d,%d]", 
-		r.connection->cstr(),
-		r.process(query).as_string().cstr(),
-		count,
-		limit);
-	row+=new(pool) String(pool, buf);
-	table+=&row;
-*/
+	Table& table=*new(pool) Table(pool, &method_name, &table_columns);
+
+	{
+		for(unsigned long r=0; r<sql_row_count; r++) {
+			SQL_Driver::Cell *sql_cells=sql_rows[r];
+			Array& table_row=*new(pool) Array(pool);
+			
+			for(unsigned int i=0; i<sql_column_count; i++) {
+				String& table_cell=*new(pool) String(pool);
+				table_cell.APPEND_TAINTED(
+					(const char *)sql_cells[i].ptr, sql_cells[i].size,
+					statement_cstr, r);
+				table_row+=&table_cell;
+			}
+			table+=&table_row;
+		}
+	}
+
 	// replace any previous table value
 	static_cast<VTable *>(r.self)->set_table(table);
 }
@@ -524,6 +546,6 @@ void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 	vclass.add_native_method("join", Method::CT_DYNAMIC, _join, 1, 1);
 
 
-	// ^table:sql{query}[(count[;offset])]
+	// ^table:sql[query][(count[;offset])]
 	vclass.add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);
 }
