@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char* IDENT_SQL_DRIVER_H="$Date: 2002/12/09 12:19:16 $";
+static const char* IDENT_SQL_DRIVER_H="$Date: 2002/12/14 12:43:26 $";
 
 #include <sys/types.h>
 
@@ -82,7 +82,7 @@ public:
 	/// throw C++ exception from prepared
 	virtual void propagate_exception() =0;
 	/// helper func
-	void _throw(const char *comment) { _throw(SQL_Error(0, 0, comment)); }
+	void _throw(const char *comment) { _throw(SQL_Error("sql.connect", 0, comment)); }
 public:
 	/// regretrully public, because can't make stack frames: "nowhere to return to"
 	jmp_buf mark;
