@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.21 2001/03/12 21:54:20 paf Exp $
+	$Id: pa_request.C,v 1.22 2001/03/13 11:15:04 paf Exp $
 */
 
 #include <string.h>
@@ -41,7 +41,6 @@ Request::Request(Pool& apool) : Pooled(apool),
 
 	// table class
 	classes().put(*table_class_name, table_class);	
-	table_class->set_name(*table_class_name);
 
 
 	// web
