@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.30 2001/05/07 08:29:42 paf Exp $
+	$Id: pa_table.h,v 1.31 2001/05/07 15:31:43 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -66,9 +66,7 @@ public:
 	void save(bool nameless_save, const String& file_spec);
 
 	bool locate(int column, const String& value);
-	bool locate(const String& column, const String& value) {
-		return locate(column_name2index(column), value);
-	}
+	bool locate(const String& column, const String& value);
 
 	const Array& at(int index) const {
 		// force @c const result

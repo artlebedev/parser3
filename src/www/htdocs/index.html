@@ -3,6 +3,13 @@
 @end
 
 @main[]
+$branches[^table:set{name	val
+index.cgihtml	123
+}]
+$splitURI[^request:uri.lsplit[/]]
+					^branches.locate[name2;$splitURI.1]
+					$branches.name
+<HR>
 $splitURI[^request:uri.lsplit[/]]
 $splitURI.0!$splitURI.1
 <HR>

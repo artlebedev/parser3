@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.26 2001/05/04 10:42:36 paf Exp $
+	$Id: mail.C,v 1.27 2001/05/07 15:31:36 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -440,7 +440,7 @@ MMail::MMail(Pool& apool) : Methoded(apool),
 {
 	set_name(*NEW String(pool(), MAIL_CLASS_NAME));
 
-	/// ^mail:send{hash}
+	// ^mail:send{hash}
 	add_native_method("send", Method::CT_STATIC, _send, 1, 1);
 }
 

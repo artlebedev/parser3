@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.27 2001/05/07 08:29:45 paf Exp $
+	$Id: pa_table.C,v 1.28 2001/05/07 15:31:46 paf Exp $
 */
 
 #include <stdlib.h>
@@ -64,6 +64,15 @@ bool Table::locate(int column, const String& value) {
 
 	fcurrent=0;
 	return false;
+}
+
+bool Table::locate(const String& column, const String& value) {
+	int index=column_name2index(column);
+	if(index<0)
+		THROW(0, 0,
+			&column,
+			"column not found (locate)");
+	return locate(index, value);
 }
 
 void Table::shift(int offset) {

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.24 2001/05/04 10:42:36 paf Exp $
+	$Id: image.C,v 1.25 2001/05/07 15:31:36 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -648,46 +648,46 @@ MImage::MImage(Pool& apool) : Methoded(apool) {
 	// ^image:measure[DATA]
 	add_native_method("measure", Method::CT_DYNAMIC, _measure, 1, 1);
 
-	/// ^image.html[]
-	/// ^image.html[hash]
+	// ^image.html[]
+	// ^image.html[hash]
 	add_native_method("html", Method::CT_DYNAMIC, _html, 0, 1);
 
-	/// ^image.load[background.gif]
+	// ^image.load[background.gif]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
 
-	/// ^image.create[width;height] bgcolor=white
-	/// ^image.create[width;height;bgcolor]
+	// ^image.create[width;height] bgcolor=white
+	// ^image.create[width;height;bgcolor]
 	add_native_method("create", Method::CT_DYNAMIC, _create, 2, 3);
 
-	/// ^image.gif[]
+	// ^image.gif[]
 	add_native_method("gif", Method::CT_DYNAMIC, _gif, 0, 0);
 
-	/// ^image.line(x0;y0;x1;y1;color)
+	// ^image.line(x0;y0;x1;y1;color)
 	add_native_method("line", Method::CT_DYNAMIC, _line, 5, 5);
 
-	/// ^image.fill(x;y;color)
+	// ^image.fill(x;y;color)
 	add_native_method("fill", Method::CT_DYNAMIC, _fill, 3, 3);
 
-	/// ^image.rectangle(x0;y0;x1;y1;color)
+	// ^image.rectangle(x0;y0;x1;y1;color)
 	add_native_method("rectangle", Method::CT_DYNAMIC, _rectangle, 5, 5);
 
-	/// ^image.bar(x0;y0;x1;y1;color)
+	// ^image.bar(x0;y0;x1;y1;color)
 	add_native_method("bar", Method::CT_DYNAMIC, _bar, 5, 5);
 
-	/// ^image.replace(color-source;color-dest)(x;y)... point coord pairs
+	// ^image.replace(color-source;color-dest)(x;y)... point coord pairs
 	add_native_method("replace", Method::CT_DYNAMIC, _replace, 2+3*2, 2+100*2);
 
-	/// ^image.polygon(color)(x;y)... point coord pairs
+	// ^image.polygon(color)(x;y)... point coord pairs
 	add_native_method("polygon", Method::CT_DYNAMIC, _polygon, 1+3*2, 1+100*2);
 
-	/// ^image.polybar(color)(x;y)... point coord pairs
+	// ^image.polybar(color)(x;y)... point coord pairs
 	add_native_method("polybar", Method::CT_DYNAMIC, _polybar, 1+3*2, 1+100*2);
 
-    /// ^image.font[alPHAbet;font-file-name.gif](height)
-    /// ^image.font[alPHAbet;font-file-name.gif](height;width)
+    // ^image.font[alPHAbet;font-file-name.gif](height)
+    // ^image.font[alPHAbet;font-file-name.gif](height;width)
 	add_native_method("font", Method::CT_DYNAMIC, _font, 3, 4);
 
-    /// ^image.text(x;y)[text]
+    // ^image.text(x;y)[text]
 	add_native_method("text", Method::CT_DYNAMIC, _text, 3, 3);
 	
 }

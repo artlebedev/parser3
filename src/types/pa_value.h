@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.53 2001/05/07 14:00:53 paf Exp $
+	$Id: pa_value.h,v 1.54 2001/05/07 15:31:50 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -339,9 +339,11 @@ public:
 	/// call this before invoking to ensure proper actual numbered params count
 	void check_actual_numbered_params(
 		Value& self, const String& actual_name, Array *actual_numbered_params) const {
+		Pool& pool=self.pool();
+
 		int actual_count=actual_numbered_params?actual_numbered_params->size():0;
 		if(actual_count<min_numbered_params_count) // not proper count? bark
-			THROW(0, 0,
+			PTHROW(0, 0,
 				&actual_name,
 				"native method of %s (%s) accepts minimum %d parameter(s) (%d present)", 
 					self.name().cstr(),

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.45 2001/05/07 13:29:47 paf Exp $
+	$Id: string.C,v 1.46 2001/05/07 15:31:36 paf Exp $
 */
 
 #include "classes.h"
@@ -181,10 +181,6 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 		*ai.dest << *ai.post_match;
 }
 
-/** search/replace
-	^string.match[regexp][options]
-	^string.match[regexp][options]{replacement-code}
-*/
 static void _match(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const String& src=*static_cast<VString *>(r.self)->get_string();
