@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_dictionary.h,v 1.10 2002/02/08 08:30:12 paf Exp $
 */
 
 #ifndef PA_DICTIONARY_H
 #define PA_DICTIONARY_H
+
+static const char* IDENT_DICTIONARY_H="$Id: pa_dictionary.h,v 1.11 2002/08/01 11:26:46 paf Exp $";
 
 #include "pa_table.h"
 

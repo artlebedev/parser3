@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: execute.C,v 1.242 2002/06/20 14:50:23 paf Exp $
 */
+
+static const char* IDENT_EXECUTE_C="$Id: execute.C,v 1.243 2002/08/01 11:26:49 paf Exp $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vmethod_frame.h,v 1.27 2002/06/20 14:50:23 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
+
+static const char* IDENT_VMETHOD_FRAME_H="$Id: pa_vmethod_frame.h,v 1.28 2002/08/01 11:26:56 paf Exp $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"

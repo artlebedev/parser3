@@ -3,9 +3,9 @@
 
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_dir.C,v 1.11 2002/02/08 08:30:15 paf Exp $
 */
+
+static const char* IDENT_DIR_C="$Id: pa_dir.C,v 1.12 2002/08/01 11:26:50 paf Exp $";
 
 #include "pa_common.h"
 #include "pa_dir.h"

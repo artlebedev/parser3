@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_sql_driver_manager.C,v 1.62 2002/03/27 15:30:37 paf Exp $
 */
+
+static const char* IDENT_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.63 2002/08/01 11:26:51 paf Exp $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: comms.C,v 1.8 2002/02/08 08:30:11 paf Exp $
 */
+
+static const char* IDENT_COMMS_C="$Id: comms.C,v 1.9 2002/08/01 11:26:45 paf Exp $";
 
 #include "smtp.h"
 #include <winsock.h>

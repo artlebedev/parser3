@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_globals.C,v 1.132 2002/06/24 13:06:39 paf Exp $
 */
+
+static const char* IDENT_GLOBALS_C="$Id: pa_globals.C,v 1.133 2002/08/01 11:26:50 paf Exp $";
 
 #include "pa_config_includes.h"
 

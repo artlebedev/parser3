@@ -3,9 +3,9 @@
 
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vtable.C,v 1.13 2002/03/27 15:30:39 paf Exp $
 */
+
+static const char* IDENT_VTABLE_C="$Id: pa_vtable.C,v 1.14 2002/08/01 11:26:57 paf Exp $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"

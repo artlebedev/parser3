@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: double.C,v 1.47 2002/04/18 10:50:59 paf Exp $
 */
+
+static const char* IDENT_DOUBLE_C="$Id: double.C,v 1.48 2002/08/01 11:26:43 paf Exp $";
 
 #include "classes.h"
 #include "pa_request.h"

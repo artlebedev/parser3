@@ -3,9 +3,6 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: gif.C,v 1.26 2002/02/08 08:30:11 paf Exp $
-
 	based on: gd
 
 	Written by Tom Boutell, 5/94.
@@ -16,6 +13,8 @@
 	you share extensions to this module with us so that we
 	can incorporate them into new versions. 
 */
+
+static const char* IDENT_GIF_C="$Id: gif.C,v 1.27 2002/08/01 11:26:45 paf Exp $";
 
 #include "gif.h"
 

@@ -3,9 +3,9 @@
 
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
-
-	$Id: math.C,v 1.21 2002/06/25 13:45:49 paf Exp $
 */
+
+static const char* IDENT_MATH_C="$Id: math.C,v 1.22 2002/08/01 11:26:44 paf Exp $";
 
 #include "pa_common.h"
 #include "pa_vint.h"

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vstatus.h,v 1.8 2002/04/18 15:33:34 paf Exp $
 */
 
 #ifndef PA_VSTATUS_H
 #define PA_VSTATUS_H
+
+static const char* IDENT_VSTATUS_H="$Id: pa_vstatus.h,v 1.9 2002/08/01 11:26:57 paf Exp $";
 
 #define STATUS_CLASS_NAME "status"
 

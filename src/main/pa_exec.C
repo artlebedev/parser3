@@ -4,11 +4,10 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.37 2002/07/11 08:16:24 paf Exp $
-
-
 	@todo setrlimit
 */
+
+static const char* IDENT_EXEC_C="$Id: pa_exec.C,v 1.38 2002/08/01 11:26:50 paf Exp $";
 
 #include "pa_config_includes.h"
 

@@ -3,13 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: xnode.h,v 1.11 2002/04/18 15:54:39 paf Exp $
 */
 
 #ifndef XNODE_H
 #define XNODE_H
 
+static const char* IDENT_XNODE_H="$Id: xnode.h,v 1.12 2002/08/01 11:26:44 paf Exp $";
 
 class MXnode : public Methoded {
 public: // Value

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vresponse.h,v 1.22 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
+
+static const char* IDENT_VRESPONSE_H="$Id: pa_vresponse.h,v 1.23 2002/08/01 11:26:56 paf Exp $";
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vxnode.h,v 1.14 2002/04/18 15:33:34 paf Exp $
 */
 
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
+
+static const char* IDENT_VXNODE_H="$Id: pa_vxnode.h,v 1.15 2002/08/01 11:26:57 paf Exp $";
 
 #include "classes.h"
 #include "pa_common.h"

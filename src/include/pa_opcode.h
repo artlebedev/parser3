@@ -4,12 +4,12 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_opcode.h,v 1.18 2002/04/18 11:41:28 paf Exp $
 */
 
 #ifndef CODE_H
 #define CODE_H
+
+static const char* IDENT_OPCODE_H="$Id: pa_opcode.h,v 1.19 2002/08/01 11:26:47 paf Exp $";
 
 #include "pa_string.h"
 #include "pa_array.h"

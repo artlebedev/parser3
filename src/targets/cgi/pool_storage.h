@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pool_storage.h,v 1.10 2002/05/06 10:53:53 paf Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
 #define PA_POOL_STORAGE_H
+
+static const char* IDENT_POOL_STORAGE_H="$Id: pool_storage.h,v 1.11 2002/08/01 11:26:52 paf Exp $";
 
 #include "pa_config_includes.h"
 

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vcookie.h,v 1.16 2002/04/18 15:33:32 paf Exp $
 */
 
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
+
+static const char* IDENT_VCOOKIE_H="$Id: pa_vcookie.h,v 1.17 2002/08/01 11:26:54 paf Exp $";
 
 #include "pa_hash.h"
 #include "pa_common.h"

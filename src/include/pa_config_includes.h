@@ -4,9 +4,6 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_includes.h,v 1.19 2002/02/18 08:39:15 paf Exp $
-
-
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
 	fixed otherwise.
 */

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vstatus.C,v 1.7 2002/03/27 15:30:38 paf Exp $
 */
+
+static const char* IDENT_VSTATUS_C="$Id: pa_vstatus.C,v 1.8 2002/08/01 11:26:57 paf Exp $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"

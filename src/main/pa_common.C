@@ -3,9 +3,9 @@
 
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_common.C,v 1.110 2002/06/10 14:37:35 paf Exp $
 */
+
+static const char* IDENT_COMMON_C="$Id: pa_common.C,v 1.111 2002/08/01 11:26:50 paf Exp $";
 
 #include "pa_common.h"
 #include "pa_types.h"

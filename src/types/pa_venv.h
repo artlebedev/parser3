@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_venv.h,v 1.21 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VENV_H
 #define PA_VENV_H
+
+static const char* IDENT_VENV_H="$Id: pa_venv.h,v 1.22 2002/08/01 11:26:54 paf Exp $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: void.C,v 1.19 2002/04/18 10:51:00 paf Exp $
 */
+
+static const char* IDENT_VOID_C="$Id: void.C,v 1.20 2002/08/01 11:26:44 paf Exp $";
 
 #include "classes.h"
 #include "pa_request.h"

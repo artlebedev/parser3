@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_wcontext.h,v 1.32 2002/04/18 10:51:02 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
+
+static const char* IDENT_WCONTEXT_H="$Id: pa_wcontext.h,v 1.33 2002/08/01 11:26:58 paf Exp $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_charsets.C,v 1.8 2002/03/27 15:30:36 paf Exp $
 */
+
+static const char* IDENT_CHARSETS_C="$Id: pa_charsets.C,v 1.9 2002/08/01 11:26:49 paf Exp $";
 
 #include "pa_charsets.h"
 #include "pa_charset.h"

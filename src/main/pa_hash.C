@@ -3,8 +3,6 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_hash.C,v 1.50 2002/02/08 08:30:16 paf Exp $
 */
 
 /*
@@ -14,6 +12,8 @@
 	http://www.zend.com/license/0_92.txt
 	For more information about Zend please visit http://www.zend.com/
 */
+
+static const char* IDENT_HASH_C="$Id: pa_hash.C,v 1.51 2002/08/01 11:26:50 paf Exp $";
 
 #include "pa_hash.h"
 

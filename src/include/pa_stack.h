@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_stack.h,v 1.14 2002/03/18 15:29:46 paf Exp $
 */
 
 #ifndef PA_STACK_H
 #define PA_STACK_H
+
+static const char* IDENT_STACK_H="$Id: pa_stack.h,v 1.15 2002/08/01 11:26:48 paf Exp $";
 
 #include "pa_config_includes.h"
 #include "pa_array.h"

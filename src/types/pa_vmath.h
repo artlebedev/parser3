@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vmath.h,v 1.7 2002/04/18 10:51:02 paf Exp $
 */
 
 #ifndef PA_VMATH_H
 #define PA_VMATH_H
+
+static const char* IDENT_VMATH_H="$Id: pa_vmath.h,v 1.8 2002/08/01 11:26:56 paf Exp $";
 
 #include "classes.h"
 #include "pa_common.h"

@@ -4,14 +4,14 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charsets.h,v 1.5 2002/02/08 08:30:12 paf Exp $
-
 
 	global sql driver manager, must be thread-safe
 */
 
 #ifndef PA_CHARSETS_H
 #define PA_CHARSETS_H
+
+static const char* IDENT_CHARSETS_H="$Id: pa_charsets.h,v 1.6 2002/08/01 11:26:46 paf Exp $";
 
 #include "pa_hash.h"
 

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vint.h,v 1.34 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VINT_H
 #define PA_VINT_H
+
+static const char* IDENT_VINT_H="$Id: pa_vint.h,v 1.35 2002/08/01 11:26:55 paf Exp $";
 
 #include "classes.h"
 #include "pa_common.h"

@@ -3,9 +3,9 @@
 
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: image.C,v 1.72 2002/05/16 16:18:19 paf Exp $
 */
+
+static const char* IDENT_IMAGE_C="$Id: image.C,v 1.73 2002/08/01 11:26:43 paf Exp $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file

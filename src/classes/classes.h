@@ -3,12 +3,11 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: classes.h,v 1.19 2002/04/18 15:54:39 paf Exp $
 */
-
 #ifndef CLASSES_H
 #define CLASSES_H
+
+static const char* IDENT_CLASSES_H="$Id: classes.h,v 1.20 2002/08/01 11:26:43 paf Exp $";
 
 #include "pa_vstateless_class.h"
 #include "pa_array.h"

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: mod_parser3.C,v 1.24 2002/06/24 11:59:33 paf Exp $
 */
+
+static const char* IDENT_MOD_PARSER3_C="$Id: mod_parser3.C,v 1.25 2002/08/01 11:26:52 paf Exp $";
 
 #include "pa_config_includes.h"
 
@@ -29,30 +29,6 @@
 #include "pa_request.h"
 #include "pa_version.h"
 #include "pa_socks.h"
-
-
-// consts
-
-extern const char *main_RCSIds[];
-#ifdef USE_SMTP
-extern const char *smtp_RCSIds[];
-#endif
-extern const char *gd_RCSIds[];
-extern const char *classes_RCSIds[];
-extern const char *types_RCSIds[];
-extern const char *ApacheModuleParser3_RCSIds[];
-const char **RCSIds[]={
-	main_RCSIds,
-#ifdef USE_SMTP
-	smtp_RCSIds,
-#endif
-	gd_RCSIds,
-	classes_RCSIds,
-	types_RCSIds,
-	ApacheModuleParser3_RCSIds,
-	0
-};
-
 
 /// apache parser module configuration [httpd.conf + .htaccess-es]
 struct Parser_module_config {

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: file.C,v 1.90 2002/08/01 10:31:38 paf Exp $
 */
+
+static const char* IDENT_FILE_C="$Id: file.C,v 1.91 2002/08/01 11:26:43 paf Exp $";
 
 #include "pa_config_includes.h"
 

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_string.h,v 1.139 2002/06/24 11:59:32 paf Exp $
 */
 
 #ifndef PA_STRING_H
 #define PA_STRING_H
+
+static const char* IDENT_STRING_H="$Id: pa_string.h,v 1.140 2002/08/01 11:26:48 paf Exp $";
 
 #include "pa_pool.h"
 #include "pa_types.h"

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vclass.h,v 1.25 2002/04/18 13:55:06 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
+
+static const char* IDENT_VCLASS_H="$Id: pa_vclass.h,v 1.26 2002/08/01 11:26:54 paf Exp $";
 
 #include "pa_vstateless_class.h"
 //#include "pa_vhash.h"

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_md5c.c,v 1.2 2002/06/21 13:34:54 paf Exp $
 */
+
+static const char* IDENT_MD5C_C="$Id: pa_md5c.c,v 1.3 2002/08/01 11:26:52 paf Exp $";
 
 #include "ap_config.h"
 #include "ap_md5.h"

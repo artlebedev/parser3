@@ -4,11 +4,10 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_uue.C,v 1.1 2002/06/24 11:59:33 paf Exp $
-
-
 	@todo setrlimit
 */
+
+static const char* IDENT_UUE_C="$Id: pa_uue.C,v 1.2 2002/08/01 11:26:51 paf Exp $";
 
 #include "pa_config_includes.h"
 

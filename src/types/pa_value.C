@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_value.C,v 1.1 2002/04/18 11:44:32 paf Exp $
 */
+
+static const char* IDENT_VALUE_C="$Id: pa_value.C,v 1.2 2002/08/01 11:26:53 paf Exp $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"

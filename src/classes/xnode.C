@@ -3,11 +3,11 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: xnode.C,v 1.45 2002/04/18 15:54:39 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
+
+static const char* IDENT_XNODE_C="$Id: xnode.C,v 1.46 2002/08/01 11:26:44 paf Exp $";
 
 #include "pa_charset.h"
 #include "pa_request.h"

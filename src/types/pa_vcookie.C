@@ -3,9 +3,9 @@
 
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vcookie.C,v 1.43 2002/03/27 15:30:38 paf Exp $
 */
+
+static const char* IDENT_VCOOKIE_C="$Id: pa_vcookie.C,v 1.44 2002/08/01 11:26:54 paf Exp $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"

@@ -4,8 +4,6 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: gifio.C,v 1.18 2002/02/08 08:30:11 paf Exp $
-
 	based on: gd
 
 	Written by Tom Boutell, 5/94.
@@ -36,6 +34,8 @@
  ** CompuServe Incorporated.  GIF(sm) is a Service Mark property of
  ** CompuServe Incorporated.
 */
+
+static const char* IDENT_GIFIO_C="$Id: gifio.C,v 1.19 2002/08/01 11:26:45 paf Exp $";
 
 #include "gif.h"
 

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_dir.h,v 1.10 2002/02/08 08:30:12 paf Exp $
 */
 
 #ifndef PA_DIR_H
 #define PA_DIR_H
+
+static const char* IDENT_DIR_H="$Id: pa_dir.h,v 1.11 2002/08/01 11:26:46 paf Exp $";
 
 #include "pa_config_includes.h"
 

@@ -4,8 +4,6 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver.h,v 1.26 2002/02/08 08:30:17 paf Exp $
-
 
 	driver dynamic library must look like this:
 	@code
@@ -27,6 +25,8 @@
 
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
+
+static const char* IDENT_SQL_DRIVER_H="$Id: pa_sql_driver.h,v 1.27 2002/08/01 11:26:51 paf Exp $";
 
 #include <sys/types.h>
 

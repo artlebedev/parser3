@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_sql_connection.h,v 1.24 2002/03/25 09:40:01 paf Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
+
+static const char* IDENT_SQL_CONNECTION_H="$Id: pa_sql_connection.h,v 1.25 2002/08/01 11:26:47 paf Exp $";
 
 #include "pa_pool.h"
 #include "pa_sql_driver.h"

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vmail.h,v 1.1 2002/06/24 14:24:03 paf Exp $
 */
 
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
+
+static const char* IDENT_VMAIL_H="$Id: pa_vmail.h,v 1.2 2002/08/01 11:26:56 paf Exp $";
 
 #include "classes.h"
 #include "pa_common.h"

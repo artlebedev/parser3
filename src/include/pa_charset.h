@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_charset.h,v 1.16 2002/06/28 09:59:00 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
+
+static const char* IDENT_CHARSET_H="$Id: pa_charset.h,v 1.17 2002/08/01 11:26:46 paf Exp $";
 
 #include "pa_pool.h"
 #include "pa_exception.h"

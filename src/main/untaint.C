@@ -3,9 +3,9 @@
 
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: untaint.C,v 1.102 2002/06/10 09:37:06 paf Exp $
 */
+
+static const char* IDENT_UNTAINT_C="$Id: untaint.C,v 1.103 2002/08/01 11:26:51 paf Exp $";
 
 #include "pa_pool.h"
 #include "pa_string.h"

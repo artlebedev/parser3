@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_array.h,v 1.53 2002/02/08 08:30:12 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
+
+static const char* IDENT_ARRAY_Y="$Id: pa_array.h,v 1.54 2002/08/01 11:26:46 paf Exp $";
 
 #include "pa_pool.h"
 #include "pa_types.h"

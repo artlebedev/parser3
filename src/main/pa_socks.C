@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_socks.C,v 1.14 2002/03/27 15:30:37 paf Exp $
 */
+
+static const char* IDENT_SOCKS_C="$Id: pa_socks.C,v 1.15 2002/08/01 11:26:50 paf Exp $";
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: mail.C,v 1.72 2002/07/31 14:58:00 paf Exp $
 */
+
+static const char* IDENT_MAIL_C="$Id: mail.C,v 1.73 2002/08/01 11:26:44 paf Exp $";
 
 #include "pa_config_includes.h"
 

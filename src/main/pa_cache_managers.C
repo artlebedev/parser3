@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_cache_managers.C,v 1.4 2002/02/08 08:30:15 paf Exp $
 */
+
+static const char* IDENT_CACHE_MANAGERS_C="$Id: pa_cache_managers.C,v 1.5 2002/08/01 11:26:49 paf Exp $";
 
 #include "pa_cache_managers.h"
 

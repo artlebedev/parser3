@@ -1,3 +1,11 @@
+/** @file
+	Parser: copied from apache 1.3.20  sources.
+	Replaced ap_ to pa_ prefixes. linked into all targets but Apache-module target,
+	where linked targets/apache/pa_md5c.c stub instead.
+
+	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+*/
+
 /*
  * This is work is derived from material Copyright RSA Data Security, Inc.
  *
@@ -98,6 +106,8 @@
  * this stuff is worth it, you can buy me a beer in return.   Poul-Henning Kamp
  * ----------------------------------------------------------------------------
  */
+
+static const char* IDENT_MD5_C="$Id: pa_md5c.c,v 1.4 2002/08/01 11:26:49 paf Exp $";
 
 #include <string.h>
 

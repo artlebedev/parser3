@@ -4,12 +4,12 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_pool.h,v 1.81 2002/06/28 09:59:00 paf Exp $
 */
 
 #ifndef PA_POOL_H
 #define PA_POOL_H
+
+static const char* IDENT_POOL_H="$Id: pa_pool.h,v 1.82 2002/08/01 11:26:47 paf Exp $";
 
 #include "pa_config_includes.h"
 

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vtable.h,v 1.38 2002/04/18 15:33:34 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
+
+static const char* IDENT_VTABLE_H="$Id: pa_vtable.h,v 1.39 2002/08/01 11:26:57 paf Exp $";
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_request.C,v 1.217 2002/08/01 10:31:38 paf Exp $
 */
+
+static const char* IDENT_REQUEST_C="$Id: pa_request.C,v 1.218 2002/08/01 11:26:50 paf Exp $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"

@@ -1,13 +1,12 @@
-
 /**	@file
 	Parser: @b mail class.
 	relies on gmime library, by Jeffrey Stedfast <fejj@helixcode.com>
 
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
-	
-	$Id: pa_vmail.C,v 1.11 2002/07/31 15:00:41 paf Exp $
 */
+
+static const char* IDENT_VMAIL_C="$Id: pa_vmail.C,v 1.13 2002/08/01 11:26:56 paf Exp $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -396,7 +395,7 @@ static void store_message_element(const Hash::Key& raw_element_name, Hash::Val *
 		*i.from=&extractEmail(element_value.as_string());
 	if(i.to && low_element_name=="to")
 		*i.to=&extractEmail(element_value.as_string());
-	if(i.errors_to && low_element_name=="errors-to")
+	if(low_element_name=="errors-to")
 		i.errors_to=&extractEmail(element_value.as_string());	
 
 	// append header line

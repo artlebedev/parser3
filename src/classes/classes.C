@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: classes.C,v 1.15 2002/02/08 08:30:09 paf Exp $
 */
+
+static const char* IDENT_CLASSES_C="$Id: classes.C,v 1.16 2002/08/01 11:26:43 paf Exp $";
 
 #include "classes.h"
 #include "pa_request.h"

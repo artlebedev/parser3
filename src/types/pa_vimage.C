@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b image parser type.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vimage.C,v 1.16 2002/02/08 08:31:32 paf Exp $
 */
+
+static const char* IDENT_VIMAGE_C="$Id: pa_vimage.C,v 1.18 2002/08/01 11:26:55 paf Exp $";
 
 #include "pa_vimage.h"
 #include "pa_vint.h"

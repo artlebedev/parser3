@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vrequest.h,v 1.17 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
+
+static const char* IDENT_VREQUEST_H="$Id: pa_vrequest.h,v 1.18 2002/08/01 11:26:56 paf Exp $";
 
 #include "pa_common.h"
 #include "pa_value.h"

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_pool.C,v 1.53 2002/06/28 09:59:01 paf Exp $
 */
+
+static const char* IDENT_POOL_C="$Id: pa_pool.C,v 1.54 2002/08/01 11:26:50 paf Exp $";
 
 #include "pa_pool.h"
 #include "pa_exception.h"

@@ -4,10 +4,10 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: smtp.C,v 1.11 2002/07/31 14:31:02 paf Exp $
-
 	Parts of the code here is based upon an early gensock and blat
 */
+
+static const char* IDENT_SMTP_C="$Id: smtp.C,v 1.12 2002/08/01 11:26:45 paf Exp $";
 
 #include "pa_exception.h"
 #include "smtp.h"

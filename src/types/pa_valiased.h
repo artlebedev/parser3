@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_valiased.h,v 1.20 2002/04/18 14:35:13 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
 #define PA_VALIASED_H
+
+static const char* IDENT_VALIASED_H="$Id: pa_valiased.h,v 1.21 2002/08/01 11:26:53 paf Exp $";
 
 #include "pa_globals.h"
 #include "pa_value.h"

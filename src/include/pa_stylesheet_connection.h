@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_stylesheet_connection.h,v 1.28 2002/03/27 15:30:35 paf Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
+
+static const char* IDENT_STYLESHEET_CONNECTION_H="$Id: pa_stylesheet_connection.h,v 1.29 2002/08/01 11:26:48 paf Exp $";
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: table.C,v 1.153 2002/05/17 12:19:12 paf Exp $
 */
+
+static const char* IDENT_TABLE_C="$Id: table.C,v 1.154 2002/08/01 11:26:44 paf Exp $";
 
 #include "classes.h"
 #include "pa_common.h"

@@ -3,14 +3,13 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vobject.h,v 1.18 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-//#include "pa_valiased.h"
+static const char* IDENT_VOBJECT_H="$Id: pa_vobject.h,v 1.19 2002/08/01 11:26:56 paf Exp $";
+
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
 #include "pa_vstateless_object.h"

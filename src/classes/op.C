@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: op.C,v 1.97 2002/06/20 14:50:22 paf Exp $
 */
+
+static const char* IDENT_OP_C="$Id: op.C,v 1.98 2002/08/01 11:26:44 paf Exp $";
 
 #include "classes.h"
 #include "pa_common.h"

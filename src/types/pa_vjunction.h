@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vjunction.h,v 1.13 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
+
+static const char* IDENT_VJUNCTION_H="$Id: pa_vjunction.h,v 1.14 2002/08/01 11:26:56 paf Exp $";
 
 #include "pa_value.h"
 #include "pa_vbool.h"

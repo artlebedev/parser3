@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_exception.C,v 1.40 2002/03/27 15:30:36 paf Exp $
 */
+
+static const char* IDENT_EXCEPTION_C="$Id: pa_exception.C,v 1.41 2002/08/01 11:26:50 paf Exp $";
 
 #include "pa_common.h"
 #include "pa_exception.h"

@@ -3,9 +3,9 @@
 
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vfile.C,v 1.29 2002/03/11 07:15:23 paf Exp $
 */
+
+static const char* IDENT_VFILE_C="$Id: pa_vfile.C,v 1.30 2002/08/01 11:26:54 paf Exp $";
 
 #include "pa_vfile.h"
 #include "pa_vstring.h"

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
-
-	$Id: pa_vstateless_class.C,v 1.13 2002/02/08 08:30:20 paf Exp $
 */
+
+static const char* IDENT_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.14 2002/08/01 11:26:56 paf Exp $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"

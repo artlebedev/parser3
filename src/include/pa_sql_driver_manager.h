@@ -4,12 +4,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_sql_driver_manager.h,v 1.23 2002/02/08 08:30:14 paf Exp $
 */
 
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
+
+static const char* IDENT_SQL_DRIVER_MANAGER_H="$Id: pa_sql_driver_manager.h,v 1.24 2002/08/01 11:26:48 paf Exp $";
 
 #include "pa_pool.h"
 #include "pa_sql_driver.h"

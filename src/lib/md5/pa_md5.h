@@ -4,8 +4,6 @@
 	where linked targets/apache/pa_md5c.c stub instead.
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
-
-	$Id: pa_md5.h,v 1.2 2002/06/21 13:34:54 paf Exp $
 */
 
 /*
@@ -97,6 +95,8 @@
 
 #ifndef PA_MD5_H
 #define PA_MD5_H
+
+static const char* IDENT_MD5_H="$Id: pa_md5.h,v 1.3 2002/08/01 11:26:48 paf Exp $";
 
 #define PA_API_EXPORT(rtype) rtype
 

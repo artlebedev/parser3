@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_threads.h,v 1.23 2002/02/08 08:30:14 paf Exp $
 */
 
 #ifndef PA_THREADS_H
 #define PA_THREADS_H
+
+static const char* IDENT_THREADS_H="$Id: pa_threads.h,v 1.24 2002/08/01 11:26:48 paf Exp $";
 
 #include "pa_config_includes.h"
 #include "pa_types.h"

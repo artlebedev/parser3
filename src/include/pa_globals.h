@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_globals.h,v 1.89 2002/06/20 13:39:57 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
+
+static const char* IDENT_GLOBALS_H="$Id: pa_globals.h,v 1.90 2002/08/01 11:26:47 paf Exp $";
 
 #include "pa_pool.h"
 

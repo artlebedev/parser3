@@ -3,11 +3,11 @@
 
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-	
-	$Id: pa_vform.C,v 1.58 2002/06/24 19:11:43 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
+
+static const char* IDENT_VFORM_C="$Id: pa_vform.C,v 1.59 2002/08/01 11:26:54 paf Exp $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"

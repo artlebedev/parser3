@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: compile.C,v 1.63 2002/04/02 13:50:48 paf Exp $
 */
+
+static const char* IDENT_COMPILE_C="$Id: compile.C,v 1.64 2002/08/01 11:26:49 paf Exp $";
 
 #include "pa_opcode.h"
 #include "pa_request.h"

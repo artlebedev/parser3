@@ -3,9 +3,9 @@
 
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: parser3.C,v 1.188 2002/08/01 08:39:50 paf Exp $
 */
+
+static const char* IDENT_PARSER3_C="$Id: parser3.C,v 1.189 2002/08/01 11:26:52 paf Exp $";
 
 #include "pa_config_includes.h"
 
@@ -42,28 +42,6 @@ extern ulong
 #endif
 
 // consts
-
-#ifndef _PROFILE
-extern const char *main_RCSIds[];
-#ifdef USE_SMTP
-extern const char *smtp_RCSIds[];
-#endif
-extern const char *gd_RCSIds[];
-extern const char *classes_RCSIds[];
-extern const char *types_RCSIds[];
-extern const char *parser3_RCSIds[];
-const char **RCSIds[]={
-	main_RCSIds,
-#ifdef USE_SMTP
-	smtp_RCSIds,
-#endif
-	gd_RCSIds,
-	classes_RCSIds,
-	types_RCSIds,
-	parser3_RCSIds,
-	0
-};
-#endif
 
 #define REDIRECT_PREFIX "REDIRECT_"
 #define PARSER_CONFIG_ENV_NAME "CGI_PARSER_CONFIG"

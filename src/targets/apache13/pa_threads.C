@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_threads.C,v 1.8 2002/02/28 14:31:48 paf Exp $
 */
+
+static const char* IDENT_THREADS_C="$Id: pa_threads.C,v 1.9 2002/08/01 11:26:52 paf Exp $";
 
 #include "pa_threads.h"
 

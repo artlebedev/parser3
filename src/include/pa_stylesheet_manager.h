@@ -4,14 +4,13 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.h,v 1.12 2002/02/08 08:30:14 paf Exp $
-
-
 	global sql driver manager, must be thread-safe
 */
 
 #ifndef PA_STYLESHEET_MANAGER_H
 #define PA_STYLESHEET_MANAGER_H
+
+static const char* IDENT_STYLESHEET_MANAGER_H="$Id: pa_stylesheet_manager.h,v 1.13 2002/08/01 11:26:48 paf Exp $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"

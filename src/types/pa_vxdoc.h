@@ -3,25 +3,17 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vxdoc.h,v 1.21 2002/04/18 15:33:34 paf Exp $
 */
 
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
+static const char* IDENT_VXDOC_H="$Id: pa_vxdoc.h,v 1.22 2002/08/01 11:26:57 paf Exp $";
+
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
 #include "pa_vxnode.h"
-
-//#include "libxml/xmlmemory.h"
-//#include "libxml/parser.h"
-//#include "libxslt/xslt.h"
-//#include "libxslt/libxslt.h"
-//#include "libxslt/extensions.h"
-//#include "libexslt/exslt.h"
-//#include "libxslt/xsltInternals.h"
 
 // defines
 

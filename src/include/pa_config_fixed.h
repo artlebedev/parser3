@@ -4,11 +4,13 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_fixed.h,v 1.46 2002/06/28 09:59:00 paf Exp $
-
-
 	tested only with MS Visual C++ V6
 */
+
+#ifndef PA_CONFIG_FIXED_H
+#define PA_CONFIG_FIXED_H
+
+static const char* IDENT_CONFIG_FIXED_H="$Id: pa_config_fixed.h,v 1.47 2002/08/01 11:26:46 paf Exp $";
 
 #define inline  __inline
 #define HAVE_STDARG_H
@@ -48,3 +50,4 @@
 // xml-abled parser
 #define XML
 
+#endif

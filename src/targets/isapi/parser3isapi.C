@@ -3,9 +3,9 @@
 
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: parser3isapi.C,v 1.76 2002/06/24 11:59:33 paf Exp $
 */
+
+static const char* IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.77 2002/08/01 11:26:53 paf Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -29,26 +29,6 @@
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
 
 // consts
-
-extern const char *main_RCSIds[];
-#ifdef USE_SMTP
-extern const char *smtp_RCSIds[];
-#endif
-extern const char *gd_RCSIds[];
-extern const char *classes_RCSIds[];
-extern const char *types_RCSIds[];
-extern const char *parser3isapi_RCSIds[];
-const char **RCSIds[]={
-	main_RCSIds,
-#ifdef USE_SMTP
-	smtp_RCSIds,
-#endif
-	gd_RCSIds,
-	classes_RCSIds,
-	types_RCSIds,
-	parser3isapi_RCSIds,
-	0
-};
 
 const char *IIS51vars[]={
 	"APPL_MD_PATH", "APPL_PHYSICAL_PATH",

@@ -3,12 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_vbool.h,v 1.18 2002/04/18 15:33:32 paf Exp $
 */
 
 #ifndef PA_VBOOL_H
 #define PA_VBOOL_H
+
+static const char* IDENT_VBOOL_H="$Id: pa_vbool.h,v 1.19 2002/08/01 11:26:54 paf Exp $";
 
 #include "pa_common.h"
 #include "pa_value.h"

@@ -3,11 +3,12 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: xdoc.C,v 1.95 2002/06/28 09:59:00 paf Exp $
 */
+
 #include "classes.h"
 #ifdef XML
+
+static const char* IDENT_XDOC_C="$Id: xdoc.C,v 1.96 2002/08/01 11:26:44 paf Exp $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"

@@ -3,9 +3,9 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: compile_tools.C,v 1.50 2002/06/10 14:13:08 paf Exp $
 */
+
+static const char* IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.51 2002/08/01 11:26:49 paf Exp $";
 
 #include "compile_tools.h"
 #include "pa_string.h"

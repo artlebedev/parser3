@@ -3,11 +3,11 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Id: pa_stylesheet_manager.C,v 1.13 2002/02/08 08:30:16 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
+
+static const char* IDENT_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.14 2002/08/01 11:26:51 paf Exp $";
 
 #include "pa_stylesheet_manager.h"
 #include "pa_stylesheet_connection.h"
