@@ -15,6 +15,7 @@
 		<html>
 		<head/>
 		<xsl:value-of select="."/> - в шаблоне<br/>
+		<тег атрибут="значение"/>
 		</html>
 	</xsl:template>
 	
