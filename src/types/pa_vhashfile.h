@@ -8,9 +8,10 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char* IDENT_VHASHFILE_H="$Date: 2003/11/06 11:53:06 $";
+static const char* IDENT_VHASHFILE_H="$Date: 2003/11/07 13:59:22 $";
 
 #include "classes.h"
+#include "pa_pool.h"
 #include "pa_value.h"
 #include "pa_hash.h"
 #include "pa_vint.h"
@@ -25,12 +26,8 @@ static const char* IDENT_VHASHFILE_H="$Date: 2003/11/06 11:53:06 $";
 
 extern Methoded *hashfile_class;
 
-// forwards
-
-class Autosave_marked_to_cancel_cache ;
-
 /// value of type 'hashfile', implemented with SDBM library bundled in ../libs/sdbm
-class VHashfile : public VStateless_object, PA_Cleaned {
+class VHashfile : public VStateless_object, Pooled {
 public: // value
 
 	override const char *type() const { return VHASHFILE_TYPE; }
@@ -60,7 +57,7 @@ public: // value
 
 public: // usage
 
-	VHashfile(): db(0) {}
+	VHashfile(Pool& apool): Pooled(apool), db(0) {}
 	override ~VHashfile();
 
 	void open(const String& afile_name);

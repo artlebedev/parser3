@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2003/10/02 07:26:46 $";
+static const char* IDENT_EXECUTE_C="$Date: 2003/11/07 13:59:21 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -431,7 +431,7 @@ void Request::execute(ArrayOperation& ops) {
 					if(frame.junction.method->call_type!=Method::CT_STATIC) {
 						// this is a constructor call
 
-						if(Value* value=called_class.create_new_value()) {
+						if(Value* value=called_class.create_new_value(fpool)) {
 							// some stateless_class creatable derivates
 							new_self=value;
 						} else 

@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2003/11/06 09:15:16 $";
+static const char* IDENT_XDOC_C="$Date: 2003/11/07 13:59:21 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -42,7 +42,7 @@ static const char* IDENT_XDOC_C="$Date: 2003/11/06 09:15:16 $";
 
 class MXdoc: public MXnode {
 public: // VStateless_class
-	Value* create_new_value() { return new VXdoc(0, 0); }
+	Value* create_new_value(Pool& apool) { return new VXdoc(0, 0); }
 
 public:
 	MXdoc();

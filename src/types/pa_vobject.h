@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2003/07/24 11:31:26 $";
+static const char* IDENT_VOBJECT_H="$Date: 2003/11/07 13:59:22 $";
 
 // includes
 
@@ -66,9 +66,9 @@ public: // Value
 
 public: // creation
 
-	VObject(VStateless_class& aclass): fclass(aclass), fderived(0) {
+	VObject(Pool& apool, VStateless_class& aclass): fclass(aclass), fderived(0) {
 		if(VStateless_class* base_class=fclass.base_class())
-			(fbase=base_class->create_new_value())->set_derived(this);
+			(fbase=base_class->create_new_value(apool))->set_derived(this);
 	}
 
 private:

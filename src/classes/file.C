@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_FILE_C="$Date: 2003/11/07 13:59:21 $";
 
 #include "pa_config_includes.h"
 
@@ -36,7 +36,7 @@ static const char* IDENT_FILE_C="$Date: 2003/09/25 09:15:02 $";
 class MFile: public Methoded {
 public: // VStateless_class
 	
-	Value* create_new_value() { return new VFile(); }
+	Value* create_new_value(Pool& apool) { return new VFile(); }
 
 public: // Methoded
 	bool used_directly() { return true; }

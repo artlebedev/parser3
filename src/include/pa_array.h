@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char* IDENT_ARRAY_Y="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_ARRAY_Y="$Date: 2003/11/07 13:59:21 $";
 
 // includes
 
@@ -159,6 +159,13 @@ public:
 
 	/// iterate over all elements
 	template<typename I> void for_each(void (*callback)(T, I), I info) const {
+		T *last=felements+fused;
+		for(T *current=felements; current<last; current++)
+			callback(*current, info);
+	}
+
+	/// iterate over all elements
+	template<typename I> void for_each_ref(void (*callback)(T&, I), I info) {
 		T *last=felements+fused;
 		for(T *current=felements; current<last; current++)
 			callback(*current, info);

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2003/11/06 11:13:24 $";
+static const char* IDENT_HASH_C="$Date: 2003/11/07 13:59:21 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -22,7 +22,7 @@ static const char* IDENT_HASH_C="$Date: 2003/11/06 11:13:24 $";
 
 class MHash: public Methoded {
 public: // VStateless_class
-	Value* create_new_value() { return new VHash(); }
+	Value* create_new_value(Pool& apool) { return new VHash(); }
 
 public:
 	MHash();

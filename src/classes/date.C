@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2003/11/03 11:10:39 $";
+static const char* IDENT_DATE_C="$Date: 2003/11/07 13:59:21 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -19,7 +19,7 @@ static const char* IDENT_DATE_C="$Date: 2003/11/03 11:10:39 $";
 
 class MDate: public Methoded {
 public: // VStateless_class
-	Value* create_new_value() { return new VDate(0); }
+	Value* create_new_value(Pool& apool) { return new VDate(0); }
 
 public:
 	MDate();

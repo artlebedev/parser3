@@ -6,7 +6,7 @@
 */
 
 
-static const char* IDENT="$Id: hashfile.C,v 1.28 2003/11/06 11:13:24 paf Exp $";
+static const char* IDENT="$Id: hashfile.C,v 1.29 2003/11/07 13:59:21 paf Exp $";
 
 #include "classes.h"
 
@@ -19,7 +19,7 @@ static const char* IDENT="$Id: hashfile.C,v 1.28 2003/11/06 11:13:24 paf Exp $";
 
 class MHashfile : public Methoded {
 public: // VStateless_class
-	Value *create_new_value() { return new VHashfile; }
+	Value *create_new_value(Pool& apool) { return new VHashfile(apool); }
 
 public:
 	MHashfile();

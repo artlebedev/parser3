@@ -8,8 +8,9 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/10/22 07:15:47 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/11/07 13:59:21 $";
 
+#include "pa_pool.h"
 #include "pa_hash.h"
 #include "pa_wcontext.h"
 #include "pa_value.h"
@@ -63,6 +64,10 @@ public:
 		const Operation::Origin origin() const { return forigin; }
 	};
 
+private:
+	Pool fpool;
+public:
+	Pool& pool() { return fpool; }
 
 private:
 	union StackItem {

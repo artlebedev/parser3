@@ -8,10 +8,11 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2003/09/25 09:15:03 $";
+static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2003/11/07 13:59:22 $";
 
 // include
 
+#include "pa_pool.h"
 #include "pa_hash.h"
 #include "pa_vjunction.h"
 #include "pa_method.h"
@@ -123,7 +124,7 @@ public: // usage
 	//@}
 
 	/// @returns new value for current class, used in classes/ & VClass
-	virtual Value* create_new_value() { return 0; }
+	virtual Value* create_new_value(Pool& apool) { return 0; }
 
 private: // Temp_method
 

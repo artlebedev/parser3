@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2003/11/06 09:56:17 $";
+static const char* IDENT_PARSER3_C="$Date: 2003/11/07 13:59:22 $";
 
 #include "pa_config_includes.h"
 
@@ -19,8 +19,6 @@ static const char* IDENT_PARSER3_C="$Date: 2003/11/06 09:56:17 $";
 #include "pa_request.h"
 #include "pa_socks.h"
 #include "pa_version.h"
-
-
 
 #ifdef WIN32
 #	include <windows.h>
@@ -384,8 +382,7 @@ static void real_parser_handler(const char* filespec_to_process,
 		SAPI::die("Execution canceled");
 
 	// prepare to process request
-	Request request(SAPI_info, 
-		request_info,
+	Request request(SAPI_info, request_info,
 		cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS,
 		true /* status_allowed */);
 

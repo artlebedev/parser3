@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2003/10/02 07:26:47 $";
+static const char* IDENT_REQUEST_C="$Date: 2003/11/07 13:59:22 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -94,7 +94,7 @@ VStateless_class& VClassMAIN_create();
 
 //
 Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, 
-		 String::Language adefault_lang, bool status_allowed):
+				 String::Language adefault_lang, bool status_allowed):
 	// private
 	anti_endless_execute_recoursion(0),
 

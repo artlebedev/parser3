@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char* IDENT_VCLASS_H="$Date: 2003/07/24 11:31:25 $";
+static const char* IDENT_VCLASS_H="$Date: 2003/11/07 13:59:22 $";
 
 // includes
 
@@ -33,7 +33,7 @@ public: // Value
 
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 	override bool put_element(const String& aname, Value* avalue, bool replace);
-	override Value* create_new_value();
+	override Value* create_new_value(Pool& apool);
 
 protected:
 		

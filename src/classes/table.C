@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/11/04 12:50:22 $";
+static const char* IDENT_TABLE_C="$Date: 2003/11/07 13:59:21 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -21,7 +21,7 @@ static const char* IDENT_TABLE_C="$Date: 2003/11/04 12:50:22 $";
 
 class MTable: public Methoded {
 public: // VStateless_class
-	Value* create_new_value() { return new VTable(); }
+	Value* create_new_value(Pool& apool) { return new VTable(); }
 
 public:
 	MTable();
