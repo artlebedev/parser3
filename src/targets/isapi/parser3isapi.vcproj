@@ -62,8 +62,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Starting inetinfo..."
-				CommandLine="CD \parser3project\win32\tools
-istart
+				CommandLine="..\..\..\..\win32\tools\istart
 dir&gt;nul
 "/>
 			<Tool
@@ -71,8 +70,7 @@ dir&gt;nul
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Stopping inetinfo..."
-				CommandLine="CD \parser3project\win32\tools
-istop
+				CommandLine="..\..\..\..\win32\tools\istop
 dir&gt;nul
 "/>
 			<Tool
@@ -147,7 +145,8 @@ dir&gt;nul
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Stopping inetinfo..."
-				CommandLine="CD \parser3project\win32\tools
+				CommandLine="cd
+CD \parser3project\win32\tools
 istop
 dir&gt;nul
 "/>
