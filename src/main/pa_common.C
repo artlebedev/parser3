@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/04/06 14:18:00 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/07/26 10:44:21 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1047,6 +1047,7 @@ const char* format(double value, char* fmt) {
 
 size_t stdout_write(const void *buf, size_t size) {
 #ifdef WIN32
+	size_t to_write = size;
 	do{
 		int chunk_written=fwrite(buf, 1, min((size_t)8*0x400, size), stdout); 
 		if(chunk_written<=0)
@@ -1055,7 +1056,7 @@ size_t stdout_write(const void *buf, size_t size) {
 		buf=((const char*)buf)+chunk_written;
 	} while(size>0); 
 
-	return size;
+	return to_write-size;
 #else
 	return fwrite(buf, 1, size, stdout); 
 #endif

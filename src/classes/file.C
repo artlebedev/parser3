@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2004/07/26 10:17:04 $";
+static const char * const IDENT_FILE_C="$Date: 2004/07/26 10:44:21 $";
 
 #include "pa_config_includes.h"
 
@@ -25,6 +25,8 @@ static const char * const IDENT_FILE_C="$Date: 2004/07/26 10:17:04 $";
 #include "pa_charset.h"
 #include "pa_charsets.h"
 #include "pa_sql_connection.h"
+#include "pa_vresponse.h"
+#include "pa_vcookie.h"
 
 // defines
 
@@ -710,6 +712,262 @@ static void _sql(Request& r, MethodParams& params) {
 			"produced no result");
 
 	if(!user_file_name)
+class send_attr_info
+{
+public:
+	send_attr_info(Request *t) : r(t), add_content_type(true), add_last_modified(true), add_content_disposition(true) {}
+	Request *r;
+	bool add_content_type;
+	bool add_last_modified;
+	bool add_content_disposition;
+};
+
+static void send_add_header_attribute(
+				 HashStringValue::key_type aattribute, 
+				 HashStringValue::value_type ameaning, 
+				 send_attr_info *r)
+{
+	const char *a = aattribute.cstr();
+	SAPI::add_header_attribute(r->r->sapi_info,
+		a, 
+		attributed_meaning_to_string(*ameaning, String::L_HTTP_HEADER, false).
+			cstr(String::L_UNSPECIFIED));
+	if(strcasecmp(a, "content-type")==0)
+		r->add_content_type = false;
+	else if(strcasecmp(a, "last-modified")==0)
+		r->add_last_modified = false;
+	else if(strcasecmp(a, "content-disposition")==0)
+		r->add_content_disposition = false;
+}
+
+struct RANGE
+{
+	size_t start;
+	size_t end;
+};
+
+static void parse_range(const String* s, Array<RANGE> &ar)
+{
+	const char *p = s->cstr();
+	if(s->starts_with("bytes="))
+		p += 6;
+	RANGE r;
+	while(*p){
+		r.start = (size_t)-1;
+		r.end = (size_t)-1;
+		if(*p >= '0' && *p <= '9'){
+			r.start = atol(p);
+			while(*p>='0' && *p<='9') ++p;
+		}
+		if(*p++ != '-') break;
+		if(*p >= '0' && *p <= '9'){
+			r.end = atol(p);
+			while(*p>='0' && *p<='9') ++p;
+		}
+		if(*p == ',') ++p;
+		ar += r;
+	}
+}
+
+class auto_file
+{
+protected:
+	FILE *f;
+public:
+	auto_file(FILE *t){
+		f = t;
+	}
+	~auto_file(){
+		if(f != 0){
+			fclose(f);
+			f = 0;
+		}
+	}
+	operator FILE*(){
+		return f;
+	}
+};
+
+// ^file:send[filename]
+// ^file:send[filename;options hash]
+// ^file:send[local_filename;remote_filename]
+// ^file:send[local_filename;remote_filename;options hash]
+static void _send(Request& r, MethodParams& params) {
+	SAPI::add_header_attribute(r.sapi_info, "Accept-Ranges", "bytes");
+	if(r.response.fields().get("ignore")!=0) throw Exception("parser.runtime", 0, "^file:send not allowed here");
+	Value *to_file_name = 0;
+	Value *options = 0;
+	Value *from_file_name = params.get(0);
+	const char *c_from_file_name=0, *disposition=0;
+	if(!from_file_name->is("string")) throw Exception("parser.runtime", 0, "filename must be string");
+
+	size_t count = params.count();
+	if(count > 1){
+		to_file_name = params.get(1);
+		if(to_file_name->is("hash")){
+			options = to_file_name;
+			to_file_name = 0;
+		}else if(count > 2){
+			options = params.get(2);
+			if(!options->is("hash")) throw Exception("parser.runtime", 0, "options parameter must be hash");
+		}
+	}
+
+	c_from_file_name=r.absolute(from_file_name->as_string()).cstr();
+
+	size_t offset = 0;
+	size_t limit = (size_t)-1;
+	send_attr_info info(&r);
+	VDate *date = 0;
+
+	if(options){
+		HashStringValue *opts = options->get_hash();
+		if(opts == 0)
+			throw Exception("parser.runtime", 0, "options must be hash");
+		Value *v;
+		int valid_options = 0;
+		if(v = opts->get("offset")){
+			++valid_options;
+			offset = v->as_int();
+		}
+		if(v = opts->get("limit")){
+			++valid_options;
+			limit = v->as_int();
+		}
+		if(v = opts->get("headers")){
+			++valid_options;
+			HashStringValue *headers = v->get_hash();
+			if(headers == 0)
+				throw Exception("parser.runtime", 0, "headers must be hash");
+			headers->for_each(send_add_header_attribute, &info);
+		}
+		if(v = opts->get("mdate")){
+			++valid_options;
+			if(Value* vdate=v->as(VDATE_TYPE, false))
+				date=static_cast<VDate*>(vdate);
+			else throw Exception("parser.runtime", 0, "mdate must be a date");
+		}
+		if(v = opts->get("disposition")){
+			++valid_options;
+			if(!v->is("string")) throw Exception("parser.runtime", 0, "disposition must be a string");
+			disposition = v->get_string()->cstr();
+			if(strcmp(disposition, "inline") && strcmp(disposition, "attachment")) throw Exception("parser.runtime", 0, "disposition can be only 'inline' or 'attachment'");
+		}
+		if(valid_options != opts->count())
+			throw Exception("parser.runtime", 0, "invalid option passed");
+	}
+
+	auto_file f = fopen(c_from_file_name, "rb");
+	if(f == 0)
+		throw Exception("parser.runtime", 0, "Can't open file");
+
+	if(fseek(f, 0, SEEK_END)!=0)
+		throw Exception("parser.runtime", 0, "Can't seek file");
+
+	size_t file_length = (size_t)ftell(f);
+	if(file_length == (size_t)-1)
+		throw Exception("parser.runtime", 0, "can't get file size");
+	if(file_length <= offset)
+		throw Exception("parser.runtime", 0, "offset too big");
+	
+	size_t content_length = file_length-offset;
+	if(limit != (size_t)-1)
+		content_length = limit<content_length?limit:content_length;
+
+	size_t part_length = content_length;
+
+	const size_t BUFSIZE = 4096;
+	unsigned char buf[BUFSIZE];
+	const char *range = SAPI::get_env(r.sapi_info, "HTTP_RANGE");
+	if(range){
+		Array<RANGE> ar;
+		parse_range(new String(range), ar);
+		size_t count = ar.count();
+		if(count == 1){
+			RANGE &rg = ar.get_ref(0);
+			if(rg.start == (size_t)-1 && rg.end == (size_t)-1){
+				SAPI::add_header_attribute(r.sapi_info, "status", "416 Requested Range Not Satisfiable");
+				return;
+			}
+			if(rg.start == (size_t)-1 && rg.end != (size_t)-1){
+				rg.start = content_length - rg.end;
+				rg.end = content_length;
+				offset += rg.start;
+				part_length = rg.end-rg.start;
+			}else if(rg.start != (size_t)-1 && rg.end == (size_t)-1){
+				rg.end = content_length-1;
+				offset += rg.start;
+				part_length -= rg.start;
+			}
+			if(part_length == 0){
+				SAPI::add_header_attribute(r.sapi_info, "status", "204 No Content");
+				return;
+			}
+			SAPI::add_header_attribute(r.sapi_info, "status", "206 Partial Content");
+			snprintf((char*)buf, BUFSIZE, "bytes %u-%u/%u", rg.start, rg.end, content_length);
+			SAPI::add_header_attribute(r.sapi_info, "Content-Range", (char*)buf);
+		}else if(count != 0){
+			SAPI::add_header_attribute(r.sapi_info, "status", "501 Not Implemented");
+			return;
+		}
+	}
+
+	fseek(f, offset, SEEK_SET);
+	snprintf((char*)buf, BUFSIZE, "%u", part_length);
+	SAPI::add_header_attribute(r.sapi_info, "Content-Length", (char*)buf);
+
+	if(info.add_content_disposition && disposition){
+		const char *fname = 0;
+		if(to_file_name){
+			fname = to_file_name->as_string().cstr();
+		}else{
+			const char *fname = c_from_file_name;
+			const char *p1 = strrchr(fname, '/');
+			const char *p2 = strrchr(fname, '\\');
+			if(p1 || p2)
+				fname = max(p1, p2)+1;
+		}
+
+		snprintf((char*)buf, BUFSIZE, "%s; filename=\"%s\"", disposition, fname);
+		SAPI::add_header_attribute(r.sapi_info, "Content-Disposition", (char*)buf);
+	}
+	if(info.add_content_type)
+		SAPI::add_header_attribute(r.sapi_info, "Content-Type", r.mime_type_of(c_from_file_name).cstr());
+	if(info.add_last_modified){
+		if(date == 0){
+			struct stat st;	
+			if(stat(c_from_file_name, &st)!=0) throw Exception("parser.runtime", 0, "can't get file stat");
+			date = new VDate(st.st_mtime);
+		}
+		const String &s = attributed_meaning_to_string(*date, String::L_AS_IS, true);
+		SAPI::add_header_attribute(r.sapi_info, "Last-Modified", s.cstr());
+	}
+	r.cookie.output_result(r.sapi_info);
+	SAPI::send_header(r.sapi_info);
+
+	const char* request_method=getenv("REQUEST_METHOD");
+	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
+	size_t sent = 0;
+	if(!header_only){
+		size_t to_read = 0;
+		size_t size = 0;
+		do{
+			to_read = part_length<BUFSIZE?part_length:BUFSIZE;
+			to_read = fread(buf, 1, to_read, f);
+			if(to_read == 0)
+				break;
+			size = SAPI::send_body(r.sapi_info, buf, to_read);
+			sent += size;
+			if(size != to_read)
+				break;
+			part_length -= to_read;
+		}while(part_length);
+	}
+	// set flag to bypass other outputs
+	r.response.fields().put("ignore", new VString(*new String("y")));
+	r.write_no_lang(*new VInt(sent));
+}
+
 		user_file_name=handlers.user_file_name;
 
 	const char* user_file_name_cstr=user_file_name? user_file_name->cstr(): 0;
@@ -767,6 +1025,12 @@ MFile::MFile(): Methoded("file") {
 	// ^file:dirname[/a/b/]=/a
 	add_native_method("dirname", Method::CT_STATIC, _dirname, 1, 1);
     // ^file:basename[/a/some.tar.gz]=some.tar.gz
+
+	// ^file:send[filename]
+	// ^file:send[filename;options hash]
+	// ^file:send[filename;new_filename]
+	// ^file:send[filename;new_filename;options hash]
+	add_native_method("send", Method::CT_STATIC, _send, 1, 3);
     add_native_method("basename", Method::CT_STATIC, _basename, 1, 1);
     // ^file:justname[/a/some.tar.gz]=some.tar
 	add_native_method("justname", Method::CT_STATIC, _justname, 1, 1);

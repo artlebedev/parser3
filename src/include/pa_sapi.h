@@ -8,7 +8,7 @@
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-static const char * const IDENT_SAPI_H="$Date: 2004/02/12 06:46:31 $";
+static const char * const IDENT_SAPI_H="$Date: 2004/07/26 10:44:21 $";
 
 // includes
 
@@ -39,7 +39,7 @@ struct SAPI {
 	/// send collected header attributes to client
 	static void send_header(SAPI_Info& info);
 	/// output body bytes
-	static void send_body(SAPI_Info& info, const void *buf, size_t size);
+	static size_t send_body(SAPI_Info& info, const void *buf, size_t size);
 };
 
 #endif

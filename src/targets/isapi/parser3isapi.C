@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/04/05 13:37:06 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/07/26 10:44:21 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -243,10 +243,12 @@ void SAPI::send_header(SAPI_Info& SAPI_info) {
 		HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
 }
 
-void SAPI::send_body(SAPI_Info& SAPI_info, const void *buf, size_t size) {
+size_t SAPI::send_body(SAPI_Info& SAPI_info, const void *buf, size_t size) {
 	DWORD num_bytes=size;
-	SAPI_info.lpECB->WriteClient(SAPI_info.lpECB->ConnID, 
-		const_cast<void *>(buf), &num_bytes, HSE_IO_SYNC);
+	if(!SAPI_info.lpECB->WriteClient(SAPI_info.lpECB->ConnID, 
+		const_cast<void *>(buf), &num_bytes, HSE_IO_SYNC))
+		return 0;
+	return (size_t)num_bytes;
 }
 
 

@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2004/04/01 11:43:54 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2004/07/26 10:44:21 $";
 
 #include "pa_globals.h"
 
@@ -178,10 +178,12 @@ void SAPI::send_header(SAPI_Info& SAPI_info) {
 	pa_ap_kill_timeout(SAPI_info.r);
 }
 
-void SAPI::send_body(SAPI_Info& SAPI_info, const void *buf, size_t size) {
+size_t SAPI::send_body(SAPI_Info& SAPI_info, const void *buf, size_t size) {
+	size_t size;
 	pa_ap_hard_timeout("Send body", SAPI_info.r);
-	pa_ap_rwrite(buf, size, SAPI_info.r);
+	size = (size_t)pa_ap_rwrite(buf, size, SAPI_info.r);
 	pa_ap_kill_timeout(SAPI_info.r);
+	return size;
 }
 
 //@}

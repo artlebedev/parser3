@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2004/06/18 09:17:11 $";
+static const char * const IDENT_PARSER3_C="$Date: 2004/07/26 10:44:21 $";
 
 #include "pa_config_includes.h"
 
@@ -221,8 +221,8 @@ void SAPI::send_header(SAPI_Info& ) {
 	}
 }
 
-void SAPI::send_body(SAPI_Info& , const void *buf, size_t size) {
-	stdout_write(buf, size);
+size_t SAPI::send_body(SAPI_Info& , const void *buf, size_t size) {
+	return stdout_write(buf, size);
 }
 
 //
