@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2004/04/01 11:43:54 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2004/09/20 16:26:12 $";
 
 #include "pa_config_includes.h"
 
@@ -32,6 +32,12 @@ extern "C" {
 // defines
 
 //#define PA_DEBUG_XML_GC_MEMORY
+
+// 20040920 for now both workarounds needed. wait for new libxml/xsl versions
+// there is a problem with testcase, it's unstable. 
+// see paf@six/bug20040920/cgi-bin/t for it-showed-bug-on-20040920-day
+#define PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
+#define PA_WORKAROUND_BUGGY_MALLOCATOMIC_IN_LIBXML_GC_MEMORY
 
 // globals
 
@@ -169,42 +175,58 @@ static char *pa_GC_strdup(const char *s) {
 }
 
 #ifdef PA_DEBUG_XML_GC_MEMORY
-void *pa_look_for[]={(void*)0x8abe000,(void*)0x0,(void*)0x0,(void*)0x0,
+void *pa_look_for[]={(void*)0x84ba980,(void*)0x8969460,(void*)0x0,(void*)0x0,
 			(void*)0x0,(void*)0x0,(void*)0x0,(void*)0x0};
 bool pa_looked(void*p) {
 	for(int i=0; i<8; i++)
-		if(pa_look_for[i]==p)
+		if(pa_look_for[i]==p) {
+			__asm__("int $3");
 			return true;
+		}
+	if((((int)p)&~0xFF)==0x89a7700) {
+		__asm__("int $3");
+		return true;
+	}
 	return false;
 }
 static void* pa_gc_malloc_log(size_t size){
 	void *p=pa_gc_malloc(size);
         fprintf(stderr, "pa_gc_malloc_log(%d)=0x%p\n", size, p);
-//	if(pa_looked(p))
-//		fprintf(stderr,"catched debug malloc(%d)=0x%p\n", size, p);
+	if(pa_looked(p))
+		fprintf(stderr,"catched debug malloc(%d)=0x%p\n", size, p);
 	return p;
         
 }
 static void* pa_gc_malloc_atomic_log(size_t size){
+#ifdef PA_WORKAROUND_BUGGY_MALLOCATOMIC_IN_LIBXML_GC_MEMORY
+	void *p=pa_gc_malloc(size);
+        fprintf(stderr, "pa_gc_malloc_atomicFAKE_log(%d)=0x%p\n", size, p);
+#else
 	void *p=pa_gc_malloc_atomic(size);
         fprintf(stderr, "pa_gc_malloc_atomic_log(%d)=0x%p\n", size, p);
-//	if(pa_looked(p))
-//		fprintf(stderr,"catched debug malloc atomic(%d)=0x%p\n", size, p);
+#endif
+	if(pa_looked(p))
+		fprintf(stderr,"catched debug malloc atomic(%d)=0x%p\n", size, p);
 	return p;
 }
 static void* pa_gc_realloc_log(void *ptr, size_t size){
 	void *p=pa_gc_realloc(ptr, size);
         fprintf(stderr, "pa_gc_realloc_log(0x%p, %d)=0x%p\n", ptr, size, p);
-//	if(pa_looked(p))
-//		fprintf(stderr,"catched debug realloc(%d)=0x%p\n", size, p);
+	if(pa_looked(p))
+		fprintf(stderr,"catched debug realloc(%d)=0x%p\n", size, p);
 	return p;
 }
-//static void pa_gc_free_ignore(void *){}
 static void pa_gc_free_log(void *p){
+#ifdef PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
+        fprintf(stderr, "pa_gc_freeIGNORE_log(0x%p)\n", p);
+#else
         fprintf(stderr, "pa_gc_free_log(0x%p)\n", p);
-//	if(pa_looked(p))
-//		fprintf(stderr,"catched debug free(0x%p)\n", p);
+#endif
+	if(pa_looked(p))
+		fprintf(stderr,"catched debug free(0x%p)\n", p);
+#ifndef PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
         pa_gc_free(p);
+#endif
 }
 #else
 
@@ -218,10 +240,25 @@ static void* pa_gc_malloc_nonull(size_t size) {
 	return check(pa_gc_malloc(size), "allocating XML compsite memory", size);
 }
 static void* pa_gc_malloc_atomic_nonull(size_t size) { 
+#ifdef PA_WORKAROUND_BUGGY_MALLOCATOMIC_IN_LIBXML_GC_MEMORY
+	return check(pa_gc_malloc(size), "allocating XML composite memory (asked atomic)", size);
+#else
 	return check(pa_gc_malloc_atomic(size), "allocating XML atomic memory", size);
+#endif
 }
 static void* pa_gc_realloc_nonull(void* ptr, size_t size) { 
 	return check(pa_gc_realloc(ptr, size), "reallocating XML memory", size);
+}
+
+static void pa_gc_free_maybeignore(
+	void* 
+#ifndef PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
+		ptr
+#endif
+	) {
+#ifndef PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
+	pa_gc_free(ptr);
+#endif
 }
 
 #endif
@@ -248,7 +285,7 @@ static void gc_substitute_memory_management_functions() {
 		/*xmlStrdupFunc */pa_GC_strdup);
 #else
 	xmlGcMemSetup(
-		/*xmlFreeFunc */pa_gc_free,
+		/*xmlFreeFunc */pa_gc_free_maybeignore,
 		/*xmlMallocFunc */pa_gc_malloc_nonull,
 		/*xmlMallocFunc */pa_gc_malloc_atomic_nonull,
 		/*xmlReallocFunc */pa_gc_realloc_nonull,
@@ -257,7 +294,7 @@ static void gc_substitute_memory_management_functions() {
 
 #else
 	xmlMemSetup(
-		/*xmlFreeFunc */pa_gc_free,
+		/*xmlFreeFunc */pa_gc_free_maybeignore,
 		/*xmlMallocFunc */pa_gc_malloc,
 		/*xmlReallocFunc */pa_gc_realloc,
 		/*xmlStrdupFunc */pa_GC_strdup);
