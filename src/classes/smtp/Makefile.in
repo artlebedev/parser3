@@ -148,7 +148,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 
 noinst_HEADERS = smtp.h
-EXTRA_DIST = comms.C smtp.C smtp.dsp
+EXTRA_DIST = comms.C smtp.C smtp.vcproj
 subdir = src/classes/smtp
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h

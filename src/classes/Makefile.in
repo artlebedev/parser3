@@ -154,7 +154,7 @@ CLASSES_SOURCE_FILES = classes.awk double.C file.C form.C image.C int.C mail.C o
 libclasses_a_SOURCES = classes.C $(CLASSES_SOURCE_FILES)
 CLEANFILES = classes.inc
 
-EXTRA_DIST = classes.dsp
+EXTRA_DIST = classes.vcproj
 subdir = src/classes
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h

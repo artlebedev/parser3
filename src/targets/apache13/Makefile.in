@@ -146,7 +146,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 noinst_DATA = apache_build_instruction
 
-EXTRA_DIST = ApacheModuleParser3.dsp mod_parser3.c pa_httpd.h
+EXTRA_DIST = ApacheModuleParser3.vcproj mod_parser3.c pa_httpd.h
 subdir = src/targets/apache13
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
