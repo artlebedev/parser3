@@ -84,8 +84,6 @@ XML_INCLUDES = @XML_INCLUDES@
 XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 host_os = @host_os@
-@COMPILE_XML_TRUE@PATCHES_LIBS = ../../classes/xalan-patched/libxalan_patched.a
-@COMPILE_XML_FALSE@PATCHES_LIBS = 
 
 INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql @XML_INCLUDES@
 
@@ -94,7 +92,7 @@ CPPFLAGS := $(CPPFLAGS) -DSYSCONFDIR=\"$(sysconfdir)\"
 
 bin_PROGRAMS = parser3
 parser3_SOURCES = pa_pool.C pa_threads.C parser3.C ident.C
-parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../pcre/libpcre.a $(PATCHES_LIBS) @XML_LIBS@ @DB2_LIBS@
+parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../classes/xalan-patched/libxalan_patched.a ../../pcre/libpcre.a @XML_LIBS@ @DB2_LIBS@
 
 IDENT_AWK = ../../ident.awk
 IDENT_DEPS = *.C
@@ -108,15 +106,9 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I../../include
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 parser3_OBJECTS =  pa_pool.o pa_threads.o parser3.o ident.o
-@COMPILE_XML_TRUE@parser3_DEPENDENCIES =  ../../main/libmain.a \
-@COMPILE_XML_TRUE@../../classes/libclasses.a ../../main/libmain.a \
-@COMPILE_XML_TRUE@../../types/libtypes.a ../../classes/gd/libgd.a \
-@COMPILE_XML_TRUE@../../pcre/libpcre.a \
-@COMPILE_XML_TRUE@../../classes/xalan-patched/libxalan_patched.a
-@COMPILE_XML_FALSE@parser3_DEPENDENCIES =  ../../main/libmain.a \
-@COMPILE_XML_FALSE@../../classes/libclasses.a ../../main/libmain.a \
-@COMPILE_XML_FALSE@../../types/libtypes.a ../../classes/gd/libgd.a \
-@COMPILE_XML_FALSE@../../pcre/libpcre.a
+parser3_DEPENDENCIES =  ../../main/libmain.a ../../classes/libclasses.a \
+../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a \
+../../classes/xalan-patched/libxalan_patched.a ../../pcre/libpcre.a
 parser3_LDFLAGS = 
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
