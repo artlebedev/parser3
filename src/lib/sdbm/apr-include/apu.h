@@ -52,70 +52,62 @@
  * <http://www.apache.org/>.
  */
 
-#ifndef APR_POOLS_H
-#define APR_POOLS_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/**
- * @file apr_pools.h
- * @brief APR memory allocation
- *
- * Resource allocation routines...
- *
- * designed so that we don't have to keep track of EVERYTHING so that
- * it can be explicitly freed later (a fundamentally unsound strategy ---
- * particularly in the presence of die()).
- *
- * Instead, we maintain pools, and allocate items (both memory and I/O
- * handlers) from the pools --- currently there are two, one for per
- * transaction info, and one for config info.  When a transaction is over,
- * we can delete everything in the per-transaction apr_pool_t without fear,
- * and without thinking too hard about it either.
- */
-
-typedef void apr_pool_t;
-
 /*
- * Cleanup
+ * apu.h is generated from apu.h.in by configure -- do not edit apu.h
+ */
+/* @file apu.h
+ * @brief APR-Utility main file
+ */
+/**
+ * @defgroup APR_Util APR Utility Functions
+ * @{
+ */
+
+
+#ifndef APU_H
+#define APU_H
+
+/**
+ * APU_DECLARE_EXPORT is defined when building the APR-UTIL dynamic library,
+ * so that all public symbols are exported.
+ *
+ * APU_DECLARE_STATIC is defined when including the APR-UTIL public headers,
+ * to provide static linkage when the dynamic library may be unavailable.
+ *
+ * APU_DECLARE_STATIC and APU_DECLARE_EXPORT are left undefined when
+ * including the APR-UTIL public headers, to import and link the symbols from 
+ * the dynamic APR-UTIL library and assure appropriate indirection and calling
+ * conventions at compile time.
  */
 
 /**
- * Register a function to be called when a pool is cleared or destroyed
- * @param p The pool register the cleanup with
- * @param data The data to pass to the cleanup function.
- * @param plain_cleanup The function to call when the pool is cleared
- *                      or destroyed
- * @param child_cleanup The function to call when a child process is being
- *                      shutdown - this function is called in the child, obviously!
+ * The public APR-UTIL functions are declared with APU_DECLARE(), so they may
+ * use the most appropriate calling convention.  Public APR functions with 
+ * variable arguments must use APU_DECLARE_NONSTD().
+ *
+ * @deffunc APU_DECLARE(rettype) apr_func(args);
  */
-APR_DECLARE(void) apr_pool_cleanup_register(
-    apr_pool_t *p,
-    const void *data,
-    apr_status_t (*plain_cleanup)(void *),
-    apr_status_t (*child_cleanup)(void *));
+#define APU_DECLARE(type)            type
 /**
- * An empty cleanup function
- * @param data The data to cleanup
+ * The public APR-UTIL functions using variable arguments are declared with 
+ * APU_DECLARE_NONSTD(), as they must use the C language calling convention.
+ *
+ * @deffunc APU_DECLARE_NONSTD(rettype) apr_func(args, ...);
  */
-APR_DECLARE_NONSTD(apr_status_t) apr_pool_cleanup_null(void *data);
-
+#define APU_DECLARE_NONSTD(type)     type
 /**
- * Run the specified cleanup function immediately and unregister it. Use
- * @a data instead of the data that was registered with the cleanup.
- * @param p The pool remove the cleanup from
- * @param data The data to remove from cleanup
- * @param cleanup The function to remove from cleanup
+ * The public APR-UTIL variables are declared with APU_DECLARE_DATA.
+ * This assures the appropriate indirection is invoked at compile time.
+ *
+ * @deffunc APU_DECLARE_DATA type apr_variable;
+ * @tip APU_DECLARE_DATA extern type apr_variable; syntax is required for
+ * declarations within headers to properly import the variable.
  */
-APR_DECLARE(apr_status_t) apr_pool_cleanup_run(
-    apr_pool_t *p,
-    void *data,
-    apr_status_t (*cleanup)(void *));
+#define APU_DECLARE_DATA
+/*
+ * we always have SDBM (it's in our codebase)
+ */
+#define APU_HAVE_SDBM
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* !APR_POOLS_H */
+#endif /* APU_H */
+/** @} */
