@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.136 2002/06/12 10:58:42 paf Exp $
+	$Id: pa_request.h,v 1.137 2002/06/12 11:40:31 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -292,13 +292,14 @@ private: // compile.C
 
 private: // execute.C
 
-	const String *execute_method(Value& aself, const Method& method,
-		bool return_cstr);
+	void execute_method(Value& aself, const Method& method,
+		const String **return_string);
 	const String& execute_method(VMethodFrame& amethodFrame, const Method& method);
 	const String *execute_virtual_method(Value& aself, const String& method_name);
-	const String *execute_nonvirtual_method(VStateless_class& aclass, 
+	void execute_nonvirtual_method(VStateless_class& aclass, 
 		const String& method_name,
-		bool return_cstr);
+		const String **return_string,
+		const Method **return_method=0);
 
 	Value *get_element(const String *& remember_name, bool can_call_operator);
 

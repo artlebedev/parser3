@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.208 2002/06/12 10:58:43 paf Exp $
+	$Id: pa_request.C,v 1.209 2002/06/12 11:40:32 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -496,11 +496,14 @@ VStateless_class *Request::use_buf(const char *source, const char *file,
 	VStateless_class& cclass=COMPILE(source, aclass, name, base_class, file);
 
 	// locate and execute possible @conf[] static
-	if(const String *conf=execute_nonvirtual_method(cclass, *conf_method_name, true /*we need does_exist(result)*/))
-		configure_admin(cclass, conf);
+	const Method *method_called;
+	execute_nonvirtual_method(cclass, *rootconf_method_name, 0/*no result needed*/, 
+		&method_called);
+	if(method_called)
+		configure_admin(cclass, &method_called->name);
 
 	// locate and execute possible @auto[] static
-	execute_nonvirtual_method(cclass, *auto_method_name, false /*no result needed*/);
+	execute_nonvirtual_method(cclass, *auto_method_name, 0/*no result needed*/);
 	return &cclass;
 }
 

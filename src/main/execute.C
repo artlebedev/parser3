@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.240 2002/04/22 10:32:30 paf Exp $
+	$Id: execute.C,v 1.241 2002/06/12 11:40:32 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -961,8 +961,8 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	return result;
 }
 
-const String *Request::execute_method(Value& aself, const Method& method,
-		bool return_cstr) {
+void Request::execute_method(Value& aself, const Method& method,
+		const String **return_string) {
 	PUSH(self);  
 	PUSH(root);  
 	PUSH(rcontext);  
@@ -978,20 +978,17 @@ const String *Request::execute_method(Value& aself, const Method& method,
 	
 	// result
 	const String *result=0;
-	if(return_cstr) {
+	if(return_string) {
 		if(Value *result_var_value=wcontext->get_element(*result_var_name))
-			result=&result_var_value->as_string();
+			*return_string=&result_var_value->as_string();
 		else
-			result=&wcontext->as_string();
+			*return_string=&wcontext->as_string();
 	}
 	
 	wcontext=static_cast<WContext *>(POP());  
 	rcontext=POP();  
 	root=POP();  
 	self=static_cast<VAliased *>(POP());
-	
-	// return
-	return result;
 }
 
 const String& Request::execute_method(VMethodFrame& amethodFrame, const Method& method) {
@@ -1023,17 +1020,25 @@ const String *Request::execute_virtual_method(Value& aself,
 											  const String& method_name) {
 	if(Value *value=aself.get_element(method_name))
 		if(Junction *junction=value->get_junction())
-			if(const Method *method=junction->method) 
-				return execute_method(aself, *method, true /*return_cstr*/);
+			if(const Method *method=junction->method) {
+				const String *result;
+				execute_method(aself, *method, &result);
+				return result;
+			}
 			
 	return 0;
 }
 
-const String *Request::execute_nonvirtual_method(VStateless_class& aclass, 
+void Request::execute_nonvirtual_method(VStateless_class& aclass, 
 												 const String& method_name,
-												 bool return_cstr) {
-	if(const Method *method=aclass.get_method(method_name))
-		return execute_method(aclass, *method, return_cstr);
+												 const String **return_string,
+												 const Method **return_method) {
+	const Method *method=aclass.get_method(method_name);
+	if(return_string)
+		*return_string=0;
+	if(return_method)
+		*return_method=method;
 
-	return 0;
+	if(method)
+		execute_method(aclass, *method, return_string);
 }
