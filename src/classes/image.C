@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.14 2001/04/12 14:08:57 paf Exp $
+	$Id: image.C,v 1.15 2001/04/12 14:50:26 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -328,7 +328,7 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	const String& file_name=vfile_name.as_string();
 
 	const char *file_name_cstr=r.absolute(file_name).cstr(String::UL_FILE_NAME);
-	gdImage image(pool);
+	gdImage& image=*new(pool) gdImage(pool);
 	if(FILE *f=fopen(file_name_cstr, "rb")) {
 		image.CreateFromGif(f);
 		int width=image.SX();
@@ -353,10 +353,10 @@ static void _create(Request& r, const String& method_name, Array *params) {
 	if(params->size()>2)
 		bgcolor_value=
 			(int)r.process(*static_cast<Value *>(params->get(2))).as_double();
-	gdImage *image=new(pool) gdImage(pool);
-	image->Create(width, height);
-	image->FilledRectangle(0, 0, width-1, height-1, image->Color(bgcolor_value));
-	static_cast<VImage *>(r.self)->set(0, width, height, image);
+	gdImage& image=*new(pool) gdImage(pool);
+	image.Create(width, height);
+	image.FilledRectangle(0, 0, width-1, height-1, image.Color(bgcolor_value));
+	static_cast<VImage *>(r.self)->set(0, width, height, &image);
 }
 
 /// ^image.gif[]

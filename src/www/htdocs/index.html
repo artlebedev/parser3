@@ -31,18 +31,23 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
-image:create<BR>
-$drawing[^image:create(300;100)]
+$t[^table:set{id}]
+^$t.id=$t.id ?
+
+#image:create<BR>
+#$drawing[^image:create(300;100)]
+drawing:load<BR>
+$drawing[^image:load[001004paf(c)lena_karin.gif]]
 $drawing{
 ^$drawing.width=$width<BR>
 ^$drawing.height=$height<BR>
 ^for[i](0;$width/4){
-^line(0;0;$:i*4;$height-1;0)
+^line(0;0)($:i*4)($height-1;0)
 }
 
-^rectangle(100;10;180;40;0xFF0000)
-^bar(100+20;10+20;180+20;40+20;0x00FF00)
-^fill(0;30;0x0000FF)
+^rectangle(100;10)(180;40)(0xFF0000)
+^bar(100+20;10+20)(180+20;40+20)(0xFFFF00)
+#^fill(0;0)(0x0000FF)
 ^replace(0xFFffFF;0x00FF00)(30;0)(150;99)(200;50)
 ^polybar(0x00FFFF)(200;100)(170;99)(280;50)
 ^polygon(0xFFFF00)(210;100)(160;90)(250;50)

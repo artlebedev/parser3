@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.32 2001/04/09 13:21:13 paf Exp $
+	$Id: pa_hash.C,v 1.33 2001/04/12 14:50:29 paf Exp $
 */
 
 /*
@@ -48,6 +48,7 @@ void Hash::expand() {
 	// allocated bigger refs array
 	allocates_index=allocates_index+1<allocates_count?allocates_index+1:allocates_count-1;
 	allocated=allocates[allocates_index];
+	threshold=allocated*THRESHOLD_PERCENT/100;
 	refs=static_cast<Pair **>(calloc(sizeof(Pair *)*allocated));
 
 	// rehash
