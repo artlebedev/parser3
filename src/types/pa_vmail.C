@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2003/03/20 12:58:08 $";
+static const char* IDENT_VMAIL_C="$Date: 2003/04/04 08:23:07 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -416,6 +416,11 @@ static void extractEmail(String& result, char *email, const String& origin_strin
 	Pool& pool=string.pool();
 
 	char *emails=string.cstr();
+	if(strpbrk(emails, "\r\n"/*hacker can send us "to:normal\nbcc:hidden"*/))
+		throw Exception("email.format",
+			&string,
+			"emails contain bad characters (line breaks)");
+
 	String& result=*new(pool) String(pool);
 	while(char *email=lsplit(&emails, ',')) {
 		rsplit(email, '>');
