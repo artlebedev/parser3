@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.65 2001/08/01 12:08:40 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.66 2001/08/02 06:54:12 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -140,7 +140,11 @@ void pa_globals_init(Pool& pool) {
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
 	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
 	origins_mode_name=NEW String(pool, ORIGINS_MODE_NAME);
-	
+
+	//^switch ^case
+	switch_data_name=NEW String(pool, SWITCH_DATA_NAME);
+	case_default_value=NEW String(pool, CASE_DEFAULT_VALUE);
+
 	// hashes
 	untaint_lang_name2enum=NEW Hash(pool);
 	#define ULN(var, cstr, LANG) \
