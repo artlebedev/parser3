@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.6 2001/04/07 15:16:26 paf Exp $
+	$Id: mail.C,v 1.7 2001/04/07 15:34:56 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -23,7 +23,53 @@
 
 VStateless_class *mail_class;
 
-// methods
+// helpers
+
+/// ^mail:send[$attach[$type[uue|mime64] $value[DATA]]] 
+static const String& attach_hash_to_string(Request& r, const String& origin_string, 
+										   Hash& attach_hash) {
+	Pool& pool=r.pool();
+
+	Value *vtype=static_cast<Value *>(attach_hash.get(*new(pool) String(pool, "type")));
+	if(!vtype)
+		PTHROW(0, 0,
+			&origin_string,
+			"has no $type");
+
+	Value *value=static_cast<Value *>(attach_hash.get(*value_name));
+	if(!value)
+		PTHROW(0, 0,
+			&origin_string,
+			"has no $value");
+
+	const String *file_name;
+	if(Value *vfile_name=static_cast<Value *>(attach_hash.get(
+		*new(pool) String(pool, "file-name"))))
+		file_name=&vfile_name->as_string();
+	else
+		file_name=new(pool) String(pool, "noname.dat");
+
+	String& result=*new(pool) String(pool);
+
+	// content-disposition: attachment; filename="user_file_name"
+	result+="content-disposition: attachment; filename=\"";
+	result+=file_name->cstr(String::UL_FILE_NAME);
+	result+="\"\n";
+
+	const String& type=vtype->as_string();
+	if(type=="uue") {
+		// content-transfer-encoding: x-uuencode
+		result+="content-transfer-encoding: x-uuencode\n";
+		result+="\n";
+		result+="todo";
+	} else 
+		PTHROW(0, 0,
+			&type,
+			"unknown encode type");
+	
+	return result;
+}
+
 
 struct Mail_info {
 	String *attribute_to_exclude;
@@ -54,24 +100,31 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 	*mi.header+="\n";
 }
 struct Seq_item {
-	const String *part_number;
+	const String *part_name;
 	Value *part_value;
 };
-static void add_part(const Hash::Key& part_number, Hash::Val *part_value, 
+static void add_part(const Hash::Key& part_name, Hash::Val *part_value, 
 					 void *info) {
 	Seq_item **seq_ref=static_cast<Seq_item **>(info);
-	(**seq_ref).part_number=&part_number;
+	(**seq_ref).part_name=&part_name;
 	(**seq_ref).part_value=static_cast<Value *>(part_value);
 	(*seq_ref)++;
 }
 static double key_of_part(const void *item) {
-	const char *cstr=static_cast<const Seq_item *>(item)->part_number->cstr();
+	const char *cstr=static_cast<const Seq_item *>(item)->part_name->cstr();
 	char *error_pos;
 	return strtod(cstr, &error_pos);
 }
 static int sort_cmp_string_double_value(const void *a, const void *b) {
 	double va=key_of_part(a);
 	double vb=key_of_part(b);
+
+	// 0 logically equals infinity. so that attachments would go last
+	if(va==0)
+		return +1;
+	if(vb==0)
+		return -1;
+
 	if(va<vb)
 		return -1;
 	else if(va>vb)
@@ -96,11 +149,10 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 	if(Value *body_element=static_cast<Value *>(letter_hash.get(*body_name))) {
 		if(Hash *body_hash=body_element->get_hash()) {
 			char *boundary=(char *)pool.malloc(MAX_NUMBER);
-			snprintf(boundary, MAX_NUMBER-6/*level_*/, "level_%d", level);
+			snprintf(boundary, MAX_NUMBER, "%d", level);
 			// multi-part
 			((result+=
-				"content-type: multipart/mixed;\n"
-				"    boundary=\"----=")+=boundary)+="\"\n"
+				"content-type: multipart/mixed; boundary=\"")+=boundary)+="\"\n"
 				"\n"
 				"This is a multi-part message in MIME format.";
 
@@ -114,19 +166,22 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			// ..insert in 'seq' order
 			for(int i=0; i<body_hash->size(); i++) {
 				// intermediate boundary
-				((result+="\n------=")+=boundary)+="\n";
+				((result+="\n--")+=boundary)+="\n";
 
 				if(Hash *part_hash=seq[i].part_value->get_hash())
-					result+=letter_hash_to_string(r, method_name, *part_hash, 
-						level+1, 0, 0);
+					if(seq[i].part_name->mid(0, 6/*attach*/)=="attach")
+						result+=attach_hash_to_string(r, *seq[i].part_name, *part_hash);
+					else 
+						result+=letter_hash_to_string(r, method_name, *part_hash, 
+							level+1, 0, 0);
 				else
 					PTHROW(0, 0,
-						seq[i].part_number,
+						seq[i].part_name,
 						"part is not hash");
 			}
 
 			// finish boundary
-			((result+="\n------=")+=boundary)+="--\n";
+			((result+="\n--")+=boundary)+="--\n";
 		} else {
 			result+="\n"; // header|body separator
 			result+=body_element->as_string();  // body
@@ -138,7 +193,6 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 
 	return result;
 }
-
 
 /// @test unix ver
 static void sendmail(Request& r, const String& method_name, 
@@ -180,6 +234,9 @@ static void sendmail(Request& r, const String& method_name,
 #endif
 }
 
+
+// methods
+
 static void _send(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
@@ -200,69 +257,8 @@ static void _send(Request& r, const String& method_name, Array *params) {
 	//sendmail(r, method_name, letter, from, to);
 }
 
-/// ^mail:attach[uue|base64;DATA]
-/// ^mail:attach[uue|base64;DATA;user-file-name]
-static void _attach(Request& r, const String& method_name, Array *params) {
-	Pool& pool=r.pool();
-
-	Value& vtype=*static_cast<Value *>(params->get(0));
-	// forcing [this vtype]
-	r.fail_if_junction_(true, vtype, method_name, "type must not be code");
-
-	Value& vdata=*static_cast<Value *>(params->get(1));
-	// forcing [this vtype]
-	r.fail_if_junction_(true, vdata, method_name, "data must not be code");
-	const VFile& vfile=*vdata.as_vfile();
-
-	Value *user_file_name;
-	if(params->size()>2) {
-		user_file_name=static_cast<Value *>(params->get(0));
-		// forcing [this vtype]
-		r.fail_if_junction_(true, *user_file_name, method_name, 
-			"user file name must not be code");
-	} else {
-		user_file_name=static_cast<Value *>(vfile.fields().get(*name_name));
-	}
-
-	VHash& result=*new(pool) VHash(pool);
-
-	{ // content-disposition: attachment; filename='user_file_name'
-		VHash& content_disposition=*new(pool) VHash(pool);
-		content_disposition.hash().put(*value_name,
-			new(pool) VString(*new(pool) String(pool, "attachment")));
-		content_disposition.hash().put(
-			*new(pool) String(pool, "filename"),
-			user_file_name);
-		result.hash().put(*new(pool) String(pool, "content-disposition"),
-			&content_disposition);
-	}
-
-	const String& type=vtype.as_string();
-	if(type=="uue") {
-		{ // content-transfer-encoding: x-uuencode
-			VString& content_transfer_encoding=*new(pool) VString(
-				*new(pool) String(pool, "x-uuencode"));
-			result.hash().put(*new(pool) String(pool, "content-transfer-encoding"),
-				&content_transfer_encoding);
-		}
-
-		result.hash().put(*body_name, 
-			new(pool) String(pool, "todo"));
-	} else 
-		PTHROW(0, 0,
-			&type,
-			"unknown encode type");
-
-	result.set_name(*new(pool) String(pool, "100")); // so that would go last
-	r.write_no_lang(result);
-}
-
 // initialize
 void initialize_mail_class(Pool& pool, VStateless_class& vclass) {
 	// ^mail:send{hash}
 	vclass.add_native_method("send", Method::CT_STATIC, _send, 1, 1);
-
-	// ^mail:encode[uue|base64;DATA]
-	// ^mail:encode[uue|base64;DATA;user-file-name]
-	vclass.add_native_method("attach", Method::CT_ANY, _attach, 2, 3);
 }

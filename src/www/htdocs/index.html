@@ -31,7 +31,7 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
-^mail:send[
+<pre>^mail:send[
     $to[paf@design.ru]
     $from[paf@design.ru]
 	$body[
@@ -46,9 +46,13 @@ sincerily yours,
 PAF
 ]
 		]
-		$attach[uue;test]
+		$attach[
+			$value[test]
+			$type[uue]
+			$file-name[te st.txt]
+		]
 	]
-]
+]</pre>
 <HR>
 
 ^rem{^mail:send[
