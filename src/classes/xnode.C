@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.22 2002/01/11 12:24:27 paf Exp $
+	$Id: xnode.C,v 1.23 2002/01/11 12:39:05 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -12,6 +12,7 @@
 #include "pa_charset.h"
 #include "pa_request.h"
 #include "pa_vxnode.h"
+#include "pa_vvoid.h"
 
 #include "xnode.h"
 
@@ -443,6 +444,8 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 		case XPATH_UNDEFINED: break;
 		case XPATH_NODESET: 
 			{
+				if(!res->nodesetval->nodeNr)
+					break; // empty result strangly has NODESET  res->type
 				if(res->nodesetval->nodeNr>1)
 					throw Exception(0, 0,
 					&expression,
@@ -453,7 +456,7 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 					gdome_xml_n_mkref(res->nodesetval->nodeTab[0]));
 				result.set_name(method_name);
 				r.write_no_lang(result);
-				break;
+				return;
 			}
 		//case XPATH_BOOLEAN: nothing; break;
 		//case XPATH_NUMBER: nothing; break;
