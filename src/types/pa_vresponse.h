@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vresponse.h,v 1.1 2001/03/18 11:37:54 paf Exp $
+	$Id: pa_vresponse.h,v 1.2 2001/03/18 17:39:30 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -20,6 +20,9 @@ public: // Value
 	
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "response"; }
+
+	// response: ffields
+	Hash *get_hash() { return &ffields; }
 
 	// response: CLASS,BASE,method,fields
 	Value *get_element(const String& name) {

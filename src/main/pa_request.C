@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.48 2001/03/18 17:24:55 paf Exp $
+	$Id: pa_request.C,v 1.49 2001/03/18 17:39:29 paf Exp $
 */
 
 #include <string.h>
@@ -80,15 +80,13 @@ static void output_response_attribute(const Hash::Key& aattribute, Hash::Value *
 
 	Value *meaning=static_cast<Value *>(ameaning);
 	String string(meaning->pool());
-	if(VHash *vhash=meaning->get_hash()) {
+	if(Hash *hash=meaning->get_hash()) {
 		// $value(value) $subattribute(subattribute value)
-		Hash& hash=vhash->hash();
-
-		Value *value=static_cast<Value *>(hash.get(*value_name));
+		Value *value=static_cast<Value *>(hash->get(*value_name));
 		if(value)
 			string.append(value->as_string(), String::Untaint_lang::URI, true);
 
-		hash.foreach(append_attribute_subattribute, &string);
+		hash->foreach(append_attribute_subattribute, &string);
 	} else // string value
 		string.append(meaning->as_string(), String::Untaint_lang::URI, true);
 
@@ -149,9 +147,7 @@ void Request::core(Exception& system_exception,
 
 		// $MAIN:defaults
 		Value *defaults=main_class?main_class->get_element(*defaults_name):0;
-		// $defaults.content-type
-		if(fdefault_content_type=defaults?defaults->get_element(*content_type_name):0)
-			response.fields().put(*content_type_name, fdefault_content_type);
+		fdefault_content_type=defaults?defaults->get_element(*content_type_name):0;
 
 		// there must be some auto.p
 		if(!main_class)
@@ -188,9 +184,6 @@ void Request::core(Exception& system_exception,
 			
 			// reset response
 			response.fields().clear();
-
-			// this is what we'd return in $response:content-type
-			Value *content_type;
 
 			// this is what we'd return in $response:body
 			const String *body_string=0;
@@ -267,9 +260,6 @@ void Request::core(Exception& system_exception,
 								code_value=NEW VUnknown(pool());
 							frame.store_param(code_name, code_value);
 
-							// future $response:content-type=
-							//   content-type from any auto.p
-							content_type=fdefault_content_type;
 							// future $response:body=
 							//   execute ^exception[origin;source;comment;type;code]
 							body_string=execute_method(frame, *method);
@@ -306,15 +296,11 @@ void Request::core(Exception& system_exception,
 				}
 
 				// future $response:content-type
-				String &content_type_value=*NEW String(pool(), "text/plain");
-				content_type=NEW VString(content_type_value);
+				response.fields().put(*content_type_name, 
+					NEW VString(*NEW String(pool(), "text/plain")));
 				// future $response:body
 				body_string=NEW String(pool(), buf);
 			}
-
-			// set $response:content-type
-			if(content_type)
-				response.fields().put(*content_type_name, content_type);
 
 			// ERROR. write it out
 			output_result(*body_string);
@@ -391,6 +377,9 @@ char *Request::absolute(const char *name) {
 }
 
 void Request::output_result(const String& body_string) {
+	// set default content-type
+	response.fields().put_dont_replace(*content_type_name, fdefault_content_type);
+
 	// header: response fields 
 	response.fields().foreach(output_response_attribute, /*excluding*/ body_name);
 	const char *body=body_string.cstr();
