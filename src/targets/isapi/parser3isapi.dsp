@@ -115,5 +115,9 @@ SOURCE=.\parser3isapi.C
 
 SOURCE=.\parser3isapi.def
 # End Source File
+# Begin Source File
+
+SOURCE=.\pool_storage.h
+# End Source File
 # End Target
 # End Project

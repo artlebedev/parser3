@@ -97,7 +97,7 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 	}
 }
 
-/// @todo intelligent cache-control
+/// @todo parser4: intelligent cache-control
 void SAPI::send_header(Pool& pool) {
 	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
@@ -191,7 +191,7 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 /** 
 	ISAPI // main workhorse
 
-	@todo 
+	@todo parser4:
 		IIS: remove trailing default-document[index.html] from $request.uri.
 		to do that we need to consult metabase,
 		wich is tested&works but seems slow runtime 

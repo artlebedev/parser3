@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.47 2001/03/24 19:30:08 paf Exp $
+	$Id: parser3.C,v 1.48 2001/03/26 09:09:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -75,7 +75,7 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 		printf("%s: %s\n", key, value);
 }
 
-/// @todo intelligent cache-control
+/// @todo parser4: intelligent cache-control
 void SAPI::send_header(Pool& pool) {
 	if(cgi) {
 		puts("expires: Fri, 23 Mar 2001 09:32:23 GMT");
@@ -125,7 +125,7 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 /**
 	main workhorse
 
-	@todo 
+	@todo parser4:
 		IIS: remove trailing default-document[index.html] from $request.uri.
 		to do that we need to consult metabase,
 		wich is tested but seems slow.

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vresponse.h,v 1.4 2001/03/26 08:27:28 paf Exp $
+	$Id: pa_vresponse.h,v 1.5 2001/03/26 09:09:49 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -17,17 +17,17 @@
 
 class Response;
 
-/// response class
+/// value of type 'response'
 class VResponse : public VStateless_object {
 public: // Value
 	
-	// all: for error reporting after fail(), etc
+	/// all: for error reporting after fail(), etc
 	const char *type() const { return "response"; }
 
-	// response: ffields
+	/// Response: ffields
 	Hash *get_hash() { return &ffields; }
 
-	// response: CLASS,BASE,method,fields
+	/// Response: CLASS,BASE,method,fields
 	Value *get_element(const String& name) {
 		// $CLASS,$BASE,$method
 		if(Value *result=VStateless_object::get_element(name))
@@ -37,13 +37,14 @@ public: // Value
 		return static_cast<Value *>(ffields.get(name));
 	}
 
-	// response: (attribute)=value
+	/// Response: (attribute)=value
 	void put_element(const String& name, Value *value) { 
 		ffields.put(name, value);
 	}
 
 protected: // VAliased
 
+	/// disable .CLASS element. @see VAliased::get_class_alias
 	VStateless_class *get_class_alias() { return 0; }
 
 public: // usage

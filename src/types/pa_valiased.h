@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.h,v 1.9 2001/03/26 08:27:27 paf Exp $
+	$Id: pa_valiased.h,v 1.10 2001/03/26 09:09:48 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -66,7 +66,7 @@ public: // creation
 protected: // VAliased
 
 /**
-	used in get_element for getting $CLASS and $BASE @returns current class alias.
+	used in get_element for getting $CLASS and $BASE. @returns current class alias.
 
 	some classes have only dynamic method calls
 	and don't want to deal with static method calls:
@@ -76,9 +76,9 @@ protected: // VAliased
 	more that that - they even have no name in Parser -
 	they are not registered in in Request::classes.
 
-	so the only way to get to the class having no ability 
-	to use @c $CLASS_NAME: or @c ^CLASS_NAME: syntax is to use something like this:
-
+	so the only way to get to the 'class' having no ability 
+	to use @c $CLASS_NAME: or @c ^CLASS_NAME: syntax 
+	is to use something like this:
 	ex: VInt
 		this is nonsense:
 		@verbatim
@@ -86,7 +86,7 @@ protected: // VAliased
 		@endverbatim
 
 	to disable that and to enable no 'self' checks in methods realisations
-	such classes can override it with @c {return0;}
+	such classes can override this method with @c {return0;}
 */
 	virtual VStateless_class *get_class_alias() { return fclass_alias; }
 

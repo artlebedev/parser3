@@ -1,9 +1,11 @@
 /*
-	Parser
+	Parser: string parser class decl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.12 2001/03/26 08:27:28 paf Exp $
+	$Id: pa_vstring.h,v 1.13 2001/03/26 09:09:49 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -15,16 +17,17 @@
 #include "pa_vdouble.h"
 #include "_string.h"
 
+/// value of type 'string'. implemented with @c String
 class VString : public VStateless_object {
 public: // Value
 
-	// all: for error reporting after fail(), etc
+	/// all: for error reporting after fail(), etc
 	const char *type() const { return "string"; }
-	// string: fstring as VDouble
+	/// VString: fstring as VDouble
 	Value *get_expr_result() { return NEW VDouble(pool(), get_double()); }
-	// string: fstring
+	/// VString: fstring
 	const String *get_string() { return &fstring; };
-	// string: fstring
+	/// VString: fstring
 	double get_double() { 
 		double result;
 		const char *cstr=fstring.cstr();
@@ -43,7 +46,7 @@ public: // Value
 		return result;
 	}
 
-	// string: $CLASS,$BASE,$method
+	/// VString: $CLASS,$BASE,$method
 	Value *get_element(const String& name) {
 		// $CLASS,$BASE,$method
 		if(Value *result=VStateless_object::get_element(name))
@@ -55,6 +58,7 @@ public: // Value
 
 protected: // VAliased
 
+	/// disable .CLASS element. @see VAliased::get_class_alias
 	VStateless_class *get_class_alias() { return 0; }
 
 public: // usage

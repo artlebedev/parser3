@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.18 2001/03/24 14:31:00 paf Exp $
+	$Id: mod_parser3.C,v 1.19 2001/03/26 09:09:45 paf Exp $
 */
 
 #include "httpd.h"
@@ -156,7 +156,7 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 /**
 	main workhorse
 	
-	@todo intelligent cache-control
+	@todo parser4: intelligent cache-control
 */
 static int parser_handler(request_rec *r)
 {

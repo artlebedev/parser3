@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.21 2001/03/25 10:30:43 paf Exp $
+	$Id: untaint.C,v 1.22 2001/03/26 09:09:44 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -71,7 +71,7 @@ static bool typo_present(Array::Item *value, const void *info) {
 		partial==1; // typo left column starts 'src'
 }
 
-/// @todo optimize whitespaces for all but 'html'
+/// @todo @b now: optimize whitespaces for all but 'html'
 char *String::store_to(char *dest) const {
 	// $MAIN:html-typo table
 	Table *user_typo_table=static_cast<Table *>(pool().tag());
