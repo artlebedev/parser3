@@ -206,7 +206,7 @@ InputName=compile
 
 "compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	cd $(InputDir) 
-	bison -v $(InputName).y -o compile.tab.C 
+	..\win32tools\bison -v $(InputName).y -o compile.tab.C 
 	
 # End Custom Build
 
@@ -431,7 +431,7 @@ SOURCE=..\classes\classes.awk
 
 !IF  "$(CFG)" == "main - Win32 Release"
 
-# Begin Custom Build - Creating classes.inc...
+# Begin Custom Build - Scanning classes/, creating classes.inc...
 InputPath=..\classes\classes.awk
 
 "..\classes\classes.inc" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -442,7 +442,7 @@ InputPath=..\classes\classes.awk
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
 
-# Begin Custom Build - Creating classes.inc...
+# Begin Custom Build - Scanning classes/, creating classes.inc...
 InputPath=..\classes\classes.awk
 
 "..\classes\classes.inc" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
