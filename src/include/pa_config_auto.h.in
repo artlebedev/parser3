@@ -168,6 +168,9 @@
 /* disabled reading and executing files of non-process-effective-group */
 #undef NO_FOREIGN_GROUP_FILES
 
+/* one can throw from dynamic library */
+#undef PA_WITH_SJLJ_EXCEPTIONS
+
 /* xml-abled parser (uses shared library) */
 #undef XML
 
