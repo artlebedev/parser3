@@ -265,6 +265,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         опции поиска+=
         g заменить все вхождения, а не одно
     !^строка.{l|r}split[разделитель] таблица из столбца $piece
+    ^строка.split[разделитель][[lrhv]]
+    	вариант с параметрами
     !^строка.upper|lower[] 
     X^строка.truncate(предел терпенья) стиль :(
     !^строка.length[]

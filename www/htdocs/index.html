@@ -218,10 +218,16 @@ $selffilespec[$filespec]
 #^cookieexpirestest[]
 #^postest[]
 #^voidpostest[]
-^virtualtest[]
+#^virtualtest[]
 #^badcolumntest[]
+^delimiters[]
 <hr>
 OK
+
+@delimiters[]
+$a#1[1]<br>
+$a#1=<br>
+
 
 @badcolumntest[]
 $table[^table::load[ext.cfg]]

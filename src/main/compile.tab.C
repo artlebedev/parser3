@@ -38,7 +38,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.61 2002/08/21 11:47:25 paf Exp $
+	$Id: compile.tab.C,v 1.62 2002/08/27 10:22:11 paf Exp $
 */
 
 /**
@@ -2281,7 +2281,7 @@ default:
 			case '&': case '|': 
 			case '=': case '!':
 			// common delimiters
-			case ',': case '?':
+			case ',': case '?': case '#':
 			// before call
 			case '^': 
 				pop_LS(PC);

@@ -1,90 +1,12 @@
-From: "Alexandr Petrosian \(PAF\)" <PAF@design.ru>
-To: "Developers" <dev@design.ru>
-Subject: xpath: id function
-Date: Fri, 16 Aug 2002 16:58:03 +0400
-MIME-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="----=_NextPart_000_0048_01C24546.1605A090"
-X-Priority: 3
-X-MSMail-Priority: Normal
-X-Mailer: Microsoft Outlook Express 6.00.2600.0000
-X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
-
-This is a multi-part message in MIME format.
-
-------=_NextPart_000_0048_01C24546.1605A090
-Content-Type: text/plain;
-	charset="koi8-r"
-Content-Transfer-Encoding: 8bit
-
-можно частично определить DTD документа, определив только атрибуты типа ID.
-{attachment} пример .dtd
-
-при этом документ не будет valid, но это позволит позволяет делать такие
-XPath запросы:
-  <xsl:template match="refitem">
-       ... select="id(@refid)/..."
-{attachment} пример .xsl
-
-которые работают через hash-lookup-ы, т.е. супербыстро.
-
-тест 3000 запросов к 3000 узлам работает меньше секунды.
-
-используйте!
-
-PAF
-
-------=_NextPart_000_0048_01C24546.1605A090
-Content-Type: text/xml;
-	name="test.xsl"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
-	filename="test.xsl"
-
-<?xml version=3D"1.0"?>=20
-<xsl:stylesheet xmlns:xsl=3D"http://www.w3.org/1999/XSL/Transform" =
-version=3D"1.0">
-
-	<xsl:template match=3D"document">
-		<output>
-		<xsl:apply-templates select=3D"refitems"/>
-		</output>
-	</xsl:template>
-
-	<xsl:template name=3D"refitems">
-		z<xsl:apply-templates select=3D"refitem"/>	=09
-	</xsl:template>
-
-  <xsl:template match=3D"refitem">
-  	<xsl:value-of select=3D"id(@refid)/@id"/>
-  </xsl:template>
-
-</xsl:stylesheet>
-
-------=_NextPart_000_0048_01C24546.1605A090
-Content-Type: text/xml;
-	name="test.dtd"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="test.dtd"
-
-<?xml version="1.0" encoding="ISO-8859-1"?> 
-
-<!ELEMENT document ANY>
-<!ELEMENT items (item*)>
-<!ELEMENT item EMPTY>
-<!ATTLIST item 
-	id ID #REQUIRED
->
-
-<!ELEMENT refitems (refitem*)>
-<!ELEMENT refitem EMPTY>
-<!ATTLIST refitem
-	refid IDREF #REQUIRED
->
-
-<!ATTLIST refitem
-	value CDATA #REQUIRED
->
-
-------=_NextPart_000_0048_01C24546.1605A090--
+From alx@rol3.design.ru Mon Aug 26 17:19:27 2002
+Received: from rol3.design.ru (localhost [127.0.0.1])
+	by rol3.design.ru (8.12.3/8.12.3) with ESMTP id g7QDJRui033087
+	for <alfa@rol3.design.ru>; Mon, 26 Aug 2002 17:19:27 +0400 (MSD)
+	(envelope-from alx@rol3.design.ru)
+Received: (from root@localhost)
+	by rol3.design.ru (8.12.3/8.12.3/Submit) id g7QDJRgw033086
+	for alfa@rol3; Mon, 26 Aug 2002 17:19:27 +0400 (MSD)
+Date: Mon, 26 Aug 2002 17:19:27 +0400 (MSD)
+From: Alex Korchmar <alx@rol3.design.ru>
+Message-Id: <200208261319.g7QDJRgw033086@rol3.design.ru>
+To: alfa@rol3.design.ru
