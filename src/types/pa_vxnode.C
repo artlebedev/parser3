@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXNODE_C="$Date: 2002/09/04 07:46:09 $";
+static const char* IDENT_VXNODE_C="$Date: 2002/10/08 12:13:37 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -116,7 +116,7 @@ Value *VXnode::get_element(const String& aname, Value *aself, bool looking_up) {
 		case GDOME_DOCUMENT_TYPE_NODE: 
 			{
 				GdomeDocumentType *doctype=GDOME_DT(selfNode);
-				if(aname=="aname") {
+				if(aname=="name") {
 					// readonly attribute DOMString aname;
 					// The aname of DTD; i.e., the aname immediately following 
 					// the DOCTYPE keyword in an XML source document.
