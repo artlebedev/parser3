@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2004/07/07 16:04:53 $";
+static const char * const IDENT_OP_C="$Date: 2005/02/17 14:56:54 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -757,6 +757,11 @@ static void _throw_operator(Request&, MethodParams& params) {
 	}
  }
 
+static void _sleep_operator(Request& r, MethodParams& params) {
+	double seconds=params.as_double(0, "seconds must be double", r);
+	pa_sleep((int)trunc(seconds), (int)trunc(seconds*1000));
+ }
+
 #if defined(WIN32) && defined(_DEBUG)
 #	define PA_BPT
 static void _bpt(Request&, MethodParams&) {
@@ -827,6 +832,7 @@ VClassMAIN::VClassMAIN(): VClass() {
 	// ^throw[type;source;comment]
 	add_native_method("throw", Method::CT_ANY, _throw_operator, 1, 3);
 
+	add_native_method("sleep", Method::CT_ANY, _sleep_operator, 1, 1);
 }
 
 // constructor & configurator
