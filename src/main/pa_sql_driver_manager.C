@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2004/02/11 15:33:16 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2004/03/04 12:05:16 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -46,9 +46,34 @@ void SQL_Driver_services_impl::transcode(const char* src, size_t src_length,
 	) 
 {
 	try {
+		// to speed up sql transcode [lots of charsets::get-s -- twice for each cell]
+		// without complicating sql driver API
+		// we need to cache couple of name->charset pairs
+		// assuming pointers to names are are NOT to local vars 
+
+		struct cache_record {
+			const char* name;
+			Charset* object;
+		} cache[2]={{0,0}, {0,0}};
+
+		Charset* charset_from_object;
+		Charset* charset_to_object;
+		if(charset_from_name==cache[0].name) {
+			charset_from_object=cache[0].object;
+		} else {
+			cache[0].name=charset_from_name;
+			cache[0].object=charset_from_object=&charsets.get(charset_from_name);
+		}
+		if(charset_to_name==cache[1].name) {
+			charset_to_object=cache[1].object;
+		} else {
+			cache[1].name=charset_to_name;
+			cache[1].object=charset_to_object=&charsets.get(charset_to_name);
+		}
+
 		String::C result=Charset::transcode(String::C(src, src_length), 
-			charsets.get(charset_from_name),
-			charsets.get(charset_to_name));
+			*charset_from_object,
+			*charset_to_object);
 		dst=result.str;
 		dst_length=result.length;
 	} catch(const Exception& e) {
