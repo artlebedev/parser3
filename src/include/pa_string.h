@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.65 2001/04/03 14:39:02 paf Exp $
+	$Id: pa_string.h,v 1.66 2001/04/03 15:07:33 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -184,10 +184,12 @@ public:
 		const String& delim, 
 		Untaint_lang lang, int limit=-1) const;
 
+	typedef void (*Row_action)(Table& table, Array& row, void *info);
 	bool match(const String *aorigin,
 		const String& regexp, 
 		const String *options,
-		Table **table) const;
+		Table **table,
+		Row_action row_action, void *info) const;
 
 #ifndef NO_STRING_ORIGIN
 	/// origin of string. calculated by first row

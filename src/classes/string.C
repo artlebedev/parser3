@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.26 2001/04/03 14:38:58 paf Exp $
+	$Id: string.C,v 1.27 2001/04/03 15:07:31 paf Exp $
 */
 
 #include "pa_request.h"
@@ -14,6 +14,7 @@
 #include "pa_vint.h"
 #include "pa_vtable.h"
 #include "pa_vbool.h"
+#include "pa_string.h"
 
 // global var
 
@@ -136,7 +137,24 @@ static void _rsplit(Request& r, const String& method_name, Array *params) {
 	r.write_no_lang(*new(pool) VTable(pool, &table));
 }
 
-/// ^string.match{regexp}[options]
+static void search_row_action(Table& table, Array& row, void *) {
+	table+=&row;
+}
+
+struct Replace_action_info {
+	String *string;
+	Value *replacement_code;
+};
+static void replace_row_action(Table& table, Array& row, void *info) {
+	Replace_action_info& ai=*static_cast<Replace_action_info *>(info);
+	//table+=&row;
+	ai.string->APPEND_CONST("R!");
+}
+
+/** search/replace
+	^string.match{regexp}[options]
+	^string.match{regexp}[options]{replacement-code}
+*/
 static void _match(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 	const String& string=*static_cast<VString *>(r.self)->get_string();
@@ -153,21 +171,39 @@ static void _match(Request& r, const String& method_name, Array *params) {
 		options=&value.as_string();
 	}
 
+	Value *result;
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	Table *table;
-	Value *result;
-	if(string.match(&method_name, 
-		r.process(regexp).as_string(), options,
-		&table)) {
-		// matched
-		if(table->columns()->size()==3 && // just matched[3=pre/match/post], no substrings
-			table->size()==1)  // just one row, not Global search
-			result=new(pool) VBool(pool, true);
-		else // table of match column+substring columns
-			result=new(pool) VTable(pool, table);
-	} else // not global & not matched
-		result=new(pool) VBool(pool, false);
+	if(params->size()<3) { // search
+		if(string.match(&method_name, 
+			r.process(regexp).as_string(), options,
+			&table,
+			search_row_action, 0)) {
+			// matched
+			if(table->columns()->size()==3 && // just matched[3=pre/match/post], no substrings
+				table->size()==1)  // just one row, not /g_lobal search
+				result=new(pool) VBool(pool, true);
+			else // table of pre/match/post+substrings
+				result=new(pool) VTable(pool, table);
+		} else // not matched [not global]
+			result=new(pool) VBool(pool, false);
+	} else { // replace
+		Value& replacement_code=*static_cast<Value *>(params->get(2));
+		// forcing {this param type}
+		r.fail_if_junction_(false, replacement_code, 
+			method_name, "replacement code must be junction");
 
+		String& string=*new(pool) String(pool);
+		Replace_action_info replace_action_info={
+			&string,
+			&replacement_code
+		};
+		string.match(&method_name, 
+			r.process(regexp).as_string(), options,
+			&table,
+			replace_row_action, &replace_action_info);
+		result=new(pool) VString(string);
+	}
 	result->set_name(method_name);
 	r.write_no_lang(*result);
 }
@@ -203,6 +239,7 @@ void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 	vclass.add_native_method("rsplit", Method::CT_DYNAMIC, _rsplit, 1, 1);
 
 	// ^string.match{regexp}[options]
+	// ^string.match{regexp}[options]{replacement-code}
 	vclass.add_native_method("match", Method::CT_DYNAMIC, _match, 1, 2);
 }	
 

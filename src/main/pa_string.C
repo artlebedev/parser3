@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.63 2001/04/03 14:39:03 paf Exp $
+	$Id: pa_string.C,v 1.64 2001/04/03 15:07:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -485,11 +485,13 @@ static void regex_options(char *options, int *result){
 			}
 }
 
-/// @test setlocale param to auto.p  @test pcre_malloc & pcre_free substs
+/// @test setlocale param to auto.p
 bool String::match(const String *aorigin,
 				   const String& regexp, 
 				   const String *options,
-				   Table **table) const { 
+				   Table **table,
+				   Row_action row_action, void *info) const { 
+
 	static const unsigned char *tables=0; {	SYNCHRONIZED(true);
 		if(!tables) {
 			setlocale(LC_CTYPE, "ru");
@@ -526,22 +528,24 @@ bool String::match(const String *aorigin,
 	int *ovector=(int *)malloc(sizeof(int)*
 		(ovecsize=(3/*pre/match/post*/+info_substrings)*3));
 
-	// create table
-	Array& columns=*NEW Array(pool());
-	columns+=string_pre_match_name;
-	columns+=string_match_name;
-	columns+=string_post_match_name;
-	for(int i=1; i<=info_substrings; i++) {
-		char *column=(char *)malloc(MAX_NUMBER);
-		snprintf(column, MAX_NUMBER, "%d", i);
-		columns+=NEW String(pool(), column); // .i column name
+	{ // create table
+		Array& columns=*NEW Array(pool());
+		columns+=string_pre_match_name;
+		columns+=string_match_name;
+		columns+=string_post_match_name;
+		for(int i=1; i<=info_substrings; i++) {
+			char *column=(char *)malloc(MAX_NUMBER);
+			snprintf(column, MAX_NUMBER, "%d", i);
+			columns+=NEW String(pool(), column); // .i column name
+		}
+		*table=NEW Table(pool(), aorigin, &columns);
 	}
-	*table=NEW Table(pool(), aorigin, &columns);
 
+	int exec_option_bits=0;
 	while(true) {
 		int exec_substrings=pcre_exec(code, 0,
 			subject, length, startoffset,
-			0/*option_bits[0]*/, ovector, ovecsize);
+			exec_option_bits, ovector, ovecsize);
 		
 		if(exec_substrings==PCRE_ERROR_NOMATCH) {
 			(*pcre_free)(code);
@@ -566,7 +570,7 @@ bool String::match(const String *aorigin,
 			row+=&piece(ovector[i*2+0], ovector[i*2+1]); // .i column value
 		}
 		
-		(**table)+=&row;
+		(*row_action)(**table, row, info);
 
 		if(!option_bits[1]) { // not global
 			(*pcre_free)(code);
@@ -576,7 +580,7 @@ bool String::match(const String *aorigin,
 		startoffset=ovector[1];
 /*
 		if(option_bits[0] & PCRE_MULTILINE)
-			option_bits[0]|=PCRE_NOTBOL; // start of subject+startoffset not BOL
+			exec_option_bits|=PCRE_NOTBOL; // start of subject+startoffset not BOL
 */
 	}
 }
