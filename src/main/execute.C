@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.155 2001/05/11 17:45:10 parser Exp $
+	$Id: execute.C,v 1.156 2001/05/15 10:01:25 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -340,8 +340,7 @@ void Request::execute(const Array& ops) {
 				if(is_constructor)
 					wcontext->constructing(false);
 
-				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction, is_constructor);
-				frame->set_name(value->name());
+				VMethodFrame *frame=NEW VMethodFrame(pool(), value->name(), *junction, is_constructor);
 				PUSH(frame);
 				break;
 			}
@@ -365,17 +364,18 @@ void Request::execute(const Array& ops) {
 				
 				VStateless_class *called_class=frame->junction.self.get_class();
 				// not ^name.method call and
-				// is context object or class & is it my class or my parent's class?
+				// is context object or class & is it my class or my parent's class and?
 				VStateless_class *read_class=rcontext->get_class();
-				if(
-					!wcontext->somebody_entered_some_object() && 
+				if(!wcontext->somebody_entered_some_object() && 
 					read_class && read_class->is_or_derived_from(*called_class)) // yes
 					self=rcontext; // class dynamic call
 				else // no, not me or relative of mine (total stranger)
 					// were are constructing something and
-					// our constructor is just method call
+					// our constructor is just method call and
+					// not static-only-method call
 					if(frame->is_constructor && 
-						wcontext->somebody_entered_some_object()==1) {
+						wcontext->somebody_entered_some_object()==1 &&
+						frame->junction.method->call_type!=Method::CT_STATIC) {
 						// this is a constructor call
 						// some stateless_object creatable derivates
 						if(Value *value=called_class->create_new_value(pool()))

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.132 2001/05/10 12:57:25 paf Exp $
+	$Id: compile.y,v 1.133 2001/05/15 10:01:25 parser Exp $
 */
 
 /**
@@ -1062,7 +1062,7 @@ break2:
 			// strip last \n
 			end--;
 		}
-		if(end!=begin) { // last piece still alive?
+		if(end!=begin && PC.ls!=LS_COMMENT) { // last piece still alive and not comment?
 			// append it
 			PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line/*, start_col*/);
 		}

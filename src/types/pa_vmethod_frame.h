@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.7 2001/05/08 10:39:23 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.8 2001/05/15 10:01:25 parser Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -56,6 +56,7 @@ public: // wcontext
 public: // usage
 
 	VMethodFrame(Pool& apool, 
+		const String& name,
 		const Junction& ajunction/*info: always method-junction*/, 
 		bool ais_constructor) : 
 		WContext(apool, 0 /* empty */, false /* not constructing */),
@@ -69,7 +70,7 @@ public: // usage
 
 		if(method.max_numbered_params_count) { // are this method params numbered?
 			my=0; // no named parameters
-			fnumbered_params=NEW MethodParams(pool(), name()); // create storage
+			fnumbered_params=NEW MethodParams(pool(), name); // create storage
 		} else { // named params
 			my=NEW Hash(pool()); // create storage
 			fnumbered_params=0; // no numbered parameters

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.59 2001/05/11 17:45:10 parser Exp $
+	$Id: pa_value.h,v 1.60 2001/05/15 10:01:25 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -130,7 +130,7 @@ public: // Value
 	/** extract Value element
 		@return for
 		- VHash: (key)=value
-		- VAliased: sometimes $CLASS, $BASE [@see VAliased::hide_class()]
+		- VAliased: sometimes $CLASS, $BASE [see VAliased::hide_class()]
 		- VStateless_class: +$method
 		- VStateless_object: +$method
 		- VClass: (field)=STATIC value;(method)=method_ref with self=object_class
@@ -281,7 +281,7 @@ private:
 		if((result.get_junction()!=0) ^ as_junction)
 			THROW(0, 0,
 				&fmethod_name,
-				"%s", msg);
+				"%s (parameter #%d)", msg, index);
 		return result;
 	}
 

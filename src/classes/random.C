@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: random.C,v 1.11 2001/05/04 10:42:37 paf Exp $
+	$Id: random.C,v 1.12 2001/05/15 10:01:25 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -51,8 +51,8 @@ MRandom::MRandom(Pool& apool) : Methoded(apool) {
 	srand(getpid()+time(NULL));  rand();
 	
 
-	// ^random.generate[]
-	// ^random.generate(range)
+	// ^random:generate[]
+	// ^random:generate(range)
 	add_native_method("generate", Method::CT_STATIC, _generate, 1, 1);
 }
 
