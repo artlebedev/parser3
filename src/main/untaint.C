@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.80 2001/11/21 10:02:13 paf Exp $
+	$Id: untaint.C,v 1.81 2001/11/22 10:28:46 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -378,9 +378,8 @@ char *String::store_to(char *dest, Untaint_lang lang,
 		default:
 			throw Exception(0, 0, 
 				this, 
-				"unknown untaint language #%d of %d piece", 
-					static_cast<int>(row->item.lang), 
-					i); // never
+				"unknown untaint language #%d", 
+					static_cast<int>(row->item.lang)); // sould never
 			break; // never
 		}
 
@@ -413,6 +412,7 @@ break2:
 }
 
 char *String::cstr_debug_origins() const {
+	//_asm int 3;
 	char *result=(char *)malloc(size()+used_rows()*MAX_STRING*2);
 	char *dest=result;
 	
@@ -431,8 +431,16 @@ char *String::cstr_debug_origins() const {
 			else
 				dest+=sprintf(dest, "<unknown>");
 #endif
-			dest+=sprintf(dest, "#%s: ",
-				String_Untaint_lang_name[row->item.lang]);
+			uchar show_lang=row->item.lang & ~UL_OPTIMIZE_BIT;
+			if(show_lang>=sizeof(String_Untaint_lang_name)/sizeof(String_Untaint_lang_name[0]))
+				throw Exception(0, 0, 
+					this, 
+					"unknown untaint language #%d", 
+						static_cast<int>(show_lang)); // sould never
+
+			dest+=sprintf(dest, "#%s%s: ",
+				String_Untaint_lang_name[show_lang],
+				row->item.lang & UL_OPTIMIZE_BIT?".O":"");
 			char *dest_after_origins=dest;
 
 			memcpy(dest, row->item.ptr, row->item.size); 
