@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.66 2001/11/14 13:23:50 paf Exp $
+	$Id: pa_common.h,v 1.67 2001/12/07 15:24:46 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -114,14 +114,13 @@ void file_write(Pool& pool,
 				const String& file_spec,
 				const void *data, size_t size, 
 				bool as_text,
-				bool do_append=false/*,
-				bool exclusive=false*/);
+				bool do_append=false);
 
 /**
 	delete specified file 
 	throws an exception in case of problems
 */
-void file_delete(Pool& pool, const String& file_spec);
+bool file_delete(Pool& pool, const String& file_spec, bool fail_on_read_problem=true);
 /**
 	move specified file 
 	throws an exception in case of problems

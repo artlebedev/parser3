@@ -1,5 +1,5 @@
 @main[]
-^bigxslt[]
+^tcache2[]
 #$ORIGINS(1)
 #$t[^table::set{a b} ^table::set{c d}]
 #^ttaintuntaint[]
@@ -75,22 +75,10 @@
 <hr>
 OK
 
-@bigxslt[]
-$xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
-<document>
-        <script>
-        	here
-        </script>
-	<block>
-		<p>hi</p>
-	</block>
-</document>
-}]
-
-
-#^show-xdoc2[$xdoc]
-^show-xdoc2[^xdoc.transform[templates/_document.xslt]]
-<hr>
+@tcache2[]
+^cache[$DB_HOME/keyключ](2){
+	^math:random(100)
+}
 
 @ttaintuntaint[]
 <!-- некий панковский заголовок с буковкой C в круглых скобках -->^taint[html][
@@ -281,13 +269,14 @@ $dom_created_in_air[^xdoc::create[doc]]
 
 
 @tcache[]
+^rem{
 #^hashfile:clear[cache]
 $code[^hashfile::open[$DB_HOME;cache]]
-^code.cache[key](100){
+^code.cache[key](2){
 	^math:random(100)
 #	^code.delete[]
 }
-
+}
 
 @thashfileexp[]
 $hf[^hashfile::open[$DB_HOME;hashfile]]

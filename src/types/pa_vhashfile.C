@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_vhashfile.C,v 1.15 2001/11/23 12:56:38 paf Exp $
+	$Id: pa_vhashfile.C,v 1.16 2001/12/07 15:24:48 paf Exp $
 */
 
 #include "pa_config_includes.h"

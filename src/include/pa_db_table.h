@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.h,v 1.9 2001/11/23 12:56:37 paf Exp $
+	$Id: pa_db_table.h,v 1.10 2001/12/07 15:24:47 paf Exp $
 */
 
 #ifndef PA_DB_TABLE_H

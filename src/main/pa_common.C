@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.92 2001/11/23 12:56:37 paf Exp $
+	$Id: pa_common.C,v 1.93 2001/12/07 15:24:47 paf Exp $
 */
 
 #include "pa_common.h"
@@ -16,6 +16,8 @@
 #include "pa_hash.h"
 #include "pa_string.h"
 
+// some maybe-undefined constants
+
 #ifndef _O_TEXT
 #	define _O_TEXT 0
 #endif
@@ -24,6 +26,73 @@
 #endif
 #ifndef O_TRUNC
 #	define O_TRUNC 0
+#endif
+
+// locking constants
+
+#ifndef LOCK_EX
+// win32
+#	ifdef _LK_LOCK
+#		define LOCK_EX _LK_LOCK
+#	else
+// sun 
+#		ifdef F_LOCK
+#			define LOCK_EX F_LOCK
+#		else
+#			error unable to define LOCK_EX
+#		endif
+#	endif
+#endif
+
+#ifndef LOCK_SH
+// win32
+#	ifdef _LK_RLCK
+#		define LOCK_SH _LK_RLCK
+#	else
+// sun 
+/// @todo shared lock bit. forgot where to get those  F_LOCK consts group
+#		ifdef F_LOCK
+#			define LOCK_SH F_LOCK
+#		else
+#			error unable to define LOCK_SH
+#		endif
+#	endif
+#endif
+
+#ifndef LOCK_UN
+// win32
+#	ifdef _LK_UNLCK
+#		define LOCK_UN _LK_UNLCK
+#	else
+// sun 
+#		ifdef F_ULOCK
+#			define LOCK_UN F_ULOCK
+#		else
+#			error unable to define LOCK_UN
+#		endif
+#	endif
+#endif
+
+#ifndef HAVE_FLOCK
+// win32
+#ifdef HAVE__LOCKING
+static void flock(int fd, int operation) {
+	lseek(fd, 0, SEEK_SET);
+	while(_locking(fd, operation, 1)!=0);
+	lseek(fd, 0, SEEK_SET);
+}
+#else
+// sun
+#ifdef HAVE_LOCKF
+static void flock(int fd, int operation) {
+	lseek(fd, 0, SEEK_SET);
+	lockf(fd, operation, 1);
+	lseek(fd, 0, SEEK_SET);
+}
+#else
+#error unable to find locking func
+#endif
+#endif
 #endif
 
 static char *strnchr(char *buf, size_t size, char c) {
@@ -84,8 +153,7 @@ bool file_read(Pool& pool, const String& file_spec,
     if(
 		(f=open(fname, O_RDONLY|(as_text?_O_BINARY/*_O_TEXT*/:_O_BINARY)))>=0 && 
 		stat(fname, &finfo)==0) {
-		/*if(exclusive)
-			flock(f, LOCK_EX);*/
+		flock(f, LOCK_SH);		
 		size_t max_size=limit?min(offset+limit, finfo.st_size)-offset:finfo.st_size;
 		int read_size;
 		if(!max_size) { // eof
@@ -101,8 +169,7 @@ bool file_read(Pool& pool, const String& file_spec,
 				lseek(f, offset, SEEK_SET);
 			read_size=read(f, data, max_size);
 		}
-		/*if(exclusive)
-			flock(f, LOCK_UN);*/
+		flock(f, LOCK_UN);
 		close(f);
 		if(!max_size) // eof
 			return true;
@@ -142,8 +209,7 @@ void file_write(Pool& pool,
 				const String& file_spec, 
 				const void *data, size_t size, 
 				bool as_text,
-				bool do_append/*, 
-				bool exclusive*/) {
+				bool do_append) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	int f;
 	if(access(fname, W_OK)!=0) // no
@@ -153,15 +219,13 @@ void file_write(Pool& pool,
 		O_CREAT|O_RDWR
 		|(as_text?_O_TEXT:_O_BINARY)
 		|(do_append?O_APPEND:O_TRUNC), 0664))>=0) {
-		/*if(exclusive)
-			flock(f, LOCK_EX);*/
+		flock(f, LOCK_EX);
 		
 		if(size) write(f, data, size);
 #if O_TRUNC==0
 		ftruncate(f, size);
 #endif
-		/*if(exclusive)
-			flock(f, LOCK_UN);*/
+		flock(f, LOCK_UN);
 		close(f);
 	} else
 		throw Exception(0, 0, 
@@ -178,15 +242,19 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 	
 	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::UL_FILE_SPEC));
 }
-void file_delete(Pool& pool, const String& file_spec) {
+bool file_delete(Pool& pool, const String& file_spec, bool fail_on_read_problem) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	if(unlink(fname)!=0)
-		throw Exception(0, 0, 
-			&file_spec, 
-			"unlink failed: %s (%d), actual filename '%s'", 
-				strerror(errno), errno, fname);
+		if(fail_on_read_problem)
+			throw Exception(0, 0, 
+				&file_spec, 
+				"unlink failed: %s (%d), actual filename '%s'", 
+					strerror(errno), errno, fname);
+		else
+			return false;
 
 	rmdir(file_spec, 1);
+	return true;
 }
 void file_move(Pool& pool, const String& old_spec, const String& new_spec) {
 	const char *old_spec_cstr=old_spec.cstr(String::UL_FILE_SPEC);

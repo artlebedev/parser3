@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.62 2001/11/22 12:40:48 paf Exp $
+	$Id: op.C,v 1.63 2001/12/07 15:24:46 paf Exp $
 */
 
 #include "classes.h"
@@ -232,17 +232,33 @@ static void _error(Request& r, const String& method_name, MethodParams *params) 
 /// @todo rewrite ugly code with try/try to autoobject TempConnection
 static void _connect(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-
+#ifdef RESOURCES_DEBUG
+struct timeval mt[2];
+#endif
 	Value& url=params->as_no_junction(0, "url must not be code");
 	Value& body_code=params->as_junction(1, "body must be code");
 
 	Table *protocol2driver_and_client=
 		static_cast<Table *>(r.classes_conf.get(r.OP.name()));
 
+#ifdef RESOURCES_DEBUG
+//measure:before
+gettimeofday(&mt[0],NULL);
+#endif
 	// connect
 	SQL_Connection& connection=SQL_driver_manager->get_connection(
 		url.as_string(), method_name, protocol2driver_and_client);
 
+#ifdef RESOURCES_DEBUG
+//measure:after connect
+gettimeofday(&mt[1],NULL);
+
+double t[2];
+for(int i=0;i<2;i++)
+    t[i]=mt[i].tv_sec+mt[i].tv_usec/1000000.0;
+
+r.sql_connect_time+=t[1]-t[0];
+#endif
 	// remember/set current connection
 	SQL_Connection *saved_connection=r.connection;
 	r.connection=&connection;
@@ -326,6 +342,106 @@ static void _case(Request& r, const String& method_name, MethodParams *params) {
 	}
 }
 
+// cache--
+
+// consts
+
+const int DATA_STRING_SERIALIZED_VERSION=0x0001;
+
+// helper types
+
+#ifndef DOXYGEN
+struct Data_string_serialized_prolog {
+	int version;
+};
+#endif
+
+void cache_delete(Pool& pool, const String& file_spec) {
+	file_delete(pool, file_spec, false/*fail_on_read_problem*/);
+}
+void cache_put(Pool& pool, const String& file_spec, const String& data_string) {
+	void *data; size_t data_size;
+	data_string.serialize(
+		sizeof(Data_string_serialized_prolog), 
+		data, data_size);
+	Data_string_serialized_prolog& prolog=
+		*static_cast<Data_string_serialized_prolog *>(data);
+
+	prolog.version=DATA_STRING_SERIALIZED_VERSION;
+
+	file_write(pool, 
+				file_spec, 
+				data, data_size, 
+				false/*as_text*/);
+}
+String *cache_get(Pool& pool, const String& file_spec) {
+	void* data; size_t data_size;
+	if(!file_read(pool, file_spec, 
+			   data, data_size, 
+			   false/*as_text*/, 
+			   false/*fail_on_read_problem*/))
+		return 0;
+	
+	Data_string_serialized_prolog& prolog=
+		*static_cast<Data_string_serialized_prolog *>(data);
+
+	if(data_size<sizeof(Data_string_serialized_prolog))
+		throw Exception(0, 0,
+			&file_spec,
+			"bad cached file, too short");
+
+	if(prolog.version!=DATA_STRING_SERIALIZED_VERSION)
+		throw Exception(0, 0,
+			&file_spec,
+			"data string version 0x%04X not equal to 0x%04X, recreate file",
+				prolog.version, DATA_STRING_SERIALIZED_VERSION);
+
+	String& result=*new(pool) String(pool);
+	if(data_size) {
+		result.deserialize(
+			sizeof(Data_string_serialized_prolog), 
+			data, data_size, file_spec.cstr());
+	}
+	
+	return &result;
+}
+static void _cache(Request& r, const String& method_name, MethodParams *params) {
+	// ^cache[file_spec](lifespan){code} time=0 no cache
+	Pool& pool=r.pool();
+	
+	// file_spec, expires, body code
+	const String &file_spec=params->as_string(0, "key must be string");
+	time_t lifespan=(time_t)params->as_double(1, "lifespan must be number", r);
+	Value& body_code=params->as_junction(2, "body must be code");
+
+	if(lifespan) { // 'lifespan' specified? try cached copy...
+		size_t size;
+		time_t atime, mtime, ctime;
+		// {file_spec} modification time
+		if(!file_stat(file_spec, size, atime, mtime, ctime, false/*no exception on error*/) 
+			|| (time(0)-mtime) > lifespan) // cached file expired
+			cache_delete(pool, file_spec);
+		else
+			if(String *cached_body=cache_get(pool, file_spec)) { // have cached copy?
+				// write it out 
+				r.write_assign_lang(*cached_body);
+				// happy with it
+				return;
+			}
+	} else // 'lifespan'=0, forget cached copy
+		cache_delete(pool, file_spec);
+	
+	// process
+	Value& processed_body=r.process(body_code);
+	
+	// put it to cache if 'lifespan' specified
+	if(lifespan)
+		cache_put(pool, file_spec, processed_body.as_string());
+
+	// write it out 
+	r.write_assign_lang(processed_body);
+}
+
 // constructor
 
 MOP::MOP(Pool& apool) : Methoded(apool),
@@ -370,6 +486,10 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
 	add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
 
+
+	// ^cache[file_spec](time){code} time=0 no cache
+	add_native_method("cache", Method::CT_ANY, _cache, 3, 3);
+	
 	// switch
 
 	// ^switch[value]{cases}

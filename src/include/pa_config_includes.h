@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_includes.h,v 1.13 2001/11/15 18:04:18 paf Exp $
+	$Id: pa_config_includes.h,v 1.14 2001/12/07 15:24:46 paf Exp $
 
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
@@ -96,4 +96,16 @@
 
 #ifdef HAVE_NEW
 #include <new>
+#endif
+
+#ifdef HAVE_SYS_FILE_H
+#include <sys/file.h>
+#endif
+
+#ifdef HAVE_SYS_LOCKING_H
+#include <sys/locking.h>
+#endif
+
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
 #endif

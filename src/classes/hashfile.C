@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hashfile.C,v 1.16 2001/11/23 12:56:37 paf Exp $
+	$Id: hashfile.C,v 1.17 2001/12/07 15:24:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -86,18 +86,19 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	Value& body_code=params->as_junction(2, "body must be code");
 
 	// transaction
-	DB_Transaction transaction(pool, *self.get_table_ptr(&method_name), self.current_transaction);
+////	DB_Transaction transaction(pool, *self.get_table_ptr(&method_name), self.current_transaction);
+	DB_Table_ptr table_ptr=self.get_table_ptr(&method_name);
 
 	// execute body
-	try {
+////	try {
 		if(lifespan) { // 'lifespan' specified? try cached copy...
-			if(String *cached_body=transaction.get(key, lifespan)) { // have cached copy?
+			if(String *cached_body=/*transaction.*/table_ptr->get(self.current_transaction, pool, key, lifespan)) { // have cached copy?
 				r.write_assign_lang(*cached_body);
 				// happy with it
 				return;
 			}
 		} else // 'lifespan'=0, forget cached copy
-			transaction.remove(key);
+			/*transaction.*/table_ptr->remove(self.current_transaction, key);
 
 		// save
 		Autosave_marked_to_cancel_cache saved(self);
@@ -108,12 +109,12 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 		
 		// put it to cache if 'lifespan' specified & never called ^delete[]
 		if(lifespan && !self.marked_to_cancel_cache())
-			transaction.put(key, processed_body.as_string(), lifespan);
-	} catch(...) { // process/commit problem
-		transaction.mark_to_rollback();
+			/*transaction.*/table_ptr->put(self.current_transaction, key, processed_body.as_string(), lifespan);
+////	} catch(...) { // process/commit problem
+////		transaction.mark_to_rollback();
 		
-		/*re*/throw; 
-	}
+////		/*re*/throw; 
+////	}
 }
 
 static void _delete(Request& r, const String& method_name, MethodParams *params) {

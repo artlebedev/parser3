@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.182 2001/11/19 12:17:06 paf Exp $
+	$Id: pa_request.C,v 1.183 2001/12/07 15:24:47 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -74,6 +74,9 @@ Request::Request(Pool& apool,
 	classes_conf(apool),
 	anti_endless_execute_recoursion(0),
 	trace(apool)
+#ifdef RESOURCES_DEBUG
+	,sql_connect_time(0),sql_request_time(0)
+#endif
 {
 	// maybe expire old caches
 	cache_managers->maybe_expire();
@@ -122,6 +125,13 @@ void Request::core(
 				   const char *root_config_filespec, bool root_config_fail_on_read_problem,
 				   const char *site_config_filespec, bool site_config_fail_on_read_problem,
 				   bool header_only) {
+
+#ifdef RESOURCES_DEBUG
+//measures
+struct timeval mt[10];
+//measure:before all
+gettimeofday(&mt[0],NULL);
+#endif
 	try {
 		char *auto_filespec=(char *)malloc(MAX_STRING);
 		
@@ -228,6 +238,10 @@ void Request::core(
 		// filling cookies
 		cookie.fill_fields(*this);
 
+#ifdef RESOURCES_DEBUG
+//measure:after compile
+gettimeofday(&mt[1],NULL);
+#endif
 		// execute @main[]
 		const String *body_string=execute_virtual_method(
 			*main_class, *main_method_name);
@@ -236,9 +250,13 @@ void Request::core(
 				0, 
 				"'"MAIN_METHOD_NAME"' method not found");
 
+#ifdef RESOURCES_DEBUG
+		//measure:after main
+gettimeofday(&mt[2],NULL);
+#endif
+
 		VString body_vstring_before_post_process(*body_string);
 		VString *body_vstring_after_post_process=&body_vstring_before_post_process;
-		
 		// @postprocess
 		if(Value *value=main_class->get_element(*post_process_method_name))
 			if(Junction *junction=value->get_junction())
@@ -268,8 +286,32 @@ void Request::core(
 			response.fields().put(*content_type_name, 
 				NEW VString(*NEW String(pool(), ORIGINS_CONTENT_TYPE)));
 
+#ifdef RESOURCES_DEBUG
+//measure:after postprocess
+gettimeofday(&mt[3],NULL);		
+#endif
+
 		// OK. write out the result
 		output_result(*body_file, header_only);
+
+#ifdef RESOURCES_DEBUG
+		//measure:after output_result
+gettimeofday(&mt[9],NULL);		
+t[9]=mt[9].tv_sec+mt[9].tv_usec/1000000.0;
+
+double t[10];
+for(int i=0;i<10;i++)
+    t[i]=mt[i].tv_sec+mt[i].tv_usec/1000000.0;
+//measure:log2 compile,main,postprocess,output
+SAPI::log(pool(), "rmeasure: %s,%.2f,%.2f,%.2f %.2f,%.2f %.2f", 
+info.uri,
+t[1]-t[0],
+t[2]-t[1],
+t[3]-t[2],
+sql_connect_time,sql_request_time,
+t[9]-t[3]
+);
+#endif
 	} catch(const Exception& e) { // request handling problem
 		// we're returning not result, but error explanation
 		try {

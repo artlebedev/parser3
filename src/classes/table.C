@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.134 2001/11/23 12:56:37 paf Exp $
+	$Id: table.C,v 1.135 2001/12/07 15:24:46 paf Exp $
 */
 
 #include "classes.h"
@@ -550,9 +550,25 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Table_sql_event_handlers handlers(pool, method_name,
 		statement_string, statement_cstr);
 	try {
+#ifdef RESOURCES_DEBUG
+	struct timeval mt[2];
+	//measure:before
+	gettimeofday(&mt[0],NULL);
+#endif	
 		r.connection->query(
 			statement_cstr, offset, limit, 
 			handlers);
+	
+#ifdef RESOURCES_DEBUG
+		//measure:after connect
+	gettimeofday(&mt[1],NULL);
+	
+	double t[2];
+	for(int i=0;i<2;i++)
+	    t[i]=mt[i].tv_sec+mt[i].tv_usec/1000000.0;
+	    
+	r.sql_request_time+=t[1]-t[0];
+#endif	    			
 	} catch(const Exception& e) { // query problem
 		// more specific source [were url]
 		throw Exception(e.type(), e.code(), 

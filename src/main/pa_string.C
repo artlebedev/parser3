@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.127 2001/11/23 12:56:38 paf Exp $
+	$Id: pa_string.C,v 1.128 2001/12/07 15:24:47 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -852,6 +852,13 @@ int String::as_int() const {
 	return result;
 }
 
+inline void ushort2uchars(ushort word, uchar& byte1, uchar& byte2) {
+	byte1=word&0xFF;
+	byte2=word>>8;
+}
+inline ushort uchars2ushort(uchar byte1, uchar byte2) {
+	return (byte2<<8) | byte1;
+}
 /* @todo maybe network order worth spending some effort?
 	don't bothering myself with network byte order,
 	am not planning to be able to move resulting file across platforms
@@ -870,8 +877,10 @@ void String::serialize(size_t prolog_size, void *& buf, size_t& buf_size) const 
 		memcpy(cur, &row->item.lang, sizeof(uchar));
 		cur+=sizeof(uchar);
 		// size
-		memcpy(cur, &row->item.size, sizeof(ushort));
-		cur+=sizeof(ushort);
+		uchar byte1; uchar byte2;
+		ushort2uchars(row->item.size, byte1, byte2);
+		memcpy(cur, &byte1, sizeof(uchar)); cur+=sizeof(uchar);
+		memcpy(cur, &byte2, sizeof(uchar)); cur+=sizeof(uchar);
 		// bytes
 		memcpy(cur, row->item.ptr, row->item.size);
 		cur+=row->item.size;
@@ -884,9 +893,14 @@ void String::deserialize(size_t prolog_size, void *buf, size_t buf_size, const c
 	buf_size-=prolog_size;
 
 	while(buf_size) {
-		uchar lang=*(const uchar*)((const char*)cur+0);
-		ushort size=*(const ushort*)((const char*)cur+sizeof(uchar));
-		const char *ptr=(const char*)cur+sizeof(uchar)+sizeof(ushort);
+		uchar lang=*(uchar *)(cur);
+		
+		ushort size=uchars2ushort(
+			*(uchar*)(cur+sizeof(uchar)*1),
+			*(uchar*)(cur+sizeof(uchar)*2)
+		);
+
+		const char *ptr=(const char*)(cur+sizeof(uchar)*3); 
 		APPEND(ptr, size, lang, file, 0);
 
 		size_t piece_size=sizeof(uchar)+sizeof(ushort)+size;

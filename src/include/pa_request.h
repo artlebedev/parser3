@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.111 2001/11/19 12:17:05 paf Exp $
+	$Id: pa_request.h,v 1.112 2001/12/07 15:24:47 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -26,6 +26,10 @@
 #include "pa_vresponse.h"
 #include "pa_vcookie.h"
 #include "pa_sql_driver_manager.h"
+
+#ifdef RESOURCES_DEBUG
+#include <sys/resource.h>
+#endif
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \
@@ -51,6 +55,12 @@ class Methoded;
 class Request : public Pooled {
 	friend class Temp_lang;
 public:
+
+#ifdef RESOURCES_DEBUG
+	/// measures
+	double sql_connect_time;
+	double sql_request_time;
+#endif	
 
 	/// some information from web server
 	class Info {
