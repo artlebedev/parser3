@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2003/11/28 10:27:00 $";
+static const char * const IDENT_XDOC_C="$Date: 2003/12/01 12:55:03 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -492,7 +492,7 @@ static void _load(Request& r, MethodParams& params) {
 
 	/// todo!! add SAFE MODE!!
 	GdomeDocument *document=(GdomeDocument *)
-		gdome_xml_n_mkref((xmlNode *)xmlParseFile(uri->cstr()));
+		gdome_xml_n_mkref((xmlNode *)xmlParseFile(uri_cstr));
 	if(!document || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
 		throw XmlException(uri, exc);
