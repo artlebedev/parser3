@@ -469,6 +469,7 @@ flock \
 _locking \
 fcntl \
 lockf \
+ftruncate \
 getrusage \
 gettimeofday \
 crypt \
