@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMS_C="$Date: 2004/02/24 10:36:16 $";
+static const char * const IDENT_COMMS_C="$Date: 2004/02/24 12:04:16 $";
 
 #include "smtp.h"
 
@@ -121,7 +121,7 @@ GetConnection(SOCKET the_socket, struct sockaddr_in *sa_in)
 
     if( connect(the_socket,
 			                    (struct sockaddr *)sa_in,
-			                    sizeof(struct sockaddr_in)<0 )
+			                    sizeof(struct sockaddr_in))<0
       ) 
     {
 	int     retval = 0;
