@@ -3,7 +3,11 @@ t.p
 dtf.p
 
 @main[]
-^thashdefault2[]
+^tdupleform[]
+#^tvoiddefault[]
+#^testdom0[]
+#^testlocal[0]
+#^thashdefault2[]
 #^tcase2[]
 #^tlsplit2[]
 #^tconnect[]
@@ -30,6 +34,28 @@ dtf.p
 #^list[]
 #^tests[]
 #^func(0)<hr>
+
+@tdupleform[]
+#$c[^form:a.columns[]]
+#^c.menu{$c.column}[,]<br>
+^form:a.menu{$form:a.element=}[,]
+
+@tvoiddefault[]
+$var[$form:element]
+^var.int(2)
+
+
+@testdom0[]
+$dom[^dom::load[a.xml]]
+
+
+@testlocal[level][local]
+$local($level)
+before($level):$local<br>
+^if($level<10){
+	^testlocal($level+1)
+}
+after($level):$local<br>
 
 @thashdefault2[]
 $hash[
