@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.7 2001/03/21 14:06:53 paf Exp $
+	$Id: pa_vcookie.C,v 1.8 2001/03/22 07:05:43 paf Exp $
 */
 
 #include <string.h>
@@ -62,15 +62,17 @@ void VCookie::fill_fields(Request& request) {
 	strcpy(cookies, request.info.cookie);
     char *current=cookies;
     do {
-		char *value=lsplit(&current,';');
-		char *fname=lsplit(&value, '=');
-		if(value) {
-			while(*fname==' ')
-				fname++;
-			rsplit(value,' ');
-			String& string=*NEW String(pool(), 
-				unescape_chars(pool(), value, strlen(value)), true);
-			before.put(String(pool(), fname), NEW VString(string));
+		char *meaning=lsplit(&current,';');
+		char *attribute=lsplit(&meaning, '=');
+		if(meaning) {
+			while(*attribute==' ')
+				attribute++;
+			rsplit(meaning,' ');
+			String& smeaning=*NEW String(pool(), 
+				unescape_chars(pool(), meaning, strlen(meaning)), true);
+			String& sattribute=*NEW String(pool(), 
+				unescape_chars(pool(), attribute, strlen(attribute)), true);
+			before.put(sattribute, NEW VString(smeaning));
 		}
 	} while(current);
 }
