@@ -653,7 +653,7 @@ Xhashfile
     !/some/page.html: ^file:fullpath[a.gif] => /some/a.gif
 
 
-math
+!math
     !$math:PI
     !^math:round floor ceiling 
     !^math:trunc frac
@@ -670,8 +670,8 @@ math
             если нет, /dev/random, 
             если нет, rand 
             [на solaris /dev/random можно добавить]
-    ^math:id64[]
-        4507055078884095953
+    !^math:uid64[]
+       BA39BAB6340BE370
     !^math:md5[string]
         выдает digest строки, длиной 16 байт в виде строки, 
         где байты digest выданы в hex виде, впритык, в нижнем регистре

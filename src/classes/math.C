@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/04/15 14:12:15 $";
+static const char* IDENT_MATH_C="$Date: 2003/04/15 14:30:14 $";
 
 #include "pa_common.h"
 #include "pa_vint.h"
@@ -282,6 +282,18 @@ static void _crypt(Request& r, const String& method_name, MethodParams *params) 
 	}
 }
 
+static const char* hex_string(Pool& pool, unsigned char* bytes, size_t size, bool upcase) {
+	char *bytes_hex=(char *)pool.malloc(size*2/*byte->hh*/+1/*for zero-teminator*/);
+	unsigned char *src=bytes;
+	unsigned char *end=bytes+size;
+	char *dest=bytes_hex;
+	const char *format=upcase?"%02X":"%02x";
+	while(src<end)
+		dest+=snprintf(dest, 3, format, *src++);
+
+	return bytes_hex;
+}
+
 static void _md5(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const char *string=params->as_string(0, "parameter must be string").cstr();
@@ -293,14 +305,8 @@ static void _md5(Request& r, const String& method_name, MethodParams *params) {
 	PA_MD5Update(&context, (const unsigned char*)string, strlen(string));
 	PA_MD5Final(digest, &context);
 
-	char *digest_bytes_hex=(char *)pool.malloc(sizeof(digest)*2/*byte->hh*/+1/*for zero-teminator*/);
-	unsigned char *src=digest;
-	unsigned char *end=digest+sizeof(digest);
-	char *dest=digest_bytes_hex;
-	while(src<end)
-		dest+=snprintf(dest, 3, "%02x", *src++);
-
-	r.write_pass_lang(*new(pool) String(pool, digest_bytes_hex));
+	r.write_pass_lang(*new(pool) String(pool, 
+		hex_string(pool, digest, sizeof(digest), false)));
 }
 
 /// to hell with extra bytes on 64bit platforms
@@ -347,6 +353,16 @@ static void _uuid(Request& r, const String& method_name, MethodParams *params) {
 	r.write_pass_lang(*new(pool) String(pool, uuid_cstr));
 }
 
+static void _uid64(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	unsigned char id[64/8];
+	random(&id, sizeof(id));
+
+	r.write_pass_lang(*new(pool) String(pool, 
+		hex_string(pool, id, sizeof(id), true)));
+}
+
 // constructor
 
 MMath::MMath(Pool& apool) : Methoded(apool, "math") {
@@ -380,8 +396,8 @@ MMath::MMath(Pool& apool) : Methoded(apool, "math") {
 	// ^uuid[]
 	ADD0(uuid);
 
-	// ^uid16[]
-	//ADD0(uid16);
+	// ^uid64[]
+	ADD0(uid64);
 }
 
 // global variables
