@@ -1,4 +1,6 @@
 @main[]
+#^xloadwrongtable[]
+^xsetwrongtable[]
 #^if($form:test){y}{n}
 #^tablecolumnerror[]
 #^roll[]
@@ -26,8 +28,8 @@
 #j^hashfile[]
 #^formclass[]
 #^hren[]
-^domedit[]
-#$^domxslt[]
+#^domedit[]
+#^domxslt[]
 #^lsplit2[]
 #^faceesize[]
 #^imageresize[]
@@ -63,6 +65,14 @@
 #^xml[]
 #^header[]
 OK
+
+@xloadwrongtable[]
+$constr[^xdoc::load[wrongtable.xml]]
+
+@xsetwrongtable[]
+$constr[^xdoc::set{<?xml version="1.0" encoding="windows-1251z" ?>
+<block-list>^untaint[as-is]{$constructor}</block-list>}]
+
 
 @tablecolumnerror[]
 $t[^table::set{a}]
