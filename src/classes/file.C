@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.39 2001/07/07 16:38:01 parser Exp $
+	$Id: file.C,v 1.40 2001/07/11 15:02:09 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.39 2001/07/07 16:38:01 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.40 2001/07/11 15:02:09 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -15,6 +15,7 @@ static const char *RCSId="$Id: file.C,v 1.39 2001/07/07 16:38:01 parser Exp $";
 #include "pa_table.h"
 #include "pa_vint.h"
 #include "pa_exec.h"
+#include "pa_vdate.h"
 
 // consts
 
@@ -111,9 +112,18 @@ static void _stat(Request& r, const String& method_name, MethodParams *params) {
 
 	const String& lfile_name=vfile_name.as_string();
 
-	size_t size=file_size(r.absolute(lfile_name));
+	size_t size;
+	time_t atime, mtime, ctime;
+	file_stat(r.absolute(lfile_name),
+		size,
+		atime, mtime, ctime);
 	
-	static_cast<VFile *>(r.self)->set(true/*tainted*/, 0/*no bytes*/, size);
+	VFile& vfile=*static_cast<VFile *>(r.self);
+	vfile.set(true/*tainted*/, 0/*no bytes*/, size);
+	Hash& ff=vfile.fields();
+	ff.put(*new(pool) String(pool, "adate"), new(pool) VDate(pool, atime));
+	ff.put(*new(pool) String(pool, "mdate"), new(pool) VDate(pool, mtime));
+	ff.put(*new(pool) String(pool, "cdate"), new(pool) VDate(pool, ctime));
 }
 
 static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) {

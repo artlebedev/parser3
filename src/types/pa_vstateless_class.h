@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.14 2001/05/10 12:49:27 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.15 2001/07/11 15:02:09 parser Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -41,7 +41,7 @@ public: // Value
 
 		// $method=junction(self+class+method)
 		if(Junction *junction=get_junction(*this, aname))
-			return NEW VJunction(*junction);
+			return new(junction->pool()) VJunction(*junction);
 		
 		return 0;
 	}
@@ -80,7 +80,8 @@ public: // usage
 
 	Junction *get_junction(VAliased& self, const String& name) {
 		if(Method *method=static_cast<Method *>(fmethods.get(name)))
-			return NEW Junction(pool(), self, this, method, 0,0,0,0);
+			return 
+				new(name.pool()) Junction(name.pool(), self, this, method, 0,0,0,0);
 		if(fbase)
 			return fbase->get_junction(self, name);
 		return 0; 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.45 2001/07/07 17:59:02 parser Exp $
+	$Id: pa_common.h,v 1.46 2001/07/11 15:02:09 parser Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -107,7 +107,11 @@ bool file_readable(const String& file_spec);
 bool dir_readable(const String& file_spec);
 bool file_executable(const String& file_spec);
 
-size_t file_size(const String& file_spec);
+void file_stat(const String& file_spec, 
+			   size_t& rsize, 
+			   time_t& ratime,
+			   time_t& rmtime,
+			   time_t& rctime);
 
 /**
 	scans for @a delim[default \n] in @a *row_ref, 

@@ -2,7 +2,21 @@
 dtformat.p
 input_date.p
 
+@href[href zzz;title xxxx;ставить]
+^if($ставить){y;n}
+
 @main[]
+^href[href;title](1<2)
+
+<hr>
+$stat[^file:stat[test.zip]]
+$stat{
+^$size=$size<br>
+adate=^long_date_format[$adate]<br>
+mdate=^long_date_format[$mdate]<br>
+cdate=^long_date_format[$cdate]<br>
+}
+<hr>
 $дата[^input_date:parse[9.7.2001]]
 ^long_date_format[$дата]
 <hr>

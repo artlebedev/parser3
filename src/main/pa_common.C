@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_common.C,v 1.57 2001/07/07 17:59:02 parser Exp $"; 
+static const char *RCSId="$Id: pa_common.C,v 1.58 2001/07/11 15:02:09 parser Exp $"; 
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -185,7 +185,11 @@ bool file_executable(const String& file_spec) {
     return access(file_spec.cstr(String::UL_FILE_NAME), X_OK)==0;
 }
 
-size_t file_size(const String& file_spec) {
+void file_stat(const String& file_spec, 
+			   size_t& rsize, 
+			   time_t& ratime,
+			   time_t& rmtime,
+			   time_t& rctime) {
 	Pool& pool=file_spec.pool();
 	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
     struct stat finfo;
@@ -194,7 +198,10 @@ size_t file_size(const String& file_spec) {
 			&file_spec, 
 			"getting file size failed: %s (%d), real filename '%s'", 
 				strerror(errno), errno, fname);
-	return finfo.st_size;
+	rsize=finfo.st_size;
+	ratime=finfo.st_atime;
+	rmtime=finfo.st_mtime;
+	rctime=finfo.st_ctime;
 }
 
 char *getrow(char **row_ref, char delim) {
