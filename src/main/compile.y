@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.184 2002/04/15 08:13:09 paf Exp $
+	$Id: compile.y,v 1.185 2002/04/16 08:41:05 paf Exp $
 */
 
 /**
@@ -353,7 +353,10 @@ codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
 
 call: call_value {
 	$$=$1; /* stack: value */
-	O($$, OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
+	changetail_or_append($$, 
+		OP_CALL, OP_CALL__WRITE,
+		OP_WRITE_VALUE
+		); /* value=pop; wcontext.write(value) */
 };
 call_value: '^' { 
 					PC.in_call_value=true; 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.231 2002/04/15 13:39:53 paf Exp $
+	$Id: execute.C,v 1.232 2002/04/16 08:41:05 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -23,7 +23,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-//#define DEBUG_EXECUTE
+#define DEBUG_EXECUTE
 //#define DEBUG_STRING_APPENDS_VS_EXPANDS
 
 
@@ -45,11 +45,11 @@ char *opcode_name[]={
 	"CONSTRUCT_VALUE", "CONSTRUCT_EXPR", "CURLY_CODE__CONSTRUCT",
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
 	"GET_ELEMENT_OR_OPERATOR", "GET_ELEMENT",	"GET_ELEMENT__WRITE",
-	"OBJECT_POOL",	
-  	"STRING_POOL",
+	"OBJECT_POOL",	"STRING_POOL",
 	"GET_METHOD_FRAME",
 	"STORE_PARAM",
-	"PREPARE_TO_CONSTRUCT_OBJECT",	"PREPARE_TO_EXPRESSION", "CALL",
+	"PREPARE_TO_CONSTRUCT_OBJECT",	"PREPARE_TO_EXPRESSION", 
+	"CALL", "CALL__WRITE",
 
 	// expression ops: unary
 	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS",
@@ -266,10 +266,6 @@ void Request::execute(const Array& ops) {
 			{
 				value=POP();
 				write_assign_lang(*value);
-
-				// forget the fact they've entered some ^object.method[].
-				// see OP_GET_ELEMENT
-				wcontext->set_somebody_entered_some_object(false);
 				break;
 			}
 		case OP_WRITE_EXPR_RESULT:
@@ -403,6 +399,7 @@ void Request::execute(const Array& ops) {
 			}
 
 		case OP_CALL:
+		case OP_CALL__WRITE:
 			{
 #ifdef DEBUG_EXECUTE
 				debug_printf(pool(), "->\n");
@@ -494,7 +491,7 @@ void Request::execute(const Array& ops) {
 								call_type==Method::CT_STATIC?"statically":"dynamically");
 
 				}
-				value=&wcontext->result().as_value(); // todo CALL_WRITE & VString removal
+				StringOrValue result=wcontext->result();
 
 				wcontext=static_cast<WContext *>(POP());  
 				rcontext=POP();  
@@ -506,7 +503,15 @@ void Request::execute(const Array& ops) {
 					wcontext_result_size+=s->used_rows()*sizeof(String::Chunk::Row);
 #endif
 
-				PUSH(value);
+				if(op.code==OP_CALL__WRITE) {
+					write_assign_lang(result);
+					// forget the fact they've entered some ^object.method[].
+					// see OP_GET_ELEMENT
+					wcontext->set_somebody_entered_some_object(false);
+				} else { // OP_CALL
+					PUSH(&result.as_value());
+				}
+				
 #ifdef DEBUG_EXECUTE
 				debug_printf(pool(), "<-returned");
 #endif
