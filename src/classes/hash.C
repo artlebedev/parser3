@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2003/04/04 10:38:26 $";
+static const char* IDENT_HASH_C="$Date: 2003/04/25 11:39:54 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -134,12 +134,10 @@ static void _create_or_add(Request& r, const String& method_name, MethodParams *
 
 			if(is_create)
 				vah.set_default(vbh->get_default());
-		} else
+		} else if(!vb_maybehash.is_string()) // allow ^hash::create[^rem{xxx}]
 			throw Exception("parser.runtime",
 				&method_name,
 				"param must be hash");
-
-		
 	}
 }
 static void _create(Request& r, const String& method_name, MethodParams *params) {
