@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/09/18 12:40:38 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/09/21 12:36:10 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -400,7 +400,7 @@ t[9]-t[3]
 							frame.store_param(NEW VTable(pool(), &stack_trace));
 
 							// future $response:body=
-							//   execute ^exception[origin;source;comment;type;code;stack]
+							//   execute ^unhandled_exception[exception;stack]
 							body_string=&execute_method(frame, *method);
 						}
 			}

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/20 14:21:29 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/21 12:36:10 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -827,7 +827,7 @@ void Request::execute(const Array& ops) {
 
 /// @test cache|prepare junctions 
 Value *Request::get_element(const String *& remember_name, 
-							bool can_call_operator, bool sould_explode_junction) {
+							bool can_call_operator, bool should_explode_junction) {
 	const String& name=POP_NAME();  remember_name=&name;
 	Value *ncontext=POP();
 	Value *value=0;
@@ -856,7 +856,7 @@ Value *Request::get_element(const String *& remember_name,
 
 _void:
 	if(value) {
-		if(sould_explode_junction) // process $junction, but leave $junction.xxx as is
+		if(should_explode_junction) // process $junction, but leave $junction.xxx as is
 			value=&process_to_value(*value); // process possible code-junction
 	} else
 		value=NEW VVoid(pool());

@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/09/20 09:26:31 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/09/21 12:36:10 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -323,7 +323,7 @@ private: // execute.C
 	const String *execute_virtual_method(Value& aself, const String& method_name);
 
 	Value *get_element(const String *& remember_name, 
-		bool can_call_operator, bool sould_explode_junction=false/*there's only one place when true*/);
+		bool can_call_operator, bool should_explode_junction=false/*there's only one place when true*/);
 
 private: // defaults
 
