@@ -1019,13 +1019,21 @@ console
         операторов/методов, приведших к ошибке.
 
 !при загрузке файла (file::load, table::load, xdoc::load) можно указать такое им€ файла:
-    !http://domain/document?params
+    !http://domain/document[?params<<deprecated, use $.form[...]]
     !а также, возможно, указать опции:
         !$.method[GET|HEAD]
         !$.timeout(3)  << в секундах, по-умолчанию =2
         !$.headers[
         !    $поле[значение] << значение имеет формат, как $response:«ј√ќЋќ¬ќ 
         !]
+        $.enctype[multipart/form-data]
+        $.form[
+            !$.field1[string]
+            !$.field2[^table::create{one_column_only^#0Avalue1^#0Avalue2}]
+            $.field3[file]
+        ]
+        !$.body[string]
+        	|file
         !по-умолчанию, user-agent=parser3
         !по-умолчанию, получение http status != 200 >> создает http.status ошибку,
         !это можно отключить, передав

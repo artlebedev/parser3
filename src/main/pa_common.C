@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/03/05 13:17:59 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/03/05 15:14:47 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -79,6 +79,8 @@ const String file_status_name(FILE_STATUS_NAME);
 // defines
 
 #define HTTP_METHOD_NAME  "method"
+#define HTTP_FORM_NAME  "form"
+#define HTTP_BODY_NAME  "body"
 #define HTTP_TIMEOUT_NAME    "timeout"
 #define HTTP_HEADERS_NAME "headers"
 #define HTTP_ANY_STATUS_NAME "any-status"
@@ -342,6 +344,20 @@ static const String* basic_authorization_field(const char* user, const char* pas
 	return result;
 }
 
+/// @todo table value
+static void form_value2string(
+								  HashStringValue::key_type key, 
+								  HashStringValue::value_type value, 
+								  String* result) 
+{
+	*result << String(key, String::L_TAINTED) << "=";
+	result->append(value->as_string(), String::L_URI, true);
+}
+static const char* form2string(HashStringValue& form) {
+	String string;
+	form.for_each(form_value2string, &string);
+	return 0; // todo
+}
 #ifndef DOXYGEN
 struct File_read_http_result {
 	char *str; size_t length;
@@ -357,7 +373,9 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	char host[MAX_STRING]; 
 	const char* uri; 
 	int port;
-	const char* method=0;
+	const char* method="GET"; bool method_is_get;
+	HashStringValue* form=0;
+	const char* body_cstr=0;
 	int timeout=2;
 	bool fail_on_status_ne_200=true;
 	Value* vheaders=0;
@@ -370,28 +388,28 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		if(Value* vmethod=options->get(HTTP_METHOD_NAME)) {
 			valid_options++;
 			method=vmethod->as_string().cstr();
-		}
-		if(Value* vtimeout=options->get(HTTP_TIMEOUT_NAME)) {
+		} else if(Value* vform=options->get(HTTP_FORM_NAME)) {
+			valid_options++;
+			form=vform->get_hash(); 
+		} else if(Value* vbody=options->get(HTTP_BODY_NAME)) {
+			valid_options++;
+			body_cstr=vbody->as_string().cstr(String::L_UNSPECIFIED);
+		} else if(Value* vtimeout=options->get(HTTP_TIMEOUT_NAME)) {
 			valid_options++;
 			timeout=vtimeout->as_int(); 
-		}
-		if((vheaders=options->get(HTTP_HEADERS_NAME))) {
+		} else if((vheaders=options->get(HTTP_HEADERS_NAME))) {
 			valid_options++;
-		}
-		if(Value* vany_status=options->get(HTTP_ANY_STATUS_NAME)) {
+		} else if(Value* vany_status=options->get(HTTP_ANY_STATUS_NAME)) {
 			valid_options++;
 			fail_on_status_ne_200=!vany_status->as_bool(); 
-		}
-		if(Value* vcharset_name=options->get(HTTP_CHARSET_NAME)) {
+		} else if(Value* vcharset_name=options->get(HTTP_CHARSET_NAME)) {
 			valid_options++;
 			asked_remote_charset=&::charsets.get(vcharset_name->as_string().
 				change_case(charsets.source(), String::CC_UPPER));
-		}
-		if(Value* vuser=options->get(HTTP_USER)) {
+		} else if(Value* vuser=options->get(HTTP_USER)) {
 			valid_options++;
 			user_cstr=vuser->as_string().cstr();
-		}
-		if(Value* vpassword=options->get(HTTP_PASSWORD)) {
+		} else if(Value* vpassword=options->get(HTTP_PASSWORD)) {
 			valid_options++;
 			password_cstr=vpassword->as_string().cstr();
 		}
@@ -404,12 +422,18 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	if(!asked_remote_charset) // defaulting to $request:charset
 		asked_remote_charset=&charsets.source();
 
+	method_is_get=strcmp(method, "GET")==0;
+	if(method_is_get && body_cstr)
+		throw Exception("parser.runtime",
+			0,
+			"you can not use $."HTTP_BODY_NAME" option with method GET");
+
 	//preparing request
 	String& connect_string=*new String;
 	// not in ^sql{... L_SQL ...} spirit, but closer to ^file::load one
 	connect_string.append(file_spec, String::L_URI); // tainted pieces -> URI pieces
 
-	const char* request_cstr;
+	String request_head_and_body;
 	{
 		// influence URLencoding of tainted pieces to String::L_URI lang
 		Temp_client_charset temp(charsets, *asked_remote_charset);
@@ -430,23 +454,31 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		char* error_pos=0;
 		port=port_cstr?strtol(port_cstr, &error_pos, 0):80;
 
-		//making request
-		String request;
-		if(method)
-			request<<method;
-		else
-			request<<"GET";
-		request<< " "<< uri <<" HTTP/1.0" CRLF
+		if(strchr(uri, '?') && form)
+			throw Exception("parser.runtime",
+				0,
+				"use either uri with ?params or $."HTTP_FORM_NAME" option");
+
+		//making request head
+		String head;
+		head << method;
+		head << " " << uri;
+		if(form)
+			if(method_is_get)
+				head << form2string(*form);
+			else
+				body_cstr = form2string(*form);
+		head <<" HTTP/1.0" CRLF
 			"host: "<< host << CRLF; 
 
 		// http://www.ietf.org/rfc/rfc2617.txt
 		if(const String* authorization_field_value=basic_authorization_field(user_cstr, password_cstr))
-			request<<"Authorization: "<<*authorization_field_value<<CRLF;
+			head<<"authorization: "<<*authorization_field_value<<CRLF;
 
 		bool user_agent_specified=false;
 		if(vheaders && !vheaders->is_string()) { // allow empty
 			if(HashStringValue *headers=vheaders->get_hash()) {
-				Http_pass_header_info info={&charsets, &request, false};
+				Http_pass_header_info info={&charsets, &head, false};
 				headers->for_each(http_pass_header, &info); 
 				user_agent_specified=info.user_agent_specified;
 			} else
@@ -455,23 +487,42 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 					"headers param must be hash"); 
 		};
 		if(!user_agent_specified) // defaulting
-			request << "user-agent: " DEFAULT_USER_AGENT CRLF;
-		request << CRLF; 
+			head << "user-agent: " DEFAULT_USER_AGENT CRLF;
 
-		request_cstr=request.cstr(String::L_UNSPECIFIED);
+		const char* head_cstr=head.cstr(String::L_UNSPECIFIED);
+
+		// recode those pieces which are not in String::L_URI lang 
+		// [those violating HTTP standard, but widly used]
+		head_cstr=Charset::transcode(
+			String::C(head_cstr, strlen(head_cstr)),
+			charsets.source(),
+			*asked_remote_charset);
+
+		if(body_cstr) {
+			// recode those pieces which are not in String::L_URI lang 
+			// [those violating HTTP standard, but widly used]
+			body_cstr=Charset::transcode(
+				String::C(body_cstr, strlen(body_cstr)),
+				charsets.source(),
+				*asked_remote_charset);
+		}
+
+		request_head_and_body << head_cstr;
+		if(body_cstr)
+			head << "content-length: " << format(strlen(body_cstr), "%u") << CRLF;
+
+		// end of header
+		request_head_and_body << CRLF; 
+		// body
+		if(body_cstr)
+			request_head_and_body << body_cstr;
 	}
-	// recode those pieces which are not in String::L_URI lang 
-	// [those violating HTTP standard, but widly used]
-	request_cstr=Charset::transcode(
-		String::C(request_cstr, strlen(request_cstr)),
-		charsets.source(),
-		*asked_remote_charset);
 	
 	//sending request
 	char* response;
 	size_t response_size;
 	int status_code=http_request(response, response_size,
-		host, port, request_cstr, 
+		host, port, request_head_and_body.cstr(), 
 		timeout, fail_on_status_ne_200); 
 	
 	//processing results	
