@@ -7,7 +7,7 @@
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char * const IDENT_SMTP_C="$Date: 2004/02/24 11:10:05 $";
+static const char * const IDENT_SMTP_C="$Date: 2004/02/24 11:37:14 $";
 
 #include "pa_exception.h"
 #include "smtp.h"
@@ -44,6 +44,7 @@ void SMTP::
 ConnectToHost(const char* hostname, const char* service)
 {
     struct sockaddr_in	sa_in;
+	memset(sa_in, 0, sizeof(*sa_in)); 
     u_short our_port;
 
     if( !ResolveService(service, &our_port) )
