@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/08/06 09:07:59 $";
+static const char* IDENT_FILE_C="$Date: 2002/08/06 09:49:04 $";
 
 #include "pa_config_includes.h"
 
@@ -187,13 +187,24 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 		pi.hash->put(key, &svalue);
 	}
 }
-static void pass_cgi_header_attribute(Array::Item *value, void *info) {
+#ifndef DOXYGEN
+struct Pass_cgi_header_attribute_info {
+	Hash *hash;
+	Value *content_type;
+};
+#endif
+static void pass_cgi_header_attribute(Array::Item *value, void *ainfo) {
 	String& string=*static_cast<String *>(value);
-	Hash& hash=*static_cast<Hash *>(info);
+	Pool& pool=string.pool();
+	Pass_cgi_header_attribute_info& info=*static_cast<Pass_cgi_header_attribute_info *>(ainfo);
 	int colon_pos=string.pos(":", 1);
-	if(colon_pos>0)
-		hash.put(string.mid(0, colon_pos), 
-		new(string.pool()) VString(string.mid(colon_pos+1, string.size())));
+	if(colon_pos>0) {
+		const String& key=string.mid(0, colon_pos).change_case(pool, String::CC_UPPER);
+		Value *value=new(pool) VString(string.mid(colon_pos+1, string.size()));
+		info.hash->put(key, value);
+		if(key=="CONTENT-TYPE")
+			info.content_type=value;
+	}
 }
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
 static void _exec_cgi(Request& r, const String& method_name, MethodParams *params,
@@ -271,10 +282,12 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	VFile& self=*static_cast<VFile *>(r.self);
 
 	const String *body=&out; // ^file:exec
+	Value *content_type=0;
+	const char *eol_marker="\r\n"; size_t eol_marker_size=2;
+	const String *header=0;
 	if(cgi) { // ^file:cgi
 		// construct with 'out' body and header
 		int delim_size;
-		const char *eol_marker="\r\n"; size_t eol_marker_size=2;
 		int pos=out.pos("\r\n\r\n", delim_size=4);
 		if(pos<0) {
 			eol_marker="\n"; eol_marker_size=1;
@@ -291,18 +304,21 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 					(uint)err.size(), err.cstr());
 		}
 
-		const String& header=out.mid(0, pos);
+		header=&out.mid(0, pos);
 		body=&out.mid(pos+delim_size, out.size());
-
-		// header to $fields
-		{
-			Array rows(pool);
-			header.split(rows, 0, eol_marker, eol_marker_size, String::UL_CLEAN);
-			rows.for_each(pass_cgi_header_attribute, &self.fields());
-		}
 	}
 	// body
 	self.set(false/*not tainted*/, body->cstr(), body->size());
+
+	// $fields << header
+	if(header) {
+		Array rows(pool);
+		header->split(rows, 0, eol_marker, eol_marker_size);
+		Pass_cgi_header_attribute_info info={&self.fields()};
+		rows.for_each(pass_cgi_header_attribute, &info);
+		if(info.content_type)
+			self.fields().put(*content_type_name, info.content_type);
+	}
 
 	// $status
 	self.fields().put(

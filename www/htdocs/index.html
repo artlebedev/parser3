@@ -189,9 +189,17 @@ $selffilespec[$filespec]
 #^tstdin[]
 #^tfind[]
 #^calendar[]
-^mimet[]
+#^mimet[]
+^cgit[]
 <hr>
 OK
+
+@cgit[]
+$f[^file::cgi[showenv.cmd]]
+$f.HELLO=<br>
+$f.CONTENT-TYPE=<br>
+$f.content-type=<br>
+
 
 @mimet[]
 $f[^file::stat[a.GIF]]
