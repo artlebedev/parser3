@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.39 2001/11/05 11:46:28 paf Exp $
+	$Id: pa_pool.C,v 1.40 2001/11/12 14:45:37 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -122,7 +122,7 @@ std::auto_ptr<XalanDOMString> Pool::transcode_buf(const char *buf, size_t buf_si
 	return std::auto_ptr<XalanDOMString>(result);
 }
 std::auto_ptr<XalanDOMString> Pool::transcode(const String& s) { 
-	const char *cstr=s.cstr(String::UL_XML);
+	const char *cstr=s.cstr(String::UL_UNSPECIFIED);
 
 	return transcode_buf(cstr, strlen(cstr)); 
 }

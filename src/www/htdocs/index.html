@@ -1,5 +1,5 @@
 @main[]
-^if($form:test){y}{n}
+#^if($form:test){y}{n}
 #^tablecolumnerror[]
 #^roll[]
 #^cookie2[]
@@ -26,8 +26,8 @@
 #j^hashfile[]
 #^formclass[]
 #^hren[]
-#^domedit[]
-#^domxslt[]
+^domedit[]
+#$^domxslt[]
 #^lsplit2[]
 #^faceesize[]
 #^imageresize[]
@@ -271,8 +271,8 @@ paf=$hf.paf
 $a
 $xdoc[^xdoc::create[doc]]
 $doc[$xdoc.documentElement]
-$name[^doc.appendChild[^xdoc.createElement{name}]]
-$text[^name.appendChild[^xdoc.createTextNode{петросян&nbsp^;co}]]
+$name[^doc.appendChild[^xdoc.createElement[name]]]
+$text[^name.appendChild[^xdoc.createTextNode[петросян&amp^;coz]]]
 ^untaint[as-is]{=$text.nodeValue=}
 
 @domedit[]
@@ -605,7 +605,7 @@ by id:
 }
 
 @show-xdoc2[xdoc]
-^xdoc.save[save.xml;
+^xdoc.save[out/save.xml;
 #	$.encoding[windows-1251]
 	$.method[xml]
 ]
@@ -613,7 +613,7 @@ $file[^xdoc.file[
 #	$.encoding[windows-1251]
 	$.method[html]
 ]]
-^file.save[text;save_file.html]
+^file.save[text;out/save_file.html]
 <pre>^taint[^xdoc.string[]]
 #	$.encoding[windows-1251]
 #	$.method[html]
