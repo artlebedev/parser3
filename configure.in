@@ -361,6 +361,10 @@ case "$host" in
       AC_DEFINE(WIN32,,Windows32 target platform)
       AC_CHECK_LIB(wsock32, socket)
   ;;
+# never tested this, only theoretically by letter from demos about parser2 build
+  *-hp-ux*)
+      AC_CHECK_LIB(nsl, main)
+  ;;
 esac
 
 AC_CHECK_LIB(m, sin)
