@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char* IDENT_WCONTEXT_H="$Date: 2002/08/29 12:22:48 $";
+static const char* IDENT_WCONTEXT_H="$Date: 2002/09/10 12:02:24 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -81,14 +81,23 @@ public: // WContext
 		return fvalue?StringOrValue(0, fvalue):StringOrValue(&fstring, 0);
 	}
 
+	void attach_junction(Junction& ajunction) {
+		junctions+=&ajunction;
+	}
+
 public: // usage
 
-	WContext(Pool& apool, Value *avalue) : Value(apool), 
+	WContext(Pool& apool, Value *avalue, WContext *aparent) : Value(apool), 
 		fstring(*new(apool) String(apool)),
-		fvalue(avalue) {
+		fvalue(avalue),
+		fparent(aparent),
+		junctions(apool) {
 		flags.constructing=
 			flags.entered_class=
 			flags.entered_object=0;
+	}
+	~WContext() {
+		detach_junctions();
 	}
 
 	void set_constructing(bool aconstructing) { flags.constructing=aconstructing?1:0; }
@@ -100,6 +109,10 @@ public: // usage
 	void set_somebody_entered_some_class() { flags.entered_class=1; }
 	bool get_somebody_entered_some_class() { return flags.entered_class!=0; }
 
+private:
+
+	void detach_junctions(); 
+
 protected:
 	String& fstring;
 	Value *fvalue;
@@ -110,6 +123,11 @@ private:
 		int entered_object:1;
 		int entered_class:1;
 	} flags;
+
+private:
+
+	WContext *fparent;
+	Array  junctions;
 
 };
 

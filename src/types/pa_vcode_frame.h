@@ -8,7 +8,7 @@
 #ifndef PA_VCODE_FRAME_H
 #define PA_VCODE_FRAME_H
 
-static const char* IDENT_VCODE_FRAME_H="$Date: 2002/08/14 14:18:29 $";
+static const char* IDENT_VCODE_FRAME_H="$Date: 2002/09/10 12:02:24 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -53,8 +53,8 @@ public: // WContext
 
 public: // usage
 
-	VCodeFrame(Pool& apool, WContext& awcontext) : 
-		WContext(apool, &awcontext),
+	VCodeFrame(Pool& apool, WContext& awcontext, WContext *parent) : 
+		WContext(apool, &awcontext, parent),
 		wcontext(awcontext) {
 	}
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VALUE_C="$Date: 2002/08/29 12:22:48 $";
+static const char* IDENT_VALUE_C="$Date: 2002/09/10 12:02:24 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -41,14 +41,18 @@ Junction::Junction(Pool& apool,
 	rcontext(arcontext),
 	wcontext(awcontext),
 	code(acode) {
-	if(method_frame)
-		method_frame->register_junction(*this);
+	if(wcontext)
+		wcontext->attach_junction(*this);
 }
 
-void Junction::invalidate() {
-	method_frame=0;
-	rcontext=0;
-	wcontext=0;
+void Junction::reattach(WContext *new_wcontext) {
+	if(new_wcontext)
+		wcontext=new_wcontext;
+	else {
+		method_frame=0;
+		rcontext=0;
+		wcontext=0;
+	}
 }
 
 /*

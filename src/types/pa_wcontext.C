@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_WCONTEXT_C="$Date: 2002/08/07 13:24:31 $";
+static const char* IDENT_WCONTEXT_C="$Date: 2002/09/10 12:02:24 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"
@@ -29,4 +29,12 @@ void WContext::write(Value& avalue, const String* origin) {
 					avalue.get_class()->name_cstr(), avalue.type());
 	} else 
 		fvalue=&avalue;
+}
+
+
+void WContext::detach_junctions() {
+	Array_iter i(junctions);
+	while(i.has_next())
+		static_cast<Junction *>(i.next())->reattach(fparent);
+	// someday free junctions
 }

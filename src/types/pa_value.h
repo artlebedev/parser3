@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/29 12:22:48 $";
+static const char* IDENT_VALUE_H="$Date: 2002/09/10 12:02:24 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -290,7 +290,7 @@ public:
 		WContext *awcontext,
 		const Array *acode);
 
-	void invalidate();
+	void reattach(WContext *new_wcontext);
 
 	/// always present
 	Value& self;

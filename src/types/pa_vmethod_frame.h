@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/08/29 12:22:48 $";
+static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/09/10 12:02:24 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -65,7 +65,7 @@ public: // usage
 	VMethodFrame(Pool& apool, 
 		const String& aname,
 		const Junction& ajunction/*info: always method-junction*/) : 
-		WContext(apool, 0 /* empty */),
+		WContext(apool, 0 /* empty */, 0 /* no parent, junctions can be reattached only up to VMethodFrame */ ),
 
 		fname(aname),
 		junction(ajunction),
@@ -75,9 +75,7 @@ public: // usage
 		fnumbered_params(apool, aname),
 
 		fself(0),
-		fresult_initial_void(0),
-
-		junctions(apool) {
+		fresult_initial_void(0) {
 
 		if(has_my()) { // this method uses named params?
 			const Method &method=*junction.method;
@@ -98,9 +96,6 @@ public: // usage
 		}
 	}
 
-	~VMethodFrame() {
-		invalidate_junctions();
-	}
 	const String& name() { return fname; }
 
 	void set_self(Value& aself) { fself=&aself; }
@@ -144,10 +139,6 @@ public: // usage
 
 	MethodParams *numbered_params() { return &fnumbered_params; }
 
-	void register_junction(Junction& ajunction) {
-		junctions+=&ajunction;
-	}
-
 private:
 
 	bool has_my() {
@@ -161,13 +152,6 @@ private:
 	Value *get_result_variable() {
 		Value *result=has_my()?static_cast<Value*>(my.get(*result_var_name)):0;
 		return result && result!=fresult_initial_void ? result : 0;
-	}
-
-	void invalidate_junctions() {
-		Array_iter i(junctions);
-		while(i.has_next())
-			static_cast<Junction *>(i.next())->invalidate();
-		// someday free junctions
 	}
 
 public:
@@ -185,10 +169,6 @@ private:
 private:
 
 	Value *fresult_initial_void;
-
-private:
-
-	Array  junctions;
 
 };
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/08/29 12:22:46 $";
+static const char* IDENT_OP_C="$Date: 2002/09/10 12:02:23 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -293,7 +293,7 @@ static void _switch(Request& r, const String&, MethodParams *params) {
 	if(Value *selected_code=data.found ? data.found : data._default) {
 		// setting code context, would execute in ^switch[...]{>>context<<}
 		//selected_code->get_junction()->change_context(cases_code.get_junction());
-		r.write_pass_lang(r.process(*selected_code));
+		r.write_pass_lang(r.process(*selected_code, false /* get all that can be got */ ));
 	}
 }
 
