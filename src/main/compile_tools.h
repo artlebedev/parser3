@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.14 2001/02/24 15:26:03 paf Exp $
+  $Id: compile_tools.h,v 1.15 2001/02/24 16:19:06 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -18,6 +18,7 @@ enum lexical_state {
 	LS_DEF_PARAMS,
 	LS_DEF_LOCALS,
 	LS_DEF_COMMENT,
+	LS_SPEC_CODE,
 	LS_VAR_NAME_SIMPLE,
 	LS_VAR_NAME_CURLY,
 	LS_VAR_ROUND,

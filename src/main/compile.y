@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.36 2001/02/24 16:05:48 paf Exp $
+  $Id: compile.y,v 1.37 2001/02/24 16:19:06 paf Exp $
 */
 
 %{
@@ -59,6 +59,12 @@ control_method: '@' STRING '\n'
 				control_strings {
 	String& name=*LA2S($2);
 	YYSTYPE strings_code=$4;
+	if(strings_code->size()<1*2) {
+		strcpy(PC->error, "@");
+		strcat(PC->error, name.cstr());
+		strcat(PC->error, " is empty");
+		YYERROR;
+	}
 	if(name==CLASS_NAME) {
 		if(strings_code->size()==1*2) 
 			PC->vclass->set_name(*LA2S(strings_code));
@@ -93,8 +99,9 @@ control_method: '@' STRING '\n'
 		}
 	}
 };
-control_strings: control_string | control_strings '\n' control_string { $$=$1; P($$, $3) };
-control_string: STRING;
+control_strings: control_string | control_strings control_string { $$=$1; P($$, $2) };
+control_string: maybe_string '\n';
+maybe_string: empty | STRING;
 
 code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' 
 			maybe_codes {
@@ -431,9 +438,9 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				PC->ls=LS_DEF_PARAMS;
 				goto break2;
 			}
-			if(c=='\n') { // special @NAME or wrong
+			if(c=='\n') {
 				result=c;
-				pop_LS(PC);
+				PC->ls=LS_SPEC_CODE;
 				goto break2;
 			}
 			break;
@@ -473,6 +480,15 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			if(c=='\n') {
 				result=c;
 				pop_LS(PC);
+				goto break2;
+			}
+			break;
+
+		case LS_SPEC_CODE:
+			if(c=='\n') {
+				result=c;
+				if(*PC->source=='@' || *PC->source==0) // end of special_code
+					pop_LS(PC);
 				goto break2;
 			}
 			break;
