@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2004/06/25 12:04:00 $";
+static const char * const IDENT="$Date: 2004/09/13 08:56:47 $";
 
 #include "pa_globals.h"
 #include "pa_threads.h"
@@ -147,6 +147,11 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 				"put hash value must contain ."VALUE_NAME);
 	} else
 		value_string=&avalue->as_string();
+
+	if(aname.is_empty())
+		throw Exception("parser.runtime",
+			0,
+			"hashfile key must not be empty");
 
 	apr_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
