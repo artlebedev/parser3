@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: math.C,v 1.13 2002/02/08 08:30:10 paf Exp $
+	$Id: math.C,v 1.14 2002/02/18 12:10:53 paf Exp $
 */
 
 #include "pa_common.h"
@@ -38,14 +38,14 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 
 	Value& range=params->as_junction(0, "range must be expression");
-    uint max=(uint)r.process(range).as_double();
-    if(max<=1)
+    double top=r.process(range).as_double();
+    if(top<=1)
 		throw Exception(0, 0,
 			&method_name,
-			"bad range [0..%u]", max);
+			"top must be above 1 (%g)", top);
 	
 	Value& result=*new(pool) VInt(pool, (int)(
-		((double)((randomizer=rand())% RAND_MAX)) / RAND_MAX * max ));
+		((double)((randomizer=rand())% RAND_MAX)) / RAND_MAX * uint(top) ));
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
@@ -141,13 +141,13 @@ MMath::MMath(Pool& apool) : Methoded(apool) {
 void MMath::configure_admin(Request&) {
 	// setting seed
 	srand(
-		randomizer ^
+		randomizer
 #ifdef WIN32
-		GetCurrentThreadId() ^
+		^ GetCurrentThreadId()
 #else
-		getpid() ^
+		^ getpid()
 #endif
-		(unsigned int)time(NULL)
+		^ (unsigned int)time(NULL)
 	);
 	if(!randomizer)
 		randomizer=rand();
