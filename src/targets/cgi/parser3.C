@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.65 2001/04/19 16:59:23 paf Exp $
+	$Id: parser3.C,v 1.66 2001/04/20 09:04:16 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -101,7 +101,7 @@ size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
 }
 
 void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) {
-	if(cgi)
+	if(1||cgi)
 		printf("%s: %s\n", key, value);
 }
 
@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
 		// prepare to process request
 		Request request(pool,
 			request_info,
-			1||cgi ? String::UL_HTML_TYPO : String::UL_AS_IS
+			cgi ? String::UL_HTML_TYPO : String::UL_AS_IS
 			);
 		
 		// some root-controlled location

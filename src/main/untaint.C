@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.40 2001/04/19 15:38:00 paf Exp $
+	$Id: untaint.C,v 1.41 2001/04/20 09:04:08 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -77,6 +77,48 @@ static bool typo_present(Array::Item *value, const void *info) {
 		partial==1; // typo left column starts 'src'
 }
 
+/*
+
+HTTP-header    = field-name ":" [ field-value ] CRLF
+
+       field-name     = token
+       field-value    = *( field-content | LWS )
+
+       field-content  = <the OCTETs making up the field-value
+                        and consisting of either *TEXT or combinations
+                        of token, tspecials, and quoted-string>
+
+
+
+word           = token | quoted-string
+
+token          = 1*<any CHAR except CTLs or tspecials>
+
+
+
+tspecials      = "(" | ")" | "<" | ">" | "@"
+                      | "," | ";" | ":" | "\" | <">
+                      | "/" | "[" | "]" | "?" | "="
+                      | "{" | "}" | SP | HT
+
+SP             = <US-ASCII SP, space (32)>
+HT             = <US-ASCII HT, horizontal-tab (9)>
+
+LWS            = [CRLF] 1*( SP | HT )
+TEXT           = <any OCTET except CTLs,
+                        but including LWS>
+
+quoted-pair    = "\" CHAR
+
+  if(strchr("()<>@,;:\\\"/[]?={} \t", *ptr))
+*/
+inline bool need_quote_http_header(const char *ptr, size_t size) {
+	for(; size--; ptr++)
+		if(strchr("()<>@,;:\\\"[]?={} \t" /* excluded / */, *ptr))
+			return true;
+	return false;
+}
+
 /**
 	@test optimize whitespaces for all but 'html'
 	@todo fix theoretical \n mem overrun in TYPO replacements
@@ -124,47 +166,17 @@ char *String::store_to(char *dest, Untaint_lang lang, SQL_Connection *connection
 				break;
 			case UL_HTTP_HEADER:
 				// tainted, untaint language: http-header
-/*
-
-HTTP-header    = field-name ":" [ field-value ] CRLF
-
-       field-name     = token
-       field-value    = *( field-content | LWS )
-
-       field-content  = <the OCTETs making up the field-value
-                        and consisting of either *TEXT or combinations
-                        of token, tspecials, and quoted-string>
-
-
-
-word           = token | quoted-string
-
-token          = 1*<any CHAR except CTLs or tspecials>
-
-
-
-tspecials      = "(" | ")" | "<" | ">" | "@"
-                      | "," | ";" | ":" | "\" | <">
-                      | "/" | "[" | "]" | "?" | "="
-                      | "{" | "}" | SP | HT
-
-SP             = <US-ASCII SP, space (32)>
-HT             = <US-ASCII HT, horizontal-tab (9)>
-
-LWS            = [CRLF] 1*( SP | HT )
-TEXT           = <any OCTET except CTLs,
-                        but including LWS>
-
-quoted-pair    = "\" CHAR
-
-
-*/
-				*dest++='\"';
-				escape(switch(*src) {
-					case '\"': to_string("\\\"", 2);  break;
-					_default;
-				});
-				*dest++='\"';
+				if(need_quote_http_header(row->item.ptr, row->item.size)) {
+					*dest++='\"';
+					escape(switch(*src) {
+						case '\"': to_string("\\\"", 2);  break;
+						_default;
+					});
+					*dest++='\"';
+				} else {
+					memcpy(dest, row->item.ptr, row->item.size); 
+					dest+=row->item.size;
+				}
 				break;
 			case UL_MAIL_HEADER:
 				// tainted, untaint language: mail-header
