@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.5 2001/02/25 14:23:31 paf Exp $
+  $Id: pa_vmframe.h,v 1.6 2001/02/25 16:36:11 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -27,6 +27,9 @@ public: // Value
 			self->put_element(name, value);
 	}
 
+	// frame: self_transparent
+	VClass* get_class() { return self->get_class(); }
+
 public: // usage
 
 	VMethodFrame(Pool& apool, const Junction& ajunction) : 
@@ -47,7 +50,7 @@ public: // usage
 		}
 	}
 
-	void set_self(Value *aself) { self=aself; }
+	void set_self(VAliased& aself) { self=&aself; }
 
 	void store_param(Value *value) {
 		Method *method=junction.method;
@@ -73,7 +76,7 @@ public:
 private:
 	int store_param_index;
 	Hash my;
-	Value *self;
+	VAliased *self;
 
 };
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.32 2001/02/25 14:47:12 paf Exp $
+  $Id: pa_value.h,v 1.33 2001/02/25 16:36:11 paf Exp $
 */
 
 /*
@@ -21,6 +21,7 @@ class VClass;
 //class VOperator;
 class Junction;
 class WContext;
+class VAliased;
 
 class Method : public Pooled {
 public:
@@ -55,23 +56,23 @@ class Junction : public Pooled {
 public:
 
 	Junction(Pool& apool,
-		Value& aself,
-		Method *amethod,
+		VAliased& aself,
+		VClass *avclass, Method *amethod,
 		Value *aroot,
 		Value *arcontext,
 		WContext *awcontext,
 		const Array *acode) : Pooled(apool),
 		
 		self(aself),
-		method(amethod),
+		vclass(avclass), method(amethod),
 		root(aroot),
 		rcontext(arcontext),
 		wcontext(awcontext),
 		code(acode) {
 	}
 
-	Value& self;
-	Method *method;
+	VAliased& self;
+	VClass *vclass;  Method *method;
 	Value *root;
 	Value *rcontext;
 	WContext *wcontext;

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.24 2001/02/22 11:08:06 paf Exp $
+  $Id: pa_pool.h,v 1.25 2001/02/25 16:36:11 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -9,10 +9,10 @@
 
 //class String;
 class Exception;
-class Temp_exception_change;
+class Temp_exception;
 
 class Pool {
-	friend Temp_exception_change;
+	friend Temp_exception;
 public:
 
 	Pool() : fexception(0) {}
@@ -91,15 +91,15 @@ public:
 };
 #define NEW new(pool())
 
-class Temp_exception_change {
+class Temp_exception {
 	Pool pool;
 	Exception *saved_exception;
 public:
-	Temp_exception_change(Pool& apool, Exception& exception) : 
+	Temp_exception(Pool& apool, Exception& exception) : 
 		pool(apool),
 		saved_exception(apool.set_exception(&exception)) {
 	}
-	~Temp_exception_change() { 
+	~Temp_exception() { 
 		pool.restore_exception(saved_exception); 
 	}
 };
@@ -107,7 +107,7 @@ public:
 #define TRY \
 	{ \
 		Exception temp_exception; \
-		Temp_exception_change le(pool(), temp_exception); \
+		Temp_exception le(pool(), temp_exception); \
 		if(setjmp(temp_exception.mark)==0)
 
 #define THROW exception()._throw

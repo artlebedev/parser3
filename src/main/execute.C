@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.44 2001/02/25 14:47:13 paf Exp $
+  $Id: execute.C,v 1.45 2001/02/25 16:36:12 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -97,8 +97,7 @@ void Request::execute(const Array& ops) {
 				printf(" (%d)\n", local_ops->size());
 				dump(1, *local_ops);
 				Junction& j=*NEW Junction(pool(), 
-					*self,
-					0,
+					*self, 0, 0,
 					root,rcontext,wcontext,local_ops);
 				
 				Value *value=NEW VJunction(j);
@@ -230,8 +229,11 @@ void Request::execute(const Array& ops) {
 				printf("->\n");
 				VMethodFrame *frame=static_cast<VMethodFrame *>(POP());
 				frame->fill_unspecified_params();
-				PUSH(self);  PUSH(root);  PUSH(rcontext);  PUSH(wcontext); 
-
+				PUSH(self);  
+				PUSH(root);  
+				PUSH(rcontext);  
+				PUSH(wcontext); 
+				
 				VClass *called_class=frame->junction.self.get_class();
 				// constructing?
 				if(wcontext->constructing()) {  // yes
@@ -242,16 +244,20 @@ void Request::execute(const Array& ops) {
 					// is it my class or my parent's class?
 					VClass *read_class=rcontext->get_class();
 					if(read_class && read_class->is_or_derived_from(*called_class)) // yes
-						self=rcontext; // class dynamic call
+						self=reinterpret_cast<VAliased *>(rcontext); // class dynamic call
 					else // no
 						self=&frame->junction.self; // static or simple dynamic call
 				}
-				frame->set_self(self);
-
+				frame->set_self(*self);
+				
 				root=rcontext=wcontext=frame;
 				execute(frame->junction.method->code);
 				Value *value=wcontext->result();
-				wcontext=static_cast<WContext *>(POP());  rcontext=POP();  root=POP();  self=POP();
+
+				wcontext=static_cast<WContext *>(POP());  
+				rcontext=POP();  
+				root=POP();  
+				self=static_cast<VAliased *>(POP());
 				wcontext->write(value);
 				printf("<-returned");
 				break;
@@ -275,7 +281,11 @@ Value *Request::get_element() {
 		if(junction && junction->code) { // is it a code-junction?
 			// autocalc it
 			printf("ja->\n");
-			PUSH(self);  PUSH(root);  PUSH(rcontext);  PUSH(wcontext);
+			PUSH(self);  
+			PUSH(root);  
+			PUSH(rcontext);  
+			PUSH(wcontext);
+
 			// almost plain wwrapper about junction wcontext, 
 			// BUT intercepts string writes
 			VCodeFrame frame(pool(), *junction->wcontext);  wcontext=&frame;
@@ -287,7 +297,11 @@ Value *Request::get_element() {
 			//   string writes were intercepted
 			//   returning them as the result of getting code-junction
 			value=NEW VString(*frame.get_string());
-			wcontext=static_cast<WContext *>(POP());  rcontext=POP();  root=POP();  self=POP();
+
+			wcontext=static_cast<WContext *>(POP());  
+			rcontext=POP();  
+			root=POP();  
+			self=static_cast<VAliased *>(POP());
 			printf("<-ja returned");
 		}
 	} else {

@@ -228,6 +228,10 @@ SOURCE=..\include\pa_types.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_valiased.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_value.h
 # End Source File
 # Begin Source File

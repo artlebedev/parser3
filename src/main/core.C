@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.40 2001/02/25 14:23:32 paf Exp $
+$Id: core.C,v 1.41 2001/02/25 16:36:12 paf Exp $
 */
 
 #include "pa_request.h"
@@ -80,7 +80,7 @@ char *Request::execute_MAIN() {
 				const Method *method=junction->method;
 				if(method) { // and junction is method-junction! call it
 					// initialize contexts
-					self=root=rcontext=vclass;
+					root=rcontext=self=vclass;
 					wcontext=NEW WWrapper(pool(), vclass, false /* not constructing */);
 					
 					// execute!	
