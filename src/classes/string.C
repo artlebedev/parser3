@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.72 2001/08/31 09:26:12 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.73 2001/09/05 15:05:27 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -355,16 +355,17 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 	ulong limit=0;
 	ulong offset=0;
 	if(params->size()>1) {
-		Value& options_param=params->as_no_junction(1, "options must be hash, not code");
-		if(options=options_param.get_hash()) {
-			if(Value *vlimit=(Value *)options->get(*sql_limit_name))
-				limit=(ulong)r.process(*vlimit).as_double();
-			if(Value *voffset=(Value *)options->get(*sql_offset_name))
-				offset=(ulong)r.process(*voffset).as_double();
-		} else
-			PTHROW(0, 0,
-				&method_name,
-				"options must be hash");
+		Value& voptions=params->as_no_junction(1, "options must be hash, not code");
+		if(voptions.is_defined())
+			if(options=voptions.get_hash()) {
+				if(Value *vlimit=(Value *)options->get(*sql_limit_name))
+					limit=(ulong)r.process(*vlimit).as_double();
+				if(Value *voffset=(Value *)options->get(*sql_offset_name))
+					offset=(ulong)r.process(*voffset).as_double();
+			} else
+				PTHROW(0, 0,
+					&method_name,
+					"options must be hash");
 	} else
 		options=0;
 

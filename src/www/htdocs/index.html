@@ -3,7 +3,8 @@ t.p
 dtf.p
 
 @main[]
-^tconnect[]
+^tlsplit2[]
+#^tconnect[]
 #^timghtmlyu[]
 #^timghtml[]
 #^tresult[]
@@ -27,6 +28,10 @@ dtf.p
 #^list[]
 #^tests[]
 #^func(0)<hr>
+
+@tlsplit2[]
+$splitURI[^request:uri.mid(1;^request:uri.length[]-1).lsplit[/]]
+OK
 
 @tconnect[]
 #^connect[mysql://hren:pwd@hren/zz]{hren}
