@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.64 2001/12/15 21:28:17 paf Exp $
+	$Id: op.C,v 1.65 2001/12/19 16:17:26 paf Exp $
 */
 
 #include "classes.h"
@@ -405,11 +405,15 @@ String *cache_get(Pool& pool, const String& file_spec) {
 	return &result;
 }
 static void _cache(Request& r, const String& method_name, MethodParams *params) {
-	// ^cache[file_spec](lifespan){code} time=0 no cache
 	Pool& pool=r.pool();
 	
 	// file_spec, expires, body code
-	const String &file_spec=params->as_string(0, "key must be string");
+	const String &file_spec=r.absolute(params->as_string(0, "filespec must be string"));
+	if(params->size()==1) { // delete
+		cache_delete(pool, file_spec);
+		return;
+	}
+
 	time_t lifespan=(time_t)params->as_double(1, "lifespan must be number", r);
 	Value& body_code=params->as_junction(2, "body must be code");
 
@@ -486,8 +490,9 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
 
 
+	// ^cache[file_spec] delete cache
 	// ^cache[file_spec](time){code} time=0 no cache
-	add_native_method("cache", Method::CT_ANY, _cache, 3, 3);
+	add_native_method("cache", Method::CT_ANY, _cache, 1, 3);
 	
 	// switch
 
