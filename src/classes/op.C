@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.65 2001/12/19 16:17:26 paf Exp $
+	$Id: op.C,v 1.66 2001/12/24 09:05:34 paf Exp $
 */
 
 #include "classes.h"
@@ -396,12 +396,9 @@ String *cache_get(Pool& pool, const String& file_spec) {
 				prolog.version, DATA_STRING_SERIALIZED_VERSION);
 
 	String& result=*new(pool) String(pool);
-	if(data_size) {
-		result.deserialize(
-			sizeof(Data_string_serialized_prolog), 
-			data, data_size, file_spec.cstr());
-	}
-	
+	result.deserialize(
+		sizeof(Data_string_serialized_prolog), 
+		data, data_size, file_spec.cstr());
 	return &result;
 }
 static void _cache(Request& r, const String& method_name, MethodParams *params) {

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hashfile.C,v 1.18 2001/12/19 16:19:11 paf Exp $
+	$Id: hashfile.C,v 1.19 2001/12/24 09:05:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -85,36 +85,27 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	time_t lifespan=(time_t)params->as_double(1, "lifespan must be number", r);
 	Value& body_code=params->as_junction(2, "body must be code");
 
-	// transaction
-////	DB_Transaction transaction(pool, *self.get_table_ptr(&method_name), self.current_transaction);
 	DB_Table_ptr table_ptr=self.get_table_ptr(&method_name);
 
-	// execute body
-////	try {
 		if(lifespan) { // 'lifespan' specified? try cached copy...
-			if(String *cached_body=/*transaction.*/table_ptr->get(self.current_transaction, pool, key, lifespan)) { // have cached copy?
-				r.write_assign_lang(*cached_body);
-				// happy with it
-				return;
-			}
-		} else // 'lifespan'=0, forget cached copy
-			/*transaction.*/table_ptr->remove(self.current_transaction, key);
+		if(String *cached_body=table_ptr->get(self.current_transaction, pool, key, lifespan)) { // have cached copy?
+			r.write_assign_lang(*cached_body);
+			// happy with it
+			return;
+		}
+	} else // 'lifespan'=0, forget cached copy
+		table_ptr->remove(self.current_transaction, key);
 
-		// save
-		Autosave_marked_to_cancel_cache saved(self);
+	// save
+	Autosave_marked_to_cancel_cache saved(self);
 
-		// process
-		Value& processed_body=r.process(body_code);
-		r.write_assign_lang(processed_body);
-		
-		// put it to cache if 'lifespan' specified & never called ^delete[]
-		if(lifespan && !self.marked_to_cancel_cache())
-			/*transaction.*/table_ptr->put(self.current_transaction, key, processed_body.as_string(), lifespan);
-////	} catch(...) { // process/commit problem
-////		transaction.mark_to_rollback();
-		
-////		/*re*/throw; 
-////	}
+	// process
+	Value& processed_body=r.process(body_code);
+	r.write_assign_lang(processed_body);
+	
+	// put it to cache if 'lifespan' specified & never called ^delete[]
+	if(lifespan && !self.marked_to_cancel_cache())
+		table_ptr->put(self.current_transaction, key, processed_body.as_string(), lifespan);
 }
 
 static void _delete(Request& r, const String& method_name, MethodParams *params) {

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.134 2001/12/24 07:26:44 paf Exp $
+	$Id: pa_string.C,v 1.135 2001/12/24 09:05:34 paf Exp $
 */
 
 #include "pcre.h"
@@ -893,6 +893,9 @@ break2:
 	;
 }
 void String::deserialize(size_t prolog_size, void *buf, size_t buf_size, const char *file) {
+	if(buf_size<=prolog_size)
+		return;
+
 	char *cur=(char *)buf+prolog_size;
 	buf_size-=prolog_size;
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.C,v 1.16 2001/12/17 19:16:09 paf Exp $
+	$Id: pa_db_table.C,v 1.17 2001/12/24 09:05:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -175,7 +175,7 @@ String *DB_Table::data_dbt_to_string(Pool& pool, const DBT& data_dbt, time_t lif
 		return 0;
 
 	String& result=*new(pool) String(pool);
-	if(data_dbt.size) {
+	if(data_dbt.size>sizeof(Data_string_serialized_prolog)) {
 		char *data=(char *)pool.malloc(data_dbt.size);
 		memcpy(data, data_dbt.data, data_dbt.size);
 		result.deserialize(
