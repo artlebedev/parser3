@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.187 2002/07/30 14:30:55 paf Exp $
+	$Id: parser3.C,v 1.188 2002/08/01 08:39:50 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -416,7 +416,7 @@ static void failed_new() {
 #endif
 
 static void usage(const char *program) {
-	fprintf(stderr,
+	printf(
 		"Parser/%s Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)\n"
 		"Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\n"
 		"\n"
