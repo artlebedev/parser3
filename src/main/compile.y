@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.164 2001/08/22 07:31:54 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.165 2001/09/06 07:59:11 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -584,7 +584,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 
 		if(c=='^' && PC.ls!=LS_COMMENT && PC.ls!=LS_DEF_COMMENT) 
 			switch(*PC.source) {
-			// escaping: ^^ & co
+			// ^escaping some punctuators
 			case '^': case '$': case ';':
 			case '(': case ')':
 			case '[': case ']':
@@ -600,6 +600,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				if(PC.ls==LS_METHOD_AFTER) {
 					pop_LS(PC);
 					result=EON;
+					skip_analized=-1; // return to ^ afterwards to assure it's literality
 					goto break2;
 				} else {
 					// skip over _ after ^

@@ -31,7 +31,7 @@
 
 #line 8 "compile.y"
 
-static char *RCSId="$Id: compile.tab.C,v 1.9 2001/08/28 10:30:28 parser Exp $"; 
+static char *RCSId="$Id: compile.tab.C,v 1.10 2001/09/06 07:59:11 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -1852,7 +1852,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 
 		if(c=='^' && PC.ls!=LS_COMMENT && PC.ls!=LS_DEF_COMMENT) 
 			switch(*PC.source) {
-			// escaping: ^^ & co
+			// ^escaping some punctuators
 			case '^': case '$': case ';':
 			case '(': case ')':
 			case '[': case ']':
@@ -1868,6 +1868,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				if(PC.ls==LS_METHOD_AFTER) {
 					pop_LS(PC);
 					result=EON;
+					skip_analized=-1; // return to ^ afterwards to assure it's literality
 					goto break2;
 				} else {
 					// skip over _ after ^
@@ -2435,7 +2436,7 @@ break2:
 }
 
 static int real_yyerror(parse_control *pc, char *s) {  // Called by yyparse on error
-	   strncpy(PC.error, s, MAX_STRING-1); PC.error[MAX_STRING-1]=0;
+	   strncpy(PC.error, s, MAX_STRING);
 	   return 1;
 }
 
