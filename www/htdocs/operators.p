@@ -10,4 +10,4 @@ $x
 $self.x
 
 @three[]
-^process{^^eval(2*2)}
+^process{^^eval(2*2)^$a[1]^$a}

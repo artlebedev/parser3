@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VALUE_C="$Date: 2002/09/17 15:53:46 $";
+static const char* IDENT_VALUE_C="$Date: 2002/09/17 16:46:25 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -13,22 +13,22 @@ static const char* IDENT_VALUE_C="$Date: 2002/09/17 15:53:46 $";
 
 /// call this before invoking to ensure proper actual numbered params count
 void Method::check_actual_numbered_params(
-	Value *self, const String& actual_name, Array *actual_numbered_params) const {
+	Value& self, const String& actual_name, Array *actual_numbered_params) const {
 
 	int actual_count=actual_numbered_params?actual_numbered_params->size():0;
 	if(actual_count<min_numbered_params_count) // not proper count? bark
 		throw Exception("parser.runtime",
 			&actual_name,
 			"native method of %s (%s) accepts minimum %d parameter(s) (%d present)", 
-				self?self->get_class()->name_cstr():"<unknown class>",
-				self?self->type():"<unknown type>",
+				self.get_class()->name_cstr(),
+				self.type(),
 				min_numbered_params_count,
 				actual_count);
 
 }
 
 Junction::Junction(Pool& apool,
-	Value *aself,
+	Value& aself,
 	const Method *amethod,
 	VMethodFrame *amethod_frame,
 	Value *arcontext,

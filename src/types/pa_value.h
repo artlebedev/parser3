@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/09/17 15:53:46 $";
+static const char* IDENT_VALUE_H="$Date: 2002/09/17 16:46:26 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -286,7 +286,7 @@ class Junction : public Pooled {
 public:
 
 	Junction(Pool& apool,
-		Value *aself,
+		Value& aself,
 		const Method *amethod,
 		VMethodFrame *amethod_frame,
 		Value *arcontext,
@@ -296,7 +296,7 @@ public:
 	void reattach(WContext *new_wcontext);
 
 	/// present when not operator [selfless]
-	Value *self;
+	Value& self;
 	//@{
 	/// @name either these // so called 'method-junction'
 	const Method *method;
@@ -382,7 +382,7 @@ public:
 
 	/// call this before invoking to ensure proper actual numbered params count
 	void check_actual_numbered_params(
-		Value *self, const String& actual_name, Array *actual_numbered_params) const;
+		Value& self, const String& actual_name, Array *actual_numbered_params) const;
 };
 
 ///	Auto-object used for temporarily substituting/removing elements
