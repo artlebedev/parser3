@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.38 2001/09/01 14:49:01 parser Exp $
+	$Id: image.C,v 1.39 2001/09/04 19:44:32 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.38 2001/09/01 14:49:01 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.39 2001/09/04 19:44:32 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -309,14 +309,17 @@ static void _html(Request& r, const String& method_name, MethodParams *params) {
 	const Hash& fields=static_cast<VImage *>(r.self)->fields();
 	Hash *attribs=0;
 
-	if(params->size())
-		if(attribs=params->get(0).get_hash()) {
-			Attrib_info attrib_info={&tag, 0};
-			attribs->for_each(append_attrib_pair, &attrib_info);
-		} else
-			PTHROW(0, 0, 
-				&method_name, 
-				"attributes must be must be hash");
+	if(params->size()) {
+		Value &vattribs=params->get(0);
+		if(vattribs.is_defined()) // allow 'void'
+			if(Hash *attribs=vattribs.get_hash()) {
+				Attrib_info attrib_info={&tag, 0};
+				attribs->for_each(append_attrib_pair, &attrib_info);
+			} else
+				PTHROW(0, 0, 
+					&method_name, 
+					"attributes must be hash");
+	}
 
 	Attrib_info attrib_info={&tag, attribs};
 	fields.for_each(append_attrib_pair, &attrib_info);
