@@ -2,7 +2,7 @@
 #^exec[]
 #^fori[]
 #^connect[mysql://hren]{^void:sql{nothing}}
-#$response:content-type[$.value[text/html] $.charset[utf-8]]
+$response:content-type[$.value[text/html] $.charset[windows-125odin]]
 ^xslt[]
 OK
 
@@ -92,7 +92,7 @@ $file[^xdoc.file[
 	$.method[html]
 ]]
 ^file.save[text;save_file.html]
-^taint[^xdoc.string[]]
+taint[^xdoc.string[]]
 #	$.encoding[windows-1251]
 #	$.method[xml]
-#]]
+]]

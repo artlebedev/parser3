@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.2 2001/09/26 15:43:59 parser Exp $
+	$Id: xnode.C,v 1.3 2001/09/28 09:37:09 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -127,6 +127,7 @@ MXnode::MXnode(Pool& apool) : Methoded(apool),
     CONST(NOTATION_NODE,  12);
 
 }
+
 // global variable
 
 Methoded *Xnode_class;
