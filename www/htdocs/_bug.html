@@ -1,12 +1,8 @@
-﻿<pre>$response:charset[windows-1251]
-$request:charset[UTF-8]
-$s[
-^mail:send[
-    ...
-    $.charset[windows-1251]
-    ...
-    $.text[Для подтверждения пройдите по ссылке: http://aaa.ru/?name=^taint[uri][Миша]]
-]  
-]
-^s.save[s.txt]
-OK
+$b[^date::now[]]
+$f[^file::load[text;http://mts.ru:9090;
+	$.timeout(2)
+]]
+$a[^date::now[]]
+$f.status
+<hr>
+^eval(^a.unix-timestamp[]-^b.unix-timestamp[])

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/10/06 10:55:10 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/12/10 07:31:27 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -165,8 +165,13 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 	while(true) {
 		char buf[MAX_STRING*10]; 
 		ssize_t received_size=recv(sock, buf, sizeof(buf), 0); 
-		if(received_size<=0)
+		if(received_size<=0) {
+			if(int no=pa_socks_errno())
+				throw Exception("http.connect", 
+					0, 
+					"error receiving response: %s (%d)", pa_socks_strerr(no), no); 
 			break;
+		}
 		response=(char*)pa_realloc(response, response_size+received_size+1/*terminator*/);
 		memcpy(response+response_size, buf, received_size);
 		response_size+=received_size;
@@ -210,11 +215,7 @@ static void timeout_handler(int sig){
 static int http_request(char*& response, size_t& response_size,
 			const char* host, short port, 
 			const char* request, 
-			int 
-#ifdef PA_USE_ALARM
-			timeout
-#endif
-			,
+			int timeout_secs,
 			bool fail_on_status_ne_200) {
 	if(!host)
 		throw Exception("http.host", 
@@ -237,7 +238,7 @@ static int http_request(char*& response, size_t& response_size,
 			"timeout occured while retrieving document"); 
 		return 0; // never
 	} else {
-		alarm(timeout); 
+		alarm(timeout_secs); 
 #endif
 		try {
 			int result;
@@ -254,6 +255,23 @@ static int http_request(char*& response, size_t& response_size,
 					0, 
 					"can not make socket: %s (%d)", pa_socks_strerr(no), no); 
 			}
+
+#ifdef SO_DONTLINGER
+			int dont_linger = 0;
+			setsockopt(sock, SOL_SOCKET, SO_DONTLINGER, (const char *)&dont_linger, sizeof(dont_linger));
+#else
+			// To enable SO_DONTLINGER (that is, disable SO_LINGER) 
+			// l_onoff should be set to zero and setsockopt should be called
+			linger dont_linger={0,0};
+			setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *)&dont_linger, sizeof(dont_linger));
+#endif
+
+#ifndef PA_USE_ALARM
+			int timeout_ms=timeout_secs*1000;
+			setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
+			setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
+#endif
+
 			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest))) {
 				int no=pa_socks_errno();
 				throw Exception("http.connect", 
@@ -431,7 +449,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	const char* method="GET"; bool method_is_get;
 	HashStringValue* form=0;
 	const char* body_cstr=0;
-	int timeout=2;
+	int timeout_secs=2;
 	bool fail_on_status_ne_200=true;
 	Value* vheaders=0;
 	Charset *asked_remote_charset=0;
@@ -454,7 +472,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		} 
 		if(Value* vtimeout=options->get(HTTP_TIMEOUT_NAME)) {
 			valid_options++;
-			timeout=vtimeout->as_int(); 
+			timeout_secs=vtimeout->as_int(); 
 		} 
 		if((vheaders=options->get(HTTP_HEADERS_NAME))) {
 			valid_options++;
@@ -586,7 +604,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	size_t response_size;
 	int status_code=http_request(response, response_size,
 		host, port, request_head_and_body.cstr(), 
-		timeout, fail_on_status_ne_200); 
+		timeout_secs, fail_on_status_ne_200); 
 	
 	//processing results	
 	char* raw_body; size_t raw_body_size;
