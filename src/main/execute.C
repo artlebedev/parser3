@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.107 2001/03/16 08:31:21 paf Exp $
+	$Id: execute.C,v 1.108 2001/03/16 09:26:43 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -34,7 +34,7 @@ char *opcode_name[]={
 	"WITH_SELF",	"WITH_ROOT",	"WITH_READ",	"WITH_WRITE",
 	"GET_CLASS",
 	"CONSTRUCT_VALUE",  "CONSTRUCT_DOUBLE",
-	"WRITE",  "STRING__WRITE",
+	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
 	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
 	"CREATE_RWPOOL",	"REDUCE_RWPOOL",
@@ -195,17 +195,23 @@ void Request::execute(const Array& ops) {
 				value->set_name(name);
 				break;
 			}
-		case OP_WRITE:
+		case OP_WRITE_VALUE:
 			{
 				Value *value=POP();
 				write_assign_lang(*value);
 				break;
 			}
+		case OP_WRITE_EXPR_RESULT:
+			{
+				Value *value=POP();
+				write_expr_result(*value->get_expr_result());
+				break;
+			}
 		case OP_STRING__WRITE:
 			{
 				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
-				log_printf(" \"%s\"", vstring->value().cstr());
-				write(vstring->value());
+				log_printf(" \"%s\"", vstring->string().cstr());
+				write(vstring->string());
 				break;
 			}
 			
@@ -639,7 +645,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 			frame=NEW VCodeFrame(pool(), *junction->wcontext);  
 		} else {
 			// plain wwrapper
-			frame=NEW WWrapper(pool(), 0 /* empty */, false /*not constructing*/);
+			frame=NEW WWrapper(pool(), 0/*empty*/, false/*not constructing*/);
 		}
 		
 		wcontext=frame;

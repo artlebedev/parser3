@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.14 2001/03/16 08:31:24 paf Exp $
+	$Id: pa_value.h,v 1.15 2001/03/16 09:26:45 paf Exp $
 */
 
 /*
@@ -106,7 +106,7 @@ public: // Value
 	// unknown: false
 	// others: true
 	virtual bool get_defined() { return true; }
-	// string: fvalue as VDouble
+	// string: fstring as VDouble
 	// bool: this
 	// double: this
 	// int: this
@@ -127,12 +127,9 @@ public: // Value
 
 	// unknown: false
 	// bool: value
+	// integer: 0 or !0
 	// double: 0 or !0
-	// string: empty or not
-	// hash: size!=0
-	// table: empty or not
-	// others: true
-	virtual bool get_bool() { return true; }
+	virtual bool get_bool() { bark("(%s) does not have logical value"); return 0; }
 
 	// junction: itself
 	virtual Junction *get_junction() { return 0; }

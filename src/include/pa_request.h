@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.54 2001/03/14 17:15:06 paf Exp $
+	$Id: pa_request.h,v 1.55 2001/03/16 09:26:42 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -81,25 +81,29 @@ public:
 		const String *name=0,
 		bool intercept_string=true); // execute.C
 
+	// write(const) = clean
 	void write(const String& astring) {
-		wcontext->write(astring, String::Untaint_lang::NO);  // write(const) = clean
-	}
-	void write_no_lang(String& astring) {
-		// appending, sure of clean string inside
 		wcontext->write(astring, String::Untaint_lang::NO);
 	}
-
+	// appending, sure of clean string inside
+	void write_no_lang(String& astring) {
+		wcontext->write(astring, String::Untaint_lang::NO);
+	}
+	// appending possible string, assigning untaint language
 	void write_assign_lang(Value& avalue) {
-		// appending possible string, assigning untaint language
 		wcontext->write(avalue, flang); 
 	}
+	// appending possible string, passing language built into string being written
 	void write_pass_lang(Value& avalue) {
-		// appending possible string, passing language built into string being written
 		wcontext->write(avalue, String::Untaint_lang::PASS_APPENDED); 
 	}
+	// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
-		// appending sure value, no strings inside
-		wcontext->write(avalue, String::Untaint_lang::NO); 
+		wcontext->write(avalue, String::Untaint_lang::NO);
+	}
+	// appending sure value, not VString
+	void write_expr_result(Value& avalue) {
+		wcontext->write(avalue); 
 	}
 
 	void fail_if_junction_(bool is, Value& value, const String& method_name, char *msg);

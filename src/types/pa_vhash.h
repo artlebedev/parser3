@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhash.h,v 1.4 2001/03/13 17:17:29 paf Exp $
+	$Id: pa_vhash.h,v 1.5 2001/03/16 09:26:45 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -20,24 +20,21 @@ public: // value
 
 	// value: (key)=value
 	Value *get_element(const String& name) { 
-		return static_cast<Value *>(fvalue.get(name));
+		return static_cast<Value *>(fhash.get(name));
 	}
 	
 	// value: (key)=value
 	void put_element(const String& name, Value *value) { 
-		fvalue.put(name, value);
+		fhash.put(name, value);
 	}
-
-	// value: size!=0
-	bool get_bool() { return fvalue.size()!=0; }
 
 public: // usage
 
 	VHash(Pool& apool, Hash *ahash=0) : Value(apool), 
-		fvalue(ahash?*ahash:*new(apool) Hash(apool)) {}
+		fhash(ahash?*ahash:*new(apool) Hash(apool)) {}
 
 private:
-	Hash& fvalue;
+	Hash& fhash;
 };
 
 #endif

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.3 2001/03/12 21:54:21 paf Exp $
+	$Id: pa_vtable.h,v 1.4 2001/03/16 09:26:45 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -19,10 +19,8 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "table"; }
-	// table: fvalue
-//	const Table *get_table() { return &fvalue; };
-	// table: empty or not
-	bool get_bool() { return table().size()!=0; }
+	// table: ftable
+//	const Table *get_table() { return &ftable; };
 	// table: itself
 	VTable *get_vtable() { return this; }
 	// table: column
@@ -31,8 +29,8 @@ public: // Value
 		if(Value *result=VStateless_object::get_element(name))
 			return result;
 
-		if(fvalue)
-			if(const String *string=fvalue->item(name))
+		if(ftable)
+			if(const String *string=ftable->item(name))
 				return NEW VString(*string);
 
 		return NEW VUnknown(pool());
@@ -41,25 +39,19 @@ public: // Value
 public: // usage
 
 	VTable(Pool& apool) : VStateless_object(apool, *table_class), 
-		fvalue(0) {
+		ftable(0) {
 	}
-/*
-	VTable(const Table& avalue) : VStateless_object(avalue.pool(), *table_class),
-		fvalue(avalue) {
-	}
-*/
-
-	void set_table(Table& avalue) { fvalue=&avalue; }
+	void set_table(Table& avalue) { ftable=&avalue; }
 	Table& table() { 
-		if(!fvalue)
+		if(!ftable)
 			bark("getting unset vtable value");
 
-		return *fvalue; 
+		return *ftable; 
 	}
 
 private:
 
-	Table *fvalue;
+	Table *ftable;
 
 };
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: code.h,v 1.21 2001/03/13 14:28:50 paf Exp $
+	$Id: code.h,v 1.22 2001/03/16 09:26:42 paf Exp $
 */
 
 #ifndef CODE_H
@@ -20,7 +20,7 @@ enum OPCODE {
 	OP_WITH_SELF,	OP_WITH_ROOT,	OP_WITH_READ,	OP_WITH_WRITE,
 	OP_GET_CLASS,
 	OP_CONSTRUCT_VALUE, OP_CONSTRUCT_EXPR,
-	OP_WRITE,  OP_STRING__WRITE,
+	OP_WRITE_VALUE,  OP_WRITE_EXPR_RESULT, OP_STRING__WRITE,
 	OP_GET_ELEMENT,	OP_GET_ELEMENT__WRITE,
 	OP_CREATE_EWPOOL,	OP_REDUCE_EWPOOL,
 	OP_CREATE_RWPOOL,	OP_REDUCE_RWPOOL,

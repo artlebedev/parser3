@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.101 2001/03/15 11:00:40 paf Exp $
+	$Id: compile.y,v 1.102 2001/03/16 09:26:43 paf Exp $
 */
 
 /*
@@ -239,7 +239,7 @@ action: get | put | with | call;
 
 get: get_value {
 	$$=$1; /* stack: resulting value */
-	O($$, OP_WRITE); /* value=pop; wcontext.write(value) */
+	O($$, OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 };
 get_value: '$' get_name_value { $$=$2 }
 get_name_value: name_without_curly_rdive EON | name_in_curly_rdive;
@@ -332,7 +332,7 @@ codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
 
 call: call_value {
 	$$=$1; /* stack: value */
-	O($$, OP_WRITE); /* value=pop; wcontext.write(value) */
+	O($$, OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 };
 call_value: '^' call_name store_params EON { /* ^field.$method{vasya} */
 	$$=$2; /* with_xxx,diving code; stack: context,method_junction */
@@ -385,7 +385,7 @@ store_curly_param_part: maybe_codes {
 };
 write_expr_value: expr_value {
 	$$=$1;
-	O($$, OP_WRITE);
+	O($$, OP_WRITE_EXPR_RESULT);
 };
 
 /* name */
@@ -419,7 +419,7 @@ name_expr_with_subvar_value: STRING subvar_get_writes {
 	$$=N(POOL); 
 	O($$, OP_CREATE_EWPOOL);
 	P($$, $1);
-	O($$, OP_WRITE);
+	O($$, OP_WRITE_VALUE);
 	P($$, $2);
 	O($$, OP_REDUCE_EWPOOL);
 };
@@ -453,7 +453,7 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 	O($$, OP_CREATE_RWPOOL);
 	P($$, $4);
 	O($$, OP_REDUCE_RWPOOL);
-	O($$, OP_WRITE);
+	O($$, OP_WRITE_VALUE);
 };
 
 /* expr */
@@ -512,7 +512,7 @@ string_inside_quotes_value: maybe_codes {
 /* basics */
 
 write_string: STRING {
-	// optimized from OP_STRING+OP_WRITE to OP_STRING__WRITE
+	// optimized from OP_STRING+OP_WRITE_VALUE to OP_STRING__WRITE
 	change_string_literal_to_write_string_literal($$=$1)
 };
 

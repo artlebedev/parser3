@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.23 2001/03/11 12:04:43 paf Exp $
+	$Id: pa_hash.h,v 1.24 2001/03/16 09:26:42 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -23,8 +23,9 @@ public:
 
 public:
 
-	Hash(Pool& apool,bool) : Pooled(apool) { construct(apool, true); }
-	Hash(Pool& apool) : Pooled(apool) { construct(apool, false); }
+	Hash(Pool& apool,bool athread_safe=false) : Pooled(apool) { 
+		construct(apool, athread_safe); 
+	}
 
 	// useful generic hash function
 	static uint generic_code(uint aresult, const char *start, uint allocated);
