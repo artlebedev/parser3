@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.157 2001/09/28 15:58:15 parser Exp $
+	$Id: pa_request.C,v 1.158 2001/09/30 09:56:43 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -35,29 +35,14 @@ const char *ORIGINS_CONTENT_TYPE="text/plain";
 
 Methoded *MOP_create(Pool&);
 
-static void element2ctypes(unsigned char *tables, 
-	Value& ctype, const String& name, 
-	unsigned char bit,
-	int group_offset=-1,
-	bool skip_ws=true) {
-	Value *value=ctype.get_element(name);
-	if(!value)
-		return;
 
-	unsigned char *ctypes_table=tables+ctypes_offset;
-	const unsigned char *cstr=
-		(const unsigned char *)value->as_string().cstr(String::UL_AS_IS);
-	for(; *cstr; cstr++) {
-		unsigned char c=*cstr;
-		if(skip_ws && (c=='\n' || c=='\t' || c==' '))
-			continue;
-		ctypes_table[c]|=bit;
-
-		if(group_offset>=0)
-			tables[cbits_offset+group_offset+c/8] |= 1 << (c%8);
-	}				
+inline void prepare_case_tables(unsigned char *tables) {
+	unsigned char *lcc_table=tables+lcc_offset;
+	unsigned char *fcc_table=tables+fcc_offset;
+	for(int i=0; i<0x100; i++)
+		lcc_table[i]=fcc_table[i]=i;
 }
-static void cstr2ctypes(unsigned char *tables, const unsigned char *cstr, 
+inline void cstr2ctypes(unsigned char *tables, const unsigned char *cstr, 
 						unsigned char bit) {
 	unsigned char *ctypes_table=tables+ctypes_offset;
 	ctypes_table[0]=bit;
@@ -66,33 +51,73 @@ static void cstr2ctypes(unsigned char *tables, const unsigned char *cstr,
 		ctypes_table[c]|=bit;
 	}
 }
-static void prepare_case_tables(unsigned char *tables) {
-	unsigned char *lcc_table=tables+lcc_offset;
-	unsigned char *fcc_table=tables+fcc_offset;
-	for(int i=0; i<0x100; i++)
-		lcc_table[i]=fcc_table[i]=i;
+inline unsigned int to_wchar_code(const String *s) {
+	if(!s || s->size()==0)
+		return 0;
+	if(s->size()==1)
+		return (unsigned int)s->first_char();
+	return (unsigned int)s->as_int();
 }
-static void element2case(unsigned char *tables, Value& ctype, const String& name) {
-	Value *value=ctype.get_element(name);
-	if(!value)
+inline bool to_bool(const String *s) {
+	return s && s->size()!=0;
+}
+static void element2ctypes(unsigned char c, bool belongs,
+						   unsigned char *tables,  unsigned char bit, int group_offset=-1) {
+	if(!belongs)
+		return;
+
+	unsigned char *ctypes_table=tables+ctypes_offset;
+
+	ctypes_table[c]|=bit;
+	if(group_offset>=0)
+		tables[cbits_offset+group_offset+c/8] |= 1 << (c%8);
+}
+static void element2case(unsigned char from, unsigned char to,
+						 unsigned char *tables) {
+	if(!to) 
 		return;
 
 	unsigned char *lcc_table=tables+lcc_offset;
 	unsigned char *fcc_table=tables+fcc_offset;
-	const unsigned char *cstr=
-		(const unsigned char *)value->as_string().cstr(String::UL_AS_IS);
-	unsigned char from=0;
-	for(; *cstr; cstr++) {
-		unsigned char c=*cstr;
-		if(c=='\n' || c=='\t' || c==' ')
-			continue;
-		if(from) {
-			lcc_table[from]=c;
-			fcc_table[from]=c; fcc_table[c]=from;
-			from=0;
-		} else
-			from=c;
-	}
+	lcc_table[from]=to;
+	fcc_table[from]=to; fcc_table[to]=from;
+}
+
+static void ctype_table_row_to_pcretables(Array::Item *value, void *info) {
+	Array& row=*static_cast<Array *>(value);
+	unsigned char *pcre_tables=(unsigned char *)info;
+	
+// char	white-space	digit	hex-digit	letter	word	lowercase	unicode1	unicode2	
+	unsigned int c=to_wchar_code(row.get_string(0));
+	
+	element2ctypes(c, to_bool(row.get_string(1)), pcre_tables, ctype_space, cbit_space);
+	element2ctypes(c, to_bool(row.get_string(2)), pcre_tables, ctype_digit, cbit_digit);
+	element2ctypes(c, to_bool(row.get_string(3)), pcre_tables, ctype_xdigit);
+	element2ctypes(c, to_bool(row.get_string(4)), pcre_tables, ctype_letter);
+	element2ctypes(c, to_bool(row.get_string(5)), pcre_tables, ctype_word, cbit_word);
+	element2case(c, to_wchar_code(row.get_string(6)), pcre_tables);
+}
+
+static void load_ctype_for_charset(const Hash::Key& akey, Hash::Val *avalue, 
+										  void *info) {
+	Hash& CTYPE=*static_cast<Hash *>(info);
+	Pool& pool=CTYPE.pool();
+
+	// lowcase, flipcase, bits digit+word+whitespace, masks
+	unsigned char *pcre_tables=(unsigned char *)pool.calloc(tables_length);
+	prepare_case_tables(pcre_tables);
+	cstr2ctypes(pcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
+
+	Value& value=*static_cast<Value *>(avalue);
+	if(Table *table=value.get_table()) {
+		table->for_each(ctype_table_row_to_pcretables, pcre_tables);
+	} else 
+		PTHROW(0, 0,
+			&value.name(),
+			"must be hash");
+
+	XML256TableTranscoder *transcoder=0;
+	CTYPE.put(akey, new(pool) Request_CTYPE_value(pool, pcre_tables, transcoder));
 }
 
 //
@@ -108,6 +133,7 @@ Request::Request(Pool& apool,
 	response(apool),
 	cookie(apool),
 	fclasses(apool),
+	CTYPE(apool),
 	fdefault_lang(adefault_lang), flang(adefault_lang),
 	info(ainfo),
 	post_data(0), post_size(0),
@@ -116,9 +142,8 @@ Request::Request(Pool& apool,
 	mime_types(0),
 	main_class(0),
 	connection(0),
-	pcre_tables(0),
 	classes_conf(apool),
-	anti_endless_execute_recoursion(0)
+	anti_endless_execute_recoursion(0)	
 {
 	/// directly used
 	// operators
@@ -250,38 +275,14 @@ void Request::core(
 			if(Table *table=element->get_table())
 				mime_types=table;			
 
-		/*
-			$MAIN:CTYPE[
-				$.white-space[
-					^#09^#0A^#0B^#0C^#0D^#20]
-				$.digit[
-					0123456789]
-				$.hex-digit[
-					0123456789ABCDEFabcdef]
-				$.letter[
-					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]
-				$.word[
-					0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz]
-
-				$.lowercase[
-					AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz]
-			]
-		*/
-		if(Value *ctype=main_class->get_element(*ctype_name)) {
-			// lowcase, flipcase, bits digit+word+whitespace, masks
-			pcre_tables=(unsigned char *)calloc(tables_length);
-			prepare_case_tables(pcre_tables);
-
-			element2ctypes(pcre_tables, *ctype, *ctype_white_space_name, ctype_space, cbit_space, false);
-			element2ctypes(pcre_tables, *ctype, *ctype_digit_name, ctype_digit, cbit_digit);
-			element2ctypes(pcre_tables, *ctype, *ctype_hex_digit_name, ctype_xdigit);
-			element2ctypes(pcre_tables, *ctype, *ctype_letter_name, ctype_letter);
-			element2ctypes(pcre_tables, *ctype, *ctype_word_name, ctype_word, cbit_word);
-			cstr2ctypes(pcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
-
-			element2case(pcre_tables, *ctype, *ctype_lowercase_name);
-		} else
-			pcre_tables=pcre_default_tables;
+		if(Value *vctype=main_class->get_element(*ctype_name)) {
+			if(Hash *ctype=vctype->get_hash())
+				ctype->for_each(load_ctype_for_charset, &CTYPE);
+			else
+				THROW(0, 0,
+					&vctype->name(),
+					"must be hash");
+		}
 
 		// filling form fields
 		form.fill_fields_and_tables(*this);
@@ -655,4 +656,12 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 						"MIME-TYPE table column elements must not be empty");
 		}
 	return *NEW String(pool(), "application/octet-stream");
+}
+
+/// PCRE character tables
+unsigned char *Request::pcre_tables() {
+	if(Request_CTYPE_value *v=(Request_CTYPE_value *)CTYPE.get(pool().get_charset()))
+		return v->pcre_tables;
+
+	return pcre_default_tables;
 }

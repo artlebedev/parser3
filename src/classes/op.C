@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.46 2001/09/28 15:58:26 parser Exp $
+	$Id: op.C,v 1.47 2001/09/30 09:56:43 parser Exp $
 */
 
 #include "classes.h"
@@ -375,69 +375,6 @@ Methoded *MOP_create(Pool& pool) {
 	return new(pool) MOP(pool);
 }
 
-/*
-static void element2ctypes(unsigned char *tables, 
-	Value& ctype, const String& name, 
-	unsigned char bit,
-	int group_offset=-1,
-	bool skip_ws=true) {
-	Value *value=ctype.get_element(name);
-	if(!value)
-		return;
-
-	unsigned char *ctypes_table=tables+ctypes_offset;
-	const unsigned char *cstr=
-		(const unsigned char *)value->as_string().cstr(String::UL_AS_IS);
-	for(; *cstr; cstr++) {
-		unsigned char c=*cstr;
-		if(skip_ws && (c=='\n' || c=='\t' || c==' '))
-			continue;
-		ctypes_table[c]|=bit;
-
-		if(group_offset>=0)
-			tables[cbits_offset+group_offset+c/8] |= 1 << (c%8);
-	}				
-}
-static void cstr2ctypes(unsigned char *tables, const unsigned char *cstr, 
-						unsigned char bit) {
-	unsigned char *ctypes_table=tables+ctypes_offset;
-	ctypes_table[0]=bit;
-	for(; *cstr; cstr++) {
-		unsigned char c=*cstr;
-		ctypes_table[c]|=bit;
-	}
-}
-static void prepare_case_tables(unsigned char *tables) {
-	unsigned char *lcc_table=tables+lcc_offset;
-	unsigned char *fcc_table=tables+fcc_offset;
-	for(int i=0; i<0x100; i++)
-		lcc_table[i]=fcc_table[i]=i;
-}
-static void element2case(unsigned char *tables, Value& ctype, const String& name) {
-	Value *value=ctype.get_element(name);
-	if(!value)
-		return;
-
-	unsigned char *lcc_table=tables+lcc_offset;
-	unsigned char *fcc_table=tables+fcc_offset;
-	const unsigned char *cstr=
-		(const unsigned char *)value->as_string().cstr(String::UL_AS_IS);
-	unsigned char from=0;
-	for(; *cstr; cstr++) {
-		unsigned char c=*cstr;
-		if(c=='\n' || c=='\t' || c==' ')
-			continue;
-		if(from) {
-			lcc_table[from]=c;
-			fcc_table[from]=c; fcc_table[c]=from;
-			from=0;
-		} else
-			from=c;
-	}
-}
-
-*/
-
 void MOP::configure_user(Request& r) {
 	Pool& pool=r.pool();
 
@@ -446,7 +383,4 @@ void MOP::configure_user(Request& r) {
 		if(Value *element=sql->get_element(main_sql_drivers_name))
 			if(Table *protocol2library=element->get_table())
 				r.classes_conf.put(name(), protocol2library);
-
-
-
 }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.75 2001/09/26 10:32:25 parser Exp $
+	$Id: string.C,v 1.76 2001/09/30 09:56:43 parser Exp $
 */
 
 #include "classes.h"
@@ -254,7 +254,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 	Table *table;
 	if(params->size()<3) { // search
 		bool was_global;
-		bool matched=src.match(r.pcre_tables,
+		bool matched=src.match(r.pcre_tables(),
 			&method_name, 
 			regexp.as_string(), options,
 			&table,
@@ -276,7 +276,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 			&replacement_code,
 			&src
 		};
-		src.match(r.pcre_tables,
+		src.match(r.pcre_tables(),
 			&method_name, 
 			r.process(regexp).as_string(), options,
 			&table,
@@ -292,7 +292,7 @@ static void change_case(Request& r, const String& method_name, MethodParams *par
 	Pool& pool=r.pool();
 	const String& src=*static_cast<VString *>(r.self)->get_string();
 
-	r.write_assign_lang(*new(pool) VString(src.change_case(pool, r.pcre_tables,
+	r.write_assign_lang(*new(pool) VString(src.change_case(pool, r.pcre_tables(),
 		kind)));
 }
 static void _upper(Request& r, const String& method_name, MethodParams *params) {

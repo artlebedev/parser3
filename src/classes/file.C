@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.55 2001/09/26 10:32:25 parser Exp $
+	$Id: file.C,v 1.56 2001/09/30 09:56:43 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -306,7 +306,7 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 		int erroffset;
 		regexp_code=pcre_compile(pattern, PCRE_EXTRA | PCRE_DOTALL, 
 			&errptr, &erroffset, 
-			r.pcre_tables);
+			r.pcre_tables());
 
 		if(!regexp_code)
 			PTHROW(0, 0, 

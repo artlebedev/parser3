@@ -1,11 +1,21 @@
+@auto[]
+$CTYPE[
+    $.windows-1251[^table::load[windows-1251.cfg]]
+]
+
 @main[]
-^mail[]
+^regexp[]<hr>
+#^mail[]
 #^exec[]
 #^fori[]
 #^connect[mysql://hren]{^void:sql{nothing}}
 #$response:content-type[$.value[text/html] $.charset[windows-125odin]]
 #^xslt[]
 OK
+
+@regexp[]
+$s[abc¿¡¬]
+^if(^s.match[·][i]){y}{n}
 
 @mail[]
 #$ORIGINS(1)
