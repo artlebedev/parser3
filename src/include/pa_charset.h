@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.h,v 1.3 2001/12/27 19:57:08 paf Exp $
+	$Id: pa_charset.h,v 1.4 2001/12/28 18:12:30 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
@@ -85,7 +85,6 @@ private:
 	void loadDefinition(const String& request_file_spec);
 	void sort_ToTable();
 
-	XMLByte xlatOneTo(const XMLCh toXlat) const;
 	void transcodeToUTF8(Pool& pool,
 									 const void *source_body, size_t source_content_length,
 									 const void *& dest_body, size_t& dest_content_length) const;
@@ -97,18 +96,24 @@ private:
 										   const void *source_body, size_t source_content_length,
 										   const void *& dest_body, size_t& dest_content_length) const;
 
+public:
+
+	struct Tables {
+		XMLCh fromTable[0x100];
+		Charset_TransRec *toTable;
+		uint toTableSize;
+	};
+
 private:
 
 	const String& fname;
 	bool fisUTF8;
-	XMLCh fromTable[0x100];
-	Charset_TransRec *toTable;
-	uint toTableSize;
+	Tables tables;
 
 #ifdef XML
 
 private:
-	void addEncoding(const char *name_cstr);
+	void addEncoding(char *name_cstr);
 	void initTranscoder(const String *source, const char *name_cstr);
 
 public:

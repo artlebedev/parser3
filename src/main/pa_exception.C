@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.28 2001/12/28 14:06:51 paf Exp $
+	$Id: pa_exception.C,v 1.29 2001/12/28 18:12:30 paf Exp $
 */
 
 #include "pa_common.h"
@@ -72,7 +72,7 @@ Exception::Exception(
 				exc // code of exception
 		);
 	} else
-		fcomment="no DOMException";
+		fcomment=0;
 }
 
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.54 2001/12/28 14:06:50 paf Exp $
+	$Id: xdoc.C,v 1.55 2001/12/28 18:12:30 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -318,8 +318,8 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	GdomeException exc;
 	GdomeDocument *document=gdome_di_createDocFromMemory(domimpl,
 		xml.cstr(String::UL_UNSPECIFIED, r.connection),
-		GDOME_LOAD_VALIDATING 
-		/*GDOME_LOAD_PARSING */ 
+		GDOME_LOAD_PARSING
+		/* GDOME_LOAD_VALIDATING */ 
 		/*|GDOME_LOAD_SUBSTITUTE_ENTITIES */,
 		&exc);
 	if(!document || exc)
@@ -342,8 +342,8 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	GdomeException exc;
 	GdomeDocument *document=gdome_di_createDocFromURI(domimpl,
 		uri.cstr(),
-		GDOME_LOAD_VALIDATING 
-		/*GDOME_LOAD_PARSING */ 
+		GDOME_LOAD_PARSING
+		/*GDOME_LOAD_VALIDATING */ 
 		/*|GDOME_LOAD_SUBSTITUTE_ENTITIES */,
 		&exc);
 	if(!document || exc)
