@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.5 2001/01/29 10:22:01 paf Exp $
+  $Id: pa_hash.h,v 1.6 2001/01/29 11:17:49 paf Exp $
 */
 
 /*
@@ -26,7 +26,7 @@ public:
 private:
 	friend Pool;
 
-	// expand when used these %% of size
+	// expand when these %% of size exausted
 	enum {
 		THRESHOLD_PERCENT=75
 	};

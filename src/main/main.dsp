@@ -101,6 +101,10 @@ SOURCE=.\pa_pool.C
 
 SOURCE=.\pa_string.C
 # End Source File
+# Begin Source File
+
+SOURCE=.\pa_threads.C
+# End Source File
 # End Group
 # Begin Group "include"
 
@@ -120,6 +124,10 @@ SOURCE=..\include\pa_pool.h
 # Begin Source File
 
 SOURCE=..\include\pa_string.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_threads.h
 # End Source File
 # Begin Source File
 
