@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.4 2001/10/19 13:43:59 parser Exp $
+	$Id: mod_parser3.C,v 1.5 2001/10/22 09:02:04 parser Exp $
 */
 
 #include "httpd.h"
@@ -259,13 +259,13 @@ static void real_parser_handler(Pool& pool, request_rec *r) {
 }
 
 void call_real_parser_handler__do_SEH(Pool& pool, request_rec *r) {
-#ifdef WIN32
+#if _MSC_VER & !defined(_DEBUG)
 	LPEXCEPTION_POINTERS system_exception=0;
 	__try {
 #endif
 		real_parser_handler(pool, r);
 		
-#if _MSC_VER
+#if _MSC_VER & !defined(_DEBUG)
 	} __except (
 		(system_exception=GetExceptionInformation()), 
 		EXCEPTION_EXECUTE_HANDLER) {
@@ -273,8 +273,8 @@ void call_real_parser_handler__do_SEH(Pool& pool, request_rec *r) {
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
 				throw Exception(0, 0,
-				0,
-				"Exception 0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
+					0,
+					"Exception 0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
 			else
 				throw Exception(0, 0, 0, "Exception <no exception record>");
 			else

@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.53 2001/10/19 12:43:30 parser Exp $
+	$Id: parser3isapi.C,v 1.54 2001/10/22 09:02:04 parser Exp $
 */
 
 #ifndef _MSC_VER
@@ -353,13 +353,13 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 void call_real_parser_handler__do_SEH(Pool& pool, 
 									  LPEXTENSION_CONTROL_BLOCK lpECB,
 									  bool header_only) {
-#ifdef WIN32
+#if _MSC_VER & !defined(_DEBUG)
 	LPEXCEPTION_POINTERS system_exception=0;
 	__try {
 #endif
 		real_parser_handler(pool, lpECB, header_only);
 		
-#if _MSC_VER
+#if _MSC_VER & !defined(_DEBUG)
 	} __except (
 		(system_exception=GetExceptionInformation()), 
 		EXCEPTION_EXECUTE_HANDLER) {
