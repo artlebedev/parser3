@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.12 2002/01/10 15:41:49 paf Exp $
+	$Id: pa_charset.C,v 1.13 2002/01/11 12:24:27 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -546,6 +546,8 @@ const char *Charset::transcode_cstr(GdomeDOMString *s) {
 		throw Exception(0, 0,
 			0,
 			"transcode_cstr no transcoder");
+	if(!s)
+		return 0;
 
 	int inlen=gdome_str_length(s);
 	int outlen=inlen+1; // max

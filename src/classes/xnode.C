@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.21 2002/01/10 17:18:45 paf Exp $
+	$Id: xnode.C,v 1.22 2002/01/11 12:24:27 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -427,11 +427,13 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 	const String& expression=params->as_string(0, "expression must be string");
 
 	GdomeException exc;
-	xmlDoc *document=
-		((_Gdome_xml_Document *)gdome_n_ownerDocument(
-			vnode.get_node(&method_name), &exc))->n;
-    xmlXPathContext_auto_ptr ctxt(xmlXPathNewContext(document));
-	ctxt->node=xmlDocGetRootElement(document);
+	GdomeNode *dome_node=vnode.get_node(&method_name);
+	GdomeDocument *dome_document=gdome_n_ownerDocument(dome_node, &exc);
+	if(!dome_document)
+		dome_document=GDOME_DOC(dome_node);
+	xmlDoc *xml_document=((_Gdome_xml_Document *)dome_document)->n;
+    xmlXPathContext_auto_ptr ctxt(xmlXPathNewContext(xml_document));
+	ctxt->node=xmlDocGetRootElement(xml_document);
 	/*error to stderr for now*/
 	xmlXPathObject_auto_ptr res(
 		xmlXPathEvalExpression(BAD_CAST pool.transcode(expression)->str, ctxt.get()));

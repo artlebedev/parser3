@@ -4,20 +4,13 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-$wl(10)
-^while($wl>0){
-	<br>$wl негритят пошли купаться в море. Один из них утоп,  ему срубили гроб,  и вот вам результат -
-	^wl.dec(1)
-	$wl негритят.
-}
-<hr>
-
+^xpath[]
 #^ttablesetlang[]
 #^mail3[]
 #^ttime[]
 #^tupper[]
 #^treplace[]
-^xslt2[]
+#^xslt2[]
 #^tcache2[]
 #$ORIGINS(1)
 #$t[^table::set{a b} ^table::set{c d}]
@@ -93,6 +86,16 @@ $wl(10)
 #^header[]
 <hr>
 OK
+
+@xpath[]
+$xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251" ?>
+<document><block><p>привет</p></block></document>
+}]
+#^show-xdoc2[$xdoc]
+$node[^xdoc.selectSingle[/document/block/p]]
+$node.firstChild.nodeValue
+<hr>
+
 
 @ttablesetlang[]
 $a-tab-b[a	b
