@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.120 2001/10/09 07:06:00 parser Exp $
+	$Id: table.C,v 1.121 2001/10/09 08:13:04 parser Exp $
 */
 
 #include "classes.h"
@@ -321,7 +321,7 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	Value& body_code=params->as_junction(0, "body must be code");
 	
-	Value *delim_code=params->size()==2?&params->as_junction(1, "delim must be code"):0;
+	Value *delim_maybe_code=params->size()==2?&params->get(1):0;
 
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	Table& table=vtable.table();
@@ -332,10 +332,10 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 		table.set_current(row);
 
 		Value& processed_body=r.process(body_code);
-		if(delim_code) { // delimiter set?
+		if(delim_maybe_code) { // delimiter set?
 			const String *string=processed_body.get_string();
 			if(need_delim && string && string->size()) // need delim & iteration produced string?
-				r.write_pass_lang(r.process(*delim_code));
+				r.write_pass_lang(r.process(*delim_maybe_code));
 			need_delim=true;
 		}
 		r.write_pass_lang(processed_body);

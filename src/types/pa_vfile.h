@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.34 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vfile.h,v 1.35 2001/10/09 08:13:04 parser Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -28,6 +28,9 @@ public: // Value
 
 	/// VFile: true
 	bool as_bool() const { return true; }
+
+	/// VFile: true
+	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), as_bool()); }
 
 	/// VFile: this
 	VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED,

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxdoc.h,v 1.3 2001/10/08 08:21:05 parser Exp $
+	$Id: pa_vxdoc.h,v 1.4 2001/10/09 08:13:04 parser Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -29,6 +29,12 @@ void VXdoc_cleanup(void *);
 class VXdoc : public VXnode {
 	friend void VXdoc_cleanup(void *);
 public: // Value
+
+	/// VXdoc: true
+	bool as_bool() const { return true; }
+
+	/// VXdoc: true
+	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), as_bool()); }
 
 	const char *type() const { return "xdoc"; }
 /*

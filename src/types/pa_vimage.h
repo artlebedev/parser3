@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.18 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vimage.h,v 1.19 2001/10/09 08:13:04 parser Exp $
 */
 
 #ifndef PA_VIMAGE_H
@@ -28,6 +28,9 @@ public: // Value
 
 	/// VImage: true
 	bool as_bool() const { return true; }
+
+	/// VImage: true
+	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), as_bool()); }
 
 	/// VImage: method,field
 	Value *VImage::get_element(const String& aname) {

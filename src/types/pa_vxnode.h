@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxnode.h,v 1.1 2001/09/26 11:24:07 parser Exp $
+	$Id: pa_vxnode.h,v 1.2 2001/10/09 08:13:04 parser Exp $
 */
 
 #ifndef PA_VXNODE_H
@@ -27,6 +27,12 @@ class VXnode : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "xnode"; }
+
+	/// VXnode: true
+	bool as_bool() const { return true; }
+
+	/// VXnode: true
+	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), as_bool()); }
 
 	/// VXnode: $CLASS,$method, fields
 	Value *get_element(const String& aname);
