@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.93 2002/06/25 15:08:09 paf Exp $
+	$Id: xdoc.C,v 1.94 2002/06/27 08:32:18 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -720,7 +720,10 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		xmlDoc *document=gdome_xml_doc_get_xmlDoc(
 			static_cast<VXdoc *>(&vmaybe_xdoc)->get_document(&method_name));
 		// compile xdoc stylesheet
-		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(document));
+		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(document)); 
+		// strange thing - xsltParseStylesheetDoc records document and destroys it in stylesheet destructor
+		// we don't need that
+		stylesheet_ptr->doc=0;
 		if(xmlHaveGenericErrors()) {
 			GdomeException exc=0;
 			throw Exception(&method_name, exc);
