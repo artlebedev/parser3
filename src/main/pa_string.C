@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.28 2001/02/22 08:16:31 paf Exp $
+  $Id: pa_string.C,v 1.29 2001/02/22 08:26:12 paf Exp $
 */
 
 #include <string.h>
@@ -132,8 +132,8 @@ String& String::operator += (const String& src) {
 				break;
 			}
 		}
+		link_row->link=0;
 	}
-	link_row->link=0;
 	fused_rows+=src_used_rows;
 	fsize+=src.fsize;
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.3 2001/02/22 08:16:09 paf Exp $
+  $Id: pa_wcontext.h,v 1.4 2001/02/22 08:25:51 paf Exp $
 */
 
 /*
@@ -37,13 +37,9 @@ public: // usage
 	}
 
 	// appends a string to result
-	// until Value written, ignores afterwards
 	void write(String *astring) {
 		if(!astring)
 			return;
-
-		if(fvalue)  // already have value?
-			return;  // don't need any strings anymore
 
 		string+=*astring;
 	}
@@ -53,16 +49,16 @@ public: // usage
 		if(!avalue)
 			return;
 
+		if(fvalue) // already have value?
+			pool().exception().raise(0,0,  // don't need to construct twice
+				0,
+				"value already assigned");
+		else
+			fvalue=avalue;
+		
 		String *string=avalue->get_string();
 		if(string)
 			write(string);
-		else
-			if(fvalue) // already have value?
-				pool().exception().raise(0,0,  // don't need to construct twice
-					0,
-					"value already assigned");
-			else
-				fvalue=avalue;
 	}
 	//void write(String_iterator& from, String_iterator& to);
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.17 2001/02/21 17:36:29 paf Exp $
+  $Id: pa_array.h,v 1.18 2001/02/22 08:25:51 paf Exp $
 */
 
 /*
@@ -38,7 +38,12 @@ public:
 
 	Array(Pool& apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
-	int size() const { return fused_rows; }
+	int size() const { 
+		// for get and quick_get
+		cache_chunk_base=0;
+		cache_chunk=head;
+		return fused_rows; 
+	}
 	Array& operator += (Item *src);
 	Array& append_array(const Array& src);
 	Item *quick_get(int index) const {
