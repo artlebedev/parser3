@@ -156,8 +156,25 @@ OK
 ^datecreatestring2[]
 
 @datecreatestring2[]
-$date[^date::create[2000]]
-^date.sql-string[]	
+<table border=1>
+^datecreatestring2show[2000]
+^datecreatestring2show[2000-02]
+^datecreatestring2show[2000-02-03]
+^datecreatestring2show[2000-02-03 15]
+^datecreatestring2show[2000-02-03 15:30] 
+^datecreatestring2show[2000-02-03 15:30:04] 
+^datecreatestring2show[2000-02-03 15:30:04 hren] 
+^datecreatestring2show[15:30] 
+^datecreatestring2show[15:30:05] 
+^datecreatestring2show[15:30:05 hren] 
+</table>
+
+@datecreatestring2show[s]
+$date[^date::create[$s]]
+<tr>
+<td>$s</td><td align=right>^date.sql-string[]</td>
+</tr>
+
 
 @junctionprob[][l]
 $l[123]

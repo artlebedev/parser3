@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.30 2002/05/15 08:58:00 paf Exp $
+	$Id: date.C,v 1.31 2002/05/15 09:40:43 paf Exp $
 */
 
 #include "classes.h"
@@ -53,19 +53,37 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 
 	time_t t;
 	if(params->size()==1) { 
-		if(const String *sdate=params->get(0).get_string()) { // ^create[2002-04-25 18:14:00]
+		// ^create[2002-04-25 18:14:00]
+		// ^create[18:14:00]
+		if(const String *sdate=params->get(0).get_string()) {
 			char *cstr=sdate->cstr();
-			const char *year=lsplit(&cstr, '-');
-			const char *month=lsplit(&cstr, '-');
-			const char *mday=lsplit(&cstr, ' ');
-			const char *hour=lsplit(&cstr, ':');
-			const char *min=lsplit(&cstr, ':');
-			const char *sec=cstr;
+			char *cur=cstr;
+			const char *year=lsplit(&cur, '-');
+			const char *month=lsplit(&cur, '-');
+			const char *mday=lsplit(&cur, ' ');
+			if(!month)
+				cur=cstr;
+			const char *hour=lsplit(&cur, ':');
+			const char *min=lsplit(&cur, ':');
+			const char *sec=cur;
+
 			tm tmIn={0};
 			tmIn.tm_isdst=-1;
+			if(!month)
+				if(min) {
+					year=mday=0; // HH:MM
+					time_t t=time(0);
+					tm *tmNow=localtime(&t);
+					tmIn.tm_year=tmNow->tm_year;
+					tmIn.tm_mon=tmNow->tm_mon;
+					tmIn.tm_mday=tmNow->tm_mday;
+					goto date_part_set;
+				} else
+					hour=min=sec=0; // not YYYY- & not HH: = just YYYY					
 			tmIn.tm_year=NN_year_to_NNNN(atoi(year));
 			tmIn.tm_mon=month?atoi(month)-1:0;
 			tmIn.tm_mday=mday?atoi(mday):1;
+date_part_set:
 			tmIn.tm_hour=hour?atoi(hour):0;
 			tmIn.tm_min=min?atoi(min):0;
 			tmIn.tm_sec=sec?atoi(sec):0;
