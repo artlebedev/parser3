@@ -1,0 +1,30 @@
+*** ../0/libxslt-1.0.23/libxslt/xsltutils.c	Mon Nov  4 20:05:25 2002
+--- ./libxslt/xsltutils.c	Fri Jan 10 14:24:53 2003
+***************
+*** 1012,1022 ****
+  
+      if ((method != NULL) &&
+  	(xmlStrEqual(method, (const xmlChar *) "html"))) {
+- 	if (encoding != NULL) {
+- 	    htmlSetMetaEncoding(result, (const xmlChar *) encoding);
+- 	} else {
+- 	    htmlSetMetaEncoding(result, (const xmlChar *) "UTF-8");
+- 	}
+  	if (indent != 0)
+  	    indent = 1;
+  	htmlDocContentDumpFormatOutput(buf, result, (const char *) encoding,
+--- 1012,1017 ----
+***************
+*** 1024,1034 ****
+  	xmlOutputBufferFlush(buf);
+      } else if ((method != NULL) &&
+  	(xmlStrEqual(method, (const xmlChar *) "xhtml"))) {
+- 	if (encoding != NULL) {
+- 	    htmlSetMetaEncoding(result, (const xmlChar *) encoding);
+- 	} else {
+- 	    htmlSetMetaEncoding(result, (const xmlChar *) "UTF-8");
+- 	}
+  	htmlDocContentDumpOutput(buf, result, (const char *) encoding);
+  	xmlOutputBufferFlush(buf);
+      } else if ((method != NULL) &&
+--- 1019,1024 ----
