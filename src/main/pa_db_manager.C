@@ -4,8 +4,11 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.C,v 1.2 2001/10/23 12:41:05 parser Exp $
+	$Id: pa_db_manager.C,v 1.3 2001/10/23 12:53:22 parser Exp $
 */
+
+#include "pa_config_includes.h"
+#ifdef HAVE_LIBDB
 
 #include "pa_db_manager.h"
 #include "ltdl.h"
@@ -168,3 +171,5 @@ void DB_Manager::maybe_expire_connection_cache() {
 		prev_expiration_pass_time=now;
 	}
 }
+
+#endif

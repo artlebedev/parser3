@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.83 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_globals.C,v 1.84 2001/10/23 12:53:22 parser Exp $
 */
 
 #include "pa_globals.h"
@@ -15,7 +15,10 @@
 #include "pa_stylesheet_manager.h"
 #include "pa_charset_manager.h"
 #include "pa_sapi.h"
+
+#ifdef HAVE_LIBDB
 #include "pa_db_manager.h"
+#endif
 
 String *user_html_name;
 String *content_type_name;

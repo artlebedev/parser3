@@ -4,13 +4,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.3 2001/10/23 12:41:05 parser Exp $
+	$Id: hashfile.C,v 1.4 2001/10/23 12:53:22 parser Exp $
 */
 
 #include "pa_config_includes.h"
+#include "classes.h"
 #ifdef HAVE_LIBDB
 
-#include "classes.h"
 #include "pa_request.h"
 #include "pa_vhashfile.h"
 #include "pa_vhash.h"
@@ -106,13 +106,13 @@ MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
 	// ^hashfile:clear[filename]
 	add_native_method("clear", Method::CT_STATIC, _clear, 1, 1);
+	// ^pack[]
+	add_native_method("pack", Method::CT_DYNAMIC, _pack, 0, 0);
 /*
 	// ^cache[key](seconds){code}
 	add_native_method("cache", Method::CT_DYNAMIC, _cache, 3, 3);
 	// ^cancel[]
 	add_native_method("cancel", Method::CT_DYNAMIC, _cancel, 0, 0);
-	// ^pack[]
-	add_native_method("pack", Method::CT_DYNAMIC, _pack, 0, 0);
 	// ^hash[]
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
 	*/
@@ -122,10 +122,16 @@ MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
 
 Methoded *hashfile_base_class;
 
+#endif
+
 // creator
 
 Methoded *MHashfile_create(Pool& pool) {
-	return hashfile_base_class=new(pool) MHashfile(pool);
-}
-
+	return 
+#ifdef HAVE_LIBDB
+		hashfile_base_class=new(pool) MHashfile(pool)
+#else
+		0
 #endif
+	;
+}

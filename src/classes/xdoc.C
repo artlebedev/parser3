@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.32 2001/10/22 16:44:42 parser Exp $
+	$Id: xdoc.C,v 1.33 2001/10/23 12:53:22 parser Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -840,7 +840,7 @@ Methoded *Xdoc_class;
 Methoded *MXdoc_create(Pool& pool) {
 	return 
 #ifdef XML
-		Xdoc_class=new(pool) MXdoc(pool);
+		Xdoc_class=new(pool) MXdoc(pool)
 #else
 		0
 #endif
