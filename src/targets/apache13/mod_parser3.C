@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.9 2001/11/08 11:52:34 paf Exp $
+	$Id: mod_parser3.C,v 1.10 2001/11/19 08:00:34 paf Exp $
 */
 
 #include "httpd.h"
@@ -14,6 +14,12 @@
 #include "http_main.h"
 #include "http_protocol.h"
 #include "util_script.h"
+
+#include "pa_config_includes.h"
+
+#ifdef WIN32
+#	include <new.h>
+#endif
 
 #include "pa_sapi.h"
 #include "classes.h"
@@ -263,7 +269,7 @@ static void real_parser_handler(Pool& pool, request_rec *r) {
 	// prepare to process request
 	Request request(pool,
 		request_info,
-		String::UL_USER_HTML,
+		String::UL_OPTIMIZED_HTML,
 		dcfg->parser_status_allowed
 		);
 	
@@ -361,6 +367,19 @@ static int parser_handler(request_rec *r) {
     return OK;
 }
 
+#ifdef WIN32
+int failed_new(size_t size) {
+	SAPI::die("out of memory in 'new', failed to allocated %u bytes", size);
+	return 0; // not reached
+}
+#endif
+
+#ifdef HAVE_SET_NEW_HANDLER
+void failed_new() {
+    SAPI::die("out of memory in 'new'");
+}
+#endif
+
 /*--------------------------------------------------------------------------*/
 /*                                                                          */
 /* Now let's declare routines for each of the callback phase in order.      */
@@ -403,6 +422,14 @@ static void setup_module_cells() {
 	if(globals_inited)
 		return;
 	globals_inited=true;
+
+#ifdef WIN32
+	_set_new_handler(failed_new);
+#endif
+
+#ifdef HAVE_SET_NEW_HANDLER
+	std::set_new_handler(failed_new);
+#endif
 
 	/*
      * allocate our module-private pool.

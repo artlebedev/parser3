@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.137 2001/11/16 16:00:59 paf Exp $
+	$Id: parser3.C,v 1.138 2001/11/19 08:00:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -116,16 +116,20 @@ void SAPI::die(const char *fmt, ...) {
 	log_pool_stats(pool);
 #endif
 
+	// log
+
+	// logging is more important than user 
+	// she can cancel download, we'd get SIG_PIPE, 
+	// nothing would be logged then
     va_list args;
 	va_start(args,fmt);
 	::log(fmt, args);
 	va_end(args);
 
-	char body[MAX_STRING];
-	size_t size=vsnprintf(body, MAX_STRING, fmt, args);
+	// inform user
 
-	//
-	int content_length=strlen(body);
+	char body[MAX_STRING];
+	int content_length=vsnprintf(body, MAX_STRING, fmt, args);
 
 	// prepare header
 	// let's be honest, that's bad we couldn't produce valid output
@@ -419,6 +423,14 @@ int main(int argc, char *argv[]) {
 	setmode(fileno(stderr), _O_BINARY);
 #endif
 
+#ifdef WIN32
+	_set_new_handler(failed_new);
+#endif
+
+#ifdef HAVE_SET_NEW_HANDLER
+	std::set_new_handler(failed_new);
+#endif
+
 	char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
 #ifdef WIN32
 	back_slashes_to_slashes(filespec_to_process);
@@ -427,14 +439,6 @@ int main(int argc, char *argv[]) {
 
 	const char *request_method=getenv("REQUEST_METHOD");
 	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
-
-#ifdef WIN32
-	_set_new_handler(failed_new);
-#endif
-
-#ifdef HAVE_SET_NEW_HANDLER
-	std::set_new_handler(failed_new);
-#endif
 
 	try { // global try
 		call_real_parser_handler__do_SEH(

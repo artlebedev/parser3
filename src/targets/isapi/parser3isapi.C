@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.58 2001/11/08 11:52:34 paf Exp $
+	$Id: parser3isapi.C,v 1.59 2001/11/19 08:00:34 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -15,6 +15,7 @@
 
 #include <windows.h>
 #include <process.h>
+#include <new.h>
 
 #include <httpext.h>
 
@@ -229,11 +230,18 @@ void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 
 // 
 
+int failed_new(size_t size) {
+	SAPI::die("out of memory in 'new', failed to allocated %u bytes", size);
+	return 0; // not reached
+}
+
 static bool parser_init() {
 	static bool globals_inited=false;
 	if(globals_inited)
 		return true;
 	globals_inited=true;
+
+	_set_new_handler(failed_new);
 
 	static Pool pool(0); // global pool
 	try {
@@ -334,7 +342,7 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 	// prepare to process request
 	Request request(pool,
 		request_info,
-		String::UL_USER_HTML,
+		String::UL_OPTIMIZED_HTML,
 		false /* status_allowed */);
 
 	// some root-controlled location
