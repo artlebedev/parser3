@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.104 2001/04/08 13:11:19 paf Exp $
+	$Id: pa_request.C,v 1.105 2001/04/09 09:48:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -52,6 +52,7 @@ Request::Request(Pool& apool,
 	fclasses(apool),
 	fdefault_lang(adefault_lang), flang(adefault_lang),
 	info(ainfo),
+	post_data(0), post_size(0),
 	used_files(apool),
 	default_content_type(0),
 	mime_types(0),
@@ -115,12 +116,25 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		//	until someone with less privileges have overriden them
 		{
 			Value *limits=main_class?main_class->get_element(*limits_name):0;
-			// $limits.post_max_size default 10M
-			Value *element=limits?limits->get_element(*post_max_size_name):0;
-			size_t value=element?(size_t)element->as_double():0;
-			size_t post_max_size=value?value:MAX_POST_SIZE_DEFAULT;
-			
-			form.fill_fields(*this, post_max_size);
+			if(StrEqNc(info.method, "post", true)) {
+				// $limits.post_max_size default 10M
+				Value *element=limits?limits->get_element(*post_max_size_name):0;
+				size_t value=element?(size_t)element->as_double():0;
+				size_t post_max_size=value?value:MAX_POST_SIZE_DEFAULT;
+				
+				size_t post_size=max(0, min(info.content_length, post_max_size));
+				if(post_size) {
+					post_data=(char *)malloc(post_size);
+					size_t read_size=SAPI::read_post(pool(), post_data, post_size);
+					if(read_size!=post_size)
+						THROW(0, 0, 
+							0, 
+							"post_size(%d)!=read_size(%d)", 
+								post_size, read_size);
+				}
+			}
+
+			form.fill_fields(*this);
 		}
 
 		// filling cookies

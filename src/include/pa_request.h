@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.80 2001/04/08 13:11:17 paf Exp $
+	$Id: pa_request.h,v 1.81 2001/04/09 09:48:18 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -145,6 +145,8 @@ public:
 	
 	/// info from web server
 	Info& info;
+	/// user's post data
+	char *post_data;  size_t post_size;
 
 	/// operators are methods of this class
 	VClass OP;

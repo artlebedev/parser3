@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.14 2001/03/24 08:54:05 paf Exp $
+	$Id: pa_vform.h,v 1.15 2001/04/09 09:48:30 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -56,7 +56,7 @@ public: // usage
 
 //	Hash& fields() { return ffields; }
 
-	void fill_fields(Request& request, size_t post_max_size);
+	void fill_fields(Request& request);
 
 private:
 
@@ -64,7 +64,6 @@ private:
 	char *getAttributeValue(const char *data,char *attr,size_t len);
 	void UnescapeChars(char **sp, const char *cp, size_t len);
 	void ParseGetFormInput(const char *query_string);
-	void ParsePostFormInput(const char *content_type, size_t post_size, bool mime_mode);
 	void ParseFormInput(const char *data, size_t length);
 	void ParseMimeInput(const char *content_type, const char *data, size_t length);
 	void AppendFormEntry(

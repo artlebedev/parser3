@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sapi.h,v 1.5 2001/04/09 08:55:28 paf Exp $
+	$Id: pa_sapi.h,v 1.6 2001/04/09 09:48:18 paf Exp $
 */
 
 #ifndef PA_SAPI_H
@@ -25,7 +25,7 @@ struct SAPI {
 	/// 
 	static const char *get_env(Pool& pool, const char *name);
 	/// read POST request bytes
-	static uint read_post(Pool& pool, char *buf, uint max_bytes);
+	static size_t read_post(Pool& pool, char *buf, size_t max_bytes);
 	/// add response header attribute
 	static void add_header_attribute(Pool& pool, const char *key, const char *value);
 	/// add response header attribute

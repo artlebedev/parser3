@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.20 2001/04/03 17:46:16 paf Exp $
+	$Id: pa_vform.C,v 1.21 2001/04/09 09:48:30 paf Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
@@ -20,27 +20,9 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_vfile.h"
+#include "pa_common.h"
 
 // parse helper funcs
-
-static bool StrEqNc(const char *s1, const char *s2, bool strict) {
-	while(true) {
-		if(!(*s1)) {
-			if(!(*s2))
-				return true;
-			else
-				return !strict;
-		} else if(!(*s2))
-			return !strict;
-		if(isalpha(*s1)) {
-			if(tolower(*s1) !=tolower(*s2))
-				return false;
-		} else if((*s1) !=(*s2))
-			return false;
-		s1++;
-		s2++;
-	}
-}
 
 static size_t getHeader(const char *data, size_t len){
     size_t i, enter=-1;
@@ -97,26 +79,6 @@ char *VForm::getAttributeValue(const char *data, char *attr, size_t len) {
 
 void VForm::ParseGetFormInput(const char *query_string) {
 	ParseFormInput(query_string, strlen(query_string));
-}
-
-void VForm::ParsePostFormInput(const char *content_type, size_t post_size, 
-							   bool mime_mode) {
-	char *input;
-	if(!post_size) 
-		return;
-
-	input=(char *) malloc(post_size);
-	size_t read_size=SAPI::read_post(pool(), input, post_size);
-	if(read_size!=post_size)
-		THROW(0, 0, 
-			0, 
-			"ParsePostFormInput: post_size(%d)!=read_size(%d)", 
-				post_size, read_size);
-
-	if(mime_mode)
-		ParseMimeInput(content_type, input, post_size);
-	else
-		ParseFormInput(input, post_size);
 }
 
 void VForm::ParseFormInput(const char *data, size_t length) {
@@ -211,7 +173,8 @@ void VForm::AppendFormEntry(const char *aname,
 	fields.put(sname, value);
 }
 
-void VForm::fill_fields(Request& request, size_t post_max_size) {
+/// @test parse input letter if some switch is on
+void VForm::fill_fields(Request& request) {
 	//AppendFormEntry("fs", "<1!2>", 5, 0);
 	// parsing QS [GET and ?name=value from uri rewrite)]
 	if(request.info.query_string)
@@ -220,12 +183,11 @@ void VForm::fill_fields(Request& request, size_t post_max_size) {
 	if(request.info.method) {
 		if(const char *content_type=request.info.content_type)
 			if(StrEqNc(request.info.method, "post", true)) {
-				size_t post_size=max(0, min(request.info.content_length, post_max_size));
 				if(StrEqNc(content_type, "application/x-www-form-urlencoded", true)) 
-					ParsePostFormInput(content_type, post_size, false);
+					ParseFormInput(request.post_data, request.post_size);
 				else if(StrEqNc(content_type, "multipart/form-data", 0))
-					ParsePostFormInput(content_type, post_size, true);
+					ParseMimeInput(content_type, request.post_data, request.post_size);
 			}
 	} else
-		; // TODO: разобрать пришедшее письмо, если какой ключик выставлен?
+		; // letter?
 }

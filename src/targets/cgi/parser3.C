@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.58 2001/04/09 08:55:40 paf Exp $
+	$Id: parser3.C,v 1.59 2001/04/09 09:48:26 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -59,8 +59,8 @@ const char *SAPI::get_env(Pool& pool, const char *name) {
  	return getenv(name);
 }
 
-uint SAPI::read_post(Pool& pool, char *buf, uint max_bytes) {
-	uint read_size=0;
+size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
+	size_t read_size=0;
 	do {
 		int chunk_size=read(fileno(stdin), 
 			buf+read_size, min(READ_POST_CHUNK_SIZE, max_bytes-read_size));
@@ -124,7 +124,7 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 		fclose(f);
 }
 
-int SAPI:execute(const String& file_spec, 
+int SAPI::execute(const String& file_spec, 
 	const Hash *env,
 	const Array *argv,
 	const String& in, String& out, String& err) {

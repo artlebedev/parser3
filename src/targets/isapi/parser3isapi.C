@@ -54,7 +54,7 @@ const char *SAPI::get_env(Pool& pool, const char *name) {
 	return 0;
 }
 
-uint SAPI::read_post(Pool& pool, char *buf, uint max_bytes) {
+size_t SAPI::read_post(Pool& pool, void *buf, size_t max_bytes) {
 	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
 	DWORD read_from_buf=0;

@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.40 2001/04/07 10:34:45 paf Exp $
+	$Id: pa_common.C,v 1.41 2001/04/09 09:48:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -16,6 +16,7 @@
 #include <io.h>
 #include <stdio.h>
 #include <errno.h>
+#include <ctype.h>
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -299,3 +300,22 @@ void back_slashes_to_slashes(char *s) {
 				*s='/';
 }
 #endif
+
+bool StrEqNc(const char *s1, const char *s2, bool strict) {
+	while(true) {
+		if(!(*s1)) {
+			if(!(*s2))
+				return true;
+			else
+				return !strict;
+		} else if(!(*s2))
+			return !strict;
+		if(isalpha(*s1)) {
+			if(tolower(*s1) !=tolower(*s2))
+				return false;
+		} else if((*s1) !=(*s2))
+			return false;
+		s1++;
+		s2++;
+	}
+}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.76 2001/04/08 13:11:17 paf Exp $
+	$Id: pa_string.h,v 1.77 2001/04/09 09:48:18 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -111,7 +111,7 @@ public:
 
 public:
 
-	String(Pool& apool, const char *src=0, bool tainted=false);
+	String(Pool& apool, const char *src=0, size_t src_size=0, bool tainted=false);
 	String(const String& src);
 	size_t size() const { return fsize; }
 	/// convert to C string. if 'lang' known, forcing 'lang' to it

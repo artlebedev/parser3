@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.74 2001/04/06 13:41:32 paf Exp $
+	$Id: pa_string.C,v 1.75 2001/04/09 09:48:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -26,7 +26,7 @@
 
 // String
 
-String::String(Pool& apool, const char *src, bool tasize_ted) :
+String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	Pooled(apool) {
 	last_chunk=&head;
 	head.count=CR_PREALLOCATED_COUNT;
@@ -36,10 +36,10 @@ String::String(Pool& apool, const char *src, bool tasize_ted) :
 	fused_rows=fsize=0;
 
 	if(src)
-		if(tasize_ted)
-			APPEND_TAINTED(src, 0, 0, 0);
+		if(tainted)
+			APPEND_TAINTED(src, src_size, 0, 0);
 		else
-			APPEND_CONST(src);
+			APPEND_CLEAN(src, src_size, 0, 0);
 }
 
 void String::expand() {
