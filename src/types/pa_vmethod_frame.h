@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2004/04/06 07:53:57 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2004/12/23 14:40:54 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -103,12 +103,12 @@ public: // Value
 	}
 	
 	/// VMethodFrame: my or self_transparent or $caller
-	override Value* get_element(const String& aname, Value& aself, bool looking_up) { 
+	override Value* get_element(const String& aname, Value& /*aself*/, bool looking_up) { 
 		if(my) {
 			if(Value* result=my->get(aname))
 				return result;
 		}
-		if(Value* result=self().get_element(aname, aself, looking_up))
+		if(Value* result=self().get_element(aname, self(), looking_up))
 			return result;
 
 		if(aname==CALLER_ELEMENT_NAME)

@@ -1,5 +1,25 @@
-$hf[^hashfile::open[/test]]
-$hf.key[]
-$s[$hf.key]
-#$s[$nothing]
-$t[^s.split[-;lh]]
+@main[]
+
+$cH[^cH[]]
+
+^if($cH.this is "junction"){
+		$result[^cH.this[$cH.th_par]]
+}{
+		$result[0]
+}
+
+####################################################################################################################
+
+@cH[]
+$result[
+		$.this[$mThis]
+		$.th_par[
+				$.a(2)
+				$.b(3)
+		]
+]
+####################################################################################################################
+
+@mThis[lparams][params]
+$params[^hash::create[$lparams]]
+$result[^eval($params.a * $params.b)]
