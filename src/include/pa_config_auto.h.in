@@ -12,9 +12,6 @@
 /* Define if you have the round function.  */
 #undef HAVE_ROUND
 
-/* Define if you have the set_new_handler function.  */
-#undef HAVE_SET_NEW_HANDLER
-
 /* Define if you have the sign function.  */
 #undef HAVE_SIGN
 
@@ -41,6 +38,9 @@
 
 /* Define if you have the <memory.h> header file.  */
 #undef HAVE_MEMORY_H
+
+/* Define if you have the <new> header file.  */
+#undef HAVE_NEW
 
 /* Define if you have the <process.h> header file.  */
 #undef HAVE_PROCESS_H
@@ -96,9 +96,12 @@
 /* DB2-abled parser */
 #undef DB2
 
+/* Windows32 target platform */
+#undef WIN32
+
 /* compiler supports pragma pack */
 #undef HAVE_PRAGMA_PACK
 
-/* Windows32 target platform */
-#undef WIN32
+/* library has set_new_handler func */
+#undef HAVE_SET_NEW_HANDLER
 

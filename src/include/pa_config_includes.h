@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_includes.h,v 1.12 2001/11/05 11:46:23 paf Exp $
+	$Id: pa_config_includes.h,v 1.13 2001/11/15 18:04:18 paf Exp $
 
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
@@ -92,4 +92,8 @@
 
 #ifdef HAVE_MEMORY_H
 #	include <memory.h>
+#endif
+
+#ifdef HAVE_NEW
+#include <new>
 #endif
