@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/21 12:47:23 $";
+static const char* IDENT_COMMON_C="$Date: 2002/11/25 08:55:12 $";
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -256,13 +256,13 @@ bool file_write_action_under_lock(
 			action(f, context);
 		} catch(...) {
 			if(!do_append)
-				ftruncate(f, tell(f)); // one can not use O_TRUNC, read lower
+				ftruncate(f, lseek(f, 0, SEEK_CUR)); // one can not use O_TRUNC, read lower
 			unlock(f);close(f);
 			/*re*/throw;
 		}
 		
 		if(!do_append)
-			ftruncate(f, tell(f)); // O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
+			ftruncate(f, lseek(f, 0, SEEK_CUR)); // O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
 		unlock(f);close(f);
 		return true;
 	} else

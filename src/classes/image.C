@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/11/22 16:16:33 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/25 08:55:11 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -78,7 +78,7 @@ public:
 					value, whence, strerror(errno), errno, fname);
 	}
 
-	/*override*/long tell() { return ::tell(f); }
+	/*override*/long tell() { return lseek(f, 0, SEEK_CUR); }
 
 private:
 	Pool& pool;
