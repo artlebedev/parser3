@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.12 2001/01/29 20:46:22 paf Exp $
+  $Id: pa_string.h,v 1.13 2001/01/29 21:51:51 paf Exp $
 */
 
 /*
@@ -56,6 +56,8 @@ public:
 	bool operator == (String& src);
 
 	uint hash_code();
+
+	const Origin& origin() const { return head.rows[0].item.origin; }
 
 protected:
 

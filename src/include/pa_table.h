@@ -1,5 +1,5 @@
 /*
-  $Id: pa_table.h,v 1.3 2001/01/29 20:46:22 paf Exp $
+  $Id: pa_table.h,v 1.4 2001/01/29 21:51:52 paf Exp $
 */
 
 /*
@@ -36,7 +36,7 @@ public:
 		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
 	const char *item(int column_index);
-	const char *item(String column_name);
+	const char *item(String& column_name);
 
 protected:
 

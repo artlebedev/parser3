@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.1 2001/01/29 20:46:22 paf Exp $
+  $Id: pa_request.h,v 1.2 2001/01/29 21:51:51 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -16,10 +16,10 @@ public:
 	Pool pool;
 	
 	// these errors handled on global(request) level
-	Error fatal_error;
+	Error request_error;
 
 	// these errors handled on local(operator) level
-	Error error;
+	Error operator_error;
 
 	Request() {}
 	~Request() {}
