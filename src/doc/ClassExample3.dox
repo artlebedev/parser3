@@ -1,11 +1,12 @@
-/**	@page ClassExample3  Пример создания класса (методы и поля)
+/**	@page ClassExample3  Sample of creating class (methods and fields)
 
-Чтобы создать свой класс, который 
-- смогут создавать пользователи,
-- состоящий и из методов 
-- и из полей
-[таков, например, класс image], 
-нужно создать простой класс, см. @ref ClassExample1, переопределив Methoded::create_new_value в 
+To create a class of your own, which
+- could be constructed by users,
+- has methods 
+- AND fields
+[like 'image' class], 
+one need to create simple class, see @ref ClassExample1, 
+and override Methoded::create_new_value to
 
 @code
 class MExample3 : public Methoded {
@@ -14,15 +15,15 @@ public: // VStateless_class
 	Value *create_new_value(Pool& pool) { return new(pool) VExample3(pool); }
 @endcode
 
-Этот метод будет вызван при создании пользователем значений этого типа:
+This methods would be called when user would creates values of your type:
 @verbatim
 $variable[^example3::create[]]
 @endverbatim
 
-Здесь VExample3, это класс значения, см. ClassExample2.
-Его не нужно регистрировать, поскольку он Methoded::used_directly true.
-Однако в нём необходимо объявить
+Here "VExample3", is value class, see ClassExample2.
+It need not be registered, because it has Methoded::used_directly set to true.
+But it should override:
 	VStateless_class *get_class() { return example_class3; }
-где example_class3 это глобальный экземпляр MExample3.
+where example_class3 is global instance of MExample3.
 
 */

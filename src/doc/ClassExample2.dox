@@ -1,10 +1,10 @@
-/**	@page ClassExample2  Пример создания простого класса (только поля)
+/**	@page ClassExample2  Sample of creating simple class (with fields only)
 
-Чтобы создать свой класс, не содержащий методов[таков, например, env; см. VEnv], 
-следует создать потомка Value, в котором переопределить Value::type,
-а также Value::get_element и/или Value::put_element.
+To create the class of your own, which does not contain methods [like 'env', see VEnv],
+one need to create a derivate from Value, where override Value::type,
+and also Value::get_element and/or Value::put_element.
 
-Файл pa_vexample2.h в каталоге types/:
+File pa_vexample2.h in types/ directory:
 @code
 #define EXAMPLE2_CLASS_NAME "example2"
 
@@ -16,7 +16,7 @@ public: // Value
 
 	/// VEnv: field
 	Value *get_element(const String& aname) {
-		// показания датчика
+		// device information
 		double temperature=25;
 		return NEW VDouble(temperature);
 	}
@@ -29,7 +29,7 @@ public: // usage
 };
 @endcode
 
-Зарегистрируйте ваш класс в Request::classes(), добавив в конструктор Request [файл pa_request.C]:
+Register your class in Request::classes(), by adding it to Request constructor [in pa_request.C file]:
 
 @code
 	/// methodless
@@ -37,7 +37,7 @@ public: // usage
 	classes().put(*NEW String(pool(), EXAMPLE2_CLASS_NAME), &example2);
 @endcode
 
-Пользователь сможет считать температуру так:
+User could then read temperature like:
 @verbatim
 $example2:test
 @endverbatim

@@ -1,13 +1,13 @@
-/**	@page Targets  Варианты сборки
+/**	@page Targets  Build targets
 
-Parser, варианты сборки [/targets]:
-- Apache 1.3 модуль [apache13/];
-- CGI скрипт [cgi/];
+Parser is build as [/targets]:
+- Apache 1.3 module [apache13/];
+- CGI script [cgi/];
 - ISAPI extension [isapi/].
 
-Каждый вариант реализует pure virtual static SAPI класс - интерфейс общения Parser'а с сервером, 
-и функции выделения памяти Pool класса - задаёт способ выделения памяти.
+Each target implements pure virtual static SAPI class - an interface of Parser with web-server.
 
-Сначала создаётся объект Request, ему передаётся Request::Info с параметрами запроса.
-После чего выполняется метод Request::core, выполняющий всю обработку.
+At the very beginning an instance of Request object is created, 
+which is passed an Request::Info object with request parameters.
+After that Request::core method is called, which does all request processing.
 */

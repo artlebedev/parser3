@@ -1,14 +1,14 @@
 /**	@page Value Value
 
-«начени€, которыми оперирует Parser, есть экземпл€ры классов, производных от Value.
-Value знает свой тип [Value::type], который используетс€ дл€ выводов сообщений об ошибках.
-“ип также можно проверить в
+All values, with which Parser operates, are instances of classes, derived from Value.
+Value knows it's type [Value::type], which is used in error messages.
+Type can also be checked like this:
 @verbatim
-^if($variable is hash){когда в переменной hash}{когда не hash}
+^if($variable is hash){when there is hash in variable}{when not hash}
 @endverbatim
 
-Value может хранить элементы [Value::get_element, Value::put_element].
-—амый простой случай - hash[VHash].
+Value can store elements [Value::get_element, Value::put_element].
+Simplest example - hash[VHash].
 
 
 */

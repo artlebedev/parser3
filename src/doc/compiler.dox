@@ -1,8 +1,8 @@
 /**	@page Compiler Compiler
 
-Входной код предварительно компилируется во внутренний формат.
-Это происходит с каждым запросом, результат компиляции не кэшируется.
-На выходе получается \b класс, который складывается в Hash Request::classes().
+Source code is compiled to internal form.
+This happens with each request, result of compilation is not cached.
+After compilation we have \b class, which got registered in Hash Request::classes().
 
 @see compile.y, compile.C, compile_tools.h, compile_tools.C
 

@@ -1,35 +1,35 @@
-/**	@page ClassExample1  Пример создания простого класса (только методы)
+/**	@page ClassExample1  Example of creating simple class (with methods only)
 
-Чтобы создать свой класс, состоящий только из методов[таков, например, класс random], 
-нужно положить в каталог classes/ модуль на C++ с расширением .С,
-в котором...
+To create the class of your own, consisting only of methods[like, for "random" class],
+one need to put to classes/ directory module in C++ language with .C file name extension,
+in which...
 
-1. Определить потомка Methoded, определяющего Methoded::used_directly в true.
+1. Define a descendant of Methoded, declaring Methoded::used_directly as true.
 
-2. Оформить методы объекта так[ Native_code_ptr ]:
+2. Code methods of objects like this[ Native_code_ptr ]:
 @code
 static void _test(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	...
 
-	// ошибки генерировать так:
+	// generate exceptions like this:
 	if(error_code)
-		throw Exception("класс ошибки",
-			&method_name, // адрес String, содержащей текст/место ошибки
-			"проблема %d", error_code);
+		throw Exception("exception class",
+			&method_name, // address of String, containing text/source of error
+			"problem %d", error_code);
 
-	// выдавать текст так:
+	// output text like this:
 	if(text_result)
 		r.write_assign_lang(*new(pool) String(pool, "тест"));
 
-	// выдавать объекты так:
+	// output objects like this:
 	if(object_result)
 		r.write_no_lang(*new(pool) VInt(pool, 48));
 }
 @endcode
 
-3. В конструкторе задать имя класса и зарегистрировать методы:
+3. In constructor one must set class name and register it's methods:
 
 @code
 MExample1::MExample1(Pool& apool) : Methoded(apool, "example1") {
@@ -40,17 +40,17 @@ MExample1::MExample1(Pool& apool) : Methoded(apool, "example1") {
 
 @see VStateless_class::add_native_method
 
-4. И, наконец, определить производящую функцию, с именем M{имя_файла_с_заглавной_буквы}_create:
+4. And, finally, define constricting function, with name M{name_of_file_with_first_letter_Capital}_create:
 @code
 Methoded *MExample1_create(Pool& pool) {
 	return new(pool) MExample1(pool);
 }
 @endcode
 
-5. Если для работы классу необходимы какие-то настройки, то их можно принять из системного parser3.conf,
-или из пользовательского MAIN класса, переопределив Methoded::configure_admin и/или Methoded::configure_user.
+5. If for class to work it need any options, they could be read from variables assigned in @conf,
+by overriding Methoded::configure_admin and/or Methoded::configure_user.
 
-Пользователь сможет вызвать метод так:
+User then could call that method like:
 @verbatim
 ^example1:test[]
 @endverbatim

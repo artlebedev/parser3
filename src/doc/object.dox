@@ -1,7 +1,7 @@
-/**	@page Object  Объект: класс+поля
+/**	@page Object  Object: class+fields
 
-Объект[VObject], это экземпляр Класса.
-Хранит поля: VObject::ffields (динамические, не статические - тех хранит Класс).
+Object[VObject], is an instance of Class.
+Stores fields: VObject::ffields (dynamic, not static - those are stored in Class).
 
 
 */

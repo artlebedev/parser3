@@ -12,7 +12,7 @@ sub action {
 	close($file);
 
 	s/\.html/.htm/sg;
-    s/(\<head\>)/$1<meta http-equiv="Content-Type" content="text\/html;charset=Windows-1251">/;
+#    s/(\<head\>)/$1<meta http-equiv="Content-Type" content="text\/html;charset=Windows-1251">/;
     s/(Language=)/;$1/;
 
 	open(FILE, ">$file");
