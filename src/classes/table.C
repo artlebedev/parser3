@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.41 2001/03/30 09:58:57 paf Exp $
+	$Id: table.C,v 1.42 2001/04/02 09:29:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -378,6 +378,42 @@ static void _append(Request& r, const String& method_name, Array *params) {
 	static_cast<VTable *>(r.self)->table()+=&row;
 }
 
+static void _join(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	Value *value=static_cast<Value *>(params->get(0));
+	// forcing [this table ref type]
+	r.fail_if_junction_(true, *value, method_name, "table ref must not be junction");
+
+	Table *maybe_src=value->get_table();
+	if(!maybe_src)
+		RTHROW(0, 0,
+			&method_name,
+			"source is not a table");
+
+	Table& src=*maybe_src;
+	Table& dest=static_cast<VTable *>(r.self)->table();
+	if(&src == &dest)
+		RTHROW(0, 0,
+			&method_name,
+			"source and destination are same table");
+
+	if(const Array *dest_columns=dest.columns()) { // dest is named
+		int saved_src_current=src.current();
+		for(int src_row=0; src_row<src.size(); src_row++) {
+			src.set_current(src_row);
+			Array& dest_row=*new(pool) Array(pool);
+			for(int dest_column=0; dest_column<dest_columns->size(); dest_column++) 
+				dest_row+=src.item(*dest_columns->get_string(dest_column));
+			dest+=&dest_row;
+		}
+		src.set_current(saved_src_current);
+	} else { // dest is nameless
+		for(int src_row=0; src_row<src.size(); src_row++)
+			dest+=&src.at(src_row);
+	}
+}
+
 // initialize
 
 void initialize_table_class(Pool& pool, VStateless_class& vclass) {
@@ -429,4 +465,7 @@ void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^table.append{r{tab}e{tab}c{tab}o{tab}r{tab}d}
 	vclass.add_native_method("append", Method::CT_DYNAMIC, _append, 1, 1);
+
+	// ^table.join[table]
+	vclass.add_native_method("join", Method::CT_DYNAMIC, _join, 1, 1);
 }

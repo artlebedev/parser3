@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.134 2001/03/30 05:52:17 paf Exp $
+	$Id: execute.C,v 1.135 2001/04/02 09:29:19 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -74,7 +74,7 @@ void log_printf(Pool& pool, const char *fmt, ...) {
 
 void dump(Pool& pool, int level, const Array& ops) {
 	if(0){
-		int size=ops.size();
+		int size=ops.quick_size();
 		//log_printf(pool, "size=%d\n", size);
 		for(int i=0; i<size; i++) {
 			Operation op;
@@ -83,7 +83,7 @@ void dump(Pool& pool, int level, const Array& ops) {
 		}
 	}
 
-	int size=ops.size();
+	int size=ops.quick_size();
 	//log_printf(pool, "size=%d\n", size);
 	for(int i=0; i<size; i++) {
 		Operation op;
@@ -114,7 +114,7 @@ void Request::execute(const Array& ops) {
 		log_printf(pool(), "execution-------------------------\n");
 	}
 
-	int size=ops.size();
+	int size=ops.quick_size();
 	//log_printf(pool(), "size=%d\n", size);
 	for(int i=0; i<size; i++) {
 		Operation op;

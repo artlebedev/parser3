@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.40 2001/04/02 08:45:46 paf Exp $
+	$Id: pa_value.h,v 1.41 2001/04/02 09:29:20 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -244,13 +244,12 @@ typedef void (*Native_code_ptr)(Request& request,
 class Method : public Pooled {
 public:
 
-	/// bits of allowed call types
+	/// allowed method call types
 	enum Call_type {
-		CT_ANY=0,
-		CT_STATIC,
-		CT_DYNAMIC		
+		CT_ANY, ///< method can be called either statically or dynamically
+		CT_STATIC, ///< method can be called only statically
+		CT_DYNAMIC ///< method can be called only dynamically
 	};
-
 	
 	/// name for error reporting
 	const String& name;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.59 2001/03/30 09:58:58 paf Exp $
+	$Id: pa_string.h,v 1.60 2001/04/02 09:29:17 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -82,7 +82,7 @@ public:
 
 	/// piece is tainted or not. the language to use when detaint 
 	enum Untaint_lang {
-		UL_UNKNOWN=0, ///< when get by name fails
+		UL_UNKNOWN=0, ///< zero value handy for hash lookup @see untaint_lang_name2enum
 		UL_NO, ///< clean
 		UL_YES,  ///< tainted, untaint language as assigned later 
 		// untaint languages. assigned by ^untaint[lang]{...}

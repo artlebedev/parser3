@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.27 2001/03/29 20:53:03 paf Exp $
+	$Id: pa_table.h,v 1.28 2001/04/02 09:29:18 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -27,7 +27,9 @@
 
 	uses String for column names and data items
 
-	hence most of tables are "named", no need to uptimize nameless onces
+	hence most of tables are "named", no need to uptimize nameless onces.
+	rows and strings stored are read-only. once stored they can be removed,
+	but not altered. that's handy for quick copying & co. see table:join
 */
 class Table : public Array {
 public:

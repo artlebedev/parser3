@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.32 2001/03/28 08:01:41 paf Exp $
+	$Id: pa_array.h,v 1.33 2001/04/02 09:29:17 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -57,13 +57,24 @@ public:
 
 	Array(Pool& apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
-	/// size Array. how many items are in it
-	int size() const { 
-		// for get and quick_get
+	/**
+		size Array. how many items are in it. 
+		must be used with quick_get like this:
+		@code
+			int size=src.quick_size();
+			for(int i=0; i<size; i++) {
+				z=src.quick_get(i);
+			}
+		@endcode
+	*/
+	int quick_size() const { 
+		// for quick_get
 		cache_chunk_base=0;
 		cache_chunk=head;
-		return fused_rows; 
+		return size(); 
 	}
+	/// size Array. how many items are in it
+	int size() const { return fused_rows; }
 	/// append Item to array
 	Array& operator += (Item *src);
 
