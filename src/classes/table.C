@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/04/04 13:44:59 $";
+static const char* IDENT_TABLE_C="$Date: 2003/04/11 10:39:24 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -310,6 +310,7 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 }
 
 #ifndef DOXYGEN
+enum Table2hash_distint { D_ILLEGAL, D_FIRST, D_TABLES };
 struct Row_info {
 	Request *r;
 	Table *table;
@@ -317,7 +318,7 @@ struct Row_info {
 	int key_field;
 	Array *value_fields;
 	Hash *hash;
-	bool distinct;
+	Table2hash_distint distinct;
 	int row;
 };
 #endif
@@ -337,21 +338,46 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 	if(!key)
 		return; // ignore rows without key [too-short-record_array if-indexed]
 		
-	VHash& result=*new(pool) VHash(pool);
-	Hash& hash=*result.get_hash(0);
-	for(int i=0; i<ri.value_fields->size(); i++) {
-		int value_field=ri.value_fields->get_int(i);
-		if(value_field<row.size())
-			hash.put(
-				*ri.table->columns()->get_string(value_field), 
-				new(pool) VString(*row.get_string(value_field)));
+	switch(ri.distinct) {
+	case D_ILLEGAL: case D_FIRST:
+		{
+			VHash& result=*new(pool) VHash(pool);
+			Hash& hash=*result.get_hash(0);
+			for(int i=0; i<ri.value_fields->size(); i++) {
+				int value_field=ri.value_fields->get_int(i);
+				if(value_field<row.size())
+					hash.put(
+						*ri.table->columns()->get_string(value_field), 
+						new(pool) VString(*row.get_string(value_field)));
+			}
+
+			if(ri.hash->put_dont_replace(*key, &result)) // put. existed?
+				if(ri.distinct==D_ILLEGAL)
+					throw Exception("parser.runtime",
+						key,
+						"duplicate key");
+		}
+		break;
+	case D_TABLES:
+		{
+			VTable* vtable=(VTable*)ri.hash->get(*key); // put. table existed?
+			Table* table;
+			if(vtable) 
+				table=vtable->get_table();
+			else {
+				// no? creating table of same structure as source
+				table=new(pool) Table(pool, *ri.table, 0, -1 /*no rows, just structure*/);
+				ri.hash->put(*key, new(pool) VTable(pool, table));
+			}
+			*table+=&row;
+		}
+		break;
+	default:
+		throw Exception(0,
+			0,
+			"invalid distinct code (#%d), ri.distinct");
 	}
 
-	if(ri.hash->put_dont_replace(*key, &result)) // put. existed?
-		if(!ri.distinct)
-			throw Exception("parser.runtime",
-				key,
-				"duplicate key");
 }
 static void _hash(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -359,16 +385,26 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 	Value& result=*new(pool) VHash(pool);
 	if(const Array *columns=self_table.columns())
 		if(columns->size()>0) {
-			bool distinct=false;
+			Table2hash_distint distinct=D_ILLEGAL;
 			int param_index=params->size()-1;
 			if(param_index>0) {
 				if(Hash *options=
 					params->as_no_junction(param_index, "param must not be code").get_hash(0)) {
 					--param_index;
 					int valid_options=0;
-					if(Value *vdistinct=(Value *)options->get(*sql_distinct_name)) {
+					if(Value *vdistinct_code=(Value *)options->get(*sql_distinct_name)) {
 						valid_options++;
-						distinct=r.process_to_value(*vdistinct).as_bool();
+						Value& vdistinct_value=r.process_to_value(*vdistinct_code);
+						if(vdistinct_value.is_string()) {
+							const String& sdistinct=*vdistinct_value.get_string();
+							if(sdistinct=="tables")
+								distinct=D_TABLES;
+							else
+								throw Exception("parser.runtime",
+									&sdistinct,
+									"must be 'tables' or true/false");
+						} else
+							distinct=vdistinct_value.as_bool()?D_FIRST:D_ILLEGAL;
 					}
 					if(valid_options!=options->size())
 						throw Exception("parser.runtime",
@@ -383,6 +419,10 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 
 			Array value_fields(pool);
 			if(param_index>0) {
+				if(distinct!=D_ILLEGAL && distinct!=D_FIRST)
+					throw Exception("parser.runtime",
+						0,
+						"in distinct[tables] mode you may not specify value field(s)");
 				Value& value_fields_param=params->as_no_junction(param_index, "value field(s) must not be code");
 				if(value_fields_param.is_string()) {
 					value_fields+=self_table.column_name2index(value_fields_param.as_string(), true);
@@ -398,8 +438,9 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 						"value field(s) must be string or self_table"
 					);
 			} else { // by all columns, including key
-				for(int i=0; i<columns->size(); i++)
-					value_fields+=i;
+				if(!(distinct!=D_ILLEGAL && distinct!=D_FIRST))
+					for(int i=0; i<columns->size(); i++)
+						value_fields+=i;
 			}
 
 			Value& key_param=params->get(0);
@@ -407,7 +448,9 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 			int key_field=key_code?-1
 				:self_table.column_name2index(key_param.as_string(), true);
 
-			Row_info row_info={&r, &self_table, key_code, key_field, &value_fields, result.get_hash(0), distinct};
+			Row_info row_info={&r, &self_table, 
+				key_code, key_field, &value_fields, 
+				result.get_hash(0), distinct};
 
 			int saved_current=self_table.current();
 			self_table.for_each(table_row_to_hash, &row_info);
