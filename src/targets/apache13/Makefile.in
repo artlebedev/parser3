@@ -79,6 +79,7 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 charsetsdir = @charsetsdir@
 commentcharset_ = @commentcharset_@
+dll_extension = @dll_extension@
 host_os = @host_os@
 mysql_client = @mysql_client@
 oracle_client = @oracle_client@

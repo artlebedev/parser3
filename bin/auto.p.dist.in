@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.7 2002/08/21 06:24:06 paf Exp $
+#$Id: auto.p.dist.in,v 1.8 2002/09/17 11:24:20 paf Exp $
 
 @conf[]
 $charsetsdir[@charsetsdir@]
@@ -13,9 +13,9 @@ $CHARSETS[
 #change your client libraries paths to those on your system
 $SQL[
 	$.drivers[^table::set{protocol	driver	client
-mysql	$sqldriversdir/libparser3mysql.so	@mysql_client@
-pgsql	$sqldriversdir/libparser3pgsql.so	@pgsql_client@
-oracle	$sqldriversdir/libparser3oracle.so	@oracle_client@
+mysql	$sqldriversdir/libparser3mysql.@dll_extension@	@mysql_client@
+pgsql	$sqldriversdir/libparser3pgsql.@dll_extension@	@pgsql_client@
+oracle	$sqldriversdir/libparser3oracle.@dll_extension@	@oracle_client@
 }]
 ]
 
