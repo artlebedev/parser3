@@ -4,10 +4,20 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.68 2002/01/21 16:53:17 paf Exp $
+	$Id: xdoc.C,v 1.69 2002/01/21 17:06:35 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
+
+#include "gdome.h"
+#include "libxml/tree.h"
+extern "C" {
+#include "gdomecore/gdome-xml-node.h"
+#include "gdomecore/gdome-xml-document.h"
+};
+#include "libxslt/xsltInternals.h"
+#include "libxslt/transform.h"
+#include "libxslt/xsltutils.h"
 
 #include "pa_stylesheet_connection.h"
 #include "classes.h"
@@ -17,12 +27,6 @@
 #include "pa_vfile.h"
 #include "xnode.h"
 
-extern "C" {
-#include "gdomecore/gdome-xml-node.h"
-#include "gdomecore/gdome-xml-document.h"
-};
-#include "libxslt/transform.h"
-#include "libxslt/xsltutils.h"
 
 // defines
 
@@ -453,7 +457,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 		&exc);
 	if(!document || exc || xmlHaveGenericErrors())
 		throw Exception(0, 0, 
-			&method_name, 
+			&uri, 
 			exc);
 
 	// replace any previous parsed source
