@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: mod_parser3.C,v 1.38 2001/07/30 12:29:11 parser Exp $"; 
+static const char *RCSId="$Id: mod_parser3.C,v 1.39 2001/08/07 13:23:33 parser Exp $"; 
 
 #include "httpd.h"
 #include "http_config.h"
@@ -294,7 +294,7 @@ static int parser_handler(request_rec *r)
  */
 
 static void setup_module_cells() {
-	static bool globals_inited=false;
+	static bool  globals_inited=false;
 	if(globals_inited)
 		return;
 	globals_inited=true;

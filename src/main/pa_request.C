@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.148 2001/08/06 16:18:26 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.149 2001/08/07 13:23:33 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -534,7 +534,7 @@ VStateless_class *Request::use_file(const String& file_name,
 			if(!file_spec)
 				THROW(0, 0,
 					&file_name,
-					"can not be loaded because no " CLASS_PATH_NAME " specified");
+					"can not be found because no " CLASS_PATH_NAME " were specified");
 	}
 
 	char *source=file_read_text(pool(), *file_spec, fail_on_read_problem);

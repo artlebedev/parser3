@@ -5,13 +5,17 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: math.C,v 1.4 2001/07/18 10:06:04 parser Exp $"; 
+static const char *RCSId="$Id: math.C,v 1.5 2001/08/07 13:23:33 parser Exp $"; 
 
 #include "pa_config_includes.h"
 #include "pa_common.h"
 #include "pa_vint.h"
 #include "pa_vmath.h"
 #include "pa_request.h"
+
+#ifdef WIN32
+#	include <windows.h>
+#endif
 
 // defines
 
@@ -23,12 +27,14 @@ static const char *RCSId="$Id: math.C,v 1.4 2001/07/18 10:06:04 parser Exp $";
 class MMath : public Methoded {
 public:
 	MMath(Pool& pool);
+	void configure_admin(Request& r);
+
 public: // Methoded
 	bool used_directly() { return true; }
 };
 
 // methods
-
+static unsigned int randomizer=0;
 static void _random(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -39,7 +45,8 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
 			&method_name,
 			"bad range [0..%u]", max);
 	
-	Value& result=*new(pool) VInt(pool, rand()%max);
+	Value& result=*new(pool) VInt(pool, (int)(
+		((double)((randomizer=rand())% RAND_MAX)) / RAND_MAX * (max + 1)));
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
@@ -108,10 +115,6 @@ MATH2(pow);
 
 MMath::MMath(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), MATH_CLASS_NAME));
-
-
-	// setting seed
-	srand(getpid()+time(NULL));  rand();
 	
 	// ^FUNC(expr)	
 #define ADD1(name) \
@@ -134,6 +137,24 @@ MMath::MMath(Pool& apool) : Methoded(apool) {
 	// ^pow(x;y)
 	ADD2(pow);
 
+}
+
+// in MSVC each thread has it's own pseudo-random sequence
+// in win32 apache each thread can handle multiple requests
+// so to get proper randoms we remember random generated in one thread
+void MMath::configure_admin(Request&) {
+	// setting seed
+	srand(
+		randomizer ^
+#ifdef WIN32
+		GetCurrentThreadId() ^
+#else
+		getpid() ^
+#endif
+		(unsigned int)time(NULL)
+	);
+	if(!randomizer)
+		randomizer=rand();
 }
 
 // global variables
