@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.41 2001/04/20 09:04:08 paf Exp $
+	$Id: untaint.C,v 1.42 2001/04/20 09:05:24 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -114,7 +114,7 @@ quoted-pair    = "\" CHAR
 */
 inline bool need_quote_http_header(const char *ptr, size_t size) {
 	for(; size--; ptr++)
-		if(strchr("()<>@,;:\\\"[]?={} \t" /* excluded / */, *ptr))
+		if(strchr(";\\\"= \t" /* excluded ()<>@, :/ ? []{} */, *ptr))
 			return true;
 	return false;
 }
