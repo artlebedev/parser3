@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.13 2001/04/10 07:40:46 paf Exp $
+	$Id: mail.C,v 1.14 2001/04/10 07:41:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -346,8 +346,8 @@ static void sendmail(Request& r, const String& method_name,
 				prog_string->split(argv, &pos_after, " ", 1, String::UL_CLEAN);
 			}
 
-			// skip unavailable
-			if(!file_executable(*file_spec))
+			// skip unavailable default programs
+			if(no<0 && !file_executable(*file_spec))
 				continue;
 
 			String in(pool, letter_cstr); String out(pool); String err(pool);
