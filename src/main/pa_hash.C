@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.1 2001/01/27 10:03:31 paf Exp $
+  $Id: pa_hash.C,v 1.2 2001/01/27 12:04:43 paf Exp $
 */
 
 /*
@@ -11,6 +11,11 @@
 */
 
 #include "pa_pool.h"
+
+
+void *Hash::Pair::operator new(size_t size, Pool *apool) {
+	return apool->malloc(size);
+}
 
 /* Zend comment: Generated on an Octa-ALPHA 300MHz CPU & 2.5GB RAM monster */
 uint Hash::sizes[]={
@@ -29,24 +34,36 @@ Hash::Hash(Pool *apool) {
 	pool=apool;
 	
 	size=sizes[size_index=0];
-	threshold=size*100/THRESHOLD_PERCENT;
+	threshold=size*THRESHOLD_PERCENT/100;
 	used=0;
-	pair_refs=static_cast<Pair **>(pool->calloc(sizeof(Pair *)*size));
+	refs=static_cast<Pair **>(pool->calloc(sizeof(Pair *)*size));
 }
 
 void Hash::expand() {
-	int new_size_index=size_index+1<sizes_count?size_index+1:sizes_count-1;
-	int new_size=sizes[new_size_index];
-	Pair **new_pair_refs=static_cast<Pair **>(pool->calloc(sizeof(Pair *)*new_size));
+	int old_size=size;
+	Pair **old_refs=refs;
+	
+	// allocated bigger refs array
+	size_index=size_index+1<sizes_count?size_index+1:sizes_count-1;
+	size=sizes[size_index];
+	Pair **refs=static_cast<Pair **>(pool->calloc(sizeof(Pair *)*size));
 
 	// rehash
+	Pair **old_ref=old_refs;
+	for(int old_index=0; old_index<old_size; old_index++)
+		for(Pair *pair=*old_ref++; pair; ) {
+			Pair *linked_pair=pair->link;
 
-	size=new_size;  size_index=new_size_index;
-	pair_refs=new_pair_refs;
+			uint new_index=pair->code%size;
+			Pair **new_ref=&refs[new_index];
+			pair->link=*new_ref;
+			*new_ref=pair;
+
+			pair=linked_pair;
+		}
 }
 
 uint Hash::generic_code(uint aresult, char *start, uint size) {
-	return 0;
 	uint result=aresult, g;
 	char *end=start+size;
 
@@ -60,39 +77,28 @@ uint Hash::generic_code(uint aresult, char *start, uint size) {
 	return result;
 }
 
-void Hash::put(Key& akey, Value *avalue) {
+void Hash::put(Key& key, Value *value) {
 	if(full()) 
 		expand();
 
-	uint index=akey.hash_code()%size;
-	Pair *pair=&pairs[index];
-	if(pair->used) {
-		Pair *prev_pair=pair;
-		for(; pair; pair=pair->link) {
-			if(pair->key==akey) { // found a pair with the same key
-				pair->value=avalue;
-				return;
-			}
-			prev_pair=pair;
+	uint code=key.hash_code();
+	uint index=code%size;
+	Pair **ref=&refs[index];
+	for(Pair *pair=*ref; pair; pair=pair->link)
+		if(pair->code==code && pair->key==key) {
+			// found a pair with the same key
+			pair->value=value;
+			return;
 		}
-
-		// not found proper pair -- create&link_in new pair
-		Pair *new_pair=static_cast<Pair *>(pool->malloc(sizeof(Pair)));
-		new_pair->used=true;
-		new_pair->key=akey;
-		new_pair->value=avalue;
-		new_pair->link=0;
-		prev_pair->link=new_pair;	
-	}
-	pair->used=true;
-	pair->key=akey;
-	pair->value=avalue;
+	
+	// not found proper pair -- create&link_in new pair
+	*ref=new(pool) Pair(code, key, value, *ref);
 }
 
 Value* Hash::get(Key& key) {
-	uint code=akey.hash_code();
+	uint code=key.hash_code();
 	uint index=code%size;
-	for(Pair *pair=&pairs[index]; pair; pair=pair->link)
+	for(Pair *pair=refs[index]; pair; pair=pair->link)
 		if(pair->code==code && pair->key==key)
 			return pair->value;
 	
