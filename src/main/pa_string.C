@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.152 2002/04/10 09:53:15 paf Exp $
+	$Id: pa_string.C,v 1.153 2002/04/19 07:59:51 paf Exp $
 */
 
 #include "pcre.h"
@@ -441,27 +441,28 @@ void String::split(Array& result,
 	}
 }
 
-static void regex_options(char *options, int *result){
+static void regex_options(const String *options, int *result){
     struct Regex_option {
-		char key;
+		const char *keyL;
+		const char *keyU;
 		int clear, set;
 		int *result;
     } regex_option[]={
-		{'i', 0, PCRE_CASELESS, result}, // a=A
-		{'s', 0, PCRE_DOTALL, result}, // \n\n$ [default]
-		{'x', 0, PCRE_EXTENDED, result}, // whitespace in regex ignored
-		{'m', PCRE_DOTALL, PCRE_MULTILINE, result}, // ^aaa\n$^bbb\n$
-		{'g', 0, true, result+1}, // many rows
+		{"i", "I", 0, PCRE_CASELESS, result}, // a=A
+		{"s", "S", 0, PCRE_DOTALL, result}, // \n\n$ [default]
+		{"x", "U", 0, PCRE_EXTENDED, result}, // whitespace in regex ignored
+		{"m", "M", PCRE_DOTALL, PCRE_MULTILINE, result}, // ^aaa\n$^bbb\n$
+		{"g", "G", 0, true, result+1}, // many rows
 		{0},
     };
 	result[0]=PCRE_EXTRA | PCRE_DOTALL;
 	result[1]=0;
 
     if(options) 
-		for(Regex_option *o=regex_option; o->key; o++) 
+		for(Regex_option *o=regex_option; o->keyL; o++) 
 			if(
-				strchr(options, o->key) || 
-				strchr(options, toupper(o->key))) {
+				options->pos(o->keyL)>=0 || 
+				options->pos(o->keyU)>=0) {
 				*(o->result)&=~o->clear;
 				*(o->result)|=o->set;
 			}
@@ -483,7 +484,7 @@ bool String::match(
 	const char *pattern=regexp.cstr();
 	const char *errptr;
 	int erroffset;
-    int option_bits[2];  regex_options(options?options->cstr():0, option_bits);
+    int option_bits[2];  regex_options(options, option_bits);
 	if(was_global)
 		*was_global=option_bits[1]!=0;
 	pcre *code=pcre_compile(pattern, option_bits[0], 
