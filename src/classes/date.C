@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2004/02/11 15:33:12 $";
+static const char * const IDENT_DATE_C="$Date: 2004/02/19 15:16:53 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -233,7 +233,7 @@ static void _roll(Request& r, MethodParams& params) {
 	tmOut->tm_isdst=-1; 
 	{
 		time_t t_changed_time=mktime/*normalizetime*/(tmOut);
-		/*autofix: in msk timezone last sunday of april hour hole: [2am->3am)
+		/*autofix: in msk timezone last sunday of march hour hole: [2am->3am)
 		if(
 			tmOut->tm_hour!=tmSaved.tm_hour
 			||tmOut->tm_min!=tmSaved.tm_min)
