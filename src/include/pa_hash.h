@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.6 2001/01/29 11:17:49 paf Exp $
+  $Id: pa_hash.h,v 1.7 2001/01/29 11:53:42 paf Exp $
 */
 
 /*
@@ -85,10 +85,10 @@ public:
 	static uint generic_code(uint aresult, char *start, uint size);
 
 	// put a [value] under the [key]
-	void put(Key& key, Value *value);
+	/*SYNCHRONIZED*/ void put(Key& key, Value *value);
 
 	// get associated [value] by the [key]
-	Value* get(Key& key);
+	/*SYNCHRONIZED*/ Value* get(Key& key);
 
 private: //disabled
 

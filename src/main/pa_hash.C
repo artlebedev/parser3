@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.3 2001/01/27 15:00:04 paf Exp $
+  $Id: pa_hash.C,v 1.4 2001/01/29 11:53:42 paf Exp $
 */
 
 /*
@@ -11,7 +11,7 @@
 */
 
 #include "pa_pool.h"
-
+#include "pa_threads.h"
 
 void *Hash::Pair::operator new(size_t size, Pool *apool) {
 	return apool->malloc(size);
@@ -42,11 +42,11 @@ Hash::Hash(Pool *apool) {
 void Hash::expand() {
 	int old_size=size;
 	Pair **old_refs=refs;
-	
+
 	// allocated bigger refs array
 	size_index=size_index+1<sizes_count?size_index+1:sizes_count-1;
 	size=sizes[size_index];
-	Pair **refs=static_cast<Pair **>(pool->calloc(sizeof(Pair *)*size));
+	refs=static_cast<Pair **>(pool->calloc(sizeof(Pair *)*size));
 
 	// rehash
 	Pair **old_ref=old_refs;
@@ -78,6 +78,8 @@ uint Hash::generic_code(uint aresult, char *start, uint size) {
 }
 
 void Hash::put(Key& key, Value *value) {
+	SYNCHRONIZED;
+
 	if(full()) 
 		expand();
 
@@ -96,6 +98,8 @@ void Hash::put(Key& key, Value *value) {
 }
 
 Hash::Value* Hash::get(Key& key) {
+	SYNCHRONIZED;
+
 	uint code=key.hash_code();
 	uint index=code%size;
 	for(Pair *pair=refs[index]; pair; pair=pair->link)

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_threads.h,v 1.1 2001/01/29 11:17:49 paf Exp $
+  $Id: pa_threads.h,v 1.2 2001/01/29 11:53:42 paf Exp $
 */
 
 #ifndef PA_THREADS_H
@@ -19,19 +19,26 @@ class Mutex {
 public:
 	Mutex();
 	~Mutex();
-	void lock();
-	void unlock();
+	void acquire();
+	void release();
 };
 
-#else
+extern Mutex global_mutex;
 
-class Mutex {
-	Mutex() {}
-	~Mutex() {}
-	void lock() {}
-	void unlock() {}
-};
+class AutoSYNCHRONIZED {
+public:
+	AutoSYNCHRONIZED() { global_mutex.acquire(); }
+	~AutoSYNCHRONIZED() { global_mutex.release(); }
+}
+
+#define SYNCHRONIZED AutoSYNCHRONIZED autoSYNCHRONIZED()
+
+
+#else // not MULTITHREAD-ed
+
+#define SYNCHRONIZED /* do nothing */
 
 #endif
+
 
 #endif
