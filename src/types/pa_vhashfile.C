@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2004/06/25 11:18:31 $";
+static const char * const IDENT="$Date: 2004/06/25 12:04:00 $";
 
 #include "pa_globals.h"
 #include "pa_threads.h"
@@ -102,17 +102,13 @@ const String* VHashfile::deserialize_value(apr_sdbm_datum_t key, const apr_sdbm_
 	if(!value.dptr || (size_t)value.dsize<sizeof(Hashfile_value_serialized_prolog))
 		return 0; 
 
-	Hashfile_value_serialized_prolog& prolog=*reinterpret_cast<Hashfile_value_serialized_prolog*>(value.dptr);
-	uint version;
-	time_t time_to_die;
 	// [WARNING: not cast, addresses must be %4=0 on sparc]
-	memcpy(&version, &prolog.version, sizeof(prolog.version));
-	// [WARNING: not cast, addresses must be %4=0 on sparc]
-	memcpy(&time_to_die, &prolog.time_to_die, sizeof(prolog.time_to_die));
+	Hashfile_value_serialized_prolog prolog;
+	memcpy(&prolog, value.dptr, sizeof(prolog));
 	
-	if(version!=HASHFILE_VALUE_SERIALIZED_VERSION
-		|| (time_to_die/*specified*/ 
-			&& (time_to_die <= time(0)/*expired*/))) {
+	if(prolog.version!=HASHFILE_VALUE_SERIALIZED_VERSION
+		|| (prolog.time_to_die/*specified*/ 
+			&& (prolog.time_to_die <= time(0)/*expired*/))) {
 		// old format || exipred value
 		remove(key);
 		return 0;
