@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.156 2001/07/26 14:15:45 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.157 2001/07/26 14:38:22 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -273,10 +273,10 @@ put: '$' name_expr_wdive construct {
 	P($$, $3); /* stack: context,name,constructor_value */
 };
 name_expr_wdive: 
-	name_expr_wdive_write
-|	name_expr_wdive_root
+	name_expr_wdive_root
+|	name_expr_wdive_write
 |	name_expr_wdive_class;
-name_expr_wdive_write: name_expr_dive_code {
+name_expr_wdive_root: name_expr_dive_code {
 	$$=N(POOL);
 	Array *diving_code=$1;
 	const String *first_name=LA2S(diving_code);
@@ -286,14 +286,14 @@ name_expr_wdive_write: name_expr_dive_code {
 			/* skip over... */
 			diving_code->size()>2?3/*OP_+string+get_element*/:2/*OP_+string*/);
 	} else {
-		O($$, OP_WITH_WRITE); /* stack: starting context */
+		O($$, OP_WITH_ROOT); /* stack: starting context */
 		P($$, diving_code);
 	}
 	/* diving code; stack: current context */
 };
-name_expr_wdive_root: ':' name_expr_dive_code {
+name_expr_wdive_write: '.' name_expr_dive_code {
 	$$=N(POOL); 
-	O($$, OP_WITH_ROOT); /* stack: starting context */
+	O($$, OP_WITH_WRITE); /* stack: starting context */
 	P($$, $2); /* diving code; stack: context,name */
 };
 name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
@@ -322,7 +322,7 @@ construct_curly: '{' maybe_codes '}' {
 };
 
 any_constructor_code_value: 
-	empty_string_value /* optimized $var[] case */
+	void_value /* optimized $var[] case */
 |	STRING /* optimized $var[STRING] case */
 |	constructor_code_value /* $var[something complex] */
 ;
@@ -393,7 +393,7 @@ store_curly_param_part: maybe_codes {
 	PCA($$, $1);
 };
 code_param_value:
-	empty_void_value /* optimized [;...] case */
+	void_value /* optimized [;...] case */
 |	STRING /* optimized [STRING] case */
 |	constructor_code_value /* [something complex] */
 ;
@@ -528,8 +528,7 @@ write_string: STRING {
 	change_string_literal_to_write_string_literal($$=$1)
 };
 
-empty_void_value: /* empty */ { $$=VL(NEW VVoid(POOL)) };
-empty_string_value: /* empty */ { $$=VL(NEW VString(POOL)) };
+void_value: /* empty */ { $$=VL(NEW VVoid(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%

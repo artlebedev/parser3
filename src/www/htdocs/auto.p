@@ -1,6 +1,6 @@
 @auto[]
 $SQL[
-	$drivers[^table::set{protocol	driver	client
+	$.drivers[^table::set{protocol	driver	client
 mysql	d:\Y\parser3\src\sql\mysql\debug\parser3mysql.dll	d:\y\parser3\src\sql\mysql\mySQL32\lib\opt\libmySQL.dll
 odbc	d:\y\parser3\src\sql\odbc\Debug\parser3odbc.dll
 }]
