@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2004/07/07 11:29:06 $";
+static const char * const IDENT_EXEC_C="$Date: 2004/07/28 13:25:41 $";
 
 #include "pa_config_includes.h"
 
@@ -75,7 +75,6 @@ static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
 	strncpy(dir, szCmdLine, MAX_STRING-1); dir[MAX_STRING-1]=0;
 	lsplit(dir,' '); // trim arguments
 	rsplit(dir,'/'); rsplit(dir,'\\'); // trim filename
-	chdir(dir);
 	
 	// Create a child process (suspended)
 	fCreated=CreateProcess(NULL,
