@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.19 2001/02/23 09:43:15 paf Exp $
+  $Id: pa_array.C,v 1.20 2001/02/24 12:58:15 paf Exp $
 */
 
 #include <string.h>
@@ -23,6 +23,9 @@ Array::Array(Pool& apool, int initial_rows) :
 }
 
 void Array::expand(int chunk_rows) {
+	if(chunk_rows<CR_INITIAL_ROWS_DEFAULT)
+		chunk_rows=CR_INITIAL_ROWS_DEFAULT;
+
 	Chunk *chunk=tail=static_cast<Chunk *>(
 		malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *)));
 	chunk->count=chunk_rows;
