@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2003/12/17 07:33:53 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2004/01/22 07:11:59 $";
 
 #include "pa_config_includes.h"
 
@@ -81,7 +81,7 @@ Request& pa_thread_request() {
 
 class XML_Generic_error_info {
 public:
-	char buf[MAX_STRING];
+	char buf[MAX_STRING*5];
 	size_t used;
 public:
 	XML_Generic_error_info() {
