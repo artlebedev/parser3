@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.124 2001/10/22 16:44:43 parser Exp $
+	$Id: parser3.C,v 1.125 2001/10/22 17:16:14 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -19,6 +19,7 @@
 #include "pa_request.h"
 #include "pa_socks.h"
 #include "pa_version.h"
+#include "pool_storage.h"
 
 #ifdef XML
 #include <XalanTransformer/XalanCAPI.h>
@@ -58,7 +59,8 @@ const char **RCSIds[]={
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
 
 const char *argv0;
-Pool pool(0); // global pool [dont describe to doxygen: it confuses it with param names]
+Pool_storage pool_storage;
+Pool pool(&pool_storage); // global pool [dont describe to doxygen: it confuses it with param names]
 bool cgi; ///< we were started as CGI?
 
 // SAPI

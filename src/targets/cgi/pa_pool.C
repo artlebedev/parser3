@@ -4,12 +4,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.23 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_pool.C,v 1.24 2001/10/22 17:16:14 parser Exp $
 */
 
 #include <stdlib.h>
 
 #include "pa_pool.h"
+#include "pool_storage.h"
 
 //#define DEBUG_POOL_MALLOC
 
@@ -173,6 +174,5 @@ void *Pool::real_calloc(size_t size) {
 }
 
 bool Pool::real_register_cleanup(void (*cleanup) (void *), void *data) {
-	// we free nothing in CGI
-	return true;
+	return fstorage!=0 && static_cast<Pool_storage *>(fstorage)->register_cleanup(cleanup, data);
 }

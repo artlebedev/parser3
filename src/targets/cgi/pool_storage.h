@@ -1,10 +1,10 @@
 /** @file
-	Parser: ISAPI: pool storage class decl.
+	Parser: CGI: pool storage class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pool_storage.h,v 1.11 2001/10/22 17:16:14 parser Exp $
+	$Id: pool_storage.h,v 1.1 2001/10/22 17:16:14 parser Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
@@ -74,23 +74,7 @@ class Pool_storage {
 public:
 
 	Pool_storage() : 
-		cleanups(100),
-		allocations(10*0x400) {
-	}
-
-	void *malloc(size_t size) { 
-		void *result=::malloc(size);
-		if(result && !allocations.add(result)) {
-			::free(result); result=0;
-		}
-		return result;
-	}
-	void *calloc(size_t size) { 
-		void *result=::calloc(size, 1);
-		if(result && !allocations.add(result)) {
-			::free(result); result=0;
-		}
-		return result;
+		cleanups(100) {
 	}
 
 	bool register_cleanup(void (*cleanup) (void *), void *data) {
@@ -107,16 +91,11 @@ public:
 			Cleanup_struct& item=cleanups.items[--top];
 			item.cleanup(item.data);
 		}
-
-		// allocations
-		for(top=allocations.used; top; )
-			free(allocations.items[--top]);
 	}
 
 private:
 
 	List<Cleanup_struct> cleanups;
-	List<void *> allocations;
 
 };
 

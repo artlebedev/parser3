@@ -176,5 +176,9 @@ SOURCE=.\pa_threads.C
 
 SOURCE=.\parser3.C
 # End Source File
+# Begin Source File
+
+SOURCE=.\pool_storage.h
+# End Source File
 # End Target
 # End Project
