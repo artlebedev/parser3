@@ -1,9 +1,16 @@
 $request:charset[windows-1251]
 $response:charset[windows-1251]
 
+
 ^connect[$SQL.connect-string]{
-#$f[^file::sql{select 2*2 from dual}]
-#^f.save[binary;file_sql.dat]
-$f[^file::load[binary;_bug.gif]]
-=^f.sql-string[]=
+#$f[^file::sql[_bug.dat]{select 2*2}]
+#^f.save[binary;$f.name] $f.name saved
+
+#$f[^file::sql{select 2*2, '_bug2.zip' }]
+#^f.save[binary;$f.name] $f.name $f.content-type saved
+
+$f[^file::sql{select 2*2, '_bug2.giffff', 'image/gif' }]
+^f.save[binary;$f.name] $f.name $f.content-type saved
+#$f[^file::load[binary;_bug.gif]]
+#=^f.sql-string[]=
 }

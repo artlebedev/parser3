@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2004/02/27 15:07:46 $";
+static const char * const IDENT_STRING_H="$Date: 2004/03/02 15:54:07 $";
 
 // includes
 
@@ -343,6 +343,7 @@ public:
 		const char *str;
 		size_t length;
 		operator const char *() { return str; }
+		C(): str(0), length(0) {}
 		C(const char *astr, size_t asize): str(astr), length(asize) {}
 	};
 
@@ -350,6 +351,7 @@ public:
 		char *str;
 		size_t length;
 		//operator char *() { return str; }
+		Cm(): str(0), length(0) {}
 		Cm(char *astr, size_t asize): str(astr), length(asize) {}
 	};
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2004/03/02 14:56:42 $";
+static const char * const IDENT_FILE_C="$Date: 2004/03/02 15:54:07 $";
 
 #include "pa_config_includes.h"
 
@@ -623,6 +623,93 @@ static void _sql_string(Request& r, MethodParams&) {
 	r.write_assign_lang(*new String(quoted));
 }
 
+#ifndef DOXYGEN
+class File_sql_event_handlers: public SQL_Driver_query_event_handlers {
+	const String& statement_string; const char* statement_cstr;
+	int got_columns;
+	int got_cells;
+public:
+	String::C value;
+	String* user_file_name;
+	String* user_content_type;
+public:
+	File_sql_event_handlers(
+		const String& astatement_string, const char* astatement_cstr):
+		statement_string(astatement_string), statement_cstr(astatement_cstr),
+		got_columns(0),
+		got_cells(0),
+		user_file_name(0),
+		user_content_type(0) {}
+
+	bool add_column(SQL_Error& error, const char* /*str*/, size_t /*length*/) {
+		if(got_columns++==3) {
+			error=SQL_Error("parser.runtime", "result must contain not more then 3 columns");
+			return true;
+		}
+		return false;
+	}
+	bool before_rows(SQL_Error& /*error*/ ) { /* ignore */ return false; }
+	bool add_row(SQL_Error& /*error*/) { /* ignore */ return false; }
+	bool add_row_cell(SQL_Error& error, const char* str, size_t length) {
+		try {
+			switch(got_cells++) {
+				case 0:
+					value=String::C(str, length); 
+					break;
+				case 1:
+					user_file_name=new String(str, length, true);
+					break;
+				case 2:
+					user_content_type=new String(str, length, true);
+					break;
+				default:
+					error=SQL_Error("parser.runtime", "result must not contain more then one row, three rows");
+					return true;
+			}
+			return false;
+		} catch(...) {
+			error=SQL_Error("exception occured in File_sql_event_handlers::add_row_cell");
+			return true;
+		}
+	}
+};
+#endif
+static void _sql(Request& r, MethodParams& params) {
+	const String* user_file_name=0;
+	if(params.get(0)->is_string())
+		user_file_name=&params.get(0)->as_string();
+
+	Value& statement=params.as_junction(params.count()-1, "statement must be code");
+
+	Temp_lang temp_lang(r, String::L_SQL);
+	const String& statement_string=r.process_to_string(statement);
+	const char* statement_cstr=
+		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
+	File_sql_event_handlers handlers(statement_string, statement_cstr);
+	r.connection()->query(
+		statement_cstr, 0, 0, 
+		handlers,
+		statement_string);
+
+	if(!handlers.value)
+		throw Exception("parser.runtime",
+			0,
+			"produced no result");
+
+	if(!user_file_name)
+		user_file_name=handlers.user_file_name;
+
+	const char* user_file_name_cstr=user_file_name? user_file_name->cstr(): 0;
+
+	VString* vcontent_type=handlers.user_content_type? 
+		new VString(*handlers.user_content_type)
+		: user_file_name_cstr?
+			new VString(r.mime_type_of(user_file_name_cstr))
+			: 0;
+	VFile& self=GET_SELF(r, VFile);
+	self.set(true/*tainted*/, handlers.value.str, handlers.value.length, user_file_name_cstr, vcontent_type);
+}
+
 // constructor
 
 MFile::MFile(): Methoded("file") {
@@ -677,4 +764,7 @@ MFile::MFile(): Methoded("file") {
 
     // ^file.sql-string[]
 	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 0);
+
+    // ^file::sql[[alt_name]]{}
+	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 }
