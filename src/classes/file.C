@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2004/08/17 09:54:46 $";
+static const char * const IDENT_FILE_C="$Date: 2004/08/17 10:00:33 $";
 
 #include "pa_config_includes.h"
 
@@ -169,7 +169,10 @@ static void _load(Request& r, MethodParams& params) {
 
 	Value* vcontent_type=0;
 	if(file.headers)
-		vcontent_type=file.headers->get("CONTENT-TYPE");
+	{
+		if(Value* remote_content_type=file.headers->get("CONTENT-TYPE"))
+			vcontent_type=new VString(*new String(remote_content_type->as_string().cstr()));
+	} 
 	if(!vcontent_type)
 		vcontent_type=new VString(r.mime_type_of(user_file_name));
 	
