@@ -271,7 +271,17 @@ $response:charset[windows-1251]
 #^domorigint[]
 #^junctiontest2[]
 #^junctionselftest[]
-^bad-compiletosystem[]
+#^bad-compiletosystem[]
+#^steppedfor[i](1;10;2){$i }
+^file:fullpath[a.gif]<br>
+^file:fullpath[/abs/a.gif]<br>
+
+@steppedfor[name;from;to;step;code]
+$caller.$name($from)
+^while($caller.$name<=$to){
+	$code
+	^caller.$name.inc($step)
+}
 
 @bad-compiletosystem[]
 ^process[$string:CLASS]{@a[]

@@ -630,6 +630,8 @@ Xhashfile
     !^file:basename[/a/some.tar.gz]=some.tar.gz
     !^file:justname[/a/some.tar.gz]=some.tar
     !^file:justext[/a/some.tar.gz]=gz
+    !/some/page.html: ^file:fullpath[a.gif] => /some/a.gif
+
 
 math
     !$math:PI

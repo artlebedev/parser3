@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/09/24 10:24:22 $";
+static const char* IDENT_FILE_C="$Date: 2002/10/21 08:22:17 $";
 
 #include "pa_config_includes.h"
 
@@ -545,6 +545,22 @@ static void _justext(Request& r, const String& method_name, MethodParams *params
 		r.write_assign_lang(file_spec.mid(afterdot, file_spec.size()));
 }
 
+static void _fullpath(Request& r, const String& method_name, MethodParams *params) {
+	const String& file_spec=params->as_string(0, "file name must be string");
+	const String *result;
+	if(file_spec.first_char()=='/')
+		result=&file_spec;
+	else {
+		// /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
+		const String& full_disk_path=r.absolute(file_spec);
+		size_t document_root_length=strlen(r.info.document_root);
+		if(document_root_length>0)
+			--document_root_length;
+		result=&full_disk_path.mid(document_root_length,  full_disk_path.size());
+	}
+	r.write_assign_lang(*result);
+}
+
 
 // constructor
 
@@ -595,6 +611,8 @@ MFile::MFile(Pool& apool) : Methoded(apool, "file") {
 	add_native_method("justname", Method::CT_STATIC, _justname, 1, 1);
     // ^file:justext[/a/some.tar.gz]=gz
 	add_native_method("justext", Method::CT_STATIC, _justext, 1, 1);
+    // /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
+	add_native_method("fullpath", Method::CT_STATIC, _fullpath, 1, 1);
 }
 
 // global variable
