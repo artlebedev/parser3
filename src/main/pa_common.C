@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/29 07:42:16 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/11/29 07:48:38 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -252,7 +252,11 @@ static void http_pass_header(const Hash::Key& key, Hash::Val *value, void *info)
 	Http_pass_header_info& i=*static_cast<Http_pass_header_info *>(info);
 	Pool& pool=i.request->pool();
     
-    *(i.request)<<key<<": "<<*(static_cast<Value *>(value))->get_string()<<"\n"; 
+	// force all to URI lang
+	String& value_string=*new(pool) String(pool);
+	value_string.append(*(static_cast<Value *>(value))->get_string(), String::UL_URI,  true);
+
+    *(i.request)<<key<<": "<< value_string <<"\n"; 
 
 	if(key.change_case(pool, String::CC_UPPER)=="USER-AGENT")
 		i.user_agent_specified=true;

@@ -346,7 +346,11 @@ $length[^image.length[$text]]
 $response:body[^image.gif[]]
 
 @http_prefix_xml[]
-$xdoc[^xdoc::load[http://www.cbr.ru/scripts/XML_daily.asp?^taint[сегодня]]]
+$xdoc[^xdoc::load[http://www.cbr.ru/scripts/XML_daily.asp?^taint[сегодня];
+    $.headers[
+		$.user-agent[ПАФ]
+	]
+]]
 На ^xdoc.selectString[string(/ValCurs/@Date)]
 курс валюты
 $USD_node[^xdoc.selectSingle[/ValCurs/Valute[CharCode='USD']]]
