@@ -33,6 +33,9 @@
 	* src/classes/file.C:
 		strcasecmp
 
+	* INSTALL:
+		reflected .conf.dist dir change
+
 	* configure:
 	* configure.in:
 	* src/include/pa_pool.h:
@@ -7503,7 +7506,7 @@
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.9 2002/06/18 14:58:04 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.10 2002/06/18 15:18:37 paf Exp $";
 
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
@@ -7546,7 +7549,7 @@
 	* src/main/untaint.C:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
-		static char *RCSId="$Id: ChangeLog,v 1.9 2002/06/18 14:58:04 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.10 2002/06/18 15:18:37 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C:
@@ -13600,7 +13603,7 @@
 	* src/targets/parser.C:
 	* src/targets/parser.dsp:
 	* src/targets/parser.dsp:
-		$Id: ChangeLog,v 1.9 2002/06/18 14:58:04 paf Exp $ check
+		$Id: ChangeLog,v 1.10 2002/06/18 15:18:37 paf Exp $ check
 
 	* src/targets/parser.C:
 		$id$ check
