@@ -81,7 +81,7 @@ host_os = @host_os@
 
 INCLUDES = -I../../../../classes -I../../../../types $(INCLTDL) -I../../../../sql -I$(APACHE13_SRC)/include -I$(APACHE13_SRC)/os/unix
 
-noinst_LIBRARIES = libmod_parser3.a
+noinst_LIBRARIES = libmod_parser3.a libpostbuildmessage.a
 libmod_parser3_a_SOURCES = pa_pool.C pa_threads.C mod_parser3.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../../include/pa_config_auto.h
@@ -95,12 +95,20 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 libmod_parser3_a_LIBADD = 
 libmod_parser3_a_OBJECTS =  pa_pool.o pa_threads.o mod_parser3.o
+libpostbuildmessage_a_LIBADD = 
+libpostbuildmessage_a_SOURCES = libpostbuildmessage.a.c
+libpostbuildmessage_a_OBJECTS =  libpostbuildmessage.a.o
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 DIST_COMMON =  Makefile.am Makefile.in
 
 
@@ -108,9 +116,10 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/mod_parser3.P .deps/pa_pool.P .deps/pa_threads.P
-SOURCES = $(libmod_parser3_a_SOURCES)
-OBJECTS = $(libmod_parser3_a_OBJECTS)
+DEP_FILES =  .deps/libpostbuildmessage.a.P .deps/mod_parser3.P \
+.deps/pa_pool.P .deps/pa_threads.P
+SOURCES = $(libmod_parser3_a_SOURCES) libpostbuildmessage.a.c
+OBJECTS = $(libmod_parser3_a_OBJECTS) libpostbuildmessage.a.o
 
 all: all-redirect
 .SUFFIXES:
@@ -349,6 +358,25 @@ all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
+
+libpostbuildmessage.a:
+	@echo "******************************************************"
+	@echo "0. go to your Apache sources directory"
+	@echo
+	@echo "1. add these lines to Configuration file"
+	@echo
+	@echo "PARSER_SRC={path to your parser3 sources}"
+	@echo "PARSER_LIBS=\$(PARSER_SRC)/main/libmain.a \$(PARSER_SRC)/classes/libclasses.a \$(PARSER_SRC)/main/libmain.a \$(PARSER_SRC)/types/libtypes.a \$(PARSER_SRC)/libltdl/.libs/libltdlc.al -ldl \$(PARSER_SRC)/classes/gd/libgd.a \$(PARSER_SRC)/pcre/libpcre.a \$(PARSER_SRC)/targets/apache13/modules/extra/libmod_parser3.a"
+	@echo "EXTRA_LIBS=\$(PARSER_LIBS) \$(PARSER_LIBS)"
+	@echo "AddModule modules/extra/mod_parser3.o"
+	@echo
+	@echo "2. create empty file modules/extra/mod_parser3.c"
+	@echo
+	@echo "touch modules/extra/mod_parser3.c"
+	@echo
+	@echo "3. ./configure"
+	@echo "4. make"
+	@echo "******************************************************"
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
