@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.162 2002/06/26 10:35:16 paf Exp $
+	$Id: pa_string.C,v 1.163 2002/06/26 10:36:04 paf Exp $
 */
 
 #include "pcre.h"
@@ -733,7 +733,7 @@ int String::as_int() const {
 	const char *cstr;
 	char buf[MAX_NUMBER];
 	if(head.chunk.rows+1==append_here) {
-		int size=min(head.chunk.rows[0].item.size, MAX_NUMBER-1);
+		size_t size=min(head.chunk.rows[0].item.size, MAX_NUMBER-1);
 		memcpy(buf, head.chunk.rows[0].item.ptr, size);
 		buf[size]=0;
 		cstr=buf;
