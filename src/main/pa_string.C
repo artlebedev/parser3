@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/04/02 13:57:07 $";
+static const char * const IDENT_STRING_C="$Date: 2004/05/26 08:25:55 $";
 
 #include "pcre.h"
 
@@ -152,7 +152,6 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars,
 		return *this;
 	if(!chars)
 		chars=" \t\n"; // white space
-	Body result=*this;
 
 	size_t start=0;
 	size_t end=our_length;
@@ -673,7 +672,7 @@ const char* String::Languages::v() const {
 		return (const char*)&langs;
 }
 const char* String::v() const {
-	const int LIMIT_VIEW=20;
+	const uint LIMIT_VIEW=20;
 	char* buf=(char*)malloc(MAX_STRING);
 	const char*body_view=body.v();
 	const char*langs_view=langs.v();
