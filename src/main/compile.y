@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.63 2001/03/07 10:10:50 paf Exp $
+  $Id: compile.y,v 1.64 2001/03/07 10:27:10 paf Exp $
 */
 
 %{
@@ -186,11 +186,12 @@ action: get | put | with | call;
 
 /* get */
 
-get: '$' get_name {
-	$$=$2; /* stack: resulting value */
+get: get_value {
+	$$=$1; /* stack: resulting value */
 	O($$, OP_WRITE); /* value=pop; write(value) */
 };
-get_name: name_without_curly_rdive EON | name_in_curly_rdive;
+get_value: '$' get_name_value { $$=$2 }
+get_name_value: name_without_curly_rdive EON | name_in_curly_rdive;
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
 name_without_curly_rdive: 
 	name_without_curly_rdive_read 
@@ -394,7 +395,8 @@ optimized_expr: expr {
 };
 expr: 
 	STRING
-|	'"' STRING '"' { $$ = $2; }
+|	get_value
+|	'"' string_inside_quotes_value '"' { $$ = $2; }
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
 |	'-' expr %prec NEG { $$=$2;  O($$, OP_NEG) }
@@ -427,13 +429,19 @@ expr:
 |	expr "ne" expr { $$=$1;  P($$, $3);  O($$, OP_STR_NE) }
 ;
 
-/*
-complex_expr_value: complex_expr {
-	$$=N(POOL); 
-	O($$, OP_CREATE_SWPOOL); /* stack: empty write context * /
-	P($$, $1); /* some codes to that context * /
-	O($$, OP_REDUCE_SWPOOL); /* context=pop; stack: context.get_string() * /
+string_inside_quotes_value: maybe_codes/*string_inside_quotes*/ {
+	$$=N(POOL);
+	O($$, OP_CREATE_SWPOOL); /* stack: empty write context */
+	P($$, $1); /* some codes to that context */
+	O($$, OP_REDUCE_SWPOOL); /* context=pop; stack: context.get_string() */
 };
+/*string_inside_quotes: 
+	string_inside_quotes_part
+|	string_inside_quotes string_inside_quotes_part { 
+		$$=$1; P($$, $2) 
+}
+;
+string_inside_quotes_part: STRING | get_value;
 */
 
 /* basics */
@@ -695,7 +703,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			case 0:
 			case ' ': case '\t': case '\n':
 			case ';':
-			case ']': case '}':
+			case ']': case '}': case ')': case '"':
 				pop_LS(PC);
 				PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
 				result=EON;
