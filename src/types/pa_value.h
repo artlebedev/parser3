@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.69 2001/08/10 10:24:09 parser Exp $
+	$Id: pa_value.h,v 1.70 2001/08/20 13:22:05 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -55,9 +55,9 @@ public: // Value
 	/** what's the meaning of this value in context of expression?
 		@return for
 		- VString: fstring as VDouble or this depending on return_string_as_is
-		- VBool: this
-		- VDouble: this
-		- VInt: this
+		- VBool: clone
+		- VDouble: clone
+		- VInt: clone
 		- VVoid: this
 		- VFile: this
 		- VImage: this

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.23 2001/07/23 13:59:52 parser Exp $"; 
+static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.24 2001/08/20 13:22:05 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -197,7 +197,7 @@ void SQL_Driver_manager::put_driver_to_cache(const String& protocol,
 }
 
 // connection cache
-
+/// @todo get rid of memory spending Stack [zeros deep inside got accumulated]
 SQL_Connection *SQL_Driver_manager::get_connection_from_cache(const String& url) { 
 	SYNCHRONIZED;
 

@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.162 2001/08/10 13:03:05 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.163 2001/08/20 13:22:05 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -241,7 +241,7 @@ get: get_value {
 	$$=$1; /* stack: resulting value */
 	O($$, OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 };
-get_value: '$' get_name_value { $$=$2 }
+get_value: '$' get_name_value { $$=$2 };
 get_name_value: name_without_curly_rdive EON | name_in_curly_rdive;
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
 name_without_curly_rdive: 
@@ -298,9 +298,9 @@ name_expr_wdive_write: '.' name_expr_dive_code {
 name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
 
 construct: 
-	construct_square | 
-	construct_round |
-	construct_curly
+	construct_square
+|	construct_round
+|	construct_curly
 ;
 construct_square: '[' any_constructor_code_value ']' {
 	// stack: context, name
@@ -311,7 +311,7 @@ construct_square: '[' any_constructor_code_value ']' {
 construct_round: '(' expr_value ')' { 
 	// stack: context, name
 	$$=$2; // stack: context, name, value
-	O($$, OP_CONSTRUCT_EXPR); /* value=pop; name=pop; context=pop; construct(context,name,value) */
+	O($$, OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
 }
 ;
 construct_curly: '{' maybe_codes '}' {
@@ -939,8 +939,9 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case '[':
 				// $name.<[>code]
 				if(PC.col>1/*not first column*/ && (
-					end[-1]=='.'/*was dot */ ||
-					end[-1]=='$'/*was start of get*/
+					end[-1]=='$'/*was start of get*/ ||
+					end[-1]==':'/*was class name delim */ ||
+					end[-1]=='.'/*was name delim */
 					)) {
 					push_LS(PC, LS_USER);
 					lexical_brackets_nestage=1;
@@ -1035,8 +1036,9 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case '[':
 				// $name.<[>code)
 				if(PC.col>1/*not first column*/ && (
-					end[-1]=='.'/*was dot */ ||
-					end[-1]=='^'/*was start of call*/
+					end[-1]=='^'/*was start of call*/ || // never, ^[ is literal...
+					end[-1]==':'/*was class name delim */ ||
+					end[-1]=='.'/*was name delim */
 					)) {
 					push_LS(PC, LS_USER);
 					lexical_brackets_nestage=1;

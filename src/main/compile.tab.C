@@ -31,7 +31,7 @@
 
 #line 8 "compile.y"
 
-static char *RCSId="$Id: compile.tab.C,v 1.5 2001/08/10 13:03:05 parser Exp $"; 
+static char *RCSId="$Id: compile.tab.C,v 1.6 2001/08/20 13:22:05 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -200,7 +200,7 @@ static const short yyrline[] = { 0,
    225,   226,   226,   228,   228,   232,   232,   234,   234,   235,
    235,   236,   236,   236,   240,   244,   245,   245,   246,   247,
    249,   250,   265,   266,   266,   270,   274,   276,   277,   278,
-   293,   298,   300,   301,   302,   305,   311,   317,   323,   325,
+   293,   298,   300,   302,   303,   305,   311,   317,   323,   325,
    326,   328,   334,   335,   335,   339,   343,   344,   345,   359,
    361,   361,   362,   364,   365,   367,   368,   369,   370,   372,
    374,   376,   378,   380,   382,   386,   390,   394,   396,   397,
@@ -1216,7 +1216,7 @@ case 57:
 { 
 	// stack: context, name
 	yyval=yyvsp[-1]; // stack: context, name, value
-	O(yyval, OP_CONSTRUCT_EXPR); /* value=pop; name=pop; context=pop; construct(context,name,value) */
+	O(yyval, OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
 ;
     break;}
 case 58:
@@ -2207,8 +2207,9 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case '[':
 				// $name.<[>code]
 				if(PC.col>1/*not first column*/ && (
-					end[-1]=='.'/*was dot */ ||
-					end[-1]=='$'/*was start of get*/
+					end[-1]=='$'/*was start of get*/ ||
+					end[-1]==':'/*was class name delim */ ||
+					end[-1]=='.'/*was name delim */
 					)) {
 					push_LS(PC, LS_USER);
 					lexical_brackets_nestage=1;
@@ -2303,8 +2304,9 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case '[':
 				// $name.<[>code)
 				if(PC.col>1/*not first column*/ && (
-					end[-1]=='.'/*was dot */ ||
-					end[-1]=='^'/*was start of call*/
+					end[-1]=='^'/*was start of call*/ || // never, ^[ is literal...
+					end[-1]==':'/*was class name delim */ ||
+					end[-1]=='.'/*was name delim */
 					)) {
 					push_LS(PC, LS_USER);
 					lexical_brackets_nestage=1;

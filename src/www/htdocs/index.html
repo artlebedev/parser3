@@ -2,6 +2,19 @@
 t.p
 dtf.p
 
+@main[]
+#$ORIGINS(1)
+^func(0)<hr>
+#^tests[]
+
+@func[param]
+#[local]
+$local(0)
+^local.inc(1)
+#$local($local+1)
+=$local=
+^if($param<10){^func($param+1)}
+
 @bannerSSI[][code]
 $code[^file::cgi[/../cgi-bin/bbssi.pl;
 	$.QUERY_STRING[d=1&H=ad1.lbe.ru&pubid=91033&pg=1&vbn=26&num=1&w=-1&h=-1&r=ssi&i=http://go.bb.ru/images/onerror/bb.gif&g=http://www.bb.ru&before=<center>&after=</center>&bafter=]
@@ -22,11 +35,11 @@ document.write('');
 </script>
 <!-- BannerBank advertising end: new -->
 
-@main[]
-$ab(12)
-${(ab)}=
+@tests[]
+$ab(123)
+${[ab]}=
 <hr>
-$хэш[$.возраст(88)] $достать[$.поле[возраст]] ^хэш.($достать.поле).format{%05d}
+$хэш[$.возраст(88)] $достать[$.поле[возраст]] ^хэш.[$достать.поле].format{%05d}
 <hr>
 
 $люди[
@@ -38,8 +51,8 @@ $человек[
 	$.поле[возраст]	
 ]
 
-$люди.вася.($человек.поле)<br>
-^люди.вася.($человек.поле).format{%010d}<br>
+$люди.вася.[$человек.поле]<br>
+^люди.вася.[$человек.поле].format{%010d}<br>
 
 
 <hr>

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.23 2001/07/25 12:46:45 parser Exp $
+	$Id: pa_vdouble.h,v 1.24 2001/08/20 13:22:05 parser Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -22,8 +22,8 @@ class VDouble : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "double"; }
-	/// VDouble: this
-	Value *as_expr_result(bool return_string_as_is=false) { return this; }
+	/// VDouble: clone
+	Value *as_expr_result(bool return_string_as_is=false) { return NEW VDouble(pool(), fdouble); }
 
 	/// VDouble: fdouble
 	const String *get_string() {

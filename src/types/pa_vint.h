@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.24 2001/07/25 12:46:45 parser Exp $
+	$Id: pa_vint.h,v 1.25 2001/08/20 13:22:05 parser Exp $
 */
 
 #ifndef PA_VINT_H
@@ -22,8 +22,8 @@ class VInt : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "int"; }
-	/// VInt: this
-	Value *as_expr_result(bool return_string_as_is=false) { return this; }
+	/// VInt: clone
+	Value *as_expr_result(bool return_string_as_is=false) { return NEW VInt(pool(), finteger); }
 
 	/// VInt: finteger
 	const String *get_string() {

@@ -88,6 +88,7 @@ $CTYPE[
 ]
 
 
+
 $MAIL[
 	$.SMTP[mail.office.design.ru]
 #	$.prog1[/usr/sbin/sendmail -t]

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pcre_parser_ctype.c,v 1.3 2001/04/28 08:44:01 paf Exp $
+	$Id: pcre_parser_ctype.c,v 1.4 2001/08/20 13:22:05 parser Exp $
 
 
 Perl-Compatible Regular ExpressionsThis is a support program to generate part of auto.p, containing
@@ -59,8 +59,8 @@ and semantics are as close as possible to those of the Perl 5 language.
 size_t out_c(int c) {
 	return printf(
 		isprint(c)&&
-		!isspace(c)/*&&
-		!(c>=128&&c<192)*/?
+		!isspace(c) &&
+		!(c>=128&&c<192)?
 		strchr("^$;()[]{}\"", c)==0?"%c":"^%c":"^#%02X", c);
 }
 
@@ -71,7 +71,7 @@ void ctype_out(unsigned const char *bit_table,
 	int printed=0;
 
 	printf("    ");
-	printf("$%s[", name);
+	printf("$.%s[", name);
 	for(c=0; c<0x100; c++)
 		if(bit_table[c] & bit) {
 			if(!printed || printed > TABLE_WRAP_COL) {
@@ -86,7 +86,7 @@ void case_out(unsigned const char *case_table, const char *name) {
 	int c;
 	int printed=0;
 	printf("    ");
-	printf("$%s[", name);
+	printf("$.%s[", name);
 	for(c=0; c<0x100; c++)
 		if(case_table[c] != c) {
 			if(!printed || printed > TABLE_WRAP_COL) {
