@@ -1,2 +1,5 @@
 @main[]
-123
+^untaint[as-is]{^process[$request:query]}<BR>
+^$request:query=$request:query<BR>
+^$request:uri=$request:uri<BR>
+<a href=^untaint[uri]{$request:query}>aaaaaaaa</a>
