@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/10/31 15:01:54 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/10/31 16:35:33 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -831,7 +831,6 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 	Value *value=0;
 	if(can_call_operator) {
 		if(Method* method=main_class.get_method(name)) { // looking operator of that name FIRST
-			// as if that method were in self and we have normal dynamic method here
 			Junction& junction=*NEW Junction(pool(), 
 				main_class, method, 0,0,0,0);
 			value=NEW VJunction(junction);
@@ -851,6 +850,14 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 	}
 	if(!value)
 		value=ncontext->get_element(name, *ncontext, false);
+
+	if(value && wcontext->get_constructing())
+		if(Junction *junction=value->get_junction()) {
+			if(junction->self.get_class()!=ncontext)
+				throw Exception("parser.runtime",
+					&name,
+					"constructor must be declared in class %s", ncontext->get_class()->name_cstr());
+		}
 
 value_ready:
 	if(value)
