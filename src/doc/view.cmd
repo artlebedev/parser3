@@ -1,1 +1,1 @@
-start /max "" html\index.html
+START /max "" html\index.html
