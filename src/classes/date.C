@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2004/01/30 09:56:49 $";
+static const char * const IDENT_DATE_C="$Date: 2004/01/30 10:05:24 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -61,12 +61,12 @@ static void _now(Request& r, MethodParams& params) {
 }
 
 /// shrinked range: 1970/1/1 to 2038/1/1
-static int check_year(int iyear) {
+static int to_tm_year(int iyear) {
 	if(iyear<1970 || iyear>2038)
 		throw Exception(0,
 			0,
 			"year '%d' is out of valid range", iyear);
-	return iyear;
+	return iyear-1900;
 }
 
 // 2002-04-25 18:14:00
@@ -105,7 +105,7 @@ static int check_year(int iyear) {
 			goto date_part_set;
 		} else
 			hour=min=sec=0; // not YYYY- & not HH: = just YYYY					
-	tmIn.tm_year=check_year(pa_atoi(year));
+	tmIn.tm_year=to_tm_year(pa_atoi(year));
 	tmIn.tm_mon=month?pa_atoi(month)-1:0;
 	tmIn.tm_mday=mday?pa_atoi(mday):1;
 date_part_set:
@@ -141,7 +141,7 @@ static void _create(Request& r, MethodParams& params) {
 	} else if(params.count()>=2) { // ^create(y;m;d[;h[;m[;s]]])
 		tm tmIn; memset(&tmIn, 0, sizeof(tmIn));
 		tmIn.tm_isdst=-1;
-		tmIn.tm_year=check_year(params.as_int(0, "year must be int", r));
+		tmIn.tm_year=to_tm_year(params.as_int(0, "year must be int", r));
 		tmIn.tm_mon=params.as_int(1, "month must be int", r)-1;
 		tmIn.tm_mday=params.count()>2?params.as_int(2, "mday must be int", r):1;
 		if(params.count()>3) tmIn.tm_hour=params.as_int(3, "hour must be int", r);
