@@ -248,12 +248,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		// c:\windows
 		root_auto_path=(char *)pool.malloc(MAX_STRING);
 		GetWindowsDirectory(root_auto_path, MAX_STRING);
-/*		
-	char *fuck_it="fff";
-	DWORD num_bytes=strlen(fuck_it);;
-	lpECB->WriteClient(lpECB->ConnID, fuck_it, &num_bytes, HSE_IO_SYNC);
-	return HSE_STATUS_SUCCESS;
-*/
+
 		// process the request
 		request.core(
 			root_auto_path, false/*may be abcent*/, // /path/to/admin/auto.p
