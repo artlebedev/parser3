@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.146 2001/04/12 13:15:22 paf Exp $
+	$Id: execute.C,v 1.147 2001/04/23 13:09:19 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -670,14 +670,14 @@ void Request::execute(const Array& ops) {
 Value *Request::get_element() {
 	const String& name=POP_NAME();
 	Value *ncontext=POP();
-	Value *value=ncontext->get_element(name);
-	if(!value)
-		if(Method* method=OP.get_method(name)) { // operator?
-			// as if that method were in self and we have normal dynamic method here
-			Junction& junction=*NEW Junction(pool(), 
-				*self, self->get_class(), method, 0,0,0,0);
-			value=NEW VJunction(junction);
-		}
+	Value *value;
+	if(Method* method=OP.get_method(name)) { // operator?
+		// as if that method were in self and we have normal dynamic method here
+		Junction& junction=*NEW Junction(pool(), 
+			*self, self->get_class(), method, 0,0,0,0);
+		value=NEW VJunction(junction);
+	} else
+		value=ncontext->get_element(name);
 	if(value)
 		value=&process(*value, &name); // process possible code-junction
 	else {
