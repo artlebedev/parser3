@@ -1,5 +1,6 @@
 @main[]
 ^xslt[]
+OK
 
 @xslt[]
 $dom[^dom::set{<?xml version="1.0" encoding="windows-1251"?>
@@ -14,9 +15,28 @@ $dom[^dom::set{<?xml version="1.0" encoding="windows-1251"?>
 </people>
 }]
 
-$people[^dom.xpath[/people/man/name]]
+^show-dnode[$dom]<hr>
+$people[^dom.xpath[*/man/*]]
+#^show1[]
+^show-dnodes[$people]<hr>
 
+@show1[]
 ^for[i](0;^people._count[]-1){
-	z$people.$i.first-child.value<br>	
+    $node[$people.$i]
+	$node.first-child.value: 
+		$pattributes[$node.parent.attributes]
+		^if(^pattributes._count[]){
+			$pattributes.id.name=$pattributes.id.value
+		}
+	<br>
 }
-OK
+
+@show-dnodes[array2]
+^for[i](0;^array2._count[]-1){
+	^show-dnode[$array2.$i]
+}
+
+@show-dnode[dnode]
+[$dnode.type] $dnode.name ^if(def $dnode.value){'$dnode.value'}<br>
+^if(def ${dnode.first-child}){^show-dnode[$dnode.first-child]}
+^if(def ${dnode.next-sibling}){^show-dnode[$dnode.next-sibling]}

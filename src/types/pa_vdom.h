@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.11 2001/09/17 16:49:15 parser Exp $
+	$Id: pa_vdom.h,v 1.12 2001/09/18 13:31:56 parser Exp $
 */
 
 #ifndef PA_VDOM_H
@@ -52,11 +52,11 @@ public: // VDNode
 
 public: // usage
 
-	VDom(Pool& apool) : VDnode(apool, 0, *Dom_class), 
+	VDom(Pool& apool, XalanDocument *adocument=0) : VDnode(apool, 0, *Dom_class), 
 		ftransformer(0),
 		fparser_liaison(0),
 		fparsed_source(0),
-		fdocument(0) {
+		fdocument(adocument) {
 		register_cleanup(VDom_cleanup, this);
 		ftransformer=new XalanTransformer;
 		fparser_liaison=new XercesParserLiaison;

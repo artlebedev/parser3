@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.28 2001/08/03 11:54:19 parser Exp $
+	$Id: pa_vtable.h,v 1.29 2001/09/18 13:31:56 parser Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -24,6 +24,8 @@ class VTable : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "table"; }
+	/// VTable: count!=0
+	bool is_defined() const { return table().size()!=0; }
 	/// extract VTable
 	Table *get_table() { return ftable; }
 	/// VTable: columns,methods
