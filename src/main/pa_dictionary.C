@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_dictionary.C,v 1.2 2001/08/02 07:00:08 parser Exp $"; 
+static const char *RCSId="$Id: pa_dictionary.C,v 1.3 2001/08/06 16:18:26 parser Exp $"; 
 
 #include "pa_dictionary.h"
 
@@ -22,15 +22,16 @@ Dictionary::Dictionary(Table& atable) : Pooled(atable.pool()), table(atable) {
 	table.for_each(add_first, this);
 }
 
-static bool starts(Array::Item *value, const void *info) {
+static void *starts(Array::Item *value, const void *info) {
 	Array *row=static_cast<Array *>(value);
 	const char *src=static_cast<const char *>(info);
 
 	int partial;
 	row->get_string(0)->cmp(partial, src);
-	return 
+	return (
 		partial==0 || // full match
-		partial==1; // typo left column starts 'src'
+		partial==1) // typo left column starts 'src'
+		?value:0;
 }
 
 void* Dictionary::first_that_starts(const char *src) const {

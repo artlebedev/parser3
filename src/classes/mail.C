@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.33 2001/07/18 10:06:04 parser Exp $
+	$Id: mail.C,v 1.34 2001/08/06 16:18:26 parser Exp $
 */
-static const char *RCSId="$Id: mail.C,v 1.33 2001/07/18 10:06:04 parser Exp $"; 
+static const char *RCSId="$Id: mail.C,v 1.34 2001/08/06 16:18:26 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -168,13 +168,13 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 }
 
 
-static bool find_content_type(const Hash::Key& aattribute, Hash::Val *ameaning, 
+static void *find_content_type(const Hash::Key& aattribute, Hash::Val *ameaning, 
 							  void *) {
-	return StrEqNc(aattribute.cstr(), CONTENT_TYPE_NAME);
+	return StrEqNc(aattribute.cstr(), CONTENT_TYPE_NAME)?ameaning:0;
 }
-static bool find_content_type_charset(const Hash::Key& aattribute, Hash::Val *ameaning, 
+static void *find_content_type_charset(const Hash::Key& aattribute, Hash::Val *ameaning, 
 									  void *) {
-	return StrEqNc(aattribute.cstr(), "charset");
+	return StrEqNc(aattribute.cstr(), "charset")?ameaning:0;
 }
 
 /// used by mail: _send / letter_hash_to_string / add_header_attribute

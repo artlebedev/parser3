@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: op.C,v 1.36 2001/08/02 06:54:12 parser Exp $"; 
+static const char *RCSId="$Id: op.C,v 1.37 2001/08/06 16:18:26 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -169,7 +169,7 @@ static void _while(Request& r, const String& method_name, MethodParams *params) 
 
 static void _use(Request& r, const String& method_name, MethodParams *params) {
 	Value& vfile=params->as_no_junction(0, "file name must not be code");
-	r.use_file(r.absolute(vfile.as_string()));
+	r.use_file(vfile.as_string());
 }
 
 static void _for(Request& r, const String& method_name, MethodParams *params) {

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_hash.C,v 1.37 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: pa_hash.C,v 1.38 2001/08/06 16:18:26 parser Exp $"; 
 
 /*
 	The prime numbers used from zend_hash.c,
@@ -157,13 +157,13 @@ void Hash::for_each(For_each_func func, void *info) const {
 				(*func)(pair->key, pair->value, info);
 }
 
-Hash::Val* Hash::first_that(First_that_func func, void *info) const {
+void* Hash::first_that(First_that_func func, void *info) const {
 	Pair **ref=refs;
 	for(int index=0; index<allocated; index++)
 		for(Pair *pair=*ref++; pair; pair=pair->link)
 			if(pair->value)
-				if((*func)(pair->key, pair->value, info))
-					return pair->value;
+				if(void *result=(*func)(pair->key, pair->value, info))
+					return result;
 	return 0;
 }
 

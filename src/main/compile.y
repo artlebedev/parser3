@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.158 2001/07/28 12:01:50 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.159 2001/08/06 16:18:26 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -151,8 +151,7 @@ control_method: '@' STRING '\n'
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
 		for(int i=0; i<strings_code->size(); i+=2) 
-			PC.request->use_file(
-			PC.request->absolute(*LA2S(strings_code, i)));
+			PC.request->use_file(*LA2S(strings_code, i));
 	} else if(command==BASE_NAME) {
 		if(PC.cclass->base()) { // already changed from default?
 			strcpy(PC.error, "class already have a base '");

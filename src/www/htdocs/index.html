@@ -1,8 +1,11 @@
+@USE
+t.p
+
 @bannerSSI[][code]
-$code[^file::cgi[z/../cgi-bin/bbssi.pl;
-	$.QUERY_STRING[H=ad1.lbe.ru&pubid=91033&pg=1&vbn=26&num=1&w=-1&h=-1&r=ssi&i=http://go.bb.ru/images/onerror/bb.gif&g=http://www.bb.ru&before=<center>&after=</center>&bafter=]
+$code[^file::cgi[/../cgi-bin/bbssi.pl;
+	$.QUERY_STRING[d=1&H=ad1.lbe.ru&pubid=91033&pg=1&vbn=26&num=1&w=-1&h=-1&r=ssi&i=http://go.bb.ru/images/onerror/bb.gif&g=http://www.bb.ru&before=<center>&after=</center>&bafter=]
 ]]
-$result[^untaint[as-is]{$code.stderr text}]
+$result[<pre>^untaint[as-is]{$code.text}</pre>]
 
 @bannerJS[]
 <!-- BannerBank advertising begin: new -->
@@ -19,8 +22,8 @@ document.write('');
 <!-- BannerBank advertising end: new -->
 
 @main[]
-#^bannerJS[]
-^bannerSSI[]
+^bannerJS[]
+#^bannerSSI[]
 
 $t[^table::set{a	b
 1	2

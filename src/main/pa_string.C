@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_string.C,v 1.97 2001/08/01 12:08:40 parser Exp $"; 
+static const char *RCSId="$Id: pa_string.C,v 1.98 2001/08/06 16:18:26 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -46,6 +46,7 @@ String::String(const String& src) :
 	size_t src_used_rows=src.fused_rows;
 	if(src_used_rows<=head.count) {
 		// all new rows fit size_to preallocated area
+		last_chunk=&head;
 		size_t curr_chunk_rows=head.count;
 		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
 		append_here=&head.rows[src_used_rows];
@@ -64,15 +65,15 @@ String::String(const String& src) :
 		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*head.count);
 		// remaining rows size_to new_chunk
 		size_t curr_chunk_rows=src_used_rows-head.count;
-		Chunk *new_chunk=static_cast<Chunk *>(
+		last_chunk=static_cast<Chunk *>(
 			malloc(sizeof(size_t)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
-		new_chunk->count=curr_chunk_rows;
-		head.preallocated_link=new_chunk;
-		append_here=link_row=&new_chunk->rows[new_chunk->count];
+		last_chunk->count=curr_chunk_rows;
+		head.preallocated_link=last_chunk;
+		append_here=link_row=&last_chunk->rows[last_chunk->count];
 
 		Chunk *old_chunk=src.head.preallocated_link; 
-		Chunk::Row *new_rows=new_chunk->rows;
-		size_t rows_left_to_copy=new_chunk->count;
+		Chunk::Row *new_rows=last_chunk->rows;
+		size_t rows_left_to_copy=last_chunk->count;
 		while(true) {
 			size_t old_count=old_chunk->count;
 			Chunk *next_chunk=old_chunk->rows[old_count].link;

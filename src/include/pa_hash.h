@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.41 2001/05/17 10:22:24 parser Exp $
+	$Id: pa_hash.h,v 1.42 2001/08/06 16:18:26 parser Exp $
 */
 
 #ifndef PA_HASH_H
@@ -32,7 +32,7 @@ public:
 	typedef void (*For_each_func)(const Key& key, Val *value, void *info);
 
 	/// first_that iterator function type
-	typedef bool (*First_that_func)(const Key& key, Val *value, void *info);
+	typedef void *(*First_that_func)(const Key& key, Val *value, void *info);
 
 public:
 
@@ -81,7 +81,7 @@ public:
 	void for_each(For_each_func func, void *info=0) const;
 
 	/// iterate over all elements until condition
-	Val* first_that(First_that_func func, void *info=0) const;
+	void *first_that(First_that_func func, void *info=0) const;
 
 	/// remove all elements
 	void clear();

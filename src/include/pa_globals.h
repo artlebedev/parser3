@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.58 2001/08/02 06:54:12 parser Exp $
+	$Id: pa_globals.h,v 1.59 2001/08/06 16:18:26 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -69,6 +69,8 @@ class Dictionary;
 #define SWITCH_DATA_NAME "SWITCH-DATA"
 #define CASE_DEFAULT_VALUE "DEFAULT"
 
+#define CLASS_PATH_NAME "class_path"
+
 //@}
 
 /// core func
@@ -124,6 +126,8 @@ extern String *content_disposition_name;
 extern String *content_disposition_filename_name;
 
 extern String *limits_name;
+
+extern String *class_path_name;
 
 extern String *switch_data_name;
 extern String *case_default_value;

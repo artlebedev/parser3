@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_exec.C,v 1.10 2001/08/06 12:27:46 parser Exp $"; 
+static const char *RCSId="$Id: pa_exec.C,v 1.11 2001/08/06 16:18:26 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -354,7 +354,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		PTHROW(0, 0,
 			&file_spec,
 			"(real filename=\"%s\") exec failed - %s (%ld)",
-				cmd
+				cmd,
 				szErrorDesc, (long)error);
 	}
 

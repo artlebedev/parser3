@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.93 2001/07/13 12:15:37 parser Exp $
+	$Id: pa_request.h,v 1.94 2001/08/06 16:18:26 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -92,7 +92,8 @@ public:
 
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
 	VStateless_class *use_file(
-		const String& file_spec, bool fail_on_read_problem=true,
+		const String& file_name, 
+		bool ignore_class_path=false, bool fail_on_read_problem=true,
 		const String *name=0, 
 		VStateless_class *base_class=0); // core.C
 	/// compiles a @a source buffer

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.68 2001/08/02 07:00:08 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.69 2001/08/06 16:18:26 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -54,6 +54,8 @@ String *ctype_lowercase_name;
 String *mime_types_name;
 String *vfile_mime_type_name;
 String *origins_mode_name;
+
+String *class_path_name;
 
 String *switch_data_name;
 String *case_default_value;
@@ -141,6 +143,8 @@ void pa_globals_init(Pool& pool) {
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
 	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
 	origins_mode_name=NEW String(pool, ORIGINS_MODE_NAME);
+
+	class_path_name=NEW String(pool, CLASS_PATH_NAME);
 
 	//^switch ^case
 	switch_data_name=NEW String(pool, SWITCH_DATA_NAME);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.147 2001/08/01 12:08:40 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.148 2001/08/06 16:18:26 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -167,7 +167,8 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			filespec.APPEND_CLEAN(root_auto_path, 0, "root_auto", 0);
 			filespec.APPEND_CONST("/" AUTO_FILE_NAME);
 			main_class=use_file(
-				filespec, root_auto_fail,
+				filespec, 
+				true/*ignore class_path*/, root_auto_fail,
 				main_class_name, main_class);
 		}
 
@@ -182,7 +183,8 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			filespec.APPEND_CLEAN(site_auto_path, 0, "site_auto", 0);
 			filespec.APPEND_CONST("/" AUTO_FILE_NAME);
 			main_class=use_file(
-				filespec, site_auto_fail,
+				filespec, 
+				true/*ignore class_path*/, site_auto_fail,
 				main_class_name, main_class);
 		}
 
@@ -212,7 +214,8 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			}
 			for(int i=0; i<ladder.size(); i++) {
 				const String& sfile_spec=*ladder.get_string(i);
-				main_class=use_file(sfile_spec, false/*ignore read problem*/,
+				main_class=use_file(sfile_spec, 
+					true/*ignore class_path*/, false/*ignore read problem*/,
 					main_class_name, main_class);
 			}
 		}
@@ -220,7 +223,8 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// compile requested file
 		String& spath_translated=*NEW String(pool());
 		spath_translated.APPEND_TAINTED(info.path_translated, 0, "user-request", 0);
-		main_class=use_file(spath_translated, true/*don't ignore read problem*/,
+		main_class=use_file(spath_translated, 
+			true/*ignore class_path*/, true/*don't ignore read problem*/,
 			main_class_name, main_class);
 
 		// configure not-root=user options
@@ -493,20 +497,51 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			rethrow_me.comment());
 }
 
-VStateless_class *Request::use_file(const String& file_spec, bool fail_on_read_problem,
+VStateless_class *Request::use_file(const String& file_name, 
+									bool ignore_class_path, bool fail_on_read_problem,
 									const String *name, 
 									VStateless_class *base_class) {
 	// cyclic dependence check
-	if(used_files.get(file_spec))
+	if(used_files.get(file_name))
 		return base_class;
-	used_files.put(file_spec, (Hash::Val *)true);
+	used_files.put(file_name, (Hash::Val *)true);
 
+	const String *file_spec;
+	if(ignore_class_path || file_name.first_char()=='/') {
+		// ignore_class_path | absolute path, no need to scan MAIN:class_path
+		file_spec=&file_name;
+	} else {
+			file_spec=0;
+			if(main_class)
+				if(Value *element=main_class->get_element(*class_path_name))
+					if(Table *table=element->get_table()) {
+						int size=table->size();
+						for(int i=size; i--; ) {
+							const String& path=*static_cast<Array *>(table->get(i))->get_string(0);
+							String *test_file_spec=NEW String(path);
+							*test_file_spec << "/";
+							*test_file_spec << file_name;
+							if(file_readable(*test_file_spec)) {
+								file_spec=test_file_spec; // found along class_path
+								break;
+							}
+						}
+						if(!file_spec)
+							THROW(0, 0,
+								&file_name,
+								"not found along " CLASS_PATH_NAME);
+					}
+			if(!file_spec)
+				THROW(0, 0,
+					&file_name,
+					"can not be loaded because no " CLASS_PATH_NAME " specified");
+	}
 
-	char *source=file_read_text(pool(), file_spec, fail_on_read_problem);
+	char *source=file_read_text(pool(), *file_spec, fail_on_read_problem);
 	if(!source)
 		return base_class;
 
-	return use_buf(source, file_spec.cstr(), 0/*new class*/, name, base_class);
+	return use_buf(source, file_spec->cstr(), 0/*new class*/, name, base_class);
 }
 
 VStateless_class *Request::use_buf(const char *source, const char *file,

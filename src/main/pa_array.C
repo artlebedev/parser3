@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_array.C,v 1.37 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: pa_array.C,v 1.38 2001/08/06 16:18:26 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_array.h"
@@ -177,20 +177,20 @@ void Array::for_each(For_each_func func, void *info) const {
 	}
 }
 */
-Array::Item* Array::first_that(First_that_func_const func, const void *info) const {
+void* Array::first_that(Item_that_func_const func, const void *info) const {
 	Chunk *chunk=head;
 	while(true) {
 		if(chunk==tail) { // last chunk?
 			for(Chunk::Row *row=chunk->rows; row!=append_here; row++)
-				if((*func)(row->item, info))
-					return row->item;
+				if(void *result=(*func)(row->item, info))
+					return result;
 			break;
 		} else {
 			int count=chunk->count;
 			for(int i=0; i<count; i++) {
 				Item* item=chunk->rows[i].item;
-				if((*func)(item, info))
-					return item;
+				if(void *result=(*func)(item, info))
+					return result;
 			}
 			chunk=chunk->rows[count].link;
 		}
@@ -198,20 +198,20 @@ Array::Item* Array::first_that(First_that_func_const func, const void *info) con
 	return 0;
 }
 
-Array::Item* Array::first_that(First_that_func func, void *info) const {
+void* Array::first_that(Item_that_func func, void *info) const {
 	Chunk *chunk=head;
 	while(true) {
 		if(chunk==tail) { // last chunk?
 			for(Chunk::Row *row=chunk->rows; row!=append_here; row++)
-				if((*func)(row->item, info))
-					return row->item;
+				if(void *result=(*func)(row->item, info))
+					return result;
 			break;
 		} else {
 			int count=chunk->count;
 			for(int i=0; i<count; i++) {
 				Item* item=chunk->rows[i].item;
-				if((*func)(item, info))
-					return item;
+				if(void *result=(*func)(item, info))
+					return result;
 			}
 			chunk=chunk->rows[count].link;
 		}
