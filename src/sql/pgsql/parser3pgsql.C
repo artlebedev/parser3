@@ -7,7 +7,7 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.4 2001/07/31 12:44:36 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.5 2001/07/31 12:51:45 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -151,6 +151,15 @@ public:
 		SQL_Driver_query_event_handlers& handlers) {
 
 		PGconn *conn=(PGconn *)connection;
+		#define PQclear_throwPQerror { \
+				PQclear(res); \
+				services._throw(PQerrorMessage(conn)); \
+			}
+		#define PQclear_throw(msg) { \
+				PQclear(res); \
+				services._throw(msg); \
+			}
+						
 
 		const char *statement;
 		if(offset || limit) {
@@ -173,8 +182,7 @@ public:
 
 		switch(PQresultStatus(res)) {
 		case PGRES_EMPTY_QUERY: 
-			PQclear(res);
-			services._throw("no query");
+			PQclear_throw("no query");
 			break;
 		case PGRES_COMMAND_OK:
 			// empty result: insert|delete|update|...
@@ -182,16 +190,13 @@ public:
 		case PGRES_TUPLES_OK: 
 			break;	
 		default:
-			PQclear(res);
-			services._throw("unknown PQexec error"); 
+			PQclear_throw("unknown PQexec error"); 
 			break;
 		}
 		
 		int column_count=PQnfields(res);
-		if(!column_count) {
-			PQclear(res);
-			services._throw("result contains no columns");
-		}
+		if(!column_count)
+			PQclear_throw("result contains no columns");
 
 		for(int i=0; i<column_count; i++){
 			char *name=PQfname(res, i);
@@ -214,25 +219,20 @@ public:
 						// ObjectID column, read object bytes
 //						_asm int 3;
 
-						#define PQclear_n_throw { \
-								PQclear(res); \
-								services._throw(PQerrorMessage(conn)); \
-							}
-						
 						char *error_pos=0;
 						Oid oid=cell?atoi(cell):0;
 						int fd=lo_open(conn, oid, INV_READ);
 						if(fd>=0) {
 							// seek to end
 							if(lo_lseek(conn, fd, 0, SEEK_END)<0)
-								PQclear_n_throw;
+								PQclear_throwPQerror;
 							// get size
 							int size_tell=lo_tell(conn, fd);
 							if(size_tell<0)
-								PQclear_n_throw;
+								PQclear_throwPQerror;
 							// seek to begin
 							if(lo_lseek(conn, fd, 0, SEEK_SET)<0)
-								PQclear_n_throw;
+								PQclear_throwPQerror;
 							size=(size_t)size_tell;
 							if(size) {
 								// read 
@@ -244,16 +244,14 @@ public:
 									buf+=size_read;
 									countdown-=size_read;									
 								}
-								if(countdown) {
-									PQclear(res);
-									services._throw("lo_read can not read all of object bytes");
-								}
+								if(countdown)
+									PQclear_throw("lo_read can not read all bytes of object");
 							} else
 								ptr=0;
 							if(lo_close(conn, fd)<0)
-								PQclear_n_throw;
+								PQclear_throwPQerror;
 						} else
-							PQclear_n_throw;
+							PQclear_throwPQerror;
 					} else {
 						// normal column, read it as ASCII string
 						size=(size_t)PQgetlength(res, r, i);
