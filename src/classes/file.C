@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.30 2001/04/19 16:40:05 paf Exp $
+	$Id: file.C,v 1.31 2001/04/25 10:25:31 paf Exp $
 */
 
 #include "pa_request.h"
@@ -187,8 +187,9 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 
 	const String in(pool, r.post_data, r.post_size);
 	String out(pool);
+	//out.APPEND_CONST("content-type:text/plain\nheader:test-header\n\ntest-body");
+	//out<<in;
 	String& err=*new(pool) String(pool);
-//	out.APPEND_CONST("content-type:text/plain\nheader:test-header\n\ntest-body");
 	int exit_code=pa_exec(script_name, &env, argv, in, out, err);
 
 	VFile& self=*static_cast<VFile *>(r.self);

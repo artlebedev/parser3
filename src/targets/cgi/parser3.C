@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.71 2001/04/23 13:29:53 paf Exp $
+	$Id: parser3.C,v 1.72 2001/04/25 10:25:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -228,12 +228,15 @@ int main(int argc, char *argv[]) {
 					0,
 					"CGI: no PATH_INFO defined(in reinventing REQUEST_URI)");
 
-			const char *script_name=SAPI::get_env(pool, "SCRIPT_NAME");
-			if(script_name &&
-				strncmp(request_info.uri,script_name, strlen(script_name))==0)
-				PTHROW(0, 0,
-					0,
-					"CGI: illegal call");
+			if(const char *script_name=SAPI::get_env(pool, "SCRIPT_NAME")) {
+				size_t script_name_len=strlen(script_name);
+				size_t uri_len=strlen(request_info.uri);
+				if(strncmp(request_info.uri,script_name, script_name_len)==0 &&
+					script_name_len != uri_len) // under IIS they are the same
+					PTHROW(0, 0,
+						0,
+						"CGI: illegal call");
+			}
 		} else
 			request_info.uri=0;
 

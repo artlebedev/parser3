@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_exec.C,v 1.4 2001/04/24 07:58:14 paf Exp $
+	$Id: pa_exec.C,v 1.5 2001/04/25 10:25:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -68,7 +68,7 @@ static BOOL WINAPI CreateHiddenConsoleProcess( LPCTSTR szChildName,
     // child process' console must be hidden for Win95 compatibility
     si.wShowWindow = SW_HIDE;
     // assign "other" sides of pipes
-//    si.hStdInput = hInRead;
+    si.hStdInput = hInRead;
     si.hStdOutput = hOutWrite;
     si.hStdError = hErrWrite;
 
@@ -308,10 +308,17 @@ int pa_exec(const String& file_spec,
 	if( CreateHiddenConsoleProcess(cmd, env_cstr, &pi, &hInWrite, &hOutRead, &hErrRead )) {
 		SetCurrentDirectory(pwd);
 
-		read_pipe(out, hOutRead, file_spec_cstr);
-		read_pipe(err, hErrRead, file_spec_cstr);
+		const char *in_cstr=in.cstr(String::UL_AS_IS);
+		DWORD written_size;
+		WriteFile(hInWrite, in_cstr, in.size(), &written_size, NULL);
+		// EOF for stupid text reads
+		// normally they should read CONTENT_LENGTH bytes,
+		// without this char
+		WriteFile(hInWrite, "\x1A", 1, &written_size, NULL);
 		CloseHandle( hInWrite );
+		read_pipe(out, hOutRead, file_spec_cstr);
 		CloseHandle( hOutRead );
+		read_pipe(err, hErrRead, file_spec_cstr);		
 		CloseHandle( hErrRead );
 /*	
 from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?rev=1.151&content-type=text/vnd.viewcvs-markup
@@ -368,8 +375,8 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		write(pipe_write, in_cstr, in.size());
 		close(pipe_write);
 		read_pipe(out, pipe_read, file_spec_cstr);
-		read_pipe(err, pipe_err, file_spec_cstr);
 		close(pipe_read);
+		read_pipe(err, pipe_err, file_spec_cstr);
 		close(pipe_err);
 
 		return get_exit_status(pid); // negative may mean "-errno[execl()]"
