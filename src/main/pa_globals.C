@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2003/07/24 11:31:23 $";
+static const char* IDENT_GLOBALS_C="$Date: 2003/07/24 12:07:03 $";
 
 #include "pa_config_includes.h"
 
@@ -412,7 +412,7 @@ void pa_globals_init() {
 #endif
 
 #ifdef XML
-#	define GNOME_LIBS "../../../../win32xml/win32/gnome"
+#	define GNOME_LIBS "../../../../win32/gnome"
 #	pragma comment(lib, GNOME_LIBS "/glib/lib/libglib-1.3-11.lib")
 #	ifdef _DEBUG
 

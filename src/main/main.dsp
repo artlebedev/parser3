@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32\gnome\glib\include" /I "\parser3project\win32\gnome\glib\include\glib" /I "\parser3project\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32\gnome\gnome-xml\include" /I "\parser3project\win32\gnome\libxslt-x.x.x" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -66,7 +66,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /D "_DEBUG" /D "_LIB" /D "WIN32" /D "_AFXDLL" /FR /FD /TP /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32\gnome\glib\include" /I "\parser3project\win32\gnome\glib\include\glib" /I "\parser3project\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32\gnome\gnome-xml\include" /I "\parser3project\win32\gnome\libxslt-x.x.x" /D "_DEBUG" /D "_LIB" /D "WIN32" /D "_AFXDLL" /FR /FD /TP /GZ /c
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG" /d "_AFXDLL"
 BSC32=bscmake.exe
@@ -88,8 +88,8 @@ LIB32=link.exe -lib
 # PROP Output_Dir "ProfileRelease"
 # PROP Intermediate_Dir "ProfileRelease"
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
+# ADD BASE CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32\gnome\glib\include" /I "\parser3project\win32\gnome\glib\include\glib" /I "\parser3project\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32\gnome\gnome-xml\include" /I "\parser3project\win32\gnome\libxslt-x.x.x" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32\gnome\glib\include" /I "\parser3project\win32\gnome\glib\include\glib" /I "\parser3project\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32\gnome\gnome-xml\include" /I "\parser3project\win32\gnome\libxslt-x.x.x" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -111,8 +111,8 @@ LIB32=link.exe -lib
 # PROP Output_Dir "ProfileDebug"
 # PROP Intermediate_Dir "ProfileDebug"
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /D "_DEBUG" /D "_LIB" /D "WIN32" /D "_AFXDLL" /FR /FD /TP /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /D "_DEBUG" /D "_LIB" /D "WIN32" /D "_AFXDLL" /FR /FD /TP /GZ /c
+# ADD BASE CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32\gnome\glib\include" /I "\parser3project\win32\gnome\glib\include\glib" /I "\parser3project\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32\gnome\gnome-xml\include" /I "\parser3project\win32\gnome\libxslt-x.x.x" /D "_DEBUG" /D "_LIB" /D "WIN32" /D "_AFXDLL" /FR /FD /TP /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\lib\ltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "..\sql" /I "\parser3project\win32\gnome\glib\include" /I "\parser3project\win32\gnome\glib\include\glib" /I "\parser3project\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32\gnome\gnome-xml\include" /I "\parser3project\win32\gnome\libxslt-x.x.x" /D "_DEBUG" /D "_LIB" /D "WIN32" /D "_AFXDLL" /FR /FD /TP /GZ /c
 # ADD BASE RSC /l 0x419 /d "_DEBUG" /d "_AFXDLL"
 # ADD RSC /l 0x419 /d "_DEBUG" /d "_AFXDLL"
 BSC32=bscmake.exe
