@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.17 2002/02/18 12:13:42 paf Exp $
+	$Id: date.C,v 1.18 2002/03/05 12:20:48 paf Exp $
 */
 
 #include "classes.h"
@@ -183,6 +183,10 @@ static Table *fill_week_days(Request& r,
 							 const String& method_name, MethodParams *params, bool rus){
 	Pool& pool=r.pool();
 	Array& columns=*new(pool) Array(pool, 4);
+	columns+=new(pool) String(pool, "year");
+	columns+=new(pool) String(pool, "month");
+	columns+=new(pool) String(pool, "day");
+	columns+=new(pool) String(pool, "week_day");
 	Table *result=new(pool) Table(pool, &method_name, &columns);
 
     int year=params->as_int(1, "year must be int", r);

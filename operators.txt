@@ -514,8 +514,10 @@ Xhashfile
     !^date.roll[year|month|day](+/- 1) сдвигает дату
     !^date.sql-string[] %Y-%m-%d %H:%M:%S
         where published='$дата.sql-string[]'
-    !^date:calendar[rus|eng;год;мес€ц] выдаЄт таблицу
-    !^date:calendar[rus|eng;год;мес€ц;день] выдаЄт таблицу
+    !^date:calendar[rus|eng;год;мес€ц] выдаЄт неименованную таблицу 
+    	столбцы: 0..6 
+    !^date:calendar[rus|eng;год;мес€ц;день] выдаЄт именнованную таблицу
+    	столбцы: year, month, day, week_day
     
 xdoc(xnode)
     DOM1 attributes:
