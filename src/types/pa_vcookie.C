@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2003/11/20 17:15:12 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2004/02/02 09:49:19 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -149,9 +149,10 @@ static Value& expires_vdate(double days_till_expire) {
 		and domains are treated as separate entities and have a 20 cookie limitation 
 		for each, not combined) 
 */
-static void output_set_cookie(
+static void output_set_cookie_header(
 			      HashStringValue::key_type aattribute, 
 			      HashStringValue::value_type ameaning,
+				  bool adelete,
 			      SAPI_Info& sapi_info) {
 	String string;
 	// attribute
@@ -160,38 +161,40 @@ static void output_set_cookie(
 	string << "=";
 	Value* lmeaning;
 	// figure out 'meaning'
-	if(ameaning) { // assigning value
-		// Set-Cookie: (attribute)=(value); path=/
-		lmeaning=ameaning;
-		HashStringValue *hash;
-		if((hash=lmeaning->get_hash())) { // ...[hash value]
-			// $expires
-			if(Value* expires=hash->get(expires_name)) {
-				const String* string;
-				if(expires->is_string() && (string=expires->get_string()) && (*string==SESSION_NAME))  {
-					// $expires[session]
-					hash->remove(expires_name);
-				} else {
-					if(Value* vdate=expires->as(VDATE_TYPE, false))
-						hash->put(expires_name, vdate); // $expires[DATE]
-					else if(double days_till_expire=expires->as_double())
-						hash->put(expires_name, &expires_vdate(days_till_expire)); // $expires(days)
-					else
-						hash->remove(expires_name); // $expires(0)
-				}
-			} else // $expires not assigned, defaulting
-				hash->put(expires_name, &expires_vdate(DEFAULT_EXPIRES_DAYS));
-		} else { // ...[string value]
-			Value* wrap_meaning=new VHash;
-			hash=wrap_meaning->get_hash();
-			// wrapping lmeaning into hash
-			hash->put(value_name, lmeaning);
-			// string = $expires not assigned, defaulting
-			hash->put(expires_name, &expires_vdate(DEFAULT_EXPIRES_DAYS));
-			// replacing lmeaning with hash-wrapped one
-			lmeaning=wrap_meaning;
-		}
-	} else {// removing value
+	// Set-Cookie: (attribute)=(value); path=/
+	HashStringValue *hash;
+	double default_expires_days=adelete?-DEFAULT_EXPIRES_DAYS:+DEFAULT_EXPIRES_DAYS;
+	if((hash=ameaning->get_hash())) { // ...[hash value]
+		// clone to safely change it
+		lmeaning=new VHash(*hash);  hash=lmeaning->get_hash();
+		// $expires
+		if(Value* expires=hash->get(expires_name)) {
+			const String* string;
+			if(expires->is_string() && (string=expires->get_string()) && (*string==SESSION_NAME))  {
+				// $expires[session]
+				hash->remove(expires_name);
+			} else {
+				if(Value* vdate=expires->as(VDATE_TYPE, false))
+					hash->put(expires_name, vdate); // $expires[DATE]
+				else if(double days_till_expire=expires->as_double())
+					hash->put(expires_name, &expires_vdate(days_till_expire)); // $expires(days)
+				else
+					hash->remove(expires_name); // $expires(0)
+			}
+		} else // $expires not assigned, defaulting
+			hash->put(expires_name, &expires_vdate(default_expires_days));
+	} else { // ...[string value]
+		Value* wrap_meaning=new VHash;
+		hash=wrap_meaning->get_hash();
+		// wrapping lmeaning into hash
+		hash->put(value_name, ameaning);
+		// string = $expires not assigned, defaulting
+		hash->put(expires_name, &expires_vdate(default_expires_days));
+		// replacing lmeaning with hash-wrapped one
+		lmeaning=wrap_meaning;
+	}
+
+	if(adelete) {// removing value
 		/*
 			http://www.netscape.com/newsref/std/cookie_spec.html
 			to delete a cookie, it can do so by returning a cookie with the same name, 
@@ -199,8 +202,7 @@ static void output_set_cookie(
 		*/
 
 		// Set-Cookie: (attribute)=; path=/
-		lmeaning=new VHash;
-		lmeaning->get_hash()->put(expires_name, &expires_vdate(-DEFAULT_EXPIRES_DAYS));
+		lmeaning->get_hash()->remove(value_name);
 	}
 	// defaulting path
 	if(!lmeaning->get_hash()->get(path_name))
@@ -217,14 +219,14 @@ static void output_after(
 						 HashStringValue::key_type aattribute, 
 						 HashStringValue::value_type ameaning,
 						 SAPI_Info* sapi_info) {
-	output_set_cookie(aattribute, ameaning, *sapi_info);
+	output_set_cookie_header(aattribute, ameaning, false, *sapi_info);
 }
 static void output_deleted(
 						   HashStringValue::key_type aattribute, 
 						   HashStringValue::value_type ameaning, 
 						   SAPI_Info* sapi_info) {
 	if(ameaning)
-		output_set_cookie(aattribute, 0, *sapi_info);
+		output_set_cookie_header(aattribute, ameaning, true, *sapi_info);
 }
 void VCookie::output_result(SAPI_Info& sapi_info) {
 	after.for_each(output_after, &sapi_info);
