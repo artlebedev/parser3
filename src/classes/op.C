@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2003/10/02 07:26:46 $";
+static const char* IDENT_OP_C="$Date: 2003/10/21 04:45:18 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -587,9 +587,8 @@ static void _try_operator(Request& r, MethodParams& params) {
 	try {
 		result=r.process(body_code);
 	} catch(const Exception& e) {
-		Request::Exception_details details=r.get_details(e);
-
 		Request_context_saver throw_context(r); // taking snapshot of throw-context [stack trace contains error]
+		Request::Exception_details details=r.get_details(e);
 		try_context.restore(); // restoring try-context to perform catch-code
 
 		Junction* junction=catch_code.get_junction();

@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/10/02 07:26:46 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/10/21 04:45:19 $";
 
 #include "pa_hash.h"
 #include "pa_wcontext.h"
@@ -154,9 +154,7 @@ public:
 		Exception_details(
 			const Trace atrace,
 			const String* aproblem_source,
-			VHash& avhash):
-			trace(atrace), problem_source(aproblem_source), vhash(avhash) {}
-
+			VHash& avhash): trace(atrace), problem_source(aproblem_source), vhash(avhash) {}
 	};
 	Exception_details get_details(const Exception& e);
 
@@ -427,6 +425,7 @@ class Request_context_saver {
 	size_t exception_trace_bottom;
 	/// execution stack
 	size_t stack;
+	uint anti_endless_execute_recoursion;
 	/// contexts
 	VMethodFrame* method_frame;
 	Value* rcontext;
@@ -441,6 +440,7 @@ public:
 		exception_trace_top(ar.exception_trace.top_index()),	
 		exception_trace_bottom(ar.exception_trace.bottom_index()),	
 		stack(ar.stack.top_index()),
+		anti_endless_execute_recoursion(ar.anti_endless_execute_recoursion),
 		method_frame(ar.method_frame),
 		rcontext(ar.rcontext),
 		wcontext(ar.wcontext),
@@ -451,6 +451,7 @@ public:
 		fr.exception_trace.set_top_index(exception_trace_top);
 		fr.exception_trace.set_bottom_index(exception_trace_bottom);
 		fr.stack.set_top_index(stack);
+		fr.anti_endless_execute_recoursion=anti_endless_execute_recoursion;
 		fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;
 		fr.flang=flang;
 		fr.fconnection=fconnection;
