@@ -14,6 +14,7 @@
 #define GIF_H 1
 
 #include "pa_pool.h"
+#include "pa_string.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -66,7 +67,7 @@ public: /* Functions to manipulate images. */
 	int BoundsSafe(int x, int y);
 	void DoSetPixel(int x, int y, int color);
 	
-	void Gif(FILE *out);
+	void Gif(String& out);
 	void Arc(int cx, int cy, int w, int h, int s, int e, int color);
 	void FillToBorder(int x, int y, int border, int color);
 	void Fill(int x, int y, int color);
@@ -119,9 +120,9 @@ private: // read gif
 class gdGifEncoder : public Pooled {
 public:
 
-	gdGifEncoder(Pool& pool, gdImage& aim);
+	gdGifEncoder(Pool& pool, gdImage& aim, String& afp);
 
-	void encode(FILE *fp, 
+	void encode( 
 		int GWidth, int GHeight, 
 		int GInterlace, int Background, 
 		int Transparent, int BitsPerPixel, 
@@ -142,10 +143,14 @@ private:
 
 private:
 
+	void Putbyte(int c);
+	void Putword(int w);
+	void Write(void *buf, size_t size);
+
 	void prepare_encoder(void);
 	void BumpPixel(void);
 	int GIFNextPixel();
-	void compress(int init_bits, FILE *outfile);
+	void compress(int init_bits);
 	void output(code_int code);
 	void cl_block(void);
 	void cl_hash(count_int hsize);
@@ -156,6 +161,7 @@ private:
 private:
 	
 	gdImage& im;
+	String& fp;
 
 	int Width, Height;
 	int curx, cury;
@@ -164,7 +170,6 @@ private:
 	int Interlace;
 
 	int g_init_bits;
-	FILE* g_outfile;
 
 	int ClearCode;
 	int EOFCode;

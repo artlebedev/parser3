@@ -24,16 +24,15 @@ Code drawn from ppmtogif.c, from the pbmplus package
 #include "gif.h"
 
 static int colorstobpp(int colors);
-static void Putword(int w, FILE *fp);
 
-void gdImage::Gif(FILE *out)
+void gdImage::Gif(String& out)
 {
 	int BitsPerPixel = colorstobpp(colorsTotal);
 	/* Clear any old values in statics strewn through the GIF code */
-	gdGifEncoder encoder(pool(), *this);
+	gdGifEncoder encoder(pool(), *this, out);
 	/* All set, let's do it. */
 	encoder.encode(
-		out, sx, sy, interlace, 0, transparent, BitsPerPixel,
+		sx, sy, interlace, 0, transparent, BitsPerPixel,
 		red, green, blue);
 }
 
@@ -152,7 +151,9 @@ gdGifEncoder::GIFNextPixel()
 /* public */
 
 void
-gdGifEncoder::encode(FILE *fp, int GWidth, int GHeight, int GInterlace, int Background, int Transparent, int BitsPerPixel, int *Red, int *Green, int *Blue)
+gdGifEncoder::encode(int GWidth, int GHeight, 
+					 int GInterlace, int Background, int Transparent, int BitsPerPixel, 
+					 int *Red, int *Green, int *Blue)
 {
 	int B;
 	int RWidth, RHeight;
@@ -198,13 +199,13 @@ gdGifEncoder::encode(FILE *fp, int GWidth, int GHeight, int GInterlace, int Back
 	/*
 	* Write the Magic header
 	*/
-	fwrite( Transparent < 0 ? "GIF87a" : "GIF89a", 1, 6, fp );
+	fp << (Transparent < 0 ? "GIF87a" : "GIF89a");
 	
 	/*
 	* Write out the screen width and height
 	*/
-	Putword( RWidth, fp );
-	Putword( RHeight, fp );
+	Putword( RWidth);
+	Putword( RHeight);
 	
 	/*
 	* Indicate that there is a global colour map
@@ -224,94 +225,110 @@ gdGifEncoder::encode(FILE *fp, int GWidth, int GHeight, int GInterlace, int Back
 	/*
 	* Write it out
 	*/
-	fputc( B, fp );
+	Putbyte(B);
 	
 	/*
 	* Write out the Background colour
 	*/
-	fputc( Background, fp );
+	Putbyte(Background);
 	
 	/*
 	* Byte of 0's(future expansion)
 	*/
-	fputc( 0, fp );
+	Putbyte(0);
 	
 	/*
 	* Write out the Global Colour Map
 	*/
 	for( i=0; i<ColorMapSize; ++i ) {
-		fputc( Red[i], fp );
-		fputc( Green[i], fp );
-		fputc( Blue[i], fp );
+		Putbyte( Red[i]);
+		Putbyte( Green[i]);
+		Putbyte( Blue[i]);
 	}
 	
 	/*
 	* Write out extension for transparent colour index, if necessary.
 	*/
 	if( Transparent >= 0 ) {
-		fputc( '!', fp );
-		fputc( 0xf9, fp );
-		fputc( 4, fp );
-		fputc( 1, fp );
-		fputc( 0, fp );
-		fputc( 0, fp );
-		fputc((unsigned char) Transparent, fp );
-		fputc( 0, fp );
+		Putbyte( '!');
+		Putbyte( 0xf9);
+		Putbyte( 4);
+		Putbyte( 1);
+		Putbyte( 0);
+		Putbyte( 0);
+		Putbyte((unsigned char) Transparent);
+		Putbyte( 0);
 	}
 	
 	/*
 	* Write an Image separator
 	*/
-	fputc( ',', fp );
+	Putbyte( ',');
 	
 	/*
 	* Write the Image header
 	*/
 	
-	Putword( LeftOfs, fp );
-	Putword( TopOfs, fp );
-	Putword( Width, fp );
-	Putword( Height, fp );
+	Putword( LeftOfs);
+	Putword( TopOfs);
+	Putword( Width);
+	Putword( Height);
 	
 	/*
 	* Write out whether or not the image is interlaced
 	*/
 	if( Interlace )
-		fputc( 0x40, fp );
+		Putbyte( 0x40);
 	else
-		fputc( 0x00, fp );
+		Putbyte( 0x00);
 	
         /*
 		* Write out the initial code size
 	*/
-	fputc( InitCodeSize, fp );
+	Putbyte( InitCodeSize);
 	
 	/*
 	* Go and actually compress the data
 	*/
-	compress( InitCodeSize+1, fp);
+	compress( InitCodeSize+1 );
 	
 	/*
 	* Write out a Zero-length packet(to end the series)
 	*/
-	fputc( 0, fp );
+	Putbyte( 0);
 	
 	/*
 	* Write the GIF file terminator
 	*/
-	fputc( ';', fp );
+	Putbyte( ';');
 }
 
 /*
+* Write out a byte to the GIF file
+*/
+void 
+gdGifEncoder::Putbyte(int c) {
+	char *p=(char *)malloc(1);
+	*p=c;
+	fp.APPEND_CLEAN(p, 1, 0, 0);
+}
+/*
 * Write out a word to the GIF file
 */
-static void
-Putword(int w, FILE *fp)
+void
+gdGifEncoder::Putword(int w)
 {
-	fputc( w & 0xff, fp );
-	fputc((w / 256) & 0xff, fp );
+	char *p=(char *)malloc(2);
+	p[0]=w & 0xff;
+	p[1]=(w / 256) & 0xff;
+	fp.APPEND_CLEAN(p, 2, 0, 0);
 }
 
+void gdGifEncoder::Write(void *buf, size_t size) {
+	char *p=(char *)malloc(size);
+	memcpy(p, buf, size);
+	fp.APPEND_CLEAN(p, size, 0, 0);
+}
 
 /***************************************************************************
 *
@@ -388,7 +405,7 @@ typedef        unsigned char   char_type;
 */
 
 void
-gdGifEncoder::compress(int init_bits, FILE *outfile)
+gdGifEncoder::compress(int init_bits)
 {
     register long fcode;
     register code_int i /* = 0 */;
@@ -403,7 +420,6 @@ gdGifEncoder::compress(int init_bits, FILE *outfile)
 	*                      g_outfile   - pointer to output file
 	*/
     g_init_bits = init_bits;
-    g_outfile = outfile;
 	
     /*
 	* Set up the necessary values
@@ -555,12 +571,7 @@ void
 		}
 		
 		flush_char();
-		
-		fflush( g_outfile );
-		
-		if( ferror( g_outfile ) )
-			return;
-	}
+			}
 }
 
 /*
@@ -646,14 +657,15 @@ void
 	gdGifEncoder::flush_char(void)
 {
 	if( a_count > 0 ) {
-        fputc( a_count, g_outfile );
-        fwrite( accum, 1, a_count, g_outfile );
+        Putbyte( a_count );
+        Write( accum, a_count);
         a_count = 0;
 	}
 }
 
-gdGifEncoder::gdGifEncoder(Pool& pool, gdImage& aim) : Pooled(pool),
-	im(aim) {
+gdGifEncoder::gdGifEncoder(Pool& pool, gdImage& aim, String& afp) : Pooled(pool),
+	im(aim), 
+	fp(afp) {
 	/* Some of these are properly initialized later. What I'm doing
 	here is making sure code that depends on C's initialization
 	of statics doesn't break when the code gets called more
@@ -669,7 +681,6 @@ gdGifEncoder::gdGifEncoder(Pool& pool, gdImage& aim) : Pooled(pool),
 	cur_accum = 0;
 	cur_bits = 0;
 	g_init_bits = 0;
-	g_outfile = 0;
 	ClearCode = 0;
 	EOFCode = 0;
 	free_ent = 0;
