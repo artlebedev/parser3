@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.79 2001/09/30 12:27:59 parser Exp $
+	$Id: pa_globals.C,v 1.80 2001/10/01 08:53:58 parser Exp $
 */
 
 #include "pa_globals.h"
@@ -13,6 +13,7 @@
 #include "pa_sql_driver_manager.h"
 #include "pa_dictionary.h"
 #include "pa_xslt_stylesheet_manager.h"
+#include "pa_charset_manager.h"
 
 #ifdef XML
 #include <util/PlatformUtils.hpp>
@@ -207,6 +208,9 @@ void pa_globals_init(Pool& pool) {
 	// XSLT stylesheet driver manager
  	XSLT_stylesheet_manager=NEW XSLT_Stylesheet_manager(pool);
 #endif
+
+	// Charset manager 
+	charset_manager=NEW Charset_manager(pool);
 }
 
 #if defined(XML) && defined(_MSC_VER)

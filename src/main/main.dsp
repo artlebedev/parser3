@@ -89,6 +89,14 @@ SOURCE=..\include\pa_array.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_charset_connection.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_charset_manager.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_common.h
 # End Source File
 # Begin Source File
@@ -235,6 +243,10 @@ SOURCE=.\execute.C
 # Begin Source File
 
 SOURCE=.\pa_array.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_charset_connection.C
 # End Source File
 # Begin Source File
 

@@ -1,10 +1,10 @@
 /** @file
-	Parser: sql driver manager decl.
+	Parser: Stylesheet manager decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_xslt_stylesheet_manager.h,v 1.2 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_xslt_stylesheet_manager.h,v 1.3 2001/10/01 08:53:58 parser Exp $
 
 
 	global sql driver manager, must be thread-safe

@@ -1,10 +1,10 @@
 /** @file
-	Parser: stylesheet fstylesheet decl.
+	Parser: Stylesheet connection decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.6 2001/09/28 15:58:26 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.7 2001/10/01 08:53:58 parser Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H

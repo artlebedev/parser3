@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.162 2001/09/30 14:36:26 parser Exp $
+	$Id: pa_request.C,v 1.163 2001/10/01 08:53:58 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -120,6 +120,7 @@ static void ctype_table_row_to_charset_tables(Array::Item *value, void *info) {
 	element2case(c, to_wchar_code(row.get_string(6)), tables.pcre_tables);
 
 #ifdef XML
+	// transcoder
 	XMLCh unicode1=row.size()>7?(XMLCh)to_wchar_code(row.get_string(7)):0;
 	XMLCh unicode2=row.size()>8?(XMLCh)to_wchar_code(row.get_string(8)):0;
 	if(!tables.fromTable[c])
@@ -143,6 +144,7 @@ static int sort_cmp_Trans_rec_intCh(const void *a, const void *b) {
 	if(cb==0)
 		return -1;
 
+	//
 	return ca-cb;
 }
 
@@ -218,14 +220,15 @@ static void hack_s_maximumCharacterValues(const XalanDOMString& encoding) {
 		friend static void hack_s_maximumCharacterValues(const XalanDOMString& encoding); // hack by paf
 */
 
-	/*
+	/**/
 	const_cast<XalanTranscodingServices::MaximumCharacterValueMapType &>(
 		XalanTranscodingServices::s_maximumCharacterValues).insert(
 		XalanTranscodingServices::MaximumCharacterValueMapType::value_type(encoding, 0xFFFF));
-		*/
+		/**/
 }
 #endif
 
+/// @todo addEncoding only once!
 static void load_charset(const Hash::Key& akey, Hash::Val *avalue, 
 										  void *info) {
 	Hash& CTYPE=*static_cast<Hash *>(info);
