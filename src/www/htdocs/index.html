@@ -15,7 +15,7 @@
 #^безнадёжна_попытка_поправить_непоправимое[]
 #^tcache[]
 #^thashfileexp[]
-^tcounter[]
+#^tcounter[]
 #^tablehash[]
 #j^hashfile[]
 #^formclass[]
@@ -52,9 +52,9 @@
 #^mail[]
 #^exec[]
 #^fori[]
-^tconnect[]
+#^tconnect[]
 ^xslt[]
-#^xml[]
+^xml[]
 #^header[]
 OK
 
@@ -500,7 +500,18 @@ $a.status|$a.stderr<hr>
 
 @xdata[]
 #$response:content-type[$.value[text/html] $.charset[windows-1251]]
-$xdoc[^xdoc::load[input.xml]]
+$xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
+<!--DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd"-->
+
+<people>
+	<man id="1" имя="word слово">
+		<name>P&#171^;AF	B</name>
+	</man>
+	   	<man id="2">
+   			<name>ПИФ^taint[&]</name>
+	   	</man>
+</people>
+}]
 
 @xml[]
 ^xdata[]

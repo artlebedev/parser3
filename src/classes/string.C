@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.89 2001/11/09 11:59:13 paf Exp $
+	$Id: string.C,v 1.90 2001/11/09 12:09:53 paf Exp $
 */
 
 #include "classes.h"
@@ -84,7 +84,7 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	char *buf=format(pool, r.self->as_double(), 
-		r.process(fmt).as_string().cstr(String::UL_UNSPECIFIED));
+		r.process(fmt).as_string().cstr(String::UL_UNSPECIFIED, r.connection));
 
 	String result(pool);
 	result.APPEND_CLEAN(buf, 0, 

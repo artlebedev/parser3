@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.43 2001/11/05 11:46:22 paf Exp $
+	$Id: xdoc.C,v 1.44 2001/11/09 12:09:53 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -533,7 +533,8 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	Temp_lang temp_lang(r, String::UL_XML);
 	const String& xml=r.process(vxml).as_string();
 
-	std::istrstream stream(xml.cstr());
+	std::istrstream stream(
+		xml.cstr(String::UL_UNSPECIFIED, r.connection));
 	const XalanParsedSource* parsedSource;
 
 	try {
