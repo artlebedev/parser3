@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/08/01 11:41:21 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/08/02 13:11:40 $";
 
 #include "pa_config_includes.h"
 
@@ -31,7 +31,7 @@ static const char* IDENT_PARSER3_C="$Date: 2002/08/01 11:41:21 $";
 
 //#define DEBUG_POOL_MALLOC
 //#define DEBUG_STRING_APPENDS_VS_EXPANDS
-#define DEBUG_MAILRECEIVE "koi.eml"
+//#define DEBUG_MAILRECEIVE "koi.eml"
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
 extern ulong 

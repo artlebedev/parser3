@@ -167,4 +167,4 @@ int
       return 0;
  }
 
-#endif /* TESTGETOPT */
+#endif

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/08/01 11:41:19 $";
+static const char* IDENT_STRING_C="$Date: 2002/08/02 13:11:39 $";
 
 #include "pcre.h"
 
@@ -20,7 +20,7 @@ static const char* IDENT_STRING_C="$Date: 2002/08/01 11:41:19 $";
 #include "pa_dictionary.h"
 #include "pa_charset.h"
 
-#define DEBUG_STRING_APPENDS_VS_EXPANDS
+//#define DEBUG_STRING_APPENDS_VS_EXPANDS
 
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
