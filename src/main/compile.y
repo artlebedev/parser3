@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.62 2001/03/07 09:47:39 paf Exp $
+  $Id: compile.y,v 1.63 2001/03/07 10:10:50 paf Exp $
 */
 
 %{
@@ -394,6 +394,7 @@ optimized_expr: expr {
 };
 expr: 
 	STRING
+|	'"' STRING '"' { $$ = $2; }
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
 |	'-' expr %prec NEG { $$=$2;  O($$, OP_NEG) }
@@ -501,7 +502,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 					// append piece till ^
 					PC->string->APPEND(begin, end-begin, PC->file, begin_line);
 				}
-				// reset piece 'start' position & line
+				// reset piece 'begin' position & line
 				begin=PC->source; // ^
 				begin_line=PC->line;
 				// skip over ^ and _
@@ -662,11 +663,13 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 					}
 				break;
 			case ' ': case '\t': case '\n':
-				if(end!=begin) {
-					// append piece till whitespace char
-					PC->string->APPEND(begin, end-begin, PC->file, begin_line);
+				if(end!=begin) { // there were a string after previous operator?
+					result=0; // return that string
+					goto break2;
 				}
-				// reset piece 'start' position & line
+				// that's a leading|traling space or after-operator-space
+				// ignoring it
+				// reset piece 'begin' position & line
 				begin=PC->source; // after whitespace char
 				begin_line=PC->line;
 				continue;

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.58 2001/03/07 09:29:54 paf Exp $
+  $Id: execute.C,v 1.59 2001/03/07 10:10:50 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -312,8 +312,7 @@ void Request::execute(const Array& ops) {
 		case OP_INV:
 			{
 				Value *operand=POP();
-				Value *value=NEW VDouble(pool(), 
-					~static_cast<int>(operand->get_double()));
+				Value *value=NEW VDouble(pool(), ~static_cast<int>(operand->get_double()));
 				PUSH(value);
 				break;
 			}
