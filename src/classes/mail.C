@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.63 2002/04/18 10:50:59 paf Exp $
+	$Id: mail.C,v 1.64 2002/06/10 11:56:22 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -44,8 +44,6 @@ public: // Methoded
 	void configure_user(Request& r);
 private:
 	String mail_name;
-	String content_disposition_name;
-	String content_disposition_filename_name;
 };
 
 // helpers
@@ -152,7 +150,8 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 	String& result=*new(pool) String(pool);
 
 	// content-type: application/octet-stream
-	result << "content-type: " << r.mime_type_of(file_name_cstr) << "\n";
+	result << "content-type: " << r.mime_type_of(file_name_cstr) 
+		<< "; name=\"" << file_name_cstr << "\"\n";
 	// content-disposition: attachment; filename="user_file_name"
 	result << "content-disposition: attachment; filename=\"" << file_name_cstr << "\"\n";
 
@@ -465,9 +464,7 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 // constructor & configurator
 
 MMail::MMail(Pool& apool) : Methoded(apool, MAIL_CLASS_NAME),
-	mail_name(apool, MAIL_NAME),
-	content_disposition_name(apool, CONTENT_DISPOSITION_NAME),
-	content_disposition_filename_name(apool, CONTENT_DISPOSITION_FILENAME_NAME)
+	mail_name(apool, MAIL_NAME)
 {
 	// ^mail:send{hash}
 	add_native_method("send", Method::CT_STATIC, _send, 1, 1);
