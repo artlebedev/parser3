@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2003/07/24 11:31:25 $";
+static const char* IDENT_VALUE_H="$Date: 2003/08/19 09:12:04 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -48,7 +48,7 @@ public: // Value
 		all except VObject/VClass: this if @atype eq type()
 		VObject/VClass: can locate parent class by it's type
 	*/
-	virtual Value* as(const char* atype, bool looking_up) {
+	virtual Value* as(const char* atype, bool /*looking_up*/) {
 		return atype && strcmp(type(), atype)==0?this:0;
 	}
 	/// type checking helper, uses Value::as
