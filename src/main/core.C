@@ -1,5 +1,5 @@
 /*
-  $Id: core.C,v 1.19 2001/02/15 14:18:50 paf Exp $
+  $Id: core.C,v 1.20 2001/02/20 12:18:28 paf Exp $
 */
 
 /*
@@ -10,6 +10,7 @@
 	$name.subname
 	$name.subname(constructor-code in current context)
 	$name.subname{usage-code, in $name context}
+	$name.part$part... name part $part calculated in current context
 
 	^:name...
 	^name.field.subfield.method -- plain call
@@ -21,6 +22,40 @@
 	parameters, any combination of:
 		(arg1;arg2) -- calculated before the call, in current context
 		{arg1}{arg2} -- calculated inside a call, when $arg1 substituted. in object context
+
+	
+	0 pass as-is code
+		'$' -- 1
+		'^' -- x
+		'eof' -- 1000 exit:normal 
+		else wcontext.write(until those chars)
+	1 variable name start in as-is code: names(); name=""; start(iter);
+		first_char '{' -- x.x
+		first_char ':' -- x.x
+		else -- prefix=NO_PREFIX; 1.1
+	1.1 variable name part, plain and $name [in as-is code]
+		first_char '$' -- 1.2
+		'.' -- name+=String(start,iter); names+=name; 1.1
+		'(' -- name+=String(start,iter); names+=name; 1.3
+		'{' -- name+=String(start,iter); names+=name; x.x
+	1.2 name part from variable [variable ref in as-is code]
+		'.' -- names+=arcontext.get_element(name); 1.1
+		'(' -- names+=arcontext.get_element(name); 1.3
+		'{' -- names+=arcontext.get_element(name); x.x
+	1.3 variable constructor in as-is code: push(wcontext); wcontext=temp;
+		'$' -- 2.1
+		'^' -- x.x
+		'eof' -- 1001 exit:unexpected eof in constructor
+		')'
+		else wcontext.write(until those chars)
+
+		
+
+    x.x bracketed name
+		: -- x.x
+	x.x prefix=ROOT_PREFIX; names+=name
+
+
 
 
 
