@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2002/12/02 10:07:38 $";
+static const char* IDENT_MAIL_C="$Date: 2002/12/05 09:41:56 $";
 
 #include "pa_config_includes.h"
 
@@ -98,6 +98,7 @@ struct Mail_info {
 	String *header;
 	const String **from, **to;
 	const String *errors_to;
+	bool mime_version_specified;
 };
 #endif
 
@@ -120,6 +121,8 @@ static void add_header_attribute(const Hash::Key& raw_element_name, Hash::Val *a
 		*mi.to=&extractEmail(element_value.as_string());
 	if(low_element_name=="errors-to")
 		mi.errors_to=&extractEmail(element_value.as_string());
+	if(low_element_name=="mime-version")
+		mi.mime_version_specified=true;
 
 	// append header line
 	*mi.header << 
@@ -198,6 +201,8 @@ static const String& message_hash_to_string(Request& r, const String& method_nam
 	message_hash.for_each(add_header_attribute, &mail_info);
 	if(!mail_info.errors_to)
 		result << "errors-to: postmaster\n"; // errors-to: default
+	if(!mail_info.mime_version_specified)
+		result << "MIME-Version: 1.0\n"; // MIME-Version: default
 
 	if(Value *body_element=static_cast<Value *>(message_hash.get(*body_name))) {
 		if(Hash *body_hash=body_element->get_hash(&method_name)) {

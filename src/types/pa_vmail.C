@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/12/02 10:07:40 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/12/05 09:41:56 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -332,6 +332,7 @@ struct Store_message_element_info {
 	String *header;
 	const String **from, **to;
 	const String *errors_to;
+	bool mime_version_specified;
 	Array *parts[P_TYPES_COUNT];
 	int parts_count;
 	bool has_content_type;
@@ -455,6 +456,8 @@ static void store_message_element(const Hash::Key& raw_element_name, Hash::Val *
 		*i.to=&extractEmail(element_value.as_string());
 	if(low_element_name=="errors-to")
 		i.errors_to=&extractEmail(element_value.as_string());	
+	if(low_element_name=="mime-version")
+		i.mime_version_specified=true;
 
 	// append header line
 	*i.header << 
@@ -605,6 +608,8 @@ const String& VMail::message_hash_to_string(Request& r, const String *source,
 		message_hash->for_each(store_message_element, &info);
 		if(!info.errors_to)
 			result << "errors-to: postmaster\n"; // errors-to: default
+		if(!info.mime_version_specified)
+			result << "MIME-Version: 1.0\n"; // MIME-Version: default
 	}
 
 	int textCount=info.parts[P_TEXT]->size();
