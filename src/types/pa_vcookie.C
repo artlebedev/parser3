@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vcookie.C,v 1.40 2002/02/20 10:40:08 paf Exp $
+	$Id: pa_vcookie.C,v 1.41 2002/02/22 11:23:33 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -101,7 +101,8 @@ void VCookie::fill_fields(Request& request) {
 	} while(current);
 }
 
-static VString *expires_timestamp(Pool& pool, double days_till_expire) {
+static VString *expires_timestamp(const String& source, double days_till_expire) {
+	Pool& pool=source.pool();
     const char month_names[12][4]={
 		"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
     const char days[7][4]={
@@ -109,6 +110,10 @@ static VString *expires_timestamp(Pool& pool, double days_till_expire) {
 	
 	time_t when=time(NULL)+(time_t)(60*60*24*days_till_expire);
 	struct tm *tms=gmtime(&when);
+	if(!tms)
+		throw Exception(0, 0,
+			&source,
+			"bad expires time (seconds from epoch=%ld)", when);
 	char *buf=(char *)pool.malloc(MAX_STRING);
 	snprintf(buf, MAX_STRING, "%s, %.2d-%s-%.4d %.2d:%.2d:%.2d GMT", 
 		days[tms->tm_wday],
@@ -156,8 +161,10 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 					hash->remove(*expires_name);
 				} else {
 					// $expires(days)
-					hash->put(*expires_name, 
-						expires_timestamp(pool, expires->as_double()));
+					if(double days_till_expire=expires->as_double())
+						hash->put(*expires_name, expires_timestamp(aattribute, days_till_expire));
+					else // $expires(0)
+						hash->remove(*expires_name);
 				}
 			} else // $expires not assigned, defaulting
 				hash->put(*expires_name, expires_timestamp(pool, DEFAULT_EXPIRES_DAYS));

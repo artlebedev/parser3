@@ -306,7 +306,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 !cookie
     !$cookie:имя считать старое или свежезаданное
     !$cookie:имя[значение] на 90 дней
-    !$cookie:имя[$.value[значение]  $.expires(дней) или $.expires[session]]
+    !$cookie:имя[$.value[значение]  $.expires(дней, 0дней=session)]
 
 !request
     !$request:query    
