@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.55 2002/03/25 11:36:23 paf Exp $
+	$Id: mail.C,v 1.56 2002/03/25 11:55:26 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -416,7 +416,14 @@ static void sendmail(Request& r, const String& method_name,
 
 
 	String in(pool, letter_cstr); String out(pool); String err(pool);
-	int exit_status=pa_exec(*file_spec,
+	int exit_status=pa_exec(
+		// forced_allow
+#ifdef PA_FORCED_SENDMAIL
+		true
+#else
+		false
+#endif
+		*file_spec,
 		0/*default env*/,
 		&argv,
 		in, out, err);

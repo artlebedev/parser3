@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.31 2002/03/25 11:36:24 paf Exp $
+	$Id: pa_exec.C,v 1.32 2002/03/25 11:55:26 paf Exp $
 
 
 	@todo setrlimit
@@ -301,19 +301,20 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 #endif
 }
 
-int pa_exec(const String& file_spec, 
+int pa_exec(
+			bool forced_allow,
+			const String& file_spec, 
 			const Hash *env,
 			const Array *argv,
 			const String& in, String& out, String& err) {
 	Pool& pool=file_spec.pool();
 
 #ifdef NO_PA_EXECS
-
-	throw Exception(0, 0,
-		&file_spec,
-		"parser execs are disabled [recompile parser without --disable-execs configure option]");
-
-#else
+	if(!forced_allow)
+		throw Exception(0, 0,
+			&file_spec,
+			"parser execs are disabled [recompile parser without --disable-execs configure option]");
+#endif
 
 #ifdef WIN32
 
@@ -371,19 +372,20 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC);
 
 #ifdef NO_FOREIGN_GROUP_FILES
-    struct stat finfo;
-	if(stat(file_spec_cstr, &finfo)!=0)
-		throw Exception(0, 0, 
-				&file_spec, 
-				"stat failed: %s (%d), actual filename '%s'", 
-					strerror(errno), errno, file_spec_cstr);
+	if(!forced_allow) {
+		struct stat finfo;
+		if(stat(file_spec_cstr, &finfo)!=0)
+			throw Exception(0, 0, 
+					&file_spec, 
+					"stat failed: %s (%d), actual filename '%s'", 
+						strerror(errno), errno, file_spec_cstr);
 
-	if(finfo.st_gid/*foreign?*/!=getegid())
-		throw Exception(0, 0,
-			&file_spec,
-			"parser executing files of foreign group is	disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
-				file_spec_cstr);
-
+		if(finfo.st_gid/*foreign?*/!=getegid())
+			throw Exception(0, 0,
+				&file_spec,
+				"parser executing files of foreign group is	disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
+					file_spec_cstr);
+	}
 #endif
 
 	char *argv_cstrs[1+10+1]={file_spec_cstr, 0};
@@ -426,7 +428,6 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		throw Exception(0, 0,
 			&file_spec,
 			"pipe error");
-#endif
 #endif
 
 	return 0;

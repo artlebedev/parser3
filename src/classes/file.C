@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.72 2002/02/08 08:30:09 paf Exp $
+	$Id: file.C,v 1.73 2002/03/25 11:55:26 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -236,7 +236,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	//out.APPEND_CONST("content-type:text/plain\nheader:test-header\n\ntest-body");
 	//out<<in;
 	String& err=*new(pool) String(pool);
-	int status=pa_exec(script_name, &env, argv, in, out, err);
+	int status=pa_exec(false/*forced_allow*/, script_name, &env, argv, in, out, err);
 
 	VFile& self=*static_cast<VFile *>(r.self);
 
