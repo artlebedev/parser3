@@ -4,17 +4,17 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_socks.C,v 1.10 2002/02/07 17:41:36 paf Exp $
+	$Id: pa_socks.C,v 1.11 2002/02/07 17:48:12 paf Exp $
 */
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"
 
 #ifndef HAVE_SYS_SELECT_H
-#include <winsock.h>
-
 #include "pa_exception.h"
 #include "pa_socks.h"
+
+#include <winsock.h>
 
 WSADATA wsaData;
 
