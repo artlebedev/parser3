@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.78 2002/01/28 08:20:33 paf Exp $
+	$Id: xdoc.C,v 1.79 2002/01/28 10:33:52 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -371,8 +371,29 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 			&method_name, 
 			exc);
 }
+
+static void _importNode(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	GdomeNode *importedNode=
+		as_node(pool, method_name, params, 0, "importedNode must be node");
+	bool deep=
+		params->as_bool(1, "deep must be bool", r);
+
+	GdomeException exc;
+	GdomeNode *outputNode=gdome_doc_importNode(vdoc.get_document(&method_name), 
+		importedNode,
+		deep, &exc);
+	if(exc)
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
+
+	// write out result
+	r.write_no_lang(*new(pool) VXnode(pool, outputNode));
+}
 /*
-GdomeNode *gdome_doc_importNode (GdomeDocument *self, GdomeNode *importedNode, GdomeBoolean deep, GdomeException *exc);
 GdomeElement *gdome_doc_createElementNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
 GdomeAttr *gdome_doc_createAttributeNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
 */
@@ -797,10 +818,13 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 	// ^xdoc.getElementsByTagNameNS[namespaceURI;localName] = array of nodes
 	add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
 
-	/// DOM2(?)
+	/// DOM2
 
 	// ^xdoc.getElementById[elementId]
 	add_native_method("getElementById", Method::CT_DYNAMIC, _getElementById, 1, 1);
+
+    // Node (in Node importedNode, in boolean deep) raises(DOMException)
+	add_native_method("importNode", Method::CT_DYNAMIC, _importNode, 2, 2);
 
 	/// parser
 	

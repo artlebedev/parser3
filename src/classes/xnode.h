@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.h,v 1.6 2002/01/24 15:11:59 paf Exp $
+	$Id: xnode.h,v 1.7 2002/01/28 10:33:52 paf Exp $
 */
 
 #ifndef XNODE_H
@@ -43,5 +43,8 @@ private:
 };
 
 #define gdome_xml_doc_get_xmlDoc(dome_doc) ((_Gdome_xml_Document *)dome_doc)->n;
+
+GdomeNode *as_node(Pool& pool, const String& method_name, MethodParams *params, 
+						int index, const char *msg);
 
 #endif
