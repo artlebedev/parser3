@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_connection.C,v 1.8 2001/10/05 10:36:43 parser Exp $
+	$Id: pa_charset_connection.C,v 1.9 2001/10/05 10:37:26 parser Exp $
 */
 
 #include "pa_charset_connection.h"
@@ -148,7 +148,10 @@ private :
 void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 	// pcre_tables
 	// lowcase, flipcase, bits digit+word+whitespace, masks
-	memset(fpcre_tables, 0, sizeof(fpcre_tables));
+
+	// must not move this inside of prepare_case_tables
+	// don't know the size there
+	memset(fpcre_tables, 0, sizeof(fpcre_tables)); 
 	prepare_case_tables(fpcre_tables);
 	cstr2ctypes(fpcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
 
