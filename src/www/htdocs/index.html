@@ -35,7 +35,7 @@ OK
 $k(2)
 $pict[^image::load[paf.gif]]
 $small[^image::create($pict.width/$k;$pict.height/$k)]
-^small.copy[$pict](0;0;$pict.width;$pict.height;0;0;$small.width;$small.height)
+^small.copy[$pict](0;0;$pict.width;$pict.height;0;0;$small.width;$small.height;250)
 $response:body[^small.gif[]]
 
 @imageresize[]
@@ -51,7 +51,7 @@ $pict.line-width(2)
 
 $small[^image::create($pict.width/$k;$pict.height/$k)]
 #^small.copy[$pict](0;0;$pict.width;$pict.height;0;0)
-^small.copy[$pict](0;0;$pict.width;$pict.height;0;0;$small.width;$small.height)
+^small.copy[$pict](0;0;$pict.width;$pict.height;0;0;$small.width;$small.height;0)
 
 $response:body[^small.gif[]]
 

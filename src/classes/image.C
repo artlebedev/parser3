@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.55 2001/10/16 09:59:23 parser Exp $
+	$Id: image.C,v 1.56 2001/10/16 10:26:09 parser Exp $
 */
 
 /*
@@ -779,7 +779,6 @@ gdImage& as_image(Pool& pool, const String& method_name, MethodParams *params,
 	return *src;
 }
 
-// ^image.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h]])
 static void _copy(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -799,9 +798,12 @@ static void _copy(Request& r, const String& method_name, MethodParams *params) {
 	int dy=params->as_int(6, "dest_y must be int", r);
 	if(params->size()>1+2+2+2) {
 		int dw=params->as_int(1+2+2+2, "dest_w must be int", r);
-		int dh=params->size()>1+2+2+2+1?params->as_int(1+2+2+2+1, "dest_h must be int", r):dw;
+		int dh=(int)(params->size()>1+2+2+2+1?
+			params->as_int(1+2+2+2+1, "dest_h must be int", r):sh*(((double)dw)/((double)sw)));
+		int tolerance=params->size()>1+2+2+2+2?
+			params->as_int(1+2+2+2+2, "tolerance must be int", r):150;
 
-		src.CopyResampled(*dest, dx, dy, sx, sy, dw, dh, sw, sh);
+		src.CopyResampled(*dest, dx, dy, sx, sy, dw, dh, sw, sh, tolerance);
 	} else
 		src.Copy(*dest, dx, dy, sx, sy, sw, sh);
 }
@@ -873,8 +875,8 @@ MImage::MImage(Pool& apool) : Methoded(apool) {
 	// ^image.circle(center x;center y;r;color)
 	add_native_method("circle", Method::CT_DYNAMIC, _circle, 4, 4);
 
-	// ^image.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h]])
-	add_native_method("copy", Method::CT_DYNAMIC, _copy, 1+2+2+2, (1+2+2+2)+2);
+	// ^image.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h[;tolerance]]])
+	add_native_method("copy", Method::CT_DYNAMIC, _copy, 1+2+2+2, (1+2+2+2)+2+1);
 }
 
 // global variable

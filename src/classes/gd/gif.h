@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.h,v 1.16 2001/10/16 09:59:23 parser Exp $
+	$Id: gif.h,v 1.17 2001/10/16 10:26:09 parser Exp $
 
 	based on:
 	gd.h: declarations file for the gifdraw module.
@@ -79,7 +79,7 @@ public:
 	void FillToBorder(int x, int y, int border, int color);
 	void Fill(int x, int y, int color);
 	void Copy(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int w, int h);
-	void CopyResampled(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int dstW, int dstH, int srcW, int srcH);
+	void CopyResampled(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int dstW, int dstH, int srcW, int srcH, int tolerance);
 	void SetLineWidth(int width);
 	void SetLineStyle(const char *aLineStyle);
 	void SetInterlace(int interlaceArg); /* On or off(1 or 0) */

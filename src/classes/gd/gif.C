@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.18 2001/10/16 09:59:23 parser Exp $
+	$Id: gif.C,v 1.19 2001/10/16 10:26:09 parser Exp $
 
 	based on: gd
 
@@ -647,7 +647,8 @@ void gdImage::CopyResampled(gdImage& dst,
 		      int dstX, int dstY,
 		      int srcX, int srcY,
 		      int dstW, int dstH,
-			  int srcW, int srcH)
+			  int srcW, int srcH,
+			  int tolerance)
 {
 	gdImage& src=*this;
 	int x, y;
@@ -746,7 +747,7 @@ void gdImage::CopyResampled(gdImage& dst,
 			int nc = dst.ColorExact(red, green, blue);
 			if (nc == (-1)) {
 				/* No, so go for the closest color with high tolerance */
-				nc = dst.ColorClosest(red, green, blue,  100);
+				nc = dst.ColorClosest(red, green, blue,  tolerance);
 				if (nc == (-1)) {
 					/* Not found with even high tolerance, so try to allocate it */
 					nc = dst.ColorAllocate(red, green,blue);
