@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.6 2001/09/11 09:14:04 parser Exp $
+	$Id: pa_vdom.h,v 1.7 2001/09/15 10:31:14 parser Exp $
 */
 
 #ifndef PA_VDOM_H
@@ -22,12 +22,12 @@
 
 extern Methoded *Dom_class;
 
-/// value of type 'DOM'. implemented with @c DOM
+/// value of type 'dom'. implemented with Xalan
 class VDom : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "dom"; }
-	/// VDom: clone
+	/// VDom: this
 	Value *as_expr_result(bool return_string_as_is=false) { return this; }
 
 protected: // VAliased

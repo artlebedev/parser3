@@ -4,10 +4,8 @@
 
   <xsl:template match="doc">
     <html>
-    	<title>test3</title>
+    	<title>test4</title>
     	<xsl:apply-templates/>
-    	<hr/>
-    	param1=<xsl:value-of select="$param1"/>.
     </html>
   </xsl:template>
 
