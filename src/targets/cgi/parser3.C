@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.38 2001/03/23 10:32:53 paf Exp $
+	$Id: parser3.C,v 1.39 2001/03/23 11:07:07 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -38,7 +38,7 @@
 Pool pool; // global pool
 bool cgi; ///< we were started as CGI?
 
-#if defined(WIN32) && _MSC_VER
+#if _MSC_VER
 // intercept global system errors
 static LONG WINAPI TopLevelExceptionFilter (struct _EXCEPTION_POINTERS *ExceptionInfo) {
 	char buf[MAX_STRING];
@@ -108,6 +108,7 @@ void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 
 // main
 
+#include <stdlib.h>
 int main(int argc, char *argv[]) {
 	umask(2);
 
@@ -141,7 +142,7 @@ int main(int argc, char *argv[]) {
 	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
-#if defined(WIN32) && _MSC_VER
+#if _MSC_VER
 		SetUnhandledExceptionFilter(&TopLevelExceptionFilter);
 		//TODO: initSocks();
 #endif
@@ -156,13 +157,25 @@ int main(int argc, char *argv[]) {
 
 		// Request info
 		Request::Info request_info;
-		if(cgi)
-			request_info.document_root=getenv("DOCUMENT_ROOT");
-		else {
-			static char document_root[MAX_STRING];
-			strncpy(document_root, filespec_to_process, MAX_STRING);
-			rsplit(document_root, '/');  rsplit(document_root, '\\');// strip filename
-			request_info.document_root=document_root;
+		if(cgi) {
+			if(const char *env_document_root=getenv("DOCUMENT_ROOT"))
+				request_info.document_root=env_document_root;
+			else if(const char *path_info=getenv("PATH_INFO")) {
+				// under IIS for sure
+				static char buf[MAX_STRING];
+				size_t len=strlen(filespec_to_process)-strlen(path_info);
+				strncpy(buf, filespec_to_process, min(MAX_STRING-1, len));
+				buf[len]=0;
+				request_info.document_root=buf;
+			} else
+				PTHROW(0, 0,
+					0,
+					"CGI: no PATH_INFO defined (in reinventing DOCUMENT_ROOT)");
+		} else {
+			static char buf[MAX_STRING];
+			strncpy(buf, filespec_to_process, MAX_STRING);
+			rsplit(buf, '/');  rsplit(buf, '\\');// strip filename
+			request_info.document_root=buf;
 		}
 		request_info.path_translated=filespec_to_process;
 		request_info.method=request_method;
@@ -201,7 +214,7 @@ int main(int argc, char *argv[]) {
 			header_only);
 
 		// must be last in PTRY{}PCATCH
-#if defined(WIN32) && _MSC_VER
+#if _MSC_VER
 		SetUnhandledExceptionFilter(0);
 #endif
 		// successful finish
