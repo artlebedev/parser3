@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.88 2002/03/28 14:02:30 paf Exp $
+	$Id: xdoc.C,v 1.89 2002/04/09 15:27:13 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -626,9 +626,9 @@ static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning,
 						   void *info) {
 	Value *meaning=static_cast<Value *>(ameaning);
 	Pool& pool=meaning->pool();
-	const char **transform_params=(const char **)info;
-	*transform_params++=pool.transcode(aattribute)->str;
-	*transform_params++=pool.transcode(meaning->as_string())->str;
+	const char ** & current_transform_param=*(const char ***)info;
+	*current_transform_param++=pool.transcode(aattribute)->str;
+	*current_transform_param++=pool.transcode(meaning->as_string())->str;
 }
 static void _transform(Request& r, const String& method_name, MethodParams *params) {
 	//_asm int 3;
@@ -641,9 +641,9 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		Value& vparams=params->as_no_junction(1, "transform parameters must be hash");
 		if(vparams.is_defined())
 			if(Hash *params=vparams.get_hash(&method_name)) {
-				transform_params=
-					(const char **)pool.malloc(sizeof(const char *)*params->size()*2+1);
-				params->for_each(add_xslt_param, transform_params);
+				const char **current_transform_param=transform_params=
+					(const char **)pool.malloc(sizeof(const char *)*(params->size()*2+1));
+				params->for_each(add_xslt_param, &current_transform_param);
 				transform_params[params->size()*2]=0;				
 			} else
 				throw Exception("parser.runtime",

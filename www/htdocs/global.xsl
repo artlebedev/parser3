@@ -3,8 +3,12 @@
 <!--<xsl:output doctype-public ="-//W3C//DTD XHTML" indent="yes"/>-->
 
 <xsl:param name="param1">defparam1</xsl:param>
+<xsl:param name="param2">defparam2</xsl:param>
 
 	<xsl:template match="doc">
+		param1=<xsl:value-of select="$param1"/><br/>
+		param2=<xsl:value-of select="$param2"/><br/>
+
 		test return <something background=""/>
 	</xsl:template>
 
