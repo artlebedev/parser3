@@ -1,3 +1,5 @@
+//#define DEBUG_JUST_SEE_MESSAGE
+
 /** @file
 	Parser: @b mail parser class.
 
@@ -5,7 +7,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2004/09/01 09:22:00 $";
+static const char * const IDENT_MAIL_C="$Date: 2004/09/13 08:12:38 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -22,8 +24,6 @@ static const char * const IDENT_MAIL_C="$Date: 2004/09/01 09:22:00 $";
 #include "smtp.h"
 
 // debug switches
-
-//#define DEBUG_JUST_SEE_MESSAGE
 
 // defines
 
@@ -218,7 +218,7 @@ static void _send(Request& r, MethodParams& params) {
 		GET_SELF(r, VMail).message_hash_to_string(r, hash, 0, from, 
 			smtp_server_port?true:false /*send by SMTP=strip to?*/, to);
 
-#if DEBUG_JUST_SEE_MESSAGE
+#ifdef DEBUG_JUST_SEE_MESSAGE
 	r.write_pass_lang(message);
 #else
 	sendmail(vmail_conf, smtp_server_port, 
