@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.113 2001/10/29 16:56:30 paf Exp $
+	$Id: pa_string.h,v 1.114 2001/10/30 07:41:29 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -78,6 +78,7 @@ class Dictionary;
 	- whether they are tainted or not, 
 	  and the language which should be used to detaint them
 */
+#include "pa_pragma_pack_begin.h"
 class String : public Pooled {
 public:
 
@@ -304,5 +305,6 @@ private: //disabled
 	String& operator = (const String&) { return *this; }
 
 };
+#include "pa_pragma_pack_end.h"
 
 #endif
