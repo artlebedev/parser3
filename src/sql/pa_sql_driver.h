@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char * const IDENT_SQL_DRIVER_H="$Date: 2004/06/18 15:55:47 $";
+static const char * const IDENT_SQL_DRIVER_H="$Date: 2004/06/22 14:17:22 $";
 
 #include <sys/types.h>
 #include <setjmp.h>
@@ -117,6 +117,8 @@ public:
 class SQL_Driver {
 public:
 
+	/// @todo can be optimized to contain type information, 
+	/// to pass IN and OUT int/double NOT in string format
 	struct Placeholder {
 		const char* name;
 		const char* value;
