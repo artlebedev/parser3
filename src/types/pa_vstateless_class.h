@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.10 2001/04/26 14:55:35 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.11 2001/04/28 08:44:16 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -86,9 +86,13 @@ public: // usage
 		return 0; 
 	}
 
-	// just stubs, real onces defined below the hierarchy, in 
+	//@{
+	/// @name just stubs, real onces defined below the hierarchy
 	virtual Value *get_field(const String& name) { return 0; }
 	virtual bool replace_field(const String& name, Value *value) { return false; }
+	
+	virtual Value *create_new_value(Pool& pool) { return 0; }
+	//@}
 
 private: // Temp_method
 

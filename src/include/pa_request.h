@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.83 2001/04/20 14:18:36 paf Exp $
+	$Id: pa_request.h,v 1.84 2001/04/28 08:43:53 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -43,6 +43,7 @@
 #endif
 
 class Temp_lang;
+class Methoded;
 
 /// Main workhorse.
 class Request : public Pooled {
@@ -145,7 +146,7 @@ public:
 	char *post_data;  size_t post_size;
 
 	/// operators are methods of this class
-	VClass OP;
+	Methoded& OP;
 	/// $env:fields here
 	VEnv env;
 	/// $form:elements here

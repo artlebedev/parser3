@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vrequest.h,v 1.8 2001/04/26 15:01:52 paf Exp $
+	$Id: pa_vrequest.h,v 1.9 2001/04/28 08:44:16 paf Exp $
 */
 
 #ifndef PA_VREQUEST_H
@@ -16,6 +16,8 @@
 #include "pa_string.h"
 
 class Request;
+
+#define REQUEST_CLASS_NAME "request"
 
 /// request class
 class VRequest : public Value {

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vresponse.h,v 1.8 2001/04/10 10:32:15 paf Exp $
+	$Id: pa_vresponse.h,v 1.9 2001/04/28 08:44:16 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -13,7 +13,8 @@
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
-#include "_response.h"
+
+extern Methoded *response_class;
 
 class Response;
 

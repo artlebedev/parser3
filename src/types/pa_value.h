@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.49 2001/04/15 13:21:47 paf Exp $
+	$Id: pa_value.h,v 1.50 2001/04/28 08:44:15 paf Exp $
 */
 
 #ifndef PA_VALUE_H

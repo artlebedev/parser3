@@ -5,18 +5,19 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.9 2001/04/26 15:01:51 paf Exp $
+	$Id: pa_vimage.h,v 1.10 2001/04/28 08:44:16 paf Exp $
 */
 
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
+#include "classes.h"
 #include "pa_common.h"
-//#include "pa_globals.h"
 #include "pa_vstateless_object.h"
-#include "_image.h"
 
 class gdImage; class Font;
+
+extern Methoded *image_class;
 
 /** holds img attributes 
 	and [image itself]

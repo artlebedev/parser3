@@ -5,15 +5,29 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.9 2001/04/26 15:01:48 paf Exp $
+	$Id: op.C,v 1.10 2001/04/28 08:43:47 paf Exp $
 */
 
+#include "classes.h"
 #include "pa_config_includes.h"
 #include "pa_common.h"
 #include "pa_request.h"
-#include "_op.h"
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
+
+// defines
+
+#define OP_CLASS_NAME "OP"
+
+// class
+
+class MOP : public Methoded {
+public:
+	MOP(Pool& pool);
+	bool used_directly() { return true; }
+};
+
+// methods
 
 static void _if(Request& r, const String&, MethodParams *params) {
 	Value& condition_code=params->get(0);
@@ -277,60 +291,67 @@ static void _connect(Request& r, const String&, MethodParams *params) {
 			rethrow_me.comment());
 }
 
-// initialize
+// constructor
 
-void initialize_op_class(Pool& pool, VStateless_class& vclass) {
+MOP::MOP(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), OP_CLASS_NAME));
+
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
-	vclass.add_native_method("if", Method::CT_ANY, _if, 2, 3);
+	add_native_method("if", Method::CT_ANY, _if, 2, 3);
 
 	// ^untaint[as-is|uri|sql|js|html|html-typo]{code}
-	vclass.add_native_method("untaint", Method::CT_ANY, _untaint, 2, 2);
+	add_native_method("untaint", Method::CT_ANY, _untaint, 2, 2);
 
 	// ^taint[as-is|uri|sql|js|html|html-typo]{code}
-	vclass.add_native_method("taint", Method::CT_ANY, _taint, 1, 2);
+	add_native_method("taint", Method::CT_ANY, _taint, 1, 2);
 
 	// ^process[code]
-	vclass.add_native_method("process", Method::CT_ANY, _process, 1, 1);
+	add_native_method("process", Method::CT_ANY, _process, 1, 1);
 
 	// ^rem{code}
-	vclass.add_native_method("rem", Method::CT_ANY, _rem, 1, 1);
+	add_native_method("rem", Method::CT_ANY, _rem, 1, 1);
 
 	// ^while(condition){code}
-	vclass.add_native_method("while", Method::CT_ANY, _while, 2, 2);
+	add_native_method("while", Method::CT_ANY, _while, 2, 2);
 
 	// ^use[file]
-	vclass.add_native_method("use", Method::CT_ANY, _use, 1, 1);
+	add_native_method("use", Method::CT_ANY, _use, 1, 1);
 
 	// ^for[i;from-number;to-number-inclusive]{code}[delim]
-	vclass.add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1);
+	add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1);
 
 	// ^eval(expr)
 	// ^eval(expr)[format]
-	vclass.add_native_method("eval", Method::CT_ANY, _eval, 1, 2);
+	add_native_method("eval", Method::CT_ANY, _eval, 1, 2);
 
 
 	// math functions
 
 	// ^round(expr)	
-	vclass.add_native_method("round", Method::CT_ANY, _round, 1, 1);
+	add_native_method("round", Method::CT_ANY, _round, 1, 1);
 
 	// ^floor(expr)	
-	vclass.add_native_method("floor", Method::CT_ANY, _floor, 1, 1);
+	add_native_method("floor", Method::CT_ANY, _floor, 1, 1);
 
 	// ^ceiling(expr)	
-	vclass.add_native_method("ceiling", Method::CT_ANY, _ceiling, 1, 1);
+	add_native_method("ceiling", Method::CT_ANY, _ceiling, 1, 1);
 
 	// ^abs(expr)	
-	vclass.add_native_method("abs", Method::CT_ANY, _abs, 1, 1);
+	add_native_method("abs", Method::CT_ANY, _abs, 1, 1);
 
 	// ^sign(expr)
-	vclass.add_native_method("sign", Method::CT_ANY, _sign, 1, 1);
+	add_native_method("sign", Method::CT_ANY, _sign, 1, 1);
 
 	
 	// connect
 
 	// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
-	vclass.add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
+	add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
 
+}
+// creator
+
+Methoded *MOP_create(Pool& pool) {
+	return new(pool) MOP(pool);
 }

@@ -5,23 +5,35 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.31 2001/04/25 10:25:31 paf Exp $
+	$Id: file.C,v 1.32 2001/04/28 08:43:47 paf Exp $
 */
 
+#include "classes.h"
 #include "pa_request.h"
-#include "_file.h"
 #include "pa_vfile.h"
 #include "pa_table.h"
 #include "pa_vint.h"
 #include "pa_exec.h"
 
+// defines
+
+#define FILE_CLASS_NAME "file"
+
+// class
+
+class MFile : public Methoded {
+public: // VStateless_class
+	
+	Value *create_new_value(Pool& pool) { return new(pool) VFile(pool); }
+
+public:
+	MFile(Pool& pool);
+	bool used_directly() { return true; }
+};
+
 // consts
 
 const int FIND_MONKEY_MAX_HOPS=10;
-
-// global var
-
-VStateless_class *file_class;
 
 // methods
 
@@ -237,28 +249,41 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	}
 }
 
-// initialize
+// constructor
 
-void initialize_file_class(Pool& pool, VStateless_class& vclass) {
+MFile::MFile(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), FILE_CLASS_NAME));
+
+
 	// ^save[file-name]
-	vclass.add_native_method("save", Method::CT_DYNAMIC, _save, 1, 1);
+	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 1);
 
 	// ^delete[file-name]
-	vclass.add_native_method("delete", Method::CT_STATIC, _delete, 1, 1);
+	add_native_method("delete", Method::CT_STATIC, _delete, 1, 1);
 
 	// ^find[file-name]
 	// ^find[file-name]{when-not-found}
-	vclass.add_native_method("find", Method::CT_STATIC, _find, 1, 2);
+	add_native_method("find", Method::CT_STATIC, _find, 1, 2);
 
 	// ^load[disk-name]
 	// ^load[disk-name;user-name]
-	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
+	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
 
 	// ^stat[disk-name]
-	vclass.add_native_method("stat", Method::CT_DYNAMIC, _stat, 1, 1);
+	add_native_method("stat", Method::CT_DYNAMIC, _stat, 1, 1);
 
 	// ^exec[file-name]
 	// ^exec[file-name;env hash]
 	// ^exec[file-name;env hash;1cmd;2line;3ar;4g;5s]
-	vclass.add_native_method("cgi", Method::CT_DYNAMIC, _cgi, 1, 2+5);
+	add_native_method("cgi", Method::CT_DYNAMIC, _cgi, 1, 2+5);
+}
+
+// global variable
+
+Methoded *file_class;
+
+// creator
+
+Methoded *MFile_create(Pool& pool) {
+	return file_class=new(pool) MFile(pool);
 }

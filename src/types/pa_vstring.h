@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.23 2001/04/26 15:01:52 paf Exp $
+	$Id: pa_vstring.h,v 1.24 2001/04/28 08:44:17 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -15,7 +15,8 @@
 
 #include "pa_vstateless_object.h"
 #include "pa_vdouble.h"
-#include "_string.h"
+
+extern Methoded *string_class;
 
 /// value of type 'string'. implemented with @c String
 class VString : public VStateless_object {

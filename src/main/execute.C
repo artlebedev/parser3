@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.148 2001/04/25 11:02:57 paf Exp $
+	$Id: execute.C,v 1.149 2001/04/28 08:43:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -140,11 +140,6 @@ void Request::execute(const Array& ops) {
 				log_printf(pool(), " (%d)\n", local_ops->size());
 				dump(pool(), 1, *local_ops);
 				
-				// when called method of some object, specifying object literally,
-				// e.g ^t.menu, code of curly params must be executed 
-				// in r/w context of that object.
-				// otherwise in current r/w context.
-				//
 				// when they evaluate expression parameter,
 				// the object expression result
 				// does not need to be written into calling frame
@@ -155,11 +150,8 @@ void Request::execute(const Array& ops) {
 				Junction& j=*NEW Junction(pool(), 
 					*self, 0, 0,
 					root, 
-					wcontext->somebody_entered_some_object()>1?
-						&frame->junction.self /*^t.menu{}*/:rcontext/*^if()*/, 
-					op.code==OP_EXPR_CODE__STORE_PARAM?
-						0:wcontext->somebody_entered_some_object()>1?
-							frame/*^t.menu{}*/:wcontext/*^if()*/, 
+					rcontext, 
+					op.code==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
 					local_ops);
 				
 				Value *value=NEW VJunction(j);
@@ -229,10 +221,6 @@ void Request::execute(const Array& ops) {
 			{
 				Value *value=POP();
 				write_assign_lang(*value);
-
-				// forget the fact they've entered some ^object.method[].
-				// see OP_GET_ELEMENT
-				wcontext->clear_somebody_entered_some_object();
 				break;
 			}
 		case OP_WRITE_EXPR_RESULT:
@@ -251,9 +239,6 @@ void Request::execute(const Array& ops) {
 			
 		case OP_GET_ELEMENT:
 			{
-				// maybe they do ^object.method[] call, remember the fact
-				wcontext->inc_somebody_entered_some_object();
-
 				Value *value=get_element();
 				PUSH(value);
 				break;
@@ -379,13 +364,9 @@ void Request::execute(const Array& ops) {
 				else // no, not me or relative of mine (total stranger)
 					if(frame->is_constructor) {
 						// this is a constructor call
-						// some stateless_object derivates with constructors
-						if(called_class==table_class)
-							self=NEW VTable(pool());
-						else if(called_class==file_class)
-							self=NEW VFile(pool());
-						else if(called_class==image_class)
-							self=NEW VImage(pool());
+						// some stateless_object creatable derivates
+						if(Value *value=called_class->create_new_value(pool()))
+							self=value;
 						else // stateful object
 							self=NEW VObject(pool(), *called_class);
 						frame->write(*self, 

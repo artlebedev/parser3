@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.21 2001/04/26 14:55:12 paf Exp $
+	$Id: image.C,v 1.22 2001/04/28 08:43:47 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -17,9 +17,22 @@
 #include "pa_vfile.h"
 #include "pa_vimage.h"
 
-// global var
+// defines
 
-VStateless_class *image_class;
+#define IMAGE_CLASS_NAME "image"
+
+// class
+
+class MImage : public Methoded {
+public: // VStateless_class
+	
+	Value *create_new_value(Pool& pool) { return new(pool) VImage(pool); }
+
+public:
+	MImage(Pool& pool);
+	bool used_directly() { return true; }
+
+};
 
 // helpers
 
@@ -642,51 +655,65 @@ static void _text(Request& r, const String& method_name, MethodParams *params) {
 			"does not contain an image");
 }
 
-// initialize
-void initialize_image_class(Pool& pool, VStateless_class& vclass) {
+// constructor
+
+MImage::MImage(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), IMAGE_CLASS_NAME));
+
+
 	// ^image:measure[DATA]
-	vclass.add_native_method("measure", Method::CT_DYNAMIC, _measure, 1, 1);
+	add_native_method("measure", Method::CT_DYNAMIC, _measure, 1, 1);
 
 	/// ^image.html[]
 	/// ^image.html[hash]
-	vclass.add_native_method("html", Method::CT_DYNAMIC, _html, 0, 1);
+	add_native_method("html", Method::CT_DYNAMIC, _html, 0, 1);
 
 	/// ^image.load[background.gif]
-	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
+	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
 
 	/// ^image.create[width;height] bgcolor=white
 	/// ^image.create[width;height;bgcolor]
-	vclass.add_native_method("create", Method::CT_DYNAMIC, _create, 2, 3);
+	add_native_method("create", Method::CT_DYNAMIC, _create, 2, 3);
 
 	/// ^image.gif[]
-	vclass.add_native_method("gif", Method::CT_DYNAMIC, _gif, 0, 0);
+	add_native_method("gif", Method::CT_DYNAMIC, _gif, 0, 0);
 
 	/// ^image.line(x0;y0;x1;y1;color)
-	vclass.add_native_method("line", Method::CT_DYNAMIC, _line, 5, 5);
+	add_native_method("line", Method::CT_DYNAMIC, _line, 5, 5);
 
 	/// ^image.fill(x;y;color)
-	vclass.add_native_method("fill", Method::CT_DYNAMIC, _fill, 3, 3);
+	add_native_method("fill", Method::CT_DYNAMIC, _fill, 3, 3);
 
 	/// ^image.rectangle(x0;y0;x1;y1;color)
-	vclass.add_native_method("rectangle", Method::CT_DYNAMIC, _rectangle, 5, 5);
+	add_native_method("rectangle", Method::CT_DYNAMIC, _rectangle, 5, 5);
 
 	/// ^image.bar(x0;y0;x1;y1;color)
-	vclass.add_native_method("bar", Method::CT_DYNAMIC, _bar, 5, 5);
+	add_native_method("bar", Method::CT_DYNAMIC, _bar, 5, 5);
 
 	/// ^image.replace(color-source;color-dest)(x;y)... point coord pairs
-	vclass.add_native_method("replace", Method::CT_DYNAMIC, _replace, 2+3*2, 2+100*2);
+	add_native_method("replace", Method::CT_DYNAMIC, _replace, 2+3*2, 2+100*2);
 
 	/// ^image.polygon(color)(x;y)... point coord pairs
-	vclass.add_native_method("polygon", Method::CT_DYNAMIC, _polygon, 1+3*2, 1+100*2);
+	add_native_method("polygon", Method::CT_DYNAMIC, _polygon, 1+3*2, 1+100*2);
 
 	/// ^image.polybar(color)(x;y)... point coord pairs
-	vclass.add_native_method("polybar", Method::CT_DYNAMIC, _polybar, 1+3*2, 1+100*2);
+	add_native_method("polybar", Method::CT_DYNAMIC, _polybar, 1+3*2, 1+100*2);
 
     /// ^image.font[alPHAbet;font-file-name.gif](height)
     /// ^image.font[alPHAbet;font-file-name.gif](height;width)
-	vclass.add_native_method("font", Method::CT_DYNAMIC, _font, 3, 4);
+	add_native_method("font", Method::CT_DYNAMIC, _font, 3, 4);
 
     /// ^image.text(x;y)[text]
-	vclass.add_native_method("text", Method::CT_DYNAMIC, _text, 3, 3);
+	add_native_method("text", Method::CT_DYNAMIC, _text, 3, 3);
 	
+}
+
+// global variable
+
+Methoded *image_class;
+
+// creator
+
+Methoded *MImage_create(Pool& pool) {
+	return image_class=new(pool) MImage(pool);
 }

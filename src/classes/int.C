@@ -5,18 +5,29 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.19 2001/04/15 13:12:17 paf Exp $
+	$Id: int.C,v 1.20 2001/04/28 08:43:47 paf Exp $
 */
 
+#include "classes.h"
 #include "pa_request.h"
-#include "_int.h"
 #include "pa_vdouble.h"
 #include "pa_vint.h"
-#include "_string.h"
 
-// global var
+// externs
 
-VStateless_class *int_class;
+void _string_format(Request& r, const String& method_name, MethodParams *);
+
+// defines
+
+#define INT_CLASS_NAME "int"
+
+// class
+
+class MInt : public Methoded {
+public:
+	MInt(Pool& pool);
+	bool used_directly() { return false; }
+};
 
 // methods
 
@@ -59,29 +70,41 @@ static void _mul(Request& r, const String&, MethodParams *params) { vint_op(r, p
 static void _div(Request& r, const String&, MethodParams *params) { vint_op(r, params, &__div); }
 static void _mod(Request& r, const String&, MethodParams *params) { vint_op(r, params, &__mod); }
 
-// initialize
+// constructor
 
-void initialize_int_class(Pool& pool, VStateless_class& vclass) {
+MInt::MInt(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), INT_CLASS_NAME));
+
+
 	// ^int.int[]
-	vclass.add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
+	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
 
 	// ^int.double[]
-	vclass.add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
+	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
 
 	// ^int.inc[] 
 	// ^int.inc[offset]
-	vclass.add_native_method("inc", Method::CT_DYNAMIC, _inc, 0, 1);
+	add_native_method("inc", Method::CT_DYNAMIC, _inc, 0, 1);
 	// ^int.dec[] 
 	// ^int.dec[offset]
-	vclass.add_native_method("dec", Method::CT_DYNAMIC, _dec, 0, 1);
+	add_native_method("dec", Method::CT_DYNAMIC, _dec, 0, 1);
 	// ^int.mul[k] 
-	vclass.add_native_method("mul", Method::CT_DYNAMIC, _mul, 1, 1);
+	add_native_method("mul", Method::CT_DYNAMIC, _mul, 1, 1);
 	// ^int.div[d]
-	vclass.add_native_method("div", Method::CT_DYNAMIC, _div, 1, 1);
+	add_native_method("div", Method::CT_DYNAMIC, _div, 1, 1);
 	// ^int.mod[offset]
-	vclass.add_native_method("mod", Method::CT_DYNAMIC, _mod, 1, 1);
+	add_native_method("mod", Method::CT_DYNAMIC, _mod, 1, 1);
 
 
 	// ^int.format{format}
-	vclass.add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
+	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
+}
+// global variable
+
+Methoded *int_class;
+
+// creator
+
+Methoded *MInt_create(Pool& pool) {
+	return int_class=new(pool) MInt(pool);
 }

@@ -5,20 +5,28 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.40 2001/04/26 14:55:13 paf Exp $
+	$Id: string.C,v 1.41 2001/04/28 08:43:48 paf Exp $
 */
 
+#include "classes.h"
 #include "pa_request.h"
-#include "_string.h"
 #include "pa_vdouble.h"
 #include "pa_vint.h"
 #include "pa_vtable.h"
 #include "pa_vbool.h"
 #include "pa_string.h"
 
-// global var
+// defines
 
-VStateless_class *string_class;
+#define STRING_CLASS_NAME "string"
+
+// class
+
+class MString : public Methoded {
+public:
+	MString(Pool& pool);
+	bool used_directly() { return false; }
+};
 
 // methods
 
@@ -227,38 +235,50 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 	r.write_assign_lang(*result);
 }
 
-// initialize
+// constructor
 
-void initialize_string_class(Pool& pool, VStateless_class& vclass) {
+MString::MString(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), STRING_CLASS_NAME));
+
+
 	// ^string.length[]
-	vclass.add_native_method("length", Method::CT_DYNAMIC, _length, 0, 0);
+	add_native_method("length", Method::CT_DYNAMIC, _length, 0, 0);
 	
 	// ^string.int[]
-	vclass.add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
+	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
 	
 	// ^string.double[]
-	vclass.add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
+	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
 
 	// ^string.format{format}
-	vclass.add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
+	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
 
 	// ^string.left(n)
-	vclass.add_native_method("left", Method::CT_DYNAMIC, _left, 1, 1);
+	add_native_method("left", Method::CT_DYNAMIC, _left, 1, 1);
 	// ^string.right(n)
-	vclass.add_native_method("right", Method::CT_DYNAMIC, _right, 1, 1);
+	add_native_method("right", Method::CT_DYNAMIC, _right, 1, 1);
 	// ^string.mid(p;n)
-	vclass.add_native_method("mid", Method::CT_DYNAMIC, _mid, 2, 2);
+	add_native_method("mid", Method::CT_DYNAMIC, _mid, 2, 2);
 
 	// ^string.pos[substr]
-	vclass.add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 1);
+	add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 1);
 
 	// ^string.lsplit[delim]
-	vclass.add_native_method("lsplit", Method::CT_DYNAMIC, _lsplit, 1, 1);
+	add_native_method("lsplit", Method::CT_DYNAMIC, _lsplit, 1, 1);
 	// ^string.rsplit[delim]
-	vclass.add_native_method("rsplit", Method::CT_DYNAMIC, _rsplit, 1, 1);
+	add_native_method("rsplit", Method::CT_DYNAMIC, _rsplit, 1, 1);
 
 	// ^string.match[regexp][options]
 	// ^string.match[regexp][options]{replacement-code}
-	vclass.add_native_method("match", Method::CT_DYNAMIC, _match, 1, 3);
+	add_native_method("match", Method::CT_DYNAMIC, _match, 1, 3);
 }	
 
+// global variable
+
+Methoded *string_class;
+
+// creator
+
+Methoded *MString_create(Pool& pool) {
+	return string_class=new(pool) MString(pool);
+}

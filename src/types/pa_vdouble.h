@@ -5,15 +5,17 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.16 2001/04/26 15:01:51 paf Exp $
+	$Id: pa_vdouble.h,v 1.17 2001/04/28 08:44:15 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
+#include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
-#include "_double.h"
+
+extern Methoded *double_class;
 
 /// value of type 'double'. implemented with @c double
 class VDouble : public VStateless_object {

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.128 2001/04/27 15:56:32 paf Exp $
+	$Id: compile.y,v 1.129 2001/04/28 08:43:56 paf Exp $
 */
 
 /**
@@ -29,9 +29,6 @@
 #define YYPRINT(file, type, value)  yyprint(file, type, value)
 
 #include "pa_config_includes.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
 
 #include "compile_tools.h"
 #include "pa_value.h"
@@ -138,7 +135,7 @@ control_method: '@' STRING '\n'
 		YYERROR;
 	}
 	if(command==CLASS_NAME) {
-		if(PC.cclass!=&PC.request->OP) { // already changed from default[OP]?
+		if(PC.cclass!=&PC.request->OP) { // already changed from default?
 			strcpy(PC.error, "class already have a name '");
 			strncat(PC.error, PC.cclass->name().cstr(), 100);
 			strcat(PC.error, "'");

@@ -5,26 +5,40 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.65 2001/04/26 14:55:13 paf Exp $
+	$Id: table.C,v 1.66 2001/04/28 08:43:48 paf Exp $
 */
 
 #include "pa_config_includes.h"
 
 #include "pcre.h"
 
+#include "classes.h"
 #include "pa_common.h"
 #include "pa_request.h"
-#include "_table.h"
 #include "pa_vtable.h"
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
 #include "pa_dir.h"
 
-// global var
+// defines
 
-VStateless_class *table_class;
+#define TABLE_CLASS_NAME "table"
+
+// class
+
+class MTable : public Methoded {
+public: // VStateless_class
+	
+	Value *create_new_value(Pool& pool) { return new(pool) VTable(pool); }
+
+public:
+	MTable(Pool& pool);
+	bool used_directly() { return true; }
+
+};
 
 // methods
+
 static void _set(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// data is last parameter
@@ -358,7 +372,11 @@ static void _append(Request& r, const String& method_name, MethodParams *params)
 	Array& row=*new(pool) Array(pool);
 	string.split(row, 0, "\t", 1, String::UL_CLEAN);
 
-	static_cast<VTable *>(r.self)->table()+=&row;
+	VTable& vtable=*static_cast<VTable *>(r.self);
+	// disable ^a.menu{^a.append[]}
+	vtable.lock();
+	vtable.table()+=&row;
+	vtable.unlock();
 }
 
 static void _join(Request& r, const String& method_name, MethodParams *params) {
@@ -546,65 +564,78 @@ static void _dir(Request& r, const String& method_name, MethodParams *params) {
 	static_cast<VTable *>(r.self)->set_table(table);
 }
 
-// initialize
-void initialize_table_class(Pool& pool, VStateless_class& vclass) {
+// constructor
+
+MTable::MTable(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), TABLE_CLASS_NAME));
+
 	// ^table:set{data}
 	// ^table:set[nameless]{data}
-	vclass.add_native_method("set", Method::CT_DYNAMIC, _set, 1, 2);
+	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 2);
 
 	// ^table:load[file]  
 	// ^table:load[nameless;file]
-	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
+	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
 
 	// ^table.save[file]  
 	// ^table.save[nameless;file]
-	vclass.add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
+	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
 
 	// ^table.count[]
-	vclass.add_native_method("count", Method::CT_DYNAMIC, _count, 0, 0);
+	add_native_method("count", Method::CT_DYNAMIC, _count, 0, 0);
 
 	// ^table.line[]
-	vclass.add_native_method("line", Method::CT_DYNAMIC, _line, 0, 0);
+	add_native_method("line", Method::CT_DYNAMIC, _line, 0, 0);
 
 	// ^table.offset[]  
 	// ^table.offset[offset]
-	vclass.add_native_method("offset", Method::CT_DYNAMIC, _offset, 0, 1);
+	add_native_method("offset", Method::CT_DYNAMIC, _offset, 0, 1);
 
 	// ^table.menu{code}  
 	// ^table.menu{code}[delim]
-	vclass.add_native_method("menu", Method::CT_DYNAMIC, _menu, 1, 2);
+	add_native_method("menu", Method::CT_DYNAMIC, _menu, 1, 2);
 
 	// ^table.empty{code-when-empty}  
 	// ^table.empty{code-when-empty}{code-when-not}
-	vclass.add_native_method("empty", Method::CT_DYNAMIC, _empty, 1, 2);
+	add_native_method("empty", Method::CT_DYNAMIC, _empty, 1, 2);
 
 	// ^table.record[]
-	vclass.add_native_method("record", Method::CT_DYNAMIC, _record, 0, 0);
+	add_native_method("record", Method::CT_DYNAMIC, _record, 0, 0);
 
 	// ^table.sort{string-key-maker} ^table.sort{string-key-maker}[asc|desc]
 	// ^table.sort(numeric-key-maker) ^table.sort(numeric-key-maker)[asc|desc]
-	vclass.add_native_method("sort", Method::CT_DYNAMIC, _sort, 1, 2);
+	add_native_method("sort", Method::CT_DYNAMIC, _sort, 1, 2);
 
 	// ^table.locate[field;value]
-	vclass.add_native_method("locate", Method::CT_DYNAMIC, _locate, 2, 2);
+	add_native_method("locate", Method::CT_DYNAMIC, _locate, 2, 2);
 	// ^table.found{when-found}
 	// ^table.found{when-found}{when-not-found}
-	vclass.add_native_method("found", Method::CT_DYNAMIC, _found, 1, 2);
+	add_native_method("found", Method::CT_DYNAMIC, _found, 1, 2);
 
 	// ^table.flip[]
-	vclass.add_native_method("flip", Method::CT_DYNAMIC, _flip, 0, 0);
+	add_native_method("flip", Method::CT_DYNAMIC, _flip, 0, 0);
 
 	// ^table.append{r{tab}e{tab}c{tab}o{tab}r{tab}d}
-	vclass.add_native_method("append", Method::CT_DYNAMIC, _append, 1, 1);
+	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 1);
 
 	// ^table.join[table]
-	vclass.add_native_method("join", Method::CT_DYNAMIC, _join, 1, 1);
+	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 1);
 
 
 	// ^table:sql[query][(count[;offset])]
-	vclass.add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);
+	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);
 
 	// ^table:dir[path]
 	// ^table:dir[path][regexp]
-	vclass.add_native_method("dir", Method::CT_DYNAMIC, _dir, 1, 2);
+	add_native_method("dir", Method::CT_DYNAMIC, _dir, 1, 2);
+}
+
+// global variable
+
+Methoded *table_class;
+
+// creator
+
+Methoded *MTable_create(Pool& pool) {
+	return table_class=new(pool) MTable(pool);
 }

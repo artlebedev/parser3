@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.72 2001/04/25 10:25:37 paf Exp $
+	$Id: parser3.C,v 1.73 2001/04/28 08:44:09 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -16,7 +16,7 @@
 
 #include "pa_sapi.h"
 #include "pa_common.h"
-#include "pa_globals.h"
+#include "classes.h"
 #include "pa_request.h"
 #include "pa_socks.h"
 #include "pa_version.h"
@@ -173,6 +173,8 @@ int main(int argc, char *argv[]) {
 		// init socks
 		init_socks(pool);
 
+		// init global classes
+		init_methoded_array(pool);
 		// init global variables
 		pa_globals_init(pool);
 

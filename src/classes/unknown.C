@@ -5,18 +5,26 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: unknown.C,v 1.2 2001/04/15 13:12:18 paf Exp $
+	$Id: unknown.C,v 1.3 2001/04/28 08:43:48 paf Exp $
 */
 
+#include "classes.h"
 #include "pa_request.h"
-#include "_unknown.h"
 #include "pa_vint.h"
 #include "pa_vdouble.h"
 #include "pa_vunknown.h"
 
-// global var
+// defines
 
-VStateless_class *unknown_class;
+#define UNKNOWN_CLASS_NAME "UNKNOWN"
+
+// class
+
+class MUnknown : public Methoded {
+public:
+	MUnknown(Pool& pool);
+	bool used_directly() { return false; }
+};
 
 // methods
 
@@ -34,13 +42,25 @@ static void _double(Request& r, const String&, MethodParams *) {
 	r.write_no_lang(value);
 }
 
+// constructor
 
-// initialize
+MUnknown::MUnknown(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), UNKNOWN_CLASS_NAME));
 
-void initialize_unknown_class(Pool& pool, VStateless_class& vclass) {
+
 	// ^unknown.int[]
-	vclass.add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
+	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
 
 	// ^unknown.double[]
-	vclass.add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
+	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
+}
+
+// global variable
+
+Methoded *unknown_class;
+
+// creator
+
+Methoded *MUnknown_create(Pool& pool) {
+	return unknown_class=new(pool) MUnknown(pool);
 }

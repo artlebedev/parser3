@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcookie.h,v 1.8 2001/04/26 15:01:51 paf Exp $
+	$Id: pa_vcookie.h,v 1.9 2001/04/28 08:44:15 paf Exp $
 */
 
 #ifndef PA_VCOOKIE_H
@@ -16,6 +16,8 @@
 #include "pa_value.h"
 
 class Request;
+
+#define COOKIE_CLASS_NAME "cookie"
 
 /// cookie class
 class VCookie : public Value {

@@ -5,25 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.56 2001/04/20 14:18:42 paf Exp $
+	$Id: pa_globals.C,v 1.57 2001/04/28 08:43:57 paf Exp $
 */
 
 #include "pa_globals.h"
 #include "pa_string.h"
 #include "pa_hash.h"
-#include "pa_table.h"
-#include "_string.h"
-#include "_double.h"
-#include "_int.h"
-#include "_table.h"
-#include "_form.h"
-#include "_response.h"
-#include "_file.h"
-#include "_random.h"
 #include "pa_sql_driver_manager.h"
-#include "_mail.h"
-#include "_image.h"
-#include "_unknown.h"
 
 String *user_html_name;
 String *content_type_name;
@@ -47,22 +35,7 @@ String *empty_string;
 String *auto_method_name;
 String *main_method_name;
 
-String *unknown_class_name;
-String *op_class_name;
 String *main_class_name;
-String *string_class_name;
-String *double_class_name;
-String *int_class_name;
-String *env_class_name;
-String *table_class_name;
-String *file_class_name;
-String *form_class_name;
-String *request_class_name;
-String *response_class_name;
-String *cookie_class_name;
-String *random_class_name;
-String *mail_class_name;
-String *image_class_name;
 
 String *result_var_name;
 String *string_pre_match_name;
@@ -152,22 +125,7 @@ void pa_globals_init(Pool& pool) {
 	auto_method_name=NEW String(pool, AUTO_METHOD_NAME);
 	main_method_name=NEW String(pool, MAIN_METHOD_NAME);
 
-	unknown_class_name=NEW String(pool, UNKNOWN_CLASS_NAME);
-	op_class_name=NEW String(pool, OP_CLASS_NAME);
 	main_class_name=NEW String(pool, MAIN_CLASS_NAME);
-	string_class_name=NEW String(pool, STRING_CLASS_NAME);
-	double_class_name=NEW String(pool, DOUBLE_CLASS_NAME);
-	int_class_name=NEW String(pool, INT_CLASS_NAME);
-	table_class_name=NEW String(pool, TABLE_CLASS_NAME);
-	file_class_name=NEW String(pool, FILE_CLASS_NAME);
-	env_class_name=NEW String(pool, ENV_CLASS_NAME);	
-	form_class_name=NEW String(pool, FORM_CLASS_NAME);	
-	request_class_name=NEW String(pool, REQUEST_CLASS_NAME);	
-	response_class_name=NEW String(pool, RESPONSE_CLASS_NAME);
-	cookie_class_name=NEW String(pool, COOKIE_CLASS_NAME);
-	random_class_name=NEW String(pool, RANDOM_CLASS_NAME);
-	mail_class_name=NEW String(pool, MAIL_CLASS_NAME);
-	image_class_name=NEW String(pool, IMAGE_CLASS_NAME);
 
 	result_var_name=NEW String(pool, RESULT_VAR_NAME);
 	string_pre_match_name=NEW String(pool, STRING_PRE_MATCH_NAME);
@@ -219,65 +177,18 @@ void pa_globals_init(Pool& pool) {
 
 	// tables
 	default_typo_table=NEW Table(pool, 0, 0);
-	{
-		// < -> &lt;
-		{
-			Array *row=NEW Array(pool);
-			*row+=NEW String(pool, "<");	
-			*row+=NEW String(pool, "&lt;");
-			*default_typo_table+=row;
+	#define DT_ROW(from, to) { \
+			Array *row=NEW Array(pool); \
+			*row+=NEW String(pool, from); \
+			*row+=NEW String(pool, to); \
+			*default_typo_table+=row; \
 		}
-		// > -> &gt;
-		{
-			Array *row=NEW Array(pool);
-			*row+=NEW String(pool, ">");	
-			*row+=NEW String(pool, "&gt;");
-			*default_typo_table+=row;
-		}
-		// " -> &quot;
-		{
-			Array *row=NEW Array(pool);
-			*row+=NEW String(pool, "\"");	
-			*row+=NEW String(pool, "&quot;");
-			*default_typo_table+=row;
-		}
-		// & -> &amp;
-		{
-			Array *row=NEW Array(pool);
-			*row+=NEW String(pool, "&");	
-			*row+=NEW String(pool, "&amp;");
-			*default_typo_table+=row;
-		}
-		// \n\n -> <p>
-		{
-			Array *row=NEW Array(pool);
-			*row+=NEW String(pool, "\\n\\n");	
-			*row+=NEW String(pool, "<p>");
-			*default_typo_table+=row;
-		}
-		// \n -> <br>
-		{
-			Array *row=NEW Array(pool);
-			*row+=NEW String(pool, "\\n");	
-			*row+=NEW String(pool, "<br>");
-			*default_typo_table+=row;
-		}
-	}
-
-	// stateless classes
-	initialize_unknown_class(pool, *(unknown_class=NEW VStateless_class(pool)));  unknown_class->set_name(*unknown_class_name);
-	initialize_string_class(pool, *(string_class=NEW VStateless_class(pool)));  string_class->set_name(*string_class_name);
-	initialize_double_class(pool, *(double_class=NEW VStateless_class(pool)));  double_class->set_name(*double_class_name);
-	initialize_int_class(pool, *(int_class=NEW VStateless_class(pool)));  int_class->set_name(*int_class_name);
-	initialize_table_class(pool, *(table_class=NEW VStateless_class(pool)));  table_class->set_name(*table_class_name);
-	initialize_file_class(pool, *(file_class=NEW VStateless_class(pool)));  file_class->set_name(*file_class_name);
-	initialize_response_class(pool, *(response_class=NEW VStateless_class(pool)));  response_class->set_name(*response_class_name);
-	initialize_random_class(pool, *(random_class=NEW VStateless_class(pool)));  random_class->set_name(*random_class_name);
-	initialize_mail_class(pool, *(mail_class=NEW VStateless_class(pool)));  mail_class->set_name(*mail_class_name);
-	initialize_image_class(pool, *(image_class=NEW VStateless_class(pool)));  image_class->set_name(*image_class_name);
-
-	// stateless base classes
-	initialize_form_base_class(pool, *(form_base_class=NEW VStateless_class(pool)));  form_base_class->set_name(*form_class_name);
+	DT_ROW("<", "&lt;");
+	DT_ROW(">", "&gt;");
+	DT_ROW("\"", "&quot;");
+	DT_ROW("&", "&amp;");
+	DT_ROW("\\n\\n", "<p>");
+	DT_ROW("\\n", "<br>");
 
 	// SQL_Driver_manager
  	SQL_driver_manager=NEW SQL_Driver_manager(pool);

@@ -5,15 +5,23 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: response.C,v 1.7 2001/04/15 13:12:18 paf Exp $
+	$Id: response.C,v 1.8 2001/04/28 08:43:48 paf Exp $
 */
 
+#include "classes.h"
 #include "pa_request.h"
-#include "_response.h"
 
-// global var
+// defines
 
-VStateless_class *response_class;
+#define RESPONSE_CLASS_NAME "response"
+
+// class
+
+class MResponse : public Methoded {
+public:
+	MResponse(Pool& pool);
+	bool used_directly() { return false; }
+};
 
 // methods
 
@@ -21,9 +29,21 @@ static void _clear(Request& r, const String&, MethodParams *) {
 	r.self/*VResponse*/->get_hash()/*sure not 0*/->clear();
 }
 
-// initialize
+// constructor
 
-void initialize_response_class(Pool& pool, VStateless_class& vclass) {
+MResponse::MResponse(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), RESPONSE_CLASS_NAME));
+
+
 	// ^clear[]
-	vclass.add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
+	add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
+}
+// global variable
+
+Methoded *response_class;
+
+// creator
+
+Methoded *MResponse_create(Pool& pool) {
+	return response_class=new(pool) MResponse(pool);
 }

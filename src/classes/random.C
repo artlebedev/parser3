@@ -5,21 +5,31 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: random.C,v 1.9 2001/04/26 15:01:48 paf Exp $
+	$Id: random.C,v 1.10 2001/04/28 08:43:48 paf Exp $
 */
 
 #include "pa_config_includes.h"
 #include "pa_common.h"
-#include "_random.h"
 #include "pa_vint.h"
 #include "pa_request.h"
 
-// global var
+// defines
 
-VStateless_class *random_class;
+#define RANDOM_CLASS_NAME "random"
+
+// class
+
+class MRandom : public Methoded {
+public:
+	MRandom(Pool& pool);
+	bool used_directly() { return true; }
+};
 
 // methods
 
+/**	^random.generate[]
+	^random.generate(range)
+*/
 static void _generate(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -33,13 +43,23 @@ static void _generate(Request& r, const String& method_name, MethodParams *param
 	r.write_no_lang(*new(pool) VInt(pool, rand()%max));
 }
 
-// initialize
+// constructor
 
-void initialize_random_class(Pool& pool, VStateless_class& vclass) {
+MRandom::MRandom(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), RANDOM_CLASS_NAME));
+
+
 	// setting seed
 	srand(getpid()+time(NULL));  rand();
 	
+
 	// ^random.generate[]
 	// ^random.generate(range)
-	vclass.add_native_method("generate", Method::CT_STATIC, _generate, 1, 1);
+	add_native_method("generate", Method::CT_STATIC, _generate, 1, 1);
+}
+
+// creator
+
+Methoded *MRandom_create(Pool& pool) {
+	return new(pool) MRandom(pool);
 }

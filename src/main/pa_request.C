@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.122 2001/04/26 15:19:28 paf Exp $
+	$Id: pa_request.C,v 1.123 2001/04/28 08:43:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -18,18 +18,12 @@
 #include "pa_request.h"
 #include "pa_wwrapper.h"
 #include "pa_vclass.h"
-#include "_op.h"
-#include "_table.h"
-#include "_file.h"
 #include "pa_globals.h"
 #include "pa_vint.h"
 #include "pa_vmethod_frame.h"
 #include "pa_types.h"
 #include "pa_vtable.h"
-#include "_random.h"
 #include "pa_vfile.h"
-#include "_mail.h"
-#include "_image.h"
 
 /// $LIMITS.post_max_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
@@ -40,12 +34,14 @@ const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
 /// content type of response when no $MAIN:defaults.content-type defined
 const char *DEFAULT_CONTENT_TYPE="text/html";
 
+Methoded *MOP_create(Pool&);
+
 //
 Request::Request(Pool& apool,
 				 Info& ainfo,
 				 String::Untaint_lang adefault_lang) : Pooled(apool),
 	stack(apool),
-	OP(apool),
+	OP(*MOP_create(apool)),
 	env(apool),
 	form(apool),
 	request(apool, *this),
@@ -62,31 +58,28 @@ Request::Request(Pool& apool,
 	mail(0), 
 	pcre_tables(0)
 {
-	// root superclass, 
-	//   parent of all classes, 
-	//   operators holder
-	initialize_op_class(pool(), OP);
-	classes().put(*op_class_name, &OP);
-	// table class
-	classes().put(*table_class_name, table_class);	
-	// file class
-	classes().put(*file_class_name, file_class);	
-	// random class
-	classes().put(*random_class_name, random_class);	
+	/// directly used
+	// operators
+	OP.register_directly_used(*this);
+	// classes:
+	// table, file, random, mail, image
+	methoded_array->register_directly_used(*this);
+
+	/// methodless
 	// env class
-	classes().put(*env_class_name, &env);
-	// form class
-	classes().put(*form_class_name, &form);	
+	classes().put(*NEW String(pool(), ENV_CLASS_NAME), &env);
 	// request class
-	classes().put(*request_class_name, &request);	
-	// response class
-	classes().put(*response_class_name, &response);	
+	classes().put(*NEW String(pool(), REQUEST_CLASS_NAME), &request);	
 	// cookie class
-	classes().put(*cookie_class_name, &cookie);
-	// mail class
-	classes().put(*mail_class_name, mail_class);
-	// image class
-	classes().put(*image_class_name, image_class);
+	classes().put(*NEW String(pool(), COOKIE_CLASS_NAME), &cookie);
+
+	/// methoded
+	// response class
+	classes().put(response.get_class()->name(), &response);	
+
+	/// bases used
+	// form class
+	classes().put(form.get_class()->base()->name(), &form);	
 }
 
 static void element2ctypes(unsigned char *tables, 
@@ -155,6 +148,8 @@ static void element2case(unsigned char *tables, Value& ctype, const String& name
 	the file user requested us to process
 	all located classes become children of one another,
 	composing class we name 'MAIN'
+
+	@test move configure to M-class
 */
 void Request::core(const char *root_auto_path, bool root_auto_fail,
 				   const char *site_auto_path, bool site_auto_fail,
@@ -177,6 +172,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 		// $MAIN:LIMITS hash used here,
 		//	until someone with less privileges have overriden them
+		methoded_array->configure(*this);
 		{
 			Value *limits=main_class?main_class->get_element(*limits_name):0;
 			if(info.method && StrEqNc(info.method, "post", true)) {

@@ -425,51 +425,15 @@ SOURCE=..\types\pa_wwrapper.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\classes\_double.h
+SOURCE=..\classes\classes.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\classes\_file.h
+SOURCE=..\classes\classes.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\classes\_form.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\_image.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\_int.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\_mail.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\_op.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\_random.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\_response.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\_string.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\_table.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\_unknown.h
+SOURCE=..\classes\classes.inc
 # End Source File
 # Begin Source File
 

@@ -14,6 +14,7 @@ _	&nbsp^;
 (c)	&copy^;
 ^#A9	&copy^;	windows (c)
 }]
+#$if(!($SQL is hash)){$SQL[$z[z]]}
 $SQL.connect-string[mysql://test:test@localhost/test/cp1251_koi8]
 #for ^file:load[name;user-name;mime-type << autodetection]
 $MIME-TYPES[^table:set{ext	mime-type

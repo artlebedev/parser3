@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_venv.h,v 1.14 2001/04/26 15:01:51 paf Exp $
+	$Id: pa_venv.h,v 1.15 2001/04/28 08:44:15 paf Exp $
 */
 
 #ifndef PA_VENV_H
@@ -15,6 +15,8 @@
 #include "pa_common.h"
 #include "pa_value.h"
 #include "pa_string.h"
+
+#define ENV_CLASS_NAME "env"
 
 /// env class
 class VEnv : public Value {

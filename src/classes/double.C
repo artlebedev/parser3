@@ -5,18 +5,29 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.21 2001/04/15 13:12:17 paf Exp $
+	$Id: double.C,v 1.22 2001/04/28 08:43:47 paf Exp $
 */
 
+#include "classes.h"
 #include "pa_request.h"
-#include "_double.h"
 #include "pa_vdouble.h"
 #include "pa_vint.h"
-#include "_string.h"
 
-// global var
+// externs
 
-VStateless_class *double_class;
+void _string_format(Request& r, const String& method_name, MethodParams *);
+
+// defines
+
+#define DOUBLE_CLASS_NAME "double"
+
+// class
+
+class MDouble : public Methoded {
+public:
+	MDouble(Pool& pool);
+	bool used_directly() { return true; }
+};
 
 // methods
 
@@ -59,28 +70,39 @@ static void _mul(Request& r, const String&, MethodParams *params) { vdouble_op(r
 static void _div(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__div); }
 static void _mod(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__mod); }
 
-// initialize
+// constructor
 
-void initialize_double_class(Pool& pool, VStateless_class& vclass) {
+MDouble::MDouble(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), DOUBLE_CLASS_NAME));
+
 	// ^double.int[]
-	vclass.add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
+	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
 
 	// ^double.double[]
-	vclass.add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
+	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
 	
 	// ^double.inc[] 
 	// ^double.inc[offset]
-	vclass.add_native_method("inc", Method::CT_DYNAMIC, _inc, 0, 1);
+	add_native_method("inc", Method::CT_DYNAMIC, _inc, 0, 1);
 	// ^double.dec[] 
 	// ^double.dec[offset]
-	vclass.add_native_method("dec", Method::CT_DYNAMIC, _dec, 0, 1);
+	add_native_method("dec", Method::CT_DYNAMIC, _dec, 0, 1);
 	// ^double.mul[k] 
-	vclass.add_native_method("mul", Method::CT_DYNAMIC, _mul, 1, 1);
+	add_native_method("mul", Method::CT_DYNAMIC, _mul, 1, 1);
 	// ^double.div[d]
-	vclass.add_native_method("div", Method::CT_DYNAMIC, _div, 1, 1);
+	add_native_method("div", Method::CT_DYNAMIC, _div, 1, 1);
 	// ^double.mod[offset]
-	vclass.add_native_method("mod", Method::CT_DYNAMIC, _mod, 1, 1);
+	add_native_method("mod", Method::CT_DYNAMIC, _mod, 1, 1);
 
 	// ^double.format{format}
-	vclass.add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
+	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
+}
+// global variable
+
+Methoded *double_class;
+
+// creator
+
+Methoded *MDouble_create(Pool& pool) {
+	return double_class=new(pool) MDouble(pool);
 }

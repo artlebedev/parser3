@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.15 2001/04/26 15:01:52 paf Exp $
+	$Id: pa_vtable.h,v 1.16 2001/04/28 08:44:17 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -13,8 +13,9 @@
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
-#include "_table.h"
 #include "pa_vunknown.h"
+
+extern Methoded *table_class;
 
 /// value of type 'table'. implemented with Table
 class VTable : public VStateless_object {
@@ -52,11 +53,13 @@ public: // usage
 		ftable(atable), locked(false),
 		last_locate_was_successful(false) {
 	}
-	void lock() { locked=true; }
+	void lock() { 
+		check_lock();
+		locked=true; 
+	}
 	void unlock() { locked=false; }
 	void set_table(Table& avalue) { 
-		if(locked)
-			bark("is locked");
+		check_lock();
 		ftable=&avalue; 
 	}
 	Table& table() { 
@@ -70,6 +73,13 @@ private:
 
 	Table *ftable;
 	bool locked;
+
+private:
+
+	void check_lock() {
+		if(locked)
+			bark("is locked");
+	}
 
 };
 

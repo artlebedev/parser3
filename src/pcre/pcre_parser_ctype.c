@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pcre_parser_ctype.c,v 1.2 2001/04/23 16:13:05 paf Exp $
+	$Id: pcre_parser_ctype.c,v 1.3 2001/04/28 08:44:01 paf Exp $
 
 
 Perl-Compatible Regular ExpressionsThis is a support program to generate part of auto.p, containing
@@ -59,8 +59,8 @@ and semantics are as close as possible to those of the Perl 5 language.
 size_t out_c(int c) {
 	return printf(
 		isprint(c)&&
-		!isspace(c)&&
-		!(c>=128&&c<192)?
+		!isspace(c)/*&&
+		!(c>=128&&c<192)*/?
 		strchr("^$;()[]{}\"", c)==0?"%c":"^%c":"^#%02X", c);
 }
 

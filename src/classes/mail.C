@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.22 2001/04/26 14:55:12 paf Exp $
+	$Id: mail.C,v 1.23 2001/04/28 08:43:47 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -14,15 +14,22 @@
 #	include "smtp/smtp.h"
 #endif
 
-#include "_mail.h"
 #include "pa_common.h"
 #include "pa_request.h"
 #include "pa_vfile.h"
 #include "pa_exec.h"
 
-// global var
+// defines
 
-VStateless_class *mail_class;
+#define MAIL_CLASS_NAME "mail"
+
+// class
+
+class MMail : public Methoded {
+public:
+	MMail(Pool& pool);
+	bool used_directly() { return true; }
+};
 
 // helpers
 
@@ -412,8 +419,21 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 	sendmail(r, method_name, letter, from, to);
 }
 
-// initialize
-void initialize_mail_class(Pool& pool, VStateless_class& vclass) {
+// constructor
+
+MMail::MMail(Pool& apool) : Methoded(apool) {
+	set_name(*NEW String(pool(), MAIL_CLASS_NAME));
+
 	/// ^mail:send{hash}
-	vclass.add_native_method("send", Method::CT_STATIC, _send, 1, 1);
+	add_native_method("send", Method::CT_STATIC, _send, 1, 1);
+}
+
+// global variable
+
+Methoded *mail_class;
+
+// creator
+
+Methoded *MMail_create(Pool& pool) {
+	return mail_class=new(pool) MMail(pool);
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vunknown.h,v 1.10 2001/04/26 15:01:52 paf Exp $
+	$Id: pa_vunknown.h,v 1.11 2001/04/28 08:44:17 paf Exp $
 */
 
 #ifndef PA_VUNKNOWN_H
@@ -13,8 +13,8 @@
 
 #include "pa_vstateless_object.h"
 #include "pa_globals.h"
-#include "_unknown.h"
 
+extern Methoded *unknown_class;
 
 /// value of type 'unknown'. ex: usually $sjfklsjfksjdfk has this type
 class VUnknown : public VStateless_object {

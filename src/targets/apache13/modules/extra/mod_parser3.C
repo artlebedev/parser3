@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.28 2001/04/26 15:14:28 paf Exp $
+	$Id: mod_parser3.C,v 1.29 2001/04/28 08:44:06 paf Exp $
 */
 
 #include "httpd.h"
@@ -17,6 +17,7 @@
 #include "util_script.h"
 
 #include "pa_sapi.h"
+#include "classes.h"
 #include "pa_common.h"
 #include "pa_globals.h"
 #include "pa_request.h"
@@ -292,6 +293,8 @@ static void setup_module_cells() {
 		// init socks
 		init_socks(pool);
 
+		// init global classes
+		init_methoded_array(pool);
 		// init global variables
 		pa_globals_init(pool);
 	} PCATCH(e) { // global problem 

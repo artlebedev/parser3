@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.12 2001/04/26 14:55:35 paf Exp $
+	$Id: pa_wcontext.h,v 1.13 2001/04/28 08:44:17 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -71,8 +71,7 @@ public: // usage
 	WContext(Pool& apool, Value *avalue, bool aconstructing) : Value(apool), 
 		fstring(*new(apool) String(apool)),
 		fconstructing(aconstructing), fvalue(avalue),
-		fsomebody_entered_some_class(false),
-		fsomebody_entered_some_object(0){
+		fsomebody_entered_some_class(false){
 	}
 
 	bool constructing() { return fconstructing; }
@@ -80,16 +79,11 @@ public: // usage
 	void set_somebody_entered_some_class() { fsomebody_entered_some_class=true; }
 	bool somebody_entered_some_class() { return fsomebody_entered_some_class; }
 
-	void inc_somebody_entered_some_object() { fsomebody_entered_some_object++; }
-	int somebody_entered_some_object() { return fsomebody_entered_some_object; }
-	void clear_somebody_entered_some_object() { fsomebody_entered_some_object=0; }
-
 protected:
 	String& fstring;
 	bool fconstructing;  Value *fvalue;
 private:
 	bool fsomebody_entered_some_class;
-	int fsomebody_entered_some_object;
 };
 
 #endif

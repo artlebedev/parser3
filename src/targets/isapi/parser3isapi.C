@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.31 2001/04/25 14:55:22 paf Exp $
+	$Id: parser3isapi.C,v 1.32 2001/04/28 08:44:12 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -181,6 +181,8 @@ static bool parser_init() {
 		// init socks
 		init_socks(pool);
 
+		// init global classes
+		init_methoded_array(pool);
 		// init global variables
 		pa_globals_init(pool);
 		
