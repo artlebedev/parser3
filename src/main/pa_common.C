@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/25 14:57:33 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/11/25 15:03:41 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -340,7 +340,9 @@ static void file_read_http(Pool& pool, const String& file_spec,
 					&file_spec,
 					"bad response from host - bad header \"%s\"", line->cstr()); 
 				
-			headers.put(line->mid(0, pos), new(pool) VString(line->mid(pos+2, line->size()))); 
+			headers.put(
+				line->mid(0, pos).change_case(pool, String::CC_UPPER), 
+				new(pool) VString(line->mid(pos+2, line->size()))); 
 		} else
 			throw Exception("http.response", 
 				&file_spec, 

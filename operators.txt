@@ -303,7 +303,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^table::create[[nameless]]{данные} старое имя "set"
     !^table::create[table][[$.limit(1) $.offset(5) $.offset[cur]]]
         клонирует таблицу    
-    !^table::load[[nameless;]путь]
+    !^table::load[[nameless;]путь[;опции]]
         !если не nameless, названия колонок берутся из первой строки
         !пустые строки, и строки в первой колонке содержащие '#', игнорируются        
     !^table::sql{query}[[$.limit(2) $.offset(4) todo:$.default{ ^table::create[...] }]]
@@ -615,7 +615,7 @@ Xhashfile
     !^file:delete[имя файла]
     !^file:find[имя файла][{когда не нашли}]
     !^file:list[путь[;шаблон]] = table с колонкой name
-    !^file::load[text|binary;!big.zip[;!domain_press_release_2001_03_01.zip]]
+    !^file::load[text|binary;!big.zip[;!domain_press_release_2001_03_01.zip][;опции]]
     !$файл_который_был_loaded.size
     !^file::stat[имя файла]
     !$файл_который_был_stated.size !.adate !.mdate !.cdate
@@ -718,7 +718,7 @@ xdoc(xnode)
     !::create[[URI]][qualifiedName]
       URI default = disk path to requested document
       для каталогов конечный / обязателен
-    !::load[file.xml]
+    !::load[file.xml[;опции]]
     !.transform[rules.xsl|xdoc][[params hash]] выдаёт dom
         шаблон кэшируется, кэш обновляется при изменении даты файла шаблона,
         или изменении даты файла "имя шаблона.stamp"[проверка даты stamp приоритетнее]
@@ -936,6 +936,11 @@ xdoc(xnode)
     !stack табличка из колонок file line name,
         там лежат в обратном порядке имена[name] и места вызовов[file line] 
         операторов/методов, приведших к ошибке.
+
+!при загрузке файла (file::load, table::load, xdoc::load) можно указать в имени файла 
+    !http://domain/document?params
+    такой будет запрошен и получен
+
 
 !системные типы ошибок:
     !parser.compile       ^test[}                компиляция (непарная скобка, ...)
