@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2002/08/29 12:22:46 $";
+static const char* IDENT_HASH_C="$Date: 2002/09/17 08:48:35 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -275,14 +275,14 @@ static void one_foreach_cycle(const Hash::Key& akey, Hash::Val *avalue,
 	i.r->method_frame->put_element(*i.key_var_name, i.vkey, false);
 	i.r->method_frame->put_element(*i.value_var_name, static_cast<Value *>(avalue), false);
 
-	StringOrValue processed_body=i.r->process(*i.body_code);
-	if(i.delim_maybe_code) { // delimiter set?
-		const String *string=processed_body.get_string();
-		if(i.need_delim && string && string->size()) // need delim & iteration produced string?
+	StringOrValue sv_processed=i.r->process(*i.body_code);
+	const String *s_processed=sv_processed.get_string();
+	if(i.delim_maybe_code && s_processed && s_processed->size()) { // delimiter set and we have body
+		if(i.need_delim) // need delim & iteration produced string?
 			i.r->write_pass_lang(i.r->process(*i.delim_maybe_code));
 		i.need_delim=true;
 	}
-	i.r->write_pass_lang(processed_body);
+	i.r->write_pass_lang(sv_processed);
 }
 static void _foreach(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
