@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char * const IDENT_VXDOC_H="$Date: 2004/02/11 15:33:19 $";
+static const char * const IDENT_VXDOC_H="$Date: 2004/02/17 14:22:29 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -77,7 +77,10 @@ public: // VXdoc
 		gdome_doc_ref(fdocument, &exc);
 	}
 	GdomeDocument* get_document() { 
-		assert(fdocument);
+		if(!fdocument)
+			throw Exception("parser.runtime",
+				0,
+				"using unitialized xdoc object");
 		return fdocument; 
 	}
 
