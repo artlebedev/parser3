@@ -21,6 +21,8 @@ mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll
 ]
 $MAIL[
 	$SMTP[mail.office.design.ru]
+	$prog1[/usr/sbin/sendmail -t]
+	$prog2[/usr/lib/sendmail -t]
 ]
 #for ^file:load[name;user-name;mime-type << autodetection]
 $MIME-TYPES[^table:set{ext	mime-type
