@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.h,v 1.28 2002/02/18 15:21:01 paf Exp $
+	$Id: pa_wcontext.h,v 1.29 2002/04/15 10:35:22 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -15,6 +15,23 @@
 #include "pa_vhash.h"
 
 class Request;
+
+class StringOrValue {
+public:
+	StringOrValue() : fstring(0), fvalue(0) {}
+	/// anticipating either String or Value [must not be 0&0]
+	StringOrValue(String *astring, Value *avalue) : fstring(astring), fvalue(avalue) {}
+	void set_value(Value& avalue) { fvalue=&avalue; }
+	Value& as_value() const {
+		return *(fvalue?fvalue:new(fstring->pool()) VString(*fstring));
+	}
+	const String& as_string() const {
+		return fstring?*fstring:fvalue->as_string();
+	}
+private:
+	String *fstring;
+	Value *fvalue;
+};
 
 /** Write context
 	they do different write()s here, later picking up the result
@@ -50,11 +67,11 @@ public: // WContext
 
 	/**
 		retrives the resulting value
-		that can be VString if value==0 or the Value object
+		that can be String if value==0 or the Value object
 		wmethod_frame first checks for $result and if there is one, returns it instead
 	*/
-	virtual Value& result() {
-		return *(fvalue?fvalue:NEW VString(fstring));
+	virtual StringOrValue result() {
+		return fvalue?StringOrValue(0, fvalue):StringOrValue(&fstring, 0);
 	}
 
 public: // usage

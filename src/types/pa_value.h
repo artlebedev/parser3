@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_value.h,v 1.80 2002/03/27 15:30:38 paf Exp $
+	$Id: pa_value.h,v 1.81 2002/04/15 10:35:22 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -262,6 +262,17 @@ public:
 		rcontext(arcontext),
 		wcontext(awcontext),
 		code(acode) {
+	}
+
+	void change_context(Junction *source) {
+		if(source) {
+			root=source->root;
+			rcontext=source->rcontext;
+			wcontext=source->wcontext;
+		} else {
+			root=rcontext=0;
+			wcontext=0;
+		}
 	}
 
 	/// always present

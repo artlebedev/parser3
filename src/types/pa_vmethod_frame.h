@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vmethod_frame.h,v 1.23 2002/03/27 15:30:38 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.24 2002/04/15 10:35:22 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -54,11 +54,11 @@ public: // Value
 
 public: // wcontext
 
-	Value& result() {
+	StringOrValue result() {
 		// check the $result value
-		Value *result=get_result_variable();
+		Value *result_value=get_result_variable();
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue
-		return result ? *result : WContext::result();
+		return result_value ? StringOrValue(0, result_value) : WContext::result();
 	}
 
 public: // usage

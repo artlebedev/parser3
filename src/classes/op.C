@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.82 2002/04/15 06:45:55 paf Exp $
+	$Id: op.C,v 1.83 2002/04/15 10:35:21 paf Exp $
 */
 
 #include "classes.h"
@@ -43,7 +43,7 @@ static void _if(Request& r, const String&, MethodParams *params) {
 	Value& condition_code=params->as_junction(0, "condition must be expression");
 
 	bool condition=r.process_to_value(condition_code, 
-		0/*no name*/,
+		/*0/*no name* /,*/
 		false/*don't intercept string*/).as_bool();
 	if(condition)
 		r.write_pass_lang(r.process_to_value(params->as_junction(1, "'then' parameter must be code")));
@@ -166,7 +166,7 @@ static void _while(Request& r, const String& method_name, MethodParams *params) 
 		bool condition=
 			r.process_to_value(
 				vcondition, 
-				0/*no name*/,
+				/*0/*no name* /,*/
 				false/*don't intercept string*/).as_bool();
 		if(!condition) // ...condition is true
 			break;
@@ -215,7 +215,7 @@ static void _eval(Request& r, const String& method_name, MethodParams *params) {
 	Value& expr=params->as_junction(0, "need expression");
 	// evaluate expresion
 	Value *result=r.process_to_value(expr, 
-		0/*no name YET*/,
+		/*0/*no name YET* /,*/
 		true/*don't intercept string*/).as_expr_result();
 	if(params->size()>1) {
 		Value& fmt=params->as_no_junction(1, "fmt must not be code");
@@ -274,28 +274,24 @@ struct Switch_data {
 	Value *searching;
 	Value *found;
 	Value *_default;
-	Value *result;
 };
 #endif
-static void switch_postexecute(void *info) {
-	Switch_data& data=*static_cast<Switch_data *>(info);
-
-	if(Value *code=data.found ? data.found : data._default)
-		data.result=&data.r->process_to_value(*code);
-}
 static void _switch(Request& r, const String&, MethodParams *params) {
 	Switch_data data={&r, &r.process_to_value(params->get(0))};	
 	Temp_hash_value switch_data_setter(r.classes_conf, *switch_data_name, &data);
 
+	Value& cases_code=params->as_junction(1, "switch cases must be code");
 	// execution of found ^case[...]{code} must be in context of ^switch[...]{code}
 	// because of stacked WWrapper used there as wcontext
-	r.process_to_nothing(
-		params->as_junction(1, "switch cases must be code"),
-		switch_postexecute, &data
+	r.process(
+		cases_code,
+		true/*intercept_string*/
 	);
-
-	if(data.result)
-		r.write_pass_lang(*data.result);
+	if(Value *selected_code=data.found ? data.found : data._default) {
+		// setting code context, would execute in ^switch[...]{>>context<<}
+		selected_code->get_junction()->change_context(cases_code.get_junction());
+		r.write_pass_lang(r.process_to_value(*selected_code));
+	}
 }
 
 static void _case(Request& r, const String& method_name, MethodParams *params) {
@@ -309,6 +305,11 @@ static void _case(Request& r, const String& method_name, MethodParams *params) {
 
 	int count=params->size();
 	Value *code=&params->as_junction(--count, "case result must be code");
+	
+	// killing context for safety, would execute in ^switch[...]{>>context<<}
+	// reason: context is stacked, and it would become invalid afterwards
+	code->get_junction()->change_context(0);
+
 	for(int i=0; i<count; i++) {
 		Value& value=r.process_to_value(params->get(i));
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.128 2002/04/15 06:45:56 paf Exp $
+	$Id: pa_request.h,v 1.129 2002/04/15 10:35:22 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -132,25 +132,16 @@ public:
 		VStateless_class *aclass=0, const String *name=0, 
 		VStateless_class *base_class=0); // core.C
 
-	//@{ convinient inline helpers @see Request::process
-	void process_to_nothing(Value& input_value, 
-		void (*postexecute)(void *info)=0, void *postexecute_info=0) {
-		const String *junk_string;
-		process_internal(input_value, 0/*result_name*/, true/*intercept_string*/, &junk_string, 0,
-			postexecute, postexecute_info);
+	/// processes any code-junction there may be inside of @a value
+	StringOrValue process(Value& input_value,
+		bool intercept_string,
+		void (*postexecute)(void *info)=0, void *postexecute_info=0); // execute.C
+	//@{ convinient helpers
+	const String& process_to_string(Value& input_value) {
+		return process(input_value, true/*intercept_string*/).as_string();
 	}
-	const String& process_to_string(Value& input_value, 
-		const String *result_name=0) {
-		const String *result;
-		process_internal(input_value, result_name, true/*intercept_string*/, &result, 0);
-		return *result;
-	}
-	Value& process_to_value(Value& input_value, 
-		const String *result_name=0, 
-		bool intercept_string=true) {
-		Value *result;
-		process_internal(input_value, result_name, intercept_string, 0, &result);
-		return *result;
+	Value& process_to_value(Value& input_value, bool intercept_string=true) {
+		return process(input_value, intercept_string).as_value();
 	}
 	//@}
 	
@@ -318,16 +309,6 @@ private:
 
 	/// connection
 	SQL_Connection *fconnection;
-
-
-private:
-
-	/// processes any code-junction there may be inside of @a value
-	void process_internal(
-		Value& input_value, const String *result_name, 
-		bool intercept_string,
-		const String **string_result, Value **value_result,
-		void (*postexecute)(void *info)=0, void *postexecute_info=0); // execute.C
 
 	void output_result(const VFile& body_file, bool header_only);
 };

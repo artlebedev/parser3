@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.100 2002/04/11 13:33:39 paf Exp $
+	$Id: string.C,v 1.101 2002/04/15 10:35:21 paf Exp $
 */
 
 #include "classes.h"
@@ -214,7 +214,7 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 			Junction *junction=ai.replacement_code->get_junction();
 			Value *saved_match_var_value=junction->root->get_element(*match_var_name);
 			junction->root->put_element(*match_var_name, &vtable);
-			const String& replaced=ai.request->process_to_string(*ai.replacement_code, ai.origin);
+			const String& replaced=ai.request->process_to_string(*ai.replacement_code);
 			junction->root->put_element(*match_var_name, saved_match_var_value);
 
 			/*

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.148 2002/04/12 11:44:27 paf Exp $
+	$Id: table.C,v 1.149 2002/04/15 10:35:21 paf Exp $
 */
 
 #include "classes.h"
@@ -659,7 +659,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 		bool condition=
 			r.process_to_value(
 				vcondition, 
-				0/*no name*/,
+				/*0/*no name* /,*/
 				false/*don't intercept string*/).as_bool();
 
 		if(condition) // ...condition is true=

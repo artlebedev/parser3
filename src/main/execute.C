@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.227 2002/04/15 08:13:10 paf Exp $
+	$Id: execute.C,v 1.228 2002/04/15 10:35:22 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -332,7 +332,7 @@ void Request::execute(const Array& ops) {
 
 				execute(*local_ops);
 
-				value=&wcontext->result();
+				value=&wcontext->result().as_value();
 				flang=static_cast<String::Untaint_lang>(reinterpret_cast<int>(POP()));
 				wcontext=static_cast<WContext *>(POP());
 				PUSH(value);
@@ -342,7 +342,6 @@ void Request::execute(const Array& ops) {
 		case OP_STRING_POOL:
 			{
 				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
-				
 
 				PUSH(wcontext);
 				WWrapper local(pool(), 0 /*empty*/);
@@ -494,7 +493,7 @@ void Request::execute(const Array& ops) {
 								call_type==Method::CT_STATIC?"statically":"dynamically");
 
 				}
-				value=&wcontext->result();
+				value=&wcontext->result().as_value(); // todo CALL_WRITE & VString removal
 
 				wcontext=static_cast<WContext *>(POP());  
 				rcontext=POP();  
@@ -835,7 +834,7 @@ Value *Request::get_element(bool can_call_operator) {
 	if(!value)
 		value=ncontext->get_element(name);
 	if(value)
-		value=&process_to_value(*value, &name); // process possible code-junction
+		value=&process_to_value(*value/* ++ name*/); // process possible code-junction
 	else {
 		value=NEW VVoid(pool());
 		value->set_name(name);
@@ -855,11 +854,11 @@ Value *Request::get_element(bool can_call_operator) {
 
     using the fact it's either string_ or value_ result requested to speed up checkes
 */
-void Request::process_internal(
-							   Value& input_value, const String *result_name, 
+StringOrValue Request::process(
+							   Value& input_value,
 							   bool intercept_string,
-							   const String **string_result, Value **value_result,
 							   void (*postexecute)(void *info), void *postexecute_info) {
+	StringOrValue result;
 	Junction *junction=input_value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
 		// process it
@@ -886,7 +885,7 @@ void Request::process_internal(
 			wcontext=&local;
 
 			// execute it
-			recoursion_checked_execute(result_name, *junction->code);
+			recoursion_checked_execute(0/*result_name*/, *junction->code);
 			
 			// maybe-postexecute something
 			if(postexecute)
@@ -895,32 +894,20 @@ void Request::process_internal(
 			// CodeFrame soul:
 			//   string writes were intercepted
 			//   returning them as the result of getting code-junction
-			if(string_result)
-				*string_result=wcontext->get_string();
-			else {
-				*value_result=NEW VString(*wcontext->get_string());
-				if(result_name)
-					(*value_result)->set_name(*result_name);
-			}
+			result=wcontext->result();
 		} else {
 			// plain wwrapper
 			WWrapper local(pool(), 0/*empty*/);
 			wcontext=&local;
 		
 			// execute it
-			recoursion_checked_execute(result_name, *junction->code);
+			recoursion_checked_execute(0/*result_name*/, *junction->code);
 		
 			// maybe-postexecute something
 			if(postexecute)
 				postexecute(postexecute_info);
 		
-			if(string_result)
-				*string_result=&wcontext->result().as_string();
-			else {
-				*value_result=&wcontext->result();
-				if(result_name)
-					(*value_result)->set_name(*result_name);
-			}
+			result=wcontext->result();
 		}
 		
 		wcontext=static_cast<WContext *>(POP());  
@@ -932,14 +919,9 @@ void Request::process_internal(
 		debug_printf(pool(), "<-ja returned");
 #endif
 	} else {
-		if(string_result) // they asked for string_result
-			*string_result=&input_value.as_string();
-		else {// they asked for value_result
-			*value_result=&input_value;
-			if(result_name)
-				(*value_result)->set_name(*result_name);
-		}
+		result.set_value(input_value);
 	}
+	return result;
 }
 
 const String *Request::execute_method(Value& aself, const Method& method,
