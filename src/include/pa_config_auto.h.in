@@ -12,6 +12,9 @@
 /* Define if you have the round function.  */
 #undef HAVE_ROUND
 
+/* Define if you have the set_new_handler function.  */
+#undef HAVE_SET_NEW_HANDLER
+
 /* Define if you have the sign function.  */
 #undef HAVE_SIGN
 
