@@ -210,8 +210,14 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* compile for sparc processor */
+#undef PA_BIG_ENDIAN
+
 /* parser uses this command instead of user-defined sendmail commands */
 #undef PA_FORCED_SENDMAIL
+
+/* compile for intel processor or compatible */
+#undef PA_LITTLE_ENDIAN
 
 /* disabled reading of files belonging to group+user other then effective */
 #undef PA_SAFE_MODE
