@@ -88,7 +88,7 @@ Xне сделано, видимо, не будет сделано
         выдавая нестандартный результат
     X^break[] + - обрывает цикл
     X^continue[] + - обрывает итерацию цикла
-    !^untaint[[as-is|file-spec|http-header|mail-header|uri|table|sql|js|xml|html|optimized-html]]{код}
+    !^untaint[[as-is|file-spec|http-header|mail-header|uri|sql|js|xml|html|optimized-html]]{код}
         default as-is
     !^taint[[lang]][код]
         default "just tainted, language unknown"
