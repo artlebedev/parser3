@@ -1,0 +1,118 @@
+--- encoding.c.0	Sun Nov  4 23:23:38 2001
++++ encoding.c	Fri Dec 28 18:32:12 2001
+@@ -422,7 +422,8 @@
+  */
+ static int
+ asciiToUTF8(unsigned char* out, int *outlen,
+-              const unsigned char* in, int *inlen) {
++              const unsigned char* in, int *inlen,
++			  void *info) {
+     unsigned char* outstart = out;
+     const unsigned char* base = in;
+     const unsigned char* processed = in;
+@@ -474,7 +475,8 @@
+  */
+ static int
+ UTF8Toascii(unsigned char* out, int *outlen,
+-              const unsigned char* in, int *inlen) {
++              const unsigned char* in, int *inlen,
++			  void *info) {
+     const unsigned char* processed = in;
+     const unsigned char* outend;
+     const unsigned char* outstart = out;
+@@ -556,7 +558,8 @@
+  */
+ int
+ isolat1ToUTF8(unsigned char* out, int *outlen,
+-              const unsigned char* in, int *inlen) {
++              const unsigned char* in, int *inlen,
++			  void *info) {
+     unsigned char* outstart = out;
+     const unsigned char* base = in;
+     const unsigned char* processed = in;
+@@ -605,7 +608,8 @@
+  */
+ int
+ UTF8Toisolat1(unsigned char* out, int *outlen,
+-              const unsigned char* in, int *inlen) {
++              const unsigned char* in, int *inlen,
++			  void *info) {
+     const unsigned char* processed = in;
+     const unsigned char* outend;
+     const unsigned char* outstart = out;
+@@ -695,7 +699,8 @@
+  */
+ static int
+ UTF16LEToUTF8(unsigned char* out, int *outlen,
+-            const unsigned char* inb, int *inlenb)
++            const unsigned char* inb, int *inlenb, 
++			void *info)
+ {
+     unsigned char* outstart = out;
+     const unsigned char* processed = inb;
+@@ -779,7 +784,8 @@
+  */
+ static int
+ UTF8ToUTF16LE(unsigned char* outb, int *outlen,
+-            const unsigned char* in, int *inlen)
++            const unsigned char* in, int *inlen,
++			void *info)
+ {
+     unsigned short* out = (unsigned short*) outb;
+     const unsigned char* processed = in;
+@@ -902,7 +908,8 @@
+  */
+ static int
+ UTF16BEToUTF8(unsigned char* out, int *outlen,
+-            const unsigned char* inb, int *inlenb)
++            const unsigned char* inb, int *inlenb,
++			void *info)
+ {
+     unsigned char* outstart = out;
+     const unsigned char* processed = inb;
+@@ -990,7 +997,8 @@
+  */
+ static int
+ UTF8ToUTF16BE(unsigned char* outb, int *outlen,
+-            const unsigned char* in, int *inlen)
++            const unsigned char* in, int *inlen,
++			void *info)
+ {
+     unsigned short* out = (unsigned short*) outb;
+     const unsigned char* processed = in;
+@@ -1979,7 +1987,7 @@
+ 
+     if (handler->input != NULL) {
+ 	ret = handler->input(&out->content[out->use], &written,
+-	                     in->content, &toconv);
++	                     in->content, &toconv, handler->inputInfo);
+ 	xmlBufferShrink(in, toconv);
+ 	out->use += written;
+ 	out->content[out->use] = 0;
+@@ -2063,7 +2071,7 @@
+     }
+     if (handler->input != NULL) {
+         ret = handler->input(&out->content[out->use], &written,
+-                             in->content, &toconv);
++                             in->content, &toconv, handler->inputInfo);
+         xmlBufferShrink(in, toconv);
+         out->use += written;
+         out->content[out->use] = 0;
+@@ -2158,7 +2166,7 @@
+         toconv = 0;
+ 	if (handler->output != NULL) {
+ 	    ret = handler->output(&out->content[out->use], &written,
+-				  NULL, &toconv);
++				  NULL, &toconv, handler->outputInfo);
+ 	    out->use += written;
+ 	    out->content[out->use] = 0;
+ 	}
+@@ -2189,7 +2197,7 @@
+     }
+     if (handler->output != NULL) {
+ 	ret = handler->output(&out->content[out->use], &written,
+-	                      in->content, &toconv);
++	                      in->content, &toconv, handler->outputInfo);
+ 	xmlBufferShrink(in, toconv);
+ 	out->use += written;
+ 	writtentot += written;

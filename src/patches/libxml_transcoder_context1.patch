@@ -1,0 +1,49 @@
+--- include/libxml/encoding.h.0	Wed Oct 10 14:45:48 2001
++++ include/libxml/encoding.h	Fri Dec 28 18:30:49 2001
+@@ -97,7 +97,8 @@
+  * The value of @outlen after return is the number of ocetes consumed.
+  */
+ typedef int (* xmlCharEncodingInputFunc)(unsigned char* out, int *outlen,
+-                                         const unsigned char* in, int *inlen);
++                                         const unsigned char* in, int *inlen,
++                                         void *info);
+ 
+ 
+ /**
+@@ -119,7 +120,8 @@
+  * The value of @outlen after return is the number of ocetes consumed.
+  */
+ typedef int (* xmlCharEncodingOutputFunc)(unsigned char* out, int *outlen,
+-                                          const unsigned char* in, int *inlen);
++                                          const unsigned char* in, int *inlen,
++                                          void *info);
+ 
+ 
+ /*
+@@ -131,8 +133,8 @@
+ typedef xmlCharEncodingHandler *xmlCharEncodingHandlerPtr;
+ struct _xmlCharEncodingHandler {
+     char                       *name;
+-    xmlCharEncodingInputFunc   input;
+-    xmlCharEncodingOutputFunc  output;
++    xmlCharEncodingInputFunc   input;	void *inputInfo;
++    xmlCharEncodingOutputFunc  output;	void *outputInfo;
+ #ifdef LIBXML_ICONV_ENABLED
+     iconv_t                    iconv_in;
+     iconv_t                    iconv_out;
+@@ -190,11 +192,13 @@
+ int	UTF8Toisolat1			(unsigned char* out,
+ 					 int *outlen,
+ 					 const unsigned char* in,
+-					 int *inlen);
++					 int *inlen,
++			  void *info);
+ int	isolat1ToUTF8			(unsigned char* out,
+ 					 int *outlen,
+ 					 const unsigned char* in,
+-					 int *inlen);
++					 int *inlen,
++			  void *info);
+ /*
+  * exports additional "UTF-8 aware" string routines which are
+  */
