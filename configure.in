@@ -188,7 +188,7 @@ stdio.h \
 errno.h \
 ctype.h \
 math.h \
-time.h \
+time.h sys/time.h \
 stdlib.h \
 string.h \
 direct.h \
@@ -197,7 +197,8 @@ memory.h \
 new \
 sys/file.h \
 sys/locking.h \
-sys/types.h
+sys/types.h \
+sys/select.h
 )
 
 dnl Checks for libraries.
@@ -233,6 +234,11 @@ flock \
 _locking \
 lockf
 )
+
+dnl We require qsort(3) and select(2).
+
+AC_CHECK_FUNCS(qsort, , AC_MSG_ERROR([No qsort library function.]))
+AC_CHECK_FUNCS(select, , AC_MSG_ERROR([No select library function.]))
 
 AC_MSG_CHECKING(whether compiler supports pragma pack)
 AC_TRY_COMPILE(

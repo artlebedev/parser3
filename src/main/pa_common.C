@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.97 2002/02/05 09:32:43 paf Exp $
+	$Id: pa_common.C,v 1.98 2002/02/05 12:09:23 paf Exp $
 */
 
 #include "pa_common.h"
@@ -15,6 +15,10 @@
 #include "pa_value.h"
 #include "pa_hash.h"
 #include "pa_string.h"
+
+#ifdef WIN32
+#	include <windows.h>
+#endif
 
 // some maybe-undefined constants
 
@@ -29,6 +33,23 @@
 #endif
 
 // locking constants
+
+// win32
+#ifdef _LK_NBLCK
+#	define TEST_LOCK_EX _LK_NBLCK
+#else
+// *
+#	if defined LOCK_EX && defined LOCK_NB
+#			define TEST_LOCK_EX (LOCK_EX || LOCK_NB)
+#	else
+// sun 
+#		ifdef F_TLOCK
+#			define TEST_LOCK_EX F_TLOCK
+#		else
+#			error unable to define TEST_LOCK_EX
+#		endif
+#	endif
+#endif
 
 #ifndef LOCK_EX
 // win32
@@ -74,25 +95,22 @@
 #endif
 
 #ifndef HAVE_FLOCK
+static int flock(int fd, int operation) {
+	lseek(fd, 0, SEEK_SET);
 // win32
 #ifdef HAVE__LOCKING
-static void flock(int fd, int operation) {
-	lseek(fd, 0, SEEK_SET);
-	while(_locking(fd, operation, 1)!=0);
-	lseek(fd, 0, SEEK_SET);
-}
+	int result=_locking(fd, operation, 1);
 #else
 // sun
 #ifdef HAVE_LOCKF
-static void flock(int fd, int operation) {
-	lseek(fd, 0, SEEK_SET);
-	lockf(fd, operation, 1);
-	lseek(fd, 0, SEEK_SET);
-}
+	int result=lockf(fd, operation, 1);
 #else
-#error unable to find locking func
+#	error unable to find locking func
 #endif
 #endif
+	lseek(fd, 0, SEEK_SET);
+	return result;
+}
 #endif
 
 static char *strnchr(char *buf, size_t size, char c) {
@@ -150,37 +168,44 @@ bool file_read(Pool& pool, const String& file_spec,
 	//   directory entry of b.html in NTFS not updated at once,
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
-    if(
-		(f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0 && 
-		stat(fname, &finfo)==0) {
+    if((f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
 		flock(f, LOCK_SH);		
-		size_t max_size=limit?min(offset+limit, finfo.st_size)-offset:finfo.st_size;
-		int read_size;
+		if(stat(fname, &finfo)!=0) {
+			Exception e(0, 0, 
+					&file_spec, 
+					"stat failed: %s (%d), actual filename '%s'", 
+						strerror(errno), errno, fname);
+			flock(f, LOCK_UN);
+			close(f);
+			if(fail_on_read_problem)
+				throw e;
+			return false;
+		}
+		size_t max_size=limit?min(offset+limit, (size_t)finfo.st_size)-offset:finfo.st_size;
 		if(!max_size) { // eof
 			if(as_text) {
 				data=pool.malloc(1);
 				*(char*)data=0;
 			} else 
 				data=0;
-			read_size=0;
+			data_size=0;
 		} else {
 			data=pool.malloc(max_size+(as_text?1:0), 3);
 			if(offset)
 				lseek(f, offset, SEEK_SET);
-			read_size=read(f, data, max_size);
+			data_size=read(f, data, max_size);
 		}
 		flock(f, LOCK_UN);
 		close(f);
 		if(!max_size) // eof
 			return true;
 
-		if(read_size<0 || size_t(read_size)>max_size)
+		if(int(data_size)<0 || data_size>max_size)
 			throw Exception(0, 0, 
 				&file_spec, 
 				"read failed: actually read %d bytes count not in [0..%lu] valid range", 
-					read_size, (unsigned long)max_size); //never
+					data_size, (unsigned long)max_size); //never
 
-		data_size=read_size;		
 		if(as_text) {
 			fix_line_breaks((char *)data, data_size);
 			// note: after fixing
@@ -205,11 +230,12 @@ static void create_dir_for_file(const String& file_spec) {
 	}
 }
 
-void file_action_under_lock(
+bool file_write_action_under_lock(
 				const String& file_spec, 
 				const char *action_name, void (*action)(int, void *), void *context,
 				bool as_text,
-				bool do_append) {
+				bool do_append,
+				bool do_block) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	int f;
 	if(access(fname, W_OK)!=0) // no
@@ -218,19 +244,29 @@ void file_action_under_lock(
 	if((f=open(fname, 
 		O_CREAT|O_RDWR
 		|(as_text?_O_TEXT:_O_BINARY)
-		|(do_append?O_APPEND:O_TRUNC), 0664))>=0) {
-		flock(f, LOCK_EX);
+		|(do_append?O_APPEND:0), 0664))>=0) {
+		if(flock(f, do_block?LOCK_EX:TEST_LOCK_EX)!=0) {
+			close(f);
+			return false;
+		}
 
 		try {
 			action(f, context);
 		} catch(...) {
+#if O_TRUNC==0
+			ftruncate(f, tell(f));
+#endif
 			flock(f, LOCK_UN);
 			close(f);
 			/*re*/throw;
 		}
 		
+#if O_TRUNC==0
+		ftruncate(f, tell(f));
+#endif
 		flock(f, LOCK_UN);
 		close(f);
+		return true;
 	} else
 		throw Exception(0, 0, 
 			&file_spec, 
@@ -248,9 +284,6 @@ static void file_write_action(int f, void *context) {
 	File_write_action_info& info=*static_cast<File_write_action_info *>(context);
 	if(info.size) 
 		write(f, info.data, info.size);
-#if O_TRUNC==0
-	ftruncate(f, info.size);
-#endif
 }
 void file_write(
 				const String& file_spec, 
@@ -258,7 +291,7 @@ void file_write(
 				bool as_text,
 				bool do_append) {
 	File_write_action_info info={data, size};
-	file_action_under_lock(
+	file_write_action_under_lock(
 				file_spec, 
 				"write", file_write_action, &info,
 				as_text,
@@ -618,4 +651,18 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
     int r=__vsnprintf(b, s, f, l);
     va_end(l);
 	return r;
+}
+
+int pa_sleep(unsigned long secs, unsigned long usecs) {
+	for (; usecs >= 1000000; ++secs, usecs -= 1000000);
+
+#ifdef WIN32
+	Sleep(secs * 1000 + usecs / 1000);
+	return 0;
+#else
+	struct timeval t;
+	t.tv_sec = secs;
+	t.tv_usec = usecs;
+	return (select(0, NULL, NULL, NULL, &t) == -1 ? errno : 0);
+#endif
 }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.71 2002/01/25 12:09:04 paf Exp $
+	$Id: pa_common.h,v 1.72 2002/02/05 12:09:22 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -78,6 +78,8 @@ extern "C" double sign(double);
 inline double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 ); }
 #endif
 
+/// yields to OS for secs secs and usecs milliseconds
+int pa_sleep(unsigned long secs, unsigned long usecs);
 
 /** under WIN32 "t" mode fixes DOS chars OK, 
 	can't say that about other systems/ line break styles
@@ -109,12 +111,16 @@ bool file_read(Pool& pool, const String& file_spec,
 	lock specified file exclusively, 
 	do actions under lock.
 	throws an exception in case of problems
+	
+	if block=false does non-blocking lock
+	@returns true if locked OK, or false if non-blocking locking failed
 */
-void file_action_under_lock(
+bool file_write_action_under_lock(
 				const String& file_spec, 
 				const char *action_name, void (*action)(int, void *), void *context=0,
 				bool as_text=false,
-				bool do_append=false);
+				bool do_append=false,
+				bool do_block=true);
 
 /**
 	write data to specified file, 

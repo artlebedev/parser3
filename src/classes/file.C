@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.69 2002/01/25 12:09:03 paf Exp $
+	$Id: file.C,v 1.70 2002/02/05 12:09:22 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -388,7 +388,7 @@ static void _lock(Request& r, const String& method_name, MethodParams *params) {
 	Value& body_code=params->as_junction(1, "body must be code");
 
 	Lock_execute_body_info info={&r, &body_code};
-	file_action_under_lock(file_spec, "lock", lock_execute_body, &info);
+	file_write_action_under_lock(file_spec, "lock", lock_execute_body, &info);
 }
 
 // constructor

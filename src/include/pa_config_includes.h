@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_includes.h,v 1.14 2001/12/07 15:24:46 paf Exp $
+	$Id: pa_config_includes.h,v 1.15 2002/02/05 12:09:23 paf Exp $
 
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
@@ -70,8 +70,12 @@
 #	include <math.h>
 #endif
 
-#ifdef HAVE_TIME_H
-#	include <time.h>
+#ifdef HAVE_SYS_TIME_H
+#	include <sys/time.h>
+#else
+#	ifdef HAVE_TIME_H
+#		include <time.h>
+#	endif
 #endif
 
 #ifdef HAVE_STDLIB_H
@@ -108,4 +112,8 @@
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
 #endif

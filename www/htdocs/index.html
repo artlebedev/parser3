@@ -1,5 +1,7 @@
 @main[][l]
 $request[^trim[$form:request;/]]
+$request[^trim[/branches/moscow/tariff/;/]]
+$request[^trim[/branches/regional/;/]]
 $mode[^if(def $form:mode){^trim[^form:mode.lower[]]}]
 
 ^if(def $form:print){
@@ -24,7 +26,7 @@ $cache_cfg[^load[named;/_cache.cfg]]
 $cache_key[^request:query.match[^^([^^=]*=)][]{}_${platform}_${browser}_$stylesheetType]
 $cache_time(^if($env:REQUEST_METHOD eq POST){0}{^if(def $cache_time){$cache_time}{$default_cache_time}})
 
-# дл�� о��ладки...
+# дл оладки...
 # ^$cache_time=$cache_time<br />^$cache_key=$cache_key
 
 $hashData[^hashfile::open[$DB_HOME;data.dat]]

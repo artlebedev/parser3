@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.68 2002/01/25 11:33:45 paf Exp $
+	$Id: op.C,v 1.69 2002/02/05 12:09:22 paf Exp $
 */
 
 #include "classes.h"
@@ -341,27 +341,58 @@ struct Data_string_serialized_prolog {
 void cache_delete(const String& file_spec) {
 	file_delete(file_spec, false/*fail_on_read_problem*/);
 }
-void cache_put(const String& file_spec, const String& data_string) {
+
+#ifndef DOXYGEN
+struct Locked_process_and_cache_put_action_info {
+	Request *r;
+	Value *body;
+};
+#endif
+static void locked_process_and_cache_put_action(int f, void *context) {
+	Locked_process_and_cache_put_action_info& info=
+		*static_cast<Locked_process_and_cache_put_action_info *>(context);
+	
+	// body->process 
+	info.body=&info.r->process(*info.body);
+
+	// result->string
+	const String& data_string=info.body->as_string();
+
+	// string -serialize> buffer
 	void *data; size_t data_size;
 	data_string.serialize(
 		sizeof(Data_string_serialized_prolog), 
 		data, data_size);
 	Data_string_serialized_prolog& prolog=
 		*static_cast<Data_string_serialized_prolog *>(data);
-
 	prolog.version=DATA_STRING_SERIALIZED_VERSION;
+	
+	// buffer -write> file
+	write(f, data, data_size);
+}
+Value *locked_process_and_cache_put(Request& r, 
+									Value& body_code,
+									const String& file_spec) {
+	Locked_process_and_cache_put_action_info info={
+		&r,
+		&body_code,
+	};
 
-	file_write(
-				file_spec, 
-				data, data_size, 
-				false/*as_text*/);
+	return file_write_action_under_lock(
+		file_spec, 
+		"cache_put", locked_process_and_cache_put_action, &info,
+		false/*as_text*/,
+		false/*do_append*/,
+		false/*block*/) ? info.body : 0;
 }
 String *cache_get(Pool& pool, const String& file_spec) {
 	void* data; size_t data_size;
 	if(!file_read(pool, file_spec, 
 			   data, data_size, 
 			   false/*as_text*/, 
-			   false/*fail_on_read_problem*/))
+			   false/*fail_on_read_problem*/)
+	    || !data_size/* ignore reads which are empty due to 
+			non-unary open+lockEX conflict with lockSH */)
 		return 0;
 	
 	Data_string_serialized_prolog& prolog=
@@ -370,7 +401,8 @@ String *cache_get(Pool& pool, const String& file_spec) {
 	if(data_size<sizeof(Data_string_serialized_prolog))
 		throw Exception(0, 0,
 			&file_spec,
-			"bad cached file, too short");
+			"bad cached file (size=%d), too short (minsize=%d)", 
+			    data_size, sizeof(Data_string_serialized_prolog));
 
 	if(prolog.version!=DATA_STRING_SERIALIZED_VERSION)
 		throw Exception(0, 0,
@@ -400,29 +432,61 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	if(lifespan) { // 'lifespan' specified? try cached copy...
 		size_t size;
 		time_t atime, mtime, ctime;
+
+		// hence we don't hope to have unary create/lockEX
+		// we need some plan to live in a life like that, so... 
+		// worst races plan:
+		// A        B
+		// open
+		//          |open
+		// lockSH
+		//          |nonblocking-lockEX fails
+		// unlockSH
+		// close, cache_get returns 0
+		// open
+		// nonblocking-lockEX succeeds; process, write, close
+		//          |retry1: open
+		// ...
+		//          |lockSH succeeds; ...
+
 		// {file_spec} modification time
-		if(!file_stat(file_spec, size, atime, mtime, ctime, false/*no exception on error*/) 
-			|| (time(0)-mtime) > lifespan) // cached file expired
-			cache_delete(file_spec);
-		else
-			if(String *cached_body=cache_get(pool, file_spec)) { // have cached copy?
+		for(int retry=0; retry<2; retry++) {
+			if(file_stat(file_spec, size, atime, mtime, ctime, false/*no exception on error*/)) // exists?
+				if(time(0)-mtime > lifespan) // expired
+					cache_delete(file_spec);
+				else // not expired
+					if(String *cached_body=cache_get(pool, file_spec)) { // have cached copy?
+						// write it out 
+						r.write_assign_lang(*cached_body);
+						// happy with it
+						return;
+					}
+
+			// non-blocked lock; process; cache it
+			if(Value *processed_body=locked_process_and_cache_put(r, body_code, file_spec)) {
 				// write it out 
-				r.write_assign_lang(*cached_body);
+				r.write_assign_lang(*processed_body);
 				// happy with it
 				return;
+			} else { // somebody writing result right now
+				pa_sleep(0, 500000); // waiting half a second
+				retry=0; // prolonging our wait, than could cache_get it, without processing body_code
 			}
-	} else // 'lifespan'=0, forget cached copy
+		}
+		throw Exception(0, 0,
+			&file_spec,
+			"locking problem");
+	} else { 
+		// 'lifespan'=0, forget cached copy
 		cache_delete(file_spec);
-	
-	// process
-	Value& processed_body=r.process(body_code);
-	
-	// put it to cache if 'lifespan' specified
-	if(lifespan)
-		cache_put(file_spec, processed_body.as_string());
-
-	// write it out 
-	r.write_assign_lang(processed_body);
+		// process
+		Value& processed_body=r.process(body_code);
+		// write it out 
+		r.write_assign_lang(processed_body);
+		// happy with it
+		return;
+	}
+	// never reached
 }
 
 // constructor
