@@ -538,7 +538,7 @@ Xhashfile
         разблокируется
     Xchmod[...] НЕТ И НЕ БУДЕТ, ЧТОБЫ НЕ МОГЛИ СДЕЛАТЬ executable и запустить, даже если ftp запрещает chmod.
 
-!math
+math
     !$math:PI
     !^math:round floor ceiling 
     !^math:trunc frac
@@ -548,6 +548,8 @@ Xhashfile
     !^math:degrees radians
     !^math:pow sqrt
     !^math:random(ширина диапазона)
+    ^math:{C2C0983C-E26E-4169-BD07-77ECE9405BA5}
+
 
 !date
     !время типа time можно использовать в выражениях, подставляет 
@@ -690,7 +692,7 @@ xdoc(xnode)
     !void removeAttribute(in DOMString name) raises(DOMException)
     !Attr getAttributeNode(in DOMString name)
     !Attr setAttributeNode(in Attr newAttr) raises(DOMException)
-    !/*Attr*/ removeAttributeNode(in Attr oldAttr) raises(DOMException)
+    !Attr removeAttributeNode(in Attr oldAttr) raises(DOMException)
     !NodeList getElementsByTagName(in DOMString name)
     !void normalize()
 
