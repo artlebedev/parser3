@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.23 2001/03/12 12:00:03 paf Exp $
+	$Id: root.C,v 1.24 2001/03/12 13:13:19 paf Exp $
 */
 
 #include <string.h>
@@ -35,16 +35,17 @@ static void _untaint(Request& r, const String& method_name, Array *params) {
 			&lang_name,
 			"invalid untaint language");
 
-	Temp_lang temp_lang(r, lang);
-	Value *value=static_cast<Value *>(params->get(1));
-	// forcing ^untaint[]{this param type}
-	if(!value->get_junction())
-		R_THROW(0, 0,
+	{
+		Temp_lang temp_lang(r, lang);
+		Value *vbody=static_cast<Value *>(params->get(1));
+		// forcing ^untaint[]{this param type}
+		if(!vbody->get_junction())
+			R_THROW(0, 0,
 			&method_name,
 			"body must be junction");
-
-	value=&r.process(*value);
-	r.write_pass_lang(*value);
+		
+		r.write_pass_lang(r.process(*vbody));
+	}
 }
 	
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.17 2001/03/12 12:00:06 paf Exp $
+	$Id: pa_request.C,v 1.18 2001/03/12 13:13:21 paf Exp $
 */
 
 #include "pa_request.h"
@@ -31,13 +31,15 @@ Request::Request(Pool& apool) : Pooled(apool),
 	//   parent of all classes, 
 	//   operators holder
 	classes().put(*root_class_name, &root_class);
+	//root_class.set_name(*root_class_name);
 
 	// env class
 	initialize_env_class(pool(), env_class);
 	classes().put(*env_class_name, &env_class);
 
 	// table class
-	classes().put(*table_class_name, &table_class);	
+	classes().put(*table_class_name, table_class);	
+	table_class->set_name(*table_class_name);
 }
 
 void Request::core() {

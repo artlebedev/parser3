@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.12 2001/03/12 12:00:06 paf Exp $
+	$Id: pa_table.C,v 1.13 2001/03/12 13:13:21 paf Exp $
 */
 
 #include <stdlib.h>
@@ -12,17 +12,15 @@
 #include "pa_pool.h"
 
 Table::Table(Pool& apool, 
-			 char *afile, uint aline, 
+			 const String& asource, 
 			 Array *acolumns, 
 			 int initial_rows) :
 	Array(apool, initial_rows),
+
+	fsource(asource),
 	fcurrent(0),
 	fcolumns(acolumns), 
 	name2number(pool(), false) {
-#ifndef NO_STRING_ORIGIN
-	forigin.file=afile;
-	forigin.line=aline;
-#endif
 
 	if(fcolumns)
 		for(int i=0; i<fcolumns->size(); i++) {
@@ -32,12 +30,6 @@ Table::Table(Pool& apool,
 }
 
 const Array &Table::at(int index) {
-	if(index<0 || index>=size())
-		THROW(0, 0, 
-			0,
-			"table row index %d is out of range [0..%d]", 
-			index, size()-1);
-	
 	return *static_cast<const Array *>(get(index));
 }
 
@@ -53,9 +45,11 @@ const String *Table::item(const String& column_name) {
 				"column not found");
 	} else { // nameless
 		column_index=atoi(column_name.cstr());
+		if(!valid(fcurrent))
+			return 0; // it's OK we don't have row, just return nothing
 		const Array& row=at(fcurrent);
 		if(column_index<0 || column_index>=row.size()) // read past proper index?
-			return 0; // it's OK, just return nothing
+			return 0; // it's OK we don't have column, just return nothing
 	}
 
 	return item(column_index);

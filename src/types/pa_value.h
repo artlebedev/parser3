@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.6 2001/03/12 12:00:06 paf Exp $
+	$Id: pa_value.h,v 1.7 2001/03/12 13:13:22 paf Exp $
 */
 
 /*
@@ -27,7 +27,7 @@ class Junction;
 class WContext;
 class VAliased;
 class Request;
-class Table;
+class VTable;
 
 typedef void (*Native_code_ptr)(Request& request, const String& method_name, Array *params);
 
@@ -62,7 +62,7 @@ public:
 		if(actual_count<min_numbered_params_count) // not proper count? bark
 			THROW(0, 0,
 				&actual_name,
-				"native method accepts minimum %d parameters", 
+				"native method accepts minimum %d parameter(s)", 
 					min_numbered_params_count);
 
 	}
@@ -112,7 +112,7 @@ public: // Value
 	// bool: this
 	// double: this
 	// int: this
-	virtual Value *get_expr_result() { failed("(%s) can not be used in expression"); return 0; }
+	virtual Value *get_expr_result() { bark("(%s) can not be used in expression"); return 0; }
 
 	// string: value
 	// unknown: ""
@@ -125,7 +125,7 @@ public: // Value
 	// double: value
 	// integer: finteger
 	// bool: value
-	virtual double get_double() { failed("(%s) does not have numerical value"); return 0; }
+	virtual double get_double() { bark("(%s) does not have numerical value"); return 0; }
 
 	// unknown: false
 	// bool: value
@@ -136,11 +136,11 @@ public: // Value
 	// others: true
 	virtual bool get_bool() { return true; }
 
-	// junction: auto_calc,root,self,rcontext,wcontext, code
+	// junction: itself
 	virtual Junction *get_junction() { return 0; }
 
 	// table: itself
-	virtual Table *get_table() { return 0; }
+	virtual VTable *get_vtable() { return 0; }
 
 	// hash: (key)=value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
@@ -150,14 +150,14 @@ public: // Value
 	// codeframe: wcontext_transparent
 	// methodframe: my or self_transparent
 	// table: column
-	virtual Value *get_element(const String& name) { failed("(%s) does not have elements"); return 0; }
+	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
 	
 	// hash: (key)=value
 	// object_class, operator_class: (field)=value - static values only
 	// object_instance: (field)=value
 	// codeframe: wcontext_transparent
 	// methodframe: my or self_transparent
-	virtual void put_element(const String& name, Value *value) { failed("(%s) does not accept elements"); }
+	virtual void put_element(const String& name, Value *value) { bark("(%s) does not accept elements"); }
 
 	// object_class, object_instance: object_class
 	// wcontext: none yet | transparent
@@ -178,15 +178,15 @@ public: // usage
 	const String& as_string() {
 		const String *result=get_string(); 
 		if(!result)
-			failed("getting string of '%s'");
+			bark("(%s) not a string");
 
 		return *result;
 	}
 
-	Table& as_table() {
-		Table *result=get_table(); 
+	VTable& as_vtable() {
+		VTable *result=get_vtable(); 
 		if(!result)
-			failed("getting table of '%s'");
+			bark("(%s) not a table object");
 
 		return *result;
 	}
@@ -197,7 +197,7 @@ private:
 
 protected: 
 
-	void failed(char *action) const {
+	void bark(char *action) const {
 		THROW(0,0,
 			&name(),
 			action, type());

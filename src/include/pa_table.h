@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.11 2001/03/12 12:00:05 paf Exp $
+	$Id: pa_table.h,v 1.12 2001/03/12 13:13:20 paf Exp $
 */
 
 /*
@@ -24,12 +24,12 @@ class Table : public Array {
 public:
 
 	Table(Pool& apool,
-		char *afile, uint aline,
+		const String& asource,
 		Array *acolumns,
 		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
-	// the base origin of table's data
-	//const Origin& origin() { return forigin; }
+	// the source of table's data
+	const String& source() { return fsource; }
 
 	const Array *columns() { return fcolumns; }
 
@@ -39,10 +39,10 @@ public:
 
 	const String *item(const String& column_name);
 
-protected:
+private:
 
 	// the base origin of table's data
-	Origin forigin;
+	const String& fsource;
 
 	// column name->number lookup table
 	Hash name2number;
@@ -53,10 +53,12 @@ protected:
 	// columns
 	Array *fcolumns;
 
+	bool valid(int index) { return index>=0 && index<size();	}
+
 	const Array& at(int index);
 
 	const String *item(int column_index) {
-		return at(fcurrent).get_string(column_index);
+		return valid(fcurrent)?at(fcurrent).get_string(column_index):0;
 	}
 };
 

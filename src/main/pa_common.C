@@ -1,9 +1,9 @@
 /*
 	Parser
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.7 2001/03/12 09:08:51 paf Exp $
+	$Id: pa_common.C,v 1.8 2001/03/12 13:13:21 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -15,6 +15,7 @@
 #include <sys/stat.h>
 #include <io.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -40,11 +41,11 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
 char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem) {
     int f;
     struct stat finfo;
-    if (fname && !stat(fname,&finfo) && (f=open(fname,O_RDONLY
+    if(fname && !stat(fname,&finfo) &&(f=open(fname,O_RDONLY
 #ifdef WIN32
 		|O_TEXT
 #endif
-		))>=0){
+		))>=0) {
 		/*if(exclusive)
 			flock(f, LOCK_EX);*/
 
@@ -61,5 +62,35 @@ char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem) {
 		POOL_THROW(0,0,
 			0,
 			"use: can not read '%s' file", fname);
-    return NULL;
+    return 0;
+}
+
+char *getrow(char **row_ref, char delim) {
+    char *result=*row_ref;
+    if(result) {
+		*row_ref=strchr(result, delim);
+		if(*row_ref) 
+			*((*row_ref)++)=0; 
+		else if(!*result) 
+			return 0;
+    }
+    return result;
+}
+
+char *lsplit(char *string_ref, char delim) {
+    if(string_ref) {
+		char *v=strchr(string_ref, delim);
+		if(v) {
+			*v=0;
+			return v+1;
+		}
+    }
+    return 0;
+}
+
+char *lsplit(char **string_ref, char delim) {
+    char *result=*string_ref;
+	char *next=lsplit(*string_ref, delim);
+    *string_ref=next;
+    return result;
 }

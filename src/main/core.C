@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.C,v 1.60 2001/03/12 12:00:05 paf Exp $
+	$Id: core.C,v 1.61 2001/03/12 13:13:21 paf Exp $
 */
 
 #include "core.h"
@@ -50,6 +50,9 @@ void core() {
 	LOCAL_STRING(as_is, "as-is");  
 	untaint_lang_name2enum->put(as_is, 
 		static_cast<int>(String::Untaint_lang::AS_IS));
+	LOCAL_STRING(table, "table");
+	untaint_lang_name2enum->put(table, 
+		static_cast<int>(String::Untaint_lang::TABLE));
 	LOCAL_STRING(sql, "sql");
 	untaint_lang_name2enum->put(sql, 
 		static_cast<int>(String::Untaint_lang::SQL));

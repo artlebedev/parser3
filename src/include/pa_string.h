@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.32 2001/03/12 09:08:48 paf Exp $
+	$Id: pa_string.h,v 1.33 2001/03/12 13:13:20 paf Exp $
 */
 
 /*
@@ -34,11 +34,17 @@
 #define UNTAINT_TIMES_BIGGER 10
 
 #ifndef NO_STRING_ORIGIN
-#	define STRING_APPEND_PARAMS const char *src, size_t size, bool tainted, const char *file, uint line
+#	define STRING_APPEND_PARAMS \
+		const char *src, size_t size,  \
+		bool tainted, \
+		const char *file, uint line
 #	define APPEND(src, size, file, line) real_append(src, size, false, file, line)
 #	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true, file, line)
 #else
-#	define STRING_APPEND_PARAMS const char *src, size_t size, bool tainted
+#	define STRING_APPEND_PARAMS \
+		const char *src, \
+		size_t size, \
+		bool tainted
 #	define APPEND(src, size, file, line) real_append(src, size, false)
 #	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true)
 #endif
@@ -60,9 +66,9 @@ public:
 			// leave language built into string being appended
 			// just a flag, that value not stored
 		AS_IS,
+		TABLE,
 		SQL,
 		JS,
-		TABLE,
 		HTML,
 		HTML_TYPO
 	};

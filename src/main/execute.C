@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.93 2001/03/12 09:41:00 paf Exp $
+	$Id: execute.C,v 1.94 2001/03/12 13:13:21 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -17,6 +17,7 @@
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
 #include "pa_vbool.h"
+#include "pa_vtable.h"
 
 #include <stdio.h>
 
@@ -309,7 +310,10 @@ void Request::execute(const Array& ops) {
 				else // no, not me or relative of mine (total stranger)
 					if(wcontext->constructing()) {  // constructing?
 						// yes, constructor call: $some(^class:method(..))
-						self=NEW VObject(pool(), *called_class);
+						if(called_class->name()==TABLE_CLASS_NAME)
+							self=NEW VTable(pool());
+						else
+							self=NEW VObject(pool(), *called_class);
 						frame->write(*self, 
 							String::Untaint_lang::NO  // not used, always an object, not string
 						);

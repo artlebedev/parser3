@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.6 2001/03/12 09:08:47 paf Exp $
+	$Id: pa_common.h,v 1.7 2001/03/12 13:13:20 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -21,5 +21,8 @@ int __snprintf(char *, size_t, const char *, ...);
 #endif
 
 char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem);
+char *getrow(char **row_ref,char delim='\n');
+//char *lsplit(char *,char);
+char *lsplit(char **string_ref,char delim);
 
 #endif
