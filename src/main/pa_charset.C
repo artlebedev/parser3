@@ -1,10 +1,10 @@
 /** @file
 	Parser: Charset connection implementation.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
+	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
+	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.3 2001/12/15 21:49:18 paf Exp $
+	$Id: pa_charset.C,v 1.4 2001/12/17 17:59:51 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -13,10 +13,10 @@
 //#include "pa_threads.h"
 
 #ifdef XML
-#	include <util/TransENameMap.hpp>
-#	include <util/XML256TableTranscoder.hpp>
-#	include <util/PlatformUtils.hpp>
-#	include <PlatformSupport/XalanTranscodingServices.hpp>
+#	include<util/TransENameMap.hpp>
+#	include<util/XML256TableTranscoder.hpp>
+#	include<util/PlatformUtils.hpp>
+#	include<PlatformSupport/XalanTranscodingServices.hpp>
 #endif
 
 // globals
@@ -47,10 +47,10 @@ inline unsigned int to_wchar_code(const char *cstr) {
 	if(!cstr || !*cstr)
 		return 0;
 	if(cstr[1]==0)
-		return (unsigned int)(unsigned char)cstr[0];
+		return(unsigned int)(unsigned char)cstr[0];
 
 	char *error_pos;
-	return (unsigned int)strtol(cstr, &error_pos, 0);
+	return(unsigned int)strtol(cstr, &error_pos, 0);
 }
 inline bool to_bool(const char *cstr) {
 	return cstr && *cstr!=0;
@@ -64,7 +64,7 @@ static void element2ctypes(unsigned char c, bool belongs,
 
 	ctypes_table[c]|=bit;
 	if(group_offset>=0)
-		tables[cbits_offset+group_offset+c/8] |= 1 << (c%8);
+		tables[cbits_offset+group_offset+c/8] |= 1<<(c%8);
 }
 static void element2case(unsigned char from, unsigned char to,
 						 unsigned char *tables) {
@@ -79,7 +79,7 @@ static void element2case(unsigned char from, unsigned char to,
 
 #ifdef XML
 template <class TType> class ENameMapFor2 : public ENameMap {
-public :
+public:
     // -----------------------------------------------------------------------
     //  Constructors and Destructor
     // -----------------------------------------------------------------------
@@ -88,7 +88,7 @@ public :
         , const XMLCh* const                        fromTable
         , const XMLTransService::TransRec* const    toTable
         , const unsigned int                        toTableSize
-		) : ENameMap(encodingName),
+		): ENameMap(encodingName),
 		ffromTable(fromTable),
 		ftoTable(toTable),
 		ftoTableSize(toTableSize) {}
@@ -108,7 +108,7 @@ private:
 	const XMLTransService::TransRec* const    ftoTable;
 	const unsigned int                        ftoTableSize;
 
-private :
+private:
     // -----------------------------------------------------------------------
     //  Unimplemented constructors and operators
     // -----------------------------------------------------------------------
@@ -127,7 +127,7 @@ public :
         , const unsigned int                        toTableSize
 		) : XML256TableTranscoder(encodingName, blockSize, fromTable, toTable, toTableSize) {}
 
-private :
+private:
     XML256TableTranscoder2();
     XML256TableTranscoder2(const XML256TableTranscoder2&);
     void operator=(const XML256TableTranscoder2&);
@@ -137,7 +137,7 @@ private :
 // methods
 
 extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
-Charset::Charset(Pool& apool, const String& aname, const String *file_spec) : Pooled(apool),
+Charset::Charset(Pool& apool, const String& aname, const String *file_spec): Pooled(apool),
 	fname(apool) {
 	// fname
 	char *name_cstr=(char *)malloc(aname.size()+1);
@@ -152,7 +152,7 @@ Charset::Charset(Pool& apool, const String& aname, const String *file_spec) : Po
 #endif
 	} else {
 		fisUTF8=true;
-		// grab default onces [for UTF-8 so to be able to make a-z => A-Z
+		// grab default onces [for UTF-8 so to be able to make a-z =>A-Z
 		memcpy(pcre_tables, pcre_default_tables, sizeof(pcre_tables));
 	}
 
@@ -175,7 +175,7 @@ void Charset::loadDefinition(const String& file_spec) {
 	// don't know the size there
 	memset(pcre_tables, 0, sizeof(pcre_tables)); 
 	prepare_case_tables(pcre_tables);
-	cstr2ctypes(pcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
+	cstr2ctypes(pcre_tables,(const unsigned char *)"*+?{^.$|()[", ctype_meta);
 
 	// charset
 	memset(fromTable, 0, sizeof(fromTable));
@@ -290,18 +290,18 @@ XMLByte Charset::xlatOneTo(const XMLCh toXlat) const {
     XMLByte         curByte = 0;
     do {
         // Calc the mid point of the low and high offset.
-        const unsigned int midOfs = ((hiOfs - lowOfs) / 2) + lowOfs;
+        const unsigned int midOfs =((hiOfs - lowOfs) / 2)+lowOfs;
 
         //  If our test char is greater than the mid point char, then
         //  we move up to the upper half. Else we move to the lower
         //  half. If its equal, then its our guy.
-        if (toXlat > toTable[midOfs].intCh)
+        if(toXlat>toTable[midOfs].intCh)
             lowOfs = midOfs;
-		else if (toXlat < toTable[midOfs].intCh)
+		else if(toXlat<toTable[midOfs].intCh)
 			hiOfs = midOfs;
 		else
 			return toTable[midOfs].extCh;
-	} while(lowOfs + 1 < hiOfs);
+	} while(lowOfs+1<hiOfs);
 
     return '?';
 }
@@ -310,6 +310,12 @@ void Charset::transcode(Pool& pool,
 	const Charset& source_charset, const void *source_body, size_t source_content_length,
 	const Charset& dest_charset, const void *& dest_body, size_t& dest_content_length
 	) {
+	if(!source_content_length) {
+		dest_body=0;
+		dest_content_length=0;
+		return;
+	}
+
 	switch((source_charset.isUTF8()?0x10:0x00)|(dest_charset.isUTF8()?0x01:0x00)) {
 		default: // 0x00
 			source_charset.transcodeToCharset(pool, dest_charset,
@@ -386,33 +392,33 @@ void Charset::transcodeToUTF8(Pool& pool,
 	const XMLByte* srcEnd=(const XMLByte*)source_body+source_content_length;
 	XMLByte* outPtr=dest_body;
 
-    while (srcPtr < srcEnd) {
+    while(srcPtr<srcEnd) {
         uint curVal = fromTable[*srcPtr];
 		if(!curVal) {
             // use the replacement character
-            *outPtr++ = '?';
-            srcPtr ++;
+            *outPtr++= '?';
+            srcPtr++;
             continue;
         }
 
         // Figure out how many bytes we need
         unsigned int encodedBytes;
-        if (curVal < 0x80)
+        if(curVal<0x80)
             encodedBytes = 1;
-        else if (curVal < 0x800)
+        else if(curVal<0x800)
             encodedBytes = 2;
-        else if (curVal < 0x10000)
+        else if(curVal<0x10000)
             encodedBytes = 3;
-        else if (curVal < 0x200000)
+        else if(curVal<0x200000)
             encodedBytes = 4;
-        else if (curVal < 0x4000000)
+        else if(curVal<0x4000000)
             encodedBytes = 5;
-        else if (curVal <= 0x7FFFFFFF)
+        else if(curVal<= 0x7FFFFFFF)
             encodedBytes = 6;
         else {
             // use the replacement character
-            *outPtr++ = '?';
-            srcPtr ++;
+            *outPtr++= '?';
+            srcPtr++;
             continue;
         }
 
@@ -424,23 +430,23 @@ void Charset::transcodeToUTF8(Pool& pool,
 
         //  And spit out the bytes. We spit them out in reverse order
         //  here, so bump up the output pointer and work down as we go.
-        outPtr += encodedBytes;
+        outPtr+= encodedBytes;
         switch(encodedBytes) {
-            case 6 : *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-                     curVal >>= 6;
-            case 5 : *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-                     curVal >>= 6;
-            case 4 : *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-                     curVal >>= 6;
-            case 3 : *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-                     curVal >>= 6;
-            case 2 : *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-                     curVal >>= 6;
-            case 1 : *--outPtr = XMLByte(curVal | gFirstByteMark[encodedBytes]);
+            case 6: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+                     curVal>>= 6;
+            case 5: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+                     curVal>>= 6;
+            case 4: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+                     curVal>>= 6;
+            case 3: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+                     curVal>>= 6;
+            case 2: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+                     curVal>>= 6;
+            case 1: *--outPtr = XMLByte(curVal | gFirstByteMark[encodedBytes]);
         }
 
         // Add the encoded bytes back in again to indicate we've eaten them
-        outPtr += encodedBytes;
+        outPtr+= encodedBytes;
     }
 
 	// return
@@ -458,13 +464,13 @@ void Charset::transcodeFromUTF8(Pool& pool,
 	XMLByte* outPtr=dest_body;
 
     //  We now loop until we either run out of input data
-    while (srcPtr < srcEnd) {
+    while(srcPtr<srcEnd) {
         // Get the next leading byte out
         const XMLByte firstByte = *srcPtr;
 
-        // Special-case ASCII, which is a leading byte value of <= 127
-        if (firstByte <= 127) {
-            *outPtr++ = firstByte;
+        // Special-case ASCII, which is a leading byte value of<= 127
+        if(firstByte<= 127) {
+            *outPtr++= firstByte;
             srcPtr++;
             continue;
         }
@@ -473,9 +479,9 @@ void Charset::transcodeFromUTF8(Pool& pool,
         const unsigned int trailingBytes = gUTFBytes[firstByte];
 
         //  If there are not enough source bytes to do this one, then we
-        //  are done. Note that we done >= here because we are implicitly
+        //  are done. Note that we done>= here because we are implicitly
         //  counting the 1 byte we get no matter what.
-        if (srcPtr + trailingBytes >= srcEnd)
+        if(srcPtr+trailingBytes>= srcEnd)
             break;
 
         // Looks ok, so lets build up the value
@@ -492,19 +498,19 @@ void Charset::transcodeFromUTF8(Pool& pool,
             default:
                 throw Exception(0, 0,
 					0,
-					"transcodeFromUTF8 error: wrong trailingBytes value (%d)", trailingBytes);
+					"transcodeFromUTF8 error: wrong trailingBytes value(%d)", trailingBytes);
         }
         tmpVal-=gUTFOffsets[trailingBytes];
 
         //  If it will fit into a single char, then put it in. Otherwise
         //  fail [*encode it as a surrogate pair. If its not valid, use the
         //  replacement char.*]
-        if (!(tmpVal & 0xFFFF0000))
-            *outPtr++ = xlatOneTo(tmpVal);
+        if(!(tmpVal & 0xFFFF0000))
+            *outPtr++= xlatOneTo(tmpVal);
 		else
 			throw Exception(0, 0,
 				0,
-				"transcodeFromUTF8 error: too big tmpVal (0x%08X)", tmpVal);
+				"transcodeFromUTF8 error: too big tmpVal(0x%08X)", tmpVal);
 	}
 
 	// return
@@ -554,13 +560,13 @@ const char *Charset::transcode_cstr(const XalanDOMString& s) {
 	} catch(XMLException& e) {
 		Exception::provide_source(pool(), 0, e);
 	}
-	return (const char *)dest;
+	return(const char *)dest;
 }
 String& Charset::transcode(const XalanDOMString& s) { 
 	return *NEW String(pool(), transcode_cstr(s)); 
 }
 
-std::auto_ptr<XalanDOMString> Charset::transcode_buf(const char *buf, size_t buf_size) { 
+std::auto_ptr<XalanDOMString>Charset::transcode_buf(const char *buf, size_t buf_size) { 
 	unsigned int dest_size=0;
 	XMLCh* dest=(XMLCh *)malloc((buf_size+1)*sizeof(XMLCh));
 	unsigned char *charSizes=(unsigned char *)malloc(buf_size*sizeof(unsigned char));
@@ -571,7 +577,7 @@ std::auto_ptr<XalanDOMString> Charset::transcode_buf(const char *buf, size_t buf
 			unsigned int dest_size=transcoder->transcodeFrom(
 				(unsigned char *)buf,
 				(const unsigned int)buf_size,
-				dest, (const unsigned int)buf_size,
+				dest,(const unsigned int)buf_size,
 				bytesEaten,
 				charSizes
 			);
@@ -584,7 +590,7 @@ std::auto_ptr<XalanDOMString> Charset::transcode_buf(const char *buf, size_t buf
 	
 	return std::auto_ptr<XalanDOMString>(result);
 }
-std::auto_ptr<XalanDOMString> Charset::transcode(const String& s) { 
+std::auto_ptr<XalanDOMString>Charset::transcode(const String& s) { 
 	const char *cstr=s.cstr(String::UL_UNSPECIFIED);
 
 	return transcode_buf(cstr, strlen(cstr)); 
