@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.105 2001/03/15 09:58:18 paf Exp $
+	$Id: execute.C,v 1.106 2001/03/15 11:00:40 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -286,7 +286,7 @@ void Request::execute(const Array& ops) {
 							value->type()); 
 
 				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);
-				//frame->set_name(value->name());
+				frame->set_name(value->name());
 				PUSH(frame);
 				break;
 			}

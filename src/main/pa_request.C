@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.37 2001/03/15 09:37:56 paf Exp $
+	$Id: pa_request.C,v 1.38 2001/03/15 11:00:41 paf Exp $
 */
 
 #include <string.h>
@@ -128,33 +128,40 @@ char *Request::core(const char *sys_auto_path1,
 						if(const Method *method=junction->method) {
 							// preparing to pass parameters to 
 							//	@exception[origin;source;comment;type;code]
-							VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);
+							VMethodFrame frame(pool(), *junction);
+							frame.set_self(*main_class);
 
 							const String *problem_source=e.problem_source();
 							// origin
 							LOCAL_STRING(origin_name, "origin");
-							VString *origin_value=0;
+							Value *origin_value=0;
 #ifndef NO_STRING_ORIGIN
-							const Origin& origin=problem_source->origin();
-							if(origin.file) {
-								char *buf=(char *)malloc(MAX_STRING);
-								snprintf(buf, MAX_STRING, "%s(%d): ", 
-									origin.file, 1+origin.line);
-								String *NEW_STRING(origin_file_line, buf);
-								origin_value=NEW VString(*origin_file_line);
+							if(problem_source) {
+								const Origin& origin=problem_source->origin();
+								if(origin.file) {
+									char *buf=(char *)malloc(MAX_STRING);
+									snprintf(buf, MAX_STRING, "%s(%d): ", 
+										origin.file, 1+origin.line);
+									String *NEW_STRING(origin_file_line, buf);
+									origin_value=NEW VString(*origin_file_line);
+								}
 							}
 #endif
-							frame->store_param(origin_name, origin_value);
+							frame.store_param(origin_name, 
+								origin_value?origin_value:NEW VUnknown(pool()));
 
 							// source
 							LOCAL_STRING(source_name, "source");
-							frame->store_param(source_name, 
-								NEW VString(*problem_source));
+							Value *source_value=0;
+							if(problem_source)
+								source_value=NEW VString(*problem_source);
+							frame.store_param(source_name, 
+								source_value?source_value:NEW VUnknown(pool()));
 
 							// comment
 							LOCAL_STRING(comment_name, "comment");
 							String *NEW_STRING(comment_value, e.comment());
-							frame->store_param(comment_name, 
+							frame.store_param(comment_name, 
 								NEW VString(*comment_value));
 
 							// type
@@ -164,7 +171,7 @@ char *Request::core(const char *sys_auto_path1,
 								type_value=NEW VString(*e.type());
 							else
 								type_value=NEW VUnknown(pool());
-							frame->store_param(type_name, type_value);
+							frame.store_param(type_name, type_value);
 
 							// code
 							LOCAL_STRING(code_name, "code");
@@ -173,9 +180,9 @@ char *Request::core(const char *sys_auto_path1,
 								code_value=NEW VString(*e.code());
 							else
 								code_value=NEW VUnknown(pool());
-							frame->store_param(code_name, code_value);
+							frame.store_param(code_name, code_value);
 
-							result=execute_method(*frame, *method);
+							result=execute_method(frame, *method);
 						}
 			}
 			

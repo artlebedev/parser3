@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.100 2001/03/15 09:58:18 paf Exp $
+	$Id: compile.y,v 1.101 2001/03/15 11:00:40 paf Exp $
 */
 
 /*
@@ -809,7 +809,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			case '&': case '|': 
 			case '=': case '!':
 			// common delimiters
-			case '\'':
+			case '\'': case ',':
 				pop_LS(PC);
 				PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
 				result=EON;

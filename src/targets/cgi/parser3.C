@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.13 2001/03/15 09:37:56 paf Exp $
+	$Id: parser3.C,v 1.14 2001/03/15 11:00:41 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -27,7 +27,7 @@
 Pool pool; // global pool
 
 #ifdef WIN32
-#	if MSVC
+#	if _MSC_VER
 // intercept global system errors
 LONG WINAPI TopLevelExceptionFilter (
 									 struct _EXCEPTION_POINTERS *ExceptionInfo
@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
 #ifdef WIN32
-#	if MSVC
+#	if _MSC_VER
 		SetUnhandledExceptionFilter(&TopLevelExceptionFilter);
 		//TODO: initSocks();
 #	endif
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
 
 		// must be last in PTRY{}PCATCH
 #ifdef WIN32
-#	if MSVC
+#	if _MSC_VER
 		SetUnhandledExceptionFilter(0);
 #	endif
 #endif
