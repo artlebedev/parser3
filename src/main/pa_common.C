@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/04/11 12:29:19 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/05/30 10:45:37 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -975,6 +975,7 @@ int pa_sleep(unsigned long secs, unsigned long usecs) {
 
 // attributed meaning
 
+/// http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
 static size_t date_attribute(const VDate& vdate, char *buf, size_t buf_size) {
     const char month_names[12][4]={
 		"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
@@ -987,7 +988,7 @@ static size_t date_attribute(const VDate& vdate, char *buf, size_t buf_size) {
 		throw Exception(0,
 			0,
 			"bad time in attribute value (seconds from epoch=%ld)", when);
-	return snprintf(buf, MAX_STRING, "%s, %.2d-%s-%.4d %.2d:%.2d:%.2d GMT", 
+	return snprintf(buf, MAX_STRING, "%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT", 
 		days[tms->tm_wday],
 		tms->tm_mday,month_names[tms->tm_mon],tms->tm_year+1900,
 		tms->tm_hour,tms->tm_min,tms->tm_sec);
