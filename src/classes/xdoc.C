@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/02/17 15:01:01 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/02/17 15:02:15 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -797,8 +797,8 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
 	document->encoding=BAD_CAST xmlMemStrdup(encoder_name);
 
-	xmlChar* doc_txt_ptr;
-	int doc_txt_len;
+	xmlChar* doc_txt_ptr=0;
+	int doc_txt_len=0;
 	pa_xsltSaveResultToMem(doc_txt_ptr, doc_txt_len, document, stylesheet.get(), encoder);
 	if(xmlHaveGenericErrors()) {
 		GdomeException exc=0;
