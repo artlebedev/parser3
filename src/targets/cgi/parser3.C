@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.168 2002/04/09 08:10:37 paf Exp $
+	$Id: parser3.C,v 1.169 2002/04/09 16:27:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -310,33 +310,35 @@ void real_parser_handler(
 		true /* status_allowed */);
 	
 	// some root-controlled location
-	const char *root_config_filespec;
+	const char *root_config_filespec_cstr;
+	char root_config_filespec_buf[MAX_STRING];
 	if(const char *root_config_by_env=getenv(PARSER_ROOT_CONFIG_ENV_NAME))
-		root_config_filespec=root_config_by_env;
+		root_config_filespec_cstr=root_config_by_env;
 	else {
 #ifdef ROOT_CONFIG_DIR
-		root_config_filespec=ROOT_CONFIG_DIR "/" CONFIG_FILE_NAME;
+		root_config_filespec_cstr=ROOT_CONFIG_DIR "/" CONFIG_FILE_NAME;
 #else
 #	ifdef WIN32
 		// c:\windows
 		char windows_dir[MAX_STRING];
 		GetWindowsDirectory(windows_dir, MAX_STRING);
 
-		char buf[MAX_STRING];
-		snprintf(buf, MAX_STRING, 
+		
+		snprintf(root_config_filespec_buf, MAX_STRING, 
 			"%s/%s", 
 			windows_dir, CONFIG_FILE_NAME);
 		
-		root_config_filespec=buf;
+		root_config_filespec_cstr=root_config_filespec_buf;
 #	else
 #error must be compiled either configure/make or MSVC++
 #	endif
 #endif
 	}
 	
-	const char *site_config_filespec;
+	const char *site_config_filespec_cstr;
+	char site_config_filespec_buf[MAX_STRING];
 	if(const char *site_config_by_env=getenv(PARSER_SITE_CONFIG_ENV_NAME))
-		site_config_filespec=site_config_by_env;
+		site_config_filespec_cstr=site_config_by_env;
 	else {
 	// beside by binary
 	// @todo full path, not ./!
@@ -348,17 +350,16 @@ void real_parser_handler(
 			// no path, just filename
 			beside_binary_path[0]='.'; beside_binary_path[1]=0;
 		}
-		char buf[MAX_STRING];
-		snprintf(buf, MAX_STRING, 
+		snprintf(site_config_filespec_buf, MAX_STRING, 
 			"%s/%s", 
 			beside_binary_path, CONFIG_FILE_NAME);
-		site_config_filespec=buf;
+		site_config_filespec_cstr=site_config_filespec_buf;
 	}
 	
 	// process the request
 	request.core(
-		root_config_filespec, false /*don't fail_on_read_problem*/,
-		site_config_filespec, false /*don't fail_on_read_problem*/,
+		root_config_filespec_cstr, true/*fail_on_read_problem*/,
+		site_config_filespec_cstr, true /*fail_on_read_problem*/,
 		header_only);
 	
 	//

@@ -1,151 +1,42 @@
-[Tue Feb 19 14:36:30 2002] string piece appends=35945, string string appends=45113
-[Tue Feb 19 14:38:35 2002] string piece appends=307971[including string append-pieces], string string appends=45116
-[Tue Feb 19 15:12:43 2002] string piece appends=36025, string string appends=45113, wcontext_result_size=1454388
-[Tue Feb 19 15:14:00 2002] string piece appends=36025, string string appends=45113, wcontext_result_size=111876[pieces count, not size. 13bytes per piece]
-[Tue Feb 19 15:19:55 2002] string piece appends=36032, string string appends=45116, wcontext_result_size=9010[calls with string results] 36M total
-[Tue Feb 19 16:40:09 2002] string piece appends=36025, string string appends=3535584[bytes], wcontext_result_size=1454388, total_alloc_size=12266869
-
-[Tue Feb 19 17:05:07 2002] string piece appends=36025, string string appends=1903776, wcontext_result_size=783132, total_alloc_size=9922292 [no origins]
-[Tue Feb 19 17:35:41 2002] string piece appends=35981, string string appends=3532334, wcontext_result_size=1452958, total_alloc_size=12263593 /stopped random
-[Tue Feb 19 17:38:41 2002] string piece appends=35981, string string appends=3532334, wcontext_result_size=1452958, total_alloc_size=12153191 /���� ������ +1 �� ���� [1%
-[Tue Feb 19 18:08:59 2002] string piece appends=36225, string string appends=3327900, wcontext_result_size=1373304, total_alloc_size=11813837 /Row.item size ushort, 3% 
-[Tue Feb 19 18:51:24 2002] string piece appends=36021, string string appends=3286488, wcontext_result_size=1354164, total_alloc_size=11758725 /don't remember :(
-[Wed Feb 20 11:21:57 2002] string piece appends=36025, string string appends=3286572, wcontext_result_size=1354188, total_alloc_size=11672569
-[Wed Feb 20 11:30:11 2002] string piece appends=36025, string string appends=3286572, wcontext_result_size=1354188, total_alloc_size=11672569
-[Wed Feb 20 11:36:51 2002] string piece appends=36025, string string appends=3286572, wcontext_result_size=1354188, double_appends=45107, total_alloc_size=11672569
-[Wed Feb 20 11:37:32 2002] string piece appends=36025, string string appends=45107, wcontext_result_size=1354188, double_appends=45107, total_alloc_size=11672569
-[Wed Feb 20 11:38:07 2002] string piece appends=36025, string string appends=45107[count], wcontext_result_size=1354188, double_appends=22465[count], total_alloc_size=11672569
-[Wed Feb 20 11:39:29 2002] string piece appends=36025, string string appends=3286572[size], wcontext_result_size=1354188, double_appends=295140[size], total_alloc_size=11672569
-[Wed Feb 20 11:52:36 2002] string piece appends=36025, string string appends=3286572, wcontext_result_size=1354188, double_appends=47568[double append of non-modified-lang strings], total_alloc_size=11672569
-[Wed Feb 20 11:56:33 2002] string piece appends=36025, string string appends=3286572, wcontext_result_size=1354188, double_appends=47568, string_string_shortcut_economy=2538024[77% of all string to string appends; 21% of total_alloc], total_alloc_size=11672569
-z
-[Wed Feb 20 12:37:03 2002] string piece appends=309906, wcontext_result_size=1354188, string_string_shortcut_economy_closer=1821432[append size to empty string], total_alloc_size=11672569
-[Wed Feb 20 12:38:16 2002] string piece appends=309906, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=11672569
-[Wed Feb 20 12:42:11 2002] string piece appends=310076, wcontext_result_size=1355340, string_string_shortcut_economy_closer=2538900, total_alloc_size=11676597
-[Wed Feb 20 13:18:05 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=0, total_alloc_size=11672761
-[Wed Feb 20 13:19:22 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=11672973
-[Wed Feb 20 13:19:42 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=11672761
-[Wed Feb 20 13:26:19 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=11672761
-[Wed Feb 20 13:36:21 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=11672761
-[Wed Feb 20 14:03:33 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=11672761
-[Wed Feb 20 14:10:14 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=11484213 /2% economy on string::link_row removal
-[Wed Feb 20 14:16:14 2002] string piece appends=309976, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2538024, total_alloc_size=8918634/11484213
-[Wed Feb 20 15:06:06 2002] string piece appends=158190, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2558916, total_alloc_size=9674460 // first results:15%, that's only appends to emptystring
-[Wed Feb 20 15:26:02 2002] string piece appends=166051, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2421420, total_alloc_size=9674460
-[Wed Feb 20 15:29:27 2002] string piece appends=107276, wcontext_result_size=1354188, string_string_shortcut_economy_closer=2432400, total_alloc_size=8918634 // final results: 22% economy of total-without-any-optimization
-[Fri Feb 22 14:26:10 2002] c:/drives/y/parser3project/parser3/www/htdocs/t.html(4): 'm' (void) not a method or junction, can not call it [- -]
-[Fri Feb 22 14:27:11 2002] c:/drives/y/parser3project/parser3/www/htdocs/t.html(5): 'a' column not found [- -]
-[Fri Feb 22 14:27:12 2002] c:/drives/y/parser3project/parser3/www/htdocs/t.html(5): 'a' column not found [- -]
-[Fri Feb 22 14:44:37 2002] c:/drives/y/parser3project/parser3/www/htdocs/family/our_baby/inner.html(3): 'name' column not found [- -]
-[Fri Feb 22 14:44:57 2002] c:/drives/y/parser3project/parser3/www/htdocs/family/our_baby/inner.html(9): 'id' column not found [- -]
-[Fri Feb 22 14:49:38 2002] user-request(0): 'Y:/parser3project/parser3/www/htdocs/admin/objects/object_lf.html' read failed: No such file or directory (2), actual filename 'Y:/parser3project/parser3/www/htdocs/admin/objects/object_lf.html' [- -]
-[Fri Feb 22 15:05:14 2002] c:/drives/y/parser3project/parser3/www/htdocs/family/our_baby/inner.html(86): 'image_id' column not found [- -]
-[Fri Feb 22 15:05:24 2002] c:/drives/y/parser3project/parser3/www/htdocs/family/our_baby/inner.html(86): 'image_id' column not found [- -]
-[Fri Feb 22 15:05:26 2002] c:/drives/y/parser3project/parser3/www/htdocs/family/our_baby/inner.html(86): 'image_id' column not found [- -]
-[Fri Feb 22 15:16:46 2002] c:/drives/y/parser3project/parser3/www/htdocs/family/our_baby/inner.html(86): 'image_id' column not found [- -]
-[Fri Feb 22 15:19:17 2002] user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/t.html' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/t.html' [- -]
-[Fri Feb 22 16:16:25 2002] c:/drives/y/parser3project/parser3/www/htdocs/t.html(8): 'append' (void) not a method or junction, can not call it [- -]
-[Mon Feb 25 19:56:16 2002] c:/drives/y/parser3project/parser3/www/htdocs/z2/auto.p(1): 'common/lib.p' not found along MAIN:CLASS_PATH [- -]
-[Tue Feb 26 15:26:42 2002] exception in request exception handler: Exception 0xC0000005 at 0x00420E03
-[Tue Feb 26 15:27:16 2002] user-request(0): 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' read failed: No such file or directory (2), actual filename 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' [- -]
-[Tue Feb 26 15:27:24 2002] user-request(0): 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' read failed: No such file or directory (2), actual filename 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' [- -]
-[Tue Feb 26 15:30:07 2002] user-request(0): 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' read failed: No such file or directory (2), actual filename 'Y:/parser3project/parser3/www/htdocs/pafn/index.html' [- -]
-[Tue Feb 26 15:41:34 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.html(108): 'zzz' (void) not a method or junction, can not call it [- -]
-[Tue Feb 26 15:41:42 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.html(108): 'xmlDataTypes' (hash) not a method or junction, can not call it [- -]
-[Tue Feb 26 17:05:08 2002] user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/sdfsdf.html' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/sdfsdf.html' [- -]
-[Wed Feb 27 09:33:05 2002] c:/drives/y/parser3project/parser3/www/htdocs//../data/classes/t.p(4): 'a' element can not be stored to stateless_class [- -]
-[Wed Feb 27 09:33:56 2002] c:/drives/y/parser3project/parser3/www/htdocs/t.html(3): 'saaa' element can not be stored to stateless_class [- -]
-[Wed Feb 27 09:34:44 2002] c:/drives/y/parser3project/parser3/www/htdocs/t.html(3): 'saaa' element can not be stored to stateless_class [- -]
-[Wed Feb 27 09:35:22 2002] c:/drives/y/parser3project/parser3/www/htdocs/t.html(4): 't' class is undefined [- -]
-[Wed Feb 27 10:02:15 2002] user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/mdm/sdfsdf.html' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/mdm/sdfsdf.html' [- -]
-[Wed Feb 27 10:02:38 2002] user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/mdm/sdfsdf.html' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/mdm/sdfsdf.html' [- -]
-[Wed Feb 27 10:02:47 2002] user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/mdm/sdfsdf.html' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/mdm/sdfsdf.html' [- -]
-[Wed Feb 27 10:03:33 2002] c:/drives/y/parser3project/parser3/www/htdocs/ta.html(0): 'untaint' body must be code (parameter #1) [- -]
-[Wed Feb 27 10:03:34 2002] c:/drives/y/parser3project/parser3/www/htdocs/ta.html(0): 'untaint' body must be code (parameter #1) [- -]
-[Wed Feb 27 10:11:13 2002] c:/drives/y/parser3project/parser3/www/htdocs/dates.html(0): 'create' invalid datetime [- -]
-[Wed Feb 27 10:12:03 2002] c:/drives/y/parser3project/parser3/www/htdocs/dates.html(1): 'roll' bad resulting time (seconds from epoch=-1) [- -]
-[Wed Feb 27 10:13:15 2002] c:/drives/y/parser3project/parser3/www/htdocs/dates.html(0): 'create' invalid datetime [- -]
-[Wed Feb 27 10:37:44 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(15): 'KOI8-R' unknown charset [- -]
-[Wed Feb 27 10:37:45 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(15): 'KOI8-R' unknown charset [- -]
-[Wed Feb 27 10:39:49 2002] transcodeFromUTF8 error: too big tmpVal(0x002349AD) [- -]
-[Thu Feb 28 18:28:59 2002] Y:/parser3project/parser3/www/htdocs/index.html(282): 'Y:/parser3project/parser3/www/htdocs/index.xml' http://localhost/xsl/entities.xsl:1: error: Extra content at the end of the document|<html><head><title>Site Not Found</title></head>|^|Y:/parser3project/parser3/www/htdocs/index.xml:17: error: Entity 'nbsp' not defined|  Реализация новых квартир по&nbsp;тел.:<br />|                                                           ^|Y:/parser3project/parser3/www/htdocs/index.xml:18: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;47</b><br />|                     ^|Y:/parser3project/parser3/www/htdocs/index.xml:18: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;47</b><br />|                              ^|Y:/parser3project/parser3/www/htdocs/index.xml:19: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;48</b>|                     ^|Y:/parser3project/parser3/www/htdocs/index.xml:19: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&
-[Thu Feb 28 18:29:05 2002] Y:/parser3project/parser3/www/htdocs/index.html(282): 'Y:/parser3project/parser3/www/htdocs/index.xml' http://localhost/xsl/entities.xsl:1: error: Extra content at the end of the document|<html><head><title>Site Not Found</title></head>|^|Y:/parser3project/parser3/www/htdocs/index.xml:17: error: Entity 'nbsp' not defined|  Реализация новых квартир по&nbsp;тел.:<br />|                                                           ^|Y:/parser3project/parser3/www/htdocs/index.xml:18: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;47</b><br />|                     ^|Y:/parser3project/parser3/www/htdocs/index.xml:18: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;47</b><br />|                              ^|Y:/parser3project/parser3/www/htdocs/index.xml:19: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;48</b>|                     ^|Y:/parser3project/parser3/www/htdocs/index.xml:19: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&
-[Thu Feb 28 18:35:18 2002] Y:/parser3project/parser3/www/htdocs/more.html(46): 'Y:/parser3project/parser3/www/htdocs/index.xml' Y:/parser3project/parser3/www/htdocs/index.xml:3: warning: failed to load external entity "Y:///drives/y/parser3project/parser3/www/htdocs/xsl/entities.xsl"|stylesheet SYSTEM "/drives/y/parser3project/parser3/www/htdocs/xsl/entities.xsl|                                                                              ^|Y:/parser3project/parser3/www/htdocs/index.xml:17: error: Entity 'nbsp' not defined|  Реализация новых квартир по&nbsp;тел.:<br />|                                                           ^|Y:/parser3project/parser3/www/htdocs/index.xml:18: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;47</b><br />|                     ^|Y:/parser3project/parser3/www/htdocs/index.xml:18: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;47</b><br />|                              ^|Y:/parser3project/parser3/www/htdocs/index.xml:19: error: Entity 'ndash' no
-[Thu Feb 28 18:35:30 2002] Y:/parser3project/parser3/www/htdocs/more.html(46): 'Y:/parser3project/parser3/www/htdocs/index.xml' Y:/parser3project/parser3/www/htdocs/index.xml:3: warning: failed to load external entity "Y:///drives/y/parser3project/parser3/www/htdocs/xsl/entities.xsl"|stylesheet SYSTEM "/drives/y/parser3project/parser3/www/htdocs/xsl/entities.xsl|                                                                              ^|Y:/parser3project/parser3/www/htdocs/index.xml:17: error: Entity 'nbsp' not defined|  Реализация новых квартир по&nbsp;тел.:<br />|                                                           ^|Y:/parser3project/parser3/www/htdocs/index.xml:18: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;47</b><br />|                     ^|Y:/parser3project/parser3/www/htdocs/index.xml:18: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;47</b><br />|                              ^|Y:/parser3project/parser3/www/htdocs/index.xml:19: error: Entity 'ndash' no
-[Thu Feb 28 18:35:58 2002] Y:/parser3project/parser3/www/htdocs/more.html(46): 'Y:/parser3project/parser3/www/htdocs/index.xml' Y:/parser3project/parser3/www/htdocs/index.xml:3: warning: failed to load external entity "Y:///drives/y/parser3project/parser3/www/htdocs/xsl/entities.xsl"|stylesheet SYSTEM "/drives/y/parser3project/parser3/www/htdocs/xsl/entities.xsl|                                                                              ^|Y:/parser3project/parser3/www/htdocs/index.xml:17: error: Entity 'nbsp' not defined|  Реализация новых квартир по&nbsp;тел.:<br />|                                                           ^|Y:/parser3project/parser3/www/htdocs/index.xml:18: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;47</b><br />|                     ^|Y:/parser3project/parser3/www/htdocs/index.xml:18: error: Entity 'ndash' not defined|  (095) <b>782&ndash;47&ndash;47</b><br />|                              ^|Y:/parser3project/parser3/www/htdocs/index.xml:19: error: Entity 'ndash' no
-[Thu Feb 28 18:36:18 2002] transcodeFromUTF8 error: too big tmpVal(0x0001086D) [- -]
-[Thu Feb 28 18:37:36 2002] transcodeFromUTF8 error: too big tmpVal(0x0001086D) [- -]
-[Mon Mar 04 17:25:50 2002] user-request(0): 'c:/drives/Y/parser3project/parser3/www/htdocs/more.html' read failed: No such file or directory (2), actual filename 'c:/drives/Y/parser3project/parser3/www/htdocs/more.html' [- -]
-[Mon Mar 18 14:25:56 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(964:24): parse error, expecting `']'' or `';'' [- -]
-[Mon Mar 18 14:26:08 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(964:24): parse error, expecting `']'' or `';'' [- -]
-[Mon Mar 18 16:47:01 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(112): 'try' native method of exceptions1 (method_frame) accepts minimum 2 parameter(s) (1 present) [- -]
-[Mon Mar 18 16:47:22 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(965:2): parse error, expecting `STRING' or `'$'' or `'^'' [- -]
-[Mon Mar 18 16:53:04 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(968:4): parse error, expecting `']'' or `';'' [- -]
-[Mon Mar 18 16:53:46 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(970:2): parse error, expecting `']'' or `';'' [- -]
-[Mon Mar 18 17:39:24 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:39:25 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:39:32 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:41:06 2002] c:/drives/Y/parser3project/parser3/www/htdocs/index.html(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:56:21 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:56:22 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:56:23 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:57:06 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:57:06 2002] exception in request exception handler: column not found
-[Mon Mar 18 17:57:26 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:57:26 2002] exception in request exception handler: element can not be stored to table
-[Mon Mar 18 17:57:40 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:57:40 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
-[Mon Mar 18 17:57:50 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:57:50 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
-[Mon Mar 18 17:58:03 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:58:03 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
-[Mon Mar 18 17:58:06 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:58:15 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:58:15 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
-[Mon Mar 18 17:58:15 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:58:15 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
-[Mon Mar 18 17:59:46 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:59:46 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
-[Mon Mar 18 17:59:47 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 17:59:47 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
-[Mon Mar 18 17:59:54 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 18:00:01 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 18:00:27 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 18:00:32 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 18:00:58 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
-[Mon Mar 18 18:01:16 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'throw' one-param version has hash param [- -]
-[Mon Mar 18 18:01:35 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(969:18): parse error, expecting `']'' or `';'' [- -]
-[Mon Mar 18 18:01:36 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'throw' method of exceptions1 (method_frame) accepts maximum 3 parameter(s) [- -]
-[Mon Mar 18 18:01:46 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
-[Mon Mar 18 18:02:28 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
-[Mon Mar 18 18:25:11 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
-[Mon Mar 18 18:25:12 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
-[Mon Mar 18 18:25:24 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(970:16): parse error, expecting `']'' or `';'' [- -]
-[Mon Mar 18 18:26:26 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
-[Mon Mar 18 18:29:13 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
-[Mon Mar 18 18:29:16 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
-[Mon Mar 18 18:29:19 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
-[Mon Mar 18 18:29:46 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
-[Wed Mar 27 16:26:14 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(155): 'paf' is stupid [custom1 -]
-[Wed Mar 27 16:26:37 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(155): 'paf' is stupid [custom1 -]
-[Wed Mar 27 16:26:46 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(155): 'paf' is stupid [custom1 -]
-[Wed Mar 27 16:27:49 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(155): 'paf' is stupid [custom1 -]
-[Wed Mar 27 16:28:24 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(155): 'paf' is stupid [custom1 -]
-[Wed Mar 27 16:29:15 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(155): 'paf' is stupid [custom1 -]
-[Wed Mar 27 16:50:23 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(155): 'paf' is stupid [custom1 -]
-[Wed Mar 27 17:16:00 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(155): 'paf' is stupid [custom1]
-[Wed Mar 27 18:17:33 2002] (null) [-]
-[Fri Mar 29 13:14:20 2002] user-request(0): 'Y:/parser3project/parser3/www/htdocs/test.html' read failed: No such file or directory (2), actual filename 'Y:/parser3project/parser3/www/htdocs/test.html' [file.missing]
-[Fri Mar 29 18:23:15 2002] Y:/parser3project/parser3/www/htdocs/paul.html(0): 'send' message must not be code (parameter #1) [parser.runtime]
-[Fri Mar 29 18:23:53 2002] Y:/parser3project/parser3/www/htdocs/paul.html(0): 'send' message must not be code (parameter #1) [parser.runtime]
-[Fri Mar 29 18:24:00 2002] Y:/parser3project/parser3/www/htdocs/paul.html(0): 'send' message must not be code (parameter #1) [parser.runtime]
-[Thu Apr 04 11:42:42 2002] W:/nestle/www/auto.p(1): 'hosting.p' not found along MAIN:CLASS_PATH [parser.runtime]
-[Thu Apr 04 11:43:16 2002] W:/nestle/www/auto.p(1): 'hosting.p' not found along MAIN:CLASS_PATH [parser.runtime]
-[Thu Apr 04 11:47:05 2002] 'main' method not found [parser.runtime]
-[Thu Apr 04 11:48:42 2002] W:/nestle/www/auto.p(1): 'hosting.p' not found along MAIN:CLASS_PATH [parser.runtime]
-[Tue Apr 09 12:07:27 2002] user-request(0): 'Y:/parser3project/parser3/www/htdocs/t.html' read failed: No such file or directory (2), actual filename 'Y:/parser3project/parser3/www/htdocs/t.html' [file.missing]
-[Tue Apr 09 19:39:27 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(122): 'c:/drives/y/parser3project/parser3/www/htdocs/global.xsl' runtime error|Global parameter param1 already defined|runtime error|Global parameter param2 already defined| [xml]
-[Tue Apr 09 19:39:32 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(122): 'c:/drives/y/parser3project/parser3/www/htdocs/global.xsl' runtime error|Global parameter param1 already defined|runtime error|Global parameter param2 already defined| [xml]
-[Tue Apr 09 19:41:04 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(122): 'c:/drives/y/parser3project/parser3/www/htdocs/global.xsl' runtime error|Global parameter param1 already defined|runtime error|Global parameter param2 already defined| [xml]
-[Tue Apr 09 19:41:05 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(122): 'c:/drives/y/parser3project/parser3/www/htdocs/global.xsl' runtime error|Global parameter param1 already defined|runtime error|Global parameter param2 already defined| [xml]
-[Tue Apr 09 19:43:55 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(122): 'c:/drives/y/parser3project/parser3/www/htdocs/global.xsl' runtime error|Global parameter param1 already defined|runtime error|Global parameter param2 already defined|runtime error: file c:/drives/y/parser3project/parser3/www/htdocs/global.xsl element value-of|unregistered variable param1|xmlXPathEval: evaluation failed|runtime error: file c:/drives/y/parser3project/parser3/www/htdocs/global.xsl element value-of|xsltValueOf: text copy failed|runtime error: file c:/drives/y/parser3project/parser3/www/htdocs/global.xsl element value-of|unregistered variable param2|xmlXPathEval: evaluation failed|runtime error: file c:/drives/y/parser3project/parser3/www/htdocs/global.xsl element value-of|xsltValueOf: text copy failed| [xml]
+[Tue Apr 09 19:55:52 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 19:56:27 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 19:56:28 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 19:56:40 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 19:59:54 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:00:29 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:00:30 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:01:25 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:01:28 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:02:06 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:02:07 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:02:18 2002] exception in request exception handler: Exception 0x80000003 at 0x00401A7B
+[Tue Apr 09 20:02:20 2002] exception in request exception handler: Exception 0x80000003 at 0x00401A7B
+[Tue Apr 09 20:02:43 2002] <unknown exception>
+[Tue Apr 09 20:03:07 2002] <unknown exception>
+[Tue Apr 09 20:03:19 2002] <unknown exception>
+[Tue Apr 09 20:03:20 2002] <unknown exception>
+[Tue Apr 09 20:08:39 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:10:35 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:10:36 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:10:37 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:10:38 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:10:38 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:10:46 2002] root_config(0): 'c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf' read failed: No such file or directory (2), actual filename 'c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf' [file.missing]
+[Tue Apr 09 20:10:57 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:10:58 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:10:58 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:11:01 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:11:04 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:11:40 2002] root_config(0): 'c:/winnt/parser3.conf' read failed: No such file or directory (2), actual filename 'c:/winnt/parser3.conf' [file.missing]
+[Tue Apr 09 20:11:52 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:12:09 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:12:10 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:12:38 2002] root_config(0): 'c:/winnt/parser3.conf' read failed: No such file or directory (2), actual filename 'c:/winnt/parser3.conf' [file.missing]
+[Tue Apr 09 20:13:08 2002] r=
+[Tue Apr 09 20:13:25 2002] wd=
+[Tue Apr 09 20:14:25 2002] error=
+[Tue Apr 09 20:15:04 2002] wd=C:\WINNT
+[Tue Apr 09 20:15:16 2002] b=C:\WINNT/parser3.conf
+[Tue Apr 09 20:15:34 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:15:35 2002] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(14): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 09 20:17:38 2002] root_config(0): 'C:\WINNT/parser3.conf' read failed: No such file or directory (2), actual filename 'C:\WINNT/parser3.conf' [file.missing]

@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.67 2002/03/27 15:30:38 paf Exp $
+	$Id: parser3isapi.C,v 1.68 2002/04/09 16:27:27 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -340,8 +340,8 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 
 	// process the request
 	request.core(
-		root_config_filespec, false /*don't fail_on_read_problem*/, // /path/to/root/parser3.conf
-		site_config_filespec, false /*don't fail_on_read_problem*/, // /path/to/site/parser3.conf
+		root_config_filespec, false /*fail_on_read_problem*/, // /path/to/root/parser3.conf
+		site_config_filespec, false /*fail_on_read_problem*/, // /path/to/site/parser3.conf
 		header_only);
 }
 
