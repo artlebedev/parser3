@@ -309,7 +309,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os RANLIB ac_ct_RANLIB YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE commentcharset_windows1251 commentcharset_windows1250 commentcharset_windows1257 commentcharset_koi8r dll_extension mysql_client pgsql_client oracle_client CPP_LIBS GC_LIBS XML_INCLUDES XML_LIBS MIME_INCLUDES MIME_LIBS APACHE13 COMPILE_APACHE13_MODULE_TRUE COMPILE_APACHE13_MODULE_FALSE INCLTDL LIBLTDL subdirs LIBADD_DL CPP EGREP charsetsdir sqldriversdir LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os RANLIB ac_ct_RANLIB YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE commentcharset_windows1251 commentcharset_windows1250 commentcharset_windows1257 commentcharset_koi8r dll_extension mysql_client pgsql_client oracle_client CPP_LIBS GC_LIBS XML_INCLUDES XML_LIBS MIME_INCLUDES MIME_LIBS APACHE13 COMPILE_APACHE13_MODULE_TRUE COMPILE_APACHE13_MODULE_FALSE INCLTDL LIBLTDL subdirs LIBADD_DL CPP EGREP LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1586,7 +1586,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=parser
- VERSION=3.1.2beta
+ VERSION=3.1.2prerelease
 
 
 # Some tools Automake needs.
@@ -6689,34 +6689,6 @@ rm -f conftest.$ac_objext conftest.$ac_ext
 
 
 
-# expand apostrophed
-e_prefix=$prefix
-test "x$e_prefix" = xNONE && e_prefix=$ac_default_prefix
-
-e_sysconfdir=$sysconfdir
-test "$e_sysconfdir" = "\${prefix}/etc" && e_sysconfdir="${e_prefix}/etc"
-
-
-charsetsdir=$e_sysconfdir/parser3.charsets
-
-
-# expand apostrophed
-e_libdir=$libdir
-if test "$e_libdir" = "\${exec_prefix}/lib"; then
-
-	# Let make expand exec_prefix.
-	e_exec_prefix=$exec_prefix
-	test "x$e_exec_prefix" = xNONE && e_exec_prefix=$e_prefix
-
-	# expand apostrophed
-	test "$e_libdir" = "\${exec_prefix}/lib" && e_libdir="${e_exec_prefix}/lib"
-fi
-
-sqldriversdir=$e_libdir
-
-
-
-
 
 
 
@@ -7504,8 +7476,6 @@ s,@subdirs@,$subdirs,;t t
 s,@LIBADD_DL@,$LIBADD_DL,;t t
 s,@CPP@,$CPP,;t t
 s,@EGREP@,$EGREP,;t t
-s,@charsetsdir@,$charsetsdir,;t t
-s,@sqldriversdir@,$sqldriversdir,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
