@@ -296,9 +296,9 @@ OK
 #^http_prefix[]
 #^http_prefix_table[]
 #^http_prefix_xml[]
-#^imagefont[]
+^imagefont[]
 #^downloadtest[]
-^cachebug[]
+#^cachebug[]
 
 @cachebug[]
 ^cache[test](10){body}
@@ -308,14 +308,14 @@ $response:body[^file::load[binary;index.html]]
 
 
 @imagefont[]
-$image[^image::create(200;30)]
+$image[^image::create(200;30;0x00FFFF)]
 height(font)=1950<br>
 $alph[ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞßàáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ0123456789-+=!\"%:,.^;<>?@()^[^]'&*/]
 ^^alph.length[]=^alph.length[]<br>
 ^eval(1950/^alph.length[])[%.10f]
 
 ^image.font[$alph;font.gif](20)
-^image.text(0;0)[Ïğèâåò*]
+^image.text(0;0)[AÏğèâåò*]
 $response:body[^image.gif[]]
 
 @http_prefix_xml[]

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/11/27 09:43:53 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/28 08:38:14 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -891,10 +891,10 @@ static void _polybar(Request& r, const String& method_name, MethodParams *params
 
 // font
 
-#define Y(y)(y+index*height+1)
+#define Y(y)(y+index*height)
 
 /// simple gdImage-based font storage & text output 
-class Font : public Pooled {
+class Font: public Pooled {
 public:
 	
 	const static int letter_spacing;
@@ -906,7 +906,7 @@ public:
 	
 	Font(Pool& pool, 
 		const String& aalphabet, 
-		gdImage& aifont, int aheight, int amonospace, int aspacebarspace) : Pooled(pool), 
+		gdImage& aifont, int aheight, int amonospace, int aspacebarspace): Pooled(pool), 
 		alphabet(aalphabet), 
 		height(aheight), monospace(amonospace),  spacebarspace(aspacebarspace),
 		ifont(aifont) {
@@ -933,7 +933,7 @@ public:
 	
 	void index_display(gdImage& image, int x, int y, int index){
 		if(index>=0) 
-			ifont.Copy(image, x, y, 0, Y(0), index_width(index), height-1);
+			ifont.Copy(image, x, y, 0, Y(0), index_width(index), height);
 	}
 	
 	/* ******************************** string ********************************** */
