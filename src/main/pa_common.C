@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.96 2002/01/25 12:09:04 paf Exp $
+	$Id: pa_common.C,v 1.97 2002/02/05 09:32:43 paf Exp $
 */
 
 #include "pa_common.h"
@@ -151,7 +151,7 @@ bool file_read(Pool& pool, const String& file_spec,
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
     if(
-		(f=open(fname, O_RDONLY|(as_text?_O_BINARY/*_O_TEXT*/:_O_BINARY)))>=0 && 
+		(f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0 && 
 		stat(fname, &finfo)==0) {
 		flock(f, LOCK_SH);		
 		size_t max_size=limit?min(offset+limit, finfo.st_size)-offset:finfo.st_size;
