@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_table.h,v 1.43 2002/04/22 14:11:28 paf Exp $
+	$Id: pa_table.h,v 1.44 2002/05/07 07:39:18 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -85,7 +85,7 @@ private:
 	const String *forigin_string;
 
 	// column name->number lookup table
-	Hash name2number;
+	Hash& name2number;
 
 	// current row
 	int fcurrent;

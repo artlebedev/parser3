@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pool_storage.h,v 1.15 2002/02/08 08:30:18 paf Exp $
+	$Id: pool_storage.h,v 1.16 2002/05/07 07:39:20 paf Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
@@ -80,11 +80,18 @@ class Pool_storage {
 public:
 
 	Pool_storage() : 
+#ifdef _DEBUG
+		fbreak_on_alloc(false),
+#endif
 		cleanups(100),
 		allocations(10*0x400) {
 	}
 
-	void *malloc(size_t size) { 
+	void *malloc(size_t size) {
+#ifdef _DEBUG
+		if(fbreak_on_alloc)
+			_asm int 3;
+#endif
 		void *result=::malloc(size);
 		if(result && !allocations.add(result)) {
 			::free(result); result=0;
@@ -92,6 +99,10 @@ public:
 		return result;
 	}
 	void *calloc(size_t size) { 
+#ifdef _DEBUG
+		if(fbreak_on_alloc)
+			_asm int 3;
+#endif
 		void *result=::calloc(size, 1);
 		if(result && !allocations.add(result)) {
 			::free(result); result=0;
@@ -119,6 +130,11 @@ public:
 		// allocations
 		allocations.for_each_reverse(free);
 	}
+
+#ifdef _DEBUG
+public:
+	bool fbreak_on_alloc;
+#endif
 
 private:
 

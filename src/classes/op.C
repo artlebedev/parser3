@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.94 2002/04/29 06:27:29 paf Exp $
+	$Id: op.C,v 1.95 2002/05/07 07:39:17 paf Exp $
 */
 
 #include "classes.h"
@@ -122,7 +122,7 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 		// temporary remove language change
 		Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 		// temporary zero @main so to maybe-replace it in processed code
-		Temp_method temp_method_main(self_class, *main_method_name, 0);
+		Temp_method temp_method_main(self_class, r.main_method_name, 0);
 		// temporary zero @auto so it wouldn't be auto-called in Request::use_buf
 		Temp_method temp_method_auto(self_class, *auto_method_name, 0);
 		
@@ -137,7 +137,7 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 			&self_class);
 		
 		// main_method
-		main_method=self_class.get_method(*main_method_name);
+		main_method=self_class.get_method(r.main_method_name);
 	}
 	// after restoring current-request-lang
 	// maybe-execute @main[]

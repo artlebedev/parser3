@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.84 2002/04/22 14:11:27 paf Exp $
+	$Id: pa_globals.h,v 1.85 2002/05/07 07:39:18 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -34,10 +34,6 @@ class Table;
 #define SIZE_NAME "size"
 #define TEXT_NAME "text"
 
-#define UNHANDLED_EXCEPTION_METHOD_NAME "unhandled_exception"
-#define POST_PROCESS_METHOD_NAME "postprocess"
-
-#define MAIN_METHOD_NAME "main"
 #define AUTO_METHOD_NAME "auto"
 
 #define MAIN_CLASS_NAME "MAIN"
@@ -100,11 +96,7 @@ extern String *name_name;
 extern String *size_name;
 extern String *text_name;
 
-extern String *unhandled_exception_method_name;
-extern String *post_process_method_name;
-
 extern String *auto_method_name;
-extern String *main_method_name;
 
 extern String *main_class_name;
 

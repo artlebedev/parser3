@@ -1,8 +1,71 @@
+2002-05-07  paf
+	* src/classes/classes.dsp:
+	* src/classes/gd/gd.dsp:
+	* src/classes/op.C:
+	* src/classes/smtp/smtp.dsp:
+	* src/include/pa_globals.h:
+	* src/include/pa_request.h:
+	* src/include/pa_table.h:
+	* src/libltdl/libltdl.dsp:
+	* src/main/compile.tab.C:
+	* src/main/compile.y:
+	* src/main/main.dsp:
+	* src/main/pa_globals.C:
+	* src/main/pa_request.C:
+	* src/main/pa_table.C:
+	* src/pcre/pcre.dsp:
+	* src/targets/isapi/pa_pool.C:
+	* src/targets/isapi/parser3isapi.C:
+	* src/targets/isapi/parser3isapi.dsp:
+	* src/targets/isapi/pool_storage.h:
+	* src/types/types.dsp:
+	* www/htdocs/parser-status.html:
+		Table name2number field now &.
+		main_method_name now on Request pool rather on global_pool [Junction+VJunction created on same pool as name = were created on global pool, causing mem leaks]
+
+2002-05-06  paf
+	* src/main/pa_globals.C:
+	* src/main/pa_globals.C:
+	* src/targets/cgi/parser3.C:
+	* src/targets/cgi/parser3.C:
+	* src/targets/cgi/pool_storage.h:
+	* src/targets/cgi/pool_storage.h:
+	* src/targets/isapi/parser3isapi.C:
+	* src/targets/isapi/parser3isapi.C:
+		removed 100*40 bytes per request memory leak [nonpool malloc in
+		globals]
+
+2002-04-30  paf
+	* configure:
+	* src/include/pa_version.h:
+		version now not b
+
+	* src/targets/cgi/parser3.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/global.xsl:
+	* www/htdocs/index.html:
+		request.uri now never 0
+
 2002-04-29  paf
+	* configure.in:
+		removed b
+
 	* src/doc/ClassExample1.dox:
+	* src/doc/ClassExample3.dox:
+	* src/doc/aliased.dox:
+	* src/doc/methoded.dox:
+	* src/doc/string.dox:
+	* src/doc/value.dox:
 	* src/include/pa_exception.h:
 	* src/main/pa_request.C:
-		problem source size checked in ()
+	* src/targets/cgi/parser3.C:
+		merged from 0001
+
+	* src/classes/op.C:
+	* src/include/pa_exception.h:
+	* src/main/pa_request.C:
+		Exception::comment/type checked in (), no there's no empty type
+		comment by default
 
 2002-04-26  paf
 	* src/doc/doxygen.cfg:
@@ -7137,7 +7200,7 @@
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.5 2002/04/29 05:59:32 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.6 2002/05/07 07:39:17 paf Exp $";
 
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
@@ -7180,7 +7243,7 @@
 	* src/main/untaint.C:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
-		static char *RCSId="$Id: ChangeLog,v 1.5 2002/04/29 05:59:32 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.6 2002/05/07 07:39:17 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C:
@@ -13234,7 +13297,7 @@
 	* src/targets/parser.C:
 	* src/targets/parser.dsp:
 	* src/targets/parser.dsp:
-		$Id: ChangeLog,v 1.5 2002/04/29 05:59:32 paf Exp $ check
+		$Id: ChangeLog,v 1.6 2002/05/07 07:39:17 paf Exp $ check
 
 	* src/targets/parser.C:
 		$id$ check
