@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.11 2001/03/27 16:35:56 paf Exp $
+	$Id: pa_vfile.h,v 1.12 2001/03/28 09:38:09 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -38,7 +38,7 @@ public: // Value
 		if(Value *result=VStateless_object::get_element(aname))
 			return result;
 
-		// $element
+		// $name, $size, $text
 		return static_cast<Value *>(fields.get(aname));
 	}
 
@@ -50,7 +50,7 @@ protected: // VAliased
 public: // usage
 
 	VFile(Pool& apool, 
-		const char *avalue_ptr, size_t avalue_size,
+		const void *avalue_ptr, size_t avalue_size,
 		const char *afile_name);
 
 	void save(const String& file_spec) {
@@ -59,7 +59,7 @@ public: // usage
 
 private:
 
-	const char *fvalue_ptr;
+	const void *fvalue_ptr;
 	size_t fvalue_size;
 	Hash fields;
 

@@ -3,12 +3,16 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.8 2001/03/28 09:01:20 paf Exp $
+	$Id: file.C,v 1.9 2001/03/28 09:38:06 paf Exp $
 */
 
 #include "pa_request.h"
 #include "_file.h"
 #include "pa_vfile.h"
+
+// consts
+
+const int FIND_MONKEY_MAX_HOPS=10;
 
 // global var
 
@@ -71,7 +75,7 @@ static void _find(Request& r, const String& method_name, Array *params) {
 	}
 
 	// scan .. dirs for result
-	for(int i=0; i<10; i++) {
+	for(int i=0; i<FIND_MONKEY_MAX_HOPS; i++) {
 		String test_name(pool);
 		for(int j=0; j<i; j++)
 			test_name.APPEND_CONST("../");
@@ -92,6 +96,29 @@ static void _find(Request& r, const String& method_name, Array *params) {
 	}
 }
 
+static void _load(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+	Value& vfile_name=*static_cast<Value *>(params->get(0));
+
+	// forcing
+	// ^load[this body type]
+	r.fail_if_junction_(true, vfile_name, 
+		method_name, "file name must not be junction");
+
+	// forcing untaint language
+	String lfile_name(pool);
+	lfile_name.append(vfile_name.as_string(),
+		String::UL_FILE_NAME, true);
+
+	void *data;
+	size_t size;
+	file_read(pool, r.absolute(lfile_name), data, size, false/*binary*/);
+
+	char *user_file_name=params->size()==1?lfile_name.cstr()
+		:static_cast<Value *>(params->get(1))->as_string().cstr();
+	r.write_no_lang(*new(pool) VFile(pool, data, size, user_file_name));
+}
+
 // initialize
 
 void initialize_file_class(Pool& pool, VStateless_class& vclass) {
@@ -104,4 +131,9 @@ void initialize_file_class(Pool& pool, VStateless_class& vclass) {
 	// ^find[file-name]
 	// ^find[file-name]{when-not-found}
 	vclass.add_native_method("find", _find, 1, 2);
+
+	// ^load[disk-name]
+	// ^load[disk-name;user-name]
+	// TODO:^load[disk-name;user-name;content-type]
+	vclass.add_native_method("load", _load, 1, 2);
 }
