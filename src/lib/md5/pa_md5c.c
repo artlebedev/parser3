@@ -99,7 +99,8 @@
  * ----------------------------------------------------------------------------
  */
 
-#include "pa_config_includes.h"
+#include <strings.h>
+
 #include "pa_md5.h"
 //#include "ap.h"
 //#ifdef CHARSET_EBCDIC

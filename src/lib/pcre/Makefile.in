@@ -38,7 +38,7 @@ pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 
-top_builddir = ../..
+top_builddir = ../../..
 
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
@@ -86,18 +86,21 @@ sqldriversdir = @sqldriversdir@
 noinst_PROGRAMS = dftables pcre_parser_ctype
 dftables_SOURCES = dftables.c 
 pcre_parser_ctype_SOURCES = pcre_parser_ctype.c
+
 CLEANFILES = auto_part.p chartables.c
+
 noinst_LIBRARIES = libpcre.a
 noinst_HEADERS = pcre.h internal.h
 libpcre_a_SOURCES = get.c pcre.c study.c maketables.c
+
 EXTRA_DIST = pcre.3.html pcre.3.txt pcre.dsp pcre_dftables.dsp pcre_parser_ctype.dsp
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ../../src/include/pa_config_auto.h
+CONFIG_HEADER = ../../../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
 LIBRARIES =  $(noinst_LIBRARIES)
 
 
-DEFS = @DEFS@ -I. -I$(srcdir) -I../../src/include
+DEFS = @DEFS@ -I. -I$(srcdir) -I../../../src/include
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
@@ -136,7 +139,7 @@ all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/pcre/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/lib/pcre/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -221,14 +224,14 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = src/pcre
+subdir = src/lib/pcre
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/pcre/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/lib/pcre/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -355,10 +358,7 @@ auto_part.p:   pcre_parser_ctype
 chartables.c:   dftables
 	./dftables >chartables.c
 
-
 pcre.c: chartables.c
-
-
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

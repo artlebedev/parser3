@@ -83,7 +83,7 @@ oracle_client = @oracle_client@
 pgsql_client = @pgsql_client@
 sqldriversdir = @sqldriversdir@
 
-SUBDIRS = libltdl pcre include main patches sql types classes targets
+SUBDIRS = include main sql types classes lib targets
 EXTRA_DIST = ident.awk
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../src/include/pa_config_auto.h

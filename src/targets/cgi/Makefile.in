@@ -87,12 +87,12 @@ sqldriversdir = @sqldriversdir@
 @DO_NOT_LINK_LIBSTDCPP_TRUE@CXXLD = $(CC)
 @DO_NOT_LINK_LIBSTDCPP_FALSE@CXXLD = $(CXX)
 
-INCLUDES = -I../../classes -I../../types -I../../sql -I../../pcre -I$(INCLTDL) @XML_INCLUDES@
+INCLUDES = -I../../classes -I../../types -I../../sql -I../../lib/pcre -I../../lib/md5 -I$(INCLTDL) @XML_INCLUDES@
 
 bin_PROGRAMS = parser3
 noinst_HEADERS = pool_storage.h
 parser3_SOURCES = pa_pool.C pa_threads.C parser3.C ident.C
-parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a ../../pcre/libpcre.a $(LIBLTDL) $(LIBADD_DL) @XML_LIBS@
+parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a ../../lib/pcre/libpcre.a ../../lib/md5/libmd5.a $(LIBLTDL) $(LIBADD_DL) @XML_LIBS@
 
 IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.C
@@ -111,7 +111,7 @@ LIBS = @LIBS@
 parser3_OBJECTS =  pa_pool.o pa_threads.o parser3.o ident.o
 parser3_DEPENDENCIES =  ../../main/libmain.a ../../classes/libclasses.a \
 ../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a \
-../../pcre/libpcre.a
+../../lib/pcre/libpcre.a ../../lib/md5/libmd5.a
 parser3_LDFLAGS = 
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
