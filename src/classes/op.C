@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/08/07 11:25:36 $";
+static const char* IDENT_OP_C="$Date: 2002/08/08 09:35:22 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -101,22 +101,6 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 
 static void _process(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	// calculate pseudo file name of processed chars
-	// would be something like "/some/file(4) process"
-	char local_place[MAX_STRING];
-#ifndef NO_STRING_ORIGIN
-	const Origin& origin=method_name.origin();
-	size_t place_size=snprintf(local_place, MAX_STRING, "%s(%d) %s", 
-		origin.file?origin.file:"unknown_file", 1+origin.line,
-		method_name.cstr())+1;
-#else
-	strncpy(local_place, method_name.cstr(), MAX_STRING-1); place[MAX_STRING-1]=0;
-	size_t place_size=strlen(local_place)+1;
-#endif
-	char *heap_place=(char *)r.malloc(place_size);
-	memcpy(heap_place, local_place, place_size);
-
-
 	VStateless_class& self_class=*r.self->get_class();
 	const Method *main_method;
 	{
@@ -129,6 +113,26 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 		
 		// evaluate source to process
 		const String& source=r.process_to_string(params->as_junction(0, "body must be code"));
+		// calculate pseudo file name of processed chars
+		// would be something like "/some/file(4) process"
+		char local_place[MAX_STRING];
+#ifndef NO_STRING_ORIGIN
+		const Origin& source_origin=source.origin();
+		const Origin& method_origin=method_name.origin();
+		size_t place_size;
+		if(source_origin.file==method_origin.file)
+			place_size=snprintf(local_place, MAX_STRING, "%s(%d) %s",  // same file
+				source_origin.file?source_origin.file:"unknown_file", 1+source_origin.line, 
+				method_name.cstr())+1;
+		else // different files ^process{external__file_text__or__sql}
+			place_size=snprintf(local_place, MAX_STRING, "%s", 
+				source_origin.file?source_origin.file:"unknown_file")+1;
+#else
+		strncpy(local_place, method_name.cstr(), MAX_STRING-1); place[MAX_STRING-1]=0;
+		size_t place_size=strlen(local_place)+1;
+#endif
+		char *heap_place=(char *)r.malloc(place_size);
+		memcpy(heap_place, local_place, place_size);
 
 		// process source code, append processed methods to 'self' class
 		// maybe-define new @main

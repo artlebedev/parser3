@@ -24,12 +24,10 @@ $selffilespec[$filespec]
 #    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
 #	^file::load[text;^string:sql{select '^^hello[]' }]
 #	^string:sql{select '^^hello[]' }] $ORIGINS(1)
-	^process{here
-	^$aa[xxx]
-#	^string:sql{select '^^hello[]' }]
-	goes}
-	after
-	$aa
+#	^process{	^^h[]}
+	^process{^string:sql{select '1
+	^^hello[]' }]	}
+#    $f[^file::load[text;piece.p]]	^process{$f.text}
 	$ORIGINS(1)
 
 }

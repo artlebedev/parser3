@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/08/06 09:49:04 $";
+static const char* IDENT_FILE_C="$Date: 2002/08/08 09:35:22 $";
 
 #include "pa_config_includes.h"
 
@@ -119,12 +119,10 @@ static void _move(Request& r, const String&, MethodParams *params) {
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	Value& vmode_name=params-> as_no_junction(0, "mode must not be code");
-	Value& vfile_name=params->as_no_junction(1, "file name must not be code");
-
-	const String& lfile_name=vfile_name.as_string();
+	const String& lfile_name=r.absolute(params->as_no_junction(1, "file name must not be code").as_string());
 
 	void *data;  size_t size;
-	file_read(pool, r.absolute(lfile_name), data, size, 
+	file_read(pool, lfile_name, data, size, 
 		vmode_name.as_string()==TEXT_MODE_NAME);
 
 	char *user_file_name=params->size()>2?

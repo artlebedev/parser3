@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VFILE_C="$Date: 2002/08/06 09:08:00 $";
+static const char* IDENT_VFILE_C="$Date: 2002/08/08 09:35:23 $";
 
 #include "pa_vfile.h"
 #include "pa_vstring.h"
@@ -18,7 +18,7 @@ void VFile::set(bool tainted,
 	fvalue_ptr=avalue_ptr;
 	fvalue_size=avalue_size;
 
-	const char *origin_file="user <input type=file>";
+	const char *origin_file=afile_name?afile_name:"user (input type=file)";
 
 	ffields.clear();
 	// $name
