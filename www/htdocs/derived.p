@@ -31,6 +31,14 @@ derived_includet<br>
 ^include[some.p]
 ^self.included_method[2]
 
+@includet2override[]
+^include[some.p]
+^override[]
+
+@override[] me
+in derived.p
+
+
 @inclass_process_test[][ipt]
 $ipt[3]
 #^process[$MAIN:CLASS]{^^eval($ipt*2)}
