@@ -1,5 +1,6 @@
 @main[]
-^thash[]
+^calendar[]
+#^thash[]
 #^tdef[]
 #^ford[]
 #^tif[]
@@ -19,6 +20,13 @@
 #^xml[]
 #^header[]
 OK
+
+@calendar[]
+2001;11:<br>
+$week_days[^date:calendar[rus](2001;11)]
+<pre>
+^week_days.menu{^for[wday](0;7){^if($week_days.$wday){$week_days.$wday;&nbsp^;&nbsp^;} }<br>}
+</pre>
 
 @thash[]
 $table[^table::set{id	name	age

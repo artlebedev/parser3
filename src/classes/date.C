@@ -4,13 +4,14 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: date.C,v 1.9 2001/10/08 16:42:06 parser Exp $
+	$Id: date.C,v 1.10 2001/10/09 13:17:45 parser Exp $
 */
 
 #include "classes.h"
 #include "pa_request.h"
 #include "pa_vdouble.h"
 #include "pa_vdate.h"
+#include "pa_vtable.h"
 
 // defines
 
@@ -122,6 +123,114 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	vdate->set_time(t);
 }
 
+static Table *fill_month_days(Request& r, 
+							  const String& method_name, MethodParams *params, bool rus){
+	Pool& pool=r.pool();
+	Table *result=new(pool) Table(pool, &method_name, 0/*&columns*/);
+
+    int year=params->as_int(1, "year must be int", r);
+    int month=max(1, min(params->as_int(2, "month must be int", r), 12)) -1;
+
+    tm tmIn={0, 0, 0, 1, month, year-1900};
+    time_t t=mktime(&tmIn);
+	if(t<0)
+		PTHROW(0, 0, 
+			&method_name, 
+			"invalid date");
+    tm *tmOut=localtime(&t);
+
+    int weekDay1=tmOut->tm_wday;
+	if(rus) 
+		weekDay1=weekDay1?weekDay1-1:6; //sunday last
+    int monthDays=getMonthDays(year, month);
+    
+    for(int _day=1-weekDay1; _day<=monthDays;) {
+		Array& row=*new(pool) Array(pool, 7);
+    	for(int wday=0; wday<7; wday++, _day++) {
+        	String *cell=new(pool) String(pool);
+			if(_day>=1 && _day<=monthDays) {
+				char *buf=(char *)pool.malloc(2+1); 
+				cell->APPEND_CLEAN(buf, sprintf(buf, "%02d", _day), 
+					method_name.origin().file, method_name.origin().line);
+            }
+			row+=cell;            
+        }
+    	*result+=&row;
+    }
+    
+    return result;
+}
+
+static Table *fill_week_days(Request& r, 
+							 const String& method_name, MethodParams *params, bool rus){
+	Pool& pool=r.pool();
+	Array& columns=*new(pool) Array(pool, 4);
+	Table *result=new(pool) Table(pool, &method_name, &columns);
+
+    int year=params->as_int(1, "year must be int", r);
+    int month=max(1, min(params->as_int(2, "month must be int", r), 12)) -1;
+    int day=params->as_int(3, "day must be int", r);
+    
+    tm tmIn={0, 0, 18, day, month, year-1900};
+    time_t t=mktime(&tmIn);
+	if(t<0)
+		PTHROW(0, 0, 
+			&method_name, 
+			"invalid date");
+    tm *tmOut=localtime(&t);
+    
+    int baseWeekDay=tmOut->tm_wday;
+	if(rus) 
+		baseWeekDay=baseWeekDay?baseWeekDay-1:6; //sunday last
+
+    t-=baseWeekDay*SECS_PER_DAY;
+
+    for(int curWeekDay=0; curWeekDay<7; curWeekDay++, t+=SECS_PER_DAY) {
+        tm *tmOut=localtime(&t);
+		Array& row=*new(pool) Array(pool, 4);
+#define WDFILL(size, value) { \
+		char *buf=(char *)pool.malloc(size+1); \
+		String *cell=new(pool) String(pool); \
+		cell->APPEND_CLEAN(buf, sprintf(buf, "%0"#size"d", value), \
+			method_name.origin().file, \
+			method_name.origin().line); \
+		row+=cell; \
+		}
+		WDFILL(4, 1900+tmOut->tm_year);
+		WDFILL(2, 1+tmOut->tm_mon);
+		WDFILL(2, tmOut->tm_mday);
+		WDFILL(2, tmOut->tm_wday);
+        *result+=&row;
+    }
+    
+    return result;
+}
+
+static void _calendar(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	const String& what=params->as_string(0, "format must be strig");
+	bool rus=false;
+	if(what=="rus")
+		rus=true;
+	else if(what=="eng")
+		rus=false;
+	else
+		PTHROW(0, 0, 
+			&what, 
+			"must be rus|eng");
+
+	Table *table;
+	if(params->size()==1+2) 
+		table=fill_month_days(r, method_name, params, rus);
+	else // 1+3
+		table=fill_week_days(r, method_name, params, rus);
+
+	VTable& result=*new(pool) VTable(pool, table);
+	result.set_name(method_name);
+	r.write_no_lang(result);
+}
+
 // constructor
 
 MDate::MDate(Pool& apool) : Methoded(apool) {
@@ -139,6 +248,10 @@ MDate::MDate(Pool& apool) : Methoded(apool) {
 
 	// ^roll(year|month|day;+/- 1)
 	add_native_method("roll", Method::CT_DYNAMIC, _roll, 2, 2);
+
+	// ^date:calendar[month|montheng;year;month]  = table
+	// ^date:calendar[week|weekeng;year;month;day] = table
+	add_native_method("calendar", Method::CT_STATIC, _calendar, 3, 4);
 
 }
 // global variable

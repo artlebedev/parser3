@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.123 2001/10/09 12:49:01 parser Exp $
+	$Id: table.C,v 1.124 2001/10/09 13:17:45 parser Exp $
 */
 
 #include "classes.h"
@@ -128,120 +128,6 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	// replace any previous table value
 	static_cast<VTable *>(r.self)->set_table(table);
 }
-
-static Table *fill_month_days(Request& r, 
-							  const String& method_name, MethodParams *params, bool rus){
-	Pool& pool=r.pool();
-	Table *result=new(pool) Table(pool, &method_name, 0/*&columns*/);
-
-    int year=params->as_int(1, "year must be int", r);
-    int month=max(1, min(params->as_int(2, "month must be int", r), 12)) -1;
-
-    tm tmIn={0, 0, 0, 1, month, year-1900};
-    time_t t=mktime(&tmIn);
-	if(t<0)
-		PTHROW(0, 0, 
-			&method_name, 
-			"invalid date");
-    tm *tmOut=localtime(&t);
-
-    int weekDay1=tmOut->tm_wday;
-	if(rus) 
-		weekDay1=weekDay1?weekDay1-1:6; //sunday last
-    int monthDays=getMonthDays(year, month);
-    
-    for(int _day=1-weekDay1; _day<=monthDays;) {
-		Array& row=*new(pool) Array(pool, 7);
-    	for(int wday=0; wday<7; wday++, _day++) {
-        	String *cell=new(pool) String(pool);
-			if(_day>=1 && _day<=monthDays) {
-				char *buf=(char *)pool.malloc(2+1); 
-				cell->APPEND_CLEAN(buf, sprintf(buf, "%02d", _day), 
-					method_name.origin().file, method_name.origin().line);
-            }
-			row+=cell;            
-        }
-    	*result+=&row;
-    }
-    
-    return result;
-}
-
-static Table *fill_week_days(Request& r, 
-							 const String& method_name, MethodParams *params, bool rus){
-	Pool& pool=r.pool();
-	Array& columns=*new(pool) Array(pool, 4);
-	columns+=new(pool) String(pool, "year");
-	columns+=new(pool) String(pool, "month");
-	columns+=new(pool) String(pool, "day");
-	columns+=new(pool) String(pool, "weekday");
-	Table *result=new(pool) Table(pool, &method_name, &columns);
-
-    int year=params->as_int(1, "year must be int", r);
-    int month=max(1, min(params->as_int(2, "month must be int", r), 12)) -1;
-    int day=params->as_int(3, "day must be int", r);
-    
-    tm tmIn={0, 0, 18, day, month, year-1900};
-    time_t t=mktime(&tmIn);
-	if(t<0)
-		PTHROW(0, 0, 
-			&method_name, 
-			"invalid date");
-    tm *tmOut=localtime(&t);
-    
-    int baseWeekDay=tmOut->tm_wday;
-	if(rus) 
-		baseWeekDay=baseWeekDay?baseWeekDay-1:6; //sunday last
-
-    t-=baseWeekDay*SECS_PER_DAY;
-
-    for(int curWeekDay=0; curWeekDay<7; curWeekDay++, t+=SECS_PER_DAY) {
-        tm *tmOut=localtime(&t);
-		Array& row=*new(pool) Array(pool, 4);
-#define WDFILL(size, value) { \
-		char *buf=(char *)pool.malloc(size+1); \
-		String *cell=new(pool) String(pool); \
-		cell->APPEND_CLEAN(buf, sprintf(buf, "%0"#size"d", value), \
-			method_name.origin().file, \
-			method_name.origin().line); \
-		row+=cell; \
-		}
-		WDFILL(4, 1900+tmOut->tm_year);
-		WDFILL(2, 1+tmOut->tm_mon);
-		WDFILL(2, tmOut->tm_mday);
-		WDFILL(2, tmOut->tm_wday);
-        *result+=&row;
-    }
-    
-    return result;
-}
-
-static void _calendar(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	const String& what=params->as_string(0, "format must be strig");
-	bool rus=false;
-	if(what=="rus")
-		rus=true;
-	else if(what=="eng")
-		rus=false;
-	else
-		PTHROW(0, 0, 
-			&what, 
-			"must be rus|eng");
-
-	Table *result=0;
-	if(params->size()==1+2) 
-		result=fill_month_days(r, method_name, params, rus);
-	else // 1+3
-		result=fill_week_days(r, method_name, params, rus);
-
-	// replace any previous table value
-	static_cast<VTable *>(r.self)->set_table(*result);
-}
-
-
-
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -695,10 +581,6 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 	// ^table:load[file]  
 	// ^table:load[nameless;file]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
-
-	// ^table:calendar[month|montheng;year;month]  
-	// ^table:calendar[week|weekeng;year;month;day]
-	add_native_method("calendar", Method::CT_DYNAMIC, _calendar, 3, 4);
 
 	// ^table.save[file]  
 	// ^table.save[nameless;file]
