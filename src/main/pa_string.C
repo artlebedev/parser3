@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_string.C,v 1.99 2001/08/09 16:53:27 parser Exp $"; 
+static const char *RCSId="$Id: pa_string.C,v 1.100 2001/08/10 08:10:13 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -527,7 +527,7 @@ bool String::match(const unsigned char *pcre_tables,
 	
 	int info_substrings=pcre_info(code, 0, 0);
 	if(info_substrings<0) {
-		(*pcre_free)(code);
+		pcre_free(code);
 		THROW(0, 0,
 			aorigin,
 			"pcre_info error (%d)", 
@@ -561,13 +561,13 @@ bool String::match(const unsigned char *pcre_tables,
 			exec_option_bits, ovector, ovecsize);
 		
 		if(exec_substrings==PCRE_ERROR_NOMATCH) {
-			(*pcre_free)(code);
-			(*row_action)(**table, 0/*last time, no row*/, 0, 0, info);
+			pcre_free(code);
+			row_action(**table, 0/*last time, no row*/, 0, 0, info);
 			return option_bits[1]!=0; // global=true+table, not global=false
 		}
 
 		if(exec_substrings<0) {
-			(*pcre_free)(code);
+			pcre_free(code);
 			THROW(0, 0,
 				aorigin,
 				"regular expression execute error (%d)", 
@@ -584,13 +584,14 @@ bool String::match(const unsigned char *pcre_tables,
 			row+=&mid(ovector[i*2+0], ovector[i*2+1]); // .i column value
 		}
 		
-		(*row_action)(**table, &row, startoffset, ovector[0], info);
+		row_action(**table, &row, startoffset, ovector[0], info);
 
-		if(!option_bits[1] || !(startoffset=ovector[1])) { // not global | going to hang
-			(*pcre_free)(code);
-			(*row_action)(**table, 0/*last time, no row*/, 0, 0, info);
+		if(!option_bits[1] || startoffset==ovector[1]) { // not global | going to hang
+			pcre_free(code);
+			row_action(**table, 0/*last time, no row*/, 0, 0, info);
 			return true;
 		}
+		startoffset=ovector[1];
 
 /*
 		if(option_bits[0] & PCRE_MULTILINE)
