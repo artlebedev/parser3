@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.149 2001/07/25 08:16:21 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.150 2001/07/25 10:12:13 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -526,7 +526,7 @@ write_string: STRING {
 	change_string_literal_to_write_string_literal($$=$1)
 };
 
-unknown_value: /* empty */ { $$=VL(NEW VVoid(POOL)) };
+unknown_value: /* empty */ { $$=VL(NEW VString(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.183 2001/07/25 09:57:33 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.184 2001/07/25 10:12:13 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -95,7 +95,10 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 		}
 		debug_printf(pool, "%*s%s", level*4, "", opcode_name[op.code]);
 
-		if(op.code==OP_CURLY_CODE__STORE_PARAM || op.code==OP_EXPR_CODE__STORE_PARAM) {
+		switch(op.code) {
+		case OP_CURLY_CODE__STORE_PARAM: 
+		case OP_EXPR_CODE__STORE_PARAM:
+		case OP_CURLY_CODE__CONSTRUCT:
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 			debug_dump(pool, level+1, *local_ops);
 		}
