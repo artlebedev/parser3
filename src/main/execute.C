@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.45 2001/02/25 16:36:12 paf Exp $
+  $Id: execute.C,v 1.46 2001/02/25 17:33:44 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -36,30 +36,30 @@ char *opcode_name[]={
 void dump(int level, const Array& ops) {
 	if(0){
 		int size=ops.size();
-		//printf("size=%d\n", size);
+		//fprintf(stderr, "size=%d\n", size);
 		for(int i=0; i<size; i++) {
 			Operation op;
 			op.cast=ops.quick_get(i);
-			printf("%8X\n", op.cast);
+			fprintf(stderr, "%8X\n", op.cast);
 		}
 	}
 
 	int size=ops.size();
-	//printf("size=%d\n", size);
+	//fprintf(stderr, "size=%d\n", size);
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
-		printf("%*s%s", level*4, "", opcode_name[op.code]);
+		fprintf(stderr, "%*s%s", level*4, "", opcode_name[op.code]);
 
 		if(op.code==OP_STRING) {
 			VString *vstring=static_cast<VString *>(ops.quick_get(++i));
-			printf(" \"%s\"", vstring->get_string()->cstr());
+			fprintf(stderr, " \"%s\"", vstring->get_string()->cstr());
 		}
 		if(op.code==OP_CLASS) {
 			VClass *vclass=static_cast<VClass *>(ops.quick_get(++i));
-			printf(" \"%s\"", vclass->name().cstr());
+			fprintf(stderr, " \"%s\"", vclass->name().cstr());
 		}
-		printf("\n");
+		fprintf(stderr, "\n");
 
 		if(op.code==OP_CODE) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
@@ -70,31 +70,31 @@ void dump(int level, const Array& ops) {
 
 void Request::execute(const Array& ops) {
 	if(1) {
-		puts("source----------------------------");
+		fputs("source----------------------------", stderr);
 		dump(0, ops);
-		puts("execution-------------------------");
+		fputs("execution-------------------------", stderr);
 	}
 
 	int size=ops.size();
-	//printf("size=%d\n", size);
+	//fprintf(stderr, "size=%d\n", size);
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
-		printf("%d:%s", stack.top(), opcode_name[op.code]);
+		fprintf(stderr, "%d:%s", stack.top(), opcode_name[op.code]);
 
 		switch(op.code) {
 			// param in next instruction
 		case OP_STRING:
 			{
 				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
-				printf(" \"%s\"", vstring->get_string()->cstr());
+				fprintf(stderr, " \"%s\"", vstring->get_string()->cstr());
 				PUSH(vstring);
 				break;
 			}
 		case OP_CODE:
 			{
 				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
-				printf(" (%d)\n", local_ops->size());
+				fprintf(stderr, " (%d)\n", local_ops->size());
 				dump(1, *local_ops);
 				Junction& j=*NEW Junction(pool(), 
 					*self, 0, 0,
@@ -107,7 +107,7 @@ void Request::execute(const Array& ops) {
 		case OP_CLASS:
 			{
 				VClass *vclass=static_cast<VClass *>(ops.quick_get(++i));
-				printf(" \"%s\"", vclass->name().cstr());
+				fprintf(stderr, " \"%s\"", vclass->name().cstr());
 		        PUSH(vclass);
 				break;
 			}
@@ -226,7 +226,7 @@ void Request::execute(const Array& ops) {
 
 		case OP_CALL:
 			{
-				printf("->\n");
+				fprintf(stderr, "->\n");
 				VMethodFrame *frame=static_cast<VMethodFrame *>(POP());
 				frame->fill_unspecified_params();
 				PUSH(self);  
@@ -241,15 +241,16 @@ void Request::execute(const Array& ops) {
 					self=NEW VObject(pool(), *called_class);
 					frame->write(self);
 				} else {  // no
-					// is it my class or my parent's class?
+					// context is object & is it my class or my parent's class?
 					VClass *read_class=rcontext->get_class();
 					if(read_class && read_class->is_or_derived_from(*called_class)) // yes
-						self=reinterpret_cast<VAliased *>(rcontext); // class dynamic call
+						self=rcontext; // class dynamic call
 					else // no
 						self=&frame->junction.self; // static or simple dynamic call
 				}
 				frame->set_self(*self);
-				
+				VAliased *aliased=reinterpret_cast<VAliased *>(self->get_aliased());
+				Temp_alias temp_alias(*aliased, *frame->junction.vclass);
 				root=rcontext=wcontext=frame;
 				execute(frame->junction.method->code);
 				Value *value=wcontext->result();
@@ -259,15 +260,15 @@ void Request::execute(const Array& ops) {
 				root=POP();  
 				self=static_cast<VAliased *>(POP());
 				wcontext->write(value);
-				printf("<-returned");
+				fprintf(stderr, "<-returned");
 				break;
 			}
 
 		default:
-			printf("\tTODO");
+			fprintf(stderr, "\tTODO");
 			break;
 		}
-		printf("\n");
+		fprintf(stderr, "\n");
 	}
 }
 
@@ -280,7 +281,7 @@ Value *Request::get_element() {
 		Junction *junction=value->get_junction();
 		if(junction && junction->code) { // is it a code-junction?
 			// autocalc it
-			printf("ja->\n");
+			fprintf(stderr, "ja->\n");
 			PUSH(self);  
 			PUSH(root);  
 			PUSH(rcontext);  
@@ -302,7 +303,7 @@ Value *Request::get_element() {
 			rcontext=POP();  
 			root=POP();  
 			self=static_cast<VAliased *>(POP());
-			printf("<-ja returned");
+			fprintf(stderr, "<-ja returned");
 		}
 	} else {
 		value=NEW VUnknown(pool());

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.33 2001/02/25 16:36:11 paf Exp $
+  $Id: pa_value.h,v 1.34 2001/02/25 17:33:43 paf Exp $
 */
 
 /*
@@ -56,7 +56,7 @@ class Junction : public Pooled {
 public:
 
 	Junction(Pool& apool,
-		VAliased& aself,
+		Value& aself,
 		VClass *avclass, Method *amethod,
 		Value *aroot,
 		Value *arcontext,
@@ -71,7 +71,7 @@ public:
 		code(acode) {
 	}
 
-	VAliased& self;
+	Value& self;
 	VClass *vclass;  Method *method;
 	Value *root;
 	Value *rcontext;
@@ -115,6 +115,11 @@ public: // Value
 	// object_class, object_instance: object_class
 	// wcontext: none yet | transparent
 	virtual VClass *get_class() { return 0; }
+
+	// valiased: this
+	// wcontext: transparent
+	// methodframe: self
+	virtual Value *get_aliased() { return 0; }
 
 public: // usage
 
