@@ -1,4 +1,108 @@
+2004-03-30  paf
+	* src/doc/ClassExample1.dox 1.5:
+	* src/doc/ClassExample2.dox 1.5:
+	* src/doc/ClassExample3.dox 1.5:
+	* src/doc/chmhelper.pl 1.2:
+	* src/doc/class.dox 1.3:
+	* src/doc/compiler.dox 1.4:
+	* src/doc/doxygen.cfg 1.25:
+	* src/doc/exception.dox 1.3:
+	* src/doc/executor.dox 1.3:
+	* src/doc/footer.htm 1.4:
+	* src/doc/index.dox 1.6:
+	* src/doc/memory.dox 1.3:
+	* src/doc/methoded.dox 1.4:
+	* src/doc/object.dox 1.3:
+	* src/doc/string.dox 1.6:
+	* src/doc/targets.dox 1.4:
+	* src/doc/value.dox 1.4:
+	* src/include/pa_version.h 1.14:
+	* src/main/pa_cache_managers.C 1.14:
+	* src/main/pa_stylesheet_connection.C 1.2:
+	* src/targets/isapi/parser3isapi.vcproj 1.7:
+	* src/types/pa_vform.C 1.81:
+	* www/htdocs/_bug.html 1.36:
+	* www/htdocs/_bug.txt 1.4:
+		merged bugfixes from 3.1.2, changed version to 3.1.3beta
+
+	* src/classes/table.C 1.200:
+		bugfix: table::load last line without tab and enter were ignored
+
+	* src/classes/table.C 1.199:
+		bufix: if last table lines were commented, gpfed
+
+2004-03-29  paf
+	* src/types/pa_vhashfile.C 1.39:
+		bugfix: empty key on hashfile.get causes gpf
+
+	* src/doc/ClassExample1.dox [release_3_1_2] 1.4.34.1:
+	* src/doc/ClassExample2.dox [release_3_1_2] 1.4.36.1:
+	* src/doc/ClassExample3.dox [release_3_1_2] 1.4.34.1:
+	* src/doc/chmhelper.pl [release_3_1_2] 1.1.36.1:
+	* src/doc/class.dox [release_3_1_2] 1.2.44.1:
+	* src/doc/compiler.dox [release_3_1_2] 1.3.36.1:
+	* src/doc/doxygen.cfg [release_3_1_2] 1.24.28.1:
+	* src/doc/exception.dox [release_3_1_2] 1.2.10.1:
+	* src/doc/executor.dox [release_3_1_2] 1.2.44.1:
+	* src/doc/footer.htm [release_3_1_2] 1.3.8.1:
+	* src/doc/index.dox [release_3_1_2] 1.5.10.1:
+	* src/doc/memory.dox [release_3_1_2] 1.2.10.1:
+	* src/doc/methoded.dox [release_3_1_2] 1.3.34.1:
+	* src/doc/object.dox [release_3_1_2] 1.2.44.1:
+	* src/doc/string.dox [release_3_1_2] 1.5.10.1:
+	* src/doc/targets.dox [release_3_1_2] 1.3.36.1:
+	* src/doc/value.dox [release_3_1_2] 1.3.34.1:
+		translated to english
+
+2004-03-25  paf
+	* src/types/pa_vform.C [release_3_1_2] 1.80.2.1:
+		beauty: removed warning
+
+	* src/classes/classes.vcproj [release_3_1_2] 1.10.2.1:
+		bugfix: now all compiles in any folder [removed last ;) folder
+		dependency]
+
+	* src/classes/classes.vcproj 1.11:
+		merged bugfix: now all compiles in any folder [removed last ;) 
+		folder dependency]
+
+	* src/classes/hash.C 1.69:
+	* www/htdocs/_bug.html 1.35:
+		bugfix: ^hash::sql{one column} now produces $.hash[$.column_value1(true) ... ]
+		[were producing some strang thing]
+
+	* src/targets/isapi/parser3isapi.vcproj [release_3_1_2] 1.6.2.1:
+		beauty: one more parser3project dependency removed
+
+	* src/include/pa_version.h [release_3_1_2] 1.13.2.1:
+		release
+
+	* src/classes/table.C 1.197:
+		beauty: comment& more meaningful error message
+
+	* src/main/pa_cache_managers.C [release_3_1_2] 1.13.2.1:
+	* src/main/pa_stylesheet_connection.C [release_3_1_2] 1.1.2.1:
+		bugfix: refused to compile without xml
+
+	* src/lib/gd/gif.C 1.4:
+		new: ^image.pixel(outof;bounds) now returns -1
+
+	* Makefile.am [release_3_1_2] 1.43.2.1:
+	* Makefile.in [release_3_1_2] 1.57.2.1:
+	* acinclude.m4 [release_3_1_2] 1.30.2.1:
+	* aclocal.m4 [release_3_1_2] 1.33.2.1:
+	* acsite.m4 [release_3_1_2] 1.8.2.1:
+	* configure [release_3_1_2] 1.76.2.1:
+	* configure.in [release_3_1_2] 1.75.2.1:
+		*** empty log message ***
+
 2004-03-23  paf
+	* src/classes/image.C 1.110:
+	* src/main/pa_common.C 1.182:
+	* www/htdocs/_bug.html 1.34:
+		bugfix: ^image.polyline and http status line parsing
+		checked number of columns in table [user reported an assert]
+
 	* src/targets/cgi/parser3.C 1.224:
 		debug helper added
 
@@ -8,6 +112,9 @@
 	* www/htdocs/_bug.html 1.33:
 		bugfix: junction reattach now actually reattaches a junction to new wcontext [were only assigning it to junction,
 		which caused junction tracking to loose junction, and it's context were not killed, and it tried to process in invalid context, gpf]
+
+	* operators.txt 1.170:
+		example: on hashfile
 
 2004-03-19  paf
 	* src/types/pa_wcontext.C 1.29:
@@ -11738,7 +11845,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2004/03/23 11:21:39 $
+		$Date: 2004/04/01 14:39:35 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -18898,7 +19005,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.35 2004/03/23 11:21:39 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.36 2004/04/01 14:39:35 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -18941,7 +19048,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.35 2004/03/23 11:21:39 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.36 2004/04/01 14:39:35 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -24304,7 +24411,7 @@
 	* src/main/pa_pool.C 1.2:
 	* src/main/pa_string.C 1.3:
 	* src/main/pa_string.C 1.4:
-		$Id: ChangeLog,v 1.35 2004/03/23 11:21:39 paf Exp $ check
+		$Id: ChangeLog,v 1.36 2004/04/01 14:39:35 paf Exp $ check
 
 	* src/include/pa_pool.h 1.5:
 	* src/include/pa_string.h 1.2:
