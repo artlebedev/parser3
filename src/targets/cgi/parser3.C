@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2004/07/30 10:55:22 $";
+static const char * const IDENT_PARSER3_C="$Date: 2004/11/09 11:34:06 $";
 
 #include "pa_config_includes.h"
 
@@ -28,6 +28,9 @@ static const char * const IDENT_PARSER3_C="$Date: 2004/07/30 10:55:22 $";
 #endif
 
 // defines
+
+// comment remove me after debugging
+#define PA_DEBUG_CGI_ENTRY_EXIT	"c:\\parser3.log"
 
 #if _MSC_VER && !defined(_DEBUG)
 #	define PA_SUPPRESS_SYSTEM_EXCEPTION
@@ -71,6 +74,10 @@ static void log(const char* fmt, va_list args) {
 		f=fopen(log_by_env, "at");
 		opened=f!=0;
 	}
+#ifdef PA_DEBUG_CGI_ENTRY_EXIT	
+	f=fopen(PA_DEBUG_CGI_ENTRY_EXIT, "at");
+	opened=f!=0;
+#endif
 
 	if(!opened && config_filespec_cstr) {
 		char beside_config_path[MAX_STRING];
@@ -99,7 +106,9 @@ static void log(const char* fmt, va_list args) {
 	time_t t=time(0);
 	if(const char* stamp=ctime(&t)) { // never saw that
 		if(size_t len=strlen(stamp)) // saw once stamp being =""
-			fprintf(f, "[%.*s] ", len-1, stamp);
+			fprintf(f, "[%.*s] [%u] ", len-1, stamp,
+			getpid()
+			);
 	}
 	// message
 
@@ -115,6 +124,12 @@ static void log(const char* fmt, va_list args) {
 		fclose(f);
 	else
 		fflush(f);
+}
+static void log(const char* fmt, ...) {
+    va_list args;
+	va_start(args,fmt);
+	log(fmt, args);
+	va_end(args);
 }
 
 // appends to parser3.log located beside my binary if openable, to stderr otherwize
@@ -341,7 +356,11 @@ static void real_parser_handler(const char* filespec_to_process,
 	pa_globals_init();
 	
 	if(!filespec_to_process || !*filespec_to_process)
-		SAPI::die("Parser/%s", PARSER_VERSION);
+		SAPI::die("Parser/%s"
+#ifdef PA_DEBUG_CGI_ENTRY_EXIT
+		" with entry/exit tracing"
+#endif
+		, PARSER_VERSION);
 	
 	// Request info
 	Request_info request_info;  memset(&request_info, 0, sizeof(request_info));
@@ -443,6 +462,17 @@ static void real_parser_handler(const char* filespec_to_process,
 	::request_info=&request_info;
 	if(execution_canceled)
 		SAPI::die("Execution canceled");
+
+#ifdef PA_DEBUG_CGI_ENTRY_EXIT
+	log("request_info: method=%s, uri=%s, q=%s, dr=%s, pt=%s, cookies=%s, cl=%u", 
+		request_info.method,
+		request_info.uri,
+		request_info.query_string,
+		request_info.document_root,
+		request_info.path_translated,
+		request_info.cookie,
+		request_info.content_length);
+#endif
 
 	// prepare to process request
 	Request request(SAPI_info, request_info,
@@ -563,6 +593,9 @@ static void usage(const char* program) {
 }
 
 int main(int argc, char *argv[]) {
+#ifdef PA_DEBUG_CGI_ENTRY_EXIT
+	log("main: entry");
+#endif
 	//_asm int 3;
 	GC_java_finalization=0;
 
@@ -718,5 +751,8 @@ int main(int argc, char *argv[]) {
 		// unsuccessful finish
 	}
 
+#ifdef PA_DEBUG_CGI_ENTRY_EXIT
+	log("main: successful return");
+#endif
 	return 0;
 }
