@@ -31,7 +31,7 @@
 
 #line 8 "compile.y"
 
-static char *RCSId="$Id: compile.tab.C,v 1.3 2001/08/10 12:36:55 parser Exp $"; 
+static char *RCSId="$Id: compile.tab.C,v 1.4 2001/08/10 12:53:32 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -1939,6 +1939,9 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 					RC;
 				}
 				break;
+			case '(':
+				lexical_brackets_nestage++;
+				break;
 			}
 			break;
 			
@@ -2216,7 +2219,10 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				RC;
 			case '(':
 				// $name.<(>code)
-				if(PC.col>1/*not first column*/ && end[-1]=='.'/*was dot */) {
+				if(PC.col>1/*not first column*/ && (
+					end[-1]=='.'/*was dot */ ||
+					end[-1]=='$'/*was start of get*/
+					)) {
 					push_LS(PC, LS_USER);
 					lexical_brackets_nestage=1;
 					RC;
@@ -2304,7 +2310,10 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				RC;
 			case '(':
 				// $name.<(>code)
-				if(PC.col>1/*not first column*/ && end[-1]=='.'/*was dot */) {
+				if(PC.col>1/*not first column*/ && (
+					end[-1]=='.'/*was dot */ ||
+					end[-1]=='^'/*was start of call*/
+					)) {
 					push_LS(PC, LS_USER);
 					lexical_brackets_nestage=1;
 					RC;
