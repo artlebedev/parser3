@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2003/08/19 08:30:52 $";
+static const char* IDENT_VMAIL_C="$Date: 2003/08/19 08:36:08 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -326,7 +326,8 @@ void VMail::fill_received(Request& r) {
 #ifdef WITH_MAILRECEIVE
 	if(r.request_info.mail_received) {
 		// init
-		g_mime_init(GMIME_INIT_FLAG_UTF8);
+		g_mime_init(0);
+		//	g_mime_init(GMIME_INIT_FLAG_UTF8);
 
 		// create stream with CRLF filter
 		GMimeStream *stream = g_mime_stream_fs_new(fileno(stdin));
