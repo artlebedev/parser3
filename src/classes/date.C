@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.16 2002/02/08 08:30:09 paf Exp $
+	$Id: date.C,v 1.17 2002/02/18 12:13:42 paf Exp $
 */
 
 #include "classes.h"
@@ -37,7 +37,7 @@ static void _now(Request& r, const String& method_name, MethodParams *) {
 	vdate->set_time(time(0));
 }
 
-static void _set(Request& r, const String& method_name, MethodParams *params) {
+static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDate *vdate=static_cast<VDate *>(r.self);
 
@@ -259,7 +259,8 @@ MDate::MDate(Pool& apool) : Methoded(apool) {
 	add_native_method("now", Method::CT_DYNAMIC, _now, 0, 0);
 
 	// ^set(float days)
-	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 6);
+	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 6);
+	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 6);
 
 	// ^sql-string[]
 	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 0);

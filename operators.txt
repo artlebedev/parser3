@@ -505,8 +505,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !всЄ происходит в localtime, 
     !временна€ зона задаЄтс€ вне parser средствами OS
     !^date::now[]
-    !^date::set(дней с epoch)
-    !^date::set(year;month;day[;hour[;minute[;second]]])
+    !^date::create(дней с epoch) // старое им€ set
+    !^date::create(year;month;day[;hour[;minute[;second]]]) // старое им€ set
     !$date.year month day  hour minute second  weekday read-only    
     !^date.roll[year|month|day](+/- 1) сдвигает дату
     !^date.sql-string[] %Y-%m-%d %H:%M:%S
