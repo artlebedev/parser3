@@ -231,6 +231,10 @@ SOURCE=..\include\pa_vhash.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_vjunction.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_vstring.h
 # End Source File
 # Begin Source File

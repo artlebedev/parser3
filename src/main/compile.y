@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.27 2001/02/23 12:37:58 paf Exp $
+  $Id: compile.y,v 1.28 2001/02/23 17:48:00 paf Exp $
 */
 
 %{
@@ -124,7 +124,7 @@ name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; 
 
 /* put */
 
-put: '$' name_expr_dive '(' constructor_value ')' {
+put: '$' name_expr_wdive '(' constructor_value ')' {
 /*
 	TODO: подсмотреть в $3, и если там первым элементом self,
 		то выкинуть его и делать не WITH_WRITE, а WITH_SELF
@@ -135,8 +135,8 @@ put: '$' name_expr_dive '(' constructor_value ')' {
 	P($$, $4); /* stack: context,name,constructor_value */
 	OP($$, OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 };
-name_expr_dive: name_expr_dive_write | name_expr_dive_root;
-name_expr_dive_write: name_expr_dive_code {
+name_expr_wdive: name_expr_wdive_write | name_expr_wdive_root;
+name_expr_wdive_write: name_expr_dive_code {
 	$$=N(POOL); 
 	Array *diving_code=$1;
 	String *first_name=LA2S(diving_code);
@@ -151,7 +151,7 @@ name_expr_dive_write: name_expr_dive_code {
 	}
 	/* diving code; stack: current context */
 };
-name_expr_dive_root: ':' name_expr_dive_code {
+name_expr_wdive_root: ':' name_expr_dive_code {
 	$$=N(POOL); 
 	OP($$, OP_WITH_ROOT); /* stack: starting context */
 	P($$, $2); /* diving code; stack: context,name */
@@ -197,25 +197,8 @@ constructor_two_params_value: STRING ';' constructor_one_param_value {
 
 /* call */
 
-call: '^' name_expr_dive store_params EON { /* ^field.$method{vasya} */
-/*
-	TODO: подсмотреть в $3, и если там в первом элементе первая буква ":"
-		то выкинуть её и делать не OP_WITH_READ, а WITH_ROOT
-	TODO: подсмотреть в $3, и если там первым элементом self,
-		то выкинуть его и делать не OP_WITH_READ, а WITH_SELF
-	TODO:
-		если первым в $3 идёт result
-		то
-			выкинуть его
-			если там ещё что-то осталось,
-			то
-				не OP_WITH_READ, а WITH_RESULT
-			иначе  // ^result(value)
-				обругать безобразие
-*/
-	$$=N(POOL); 
-	OP($$, OP_WITH_READ); /* stack: starting context */
-	P($$, $2); /* diving code; stack: context,method_name */
+call: '^' name_without_curly_rdive store_params EON { /* ^field.$method{vasya} */
+	$$=$2; /* with_xxx,diving code; stack: context,method_name */
 	OP($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
 	P($$, $3); /* filling method_frame.store_params */
 	OP($$, OP_CALL); /* method_frame=pop; ncontext=pop; call(ncontext,method_frame) */

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.29 2001/02/23 17:12:58 paf Exp $
+  $Id: execute.C,v 1.30 2001/02/23 17:48:00 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -65,7 +65,7 @@ void dump(int level, const Array& ops) {
 }
 
 void Request::execute(Array& ops) {
-	if(0) {
+	if(1) {
 		puts("---------------------------");
 		dump(0, ops);
 		puts("---------------------------");
