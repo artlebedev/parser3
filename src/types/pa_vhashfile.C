@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2004/09/13 08:57:43 $";
+static const char * const IDENT="$Date: 2004/09/13 09:06:24 $";
 
 #include "pa_globals.h"
 #include "pa_threads.h"
@@ -92,7 +92,8 @@ apr_sdbm_datum_t VHashfile::serialize_value(const String& string, time_t time_to
 
 	prolog.version=HASHFILE_VALUE_SERIALIZED_VERSION;
 	prolog.time_to_die=time_to_die;
-	memcpy(output_cstr, string.cstr(), length);
+	if(length) // reported errors on storing empty values to hashfiles, but without details. maybe here [win32, intel:solaris, freebsd were OK...]
+		memcpy(output_cstr, string.cstr(), length);
 
 	return result;
 }
