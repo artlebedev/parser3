@@ -9,8 +9,23 @@
 /* Define if you have the ANSI C header files.  */
 #undef STDC_HEADERS
 
+/* Define if you can safely include both <sys/time.h> and <time.h>.  */
+#undef TIME_WITH_SYS_TIME
+
+/* Define if you have the GNU dld library.  */
+#undef HAVE_DLD
+
+/* Define if you have the libdl library or equivalent.  */
+#undef HAVE_LIBDL
+
+/* Define if you have the shl_load function.  */
+#undef HAVE_SHL_LOAD
+
 /* Define if you have the _locking function.  */
 #undef HAVE__LOCKING
+
+/* Define if you have the dlerror function.  */
+#undef HAVE_DLERROR
 
 /* Define if you have the fcntl function.  */
 #undef HAVE_FCNTL

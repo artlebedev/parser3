@@ -11,6 +11,7 @@
 # PARTICULAR PURPOSE.
 
 #this read configure.in comment on stdc++ about next line
+#CXXLD=$(CC)
 
 
 SHELL = @SHELL@
@@ -63,21 +64,15 @@ host_alias = @host_alias@
 host_triplet = @host@
 APACHE13 = @APACHE13@
 APACHE_LIBS = @APACHE_LIBS@
-AS = @AS@
 AWK = @AWK@
 CC = @CC@
 CXX = @CXX@
 DB2_INCLUDES = @DB2_INCLUDES@
 DB2_LIBS = @DB2_LIBS@
-DLLTOOL = @DLLTOOL@
 INCLTDL = @INCLTDL@
 LIBADD_DL = @LIBADD_DL@
 LIBLTDL = @LIBLTDL@
-LIBTOOL = @LIBTOOL@
-LIBTOOL_DEPS = @LIBTOOL_DEPS@
-LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
-OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
@@ -90,14 +85,12 @@ host_os = @host_os@
 rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
-CXXLD = $(CC)
-
-INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql -I../../pcre @XML_INCLUDES@
+INCLUDES = -I../../classes -I../../types -I../../sql -I../../pcre -I$(INCLTDL) @XML_INCLUDES@
 
 bin_PROGRAMS = parser3
 noinst_HEADERS = pa_config_paths.h pool_storage.h
 parser3_SOURCES = pa_pool.C pa_threads.C parser3.C ident.C
-parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../pcre/libpcre.a @XML_LIBS@ @DB2_LIBS@
+parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a ../../pcre/libpcre.a $(LIBLTDL) $(LIBADD_DL) @XML_LIBS@ @DB2_LIBS@
 
 IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.C
@@ -120,8 +113,8 @@ parser3_DEPENDENCIES =  ../../main/libmain.a ../../classes/libclasses.a \
 parser3_LDFLAGS = 
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
+CXXLD = $(CXX)
+CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
 HEADERS =  $(noinst_HEADERS)
 
 DIST_COMMON =  Makefile.am Makefile.in pa_config_paths.h.in
@@ -138,7 +131,7 @@ OBJECTS = $(parser3_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
-.SUFFIXES: .C .S .c .lo .o .s
+.SUFFIXES: .C .S .c .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/targets/cgi/Makefile
 
@@ -163,8 +156,8 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
 	@list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  if test -f $$p; then \
-	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
-	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	    echo "  $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	     $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
 	  else :; fi; \
 	done
 
@@ -190,29 +183,11 @@ distclean-compile:
 
 maintainer-clean-compile:
 
-.s.lo:
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
-
-.S.lo:
-	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
-
-mostlyclean-libtool:
-	-rm -f *.lo
-
-clean-libtool:
-	-rm -rf .libs _libs
-
-distclean-libtool:
-
-maintainer-clean-libtool:
-
 parser3: $(parser3_OBJECTS) $(parser3_DEPENDENCIES)
 	@rm -f parser3
 	$(CXXLINK) $(parser3_LDFLAGS) $(parser3_OBJECTS) $(parser3_LDADD) $(LIBS)
 .C.o:
 	$(CXXCOMPILE) -c $<
-.C.lo:
-	$(LTCXXCOMPILE) -c $<
 
 tags: TAGS
 
@@ -351,27 +326,24 @@ distclean-generic:
 
 maintainer-clean-generic:
 mostlyclean-am:  mostlyclean-binPROGRAMS mostlyclean-compile \
-		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
-		mostlyclean-generic
+		mostlyclean-tags mostlyclean-depend mostlyclean-generic
 
 mostlyclean: mostlyclean-am
 
-clean-am:  clean-binPROGRAMS clean-compile clean-libtool clean-tags \
-		clean-depend clean-generic mostlyclean-am
+clean-am:  clean-binPROGRAMS clean-compile clean-tags clean-depend \
+		clean-generic mostlyclean-am
 
 clean: clean-am
 
-distclean-am:  distclean-binPROGRAMS distclean-compile distclean-libtool \
-		distclean-tags distclean-depend distclean-generic \
-		clean-am
-	-rm -f libtool
+distclean-am:  distclean-binPROGRAMS distclean-compile distclean-tags \
+		distclean-depend distclean-generic clean-am
 
 distclean: distclean-am
 
 maintainer-clean-am:  maintainer-clean-binPROGRAMS \
-		maintainer-clean-compile maintainer-clean-libtool \
-		maintainer-clean-tags maintainer-clean-depend \
-		maintainer-clean-generic distclean-am
+		maintainer-clean-compile maintainer-clean-tags \
+		maintainer-clean-depend maintainer-clean-generic \
+		distclean-am
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 
@@ -380,16 +352,14 @@ maintainer-clean: maintainer-clean-am
 .PHONY: mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
 maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
 mostlyclean-compile distclean-compile clean-compile \
-maintainer-clean-compile mostlyclean-libtool distclean-libtool \
-clean-libtool maintainer-clean-libtool tags mostlyclean-tags \
-distclean-tags clean-tags maintainer-clean-tags distdir \
-mostlyclean-depend distclean-depend clean-depend \
-maintainer-clean-depend info-am info dvi-am dvi check check-am \
-installcheck-am installcheck install-exec-am install-exec \
-install-data-am install-data install-am install uninstall-am uninstall \
-all-redirect all-am all installdirs mostlyclean-generic \
-distclean-generic clean-generic maintainer-clean-generic clean \
-mostlyclean distclean maintainer-clean
+maintainer-clean-compile tags mostlyclean-tags distclean-tags \
+clean-tags maintainer-clean-tags distdir mostlyclean-depend \
+distclean-depend clean-depend maintainer-clean-depend info-am info \
+dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
+install-exec install-data-am install-data install-am install \
+uninstall-am uninstall all-redirect all-am all installdirs \
+mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 ident.C: $(IDENT_AWK) $(IDENT_DEPS) Makefile.am

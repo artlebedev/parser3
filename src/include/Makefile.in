@@ -61,21 +61,15 @@ host_alias = @host_alias@
 host_triplet = @host@
 APACHE13 = @APACHE13@
 APACHE_LIBS = @APACHE_LIBS@
-AS = @AS@
 AWK = @AWK@
 CC = @CC@
 CXX = @CXX@
 DB2_INCLUDES = @DB2_INCLUDES@
 DB2_LIBS = @DB2_LIBS@
-DLLTOOL = @DLLTOOL@
 INCLTDL = @INCLTDL@
 LIBADD_DL = @LIBADD_DL@
 LIBLTDL = @LIBLTDL@
-LIBTOOL = @LIBTOOL@
-LIBTOOL_DEPS = @LIBTOOL_DEPS@
-LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
-OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
@@ -235,7 +229,6 @@ clean-am:  clean-hdr clean-tags clean-generic mostlyclean-am
 clean: clean-am
 
 distclean-am:  distclean-hdr distclean-tags distclean-generic clean-am
-	-rm -f libtool
 
 distclean: distclean-am
 
