@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/26 12:39:44 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/11/26 15:01:39 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -465,7 +465,7 @@ bool file_read_action_under_lock(Pool& pool, const String& file_spec,
 						strerror(errno), errno, fname); 
 
 #ifdef NO_FOREIGN_GROUP_FILES
-			if(finfo.st_gid/*foreign?*/!=getegid()) {
+			if(finfo.st_gid/*foreign?*/!=getegid())
 				throw Exception("parser.runtime", 
 					&file_spec, 
 					"parser reading files of foreign group disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
