@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.109 2001/09/05 09:22:45 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.110 2001/09/05 09:33:33 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -20,9 +20,6 @@ static const char *RCSId="$Id: parser3.C,v 1.109 2001/09/05 09:22:45 parser Exp 
 #include "pa_socks.h"
 #include "pa_version.h"
 
-// helper macros
-
-#define STRINGIZE(name) #name
 //#define DEBUG_POOL_MALLOC
 
 // consts
@@ -278,7 +275,7 @@ int main(int argc, char *argv[]) {
 		
 		// some root-controlled location
 #ifdef SYSCONFDIR
-		const char *root_auto_path=STRINGIZE(SYSCONFDIR);
+		const char *root_auto_path=SYSCONFDIR;
 #else
 #	ifdef WIN32
 		// c:\windows
