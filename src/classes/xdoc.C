@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.16 2001/10/15 11:48:04 parser Exp $
+	$Id: xdoc.C,v 1.17 2001/10/15 14:22:12 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -554,6 +554,44 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	vdoc.set_parsed_source(*parsedSource);
 }
 
+static void _create(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	Value& vqualifiedName=params->as_junction(0, "qualifiedName must be code");
+	Temp_lang temp_lang(r, String::UL_XML);
+	const String& qualifiedName=r.process(vqualifiedName).as_string();
+
+	String xml(pool, "<?xml version=\"1.0\"?>\n");
+	xml << "<" << qualifiedName << " />";
+
+	std::istrstream stream(xml.cstr());
+
+	const XalanParsedSource* parsedSource;
+
+	try {
+		parsedSource = new XalanDefaultParsedSource2(&stream);
+	}
+	catch (XSLException& e)	{
+		pool.exception()._throw(pool, &method_name, e);
+	}
+	catch (SAXParseException& e)	{
+		pool.exception()._throw(pool, &method_name, e);
+	}
+	catch (SAXException& e)	{
+		pool.exception()._throw(pool, &method_name, e);
+	}
+	catch (XMLException& e) {
+		pool.exception()._throw(pool, &method_name, e);
+	}
+	catch(const XalanDOMException& e)	{
+		pool.exception()._throw(pool, &method_name, e);
+	}
+
+	// replace any previous parsed source
+	vdoc.set_parsed_source(*parsedSource);
+}
+
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
@@ -727,6 +765,8 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 
 	// ^xdoc::set[<some>xml</some>]
 	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 1);
+	// ^xdoc::create[]
+	add_native_method("create", Method::CT_DYNAMIC, _create, 0, 0);	
 
 	// ^xdoc::load[some.xml]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
