@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2003/07/24 11:31:19 $";
+static const char* IDENT_DATE_C="$Date: 2003/10/30 12:46:23 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -71,7 +71,14 @@ static int NN_year_to_NNNN(int year) {
 // 2002-04-25 18:14:00
 // 18:14:00
 // 2002:04:25 [+maybe time]
-time_t cstr_to_time_t(char *cstr, bool fail_on_error) { // used in image.C
+/*not static, used in image.C*/ time_t cstr_to_time_t(char *cstr, bool fail_on_error) {
+	if( !cstr || !*cstr ) {
+		if(fail_on_error)
+			throw Exception(0,
+				0,
+				"empty string is not valid datetime");
+		return 0;
+	}
 	char *cur=cstr;
 	int date_delim=isdigit(cur[0])&&isdigit(cur[1])&&isdigit(cur[2])&&isdigit(cur[3])&&cur[4]==':'?':'
 		:'-';

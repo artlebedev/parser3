@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_IMAGE_C="$Date: 2003/10/30 12:46:23 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -410,7 +410,7 @@ static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format,
 			strcpy(cstr_writable, cstr);
 
 			time_t t=cstr_to_time_t(cstr_writable, 
-				0/* do not throw exception, just return bad result */);
+				false/* do not throw exception, just return bad result */);
 			if(t>=0)
 				return new VDate(t);
 		}
