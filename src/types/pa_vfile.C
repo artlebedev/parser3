@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VFILE_C="$Date: 2002/08/01 11:41:22 $";
+static const char* IDENT_VFILE_C="$Date: 2002/08/06 09:08:00 $";
 
 #include "pa_vfile.h"
 #include "pa_vstring.h"
@@ -14,7 +14,7 @@ static const char* IDENT_VFILE_C="$Date: 2002/08/01 11:41:22 $";
 void VFile::set(bool tainted, 
 				const void *avalue_ptr, size_t avalue_size,
 				const char *afile_name,
-				Value *mime_type) {
+				Value *content_type) {
 	fvalue_ptr=avalue_ptr;
 	fvalue_size=avalue_size;
 
@@ -54,6 +54,6 @@ void VFile::set(bool tainted,
 		ffields.put(*text_name, NEW VString(text));
 	}
 	// $mime-type
-	if(mime_type)
-		ffields.put(*vfile_mime_type_name, mime_type);
+	if(content_type)
+		ffields.put(*content_type_name, content_type);
 }

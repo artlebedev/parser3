@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/08/01 11:41:12 $";
+static const char* IDENT_FILE_C="$Date: 2002/08/06 09:07:59 $";
 
 #include "pa_config_includes.h"
 
@@ -153,6 +153,7 @@ static void _stat(Request& r, const String& method_name, MethodParams *params) {
 	ff.put(*new(pool) String(pool, "adate"), new(pool) VDate(pool, atime));
 	ff.put(*new(pool) String(pool, "mdate"), new(pool) VDate(pool, mtime));
 	ff.put(*new(pool) String(pool, "cdate"), new(pool) VDate(pool, ctime));
+	ff.put(*content_type_name, new(pool) VString(r.mime_type_of(lfile_name.cstr(String::UL_FILE_SPEC))));
 }
 
 static bool is_safe_env_key(const char *key) {

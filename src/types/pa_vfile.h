@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char* IDENT_VFILE_H="$Date: 2002/08/01 11:41:22 $";
+static const char* IDENT_VFILE_H="$Date: 2002/08/06 09:08:00 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -64,7 +64,7 @@ public: // usage
 
 	void set(bool tainted, 
 		const void *avalue_ptr, size_t avalue_size, const char *afile_name=0,
-		Value *amime_type=0);
+		Value *acontent_type=0);
 	
 	void save(const String& file_spec, bool is_text) {
 		if(fvalue_ptr)

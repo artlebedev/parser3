@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/08/05 11:28:10 $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/08/06 09:07:59 $";
 
 #include "pa_config_includes.h"
 
@@ -336,7 +336,6 @@ void pa_globals_init(Pool& pool) {
 
 	charsets_name=NEW String(pool, CHARSETS_NAME);
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
-	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
 	origins_mode_name=NEW String(pool, ORIGINS_MODE_NAME);
 
 	class_path_name=NEW String(pool, CLASS_PATH_NAME);

@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2002/08/05 11:28:09 $";
+static const char* IDENT_GLOBALS_H="$Date: 2002/08/06 09:07:59 $";
 
 #include "pa_pool.h"
 
@@ -41,7 +41,6 @@ class Table;
 #define DEFAULTS_NAME "DEFAULTS"
 #define CHARSETS_NAME "CHARSETS"
 #define MIME_TYPES_NAME "MIME-TYPES"
-#define VFILE_MIME_TYPE_NAME "mime-type"
 #define ORIGINS_MODE_NAME "ORIGINS"
 
 #define RESULT_VAR_NAME "result"
@@ -107,7 +106,6 @@ extern String *main_class_name;
 extern String *charsets_name;
 
 extern String *mime_types_name;
-extern String *vfile_mime_type_name;
 extern String *origins_mode_name;
 
 extern String *result_var_name;

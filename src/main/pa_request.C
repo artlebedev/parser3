@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/08/06 07:59:36 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/08/06 09:07:59 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -556,7 +556,7 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	VString *body_file_content_type;
 	// set content-type
 	if(body_file_content_type=static_cast<VString *>(
-		body_file.fields().get(*vfile_mime_type_name))) {
+		body_file.fields().get(*content_type_name))) {
 		// body file content type
 		response.fields().put(*content_type_name, body_file_content_type);
 	} else {
