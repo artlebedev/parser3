@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.52 2001/05/19 18:35:40 parser Exp $
+	$Id: string.C,v 1.53 2001/05/21 16:38:46 parser Exp $
 */
 
 #include "classes.h"
@@ -15,6 +15,7 @@
 #include "pa_vtable.h"
 #include "pa_vbool.h"
 #include "pa_string.h"
+#include "pa_sql_connection.h"
 
 // defines
 
@@ -23,10 +24,13 @@
 // class
 
 class MString : public Methoded {
+public: // VStateless_class
+	Value *create_new_value(Pool& pool) { return new(pool) VString(pool); }
+
 public:
 	MString(Pool& pool);
 public: // Methoded
-	bool used_directly() { return false; }
+	bool used_directly() { return true; }
 };
 
 // methods
@@ -249,6 +253,71 @@ static void _lower(Request& r, const String& method_name, MethodParams *params) 
 	change_case(r, method_name, params, String::CC_LOWER);
 }
 
+String& sql_result_string(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	if(!r.connection)
+		PTHROW(0, 0,
+			&method_name,
+			"without connect");
+
+	Value& statement=params->get_junction(0, "statement must be code");
+
+	ulong offset=0;
+	if(params->size()>1) {
+		Value& offset_code=params->get_junction(1, "offset must be expression");
+		offset=(ulong)r.process(offset_code).as_double();
+	}
+
+	Temp_lang temp_lang(r, String::UL_SQL);
+	const String& statement_string=r.process(statement).as_string();
+	const char *statement_cstr=
+		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
+	unsigned int sql_column_count; SQL_Driver::Cell *sql_columns;
+	unsigned long sql_row_count; SQL_Driver::Cell **sql_rows;
+	bool need_rethrow=false; Exception rethrow_me;
+	PTRY {
+		r.connection->query(
+			statement_cstr, offset, 0,
+			&sql_column_count, &sql_columns,
+			&sql_row_count, &sql_rows);
+	}
+	PCATCH(e) { // query problem
+		rethrow_me=e;  need_rethrow=true;
+	}
+	PEND_CATCH
+	if(need_rethrow)
+		PTHROW(rethrow_me.type(), rethrow_me.code(),
+			&statement_string, // setting more specific source [were url]
+			rethrow_me.comment());
+	
+	if(sql_column_count!=1)
+		PTHROW(0, 0,
+			&statement_string,
+			"result must contain only one column");
+
+	if(sql_row_count!=1)
+		PTHROW(0, 0,
+			&statement_string,
+			"result must contain only one row");
+
+	String& result=*new(pool) String(pool);
+	SQL_Driver::Cell& cell=sql_rows[0][0];
+	result.APPEND_TAINTED(
+		(const char *)cell.ptr, cell.size,
+		statement_cstr, 0);
+	
+	return result;
+}
+
+static void _sql(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	VString& result=*new(pool) VString(sql_result_string(r, method_name, params));
+	result.set_name(method_name);
+	r.write_assign_lang(result);
+}
+
 // constructor
 
 MString::MString(Pool& apool) : Methoded(apool) {
@@ -290,6 +359,10 @@ MString::MString(Pool& apool) : Methoded(apool) {
 	add_native_method("upper", Method::CT_DYNAMIC, _upper, 0, 0);
 	// ^string.tolower[]
 	add_native_method("lower", Method::CT_DYNAMIC, _lower, 0, 0);
+
+	// ^string:sql[query]
+	// ^string:sql[query](offset)
+	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 }	
 
 // global variable

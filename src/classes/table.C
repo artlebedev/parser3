@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.81 2001/05/21 16:01:10 parser Exp $
+	$Id: table.C,v 1.82 2001/05/21 16:38:46 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -505,7 +505,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			&sql_column_count, &sql_columns,
 			&sql_row_count, &sql_rows);
 	}
-	PCATCH(e) { // connect/process problem
+	PCATCH(e) { // query problem
 		rethrow_me=e;  need_rethrow=true;
 	}
 	PEND_CATCH

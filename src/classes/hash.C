@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.2 2001/05/21 16:01:10 parser Exp $
+	$Id: hash.C,v 1.3 2001/05/21 16:38:46 parser Exp $
 */
 
 #include "classes.h"
@@ -79,7 +79,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			&sql_column_count, &sql_columns,
 			&sql_row_count, &sql_rows);
 	}
-	PCATCH(e) { // connect/process problem
+	PCATCH(e) { // query problem
 		rethrow_me=e;  need_rethrow=true;
 	}
 	PEND_CATCH

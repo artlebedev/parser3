@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.24 2001/05/08 06:07:47 paf Exp $
+	$Id: int.C,v 1.25 2001/05/21 16:38:46 parser Exp $
 */
 
 #include "classes.h"
@@ -24,10 +24,13 @@ void _string_format(Request& r, const String& method_name, MethodParams *);
 // class
 
 class MInt : public Methoded {
+public: // VStateless_class
+	Value *create_new_value(Pool& pool) { return new(pool) VInt(pool); }
+
 public:
 	MInt(Pool& pool);
 public: // Methoded
-	bool used_directly() { return false; }
+	bool used_directly() { return true; }
 };
 
 // methods
@@ -73,6 +76,17 @@ static void _mul(Request& r, const String&, MethodParams *params) { vint_op(r, p
 static void _div(Request& r, const String&, MethodParams *params) { vint_op(r, params, &__div); }
 static void _mod(Request& r, const String&, MethodParams *params) { vint_op(r, params, &__mod); }
 
+extern 
+String& sql_result_string(Request& r, const String& method_name, MethodParams *params);
+
+static void _sql(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	VInt& result=*new(pool) VInt(sql_result_string(r, method_name, params).as_int());
+	result.set_name(method_name);
+	r.write_no_lang(result);
+}
+
 // constructor
 
 MInt::MInt(Pool& apool) : Methoded(apool) {
@@ -101,6 +115,9 @@ MInt::MInt(Pool& apool) : Methoded(apool) {
 
 	// ^int.format{format}
 	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
+	// ^int:sql[query]
+	// ^int:sql[query](offset)
+	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 }
 // global variable
 
