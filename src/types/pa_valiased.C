@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.C,v 1.6 2001/04/02 16:00:16 paf Exp $
+	$Id: pa_valiased.C,v 1.7 2001/04/06 10:24:14 paf Exp $
 */
 
 #include "pa_valiased.h"
@@ -29,12 +29,7 @@ Value *VAliased::get_element(const String& aname) {
 		if(hide_class()) 
 			bark("%s has no "BASE_NAME" element");
 		else {
-			Value *result=fclass_alias->base();
-			// check whether result has base
-			// note:
-			//   all classes have silent ROOT superclass.
-			//   so we need to skip it in check
-			if(result->get_class()->base()) 
+			if(Value *result=fclass_alias->base())
 				return result;
 			else
 				THROW(0, 0,

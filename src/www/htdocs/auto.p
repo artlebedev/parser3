@@ -50,6 +50,6 @@ swf	application/x-shockwave-flash
 }]
 
 @auto_test[]
-#^BASE.auto_test[]
+^BASE.auto_test[]
 <li>DR
 
