@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.C,v 1.33 2001/03/29 09:31:43 paf Exp $
+	$Id: compile_tools.C,v 1.34 2001/04/03 07:54:25 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -81,5 +81,5 @@ void pop_LS(parse_control& pc) {
 	if(--pc.sp>=0)
 		pc.ls=pc.stack[pc.sp];
 	else
-		pc.pool->THROW(0, 0, 0, "push_LS: stack underflow");
+		pc.pool->THROW(0, 0, 0, "pop_LS: stack underflow");
 }

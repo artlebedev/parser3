@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.92 2001/04/03 07:20:53 paf Exp $
+	$Id: pa_request.C,v 1.93 2001/04/03 07:54:25 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -98,8 +98,6 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 	the file user requested us to process
 	all located classes become children of one another,
 	composing class we name 'MAIN'
-
-	@test post-process
 */
 void Request::core(const char *root_auto_path, bool root_auto_fail,
 				   const char *site_auto_path, bool site_auto_fail,

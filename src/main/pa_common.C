@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.37 2001/04/03 07:32:46 paf Exp $
+	$Id: pa_common.C,v 1.38 2001/04/03 07:54:25 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -94,6 +94,7 @@ bool file_read(Pool& pool, const String& file_spec,
     return false;
 }
 
+/// @test mkdirs
 void file_write(Pool& pool, 
 				const String& file_spec, 
 				const void *data, size_t size, 
@@ -260,7 +261,8 @@ static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *aval
 
 	// ...; charset=windows1251
 	String *string=static_cast<String *>(info);
-	string->APPEND_CONST("; ");
+	if(string->size())
+		string->APPEND_CONST("; ");
 	string->append(akey, String::UL_HEADER, true);
 	string->APPEND_CONST("=");
 	string->append(static_cast<Value *>(avalue)->as_string(), 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.15 2001/04/03 05:23:36 paf Exp $
+	$Id: file.C,v 1.16 2001/04/03 07:54:24 paf Exp $
 */
 
 #include "pa_request.h"
@@ -21,7 +21,6 @@ VStateless_class *file_class;
 
 // methods
 
-/// @test mkdirs
 static void _save(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 	Value& vfile_name=*static_cast<Value *>(params->get(0));
