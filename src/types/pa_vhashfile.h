@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhashfile.h,v 1.1 2001/10/22 12:30:24 parser Exp $
+	$Id: pa_vhashfile.h,v 1.2 2001/10/22 16:44:43 parser Exp $
 */
 
 #ifndef PA_VHASHFILE_H
@@ -14,11 +14,13 @@
 #include "pa_value.h"
 #include "pa_hash.h"
 #include "pa_vint.h"
+#include "pa_db_connection.h"
 
 extern Methoded *hash_base_class;
 
 /// value of type 'hashfile', implemented with GDBM library
 class VHashfile : public VStateless_class {
+	friend void VHashfile_cleanup(void *);
 public: // value
 
 	const char *type() const { return "hashfile"; }
@@ -51,42 +53,36 @@ public: // value
 public: // usage
 
 	VHashfile(Pool& apool) : VStateless_class(apool, hash_base_class),
-		ffile_spec(0), ffile_spec_cstr(0) {
+		fconnection(0) {
+		register_cleanup(VHashfile_cleanup, this);
 	}
+private:
+	void cleanup() {
+		if(fconnection)
+			fconnection->close();  // cache it
+	}
+public:
 
-	void set_file_spec(const String& afile_spec) { 
-		ffile_spec=&afile_spec; 
-		ffile_spec_cstr=afile_spec.cstr(String::UL_FILE_SPEC);
+	void assign(const String& file_spec, const String& request_origin) {
+		fconnection=&DB_manager->get_connection(file_spec, request_origin);
 	}
-	const String& get_file_spec(const String *source) const { 
-		if(!ffile_spec)
+	DB_Connection& get_connection(const String *source) const { 
+		if(!fconnection)
 			throw Exception(0, 0,
 				source,
 				"can not be applied to uninitialized instance");
 
-		return *ffile_spec;
-	}
-	const char *get_file_spec_cstr(const String *source) {
-		if(!ffile_spec_cstr)
-			throw Exception(0, 0,
-				source,
-				"can not be applied to uninitialized instance");
-
-		return ffile_spec_cstr;
+		return *fconnection;
 	}
 
 private:
 
-	void check(const char *operation, const String *source, int error);
-
 	Value *get_field(const String& name);
-	
 	void put_field(const String& name, Value *value);
 
 private:
 
-	const String *ffile_spec;
-	const char *ffile_spec_cstr;
+	DB_Connection *fconnection;
 
 };
 

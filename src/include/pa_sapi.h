@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sapi.h,v 1.13 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_sapi.h,v 1.14 2001/10/22 16:44:42 parser Exp $
 */
 
 #ifndef PA_SAPI_H
@@ -22,6 +22,8 @@ class Hash;
 struct SAPI {
 	/// log error message
 	static void log(Pool& pool, const char *fmt, ...);
+	/// log error message & die
+	static void die(const char *fmt, ...);
 	/// get environment string
 	static const char *get_env(Pool& pool, const char *name);
 	/// read POST request bytes

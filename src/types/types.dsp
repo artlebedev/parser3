@@ -82,186 +82,6 @@ LIB32=link.exe -lib
 
 # Name "types - Win32 Release"
 # Name "types - Win32 Debug"
-# Begin Group "Source Files"
-
-# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Source File
-
-SOURCE=.\pa_valiased.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vcookie.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vfile.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vform.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vhashfile.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vimage.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vrequest.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vstateless_class.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vstring.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vtable.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vxdoc.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vxnode.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_wcontext.C
-# End Source File
-# End Group
-# Begin Group "Header Files"
-
-# PROP Default_Filter "h;hpp;hxx;hm;inl"
-# Begin Source File
-
-SOURCE=.\pa_valiased.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_value.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vbool.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vclass.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vcode_frame.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vcookie.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vdate.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vdouble.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_venv.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vfile.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vform.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vhash.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vhashfile.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vimage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vint.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vjunction.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vmath.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vmethod_frame.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vobject.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vrequest.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vresponse.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vstateless_class.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vstateless_object.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vstring.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vtable.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vvoid.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vxdoc.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vxnode.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_wcontext.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_wwrapper.h
-# End Source File
-# End Group
 # Begin Group "ident"
 
 # PROP Default_Filter ""
@@ -327,5 +147,177 @@ SOURCE=.\ident.C
 SOURCE=.\ident.C.new
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\pa_valiased.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_valiased.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_value.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vbool.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vclass.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vcode_frame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vcookie.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vcookie.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vdate.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vdouble.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_venv.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vfile.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vfile.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vform.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vform.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vhash.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vhashfile.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vhashfile.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vimage.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vimage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vint.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vjunction.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vmath.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vmethod_frame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vobject.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vrequest.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vrequest.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vresponse.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vstateless_class.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vstateless_class.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vstateless_object.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vstring.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vstring.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vtable.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vtable.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vvoid.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vxdoc.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vxdoc.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vxnode.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vxnode.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_wcontext.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_wcontext.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_wwrapper.h
+# End Source File
 # End Target
 # End Project

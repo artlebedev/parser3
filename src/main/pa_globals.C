@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.82 2001/10/12 12:15:32 parser Exp $
+	$Id: pa_globals.C,v 1.83 2001/10/22 16:44:42 parser Exp $
 */
 
 #include "pa_globals.h"
@@ -12,8 +12,10 @@
 #include "pa_hash.h"
 #include "pa_sql_driver_manager.h"
 #include "pa_dictionary.h"
-#include "pa_xslt_stylesheet_manager.h"
+#include "pa_stylesheet_manager.h"
 #include "pa_charset_manager.h"
+#include "pa_sapi.h"
+#include "pa_db_manager.h"
 
 String *user_html_name;
 String *content_type_name;
@@ -94,7 +96,37 @@ static void setup_hex_value() {
 	hex_value['f'] = 15;
 }
 
+void pa_globals_destroy(void *) {
+	try {
+		// SQL driver manager
+		if(SQL_driver_manager)
+			SQL_driver_manager->~SQL_Driver_manager();
+		
+#ifdef HAVE_LIBDB
+		// DB driver manager
+		if(DB_manager)
+			DB_manager->~DB_Manager();
+#endif
+		
+#ifdef XML
+		// XSLT stylesheet driver manager
+		if(stylesheet_manager)
+			stylesheet_manager->~Stylesheet_manager();
+#endif
+		
+		// Charset manager 
+		if(charset_manager)
+			charset_manager->~Charset_manager();
+
+	} catch(const Exception& e) {
+		SAPI::die("pa_globals_destroy failed: %s", e.comment());
+	}
+}
+
+
 void pa_globals_init(Pool& pool) {
+	pool.register_cleanup(pa_globals_destroy, 0);
+
 	#undef NEW
 	#define NEW new(pool)
 
@@ -190,9 +222,14 @@ void pa_globals_init(Pool& pool) {
 	// SQL driver manager
  	SQL_driver_manager=NEW SQL_Driver_manager(pool);
 
+#ifdef HAVE_LIBDB
+	// DB driver manager
+	DB_manager=NEW DB_Manager(pool);
+#endif
+
 #ifdef XML
 	// XSLT stylesheet driver manager
- 	XSLT_stylesheet_manager=NEW XSLT_Stylesheet_manager(pool);
+ 	stylesheet_manager=NEW Stylesheet_manager(pool);
 #endif
 
 	// Charset manager 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.6 2001/10/22 09:04:43 parser Exp $
+	$Id: mod_parser3.C,v 1.7 2001/10/22 16:44:43 parser Exp $
 */
 
 #include "httpd.h"
@@ -150,6 +150,18 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 	remove_crlf(buf, buf+size);
 	ap_log_rerror(0, 0, APLOG_ERR | APLOG_NOERRNO, r, "%s", buf);
     va_end(args);
+}
+
+void SAPI::die(const char *fmt, ...) {
+    va_list args;
+    va_start(args,fmt);
+	char buf[MAX_STRING];
+	size_t size=vsnprintf(buf, MAX_STRING, fmt, args);
+	remove_crlf(buf, buf+size);
+	ap_log_error(APLOG_MARK, APLOG_EMERG, 0, "%s", buf);
+    va_end(args);
+
+	exit(1);
 }
 
 const char *SAPI::get_env(Pool& pool, const char *name) {
@@ -413,9 +425,7 @@ static void setup_module_cells() {
 		// init global variables
 		pa_globals_init(pool);
 	} catch(const Exception& e) { // global problem 
-		ap_log_error(APLOG_MARK, APLOG_EMERG, 0, 
-			"setup_module_cells failed: ", e.comment());
-		exit(1);
+		SAPI::die("setup_module_cells failed: %s", e.comment());
 	}
 }
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.13 2001/10/19 14:15:23 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.14 2001/10/22 16:44:42 parser Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -12,7 +12,7 @@
 
 #include "pa_config_includes.h"
 #include "pa_pool.h"
-#include "pa_xslt_stylesheet_manager.h"
+#include "pa_stylesheet_manager.h"
 #include "pa_exception.h"
 #include "pa_common.h"
 
@@ -50,7 +50,7 @@ public:
 	}
 
 	void close() {
-		XSLT_stylesheet_manager->close_connection(ffile_spec, *this);
+		stylesheet_manager->close_connection(ffile_spec, *this);
 	}
 
 	void disconnect() { 
@@ -86,19 +86,19 @@ private:
 			fstylesheet=nstylesheet;
 		}
 		catch (XSLException& e)	{
-			Exception::convert(pool, &ffile_spec, e);
+			Exception::provide_source(pool, &ffile_spec, e);
 		}
 		catch (SAXParseException& e)	{
-			Exception::convert(pool, &ffile_spec, e);
+			Exception::provide_source(pool, &ffile_spec, e);
 		}
 		catch (SAXException& e)	{
-			Exception::convert(pool, &ffile_spec, e);
+			Exception::provide_source(pool, &ffile_spec, e);
 		}
 		catch (XMLException& e) {
-			Exception::convert(pool, &ffile_spec, e);
+			Exception::provide_source(pool, &ffile_spec, e);
 		}
 		catch(const XalanDOMException&	e)	{
-			Exception::convert(pool, &ffile_spec, e);
+			Exception::provide_source(pool, &ffile_spec, e);
 		}
 
 		prev_disk_time=new_disk_time;
@@ -111,11 +111,10 @@ private:
 		stamp_file_spec << STYLESHEET_FILENAME_STAMP_SUFFIX;
 		// {file_spec}.stamp modification time OR {file_spec}
 		const String& stat_file_spec=file_readable(stamp_file_spec)?stamp_file_spec:ffile_spec;
-		if(!file_stat(stat_file_spec, 
+		file_stat(stat_file_spec, 
 			size,
 			atime, mtime, ctime,
-			false/*no exception on global pool[stat_file_spec], please*/))
-			mtime=1; //no file=pseudo non-zero time, see get_new_disk_time
+			true/*exception on error*/);
 		return mtime;
 	}
 
@@ -131,6 +130,10 @@ private:
 	XalanTransformer2 *ftransformer;
 
 	Pool *fservices_pool;
+
+private:
+	void *malloc(size_t size) { return fservices_pool->malloc(size); }
+	void *calloc(size_t size) { return fservices_pool->calloc(size); }
 };
 
 #endif

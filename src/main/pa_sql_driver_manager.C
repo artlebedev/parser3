@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.41 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_sql_driver_manager.C,v 1.42 2001/10/22 16:44:42 parser Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -13,6 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 #include "pa_threads.h"
+#include "pa_stack.h"
 
 // globals
 
@@ -47,7 +48,34 @@ private:
 	const String& furl;
 };
 
+// helpers
+
+static void expire_connection(Array::Item *value, void *info) {
+	SQL_Connection& connection=*static_cast<SQL_Connection *>(value);
+	time_t older_dies=reinterpret_cast<time_t>(info);
+
+	if(connection.connected() && connection.expired(older_dies))
+		connection.disconnect();
+}
+static void expire_connections(const Hash::Key& key, Hash::Val *value, void *info) {
+	Stack& stack=*static_cast<Stack *>(value);
+	for(int i=0; i<=stack.top_index(); i++)
+		expire_connection(stack.get(i), info);
+}
+
 // SQL_Driver_manager
+
+SQL_Driver_manager::SQL_Driver_manager(Pool& pool) : Pooled(pool),
+		driver_cache(pool),
+		connection_cache(pool),
+		prev_expiration_pass_time(0) {
+	
+}
+
+SQL_Driver_manager::~SQL_Driver_manager() {
+	connection_cache.for_each(expire_connections, 
+		reinterpret_cast<void *>((time_t)0/*=in past=expire all*/));
+}
 
 /// @param request_url protocol://[driver-dependent]
 SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
@@ -229,18 +257,6 @@ void SQL_Driver_manager::put_connection_to_cache(const String& url,
 	connections->push(&connection);
 }
 
-static void expire_connection(Array::Item *value, void *info) {
-	SQL_Connection& connection=*static_cast<SQL_Connection *>(value);
-	time_t older_dies=reinterpret_cast<time_t>(info);
-
-	if(connection.connected() && connection.expired(older_dies))
-		connection.disconnect();
-}
-static void expire_connections(const Hash::Key& key, Hash::Val *value, void *info) {
-	Stack& stack=*static_cast<Stack *>(value);
-	for(int i=0; i<=stack.top_index(); i++)
-		expire_connection(stack.get(i), info);
-}
 void SQL_Driver_manager::maybe_expire_connection_cache() {
 	time_t now=time(0);
 

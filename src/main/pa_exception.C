@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.C,v 1.21 2001/10/22 08:27:44 parser Exp $
+	$Id: pa_exception.C,v 1.22 2001/10/22 16:44:42 parser Exp $
 */
 
 #include "pa_common.h"
@@ -29,7 +29,7 @@ Exception::Exception(const String *atype, const String *acode,
 }
 
 #ifdef XML
-void Exception::convert(Pool& pool, const String *source, const XSLException& e) {
+void Exception::provide_source(Pool& pool, const String *source, const XSLException& e) {
 	if(e.getURI().empty())
 		throw Exception(0, 0,
 			source,
@@ -50,14 +50,14 @@ void Exception::convert(Pool& pool, const String *source, const XSLException& e)
 		);
 }
 
-void Exception::convert(Pool& pool, const String *source, const SAXException& e) {
+void Exception::provide_source(Pool& pool, const String *source, const SAXException& e) {
 	throw Exception(0, 0,
 		source,
 		"%s",
 			pool.transcode_cstr(XalanDOMString(e.getMessage()))  // message for exception
 	);
 }
-void Exception::convert(Pool& pool, const String *source, const SAXParseException& e) {
+void Exception::provide_source(Pool& pool, const String *source, const SAXParseException& e) {
 	throw Exception(0, 0,
 		source,
 		"%s. %s(%d:%d)",
@@ -68,7 +68,7 @@ void Exception::convert(Pool& pool, const String *source, const SAXParseExceptio
 }
 
 
-void Exception::convert(Pool& pool, const String *source, const XMLException& e) {
+void Exception::provide_source(Pool& pool, const String *source, const XMLException& e) {
 	throw Exception(0, 0,
 		source,
 		"%s (%s). %s(%d)'", 
@@ -81,7 +81,7 @@ void Exception::convert(Pool& pool, const String *source, const XMLException& e)
 	);
 }
 
-void Exception::convert(Pool& pool, const String *source, const XalanDOMException& e) {
+void Exception::provide_source(Pool& pool, const String *source, const XalanDOMException& e) {
 	const char *s;
 	int code=(int)e.getExceptionCode();
 	switch(code) {

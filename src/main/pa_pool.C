@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.37 2001/10/19 15:27:42 parser Exp $
+	$Id: pa_pool.C,v 1.38 2001/10/22 16:44:42 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -87,7 +87,7 @@ const char *Pool::transcode_cstr(const XalanDOMString& s) {
 			error=false;
 		}
 	} catch(XMLException& e) {
-		Exception::convert(*this, 0, e);
+		Exception::provide_source(*this, 0, e);
 	}
 	return (const char *)dest;
 }
@@ -115,7 +115,7 @@ std::auto_ptr<XalanDOMString> Pool::transcode_buf(const char *buf, size_t buf_si
 			result=new XalanDOMString(dest, dest_size);
 		}
 	} catch(XMLException& e) {
-		Exception::convert(*this, 0, e);
+		Exception::provide_source(*this, 0, e);
 		result=0; //calm, compiler
 	}
 	

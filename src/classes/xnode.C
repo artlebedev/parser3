@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.14 2001/10/19 14:56:16 parser Exp $
+	$Id: xnode.C,v 1.15 2001/10/22 16:44:42 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -74,7 +74,7 @@ static void _insertBefore(Request& r, const String& method_name, MethodParams *p
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
-		Exception::convert(pool, &method_name, e);
+		Exception::provide_source(pool, &method_name, e);
 	}
 }
 
@@ -94,7 +94,7 @@ static void _replaceChild(Request& r, const String& method_name, MethodParams *p
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
-		Exception::convert(pool, &method_name, e);
+		Exception::provide_source(pool, &method_name, e);
 	}
 }
 
@@ -113,7 +113,7 @@ static void _removeChild(Request& r, const String& method_name, MethodParams *pa
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
-		Exception::convert(pool, &method_name, e);
+		Exception::provide_source(pool, &method_name, e);
 	}
 }
 
@@ -132,7 +132,7 @@ static void _appendChild(Request& r, const String& method_name, MethodParams *pa
 			r.write_no_lang(result);		
 		}
 	} catch(const XalanDOMException& e)	{
-		Exception::convert(pool, &method_name, e);
+		Exception::provide_source(pool, &method_name, e);
 	}
 }
 
@@ -201,7 +201,7 @@ static void _setAttribute(Request& r, const String& method_name, MethodParams *p
 			*pool.transcode(name), 
 			*pool.transcode(attribute_value));
 	} catch(const XalanDOMException& e)	{
-		Exception::convert(pool, &method_name, e);
+		Exception::provide_source(pool, &method_name, e);
 	}
 }
 
@@ -214,7 +214,7 @@ static void _removeAttribute(Request& r, const String& method_name, MethodParams
 	try {
 		element.removeAttribute(*pool.transcode(name));
 	} catch(const XalanDOMException& e)	{
-		Exception::convert(pool, &method_name, e);
+		Exception::provide_source(pool, &method_name, e);
 	}
 }
 
@@ -244,7 +244,7 @@ static void _setAttributeNode(Request& r, const String& method_name, MethodParam
 			r.write_no_lang(result);
 		}
 	} catch(const XalanDOMException& e)	{
-		Exception::convert(pool, &method_name, e);
+		Exception::provide_source(pool, &method_name, e);
 	}
 }	
 
@@ -257,7 +257,7 @@ static void _removeAttributeNode(Request& r, const String& method_name, MethodPa
 	try {
 		/*XalanAttr *returnAttr*/element.removeAttributeNode(&oldAttr);
 	} catch(const XalanDOMException& e)	{
-		Exception::convert(pool, &method_name, e);
+		Exception::provide_source(pool, &method_name, e);
 	}
 }	
 
@@ -329,7 +329,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 		result.set_name(method_name);
 		r.write_no_lang(result);
 	} catch(const XSLException& e) {
-		Exception::convert(pool, &expression, e);
+		Exception::provide_source(pool, &expression, e);
 	}
 }
 
@@ -360,7 +360,7 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 			r.write_no_lang(result);
 		}
 	} catch(const XSLException& e) {
-		Exception::convert(pool, &expression, e);
+		Exception::provide_source(pool, &expression, e);
 	}
 }
 

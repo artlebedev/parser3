@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.1 2001/10/22 12:30:24 parser Exp $
+	$Id: hashfile.C,v 1.2 2001/10/22 16:44:42 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -39,7 +39,7 @@ static void _assign(Request& r, const String& method_name, MethodParams *params)
 	
 	const String &sfile_spec=params->as_string(0, "filename must be string");
 
-	self.set_file_spec(r.absolute(sfile_spec));
+	self.assign(r.absolute(sfile_spec), method_name);
 }
 //static_cast<VHashfile *>(r.self)	const String& file_spec=->file_spec();
 

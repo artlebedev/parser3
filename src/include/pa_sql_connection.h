@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.13 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_sql_connection.h,v 1.14 2001/10/22 16:44:42 parser Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -15,7 +15,7 @@
 #include "pa_sql_driver.h"
 #include "pa_sql_driver_manager.h"
 
-/// SQL fconnection. handy wrapper around low level SQL_Driver
+/// SQL connection. handy wrapper around low level SQL_Driver
 class SQL_Connection : public Pooled {
 
 public:

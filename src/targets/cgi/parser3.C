@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.123 2001/10/22 08:27:44 parser Exp $
+	$Id: parser3.C,v 1.124 2001/10/22 16:44:43 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -63,8 +63,7 @@ bool cgi; ///< we were started as CGI?
 
 // SAPI
 
-// appends to parser3.log located beside my binary if openable, to stderr otherwize
-void SAPI::log(Pool& , const char *fmt, ...) {
+static void log(const char *fmt, va_list args) {
 	bool opened;
 	FILE *f=0;
 
@@ -85,15 +84,12 @@ void SAPI::log(Pool& , const char *fmt, ...) {
 	const char *stamp=ctime(&t);
 	fprintf(f, "[%.*s] ", strlen(stamp)-1, stamp);
 	// message
-    va_list args;
-	va_start(args,fmt);
 
 	char buf[MAX_STRING];
 	size_t size=vsnprintf(buf, MAX_STRING, fmt, args);
 	remove_crlf(buf, buf+size);
 
 	fwrite(buf, size, 1, f);
-	va_end(args);
 	// newline
 	fprintf(f, "\n");
 
@@ -101,6 +97,23 @@ void SAPI::log(Pool& , const char *fmt, ...) {
 		fclose(f);
 	else
 		fflush(f);
+}
+
+// appends to parser3.log located beside my binary if openable, to stderr otherwize
+void SAPI::log(Pool& , const char *fmt, ...) {
+    va_list args;
+	va_start(args,fmt);
+	::log(fmt, args);
+	va_end(args);
+}
+
+void SAPI::die(const char *fmt, ...) {
+    va_list args;
+	va_start(args,fmt);
+	::log(fmt, args);
+	va_end(args);
+
+	exit(1);
 }
 
 const char *SAPI::get_env(Pool& , const char *name) {
