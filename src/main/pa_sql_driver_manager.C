@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/12/10 14:17:45 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/12/10 14:28:46 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -260,8 +260,8 @@ static void add_connections_to_status_cache_table(
 	SQL_Driver_manager::connection_cache_type::key_type /*key*/, 
 	SQL_Driver_manager::connection_cache_type::value_type stack, Table* table) 
 {
-		for(Array_iterator<SQL_Connection*> i(*stack); i.has_next(); )
-			add_connection_to_status_cache_table(*i.next(), table);
+	for(Array_iterator<SQL_Connection*> i(*stack); i.has_next(); )
+		add_connection_to_status_cache_table(*i.next(), table);
 }
 
 Value* SQL_Driver_manager::get_status() {
