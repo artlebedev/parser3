@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.31 2001/03/26 09:53:42 paf Exp $
+	$Id: pa_array.h,v 1.32 2001/03/28 08:01:41 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -42,8 +42,11 @@ public:
 	/// for_each iterator function type
 	typedef void (*For_each_func)(Item *value, void *info);
 
+	/// first_that iterator function type, const info
+	typedef bool (*First_that_func_const)(Item *value, const void *info);
+
 	/// first_that iterator function type
-	typedef bool (*First_that_func)(Item *value, const void *info);
+	typedef bool (*First_that_func)(Item *value, void *info);
 
 	enum {
 		CR_INITIAL_ROWS_DEFAULT=10, ///< default preallocated row count
@@ -99,8 +102,11 @@ public:
 	/// iterate over all elements
 	void for_each(For_each_func func, void *info=0) const;
 
+	/// iterate over all elements until condition, const info
+	void* first_that(First_that_func_const func, const void *info=0) const;
+
 	/// iterate over all elements until condition
-	void* first_that(First_that_func func, const void *info=0) const;
+	void* first_that(First_that_func func, void *info=0) const;
 
 private:
 

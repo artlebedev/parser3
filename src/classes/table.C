@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.35 2001/03/27 17:12:22 paf Exp $
+	$Id: table.C,v 1.36 2001/03/28 08:01:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -314,6 +314,14 @@ static void _sort(Request& r, const String& method_name, Array *params) {
 	table.set_current(0);
 }
 
+static void _locate(Request& r, const String&, Array *params) {
+	VTable& vtable=*static_cast<VTable *>(r.self);
+	Table& table=vtable.table();
+	vtable.last_locate_was_successful=table.locate(
+		static_cast<Value *>(params->get(0))->as_string(),
+		static_cast<Value *>(params->get(1))->as_string());
+}
+
 // initialize
 
 void initialize_table_class(Pool& pool, VStateless_class& vclass) {
@@ -354,4 +362,6 @@ void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 	// ^table.sort(numeric-key-maker) ^table.sort(numeric-key-maker)[asc|desc]
 	vclass.add_native_method("sort", _sort, 1, 2);
 
+	// ^table.locate[field;value]
+	vclass.add_native_method("locate", _locate, 2, 2);
 }	

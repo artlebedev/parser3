@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.31 2001/03/24 10:54:45 paf Exp $
+	$Id: pa_hash.h,v 1.32 2001/03/28 08:01:41 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -64,8 +64,8 @@ public:
 
 	//@{
 	/// handy get, longing for Hash<int>, Hash<String *>
-	int get_int(const Key& key) { return reinterpret_cast<int>(get(key)); }
-	const String *get_string(const Key& key) { return static_cast<String *>(get(key)); }
+	int get_int(const Key& key) const { return reinterpret_cast<int>(get(key)); }
+	const String *get_string(const Key& key) const { return static_cast<String *>(get(key)); }
 	//@}
 
 	/// number of elements in hash

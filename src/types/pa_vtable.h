@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.10 2001/03/27 16:35:57 paf Exp $
+	$Id: pa_vtable.h,v 1.11 2001/03/28 08:01:43 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -37,6 +37,10 @@ public: // Value
 		return NEW VUnknown(pool());
 	}
 
+public:
+
+	bool last_locate_was_successful;
+
 protected: // VAliased
 
 	/// disable .CLASS element. @see VAliased::get_element
@@ -45,7 +49,8 @@ protected: // VAliased
 public: // usage
 
 	VTable(Pool& apool) : VStateless_object(apool, *table_class), 
-		ftable(0) {
+		ftable(0),
+		last_locate_was_successful(false) {
 	}
 	void set_table(Table& avalue) { ftable=&avalue; }
 	Table& table() { 

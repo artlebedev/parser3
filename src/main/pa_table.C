@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.20 2001/03/27 13:47:31 paf Exp $
+	$Id: pa_table.C,v 1.21 2001/03/28 08:01:42 paf Exp $
 */
 
 #include <stdlib.h>
@@ -31,28 +31,39 @@ Table::Table(Pool& apool,
 		}
 }
 
-const Array &Table::at(int index) {
-	return *const_cast<const Array *>(static_cast<Array *>(get(index)));
-}
-
-const String *Table::item(const String& column_name) {
-	int column_index;
+int Table::column_name2index(const String& column_name) const {
+	int result;
 	if(fcolumns) { // named
-		int found_index=name2number.get_int(column_name);
-		if(found_index)
-			column_index=found_index-1;
+		int column_index=name2number.get_int(column_name);
+		if(column_index)
+			result=column_index-1;
 		else
 			THROW(0, 0,
 				&column_name, 
 				"column not found");
 	} else { // nameless
-		column_index=atoi(column_name.cstr());
-		if(!valid(fcurrent))
-			return 0; // it's OK we don't have row, just return nothing
+		result=atoi(column_name.cstr());
+	}
+	return result;
+}
+
+const String *Table::item(int column_index) const {
+	if(valid(fcurrent)) {
 		const Array& row=at(fcurrent);
-		if(column_index<0 || column_index>=row.size()) // read past proper index?
-			return 0; // it's OK we don't have column, just return nothing
+		if(column_index>=0 && column_index<row.size()) // proper index?
+			return row.get_string(column_index);
+	}
+	return 0; // it's OK we don't have row|column, just return nothing
+}
+
+bool Table::locate(const String& column, const String& value) const {
+	int key_index=column_name2index(column);
+	for(int fcurrent=0; fcurrent<size(); fcurrent++) {
+		const String *item_value=item(key_index);
+		if(item_value && *item_value==value)
+			return true;
 	}
 
-	return item(column_index);
+	fcurrent=0;
+	return false;
 }

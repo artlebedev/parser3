@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.23 2001/03/26 10:36:53 paf Exp $
+	$Id: pa_table.h,v 1.24 2001/03/28 08:01:41 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -49,10 +49,14 @@ public:
 	int get_current() { return fcurrent; }
 
 	/// @return item from @a column_name
-	const String *item(const String& column_name);
+	const String *item(const String& column) const { 
+		return item(column_name2index(column)); 
+	}
 
 	/// saves to text file
 	void save(bool nameless_save, const String& file_spec);
+
+	bool locate(const String& column, const String& value) const;
 
 private:
 	
@@ -68,13 +72,18 @@ private:
 	// columns
 	Array *fcolumns;
 
-	bool valid(int index) { return index>=0 && index<size(); }
+	bool valid(int index) const { return index>=0 && index<size(); }
 
-	const Array& at(int index);
-
-	const String *item(int column_index) {
-		return valid(fcurrent)?at(fcurrent).get_string(column_index):0;
+	const Array& at(int index) const {
+		// force @c const result
+		return *const_cast<const Array *>(static_cast<Array *>(get(index)));
 	}
+
+	/// @return column index from @a column_name
+	int column_name2index(const String& column_name) const;
+
+	const String *item(int column_index) const;
+
 };
 
 #endif
