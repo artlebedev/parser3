@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/04/11 15:00:04 $";
+static const char* IDENT_TABLE_C="$Date: 2003/04/11 15:51:29 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -561,8 +561,7 @@ static bool _locate_expression(Table& table, Table::Action_options o,
 	Value& expression_code=params->as_junction(0, "must be expression");
 
 	Locate_expression_func_info info={&r, &expression_code};
-	table.locate(locate_expression_func, &info, o);
-	return false;
+	return table.locate(locate_expression_func, &info, o);
 }
 static bool _locate_name_value(Table& table, Table::Action_options o,
 			       Request& r, const String& method_name, MethodParams *params) {
