@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.44 2001/07/20 09:40:46 parser Exp $
+	$Id: file.C,v 1.45 2001/07/24 09:45:27 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.44 2001/07/20 09:40:46 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.45 2001/07/24 09:45:27 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -57,6 +57,17 @@ static void _delete(Request& r, const String&, MethodParams *params) {
 
 	// unlink
 	file_delete(pool, r.absolute(vfile_name.as_string()));
+}
+
+static void _move(Request& r, const String&, MethodParams *params) {
+	Pool& pool=r.pool();
+	Value& vfrom_file_name=params->as_no_junction(0, "from file name must not be code");
+	Value& vto_file_name=params->as_no_junction(1, "to file name must not be code");
+
+	// unlink
+	file_move(pool, 
+		r.absolute(vfrom_file_name.as_string()),
+		r.absolute(vto_file_name.as_string()));
 }
 
 static void _find(Request& r, const String& method_name, MethodParams *params) {
@@ -278,6 +289,9 @@ MFile::MFile(Pool& apool) : Methoded(apool) {
 
 	// ^delete[file-name]
 	add_native_method("delete", Method::CT_STATIC, _delete, 1, 1);
+
+	// ^move[from-file-name;to-file-name]
+	add_native_method("move", Method::CT_STATIC, _move, 2, 2);
 
 	// ^find[file-name]
 	// ^find[file-name]{when-not-found}

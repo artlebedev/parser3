@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_common.C,v 1.59 2001/07/24 08:37:18 parser Exp $"; 
+static const char *RCSId="$Id: pa_common.C,v 1.60 2001/07/24 09:45:27 parser Exp $"; 
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -165,6 +165,15 @@ void file_delete(Pool& pool, const String& file_spec) {
 				strerror(errno), errno, fname);
 
 	rmdir(file_spec, 1);
+}
+void file_move(Pool& pool, const String& old_spec, const String& new_spec) {
+	const char *old_spec_cstr=old_spec.cstr(String::UL_FILE_NAME);
+	const char *new_spec_cstr=new_spec.cstr(String::UL_FILE_NAME);
+	if(rename(old_spec_cstr, new_spec_cstr)!=0)
+		PTHROW(0, 0, 
+			&old_spec, 
+			"rename failed: %s (%d), actual filename '%s' to '%s'", 
+				strerror(errno), errno, old_spec_cstr, new_spec_cstr);
 }
 
 

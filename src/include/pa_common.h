@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.46 2001/07/11 15:02:09 parser Exp $
+	$Id: pa_common.h,v 1.47 2001/07/24 09:45:27 parser Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -102,6 +102,11 @@ void file_write(Pool& pool,
 	throws an exception in case of problems
 */
 void file_delete(Pool& pool, const String& file_spec);
+/**
+	move specified file 
+	throws an exception in case of problems
+*/
+void file_move(Pool& pool, const String& old_spec, const String& new_spec);
 
 bool file_readable(const String& file_spec);
 bool dir_readable(const String& file_spec);
