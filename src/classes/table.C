@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/04/11 10:39:24 $";
+static const char* IDENT_TABLE_C="$Date: 2003/04/11 11:47:05 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -375,7 +375,7 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 	default:
 		throw Exception(0,
 			0,
-			"invalid distinct code (#%d), ri.distinct");
+			"invalid distinct code (#%d)", ri.distinct);
 	}
 
 }
