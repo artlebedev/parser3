@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.43 2001/10/29 08:05:37 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.44 2001/10/29 10:06:36 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -97,11 +97,17 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 			&request_url,
 			"$"MAIN_SQL_NAME":"MAIN_SQL_DRIVERS_NAME" table must be defined");
 
+	// construct services[request]  (deassociates at close)
+	SQL_Driver_services *services=new(pool) SQL_Driver_services_impl(pool, request_url); 
+
 	// first trying to get cached connection
 	SQL_Connection *result=get_connection_from_cache(request_url);
-	if(result && !result->ping()) { // we have some cached connection, is it pingable?
-		result->disconnect(); // kill unpingabe=dead connection
-		result=0;
+	if(result) {
+		result->set_services(services);
+		if(!result->ping()) { // we have some cached connection, is it pingable?
+			result->disconnect(); // kill unpingabe=dead connection
+			result=0;
+		}
 	}
 
 	char *request_url_cstr;
@@ -202,10 +208,10 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 		// associate with services[request]
 		// NOTE: never freed up!
 		result=new(this->pool()) SQL_Connection(this->pool(), global_url, *driver);
+		// associate with services[request]  (deassociates at close)
+		result->set_services(services); 
 	}
 
-	// associate with services[request]  (deassociates at close)
-	result->set_services(new(pool) SQL_Driver_services_impl(pool, request_url)); 
 	// if not connected yet, do that now, when result has services
 	if(!result->connected())
 		result->connect(request_url_cstr);
