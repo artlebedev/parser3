@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.h,v 1.6 2002/01/11 12:24:27 paf Exp $
+	$Id: pa_charset.h,v 1.7 2002/01/11 13:00:52 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
@@ -140,7 +140,7 @@ class GdomeDOMString_auto_ptr {
 public:
 	explicit GdomeDOMString_auto_ptr(gchar *astring) : fstring(gdome_str_mkref(astring)) {}
 	explicit GdomeDOMString_auto_ptr(GdomeDOMString *astring) : fstring(astring) {
-		gdome_str_ref(fstring);
+		// not ref-ing, owning
 	}
 	~GdomeDOMString_auto_ptr() {
 		gdome_str_unref(fstring);

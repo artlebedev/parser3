@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.23 2002/01/11 12:39:05 paf Exp $
+	$Id: xnode.C,v 1.24 2002/01/11 13:00:52 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -439,34 +439,44 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 	xmlXPathObject_auto_ptr res(
 		xmlXPathEvalExpression(BAD_CAST pool.transcode(expression)->str, ctxt.get()));
 
+	Value *result=0;
    	if(res.get())
 		switch(res->type) {
-		case XPATH_UNDEFINED: break;
+		case XPATH_UNDEFINED: 
+			break;
 		case XPATH_NODESET: 
-			{
-				if(!res->nodesetval->nodeNr)
-					break; // empty result strangly has NODESET  res->type
+			if(res->nodesetval->nodeNr) { // empty result strangly has NODESET  res->type
 				if(res->nodesetval->nodeNr>1)
 					throw Exception(0, 0,
 					&expression,
 					"resulted not in a single node (%d)", res->nodesetval->nodeNr);
 				
-				VXnode& result=*new(pool) VXnode(
-					pool, 
-					gdome_xml_n_mkref(res->nodesetval->nodeTab[0]));
-				result.set_name(method_name);
-				r.write_no_lang(result);
-				return;
+				result=new(pool) VXnode(pool, gdome_xml_n_mkref(res->nodesetval->nodeTab[0]));
 			}
-		//case XPATH_BOOLEAN: nothing; break;
-		//case XPATH_NUMBER: nothing; break;
-		//case XPATH_STRING: nothing; break;
+			break;
+		case XPATH_BOOLEAN: 
+			result=new(pool) VBool(pool, res->boolval!=0);
+			break;
+		case XPATH_NUMBER: 
+			result=new(pool) VDouble(pool, res->floatval);
+			break;
+		case XPATH_STRING:
+			result=new(pool) VString(
+				pool.transcode(
+					GdomeDOMString_auto_ptr(
+						gdome_str_mkref_dup((const gchar *)res->stringval)).get()));
+			break;
 		default: 
 			throw Exception(0, 0,
 				&expression,
 				"unrecognized xmlXPathEvalExpression result type (%d)", res->type);
 			break; // never
 		}
+
+	if(result) {
+		result->set_name(method_name);
+		r.write_no_lang(*result);
+	}
 }
 
 // constructor

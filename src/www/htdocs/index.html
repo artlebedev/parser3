@@ -92,9 +92,15 @@ $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251" ?>
 <document><block><p>привет</p></block></document>
 }]
 #^show-xdoc2[$xdoc]
-$node[^xdoc.selectSingle[/document/block/p]]
-^if(def $node){$node.nodeType}{node not found}
+$node[^xdoc.selectSingle['1<2']]
+^if(def $node){
+	^if($node is string){$node}
+		$node.nodeType
+	}
 #$node.firstChild.nodeValue
+}{
+	node not found
+}
 
 
 @ttablesetlang[]
