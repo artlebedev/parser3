@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.19 2001/03/26 09:09:45 paf Exp $
+	$Id: mod_parser3.C,v 1.20 2001/03/28 14:41:29 paf Exp $
 */
 
 #include "httpd.h"
@@ -177,20 +177,16 @@ static int parser_handler(request_rec *r)
 
 		// Request info
 		Request::Info request_info;
-		request_info.document_root=(const char *)
-			ap_table_get(r->subprocess_env, "DOCUMENT_ROOT");
+		request_info.document_root=SAPI::get_env(pool, "DOCUMENT_ROOT");
 		request_info.path_translated=r->filename;
 		request_info.method=r->method;
 		request_info.query_string=r->args;
-		request_info.uri=(const char *)
-			ap_table_get(r->subprocess_env, "REQUEST_URI");
-		request_info.content_type=(const char *)
-			ap_table_get(r->subprocess_env, "CONTENT_TYPE");
-		const char *content_length=(const char *)
-			ap_table_get(r->subprocess_env, "CONTENT_LENGTH");
+		request_info.uri=SAPI::get_env(pool, "REQUEST_URI");
+		request_info.content_type=SAPI::get_env(pool, "CONTENT_TYPE");
+		const char *content_length=SAPI::get_env(pool, "CONTENT_LENGTH");
 		request_info.content_length=(content_length?atoi(content_length):0);
-		request_info.cookie=(const char *)
-			ap_table_get(r->subprocess_env, "HTTP_COOKIE");
+		request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
+		request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
 
 		// prepare to process request
 		Request request(pool,

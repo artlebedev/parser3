@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.29 2001/03/28 14:07:15 paf Exp $
+	$Id: pa_globals.h,v 1.30 2001/03/28 14:41:28 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -54,7 +54,6 @@ class Table;
 #define DEFAULTS_NAME "DEFAULTS"
 #define MIME_TYPES_NAME "MIME_TYPES"
 #define VFILE_MIME_TYPE_NAME "mime-type"
-
 
 #define RESULT_VAR_NAME "result"
 //@}

@@ -250,6 +250,8 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		request_info.content_type=lpECB->lpszContentType;
 		request_info.content_length=lpECB->cbTotalBytes;
 		request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
+		request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
+
 		
 		// prepare to process request
 		Request request(pool,

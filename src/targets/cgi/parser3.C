@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.50 2001/03/28 13:21:31 paf Exp $
+	$Id: parser3.C,v 1.51 2001/03/28 14:41:31 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -180,9 +180,9 @@ int main(int argc, char *argv[]) {
 		// Request info
 		Request::Info request_info;
 		if(cgi) {
-			if(const char *env_document_root=getenv("DOCUMENT_ROOT"))
+			if(const char *env_document_root=SAPI::get_env(pool, "DOCUMENT_ROOT"))
 				request_info.document_root=env_document_root;
-			else if(const char *path_info=getenv("PATH_INFO")) {
+			else if(const char *path_info=SAPI::get_env(pool, "PATH_INFO")) {
 				// IIS
 				size_t len=strlen(filespec_to_process)-strlen(path_info);
 				char *buf=(char *)pool.malloc(len+1);
@@ -201,12 +201,12 @@ int main(int argc, char *argv[]) {
 		}
 		request_info.path_translated=filespec_to_process;
 		request_info.method=request_method;
-		const char *query_string=getenv("QUERY_STRING");
+		const char *query_string=SAPI::get_env(pool, "QUERY_STRING");
 		request_info.query_string=query_string;
 		if(cgi) 
-			if(const char *env_request_uri=getenv("REQUEST_URI"))
+			if(const char *env_request_uri=SAPI::get_env(pool, "REQUEST_URI"))
 				request_info.uri=env_request_uri;
-			else if(const char *path_info=getenv("PATH_INFO"))
+			else if(const char *path_info=SAPI::get_env(pool, "PATH_INFO"))
 				if(query_string) {
 					char *reconstructed_uri=(char *)malloc(
 						strlen(path_info)+1/*'?'*/+
@@ -224,10 +224,11 @@ int main(int argc, char *argv[]) {
 		else
 			request_info.uri=0;
 
-		request_info.content_type=getenv("CONTENT_TYPE");
-		const char *content_length=getenv("CONTENT_LENGTH");
+		request_info.content_type=SAPI::get_env(pool, "CONTENT_TYPE");
+		const char *content_length=SAPI::get_env(pool, "CONTENT_LENGTH");
 		request_info.content_length=(content_length?atoi(content_length):0);
-		request_info.cookie=getenv("HTTP_COOKIE");
+		request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
+		request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
 
 		// prepare to process request
 		Request request(pool,
@@ -242,7 +243,7 @@ int main(int argc, char *argv[]) {
 		GetWindowsDirectory(root_auto_path, MAX_STRING);
 #else
 		// ~nobody  todo: figure out a better place
-		char *root_auto_path=getenv("HOME");
+		char *root_auto_path=SAPI::get_env(pool, "HOME");
 #endif
 		
 		// beside by binary

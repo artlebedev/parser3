@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.36 2001/03/27 18:06:11 paf Exp $
+	$Id: pa_value.h,v 1.37 2001/03/28 14:41:32 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -80,6 +80,7 @@ public: // Value
 		- VDouble: value
 		- VInt: finteger
 		- VBool: value
+		- VUnknown: 0
 	*/
 	virtual double as_double() { bark("(%s) does not have numerical value"); return 0; }
 	/** extract bool

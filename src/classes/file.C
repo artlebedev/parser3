@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.11 2001/03/28 14:07:14 paf Exp $
+	$Id: file.C,v 1.12 2001/03/28 14:41:27 paf Exp $
 */
 
 #include "pa_request.h"
@@ -110,8 +110,7 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	lfile_name.append(vfile_name.as_string(),
 		String::UL_FILE_NAME, true);
 
-	void *data;
-	size_t size;
+	void *data;  size_t size;
 	file_read(pool, r.absolute(lfile_name), data, size, false/*binary*/);
 
 	char *user_file_name=params->size()==1?lfile_name.cstr()
@@ -128,11 +127,12 @@ static void _load(Request& r, const String& method_name, Array *params) {
 				if(r.mime_types->locate(0, sext))
 					if(!(mime_type=r.mime_types->item(1)))
 						PTHROW(0, 0,
-							r.mime_types->origin_string(),
-							"MIME-TYPE table column elements must not be empty");
+						r.mime_types->origin_string(),
+						"MIME-TYPE table column elements must not be empty");
 			}
 		}
 	}
+
 	if(!mime_type)
 		mime_type=new(pool) String(pool, "application/octet-stream");
 
