@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.15 2002/01/15 13:18:43 paf Exp $
+	$Id: pa_charset.C,v 1.16 2002/01/21 16:44:48 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -337,17 +337,17 @@ static int transcodeToUTF8(
         //  here, so bump up the output pointer and work down as we go.
         outPtr+= encodedBytes;
         switch(encodedBytes) {
-            case 6: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+            case 6: *--outPtr = (XMLByte)((curVal | 0x80UL) & 0xBFUL);
                      curVal>>= 6;
-            case 5: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+            case 5: *--outPtr = (XMLByte)((curVal | 0x80UL) & 0xBFUL);
                      curVal>>= 6;
-            case 4: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+            case 4: *--outPtr = (XMLByte)((curVal | 0x80UL) & 0xBFUL);
                      curVal>>= 6;
-            case 3: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+            case 3: *--outPtr = (XMLByte)((curVal | 0x80UL) & 0xBFUL);
                      curVal>>= 6;
-            case 2: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+            case 2: *--outPtr = (XMLByte)((curVal | 0x80UL) & 0xBFUL);
                      curVal>>= 6;
-            case 1: *--outPtr = XMLByte(curVal | gFirstByteMark[encodedBytes]);
+            case 1: *--outPtr = (XMLByte)(curVal | gFirstByteMark[encodedBytes]);
         }
 
         // Add the encoded bytes back in again to indicate we've eaten them
@@ -360,7 +360,7 @@ static int transcodeToUTF8(
     // Return the characters read
     toFillLen = outPtr - toFill;
 
-	return srcPtr==srcEnd?toFillLen:-1;
+	return srcPtr==srcEnd?(int)toFillLen:-1;
 }
 static size_t transcodeFromUTF8(
 								const XMLByte *srcData, size_t& srcLen,
@@ -427,7 +427,7 @@ static size_t transcodeFromUTF8(
     // Return the characters read
     toFillLen = outPtr - toFill;
 
-	return srcPtr==srcEnd?toFillLen:-1;
+	return srcPtr==srcEnd?(int)toFillLen:-1;
 }
 
 /// @todo not so memory-hungry with prescan
@@ -590,7 +590,7 @@ GdomeDOMString_auto_ptr Charset::transcode_buf(const char *buf, size_t buf_size)
 			"transcode_buf failed (%d)", size);
 
 	out[size]=0;
-	return (gchar*)out;
+	return GdomeDOMString_auto_ptr((gchar*)out);
 }
 GdomeDOMString_auto_ptr Charset::transcode(const String& s) { 
 	const char *cstr=s.cstr(String::UL_UNSPECIFIED);

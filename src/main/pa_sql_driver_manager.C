@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.C,v 1.58 2002/01/16 10:28:35 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.59 2002/01/21 16:44:49 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -229,7 +229,7 @@ SQL_Connection_ptr SQL_Driver_manager::get_connection(const String& request_url,
 	if(!connection->connected())
 		connection->connect(request_url_cstr);
 	// return autoclosing object for it
-	return connection;
+	return SQL_Connection_ptr(connection);
 }
 
 void SQL_Driver_manager::close_connection(const String& url, 

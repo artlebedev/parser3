@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.66 2002/01/21 13:04:02 paf Exp $
+	$Id: xdoc.C,v 1.67 2002/01/21 16:44:48 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -51,8 +51,8 @@ public: // Methoded
 
 class xmlOutputBuffer_auto_ptr {
 public:
-	explicit xmlOutputBuffer_auto_ptr(xmlOutputBuffer *_P = 0) 
-		: _Owns(_P != 0), _Ptr(_P) {}
+	explicit xmlOutputBuffer_auto_ptr(xmlOutputBuffer *_APtr = 0) 
+		: _Owns(_APtr != 0), _Ptr(_APtr) {}
 	xmlOutputBuffer_auto_ptr(const xmlOutputBuffer_auto_ptr& _Y) 
 		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
 	xmlOutputBuffer_auto_ptr& operator=(const xmlOutputBuffer_auto_ptr& _Y) 
@@ -84,8 +84,8 @@ private:
 
 class xsltTransformContext_auto_ptr {
 public:
-	explicit xsltTransformContext_auto_ptr(xsltTransformContext *_P = 0) 
-		: _Owns(_P != 0), _Ptr(_P) {}
+	explicit xsltTransformContext_auto_ptr(xsltTransformContext *_APtr = 0) 
+		: _Owns(_APtr != 0), _Ptr(_APtr) {}
 	xsltTransformContext_auto_ptr(const xsltTransformContext_auto_ptr& _Y) 
 		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
 	xsltTransformContext_auto_ptr& operator=(const xsltTransformContext_auto_ptr& _Y) 
@@ -117,8 +117,8 @@ private:
 
 class xsltStylesheet_auto_ptr {
 public:
-	explicit xsltStylesheet_auto_ptr(xsltStylesheet *_P = 0) 
-		: _Owns(_P != 0), _Ptr(_P) {}
+	explicit xsltStylesheet_auto_ptr(xsltStylesheet *_APtr = 0) 
+		: _Owns(_APtr != 0), _Ptr(_APtr) {}
 	xsltStylesheet_auto_ptr(const xsltStylesheet_auto_ptr& _Y) 
 		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
 	xsltStylesheet_auto_ptr& operator=(const xsltStylesheet_auto_ptr& _Y) 

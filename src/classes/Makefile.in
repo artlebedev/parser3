@@ -85,7 +85,7 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 host_os = @host_os@
 
-SUBDIRS = gd xalan-patched
+SUBDIRS = gd
 
 INCLUDES = -I../types -I../sql -I../pcre -Igd -Ixalan-patched @XML_INCLUDES@ @DB2_INCLUDES@
 

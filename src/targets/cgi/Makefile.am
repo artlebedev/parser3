@@ -1,7 +1,7 @@
 INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql -I../../pcre @XML_INCLUDES@
 
 #for sysadmin-controlled auto.p
-CPPFLAGS:=$(CPPFLAGS) -DSYSCONFDIR=\"$(sysconfdir)\"
+AM_CPPFLAGS:=$(AM_CPPFLAGS) -DSYSCONFDIR=\"$(sysconfdir)\"
 
 bin_PROGRAMS = parser3
 parser3_SOURCES = pa_pool.C pa_threads.C parser3.C ident.C

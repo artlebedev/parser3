@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.102 2002/01/21 13:04:03 paf Exp $
+	$Id: pa_globals.C,v 1.103 2002/01/21 16:44:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,7 +15,9 @@
 //#include "libxslt/libxslt.h"
 #include "libxslt/extensions.h"
 #include "libxslt/xsltutils.h"
+extern "C" {
 #include "libexslt/exslt.h"
+};
 #endif
 
 #include "pa_globals.h"

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.28 2002/01/21 13:04:02 paf Exp $
+	$Id: xnode.C,v 1.29 2002/01/21 16:44:48 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -27,8 +27,8 @@ extern "C" {
 
 class xmlXPathObject_auto_ptr {
 public:
-	explicit xmlXPathObject_auto_ptr(xmlXPathObject *_P = 0) 
-		: _Owns(_P != 0), _Ptr(_P) {}
+	explicit xmlXPathObject_auto_ptr(xmlXPathObject *_APtr = 0) 
+		: _Owns(_APtr != 0), _Ptr(_APtr) {}
 	xmlXPathObject_auto_ptr(const xmlXPathObject_auto_ptr& _Y) 
 		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
 	xmlXPathObject_auto_ptr& operator=(const xmlXPathObject_auto_ptr& _Y) 
@@ -60,8 +60,8 @@ private:
 
 class xmlXPathContext_auto_ptr {
 public:
-	explicit xmlXPathContext_auto_ptr(xmlXPathContext *_P = 0) 
-		: _Owns(_P != 0), _Ptr(_P) {}
+	explicit xmlXPathContext_auto_ptr(xmlXPathContext *_APtr = 0) 
+		: _Owns(_APtr != 0), _Ptr(_APtr) {}
 	xmlXPathContext_auto_ptr(const xmlXPathContext_auto_ptr& _Y) 
 		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
 	xmlXPathContext_auto_ptr& operator=(const xmlXPathContext_auto_ptr& _Y) 

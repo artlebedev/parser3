@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.C,v 1.10 2002/01/16 10:28:35 paf Exp $
+	$Id: pa_stylesheet_manager.C,v 1.11 2002/01/21 16:44:49 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -73,7 +73,7 @@ Stylesheet_connection_ptr Stylesheet_manager::get_connection(const String& reque
 	// associate with services[request]  (deassociates at close)
 	connection->set_services(&pool); 
 	// return autoclosing object for it
-	return connection;
+	return Stylesheet_connection_ptr(connection);
 }
 
 void Stylesheet_manager::close_connection(const String& file_spec, 
