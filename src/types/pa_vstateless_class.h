@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.7 2001/03/19 22:38:11 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.8 2001/03/24 09:44:20 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -21,16 +21,6 @@ class Temp_method;
 	object' class. 
 	
 	basically collection of methods.
-
-	some classes are freeze()-ed after their creation so that
-	malicious users would not alter their method set using some tricks
-	like
-	@verbatim
-		$response.process[@new-resonse-method[]
-		defined here
-		]
-	@endverbatim
-	affecting unaware neibours.
 
 	@see VStateless_object, Temp_method
 */
@@ -60,17 +50,12 @@ public: // usage
 
 	VStateless_class(Pool& apool, VStateless_class *abase=0) : VAliased(apool, *this), 
 		fbase(abase),
-		read_only(false),
 		fmethods(apool) {
 	}
 
 	Method *get_method(const String& name) { 
 		return static_cast<Method *>(fmethods.get(name)); 
 	}
-
-	// make class read-only
-	//	this blocks put_method  // which could be done with ^process
-	void freeze() { read_only=true; }
 
 	void add_method(const String& name, Method& method) {
 		put_method(name, &method);
@@ -106,7 +91,9 @@ public: // usage
 
 private: // Temp_method
 
-	void put_method(const String& aname, Method *amethod);
+	void put_method(const String& aname, Method *amethod) {
+		fmethods.put(aname, amethod); 
+	}
 	
 private:
 
@@ -115,7 +102,6 @@ private:
 protected:
 
 	VStateless_class *fbase;
-	bool read_only;
 
 };
 

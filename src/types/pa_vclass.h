@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.10 2001/03/19 19:17:47 paf Exp $
+	$Id: pa_vclass.h,v 1.11 2001/03/24 09:44:20 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -29,7 +29,9 @@ public: // Value
 	}
 
 	// object_class, operator_class: (field)=value - static values only
-	void put_element(const String& name, Value *value);
+	void put_element(const String& name, Value *value) {
+		set_field(name, value);
+	}
 
 public: // usage
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.C,v 1.5 2001/03/19 22:38:11 paf Exp $
+	$Id: pa_vstateless_class.C,v 1.6 2001/03/24 09:44:20 paf Exp $
 */
 
 #include "pa_vstateless_class.h"
@@ -23,14 +23,4 @@ void VStateless_class::add_native_method(
 		0/*parser_code*/, native_code
 		);
 	add_method(name, method);
-}
-
-void VStateless_class::put_method(const String& aname, Method *amethod) {
-	if(read_only)
-		THROW(0, 0,
-			&aname,
-			"can not add method to read-only '%s' class",
-				name().cstr());
-	
-	fmethods.put(aname, amethod); 
 }
