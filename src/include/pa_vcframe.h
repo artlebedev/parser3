@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vcframe.h,v 1.1 2001/02/24 11:20:32 paf Exp $
+  $Id: pa_vcframe.h,v 1.2 2001/02/25 14:23:31 paf Exp $
 */
 
 #ifndef PA_VCFRAME_H
@@ -24,8 +24,12 @@ public: // WContext
 
 public: // usage
 
-	VCodeFrame(Pool& apool, WContext& awcontext) : WWrapper(apool, &awcontext),
-		string_wcontext(apool, 0 /* value not used, only write(string) */ ) {
+	VCodeFrame(Pool& apool, WContext& awcontext) : 
+		WWrapper(apool, &awcontext, awcontext.constructing()),
+
+		string_wcontext(apool, 
+			0 /* value not used, only write(string) */,
+			false /* value not used, only write(string) */) {
 	}
 
 public:

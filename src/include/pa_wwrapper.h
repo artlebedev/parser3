@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wwrapper.h,v 1.6 2001/02/25 09:42:03 paf Exp $
+  $Id: pa_wwrapper.h,v 1.7 2001/02/25 14:23:31 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -27,7 +27,8 @@ public: // Value
 
 public: // usage
 
-	WWrapper(Pool& apool, Value *avalue) : WContext(apool, avalue) {
+	WWrapper(Pool& apool, Value *avalue, bool aconstructed) : 
+		WContext(apool, avalue, aconstructed) {
 	}
 	
 private:

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vobject.h,v 1.5 2001/02/25 13:23:01 paf Exp $
+  $Id: pa_vobject.h,v 1.6 2001/02/25 14:23:31 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -19,6 +19,9 @@ public: // Value
 		// $CLASS=my class
 		if(name==CLASS_NAME)
 			return &vclass;
+		// $BASE=my parent
+		if(name==BASE_NAME)
+			return vclass.base();
 
 		// $method=junction(this+method)
 		if(Method *method=static_cast<Method *>(vclass.methods().get(name))) {

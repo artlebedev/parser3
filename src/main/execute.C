@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.42 2001/02/25 13:23:02 paf Exp $
+  $Id: execute.C,v 1.43 2001/02/25 14:23:32 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -171,7 +171,7 @@ void Request::execute(const Array& ops) {
 		case OP_CREATE_EWPOOL:
 			{
 				PUSH(wcontext);
-				wcontext=NEW WWrapper(pool(), 0 /* empty */);
+				wcontext=NEW WWrapper(pool(), 0 /* empty */, true /* constructing */);
 				break;
 			}
 		case OP_REDUCE_EWPOOL:
@@ -188,7 +188,7 @@ void Request::execute(const Array& ops) {
 				PUSH(rcontext);
 				rcontext=ncontext;
 				PUSH(wcontext);
-				wcontext=NEW WWrapper(pool(), ncontext);
+				wcontext=NEW WWrapper(pool(), ncontext, false /* not constructing */);
 				break;
 			}
 		case OP_REDUCE_RWPOOL:
@@ -233,14 +233,14 @@ void Request::execute(const Array& ops) {
 				PUSH(self);  PUSH(root);  PUSH(rcontext);  PUSH(wcontext); 
 
 				VClass *called_class=frame->junction.self.get_class();
-				// variable already constructed?
-				if(wcontext->get_class()) {  // yes
-					// static or dynamic call
-					self=&frame->junction.self;
-				} else {  // no
+				// constructing?
+				if(wcontext->constructing()) {  // yes
 					// constructor call: $some(^class:method(..))
 					self=NEW VObject(pool(), *called_class);
 					frame->write(self);
+				} else {  // no
+					// static or dynamic call
+					self=&frame->junction.self;
 				}
 				frame->set_self(self);
 

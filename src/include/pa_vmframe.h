@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.4 2001/02/25 13:23:01 paf Exp $
+  $Id: pa_vmframe.h,v 1.5 2001/02/25 14:23:31 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -29,7 +29,9 @@ public: // Value
 
 public: // usage
 
-	VMethodFrame(Pool& apool, const Junction& ajunction) : WContext(apool, 0 /* empty */),
+	VMethodFrame(Pool& apool, const Junction& ajunction) : 
+		WContext(apool, 0 /* empty */, false /* not constructing */),
+
 		junction(ajunction),
 		store_param_index(0),
 		my(apool),

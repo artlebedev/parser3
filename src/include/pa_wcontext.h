@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.16 2001/02/25 13:23:01 paf Exp $
+  $Id: pa_wcontext.h,v 1.17 2001/02/25 14:23:31 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -28,10 +28,13 @@ public: // WContext
 
 public: // usage
 
-	WContext(Pool& apool, Value *avalue) : Value(apool), 
+	WContext(Pool& apool, Value *avalue, bool aconstructing) : Value(apool), 
 		fvalue(avalue),
+		fconstructing(aconstructing),
 		string(*new(apool) String(apool)) {
 	}
+
+	bool constructing() { return fconstructing; }
 
 	// retrives the resulting value
 	Value *object() const {
@@ -46,6 +49,7 @@ public: // usage
 protected:
 	Value *fvalue;
 private:
+	bool fconstructing;
 	String& string;
 };
 
