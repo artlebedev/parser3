@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vframe.h,v 1.4 2001/02/24 08:28:35 paf Exp $
+  $Id: pa_vframe.h,v 1.5 2001/02/24 09:56:02 paf Exp $
 */
 
 #ifndef PA_VFRAME_H
@@ -62,7 +62,7 @@ public: // usage
 	}
 	void fill_empty_params() {
 		Method *method=junction.method;
-		for(; store_param_index<method->locals_names.size(); store_param_index++)
+		for(; store_param_index<method->params_names.size(); store_param_index++)
 			my.put(
 				*static_cast<String *>(method->params_names.get(store_param_index)), 
 				NEW VUnknown(pool()));

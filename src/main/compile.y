@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.32 2001/02/24 09:31:34 paf Exp $
+  $Id: compile.y,v 1.33 2001/02/24 09:56:02 paf Exp $
 */
 
 %{
@@ -211,12 +211,12 @@ store_curly_param: '{' maybe_codes '}' {
 	OP($$, OP_STORE_PARAM);
 };
 store_param_part: 
-	empty /* optimized $var() case */
-|	STRING { /* optimized $var(STRING) case */
+	empty /* optimized () case */
+|	STRING { /* optimized (STRING) case */
 	$$=$1;
 	OP($$, OP_STORE_PARAM);
 }
-|	complex_constructor_param_value { /* $var(something complex) */
+|	complex_constructor_param_value { /* (something complex) */
 	$$=$1;
 	OP($$, OP_STORE_PARAM);
 }
