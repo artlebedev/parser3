@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_table.h,v 1.1 2001/10/25 13:18:19 paf Exp $
+	$Id: pa_db_table.h,v 1.2 2001/10/26 06:40:25 paf Exp $
 */
 
 #ifndef PA_DB_TABLE_H
@@ -25,14 +25,14 @@
 
 // forwards
 
-class Auto_transaction;
+class DB_Transaction;
 class DB_Cursor;
 
 // class
 
 /// DB table. handy wrapper around low level <db.h> calls
 class DB_Table : public Pooled {
-	friend Auto_transaction;
+	friend DB_Transaction;
 	friend DB_Cursor;
 public:
 
@@ -67,33 +67,35 @@ private:
 	Pool *fservices_pool;
 	DB *db;
 	int errors;
-	DB_TXN *ftid;
+	DB_TXN *ftid; bool ftid_has_parent;
 	time_t time_used;
 
 private: // transaction
 
 	/// commits current transaction, restores previous transaction handle
-	void commit_restore(DB_TXN *atid) { 
-		if(ftid)
+	void commit_restore(DB_TXN *atid, bool atid_has_parent) { 
+		if(ftid && !atid_has_parent) // it's parent responsibility to do that
 			check("txn_commit", &ffile_spec, txn_commit(ftid)); 
 
 		ftid=atid;
+		ftid_has_parent=atid_has_parent;
 	}
 	
 	/// rolls current transaction back, restores previous transaction handle
-	void rollback_restore(DB_TXN *atid) {
-		if(ftid)
+	void rollback_restore(DB_TXN *atid, bool atid_has_parent) {
+		if(ftid && !atid_has_parent) // it's parent responsibility to do that
 			check("txn_abort", &ffile_spec, txn_abort(ftid));
 
 		ftid=atid;
+		ftid_has_parent=atid_has_parent;
 	}
 	
 	/// stars new current trunsaction @returns previous transaction handle
-	DB_TXN *transaction_begin_save() {
-		DB_TXN *parent=ftid;
-		check("txn_begin", &ffile_spec, ::txn_begin(dbenv.tx_info, parent, &ftid));
-
-		return parent;
+	void transaction_begin_save(DB_TXN *& rtid, bool& rtid_has_parent) {
+		rtid=ftid;
+		rtid_has_parent=ftid_has_parent;
+		check("txn_begin", &ffile_spec, ::txn_begin(dbenv.tx_info, rtid, &ftid));
+		ftid_has_parent=rtid!=0;
 	}
 	
 private:
@@ -114,20 +116,19 @@ private:
 };
 
 ///	Auto-object used for temporary changing DB_Table::tid.
-class Auto_transaction {
+class DB_Transaction {
 	DB_Table& ftable;
 	bool marked_to_rollback;
-	DB_TXN *saved_tid;
+	DB_TXN *saved_tid; bool saved_tid_has_parent;
 public:
-	Auto_transaction(DB_Table& atable) : 
-		ftable(atable), marked_to_rollback(false),
-		saved_tid(atable.transaction_begin_save()) {
+	DB_Transaction(DB_Table& atable) : ftable(atable), marked_to_rollback(false) {
+		atable.transaction_begin_save(saved_tid, saved_tid_has_parent);
 	}
-	~Auto_transaction() { 
+	~DB_Transaction() { 
 		if(marked_to_rollback)
-			ftable.rollback_restore(saved_tid);
+			ftable.rollback_restore(saved_tid, saved_tid_has_parent);
 		else
-			ftable.commit_restore(saved_tid);
+			ftable.commit_restore(saved_tid, saved_tid_has_parent);
 	}
 	void mark_to_rollback() {
 		marked_to_rollback=true;
