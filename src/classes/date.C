@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2002/09/23 09:34:00 $";
+static const char* IDENT_DATE_C="$Date: 2002/09/23 09:50:18 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -33,7 +33,7 @@ static void _now(Request& r, const String& method_name, MethodParams *params) {
 
 	time_t t=time(0);
 	if(params->size()==1) // ^now(offset)
-		t+=(time_t)(params->as_double(0, "offset must be double", r)*SECS_PER_DAY);
+		t+=(time_t)round(params->as_double(0, "offset must be double", r)*SECS_PER_DAY);
 	
 	vdate->set_time(t);
 }
