@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.16 2001/03/08 13:13:39 paf Exp $
+  $Id: pa_vmframe.h,v 1.17 2001/03/08 15:32:51 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -53,9 +53,10 @@ public: // usage
 			// remember them
 			// those are flags that name is local == to be looked up in 'my'
 			for(int i=0; i<method.locals_names->size(); i++) {
-				my->put(
-					*static_cast<String *>(method.locals_names->get(i)), 
-					NEW VUnknown(pool()));
+				Value *value=NEW VUnknown(pool());
+				String& name=*static_cast<String *>(method.locals_names->get(i));
+				value->set_name(name);
+				my->put(name, value);
 			}
 		}
 	}
@@ -88,14 +89,19 @@ public: // usage
 	void fill_unspecified_params() {
 		Method &method=*junction.method;
 		if(method.numbered_params_count) { // are this method params numbered?
-			for(; store_param_index<method.numbered_params_count; store_param_index++)
-				*fnumbered_params+=NEW VUnknown(pool());
+			for(; store_param_index<method.numbered_params_count; store_param_index++) {
+				Value *value=NEW VUnknown(pool());
+				//value->set_name(/*"Param#" . store_param_index*/);
+				*fnumbered_params+=value;
+			}
 		} else { // named params
 			if(method.params_names) // there are any parameters might need filling?
-				for(; store_param_index<method.params_names->size(); store_param_index++)
-					my->put(
-						*static_cast<String *>(method.params_names->get(store_param_index)), 
-						NEW VUnknown(pool()));
+				for(; store_param_index<method.params_names->size(); store_param_index++) {
+					Value *value=NEW VUnknown(pool());
+					String& name=*static_cast<String *>(method.params_names->get(store_param_index));
+					value->set_name(name);
+					my->put(name, value);
+				}
 		}
 	}
 

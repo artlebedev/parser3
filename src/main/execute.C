@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.75 2001/03/08 15:20:46 paf Exp $
+  $Id: execute.C,v 1.76 2001/03/08 15:32:52 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -542,10 +542,13 @@ Value *Request::get_element() {
 	Value *ncontext=POP();
 	Value *value=ncontext->get_element(name);
 
-	// autocalc possible code-junction
-	value=value?&autocalc(*value):NEW VUnknown(pool());
+	if(value)
+		value=&autocalc(*value); // autocalc possible code-junction
+	else {
+		value=NEW VUnknown(pool());
+		value->set_name(name);
+	}
 
-	value->set_name(name);
 	return value;
 }
 
