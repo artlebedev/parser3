@@ -1,3 +1,7 @@
+setenv HTTP_TEST /foo/bin3!
+#setenv HTTP_PARSER_SITE_CONFIG /foo/bin3!
+
+
 addhandler parser3-handler html
 addhandler parser3-cgi-handler cgihtml
 action parser3-cgi-handler /cgi-bin/parser3

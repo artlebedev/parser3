@@ -12,3 +12,5 @@
 [Thu Apr 25 18:34:41 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(147): '2002' year&month parts of date abscent, must be in YYYY-NN-DD HH-MM-SS format [-]
 [Thu Apr 25 18:34:41 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(147): '2002' year&month parts of date abscent, must be in YYYY-NN-DD HH-MM-SS format [-]
 [Thu Apr 25 18:34:50 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1328:1): parse error, expecting `']'' or `';'' [parser.compile]
+[Thu Apr 25 19:07:56 2002] (null): Y:/parser3project/parser3/www/htdocs/index.html(149): 'select CAST('2000-05-28 00:00:00.000' AS smalldatetime)' CDBException: The conversion of char data type to smalldatetime data type resulted in an out-of-range smalldatetime value.| [sql.execute]
+[Thu Apr 25 19:31:00 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1): 't.p' usage failed - no $MAIN:CLASS_PATH were specified [parser.runtime]
