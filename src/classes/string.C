@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/03/01 08:54:16 $";
+static const char * const IDENT_STRING_C="$Date: 2004/03/01 09:36:37 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -505,24 +505,22 @@ static void _trim(Request& r, MethodParams& params) {
 	if(params.count()>0) {
 		const String& skind=params.as_string(0, 
 			"'where' must be string");
-		if(skind==TRIM_START_OPTION)
-			kind=String::TRIM_START;
-		else if(skind==TRIM_END_OPTION)
-			kind=String::TRIM_END;
-		else if(skind==TRIM_BOTH_OPTION)
-			kind=String::TRIM_BOTH;
-		else
-			throw Exception("parser.runtime",
-				&skind,
-				"'kind' should be one of "TRIM_START_OPTION", "TRIM_BOTH_OPTION", "TRIM_END_OPTION);
+		if(skind.length())
+			if(skind==TRIM_START_OPTION)
+				kind=String::TRIM_START;
+			else if(skind==TRIM_END_OPTION)
+				kind=String::TRIM_END;
+			else if(skind==TRIM_BOTH_OPTION)
+				kind=String::TRIM_BOTH;
+			else
+				throw Exception("parser.runtime",
+					&skind,
+					"'kind' must be one of "TRIM_START_OPTION", "TRIM_BOTH_OPTION", "TRIM_END_OPTION);
 
 		if(params.count()>1) {
 			const String& schars=params.as_string(1, "'chars' must be string");
-			if(!schars.length())
-				throw Exception("parser.runtime",
-					0,
-					"'chars' must not be empty");
-			chars=schars.cstr();
+			if(schars.length())
+				chars=schars.cstr();
 		}
 	}
 
