@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.170 2001/06/29 13:53:23 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.171 2001/06/29 14:16:09 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -533,12 +533,18 @@ void Request::execute(const Array& ops) {
 				double a_double=a->as_double();
 				double b_double=b->as_double();
 
-				if(b_double == 0)
+				if(b_double == 0) {
+					const String *problem_source=&b->as_string();
+#ifndef NO_STRING_ORIGIN
+					if(!problem_source->origin().file)
+						problem_source=b->name();
+#endif
 					THROW(0, 0,
-						&b->name(),
+						problem_source,
 						"Division by zero");
+				}
 
-				Value *value=NEW VDouble(pool(), a_double/b_double);
+				Value *value=NEW VDouble(pool(), a_double / b_double);
 				PUSH(value);
 				break;
 			}
@@ -549,10 +555,16 @@ void Request::execute(const Array& ops) {
 				int a_int=a->as_int();
 				int b_int=b->as_int();
 
-				if(b_int == 0)
+				if(b_int == 0) {
+					const String *problem_source=&b->as_string();
+#ifndef NO_STRING_ORIGIN
+					if(!problem_source->origin().file)
+						problem_source=b->name();
+#endif
 					THROW(0, 0,
-						&b->name(),
+						problem_source,
 						"Modulus by zero");
+				}
 
 				Value *value=NEW VDouble(pool(), a_int % b_int);
 				PUSH(value);
