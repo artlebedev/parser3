@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.3 2001/04/11 08:13:38 paf Exp $
+	$Id: op.C,v 1.4 2001/04/12 13:15:18 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -178,9 +178,8 @@ static void _use(Request& r, const String& method_name, Array *params) {
 	r.use_file(r.absolute(vfile.as_string()));
 }
 
+/// ^for[i;from-number;to-number-inclusive]{code}[delim]
 static void _for(Request& r, const String& method_name, Array *params) {
-	// ^for[i;from-number;to-number-inclusive]{code}[delim]
-
 	Pool& pool=r.pool();
 	const String& var_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
 	int from=(int)r.process(*static_cast<Value *>(params->get(1))).as_double();
@@ -200,7 +199,7 @@ static void _for(Request& r, const String& method_name, Array *params) {
 				&method_name,
 				"endless loop detected");
 		vint->set_int(i);
-		r.wcontext->put_element(var_name, vint);
+		r.root->put_element(var_name, vint);
 
 		Value& processed_body=r.process(body_code);
 		if(delim_code) { // delimiter set?

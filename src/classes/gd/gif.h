@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.h,v 1.4 2001/04/11 18:07:17 paf Exp $
+	$Id: gif.h,v 1.5 2001/04/12 13:15:20 paf Exp $
 
 
 	based on:
@@ -226,7 +226,5 @@ inline int gdImage::BoundsSafe(int x, int y){
 inline /*paf int*/void gdImage::DoSetPixel(int x, int y, int color){
     if(BoundsSafe(x, y)) pixels[x][y] = color;
 }
-
-
 
 #endif

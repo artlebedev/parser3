@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.145 2001/04/11 15:45:50 paf Exp $
+	$Id: execute.C,v 1.146 2001/04/12 13:15:22 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -149,8 +149,8 @@ void Request::execute(const Array& ops) {
 				// the object expression result
 				// does not need to be written into calling frame
 				// it must go into any expressions using that parameter
-				// hence, zeroing junction.wcontext being created
-				// later, in .process we would test that field 
+				// hence, we zero junction.wcontext here, and later
+				// in .process we would test that field 
 				// in decision "which wwrapper to use"
 				Junction& j=*NEW Junction(pool(), 
 					*self, 0, 0,
@@ -229,6 +229,10 @@ void Request::execute(const Array& ops) {
 			{
 				Value *value=POP();
 				write_assign_lang(*value);
+
+				// forget the fact they've entered some ^object.method[].
+				// see OP_GET_ELEMENT
+				wcontext->clear_somebody_entered_some_object();
 				break;
 			}
 		case OP_WRITE_EXPR_RESULT:
@@ -284,8 +288,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *ncontext=POP();
 				PUSH(rcontext);
-				rcontext=ncontext;
 				PUSH(wcontext);
+				rcontext=ncontext;
 				wcontext=NEW WWrapper(pool(), ncontext, false /*not constructing*/);
 				break;
 			}

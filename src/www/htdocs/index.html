@@ -32,12 +32,19 @@ $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
 image:create<BR>
-$face[^image:create(200;100)]
-^$face.width=$face.width<BR>
-^$face.height=$face.height<BR>
-$ff[^face.gif[]]
-^ff.save[face.gif]
-^face.html[$src[face.gif]]
+$drawing[^image:create(300;100)]
+$drawing{
+^$drawing.width=$width<BR>
+^$drawing.height=$height<BR>
+^for[i](0;$width/4){
+^line(0;0;$:i*4;$height-1;0)
+}
+}
+<HR>
+#$response:body[^drawing.gif[]]
+$ff[^drawing.gif[]]
+^ff.save[drawing.gif]
+^drawing.html[$src[drawing.gif]]
 <HR>
 image:load<BR>
 $face[^image:load[001004paf(c)lena_karin.gif]]

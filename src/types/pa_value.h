@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.46 2001/04/11 08:13:42 paf Exp $
+	$Id: pa_value.h,v 1.47 2001/04/12 13:15:25 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -303,10 +303,11 @@ public:
 		if(actual_count<min_numbered_params_count) // not proper count? bark
 			THROW(0, 0,
 				&actual_name,
-				"native method of %s (%s) accepts minimum %d parameter(s)", 
+				"native method of %s (%s) accepts minimum %d parameter(s) (%d present)", 
 					self.name().cstr(),
 					self.type(),
-					min_numbered_params_count);
+					min_numbered_params_count,
+					actual_count);
 
 	}
 };

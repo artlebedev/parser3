@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.11 2001/04/11 18:07:15 paf Exp $
+	$Id: image.C,v 1.12 2001/04/12 13:15:18 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -368,7 +368,7 @@ static void _gif(Request& r, const String& method_name, Array *params) {
 	if(!image)
 		PTHROW(0, 0,
 			&method_name,
-			"does not contain image");
+			"does not contain an image");
 
 	char *file_name_cstr=0;
 	if(params->size()) {
@@ -387,6 +387,25 @@ static void _gif(Request& r, const String& method_name, Array *params) {
 	vfile.set(false/*not tainted*/, out.cstr(), out.size(), file_name_cstr, &image_gif);
 
 	r.write_no_lang(vfile);
+}
+
+/// ^image.line(x0;y0;x1;y1;color)
+static void _line(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	gdImage *image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0,
+			&method_name,
+			"does not contain an image");
+
+	image->Line(
+		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(),
+		image->Color((int)r.process(*static_cast<Value *>(params->get(4))).as_double()));
+
 }
 
 // initialize
@@ -408,4 +427,7 @@ void initialize_image_class(Pool& pool, VStateless_class& vclass) {
 	/// ^image.gif[]
 	/// ^image.gif[user-file-name]
 	vclass.add_native_method("gif", Method::CT_DYNAMIC, _gif, 0, 1);
+
+	/// ^image.line(x0;y0;x1;y1;color)
+	vclass.add_native_method("line", Method::CT_DYNAMIC, _line, 5, 5);
 }

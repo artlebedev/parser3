@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.1 2001/04/11 15:45:53 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.2 2001/04/12 13:15:25 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -99,9 +99,10 @@ public: // usage
 		if(store_param_index==max_params)
 			THROW(0,0,
 				&actual_method_name,
-				"method of %s (%s) accepts maximum %d parameter(s)", 
+				"method of %s (%s) accepts maximum %d parameter(s) (%d present)", 
 					junction.self.name().cstr(),
 					junction.self.type(),
+					max_params,
 					max_params);
 		
 		if(method.max_numbered_params_count) { // are this method params numbered?

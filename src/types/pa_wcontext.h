@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.10 2001/04/05 19:35:18 paf Exp $
+	$Id: pa_wcontext.h,v 1.11 2001/04/12 13:15:25 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -72,6 +72,7 @@ public: // usage
 
 	void inc_somebody_entered_some_object() { fsomebody_entered_some_object++; }
 	int somebody_entered_some_object() { return fsomebody_entered_some_object; }
+	void clear_somebody_entered_some_object() { fsomebody_entered_some_object=0; }
 
 protected:
 	String& fstring;
