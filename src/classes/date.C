@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: date.C,v 1.2 2001/07/07 17:59:02 parser Exp $
+	$Id: date.C,v 1.3 2001/07/09 16:13:17 parser Exp $
 */
-static const char *RCSId="$Id: date.C,v 1.2 2001/07/07 17:59:02 parser Exp $"; 
+static const char *RCSId="$Id: date.C,v 1.3 2001/07/09 16:13:17 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -51,6 +51,8 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 		int year=params->as_int(0, r);
 		if(year<70) // 0..69 -> 100..169 [2000..2069]
 			year+=100;
+		if(year>=1900)
+			year-=1900;
 		tmIn.tm_year=year;
 		tmIn.tm_mon=params->as_int(1, r)-1;
 		tmIn.tm_mday=params->as_int(2, r);

@@ -1,4 +1,14 @@
+@USE
+dtformat.p
+input_date.p
+
 @main[]
+$дата[^input_date:parse[9.7.2001]]
+^long_date_format[$дата]
+<hr>
+$дата[^parse_date[9.7.2001]]
+^long_date_format[$дата]
+<hr>
 $сегодня[^date:now[]]
 $недельный_календарь[^table:calendar[rus]($сегодня.year;$сегодня.month;$сегодня.day)]
 <TT>

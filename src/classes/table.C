@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.91 2001/07/07 17:59:02 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.92 2001/07/09 16:13:17 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -213,11 +213,11 @@ static Table *fill_week_days(Request& r,
 static void _calendar(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	const String& what=params->as_string(0, "'what' must be rus|eng");
+	const String& what=params->as_string(0, "format must be strig");
 	bool rus=false;
-	if(what == "rus")
+	if(what=="rus")
 		rus=true;
-	else if(what == "eng")
+	else if(what=="eng")
 		rus=false;
 	else
 		PTHROW(0, 0, 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.59 2001/07/07 16:38:01 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.60 2001/07/09 16:13:17 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -200,19 +200,17 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	Table *table;
 	if(params->size()<3) { // search
-		if(src.match(r.pcre_tables,
+		bool matched=src.match(r.pcre_tables,
 			&method_name, 
 			regexp.as_string(), options,
 			&table,
-			search_action, 0)) {
-			// matched
-			if(table->columns()->size()==3 && // just matched[3=pre/match/post], no substrings
-				table->size()==1)  // just one row, not /g_lobal search
-				result=new(pool) VBool(pool, true);
-			else // table of pre/match/post+substrings
-				result=new(pool) VTable(pool, table);
-		} else // not matched [not global]
-			result=new(pool) VBool(pool, false);
+			search_action, 0);
+		// matched
+		if(table->columns()->size()==3 && // just matched[3=pre/match/post], no substrings
+			table->size()<=1)  // just one row, not /g_lobal search
+			result=new(pool) VBool(pool, matched);
+		else // table of pre/match/post+substrings
+			result=new(pool) VTable(pool, table);
 	} else { // replace
 		Value& replacement_code=params->as_junction(2, "replacement code must be code");
 
