@@ -1,23 +1,23 @@
 /*
-  $Id: compile_tools.C,v 1.8 2001/02/22 13:52:26 paf Exp $
+  $Id: compile_tools.C,v 1.9 2001/02/22 13:58:43 paf Exp $
 */
 
 #include "compile_tools.h"
 #include "pa_string.h"
 #include "pa_array.h"
 #include "pa_exception.h"
-#include "pa_value.h"
+#include "pa_vstring.h"
 
-Array *L(Value *value) {
+Array *L(VString *vstring) {
 	// empty ops array
-	Array *result=N(value->pool());
+	Array *result=N(vstring->pool());
 
 	// append OP_STRING
-	Operation op; op.code=OP_VALUE;
+	Operation op; op.code=OP_STRING;
 	*result+=op.cast;
 
-	// append 'value'
-	*result+=value;
+	// append 'vstring'
+	*result+=vstring;
 
 	return result;
 }

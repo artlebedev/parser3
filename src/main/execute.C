@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.18 2001/02/22 13:52:26 paf Exp $
+  $Id: execute.C,v 1.19 2001/02/22 13:58:43 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -11,7 +11,7 @@
 
 
 char *opcode_name[]={
-	"VALUE",  "CODE_ARRAY",
+	"STRING",  "CODE_ARRAY",
 	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
 	"CONSTRUCT",
 	"EXPRESSION_EVAL",	"MODIFY_EVAL",
@@ -31,9 +31,9 @@ void dump(int level, const Array& ops) {
 		int code=reinterpret_cast<int>(ops.quick_get(i));
 		printf("%*s%s", level*4, "", opcode_name[code]);
 
-		if(code==OP_VALUE) {
-			Value *value=static_cast<Value *>(ops.quick_get(++i));
-			printf(" \"%s\"", value->get_string()->cstr());
+		if(code==OP_STRING) {
+			VString *vstring=static_cast<VString *>(ops.quick_get(++i));
+			printf(" \"%s\"", vstring->get_string()->cstr());
 		}
 		printf("\n");
 
@@ -73,11 +73,11 @@ void Request::execute(Array& ops) {
 				break;
 			}
 			
-		case OP_VALUE:
+		case OP_STRING:
 			{
-				Value *value=static_cast<Value *>(ops.quick_get(++i));
-				printf(" \"%s\"", value->get_string()->cstr());
-				stack.push(value);
+				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
+				printf(" \"%s\"", vstring->get_string()->cstr());
+				stack.push(vstring);
 				break;
 			}
 			
