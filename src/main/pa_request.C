@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.141 2001/07/06 11:13:35 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.142 2001/07/13 10:58:03 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -208,7 +208,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				}
 				after=before+1;
 			}
-			for(int i=ladder.size(); --i>=0; ) {
+			for(int i=0; i<ladder.size(); i++) {
 				const String& sfile_spec=*ladder.get_string(i);
 				main_class=use_file(sfile_spec, false/*ignore read problem*/,
 					main_class_name, main_class);

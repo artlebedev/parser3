@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.174 2001/07/06 11:13:35 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.175 2001/07/13 10:58:03 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -834,6 +834,7 @@ const String *Request::execute_method(Value& aself, const Method& method, bool r
 	return result;
 }
 
+/// @test remove virtual @auto calls when initializing children
 const String *Request::execute_method(Value& aself, 
 							  const String& method_name, bool return_cstr) {
 	if(Value *value=aself.get_element(method_name))
