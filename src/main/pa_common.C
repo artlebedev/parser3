@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_common.C,v 1.58 2001/07/11 15:02:09 parser Exp $"; 
+static const char *RCSId="$Id: pa_common.C,v 1.59 2001/07/24 08:37:18 parser Exp $"; 
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -74,15 +74,17 @@ bool file_read(Pool& pool, const String& file_spec,
 		if(!max_size) { // eof
 			data=0;
 			read_size=0;
-			return true;
+		} else {
+			data=pool.malloc(max_size+(as_text?1:0));
+			if(offset)
+				lseek(f, offset, SEEK_SET);
+			read_size=read(f, data, max_size);
 		}
-		data=pool.malloc(max_size+(as_text?1:0));
-		if(offset)
-			lseek(f, offset, SEEK_SET);
-		read_size=read(f, data, max_size);
 		/*if(exclusive)
 			flock(f, LOCK_UN);*/
 		close(f);
+		if(!max_size) // eof
+			return true;
 
 		if(read_size>=0 && read_size<=max_size) {
 			if(as_text)
