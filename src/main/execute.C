@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.159 2001/05/17 15:20:15 parser Exp $
+	$Id: execute.C,v 1.160 2001/05/17 15:43:08 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -416,14 +416,14 @@ void Request::execute(const Array& ops) {
 							method.check_actual_numbered_params(pool(),
 								frame->junction.self, 
 								frame->name(), frame->numbered_params());
-							(*method.native_code)(
+							method.native_code(
 								*this, 
 								frame->name(), frame->numbered_params()); // execute it
 						} else { // parser code
 							if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
 								anti_endless_execute_recoursion=0; // give @exception a chance
 								THROW(0, 0,
-									&method.name,
+									&frame->name(),
 									"endless recursion detected");
 							}
 							

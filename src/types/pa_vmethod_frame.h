@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.8 2001/05/15 10:01:25 parser Exp $
+	$Id: pa_vmethod_frame.h,v 1.9 2001/05/17 15:43:08 parser Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -65,6 +65,7 @@ public: // usage
 		is_constructor(ais_constructor),
 		store_param_index(0),
 		fself(0) {
+		set_name(name);
 
 		const Method &method=*junction.method;
 
