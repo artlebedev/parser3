@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 	
-	$Id: pa_vform.C,v 1.57 2002/06/24 11:59:34 paf Exp $
+	$Id: pa_vform.C,v 1.58 2002/06/24 19:11:43 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -234,6 +234,9 @@ void VForm::fill_fields_and_tables(Request& request) {
 		memcpy(buf, request.info.query_string, length);
 		ParseGetFormInput(buf, length);
 	}
+	/*throw Exception("test shit",
+		0,
+		"happened");*/
 
 	// parsing POST data
 	if(request.info.method) {
@@ -274,4 +277,3 @@ Value *VForm::get_element(const String& aname) {
 	// $element
 	return static_cast<Value *>(fields.get(aname));
 }
-

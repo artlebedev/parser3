@@ -418,14 +418,12 @@ Xhashfile
         .from
         .reply-to
         .subject
-        .date класса data
+        .date класса date
         .message-id
         .raw[
             .—џ–ќ≈_ѕќЋ№«ќ¬ј“≈Ћ№— ќ≈-ѕќЋ≈-«ј√ќЋќ¬ ј
         ]
-        .text если из письма можно вынуть текст, он тут
-        .html если из письма можно вынуть HTML, он тут
-        $.{text|html|file}#[ << нумеруетс€ как и в mail:send (text, text2, ...) (attachment, attachment2, ...)
+        $.{text|html|file#}[ << нумеруетс€ как и в mail:send (text, text2, ...) (file, file2, ...)
             $.content-type[
                 $.value[{text|...|x-unknown}/{plain|html|...|x-unknown}]
                 [$.charset[windows-1251]] << в каком пришло, сейчас уже перекодировано
@@ -440,7 +438,7 @@ Xhashfile
             ]
             $.value[строка|FILE]
         ]
-        $.message#[MESSAGE]
+        $.message#[MESSAGE] (message, message2, ...)
 
     !^mail:send[
         $.charset[кодировка заголовка и текстовых блоков] 

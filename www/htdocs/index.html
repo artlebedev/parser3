@@ -181,9 +181,9 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^div[]
 #^datecreatestring3[]
 #^tfilespec[]
-#^tcrypt[]
+^tcrypt[]
 #^cryptdocsample[]
-^sendtests[]
+#^sendtests[]
 OK
 
 @sendtests[]
@@ -281,7 +281,7 @@ $htpasswd[^table::create[nameless]{}]
 
 
 @tcrypt[]
-^math:crypt[paf;^$apr1^$salt123]
+^math:crypt[123;^$apr1^$94......]<br>
 
 @tfilespec[]
 src=$selffilespec<br>

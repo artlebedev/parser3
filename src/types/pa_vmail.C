@@ -6,7 +6,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vmail.C,v 1.4 2002/06/24 15:10:21 paf Exp $
+	$Id: pa_vmail.C,v 1.5 2002/06/24 19:11:43 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -229,7 +229,7 @@ static void parse(GMimeStream *stream, Hash& received) {
 		//  user headers
 		{
 			// $.raw[
-			VHash& vraw=*new(pool) VHash(pool);  putReceived(received, "raw", &vraw);
+			VHash& vraw=*new(pool) VHash(pool);  putReceived(received, RAW_NAME, &vraw);
 			g_mime_header_foreach(messageHeader->headers, MimeHeaderField2received, &vraw.hash(0));
 		}
 
@@ -312,20 +312,22 @@ struct Store_message_element_info {
 	bool has_content_type;
 };
 #endif
-static void store_message_element(const Hash::Key& element_name, Hash::Val *aelement_value, 
+static void store_message_element(const Hash::Key& raw_element_name, Hash::Val *aelement_value, 
 								  void *info) {
 	Value& element_value=*static_cast<Value *>(aelement_value);
+	const String& low_element_name=raw_element_name.change_case(raw_element_name.pool(), String::CC_LOWER);
 	Store_message_element_info& i=*static_cast<Store_message_element_info *>(info);
 
 	// exclude internals
-	if(element_name==CHARSET_NAME
-		|| element_name==VALUE_NAME
-		|| element_name==RAW_NAME)		
+	if(low_element_name==CHARSET_NAME
+		|| low_element_name==VALUE_NAME
+		|| low_element_name==RAW_NAME
+		|| low_element_name=="date")
 		return;
 
 	// grep parts
 	for(int pt=0; pt<P_TYPES_COUNT; pt++) {
-		if(element_name.starts_with(part_name_starts[pt])) {
+		if(low_element_name.starts_with(part_name_starts[pt])) {
 			*i.parts[pt]+=&element_value;
 			i.parts_count++;
 			return;
@@ -333,20 +335,20 @@ static void store_message_element(const Hash::Key& element_name, Hash::Val *aele
 	}
 
 	// fetch from & to from header for SMTP
-	if(i.from && element_name=="from")
+	if(i.from && low_element_name=="from")
 		*i.from=&element_value.as_string();
-	if(i.to && element_name=="to")
+	if(i.to && low_element_name=="to")
 		*i.to=&element_value.as_string();
 
 	// append header line
 	*i.header << 
-		element_name << ":" << 
+		raw_element_name << ":" << 
 		attributed_meaning_to_string(element_value, String::UL_MAIL_HEADER).
 			cstr(String::UL_UNSPECIFIED, 0, i.charset, i.charset?i.charset->name().cstr():0) << 
 		"\n";
 
 	// has content type?
-	if(element_name.change_case(element_name.pool(), String::CC_LOWER)==CONTENT_TYPE_NAME)
+	if(low_element_name==CONTENT_TYPE_NAME)
 		i.has_content_type=true;
 }
 

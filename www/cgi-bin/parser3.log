@@ -191,3 +191,7 @@
 [Mon Jun 24 15:28:57 2002] : Y:/parser3project/parser3/www/htdocs/index.html(202): 'value' is neither text# nor attach# [parser.runtime]
 [Mon Jun 24 15:43:55 2002] : Y:/parser3project/parser3/www/htdocs/index.html(250): 'send' $MAIN:MAIL.SMTP not defined [parser.runtime]
 [Mon Jun 24 15:44:25 2002] : Y:/parser3project/parser3/www/htdocs/index.html(250): 'send' html part value must be code [parser.runtime]
+[Mon Jun 24 22:28:57 2002] /index.cgihtml: happened [shit]
+[Mon Jun 24 22:30:54 2002] /index.cgihtml: happened [shit]
+[Mon Jun 24 22:31:37 2002] /index.cgihtml: happened [shit]
+[Mon Jun 24 22:31:59 2002] /index.cgihtml: happened [shit]
