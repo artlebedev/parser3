@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2002/09/18 08:52:50 $";
+static const char* IDENT_XDOC_C="$Date: 2002/09/20 11:23:33 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -671,7 +671,8 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 		new(pool) VString(*oo.encoding));
 	vcontent_type=vhcontent_type;
 	
-	vfile.set(false/*tainted*/, buf, buf_size, 0/*file_name*/, vcontent_type);
+	vfile.set(false/*tainted*/, buf?buf:""/*to distinguish from stat-ed file*/, buf_size, 
+		0/*file_name*/, vcontent_type);
 	r.write_no_lang(vfile);
 }
 
