@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_string.C,v 1.95 2001/07/20 09:40:46 parser Exp $"; 
+static const char *RCSId="$Id: pa_string.C,v 1.96 2001/07/24 15:43:56 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -329,10 +329,10 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 
 #ifndef NO_STRING_ORIGIN
 const Origin& String::origin() const { 
-	if(!fused_rows)
-		THROW(0, 0, 
-			0,
-			"String::origin() of empty string called");
+	if(!fused_rows) {
+		static const Origin empty_origin={"empty string"};
+		return empty_origin;
+	}
 	
 	// determining origin by last appended piece
 	// because first one frequently constant. 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.180 2001/07/20 09:40:46 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.181 2001/07/24 15:43:56 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -34,7 +34,7 @@ char *opcode_name[]={
 	// actions
 	"WITH_SELF",	"WITH_ROOT",	"WITH_READ",	"WITH_WRITE",
 	"GET_CLASS",
-	"CONSTRUCT_VALUE",  "CONSTRUCT_DOUBLE",
+	"CONSTRUCT_VALUE",  "CONSTRUCT_EXPR",
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
 	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
@@ -69,7 +69,7 @@ void debug_printf(Pool& pool, const char *fmt, ...) {
 }
 
 void debug_dump(Pool& pool, int level, const Array& ops) {
-	{
+/*	{
 		int size=ops.quick_size();
 		//debug_printf(pool, "size=%d\n", size);
 		for(int i=0; i<size; i++) {
@@ -77,7 +77,7 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 			op.cast=ops.quick_get(i);
 			debug_printf(pool, "%8X\n", op.cast);
 		}
-	}
+	}*/
 
 	int size=ops.quick_size();
 	//debug_printf(pool, "size=%d\n", size);
@@ -724,14 +724,14 @@ void Request::execute(const Array& ops) {
 Value *Request::get_element() {
 	const String& name=POP_NAME();
 	Value *ncontext=POP();
-	Value *value;
-	if(Method* method=OP.get_method(name)) { // operator?
-		// as if that method were in self and we have normal dynamic method here
-		Junction& junction=*NEW Junction(pool(), 
-			*self, self->get_class(), method, 0,0,0,0);
-		value=NEW VJunction(junction);
-	} else
-		value=ncontext->get_element(name);
+	Value *value=ncontext->get_element(name);
+	if(!value)
+		if(Method* method=OP.get_method(name)) { // maybe operator?
+			// as if that method were in self and we have normal dynamic method here
+			Junction& junction=*NEW Junction(pool(), 
+				*self, self->get_class(), method, 0,0,0,0);
+			value=NEW VJunction(junction);
+		}
 	if(value)
 		value=&process(*value, &name); // process possible code-junction
 	else {

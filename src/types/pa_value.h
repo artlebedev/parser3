@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.67 2001/07/20 09:40:46 parser Exp $
+	$Id: pa_value.h,v 1.68 2001/07/24 15:43:56 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -202,7 +202,9 @@ public: // usage
 	}
 
 	/// set's the name which is used in error messages
-	void set_name(const String& aname) { fname=&aname; }
+	void set_name(const String& aname) {
+		fname=&aname; 
+	}
 
 	/// @return sure String. if it doesn't have string value barks
 	const String& as_string() {
