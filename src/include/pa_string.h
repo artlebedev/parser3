@@ -1,17 +1,17 @@
 /*
-  $Id: pa_string.h,v 1.15 2001/02/11 11:27:24 paf Exp $
+  $Id: pa_string.h,v 1.16 2001/02/12 13:26:54 paf Exp $
 */
 
 /*
 
 	String				Chunk0
 	======				========
-	head--------->[ptr, size]
-	append_here-------->[ptr, size]
-	link_row      ........
-			.			.
-			.			[ptr, size]
-			...........>[link to the next chunk]
+	head--------------->[ptr, size, ...]
+	append_here-------->[ptr, size, ...]
+						.
+						.
+						[ptr, size, ...]
+	link_row----------->[link to the next chunk]
 
 */
 
@@ -35,7 +35,10 @@
 #	define APPEND(src, file, line) real_append(src)
 #endif
 
+class String_iterator;
+
 class String : public Pooled {
+	friend String_iterator;
 public:
 	enum {
 		CR_PREALLOCATED_COUNT=5,
@@ -51,6 +54,7 @@ public:
 	char *cstr() const;
 	String& real_append(STRING_APPEND_PARAMS);
 	bool operator == (const String& src) const;
+	String& append(const String_iterator& begin, const String_iterator& end);
 
 	uint hash_code() const;
 
@@ -105,5 +109,49 @@ private: //disabled
 
 };
 
+
+class Char_set {
+public:
+	Char_set();
+	void include(char c) { bools[static_cast<unsigned int>(c)]=true; }
+	bool in(char c) { return bools[static_cast<unsigned int>(c)]; }
+private:	
+	bool bools[0x100];
+};
+
+class String_iterator {
+public:
+	String_iterator(String& astring);
+
+	void operator ++() { skip(); }
+	void operator ++(int) { skip(); }
+
+	void skip_to(Char_set& set);
+	void skip_to(char c);
+
+	bool eof() { return feof; }
+
+	// current char
+	char operator() const;
+
+protected:
+	// home string
+	String& string;
+	// the row in which we are
+	Chunk::Row *read_here;
+	// position in that row's string fragment
+	int offset;
+	// when read_here reaches this row, move to the next chunk
+	Chunk::Row *link_row;
+
+	bool feof;
+
+protected:
+
+	// advances position on one char
+	void skip() {
+
+	}
+};
 
 #endif

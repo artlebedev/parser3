@@ -8,6 +8,10 @@ void process(Pool& pool,
 
 	// ^ on code?
 	process_bird(pool, rcontext, wcontext, code, char_to_stop_before);
+
+	// TODO
+	// 1. случаи :: и this. в начале 
+	// 2. вызовы статических методов
 }
 
 void process_dollar(Pool& pool, 
@@ -41,10 +45,11 @@ void process_dollar(Pool& pool,
 
 		bool construct_mode=names_ended_before=='(';
 
+		// 'context' dive into dotted path, 
 		int steps=names.count();
+		// if constructing then "excluding last .name"
 		if(construct_mode)
 			steps--;
-		// 'context' dive into dotted path, if constructing then "excluding last .name"
 		for(int i=0; i<steps; i++) {
 			String& name=static_cast<String&>(names.get[i]);
 			Value *next_current=context->get_element(name);

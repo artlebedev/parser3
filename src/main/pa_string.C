@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.17 2001/02/11 11:27:25 paf Exp $
+  $Id: pa_string.C,v 1.18 2001/02/12 13:26:55 paf Exp $
 */
 
 #include <string.h>
@@ -7,6 +7,8 @@
 #include "pa_pool.h"
 #include "pa_string.h"
 #include "pa_hash.h"
+
+// String
 
 String::String(Pool& apool) :
 	Pooled(apool) {
@@ -204,3 +206,15 @@ bool String::operator == (const String& src) const {
 	}
 	return a_break==b_break;
 }
+
+String& String::append(const String_iterator& begin, const String_iterator& end) {
+	return z;
+}
+
+// Char_set
+
+Char_set::Char_set() {
+	memset(bools, 0, sizeof(bools));
+}
+
+// String_iterator 
