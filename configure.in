@@ -420,6 +420,14 @@ AC_SUBST(LIBADD_DL)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
+AC_C_BIGENDIAN(
+	AC_DEFINE(PA_BIG_ENDIAN,,compile for sparc processor)
+,
+	AC_DEFINE(PA_LITTLE_ENDIAN,,compile for intel processor or compatible)
+,
+	AC_MSG_ERROR(word endianness not determined for some obscure reason)
+)
+
 AC_TYPE_SIZE_T
 dnl gmime
 AC_CHECK_TYPE(off_t, long)
