@@ -1,5 +1,149 @@
-@frameset[]
-<frameset cols=30%,*>
-<frame src=left.html>
-<frame src=right.html>
-</frameset>
+@main[]
+#^regexp2[]
+#^ttablerem[]
+#^pcre[]
+#^regexp[]<hr>
+#^mail[]
+#^exec[]
+#^fori[]
+#^tconnect[]
+^xslt[]
+#^xml[]
+#^header[]
+OK
+
+@xslt[]
+^xdata[]
+^show-xdoc2[^xdoc.transform[global.xsl]]
+
+@regexp2[]
+$s[  select]
+$s[^s.match[^^\s*][]{!}]
+$s
+
+@header[]
+$response:refresh[
+	$.value[0]
+	$.url[http://design.ru?a=^taint[123]]
+]
+
+@ttablerem[]
+$table[^table::load[a.cfg]]
+^table.menu{$table.a}
+
+@tconnect[]
+^connect[mysql://test:test@paf/test?charset=cp1251_koi8&compress=1&timeout=1&named_pipe=1]{
+$tables[^table::sql{show tables}]
+#$cols[^tables.columns[]]
+#$cols.column
+^tables.menu{
+	$tables.[Tables_in_test]<br>
+}
+}
+
+@pcre[]
+$s[1 2]
+^s.match[\s;ig]{!}
+#^s.match[\d;ig]{!}
+
+
+@regexp[]
+$s[abc¿¡¬]
+^if(^s.match[·][i]){y}{n}
+
+@mail[]
+#$ORIGINS(1)
+^mail:send[
+	$.from[paf@design.ru]
+	$.to[paf@design.ru]
+	$.body[1
+	
+	2
+	
+	
+		3]
+]
+
+@exec[]
+$a[^file::exec[fc.exe;a;b]]
+$a.status|$a.stderr<hr>
+
+@fori[][i]
+^for[i](1;3){... =$i= ...}
+
+@xdata[]
+#$response:content-type[$.value[text/html] $.charset[windows-1251]]
+$xdoc[^xdoc::load[input.xml]]
+
+@xml[]
+^xdata[]
+
+^show-xdoc2[$xdoc]<hr>
+#^show-xnode1[$xdoc]<hr>
+$people[^xdoc.select[*/man]]
+#^show1[]
+^show-xnodes1[$people]<hr>
+#^people.0.owner.hren[]
+
+^show-xnode1[^xdoc.select-single[*/man[2]/name];0;1]<hr>
+
+by id:
+^show-xnode1[^xdoc.getElementById[1];0;1]
+<hr>
+
+@show1[array]
+^for[i](0;^array._count[]-1){
+    $x[$array.$i]
+	$x.firstChild.nodeValue: 
+		$pattributes[$x.parentNode.attributes]
+		^if(^pattributes._count[]){
+			$pattributes.id.name=$pattributes.id.nodeValue
+		}
+	<br>
+}
+	
+@show-xnodes1[array][i]
+^for[i](0;^array._count[]-1){
+	^show-xnode1[$array.$i;0;1]
+}
+
+@show-xnode1[x;level;single][l]
+^if(def $x){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    	&lt^;$x.nodeName
+	    $pairs[$x.attributes]
+	    ^if(def $pairs){
+	    	$names[^pairs._keys[]]
+	    	^names.menu{ $names.key="$pairs.[$names.key].nodeValue"}
+	    }
+	    &gt^;
+    }{
+    	[$x.nodeType]
+    }
+    
+    ^if(def $x.nodeValue){$x.nodeValue}<br>
+    ^show-xnode1[$x.firstChild]($level+1)
+    ^if(!$single){
+	    ^show-xnode1[$x.nextSibling]($level)
+    }
+
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
+    }
+}
+
+@show-xdoc2[xdoc]
+^xdoc.save[save.xml;
+#	$.encoding[windows-1251]
+	$.method[xml]
+]
+$file[^xdoc.file[
+#	$.encoding[windows-1251]
+	$.method[html]
+]]
+^file.save[text;save_file.html]
+<pre>^taint[^xdoc.string[]]</pre>
+#	$.encoding[windows-1251]
+#	$.method[xml]
+#]]

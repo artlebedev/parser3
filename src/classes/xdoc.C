@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.11 2001/10/08 08:21:04 parser Exp $
+	$Id: xdoc.C,v 1.12 2001/10/08 08:35:56 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -331,13 +331,6 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 
 	std::istrstream stream(xml.cstr());
 	const XalanParsedSource* parsedSource;
-/*	int error=vdoc.transformer().parseSource(&stream, parsedSource);
-
-	if(error)
-		PTHROW(0, 0,
-			&method_name,
-			vdoc.transformer().getLastError());
-*/
 
 	try {
 		parsedSource = new XalanDefaultParsedSource2(&stream);
@@ -371,12 +364,24 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	const char *filespec=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
 	
 	const XalanParsedSource* parsedSource;
-	int error=vdoc.transformer().parseSource(filespec, parsedSource);
-
-	if(error)
-		PTHROW(0, 0,
-			&file_name,
-			vdoc.transformer().getLastError());
+	try {
+		parsedSource = new XalanDefaultParsedSource2(filespec);
+	}
+	catch (XSLException& e)	{
+		r._throw(&method_name, e);
+	}
+	catch (SAXParseException& e)	{
+		r._throw(&method_name, e);
+	}
+	catch (SAXException& e)	{
+		r._throw(&method_name, e);
+	}
+	catch (XMLException& e) {
+		r._throw(&method_name, e);
+	}
+	catch(const XalanDOMException&	e)	{
+		r._throw(&method_name, e);
+	}
 
 	// replace any previous parsed source
 	vdoc.set_parsed_source(*parsedSource);
