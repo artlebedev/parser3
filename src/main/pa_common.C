@@ -1,4 +1,3 @@
-
 /** @file
 	Parser: commonly functions.
 
@@ -6,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.47 2001/04/17 19:00:41 paf Exp $
+	$Id: pa_common.C,v 1.48 2001/04/19 15:38:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -291,11 +290,10 @@ static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *aval
 	Attributed_meaning_info& ami=*static_cast<Attributed_meaning_info *>(info);
 
 	// ...; charset=windows1251
-	ami.header->APPEND_CONST("; ");
+	*ami.header << "; ";
 	ami.header->append(akey, ami.lang, true);
-	ami.header->APPEND_CONST("=");
-	ami.header->append(static_cast<Value *>(avalue)->as_string(), 
-		ami.lang, true);
+	*ami.header << "=";
+	ami.header->append(static_cast<Value *>(avalue)->as_string(), ami.lang, true);
 }
 const String& attributed_meaning_to_string(Value& meaning, String::Untaint_lang lang) {
 	String &result=*new(meaning.pool()) String(meaning.pool());
@@ -349,4 +347,41 @@ bool StrEqNc(const char *s1, const char *s2, bool strict) {
 		s1++;
 		s2++;
 	}
+}
+
+char *unquote(char*& current, char stop_at) {
+	char *result=current;
+	char *dest=current;
+	// skip leading WS
+	while(*current==' ' || *current=='\t')
+		current++;
+	if(!*current)
+		return current=0;
+
+	bool quoted=*current=='"';
+	if(quoted)
+		current++;
+
+	for(; *current; ) {
+		if(quoted)
+			switch(*current) {
+			case '\\': // "...\c
+				if(current[1])
+					current++;
+				break;
+			case '"':
+				current++;
+				goto break2;
+			}
+		else
+			if(*current==stop_at)
+				break;
+
+		*dest++=*current++;
+	}
+break2:
+	if(*current)
+		current++; // skip 'stop_at'
+	*dest=0;
+	return result;
 }

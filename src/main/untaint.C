@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.39 2001/04/11 08:36:20 paf Exp $
+	$Id: untaint.C,v 1.40 2001/04/19 15:38:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -124,9 +124,47 @@ char *String::store_to(char *dest, Untaint_lang lang, SQL_Connection *connection
 				break;
 			case UL_HTTP_HEADER:
 				// tainted, untaint language: http-header
+/*
+
+HTTP-header    = field-name ":" [ field-value ] CRLF
+
+       field-name     = token
+       field-value    = *( field-content | LWS )
+
+       field-content  = <the OCTETs making up the field-value
+                        and consisting of either *TEXT or combinations
+                        of token, tspecials, and quoted-string>
+
+
+
+word           = token | quoted-string
+
+token          = 1*<any CHAR except CTLs or tspecials>
+
+
+
+tspecials      = "(" | ")" | "<" | ">" | "@"
+                      | "," | ";" | ":" | "\" | <">
+                      | "/" | "[" | "]" | "?" | "="
+                      | "{" | "}" | SP | HT
+
+SP             = <US-ASCII SP, space (32)>
+HT             = <US-ASCII HT, horizontal-tab (9)>
+
+LWS            = [CRLF] 1*( SP | HT )
+TEXT           = <any OCTET except CTLs,
+                        but including LWS>
+
+quoted-pair    = "\" CHAR
+
+
+*/
+				*dest++='\"';
 				escape(switch(*src) {
-					encode(need_http_header_encode, '%');
+					case '\"': to_string("\\\"", 2);  break;
+					_default;
 				});
+				*dest++='\"';
 				break;
 			case UL_MAIL_HEADER:
 				// tainted, untaint language: mail-header

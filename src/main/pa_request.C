@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.115 2001/04/19 11:57:00 paf Exp $
+	$Id: pa_request.C,v 1.116 2001/04/19 15:38:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -497,9 +497,8 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 	Value& lmeaning=*static_cast<Value *>(ameaning);
 	Pool& pool=lmeaning.pool();
 
-	String attribute(pool);
 	SAPI::add_header_attribute(pool,
-		attribute.append(aattribute, String::UL_HTTP_HEADER, true).cstr(), 
+		aattribute.cstr(String::UL_AS_IS), 
 		attributed_meaning_to_string(lmeaning, String::UL_HTTP_HEADER).cstr());
 }
 void Request::output_result(const VFile& body_file, bool header_only) {

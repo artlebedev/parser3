@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.29 2001/04/19 11:57:05 paf Exp $
+	$Id: parser3isapi.C,v 1.30 2001/04/19 15:38:03 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -119,7 +119,7 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 		ctx.header->APPEND_CONST(key);
 		ctx.header->APPEND_CONST(": ");
 		ctx.header->APPEND_CONST(value);
-		ctx.header->APPEND_CONST("\n");
+		ctx.header->APPEND_CONST("\r\n");
 	}
 }
 
@@ -128,8 +128,8 @@ void SAPI::send_header(Pool& pool) {
 	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
 	ctx.header->APPEND_CONST(
-		"expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
-		"\n");
+		"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
+		"\r\n");
 	HSE_SEND_HEADER_EX_INFO header_info;
 
 	char status_buf[MAX_STATUS_LENGTH];
@@ -300,10 +300,10 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		// prepare header // not using SAPI func wich allocates on pool
 		char header_buf[MAX_STRING];
 		int header_len=snprintf(header_buf, MAX_STRING,
-			"content-type: text/plain\n"
-			"content-length: %lu\n"
-			"expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
-			"\n",
+			"content-type: text/plain\r\n"
+			"content-length: %lu\r\n"
+			"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
+			"\r\n",
 			content_length);
 
 		HSE_SEND_HEADER_EX_INFO header_info;

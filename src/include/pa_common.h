@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.38 2001/04/10 11:23:58 paf Exp $
+	$Id: pa_common.h,v 1.39 2001/04/19 15:37:56 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -151,5 +151,6 @@ void back_slashes_to_slashes(char *s);
 #endif
 
 bool StrEqNc(const char *s1, const char *s2, bool strict);
+char *unquote(char*& current, char stop_at);
 
 #endif

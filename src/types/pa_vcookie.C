@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.18 2001/04/17 19:01:01 paf Exp $
+	$Id: pa_vcookie.C,v 1.19 2001/04/19 15:38:06 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -17,8 +17,6 @@
 
 #define SESSION_NAME "session"
 #define DEFAULT_EXPIRES_DAYS 90
-
-/// @test change urlencode here and in untaint.C to HTTP standard's " and \" mech
 
 // VCookie
 
@@ -52,7 +50,8 @@ void VCookie::put_element(const String& aname, Value *avalue) {
 
 //#include <stdio.h>
 void VCookie::fill_fields(Request& request) {
-//	request.info.cookie="test-session=value%3D5; test-default1=value%3D1; test-default2=value%3D2; test-tomorrow=value%3D3";
+	//request.info.cookie="test-session=value%3D5; test-default1=value%3D1; test-default2=value%3D2; test-tomorrow=value%3D3";
+	request.info.cookie="\"вот\"=\"прислал \\\"browser\\\"\"";
 	if(!request.info.cookie)
 		return;
 /*
@@ -63,18 +62,12 @@ void VCookie::fill_fields(Request& request) {
 	strcpy(cookies, request.info.cookie);
     char *current=cookies;
     do {
-		char *meaning=lsplit(&current,';');
-		char *attribute=lsplit(&meaning, '=');
-		if(meaning) {
-			while(*attribute==' ')
-				attribute++;
-			rsplit(meaning,' ');
-			String& smeaning=*NEW String(pool(), 
-				unescape_chars(pool(), meaning, strlen(meaning)), 0, true);
-			String& sattribute=*NEW String(pool(), 
-				unescape_chars(pool(), attribute, strlen(attribute)), 0, true);
-			before.put(sattribute, NEW VString(smeaning));
-		}
+		if(char *attribute=unquote(current, '='))
+			if(char *meaning=unquote(current, ';')) {
+				String& sattribute=*NEW String(pool(), attribute, 0, true);
+				String& smeaning=*NEW String(pool(), meaning, 0, true);
+				before.put(sattribute, NEW VString(smeaning));
+			}
 	} while(current);
 }
 
@@ -100,7 +93,7 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 	// attribute
 	string.append(aattribute, String::UL_HTTP_HEADER, true);
 	// attribute=
-	string.APPEND_CONST("=");
+	string << "=";
 	Value *meaning;
 	// figure out 'meaning'
 	if(ameaning) { // assigning value
@@ -140,13 +133,10 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 			new(pool) VString(*new(pool) String(pool, "/")));
 
 	// append meaning
-	string.append(attributed_meaning_to_string(*meaning, String::UL_HTTP_HEADER), 
-		String::UL_PASS_APPENDED);
+	string << attributed_meaning_to_string(*meaning, String::UL_HTTP_HEADER);
 
 	// output
-	SAPI::add_header_attribute(pool,
-		"set-cookie", 
-		string.cstr());
+	SAPI::add_header_attribute(pool, "set-cookie", string.cstr());
 }
 static void output_after(const Hash::Key& aattribute, Hash::Val *ameaning, void *) {
 	output_set_cookie(aattribute, ameaning);
