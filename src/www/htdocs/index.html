@@ -1,5 +1,7 @@
 @main[]
-^roll[]
+^if($form:test){y}{n}
+#^tablecolumnerror[]
+#^roll[]
 #^cookie2[]
 #^tableset[]
 #^math:PI.format{%.30f}
@@ -62,8 +64,14 @@
 #^header[]
 OK
 
+@tablecolumnerror[]
+$t[^table::set{a}]
+$t.$a
+
 @roll[]
-$date[^date::set(2001;10;1)]
+#$date[^date::set(1970;1;2)]
+#^date.roll[month](-1)
+$date[^date::set(2038;1;1)]
 ^date.roll[month](+1)
 $date.year  $date.month  $date.day
 
