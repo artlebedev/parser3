@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_C="$Date: 2004/02/26 14:37:30 $";
+static const char * const IDENT_COMPILE_C="$Date: 2004/02/27 13:38:37 $";
 
 #include "pa_opcode.h"
 #include "pa_request.h"
@@ -30,7 +30,7 @@ VStateless_class& Request::compile(VStateless_class* aclass,
 
 		throw Exception("parser.compile",
 			0,
-			"%s(%u:%u): %s",  file_list[file_no].cstr(), 1+pc.pos.line, 1+pc.pos.col,  pc.error);
+			"%s(%d:%d): %s",  file_list[file_no].cstr(), 1+pc.pos.line, 1+pc.pos.col,  pc.error);
 	}
 
 	// result
