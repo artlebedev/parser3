@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/02/27 15:07:46 $";
+static const char * const IDENT_STRING_C="$Date: 2004/02/27 15:24:03 $";
 
 #include "pcre.h"
 
@@ -153,8 +153,8 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars,
 
 	size_t start=0;
 	size_t end=our_length;
-	bool trim_start=(kind!=TRIM_END);
-	if(trim_start) {
+	// from left...
+	if(kind!=TRIM_END) {
 		CORD_pos pos; set_pos(pos, 0);
 		while(true) {
 			char c=CORD_pos_fetch(pos);
@@ -167,7 +167,20 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars,
 			CORD_next(pos);
 		}
 	}
-	// todo справа
+	// from right..
+	if(kind!=TRIM_START) {
+		CORD_pos pos; set_pos(pos, end-1);
+		while(true) {
+			char c=CORD_pos_fetch(pos);
+			if(strchr(chars, c)) {
+				if(--end==0) // optimization: NO need to check for 'end>=start', that's(<) impossible
+					return 0; // all chars are empty, just return empty string
+			} else
+				break;			
+
+			CORD_prev(pos);
+		}
+	}
 
 	if(start==0 && end==our_length) // nobody moved a thing
 		return *this;

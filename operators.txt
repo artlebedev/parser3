@@ -305,7 +305,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^строка.normalize[] выдает другую строку, в которой фрагменты на одном языке объединены
         полезно делать перед сложными match операциями, если вы знаете, что входная строка
         состоит из большого числа фрагментов
-    ^string.trim[start|both|end[;chars]] выкидывает charset из начала/конца/и начала и конца
+    !^string.trim[start|both|end[;chars]] выкидывает charset из начала/конца/и начала и конца
         default 'chars' -- whitespace chars
 
 !table
