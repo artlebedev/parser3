@@ -763,6 +763,8 @@ xdoc(xnode)
         !idrss integral unshared data size
         !isrss integral unshared stack size
 
+!DATA::=string | file
+
 !MAIN
     это класс, загружаемый на автомате из parser3.conf, 
     кучи auto.p и запрашиваемого документа:
@@ -784,7 +786,7 @@ xdoc(xnode)
     !результат которого передаЄтс€ в его @post-process[data] if($data is string) ...
     !результат которого отдаЄтс€ пользователю
 
-    !если встречаетс€ ошибка и try не задан, еЄ можно красиво сообщить пользователю, 
+!если встречаетс€ ошибка и try не задан, еЄ можно красиво сообщить пользователю, 
     !определив
     !@unhandled_exception[exception;stack]
     !$exception.type  строка "тип проблемы"
@@ -795,11 +797,22 @@ xdoc(xnode)
         там лежат в обратном пор€дке имена[name] и места вызовов[file line] 
         операторов/методов, приведших к ошибке.
 
-    !нужно выключить русский apache: CharsetDisable on
+системные типы ошибок:
+    parser.compile       ^test[}                компил€ци€ (непарна€ скобка, ...)
+    parser.runtime       ^if(0).                параметры (больше/меньше, чем нужно, не тех типов, ...)
+    number.zerodivision  ^eval(1/0) ^eval(1%0)
+    number.format        ^eval(abc*5)
+    file.lock
+    file.read                                   not found
+    file.write                                  no rights
+    file.format                                 not gif/jpg
+    sql.connect                                 not found/timeout
+    sql.execute                                 syntax error
+    xml                                         any error in xml/xslt libs
+    smtp.connect                                not found/timeout
+    smtp.execute                                communication error
 
+!нужно выключить русский apache: CharsetDisable on
 
-!DATA::=string | file
-
----
-    если в MAIN будет определЄн флаг $ORIGINS(1) то вместо обычного вывода страницы будет
+!если в MAIN будет определЄн флаг $ORIGINS(1) то вместо обычного вывода страницы будет
     выдан список фрагментов результата с указанием их происхождени€

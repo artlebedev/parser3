@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.221 2002/02/20 12:40:24 paf Exp $
+	$Id: execute.C,v 1.222 2002/03/27 13:33:32 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -487,7 +487,7 @@ void Request::execute(const Array& ops) {
 							}
 						} catch(...) {
 							// record it to stack trace
-							trace.push((void *)&frame->name());
+							exception_trace.push((void *)&frame->name());
 							/*re*/throw;
 						}
 					} else

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.123 2002/03/18 15:29:45 paf Exp $
+	$Id: pa_request.h,v 1.124 2002/03/27 13:33:32 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -203,6 +203,8 @@ public:
 	Value *self, *root, *rcontext;
 	/// contexts
 	WContext *wcontext;
+	/// exception stack trace
+	Stack exception_trace;
 	//@}
 
 	/// 'MAIN' class conglomerat
@@ -223,9 +225,6 @@ private: // core data
 		@see ANTI_ENDLESS_EXECUTE_RECOURSION
 	*/
 	uint anti_endless_execute_recoursion;
-
-	/// stack trace
-	Stack trace;
 
 private: // compile.C
 

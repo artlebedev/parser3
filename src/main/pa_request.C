@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.195 2002/03/18 15:29:46 paf Exp $
+	$Id: pa_request.C,v 1.196 2002/03/27 13:33:32 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -63,7 +63,7 @@ Request::Request(Pool& apool,
 	fconnection(0),
 	classes_conf(apool),
 	anti_endless_execute_recoursion(0),
-	trace(apool)
+	exception_trace(apool)
 #ifdef RESOURCES_DEBUG
 	,sql_connect_time(0),sql_request_time(0)
 #endif
@@ -349,10 +349,11 @@ t[9]-t[3]
 					if(Junction *junction=value->get_junction())
 						if(const Method *method=junction->method) {
 		 					// preparing to pass parameters to 
-							//	@exception[origin;source;comment;type;code;stack]
+							//	@unhandled_exception[exception;stack]
 							VMethodFrame frame(pool(), value->name(), *junction);
 							frame.set_self(*main_class);
 
+							// $exception
 							frame.store_param(method->name, &exception2vhash(pool(), e));
 							// $stack[^table::set{name	origin}]
 							Array& stack_trace_columns=*NEW Array(pool());
@@ -360,7 +361,7 @@ t[9]-t[3]
 							stack_trace_columns+=NEW String(pool(), "file");
 							stack_trace_columns+=NEW String(pool(), "lineno");
 							Table& stack_trace=*NEW Table(pool(), 0, &stack_trace_columns);
-							Array_iter tracei(trace);
+							Array_iter tracei(exception_trace);
 							while(tracei.has_next()) {
 								Array& row=*NEW Array(pool());
 

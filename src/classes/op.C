@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.76 2002/03/26 13:08:30 paf Exp $
+	$Id: op.C,v 1.77 2002/03/27 13:33:31 paf Exp $
 */
 
 #include "classes.h"
@@ -517,15 +517,18 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 	Value *result;
 
 	// taking snapshot of request processing status
-	int stop_index=r.stack.top_index();
+	//int ssexception_trace=r.exception_trace.top_index();
+	int sstack=r.stack.top_index();
 	Value *sself=r.self, *sroot=r.root, *srcontext=r.rcontext;  
 	WContext *swcontext=r.wcontext;	
 	try {
 		result=&r.process(body_code);
 	} catch(const Exception& e) {
 		// restoring request processing status
-		r.stack.top_index(stop_index);
+		//r.exception_trace.top_index(ssexception_trace);
+		r.stack.top_index(sstack);
 		r.self=sself; r.root=sroot, r.rcontext=srcontext; r.wcontext=swcontext;
+		
 		
 		VHash& vhash=exception2vhash(pool, e);
 

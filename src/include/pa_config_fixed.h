@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_fixed.h,v 1.41 2002/03/27 09:44:12 paf Exp $
+	$Id: pa_config_fixed.h,v 1.42 2002/03/27 13:33:31 paf Exp $
 
 
 	tested only with MS Visual C++ V6
@@ -40,4 +40,4 @@
 //#define NO_PA_EXECS
 
 // xml-abled parser
-//#define XML
+#define XML
