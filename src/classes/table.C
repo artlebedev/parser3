@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.152 2002/04/25 09:39:45 paf Exp $
+	$Id: table.C,v 1.151.2.1 2002/05/17 12:18:12 paf Exp $
 */
 
 #include "classes.h"
@@ -184,8 +184,9 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	while(i.has_next()) {
 		Array_iter c(*static_cast<Array *>(i.next()));
 		while(c.has_next()) {
-			sdata.append(*c.next_string(), //*static_cast<String *>(row->quick_get(column)), 
-				String::UL_TABLE);
+			if(const String *s=c.next_string())
+				sdata.append(*s,
+					String::UL_TABLE);
 			if(c.has_next())
 				sdata.APPEND_CONST("\t");
 		}
@@ -287,8 +288,8 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	Table& self_table=static_cast<VTable *>(r.self)->table();
 	Value& result=*new(pool) VHash(pool);
-	if(const Array *columns=self_table.columns())
-		if(columns->size()>0) {
+	if(const Array *columns=self_table.columns()) 
+		if(columns->size()>1) {
 			const String& key_field_name=params->as_no_junction(0, 
 				"key field name must not be code").as_string();
 			int key_field=self_table.column_name2index(key_field_name, true);
