@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.2 2001/04/10 13:24:49 paf Exp $
+	$Id: image.C,v 1.3 2001/04/10 14:00:02 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -27,7 +27,7 @@ VStateless_class *image_class;
 
 class Measure_reader {
 public:
-	enum { READ_CHUNK_SIZE=10*0x400 }; // 10K
+	enum { READ_CHUNK_SIZE=0x400 }; // 1K
 	typedef size_t (*Func)(void *& buf, size_t limit, void *info);
 
 	Measure_reader(Func afunc, void *ainfo) : 
@@ -36,8 +36,12 @@ public:
 	}
 
 	size_t read(unsigned char *& buf, size_t limit) {
-		if(!size) // nothing left
-			size=(*func)(chunk, READ_CHUNK_SIZE, info);
+		if(offset+limit>size) // nothing left
+			if(offset==0 || limit==1) { // only one-byte continuations allowed
+				size=(*func)(chunk, READ_CHUNK_SIZE, info);
+				offset=0;
+			} else
+				return 0; // as if EOF
 		if(!size) // EOF
 			return 0;
 			
@@ -125,7 +129,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 	const unsigned char COM=0xFE;
 
 	unsigned char *screenD_buf;
-	unsigned char *h_buf;
+	unsigned char *h_buf=0;
 	
 	bool flag=false;
 	
@@ -171,7 +175,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 		}
 	} while(*marker!=EOI);
 	
-	if(flag) {
+	if(flag && h_buf) {
 		JPG_Frame& h=*reinterpret_cast<JPG_Frame *>(h_buf);
 		width=bytes_to_int(h.width[0], h.width[1]);
 		height=bytes_to_int(h.height[0], h.height[1]);
@@ -268,8 +272,38 @@ static void _measure(Request& r, const String& method_name, Array *params) {
 	static_cast<VImage *>(r.self)->set(*file_name, width, height);
 }
 
+static void append_attrib_pair(const Hash::Key& key, Hash::Val *val, void *info) {
+	String& tag=*static_cast<String *>(info);
+	Value& value=*static_cast<Value *>(val);
+	// src="a.gif" width=123 ismap[=-1]
+	tag << " " << key;
+	if(value.is_string() || value.as_double()>=0) {
+		tag << "=";
+		if(value.is_string())
+			tag << "\"";
+		tag << value.as_string();
+		if(value.is_string())
+			tag << "\"";
+	}
+}
+/// ^image.html[]
+/// ^image.html[hash]
+static void _html(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	String tag(pool);
+	tag << "<img";
+	static_cast<VImage *>(r.self)->fields().for_each(append_attrib_pair, &tag);
+	tag << ">";
+	r.write_pass_lang(tag);
+}
+
 // initialize
 void initialize_image_class(Pool& pool, VStateless_class& vclass) {
 	// ^image:measure[DATA]
 	vclass.add_native_method("measure", Method::CT_DYNAMIC, _measure, 1, 1);
+
+	/// ^image.html[]
+	/// ^image.html[hash]
+	vclass.add_native_method("html", Method::CT_DYNAMIC, _html, 0, 1);
 }
