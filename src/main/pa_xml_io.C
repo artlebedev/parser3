@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/12/01 09:35:38 $";
+static const char * const IDENT="$Date: 2003/12/01 09:38:26 $";
 
 #include "libxslt/extensions.h"
 
@@ -97,7 +97,7 @@ xmlFileOpenLocalhost (const char* filename) {
 
 	if(char *buf=file_read_text(r.charsets, *new String(path), false)) {
 		MemoryStream *stream=new(UseGC) MemoryStream;
-		stream->m_buf=buf
+		stream->m_buf=buf;
 		stream->m_size=strlen(buf);
 		return (void *)stream;
 	} else
