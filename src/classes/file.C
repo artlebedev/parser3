@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2003/01/21 15:51:06 $";
+static const char* IDENT_FILE_C="$Date: 2003/03/21 07:19:42 $";
 
 #include "pa_config_includes.h"
 
@@ -269,7 +269,6 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	env.put(*new(pool) String(pool, "SCRIPT_NAME"), &script_name);
 	//env.put(*new(pool) String(pool, "SCRIPT_FILENAME"), ??&script_name);
 
-	bool stdin_specified=false;
 	// environment & stdin from param
 	String in(pool);
 	if(params->size()>1) {
@@ -278,7 +277,6 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			Append_env_pair_info info={&env};
 			user_env->for_each(append_env_pair, &info);
 			if(info.vstdin) {
-				stdin_specified=true;
 				if(const String *sstdin=info.vstdin->get_string()) {
 					in.append(*sstdin, String::UL_CLEAN, true);
 				} else
@@ -300,10 +298,6 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 		for(int i=2; i<params->size(); i++)
 			*argv+=&params->as_string(i, "parameter must be string");
 	}
-
-	// passing POST data
-	if(!stdin_specified) // if $.stdin[...] not specified 
-		in.APPEND(r.post_data, r.post_size, String::UL_CLEAN, "POST data (passed)", 0);
 
 	// exec!
 	String out(pool);
