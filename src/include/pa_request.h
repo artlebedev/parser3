@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/08/29 12:22:46 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/09/10 12:05:37 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -106,7 +106,7 @@ public:
 		bool header_only);
 
 	/// executes ops
-	void execute(const Array& ops, bool clean_junctions=false); // execute.C
+	void execute(const Array& ops); // execute.C
 	/// execute ops with anti-recoursion check
 	void recoursion_checked_execute(const String *name, const Array& ops) {
 		// anti_endless_execute_recoursion
@@ -116,8 +116,7 @@ public:
 				name,
 				"call canceled - endless recursion detected");
 		}
-		// in call & co: clean_junctions
-		execute(ops, true); // execute it
+		execute(ops); // execute it
 		anti_endless_execute_recoursion--;
 	}
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/10 12:02:24 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/10 12:05:37 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -111,7 +111,7 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 #define POP_NAME() static_cast<Value *>(stack.pop())->as_string()
 #define POP_CODE() static_cast<Array *>(stack.pop())
 
-void Request::execute(const Array& ops, bool clean_junctions) {
+void Request::execute(const Array& ops) {
 //	_asm int 3;
 #ifdef DEBUG_EXECUTE
 	debug_printf(pool(), "source----------------------------\n");
