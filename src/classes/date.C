@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.13 2001/11/12 10:32:24 paf Exp $
+	$Id: date.C,v 1.14 2001/12/21 14:08:55 paf Exp $
 */
 
 #include "classes.h"
@@ -76,7 +76,7 @@ static void _sql_string(Request& r, const String& method_name, MethodParams *) {
 	int size=1+ 4+1+2+1+2 +1+ 2+1+2+1+2 +1 +1;
 	char *buf=(char *)pool.malloc(size);
 	time_t time=vdate->get_time();
-	size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", gmtime(&time));
+	size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", localtime(&time));
 	
 	String& string=*new(pool) String(pool);
 	string.APPEND_CLEAN(buf, size, 

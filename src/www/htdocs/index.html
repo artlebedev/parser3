@@ -1,10 +1,9 @@
-@main[]
-#^eval(100/6)[%.2f]
-$a{$a}
-$a
-
+@auto[]
 $request:charset[windows-1251]
 $response:charset[windows-1251]
+
+@main[]
+^ttime[]
 #^tupper[]
 #^treplace[]
 #^xslt2[]
@@ -83,6 +82,10 @@ $response:charset[windows-1251]
 #^header[]
 <hr>
 OK
+
+@ttime[]
+$now[^date::now[]]
+$now.hour:$now.minute
 
 @tupper[]
 $t[abcABC‡·‚¿¡¬]
@@ -758,4 +761,3 @@ $file[^xdoc.file[
 	$.media-type[text/paf]
 ]]
 </pre>
-
