@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.43 2001/02/25 10:22:34 paf Exp $
+  $Id: compile.y,v 1.44 2001/02/25 10:48:59 paf Exp $
 */
 
 %{
@@ -151,7 +151,10 @@ get: '$' get_name {
 };
 get_name: name_without_curly_rdive EON | name_in_curly_rdive;
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
-name_without_curly_rdive: class_element | name_without_curly_rdive_read | name_without_curly_rdive_root;
+name_without_curly_rdive: 
+	name_without_curly_rdive_read 
+|	name_without_curly_rdive_root
+|	name_without_curly_rdive_class;
 name_without_curly_rdive_read: name_without_curly_rdive_code {
 	$$=N(POOL); 
 	Array *diving_code=$1;
@@ -172,6 +175,7 @@ name_without_curly_rdive_root: ':' name_without_curly_rdive_code {
 	OP($$, OP_WITH_ROOT); /* stack: starting context */
 	P($$, $2); /* diving code; stack: current context */
 };
+name_without_curly_rdive_class: class_prefix name_without_curly_rdive_code { $$=$1; P($$, $2) };
 name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; P($$, $2) };
 
 /* put */
@@ -181,9 +185,12 @@ put: '$' name_expr_wdive '(' constructor_value ')' {
 	P($$, $4); /* stack: context,name,constructor_value */
 	OP($$, OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 };
-name_expr_wdive: class_element | name_expr_wdive_write | name_expr_wdive_root;
+name_expr_wdive: 
+	name_expr_wdive_write
+|	name_expr_wdive_root
+|	name_expr_wdive_class;
 name_expr_wdive_write: name_expr_dive_code {
-	$$=N(POOL); 
+	$$=N(POOL);
 	Array *diving_code=$1;
 	String *first_name=SLA2S(diving_code);
 	if(first_name && *first_name==SELF_NAME) {
@@ -202,6 +209,7 @@ name_expr_wdive_root: ':' name_expr_dive_code {
 	OP($$, OP_WITH_ROOT); /* stack: starting context */
 	P($$, $2); /* diving code; stack: context,name */
 };
+name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
 
 constructor_value: 
 	constructor_one_param_value
@@ -328,11 +336,7 @@ subvar__get_write: '$' subvar_ref_name_rdive {
 	OP($$, OP_GET_ELEMENT__WRITE);
 };
 
-class_element: class ':' name_advance1 {
-	$$=$1; // stack: vclass
-	P($$, $3); // stack: element
-};
-class: STRING {
+class_prefix: STRING ':' {
 	String& name=*SLA2S($1);
 	VClass *vclass=static_cast<VClass *>(PC->request->classes().get(name));
 	if(!vclass) {
