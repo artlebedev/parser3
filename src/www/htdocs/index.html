@@ -3,7 +3,7 @@ $request:charset[windows-1251]
 $response:charset[windows-1251]
 
 @main[]
-^mail3[]
+#^mail3[]
 #^ttime[]
 #^tupper[]
 #^treplace[]
@@ -16,7 +16,7 @@ $response:charset[windows-1251]
 #^badvsnprintf[]
 #^badoracequoting[]
 #^badconstructors[]
-#^xloadwrongtable[]
+^xloadwrongtable[]
 #^xsetwrongtable[]
 #^if($form:test){y}{n}
 #^tablecolumnerror[]
@@ -199,6 +199,7 @@ $bred[^int::int[]]
 
 @xloadwrongtable[]
 $constr[^xdoc::load[wrongtable.xml]]
+^show-xdoc2[$constr]
 
 @xsetwrongtable[]
 $constr[^xdoc::set{<?xml version="1.0" encoding="windows-1251z" ?>
