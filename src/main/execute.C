@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/02 14:27:54 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/02 14:31:13 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -695,7 +695,7 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 			{
 				b=POP();  a=POP();
 				double_result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), double_result < 0);
+				value=NEW VBool(pool(), double_result < 0.0);
 				PUSH(value);
 				break;
 			}
@@ -703,7 +703,7 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 			{
 				b=POP();  a=POP();
 				double_result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), double_result > 0);
+				value=NEW VBool(pool(), double_result > 0.0);
 				PUSH(value);
 				break;
 			}
@@ -711,7 +711,7 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 			{
 				b=POP();  a=POP();
 				double_result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), double_result <= 0);
+				value=NEW VBool(pool(), double_result <= 0.0);
 				PUSH(value);
 				break;
 			}
@@ -719,7 +719,7 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 			{
 				b=POP();  a=POP();
 				double_result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), double_result >= 0);
+				value=NEW VBool(pool(), double_result >= 0.0);
 				PUSH(value);
 				break;
 			}
@@ -727,7 +727,7 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 			{
 				b=POP();  a=POP();
 				double_result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), double_result== 0);
+				value=NEW VBool(pool(), double_result == 0.0);
 				PUSH(value);
 				break;
 			}
@@ -735,7 +735,7 @@ void Request::execute(const Array& ops, bool clean_junctions) {
 			{
 				b=POP();  a=POP();
 				double_result=a->as_double() - b->as_double();
-				value=NEW VBool(pool(), double_result != 0);
+				value=NEW VBool(pool(), double_result != 0.0);
 				PUSH(value);
 				break;
 			}
