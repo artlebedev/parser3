@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.181 2001/11/16 12:38:44 paf Exp $
+	$Id: pa_request.C,v 1.182 2001/11/19 12:17:06 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -50,7 +50,7 @@ static void load_charset(const Hash::Key& akey, Hash::Val *avalue,
 //
 Request::Request(Pool& apool,
 				 Info& ainfo,
-				 String::Untaint_lang adefault_lang,
+				 uchar adefault_lang,
 				 bool status_allowed) : Pooled(apool),
 	stack(apool),
 	OP(*MOP_create(apool)),

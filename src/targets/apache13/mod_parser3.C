@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.11 2001/11/19 08:21:38 paf Exp $
+	$Id: mod_parser3.C,v 1.12 2001/11/19 12:17:06 paf Exp $
 */
 
 #include "httpd.h"
@@ -269,7 +269,7 @@ static void real_parser_handler(Pool& pool, request_rec *r) {
 	// prepare to process request
 	Request request(pool,
 		request_info,
-		String::UL_OPTIMIZED_HTML,
+		String::UL_HTML|String::UL_OPTIMIZE_BIT,
 		dcfg->parser_status_allowed
 		);
 	

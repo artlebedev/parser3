@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_types.h,v 1.33 2001/11/16 14:25:02 paf Exp $
+	$Id: pa_types.h,v 1.34 2001/11/19 12:17:06 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -33,16 +33,20 @@
 /// for snprintf(buf, MAX_NUMBER, "%.2f")
 #define MAX_NUMBER 40
 
-/// handy type
+///{@ handy types
+#undef uchar
+typedef unsigned char uchar;
+
 #undef ushort
 typedef unsigned short ushort;
 const size_t MAX_USHORT=1<<sizeof(ushort)*8-1;
-/// handy type
+
 #undef uint
 typedef unsigned int uint;
-/// handy type
+
 #undef ulong
 typedef unsigned long ulong;
+///}@
 
 #ifndef NO_STRING_ORIGIN
 /// all String pieces hold information of where they come from

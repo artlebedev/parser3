@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.76 2001/11/16 13:51:14 paf Exp $
+	$Id: untaint.C,v 1.77 2001/11/19 12:17:06 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -133,267 +133,270 @@ inline bool need_quote_http_header(const char *ptr, size_t size) {
 	return false;
 }
 
-/// @test UL_OPTIMIZED_HTML optimize
+String& String::append(const String& src, uchar lang, bool forced) {
+	// manually unrolled code to avoid do{if(const)} constructs
+	if(forced) 
+		STRING_SRC_FOREACH_ROW(
+			APPEND(row->item.ptr, row->item.size, 
+				lang, //forcing passed lang
+				row->item.origin.file, row->item.origin.line);
+		)
+	else if(lang==UL_PASS_APPENDED) 
+		STRING_SRC_FOREACH_ROW(
+			APPEND(row->item.ptr, row->item.size, 
+				row->item.lang, // passing item's lang
+				row->item.origin.file, row->item.origin.line);
+		)
+	else if(lang&UL_OPTIMIZE_BIT) // main idea here
+		// tainted piece would get OPTIMIZED bit from 'lang'
+		// clean piece would be marked OPTIMIZED manually
+		// pieces with determined languages [not tainted|clean] would retain theirs langs
+		STRING_SRC_FOREACH_ROW(
+			APPEND(row->item.ptr, row->item.size, 
+				row->item.lang==UL_TAINTED?lang:(
+					row->item.lang==UL_CLEAN?UL_CLEAN|UL_OPTIMIZE_BIT: // ORing with OPTIMIZED flag
+						row->item.lang
+				), 
+				row->item.origin.file, row->item.origin.line);
+		)
+	else
+		STRING_SRC_FOREACH_ROW(
+			APPEND(row->item.ptr, row->item.size, 
+				row->item.lang==UL_TAINTED?lang:row->item.lang,
+				row->item.origin.file, row->item.origin.line);
+		);
+break2:
+	return *this;
+}
+
 size_t String::cstr_bufsize(Untaint_lang lang,
 							SQL_Connection *connection,
 							const char *charset) const {
-	size_t dest=1;
-	bool whitespace=true;
-	const Chunk *chunk=&head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; i++, row++) {
-			if(row==append_here)
-				goto break2;
+	size_t dest=1; // for terminating 0
+	STRING_FOREACH_ROW(
+		uchar to_lang=lang==UL_UNSPECIFIED?row->item.lang:lang;
 
-			Untaint_lang to_lang=lang==UL_UNSPECIFIED?(Untaint_lang)row->item.lang:lang;
+		switch(to_lang & ~UL_OPTIMIZE_BIT) {
+		case UL_CLEAN:
+		case UL_TAINTED:
+		case UL_AS_IS:
+			// clean piece
 
-			switch(to_lang) {
-			case UL_CLEAN:
-				// clean piece
-				{ // optimizing whitespace
-					escape(switch(*src) {
-						case ' ': case '\n': case '\t':
-							if(!whitespace) {
-								dest++;
-								whitespace=true;
-							}
-							break;
-						default:
-							whitespace=false;
-							dest++;
-							break;
-					});
-				}
-				break;
-			case UL_TAINTED:
-				// tainted piece, but undefined untaint language
-				// for VString.as_double of tainted values
-				// for ^process{body} evaluation
-			case UL_AS_IS:
-				// tainted, untaint language: as-is
+			// tainted piece, but undefined untaint language
+			// for VString.as_double of tainted values
+			// for ^process{body} evaluation
+
+			// tainted, untaint language: as-is
+			dest+=row->item.size;
+			break;
+		case UL_FILE_SPEC:
+			// tainted, untaint language: file [name]
+			dest+=row->item.size*3/* worst: Z->%XX */;
+			break;
+		case UL_URI:
+			// tainted, untaint language: uri
+			dest+=row->item.size*3/* worst: Z->%XX */;
+			break;
+		case UL_HTTP_HEADER:
+			// tainted, untaint language: http-field-content-text
+			dest+=row->item.size*3/* worst: Z->%XX */;
+			break;
+		case UL_MAIL_HEADER:
+			// tainted, untaint language: mail-header
+			if(charset) {
+				// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
+				dest+=row->item.size*3+MAX_STRING/* worst: =?charset?Q?=%XX?= */;
+			} else {
 				dest+=row->item.size;
-				break;
-			case UL_FILE_SPEC:
-				// tainted, untaint language: file [name]
-				dest+=row->item.size*3/* worst: Z->%XX */;
-				break;
-			case UL_URI:
-				// tainted, untaint language: uri
-				dest+=row->item.size*3/* worst: Z->%XX */;
-				break;
-			case UL_HTTP_HEADER:
-				// tainted, untaint language: http-field-content-text
-				dest+=row->item.size*3/* worst: Z->%XX */;
-				break;
-			case UL_MAIL_HEADER:
-				// tainted, untaint language: mail-header
-				if(charset) {
-					// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
-					dest+=row->item.size*3+MAX_STRING/* worst: =?charset?Q?=%XX?= */;
-				} else {
-					dest+=row->item.size;
-				}
-				break;
-			case UL_TABLE: 
-				// tainted, untaint language: table
-				dest+=row->item.size;
-				break;
-			case UL_SQL:
-				// tainted, untaint language: sql
-				if(connection)
-					dest+=connection->quote(0, row->item.ptr, row->item.size);
-				break;
-			case UL_JS:
-				escape(switch(*src) {
-					case '"': case '\'': case '\n': case '\\': case '\xFF':
-						dest+=2;  break;
-					default: 
-						dest++;  break;
-				});
-				break;
-			case UL_XML:
-				escape(switch(*src) {
-					case '&': case '>': case '<': case '"': case '\'': 
-						dest+= 6;  break;
-					default: 
-						dest++;  break;
-				});
-				break;
-			case UL_HTML:
-			case UL_OPTIMIZED_HTML:
-				escape(switch(*src) {
-					case '&': 
-					case '>': 
-					case '<': 
-					case '"': 
-						dest+=6;  break;
-					default: 
-						dest++;  break;
-				});
-				break;
 			}
-
-			if((lang==UL_UNSPECIFIED?row->item.lang:lang)!=UL_CLEAN)
-				whitespace=false;
+			break;
+		case UL_TABLE: 
+			// tainted, untaint language: table
+			dest+=row->item.size;
+			break;
+		case UL_SQL:
+			// tainted, untaint language: sql
+			if(connection)
+				dest+=connection->quote(0, row->item.ptr, row->item.size);
+			break;
+		case UL_JS:
+			escape(switch(*src) {
+				case '"': case '\'': case '\n': case '\\': case '\xFF':
+					dest+=2;  break;
+				default: 
+					dest++;  break;
+			});
+			break;
+		case UL_XML:
+			escape(switch(*src) {
+				case '&': case '>': case '<': case '"': case '\'': 
+					dest+= 6;  break;
+				default: 
+					dest++;  break;
+			});
+			break;
+		case UL_HTML:
+			escape(switch(*src) {
+				case '&': 
+				case '>': 
+				case '<': 
+				case '"': 
+					dest+=6;  break;
+				default: 
+					dest++;  break;
+			});
+			break;
 		}
-		chunk=row->link;
-	} while(chunk);
-
+	);
 break2:
 	return dest;
 }
 
-/// @test UL_OPTIMIZED_HTML optimize
 char *String::store_to(char *dest, Untaint_lang lang, 
 					   SQL_Connection *connection,
 					   const char *charset) const {
 	// WARNING:
 	//	 before any changes check cstr_bufsize first!!!
 	bool whitespace=true;
-	const Chunk *chunk=&head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; i++, row++) {
-			if(row==append_here)
-				goto break2;
+	STRING_FOREACH_ROW(
+		uchar to_lang=lang==UL_UNSPECIFIED?row->item.lang:lang;
 
-			Untaint_lang to_lang=lang==UL_UNSPECIFIED?(Untaint_lang)row->item.lang:lang;
+		char *start=dest;
 
-			switch(to_lang) {
-			case UL_CLEAN:
-				// clean piece
-				{ // optimizing whitespace
-					escape(switch(*src) {
-						case ' ': case '\n': case '\t':
-							if(!whitespace) {
-								*dest++=*src;
-								whitespace=true;
-							}
-							break;
-						default:
-							whitespace=false;
-							*dest++=*src;
-							break;
-					});
+		switch(to_lang & ~UL_OPTIMIZE_BIT) {
+		case UL_CLEAN:
+		case UL_TAINTED:
+		case UL_AS_IS:
+			// clean piece
+
+			// tainted piece, but undefined untaint language
+			// for VString.as_double of tainted values
+			// for ^process{body} evaluation
+
+			// tainted, untaint language: as-is
+			memcpy(dest, row->item.ptr, row->item.size); 
+			dest+=row->item.size;
+			break;
+		case UL_FILE_SPEC:
+			// tainted, untaint language: file [name]
+			escape(switch(*src) {
+				case ' ': to_char('_');  break;
+				encode(need_file_encode, '+');
+			});
+			break;
+		case UL_URI:
+			// tainted, untaint language: uri
+			escape(switch(*src) {
+				case ' ': to_char('+');  break;
+				encode(need_uri_encode, '%');
+			});
+			break;
+		case UL_HTTP_HEADER:
+			// tainted, untaint language: http-field-content-text
+			escape(switch(*src) {
+				case ' ': to_char('+');  break;
+				encode(need_uri_encode, '%');
+			});
+			break;
+		case UL_MAIL_HEADER:
+			// tainted, untaint language: mail-header
+			if(charset) {
+				// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
+				const char *src=row->item.ptr; 
+				bool to_quoted_printable=false;
+				for(int size=row->item.size; size--; src++) {
+					if(*src & 0x80) {
+						if(!to_quoted_printable) {
+							dest+=sprintf(dest, "=?%.15s?Q?", charset);
+							to_quoted_printable=true;
+						}
+						dest+=sprintf(dest, "=%02X", *src & 0xFF);
+					} else {
+						*dest++=*src;						
+					}
 				}
-				break;
-			case UL_TAINTED:
-				// tainted piece, but undefined untaint language
-				// for VString.as_double of tainted values
-				// for ^process{body} evaluation
-			case UL_AS_IS:
-				// tainted, untaint language: as-is
+				if(to_quoted_printable) // close
+					dest+=sprintf(dest, "?=");
+			} else {
 				memcpy(dest, row->item.ptr, row->item.size); 
 				dest+=row->item.size;
-				break;
-			case UL_FILE_SPEC:
-				// tainted, untaint language: file [name]
-				escape(switch(*src) {
-					case ' ': to_char('_');  break;
-					encode(need_file_encode, '+');
-				});
-				break;
-			case UL_URI:
-				// tainted, untaint language: uri
-				escape(switch(*src) {
-					case ' ': to_char('+');  break;
-					encode(need_uri_encode, '%');
-				});
-				break;
-			case UL_HTTP_HEADER:
-				// tainted, untaint language: http-field-content-text
-				escape(switch(*src) {
-					case ' ': to_char('+');  break;
-					encode(need_uri_encode, '%');
-				});
-				break;
-			case UL_MAIL_HEADER:
-				// tainted, untaint language: mail-header
-				if(charset) {
-					// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
-					const char *src=row->item.ptr; 
-					bool to_quoted_printable=false;
-					for(int size=row->item.size; size--; src++) {
-						if(*src & 0x80) {
-							if(!to_quoted_printable) {
-								dest+=sprintf(dest, "=?%.15s?Q?", charset);
-								to_quoted_printable=true;
-							}
-							dest+=sprintf(dest, "=%02X", *src & 0xFF);
-						} else {
-							*dest++=*src;						
-						}
-					}
-					if(to_quoted_printable) // close
-						dest+=sprintf(dest, "?=");
-				} else {
-					memcpy(dest, row->item.ptr, row->item.size); 
-					dest+=row->item.size;
-				}
-				break;
-			case UL_TABLE: 
-				// tainted, untaint language: table
-				escape(switch(*src) {
-					case '\t': to_char(' ');  break;
-					case '\n': to_char(' ');  break;
-					_default;
-				});
-				break;
-			case UL_SQL:
-				// tainted, untaint language: sql
-				if(connection)
-					dest+=connection->quote(dest, row->item.ptr, row->item.size);
-				else
-					throw Exception(0, 0,
-						this,
-						"untaint in SQL language failed - no connection specified");
-				break;
-			case UL_JS:
-				escape(switch(*src) {
-					case '"': to_string("\\\"", 2);  break;
-					case '\'': to_string("\\'", 2);  break;
-					case '\n': to_string("\\n", 2);  break;
-					case '\\': to_string("\\\\", 2);  break;
-					case '\xFF': to_string("\\\xFF", 2);  break;
-					_default;
-				});
-				break;
-			case UL_XML:
-				escape(switch(*src) {
-					case '&': to_string("&amp;", 5);  break;
-					case '>': to_string("&gt;", 4);  break;
-					case '<': to_string("&lt;", 4);  break;
-					case '"': to_string("&quot;", 6);  break;
-					case '\'': to_string("&apos;", 6);  break;
-					_default;
-				});
-				break;
-			case UL_HTML:
-			case UL_OPTIMIZED_HTML:
-				escape(switch(*src) {
-					case '&': to_string("&amp;", 5);  break;
-					case '>': to_string("&gt;", 4);  break;
-					case '<': to_string("&lt;", 4);  break;
-					case '"': to_string("&quot;", 6);  break;
-					_default;
-				});
-				break;
-			default:
-				throw Exception(0, 0, 
-					this, 
-					"unknown untaint language #%d of %d piece", 
-						static_cast<int>(row->item.lang), 
-						i); // never
-				break; // never
 			}
-
-			if((lang==UL_UNSPECIFIED?row->item.lang:lang)!=UL_CLEAN)
-				whitespace=false;
+			break;
+		case UL_TABLE: 
+			// tainted, untaint language: table
+			escape(switch(*src) {
+				case '\t': to_char(' ');  break;
+				case '\n': to_char(' ');  break;
+				_default;
+			});
+			break;
+		case UL_SQL:
+			// tainted, untaint language: sql
+			if(connection)
+				dest+=connection->quote(dest, row->item.ptr, row->item.size);
+			else
+				throw Exception(0, 0,
+					this,
+					"untaint in SQL language failed - no connection specified");
+			break;
+		case UL_JS:
+			escape(switch(*src) {
+				case '"': to_string("\\\"", 2);  break;
+				case '\'': to_string("\\'", 2);  break;
+				case '\n': to_string("\\n", 2);  break;
+				case '\\': to_string("\\\\", 2);  break;
+				case '\xFF': to_string("\\\xFF", 2);  break;
+				_default;
+			});
+			break;
+		case UL_XML:
+			escape(switch(*src) {
+				case '&': to_string("&amp;", 5);  break;
+				case '>': to_string("&gt;", 4);  break;
+				case '<': to_string("&lt;", 4);  break;
+				case '"': to_string("&quot;", 6);  break;
+				case '\'': to_string("&apos;", 6);  break;
+				_default;
+			});
+			break;
+		case UL_HTML:
+			escape(switch(*src) {
+				case '&': to_string("&amp;", 5);  break;
+				case '>': to_string("&gt;", 4);  break;
+				case '<': to_string("&lt;", 4);  break;
+				case '"': to_string("&quot;", 6);  break;
+				_default;
+			});
+			break;
+		default:
+			throw Exception(0, 0, 
+				this, 
+				"unknown untaint language #%d of %d piece", 
+					static_cast<int>(row->item.lang), 
+					i); // never
+			break; // never
 		}
-		chunk=row->link;
-	} while(chunk);
 
+		if(to_lang & UL_OPTIMIZE_BIT) { 
+			// optimizing whitespace
+			char *stop=dest;  dest=start;
+			for(char *src=start; src<stop; src++)
+				switch(*src) {
+				// of all consequent white space chars leaving only first one
+				case ' ': case '\n': case '\t':
+					if(!whitespace) {
+						*dest++=*src;
+						whitespace=true;
+					}
+					break;
+				default:
+					whitespace=false;
+					*dest++=*src;
+					break;
+				};
+		} else // piece without optimization
+			whitespace=false;
+	);
 break2:
 	return dest;
 }

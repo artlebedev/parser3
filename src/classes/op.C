@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.59 2001/11/14 09:30:08 paf Exp $
+	$Id: op.C,v 1.60 2001/11/19 12:17:05 paf Exp $
 */
 
 #include "classes.h"
@@ -53,13 +53,12 @@ static void _if(Request& r, const String&, MethodParams *params) {
 static void _untaint(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	String::Untaint_lang lang;
+	uchar lang;
 	if(params->size()==1)
 		lang=String::UL_AS_IS; // mark as simply 'tainted'. useful in html from sql 
 	else {
 		const String& lang_name=params->as_string(0, "lang must be string");
-		lang=static_cast<String::Untaint_lang>(
-			untaint_lang_name2enum->get_int(lang_name));
+		lang=untaint_lang_name2enum->get_int(lang_name);
 		if(!lang)
 			throw Exception(0, 0,
 				&lang_name,
@@ -77,13 +76,12 @@ static void _untaint(Request& r, const String& method_name, MethodParams *params
 static void _taint(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	String::Untaint_lang lang;
+	uchar lang;
 	if(params->size()==1)
 		lang=String::UL_TAINTED; // mark as simply 'tainted'. useful in table:set
 	else {
 		const String& lang_name=params->as_string(0, "lang must be string");
-		lang=static_cast<String::Untaint_lang>(
-			untaint_lang_name2enum->get_int(lang_name));
+		lang=untaint_lang_name2enum->get_int(lang_name);
 		if(!lang)
 			throw Exception(0, 0,
 				&lang_name,

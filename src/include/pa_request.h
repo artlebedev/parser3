@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.110 2001/11/08 11:52:34 paf Exp $
+	$Id: pa_request.h,v 1.111 2001/11/19 12:17:05 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -68,7 +68,7 @@ public:
 	
 	Request(Pool& apool,
 		Info& ainfo,
-		String::Untaint_lang adefault_lang, ///< all tainted data default untainting lang
+		uchar adefault_lang, ///< all tainted data default untainting lang
 		bool status_allowed ///<  status class allowed
 	);
 	~Request() {}
@@ -110,7 +110,8 @@ public:
 
 	/// appending, sure of clean string inside
 	void write_no_lang(const String& astring) {
-		wcontext->write(astring, String::UL_CLEAN);
+		wcontext->write(astring, 
+			String::UL_CLEAN | flang&String::UL_OPTIMIZE_BIT);
 	}
 	/// appending string, passing language built into string being written
 	void write_pass_lang(const String& astring) {
@@ -130,7 +131,8 @@ public:
 	}
 	/// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
-		wcontext->write(avalue, String::UL_CLEAN);
+		wcontext->write(avalue, 
+			String::UL_CLEAN | flang&String::UL_OPTIMIZE_BIT);
 	}
 	/// appending sure value, not VString
 	void write_expr_result(Value& avalue) {
@@ -226,11 +228,11 @@ private: // execute.C
 
 private: // lang&raw 
 	
-	String::Untaint_lang flang;
+	uchar flang;
 
 private: // defaults
 
-	const String::Untaint_lang fdefault_lang;
+	const uchar fdefault_lang;
 	Value *default_content_type;
 
 private: // mime types
@@ -240,12 +242,12 @@ private: // mime types
 
 private: // lang manipulation
 
-	String::Untaint_lang set_lang(String::Untaint_lang alang) {
-		String::Untaint_lang result=flang;
+	uchar set_lang(uchar alang) {
+		uchar result=flang;
 		flang=alang;
 		return result;
 	}
-	void restore_lang(String::Untaint_lang alang) {
+	void restore_lang(uchar alang) {
 		flang=alang;
 	}
 
@@ -257,9 +259,9 @@ private:
 ///	Auto-object used for temporary changing Request::flang.
 class Temp_lang {
 	Request& frequest;
-	String::Untaint_lang saved_lang;
+	uchar saved_lang;
 public:
-	Temp_lang(Request& arequest, String::Untaint_lang alang) : 
+	Temp_lang(Request& arequest, uchar alang) : 
 		frequest(arequest),
 		saved_lang(arequest.set_lang(alang)) {
 	}

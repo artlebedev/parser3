@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.91 2001/11/16 12:38:43 paf Exp $
+	$Id: pa_globals.C,v 1.92 2001/11/19 12:17:06 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -202,7 +202,7 @@ void pa_globals_init(Pool& pool) {
 	ULN("js", JS);
 	ULN("xml", XML);
 	ULN("html", HTML);
-	ULN("optimized-html", OPTIMIZED_HTML);
+	ULN("optimized-html", HTML|String::UL_OPTIMIZE_BIT);
 
 	// tables
 	Table *default_typo_table=NEW Table(pool, 0, 0);

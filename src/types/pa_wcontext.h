@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.h,v 1.21 2001/11/05 11:46:35 paf Exp $
+	$Id: pa_wcontext.h,v 1.22 2001/11/19 12:17:07 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -37,7 +37,7 @@ public: // Value
 public: // WContext
 
 	/// appends a fstring to result
-	virtual void write(const String& astring, String::Untaint_lang lang);
+	virtual void write(const String& astring, uchar lang);
 
 	/// writes Value; raises an error if already
 	virtual void write(Value& avalue);
@@ -46,7 +46,7 @@ public: // WContext
 		if value is VString writes fstring,
 		else writes Value; raises an error if already
 	*/
-	virtual void write(Value& avalue, String::Untaint_lang lang);
+	virtual void write(Value& avalue, uchar lang);
 
 	/**
 		retrives the resulting value

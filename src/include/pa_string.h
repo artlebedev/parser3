@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.118 2001/11/16 14:25:02 paf Exp $
+	$Id: pa_string.h,v 1.119 2001/11/19 12:17:06 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -19,7 +19,7 @@ class Table;
 #ifndef NO_STRING_ORIGIN
 #	define STRING_APPEND_PARAMS \
 		const char *src, size_t size,  \
-		String::Untaint_lang lang, \
+		uchar lang, \
 		const char *file, uint line
 /// appends piece to String  @see String::real_append
 #	define APPEND(src, size, lang, file, line) \
@@ -28,7 +28,7 @@ class Table;
 #	define STRING_APPEND_PARAMS \
 		const char *src, \
 		size_t size, \
-		String::Untaint_lang lang
+		uchar lang
 /// appends piece to String  @see String::real_append
 #	define APPEND(src, size, lang, file, line) \
 		real_append(src, size, lang)
@@ -101,7 +101,7 @@ public:
 		UL_JS,        ///< JavaScript code
 		UL_XML,		///< ^dom:set xml
 		UL_HTML,      ///< HTML code (for editing)
-		UL_OPTIMIZED_HTML  ///< optimized HTML code, adjucent whitespaces joined
+		UL_OPTIMIZE_BIT = 0x80  ///< flag, requiring cstr whitespace optimization
 	};
 
 public:
@@ -170,7 +170,7 @@ public:
 		marking all tainted pieces of it with @a lang.
 		or marking ALL pieces of it with a @a lang when @a forced to.
 	*/
-	String& append(const String& src, Untaint_lang lang, bool forced=false);
+	String& append(const String& src, uchar lang, bool forced=false);
 	String& operator << (const String& src) { return append(src, UL_PASS_APPENDED); }
 	String& operator << (const char *src) { return APPEND_CONST(src); }
 
@@ -248,9 +248,9 @@ private:
 			} item;
 			Chunk *link;  ///< link to the next chunk in chain
 		} rows[CR_PREALLOCATED_COUNT];
-		Chunk *preallocated_link; ///< next rows are here
 	}
 		head;  ///< the head chunk of the chunk chain
+	Chunk *head_link; ///< next rows are here
 
 	/// next append would write to this record
 	Chunk::Row *append_here;
@@ -283,7 +283,7 @@ private:
 	String& reconstruct(Pool& pool) const;
 	void join_chain(Pool& pool, 
 					   uint& ai, const Chunk*& achunk, const Chunk::Row*& arow,
-					   Untaint_lang& joined_lang, const char *& joined_ptr, size_t& joined_size) const;
+					   uchar& joined_lang, const char *& joined_ptr, size_t& joined_size) const;
 	String& replace_in_reconstructed(Pool& pool, Dictionary& dict) const;
 
 private: //disabled
@@ -292,5 +292,22 @@ private: //disabled
 
 };
 #include "pa_pragma_pack_end.h"
+
+#define STRING_PREFIX_FOREACH_ROW(src, body) { \
+	const Chunk *chunk=&(src).head;  \
+	do { \
+		const Chunk::Row *row=chunk->rows; \
+		for(uint i=0; i<chunk->count; i++, row++) { \
+			if(row==(src).append_here) \
+				goto break2; \
+			\
+			body \
+		} \
+		chunk=row->link; \
+	} while(chunk); \
+}
+
+#define STRING_FOREACH_ROW(body) STRING_PREFIX_FOREACH_ROW(*this, body)
+#define STRING_SRC_FOREACH_ROW(body) STRING_PREFIX_FOREACH_ROW(src, body)
 
 #endif

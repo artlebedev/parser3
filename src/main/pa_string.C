@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.122 2001/11/16 14:25:02 paf Exp $
+	$Id: pa_string.C,v 1.123 2001/11/19 12:17:06 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -27,7 +27,7 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	last_chunk=&head;
 	head.count=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
-	head.preallocated_link=0;
+	head_link=0;
 	link_row=&head.rows[head.count];
 
 	if(src)
@@ -66,10 +66,10 @@ String::String(const String& src) :
 		last_chunk=static_cast<Chunk *>(
 			malloc(sizeof(uint)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *), 9));
 		last_chunk->count=curr_chunk_rows;
-		head.preallocated_link=last_chunk;
+		head_link=last_chunk;
 		append_here=link_row=&last_chunk->rows[last_chunk->count];
 
-		Chunk *old_chunk=src.head.preallocated_link; 
+		Chunk *old_chunk=src.head_link; 
 		Chunk::Row *new_rows=last_chunk->rows;
 		uint rows_left_to_copy=last_chunk->count;
 		while(true) {
@@ -97,18 +97,9 @@ String::String(const String& src) :
 
 size_t  String::size() const {
 	size_t result=0;
-	const Chunk *chunk=&head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; i++, row++) {
-			if(row==append_here)
-				goto break2;
-
+	STRING_FOREACH_ROW(
 			result+=row->item.size;
-		}
-		chunk=row->link;
-	} while(chunk);
-
+	);
 break2:
 	return result;
 }
@@ -116,18 +107,9 @@ break2:
 /// @todo not very optimal
 uint String::used_rows() const {
 	uint result=0;
-	const Chunk *chunk=&head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; i++, row++) {
-			if(row==append_here)
-				goto break2;
-
-			result++;
-		}
-		chunk=row->link;
-	} while(chunk);
-
+	STRING_FOREACH_ROW(
+		result++;
+	);
 break2:
 	return result;
 }
@@ -143,24 +125,6 @@ void String::expand() {
 	append_here=last_chunk->rows;
 	link_row=&last_chunk->rows[last_chunk->count];
 	link_row->link=0;
-}
-
-String& String::append(const String& src, Untaint_lang lang, bool forced) {
-	const Chunk *chunk=&src.head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; i++, row++) {
-			if(row==src.append_here)
-				goto break2;
-			
-			APPEND(row->item.ptr, row->item.size, 
-				(lang!=UL_PASS_APPENDED && (row->item.lang==UL_TAINTED || forced))?lang:(Untaint_lang)row->item.lang,
-				row->item.origin.file, row->item.origin.line);
-		}
-		chunk=row->link;
-	} while(chunk);
-break2:
-	return *this;
 }
 
 String& String::real_append(STRING_APPEND_PARAMS) {
@@ -214,19 +178,9 @@ char String::first_char() const {
 
 uint String::hash_code() const {
 	uint result=0;
-
-	const Chunk *chunk=&head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; i++) {
-			if(row==append_here)
-				goto break2;
-
+	STRING_FOREACH_ROW(
 			result=Hash::generic_code(result, row->item.ptr, row->item.size);
-			row++;
-		}
-		chunk=row->link;
-	} while(chunk);
+	);
 break2:
 	return result;
 }
@@ -417,29 +371,22 @@ String& String::mid(size_t start, size_t finish) const {
 		return result;
 
 	size_t pos=0;
-	const Chunk *chunk=&head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; pos+=row->item.size, i++, row++) {
-			if(row==append_here)
+	STRING_FOREACH_ROW(
+		size_t item_finish=pos+row->item.size;
+		if(item_finish > start) { // started now or already?
+			bool started=result.size()==0; // started now?
+			bool finished=finish <= item_finish; // finished now?
+			size_t offset=started?start-pos:0;
+			size_t size=finished?finish-pos:row->item.size;
+			result.APPEND(
+				row->item.ptr+offset, size-offset, 
+				row->item.lang,
+				row->item.origin.file, row->item.origin.line);
+			if(finished)
 				goto break2;
-
-			size_t item_finish=pos+row->item.size;
-			if(item_finish > start) { // started now or already?
-				bool started=result.size()==0; // started now?
-				bool finished=finish <= item_finish; // finished now?
-				size_t offset=started?start-pos:0;
-				size_t size=finished?finish-pos:row->item.size;
-				result.APPEND(
-					row->item.ptr+offset, size-offset, 
-					(Untaint_lang)row->item.lang,
-					row->item.origin.file, row->item.origin.line);
-				if(finished)
-					goto break2;
-			}
 		}
-		chunk=row->link;
-	} while(chunk);
+		pos+=row->item.size;
+	);
 break2:
 //	SAPI::log(pool(), "piece of '%s' from %d to %d is '%s'",
 		//cstr(), start, finish, result.cstr());
@@ -696,7 +643,7 @@ String& String::change_case(Pool& pool, const unsigned char *tables,
 			}
 			
 			result.APPEND(new_cstr, row->item.size, 
-				(Untaint_lang)row->item.lang,
+				row->item.lang,
 				row->item.origin.file, row->item.origin.line);
 		}
 		chunk=row->link;
@@ -708,8 +655,8 @@ break2:
 
 void String::join_chain(Pool& pool, 
 					   uint& ai, const Chunk*& achunk, const Chunk::Row*& arow,
-					   Untaint_lang& joined_lang, const char *& joined_ptr, size_t& joined_size) const {
-	joined_lang=(Untaint_lang)arow->item.lang;
+					   uchar& joined_lang, const char *& joined_ptr, size_t& joined_size) const {
+	joined_lang=arow->item.lang;
 	
 	// calc size
 	joined_size=0;
@@ -789,7 +736,7 @@ String& String::reconstruct(Pool& pool) const {
 			if(row==append_here)
 				goto break2;
 
-			Untaint_lang joined_lang;
+			uchar joined_lang;
 			const char *joined_ptr;
 			size_t joined_size;
 			join_chain(pool, i, chunk, row,
@@ -810,40 +757,31 @@ break2:
 String& String::replace_in_reconstructed(Pool& pool, Dictionary& dict) const {
 	//_asm int 3;
 	String& result=*new(pool) String(pool);
-	const Chunk *chunk=&head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; i++, row++) {
-			if(row==append_here)
-				goto break2;
-
-			const char *src=row->item.ptr; 
-			size_t src_size=row->item.size;
-			char *new_cstr=(char *)pool.malloc((size_t)ceil(src_size*dict.max_ratio()), 14);
-			char *dest=new_cstr;
-			while(src_size) {
-				// there is a row where first column starts 'src'
-				if(Table::Item *item=dict.first_that_starts(src, src_size)) {
-					// get a=>b values
-					const String& a=*static_cast<Array *>(item)->get_string(0);
-					const String& b=*static_cast<Array *>(item)->get_string(1);
-					// skip 'a' in 'src' && reduce work size
-					src+=a.size();  src_size-=a.size();
-					// write 'b' to 'dest' && skip 'b' in 'dest'
-					b.store_to(dest);  dest+=b.size();
-				} else {
-					// write a char to b && reduce work size
-					*dest++=*src++;  src_size--;
-				}
+	STRING_FOREACH_ROW(
+		const char *src=row->item.ptr; 
+		size_t src_size=row->item.size;
+		char *new_cstr=(char *)pool.malloc((size_t)ceil(src_size*dict.max_ratio()), 14);
+		char *dest=new_cstr;
+		while(src_size) {
+			// there is a row where first column starts 'src'
+			if(Table::Item *item=dict.first_that_starts(src, src_size)) {
+				// get a=>b values
+				const String& a=*static_cast<Array *>(item)->get_string(0);
+				const String& b=*static_cast<Array *>(item)->get_string(1);
+				// skip 'a' in 'src' && reduce work size
+				src+=a.size();  src_size-=a.size();
+				// write 'b' to 'dest' && skip 'b' in 'dest'
+				b.store_to(dest);  dest+=b.size();
+			} else {
+				// write a char to b && reduce work size
+				*dest++=*src++;  src_size--;
 			}
-
-			result.APPEND(new_cstr, dest-new_cstr, 
-				(Untaint_lang)row->item.lang,
-				row->item.origin.file, row->item.origin.line);
 		}
-		chunk=row->link;
-	} while(chunk);
 
+		result.APPEND(new_cstr, dest-new_cstr, 
+			row->item.lang,
+			row->item.origin.file, row->item.origin.line);
+	);
 break2:
 	return result;
 }
@@ -922,27 +860,17 @@ void String::serialize(size_t prolog_size, void *& buf, size_t& buf_size) const 
 	buf=malloc(buf_size,15);
 	char *cur=(char *)buf+prolog_size;
 
-	const Chunk *chunk=&head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; i++) {
-			if(row==append_here)
-				goto break2;
-
-			// lang
-			memcpy(cur, &row->item.lang, sizeof(Untaint_lang));
-			cur+=sizeof(Untaint_lang);
-			// size
-			memcpy(cur, &row->item.size, sizeof(size_t));
-			cur+=sizeof(size_t);
-			// bytes
-			memcpy(cur, row->item.ptr, row->item.size);
-			cur+=row->item.size;
-
-			row++;
-		}
-		chunk=row->link;
-	} while(chunk);
+	STRING_FOREACH_ROW(
+		// lang
+		memcpy(cur, &row->item.lang, sizeof(Untaint_lang));
+		cur+=sizeof(Untaint_lang);
+		// size
+		memcpy(cur, &row->item.size, sizeof(size_t));
+		cur+=sizeof(size_t);
+		// bytes
+		memcpy(cur, row->item.ptr, row->item.size);
+		cur+=row->item.size;
+	);
 break2:
 	;
 }
