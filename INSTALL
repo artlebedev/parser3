@@ -16,6 +16,12 @@
         --with-static-gc=$HOME/gc/lib
         --with-shared-gc=$HOME/gc/lib
 
+    NOTE:
+    On some platforms there is special version of libgc patched to support some
+    local piece of subtlety.
+    Official libgc does not work there, use special version instead.
+    (OpenBSD reported to be one of those)
+
   As most UNIX programs Parser3 follows the "standard":
 
   mkdir $HOME/parser3project
@@ -206,4 +212,4 @@
   
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.37 2004/03/02 14:05:08 paf Exp $
+$Id: INSTALL,v 1.38 2004/03/03 12:41:42 paf Exp $
