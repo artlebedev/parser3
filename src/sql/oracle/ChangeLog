@@ -1,0 +1,29 @@
+2001-07-30  parser
+	* PgSQL32/include/fe-auth.h:
+	* PgSQL32/include/libpq-fe.h:
+	* PgSQL32/include/libpq-int.h:
+	* PgSQL32/include/postgres_ext.h:
+	* PgSQL32/include/pqexpbuffer.h:
+	* PgSQL32/include/pqsignal.h:
+	* PgSQL32/include/win32.h:
+	* PgSQL32/lib/release/libpq.dll:
+	* config_fixed.h:
+	* config_includes.h:
+	* libltdl/Makefile.am:
+	* libltdl/Makefile.in:
+	* libltdl/README:
+	* libltdl/acinclude.m4:
+	* libltdl/aclocal.m4:
+	* libltdl/config.h:
+	* libltdl/config_auto.h.in:
+	* libltdl/config_fixed.h:
+	* libltdl/configure:
+	* libltdl/configure.in:
+	* libltdl/libltdl_pgsql.dsp:
+	* libltdl/ltdl.c:
+	* libltdl/ltdl.h:
+	* parser3pgsql.C:
+	* parser3pgsql.def:
+	* parser3pgsql.dsp:
+		pgsql 0
+
