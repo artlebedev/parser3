@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_transcoder.C,v 1.1 2001/12/14 12:55:36 paf Exp $
+	$Id: pa_transcoder.C,v 1.2 2001/12/14 14:50:17 paf Exp $
 */
 
 #include "pa_common.h"
@@ -74,16 +74,6 @@ void transcoder_transcode(Pool& pool,
 	}
 }
 
-void Transcoder::transcodeToUTF8(Pool& pool,
-								 const void *source_body, size_t source_content_length,
-								 const void *& dest_body, size_t& dest_content_length) const {
-	throw Exception(0, 0,
-		0,
-		"transcodeToUTF8 not supported(yet)");
-}
-
-
-
 // ---------------------------------------------------------------------------
 //  Local static data
 //
@@ -124,6 +114,74 @@ static const uint gUTFOffsets[6] = {
 static const XMLByte gFirstByteMark[7] = {
     0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
 };
+
+/// @todo not so memory-hungry with prescan
+void Transcoder::transcodeToUTF8(Pool& pool,
+								 const void *source_body, size_t source_content_length,
+								 const void *& adest_body, size_t& adest_content_length) const {
+	
+	size_t dest_content_length=0;
+	XMLByte *dest_body=(XMLByte*)pool.malloc(source_content_length*6/*so that surly enough*/);
+
+	const XMLByte* srcPtr=(const XMLByte*)source_body;
+	const XMLByte* srcEnd=(const XMLByte*)source_body+source_content_length;
+	XMLByte* outPtr=dest_body;
+
+    while (srcPtr < srcEnd) {
+        uint curVal = fromTable[*srcPtr];
+
+        // Figure out how many bytes we need
+        unsigned int encodedBytes;
+        if (curVal < 0x80)
+            encodedBytes = 1;
+        else if (curVal < 0x800)
+            encodedBytes = 2;
+        else if (curVal < 0x10000)
+            encodedBytes = 3;
+        else if (curVal < 0x200000)
+            encodedBytes = 4;
+        else if (curVal < 0x4000000)
+            encodedBytes = 5;
+        else if (curVal <= 0x7FFFFFFF)
+            encodedBytes = 6;
+        else {
+            // use the replacement character
+            *outPtr++ = '?';
+            srcPtr ++;
+            continue;
+        }
+
+        //  If we cannot fully get this char into the output buffer,
+		// never
+
+        // We can do it, so update the source index
+        srcPtr++;
+
+        //  And spit out the bytes. We spit them out in reverse order
+        //  here, so bump up the output pointer and work down as we go.
+        outPtr += encodedBytes;
+        switch(encodedBytes) {
+            case 6 : *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+                     curVal >>= 6;
+            case 5 : *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+                     curVal >>= 6;
+            case 4 : *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+                     curVal >>= 6;
+            case 3 : *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+                     curVal >>= 6;
+            case 2 : *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+                     curVal >>= 6;
+            case 1 : *--outPtr = XMLByte(curVal | gFirstByteMark[encodedBytes]);
+        }
+
+        // Add the encoded bytes back in again to indicate we've eaten them
+        outPtr += encodedBytes;
+    }
+
+	// return
+	adest_body=dest_body;
+	adest_content_length=outPtr-dest_body;
+}
 void Transcoder::transcodeFromUTF8(Pool& pool,
 								   const void *source_body, size_t source_content_length,
 								   const void *& adest_body, size_t& adest_content_length) const {
@@ -184,7 +242,6 @@ void Transcoder::transcodeFromUTF8(Pool& pool,
 				"transcodeFromUTF8 error: too big tmpVal (0x%08X)", tmpVal);
 	}
 
-	
 	// return
 	adest_body=dest_body;
 	adest_content_length=outPtr-dest_body;
