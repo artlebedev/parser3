@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.15 2001/03/25 08:52:37 paf Exp $
+	$Id: untaint.C,v 1.16 2001/03/25 09:01:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -168,8 +168,13 @@ char *String::store_to(char *dest) const {
 						to_string('<', "&lt;",4);
 						to_string('"', "&quot;",6);
 						to_char('\t', ' ');
-						to_string('\r', "", 0); // todo: check  mac & linux browsers' textarea
-						to_string('\n', "\\n", 2);  // convinient name for typo match
+						// convinient name for typo match "\n"
+						case '\r': 
+							*dest++='\\';  *dest++='n'; // \r -> \n
+							if(src[1]=='\n') // \r\n -> remove \n
+								src++;
+							break;
+						to_string('\n', "\\n", 2);
 						//TODO: XSLT to_string('\'', "&apos;", 6)
 						_default;
 					);
