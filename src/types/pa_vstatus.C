@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstatus.C,v 1.2 2002/02/05 14:57:51 paf Exp $
+	$Id: pa_vstatus.C,v 1.3 2002/02/05 15:07:15 paf Exp $
 */
 
 #include "pa_vstatus.h"
@@ -34,9 +34,9 @@ Value *VStatus::get_element(const String& aname) {
 
 		Hash& hash=rusage.hash(&aname);
 		hash.put(*NEW String(pool(), "utime"), NEW VDouble(pool(), 
-			u.ru_utime.tv_sec+u.ru_utime.tv_usec/10000));
+			u.ru_utime.tv_sec+u.ru_utime.tv_usec/1000000));
 		hash.put(*NEW String(pool(), "stime"), NEW VDouble(pool(), 
-			u.ru_stime.tv_sec+u.ru_stime.tv_usec/10000));
+			u.ru_stime.tv_sec+u.ru_stime.tv_usec/1000000));
 		hash.put(*NEW String(pool(), "maxrss"), NEW VDouble(pool(), u.ru_maxrss));
 		hash.put(*NEW String(pool(), "ixrss"), NEW VDouble(pool(), u.ru_ixrss));
 		hash.put(*NEW String(pool(), "idrss"), NEW VDouble(pool(), u.ru_idrss));
