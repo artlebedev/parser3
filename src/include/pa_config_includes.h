@@ -205,6 +205,9 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 // assignment within conditional expression if(type var=somethig) OK
 #pragma warning(disable:4706)
 
+// memcpy deprecation
+#pragma warning(disable:4996)
+
 
 #if 0
 #ifdef _DEBUG

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2004/06/18 15:55:47 $";
+static const char * const IDENT_HASH_C="$Date: 2004/06/22 14:12:57 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -212,13 +212,18 @@ static void _intersects(Request& r, MethodParams& params) {
 }
 
 
+extern String sql_bind_name;
 extern String sql_limit_name;
 extern String sql_offset_name;
 extern String sql_default_name;
 extern String sql_distinct_name;
+extern int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders);
+extern void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Driver::Placeholder* placeholders);
+
 static void _sql(Request& r, MethodParams& params) {
 	Value& statement=params.as_junction(0, "statement must be code");
 
+	HashStringValue* bind=0;
 	ulong limit=0;
 	ulong offset=0;
 	bool distinct=false;
@@ -227,6 +232,10 @@ static void _sql(Request& r, MethodParams& params) {
 		if(!voptions.is_string())
 			if(HashStringValue* options=voptions.get_hash()) {
 				int valid_options=0;
+				if(Value* vbind=options->get(sql_bind_name)) {
+					valid_options++;
+					bind=vbind->get_hash();
+				}
 				if(Value* vlimit=options->get(sql_limit_name)) {
 					valid_options++;
 					limit=(ulong)r.process_to_value(*vlimit).as_double();
@@ -249,6 +258,11 @@ static void _sql(Request& r, MethodParams& params) {
 					"options must be hash");
 	}
 
+	SQL_Driver::Placeholder* placeholders=0;
+	uint placeholders_count=0;
+	if(bind)
+		placeholders_count=marshal_binds(*bind, placeholders);
+
 	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
 	const char* statement_cstr=
@@ -265,6 +279,9 @@ static void _sql(Request& r, MethodParams& params) {
 		offset, limit,
 		handlers,
 		statement_string);
+
+	if(bind)
+		unmarshal_bind_updates(*bind, placeholders_count, placeholders);
 }
 
 static void keys_collector(
@@ -367,7 +384,7 @@ MHash::MHash(): Methoded("hash")
 	// ^a.delete[key]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
 
-	// ^hash:sql[query][$.limit(1) $.offset(2)]
+	// ^hash:sql[query][options hash]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 
 	// ^hash._keys[[column name]]

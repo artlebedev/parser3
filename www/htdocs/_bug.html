@@ -1,4 +1,17 @@
+@main[]
 ^connect[oracle://mts_imprimatur2:imp2@mts]{
+#    ^in[]
+	^out[]
+	OK
+}
+
+@inp[]
+create or replace procedure paf(a in integer) as begin
+insert into pif (a) values (:a);
+end;
+/
+
+@in[]
 #    ^void:sql{create table paf(a clob)}
 #    ^void:sql{insert into paf (a) values (/**a**/'a')}
 #    ^void:sql{insert into paf (a) values (:unk)}
@@ -12,5 +25,21 @@
 	"^string:sql{select a from pif}"
 
 #	^string:sql{select a from paf}
-	OK
-}
+
+@outp[]
+create or replace procedure pafm(ai in integer,ao out integer) as begin
+ao:=ai;
+end;
+/
+@out[]
+    $vars[
+    	$.ai(2222)
+    	$.ao[sad]
+    ]
+	^void:sql{call pafm(:ai,:ao)}[
+		$.bind[$vars]
+	]
+	"$vars.ai"
+	"$vars.ao"
+
+#	^string:sql{select a from paf}

@@ -252,7 +252,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         0 или default
     !^имя.double[] (default)
         0 или default
-    !^void:sql{запрос без результата}
+    !^void:sql{запрос без результата}{$.bind[см. table::sql]}
 
 
 !int,double
@@ -264,7 +264,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^имя.div(на сколько /)
     !^имя.mod(на сколько %)
     !^имя.format[формат]
-    !^int/double:sql{query}[[$.limit(2) $.offset(4) $.default{0}]]
+    !^int/double:sql{query}[[$.limit(2) $.offset(4) $.default{0} $.bind[см. table::sql]]]
         запрос, результат которого должен быть один столбец/одна строка
 
 !string
@@ -276,7 +276,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         пример:
         ^if(def $form:name) не пуста?
         ^if($user.isAlive) истина? [автопреобразование к числу, не ноль?]
-    !^string::sql{query}[[$.limit(1) $.offset(4) $.default{n/a}]]
+    !^string::sql{query}[[$.limit(1) $.offset(4) $.default{n/a} $.bind[см. table::sql]]]
         результат запроса должен быть один столбец/одна строка
     !^имя.int[] .int(default) целочисленное значение строки. 
         если ломается преобразование, берётся default
@@ -332,7 +332,11 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         !пустые строки, и строки в первой колонке содержащие '#', игнорируются        
         !$.separator[^#09]
         !$.encloser["] по-умолчанию, нет.
-    !^table::sql{query}[[$.limit(2) $.offset(4) todo:$.default{ ^table::create[...] }]]
+    !^table::sql{query}[[$.limit(2) $.offset(4) $.bind[hash] todo:$.default{ ^table::create[...] }]]
+    	bind привязывает переменные в запросе к их значениям
+    	пока реализован только для oracle
+    	в запросе надо написать ":имя"
+    	в параметре bind передать hash, из которого возьмётся(или куда запишется) значение
     !^таблица.save[[nameless|append;]путь[;опции, см. load]]
     !$таблица.поле
     !$таблица.fields  из named таблицы выдаёт текущую запись как Hash

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/06/18 15:55:47 $";
+static const char * const IDENT_STRING_C="$Date: 2004/06/22 14:12:57 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -415,14 +415,19 @@ public:
 	}
 };
 #endif
+extern String sql_bind_name;
 extern String sql_limit_name;
 extern String sql_offset_name;
 extern String sql_default_name;
 extern String sql_distinct_name;
+extern int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders);
+extern void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Driver::Placeholder* placeholders);
+
 const String* sql_result_string(Request& r, MethodParams& params,
 				HashStringValue*& options, Value*& default_code) {
 	Value& statement=params.as_junction(0, "statement must be code");
 
+	HashStringValue* bind=0;
 	ulong limit=0;
 	ulong offset=0;
 	default_code=0;
@@ -430,22 +435,41 @@ const String* sql_result_string(Request& r, MethodParams& params,
 		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
 		if(!voptions.is_string())
 			if((options=voptions.get_hash())) {
-				if(Value* vlimit=options->get(sql_limit_name))
+				int valid_options=0;
+				if(Value* vbind=options->get(sql_bind_name)) {
+					valid_options++;
+					bind=vbind->get_hash();
+				}
+				if(Value* vlimit=options->get(sql_limit_name)) {
+					valid_options++;
 					limit=(ulong)r.process_to_value(*vlimit).as_double();
-				if(Value* voffset=options->get(sql_offset_name))
+				}
+				if(Value* voffset=options->get(sql_offset_name)) {
+					valid_options++;
 					offset=(ulong)r.process_to_value(*voffset).as_double();
+				}
 				if((default_code=options->get(sql_default_name))) {
+					valid_options++;
 					if(!default_code->get_junction())
 						throw Exception("parser.runtime",
 							0,
 							"default option must be code");
 				}
+				if(valid_options!=options->count())
+					throw Exception("parser.runtime",
+						0,
+						"called with invalid option");
 			} else
 				throw Exception("parser.runtime",
 					0,
 					"options must be hash");
 	} else
 		options=0;
+
+	SQL_Driver::Placeholder* placeholders=0;
+	uint placeholders_count=0;
+	if(bind)
+		placeholders_count=marshal_binds(*bind, placeholders);
 
 	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
@@ -459,6 +483,9 @@ const String* sql_result_string(Request& r, MethodParams& params,
 		handlers,
 		statement_string);
 	
+	if(bind)
+		unmarshal_bind_updates(*bind, placeholders_count, placeholders);
+
 	if(!handlers.got_cell)
 		return 0; // no lines, caller should return second param[default value]
 
@@ -609,7 +636,7 @@ MString::MString(): Methoded("string") {
 	add_native_method("lower", Method::CT_DYNAMIC, _lower, 0, 0);
 
 	// ^sql[query]
-	// ^sql[query][$.limit(1) $.offset(2) $.default[n/a]]
+	// ^sql[query][options hash]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 
 	// ^string.replace[table]

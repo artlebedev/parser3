@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_MATH_C="$Date: 2004/02/11 15:33:12 $";
+static const char * const IDENT_MATH_C="$Date: 2004/06/22 14:12:57 $";
 
 #include "pa_common.h"
 #include "pa_vmemory.h"
@@ -23,6 +23,7 @@ public: // Methoded
 
 DECLARE_CLASS_VAR(memory, 0 /*fictive*/, new MMemory);
 
+#undef GC_DEBUG
 #ifdef GC_DEBUG
 extern "C" GC_API void GC_print_backtrace(void *);
 void *debug_print_backtrace=0;

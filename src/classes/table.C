@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2004/06/18 15:55:47 $";
+static const char * const IDENT_TABLE_C="$Date: 2004/06/22 14:12:57 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -889,9 +889,51 @@ public:
 	}
 };
 #endif
+
+static void marshal_bind(
+						 HashStringValue::key_type aname, 
+						 HashStringValue::value_type avalue,
+						 SQL_Driver::Placeholder** pptr) 
+{
+	SQL_Driver::Placeholder& ph=**pptr;
+	ph.name=aname.cstr();
+	ph.value=avalue->as_string().cstr();
+	ph.is_null=avalue->get_class()==void_class;
+	ph.were_updated=false;
+
+	(*pptr)++;
+}
+
+// not static, used elsewhere
+int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders) {
+	int hash_count=hash.count();
+	placeholders=new(UseGC) SQL_Driver::Placeholder[hash_count];
+	SQL_Driver::Placeholder* ptr=placeholders;
+	hash.for_each(marshal_bind, &ptr);
+	return hash_count;
+}
+
+// not static, used elsewhere
+void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Driver::Placeholder* placeholders) {
+	SQL_Driver::Placeholder* ph=placeholders;
+	for(int i=0; i<placeholder_count; i++, ph++)
+		if(ph->were_updated) {
+			Value* value;
+			if(ph->is_null)
+				value=new VVoid();
+			else
+				if(ph->value)
+					value=new VString(*new String(ph->value, 0, true/*tainted*/));
+				else
+					value=new VString(*new String());					
+			hash.put(ph->name, value);
+		}
+}
+
 static void _sql(Request& r, MethodParams& params) {
 	Value& statement=params.as_junction(0, "statement must be code");
 
+	HashStringValue* bind=0;
 	ulong limit=0;
 	ulong offset=0;
 	if(params.count()>1) {
@@ -899,6 +941,10 @@ static void _sql(Request& r, MethodParams& params) {
 		if(!voptions.is_string())
 			if(HashStringValue* options=voptions.get_hash()) {
 				int valid_options=0;
+				if(Value* vbind=options->get(sql_bind_name)) {
+					valid_options++;
+					bind=vbind->get_hash();
+				}
 				if(Value* vlimit=options->get(sql_limit_name)) {
 					valid_options++;
 					limit=(ulong)r.process_to_value(*vlimit).as_double();
@@ -916,6 +962,11 @@ static void _sql(Request& r, MethodParams& params) {
 					0,
 					"options must be hash");
 	}
+
+	SQL_Driver::Placeholder* placeholders=0;
+	uint placeholders_count=0;
+	if(bind)
+		placeholders_count=marshal_binds(*bind, placeholders);
 
 	Temp_lang temp_lang(r, String::L_SQL);
 	const String&  statement_string=r.process_to_string(statement);
@@ -944,6 +995,9 @@ static void _sql(Request& r, MethodParams& params) {
 	    
 	r.sql_request_time+=t[1]-t[0];
 #endif	    			
+
+	if(bind)
+		unmarshal_bind_updates(*bind, placeholders_count, placeholders);
 
 	Table& result=
 		handlers.table?*handlers.table: // query resulted in table? return it

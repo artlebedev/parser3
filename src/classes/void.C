@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2004/06/18 15:55:47 $";
+static const char * const IDENT_VOID_C="$Date: 2004/06/22 14:12:57 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -60,29 +60,6 @@ static void _double(Request& r, MethodParams& params) {
 }
 
 #ifndef DOXYGEN
-static void marshal_bind(
-						 HashStringValue::key_type aname, 
-						 HashStringValue::value_type avalue,
-						 SQL_Driver::Placeholder** pptr) 
-{
-	SQL_Driver::Placeholder& ph=**pptr;
-	ph.name=aname.cstr();
-	ph.value=avalue->as_string().cstr();
-	ph.is_null=avalue->get_class()==void_class;
-	ph.were_updated=false;
-
-	*pptr++;
-}
-
-// not static, used elsewhere
-int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders) {
-	int hash_count=hash.count();
-	placeholders=new(UseGC) SQL_Driver::Placeholder[hash_count];
-	SQL_Driver::Placeholder* ptr=placeholders;
-	hash.for_each(marshal_bind, &ptr);
-	return hash_count;
-}
-
 class Void_sql_event_handlers: public SQL_Driver_query_event_handlers {
 	const String& statement_string;
 public:
@@ -100,6 +77,10 @@ public:
 
 };
 #endif
+
+extern int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders);
+extern void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Driver::Placeholder* placeholders);
+
 static void _sql(Request& r, MethodParams& params) {
 	Value& statement=params.as_junction(0, "statement must be code");
 
@@ -139,6 +120,9 @@ static void _sql(Request& r, MethodParams& params) {
 		0, 0,
 		handlers,
 		statement_string);
+
+	if(bind)
+		unmarshal_bind_updates(*bind, placeholders_count, placeholders);
 }
 
 static void _left_right(Request& r, MethodParams& params) {
