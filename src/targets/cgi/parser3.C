@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.133 2001/11/15 20:26:34 paf Exp $
+	$Id: parser3.C,v 1.134 2001/11/16 11:03:02 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -115,6 +115,26 @@ void SAPI::die(const char *fmt, ...) {
 	va_start(args,fmt);
 	::log(fmt, args);
 	va_end(args);
+
+	char body[MAX_STRING];
+	size_t size=vsnprintf(body, MAX_STRING, fmt, args);
+
+	//
+	int content_length=strlen(body);
+
+	// prepare header
+	// let's be honest, that's bad we couldn't produce valid output
+	SAPI::add_header_attribute(pool, "status", "500");
+	SAPI::add_header_attribute(pool, "content-type", "text/plain");
+	char content_length_cstr[MAX_NUMBER];
+	snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
+	SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
+
+	// send header
+	SAPI::send_header(pool);
+
+	// body
+	SAPI::send_body(pool, body, content_length);
 
 	exit(1);
 }
@@ -351,48 +371,24 @@ void call_real_parser_handler__do_SEH(
 }
 
 void report_error(const char *prefix, const char *body, bool header_only) {
-	if(!body)
-		body="<unknown error>";
-
-	// log it
-	SAPI::log(pool, "%s%s", prefix?prefix:"", body);
-
-	//
-	int content_length=strlen(body);
-
-	// prepare header
-	SAPI::add_header_attribute(pool, "content-type", "text/plain");
-	char content_length_cstr[MAX_NUMBER];
-	snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
-	SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
-
-	// send header
-	SAPI::send_header(pool);
-
-	// body
-	if(!header_only)
-		SAPI::send_body(pool, body, content_length);
 }
 
-#ifdef WIN32
-int failed_new(size_t size) {
-    const char *msg="out of memory";
-    report_error(0, msg, false/*header_only*/);
-	SAPI::die(msg);
-	return 0; // not reached
-}
-#endif
-
-#ifdef HAVE_SET_NEW_HANDLER
+#if defined(HAVE_SET_NEW_HANDLER) || defined(WIN32)
+#ifdef HAVE_SET_NEW_HANDLER 
 void failed_new() {
-    const char *msg="out of memory";
+#else
+int failed_new(size_t size) {
+#endif
+    const char *msg="out of memory in 'new'";
     report_error(0, msg, false/*header_only*/);
 	SAPI::die(msg);
+#ifndef HAVE_SET_NEW_HANDLER
+	return 0; // not reached
+#endif
 }
 #endif
 
 int main(int argc, char *argv[]) {
-	int result;
 	argv0=argv[0];
 
 	umask(2);
@@ -444,24 +440,15 @@ int main(int argc, char *argv[]) {
 		call_real_parser_handler__do_SEH(
 			filespec_to_process,
 			request_method, header_only);
-
-		// successful finish
-		result=0;
 	} catch(const Exception& e) { // global problem 
 		// don't allocate anything on pool here:
 		//   possible pool' exception not catch-ed now
 		//   and there could be out-of-memory exception
 
-		report_error("exception in request exception handler: ", e.comment(), header_only);
-
-		// unsuccessful finish
-		result=1;
-#if _MSC_VER && !defined(_DEBUG)
+		SAPI::die("exception in request exception handler: ", e.comment());
+#ifndef _DEBUG
 	} catch(...) { 
-		report_error(0, "<unknown exception>", header_only);
-
-		// unsuccessful finish
-		result=1;
+		SAPI::die("<unknown exception>");
 #endif
 	}
 	
@@ -471,5 +458,5 @@ int main(int argc, char *argv[]) {
 	if(!cgi)
 		SAPI::send_body(pool, "\n", 1);
 #endif
-	return result;
+	return 0;
 }

@@ -4,12 +4,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.40 2001/11/12 14:45:37 paf Exp $
+	$Id: pa_pool.C,v 1.41 2001/11/16 11:03:02 paf Exp $
 */
 
 #include "pa_pool.h"
 #include "pa_exception.h"
 #include "pa_common.h"
+#include "pa_sapi.h"
 
 #ifdef XML
 #include <util/PlatformUtils.hpp>
@@ -35,15 +36,14 @@ Pool::~Pool() {
 }
 
 void Pool::fail_alloc(size_t size) const {
-	throw Exception(0, 0,
-		0,
-		"failed to allocate %u bytes", size);
+	SAPI::die("failed to allocate %u bytes, "
+		"total allocated %u in %u times", 
+		size, 
+		ftotal_allocated, ftotal_times);
 }
 
 void Pool::fail_register_cleanup() const {
-	throw Exception(0, 0,
-		0,
-		"failed to register cleanup");
+	SAPI::die("failed to register cleanup");
 }
 
 void Pool::set_charset(const String &new_charset) {
