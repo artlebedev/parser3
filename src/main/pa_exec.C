@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.22 2002/01/25 12:59:43 paf Exp $
+	$Id: pa_exec.C,v 1.23 2002/02/05 15:38:57 paf Exp $
 
 
 	@todo setrlimit
@@ -234,7 +234,7 @@ static int execle_piped(const char *path,
 		/* HP-UX SIGCHLD fix goes here, if someone will remind me what it is... */
 		signal(SIGCHLD, SIG_DFL);	/* Was that it? */
 	
-		execle(path, arg1, arg2, arg3, arg4, arg5, NULL, env);
+		execle(path, path, arg1, arg2, arg3, arg4, arg5, NULL, env);
 		exit(-errno);
 	}
 	
