@@ -51,30 +51,30 @@ Xне сделано, видимо, не будет сделано
     !^for[i](0;4){тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
     !^use[модуль]
     !^try{
-    	...
+        ...
         !^throw[sql.connect;вася;болван] // был ^error[текст]
         ...
     }{
-    	^if($exception.type eq sql){
-    		$exception.handled(1)  ^rem{флаг, что exception обработан}
-    		....
-    	}
-    	
-    	^switch($exception.type){
-	    	^case[sql;mail]{
-	    		$exception.handled(1)
-    	        код, обрабатывающий sql ошибку
-    			$exception.type = sql.connect
-			    $exception.file $exception.lineno [если не запрещены при компиляции]
-    			$exception.source = вася
-    			$exception.comment = болван
-    			^if($exception.type eq connect){^cache[read]}
-	    	}
-    		^case[_default]{
-    			код, обрабатывающий другую ошибку
-    			^throw[$exception] << re-throw
-	    	}
-	    }
+        ^if($exception.type eq sql){
+            $exception.handled(1)  ^rem{флаг, что exception обработан}
+            ....
+        }
+        
+        ^switch($exception.type){
+            ^case[sql;mail]{
+                $exception.handled(1)
+                код, обрабатывающий sql ошибку
+                $exception.type = sql.connect
+                $exception.file $exception.lineno [если не запрещены при компиляции]
+                $exception.source = вася
+                $exception.comment = болван
+                ^if($exception.type eq connect){^cache[read]}
+            }
+            ^case[_default]{
+                код, обрабатывающий другую ошибку
+                ^throw[$exception] << re-throw
+            }
+        }
     }
     ^exit[] + - прекращяет обработку запроса. 
         удобно сделать после выставления 401 ошибки
@@ -142,8 +142,11 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^cache[файл](секунд){код}
         !скэшировать строку, которая получается при выполнении кода на 'секунд' секунд
         !если 0секунд, значит не кэшировать, а старый такой стереть
-	^cache[delete] << не кэшировать, старое забыть
-	^cache[read] << взять скэшированное насильно, игнорируя expires
+    ^cache[delete] 
+    	сигнализирует вышестоящему ^cache "не кэшировать, старое забыть"
+    ^cache[read] 
+    	сигнализирует вышестоящему ^cache "взять скэшированное насильно, игнорируя expires", <br>
+    	выдаёт bool "получилось/нет"
 
 
     Xесть глобальный флажок в свойствах/командной строке "не оптимизировать"
@@ -240,15 +243,15 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         если ломается преобразование, берётся default
     !^имя.format[формат] %d  %.2f %02d...
     !^строка.match[шаблон][[опции поиска]]  $prematch $match $postmatch $1 $2...
-    	опции поиска=
-		i CASELESS
-		x whitespace in regex ignored
-		s singleline = $ считается концом всего текста
-		m multiline = $ считается концом строки[\n], не концом всего текста
-		g найти все вхождения, а не одно
+        опции поиска=
+        i CASELESS
+        x whitespace in regex ignored
+        s singleline = $ считается концом всего текста
+        m multiline = $ считается концом строки[\n], не концом всего текста
+        g найти все вхождения, а не одно
     !^строка.match[шаблон][опции поиска]{замена}
-    	опции поиска+=
-		g заменить все вхождения, а не одно
+        опции поиска+=
+        g заменить все вхождения, а не одно
     !^строка.{l|r}split[разделитель] таблица из столбца $piece
     !^строка.upper|lower[] 
     X^строка.truncate(предел терпенья) стиль :(
@@ -268,7 +271,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         числовое значение равно count[]
     !^table::create[[nameless]]{данные} старое имя "set"
     !^table::create[table]
-    	клонирует таблицу
+        клонирует таблицу
     !^table::load[[nameless;]путь]
         !если не nameless, названия колонок берутся из первой строки
         !пустые строки, и строки в первой колонке содержащие '#', игнорируются        
@@ -312,7 +315,9 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         перезаписывает одноимённые
     !^hash.sub[вычитаемое]
     !^a.union[b] = объединение
+        одноимённые остаются
     !^a.intersection[b] = пересечение
+        значения a
     !^a.intersects[b] = bool
     !^hash::sql{запрос}[[$.limit(2) $.offset(4)]]
         получается hash(ключи=значения первая колонка ответа)
@@ -446,13 +451,13 @@ Xhashfile
         ]
     !для отправки 
     под unix используется программа с параметрами, задаваемая 
-    	$MAIL.sendmail[команда]
-    	если не будет задана, проверяется, доступна ли 
-    	/usr/sbin/sendmail или
+        $MAIL.sendmail[команда]
+        если не будет задана, проверяется, доступна ли 
+        /usr/sbin/sendmail или
         /usr/lib/sendmail
-        и, если доступна, то запускается с параметром "-t".	
+        и, если доступна, то запускается с параметром "-t".    
     под win32 используется SMTP протокол, сервер задаётся 
-    	$MAIL.SMTP[smtp.domain.ru]
+        $MAIL.SMTP[smtp.domain.ru]
 
 !image
     !$картинка[^image::measure[DATA]]
@@ -515,10 +520,10 @@ Xhashfile
         каталоги для dest создаются с правами 775
         каталог старого файла стирается, если после move он остаётся пуст
     !^file:lock[имя файла]{код}
-    	файл при необходимости создаётся
-    	блокируется
-    	выполняется код
-    	разблокируется
+        файл при необходимости создаётся
+        блокируется
+        выполняется код
+        разблокируется
 
 !math
     !$math:PI
@@ -533,7 +538,7 @@ Xhashfile
 
 !date
     !время типа time можно использовать в выражениях, подставляет 
-    	количество дней с epoch [1 января 1970 (UTC)], дробное
+        количество дней с epoch [1 января 1970 (UTC)], дробное
     !всё происходит в localtime, 
     !временная зона задаётся вне parser средствами OS
     !^date::now[]
@@ -544,9 +549,9 @@ Xhashfile
     !^date.sql-string[] %Y-%m-%d %H:%M:%S
         where published='$дата.sql-string[]'
     !^date:calendar[rus|eng;год;месяц] выдаёт неименованную таблицу 
-    	столбцы: 0..6 
+        столбцы: 0..6 
     !^date:calendar[rus|eng;год;месяц;день] выдаёт именнованную таблицу
-    	столбцы: year, month, day, weekday
+        столбцы: year, month, day, weekday
     
 xdoc(xnode)
     DOM1 attributes:
@@ -600,7 +605,7 @@ xdoc(xnode)
     !.save[file.xml;output options] с шапкой
     !.file[output options] = file
         output options идентичны атрибутам xsl:output 
-        	[исключение: игнорируется cdata-section-elements, нужно будет, сделаю]
+            [исключение: игнорируется cdata-section-elements, нужно будет, сделаю]
         выдаёт media-type при подстановке $response:body[сюда]
 
 
@@ -676,7 +681,7 @@ xdoc(xnode)
 
     !XPath:
     !^node.select[xpath/query/expression] = array of nodes, 
-    	empty array if nothing found
+        empty array if nothing found
     !^node.selectSingle[xpath/query/expression] = first node if any
     !^node.selectBool[xpath/query/expression] = bool if any
     !^node.selectNumber[xpath/query/expression] = double if any
@@ -748,12 +753,12 @@ xdoc(xnode)
             file
 
     !$status:rusage hash
-    	!utime user time used
-    	!stime system time used
-    	!maxrss max resident set size
-    	!ixrss integral shared text memory size
-    	!idrss integral unshared data size
-    	!isrss integral unshared stack size
+        !utime user time used
+        !stime system time used
+        !maxrss max resident set size
+        !ixrss integral shared text memory size
+        !idrss integral unshared data size
+        !isrss integral unshared stack size
 
 !MAIN
     это класс, загружаемый на автомате из parser3.conf, 
