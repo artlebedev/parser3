@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/11/20 14:50:51 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/11/20 14:56:40 $";
 
 #include "pa_config_includes.h"
 
@@ -227,8 +227,8 @@ static void log_signal(const char *signal_name) {
 	SAPI::log(global_pool, request? "%s received. uri=%s, qs=%s"
 		:"%s received. no request being processed", 
 		signal_name,
-		request?request->info.uri:"-",
-		request?request->info.query_string:"-");
+		request && request->info.uri?request->info.uri:"-",
+		request && request->info.query_string?request->info.query_string:"-");
 }
 
 #ifdef SIGUSR1
