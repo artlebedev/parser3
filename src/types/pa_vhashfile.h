@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhashfile.h,v 1.5 2001/10/24 09:34:26 parser Exp $
+	$Id: pa_vhashfile.h,v 1.6 2001/10/24 10:04:54 parser Exp $
 */
 
 #ifndef PA_VHASHFILE_H
@@ -45,7 +45,9 @@ public: // value
 	}
 	
 	/// VHashfile: (key)=value, (key)=(value+expires)
-	void put_element(const String& name, Value *value);
+	void put_element(const String& name, Value *value) {
+		put_field(name, value);
+	}
 
 public: // usage
 
@@ -73,7 +75,7 @@ public:
 private:
 
 	Value *get_field(const String& name);
-	void put_field(const String& name, Value *value, time_t time_to_die);
+	void put_field(const String& name, Value *value);
 
 private:
 
