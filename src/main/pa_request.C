@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.90 2001/04/03 06:23:05 paf Exp $
+	$Id: pa_request.C,v 1.91 2001/04/03 07:02:43 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -208,10 +208,25 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			0, 
 			"'"MAIN_METHOD_NAME"' method not found");
 
-		const VString body_vstring(*body_string);
-		//\ post-process
+		VString body_vstring_before_post_process(*body_string);
+		VString *body_vstring_after_post_process=&body_vstring_before_post_process;
+		
+		// post-process
+		if(Value *value=main_class->get_element(*post_process_method_name))
+			if(Junction *junction=value->get_junction())
+				if(const Method *method=junction->method) {
+					// preparing to pass parameters to 
+					//	@post-process[data]
+					VMethodFrame frame(pool(), *junction);
+					frame.set_self(*main_class);
 
-		const VFile *body_file=body_vstring.as_vfile();
+					frame.store_param(method->name, 
+						&body_vstring_before_post_process);
+					body_vstring_after_post_process=
+						NEW VString(*execute_method(frame, *method));
+				}
+
+		const VFile *body_file=body_vstring_after_post_process->as_vfile();
 
 		// extract response body
 		Value *body_value=static_cast<Value *>(
@@ -272,7 +287,6 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 							const String *problem_source=e.problem_source();
 							// origin
-							String origin_name(pool(), "origin");
 							Value *origin_value=0;
 #ifndef NO_STRING_ORIGIN
 							if(problem_source) {
@@ -287,11 +301,10 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 								}
 							}
 #endif
-							frame.store_param(origin_name, 
+							frame.store_param(method->name, 
 								origin_value?origin_value:NEW VUnknown(pool()));
 
 							// source
-							String source_name(pool(), "source");
 							Value *source_value=0;
 							if(problem_source) {
 								String& problem_source_copy=*NEW String(pool());
@@ -299,18 +312,16 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 									flang, true);
 								source_value=NEW VString(problem_source_copy);
 							}
-							frame.store_param(source_name, 
+							frame.store_param(method->name, 
 								source_value?source_value:NEW VUnknown(pool()));
 
 							// comment
-							String comment_name(pool(), "comment");
 							String *comment_value=NEW String(pool(),
 								e.comment(), true);
-							frame.store_param(comment_name, 
+							frame.store_param(method->name, 
 								NEW VString(*comment_value));
 
 							// type
-							String type_name(pool(), "type");
 							Value *type_value;
 							if(e.type()) {
 								String& type_copy=*NEW String(pool());
@@ -318,10 +329,9 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 									flang, true));
 							} else
 								type_value=NEW VUnknown(pool());
-							frame.store_param(type_name, type_value);
+							frame.store_param(method->name, type_value);
 
 							// code
-							String code_name(pool(), "code");
 							Value *code_value;
 							if(e.code()) {
 								String& code_copy=*NEW String(pool());
@@ -329,7 +339,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 									flang, true));
 							} else
 								code_value=NEW VUnknown(pool());
-							frame.store_param(code_name, code_value);
+							frame.store_param(method->name, code_value);
 
 							// future $response:body=
 							//   execute ^exception[origin;source;comment;type;code]
@@ -389,7 +399,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 	END_CATCH // do not use pool() after this point - no exception handler set
 	          // any throw() would try to use zero exception() pointer 
 
-	if(need_rethrow) // there were an exception set for us to rethrow?
+	if(need_rethrow) // were there an exception for us to rethrow?
 		THROW(rethrow_me.type(), rethrow_me.code(),
 			rethrow_me.problem_source(),
 			rethrow_me.comment());

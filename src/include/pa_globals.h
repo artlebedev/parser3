@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.31 2001/04/02 08:44:24 paf Exp $
+	$Id: pa_globals.h,v 1.32 2001/04/03 07:02:42 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -33,6 +33,7 @@ class Table;
 #define TEXT_NAME "text"
 
 #define EXCEPTION_METHOD_NAME "exception"
+#define POST_PROCESS_METHOD_NAME "post-process"
 
 #define UNNAMED_NAME "unnamed"
 
@@ -78,6 +79,7 @@ extern String *size_name;
 extern String *text_name;
 
 extern String *exception_method_name;
+extern String *post_process_method_name;
 
 extern String *unnamed_name;
 extern String *empty_string;

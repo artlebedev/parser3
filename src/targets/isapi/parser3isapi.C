@@ -102,7 +102,7 @@ void SAPI::send_header(Pool& pool) {
 	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
 	ctx.header->APPEND_CONST(
-		"expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
+		"Expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
 		"\n");
 	HSE_SEND_HEADER_EX_INFO header_info;
 
@@ -286,9 +286,9 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		// prepare header // not using SAPI func wich allocates on pool
 		char header_buf[MAX_STRING];
 		int header_len=snprintf(header_buf, MAX_STRING,
-			"content-type: text/plain\n"
-			"content-length: %ul\n"
-			"expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
+			"Content-type: text/plain\n"
+			"Content-length: %ul\n"
+			"Expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
 			"\n",
 			content_length);
 

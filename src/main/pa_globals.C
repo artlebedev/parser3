@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.37 2001/04/02 08:44:56 paf Exp $
+	$Id: pa_globals.C,v 1.38 2001/04/03 07:02:43 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -32,6 +32,7 @@ String *size_name;
 String *text_name;
 
 String *exception_method_name;
+String *post_process_method_name;
 
 String *unnamed_name;
 String *empty_string;
@@ -113,6 +114,7 @@ void pa_globals_init(Pool& pool) {
 	text_name=NEW String(pool, TEXT_NAME);
 
 	exception_method_name=NEW String(pool, EXCEPTION_METHOD_NAME);
+	post_process_method_name=NEW String(pool, POST_PROCESS_METHOD_NAME);
 
 	unnamed_name=NEW String(pool, UNNAMED_NAME);
 	empty_string=NEW String(pool); 

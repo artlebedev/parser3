@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.30 2001/04/03 06:23:04 paf Exp $
+	$Id: pa_common.h,v 1.31 2001/04/03 07:02:42 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -126,9 +126,9 @@ const char *unescape_chars(Pool& pool, const char *cp, int len);
 
 /**
 	$content-type[text/html] -> 
-		content-type: text/html
+		Content-type: text/html
 	$content-type[$value[text/html] charset[windows-1251]] -> 
-		content-type: text/html; charset=windows-1251
+		Content-type: text/html; charset=windows-1251
 */
 const String& attributed_meaning_to_string(Value& meaning);
 
