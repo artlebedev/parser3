@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.11 2001/03/13 19:35:04 paf Exp $
+	$Id: pa_common.h,v 1.12 2001/03/14 09:02:51 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -16,6 +16,12 @@
 
 
 #ifdef WIN32
+
+#define open _open
+#define close _close
+#define read _read
+#define stat _stat
+
 #define vsnprintf __vsnprintf 
 #define snprintf __snprintf
 

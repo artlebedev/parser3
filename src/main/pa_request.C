@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.31 2001/03/14 08:50:04 paf Exp $
+	$Id: pa_request.C,v 1.32 2001/03/14 09:02:52 paf Exp $
 */
 
 #include <string.h>
@@ -18,6 +18,7 @@
 #include "pa_globals.h"
 #include "pa_vint.h"
 #include "pa_vmframe.h"
+#include "pa_types.h"
 
 #define NEW_STRING(name, value)  name=NEW String(pool()); name->APPEND_CONST(value)
 #define LOCAL_STRING(name, value)  String name(pool()); name.APPEND_CONST(value)
@@ -252,8 +253,8 @@ void Request::fail_if_junction_(bool is,
 char *Request::relative(const char *path, const char *file) {
     char *result=(char *)malloc(strlen(path)+strlen(file)+1);
 	strcpy(result, path);
-    rsplit(result,'/');
-    strcat(result, "/");
+    rsplit(result, PATH_DELIMITER_CHAR);
+    strcat(result, PATH_DELIMITER_STRING);
     strcat(result, file);
     return result;
 }

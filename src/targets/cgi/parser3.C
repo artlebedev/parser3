@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.6 2001/03/14 08:53:58 paf Exp $
+	$Id: parser3.C,v 1.7 2001/03/14 09:02:53 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
 		char *sys_auto_path1;
 #ifdef WIN32
 		sys_auto_path1=(char *)pool.malloc(MAX_STRING);
-		GetWindowsDirectory(sys_auto_path1, MAX_STRING-1/*for \*/);
+		GetWindowsDirectory(sys_auto_path1, MAX_STRING);
 		strcat(sys_auto_path1, "\\");
 #else
 		sys_auto_path1=getenv("HOME");
@@ -108,12 +108,7 @@ int main(int argc, char *argv[]) {
 		// beside by binary
 		char *sys_auto_path2=(char *)pool.malloc(MAX_STRING);
 		strncpy(sys_auto_path2, argv[0], MAX_STRING);  // filespec of my binary
-		// strip filename
-#ifdef WIN32
-		rsplit(sys_auto_path2, '\\');  
-#else
-		rsplit(sys_auto_path2, '/'); 
-#endif
+		rsplit(sys_auto_path2, PATH_DELIMITER_CHAR);  // strip filename
 		
 		// process the request
 		result=request.core(
@@ -126,7 +121,7 @@ int main(int argc, char *argv[]) {
 #ifdef WIN32
 		SetUnhandledExceptionFilter(0);
 #endif
-	} PCATCH(e) { // global problem [creating Request, preparing to .core()]
+	} PCATCH(e) { // global problem @globals fill @Request create @prepare to .core()
 		result=0;
 		strcpy(error, e.comment());
 	}

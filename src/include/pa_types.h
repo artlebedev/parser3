@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.13 2001/03/14 08:50:01 paf Exp $
+	$Id: pa_types.h,v 1.14 2001/03/14 09:02:51 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -14,19 +14,20 @@
 #endif
 
 #ifdef WIN32
-#define open _open
-#define close _close
-#define read _read
-#define stat _stat
-
-
 #if _MSC_VER
 #pragma warning(disable:4355)   // disable C4355 warning about using this
 	                            // in calls to parent constructors
 #endif
-
-
 #endif
+
+#ifdef WIN32
+#	define PATH_DELIMITER_CHAR '\\'
+#	define PATH_DELIMITER_STRING "\\"
+#else
+#	define PATH_DELIMITER_CHAR '/'
+#	define PATH_DELIMITER_STRING "/"
+#endif
+
 
 // for now: used in Exception::fcomment
 #define MAX_STRING 5*0x400
