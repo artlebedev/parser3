@@ -18,12 +18,9 @@ _	&nbsp^;
 @dump[t]
 ^t.menu{$n<BR>}
 <HR>
-@func[n2]
-$n2
+@func[n]
+$n
 @main[]
-$n3[234]
-^func{$n3}
-
 $t[^table:set{n
 3
 01.3
@@ -99,7 +96,7 @@ $result[^if(^test.length[]){$test}{$def}]
 <body bgcolor=black>
 <font color=white>
 ERROR:
-^if(def $source){$origin '$source'}
+^rem{TODO: checkif(def $source)}$origin '$source'
 ${comment}.
 ^if(def $type){type=$type}
 ^if(def $code){code=$code}

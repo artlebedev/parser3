@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.35 2001/03/27 16:35:56 paf Exp $
+	$Id: pa_value.h,v 1.36 2001/03/27 18:06:11 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -113,7 +113,7 @@ public: // Value
 		- VCookie: field
 		- VFile: CLASS,BASE,method,field
 		*/
-	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
+	virtual Value *get_element(const String& name) { bark("(%s) has no elements"); return 0; }
 	/** store Value element under @a name
 		@return for
 		- VHash: (key)=value

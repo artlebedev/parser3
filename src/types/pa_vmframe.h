@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmframe.h,v 1.9 2001/03/27 16:35:57 paf Exp $
+	$Id: pa_vmframe.h,v 1.10 2001/03/27 18:06:11 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -85,6 +85,7 @@ public: // usage
 	}
 
 	void set_self(Value& aself) { fself=&aself; }
+	Value *self() { return fself; }
 
 	void store_param(const String& actual_method_name, Value *value) {
 		const Method& method=*junction.method;

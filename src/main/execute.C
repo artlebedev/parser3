@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.129 2001/03/27 17:12:23 paf Exp $
+	$Id: execute.C,v 1.130 2001/03/27 18:06:10 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -58,7 +58,7 @@ char *opcode_name[]={
 };
 
 void va_log_printf(Pool& pool, const char *fmt,va_list args) {
-//	return;
+	return;
 	char buf[MAX_STRING];
 	vsnprintf(buf, MAX_STRING, fmt, args);
 	SAPI::log(pool, "%s", buf);
@@ -134,6 +134,11 @@ void Request::execute(const Array& ops) {
 				log_printf(pool(), " (%d)\n", local_ops->size());
 				dump(pool(), 1, *local_ops);
 				
+				// when called method of some object, specifying object literally,
+				// e.g ^t.menu, code of curly params must be executed 
+				// in r/w context of that object.
+				// otherwise in current r/w context.
+				//
 				// when they evaluate expression parameter,
 				// the object expression result
 				// does not need to be written into calling frame
@@ -143,7 +148,13 @@ void Request::execute(const Array& ops) {
 				// in decision "which wwrapper to use"
 				Junction& j=*NEW Junction(pool(), 
 					*self, 0, 0,
-					root, frame, op.code==OP_EXPR_CODE__STORE_PARAM?0:frame, local_ops);
+					root, 
+					wcontext->somebody_entered_some_object()>1?
+						&frame->junction.self /* ^t.menu{} */:rcontext/* ^if() */, 
+					op.code==OP_EXPR_CODE__STORE_PARAM?
+						0:wcontext->somebody_entered_some_object()>1?
+							&frame->junction.self /* ^t.menu{} */:wcontext/* ^if() */, 
+					local_ops);
 				
 				Value *value=NEW VJunction(j);
 
@@ -153,7 +164,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_GET_CLASS:
 			{
-				// maybe the do ^class:method[] call, remember the fact
+				// maybe they do ^class:method[] call, remember the fact
 				wcontext->set_somebody_entered_some_class();
 
 				const String& name=POP_NAME();
@@ -230,6 +241,9 @@ void Request::execute(const Array& ops) {
 			
 		case OP_GET_ELEMENT:
 			{
+				// maybe they do ^object.method[] call, remember the fact
+				wcontext->inc_somebody_entered_some_object();
+
 				Value *value=get_element();
 				PUSH(value);
 				break;
