@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.h,v 1.9 2001/03/11 12:04:43 paf Exp $
+	$Id: core.h,v 1.10 2001/03/11 12:10:43 paf Exp $
 */
 
 #ifndef CORE_H
@@ -27,6 +27,6 @@ extern String *root_class_name;
 extern String *env_class_name;
 
 // global hashes
-extern Hash *untaint_lang_name_to_value;
+extern Hash *untaint_lang_name_to_enum;
 
 #endif
