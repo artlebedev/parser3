@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.51 2001/08/28 09:39:30 parser Exp $
+	$Id: file.C,v 1.52 2001/09/13 14:10:54 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.51 2001/08/28 09:39:30 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.52 2001/09/13 14:10:54 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -126,7 +126,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 		:lfile_name.cstr(String::UL_FILE_NAME);
 	
 	static_cast<VFile *>(r.self)->set(true/*tainted*/, data, size, 
-		user_file_name, &r.mime_type_of(user_file_name));
+		user_file_name, new(pool) VString(r.mime_type_of(user_file_name)));
 }
 
 static void _stat(Request& r, const String& method_name, MethodParams *params) {

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.18 2001/08/22 14:03:18 parser Exp $
+	$Id: pa_vfile.C,v 1.19 2001/09/13 14:10:54 parser Exp $
 */
 
 #include "pa_vfile.h"
@@ -15,7 +15,7 @@
 void VFile::set(bool tainted, 
 				const void *avalue_ptr, size_t avalue_size,
 				const char *afile_name,
-				const String *mime_type) {
+				Value *mime_type) {
 	fvalue_ptr=avalue_ptr;
 	fvalue_size=avalue_size;
 
@@ -52,5 +52,5 @@ void VFile::set(bool tainted,
 	}
 	// $mime-type
 	if(mime_type)
-		ffields.put(*vfile_mime_type_name, NEW VString(*mime_type));
+		ffields.put(*vfile_mime_type_name, mime_type);
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.18 2001/09/13 12:40:03 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.19 2001/09/13 14:10:54 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -148,9 +148,10 @@ private:
 
 
 void create_optioned_listener(
-							  const char *& content_type, FormatterListener *& listener, 
+							  const char *& content_type, const char *& charset, FormatterListener *& listener, 
 							  Pool& pool, 
 							  const String& method_name, MethodParams *params, int index, Writer& writer) {
+	charset=0;
 	const String *method=0;
 	XalanDOMString xalan_encoding;
 
@@ -165,8 +166,8 @@ void create_optioned_listener(
 			// $.encoding[windows-1251|...]
 			if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 
 				String(pool, DOM_OUTPUT_ENCODING_OPTION_NAME)))) {
-				const char *cstr=vencoding->as_string().cstr();
-				xalan_encoding.append(cstr, strlen(cstr));
+				charset=vencoding->as_string().cstr();
+				xalan_encoding.append(charset, strlen(charset));
 			}
 		} else
 			PTHROW(0, 0,
@@ -222,9 +223,9 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	try {
 		XalanFileOutputStream stream(XalanDOMString(filespec, strlen(filespec)));
 		XalanOutputStreamPrintWriter writer(stream);
-		const char *content_type;
+		const char *content_type, *charset;
 		FormatterListener *formatterListener;
-		create_optioned_listener(content_type, formatterListener, 
+		create_optioned_listener(content_type, charset, formatterListener, 
 			pool, method_name, params, 0, writer);
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&document); // Walk the document and produce the XML...
@@ -244,9 +245,9 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 		String parserString=*new(pool) String(pool);
 		ParserStringXalanOutputStream stream(parserString);
 		XalanOutputStreamPrintWriter writer(stream);
-		const char *content_type;
+		const char *content_type, *charset;
 		FormatterListener *formatterListener;
-		create_optioned_listener(content_type, formatterListener, 
+		create_optioned_listener(content_type, charset, formatterListener, 
 			pool, method_name, params, 0, writer);
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&document); // Walk the document and produce the XML...
@@ -270,9 +271,9 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 		String& parserString=*new(pool) String(pool);
 		ParserStringXalanOutputStream stream(parserString);
 		XalanOutputStreamPrintWriter writer(stream);
-		const char *content_type;
+		const char *content_type, *charset;
 		FormatterListener *formatterListener;
-		create_optioned_listener(content_type, formatterListener, 
+		create_optioned_listener(content_type, charset, formatterListener, 
 			pool, method_name, params, 0, writer);
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&document); // Walk the document and produce the XML...
@@ -280,7 +281,17 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 		// write out result
 		VFile& vfile=*new(pool) VFile(pool);
 		const char *cstr=parserString.cstr();
-		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*filename*/, new(pool) String(pool, content_type));
+		String *scontent_type=new(pool) String(pool, content_type);
+		Value *vcontent_type;
+		if(charset) {
+			VHash *vhcontent_type=new(pool) VHash(pool);
+			vhcontent_type->hash().put(*value_name, new(pool) VString(*scontent_type));
+			String *scharset=new(pool) String(pool, charset);
+			vhcontent_type->hash().put(*new(pool) String(pool, "charset"), new(pool) VString(*scharset));
+			vcontent_type=vhcontent_type;
+		} else
+			vcontent_type=new(pool) VString(*scontent_type);
+		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*filename*/, vcontent_type);
 		r.write_no_lang(vfile);
 	} catch(const XSLException& e) {
 		_throw(pool, &method_name, e);

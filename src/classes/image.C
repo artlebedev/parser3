@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.40 2001/09/06 06:11:13 parser Exp $
+	$Id: image.C,v 1.41 2001/09/13 14:10:54 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.40 2001/09/06 06:11:13 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.41 2001/09/13 14:10:54 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -393,9 +393,9 @@ static void _gif(Request& r, const String& method_name, MethodParams *params) {
 	String out(pool); image->Gif(out);
 	
 	VFile& vfile=*new(pool) VFile(pool);
-	String& image_gif=*new(pool) String(pool, "image/gif");
+	Value *content_type=new(pool) VString(*new(pool) String(pool, "image/gif"));
 	vfile.set(false/*not tainted*/, 
-		out.cstr(String::UL_AS_IS), out.size(), 0, &image_gif);
+		out.cstr(String::UL_AS_IS), out.size(), 0, content_type);
 
 	r.write_no_lang(vfile);
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.30 2001/09/07 11:05:02 parser Exp $
+	$Id: pa_vfile.h,v 1.31 2001/09/13 14:10:54 parser Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -64,7 +64,7 @@ public: // usage
 
 	void set(bool tainted, 
 		const void *avalue_ptr, size_t avalue_size, const char *afile_name=0,
-		const String *amime_type=0);
+		Value *amime_type=0);
 	
 	void save(const String& file_spec, bool is_text) {
 		if(fvalue_ptr)
