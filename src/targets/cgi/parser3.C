@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/12/05 10:43:23 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/12/05 11:07:09 $";
 
 #include "pa_config_includes.h"
 
@@ -209,12 +209,12 @@ void SAPI::send_body(Pool& , const void *buf, size_t size) {
 //
 
 static void full_file_spec(const char *file_name, char *buf, size_t buf_size) {
-	if(file_name && *file_name)
+	if(file_name)
 		if(file_name[0]=='/' 
 #ifdef WIN32
-			|| file_name[1]==':'
+			|| file_name[0] && file_name[1]==':'
 #endif
-			) 
+			)
 			strncpy(buf, file_name, buf_size);
 		else {
 			char cwd[MAX_STRING];  getcwd(cwd, MAX_STRING);
@@ -494,9 +494,11 @@ int main(int argc, char *argv[]) {
 		getenv("REQUEST_METHOD");
 	
 	char *raw_filespec_to_process;
-	if(cgi) 
+	if(cgi) {
 		raw_filespec_to_process=getenv("PATH_TRANSLATED");
-	else {
+		if(raw_filespec_to_process && !*raw_filespec_to_process)
+			raw_filespec_to_process=0;
+	} else {
 		optind = 1;
 		opterr = 0;
 		int c;
