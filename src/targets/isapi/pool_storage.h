@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pool_storage.h,v 1.9 2001/09/26 10:32:26 parser Exp $
+	$Id: pool_storage.h,v 1.10 2001/10/13 17:17:37 parser Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
@@ -103,13 +103,13 @@ public:
 
 		// cleanups first, because they use some object's memory pointers
 		// Cleanup_structs 
-		for(i=0; i<cleanups.used; i++) {
+		for(i=cleanups.used; --i>=0; ) {
 			Cleanup_struct& item=cleanups.items[i];
 			item.cleanup(item.data);
 		}
 
 		// allocations
-		for(i=0; i<allocations.used; i++)
+		for(i=allocations.used; --i<0; i++)
 			free(allocations.items[i]);
 	}
 
