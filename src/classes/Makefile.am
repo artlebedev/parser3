@@ -1,4 +1,4 @@
-#  $Id: Makefile.am,v 1.7 2001/05/03 13:13:21 paf Exp $
+#  $Id: Makefile.am,v 1.8 2001/05/10 14:00:18 paf Exp $
 
 SUBDIRS = gd
 
@@ -11,7 +11,7 @@ $(CLASSES_INC): $(METHODED) classes.awk
 	echo >> $(CLASSES_INC)
 	ls | $(AWK) -f classes.awk >> $(CLASSES_INC)
 
-METHODED=double.C file.C form.C image.C int.C mail.C op.C random.C response.C string.C table.C unknown.C
+METHODED=double.C file.C form.C image.C int.C mail.C op.C random.C response.C string.C table.C unknown.C hash.C
 
 noinst_LIBRARIES = libclasses.a
 libclasses_a_DEPENDENCES = $(CLASSES_INC)
