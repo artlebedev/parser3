@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.6 2001/02/13 10:50:24 paf Exp $
+  $Id: parser.C,v 1.7 2001/02/20 18:45:53 paf Exp $
 */
 
 #include <stdio.h>
@@ -10,6 +10,8 @@
 #include "pa_table.h"
 #include "pa_common.h"
 #include "pa_pool.h"
+#include "compile.h"
+#include "execute.h"
 
 char *itoa(int n, char *buf){
     snprintf(buf,MAX_STRING,"%d",n);
@@ -23,33 +25,33 @@ int main(int argc, char *argv[]) {
 		
 		char *file="file1";
 		String& string=*new(pool) String(pool);
-		string.APPEND("Hello, ", file, 1);
-		string.APPEND("w", file, 2);
-		string.APPEND("o", file, 3);
-		string.APPEND("r", file, 4);
-		string.APPEND("l", file, 5);
-		string.APPEND("d", file, 6);
-		string.APPEND("!\n ", file, 7);
+		string.APPEND("Hello, ", 0,file, 1);
+		string.APPEND("w", 0,file, 2);
+		string.APPEND("o", 0,file, 3);
+		string.APPEND("r", 0,file, 4);
+		string.APPEND("l", 0,file, 5);
+		string.APPEND("d", 0,file, 6);
+		string.APPEND("!\n ", 0,file, 7);
 		printf(string.cstr());
 		
 		char *key1_file="key1_file";
 		Hash& hash=*new(pool) Hash(pool, false);
 		String key1=string;
-		key1.APPEND("1", key1_file, 1);
+		key1.APPEND("1", 0,key1_file, 1);
 		String& value1=*new(pool) String(pool);
-		value1.APPEND("i'm value1\n", file, 1);
+		value1.APPEND("i'm value1\n", 0,file, 1);
 		String& value2=*new(pool) String(pool);
-		value2.APPEND("i'm value2\n", file, 1);
+		value2.APPEND("i'm value2\n", 0,file, 1);
 		hash.put(key1, &value1);
 		char *key2_file="key2_file";
 		String key2=string;
-		key2.APPEND("2", key2_file, 1);
+		key2.APPEND("2", 0,key2_file, 1);
 		hash.put(key2, &value2);
 		String *found_value=(String*)hash.get(key2);
 		printf(found_value?found_value->cstr():"not found\n");
 		
-		String& a=*new(pool) String(pool); 	a.APPEND("fi", file, 1); a.APPEND("rst", file, 2);
-		String& b=*new(pool) String(pool); 	b.APPEND("fir", file, 1); b.APPEND("st", file, 2);
+		String& a=*new(pool) String(pool); 	a.APPEND("fi", 0,file, 1); a.APPEND("rst", 0,file, 2);
+		String& b=*new(pool) String(pool); 	b.APPEND("fir", 0,file, 1); b.APPEND("st", 0,file, 2);
 		printf(a==b?"eq\n":"ne\n");
 		
 		
@@ -107,7 +109,7 @@ int main(int argc, char *argv[]) {
 					/**/
 					String name(request.pool());
 					char *buf=static_cast<char *>(request.pool().malloc(MAX_STRING));
-					name.APPEND(itoa(i, buf), "names file", 0);
+					name.APPEND(itoa(i, buf), 0,"names file", 0);
 					//name.APPEND("id", "names file", 0);
 					table.read_item(line, name);
 					/*
@@ -116,25 +118,25 @@ int main(int argc, char *argv[]) {
 					name.APPEND(cstr_name, 0, 0);
 					table.read_item(line, name);
 					/**/
-					line.APPEND("\t", 0, 0);
+					line.APPEND("\t", 0,0, 0);
 				}
 				printf("%s\n", line.cstr());
 			}
 
-
+/*
 			String it(request.pool());
 			it.APPEND("ab.cd[zzz]", 0,0);
 			String_iterator si(it);
-			/*si++;
+			/ *si++;
 			si++;
 			si++;
 			si++;
 			si++;
 			si++;
-			*/
-			/*bool found=si.skip_to('.');
+			* /
+			/ *bool found=si.skip_to('.');
 			si++;
-			*/
+			* /
 			si++;
 			Char_types types;
 			types.set(' ', 1);
@@ -142,7 +144,12 @@ int main(int argc, char *argv[]) {
 			types.set(']', 3);
 			int type=si.skip_to(types);
 			si++;
-
+*/
+			// compile
+			char *file="test.p";
+			char *source=file_read(pool, file);
+			Array *ops=COMPILE(&pool, source, file);
+			execute(&pool, ops);
 
 		} else {
 			Exception& e=request.exception();

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.25 2001/02/14 15:19:02 paf Exp $
+  $Id: pa_string.C,v 1.26 2001/02/20 18:45:53 paf Exp $
 */
 
 #include <string.h>
@@ -23,7 +23,7 @@ String::String(Pool& apool) :
 void String::expand() {
 	curr_chunk_rows+=curr_chunk_rows*CR_GROW_PERCENT/100;
 	Chunk *chunk=static_cast<Chunk *>(
-		pool.malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
+		pool().malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
 	chunk->count=curr_chunk_rows;
 	link_row->link=chunk;
 	append_here=chunk->rows;
@@ -32,7 +32,7 @@ void String::expand() {
 }
 
 String::String(const String& src) :
-	Pooled(src.pool) {
+	Pooled(src.pool()) {
 	head.count=CR_PREALLOCATED_COUNT;
 	
 	int src_used_rows=src.used_rows();
@@ -57,7 +57,7 @@ String::String(const String& src) :
 		// remaining rows into new_chunk
 		curr_chunk_rows=src_used_rows-head.count;
 		Chunk *new_chunk=static_cast<Chunk *>(
-			pool.malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
+			pool().malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
 		new_chunk->count=curr_chunk_rows;
 		head.preallocated_link=new_chunk;
 		append_here=link_row=&new_chunk->rows[curr_chunk_rows];
@@ -97,15 +97,16 @@ String(const String_iterator& begin, const String_iterator& end) {
 String& String::real_append(STRING_APPEND_PARAMS) {
 	if(!src)
 		return *this;
-	int len=strlen(src);
-	if(!len)
+	if(!size)
+		size=strlen(src);
+	if(!size)
 		return *this;
 
 	if(chunk_is_full())
 		expand();
 
 	append_here->item.ptr=src;
-	fsize+=append_here->item.size=len;
+	fsize+=append_here->item.size=size;
 #ifndef NO_STRING_ORIGIN
 	append_here->item.origin.file=file;
 	append_here->item.origin.line=line;
@@ -116,7 +117,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 }
 
 char *String::cstr() const {
-	char *result=static_cast<char *>(pool.malloc(size()+1));
+	char *result=static_cast<char *>(pool().malloc(size()+1));
 
 	char *copy_here=result;
 	const Chunk *chunk=&head; 
@@ -212,7 +213,7 @@ bool String::operator == (const String& src) const {
 	}
 	return a_break==b_break;
 }
-
+/*
 String& String::append(const String_iterator& begin, const String_iterator& end) {
 	//TODO
 	return *this;
@@ -235,7 +236,7 @@ String_iterator::String_iterator(String& astring) :	string(astring) {
 	position=string.size()==0?0:read_here->item.ptr;
 	link_row=reinterpret_cast<String::Chunk::Row*>(string.head.preallocated_link);
 }
-
+/*
 String_iterator::String_iterator(String_iterator& asi) {
 	//TODO
 }
@@ -260,7 +261,7 @@ void String_iterator::skip() {
 		if(read_here==link_row) {
 			String::Chunk *chunk=link_row->link;
 			if(!chunk)
-				string.pool.exception().raise(0, 0,
+				string.pool().exception().raise(0, 0,
 					&string,
 					"String_iterator::skip() missed "
 					"read_here==string.append_here check");
@@ -291,7 +292,7 @@ bool String_iterator::skip_to(char c) {
 		if(read_here==link_row) {
 			String::Chunk *chunk=link_row->link;
 			if(!chunk)
-				string.pool.exception().raise(0, 0,
+				string.pool().exception().raise(0, 0,
 					&string,
 					"String_iterator::skip_to(char) missed "
 					"read_here==string.append_here check");
@@ -321,7 +322,7 @@ int String_iterator::skip_to(Char_types& types) {
 		if(read_here==link_row) {
 			String::Chunk *chunk=link_row->link;
 			if(!chunk)
-				string.pool.exception().raise(0, 0,
+				string.pool().exception().raise(0, 0,
 					&string,
 					"String_iterator::skip_to(Char_type) missed "
 					"read_here==string.append_here check");
@@ -332,3 +333,4 @@ int String_iterator::skip_to(Char_types& types) {
 		position=read_here->item.ptr;
 	}
 }
+*/

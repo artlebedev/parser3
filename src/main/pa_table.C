@@ -1,5 +1,5 @@
 /*
-  $Id: pa_table.C,v 1.7 2001/01/30 13:43:43 paf Exp $
+  $Id: pa_table.C,v 1.8 2001/02/20 18:45:53 paf Exp $
 */
 
 #include <stdlib.h>
@@ -23,8 +23,8 @@ Table::Table(Request& arequest,
 
 	if(fcolumns)
 		for(int i=0; i<fcolumns->size(); i++) {
-			String name(pool);
-			name.APPEND(fcolumns->get_cstr(i), 0, 0);
+			String name(arequest.pool());
+			name.APPEND(fcolumns->get_cstr(i), 0, 0, 0);
 			name2number.put(name, i+1);
 		}
 }

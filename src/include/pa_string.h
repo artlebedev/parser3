@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.21 2001/02/14 15:19:02 paf Exp $
+  $Id: pa_string.h,v 1.22 2001/02/20 18:45:51 paf Exp $
 */
 
 /*
@@ -28,17 +28,17 @@
 #include "pa_types.h"
 
 #ifndef NO_STRING_ORIGIN
-#	define STRING_APPEND_PARAMS const char *src, char *file, uint line
-#	define APPEND(src, file, line) real_append(src, file, line)
+#	define STRING_APPEND_PARAMS const char *src, size_t size, char *file, uint line
+#	define APPEND(src, size, file, line) real_append(src, size, file, line)
 #else
-#	define STRING_APPEND_PARAMS const char *src
-#	define APPEND(src, file, line) real_append(src)
+#	define STRING_APPEND_PARAMS const char *src, size_t size
+#	define APPEND(src, size, file, line) real_append(src, size)
 #endif
 
-class String_iterator;
+//class String_iterator;
 
 class String : public Pooled {
-	friend String_iterator;
+//	friend String_iterator;
 public:
 	enum {
 		CR_PREALLOCATED_COUNT=5,
@@ -55,7 +55,7 @@ public:
 	char *cstr() const;
 	String& real_append(STRING_APPEND_PARAMS);
 	bool operator == (const String& src) const;
-	String& append(const String_iterator& begin, const String_iterator& end);
+//	String& append(const String_iterator& begin, const String_iterator& end);
 
 	uint hash_code() const;
 
@@ -110,7 +110,7 @@ private: //disabled
 
 };
 
-
+/*
 class Char_types {
 public:
 	Char_types();
@@ -156,5 +156,6 @@ protected:
 	// advances position by one char
 	void skip();
 };
+*/
 
 #endif

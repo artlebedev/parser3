@@ -97,6 +97,10 @@ SOURCE=.\parser.C
 # Begin Group "include"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=..\..\main\opcodes.h
+# End Source File
 # End Group
 # End Target
 # End Project

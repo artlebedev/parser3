@@ -1,5 +1,5 @@
 /*
-  $Id: pa_table.h,v 1.7 2001/01/30 13:43:43 paf Exp $
+  $Id: pa_table.h,v 1.8 2001/02/20 18:45:51 paf Exp $
 */
 
 /*
@@ -34,7 +34,7 @@ public:
 	void inc_current() { fcurrent++; }
 
 	void read_item(String& result, const String& column_name) {
-		result.APPEND(item(column_name), forigin.file, forigin.line+fcurrent);
+		result.APPEND(item(column_name), 0/*TODO:think about*/, forigin.file, forigin.line+fcurrent);
 	}
 
 protected:

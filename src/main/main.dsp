@@ -41,8 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Za /W3 /O2 /I ".." /I "../include" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /Za /W3 /O2 /I ".." /I "../include" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /Tccompile.tab.c /TP /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -65,8 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Za /W3 /Gm /Zi /Od /I ".." /I "../include" /D "_DEBUG" /D "_LIB" /D "WIN32" /FR /FD /TP /GZ /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /Za /W3 /Gm /Zi /Od /I ".." /I "../include" /D "_DEBUG" /D "_LIB" /D "WIN32" /FR /FD /TP /GZ /Tccompile.tab.c /c
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -87,6 +85,43 @@ LIB32=link.exe -lib
 # PROP Default_Filter "C;cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\compile.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\compile.tab.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\compile.y
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# Begin Custom Build
+InputPath=.\compile.y
+InputName=compile
+
+"compile.tab.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	call VCVARS32 
+	d:\cygwin\bin\bison -v -d $(InputName).y 
+	
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\compile_tools.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\compile_tools.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\core.C
 
 !IF  "$(CFG)" == "main - Win32 Release"
@@ -97,6 +132,10 @@ SOURCE=.\core.C
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=.\execute.C
 # End Source File
 # Begin Source File
 
@@ -130,6 +169,18 @@ SOURCE=.\pa_table.C
 # Begin Group "include"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=..\include\code.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\compile.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\execute.h
+# End Source File
 # Begin Source File
 
 SOURCE=..\include\pa_array.h

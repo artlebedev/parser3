@@ -1,17 +1,11 @@
 /*
-  $Id: pa_pool.h,v 1.21 2001/02/11 11:27:24 paf Exp $
+  $Id: pa_pool.h,v 1.22 2001/02/20 18:45:51 paf Exp $
 */
 
 #ifndef PA_POOL_H
 #define PA_POOL_H
 
 #include <stddef.h>
-
-///#include "pa_string.h"
-///#include "pa_hash.h"
-///#include "pa_array.h"
-//#include "pa_table.h"
-//#include "pa_exception.h"
 
 class String;
 class Exception;
@@ -31,27 +25,6 @@ public:
 	void *calloc(size_t size) {
 		return check(real_calloc(size), size);
 	}
-/*
-	String& make_string() {
-		return *new(*this) String(*this);
-	}
-	Hash& make_hash() {
-		return *new(*this) Hash(*this, false);
-	}
-	Hash& make_thread_safe_hash() {
-		return *new(*this) Hash(*this, true);
-	}
-	Array& make_array() {
-		return *new(*this) Array(*this);
-	}
-	Array& make_array(int initial_rows) {
-		return *new(*this) Array(*this, initial_rows);
-	}
-*/
-
-	/*Table& make_table(char *afile, uint aline, Array *acolumns, int initial_rows) {
-		return *new(this) Table(this, afile, aline, acolumns, initial_rows);
-	}*/
 
 protected: // implementation defined
 
@@ -77,11 +50,12 @@ public:
 		return apool.malloc(size);
 	}
 
-	Pooled(Pool& apool) : pool(apool) {}
+	Pooled(Pool& apool) : fpool(apool) {}
+	Pool& pool() const { return fpool; }
 
 protected:
 	// the pool I'm allocated on
-	Pool& pool;
+	Pool& fpool;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_types.h,v 1.3 2001/01/29 20:10:32 paf Exp $
+  $Id: pa_types.h,v 1.4 2001/02/20 18:45:51 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -9,16 +9,23 @@
 #include "pa_config.h"
 #endif
 
-#define MAX_STRING 2*0x400
+#ifdef WIN32
+#define open _open
+#define close _close
+#define read _read
+#define stat _stat
+#endif
+
+/* for now: used in Exception::fcomment */
+#define MAX_STRING 5*0x400
 
 #undef uint
 typedef unsigned int uint;
 
-class Origin {
-public:
+struct Origin {
 #ifndef NO_STRING_ORIGIN
-	char *file;  // macros file name | load file name | sql query text
-	uint line; // file line no | record no
+	char *file;  /* macros file name | load file name | sql query text */
+	uint line; /* file line no | record no */
 #endif
 };
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.11 2001/02/11 11:27:25 paf Exp $
+  $Id: pa_hash.C,v 1.12 2001/02/20 18:45:53 paf Exp $
 */
 
 /*
@@ -34,7 +34,7 @@ Hash::Hash(Pool& apool, bool athread_safe) :
 	size=sizes[size_index=0];
 	threshold=size*THRESHOLD_PERCENT/100;
 	used=0;
-	refs=static_cast<Pair **>(pool.calloc(sizeof(Pair *)*size));
+	refs=static_cast<Pair **>(pool().calloc(sizeof(Pair *)*size));
 }
 
 void Hash::expand() {
@@ -44,7 +44,7 @@ void Hash::expand() {
 	// allocated bigger refs array
 	size_index=size_index+1<sizes_count?size_index+1:sizes_count-1;
 	size=sizes[size_index];
-	refs=static_cast<Pair **>(pool.calloc(sizeof(Pair *)*size));
+	refs=static_cast<Pair **>(pool().calloc(sizeof(Pair *)*size));
 
 	// rehash
 	Pair **old_ref=old_refs;
@@ -90,7 +90,7 @@ void Hash::put(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
 		}
 	
 	// proper pair not found -- create&link_in new pair
-	*ref=new(pool) Pair(code, key, value, *ref);
+	*ref=new(pool()) Pair(code, key, value, *ref);
 }
 
 Hash::Value *Hash::get(const Key& key) {  SYNCHRONIZED(thread_safe);

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.13 2001/02/11 11:27:25 paf Exp $
+  $Id: pa_array.C,v 1.14 2001/02/20 18:45:52 paf Exp $
 */
 
 #include <string.h>
@@ -11,7 +11,7 @@
 Array::Array(Pool& apool, int initial_rows) :
 	Pooled(apool) {
 	head=tail=static_cast<Chunk *>(
-		pool.malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
+		pool().malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
 	head->count=initial_rows;
 	append_here=head->rows;
 	link_row=&head->rows[initial_rows];
@@ -24,7 +24,7 @@ Array::Array(Pool& apool, int initial_rows) :
 
 void Array::expand(int chunk_rows) {
 	Chunk *chunk=tail=static_cast<Chunk *>(
-		pool.malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *)));
+		pool().malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *)));
 	chunk->count=chunk_rows;
 	link_row->link=chunk;
 	append_here=chunk->rows;
@@ -45,7 +45,7 @@ Array& Array::operator += (const Item *src) {
 
 const Array::Item *Array::get(int index) const {
 	if(!(index>=0 && index<size())) {
-		pool.exception().raise(0, 0, 0, 
+		pool().exception().raise(0, 0, 0, 
 			"Array::get(%d) out of range [0..%d]", index, size()-1);
 		return 0;
 	}

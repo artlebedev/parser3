@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.13 2001/02/11 11:27:24 paf Exp $
+  $Id: pa_array.h,v 1.14 2001/02/20 18:45:51 paf Exp $
 */
 
 /*
@@ -41,6 +41,22 @@ public:
 	int size() const { return fused_rows; }
 	Array& operator += (const Item *src);
 	Array& append_array(const Array& src);
+	const Item *raw_get(int index) const {
+		// considering these true:
+		//   index increments from 0 to size()-1
+		//   index>=0 && index<size()
+		//   index>=cache_chunk_base
+
+		// next chunk will be with "index" row
+		if(!(index<cache_chunk_base+cache_chunk->count)) {
+			int count=cache_chunk->count;
+			cache_chunk_base+=count;
+			cache_chunk=cache_chunk->rows[count].link;
+		}
+		
+		return cache_chunk->rows[index-cache_chunk_base].item;
+	}
+
 	const Item *get(int index) const;
 	const char *get_cstr(int index) const { 
 		return static_cast<const char *>(get(index)); 
