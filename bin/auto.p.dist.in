@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.6 2002/08/12 08:19:37 paf Exp $
+#$Id: auto.p.dist.in,v 1.7 2002/08/21 06:24:06 paf Exp $
 
 @conf[]
 $charsetsdir[@charsetsdir@]
@@ -35,6 +35,7 @@ tif	image/tiff
 html	text/html
 htm	text/html
 txt	text/plain
+xml	text/xml
 mts	application/metastream
 mid	audio/midi
 midi	audio/midi

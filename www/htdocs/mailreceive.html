@@ -1,0 +1,32 @@
+@postprocess[body]
+^body.match[(\s)\s+][gs]{$match.1}
+
+@main[]
+^showMessage[$mail:received]
+
+@showMessage[message]
+^message.foreach[key;value]{
+	$key= 
+	^if($value is hash){
+		^if($value.value is file){
+			^showFile[$value.value]
+		}{
+			^showMessage[$value]
+		}
+	}{
+		^if($value is date){
+			^showDate[$value]
+		}{
+			^showString[$value]
+		}
+	}
+}
+
+@showString[string]
+$string
+
+@showDate[date]
+^date.sql-string[]
+
+@showFile[file]
++$file.name ($file.size) [$file.content-type]

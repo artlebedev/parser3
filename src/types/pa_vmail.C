@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/08/14 14:18:30 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/08/21 06:24:07 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -107,10 +107,11 @@ static void MimeHeaderField2received(const char *name, const char *value, gpoint
 	putReceived(received, name, value, 0, true/*nameInUpperCase*/);
 }
 
-static void parse(GMimeStream *stream, Hash& received);
+static void parse(Request& r, GMimeStream *stream, Hash& received);
 
 #ifndef DOXYGEN
 struct MimePart2bodyInfo {
+	Request *r;
 	Hash *body;
 	int partCounts[P_TYPES_COUNT];
 };
@@ -200,7 +201,7 @@ static void MimePart2body(GMimePart *part,
 		if(partType==P_MESSAGE) {
 			if(part->content)
 				if(GMimeStream *stream=part->content->stream)
-					parse(stream, partX);
+					parse(*i.r, stream, partX);
 		} else {
 			// $.value[string|file]
 			size_t buf_len;
@@ -209,7 +210,9 @@ static void MimePart2body(GMimePart *part,
 				VFile& vfile=*new(pool) VFile(pool);
 				char *global_buf=(char *)pool.malloc(buf_len);
 				memcpy(global_buf, local_buf, buf_len);
-				vfile.set(true/*tainted*/, global_buf, buf_len, content_filename);
+				VString *vcontent_type=content_filename?
+					new(pool) VString(i.r->mime_type_of(content_filename)):0;
+				vfile.set(true/*tainted*/, global_buf, buf_len, content_filename, vcontent_type);
 				putReceived(partX, VALUE_NAME, &vfile);
 			} else {
 				// P_TEXT, P_HTML
@@ -219,7 +222,7 @@ static void MimePart2body(GMimePart *part,
 	}
 }
 
-static void parse(GMimeStream *stream, Hash& received) {
+static void parse(Request& r, GMimeStream *stream, Hash& received) {
 	Pool& pool=received.pool();
 
 	GMimeMessage *message=g_mime_parser_construct_message(stream);
@@ -264,7 +267,7 @@ static void parse(GMimeStream *stream, Hash& received) {
 		// .body[part/parts
 		GMimePart *part=message->mime_part;
 		const GMimeContentType *type=g_mime_part_get_content_type(part);
-		MimePart2bodyInfo info={&received};
+		MimePart2bodyInfo info={&r, &received};
 		g_mime_part_foreach(part, MimePart2body, &info);
 
 		// normal unref
@@ -278,10 +281,10 @@ static void parse(GMimeStream *stream, Hash& received) {
 
 
 
-void VMail::fill_received(Request& request) {
+void VMail::fill_received(Request& r) {
 	// store letter to received
 #ifdef WITH_MAILRECEIVE
-	if(request.info.mail_received) {
+	if(r.info.mail_received) {
 		// init
 		g_mime_init(GMIME_INIT_FLAG_UTF8);
 
@@ -294,7 +297,7 @@ void VMail::fill_received(Request& request) {
 		stream = istream;
 		try {
 			// parse incoming stream
-			parse(stream, vreceived.hash(0));
+			parse(r, stream, vreceived.hash(0));
 			// normal stream free 
 			g_mime_stream_unref(stream);
 		} catch(...) {

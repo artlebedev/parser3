@@ -1,3 +1,4 @@
+
 /** @file
 	Parser: @b file parser type.
 
@@ -5,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VFILE_C="$Date: 2002/08/08 09:35:23 $";
+static const char* IDENT_VFILE_C="$Date: 2002/08/21 06:24:07 $";
 
 #include "pa_vfile.h"
 #include "pa_vstring.h"
