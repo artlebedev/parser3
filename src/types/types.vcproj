@@ -273,6 +273,9 @@
 			RelativePath=".\pa_vtable.h">
 		</File>
 		<File
+			RelativePath=".\pa_vvoid.C">
+		</File>
+		<File
 			RelativePath=".\pa_vvoid.h">
 		</File>
 		<File
