@@ -7,14 +7,14 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.9 2001/08/01 09:33:54 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.10 2001/08/01 09:49:18 parser Exp $"; 
 
 #include "config_includes.h"
 
 #include "pa_sql_driver.h"
 
 #include <libpq-fe.h>
-#include <libpq-fs.h>
+#include <libpq/libpq-fs.h>
 
 // OIDOID from #include <catalog/pg_type.h>
 #define OIDOID			26
