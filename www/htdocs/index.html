@@ -7,9 +7,9 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @postprocess[body]
-=$env:HTTP_TEST=<br>
-=$env:REDIRECT_HTTP_TEST=<br>
-<hr>
+#=$env:HTTP_TEST=<br>
+#=$env:REDIRECT_HTTP_TEST=<br>
+#<hr>
 $body
 <hr>
 OK
@@ -146,11 +146,15 @@ OK
 #^header[]
 #^tablehasht[]
 #^datecreatestring[]
-#^mssqltypes1[]
+^mssqltypes1[]
 
 @mssqltypes1[]
 ^connect[odbc://DSN=nestle^;UID=nestle^;PWD=mbm32]{
-	^string:sql{select CAST('2000-05-28 00:00:00.000' AS smalldatetime)}
+#    ^string:sql{select { ts '1998-05-02 01:23:56.123' }}
+#    ^string:sql{select CAST({ ts '1998-05-02 01:23:56.123' }AS smalldatetime)}
+#	^string:sql{select CAST({ts '2002-04-28 00:00:00.000'} AS smalldatetime)}
+	$t[^table::sql{select a from paf}]
+	^t.count[]
 }
 
 @datecreatestring[]
