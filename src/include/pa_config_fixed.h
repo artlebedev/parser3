@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_config_fixed.h,v 1.16 2001/09/30 13:28:15 parser Exp $
+	$Id: pa_config_fixed.h,v 1.17 2001/10/02 07:48:37 parser Exp $
 
 
 	tested only with MS Visual C++ V6
@@ -29,4 +29,3 @@
 #define HAVE_MEMORY_H
 #define USE_SMTP
 #define XML
-#	define XALAN_HACK_DIGITAL_ENTITIES

@@ -1,7 +1,7 @@
 @auto[]
 
 @main[]
-$response:content-type[$.value[text/html] $.charset[windows-125o]]
+$response:content-type[$.value[text/html] $.charset[windows-1251]]
 #^regexp[]<hr>
 #^mail[]
 #^exec[]
@@ -35,7 +35,7 @@ $a.status|$a.stderr<hr>
 ^for[i](1;3){... =$i= ...}
 
 @xslt[]
-$xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-125o"?>
+$xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 #<!DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd">
 
 <people>
@@ -105,15 +105,15 @@ by id:
 
 @show-xdoc2[xdoc]
 ^xdoc.save[save.xml;
-#	$.encoding[windows-125o]
+#	$.encoding[windows-1251]
 	$.method[xml]
 ]
 $file[^xdoc.file[
-#	$.encoding[windows-125o]
+#	$.encoding[windows-1251]
 	$.method[html]
 ]]
 ^file.save[text;save_file.html]
 ^taint[^xdoc.string[]]
-#	$.encoding[windows-125o]
+#	$.encoding[windows-1251]
 #	$.method[xml]
 #]]

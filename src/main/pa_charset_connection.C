@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_connection.C,v 1.2 2001/10/01 13:26:47 parser Exp $
+	$Id: pa_charset_connection.C,v 1.3 2001/10/02 07:48:37 parser Exp $
 */
 
 #include "pa_charset_connection.h"
@@ -109,7 +109,6 @@ public :
 		ffromTable(fromTable),
 		ftoTable(toTable),
 		ftoTableSize(toTableSize) {}
-    ~ENameMapFor2() {}
 
     // -----------------------------------------------------------------------
     //  Implementation of virtual factory method
@@ -230,7 +229,6 @@ void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 	memcpy(pool_encoding_cstr, auto_encoding_cstr, size);
     XMLString::upperCase(pool_encoding_cstr);
 
-	/// @todo delete prev encoding with same name
     XMLPlatformUtils::fgTransService->addEncoding(
 		pool_encoding_cstr, 
 		new ENameMapFor2<XML256TableTranscoder2>(
