@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.149 2001/08/07 13:23:33 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.150 2001/08/10 08:58:56 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -25,6 +25,8 @@ extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 #include "pa_vtable.h"
 #include "pa_vfile.h"
 #include "pa_dictionary.h"
+
+const int MAX_EXECUTE_SECONDS=1;
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
@@ -145,6 +147,7 @@ static void element2case(unsigned char *tables, Value& ctype, const String& name
 			from=c;
 	}
 }
+
 /**
 	load MAIN class, execute @main.
 	MAIN class consists of all the auto.p files we'd manage to find

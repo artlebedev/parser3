@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: mod_parser3.C,v 1.40 2001/08/09 08:45:17 parser Exp $"; 
+static const char *RCSId="$Id: mod_parser3.C,v 1.41 2001/08/10 08:58:56 parser Exp $"; 
 
 #include "httpd.h"
 #include "http_config.h"
@@ -14,6 +14,7 @@ static const char *RCSId="$Id: mod_parser3.C,v 1.40 2001/08/09 08:45:17 parser E
 #include "http_main.h"
 #include "http_protocol.h"
 #include "util_script.h"
+#include "multithread.h"
 
 #include "pa_sapi.h"
 #include "classes.h"
