@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.C,v 1.9 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_wcontext.C,v 1.10 2001/10/15 12:12:36 parser Exp $
 */
 
 #include "pa_wcontext.h"
@@ -34,10 +34,9 @@ void WContext::write(Value& avalue) {
 
 // if value is VString writes fstring,
 // else writes Value; raises an error if already
-void WContext::write(Value& avalue, String::Untaint_lang lang) {
-	const String *fstring=avalue.get_string();
-	if(fstring)
+void WContext::write(Value& value, String::Untaint_lang lang) {
+	if(const String *fstring=value.get_string())
 		write(*fstring, lang);
 	else
-		write(avalue);
+		write(value);
 }

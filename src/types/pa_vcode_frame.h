@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcode_frame.h,v 1.10 2001/10/13 16:02:13 parser Exp $
+	$Id: pa_vcode_frame.h,v 1.11 2001/10/15 12:12:36 parser Exp $
 */
 
 #ifndef PA_VCODE_FRAME_H
@@ -41,9 +41,16 @@ public: // WContext
 		wcontext.write(value);
 	}
 
-	/// VCodeFrame: twice transparent
+	/** VCodeFrame: twice transparent
+
+		if value is VString writes fstring,
+		else writes Value; raises an error if already
+	*/
 	virtual void write(Value& value, String::Untaint_lang lang) {
-		wcontext.write(value, lang);
+		if(const String *fstring=value.get_string())
+			write(*fstring, lang);
+		else
+			wcontext.write(value, lang);		
 	}
 
 public: // usage
