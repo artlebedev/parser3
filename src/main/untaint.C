@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2004/02/11 15:33:16 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2004/02/17 10:38:08 $";
 
 
 #include "pa_string.h"
@@ -371,12 +371,12 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 			bool email=false;
 			uchar c;
 			for(const char* src=mail_ptr; (c=(uchar)*src++); ) {
-				//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
-				if(to_quoted_printable && (c==',' || addr_spec_soon(src) || c == '"')) {
+				if(to_quoted_printable && (c==',' || c == '"' || addr_spec_soon(src-1/*position to 'c'*/))) {
 					email=c=='<';
 					to_string("?=");
 					to_quoted_printable=false;
 				}
+				//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
 				if(!email && (
 					!to_quoted_printable && (c & 0x80)  // starting quote-printable-encoding on first 8bit char
 					|| to_quoted_printable && !mail_header_char_valid_within_Qencoded(c)
