@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.7 2001/02/22 13:33:25 paf Exp $
+  $Id: pa_wcontext.h,v 1.8 2001/02/22 15:39:22 paf Exp $
 */
 
 /*
@@ -20,7 +20,7 @@ public: // Value
 	// wcontext: accumulated string
 	String *get_string() { return string; };
 	// wcontext: transparent
-	Value *get_element(const String& name) const { return check_value()->get_element(name); }
+	Value *get_element(const String& name) { return check_value()->get_element(name); }
 	// wcontext: transparent
 	void put_element(const String& name, Value *avalue){ check_value()->put_element(name, avalue); }
 	// wcontext: transparent

@@ -1,3 +1,7 @@
+/*
+  $Id: compile.y,v 1.24 2001/02/22 15:39:23 paf Exp $
+*/
+
 %{
 #define YYSTYPE  Array/*<op>*/ *
 #define YYPARSE_PARAM  pc
