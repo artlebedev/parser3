@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.7 2001/09/10 09:49:45 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.8 2001/09/10 09:51:14 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -200,7 +200,7 @@ MDom::MDom(Pool& apool) : Methoded(apool) {
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
 
 	// ^dom.save[some.xml]
-	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 1);
+	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 2);
 
 	// ^dom.string[windows-1251] <doc/>
 	add_native_method("string", Method::CT_DYNAMIC, _string, 1, 1);
