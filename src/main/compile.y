@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.174 2002/01/24 17:18:48 paf Exp $
+	$Id: compile.y,v 1.175 2002/01/25 13:48:55 paf Exp $
 */
 
 /**
@@ -587,10 +587,16 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			PC.col++;
 
 		if(c=='@' && PC.col==0+1) {
+			if(PC.ls==LS_DEF_SPECIAL_BODY) {
+				// @SPECIAL
+				// ...
+				// @<here = 
+				pop_LS(PC); // exiting from LS_DEF_SPECIAL_BODY state
+			} // continuing checks
 			if(PC.ls==LS_USER) {
 				push_LS(PC, LS_DEF_NAME);
 				RC;
-			} else // @ in first column inside some code
+			} else // @ in first column inside some code [when could that be?]
 				result=BAD_METHOD_DECL_START;
 			goto break2;
 		} else if(c=='^')
@@ -670,6 +676,7 @@ default:
 			}
 			// fall into COMMENT lexical state [wait for \n]
 			push_LS(PC, LS_COMMENT);
+			continue;
 		}
 		switch(PC.ls) {
 
@@ -787,19 +794,8 @@ default:
 			break;
 
 		case LS_DEF_SPECIAL_BODY:
-			//                          @todo in case
-			// ################
-			// @next-method
-			// we are here with c=='@'
-			// which is wrong, and need action
-			if(c=='\n') {
-				switch(*PC.source) {
-				case '@': case 0: // end of special_code
-					pop_LS(PC);
-					break;
-				}
+			if(c=='\n')
 				RC;
-			}
 			break;
 
 		// (EXPRESSION)
