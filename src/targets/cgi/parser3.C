@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.108 2001/09/04 19:05:04 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.109 2001/09/05 09:22:45 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -20,8 +20,12 @@ static const char *RCSId="$Id: parser3.C,v 1.108 2001/09/04 19:05:04 parser Exp 
 #include "pa_socks.h"
 #include "pa_version.h"
 
+// helper macros
+
+#define STRINGIZE(name) #name
 //#define DEBUG_POOL_MALLOC
 
+// consts
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
@@ -87,13 +91,8 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 		fflush(f);
 }
 
-static char *_getenv(const char *name) {
- 	char *result=getenv(name);
-	return result && *result ? result : 0;
-}
-
 const char *SAPI::get_env(Pool& pool, const char *name) {
-	return _getenv(name);
+	return getenv(name);
 }
 
 size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
@@ -149,16 +148,17 @@ char *full_file_spec(char *file_name) {
 		wich is tested but seems slow.
 */
 int main(int argc, char *argv[]) {
+	int result;
 	argv0=argv[0];
 
 	umask(2);
 
 	// were we started as CGI?
 	cgi=
-		_getenv("SERVER_SOFTWARE") || 
-		_getenv("SERVER_NAME") || 
-		_getenv("GATEWAY_INTERFACE") || 
-		_getenv("REQUEST_METHOD");
+		getenv("SERVER_SOFTWARE") || 
+		getenv("SERVER_NAME") || 
+		getenv("GATEWAY_INTERFACE") || 
+		getenv("REQUEST_METHOD");
 	
 	if(!cgi) {
 		if(argc<2) {
@@ -179,13 +179,13 @@ int main(int argc, char *argv[]) {
 	setmode(fileno(stderr), _O_BINARY);
 #endif
 
-	char *filespec_to_process=cgi?_getenv("PATH_TRANSLATED"):argv[1];
+	char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
 #ifdef WIN32
 	back_slashes_to_slashes(filespec_to_process);
 #endif
 	filespec_to_process=full_file_spec(filespec_to_process);
 
-	const char *request_method=_getenv("REQUEST_METHOD");
+	const char *request_method=getenv("REQUEST_METHOD");
 	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
@@ -278,7 +278,7 @@ int main(int argc, char *argv[]) {
 		
 		// some root-controlled location
 #ifdef SYSCONFDIR
-		const char *root_auto_path=SYSCONFDIR;
+		const char *root_auto_path=STRINGIZE(SYSCONFDIR);
 #else
 #	ifdef WIN32
 		// c:\windows
@@ -318,14 +318,8 @@ int main(int argc, char *argv[]) {
 		SetUnhandledExceptionFilter(0);
 #endif
 
-#ifndef WIN32
-		// 
-		if(!cgi)
-			SAPI::send_body(pool, "\n", 1);
-#endif
-
 		// successful finish
-		return 0;
+		result=0;
 	} PCATCH(e) { // global problem 
 		// must be first in PCATCH{}
 #ifdef WIN32
@@ -355,14 +349,15 @@ int main(int argc, char *argv[]) {
 		if(!header_only)
 			SAPI::send_body(pool, body, content_length);
 
-#ifndef WIN32
-		// 
-		if(!cgi)
-			SAPI::send_body(pool, "\n", 1);
-#endif
-
 		// unsuccessful finish
-		return 1;
+		result=1;
 	}
 	PEND_CATCH
+
+#ifndef WIN32
+	// 
+	if(!cgi)
+		SAPI::send_body(pool, "\n", 1);
+#endif
+	return result;
 }

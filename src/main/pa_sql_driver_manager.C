@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.31 2001/09/05 09:02:52 parser Exp $"; 
+static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.32 2001/09/05 09:22:45 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -15,6 +15,10 @@ static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.31 2001/09/05 09:02:5
 #include "pa_threads.h"
 
 #include "pa_sapi.h"
+
+// helper macros
+
+#define STRINGIZE(name) #name
 
 // globals
 
@@ -128,11 +132,11 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 					"can not open the module, %s", lt_dlerror());
 
 			SQL_Driver_create_func create=(SQL_Driver_create_func)lt_dlsym(handle, 
-				SQL_DRIVER_CREATE_FUNC_NAME);  
+				STRINGIZE(SQL_DRIVER_CREATE));
 			if(!create)
 				PTHROW(0, 0,
 					library,
-					"function '%s' was not found", SQL_DRIVER_CREATE_FUNC_NAME);
+					"function '%s' was not found", STRINGIZE(SQL_DRIVER_CREATE));
 
 			// create library-driver!
 			driver=(*create)();

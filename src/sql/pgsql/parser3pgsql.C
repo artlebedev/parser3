@@ -7,7 +7,7 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.13 2001/09/05 08:57:43 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.14 2001/09/05 09:22:45 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -423,6 +423,6 @@ private: // conn client library funcs linking
 
 };
 
-extern "C" SQL_Driver *SQL_DRIVER_CREATE_FUNC_NAME() {
+extern "C" SQL_Driver *SQL_DRIVER_CREATE() {
 	return new PgSQL_Driver();
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3odbc.C,v 1.4 2001/09/05 08:57:43 parser Exp $"; 
+static const char *RCSId="$Id: parser3odbc.C,v 1.5 2001/09/05 09:22:45 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -207,6 +207,6 @@ public:
 
 };
 
-extern "C" SQL_Driver *SQL_DRIVER_CREATE_FUNC_NAME() {
+extern "C" SQL_Driver *SQL_DRIVER_CREATE() {
 	return new ODBC_Driver();
 }
