@@ -5,9 +5,18 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.30 2001/07/07 16:38:01 parser Exp $
+	$Id: image.C,v 1.31 2001/08/27 15:17:15 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.30 2001/07/07 16:38:01 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.31 2001/08/27 15:17:15 parser Exp $"; 
+
+/*
+	jpegsize: gets the width and height (in pixels) of a jpeg file
+	Andrew Tong, werdna@ugcs.caltech.edu           February 14, 1995
+	modified slightly by alex@ed.ac.uk
+	and further still by rjray@uswest.com
+	optimization and general re-write from tmetro@vl.com
+	from perl by paf@design.ru
+*/
 
 #include "pa_config_includes.h"
 
@@ -41,7 +50,7 @@ public: // Methoded
 /// simple buffered reader[from memory/file], used in _measure
 class Measure_reader {
 public:
-	enum { READ_CHUNK_SIZE=0x400 };// 1K
+	enum { READ_CHUNK_SIZE=0x400*10 };// 10K
 	typedef size_t(*Func)(void *& buf, size_t limit, void *info);
 
 	Measure_reader(Func afunc, void *ainfo) : 
@@ -49,7 +58,7 @@ public:
 		chunk(0), offset(0), size(0) {
 	}
 
-	size_t read(unsigned char *& buf, size_t limit) {
+	size_t read(void *&buf, size_t limit) {
 		if(offset+limit>size) // nothing left
 			if(offset==0 || limit==1) { // only one-byte continuations allowed
 				size=(*func)(chunk, READ_CHUNK_SIZE, info);
@@ -86,118 +95,100 @@ struct GIF_Header {
 	char       nulls;
 };
 
-/// JPEG file header
-struct JFIF_Header {
-	char length[2];              //< length of JFIF segment marker
-	char identifier[5];          //< JFIF identifier
-	char version[2];             //< version
-	char units;                  //< units X of Y pixel density
-	char xdensity[2];            //< X pixel density
-	char ydensity[2];            //< X pixel density
-	char xthumbnails;            //< width of thumbnails
-	char ythumbnails;            //< height of thumbnails
-	char reserved;               //< reserved
+/// JPEG record head
+struct JPG_Segment_head {
+	unsigned char marker;
+	unsigned char code;
+	unsigned char length[2];
 };
 /// JPEG frame header
-struct JPG_Frame {
-	char length[2];               //< length of image marker
+struct JPG_Size_segment_body {
 	char data;                    //< data precision of bits/sample
-	char height[2];               //< image height
-	char width[2];                //< image width
+	unsigned char height[2];               //< image height
+	unsigned char width[2];                //< image width
 	char numComponents;           //< number of color components
 };
 
 //
 
-inline short bytes_to_int(unsigned char HI, unsigned char LO) {
-	return(short)((HI<<8) + LO);
+inline short bytes_to_int(unsigned char chars[2]) {
+	return(short)((chars[1]<<8) + chars[0]);
 }
 
 void measure_gif(Pool& pool, const String *origin_string, 
 			 Measure_reader& reader, int& width, int& height) {
 
-	unsigned char *buf;
+	void *buf;
 	const int head_size=sizeof(GIF_Header);
 	if(reader.read(buf, head_size)<head_size)
 		PTHROW(0, 0, 
 			origin_string, 
 			"broken GIF header - file size is less then %d bytes", head_size);
+	GIF_Header *head=(GIF_Header *)buf;
 
-	GIF_Header& screenD=*reinterpret_cast<GIF_Header *>(buf);
-	if(strncmp(screenD.type, "GIF", 3)!=0)
+	if(strncmp(head->type, "GIF", 3)!=0)
 		PTHROW(0, 0, 
 			origin_string, 
 			"bad image file - GIF signature not found");	
 
-	width=bytes_to_int(screenD.width[1], screenD.width[0]);
-	height=bytes_to_int(screenD.height[1], screenD.height[0]);
+	width=bytes_to_int(head->width);
+	height=bytes_to_int(head->height);
 }
 
 void measure_jpeg(Pool& pool, const String *origin_string, 
 			 Measure_reader& reader, int& width, int& height) {
 	// JFIF format markers
-	const unsigned char SOI=0xD8;
-	const unsigned char EOI=0xD9;
-	const unsigned char APP0=0xE0;
-	const unsigned char SOF0=0xC0;
-	const unsigned char SOF2=0xC2;
-	const unsigned char COM=0xFE;
+	const unsigned char MARKER=0xFF;
+	const unsigned char SIZE_FIRST=0xC0;
+	const unsigned char SIZE_LAST=0xC3;
 
-	unsigned char *screenD_buf;
-	unsigned char *h_buf=0;
-	
-	bool flag=false;
-	
-	unsigned char *prefix;
+	void *buf;
 	const size_t prefix_size=2;
-	if(reader.read(prefix, prefix_size)<prefix_size)
+	if(reader.read(buf, prefix_size)<prefix_size)
 		PTHROW(0, 0, 
 			origin_string, 
 			"broken JPEG file - size is less then %d bytes", prefix_size);
+	unsigned char *signature=(unsigned char *)buf;
 	
-	if(((unsigned char *)prefix)[1]!=SOI) 
+	if(!(signature[0]==0xFF && signature[1]==0xD8)) 
 		PTHROW(0, 0, 
 			origin_string, 
-			"broken JPEG file - second byte of header is not 0x%02X", SOI);
-		
-	unsigned char zero=0;
-	unsigned char *marker=&zero;
+			"broken JPEG file - signature not found");
 
-	do {
-		while((*marker)!=0xFF)
-			if(reader.read(marker, sizeof(char))<=0) break;
-		if(reader.read(marker, sizeof(char))<=0) break;
-		switch(*marker) {
-		case EOI:
-			marker=&zero;
+	bool found=false;
+	while(true) {
+		void *buf;
+        // Extract the segment header.
+		if(reader.read(buf, sizeof(JPG_Segment_head))<sizeof(JPG_Segment_head))
+			break;		
+		JPG_Segment_head *head=(JPG_Segment_head *)buf;
+
+        // Verify that it's a valid segment.
+		if(head->marker!=MARKER)
 			break;
-		case APP0:
-			if(!flag) {
-				flag=true;
-				if(reader.read(screenD_buf, sizeof(JFIF_Header)) < sizeof(JFIF_Header))
-					break;
-				JFIF_Header& screenD=*reinterpret_cast<JFIF_Header *>(screenD_buf);
-				if((bytes_to_int(screenD.length[0], screenD.length[1]) < 16) ||
-					strcasecmp(screenD.identifier, "JFIF")) flag=false;
-			}
+
+		if(head->code >= SIZE_FIRST && head->code  <= SIZE_LAST) {
+            // Segments that contain size info
+			if(reader.read(buf, sizeof(JPG_Size_segment_body))<sizeof(JPG_Size_segment_body))
+				break;
+			JPG_Size_segment_body *body=(JPG_Size_segment_body *)buf;
+			
+			width=bytes_to_int(body->width);
+			height=bytes_to_int(body->height);
+			found=true;
 			break;
-		case SOF0:
-		case SOF2:
-			if(reader.read(h_buf, sizeof(JPG_Frame))<sizeof(JPG_Frame))
-				flag=false;
-			break;
-		default: break;
-		}
-	} while(*marker!=EOI);
-	
-	if(flag && h_buf) {
-		JPG_Frame& h=*reinterpret_cast<JPG_Frame *>(h_buf);
-		width=bytes_to_int(h.width[0], h.width[1]);
-		height=bytes_to_int(h.height[0], h.height[1]);
-	} else
+		} else {
+            // Dummy read to skip over data
+            size_t limit=bytes_to_int(head->length) - 2;
+			if(reader.read(buf, limit)<limit)
+				break;
+        }
+	}
+
+	if(!found)
 		PTHROW(0, 0, 
 			origin_string, 
-			"broken JPEG file - APP0 frame not found");			
+			"broken JPEG file - size frame not found");
 }
 
 // measure center
