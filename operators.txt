@@ -558,7 +558,7 @@ Xhashfile
     !^date::now(смещение в днях) выдаёт сейчас+смещение
     !^date::create(дней с epoch) // старое имя set
     !^date::create(year;month[;day[;hour[;minute[;second]]]]) // старое имя set
-    ^date::sql-create[дата в формате %Y-%m-%d %H:%M:%S]
+    !^date::create[дата в формате %Y-%m-%d %H:%M:%S]
         для удобного создания по значению из базы
         формат1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
         формат2: %H:%M[:%S]
