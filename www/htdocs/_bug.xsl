@@ -9,8 +9,10 @@
     omit-xml-declaration="no"
 	/-->
 	
-	<xsl:template match="/doc">
+	<xsl:template match="/">
 		<html>
+		// 
+		z
 			<xsl:copy-of select="."/>
 			<br/>
 		</html>

@@ -1,13 +1,3 @@
-<pre>
-^mail:send[
-	$.from[from]
-	$.to[to]
-	$.html{
-	cid=xxx
-	}
-	$.file[
-		$.value[^file::load[binary;_bug.html]]
-#		$.content-disposition[inline]
-		$.content-disposition[]
-    ]
-]
+$s[^xdoc::load[_bug.xml]]
+$d[^s.transform[_bug.xsl]]
+^d.string[]
