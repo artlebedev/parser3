@@ -8,7 +8,7 @@
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-static const char* IDENT_VRESPONSE_H="$Date: 2002/10/31 15:01:56 $";
+static const char* IDENT_VRESPONSE_H="$Date: 2002/11/29 08:06:59 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
@@ -52,15 +52,5 @@ private:
 	Hash ffields;
 
 };
-
-// helper funcs
-
-/**
-	$content-type[text/html] -> 
-		content-type: text/html
-	$content-type[$value[text/html] charset[windows-1251]] -> 
-		content-type: text/html; charset=windows-1251
-*/
-const String& attributed_meaning_to_string(Value& meaning, String::Untaint_lang lang);
 
 #endif

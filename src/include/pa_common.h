@@ -8,12 +8,13 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2002/11/25 14:57:33 $";
+static const char* IDENT_COMMON_H="$Date: 2002/11/29 08:06:59 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
 
 class Hash;
+class Value;
 
 // replace system s*nprintf with our versions
 #undef vsnprintf 
@@ -77,6 +78,14 @@ extern "C" double sign(double);
 #else
 inline double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 ); }
 #endif
+
+/**
+	$content-type[text/html] -> 
+		content-type: text/html
+	$content-type[$value[text/html] charset[windows-1251]] -> 
+		content-type: text/html; charset=windows-1251
+*/
+const String& attributed_meaning_to_string(Value& meaning, String::Untaint_lang lang);
 
 /// yields to OS for secs secs and usecs milliseconds
 int pa_sleep(unsigned long secs, unsigned long usecs);

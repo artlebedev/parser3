@@ -349,6 +349,7 @@ $response:body[^image.gif[]]
 $xdoc[^xdoc::load[http://www.cbr.ru/scripts/XML_daily.asp?^taint[сегодня];
     $.headers[
 		$.user-agent[ПАФ]
+		$.accept-test[$.value[значение]$.with-option[опция]]
 	]
 ]]
 На ^xdoc.selectString[string(/ValCurs/@Date)]
