@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2004/03/23 15:11:15 $";
+static const char * const IDENT_IMAGE_C="$Date: 2004/07/28 14:38:20 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -402,7 +402,7 @@ static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format,
 		size_t length=components_count;
 		// Data format is "YYYY:MM:DD HH:MM:SS"+0x00, total 20bytes
 		if(length==JPEG_EXIF_DATE_CHARS 
-			&& isdigit(cstr[0])
+			&& isdigit((unsigned char)cstr[0])
 			&& cstr[length-1]==0) {
 			char cstr_writable[JPEG_EXIF_DATE_CHARS]; 
 			strcpy(cstr_writable, cstr);

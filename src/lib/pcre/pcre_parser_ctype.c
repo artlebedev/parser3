@@ -42,7 +42,7 @@ and semantics are as close as possible to those of the Perl 5 language.
 	   
 		See the file Tech.Notes for some information on the internals.
 */
-static const char *RCSId="$Date: 2003/07/24 11:31:22 $"; 
+static const char *RCSId="$Date: 2004/07/28 14:38:20 $"; 
 
 #include <ctype.h>
 #include <stdio.h>
@@ -57,8 +57,8 @@ static const char *RCSId="$Date: 2003/07/24 11:31:22 $";
 
 const char *out_c(char *buf, int c) {
 	sprintf(buf,
-		isprint(c)&&
-		!isspace(c) &&
+		isprint((unsigned char)c)&&
+		!isspace((unsigned char)c) &&
 		c!='#' &&
 		c!='"' &&
 		c<128?
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
 	for(c=0; c<0x100; c++)
 		if(
 			ctypes_table[c]&(ctype_space|ctype_digit|ctype_xdigit|ctype_letter|ctype_word) || 
-			ispunct(c) ||
+			ispunct((unsigned char)c) ||
 			c!=case_table[c] /*||
 			!(c==ucm[c][0] && ucm[c][1]==0)*/
 			) {

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2004/04/15 15:39:52 $";
+static const char * const IDENT_DATE_C="$Date: 2004/07/28 14:38:20 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -79,7 +79,7 @@ static int to_tm_year(int iyear) {
 			"empty string is not valid datetime");
 
 	char *cur=cstr;
-	int date_delim=isdigit(cur[0])&&isdigit(cur[1])&&isdigit(cur[2])&&isdigit(cur[3])&&cur[4]==':'?':'
+	int date_delim=isdigit((unsigned char)cur[0])&&isdigit((unsigned char)cur[1])&&isdigit((unsigned char)cur[2])&&isdigit((unsigned char)cur[3])&&cur[4]==':'?':'
 		:'-';
 	const char* year=lsplit(&cur, date_delim);
 	const char* month=lsplit(&cur, date_delim);

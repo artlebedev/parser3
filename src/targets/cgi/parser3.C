@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2004/07/26 10:44:21 $";
+static const char * const IDENT_PARSER3_C="$Date: 2004/07/28 14:38:21 $";
 
 #include "pa_config_includes.h"
 
@@ -282,9 +282,9 @@ const char* maybe_reconstruct_IIS_status_in_qs(const char* original)
 	// and can consider that as an indication that this is IIS way to report errors
 
 	if(original 
-		&& isdigit(original[0])
-		&& isdigit(original[1])
-		&& isdigit(original[2])
+		&& isdigit((unsigned char)original[0])
+		&& isdigit((unsigned char)original[1])
+		&& isdigit((unsigned char)original[2])
 		&& original[3]==';') 
 	{
 		size_t original_len=strlen(original);

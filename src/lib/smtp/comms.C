@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMS_C="$Date: 2004/03/01 09:14:15 $";
+static const char * const IDENT_COMMS_C="$Date: 2004/07/28 14:38:20 $";
 
 #include "smtp.h"
 
@@ -15,7 +15,7 @@ IsAddressARawIpaddress(const char*  string)
 {
     while( *string ) 
     {
-        if( !isdigit(*string) ) 
+        if( !isdigit((unsigned char)*string) ) 
         {
             return 0;
         }

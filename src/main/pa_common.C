@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/07/28 13:44:21 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/07/28 14:38:21 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1138,7 +1138,7 @@ bool StrEqNc(const char* s1, const char* s2, bool strict) {
 		} else if(!(*s2))
 			return !strict;
 		if(isalpha((unsigned char)*s1)) {
-			if(tolower(*s1) !=tolower(*s2))
+			if(tolower((unsigned char)*s1) !=tolower((unsigned char)*s2))
 				return false;
 		} else if((*s1) !=(*s2))
 			return false;

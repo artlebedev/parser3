@@ -2339,10 +2339,10 @@ load_deplibs (handle, deplibs)
   p = deplibs;
   while (*p)
     {
-      if (!isspace ((int) *p))
+      if (!isspace ((unsigned char) *p))
 	{
 	  char *end = p+1;
-	  while (*end && !isspace((int) *end))
+	  while (*end && !isspace((unsigned char) *end))
 	    {
 	      ++end;
 	    }
@@ -2391,14 +2391,14 @@ load_deplibs (handle, deplibs)
   p = deplibs;
   while (*p)
     {
-      if (isspace ((int) *p))
+      if (isspace ((unsigned char) *p))
 	{
 	  ++p;
 	}
       else
 	{
 	  char *end = p+1;
-	  while (*end && !isspace ((int) *end))
+	  while (*end && !isspace ((unsigned char) *end))
 	    {
 	      ++end;
 	    }
@@ -2640,7 +2640,7 @@ try_dlopen (phandle, filename)
         size_t i;
         for (i = 0; i < ext - base_name; ++i)
 	  {
-	    if (isalnum ((int)(base_name[i])))
+	    if (isalnum ((unsigned char)(base_name[i])))
 	      {
 	        name[i] = base_name[i];
 	      }

@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2004/02/11 15:33:12 $";
+static const char * const IDENT_MATH_C="$Date: 2004/07/28 14:38:20 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -228,9 +228,9 @@ inline bool is_salt_body_char(int c) {
 }
 static size_t calc_prefix_size(const char* salt) {
 	if(strlen(salt)) {
-		if(!is_salt_body_char(salt[0])) { // $...  {...
+		if(!is_salt_body_char((unsigned char)salt[0])) { // $...  {...
 			const char* cur=salt+1; // skip
-			while(is_salt_body_char(*cur++)) // ...$  ...}
+			while(is_salt_body_char((unsigned char)*cur++)) // ...$  ...}
 				;
 			return cur-salt;
 		} else
