@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2003/09/25 09:15:03 $";
+static const char* IDENT_UNTAINT_C="$Date: 2003/09/25 09:41:24 $";
 
 
 #include "pa_string.h"
@@ -182,10 +182,10 @@ int append_fragment_optimizing(char alang, size_t asize, Append_fragment_info* i
 	// clean piece would be marked OPTIMIZED manually
 	// pieces with determined languages [not tainted|clean] would retain theirs langs
 	info->dest_languages->append(info->dest_body_plan_length, 
-		lang==String::Language::L_TAINTED?
+		lang==String::L_TAINTED?
 			info->lang
-			:lang==String::Language::L_CLEAN?
-				(String::Language)(String::Language::L_CLEAN|String::Language::L_OPTIMIZE_BIT) // ORing with OPTIMIZED flag
+			:lang==String::L_CLEAN?
+				(String::Language)(String::L_CLEAN|String::L_OPTIMIZE_BIT) // ORing with OPTIMIZED flag
 				:lang,
 		asize);
 	info->dest_body_plan_length+=asize;
@@ -196,7 +196,7 @@ int append_fragment_nonoptimizing(char alang, size_t asize, Append_fragment_info
 	const String::Language lang=(String::Language)(unsigned char)alang;
 	// The core idea: tainted pieces got marked with context's lang
 	info->dest_languages->append(info->dest_body_plan_length, 
-		lang==String::Language::L_TAINTED?
+		lang==String::L_TAINTED?
 			info->lang
 			:lang,
 		asize);
@@ -332,15 +332,15 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 	//fprintf(stderr, "%d, %d\n", fragment.lang, fragment.length);
 
 	
-	String::Language to_lang=info->lang==String::Language::L_UNSPECIFIED?fragment_lang:info->lang;
-	bool optimize=(to_lang & String::Language::L_OPTIMIZE_BIT)!=0;
+	String::Language to_lang=info->lang==String::L_UNSPECIFIED?fragment_lang:info->lang;
+	bool optimize=(to_lang & String::L_OPTIMIZE_BIT)!=0;
 	if(!optimize)
 		whitespace=false;
 		
-	switch(to_lang & ~String::Language::L_OPTIMIZE_BIT) {
-	case String::Language::L_CLEAN:
-	case String::Language::L_TAINTED:
-	case String::Language::L_AS_IS:
+	switch(to_lang & ~String::L_OPTIMIZE_BIT) {
+	case String::L_CLEAN:
+	case String::L_TAINTED:
+	case String::L_AS_IS:
 		// clean piece
 
 		// tainted piece, but undefined untaint language
@@ -350,7 +350,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 		// tainted, untaint language: as-is
 		ec_append(info->result, optimize, whitespace, info->pos, fragment_length);
 		break;
-	case String::Language::L_FILE_SPEC:
+	case String::L_FILE_SPEC:
 		// tainted, untaint language: file [name]
 		escape(
 			// Macintosh has problems with small Russian letter 'r'
@@ -361,7 +361,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 				encode(need_file_encode, '_', c); 
 		);
 		break;
-	case String::Language::L_URI:
+	case String::L_URI:
 		// tainted, untaint language: uri
 		{
 			const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();
@@ -378,13 +378,13 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 				encode(need_uri_encode, '%', c);
 		}
 		break;
-	case String::Language::L_HTTP_HEADER:
+	case String::L_HTTP_HEADER:
 		// tainted, untaint language: http-field-content-text
 		escape(
 			encode(need_uri_encode, '%', c);
 		);
 		break;
-	case String::Language::L_MAIL_HEADER:
+	case String::L_MAIL_HEADER:
 		// tainted, untaint language: mail-header
 		// http://www.ietf.org/rfc/rfc2047.txt
 		if(info->charsets) {
@@ -430,7 +430,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 		} else
 			ec_append(info->result, optimize, whitespace, info->pos, fragment_length);
 		break;
-	case String::Language::L_TABLE: 
+	case String::L_TABLE: 
 		// tainted, untaint language: table
 		escape(switch(c) {
 			case '\t': to_char(' ');  break;
@@ -439,7 +439,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 		});
 		break;
 #ifdef PA_SQL
-	case String::Language::L_SQL:
+	case String::L_SQL:
 		// tainted, untaint language: sql
 		if(info->connection) {
 			const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();
@@ -453,7 +453,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 				"untaint in SQL language failed - no connection specified");
 		break;
 #endif
-	case String::Language::L_JS:
+	case String::L_JS:
 		escape(switch(c) {
 			case '"': to_string("\\\"");  break;
 			case '\'': to_string("\\'");  break;
@@ -463,7 +463,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 			_default;
 		});
 		break;
-	case String::Language::L_XML:
+	case String::L_XML:
 		escape(switch(c) {
 			case '&': to_string("&amp;");  break;
 			case '>': to_string("&gt;");  break;
@@ -473,7 +473,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 			_default;
 		});
 		break;
-	case String::Language::L_HTML:
+	case String::L_HTML:
 		escape(switch(c) {
 			case '&': to_string("&amp;");  break;
 			case '>': to_string("&gt;");  break;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/09/25 09:15:03 $";
+static const char* IDENT_STRING_C="$Date: 2003/09/25 09:41:24 $";
 
 #include "pcre.h"
 
@@ -583,7 +583,7 @@ const char* String::Body::v() const {
 	return CORD_to_const_char_star(body);
 }
 const char* String::Languages::v() const {
-	if(is_not_just_lang)
+	if(opt.is_not_just_lang)
 		return CORD_to_const_char_star(langs);
 	else
 		return (const char*)&langs;

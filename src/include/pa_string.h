@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char* IDENT_STRING_H="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_STRING_H="$Date: 2003/09/25 09:41:24 $";
 
 // includes
 
@@ -42,6 +42,7 @@ template<typename T>
 inline size_t get_length(T current) {
 	return current;
 }
+
 /** 
 	String which knows the lang of all it's langs.
 
@@ -80,27 +81,25 @@ public:
 		L_OPTIMIZE_BIT = 0x80  ///< flag, requiring cstr whitespace optimization
 	};
 
-	class Languages {
+	union Languages {
 
-		union {
-			struct {
-				Language lang:8;
-				int is_not_just_lang:sizeof(CORD)*8-8;
-			};
-			CORD langs;
-		};
+		struct {
+			Language lang:8;
+			int is_not_just_lang:sizeof(CORD)*8-8;
+		} opt;
+		CORD langs;
 
 		template<typename C>
 		CORD make_langs(C current) const {
-			return is_not_just_lang?
+			return opt.is_not_just_lang?
 				langs
-				:CORD_chars((char)lang, get_length(current));
+				:CORD_chars((char)opt.lang, get_length(current));
 		}
 
 		CORD make_langs(size_t aoffset, size_t alength)  const {
-			return is_not_just_lang?
+			return opt.is_not_just_lang?
 				CORD_substr(langs, aoffset, alength)
-				:CORD_chars((char)lang, alength);
+				:CORD_chars((char)opt.lang, alength);
 		}
 
 		/// appending when 'langs' already contain something [simple cases hanled elsewhere]
@@ -109,13 +108,13 @@ public:
 			const CORD to_nonempty_target_langs) {
 			assert(langs);
 
-			if(is_not_just_lang)
+			if(opt.is_not_just_lang)
 				langs=CORD_cat(langs, to_nonempty_target_langs);
 			else { // we were "just lang"
 				size_t current_size=get_length(current);
 				assert(current_size);
 				langs=CORD_cat(
-					CORD_chars((char)lang, current_size),  // first piece [making from just 'lang']
+					CORD_chars((char)opt.lang, current_size),  // first piece [making from just 'lang']
 					to_nonempty_target_langs); // new piece
 			}
 		}
@@ -125,7 +124,10 @@ public:
 		const char* v() const;
 
 		Languages(): langs(0) {}
-		Languages(Language alang): lang(alang), is_not_just_lang(0) {}
+		Languages(Language alang) {
+			opt.lang=alang;
+			opt.is_not_just_lang=0;
+		}
 
 		/// MUST be called exactly prior to modification of current [uses it's length]
 		template<typename C>
@@ -133,12 +135,12 @@ public:
 			assert(alang);
 			assert(asize);
 
-			if(!is_not_just_lang)
-				if(lang) {
-					if(lang==alang) // same length? ignoring
+			if(!opt.is_not_just_lang)
+				if(opt.lang) {
+					if(opt.lang==alang) // same length? ignoring
 						return;
 				} else {
-					lang=alang; // to uninitialized
+					opt.lang=alang; // to uninitialized
 					return;
 				}
 
@@ -153,8 +155,8 @@ public:
 
 			if(!langs)
 				langs=src.langs; // to uninitialized
-			else if(!src.is_not_just_lang)
-				append(current, src.lang, appending_length); // simplifying when simple source
+			else if(!src.opt.is_not_just_lang)
+				append(current, src.opt.lang, appending_length); // simplifying when simple source
 			else
 				append(current, src.make_langs(appending_length));
 		}
@@ -166,12 +168,12 @@ public:
 			assert(alength);
 
 			if(!langs) // to uninitialized?
-				if(src.is_not_just_lang)
+				if(src.opt.is_not_just_lang)
 					langs=CORD_substr(src.langs, aoffset, alength); // to uninitialized complex
 				else
-					lang=src.lang; // to uninitialized simple
+					opt.lang=src.opt.lang; // to uninitialized simple
 			else 
-				if(!is_not_just_lang && !src.is_not_just_lang && lang==src.lang) // both simple & of same language?
+				if(!opt.is_not_just_lang && !src.opt.is_not_just_lang && opt.lang==src.opt.lang) // both simple & of same language?
 					return; // ignoring
 				else
 					append(current, src.make_langs(aoffset, alength));
@@ -182,26 +184,26 @@ public:
 			if(alang==L_UNSPECIFIED) // ignore lang?
 				return true;
 
-			if(is_not_just_lang)
+			if(opt.is_not_just_lang)
 				return CORD_range_contains_chr_greater_then(langs, aoffset, alength, (unsigned)alang)==0;
 			else
-				return lang<=alang;
+				return opt.lang<=alang;
 		}
 
 		template<typename C, typename I> 
 		void for_each(C current, 
 			int callback(char, size_t, I), I info) const {
 			
-			if(is_not_just_lang)
+			if(opt.is_not_just_lang)
 				CORD_block_iter(langs, 0, (CORD_block_iter_fn)callback, info);
 			else
-				callback(lang, get_length(current), info);
+				callback(opt.lang, get_length(current), info);
 		}
 
 		bool invariant(size_t current_length) {
 			if(!langs)
 				return current_length==0;
-			if(is_not_just_lang)
+			if(opt.is_not_just_lang)
 				return CORD_len(langs)==current_length;
 			return true; // uncheckable, actually
 		}
@@ -291,7 +293,6 @@ public:
 		}*/
 	};
 
-
 	struct C {
 		const char *str;
 		size_t length;
@@ -379,11 +380,7 @@ public:
 	}
 	String& operator << (const String& src) { return append(src, L_PASS_APPENDED); }
 	String& operator << (const char* src) { return append_help_length(src, 0, L_AS_IS); }
-	String& operator << (const Body src) { 
-		langs.append(body, L_AS_IS, src.length());
-		body<<src;
-		return *this;
-	}
+	String& operator << (const Body src);
 
 	/// extracts first char of a string, if any
 	char first_char() const {
@@ -465,5 +462,14 @@ inline size_t get_length<String::Body>(String::Body body) {
 inline uint hash_code(const String::Body self) {
 	return self.hash_code();
 }
+
+
+/// now that we've declared specialization we can use it
+inline String& String::operator << (const String::Body src) { 
+	langs.append(body, L_AS_IS, src.length());
+	body<<src;
+	return *this;
+}
+
 
 #endif
