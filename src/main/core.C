@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.C,v 1.67 2001/03/13 19:35:06 paf Exp $
+	$Id: core.C,v 1.68 2001/03/13 20:02:10 paf Exp $
 */
 
 #include "core.h"
@@ -72,6 +72,6 @@ void core(Pool& pool) {
 	initialize_table_class(pool, *(table_class=new(pool) VStateless_class(pool)));  table_class->freeze();
 
 	// read-only stateless base classes
-	initialize_env_base_class(pool, *(env_base_class=new(pool) VStateless_class(pool)));  env_base_class->freeze();
-	initialize_form_base_class(pool, *(form_base_class=new(pool) VStateless_class(pool)));  form_base_class->freeze();
+	initialize_env_base_class(pool, *(env_base_class=new(pool) VStateless_class(pool)));  env_base_class->set_name(*env_class_name);  env_base_class->freeze();
+	initialize_form_base_class(pool, *(form_base_class=new(pool) VStateless_class(pool)));  form_base_class->set_name(*form_class_name);  form_base_class->freeze();
 }

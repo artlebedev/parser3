@@ -3,16 +3,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.C,v 1.2 2001/03/13 13:43:32 paf Exp $
+	$Id: pa_vstateless_class.C,v 1.3 2001/03/13 20:02:11 paf Exp $
 */
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"
 
 Value *VStateless_class::get_element(const String& aname) {
-	// $NAME=my name
-	if(aname==NAME_NAME)
-		return NEW VString(fclass_alias->name());
 	// $CLASS=my class=myself
 	if(aname==CLASS_NAME)
 		return fclass_alias;

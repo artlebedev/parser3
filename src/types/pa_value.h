@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.11 2001/03/13 16:38:27 paf Exp $
+	$Id: pa_value.h,v 1.12 2001/03/13 20:02:11 paf Exp $
 */
 
 /*
@@ -18,8 +18,6 @@
 #include "pa_array.h"
 #include "pa_exception.h"
 #include "core.h"
-
-#define NAME_NAME "NAME"
 
 class Value;
 class VStateless_class;
@@ -163,6 +161,9 @@ public: // Value
 
 	// object_class, object_instance: object_class
 	// wcontext: none yet | transparent
+	// form: this
+	// class: this
+	// env: this
 	virtual VStateless_class *get_class() { return 0; }
 
 	// valiased: this

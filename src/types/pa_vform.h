@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.1 2001/03/13 19:35:08 paf Exp $
+	$Id: pa_vform.h,v 1.2 2001/03/13 20:02:11 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -18,6 +18,9 @@ public: // Value
 	
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "form"; }
+
+	// vform: this
+	VStateless_class *get_class() { return this; }
 
 	// form: CLASS,BASE,method,field
 	Value *get_element(const String& aname) {
@@ -37,7 +40,7 @@ public: // usage
 		construct_fields();
 	}
 
-	Hash& fields() { return ffields; }
+//	Hash& fields() { return ffields; }
 
 private:
 

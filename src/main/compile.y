@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.96 2001/03/13 16:38:23 paf Exp $
+	$Id: compile.y,v 1.97 2001/03/13 20:02:10 paf Exp $
 */
 
 /*
@@ -38,7 +38,7 @@
 #include "core.h"
 
 #define SELF_ELEMENT_NAME "self"
-#define USE_CONTROL_METHOD_NAME "use"
+#define USE_CONTROL_METHOD_NAME "USE"
 
 int real_yyerror(parse_control *pc, char *s);
 static void yyprint(FILE *file, int type, YYSTYPE value);

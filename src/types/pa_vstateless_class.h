@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.3 2001/03/13 16:38:27 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.4 2001/03/13 20:02:12 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -13,8 +13,8 @@
 #include "pa_vhash.h"
 #include "pa_vjunction.h"
 
-#define CLASS_NAME "class"
-#define BASE_NAME "base"
+#define CLASS_NAME "CLASS"
+#define BASE_NAME "BASE"
 
 class Temp_method;
 
@@ -25,11 +25,8 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "stateless_class"; }
 
-	// stateless_class: $NAME,$CLASS,$BASE,$method
+	// stateless_class: $CLASS,$BASE,$method
 	Value *get_element(const String& aname);
-
-	// stateless_class: object_class
-	VStateless_class *get_class() { return this; }
 
 public: // usage
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.8 2001/03/13 13:43:32 paf Exp $
+	$Id: pa_vclass.h,v 1.9 2001/03/13 20:02:11 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -19,6 +19,9 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "class"; }
 
+	// class: this
+	VStateless_class *get_class() { return this; }
+
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	Value *get_element(const String& aname) {
 		if(Value *result=VStateless_class::get_element(aname))
@@ -30,9 +33,6 @@ public: // Value
 
 	// object_class, operator_class: (field)=value - static values only
 	void put_element(const String& name, Value *value);
-
-	// object_class, object_instance: object_class
-	VStateless_class *get_class() { return this; }
 
 public: // usage
 
