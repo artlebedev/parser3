@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.C,v 1.15 2001/12/07 15:24:47 paf Exp $
+	$Id: pa_db_table.C,v 1.16 2001/12/17 19:16:09 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -54,7 +54,7 @@ struct DBT_auto : public DBT {
 // DB_Table
 
 DB_Table::DB_Table(Pool& pool, const String& afile_name, DB_Connection& aconnection) : Pooled(pool),
-	time_used(0), fservices_pool(0), 
+	time_used(0),
 	fconnection(aconnection),
 	dbenv(aconnection.dbenv),
 	ffile_name(afile_name), file_name_cstr(afile_name.cstr(String::UL_FILE_SPEC)),
@@ -131,7 +131,7 @@ void DB_Table::key_string_to_dbt(const String& key_string, DBT& key_result) {
 }
 
 String& DB_Table::key_dbt_to_string(Pool& pool, const DBT& key_dbt) {
-	String& result=*new(*fservices_pool) String(*fservices_pool);
+	String& result=*new(pool) String(pool);
 	if(key_dbt.size) {
 		char *request_data=(char *)pool.malloc(key_dbt.size);
 		memcpy(request_data, key_dbt.data, key_dbt.size);

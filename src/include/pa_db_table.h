@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.h,v 1.11 2001/12/15 21:28:19 paf Exp $
+	$Id: pa_db_table.h,v 1.12 2001/12/17 19:16:09 paf Exp $
 */
 
 #ifndef PA_DB_TABLE_H
@@ -70,15 +70,12 @@ private:
 	DB_Connection& fconnection;
 	DB_ENV& dbenv;
 	const String& ffile_name; const char *file_name_cstr;
-	Pool *fservices_pool;
 	DB *db;
 	time_t time_used;
 
 private:
 
 	void check(const char *operation, const String *source, int error);
-	void *malloc(size_t size) { return fservices_pool->malloc(size); }
-	void *calloc(size_t size) { return fservices_pool->calloc(size); }
 	/// pass empty dbt, would fill it from string
 	void key_string_to_dbt(const String& key_string, DBT& key_result);
 	/// @returns new string
