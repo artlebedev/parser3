@@ -5,15 +5,15 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCLASS_C="$Date: 2002/08/14 14:18:29 $";
+static const char* IDENT_VCLASS_C="$Date: 2002/08/15 07:53:07 $";
 
 #include "pa_vclass.h"
 
-/*override*/ bool VClass::is(const char *atype, bool looking_up) const {
-	if(Value::is(atype, looking_up))
-		return true;
+/*override*/ Value *VClass::as(const char *atype, bool looking_up) {
+	if(Value *result=Value::as(atype, looking_up))
+		return result;
 	else
-		return fbase?fbase->is(atype, looking_up):false;
+		return fbase?fbase->as(atype, looking_up):0;
 }
 
 /// VClass: (field)=STATIC value;(method)=method_ref with self=object_class

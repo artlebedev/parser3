@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char* IDENT_VXDOC_H="$Date: 2002/08/14 14:18:32 $";
+static const char* IDENT_VXDOC_H="$Date: 2002/08/15 07:53:07 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -31,7 +31,7 @@ class VXdoc : public VXnode {
 public: // Value
 
 	const char *type() const { return VXDOC_TYPE; }
-	/*override*/ bool is(const char *atype, bool looking_up) const;
+	/*override*/ Value *as(const char *atype, bool looking_up);
 
 	VStateless_class *get_class() { return Xdoc_class; }
 

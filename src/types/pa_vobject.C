@@ -7,24 +7,24 @@
 
 #include "pa_vobject.h"
 
-static const char* IDENT_VOBJECT_C="$Date: 2002/08/14 14:18:30 $";
+static const char* IDENT_VOBJECT_C="$Date: 2002/08/15 07:53:07 $";
 
-bool VObject::is(const char *atype, bool looking_up) const { 
+Value *VObject::as(const char *atype, bool looking_up) { 
 	if(!looking_up)
-		return get_last_derived_const()->is(atype, true/*the only user*/); // figure out from last_derivate upwards
+		return get_last_derived()->as(atype, true/*the only user*/); // figure out from last_derivate upwards
 
 	// is it me?
-	if(Value::is(atype, false))
-		return true;
+	if(Value *result=Value::as(atype, false))
+		return result;
 
 	// is it my base?
 	if(fbase) {
-		if(fbase->is(atype, true))
-			return true;
+		if(Value *result=fbase->as(atype, true))
+			return result;
 	}
 
 	// neither
-	return false;
+	return 0;
 }
 
 /// VObject: true, todo: z base table can be 33

@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/14 14:18:29 $";
+static const char* IDENT_VALUE_H="$Date: 2002/08/15 07:53:07 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -43,8 +43,8 @@ public: // Value
 		all except VObject/VClass: this if @atype eq type()
 		VObject/VClass: can locate parent class by it's type
 	*/
-	virtual bool is(const char *atype, bool looking_up) const {
-		return atype && strcmp(type(), atype)==0;
+	virtual Value *as(const char *atype, bool looking_up) {
+		return atype && strcmp(type(), atype)==0?this:0;
 	}
 	
 	/** is this value defined?

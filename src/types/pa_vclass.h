@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char* IDENT_VCLASS_H="$Date: 2002/08/14 14:18:29 $";
+static const char* IDENT_VCLASS_H="$Date: 2002/08/15 07:53:07 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vjunction.h"
@@ -22,7 +22,7 @@ public: // Value
 	
 	const char *type() const { return name_cstr(); }
 
-	/*override*/ bool is(const char *atype, bool looking_up) const;
+	/*override*/ Value *as(const char *atype, bool looking_up);
 
 	/// VClass: true
 	Value *as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }

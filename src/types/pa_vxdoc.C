@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXDOC="$Date: 2002/08/14 14:18:32 $";
+static const char* IDENT_VXDOC="$Date: 2002/08/15 07:53:07 $";
 
 #include "pa_vxdoc.h"
 
@@ -16,11 +16,11 @@ void VXdoc_destructor(void *vxdoc) {
 	static_cast<VXdoc *>(vxdoc)->~VXdoc();
 }
 
-bool VXdoc::is(const char *atype, bool looking_up) const {
-	if(Value::is(atype, looking_up))
-		return true;
+Value *VXdoc::as(const char *atype, bool looking_up) {
+	if(Value *result=Value::as(atype, looking_up))
+		return result;
 	else
-		return VXnode::is(atype, looking_up);
+		return VXnode::as(atype, looking_up);
 }
 
 /// VXdoc: $CLASS,$method
