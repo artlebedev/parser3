@@ -7,7 +7,7 @@
 
 	2001.07.30 using MySQL 3.23.22b
 */
-static const char *RCSId="$Id: parser3mysql.C,v 1.28 2001/08/24 07:04:25 parser Exp $"; 
+static const char *RCSId="$Id: parser3mysql.C,v 1.29 2001/08/28 13:29:41 parser Exp $"; 
 
 #include "config_includes.h"
 
