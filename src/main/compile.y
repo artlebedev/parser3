@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.34 2001/02/24 15:26:03 paf Exp $
+  $Id: compile.y,v 1.35 2001/02/24 15:35:28 paf Exp $
 */
 
 %{
@@ -69,10 +69,9 @@ control_method: '@' STRING '\n'
 	} else {
 		if(*name==USES_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) {
-				char file[MAX_STRING];
-				strcpy(file, LA2S(strings_code, i)->cstr());
-				strcat(file, ".p");
-				PC->request->use(file, 0);
+				String *file=LA2S(strings_code, i);
+				file->APPEND_CONST(".p");
+				PC->request->use(file->cstr(), 0);
 			}
 		} else if(*name==PARENTS_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) {

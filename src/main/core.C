@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.35 2001/02/24 15:26:03 paf Exp $
+$Id: core.C,v 1.36 2001/02/24 15:35:28 paf Exp $
 */
 
 #include "pa_request.h"
@@ -71,17 +71,19 @@ char *Request::execute_MAIN() {
 		Value *main=vclass->get_element(name_main);
 		if(main) { // found some 'main' element
 			Junction *junction=main->get_junction();
-			const Method *method=junction->method;
-			if(method) { // that element is a method, call it
-				// initialize contexts
-				self=root=rcontext=vclass;
-				wcontext=NEW WWrapper(pool(), vclass);
-
-				// execute!	
-				execute(method->code);
-				
-				// return chars
-				return wcontext->get_string()->cstr();
+			if(junction) {// it even has junction!
+				const Method *method=junction->method;
+				if(method) { // and junction is method-junction! call it
+					// initialize contexts
+					self=root=rcontext=vclass;
+					wcontext=NEW WWrapper(pool(), vclass);
+					
+					// execute!	
+					execute(method->code);
+					
+					// return chars
+					return wcontext->get_string()->cstr();
+				}
 			}
 		}
 	}
