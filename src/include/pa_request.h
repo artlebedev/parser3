@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.26 2001/03/10 13:07:09 paf Exp $
+  $Id: pa_request.h,v 1.27 2001/03/10 14:05:35 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -14,6 +14,7 @@
 #include "pa_vclass.h"
 
 #define MAIN_METHOD_NAME "main"
+#define AUTO_METHOD_NAME "auto"
 #define RUN_NAME "RUN"
 
 #define ROOT_NAME "ROOT"
@@ -80,6 +81,7 @@ private: // compile.C
 
 private: // execute.C
 
+	char *execute_static(VClass& vclass, String& method_name, bool return_cstr);
 	void execute(const Array& ops);
 
 	Value *get_element();

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.84 2001/03/10 13:07:09 paf Exp $
+  $Id: execute.C,v 1.85 2001/03/10 14:05:36 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -616,4 +616,43 @@ Value& Request::autocalc(Value& value, const String *name, bool make_string) {
 		return *result;
 	} else
 		return value;
+}
+
+char *Request::execute_static(VClass& vclass, String& method_name, bool return_cstr) {
+	Value *value=vclass.get_element(method_name);
+	if(value) { // found some 'METHOD_NAME' element
+		Junction *junction=value->get_junction();
+		if(junction) {// it even has junction!
+			const Method *method=junction->method;
+			if(method) { // and junction is method-junction! call it
+				PUSH(self);  
+				PUSH(root);  
+				PUSH(rcontext);  
+				PUSH(wcontext);
+				
+				// initialize contexts
+				root=rcontext=self=&vclass;
+				wcontext=NEW WWrapper(pool(), &vclass, false /* not constructing */);
+				
+				// execute!	
+				execute(*method->parser_code);
+				
+				// result
+				char *result;
+				if(return_cstr)
+					result=wcontext->get_string()->cstr(); // chars
+				else
+					result=0; // ignore result
+
+				wcontext=static_cast<WContext *>(POP());  
+				rcontext=POP();  
+				root=POP();  
+				self=static_cast<VAliased *>(POP());
+
+				// return
+				return result;
+			}
+		}
+	}
+	return 0;
 }

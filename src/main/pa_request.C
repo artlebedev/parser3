@@ -1,5 +1,5 @@
 /*
-$Id: pa_request.C,v 1.3 2001/03/10 11:44:42 paf Exp $
+$Id: pa_request.C,v 1.4 2001/03/10 14:05:36 paf Exp $
 */
 
 #include "pa_request.h"
@@ -74,11 +74,12 @@ void Request::use(char *file, String *name) {
 			0,
 			"use: can not read '%s' file", file);
 
-	COMPILE(source, name, file);
-	// TODO: запустить @STATIC[], если есть
+	VClass& vclass=COMPILE(source, name, file);
 
-//	if(alias)
-		//classes().put(*alias, &vclass);
+	// locate and execute possible @auto[] static method
+	String name_auto(pool());
+	name_auto.APPEND_CONST(AUTO_METHOD_NAME);
+	execute_static(vclass, name_auto, false);
 }
 
 char *Request::execute_MAIN() {
@@ -89,24 +90,9 @@ char *Request::execute_MAIN() {
 	// looking for latest known @main
 	for(int i=classes_array().size(); --i>=0;) {
 		VClass *vclass=static_cast<VClass *>(classes_array().get(i));
-		Value *main=vclass->get_element(name_main);
-		if(main) { // found some 'main' element
-			Junction *junction=main->get_junction();
-			if(junction) {// it even has junction!
-				const Method *method=junction->method;
-				if(method) { // and junction is method-junction! call it
-					// initialize contexts
-					root=rcontext=self=vclass;
-					wcontext=NEW WWrapper(pool(), vclass, false /* not constructing */);
-					
-					// execute!	
-					execute(*method->parser_code);
-					
-					// return chars
-					return wcontext->get_string()->cstr();
-				}
-			}
-		}
+		char *result=execute_static(*vclass, name_main, true);
+		if(result)
+			return result;
 	}
 	
 	THROW(0,0,
