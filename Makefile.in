@@ -368,7 +368,7 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
 
-cvsupdate:
+update:
 	cvs update
 	$(MAKE)
 
