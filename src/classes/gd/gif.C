@@ -4,57 +4,39 @@
 
 #include "gif.h"
 
-static void gdImageBrushApply(gdImagePtr im, int x, int y);
-static void gdImageTileApply(gdImagePtr im, int x, int y);
+//static void BrushApply(int x, int y);
+//static void TileApply(int x, int y);
 
-gdImagePtr gdImageCreate(int sx, int sy)
-{
+void gdImage::Create(int asx, int asy) {
+	sx = asx;
+	sy = asy;
+
 	int i;
-	gdImagePtr im;
-	im = (gdImage *) malloc(sizeof(gdImage));
-	im->pixels = (unsigned char **) malloc(sizeof(unsigned char *) * sx);
-	im->polyInts = 0;
-	im->polyAllocated = 0;
-	im->styleWidth = 1;
-	for (i=0; (i<sx); i++) {
-		im->pixels[i] = (unsigned char *) calloc(
-			sy, sizeof(unsigned char));
-	}	
-	im->sx = sx;
-	im->sy = sy;
-	im->colorsTotal = 0;
-	im->transparent = (-1);
-	im->interlace = 0;
-	return im;
+	pixels = (unsigned char **) malloc(sizeof(unsigned char *) * sx);
+	polyInts = 0;
+	polyAllocated = 0;
+	styleWidth = 1;
+	for (i=0; (i<asx); i++)
+		pixels[i] = (unsigned char *) calloc(asy);
+	colorsTotal = 0;
+	transparent = (-1);
+	interlace = 0;
 }
 
-void gdImageDestroy(gdImagePtr im)
-{
-	int i;
-	for (i=0; (i<im->sx); i++) {
-		free(im->pixels[i]);
-	}	
-	free(im->pixels);
-	if (im->polyInts) {
-			free(im->polyInts);
-	}
-	free(im);
-}
-
-int gdImageColorClosest(gdImagePtr im, int r, int g, int b)
+int gdImage::ColorClosest(int r, int g, int b)
 {
 	int i;
 	long rd, gd, bd;
 	int ct = (-1);
 	long mindist = 0;
-	for (i=0; (i<(im->colorsTotal)); i++) {
+	for (i=0; (i<(colorsTotal)); i++) {
 		long dist;
-		if (im->open[i]) {
+		if (open[i]) {
 			continue;
 		}
-		rd = (im->red[i] - r);	
-		gd = (im->green[i] - g);
-		bd = (im->blue[i] - b);
+		rd = (red[i] - r);	
+		gd = (green[i] - g);
+		bd = (blue[i] - b);
 		dist = rd * rd + gd * gd + bd * bd;
 		if ((i == 0) || (dist < mindist)) {
 			mindist = dist;	
@@ -64,111 +46,103 @@ int gdImageColorClosest(gdImagePtr im, int r, int g, int b)
 	return ct;
 }
 
-int gdImageColorExact(gdImagePtr im, int r, int g, int b)
+int gdImage::ColorExact(int r, int g, int b)
 {
 	int i;
-	for (i=0; (i<(im->colorsTotal)); i++) {
-		if (im->open[i]) {
+	for (i=0; (i<(colorsTotal)); i++) {
+		if (open[i]) {
 			continue;
 		}
-		if ((im->red[i] == r) && 
-			(im->green[i] == g) &&
-			(im->blue[i] == b)) {
+		if ((red[i] == r) && 
+			(green[i] == g) &&
+			(blue[i] == b)) {
 			return i;
 		}
 	}
 	return -1;
 }
 
-int gdImageColorAllocate(gdImagePtr im, int r, int g, int b)
+int gdImage::ColorAllocate(int r, int g, int b)
 {
 	int i;
 	int ct = (-1);
-	for (i=0; (i<(im->colorsTotal)); i++) {
-		if (im->open[i]) {
+	for (i=0; (i<(colorsTotal)); i++) {
+		if (open[i]) {
 			ct = i;
 			break;
 		}
 	}	
 	if (ct == (-1)) {
-		ct = im->colorsTotal;
+		ct = colorsTotal;
 		if (ct == gdMaxColors) {
 			return -1;
 		}
-		im->colorsTotal++;
+		colorsTotal++;
 	}
-	im->red[ct] = r;
-	im->green[ct] = g;
-	im->blue[ct] = b;
-	im->open[ct] = 0;
+	red[ct] = r;
+	green[ct] = g;
+	blue[ct] = b;
+	open[ct] = 0;
 	return ct;
 }
 
-int gdImageColorRGB(gdImagePtr im, int r, int g, int b){
-    int idx=gdImageColorExact(im,r,g,b);
-    return idx<0 ? gdImageColorAllocate(im,r,g,b) : idx;
+int gdImage::ColorRGB(int r, int g, int b){
+    int idx=ColorExact(r,g,b);
+    return idx<0 ? ColorAllocate(r,g,b) : idx;
 }
 
-int gdImageColor(gdImagePtr im, unsigned int rgb){
+int gdImage::Color(unsigned int rgb){
     unsigned int b=rgb, g=b>>8, r=g>>8;
-    return gdImageColorRGB(im,r & 0xFF,g & 0xFF,b & 0xFF);
+    return ColorRGB(r & 0xFF,g & 0xFF,b & 0xFF);
 }
 
-void gdImageColorDeallocate(gdImagePtr im, int color)
+void gdImage::ColorDeallocate(int color)
 {
 	/* Mark it open. */
-	im->open[color] = 1;
+	open[color] = 1;
 }
 
-void gdImageColorTransparent(gdImagePtr im, int color)
+void gdImage::SetColorTransparent(int color)
 {
-	im->transparent = color;
+	transparent = color;
 }
 
 
-inline int gdImageBoundsSafe(gdImagePtr im, int x, int y){
-    return (!(((y < 0) || (y >= im->sy)) || ((x < 0) || (x >= im->sx))));
-}
-
-inline /*paf int*/void gdImageDoSetPixel(gdImagePtr im, int x, int y, int color){
-    if (gdImageBoundsSafe(im, x, y)) im->pixels[x][y] = color;
-}
-
-void gdImageSetPixel(gdImagePtr im, int x, int y, int color)
+void gdImage::SetPixel(int x, int y, int color)
 {
 //paf	int p;
 
-	switch (im->styleWidth){
+	switch (styleWidth){
 	    case 1: {
-		gdImageDoSetPixel(im, x, y,color);
+		DoSetPixel(x, y,color);
 		return;
 	    }
 	    case 2: {
-		gdImageDoSetPixel(im, x, y-1,color);
-		gdImageDoSetPixel(im, x-1, y,color);
-		gdImageDoSetPixel(im, x, y,color);
-		gdImageDoSetPixel(im, x+1, y,color);
-		gdImageDoSetPixel(im, x, y+1,color);
+		DoSetPixel(x, y-1,color);
+		DoSetPixel(x-1, y,color);
+		DoSetPixel(x, y,color);
+		DoSetPixel(x+1, y,color);
+		DoSetPixel(x, y+1,color);
 		return;
 	    }
 	    default:{
 		int i,j;
-		for (i=-1;i<=1;i++) gdImageDoSetPixel(im, x+i, y-2,color);
-		for (j=-1;j<=1;j++) for (i=-2;i<=2;i++) gdImageDoSetPixel(im, x+i, y+j,color);
-		for (i=-1;i<=1;i++) gdImageDoSetPixel(im, x+i, y+2,color);
+		for (i=-1;i<=1;i++) DoSetPixel(x+i, y-2,color);
+		for (j=-1;j<=1;j++) for (i=-2;i<=2;i++) DoSetPixel(x+i, y+j,color);
+		for (i=-1;i<=1;i++) DoSetPixel(x+i, y+2,color);
 		return;
 	    }
 	}
 }
 
-int gdImageGetPixel(gdImagePtr im, int x, int y)
+int gdImage::GetPixel(int x, int y)
 {
-	return gdImageBoundsSafe(im, x, y) ? im->pixels[x][y]:0;
+	return BoundsSafe(x, y) ? pixels[x][y]:0;
 }
 
 /* Bresenham as presented in Foley & Van Dam */
 
-void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
+void gdImage::Line(int x1, int y1, int x2, int y2, int color)
 {
 	int dx, dy, incr1, incr2, d, x, y, xend, yend, xdirflag, ydirflag;
 	dx = abs(x2-x1);
@@ -188,7 +162,7 @@ void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
 			ydirflag = 1;
 			xend = x2;
 		}
-		gdImageSetPixel(im, x, y, color);
+		SetPixel(x, y, color);
 		if (((y2 - y1) * ydirflag) > 0) {
 			while (x < xend) {
 				x++;
@@ -198,7 +172,7 @@ void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
 					y++;
 					d+=incr2;
 				}
-				gdImageSetPixel(im, x, y, color);
+				SetPixel(x, y, color);
 			}
 		} else {
 			while (x < xend) {
@@ -209,7 +183,7 @@ void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
 					y--;
 					d+=incr2;
 				}
-				gdImageSetPixel(im, x, y, color);
+				SetPixel(x, y, color);
 			}
 		}		
 	} else {
@@ -227,7 +201,7 @@ void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
 			yend = y2;
 			xdirflag = 1;
 		}
-		gdImageSetPixel(im, x, y, color);
+		SetPixel(x, y, color);
 		if (((x2 - x1) * xdirflag) > 0) {
 			while (y < yend) {
 				y++;
@@ -237,7 +211,7 @@ void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
 					x++;
 					d+=incr2;
 				}
-				gdImageSetPixel(im, x, y, color);
+				SetPixel(x, y, color);
 			}
 		} else {
 			while (y < yend) {
@@ -248,7 +222,7 @@ void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
 					x--;
 					d+=incr2;
 				}
-				gdImageSetPixel(im, x, y, color);
+				SetPixel(x, y, color);
 			}
 		}
 	}
@@ -264,11 +238,11 @@ void gdImageLine(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
 			on = !on; \
 		} \
 		if (on) { \
-			gdImageSetPixel(im, x, y, color); \
+			SetPixel(x, y, color); \
 		} \
 	}
 
-void gdImageDashedLine(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
+void gdImage::DashedLine(int x1, int y1, int x2, int y2, int color)
 {
 	int dx, dy, incr1, incr2, d, x, y, xend, yend, xdirflag, ydirflag;
 	int dashStep = 0;
@@ -366,7 +340,7 @@ void gdImageDashedLine(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
   at least for me) and there are other inefficiencies (small circles
   do far too much work). */
 
-void gdImageFillToBorder(gdImagePtr im, int x, int y, int border, int color)
+void gdImage::FillToBorder(int x, int y, int border, int color)
 {
 	int lastBorder;
 	/* Seek left */
@@ -378,10 +352,10 @@ void gdImageFillToBorder(gdImagePtr im, int x, int y, int border, int color)
 		return;
 	}
 	for (i = x; (i >= 0); i--) {
-		if (gdImageGetPixel(im, i, y) == border) {
+		if (GetPixel(i, y) == border) {
 			break;
 		}
-		gdImageSetPixel(im, i, y, color);
+		SetPixel(i, y, color);
 		leftLimit = i;
 	}
 	if (leftLimit == (-1)) {
@@ -389,11 +363,11 @@ void gdImageFillToBorder(gdImagePtr im, int x, int y, int border, int color)
 	}
 	/* Seek right */
 	rightLimit = x;
-	for (i = (x+1); (i < im->sx); i++) {	
-		if (gdImageGetPixel(im, i, y) == border) {
+	for (i = (x+1); (i < sx); i++) {	
+		if (GetPixel(i, y) == border) {
 			break;
 		}
-		gdImageSetPixel(im, i, y, color);
+		SetPixel(i, y, color);
 		rightLimit = i;
 	}
 	/* Look at lines above and below and start paints */
@@ -402,10 +376,10 @@ void gdImageFillToBorder(gdImagePtr im, int x, int y, int border, int color)
 		lastBorder = 1;
 		for (i = leftLimit; (i <= rightLimit); i++) {
 			int c;
-			c = gdImageGetPixel(im, i, y-1);
+			c = GetPixel(i, y-1);
 			if (lastBorder) {
 				if ((c != border) && (c != color)) {	
-					gdImageFillToBorder(im, i, y-1, 
+					FillToBorder(i, y-1, 
 						border, color);		
 					lastBorder = 0;
 				}
@@ -415,14 +389,14 @@ void gdImageFillToBorder(gdImagePtr im, int x, int y, int border, int color)
 		}
 	}
 	/* Below */
-	if (y < ((im->sy) - 1)) {
+	if (y < ((sy) - 1)) {
 		lastBorder = 1;
 		for (i = leftLimit; (i <= rightLimit); i++) {
 			int c;
-			c = gdImageGetPixel(im, i, y+1);
+			c = GetPixel(i, y+1);
 			if (lastBorder) {
 				if ((c != border) && (c != color)) {	
-					gdImageFillToBorder(im, i, y+1, 
+					FillToBorder(i, y+1, 
 						border, color);		
 					lastBorder = 0;
 				}
@@ -433,13 +407,13 @@ void gdImageFillToBorder(gdImagePtr im, int x, int y, int border, int color)
 	}
 }
 
-void gdImageFill(gdImagePtr im, int x, int y, int color)
+void gdImage::Fill(int x, int y, int color)
 {
 	int lastBorder;
 	int old;
 	int leftLimit, rightLimit;
 	int i;
-	old = gdImageGetPixel(im, x, y);
+	old = GetPixel(x, y);
 	if (old == color) {
 		/* Nothing to be done */
 		return;
@@ -447,10 +421,10 @@ void gdImageFill(gdImagePtr im, int x, int y, int color)
 	/* Seek left */
 	leftLimit = (-1);
 	for (i = x; (i >= 0); i--) {
-		if (gdImageGetPixel(im, i, y) != old) {
+		if (GetPixel(i, y) != old) {
 			break;
 		}
-		gdImageSetPixel(im, i, y, color);
+		SetPixel(i, y, color);
 		leftLimit = i;
 	}
 	if (leftLimit == (-1)) {
@@ -458,11 +432,11 @@ void gdImageFill(gdImagePtr im, int x, int y, int color)
 	}
 	/* Seek right */
 	rightLimit = x;
-	for (i = (x+1); (i < im->sx); i++) {	
-		if (gdImageGetPixel(im, i, y) != old) {
+	for (i = (x+1); (i < sx); i++) {	
+		if (GetPixel(i, y) != old) {
 			break;
 		}
-		gdImageSetPixel(im, i, y, color);
+		SetPixel(i, y, color);
 		rightLimit = i;
 	}
 	/* Look at lines above and below and start paints */
@@ -471,10 +445,10 @@ void gdImageFill(gdImagePtr im, int x, int y, int color)
 		lastBorder = 1;
 		for (i = leftLimit; (i <= rightLimit); i++) {
 			int c;
-			c = gdImageGetPixel(im, i, y-1);
+			c = GetPixel(i, y-1);
 			if (lastBorder) {
 				if (c == old) {	
-					gdImageFill(im, i, y-1, color);		
+					Fill(i, y-1, color);		
 					lastBorder = 0;
 				}
 			} else if (c != old) {
@@ -483,14 +457,14 @@ void gdImageFill(gdImagePtr im, int x, int y, int color)
 		}
 	}
 	/* Below */
-	if (y < ((im->sy) - 1)) {
+	if (y < ((sy) - 1)) {
 		lastBorder = 1;
 		for (i = leftLimit; (i <= rightLimit); i++) {
 			int c;
-			c = gdImageGetPixel(im, i, y+1);
+			c = GetPixel(i, y+1);
 			if (lastBorder) {
 				if (c == old) {
-					gdImageFill(im, i, y+1, color);		
+					Fill(i, y+1, color);		
 					lastBorder = 0;
 				}
 			} else if (c != old) {
@@ -500,38 +474,23 @@ void gdImageFill(gdImagePtr im, int x, int y, int color)
 	}
 }
 	
-#ifdef TEST_CODE
-void gdImageDump(gdImagePtr im)
+void gdImage::Rectangle(int x1, int y1, int x2, int y2, int color)
 {
-	int i, j;
-	for (i=0; (i < im->sy); i++) {
-		for (j=0; (j < im->sx); j++) {
-			printf("%d", im->pixels[j][i]);
-		}
-		printf("\n");
-	}
-}
-#endif
-
-void gdImageRectangle(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
-{
-	gdImageLine(im, x1, y1, x2, y1, color);		
-	gdImageLine(im, x1, y2, x2, y2, color);		
-	gdImageLine(im, x1, y1, x1, y2, color);
-	gdImageLine(im, x2, y1, x2, y2, color);
+	Line(x1, y1, x2, y1, color);		
+	Line(x1, y2, x2, y2, color);		
+	Line(x1, y1, x1, y2, color);
+	Line(x2, y1, x2, y2, color);
 }
 
-void gdImageFilledRectangle(gdImagePtr im, int x1, int y1, int x2, int y2, int color)
+void gdImage::FilledRectangle(int x1, int y1, int x2, int y2, int color)
 {
 	int x, y;
-	for (y=y1; (y<=y2); y++) {
-		for (x=x1; (x<=x2); x++) {
-			gdImageSetPixel(im, x, y, color);
-		}
-	}
+	for (y=y1; (y<=y2); y++)
+		for (x=x1; (x<=x2); x++)
+			SetPixel(x, y, color);
 }
 
-void gdImageCopy(gdImagePtr dst, gdImagePtr src, int dstX, int dstY, int srcX, int srcY, int w, int h)
+void gdImage::Copy(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int w, int h)
 {
 	int c;
 	int x, y;
@@ -546,46 +505,46 @@ void gdImageCopy(gdImagePtr dst, gdImagePtr src, int dstX, int dstY, int srcX, i
 		tox = dstX;
 		for (x=srcX; (x < (srcX + w)); x++) {
 			int nc;
-			c = gdImageGetPixel(src, x, y);
+			c = GetPixel(x, y);
 			/* Added 7/24/95: support transparent copies */
-			if (gdImageGetTransparent(src) == c) {
+			if (GetTransparent() == c) {
 				tox++;
 				continue;
 			}
 			/* Have we established a mapping for this color? */
 			if (colorMap[c] == (-1)) {
 				/* If it's the same image, mapping is trivial */
-				if (dst == src) {
+				if (&dst == this) {
 					nc = c;
 				} else { 
 					/* First look for an exact match */
-					nc = gdImageColorExact(dst,
-						src->red[c], src->green[c],
-						src->blue[c]);
+					nc = dst.ColorExact(
+						red[c], green[c],
+						blue[c]);
 				}	
 				if (nc == (-1)) {
 					/* No, so try to allocate it */
-					nc = gdImageColorAllocate(dst,
-						src->red[c], src->green[c],
-						src->blue[c]);
+					nc = dst.ColorAllocate(
+						red[c], green[c],
+						blue[c]);
 					/* If we're out of colors, go for the
 						closest color */
 					if (nc == (-1)) {
-						nc = gdImageColorClosest(dst,
-							src->red[c], src->green[c],
-							src->blue[c]);
+						nc = dst.ColorClosest(
+							red[c], green[c],
+							blue[c]);
 					}
 				}
 				colorMap[c] = nc;
 			}
-			gdImageSetPixel(dst, tox, toy, colorMap[c]);
+			dst.SetPixel(tox, toy, colorMap[c]);
 			tox++;
 		}
 		toy++;
 	}
 }			
 
-int gdGetWord(int *result, FILE *in)
+static int gdGetWord(int *result, FILE *in)
 {
 	int r;
 	r = getc(in);
@@ -601,13 +560,13 @@ int gdGetWord(int *result, FILE *in)
 	return 1;
 }
 
-void gdPutWord(int w, FILE *out)
+static void gdPutWord(int w, FILE *out)
 {
 	putc((unsigned char)(w >> 8), out);
 	putc((unsigned char)(w & 0xFF), out);
 }
 
-int gdGetByte(int *result, FILE *in)
+static int gdGetByte(int *result, FILE *in)
 {
 	int r;
 	r = getc(in);
@@ -618,191 +577,7 @@ int gdGetByte(int *result, FILE *in)
 	return 1;
 }
 
-gdImagePtr gdImageCreateFromGd(FILE *in)
-{
-	int sx, sy;
-	int x, y;
-	int i;
-	gdImagePtr im;
-	if (!gdGetWord(&sx, in)) {
-		goto fail1;
-	}
-	if (!gdGetWord(&sy, in)) {
-		goto fail1;
-	}
-	im = gdImageCreate(sx, sy);
-	if (!gdGetByte(&im->colorsTotal, in)) {
-		goto fail2;
-	}
-	if (!gdGetWord(&im->transparent, in)) {
-		goto fail2;
-	}
-	if (im->transparent == 257) {
-		im->transparent = (-1);
-	}
-	for (i=0; (i<gdMaxColors); i++) {
-		if (!gdGetByte(&im->red[i], in)) {
-			goto fail2;
-		}
-		if (!gdGetByte(&im->green[i], in)) {
-			goto fail2;
-		}
-		if (!gdGetByte(&im->blue[i], in)) {
-			goto fail2;
-		}
-	}	
-	for (y=0; (y<sy); y++) {
-		for (x=0; (x<sx); x++) {	
-			int ch;
-			ch = getc(in);
-			if (ch == EOF) {
-				gdImageDestroy(im);
-				return 0;
-			}
-			im->pixels[x][y] = ch;
-		}
-	}
-	return im;
-fail2:
-	gdImageDestroy(im);
-fail1:
-	return 0;
-}
-	
-void gdImageGd(gdImagePtr im, FILE *out)
-{
-	int x, y;
-	int i;
-	int trans;
-	gdPutWord(im->sx, out);
-	gdPutWord(im->sy, out);
-	putc((unsigned char)im->colorsTotal, out);
-	trans = im->transparent;
-	if (trans == (-1)) {
-		trans = 257;
-	}	
-	gdPutWord(trans, out);
-	for (i=0; (i<gdMaxColors); i++) {
-		putc((unsigned char)im->red[i], out);
-		putc((unsigned char)im->green[i], out);	
-		putc((unsigned char)im->blue[i], out);	
-	}
-	for (y=0; (y < im->sy); y++) {	
-		for (x=0; (x < im->sx); x++) {	
-			putc((unsigned char)im->pixels[x][y], out);
-		}
-	}
-}
-
-gdImagePtr
-gdImageCreateFromXbm(FILE *fd)
-{
-	gdImagePtr im;	
-	int bit;
-	int w, h;
-	int bytes;
-	int ch;
-	int i, x, y;
-	char *sp;
-	char s[161];
-	if (!fgets(s, 160, fd)) {
-		return 0;
-	}
-	sp = &s[0];
-	/* Skip #define */
-	sp = strchr(sp, ' ');
-	if (!sp) {
-		return 0;
-	}
-	/* Skip width label */
-	sp++;
-	sp = strchr(sp, ' ');
-	if (!sp) {
-		return 0;
-	}
-	/* Get width */
-	w = atoi(sp + 1);
-	if (!w) {
-		return 0;
-	}
-	if (!fgets(s, 160, fd)) {
-		return 0;
-	}
-	sp = s;
-	/* Skip #define */
-	sp = strchr(sp, ' ');
-	if (!sp) {
-		return 0;
-	}
-	/* Skip height label */
-	sp++;
-	sp = strchr(sp, ' ');
-	if (!sp) {
-		return 0;
-	}
-	/* Get height */
-	h = atoi(sp + 1);
-	if (!h) {
-		return 0;
-	}
-	/* Skip declaration line */
-	if (!fgets(s, 160, fd)) {
-		return 0;
-	}
-	bytes = (w * h / 8) + 1;
-	im = gdImageCreate(w, h);
-	gdImageColorAllocate(im, 255, 255, 255);
-	gdImageColorAllocate(im, 0, 0, 0);
-	x = 0;
-	y = 0;
-	for (i=0; (i < bytes); i++) {
-		char h[3];
-		int b;
-		/* Skip spaces, commas, CRs, 0x */
-		while(1) {
-			ch = getc(fd);
-			if (ch == EOF) {
-				goto fail;
-			}
-			if (ch == 'x') {
-				break;
-			}	
-		}
-		/* Get hex value */
-		ch = getc(fd);
-		if (ch == EOF) {
-			goto fail;
-		}
-		h[0] = ch;
-		ch = getc(fd);
-		if (ch == EOF) {
-			goto fail;
-		}
-		h[1] = ch;
-		h[2] = '\0';
-		sscanf(h, "%x", &b);		
-		for (bit = 1; (bit <= 128); (bit = bit << 1)) {
-			gdImageSetPixel(im, x++, y, (b & bit) ? 1 : 0);	
-			if (x == im->sx) {
-				x = 0;
-				y++;
-				if (y == im->sy) {
-					return im;
-				}
-				/* Fix 8/8/95 */
-				break;
-			}
-		}
-	}
-	/* Shouldn't happen */
-	fprintf(stderr, "Error: bug in gdImageCreateFromXbm!\n");
-	return 0;
-fail:
-	gdImageDestroy(im);
-	return 0;
-}
-
-void gdImagePolygon(gdImagePtr im, gdPointPtr p, int n, int c)
+void gdImage::Polygon(Point *p, int n, int c)
 {
 	int i;
 	int lx, ly;
@@ -811,10 +586,10 @@ void gdImagePolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 	}
 	lx = p->x;
 	ly = p->y;
-	gdImageLine(im, lx, ly, p[n-1].x, p[n-1].y, c);
+	Line(lx, ly, p[n-1].x, p[n-1].y, c);
 	for (i=1; (i < n); i++) {
 		p++;
-		gdImageLine(im, lx, ly, p->x, p->y, c);
+		Line(lx, ly, p->x, p->y, c);
 		lx = p->x;
 		ly = p->y;
 	}
@@ -822,7 +597,7 @@ void gdImagePolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 	
 int gdCompareInt(const void *a, const void *b);
 	
-void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
+void gdImage::FilledPolygon(Point *p, int n, int c)
 {
 	int i;
 	int y;
@@ -831,16 +606,16 @@ void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 	if (!n) {
 		return;
 	}
-	if (!im->polyAllocated) {
-		im->polyInts = (int *) malloc(sizeof(int) * n);
-		im->polyAllocated = n;
+	if (!polyAllocated) {
+		polyInts = (int *) malloc(sizeof(int) * n);
+		polyAllocated = n;
 	}		
-	if (im->polyAllocated < n) {
-		while (im->polyAllocated < n) {
-			im->polyAllocated *= 2;
+	if (polyAllocated < n) {
+		while (polyAllocated < n) {
+			polyAllocated *= 2;
 		}	
-		im->polyInts = (int *) realloc(im->polyInts,
-			sizeof(int) * im->polyAllocated);
+		polyInts = (int *) realloc(polyInts,
+			sizeof(int) * polyAllocated);
 	}
 	y1 = p[0].y;
 	y2 = p[0].y;
@@ -886,7 +661,7 @@ void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 				dir = 1;
 			} else {
 				/* Horizontal; just draw it */
-				gdImageLine(im, 
+				Line( 
 					p[ind1].x, y1, 
 					p[ind2].x, y1,
 					c);
@@ -907,7 +682,7 @@ void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 						if (dir == dirLast) {
 							if (inter > interLast) {
 								/* Replace the old one */
-								im->polyInts[ints] = inter;
+								polyInts[ints] = inter;
 							} else {
 								/* Discard this one */
 							}	
@@ -921,7 +696,7 @@ void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 					}
 				} 
 				if (i > 0) {
-					im->polyInts[ints++] = inter;
+					polyInts[ints++] = inter;
 				}
 				lastInd1 = i;
 				dirLast = dir;
@@ -929,27 +704,25 @@ void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 				interFirst = 0;
 			}
 		}
-		qsort(im->polyInts, ints, sizeof(int), gdCompareInt);
-		for (i=0; (i < (ints-1)); i+=2) {
-			gdImageLine(im, im->polyInts[i], y,
-				im->polyInts[i+1], y, c);
-		}
+		qsort(polyInts, ints, sizeof(int), gdCompareInt);
+		for (i=0; (i < (ints-1)); i+=2)
+			Line(polyInts[i], y, polyInts[i+1], y, c);
 	}
 }
 
-//001005paf левый хак, только для прямых линий в gdImageFilledPolygonReplaceColor
-void gdImageLineReplaceColor(gdImagePtr im, int x1, int y1, int x2, int y2, int a, int b) {
+//001005paf this used in drawing straight lines in gdImage::FilledPolygonReplaceColor
+void gdImage::LineReplaceColor(int x1, int y1, int x2, int y2, int a, int b) {
 	if(y1!=y2)
 		return;
 
 	for(int x=x1; x<=x2; x++) {
-		unsigned char *pixel=&im->pixels[x][y1];
+		unsigned char *pixel=&pixels[x][y1];
 		if(*pixel==a)
 			*pixel=b;
 	}
 }
 
-void gdImageFilledPolygonReplaceColor(gdImagePtr im, gdPointPtr p, int n, int a, int b)
+void gdImage::FilledPolygonReplaceColor(Point *p, int n, int a, int b)
 {
 	int i;
 	int y;
@@ -958,16 +731,16 @@ void gdImageFilledPolygonReplaceColor(gdImagePtr im, gdPointPtr p, int n, int a,
 	if (!n) {
 		return;
 	}
-	if (!im->polyAllocated) {
-		im->polyInts = (int *) malloc(sizeof(int) * n);
-		im->polyAllocated = n;
+	if (!polyAllocated) {
+		polyInts = (int *) malloc(sizeof(int) * n);
+		polyAllocated = n;
 	}		
-	if (im->polyAllocated < n) {
-		while (im->polyAllocated < n) {
-			im->polyAllocated *= 2;
+	if (polyAllocated < n) {
+		while (polyAllocated < n) {
+			polyAllocated *= 2;
 		}	
-		im->polyInts = (int *) realloc(im->polyInts,
-			sizeof(int) * im->polyAllocated);
+		polyInts = (int *) realloc(polyInts,
+			sizeof(int) * polyAllocated);
 	}
 	y1 = p[0].y;
 	y2 = p[0].y;
@@ -1013,7 +786,7 @@ void gdImageFilledPolygonReplaceColor(gdImagePtr im, gdPointPtr p, int n, int a,
 				dir = 1;
 			} else {
 				/* Horizontal; just draw it */
-				gdImageLineReplaceColor(im, 
+				LineReplaceColor( 
 					p[ind1].x, y1, 
 					p[ind2].x, y1,
 					a,b);
@@ -1034,7 +807,7 @@ void gdImageFilledPolygonReplaceColor(gdImagePtr im, gdPointPtr p, int n, int a,
 						if (dir == dirLast) {
 							if (inter > interLast) {
 								/* Replace the old one */
-								im->polyInts[ints] = inter;
+								polyInts[ints] = inter;
 							} else {
 								/* Discard this one */
 							}	
@@ -1048,7 +821,7 @@ void gdImageFilledPolygonReplaceColor(gdImagePtr im, gdPointPtr p, int n, int a,
 					}
 				} 
 				if (i > 0) {
-					im->polyInts[ints++] = inter;
+					polyInts[ints++] = inter;
 				}
 				lastInd1 = i;
 				dirLast = dir;
@@ -1056,26 +829,26 @@ void gdImageFilledPolygonReplaceColor(gdImagePtr im, gdPointPtr p, int n, int a,
 				interFirst = 0;
 			}
 		}
-		qsort(im->polyInts, ints, sizeof(int), gdCompareInt);
+		qsort(polyInts, ints, sizeof(int), gdCompareInt);
 		for (i=0; (i < (ints-1)); i+=2) {
-			gdImageLineReplaceColor(im, im->polyInts[i], y,
-				im->polyInts[i+1], y, a,b);
+			LineReplaceColor(polyInts[i], y,
+				polyInts[i+1], y, a,b);
 		}
 	}
 }
 
-int gdCompareInt(const void *a, const void *b)
+static int gdCompareInt(const void *a, const void *b)
 {
 	return (*(const int *)a) - (*(const int *)b);
 }
 
-void gdImageInterlace(gdImagePtr im, int interlaceArg)
+void gdImage::SetInterlace(int interlaceArg)
 {
-	im->interlace = interlaceArg;
+	interlace = interlaceArg;
 }
 
-void gdImageStyle(gdImagePtr im, int width)
+void gdImage::SetStyle(int width)
 {
-	im->styleWidth=width;
+	styleWidth=width;
 }
 

@@ -5,15 +5,18 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.7 2001/04/11 15:45:48 paf Exp $
+	$Id: image.C,v 1.8 2001/04/11 17:00:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
 
 #include <stdio.h>
 
-#include "Imaging.h"
-#include "Gif.h"
+#ifdef WIN32
+#	include "smtp/smtp.h"
+#endif
+
+#include "gif.h"
 
 #include "pa_common.h"
 #include "pa_request.h"
@@ -300,7 +303,7 @@ static void _html(Request& r, const String& method_name, Array *params) {
 	Hash& fields=static_cast<VImage *>(r.self)->fields();
 	Hash *attribs=0;
 
-	if(params->size())
+	if(params)
 		if(attribs=static_cast<Value *>(params->get(0))->get_hash()) {
 			Attrib_info attrib_info={&tag, 0};
 			attribs->for_each(append_attrib_pair, &attrib_info);
@@ -314,7 +317,7 @@ static void _html(Request& r, const String& method_name, Array *params) {
 	tag << " />";
 	r.write_pass_lang(tag);
 }
-/*
+
 /// ^image.load[background.gif]
 static void _load(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
@@ -337,51 +340,38 @@ static void _load(Request& r, const String& method_name, Array *params) {
 			&method_name,
 			"can not open background image '%s'", file_name_cstr);
 }
-*/
 
-inline void v2rgb(int v, int& r, int& g, int& b) {
-	r=v>>8*2 & 0xFF;
-	g=v>>8*1 & 0xFF;
-	b=v      & 0xFF;
-}
 /// ^image.create[width;height] bgcolor=white
 /// ^image.create[width;height;bgcolor]
-/// @test ImagingDelete
 static void _create(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
 	int width=(int)r.process(*static_cast<Value *>(params->get(0))).as_double();
 	int height=(int)r.process(*static_cast<Value *>(params->get(1))).as_double();
-	int bgcolor_value=0xFFFFFF;
+	int bgcolor_value=0xffFFff;
 	if(params->size()>2)
 		bgcolor_value=
 			(int)r.process(*static_cast<Value *>(params->get(2))).as_double();
-	Imaging im=ImagingNew("P", width, height);
-	ImagingPalette palette=ImagingPaletteNew("RGB");
-	ImagingPaletteCachePrepare(palette);
-	{
-		int r,g,b; v2rgb(bgcolor_value, r,g,b);
-		ImagingPaletteCacheUpdate(palette, r,g,b);
-		int bgcolor_index=ImagingPaletteCache(palette, r,g,b);
-		ImagingDrawRectangle(im, 0, 0, width-1, height-1, 
-			bgcolor_index, bgcolor_index);
-	}
-	static_cast<VImage *>(r.self)->set(0, width, height, im);
+	gdImage *image=new(pool) gdImage(pool);
+	image->Create(width, height);
+	image->FilledRectangle(0, 0, width-1, height-1, image->Color(bgcolor_value));
+	static_cast<VImage *>(r.self)->set(0, width, height, image);
 }
 
 /// ^image.gif[]
 /// ^image.gif[user-file-name]
+/// @test gdImageDestroy make gd pooled!
 static void _gif(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
-	Imaging im=static_cast<VImage *>(r.self)->im;
-	if(!im)
+	gdImagePtr image=static_cast<VImage *>(r.self)->image;
+	if(!image)
 		PTHROW(0, 0,
 			&method_name,
 			"does not contain image");
 
 	char *file_name_cstr=0;
-	if(params->size()) {
+	if(params) {
 		Value& vfile_name=*static_cast<Value *>(params->get(0));
 		// forcing [this body type]
 		r.fail_if_junction_(true, vfile_name, method_name, "file name must not be code");
@@ -390,31 +380,9 @@ static void _gif(Request& r, const String& method_name, Array *params) {
 	}
 	// could _ but don't thing it's wise to use $image.src for vfile.name
 	
-	ImagingCodecStateInstance codec_state={0};
-	GIFENCODERSTATE encoder_state={0};
-	int bits;
-	codec_state.shuffle=ImagingFindPacker("P", &bits);
-	codec_state.bits=codec_state.bits=bits;
-	codec_state.xsize = im->xsize;
-	codec_state.ysize = im->ysize;
-    /* Allocate memory buffer (if bits field is set) */
-	codec_state.bytes = (codec_state.bits * codec_state.xsize+7)/8;
-	codec_state.buffer = (UINT8*) malloc(codec_state.bytes);
-	codec_state.context=&encoder_state;	
-
-	String result(pool);
-    do {
-		const int buf_size=10*0x400;
-		UINT8 *buf=(UINT8 *)pool.malloc(buf_size);
-		int encoded_size=ImagingGifEncode(im, &codec_state, buf, buf_size);
-		if(encoded_size>0)
-			result.APPEND_CLEAN((const char *)buf, encoded_size, 0, 0);
-    } while(codec_state.errcode==0);
-
 	VFile& vfile=*new(pool) VFile(pool);
 	String& image_gif=*new(pool) String(pool, "image/gif");
-	vfile.set(false/*not tainted*/, result.cstr(), result.size(), 
-		file_name_cstr, &image_gif);
+	vfile.set(false/*not tainted*/, z, z, file_name_cstr, &image_gif);
 
 	r.write_no_lang(vfile);
 }
@@ -429,7 +397,7 @@ void initialize_image_class(Pool& pool, VStateless_class& vclass) {
 	vclass.add_native_method("html", Method::CT_DYNAMIC, _html, 0, 1);
 
 	/// ^image.load[background.gif]
-//	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
+	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
 
 	/// ^image.create[width;height] bgcolor=white
 	/// ^image.create[width;height;bgcolor]

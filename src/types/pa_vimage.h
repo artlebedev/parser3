@@ -5,18 +5,18 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.4 2001/04/11 15:45:53 paf Exp $
+	$Id: pa_vimage.h,v 1.5 2001/04/11 17:00:58 paf Exp $
 */
 
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
+#include "gif.h"
+
 #include "pa_common.h"
 //#include "pa_globals.h"
 #include "pa_vstateless_object.h"
 #include "_image.h"
-
-struct ImagingInstance;
 
 /** holds <img> attributes 
 	and [image itself]
@@ -55,7 +55,7 @@ public: // usage
 	}
 
 	void set(const String *src, int width, int height,
-		ImagingInstance *aim=0);
+		gdImagePtr aimage=0);
 	void save(const String& image_spec) {
 		/*if(fvalue_ptr)
 			image_write(pool(), image_spec, fvalue_ptr, fvalue_size, false);
@@ -69,7 +69,7 @@ public: // usage
 
 public:
 
-	ImagingInstance *im;
+	gdImagePtr image;
 
 private:
 
