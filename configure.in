@@ -66,27 +66,30 @@ if test "$enableval" = "no"; then
 fi
 ]
 )
-sourcecharsetsdir=$srcdir/etc/parser3.charsets
+srccharsetsdir=$srcdir/etc/parser3.charsets
 CHARSETS_REQUESTED="windows-1251"
 AC_ARG_WITH(charsets, [  --with-charsets=CHARSET[,CHARSET,...]  Enables charsets in root config (windows-1251,
                           windows-1250 windows-1257 koi8-r; Default is windows-1251)],
 [CHARSETS_REQUESTED=`echo $withval | sed -e 's/,/ /g'`])
 
+# Checking whether all requested charsets have corresponding .cfg files
+for c in $CHARSETS_REQUESTED; do
+	if test \! -f $srccharsetsdir/$c.cfg; then
+		AC_MSG_ERROR(bad charset requested "$c" - file $srccharsetsdir/$c.cfg not found)
+	fi
+done
+
+# Switching on commentcharset_XXX='#'
 AC_DEFUN(PA_SUBSTCHARSET, [
 	commentcharset_$2='#'
-  	for c in $CHARSETS_REQUESTED; do
+	for c in $CHARSETS_REQUESTED; do
 		if test "$1" = "$c"; then
-			if test -f $sourcecharsetsdir/$1.cfg; then
-				AC_MSG_WARN(Enabling charset $1)
-				commentcharset_$2=
-			else
-				AC_MSG_ERROR(bad charset requested "$1" - file $sourcecharsetsdir/$1.cfg not found)
-			fi
+			AC_MSG_WARN(Enabling charset $1)
+			commentcharset_$2=
 		fi
 	done
 	AC_SUBST(commentcharset_$2)
 ])
-
 PA_SUBSTCHARSET(windows-1251,windows1251)
 PA_SUBSTCHARSET(windows-1250,windows1250)
 PA_SUBSTCHARSET(windows-1257,windows1257)
