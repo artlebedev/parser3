@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.5 2001/12/17 19:22:21 paf Exp $
+	$Id: pa_charset.C,v 1.6 2001/12/19 16:41:02 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -521,22 +521,30 @@ void Charset::transcodeFromUTF8(Pool& pool,
 void Charset::transcodeToCharset(Pool& pool,
 									   const Charset& dest_charset,
 									   const void *source_body, size_t source_content_length,
-									   const void *& dest_body, size_t& dest_content_length) const {
+									   const void *& adest_body, size_t& adest_content_length) const {
 	if(&dest_charset==this) {
-		dest_body=source_body;
-		dest_content_length=source_content_length;
-	} else
-		throw Exception(0, 0,
-			0,
-			"transcodeToCharset not supported(yet)");
-/*
-	void *dest_body;
+		adest_body=source_body;
+		adest_content_length=source_content_length;
+	} else {
+		size_t dest_content_length=source_content_length;
+		unsigned char *dest_body=(unsigned char *)pool.malloc(dest_content_length);
 
-	dest_body=pool.malloc(dest_content_length=source_content_length);
-	// dummy
-	memset(dest_body, '?', dest_content_length);
+		const XMLByte* srcPtr=(const XMLByte*)source_body;
+		const XMLByte* srcEnd=(const XMLByte*)source_body+source_content_length;
 
-	adest_body=dest_body;*/
+		for(XMLByte* outPtr=dest_body; srcPtr<srcEnd; srcPtr++) {
+			XMLCh curVal = fromTable[*srcPtr];
+			if(curVal) 
+				*outPtr++=dest_charset.xlatOneTo(curVal);
+			else {
+				// use the replacement character
+				*outPtr++= '?';
+			}	
+		}
+
+		adest_body=dest_body;
+		adest_content_length=dest_content_length;
+	}
 }			
 
 #ifdef XML
