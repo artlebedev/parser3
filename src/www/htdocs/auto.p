@@ -11,6 +11,9 @@ $DEFAULTS[
 ]
 $SQL[
 	$connect-string[mysql://user:pass@host:port/database]
+	$drivers[^table:set{protocol	library
+mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll
+}]
 ]
 #for ^file:load[name;user-name;mime-type << autodetection]
 $MIME-TYPES[^table:set{ext	mime-type

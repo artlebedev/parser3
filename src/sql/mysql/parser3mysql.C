@@ -5,25 +5,38 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.1 2001/04/04 10:54:33 paf Exp $
+	$Id: parser3mysql.C,v 1.2 2001/04/04 11:47:30 paf Exp $
 */
 
 #include "pa_sql_driver.h"
 
+
+/// MySQL server driver
 class MySQL_Driver : public SQL_Driver {
 public:
 
-	MySQL_Driver() : SQL_driver() {}
+	MySQL_Driver() : SQL_Driver() {}
 
 	/// get api version
 	int api_version() { return SQL_API_VERSION; }
-	/// connect
-	virtual void *connect(const char *url) { 
-		return 0;
+	/// connect @test move info inside
+	bool connect(const char *url, void **info, const char **error) {
+		/**error="mysql connect failed";
+		return false;*/
+		*info=0;
+		return true;
 	}
-	/// disconnect
-	virtual void disconnect(void *info) {
-		;
+	bool disconnect(void *info, const char **error) {
+		*error="mysql disconnect failed";
+		return false;
+	}
+	bool commit(void *info, const char **error) {
+		*error="mysql commit failed";
+		return false;
+	}
+	bool rollback(void *info, const char **error) {
+		*error="mysql rollback failed";
+		return false;
 	}
 };
 

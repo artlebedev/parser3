@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.1 2001/04/04 10:53:57 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.2 2001/04/04 11:47:29 paf Exp $
 */
 
 #include "pa_config_includes.h"
 #include "ltdl.h"
 #include "pa_sql_driver_manager.h"
+#include "pa_sql_connection.h"
 #include "pa_exception.h"
 #include "pa_common.h"
 
@@ -66,17 +67,17 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& url,
 		// no cached
 		const String *library=0;
 		if(protocol2library->locate(0, protocol)) {
-			if(!(library=protocol2library->item(1)))
+			if(!(library=protocol2library->item(1)) || library->size()==0)
 				PTHROW(0, 0,
 					protocol2library->origin_string(),
 					"library column for protocol '%s' is empty", protocol_cstr);
 		} else
 			PTHROW(0, 0,
-				protocol2library->origin_string(),
-				"protocol '%s' not found", protocol_cstr);
+				&url,
+				"undefined protocol '%s'", protocol_cstr);
 
 		const char *filename=library->cstr(String::UL_FILE_NAME);
-        lt_dlhandle handle = lt_dlopen(filename);
+        lt_dlhandle handle=lt_dlopen(filename);
         if (!handle)
 			PTHROW(0, 0,
 				library,
@@ -89,12 +90,12 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& url,
 				library,
 				"function '%s' was not found", LIBRARY_CREATE_FUNC_NAME);
 
-		// create library-driver
+		// create library-driver!
 		driver=(*create)();
 
 		// validate driver api version
 		int driver_api_version=driver->api_version();
-		if(driver_api_version < SQL_API_VERSION)
+		if(driver_api_version<SQL_API_VERSION)
 			PTHROW(0, 0,
 				library,
 				"driver API version is 0x%04X while current minimum is 0x%04X",
@@ -104,15 +105,8 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& url,
 		put_driver_to_cache(protocol, *driver);
 	}
 	
-	void *info;
-	char *error;
-	if(!driver->connect(url_cstr, &info, &error))
-		PTHROW(0, 0,
-			&url,
-			"can not connect - %s", error);
-
 	return *new(this->pool()) SQL_Connection(url.pool(), //< associate with request
-		*driver, info, url);
+		*driver, url_cstr, url);
 }
 
 void SQL_Driver_manager::close_connection(const String& url, 
@@ -148,6 +142,7 @@ SQL_Connection *SQL_Driver_manager::get_connection_from_cache(const String& url)
 	return 0;
 }
 
+/// @todo cache expiration[use SQL_Driver::disconnect], pinging. 
 void SQL_Driver_manager::put_connection_to_cache(const String& url, 
 												 SQL_Connection& connection) { 
 	Stack *connections;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.1 2001/04/04 10:53:54 paf Exp $
+	$Id: pa_sql_driver.h,v 1.2 2001/04/04 11:47:28 paf Exp $
 
 
 	driver dynamic library must look like this:
@@ -33,7 +33,7 @@
 
 #define SQL_API_VERSION 0x0300
 
-/// sQl-driver API
+/// SQL driver API
 class SQL_Driver {
 public:
 
@@ -41,9 +41,10 @@ public:
 	/// get api version
 	virtual int api_version() =0;
 	/// connect. @returns true+'info' on success. 'error' on failure
-	virtual bool connect(const char *url, void **info, char **error) =0;
-	/// disconnect
-	virtual void disconnect(void *info) =0;
+	virtual bool connect(const char *url, void **info, const char **error) =0;
+	virtual bool disconnect(void *info, const char **error) =0;
+	virtual bool commit(void *info, const char **error) =0;
+	virtual bool rollback(void *info, const char **error) =0;
 	/// log error message
 	//static void log(Pool& pool, const char *fmt, ...);
 };

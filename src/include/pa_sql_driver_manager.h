@@ -1,11 +1,11 @@
 /** @file
-	Parser: sql driver manager decls.
+	Parser: sql driver manager decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.h,v 1.1 2001/04/04 10:53:55 paf Exp $
+	$Id: pa_sql_driver_manager.h,v 1.2 2001/04/04 11:47:28 paf Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -64,33 +64,5 @@ private:
 
 /// global
 extern SQL_Driver_manager *SQL_driver_manager;
-
-
-/// sql connection
-class SQL_Connection : public Pooled {
-
-public:
-
-	SQL_Connection(Pool& pool, 
-		SQL_Driver& adriver, void *ainfo, const String& aurl) : Pooled(pool),
-		fdriver(adriver),
-		finfo(ainfo),
-		furl(aurl) {
-	}
-
-	void close() {
-		SQL_driver_manager->close_connection(furl, *this);
-	}
-
-	void disconnect() {
-		fdriver.disconnect(finfo);
-	}
-
-private:
-
-	SQL_Driver& fdriver;
-	void *finfo;
-	const String& furl;
-};
 
 #endif

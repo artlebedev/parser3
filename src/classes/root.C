@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.57 2001/04/04 10:50:33 paf Exp $
+	$Id: root.C,v 1.58 2001/04/04 11:47:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,6 +15,7 @@
 #include "pa_request.h"
 #include "_root.h"
 #include "pa_vint.h"
+#include "pa_sql_connection.h"
 
 static void _if(Request& r, const String& method_name, Array *params) {
 	Value& condition_code=*static_cast<Value *>(params->get(0));
@@ -291,31 +292,40 @@ static void _connect(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(false, body_code, 
 		method_name, "body must be junction");
 
+	SQL_Connection& connection=SQL_driver_manager->get_connection(
+		url.as_string(), r.protocol2library);
+
+	Exception rethrow_me;
 	// remember/set current connection
 	SQL_Connection *saved_connection=r.connection;
-
-	// do the job
-	bool need_rethrow=false;  Exception rethrow_me;
-	PTRY {
-		r.connection=&SQL_driver_manager->get_connection(
-			url.as_string(), r.protocol2library);
+	r.connection=&connection;
+	// execute body
+	bool body_failed=false;  
+	PTRY
 		r.write_assign_lang(r.process(body_code));
-	} 
 	PCATCH(e) { // connect/process problem
-		rethrow_me=e;  need_rethrow=true; 
+		rethrow_me=e;  body_failed=true; 
 	}
 	PEND_CATCH
 
-	// FINALLY
-	if(need_rethrow)
-		;//rollback
-	else
-		;//commit
-	
+	bool finalizer_failed=false;
+	PTRY
+		// FINALLY
+		if(body_failed)
+			connection.rollback();
+		else
+			connection.commit();
+	PCATCH(e) { // commit/rollback problem
+		rethrow_me=e;  finalizer_failed=true; 
+	}
+	PEND_CATCH
+
+	// close connection [cache it]
+	connection.close();
 	// recall current connection from remembered
 	r.connection=saved_connection;
 
-	if(need_rethrow) // were there an exception for us to rethrow?
+	if(body_failed || finalizer_failed) // were there an exception for us to rethrow?
 		PTHROW(rethrow_me.type(), rethrow_me.code(),
 			rethrow_me.problem_source(),
 			rethrow_me.comment());

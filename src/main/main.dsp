@@ -130,6 +130,10 @@ SOURCE=..\include\pa_sapi.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_sql_connection.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_sql_driver.h
 # End Source File
 # Begin Source File
