@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.89 2001/11/05 11:46:28 paf Exp $
+	$Id: pa_globals.C,v 1.90 2001/11/08 11:04:13 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -15,7 +15,7 @@
 #include "pa_stylesheet_manager.h"
 #include "pa_charset_manager.h"
 #include "pa_sapi.h"
-#include "pa_status_provider.h"
+#include "pa_cache_managers.h"
 
 #ifdef DB2
 #include "pa_db_manager.h"
@@ -223,24 +223,27 @@ void pa_globals_init(Pool& pool) {
 	default_typo_dict=NEW Dictionary(*default_typo_table);
 
 	// Status registration, must be initialized before all registrants
-	status_providers=NEW Status_providers(pool);
-
+	cache_managers=NEW Cache_managers(pool);
 
 	// SQL driver manager
- 	SQL_driver_manager=NEW SQL_Driver_manager(pool);
+	cache_managers->put(*NEW String(pool, "sql"), 
+		SQL_driver_manager=NEW SQL_Driver_manager(pool));
 
 #ifdef DB2
 	// DB driver manager
-	DB_manager=NEW DB_Manager(pool);
+	cache_managers->put(*NEW String(pool, "db"), 
+		DB_manager=NEW DB_Manager(pool));
 #endif
 
 #ifdef XML
 	// XSLT stylesheet driver manager
- 	stylesheet_manager=NEW Stylesheet_manager(pool);
+	cache_managers->put(*NEW String(pool, "stylesheet"), 
+		stylesheet_manager=NEW Stylesheet_manager(pool));
 #endif
 
 	// Charset manager 
-	charset_manager=NEW Charset_manager(pool);
+	cache_managers->put(*NEW String(pool, "charset"), 
+		charset_manager=NEW Charset_manager(pool));
 }
 
 #if defined(XML) && defined(_MSC_VER)

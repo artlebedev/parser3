@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.C,v 1.15 2001/11/05 17:00:44 paf Exp $
+	$Id: pa_db_manager.C,v 1.16 2001/11/08 11:04:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -43,8 +43,6 @@ static void expire_connection(const Hash::Key& key, Hash::Val *& value, void *in
 DB_Manager::DB_Manager(Pool& apool) : Pooled(apool),
 	connection_cache(apool),
 	prev_expiration_pass_time(0) {
-
-	status_providers->put(*NEW String(pool(), "db"), this);
 }
 
 DB_Manager::~DB_Manager() {
@@ -87,8 +85,6 @@ DB_Connection_ptr DB_Manager::get_connection_ptr(const String& request_db_home,
 DB_Connection *DB_Manager::get_connection_from_cache(const String& db_home) { 
 	SYNCHRONIZED;
 
-	maybe_expire_connection_cache();
-
 	return static_cast<DB_Connection *>(connection_cache.get(db_home));
 }
 
@@ -99,7 +95,7 @@ void DB_Manager::put_connection_to_cache(const String& db_home,
 	connection_cache.put(db_home, &connection);
 }
 
-void DB_Manager::maybe_expire_connection_cache() {
+void DB_Manager::maybe_expire_cache() {
 	time_t now=time(0);
 
 	if(prev_expiration_pass_time<now-CHECK_EXPIRED_CONNECTIONS_SECONDS) {

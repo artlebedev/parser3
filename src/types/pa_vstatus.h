@@ -4,13 +4,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstatus.h,v 1.3 2001/11/05 11:46:34 paf Exp $
+	$Id: pa_vstatus.h,v 1.4 2001/11/08 11:04:13 paf Exp $
 */
 
 #ifndef PA_VSTATUS_H
 #define PA_VSTATUS_H
 
-#include "pa_status_provider.h"
+#include "pa_cache_managers.h"
 
 #define STATUS_CLASS_NAME "status"
 
@@ -23,8 +23,8 @@ public: // Value
 	// VStatus: field
 	Value *get_element(const String& aname) {
 		// getstatus
-		if(Status_provider *provider=static_cast<Status_provider *>(status_providers->get(aname)))
-			return &provider->get_status(pool(), &aname);
+		if(Cache_manager *manager=static_cast<Cache_manager *>(cache_managers->get(aname)))
+			return &manager->get_status(pool(), &aname);
 
 		return 0;
 	}

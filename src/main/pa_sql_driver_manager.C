@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.C,v 1.50 2001/11/05 11:46:28 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.51 2001/11/08 11:04:13 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -92,8 +92,6 @@ SQL_Driver_manager::SQL_Driver_manager(Pool& apool) : Pooled(apool),
 		driver_cache(apool),
 		connection_cache(apool),
 		prev_expiration_pass_time(0) {
-
-	status_providers->put(*NEW String(pool(), "sql"), this);
 }
 
 SQL_Driver_manager::~SQL_Driver_manager() {
@@ -263,8 +261,6 @@ void SQL_Driver_manager::put_driver_to_cache(const String& protocol,
 SQL_Connection *SQL_Driver_manager::get_connection_from_cache(const String& url) { 
 	SYNCHRONIZED;
 
-	maybe_expire_connection_cache();
-
 	if(Stack *connections=static_cast<Stack *>(connection_cache.get(url)))
 		while(connections->top_index()>=0) { // there are cached connections to that 'url'
 			SQL_Connection *result=static_cast<SQL_Connection *>(connections->pop());
@@ -287,7 +283,7 @@ void SQL_Driver_manager::put_connection_to_cache(const String& url,
 	connections->push(&connection);
 }
 
-void SQL_Driver_manager::maybe_expire_connection_cache() {
+void SQL_Driver_manager::maybe_expire_cache() {
 	time_t now=time(0);
 
 	if(prev_expiration_pass_time<now-CHECK_EXPIRED_CONNECTIONS_SECONDS) {

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.177 2001/11/05 16:07:16 paf Exp $
+	$Id: pa_request.C,v 1.178 2001/11/08 11:04:13 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -26,6 +26,7 @@ extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 #include "pa_vfile.h"
 #include "pa_dictionary.h"
 #include "pa_charset_manager.h"
+#include "pa_charset_connection.h"
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
@@ -41,7 +42,8 @@ static void load_charset(const Hash::Key& akey, Hash::Val *avalue,
 	Value& value=*static_cast<Value *>(avalue);
 	Hash& CTYPE=*static_cast<Hash *>(info);
 
-	Charset_connection& connection=charset_manager->get_connection(akey, value.as_string());
+	Charset_connection& connection=
+		charset_manager->get_connection(akey, value.as_string());
 
 	// charset->pcre_tables 
 	CTYPE.put(akey, connection.pcre_tables());
@@ -74,6 +76,9 @@ Request::Request(Pool& apool,
 	anti_endless_execute_recoursion(0),
 	trace(apool)
 {
+	// maybe expire old caches
+	cache_managers->maybe_expire();
+	
 	/// directly used
 	// operators
 	OP.register_directly_used(*this);
@@ -534,8 +539,8 @@ const String& Request::absolute(const String& relative_name) {
 
 static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
 								 void *info) {
-	String *attribute_to_exclude=static_cast<String *>(info);
-	if(aattribute==*attribute_to_exclude)
+	Request& r=*static_cast<Request *>(info);
+	if(aattribute==*body_name)
 		return;
 
 	Value& lmeaning=*static_cast<Value *>(ameaning);
@@ -570,7 +575,7 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 		}
 
 	// prepare header: $response:fields without :body
-	response.fields().for_each(add_header_attribute, /*excluding*/ body_name);
+	response.fields().for_each(add_header_attribute, this);
 
 	// prepare...
 	const void *body=body_file.value_ptr();

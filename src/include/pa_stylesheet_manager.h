@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.h,v 1.5 2001/11/05 11:46:25 paf Exp $
+	$Id: pa_stylesheet_manager.h,v 1.6 2001/11/08 11:04:12 paf Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -17,7 +17,7 @@
 #include "pa_pool.h"
 #include "pa_hash.h"
 #include "pa_table.h"
-#include "pa_status_provider.h"
+#include "pa_cache_managers.h"
 
 // defines
 
@@ -29,7 +29,7 @@ class Stylesheet_connection;
 		maintains 
 		stylesheet cache expiring unused stylesheets
 */
-class Stylesheet_manager : public Pooled, public Status_provider {
+class Stylesheet_manager : public Pooled, public Cache_manager {
 	friend class Stylesheet_connection;
 public:
 
@@ -45,7 +45,6 @@ private: // cache
 
 	Stylesheet_connection *get_connection_from_cache(const String& file_spec);
 	void put_connection_to_cache(const String& file_spec, Stylesheet_connection& connection);
-	void maybe_expire_connection_cache();
 private:
 	time_t prev_expiration_pass_time;
 
@@ -58,9 +57,10 @@ private:
 
 	Hash connection_cache;
 
-public: // Status_provider
+public: // Cache_manager
 
 	virtual Value& get_status(Pool& pool, const String *source);
+	virtual void maybe_expire_cache();
 
 };
 

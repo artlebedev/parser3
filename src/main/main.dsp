@@ -216,6 +216,14 @@ SOURCE=..\include\pa_array.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_cache_managers.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_cache_managers.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_charset_connection.C
 # End Source File
 # Begin Source File
@@ -374,14 +382,6 @@ SOURCE=..\include\pa_sql_driver_manager.h
 # Begin Source File
 
 SOURCE=..\include\pa_stack.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_status_provider.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_status_provider.h
 # End Source File
 # Begin Source File
 

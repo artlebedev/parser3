@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.C,v 1.4 2001/11/05 11:46:29 paf Exp $
+	$Id: pa_stylesheet_manager.C,v 1.5 2001/11/08 11:04:13 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -48,9 +48,7 @@ static void expire_connections(const Hash::Key& key, Hash::Val *value, void *inf
 Stylesheet_manager::Stylesheet_manager(Pool& apool) : Pooled(apool),
 	connection_cache(apool),
 	prev_expiration_pass_time(0) {
-	
-	status_providers->put(*NEW String(pool(), "stylesheet"), this);
-}
+	}
 Stylesheet_manager::~Stylesheet_manager() {
 	connection_cache.for_each(expire_connections, 
 		reinterpret_cast<void *>((time_t)0/*=in past=expire all*/));
@@ -92,8 +90,6 @@ void Stylesheet_manager::close_connection(const String& file_spec,
 Stylesheet_connection *Stylesheet_manager::get_connection_from_cache(const String& file_spec) { 
 	SYNCHRONIZED;
 
-	maybe_expire_connection_cache();
-
 	if(Stack *connections=static_cast<Stack *>(connection_cache.get(file_spec)))
 		while(connections->top_index()>=0) { // there are cached stylesheets to that 'file_spec'
 			Stylesheet_connection *result=static_cast<Stylesheet_connection *>(connections->pop());
@@ -116,7 +112,7 @@ void Stylesheet_manager::put_connection_to_cache(const String& file_spec,
 	connections->push(&connection);
 }
 
-void Stylesheet_manager::maybe_expire_connection_cache() {
+void Stylesheet_manager::maybe_expire_cache() {
 	time_t now=time(0);
 
 	if(prev_expiration_pass_time<now-CHECK_EXPIRED_CONNECTION_SECONDS) {
