@@ -7,7 +7,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: XalanTransformer2.cpp,v 1.2 2001/10/09 14:25:15 parser Exp $
+	$Id: XalanTransformer2.cpp,v 1.3 2001/10/09 14:35:34 parser Exp $
 
 	based on:
 */
