@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.158 2001/05/17 09:21:55 parser Exp $
+	$Id: execute.C,v 1.159 2001/05/17 15:20:15 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -26,10 +26,7 @@
 
 //#define DEBUG_EXECUTE
 
-
-#define PUSH(value) stack.push(value)
-#define POP() static_cast<Value *>(stack.pop())
-#define POP_NAME() static_cast<Value *>(stack.pop())->as_string()
+const uint ANTI_ENDLESS_EXECUTE_RECOURSION=500;
 
 #ifdef DEBUG_EXECUTE
 char *opcode_name[]={
@@ -108,6 +105,10 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 	}
 }
 #endif
+
+#define PUSH(value) stack.push(value)
+#define POP() static_cast<Value *>(stack.pop())
+#define POP_NAME() static_cast<Value *>(stack.pop())->as_string()
 
 void Request::execute(const Array& ops) {
 #ifdef DEBUG_EXECUTE
@@ -418,8 +419,17 @@ void Request::execute(const Array& ops) {
 							(*method.native_code)(
 								*this, 
 								frame->name(), frame->numbered_params()); // execute it
-						} else // parser code
+						} else { // parser code
+							if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
+								anti_endless_execute_recoursion=0; // give @exception a chance
+								THROW(0, 0,
+									&method.name,
+									"endless recursion detected");
+							}
+							
 							execute(*method.parser_code); // execute it
+							anti_endless_execute_recoursion--;
+						}
 					else
 						THROW(0, 0,
 							&frame->name(),
@@ -703,8 +713,7 @@ Value *Request::get_element() {
 	return value;
 }
 
-/**
-	intercept_string:
+/**	intercept_string:
 	- true:
 		they want result=string value, 
 		possible object result goes to wcontext

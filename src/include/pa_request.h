@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.88 2001/05/17 10:22:24 parser Exp $
+	$Id: pa_request.h,v 1.89 2001/05/17 15:20:15 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -87,7 +87,7 @@ public:
 		bool header_only);
 
 	/// executes ops
-	void execute(const Array& ops);
+	void execute(const Array& ops); // execute.C
 
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
 	VStateless_class *use_file(
@@ -178,14 +178,19 @@ public:
 
 private: // core data
 
-	// classes
+	/// classes
 	Hash fclasses;
 
-	// already used files to avoid cyclic uses
+	/// already used files to avoid cyclic uses
 	Hash used_files;
 
-	// execution stack
+	/// execution stack
 	Stack stack;
+
+	/**	endless execute(execute(... preventing counter 
+		@see ANTI_ENDLESS_EXECUTE_RECOURSION
+	*/
+	uint anti_endless_execute_recoursion;
 
 private: // compile.C
 

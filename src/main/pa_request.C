@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.130 2001/05/15 10:01:25 parser Exp $
+	$Id: pa_request.C,v 1.131 2001/05/17 15:20:15 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -54,7 +54,8 @@ Request::Request(Pool& apool,
 	main_class(0),
 	connection(0),
 	pcre_tables(0),
-	classes_conf(apool) 
+	classes_conf(apool),
+	anti_endless_execute_recoursion(0)
 {
 	/// directly used
 	// operators
