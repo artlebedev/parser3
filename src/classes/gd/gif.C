@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: gif.C,v 1.23 2002/01/22 09:08:41 paf Exp $
+	$Id: gif.C,v 1.24 2002/01/22 09:26:57 paf Exp $
 
 	based on: gd
 
@@ -338,13 +338,16 @@ void gdImage::Arc(int cx, int cy, int w, int h, int s, int e, int color)
 		int w2, h2;
 		w2 = w/2;
 		h2 = h/2;
-		while (e < s) {
-			e += 360;
-		}
+		while (e < s) e += 360;
+		// paf
+		while(s<0) s+=360;
+		while(s>360) s-=360;
+		while(e<0) e+=360;
+		while(e>360) e-=360;
 		for (i=s; (i <= e); i++) {
 			int x, y;
-			x = ((long)cost[i % 360] * (long)w2 / costScale) + cx; 
-			y = ((long)sint[i % 360] * (long)h2 / sintScale) + cy;
+			x = ((long)cost[i] * (long)w2 / costScale) + cx; 
+			y = ((long)sint[i] * (long)h2 / sintScale) + cy;
 			if (i != s) {
 				Line(lx, ly, x, y, color);	
 			}
@@ -403,13 +406,16 @@ void gdImage::Sector(int cx, int cy, int w, int h, int s, int e, int color)
 	int w2, h2;
 	w2 = w/2;
 	h2 = h/2;
-	while (e < s) {
-		e += 360;
-	}
+	while (e < s) e += 360;
+	// paf
+	while(s<0) s+=360;
+	while(s>360) s-=360;
+	while(e<0) e+=360;
+	while(e>360) e-=360;
 	for (i=s; (i <= e); i++) {
 		int x, y;
-		x = ((long)cost[i % 360] * (long)w2 / costScale) + cx; 
-		y = ((long)sint[i % 360] * (long)h2 / sintScale) + cy;
+		x = ((long)cost[i] * (long)w2 / costScale) + cx; 
+		y = ((long)sint[i] * (long)h2 / sintScale) + cy;
 		if(i==s || i==e)
 			Line(cx, cy, x, y, color);
 		if (i != s) {

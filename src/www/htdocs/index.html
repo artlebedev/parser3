@@ -4,19 +4,10 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-$paint_nodes[^table::set{x	y
-50	0
-100	50
-}
-]
-
 $square[^image::create(100;100;0x000000)]
-^square.line(0;0;100;100;0xFFFFFF)
-^square.line(100;0;0;100;0xFFFFFF)
-
-^square.replace(0x000000;0xFF00FF)[$paint_nodes]
+^square.arc(50;50;40;60;-900;360;0xFFFFFF)
 $response:body[^square.gif[]]
-^response:body.save[binary;square.gif]
+  
 
 #^xpath[]
 #^ttablesetlang[]
