@@ -1,5 +1,5 @@
 /*
-$Id: pa_request.C,v 1.7 2001/03/10 16:15:38 paf Exp $
+$Id: pa_request.C,v 1.8 2001/03/10 16:21:49 paf Exp $
 */
 
 #include "pa_request.h"
@@ -40,6 +40,8 @@ void Request::core() {
 			sys_auto_file, 
 			auto_class_name, 0, 
 			false/*ignore possible error*/);
+
+		// TODO: использовать AUTO:limits здесь, пока их не сломали враги
 
 		// TODO: load site auto.p files, all assigned bases from upper dir
 		char *site_auto_file="Y:\\parser3\\src\\auto.p";
