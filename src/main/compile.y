@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.31 2001/02/24 09:00:11 paf Exp $
+  $Id: compile.y,v 1.32 2001/02/24 09:31:34 paf Exp $
 */
 
 %{
@@ -152,20 +152,14 @@ name_expr_wdive_root: ':' name_expr_dive_code {
 };
 
 constructor_value: 
-	store_constructor_one_param_value
-|	store_constructor_two_params_value /* $var(=;2*2) $var(%d;2*2) $var(+;1) */
+	constructor_one_param_value
+|	constructor_two_params_value /* $var(=;2*2) $var(%d;2*2) $var(+;1) */
 ;
 
-store_constructor_one_param_value: 
-	empty /* optimized $var() case */
-|	STRING { /* optimized $var(STRING) case */
-	$$=$1;
-	OP($$, OP_STORE_PARAM);
-}
-|	complex_constructor_param_value { /* $var(something complex) */
-	$$=$1;
-	OP($$, OP_STORE_PARAM);
-}
+constructor_one_param_value: 
+	empty_value /* optimized $var() case */
+|	STRING /* optimized $var(STRING) case */
+|	complex_constructor_param_value /* $var(something complex) */
 ;
 complex_constructor_param_value: complex_constructor_param_body {
 	$$=N(POOL); 
@@ -176,7 +170,7 @@ complex_constructor_param_value: complex_constructor_param_body {
 complex_constructor_param_body: codes__excluding_sole_str_literal;
 codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
 
-store_constructor_two_params_value: STRING ';' store_constructor_one_param_value {
+constructor_two_params_value: STRING ';' constructor_one_param_value {
 	char *operator_or_fmt=LA2S($1)->cstr();
 	$$=N(POOL);
 	P($$, $1); /* stack: ncontext name operator_or_fmt */
@@ -208,14 +202,25 @@ store_params: store_param | store_params store_param { $$=$1; P($$, $2) };
 store_param: store_round_param | store_curly_param;
 store_round_param: '(' store_param_parts ')' {$$=$2};
 store_param_parts:
-	store_constructor_one_param_value
-|	store_param_parts ';' store_constructor_one_param_value { $$=$1; P($$, $3) }
+	store_param_part
+|	store_param_parts ';' store_param_part { $$=$1; P($$, $3) }
 ;
 store_curly_param: '{' maybe_codes '}' {
 	$$=N(POOL); 
 	PCA($$, $2);
 	OP($$, OP_STORE_PARAM);
 };
+store_param_part: 
+	empty /* optimized $var() case */
+|	STRING { /* optimized $var(STRING) case */
+	$$=$1;
+	OP($$, OP_STORE_PARAM);
+}
+|	complex_constructor_param_value { /* $var(something complex) */
+	$$=$1;
+	OP($$, OP_STORE_PARAM);
+}
+;
 
 /* name */
 
@@ -291,6 +296,7 @@ write_str_literal: STRING {
 		$$=N(POOL);
 	}
 };
+empty_value: /* empty */ { $$=L(NEW VString(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%
@@ -434,7 +440,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				c==' '|| c=='\t' || c=='\n' || 
 				c==')' || c=='}') {
 				pop_LS(PC);
-				PC->source--;	PC->col--;
+				PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
 				result=EON;
 				goto break2;
 			}
@@ -602,13 +608,12 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				goto break2;
 			}					   
 			pop_LS(PC);
-			PC->source--;  PC->col--;
+			PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
 			result=EON;
 			goto break2;
 		}
 		if(c==0) {
 			result=-1;
-//			PC->source--;  PC->col--;
 			break;
 		}
 	}
