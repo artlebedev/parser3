@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.5 2001/03/14 08:50:05 paf Exp $
+	$Id: parser3.C,v 1.6 2001/03/14 08:53:58 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -81,13 +81,12 @@ int main(int argc, char *argv[]) {
 
 		fill_globals(pool);
 		
-		Pool request_pool; // request pool
 		// TODO: ifdef WIN32 flip \\ to /
 		const char *document_root="Y:/parser3/src/";
 		const char *page_filespec="Y:/parser3/src/test.p";
 		
 		// prepare to process request
-		Request request(request_pool,
+		Request request(Pool(),
 			cgi ? String::Untaint_lang::HTML_TYPO : String::Untaint_lang::NO,
 			document_root,
 			page_filespec
@@ -108,8 +107,13 @@ int main(int argc, char *argv[]) {
 		
 		// beside by binary
 		char *sys_auto_path2=(char *)pool.malloc(MAX_STRING);
-		strncpy(sys_auto_path2, argv[0], MAX_STRING-20);  // filespec of my binary
-		rsplit(sys_auto_path2, '\\');  rsplit(sys_auto_path2, '/'); // strip filename
+		strncpy(sys_auto_path2, argv[0], MAX_STRING);  // filespec of my binary
+		// strip filename
+#ifdef WIN32
+		rsplit(sys_auto_path2, '\\');  
+#else
+		rsplit(sys_auto_path2, '/'); 
+#endif
 		
 		// process the request
 		result=request.core(
@@ -122,7 +126,7 @@ int main(int argc, char *argv[]) {
 #ifdef WIN32
 		SetUnhandledExceptionFilter(0);
 #endif
-	} PCATCH(e) { // global problem, such as out of memory when creating Request
+	} PCATCH(e) { // global problem [creating Request, preparing to .core()]
 		result=0;
 		strcpy(error, e.comment());
 	}
