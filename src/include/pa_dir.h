@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_dir.h,v 1.5 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_dir.h,v 1.6 2001/10/25 12:41:37 paf Exp $
 */
 
 #ifndef PA_DIR_H
@@ -76,14 +76,14 @@ void findclose(struct ffblk *_ffblk);
 /// main dir workhorse: calles win32/unix unified functions findfirst/next/close
 #define LOAD_DIR(dir,action) {\
     ffblk ffblk; \
-    bool done=findfirst(dir, &ffblk, 0); \
-	while(!done) { \
-		if(*ffblk.ff_name && ffblk.ff_name[0]!='.') {\
-			action; \
-		} \
-		done=findnext(&ffblk); \
-    } \
-	findclose(&ffblk); \
+    if(findfirst(dir, &ffblk, 0)) { \
+		do \
+			if(*ffblk.ff_name && ffblk.ff_name[0]!='.') {\
+				action; \
+			} \
+		while(findnext(&ffblk)); \
+		findclose(&ffblk); \
+	} \
 } 
 
 #endif
