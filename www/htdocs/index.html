@@ -1,10 +1,8 @@
 #@USE
 #t.p
 
-@auto[a]
-^throw[user;$a]
-
-@autoZ[]
+@auto[filespec]
+$selffilespec[$filespec]
 #$form:here
 $request:charset[windows-1251]
 $response:charset[windows-1251]
@@ -17,8 +15,8 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 @f[a;b]
 
 @main[]
-$a(123)
-^a.format[%.10u]
+#$a(123)
+#^a.format[%.10u]
 #$result[111]
 #^f[a]
 
@@ -185,6 +183,14 @@ $a(123)
 #^xdocsave[]
 #^div[]
 #^datecreatestring3[]
+^tfilespec[]
+
+@tfilespec[]
+src=$selffilespec<br>
+dirname=^file:dirname[$selffilespec]<br>
+basename=^file:basename[$selffilespec]<br>
+justname=^file:justname[$selffilespec]<br>
+justext=^file:justext[$selffilespec]<br>
 
 @datecreatestring3[]
 $new_after[^date::now(-3)]
