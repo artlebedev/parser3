@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.100 2001/04/06 10:32:20 paf Exp $
+	$Id: pa_request.C,v 1.101 2001/04/07 10:34:45 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -27,6 +27,7 @@
 #include "pa_vtable.h"
 #include "_random.h"
 #include "pa_vfile.h"
+#include "_mail.h"
 
 /// $limits.post_max_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
@@ -77,21 +78,8 @@ Request::Request(Pool& apool,
 	classes().put(*response_class_name, &response);	
 	// cookie class
 	classes().put(*cookie_class_name, &cookie);
-}
-
-static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
-								 void *info) {
-	String *attribute_to_exclude=static_cast<String *>(info);
-	if(aattribute==*attribute_to_exclude)
-		return;
-
-	Value& lmeaning=*static_cast<Value *>(ameaning);
-	Pool& pool=lmeaning.pool();
-
-	String attribute(pool);
-	SAPI::add_header_attribute(pool,
-		attribute.append(aattribute, String::UL_HEADER, true).cstr(), 
-		attributed_meaning_to_string(lmeaning).cstr());
+	// mail class
+	classes().put(*mail_class_name, mail_class);	
 }
 
 /**
@@ -492,6 +480,20 @@ const String& Request::absolute(const String& relative_name) {
 		return relative(info.path_translated, relative_name);
 }
 
+static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
+								 void *info) {
+	String *attribute_to_exclude=static_cast<String *>(info);
+	if(aattribute==*attribute_to_exclude)
+		return;
+
+	Value& lmeaning=*static_cast<Value *>(ameaning);
+	Pool& pool=lmeaning.pool();
+
+	String attribute(pool);
+	SAPI::add_header_attribute(pool,
+		attribute.append(aattribute, String::UL_HTTP_HEADER, true).cstr(), 
+		attributed_meaning_to_string(lmeaning, String::UL_HTTP_HEADER).cstr());
+}
 void Request::output_result(const VFile& body_file, bool header_only) {
 	// header: cookies
 	cookie.output_result();

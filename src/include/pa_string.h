@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.73 2001/04/05 16:30:41 paf Exp $
+	$Id: pa_string.h,v 1.74 2001/04/07 10:34:43 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -99,7 +99,8 @@ public:
 			*/
 		UL_AS_IS,     ///< leave all characters intact
 		UL_FILE_NAME, ///< filename
-		UL_HEADER,    ///< text in response header
+		UL_HTTP_HEADER,    ///< text in HTTP response header
+		UL_MAIL_HEADER,    ///< text in mail header
 		UL_URI,       ///< text in uri
 		UL_TABLE,     ///< ^table:set body
 		UL_SQL,       ///< ^table:sql body

@@ -1,5 +1,5 @@
 @auto[]
-!!$html-typo[^table:set{user	html	comment
+$html-typo[^table:set{user	html	comment
 <<	&laquo^;	длинные user вперёд
 >>	&raquo^;
 \n\n	<p>	!эти есть в таблице по умолчанию
@@ -31,19 +31,56 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
+^mail:send[
+	$content-type[
+	    $value[text/plain]
+    	$charset[windows-1251]
+	]
+    $to[paul]
+    $from[paf]
+    $body[
+    	hi, paul.
+
+    	sincerily yours,
+    	PAF
+    ]
+]
+<HR>
+
+
+^mail:send{
+	$content-type[
+	    $value[text/plain]
+    	$charset[windows-1251]
+	]
+    $to[sdsfsdf]
+    $from[sdfsdf]
+    $body[
+    	$1[ sdfsdf]
+    	$2[
+			$to[sdsfsdf]
+    		$from[sdfsdf]
+    		$content-type[sdfsdf]
+    		$body[$image]
+    	]
+    ]
+}
+
+<HR>
+
 ^^table:dir[/]:<BR>
 $d[^table:dir[/]]
 ^d.menu{$name;<BR>}
 <HR>
 
-^^table:dir[/;i]<BR>
-$d[^table:dir[/;i]]
+^^table:dir[/;html^$]<BR>
+$d[^table:dir[/;html^$]]
 ^d.menu{$name;<BR>}
 <HR>
 
 ^connect[$SQL.connect-string]{
 	$shit[^taint[our's]]
-	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
+#	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
 	$paf[^table:sql{select * from paf order by id desc}(5)]
 	$paf{
 	^empty{query result is empty}{

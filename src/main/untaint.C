@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.35 2001/04/05 13:27:14 paf Exp $
+	$Id: untaint.C,v 1.36 2001/04/07 10:34:45 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -57,7 +57,7 @@ inline bool need_uri_encode(unsigned char c){
 
     return !strchr("_-./", c);
 }
-inline bool need_header_encode(unsigned char c){
+inline bool need_http_header_encode(unsigned char c){
     if(strchr(" , :", c))
 		return false;
 
@@ -80,6 +80,7 @@ static bool typo_present(Array::Item *value, const void *info) {
 /**
 	@test optimize whitespaces for all but 'html'
 	@todo fix theoretical \n mem overrun in TYPO replacements
+	@test mail-header
 */
 char *String::store_to(char *dest, Untaint_lang lang, SQL_Connection *connection) const {
 	// $MAIN:html-typo table
@@ -121,11 +122,16 @@ char *String::store_to(char *dest, Untaint_lang lang, SQL_Connection *connection
 					encode(need_uri_encode, '%');
 				});
 				break;
-			case UL_HEADER:
-				// tainted, untaint language: header
+			case UL_HTTP_HEADER:
+				// tainted, untaint language: http-header
 				escape(switch(*src) {
-					encode(need_header_encode, '%');
+					encode(need_http_header_encode, '%');
 				});
+				break;
+			case UL_MAIL_HEADER:
+				// tainted, untaint language: mail-header
+				memcpy(dest, row->item.ptr, row->item.size); 
+				dest+=row->item.size;
 				break;
 			case UL_TABLE: 
 				// tainted, untaint language: table

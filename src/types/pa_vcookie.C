@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.15 2001/04/03 05:23:44 paf Exp $
+	$Id: pa_vcookie.C,v 1.16 2001/04/07 10:34:47 paf Exp $
 */
 
 #include <string.h>
@@ -100,7 +100,7 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 	Pool& pool=aattribute.pool();
 	String string(pool);
 	// attribute
-	string.append(aattribute, String::UL_HEADER, true);
+	string.append(aattribute, String::UL_HTTP_HEADER, true);
 	// attribute=
 	string.APPEND_CONST("=");
 	Value *meaning;
@@ -142,8 +142,8 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 			new(pool) VString(*new(pool) String(pool, "/")));
 
 	// append meaning
-	string.append(attributed_meaning_to_string(*meaning), 
-	String::UL_PASS_APPENDED);
+	string.append(attributed_meaning_to_string(*meaning, String::UL_HTTP_HEADER), 
+		String::UL_PASS_APPENDED);
 
 	// output
 	SAPI::add_header_attribute(pool,

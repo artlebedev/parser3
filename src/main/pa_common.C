@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.39 2001/04/03 17:01:03 paf Exp $
+	$Id: pa_common.C,v 1.40 2001/04/07 10:34:45 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -254,30 +254,39 @@ const char *unescape_chars(Pool& pool, const char *cp, int len) {
 	return s;
 }
 
+struct Attributed_meaning_info {
+	String::Untaint_lang lang;
+	String *header;
+};
 static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *avalue, 
 										  void *info) {
 	if(akey==VALUE_NAME)
 		return;
 
+	Attributed_meaning_info& ami=*static_cast<Attributed_meaning_info *>(info);
+
 	// ...; charset=windows1251
-	String *string=static_cast<String *>(info);
-	if(string->size())
-		string->APPEND_CONST("; ");
-	string->append(akey, String::UL_HEADER, true);
-	string->APPEND_CONST("=");
-	string->append(static_cast<Value *>(avalue)->as_string(), 
-		String::UL_HEADER, true);
+	if(ami.header->size())
+		ami.header->APPEND_CONST("; ");
+	ami.header->append(akey, ami.lang, true);
+	ami.header->APPEND_CONST("=");
+	ami.header->append(static_cast<Value *>(avalue)->as_string(), 
+		ami.lang, true);
 }
-const String& attributed_meaning_to_string(Value& meaning) {
+const String& attributed_meaning_to_string(Value& meaning, String::Untaint_lang lang) {
 	String &result=*new(meaning.pool()) String(meaning.pool());
 	if(Hash *hash=meaning.get_hash()) {
 		// $value(value) $subattribute(subattribute value)
 		if(Value *value=static_cast<Value *>(hash->get(*value_name)))
-			result.append(value->as_string(), String::UL_HEADER, true);
+			result.append(value->as_string(), lang, true);
 
-		hash->for_each(append_attribute_subattribute, &result);
+		Attributed_meaning_info attributed_meaning_info={
+			lang,
+			&result
+		};
+		hash->for_each(append_attribute_subattribute, &attributed_meaning_info);
 	} else // result value
-		result.append(meaning.as_string(), String::UL_HEADER, true);
+		result.append(meaning.as_string(), lang, true);
 
 	return result;
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.40 2001/04/06 13:41:30 paf Exp $
+	$Id: pa_globals.h,v 1.41 2001/04/07 10:34:42 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -53,6 +53,7 @@ class Table;
 #define RESPONSE_CLASS_NAME "response"
 #define COOKIE_CLASS_NAME "cookie"
 #define RANDOM_CLASS_NAME "random"
+#define MAIL_CLASS_NAME "mail"
 
 #define LIMITS_NAME "LIMITS"
 #define POST_MAX_SIZE_NAME "post_max_size"
@@ -112,6 +113,7 @@ extern String *request_class_name;
 extern String *response_class_name;
 extern String *cookie_class_name;
 extern String *random_class_name;
+extern String *mail_class_name;
 
 extern String *limits_name;
 extern String *post_max_size_name;

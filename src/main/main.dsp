@@ -417,6 +417,10 @@ SOURCE=..\classes\_int.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\classes\_mail.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\_op.h
 # End Source File
 # Begin Source File
@@ -450,6 +454,10 @@ SOURCE=..\classes\form.C
 # Begin Source File
 
 SOURCE=..\classes\int.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\mail.C
 # End Source File
 # Begin Source File
 

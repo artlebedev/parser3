@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.32 2001/04/03 07:24:44 paf Exp $
+	$Id: pa_common.h,v 1.33 2001/04/07 10:34:42 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -15,8 +15,9 @@
 #include <stdio.h>
 
 #include "pa_pool.h"
+#include "pa_string.h"
 
-class String;
+//class String;
 class Value;
 
 #if _MSC_VER
@@ -130,8 +131,7 @@ const char *unescape_chars(Pool& pool, const char *cp, int len);
 	$content-type[$value[text/html] charset[windows-1251]] -> 
 		content-type: text/html; charset=windows-1251
 */
-const String& attributed_meaning_to_string(Value& meaning);
-
+const String& attributed_meaning_to_string(Value& meaning, String::Untaint_lang lang);
 
 #ifdef WIN32
 void back_slashes_to_slashes(char *s);

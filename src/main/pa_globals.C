@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.46 2001/04/06 13:41:32 paf Exp $
+	$Id: pa_globals.C,v 1.47 2001/04/07 10:34:45 paf Exp $
 */
 
 #include "pcre.h"
@@ -23,6 +23,7 @@
 #include "_file.h"
 #include "_random.h"
 #include "pa_sql_driver_manager.h"
+#include "_mail.h"
 
 String *html_typo_name;
 String *content_type_name;
@@ -56,6 +57,7 @@ String *request_class_name;
 String *response_class_name;
 String *cookie_class_name;
 String *random_class_name;
+String *mail_class_name;
 
 String *result_var_name;
 String *string_pre_match_name;
@@ -152,6 +154,7 @@ void pa_globals_init(Pool& pool) {
 	response_class_name=NEW String(pool, RESPONSE_CLASS_NAME);
 	cookie_class_name=NEW String(pool, COOKIE_CLASS_NAME);
 	random_class_name=NEW String(pool, RANDOM_CLASS_NAME);
+	mail_class_name=NEW String(pool, MAIL_CLASS_NAME);
 
 	result_var_name=NEW String(pool, RESULT_VAR_NAME);
 	string_pre_match_name=NEW String(pool, STRING_PRE_MATCH_NAME);
@@ -177,8 +180,10 @@ void pa_globals_init(Pool& pool) {
 	untaint_lang_name2enum->put(as_is, (int)String::UL_AS_IS);
 	String file_name(pool, "file-name");  
 	untaint_lang_name2enum->put(file_name, (int)String::UL_FILE_NAME);
-	String header(pool, "header");  
-	untaint_lang_name2enum->put(header, (int)String::UL_HEADER);
+	String http_header(pool, "http-header");  
+	untaint_lang_name2enum->put(http_header, (int)String::UL_HTTP_HEADER);
+	String mail_header(pool, "mail-header");  
+	untaint_lang_name2enum->put(mail_header, (int)String::UL_MAIL_HEADER);
 	String uri(pool, "uri");  
 	untaint_lang_name2enum->put(uri, (int)String::UL_URI);
 	String table(pool, "table");
@@ -251,6 +256,7 @@ void pa_globals_init(Pool& pool) {
 	initialize_file_class(pool, *(file_class=NEW VStateless_class(pool)));
 	initialize_response_class(pool, *(response_class=NEW VStateless_class(pool)));
 	initialize_random_class(pool, *(random_class=NEW VStateless_class(pool)));
+	initialize_mail_class(pool, *(mail_class=NEW VStateless_class(pool)));
 
 	// stateless base classes
 	initialize_form_base_class(pool, *(form_base_class=NEW VStateless_class(pool)));  form_base_class->set_name(*form_class_name);
