@@ -7,7 +7,7 @@
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char * const IDENT_SMTP_C="$Date: 2004/02/24 11:37:54 $";
+static const char * const IDENT_SMTP_C="$Date: 2004/02/24 12:21:12 $";
 
 #include "pa_exception.h"
 #include "smtp.h"
@@ -96,7 +96,7 @@ GetBuffer(int wait)
         timeout.tv_sec = 30;
     }
 
-    if( (retval = select(0, &fds, NULL, NULL, &timeout))<0 )
+    if( (retval = select(1+the_socket, &fds, NULL, NULL, &timeout))<0 )
     {
 #ifdef WIN32
         int     error_code = WSAGetLastError();
@@ -228,7 +228,7 @@ SendLine(const char* data, unsigned long length)
 
     while( length > 0 ) 
     {
-        if( select(0, NULL, &fds, NULL, &timeout)<0 ) 
+        if( select(1+the_socket, NULL, &fds, NULL, &timeout)<0 ) 
             throw Exception("smtp.execute",
 				0,
 		        "connection::put_data() unexpected error from select: %d",
