@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/03/21 07:08:28 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/03/21 07:18:01 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -186,7 +186,7 @@ static int http_request(String& response,
 							const char* host, int port, 
 							const char* request, 
 							int timeout,
-							bool fail_on_status_ne_200){
+							bool fail_on_status_ne_200) {
 	if(!host)
 		throw Exception("http.host", 
 			origin_string, 
@@ -247,7 +247,9 @@ static int http_request(String& response,
 				closesocket(sock); 
 			/*re*/throw;
 		}
+#ifdef PA_USE_ALARM
 	}
+#endif
 }
 
 #ifndef DOXYGEN
