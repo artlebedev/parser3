@@ -102,7 +102,6 @@ $response:charset[windows-1251]
 #^if($form:test){y}{n}
 #^tablecolumnerror[]
 #^roll[]
-#^cookie2[]
 #^tableset[]
 #^math:PI.format{%.30f}
 #^xchildren[]
@@ -258,7 +257,10 @@ $response:charset[windows-1251]
 #^mail4[]
 #^voidconstructorpass[]
 #^touchittest[]
-^$form:CLASS.a=$form:CLASS.a<br>
+#^$form:CLASS.a=$form:CLASS.a<br>
+^cookie2[]
+
+
 @rusage2[]
 <hr>
 OK
@@ -1749,7 +1751,7 @@ $date.year  $date.month  $date.day
 
 @cookie2[]
 #=$cookie:clientType[$.value[test]]=<br>
-=$cookie:clientType=<br>
+=$cookie:CLASS.clientType=<br>
 
 
 @tableset[]

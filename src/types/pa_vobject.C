@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char* IDENT_VOBJECT_C="$Date: 2002/09/12 11:57:43 $";
+static const char* IDENT_VOBJECT_C="$Date: 2002/10/14 11:28:45 $";
 
 Value *VObject::as(const char *atype, bool looking_up) { 
 	if(!looking_up)
@@ -86,7 +86,7 @@ Value *VObject::get_element(const String& aname, Value * /*aself*/, bool looking
 			0, true/*the only user*/);
 	}
 
-	// $method, $CLASS_field
+	// $method
 	{
 		Temp_base temp_base(*get_class(), 0);
 		if(Value *result=VStateless_object::get_element(aname, this, true))
