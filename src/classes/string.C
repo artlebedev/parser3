@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.24 2001/04/03 08:23:06 paf Exp $
+	$Id: string.C,v 1.25 2001/04/03 09:58:07 paf Exp $
 */
 
 #include "pa_request.h"
@@ -13,6 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_vint.h"
 #include "pa_vtable.h"
+#include "pa_vbool.h"
 
 // global var
 
@@ -149,10 +150,20 @@ static void _match(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, options, method_name, "options must not be junction");
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
-	Table& table=string.match(&method_name, 
-		r.process(regexp).as_string(), options.as_string());
+	Table *table;
+	Value *result;
+	if(string.match(&method_name, 
+		r.process(regexp).as_string(), options.as_string(),
+		&table)) {
+		// matched
+		if(table->columns()->size()==1) // just matched, no substrings
+			result=new(pool) VBool(pool, true);
+		else // table of match column+substring columns
+			result=new(pool) VTable(pool, table);
+	} else // not matched
+		result=new(pool) VBool(pool, false);
 
-	r.write_no_lang(*new(pool) VTable(pool, &table));
+	r.write_no_lang(*result);
 }
 
 // initialize

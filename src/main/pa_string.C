@@ -5,10 +5,12 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.61 2001/04/03 08:23:08 paf Exp $
+	$Id: pa_string.C,v 1.62 2001/04/03 09:58:10 paf Exp $
 */
 
 #include "pa_config_includes.h"
+
+#include <locale.h>
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -18,8 +20,15 @@
 #include "pa_array.h"
 #include "pa_globals.h"
 #include "pa_table.h"
+#include "pa_threads.h"
+
+#include "pcre.h"
 
 //#include "pa_sapi.h"
+
+// consts
+
+const int MAX_MATCH_COLUMNS=20;
 
 // String
 
@@ -453,9 +462,66 @@ void String::split(Array& result,
 	}
 }
 
-Table& String::match(const String *aorigin,
-					 const String& regexp, const String& options) const {
-	Array *columns=0;
-	Table& result=*NEW Table(pool(), aorigin, columns);
-	return result;
+/// @test setlocale param to auto.p  @test pcre_malloc & pcre_free substs
+bool String::match(const String *aorigin,
+				   const String& regexp, 
+				   const String& options,
+				   Table **table) const { 
+	SYNCHRONIZED(true);
+	static const unsigned char *tables=0;
+	if(!tables) {
+		setlocale(LC_CTYPE, "ru");
+		tables = pcre_maketables();
+	}
+	const char *pattern=regexp.cstr();
+	const char *errptr;
+	int erroffset;
+	pcre *code=pcre_compile(pattern, 0, 
+		&errptr, &erroffset,
+		tables);
+
+	if(!code)
+		THROW(0, 0,
+			&regexp.piece(erroffset, regexp.size()),
+			errptr);
+	
+	int ovecsize;
+	int *ovector=(int *)malloc(sizeof(int)*(ovecsize=(1/*.match*/+MAX_MATCH_COLUMNS)*3));
+	const char *subject=cstr();
+	int length=strlen(subject);
+	int exec_result=pcre_exec(code, 0,
+          subject, length, 0/*startoffset*/,
+          0/*options*/, ovector, ovecsize);
+
+	if(exec_result==PCRE_ERROR_NOMATCH) {
+		*table=0;
+		return false;
+	}
+
+	if(exec_result<0)
+		THROW(0, 0,
+			0,
+			"pcre_exec failed");
+
+	if(exec_result==0)
+		THROW(0, 0,
+			aorigin,
+			"produced more substrings than maximum handled by Parser, which is %d",
+				MAX_MATCH_COLUMNS);
+
+	Array& columns=*NEW Array(pool());
+	columns+=string_match_name; // .match column name
+	Array& row=*NEW Array(pool());
+	row+=&piece(ovector[0], ovector[1]); // match column value
+	
+	for(int i=1; i<exec_result; i++) {
+		char *column=(char *)malloc(MAX_NUMBER);
+		snprintf(column, MAX_NUMBER, "%d", i);
+		columns+=NEW String(pool(), column); // .i column name
+		row+=&piece(ovector[i*2+0], ovector[i*2+1]); // .i column value
+	}
+	
+	*table=NEW Table(pool(), aorigin, &columns);
+	(**table)+=&row;
+	return true;
 }

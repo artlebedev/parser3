@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,8 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ  /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ  /c
+# ADD CPP /nologo /MDd /W3 /GX /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /FD /GZ  /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -83,10 +84,110 @@ LIB32=link.exe -lib
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+
+SOURCE=.\chartables.c
+
+!IF  "$(CFG)" == "pcre - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "pcre - Win32 Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\dftables.c
+
+!IF  "$(CFG)" == "pcre - Win32 Release"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build - Creating char tables...
+InputPath=.\dftables.c
+
+"chartables.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	Release\pcre_dftables > chartables.c
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "pcre - Win32 Debug"
+
+# PROP Ignore_Default_Tool 1
+# Begin Custom Build - Creating char tables...
+InputPath=.\dftables.c
+
+"chartables.c" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	Debug\pcre_dftables > chartables.c
+
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\get.c
+
+!IF  "$(CFG)" == "pcre - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "pcre - Win32 Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\maketables.c
+
+!IF  "$(CFG)" == "pcre - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "pcre - Win32 Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\pcre.c
+
+!IF  "$(CFG)" == "pcre - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "pcre - Win32 Debug"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\study.c
+
+!IF  "$(CFG)" == "pcre - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "pcre - Win32 Debug"
+
+!ENDIF 
+
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\internal.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pcre.h
+# End Source File
+# End Group
+# Begin Group "Text files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\pcre.3.txt
+# End Source File
 # End Group
 # End Target
 # End Project

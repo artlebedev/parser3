@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.33 2001/04/03 07:20:52 paf Exp $
+	$Id: pa_globals.h,v 1.34 2001/04/03 09:58:08 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -61,6 +61,8 @@ class Table;
 #define VFILE_MIME_TYPE_NAME "mime-type"
 
 #define RESULT_VAR_NAME "result"
+
+#define STRING_MATCH_NAME "match"
 //@}
 
 /// core func
@@ -112,6 +114,7 @@ extern String *mime_types_name;
 extern String *vfile_mime_type_name;
 
 extern String *result_var_name;
+extern String *string_match_name;
 //@}
 
 /// global hash

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.39 2001/04/03 07:20:53 paf Exp $
+	$Id: pa_globals.C,v 1.40 2001/04/03 09:58:10 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -55,6 +55,7 @@ String *cookie_class_name;
 String *random_class_name;
 
 String *result_var_name;
+String *string_match_name;
 
 String *limits_name;
 String *post_max_size_name;
@@ -140,6 +141,7 @@ void pa_globals_init(Pool& pool) {
 	random_class_name=NEW String(pool, RANDOM_CLASS_NAME);
 
 	result_var_name=NEW String(pool, RESULT_VAR_NAME);
+	string_match_name=NEW String(pool, STRING_MATCH_NAME);
 
 
 	limits_name=NEW String(pool, LIMITS_NAME);
