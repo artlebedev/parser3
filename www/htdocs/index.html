@@ -1,21 +1,20 @@
-#@USE
-#t.p
+@USE
+t.p
 
 @autoz[]
 $request:charset[windows-1251]
 $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
-@postprocess[body]
-#=$env:HTTP_TEST=<br>
-#=$env:REDIRECT_HTTP_TEST=<br>
-#<hr>
-$body
-<hr>
-OK
+#@postprocess[body]
+#<b>$body</b>
+#$result[123]
 
 @main[]
-#^sqldefaults[]
+^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
+	^int:sql{select news_id from news where news_id=-1}[$.default{2}]<br>
+    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
+}
 #^eval(2)
 #^tcrashlocaljunctionsv2[]
 #^tcrashlocaljunctions[]
@@ -144,6 +143,7 @@ OK
 #^xslt[]
 #^xml[]
 #^header[]
+<<<<<<< index.html
 #^tablehasht[]
 #^datecreatestring[]
 #^mssqltypes1[]
@@ -157,7 +157,23 @@ OK
 #^tstoredproc[]
 #^tstoredproc2[]
 #^forkeys[]
-^pngsize[]
+#^pngsize[]
+^checkList[]
+
+@checkList[]
+...^oneOf[a;a,b,c]...<br>
+#...^oneOf[a;ax,b,c]...<br>
+...^oneWord[word]...<br>
+#...^oneWord[wo rd]...<br>
+
+
+@oneOf[s;list][t] выдаёт строку, если строка она есть в списке(разделенном запятыми)
+$t[^list.lsplit[,]]
+^if(!^t.locate[piece;$s]){^throw[user;$s;unknown]}
+$result[$s]
+
+@oneWord[s]
+^if(^s.match[\W]){^throw[user.data;$s;not word]}{$s}
 
 @pngsize[]
 $i[^image::measure[test.png]]
@@ -301,6 +317,10 @@ $h[^t.hash[p]]
 	^int:sql{select news_id from news where news_id=-1}[$.default{2}]<br>
     ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
 }
+=======
+<hr>
+OK
+>>>>>>> 1.50
 
 @tcrashlocaljunctionsv2[]
 $a[

@@ -1,24 +1,97 @@
-2002-05-07  paf
+2002-06-03  paf
 	* src/classes/classes.dsp:
 	* src/classes/gd/gd.dsp:
-	* src/classes/op.C:
 	* src/classes/smtp/smtp.dsp:
-	* src/include/pa_globals.h:
-	* src/include/pa_request.h:
-	* src/include/pa_table.h:
-	* src/libltdl/libltdl.dsp:
 	* src/main/compile.tab.C:
-	* src/main/compile.y:
 	* src/main/main.dsp:
 	* src/main/pa_globals.C:
+	* src/targets/apache13/ApacheModuleParser3.dsp:
+	* src/targets/cgi/parser3.dsp:
+	* src/targets/isapi/parser3isapi.dsp:
+	* src/types/types.dsp:
+		reorganized cvs modules
+
+2002-05-28  paf
+	* src/targets/cgi/parser3.C:
+		info.uri now ""
+
+2002-05-17  paf
+	* src/classes/table.C:
+	* src/classes/table.C:
+		^table.save << checked empty pre/match/post columns
+
+2002-05-16  paf
+	* src/classes/image.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		image::measure can png now
+
+2002-05-15  paf
+	* operators.txt:
+	* src/classes/date.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		^date::create[%H:%M[:%S]] added
+
+	* etc/parser3.charsets/windows-1251.cfg:
+		0x forgot, fixed
+
+	* operators.txt:
+	* src/classes/date.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/.htaccess:
+	* www/htdocs/auto.p:
+	* www/htdocs/index.html:
+		^date::create[%Y[-%m[-%d[ %H[:%M[:%S]]]]]]
+		[-%m now
+
+2002-05-14  paf
+	* etc/parser3.charsets/windows-1251.cfg:
+	* etc/parser3.charsets/windows-1251.cfg:
+		added 3 quotes
+
+2002-05-07  paf
+	* src/classes/classes.dsp:
+	* src/classes/classes.dsp:
+	* src/classes/gd/gd.dsp:
+	* src/classes/gd/gd.dsp:
+	* src/classes/op.C:
+	* src/classes/op.C:
+	* src/classes/smtp/smtp.dsp:
+	* src/classes/smtp/smtp.dsp:
+	* src/include/pa_globals.h:
+	* src/include/pa_globals.h:
+	* src/include/pa_request.h:
+	* src/include/pa_request.h:
+	* src/include/pa_table.h:
+	* src/include/pa_table.h:
+	* src/libltdl/libltdl.dsp:
+	* src/libltdl/libltdl.dsp:
+	* src/main/compile.tab.C:
+	* src/main/compile.tab.C:
+	* src/main/compile.y:
+	* src/main/compile.y:
+	* src/main/main.dsp:
+	* src/main/main.dsp:
+	* src/main/pa_globals.C:
+	* src/main/pa_globals.C:
+	* src/main/pa_request.C:
 	* src/main/pa_request.C:
 	* src/main/pa_table.C:
+	* src/main/pa_table.C:
+	* src/pcre/pcre.dsp:
 	* src/pcre/pcre.dsp:
 	* src/targets/isapi/pa_pool.C:
+	* src/targets/isapi/pa_pool.C:
+	* src/targets/isapi/parser3isapi.C:
 	* src/targets/isapi/parser3isapi.C:
 	* src/targets/isapi/parser3isapi.dsp:
+	* src/targets/isapi/parser3isapi.dsp:
+	* src/targets/isapi/pool_storage.h:
 	* src/targets/isapi/pool_storage.h:
 	* src/types/types.dsp:
+	* src/types/types.dsp:
+	* www/htdocs/parser-status.html:
 	* www/htdocs/parser-status.html:
 		Table name2number field now &.
 		main_method_name now on Request pool rather on global_pool [Junction+VJunction created on same pool as name = were created on global pool, causing mem leaks]
@@ -7200,7 +7273,7 @@
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.6 2002/05/07 07:39:17 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.7 2002/06/03 15:02:39 paf Exp $";
 
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
@@ -7243,7 +7316,7 @@
 	* src/main/untaint.C:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
-		static char *RCSId="$Id: ChangeLog,v 1.6 2002/05/07 07:39:17 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.7 2002/06/03 15:02:39 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C:
@@ -13297,7 +13370,7 @@
 	* src/targets/parser.C:
 	* src/targets/parser.dsp:
 	* src/targets/parser.dsp:
-		$Id: ChangeLog,v 1.6 2002/05/07 07:39:17 paf Exp $ check
+		$Id: ChangeLog,v 1.7 2002/06/03 15:02:39 paf Exp $ check
 
 	* src/targets/parser.C:
 		$id$ check
