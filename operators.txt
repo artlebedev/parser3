@@ -630,6 +630,9 @@ math
         количество дней с epoch [1 января 1970 (UTC)], дробное
     !всё происходит в localtime, 
     !временная зона задаётся вне parser средствами OS
+    $date:UTC-offset  сколько дней надо прибавить,чтобы попасть в local время
+    $date:TZ  наш часовой пояс, дробное, в часах (где-то есть с точностью до получаса)
+    $date:isdst 1/0  действует ли сейчас летнее время
     !^date::now[]
     !^date::now(смещение в днях) выдаёт сейчас+смещение
     !^date::create(дней с epoch) // старое имя set
@@ -638,7 +641,7 @@ math
         для удобного создания по значению из базы
         формат1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
         формат2: %H:%M[:%S]
-    !$date.year month day  hour minute second  weekday todo:yearday
+    !$date.year month day  hour minute second  weekday todo:yearday todo:isdst
         read-only
     !^date.roll[year|month|day](+-смещение) сдвигает дату
     !^date.sql-string[] %Y-%m-%d %H:%M:%S

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/08/07 13:54:23 $";
+static const char* IDENT_STRING_C="$Date: 2002/08/08 08:43:38 $";
 
 #include "pcre.h"
 
@@ -142,15 +142,6 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 	append_here++;
 
 	return *this;
-}
-
-char String::first_char() const {
-	if(is_empty())
-		throw Exception(0,
-			this,
-			"getting first char of empty string");
-
-	return *head.chunk.rows[0].item.ptr;
 }
 
 uint String::hash_code() const {

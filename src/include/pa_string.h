@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char* IDENT_STRING_H="$Date: 2002/08/01 11:41:16 $";
+static const char* IDENT_STRING_H="$Date: 2002/08/08 08:43:38 $";
 
 #include "pa_pool.h"
 #include "pa_types.h"
@@ -178,8 +178,10 @@ public:
 	/// simple hash code of string. used by Hash
 	uint hash_code() const;
 
-	/// extracts first char of a string
-	char first_char() const;
+	/// extracts first char of a string, if any
+	char first_char() const {
+		return is_empty()?*head.chunk.rows[0].item.ptr:0;
+	}
 
 	/// extracts [start, finish) piece of string
 	String& mid(size_t start, size_t finish) const;
