@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.49 2001/05/17 19:33:33 parser Exp $
+	$Id: untaint.C,v 1.50 2001/05/19 19:10:20 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -257,7 +257,8 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				break;
 			case UL_USER_HTML: {
 				// tainted, untaint language: html-typo
-				char *html_for_typo=(char *)malloc(size()*2/* '\n' -> '\' 'n' */+1);
+				char *html_for_typo=
+					(char *)malloc(row->item.size*2/* '\n' -> '\' 'n' */+1);
 				// note:
 				//   there still is a possibility that user 
 				//   would not replace \n as she supposed to
@@ -310,9 +311,9 @@ char *String::store_to(char *dest, Untaint_lang lang,
 								&b, 
 								"is %g times longer then '%s', "
 								"while maximum, handled by Parser, is %d", 
-								((double)b.size())/a.size(), 
-								a.cstr(), 
-								UNTAINT_TIMES_BIGGER);
+									((double)b.size())/a.size(), 
+									a.cstr(), 
+									UNTAINT_TIMES_BIGGER);
 						}
 						
 						// skip 'a' in 'src'

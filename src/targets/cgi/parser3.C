@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.83 2001/05/16 18:13:17 parser Exp $
+	$Id: parser3.C,v 1.84 2001/05/19 19:10:20 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -20,6 +20,9 @@
 #include "pa_request.h"
 #include "pa_socks.h"
 #include "pa_version.h"
+
+//#define DEBUG_POOL_MALLOC
+
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
@@ -251,7 +254,7 @@ int main(int argc, char *argv[]) {
 		// prepare to process request
 		Request request(pool,
 			request_info,
-			cgi ? String::UL_USER_HTML : String::UL_AS_IS
+			true ||cgi ? String::UL_USER_HTML : String::UL_AS_IS
 			);
 		
 		// some root-controlled location
@@ -277,10 +280,11 @@ int main(int argc, char *argv[]) {
 
 		//
 		done_socks();
-/*
+
+#ifdef DEBUG_POOL_MALLOC
 		extern void log_pool_stats(Pool& pool);
 		log_pool_stats(pool);
-*/
+#endif
 
 		// must be last in PTRY{}PCATCH
 #ifdef WIN32

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.12 2001/05/19 15:45:10 parser Exp $
+	$Id: pa_pool.C,v 1.13 2001/05/19 19:10:20 parser Exp $
 */
 
 #include <stdlib.h>
@@ -14,7 +14,6 @@
 
 #include "pa_sapi.h"
 #include "pa_common.h"
-//#include <typeinfo.h>
 #include "pa_value.h"
 
 #include "pa_array.h"
@@ -161,8 +160,11 @@ ST(WWrapper);
 void *Pool::real_malloc(size_t size/*, int place*/) {
 #ifdef DEBUG_POOL_MALLOC
 	int index=min(MALLOC_STAT_MAXSIZE-1, size);
+	int place=0;
 	malloc_times[place][index]++;
 	malloc_places[place]++;
+	if(size==28123)
+		__asm int 3;
 #endif
 	return ::malloc(size);
 }

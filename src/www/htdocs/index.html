@@ -1,4 +1,13 @@
 @main[]
+<form method=post>
+<input type=hidden name=a value=123>
+<table border=1 width=250><tr><td>$form:name</td></tr></table>
+<textarea name=name rows=5 cols=40>^untaint[html]{^default[$form:name;Пробный текст: А.Ф._Петросян <<Жизнь в Аду>>
+нажми Submit]}</textarea><BR>
+<input type=submit>
+</form>
+<hr>
+
 #^main[]
 #^use[$form:file]
 
@@ -98,12 +107,6 @@ $list[^table:dir[$dir]]
 <HR>
 ^if(in "/otherdeeper"){y;n}
 <HR>
-^$form:проверка_имя=$form:проверка_имя<BR>
-<form method=post action=index.html>
-<input name=проверка_имя value=проверка_значение>
-<input type=submit>
-</form>
-<HR>
 
 ^^table:dir[/]:<BR>
 $d[^table:dir[/]]
@@ -153,3 +156,5 @@ ${comment}.
 #}
 #}
 
+@default[test;def]
+$result[^if(^test.length[]){$test}{$def}]
