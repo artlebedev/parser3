@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.188 2001/12/21 12:47:56 paf Exp $
+	$Id: pa_request.C,v 1.189 2001/12/21 12:50:18 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -228,8 +228,7 @@ gettimeofday(&mt[0],NULL);
 gettimeofday(&mt[1],NULL);
 #endif
 		// execute @main[]
-		const String *body_string=execute_virtual_method(
-			*main_class, *main_method_name);
+		const String *body_string=execute_virtual_method(*main_class, *main_method_name);
 		if(!body_string)
 			throw Exception(0,0,
 				0, 
