@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: untaint.C,v 1.92 2002/02/20 10:40:08 paf Exp $
+	$Id: untaint.C,v 1.93 2002/02/20 11:15:13 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -156,21 +156,45 @@ inline bool need_quote_http_header(const char *ptr, size_t size) {
 	algorithm:
 	if no language-change specified and src not yet appended to some other string[last_chunk!=0]
 		shrinking dest last_chunk[preparing it for linking],
-		shrinking src last_chunk[preparing it to be linked, consequent dest.appends would go there],
+		///shrinking src last_chunk[preparing it to be linked, consequent dest.appends would go there],
 		linking[dest.last_chunk = src.head]
 	if some language-change specified or src already appended to some other string[last_chunk==0]
 		cloning pieces.
 */
 String& String::append(const String& src, uchar lang, bool forced) {
+	// should never, but just in case...
+	if(src.is_empty())
+		return *this;
+
 	if(lang==UL_PASS_APPENDED && src.last_chunk) {
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
 		string_string_shortcut_economy+=src.used_rows()*sizeof(String::Chunk::Row);
 #endif
+/*
+		// using fact: 
+		// src.head.count shrinks-only, 
+		// so can't be less than this.head.count, 
+		// which means that we know that src.head would fit into this.head
+		if(is_empty()) { // our head is empty
+			// "your head is my head"
+			memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*(head.count=src.head.count));
+			// "your body is my body"
+			head.rows[head.count].link=src.head.rows[src.head.count].link;
+		} else { // our head contains something
+			// "chopping my tail-reserve"
+			last_chunk->count=append_here-last_chunk->rows;
+			// "you is my tail"
+			last_chunk->rows[last_chunk->count].link=src.head.rows;
+		}
+		// "your append_here is mine now"
+		append_here=src.append_here;
+		// "your last_chunk is mine now"
+		last_chunk=src.last_chunk;
 
-//		if(!head.rows[head.count].link && 
-
-		src.last_chunk=0; // stop growing
-		//return;
+*/
+		// stop-growing mark
+		src.last_chunk=0;
+//		return;
 	}
 
 	// manually unrolled code to avoid do{if(const)} constructs

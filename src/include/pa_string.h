@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.126 2002/02/20 10:40:07 paf Exp $
+	$Id: pa_string.h,v 1.127 2002/02/20 11:15:13 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -253,11 +253,6 @@ public: // debug private:
 	/// next append would write to this record
 	Chunk::Row *append_here;
 	
-	/** the address of place where lies address 
-		of the link to the next chunk to allocate
-	*/
-	Chunk::Row *link_row;
-
 private:
 	/// last chunk
 	mutable Chunk *last_chunk;
@@ -267,7 +262,7 @@ public: //debug
 private:
 
 	bool chunk_is_full() {
-		return append_here == link_row;
+		return append_here == last_chunk->rows+last_chunk->count;
 	}
 	//uint used_rows() const;
 	void expand();

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.140 2002/02/20 10:40:08 paf Exp $
+	$Id: pa_string.C,v 1.141 2002/02/20 11:15:13 paf Exp $
 */
 
 #include "pcre.h"
@@ -33,7 +33,6 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	head.count=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
 	initial_head_link=0;
-	link_row=&head.rows[head.count];
 
 	if(src)
 		if(tainted)
@@ -41,63 +40,6 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 		else
 			APPEND_CLEAN(src, src_size, 0, 0);
 }
-/*
-String::String(const String& src) :	
-	Pooled(src.pool()) {
-	head.count=CR_PREALLOCATED_COUNT;
-	
-	uint src_used_rows=src.used_rows();
-	if(src_used_rows<=head.count) {
-		// all new rows fit size_to preallocated area
-		last_chunk=&head;
-		uint curr_chunk_rows=head.count;
-		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
-		append_here=&head.rows[src_used_rows];
-		link_row=&head.rows[curr_chunk_rows];
-	} else {
-		// warning: 
-		//   heavily relies on the fact 
-		//   "preallocated area is the same for all strings"
-		//
-		// info:
-		//   allocating only enough mem to fit src string rows
-		//   next append would allocate a new chunk
-		//
-		// new rows don't fit size_to preallocated area: splitting size_to two chunks
-		// preallocated chunk src to constructing head
-		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*head.count);
-		// remaining rows size_to new_chunk
-		uint curr_chunk_rows=src_used_rows-head.count;
-		last_chunk=static_cast<Chunk *>(
-			malloc(sizeof(Chunk::count_type)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *), 9));
-		last_chunk->count=curr_chunk_rows;
-		append_here=link_row=&last_chunk->rows[last_chunk->count];
-
-		Chunk *old_chunk=src.head.rows[src.head.count].link; 
-		Chunk::Row *new_rows=last_chunk->rows;
-		uint rows_left_to_copy=last_chunk->count;
-		while(true) {
-			Chunk::count_type old_count=old_chunk->count;
-			Chunk *next_chunk=old_chunk->rows[old_count].link;
-			if(next_chunk) {
-				// not last source chunk
-				// taking it all
-				memcpy(new_rows, old_chunk->rows, sizeof(Chunk::Row)*old_count);
-				new_rows+=old_count;
-				rows_left_to_copy-=old_count;
-
-				old_chunk=next_chunk;
-			} else {
-				// the last source chunk
-				// taking only those rows of chunk that _left_to_copy
-				memcpy(new_rows, old_chunk->rows, sizeof(Chunk::Row)*rows_left_to_copy);
-				break;
-			}
-		}
-	}
-	link_row->link=0;
-}
-*/
 
 String::String(const String& src) :	
 	Pooled(src.pool()) {
@@ -105,7 +47,6 @@ String::String(const String& src) :
 	head.count=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
 	initial_head_link=0;
-	link_row=&head.rows[head.count];
 
 	append(src, UL_UNSPECIFIED);
 }
@@ -133,13 +74,13 @@ void String::expand() {
 	if(new_chunk_count>max_integral(Chunk::count_type))
 		new_chunk_count=max_integral(Chunk::count_type);
 
-	last_chunk=static_cast<Chunk *>(
+	Chunk *new_chunk=static_cast<Chunk *>(
 		malloc(sizeof(Chunk::count_type)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *), 10));
-	last_chunk->count=new_chunk_count;
-	link_row->link=last_chunk;
+	new_chunk->rows[new_chunk->count=new_chunk_count].link=0;
+	last_chunk->rows[last_chunk->count].link=new_chunk;
+	
+	last_chunk=new_chunk;
 	append_here=last_chunk->rows;
-	link_row=&last_chunk->rows[last_chunk->count];
-	link_row->link=0;
 }
 
 String& String::real_append(STRING_APPEND_PARAMS) {
