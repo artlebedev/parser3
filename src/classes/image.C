@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.1 2001/04/10 13:22:55 paf Exp $
+	$Id: image.C,v 1.2 2001/04/10 13:24:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -87,14 +87,6 @@ struct JPG_Frame {
 	char width[2];                 // image width
 	char numComponents;            // number of color components
 };
-// JFIF format markers
-#define SOI     0xD8
-#define EOI     0xD9
-#define APP0    0xE0
-#define SOF0    0xC0
-#define SOF2    0xC2
-#define COM     0xFE
-
 
 //
 
@@ -124,11 +116,18 @@ void measure_gif(Pool& pool, const String *origin_string,
 
 void measure_jpeg(Pool& pool, const String *origin_string, 
 			 Measure_reader& reader, int& width, int& height) {
+	// JFIF format markers
+	const unsigned char SOI=0xD8;
+	const unsigned char EOI=0xD9;
+	const unsigned char APP0=0xE0;
+	const unsigned char SOF0=0xC0;
+	const unsigned char SOF2=0xC2;
+	const unsigned char COM=0xFE;
+
 	unsigned char *screenD_buf;
 	unsigned char *h_buf;
 	
 	bool flag=false;
-	char Spec[]="JFIF";
 	
 	unsigned char *prefix;
 	const prefix_size=2;
@@ -160,7 +159,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 					break;
 				JFIF_Header& screenD=*reinterpret_cast<JFIF_Header *>(screenD_buf);
 				if((bytes_to_int(screenD.length[0], screenD.length[1]) < 16) ||
-					strcasecmp(screenD.identifier, Spec)) flag=false;
+					strcasecmp(screenD.identifier, "JFIF")) flag=false;
 			}
 			break;
 		case SOF0:
