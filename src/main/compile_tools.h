@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char* IDENT_COMPILE_TOOLS_H="$Date: 2002/09/13 14:11:44 $";
+static const char* IDENT_COMPILE_TOOLS_H="$Date: 2002/09/20 10:22:12 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -45,7 +45,7 @@ struct parse_control {
 	Pool *pool;
 	Request *request;
 	VStateless_class *cclass;
-#ifndef NO_CSTRING_ORIGIN
+#ifndef NO_STRING_ORIGIN
 	const char *source;
 	const char *file;
 #endif
