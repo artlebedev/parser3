@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.66 2001/03/07 10:45:49 paf Exp $
+  $Id: compile.y,v 1.67 2001/03/07 11:14:12 paf Exp $
 */
 
 %{
@@ -60,6 +60,10 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %token SEQ "eq"
 %token SNE "ne"
 
+%token DEF "def"
+%token IN "in"
+%token FEXISTS "-f"
+
 /* logical */
 %left "lt" "gt" "le" "ge"
 %left "eq" "ne"
@@ -67,6 +71,7 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %left "==" "!="
 %left "||"
 %left "&&"
+%left "def" "in" "-f"
 %left NOT     /* not: unary ! */
 
 /* bitwise */
@@ -407,7 +412,9 @@ expr:
 |	'-' expr %prec NEG { $$=$2;  O($$, OP_NEG) }
 |	'~' expr %prec INV { $$=$2;	 O($$, OP_INV) }
 |	'!' expr %prec NOT { $$=$2;  O($$, OP_NOT) }
-/*todo: def in fexists*/
+|	"def" expr %prec DEF { $$=$2;  O($$, OP_DEF) }
+|	"in" expr %prec IN { $$=$2;  O($$, OP_IN) }
+|	"-f" expr %prec FEXISTS { $$=$2;  O($$, OP_FEXISTS) }
 /* stack: a,b // stack: a@b */
 |	expr '-' expr {	$$=$1;  P($$, $3);  O($$, OP_SUB) }
 |	expr '+' expr { $$=$1;  P($$, $3);  O($$, OP_ADD) }
@@ -486,7 +493,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 	char *begin=PC->source;
 	char *end;
 	int begin_line=PC->line;
-	bool skip_analized_char=false;
+	int skip_analized=0;
 	while(true) {
 		c=*(end=(PC->source++));
 
@@ -623,20 +630,27 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			case '(':
 				lexical_brackets_nestage++;
 				RC;
-			case '+': case '-': case '*': case '/': case '%': 
+			case '-':
+				if(*PC->source=='f') { // -f
+					skip_analized=1;
+					result=FEXISTS;
+				} else
+					result=c;
+				goto break2;
+			case '+': case '*': case '/': case '%': 
 			case '~':
 			case ';':
 				RC;
 			case '&': case '|':  case '#':
 				if(*PC->source==c) { // && ||
 					result=c=='#'?LXOR:c=='&'?LAND:LOR;
-					skip_analized_char=true;
+					skip_analized=1;
 				} else
 					result=c;
 				goto break2;
 			case '<': case '>': case '=': case '!': 
 				if(*PC->source=='=') { // <= >= == !=
-					skip_analized_char=true;
+					skip_analized=1;
 					switch(c) {
 					case '<': result=NLE; break;
 					case '>': result=NGE; break;
@@ -655,15 +669,31 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 //					case '?': // ok [and bad cases, yacc would bark at them]
 					case 't': // lt gt [et nt]
 						result=c=='l'?SLT:c=='g'?SGT:BAD_STRING_COMPARISON_OPERATOR;
-						skip_analized_char=true;
+						skip_analized=1;
 						goto break2;
 					case 'e': // le ge ne [ee]
 						result=c=='l'?SLE:c=='g'?SGE:c=='n'?SNE:BAD_STRING_COMPARISON_OPERATOR;
-						skip_analized_char=true;
+						skip_analized=1;
 						goto break2;
 					case 'q': // eq [lq gq nq]
 						result=c=='e'?SEQ:BAD_STRING_COMPARISON_OPERATOR;
-						skip_analized_char=true;
+						skip_analized=1;
+						goto break2;
+					}
+				break;
+			case 'i':
+				if(end==begin) // right after whitespace
+					if(PC->source[0]=='n') { // in
+						skip_analized=1;
+						result=IN;
+						goto break2;
+					}
+				break;
+			case 'd':
+				if(end==begin) // right after whitespace
+					if(PC->source[0]=='e' && PC->source[1]=='f') { // def
+						skip_analized=2;
+						result=DEF;
 						goto break2;
 					}
 				break;
@@ -884,8 +914,8 @@ break2:
 		// make current result be pending for next call, return STRING for now
 		PC->pending_state=result;  result=STRING;
 	}
-	if(skip_analized_char) {
-		PC->source++;  PC->col++;
+	if(skip_analized) {
+		PC->source+=skip_analized;  PC->col+=skip_analized;
 	}
 	return result;
 }

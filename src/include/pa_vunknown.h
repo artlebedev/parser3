@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vunknown.h,v 1.3 2001/03/06 15:30:48 paf Exp $
+  $Id: pa_vunknown.h,v 1.4 2001/03/07 11:14:12 paf Exp $
 */
 
 #ifndef PA_VUNKNOWN_H
@@ -15,6 +15,9 @@ public: // Value
 
 	// unknown: ""
 	String *get_string() { return &empty; }
+	// unknown: false
+	bool get_defined() { return false; }
+	// unknown: false
 	bool get_bool() { return false; }
 
 public: // usage

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.18 2001/02/25 13:23:00 paf Exp $
+  $Id: pa_hash.h,v 1.19 2001/03/07 11:14:11 paf Exp $
 */
 
 /*
@@ -28,7 +28,7 @@ public:
 	Hash(Pool& apool) : Pooled(apool) { construct(apool, false); }
 
 	// useful generic hash function
-	static uint generic_code(uint aresult, const char *start, uint size);
+	static uint generic_code(uint aresult, const char *start, uint allocated);
 
 	// put a [value] under the [key], return existed or not
 	/*SYNCHRONIZED*/ bool put(const Key& key, Value *value);
@@ -51,13 +51,15 @@ public:
 	int get_int(const Key& key) { return reinterpret_cast<int>(get(key)); }
 	String *get_string(const Key& key) { return static_cast<String *>(get(key)); }
 
+	int size() { return used; }
+
 protected:
 
 	void construct(Pool& apool, bool athread_safe);
 
 private:
 
-	// expand when these %% of size exausted
+	// expand when these %% of allocated exausted
 	enum {
 		THRESHOLD_PERCENT=75
 	};
@@ -65,15 +67,15 @@ private:
 	// am I thread-safe?
 	bool thread_safe;
 
-	// the index of [size] in [sizes]
-	int size_index;
+	// the index of [allocated] in [allocates]
+	int allocates_index;
 
-	// possible [sizes]. prime numbers
-	static uint sizes[];
-	static int sizes_count;
+	// possible [allocates]. prime numbers
+	static uint allocates[];
+	static int allocates_count;
 
 	// number of allocated pairs
-	int size;
+	int allocated;
 
 	// helper: expanding when used == threshold
 	int threshold;
@@ -90,7 +92,7 @@ private:
 		Value *value;
 		Pair *link;
 		
-		void *operator new(size_t size, Pool& apool);
+		void *operator new(size_t allocated, Pool& apool);
 
 		Pair(uint acode, const Key& akey, Value *avalue, Pair *alink) :
 			code(acode),

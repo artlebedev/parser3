@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.39 2001/03/06 15:30:48 paf Exp $
+  $Id: pa_value.h,v 1.40 2001/03/07 11:14:11 paf Exp $
 */
 
 /*
@@ -86,6 +86,10 @@ public: // Value
 	virtual const char *type() const =0;
 	/*const*/ String& name() const { return *fname; }
 
+	// unknown: false
+	// others: true
+	virtual bool get_defined() { return true; }
+
 	// string: value
 	// unknown: ""
 	// double: value
@@ -101,7 +105,9 @@ public: // Value
 	// bool: value
 	// double: 0 or !0
 	// string: empty or not
-	// others: true // junction true == method defined. others 
+	// hash: size!=0
+	// TODO table: count!=0
+	// others: true
 	virtual bool get_bool() { return true; }
 
 	// junction: auto_calc,root,self,rcontext,wcontext, code

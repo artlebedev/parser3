@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vhash.h,v 1.3 2001/03/06 15:02:46 paf Exp $
+  $Id: pa_vhash.h,v 1.4 2001/03/07 11:14:11 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -23,6 +23,9 @@ public: // value
 	void put_element(const String& name, Value *value) { 
 		hash.put(name, value);
 	}
+
+	// hash: size!=0
+	bool get_bool() { return hash.size()!=0; }
 
 public: // usage
 

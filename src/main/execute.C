@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.61 2001/03/07 10:45:49 paf Exp $
+  $Id: execute.C,v 1.62 2001/03/07 11:14:12 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -297,6 +297,7 @@ void Request::execute(const Array& ops) {
 				rcontext=POP();  
 				root=POP();  
 				self=static_cast<VAliased *>(POP());
+
 				PUSH(value);
 				fprintf(stderr, "<-returned");
 				break;
@@ -325,7 +326,27 @@ void Request::execute(const Array& ops) {
 				PUSH(value);
 				break;
 			}
-		//todo: def in fexists
+		case OP_DEF:
+			{
+				Value *operand=POP();
+				Value *value=NEW VBool(pool(), operand->get_defined());
+				PUSH(value);
+				break;
+			}
+		case OP_IN:
+			{
+				Value *operand=POP();
+				Value *value=NEW VBool(pool(), true/*TODO*/);
+				PUSH(value);
+				break;
+			}
+		case OP_FEXISTS:
+			{
+				Value *operand=POP();
+				Value *value=NEW VBool(pool(), true/*TODO*/);
+				PUSH(value);
+				break;
+			}
 
 		// expression ops: binary
 		case OP_SUB: 
@@ -537,6 +558,7 @@ Value *Request::get_element() {
 			rcontext=POP();  
 			root=POP();  
 			self=static_cast<VAliased *>(POP());
+
 			fprintf(stderr, "<-ja returned");
 		}
 	} else {
