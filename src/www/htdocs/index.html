@@ -1,8 +1,5 @@
-@USE
-t.p
-
 @main[]
-^eval(100/6)[%.2f]
+#^eval(100/6)[%.2f]
 $request:charset[windows-1251]
 $response:charset[windows-1251]
 #^tupper[]
@@ -78,7 +75,7 @@ $response:charset[windows-1251]
 #^exec[]
 #^fori[]
 #^tconnect[]
-#^xslt[]
+^xslt[]
 #^xml[]
 #^header[]
 <hr>
@@ -747,7 +744,7 @@ $file[^xdoc.file[
 ^file.save[text;out/save_file.html]
 #$response:body[^xdoc.file[	$.media-type[text/paf]  ]]
 <pre>^taint[html][^xdoc.string[
-#	$.method[html]
+	$.method[html]
 #	$.version[1.0]
 #	$.encoding[utf-8]
 #  	$.omit-xml-declaration[yes]

@@ -9,12 +9,13 @@
 	</xsl:template>
 
   <xsl:template match="people">
-     <z>
+     <html>
+     <head>z</head>
    		para1=<xsl:copy-of select="$param1"/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
     	<xsl:apply-templates/>
     	<hr/>
     	<xsl:call-template name="test"/>
-     </z>	
+     </html>	
   </xsl:template>
 
   <xsl:template match="name">
