@@ -6,15 +6,19 @@
 #^exec[]
 #^fori[]
 #^tconnect[]
-#^xslt[]
-^header[]
+^xslt[]
+#^header[]
+#^xpath[]
 OK
 
+#@xpath[]
+#^xdata[]
+#$people[^xdoc.select[*/man]]
+##^show1[]
+#^show-xnodes1[$people]<hr>
+
 @header[]
-$response:refresh[
-	$.value[0] 
-	$.url[http://design.ru]
-]
+$response:refresh[0^; url=http://design.ru?a=0]
 
 @ttablerem[]
 $table[^table::load[a.cfg]]
@@ -60,7 +64,7 @@ $a.status|$a.stderr<hr>
 @fori[][i]
 ^for[i](1;3){... =$i= ...}
 
-@xslt[]
+@xdata[]
 #$response:content-type[$.value[text/html] $.charset[windows-1251]]
 $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 #<!DOCTYPE people SYSTEM "D:\Y\parser3project\parser3\src\www\htdocs\people.dtd">
@@ -69,11 +73,16 @@ $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?>
 	<man id="1" имя="word слово">
 		<name>P&#171^;AF	B</name>
 	</man>
-	<man id="2">
-		<name>ПИФ</name>
-	</man>
+	^for[i](2;20){
+	   	<man id="$i">
+   			<name>ПИФ$i</name>
+	   	</man>
+	}
 </people>
 }]
+
+@xslt[]
+^xdata[]
 
 ^show-xdoc2[$xdoc]<hr>
 #^show-xnode1[$xdoc]<hr>
@@ -112,7 +121,7 @@ by id:
 	    $pairs[$x.attributes]
 	    ^if(def $pairs){
 	    	$names[^pairs._keys[]]
-	    	^names.menu{$names.key=$pairs.[$names.key].nodeValue }
+	    	^names.menu{ $names.key="$pairs.[$names.key].nodeValue"}
 	    }
 	    &gt^;
     }{

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.40 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_hash.C,v 1.41 2001/10/05 08:20:26 parser Exp $
 */
 
 /*
@@ -34,7 +34,7 @@ int Hash::allocates_count=
 void Hash::construct_new() {
 	allocated=allocates[allocates_index=0];
 	threshold=allocated*THRESHOLD_PERCENT/100;
-	used=0;
+	count=used=0;
 	refs=static_cast<Pair **>(calloc(sizeof(Pair *)*allocated));
 }
 
@@ -43,6 +43,7 @@ void Hash::construct_copy(const Hash& source) {
 	allocated=source.allocated;
 	threshold=source.threshold;
 	used=source.used;
+	count=source.count;
 	size_t size=sizeof(Pair *)*allocated;
 	refs=static_cast<Pair **>(malloc(size));  memcpy(refs, source.refs, size);
 }
@@ -104,6 +105,7 @@ bool Hash::put(const Key& key, Val *value) {
 	if(!*ref) // root cell were used?
 		used++; // not, we'll use it and record the fact
 	*ref=NEW Pair(code, key, value, *ref);
+	count++;
 	return false;
 }
 
@@ -145,9 +147,10 @@ bool Hash::put_dont_replace(const Key& key, Val *value) {
 		}
 
 	// proper pair not found -- create&link_in new pair
-	*ref=NEW Pair(code, key, value, *ref);
 	if(!*ref) // root cell were used?
 		used++; // not, we'll use it and record the fact
+	*ref=NEW Pair(code, key, value, *ref);
+	count++;
 	return false;
 }
 
@@ -178,5 +181,5 @@ void* Hash::first_that(First_that_func func, void *info) const {
 
 void Hash::clear() {
 	memset(refs, 0, sizeof(*refs)*allocated);
-	used=0;
+	count=used=0;	
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.43 2001/09/07 11:05:02 parser Exp $
+	$Id: pa_hash.h,v 1.44 2001/10/05 08:20:26 parser Exp $
 */
 
 #ifndef PA_HASH_H
@@ -79,7 +79,7 @@ public:
 	//@}
 
 	/// number of elements in hash
-	int size() const { return used; }
+	int size() const { return count; }
 
 	/// iterate over all not zero elements
 	void for_each(For_each_func func, void *info=0) const;
@@ -117,6 +117,9 @@ private:
 
 	/// used pairs
 	int used;
+
+	/// stored pairs total (including those by links)
+	int count;
 
 	/// pair storage
 	class Pair {
