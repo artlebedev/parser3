@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.24 2001/03/09 04:47:27 paf Exp $
+  $Id: pa_wcontext.h,v 1.25 2001/03/10 11:03:48 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -9,7 +9,10 @@
 #include "pa_vstring.h"
 #include "pa_vhash.h"
 
+class Request;
+
 class WContext : public Value {
+	friend Request;
 public: // Value
 
 	// all: for error reporting after fail(), etc
@@ -25,7 +28,7 @@ public: // Value
 public: // WContext
 
 	// appends a fstring to result
-	virtual void write(String& astring);
+	virtual void write(String& astring, String::Untaint_lang lang);
 
 	// if value is VString writes fstring,
 	// else writes Value; raises an error if already

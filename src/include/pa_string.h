@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.26 2001/03/07 09:29:53 paf Exp $
+  $Id: pa_string.h,v 1.27 2001/03/10 11:03:48 paf Exp $
 */
 
 /*
@@ -28,11 +28,13 @@
 #include "pa_types.h"
 
 #ifndef NO_STRING_ORIGIN
-#	define STRING_APPEND_PARAMS const char *src, size_t size, char *file, uint line
-#	define APPEND(src, size, file, line) real_append(src, size, file, line)
+#	define STRING_APPEND_PARAMS const char *src, size_t size, bool tainted, char *file, uint line
+#	define APPEND(src, size, file, line) real_append(src, size, false, file, line)
+#	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true, file, line)
 #else
-#	define STRING_APPEND_PARAMS const char *src, size_t size
-#	define APPEND(src, size, file, line) real_append(src, size)
+#	define STRING_APPEND_PARAMS const char *src, size_t size, bool tainted
+#	define APPEND(src, size, file, line) real_append(src, size, false)
+#	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true)
 #endif
 #define	APPEND_CONST(src) APPEND(src, 0, 0, 0)
 
@@ -41,6 +43,19 @@ public:
 	enum {
 		CR_PREALLOCATED_COUNT=5,
 		CR_GROW_PERCENT=60
+	};
+
+	enum Untaint_lang {
+		NO, // clean
+		YES,  // tainted, untaint language as assigned later 
+		// untaint languages. assigned by ^untaint[lang]{...}
+		APPENDED, // leave langage build into string being appended
+		AS_IS,
+		SQL,
+		JS,
+		TABLE,
+		HTML,
+		HTML_TYPO
 	};
 
 public:
@@ -64,7 +79,7 @@ public:
 	bool operator != (const String& src) const { return cmp(src)!=0; }
 
 	bool operator == (char* src) const;
-	String& operator += (const String& src);
+	String& append(const String& src, Untaint_lang lang);
 
 	uint hash_code() const;
 
@@ -76,11 +91,14 @@ private:
 		// the number of rows in chunk
 		int count;
 		union Row {
-			// chunk item
-			struct {
-				const char *ptr;  // pointer to the start of string fragment
-				size_t size;  // length of the fragment
-				Origin origin;  // origin of this fragment
+			// fragment
+			struct { 
+				const char *ptr;  // pointer to the start
+				size_t size;  // length
+				Untaint_lang lang; // untaint flag, later untaint language
+#ifndef NO_STRING_ORIGIN
+				Origin origin;  // origin
+#endif
 			} item;
 			Chunk *link;  // link to the next chunk in chain
 		} rows[CR_PREALLOCATED_COUNT];
@@ -112,6 +130,7 @@ private:
 		return append_here == link_row;
 	}
 	void expand();
+	void set_lang(Chunk::Row *row, Untaint_lang lang, size_t size);
 
 private: //disabled
 

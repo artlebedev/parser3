@@ -1,5 +1,5 @@
 /*
-$Id: root.C,v 1.6 2001/03/09 08:19:46 paf Exp $
+$Id: root.C,v 1.7 2001/03/10 11:03:47 paf Exp $
 */
 
 #include "pa_request.h"
@@ -18,8 +18,7 @@ static void _if(Request& r, Array *params) {
 	}
 }
 
-void construct_root_class(Request& request) {
-	Pool& pool=request.pool();
+void initialize_root_class(Pool& pool, VClass& vclass) {
 	String& IF_NAME=*new(pool) String(pool);
 	IF_NAME.APPEND_CONST("if");
 
@@ -30,5 +29,5 @@ void construct_root_class(Request& request) {
 		0/*parser_code*/, _if
 	);
 
-	request.root_class.add_method(IF_NAME, IF_METHOD);
+	vclass.add_method(IF_NAME, IF_METHOD);
 }

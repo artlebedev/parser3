@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.47 2001/03/09 08:19:50 paf Exp $
+$Id: core.C,v 1.48 2001/03/10 11:03:49 paf Exp $
 */
 
 #include "pa_request.h"
@@ -8,15 +8,16 @@ $Id: core.C,v 1.47 2001/03/09 08:19:50 paf Exp $
 #include "pa_vclass.h"
 
 #include <stdio.h>
+#include "classes/_root.h"
 #include "classes/_string.h"
 #include "classes/_double.h"
 #include "classes/_int.h"
 
 void core() {
 	Pool pool;
-	initialize_string_class(pool);
-	initialize_double_class(pool);
-	initialize_int_class(pool);
+	initialize_string_class(pool, *(string_class=new(pool) VClass(pool)));
+	initialize_double_class(pool, *(double_class=new(pool) VClass(pool)));
+	initialize_int_class(pool, *(int_class=new(pool) VClass(pool)));
 	Request request(pool);
 	request.core();
 }
@@ -25,15 +26,12 @@ Request::Request(Pool& apool) : Pooled(apool),
 	stack(apool),
 	root_class(apool),
 	fclasses(apool),
-	fclasses_array(apool)
+	fclasses_array(apool),
+	lang(String::Untaint_lang::HTML_TYPO)
 {
 	// construct_root_class
-	void construct_root_class(Request& request); // classes/root
-	construct_root_class(*this);
+	initialize_root_class(pool(), root_class);
 
-	// TODO: construct other classes, 
-	// для встроенных какая-то табличка
-	// для внешних - конфиг с @CLASSES файлы с классами/ворохами операторов
 
 	// adding root superclass, 
 	//   parent of all classes, 

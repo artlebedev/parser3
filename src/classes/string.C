@@ -1,5 +1,5 @@
 /*
-$Id: string.C,v 1.1 2001/03/09 08:19:46 paf Exp $
+$Id: string.C,v 1.2 2001/03/10 11:03:47 paf Exp $
 */
 
 #include "pa_request.h"
@@ -31,9 +31,7 @@ static void _double(Request& r, Array *) {
 	r.wcontext->write(value);
 }
 
-void initialize_string_class(Pool& pool) {
-	string_class=new(pool) VClass(pool);
-
+void initialize_string_class(Pool& pool, VClass& vclass) {
 	// ^string.length[]
 	String& LENGTH_NAME=*new(pool) String(pool);
 	LENGTH_NAME.APPEND_CONST("length");
@@ -44,7 +42,7 @@ void initialize_string_class(Pool& pool) {
 		0/*params_names*/, 0/*locals_names*/,
 		0/*parser_code*/, _length
 	);
-	string_class->add_method(LENGTH_NAME, LENGTH_METHOD);
+	vclass.add_method(LENGTH_NAME, LENGTH_METHOD);
 
 	// ^string.int[]
 	String& INT_NAME=*new(pool) String(pool);
@@ -56,7 +54,7 @@ void initialize_string_class(Pool& pool) {
 		0/*params_names*/, 0/*locals_names*/,
 		0/*parser_code*/, _int
 	);
-	string_class->add_method(INT_NAME, INT_METHOD);
+	vclass.add_method(INT_NAME, INT_METHOD);
 
 	// ^string.double[]
 	String& DOUBLE_NAME=*new(pool) String(pool);
@@ -68,6 +66,6 @@ void initialize_string_class(Pool& pool) {
 		0/*params_names*/, 0/*locals_names*/,
 		0/*parser_code*/, _double
 	);
-	string_class->add_method(DOUBLE_NAME, DOUBLE_METHOD);
-}
+	vclass.add_method(DOUBLE_NAME, DOUBLE_METHOD);
+}	
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.33 2001/03/07 10:35:41 paf Exp $
+  $Id: pa_string.C,v 1.34 2001/03/10 11:03:49 paf Exp $
 */
 
 #include <string.h>
@@ -90,13 +90,14 @@ String::String(const String& src) :
 	fsize=src.fsize;
 }
 
-String& String::operator += (const String& src) {
+String& String::append(const String& src, Untaint_lang lang) {
 	int src_used_rows=src.used_rows();
 	int dst_free_rows=link_row-append_here;
 	
 	if(src_used_rows<=dst_free_rows) {
 		// all new rows fit into last chunk
 		memcpy(append_here, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
+		set_lang(append_here, lang, src_used_rows);
 		append_here+=src_used_rows;
 	} else {
 		// not all new rows fit into last chunk: shrinking it to used part,
@@ -121,6 +122,7 @@ String& String::operator += (const String& src) {
 				// not last source chunk
 				// taking it all
 				memcpy(new_rows, old_chunk->rows, sizeof(Chunk::Row)*old_count);
+				set_lang(new_rows, lang, old_count);
 				new_rows+=old_count;
 				rows_left_to_copy-=old_count;
 
@@ -129,6 +131,7 @@ String& String::operator += (const String& src) {
 				// the last source chunk
 				// taking only those rows of chunk that _left_to_copy
 				memcpy(new_rows, old_chunk->rows, sizeof(Chunk::Row)*rows_left_to_copy);
+				set_lang(new_rows, lang, rows_left_to_copy);
 				break;
 			}
 		}
@@ -138,6 +141,16 @@ String& String::operator += (const String& src) {
 	fsize+=src.fsize;
 
 	return *this;
+}
+void String::set_lang(Chunk::Row *row, Untaint_lang lang, size_t size) {
+	if(lang==APPENDED)
+		return;
+
+	while(size--) {
+		Untaint_lang& item_lang=(row++)->item.lang;
+		if(item_lang==YES) // tainted? need untaint language assignment
+			item_lang=lang;  // assign untaint language
+	}
 }
 
 String& String::real_append(STRING_APPEND_PARAMS) {
@@ -153,6 +166,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 
 	append_here->item.ptr=src;
 	fsize+=append_here->item.size=size;
+	append_here->item.lang=tainted?/*Untaint_lang::*/YES:Untaint_lang::NO;
 #ifndef NO_STRING_ORIGIN
 	append_here->item.origin.file=file;
 	append_here->item.origin.line=line;

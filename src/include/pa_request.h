@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.21 2001/03/09 04:47:27 paf Exp $
+  $Id: pa_request.h,v 1.22 2001/03/10 11:03:47 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -40,9 +40,21 @@ public:
 	// core request processing
 	void core();
 
-public:
+	void use(char *file, String *alias); // core.C
+	Value& autocalc(Value& value, bool make_string=true); // execute.C
 
-	VClass root_class; // default base
+	void write(String& astring) {
+		wcontext->write(astring, lang); // append string, assigning untaint language
+	}
+
+public:
+	
+	// default base
+	VClass root_class;
+
+	// contexts
+	Value *self, *root, *rcontext;
+	WContext *wcontext;
 
 private: // core data
 
@@ -53,17 +65,6 @@ private: // core data
 	// execution stack
 	Stack stack;
 
-public:
-
-	void use(char *file, String *alias); // core.C
-	Value& autocalc(Value& value, bool make_string=true); // execute.C
-
-public:
-
-	// contexts
-	Value *self, *root, *rcontext;
-	WContext *wcontext;
-	
 private: // core.C
 
 	char *execute_MAIN();
@@ -77,6 +78,14 @@ private: // execute.C
 	void execute(const Array& ops);
 
 	Value *get_element();
+
+private: // lang&raw 
+	
+	String::Untaint_lang lang;
+
+private: // lang&raw manipulation
+
+
 
 };
 

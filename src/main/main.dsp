@@ -300,6 +300,10 @@ SOURCE=..\classes\_int.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\classes\_root.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\_string.h
 # End Source File
 # Begin Source File

@@ -1,5 +1,5 @@
 /*
-$Id: int.C,v 1.1 2001/03/09 08:19:46 paf Exp $
+$Id: int.C,v 1.2 2001/03/10 11:03:46 paf Exp $
 */
 
 #include "pa_request.h"
@@ -34,9 +34,7 @@ static void _inc(Request& r, Array *params) {
 	vint->inc(increment);
 }
 
-void initialize_int_class(Pool& pool) {
-	int_class=new(pool) VClass(pool);
-
+void initialize_int_class(Pool& pool, VClass& vclass) {
 	// ^int.int[]
 	String& INT_NAME=*new(pool) String(pool);
 	INT_NAME.APPEND_CONST("int");
@@ -47,7 +45,7 @@ void initialize_int_class(Pool& pool) {
 		0/*params_names*/, 0/*locals_names*/,
 		0/*parser_code*/, _int
 	);
-	int_class->add_method(INT_NAME, INT_METHOD);
+	vclass.add_method(INT_NAME, INT_METHOD);
 
 	// ^int.int[]
 	String& DOUBLE_NAME=*new(pool) String(pool);
@@ -59,7 +57,7 @@ void initialize_int_class(Pool& pool) {
 		0/*params_names*/, 0/*locals_names*/,
 		0/*parser_code*/, _int
 	);
-	int_class->add_method(DOUBLE_NAME, DOUBLE_METHOD);
+	vclass.add_method(DOUBLE_NAME, DOUBLE_METHOD);
 
 	// ^int.inc[] ^int.inc[offset]
 	String& INC_NAME=*new(pool) String(pool);
@@ -71,6 +69,6 @@ void initialize_int_class(Pool& pool) {
 		0/*params_names*/, 0/*locals_names*/,
 		0/*parser_code*/, _inc
 	);
-	int_class->add_method(INC_NAME, INC_METHOD);
+	vclass.add_method(INC_NAME, INC_METHOD);
 }
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_types.h,v 1.6 2001/02/21 12:43:41 paf Exp $
+  $Id: pa_types.h,v 1.7 2001/03/10 11:03:48 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -24,11 +24,11 @@
 #undef uint
 typedef unsigned int uint;
 
-struct Origin {
 #ifndef NO_STRING_ORIGIN
+struct Origin {
 	char *file;  // macros file name | load file name | sql query text
 	uint line; // file line no | record no
-#endif
 };
+#endif
 
 #endif

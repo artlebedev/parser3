@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vcframe.h,v 1.4 2001/03/08 13:13:39 paf Exp $
+  $Id: pa_vcframe.h,v 1.5 2001/03/10 11:03:48 paf Exp $
 */
 
 #ifndef PA_VCFRAME_H
@@ -15,26 +15,24 @@ public: // Value
 	const char *type() const { return "code_frame"; }
 
 	// codeframe: accumulated string
-	String *get_string() { return string_wcontext.get_string(); };
+	String *get_string() { return &string; };
 
 public: // WContext
 
 	// codeframe: intercepting string writes 
-	void write(String& astring);
+	void write(String& astring, String::Untaint_lang lang);
 
 public: // usage
 
 	VCodeFrame(Pool& apool, WContext& awcontext) : 
 		WWrapper(apool, &awcontext, awcontext.constructing()),
 
-		string_wcontext(apool, 
-			0 /* value not used, only write(string) */,
-			false /* value not used, only write(string) */) {
+		string(apool) {
 	}
 
-public:
+private:
 	
-	WContext string_wcontext;
+	String string;
 
 };
 
