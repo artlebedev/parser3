@@ -61,7 +61,7 @@
 
     Installation sequence of these libraries to $D/gnome:
 
-    libxml2:  [ftp://ftp.gnome.org/pub/GNOME/stable/sources/libxml/libxml2-2.4.12.tar.gz]
+    libxml2:  [ftp://ftp.gnome.org/pub/GNOME/sources/libxml2/2.4/libxml2-2.4.12.tar.gz]
 
     cd libxml2-x.x.x
     patch -p0 < $D/parser3project/parser3/src/lib/patches/libxml_error_column_tab.patch
@@ -73,7 +73,7 @@
     ./configure --prefix=$D/gnome --without-zlib --without-iconv
     make install
 
-    libxslt:  [ftp://ftp.gnome.org/pub/GNOME/stable/sources/libxslt/libxslt-1.0.9.tar.gz]
+    libxslt:  [ftp://ftp.gnome.org/pub/GNOME/sources/libxslt/1.0/libxslt-1.0.9.tar.gz]
 
     cd libxslt-x.x.x
     patch -p0 < $D/parser3project/parser3/src/lib/patches/libxslt_html_output_no_charset_meta.patch
@@ -86,7 +86,7 @@
     ./configure --prefix=$D/gnome 
     make install
 
-    gdome2:  [http://phd.cs.unibo.it/gdome2/tarball/gdome2-0.7.0.tar.gz]
+    gdome2:  [http://gdome2.cs.unibo.it/tarball/gdome2-0.7.0.tar.gz]
 
     cd gdome2-x.x.x
     patch -p0 < $D/parser3project/parser3/src/lib/patches/libgdome_cpp_syntax1.patch
@@ -193,4 +193,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.29 2002/12/26 12:27:27 paf Exp $
+$Id: INSTALL,v 1.30 2003/01/09 17:06:45 paf Exp $
