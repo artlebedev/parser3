@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2003/01/15 10:34:51 $";
+static const char* IDENT_GLOBALS_C="$Date: 2003/01/16 09:07:20 $";
 
 #include "pa_config_includes.h"
 
@@ -81,6 +81,7 @@ String *hash_default_element_name;
 String *http_method_name;
 String *http_timeout_name;
 String *http_headers_name;
+String *http_any_status_name;
 String *file_status_name;
 
 
@@ -359,6 +360,7 @@ void pa_globals_init(Pool& pool) {
 	http_method_name=NEW String(pool, HTTP_METHOD_NAME);
 	http_timeout_name=NEW String(pool, HTTP_TIMEOUT_NAME);
 	http_headers_name=NEW String(pool, HTTP_HEADERS_NAME);
+	http_any_status_name=NEW String(pool, HTTP_ANY_STATUS_NAME);
 	file_status_name=NEW String(pool, FILE_STATUS_NAME);
 
 	

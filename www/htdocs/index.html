@@ -301,7 +301,7 @@ OK
 #^downloadtest[]
 #^cachebug[]
 #^quickregexatend[]
-^docsamplehttpfileload[]
+^httpfileloadtest2[]
 #^datecreatecolon[]
 #^exifdocsample[]
 #^rusagetv[]
@@ -488,8 +488,10 @@ $date[^date::create[2002:12:02]]
 #$date[^date::create[12:02]]
 ^date.sql-string[]
 
-@docsamplehttpfileload[]
-$file[^file::load[text;http://parser.ru/x]]
+@httpfileloadtest2[]
+$file[^file::load[text;http://parser.ru/x;
+	$.any-status(1)
+]]
 Программное обеспечение сервера: $file.SERVER
 <hr>
 HTTP status: $file.status<br>

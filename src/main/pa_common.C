@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/01/16 08:44:19 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/01/16 09:07:20 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -139,7 +139,8 @@ static bool set_addr(struct sockaddr_in *addr, const char* host, const short por
     return true;
 }
 
-static void http_read_response(String& response, int sock){
+static int http_read_response(String& response, int sock, bool fail_on_status_ne_200){
+	const String* status_code=0;
 	ssize_t EOLat=0;
 	while(true) {
 		char *buf=(char *)response.pool().malloc(MAX_STRING); 
@@ -147,7 +148,24 @@ static void http_read_response(String& response, int sock){
 		if(size<=0)
 			break;
 		response.APPEND_TAINTED(buf, size, "remote HTTP server response", 0); 
-    }
+		if(!status_code && (EOLat=response.pos("\r\n", 2))>=0) { // checking status in first response
+			const String& status_line=response.mid(0, (size_t)EOLat);
+			Array astatus(response.pool()); 
+			size_t pos_after_ref=0; status_line.split(astatus, &pos_after_ref, " ", 1); 
+			status_code=astatus.get_string(1); 
+
+			if(fail_on_status_ne_200 && *status_code!="200")
+				throw Exception("http.status",
+					status_code,
+					"invalid HTTP response status");
+		}
+	}
+	if(status_code)
+		return status_code->as_int();
+	else
+		throw Exception("http.response",
+			0,
+			"bad response from host - no status found (size=%lu)", response.size()); 
 }
 
 /* ********************** request *************************** */
@@ -163,11 +181,12 @@ static void timeout_handler(int sig){
 }
 #endif
 
-static void http_request(String& response,
+static int http_request(String& response,
 							const String *origin_string, 
 							const char* host, int port, 
 							const char* request, 
-							int timeout){
+							int timeout,
+							bool fail_on_status_ne_200){
 	if(!host)
 		throw Exception("http.host", 
 			origin_string, 
@@ -178,6 +197,7 @@ static void http_request(String& response,
 #endif
 	int sock=-1;
 	try {
+		int result;
 #ifdef WE_CAN_USE_ALARM
 		if(sigsetjmp(timeout_env, 1))
 			throw Exception("http.timeout", 
@@ -207,12 +227,13 @@ static void http_request(String& response,
 					origin_string, 
 					"error sending request: %s (%d)", strerror(errno), errno); 
 
-			http_read_response(response, sock); 
-			if(sock>=0) 
-				closesocket(sock); 
+			result=http_read_response(response, sock, fail_on_status_ne_200); 
+			closesocket(sock); 
 #ifdef WE_CAN_USE_ALARM
+			alarm(0); 
 		}
 #endif
+		return result;
 	} catch(...) {
 		if(sock>=0) 
 			closesocket(sock); 
@@ -249,6 +270,7 @@ static void file_read_http(Pool& pool, const String& file_spec,
 	int port;
 	const char* method="GET"; 
 	int timeout=2;
+	bool fail_on_status_ne_200=true;
 	Value *vheaders=0;
 
 	String connect_string(pool);
@@ -282,6 +304,11 @@ static void file_read_http(Pool& pool, const String& file_spec,
 		if(vheaders=static_cast<Value *>(options->get(*http_headers_name))) {
 			valid_options++;
 		}
+		if(Value *vany_status=static_cast<Value *>(options->get(*http_any_status_name))) {
+			valid_options++;
+			fail_on_status_ne_200=!vany_status->as_bool(); 
+		}
+
 		if(valid_options!=options->size())
 			throw Exception("parser.runtime",
 				0,
@@ -308,8 +335,9 @@ static void file_read_http(Pool& pool, const String& file_spec,
 	
 	//sending request
 	String response(pool); 
-	http_request(response,
-		&connect_string, host, port, request.cstr(String::UL_UNSPECIFIED), timeout); 
+	int status_code=http_request(response,
+		&connect_string, host, port, request.cstr(String::UL_UNSPECIFIED), 
+		timeout, fail_on_status_ne_200); 
 	
 	//processing results	
 	int pos=response.pos("\r\n\r\n", 4); 
@@ -326,13 +354,6 @@ static void file_read_http(Pool& pool, const String& file_spec,
 	size_t pos_after_ref=0;
 	header_block.split(aheaders, &pos_after_ref, "\r\n", 2); 
 	
-	//processing status code
-	const String *status_line=aheaders.get_string(0); 
-	Array astatus(pool); 
-	pos_after_ref=0;
-	status_line->split(astatus, &pos_after_ref, " ", 1); 
-	const String *status_code=astatus.get_string(1); 
-
 	//processing headers
 	for(int i=1;i<aheaders.size();i++) {
 		if(const String *line=aheaders.get_string(i)) {
@@ -354,7 +375,7 @@ static void file_read_http(Pool& pool, const String& file_spec,
 	// output response
 	data=body.cstr(); data_size=body.size();
 	if(out_fields) {
-		headers.put(*file_status_name, new(pool) VString(*status_code)); 
+		headers.put(*file_status_name, new(pool) VInt(pool, status_code)); 
 		*out_fields=&headers;
 	}
 }
