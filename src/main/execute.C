@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.97 2001/03/12 21:18:01 paf Exp $
+	$Id: execute.C,v 1.98 2001/03/12 22:21:02 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -128,6 +128,9 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_GET_CLASS:
 			{
+				// maybe the do ^class:method[] call, remember the fact
+				wcontext->set_somebody_entered_some_class();
+
 				const String& name=POP_NAME();
 				VClass *vclass=static_cast<VClass *>(classes().get(name));
 				if(!vclass) 
@@ -308,8 +311,10 @@ void Request::execute(const Array& ops) {
 				if(read_class && read_class->is_or_derived_from(*called_class)) // yes
 					self=rcontext; // class dynamic call
 				else // no, not me or relative of mine (total stranger)
-					if(wcontext->constructing()) {  // constructing?
-						// yes, constructor call: $some[^class:method[..]]
+					if(
+						wcontext->constructing() && // constructing?
+						wcontext->somebody_entered_some_class()) { // ^class:method[..]?
+						// yes, this is a constructor call
 						if(called_class->name()==TABLE_CLASS_NAME)
 							self=NEW VTable(pool());
 						else

@@ -3,13 +3,14 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.11 2001/03/12 21:17:59 paf Exp $
+	$Id: int.C,v 1.12 2001/03/12 22:21:01 paf Exp $
 */
 
 #include "pa_request.h"
 #include "_int.h"
 #include "pa_vdouble.h"
 #include "pa_vint.h"
+#include "_string.h"
 
 // global var
 
@@ -51,4 +52,7 @@ void initialize_int_class(Pool& pool, VClass& vclass) {
 	// ^int.inc[] 
 	// ^int.inc[offset]
 	vclass.add_native_method("inc", _inc, 0, 1);
+
+	// ^int.format[]
+	vclass.add_native_method("format", _string_format, 1, 1);
 }

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.8 2001/03/12 21:18:00 paf Exp $
+	$Id: string.C,v 1.9 2001/03/12 22:21:01 paf Exp $
 */
 
 #include "pa_request.h"
@@ -35,6 +35,21 @@ static void _double(Request& r, const String&, Array *) {
 	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
 }
 
+void _string_format(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	Value& fmt=*static_cast<Value *>(params->get(0));
+	// forcing ^format[this param type]
+	r.fail_if_junction_(true, fmt, 
+		method_name, "fmt must not be junction");
+
+	char *buf=format(pool, r.self->get_double(), fmt.as_string().cstr());
+	
+	String *string=new(pool) String(pool);
+	r.wcontext->write(string->APPEND_CONST(buf), 
+		String::Untaint_lang::NO /*always object, not string*/);
+}
+
 void initialize_string_class(Pool& pool, VClass& vclass) {
 	// ^string.length[]
 	vclass.add_native_method("length", _length, 0, 0);
@@ -44,5 +59,8 @@ void initialize_string_class(Pool& pool, VClass& vclass) {
 	
 	// ^string.double[]
 	vclass.add_native_method("double", _double, 0, 0);
+
+	// ^string.format[]
+	vclass.add_native_method("format", _string_format, 1, 1);
 }	
 
