@@ -1,11 +1,12 @@
 /*
-  $Id: execute.C,v 1.21 2001/02/22 15:39:23 paf Exp $
+  $Id: execute.C,v 1.22 2001/02/22 16:21:49 paf Exp $
 */
 
 #include "pa_array.h" 
 #include "code.h"
 #include "pa_request.h"
 #include "pa_vstring.h"
+#include "pa_vhash.h"
 
 #include <stdio.h>
 
@@ -149,7 +150,9 @@ Value *Request::get_element() {
 	Value *value=ncontext->get_element(*name); // name бывает method, тогда выдаЄт new junction(ј¬“ќ¬џ„»—Ћя“№=false, root,self,rcontext,wcontext,code)
 	// name бывает им€ junction, тогда или оставл€ет в покое, или вычисл€ет в зависимости от флага ј¬“ќ¬џ„»—Ћя“№
 
-	if(!value)
-		value=NEW VString(pool());
+	if(!value) {
+		value=NEW VHash(pool());
+		ncontext->put_element(*name, value);
+	}
 	return value;
 }

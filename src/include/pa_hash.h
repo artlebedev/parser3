@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.15 2001/02/21 11:10:02 paf Exp $
+  $Id: pa_hash.h,v 1.16 2001/02/22 16:21:48 paf Exp $
 */
 
 /*
@@ -16,7 +16,7 @@
 #include "pa_types.h"
 #include "pa_string.h"
 
-class Hash : public Pooled {
+class Hash : virtual public Pooled {
 public:
 
 	typedef String Key;

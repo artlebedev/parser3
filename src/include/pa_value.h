@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.14 2001/02/22 10:43:42 paf Exp $
+  $Id: pa_value.h,v 1.15 2001/02/22 16:21:49 paf Exp $
 */
 
 /*
@@ -93,6 +93,7 @@ public:
 	// operator_class: (field)=value - static values only
 	virtual Value *get_element(const String& name) { failed("getting element from %s"); return 0; }
 	
+	// hash: (key)=value
 	// object_class, operator_class: (field)=value - static values only
 	virtual void put_element(const String& name, Value *value) { failed("putting element to %s"); }
 

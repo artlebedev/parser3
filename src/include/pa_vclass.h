@@ -1,20 +1,12 @@
 /*
-  $Id: pa_vclass.h,v 1.5 2001/02/22 11:08:06 paf Exp $
-*/
-
-/*
-	data core
+  $Id: pa_vclass.h,v 1.6 2001/02/22 16:21:49 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
 #include "pa_value.h"
-///#include "pa_vhash.h"
-class VHash {
-public:
-	VHash(Pool& apool, Hash& hash) {}
-};
+#include "pa_vhash.h"
 
 class VClass : public Value {
 public: // Value

@@ -1,9 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.8 2001/02/22 15:39:22 paf Exp $
-*/
-
-/*
-	data core
+  $Id: pa_wcontext.h,v 1.9 2001/02/22 16:21:49 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
