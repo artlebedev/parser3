@@ -878,11 +878,6 @@ xdoc(xnode)
             url    time    
             url    time    
             url    time    
-    !$status:db hash
-        !cache hash db_home=>tables table
-            name    time    users
-            name    time    users
-            name    time    users
     !$status:stylesheet
         !cache table
             file    time
