@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.81 2001/10/12 12:48:22 parser Exp $
+	$Id: string.C,v 1.82 2001/10/16 14:49:16 parser Exp $
 */
 
 #include "classes.h"
@@ -130,7 +130,7 @@ static void _mid(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	size_t p=(size_t)params->as_int(0, "p must be int", r);
-	size_t n=(size_t)params->as_int(1, "n must be int", r);
+	size_t n=params->size()>1?(size_t)params->as_int(1, "n must be int", r):0;
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VString(string.mid(p, p+n)));
@@ -478,7 +478,7 @@ MString::MString(Pool& apool) : Methoded(apool) {
 	// ^string.right(n)
 	add_native_method("right", Method::CT_DYNAMIC, _right, 1, 1);
 	// ^string.mid(p;n)
-	add_native_method("mid", Method::CT_DYNAMIC, _mid, 2, 2);
+	add_native_method("mid", Method::CT_DYNAMIC, _mid, 1, 2);
 
 	// ^string.pos[substr]
 	add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 1);
