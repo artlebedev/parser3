@@ -112,7 +112,6 @@ build_alias = @build_alias@
 build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
-charsetsdir = @charsetsdir@
 commentcharset_koi8r = @commentcharset_koi8r@
 commentcharset_windows1250 = @commentcharset_windows1250@
 commentcharset_windows1251 = @commentcharset_windows1251@
@@ -140,7 +139,6 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
-sqldriversdir = @sqldriversdir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
@@ -148,7 +146,7 @@ INCLUDES = -I../types -I../classes -I../sql -I../lib/pcre -I../lib/gc/include -I
 
 noinst_HEADERS = compile_tools.h utf8-to-lower.inc utf8-to-upper.inc
 noinst_LIBRARIES = libmain.a
-libmain_a_SOURCES = pa_pool.C pa_os.C pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C 
+libmain_a_SOURCES = pa_pool.C pa_os.C pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C
 
 EXTRA_DIST = compile.y main.vcproj
 subdir = src/main
@@ -169,7 +167,8 @@ am_libmain_a_OBJECTS = pa_pool.$(OBJEXT) pa_os.$(OBJEXT) \
 	pa_dir.$(OBJEXT) pa_exec.$(OBJEXT) pa_socks.$(OBJEXT) \
 	pa_dictionary.$(OBJEXT) pa_charset.$(OBJEXT) \
 	pa_charsets.$(OBJEXT) pa_uue.$(OBJEXT) \
-	pa_sql_driver_manager.$(OBJEXT) pa_stylesheet_manager.$(OBJEXT)
+	pa_sql_driver_manager.$(OBJEXT) pa_stylesheet_manager.$(OBJEXT) \
+	pa_stylesheet_connection.$(OBJEXT)
 libmain_a_OBJECTS = $(am_libmain_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/src/include
@@ -188,6 +187,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/pa_request.Po ./$(DEPDIR)/pa_socks.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_sql_driver_manager.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_string.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/pa_stylesheet_connection.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_stylesheet_manager.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_table.Po ./$(DEPDIR)/pa_uue.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_xml_exception.Po \
@@ -248,6 +248,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_socks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_sql_driver_manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_string.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_stylesheet_connection.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_stylesheet_manager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_table.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_uue.Po@am__quote@
