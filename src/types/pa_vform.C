@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.3 2001/03/15 09:04:08 paf Exp $
+	$Id: pa_vform.C,v 1.4 2001/03/16 12:30:26 paf Exp $
 */
 
 /*
@@ -256,9 +256,9 @@ void VForm::fill_fields(
 	if(request.info.query_string)
 		ParseGetFormInput(request.info.query_string);
 	// parsing POSTed data
-	if(request.info.request_method) {
+	if(request.info.method) {
 		if(const char *content_type=request.info.content_type)
-			if(StrEqNc(request.info.request_method, "post",true)) {
+			if(StrEqNc(request.info.method, "post",true)) {
 				int post_size=max(0, min(request.info.content_length, post_max_size));
 				if(StrEqNc(content_type, "application/x-www-form-urlencoded",true)) 
 					ParsePostFormInput(content_type, post_size, false);

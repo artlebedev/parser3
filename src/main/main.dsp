@@ -299,6 +299,10 @@ SOURCE=..\types\pa_vobject.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vrequest.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vstateless_class.C
 # End Source File
 # Begin Source File

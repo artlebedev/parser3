@@ -1,3 +1,4 @@
 @main[]
-default main
-^if(in "/news/"){in news}{not in news}
+^$request:query=$request:query	<BR>
+^$request:uri=$request:uri<BR>
+

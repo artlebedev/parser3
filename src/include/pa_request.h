@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.55 2001/03/16 09:26:42 paf Exp $
+	$Id: pa_request.h,v 1.56 2001/03/16 12:30:22 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -18,6 +18,7 @@
 #include "pa_vobject.h"
 #include "pa_venv.h"
 #include "pa_vform.h"
+#include "pa_vrequest.h"
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \
@@ -45,9 +46,9 @@ public:
 	struct Info {
 		const char *document_root;
 		const char *path_translated;
-		const char *request_method;
+		const char *method;
 		const char *query_string;
-		const char *request_uri;
+		const char *uri;
 		const char *content_type;
 		size_t content_length;
 	};
@@ -122,6 +123,8 @@ public:
 	VEnv env_class;
 	// $form:elements here
 	VForm form_class;
+	// $request:elements here
+	VRequest request_class;
 
 	// contexts
 	Value *self, *root, *rcontext;

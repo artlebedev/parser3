@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.111 2001/03/16 11:10:20 paf Exp $
+	$Id: execute.C,v 1.112 2001/03/16 12:30:23 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -416,7 +416,7 @@ void Request::execute(const Array& ops) {
 			{
 				Value *operand=POP();
 				const char *path=operand->as_string().cstr();
-				Value *value=NEW VBool(pool(), strcmp(path, info.request_uri)<=0);
+				Value *value=NEW VBool(pool(), strcmp(path, info.uri)<=0);
 				PUSH(value);
 				break;
 			}

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.6 2001/03/16 11:10:19 paf Exp $
+	$Id: pa_globals.h,v 1.7 2001/03/16 12:30:22 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -26,6 +26,7 @@
 #define TABLE_CLASS_NAME "table"
 #define ENV_CLASS_NAME "env"
 #define FORM_CLASS_NAME "form"
+#define REQUEST_CLASS_NAME "request"
 
 #define LIMITS_NAME "limits"
 #define POST_MAX_SIZE_NAME "post_max_size"
@@ -60,6 +61,7 @@ extern String *main_class_name;
 extern String *env_class_name;
 extern String *table_class_name;
 extern String *form_class_name;
+extern String *request_class_name;
 
 extern String *limits_name;
 extern String *post_max_size_name;

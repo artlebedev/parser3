@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.14 2001/03/15 11:00:41 paf Exp $
+	$Id: parser3.C,v 1.15 2001/03/16 12:30:25 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -126,9 +126,9 @@ int main(int argc, char *argv[]) {
 		}
 		request_info.document_root=document_root;
 		request_info.path_translated=filespec_to_process;
-		request_info.request_method=getenv("REQUEST_METHOD");
+		request_info.method=getenv("REQUEST_METHOD");
 		request_info.query_string=getenv("QUERY_STRING");
-		request_info.request_uri=getenv("REQUEST_URI");
+		request_info.uri=getenv("REQUEST_URI");
 		request_info.content_type=getenv("CONTENT_TYPE");
 		const char *content_length=getenv("CONTENT_LENGTH");
 		request_info.content_length=(content_length?atoi(content_length):0);

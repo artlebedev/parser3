@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.39 2001/03/15 11:09:49 paf Exp $
+	$Id: pa_request.C,v 1.40 2001/03/16 12:30:24 paf Exp $
 */
 
 #include <string.h>
@@ -30,6 +30,7 @@ Request::Request(Pool& apool,
 	root_class(apool),
 	env_class(apool),
 	form_class(apool),
+	request_class(apool, *this),
 	fclasses(apool),
 	flang(alang),
 	info(ainfo)
@@ -47,6 +48,8 @@ Request::Request(Pool& apool,
 	classes().put(*env_class_name, &env_class);
 	// form class
 	classes().put(*form_class_name, &form_class);	
+	// request class
+	classes().put(*request_class_name, &request_class);	
 }
 
 char *Request::core(const char *sys_auto_path1,
@@ -280,5 +283,5 @@ char *Request::absolute(const char *name) {
 		strcat(result, name);
 		return result;
 	} else 
-		return relative(info.request_uri, name);
+		return relative(info.uri, name);
 }
