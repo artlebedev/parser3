@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.3 2001/02/21 06:21:19 paf Exp $
+  $Id: compile_tools.C,v 1.4 2001/02/21 11:13:16 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -9,7 +9,7 @@
 
 Array *L(String *string) {
 	// empty ops array
-	Array *result=N(&string->pool());
+	Array *result=N(string->pool());
 
 	// append OP_STRING
 	Operation op; op.code=OP_STRING;

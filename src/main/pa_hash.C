@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.12 2001/02/20 18:45:53 paf Exp $
+  $Id: pa_hash.C,v 1.13 2001/02/21 11:13:16 paf Exp $
 */
 
 /*
@@ -27,9 +27,8 @@ int Hash::sizes_count=
 	sizeof(sizes)/sizeof(uint);
 
 
-Hash::Hash(Pool& apool, bool athread_safe) :
-	Pooled(apool),
-	thread_safe(athread_safe) {
+void Hash::construct(Pool& apool, bool athread_safe) {
+	thread_safe=athread_safe;
 	
 	size=sizes[size_index=0];
 	threshold=size*THRESHOLD_PERCENT/100;
@@ -93,7 +92,7 @@ void Hash::put(const Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
 	*ref=new(pool()) Pair(code, key, value, *ref);
 }
 
-Hash::Value *Hash::get(const Key& key) {  SYNCHRONIZED(thread_safe);
+Hash::Value *Hash::get(const Key& key) const {  SYNCHRONIZED(thread_safe);
 	uint code=key.hash_code();
 	uint index=code%size;
 	for(Pair *pair=refs[index]; pair; pair=pair->link)

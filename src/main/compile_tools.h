@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.5 2001/02/21 07:31:41 paf Exp $
+  $Id: compile_tools.h,v 1.6 2001/02/21 11:13:16 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -7,6 +7,8 @@
 
 #include "code.h"
 #include "pa_types.h"
+#include "pa_pool.h"
+#include "pa_array.h"
 
 enum lexical_state {
 	LS_USER,
@@ -22,6 +24,7 @@ enum lexical_state {
 struct parse_control {
 	/* input */
 	Pool *pool;
+	Array *methods;
 #ifndef NO_CSTRING_ORIGIN
 	char *source;
 	char *file;
@@ -37,14 +40,13 @@ struct parse_control {
 	enum lexical_state stack[MAX_LEXICAL_STATES];
 	int brackets_nestages[MAX_LEXICAL_STATES];
 	
-	/* output: Array *  */
-	Array *result;
+	/* output: filled input 'methods' and 'error' if any */
 	char error[MAX_STRING];
 };
 
 /* New array // return empty array */
-inline Array/*<op>*/ *N(Pool *pool) {
-	return new(*pool) Array/*<op>*/(*pool);
+inline Array/*<op>*/ *N(Pool& pool) {
+	return new(pool) Array/*<op>*/(pool);
 }
 
 /* Assembler instruction // append ordinary instruction to ops */

@@ -12,13 +12,16 @@
 #include <stdlib.h>
 
 #include "compile_tools.h"
+#include "pa_value.h"
 
 int real_yyerror (parse_control *pc, char *s);
 static void yyprint (FILE *file, int type, YYSTYPE value);
 int yylex(YYSTYPE *lvalp, void *pc);
 
 
+// local convinient inplace typecast & var
 #define PC ((parse_control *)pc)
+#define pool *PC->pool
 %}
 
 %pure_parser
@@ -29,7 +32,14 @@ int yylex(YYSTYPE *lvalp, void *pc);
 
 %%
 
-result: input { PC->result=$1 };
+result: input { 
+	String& name_main=*new(pool) String(pool);
+	name_main.APPEND_CONST("main");
+	Array& param_names=*new(pool) Array(pool);
+	Array& local_names=*new(pool) Array(pool);
+	Method *method=new(pool) Method(pool, name_main, param_names, local_names, *$1);
+	*PC->methods+=method;
+};
 input: empty | codes;
 
 /* codes */
@@ -58,7 +68,7 @@ name_without_curly_rdive: name_rdive {
 	TODO: подсмотреть в $1, и если там первым элементом self,
 		то выкинуть его и делать не OP_WITH_READ, а WITH_SELF
 	*/ 
-	$$=N(PC->pool); OP($$, OP_WITH_READ); /* stack: starting context */
+	$$=N(pool); OP($$, OP_WITH_READ); /* stack: starting context */
 	P($$,$1); /* diving code; stack: current context */
 };
 name_rdive: name_advance2 | name_path name_advance2 { $$=$1; P($$,$2) }
@@ -74,7 +84,7 @@ put: '$' name_expr_dive '(' constructor_value ')' {
 		если ничего не осталось - $self(xxx)
 			обругать
 */
-	$$=N(PC->pool); 
+	$$=N(pool); 
 	OP($$, OP_WITH_WRITE); /* stack: starting context */
 	P($$,$2); /* diving code; stack: context,name */
 	P($$,$4); /* stack: context,name,constructor_value */
@@ -91,7 +101,7 @@ constructor_one_param_value:
 ;
 empty_value: empty;
 complex_constructor_param_value: complex_constructor_param_body {
-	$$=N(PC->pool); 
+	$$=N(pool); 
 	OP($$, OP_CREATE_EWPOOL); /* stack: empty write context */
 	P($$,$1); /* some codes to that context */
 	OP($$,OP_REDUCE_EWPOOL); /* context=pop; stack: context.value() */
@@ -102,7 +112,7 @@ complex_constructor_param_body:
 ;
 constructor_two_params_value: STRING ';' constructor_one_param_value {
 	char *operator_or_fmt=LA2S($1)->cstr();
-	$$=N(PC->pool);
+	$$=N(pool);
 	P($$, $1);/* stack: ncontext name operator_or_fmt */
 	P($$, $3); /* stack: ncontext name operator_or_fmt expr */
 	switch(operator_or_fmt[0]) {
@@ -138,7 +148,7 @@ call: '^' name_expr_dive store_params END_OF_NAME { /* ^field.$method{vasya} */
 			иначе  // ^result(value)
 				обругать безобразие
 */
-	$$=N(PC->pool); 
+	$$=N(pool); 
 	OP($$, OP_WITH_READ); /* stack: starting context */
 	P($$,$2); /* diving code; stack: context,method_name */
 	OP($$,OP_GET_METHOD_FRAME); /* stack: context,method_frame */
@@ -155,7 +165,7 @@ store_param_part: constructor_one_param_value {
 	OP($$,OP_STORE_PARAM);
 }
 store_curly_param: '{' input '}' {
-	$$=N(PC->pool); 
+	$$=N(pool); 
 	OP($$, OP_CODE_ARRAY);
 	AA($$,$2);
 	OP($$,OP_CREATE_JUNCTION);
@@ -190,7 +200,7 @@ name_expr_subvar_value: '$' subvar_ref_name_rdive {
 	OP($$,OP_GET_ELEMENT);
 };
 name_expr_with_subvar_value: STRING subvar_get_writes {
-	$$=N(PC->pool); 
+	$$=N(pool); 
 	OP($$, OP_CREATE_EWPOOL);
 	P($$,$1);
 	OP($$,OP_WRITE);
@@ -202,7 +212,7 @@ subvar_ref_name_rdive: STRING {
 	TODO: подсмотреть в $1, и если там в первом элементе первая буква ":"
 		то выкинуть её и делать не OP_WITH_READ, а WITH_ROOT
 */
-	$$=N(PC->pool); OP($$, OP_WITH_READ);
+	$$=N(pool); OP($$, OP_WITH_READ);
 	P($$,$1);
 };
 subvar_get_writes: subvar__get_write | subvar_get_writes subvar__get_write { $$=$1; P($$,$2) };
@@ -244,7 +254,7 @@ write_str_literal: STRING {
 
 /* */
 
-empty: /* empty */ { $$=N(PC->pool) };
+empty: /* empty */ { $$=N(pool) };
 
 %%
 
@@ -285,7 +295,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 
 		if(c=='\n') {
 			PC->line++;
-			PC->col=1;
+			PC->col=0;
 		}
 			PC->col++;
 
@@ -508,7 +518,7 @@ break2:
 		/* create STRING value: array of OP_STRING+string */
 		*lvalp=L(PC->string);
 		/* new pieces storage */
-		PC->string=new(*PC->pool) String(*PC->pool);
+		PC->string=new(pool) String(pool);
 		/* go */
 		return STRING;
 	}

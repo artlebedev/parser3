@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.6 2001/02/21 07:31:41 paf Exp $
+  $Id: compile.C,v 1.7 2001/02/21 11:13:16 paf Exp $
 */
 
 #include "pa_string.h"
@@ -20,26 +20,30 @@ Array *real_compile(COMPILE_PARAMS) {
 
 	Pool& pool=request.pool();
 
-	yydebug=1;
+	// prepare to parse
 	struct parse_control pc;
-	/* input */
+	// input 
 	pc.pool=&pool;
+	pc.methods=new(pool) Array(pool);
+	//   create new 'name' vclass, add it to request's classes
 	pc.source=source;
 #ifndef NO_STRING_ORIGIN
 	pc.file=file;
-	pc.line=pc.col=1;
+	pc.line=pc.col=0;
 #endif
-	/* state to initial */
+	// initialise state
 	pc.pending_state=0;
 	pc.string=new(pool) String(pool);
 	pc.ls=LS_USER;
 	pc.sp=0;
-	/* parse! */
-	if(yyparse(&pc)) // parse, error?
+	
+	// parse! 
+	yydebug=1;
+	if(yyparse(&pc)) // error?
 		request.exception().raise(0,0,
 			0,
-			"%s @%s[%d:%d]", pc.error, file, pc.line, pc.col-1);
-	
-	/* result */
-	return pc.result;
+			"%s @%s[%d:%d]", pc.error, file, 1+pc.line, pc.col/*already+1*/);
+
+	// result
+	return pc.methods;
 }
