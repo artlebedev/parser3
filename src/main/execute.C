@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.56 2001/03/06 17:18:57 paf Exp $
+  $Id: execute.C,v 1.57 2001/03/07 08:27:10 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -110,6 +110,11 @@ void Request::execute(const Array& ops) {
 				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 				fprintf(stderr, " (%d)\n", local_ops->size());
 				dump(1, *local_ops);
+				// TODO: rcontext junction должен быть контекстом вызываемого объекта
+				// чтобы вот эти конструкции орудовали одними полями внутри {}  :
+				//   $var{$field}
+				//   ^var.menu{$field}
+				// поскольку они суть одно и то же, и так удобнее
 				Junction& j=*NEW Junction(pool(), 
 					*self, 0, 0,
 					root,rcontext,wcontext,local_ops);
