@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.19 2001/05/17 16:43:10 parser Exp $
+	$Id: parser3mysql.C,v 1.20 2001/05/17 17:10:12 parser Exp $
 */
 
 #include "config_includes.h"
@@ -51,7 +51,7 @@ public:
 	}
 	/**	connect
 		@param used_only_in_connect_url
-			format: @b user:pass@host[:port]/database/charset 
+			format: @b user:pass@{host[:port]|[/unix/socket]}/database/charset 
 			3.23.22b
 			Currently the only option for @b character_set_name is cp1251_koi8.
 			WARNING: must be used only to connect, for buffer doesn't live long
@@ -62,8 +62,16 @@ public:
 		void **connection ///< output: MYSQL *
 		) {
 		char *user=used_only_in_connect_url;
-		char *host=lsplit(user, '@');
-		char *db=lsplit(host, '/');
+		char *s=lsplit(user, '@');
+		char *host=0;
+		char *unix_socket=0;
+		if(s && s[0]=='[') { // unix socket
+			unix_socket=1+s;
+			s=lsplit(unix_socket, ']');
+		} else { // IP
+			host=s;
+		}
+		char *db=lsplit(s, '/');
 		char *pwd=lsplit(user, ':');
 		char *error_pos=0;
 		char *port_cstr=lsplit(host, ':');
@@ -72,7 +80,7 @@ public:
 
 	    MYSQL *mysql=mysql_init(NULL);
 		if(!mysql_real_connect(mysql, 
-			host, user, pwd, db, port?port:MYSQL_PORT, NULL, 0))
+			host, user, pwd, db, port?port:MYSQL_PORT, unix_socket, 0))
 			services._throw(mysql_error(mysql));
 
 		if(charset) { 

@@ -21,6 +21,7 @@ mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll	Y:\parser3\src\sql\mysql\m
 }]
 ]
 $SQL.connect-string[mysql://test:test@localhost/test/cp1251_koi8]
+$SQL.connect-string[mysql://test:test@[/a/b]/test/cp1251_koi8]
 #for ^file:load[name;user-name;mime-type << autodetection]
 $MIME-TYPES[^table:set{ext	mime-type
 zip	application/zip
