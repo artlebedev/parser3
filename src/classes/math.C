@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: math.C,v 1.9 2001/11/05 11:46:21 paf Exp $
+	$Id: math.C,v 1.10 2001/12/10 13:51:30 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -46,7 +46,7 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
 			"bad range [0..%u]", max);
 	
 	Value& result=*new(pool) VInt(pool, (int)(
-		((double)((randomizer=rand())% RAND_MAX)) / RAND_MAX * (max + 1)));
+		((double)((randomizer=rand())% RAND_MAX)) / RAND_MAX * max ));
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
