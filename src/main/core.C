@@ -30,7 +30,7 @@ void process_dollar(method_self_n_params_n_locals& root, Value& self,
 	bool read_mode=name_ended_before==' ';
 	Value *context=
 		prefix?
-			prefix==ROOT?root:self:
+			prefix==ROOT_PREFIX?root:self:
 		read_mode?arcontext:awcontext;
 	
 	if(read_mode) {
@@ -85,6 +85,10 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 	
 	// ^name.field.subfield.method[..] -- plain call
 	// ^name.field.subfield.method_ref[..] -- method ref call, when .get_method()!=0
+	// ^class:method[..]  -- no dotted path allowed before/after
+	//  1: wcontext.object_class == 0?  -- constructor
+	//  2: wcontext.object_class.has_parent('class')? -- dynamic call
+	//  3: not -------------------------------------? -- static call
 	
 	Array/*<String&>*/ names(pool);  // what.they.refer.to left-to-right list
 	char names_ended_before; // the char after long name
@@ -95,7 +99,7 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 
 	Value *context=
 		prefix?
-			prefix==ROOT?root:self:
+			prefix==ROOT_PREFIX?root:self:
 		arcontext;
 	iter++; // skip '['
 
@@ -112,6 +116,29 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 	
 	// last .name
 	String& name=static_cast<String&>(names.get[steps]);
+	if(steps==0) { // the sole name on path, maybe ^class:method[ call
+		String_iterator ni(name);
+		if(ni.skip_to(':')) { // it is
+			ni++; // skip ':'
+			String method_name(pool); method_name.append(ni, 0);
+			name=method_name; // trim "class:" prefix from the name
+
+			String cn(pool);  cn.append(0, ni);
+			Class *right_class=classes.get(cn);
+			if(!oc) // bad: no such class
+				pool.exception().raise(cn, "call: undefined class");
+			Class *left_class=awcontext.get_class();
+			if(left_class) {
+				if(left_class.has_parent(right_class)) // dynamic call
+					;
+				else // static call
+					context=right_class;
+			} else { // constructor: $some(^class:method[..]) call
+				context=new(pool) VClass(pool, right_class);
+				awcontext.write(context);
+			}
+		}
+	}
 	// first we're trying to locate method with that 'name'
 	Method *method=context.get_method(name);
 	if(!method) { // no such method: try to locate method ref field
@@ -133,6 +160,7 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 	Array/*<String&>*/ param_values(pool);
 	get_params(
 		iter,
+		awcontext,
 		&param_values);
 	iter++; // skip ']'
 

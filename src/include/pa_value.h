@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.4 2001/02/13 12:59:57 paf Exp $
+  $Id: pa_value.h,v 1.5 2001/02/13 15:10:45 paf Exp $
 */
 
 /*
@@ -41,6 +41,9 @@ public:
 
 	// object_instance, object_class: method
 	virtual Method *get_method(const String& name) const =0;
+
+	// object_class, object_instance: object_class
+	virtual Class *get_class() const =0;
 };
 
 /*
