@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.22 2001/03/09 08:19:50 paf Exp $
+  $Id: compile_tools.C,v 1.23 2001/03/10 11:44:42 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -38,7 +38,7 @@ Array *VL(Value *value) {
 	return result;
 }
 
-String *SLA2S(Array *literal_string_array, int offset) {
+const String *SLA2S(Array *literal_string_array, int offset) {
 	Operation op;
 	op.cast=literal_string_array->get(offset+0);
 	if(op.code!=OP_VALUE)

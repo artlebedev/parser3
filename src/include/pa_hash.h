@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.19 2001/03/07 11:14:11 paf Exp $
+  $Id: pa_hash.h,v 1.20 2001/03/10 11:44:31 paf Exp $
 */
 
 /*
@@ -49,7 +49,7 @@ public:
 	void put(const Key& key, String *value) { put(key, static_cast<Value *>(value)); }
 
 	int get_int(const Key& key) { return reinterpret_cast<int>(get(key)); }
-	String *get_string(const Key& key) { return static_cast<String *>(get(key)); }
+	const String *get_string(const Key& key) { return static_cast<String *>(get(key)); }
 
 	int size() { return used; }
 

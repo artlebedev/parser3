@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.23 2001/03/08 10:07:10 paf Exp $
+  $Id: compile_tools.h,v 1.24 2001/03/10 11:44:42 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -89,7 +89,7 @@ void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array);
 // second op: string itself
 Array *VL(Value *value);
 // Literal Array to(2) String // return string value from literal array OP+string array
-String *SLA2S(Array *literal_string_array, int offset=0);
+const String *SLA2S(Array *literal_string_array, int offset=0);
 
 void change_string_literal_to_double_literal(Array *literal_string_array);
 

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vcframe.h,v 1.5 2001/03/10 11:03:48 paf Exp $
+  $Id: pa_vcframe.h,v 1.6 2001/03/10 11:44:32 paf Exp $
 */
 
 #ifndef PA_VCFRAME_H
@@ -15,12 +15,12 @@ public: // Value
 	const char *type() const { return "code_frame"; }
 
 	// codeframe: accumulated string
-	String *get_string() { return &string; };
+	const String *get_string() { return &string; };
 
 public: // WContext
 
 	// codeframe: intercepting string writes 
-	void write(String& astring, String::Untaint_lang lang);
+	void write(const String& astring, String::Untaint_lang lang);
 
 public: // usage
 

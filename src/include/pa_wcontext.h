@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.25 2001/03/10 11:03:48 paf Exp $
+  $Id: pa_wcontext.h,v 1.26 2001/03/10 11:44:32 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -18,7 +18,7 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "wcontext"; }
 	// WContext: accumulated fstring
-	String *get_string() { return &fstring; };
+	const String *get_string() { return &fstring; };
 
 	// WContext: none yet | transparent
 	VClass *get_class() { return fvalue?fvalue->get_class():0; }
@@ -28,7 +28,7 @@ public: // Value
 public: // WContext
 
 	// appends a fstring to result
-	virtual void write(String& astring, String::Untaint_lang lang);
+	virtual void write(const String& astring, String::Untaint_lang lang);
 
 	// if value is VString writes fstring,
 	// else writes Value; raises an error if already

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vdouble.h,v 1.10 2001/03/09 08:19:47 paf Exp $
+  $Id: pa_vdouble.h,v 1.11 2001/03/10 11:44:32 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -20,7 +20,7 @@ public: // Value
 	Value *get_expr_result() { return this; }
 
 	// double: fdouble
-	String *get_string() {
+	const String *get_string() {
 		char *buf=static_cast<char *>(pool().malloc(MAX_DOUBLE_AS_STRING));
 		snprintf(buf, MAX_DOUBLE_AS_STRING, "%g", fdouble);
 		String *result=NEW String(pool());

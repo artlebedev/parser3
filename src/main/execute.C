@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.81 2001/03/09 08:28:34 paf Exp $
+  $Id: execute.C,v 1.82 2001/03/10 11:44:42 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -124,7 +124,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_GET_CLASS:
 			{
-				String& name=POP_NAME();
+				const String& name=POP_NAME();
 				VClass *vclass=static_cast<VClass *>(classes().get(name));
 				if(!vclass) 
 					THROW(0,0,
@@ -161,7 +161,7 @@ void Request::execute(const Array& ops) {
 		case OP_CONSTRUCT_VALUE:
 			{
 				Value *value=POP();
-				String& name=POP_NAME();
+				const String& name=POP_NAME();
 				Value *ncontext=POP();
 				ncontext->put_element(name, value);
 				value->set_name(name);
@@ -170,7 +170,7 @@ void Request::execute(const Array& ops) {
 		case OP_CONSTRUCT_EXPR:
 			{
 				Value *value=POP();
-				String& name=POP_NAME();
+				const String& name=POP_NAME();
 				Value *ncontext=POP();
 				ncontext->put_element(name, value->get_expr_result());
 				value->set_name(name);
@@ -223,7 +223,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_REDUCE_RWPOOL:
 			{
-				String *string=wcontext->get_string();
+				const String *string=wcontext->get_string();
 				Value *value;
 				if(string)
 					value=NEW VString(*string);
@@ -244,7 +244,7 @@ void Request::execute(const Array& ops) {
 			{
 				// from "$a $b" part of expression taking only string value,
 				// ignoring any other content of wcontext
-				String *string=wcontext->get_string();
+				const String *string=wcontext->get_string();
 				Value *value;
 				if(string)
 					value=NEW VString(*string);
@@ -555,7 +555,7 @@ void Request::execute(const Array& ops) {
 }
 
 Value *Request::get_element() {
-	String& name=POP_NAME();
+	const String& name=POP_NAME();
 	Value *ncontext=POP();
 	Value *value=ncontext->get_element(name);
 

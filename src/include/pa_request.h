@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.23 2001/03/10 11:18:14 paf Exp $
+  $Id: pa_request.h,v 1.24 2001/03/10 11:44:31 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -89,11 +89,7 @@ private: // lang&raw
 
 private: // lang&raw manipulation
 
-
-
+	// TODO
 };
-
-// core func
-void core();
 
 #endif

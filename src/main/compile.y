@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.81 2001/03/09 08:19:50 paf Exp $
+  $Id: compile.y,v 1.82 2001/03/10 11:44:41 paf Exp $
 */
 
 %{
@@ -106,7 +106,7 @@ method: control_method | code_method;
 
 control_method: '@' STRING '\n' 
 				control_strings {
-	String& command=*SLA2S($2);
+	const String& command=*SLA2S($2);
 	YYSTYPE strings_code=$4;
 	if(strings_code->size()<1*2) {
 		strcpy(PC->error, "@");
@@ -123,7 +123,7 @@ control_method: '@' STRING '\n'
 		}
 		if(strings_code->size()==1*2) {
 			// new class' name
-			String *name=SLA2S(strings_code);
+			const String *name=SLA2S(strings_code);
 			// creating the class
 			PC->vclass=NEW VClass(POOL);
 			PC->vclass->set_name(*name);
@@ -139,9 +139,9 @@ control_method: '@' STRING '\n'
 	} else {
 		if(command==USE_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) {
-				String *file=SLA2S(strings_code, i);
-				file->APPEND_CONST(".p");
-				PC->request->use(file->cstr(), 0);
+				String file(*SLA2S(strings_code, i));
+				file.APPEND_CONST(".p");
+				PC->request->use(file.cstr(), 0);
 			}
 		} else if(command==BASE_NAME) {
 			if(PC->vclass->base()!=&PC->request->root_class) { // already changed from default?
@@ -150,7 +150,7 @@ control_method: '@' STRING '\n'
 			}
 			if(strings_code->size()==1*2) {
 				// TODO: преодолеть self и циклические base
-				String& base_name=*SLA2S(strings_code);
+				const String& base_name=*SLA2S(strings_code);
 				VClass *base=static_cast<VClass *>(
 					PC->request->classes().get(base_name));
 				if(!base) {
@@ -237,7 +237,7 @@ name_without_curly_rdive:
 name_without_curly_rdive_read: name_without_curly_rdive_code {
 	$$=N(POOL); 
 	Array *diving_code=$1;
-	String *first_name=SLA2S(diving_code);
+	const String *first_name=SLA2S(diving_code);
 	if(first_name && *first_name==SELF_NAME) {
 		O($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
@@ -270,7 +270,7 @@ name_expr_wdive:
 name_expr_wdive_write: name_expr_dive_code {
 	$$=N(POOL);
 	Array *diving_code=$1;
-	String *first_name=SLA2S(diving_code);
+	const String *first_name=SLA2S(diving_code);
 	if(first_name && *first_name==SELF_NAME) {
 		O($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 

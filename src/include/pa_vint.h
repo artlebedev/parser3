@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vint.h,v 1.1 2001/03/09 08:19:47 paf Exp $
+  $Id: pa_vint.h,v 1.2 2001/03/10 11:44:32 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -20,7 +20,7 @@ public: // Value
 	Value *get_expr_result() { return this; }
 
 	// integer: finteger
-	String *get_string() {
+	const String *get_string() {
 		char *buf=static_cast<char *>(pool().malloc(MAX_INT_AS_STRING));
 		snprintf(buf, MAX_INT_AS_STRING, "%d", finteger);
 		String *result=NEW String(pool());

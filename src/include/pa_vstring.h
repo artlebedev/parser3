@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vstring.h,v 1.14 2001/03/09 08:19:48 paf Exp $
+  $Id: pa_vstring.h,v 1.15 2001/03/10 11:44:32 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -20,7 +20,7 @@ public: // Value
 	// string: fvalue as VDouble
 	Value *get_expr_result() { return NEW VDouble(pool(), get_double()); }
 	// string: fvalue
-	String *get_string() { return &fvalue; };
+	const String *get_string() { return &fvalue; };
 	// string: fvalue
 	double get_double() { return atof(fvalue.cstr()); }
 	// string: empty or not
@@ -32,12 +32,12 @@ public: // usage
 		fvalue(*new(string_class->pool()) String(string_class->pool())) {
 	}
 
-	VString(String& avalue) : VObject(avalue.pool(), *string_class),
+	VString(const String& avalue) : VObject(avalue.pool(), *string_class),
 		fvalue(avalue) {
 	}
 
 private:
-	String& fvalue;
+	const String& fvalue;
 
 };
 

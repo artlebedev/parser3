@@ -1,6 +1,6 @@
 
 /*
-  $Id: pa_value.h,v 1.48 2001/03/09 08:19:47 paf Exp $
+  $Id: pa_value.h,v 1.49 2001/03/10 11:44:31 paf Exp $
 */
 
 /*
@@ -14,6 +14,7 @@
 #include "pa_string.h"
 #include "pa_array.h"
 #include "pa_exception.h"
+#include "core.h"
 
 #define NAME_NAME "NAME"
 
@@ -97,7 +98,7 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	virtual const char *type() const =0;
-	String& name() const { return *fname; }
+	const String& name() const { return *fname; }
 
 	// unknown: false
 	// others: true
@@ -113,7 +114,7 @@ public: // Value
 	// double: value
 	// bool: must be 0: so in ^if(1>2) it would'nt become "FALSE" string which is 'true'
 	// others: 0
-	virtual String *get_string() { return 0; }
+	virtual const String *get_string() { return 0; }
 	
 	// string: value
 	// double: value
@@ -159,14 +160,13 @@ public: // Value
 
 public: // usage
 
-	Value(Pool& apool) : Pooled(apool), fname(new(apool) String(apool)) {
-		fname->APPEND_CONST("unnamed");
+	Value(Pool& apool) : Pooled(apool), fname(unnamed_name) {
 	}
 
-	void set_name(String& aname) { fname=&aname; }
+	void set_name(const String& aname) { fname=&aname; }
 
-	String& as_string() {
-		String *result=get_string(); 
+	const String& as_string() {
+		const String *result=get_string(); 
 		if(!result)
 			failed("getting string of '%s'");
 		return *result;
@@ -174,7 +174,7 @@ public: // usage
 
 private:
 
-	String *fname;
+	const String *fname;
 
 private: 
 

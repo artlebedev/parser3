@@ -156,6 +156,10 @@ SOURCE=.\pa_pool.C
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_request.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_string.C
 # End Source File
 # Begin Source File
@@ -181,6 +185,10 @@ SOURCE=.\pa_wcontext.C
 # Begin Source File
 
 SOURCE=..\include\code.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\core.h
 # End Source File
 # Begin Source File
 
