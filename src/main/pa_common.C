@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.87 2001/11/09 11:47:55 paf Exp $
+	$Id: pa_common.C,v 1.88 2001/11/14 11:26:17 paf Exp $
 */
 
 #include "pa_common.h"
@@ -26,13 +26,46 @@
 #	define O_TRUNC 0
 #endif
 
-#if _MSC_VER
-
 int __vsnprintf(char *b, size_t s, const char *f, va_list l) {
-	int r=_vsnprintf(b, --s, f, l);
-	b[s]=0;
+	if(!s)
+		return 0;
+
+	int r;
+	// note: on win32& maybe somewhere else
+	// vsnprintf do not writes terminating 0 in 'buffer full' case, reducing
+	--s;
+#if _MSC_VER
+	/*
+	win32: 
+	mk:@MSITStore:C:\Program%20Files\Microsoft%20Visual%20Studio\MSDN\2001APR\1033\vccore.chm::/html/_crt__vsnprintf.2c_._vsnwprintf.htm
+
+	  if the number of bytes to write exceeds buffer, then count bytes are written and –1 is returned
+	*/
+	r=_vsnprintf(b, s, f, l);
+	if(r<0) 
+		r=s;
+#else
+	int r=vsnprintf(b, s, f, l);
+	/*
+	solaris: 
+	man vsnprintf
+
+	  The snprintf() function returns  the  number  of  characters
+	formatted, that is, the number of characters that would have
+	been written to the buffer if it were large enough.  If  the
+	value  of  n  is  0  on a call to snprintf(), an unspecified
+	value less than 1 is returned.
+	*/
+
+	if(r<0)
+		r=0;
+	else if(r>s)
+		r=s;
+#endif
+	b[r]=0;
 	return r;
 }
+
 int __snprintf(char *b, size_t s, const char *f, ...) {
 	va_list l;
     va_start(l, f);
@@ -41,7 +74,6 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
 	return r;
 }
 
-#endif
 
 static char *strnchr(char *buf, size_t size, char c) {
 	for(; size-->0; buf++) {
