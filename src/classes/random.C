@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: random.C,v 1.12 2001/05/15 10:01:25 parser Exp $
+	$Id: random.C,v 1.13 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: random.C,v 1.13 2001/06/28 07:41:59 parser Exp $"; 
 
 #include "pa_config_includes.h"
 #include "pa_common.h"

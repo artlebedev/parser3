@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.54 2001/05/19 17:37:06 parser Exp $
+	$Id: pa_common.C,v 1.55 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: pa_common.C,v 1.55 2001/06/28 07:41:59 parser Exp $"; 
 
 #include "pa_common.h"
 #include "pa_types.h"

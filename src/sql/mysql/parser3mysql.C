@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.21 2001/05/17 19:03:00 parser Exp $
+	$Id: parser3mysql.C,v 1.22 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: parser3mysql.C,v 1.22 2001/06/28 07:41:59 parser Exp $"; 
 
 #include "config_includes.h"
 

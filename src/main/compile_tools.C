@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.C,v 1.34 2001/04/03 07:54:25 paf Exp $
+	$Id: compile_tools.C,v 1.35 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: compile_tools.C,v 1.35 2001/06/28 07:41:59 parser Exp $"; 
 
 #include "compile_tools.h"
 #include "pa_string.h"

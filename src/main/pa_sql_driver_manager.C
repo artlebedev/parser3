@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.20 2001/05/19 15:45:10 parser Exp $
+	$Id: pa_sql_driver_manager.C,v 1.21 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: pa_sql_driver_manager.C,v 1.21 2001/06/28 07:41:59 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"

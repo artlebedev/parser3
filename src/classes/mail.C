@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.29 2001/05/23 07:37:01 parser Exp $
+	$Id: mail.C,v 1.30 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: mail.C,v 1.30 2001/06/28 07:41:59 parser Exp $"; 
 
 #include "pa_config_includes.h"
 

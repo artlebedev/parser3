@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.C,v 1.9 2001/03/19 17:42:16 paf Exp $
+	$Id: pa_exception.C,v 1.10 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: pa_exception.C,v 1.10 2001/06/28 07:41:59 parser Exp $"; 
 
 #include <stdio.h>
 #include <stdlib.h>

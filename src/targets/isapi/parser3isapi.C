@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.33 2001/04/28 13:38:23 paf Exp $
+	$Id: parser3isapi.C,v 1.34 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: parser3isapi.C,v 1.34 2001/06/28 07:41:59 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]

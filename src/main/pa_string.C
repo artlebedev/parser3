@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.91 2001/05/23 08:57:39 parser Exp $
+	$Id: pa_string.C,v 1.92 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: pa_string.C,v 1.92 2001/06/28 07:41:59 parser Exp $"; 
 
 #include "pa_config_includes.h"
 

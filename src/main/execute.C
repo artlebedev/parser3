@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.167 2001/06/27 12:44:33 parser Exp $
+	$Id: execute.C,v 1.168 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: execute.C,v 1.168 2001/06/28 07:41:59 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 

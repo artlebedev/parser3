@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.51 2001/05/19 19:52:38 parser Exp $
+	$Id: untaint.C,v 1.52 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: untaint.C,v 1.52 2001/06/28 07:41:59 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"

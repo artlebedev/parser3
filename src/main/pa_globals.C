@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.60 2001/04/28 13:38:15 paf Exp $
+	$Id: pa_globals.C,v 1.61 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: pa_globals.C,v 1.61 2001/06/28 07:41:59 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"

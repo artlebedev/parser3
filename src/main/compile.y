@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.142 2001/06/28 07:33:38 parser Exp $
+	$Id: compile.y,v 1.143 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: compile.y,v 1.143 2001/06/28 07:41:59 parser Exp $"; 
 
 /**
 	@todo parser4: 

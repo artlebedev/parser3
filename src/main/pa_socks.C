@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_socks.C,v 1.3 2001/04/26 15:14:18 paf Exp $
+	$Id: pa_socks.C,v 1.4 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: pa_socks.C,v 1.4 2001/06/28 07:41:59 parser Exp $"; 
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"

@@ -5,8 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.35 2001/05/17 19:33:33 parser Exp $
+	$Id: pa_hash.C,v 1.36 2001/06/28 07:41:59 parser Exp $
 */
+static char *RCSId="$Id: pa_hash.C,v 1.36 2001/06/28 07:41:59 parser Exp $"; 
 
 /*
 	The prime numbers used from zend_hash.c,
