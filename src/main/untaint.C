@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: untaint.C,v 1.97 2002/02/21 14:44:37 paf Exp $
+	$Id: untaint.C,v 1.98 2002/02/28 15:40:40 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -202,9 +202,6 @@ String& String::append(const String& src, uchar lang, bool forced) {
 				append_here=head.rows+head_count;
 			}
 		} else { // our head contains something
-/*			for(Chunk::Row *row=src.last_chunk->rows; row<src.append_here; row++)
-				if(row->link==(void*)0xcdcdcdcd)
-					_asm int 3;*/
 			// "chopping off my tail-reserve"
 			last_chunk->count=append_here-last_chunk->rows;
 			// "you is my tail"
