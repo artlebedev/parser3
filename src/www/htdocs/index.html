@@ -32,7 +32,7 @@ $m ^if(^s.match[$:m][i]){matches}{do not match} $s<BR>
 
 @main[]
 ^connect[$SQL.connect-string]{
-	$paf[^table:sql[select * from pafz](1;4)]
+	$paf[^table:sql[select * from paf](1;4)]
 	<table border=1>
 		<tr><td>id</td><td>name</td><td>age</td></tr>
 		^paf.menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}

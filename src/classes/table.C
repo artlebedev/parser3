@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.51 2001/04/05 11:01:54 paf Exp $
+	$Id: table.C,v 1.52 2001/04/05 11:36:51 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -451,13 +451,25 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 		offset=(ulong)r.process(offset_code).as_double();
 	}
 
-	const char *statement_cstr=statement.as_string().cstr(String::UL_SQL);
+	const String& statement_string=statement.as_string();
+	const char *statement_cstr=statement_string.cstr(String::UL_SQL);
 	unsigned int sql_column_count; SQL_Driver::Cell *sql_columns;
 	unsigned long sql_row_count; SQL_Driver::Cell **sql_rows;
-	r.connection->query(
-		statement_cstr, 
-		&sql_column_count, &sql_columns,
-		&sql_row_count, &sql_rows);
+	bool need_rethrow=false; Exception rethrow_me;
+	PTRY {
+		r.connection->query(
+			statement_cstr, 
+			&sql_column_count, &sql_columns,
+			&sql_row_count, &sql_rows);
+	}
+	PCATCH(e) { // connect/process problem
+		rethrow_me=e;  need_rethrow=true;
+	}
+	PEND_CATCH
+	if(need_rethrow)
+		PTHROW(rethrow_me.type(), rethrow_me.code(),
+			&statement_string,
+			rethrow_me.comment());
 	
 	Array& table_columns=*new(pool) Array(pool);
 	for(unsigned int i=0; i<sql_column_count; i++) {
