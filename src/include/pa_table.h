@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-static const char* IDENT_TABLE_H="$Date: 2002/08/01 11:41:16 $";
+static const char* IDENT_TABLE_H="$Date: 2002/08/06 14:23:22 $";
 
 #include "pa_types.h"
 #include "pa_array.h"
@@ -36,8 +36,7 @@ public:
 		const String *aorigin,
 		const Array *acolumns,
 		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
-	Table(const Table& source);
-	Table(Pool& apool, const Table& source, int offset=0);
+	Table(Pool& apool, const Table& source, int offset=0, int limit=0);
 
 	/// where this table came from, may be NULL
 	const String *origin_string() { return forigin_string; }
@@ -51,7 +50,7 @@ public:
 	/// moves @a current pointer
 	void set_current(int acurrent) { fcurrent=acurrent; }
 	/// @return current pointer
-	int current() { return fcurrent; }
+	int current() const { return fcurrent; }
 	void offset(bool absolute, int offset);
 
 	/** @return column index from @a column_name. '<0' if no such column

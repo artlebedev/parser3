@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/08/06 12:48:15 $";
+static const char* IDENT_TABLE_C="$Date: 2002/08/06 14:23:22 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -30,14 +30,47 @@ public: // Methoded
 
 // methods
 
+static void get_copy_options(Request& r, const String& method_name, MethodParams *params, int param_index,
+							 const Table& source,
+							 int& offset,
+							 int& limit) {
+	offset=0;
+	limit=0;
+	if(params->size()<=param_index)
+		return;
+
+	Value& voptions=params->as_no_junction(param_index, "options must be hash, not code");
+	if(!voptions.is_string())
+		if(Hash *options=voptions.get_hash(&method_name)) {
+			if(Value *voffset=(Value *)options->get(*sql_offset_name))
+				if(voffset->is_string()) {
+					const String& soffset=*voffset->get_string();
+					if(soffset == "cur")
+						offset=source.current();
+					else
+						throw Exception("parser.runtime",
+							&soffset,
+							"must be 'cur' string or expression");
+				} else 
+					offset=r.process_to_value(*voffset).as_int();
+			if(Value *vlimit=(Value *)options->get(*sql_limit_name))
+				limit=r.process_to_value(*vlimit).as_int();
+		} else
+			throw Exception("parser.runtime",
+				&method_name,
+				"options must be hash");
+}
+
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	// clone?
-	if(params->size()==1) 
-		if(const Table *source=params->get(0).get_table()) {
-			static_cast<VTable *>(r.self)->set_table(*new(pool) Table(*source));
-			return;
-		}
+	// clone/copy part?
+	if(const Table *source=params->get(0).get_table()) {
+		int offset, limit;
+		get_copy_options(r, method_name, params, 1, *source, 
+			offset, limit);
+		static_cast<VTable *>(r.self)->set_table(*new(pool) Table(pool, *source, offset, limit));
+		return;
+	}
 
 	// data is last parameter
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
@@ -225,7 +258,7 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 				throw Exception("parser.runtime",
 					&whence,
 					"is invalid whence, valid are 'cur' or 'set'");
-		}		    
+		}
 		
 		Value& offset_expr=params->as_junction(params->size()-1, "offset must be expression");
 		table.offset(absolute, r.process_to_value(offset_expr).as_int());
@@ -480,9 +513,17 @@ static void _join(Request& r, const String& method_name, MethodParams *params) {
 			&method_name, 
 			"source and destination are same table");
 
+	int offset, limit;
+	get_copy_options(r, method_name, params, 1, src, 
+		offset, limit);
+
 	if(const Array *dest_columns=dest.columns()) { // dest is named
 		int saved_src_current=src.current();
-		for(int src_row=0; src_row<src.size(); src_row++) {
+		int m=src.size()-offset;
+		if(!limit || limit>m)
+			limit=m;
+		int end=offset+limit;
+		for(int src_row=offset; src_row<end; src_row++) {
 			src.set_current(src_row);
 			Array& dest_row=*new(pool) Array(pool);
 			for(int dest_column=0; dest_column<dest_columns->size(); dest_column++) {
@@ -705,8 +746,8 @@ MTable::MTable(Pool& apool) : Methoded(apool, "table") {
 	// ^table.append{r{tab}e{tab}c{tab}o{tab}r{tab}d}
 	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 1);
 
-	// ^table.join[table]
-	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 1);
+	// ^table.join[table][$.limit(10) $.offset(1) $.offset[cur] ]
+	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 2);
 
 
 	// ^table:sql[query]

@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char* IDENT_ARRAY_Y="$Date: 2002/08/01 11:41:14 $";
+static const char* IDENT_ARRAY_Y="$Date: 2002/08/06 14:23:22 $";
 
 #include "pa_pool.h"
 #include "pa_types.h"
@@ -64,7 +64,6 @@ public:
 public:
 
 	Array(Pool& apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
-	Array(const Array& source, int offset=0);
 
 	/// size Array. how many items are in it
 	int size() const { return fused_rows; }
@@ -77,7 +76,7 @@ public:
 	Array& operator += (const Item *src) { return *this+=const_cast<Item *>(src); }
 
 	/// append other Array portion to this one. starting from offset
-	Array& append_array(const Array& src, int offset=0);
+	Array& append_array(const Array& src, int offset=0, int limit=0);
 
 	Item *get(int index) const;
 	int get_int(int index) const { return reinterpret_cast<int>(get(index)); }
@@ -105,11 +104,6 @@ public:
 
 	/// iterate over all elements until condition
 	void* first_that(Item_that_func func, void *info=0) const;
-
-private:
-
-	/// constructor helper
-	void construct_new(int initial_rows);
 
 private:
 

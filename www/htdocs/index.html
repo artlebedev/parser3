@@ -17,12 +17,12 @@ $selffilespec[$filespec]
 #^a.format[%.10u]
 #$result[111]
 #^f[a]
-^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
-	^int:sql{select news_id from news where news_id=-1}[
-#	$.default{2}
-	]<br>
-    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
-}
+#^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
+#	^int:sql{select news_id from news where news_id=-1}[
+##	$.default{2}
+#	]<br>
+#    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
+#}
 #^eval(2)
 #^tcrashlocaljunctionsv2[]
 #^tcrashlocaljunctions[]
@@ -192,9 +192,44 @@ $selffilespec[$filespec]
 #^tfind[]
 #^calendar[]
 #^mimet[]
-^cgit[]
+#^cgit[]
+#^joinlimit[]
+^tableclonelimit[]
 <hr>
 OK
+
+@tableclonelimit[]
+$source[^table::create{a
+aa
+bb
+cc}]
+^source.offset(1)
+#$dest[^table::create[$source]]
+$dest[^table::create[$source;$.offset(2)]]
+$dest[^table::create[$source;$.limit(2)]]
+$dest[^table::create[$source;$.offset(1)$.limit(1)]]
+$dest[^table::create[$source;$.offset(1)$.limit(2)]]
+$dest[^table::create[$source;$.offset[cur]$.limit(2)]]
+
+^dest.menu{$dest.a}[,]<br>
+
+@joinlimit[]
+$source[^table::create{a
+aa
+bb
+cc}]
+^source.offset(2)
+$dest[^table::create{a
+xx
+}]
+#^dest.join[$source]
+#^dest.join[$source;$.offset(2)]
+#^dest.join[$source;$.limit(2)]
+#^dest.join[$source;$.offset(1)$.limit(1)]
+#^dest.join[$source;$.offset(1)$.limit(2)]
+^dest.join[$source;$.offset[cur]$.limit(1)]
+
+^dest.menu{$dest.a}[,]<br>
 
 @cgit[]
 $f[^file::cgi[showenv.cmd]]

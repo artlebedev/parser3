@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/08/01 11:41:19 $";
+static const char* IDENT_TABLE_C="$Date: 2002/08/06 14:23:23 $";
 
 //#include <stdlib.h>
 
@@ -31,25 +31,15 @@ Table::Table(Pool& apool,
 		}
 }
 
-Table::Table(const Table& source)  :
-	Array(source),
+Table::Table(Pool& apool, const Table& source, int offset, int limit) :
+	Array(apool, limit/*may be more than needed, no harm done*/),
 
 	forigin_string(source.forigin_string),
 	fcurrent(source.fcurrent),
 	fcolumns(source.fcolumns),
 	name2number(source.name2number) {
 
-}
-
-Table::Table(Pool& apool, const Table& source, int offset) :
-	Array(apool),
-
-	forigin_string(source.forigin_string),
-	fcurrent(source.fcurrent),
-	fcolumns(source.fcolumns),
-	name2number(source.name2number) {
-
-	append_array(source, offset);
+	append_array(source, offset, limit);
 }
 
 int Table::column_name2index(const String& column_name, bool bark) const {
