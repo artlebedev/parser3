@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.95 2001/07/25 10:43:14 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.96 2001/07/25 11:22:46 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -648,14 +648,13 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		PTHROW(rethrow_me.type(), rethrow_me.code(), 
 			&statement_string, // setting more specific source [were url]
 			rethrow_me.comment());
-	
-	if(!handlers.table)
-		PTHROW(0, 0, 
-			&statement_string, 
-			"no table result");
+
+	Table *result=
+		handlers.table?handlers.table: // query resulted in table? return it
+		new(pool) Table(pool, &method_name, 0); // query returned no table, fake it
 
 	// replace any previous table value
-	static_cast<VTable *>(r.self)->set_table(*handlers.table);
+	static_cast<VTable *>(r.self)->set_table(*result);
 }
 
 static void _dir(Request& r, const String& method_name, MethodParams *params) {
