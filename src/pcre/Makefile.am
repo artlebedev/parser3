@@ -1,17 +1,16 @@
-bin_PROGRAMS = dftables pcre_parser_ctype
+noinst_PROGRAMS = dftables pcre_parser_ctype
 dftables_SOURCES = dftables.c 
 pcre_parser_ctype_SOURCES = pcre_parser_ctype.c
 
 auto_part.p:   pcre_parser_ctype
 	./pcre_parser_ctype Russian_Russia.1251 > auto_part.p
 
-CHARTABLES_C=chartables.c
+chartables.c:   dftables
+	./dftables >chartables.c
 
-$(CHARTABLES_C):   dftables
-	./dftables >$(CHARTABLES_C)
+CLEANFILES = auto_part.p chartables.c
 
-pcre.c: $(CHARTABLES_C)
+pcre.c: chartables.c
 
 noinst_LIBRARIES = libpcre.a
 libpcre_a_SOURCES = get.c pcre.c study.c maketables.c
-CLEANFILES = $(CHARTABLES_C)

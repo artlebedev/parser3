@@ -72,6 +72,7 @@ INCLTDL = @INCLTDL@
 LIBADD_DL = @LIBADD_DL@
 LIBLTDL = @LIBLTDL@
 LIBTOOL = @LIBTOOL@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
@@ -82,11 +83,10 @@ VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
 XML_LIBS = @XML_LIBS@
 YACC = @YACC@
+charsetsdir = @charsetsdir@
 host_os = @host_os@
 
-SUBDIRS = libltdl pcre main types classes targets
-
-LIBTOOL_DEPS = @LIBTOOL_DEPS@
+SUBDIRS = libltdl pcre main types classes targets etc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ./include/pa_config_auto.h
@@ -368,6 +368,7 @@ install-exec install-data-am install-data install-am install \
 uninstall-am uninstall all-redirect all-am all installdirs-am \
 installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+
 
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck

@@ -83,6 +83,7 @@ VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
 XML_LIBS = @XML_LIBS@
 YACC = @YACC@
+charsetsdir = @charsetsdir@
 host_os = @host_os@
 
 INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql -I../../pcre @XML_INCLUDES@

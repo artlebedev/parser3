@@ -83,17 +83,17 @@ VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
 XML_LIBS = @XML_LIBS@
 YACC = @YACC@
+charsetsdir = @charsetsdir@
 host_os = @host_os@
 
-bin_PROGRAMS = dftables pcre_parser_ctype
+noinst_PROGRAMS = dftables pcre_parser_ctype
 dftables_SOURCES = dftables.c 
 pcre_parser_ctype_SOURCES = pcre_parser_ctype.c
 
-CHARTABLES_C = chartables.c
+CLEANFILES = auto_part.p chartables.c
 
 noinst_LIBRARIES = libpcre.a
 libpcre_a_SOURCES = get.c pcre.c study.c maketables.c
-CLEANFILES = $(CHARTABLES_C)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -107,7 +107,7 @@ LIBS = @LIBS@
 libpcre_a_LIBADD = 
 libpcre_a_OBJECTS =  get.o pcre.o study.o maketables.o
 AR = ar
-PROGRAMS =  $(bin_PROGRAMS)
+PROGRAMS =  $(noinst_PROGRAMS)
 
 dftables_OBJECTS =  dftables.o
 dftables_LDADD = $(LDADD)
@@ -191,30 +191,14 @@ libpcre.a: $(libpcre_a_OBJECTS) $(libpcre_a_DEPENDENCIES)
 	$(AR) cru libpcre.a $(libpcre_a_OBJECTS) $(libpcre_a_LIBADD)
 	$(RANLIB) libpcre.a
 
-mostlyclean-binPROGRAMS:
+mostlyclean-noinstPROGRAMS:
 
-clean-binPROGRAMS:
-	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
 
-distclean-binPROGRAMS:
+distclean-noinstPROGRAMS:
 
-maintainer-clean-binPROGRAMS:
-
-install-binPROGRAMS: $(bin_PROGRAMS)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(bindir)
-	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
-	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
-	  else :; fi; \
-	done
-
-uninstall-binPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
-	done
+maintainer-clean-noinstPROGRAMS:
 
 dftables: $(dftables_OBJECTS) $(dftables_DEPENDENCIES)
 	@rm -f dftables
@@ -313,7 +297,7 @@ check-am: all-am
 check: check-am
 installcheck-am:
 installcheck: installcheck-am
-install-exec-am: install-binPROGRAMS
+install-exec-am:
 install-exec: install-exec-am
 
 install-data-am:
@@ -322,14 +306,13 @@ install-data: install-data-am
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-am
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am:
 uninstall: uninstall-am
 all-am: Makefile $(LIBRARIES) $(PROGRAMS)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs:
-	$(mkinstalldirs)  $(DESTDIR)$(bindir)
 
 
 mostlyclean-generic:
@@ -343,27 +326,28 @@ distclean-generic:
 
 maintainer-clean-generic:
 mostlyclean-am:  mostlyclean-noinstLIBRARIES mostlyclean-compile \
-		mostlyclean-libtool mostlyclean-binPROGRAMS \
+		mostlyclean-libtool mostlyclean-noinstPROGRAMS \
 		mostlyclean-tags mostlyclean-depend mostlyclean-generic
 
 mostlyclean: mostlyclean-am
 
 clean-am:  clean-noinstLIBRARIES clean-compile clean-libtool \
-		clean-binPROGRAMS clean-tags clean-depend clean-generic \
-		mostlyclean-am
+		clean-noinstPROGRAMS clean-tags clean-depend \
+		clean-generic mostlyclean-am
 
 clean: clean-am
 
 distclean-am:  distclean-noinstLIBRARIES distclean-compile \
-		distclean-libtool distclean-binPROGRAMS distclean-tags \
-		distclean-depend distclean-generic clean-am
+		distclean-libtool distclean-noinstPROGRAMS \
+		distclean-tags distclean-depend distclean-generic \
+		clean-am
 	-rm -f libtool
 
 distclean: distclean-am
 
 maintainer-clean-am:  maintainer-clean-noinstLIBRARIES \
 		maintainer-clean-compile maintainer-clean-libtool \
-		maintainer-clean-binPROGRAMS maintainer-clean-tags \
+		maintainer-clean-noinstPROGRAMS maintainer-clean-tags \
 		maintainer-clean-depend maintainer-clean-generic \
 		distclean-am
 	@echo "This command is intended for maintainers to use;"
@@ -375,26 +359,25 @@ maintainer-clean: maintainer-clean-am
 clean-noinstLIBRARIES maintainer-clean-noinstLIBRARIES \
 mostlyclean-compile distclean-compile clean-compile \
 maintainer-clean-compile mostlyclean-libtool distclean-libtool \
-clean-libtool maintainer-clean-libtool mostlyclean-binPROGRAMS \
-distclean-binPROGRAMS clean-binPROGRAMS maintainer-clean-binPROGRAMS \
-uninstall-binPROGRAMS install-binPROGRAMS tags mostlyclean-tags \
-distclean-tags clean-tags maintainer-clean-tags distdir \
-mostlyclean-depend distclean-depend clean-depend \
-maintainer-clean-depend info-am info dvi-am dvi check check-am \
-installcheck-am installcheck install-exec-am install-exec \
-install-data-am install-data install-am install uninstall-am uninstall \
-all-redirect all-am all installdirs mostlyclean-generic \
-distclean-generic clean-generic maintainer-clean-generic clean \
-mostlyclean distclean maintainer-clean
+clean-libtool maintainer-clean-libtool mostlyclean-noinstPROGRAMS \
+distclean-noinstPROGRAMS clean-noinstPROGRAMS \
+maintainer-clean-noinstPROGRAMS tags mostlyclean-tags distclean-tags \
+clean-tags maintainer-clean-tags distdir mostlyclean-depend \
+distclean-depend clean-depend maintainer-clean-depend info-am info \
+dvi-am dvi check check-am installcheck-am installcheck install-exec-am \
+install-exec install-data-am install-data install-am install \
+uninstall-am uninstall all-redirect all-am all installdirs \
+mostlyclean-generic distclean-generic clean-generic \
+maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
 
 auto_part.p:   pcre_parser_ctype
 	./pcre_parser_ctype Russian_Russia.1251 > auto_part.p
 
-$(CHARTABLES_C):   dftables
-	./dftables >$(CHARTABLES_C)
+chartables.c:   dftables
+	./dftables >chartables.c
 
-pcre.c: $(CHARTABLES_C)
+pcre.c: chartables.c
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

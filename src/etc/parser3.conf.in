@@ -1,0 +1,83 @@
+@auto[]
+$prefix[@prefix@]
+$exec_prefix[@exec_prefix@]
+$libdir[@libdir@]
+
+$charsetsdir[@charsetsdir@]
+$CHARSETS[
+    $.windows-1251[$charsetsdir/windows-1251.cfg]
+    $.koi8-r[$charsetsdir/koi8-r.cfg]
+]
+
+$DEFAULTS[
+	$.content-type[
+		$.value[text/html]
+		$.charset[windows-1251]
+	]
+]
+
+#change your client libraries paths to those on your system
+$SQL[
+	$.drivers[^table::set{protocol	driver	client
+mysql	$libdir/libparser3mysql.so	/usr/local/lib/mysql/libmysql.so
+pgsql	$libdir/libparser3pgsql.so	/usr/local/pgsql/lib/libpq.so
+oracle	$libdir/libparser3oracle.dll	/u01/app/oracle/product/8.1.5/lib/libclntsh.so?ORACLE_HOME=/u01/app/oracle/product/8.1.5&ORA_NLS33=/u01/app/oracle/product/8.1.5/ocommon/nls/admin/data
+}]
+]
+
+#for ^file:load[name;user-name] mime-type autodetection
+$MIME-TYPES[^table::set{ext	mime-type
+zip	application/zip
+doc	application/msword
+xls	application/vnd.ms-excel
+pdf	application/pdf
+ppt	application/powerpoint
+rtf	application/rtf
+gif	image/gif
+jpg	image/jpeg
+png	image/png
+tif	image/tiff
+html	text/html
+htm	text/html
+txt	text/plain
+mts	application/metastream
+mid	audio/midi
+midi	audio/midi
+mp3	audio/mpeg
+ram	audio/x-pn-realaudio
+rpm	audio/x-pn-realaudio-plugin
+ra	audio/x-realaudio
+wav	audio/x-wav
+au	audio/basic
+mpg	video/mpeg
+avi	video/x-msvideo
+mov	video/quicktime
+swf	application/x-shockwave-flash
+}]
+
+$LIMITS[
+	$.post_max_size(10*0x400*0x400)
+]	
+
+$MAIL[
+#	$.prog1[/usr/sbin/sendmail -t]
+#	$.prog2[/usr/lib/sendmail -t]
+]
+
+@exception[origin;source;comment;type;code;stack]
+<title>ROOT_CONF_ERROR</title>
+<body bgcolor=white>
+<font color=black>
+<pre>^untaint[html]{$comment}</pre>
+^if(def $source){
+<b>$source</b><br>
+<pre>^untaint[html]{$origin}</pre>
+}
+^if(def $type){type=$type}
+^if(def $code){code=$code}
+^if($stack){
+	<hr>
+	^stack.menu{
+		<tt>$stack.name</tt> $stack.origin<br>
+	}
+}

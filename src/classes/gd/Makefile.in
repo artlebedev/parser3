@@ -83,6 +83,7 @@ VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
 XML_LIBS = @XML_LIBS@
 YACC = @YACC@
+charsetsdir = @charsetsdir@
 host_os = @host_os@
 
 INCLUDES = -I../../types @XML_INCLUDES@
