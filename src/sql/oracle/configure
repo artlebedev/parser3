@@ -22,7 +22,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --disable-libtool-lock  avoid locking (might break parallel builds)"
 ac_help="$ac_help
-  --with-pgsql_inc[=DIR]      DIR is the PgSQL includes directory"
+  --with-oracleoci_inc[=DIR]      DIR is the Oracle OCI includes directory"
 
 # Initialize some variables set by options.
 # The variables have the same names as the options, with
@@ -463,7 +463,7 @@ echo > confdefs.h
 
 # A filename unique to this package, relative to the directory that
 # configure is in, which we can look for to find out if srcdir is correct.
-ac_unique_file=parser3pgsql.C
+ac_unique_file=parser3oracle.C
 
 # Find the source files, if location was not specified.
 if test -z "$srcdir"; then
@@ -701,7 +701,7 @@ else
 fi
 
 
-PACKAGE=parser3pgsqlclient
+PACKAGE=parser3oracleclient
 
 VERSION=3.0g
 
@@ -1748,16 +1748,16 @@ subdirs="libltdl"
 
 
 
-# Check whether --with-pgsql_inc or --without-pgsql_inc was given.
-if test "${with_pgsql_inc+set}" = set; then
-  withval="$with_pgsql_inc"
+# Check whether --with-oracleoci_inc or --without-oracleoci_inc was given.
+if test "${with_oracleoci_inc+set}" = set; then
+  withval="$with_oracleoci_inc"
   :
 else
-  withval="/usr/local/pgsql/include"
+  withval="/usr/local/oracleoci/include"
 
 fi
 
-PGSQL_INC=$withval
+ORACLEOCI_INC=$withval
 
 
 
@@ -2159,7 +2159,7 @@ s%@CC@%$CC%g
 s%@LN_S@%$LN_S%g
 s%@LIBTOOL@%$LIBTOOL%g
 s%@subdirs@%$subdirs%g
-s%@PGSQL_INC@%$PGSQL_INC%g
+s%@ORACLEOCI_INC@%$ORACLEOCI_INC%g
 s%@CXXCPP@%$CXXCPP%g
 
 CEOF

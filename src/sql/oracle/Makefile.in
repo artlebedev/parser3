@@ -71,8 +71,8 @@ LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
+ORACLEOCI_INC = @ORACLEOCI_INC@
 PACKAGE = @PACKAGE@
-PGSQL_INC = @PGSQL_INC@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 
@@ -80,12 +80,12 @@ SUBDIRS = libltdl
 
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 
-INCLUDES = -I.. $(INCLTDL) -I$(PGSQL_INC)
+INCLUDES = -I.. $(INCLTDL) -I$(ORACLEOCI_INC)
 
-lib_LTLIBRARIES = parser3pgsql.la
-parser3pgsql_la_SOURCES = parser3pgsql.C parser3pgsql.h
-parser3pgsql_la_LIBADD = $(LIBLTDL)
-parser3pgsql_la_LDFLAGS = -module -avoid-version
+lib_LTLIBRARIES = parser3oracle.la
+parser3oracle_la_SOURCES = parser3oracle.C config_includes.h
+parser3oracle_la_LIBADD = $(LIBLTDL)
+parser3oracle_la_LDFLAGS = -module -avoid-version
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config_auto.h
@@ -97,8 +97,8 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I.
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-parser3pgsql_la_DEPENDENCIES = 
-parser3pgsql_la_OBJECTS =  parser3pgsql.lo
+parser3oracle_la_DEPENDENCIES = 
+parser3oracle_la_OBJECTS =  parser3oracle.lo
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -117,11 +117,11 @@ ltmain.sh missing mkinstalldirs
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/parser3pgsql.P
-SOURCES = $(parser3pgsql_la_SOURCES)
-OBJECTS = $(parser3pgsql_la_OBJECTS)
+DEP_FILES =  .deps/parser3oracle.P
+SOURCES = $(parser3oracle_la_SOURCES)
+OBJECTS = $(parser3oracle_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -226,8 +226,8 @@ distclean-libtool:
 
 maintainer-clean-libtool:
 
-parser3pgsql.la: $(parser3pgsql_la_OBJECTS) $(parser3pgsql_la_DEPENDENCIES)
-	$(CXXLINK) -rpath $(libdir) $(parser3pgsql_la_LDFLAGS) $(parser3pgsql_la_OBJECTS) $(parser3pgsql_la_LIBADD) $(LIBS)
+parser3oracle.la: $(parser3oracle_la_OBJECTS) $(parser3oracle_la_DEPENDENCIES)
+	$(CXXLINK) -rpath $(libdir) $(parser3oracle_la_LDFLAGS) $(parser3oracle_la_OBJECTS) $(parser3oracle_la_LIBADD) $(LIBS)
 .C.o:
 	$(CXXCOMPILE) -c $<
 .C.lo:
@@ -368,7 +368,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
