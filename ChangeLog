@@ -1,14 +1,207 @@
+2002-06-18  paf
+	* bin/Makefile.am:
+	* bin/Makefile.in:
+	* bin/parser3.conf.dist.in:
+	* etc/Makefile.am:
+	* etc/parser3.conf.sample.in:
+	* www/htdocs/index.html:
+		bin/parser3.conf.dist [moved from etc
+
+	* src/classes/file.C:
+	* www/cgi-bin/parser3.log:
+		^file::exec[script;$.bad error case insensitive check now
+
+	* src/classes/file.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		^file::exec[script;$.bad now error, not skip
+
+	* Makefile.am:
+	* Makefile.in:
+	* bin/Makefile.am:
+	* bin/Makefile.in:
+	* configure:
+	* configure.in:
+	* etc/Makefile.in:
+	* etc/parser3.charsets/Makefile.am:
+	* etc/parser3.charsets/Makefile.in:
+	* src/classes/smtp/Makefile.am:
+	* src/classes/smtp/Makefile.in:
+	* src/targets/apache13/Makefile.in:
+		parser3.conf.dist moved to bin, .in & *.am updated
+
+	* src/classes/file.C:
+		strcasecmp
+
+	* configure:
+	* configure.in:
+	* src/include/pa_pool.h:
+	* src/include/pa_types.h:
+		pack configure.in detection simplified.
+		figured out that gcc on sparc not that stupid as thought previously:
+		on sparc: when it sees packed class it modifies it's field-access-code to byte operations [stb, ldub] instead of 4byte operations [st, lduh]
+		so packed must be all parts of packed class, i.e. it's parents&fields(classes).
+		for now it's only String that packed and what was wrong is that it's parent - Pooled, were not packed. fixed that.
+
+	* src/classes/file.C:
+		strncasecmp
+
+2002-06-14  paf
+	* operators.txt:
+		more precise xml-to-text options
+
+	* operators.txt:
+	* src/types/pa_vxnode.C:
+		xnode attribute_node.name/value
+		xnode pi.node.data
+
+2002-06-12  paf
+	* Makefile.in:
+	* configure:
+	* configure.in:
+	* etc/Makefile.in:
+	* etc/parser3.charsets/Makefile.in:
+	* src/Makefile.in:
+	* src/classes/Makefile.in:
+	* src/classes/gd/Makefile.in:
+	* src/classes/smtp/Makefile.in:
+	* src/include/Makefile.in:
+	* src/libltdl/Makefile.in:
+	* src/main/Makefile.in:
+	* src/patches/Makefile.in:
+	* src/pcre/Makefile.in:
+	* src/sql/Makefile.in:
+	* src/targets/Makefile.in:
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/Makefile.in:
+	* src/targets/cgi/parser3.C:
+	* src/targets/isapi/Makefile.in:
+	* src/types/Makefile.in:
+		removed root conf define creation
+
+	* etc/parser3.conf.in:
+	* src/classes/mail.C:
+		sendmail -ti [default now]
+
+	* etc/parser3.conf.in:
+	* src/include/pa_globals.h:
+	* src/include/pa_request.h:
+	* src/main/main.dsp:
+	* src/main/pa_globals.C:
+	* src/main/pa_request.C:
+	* www/cgi-bin/parser3.log:
+		@conf
+
+	* etc/parser3.conf.in:
+	* src/include/pa_globals.h:
+	* src/include/pa_request.h:
+	* src/main/execute.C:
+	* src/main/pa_globals.C:
+	* src/main/pa_request.C:
+	* www/cgi-bin/parser3.log:
+		@rootconf [were @conf]
+
+	* INSTALL:
+	* configure.in:
+	* etc/Makefile.am:
+	* operators.txt:
+	* src/include/pa_globals.h:
+	* src/include/pa_request.h:
+	* src/main/compile.tab.C:
+	* src/main/pa_globals.C:
+	* src/main/pa_request.C:
+	* src/targets/apache13/mod_parser3.C:
+	* src/targets/cgi/parser3.C:
+	* src/targets/isapi/parser3isapi.C:
+	* www/cgi-bin/parser3.log:
+		parser3.conf now one and only
+
+	* src/classes/mail.C:
+	* src/main/pa_request.C:
+		$MAIL $CHARSETS allowed to be strings. for convinient #ing
+
+	* etc/parser3.conf.in:
+	* etc/parser3.conf.sample.in:
+		.conf renamed to .conf.sample
+
+2002-06-11  paf
+	* src/classes/file.C:
+	* src/targets/cgi/parser3.dsp:
+	* src/targets/isapi/parser3isapi.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/.htaccess:
+	* www/htdocs/index.html:
+		suexec env keys filter plus CGI_ as valid prefix
+
+	* src/classes/file.C:
+		check simplified
+
+	* src/classes/file.C:
+	* src/include/pa_request.h:
+	* src/include/pa_sapi.h:
+	* src/targets/apache13/mod_parser3.C:
+	* src/targets/cgi/parser3.C:
+	* src/targets/isapi/parser3isapi.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		file::exec/cgi to pass HTTP_ vars
+		introducing SAPI::environment
+
 2002-06-10  paf
 	* src/main/pa_common.C:
 		fixed -d (bug)
 
-	* src/main/pa_common.C:
-		merged fixed -d (bug)
-
+	* configure:
 	* configure:
 	* configure.in:
 	* src/include/pa_version.h:
+	* src/include/pa_version.h:
 		makes
+
+	* operators.txt:
+		old merge conflict removed
+
+	* src/types/pa_vform.C:
+	* src/types/pa_vform.h:
+	* www/htdocs/index.html:
+		$form: not determined yet check
+
+	* src/main/pa_common.C:
+		merged fixed -d (bug)
+
+	* src/main/compile.tab.C:
+	* src/main/pa_string.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		whitespace after number in autoconvert now ignored
+
+	* operators.txt:
+	* src/classes/op.C:
+	* src/include/pa_common.h:
+	* src/main/pa_common.C:
+		lock failures reported now
+
+	* configure:
+	* configure.in:
+		pack even address access on sparc&co arch checked in configure
+
+	* configure:
+	* configure.in:
+		*** empty log message ***
+
+	* src/main/compile_tools.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		^if(" 1 "){y} bug fixed
+		optimization string->double @ compile time were not-enough-checking...
+
+	* configure:
+	* configure.in:
+		hpux check, nsl link, no socket
+
+	* src/classes/mail.C:
+		mail netscape attachment name fixed. todo: $response:body
+		content-type:name
 
 	* src/main/untaint.C:
 		bug#2) mail subject got always prepended with charset even when
@@ -7310,7 +7503,7 @@
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.8 2002/06/10 11:15:51 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.9 2002/06/18 14:58:04 paf Exp $";
 
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
@@ -7353,7 +7546,7 @@
 	* src/main/untaint.C:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
-		static char *RCSId="$Id: ChangeLog,v 1.8 2002/06/10 11:15:51 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.9 2002/06/18 14:58:04 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C:
@@ -13407,7 +13600,7 @@
 	* src/targets/parser.C:
 	* src/targets/parser.dsp:
 	* src/targets/parser.dsp:
-		$Id: ChangeLog,v 1.8 2002/06/10 11:15:51 paf Exp $ check
+		$Id: ChangeLog,v 1.9 2002/06/18 14:58:04 paf Exp $ check
 
 	* src/targets/parser.C:
 		$id$ check
