@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VTABLE_C="$Date: 2002/08/13 13:02:43 $";
+static const char* IDENT_VTABLE_C="$Date: 2002/08/13 13:08:46 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -29,9 +29,10 @@ static void store_column_item_to_hash(Array::Item *item, void *info) {
 	ri.hash->put(column_name, value);
 }
 Value *VTable::fields_element() {
-	if(const Array *columns=table().columns()) {
+	Table& ltable=table(0);
+	if(const Array *columns=ltable.columns()) {
 		Value *result=NEW VHash(pool());
-		Record_info record_info={&pool(), &table(), result->get_hash(0)};
+		Record_info record_info={&pool(), &ltable, result->get_hash(0)};
 		columns->for_each(store_column_item_to_hash, &record_info);
 		return result;
 	}

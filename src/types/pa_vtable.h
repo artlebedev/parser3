@@ -8,7 +8,7 @@
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-static const char* IDENT_VTABLE_H="$Date: 2002/08/13 13:02:43 $";
+static const char* IDENT_VTABLE_H="$Date: 2002/08/13 13:08:47 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
@@ -26,7 +26,7 @@ public: // Value
 	const char *type() const { return "table"; }
 	VStateless_class *get_class() { return table_class; }
 	/// VTable: count
-	int as_int() const { return table().size(); }
+	int as_int() const { return table(0).size(); }
 	/// VTable: count
 	double as_double() const { return as_int(); }
 	/// VTable: count!=0
@@ -48,9 +48,9 @@ public: // usage
 	void set_table(Table& avalue) { 
 		ftable=&avalue; 
 	}
-	Table& table() const { 
+	Table& table(const String *source) const { 
 		if(!ftable)
-			bark("getting unset vtable value");
+			bark("getting unset vtable value", 0, source);
 
 		return *ftable; 
 	}
