@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.28 2001/03/24 15:58:00 paf Exp $
+	$Id: pa_common.C,v 1.29 2001/03/24 20:08:14 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -68,7 +68,7 @@ char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_prob
 	if(fail_on_read_problem)
 		PTHROW(0, 0,
 			&file_spec,
-			"read %s (#%d)", strerror(errno), errno);
+			"read failed: %s (#%d)", strerror(errno), errno);
     return 0;
 }
 
@@ -106,7 +106,7 @@ void file_write(Pool& pool,
 	}
 	PTHROW(0, 0,
 		&file_spec,
-		"write %s (#%d)", strerror(errno), errno);
+		"write failed: %s (#%d)", strerror(errno), errno);
 }
 
 char *getrow(char **row_ref, char delim) {
