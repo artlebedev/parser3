@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.11 2001/09/10 14:24:37 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.12 2001/09/10 14:42:05 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -216,9 +216,31 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 }
 
 
+static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning, 
+								 void *info) {
+	XalanTransformer& transformer=*static_cast<XalanTransformer *>(info);
+	const char *attribute_cstr=aattribute.cstr();
+	const char *meaning_cstr=static_cast<Value *>(ameaning)->as_string().cstr();
+
+	transformer.setStylesheetParam(
+		XalanDOMString(attribute_cstr, strlen(attribute_cstr)),  
+		XalanDOMString(meaning_cstr, strlen(meaning_cstr)));
+}
 static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDom& vDom=*static_cast<VDom *>(r.self);
+
+	// params
+	if(params->size()>1) {
+		Value& vparams=params->as_no_junction(1, "params must not be code");
+		if(vparams.is_defined())
+			if(Hash *params=vparams.get_hash())
+				params->for_each(add_xslt_param, &vDom.get_transformer());
+			else
+				PTHROW(0, 0,
+					&method_name,
+					"params must be hash");
+	}
 
 	// source
 	XalanParsedSource &parsed_source=vDom.get_parsed_source(pool, &method_name);
@@ -228,9 +250,6 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 	const char *stylesheet_filespec=r.absolute(stylesheet_filename).cstr(String::UL_FILE_NAME);
 
 	// target
-//	XercesDOMSupport domSupport;
-//	XercesParserLiaison	parserLiaison(domSupport);
-//	XalanDocument* target=parserLiaison.createDocument();
 	XalanDocument* target=vDom.get_parser_liaison().createDocument();
 	XSLTResultTarget domResultTarget(target);
 
@@ -265,8 +284,8 @@ MDom::MDom(Pool& apool) : Methoded(apool) {
 	add_native_method("file", Method::CT_DYNAMIC, _file, 1, 1);
 
 	// ^dom.xslt[stylesheet filename]
-	/// ^dom.xslt[stylesheet filename;params hash]
-	add_native_method("xslt", Method::CT_DYNAMIC, _xslt, 1, 1);
+	// ^dom.xslt[stylesheet filename;params hash]
+	add_native_method("xslt", Method::CT_DYNAMIC, _xslt, 1, 2);
 
 }
 // global variable
