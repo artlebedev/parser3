@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vtable.C,v 1.1 2001/07/25 10:43:14 parser Exp $
+	$Id: pa_vtable.C,v 1.2 2001/07/25 14:36:03 parser Exp $
 */
 
 #include "pa_vtable.h"
@@ -43,6 +43,10 @@ Value *VTable::get_element(const String& name) {
 	if(name==TABLE_FIELDS_ELEMENT_NAME)
 		return fields_element();
 
+	// methods
+	if(Value *result=VStateless_object::get_element(name))
+		return result;
+
 	// columns
 	if(ftable) {
 		int index=ftable->column_name2index(name, false);
@@ -52,10 +56,6 @@ Value *VTable::get_element(const String& name) {
 			else
 				return NEW VVoid(pool());
 	}
-
-	// methods
-	if(Value *result=VStateless_object::get_element(name))
-		return result;
 
 	THROW(0, 0,
 		&name, 
