@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.25 2001/11/15 18:21:31 paf Exp $
+	$Id: pa_exception.C,v 1.26 2001/11/15 20:26:34 paf Exp $
 */
 
 #include "pa_common.h"
@@ -12,7 +12,7 @@
 
 Exception::Exception() {
 	ftype=fcode=fproblem_source=0;
-	fcomment[0]=0;
+	owns_comment=false; fcomment=0;
 }
 Exception::Exception(const String *atype, const String *acode,
 					  const String *aproblem_source, 
@@ -21,14 +21,42 @@ Exception::Exception(const String *atype, const String *acode,
 	ftype=atype;
 	fcode=acode;
 	fproblem_source=aproblem_source;
+	owns_comment=true;
 
 	if(comment_fmt) {
 		va_list args;
 		va_start(args, comment_fmt);
+		fcomment=(char *)malloc(MAX_STRING);
 		vsnprintf(fcomment, MAX_STRING, comment_fmt, args);
 		va_end(args);
-	} else 
-		fcomment[0]=0;
+	} else
+		fcomment=0;
+}
+Exception::Exception(const Exception& src) : 
+	ftype(src.ftype),
+	fcode(src.fcode),
+	fproblem_source(src.fproblem_source),
+	fcomment(src.fcomment),
+	owns_comment(src.owns_comment) {
+	// that ugly string got from STL, along with principal ideal
+	const_cast<Exception *>(&src)->owns_comment=false;
+}
+Exception& Exception::operator =(const Exception& src) {
+	ftype=src.ftype;
+	fcode=src.fcode;
+	fproblem_source=src.fproblem_source;
+
+	if(owns_comment)
+		free(fcomment);
+	fcomment=src.fcomment;
+	// that ugly string got from STL, along with principal ideal
+	owns_comment=src.owns_comment;  ((Exception*)&src)->owns_comment=false;
+	
+	return *this;
+}
+Exception::~Exception() {
+	if(owns_comment)
+		free(fcomment);
 }
 
 #ifdef XML

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.21 2001/11/15 18:21:31 paf Exp $
+	$Id: pa_exception.h,v 1.22 2001/11/15 20:26:34 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -23,6 +23,8 @@
 
 class Pool;
 
+// defines
+
 /// Just simple longjump mechanizm dressed in class clothes. use Temp_exception
 class Exception {
 public:
@@ -32,6 +34,9 @@ public:
 		const String *atype, const String *acode,
 		const String *aproblem_source, 
 		const char *comment_fmt, ...);
+	Exception(const Exception& src);
+	Exception& operator =(const Exception& src);
+	~Exception();
 
 #ifdef XML
 	/// converts XSL exception to parser exception
@@ -53,12 +58,13 @@ public:
 	/// extracts exception problem_source
 	const String *problem_source() const { return fproblem_source; }
 	/// extracts exception comment
-	const char *comment() const { return *fcomment?fcomment:0; }
+	const char *comment() const { return fcomment; }
 
 private:
 
 	const String *ftype, *fcode, *fproblem_source;
-	char fcomment[MAX_STRING];
+	bool owns_comment;
+	char *fcomment;
 
 };
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.204 2001/11/14 07:46:42 paf Exp $
+	$Id: execute.C,v 1.205 2001/11/15 20:26:34 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -25,7 +25,7 @@
 
 //#define DEBUG_EXECUTE
 
-const uint ANTI_ENDLESS_EXECUTE_RECOURSION=200;
+const uint ANTI_ENDLESS_EXECUTE_RECOURSION=1000;
 
 #ifdef DEBUG_EXECUTE
 char *opcode_name[]={

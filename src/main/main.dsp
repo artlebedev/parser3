@@ -205,6 +205,15 @@ SOURCE=.\compile_tools.h
 # Begin Source File
 
 SOURCE=.\execute.C
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# ADD CPP /Od
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
