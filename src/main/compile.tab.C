@@ -35,10 +35,10 @@
 /** @file
 	Parser: compiler(lexical parser and grammar).
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.40 2002/02/08 07:27:46 paf Exp $
+	$Id: compile.tab.C,v 1.41 2002/02/18 12:05:02 paf Exp $
 */
 
 /**
@@ -2227,9 +2227,12 @@ default:
 			if(
 				PC.ls==LS_EXPRESSION_VAR_NAME_WITH_COLON ||
 				PC.ls==LS_EXPRESSION_VAR_NAME_WITHOUT_COLON) {
-				// name in expr ends also before binary operators 
+				// name in expr ends also before 
 				switch(c) {
+				// expression minus
 				case '-': 
+				// expression integer division
+				case '\\':
 					pop_LS(PC);
 					PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
 					result=EON;
