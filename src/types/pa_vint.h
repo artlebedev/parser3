@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.12 2001/03/26 09:09:49 paf Exp $
+	$Id: pa_vint.h,v 1.13 2001/03/27 15:37:54 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -22,7 +22,7 @@ public: // Value
 	/// all: for error reporting after fail(), etc
 	const char *type() const { return "int"; }
 	/// VInt: this
-	Value *get_expr_result() { return this; }
+	Value *get_expr_result(bool return_string_as_is=false) { return this; }
 
 	/// VInt: finteger
 	const String *get_string() {

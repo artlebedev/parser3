@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.82 2001/03/26 10:36:55 paf Exp $
+	$Id: pa_request.C,v 1.83 2001/03/27 15:37:52 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -144,14 +144,17 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			/* /document/root */
 			char *file_spec=
 				(char *)malloc(strlen(info.path_translated)+strlen(AUTO_FILE_NAME)+1);
-			strcpy(file_spec, info.document_root);
+			size_t document_root_size=strlen(info.document_root);
+			if(info.document_root[document_root_size-1]=='/')
+				document_root_size--;
+			memcpy(file_spec, info.document_root, document_root_size);
 
 			/* /requested/file.html */
 			char *branches=(char *)malloc(strlen(info.path_translated)+1);
-			strcpy(branches, info.path_translated+strlen(info.document_root));
+			strcpy(branches, info.path_translated+document_root_size);
 			char *next=branches;
+			char *append_here=file_spec+document_root_size;
 
-			char *append_here=file_spec+strlen(file_spec);
 			size_t slash_auto_p_size=strlen("/" AUTO_FILE_NAME);
 			while(true) {
 				char *step=lsplit(&next, '/');

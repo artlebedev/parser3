@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.48 2001/03/26 09:09:46 paf Exp $
+	$Id: parser3.C,v 1.49 2001/03/27 15:37:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
 		// prepare to process request
 		Request request(pool,
 			request_info,
-			1||cgi ? String::UL_HTML_TYPO : String::UL_NO
+			cgi ? String::UL_HTML_TYPO : String::UL_NO
 			);
 		
 		// some root-controlled location

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vunknown.h,v 1.4 2001/03/18 20:31:30 paf Exp $
+	$Id: pa_vunknown.h,v 1.5 2001/03/27 15:37:55 paf Exp $
 */
 
 #ifndef PA_VUNKNOWN_H
@@ -23,7 +23,7 @@ public: // Value
 	// unknown: false
 	bool get_defined() { return false; }
 	// unknown: this
-	Value *get_expr_result() { return this; }
+	Value *get_expr_result(bool return_string_as_is=false) { return this; }
 	// unknown: false
 	bool get_bool() { return false; }
 

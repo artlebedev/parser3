@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.11 2001/03/26 09:09:48 paf Exp $
+	$Id: pa_vdouble.h,v 1.12 2001/03/27 15:37:54 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -22,7 +22,7 @@ public: // Value
 	/// all: for error reporting after fail(), etc
 	const char *type() const { return "double"; }
 	/// VDouble: this
-	Value *get_expr_result() { return this; }
+	Value *get_expr_result(bool return_string_as_is=false) { return this; }
 
 	/// VDouble: fdouble
 	const String *get_string() {

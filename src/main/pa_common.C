@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.31 2001/03/27 13:47:31 paf Exp $
+	$Id: pa_common.C,v 1.32 2001/03/27 15:37:51 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -48,21 +48,24 @@ char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_prob
     int f;
     struct stat finfo;
 	char *fname=file_spec.cstr();
-    if(!stat(fname,&finfo) &&(f=open(fname,O_RDONLY
-#ifdef WIN32
-		|O_TEXT
-#endif
-		))>=0) {
+    if(!stat(fname,&finfo) &&(f=open(fname,O_RDONLY|_O_TEXT))>=0) {
 		/*if(exclusive)
 			flock(f, LOCK_EX);*/
 
 		char *result=(char *)pool.malloc(finfo.st_size+1);
 		int read_size=read(f,result,finfo.st_size);
-		if(read_size>=0 && read_size<=finfo.st_size) 
-			result[read_size]='\0';
 		/*if(exclusive)
 			flock(f, LOCK_UN);*/
 		close(f);
+
+		if(read_size>=0 && read_size<=finfo.st_size) 
+			result[read_size]='\0';
+		else
+			PTHROW(0, 0,
+				&file_spec,
+				"read failed: actually read %d bytes count not in [0..%ul] valid range",
+					read_size, (unsigned long)finfo.st_size);
+		
 		return result;//prepare_config(result, remove_empty_lines);
     }
 	if(fail_on_read_problem)

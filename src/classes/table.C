@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.32 2001/03/27 14:50:44 paf Exp $
+	$Id: table.C,v 1.33 2001/03/27 15:37:50 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -265,10 +265,9 @@ static void _sort(Request& r, const String& method_name, Array *params) {
 	Order_item *current=order;
 	for(int i=0; i<table.size(); i++) {
 		table.set_current(i);
-		// todo: think about rcontext! must be VTable, could be not
 		// calculate key value
 		current->index=i;
-		current->value=&r.process(key_maker);
+		current->value=r.process(key_maker).get_expr_result(true/*return string as-is*/);
 		current++;
 	}
 	// sort keys

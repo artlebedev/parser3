@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.8 2001/03/26 09:09:48 paf Exp $
+	$Id: pa_vfile.h,v 1.9 2001/03/27 15:37:54 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -27,7 +27,7 @@ public: // Value
 	const char *type() const { return "file"; }
 
 	/// VFile: this
-	Value *get_expr_result() { return this; }
+	Value *get_expr_result(bool return_string_as_is=false) { return this; }
 	/// VFile: true
 	bool get_bool() { return true; }
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.33 2001/03/26 08:27:28 paf Exp $
+	$Id: pa_value.h,v 1.34 2001/03/27 15:37:54 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -42,14 +42,16 @@ public: // Value
 	virtual bool get_defined() { return true; }
 	/** what's the meaning of this value in context of expression?
 		@return for
-		- VString: fstring as VDouble
+		- VString: fstring as VDouble or this depending on return_string_as_is
 		- VBool: this
 		- VDouble: this
 		- VInt: this
 		- VUnknown: this
 		- VFile: this
 	*/
-	virtual Value *get_expr_result() { bark("(%s) can not be used in expression"); return 0; }
+	virtual Value *get_expr_result(bool return_string_as_is=false) { 
+		bark("(%s) can not be used in expression"); return 0; 
+	}
 	/** extract Hash
 		@return for
 		- VHash: fhash

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.13 2001/03/26 09:09:49 paf Exp $
+	$Id: pa_vstring.h,v 1.14 2001/03/27 15:37:54 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -23,8 +23,13 @@ public: // Value
 
 	/// all: for error reporting after fail(), etc
 	const char *type() const { return "string"; }
-	/// VString: fstring as VDouble
-	Value *get_expr_result() { return NEW VDouble(pool(), get_double()); }
+	/// VString: fstring as VDouble or this depending on return_string_as_is
+	Value *get_expr_result(bool return_string_as_is=false) { 
+		if(return_string_as_is)
+			return this;
+		else
+			return NEW VDouble(pool(), get_double()); 
+	}
 	/// VString: fstring
 	const String *get_string() { return &fstring; };
 	/// VString: fstring
