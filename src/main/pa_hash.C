@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.7 2001/01/29 12:21:35 paf Exp $
+  $Id: pa_hash.C,v 1.8 2001/01/29 20:10:32 paf Exp $
 */
 
 /*
@@ -13,8 +13,8 @@
 #include "pa_pool.h"
 #include "pa_threads.h"
 
-void *Hash::Pair::operator new(size_t size, Pool *apool) {
-	return apool->malloc(size);
+void *Hash::Pair::operator new(size_t size, Pool& apool) {
+	return apool.malloc(size);
 }
 
 /* Zend comment: Generated on an Octa-ALPHA 300MHz CPU & 2.5GB RAM monster */
@@ -26,18 +26,18 @@ uint Hash::sizes[]={
 int Hash::sizes_count=
 	sizeof(sizes)/sizeof(uint);
 
-void *Hash::operator new(size_t size, Pool *apool) {
-	return apool->malloc(size);
+void *Hash::operator new(size_t size, Pool& apool) {
+	return apool.malloc(size);
 }
 
-Hash::Hash(Pool *apool, bool athread_safe) :
+Hash::Hash(Pool& apool, bool athread_safe) :
 	pool(apool),
 	thread_safe(athread_safe) {
 	
 	size=sizes[size_index=0];
 	threshold=size*THRESHOLD_PERCENT/100;
 	used=0;
-	refs=static_cast<Pair **>(pool->calloc(sizeof(Pair *)*size));
+	refs=static_cast<Pair **>(pool.calloc(sizeof(Pair *)*size));
 }
 
 void Hash::expand() {
@@ -47,7 +47,7 @@ void Hash::expand() {
 	// allocated bigger refs array
 	size_index=size_index+1<sizes_count?size_index+1:sizes_count-1;
 	size=sizes[size_index];
-	refs=static_cast<Pair **>(pool->calloc(sizeof(Pair *)*size));
+	refs=static_cast<Pair **>(pool.calloc(sizeof(Pair *)*size));
 
 	// rehash
 	Pair **old_ref=old_refs;
@@ -96,7 +96,7 @@ void Hash::put(Key& key, Value *value) {  SYNCHRONIZED(thread_safe);
 	*ref=new(pool) Pair(code, key, value, *ref);
 }
 
-Hash::Value* Hash::get(Key& key) {  SYNCHRONIZED(thread_safe);
+Hash::Value *Hash::get(Key& key) {  SYNCHRONIZED(thread_safe);
 	uint code=key.hash_code();
 	uint index=code%size;
 	for(Pair *pair=refs[index]; pair; pair=pair->link)

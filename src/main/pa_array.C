@@ -1,20 +1,21 @@
 /*
-  $Id: pa_array.C,v 1.9 2001/01/29 17:01:51 paf Exp $
+  $Id: pa_array.C,v 1.10 2001/01/29 20:10:32 paf Exp $
 */
 
 #include <string.h>
 
 #include "pa_pool.h"
 #include "pa_array.h"
+#include "pa_error.h"
 
-void *Array::operator new(size_t size, Pool *apool) {
-	return apool->malloc(size);
+void *Array::operator new(size_t size, Pool& apool) {
+	return apool.malloc(size);
 }
 
-Array::Array(Pool *apool, int initial_rows) :
+Array::Array(Pool& apool, int initial_rows) :
 	pool(apool) {
 	head=tail=static_cast<Chunk *>(
-		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
+		pool.malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
 	head->count=initial_rows;
 	append_here=head->rows;
 	link_row=&head->rows[initial_rows];
@@ -27,7 +28,7 @@ Array::Array(Pool *apool, int initial_rows) :
 
 void Array::expand(int chunk_rows) {
 	Chunk *chunk=tail=static_cast<Chunk *>(
-		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *)));
+		pool.malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *)));
 	chunk->count=chunk_rows;
 	link_row->link=chunk;
 	append_here=chunk->rows;
@@ -36,7 +37,7 @@ void Array::expand(int chunk_rows) {
 }
 
 
-Array& Array::operator += (Item src) {
+Array& Array::operator += (Item *src) {
 	if(chunk_is_full())
 		expand(tail->count*CR_GROW_PERCENT/100);
 
@@ -46,11 +47,10 @@ Array& Array::operator += (Item src) {
 	return *this;
 }
 
-Array::Item& Array::operator [] (int index) {
+Array::Item *Array::get(int index) {
 	if(!(index>=0 && index<size())) {
-		// FIX: some sort of thread-global error
-		Item *result=0;
-		return *result;
+		Error::die("Array::get out of range");
+		return 0;
 	}
 
 	// if they ask index to the left of cached position, forget cache
@@ -69,7 +69,7 @@ Array::Item& Array::operator [] (int index) {
 	return cache_chunk->rows[index-cache_chunk_base].item;
 }
 
-Array& Array::operator += (Array& src) {
+Array& Array::append_array(Array& src) {
 	int src_used_rows=src.fused_rows;
 	int last_chunk_rows_left=link_row-append_here;
 	

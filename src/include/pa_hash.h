@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.10 2001/01/29 15:56:03 paf Exp $
+  $Id: pa_hash.h,v 1.11 2001/01/29 20:10:31 paf Exp $
 */
 
 /*
@@ -25,8 +25,8 @@ public:
 
 public:
 
-	void *operator new(size_t size, Pool *apool);
-	Hash(Pool *apool, bool athread_safe);
+	void *operator new(size_t size, Pool& apool);
+	Hash(Pool& apool, bool athread_safe);
 
 	// useful generic hash function
 	static uint generic_code(uint aresult, char *start, uint size);
@@ -35,12 +35,18 @@ public:
 	/*SYNCHRONIZED*/ void put(Key& key, Value *value);
 
 	// get associated [value] by the [key]
-	/*SYNCHRONIZED*/ Value* get(Key& key);
+	/*SYNCHRONIZED*/ Value *get(Key& key);
+
+	void put(Key& key, int     value) { put(key, reinterpret_cast<Value *>(value)); }
+	void put(Key& key, String *value) { put(key, static_cast<Value *>(value)); }
+
+	int get_int(Key& key) { return reinterpret_cast<int>(get(key)); }
+	String *get_string(Key& key) { return static_cast<String *>(get(key)); }
 
 protected:
 
 	// the pool I'm allocated on
-	Pool *pool;
+	Pool& pool;
 
 private:
 
@@ -77,7 +83,7 @@ private:
 		Value *value;
 		Pair *link;
 		
-		void *operator new(size_t size, Pool *apool);
+		void *operator new(size_t size, Pool& apool);
 
 		Pair(uint acode, Key& akey, Value *avalue, Pair *alink) :
 			code(acode),
@@ -94,7 +100,7 @@ private:
 
 private: //disabled
 
-	Hash(Hash&) {}
+	//Hash(Hash&) {}
 	Hash& operator = (Hash&) { return *this; }
 };
 

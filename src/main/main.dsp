@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Za /W3 /Gm /Zi /Od /I ".." /I "../include" /D "_DEBUG" /D "_LIB" /D "WIN32" /FR /FD /TP /GZ /c
+# ADD CPP /nologo /Za /W3 /Gm /GR- /GX- /Zi /Od /I ".." /I "../include" /D "_DEBUG" /D "_LIB" /D "WIN32" /FR /FD /TP /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -91,6 +91,14 @@ SOURCE=.\pa_array.C
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_common.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_error.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_hash.C
 # End Source File
 # Begin Source File
@@ -109,8 +117,6 @@ SOURCE=.\pa_table.C
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
 
-# PROP Exclude_From_Build 1
-
 !ENDIF 
 
 # End Source File
@@ -128,11 +134,23 @@ SOURCE=..\include\pa_array.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_common.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_error.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_hash.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\include\pa_pool.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_request.h
 # End Source File
 # Begin Source File
 

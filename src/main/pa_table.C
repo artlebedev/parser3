@@ -1,26 +1,64 @@
 /*
-  $Id: pa_table.C,v 1.1 2001/01/29 15:56:04 paf Exp $
+  $Id: pa_table.C,v 1.2 2001/01/29 20:10:32 paf Exp $
 */
+
+#include <stdlib.h>
 
 #include "pa_table.h"
 #include "pa_pool.h"
 
-Table::Table(Pool *apool, 
+Table::Table(Request& arequest, 
 			 char *afile, uint aline, 
 			 Array *acolumns, 
 			 int initial_rows) :
-	Array(apool, initial_rows),
-	columns_order(acolumns), 
-	name2number(apool, false) {
+	Array(arequest.pool, initial_rows),
+	request(arequest),
+	current(0),
+	columns(acolumns), 
+	name2number(arequest.pool, false) {
 #ifndef NO_STRING_ORIGIN
 	origin.file=afile;
 	origin.line=aline;
 #endif
 
-	if(columns_order)
-		for(int i=0; i<columns_order->size(); i++) {
+	if(columns)
+		for(int i=0; i<columns->size(); i++) {
 			String name(pool);
-			name.APPEND(static_cast<char *>((*columns_order)[i]), 0, 0);
-			name2number.put(name, reinterpret_cast<Item>(i));
+			name.APPEND(columns->get_cstr(i), 0, 0);
+			name2number.put(name, i+1);
 		}
+}
+
+Array *Table::at(int index) {
+	if(index<0 || index>=size())
+		request.error.raise(0, 
+			"table column index %d is out of range [0..%d]", 
+			index, size()-1);
+	
+	return static_cast<Array *>(get(index));
+}
+
+char *Table::item(int index) {
+	Array *row=at(current);
+	return row->get_cstr(index);
+}
+
+char *Table::item(String column_name) {
+	int column_index;
+	if(columns) {
+		int found_index=name2number.get_int(column_name);
+		if(found_index)
+			column_index=found_index-1;
+		else
+			request.error.raise(&column_name, "column not found");
+	} else {
+		column_index=atoi(column_name.cstr());
+		Array *row=at(current);
+		if(column_index<0 || column_index>=row->size())
+			request.error.raise(&column_name, 
+				"table column index %d is out of range [0..%d]", 
+				column_index, row->size()-1);
+	}
+
+	return item(column_index);
 }

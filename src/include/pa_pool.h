@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.14 2001/01/29 17:01:51 paf Exp $
+  $Id: pa_pool.h,v 1.15 2001/01/29 20:10:32 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -19,20 +19,20 @@ public:
     void *malloc(size_t size);
     void *calloc(size_t size);
 
-	String& make_string() { 
-		return *new(this) String(this);
+	String& make_string() {
+		return *new(*this) String(*this);
 	}
 	Hash& make_hash() {
-		return *new(this) Hash(this, false);
+		return *new(*this) Hash(*this, false);
 	}
 	Hash& make_thread_safe_hash() {
-		return *new(this) Hash(this, true);
+		return *new(*this) Hash(*this, true);
 	}
 	Array& make_array() {
-		return *new(this) Array(this);
+		return *new(*this) Array(*this);
 	}
 	Array& make_array(int initial_rows) {
-		return *new(this) Array(this, initial_rows);
+		return *new(*this) Array(*this, initial_rows);
 	}
 	/*Table& make_table(char *afile, uint aline, Array *acolumns, int initial_rows) {
 		return *new(this) Table(this, afile, aline, acolumns, initial_rows);

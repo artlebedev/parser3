@@ -1,6 +1,11 @@
 /*
-  $Id: pa_table.h,v 1.1 2001/01/29 15:56:03 paf Exp $
+  $Id: pa_table.h,v 1.2 2001/01/29 20:10:32 paf Exp $
 */
+
+/*
+	hence most of tables are "named", no need to uptimize unnamed onces
+*/
+
 
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
@@ -8,24 +13,38 @@
 #include "pa_types.h"
 #include "pa_array.h"
 #include "pa_hash.h"
+#include "pa_string.h"
+#include "pa_request.h"
 
 class Table : public Array {
 public:
 
+	// request I'm processed on
+	Request& request;
+
 	// the base origin of table data
 	Origin origin;
 
-	// columns order
-	Array *columns_order;
+	int current;
+
+	// columns
+	Array *columns;
+
+	Table(Request& request,
+		char *afile, uint aline,
+		Array *acolumns,
+		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
+
+	char *item(int column_index);
+	char *item(String column_name);
+
+protected:
 
 	// column name->number lookup table
-	// hence most of tables are "named", no need to uptimize unnamed onces
 	Hash name2number;
 
-	Table(Pool *apool, 
-		char *afile, uint aline, 
-		Array *acolumns, 
-		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
+	Array *at(int index);
+
 };
 
 #endif

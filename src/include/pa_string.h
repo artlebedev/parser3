@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.10 2001/01/29 15:56:03 paf Exp $
+  $Id: pa_string.h,v 1.11 2001/01/29 20:10:32 paf Exp $
 */
 
 /*
@@ -46,12 +46,12 @@ public:
 
 public:
 
-	void *operator new(size_t size, Pool *apool);
-	String(Pool *apool);
+	void *operator new(size_t size, Pool& apool);
+	String(Pool& apool);
 	String(String& src);
 	size_t size() { return fsize; }
 	int used_rows() { return fused_rows; }
-	char *c_str();
+	char *cstr();
 	String& real_append(STRING_APPEND_PARAMS);
 	bool operator == (String& src);
 
@@ -60,7 +60,7 @@ public:
 protected:
 
 	// the pool I'm allocated on
-	Pool *pool;
+	Pool& pool;
 
 private:
 

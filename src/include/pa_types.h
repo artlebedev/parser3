@@ -1,5 +1,5 @@
 /*
-  $Id: pa_types.h,v 1.2 2001/01/29 15:56:04 paf Exp $
+  $Id: pa_types.h,v 1.3 2001/01/29 20:10:32 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -9,6 +9,7 @@
 #include "pa_config.h"
 #endif
 
+#define MAX_STRING 2*0x400
 
 #undef uint
 typedef unsigned int uint;

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.10 2001/01/29 16:57:08 paf Exp $
+  $Id: pa_array.h,v 1.11 2001/01/29 20:10:31 paf Exp $
 */
 
 /*
@@ -21,13 +21,14 @@
 #include <stddef.h>
 
 #include "pa_types.h"
+#include "pa_string.h"
 
 class Pool;
 
 class Array {
 public:
 
-	typedef void *Item;
+	typedef void Item;
 
 	enum {
 		CR_INITIAL_ROWS_DEFAULT=10,
@@ -36,18 +37,20 @@ public:
 
 public:
 
-	void *operator new(size_t size, Pool *apool);
-	Array(Pool *apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
+	void *operator new(size_t size, Pool& apool);
+	Array(Pool& apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
 	int size() { return fused_rows; }
-	Array& operator += (Item src);
-	Array& operator += (Array& src);
-	Item& operator [] (int index);
+	Array& operator += (Item *src);
+	Array& append_array(Array& src);
+	Item *get(int index);
+	char *get_cstr(int index) { return static_cast<char *>(get(index)); }
+	String *get_string(int index) { return static_cast<String *>(get(index)); }
 
 protected:
 
 	// the pool I'm allocated on
-	Pool *pool;
+	Pool& pool;
 
 private:
 
@@ -55,7 +58,7 @@ private:
 		// the number of rows in chunk
 		int count;
 		union Row {
-			Item item;
+			Item *item;
 			Chunk *link;  // link to the next chunk in chain
 		} rows[1];
 		// next rows are here
@@ -90,7 +93,7 @@ private:
 
 private: //disabled
 
-	Array(Array&) {}
+	//Array(Array&) { }
 	Array& operator = (Array&) { return *this; }
 };
 

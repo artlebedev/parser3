@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.14 2001/01/29 15:56:04 paf Exp $
+  $Id: pa_string.C,v 1.15 2001/01/29 20:10:32 paf Exp $
 */
 
 #include <string.h>
@@ -8,11 +8,11 @@
 #include "pa_string.h"
 #include "pa_hash.h"
 
-void *String::operator new(size_t size, Pool *apool) {
-	return apool->malloc(size);
+void *String::operator new(size_t size, Pool& apool) {
+	return apool.malloc(size);
 }
 
-String::String(Pool *apool) :
+String::String(Pool& apool) :
 	pool(apool) {
 	head.count=curr_chunk_rows=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
@@ -24,7 +24,7 @@ String::String(Pool *apool) :
 void String::expand() {
 	curr_chunk_rows+=curr_chunk_rows*CR_GROW_PERCENT/100;
 	Chunk *chunk=static_cast<Chunk *>(
-		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
+		pool.malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
 	chunk->count=curr_chunk_rows;
 	link_row->link=chunk;
 	append_here=chunk->rows;
@@ -58,7 +58,7 @@ String::String(String& src) :
 		// remaining rows into new_chunk
 		curr_chunk_rows=src_used_rows-head.count;
 		Chunk *new_chunk=static_cast<Chunk *>(
-			pool->malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
+			pool.malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
 		new_chunk->count=curr_chunk_rows;
 		head.preallocated_link=new_chunk;
 		append_here=link_row=&new_chunk->rows[curr_chunk_rows];
@@ -111,8 +111,8 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 	return *this;
 }
 
-char *String::c_str() {
-	char *result=static_cast<char *>(pool->malloc(size()+1));
+char *String::cstr() {
+	char *result=static_cast<char *>(pool.malloc(size()+1));
 
 	char *copy_here=result;
 	Chunk *chunk=&head; 
