@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.35 2002/04/16 09:38:49 paf Exp $
+	$Id: pa_exec.C,v 1.36 2002/07/11 08:12:17 paf Exp $
 
 
 	@todo setrlimit
@@ -27,14 +27,15 @@
 #ifdef WIN32
 
 /// this func from http://www.ccas.ru/~posp/popov/spawn.htm
-static BOOL WINAPI CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
+static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
 										char *szEnv,
                                         PROCESS_INFORMATION* ppi, 
                                         LPHANDLE phInWrite,
                                         LPHANDLE phOutRead,
                                         LPHANDLE phErrRead)
 {
-    BOOL fCreated;
+    DWORD result=0;
+	BOOL fCreated;
     STARTUPINFO si;
     SECURITY_ATTRIBUTES sa={0};
     HANDLE hInRead;
@@ -88,6 +89,8 @@ static BOOL WINAPI CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
                               dir,
                               &si,
                               ppi);
+	if(!fCreated)
+		result=GetLastError();
 
     CloseHandle(hInRead);
     CloseHandle(hOutWrite);
@@ -96,14 +99,17 @@ static BOOL WINAPI CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
     if(!fCreated)
         goto error;
 
-    return TRUE;
+    return result;
 
 error:
+	if(!result/*yet*/)
+		result=GetLastError(); // get it
+
     CloseHandle(*phInWrite);
     CloseHandle(*phOutRead);
     CloseHandle(*phErrRead);
 
-    return FALSE;
+    return result;
 }
 
 static void read_pipe(String& result, HANDLE hOutRead, const char *file_spec, 
@@ -330,7 +336,21 @@ int pa_exec(
 		env->for_each(append_env_pair, &string);
 		env_cstr=string.cstr();
 	}
-	if(CreateHiddenConsoleProcess(cmd, env_cstr, &pi, &hInWrite, &hOutRead, &hErrRead)) {
+	if(DWORD error=CreateHiddenConsoleProcess(cmd, env_cstr, &pi, &hInWrite, &hOutRead, &hErrRead)) {
+		char szErrorDesc[MAX_STRING];
+		char *param="the file you tried to run";
+		size_t error_size=FormatMessage(
+			FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_ARGUMENT_ARRAY , NULL, error,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
+			szErrorDesc, sizeof(szErrorDesc), &param);
+		if(error_size>3) // ".\r\n"
+			szErrorDesc[error_size-3]=0;
+            
+		throw Exception(0,
+			&file_spec,
+			"exec failed - %s (%ld). Consider adding shbang line (#!x:\\interpreter\\command line)", 
+				error_size?szErrorDesc:"<unknown>", (long)error);
+	} else {
 		const char *in_cstr=in.cstr();
 		DWORD written_size;
 		WriteFile(hInWrite, in_cstr, in.size(), &written_size, NULL);
@@ -351,21 +371,6 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 */	
 		CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
-	} else {
-		DWORD error=GetLastError();
-		char szErrorDesc[MAX_STRING];
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, error,
-                MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
-                szErrorDesc, sizeof(szErrorDesc), NULL);
-		size_t error_size=strlen(szErrorDesc);
-		if(error_size>3) // ".\r\n"
-			szErrorDesc[error_size-3]=0;
-            
-		throw Exception(0,
-			&file_spec,
-			"(real command line=\"%s\") exec failed - %s (%ld)",
-				cmd,
-				szErrorDesc, (long)error);
 	}
 
 #else
