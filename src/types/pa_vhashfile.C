@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2004/09/13 09:06:24 $";
+static const char * const IDENT="$Date: 2004/09/14 11:09:19 $";
 
 #include "pa_globals.h"
 #include "pa_threads.h"
@@ -203,6 +203,9 @@ void VHashfile::for_each(void callback(apr_sdbm_datum_t, void*), void* info) con
 		apr_sdbm_datum_t key;
 		if(apr_sdbm_firstkey(db, &key)==APR_SUCCESS)
 			do {
+				 // must clone because it points to page which may go away 
+				// [if they modify hashfile inside foreach]
+				key.dptr = pa_strdup(key.dptr, key.dsize);
 				keys+=key;
 			} while(apr_sdbm_nextkey(db, &key)==APR_SUCCESS);
 	} catch(...) {
