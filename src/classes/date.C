@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2004/01/30 09:39:45 $";
+static const char * const IDENT_DATE_C="$Date: 2004/01/30 09:56:49 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -69,15 +69,6 @@ static int check_year(int iyear) {
 	return iyear;
 }
 
-static int ato_year(const char* syear) {
-	int iyear=atoi(syear);
-	if(iyear==0)
-		throw Exception(0,
-			0,
-			"invalid year: '%s'", syear);
-	return check_year(iyear);
-}
-
 // 2002-04-25 18:14:00
 // 18:14:00
 // 2002:04:25 [+maybe time]
@@ -114,13 +105,13 @@ static int ato_year(const char* syear) {
 			goto date_part_set;
 		} else
 			hour=min=sec=0; // not YYYY- & not HH: = just YYYY					
-	tmIn.tm_year=ato_year(year);
-	tmIn.tm_mon=month?atoi(month)-1:0;
-	tmIn.tm_mday=mday?atoi(mday):1;
+	tmIn.tm_year=check_year(pa_atoi(year));
+	tmIn.tm_mon=month?pa_atoi(month)-1:0;
+	tmIn.tm_mday=mday?pa_atoi(mday):1;
 date_part_set:
-	tmIn.tm_hour=hour?atoi(hour):0;
-	tmIn.tm_min=min?atoi(min):0;
-	tmIn.tm_sec=sec?atoi(sec):0;
+	tmIn.tm_hour=hour?pa_atoi(hour):0;
+	tmIn.tm_min=min?pa_atoi(min):0;
+	tmIn.tm_sec=sec?pa_atoi(sec):0;
 	time_t result=mktime(&tmIn);
 	if(result<0)
 		if(fail_on_error)

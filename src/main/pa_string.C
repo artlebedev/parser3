@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2003/12/10 14:17:45 $";
+static const char * const IDENT_STRING_C="$Date: 2004/01/30 09:56:49 $";
 
 #include "pcre.h"
 
@@ -16,6 +16,64 @@ static const char * const IDENT_STRING_C="$Date: 2003/12/10 14:17:45 $";
 #include "pa_charset.h"
 
 const String String::Empty;
+
+int pa_atoi(const char* str, const String* problem_source) {
+	if(!str)
+		return 0;
+
+	while(*str && isspace(*str))
+		str++;
+	if(!*str)
+		return 0;
+
+	int result;
+	char *error_pos;
+	// 0xABC
+	if(str[0]=='0')
+		if(str[1]=='x' || str[1]=='X')
+			result=(int)(unsigned long)strtol(str, &error_pos, 0);
+		else
+			result=(int)strtol(str+1/*skip leading 0*/, &error_pos, 0);
+	else
+		result=(int)strtol(str, &error_pos, 0);
+
+	while(char c=*error_pos++)
+		if(!isspace(c))
+			throw Exception("number.format",
+				problem_source,
+				problem_source?"invalid number (int)": "'%s' is invalid number (int)", str);
+
+	return result;
+}
+
+double pa_atod(const char* str, const String* problem_source) {
+	if(!str)
+		return 0;
+
+	while(*str && isspace(*str))
+		str++;
+	if(!*str)
+		return 0;
+
+	double result;
+	char *error_pos;
+	// 0xABC
+	if(str[0]=='0')
+		if(str[1]=='x' || str[1]=='X')
+			result=(double)(unsigned long)strtol(str, &error_pos, 0);
+		else
+			result=(double)strtod(str+1/*skip leading 0*/, &error_pos);
+	else
+		result=(double)strtod(str, &error_pos);
+
+	while(char c=*error_pos++)
+		if(!isspace(c))
+			throw Exception("number.format",
+				problem_source,
+				problem_source?"invalid number (double)": "'%s' is invalid number (double)", str);
+
+	return result;
+}
 
 // cord lib extension
 
@@ -456,61 +514,6 @@ const String& String::replace(const Dictionary& dict) const {
 	}
 
 	ASSERT_STRING_INVARIANT(result);
-	return result;
-}
-
-double String::as_double() const { 
-	double result;
-	const char *str=cstr();
-
-	while(*str && isspace(*str))
-		str++;
-	if(!*str)
-		return 0;
-
-	char *error_pos;
-	// 0xABC
-	if(str[0]=='0')
-		if(str[1]=='x' || str[1]=='X')
-			result=(double)(unsigned long)strtol(str, &error_pos, 0);
-		else
-			result=(double)strtod(str+1/*skip leading 0*/, &error_pos);
-	else
-		result=(double)strtod(str, &error_pos);
-
-	while(char c=*error_pos++)
-		if(!isspace(c))
-			throw Exception("number.format",
-				this,
-				"invalid number (double)");
-
-	return result;
-}
-int String::as_int() const { 
-	int result;
-	const char *str=cstr();
-
-	while(*str && isspace(*str))
-		str++;
-	if(!*str)
-		return 0;
-
-	char *error_pos;
-	// 0xABC
-	if(str[0]=='0')
-		if(str[1]=='x' || str[1]=='X')
-			result=(int)(unsigned long)strtol(str, &error_pos, 0);
-		else
-			result=(int)strtol(str+1/*skip leading 0*/, &error_pos, 0);
-	else
-		result=(int)strtol(str, &error_pos, 0);
-
-	while(char c=*error_pos++)
-		if(!isspace(c))
-			throw Exception("number.format",
-				this,
-				"invalid number (int)");
-
 	return result;
 }
 

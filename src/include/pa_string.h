@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2003/12/17 07:34:11 $";
+static const char * const IDENT_STRING_H="$Date: 2004/01/30 09:56:49 $";
 
 // includes
 
@@ -35,6 +35,11 @@ class Dictionary;
 class Request_charsets;
 class String;
 typedef Array<const String*> ArrayString;
+
+// generally useful
+
+int pa_atoi(const char* str, const String* problem_source=0);
+double pa_atod(const char* str, const String* problem_source=0);
 
 /// this is result of pos functions which mean that substr were not found
 #define STRING_NOT_FOUND ((size_t)-1)
@@ -476,8 +481,8 @@ public:
 	String& change_case(Charset& source_charset,
 		Change_case_kind kind) const;
 	const String& replace(const Dictionary& dict) const;
-	double as_double() const;
-	int as_int() const;
+	double as_double() const { return pa_atod(cstr(), this); }
+	int as_int() const { return pa_atoi(cstr(), this); }
 
 private: //disabled
 
