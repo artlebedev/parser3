@@ -77,6 +77,9 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 commentcharset_ = @commentcharset_@
 host_os = @host_os@
+mysql_client = @mysql_client@
+oracle_client = @oracle_client@
+pgsql_client = @pgsql_client@
 rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 

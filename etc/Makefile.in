@@ -78,6 +78,9 @@ YACC = @YACC@
 charsetsdir = @charsetsdir@
 commentcharset_ = @commentcharset_@
 host_os = @host_os@
+mysql_client = @mysql_client@
+oracle_client = @oracle_client@
+pgsql_client = @pgsql_client@
 sqldriversdir = @sqldriversdir@
 
 SUBDIRS = parser3.charsets
