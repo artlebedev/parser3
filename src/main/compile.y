@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.47 2001/03/06 10:49:23 paf Exp $
+  $Id: compile.y,v 1.48 2001/03/06 12:00:44 paf Exp $
 */
 
 %{
@@ -348,6 +348,7 @@ class_prefix: STRING ':' {
 		strcat(PC->error, "' class is undefined in call");
 		YYERROR;
 	}
+	//TODO: убрать зависимость от статических @USE, сделать имя, а не ссылку
 	$$=CL(vclass); // vclass
 };
 
@@ -396,6 +397,7 @@ empty: /* empty */ { $$=N(POOL) };
 
 int yylex(YYSTYPE *lvalp, void *pc) {
 	#define lexical_brackets_nestage PC->brackets_nestages[PC->sp]
+	#define RC {result=c; goto break2; }
 
     register int c;
     int result;
@@ -418,13 +420,13 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 		} else
 			PC->col++;
 
-		// escaping: ^^ ^$ ^; ^) ^} ^( ^{
-		if(c=='^') {
-			char next_c=*PC->source;
-
-			if(next_c=='^' || next_c=='$' || next_c==';' ||
-				next_c=='[' || next_c==']' ||
-				next_c=='{' || next_c=='}') {
+		// escaping: ^^ ^$ ^; ^) ^} ^( ^{ ^"
+		if(c=='^') 
+			switch(*PC->source) {
+			case '^': case '$': case ';':
+			case '[': case ']':
+			case '{': case '}':
+			case '"':
 				if(end!=begin) {
 					// append piece till ^
 					PC->string->APPEND(begin, end-begin, PC->file, begin_line);
@@ -437,262 +439,311 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				// skip analysis = forced literal
 				continue;
 			}
-		}
 		switch(PC->ls) {
 
 		// USER'S = NOT OURS
 		case LS_USER:
-			if(c=='$') {
+			switch(c) {
+			case '$':
 				push_LS(PC, LS_VAR_NAME_SIMPLE);
-				result=c;
-				goto break2;
-			}
-			if(c=='^') {
+				RC;
+			case '^':
 				push_LS(PC, LS_METHOD_NAME);
-				result=c;
-				goto break2;
+				RC;
+			case '@':
+				if(PC->col==0+1) {
+					push_LS(PC, LS_DEF_NAME);
+					RC;
+				}
+				break;
 			}
-			if(c=='@' && PC->col==0+1) {
-				result=c;
-				push_LS(PC, LS_DEF_NAME);
-				goto break2;
-			}
+			break;
 			
+		// STRING IN EXPRESSION
+		case LS_EXPRESSION_STRING:
+			switch(c) {
+			case '"':
+				pop_LS(PC); //"abc".
+				RC;
+			case '$':
+				push_LS(PC, LS_VAR_NAME_SIMPLE);
+				RC;
+			case '^':
+				push_LS(PC, LS_METHOD_NAME);
+				RC;
+			}
 			break;
 
 		// METHOD DEFINITION
 		case LS_DEF_NAME:
-			if(c=='[') {
-				result=c;
+			switch(c) {
+			case '[':
 				PC->ls=LS_DEF_PARAMS;
-				goto break2;
-			}
-			if(c=='\n') {
-				result=c;
-				PC->ls=LS_SPEC_CODE;
-				goto break2;
-			}
-			break;
-		case LS_DEF_PARAMS:
-			if(c==';') {
-				result=c;
-				goto break2;
-			}
-			if(c==']') {
-				result=c;
-				PC->ls=*PC->source=='['?LS_DEF_LOCALS:LS_DEF_COMMENT;
-				goto break2;
-			}
-			if(c=='\n') { // wrong. bailing out
-				result=c;
-				pop_LS(PC);
-				goto break2;
-			}
-			break;
-		case LS_DEF_LOCALS:
-			if(c=='[' || c==';') {
-				result=c;
-				goto break2;
-			}
-			if(c==']') {
-				result=c;
-				PC->ls=LS_DEF_COMMENT;
-				goto break2;
-			}
-			if(c=='\n') { // wrong. bailing out
-				result=c;
-				pop_LS(PC);
-				goto break2;
-			}
-			break;
-		case LS_DEF_COMMENT:
-			if(c=='\n') {
-				result=c;
-				pop_LS(PC);
-				goto break2;
+				RC;
+			case '\n':
+				PC->ls=LS_DEF_SPECIAL_BODY;
+				RC;
 			}
 			break;
 
-		case LS_SPEC_CODE:
+		case LS_DEF_PARAMS:
+			switch(c) {
+			case ';':
+				RC;
+			case ']':
+				PC->ls=*PC->source=='['?LS_DEF_LOCALS:LS_DEF_COMMENT;
+				RC;
+			case c=='\n': // wrong. bailing out
+				pop_LS(PC);
+				RC;
+			}
+			break;
+
+		case LS_DEF_LOCALS:
+			switch(c) {
+			case '[':
+			case ';':
+				RC;
+			case ']':
+				PC->ls=LS_DEF_COMMENT;
+				RC;
+			case '\n': // wrong. bailing out
+				pop_LS(PC);
+				RC;
+			}
+			break;
+
+		case LS_DEF_COMMENT:
 			if(c=='\n') {
-				result=c;
-				if(*PC->source=='@' || *PC->source==0) // end of special_code
+				pop_LS(PC);
+				RC;
+			}
+			break;
+
+		case LS_DEF_SPECIAL_BODY:
+			if(c=='\n') {
+				switch(*PC->source) {
+				case '@': case 0: // end of special_code
 					pop_LS(PC);
-				goto break2;
+					break;
+				}
+				RC;
+			}
+			break;
+
+		// (EXPRESSION)
+		case LS_EXPRESSION_BODY:
+			switch(c) {
+			case ')':
+				if(--lexical_brackets_nestage==0)
+					pop_LS(PC); //(EXPRESSION).
+				RC;
+			case '$':
+				push_LS(PC, LS_VAR_NAME_IN_EXPRESSION);				
+				RC;
+			case '^':
+				push_LS(PC, LS_METHOD_NAME);
+				RC;
+			case '(':
+				lexical_brackets_nestage++;
+				RC;
+			case '+': case '-': case '*': case '/': case '%': 
+			case ';':
+				RC;
+			case '&': case '|': 
+			case '<': case '>': case '=': case '!':
+				?
+				break;
+			case '"':
+				push_LS(PC, LS_EXPRESSION_STRING);
+				RC;
+				break;
+			case ' ': case '\t': case '\n':
+				if(end!=begin) {
+					// append piece till whitespace
+					PC->string->APPEND(begin, end-begin, PC->file, begin_line);
+				}
+				// skip over whitespace
+				PC->source++;
+				// reset piece 'start' position & line
+				begin=PC->source; // ^
+				begin_line=PC->line;
+				continue;
 			}
 			break;
 
 		// VARIABLE GET/PUT/WITH
 		case LS_VAR_NAME_SIMPLE:
-			if(c==0 || 
-				c==' '|| c=='\t' || c=='\n' || 
-				c==';' || 
-				c==']' || c=='}') {
+		case LS_VAR_NAME_IN_EXPRESSION:
+			if(PC->ls==LS_VAR_NAME_IN_EXPRESSION) {
+				// name in expression ends also before binary operators 
+				switch(c) {
+				case '+': case '-': case '*': case '/': case '%': 
+				case '&': case '|': 
+				case '<': case '>': case '=': case '!':
+					pop_LS(PC);
+					PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
+					result=EON;
+					goto break2;
+				}
+			}
+			switch(c) {
+			case 0:
+			case ' ': case '\t': case '\n':
+			case ';':
+			case ']': case '}':
 				pop_LS(PC);
 				PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }
 				result=EON;
 				goto break2;
-			}
-			if(begin==end && c=='{') { /* ${name}, no need of EON, switching LS */
-				PC->ls=LS_VAR_NAME_CURLY; 
-				result=c;
-				goto break2;
-			}
-			if(c=='[') {
-				PC->ls=LS_VAR_ROUND;
+			case '[':
+				PC->ls=LS_VAR_SQUARE;
 				lexical_brackets_nestage=1;
-				result=c;
-				goto break2;
-			}
-			if(c=='{') {
-				PC->ls=LS_VAR_CURLY;
+				RC;
+			case '{':
+				if(begin==end) { // ${name}, no need of EON, switching LS
+					PC->ls=LS_VAR_NAME_CURLY; 
+				} else {
+					PC->ls=LS_VAR_CURLY;
+					lexical_brackets_nestage=1;
+				}
+				
+				RC;
+			case '(':
+				PC->ls=LS_EXPRESSION_BODY;
 				lexical_brackets_nestage=1;
-				result=c;
-				goto break2;
-			}
-			if(c=='.'/* name part delim */ || 
-				c=='$'/* name part subvar */ ||
-				c==':'/* ':name' or 'class:name' */) {
-				result=c;
-				goto break2;
+				RC;
+			case '.': // name part delim
+			case '$': // name part subvar
+			case ':': // ':name' or 'class:name'
+				RC;
 			}
 			break;
+
 		case LS_VAR_NAME_CURLY:
-			if(c=='}') {  /* ${name} finished, restoring LS */
+			switch(c) {
+			case '}': // ${name} finished, restoring LS
 				pop_LS(PC);
-				result=c;
-				goto break2;
-			}
-			if(c=='.'/* name part delim */ || 
-				c=='$'/*name part subvar*/ ||
-				c==':'/* ':name' or 'class:name' */) {
-				result=c;
-				goto break2;
+				RC;
+			case '.': // name part delim
+			case '$': // name part subvar
+			case ':': // ':name' or 'class:name'
+				RC;
 			}
 			break;
-		case LS_VAR_ROUND:
-			if(c=='$') {
+
+		case LS_VAR_SQUARE:
+			switch(c) {
+			case '$':
 				push_LS(PC, LS_VAR_NAME_SIMPLE);
-				result=c;
-				goto break2;
-			}
-			if(c=='^') {
+				RC;
+			case '^':
 				push_LS(PC, LS_METHOD_NAME);
-				result=c;
-				goto break2;
-			}
-			if(c==']') {
+				RC;
+			case ']':
 				if(--lexical_brackets_nestage==0) {
 					pop_LS(PC);
-					result=c;
-					goto break2;
+					RC;
 				}
-			}
-			if(c==';'/* operator_or_fmt;value delim */) {
-				result=c;
-				goto break2;
-			}
-			if(c=='[')
+				break;
+			case ';': // operator_or_fmt;value delim
+				RC;
+			case '[':
 				lexical_brackets_nestage++;
+				break;
+			}
 			break;
+
 		case LS_VAR_CURLY:
-			if(c=='$') {
+			switch(c) {
+			case '$':
 				push_LS(PC, LS_VAR_NAME_SIMPLE);
-				result=c;
-				goto break2;
-			}
-			if(c=='^') {
+				RC;
+			case '^':
 				push_LS(PC, LS_METHOD_NAME);
-				result=c;
-				goto break2;
-			}
-			if(c=='}')
+				RC;
+			case '}':
 				if(--lexical_brackets_nestage==0) {
 					pop_LS(PC);
-					result=c;
-					goto break2;
+					RC;
 				}
-			if(c=='{')
+				break;
+			case '{':
 				lexical_brackets_nestage++;
+				break;
+			}
 			break;
 
 		// METHOD CALL
 		case LS_METHOD_NAME:
-			if(c=='[') {
-				PC->ls=LS_METHOD_ROUND;
+			switch(c) {
+			case '[':
+				PC->ls=LS_METHOD_SQUARE;
 				lexical_brackets_nestage=1;
-				result=c;
-				goto break2;
-			}
-			if(c=='{') {
+				RC;
+			case '{':
 				PC->ls=LS_METHOD_CURLY;
 				lexical_brackets_nestage=1;
-				result=c;
-				goto break2;
-			}
-			if(c=='.'/* name part delim */ || 
-				c=='$'/* name part subvar */ ||
-				c==':'/* ':name' or 'class:name' */) {
-				result=c;
-				goto break2;
+				RC;
+			case '.': // name part delim 
+			case '$': // name part subvar
+			case ':': // ':name' or 'class:name'
+				RC;
 			}
 			break;
-		case LS_METHOD_ROUND:
-			if(c=='$') {
+
+		case LS_METHOD_SQUARE:
+			switch(c) {
+			case '$':
 				push_LS(PC, LS_VAR_NAME_SIMPLE);
-				result=c;
-				goto break2;
-			}
-			if(c=='^') {
+				RC;
+			case '^':
 				push_LS(PC, LS_METHOD_NAME);
-				result=c;
-				goto break2;
-			}
-			if(c==';'/* param delim */) {
-				result=c;
-				goto break2;
-			}
-			if(c==']')
+				RC;
+			case ';': // param delim
+				RC;
+			case ']':
 				if(--lexical_brackets_nestage==0) {
 					PC->ls=LS_METHOD_AFTER;
-					result=c;
-					goto break2;
+					RC;
 				}
-			if(c=='[')
+				break;
+			case '[':
 				lexical_brackets_nestage++;
+				break;
+			}
 			break;
+
 		case LS_METHOD_CURLY:
-			if(c=='$') {
+			switch(c) {
+			case '$':
 				push_LS(PC, LS_VAR_NAME_SIMPLE);
-				result=c;
-				goto break2;
-			}
-			if(c=='^') {
+				RC;
+			case '^':
 				push_LS(PC, LS_METHOD_NAME);
-				result=c;
-				goto break2;
-			}
-			if(c=='}')
+				RC;
+			case '}':
 				if(--lexical_brackets_nestage==0) {
 					PC->ls=LS_METHOD_AFTER;
-					result=c;
-					goto break2;
+					RC;
 				}
-			if(c=='{')
+				break;
+			case '{':
 				lexical_brackets_nestage++;
+				break;
+			}
 			break;
+
 		case LS_METHOD_AFTER:
 			if(c=='[') {/* )( }( */
-				PC->ls=LS_METHOD_ROUND;
+				PC->ls=LS_METHOD_SQUARE;
 				lexical_brackets_nestage=1;
-				result=c;
-				goto break2;
+				RC;
 			}					   
 			if(c=='{') {/* ){ }{ */
 				PC->ls=LS_METHOD_CURLY;
 				lexical_brackets_nestage=1;
-				result=c;
-				goto break2;
+				RC;
 			}					   
 			pop_LS(PC);
 			PC->source--;  if(--PC->col<0) { PC->line--;  PC->col=-1; }

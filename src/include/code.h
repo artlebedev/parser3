@@ -1,5 +1,5 @@
 /*
-  $Id: code.h,v 1.9 2001/02/25 08:12:20 paf Exp $
+  $Id: code.h,v 1.10 2001/03/06 12:00:43 paf Exp $
 */
 
 #ifndef CODE_H
@@ -9,18 +9,31 @@
 #include "pa_array.h"
 
 enum OPCODE {
+	// literals
 	OP_STRING,  OP_CODE,  OP_CLASS,
+
+	// actions
 	OP_WITH_SELF,	OP_WITH_ROOT,	OP_WITH_READ,	OP_WITH_WRITE,
 	OP_CONSTRUCT,
-	OP_EXPRESSION_EVAL,	OP_MODIFY_EVAL,
 	OP_WRITE,
 	OP_GET_ELEMENT,	OP_GET_ELEMENT__WRITE,
 	OP_CREATE_EWPOOL,	OP_REDUCE_EWPOOL,
 	OP_CREATE_RWPOOL,	OP_REDUCE_RWPOOL,
+  	OP_CREATE_SWPOOL,	OP_REDUCE_SWPOOL,
 	OP_GET_METHOD_FRAME,
 	OP_STORE_PARAM,
-	OP_CALL
-};
+	OP_CALL,
+
+	// expression ops: unary
+	OP_NEG, OP_INV, OP_NOT, OP_DEF, OP_IN, OP_FEXISTS,
+	// expression ops: binary
+	OP_SUB OP_ADD OP_MUL OP_DIV OP_MOD,
+	OP_BIN_AND, OP_BIN_OR,
+	OP_LOG_AND, OP_LOG_OR,
+	OP_NUM_LT, OP_NUM_GT, OP_NUM_LE, OP_NUM_GE, OP_NUM_EQ, OP_NUM_NE,
+	OP_STR_LT, OP_STR_GT, OP_STR_LE, OP_STR_GE, OP_STR_EQ, OP_STR_NE,
+	OP_XOR
+;
 
 union Operation {
 	void *cast; // casting helper 
