@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2002/12/09 11:07:39 $";
+static const char* IDENT_HASH_C="$Date: 2002/12/09 12:19:16 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -46,39 +46,60 @@ public:
 		columns(pool),
 		row_index(0) {
 	}
-	void add_column(void *ptr, size_t size) {
-		String *column=new(pool) String(pool);
-		column->APPEND_TAINTED(
-			(const char *)ptr, size, 
-			statement_cstr, 0);
-		columns+=column;
+	bool add_column(SQL_Error& error, void *ptr, size_t size) {
+		try {
+			String *column=new(pool) String(pool);
+			column->APPEND_TAINTED(
+				(const char *)ptr, size, 
+				statement_cstr, 0);
+			columns+=column;
+
+			return false;
+		} catch(...) {
+			error=SQL_Error("exception occured in Hash_sql_event_handlers::add_column");
+			return true;
+		}
 	}
-	void before_rows() { 
-		if(columns.size()<=1)
-			throw SQL_Exception("parser.runtime",
+	bool before_rows(SQL_Error& error) { 
+		if(columns.size()<=1) {
+			error=SQL_Error("parser.runtime",
 				&method_name,
 				"column count must be more than 1 to create a hash");
+			return true;
+		}
+
+		return false;
 	}
-	void add_row() {
+	bool add_row(SQL_Error& /*error*/) {
 		column_index=0;
+		return false;
 	}
-	void add_row_cell(void *ptr, size_t size) {
-		String *cell=new(pool) String(pool);
-		if(size)
-			cell->APPEND_TAINTED(
-				(const char *)ptr, size, 
-				statement_cstr, row_index++);
-		if(column_index==0) {
-			VHash *row_vhash=new(pool) VHash(pool);
-			row_hash=row_vhash->get_hash(0);
-			if(rows_hash.put_dont_replace(*cell, row_vhash)) // put. existed?
-				if(!distinct)
-					throw SQL_Exception("parser.runtime",
-						cell,
-						"duplicate key");
-		} else
-			row_hash->put(*columns.get_string(column_index), new(pool) VString(*cell));
-		column_index++;
+	bool add_row_cell(SQL_Error& error, void *ptr, size_t size) {
+		try {
+			String *cell=new(pool) String(pool);
+			if(size)
+				cell->APPEND_TAINTED(
+					(const char *)ptr, size, 
+					statement_cstr, row_index++);
+			if(column_index==0) {
+				VHash *row_vhash=new(pool) VHash(pool);
+				row_hash=row_vhash->get_hash(0);
+				if(rows_hash.put_dont_replace(*cell, row_vhash)) // put. existed?
+					if(!distinct) {
+						error=SQL_Error("parser.runtime",
+							cell,
+							"duplicate key");
+						return true;
+					}
+			} else
+				row_hash->put(*columns.get_string(column_index), new(pool) VString(*cell));
+			column_index++;
+
+			return false;
+		} catch(...) {
+			error=SQL_Error("exception occured in Hash_sql_event_handlers::add_row_cell");
+			return true;
+		}
 	}
 
 private:

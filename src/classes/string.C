@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/12/09 11:07:39 $";
+static const char* IDENT_STRING_C="$Date: 2002/12/09 12:19:16 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -374,23 +374,34 @@ public:
 		result=new(pool) String(pool);
 	}
 
-	void add_column(void *ptr, size_t size) {
-		if(got_column)
-			throw SQL_Exception("parser.runtime",
+	bool add_column(SQL_Error& error, void *ptr, size_t size) {
+		if(got_column) {
+			error=SQL_Error("parser.runtime",
 				&statement_string,
 				"result must contain exactly one column");
+			return true;
+		}
 		got_column=true;
+		return false;
 	}
-	void before_rows() { /* ignore */ }
-	void add_row() { /* ignore */ }
-	void add_row_cell(void *ptr, size_t size) {
-		if(got_cell)
-			throw SQL_Exception("parser.runtime",
+	bool before_rows(SQL_Error& /*error*/ ) { /* ignore */ return false; }
+	bool add_row(SQL_Error& /*error*/) { /* ignore */ return false; }
+	bool add_row_cell(SQL_Error& error, void *ptr, size_t size) {
+		if(got_cell) {
+			error=SQL_Error("parser.runtime",
 				&statement_string,
 				"result must not contain more then one row");
-		got_cell=true;
+			return true;
+		}
 
-		result->APPEND_TAINTED((const char *)ptr, size, statement_cstr, 0);
+		try {
+			got_cell=true;
+			result->APPEND_TAINTED((const char *)ptr, size, statement_cstr, 0);
+			return false;
+		} catch(...) {
+			error=SQL_Error("exception occured in String_sql_event_handlers::add_row_cell");
+			return true;
+		}
 	}
 
 private:

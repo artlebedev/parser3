@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VOID_C="$Date: 2002/12/09 11:07:40 $";
+static const char* IDENT_VOID_C="$Date: 2002/12/09 12:19:16 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -59,15 +59,16 @@ public:
 	Void_sql_event_handlers(Pool& apool, const String& astatement_string) :
 		pool(apool), statement_string(astatement_string) {
 	}
-	void add_column(void *ptr, size_t size) { /* ignore */ }
-	void before_rows() {
+	bool add_column(SQL_Error& /*error*/, void *ptr, size_t size) { /* ignore */ return false; }
+	bool before_rows(SQL_Error& error) {
 		// there are some result rows, which is wrong
-		throw SQL_Exception("parser.runtime",
+		error=SQL_Error("parser.runtime",
 			&statement_string,
 			"must return nothing");
+		return true;
 	}
-	void add_row() { /* never */ }
-	void add_row_cell(void *ptr, size_t size) { /* never */ }
+	bool add_row(SQL_Error& /*error*/) { /* never */ return false; }
+	bool add_row_cell(SQL_Error& /*error*/, void *ptr, size_t size) { /* never */ return false; }
 
 private:
 	Pool& pool;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/12/09 11:07:40 $";
+static const char* IDENT_TABLE_C="$Date: 2002/12/09 12:19:16 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -615,26 +615,50 @@ public:
 	{
 	}
 
-	void add_column(void *ptr, size_t size) {
-		String *column=new(pool) String(pool);
-		column->APPEND_TAINTED(
-			(const char *)ptr, size, 
-			statement_cstr, 0);
-		columns+=column;
-	}
-	void before_rows() { 
-		table=new(pool) Table(pool, &method_name, &columns);
-	}
-	void add_row() {
-		(*table)+=(row=new(pool) Array(pool));
-	}
-	void add_row_cell(void *ptr, size_t size) {
-		String *cell=new(pool) String(pool);
-		if(size)
-			cell->APPEND_TAINTED(
+	bool add_column(SQL_Error& error, void *ptr, size_t size) {
+		try {
+			String *column=new(pool) String(pool);
+			column->APPEND_TAINTED(
 				(const char *)ptr, size, 
-				statement_cstr, table->size()-1);
-		(*row)+=cell;
+				statement_cstr, 0);
+			columns+=column;
+			return false;
+		} catch(...) {
+			error=SQL_Error("exception occured in Table_sql_event_handlers::add_column");
+			return true;
+		}
+	}
+	bool before_rows(SQL_Error& error) { 
+		try {
+			table=new(pool) Table(pool, &method_name, &columns);
+			return false;
+		} catch(...) {
+			error=SQL_Error("exception occured in Table_sql_event_handlers::before_rows");
+			return true;
+		}
+	}
+	bool add_row(SQL_Error& error) {
+		try {
+			(*table)+=(row=new(pool) Array(pool));
+			return false;
+		} catch(...) {
+			error=SQL_Error("exception occured in Table_sql_event_handlers::add_row");
+			return true;
+		}
+	}
+	bool add_row_cell(SQL_Error& error, void *ptr, size_t size) {
+		try {
+			String *cell=new(pool) String(pool);
+			if(size)
+				cell->APPEND_TAINTED(
+					(const char *)ptr, size, 
+					statement_cstr, table->size()-1);
+			(*row)+=cell;
+			return false;
+		} catch(...) {
+			error=SQL_Error("exception occured in Table_sql_event_handlers::add_row_cell");
+			return true;
+		}
 	}
 
 private:
