@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.20 2001/03/12 17:16:50 paf Exp $
+	$Id: pa_request.C,v 1.21 2001/03/12 21:54:20 paf Exp $
 */
 
 #include <string.h>
@@ -157,7 +157,7 @@ void Request::fail_if_junction_(bool is,
 }
 
 char *Request::relative(const char *path, const char *file) {
-    char *result=static_cast<char *>(malloc(strlen(path)+strlen(file)+1));
+    char *result=(char *)malloc(strlen(path)+strlen(file)+1);
 	strcpy(result, path);
     rsplit(result,'/');
     strcat(result, "/");
@@ -167,7 +167,7 @@ char *Request::relative(const char *path, const char *file) {
 
 char *Request::absolute(const char *name) {
 	if(name[0]=='/') {
-		char *result=static_cast<char *>(malloc(strlen(document_root)+strlen(name)+1));
+		char *result=(char *)malloc(strlen(document_root)+strlen(name)+1);
 		strcpy(result, document_root);
 		strcat(result, name);
 		return result;

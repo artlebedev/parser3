@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wwrapper.h,v 1.3 2001/03/12 18:13:51 paf Exp $
+	$Id: pa_wwrapper.h,v 1.4 2001/03/12 21:54:21 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -34,8 +34,7 @@ public: // Value
 
 			String& auto_created_hash_name=*NEW String(pool());
 			auto_created_hash_name.append(aname, String::Untaint_lang::NO);
-			auto_created_hash_name.APPEND_CONST(" storage");
-			fvalue->set_name(auto_created_hash_name);
+			fvalue->set_name(auto_created_hash_name.APPEND_CONST(" storage"));
 		}
 
 		fvalue->put_element(aname, avalue); 

@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.9 2001/03/12 17:00:48 paf Exp $
+	$Id: pa_common.C,v 1.10 2001/03/12 21:54:20 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -49,7 +49,7 @@ char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem) {
 		/*if(exclusive)
 			flock(f, LOCK_EX);*/
 
-		char *result=static_cast<char *>(pool.malloc(finfo.st_size+1));
+		char *result=(char *)pool.malloc(finfo.st_size+1);
 		int read_size=read(f,result,finfo.st_size);
 		if(read_size>=0 && read_size<=finfo.st_size) 
 			result[read_size]='\0';
@@ -104,4 +104,20 @@ char *rsplit(char *string, char delim) {
 		}
     }
     return NULL;	
+}
+
+char *format(Pool& pool, double value, char *fmt) {
+	char *result=(char *)pool.malloc(MAX_NUMBER);
+	if(fmt)
+		if(strpbrk(fmt, "diouxX"))
+			if(strpbrk(fmt, "ouxX"))
+				snprintf(result, MAX_NUMBER, fmt, (uint)value );
+			else
+				snprintf(result, MAX_NUMBER, fmt, (int)value );
+		else
+			snprintf(result, MAX_NUMBER, fmt, value);
+	else
+		snprintf(result, MAX_NUMBER, "%d", (int)value);
+	
+	return result;
 }

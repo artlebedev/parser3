@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: untaint.C,v 1.1 2001/03/12 13:40:27 paf Exp $
+	$Id: untaint.C,v 1.2 2001/03/12 21:54:20 paf Exp $
 */
 
 #include <string.h>
@@ -35,7 +35,7 @@
 // String
 
 char *String::cstr() const {
-	char *result=static_cast<char *>(malloc(size()*UNTAINT_TIMES_BIGGER+1));
+	char *result=(char *)malloc(size()*UNTAINT_TIMES_BIGGER+1);
 
 	char *copy_here=result;
 	const Chunk *chunk=&head; 

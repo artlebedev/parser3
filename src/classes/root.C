@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.31 2001/03/12 21:18:00 paf Exp $
+	$Id: root.C,v 1.32 2001/03/12 21:54:18 paf Exp $
 */
 
 #include <string.h>
@@ -12,6 +12,7 @@
 #include "pa_request.h"
 #include "_root.h"
 #include "pa_vint.h"
+#include "pa_common.h"
 
 static void _if(Request& r, const String&, Array *params) {
 	bool condition=

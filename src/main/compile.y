@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.92 2001/03/12 18:13:49 paf Exp $
+	$Id: compile.y,v 1.93 2001/03/12 21:54:20 paf Exp $
 */
 
 /*
@@ -180,7 +180,7 @@ control_method: '@' STRING '\n'
 			}
 		} else {
 			strcpy(PC->error, "'");
-			strncat(PC->error, command.cstr(), MAX_STRING-1);
+			strncat(PC->error, command.cstr(), MAX_STRING/2);
 			strcat(PC->error, "' invalid special name. valid names are "
 				"'"CLASS_NAME"', '"USE_CONTROL_METHOD_NAME"' and '"BASE_NAME"'");
 			YYERROR;

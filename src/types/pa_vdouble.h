@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.5 2001/03/12 12:00:07 paf Exp $
+	$Id: pa_vdouble.h,v 1.6 2001/03/12 21:54:21 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -12,8 +12,6 @@
 #include "pa_vstateless_object.h"
 #include "pa_common.h"
 #include "_double.h"
-
-#define MAX_DOUBLE_AS_STRING 20
 
 class VDouble : public VStateless_object {
 public: // Value
@@ -25,8 +23,8 @@ public: // Value
 
 	// double: fdouble
 	const String *get_string() {
-		char *buf=static_cast<char *>(pool().malloc(MAX_DOUBLE_AS_STRING));
-		snprintf(buf, MAX_DOUBLE_AS_STRING, "%g", fdouble);
+		char *buf=(char *)pool().malloc(MAX_NUMBER);
+		snprintf(buf, MAX_NUMBER, "%g", fdouble);
 		String *result=NEW String(pool());
 		result->APPEND_CONST(buf);
 		return result;

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.9 2001/03/12 21:18:00 paf Exp $
+	$Id: table.C,v 1.10 2001/03/12 21:54:18 paf Exp $
 */
 
 #include "pa_request.h"
@@ -149,10 +149,12 @@ static void _empty(Request& r, const String&, Array *params) {
 }
 
 void initialize_table_class(Pool& pool, VClass& vclass) {
-	// ^table.set[data]  ^table.set[nameless;data]
+	// ^table.set[data]  
+	// ^table.set[nameless;data]
 	vclass.add_native_method("set", _set, 1, 2);
 
-	// ^table.load[file]  ^table.load[nameless;file]
+	// ^table.load[file]  
+	// ^table.load[nameless;file]
 	vclass.add_native_method("load", _load, 1, 2);
 
 	// ^table.count[]
@@ -161,13 +163,16 @@ void initialize_table_class(Pool& pool, VClass& vclass) {
 	// ^table.line[]
 	vclass.add_native_method("line", _line, 0, 0);
 
-	// ^table.offset[]  ^table.offset[offset]
+	// ^table.offset[]  
+	// ^table.offset[offset]
 	vclass.add_native_method("offset", _offset, 0, 1);
 
-	// ^table.menu{code}  ^table.menu{code}[delim]
+	// ^table.menu{code}  
+	// ^table.menu{code}[delim]
 	vclass.add_native_method("menu", _menu, 1, 2);
 
-	// ^table.empty{code-when-empty}  ^table.empty{code-when-empty}{code-when-not}
+	// ^table.empty{code-when-empty}  
+	// ^table.empty{code-when-empty}{code-when-not}
 	vclass.add_native_method("empty", _empty, 1, 2);
 
 }	

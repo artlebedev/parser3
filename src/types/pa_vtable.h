@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.2 2001/03/12 20:36:53 paf Exp $
+	$Id: pa_vtable.h,v 1.3 2001/03/12 21:54:21 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -27,6 +27,7 @@ public: // Value
 	VTable *get_vtable() { return this; }
 	// table: column
 	Value *get_element(const String& name) {
+		// methods
 		if(Value *result=VStateless_object::get_element(name))
 			return result;
 

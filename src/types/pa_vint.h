@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.6 2001/03/12 21:18:01 paf Exp $
+	$Id: pa_vint.h,v 1.7 2001/03/12 21:54:21 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -12,8 +12,6 @@
 #include "pa_vstateless_object.h"
 #include "pa_common.h"
 #include "_int.h"
-
-#define MAX_INT_AS_STRING 20
 
 class VInt : public VStateless_object {
 public: // Value
@@ -25,8 +23,8 @@ public: // Value
 
 	// integer: finteger
 	const String *get_string() {
-		char *buf=static_cast<char *>(pool().malloc(MAX_INT_AS_STRING));
-		snprintf(buf, MAX_INT_AS_STRING, "%d", finteger);
+		char *buf=(char *)pool().malloc(MAX_NUMBER);
+		snprintf(buf, MAX_NUMBER, "%d", finteger);
 		String *result=NEW String(pool());
 		result->APPEND_CONST(buf);
 		return result;
