@@ -1,3 +1,4 @@
+//2
 /** @file
 	Parser: scripting and CGI main.
 
@@ -5,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.102 2001/09/04 07:02:33 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.103 2001/09/04 15:55:48 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
