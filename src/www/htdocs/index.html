@@ -1,5 +1,7 @@
 @main[]
-^thashforeach[]
+^thashforeach3[]
+#^thashforeach2[]
+#^thashforeach[]
 #^thashdelete[]
 #^connect[mysql://user:pass@cd.rinet.ru/db]{^void:sql{z} }
 #^tappend[]
@@ -54,6 +56,28 @@
 #^xml[]
 #^header[]
 OK
+
+@thashforeach3[]
+$h[
+	$.a[1] 
+	$.b[2]
+]
+$c[^table::set{a
+^h.foreach[key;value]{$value
+}}]
+$c.a
+
+@thashforeach2[]
+$h[
+	$.a[1] 
+	$.b[2]
+]
+$c[
+^h.foreach[key;value]{
+	$.$key[$value]
+}
+]
+$c.b
 
 @thashforeach[]
 $h[
