@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2003/11/20 17:22:48 $";
+static const char * const IDENT_XDOC_C="$Date: 2003/11/20 17:19:27 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -661,7 +661,7 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 		gnome_str=(char *)outputBuffer->buffer->content;
 	}
 
-	if((result.length=gnome_length)) {
+	if(result.length=gnome_length) {
 		result.str=pa_strdup(gnome_str, gnome_length);
 	} else
 		result.str=0;
