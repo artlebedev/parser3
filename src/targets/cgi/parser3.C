@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/08/14 09:20:53 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/08/14 10:52:28 $";
 
 #include "pa_config_includes.h"
 
@@ -50,7 +50,8 @@ extern ulong
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
 
 static const char *argv0;
-static char beside_binary_path[MAX_STRING];
+static const char *config_filespec_cstr=0;
+static bool fail_on_config_read_problem=true;
 
 static Pool *pool; // global pool [dont describe to doxygen: it confuses it with param names]
 static bool cgi; ///< we were started as CGI?
@@ -59,15 +60,25 @@ static bool mail_received=false; ///< we were started with -m option? [asked to 
 // SAPI
 
 static void log(const char *fmt, va_list args) {
-	bool opened;
+	bool opened=false;
 	FILE *f=0;
 
-	// try beside by binary first
-	char file_spec[MAX_STRING];
-	snprintf(file_spec, MAX_STRING, 
-		"%s/parser3.log", beside_binary_path);
-	f=fopen(file_spec, "at");
-	opened=f!=0;
+	if(config_filespec_cstr) {
+		char beside_config_path[MAX_STRING];
+		strncpy(beside_config_path, config_filespec_cstr, MAX_STRING-1);  beside_config_path[MAX_STRING-1]=0;
+		if(!(
+			rsplit(beside_config_path, '/') || 
+			rsplit(beside_config_path, '\\'))) { // strip filename
+			// no path, just filename
+			beside_config_path[0]='.'; beside_config_path[1]=0;
+		}
+
+		char file_spec[MAX_STRING];
+		snprintf(file_spec, MAX_STRING, 
+			"%s/parser3.log", beside_config_path);
+		f=fopen(file_spec, "at");
+		opened=f!=0;
+	}
 	// fallback to stderr
 	if(!opened)
 		f=stderr;
@@ -303,23 +314,35 @@ static void real_parser_handler(
 		,
 		true /* status_allowed */);
 	
-	const char *config_filespec_cstr;
 	char config_filespec_buf[MAX_STRING];
-	const char *config_by_env=getenv(PARSER_CONFIG_ENV_NAME);
-	if(!config_by_env)
-		config_by_env=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
-	if(config_by_env)
-		config_filespec_cstr=config_by_env;
-	else {
-		snprintf(config_filespec_buf, MAX_STRING, 
-			"%s/%s", 
-			beside_binary_path, AUTO_FILE_NAME);
-		config_filespec_cstr=config_filespec_buf;
+	if(!config_filespec_cstr) {
+		const char *config_by_env=getenv(PARSER_CONFIG_ENV_NAME);
+		if(!config_by_env)
+			config_by_env=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
+		if(config_by_env)
+			config_filespec_cstr=config_by_env;
+		else {
+			// beside by binary
+			char beside_binary_path[MAX_STRING];
+			strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
+			if(!(
+				rsplit(beside_binary_path, '/') || 
+				rsplit(beside_binary_path, '\\'))) { // strip filename
+				// no path, just filename
+				// @todo full path, not ./!
+				beside_binary_path[0]='.'; beside_binary_path[1]=0;
+			}
+			snprintf(config_filespec_buf, MAX_STRING, 
+				"%s/%s", 
+				beside_binary_path, AUTO_FILE_NAME);
+			config_filespec_cstr=config_filespec_buf;
+			fail_on_config_read_problem=false;
+		}
 	}
 	
 	// process the request
 	request.core(
-		config_filespec_cstr, false /*fail_on_read_problem*/,
+		config_filespec_cstr, fail_on_config_read_problem,
 		header_only);
 	
 	//
@@ -391,9 +414,10 @@ static void usage(const char *program) {
 		"Usage: %s [options] file\n"
 		"Options are:\n"
 #ifdef WITH_MAILRECEIVE
-		"    -m  Parse mail, put received letter to $mail:received\n"
+		"    -m              Parse mail, put received letter to $mail:received\n"
 #endif
-		"    -h  Display usage information (this message)\n"
+		"    -f config_file  Use this config file (/path/to/auto.p)\n"
+		"    -h              Display usage information (this message)\n"
 		, PARSER_VERSION, 
 		program);
 	exit(EINVAL);
@@ -414,18 +438,7 @@ int main(int argc, char *argv[]) {
 //	_crtBreakAlloc=33112;
 #endif
 //	_asm int 3;
-	{
-		argv0=argv[0];
-		// beside by binary
-		// @todo full path, not ./!
-		strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
-		if(!(
-			rsplit(beside_binary_path, '/') || 
-			rsplit(beside_binary_path, '\\'))) { // strip filename
-			// no path, just filename
-			beside_binary_path[0]='.'; beside_binary_path[1]=0;
-		}
-	}
+	argv0=argv[0];
 
 	umask(2);
 
@@ -443,7 +456,7 @@ int main(int argc, char *argv[]) {
 		optind = 1;
 		opterr = 0;
 		int c;
-		while((c = getopt(argc, argv, "h"
+		while((c = getopt(argc, argv, "hf:"
 #ifdef WITH_MAILRECEIVE
 			"m"
 #endif
@@ -451,6 +464,9 @@ int main(int argc, char *argv[]) {
 			switch (c) {
 			case 'h':
 				usage(argv[0]);
+				break;
+			case 'f':
+				config_filespec_cstr=optarg;
 				break;
 #ifdef WITH_MAILRECEIVE
 			case 'm':
