@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.51 2001/03/06 14:09:36 paf Exp $
+  $Id: execute.C,v 1.52 2001/03/06 14:32:19 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -22,7 +22,7 @@
 
 char *opcode_name[]={
 	// literals
-	"STRING",  "CODE",  "CLASS",
+	"VALUE",  "CODE",  "CLASS",
 
 	// actions
 	"WITH_SELF",	"WITH_ROOT",	"WITH_READ",	"WITH_WRITE",
@@ -65,9 +65,9 @@ void dump(int level, const Array& ops) {
 		op.cast=ops.quick_get(i);
 		fprintf(stderr, "%*s%s", level*4, "", opcode_name[op.code]);
 
-		if(op.code==OP_STRING) {
-			VString *vstring=static_cast<VString *>(ops.quick_get(++i));
-			fprintf(stderr, " \"%s\"", vstring->get_string()->cstr());
+		if(op.code==OP_VALUE) {
+			Value *value=static_cast<Value *>(ops.quick_get(++i));
+			fprintf(stderr, " \"%s\" %s", value->get_string()->cstr(), value->type());
 		}
 		if(op.code==OP_CLASS) {
 			VClass *vclass=static_cast<VClass *>(ops.quick_get(++i));
@@ -98,11 +98,11 @@ void Request::execute(const Array& ops) {
 
 		switch(op.code) {
 		// param in next instruction
-		case OP_STRING:
+		case OP_VALUE:
 			{
-				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
-				fprintf(stderr, " \"%s\"", vstring->get_string()->cstr());
-				PUSH(vstring);
+				Value *value=static_cast<Value *>(ops.quick_get(++i));
+				fprintf(stderr, " \"%s\" %s", value->get_string()->cstr(), value->type());
+				PUSH(value);
 				break;
 			}
 		case OP_CODE:

@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.19 2001/03/06 14:28:35 paf Exp $
+  $Id: compile_tools.h,v 1.20 2001/03/06 14:32:18 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -84,7 +84,7 @@ void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array);
 
 
 // String Literal // returns array with 
-// first: OP_STRING instruction
+// first: OP_VALUE instruction
 // second op: string itself
 Array *SL(VString *vstring);
 // Literal Array to(2) String // return string value from literal array OP+string array
