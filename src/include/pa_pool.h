@@ -1,9 +1,9 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.33 2001/03/14 08:50:01 paf Exp $
+	$Id: pa_pool.h,v 1.34 2001/03/19 15:29:38 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -14,6 +14,14 @@
 class Exception;
 class Temp_exception;
 
+/** @brief
+	Pool mechanizm allows users not to free up allocated memory,
+	leaving that problem to 'pools'.
+
+	Also holds Exception object, which can be temporary set using 
+	Temp_exception auto-object.
+*/
+
 class Pool {
 	friend Temp_exception;
 public:
@@ -21,11 +29,14 @@ public:
 	Pool() : fexception(0) {}
 	~Pool() {}
 
+	/// current exception object of the pool
 	Exception& exception() const { return *fexception; }
 
+	/// allocates some bytes on pool
 	void *malloc(size_t size) {
 		return check(real_malloc(size), size);
 	}
+	/// allocates some bytes clearing them with zeros
 	void *calloc(size_t size) {
 		return check(real_calloc(size), size);
 	}
@@ -37,7 +48,7 @@ private: // implementation defined
 
 private: 
 
-	// checks whether mem allocated OK. throws exception otherwise
+	/// checks whether mem allocated OK. throws exception otherwise
 	void *check(void *ptr, size_t size) {
 		if(ptr)
 			return ptr;
@@ -47,13 +58,13 @@ private:
 		// never reached
 		return 0;
 	}
-	// throws proper exception
+	/// throws proper exception
 	void fail(size_t size) const;
 
-protected: // exception handling
+private: // exception handling
 
 	// exception replacement mechanism is 'protected' from direct usage
-	// Temp_exception_change object enforces paired set/restore
+	// Temp_exception object enforces paired set/restore
 	Exception *set_exception(Exception *e){
 		Exception *r=fexception;
 		fexception=e;
@@ -74,6 +85,11 @@ private: //disabled
 	Pool& operator = (const Pool&) { return *this; }
 };
 
+/** @brief
+	Base for all classes that are allocated in 'pools'.
+
+	Holds Pool object. Contains useful wrappers to it's methods.
+*/
 class Pooled {
 	// the pool i'm allocated on
 	Pool& fpool;
@@ -86,14 +102,36 @@ public:
 	Pooled(Pool& apool) : fpool(apool) {
 	}
 
+	/// my pool
 	Pool& pool() const { return fpool; }
 
+	/// useful wrapper around pool
 	void *malloc(size_t size) const { return fpool.malloc(size); }
+	/// useful wrapper around pool
 	void *calloc(size_t size) const { return fpool.calloc(size); }
+	/// useful wrapper around pool
 	Exception& exception() const { return fpool.exception(); }
 };
+/// useful macro for creating objects on current Pooled object Pooled::pool()
 #define NEW new(pool())
 
+/** @brief 
+	Auto-object used for temporary changing Pool's exception().
+
+	Use by with these macros:
+	\code
+		TRY { 
+			... 
+			if(?) 
+				THROW(?); 
+			...;
+		} CATCH(e) { 
+			code, using e fields
+			e.comment() 
+		}
+		END_CATCH
+	\endcode
+*/
 class Temp_exception {
 	Pool& fpool;
 	Exception *saved_exception;
@@ -121,9 +159,9 @@ public:
 #define XEND_CATCH \
 		} \
 	}
-// usage:
-//   TRY { ...; if(?) RAISE(?); ...; } CATCH(e) { catch-code e.comment() } END_CATCH
 
+//@{
+/// @see Temp_exception 
 #define TRY XTRY(pool())
 #define THROW XTHROW(exception())
 #define CATCH(e) XCATCH(e)
@@ -135,5 +173,6 @@ public:
 #define PEND_CATCH XEND_CATCH 
 
 #define RTHROW XTHROW(r.pool().exception())
+//@}
 
 #endif

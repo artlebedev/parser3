@@ -1,9 +1,9 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.12 2001/03/18 20:31:25 paf Exp $
+	$Id: pa_globals.h,v 1.13 2001/03/19 15:29:37 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H

@@ -1,9 +1,9 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.60 2001/03/18 20:31:25 paf Exp $
+	$Id: pa_request.h,v 1.61 2001/03/19 15:29:38 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -41,10 +41,12 @@
 
 class Temp_lang;
 
+/// Main workhorse.
 class Request : public Pooled {
 	friend Temp_lang;
 public:
-	
+
+	/// some information from web server
 	struct Info {
 		const char *document_root;
 		const char *path_translated;
@@ -58,87 +60,96 @@ public:
 	
 	Request(Pool& apool,
 		Info& ainfo,
-		String::Untaint_lang adefault_lang
+		String::Untaint_lang adefault_lang ///< all tainted data default untainted
 	);
 	~Request() {}
 
-	// global classes
+	/// global classes
 	Hash& classes() { return fclasses; }
 
-	// core request processing
+	/// core request processing
 	void core(Exception& system_exception,
 		const char *sys_auto_path1,
 		const char *sys_auto_path2);
 
+	/// executes ops
 	void execute(const Array& ops);
 
+	/// compiles the file, maybe forcing it's class \a name and \a base_class.
 	VStateless_class *use_file(
 		const char *file, bool fail_on_read_problem=true,
 		const String *name=0, 
 		VStateless_class *base_class=0); // core.C
+	/// compiles a \a source buffer
 	VStateless_class *use_buf(
 		const char *source, const char *file,
 		VStateless_class *aclass=0, const String *name=0, 
 		VStateless_class *base_class=0); // core.C
+	/// processes any code-junction there may be inside of \a value
 	Value& process(
 		Value& value, 
 		const String *name=0,
 		bool intercept_string=true); // execute.C
 
-	// write(const) = clean
+	/// write(const) = clean
 	void write(const String& astring) {
 		wcontext->write(astring, String::Untaint_lang::NO);
 	}
-	// appending, sure of clean string inside
+	/// appending, sure of clean string inside
 	void write_no_lang(String& astring) {
 		wcontext->write(astring, String::Untaint_lang::NO);
 	}
-	// appending string, passing language built into string being written
+	/// appending string, passing language built into string being written
 	void write_pass_lang(String& astring) {
 		wcontext->write(astring, String::Untaint_lang::PASS_APPENDED); 
 	}
-	// appending possible string, assigning untaint language
+	/// appending possible string, assigning untaint language
 	void write_assign_lang(Value& avalue) {
 		wcontext->write(avalue, flang); 
 	}
-	// appending possible string, passing language built into string being written
+	/// appending possible string, passing language built into string being written
 	void write_pass_lang(Value& avalue) {
 		wcontext->write(avalue, String::Untaint_lang::PASS_APPENDED); 
 	}
-	// appending sure value, that would be converted to clean string
+	/// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
 		wcontext->write(avalue, String::Untaint_lang::NO);
 	}
-	// appending sure value, not VString
+	/// appending sure value, not VString
 	void write_expr_result(Value& avalue) {
 		wcontext->write(avalue); 
 	}
 
+	/// handy is-value-a-junction ensurer
 	void fail_if_junction_(bool is, Value& value, const String& method_name, char *msg);
 
+	/// returns relative to \a path  path to \a file 
 	char *relative(const char *path, const char *file);
+
+	/// returns an absolute \a path to relative \a name
 	char *absolute(const char *name);
 
 public:
 	
-	//
+	/// info from web server
 	Info& info;
 
-	// default base
+	/// default base
 	VClass ROOT;
-	// $env:fields here
+	/// $env:fields here
 	VEnv env;
-	// $form:elements here
+	/// $form:elements here
 	VForm form;
-	// $request:elements here
+	/// $request:elements here
 	VRequest request;
-	// $response:
+	/// $response:
 	VResponse response;
-	// $cookie:
+	/// $cookie:
 	VCookie cookie;
 
-	// contexts
+	/// contexts
 	Value *self, *root, *rcontext;
+	/// contexts
 	WContext *wcontext;
 
 private: // core data
@@ -187,6 +198,7 @@ private:
 	void output_result(const String& body_string);
 };
 
+///	Auto-object used for temporary changing Request::flang.
 class Temp_lang {
 	Request& frequest;
 	String::Untaint_lang saved_lang;

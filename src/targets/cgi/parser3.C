@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.22 2001/03/18 20:32:53 paf Exp $
+	$Id: parser3.C,v 1.23 2001/03/19 15:29:41 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -86,7 +86,7 @@ void output_body(const char *buf, size_t size) {
 // main
 
 int main(int argc, char *argv[]) {
-	//TODO: umask(2);
+	// TODO:umask(2);
 #ifdef WIN32
 	_setmode(fileno(stdin), _O_BINARY);
 	_setmode(fileno(stdout), _O_BINARY);

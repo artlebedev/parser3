@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.115 2001/03/18 16:36:55 paf Exp $
+	$Id: execute.C,v 1.116 2001/03/19 15:29:39 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -634,16 +634,17 @@ Value *Request::get_element() {
 	return value;
 }
 
+/**
+	intercept_string:
+	- true:
+		they want result=string value, 
+		possible object result goes to wcontext
+	- false:
+		they want any result[string|object]
+		nothing goes to wcontext.
+		used in (expression) params evaluation
+*/
 Value& Request::process(Value& value, const String *name, bool intercept_string) {
-	// intercept_string:
-	//	true:
-	//		they want result=string value, 
-	//		possible object result goes to wcontext
-	//	false:
-	//		they want any result[string|object]
-	//		nothing goes to wcontext.
-	//		used in (expression) params evaluation
-
 	Value *result;
 	Junction *junction=value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?

@@ -1,9 +1,9 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_threads.h,v 1.6 2001/03/11 08:16:33 paf Exp $
+	$Id: pa_threads.h,v 1.7 2001/03/19 15:29:38 paf Exp $
 */
 
 #ifndef PA_THREADS_H
@@ -18,6 +18,7 @@
 
 #ifdef MULTITHREAD
 
+/// simple semaphore object
 class Mutex {
 	uint handle;
 public:
@@ -29,6 +30,11 @@ public:
 
 extern Mutex global_mutex;
 
+/** @brief
+	Helper to ensure paired Mutex::acquire() and Mutex::release().
+
+	Use it with SYNCHRONIZED macro
+*/
 class AutoSYNCHRONIZED {
 	bool thread_safe;
 public:
@@ -40,10 +46,21 @@ public:
 		if(thread_safe)
 			global_mutex.release(); 
 	}
-}
+};
 
+/** @brief
+	put it to first line of a function to ensure thread safety
+
+	@verbatim
+	void someclass::somefunc(...) { SYNCHRONIZED(thread_safe);
+		...
+	}
+	@endverbatim
+
+	considering \a thread_safe to be the object field to flag 
+	whether safety is really needed in this particular object instance
+*/
 #define SYNCHRONIZED(athread_safe) AutoSYNCHRONIZED autoSYNCHRONIZED(athread_safe)
-
 
 #else // not MULTITHREAD-ed
 

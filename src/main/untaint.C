@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: untaint.C,v 1.5 2001/03/18 20:31:27 paf Exp $
+	$Id: untaint.C,v 1.6 2001/03/19 15:29:40 paf Exp $
 */
 
 #include <string.h>
@@ -55,12 +55,12 @@ inline bool need_header_encode(unsigned char c){
 
 // String
 
+/// \todo optimize whitespaces for all but 'html'
 char *String::cstr() const {
 	char *result=(char *)malloc(size()*UNTAINT_TIMES_BIGGER+1);
 
 	char *copy_here=result;
 	const Chunk *chunk=&head; 
-	// TODO: оптимизировать whitespaces для всех, кроме 'html'
 	do {
 		const Chunk::Row *row=chunk->rows;
 		for(int i=0; i<chunk->count; i++) {

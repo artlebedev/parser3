@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.43 2001/03/18 20:31:27 paf Exp $
+	$Id: pa_string.C,v 1.44 2001/03/19 15:29:40 paf Exp $
 */
 
 #include <string.h>
@@ -45,7 +45,7 @@ void String::expand() {
 String::String(const String& src) :	Pooled(src.pool()) {
 	head.count=CR_PREALLOCATED_COUNT;
 	
-	int src_used_rows=src.used_rows();
+	int src_used_rows=src.fused_rows;
 	if(src_used_rows<=head.count) {
 		// all new rows fit into preallocated area
 		int curr_chunk_rows=head.count;
@@ -100,7 +100,7 @@ String::String(const String& src) :	Pooled(src.pool()) {
 }
 
 String& String::append(const String& src, Untaint_lang lang, bool forced) {
-	int src_used_rows=src.used_rows();
+	int src_used_rows=src.fused_rows;
 	int dst_free_rows=link_row-append_here;
 	
 	if(src_used_rows<=dst_free_rows) {

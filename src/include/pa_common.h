@@ -1,9 +1,9 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.14 2001/03/18 20:31:25 paf Exp $
+	$Id: pa_common.h,v 1.15 2001/03/19 15:29:37 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -34,7 +34,18 @@ int __snprintf(char *, size_t, const char *, ...);
 
 #endif
 
+/**
+	read specified file using pool, 
+	if fail_on_read_problem is true[default] throws an exception
+*/
 char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem=true);
+
+/**
+	scans for \a delim[default \n] in \a *row_ref, 
+	\return piece of line before it or end of string, if no \a delim found
+	assigns \a *row_ref to point right after delimiter if there were one
+	or to zero if no \a delim were found.
+*/
 char *getrow(char **row_ref,char delim='\n');
 //char *lsplit(char *,char);
 char *lsplit(char **string_ref,char delim);

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.51 2001/03/18 20:31:27 paf Exp $
+	$Id: pa_request.C,v 1.52 2001/03/19 15:29:40 paf Exp $
 */
 
 #include <string.h>
@@ -298,11 +298,11 @@ void Request::core(Exception& system_exception,
 
 }
 
+/// \todo find|solve cyclic dependences
 VStateless_class *Request::use_file(
 									const char *file, bool fail_on_read_problem,
 									const String *name, 
 									VStateless_class *base_class) {
-	// TODO: обнаружить|решить cyclic dependences
 	char *source=file_read(pool(), file, fail_on_read_problem);
 	if(!source)
 		return base_class;
@@ -322,11 +322,13 @@ VStateless_class *Request::use_buf(
 	return &cclass;
 }
 
+/**
+	- fail_if_junction(true, junction = fail
+	- fail_if_junction(false, not junction = fail
+*/
 void Request::fail_if_junction_(bool is, 
 								Value& value, const String& method_name, char *msg) {
 
-	// fail_if_junction(true, junction = fail
-	// fail_if_junction(false, not junction = fail
 	if((value.get_junction()!=0) ^ !is)
 		THROW(0, 0,
 			&method_name,

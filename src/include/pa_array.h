@@ -1,22 +1,9 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.23 2001/03/12 12:00:04 paf Exp $
-*/
-
-/*
-
-	Array               Chunk0
-	======              ========
-	head--------------->[ptr]
-	append_here-------->[ptr]
-	link_row            ........
-			.			.
-			.			[ptr]
-			...........>[link to the next chunk]
-
+	$Id: pa_array.h,v 1.24 2001/03/19 15:29:37 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -28,36 +15,62 @@
 #include "pa_types.h"
 #include "pa_string.h"
 
+/**	@brief	
+	Pooled Array.
+
+	Internal structure: @verbatim	
+
+	Array               Chunk0
+	======              ========
+	head--------------->[ptr]
+	append_here-------->[ptr]
+	link_row            ........
+			.			.
+			.			[ptr]
+			...........>[link to the next chunk]
+
+	@endverbatim
+*/
+
 class Array : public Pooled {
 public:
 
-	typedef void Item;
+	typedef void Item; ///< Array item type
 
 	enum {
-		CR_INITIAL_ROWS_DEFAULT=10,
-		CR_GROW_PERCENT=60
+		CR_INITIAL_ROWS_DEFAULT=10, ///< default preallocated row count
+		CR_GROW_PERCENT=60 ///< each time the Array chunk_is_full() array expanded()
 	};
 
 public:
 
 	Array(Pool& apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
+	/// size Array. how many items are in it
 	int size() const { 
 		// for get and quick_get
 		cache_chunk_base=0;
 		cache_chunk=head;
 		return fused_rows; 
 	}
+	/// append Item to array
 	Array& operator += (Item *src);
-	// Array<const Item*> replacement
-	Array& operator += (const Item *src) { return *this+=const_cast<Item*>(src); }
-	Array& append_array(const Array& src, int offset=0);
-	Item *quick_get(int index) const {
-		// considering these true:
-		//   index increments from 0 to size()-1
-		//   index>=0 && index<size()
-		//   index>=cache_chunk_base
 
+	/// dirty hack to allow constant items storage. I long for Array<const Item*>
+	Array& operator += (const Item *src) { return *this+=const_cast<Item*>(src); }
+
+	/// append other Array portion to this one. starting from offset
+	Array& append_array(const Array& src, int offset=0);
+
+	/** @brief
+		quickly get some item considering
+
+		these true:
+			- index increments from 0 to size()-1
+			- index>=0 && index<size()
+			- index>=cache_chunk_base
+	*/
+	Item *quick_get(int index) const {
 		// next chunk will be with "index" row
 		if(!(index<cache_chunk_base+cache_chunk->count)) {
 			int count=cache_chunk->count;
@@ -70,6 +83,7 @@ public:
 
 	Item *get(int index) const;
 	void put(int index, Item *item);
+	/// convinient way to get strings from Array. I long for Array<const String *>
 	const String *get_string(int index) const { 
 		return static_cast<const String *>(get(index)); 
 	}

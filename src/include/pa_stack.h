@@ -1,9 +1,9 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stack.h,v 1.6 2001/03/11 08:16:33 paf Exp $
+	$Id: pa_stack.h,v 1.7 2001/03/19 15:29:38 paf Exp $
 */
 
 #ifndef PA_STACK_H
@@ -11,6 +11,7 @@
 
 #include "pa_array.h"
 
+/// simple stack based on Array
 class Stack : public Array {
 public:
 

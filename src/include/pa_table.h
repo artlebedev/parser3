@@ -1,15 +1,10 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.13 2001/03/12 20:55:15 paf Exp $
+	$Id: pa_table.h,v 1.14 2001/03/19 15:29:38 paf Exp $
 */
-
-/*
-	hence most of tables are "named", no need to uptimize nameless onces
-*/
-
 
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
@@ -20,6 +15,17 @@
 #include "pa_string.h"
 #include "pa_request.h"
 
+/// parser \b table class backend
+/**
+	holds 
+	- column names[if any]
+	- data rows
+	- current row pointer
+
+	uses String for column names and data items
+
+	hence most of tables are "named", no need to uptimize nameless onces
+*/
 class Table : public Array {
 public:
 
@@ -28,14 +34,18 @@ public:
 		Array *acolumns,
 		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
-	// the source of table's data
-	const String& source() { return fsource; }
+	/// the string source of table's data
+	//const String& source() { return fsource; }
 
+	/// column names
 	const Array *columns() { return fcolumns; }
 
+	/// moves \a current pointer
 	void set_current(int acurrent) { fcurrent=acurrent; }
+	/// \return current pointer
 	int get_current() { return fcurrent; }
 
+	/// \return item from \a column_name
 	const String *item(const String& column_name);
 
 private:

@@ -3,11 +3,11 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.6 2001/03/18 20:31:30 paf Exp $
+	$Id: pa_vform.C,v 1.7 2001/03/19 15:29:42 paf Exp $
 */
 
-/*
-	based on cgic by TODO:?
+/**
+	\todo based on cgic by ?
 */
 
 #include <ctype.h>
@@ -16,7 +16,6 @@
 #include "pa_vform.h"
 #include "pa_vstring.h"
 #include "pa_globals.h"
-//#include "pa_common.h"
 #include "pa_request.h"
 
 // parse helper funcs
@@ -70,7 +69,7 @@ static const char *searchAttribute(const char *data,const char *attr,int len){
 // VForm
 
 char *VForm::strpart(const char *str, int len) {
-    char *result=(char *)malloc(len+1); // TODO
+    char *result=(char *)malloc(len+1);
     if (!result) return NULL;
     memcpy(result,str,len);
     result[len]=0;
@@ -191,10 +190,10 @@ void VForm::ParseMimeInput(const char *content_type,
 	}
 }
 
-void VForm::AppendFormEntry(const char *name, 
+void VForm::AppendFormEntry(const char *aname, 
 							const char *value_ptr, int value_size,
 							const char *file_name) {
-	String& sname=*NEW String(pool(), name);
+	String& sname=*NEW String(pool(), aname);
 
 	Value *value;
 	if(file_name)

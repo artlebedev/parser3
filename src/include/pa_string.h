@@ -1,22 +1,9 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.40 2001/03/18 20:31:26 paf Exp $
-*/
-
-/*
-
-	String				Chunk0
-	======				========
-	head--------------->[ptr, size, ...]
-	append_here-------->[ptr, size, ...]
-						.
-						.
-						[ptr, size, ...]
-	link_row----------->[link to the next chunk]
-
+	$Id: pa_string.h,v 1.41 2001/03/19 15:29:38 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -38,41 +25,70 @@
 		const char *src, size_t size,  \
 		bool tainted, \
 		const char *file, uint line
+/// appends clean piece to String
 #	define APPEND(src, size, file, line) real_append(src, size, false, file, line)
+/// appends tainted piece to String
 #	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true, file, line)
 #else
 #	define STRING_APPEND_PARAMS \
 		const char *src, \
 		size_t size, \
 		bool tainted
+/// appends clean piece to String
 #	define APPEND(src, size, file, line) real_append(src, size, false)
+/// appends tainted piece to String
 #	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true)
 #endif
+/// handy: appends const char* piece to String
 #define	APPEND_CONST(src) APPEND(src, 0, 0, 0)
 
+/** @brief
+	Pooled string.
+
+	Internal structure: @verbatim	
+
+	String				Chunk0
+	======				========
+	head--------------->[ptr, size, ...]
+	append_here-------->[ptr, size, ...]
+						.
+						.
+						[ptr, size, ...]
+	link_row----------->[link to the next chunk]
+
+	@endverbatim
+
+	All pieces remember 
+	- the file and its line they are from [can be turned off by NO_STRING_ORIGIN]
+	- whether they are tainted or not, 
+	  and the language which should be used to detaint them
+*/
 class String : public Pooled {
 public:
 	enum {
-		CR_PREALLOCATED_COUNT=5,
-		CR_GROW_PERCENT=60
+		CR_PREALLOCATED_COUNT=5, ///< default preallocated item count
+		CR_GROW_PERCENT=60 ///< each time the Array chunk_is_full() array expanded()
 	};
 
+	/// piece is tainted or not. the language to use when detaint 
 	enum Untaint_lang {
-		UNKNOWN=0, // when get by name fails
-		NO, // clean
-		YES,  // tainted, untaint language as assigned later 
+		UNKNOWN=0, ///< when get by name fails
+		NO, ///< clean
+		YES,  ///< tainted, untaint language as assigned later 
 		// untaint languages. assigned by ^untaint[lang]{...}
 		PASS_APPENDED,
-			// leave language built into string being appended
-			// just a flag, that value not stored
-		AS_IS,
-		HEADER,
-		URI,
-		TABLE,
-		SQL,
-		JS,
-		HTML,
-		HTML_TYPO
+			/**<
+				leave language built into string being appended.
+				just a flag, that value not stored
+			*/
+		AS_IS,  ///< leave all characters intact
+		HEADER, ///< text in response header
+		URI,    ///< text in uri
+		TABLE,  ///< ^table:set body
+		SQL,    ///< ^table:sql body
+		JS,     ///< JavaScript code
+		HTML,   ///< HTML code (for editing)
+		HTML_TYPO ///< HTML code with TYPOgraphic replacements (for showing)
 	};
 
 public:
@@ -80,9 +96,10 @@ public:
 	String(Pool& apool, const char *src=0, bool tainted=false);
 	String(const String& src);
 	size_t size() const { return fsize; }
-	int used_rows() const { return fused_rows; }
+	/// convert to C string
 	char *cstr() const;
 	String& real_append(STRING_APPEND_PARAMS);
+	/// \return <0 ==0 or >0 depending on comparison result
 	int cmp (const String& src) const;
 	bool operator < (const String& src) const {	return cmp(src)<0; }
 	bool operator > (const String& src) const {	return cmp(src)>0; }
@@ -96,13 +113,28 @@ public:
 	bool operator != (const String& src) const { return cmp(src)!=0; }
 
 	bool operator == (const char* b_ptr) const;
+	/** @brief
+		appends other String
+
+		marking all tainted pieces of it with \a lang.
+		or marking ALL pieces of it with a \a lang when \a forced to.
+	*/
 	String& append(const String& src, Untaint_lang lang, bool forced=false);
 
+	/// simple hash code of string. used by Hash
 	uint hash_code() const;
 
-	const Origin& origin() const { return head.rows[0].item.origin; }
+#ifndef NO_STRING_ORIGIN
+	/// origin of string. calculated by first row
+	const Origin& origin() const { 
+		if(!fused_rows)
+			THROW(0, 0, 
+				0,
+				"String::origin() of empty string called");
 
-//	void change_lang(Untaint_lang lang);
+		return head.rows[0].item.origin; 
+	}
+#endif
 
 private:
 
