@@ -3,7 +3,7 @@
 @end
 
 @main[]
-$splitURI[$request:uri.lsplit[/]]
+$splitURI[^request:uri.lsplit[/]]
 $splitURI.0!$splitURI.1
 <HR>
 

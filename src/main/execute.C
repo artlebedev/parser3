@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.152 2001/05/07 14:00:49 paf Exp $
+	$Id: execute.C,v 1.153 2001/05/07 14:09:04 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -372,7 +372,10 @@ void Request::execute(const Array& ops) {
 					read_class && read_class->is_or_derived_from(*called_class)) // yes
 					self=rcontext; // class dynamic call
 				else // no, not me or relative of mine (total stranger)
-					if(frame->is_constructor) {
+					// were are constructing something and
+					// our constructor is just method call
+					if(frame->is_constructor && 
+						wcontext->somebody_entered_some_object()==1) {
 						// this is a constructor call
 						// some stateless_object creatable derivates
 						if(Value *value=called_class->create_new_value(pool()))
