@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.136 2002/04/19 08:28:35 paf Exp $
+	$Id: pa_string.h,v 1.137 2002/04/19 11:59:43 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -205,7 +205,7 @@ public:
 			prematch/match/postmatch/1/2/3/...
 		@endverbatim
 	*/
-	bool match(
+	bool match(const char *acstr,
 		const String *aorigin,		
 		const String& regexp, 
 		const String *options,
@@ -221,6 +221,9 @@ public:
 	String& replace(Pool& pool, Dictionary& dict) const;
 	double as_double() const;
 	int as_int() const;
+
+	bool is_join_chains_profitable() const;
+	String& join_chains(Pool& pool, char** cstr) const;
 
 #ifndef NO_STRING_ORIGIN
 	/// origin of string. calculated by first row

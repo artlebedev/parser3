@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.105 2002/04/19 08:54:35 paf Exp $
+	$Id: string.C,v 1.106 2002/04/19 11:59:43 paf Exp $
 */
 
 #include "classes.h"
@@ -88,7 +88,7 @@ static void _left(Request& r, const String&, MethodParams *params) {
 
 	size_t n=(size_t)params->as_int(0, "n must be int", r);
 	
-	const String& string=*static_cast<VString *>(r.self)->get_string();
+	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
 	r.write_assign_lang(string.mid(0, n));
 }
 
@@ -97,14 +97,13 @@ static void _right(Request& r, const String&, MethodParams *params) {
 
 	size_t n=(size_t)params->as_int(0, "n must be int", r);
 	
-	const String& string=*static_cast<VString *>(r.self)->get_string();
+	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
 	r.write_assign_lang(string.mid(string.size()-n, string.size()));
 }
 
 static void _mid(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
-
-	const String& string=*static_cast<VString *>(r.self)->get_string();
+	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
 
 	size_t p=(size_t)params->as_int(0, "p must be int", r);
 	size_t n=params->size()>1?
@@ -118,7 +117,7 @@ static void _pos(Request& r, const String& method_name, MethodParams *params) {
 
 	Value& substr=params->as_no_junction(0, "substr must not be code");
 	
-	const String& string=*static_cast<VString *>(r.self)->get_string();
+	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
 	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
 }
 
@@ -132,7 +131,7 @@ static void split_list(Request& r, const String& method_name, MethodParams *para
 
 static void _lsplit(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& string=*static_cast<VString *>(r.self)->get_string();
+	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
 
 	Array pieces(pool);
 	split_list(r, method_name, params, string, pieces);
@@ -153,7 +152,7 @@ static void _lsplit(Request& r, const String& method_name, MethodParams *params)
 
 static void _rsplit(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& string=*static_cast<VString *>(r.self)->get_string();
+	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
 
 	Array pieces(pool);
 	split_list(r, method_name, params, string, pieces);
@@ -212,8 +211,6 @@ static void replace_action(Table& table, Array *row,
 /// @todo use pcre:study somehow
 static void _match(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& src=*static_cast<VString *>(r.self)->get_string();
-
 	Value& regexp=params->as_no_junction(0, "regexp must not be code");
 
 	const String *options=
@@ -223,8 +220,10 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	Table *table;
 	if(params->size()<3) { // search
+		const String& src=static_cast<VString *>(r.self)->string();
+
 		bool was_global;
-		bool matched=src.match(
+		bool matched=src.match(0,
 			&method_name, 
 			regexp.as_string(), options,
 			&table,
@@ -239,6 +238,9 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 			result=new(pool) VBool(pool, matched);			
 		r.write_assign_lang(*result);
 	} else { // replace
+		char* src_cstr;
+		const String& src=static_cast<VString *>(r.self)->optimized_string(r.origins_mode(), &src_cstr);
+
 		Value& replacement_code=params->as_junction(2, "replacement param must be code");
 
 		String& result=*new(pool) String(pool);
@@ -252,7 +254,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 		Temp_value_element temp_match_var(
 			*replacement_code.get_junction()->root, 
 			*match_var_name, &vtable);
-		src.match(
+		src.match(src_cstr,
 			&method_name, 
 			r.process_to_string(regexp), options,
 			&table,
@@ -264,7 +266,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 static void change_case(Request& r, const String& method_name, MethodParams *params, 
 						String::Change_case_kind kind) {
 	Pool& pool=r.pool();
-	const String& src=*static_cast<VString *>(r.self)->get_string();
+	const String& src=static_cast<VString *>(r.self)->string();
 
 	r.write_assign_lang(src.change_case(pool, kind));
 }
@@ -389,7 +391,9 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 
 static void _replace(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& src=*static_cast<VString *>(r.self)->get_string();
+	const String& src=static_cast<VString *>(r.self)->optimized_string(false/*unused*/, 
+		0/*cstr not needed*/, true/*optimization forced, 
+								  so that replace fould strings that span across pices*/);
 
 	Table *table=params->as_no_junction(0, "parameter must not be code").get_table();
 	if(!table)
@@ -405,7 +409,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	const String& file_name=params->as_string(params->size()-1, 
 		"file name must be string");
 
-	const String& src=*static_cast<VString *>(r.self)->get_string();
+	const String& src=static_cast<VString *>(r.self)->string();
 
 	bool do_append=false;
 	if(params->size()>1) {

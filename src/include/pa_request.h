@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.132 2002/04/18 10:51:00 paf Exp $
+	$Id: pa_request.h,v 1.133 2002/04/19 11:59:43 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -216,6 +216,10 @@ public:
 				"outside of 'connect' operator");
 
 		return fconnection; 
+	}
+
+	bool origins_mode() {
+		return main_class->get_element(*origins_mode_name)!=0;  // $ORIGINS mode
 	}
 
 public:

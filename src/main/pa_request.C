@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.203 2002/04/18 14:35:13 paf Exp $
+	$Id: pa_request.C,v 1.204 2002/04/19 11:59:44 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -265,17 +265,17 @@ gettimeofday(&mt[2],NULL);
 						NEW VString(execute_method(frame, *method));
 				}
 
-		bool origins_mode=main_class->get_element(*origins_mode_name)!=0;
+		bool lorigins_mode=origins_mode();
 
 		const VFile *body_file=body_vstring_after_post_process->as_vfile(
-			String::UL_UNSPECIFIED, origins_mode);
+			String::UL_UNSPECIFIED, lorigins_mode);
 
 		// extract response body
 		Value *body_value=static_cast<Value *>(
 			response.fields().get(*body_name));
 		if(body_value) // there is some $response.body
 			body_file=body_value->as_vfile();
-		else if(origins_mode)
+		else if(lorigins_mode)
 			response.fields().put(*content_type_name, 
 				NEW VString(*NEW String(pool(), ORIGINS_CONTENT_TYPE)));
 

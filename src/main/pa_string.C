@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.155 2002/04/19 09:36:51 paf Exp $
+	$Id: pa_string.C,v 1.156 2002/04/19 11:59:44 paf Exp $
 */
 
 #include "pcre.h"
@@ -474,7 +474,7 @@ static void regex_options(const String *options, int *result, bool& need_pre_pos
 }
 
 /// @todo make replacement Table stacked
-bool String::match(
+bool String::match(const char *acstr,
 				   const String *aorigin,
 				   const String& regexp, 
 				   const String *options,
@@ -512,7 +512,7 @@ bool String::match(
 				info_substrings);
 	}
 
-	const char *subject=cstr();
+	const char *subject=acstr?acstr:cstr();
 	int length=strlen(subject);
 	const int ovecsize=(1/*match*/+MAX_STRING_MATCH_TABLE_COLUMNS)*3;
 	int ovector[ovecsize];
@@ -616,68 +616,14 @@ String& String::change_case(Pool& pool,
 	return result;
 }
 
-void String::join_chain(Pool& pool, 
-					   const Chunk*& achunk, const Chunk::Row*& arow, uint& acountdown, 
-					   uchar& joined_lang, const char *& joined_ptr, size_t& joined_size) const {
-	joined_lang=arow->item.lang;
-	
-	// calc size
-	joined_size=0;
-	{
-		const Chunk* chunk=achunk;
-		const Chunk::Row* row=arow;
-		uint countdown=acountdown;
-		STRING_PREPARED_FOREACH_ROW(*this, 
-			if(row->item.lang==joined_lang)
-				joined_size+=row->item.size;
-			else
-				break;
-		);
-	}
-
-	// if one row, return simply itself
-	if(joined_size==arow->item.size) {
-		joined_ptr=arow->item.ptr;
-	} else {
-		// join adjacent rows
-		char *ptr=(char *)pool.malloc(joined_size,13);  
-		joined_ptr=ptr;
-
-		const Chunk* chunk=achunk;
-		const Chunk::Row* row=arow;
-		uint countdown=acountdown;
-		STRING_PREPARED_FOREACH_ROW(*this, 
-			if(row->item.lang==joined_lang) {
-				memcpy(ptr, row->item.ptr, row->item.size);  ptr+=row->item.size;
-			} else
-				break; // before non-ours
-		);
-		
-		// set pointers after joined piece
-		achunk=chunk;  arow=row;  acountdown=countdown;
-		// & one step back, see String::reconstruct
-		--arow;  ++acountdown;
-	}
-}
-
 /// @test if in some piece were found no dict words, append it, not it's duplicate
 String& String::replace(Pool& pool, Dictionary& dict) const {
 //	return reconstruct(pool).replace_in_reconstructed(pool, dict);
 	String& result=*new(pool) String(pool);
 
 	STRING_FOREACH_ROW(
-		uchar joined_lang;
-		const char *joined_ptr;
-		size_t joined_size;
-IFNDEF_NO_STRING_ORIGIN(
-		const char *joined_origin_file=row->item.origin.file;
-		const size_t joined_origin_line=row->item.origin.line;
-);
-		join_chain(pool, chunk, row, countdown,
-			joined_lang, joined_ptr, joined_size);
-		
-		const char *src=joined_ptr; 
-		size_t src_size=joined_size;
+		const char *src=row->item.ptr; 
+		size_t src_size=row->item.size;
 		char *new_cstr=(char *)pool.malloc((size_t)ceil(src_size*dict.max_ratio()), 14);
 		char *dest=new_cstr;
 		while(src_size) {
@@ -696,9 +642,69 @@ IFNDEF_NO_STRING_ORIGIN(
 			}
 		}
 
-		result.APPEND(new_cstr, dest-new_cstr, joined_lang,
+		result.APPEND(new_cstr, dest-new_cstr, row->item.lang,
+			row->item.origin.file, row->item.origin.line);
+	);
+	return result;
+}
+
+/// @test real!
+bool String::is_join_chains_profitable() const {
+	// mimimum actually sizeof(String), 
+	// but one must also consider CPU time optimize would eat
+	const int minimum_economy=sizeof(String)*2;
+
+	size_t wasted=0;
+	STRING_FOREACH_ROW(
+		uchar joined_lang=row->item.lang;
+		STRING_PREPARED_FOREACH_ROW(*this, 
+			if(row->item.lang==joined_lang) {
+				wasted+=sizeof(String::Chunk::rows_type);
+				if(wasted>minimum_economy)
+					return true;
+			} else
+				break; // before non-ours
+		);
+
+		// pointers are after joined piece
+		// & one step back, see STRING_FOREACH_ROW
+		--row;  ++countdown;
+	);
+	return false;
+}
+
+String& String::join_chains(Pool& pool, char** acstr) const {
+	char *lcstr=cstr();
+	const char *current=lcstr;
+
+	String& result=*new(pool) String(pool);
+	STRING_FOREACH_ROW(
+IFNDEF_NO_STRING_ORIGIN(
+		const char *joined_origin_file=row->item.origin.file;
+		const size_t joined_origin_line=row->item.origin.line;
+);
+		uchar joined_lang=row->item.lang;
+		const char *joined_ptr=current;
+		// calc size
+		size_t joined_size=0;
+		STRING_PREPARED_FOREACH_ROW(*this, 
+			if(row->item.lang==joined_lang)
+				joined_size+=row->item.size;
+			else
+				break; // before non-ours
+		);
+		current+=joined_size;
+
+		// pointers are after joined piece
+		// & one step back, see STRING_FOREACH_ROW
+		--row;  ++countdown;
+		
+		result.APPEND(joined_ptr, joined_size, joined_lang,
 			joined_origin_file, joined_origin_line);
 	);
+
+	if(acstr)
+		*acstr=lcstr;
 	return result;
 }
 
