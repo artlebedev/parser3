@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.24 2002/01/11 13:00:52 paf Exp $
+	$Id: xnode.C,v 1.25 2002/01/11 13:45:21 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -380,7 +380,7 @@ static void _normalize(Request& r, const String& method_name, MethodParams *) {
 		&method_name, 
 		exc);
 }
-/*
+
 static void _select(Request& r, const String& method_name, MethodParams *params) {
 //	_asm int 3;
 	Pool& pool=r.pool();
@@ -388,37 +388,55 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 
 	// expression
 	const String& expression=params->as_string(0, "expression must be string");
-	const char *expression_cstr=expression.cstr();
-	XalanDOMString dstring(expression_cstr);
-	const XalanDOMChar *expression_dcstr=dstring.c_str();
 
-	XPathEvaluator evaluator;
-	// We'll use these to parse the XML file.
-	XalanSourceTreeDOMSupport dom_support;
+	GdomeException exc;
+	GdomeNode *dome_node=vnode.get_node(&method_name);
+	GdomeDocument *dome_document=gdome_n_ownerDocument(dome_node, &exc);
+	if(!dome_document)
+		dome_document=GDOME_DOC(dome_node);
+	xmlDoc *xml_document=((_Gdome_xml_Document *)dome_document)->n;
+    xmlXPathContext_auto_ptr ctxt(xmlXPathNewContext(xml_document));
+	ctxt->node=xmlDocGetRootElement(xml_document);
+	/*error to stderr for now*/
+	xmlXPathObject_auto_ptr res(
+		xmlXPathEvalExpression(BAD_CAST pool.transcode(expression)->str, ctxt.get()));
 
-	try {
-		NodeRefList list=evaluator.selectNodeList(dom_support, 
-			&vnode.get_node(&method_name), 
-			expression_dcstr);
+	Value *result=0;
+   	if(res.get())
+		switch(res->type) {
+		case XPATH_UNDEFINED: 
+			break;
+		case XPATH_NODESET:
+			if(int size=res->nodesetval->nodeNr) {
+				VHash *vhash=new(pool) VHash(pool);
+				Hash& hash=vhash->hash(0);
+				for(int i=0; i<size; i++) {
+					String& skey=*new(pool) String(pool);
+					{
+						char *buf=(char *)pool.malloc(MAX_NUMBER);
+						snprintf(buf, MAX_NUMBER, "%d", i);
+						skey << buf;
+					}
 
-		VHash& result=*new(pool) VHash(pool);
-		for(int i=0; i<list.getLength(); i++) {
-			String& skey=*new(pool) String(pool);
-			{
-				char *buf=(char *)pool.malloc(MAX_NUMBER);
-				snprintf(buf, MAX_NUMBER, "%d", i);
-				skey << buf;
+					hash.put(skey, new(pool) VXnode(pool, 
+						gdome_xml_n_mkref(res->nodesetval->nodeTab[0])));
+				}
+				result=vhash;
 			}
-
-			result.hash(0).put(skey, new(pool) VXnode(pool, list.item(i), false));
+			break;
+		default: 
+			throw Exception(0, 0,
+				&expression,
+				"unrecognized xmlXPathEvalExpression result type (%d)", res->type);
+			break; // never
 		}
-		result.set_name(method_name);
-		r.write_no_lang(result);
-	} catch(const XSLException& e) {
-		Exception::provide_source(pool, &expression, e);
+
+	if(result) {
+		result->set_name(method_name);
+		r.write_no_lang(*result);
 	}
 }
-*/
+
 static void _selectSingle(Request& r, const String& method_name, MethodParams *params) {
 //	_asm int 3;
 	Pool& pool=r.pool();
@@ -521,7 +539,7 @@ MXnode::MXnode(Pool& apool) : Methoded(apool),
 
 	/// parser
 	// ^node.select[/some/xpath/query] = hash $.#[dnode]
-//	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
+	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
 
 	// ^node.selectSingle[/some/xpath/query] = first dnode
 	add_native_method("selectSingle", Method::CT_DYNAMIC, _selectSingle, 1, 1);

@@ -92,10 +92,16 @@ $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251" ?>
 <document><block><p>привет</p></block></document>
 }]
 #^show-xdoc2[$xdoc]
-$node[^xdoc.selectSingle['1<2']]
+$node[^xdoc.selectSingle[/document/block/p]]
 ^if(def $node){
-	^if($node is string){$node}
-		$node.nodeType
+	^if($node is string){
+		$node
+	}{
+    	^if($node is hash){
+    		^node._count[]
+    	}{
+    		$node.nodeType
+    	}
 	}
 #$node.firstChild.nodeValue
 }{
