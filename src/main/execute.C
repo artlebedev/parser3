@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.194 2001/10/13 15:59:43 parser Exp $
+	$Id: execute.C,v 1.195 2001/10/15 15:11:18 parser Exp $
 */
 
 #include "pa_opcode.h"
@@ -23,7 +23,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-#define DEBUG_EXECUTE
+//#define DEBUG_EXECUTE
 
 const uint ANTI_ENDLESS_EXECUTE_RECOURSION=400;
 
