@@ -1,10 +1,14 @@
 if COMPILE_XML
-SUBDIRS = gd xalan-patched
+PATCHES_SUBDIR=xalan-patched
+PATCHES_INCLUDES=-I$(PATCHES_SUBDIR)
 else
-SUBDIRS = gd
+PATCHES_SUBDIR=
+PATCHES_INCLUDES=
 endif
 
-INCLUDES = -I../types -I../sql -I../pcre -Igd -Ixalan-patched @XML_INCLUDES@
+SUBDIRS = gd $(XML_SUBDIR)
+
+INCLUDES = -I../types -I../sql -I../pcre -Igd $(PATCHES_INCLUDES) @XML_INCLUDES@
 
 noinst_LIBRARIES = libclasses.a
 libclasses_a_SOURCES = classes.C double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C ident.C
