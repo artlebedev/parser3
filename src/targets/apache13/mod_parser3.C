@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.19 2002/03/27 15:30:37 paf Exp $
+	$Id: mod_parser3.C,v 1.20 2002/06/04 09:22:08 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -706,7 +706,7 @@ module MODULE_VAR_EXPORT parser3_module =
 };
 
 #if defined(_MSC_VER)
-#	define APACHE_WIN32_SRC "/parser3project/win32apache13/src"
+#	define APACHE_WIN32_SRC "/parser3project/win32/apache13/src"
 #	ifdef _DEBUG
 #		pragma comment(lib, APACHE_WIN32_SRC "/CoreD/ApacheCore.lib")
 #	else
