@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/26 15:01:39 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/11/29 07:42:16 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -267,16 +267,20 @@ static void file_read_http(Pool& pool, const String& file_spec,
 	int timeout=2;
 	Value *vheaders=0;
 
-	char* connect_string=file_spec.cstr(String::UL_UNSPECIFIED); 
-	if(strncmp(connect_string, "http://", 7)!=0)
-		throw Exception(0, 
-			&file_spec, 
-			"does not start with http://"); //never
-	connect_string+=7;
+	String connect_string(pool);
+	// not in ^sql{... UL_SQL ...} spirit, but closer to ^file::load one
+	connect_string.append(file_spec, String::UL_URI); // tainted pieces -> URI pieces
 
-	strncpy(host, connect_string, sizeof(host)-1);  host[sizeof(host)-1]=0;
+	char* connect_string_cstr=connect_string.cstr(String::UL_UNSPECIFIED); 
+	if(strncmp(connect_string_cstr, "http://", 7)!=0)
+		throw Exception(0, 
+			&connect_string, 
+			"does not start with http://"); //never
+	connect_string_cstr+=7;
+
+	strncpy(host, connect_string_cstr, sizeof(host)-1);  host[sizeof(host)-1]=0;
 	char* host_uri=lsplit(host, '/'); 
-	uri=host_uri?connect_string+(host_uri-1-host):"/"; 
+	uri=host_uri?connect_string_cstr+(host_uri-1-host):"/"; 
 	char* port_cstr=lsplit(host, ':'); 
 	char* error_pos=0;
 	port=port_cstr?strtol(port_cstr, &error_pos, 0):80;
@@ -298,20 +302,20 @@ static void file_read_http(Pool& pool, const String& file_spec,
 			throw Exception("parser.runtime",
 				0,
 				"invalid option passed");
-	}
+	} 
 
 	//making request
 	String request(pool);
 	request<< method <<" "<< uri <<" HTTP/1.0\nHost: "<< host<<"\n"; 
 	bool user_agent_specified=false;
 	if(vheaders && !vheaders->is_string()) { // allow empty
-		if(Hash *headers=vheaders->get_hash(&file_spec)) {
+		if(Hash *headers=vheaders->get_hash(&connect_string)) {
 			Http_pass_header_info info={&request};
 			headers->for_each(http_pass_header, &info); 
 			user_agent_specified=info.user_agent_specified;
 		} else
 			throw Exception("parser.runtime", 
-				&file_spec,
+				&connect_string,
 				"headers param must be hash"); 
 	};
 	if(!user_agent_specified) // defaulting
@@ -321,13 +325,13 @@ static void file_read_http(Pool& pool, const String& file_spec,
 	//sending request
 	String response(pool); 
 	http_request(response,
-		&file_spec, host, port, request.cstr(String::UL_UNSPECIFIED), timeout); 
+		&connect_string, host, port, request.cstr(String::UL_UNSPECIFIED), timeout); 
 	
 	//processing results	
 	int pos=response.pos("\r\n\r\n", 4); 
 	if(pos<1){
 		throw Exception("http.response", 
-			&file_spec,
+			&connect_string,
 			"bad response from host - no headers found"); 
 	}
 	String header_block=response.mid(0, pos); 
@@ -342,7 +346,7 @@ static void file_read_http(Pool& pool, const String& file_spec,
 	const String *status_line=aheaders.get_string(0); 
 	if(!status_line){
 		throw Exception("http.response", 
-			&file_spec,
+			&connect_string,
 			"bad response from host - no status line "); 
 	}
 	//processing headers
@@ -351,7 +355,7 @@ static void file_read_http(Pool& pool, const String& file_spec,
 			pos=line->pos(": ", 2); 
 			if(pos<1)
 				throw Exception("http.response", 
-					&file_spec,
+					&connect_string,
 					"bad response from host - bad header \"%s\"", line->cstr()); 
 				
 			headers.put(
@@ -359,7 +363,7 @@ static void file_read_http(Pool& pool, const String& file_spec,
 				new(pool) VString(line->mid(pos+2, line->size()))); 
 		} else
 			throw Exception("http.response", 
-				&file_spec, 
+				&connect_string, 
 				"bad response from host - bad headers \"%s\"", header_block.cstr()); 
 	}
 
