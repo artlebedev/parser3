@@ -77,7 +77,7 @@ PostBuild_Cmds=net start apache_release
 # PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /c
-# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\pcre" /I "\parser3project\win32xml\glib\include" /I "\parser3project\win32xml\glib\include\glib" /I "\parser3project\win32xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\libxml2-x.x.x\include" /I "\parser3project\win32xml\libxslt-x.x.x" /I "\parser3project\win32apache13\src\include" /I "\parser3project\win32apache13\src\os\win32" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "SHARED_MODULE" /FD /TP /c
+# ADD CPP /nologo /MDd /W3 /Gm /Gi /GR- /GX /Zi /Od /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\pcre" /I "\parser3project\win32xml\glib\include" /I "\parser3project\win32xml\glib\include\glib" /I "\parser3project\win32xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\libxml2-x.x.x\include" /I "\parser3project\win32xml\libxslt-x.x.x" /I "\parser3project\win32apache13\src\include" /I "\parser3project\win32apache13\src\os\win32" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "SHARED_MODULE" /FD /TP /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32

@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
 
-CFG=main - Win32 Debug
+CFG=main - Win32 Profile
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,12 +13,13 @@ CFG=main - Win32 Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "main.mak" CFG="main - Win32 Debug"
+!MESSAGE NMAKE /f "main.mak" CFG="main - Win32 Profile"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "main - Win32 Release" (based on "Win32 (x86) Static Library")
 !MESSAGE "main - Win32 Debug" (based on "Win32 (x86) Static Library")
+!MESSAGE "main - Win32 Profile" (based on "Win32 (x86) Static Library")
 !MESSAGE 
 
 # Begin Project
@@ -64,6 +65,29 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /Gi /GR- /GX /Zi /Od /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "\parser3project\win32xml\glib\include" /I "\parser3project\win32xml\glib\include\glib" /I "\parser3project\win32xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\libxml2-x.x.x\include" /I "\parser3project\win32xml\libxslt-x.x.x" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
+# ADD BASE RSC /l 0x419 /d "_DEBUG"
+# ADD RSC /l 0x419 /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo
+# ADD LIB32 /nologo
+
+!ELSEIF  "$(CFG)" == "main - Win32 Profile"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "main___Win32_Profile"
+# PROP BASE Intermediate_Dir "main___Win32_Profile"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Profile"
+# PROP Intermediate_Dir "Profile"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "\parser3project\win32xml\glib\include" /I "\parser3project\win32xml\glib\include\glib" /I "\parser3project\win32xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\libxml2-x.x.x\include" /I "\parser3project\win32xml\libxslt-x.x.x" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
 # ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "\parser3project\win32xml\glib\include" /I "\parser3project\win32xml\glib\include\glib" /I "\parser3project\win32xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\libxml2-x.x.x\include" /I "\parser3project\win32xml\libxslt-x.x.x" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -80,6 +104,7 @@ LIB32=link.exe -lib
 
 # Name "main - Win32 Release"
 # Name "main - Win32 Debug"
+# Name "main - Win32 Profile"
 # Begin Group "ident"
 
 # PROP Default_Filter ""
@@ -133,16 +158,42 @@ BuildCmds= \
    $(BuildCmds)
 # End Custom Build
 
+!ELSEIF  "$(CFG)" == "main - Win32 Profile"
+
+# PROP Exclude_From_Build 1
+
 !ENDIF 
 
 # End Source File
 # Begin Source File
 
 SOURCE=.\ident.C
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Profile"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
 SOURCE=.\ident.C.new
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Profile"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
 # End Source File
 # End Group
 # Begin Group "sql"
@@ -193,6 +244,20 @@ InputName=compile
 	
 # End Custom Build
 
+!ELSEIF  "$(CFG)" == "main - Win32 Profile"
+
+# Begin Custom Build - Compiling grammar...
+InputDir=.
+InputPath=.\compile.y
+InputName=compile
+
+"compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	cd $(InputDir) 
+	set BISON_SIMPLE=..\..\..\win32tools\usr\share\bison.simple 
+	..\..\..\win32tools\bison -v $(InputName).y -o compile.tab.C 
+	
+# End Custom Build
+
 !ENDIF 
 
 # End Source File
@@ -212,6 +277,11 @@ SOURCE=.\execute.C
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
 
+# ADD CPP /Od
+
+!ELSEIF  "$(CFG)" == "main - Win32 Profile"
+
+# ADD BASE CPP /Od
 # ADD CPP /Od
 
 !ENDIF 
@@ -309,6 +379,11 @@ SOURCE=.\pa_globals.C
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
 
+# ADD CPP /GX
+
+!ELSEIF  "$(CFG)" == "main - Win32 Profile"
+
+# ADD BASE CPP /GX
 # ADD CPP /GX
 
 !ENDIF 

@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.173 2002/04/16 08:59:26 paf Exp $
+	$Id: parser3.C,v 1.174 2002/04/24 09:53:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -41,6 +41,7 @@ extern ulong
 
 // consts
 
+#ifndef _PROFILE
 extern const char *main_RCSIds[];
 #ifdef USE_SMTP
 extern const char *smtp_RCSIds[];
@@ -60,6 +61,7 @@ const char **RCSIds[]={
 	parser3_RCSIds,
 	0
 };
+#endif
 
 const char *PARSER_ROOT_CONFIG_ENV_NAME="HTTP_PARSER_ROOT_CONFIG";
 const char *PARSER_SITE_CONFIG_ENV_NAME="HTTP_PARSER_SITE_CONFIG";
