@@ -9,4 +9,8 @@ update:
 	cvs update
 	$(MAKE)
 
+commit:
+	cvs commit -m "no message" -f aclocal.m4
+	cvs commit
+
 happy: update install-exec
