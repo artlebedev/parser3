@@ -7,7 +7,7 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.8 2001/08/01 09:30:35 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.9 2001/08/01 09:33:54 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -64,6 +64,9 @@ public:
 		return dlopen_file_spec?
 			dlink(dlopen_file_spec):"client library column is empty";
 	}
+
+	#define throwPQerror services._throw(PQerrorMessage(conn))
+
 	/**	connect
 		@param used_only_in_connect_url
 			format: @b user:pass@host[:port]|[local]/database
@@ -85,7 +88,7 @@ public:
 		if(!conn)
 			services._throw("PQsetdbLogin failed");
 		if(PQstatus(conn)!=CONNECTION_OK)  
-			services._throw(PQerrorMessage(conn));
+			throwPQerror;
 
 		*(PGconn **)connection=conn;
 		begin_transaction(services, conn);
@@ -98,7 +101,7 @@ public:
 		if(PGresult *res=PQexec(conn, "COMMIT"))
 			PQclear(res);
 		else
-			services._throw(PQerrorMessage(conn));
+			throwPQerror;
 		begin_transaction(services, conn);
 	}
 	void rollback(SQL_Driver_services& services, void *connection) {
@@ -106,7 +109,7 @@ public:
 		if(PGresult *res=PQexec(conn, "ROLLBACK"))
 			PQclear(res);
 		else
-			services._throw(PQerrorMessage(conn));
+			throwPQerror;
 		begin_transaction(services, conn);
 	}
 
@@ -152,7 +155,7 @@ public:
 
 		PGresult *res=PQexec(conn, statement);
 		if(!res) 
-			services._throw(PQerrorMessage(conn));
+			throwPQerror;
 
 		switch(PQresultStatus(res)) {
 		case PGRES_EMPTY_QUERY: 
@@ -241,15 +244,12 @@ private: // private funcs
 		if(PGresult *res=PQexec(conn, "BEGIN"))
 			PQclear(res);
 		else
-			services._throw(PQerrorMessage(conn));
+			throwPQerror;
 	}
 
 	const char *preprocess_statement(SQL_Driver_services& services, PGconn *conn,
 		const char *astatement, unsigned long offset, unsigned long limit) {
 		size_t statement_size=strlen(astatement);
-		//_asm int 3;
-
-		#define throwPQerror services._throw(PQerrorMessage(conn))
 
 		char *result=(char *)services.malloc(statement_size
 			+MAX_NUMBER*2+15 // limit # offset #
