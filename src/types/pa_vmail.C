@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2003/09/25 09:15:03 $";
+static const char* IDENT_VMAIL_C="$Date: 2003/11/04 12:29:16 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -483,7 +483,8 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 		info->charsets.source(), String::CC_LOWER);
 
 	// exclude internals
-	if(low_element_name==CHARSET_NAME
+	if(low_element_name==MAIL_OPTIONS_NAME
+		|| low_element_name==CHARSET_NAME
 		|| low_element_name==VALUE_NAME
 		|| low_element_name==RAW_NAME
 		|| low_element_name=="date")

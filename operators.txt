@@ -488,6 +488,7 @@ Xhashfile
         $.message#[MESSAGE] (message, message2, ...)
 
     !^mail:send[
+    	$.options[unix: строка, которая будет добавлена к команде запуска sendmail]
         $.charset[кодировка заголовка и текстовых блоков] 
         $.any-header-field 
         $.text[string]

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_MAIL_C="$Date: 2003/11/04 12:29:16 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -26,7 +26,7 @@ static const char* IDENT_MAIL_C="$Date: 2003/09/25 09:15:02 $";
 // defines
 
 #define MAIL_CLASS_NAME "mail"
-#define MAIL_SENDMAIL_NAME "sendmail"
+#define SENDMAIL_NAME "sendmail"
 
 // consts
 
@@ -54,13 +54,14 @@ DECLARE_CLASS_VAR(mail, 0/*fictive*/, new MMail);
 // statics
 	
 static const String mail_name(MAIL_NAME);
-static const String mail_sendmail_name(MAIL_SENDMAIL_NAME);
+static const String mail_sendmail_name(SENDMAIL_NAME);
 
 // helpers
 
 static void sendmail(Request& r, 
 		     const String& message, 
-		     const String* from, const String* to) {
+		     const String* from, const String* to,
+			 const String* options) {
 	const char* message_cstr=message.cstr(String::L_UNSPECIFIED);
 	Value* vmail_conf=static_cast<Value*>(r.classes_conf.get(mail_base_class->name()));
 
@@ -109,7 +110,7 @@ static void sendmail(Request& r,
 		else
 			throw Exception("parser.runtime",
 				0,
-				"$"MAIN_CLASS_NAME":"MAIL_NAME"."MAIL_SENDMAIL_NAME" not defined");
+				"$"MAIN_CLASS_NAME":"MAIL_NAME"."SENDMAIL_NAME" not defined");
 #endif
 	} else {
 #ifdef PA_FORCED_SENDMAIL
@@ -122,6 +123,8 @@ static void sendmail(Request& r,
 		sendmail_command=test;
 #endif
 	}
+	if(options)
+		sendmail_command<<" "<<*options;
 
 	// we know sendmail_command here, should replace "postmaster" with "$from" from message
 	size_t at_postmaster=sendmail_command->pos("postmaster");
@@ -151,7 +154,7 @@ static void sendmail(Request& r,
 #ifdef PA_FORCED_SENDMAIL
 			" Use configure key \"--with-sendmail=appropriate sendmail command\""
 #else
-			" Set $"MAIN_CLASS_NAME":"MAIL_NAME"."MAIL_SENDMAIL_NAME" to appropriate sendmail command"
+			" Set $"MAIN_CLASS_NAME":"MAIL_NAME"."SENDMAIL_NAME" to appropriate sendmail command"
 #endif
 		);
 
@@ -188,6 +191,10 @@ static void _send(Request& r, MethodParams& params) {
 			0,
 			"message must be hash");
 
+	const String* soptions=0;
+	if(Value* voptions=hash->get(MAIL_OPTIONS_NAME))
+		soptions=&voptions->as_string();
+
 	const String* from=0;
 	String* to=0;
 	const String& message=
@@ -200,7 +207,7 @@ static void _send(Request& r, MethodParams& params) {
 			, to);
 
 	//r.write_pass_lang(message);
-	sendmail(r, message, from, to);
+	sendmail(r, message, from, to, soptions);
 }
 
 // constructor & configurator
