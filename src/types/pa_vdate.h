@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdate.h,v 1.1 2001/07/07 16:38:02 parser Exp $
+	$Id: pa_vdate.h,v 1.2 2001/07/07 17:59:02 parser Exp $
 */
 
 #ifndef PA_VDATE_H
@@ -15,8 +15,6 @@
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
 #include "pa_vint.h"
-
-#define SECS_PER_DAY (60*60*24)
 
 extern Methoded *date_class;
 

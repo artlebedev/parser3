@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.44 2001/05/17 10:22:24 parser Exp $
+	$Id: pa_common.h,v 1.45 2001/07/07 17:59:02 parser Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -150,5 +150,8 @@ void back_slashes_to_slashes(char *s);
 
 bool StrEqNc(const char *s1, const char *s2, bool strict=true);
 char *unquote(char*& current, char stop_at);
+
+#define SECS_PER_DAY (60*60*24)
+int getMonthDays(int year, int month);
 
 #endif

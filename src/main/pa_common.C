@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_common.C,v 1.56 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: pa_common.C,v 1.57 2001/07/07 17:59:02 parser Exp $"; 
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -417,4 +417,28 @@ break2:
 		current++; // skip 'stop_at'
 	*dest=0;
 	return result;
+}
+
+static int isLeap(int year) {
+    return !(
+             (year % 4) || ((year % 400) && !(year % 100))
+            );
+}
+
+int getMonthDays(int year, int month) {
+    int monthDays[]={
+        31,
+        isLeap(year) ? 29 : 28,
+        31,
+        30,
+        31,
+        30,
+        31,
+        31,
+        30,
+        31,
+        30,
+        31
+    };
+    return monthDays[month];
 }

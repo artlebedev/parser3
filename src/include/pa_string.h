@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.96 2001/05/21 16:39:32 parser Exp $
+	$Id: pa_string.h,v 1.97 2001/07/07 17:59:02 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -185,7 +185,7 @@ public:
 	int pos(const String& substr, 
 		size_t this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
 	/// @return position of substr in string, -1 means "not found" [const char* version]
-	int pos(const char *substr, size_t substr_size, 
+	int pos(const char *substr, size_t substr_size=0, 
 		size_t this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
 
 	void split(Array& result, 

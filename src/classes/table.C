@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.90 2001/07/07 16:38:01 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.91 2001/07/07 17:59:02 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -129,6 +129,113 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	// replace any previous table value
 	static_cast<VTable *>(r.self)->set_table(table);
 }
+
+static Table *fill_month_days(Request& r, 
+							  const String& method_name, MethodParams *params, bool rus){
+	Pool& pool=r.pool();
+	Table *result=new(pool) Table(pool, &method_name, 0/*&columns*/);
+
+    int year=params->as_int(1, r);
+    int month=max(1, min(params->as_int(2, r), 12)) -1;
+
+    tm tmIn={0, 0, 0, 1, month, year-1900};
+    time_t t=mktime(&tmIn);
+	if(t<0)
+		PTHROW(0, 0, 
+			&method_name, 
+			"invalid date");
+    tm *tmOut=localtime(&t);
+
+    int weekDay1=tmOut->tm_wday;
+	if(rus) 
+		weekDay1=weekDay1?weekDay1-1:6; //sunday last
+    int monthDays=getMonthDays(year, month);
+    
+    for(int _day=1-weekDay1; _day<=monthDays;) {
+		Array& row=*new(pool) Array(pool, 7);
+    	for(int wday=0; wday<7; wday++, _day++) {
+        	String *cell;
+			if(_day>=1 && _day<=monthDays) {
+				char *buf=(char *)malloc(2+1); 
+				sprintf(buf, "%02d", _day); 
+				cell=new(pool) String(pool, buf);
+            } else
+				cell=new(pool) String(pool);
+			row+=cell;            
+        }
+    	*result+=&row;
+    }
+    
+    return result;
+}
+
+static Table *fill_week_days(Request& r, 
+							 const String& method_name, MethodParams *params, bool rus){
+	Pool& pool=r.pool();
+	Array& columns=*new(pool) Array(pool, 4);
+	columns+=new(pool) String(pool, "year");
+	columns+=new(pool) String(pool, "month");
+	columns+=new(pool) String(pool, "day");
+	columns+=new(pool) String(pool, "weekday");
+	Table *result=new(pool) Table(pool, &method_name, &columns);
+
+    int year=params->as_int(1, r);
+    int month=max(1, min(params->as_int(2, r), 12)) -1;
+    int day=params->as_int(3, r);
+    
+    tm tmIn={0, 0, 18, day, month, year-1900};
+    time_t t=mktime(&tmIn);
+	if(t<0)
+		PTHROW(0, 0, 
+			&method_name, 
+			"invalid date");
+    tm *tmOut=localtime(&t);
+    
+    int baseWeekDay=tmOut->tm_wday;
+	if(rus) 
+		baseWeekDay=baseWeekDay?baseWeekDay-1:6; //sunday last
+
+    t-=baseWeekDay*SECS_PER_DAY;
+
+    for(int curWeekDay=0; curWeekDay<7; curWeekDay++, t+=SECS_PER_DAY) {
+        tm *tmOut=localtime(&t);
+		Array& row=*new(pool) Array(pool, 4);
+		{char *buf=(char *)malloc(4+1); sprintf(buf, "%04d", 1900+tmOut->tm_year); row+=new(pool) String(pool, buf);}
+		{char *buf=(char *)malloc(2+1); sprintf(buf, "%02d", 1+tmOut->tm_mon); row+=new(pool) String(pool, buf);}
+		{char *buf=(char *)malloc(2+1); sprintf(buf, "%02d", tmOut->tm_mday); row+=new(pool) String(pool, buf);}
+		{char *buf=(char *)malloc(2+1); sprintf(buf, "%02d", tmOut->tm_wday); row+=new(pool) String(pool, buf);}
+        *result+=&row;
+    }
+    
+    return result;
+}
+
+static void _calendar(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	const String& what=params->as_string(0, "'what' must be rus|eng");
+	bool rus=false;
+	if(what == "rus")
+		rus=true;
+	else if(what == "eng")
+		rus=false;
+	else
+		PTHROW(0, 0, 
+			&what, 
+			"must be rus|eng");
+
+	Table *result=0;
+	if(params->size()==1+2) 
+		result=fill_month_days(r, method_name, params, rus);
+	else // 1+3
+		result=fill_week_days(r, method_name, params, rus);
+
+	// replace any previous table value
+	static_cast<VTable *>(r.self)->set_table(*result);
+}
+
+
+
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -279,7 +386,7 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 			int value_field=ri.value_fields->get_int(i);
 			if(value_field<row.size())
 				hash.put(
-					*ri.table->columns()->get_string(value_field),
+					*ri.table->columns()->get_string(value_field), 
 					new(pool) VString(*row.get_string(value_field)));
 		}
 		
@@ -302,7 +409,7 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 			Array value_fields(pool, value_fields_count);
 			if(value_fields_by_params) {
 				for(int i=1; i<params->size(); i++) {
-					const String& value_field_name=params->as_no_junction(i,
+					const String& value_field_name=params->as_no_junction(i, 
 						"value field name must not be code").as_string();
 					value_fields+=table.column_name2index(value_field_name, true);
 				}
@@ -394,7 +501,7 @@ static void _locate(Request& r, const String& method_name, MethodParams *params)
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	Table& table=vtable.table();
 	Value& result=*new(pool) VBool(pool, table.locate(
-		params->get(0).as_string(),
+		params->get(0).as_string(), 
 		params->get(1).as_string()));
 	result.set_name(method_name);
 	r.write_no_lang(result);
@@ -442,15 +549,15 @@ static void _join(Request& r, const String& method_name, MethodParams *params) {
 
 	Table *maybe_src=params->as_no_junction(0, "table ref must not be code").get_table();
 	if(!maybe_src)
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"source is not a table");
 
 	Table& src=*maybe_src;
 	Table& dest=static_cast<VTable *>(r.self)->table();
 	if(&src == &dest)
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"source and destination are same table");
 
 	if(const Array *dest_columns=dest.columns()) { // dest is named
@@ -473,8 +580,8 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	if(!r.connection)
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"without connect");
 
 	Value& statement=params->as_junction(0, "statement must be code");
@@ -500,8 +607,8 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	bool need_rethrow=false; Exception rethrow_me;
 	PTRY {
 		r.connection->query(
-			statement_cstr, offset, limit,
-			&sql_column_count, &sql_columns,
+			statement_cstr, offset, limit, 
+			&sql_column_count, &sql_columns, 
 			&sql_row_count, &sql_rows);
 	}
 	PCATCH(e) { // query problem
@@ -509,7 +616,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	}
 	PEND_CATCH
 	if(need_rethrow)
-		PTHROW(rethrow_me.type(), rethrow_me.code(),
+		PTHROW(rethrow_me.type(), rethrow_me.code(), 
 			&statement_string, // setting more specific source [were url]
 			rethrow_me.comment());
 	
@@ -517,7 +624,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	for(unsigned int i=0; i<sql_column_count; i++) {
 		String& table_column=*new(pool) String(pool);
 		table_column.APPEND_TAINTED(
-			(const char *)sql_columns[i].ptr, sql_columns[i].size,
+			(const char *)sql_columns[i].ptr, sql_columns[i].size, 
 			statement_cstr, 0);
 		table_columns+=&table_column;
 	}
@@ -532,7 +639,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			String& table_cell=*new(pool) String(pool);
 			if(sql_cells[i].size)
 				table_cell.APPEND_TAINTED(
-					(const char *)sql_cells[i].ptr, sql_cells[i].size,
+					(const char *)sql_cells[i].ptr, sql_cells[i].size, 
 					statement_cstr, row);
 			table_row+=&table_cell;
 		}
@@ -559,12 +666,12 @@ static void _dir(Request& r, const String& method_name, MethodParams *params) {
 		const char *errptr;
 		int erroffset;
 		regexp_code=pcre_compile(pattern, PCRE_EXTRA | PCRE_DOTALL, 
-			&errptr, &erroffset,
+			&errptr, &erroffset, 
 			r.pcre_tables);
 
 		if(!regexp_code)
-			PTHROW(0, 0,
-				&regexp->mid(erroffset, regexp->size()),
+			PTHROW(0, 0, 
+				&regexp->mid(erroffset, regexp->size()), 
 				"regular expression syntax error - %s", errptr);
 
 		ovector=(int *)malloc(sizeof(int)*(ovecsize=(1/*match*/)*3));
@@ -583,16 +690,16 @@ static void _dir(Request& r, const String& method_name, MethodParams *params) {
 		size_t file_name_size=strlen(ffblk.ff_name);
 		bool suits=true;
 		if(regexp_code) {
-			int exec_result=pcre_exec(regexp_code, 0,
-				ffblk.ff_name, file_name_size, 0,
+			int exec_result=pcre_exec(regexp_code, 0, 
+				ffblk.ff_name, file_name_size, 0, 
 				0, ovector, ovecsize);
 			
 			if(exec_result==PCRE_ERROR_NOMATCH)
 				suits=false;
 			else if(exec_result<0) {
 				(*pcre_free)(regexp_code);
-				PTHROW(0, 0,
-					regexp,
+				PTHROW(0, 0, 
+					regexp, 
 					"regular expression execute (%d)", 
 						exec_result);
 			}
@@ -602,7 +709,7 @@ static void _dir(Request& r, const String& method_name, MethodParams *params) {
 			char *file_name_cstr=(char *)r.malloc(file_name_size);
 			memcpy(file_name_cstr, ffblk.ff_name, file_name_size);
 			String &file_name=*new(pool) String(pool);
-			file_name.APPEND(file_name_cstr, file_name_size, String::UL_FILE_NAME,
+			file_name.APPEND(file_name_cstr, file_name_size, String::UL_FILE_NAME, 
 				method_name.origin().file, method_name.origin().line);
 		
 			Array& row=*new(pool) Array(pool);
@@ -652,6 +759,10 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 	// ^table:load[file]  
 	// ^table:load[nameless;file]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
+
+	// ^table:calendar[month|montheng;year;month]  
+	// ^table:calendar[week|weekeng;year;month;day]
+	add_native_method("calendar", Method::CT_DYNAMIC, _calendar, 3, 4);
 
 	// ^table.save[file]  
 	// ^table.save[nameless;file]

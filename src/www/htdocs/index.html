@@ -1,4 +1,21 @@
 @main[]
+$сегодня[^date:now[]]
+$недельный_календарь[^table:calendar[rus]($сегодня.year;$сегодня.month;$сегодня.day)]
+<TT>
+$недельный_календарь{^menu{
+	$year $month $day $weekday<BR>
+}}
+</TT>
+<hr>
+$сегодня[^date:now[]]
+$месячный_календарь[^table:calendar[rus;$сегодня.year;$сегодня.month]]
+<TT>
+^месячный_календарь.menu{^for[i;0;6]{
+	$day[$месячный_календарь.$i]
+	^if($day){$day}{&nbsp^;&nbsp^;}
+}<BR>}
+</TT>
+<hr>
 before $время[^date:now[]]^время.string[]<br>
 year+^время.roll[year](1)^время.string[]<br>
 month+^время.roll[month](1)^время.string[]<br>

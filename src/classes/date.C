@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: date.C,v 1.1 2001/07/07 16:38:01 parser Exp $
+	$Id: date.C,v 1.2 2001/07/07 17:59:02 parser Exp $
 */
-static const char *RCSId="$Id: date.C,v 1.1 2001/07/07 16:38:01 parser Exp $"; 
+static const char *RCSId="$Id: date.C,v 1.2 2001/07/07 17:59:02 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -72,39 +72,15 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 static void _string(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	VDate *vdate=static_cast<VDate *>(r.self);
-	int size=4+1+2+1+2 +1+ 2+1+2+1+2 +1;
+	int size=1+ 4+1+2+1+2 +1+ 2+1+2+1+2 +1 +1;
 	char *buf=(char *)pool.malloc(size);
 	time_t time=vdate->get_time();
-	size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", gmtime(&time));
+	size=strftime(buf, size, "'%Y-%m-%d %H:%M:%S'", gmtime(&time));
 	
 	Value& result=*new(pool) VString(*new(pool) String(pool, buf, size));
 	r.write_assign_lang(result);
 }
 
-
-static int isLeap(int year) {
-    return !(
-             (year % 4) || ((year % 400) && !(year % 100))
-            );
-}
-
-static int getMonthDays(int year, int month) {
-    int monthDays[]={
-        31,
-        isLeap(year) ? 29 : 28,
-        31,
-        30,
-        31,
-        30,
-        31,
-        31,
-        30,
-        31,
-        30,
-        31
-    };
-    return monthDays[month];
-}
 
 static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
