@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/15 09:07:49 $";
+static const char* IDENT_VALUE_H="$Date: 2002/08/15 10:21:43 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -154,13 +154,6 @@ public: // Value
 	*/
 	virtual Junction *get_junction() { return 0; }
 	
-	/** extract Value junction of name @a name, when @a looking_up looks only down
-		@return for
-		- VStateless_class: self or parent method junction
-		- VObject: child or self or parent method junction
-	virtual Junction *get_junction(const String& /*name* /, bool /*looking_up* /) { bark("(%s) has no junctions"); return 0; }
-	*/
-
 	/** extract base object of Value
 		@return for
 		- VObject: fbase

@@ -6,6 +6,8 @@ $selffilespec[$filespec]
 #$form:here
 #$request:charset[UTF-8]
 #$response:charset[windows-1251]
+#$request:charset[windows-1251]
+#$response:charset[UTF-8]
 #$response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 #@postprocess[body]
@@ -13,6 +15,7 @@ $selffilespec[$filespec]
 #$result[123]
 
 @main[]
+$request:hren
 #$a(123)
 #^a.format[%.10u]
 #$result[111]

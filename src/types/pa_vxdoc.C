@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXDOC="$Date: 2002/08/15 07:53:07 $";
+static const char* IDENT_VXDOC="$Date: 2002/08/15 10:21:43 $";
 
 #include "pa_vxdoc.h"
 
@@ -44,7 +44,7 @@ Value *VXdoc::get_element(const String& aname, Value *aself, bool looking_up) {
 		return NEW VXnode(pool(), (GdomeNode *)gdome_doc_documentElement(document, &exc));
 	} 	
 
-	return 0;
+	bark("%s field not found", 0, &aname);  return 0;
 }
 
 #endif

@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char* IDENT_VDATE_H="$Date: 2002/08/14 14:18:29 $";
+static const char* IDENT_VDATE_H="$Date: 2002/08/15 10:21:43 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -59,7 +59,7 @@ public: // Value
 		else if(aname=="weekday") result=tmOut->tm_wday;
 		else if(aname=="yearday") result=tmOut->tm_yday;
 		else if(aname=="daylightsaving") result=tmOut->tm_isdst;
-		else return 0;
+		else { bark("%s field not found", 0, &aname); return 0; }
 		return NEW VInt(pool(), result);
 	}
 

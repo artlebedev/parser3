@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXNODE_C="$Date: 2002/08/14 14:18:32 $";
+static const char* IDENT_VXNODE_C="$Date: 2002/08/15 10:21:43 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -138,7 +138,7 @@ Value *VXnode::get_element(const String& aname, Value *aself, bool looking_up) {
 			break;
 	}
 		
-	return 0;
+	bark("%s field not found", 0, &aname); return 0;
 }
 
 #endif
