@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.176 2002/01/31 15:04:38 paf Exp $
+	$Id: compile.y,v 1.177 2002/01/31 16:39:01 paf Exp $
 */
 
 /**
@@ -311,9 +311,7 @@ construct_square: '[' any_constructor_code_value ']' {
 ;
 construct_round: '(' expr_value ')' { 
 	// stack: context, name
-	$$=N(POOL);
-	O($$, OP_PREPARE_TO_CONSTRUCT_EXPR); /* drop change execution state */
-	P($$, $2); // stack: context, name, value
+	$$=$2; // stack: context, name, value
 	O($$, OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
 }
 ;
@@ -343,8 +341,14 @@ call: call_value {
 	$$=$1; /* stack: value */
 	O($$, OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 };
-call_value: '^' { PC.object_constructor_allowed=true } 
-			call_name { PC.object_constructor_allowed=false } 
+call_value: '^' { 
+					PC.object_constructor_allowed=true; 
+					push_OCA(PC, true);
+			}
+			call_name {
+				PC.object_constructor_allowed=false;
+				pop_OCA(PC);
+			} 
 			store_params EON { /* ^field.$method{vasya} */
 	$$=$3; /* with_xxx,diving code; stack: context,method_junction */
 	O($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
@@ -411,6 +415,9 @@ name_expr_dive_code: name_expr_value | name_path name_expr_value { $$=$1; P($$, 
 name_path: name_step | name_path name_step { $$=$1; P($$, $2) };
 name_step: name_advance1 '.';
 name_advance1: name_expr_value {
+	// we know that name_advance1 not called from ^xxx context
+	// so we'll not check for operator call possibility as we do in name_advance2
+
 	/* stack: context */
 	$$=$1; /* stack: context,name */
 	O($$, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
@@ -418,7 +425,9 @@ name_advance1: name_expr_value {
 name_advance2: name_expr_value {
 	/* stack: context */
 	$$=$1; /* stack: context,name */
-	O($$, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	O($$, PC.operator_call_allowed?OP_GET_ELEMENT_OR_OPERATOR:OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	// only ^FIRST.part.allowed.to.be.an.operator
+	PC.operator_call_allowed=false; 
 }
 |	STRING BOGUS
 ;
@@ -562,7 +571,7 @@ empty: /* empty */ { $$=N(POOL) };
 */
 
 static int yylex(YYSTYPE *lvalp, void *pc) {
-	#define lexical_brackets_nestage PC.brackets_nestages[PC.sp]
+	#define lexical_brackets_nestage PC.brackets_nestages[PC.ls_sp]
 	#define RC {result=c; goto break2; }
 
     register int c;

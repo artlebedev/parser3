@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.214 2002/01/31 15:16:01 paf Exp $
+	$Id: execute.C,v 1.215 2002/01/31 16:39:01 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -38,13 +38,12 @@ char *opcode_name[]={
 	"GET_CLASS",
 	"CONSTRUCT_VALUE", "CONSTRUCT_EXPR", "CURLY_CODE__CONSTRUCT",
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
-	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
+	"GET_ELEMENT_OR_OPERATOR", "GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
   	"CREATE_SWPOOL",	"REDUCE_SWPOOL",
 	"GET_METHOD_FRAME",
 	"STORE_PARAM",
 	"PREPARE_TO_CONSTRUCT_OBJECT",	"CALL",
-	"PREPARE_TO_CONSTRUCT_EXPR"
 
 	// expression ops: unary
 	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS",
@@ -167,7 +166,7 @@ void Request::execute(const Array& ops) {
 		case OP_GET_CLASS:
 			{
 				// maybe they do ^class:method[] call, remember the fact
-				wcontext->set_somebody_entered_some_class(true);
+				wcontext->set_somebody_entered_some_class();
 
 				const String& name=POP_NAME();
 				value=static_cast<Value *>(classes().get(name));
@@ -210,25 +209,6 @@ void Request::execute(const Array& ops) {
 				Value *ncontext=POP();
 				ncontext->put_element(name, value);
 				value->set_name(name);
-
-				// forget the fact they've entered some $class/object.xxx
-				// see OP_GET_ELEMENT
-				wcontext->set_somebody_entered_some_object(false);
-				wcontext->set_somebody_entered_some_class(false);
-				break;
-			}
-		case OP_PREPARE_TO_CONSTRUCT_EXPR:
-			{
-				// here, not in OP_CONSTRUCT_EXPR
-				// because then would be too late - expression already would try to evaluate 
-				// in wrong state
-				// not the case with OP_CONSTRUCT_VALUE, there we have write pool
-				// (separate wcontext with it's own state
-
-				// forget the fact they've entered some $class/object.xxx
-				// see OP_GET_ELEMENT
-				wcontext->set_somebody_entered_some_object(false);
-				wcontext->set_somebody_entered_some_class(false);
 				break;
 			}
 		case OP_CONSTRUCT_EXPR:
@@ -238,12 +218,6 @@ void Request::execute(const Array& ops) {
 				Value *ncontext=POP();
 				ncontext->put_element(name, value->as_expr_result());
 				value->set_name(name);
-
-				// forget the fact that they've entered some ^class/object.xxx or $class/object.xxx
-				// during expression evaluation
-				// see OP_GET_ELEMENT
-				wcontext->set_somebody_entered_some_object(false);
-				wcontext->set_somebody_entered_some_class(false);
 				break;
 			}
 		case OP_CURLY_CODE__CONSTRUCT:
@@ -282,10 +256,9 @@ void Request::execute(const Array& ops) {
 				value=POP();
 				write_assign_lang(*value);
 
-				// forget the fact they've entered some ^object/class.xxx or $object/class.xxx
+				// forget the fact they've entered some ^object.method[].
 				// see OP_GET_ELEMENT
 				wcontext->set_somebody_entered_some_object(false);
-				wcontext->set_somebody_entered_some_class(false);
 				break;
 			}
 		case OP_WRITE_EXPR_RESULT:
@@ -304,23 +277,30 @@ void Request::execute(const Array& ops) {
 				break;
 			}
 			
-		case OP_GET_ELEMENT:
+		case OP_GET_ELEMENT_OR_OPERATOR:
 			{
-				//_asm int 3;
-				// uses entered object/class flags to plug in operators
-				value=get_element();
-
 				// maybe they do ^object.method[] call, remember the fact
-				// must be below get_element() call, it checks it
 				wcontext->set_somebody_entered_some_object(true);
 
+				//_asm int 3;
+				value=get_element(true);
+				PUSH(value);
+				break;
+			}
+		case OP_GET_ELEMENT:
+			{
+				// maybe they do ^object.method[] call, remember the fact
+				wcontext->set_somebody_entered_some_object(true);
+
+				//_asm int 3;
+				value=get_element(false);
 				PUSH(value);
 				break;
 			}
 
 		case OP_GET_ELEMENT__WRITE:
 			{
-				value=get_element();
+				value=get_element(false);
 				write_assign_lang(*value);
 				break;
 			}
@@ -498,11 +478,6 @@ void Request::execute(const Array& ops) {
 				rcontext=POP();  
 				root=POP();  
 				self=static_cast<VAliased *>(POP());
-
-				// forget the fact they've entered some ^object/class.xxx
-				// see OP_GET_ELEMENT
-				wcontext->set_somebody_entered_some_object(false);
-				wcontext->set_somebody_entered_some_class(false);
 
 				PUSH(value);
 #ifdef DEBUG_EXECUTE
@@ -819,15 +794,11 @@ void Request::execute(const Array& ops) {
 	}
 }
 
-Value *Request::get_element() {
+Value *Request::get_element(bool can_call_operator) {
 	const String& name=POP_NAME();
 	Value *ncontext=POP();
 	Value *value=ncontext->get_element(name);
-	// operators can not be in form...
-	if(!value && 
-		!wcontext->get_somebody_entered_some_class () && // $class:xxx
-		!wcontext->get_somebody_entered_some_object()) // $object.xxx
-		// they can only be in form ^xxx or $xxx
+	if(!value && can_call_operator)
 		if(Method* method=OP.get_method(name)) { // maybe operator?
 			// as if that method were in self and we have normal dynamic method here
 			Junction& junction=*NEW Junction(pool(), 

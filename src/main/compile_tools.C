@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.C,v 1.41 2002/01/24 17:18:48 paf Exp $
+	$Id: compile_tools.C,v 1.42 2002/01/31 16:39:01 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -90,14 +90,27 @@ void change_string_literal_to_write_string_literal(Array *literal_string_array) 
 }
 
 void push_LS(parse_control& pc, lexical_state new_state) { 
-	if(pc.sp<MAX_LEXICAL_STATES) {
-		pc.stack[pc.sp++]=pc.ls;  pc.ls=new_state;
+	if(pc.ls_sp<MAX_LEXICAL_STATES) {
+		pc.ls_stack[pc.ls_sp++]=pc.ls;  
+		pc.ls=new_state;
 	} else
-		throw Exception(0, 0, 0, "push_LS: stack overflow");
+		throw Exception(0, 0, 0, "push_LS: ls_stack overflow");
 }
 void pop_LS(parse_control& pc) {
-	if(--pc.sp>=0)
-		pc.ls=pc.stack[pc.sp];
+	if(--pc.ls_sp>=0)
+		pc.ls=pc.ls_stack[pc.ls_sp];
 	else
-		throw Exception(0, 0, 0, "pop_LS: stack underflow");
+		throw Exception(0, 0, 0, "pop_LS: ls_stack underflow");
+}
+
+void push_OCA(parse_control& pc, bool operator_call_allowed) { 
+	if(pc.oca_sp<MAX_OPERATOR_STATES) {
+		pc.oca_stack[pc.oca_sp++]=pc.operator_call_allowed; 
+		pc.operator_call_allowed=operator_call_allowed;
+	} else
+		throw Exception(0, 0, 0, "push_OC: oca_stack overflow");
+}
+void pop_OCA(parse_control& pc) {
+	if(--pc.oca_sp<0)
+		throw Exception(0, 0, 0, "pop_OC: oca_stack underflow");
 }

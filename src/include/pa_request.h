@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.118 2002/01/21 12:10:07 paf Exp $
+	$Id: pa_request.h,v 1.119 2002/01/31 16:39:00 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -237,7 +237,7 @@ private: // execute.C
 		const String& method_name,
 		bool return_cstr);
 
-	Value *get_element();
+	Value *get_element(bool can_call_operator);
 
 private: // defaults
 
