@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2002/11/25 14:10:52 $";
+static const char* IDENT_GLOBALS_H="$Date: 2002/11/27 12:44:35 $";
 
 #include "pa_pool.h"
 
@@ -61,6 +61,7 @@ class Table;
 #define DATE_CALENDAR_WEEKYEAR_NAME "year"
 
 #define CONTENT_DISPOSITION_NAME "content-disposition"
+#define CONTENT_DISPOSITION_VALUE "attachment"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"
 
 #define SWITCH_DATA_NAME "SWITCH-DATA"
@@ -125,6 +126,7 @@ extern String *exception_comment_part_name;
 extern String *exception_handled_part_name;
 
 extern String *content_disposition_name;
+extern String *content_disposition_value;
 extern String *content_disposition_filename_name;
 
 extern String *limits_name;

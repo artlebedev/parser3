@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/11/21 09:18:19 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/11/27 12:44:36 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -504,7 +504,9 @@ static const String& file_value_to_string(Request& r, const String *source,
 	result << "content-type: " << r.mime_type_of(file_name_cstr) 
 		<< "; name=\"" << file_name_cstr << "\"\n";
 	// content-disposition: attachment; filename="user_file_name"
-	result << "content-disposition: attachment; filename=\"" << file_name_cstr << "\"\n";
+	result << 
+		CONTENT_DISPOSITION_NAME ": "CONTENT_DISPOSITION_VALUE"; "
+		CONTENT_DISPOSITION_FILENAME_NAME"=\"" << file_name_cstr << "\"\n";
 
 	const String *type=vformat?&vformat->as_string():0;
 	if(!type/*default = uue*/ || *type=="uue") {

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/11/26 14:36:49 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/11/27 12:44:35 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -579,7 +579,9 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	if(VString *vfile_name=static_cast<VString *>(body_file.fields().get(*name_name)))
 		if(vfile_name->string()!=NONAME_DAT) {
 			VHash& vhash=*NEW VHash(pool());
-			vhash.hash(0).put(*content_disposition_filename_name, vfile_name);
+			Hash& hash=vhash.hash(0);
+			hash.put(*value_name, NEW VString(*content_disposition_value));
+			hash.put(*content_disposition_filename_name, vfile_name);
 			response.fields().put(*content_disposition_name, &vhash);
 		}
 
