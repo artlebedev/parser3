@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.85 2002/06/18 11:09:02 paf Exp $
+	$Id: file.C,v 1.86 2002/06/18 11:12:05 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -190,12 +190,12 @@ static void _stat(Request& r, const String& method_name, MethodParams *params) {
 }
 
 static bool is_safe_env_key(const char *key) {
-	if(strncmp(key, "HTTP_", 5)==0)
+	if(strnicmp(key, "HTTP_", 5)==0)
 		return true;
-	if(strncmp(key, "CGI_", 4)==0)
+	if(strnicmp(key, "CGI_", 4)==0)
 		return true;
 	for(int i=0; suexec_safe_env_lst[i]; i++) {
-		if(strcmp(key, suexec_safe_env_lst[i])==0)
+		if(stricmp(key, suexec_safe_env_lst[i])==0)
 			return true;
 	}
 	return false;
