@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2003/12/11 10:25:52 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2003/12/17 07:33:53 $";
 
 #include "pa_config_includes.h"
 
@@ -91,10 +91,12 @@ public:
 		buf[used=0]=0;
 	}
 	const char* get_and_reset() {
-		char* result=new(PointerFreeGC) char[used+1];
-		memcpy(result, buf, used+1);
-		reset();
-		return result;
+		if(used) {
+			char* result=pa_strdup(buf, used);
+			reset();
+			return result;
+		} else
+			return 0;		
 	}
 };
 
