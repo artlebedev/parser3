@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.35 2002/01/28 10:50:03 paf Exp $
+	$Id: xnode.C,v 1.36 2002/01/28 10:51:29 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -101,8 +101,8 @@ private:
 GdomeNode *as_node(Pool& pool, const String& method_name, MethodParams *params, 
 						int index, const char *msg) {
 	Value& value=params->as_no_junction(index, msg);
-	if(strcmp(value.type(), VXNODE_TYPE)!=0 
-		|| strcmp(value.type(), VXDOC_TYPE)!=0)
+	if(!(strcmp(value.type(), VXNODE_TYPE)==0 
+		|| strcmp(value.type(), VXDOC_TYPE)==0))
 		throw Exception(0, 0,
 			&method_name,
 			msg);
