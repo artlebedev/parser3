@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.152 2001/07/25 11:16:57 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.153 2001/07/25 12:18:23 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -636,13 +636,15 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 
 		// USER'S = NOT OURS
 		case LS_USER:
-			if(PC.skipping_bof_empty_lines)
-				if(c=='\n') {
+			if(PC.trim_bof)
+				switch(c) {
+				case '\n': case ' ': case '\t':
 					begin=PC.source;
 					begin_line=PC.line;
 					continue; // skip it
+				default:
+					PC.trim_bof=false;
 				}
-					PC.skipping_bof_empty_lines=false;
 			switch(c) {
 			case '$':
 				push_LS(PC, LS_VAR_NAME_SIMPLE);

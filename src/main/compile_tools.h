@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.44 2001/07/25 11:16:57 parser Exp $
+	$Id: compile_tools.h,v 1.45 2001/07/25 12:18:23 parser Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -55,7 +55,7 @@ struct parse_control {
 	//@}
 	//@{
 	/// @name state; initially
-	bool skipping_bof_empty_lines;
+	bool trim_bof;
 	int pending_state; ///< i=0
 	String *string; ///< =new(pool) String(pool)
 	
