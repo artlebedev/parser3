@@ -15,7 +15,7 @@ $derived_var[derived_var_val]
 aval}
 
 @test[]
-$a[overridden]
+#$a[overridden] should be error
 ^^append{appeded} ^append{appeded}<br>
 ^^count[]=^count[]<br>
 ^offset(+1)

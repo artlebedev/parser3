@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/08/13 14:14:44 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/08/13 14:35:03 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
@@ -90,7 +90,17 @@ public: // Value
 		try {
 			if(fbase && fbase->put_element(aname, avalue, true))
 				return true; // replaced in base
-		} catch(Exception) { /* ignore "can not store to table&co errors */ }
+		} catch(Exception) { 
+			/* ignore "can not store to table&co errors for nonexistent elements */ 
+			bool error;
+			try {
+				error=get_element(aname, this)!=0;
+			} catch(Exception) { 
+				error=false;
+			}
+			if(error)
+				/*re*/throw;
+		}
 
 		if(replace)
 			return ffields.put_replace(aname, avalue);
