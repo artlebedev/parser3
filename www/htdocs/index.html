@@ -1,5 +1,5 @@
-#@USE
-#z/t.p
+@USE
+t.p
 
 @autoz[]
 $request:charset[windows-1251]
@@ -11,7 +11,8 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #$result[123]
 
 @main[]
-^main[]
+^b:method[]
+#^main[]
 #^errort[]
 #^tselectNumber[]
 #$result[hello]
@@ -133,7 +134,7 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 OK
 
 @errort[]
-#^xdoc::create[a]
+^xdoc::create[a]
 #^throw[user;here;this]
 
 @tselectNumber[]

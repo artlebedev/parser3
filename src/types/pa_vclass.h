@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vclass.h,v 1.24 2002/02/08 08:30:19 paf Exp $
+	$Id: pa_vclass.h,v 1.25 2002/04/18 13:55:06 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -16,8 +16,8 @@
 #include "pa_vobject.h"
 
 /**	stores 
-	- base: VClass::base()
-	- static fields: VClass::ffields
+- base: VClass::base()
+- static fields: VClass::ffields
 */
 class VClass : public VStateless_class {
 public: // Value
@@ -49,6 +49,15 @@ public: // Value
 		return NEW VObject(pool(), *this);
 	}
 
+protected: // VAliased
+
+	void set_alias(VStateless_class *aclass_alias) {
+		fclass_alias=aclass_alias;
+	}
+	VStateless_class *get_alias() {
+		return fclass_alias;
+	}
+
 public: // usage
 
 	VClass(Pool& apool) : VStateless_class(apool), 
@@ -58,8 +67,6 @@ public: // usage
 private:
 
 	void set_field(const String& name, Value *value) {
-		//if(value) // used in ^process to temporarily remove @main
-			//value->set_name(name);
 		if(fbase && fbase->replace_field(name, value))
 			return;
 
@@ -81,9 +88,14 @@ protected:
 			ffields.put_replace(name, value);
 	}
 
-private:
+private: // self
 
 	Hash ffields;
+
+private: // VAliased
+	
+	VStateless_class *fclass_alias;
+
 };
 
 #endif

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_valiased.h,v 1.18 2002/02/08 08:30:18 paf Exp $
+	$Id: pa_valiased.h,v 1.19 2002/04/18 13:55:06 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -52,14 +52,12 @@ class VAliased : public Value {
 	friend class Temp_alias;
 public: // creation
 
-	VAliased(Pool& apool, VStateless_class& aclass_alias) : Value(apool), 
-		fclass_alias(&aclass_alias) {
-	}
+	VAliased(Pool& apool, VStateless_class& aclass_alias) : Value(apool) {}
 
 	/// VAliased: this
 	VAliased *get_aliased() { return this; }
 
-	/// VAliased: $CLASS
+	/// VAliased: $CLASS [if not disabled by VAliased::hide_class()]
 	Value *get_element(const String& aname);
 
 protected: // VAliased
@@ -72,22 +70,12 @@ protected: // VAliased
 */
 	virtual bool hide_class() { return false; }
 
-private: // alias handling
+	//{@ VAliased replacement mechanism is 'private'zed from direct usage
+	/// Temp_alias object enforces paired set/restore
+	virtual void set_alias(VStateless_class * /*aclass_alias*/) {}
+	virtual VStateless_class *get_alias() { return 0; }
+	//}@
 
-	// VAliased replacement mechanism is 'private'zed from direct usage
-	// Temp_alias object enforces paired set/restore
-	VStateless_class *set_alias(VStateless_class *aclass_alias) {
-		VStateless_class *result=fclass_alias;
-		fclass_alias=aclass_alias;
-		return result;
-	}
-	void restore_alias(VStateless_class *aclass_alias) {
-		fclass_alias=aclass_alias;
-	}
-
-protected:
-
-	VStateless_class *fclass_alias;
 };
 
 ///	Auto-object used for temporarily changing object's effective class
@@ -97,10 +85,11 @@ class Temp_alias {
 public:
 	Temp_alias(VAliased& avobject, VStateless_class& alias) : 
 		vobject(avobject),
-		saved_alias(avobject.set_alias(&alias)) {
+		saved_alias(avobject.get_alias()) {
+		avobject.set_alias(&alias);
 	}
 	~Temp_alias() { 
-		vobject.restore_alias(saved_alias); 
+		vobject.set_alias(saved_alias); 
 	}
 };
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.C,v 1.18 2002/04/18 10:51:02 paf Exp $
+	$Id: pa_wcontext.C,v 1.19 2002/04/18 13:55:06 paf Exp $
 */
 
 #include "pa_wcontext.h"
@@ -21,7 +21,7 @@ void WContext::write(Value& avalue) {
 		// must not construct twice
 		throw Exception("parser.runtime",
 			fvalue->get_class()?&fvalue->get_class()->name():0,
-			"(%s) may not be overwritten with '%s' (%s), use constructor",
+			"%s may not be overwritten with '%s' %s, use constructor",
 			fvalue->type(), 
 				avalue.get_class()->name_cstr(), avalue.type());
 	} else 
@@ -34,13 +34,13 @@ void WContext::write(Value& avalue, const String* origin) {
 		if(origin)
 			throw Exception("parser.runtime",
 				origin,
-				"contains illegal assignment attempt of %s to '%s' (%s), use constructor",
+				"contains illegal assignment attempt of %s to %s %s, use constructor",
 				avalue.type(), 
 					fvalue->get_class()->name_cstr(), fvalue->type());
 		else		
 			throw Exception("parser.runtime",
 				fvalue->get_class()?&fvalue->get_class()->name():0,
-				"(%s) may not be overwritten with '%s' (%s), use constructor",
+				"%s may not be overwritten with %s %s, use constructor",
 				fvalue->type(), 
 					avalue.get_class()->name_cstr(), avalue.type());
 	} else 
