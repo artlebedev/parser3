@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: compile.C,v 1.46 2001/07/26 12:25:37 parser Exp $"; 
+static const char *RCSId="$Id: compile.C,v 1.47 2001/08/28 10:36:57 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_request.h"
@@ -65,7 +65,14 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 		} 
 		THROW(0,0,
 			0,
-			"%s(%d:%d): %s", file, 1+pc.line, pc.col, pc.error);
+#ifndef NO_STRING_ORIGIN
+			"%s(%d:%d): "
+#endif
+			"%s", 
+#ifndef NO_STRING_ORIGIN
+			file, 1+pc.line, pc.col, 
+#endif
+			pc.error);
 	}
 
 	// result
