@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/09/29 09:58:29 $";
+static const char* IDENT_TABLE_C="$Date: 2003/09/29 11:03:21 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -247,8 +247,9 @@ static void _save(Request& r, MethodParams& params) {
 				for(int column=0; column<lsize; column++) {
 					char *cindex_tab=new(PointerFreeGC) char[MAX_NUMBER];
 					sdata.append_know_length(cindex_tab, 
-						snprintf(cindex_tab, MAX_NUMBER, "%d\t", column),
-						String::L_CLEAN);
+						snprintf(cindex_tab, MAX_NUMBER, 
+							column<lsize-1?"%d\t":"%d", column),
+							String::L_CLEAN);
 				}
 			else
 				sdata.append_help_length("empty nameless table", 0, String::L_CLEAN);
