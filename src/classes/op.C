@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2004/03/23 09:43:44 $";
+static const char * const IDENT_OP_C="$Date: 2004/05/26 08:22:16 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -70,7 +70,6 @@ public:
 		ULN("http-header", HTTP_HEADER);
 		ULN("mail-header", MAIL_HEADER);
 		ULN("uri", URI);
-		ULN("table", TABLE);
 		ULN("sql", SQL);
 		ULN("js", JS);
 		ULN("xml", XML);

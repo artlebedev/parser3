@@ -1,16 +1,4 @@
-$xdoc[^xdoc::create{<?xml version="1.0" encoding="windows-1251" ?>
-
-<document>
-<step id="6" title="Test">
-<description>
-<![CDATA[
-Cdata test
-]]>
-</description>
-</step>
-</document>
-}]
-
-^xdoc.selectString[string(//description)]
-#$descriptionNode[^xdoc.selectSingle[/document/step/description]]
-#$descriptionNode.value
+$t[^table::create{a
+^taint[1	2]}]
+^t.save[t.txt]
+OK

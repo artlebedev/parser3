@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2004/02/27 12:57:46 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2004/05/26 08:21:56 $";
 
 
 #include "pa_string.h"
@@ -398,14 +398,6 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 		
 		} else
 			ec_append(info->result, optimize, whitespace, info->pos, fragment_length);
-		break;
-	case String::L_TABLE: 
-		// tainted, untaint language: table
-		escape(switch(c) {
-			case '\t': to_char(' ');  break;
-			case '\n': to_char(' ');  break;
-			_default;
-		});
 		break;
 	case String::L_SQL:
 		// tainted, untaint language: sql

@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2004/05/24 12:21:18 $";
+static const char * const IDENT_STRING_H="$Date: 2004/05/26 08:20:58 $";
 
 // includes
 
@@ -90,7 +90,6 @@ public:
 		L_HTTP_HEADER='h',    ///< text in HTTP response header
 		L_MAIL_HEADER='m',    ///< text in mail header
 		L_URI='U',       ///< text in uri
-		L_TABLE='L',     ///< ^table:set body
 		L_SQL='Q',       ///< ^table:sql body
 		L_JS='J',        ///< JavaScript code
 		L_XML='X',		///< ^dom:set xml

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2004/04/01 15:08:48 $";
+static const char * const IDENT_TABLE_C="$Date: 2004/05/26 08:21:56 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -369,7 +369,7 @@ static void maybe_enclose( String& to, const String& from, char encloser, const 
 
 		to<<*sencloser;
 	} else
-		to.append(from, String::L_TABLE);
+		to<<from;
 }
 
 
