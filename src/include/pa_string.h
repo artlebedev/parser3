@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.56 2001/03/29 16:12:45 paf Exp $
+	$Id: pa_string.h,v 1.57 2001/03/29 17:11:40 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -163,7 +163,7 @@ public:
 	String& piece(size_t start, size_t finish) const;
 
 	/// @return position of substr in string, -1 means "not found"
-	size_t pos(const String& substr) const;
+	int pos(const String& substr) const;
 
 #ifndef NO_STRING_ORIGIN
 	/// origin of string. calculated by first row

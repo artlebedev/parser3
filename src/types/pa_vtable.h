@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.11 2001/03/28 08:01:43 paf Exp $
+	$Id: pa_vtable.h,v 1.12 2001/03/29 17:11:43 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -48,8 +48,8 @@ protected: // VAliased
 
 public: // usage
 
-	VTable(Pool& apool) : VStateless_object(apool, *table_class), 
-		ftable(0),
+	VTable(Pool& apool, Table* atable=0) : VStateless_object(apool, *table_class), 
+		ftable(atable),
 		last_locate_was_successful(false) {
 	}
 	void set_table(Table& avalue) { ftable=&avalue; }

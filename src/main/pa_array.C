@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.C,v 1.29 2001/03/28 08:01:42 paf Exp $
+	$Id: pa_array.C,v 1.30 2001/03/29 17:11:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -13,9 +13,12 @@
 #include "pa_pool.h"
 #include "pa_array.h"
 #include "pa_exception.h"
+#include "pa_common.h"
 
 Array::Array(Pool& apool, int initial_rows) :
 	Pooled(apool) {
+	initial_rows=min(3, initial_rows);
+
 	head=tail=static_cast<Chunk *>(
 		malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
 	head->count=initial_rows;

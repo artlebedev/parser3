@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.132 2001/03/28 13:21:30 paf Exp $
+	$Id: execute.C,v 1.133 2001/03/29 17:11:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -88,13 +88,17 @@ void dump(Pool& pool, int level, const Array& ops) {
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
-		log_printf(pool, "%*s%s", level*4, "", opcode_name[op.code]);
 
 		if(op.code==OP_VALUE || op.code==OP_STRING__WRITE) {
 			Value *value=static_cast<Value *>(ops.quick_get(++i));
-			log_printf(pool, " \"%s\" %s", value->get_string()->cstr(), value->type());
+			log_printf(pool, 
+				"%*s%s"
+				" \"%s\" %s", 
+				level*4, "", opcode_name[op.code],
+				value->get_string()->cstr(), value->type());
+			continue;
 		}
-		//\log_printf(pool, "\n");
+		log_printf(pool, "%*s%s", level*4, "", opcode_name[op.code]);
 
 		if(op.code==OP_CURLY_CODE__STORE_PARAM || op.code==OP_EXPR_CODE__STORE_PARAM) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
@@ -634,7 +638,6 @@ void Request::execute(const Array& ops) {
 				0,
 				"unhandled '%s' opcode", opcode_name[op.code]); 
 		}
-		//\log_printf(pool(), "\n");
 	}
 }
 

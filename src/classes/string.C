@@ -3,13 +3,14 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.16 2001/03/29 15:36:14 paf Exp $
+	$Id: string.C,v 1.17 2001/03/29 17:11:39 paf Exp $
 */
 
 #include "pa_request.h"
 #include "_string.h"
 #include "pa_vdouble.h"
 #include "pa_vint.h"
+#include "pa_vtable.h"
 
 // global var
 
@@ -39,7 +40,7 @@ void _string_format(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
 	Value& fmt=*static_cast<Value *>(params->get(0));
-	// forcing ^format[this param type]
+	// forcing [this param type]
 	r.fail_if_junction_(true, fmt, method_name, "fmt must not be junction");
 
 	char *buf=format(pool, r.self->as_double(), fmt.as_string().cstr());
@@ -79,11 +80,42 @@ void _pos(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
 	Value& substr=*static_cast<Value *>(params->get(0));
-	// forcing ^pos[this param type]
+	// forcing [this param type]
 	r.fail_if_junction_(true, substr, method_name, "substr must not be junction");
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
+}
+
+void _lsplit(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	Value& delim_value=*static_cast<Value *>(params->get(0));
+	// forcing [this param type]
+	r.fail_if_junction_(true, delim_value, method_name, "delimiter must not be junction");
+	const String& delim=delim_value.as_string();
+	
+	const String& string=*static_cast<VString *>(r.self)->get_string();
+
+	Table& result=*new(pool) Table(pool, &string, 0);
+
+	int pos_before=string.pos(delim);
+	if(pos_before>=0) {
+		{
+			Array& row=*new(pool) Array(pool, 1);
+			result+=&(row+=&string.piece(0, pos_before));
+		}
+		size_t pos_after=pos_before+delim.size();
+		if(pos_after<string.size()) {
+			Array& row=*new(pool) Array(pool, 1);
+			result+=&(row+=&string.piece(pos_after, string.size()));
+		}
+	} else {
+		Array& row=*new(pool) Array(pool, 1);
+		result+=&(row+=&string);
+	}
+
+	r.write_no_lang(*new(pool) VTable(pool, &result));
 }
 
 // initialize
@@ -110,5 +142,8 @@ void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^string.pos[substr]
 	vclass.add_native_method("pos", _pos, 1, 1);
+
+	// ^string.lsplit[delim]
+	vclass.add_native_method("lsplit", _lsplit, 1, 1);
 }	
 

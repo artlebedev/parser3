@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.55 2001/03/29 16:12:46 paf Exp $
+	$Id: pa_string.C,v 1.56 2001/03/29 17:11:42 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -396,7 +396,7 @@ break2:
 	return result;
 }
 
-size_t String::pos(const String& substr) const {
+int String::pos(const String& substr) const {
 	for(size_t result=0; result<size(); result++) {
 		int partial; cmp(partial, substr, result);
 		if(
