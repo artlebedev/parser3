@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.53 2001/05/17 19:33:33 parser Exp $
+	$Id: pa_common.C,v 1.54 2001/05/19 17:37:06 parser Exp $
 */
 
 #include "pa_common.h"
@@ -99,7 +99,8 @@ bool file_read(Pool& pool, const String& file_spec,
 	if(fail_on_read_problem)
 		PTHROW(0, 0, 
 			&file_spec, 
-			"read failed: %s (%d)", strerror(errno), errno);
+			"read failed: %s (%d), actual filename '%s'", 
+				strerror(errno), errno, fname);
     return false;
 }
 
@@ -143,7 +144,8 @@ void file_write(Pool& pool,
 	}
 	PTHROW(0, 0, 
 		&file_spec, 
-		"write failed: %s (%d)", strerror(errno), errno);
+		"write failed: %s (%d), actual filename '%s'", 
+			strerror(errno), errno, fname);
 }
 
 static void rmdir(const String& file_spec, size_t pos_after) {
@@ -154,10 +156,12 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::UL_FILE_NAME));
 }
 void file_delete(Pool& pool, const String& file_spec) {
-	if(unlink(file_spec.cstr(String::UL_FILE_NAME))!=0)
+	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
+	if(unlink(fname)!=0)
 		PTHROW(0, 0, 
 			&file_spec, 
-			"unlink failed: %s (%d)", strerror(errno), errno);
+			"unlink failed: %s (%d), actual filename '%s'", 
+				strerror(errno), errno, fname);
 
 	rmdir(file_spec, 1);
 }
@@ -189,7 +193,8 @@ size_t file_size(const String& file_spec) {
 	if(stat(fname, &finfo)!=0)
 		PTHROW(0, 0, 
 			&file_spec, 
-			"write failed: %s (%d)", strerror(errno), errno);
+			"getting file size failed: %s (%d), real filename '%s'", 
+				strerror(errno), errno, fname);
 	return finfo.st_size;
 }
 
