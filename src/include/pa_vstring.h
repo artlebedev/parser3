@@ -1,9 +1,11 @@
 /*
-  $Id: pa_vstring.h,v 1.5 2001/02/25 13:23:01 paf Exp $
+  $Id: pa_vstring.h,v 1.6 2001/03/06 12:22:57 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
+
+#include <stdlib.h>
 
 #include "pa_value.h"
 
@@ -16,6 +18,9 @@ public: // Value
 	String *get_string() { return &string; };
 	// string: value
 	//void put_string(String *astring) { string=astring; }
+
+	// string: value
+	double get_double() { return atof(string.cstr()); }
 
 public: // usage
 

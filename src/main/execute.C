@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.48 2001/02/25 18:02:12 paf Exp $
+  $Id: execute.C,v 1.49 2001/03/06 12:22:58 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -11,6 +11,7 @@
 #include "pa_vcframe.h"
 #include "pa_vmframe.h"
 #include "pa_vobject.h"
+#include "pa_vdouble.h"
 
 #include <stdio.h>
 
@@ -20,7 +21,10 @@
 
 
 char *opcode_name[]={
+	// literals
 	"STRING",  "CODE",  "CLASS",
+
+	// actions
 	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
 	"CONSTRUCT",
 	"EXPRESSION_EVAL",	"MODIFY_EVAL",
@@ -28,9 +32,20 @@ char *opcode_name[]={
 	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
 	"CREATE_RWPOOL",	"REDUCE_RWPOOL",
+  	"CREATE_SWPOOL",	"REDUCE_SWPOOL",
 	"GET_METHOD_FRAME",
 	"STORE_PARAM",
 	"CALL"
+
+	// expression ops: unary
+	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS",
+	// expression ops: binary
+	"SUB", "ADD", "MUL", "DIV", "MOD",
+	"BIN_AND", "BIN_OR",
+	"LOG_AND", "LOG_OR",
+	"NUM_LT", "NUM_GT", "NUM_LE", "NUM_GE", "NUM_EQ", "NUM_NE",
+	"STR_LT", "STR_GT", "STR_LE", "STR_GE", "STR_EQ", "STR_NE",
+	"XOR"
 };
 
 void dump(int level, const Array& ops) {
@@ -199,6 +214,22 @@ void Request::execute(const Array& ops) {
 				PUSH(value);
 				break;
 			}
+		case OP_CREATE_SWPOOL:
+			{
+				PUSH(wcontext);
+				wcontext=NEW WWrapper(pool(), 0 /* empty */, true /* constructing */);
+				break;
+			}
+		case OP_REDUCE_SWPOOL:
+			{
+				// from "$a $b" part of expression taking only string value,
+				// ignoring any other content of wcontext
+				String *string=wcontext->get_string();
+				Value *value=NEW VString(*string);
+				PUSH(value);
+				break;
+			}
+
 
 			// CALL
 		case OP_GET_METHOD_FRAME:
@@ -265,6 +296,17 @@ void Request::execute(const Array& ops) {
 				self=static_cast<VAliased *>(POP());
 				wcontext->write(value);
 				fprintf(stderr, "<-returned");
+				break;
+			}
+
+		case OP_MUL: 
+			{
+				Value *b=POP();
+				Value *a=POP();
+				Value *value=NEW VDouble(pool(), 
+					a->get_double() *
+					b->get_double());
+				PUSH(value);
 				break;
 			}
 

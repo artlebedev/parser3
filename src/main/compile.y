@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.48 2001/03/06 12:00:44 paf Exp $
+  $Id: compile.y,v 1.49 2001/03/06 12:22:58 paf Exp $
 */
 
 %{
@@ -215,11 +215,6 @@ name_expr_wdive_root: ':' name_expr_dive_code {
 name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
 
 constructor_value: 
-	constructor_one_param_value
-|	constructor_two_params_value /* $var(=;2*2) $var(%d;2*2) $var(+;1) */
-;
-
-constructor_one_param_value: 
 	empty_value /* optimized $var() case */
 |	STRING /* optimized $var(STRING) case */
 |	complex_constructor_param_value /* $var(something complex) */
@@ -232,25 +227,6 @@ complex_constructor_param_value: complex_constructor_param_body {
 };
 complex_constructor_param_body: codes__excluding_sole_str_literal;
 codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
-
-constructor_two_params_value: STRING ';' constructor_one_param_value {
-	char *operator_or_fmt=SLA2S($1)->cstr();
-	$$=N(POOL);
-	P($$, $1); /* stack: ncontext name operator_or_fmt */
-	P($$, $3); /* stack: ncontext name operator_or_fmt expr */
-	switch(operator_or_fmt[0]) {
-	case '=': case '%':
-		OP($$, OP_EXPRESSION_EVAL);
-		break;
-	case '+': case '-': case '*': case '/':
-		OP($$, OP_MODIFY_EVAL);
-		break;
-	default:
-		strcpy(PC->error, "invalid modification operator");
-		YYERROR;
-	}
-	/* stack: ncontext name value */
-};
 
 /* call */
 
@@ -493,7 +469,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			case ']':
 				PC->ls=*PC->source=='['?LS_DEF_LOCALS:LS_DEF_COMMENT;
 				RC;
-			case c=='\n': // wrong. bailing out
+			case '\n': // wrong. bailing out
 				pop_LS(PC);
 				RC;
 			}
@@ -548,12 +524,10 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				lexical_brackets_nestage++;
 				RC;
 			case '+': case '-': case '*': case '/': case '%': 
-			case ';':
-				RC;
 			case '&': case '|': 
 			case '<': case '>': case '=': case '!':
-				?
-				break;
+			case ';':
+				RC;
 			case '"':
 				push_LS(PC, LS_EXPRESSION_STRING);
 				RC;

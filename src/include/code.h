@@ -1,5 +1,5 @@
 /*
-  $Id: code.h,v 1.10 2001/03/06 12:00:43 paf Exp $
+  $Id: code.h,v 1.11 2001/03/06 12:22:57 paf Exp $
 */
 
 #ifndef CODE_H
@@ -27,13 +27,13 @@ enum OPCODE {
 	// expression ops: unary
 	OP_NEG, OP_INV, OP_NOT, OP_DEF, OP_IN, OP_FEXISTS,
 	// expression ops: binary
-	OP_SUB OP_ADD OP_MUL OP_DIV OP_MOD,
+	OP_SUB, OP_ADD, OP_MUL, OP_DIV, OP_MOD,
 	OP_BIN_AND, OP_BIN_OR,
 	OP_LOG_AND, OP_LOG_OR,
 	OP_NUM_LT, OP_NUM_GT, OP_NUM_LE, OP_NUM_GE, OP_NUM_EQ, OP_NUM_NE,
 	OP_STR_LT, OP_STR_GT, OP_STR_LE, OP_STR_GE, OP_STR_EQ, OP_STR_NE,
 	OP_XOR
-;
+};
 
 union Operation {
 	void *cast; // casting helper 
