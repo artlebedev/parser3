@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.34 2001/04/05 13:19:43 paf Exp $
+	$Id: untaint.C,v 1.35 2001/04/05 13:27:14 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -95,7 +95,7 @@ char *String::store_to(char *dest, Untaint_lang lang, SQL_Connection *connection
 
 			// WARNING:
 			//	string can grow only UNTAINT_TIMES_BIGGER
-			switch(lang==UL_UNKNOWN?row->item.lang:lang) {
+			switch(lang==UL_UNSPECIFIED?row->item.lang:lang) {
 			case UL_CLEAN:
 				// clean piece
 			case UL_TAINTED:

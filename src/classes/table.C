@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.54 2001/04/05 13:19:40 paf Exp $
+	$Id: table.C,v 1.55 2001/04/05 13:27:11 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -454,7 +454,8 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 
 	Temp_lang temp_lang(r, String::UL_SQL);
 	const String& statement_string=r.process(statement).as_string();
-	const char *statement_cstr=statement_string.cstr(String::UL_UNKNOWN, r.connection);
+	const char *statement_cstr=
+		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
 	unsigned int sql_column_count; SQL_Driver::Cell *sql_columns;
 	unsigned long sql_row_count; SQL_Driver::Cell **sql_rows;
 	bool need_rethrow=false; Exception rethrow_me;

@@ -34,8 +34,7 @@ $m ^if(^s.match[$:m][i]){matches}{do not match} $s<BR>
 ^connect[$SQL.connect-string]{
 	$random_age(^random:generate(10000))
 	$shit[^taint[our's]]
-	$paf[table:sql{insert into paf (name, age) values ('$shit', $random_age)}(1^;4)]
-	$paf
+	$paf[^table:sql{insert into paf (name, age) values ('$shit', $random_age)}(1;4)]
 	$paf[^table:sql{select * from paf}(1;4)]
 	<table border=1>
 		<tr><td>id</td><td>name</td><td>age</td></tr>

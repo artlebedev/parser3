@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.71 2001/04/05 13:19:42 paf Exp $
+	$Id: pa_string.h,v 1.72 2001/04/05 13:27:12 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -87,7 +87,7 @@ public:
 
 	/// piece is tainted or not. the language to use when detaint 
 	enum Untaint_lang {
-		UL_UNKNOWN=0, ///< zero value handy for hash lookup @see untaint_lang_name2enum
+		UL_UNSPECIFIED=0, ///< zero value handy for hash lookup @see untaint_lang_name2enum
 		UL_CLEAN, ///< clean
 		UL_TAINTED,  ///< tainted, untaint language as assigned later 
 		// untaint languages. assigned by ^untaint[lang]{...}
@@ -113,7 +113,7 @@ public:
 	String(const String& src);
 	size_t size() const { return fsize; }
 	/// convert to C string. if 'lang' known, forcing 'lang' to it
-	char *cstr(Untaint_lang lang=UL_UNKNOWN, SQL_Connection *connection=0) const {
+	char *cstr(Untaint_lang lang=UL_UNSPECIFIED, SQL_Connection *connection=0) const {
 		char *result=(char *)malloc(size()*UNTAINT_TIMES_BIGGER+1);
 		char *eol=store_to(result, lang, connection);
 		*eol=0;
@@ -125,7 +125,7 @@ public:
 	String& real_append(STRING_APPEND_PARAMS);
 	/// @return <0 ==0 or >0 depending on comparison result
 	int cmp (int& partial, const String& src, 
-		size_t this_offset=0, Untaint_lang lang=UL_UNKNOWN) const;
+		size_t this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
 	bool operator < (const String& src) const {	int p; return cmp(p, src)<0; }
 	bool operator > (const String& src) const {	int p; return cmp(p, src)>0; }
 	bool operator <= (const String& src) const { int p; return cmp(p, src)<=0; }
@@ -146,7 +146,7 @@ public:
 			-  2: means @src starts @this
 	*/
 	int cmp(int& partial, const char* src_ptr, size_t src_size=0, 
-		size_t this_offset=0, Untaint_lang lang=UL_UNKNOWN) const;
+		size_t this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
 	bool operator == (const char* src_ptr) const { 
 		size_t src_size=src_ptr?strlen(src_ptr):0;
 		if(size() != src_size)
@@ -171,10 +171,10 @@ public:
 
 	/// @return position of substr in string, -1 means "not found" [String version]
 	int pos(const String& substr, 
-		size_t this_offset=0, Untaint_lang lang=UL_UNKNOWN) const;
+		size_t this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
 	/// @return position of substr in string, -1 means "not found" [const char* version]
 	int pos(const char *substr, size_t substr_size, 
-		size_t this_offset=0, Untaint_lang lang=UL_UNKNOWN) const;
+		size_t this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
 
 	void split(Array& result, 
 		size_t *pos_after_ref, 
@@ -244,7 +244,7 @@ private:
 	}
 	void expand();
 	char *String::store_to(char *dest, 
-		Untaint_lang lang=UL_UNKNOWN, SQL_Connection *connection=0) const;
+		Untaint_lang lang=UL_UNSPECIFIED, SQL_Connection *connection=0) const;
 
 private: //disabled
 

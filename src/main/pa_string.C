@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.70 2001/04/05 13:19:43 paf Exp $
+	$Id: pa_string.C,v 1.71 2001/04/05 13:27:14 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -199,7 +199,7 @@ int String::cmp(int& partial, const String& src,
 			break;
 
 		if(pos+a_row->item.size > this_offset) {
-			if(lang!=UL_UNKNOWN && a_row->item.lang!=lang) 
+			if(lang!=UL_UNSPECIFIED && a_row->item.lang!=lang) 
 				return -1; // wrong lang -- bail out
 
 			int size_diff=
@@ -279,7 +279,7 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 			break;
 
 		if(pos+a_row->item.size > this_offset) {
-			if(lang!=UL_UNKNOWN && a_row->item.lang!=lang) 
+			if(lang!=UL_UNSPECIFIED && a_row->item.lang!=lang) 
 				return -1; // wrong lang -- bail out
 
 			int size_diff=
