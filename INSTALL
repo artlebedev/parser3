@@ -48,6 +48,11 @@
   --disable-foreign-group-files
   option to configure.
   
+  NOTE:
+  You can disable user-configured sendmail commands by forcing it, setting
+  "--with=sendmail=COMMAND"
+  option to configure.
+  
 
 2.What is the process to install Parser3?
 
@@ -149,4 +154,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.15 2002/03/25 11:36:23 paf Exp $
+$Id: INSTALL,v 1.16 2002/03/25 11:41:26 paf Exp $
