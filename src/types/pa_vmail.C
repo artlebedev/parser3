@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2004/12/08 08:45:13 $";
+static const char * const IDENT_VMAIL_C="$Date: 2005/01/31 08:53:22 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -144,7 +144,9 @@ static void MimePart2body(GMimePart *part, gpointer data) {
 			return; // skipping frames
 
 		PartType partType;
-		if(g_mime_content_type_is_type(type, "text", "plain"))
+		if(part->disposition) // inline/attachment
+			partType=P_FILE;
+		else if(g_mime_content_type_is_type(type, "text", "plain"))
 			partType=P_TEXT;
 		else if(g_mime_content_type_is_type(type, "text", "html"))
 			partType=P_HTML;
