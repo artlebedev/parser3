@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.18 2001/02/12 13:26:55 paf Exp $
+  $Id: pa_string.C,v 1.19 2001/02/13 10:00:27 paf Exp $
 */
 
 #include <string.h>
@@ -218,3 +218,63 @@ Char_set::Char_set() {
 }
 
 // String_iterator 
+
+	// home string
+	String& string;
+	// the row in which we are
+	Chunk::Row *read_here;
+	// position in that row's string fragment
+	int offset;
+	// when read_here reaches this row, move to the next chunk
+	Chunk::Row *link_row;
+
+	bool feof;
+
+String_iterator::String_iterator(String& astring) :	
+	string(astring), 
+	offset(0),
+	feof(astring.size()==0),
+	read_here(astring.head.rows),
+	link_row(astring.preallocated_link) {
+}
+
+char String_iterator::operator() {
+	return feof?0:read_here->item.ptr[offset];
+}
+
+void String_iterator::skip() {
+	if(feof)
+		return;
+
+	if(++offset==read_here->item.size) {
+		if(++read_here==string.append_here) {
+			feof=true;
+			return;
+		}
+		offset=0;
+		if(read_here==link_row) {
+			Chunk *chunk=link_row->link;
+			if(!chunk)
+				string.pool.exception().raise(
+					"String_iterator::skip() missed "
+					"read_here==string.append_here check");
+
+			read_here=chunk->rows;
+			link_row=chunk->rows[chunk->count];
+		}
+	}
+}
+
+bool String_iterator::skip_to(char c) {
+	for(; !feof; skip())
+		if(operator()==c)
+			return true;
+	return false;
+}
+
+int String_iterator::skip_to(Char_type& types) {
+	for(; !feof; skip())
+		if(char type=types.get(operator()))
+			return type;
+	return 0;
+}

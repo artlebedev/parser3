@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.16 2001/02/12 13:26:54 paf Exp $
+  $Id: pa_string.h,v 1.17 2001/02/13 10:00:27 paf Exp $
 */
 
 /*
@@ -110,13 +110,17 @@ private: //disabled
 };
 
 
-class Char_set {
+class Char_type {
 public:
-	Char_set();
-	void include(char c) { bools[static_cast<unsigned int>(c)]=true; }
-	bool in(char c) { return bools[static_cast<unsigned int>(c)]; }
+	Char_type();
+	void set(char c, int value) { 
+		values[static_cast<unsigned int>(c)]=static_cast<char>(value); 
+	}
+	int get(char c) { 
+		return static_cast<int>(values[static_cast<unsigned int>(c)]); 
+	}
 private:	
-	bool bools[0x100];
+	char values[0x100];
 };
 
 class String_iterator {
@@ -126,8 +130,8 @@ public:
 	void operator ++() { skip(); }
 	void operator ++(int) { skip(); }
 
-	void skip_to(Char_set& set);
-	void skip_to(char c);
+	int skip_to(Char_type& types);
+	bool skip_to(char c);
 
 	bool eof() { return feof; }
 
@@ -148,10 +152,8 @@ protected:
 
 protected:
 
-	// advances position on one char
-	void skip() {
-
-	}
+	// advances position by one char
+	void skip();
 };
 
 #endif
