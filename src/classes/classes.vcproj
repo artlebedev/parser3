@@ -25,7 +25,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;&quot;..\lib\sdbm\apr-include&quot;;..\lib\md5;..\sql;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml&quot;;&quot;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include&quot;"
+				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;..\lib\sdbm\apr-include;..\lib\md5;..\sql;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -66,57 +66,6 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Profile Debug|Win32"
-			OutputDirectory=".\ProfileDebug"
-			IntermediateDirectory=".\ProfileDebug"
-			ConfigurationType="4"
-			UseOfMFC="2"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;&quot;..\lib\sdbm\apr-include&quot;;..\lib\md5;..\sql;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\win32\gnome\libxml2-x.x.x\include\libxml&quot;;&quot;..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\ProfileDebug/classes.pch"
-				AssemblerListingLocation=".\ProfileDebug/"
-				ObjectFile=".\ProfileDebug/"
-				ProgramDataBaseFileName=".\ProfileDebug/"
-				BrowseInformation="1"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="2"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\ProfileDebug\classes.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1049"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
@@ -127,7 +76,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;&quot;..\lib\sdbm\apr-include&quot;;..\lib\md5;..\sql;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include\libxml&quot;;&quot;..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include&quot;"
+				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;..\lib\sdbm\apr-include;..\lib\md5;..\sql;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include\libxml;..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -167,58 +116,6 @@
 			<Tool
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
-		<Configuration
-			Name="Profile Release|Win32"
-			OutputDirectory=".\ProfileRelease"
-			IntermediateDirectory=".\ProfileRelease"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;&quot;..\lib\sdbm\apr-include&quot;;..\lib\md5;..\sql;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml&quot;;&quot;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				StringPooling="TRUE"
-				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				PrecompiledHeaderFile=".\ProfileRelease/classes.pch"
-				AssemblerListingLocation=".\ProfileRelease/"
-				ObjectFile=".\ProfileRelease/"
-				ProgramDataBaseFileName=".\ProfileRelease/"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="2"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\ProfileRelease\classes.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1049"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -237,29 +134,7 @@ ECHO // do not edit. autogenerated by .dsp, see classes.awk settings &gt; %CLASS
 					Outputs="..\classes\classes.inc"/>
 			</FileConfiguration>
 			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCustomBuildTool"
-					Description="Scanning classes/, creating classes.inc..."
-					CommandLine="SET CLASSES_INC=..\classes\classes.inc
-ECHO // do not edit. autogenerated by .dsp, see classes.awk settings &gt; %CLASSES_INC%
-\parser3project\win32\tools\ls | \parser3project\win32\tools\gawk -f &quot;$(InputPath)&quot; &gt;&gt; %CLASSES_INC%
-"
-					Outputs="..\classes\classes.inc"/>
-			</FileConfiguration>
-			<FileConfiguration
 				Name="Debug|Win32">
-				<Tool
-					Name="VCCustomBuildTool"
-					Description="Scanning classes/, creating classes.inc..."
-					CommandLine="SET CLASSES_INC=..\classes\classes.inc
-ECHO // do not edit. autogenerated by .dsp, see classes.awk settings &gt; %CLASSES_INC%
-\parser3project\win32\tools\ls | \parser3project\win32\tools\gawk -f &quot;$(InputPath)&quot; &gt;&gt; %CLASSES_INC%
-"
-					Outputs="..\classes\classes.inc"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Scanning classes/, creating classes.inc..."
@@ -282,17 +157,6 @@ ECHO // do not edit. autogenerated by .dsp, see classes.awk settings &gt; %CLASS
 					CompileAs="2"/>
 			</FileConfiguration>
 			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
@@ -301,15 +165,6 @@ ECHO // do not edit. autogenerated by .dsp, see classes.awk settings &gt; %CLASS
 					PreprocessorDefinitions=""
 					BasicRuntimeChecks="3"
 					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
 					CompileAs="2"/>
 			</FileConfiguration>
 		</File>
@@ -328,17 +183,6 @@ ECHO // do not edit. autogenerated by .dsp, see classes.awk settings &gt; %CLASS
 					CompileAs="2"/>
 			</FileConfiguration>
 			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
@@ -347,15 +191,6 @@ ECHO // do not edit. autogenerated by .dsp, see classes.awk settings &gt; %CLASS
 					PreprocessorDefinitions=""
 					BasicRuntimeChecks="3"
 					BrowseInformation="1"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
 					CompileAs="2"/>
 			</FileConfiguration>
 		</File>

@@ -13,57 +13,6 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
-			IntermediateDirectory=".\Debug"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="..\apache13;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\lib\md5;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\libxml2-x.x.x\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\Debug/ApacheModuleParser3Core.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
-				WarningLevel="4"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="4"
-				CompileAs="2"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\Debug\ApacheModuleParser3Core.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1049"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
@@ -75,7 +24,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\apache13;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\lib\md5;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\libxml2-x.x.x\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
+				AdditionalIncludeDirectories="..\apache13;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\lib\md5;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -105,6 +54,57 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
+				Culture="1049"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory=".\Debug"
+			IntermediateDirectory=".\Debug"
+			ConfigurationType="4"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\apache13;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\lib\md5;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include\libxml;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderFile=".\Debug/ApacheModuleParser3Core.pch"
+				AssemblerListingLocation=".\Debug/"
+				ObjectFile=".\Debug/"
+				ProgramDataBaseFileName=".\Debug/"
+				WarningLevel="4"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="4"
+				CompileAs="2"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile=".\Debug\ApacheModuleParser3Core.lib"
+				SuppressStartupBanner="TRUE"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
 				Culture="1049"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>

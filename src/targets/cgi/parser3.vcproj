@@ -24,7 +24,7 @@
 				AdditionalOptions="/vmg"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\libxml2-x.x.x\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
+				AdditionalIncludeDirectories="..\..;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="NDEBUG;_CONSOLE;WIN32"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -77,133 +77,6 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Profile Release|Win32"
-			OutputDirectory=".\ProfileRelease"
-			IntermediateDirectory=".\ProfileRelease"
-			ConfigurationType="1"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions="/vmg"
-				Optimization="2"
-				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\libxml2-x.x.x\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
-				PreprocessorDefinitions="NDEBUG;_CONSOLE;WIN32"
-				StringPooling="TRUE"
-				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				PrecompiledHeaderFile=".\ProfileRelease/parser3.pch"
-				AssemblerListingLocation=".\ProfileRelease/"
-				ObjectFile=".\ProfileRelease/"
-				ProgramDataBaseFileName=".\ProfileRelease/"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="2"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib"
-				OutputFile=".\ProfileRelease/parser3.exe"
-				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="TRUE"
-				GenerateMapFile="TRUE"
-				SubSystem="1"
-				TargetMachine="1"
-				FixedBaseAddress="1"/>
-			<Tool
-				Name="VCMIDLTool"
-				TypeLibraryName=".\ProfileRelease/parser3.tlb"
-				HeaderFileName=""/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1049"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
-			Name="Profile Debug|Win32"
-			OutputDirectory=".\ProfileDebug"
-			IntermediateDirectory=".\ProfileDebug"
-			ConfigurationType="1"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				AdditionalOptions="/vmg"
-				Optimization="0"
-				AdditionalIncludeDirectories="..\..;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\libxml2-x.x.x\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
-				PreprocessorDefinitions="_DEBUG;_CONSOLE;WIN32"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\ProfileDebug/parser3.pch"
-				AssemblerListingLocation=".\ProfileDebug/"
-				ObjectFile=".\ProfileDebug/"
-				ProgramDataBaseFileName=".\ProfileDebug/"
-				BrowseInformation="1"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="2"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib"
-				OutputFile="ProfileDebug/parser3.exe "
-				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
-				IgnoreDefaultLibraryNames="msvcrt"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\ProfileDebug/parser3.pdb"
-				GenerateMapFile="TRUE"
-				SubSystem="1"
-				TargetMachine="1"
-				FixedBaseAddress="1"/>
-			<Tool
-				Name="VCMIDLTool"
-				TypeLibraryName=".\ProfileDebug/parser3.tlb"
-				HeaderFileName=""/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1049"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
@@ -214,7 +87,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/vmg"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\libxml2-x.x.x\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
+				AdditionalIncludeDirectories="..\..;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include\libxml;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include"
 				PreprocessorDefinitions="_DEBUG;_CONSOLE;WIN32"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

@@ -15,108 +15,6 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
-			IntermediateDirectory=".\Debug"
-			ConfigurationType="4"
-			UseOfMFC="2"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\types;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\libxml2-x.x.x\include&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\Debug/gd.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="2"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\Debug\gd.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1049"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
-			Name="Profile Release|Win32"
-			OutputDirectory=".\ProfileRelease"
-			IntermediateDirectory=".\ProfileRelease"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include;..\..\types;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				StringPooling="TRUE"
-				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				PrecompiledHeaderFile=".\ProfileRelease/gd.pch"
-				AssemblerListingLocation=".\ProfileRelease/"
-				ObjectFile=".\ProfileRelease/"
-				ProgramDataBaseFileName=".\ProfileRelease/"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"
-				CompileAs="2"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\ProfileRelease\gd.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1049"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
@@ -128,7 +26,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include;..\..\types;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include&quot;"
+				AdditionalIncludeDirectories="..\..\include;..\..\types;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -169,9 +67,9 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Profile Debug|Win32"
-			OutputDirectory=".\ProfileDebug"
-			IntermediateDirectory=".\ProfileDebug"
+			Name="Debug|Win32"
+			OutputDirectory=".\Debug"
+			IntermediateDirectory=".\Debug"
 			ConfigurationType="4"
 			UseOfMFC="2"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -179,14 +77,14 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\types;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;&quot;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome&quot;;&quot;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include\libxml&quot;;&quot;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include&quot;"
+				AdditionalIncludeDirectories="..\..\include;..\..\types;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\..\win32\gnome\libxml2-x.x.x\include;..\..\..\..\win32\gnome\libxslt-x.x.x"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				PrecompiledHeaderFile=".\ProfileDebug/gd.pch"
-				AssemblerListingLocation=".\ProfileDebug/"
-				ObjectFile=".\ProfileDebug/"
-				ProgramDataBaseFileName=".\ProfileDebug/"
+				PrecompiledHeaderFile=".\Debug/gd.pch"
+				AssemblerListingLocation=".\Debug/"
+				ObjectFile=".\Debug/"
+				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
@@ -195,7 +93,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\ProfileDebug\gd.lib"
+				OutputFile=".\Debug\gd.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
