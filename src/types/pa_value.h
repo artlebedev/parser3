@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.25 2001/03/19 19:17:46 paf Exp $
+	$Id: pa_value.h,v 1.26 2001/03/19 20:07:39 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -86,37 +86,32 @@ public: // Value
 		- junction: itself
 	*/
 	virtual Junction *get_junction() { return 0; }
-	/** extract VTable
-		@return for
-		- VTable: itself
-	*/
-	virtual VTable *get_vtable() { return 0; }
 	/** extract Value element
 		@return for
 		- VHash: (key)=value
-		- object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
+		- VStateless_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 		- object_base: (CLASS)=vclass;(BASE)=base;(method)=method_ref
-		- object_instance: (field)=value;(CLASS)=vclass;(method)=method_ref
+		- VStateless_object: (field)=value;(CLASS)=vclass;(method)=method_ref
 		- operator_class: (field)=value - static values only
 		- VCode_frame: wcontext_transparent
-		- methodframe: my or self_transparent
+		- VMethod_frame: my or self_transparent
 		- VTable: column
-		- env: CLASS,BASE,method,field
+		- VEnv: CLASS,BASE,method,field
 		- VForm: CLASS,BASE,method,field
 		- VString: $CLASS,$BASE,$method
 		- VRequest: CLASS,BASE,method,fields
 		- VResponse: CLASS,BASE,method,fields
 		- VCookie: CLASS,BASE,method,field
-	*/
+		*/
 	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
 	/** store Value element under \a name
 		@return for
 		- VHash: (key)=value
 		- VStateless_object: (CLASS)=vclass;(BASE)=base;(method)=method_ref
-		- object_class: (field)=value - static values only
-		- object_instance: (field)=value
+		- VStateless_class: (field)=value - static values only
+		- VStateless_object: (field)=value
 		- VCode_frame: wcontext_transparent
-		- methodframe: my or self_transparent
+		- VMethod_frame: my or self_transparent
 		- VResponse: (attribute)=value
 		- VCookie: field
 	*/
@@ -125,20 +120,14 @@ public: // Value
 		@return for
 		- VStateless_class: this
 		- VStateless_object: fclass_real
-		- wcontext: none yet | transparent
-		- VForm: this
-		- class: this
-		- env: this
-		- VRequest: this
-		- VHash: this
-		- vVCookie: this
+		- WContext: none yet | transparent
 	*/
 	virtual VStateless_class *get_class() { return 0; }
 	/** extract VAliased
 		@return for
 		- valiased: this
-		- wcontext: transparent
-		- methodframe: self_transparent
+		- WContext: transparent
+		- VMethod_frame: self_transparent
 	*/
 	virtual VAliased *get_aliased() { return 0; }
 
@@ -150,20 +139,11 @@ public: // usage
 	/// set's the name which is used in error messages
 	void set_name(const String& aname) { fname=&aname; }
 
-	/// \return sure String. if it doesn't have string value barks
+	/// @return sure String. if it doesn't have string value barks
 	const String& as_string() {
 		const String *result=get_string(); 
 		if(!result)
 			bark("(%s) not a string");
-
-		return *result;
-	}
-
-	/// \return sure VTable. if it doesn't have string value barks
-	VTable& as_vtable() {
-		VTable *result=get_vtable(); 
-		if(!result)
-			bark("(%s) not a table object");
 
 		return *result;
 	}

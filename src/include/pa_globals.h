@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.15 2001/03/19 17:42:12 paf Exp $
+	$Id: pa_globals.h,v 1.16 2001/03/19 20:07:36 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -23,6 +23,9 @@
 #define VALUE_NAME "value"
 #define EXPIRES_NAME "expires"
 #define PATH_NAME "path"
+#define NAME_NAME "name"
+#define SIZE_NAME "size"
+#define TEXT_NAME "text"
 
 #define EXCEPTION_METHOD_NAME "exception"
 
@@ -74,6 +77,9 @@ extern String *body_name;
 extern String *value_name;
 extern String *expires_name;
 extern String *path_name;
+extern String *name_name;
+extern String *size_name;
+extern String *text_name;
 
 extern String *exception_method_name;
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.17 2001/03/19 19:17:41 paf Exp $
+	$Id: table.C,v 1.18 2001/03/19 20:07:35 paf Exp $
 */
 
 #include "pa_common.h"
@@ -75,7 +75,7 @@ static void set_or_load(
 	};
 
 	// replace any previous table value
-	r.self->as_vtable().set_table(table);
+	static_cast<VTable *>(r.self)->set_table(table);
 }
 
 
@@ -89,19 +89,19 @@ static void _load(Request& r, const String& method_name, Array *params) {
 
 static void _count(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VInt(pool, r.self->as_vtable().table().size());
+	Value& value=*new(pool) VInt(pool, static_cast<VTable *>(r.self)->table().size());
 	r.write_no_lang(value);
 }
 
 static void _line(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VInt(pool, 1+r.self->as_vtable().table().get_current());
+	Value& value=*new(pool) VInt(pool, 1+static_cast<VTable *>(r.self)->table().get_current());
 	r.write_no_lang(value);
 }
 
 static void _offset(Request& r, const String&, Array *params) {
 	Pool& pool=r.pool();
-	Table& table=r.self->as_vtable().table();
+	Table& table=static_cast<VTable *>(r.self)->table();
 	if(params->size()) {
 		if(int size=table.size()) {
 			int offset=
@@ -122,7 +122,7 @@ static void _menu(Request& r, const String& method_name, Array *params) {
 	
 	Value *delim_code=params->size()==2?static_cast<Value *>(params->get(1)):0;
 
-	Table& table=r.self->as_vtable().table();
+	Table& table=static_cast<VTable *>(r.self)->table();
 	bool need_delim=false;
 	for(int i=0; i<table.size(); i++) {
 		table.set_current(i);
@@ -139,7 +139,7 @@ static void _menu(Request& r, const String& method_name, Array *params) {
 }
 
 static void _empty(Request& r, const String&, Array *params) {
-	Table& table=r.self->as_vtable().table();
+	Table& table=static_cast<VTable *>(r.self)->table();
 	if(table.size()==0) {
 		Value& value=r.process(*static_cast<Value *>(params->get(0)));
 		r.write_pass_lang(value);

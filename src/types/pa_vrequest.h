@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vrequest.h,v 1.4 2001/03/19 16:06:17 paf Exp $
+	$Id: pa_vrequest.h,v 1.5 2001/03/19 20:07:39 paf Exp $
 */
 
 #ifndef PA_VREQUEST_H
@@ -24,9 +24,6 @@ public: // Value
 
 	// request: CLASS,BASE,method,fields
 	Value *get_element(const String& aname);
-
-	// request: this
-	VStateless_class *get_class() { return this; }
 
 public: // usage
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.43 2001/03/19 17:42:12 paf Exp $
+	$Id: pa_string.h,v 1.44 2001/03/19 20:07:37 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -101,7 +101,7 @@ public:
 	/// convert to C string
 	char *cstr() const;
 	String& real_append(STRING_APPEND_PARAMS);
-	/// \return <0 ==0 or >0 depending on comparison result
+	/// @return <0 ==0 or >0 depending on comparison result
 	int cmp (const String& src) const;
 	bool operator < (const String& src) const {	return cmp(src)<0; }
 	bool operator > (const String& src) const {	return cmp(src)>0; }

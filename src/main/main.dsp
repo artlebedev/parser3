@@ -279,6 +279,10 @@ SOURCE=..\types\pa_venv.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vfile.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vform.C
 # End Source File
 # Begin Source File
@@ -371,6 +375,10 @@ SOURCE=..\classes\_env.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\classes\_file.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\_form.h
 # End Source File
 # Begin Source File
@@ -408,6 +416,10 @@ SOURCE=..\classes\double.C
 # Begin Source File
 
 SOURCE=..\classes\env.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\file.C
 # End Source File
 # Begin Source File
 

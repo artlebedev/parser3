@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.16 2001/03/19 17:42:12 paf Exp $
+	$Id: pa_common.h,v 1.17 2001/03/19 20:07:36 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -15,6 +15,11 @@
 #	include "pa_config.h"
 #endif
 
+#ifdef WIN32
+#	include <sys/locking.h>
+#endif
+
+#include <stdio.h>
 #include <stdarg.h>
 #include "pa_pool.h"
 
@@ -34,17 +39,58 @@ class Value;
 int __vsnprintf(char *, size_t, const char *, va_list);
 int __snprintf(char *, size_t, const char *, ...);
 
+//flock
+#define LOCK_EX _LK_NBLCK
+#define LOCK_UN _LK_UNLCK
+void flock(int fd, int operation);
+
+//access
+#define F_OK 0
+#define X_OK 1
+#define W_OK 2
+#define R_OK 4
+
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#define mkdir(path, mode) _mkdir(path)
+
+#define putenv _putenv
+
 #endif
+
+/// @todo define it
+#ifdef SUN
+//flock
+#define LOCK_EX F_LOCK
+#define LOCK_UN F_ULOCK
+void flock(int fd, int operation);
+#endif
+
+/// @todo use somewhere
+void lock(FILE *f, long position);
+/// @todo use somewhere
+void unlock(FILE *f);
 
 /**
 	read specified file using pool, 
 	if fail_on_read_problem is true[default] throws an exception
 */
-char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem=true);
+char *file_read(Pool& pool, 
+				const char *fname, 
+				bool fail_on_read_problem=true);
+
+/**
+	write data to specified file using pool, 
+	throws an exception in case of problems
+*/
+void file_write(Pool& pool, 
+				const char *fname,
+				const char *data, size_t size, 
+				bool exclusive=false);
 
 /**
 	scans for \a delim[default \n] in \a *row_ref, 
-	\return piece of line before it or end of string, if no \a delim found
+	@return piece of line before it or end of string, if no \a delim found
 	assigns \a *row_ref to point right after delimiter if there were one
 	or to zero if no \a delim were found.
 */

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.4 2001/03/16 09:26:45 paf Exp $
+	$Id: pa_vtable.h,v 1.5 2001/03/19 20:07:40 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -19,10 +19,6 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "table"; }
-	// table: ftable
-//	const Table *get_table() { return &ftable; };
-	// table: itself
-	VTable *get_vtable() { return this; }
 	// table: column
 	Value *get_element(const String& name) {
 		// methods

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.16 2001/03/19 17:42:16 paf Exp $
+	$Id: pa_globals.C,v 1.17 2001/03/19 20:07:38 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -26,6 +26,9 @@ String *body_name;
 String *value_name;
 String *expires_name;
 String *path_name;
+String *name_name;
+String *size_name;
+String *text_name;
 
 String *exception_method_name;
 
@@ -94,6 +97,9 @@ void globals_init(Pool& pool) {
 	value_name=new(pool) String(pool, VALUE_NAME);
 	expires_name=new(pool) String(pool, EXPIRES_NAME);
 	path_name=new(pool) String(pool, PATH_NAME);
+	name_name=new(pool) String(pool, NAME_NAME);
+	size_name=new(pool) String(pool, SIZE_NAME);
+	text_name=new(pool) String(pool, TEXT_NAME);
 
 	exception_method_name=new(pool) String(pool, EXCEPTION_METHOD_NAME);
 

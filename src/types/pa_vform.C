@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.8 2001/03/19 19:17:47 paf Exp $
+	$Id: pa_vform.C,v 1.9 2001/03/19 20:07:39 paf Exp $
 */
 
 /**
@@ -17,6 +17,7 @@
 #include "pa_vstring.h"
 #include "pa_globals.h"
 #include "pa_request.h"
+#include "pa_vfile.h"
 
 // parse helper funcs
 
@@ -196,7 +197,9 @@ void VForm::AppendFormEntry(const char *aname,
 
 	Value *value;
 	if(file_name)
-		value=0; //TODO NEW VFile(...)
+		value=NEW VFile(pool(), 
+			value_ptr, value_size,
+			file_name);
 	else {
 		String& string=*NEW String(pool());
 		string.APPEND_TAINTED(value_ptr, value_size, "form", 0);

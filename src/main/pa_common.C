@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.17 2001/03/19 17:56:27 paf Exp $
+	$Id: pa_common.C,v 1.18 2001/03/19 20:07:38 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -45,6 +45,35 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
 
 #endif
 
+
+#ifdef WIN32
+
+void flock(int fd, int operation) {
+	lseek(fd, 0, SEEK_SET);
+	while(_locking(fd, operation, 1)!=0);
+	lseek(fd, 0, SEEK_SET);
+}
+
+#endif
+
+/// @todo define it
+#ifdef SUN
+
+void flock(int fd, int operation) {
+	lseek(fd, 0, SEEK_SET);
+	lockf(fd, operation, 1);
+	lseek(fd, 0, SEEK_SET);
+}
+#endif
+
+void lock(FILE *f, long position) {
+	flock(fileno(f), LOCK_EX);
+}
+void unlock(FILE *f) {
+	flock(fileno(f), LOCK_UN);
+}
+
+
 char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem) {
     int f;
     struct stat finfo;
@@ -70,6 +99,47 @@ char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem) {
 			0,
 			"use: can not read '%s' file", fname);
     return 0;
+}
+
+void file_write(Pool& pool, 
+				const char *fname, 
+				const char *data, size_t size, 
+				bool exclusive) {
+	if(fname) {
+		int f;
+		if(access(fname, F_OK)!=0) {/*no*/
+			if((f=open(fname,O_WRONLY|O_CREAT|_O_BINARY,0666))>0)
+				close(f);
+		}
+		if(access(fname, R_OK|W_OK)==0) {
+			if((f=open(fname,O_RDWR|_O_BINARY
+#ifdef WIN32
+				|O_TRUNC
+#endif
+				,0666))>=0) {
+				if(exclusive)
+					flock(f, LOCK_EX);
+				
+				if(size) write(f,data,size);
+#ifndef WIN32
+				ftruncate(f,size);
+#endif
+				if(exclusive)
+					flock(f, LOCK_UN);
+				close(f);
+				return;
+			}
+		}
+	}
+	if(fname)
+		PTHROW(0, 0,
+			0,
+			"file_write('%s'): %s (#%d)", 
+				fname, strerror(errno), errno);
+	else
+		PTHROW(0, 0,
+			0,
+			"file_write: no filename specified");
 }
 
 char *getrow(char **row_ref, char delim) {
@@ -103,9 +173,9 @@ char *lsplit(char **string_ref, char delim) {
 }
 
 char *rsplit(char *string, char delim) {
-    if(string){
+    if(string) {
 		char *v=strrchr(string, delim);
-		if (v){
+		if(v) {
 			*v=0;
 			return v+1;
 		}
@@ -118,13 +188,13 @@ char *format(Pool& pool, double value, char *fmt) {
 	if(fmt)
 		if(strpbrk(fmt, "diouxX"))
 			if(strpbrk(fmt, "ouxX"))
-				snprintf(result, MAX_NUMBER, fmt, (uint)value );
+				snprintf(result, MAX_NUMBER, fmt,(uint)value );
 			else
-				snprintf(result, MAX_NUMBER, fmt, (int)value );
+				snprintf(result, MAX_NUMBER, fmt,(int)value );
 		else
 			snprintf(result, MAX_NUMBER, fmt, value);
 	else
-		snprintf(result, MAX_NUMBER, "%d", (int)value);
+		snprintf(result, MAX_NUMBER, "%d",(int)value);
 	
 	return result;
 }

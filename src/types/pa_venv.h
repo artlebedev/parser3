@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_venv.h,v 1.8 2001/03/19 16:06:17 paf Exp $
+	$Id: pa_venv.h,v 1.9 2001/03/19 20:07:39 paf Exp $
 */
 
 #ifndef PA_VENV_H
@@ -19,9 +19,6 @@ public: // Value
 	
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "env"; }
-
-	// env: this
-	VStateless_class *get_class() { return this; }
 
 	// env: CLASS,BASE,method,field
 	Value *get_element(const String& aname) {
