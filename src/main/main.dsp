@@ -423,38 +423,6 @@ SOURCE=..\types\pa_wwrapper.h
 # Begin Group "classes"
 
 # PROP Default_Filter ""
-# Begin Group "smtp"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\classes\smtp\comms.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\smtp\smtp.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\smtp\smtp.h
-# End Source File
-# End Group
-# Begin Group "gd"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\classes\gd\gif.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\gd\gif.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\gd\gifio.C
-# End Source File
-# End Group
 # Begin Source File
 
 SOURCE=..\classes\_double.h
