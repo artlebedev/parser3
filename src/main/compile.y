@@ -98,7 +98,7 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 	$$=N(pool); 
 	Array *diving_code=$1;
 	String *first_name=LA2S(diving_code);
-	if(first_name && *first_name=="self") {
+	if(first_name && *first_name==SELF_NAME) {
 		OP($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
 			/* skip over... */
@@ -121,7 +121,7 @@ name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; 
 put: '$' name_expr_dive '(' constructor_value ')' {
 /*
 	TODO: подсмотреть в $3, и если там первым элементом self,
-		то выкинуть его и делать не OP_WITH_OP_WRITE, а WITH_SELF
+		то выкинуть его и делать не WITH_WRITE, а WITH_SELF
 		если ничего не осталось - $self(xxx)
 			обругать
 */
@@ -132,8 +132,18 @@ put: '$' name_expr_dive '(' constructor_value ')' {
 name_expr_dive: name_expr_dive_write | name_expr_dive_root;
 name_expr_dive_write: name_expr_dive_code {
 	$$=N(pool); 
-	OP($$, OP_WITH_WRITE); /* stack: starting context */
-	P($$, $1); /* diving code; stack: context,name */
+	Array *diving_code=$1;
+	String *first_name=LA2S(diving_code);
+	if(first_name && *first_name==SELF_NAME) {
+		OP($$, OP_WITH_SELF); /* stack: starting context */
+		P($$, diving_code, 
+			/* skip over... */
+			diving_code->size()>2?3/*OP_+string+get_element*/:2/*OP_+string*/);
+	} else {
+		OP($$, OP_WITH_WRITE); /* stack: starting context */
+		P($$, diving_code);
+	}
+	/* diving code; stack: current context */
 };
 name_expr_dive_root: ':' name_expr_dive_code {
 	$$=N(pool); 
