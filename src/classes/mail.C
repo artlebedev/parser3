@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.44 2001/11/05 11:46:21 paf Exp $
+	$Id: mail.C,v 1.45 2001/12/17 18:44:51 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -17,6 +17,8 @@
 #include "pa_request.h"
 #include "pa_vfile.h"
 #include "pa_exec.h"
+#include "pa_charsets.h"
+#include "pa_charset.h"
 
 // defines
 
@@ -166,19 +168,9 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 }
 
 
-static void *find_content_type(const Hash::Key& aattribute, Hash::Val *ameaning, 
-							  void *) {
-	return StrEqNc(aattribute.cstr(), CONTENT_TYPE_NAME)?ameaning:0;
-}
-static void *find_content_type_charset(const Hash::Key& aattribute, Hash::Val *ameaning, 
-									  void *) {
-	return StrEqNc(aattribute.cstr(), "charset")?ameaning:0;
-}
-
 #ifndef DOXYGEN
 struct Mail_info {
-	String *attribute_to_exclude;
-	const char *charset;
+	Charset *charset;
 	String *header;
 	const String **from, **to;
 };
@@ -190,7 +182,8 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 	Mail_info& mi=*static_cast<Mail_info *>(info);
 
 	// exclude one attribute [body]
-	if(aattribute==*mi.attribute_to_exclude)
+	if(aattribute==BODY_NAME
+		|| aattribute==CHARSET_NAME)
 		return;
 
 	// fetch from & to from header for SMTP
@@ -250,17 +243,14 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 	// prepare header: 'hash' without "body"
 	String& result=*new(pool) String(pool);
 
-	const char *charset=0;
-	if(Value *content_type=
-		static_cast<Value *>(letter_hash.first_that(find_content_type)))
-		if(Hash *hash=content_type->get_hash(&method_name))
-			if(Value *content_type_charset=
-				static_cast<Value *>(hash->first_that(find_content_type_charset)))
-				charset=content_type_charset->as_string().cstr();
+	Charset *charset;
+	if(Value *vcharset_name=static_cast<Value *>(letter_hash.get(*charset_name)))
+		charset=&charsets->get_charset(vcharset_name->as_string());
+	else
+		charset=&pool.get_source_charset();
 
 	*from=*to=0;
 	Mail_info mail_info={
-		/*excluding*/ body_name,
 		charset,
 		&result,
 		from, to
@@ -304,8 +294,17 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			result << "\n--" << boundary << "--\n";
 		} else {
 			result << 
-				"\n" << // header|body separator
-				body_element->as_string().cstr();  // body
+				"\n"; // header|body separator
+
+			const String& body=body_element->as_string();
+			const void *body_ptr=body.cstr();  // body
+			size_t body_size=body.size();  // body
+			const void *mail_ptr;
+			size_t mail_size;
+			Charset::transcode(pool, 
+				pool.get_source_charset(), body_ptr, body_size,
+				*charset/*always set - either mail.charset or $request:charset*/, mail_ptr, mail_size);
+			result.APPEND_CLEAN((const char*)mail_ptr, mail_size, 0, 0);
 		}
 	} else 
 		throw Exception(0, 0,

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.86 2001/12/17 18:03:59 paf Exp $
+	$Id: untaint.C,v 1.87 2001/12/17 18:44:51 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -176,7 +176,7 @@ break2:
 
 size_t String::cstr_bufsize(Untaint_lang lang,
 							SQL_Connection *connection,
-							const char *charset) const {
+							Charset *buf_charset) const {
 	size_t dest=1; // for terminating 0
 	STRING_FOREACH_ROW(
 		uchar to_lang=lang==UL_UNSPECIFIED?row->item.lang:lang;
@@ -208,12 +208,13 @@ size_t String::cstr_bufsize(Untaint_lang lang,
 			break;
 		case UL_MAIL_HEADER:
 			// tainted, untaint language: mail-header
-			if(charset) {
+			if(buf_charset) {
 				// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
-				dest+=row->item.size*3+MAX_STRING/* worst: =?charset?Q?=%XX?= */;
-			} else {
+				dest+=
+					row->item.size*3+
+					buf_charset->name().size()+MAX_STRING/* worst: =?charset?Q?=%XX?= */;
+			} else
 				dest+=row->item.size;
-			}
 			break;
 		case UL_TABLE: 
 			// tainted, untaint language: table
@@ -259,7 +260,7 @@ break2:
 
 char *String::store_to(char *dest, Untaint_lang lang, 
 					   SQL_Connection *connection,
-					   const char *charset) const {
+					   Charset *store_to_charset) const {
 	// WARNING:
 	//	 before any changes check cstr_bufsize first!!!
 	bool whitespace=true;
@@ -320,14 +321,20 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			break;
 		case UL_MAIL_HEADER:
 			// tainted, untaint language: mail-header
-			if(charset) {
+			if(store_to_charset) {
+				const void *mail_ptr;
+				size_t mail_size;
+				Charset::transcode(pool(), 
+					pool().get_source_charset(), row->item.ptr, row->item.size,
+					*store_to_charset, mail_ptr, mail_size);
+
 				// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
-				const char *src=row->item.ptr; 
+				const char *src=(const char *)mail_ptr;
 				bool to_quoted_printable=false;
-				for(int size=row->item.size; size--; src++) {
+				for(int size=mail_size; size--; src++) {
 					if(*src & 0x80) {
 						if(!to_quoted_printable) {
-							dest+=sprintf(dest, "=?%.15s?Q?", charset);
+							dest+=sprintf(dest, "=?%s?Q?", store_to_charset->name().cstr());
 							to_quoted_printable=true;
 						}
 						dest+=sprintf(dest, "=%02X", *src & 0xFF);
@@ -337,6 +344,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				}
 				if(to_quoted_printable) // close
 					dest+=sprintf(dest, "?=");
+			
 			} else {
 				memcpy(dest, row->item.ptr, row->item.size); 
 				dest+=row->item.size;

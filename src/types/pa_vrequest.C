@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_vrequest.C,v 1.13 2001/12/15 21:28:22 paf Exp $
+	$Id: pa_vrequest.C,v 1.14 2001/12/17 18:44:51 paf Exp $
 */
 
 #include "pa_vrequest.h"
@@ -33,14 +33,8 @@ Value *VRequest::get_element(const String& name) {
 
 void VRequest::put_element(const String& name, Value *value) {
 	// guard charset change
-	if(name==CHARSET_NAME) {
-		const String& charset_name=value->as_string();
-		if(Charset *charset=(Charset *)charsets->get(charset_name))
-			pool().set_source_charset(*charset);
-		else
-			throw Exception(0, 0,
-				&charset_name,
-				"unknown charset");
-	} else
+	if(name==CHARSET_NAME)
+		pool().set_source_charset(charsets->get_charset(value->as_string()));
+	else
 		Value::put_element(name, value);
 }
