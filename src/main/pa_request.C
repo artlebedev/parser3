@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2003/11/20 16:39:49 $";
+static const char * const IDENT_REQUEST_C="$Date: 2003/11/20 16:41:51 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -385,59 +385,58 @@ t[9]-t[3]
 #endif
 	} catch(const Exception& e) { // request handling problem
 		// we're returning not result, but error explanation
-//		try {
 #define PA_URI_FORMAT "%s: "
 #define PA_ORIGIN_FILE_POS_FORMAT "%s(%d:%d): "
 #define PA_SOURCE_FORMAT "'%s' "
 #define PA_COMMENT_TYPE_FORMAT "%s [%s]"
-			// log the beast
-			Request::Exception_details details=get_details(e);
+		// log the beast
+		Request::Exception_details details=get_details(e);
 
-			if(details.problem_source) { // do we know the guy?
-				if(details.trace) { // do whe know where he came from?
-					Operation::Origin origin=details.trace.origin();
-					SAPI::log(sapi_info,
-						PA_URI_FORMAT 
-						PA_ORIGIN_FILE_POS_FORMAT 
-						PA_SOURCE_FORMAT PA_COMMENT_TYPE_FORMAT,
-						request_info.uri,
-						file_list[origin.file_no].cstr(), 1+origin.line, 1+origin.col,
-						details.problem_source->cstr(),
-						e.comment(), e.type()
-					);
-				} else
-					SAPI::log(sapi_info,
-						PA_URI_FORMAT 
-						PA_SOURCE_FORMAT PA_COMMENT_TYPE_FORMAT,
-						request_info.uri,
-						details.problem_source->cstr(),
-						e.comment(), e.type()
-					);
+		if(details.problem_source) { // do we know the guy?
+			if(details.trace) { // do whe know where he came from?
+				Operation::Origin origin=details.trace.origin();
+				SAPI::log(sapi_info,
+					PA_URI_FORMAT 
+					PA_ORIGIN_FILE_POS_FORMAT 
+					PA_SOURCE_FORMAT PA_COMMENT_TYPE_FORMAT,
+					request_info.uri,
+					file_list[origin.file_no].cstr(), 1+origin.line, 1+origin.col,
+					details.problem_source->cstr(),
+					e.comment(), e.type()
+				);
 			} else
 				SAPI::log(sapi_info,
 					PA_URI_FORMAT 
-					PA_COMMENT_TYPE_FORMAT,
+					PA_SOURCE_FORMAT PA_COMMENT_TYPE_FORMAT,
 					request_info.uri,
+					details.problem_source->cstr(),
 					e.comment(), e.type()
 				);
+		} else
+			SAPI::log(sapi_info,
+				PA_URI_FORMAT 
+				PA_COMMENT_TYPE_FORMAT,
+				request_info.uri,
+				e.comment(), e.type()
+			);
 
-			// reset language to default
-			flang=fdefault_lang;
-			
-			// reset response
-			response.fields().clear();
+		// reset language to default
+		flang=fdefault_lang;
+		
+		// reset response
+		response.fields().clear();
 
-			// this is what we'd return in $response:body
-			const String* body_string=0;
+		// this is what we'd return in $response:body
+		const String* body_string=0;
 
-			// maybe we'd be lucky enough as to report an error
-			// in a gracefull way...
-			if(Value* value=main_class.get_element(
-					*new String(UNHANDLED_EXCEPTION_METHOD_NAME), 
-					main_class,
-					false)) {
-				if(Junction* junction=value->get_junction()) {
-					if(const Method *method=junction->method) {
+		// maybe we'd be lucky enough as to report an error
+		// in a gracefull way...
+		if(Value* value=main_class.get_element(
+				*new String(UNHANDLED_EXCEPTION_METHOD_NAME), 
+				main_class,
+				false)) {
+			if(Junction* junction=value->get_junction()) {
+				if(const Method *method=junction->method) {
 // preparing to pass parameters to 
 //	@unhandled_exception[exception;stack]
 VMethodFrame frame(/*method->name, */ *junction, 0/*no caller*/);
@@ -453,57 +452,54 @@ Table::columns_type stack_trace_columns(new ArrayString);
 *stack_trace_columns+=new String("colno");
 Table& stack_trace=*new Table(stack_trace_columns);
 if(!exception_trace.is_empty()/*signed!*/) 
-	for(size_t i=exception_trace.bottom_index(); i<exception_trace.top_index(); i++) {
-		Trace trace=exception_trace.get(i);
-		Table::element_type row(new ArrayString);
+for(size_t i=exception_trace.bottom_index(); i<exception_trace.top_index(); i++) {
+	Trace trace=exception_trace.get(i);
+	Table::element_type row(new ArrayString);
 
-		*row+=trace.name(); // name column
-		Operation::Origin origin=trace.origin();
-		if(origin.file_no) {
-			*row+=new String(file_list[origin.file_no], String::L_TAINTED); // 'file' column
-			*row+=new String(String::Body::Format(1+origin.line), String::L_CLEAN); // 'lineno' column
-			*row+=new String(String::Body::Format(1+origin.col), String::L_CLEAN); // 'colno' column
-		}
-		stack_trace+=row;
+	*row+=trace.name(); // name column
+	Operation::Origin origin=trace.origin();
+	if(origin.file_no) {
+		*row+=new String(file_list[origin.file_no], String::L_TAINTED); // 'file' column
+		*row+=new String(String::Body::Format(1+origin.line), String::L_CLEAN); // 'lineno' column
+		*row+=new String(String::Body::Format(1+origin.col), String::L_CLEAN); // 'colno' column
 	}
+	stack_trace+=row;
+}
 frame.store_param(*new VTable(&stack_trace));
 
 // future $response:body=
 //   execute ^unhandled_exception[exception;stack]
 body_string=&execute_method(frame, *method).as_string();
-					}
 				}
 			}
-			
-			if(!body_string) {  // couldn't report an error beautifully?
-				// doing that ugly
+		}
+		
+		if(!body_string) {  // couldn't report an error beautifully?
+			// doing that ugly
 
-				// make up result: $origin $source $comment $type $code
-				char *buf=new(PointerFreeGC) char[MAX_STRING];
-				size_t printed=0;
-				if(const String* problem_source=e.problem_source())
-					printed+=snprintf(buf+printed, MAX_STRING-printed, "'%s' ", 
-						problem_source->cstr());
-				if(const char* comment=e.comment(true))
-					printed+=snprintf(buf+printed, MAX_STRING-printed, "%s", comment);
-				if(const char* type=e.type(true)) 
-					printed+=snprintf(buf+printed, MAX_STRING-printed, "  type: %s",  type);
+			// make up result: $origin $source $comment $type $code
+			char *buf=new(PointerFreeGC) char[MAX_STRING];
+			size_t printed=0;
+			if(const String* problem_source=e.problem_source())
+				printed+=snprintf(buf+printed, MAX_STRING-printed, "'%s' ", 
+					problem_source->cstr());
+			if(const char* comment=e.comment(true))
+				printed+=snprintf(buf+printed, MAX_STRING-printed, "%s", comment);
+			if(const char* type=e.type(true)) 
+				printed+=snprintf(buf+printed, MAX_STRING-printed, "  type: %s",  type);
 
-				// future $response:content-type
-				response.fields().put(content_type_name, 
-					new VString(*new String(UNHANDLED_EXCEPTION_CONTENT_TYPE)));
-				// future $response:body
-				body_string=new String(buf);
-			}
+			// future $response:content-type
+			response.fields().put(content_type_name, 
+				new VString(*new String(UNHANDLED_EXCEPTION_CONTENT_TYPE)));
+			// future $response:body
+			body_string=new String(buf);
+		}
 
-			VString body_vstring(*body_string);
-			VFile* body_file=body_vstring.as_vfile(String::L_UNSPECIFIED, &charsets);
+		VString body_vstring(*body_string);
+		VFile* body_file=body_vstring.as_vfile(String::L_UNSPECIFIED, &charsets);
 
-			// ERROR. write it out
-			output_result(body_file, header_only, false);
-//		} catch(const Exception& ) {
-//			rethrow;
-//		}
+		// ERROR. write it out
+		output_result(body_file, header_only, false);
 	}
 }
 

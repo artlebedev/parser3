@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2003/11/20 16:39:49 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2003/11/20 16:42:50 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -105,7 +105,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 void Request::execute(ArrayOperation& ops) {
 	register Stack<StackItem>& stack=this->stack; // helps a lot on MSVC: 'esi'
 
-	const String* debug_name=0;  Operation::Origin debug_origin={0};
+	const String* debug_name=0;  Operation::Origin debug_origin={0, 0, 0};
 	try{
 #ifdef DEBUG_EXECUTE
 	debug_printf(sapi_info, "source----------------------------\n");
