@@ -380,7 +380,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !.ключ[значение]  положить значение
     !.ключ[$.value[значение] $.expires ЗНАЧЕНИЕ}
       положить значение до expires
-      значение поля expires может быть date, или число дней(0дней=не вечно)
+      значение поля expires может быть date, или число дней(0дней=на вечно)
     !.ключ  достать
     !^delete[ключ]  удалить ключ
     !^delete[]  удалить файлы, содержащие данные
@@ -393,7 +393,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     $uids[^hashfile::assign[/db/uids]]
     
     $random[23847387taduigh345XGHWElxjgdjg]
-    $uids.$random[$.value[$uid] $.expires(60*30)]
+    $uids.$random[$.value[$uid] $.expires(1)]
     $uid[$persistent.logins.$random]
 
 !form
