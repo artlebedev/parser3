@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.33 2001/03/12 22:39:14 paf Exp $
+	$Id: root.C,v 1.34 2001/03/13 09:05:30 paf Exp $
 */
 
 #include <string.h>
@@ -14,18 +14,27 @@
 #include "pa_vint.h"
 #include "pa_common.h"
 
-static void _if(Request& r, const String&, Array *params) {
-	bool condition=
-		r.process(
-			*static_cast<Value *>(params->get(0)), 
-			0/*no name*/,
-			false/*don't intercept string*/).get_bool();
+static void _if(Request& r, const String& method_name, Array *params) {
+	Value& condition_code=*static_cast<Value *>(params->get(0));
+	// forcing ^if(this param type)
+	r.fail_if_junction_(false, condition_code, 
+		method_name, "condition must be junction");
+
+	bool condition=r.process(condition_code, 
+		0/*no name*/,
+		false/*don't intercept string*/).get_bool();
 	if(condition) {
-		Value& value=r.process(*static_cast<Value *>(params->get(1)));
-		r.write_pass_lang(value);
+		Value& then_code=*static_cast<Value *>(params->get(1));
+		// forcing ^if(this param type)
+		r.fail_if_junction_(false, then_code, 
+			method_name, "then-parameter must be junction");
+		r.write_pass_lang(r.process(then_code));
 	} else if(params->size()==3) {
-		Value& value=r.process(*static_cast<Value *>(params->get(2)));
-		r.write_pass_lang(value);
+		Value& else_code=*static_cast<Value *>(params->get(2));
+		// forcing ^if(this param type)
+		r.fail_if_junction_(false, else_code, 
+			method_name, "else-parameter must be junction");
+		r.write_pass_lang(r.process(else_code));
 	}
 }
 

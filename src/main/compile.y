@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.93 2001/03/12 21:54:20 paf Exp $
+	$Id: compile.y,v 1.94 2001/03/13 09:05:31 paf Exp $
 */
 
 /*
@@ -350,10 +350,7 @@ store_param:
 ;
 store_square_param: '[' store_code_param_parts ']' {$$=$2};
 store_round_param: '(' store_expr_param_parts ')' {$$=$2};
-store_curly_param: '{' maybe_codes '}' {
-	$$=N(POOL); 
-	PCA($$, $2);
-};
+store_curly_param: '{' store_curly_param_parts '}' {$$=$2};
 store_code_param_parts:
 	store_code_param_part
 |	store_code_param_parts ';' store_code_param_part { $$=$1; P($$, $3) }
@@ -361,6 +358,10 @@ store_code_param_parts:
 store_expr_param_parts:
 	store_expr_param_part
 |	store_expr_param_parts ';' store_expr_param_part { $$=$1; P($$, $3) }
+;
+store_curly_param_parts:
+	store_curly_param_part
+|	store_curly_param_parts ';' store_curly_param_part { $$=$1; P($$, $3) }
 ;
 store_code_param_part: 
 	empty /* optimized [] case */
@@ -374,6 +375,10 @@ store_code_param_part:
 }
 ;
 store_expr_param_part: write_expr_value {
+	$$=N(POOL); 
+	PCA($$, $1);
+};
+store_curly_param_part: maybe_codes {
 	$$=N(POOL); 
 	PCA($$, $1);
 };
@@ -925,6 +930,8 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				RC;
 			case '^':
 				push_LS(PC, LS_METHOD_NAME);
+				RC;
+			case ';': // param delim
 				RC;
 			case '}':
 				if(--lexical_brackets_nestage==0) {
