@@ -19,6 +19,7 @@ CFG=libltdl - Win32 Debug
 !MESSAGE 
 !MESSAGE "libltdl - Win32 Release" (based on "Win32 (x86) Static Library")
 !MESSAGE "libltdl - Win32 Debug" (based on "Win32 (x86) Static Library")
+!MESSAGE "libltdl - Win32 Profile" (based on "Win32 (x86) Static Library")
 !MESSAGE 
 
 # Begin Project
@@ -41,7 +42,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /Ze /W3 /O2 /D "NDEBUG" /D "_WIN32" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /O2 /D "NDEBUG" /D "_WIN32" /YX /FD /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,9 +65,32 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /Ze /W3 /Gm /Zi /Od /D "_DEBUG" /D "_WIN32" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /Zi /Od /D "_DEBUG" /D "_WIN32" /FR /YX /FD /GZ /c
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo
+# ADD LIB32 /nologo
+
+!ELSEIF  "$(CFG)" == "libltdl - Win32 Profile"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "libltdl___Win32_Profile"
+# PROP BASE Intermediate_Dir "libltdl___Win32_Profile"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Profile"
+# PROP Intermediate_Dir "Profile"
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MD /W3 /O2 /D "NDEBUG" /D "_WIN32" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /O2 /D "NDEBUG" /D "_WIN32" /YX /FD /c
+# ADD BASE RSC /l 0x419 /d "NDEBUG"
+# ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -80,6 +104,7 @@ LIB32=link.exe -lib
 
 # Name "libltdl - Win32 Release"
 # Name "libltdl - Win32 Debug"
+# Name "libltdl - Win32 Profile"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
