@@ -365,10 +365,12 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 !form
     [берётся первый элемент из одноимённых из GET, потом первый из POST]
     !$form:поле = string/file 
+    !$form:nameless = поле со значением поля без имени "?value&...", "...&value&...", "...&value"
+    !$form:qtail = строка со значением текста после второго "?xxxxx", если там не было ',' [imap]
     !$form:fields = hash со всеми полями формы
     !$form:tables.поле = table с одним столбцом "field" со значениями "поля"
-    !$form:image-map = поле со значением ?1,2 приписки при использовании server-site image map
-    !$form:nameless = поле со значением поля без имени "?value&...", "...&value&...", "...&value"
+    !$form:imap = хэш с ключами 'x' и 'y'
+        со значением ?1,2 приписки при использовании server-site image map
 
 !env
     !$env:переменная

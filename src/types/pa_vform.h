@@ -8,13 +8,14 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char* IDENT_VFORM_H="$Date: 2002/08/15 10:13:20 $";
+static const char* IDENT_VFORM_H="$Date: 2002/10/21 14:25:45 $";
 
 #include "classes.h"
 #include "pa_common.h"
 
 #define FORM_FIELDS_ELEMENT_NAME "fields"
 #define FORM_TABLES_ELEMENT_NAME "tables"
+#define FORM_IMAP_ELEMENT_NAME "imap"
 
 class Request;
 
@@ -59,12 +60,14 @@ private:
 		const char *name, 
 		const char *value_ptr, const size_t value_size,
 		const char *file_name=0);
+	void AppendFormEntry(const char *name, Value *value);
 
 private:
 
 	bool filled;
 	Hash fields;
 	Hash tables;
+	Hash imap;
 
 private:
 

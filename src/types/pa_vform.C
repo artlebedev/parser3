@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char* IDENT_VFORM_C="$Date: 2002/10/21 09:55:56 $";
+static const char* IDENT_VFORM_C="$Date: 2002/10/21 14:25:45 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -63,6 +63,7 @@ extern Methoded *form_base_class;
 VForm::VForm(Pool& apool) : VStateless_class(apool, 0, form_base_class),
 	fields(apool),
 	tables(apool),
+	imap(apool),
 	filled(false) {
 }
 
@@ -102,13 +103,36 @@ void VForm::ParseGetFormInput(const char *query_string, size_t length) {
 	ParseFormInput(query_string, length);
 }
 
+
+static int atoi(const char *data, size_t alength) {
+	char buf[MAX_STRING];
+	size_t length=min((int)alength, MAX_STRING-1);
+	strncpy(buf, data, length);
+	return atoi(buf);
+}
 void VForm::ParseFormInput(const char *data, size_t length) {
 	// cut out ?image_map_tail
 	{
 		for(size_t pos=0; pos<length; pos++) {
 			if(data[pos]=='?') {
-				// fake form field
-				AppendFormEntry("image-map", data+pos+1, length-pos-1);
+				size_t start=pos+1;
+				size_t aftercomma=start;
+				size_t lookingcomma=start;
+				for(; lookingcomma<length; lookingcomma++) {
+					if(data[lookingcomma]==',') {
+						aftercomma=++lookingcomma;
+						break;
+					}
+				}				
+				
+				if(aftercomma>start) { // ?x,y
+					int x=atoi(data+start, aftercomma-1-start);
+					int y=atoi(data+aftercomma, length-aftercomma);
+					imap.put(*NEW String(pool(), "x"), NEW VInt(pool(), x));
+					imap.put(*NEW String(pool(), "y"), NEW VInt(pool(), y));
+				} else { // ?qtail
+					AppendFormEntry("qtail", data+start, length-start);
+				}
 				// cut tail
 				length=pos;
 				break;
@@ -238,6 +262,17 @@ void VForm::AppendFormEntry(
 	fields.put_dont_replace(sname, value);
 }
 
+void VForm::AppendFormEntry(const char *cname_cstr, Value *value) {
+	const void *sname_ptr;
+	size_t sname_size;
+	transcode(
+		cname_cstr, strlen(cname_cstr),
+		sname_ptr, sname_size);
+	String& sname=*NEW String(pool(), (const char *)sname_ptr, sname_size);
+
+	fields.put_dont_replace(sname, value);
+}
+
 void VForm::fill_fields_and_tables(Request& request) {
 	// parsing QS [GET and ?name=value from uri rewrite)]
 	if(request.info.query_string) {
@@ -290,6 +325,9 @@ Value *VForm::get_element(const String& aname, Value *aself, bool looking_up) {
 	// $tables
 	if(aname==FORM_TABLES_ELEMENT_NAME)
 		return NEW VHash(pool(), Hash(tables));
+
+	if(aname==FORM_IMAP_ELEMENT_NAME)
+		return NEW VHash(pool(), Hash(imap));
 
 	// $method
 	if(Value *result=VStateless_class::get_element(aname, aself, looking_up))
