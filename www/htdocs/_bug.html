@@ -1,3 +1,10 @@
-$s[-009.5]
-^eval($s)
-OK
+^connect[oracle://iagency:pwd@oracle]{
+	^string:sql{select 2*2 from dual}<br>
+	^try{
+		^string:sql{select 2*2x from dual}
+	}{
+		$exception.handled(1)
+		exception($exception.comment) handled<br>
+	}
+	^string:sql{select 2*2 from dual}<br>
+}

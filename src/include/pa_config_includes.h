@@ -219,4 +219,13 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 
 #endif
 
+#ifdef PA_RELEASE_ASSERTS
+// this helps to remove warnings on helper-to-assert variables
+#undef NDEBUG
+// pa_globals.C
+void pa_release_assert(const char* str, const char* file, int line);
+#undef assert
+#define assert(exp) (void)( (exp) || (pa_release_assert(#exp, __FILE__, __LINE__), 0) )
+#endif
+
 #endif

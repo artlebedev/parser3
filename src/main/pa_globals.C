@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2004/09/20 16:26:12 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2004/10/07 09:23:44 $";
 
 #include "pa_config_includes.h"
 
@@ -82,6 +82,13 @@ void pa_register_thread_request(Request& r) {
 Request& pa_thread_request() {
 	return *thread_request.get(pa_get_thread_id());
 }
+
+#ifdef PA_RELEASE_ASSERTS
+void pa_release_assert(const char* str, const char* file, int line) {
+	SAPI::die("%s at %s:%d", str, file, line); 
+}
+#endif
+
 
 #ifdef XML
 
