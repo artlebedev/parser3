@@ -17,14 +17,14 @@
 
 //@{
 /// SAPI funcs decl
-struct sapi_func_context {
+struct SAPI_func_context {
 	LPEXTENSION_CONTROL_BLOCK lpECB;
 	String *header;
 	DWORD http_response_code;
 };
 
 const char *SAPI::get_env(Pool& pool, const char *name) {
-	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
 	char *variable_buf=(char *)pool.malloc(MAX_STRING);
 	DWORD variable_len = MAX_STRING-1;
@@ -47,7 +47,7 @@ const char *SAPI::get_env(Pool& pool, const char *name) {
 }
 
 uint SAPI::read_post(Pool& pool, char *buf, uint max_bytes) {
-	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
 	DWORD read_from_buf=0;
 	DWORD read_from_input=0;
@@ -77,7 +77,7 @@ uint SAPI::read_post(Pool& pool, char *buf, uint max_bytes) {
 }
 
 void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) {
-	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
 	if(strcasecmp(key, "location")==0) 
 		ctx.http_response_code=302;
@@ -94,7 +94,7 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 
 /// @todo intelligent cache-control
 void SAPI::send_header(Pool& pool) {
-	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
 	ctx.header->APPEND_CONST(
 		"expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
@@ -130,7 +130,7 @@ void SAPI::send_header(Pool& pool) {
 }
 
 void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
-	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
+	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
 	DWORD num_bytes=size;
 	ctx.lpECB->WriteClient(ctx.lpECB->ConnID, 
@@ -140,10 +140,10 @@ void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 
 // 
 
-static void parser_init() {
+static bool parser_init() {
 	static bool globals_inited=false;
 	if(globals_inited)
-		return;
+		return true;
 	globals_inited=true;
 
 	static Pool pool(0); // global pool
@@ -151,10 +151,13 @@ static void parser_init() {
 		// init global variables
 		pa_globals_init(pool);
 		
-		//...
+		// successful finish
+		return true;
 	} PCATCH(e) { // global problem 
-		const char *body=e.comment();
-		// TODO: somehow report that error
+		//const char *body=e.comment();
+		
+		// unsuccessful finish
+		return false;
 	}
 	PEND_CATCH
 }
@@ -162,8 +165,8 @@ static void parser_init() {
 /// ISAPI //
 BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 	pVer->dwExtensionVersion = HSE_VERSION;
-	strncpy(pVer->lpszExtensionDesc, "Parser " PARSER_VERSION, HSE_MAX_EXT_DLL_NAME_LEN);
-	return TRUE;
+	strncpy(pVer->lpszExtensionDesc, "Parser "PARSER_VERSION, HSE_MAX_EXT_DLL_NAME_LEN);
+	return parser_init();
 }
 
 /** 
@@ -177,16 +180,16 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 */
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	Pool_storage pool_storage;
-	Pool pool(&pool_storage);
+	Pool pool(&pool_storage); // no allocations until assigned context [for reporting]
+	SAPI_func_context ctx={
+		lpECB,
+			0, // filling later: so that if there would be error pool would have ctx
+			200
+	};
+	pool.set_context(&ctx);// no allocations before this line!
 	
 	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;
 	PTRY { // global try
-		sapi_func_context ctx={
-			lpECB,
-			0, // filling later: so that if there would be error pool would have ctx
-			200
-		};
-		pool.set_context(&ctx);
 		ctx.header=new(pool) String(pool);
 		
 		// Request info
@@ -234,7 +237,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 			request_info,
 			String::UL_HTML_TYPO
 			);
-		
+
 		// some root-controlled location
 		//   c:\windows
 		// must be dynamic: rethrowing from request.core 
@@ -287,14 +290,13 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	return HSE_STATUS_SUCCESS_AND_KEEP_CONN;
 }
 
-
+/*
 BOOL APIENTRY DllMain(HANDLE hModule, 
 					  DWORD  ul_reason_for_call, 
 					  LPVOID lpReserved
 					  ) {
     switch (ul_reason_for_call) {
 		case DLL_PROCESS_ATTACH:
-			parser_init();
 			break;
 		case DLL_THREAD_ATTACH:
 			break;
@@ -305,3 +307,4 @@ BOOL APIENTRY DllMain(HANDLE hModule,
     }
     return TRUE;
 }
+*/

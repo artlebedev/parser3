@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.29 2001/03/24 10:59:48 paf Exp $
+	$Id: pa_globals.C,v 1.30 2001/03/24 11:33:27 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -18,7 +18,6 @@
 #include "_file.h"
 
 String *content_type_name;
-String *default_content_type_string;
 String *body_name;
 String *value_name;
 String *expires_name;
@@ -90,7 +89,6 @@ void pa_globals_init(Pool& pool) {
 
 	// names
 	content_type_name=new(pool) String(pool, CONTENT_TYPE_NAME);
-	default_content_type_string=new(pool) String(pool, DEFAULT_CONTENT_TYPE_STRING);
 	body_name=new(pool) String(pool, BODY_NAME);
 	value_name=new(pool) String(pool, VALUE_NAME);
 	expires_name=new(pool) String(pool, EXPIRES_NAME);

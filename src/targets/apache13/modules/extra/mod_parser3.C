@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.16 2001/03/24 09:24:45 paf Exp $
+	$Id: mod_parser3.C,v 1.17 2001/03/24 11:33:28 paf Exp $
 */
 
 #include "httpd.h"
@@ -286,7 +286,7 @@ static void setup_module_cells() {
 
 static void parser_server_init(server_rec *s, pool *p) {
 #if MODULE_MAGIC_NUMBER >= 19980527
-	ap_add_version_component("Parser/" PARSER_VERSION);
+	ap_add_version_component("Parser/"PARSER_VERSION);
 #endif	
 
     /*

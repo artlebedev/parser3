@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.74 2001/03/24 10:59:48 paf Exp $
+	$Id: pa_request.C,v 1.75 2001/03/24 11:33:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -24,6 +24,7 @@
 
 /// $limits.post_max_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
+const char *DEFAULT_CONTENT_TYPE="text/html";
 
 //
 Request::Request(Pool& apool,
@@ -161,9 +162,11 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 		// $MAIN:defaults
 		Value *defaults=main_class?main_class->get_element(*defaults_name):0;
+		// value must be allocated on request's pool for that pool used on
+		// meaning constructing @see attributed_meaning_to_string
 		default_content_type=defaults?
 			defaults->get_element(*content_type_name)
-			:NEW VString(*default_content_type_string);
+			:NEW VString(*NEW String(pool(), DEFAULT_CONTENT_TYPE));
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);

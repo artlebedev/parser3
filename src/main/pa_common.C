@@ -1,3 +1,4 @@
+
 /** @file
 	Parser: commonly functions.
 
@@ -5,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.25 2001/03/24 10:54:46 paf Exp $
+	$Id: pa_common.C,v 1.26 2001/03/24 11:33:26 paf Exp $
 */
 
 #include "pa_config_includes.h"

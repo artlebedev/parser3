@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.24 2001/03/24 10:59:47 paf Exp $
+	$Id: pa_globals.h,v 1.25 2001/03/24 11:33:25 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -19,7 +19,6 @@
 #define AUTO_FILE_NAME "auto.p"
 
 #define CONTENT_TYPE_NAME "content-type"
-#define DEFAULT_CONTENT_TYPE_STRING "text/html"
 #define BODY_NAME "body"
 #define VALUE_NAME "value"
 #define EXPIRES_NAME "expires"
@@ -60,7 +59,6 @@ extern short hex_value[0x100];
 //@{
 /// global string
 extern String *content_type_name;
-extern String *default_content_type_string;
 extern String *body_name;
 extern String *value_name;
 extern String *expires_name;
