@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.21 2001/10/28 14:19:27 paf Exp $
+	$Id: pa_db_connection.C,v 1.22 2001/10/28 14:24:26 paf Exp $
 
 	developed with LIBDB 2.7.4
 */
@@ -50,11 +50,11 @@ static void db_errcall(const char *, char *buffer) {
 }
 
 static void expire_table(const Hash::Key& key, Hash::Val *& value, void *info) {
-	DB_Connection& table=*static_cast<DB_Connection *>(value);
+	DB_Table& table=*static_cast<DB_Table *>(value);
 	time_t older_dies=reinterpret_cast<time_t>(info);
 
 	if(table.expired(older_dies)) {
-		table.~DB_Connection();  value=0;
+		table.~DB_Table();  value=0;
 	}
 }
 
