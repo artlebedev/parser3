@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.10 2001/04/11 17:47:01 paf Exp $
+	$Id: image.C,v 1.11 2001/04/11 18:07:15 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -303,7 +303,7 @@ static void _html(Request& r, const String& method_name, Array *params) {
 	Hash& fields=static_cast<VImage *>(r.self)->fields();
 	Hash *attribs=0;
 
-	if(params)
+	if(params->size())
 		if(attribs=static_cast<Value *>(params->get(0))->get_hash()) {
 			Attrib_info attrib_info={&tag, 0};
 			attribs->for_each(append_attrib_pair, &attrib_info);
@@ -371,7 +371,7 @@ static void _gif(Request& r, const String& method_name, Array *params) {
 			"does not contain image");
 
 	char *file_name_cstr=0;
-	if(params) {
+	if(params->size()) {
 		Value& vfile_name=*static_cast<Value *>(params->get(0));
 		// forcing [this body type]
 		r.fail_if_junction_(true, vfile_name, method_name, "file name must not be code");

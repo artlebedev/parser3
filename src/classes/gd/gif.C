@@ -1,3 +1,11 @@
+/** @file
+	Parser: image manipulations impl1.
+
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: gif.C,v 1.3 2001/04/11 18:07:17 paf Exp $
+*/
+
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>

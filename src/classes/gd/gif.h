@@ -1,4 +1,12 @@
 /** @file
+	Parser: image manipulations decls.
+
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: gif.h,v 1.4 2001/04/11 18:07:17 paf Exp $
+
+
+	based on:
 	gd.h: declarations file for the gifdraw module.
 
 	Written by Tom Boutell, 5/94.

@@ -32,20 +32,20 @@ $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
 image:create<BR>
-$face[^image:create(100;200)]
+$face[^image:create(200;100)]
 ^$face.width=$face.width<BR>
 ^$face.height=$face.height<BR>
 $ff[^face.gif[]]
 ^ff.save[face.gif]
+^face.html[$src[face.gif]]
 <HR>
-^rem{
 image:load<BR>
 $face[^image:load[001004paf(c)lena_karin.gif]]
 ^$face.src=$face.src<BR>
 ^$face.width=$face.width<BR>
 ^$face.height=$face.height<BR>
 <HR>
-}
+
 ^if($form:photo){
 upload file:<BR>
 $face[^image:measure[$form:photo]]

@@ -1,6 +1,12 @@
 /** @file
-Code drawn from ppmtogif.c, from the pbmplus package
+	Parser: image manipulations impl2.
 
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: gifio.C,v 1.5 2001/04/11 18:07:18 paf Exp $
+
+
+	based on:
  **
  ** Based on GIFENCOD by David Rowley <mgardi@watdscu.waterloo.edu>. A
  ** Lempel-Zim compression based on "compress".
