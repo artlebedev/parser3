@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.106 2001/08/24 06:26:13 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.107 2001/08/28 10:33:32 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -118,7 +118,9 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 			cell->APPEND_TAINTED(cell_chars, 0, file, line);
 			*row+=cell;
 		}
+#ifndef NO_STRING_ORIGIN
 		line++;
+#endif
 		table+=row;
 	};
 
