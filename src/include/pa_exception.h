@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char * const IDENT_EXCEPTION_H="$Date: 2004/02/11 15:33:13 $";
+static const char * const IDENT_EXCEPTION_H="$Date: 2004/07/30 10:02:31 $";
 
 // includes
 
@@ -29,6 +29,7 @@ public:
 		const String* aproblem_source, 
 		const char* comment_fmt, ...);
 	Exception(const Exception& src);
+	operator bool() { return ftype || fproblem_source || fcomment; }
 	Exception& operator =(const Exception& src);
 
 	/// extracts exception type

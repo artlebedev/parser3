@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2004/07/26 14:43:09 $";
+static const char * const IDENT_REQUEST_C="$Date: 2004/07/30 10:02:31 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -244,7 +244,6 @@ void Request::configure_admin(VStateless_class& conf_class) {
 
 */
 void Request::core(const char* config_filespec, bool config_fail_on_read_problem, bool header_only) {
-
 #ifdef RESOURCES_DEBUG
 //measures
 struct timeval mt[10];
@@ -386,6 +385,7 @@ t[9]-t[3]
 );
 #endif
 	} catch(const Exception& e) { // request handling problem
+		try {
 		// we're returning not result, but error explanation
 #define PA_URI_FORMAT "%s: "
 #define PA_ORIGIN_FILE_POS_FORMAT "%s(%d:%d): "
@@ -502,6 +502,12 @@ body_string=&execute_method(frame, *method).as_string();
 
 		// ERROR. write it out
 		output_result(body_file, header_only, false);
+		} catch(const Exception& e) {
+			throw Exception(e.type(),
+				e.problem_source(),
+				"in request exception handler: %s", 
+					e.comment());
+		}
 	}
 }
 

@@ -6,9 +6,8 @@ deny from 62.32.63.235
 #apache
 #AddHandler parser3-handler html
 AddHandler parsed-html html
-#Action parsed-html /cgi-bin/bug/parser3
-Action parsed-html /cgi-bin/debug/parser3
-#Action parsed-html /cgi-bin/release/parser3
+#Action parsed-html /cgi-bin/debug/parser3
+Action parsed-html /cgi-bin/release/parser3
 #Action parsed-html /cgi-bin/ReleaseHEAD/parser3
 #Action parsed-html /cgi-bin/DebugHEAD/parser3
 #Action parsed-html /cgi-bin/ProfileDebug/parser3
@@ -19,33 +18,3 @@ Action parsed-html /cgi-bin/debug/parser3
 #Action parsed-html /cgi-bin/release311/parser3
 #Action parsed-html /cgi-bin/release312/parser3
 #Action parsed-html /cgi-bin/release313/parser3
-
-
-
-
-# enabling SSI
-Options +Includes
-AddHandler server-parsed .htm
-
-
-AddType image/x-icon ico
-AddType text/xml xsl
-AddType application/chm chm
-#AddType application/octet-stream chm
-
-
-RewriteEngine on
-RewriteBase /
-
-DirectoryIndex index.html index.htm
-
-#RewriteMap sub txt:Y:\parser3project\parser3\www\htdocs\sub.txt
-#RewriteRule ^(admin/.*) %{SERVER_NAME}/${sub:parser3|map_value_not_found}/$1
-
-RewriteRule ^admin/(.*) /admin2/%{SERVER_NAME}/$1
-RewriteRule ^admin2/([^/]+)/(.*) http://${sub:$1|NotFound}/admin/$2 [L,P]
-
-#RewriteRule ^admin/(.*) /admin2/%{SERVER_NAME}/$1
-#RewriteRule ^admin2/([^.]+)[^/]+/(.*) http/$1.samsung.ru/admin/$2 [L]
-
-RewriteRule % /ok.html

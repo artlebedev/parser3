@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2004/07/28 14:38:21 $";
+static const char * const IDENT_PARSER3_C="$Date: 2004/07/30 10:02:31 $";
 
 #include "pa_config_includes.h"
 
@@ -25,6 +25,12 @@ static const char * const IDENT_PARSER3_C="$Date: 2004/07/28 14:38:21 $";
 #	include "getopt.h"
 #else
 #	include <getopt.h>
+#endif
+
+//#define _DEBUG
+
+#if _MSC_VER && !defined(_DEBUG)
+#	define PA_SUPPRESS_SYSTEM_EXCEPTION
 #endif
 
 //#define DEBUG_MAILRECEIVE "mailreceive.eml"
@@ -326,10 +332,11 @@ main workhorse
 		wich is tested but seems slow.
 */
 static void real_parser_handler(const char* filespec_to_process,
-				const char* request_method, bool header_only) {
+				const char* request_method, bool header_only) 
+{
 	// init socks
 	pa_socks_init();
-	
+
 	// init global variables
 	pa_globals_init();
 	
@@ -478,7 +485,7 @@ static void real_parser_handler(const char* filespec_to_process,
 
 	// no request [prevent signal handlers from accessing invalid memory]
 	::request=0;
-	
+
 	// finalize global variables
 	pa_globals_done();
 
@@ -486,67 +493,57 @@ static void real_parser_handler(const char* filespec_to_process,
 	pa_socks_done();
 }
 
-#if _MSC_VER && !defined(_DEBUG)
-#	define PA_USE___TRY
-struct Parser_executed {
-	bool with_system_exception;
-	LPEXCEPTION_POINTERS system_exception;
-};
-#endif
-
-static 
-#ifdef PA_USE___TRY
-Parser_executed 
-#else
-void
-#endif
-call_real_parser_handler__do_SEH_return_it(
-					   const char* filespec_to_process,
-					   const char* request_method, bool header_only) {
-#ifdef PA_USE___TRY
-	Parser_executed result={false};
-	__try {
-#endif
+#ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
+static const Exception 
+call_real_parser_handler__do_PEH_return_it(
+	const char* filespec_to_process,
+	const char* request_method, bool header_only) 
+{
+	try {
 		real_parser_handler(
 			filespec_to_process,
 			request_method, header_only);
-		
-#ifdef PA_USE___TRY
-	} __except (
-		(result.system_exception=GetExceptionInformation()), 
-		EXCEPTION_EXECUTE_HANDLER) {
-		result.with_system_exception=true;
+	} catch(const Exception& e) {
+		return e;
 	}
-	return result;
-#endif
+
+	return Exception();
 }
+static void call_real_parser_handler__supress_system_exception(
+	const char* filespec_to_process,
+	const char* request_method, bool header_only) 
+{
+	Exception parser_exception;
+	LPEXCEPTION_POINTERS system_exception=0;
 
-static void call_real_parser_handler__do_SEH(
-					     const char* filespec_to_process,
-					     const char* request_method, bool header_only) {
-#ifdef PA_USE___TRY
-	Parser_executed executed=
-#endif
-		call_real_parser_handler__do_SEH_return_it(filespec_to_process, 
-			request_method, header_only);
+	__try {
+		parser_exception=call_real_parser_handler__do_PEH_return_it(
+			filespec_to_process,
+			request_method, header_only);		
+	} __except (
+		(system_exception=GetExceptionInformation()), 
+		EXCEPTION_EXECUTE_HANDLER) 
+	{
 
-#ifdef PA_USE___TRY
-	if(executed.with_system_exception)
-		if(executed.system_exception)
-			if(_EXCEPTION_RECORD *er=executed.system_exception->ExceptionRecord)
-				throw Exception(0,
+		if(system_exception)
+			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
+				throw Exception("system",
 					0,
-					"Exception 0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
+					"0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
 			else
-				throw Exception(0, 
+				throw Exception("system", 
 					0, 
-					"Exception <no exception record>");
+					"<no exception record>");
 		else
-			throw Exception(0, 
+			throw Exception("system", 
 				0, 
-				"Exception <no exception information>");
-#endif
+				"<no exception information>");
+	}
+
+	if(parser_exception)
+		throw Exception(parser_exception);
 }
+#endif
 
 static void usage(const char* program) {
 	printf(
@@ -685,17 +682,21 @@ int main(int argc, char *argv[]) {
 	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
 
 	try { // global try
-		call_real_parser_handler__do_SEH(
+#ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
+		call_real_parser_handler__supress_system_exception(
+#else
+		real_parser_handler(
+#endif
 			filespec_to_process,
 			request_method, header_only);
 	} catch(const Exception& e) { // global problem 
 		// don't allocate anything on pool here:
 		//   possible pool' exception not catch-ed now
 		//   and there could be out-of-memory exception
-		const char* body=e.comment();
 		char buf[MAX_STRING];
-		snprintf(buf, MAX_STRING, "exception in request exception handler: %s",
-			body);
+		snprintf(buf, MAX_STRING, "Exception %s [%s]",
+			e.comment(),
+			e.type());
 		// log it
 		SAPI::log(SAPI_info, "%s", buf);
 
