@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.72 2001/10/29 16:56:31 paf Exp $
+	$Id: untaint.C,v 1.73 2001/10/29 16:59:30 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -203,12 +203,12 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					const char *src=row->item.ptr; 
 					for(int size=row->item.size; size--; src++)
 						switch(*src) {
-						/***case ' ': case '\n': case '\t':
+						case ' ': case '\n': case '\t':
 							if(!whitespace) {
 								*dest++=*src;
 								whitespace=true;
 							}
-							break;*/
+							break;
 						default:
 							whitespace=false;
 							*dest++=*src;
