@@ -147,6 +147,9 @@
 /* xml-abled parser */
 #undef XML
 
+/* xml-abled parser */
+#undef XML
+
 /* Windows32 target platform */
 #undef WIN32
 

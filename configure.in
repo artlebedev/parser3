@@ -57,8 +57,8 @@ AC_ARG_WITH(glib-config,[  --with-glib-config=FILE FILE is glib library
 	GLIB_CONFIG=$withval
 )
 
-AC_ARG_WITH(gnome-xml,[  --with-gnome-xml=D      D is the directory where
-                          Gnome XML libraries are installed],[
+AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
+                          Gnome XML libraries are installed (shared libs)],[
     GNOME_XML=$withval
     XMLBIN_DIR="$GNOME_XML/bin"
     XMLINC_DIR="$GNOME_XML/include"
@@ -71,21 +71,9 @@ AC_ARG_WITH(gnome-xml,[  --with-gnome-xml=D      D is the directory where
     AC_DEFINE(XML,,xml-abled parser)
     
     LIBXML2_SO_NAME=`cd $XMLLIB_DIR ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    if test -z "$LIBXML2_SO_NAME"; then
-	AC_MSG_ERROR($LIBXML_DIR does not containt XML2 dynamic library)
-    fi
     LIBGDOME_SO_NAME=`cd $XMLLIB_DIR ; ls libgdome.?? libgdome.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    if test -z "$LIBGDOME_SO_NAME"; then
-	AC_MSG_ERROR($LIBXML_DIR does not containt GDOME dynamic library)
-    fi
     LIBXSLT_SO_NAME=`cd $XMLLIB_DIR ; ls libxslt.?? libxslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    if test -z "$LIBXSLT_SO_NAME"; then
-	AC_MSG_ERROR($LIBXML_DIR does not containt XSLT dynamic library)
-    fi
     LIBEXSLT_SO_NAME=`cd $XMLLIB_DIR ; ls libexslt.?? libexslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    if test -z "$LIBEXSLT_SO_NAME"; then
-	AC_MSG_ERROR($LIBXML_DIR does not containt EXSLT dynamic library)
-    fi
 
     if test -z "$GLIB_CONFIG"; then
 	    GLIB_CONFIG=$XMLBIN_DIR/glib-config
@@ -101,6 +89,33 @@ AC_ARG_WITH(gnome-xml,[  --with-gnome-xml=D      D is the directory where
     if test \! -z "$LD_PATHLINK"; then
 	XML_LIBS="$XML_LIBS -Wl,$LD_PATHLINK -Wl,$XMLLIB_DIR"
     fi
+])
+
+AC_ARG_WITH(static-xml,[  --with-static-xml=D     D is the directory where
+                          Gnome XML libraries are installed (static libs)],[
+    GNOME_XML=$withval
+    XMLBIN_DIR="$GNOME_XML/bin"
+    XMLINC_DIR="$GNOME_XML/include"
+    XMLLIB_DIR="$GNOME_XML/lib"
+
+    if test \! -d $XMLBIN_DIR -o \! -d $XMLINC_DIR -o \! -d $XMLLIB_DIR; then
+    	AC_MSG_ERROR($GNOME_XML does not seem to be valid Gnome installation directory)
+    fi
+
+    AC_DEFINE(XML,,xml-abled parser)
+
+    if test -z "$GLIB_CONFIG"; then
+	    GLIB_CONFIG=$XMLBIN_DIR/glib-config
+	    if test \! -x $GLIB_CONFIG; then
+	        GLIB_CONFIG=glib-config
+	    fi
+    fi
+    GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+dnl  '-L/usr/local/lib -lglib' -> /usr/local/lib
+    GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/-L//' | sed 's/-lglib//' | sed 's/ //g'`
+
+    XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC_DIR -I$XMLINC_DIR/libgdome -I$XMLINC_DIR/libxml2"
+    XML_LIBS="$XMLLIB_DIR/libgdome.a $XMLLIB_DIR/libxslt.a $XMLLIB_DIR/libexslt.a $XMLLIB_DIR/libxml2.a $GLIB_DIR/libglib.a"
 ])
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
@@ -313,7 +328,7 @@ if test "$e_libdir" = "\${exec_prefix}/lib"; then
 
     # Let make expand exec_prefix.
     e_exec_prefix=$exec_prefix
-    test "x$e_exec_prefix" = xNONE && e_exec_prefix=$prefix
+    test "x$e_exec_prefix" = xNONE && e_exec_prefix=$e_prefix
 
     # expand apostrophed
     test "$e_libdir" = "\${exec_prefix}/lib" && e_libdir="${e_exec_prefix}/lib"
