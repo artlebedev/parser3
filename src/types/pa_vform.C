@@ -5,7 +5,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vform.C,v 1.46 2001/11/05 11:46:32 paf Exp $
+	$Id: pa_vform.C,v 1.47 2001/11/09 09:53:35 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -115,7 +115,6 @@ void VForm::ParseFormInput(char *data, size_t length) {
 		char *value=unescape_chars(pool(), data+start, len);
 		/* OK, we have a new pair, add it to the list. */
 		size_t value_size=strlen(value);
-		fix_line_breaks(value, value_size);
 		AppendFormEntry(attr, value, value_size);
 
 		if(!foundAmp)
@@ -141,7 +140,7 @@ void VForm::ParseMimeInput(char *content_type,
 		size_t headerSize=getHeader(dataStart, lastData-dataStart);
 
 		if(!dataStart|!dataEnd|!headerSize) break;
-		if(searchAttribute(dataStart, "content-disposition: form-data", headerSize)){
+		if(searchAttribute(dataStart, "content-disposition: form-data", headerSize)) {
 			size_t valueSize=(dataEnd-dataStart)-headerSize-5-strlen(boundary);
 			char *attr=getAttributeValue(dataStart, " name=", headerSize), 
 			     *fName=getAttributeValue(dataStart, " filename=", headerSize);
@@ -166,6 +165,8 @@ void VForm::AppendFormEntry(const char *aname,
 		vfile->set(true/*tainted*/, value_ptr, value_size, file_name);
 		value=vfile;
 	} else {
+		fix_line_breaks(value_ptr, value_size);
+		
 		String& string=*NEW String(pool());
 		string.APPEND_TAINTED(value_ptr, value_size, "form", 0);
 
