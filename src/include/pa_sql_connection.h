@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_connection.h,v 1.23 2002/02/08 08:30:13 paf Exp $
+	$Id: pa_sql_connection.h,v 1.24 2002/03/25 09:40:01 paf Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -99,9 +99,10 @@ private: // closing process
 
 	/// return to cache
 	void close() {
-		if(marked_to_rollback)
+		if(marked_to_rollback) {
 			rollback();
-		else
+			marked_to_rollback=false;
+		} else
 			commit();
 
 		SQL_driver_manager->close_connection(furl, *this);

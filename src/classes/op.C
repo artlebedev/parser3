@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.74 2002/03/18 15:29:45 paf Exp $
+	$Id: op.C,v 1.75 2002/03/25 09:40:01 paf Exp $
 */
 
 #include "classes.h"
@@ -260,8 +260,7 @@ r.sql_connect_time+=t[1]-t[0];
 	// execute body
 	try {
 		r.write_assign_lang(r.process(body_code));
-		
-	} catch(...) { // process/commit problem
+	} catch(...) { // process problem
 		connection->mark_to_rollback();
 		/*re*/throw; 
 	}
