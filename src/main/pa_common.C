@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/03/01 12:16:00 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/03/05 10:32:17 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -86,13 +86,6 @@ const String file_status_name(FILE_STATUS_NAME);
 #define HTTP_TABLES_NAME "tables"
 
 // statics
-
-static const String http_method_name(HTTP_METHOD_NAME);
-static const String http_timeout_name(HTTP_TIMEOUT_NAME);
-static const String http_headers_name(HTTP_HEADERS_NAME);
-static const String http_any_status_name(HTTP_ANY_STATUS_NAME);
-static const String http_charset_name(HTTP_CHARSET_NAME);
-static const String http_tables_name(HTTP_TABLES_NAME);
 
 // defines
 
@@ -358,22 +351,22 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 
 	if(options) {
 		int valid_options=0;
-		if(Value* vmethod=options->get(http_method_name)) {
+		if(Value* vmethod=options->get(HTTP_METHOD_NAME)) {
 			valid_options++;
 			method=vmethod->as_string().cstr();
 		}
-		if(Value* vtimeout=options->get(http_timeout_name)) {
+		if(Value* vtimeout=options->get(HTTP_TIMEOUT_NAME)) {
 			valid_options++;
 			timeout=vtimeout->as_int(); 
 		}
-		if((vheaders=options->get(http_headers_name))) {
+		if((vheaders=options->get(HTTP_HEADERS_NAME))) {
 			valid_options++;
 		}
-		if(Value* vany_status=options->get(http_any_status_name)) {
+		if(Value* vany_status=options->get(HTTP_ANY_STATUS_NAME)) {
 			valid_options++;
 			fail_on_status_ne_200=!vany_status->as_bool(); 
 		}
-		if(Value* vcharset_name=options->get(http_charset_name)) {
+		if(Value* vcharset_name=options->get(HTTP_CHARSET_NAME)) {
 			valid_options++;
 			asked_remote_charset=&::charsets.get(vcharset_name->as_string().
 				change_case(charsets.source(), String::CC_UPPER));
@@ -412,7 +405,6 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		char* port_cstr=lsplit(host, ':'); 
 		char* error_pos=0;
 		port=port_cstr?strtol(port_cstr, &error_pos, 0):80;
-
 
 		//making request
 		String request;
@@ -470,7 +462,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	ArrayString aheaders;
 	result.headers=new HashStringValue;
 	VHash* vtables=new VHash;
-	result.headers->put(http_tables_name, vtables);
+	result.headers->put(HTTP_TABLES_NAME, vtables);
 	HashStringValue& tables=vtables->hash();
 
 	size_t pos_after=0;
