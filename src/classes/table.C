@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.44 2001/04/03 05:23:37 paf Exp $
+	$Id: table.C,v 1.45 2001/04/03 05:28:01 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -27,7 +27,7 @@ static void _set(Request& r, const String& method_name, Array *params) {
 	// forcing {this body type}
 	r.fail_if_junction_(false, *vdata, method_name, "body must be junction");
 
-	Temp_lang temp_lang(r, String::UL_AS_IS);
+	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	const String& data=r.process(*vdata).as_string();
 
 	size_t pos_after=0;
@@ -93,8 +93,7 @@ static void _load(Request& r, const String& method_name, Array *params) {
 		if(char *row_chars=getrow(&data)) 
 			do {
 				String *name=new(pool) String(pool);
-				// never reaches user, can mark it 'clean'
-				name->APPEND_CLEAN(lsplit(&row_chars, '\t'), 0, file, line++);
+				name->APPEND_TAINTED(lsplit(&row_chars, '\t'), 0, file, line++);
 				*columns+=name;
 			} while(row_chars);
 	}
