@@ -31,7 +31,7 @@
 
 #line 8 "compile.y"
 
-static char *RCSId="$Id: compile.tab.C,v 1.8 2001/08/22 14:03:18 parser Exp $"; 
+static char *RCSId="$Id: compile.tab.C,v 1.9 2001/08/28 10:30:28 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -2435,7 +2435,7 @@ break2:
 }
 
 static int real_yyerror(parse_control *pc, char *s) {  // Called by yyparse on error
-	   strncpy(PC.error, s, MAX_STRING);
+	   strncpy(PC.error, s, MAX_STRING-1); PC.error[MAX_STRING-1]=0;
 	   return 1;
 }
 

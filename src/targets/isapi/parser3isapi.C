@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3isapi.C,v 1.35 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: parser3isapi.C,v 1.36 2001/08/28 10:30:29 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -199,7 +199,8 @@ static bool parser_init() {
 /// ISAPI //
 BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 	pVer->dwExtensionVersion = HSE_VERSION;
-	strncpy(pVer->lpszExtensionDesc, "Parser "PARSER_VERSION, HSE_MAX_EXT_DLL_NAME_LEN);
+	strncpy(pVer->lpszExtensionDesc, "Parser "PARSER_VERSION, HSE_MAX_EXT_DLL_NAME_LEN-1);
+	pVer->lpszExtensionDesc[HSE_MAX_EXT_DLL_NAME_LEN-1]=0;
 	return parser_init();
 }
 
@@ -240,8 +241,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 			// IIS
 			size_t len=strlen(filespec_to_process)-strlen(path_info);
 			char *buf=(char *)pool.malloc(len+1);
-			strncpy(buf, filespec_to_process, len);
-			buf[len]=0;
+			strncpy(buf, filespec_to_process, len); buf[len]=0;
 			request_info.document_root=buf;
 		} else
 			PTHROW(0, 0,

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: untaint.C,v 1.59 2001/08/28 09:27:42 parser Exp $"; 
+static const char *RCSId="$Id: untaint.C,v 1.60 2001/08/28 10:30:28 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -30,13 +30,13 @@ static const char *RCSId="$Id: untaint.C,v 1.59 2001/08/28 09:27:42 parser Exp $
 				char chunk[3]={prefix}; \
 				chunk[1]=hex[((unsigned char)*src)/0x10]; \
 				chunk[2]=hex[((unsigned char)*src)%0x10]; \
-				strncpy(dest, chunk, 3);  dest+=3; \
+				memcpy(dest, chunk, 3);  dest+=3; \
 			} else \
 				*dest++=*src; \
 			break
 #define to_char(c)  *dest++=c
 #define to_string(b, bsize)  \
-		strncpy(dest, b, bsize); \
+		memcpy(dest, b, bsize); \
 		dest+=bsize; \
 
 inline bool need_file_encode(unsigned char c){

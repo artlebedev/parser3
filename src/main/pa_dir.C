@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_dir.C,v 1.5 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: pa_dir.C,v 1.6 2001/08/28 10:30:28 parser Exp $"; 
 
 #include "pa_dir.h"
 #include "pa_common.h"
@@ -30,7 +30,7 @@ void findclose(struct ffblk *_ffblk) {
 #else
 
 bool findfirst(const char *_pathname, struct ffblk *_ffblk, int _attrib) {
-    strncpy(_ffblk->filePath, _pathname, MAXPATH);
+    strncpy(_ffblk->filePath, _pathname, MAXPATH-1); _ffblk->filePath[MAXPATH-1]=0;
 	if(!(_ffblk->dir=opendir(_ffblk->filePath)))
         return true;
 
@@ -44,8 +44,7 @@ bool findnext(struct ffblk *_ffblk) {
             return true;
 
 		int maxsize=sizeof(_ffblk->ff_name)-1;
-		strncpy(_ffblk->ff_name, entry->d_name, maxsize);
-		_ffblk->ff_name[maxsize]=0;
+		strncpy(_ffblk->ff_name, entry->d_name, maxsize-1); _ffblk->ff_name[maxsize]=0;
 		
 		char fileSpec[MAXPATH];
 		snprintf(fileSpec, MAXPATH, "%s/%s",

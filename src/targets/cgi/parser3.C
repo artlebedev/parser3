@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.97 2001/08/27 13:27:26 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.98 2001/08/28 10:30:29 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -60,7 +60,7 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 	if(argv0) {
 		// beside by binary
 		char file_spec[MAX_STRING];
-		strncpy(file_spec, argv0, MAX_STRING);  // filespec of my binary
+		strncpy(file_spec, argv0, MAX_STRING-1);  file_spec[MAX_STRING-1]=0; // filespec of my binary
 		rsplit(file_spec, '/');  rsplit(file_spec, '\\');// strip filename
 		strcat(file_spec, "/parser3.log");
 		f=fopen(file_spec, "at");
@@ -210,8 +210,7 @@ int main(int argc, char *argv[]) {
 				// IIS
 				size_t len=strlen(filespec_to_process)-strlen(path_info);
 				char *buf=(char *)pool.malloc(len+1);
-				strncpy(buf, filespec_to_process, len);
-				buf[len]=0;
+				memcpy(buf, filespec_to_process, len); buf[len]=0;
 				request_info.document_root=buf;
 			} else
 				PTHROW(0, 0,
@@ -219,7 +218,7 @@ int main(int argc, char *argv[]) {
 					"CGI: no PATH_INFO defined(in reinventing DOCUMENT_ROOT)");
 		} else {
 			static char buf[MAX_STRING];
-			strncpy(buf, filespec_to_process, MAX_STRING);
+			strncpy(buf, filespec_to_process, MAX_STRING-1); buf[MAX_STRING-1]=0;
 			if(rsplit(buf, '/') || rsplit(buf, '\\')) // strip filename
 				request_info.document_root=buf;
 			else
@@ -284,7 +283,7 @@ int main(int argc, char *argv[]) {
 		
 		// beside by binary
 		static char site_auto_path[MAX_STRING];
-		strncpy(site_auto_path, argv0, MAX_STRING);  // filespec of my binary
+		strncpy(site_auto_path, argv0, MAX_STRING-1);  site_auto_path[MAX_STRING-1]=0; // filespec of my binary
 		if(!(
 			rsplit(site_auto_path, '/') || 
 			rsplit(site_auto_path, '\\'))) { // strip filename

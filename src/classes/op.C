@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: op.C,v 1.38 2001/08/09 14:27:49 parser Exp $"; 
+static const char *RCSId="$Id: op.C,v 1.39 2001/08/28 10:30:28 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -110,7 +110,7 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 		origin.file, 1+origin.line,
 		method_name.cstr());
 #else
-	strncpy(place, MAX_STRING, method_name.cstr());
+	strncpy(place, method_name.cstr(), MAX_STRING-1); place[MAX_STRING-1]=0;
 #endif	
 
 	VStateless_class& self_class=*r.self->get_class();
