@@ -56,3 +56,5 @@ swf	application/x-shockwave-flash
 ^BASE.auto_test[]
 <li>DR
 
+@main[]
+/auto.p main
