@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.14 2001/12/13 10:37:03 paf Exp $
+	$Id: mod_parser3.C,v 1.15 2001/12/17 19:36:37 paf Exp $
 */
 
 #include "httpd.h"
@@ -203,6 +203,7 @@ size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
 	return total_read_bytes;
 }
 
+/// @test location provide with protocol. think about internal redirects
 void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) {
 	request_rec *r=static_cast<request_rec *>(pool.get_context());
 
@@ -305,6 +306,7 @@ void call_real_parser_handler__do_SEH(Pool& pool, request_rec *r) {
 #endif
 }
 
+/// @test r->finfo.st_mode check seems to work only on win32
 static int parser_handler(request_rec *r) {
 	//_asm int 3;
     if(r->finfo.st_mode == 0) 
