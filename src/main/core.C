@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.C,v 1.63 2001/03/12 21:18:00 paf Exp $
+	$Id: core.C,v 1.64 2001/03/13 13:43:30 paf Exp $
 */
 
 #include "core.h"
@@ -60,11 +60,11 @@ void core() {
 	LOCAL_STRING(html_typo, "html-typo");
 	untaint_lang_name2enum->put(html_typo, (int)String::Untaint_lang::HTML_TYPO);
 
-	// read-only classes
-	initialize_string_class(pool, *(string_class=new(pool) VClass(pool)));  string_class->freeze();
-	initialize_double_class(pool, *(double_class=new(pool) VClass(pool)));  double_class->freeze();
-	initialize_int_class(pool, *(int_class=new(pool) VClass(pool)));  int_class->freeze();
-	initialize_table_class(pool, *(table_class=new(pool) VClass(pool)));  table_class->freeze();
+	// read-only stateless classes
+	initialize_string_class(pool, *(string_class=new(pool) VStateless_class(pool)));  string_class->freeze();
+	initialize_double_class(pool, *(double_class=new(pool) VStateless_class(pool)));  double_class->freeze();
+	initialize_int_class(pool, *(int_class=new(pool) VStateless_class(pool)));  int_class->freeze();
+	initialize_table_class(pool, *(table_class=new(pool) VStateless_class(pool)));  table_class->freeze();
 
 	// request
 	Request request(pool);

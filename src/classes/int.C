@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.13 2001/03/13 11:52:44 paf Exp $
+	$Id: int.C,v 1.14 2001/03/13 13:43:28 paf Exp $
 */
 
 #include "pa_request.h"
@@ -14,7 +14,7 @@
 
 // global var
 
-VClass *int_class;
+VStateless_class *int_class;
 
 // methods
 
@@ -57,7 +57,7 @@ static void _mul(Request& r, const String&, Array *params) { vint_op(r, params, 
 static void _div(Request& r, const String&, Array *params) { vint_op(r, params, &__div); }
 static void _mod(Request& r, const String&, Array *params) { vint_op(r, params, &__mod); }
 
-void initialize_int_class(Pool& pool, VClass& vclass) {
+void initialize_int_class(Pool& pool, VStateless_class& vclass) {
 	// ^int.int[]
 	vclass.add_native_method("int", _int, 0, 0);
 

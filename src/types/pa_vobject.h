@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vobject.h,v 1.4 2001/03/11 21:23:59 paf Exp $
+	$Id: pa_vobject.h,v 1.5 2001/03/13 13:43:32 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -43,7 +43,9 @@ public: // Value
 
 public: // creation
 
-	VObject(Pool& apool, VClass& aclass_real) : VStateless_object(apool, aclass_real), 
+	VObject(Pool& apool, VStateless_class& aclass_real) : 
+		VStateless_object(apool, aclass_real), 
+
 		ffields(apool) {
 	}
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.4 2001/03/12 22:21:03 paf Exp $
+	$Id: pa_wcontext.h,v 1.5 2001/03/13 13:43:33 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -25,7 +25,7 @@ public: // Value
 	const String *get_string() { return &fstring; };
 
 	// WContext: none yet | transparent
-	VClass *get_class() { return fvalue?fvalue->get_class():0; }
+	VStateless_class *get_class() { return fvalue?fvalue->get_class():0; }
 	// wcontext: transparent
 	VAliased *get_aliased() { return fvalue?fvalue->get_aliased():0; }
 

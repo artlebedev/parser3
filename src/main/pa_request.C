@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.25 2001/03/13 12:37:05 paf Exp $
+	$Id: pa_request.C,v 1.26 2001/03/13 13:43:30 paf Exp $
 */
 
 #include <string.h>
@@ -54,7 +54,7 @@ void Request::core() {
 	TRY {
 		// loading system auto.p
 		char *sys_auto_file="C:\\temp\\auto.p";
-		VClass *main_class=use_file(
+		VStateless_class *main_class=use_file(
 			sys_auto_file, false/*ignore possible read problem*/,
 			main_class_name);
 
@@ -112,10 +112,10 @@ void Request::core() {
 	END_CATCH
 }
 
-VClass *Request::use_file(
-						  const char *file, bool fail_on_read_problem,
-						  const String *name, 
-						  VClass *base_class) {
+VStateless_class *Request::use_file(
+									const char *file, bool fail_on_read_problem,
+									const String *name, 
+									VStateless_class *base_class) {
 	// TODO: обнаружить|решить cyclic dependences
 	char *source=file_read(pool(), file, fail_on_read_problem);
 	if(!source)
@@ -124,12 +124,12 @@ VClass *Request::use_file(
 	return use_buf(source, file, 0/*new class*/, name, base_class);
 }
 
-VClass *Request::use_buf(
-						  const char *source, const char *file,
-						  VClass *aclass, const String *name, 
-						  VClass *base_class) {
+VStateless_class *Request::use_buf(
+								   const char *source, const char *file,
+								   VStateless_class *aclass, const String *name, 
+								   VStateless_class *base_class) {
 	// compile loaded class
-	VClass& cclass=COMPILE(source, aclass, name, base_class, file);
+	VStateless_class& cclass=COMPILE(source, aclass, name, base_class, file);
 
 	// locate and execute possible @auto[] static method
 	execute_method(cclass, *auto_method_name, false /*no result needed*/);
@@ -137,7 +137,7 @@ VClass *Request::use_buf(
 }
 
 void Request::fail_if_junction_(bool is, 
-							   Value& value, const String& method_name, char *msg) {
+								Value& value, const String& method_name, char *msg) {
 
 	// fail_if_junction(true, junction = fail
 	// fail_if_junction(false, not junction = fail

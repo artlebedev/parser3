@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_object.h,v 1.1 2001/03/11 21:23:59 paf Exp $
+	$Id: pa_vstateless_object.h,v 1.2 2001/03/13 13:43:33 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_OBJECT_H
@@ -31,17 +31,19 @@ public: // Value
 	}
 
 	// object_class, object_instance: object_class
-	VClass *get_class() { return &fclass_real; }
+	VStateless_class *get_class() { return &fclass_real; }
 
 public: // creation
 
-	VStateless_object(Pool& apool, VClass& aclass_real) : VAliased(apool, aclass_real), 
+	VStateless_object(Pool& apool, VStateless_class& aclass_real) : 
+		VAliased(apool, aclass_real), 
+
 		fclass_real(aclass_real) {
 	}
 
 private:
 
-	VClass& fclass_real;
+	VStateless_class& fclass_real;
 };
 
 #endif

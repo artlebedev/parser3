@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmframe.h,v 1.5 2001/03/13 12:37:06 paf Exp $
+	$Id: pa_vmframe.h,v 1.6 2001/03/13 13:43:32 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -34,7 +34,7 @@ public: // Value
 	}
 
 	// frame: self_transparent
-	VClass* get_class() { return fself->get_class(); }
+	VStateless_class* get_class() { return fself->get_class(); }
 
 	// methodframe: self_transparent
 	VAliased *get_aliased() { return fself->get_aliased(); }

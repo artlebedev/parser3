@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.99 2001/03/13 12:37:05 paf Exp $
+	$Id: execute.C,v 1.100 2001/03/13 13:43:30 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -305,9 +305,9 @@ void Request::execute(const Array& ops) {
 				PUSH(rcontext);  
 				PUSH(wcontext); 
 				
-				VClass *called_class=frame->junction.self.get_class();
+				VStateless_class *called_class=frame->junction.self.get_class();
 				// is context object or class & is it my class or my parent's class?
-				VClass *read_class=rcontext->get_class();
+				VStateless_class *read_class=rcontext->get_class();
 				if(read_class && read_class->is_or_derived_from(*called_class)) // yes
 					self=rcontext; // class dynamic call
 				else // no, not me or relative of mine (total stranger)

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.45 2001/03/13 12:37:04 paf Exp $
+	$Id: pa_request.h,v 1.46 2001/03/13 13:43:29 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -31,16 +31,16 @@
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \
 		const char *source, \
-		VClass *aclass, const String *name, \
-		VClass *base_class, \
+		VStateless_class *aclass, const String *name, \
+		VStateless_class *base_class, \
 		const char *file
 #	define COMPILE(source, aclass, name, base_class, file)  \
 		real_compile(source, aclass, name, base_class, file)
 #else
 #	define COMPILE_PARAMS  \
 		const char *source, \
-		VClass *aclass, const String *name, \
-		VClass *base_class
+		VStateless_class *aclass, const String *name, \
+		VStateless_class *base_class
 #	define COMPILE(source, aclass, name, base_class, file)  \
 		real_compile(source, aclass, name, base_class)
 #endif
@@ -63,14 +63,14 @@ public:
 
 	void execute(const Array& ops);
 
-	VClass *use_file(
+	VStateless_class *use_file(
 		const char *file, bool fail_on_read_problem=true,
 		const String *name=0, 
-		VClass *base_class=0); // core.C
-	VClass *use_buf(
+		VStateless_class *base_class=0); // core.C
+	VStateless_class *use_buf(
 		const char *source, const char *file,
-		VClass *aclass=0, const String *name=0, 
-		VClass *base_class=0); // core.C
+		VStateless_class *aclass=0, const String *name=0, 
+		VStateless_class *base_class=0); // core.C
 	Value& process(
 		Value& value, 
 		const String *name=0,
@@ -99,7 +99,7 @@ public:
 	// default base
 	VClass root_class;
 	// $ENV:fields here
-	VClass env_class;
+	VStateless_class env_class;
 
 	// contexts
 	Value *self, *root, *rcontext;
@@ -116,7 +116,7 @@ private: // core data
 
 private: // compile.C
 
-	VClass& real_compile(COMPILE_PARAMS);
+	VStateless_class& real_compile(COMPILE_PARAMS);
 
 private: // execute.C
 

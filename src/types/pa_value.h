@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.8 2001/03/13 12:37:06 paf Exp $
+	$Id: pa_value.h,v 1.9 2001/03/13 13:43:32 paf Exp $
 */
 
 /*
@@ -22,7 +22,7 @@
 #define NAME_NAME "NAME"
 
 class Value;
-class VClass;
+class VStateless_class;
 class Junction;
 class WContext;
 class VAliased;
@@ -73,7 +73,7 @@ public:
 
 	Junction(Pool& apool,
 		Value& aself,
-		VClass *avclass, const Method *amethod,
+		VStateless_class *avclass, const Method *amethod,
 		Value *aroot,
 		Value *arcontext,
 		WContext *awcontext,
@@ -90,7 +90,7 @@ public:
 	// always present
 	Value& self;
 	// either these // so called 'method-junction'
-	VClass *vclass;  const Method *method;
+	VStateless_class *vclass;  const Method *method;
 	// or these are present // so called 'code-junction'
 	Value *root;
 	Value *rcontext;
@@ -150,6 +150,7 @@ public: // Value
 	// codeframe: wcontext_transparent
 	// methodframe: my or self_transparent
 	// table: column
+	// env: CLASS,BASE,method,field
 	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
 	
 	// hash: (key)=value
@@ -157,11 +158,12 @@ public: // Value
 	// object_instance: (field)=value
 	// codeframe: wcontext_transparent
 	// methodframe: my or self_transparent
+	// env: read-only
 	virtual void put_element(const String& name, Value *value) { bark("(%s) does not accept elements"); }
 
 	// object_class, object_instance: object_class
 	// wcontext: none yet | transparent
-	virtual VClass *get_class() { return 0; }
+	virtual VStateless_class *get_class() { return 0; }
 
 	// valiased: this
 	// wcontext: transparent

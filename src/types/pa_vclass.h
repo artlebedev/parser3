@@ -3,82 +3,41 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.7 2001/03/12 18:13:50 paf Exp $
+	$Id: pa_vclass.h,v 1.8 2001/03/13 13:43:32 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#include "pa_valiased.h"
+#include "pa_vstateless_class.h"
 #include "pa_vhash.h"
 #include "pa_vjunction.h"
 
-#define CLASS_NAME "class"
-#define BASE_NAME "base"
-
-class Temp_method;
-
-class VClass : public VAliased {
-	friend Temp_method;
+class VClass : public VStateless_class {
 public: // Value
 	
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "class"; }
 
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
-	Value *get_element(const String& aname);
+	Value *get_element(const String& aname) {
+		if(Value *result=VStateless_class::get_element(aname))
+			return result;
+
+		// $field=static field
+		return get_field(aname);
+	}
 
 	// object_class, operator_class: (field)=value - static values only
 	void put_element(const String& name, Value *value);
 
 	// object_class, object_instance: object_class
-	VClass *get_class() { return this; }
+	VStateless_class *get_class() { return this; }
 
 public: // usage
 
-	VClass(Pool& apool) : VAliased(apool, *this), 
-		read_only(false),
-		fbase(0),
-		ffields(apool),
-		fmethods(apool) {
-	}
-
-	Method *get_method(const String& name) { 
-		return static_cast<Method *>(fmethods.get(name)); 
-	}
-
-	// make class read-only
-	//	this blocks 
-	//		put_method  // which could be done with ^process
-	//		put_element  // - - - - - CLASS:static_field
-	void freeze() { read_only=true; }
-
-	void add_method(const String& name, Method& method) {
-		put_method(name, &method);
-	}
-	void add_native_method(
-		const char *cstr_name,
-		Native_code_ptr native_code,
-		int min_numbered_params_count, int max_numbered_params_count);
-	
-	void set_base(VClass& abase) {
-		// remember the guy
-		fbase=&abase;
-	}
-	VClass *base() { return fbase; }
-
-	bool is_or_derived_from(VClass& vclass) {
-		return 
-			this==&vclass || 
-			fbase && fbase->is_or_derived_from(vclass);
-	}
-
-	Junction *get_junction(VAliased& self, const String& name) {
-		if(Method *method=static_cast<Method *>(fmethods.get(name)))
-			return NEW Junction(pool(), self, this, method, 0,0,0,0);
-		if(fbase)
-			return fbase->get_junction(self, name);
-		return 0; 
+	VClass(Pool& apool) : VStateless_class(apool), 
+		ffields(apool) {
 	}
 
 	void set_field(const String& name, Value *value) {
@@ -98,6 +57,8 @@ private:
 			result=fbase->get_field(name);
 		return result;
 	}
+
+protected:
 		
 	bool replace_field(const String& name, Value *value) {
 		return 
@@ -105,32 +66,9 @@ private:
 			ffields.put_replace(name, value);
 	}
 
-private: // Temp_method
-
-	void put_method(const String& aname, Method *amethod);
-	
 private:
 
-	bool read_only;
-	VClass *fbase;
 	Hash ffields;
-	Hash fmethods;
-};
-
-class Temp_method {
-	VClass& fclass;
-	const String& fname;
-	Method *saved_method;
-public:
-	Temp_method(VClass& aclass, const String& aname, Method *amethod) : 
-		fclass(aclass),
-		fname(aname),
-		saved_method(aclass.get_method(aname)) {
-		fclass.put_method(aname, amethod);
-	}
-	~Temp_method() { 
-		fclass.put_method(fname, saved_method);
-	}
 };
 
 #endif

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.9 2001/03/12 22:21:01 paf Exp $
+	$Id: string.C,v 1.10 2001/03/13 13:43:28 paf Exp $
 */
 
 #include "pa_request.h"
@@ -13,7 +13,7 @@
 
 // global var
 
-VClass *string_class;
+VStateless_class *string_class;
 
 // methods
 
@@ -50,7 +50,7 @@ void _string_format(Request& r, const String& method_name, Array *params) {
 		String::Untaint_lang::NO /*always object, not string*/);
 }
 
-void initialize_string_class(Pool& pool, VClass& vclass) {
+void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 	// ^string.length[]
 	vclass.add_native_method("length", _length, 0, 0);
 	

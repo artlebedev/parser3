@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.h,v 1.2 2001/03/11 08:16:37 paf Exp $
+	$Id: pa_valiased.h,v 1.3 2001/03/13 13:43:31 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -17,7 +17,7 @@ class VAliased : public Value {
 	friend Temp_alias;
 public: // creation
 
-	VAliased(Pool& apool, VClass& aclass_alias) : Value(apool), 
+	VAliased(Pool& apool, VStateless_class& aclass_alias) : Value(apool), 
 		fclass_alias(&aclass_alias) {
 	}
 
@@ -28,25 +28,25 @@ private: // alias handling
 
 	// VAliased replacement mechanism is 'protected' from direct usage
 	// Temp_alias object enforces paired set/restore
-	VClass *set_alias(VClass *aclass_alias){
-		VClass *result=fclass_alias;
+	VStateless_class *set_alias(VStateless_class *aclass_alias) {
+		VStateless_class *result=fclass_alias;
 		fclass_alias=aclass_alias;
 		return result;
 	}
-	void restore_alias(VClass *aclass_alias) {
+	void restore_alias(VStateless_class *aclass_alias) {
 		fclass_alias=aclass_alias;
 	}
 
 protected:
 
-	VClass *fclass_alias;
+	VStateless_class *fclass_alias;
 };
 
 class Temp_alias {
 	VAliased& vobject;
-	VClass *saved_alias;
+	VStateless_class *saved_alias;
 public:
-	Temp_alias(VAliased& avobject, VClass& alias) : 
+	Temp_alias(VAliased& avobject, VStateless_class& alias) : 
 		vobject(avobject),
 		saved_alias(avobject.set_alias(&alias)) {
 	}

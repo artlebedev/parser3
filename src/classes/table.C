@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.13 2001/03/13 12:07:14 paf Exp $
+	$Id: table.C,v 1.14 2001/03/13 13:43:28 paf Exp $
 */
 
 #include "pa_request.h"
@@ -14,7 +14,7 @@
 
 // global var
 
-VClass *table_class;
+VStateless_class *table_class;
 
 // methods
 
@@ -145,7 +145,7 @@ static void _empty(Request& r, const String&, Array *params) {
 	}
 }
 
-void initialize_table_class(Pool& pool, VClass& vclass) {
+void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 	// ^table.set[data]  
 	// ^table.set[nameless;data]
 	vclass.add_native_method("set", _set, 1, 2);

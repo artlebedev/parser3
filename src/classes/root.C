@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.37 2001/03/13 11:52:44 paf Exp $
+	$Id: root.C,v 1.38 2001/03/13 13:43:28 paf Exp $
 */
 
 #include <string.h>
@@ -72,7 +72,7 @@ static void _process(Request& r, const String& method_name, Array *params) {
 	strncpy(place, MAX_STRING, method_name.cstr());
 #endif	
 
-	VClass& self_class=*r.self->get_class();
+	VStateless_class& self_class=*r.self->get_class();
 	{
 		// temporary zero @main so to maybe-replace it in processed code
 		Temp_method temp_method(self_class, *main_method_name, 0);
@@ -238,7 +238,7 @@ static void _sign(Request& r, const String& method_name, Array *params) {
 	double_one_op(r, method_name, params,	&sign);
 }
 
-void initialize_root_class(Pool& pool, VClass& vclass) {
+void initialize_root_class(Pool& pool, VStateless_class& vclass) {
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
 	vclass.add_native_method("if", _if, 2, 3);

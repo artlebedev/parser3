@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.28 2001/03/13 12:37:05 paf Exp $
+	$Id: compile.C,v 1.29 2001/03/13 13:43:30 paf Exp $
 */
 
 #include "pa_request.h"
@@ -18,21 +18,23 @@
 extern int yydebug;
 extern int yyparse (void *);
 
-VClass& Request::real_compile(COMPILE_PARAMS) {
+VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 	// prepare to parse
 	struct parse_control pc;
 
 	// input 
 	pc.pool=&pool();
 	pc.request=this;
-	VClass *cclass;
+	VStateless_class *cclass;
 	if(aclass) // we were told the class to compile to?
 		cclass=aclass; // yes, remember it [used in ^process]
 	else if(name) { // we were told the name of compiled class?
 		// yes. create it
 		cclass=NEW VClass(pool());
 		// defaulting base. may change with @BASE
-		cclass->set_base(base_class?*base_class:root_class);
+		if(!base_class)
+			base_class=&root_class;
+		cclass->set_base(*base_class);
 		// append to request's classes
 		classes_array()+=cclass;
 		classes().put(*name, cclass);
