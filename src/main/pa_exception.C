@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.31 2002/01/21 12:10:08 paf Exp $
+	$Id: pa_exception.C,v 1.32 2002/01/21 12:33:26 paf Exp $
 */
 
 #include "pa_common.h"
@@ -80,13 +80,21 @@ Exception::Exception(
 		}
 		
 		fcomment=(char *)malloc(MAX_STRING);
-		snprintf(fcomment, MAX_STRING, 
-			"DOMException %s (%d).\n"
-			"%s", 
-				s,  // decoded code of exception
-				exc, // DOM exception code
-				xml_generic_errors?xml_generic_errors:"<no xml_generic_errors>" // xml generic messages accumulated
-		);
+		const char *xml_error_message=
+			xml_generic_errors?xml_generic_errors:"<no xml_generic_errors>";
+		if(exc)
+			snprintf(fcomment, MAX_STRING, 
+				"DOMException %s (%d).\n"
+				"%s", 
+					s,  // decoded code of exception
+					exc, // DOM exception code
+					xml_error_message // xml generic messages accumulated
+			);
+		else // no DOM exception
+			snprintf(fcomment, MAX_STRING, 
+				"%s", 
+					xml_error_message // xml generic messages accumulated
+			);
 		if(xml_generic_errors)
 			free((void *)xml_generic_errors);
 	} else

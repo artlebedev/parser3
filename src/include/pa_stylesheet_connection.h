@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_connection.h,v 1.19 2002/01/16 10:28:35 paf Exp $
+	$Id: pa_stylesheet_connection.h,v 1.20 2002/01/21 12:33:26 paf Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -76,16 +76,17 @@ private:
 		return now_disk_time>prev_disk_time?now_disk_time:0;
 	}
 
-	/// @test grab errors
 	void load(time_t new_disk_time) {
 		Pool& pool=*fservices_pool;
 
 		xsltStylesheet *nstylesheet;
 		nstylesheet=xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr(String::UL_FILE_SPEC));
-		if(!nstylesheet)
+		if(!nstylesheet) {
+			GdomeException exc=0;
 			throw Exception(0, 0,
 				&ffile_spec,
-				"error compiling. TODO: grab errors");
+				exc);
+		}
 
 		xsltFreeStylesheet(fstylesheet);  
 		fstylesheet=nstylesheet;
