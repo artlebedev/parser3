@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.17 2001/10/15 14:22:12 parser Exp $
+	$Id: xdoc.C,v 1.18 2001/10/15 14:23:10 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -765,7 +765,7 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 
 	// ^xdoc::set[<some>xml</some>]
 	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 1);
-	// ^xdoc::create[]
+	// ^xdoc::create{qualifiedName}
 	add_native_method("create", Method::CT_DYNAMIC, _create, 0, 0);	
 
 	// ^xdoc::load[some.xml]
