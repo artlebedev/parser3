@@ -4,6 +4,7 @@ SUBDIRS = hook
 INCLUDES := $(INCLUDES) -I../../classes -I../../types $(INCLTDL) -I../../sql -I../../lib/pcre -I../../lib/md5 -I$(APACHE13)/src/include -I$(APACHE13)/src/os/unix -I$(APACHE13)/src/os/win32 @XML_INCLUDES@
 
 noinst_LIBRARIES = libmod_parser3.a
+libmod_parser3_a_DEPENDENCIES=Makefile
 libmod_parser3_a_SOURCES = pa_pool.C pa_threads.C mod_parser3.C pa_md5c.c
 noinst_DATA = apache_build_instruction
 
