@@ -389,13 +389,7 @@ AC_CONFIG_SUBDIRS(src/lib/ltdl)
 dnl detecting which libraries are needed to dynamic open
 AC_LTDL_DLLIB
 AC_SUBST(LIBADD_DL)
-
-if test "x$ac_cv_func_dlopen" = xyes || test "x$ac_cv_lib_dl_dlopen" = xyes; then
- LIBS_SAVE="$LIBS"
- LIBS="$LIBS $LIBADD_DL"
- AC_CHECK_FUNCS(dlerror)
- LIBS="$LIBS_SAVE"
-fi
+LIBS="$LIBS $LIBADD_DL"
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
