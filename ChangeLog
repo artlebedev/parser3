@@ -1,3 +1,206 @@
+2002-12-15  paf
+	* configure.in [release_3_0_0006] 1.52.2.1:
+	* src/include/pa_version.h [release_3_0_0006] 1.7.8.1:
+		new version
+
+2002-12-14  paf
+	* src/sql/pa_sql_driver.h 1.33:
+	* www/htdocs/index.html 1.204:
+		exception type fixed
+
+	* src/classes/table.C 1.171:
+		removed unnecessary code
+
+2002-12-09  paf
+	* src/classes/hash.C 1.53:
+	* src/classes/string.C 1.124:
+	* src/classes/table.C 1.170:
+	* src/classes/void.C 1.27:
+	* src/main/pa_sql_driver_manager.C 1.68:
+	* src/sql/pa_sql_driver.h 1.32:
+		changed exception handling mech in sql handlers #2
+
+	* bin/Makefile.in 1.7:
+	* configure.in 1.52:
+	* etc/Makefile.in 1.12:
+	* etc/parser3.charsets/Makefile.in 1.15:
+	* src/Makefile.in 1.53:
+	* src/classes/Makefile.in 1.51:
+	* src/classes/gd/Makefile.in 1.41:
+	* src/classes/smtp/Makefile.in 1.10:
+	* src/include/Makefile.in 1.9:
+	* src/lib/Makefile.in 1.6:
+	* src/lib/ltdl/Makefile.in 1.2:
+	* src/lib/md5/Makefile.in 1.4:
+	* src/lib/patches/Makefile.in 1.7:
+	* src/lib/pcre/Makefile.in 1.6:
+	* src/main/Makefile.in 1.48:
+	* src/sql/Makefile.in 1.9:
+	* src/targets/Makefile.in 1.40:
+	* src/targets/apache13/Makefile.in 1.42:
+	* src/targets/apache13/hook/Makefile.in 1.4:
+	* src/targets/cgi/Makefile.in 1.60:
+	* src/targets/isapi/Makefile.in 1.9:
+	* src/types/Makefile.in 1.48:
+		removed configure.in:AC_LIBTOOL, it caused automake to write
+		makefile which used libtool to install things, which is not needed
+
+	* src/targets/apache13/mod_parser3.C 1.27:
+	* src/targets/cgi/parser3.C 1.211:
+	* src/targets/cgi/parser3.C 1.212:
+	* src/targets/cgi/parser3.C 1.213:
+	* src/targets/isapi/parser3isapi.C 1.81:
+		::die now tries to write core dump
+
+	* src/types/pa_vvoid.h 1.16:
+	* www/htdocs/index.html 1.203:
+		$void.store[now] error
+
+	* src/classes/hash.C 1.52:
+	* src/classes/string.C 1.123:
+	* src/classes/table.C 1.169:
+	* src/classes/void.C 1.26:
+	* src/main/pa_sql_driver_manager.C 1.66:
+	* src/main/pa_sql_driver_manager.C 1.67:
+	* src/sql/pa_sql_driver.h 1.29:
+	* src/sql/pa_sql_driver.h 1.30:
+	* src/sql/pa_sql_driver.h 1.31:
+		changed exception handling mech in sql handlers
+
+2002-12-06  paf
+	* operators.txt 1.106:
+	* src/main/compile.tab.C 1.78:
+	* src/types/pa_vhash.h 1.42:
+		$hash.fields -- pseudo field to make 'hash' more like 'table'
+
+2002-12-05  paf
+	* src/main/pa_array.C 1.53:
+	* src/main/pa_table.C 1.51:
+	* www/htdocs/index.html 1.199:
+		wow! found/fixed bug in lowlevel proc
+
+	* src/classes/smtp/smtp.C 1.15:
+	* src/main/pa_common.C 1.137:
+	* src/main/untaint.C 1.111:
+	* src/types/pa_vmail.C 1.38:
+	* www/htdocs/index.html 1.200:
+		mail header ',' allowed.
+		still bugs in smtp [only one receiptient works, cc, bcc ignored now, and MAILED ;)]
+		
+		[strncpy killed, memnchr used]
+
+	* src/main/pa_table.C 1.52:
+		table-copy now current=0
+
+	* src/targets/cgi/parser3.C 1.209:
+	* src/targets/cgi/parser3.C 1.210:
+		more checks on http://domain/parser.cgi start [maybe some
+		getenv returns "", checked that now
+
+	* src/targets/cgi/parser3.C 1.208:
+	* www/htdocs/index.html 1.198:
+		error logging made unbuffered [so that out-of-mem errors
+		reached log]
+
+	* src/main/main.dsp 1.161:
+		pa_version included into main.dsp
+
+	* src/classes/smtp/smtp.C 1.14:
+	* www/htdocs/index.html 1.196:
+		smtp line ends fixed. now \r\n [not \r]. some smtp servers [
+		win32] leave \n intact, and some clients [bat] fail to show
+		letter correctly
+
+	* src/classes/mail.C 1.83:
+	* src/targets/cgi/parser3.C 1.207:
+	* src/types/pa_vmail.C 1.37:
+	* www/htdocs/index.html 1.197:
+		mail:send MIME-Version default
+
+	* src/classes/smtp/smtp.C 1.17:
+	* src/main/untaint.C 1.112:
+	* www/htdocs/index.html 1.201:
+		mail header closed properly
+
+	* src/classes/mail.C 1.84:
+	* src/classes/smtp/smtp.C 1.18:
+	* src/types/pa_vmail.C 1.39:
+	* src/types/pa_vmail.h 1.8:
+	* www/htdocs/index.html 1.202:
+		smtp cc/bcc OK now
+
+2002-12-04  paf
+	* gnu.dsp 1.3:
+		restored
+
+	* src/types/pa_vform.C 1.73:
+		$form:field string value cut by premature 0
+
+	* parser3.dsw 1.6:
+	* src/main/compile.tab.C 1.77:
+	* src/main/main.dsp 1.160:
+	* www/htdocs/.htaccess 1.12:
+	* www/htdocs/index.html 1.195:
+		lib/libltdl -> lib/ltdl Win32 changes. s
+
+	* bin/Makefile.in 1.6:
+	* configure.in 1.51:
+	* etc/Makefile.in 1.11:
+	* etc/parser3.charsets/Makefile.in 1.14:
+	* gnu.dsp 1.2:
+	* src/Makefile.in 1.52:
+	* src/classes/Makefile.in 1.50:
+	* src/classes/gd/Makefile.in 1.40:
+	* src/classes/smtp/Makefile.in 1.9:
+	* src/include/Makefile.in 1.8:
+	* src/lib/Makefile.am 1.3:
+	* src/lib/Makefile.in 1.5:
+	* src/lib/ltdl/Makefile.am 1.1:
+	* src/lib/ltdl/Makefile.in 1.1:
+	* src/lib/ltdl/README 1.1:
+	* src/lib/ltdl/acinclude.m4 1.1:
+	* src/lib/ltdl/config.guess 1.1:
+	* src/lib/ltdl/config.h 1.1:
+	* src/lib/ltdl/config.sub 1.1:
+	* src/lib/ltdl/config_auto.h.in 1.1:
+	* src/lib/ltdl/config_fixed.h 1.1:
+	* src/lib/ltdl/configure 1.1:
+	* src/lib/ltdl/configure.in 1.1:
+	* src/lib/ltdl/install-sh 1.1:
+	* src/lib/ltdl/libltdl.dsp 1.1:
+	* src/lib/ltdl/ltdl.c 1.1:
+	* src/lib/ltdl/ltdl.h 1.1:
+	* src/lib/md5/Makefile.in 1.3:
+	* src/lib/patches/Makefile.in 1.6:
+	* src/lib/pcre/Makefile.in 1.5:
+	* src/main/Makefile.in 1.47:
+	* src/sql/Makefile.in 1.8:
+	* src/targets/Makefile.in 1.39:
+	* src/targets/apache13/Makefile.in 1.41:
+	* src/targets/apache13/hook/Makefile.in 1.3:
+	* src/targets/cgi/Makefile.in 1.59:
+	* src/targets/isapi/Makefile.in 1.8:
+	* src/types/Makefile.in 1.47:
+		src/lib/ltdl/Makefile now created with /configure, not ltdl/configure,
+		so it does have no problems with automake.
+		ltdl/configure AC_OUTPUT(Makefile<<removed)
+
+	* src/classes/classes.awk 1.6:
+		more strict *.C$
+
+2002-12-02  paf
+	* operators.txt 1.105:
+		removed outdated status:db
+
+	* src/classes/mail.C 1.82:
+	* src/include/pa_common.h 1.88:
+	* src/main/pa_common.C 1.136:
+	* src/main/pa_request.C 1.243:
+	* src/types/pa_vcookie.C 1.53:
+	* src/types/pa_vmail.C 1.36:
+	* www/htdocs/index.html 1.194:
+		http header lang of tainted parts becomes http-header
+
 2002-11-29  paf
 	* src/include/pa_common.h 1.87:
 	* src/main/pa_common.C 1.135:
@@ -46,8 +249,6 @@
 		*** empty log message ***
 
 	* configure.in 1.50:
-	* src/lib/libltdl/configure 1.2:
-	* src/lib/libltdl/configure.in 1.2:
 		stopped double libltdl/Makefile generation
 
 	* src/classes/image.C 1.87:
@@ -908,7 +1109,6 @@
 	* src/classes/smtp/Makefile.in 1.8:
 	* src/include/Makefile.in 1.7:
 	* src/lib/Makefile.in 1.4:
-	* src/lib/libltdl/Makefile.in 1.6:
 	* src/lib/md5/Makefile.in 1.2:
 	* src/lib/patches/Makefile.in 1.4:
 	* src/lib/pcre/Makefile.in 1.4:
@@ -2016,7 +2216,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2002/12/02 10:07:38 $
+		$Date: 2002/12/15 13:32:48 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -2179,6 +2379,7 @@
 	* operators.txt 1.58:
 	* src/classes/file.C 1.90:
 	* src/main/pa_request.C 1.217:
+	* www/cgi-bin/parser3.log 1.78:
 		file:find[/can/do/this/now.txt]
 
 	* src/targets/cgi/parser3.C 1.188:
@@ -2195,6 +2396,7 @@
 	* src/classes/mail.C 1.70:
 	* src/classes/smtp/smtp.C 1.11:
 	* src/types/pa_vmail.C 1.9:
+	* www/cgi-bin/parser3.log 1.77:
 		mail from/to now must be.
 		-f postmaster now default sendmail key
 		word "postmaster" replaced to $.from
@@ -2204,6 +2406,7 @@
 
 2002-07-30  paf
 	* src/main/pa_charset.C 1.25:
+	* www/cgi-bin/parser3.log 1.76:
 	* www/htdocs/auto.p 1.15:
 		UTF-8 to 1byte charset convert, no char in table, &#decimal;
 
@@ -2268,13 +2471,13 @@
 	* src/include/pa_config_fixed.h 1.46:
 	* src/include/pa_pool.h 1.81:
 	* src/include/pa_version.h 1.6:
-	* src/lib/libltdl/Makefile.in 1.5:
 	* src/main/pa_charset.C 1.24:
 	* src/main/pa_pool.C 1.53:
 	* src/targets/apache13/ApacheModuleParser3.dsp 1.15:
 	* src/targets/cgi/parser3.dsp 1.53:
 	* src/targets/isapi/parser3isapi.dsp 1.40:
 	* src/types/pa_vmail.C 1.8:
+	* www/cgi-bin/parser3.log 1.75:
 	* www/htdocs/index.html 1.82:
 		merged latest updates to head
 
@@ -2300,6 +2503,7 @@
 	* src/include/pa_pool.h [release_3_0_0004] 1.80.4.1:
 	* src/main/pa_charset.C [release_3_0_0004] 1.23.8.1:
 	* src/main/pa_pool.C [release_3_0_0004] 1.52.8.1:
+	* www/cgi-bin/parser3.log [release_3_0_0004] 1.74.2.1:
 	* www/htdocs/index.html [release_3_0_0004] 1.80.2.1:
 		^xdoc::create[[uri]]... base uri for document being created, imports and other relative file names would be relative to this uri
 		default uri=path_translated
@@ -2313,23 +2517,23 @@
 	* configure [release_3_0_0004] 1.31.2.1:
 	* configure.in [release_3_0_0004] 1.35.2.1:
 	* src/include/pa_version.h [release_3_0_0004] 1.5.4.1:
-	* src/lib/libltdl/Makefile.in [release_3_0_0004] 1.4.2.1:
 		 release_3_0_0004
 
 	* src/main/pa_string.C 1.162:
 		blank string '', ' <whitespace>' considered 0 now
 
-	* src/lib/libltdl/config.guess 1.1:
-	* src/lib/libltdl/config.sub 1.1:
 	* src/lib/md5/Makefile.in 1.1:
 		*** empty log message ***
 
 	* src/targets/cgi/parser3.C 1.186:
+	* www/cgi-bin/parser3.log 1.74:
 		/cgi-bin/parser empty filename checked
 
 2002-06-25  paf
 	* operators.txt 1.55:
 	* src/classes/xdoc.C 1.93:
+	* www/cgi-bin/parser3.log 1.71:
+	* www/cgi-bin/parser3.log 1.72:
 	* www/htdocs/index.html 1.78:
 	* www/htdocs/index.html 1.79:
 		^xdoc.transform[xdoc <<can be now
@@ -2338,6 +2542,7 @@
 	* operators.txt 1.53:
 	* src/classes/math.C 1.20:
 	* src/types/pa_vmail.C 1.6:
+	* www/cgi-bin/parser3.log 1.70:
 	* www/htdocs/index.html 1.76:
 		math:crypt updated to generate random salt when needed and to
 		call system crypt() if not $apr1$ prefix
@@ -2353,6 +2558,7 @@
 		^string.normalize  [old name: optimize
 
 	* src/main/pa_string.C 1.161:
+	* www/cgi-bin/parser3.log 1.73:
 	* www/htdocs/index.html 1.80:
 		emtpy string, or string of whitespaces considered bad number now
 
@@ -2373,7 +2579,6 @@
 	* src/include/Makefile.in 1.6:
 	* src/include/pa_config_auto.h.in 1.25:
 	* src/lib/Makefile.in 1.3:
-	* src/lib/libltdl/Makefile.in 1.4:
 	* src/lib/patches/Makefile.in 1.3:
 	* src/lib/pcre/Makefile.in 1.3:
 	* src/main/Makefile.in 1.43:
@@ -2423,6 +2628,7 @@
 	* src/types/pa_vmail.C 1.1:
 	* src/types/pa_vmail.h 1.1:
 	* src/types/types.dsp 1.27:
+	* www/cgi-bin/parser3.log 1.68:
 	* www/htdocs/index.html 1.74:
 		uue to separate file
 		introducting $message:received
@@ -2457,8 +2663,6 @@
 	* src/Makefile.in 1.48:
 	* src/classes/Makefile.in 1.46:
 	* src/lib/Makefile.in 1.1:
-	* src/lib/libltdl/Makefile.in 1.2:
-	* src/lib/libltdl/install-sh 1.1:
 	* src/lib/md5/Makefile.am 1.2:
 	* src/lib/md5/pa_md5c.c 1.2:
 	* src/lib/patches/Makefile.in 1.2:
@@ -2472,7 +2676,6 @@
 
 	* src/lib/Makefile.am 1.2:
 	* src/lib/Makefile.in 1.2:
-	* src/lib/libltdl/Makefile.in 1.3:
 	* src/lib/md5/pa_md5.h 1.2:
 	* src/targets/apache13/p3runConfigure.in 1.10:
 	* src/targets/apache13/pa_md5c.c 1.2:
@@ -2487,18 +2690,6 @@
 	* src/classes/classes.dsp 1.21:
 	* src/classes/math.C 1.19:
 	* src/lib/Makefile.am 1.1:
-	* src/lib/libltdl/Makefile.am 1.1:
-	* src/lib/libltdl/Makefile.in 1.1:
-	* src/lib/libltdl/README 1.1:
-	* src/lib/libltdl/acinclude.m4 1.1:
-	* src/lib/libltdl/config.h 1.1:
-	* src/lib/libltdl/config_auto.h.in 1.1:
-	* src/lib/libltdl/config_fixed.h 1.1:
-	* src/lib/libltdl/configure 1.1:
-	* src/lib/libltdl/configure.in 1.1:
-	* src/lib/libltdl/libltdl.dsp 1.1:
-	* src/lib/libltdl/ltdl.c 1.1:
-	* src/lib/libltdl/ltdl.h 1.1:
 	* src/lib/md5/Makefile.am 1.1:
 	* src/lib/md5/md5.dsp 1.1:
 	* src/lib/md5/pa_md5.h 1.1:
@@ -2551,6 +2742,7 @@
 	* src/targets/isapi/parser3isapi.dsp 1.38:
 	* src/types/Makefile.am 1.22:
 	* src/types/types.dsp 1.26:
+	* www/cgi-bin/parser3.log 1.67:
 	* www/htdocs/.htaccess 1.5:
 	* www/htdocs/index.html 1.73:
 		moved libltdl and pcre to libs/
@@ -2599,6 +2791,7 @@
 
 	* operators.txt 1.49:
 	* src/classes/file.C 1.89:
+	* www/cgi-bin/parser3.log 1.66:
 	* www/htdocs/auto.p 1.14:
 	* www/htdocs/index.html 1.72:
 		    !^file:dirname[/a/some.tar.gz]=/a
@@ -2616,6 +2809,7 @@
 	* src/main/execute.C 1.242:
 	* src/main/pa_request.C 1.212:
 	* src/types/pa_vmethod_frame.h 1.27:
+	* www/cgi-bin/parser3.log 1.65:
 	* www/htdocs/auto.p 1.13:
 	* www/htdocs/index.html 1.71:
 		introducing @conf/auto[filespec]
@@ -2632,15 +2826,17 @@
 	* www/htdocs/index.html 1.69:
 		bin/parser3.conf.dist [moved from etc
 
+	* src/classes/file.C 1.86:
+	* www/cgi-bin/parser3.log 1.64:
+		^file::exec[script;$.bad error case insensitive check now
+
 	* configure [release_3_0_0003] 1.26.2.1:
 	* configure.in [release_3_0_0003] 1.29.2.1:
 	* src/include/pa_version.h [release_3_0_0003] 1.5.2.1:
 		version to configure.in
 
-	* src/classes/file.C 1.86:
-		^file::exec[script;$.bad error case insensitive check now
-
 	* src/classes/file.C 1.85:
+	* www/cgi-bin/parser3.log 1.63:
 	* www/htdocs/index.html 1.68:
 		^file::exec[script;$.bad now error, not skip
 
@@ -2717,7 +2913,17 @@
 	* src/main/main.dsp 1.153:
 	* src/main/pa_globals.C 1.128:
 	* src/main/pa_request.C 1.208:
+	* www/cgi-bin/parser3.log 1.60:
 		@conf
+
+	* etc/parser3.conf.in 1.9:
+	* src/include/pa_globals.h 1.87:
+	* src/include/pa_request.h 1.137:
+	* src/main/execute.C 1.241:
+	* src/main/pa_globals.C 1.129:
+	* src/main/pa_request.C 1.209:
+	* www/cgi-bin/parser3.log 1.61:
+		@rootconf [were @conf]
 
 	* INSTALL 1.20:
 	* configure.in 1.26:
@@ -2731,15 +2937,8 @@
 	* src/targets/apache13/mod_parser3.C 1.22:
 	* src/targets/cgi/parser3.C 1.181:
 	* src/targets/isapi/parser3isapi.C 1.74:
+	* www/cgi-bin/parser3.log 1.62:
 		parser3.conf now one and only
-
-	* etc/parser3.conf.in 1.9:
-	* src/include/pa_globals.h 1.87:
-	* src/include/pa_request.h 1.137:
-	* src/main/execute.C 1.241:
-	* src/main/pa_globals.C 1.129:
-	* src/main/pa_request.C 1.209:
-		@rootconf [were @conf]
 
 	* src/classes/mail.C 1.65:
 	* src/main/pa_request.C 1.210:
@@ -2753,6 +2952,7 @@
 	* src/classes/file.C 1.83:
 	* src/targets/cgi/parser3.dsp 1.49:
 	* src/targets/isapi/parser3isapi.C 1.73:
+	* www/cgi-bin/parser3.log 1.59:
 	* www/htdocs/.htaccess 1.4:
 	* www/htdocs/index.html 1.66:
 		suexec env keys filter plus CGI_ as valid prefix
@@ -2766,6 +2966,7 @@
 	* src/targets/apache13/mod_parser3.C 1.21:
 	* src/targets/cgi/parser3.C 1.180:
 	* src/targets/isapi/parser3isapi.C 1.72:
+	* www/cgi-bin/parser3.log 1.58:
 	* www/htdocs/index.html 1.65:
 		file::exec/cgi to pass HTTP_ vars
 		introducing SAPI::environment
@@ -2794,6 +2995,7 @@
 
 	* src/main/compile.tab.C 1.55:
 	* src/main/pa_string.C 1.159:
+	* www/cgi-bin/parser3.log 1.56:
 	* www/htdocs/index.html 1.63:
 		whitespace after number in autoconvert now ignored
 
@@ -2812,6 +3014,7 @@
 		*** empty log message ***
 
 	* src/main/compile_tools.C 1.50:
+	* www/cgi-bin/parser3.log 1.57:
 	* www/htdocs/index.html 1.64:
 		^if(" 1 "){y} bug fixed
 		optimization string->double @ compile time were not-enough-checking...
@@ -2873,12 +3076,14 @@
 
 2002-05-16  paf
 	* src/classes/image.C 1.72:
+	* www/cgi-bin/parser3.log 1.55:
 	* www/htdocs/index.html 1.59:
 		image::measure can png now
 
 2002-05-15  paf
 	* operators.txt 1.38:
 	* src/classes/date.C 1.31:
+	* www/cgi-bin/parser3.log 1.54:
 	* www/htdocs/index.html 1.58:
 		^date::create[%H:%M[:%S]] added
 
@@ -2887,6 +3092,7 @@
 
 	* operators.txt 1.37:
 	* src/classes/date.C 1.30:
+	* www/cgi-bin/parser3.log 1.53:
 	* www/htdocs/.htaccess 1.3:
 	* www/htdocs/auto.p 1.10:
 	* www/htdocs/index.html 1.57:
@@ -2958,6 +3164,7 @@
 		version now not b
 
 	* src/targets/cgi/parser3.C 1.177:
+	* www/cgi-bin/parser3.log 1.52:
 	* www/htdocs/global.xsl 1.7:
 	* www/htdocs/index.html 1.56:
 		request.uri now never 0
@@ -2987,11 +3194,13 @@
 	* src/doc/doxygen.cfg 1.22:
 	* src/doc/doxygen.cfg [release_1_0_0001] 1.21.2.1:
 	* src/targets/cgi/parser3.dsp 1.47:
+	* www/cgi-bin/parser3.log 1.51:
 	* www/htdocs/index.html 1.55:
 		doxygen dot image size reduced
 
 2002-04-25  paf
 	* src/classes/table.C 1.152:
+	* www/cgi-bin/parser3.log 1.47:
 	* www/htdocs/.htaccess 1.1:
 	* www/htdocs/index.html 1.51:
 		removed restriction on column count to ^table.hash to work, now
@@ -3003,6 +3212,7 @@
 		REDIRECT_ prefix before HTTP_PARSER_x_CONFIG, now that took
 		into account
 
+	* www/cgi-bin/parser3.log 1.48:
 	* www/htdocs/index.html 1.52:
 		sample of 'using junction out of context'
 
@@ -3010,6 +3220,7 @@
 	* operators.txt 1.36:
 	* src/classes/date.C 1.28:
 	* src/classes/date.C 1.29:
+	* www/cgi-bin/parser3.log 1.49:
 	* www/htdocs/index.html 1.53:
 		^date::create[2002-12-33 01:03:04]
 
@@ -3029,6 +3240,7 @@
 2002-04-23  paf
 	* operators.txt 1.34:
 	* src/classes/string.C 1.110:
+	* www/cgi-bin/parser3.log 1.46:
 	* www/htdocs/index.html 1.50:
 		int/double/string:sql{}[$.default{code}]
 		fixed [were barking: "junction used outside of context"]
@@ -3043,8 +3255,13 @@
 		^string.optimize[]
 
 	* src/main/execute.C 1.238:
+	* www/cgi-bin/parser3.log 1.43:
 	* www/htdocs/index.html 1.48:
 		junctions to local contexts got cleanized&checked later
+
+	* src/main/execute.C 1.240:
+	* www/cgi-bin/parser3.log 1.45:
+		rolled back to before_killing_userjunction_contexts
 
 	* src/include/pa_globals.h 1.84:
 	* src/include/pa_table.h 1.43:
@@ -3053,14 +3270,12 @@
 	* src/main/pa_table.C 1.46:
 		fixed match table template
 
-	* src/main/execute.C 1.240:
-		rolled back to before_killing_userjunction_contexts
-
 	* src/classes/string.C 1.107:
 	* src/classes/string.C 1.108:
 		optimize removed from string .left/right/pos
 
 	* src/main/execute.C 1.239:
+	* www/cgi-bin/parser3.log 1.44:
 	* www/htdocs/index.html 1.49:
 		user junctions context killed
 
@@ -3072,6 +3287,7 @@
 	* src/main/pa_string.C 1.156:
 	* src/types/pa_vstring.C 1.18:
 	* src/types/pa_vstring.h 1.45:
+	* www/cgi-bin/parser3.log 1.42:
 	* www/htdocs/index.html 1.47:
 		string now optimized prior to .left .right .mid .pos .match when that is profitable,
 		and always before .replace
@@ -3185,6 +3401,7 @@
 	* src/types/pa_wcontext.h 1.32:
 	* src/types/pa_wwrapper.h 1.18:
 	* src/types/types.dsp 1.22:
+	* www/cgi-bin/parser3.log 1.36:
 	* www/htdocs/index.html 1.40:
 		removed Value::fname
 
@@ -3196,6 +3413,7 @@
 	* src/main/execute.C 1.237:
 	* src/main/pa_request.C 1.202:
 	* src/types/pa_vmethod_frame.h 1.26:
+	* www/cgi-bin/parser3.log 1.37:
 	* www/htdocs/index.html 1.41:
 		OP_GET_METHOD_FRAME merged with OP_CALL, VCodeFrame move to
 		stack [no more heap waste on each CALL]
@@ -3205,6 +3423,7 @@
 	* src/types/pa_vclass.h 1.25:
 	* src/types/pa_vobject.h 1.17:
 	* src/types/pa_wcontext.C 1.19:
+	* www/cgi-bin/parser3.log 1.38:
 	* www/htdocs/index.html 1.42:
 		VAliased get/set alias now virtual and implemented down in
 		VClass, fclass_alias removed,
@@ -3214,6 +3433,7 @@
 	* src/types/pa_vstateless_class.h 1.25:
 	* src/types/pa_vstateless_object.h 1.16:
 	* src/types/pa_vstring.h 1.43:
+	* www/cgi-bin/parser3.log 1.39:
 	* www/htdocs/index.html 1.43:
 		VStateless_string_object speicalized light version of VStateless_object
 
@@ -3228,6 +3448,8 @@
 	* src/classes/xnode.C 1.45:
 	* src/classes/xnode.h 1.11:
 	* src/types/pa_vxdoc.C 1.13:
+	* www/cgi-bin/parser3.log 1.40:
+	* www/cgi-bin/parser3.log 1.41:
 	* www/htdocs/index.html 1.44:
 	* www/htdocs/index.html 1.45:
 		xdoc(xnode) now fully - fields&methods
@@ -3263,10 +3485,12 @@
 	* src/main/compile.y 1.185:
 	* src/main/execute.C 1.232:
 	* src/targets/cgi/parser3.C 1.172:
+	* www/cgi-bin/parser3.log 1.30:
 		OP_CALL -> OP_CALL__WRITE and used that for removing VString wrapper
 
 	* src/doc/postbuild.txt 1.2:
 	* src/main/execute.C 1.234:
+	* www/cgi-bin/parser3.log 1.34:
 	* www/htdocs/index.html 1.37:
 		result in @postprocess & @unhandled_exception now taken into
 		account as in usual functions
@@ -3278,20 +3502,25 @@
 	* form.txt 1.2:
 	* lang.txt 1.2:
 	* sql.txt 1.2:
+	* www/cgi-bin/parser3.log 1.35:
 		removed outdated. see in Attic asm.txt as most interesting
 
 	* src/classes/op.C 1.87:
+	* www/cgi-bin/parser3.log 1.28:
 	* www/htdocs/auto.p 1.8:
 		extra check on empty file in origin in _execute
 
 	* src/classes/date.C 1.26:
 	* src/main/compile.tab.C 1.50:
 	* src/targets/cgi/parser3.C 1.173:
+	* www/cgi-bin/parser3.log 1.31:
+	* www/cgi-bin/parser3.log 1.32:
 		cheched date:create(days) param for validity [later were
 		assumed valid and crashed on invalid onces]
 
 	* src/classes/file.C 1.79:
 	* src/main/pa_exec.C 1.35:
+	* www/cgi-bin/parser3.log 1.33:
 	* www/htdocs/index.html 1.36:
 		stderr of execs mark as tainted
 
@@ -3299,11 +3528,12 @@
 	* www/htdocs/index.html 1.38:
 		$result in @main now taken into account as in usual functions
 
+	* src/classes/op.C 1.88:
+	* www/cgi-bin/parser3.log 1.29:
+		_process pseudo origin copied from local var to heap
+
 	* src/main/pa_request.C 1.199:
 		uri in error log
-
-	* src/classes/op.C 1.88:
-		_process pseudo origin copied from local var to heap
 
 	* src/main/pa_request.C 1.200:
 	* src/targets/isapi/parser3isapi.C 1.69:
@@ -3325,19 +3555,22 @@
 	* src/types/pa_value.h 1.81:
 	* src/types/pa_vmethod_frame.h 1.24:
 	* src/types/pa_wcontext.h 1.29:
+	* www/cgi-bin/parser3.log 1.25:
 		StringOrValue wcontext result, now ready for dual writes
-
-	* src/main/execute.C 1.231:
-	* src/types/pa_value.h 1.83:
-		fixed name update
-
-	* src/main/execute.C 1.229:
-		CodeFrame soul fixed [mistakenly killed by prev changes]
 
 	* src/classes/file.C 1.78:
 	* src/classes/op.C 1.86:
 	* src/classes/table.C 1.150:
+	* www/cgi-bin/parser3.log 1.26:
 		finished dual write_xxx_lang functions
+
+	* src/main/execute.C 1.231:
+	* src/types/pa_value.h 1.83:
+	* www/cgi-bin/parser3.log 1.27:
+		fixed name update
+
+	* src/main/execute.C 1.229:
+		CodeFrame soul fixed [mistakenly killed by prev changes]
 
 	* src/classes/date.C 1.25:
 	* src/classes/file.C 1.76:
@@ -3361,6 +3594,7 @@
 	* src/main/pa_globals.C 1.121:
 	* src/main/pa_request.C 1.198:
 	* src/targets/cgi/parser3.C 1.170:
+	* www/cgi-bin/parser3.log 1.24:
 	* www/htdocs/index.html 1.35:
 		switch in hash constructor fixed [were problems with using of
 		stacked wwrapper after it's death]
@@ -3388,6 +3622,7 @@
 2002-04-12  paf
 	* operators.txt 1.33:
 	* src/classes/table.C 1.148:
+	* www/cgi-bin/parser3.log 1.23:
 	* www/htdocs/index.html 1.34:
 		table.select(expression) 0
 
@@ -3402,6 +3637,7 @@
 	* src/include/pa_string.h 1.135:
 	* src/main/pa_string.C 1.151:
 	* src/main/untaint.C 1.101:
+	* www/cgi-bin/parser3.log 1.22:
 	* www/htdocs/index.html 1.33:
 		killed 8 bytes from String.head
 
@@ -3452,6 +3688,7 @@
 	* src/main/compile.tab.C 1.46:
 	* src/targets/cgi/parser3.C 1.169:
 	* src/targets/isapi/parser3isapi.C 1.68:
+	* www/cgi-bin/parser3.log 1.21:
 		removed
 		{
 		  char *a;
@@ -3461,17 +3698,20 @@
 		situations
 
 	* src/classes/xdoc.C 1.89:
+	* www/cgi-bin/parser3.log 1.19:
 	* www/htdocs/global.xsl 1.6:
 	* www/htdocs/index.html 1.32:
 		xslt params fixed
 
 	* operators.txt 1.32:
 	* src/classes/xdoc.C 1.90:
+	* www/cgi-bin/parser3.log 1.20:
 		xslt params made literal
 
 2002-04-04  paf
 	* src/include/pa_string.h 1.134:
 	* src/main/pa_string.C 1.150:
+	* www/cgi-bin/parser3.log 1.18:
 	* www/htdocs/index.html 1.31:
 		fixed string.replace [when reconstructing pieces were split by
 		max_integral(piece.size), thus some strings to replace happen
@@ -3509,11 +3749,13 @@
 	* src/include/pa_string.h 1.133:
 	* src/main/untaint.C 1.100:
 	* src/targets/isapi/parser3isapi.dsp 1.33:
+	* www/cgi-bin/parser3.log 1.17:
 		mail subject encoding taken from .content-type.charset, not .charset
 
 2002-03-29  paf
 	* operators.txt 1.30:
 	* src/classes/date.C 1.24:
+	* www/cgi-bin/parser3.log 1.16:
 	* www/htdocs/index.html 1.30:
 		^date::create now may not supply day, default 1.
 		checked 29.03 -> 29.02 roll on non 366 days' year.  | 31.05->31.04   roll
@@ -3547,6 +3789,7 @@
 	* src/include/pa_request.h 1.124:
 	* src/main/execute.C 1.222:
 	* src/main/pa_request.C 1.196:
+	* www/cgi-bin/parser3.log 1.14:
 		decided agains resetting exception_trace, just changed name
 
 	* operators.txt 1.28:
@@ -3601,6 +3844,7 @@
 	* src/types/pa_vxnode.h 1.13:
 	* src/types/pa_wcontext.C 1.17:
 	* src/types/pa_wwrapper.h 1.17:
+	* www/cgi-bin/parser3.log 1.15:
 	* www/htdocs/index.html 1.28:
 		assigned exception types
 
@@ -3702,6 +3946,8 @@
 	* src/include/pa_stack.h 1.14:
 	* src/main/pa_globals.C 1.119:
 	* src/main/pa_request.C 1.195:
+	* www/cgi-bin/parser3.log 1.12:
+	* www/cgi-bin/parser3.log 1.13:
 	* www/htdocs/index.html 1.22:
 	* www/htdocs/index.html 1.23:
 		introducing ^try
@@ -3766,6 +4012,7 @@
 
 	* src/classes/op.C 1.73:
 	* src/types/pa_vfile.C 1.28:
+	* www/cgi-bin/parser3.log 1.11:
 	* www/htdocs/index.html 1.16:
 		process body now evaluated in PASS language
 
@@ -3792,6 +4039,7 @@
 	* src/targets/apache13/mod_parser3.C 1.18:
 	* src/targets/apache13/p3runConfigure.in 1.9:
 	* src/targets/apache13/pa_threads.C 1.8:
+	* www/cgi-bin/parser3.log 1.10:
 	* www/htdocs/auto.p 1.7:
 		apache module updated
 
@@ -3815,6 +4063,7 @@
 
 2002-02-26  paf
 	* src/classes/xnode.C 1.40:
+	* www/cgi-bin/parser3.log 1.9:
 	* www/htdocs/auto.p 1.6:
 	* www/htdocs/global.xsl 1.4:
 	* www/htdocs/index.html 1.15:
@@ -3828,12 +4077,16 @@
 	* operators.txt 1.14:
 	* src/types/pa_vcookie.C 1.41:
 	* src/types/pa_vcookie.C 1.42:
+	* www/cgi-bin/parser3.log 1.5:
 		cookie "expires=0" =  "session"
 
 	* src/include/pa_string.h 1.131:
 	* src/main/pa_string.C 1.144:
 	* src/main/pa_string.C 1.145:
 	* src/main/pa_string.C 1.146:
+	* www/cgi-bin/parser3.log 1.6:
+	* www/cgi-bin/parser3.log 1.7:
+	* www/cgi-bin/parser3.log 1.8:
 	* www/htdocs/auto.p 1.5:
 	* www/htdocs/index.html 1.14:
 		string iterators fixed again, so were String::join_chain
@@ -3923,12 +4176,14 @@
 		make cvsupdate
 
 	* src/main/untaint.C 1.97:
+	* www/cgi-bin/parser3.log 1.4:
 		removed debug code, activated commented-for debug parts
 
 	* src/include/pa_string.h 1.130:
 	* src/include/pa_types.h 1.39:
 	* src/main/pa_string.C 1.143:
 	* src/main/untaint.C 1.96:
+	* www/cgi-bin/parser3.log 1.3:
 		STRING_*FOREACH_ROW
 		changed to stop at append_row, not at link zero
 		now string to string appending works
@@ -3945,6 +4200,7 @@
 	* src/include/pa_string.h 1.128:
 	* src/main/pa_string.C 1.142:
 	* src/main/untaint.C 1.94:
+	* www/cgi-bin/parser3.log 1.2:
 		economy: 22%
 
 	* operators.txt 1.12:
@@ -3978,6 +4234,7 @@
 	* src/include/pa_string.h 1.127:
 	* src/main/pa_string.C 1.141:
 	* src/main/untaint.C 1.93:
+	* www/cgi-bin/parser3.log 1.1:
 		space uptimized: string::link_row removed
 
 2002-02-19  paf
@@ -9331,7 +9588,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.19 2002/12/02 10:07:38 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.20 2002/12/15 13:32:48 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -9374,7 +9631,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.19 2002/12/02 10:07:38 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.20 2002/12/15 13:32:48 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -14820,7 +15077,7 @@
 	* src/targets/parser.C 1.3:
 	* src/targets/parser.dsp 1.2:
 	* src/targets/parser.dsp 1.3:
-		$Id: ChangeLog,v 1.19 2002/12/02 10:07:38 paf Exp $ check
+		$Id: ChangeLog,v 1.20 2002/12/15 13:32:48 paf Exp $ check
 
 	* src/targets/parser.C 1.2:
 		$id$ check
