@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/11/28 10:41:11 $";
+static const char * const IDENT="$Date: 2003/11/28 10:42:47 $";
 
 #include "libxslt/extensions.h"
 
@@ -40,7 +40,7 @@ struct MemoryStream {
 #ifdef PA_SAFE_MODE
 static int
 xmlFileMatchSafeMode(const char* file_spec_cstr) {
-	if(strstr(filename, "://")) {
+	if(strstr(file_spec_cstr, "://")) {
 		String* file_spec=new String(file_spec_cstr, true);
 		struct stat finfo;
 		if(stat(file_spec_cstr, &finfo)!=0)
