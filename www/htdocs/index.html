@@ -295,11 +295,18 @@ OK
 #^test_exif[jpg]
 #^http_prefix[]
 #^http_prefix_table[]
-#^http_prefix_xml[]
-^imagefont[]
+^http_prefix_xml[]
+#^imagefont[]
 #^downloadtest[]
 #^cachebug[]
 #^quickregexatend[]
+#^docsamplehttpfileload[]
+
+@docsamplehttpfileload[]
+$file[^file::load[text;http://parser.ru/]]
+Программное обеспечение сервера: $file.SERVER
+<hr>
+<pre>$file.text</pre>
 
 @quickregexatend[]
 #$subject[xxxabcd]
@@ -339,13 +346,13 @@ $length[^image.length[$text]]
 $response:body[^image.gif[]]
 
 @http_prefix_xml[]
- $xdoc[^xdoc::load[http://www.cbr.ru/scripts/XML_daily.asp?date_req=02/03/2002;
-# 	$.method[HEAD]
- 	$.headers[
- 		$.user-agent[1]
- 	]
-]]
+$xdoc[^xdoc::load[http://www.cbr.ru/scripts/XML_daily.asp]]
+На ^xdoc.selectString[string(/ValCurs/@Date)]
+курс валюты
+$USD_node[^xdoc.selectSingle[/ValCurs/Valute[CharCode='USD']]]
+"^USD_node.selectString[string(Name)]" равен ^USD_node.selectString[string(Value)]
 
+<hr>
 <pre>^taint[^xdoc.string[]]</pre>
 
 @http_prefix_table[]
