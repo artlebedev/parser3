@@ -91,7 +91,9 @@ sqldriversdir = @sqldriversdir@
 noinst_PROGRAMS = dftables pcre_parser_ctype
 dftables_SOURCES = dftables.c 
 pcre_parser_ctype_SOURCES = pcre_parser_ctype.c
+
 CLEANFILES = auto_part.p chartables.c
+
 noinst_LIBRARIES = libpcre.a
 libpcre_a_SOURCES = get.c pcre.c study.c maketables.c
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -377,9 +379,7 @@ auto_part.p:   pcre_parser_ctype
 chartables.c:   dftables
 	./dftables >chartables.c
 
-
 pcre.c: chartables.c
-
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

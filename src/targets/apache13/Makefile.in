@@ -10,6 +10,8 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+#@test why not INCLUDES=?
+
 
 SHELL = @SHELL@
 
@@ -85,6 +87,8 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 charsetsdir = @charsetsdir@
 host_os = @host_os@
+rootconfigdir = @rootconfigdir@
+sqldriversdir = @sqldriversdir@
 
 INCLUDES := $(INCLUDES) -I../../classes -I../../types $(INCLTDL) -I../../sql -I../../pcre -I$(APACHE13)/src/include -I$(APACHE13)/src/os/unix -I$(APACHE13)/src/os/win32 @XML_INCLUDES@
 
@@ -92,7 +96,7 @@ noinst_LIBRARIES = libmod_parser3.a
 libmod_parser3_a_SOURCES = pa_pool.C pa_threads.C mod_parser3.C ident.C
 noinst_DATA = apache_build_instruction
 
-IDENT_AWK = ../../ident.awk
+IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../../src/include/pa_config_auto.h
