@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2003/07/24 11:31:24 $";
+static const char* IDENT_UNTAINT_C="$Date: 2003/08/18 08:27:41 $";
 
 
 #include "pa_string.h"
@@ -246,6 +246,14 @@ inline bool mail_header_char_valid_within_Qencoded(char c) {
 		|| c>='0' && c<='9'
 		|| strchr("!*+-/", c);
 }
+inline bool addr_spec_soon(const char *src) {
+	for(char c; c=*src; src++)
+		if(c=='<')
+			return true;
+		else if(!(c==' ' || c=='\t'))
+			return false;
+	return false;
+}
 /**
 	RFC 
 	Upper case should be used for hexadecimal digits "A" through "F"
@@ -364,7 +372,7 @@ StringBody String::cstr_to_string_body(Language lang,
 				uchar c;
 				for(const char* src=mail_ptr; c=(uchar)*src++; ) {
 					//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
-					if(to_quoted_printable && (c==',' || c=='<')) {
+					if(to_quoted_printable && (c==',' || addr_spec_soon(src) || c == '"')) {
 						email=c=='<';
 						to_string("?=");
 						to_quoted_printable=false;

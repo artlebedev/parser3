@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/07/24 11:31:24 $";
+static const char* IDENT_STRING_C="$Date: 2003/08/18 08:27:41 $";
 
 #include "pcre.h"
 
@@ -561,8 +561,10 @@ static int serialize_body_piece(const char* s, char** cur) {
 	return 0;
 };
 String::Cm String::serialize(size_t prolog_length) const {
+	//_asm int 3;
 	size_t buf_length=
 		prolog_length
+		+sizeof(size_t)
 		+fragments.count()*(sizeof(Language)+sizeof(size_t))
 		+length();
 	String::Cm result(new(PointerFreeGC) char[buf_length], buf_length);

@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSET_C="$Date: 2003/07/24 11:31:23 $";
+static const char* IDENT_CHARSET_C="$Date: 2003/08/18 08:27:40 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -646,6 +646,7 @@ GdomeDOMString_auto_ptr Charset::transcode(const StringBody s) {
 
 	return transcode_buf2dom(cstr, s.length()); 
 }
+#endif
 
 StringBody Charset::transcode(const StringBody src, 
 	const Charset& source_transcoder, 
@@ -696,4 +697,3 @@ void Charset::transcode(HashStringString& src,
 	Transcode_pair_info info={&source_transcoder, &dest_transcoder};
 	src.for_each_ref(transcode_pair, &info);
 }
-#endif

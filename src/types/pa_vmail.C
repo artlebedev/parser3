@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2003/07/24 11:31:26 $";
+static const char* IDENT_VMAIL_C="$Date: 2003/08/18 08:27:41 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -62,20 +62,19 @@ VMail::VMail(): VStateless_class(0, mail_base_class) {}
 
 #ifdef WITH_MAILRECEIVE
 
-static const String& maybeUpperCaseCharset& source_charset, 
-								const String& src, bool toUpperCase) {
-	return toUpperCase?src->change_case(source_charset, String::CC_UPPER):src;
+static const String& maybeUpperCase(Charset& source_charset, 
+				    const String& src, bool toUpperCase) {
+	return toUpperCase?src.change_case(source_charset, String::CC_UPPER):src;
 }
 
-static void UTF8toSourceCharset& source_charset, 
-						 const char* source_body, size_t source_content_length,
-						 const void *& dest_body, size_t& dest_content_length) {
+static void UTF8toSource(Charset& source_charset, 
+			 const char* source_body, size_t source_content_length,
+			 const void *& dest_body, size_t& dest_content_length) {
 	if(source_body) {
 		if(!source_content_length)
 			source_content_length=strlen(source_body);
-		Charset::transcode(
-			*UTF8_charset, source_body, source_content_length,
-			source_charset, dest_body, dest_content_length);
+		String::C dest=Charset::transcode(String::C(source_body, source_content_length),
+			UTF8_charset, source_charset, dest_body, dest_content_length);
 	} else {
 		dest_body=0;
 		dest_content_length=0;
