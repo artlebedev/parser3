@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.146 2001/07/26 10:47:02 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.147 2001/08/01 12:08:40 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -24,6 +24,7 @@ extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 #include "pa_types.h"
 #include "pa_vtable.h"
 #include "pa_vfile.h"
+#include "pa_dictionary.h"
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
@@ -233,7 +234,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		default_content_type=defaults?defaults->get_element(*content_type_name):0;
 		if(Value *element=main_class->get_element(*user_html_name))
 			if(Table *table=element->get_table())
-				pool().set_tag(table);
+				pool().set_tag(NEW Dictionary(*table));
 
 		// $MAIN:MIME-TYPES
 		if(Value *element=main_class->get_element(*mime_types_name))
@@ -242,18 +243,18 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 		/*
 			$MAIN:CTYPE[
-				$white-space[
+				$.white-space[
 					^#09^#0A^#0B^#0C^#0D^#20]
-				$digit[
+				$.digit[
 					0123456789]
-				$hex-digit[
+				$.hex-digit[
 					0123456789ABCDEFabcdef]
-				$letter[
+				$.letter[
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]
-				$word[
+				$.word[
 					0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz]
 
-				$lowercase[
+				$.lowercase[
 					AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz]
 			]
 		*/

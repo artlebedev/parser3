@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.64 2001/07/25 09:57:33 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.65 2001/08/01 12:08:40 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
 #include "pa_hash.h"
 #include "pa_sql_driver_manager.h"
+#include "pa_dictionary.h"
 
 String *user_html_name;
 String *content_type_name;
@@ -56,7 +57,7 @@ String *origins_mode_name;
 
 Hash *untaint_lang_name2enum;
 
-Table *default_typo_table;
+Dictionary *default_typo_dict;
 
 short hex_value[0x100];
 
@@ -157,7 +158,7 @@ void pa_globals_init(Pool& pool) {
 	ULN(user_html, "user-html", USER_HTML);
 
 	// tables
-	default_typo_table=NEW Table(pool, 0, 0);
+	Table *default_typo_table=NEW Table(pool, 0, 0);
 	#define DT_ROW(from, to) { \
 			Array *row=NEW Array(pool); \
 			*row+=NEW String(pool, from); \
@@ -170,6 +171,7 @@ void pa_globals_init(Pool& pool) {
 	DT_ROW("&", "&amp;");
 	DT_ROW("\\n\\n", "<p>");
 	DT_ROW("\\n", "<br>");
+	default_typo_dict=NEW Dictionary(*default_typo_table);
 
 	// SQL_Driver_manager
  	SQL_driver_manager=NEW SQL_Driver_manager(pool);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: untaint.C,v 1.57 2001/07/28 12:01:50 parser Exp $"; 
+static const char *RCSId="$Id: untaint.C,v 1.58 2001/08/01 12:08:40 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -14,6 +14,7 @@ static const char *RCSId="$Id: untaint.C,v 1.57 2001/07/28 12:01:50 parser Exp $
 #include "pa_table.h"
 #include "pa_globals.h"
 #include "pa_sql_connection.h"
+#include "pa_dictionary.h"
 
 #define escape(action) \
 	{ \
@@ -155,8 +156,8 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					   SQL_Connection *connection,
 					   const char *charset) const {
 	// $MAIN:html-typo table
-	Table *user_typo_table=static_cast<Table *>(pool().tag());
-	Table *typo_table=user_typo_table?user_typo_table:default_typo_table;
+	Dictionary *user_typo_dict=static_cast<Dictionary *>(pool().tag());
+	Dictionary *typo_dict=user_typo_dict?user_typo_dict:default_typo_dict;
 
 	bool whitespace=true;
 	const Chunk *chunk=&head; 
@@ -306,7 +307,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				break;
 			case UL_USER_HTML: {
 				// tainted, untaint language: html-typo
-				if(!typo_table) // never, always has default
+				if(!typo_dict) // never, always has default
 					THROW(0, 0,
 						this,
 						"untaint to user-html lang failed, no typo table");
@@ -343,21 +344,21 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				const char *src=html_for_typo;
 				do {
 					// there is a row where first column starts 'src'
-					if(Table::Item *item=typo_table->first_that(typo_present, src)) {
+					if(Table::Item *item=typo_dict->first_that_starts(src)) {
 						// get a=>b values
 						const String& a=*static_cast<Array *>(item)->get_string(0);
 						const String& b=*static_cast<Array *>(item)->get_string(1);
 						// empty 'a' | 'b' checks
 						if(a.size()==0 || b.size()==0) {
-							pool().set_tag(default_typo_table); // avoid recursion
+							pool().set_tag(0); // avoid recursion
 							THROW(0, 0, 
-								typo_table->origin_string(), 
+								typo_dict->origin_string(), 
 								"typo table column elements must not be empty");
 						}
 						// overflow check:
 						//   b allowed to be max UNTAINT_TIMES_BIGGER then a
 						if(b.size()>UNTAINT_TIMES_BIGGER*a.size()) {
-							pool().set_tag(default_typo_table); // avoid recursion
+							pool().set_tag(0); // avoid recursion
 							THROW(0, 0, 
 								&b, 
 								"is %g times longer then '%s', "

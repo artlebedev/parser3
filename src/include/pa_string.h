@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.99 2001/07/20 09:40:46 parser Exp $
+	$Id: pa_string.h,v 1.100 2001/08/01 12:08:40 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -179,6 +179,9 @@ public:
 
 	/// simple hash code of string. used by Hash
 	uint hash_code() const;
+
+	/// extracts first char of a string
+	char first_char() const;
 
 	/// extracts [start, finish) piece of string
 	String& mid(size_t start, size_t finish) const;

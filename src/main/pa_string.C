@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_string.C,v 1.96 2001/07/24 15:43:56 parser Exp $"; 
+static const char *RCSId="$Id: pa_string.C,v 1.97 2001/08/01 12:08:40 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -147,6 +147,15 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 	append_here++; fused_rows++;
 
 	return *this;
+}
+
+char String::first_char() const {
+	if(!fused_rows)
+		THROW(0, 0,
+			this,
+			"getting first char of empty string");
+
+	return *head.rows[0].item.ptr;
 }
 
 uint String::hash_code() const {

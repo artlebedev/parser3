@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.56 2001/07/25 09:57:33 parser Exp $
+	$Id: pa_globals.h,v 1.57 2001/08/01 12:08:40 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -16,7 +16,7 @@
 
 class String;
 class Hash;
-class Table;
+class Dictionary;
 
 //@{
 /// constant string. class name, predefined method & co
@@ -127,6 +127,6 @@ extern String *limits_name;
 extern Hash *untaint_lang_name2enum;
 
 /// global table
-extern Table *default_typo_table;
+extern Dictionary *default_typo_dict;
 
 #endif
