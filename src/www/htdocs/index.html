@@ -31,40 +31,44 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
-^mail:send[
+<pre>^mail:send[
 	$content-type[
 	    $value[text/plain]
     	$charset[windows-1251]
 	]
     $to[paul]
     $from[paf]
-    $body[
-    	hi, paul.
+	$body[hi, paul.
 
-    	sincerily yours,
-    	PAF
-    ]
+sincerily yours,
+PAF
 ]
+]</pre>
 <HR>
 
 
-^mail:send{
-	$content-type[
-	    $value[text/plain]
-    	$charset[windows-1251]
-	]
+<pre>^mail:send[
     $to[sdsfsdf]
     $from[sdfsdf]
     $body[
-    	$1[ sdfsdf]
     	$2[
-			$to[sdsfsdf]
-    		$from[sdfsdf]
-    		$content-type[sdfsdf]
-    		$body[$image]
+    		$content-type[$value[message/rfc822] $name[letter.eml]]
+    		$body[to: paul
+from: paf
+subject: 2
+
+2.body
+    		]
+    	]
+    	$1[
+			$to[paul]
+    		$from[paf]
+    		$subject[1]
+    		$content-type[text/plain]
+    		$body[image]
     	]
     ]
-}
+]</pre>
 
 <HR>
 

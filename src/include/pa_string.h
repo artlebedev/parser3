@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.74 2001/04/07 10:34:43 paf Exp $
+	$Id: pa_string.h,v 1.75 2001/04/07 11:55:32 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -164,6 +164,8 @@ public:
 		or marking ALL pieces of it with a @a lang when @a forced to.
 	*/
 	String& append(const String& src, Untaint_lang lang, bool forced=false);
+	String& operator += (const String& src) { return append(src, UL_PASS_APPENDED); }
+	String& operator += (const char *src) { return APPEND_CONST(src); }
 
 	/// simple hash code of string. used by Hash
 	uint hash_code() const;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.1 2001/04/07 10:34:39 paf Exp $
+	$Id: mail.C,v 1.2 2001/04/07 11:55:30 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -18,11 +18,14 @@
 
 VStateless_class *mail_class;
 
+// consts
+
 // methods
 
 struct Mail_info {
 	String *attribute_to_exclude;
 	String *header;
+	const String **from, **to;
 };
 
 static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
@@ -30,16 +33,108 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 
 	Value& lmeaning=*static_cast<Value *>(ameaning);
 	Mail_info& mi=*static_cast<Mail_info *>(info);
+
+	// exclude one attribute [body]
 	if(aattribute==*mi.attribute_to_exclude)
 		return;
 
-	mi.header->append(aattribute, String::UL_PASS_APPENDED);
-	mi.header->APPEND_CONST(":");
-	mi.header->append(
-		attributed_meaning_to_string(lmeaning, String::UL_MAIL_HEADER), 
-		String::UL_PASS_APPENDED);
-	mi.header->APPEND_CONST("\n");
+	// fetch from & to from header for SMTP
+	if(mi.from && aattribute=="from")
+		*mi.from=&lmeaning.as_string();
+	if(mi.to && aattribute=="to")
+		*mi.to=&lmeaning.as_string();
+
+	// append header line
+	*mi.header+=aattribute;
+	*mi.header+=":";
+	*mi.header+=attributed_meaning_to_string(lmeaning, String::UL_MAIL_HEADER);
+	*mi.header+="\n";
 }
+struct Seq_item {
+	const String *part_number;
+	Value *part_value;
+};
+static void add_part(const Hash::Key& part_number, Hash::Val *part_value, 
+					 void *info) {
+	Seq_item **seq_ref=static_cast<Seq_item **>(info);
+	(**seq_ref).part_number=&part_number;
+	(**seq_ref).part_value=static_cast<Value *>(part_value);
+	(*seq_ref)++;
+}
+static double key_of_part(const void *item) {
+	const char *cstr=static_cast<const Seq_item *>(item)->part_number->cstr();
+	char *error_pos;
+	return strtod(cstr, &error_pos);
+}
+static int sort_cmp_string_double_value(const void *a, const void *b) {
+	double va=key_of_part(a);
+	double vb=key_of_part(b);
+	if(va<vb)
+		return -1;
+	else if(va>vb)
+		return +1;
+	else 
+		return 0;
+}
+static const String& letter_hash_to_string(Request& r, const String& method_name, 
+										   Hash& letter_hash, int level,
+										   const String **from, const String **to) {
+	Pool& pool=r.pool();
+
+	// prepare header: 'hash' without "body"
+	String& result=*new(pool) String(pool);
+	Mail_info mail_info={
+		/*excluding*/ body_name,
+		&result,
+		from, to
+	};
+	letter_hash.for_each(add_header_attribute, &mail_info);
+
+	if(Value *body_element=static_cast<Value *>(letter_hash.get(*body_name))) {
+		if(Hash *body_hash=body_element->get_hash()) {
+			char *boundary=(char *)pool.malloc(MAX_NUMBER);
+			snprintf(boundary, MAX_NUMBER, "B%d", level);
+			// multi-part
+			result+="content-type: multipart/mixed;\n"
+				"    boundary=\"----="; result+=boundary; result+="\"\n"
+				"\n"
+				"This is a multi-part message in MIME format.";
+
+			// body parts
+			// collect
+			Seq_item *seq=(Seq_item *)malloc(sizeof(Seq_item)*body_hash->size());
+			Seq_item *seq_ref=seq;  body_hash->for_each(add_part, &seq_ref);
+			// sort
+			_qsort(seq, body_hash->size(), sizeof(Seq_item), 
+				sort_cmp_string_double_value);
+			// insert parts in 'seq' order
+			for(int i=0; i<body_hash->size(); i++) {
+				// intermediate boundary
+				result+="\n------="; result+=boundary; result+="\n";
+
+				if(Hash *part_hash=seq[i].part_value->get_hash())
+					result+=letter_hash_to_string(r, method_name, *part_hash, 
+						level+1, 0, 0);
+				else
+					PTHROW(0, 0,
+						seq[i].part_number,
+						"part is not hash");
+			}
+
+			// finish boundary
+			result+="\n------="; result+=boundary; result+="--\n";
+		} else {
+			result+="\n"; // header|body separator
+			result+=body_element->as_string(); 
+		}
+	} else 
+		PTHROW(0, 0,
+			&method_name,
+			"has no $body");
+
+	return result;
+}
+
 static void _send(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
@@ -53,16 +148,10 @@ static void _send(Request& r, const String& method_name, Array *params) {
 			&method_name,
 			"message must be hash");
 
-	// prepare header: 'hash' without "body"
-	String& header=*new(pool) String(pool);
-	Mail_info mail_info={
-		/*excluding*/ body_name,
-		&header
-	};
-	hash->for_each(add_header_attribute, &mail_info);
+	const String *from, *to;
+	const String& string=letter_hash_to_string(r, method_name, *hash, 0, &from, &to);
 
-
-	r.write_assign_lang(*new(pool) VString(*mail_info.header));
+	r.write_assign_lang(*new(pool) VString(string));
 }
 
 // initialize
