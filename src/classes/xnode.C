@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.29 2002/01/21 16:44:48 paf Exp $
+	$Id: xnode.C,v 1.30 2002/01/24 13:26:01 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -441,7 +441,7 @@ static void selectNodesHandler(Pool& pool,
 				}
 
 				hash.put(skey, new(pool) VXnode(pool, 
-					gdome_xml_n_mkref(res->nodesetval->nodeTab[0])));
+					gdome_xml_n_mkref(res->nodesetval->nodeTab[i])));
 			}
 			result=vhash;
 		}
