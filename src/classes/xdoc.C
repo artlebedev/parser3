@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.63 2002/01/15 16:02:42 paf Exp $
+	$Id: xdoc.C,v 1.64 2002/01/16 09:27:00 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -32,7 +32,6 @@ extern "C" {
 #define XDOC_OUTPUT_METHOD_OPTION_VALUE_XML "xml"
 #define XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML "html"
 #define XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT "text"
-#define XDOC_OUTPUT_DEFAULT_INDENT 4
 
 // class
 
@@ -560,7 +559,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 	char *buf; size_t buf_size;
 	xdoc2buf(pool, vdoc, method_name, params, 0, 
 		oo,
-		0/*memory*/,
+		0/*not to file, to memory*/,
 		&buf, &buf_size);
 	// write out result
 	r.write_no_lang(*new(pool) String(pool, buf, buf_size));
@@ -601,7 +600,7 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 	char *buf; size_t buf_size;
 	xdoc2buf(pool, vdoc, method_name, params, 0, 
 		oo,
-		0/*to memory*/,
+		0/*not to file, to memory*/,
 		&buf, &buf_size);
 	// write out result
 	r.write_no_lang(*new(pool) String(pool, buf, buf_size));
