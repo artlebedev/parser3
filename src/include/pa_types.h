@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_types.h,v 1.39 2002/02/21 14:36:54 paf Exp $
+	$Id: pa_types.h,v 1.40 2002/04/17 14:26:13 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -39,7 +39,7 @@
 /// for snprintf(buf, MAX_NUMBER, "%.2f")
 #define MAX_NUMBER 40
 
-///{@ handy types
+//{@ handy types
 #undef uchar
 typedef unsigned char uchar;
 
@@ -51,7 +51,7 @@ typedef unsigned int uint;
 
 #undef ulong
 typedef unsigned long ulong;
-///}@
+//}@
 
 /// max value of integral type
 #define max_integral(type) ((1<<sizeof(type)*8)-1)

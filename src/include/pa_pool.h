@@ -5,7 +5,7 @@
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.h,v 1.78 2002/02/08 08:30:13 paf Exp $
+	$Id: pa_pool.h,v 1.79 2002/04/17 14:26:12 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -38,10 +38,10 @@ public:
 
 	Pool(void *astorage);
 
-	///{@ statistics
+	//{@ statistics
 	size_t total_allocated() { return ftotal_allocated; }
 	unsigned int total_times() { return ftotal_times; }
-	///}@
+	//}@
 
 	void set_context(void *acontext) { fcontext=acontext; }
 	void *get_context() { return fcontext; }
@@ -61,15 +61,15 @@ public:
 			fail_register_cleanup();
 	}
 
-	///{@ source charset
+	//{@ source charset
 	void set_source_charset(Charset& acharset);
 	Charset& get_source_charset();
-	///}@
+	//}@
 
-	///{@ client charset
+	//{@ client charset
 	void set_client_charset(Charset& charset);
 	Charset& get_client_charset();
-	///}@
+	//}@
 
 #ifdef XML
 

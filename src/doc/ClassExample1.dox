@@ -15,13 +15,13 @@ static void _test(Request& r, const String& method_name, MethodParams *params) {
 
 	// ошибки генерировать так:
 	if(error_code)
-		PTHROW(0, 0,
+		throw Exception("класс ошибки",
 			&method_name, // адрес String, содержащей текст/место ошибки
 			"проблема %d", error_code);
 
 	// выдавать текст так:
 	if(text_result)
-		r.write_assign_lang(*new(pool) VString(pool, "тест"));
+		r.write_assign_lang(*new(pool) String(pool, "тест"));
 
 	// выдавать объекты так:
 	if(object_result)
@@ -52,5 +52,10 @@ Methoded *MExample1_create(Pool& pool) {
 
 5. Если для работы классу необходимы какие-то настройки, то их можно принять из системного auto.p,
 или из пользовательского MAIN класса, переопределив Methoded::configure_admin и/или Methoded::configure_user.
+
+Пользователь сможет вызвать метод так:
+@verbatim
+^example1:test[]
+@endverbatim
 
 */

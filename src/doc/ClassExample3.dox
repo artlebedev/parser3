@@ -16,7 +16,7 @@ public: // VStateless_class
 
 Ётот метод будет вызван при создании пользователем значений этого типа:
 @verbatim
-$variable[^example3:create[]]
+$variable[^example3::create[]]
 @endverbatim
 
 «десь VExample3, это класс значени€, см. ClassExample2.

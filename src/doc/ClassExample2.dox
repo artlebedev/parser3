@@ -37,4 +37,9 @@ public: // usage
 	classes().put(*NEW String(pool(), EXAMPLE2_CLASS_NAME), &example2);
 @endcode
 
+Пользователь сможет считать температуру так:
+@verbatim
+$example2:test
+@endverbatim
+
 */

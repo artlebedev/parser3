@@ -4,12 +4,31 @@
 для удобства имеется Pooled родитель, инкапсулирующий класс Pool, и имеющий одноимённые обёртки:
 Pooled::malloc и Pooled::calloc, а также функцию Pooled::pool() для доступа к самому pool'у.
 Когда освобождается память зависит от варианта сборки:
-- apache: делает это за модуля;
+- Apache: делает это сам;
 - CGI: вообще ничего не освобождает, смерть процесса всё списывает;
 - ISAPI extension: освобождается в Pooled:~Pooled().
 
-Работа с исключениями происходит через класс Exception, инкапсулированный в Pooled.
-Для доступа к нему имеется функция Pooled::exception().
-Если возникает проблема, её следует THROW. И где-то CATCH.
+Все исключения в Parser имеют тип Exception, если возникает проблема, 
+следует бросить C++ исключение этого типа
+@code
+	throw Exception("класс ошибки",
+		&method_name, // адрес String, содержащей текст/место ошибки
+		"проблема %d", error_code);
+@endcode
+
+"Класс ошибки" следует задать один из системных, придумать хороших свой, или не задавать вовсе.
+Системные классы ошибок:
+- parser.compile     
+- parser.runtime     
+- number.zerodivision
+- number.format      
+- file.missing       
+- file.access        
+- image.format       
+- sql.connect        
+- sql.execute        
+- xml                
+- smtp.connect       
+- smtp.execute       
 
 */
