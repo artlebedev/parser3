@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/09/17 16:46:26 $";
+static const char* IDENT_VALUE_H="$Date: 2002/09/17 17:14:32 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -295,7 +295,7 @@ public:
 
 	void reattach(WContext *new_wcontext);
 
-	/// present when not operator [selfless]
+	/// always present
 	Value& self;
 	//@{
 	/// @name either these // so called 'method-junction'

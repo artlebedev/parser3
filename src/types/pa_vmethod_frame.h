@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/09/17 16:46:26 $";
+static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/09/17 17:14:32 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -49,7 +49,7 @@ public: // Value
 	}
 
 	/// VMethodFrame: self_transparent
-	VStateless_class* get_class() { return fself?fself->get_class():0; }
+	VStateless_class* get_class() { return fself->get_class(); }
 
 public: // WContext
 
@@ -99,7 +99,6 @@ public: // usage
 	const String& name() { return fname; }
 
 	void set_self(Value& aself) { fself=&aself; }
-	Value& self(const String *source) { return *fself; }
 
 	bool can_store_param() {
 		const Method& method=*junction.method;
