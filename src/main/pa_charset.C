@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.4 2001/12/17 17:59:51 paf Exp $
+	$Id: pa_charset.C,v 1.5 2001/12/17 19:22:21 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -179,8 +179,7 @@ void Charset::loadDefinition(const String& file_spec) {
 
 	// charset
 	memset(fromTable, 0, sizeof(fromTable));
-	toTable=(XMLTransService::TransRec *)calloc(
-			sizeof(XMLTransService::TransRec)*MAX_CHARSET_UNI_CODES);
+	toTable=(Charset_TransRec *)calloc(sizeof(Charset_TransRec)*MAX_CHARSET_UNI_CODES);
 	toTableSize=0;
 	// strangly vital
 	toTable[toTableSize].intCh=0;
