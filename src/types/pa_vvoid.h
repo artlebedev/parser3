@@ -1,53 +1,53 @@
 /** @file
-	Parser: @b nothing parser class.
+	Parser: @b void parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vnothing.h,v 1.1 2001/05/21 17:11:57 parser Exp $
+	$Id: pa_vvoid.h,v 1.1 2001/06/27 14:24:18 parser Exp $
 */
 
-#ifndef PA_VNOTHING_H
-#define PA_VNOTHING_H
+#ifndef PA_VVOID_H
+#define PA_VVOID_H
 
 #include "pa_vstateless_object.h"
 #include "pa_globals.h"
 
-extern Methoded *nothing_class;
+extern Methoded *void_class;
 
-/// value of type 'nothing'. ex: usually $sjfklsjfksjdfk has this type
-class VNothing : public VStateless_object {
+/// value of type 'void'. ex: usually $sjfklsjfksjdfk has this type
+class VVoid : public VStateless_object {
 public: // Value
 
-	const char *type() const { return "nothing"; }
+	const char *type() const { return "void"; }
 
-	/// VNothing: ""
+	/// VVoid: ""
 	const String *get_string() { return empty_string; }
-	/// VNothing: false
+	/// VVoid: false
 	bool is_defined() const { return false; }
-	/// VNothing: 0
+	/// VVoid: 0
 	double as_double() { return 0; }
-	/// VNothing: 0
+	/// VVoid: 0
 	int as_int() { return 0; }
-	/// VNothing: this
+	/// VVoid: this
 	Value *as_expr_result(bool return_string_as_is=false) { return this; }
 
-	/// VNothing: false
+	/// VVoid: false
 	bool as_bool() { return false; }
 
-	/// VNothing: methods
+	/// VVoid: methods
 	Value *get_element(const String& name) {
 		// methods
 		if(Value *result=VStateless_object::get_element(name))
 			return result;
 
-		return NEW VNothing(pool());
+		return NEW VVoid(pool());
 	}
 
 public: // usage
 
-	VNothing(Pool& apool) : VStateless_object(apool, *nothing_class) {
+	VVoid(Pool& apool) : VStateless_object(apool, *void_class) {
 	}
 
 };
