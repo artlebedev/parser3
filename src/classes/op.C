@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.91 2002/04/18 10:51:00 paf Exp $
+	$Id: op.C,v 1.92 2002/04/18 14:00:54 paf Exp $
 */
 
 #include "classes.h"
@@ -628,7 +628,7 @@ static void _throw_operator(Request& r, const String& method_name, MethodParams 
 	} else {
 		const char *type=params->as_string(0, "type must be string").cstr();
 		const String& source=params->as_string(1, "source must be string");
-		const char *comment=params->as_string(2, "comment must be string").cstr();
+		const char *comment=params->size()>2?params->as_string(2, "comment must be string").cstr():0;
 		throw Exception(type, &source, comment);
 	}
 }
