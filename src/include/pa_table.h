@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_table.h,v 1.36 2001/11/05 11:46:25 paf Exp $
+	$Id: pa_table.h,v 1.37 2001/11/22 15:47:12 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -48,7 +48,7 @@ public:
 	void set_current(int acurrent) { fcurrent=acurrent; }
 	/// @return current pointer
 	int current() { return fcurrent; }
-	void shift(int offset);
+	void offset(bool absolute, int offset);
 
 	/** @return column index from @a column_name. '<0' if no such column
 		if no such colum conditionally 'bark'

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.132 2001/11/21 08:26:55 paf Exp $
+	$Id: table.C,v 1.133 2001/11/22 15:47:12 paf Exp $
 */
 
 #include "classes.h"
@@ -38,9 +38,10 @@ public: // Methoded
 static void _set(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// data is last parameter
+	Value& vdata=params->as_junction(params->size()-1, "body must be code");
+
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
-	const String& data=
-		r.process(params->as_junction(params->size()-1, "body must be code")).as_string();
+	const String& data=r.process(vdata).as_string();
 
 	size_t pos_after=0;
 	// parse columns
@@ -207,8 +208,22 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(params->size()) {
-		Value& offset_expr=params->as_junction(0, "offset must be expression");
-		table.shift(r.process(offset_expr).as_int());
+		bool absolute=false;
+		if(params->size()>1) {
+		    const String& whence=params->as_string(0, "whence must be string");
+		    if(whence=="cur")
+			absolute=false;
+		    else if(whence=="set")
+			absolute=true;
+		    else
+			throw Exception(0, 0,
+			    &whence,
+			    "is invalid whence, valid are 'cur' or 'set'");
+		}
+		    
+		
+		Value& offset_expr=params->as_junction(params->size()-1, "offset must be expression");
+		table.offset(absolute, r.process(offset_expr).as_int());
 	} else {
 		Value& value=*new(pool) VInt(pool, table.current());
 		value.set_name(method_name);
@@ -412,8 +427,7 @@ static void _flip(Request& r, const String& method_name, MethodParams *params) {
 
 static void _append(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	// data
-	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
+	// data is last parameter
 	const String& string=
 		r.process(params->as_junction(0, "body must be code")).as_string();
 
@@ -467,7 +481,7 @@ public:
 		statement_string(astatement_string),
 		statement_cstr(astatement_cstr),
 		columns(*new(pool) Array(pool)),
-		row(0), 
+		row(0), row_index(0),
 		table(0)
 	{
 	}
@@ -490,7 +504,7 @@ public:
 		if(size)
 			cell->APPEND_TAINTED(
 				(const char *)ptr, size, 
-				statement_cstr, table->size()-1);
+				statement_cstr, row_index++);
 		(*row)+=cell;
 	}
 
@@ -500,6 +514,7 @@ private:
 	const String& statement_string; const char *statement_cstr;
 	Array& columns;
 	Array *row;
+	uint row_index;
 public:
 	Table *table;
 };
@@ -601,8 +616,9 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 	add_native_method("line", Method::CT_DYNAMIC, _line, 0, 0);
 
 	// ^table.offset[]  
-	// ^table.offset[offset]
-	add_native_method("offset", Method::CT_DYNAMIC, _offset, 0, 1);
+	// ^table.offset(offset)
+	// ^table.offset[cur|set](offset)
+	add_native_method("offset", Method::CT_DYNAMIC, _offset, 0, 2);
 
 	// ^table.menu{code}  
 	// ^table.menu{code}[delim]

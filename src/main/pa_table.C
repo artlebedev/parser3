@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_table.C,v 1.40 2001/11/05 11:46:29 paf Exp $
+	$Id: pa_table.C,v 1.41 2001/11/22 15:47:12 paf Exp $
 */
 
 #include <stdlib.h>
@@ -79,7 +79,7 @@ bool Table::locate(const String& column, const String& value) {
 	return locate(column_name2index(column, true), value);
 }
 
-void Table::shift(int offset) {
+void Table::offset(bool absolute, int offset) {
 	if(size())
-		fcurrent=(fcurrent+offset+size())%size();
+		fcurrent=((absolute?0:fcurrent)+offset+size())%size();
 }
