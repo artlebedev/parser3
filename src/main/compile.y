@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.68 2001/03/07 11:19:42 paf Exp $
+  $Id: compile.y,v 1.69 2001/03/07 12:11:29 paf Exp $
 */
 
 %{
@@ -270,7 +270,7 @@ any_constructor_code_value:
 constructor_code_value: constructor_code {
 	$$=N(POOL); 
 	O($$, OP_CREATE_EWPOOL); /* stack: empty write context */
-	P($$, $1); /* some codes to that context */
+	P($$, $1); /* some code that writes to that context */
 	O($$, OP_REDUCE_EWPOOL); /* context=pop; stack: context.value() */
 };
 constructor_code: codes__excluding_sole_str_literal;
@@ -292,18 +292,27 @@ call_value: '^' call_name store_params EON { /* ^field.$method{vasya} */
 call_name: name_without_curly_rdive;
 
 store_params: store_param | store_params store_param { $$=$1; P($$, $2) };
-store_param: store_round_param | store_curly_param;
-store_round_param: '[' store_param_parts ']' {$$=$2};
-store_param_parts:
-	store_param_part
-|	store_param_parts ';' store_param_part { $$=$1; P($$, $3) }
+store_param: 
+	store_square_param
+|	store_round_param
+|	store_curly_param
 ;
+store_square_param: '[' store_code_param_parts ']' {$$=$2};
+store_round_param: '(' store_expr_param_parts ')' {$$=$2};
 store_curly_param: '{' maybe_codes '}' {
 	$$=N(POOL); 
 	PCA($$, $2);
 	O($$, OP_STORE_PARAM);
 };
-store_param_part: 
+store_code_param_parts:
+	store_code_param_part
+|	store_code_param_parts ';' store_code_param_part { $$=$1; P($$, $3) }
+;
+store_expr_param_parts:
+	store_expr_param_part
+|	store_expr_param_parts ';' store_expr_param_part { $$=$1; P($$, $3) }
+;
+store_code_param_part: 
 	empty /* optimized () case */
 |	STRING { /* optimized (STRING) case */
 	$$=$1;
@@ -314,6 +323,15 @@ store_param_part:
 	O($$, OP_STORE_PARAM);
 }
 ;
+store_expr_param_part: write_expr_value {
+	$$=N(POOL); 
+	PCA($$, $1);
+	O($$, OP_STORE_PARAM);
+};
+write_expr_value: any_expr {
+	$$=$1;
+	O($$, OP_WRITE);
+};
 
 /* name */
 
@@ -444,7 +462,7 @@ expr:
 string_inside_quotes_value: maybe_codes {
 	$$=N(POOL);
 	O($$, OP_CREATE_SWPOOL); /* stack: empty write context */
-	P($$, $1); /* some code that write to that context */
+	P($$, $1); /* some code that writes to that context */
 	O($$, OP_REDUCE_SWPOOL); /* context=pop; stack: context.get_string() */
 };
 
@@ -615,14 +633,18 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			break;
 
 		// (EXPRESSION)
-		case LS_EXPRESSION_BODY:
+		case LS_VAR_ROUND:
+		case LS_METHOD_ROUND:
 			switch(c) {
 			case ')':
 				if(--lexical_brackets_nestage==0)
-					pop_LS(PC); //(EXPRESSION).
+					if(PC->ls==LS_METHOD_ROUND) // method round param ended
+						PC->ls=LS_METHOD_AFTER; // look for method end
+					else // PC->ls==LS_VAR_ROUND // variable constructor ended
+						pop_LS(PC); // return to normal life
 				RC;
 			case '$':
-				push_LS(PC, LS_VAR_NAME_IN_EXPRESSION);				
+				push_LS(PC, LS_EXPRESSION_VAR_NAME);				
 				RC;
 			case '^':
 				push_LS(PC, LS_METHOD_NAME);
@@ -713,8 +735,8 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 
 		// VARIABLE GET/PUT/WITH
 		case LS_VAR_NAME_SIMPLE:
-		case LS_VAR_NAME_IN_EXPRESSION:
-			if(PC->ls==LS_VAR_NAME_IN_EXPRESSION) {
+		case LS_EXPRESSION_VAR_NAME:
+			if(PC->ls==LS_EXPRESSION_VAR_NAME) {
 				// name in expr ends also before binary operators 
 				switch(c) {
 				case '+': case '-': case '*': case '/': case '%': 
@@ -746,10 +768,10 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 					PC->ls=LS_VAR_CURLY;
 					lexical_brackets_nestage=1;
 				}
-				
+
 				RC;
 			case '(':
-				PC->ls=LS_EXPRESSION_BODY;
+				PC->ls=LS_VAR_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
 			case '.': // name part delim
@@ -824,6 +846,10 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				PC->ls=LS_METHOD_CURLY;
 				lexical_brackets_nestage=1;
 				RC;
+			case '(':
+				PC->ls=LS_METHOD_ROUND;
+				lexical_brackets_nestage=1;
+				RC;
 			case '.': // name part delim 
 			case '$': // name part subvar
 			case ':': // ':name' or 'class:name'
@@ -874,13 +900,18 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			break;
 
 		case LS_METHOD_AFTER:
-			if(c=='[') {/* )( }( */
+			if(c=='[') {/* ][ }[ )[ */
 				PC->ls=LS_METHOD_SQUARE;
 				lexical_brackets_nestage=1;
 				RC;
 			}					   
-			if(c=='{') {/* ){ }{ */
+			if(c=='{') {/* ]{ }{ ){ */
 				PC->ls=LS_METHOD_CURLY;
+				lexical_brackets_nestage=1;
+				RC;
+			}					   
+			if(c=='(') {/* ]( }( )( */
+				PC->ls=LS_METHOD_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
 			}					   
