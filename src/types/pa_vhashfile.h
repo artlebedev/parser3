@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhashfile.h,v 1.10 2001/10/29 08:23:49 paf Exp $
+	$Id: pa_vhashfile.h,v 1.11 2001/10/31 12:50:24 paf Exp $
 */
 
 #ifndef PA_VHASHFILE_H
@@ -81,7 +81,10 @@ public: // usage
 			get_table_ptr(*ffile_name, source);
 	}
 
-	void mark_to_cancel_cache() { fmarked_to_cancel_cache=true; }
+	void mark_to_cancel_cache() { 
+		if(current_transaction) // do something only inside of ^cache
+			fmarked_to_cancel_cache=true; 
+	}
 	bool marked_to_cancel_cache() { return fmarked_to_cancel_cache; }
 
 public:
