@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_array.h,v 1.49 2002/01/21 12:10:07 paf Exp $
+	$Id: pa_array.h,v 1.50 2002/02/07 11:16:27 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -82,6 +82,7 @@ public:
 	int get_int(int index) const { return reinterpret_cast<int>(get(index)); }
 
 	void put(int index, Item *item);
+	void put_int(int index, int value) { put(index, reinterpret_cast<Item *>(value)); }
 	/// convinient way to get strings from Array. I long for Array<const String *>
 	const String *get_string(int index) const { 
 		return const_cast<const String *>(static_cast<String *>(get(index))); 

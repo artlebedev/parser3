@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.h,v 1.54 2002/01/31 16:39:01 paf Exp $
+	$Id: compile_tools.h,v 1.55 2002/02/07 11:16:28 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -63,11 +63,6 @@ struct parse_control {
 	int brackets_nestages[MAX_LEXICAL_STATES]; ///< brackets nestage on each state
 
 	bool object_constructor_allowed;
-	
-#define MAX_OPERATOR_STATES 100
-	bool operator_call_allowed; ///< =false
-	int oca_sp; ///< =0
-	bool oca_stack[MAX_OPERATOR_STATES];
 	//@}
 	
 	/// output: filled input 'methods' and 'error' if any
@@ -124,8 +119,5 @@ void change_string_literal_to_write_string_literal(Array *literal_string_array);
 
 void push_LS(parse_control& pc, lexical_state new_state);
 void pop_LS(parse_control& pc);
-
-void push_OCA(parse_control& pc, bool operator_call_allowed);
-void pop_OCA(parse_control& pc);
 
 #endif

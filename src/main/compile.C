@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile.C,v 1.54 2002/01/31 16:39:00 paf Exp $
+	$Id: compile.C,v 1.55 2002/02/07 11:16:27 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -52,8 +52,6 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 	pc.ls=LS_USER;
 	pc.ls_sp=0;
 	pc.object_constructor_allowed=false;
-	pc.operator_call_allowed=false;
-	pc.oca_sp=0;
 	
 	// parse=compile! 
 	//yydebug=1;

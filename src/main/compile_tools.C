@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.C,v 1.42 2002/01/31 16:39:01 paf Exp $
+	$Id: compile_tools.C,v 1.43 2002/02/07 11:16:28 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -73,10 +73,9 @@ Array *VL(Value *value) {
 Value *LA2V(Array *literal_string_array, int offset) {
 	Operation op;
 	op.cast=literal_string_array->get(offset+0);
-	if(op.code!=OP_VALUE)
-		return 0;
-
-	return static_cast<Value *>(literal_string_array->get(offset+1));
+	return op.code==OP_VALUE?
+		static_cast<Value *>(literal_string_array->get(offset+1))
+		:0;
 }
 
 void change_string_literal_to_double_literal(Array *literal_string_array) {
@@ -101,16 +100,4 @@ void pop_LS(parse_control& pc) {
 		pc.ls=pc.ls_stack[pc.ls_sp];
 	else
 		throw Exception(0, 0, 0, "pop_LS: ls_stack underflow");
-}
-
-void push_OCA(parse_control& pc, bool operator_call_allowed) { 
-	if(pc.oca_sp<MAX_OPERATOR_STATES) {
-		pc.oca_stack[pc.oca_sp++]=pc.operator_call_allowed; 
-		pc.operator_call_allowed=operator_call_allowed;
-	} else
-		throw Exception(0, 0, 0, "push_OC: oca_stack overflow");
-}
-void pop_OCA(parse_control& pc) {
-	if(--pc.oca_sp<0)
-		throw Exception(0, 0, 0, "pop_OC: oca_stack underflow");
 }

@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.178 2002/01/31 17:12:04 paf Exp $
+	$Id: compile.y,v 1.179 2002/02/07 11:16:28 paf Exp $
 */
 
 /**
@@ -252,13 +252,20 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 	$$=N(POOL); 
 	Array *diving_code=$1;
 	const String *first_name=LA2S(diving_code);
+	// self.xxx... -> xxx...
+	// OP_VALUE+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
 		O($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
 			/* skip over... */
-			diving_code->size()>2?3/*OP_+string+get_element*/:2/*OP_+string*/);
+			diving_code->size()>=3?3/*OP_VALUE+string+OP_GET_ELEMENTx*/:2/*OP_+string*/);
 	} else {
 		O($$, OP_WITH_READ); /* stack: starting context */
+
+		// ^if ELEMENT -> ^if ELEMENT_OR_OPERATOR
+		// OP_VALUE+string+OP_GET_ELEMENT. -> OP_VALUE+string+OP_GET_ELEMENT_OR_OPERATOR.
+		if(diving_code->size()==3)
+			diving_code->put_int(2, OP_GET_ELEMENT_OR_OPERATOR);
 		P($$, diving_code);
 	}
 	/* diving code; stack: current context */
@@ -280,11 +287,13 @@ name_expr_wdive_root: name_expr_dive_code {
 	$$=N(POOL);
 	Array *diving_code=$1;
 	const String *first_name=LA2S(diving_code);
+	// $self.xxx... -> $xxx...
+	// OP_VALUE+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
 		O($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
 			/* skip over... */
-			diving_code->size()>2?3/*OP_+string+get_element*/:2/*OP_+string*/);
+			diving_code->size()>=3?3/*OP_VALUE+string+OP_GET_ELEMENTx*/:2/*OP_+string*/);
 	} else {
 		O($$, OP_WITH_ROOT); /* stack: starting context */
 		P($$, diving_code);
@@ -343,11 +352,9 @@ call: call_value {
 };
 call_value: '^' { 
 					PC.object_constructor_allowed=true; 
-					push_OCA(PC, true);
 			}
 			call_name {
 				PC.object_constructor_allowed=false;
-				pop_OCA(PC);
 			} 
 			store_params EON { /* ^field.$method{vasya} */
 	$$=$3; /* with_xxx,diving code; stack: context,method_junction */
@@ -425,9 +432,7 @@ name_advance1: name_expr_value {
 name_advance2: name_expr_value {
 	/* stack: context */
 	$$=$1; /* stack: context,name */
-	O($$, PC.operator_call_allowed?OP_GET_ELEMENT_OR_OPERATOR:OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
-	// only ^FIRST.part.allowed.to.be.an.operator
-	PC.operator_call_allowed=false; 
+	O($$, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 }
 |	STRING BOGUS
 ;
@@ -471,9 +476,6 @@ class_prefix:
 |	class_constructor_prefix
 ;
 class_static_prefix: STRING ':' {
-	// drop allow code after "name:"
-	PC.operator_call_allowed=false; 
-	
 	$$=$1; // stack: class name string
 	O($$, OP_GET_CLASS);
 };
