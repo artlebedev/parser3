@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.147 2001/12/13 10:37:04 paf Exp $
+	$Id: parser3.C,v 1.148 2001/12/13 13:02:43 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,6 +15,7 @@
 
 #if _MSC_VER
 #	include <new.h>
+#	include <crtdbg.h>
 #endif
 
 #include "pa_sapi.h"
@@ -200,6 +201,24 @@ char *full_file_spec(char *file_name) {
 	return file_name;
 }
 
+#ifdef XML
+/**
+ * Terminate Xalan and Xerces.
+ *
+ * Should be called only once per process after deleting all
+ * instances of XalanTransformer.  Once a process has called
+ * this function, it cannot use the API for the remaining
+ * lifetime of the process.
+
+	
+	this requirement is fullfilled by using Pool::register_cleanup
+ */
+void callXalanTerminate(void *) {
+	//_asm int 3;
+	XalanTerminate();
+}
+#endif
+
 /**
 main workhorse
 
@@ -224,6 +243,7 @@ void real_parser_handler(
 	*/
 	//_asm int 3;
 	XalanInitialize();
+	pool.register_cleanup(callXalanTerminate, 0);
 #endif
 	
 	// init global classes
@@ -435,6 +455,20 @@ int main(int argc, char *argv[]) {
 
 #if _MSC_VER
 	_set_new_handler(failed_new);
+
+#ifdef _DEBUG
+	// Get current flag
+	int tmpFlag = _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG );
+
+	// Turn on leak-checking bit
+	tmpFlag |= _CRTDBG_LEAK_CHECK_DF;
+
+	// Set flag to the new value
+	_CrtSetDbgFlag( tmpFlag );
+//	_CrtSetBreakAlloc(471);
+
+#endif
+
 #endif
 
 #ifdef HAVE_SET_NEW_HANDLER
