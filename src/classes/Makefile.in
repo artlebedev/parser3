@@ -151,7 +151,7 @@ noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h
 
 CLASSES_SOURCE_FILES = classes.awk double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C memory.C
-libclasses_a_SOURCES = classes.C $(CLASSES_SOURCE_FILES)
+libclasses_a_SOURCES = $(CLASSES_SOURCE_FILES) classes.C
 CLEANFILES = classes.inc
 
 EXTRA_DIST = classes.vcproj
@@ -168,7 +168,7 @@ am__objects_1 = double.$(OBJEXT) file.$(OBJEXT) form.$(OBJEXT) \
 	math.$(OBJEXT) response.$(OBJEXT) string.$(OBJEXT) \
 	table.$(OBJEXT) void.$(OBJEXT) hash.$(OBJEXT) date.$(OBJEXT) \
 	xnode.$(OBJEXT) xdoc.$(OBJEXT) memory.$(OBJEXT)
-am_libclasses_a_OBJECTS = classes.$(OBJEXT) $(am__objects_1)
+am_libclasses_a_OBJECTS = $(am__objects_1) classes.$(OBJEXT)
 libclasses_a_OBJECTS = $(am_libclasses_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/src/include
