@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.7 2001/03/14 09:02:53 paf Exp $
+	$Id: parser3.C,v 1.8 2001/03/14 09:06:28 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -27,6 +27,7 @@
 Pool pool; // global pool
 
 #ifdef WIN32
+#	if MSVC
 // intercept global system errors
 LONG WINAPI TopLevelExceptionFilter (
 									 struct _EXCEPTION_POINTERS *ExceptionInfo
@@ -51,6 +52,7 @@ LONG WINAPI TopLevelExceptionFilter (
 
 	return EXCEPTION_EXECUTE_HANDLER; // never reached
 }
+#	endif
 #endif
 
 void fill_vform_fields(Pool& pool, bool cgi, Hash& fields) {
@@ -75,8 +77,10 @@ int main(int argc, char *argv[]) {
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
 #ifdef WIN32
+#	if MSVC
 		SetUnhandledExceptionFilter(&TopLevelExceptionFilter);
 		//TODO: initSocks();
+#	endif
 #endif
 
 		fill_globals(pool);
@@ -119,7 +123,9 @@ int main(int argc, char *argv[]) {
 
 		// must be last in PTRY{}PCATCH
 #ifdef WIN32
+#	if MSVC
 		SetUnhandledExceptionFilter(0);
+#	endif
 #endif
 	} PCATCH(e) { // global problem @globals fill @Request create @prepare to .core()
 		result=0;
