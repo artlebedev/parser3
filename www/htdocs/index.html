@@ -205,9 +205,15 @@ $selffilespec[$filespec]
 #^mail4[]
 #^datesaving[]
 #^badconstructor[]
-^calendar[]
+#^calendar[]
+^monthdays(8)
 <hr>
 OK
+
+@monthdays[month]
+$from[^date::create(2000;$month;1)]
+$to[^date::create($from)] ^to.roll[month](+1)
+$result($to-$from)
 
 @badconstructor[]
 ^date::now[]
@@ -1698,7 +1704,7 @@ $abc[abc]
 ^abc.save[abc]
 
 @calendar[]
-$year(2007)
+$year(2002)
 $month(12)
 ${year}-${month}:<br>
 $week_days[^date:calendar[rus]($year;$month)]
