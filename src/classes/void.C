@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: void.C,v 1.8 2001/08/31 13:25:34 parser Exp $"; 
+static const char *RCSId="$Id: void.C,v 1.9 2001/09/06 14:55:06 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -101,10 +101,12 @@ MVoid::MVoid(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), VOID_CLASS_NAME));
 
 
-	// ^VOID.int[]
+	// ^void.int[] 
+	// ^void.int(default)
 	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
 
-	// ^VOID.double[]
+	// ^void.double[] 
+	// ^void.double(default)
 	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 1);
 
 	// ^sql[query]
