@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char* IDENT_SQL_DRIVER_H="$Date: 2002/12/09 11:11:33 $";
+static const char* IDENT_SQL_DRIVER_H="$Date: 2002/12/09 11:07:40 $";
 
 #include <sys/types.h>
 
@@ -65,7 +65,7 @@ public:
 		fproblem_source(src.fproblem_source),
 		fcomment(src.fcomment) {}
 */
-	const SQL_Exception& operator =(const SQL_Exception& src) {
+	SQL_Exception& operator =(const SQL_Exception& src) {
 		fdefined=src.fdefined;
 		ftype=src.ftype;
 		fproblem_source=src.fproblem_source;
