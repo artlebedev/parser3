@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.114 2001/10/29 13:04:47 paf Exp $
+	$Id: pa_string.C,v 1.115 2001/10/29 15:15:11 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -30,7 +30,7 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	append_here=head.rows;
 	head.preallocated_link=0;
 	link_row=&head.rows[head.count];
-	fused_rows=fsize=0;
+	fsize=0;
 
 	if(src)
 		if(tainted)
@@ -44,7 +44,7 @@ String::String(const String& src) :
 	forigins_mode(false) {
 	head.count=CR_PREALLOCATED_COUNT;
 	
-	size_t src_used_rows=src.fused_rows;
+	size_t src_used_rows=src.used_rows();
 	if(src_used_rows<=head.count) {
 		// all new rows fit size_to preallocated area
 		last_chunk=&head;
@@ -95,10 +95,28 @@ String::String(const String& src) :
 		}
 	}
 	link_row->link=0;
-	fused_rows=src_used_rows;
+	src_used_rows;
 	fsize=src.fsize;
 }
 
+/// @todo not very optimal
+uint String::used_rows() const {
+	uint result=0;
+	const Chunk *chunk=&head; 
+	do {
+		const Chunk::Row *row=chunk->rows;
+		for(size_t i=0; i<chunk->count; i++, row++) {
+			if(row==append_here)
+				goto break2;
+
+			result++;
+		}
+		chunk=row->link;
+	} while(chunk);
+
+break2:
+	return result;
+}
 void String::expand() {
 	size_t new_chunk_count=last_chunk->count+CR_GROW_COUNT;
 	last_chunk=static_cast<Chunk *>(
@@ -146,13 +164,13 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 	append_here->item.origin.file=file;
 	append_here->item.origin.line=line;
 #endif
-	append_here++; fused_rows++;
+	append_here++;
 
 	return *this;
 }
 
 char String::first_char() const {
-	if(!fused_rows)
+	if(!fsize)
 		throw Exception(0, 0,
 			this,
 			"getting first char of empty string");
@@ -340,7 +358,7 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 
 #ifndef NO_STRING_ORIGIN
 const Origin& String::origin() const { 
-	if(!fused_rows) {
+	if(!fsize) {
 		static const Origin empty_origin={"empty string"};
 		return empty_origin;
 	}
@@ -804,7 +822,7 @@ double String::as_double() const {
 	double result;
 	const char *cstr;
 	char buf[MAX_NUMBER];
-	if(fused_rows==1) {
+	if(head.rows+1==append_here) {
 		int size=min(head.rows[0].item.size, MAX_NUMBER-1);
 		memcpy(buf, head.rows[0].item.ptr, size);
 		buf[size]=0;
@@ -832,7 +850,7 @@ int String::as_int() const {
 	int result;
 	const char *cstr;
 	char buf[MAX_NUMBER];
-	if(fused_rows==1) {
+	if(head.rows+1==append_here) {
 		int size=min(head.rows[0].item.size, MAX_NUMBER-1);
 		memcpy(buf, head.rows[0].item.ptr, size);
 		buf[size]=0;
@@ -865,7 +883,7 @@ int String::as_int() const {
 void String::serialize(size_t prolog_size, void *& buf, size_t& buf_size) const {
 	buf_size=
 		prolog_size
-		+fused_rows*(sizeof(Untaint_lang)+sizeof(size_t))
+		+used_rows()*(sizeof(Untaint_lang)+sizeof(size_t))
 		+size();
 	buf=malloc(buf_size,15);
 	char *cur=(char *)buf+prolog_size;

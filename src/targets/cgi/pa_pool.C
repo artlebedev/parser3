@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.26 2001/10/29 14:13:15 paf Exp $
+	$Id: pa_pool.C,v 1.27 2001/10/29 15:15:12 paf Exp $
 */
 
 #include <stdlib.h>
@@ -158,7 +158,7 @@ ST(WWrapper);
 
 void *Pool::real_malloc(size_t size, int place) {
 #ifdef DEBUG_POOL_MALLOC
-place=0;
+//place=0;
 	int index=min(MALLOC_STAT_MAXSIZE-1, size);
 	malloc_times[place][index]++;
 	malloc_places[place]++;
