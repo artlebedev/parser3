@@ -80,42 +80,6 @@ extern "C" {
 
 typedef void apr_pool_t;
 
-/*
- * Cleanup
- */
-
-/**
- * Register a function to be called when a pool is cleared or destroyed
- * @param p The pool register the cleanup with
- * @param data The data to pass to the cleanup function.
- * @param plain_cleanup The function to call when the pool is cleared
- *                      or destroyed
- * @param child_cleanup The function to call when a child process is being
- *                      shutdown - this function is called in the child, obviously!
- */
-APR_DECLARE(void) apr_pool_cleanup_register(
-    apr_pool_t *p,
-    const void *data,
-    apr_status_t (*plain_cleanup)(void *),
-    apr_status_t (*child_cleanup)(void *));
-/**
- * An empty cleanup function
- * @param data The data to cleanup
- */
-APR_DECLARE_NONSTD(apr_status_t) apr_pool_cleanup_null(void *data);
-
-/**
- * Run the specified cleanup function immediately and unregister it. Use
- * @a data instead of the data that was registered with the cleanup.
- * @param p The pool remove the cleanup from
- * @param data The data to remove from cleanup
- * @param cleanup The function to remove from cleanup
- */
-APR_DECLARE(apr_status_t) apr_pool_cleanup_run(
-    apr_pool_t *p,
-    void *data,
-    apr_status_t (*cleanup)(void *));
-
 #ifdef __cplusplus
 }
 #endif

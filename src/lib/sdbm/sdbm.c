@@ -191,7 +191,7 @@ static apr_status_t prep(apr_sdbm_t **pdb, const char *dirname, const char *pagn
             goto error;
 
     /* make sure that we close the database at some point */
-    apr_pool_cleanup_register(p, db, database_cleanup, apr_pool_cleanup_null);
+    //apr_pool_cleanup_register(p, db, database_cleanup, apr_pool_cleanup_null);
 
     /* Done! */
     *pdb = db;
@@ -221,7 +221,8 @@ APU_DECLARE(apr_status_t) apr_sdbm_open(apr_sdbm_t **db, const char *file,
 
 APU_DECLARE(apr_status_t) apr_sdbm_close(apr_sdbm_t *db)
 {
-    return apr_pool_cleanup_run(db->pool, db, database_cleanup);
+	database_cleanup(db); return APR_SUCCESS;
+    //return apr_pool_cleanup_run(db->pool, db, database_cleanup);
 }
 
 APU_DECLARE(apr_status_t) apr_sdbm_fetch(apr_sdbm_t *db, apr_sdbm_datum_t *val,
