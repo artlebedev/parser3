@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: math.C,v 1.14 2002/02/18 12:10:53 paf Exp $
+	$Id: math.C,v 1.15 2002/02/19 15:05:27 paf Exp $
 */
 
 #include "pa_common.h"
@@ -29,7 +29,7 @@ public:
 	void configure_admin(Request& r);
 
 public: // Methoded
-	bool used_directly() { return true; }
+	bool used_directly() { return false; }
 };
 
 // methods
