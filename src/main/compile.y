@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.70 2001/03/08 09:31:47 paf Exp $
+  $Id: compile.y,v 1.71 2001/03/08 09:42:22 paf Exp $
 */
 
 %{
@@ -324,7 +324,6 @@ store_code_param_part:
 store_expr_param_part: write_expr_value {
 	$$=N(POOL); 
 	PCA($$, $1);
-	O($$, OP_STORE_PARAM);
 };
 write_expr_value: any_expr {
 	$$=$1;
