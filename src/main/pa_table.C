@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.29 2001/05/08 08:14:56 paf Exp $
+	$Id: pa_table.C,v 1.30 2001/05/08 12:58:00 paf Exp $
 */
 
 #include <stdlib.h>
@@ -43,10 +43,13 @@ int Table::column_name2index(const String& column_name, bool bark) const {
 	} else { // nameless
 		char *error_pos=0;
 		int result=(int)strtol(column_name.cstr(), &error_pos, 0);
-		if(error_pos && *error_pos)
-			THROW(0, 0,
-				&column_name,
-				"invalid column number");
+		if(error_pos && *error_pos) {
+			result=-1;
+			if(bark)
+				THROW(0, 0,
+					&column_name,
+					"invalid column number");
+		}
 		return result;
 	}
 }
