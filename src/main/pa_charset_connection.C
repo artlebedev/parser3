@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_connection.C,v 1.1 2001/10/01 10:53:16 parser Exp $
+	$Id: pa_charset_connection.C,v 1.2 2001/10/01 13:26:47 parser Exp $
 */
 
 #include "pa_charset_connection.h"
@@ -153,24 +153,6 @@ private :
 };
 #endif
 
-#undef XALAN_HACK_DIGITAL_ENTITIES
-#ifdef XALAN_HACK_DIGITAL_ENTITIES
-static void hack_s_maximumCharacterValues(const XalanDOMString& encoding) {
-/*
-	open:
-		xml-xalan/c/src/PlatformSupport/XalanTranscodingServices.hpp 
-	find: 
-		static const MaximumCharacterValueMapType&	s_maximumCharacterValues;
-	paste to next line:
-		friend static void hack_s_maximumCharacterValues(const XalanDOMString& encoding); // hack by paf
-*/
-
-	const_cast<XalanTranscodingServices::MaximumCharacterValueMapType &>(
-		XalanTranscodingServices::s_maximumCharacterValues).insert(
-		XalanTranscodingServices::MaximumCharacterValueMapType::value_type(encoding, 0xFFFF));
-}
-#endif
-
 void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 	// pcre_tables
 	// lowcase, flipcase, bits digit+word+whitespace, masks
@@ -242,9 +224,6 @@ void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 
 	// addEncoding
 	XalanDOMString sencoding(fname.cstr());
-#ifdef XALAN_HACK_DIGITAL_ENTITIES
-	hack_s_maximumCharacterValues(sencoding);
-#endif
 	const XMLCh* const auto_encoding_cstr=sencoding.c_str();
 	int size=sizeof(XMLCh)*(sencoding.size()+1);
 	XMLCh* pool_encoding_cstr=(XMLCh*)malloc(size);
