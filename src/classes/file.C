@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.18 2001/04/03 17:01:01 paf Exp $
+	$Id: file.C,v 1.19 2001/04/05 18:22:56 paf Exp $
 */
 
 #include "pa_request.h"
@@ -29,7 +29,7 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	// forcing
 	// ^save[this body type]
 	r.fail_if_junction_(true, vfile_name, 
-		method_name, "file name must not be junction");
+		method_name, "file name must not be code");
 
 	// save
 	static_cast<VFile *>(r.self)->save(r.absolute(vfile_name.as_string()));
@@ -41,7 +41,7 @@ static void _delete(Request& r, const String& method_name, Array *params) {
 	// forcing
 	// ^delete[this body type]
 	r.fail_if_junction_(true, vfile_name, 
-		method_name, "file name must not be junction");
+		method_name, "file name must not be code");
 
 	// unlink
 	file_delete(pool, r.absolute(vfile_name.as_string()));
@@ -53,7 +53,7 @@ static void _find(Request& r, const String& method_name, Array *params) {
 	// forcing
 	// ^delete[this body type]
 	r.fail_if_junction_(true, vfile_name, 
-		method_name, "file name must not be junction");
+		method_name, "file name must not be code");
 
 	const String &lfile_name=vfile_name.as_string();
 
@@ -80,7 +80,7 @@ static void _find(Request& r, const String& method_name, Array *params) {
 		// forcing ..{this body type}
 		Value& not_found_code=*static_cast<Value *>(params->get(1));
 		r.fail_if_junction_(false, not_found_code, 
-			method_name, "not-found param must be junction");
+			method_name, "not-found param must be code");
 		r.write_pass_lang(r.process(not_found_code));
 	}
 }
@@ -91,7 +91,7 @@ static void _load(Request& r, const String& method_name, Array *params) {
 
 	// forcing ^load[this body type]
 	r.fail_if_junction_(true, vfile_name, 
-		method_name, "file name must not be junction");
+		method_name, "file name must not be code");
 
 	const String& lfile_name=vfile_name.as_string();
 

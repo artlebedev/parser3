@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.96 2001/04/05 18:18:41 paf Exp $
+	$Id: pa_request.C,v 1.97 2001/04/05 18:23:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -224,7 +224,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				if(!setlocale(LC_CTYPE, name.cstr()))
 					THROW(0, 0,
 						&name,
-						"is invalid locale");
+						"locale is invalid");
 			}
 
 		// execute @main[]

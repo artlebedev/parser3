@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.35 2001/04/04 10:50:33 paf Exp $
+	$Id: string.C,v 1.36 2001/04/05 18:22:57 paf Exp $
 */
 
 #include "pa_request.h"
@@ -46,7 +46,7 @@ static void _double(Request& r, const String&, Array *) {
 
 	Value& fmt=*static_cast<Value *>(params->get(0));
 	// forcing {this param type}
-	r.fail_if_junction_(false, fmt, method_name, "fmt must be junction");
+	r.fail_if_junction_(false, fmt, method_name, "fmt must be code");
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	char *buf=format(pool, r.self->as_double(), r.process(fmt).as_string().cstr());
@@ -87,7 +87,7 @@ static void _pos(Request& r, const String& method_name, Array *params) {
 
 	Value& substr=*static_cast<Value *>(params->get(0));
 	// forcing [this param type]
-	r.fail_if_junction_(true, substr, method_name, "substr must not be junction");
+	r.fail_if_junction_(true, substr, method_name, "substr must not be code");
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
 	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
@@ -100,7 +100,7 @@ static void split_list(Request& r, const String& method_name, Array *params,
 
 	Value& delim_value=*static_cast<Value *>(params->get(0));
 	// forcing [this param type]
-	r.fail_if_junction_(true, delim_value, method_name, "delimiter must not be junction");
+	r.fail_if_junction_(true, delim_value, method_name, "delimiter must not be code");
 
 	string.split(result, 0, delim_value.as_string(), String::UL_CLEAN, -1);
 }
@@ -190,13 +190,13 @@ static void _match(Request& r, const String& method_name, Array *params) {
 
 	Value& regexp=*static_cast<Value *>(params->get(0));
 	// forcing [this param type]
-	r.fail_if_junction_(true, regexp, method_name, "regexp must not be junction");
+	r.fail_if_junction_(true, regexp, method_name, "regexp must not be code");
 
 	const String *options=0;
 	if(params->size()>1) {
 		Value& value=*static_cast<Value *>(params->get(1));
 		// forcing {this param type}
-		r.fail_if_junction_(true, value, method_name, "options must not be junction");
+		r.fail_if_junction_(true, value, method_name, "options must not be code");
 		options=&value.as_string();
 	}
 
@@ -220,7 +220,7 @@ static void _match(Request& r, const String& method_name, Array *params) {
 		Value& replacement_code=*static_cast<Value *>(params->get(2));
 		// forcing {this param type}
 		r.fail_if_junction_(false, replacement_code, 
-			method_name, "replacement code must be junction");
+			method_name, "replacement code must be code");
 
 		String& dest=*new(pool) String(pool);
 		Replace_action_info replace_action_info={

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.55 2001/04/05 13:27:11 paf Exp $
+	$Id: table.C,v 1.56 2001/04/05 18:22:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -26,7 +26,7 @@ static void _set(Request& r, const String& method_name, Array *params) {
 	// data is last parameter
 	Value *vdata=static_cast<Value *>(params->get(params->size()-1));
 	// forcing {this body type}
-	r.fail_if_junction_(false, *vdata, method_name, "body must be junction");
+	r.fail_if_junction_(false, *vdata, method_name, "body must be code");
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	const String& data=r.process(*vdata).as_string();
@@ -71,7 +71,7 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	Value *vfilename=static_cast<Value *>(params->get(params->size()-1));
 	// forcing [this file name type]
 	r.fail_if_junction_(true, *vfilename, 
-		method_name, "file name must not be junction");
+		method_name, "file name must not be code");
 
 	// loading text
 	char *data=file_read_text(pool, r.absolute(vfilename->as_string()));
@@ -121,7 +121,7 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	Value *vtable_name=static_cast<Value *>(params->get(params->size()-1));
 	// forcing this body type]
 	r.fail_if_junction_(true, *vtable_name, 
-		method_name, "file name must not be junction");
+		method_name, "file name must not be code");
 
 	Table& table=static_cast<VTable *>(r.self)->table();
 
@@ -193,7 +193,7 @@ static void _menu(Request& r, const String& method_name, Array *params) {
 	Value& body_code=*static_cast<Value *>(params->get(0));
 	// forcing ^menu{this param type}
 	r.fail_if_junction_(false, body_code, 
-		method_name, "body must be junction");
+		method_name, "body must be code");
 	
 	Value *delim_code=params->size()==2?static_cast<Value *>(params->get(1)):0;
 
@@ -280,13 +280,13 @@ static int sort_cmp_double(const void *a, const void *b) {
 static void _sort(Request& r, const String& method_name, Array *params) {
 	Value& key_maker=*(Value *)params->get(0);
 	// forcing ^sort{this} ^sort(or this) param type
-	r.fail_if_junction_(false, key_maker, method_name, "key-maker must be junction");
+	r.fail_if_junction_(false, key_maker, method_name, "key-maker must be code");
 
 	bool reverse;
 	if(params->size()==2) { // ..[asc|desc]
 		Value& order=*(Value *)params->get(1);
 		// forcing ..[this param-type]
-		r.fail_if_junction_(true, order, method_name, "order must not be junction");
+		r.fail_if_junction_(true, order, method_name, "order must not be code");
 		reverse=order.as_string()=="desc";
 	} else
 		reverse=false;
@@ -340,13 +340,13 @@ static void _found(Request& r, const String& method_name, Array *params) {
 		Value& then_code=*static_cast<Value *>(params->get(0));
 		// forcing ^found{this param type}
 		r.fail_if_junction_(false, then_code, 
-			method_name, "found-parameter must be junction");
+			method_name, "found-parameter must be code");
 		r.write_pass_lang(r.process(then_code));
 	} else if(params->size()==2) {
 		Value& else_code=*static_cast<Value *>(params->get(1));
 		// forcing ^found{this param type}
 		r.fail_if_junction_(false, else_code, 
-			method_name, "not found-parameter must be junction");
+			method_name, "not found-parameter must be code");
 		r.write_pass_lang(r.process(else_code));
 	}
 }
@@ -376,7 +376,7 @@ static void _append(Request& r, const String& method_name, Array *params) {
 	// data is last parameter
 	Value *value=static_cast<Value *>(params->get(0));
 	// forcing {this body type}
-	r.fail_if_junction_(false, *value, method_name, "body must be junction");
+	r.fail_if_junction_(false, *value, method_name, "body must be code");
 
 	const String& string=r.process(*value).as_string();
 
@@ -392,7 +392,7 @@ static void _join(Request& r, const String& method_name, Array *params) {
 
 	Value *value=static_cast<Value *>(params->get(0));
 	// forcing [this table ref type]
-	r.fail_if_junction_(true, *value, method_name, "table ref must not be junction");
+	r.fail_if_junction_(true, *value, method_name, "table ref must not be code");
 
 	Table *maybe_src=value->get_table();
 	if(!maybe_src)
@@ -434,7 +434,7 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 
 	Value& statement=*static_cast<Value *>(params->get(0));
 	// forcing {this query param type}
-	r.fail_if_junction_(false, statement, method_name, "statement must be junction");
+	r.fail_if_junction_(false, statement, method_name, "statement must be code");
 
 	ulong limit=0;
 	if(params->size()>1) {

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.60 2001/04/05 13:19:40 paf Exp $
+	$Id: root.C,v 1.61 2001/04/05 18:22:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -21,7 +21,7 @@ static void _if(Request& r, const String& method_name, Array *params) {
 	Value& condition_code=*static_cast<Value *>(params->get(0));
 	// forcing ^if(this param type)
 	r.fail_if_junction_(false, condition_code, 
-		method_name, "condition must be junction");
+		method_name, "condition must be expression");
 
 	bool condition=r.process(condition_code, 
 		0/*no name*/,
@@ -30,13 +30,13 @@ static void _if(Request& r, const String& method_name, Array *params) {
 		Value& then_code=*static_cast<Value *>(params->get(1));
 		// forcing ^if{this param type}
 		r.fail_if_junction_(false, then_code, 
-			method_name, "then-parameter must be junction");
+			method_name, "then-parameter must be code");
 		r.write_pass_lang(r.process(then_code));
 	} else if(params->size()==3) {
 		Value& else_code=*static_cast<Value *>(params->get(2));
 		// forcing ^if{this param type}
 		r.fail_if_junction_(false, else_code, 
-			method_name, "else-parameter must be junction");
+			method_name, "else-parameter must be code");
 		r.write_pass_lang(r.process(else_code));
 	}
 }
@@ -56,7 +56,7 @@ static void _untaint(Request& r, const String& method_name, Array *params) {
 		Value *vbody=static_cast<Value *>(params->get(1));
 		// forcing ^untaint[]{this param type}
 		r.fail_if_junction_(false, *vbody, 
-			method_name, "body must be junction");
+			method_name, "body must be code");
 		
 		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
 		r.write_pass_lang(r.process(*vbody)); // process marking tainted with that lang
@@ -82,7 +82,7 @@ static void _taint(Request& r, const String& method_name, Array *params) {
 	{
 		Value& vbody=*static_cast<Value *>(params->get(params->size()-1));
 		// forcing [this param type]
-		r.fail_if_junction_(true, vbody, method_name, "body must not be junction");
+		r.fail_if_junction_(true, vbody, method_name, "body must not be code");
 		
 		String result(r.pool());
 		result.append(
@@ -131,7 +131,7 @@ static void _process(Request& r, const String& method_name, Array *params) {
 static void _rem(Request& r, const String& method_name, Array *params) {
 	// forcing ^rem{this param type}
 	r.fail_if_junction_(false, *static_cast<Value *>(params->get(0)), 
-		method_name, "body must be junction");
+		method_name, "body must be code");
 }
 
 static void _while(Request& r, const String& method_name, Array *params) {
@@ -140,12 +140,12 @@ static void _while(Request& r, const String& method_name, Array *params) {
 	Value& vcondition=*static_cast<Value *>(params->get(0));
 	// forcing ^while(this param type){}
 	r.fail_if_junction_(false, vcondition, 
-		method_name, "condition must be junction");
+		method_name, "condition must be expression");
 	
 	Value& body=*static_cast<Value *>(params->get(1));
 	// forcing ^while(){this param type}
 	r.fail_if_junction_(false, body, 
-		method_name, "body must be junction");
+		method_name, "body must be code");
 
 	// while...
 	int endless_loop_count=0;
@@ -172,7 +172,7 @@ static void _use(Request& r, const String& method_name, Array *params) {
 	Value& vfile=*static_cast<Value *>(params->get(0));
 	// forcing ^rem{this param type}
 	r.fail_if_junction_(true, vfile, 
-		method_name, "file name must not be junction");
+		method_name, "file name must not be code");
 
 	r.use_file(r.absolute(vfile.as_string()));
 }
@@ -187,7 +187,7 @@ static void _for(Request& r, const String& method_name, Array *params) {
 	Value& body_code=*static_cast<Value *>(params->get(3));
 	// forcing ^menu{this param type}
 	r.fail_if_junction_(false, body_code, 
-		method_name, "body must be junction");
+		method_name, "body must be code");
 	Value *delim_code=params->size()==3+1+1?static_cast<Value *>(params->get(3+1)):0;
 
 	bool need_delim=false;
@@ -224,7 +224,7 @@ static void _eval(Request& r, const String& method_name, Array *params) {
 		Value& fmt=*static_cast<Value *>(params->get(1));
 		// forcing ^format[this param type]
 		r.fail_if_junction_(true, fmt, 
-			method_name, "fmt must not be junction");
+			method_name, "fmt must not be code");
 
 		Pool& pool=r.pool();
 		String& string=*new(pool) String(pool);
@@ -284,11 +284,11 @@ static void _connect(Request& r, const String& method_name, Array *params) {
 
 	Value& url=*static_cast<Value *>(params->get(0));
 	r.fail_if_junction_(true, url, 
-		method_name, "url must not be junction");
+		method_name, "url must not be code");
 
 	Value& body_code=*static_cast<Value *>(params->get(1));
 	r.fail_if_junction_(false, body_code, 
-		method_name, "body must be junction");
+		method_name, "body must be code");
 
 	// connect
 	SQL_Connection& connection=SQL_driver_manager->get_connection(
