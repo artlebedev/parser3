@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.64 2001/11/14 13:07:41 paf Exp $
+	$Id: pa_common.h,v 1.65 2001/11/14 13:10:30 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -20,7 +20,7 @@ class Value;
 // system one called "_snprintf"
 #else
 // remember system one
-inline int _snprintf(char *b, size_t s, const char *f, va_list l) { return snprintf(b, s, f, l); }
+inline int _vsnprintf(char *b, size_t s, const char *f, va_list l) { return snprintf(b, s, f, l); }
 #endif
 
 // replace system s*nprintf with our versions
