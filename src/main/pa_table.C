@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_table.C,v 1.41 2001/11/22 15:47:12 paf Exp $
+	$Id: pa_table.C,v 1.42 2002/02/07 11:55:30 paf Exp $
 */
 
 #include <stdlib.h>
@@ -29,6 +29,16 @@ Table::Table(Pool& apool,
 			const String& name=*fcolumns->get_string(i);
 			name2number.put(name, i+1);
 		}
+}
+
+Table::Table(const Table& source)  :
+	Array(source),
+
+	forigin_string(source.forigin_string),
+	fcurrent(source.fcurrent),
+	fcolumns(source.fcolumns),
+	name2number(source.name2number) {
+
 }
 
 int Table::column_name2index(const String& column_name, bool bark) const {

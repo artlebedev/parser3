@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.141 2002/01/25 11:33:45 paf Exp $
+	$Id: table.C,v 1.142 2002/02/07 11:55:30 paf Exp $
 */
 
 #include "classes.h"
@@ -34,8 +34,15 @@ public: // Methoded
 
 // methods
 
-static void _set(Request& r, const String& method_name, MethodParams *params) {
+static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
+	// clone?
+	if(params->size()==1) 
+		if(const Table *source=params->get(0).get_table()) {
+			static_cast<VTable *>(r.self)->set_table(*new(pool) Table(*source));
+			return;
+		}
+
 	// data is last parameter
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	const String& data=
@@ -613,12 +620,15 @@ static void _columns(Request& r, const String& method_name, MethodParams *) {
 MTable::MTable(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), TABLE_CLASS_NAME));
 
-	// ^table:set{data}
-	// ^table:set[nameless]{data}
-	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 2);
+	// ^table::create{data}
+	// ^table::create[nameless]{data}
+	// ^table::create[table]
+	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 2);
+	// old name for compatibility with <= v 1.141 2002/01/25 11:33:45 paf
+	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 2); 
 
-	// ^table:load[file]  
-	// ^table:load[nameless;file]
+	// ^table::load[file]  
+	// ^table::load[nameless;file]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
 
 	// ^table.save[file]  

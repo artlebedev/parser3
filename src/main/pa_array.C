@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_array.C,v 1.44 2002/01/21 12:10:07 paf Exp $
+	$Id: pa_array.C,v 1.45 2002/02/07 11:55:30 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -12,10 +12,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-Array::Array(Pool& apool, int initial_rows) :
-	Pooled(apool) {
-	initial_rows=max(initial_rows, CR_INITIAL_ROWS_DEFAULT);
-
+void Array::construct_new(int initial_rows) {
 	head=tail=static_cast<Chunk *>(
 		malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *), 19));
 	head->count=initial_rows;
@@ -23,6 +20,15 @@ Array::Array(Pool& apool, int initial_rows) :
 	link_row=&head->rows[initial_rows];
 	link_row->link=0;
 	fused_rows=0;
+}
+
+Array::Array(Pool& apool, int initial_rows) : Pooled(apool) {
+	construct_new(max(initial_rows, CR_INITIAL_ROWS_DEFAULT));
+}
+
+Array::Array(const Array& source, int offset) : Pooled(source.pool()) {
+	construct_new(source.size());
+	append_array(source, offset);
 }
 
 void Array::expand(int chunk_rows) {

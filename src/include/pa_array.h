@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_array.h,v 1.50 2002/02/07 11:16:27 paf Exp $
+	$Id: pa_array.h,v 1.51 2002/02/07 11:55:30 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -64,6 +64,7 @@ public:
 public:
 
 	Array(Pool& apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
+	Array(const Array& source, int offset=0);
 
 	/// size Array. how many items are in it
 	int size() const { return fused_rows; }
@@ -104,6 +105,11 @@ public:
 
 	/// iterate over all elements until condition
 	void* first_that(Item_that_func func, void *info=0) const;
+
+private:
+
+	/// constructor helper
+	void construct_new(int initial_rows);
 
 private:
 

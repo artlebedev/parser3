@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_table.h,v 1.38 2001/12/15 21:28:20 paf Exp $
+	$Id: pa_table.h,v 1.39 2002/02/07 11:55:30 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -36,6 +36,7 @@ public:
 		const String *aorigin,
 		const Array *acolumns,
 		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
+	Table(const Table& source);
 
 	/// where this table came from, may be NULL
 	const String *origin_string() { return forigin_string; }

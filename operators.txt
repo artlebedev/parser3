@@ -238,7 +238,9 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     в выражении 
         логическое значение равно "не пуста?"
         числовое значение равно count[]
-    !^table::set[[nameless]]{данные}
+    !^table::create[[nameless]]{данные} старое имя "set"
+    !^table::create[table]
+    	клонирует таблицу
     !^table::load[[nameless;]путь]
         !если не nameless, названия колонок берутся из первой строки
         !пустые строки, и строки в первой колонке содержащие '#', игнорируются        
