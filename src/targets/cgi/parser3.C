@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.172 2002/04/16 08:41:05 paf Exp $
+	$Id: parser3.C,v 1.173 2002/04/16 08:59:26 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -93,7 +93,7 @@ static void log(const char *fmt, va_list args) {
 	// prefix
 	time_t t=time(0);
 	if(const char *stamp=ctime(&t)) { // never saw that
-		if(size_t len=strlen(stamp)) // saw once empty string in 'stamp'
+		if(size_t len=strlen(stamp)) // saw once stamp being =""
 			fprintf(f, "[%.*s] ", len-1, stamp);
 	}
 	// message

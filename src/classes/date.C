@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.25 2002/04/15 11:34:24 paf Exp $
+	$Id: date.C,v 1.26 2002/04/16 08:59:25 paf Exp $
 */
 
 #include "classes.h"
@@ -47,9 +47,13 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	VDate *vdate=static_cast<VDate *>(r.self);
 
 	time_t t;
-	if(params->size()==1) // ^set(float days)
+	if(params->size()==1) { // ^set(float days)
 		t=(time_t)(params->as_double(0, "float days must be double", r)*SECS_PER_DAY);
-	else if(params->size()>=2) { // ^set(y;m;d[;h[;m[;s]]])
+		if(t<0 || !localtime(&t))
+			throw Exception(0,
+				&method_name,
+				"invalid datetime");
+	} else if(params->size()>=2) { // ^set(y;m;d[;h[;m[;s]]])
 		tm tmIn={0};
 		tmIn.tm_isdst=-1;
 		int year=params->as_int(0, "year must be int", r);
