@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.150 2001/07/25 10:12:13 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.151 2001/07/25 10:33:05 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -328,7 +328,7 @@ construct_curly: '{' maybe_codes '}' {
 };
 
 any_constructor_code_value: 
-	unknown_value /* optimized $var[] case */
+	empty_string_value /* optimized $var[] case */
 |	STRING /* optimized $var[STRING] case */
 |	constructor_code_value /* $var[something complex] */
 ;
@@ -397,7 +397,7 @@ store_curly_param_part: maybe_codes {
 	PCA($$, $1);
 };
 code_param_value:
-	unknown_value /* optimized [;...] case */
+	empty_void_value /* optimized [;...] case */
 |	STRING /* optimized [STRING] case */
 |	constructor_code_value /* [something complex] */
 ;
@@ -526,7 +526,8 @@ write_string: STRING {
 	change_string_literal_to_write_string_literal($$=$1)
 };
 
-unknown_value: /* empty */ { $$=VL(NEW VString(POOL)) };
+empty_void_value: /* empty */ { $$=VL(NEW VVoid(POOL)) };
+empty_string_value: /* empty */ { $$=VL(NEW VString(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%
