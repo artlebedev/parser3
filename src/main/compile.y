@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.196 2002/09/20 09:26:32 paf Exp $
+	$Id: compile.y,v 1.197 2002/09/20 14:12:00 paf Exp $
 */
 
 /**
@@ -273,13 +273,24 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 	} else {
 		O($$, OP_WITH_READ); /* stack: starting context */
 
+		bool noDot=diving_code->size()==3;
 		// OP_VALUE+string+OP_GET_ELEMENT. -> OP_VALUE+string+...OR_OPERATOR/OR_JUNCTION_EXP.
-		if(diving_code->size()==3) // ELEMENT without .SUBELEMENT
+		if(PC.in_call_value) {
+			//  ^if << possibly operator
+			//  but ^code.xxxx  << expand junction !!!
+
 			diving_code->put_int(2, 
-				PC.in_call_value?
-					OP_GET_ELEMENT_OR_OPERATOR// possibly ^if  [search for operator]
-					:OP_GET_ELEMENT_OR_JUNCTION_EXPAND // possibly $junction [if junction, expand it]
-			);
+				noDot? // ELEMENT without .SUBELEMENT
+					OP_GET_ELEMENT_OR_OPERATOR // possibly ^if  [search for operator]
+					: OP_GET_ELEMENT_OR_JUNCTION_EXPAND); // possibly ^junction.xxx [if junction, expand it]
+		} else {
+			//  $code  << expand junction
+			//  $code.value << do not expand junction
+			//  $code.value[xxx]  << do not expand junction
+
+			if(noDot)
+				diving_code->put_int(2, OP_GET_ELEMENT_OR_JUNCTION_EXPAND); // possibly $junction [if junction, expand it]
+		}
 		
 		P($$, diving_code);
 	}
