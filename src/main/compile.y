@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.202 2002/10/17 10:57:06 paf Exp $
+	$Id: compile.y,v 1.203 2002/10/22 09:27:10 paf Exp $
 */
 
 /**
@@ -644,7 +644,14 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			} else // @ in first column inside some code [when could that be?]
 				result=BAD_METHOD_DECL_START;
 			goto break2;
-		} else if(c=='^')
+		} else if(c=='^') {
+			if(PC.ls==LS_METHOD_AFTER) {
+				// handle after-method situation
+				pop_LS(PC);
+				result=EON;
+				skip_analized=-1; // return to punctuation afterwards to assure it's literality
+				goto break2;
+			}
 			switch(PC.ls) {
 case LS_EXPRESSION_VAR_NAME_WITH_COLON:
 case LS_EXPRESSION_VAR_NAME_WITHOUT_COLON:
@@ -669,19 +676,12 @@ default:
 					PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
 				}
 				// reset piece 'begin' position & line
-				end=begin=PC.source; // ^
+				begin=PC.source; // ->punctuation
 				begin_line=PC.line;
-				if(PC.ls==LS_METHOD_AFTER) {
-					pop_LS(PC);
-					result=EON;
-					skip_analized=-1; // return to ^ afterwards to assure it's literality
-					goto break2;
-				} else {
-					// skip over _ after ^
-					PC.source++;  PC.col++;
-					// skip analysis = forced literal
-					continue;
-				}
+				// skip over _ after ^
+				PC.source++;  PC.col++;
+				// skip analysis = forced literal
+				continue;
 
 			// converting ^#HH into char(hex(HH))
 			case '#':
@@ -705,13 +705,15 @@ default:
 					PC.source+=3;
 					PC.col+=3;
 					// reset piece 'begin' position & line
-					begin=PC.source; // ^
+					begin=PC.source; // ->after ^#HH
 					begin_line=PC.line;
+					// skip analysis = forced literal
 					continue;
 				}
 				break;
 			}
 			break;
+			}
 		}
 		// #comment  start skipping
 		if(c=='#' && PC.col==1) {
