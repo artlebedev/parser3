@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/12/02 10:07:39 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/12/05 12:53:48 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -77,20 +77,6 @@ static int unlock(int fd) { FLOCK(F_TLOCK); }
 #define DEFAULT_USER_AGENT "parser3"
 
 
-
-static char* strnchr(char* buf, size_t size, char c) {
-	// sanity check
-	if(!buf)
-		return 0;
-
-	for(;  size-->0; buf++) {
-		if(*buf==c)
-			return buf;
-	}
-
-	return 0;
-}
-
 void fix_line_breaks(char* buf, size_t& size) {
 	//_asm int 3;
 	const char* const eob=buf+size;
@@ -98,7 +84,7 @@ void fix_line_breaks(char* buf, size_t& size) {
 	// fix DOS: \r\n -> \n
 	// fix Macintosh: \r -> \n
 	char* bol=buf;
-	while(char* eol=strnchr(bol, eob -bol, '\r')) {
+	while(char* eol=(char*)memchr(bol, '\r', eob -bol)) {
 		size_t len=eol-bol;
 		if(dest!=bol)
 			memcpy(dest, bol, len); 

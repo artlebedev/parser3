@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/12/05 09:41:56 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/12/05 12:53:48 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -366,10 +366,11 @@ static char *trimBoth(char *s) {
 	// return it
 	return s;
 }
-/*nonstatic*/const String& extractEmail(const String& string) {
+/*nonstatic*/const String& extractEmail(const String& string) { // used in classes/mail.C, which supported for backward compatibility 
 	Pool& pool=string.pool();
 
 	char *email=string.cstr();
+	rsplit(email, ','); // take first email of the list,of,emails
 	rsplit(email, '>');
 	char *next=rsplit(email, '<');
 	if(next) email=next;

@@ -7,7 +7,7 @@
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char* IDENT_SMTP_C="$Date: 2002/12/05 08:08:59 $";
+static const char* IDENT_SMTP_C="$Date: 2002/12/05 12:53:47 $";
 
 #include "pa_exception.h"
 #include "smtp.h"
@@ -503,6 +503,10 @@ static char *rsplit(char *string, char delim) {
 void SMTP::
 Send(const char *server, const char *service, const char *msg, char *from, char *to)
 {
+throw Exception("paf.debug",
+				0,
+				"%s|%s|%s", from, to, msg);
+
     prepare_message( from, to, server, service);
 
     send_data(msg);

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2002/11/21 15:29:05 $";
+static const char* IDENT_UNTAINT_C="$Date: 2002/12/05 12:53:48 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -284,10 +284,18 @@ size_t String::cstr_bufsize(Untaint_lang lang,
 		case UL_MAIL_HEADER:
 			// tainted, untaint language: mail-header
 			if(buf_charset) {
+				int parts_count=1;
+				const char *prev=row->item.ptr;
+				size_t size=row->item.size;
+				while(const char *comma_at=(const char*)memchr(prev, ',', size)) {
+					parts_count++;
+					size-=comma_at-prev;
+					prev=comma_at+1;
+				}
 				// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
 				dest+=
 					row->item.size*3+
-					buf_charset->name().size()+MAX_STRING/* worst: =?charset?Q?=%XX?= */;
+					parts_count*(buf_charset->name().size()+MAX_STRING/* worst: =?charset?Q?=%XX?= */);
 			} else
 				dest+=row->item.size;
 			break;
@@ -372,7 +380,19 @@ char *String::store_to(char *dest, Untaint_lang lang,
 	// WARNING:
 	//	 before any changes check cstr_bufsize first!!!
 	bool whitespace=true;
-	STRING_FOREACH_ROW(
+//debug
+	const Chunk *chunk=&(*this).head.chunk;  \
+	const Chunk::Row *row=chunk->rows; \
+	uint countdown=chunk->count; \
+	while(row!=(*this).append_here) { \
+		if(countdown==0) { \
+			chunk=row->link; \
+			row=chunk->rows; \
+			countdown=chunk->count; \
+		};
+//*/
+//	STRING_FOREACH_ROW(
+
 		uchar to_lang=lang==UL_UNSPECIFIED?row->item.lang:lang;
 
 		char *start=dest;
@@ -430,25 +450,17 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				const char *src=(const char *)mail_ptr;
 				bool to_quoted_printable=false;
 
-				//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
-				const char *tail=src+mail_size;
-				if(*--tail=='>') {
-					for(int size=mail_size-1; size--; tail--)
-						if(*tail=='<')
-							break;
-				}
-				const char *stop=*tail=='<'?tail:0;
-				while(stop>src && stop[-1]==' ')
-					--stop;
-
 				bool closed=false;
-				for(int size=mail_size; size--; src++) {
-					if(src==stop && to_quoted_printable) {
+				bool email=false;
+				for(const char *end=src+mail_size; src<end; src++) {
+					//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
+					if(to_quoted_printable && (*src==',' || *src=='<')) {
+						email=*src=='<';
 						dest+=sprintf(dest, "?=");
 						closed=true;
 						to_quoted_printable=false;
 					}
-					if((!stop || src<stop) && (
+					if(!email && (
 						!to_quoted_printable && (*src & 0x80)  // starting quote-printable-encoding on first 8bit char
 						|| to_quoted_printable && !mail_header_char_valid_within_Qencoded(*src)
 						)) {
@@ -463,6 +475,8 @@ char *String::store_to(char *dest, Untaint_lang lang,
 							dest+=sprintf(dest, "=%02X", *src & 0xFF);
 					} else
 						*dest++=*src;
+					if(*src=='>')
+						email=false;
 				}
 				if(to_quoted_printable && !closed) // close
 					dest+=sprintf(dest, "?=");
@@ -544,9 +558,13 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					break;
 				};
 		} else // piece without optimization
+//debug
 			whitespace=false;
+		row++; countdown--; \
+	} 
+/*
 	);
-
+*/
 	return dest;
 }
 
