@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.16 2001/09/24 14:34:25 parser Exp $
+	$Id: pa_vimage.h,v 1.17 2001/09/24 15:00:35 parser Exp $
 */
 
 #ifndef PA_VIMAGE_H
@@ -28,7 +28,7 @@ public: // Value
 	const char *type() const { return "image"; }
 
 	/// VImage: true
-	bool as_bool() { return true; }
+	bool as_bool() const { return true; }
 
 	/// VImage: method,field
 	Value *VImage::get_element(const String& aname) {
