@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.40 2001/04/19 16:28:14 paf Exp $
+	$Id: pa_common.h,v 1.41 2001/04/25 11:02:52 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -107,6 +107,7 @@ void file_write(Pool& pool,
 void file_delete(Pool& pool, const String& file_spec);
 
 bool file_readable(const String& file_spec);
+bool dir_readable(const String& file_spec);
 bool file_executable(const String& file_spec);
 
 size_t file_size(const String& file_spec);

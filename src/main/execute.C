@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.147 2001/04/23 13:09:19 paf Exp $
+	$Id: execute.C,v 1.148 2001/04/25 11:02:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -49,7 +49,7 @@ char *opcode_name[]={
 	"CALL",
 
 	// expression ops: unary
-	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS",
+	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS",
 	// expression ops: binary
 	"SUB", "ADD", "MUL", "DIV", "MOD",
 	"BIN_AND", "BIN_OR", "BIN_XOR",
@@ -477,6 +477,14 @@ void Request::execute(const Array& ops) {
 				Value *operand=POP();
 				Value *value=NEW VBool(pool(), 
 					file_readable(absolute(operand->as_string())));
+				PUSH(value);
+				break;
+			}
+		case OP_DEXISTS:
+			{
+				Value *operand=POP();
+				Value *value=NEW VBool(pool(), 
+					dir_readable(absolute(operand->as_string())));
 				PUSH(value);
 				break;
 			}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: code.h,v 1.26 2001/03/19 17:42:11 paf Exp $
+	$Id: code.h,v 1.27 2001/04/25 11:02:52 paf Exp $
 */
 
 #ifndef CODE_H
@@ -41,7 +41,7 @@ enum OPCODE {
 
 	//@{
 	/// expression op: unary
-	OP_NEG, OP_INV, OP_NOT, OP_DEF, OP_IN, OP_FEXISTS,
+	OP_NEG, OP_INV, OP_NOT, OP_DEF, OP_IN, OP_FEXISTS, OP_DEXISTS,
 	//@}
 
 	//@{

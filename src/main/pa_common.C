@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.50 2001/04/23 10:19:02 paf Exp $
+	$Id: pa_common.C,v 1.51 2001/04/25 11:02:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -163,8 +163,21 @@ void file_delete(Pool& pool, const String& file_spec) {
 	rmdir(file_spec, 1);
 }
 
+
+static bool entry_readable(const String& file_spec, bool need_dir) {
+    const char *fname=file_spec.cstr(String::UL_FILE_NAME);
+	struct stat finfo;
+	if(access(fname, R_OK)==0 && stat(fname, &finfo)==0) {
+		bool is_dir=(bool)(finfo.st_mode&S_IFDIR);
+		return is_dir==need_dir;
+	}
+	return false;
+}
 bool file_readable(const String& file_spec) {
-    return access(file_spec.cstr(String::UL_FILE_NAME), R_OK)==0;
+	return entry_readable(file_spec, false);
+}
+bool dir_readable(const String& file_spec) {
+	return entry_readable(file_spec, true);
 }
 bool file_executable(const String& file_spec) {
     return access(file_spec.cstr(String::UL_FILE_NAME), X_OK)==0;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.126 2001/04/20 14:18:41 paf Exp $
+	$Id: compile.y,v 1.127 2001/04/25 11:02:56 paf Exp $
 */
 
 /**
@@ -85,6 +85,7 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 %token DEF "def"
 %token IN "in"
 %token FEXISTS "-f"
+%token DEXISTS "-d"
 %token IS "is"
 
 /* logical */
@@ -95,7 +96,7 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 %left "==" "!="
 %left "||"
 %left "&&"
-%left "def" "in" "-f"
+%left "def" "in" "-f" "-d"
 %left '!'
 
 /* bitwise */
@@ -488,6 +489,7 @@ expr:
 |	"def" expr { $$=$2;  O($$, OP_DEF) }
 |	"in" expr { $$=$2;  O($$, OP_IN) }
 |	"-f" expr { $$=$2;  O($$, OP_FEXISTS) }
+|	"-d" expr { $$=$2;  O($$, OP_DEXISTS) }
 /* stack: a,b // stack: a@b */
 |	expr '-' expr {	$$=$1;  P($$, $3);  O($$, OP_SUB) }
 |	expr '+' expr { $$=$1;  P($$, $3);  O($$, OP_ADD) }
@@ -759,11 +761,19 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				lexical_brackets_nestage++;
 				RC;
 			case '-':
-				if(*PC.source=='f') { // -f
+				switch(*PC.source) {
+				case 'f': // -f
 					skip_analized=1;
 					result=FEXISTS;
-				} else
+					goto break2;
+				case 'd': // -d
+					skip_analized=1;
+					result=DEXISTS;
+					goto break2;
+				default:
 					result=c;
+					goto break2;
+				}
 				goto break2;
 			case '+': case '*': case '/': case '%': 
 			case '~':
