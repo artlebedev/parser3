@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/04/15 11:34:03 $";
+static const char* IDENT_MATH_C="$Date: 2003/04/15 14:12:15 $";
 
 #include "pa_common.h"
 #include "pa_vint.h"
@@ -311,7 +311,7 @@ struct uuid {
         unsigned short   clock_seq;
         unsigned char    node[6];
 };
-static void _guid(Request& r, const String& method_name, MethodParams *params) {
+static void _uuid(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	// random
@@ -335,16 +335,16 @@ static void _guid(Request& r, const String& method_name, MethodParams *params) {
         uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0FFF) | 0x4000;
  
 	// format 
-	const int guid_cstr_bufsize=32+1/*for zero-teminator*/;
-	char *guid_cstr=(char *)pool.malloc(guid_cstr_bufsize);
-        snprintf(guid_cstr, guid_cstr_bufsize,
+	const int uuid_cstr_bufsize=32+1/*for zero-teminator*/;
+	char *uuid_cstr=(char *)pool.malloc(uuid_cstr_bufsize);
+        snprintf(uuid_cstr, uuid_cstr_bufsize,
                 "%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
                 uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
                 uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
                 uuid.node[0], uuid.node[1], uuid.node[2],
                 uuid.node[3], uuid.node[4], uuid.node[5]);
 
-	r.write_pass_lang(*new(pool) String(pool, guid_cstr));
+	r.write_pass_lang(*new(pool) String(pool, uuid_cstr));
 }
 
 // constructor
@@ -377,8 +377,11 @@ MMath::MMath(Pool& apool) : Methoded(apool, "math") {
 	// ^md5[string]
 	ADD1(md5);
 
-	// ^guid[]
-	ADD0(guid);
+	// ^uuid[]
+	ADD0(uuid);
+
+	// ^uid16[]
+	//ADD0(uid16);
 }
 
 // global variables
