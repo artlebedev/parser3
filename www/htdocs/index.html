@@ -77,7 +77,6 @@ $selffilespec[$filespec]
 #^precisionProblem[]
 #^xpath[]
 #^ttablesetlang[]
-#^mail3[]
 #^ttime[]
 #^tupper[]
 #^treplace[]
@@ -202,10 +201,20 @@ $selffilespec[$filespec]
 #^sendtests[]
 #^wwrapperpass[]
 #^badpos[]
-^processtest[]
+#^processtest[]
+#^mail3[]
+^mail4[]
 <hr>
 OK
 
+@mail4[]
+^mail:send[
+	$.from[paf@mail.design.ru]
+	$.to[paf@mail.design.ru]
+	$.subject[^taint[uri][москва]=2]
+	$.text[^taint[uri][москва]=]
+	$.html{<a href=http://there.ru/?city=^taint[uri][Москва]>link</a>}
+]
 @processtest[]
     $f[^file::load[text;piece.p]]	^process{$f.text}
 	$ORIGINS(1)
@@ -1210,13 +1219,13 @@ $t[^table::set{^untaint{^taint[$a-tab-b]}}]
 
 @mail3[]
 ^mail:send[
-	$.from[Александр Петросян <paf@design.ru>]
-	$.to[Александр Петросян <paf@design.ru>]
-	$.subject[проверка4]
+	$.from[Александр Петросян <paf@mail.design.ru>]
+	$.to[Александр Петросян <paf@mail.design.ru>]
+	$.subject[проверка2]
 	$.body[
 		$.text[
 			$.content-type[$.value[text/plain] $.charset[windows-1251]]
-			$.body[проверка]
+			$.body[проверка^taint[uri][москва]=]
 		]
 		$.attachment[
 			$.value[^file::load[text;index.html]]

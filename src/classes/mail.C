@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2002/08/07 07:35:45 $";
+static const char* IDENT_MAIL_C="$Date: 2002/08/08 10:04:38 $";
 
 #include "pa_config_includes.h"
 
@@ -249,8 +249,8 @@ static const String& message_hash_to_string(Request& r, const String& method_nam
 				"\n"; // header|body separator
 
 			const String& body=body_element->as_string();
-			const void *body_ptr=body.cstr();  // body
-			size_t body_size=body.size();  // body
+			const char *body_ptr=body.cstr(String::UL_UNSPECIFIED);  // body
+			size_t body_size=strlen(body_ptr);  // body
 			const void *mail_ptr;
 			size_t mail_size;
 			Charset::transcode(pool, 
@@ -271,7 +271,7 @@ static void sendmail(Request& r, const String& method_name,
 					 const String *from, const String *to) {
 	Pool& pool=r.pool();
 
-	char *message_cstr=message.cstr();
+	char *message_cstr=message.cstr(String::UL_UNSPECIFIED);
 	Hash *mail_conf=static_cast<Hash *>(r.classes_conf.get(mail_base_class->name()));
 
 	const char *exception_type="email.format";
