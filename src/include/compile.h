@@ -1,5 +1,5 @@
 /*
-  $Id: compile.h,v 1.3 2001/02/21 11:10:02 paf Exp $
+  $Id: compile.h,v 1.4 2001/02/21 15:26:32 paf Exp $
 */
 
 #ifndef COMPILE_H
@@ -16,6 +16,8 @@
 #	define COMPILE(pool, source, file) real_compile(pool, source)
 #endif
 
-Array *real_compile(COMPILE_PARAMS);
+#define MAIN_METHOD_NAME "main"
+
+Array& real_compile(COMPILE_PARAMS);
 
 #endif

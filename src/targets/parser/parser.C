@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.12 2001/02/21 15:00:08 paf Exp $
+  $Id: parser.C,v 1.13 2001/02/21 15:27:00 paf Exp $
 */
 
 #include <stdio.h>
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
 			// compile
 			char *file="c:\\temp\\test.p";
 			char *source=file_read(request.pool(), file);
-			Array *compiled_methods=COMPILE(request, source, file);
+			Array& compiled_methods=COMPILE(request, source, file);
 			
 			String name_RUN(request.pool()); name_RUN.APPEND_CONST("RUN");
 			//   create new 'name' vclass, add it to request's classes
@@ -158,18 +158,16 @@ int main(int argc, char *argv[]) {
 				VClass *vclass=new(pool) VClass(pool, &name_RUN, immediate_parents);
 				request.classes().put(name_RUN, vclass);
 
-				if(compiled_methods) {
-					for(int i=0; i<compiled_methods->size(); i++) {
-						Method &method=*static_cast<Method *>(compiled_methods->raw_get(i));
-						vclass->add_method(method.name, method);
-					}
+				for(int i=0; i<compiled_methods.size(); i++) {
+					Method &method=*static_cast<Method *>(compiled_methods.quick_get(i));
+					vclass->add_method(method.name, method);
 				}
 			}
 
 			{
 				VClass *class_RUN=static_cast<VClass *>(request.classes().get(name_RUN));
 				String name_main(pool);
-				name_main.APPEND_CONST("main");
+				name_main.APPEND_CONST(MAIN_METHOD_NAME);
 				Method *method_main=class_RUN->get_method(name_main);
 				if(!method_main)
 					request.exception().raise(0,0,

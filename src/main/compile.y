@@ -13,6 +13,7 @@
 
 #include "compile_tools.h"
 #include "pa_value.h"
+#include "compile.h"
 
 int real_yyerror(parse_control *pc, char *s);
 static void yyprint(FILE *file, int type, YYSTYPE value);
@@ -35,7 +36,7 @@ int yylex(YYSTYPE *lvalp, void *pc);
 all:
 	one_big_piece {
 	String& name_main=*new(pool) String(pool);
-	name_main.APPEND_CONST("main");
+	name_main.APPEND_CONST(MAIN_METHOD_NAME);
 	Array& param_names=*new(pool) Array(pool);
 	Array& local_names=*new(pool) Array(pool);
 	Method *method=new(pool) Method(pool, name_main, param_names, local_names, *$1);
