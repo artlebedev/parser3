@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_connection.C,v 1.28 2001/11/05 11:46:27 paf Exp $
+	$Id: pa_db_connection.C,v 1.29 2001/11/05 12:08:11 paf Exp $
 
 	developed with LIBDB 2.7.4
 */
@@ -81,7 +81,7 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 	};
 
 	u_int32_t flags=
-		parser_multithreaded?DB_THREAD:0
+		(parser_multithreaded?DB_THREAD:0)
 		| DB_CREATE 
 		| DB_INIT_MPOOL | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_TXN;
 

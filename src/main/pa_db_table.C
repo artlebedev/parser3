@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.C,v 1.11 2001/11/05 11:46:27 paf Exp $
+	$Id: pa_db_table.C,v 1.12 2001/11/05 12:08:11 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -65,7 +65,7 @@ DB_Table::DB_Table(Pool& pool, const String& afile_name, DB_Connection& aconnect
 	check("open/create", &ffile_name, db_open(
 		file_name_cstr, 
 		PA_DB_ACCESS_METHOD, 
-		parser_multithreaded?DB_THREAD:0
+		(parser_multithreaded?DB_THREAD:0)
 		| DB_CREATE,
 		0666, 
 		&dbenv, &dbinfo, &db));
