@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.2 2001/09/26 15:43:59 parser Exp $
+	$Id: xdoc.C,v 1.3 2001/09/27 07:26:27 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -430,7 +430,7 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 	// ^xdoc.getElementById[elementId]
 	add_native_method("getElementById", Method::CT_DYNAMIC, _getElementById, 1, 1);
 	
-	// ^xdoc.getElementById[tagname]
+	// ^xdoc.getElementsByTagName[tagname]
 	add_native_method("getElementsByTagName", Method::CT_DYNAMIC, _getElementsByTagName, 1, 1);
 
 	// ^xdoc.getElementsByTagNameNS[namespaceURI;localName] = array of nodes

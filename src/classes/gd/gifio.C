@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gifio.C,v 1.13 2001/09/26 10:32:25 parser Exp $
+	$Id: gifio.C,v 1.14 2001/09/27 07:26:27 parser Exp $
 
 	based on: gd
 
@@ -36,7 +36,6 @@
  ** CompuServe Incorporated.  GIF(sm) is a Service Mark property of
  ** CompuServe Incorporated.
 */
-static const char *RCSId="$Id: gifio.C,v 1.13 2001/09/26 10:32:25 parser Exp $"; 
 
 #include "gif.h"
 
