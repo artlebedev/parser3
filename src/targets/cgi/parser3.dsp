@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:console /debug /machine:I386 /out:"Y:\parser3before_xml\src\www\cgi-bin\parser3.exe" /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:console /debug /machine:I386 /out:"Y:\parser3project\parser3\src\www\cgi-bin\parser3.exe" /pdbtype:sept
 
 !ENDIF 
 
@@ -82,6 +82,31 @@ LINK32=link.exe
 
 # Name "parser3 - Win32 Release"
 # Name "parser3 - Win32 Debug"
+# Begin Source File
+
+SOURCE=..\..\ident.awk
+
+!IF  "$(CFG)" == "parser3 - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "parser3 - Win32 Debug"
+
+# Begin Custom Build
+InputPath=..\..\ident.awk
+
+"..\..\ident.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	CD \parser3project\parser3\src 
+	\parser3project\win32tools\cat */*.awk */*.C */*/*.C */*.h */*/*.h */*.cfg */*.dox | \parser3project\win32tools\gawk -f \parser3project\parser3\src\ident.awk > ident.C 
+	\parser3project\win32tools\touch 0101000001 ident.C 
+	
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\ident.C
+# End Source File
 # Begin Source File
 
 SOURCE=.\pa_pool.C
