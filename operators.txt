@@ -358,6 +358,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 
 !request
     !$request:query    
+    $request:body
     !$request:uri
     X!$request:browser  это hash, поля:
         !$type = ie/nn и !$version = номер, скажем 5.5       

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_POOL_C="$Date: 2002/08/01 11:41:19 $";
+static const char* IDENT_POOL_C="$Date: 2002/08/15 10:13:19 $";
 
 #include "pa_pool.h"
 #include "pa_exception.h"
@@ -19,6 +19,21 @@ Pool::Pool(void *astorage) :
 	source_charset(0), client_charset(0)
 	{
 }
+
+void *Pool::copy(const void *buf, const size_t size) {
+	void *result=malloc(size);
+	memcpy(result, buf, size);
+	return result;
+}
+
+char *Pool::copy(const char *cstr) {
+	if(cstr) {
+		size_t size=strlen(cstr)+1;
+		return (char *)copy(cstr, size);
+	}
+	return 0;
+}
+
 
 void Pool::fail_alloc(size_t size) const {
 	SAPI::die("out of pool memory: failed to allocate %u bytes; "

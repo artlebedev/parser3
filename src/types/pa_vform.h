@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char* IDENT_VFORM_H="$Date: 2002/08/14 14:18:30 $";
+static const char* IDENT_VFORM_H="$Date: 2002/08/15 10:13:20 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -50,14 +50,14 @@ public: // usage
 private:
 
 	char *strpart(const char *str, size_t len);
-	char *getAttributeValue(char *data,char *attr,size_t len);
+	char *getAttributeValue(const char *data,char *attr,size_t len);
 	void UnescapeChars(char **sp, const char *cp, size_t len);
-	void ParseGetFormInput(char *query_string, size_t length);
-	void ParseFormInput(char *data, size_t length);
-	void ParseMimeInput(char *content_type, char *data, size_t length);
+	void ParseGetFormInput(const char *query_string, size_t length);
+	void ParseFormInput(const char *data, size_t length);
+	void ParseMimeInput(char *content_type, const char *data, size_t length);
 	void AppendFormEntry(
 		const char *name, 
-		char *value_ptr, size_t value_size,
+		const char *value_ptr, const size_t value_size,
 		const char *file_name=0);
 
 private:

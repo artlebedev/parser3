@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/08/13 15:55:42 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/08/15 10:13:19 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -227,7 +227,7 @@ public:
 	/// info from web server
 	Info& info;
 	/// user's post data
-	char *post_data;  size_t post_size;
+	const char *post_data;  size_t post_size;
 
 	/// name of 'main' method
 	const String main_method_name;

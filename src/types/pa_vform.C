@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char* IDENT_VFORM_C="$Date: 2002/08/14 14:18:30 $";
+static const char* IDENT_VFORM_C="$Date: 2002/08/15 10:13:20 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -37,7 +37,7 @@ static size_t getHeader(const char *data, size_t len){
 		return 0;
 }
 
-static char *searchAttribute(char *data, 
+static const char *searchAttribute(const char *data, 
 							 const char *attr,  //< expected to be lowercased
 							 size_t len){
     size_t i;
@@ -74,8 +74,8 @@ char *VForm::strpart(const char *str, size_t len) {
     return result;
 }
 
-char *VForm::getAttributeValue(char *data, char *attr, size_t len) {
-    char *value=searchAttribute(data, attr, len);
+char *VForm::getAttributeValue(const char *data, char *attr, size_t len) {
+    const char *value=searchAttribute(data, attr, len);
     if (value){
 		size_t i;
 		if (!(len-=value-data)) return NULL;
@@ -98,11 +98,11 @@ void VForm::transcode(
 		pool().get_source_charset(), source_body, source_content_length);
 }
 
-void VForm::ParseGetFormInput(char *query_string, size_t length) {
+void VForm::ParseGetFormInput(const char *query_string, size_t length) {
 	ParseFormInput(query_string, length);
 }
 
-void VForm::ParseFormInput(char *data, size_t length) {
+void VForm::ParseFormInput(const char *data, size_t length) {
 	/* Scan for pairs, unescaping and storing them as they are found. */
 	size_t pos=0;
 	while(pos !=length) {
@@ -152,7 +152,7 @@ static char *pa_tolower(char *s) {
 }
 void VForm::ParseMimeInput(
 						   char *content_type, 
-						   char *data, size_t length) {
+						   const char *data, size_t length) {
 /* Scan for mime-presented pairs, storing them as they are found. */
 	const char 
 		*boundary=pa_tolower(getAttributeValue(content_type, "boundary=", strlen(content_type))), 
@@ -163,7 +163,7 @@ void VForm::ParseMimeInput(
 			"VForm::ParseMimeInput no boundary attribute of Content-Type");
 
 	while(true) {
-		char 
+		const char 
 			*dataStart=searchAttribute(data, boundary, lastData-data), 
 			*dataEnd=searchAttribute(dataStart, boundary, lastData-dataStart);
 		size_t headerSize=getHeader(dataStart, lastData-dataStart);
@@ -185,7 +185,7 @@ void VForm::ParseMimeInput(
 
 void VForm::AppendFormEntry(
 							const char *cname_cstr, 
-							char *cvalue_ptr, size_t cvalue_size, 
+							const char *raw_cvalue_ptr, const size_t raw_cvalue_size, 
 							const char *file_name) {
 	const void *sname_ptr;
 	size_t sname_size;
@@ -198,9 +198,12 @@ void VForm::AppendFormEntry(
 	if(file_name) {
 		VFile *vfile=NEW VFile(pool());
 		// maybe transcode text/* files?
-		vfile->set(true/*tainted*/, cvalue_ptr, cvalue_size, file_name);
+		vfile->set(true/*tainted*/, raw_cvalue_ptr, raw_cvalue_size, file_name);
 		value=vfile;
 	} else {
+		size_t cvalue_size;
+		char *cvalue_ptr=
+			(char *)copy(raw_cvalue_ptr, cvalue_size=raw_cvalue_size); 
 		fix_line_breaks(cvalue_ptr, cvalue_size);
 
 		const void *svalue_ptr; size_t svalue_size;

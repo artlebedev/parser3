@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FORM_C="$Date: 2002/08/13 15:55:41 $";
+static const char* IDENT_FORM_C="$Date: 2002/08/15 10:13:19 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -65,8 +65,9 @@ void MForm::configure_admin(Request& r) {
 
 		// read POST data
 		if(r.info.content_length) {
-			r.post_data=(char *)pool.malloc(r.info.content_length);
-			r.post_size=SAPI::read_post(pool, r.post_data, r.info.content_length);
+			char *post_data=(char *)pool.malloc(r.info.content_length);
+			r.post_size=SAPI::read_post(pool, post_data, r.info.content_length);
+			r.post_data=post_data;
 		}
 		if(r.post_size!=r.info.content_length)
 			throw Exception(0, 

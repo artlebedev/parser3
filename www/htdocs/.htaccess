@@ -20,3 +20,7 @@ allow from 213.152.135
 #    AuthName "parser3"
 #    AuthUserFile Y:\parser3project\parser3\www\htdocs\.htpasswd
 #    Require valid-user
+
+
+rewriteengine on
+rewriterule test\.xls /xls-test.html

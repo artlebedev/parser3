@@ -9,7 +9,7 @@
 #ifndef PA_POOL_H
 #define PA_POOL_H
 
-static const char* IDENT_POOL_H="$Date: 2002/08/01 11:41:15 $";
+static const char* IDENT_POOL_H="$Date: 2002/08/15 10:13:19 $";
 
 #include "pa_config_includes.h"
 
@@ -60,6 +60,11 @@ public:
 		if(!real_register_cleanup(cleanup, data))
 			fail_register_cleanup();
 	}
+
+	//{@ helpers
+	void *copy(const void *buf, const size_t size);
+	char *copy(const char *cstr);
+	//}@
 
 	//{@ source charset
 	void set_source_charset(Charset& acharset);
@@ -173,6 +178,8 @@ public:
 	void *malloc(size_t size, int place=0) const { return fpool->malloc(size, place); }
 	void *calloc(size_t size) const { return fpool->calloc(size); }
 	void register_cleanup(void (*cleanup) (void *), void *data) { fpool->register_cleanup(cleanup, data); }
+	void *copy(const void *buf, const size_t size) { return fpool->copy(buf, size); }
+	char *copy(const char *cstr) { return fpool->copy(cstr); }
 #ifdef XML
 
 	const char *transcode_cstr(GdomeDOMString *s) { return fpool->transcode_cstr(s); }
