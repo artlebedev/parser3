@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6, tested with Oracle 7.x.x
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.6 2001/08/23 11:57:15 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.7 2001/08/23 11:59:15 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -289,8 +289,7 @@ public:
 		if(setjmp(cs.mark)) {
 			failed=true;
 			goto cleanup;
-		}
-		{
+		} else {
 			const char *statement=preprocess_statement(services, cs, 
 				astatement, lobs);
 
@@ -484,15 +483,11 @@ private: // private funcs
 				stmthp, offset, limit, 
 				handlers);
 			break;
-		default:/*
+		default:
+		/*
 		case OCI_STMT_INSERT:
 		case OCI_STMT_UPDATE:
-		case OCI_STMT_DELETE:
-		case OCI_STMT_CREATE:
-		case OCI_STMT_DROP:
-		case OCI_STMT_ALTER:
-		case OCI_STMT_BEGIN:
-		case OCI_STMT_DECLARE:*/
+		*/
 			break;
 		}
 	}
@@ -500,7 +495,7 @@ private: // private funcs
 	void fetch_table(SQL_Driver_services& services, OracleSQL_connection_struct &cs, 
 		OCIStmt *stmthp, unsigned long offset, unsigned long limit, 
 		SQL_Driver_query_event_handlers& handlers) {
-		// todo another set/longjump
+
 		OCIParam          *mypard;
 		ub2                    dtype;
 		text                  *col_name;
@@ -519,8 +514,7 @@ private: // private funcs
 		if(setjmp(cs.mark)) {
 			failed=true;
 			goto cleanup;
-		}
-		{
+		} else {
 			// idea of preincrementing is that at error time all handles would free up
 			while(++column_count<=MAX_COLS) {
 				/* get next descriptor, if there is one */
