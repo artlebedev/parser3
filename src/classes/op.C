@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.88 2002/04/16 08:17:42 paf Exp $
+	$Id: op.C,v 1.89 2002/04/16 08:22:19 paf Exp $
 */
 
 #include "classes.h"
@@ -545,7 +545,7 @@ VHash& exception2vhash(Pool& pool, const Exception& e) {
 		hash.put(*exception_source_part_name, new(pool) VString(source));
 #ifndef NO_STRING_ORIGIN
 		const Origin& origin=source.origin();
-		hash.put(*new(pool) String(pool, "file"), 				
+		hash.put(*new(pool) String(pool, "file", 0, true),
 			new(pool) VString(*new(pool) String(pool, origin.file)));
 		hash.put(*new(pool) String(pool, "lineno"),
 			new(pool) VInt(pool, 1+origin.line));
