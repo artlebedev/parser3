@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.2 2001/03/21 14:06:49 paf Exp $
+	$Id: mod_parser3.C,v 1.3 2001/03/21 14:24:54 paf Exp $
 */
 
 #include "httpd.h"
@@ -465,7 +465,7 @@ int read_post(Pool& pool, char *buf, int max_bytes) {
 void add_header_attribute(Pool& pool, const char *key, const char *value) {
 	request_rec *r=static_cast<request_rec *>(pool.info());
 
-	if(strcmp(key, "content-type")==0) {
+	if(strcasecmp(key, "content-type")==0) {
 		/* r->content_type, *not* r->headers_out("Content-type").  If you don't
 		 * set it, it will be filled in with the server's default type (typically
 		 * "text/plain").  You *must* also ensure that r->content_type is lower
@@ -506,9 +506,6 @@ static int parser3_handler(request_rec *r)
     ap_soft_timeout("send example call trace", r);
 	PTRY { // global try
 		const char *filespec_to_process=r->filename;
-			PTHROW(0, 0,
-				0,
-				"no file to process");
 
 		// Request info
 		Request::Info request_info;
