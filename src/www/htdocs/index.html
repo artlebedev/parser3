@@ -1,7 +1,7 @@
 @main[]
-^tcache[]
+#^tcache[]
 #^thashfileexp[]
-#^tcounter[]
+^tcounter[]
 #^tablehash[]
 #^hashfile[]
 #^formclass[]
@@ -47,9 +47,9 @@ OK
 @tcache[]
 #^hashfile:clear[cache]
 $code[^hashfile::open[cache]]
-^code.cache[key](100){
-	^eval(2*3)
-	^code.delete[]
+^code.cache[key](2){
+	^math:random(100)
+#	^code.delete[]
 }
 
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.9 2001/10/24 10:26:16 parser Exp $
+	$Id: pa_db_connection.C,v 1.10 2001/10/24 14:11:25 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -12,6 +12,10 @@
 
 #include "pa_db_connection.h"
 #include "pa_exception.h"
+
+// defines
+
+#define READ_ADDITIONAL_FLAGS DB_RMW
 
 // consts
 
@@ -138,7 +142,7 @@ void DB_Connection::put(const String& key, const String& data, time_t time_to_di
 String *DB_Connection::get(const String& key) {
 	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
 	DBT dbt_data={0}; // must be zeroed
-	int error=db->get(db, ftid, &dbt_key, &dbt_data, 0/*flags*/);
+	int error=db->get(db, ftid, &dbt_key, &dbt_data, READ_ADDITIONAL_FLAGS/*flags*/);
 	if(error==DB_NOTFOUND)
 		return 0;
 	else {
@@ -177,7 +181,7 @@ bool DB_Cursor::get(String *& key, String *& data, u_int32_t flags) {
 	DBT dbt_key={0}; // must be zeroed
 	DBT dbt_data={0}; // must be zeroed
 	
-	int error=cursor->c_get(cursor, &dbt_key, &dbt_data, flags);
+	int error=cursor->c_get(cursor, &dbt_key, &dbt_data, flags | READ_ADDITIONAL_FLAGS);
 	if(error==DB_NOTFOUND)
 		return false;
 

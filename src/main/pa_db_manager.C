@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.C,v 1.3 2001/10/23 12:53:22 parser Exp $
+	$Id: pa_db_manager.C,v 1.4 2001/10/24 14:11:25 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -26,6 +26,21 @@ DB_Manager *DB_manager;
 const int EXPIRE_UNUSED_CONNECTION_SECONDS=60;
 const int CHECK_EXPIRED_CONNECTIONS_SECONDS=EXPIRE_UNUSED_CONNECTION_SECONDS*2;
 
+// callbacks
+
+static void db_paniccall(DB_ENV *dbenv, int error) {
+	throw Exception(0, 0, 
+		0, 
+		"db_paniccall: %s (%d)", 
+		strerror(error), error);
+}
+
+static void db_errcall(const char *, char *buffer) {
+	throw Exception(0, 0, 
+		0, 
+		"db_errcall: %s", 
+		buffer);
+}
 
 // DB_Manager
 
@@ -34,7 +49,11 @@ DB_Manager::DB_Manager(Pool& pool) : Pooled(pool),
 	connection_cache(pool),
 	prev_expiration_pass_time(0) {
 
+	//_asm  int 3;
 	memset(&dbenv, 0, sizeof(dbenv));
+	dbenv.db_paniccall=db_paniccall;
+	dbenv.db_errcall=db_errcall;
+
 	check("db_appinit", 0/*global*/, db_appinit(
 		0/*db_home*/,
 		0/*db_config*/, 
@@ -57,7 +76,7 @@ void DB_Manager::check(const char *operation, const String *source, int error) {
 		throw Exception(0, 0, 
 			source, 
 			"db %s error: %s (%d)", 
-			operation, strerror(errno), errno);
+			operation, strerror(error), error);
 	}
 }
 
