@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/11/28 10:34:39 $";
+static const char * const IDENT="$Date: 2003/11/28 10:40:19 $";
 
 #include "libxslt/extensions.h"
 
@@ -35,6 +35,26 @@ struct MemoryStream {
 
 };
 #endif
+
+
+#ifdef PA_SAFE_MODE
+static int
+xmlFileMatchSafeMode(const char* file_spec_cstr) {
+	if(strstr(filename, "://")) {
+		String* file_spec=new String(file_spec_cstr, true);
+		struct stat finfo;
+		if(stat(file_spec_cstr, &finfo)!=0)
+			throw Exception("file.missing", 
+				file_spec, 
+				"stat failed: %s (%d)", 
+					strerror(errno), errno);
+
+		check_safe_mode(finfo, file_spec, file_spec_cstr);
+	}
+	return 0;
+}
+#endif
+
 
 /**
  * xmlFileMatchWithLocalhostEqDocumentRoot:
@@ -138,6 +158,12 @@ pa_xmlFileCloseMethod (void * /*context*/) {
 
 
 void pa_xml_io_init() {
+#ifdef PA_SAFE_MODE
+	// safe mode checker, always fail match, but checks non-"://" there
+	xmlRegisterInputCallbacks(
+		xmlFileMatchSafeMode, 0,
+		0, 0);
+#endif
 	// http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
 	xmlRegisterInputCallbacks(
 		xmlFileMatchLocalhost, xmlFileOpenLocalhost,
