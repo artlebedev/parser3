@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2004/02/11 10:41:47 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2004/02/11 11:31:39 $";
 
 #include "pa_config_includes.h"
 
@@ -381,9 +381,9 @@ void pa_globals_init() {
 #		endif
 
 #		ifdef LIBGDOME_STATIC
-#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/dsp/libgdome_DebugStatic/libgdome.lib")
+#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/DebugStatic/libgdome.lib")
 #		else
-#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/dsp/libgdome_DebugDynamic/libgdome.lib")
+#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/DebugDynamic/libgdome.lib")
 #		endif
 
 #else
@@ -406,9 +406,9 @@ void pa_globals_init() {
 #		endif
 
 #		ifdef LIBGDOME_STATIC
-#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/dsp/libgdome_ReleaseStatic/libgdome.lib")
+#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/ReleaseStatic/libgdome.lib")
 #		else
-#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/dsp/libgdome_ReleaseDynamic/libgdome.lib")
+#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/ReleaseDynamic/libgdome.lib")
 #		endif
 
 #	endif
