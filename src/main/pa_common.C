@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.82 2001/10/31 15:05:00 paf Exp $
+	$Id: pa_common.C,v 1.83 2001/10/31 16:19:58 paf Exp $
 */
 
 #include "pa_common.h"
@@ -94,7 +94,11 @@ bool file_read(Pool& pool, const String& file_spec,
 			flock(f, LOCK_EX);*/
 		size_t max_size=limit?min(offset+limit, finfo.st_size)-offset:finfo.st_size;
 		if(!max_size) { // eof
-			data=0;
+			if(as_text) {
+				data=pool.malloc(1);
+				*(char*)data=0;
+			} else 
+				data=0;
 			read_size=0;
 		} else {
 			data=pool.malloc(max_size+(as_text?1:0), 3);
