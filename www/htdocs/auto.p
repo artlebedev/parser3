@@ -110,6 +110,8 @@ footer
 
 #################################################################################################
 @postprocess[body][repl;tmp]
+^if($body is file){
+$body}{
 ^if(def $body){
 	^if($MAIN:browser eq "nn" && $MAIN:browser_ver < 5){
 		$repl[^table::create{a	b
@@ -131,6 +133,7 @@ footer
 	$result[^result.match[ýíòÅð][g]{$not_optimized_enter}]
 }{
 	$result[]
+}
 }
 ^getStat[]
 ^rusage[]

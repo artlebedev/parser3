@@ -605,7 +605,8 @@ Xhashfile
         если указана ширина_символа, то monospaced, если 0, то ширина_символа = ширине gif
     !^картинка.text(x;y)[текст_надписи] AS_IS
     !^картинка.length[текст_надписи] AS_IS
-    !^картинка.gif[] -- кодирует в FILE с content-type=image/gif
+    !^картинка.gif[возможно, имя файла] -- кодирует в FILE с content-type=image/gif
+        имя файла будет использовано при $response:download
     !^картинка.arc(center x;center y;width;height;start in degrees;end in degrees;color)
     !^картинка.sector(center x;center y;width;height;start in degrees;end in degrees;color)
     !^картинка.circle(center x;center y;r;color)
@@ -700,8 +701,8 @@ Xhashfile
         для удобного создания по значению из базы
         формат1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
         формат2: %H:%M[:%S]
-    ^date::unix-timestamp()
-    ^date.unix-timestamp[]
+    !^date::unix-timestamp()
+    !^date.unix-timestamp[]
     !$date.year month day  hour minute second  weekday yearday(0...) daylightsaving TZ
         read-only
         TZ="" << локальная зона

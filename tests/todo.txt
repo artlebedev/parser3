@@ -1,0 +1,11 @@
+$now[^date::now[]]
+^now.unix-timestamp[]
+<hr>
+$date[^date::unix-timestamp(1067857323)]
+$date.hour $date.minute $date.second
+#^date.unix-timestamp(1067857323)
+
+---------
+
+$image[^image::create(10;10)]
+$response:download[^image.gif[a.gif]]

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2003/10/30 12:46:23 $";
+static const char* IDENT_IMAGE_C="$Date: 2003/11/03 11:22:06 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -825,14 +825,18 @@ static void _gif(Request& r, MethodParams& params) {
 			0, 
 			"does not contain an image");
 
-	// could _ but don't thing it's wise to use $image.src for vfile.name
+	const String *file_name=0;
+	if(params.count()>0)
+		file_name=&params.as_string(0, "file name must be string");
 
 	gdBuf buf=image->Gif();
 	
 	VFile& vfile=*new VFile;
 	Value* content_type=new VString(*new String("image/gif"));
 	vfile.set(false/*not tainted*/, 
-		(const char*)buf.ptr, buf.size, 0, content_type);
+		(const char*)buf.ptr, buf.size, 
+		file_name? file_name->cstr(String::L_FILE_SPEC): 0, 
+		content_type);
 
 	r.write_no_lang(vfile);
 }
@@ -1242,7 +1246,7 @@ MImage::MImage(): Methoded("image") {
 	add_native_method("create", Method::CT_DYNAMIC, _create, 2, 3);
 
 	// ^image.gif[]
-	add_native_method("gif", Method::CT_DYNAMIC, _gif, 0, 0);
+	add_native_method("gif", Method::CT_DYNAMIC, _gif, 0, 1);
 
 	// ^image.line(x0;y0;x1;y1;color)
 	add_native_method("line", Method::CT_DYNAMIC, _line, 5, 5);
