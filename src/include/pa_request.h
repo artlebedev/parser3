@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_request.h,v 1.32 2001/03/10 16:34:35 paf Exp $
+	$Id: pa_request.h,v 1.33 2001/03/10 16:58:56 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -52,7 +52,9 @@ public:
 		String *name=0, 
 		VClass *base_class=0, 
 		bool fail_on_read_problem=true); // core.C
-	Value& autocalc(Value& value, const String *name=0, 
+	Value& autocalc(
+		Value& value, 
+		const String *name=0, 
 		bool make_string=true); // execute.C
 
 	void write(const String& astring) {

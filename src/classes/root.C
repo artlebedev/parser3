@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: root.C,v 1.10 2001/03/10 16:34:33 paf Exp $
+	$Id: root.C,v 1.11 2001/03/10 16:58:56 paf Exp $
 */
 
 #include "pa_request.h"
@@ -13,6 +13,7 @@ static void _if(Request& r, Array *params) {
 	bool condition=
 		r.autocalc(
 			*static_cast<Value *>(params->get(0)), 
+			0/*no name*/,
 			false/*don't make it string*/).get_bool();
 	if(condition) {
 		Value& value=r.autocalc(*static_cast<Value *>(params->get(1)));
