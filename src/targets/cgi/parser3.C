@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/12/05 09:41:56 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/12/05 10:08:59 $";
 
 #include "pa_config_includes.h"
 
@@ -87,6 +87,9 @@ static void log(const char *fmt, va_list args) {
 	// fallback to stderr
 	if(!opened)
 		f=stderr;
+
+	// use no memory [so that we could log out-of-memory error]
+	setbuf(f, 0); // stderr stream is unbuffered by default, but still...
 
 	// prefix
 	time_t t=time(0);
