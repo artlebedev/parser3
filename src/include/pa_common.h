@@ -1,9 +1,9 @@
 /*
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.4 2001/03/10 16:34:35 paf Exp $
+	$Id: pa_common.h,v 1.5 2001/03/11 08:16:32 paf Exp $
 */
 
 #ifndef PA_COMMON_H

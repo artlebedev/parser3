@@ -1,9 +1,9 @@
 /*
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.26 2001/03/10 16:34:38 paf Exp $
+	$Id: compile_tools.h,v 1.27 2001/03/11 08:16:34 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS

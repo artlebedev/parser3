@@ -1,9 +1,9 @@
 /*
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.88 2001/03/11 07:52:42 paf Exp $
+	$Id: compile.y,v 1.89 2001/03/11 08:16:34 paf Exp $
 */
 
 /*

@@ -1,9 +1,9 @@
 /*
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.2 2001/03/10 16:34:41 paf Exp $
+	$Id: pa_pool.C,v 1.3 2001/03/11 08:16:36 paf Exp $
 */
 
 #include <stdlib.h>

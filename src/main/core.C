@@ -1,9 +1,9 @@
 /*
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.C,v 1.56 2001/03/11 08:02:06 paf Exp $
+	$Id: core.C,v 1.57 2001/03/11 08:16:34 paf Exp $
 */
 
 #include "core.h"

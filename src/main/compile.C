@@ -1,9 +1,9 @@
 /*
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.24 2001/03/10 16:34:38 paf Exp $
+	$Id: compile.C,v 1.25 2001/03/11 08:16:34 paf Exp $
 */
 
 #include "pa_request.h"
