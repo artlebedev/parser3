@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_includes.h,v 1.17 2002/02/08 08:30:12 paf Exp $
+	$Id: pa_config_includes.h,v 1.18 2002/02/13 13:50:49 paf Exp $
 
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
@@ -72,10 +72,9 @@
 
 #ifdef HAVE_SYS_TIME_H
 #	include <sys/time.h>
-#else
-#	ifdef HAVE_TIME_H
-#		include <time.h>
-#	endif
+#endif
+#ifdef HAVE_TIME_H
+#	include <time.h>
 #endif
 
 #ifdef HAVE_STDLIB_H
