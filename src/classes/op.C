@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.21 2001/05/17 13:23:28 parser Exp $
+	$Id: op.C,v 1.22 2001/05/21 16:01:10 parser Exp $
 */
 
 #include "classes.h"
@@ -309,6 +309,45 @@ static void _connect(Request& r, const String&, MethodParams *params) {
 			rethrow_me.comment());
 }
 
+static void _sql(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	if(!r.connection)
+		PTHROW(0, 0,
+			&method_name,
+			"without connect");
+
+	Value& statement=params->get_junction(0, "statement must be code");
+
+	Temp_lang temp_lang(r, String::UL_SQL);
+	const String& statement_string=r.process(statement).as_string();
+	const char *statement_cstr=
+		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
+	unsigned int sql_column_count; SQL_Driver::Cell *sql_columns;
+	unsigned long sql_row_count; SQL_Driver::Cell **sql_rows;
+	bool need_rethrow=false; Exception rethrow_me;
+	PTRY {
+		r.connection->query(
+			statement_cstr, 0, 0,
+			&sql_column_count, &sql_columns,
+			&sql_row_count, &sql_rows);
+	}
+	PCATCH(e) { // connect/process problem
+		rethrow_me=e;  need_rethrow=true;
+	}
+	PEND_CATCH
+	if(need_rethrow)
+		PTHROW(rethrow_me.type(), rethrow_me.code(),
+			&statement_string, // setting more specific source [were url]
+			rethrow_me.comment());
+
+	// there are some result rows, which is wrong
+	if(sql_row_count)
+		PTHROW(0, 0,
+			&statement_string,
+			"must not return result");
+}
+
 // constructor
 
 MOP::MOP(Pool& apool) : Methoded(apool),
@@ -370,6 +409,8 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
 	add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
 
+	// ^sql[query]
+	add_native_method("sql", Method::CT_ANY, _sql, 1, 1);
 }
 
 // constructor & configurator

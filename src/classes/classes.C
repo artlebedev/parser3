@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: classes.C,v 1.5 2001/04/28 15:22:38 paf Exp $
+	$Id: classes.C,v 1.6 2001/05/21 16:01:10 parser Exp $
 */
 
 #include "classes.h"
@@ -53,6 +53,8 @@ void Methoded_array::configure_user(Request& r) {
 static void register_one(Array::Item *value, void *info) {
 	Request& r=*static_cast<Request *>(info);
 	Methoded *methoded=static_cast<Methoded *>(value);
+	// register "operators" as a superclass of all system classes
+	methoded->set_base(r.OP);
 	methoded->register_directly_used(r);
 }
 

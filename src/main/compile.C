@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.36 2001/05/07 14:00:49 paf Exp $
+	$Id: compile.C,v 1.37 2001/05/21 16:01:10 parser Exp $
 */
 
 #include "pa_opcode.h"
@@ -34,8 +34,11 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 		// yes. create it
 		cclass=NEW VClass(pool());
 		// defaulting base. may change with @BASE
+		// dont use ?: for there would be getting & of temp object
 		if(base_class)
 			cclass->set_base(*base_class);
+		else // register "operators" as a superclass of all user classes
+			cclass->set_base(OP);
 		classes().put(*name, cclass);
 		cclass->set_name(*name);
 	} else

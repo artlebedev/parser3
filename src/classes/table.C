@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.80 2001/05/11 17:45:10 parser Exp $
+	$Id: table.C,v 1.81 2001/05/21 16:01:10 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -525,20 +525,18 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 
 	Table& table=*new(pool) Table(pool, &method_name, &table_columns);
 
-	{
-		for(unsigned long r=0; r<sql_row_count; r++) {
-			SQL_Driver::Cell *sql_cells=sql_rows[r];
-			Array& table_row=*new(pool) Array(pool);
-			
-			for(unsigned int i=0; i<sql_column_count; i++) {
-				String& table_cell=*new(pool) String(pool);
-				table_cell.APPEND_TAINTED(
-					(const char *)sql_cells[i].ptr, sql_cells[i].size,
-					statement_cstr, r);
-				table_row+=&table_cell;
-			}
-			table+=&table_row;
+	for(unsigned long row=0; row<sql_row_count; row++) {
+		SQL_Driver::Cell *sql_cells=sql_rows[row];
+		Array& table_row=*new(pool) Array(pool);
+		
+		for(unsigned int i=0; i<sql_column_count; i++) {
+			String& table_cell=*new(pool) String(pool);
+			table_cell.APPEND_TAINTED(
+				(const char *)sql_cells[i].ptr, sql_cells[i].size,
+				statement_cstr, row);
+			table_row+=&table_cell;
 		}
+		table+=&table_row;
 	}
 
 	// replace any previous table value
