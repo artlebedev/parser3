@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.C,v 1.32 2001/05/15 15:51:05 parser Exp $
+	$Id: pa_array.C,v 1.33 2001/05/16 16:48:56 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,9 +15,30 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
+#include "pa_sapi.h"
+#define ARRAY_STAT_MAX_PIECES 1000
+int array_stat_pieces[ARRAY_STAT_MAX_PIECES];
+void log_array_stats(Pool& pool) {
+	for(int i=0; i<ARRAY_STAT_MAX_PIECES; i++)
+		if(int v=array_stat_pieces[i])
+			SAPI::log(pool, "%i: %10d",	
+				i, v);
+}
+
+#define ARRAY_STAT_MAX_LEN 1000
+int array_stat_lens[ARRAY_STAT_MAX_LEN];
+void log_array_lens(Pool& pool) {
+	for(int i=0; i<ARRAY_STAT_MAX_LEN; i++)
+		if(int v=array_stat_lens[i])
+			SAPI::log(pool, "%i: %10d",	
+				i, v);
+}
+
 Array::Array(Pool& apool, int initial_rows) :
-	Pooled(apool) {
-	initial_rows=min(3, initial_rows);
+	Pooled(apool),expand_times(0) {
+		array_stat_pieces[0]++;
+		array_stat_lens[0]++;
+	initial_rows=max(initial_rows, CR_INITIAL_ROWS_DEFAULT);
 
 	head=tail=static_cast<Chunk *>(
 		malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
@@ -32,8 +53,12 @@ Array::Array(Pool& apool, int initial_rows) :
 }
 
 void Array::expand(int chunk_rows) {
-	if(chunk_rows<CR_INITIAL_ROWS_DEFAULT)
-		chunk_rows=CR_INITIAL_ROWS_DEFAULT;
+	{
+		int index=min(++expand_times, ARRAY_STAT_MAX_PIECES-1);
+		if(index)
+			array_stat_pieces[index-1]++;
+		array_stat_pieces[index]++;
+	}
 
 	Chunk *chunk=tail=static_cast<Chunk *>(
 		malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *)));
@@ -51,6 +76,13 @@ Array& Array::operator += (Item *src) {
 
 	append_here->item=src;
 	append_here++; fused_rows++;
+	{
+		int index=min(fused_rows, ARRAY_STAT_MAX_LEN-1);
+		if(index)
+			array_stat_lens[index-1]++;
+		array_stat_lens[index]++;
+	}
+
 
 	return *this;
 }
@@ -59,7 +91,7 @@ Array::Item *Array::get(int index) const {
 	if(!(index>=0 && index<size())) {
 		THROW(0, 0, 0, 
 			"Array::get(%d) out of range [0..%d]", index, size()-1);
-		return 0;
+		return 0; // never
 	}
 
 	// if they ask index to the left of cached position, forget cache
@@ -82,7 +114,7 @@ void Array::put(int index, Item *item) {
 	if(!(index>=0 && index<size())) {
 		THROW(0, 0, 0, 
 			"Array::put(%d) out of range [0..%d]", index, size()-1);
-		return;
+		return; // never
 	}
 
 	// if they ask index to the left of cached position, forget cache

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.91 2001/05/15 15:51:05 parser Exp $
+	$Id: pa_string.h,v 1.92 2001/05/16 16:48:56 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -22,12 +22,13 @@
 class Table;
 
 /**
-	$MAIN:html-typo table elements must enlarge string not more that that
+	$MAIN:html-typo table elements must enlarge string not more that that.
+
 	that's a tradeoff - otherwise we'd have to scan string twice:
 	- first for buffer length
 	- second for replacements themselves
 */
-#define UNTAINT_TIMES_BIGGER 20
+#define UNTAINT_TIMES_BIGGER 10
 
 #ifndef NO_STRING_ORIGIN
 #	define STRING_APPEND_PARAMS \

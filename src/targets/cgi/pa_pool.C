@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.8 2001/05/15 15:41:20 parser Exp $
+	$Id: pa_pool.C,v 1.9 2001/05/16 16:48:56 parser Exp $
 */
 
 #include <stdlib.h>
@@ -155,13 +155,11 @@ ST(WWrapper);
 
 void *Pool::real_malloc(size_t size, int place) {
 	int index=min(MALLOC_STAT_MAXSIZE-1, size);
-/*	if(size==497688) {
+/*	if(size==88) {
 		_asm { 
 			int 3; 
 		};
 	}*/
-	/*if(size==132 && type_name)
-		SAPI::log(*this, "type_name:%s", type_name);*/
 	malloc_times[place][index]++;
 	malloc_places[place]++;
 	return ::malloc(size);

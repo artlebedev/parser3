@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.38 2001/05/15 15:51:05 parser Exp $
+	$Id: pa_array.h,v 1.39 2001/05/16 16:48:56 parser Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -53,8 +53,8 @@ public:
 	typedef bool (*First_that_func)(Item *value, void *info);
 
 	enum {
-		CR_INITIAL_ROWS_DEFAULT=10, ///< default preallocated row count
-		CR_GROW_COUNT=10 ///< each time the Array chunk_is_full() array expanded()
+		CR_INITIAL_ROWS_DEFAULT=3, ///< default preallocated row count
+		CR_GROW_COUNT=3 ///< each time the Array chunk_is_full() array expanded()
 	};
 
 public:
@@ -174,6 +174,7 @@ private:
 	bool chunk_is_full() {
 		return append_here == link_row;
 	}
+	int expand_times;
 	void expand(int chunk_rows);
 
 private: //disabled

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.156 2001/05/15 10:01:25 parser Exp $
+	$Id: execute.C,v 1.157 2001/05/16 16:48:56 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -24,13 +24,14 @@
 #include "pa_vfile.h"
 #include "pa_vimage.h"
 
-#include <stdio.h>
+//#define DEBUG_EXECUTE
+
 
 #define PUSH(value) stack.push(value)
 #define POP() static_cast<Value *>(stack.pop())
 #define POP_NAME() static_cast<Value *>(stack.pop())->as_string()
 
-
+#ifdef DEBUG_EXECUTE
 char *opcode_name[]={
 	// literals
 	"VALUE",  "CURLY_CODE__STORE_PARAM",  "EXPR_CODE__STORE_PARAM",
@@ -60,7 +61,6 @@ char *opcode_name[]={
 };
 
 void va_log_printf(Pool& pool, const char *fmt,va_list args) {
-	return;
 	char buf[MAX_STRING];
 	vsnprintf(buf, MAX_STRING, fmt, args);
 	SAPI::log(pool, "%s", buf);
@@ -74,7 +74,7 @@ void log_printf(Pool& pool, const char *fmt, ...) {
 }
 
 void dump(Pool& pool, int level, const Array& ops) {
-	if(0){
+	{
 		int size=ops.quick_size();
 		//log_printf(pool, "size=%d\n", size);
 		for(int i=0; i<size; i++) {
@@ -107,27 +107,32 @@ void dump(Pool& pool, int level, const Array& ops) {
 		}
 	}
 }
+#endif
 
 void Request::execute(const Array& ops) {
-	if(1) {
-		log_printf(pool(), "source----------------------------\n");
-		dump(pool(), 0, ops);
-		log_printf(pool(), "execution-------------------------\n");
-	}
+#ifdef DEBUG_EXECUTE
+	log_printf(pool(), "source----------------------------\n");
+	dump(pool(), 0, ops);
+	log_printf(pool(), "execution-------------------------\n");
+#endif
 
 	int size=ops.quick_size();
 	//log_printf(pool(), "size=%d\n", size);
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
+#ifdef DEBUG_EXECUTE
 		log_printf(pool(), "%d:%s", stack.top_index()+1, opcode_name[op.code]);
+#endif
 
 		switch(op.code) {
 		// param in next instruction
 		case OP_VALUE:
 			{
 				Value *value=static_cast<Value *>(ops.quick_get(++i));
+#ifdef DEBUG_EXECUTE
 				log_printf(pool(), " \"%s\" %s", value->get_string()->cstr(), value->type());
+#endif
 				PUSH(value);
 				break;
 			}
@@ -137,9 +142,10 @@ void Request::execute(const Array& ops) {
 				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
 				// code
 				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
+#ifdef DEBUG_EXECUTE
 				log_printf(pool(), " (%d)\n", local_ops->size());
 				dump(pool(), 1, *local_ops);
-				
+#endif				
 				// when they evaluate expression parameter,
 				// the object expression result
 				// does not need to be written into calling frame
@@ -236,7 +242,9 @@ void Request::execute(const Array& ops) {
 		case OP_STRING__WRITE:
 			{
 				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
+#ifdef DEBUG_EXECUTE
 				log_printf(pool(), " \"%s\"", vstring->string().cstr());
+#endif
 				write_no_lang(vstring->string());
 				break;
 			}
@@ -354,7 +362,9 @@ void Request::execute(const Array& ops) {
 
 		case OP_CALL:
 			{
+#ifdef DEBUG_EXECUTE
 				log_printf(pool(), "->\n");
+#endif
 				VMethodFrame *frame=static_cast<VMethodFrame *>(POP());
 				frame->fill_unspecified_params();
 				PUSH(self);  
@@ -425,7 +435,9 @@ void Request::execute(const Array& ops) {
 				self=static_cast<VAliased *>(POP());
 
 				PUSH(value);
+#ifdef DEBUG_EXECUTE
 				log_printf(pool(), "<-returned");
+#endif
 				break;
 			}
 
@@ -706,7 +718,9 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 	Junction *junction=value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
 		// process it
+#ifdef DEBUG_EXECUTE
 		log_printf(pool(), "ja->\n");
+#endif
 		PUSH(self);  
 		PUSH(root);  
 		PUSH(rcontext);  
@@ -744,7 +758,9 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 		root=POP();  
 		self=static_cast<VAliased *>(POP());
 		
+#ifdef DEBUG_EXECUTE
 		log_printf(pool(), "<-ja returned");
+#endif
 	} else
 		result=&value;
 
