@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/02/24 12:17:55 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/07/15 06:38:10 $"; 
 
 #include "pa_config_includes.h"
 #include "pa_os.h"
@@ -13,11 +13,6 @@ static const char * const IDENT_COMMON_C="$Date: 2004/02/24 12:17:55 $";
 #	if defined(WIN32)
 #		include <windows.h>
 #	endif
-
-// locking constants
-//#define PA_DEBUG_NO_LOCKING
-
-#ifdef PA_DEBUG_NO_LOCKING
 
 #ifdef HAVE_FLOCK
 
@@ -60,14 +55,6 @@ int pa_unlock(int fd) { FLOCK(F_TLOCK); }
 #endif
 #endif
 #endif
-#endif
-
-#else
-int pa_lock_shared_blocking(int /*fd*/) { return 0; }
-int pa_lock_exclusive_blocking(int /*fd*/) { return 0; }
-int pa_lock_exclusive_nonblocking(int /*fd*/) { return 0; }
-int pa_unlock(int /*fd*/) { return 0; }
-
 #endif
 
 int pa_sleep(unsigned long secs, unsigned long usecs) {
