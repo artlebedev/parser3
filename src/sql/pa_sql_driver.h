@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver.h,v 1.20 2001/11/05 11:46:29 paf Exp $
+	$Id: pa_sql_driver.h,v 1.21 2001/11/11 10:52:50 paf Exp $
 
 
 	driver dynamic library must look like this:
@@ -46,7 +46,7 @@ public:
 	jmp_buf mark;
 };
 
-#define SQL_DRIVER_API_VERSION 0x0100
+#define SQL_DRIVER_API_VERSION 0x0002
 #define SQL_DRIVER_CREATE create
 #define SQL_DRIVER_CREATE_NAME "create" /* could not figure out how to # it :( */
 
@@ -67,7 +67,7 @@ public:
 	/// get api version
 	virtual int api_version() =0;
 	/// initialize driver by loading sql dynamic link library
-	virtual const char *initialize(const char *dlopen_file_spec) =0;
+	virtual const char *initialize(char *dlopen_file_spec) =0;
 	/**	connect to sql database using 
 		@param used_only_to_connect_url 
 			format is driver specific

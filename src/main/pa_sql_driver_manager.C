@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.C,v 1.52 2001/11/08 14:47:32 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.53 2001/11/11 10:52:50 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -153,11 +153,11 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 			global_protocol_cstr);
 
 		SQL_Driver *driver;
-		const String *dlopen_file_spec=0;
 		// first trying to get cached driver
 		if(!(driver=get_driver_from_cache(global_protocol))) {
 			// no cached
 			const String *library=0;
+			const String *dlopen_file_spec=0;
 			if(protocol2driver_and_client->locate(0, global_protocol)) {
 				if(!(library=protocol2driver_and_client->item(1)) || library->size()==0)
 					throw Exception(0, 0,
@@ -202,16 +202,15 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 						driver_api_version, SQL_DRIVER_API_VERSION);
 
 			// initialise by connecting to sql client dynamic link library
-			bool specified_dlopen_file_spec=dlopen_file_spec && dlopen_file_spec->size();
-			const char *dlopen_file_spec_cstr=
-				specified_dlopen_file_spec?
-				dlopen_file_spec->cstr(String::UL_FILE_SPEC):0;
+			char *dlopen_file_spec_cstr=
+				dlopen_file_spec && dlopen_file_spec->size()?
+				dlopen_file_spec->cstr(String::UL_AS_IS):0;
 			if(const char *error=driver->initialize(
 				dlopen_file_spec_cstr))
 				throw Exception(0, 0,
 					library,
 					"driver failed to initialize client library '%s', %s",
-						specified_dlopen_file_spec?dlopen_file_spec_cstr:"unspecifed", 
+						dlopen_file_spec_cstr?dlopen_file_spec_cstr:"unspecifed", 
 						error);
 
 			// cache it
