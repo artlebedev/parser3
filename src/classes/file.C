@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2004/03/02 15:54:07 $";
+static const char * const IDENT_FILE_C="$Date: 2004/06/18 15:55:46 $";
 
 #include "pa_config_includes.h"
 
@@ -687,7 +687,9 @@ static void _sql(Request& r, MethodParams& params) {
 		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
 	File_sql_event_handlers handlers(statement_string, statement_cstr);
 	r.connection()->query(
-		statement_cstr, 0, 0, 
+		statement_cstr, 
+		0, 0,
+		0, 0, 
 		handlers,
 		statement_string);
 

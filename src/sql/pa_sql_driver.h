@@ -26,13 +26,17 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char * const IDENT_SQL_DRIVER_H="$Date: 2004/05/25 07:05:52 $";
+static const char * const IDENT_SQL_DRIVER_H="$Date: 2004/06/18 15:55:47 $";
 
 #include <sys/types.h>
 #include <setjmp.h>
 #include <stdlib.h>
 
-#define SQL_DRIVER_API_VERSION 0x0008
+/*
+    1..8 not logged
+	9 introducing placeholders
+*/
+#define SQL_DRIVER_API_VERSION 9
 #define SQL_DRIVER_CREATE create /* used in driver implementation */
 #define SQL_DRIVER_CREATE_NAME "create" /* could not figure out how to # it :( */
 
@@ -113,6 +117,13 @@ public:
 class SQL_Driver {
 public:
 
+	struct Placeholder {
+		const char* name;
+		const char* value;
+		bool is_null;
+		bool were_updated;
+	};
+
 	/** allocated using our allocator,
 		@todo never freed
 	*/
@@ -144,7 +155,9 @@ public:
 	virtual const char* quote(void *connection,
 		const char* str, unsigned int length) =0;
 	virtual void query(void *connection,
-		const char* statement, unsigned long offset, unsigned long limit,
+		const char* statement, 
+		size_t placeholders_count, Placeholder* placeholders,
+		unsigned long offset, unsigned long limit,
 		SQL_Driver_query_event_handlers& handlers) =0;
 };
 

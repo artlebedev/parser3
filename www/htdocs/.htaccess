@@ -47,3 +47,5 @@ RewriteRule ^admin2/([^/]+)/(.*) http://${sub:$1|NotFound}/admin/$2 [L,P]
 
 #RewriteRule ^admin/(.*) /admin2/%{SERVER_NAME}/$1
 #RewriteRule ^admin2/([^.]+)[^/]+/(.*) http/$1.samsung.ru/admin/$2 [L]
+
+RewriteRule % /ok.html

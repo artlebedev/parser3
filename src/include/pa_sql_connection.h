@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char * const IDENT_SQL_CONNECTION_H="$Date: 2004/02/11 15:33:14 $";
+static const char * const IDENT_SQL_CONNECTION_H="$Date: 2004/06/18 15:55:47 $";
 
 
 #include "pa_sql_driver.h"
@@ -138,13 +138,17 @@ public:
 	}
 
 	void query(
-		const char* statement, unsigned long offset, unsigned long limit,
+		const char* statement, 
+		size_t placeholders_count, SQL_Driver::Placeholder* placeholders,
+		unsigned long offset, unsigned long limit,
 		SQL_Driver_query_event_handlers& handlers, 
 		const String& source) {
 		try {
 			SQL_CONNECTION_SERVICED_FUNC_GUARDED(
 				fdriver.query(fconnection, 
-					statement, offset, limit, 
+					statement, 
+					placeholders_count, placeholders,
+					offset, limit, 
 					handlers)
 			);	
 		} catch(const Exception& e) { // query problem

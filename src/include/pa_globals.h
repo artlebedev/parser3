@@ -8,20 +8,13 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char * const IDENT_GLOBALS_H="$Date: 2004/04/01 11:43:53 $";
-
-
-#include "pa_hash.h"
-#include "pa_string.h"
+static const char * const IDENT_GLOBALS_H="$Date: 2004/06/18 15:55:47 $";
 
 #ifdef XML
 #	include "libxml/tree.h"
 #	include "gdome.h"
 #endif
 
-class Dictionary;
-class Charset;
-class Table;
 class Request;
 
 /// initialize global variables

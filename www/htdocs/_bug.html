@@ -1,4 +1,16 @@
-$t[^table::create{a
-^taint[1	2]}]
-^t.save[t.txt]
-OK
+^connect[oracle://mts_imprimatur2:imp2@mts]{
+#    ^void:sql{create table paf(a clob)}
+#    ^void:sql{insert into paf (a) values (/**a**/'a')}
+#    ^void:sql{insert into paf (a) values (:unk)}
+	^void:sql{delete from pif}
+	^void:sql{call paf(:a)}[
+		$.bind[
+			$.a[2]
+		]
+	]
+	^int:sql{select count(*) from pif}
+	"^string:sql{select a from pif}"
+
+#	^string:sql{select a from paf}
+	OK
+}

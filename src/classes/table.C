@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2004/05/26 08:21:56 $";
+static const char * const IDENT_TABLE_C="$Date: 2004/06/18 15:55:47 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -36,6 +36,7 @@ DECLARE_CLASS_VAR(table, new MTable, 0);
 
 // defines for globals
 
+#define SQL_BIND_NAME "bind"
 #define SQL_LIMIT_NAME "limit"
 #define SQL_OFFSET_NAME "offset"
 #define SQL_DEFAULT_NAME "default"
@@ -44,6 +45,7 @@ DECLARE_CLASS_VAR(table, new MTable, 0);
 
 // globals
 
+String sql_bind_name(SQL_BIND_NAME);
 String sql_limit_name(SQL_LIMIT_NAME);
 String sql_offset_name(SQL_OFFSET_NAME);
 String sql_default_name(SQL_DEFAULT_NAME);
@@ -926,7 +928,9 @@ static void _sql(Request& r, MethodParams& params) {
 	gettimeofday(&mt[0],NULL);
 #endif	
 	r.connection()->query(
-		statement_cstr, offset, limit, 
+		statement_cstr, 
+		0, 0,
+		offset, limit, 
 		handlers,
 		statement_string);
 	

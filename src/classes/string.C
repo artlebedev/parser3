@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/04/06 13:14:22 $";
+static const char * const IDENT_STRING_C="$Date: 2004/06/18 15:55:47 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -453,7 +453,9 @@ const String* sql_result_string(Request& r, MethodParams& params,
 		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
 	String_sql_event_handlers handlers(statement_string, statement_cstr);
 	r.connection()->query(
-		statement_cstr, offset, limit, 
+		statement_cstr, 
+		0, 0,
+		offset, limit, 
 		handlers,
 		statement_string);
 	

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2004/03/02 16:55:28 $";
+static const char * const IDENT_VOID_C="$Date: 2004/06/18 15:55:47 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -15,6 +15,10 @@ static const char * const IDENT_VOID_C="$Date: 2004/03/02 16:55:28 $";
 #include "pa_vdouble.h"
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
+
+// externs
+
+extern String sql_bind_name;
 
 // class
 
@@ -56,6 +60,29 @@ static void _double(Request& r, MethodParams& params) {
 }
 
 #ifndef DOXYGEN
+static void marshal_bind(
+						 HashStringValue::key_type aname, 
+						 HashStringValue::value_type avalue,
+						 SQL_Driver::Placeholder** pptr) 
+{
+	SQL_Driver::Placeholder& ph=**pptr;
+	ph.name=aname.cstr();
+	ph.value=avalue->as_string().cstr();
+	ph.is_null=avalue->get_class()==void_class;
+	ph.were_updated=false;
+
+	*pptr++;
+}
+
+// not static, used elsewhere
+int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders) {
+	int hash_count=hash.count();
+	placeholders=new(UseGC) SQL_Driver::Placeholder[hash_count];
+	SQL_Driver::Placeholder* ptr=placeholders;
+	hash.for_each(marshal_bind, &ptr);
+	return hash_count;
+}
+
 class Void_sql_event_handlers: public SQL_Driver_query_event_handlers {
 	const String& statement_string;
 public:
@@ -76,13 +103,40 @@ public:
 static void _sql(Request& r, MethodParams& params) {
 	Value& statement=params.as_junction(0, "statement must be code");
 
+	HashStringValue* bind=0;
+	if(params.count()>1) {
+		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
+		if(!voptions.is_string())
+			if(HashStringValue* options=voptions.get_hash()) {
+				int valid_options=0;
+				if(Value* vbind=options->get(sql_bind_name)) {
+					valid_options++;
+					bind=vbind->get_hash();
+				}
+				if(valid_options!=options->count())
+					throw Exception("parser.runtime",
+						0,
+						"called with invalid option");
+			} else
+				throw Exception("parser.runtime",
+					0,
+					"options must be hash");
+	}
+
+	SQL_Driver::Placeholder* placeholders=0;
+	uint placeholders_count=0;
+	if(bind)
+		placeholders_count=marshal_binds(*bind, placeholders);
+
 	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
 	const char* statement_cstr=
 		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
 	Void_sql_event_handlers handlers(statement_string);
 	r.connection()->query(
-		statement_cstr, 0, 0,
+		statement_cstr, 
+		placeholders_count, placeholders,
+		0, 0,
 		handlers,
 		statement_string);
 }
@@ -133,7 +187,7 @@ MVoid::MVoid(): Methoded("void") {
 	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 1);
 
 	// ^sql[query]
-	add_native_method("sql", Method::CT_STATIC, _sql, 1, 1);
+	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 
 	// ^void.left() ^void.right()
 	add_native_method("left", Method::CT_DYNAMIC, _left_right, 1, 1);

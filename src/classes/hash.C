@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2004/03/25 11:49:25 $";
+static const char * const IDENT_HASH_C="$Date: 2004/06/18 15:55:47 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -260,7 +260,9 @@ static void _sql(Request& r, MethodParams& params) {
 		distinct,
 		hash);
 	r.connection()->query(
-		statement_cstr, offset, limit,
+		statement_cstr, 
+		0, 0,
+		offset, limit,
 		handlers,
 		statement_string);
 }
