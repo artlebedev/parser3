@@ -30,6 +30,7 @@ dnl Arguments
 AC_ARG_ENABLE(string-origins, [  --disable-string-origins to switch off string origin tracking],
 [
 if test "$enableval" = "no"; then
+	AC_MSG_WARN(disabling string origin tracking)
 	AC_DEFINE(NO_STRING_ORIGIN,,no string origin tracking)
 fi
 ]
@@ -39,7 +40,18 @@ AC_ARG_ENABLE(execs, [  --disable-execs         to disable any execs
                           (file::exec, file::cgi, unix mail:send)],
 [
 if test "$enableval" = "no"; then
+	AC_MSG_WARN(disabling file execs)
 	AC_DEFINE(NO_PA_EXECS,,pa_exec disabled)
+fi
+]
+)
+
+AC_ARG_ENABLE(foreign-group-files, [  --disable-foreign-group-files to disable reads
+                          of files belonging to group other then effective],
+[
+if test "$enableval" = "no"; then
+	AC_MSG_WARN(disabling reading of files belonging to group other then effective)
+	AC_DEFINE(NO_FOREIGN_GROUP_FILES,,disabled reading of files of non-process-effective-group)
 fi
 ]
 )

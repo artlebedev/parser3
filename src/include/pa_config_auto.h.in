@@ -147,6 +147,9 @@
 /* pa_exec disabled */
 #undef NO_PA_EXECS
 
+/* disabled reading of files of non-process-effective-group */
+#undef NO_FOREIGN_GROUP_FILES
+
 /* xml-abled parser */
 #undef XML
 
