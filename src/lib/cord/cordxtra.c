@@ -432,12 +432,6 @@ char CORD_nul_func(size_t i, void * client_data)
     return((char)(unsigned long)client_data);
 }
 
-CORD CORD_chars_block(char c, size_t i)
-{
-    return(CORD_from_fn_gen(CORD_nul_func, (void *)(unsigned long)c, i));
-}
-
-
 CORD CORD_chars(char c, size_t i)
 {
     return(CORD_from_fn(CORD_nul_func, (void *)(unsigned long)c, i));

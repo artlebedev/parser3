@@ -312,21 +312,6 @@ CORD CORD_from_fn(CORD_fn fn, void * client_data, size_t len)
     }
 }
 
-CORD CORD_from_fn_gen(CORD_fn fn, void * client_data, size_t len)
-{
-	register struct Function * result;
-    if (len <= 0) return(0);
-
-	result = GC_NEW(struct Function);
-	if (result == 0) OUT_OF_MEMORY;
-	result->header = FN_HDR;
-	/* depth is already 0 */
-	result->len = len;
-	result->fn = fn;
-	result->client_data = client_data;
-	return((CORD) result);
-}
-
 size_t CORD_len(CORD x)
 {
     if (x == 0) {
