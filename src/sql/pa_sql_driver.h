@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char * const IDENT_SQL_DRIVER_H="$Date: 2004/02/11 15:33:16 $";
+static const char * const IDENT_SQL_DRIVER_H="$Date: 2004/03/05 10:01:50 $";
 
 #include <sys/types.h>
 #include <setjmp.h>
@@ -77,7 +77,9 @@ public:
 	virtual void *realloc(void *ptr, size_t size) =0;
 	/// $request:charset
 	virtual const char* request_charset() =0;
-	/// transcoder
+	/// transcoder. 
+	/// WARNING: can store pointers to charset names to speedup name-to-instance resolving
+	/// so do NOT pass pointers to local vars and change those vars after that
 	virtual void transcode(const char* src, size_t src_length,
 		const char*& dst, size_t& dst_length,
 		const char* charset_from_name,
