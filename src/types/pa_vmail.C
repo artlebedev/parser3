@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2004/09/01 12:21:10 $";
+static const char * const IDENT_VMAIL_C="$Date: 2004/09/01 13:14:43 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -774,7 +774,7 @@ const String& VMail::message_hash_to_string(Request& r,
 		snprintf(boundary, MAX_NUMBER-5/*lEvEl*/, "lEvEl%d", level);
 		// multi-part
 		result 
-			<< "content-type: multipart/mixed; boundary=\"" 
+			<< "content-type: multipart/related; boundary=\"" 
 			<< boundary << "\"\n"
 				"\n"
 				"This is a multi-part message in MIME format.";
