@@ -1,16 +1,16 @@
 @auto[]
 $CTYPE[
-    $.windows-1251[^table::load[windows-1251.cfg]]
+    $.windows-125o[^table::load[windows-1251.cfg]]
 ]
 
 @main[]
-^regexp[]<hr>
+$response:content-type[$.value[text/html] $.charset[windows-125o]]
+#^regexp[]<hr>
 #^mail[]
 #^exec[]
 #^fori[]
 #^connect[mysql://hren]{^void:sql{nothing}}
-#$response:content-type[$.value[text/html] $.charset[windows-125odin]]
-#^xslt[]
+^xslt[]
 OK
 
 @regexp[]
@@ -116,7 +116,7 @@ $file[^xdoc.file[
 	$.method[html]
 ]]
 ^file.save[text;save_file.html]
-taint[^xdoc.string[]]
+^taint[^xdoc.string[]]
 #	$.encoding[windows-1251]
 #	$.method[xml]
 ]]

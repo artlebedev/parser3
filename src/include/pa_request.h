@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.99 2001/09/30 09:56:43 parser Exp $
+	$Id: pa_request.h,v 1.100 2001/09/30 12:06:04 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -25,13 +25,6 @@
 #include "pa_vresponse.h"
 #include "pa_vcookie.h"
 #include "pa_sql_driver_manager.h"
-
-#ifdef XML
-#	include <util/XercesDefs.hpp>
-#	include <util/PlatformUtils.hpp>
-#	include <util/TransENameMap.hpp>
-#	include <util/XML256TableTranscoder.hpp>
-#endif
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \
@@ -202,7 +195,7 @@ private: // core data
 	*/
 	uint anti_endless_execute_recoursion;
 
-	/// charset->pcre_tables+XML256TableTranscoder [Request_CTYPE_value]
+	/// charset->pcre_tables
 	Hash CTYPE;	
 
 private: // compile.C
@@ -248,22 +241,6 @@ private: // lang manipulation
 private:
 
 	void output_result(const VFile& body_file, bool header_only);
-};
-
-/// Request::CTYPE hash value
-class Request_CTYPE_value : public Pooled {
-public:
-	/// PCRE character tables
-	unsigned char *pcre_tables;
-#ifdef XML
-	/// Xalan transformer for this charset
-	XML256TableTranscoder *transcoder;
-#endif
-
-	Request_CTYPE_value(Pool& apool, 
-		unsigned char * apcre_tables, XML256TableTranscoder *atranscoder) : Pooled(apool),
-		pcre_tables(apcre_tables), transcoder(atranscoder) {
-	}
 };
 
 ///	Auto-object used for temporary changing Request::flang.

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.158 2001/09/30 09:56:43 parser Exp $
+	$Id: pa_request.C,v 1.159 2001/09/30 12:06:04 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,6 +25,13 @@ extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 #include "pa_vtable.h"
 #include "pa_vfile.h"
 #include "pa_dictionary.h"
+
+#ifdef XML
+#	include <util/XercesDefs.hpp>
+#	include <util/TransENameMap.hpp>
+#	include <util/XML256TableTranscoder.hpp>
+#	include <util/PlatformUtils.hpp>
+#endif
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
@@ -83,41 +90,179 @@ static void element2case(unsigned char from, unsigned char to,
 	fcc_table[from]=to; fcc_table[to]=from;
 }
 
-static void ctype_table_row_to_pcretables(Array::Item *value, void *info) {
+#ifndef DOXYGEN
+struct CTYPE_Tables {
+	// pcre_tables
+	unsigned char *pcre_tables;
+#ifdef XML
+	// transcoder
+	XMLCh *fromTable;
+	XMLTransService::TransRec *toTable;
+	unsigned int toTableSz;
+#endif
+};
+#endif
+
+static void ctype_table_row_to_CTYPE_tables(Array::Item *value, void *info) {
 	Array& row=*static_cast<Array *>(value);
-	unsigned char *pcre_tables=(unsigned char *)info;
+	CTYPE_Tables& tables=*static_cast<CTYPE_Tables *>(info);
 	
 // char	white-space	digit	hex-digit	letter	word	lowercase	unicode1	unicode2	
 	unsigned int c=to_wchar_code(row.get_string(0));
 	
-	element2ctypes(c, to_bool(row.get_string(1)), pcre_tables, ctype_space, cbit_space);
-	element2ctypes(c, to_bool(row.get_string(2)), pcre_tables, ctype_digit, cbit_digit);
-	element2ctypes(c, to_bool(row.get_string(3)), pcre_tables, ctype_xdigit);
-	element2ctypes(c, to_bool(row.get_string(4)), pcre_tables, ctype_letter);
-	element2ctypes(c, to_bool(row.get_string(5)), pcre_tables, ctype_word, cbit_word);
-	element2case(c, to_wchar_code(row.get_string(6)), pcre_tables);
+	// pcre_tables
+	element2ctypes(c, to_bool(row.get_string(1)), tables.pcre_tables, ctype_space, cbit_space);
+	element2ctypes(c, to_bool(row.get_string(2)), tables.pcre_tables, ctype_digit, cbit_digit);
+	element2ctypes(c, to_bool(row.get_string(3)), tables.pcre_tables, ctype_xdigit);
+	element2ctypes(c, to_bool(row.get_string(4)), tables.pcre_tables, ctype_letter);
+	element2ctypes(c, to_bool(row.get_string(5)), tables.pcre_tables, ctype_word, cbit_word);
+	element2case(c, to_wchar_code(row.get_string(6)), tables.pcre_tables);
+
+#ifdef XML
+	XMLCh unicode1=row.size()>7?(XMLCh)to_wchar_code(row.get_string(7)):0;
+	XMLCh unicode2=row.size()>8?(XMLCh)to_wchar_code(row.get_string(8)):0;
+	tables.toTable[tables.toTableSz].intCh=unicode1?unicode1:(XMLCh)c;
+	tables.toTable[tables.toTableSz].extCh=(XMLByte)c;
+	tables.toTableSz++;
+	if(unicode2) {
+		tables.toTable[tables.toTableSz].intCh=unicode2;
+		tables.toTable[tables.toTableSz].extCh=(XMLByte)c;
+		tables.toTableSz++;
+	}
+#endif
 }
+static int sort_cmp_Trans_rec_intCh(const void *a, const void *b) {
+	const XMLCh ca=static_cast<const XMLTransService::TransRec *>(a)->intCh;
+	const XMLCh cb=static_cast<const XMLTransService::TransRec *>(b)->intCh;
+	// move zeros to end of table
+	if(ca==0)
+		return +1;
+	if(cb==0)
+		return -1;
+
+	return ca-cb;
+}
+
+
+#ifdef XML
+template <class TType> class ENameMapFor2 : public ENameMap
+{
+public :
+    // -----------------------------------------------------------------------
+    //  Constructors and Destructor
+    // -----------------------------------------------------------------------
+    ENameMapFor2(
+		const XMLCh* const encodingName
+        , const XMLCh* const                        fromTable
+        , const XMLTransService::TransRec* const    toTable
+        , const unsigned int                        toTableSize
+		) : ENameMap(encodingName),
+		ffromTable(fromTable),
+		ftoTable(toTable),
+		ftoTableSize(toTableSize) {}
+    ~ENameMapFor2() {}
+
+    // -----------------------------------------------------------------------
+    //  Implementation of virtual factory method
+    // -----------------------------------------------------------------------
+    virtual XMLTranscoder* makeNew(const unsigned int blockSize) const {
+		return new TType(
+			getKey(), 
+			blockSize,
+			ffromTable,
+			ftoTable, ftoTableSize);
+	}
+private:
+	const XMLCh* const                        ffromTable;
+	const XMLTransService::TransRec* const    ftoTable;
+	const unsigned int                        ftoTableSize;
+
+private :
+    // -----------------------------------------------------------------------
+    //  Unimplemented constructors and operators
+    // -----------------------------------------------------------------------
+    ENameMapFor2();
+    ENameMapFor2(const ENameMapFor2<TType>&);
+    void operator=(const ENameMapFor2<TType>&);
+};
+
+class XML256TableTranscoder2 : public XML256TableTranscoder
+{
+public :
+    XML256TableTranscoder2(
+        const   XMLCh* const                        encodingName
+        , const unsigned int                        blockSize
+        , const XMLCh* const                        fromTable
+        , const XMLTransService::TransRec* const    toTable
+        , const unsigned int                        toTableSize
+		) : XML256TableTranscoder(encodingName, blockSize, fromTable, toTable, toTableSize) {}
+
+private :
+    XML256TableTranscoder2();
+    XML256TableTranscoder2(const XML256TableTranscoder2&);
+    void operator=(const XML256TableTranscoder2&);
+};
+#endif
 
 static void load_ctype_for_charset(const Hash::Key& akey, Hash::Val *avalue, 
 										  void *info) {
 	Hash& CTYPE=*static_cast<Hash *>(info);
 	Pool& pool=CTYPE.pool();
 
-	// lowcase, flipcase, bits digit+word+whitespace, masks
-	unsigned char *pcre_tables=(unsigned char *)pool.calloc(tables_length);
-	prepare_case_tables(pcre_tables);
-	cstr2ctypes(pcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
+	CTYPE_Tables tables={
+		// pcre_tables
+		// lowcase, flipcase, bits digit+word+whitespace, masks
+		(unsigned char *)pool.calloc(tables_length) // pcre_tables
+#ifdef XML
+		// transcoder
+		, (XMLCh *)pool.calloc(sizeof(XMLCh)*0x100) // fromTable
+		, 0 // toTable
+		, 0 // toTableSz
+#endif
+	};
+	prepare_case_tables(tables.pcre_tables);
+	cstr2ctypes(tables.pcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
 
+	// fill tables
 	Value& value=*static_cast<Value *>(avalue);
 	if(Table *table=value.get_table()) {
-		table->for_each(ctype_table_row_to_pcretables, pcre_tables);
-	} else 
+#ifdef XML
+		tables.toTable=(XMLTransService::TransRec *)pool.calloc(
+			sizeof(XMLTransService::TransRec)*table->size()*2);
+#endif
+		table->for_each(ctype_table_row_to_CTYPE_tables, &tables);
+#ifdef XML
+		// sort by the Unicode code point
+		_qsort(tables.toTable, tables.toTableSz, sizeof(*tables.toTable), 
+			sort_cmp_Trans_rec_intCh);
+#endif
+	} else
 		PTHROW(0, 0,
 			&value.name(),
 			"must be hash");
 
-	XML256TableTranscoder *transcoder=0;
-	CTYPE.put(akey, new(pool) Request_CTYPE_value(pool, pcre_tables, transcoder));
+	// charset->pcre_tables 
+	CTYPE.put(akey, tables.pcre_tables);
+
+#ifdef XML
+	// charset->transcoder
+	XalanDOMString skey(akey.cstr());
+	const XMLCh* const auto_encoding_cstr=skey.c_str();
+	int size=sizeof(XMLCh)*(skey.size()+1);
+	XMLCh* pool_encoding_cstr=(XMLCh*)malloc(size);
+	memcpy(pool_encoding_cstr, auto_encoding_cstr, size);
+    XMLString::upperCase(pool_encoding_cstr);
+
+    XMLPlatformUtils::fgTransService->addEncoding(
+		pool_encoding_cstr, 
+		new ENameMapFor2<XML256TableTranscoder2>(
+			pool_encoding_cstr
+			, tables.fromTable
+			, tables.toTable
+			, tables.toTableSz
+		));
+	// delete sencoding; somehow
+#endif
 }
 
 //
@@ -658,10 +803,9 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 	return *NEW String(pool(), "application/octet-stream");
 }
 
-/// PCRE character tables
 unsigned char *Request::pcre_tables() {
-	if(Request_CTYPE_value *v=(Request_CTYPE_value *)CTYPE.get(pool().get_charset()))
-		return v->pcre_tables;
+	if(unsigned char *result=(unsigned char *)CTYPE.get(pool().get_charset()))
+		return result;
 
 	return pcre_default_tables;
 }
