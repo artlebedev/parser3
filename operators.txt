@@ -972,7 +972,6 @@ xdoc(xnode)
     !http.connect         ^file::load[http://not_accepting/there]     host found, but do not accept connections
     !http.timeout         ^file::load[http://host/doc]                whole load operation failed to complete in # seconds
     !http.response        ^file::load[http://ok/there]                host found, connection accepted, bad answer
-    !http.status          ^file::load[http://ok/there]                host found, connection accepted, status!=200
     
 !нужно выключить русский apache: CharsetDisable on
 

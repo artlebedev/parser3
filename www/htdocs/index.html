@@ -301,7 +301,7 @@ OK
 #^downloadtest[]
 #^cachebug[]
 #^quickregexatend[]
-#^docsamplehttpfileload[]
+^docsamplehttpfileload[]
 #^datecreatecolon[]
 #^exifdocsample[]
 #^rusagetv[]
@@ -313,7 +313,41 @@ OK
 #^strangewrite[]
 #^badexceptiontype[]
 #^coookieexpirestest[]
-^fullpathbug[]
+#^fullpathbug[]
+#^form_fields_modification_bug[]
+#^nbsp_xslt_output[]
+#^mailcharset[]
+
+@mailcharset[]
+^mail:send[
+	$.from[paf@design.ru]
+	$.to[paf@mail.design.ru]
+	$.subject[проверка]
+		$.charset[koi8-r]
+	$.text[
+		$.charset[koi8-r]
+		$.value[проверка]
+	]	
+]
+
+@nbsp_xslt_output[]
+$input[^xdoc::create[doc]]
+$sheet[^xdoc::create{<?xml version="1.0"?> 
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+	<xsl:template match="doc">
+		output&#160^;there
+	</xsl:template>
+</xsl:stylesheet>
+}]
+$output[^input.transform[$sheet]]
+#$response:body[^output.file[]]
+^taint[^output.string[]]
+
+
+@form_fields_modification_bug[]
+$form:fields.foo[bar]
+$form:foo
+<hr>
 
 @fullpathbug[]
 ^file:fullpath[a.gif]
@@ -455,9 +489,10 @@ $date[^date::create[2002:12:02]]
 ^date.sql-string[]
 
 @docsamplehttpfileload[]
-$file[^file::load[text;http://parser.ru/]]
+$file[^file::load[text;http://parser.ru/x]]
 Программное обеспечение сервера: $file.SERVER
 <hr>
+HTTP status: $file.status<br>
 <pre>$file.text</pre>
 
 @quickregexatend[]
