@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/11/28 09:36:04 $";
+static const char * const IDENT="$Date: 2003/11/28 09:36:26 $";
 
 #include "libxslt/extensions.h"
 
@@ -158,12 +158,6 @@ pa_xmlFileReadMethod (void * context, //< MemoryStream actually
 	return stream.read(buffer, len);
 }
 
-/**
- * xmlFileClose:
- * @context:  the I/O context
- *
- * Close an I/O channel
- */
 static int
 pa_xmlFileCloseMethod (void * /*context*/) {
 	return 0;
