@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.44 2001/03/18 17:18:34 paf Exp $
+	$Id: root.C,v 1.45 2001/03/18 17:24:54 paf Exp $
 */
 
 #include <string.h>
@@ -78,7 +78,7 @@ static void _taint(Request& r, const String& method_name, Array *params) {
 		String result(r.pool());
 		result.append(
 			r.process(*vbody).as_string(),  // process marking tainted with that lang
-			lang);  // switch result language to specified
+			lang, true);  // force result language to specified
 		r.write_pass_lang(result);
 	}
 }

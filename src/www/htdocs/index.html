@@ -2,4 +2,5 @@
 ^untaint[as-is]{^process[$request:query]}<BR>
 ^$request:query=$request:query<BR>
 ^$request:uri=$request:uri<BR>
-<a href=^untaint[uri]{$request:query}>aaaaaaaa</a>
+<a href=^taint[uri][вот$request:query]>aaaaaaaa</a>
+$response:test[$value[value] $attr[attr value]]

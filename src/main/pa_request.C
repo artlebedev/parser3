@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.47 2001/03/18 17:18:36 paf Exp $
+	$Id: pa_request.C,v 1.48 2001/03/18 17:24:55 paf Exp $
 */
 
 #include <string.h>
@@ -69,14 +69,14 @@ static void append_attribute_subattribute(const Hash::Key& akey, Hash::Value *av
 	Value *value=static_cast<Value *>(avalue);
 	string->append(value->as_string(), String::Untaint_lang::URI, true);
 }
-static void output_response_attribute(const Hash::Key& akey, Hash::Value *ameaning, 
+static void output_response_attribute(const Hash::Key& aattribute, Hash::Value *ameaning, 
 									  void *info) {
-	String *key_to_exclude=static_cast<String *>(info);
-	if(akey==*key_to_exclude)
+	String *attribute_to_exclude=static_cast<String *>(info);
+	if(aattribute==*attribute_to_exclude)
 		return;
 
-	String key(akey.pool());
-	key.append(akey, String::Untaint_lang::URI, true);
+	String attribute(aattribute.pool());
+	attribute.append(aattribute, String::Untaint_lang::URI, true);
 
 	Value *meaning=static_cast<Value *>(ameaning);
 	String string(meaning->pool());
@@ -93,7 +93,7 @@ static void output_response_attribute(const Hash::Key& akey, Hash::Value *ameani
 		string.append(meaning->as_string(), String::Untaint_lang::URI, true);
 
 	(*service_funcs.output_header_attribute)(
-		key.cstr(), 
+		attribute.cstr(), 
 		string.cstr());
 }
 
