@@ -42,7 +42,7 @@ and semantics are as close as possible to those of the Perl 5 language.
 	   
 		See the file Tech.Notes for some information on the internals.
 */
-static const char *RCSId="$Id: pcre_parser_ctype.c,v 1.9 2002/02/08 08:30:17 paf Exp $"; 
+static const char *RCSId="$Id: pcre_parser_ctype.c,v 1.10 2002/02/13 11:51:43 paf Exp $"; 
 
 #include <ctype.h>
 #include <stdio.h>
@@ -157,8 +157,10 @@ int main(int argc, char *argv[])
 	for(c=0; c<0x100; c++)
 		if(
 			ctypes_table[c]&(ctype_space|ctype_digit|ctype_xdigit|ctype_letter|ctype_word) || 
-			c!=case_table[c] || 
-			!(c==ucm[c][0] && ucm[c][1]==0)) {
+			ispunct(c) ||
+			c!=case_table[c] /*||
+			!(c==ucm[c][0] && ucm[c][1]==0)*/
+			) {
 			printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t", 
 				out_c(buf_c, c),
 				ctypes_table[c]&ctype_space?"x":"",
