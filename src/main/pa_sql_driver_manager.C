@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.8 2001/04/17 19:31:14 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.9 2001/04/26 10:16:07 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -52,35 +52,37 @@ private:
 // url:
 //   protocol://user:pass@host:port/database
 //              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ this is driver-dependent
-SQL_Connection& SQL_Driver_manager::get_connection(const String& url, 
+SQL_Connection& SQL_Driver_manager::get_connection(const String& request_owned_url, 
 												   Table *protocol2driver_and_client) {
 	SYNCHRONIZED(true);
 
-	Pool& pool=url.pool(); // request pool											   
+	Pool& pool=request_owned_url.pool(); // request pool											   
 
 	// we have table for locating protocol's library
 	if(!protocol2driver_and_client)
 		PTHROW(0, 0,
-			&url,
+			&request_owned_url,
 			"$SQL:drivers table must be defined");
 
 	// first trying to get cached connection
-	if(SQL_Connection *result=get_connection_from_cache(url))
+	if(SQL_Connection *result=get_connection_from_cache(request_owned_url))
 		if(result->ping())
 			return *result;
 		else
 			result->disconnect(); // kill unpingabe=dead connection
 	// no cached connection
 
-	int pos=url.pos("://", 3);
+	int pos=request_owned_url.pos("://", 3);
 	if(pos<0)
 		PTHROW(0, 0,
-			&url,
+			&request_owned_url,
 			"no protocol specified"); // NOTE: not THROW, but PTHROW
 
-	// make url string on global pool
+	// make url C-string on global pool
 	char *url_cstr=(char *)malloc(MAX_STRING);
-	strncpy(url_cstr, url.cstr(String::UL_AS_IS), MAX_STRING);
+	strncpy(url_cstr, request_owned_url.cstr(String::UL_AS_IS), MAX_STRING);
+	// make url string on global pool
+	String& url=*new(this->pool()) String(this->pool(), url_cstr);
 	
 	char *protocol_cstr=lsplit(&url_cstr, ':');
 	String& protocol=*new(this->pool()) String(this->pool(), protocol_cstr);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.24 2001/04/05 11:01:55 paf Exp $
+	$Id: pa_types.h,v 1.25 2001/04/26 10:16:03 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -18,6 +18,7 @@
 	                               // in calls to parent constructors
 #	pragma warning(disable:4065)   // switch statement contains 'default' 
 								   // but no 'case' labels
+#	pragma warning(disable:4800)   // disable warning about (bool)(1&2)
 #endif
 
 /// for rare cases of undefined length using this-sized strings

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.41 2001/04/25 11:02:52 paf Exp $
+	$Id: pa_common.h,v 1.42 2001/04/26 10:16:02 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -42,12 +42,12 @@ class Value;
 #endif
 
 #ifndef vsnprintf
-#	define vsnprintf __vsnprintf 
 int __vsnprintf(char *, size_t, const char *, va_list);
+#	define vsnprintf __vsnprintf 
 #endif
 #ifndef snprintf
-#	define snprintf __snprintf
 int __snprintf(char *, size_t, const char *, ...);
+#	define snprintf __snprintf
 #endif
 
 //access
