@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.11 2001/07/23 11:19:25 parser Exp $
+	$Id: hash.C,v 1.12 2001/07/23 12:41:47 parser Exp $
 */
-static const char *RCSId="$Id: hash.C,v 1.11 2001/07/23 11:19:25 parser Exp $"; 
+static const char *RCSId="$Id: hash.C,v 1.12 2001/07/23 12:41:47 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -88,6 +88,7 @@ public:
 			rows_hash.put(*cell, row_vhash);
 		} else
 			row_hash->put(*columns.get_string(column_index), new(pool) VString(*cell));
+		column_index++;
 	}
 
 private:

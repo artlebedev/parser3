@@ -354,9 +354,9 @@ ${comment}.
 		^menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
 	</table>
 	}}
-#	^^string:sql{select name from paf where id=1}=^string:sql{select name from paf where id=1}{n/a}<br>
-#	^^int:sql{select age from paf where id=1}=^int:sql{select age from paf where id=1}(111)<br>
-#	^^double:sql{select age from paf where id=1}=^double:sql{select age from paf where id=1}(222)<br>
+	^^string:sql{select name from paf where id=1}=^string:sql{select name from paf where id=1}{n/a}<br>
+	^^int:sql{select age from paf where id=1}=^int:sql{select age from paf where id=1}(111)<br>
+	^^double:sql{select age from paf where id=1}=^double:sql{select age from paf where id=1}(222)<br>
 
 	$paf[^hash:sql{select id,age from paf}]
 	^$paf.2.age=$paf.2.age<br>
