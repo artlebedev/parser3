@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.112 2001/12/07 15:24:47 paf Exp $
+	$Id: pa_request.h,v 1.113 2001/12/14 12:53:47 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -26,6 +26,7 @@
 #include "pa_vresponse.h"
 #include "pa_vcookie.h"
 #include "pa_sql_driver_manager.h"
+#include "pa_transcoder.h"
 
 #ifdef RESOURCES_DEBUG
 #include <sys/resource.h>
@@ -158,7 +159,10 @@ public:
 	/// returns the mime type of 'user_file_name_cstr'
 	const String& mime_type_of(const char *user_file_name_cstr);
 
-	/// PCRE character tables
+	/// transcoder [pcre_tables + byte->unicode & back]
+	const Transcoder* transcoder();
+
+	/// pcre_tables [up/low case & co]
 	const unsigned char *pcre_tables();
 
 public:
@@ -215,7 +219,7 @@ private: // core data
 	*/
 	uint anti_endless_execute_recoursion;
 
-	/// charset->pcre_tables
+	/// charset->transcoder
 	Hash CTYPE;	
 
 	/// stack trace

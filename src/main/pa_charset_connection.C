@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset_connection.C,v 1.11 2001/11/05 11:46:27 paf Exp $
+	$Id: pa_charset_connection.C,v 1.12 2001/12/14 12:53:47 paf Exp $
 */
 
 #include "pa_charset_connection.h"
@@ -13,13 +13,11 @@
 //#include "pa_threads.h"
 
 #ifdef XML
-#	include <util/XercesDefs.hpp>
 #	include <util/TransENameMap.hpp>
 #	include <util/XML256TableTranscoder.hpp>
 #	include <util/PlatformUtils.hpp>
 #	include <PlatformSupport/XalanTranscodingServices.hpp>
 #endif
-
 
 // globals
 
@@ -80,12 +78,6 @@ static void element2case(unsigned char from, unsigned char to,
 }
 
 #ifdef XML
-
-static int sort_cmp_Trans_rec_intCh(const void *a, const void *b) {
-	return 
-		static_cast<const XMLTransService::TransRec *>(a)->intCh-
-		static_cast<const XMLTransService::TransRec *>(b)->intCh;
-}
 
 template <class TType> class ENameMapFor2 : public ENameMap
 {
@@ -151,21 +143,19 @@ void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 
 	// must not move this inside of prepare_case_tables
 	// don't know the size there
-	memset(fpcre_tables, 0, sizeof(fpcre_tables)); 
-	prepare_case_tables(fpcre_tables);
-	cstr2ctypes(fpcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
+	memset(ftranscoder.pcre_tables, 0, sizeof(ftranscoder.pcre_tables)); 
+	prepare_case_tables(ftranscoder.pcre_tables);
+	cstr2ctypes(ftranscoder.pcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
 
-#ifdef XML
 	// transcoder
-	XMLCh *fromTable=(XMLCh *)calloc(sizeof(XMLCh)*0x100);
-	XMLTransService::TransRec *toTable=(XMLTransService::TransRec *)calloc(
+	memset(ftranscoder.fromTable, 0, sizeof(ftranscoder.fromTable));
+	ftranscoder.toTable=(XMLTransService::TransRec *)calloc(
 			sizeof(XMLTransService::TransRec)*MAX_CHARSET_UNI_CODES);
-	unsigned int toTableSz=0;
+	ftranscoder.toTableSize=0;
 	// strangly vital
-	toTable[toTableSz].intCh=0;
-	toTable[toTableSz].extCh=(XMLByte)0;
-	toTableSz++;
-#endif
+	ftranscoder.toTable[ftranscoder.toTableSize].intCh=0;
+	ftranscoder.toTable[ftranscoder.toTableSize].extCh=(XMLByte)0;
+	ftranscoder.toTableSize++;
 
 	// loading text
 	char *data=file_read_text(pool, ffile_spec);
@@ -186,18 +176,17 @@ void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 		for(int column=0; cell=lsplit(&row, '\t'); column++) {
 			switch(column) {
 			case 0: c=to_wchar_code(cell); break;
-			// fpcre_tables
-			case 1: element2ctypes(c, to_bool(cell), fpcre_tables, ctype_space, cbit_space); break;
-			case 2: element2ctypes(c, to_bool(cell), fpcre_tables, ctype_digit, cbit_digit); break;
-			case 3: element2ctypes(c, to_bool(cell), fpcre_tables, ctype_xdigit); break;
-			case 4: element2ctypes(c, to_bool(cell), fpcre_tables, ctype_letter); break;
-			case 5: element2ctypes(c, to_bool(cell), fpcre_tables, ctype_word, cbit_word); break;
-			case 6: element2case(c, to_wchar_code(cell), fpcre_tables); break;
-#ifdef XML
+			// ftranscoder.pcre_tables
+			case 1: element2ctypes(c, to_bool(cell), ftranscoder.pcre_tables, ctype_space, cbit_space); break;
+			case 2: element2ctypes(c, to_bool(cell), ftranscoder.pcre_tables, ctype_digit, cbit_digit); break;
+			case 3: element2ctypes(c, to_bool(cell), ftranscoder.pcre_tables, ctype_xdigit); break;
+			case 4: element2ctypes(c, to_bool(cell), ftranscoder.pcre_tables, ctype_letter); break;
+			case 5: element2ctypes(c, to_bool(cell), ftranscoder.pcre_tables, ctype_word, cbit_word); break;
+			case 6: element2case(c, to_wchar_code(cell), ftranscoder.pcre_tables); break;
 			case 7:
 			case 8:
 				// transcoder
-				if(toTableSz>MAX_CHARSET_UNI_CODES)
+				if(ftranscoder.toTableSize>MAX_CHARSET_UNI_CODES)
 					throw Exception(0, 0,
 						&ffile_spec,
 						"charset must contain not more then %d unicode values", MAX_CHARSET_UNI_CODES);
@@ -206,27 +195,21 @@ void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 				if(!unicode && column==7/*unicode1 column*/)
 					unicode=(XMLCh)c;
 				if(unicode) {
-					if(!fromTable[c])
-						fromTable[c]=unicode;
-					toTable[toTableSz].intCh=unicode;
-					toTable[toTableSz].extCh=(XMLByte)c;
-					toTableSz++;
+					if(!ftranscoder.fromTable[c])
+						ftranscoder.fromTable[c]=unicode;
+					ftranscoder.toTable[ftranscoder.toTableSize].intCh=unicode;
+					ftranscoder.toTable[ftranscoder.toTableSize].extCh=(XMLByte)c;
+					ftranscoder.toTableSize++;
 				}
 				break;
-#endif
 			}
 		}
 	};
 
-#ifdef XML
 	// sort by the Unicode code point
-	_qsort(toTable, toTableSz, sizeof(*toTable), 
-		sort_cmp_Trans_rec_intCh);
-	//FILE *f=fopen("c:\\temp\\a", "wb");
-	//fwrite(toTable, toTableSz, sizeof(*toTable), f);
-	//fclose(f);
+	ftranscoder.sort_ToTable();
 
-
+#ifdef XML
 	// addEncoding
 	XalanDOMString sencoding(fname.cstr());
 	const XMLCh* const auto_encoding_cstr=sencoding.c_str();
@@ -239,9 +222,9 @@ void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 		pool_encoding_cstr, 
 		new ENameMapFor2<XML256TableTranscoder2>(
 			pool_encoding_cstr
-			, fromTable
-			, toTable
-			, toTableSz
+			, ftranscoder.fromTable
+			, ftranscoder.toTable
+			, ftranscoder.toTableSize
 		));
 #endif
 

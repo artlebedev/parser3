@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.183 2001/12/07 15:24:47 paf Exp $
+	$Id: pa_request.C,v 1.184 2001/12/14 12:53:48 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -43,8 +43,8 @@ static void load_charset(const Hash::Key& akey, Hash::Val *avalue,
 	Charset_connection& connection=
 		charset_manager->get_connection(akey, value.as_string());
 
-	// charset->pcre_tables 
-	CTYPE.put(akey, connection.pcre_tables());
+	// charset->transcoder 
+	CTYPE.put(akey, &connection.transcoder());
 }
 
 //
@@ -215,17 +215,6 @@ gettimeofday(&mt[0],NULL);
 		// configure not-root=user options
 		OP.configure_user(*this);
 		methoded_array->configure_user(*this);
-
-		// $MAIN:DEFAULTS
-		Value *defaults=main_class->get_element(*defaults_name);
-		// value must be allocated on request's pool for that pool used on
-		// meaning constructing @see attributed_meaning_to_string
-		default_content_type=defaults?defaults->get_element(*content_type_name):0;
-		// record default charset
-		if(default_content_type)
-			if(Hash *hash=default_content_type->get_hash(0))
-				if(Value *vcharset=(Value *)hash->get(*charset_name))
-					pool().set_charset(vcharset->as_string());		
 
 		// $MAIN:MIME-TYPES
 		if(Value *element=main_class->get_element(*mime_types_name))
@@ -579,7 +568,8 @@ const String& Request::absolute(const String& relative_name) {
 static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
 								 void *info) {
 	Request& r=*static_cast<Request *>(info);
-	if(aattribute==*body_name)
+	if(aattribute==BODY_NAME
+		|| aattribute==CHARSET_NAME)
 		return;
 
 	Value& lmeaning=*static_cast<Value *>(ameaning);
@@ -616,14 +606,28 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	// prepare header: $response:fields without :body
 	response.fields().for_each(add_header_attribute, this);
 
-	// prepare...
-	const void *body=body_file.value_ptr();
-	size_t content_length=body_file.value_size();
+	// source bytes+transcoder
+	const Transcoder *source_transcoder=transcoder();
+	const void *source_body=body_file.value_ptr();
+	size_t source_content_length=body_file.value_size();
+
+	// client bytes+transcoder
+	Transcoder *client_transcoder;
+	Value *vclient_charset=static_cast<Value *>(response.fields().get(*charset_name));
+	client_transcoder=vclient_charset?(Transcoder *)CTYPE.get(vclient_charset->as_string()):0;
+	const void *client_body;
+	size_t client_content_length;
+
+	// transcode
+	transcoder_transcode(pool(),
+		source_transcoder, source_body, source_content_length,
+		client_transcoder, client_body, client_content_length
+	);
 
 	// prepare header: content-length
-	if(content_length) { // useful for redirecting [header "location: http://..."]
+	if(client_content_length) { // useful for redirecting [header "location: http://..."]
 		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
+		snprintf(content_length_cstr, MAX_NUMBER, "%u", client_content_length);
 		SAPI::add_header_attribute(pool(), "content-length", content_length_cstr);
 	}
 
@@ -632,7 +636,7 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	
 	// send body
 	if(!header_only)
-		SAPI::send_body(pool(), body, content_length);
+		SAPI::send_body(pool(), client_body, client_content_length);
 }
 
 const String& Request::mime_type_of(const char *user_file_name_cstr) {
@@ -650,9 +654,13 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 	return *NEW String(pool(), "application/octet-stream");
 }
 
+const Transcoder* Request::transcoder() {
+	return (Transcoder *)CTYPE.get(pool().get_charset());
+}
+
 const unsigned char *Request::pcre_tables() {
-	if(unsigned char *result=(unsigned char *)CTYPE.get(pool().get_charset()))
-		return result;
+	if(const Transcoder *ltranscoder=transcoder())
+		return ltranscoder->pcre_tables;
 
 	// this is not for pcre itself, 
 	// it can do default, it's for string.lower&co

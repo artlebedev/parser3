@@ -426,6 +426,14 @@ SOURCE=..\include\pa_threads.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_transcoder.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_transcoder.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_types.h
 # End Source File
 # Begin Source File

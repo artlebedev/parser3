@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.h,v 1.71 2001/11/16 11:51:32 paf Exp $
+	$Id: pa_pool.h,v 1.72 2001/12/14 12:53:47 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -115,7 +115,6 @@ public:
 
 private:
 
-	void set_charset(const char *new_scharset);
 	void update_transcoder();
 
 private:

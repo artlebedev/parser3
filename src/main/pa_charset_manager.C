@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset_manager.C,v 1.8 2001/11/08 14:47:32 paf Exp $
+	$Id: pa_charset_manager.C,v 1.9 2001/12/14 12:53:48 paf Exp $
 */
 #include "pa_config_includes.h"
 
@@ -69,7 +69,6 @@ Charset_connection *Charset_manager::get_connection_from_cache(const String& fil
 
 	return (Charset_connection *)cache.get(file_spec);
 }
-
 void Charset_manager::put_connection_to_cache(const String& file_spec, 
 												 Charset_connection& connection) { 
 	SYNCHRONIZED;

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vresponse.h,v 1.17 2001/11/05 11:46:34 paf Exp $
+	$Id: pa_vresponse.h,v 1.18 2001/12/14 12:53:48 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -42,12 +42,6 @@ public: // Value
 
 	/// Response: (attribute)=value
 	void put_element(const String& name, Value *value) { 
-		// guard charset change
-		if(name == *content_type_name)
-			if(Hash *hash=value->get_hash(&name))
-				if(Value *vcharset=(Value *)hash->get(*charset_name))
-					pool().set_charset(vcharset->as_string());		
-
 		ffields.put(name, value);
 	}
 

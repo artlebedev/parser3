@@ -4,19 +4,17 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset_connection.h,v 1.4 2001/11/05 11:46:23 paf Exp $
+	$Id: pa_charset_connection.h,v 1.5 2001/12/14 12:53:47 paf Exp $
 */
 
 #ifndef PA_CHARSET_CONNECTION_H
 #define PA_CHARSET_CONNECTION_H
 
-#include "pcre.h"
-#	include "internal.h"
-
 #include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_exception.h"
 #include "pa_common.h"
+#include "pa_transcoder.h"
 
 // defines
 
@@ -40,7 +38,7 @@ public:
 			load(pool, new_disk_time);
 	}
 
-	unsigned char *pcre_tables() { return fpcre_tables; }
+	Transcoder& transcoder() { return ftranscoder; }
 
 private:
 
@@ -68,7 +66,8 @@ private:
 	const String& ffile_spec;
 	time_t prev_disk_time;
 
-	unsigned char fpcre_tables[tables_length];
+	Transcoder ftranscoder;
+
 };
 
 #endif
