@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.53 2001/03/06 14:09:36 paf Exp $
+  $Id: compile.y,v 1.54 2001/03/06 14:28:35 paf Exp $
 */
 
 %{
@@ -152,7 +152,7 @@ action: get | put | with | call;
 
 get: '$' get_name {
 	$$=$2; /* stack: resulting value */
-	OP($$, OP_WRITE); /* value=pop; write(value) */
+	O($$, OP_WRITE); /* value=pop; write(value) */
 };
 get_name: name_without_curly_rdive EON | name_in_curly_rdive;
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
@@ -165,19 +165,19 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 	Array *diving_code=$1;
 	String *first_name=SLA2S(diving_code);
 	if(first_name && *first_name==SELF_NAME) {
-		OP($$, OP_WITH_SELF); /* stack: starting context */
+		O($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
 			/* skip over... */
 			diving_code->size()>2?3/*OP_+string+get_element*/:2/*OP_+string*/);
 	} else {
-		OP($$, OP_WITH_READ); /* stack: starting context */
+		O($$, OP_WITH_READ); /* stack: starting context */
 		P($$, diving_code);
 	}
 	/* diving code; stack: current context */
 };
 name_without_curly_rdive_root: ':' name_without_curly_rdive_code {
 	$$=N(POOL); 
-	OP($$, OP_WITH_ROOT); /* stack: starting context */
+	O($$, OP_WITH_ROOT); /* stack: starting context */
 	P($$, $2); /* diving code; stack: current context */
 };
 name_without_curly_rdive_class: class_prefix name_without_curly_rdive_code { $$=$1; P($$, $2) };
@@ -188,7 +188,7 @@ name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; 
 put: '$' name_expr_wdive constructor_value {
 	$$=$2; /* stack: context,name */
 	P($$, $3); /* stack: context,name,constructor_value */
-	OP($$, OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
+	O($$, OP_CONSTRUCT); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 };
 name_expr_wdive: 
 	name_expr_wdive_write
@@ -199,19 +199,19 @@ name_expr_wdive_write: name_expr_dive_code {
 	Array *diving_code=$1;
 	String *first_name=SLA2S(diving_code);
 	if(first_name && *first_name==SELF_NAME) {
-		OP($$, OP_WITH_SELF); /* stack: starting context */
+		O($$, OP_WITH_SELF); /* stack: starting context */
 		P($$, diving_code, 
 			/* skip over... */
 			diving_code->size()>2?3/*OP_+string+get_element*/:2/*OP_+string*/);
 	} else {
-		OP($$, OP_WITH_WRITE); /* stack: starting context */
+		O($$, OP_WITH_WRITE); /* stack: starting context */
 		P($$, diving_code);
 	}
 	/* diving code; stack: current context */
 };
 name_expr_wdive_root: ':' name_expr_dive_code {
 	$$=N(POOL); 
-	OP($$, OP_WITH_ROOT); /* stack: starting context */
+	O($$, OP_WITH_ROOT); /* stack: starting context */
 	P($$, $2); /* diving code; stack: context,name */
 };
 name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
@@ -227,9 +227,9 @@ constructor_code_value:
 ;
 complex_constructor_code_value: complex_constructor_code {
 	$$=N(POOL); 
-	OP($$, OP_CREATE_EWPOOL); /* stack: empty write context */
+	O($$, OP_CREATE_EWPOOL); /* stack: empty write context */
 	P($$, $1); /* some codes to that context */
-	OP($$, OP_REDUCE_EWPOOL); /* context=pop; stack: context.value() */
+	O($$, OP_REDUCE_EWPOOL); /* context=pop; stack: context.value() */
 };
 complex_constructor_code: codes__excluding_sole_str_literal;
 codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
@@ -238,9 +238,9 @@ codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
 
 call: '^' call_name store_params EON { /* ^field.$method{vasya} */
 	$$=$2; /* with_xxx,diving code; stack: context,method_junction */
-	OP($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
+	O($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
 	P($$, $3); /* filling method_frame.store_params */
-	OP($$, OP_CALL); /* method_frame=pop; ncontext=pop; call(ncontext,method_frame) */
+	O($$, OP_CALL); /* method_frame=pop; ncontext=pop; call(ncontext,method_frame) */
 };
 
 call_name: name_without_curly_rdive;
@@ -255,17 +255,17 @@ store_param_parts:
 store_curly_param: '{' maybe_codes '}' {
 	$$=N(POOL); 
 	PCA($$, $2);
-	OP($$, OP_STORE_PARAM);
+	O($$, OP_STORE_PARAM);
 };
 store_param_part: 
 	empty /* optimized () case */
 |	STRING { /* optimized (STRING) case */
 	$$=$1;
-	OP($$, OP_STORE_PARAM);
+	O($$, OP_STORE_PARAM);
 }
 |	complex_constructor_code_value { /* (something complex) */
 	$$=$1;
-	OP($$, OP_STORE_PARAM);
+	O($$, OP_STORE_PARAM);
 }
 ;
 
@@ -278,12 +278,12 @@ name_step: name_advance1 '.';
 name_advance1: name_expr_value {
 	/* stack: context */
 	$$=$1; /* stack: context,name */
-	OP($$, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	O($$, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 };
 name_advance2: name_expr_value {
 	/* stack: context */
 	$$=$1; /* stack: context,name */
-	OP($$, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	O($$, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 }
 |	STRING BOGUS
 ;
@@ -294,31 +294,31 @@ name_expr_value:
 ;
 name_expr_subvar_value: '$' subvar_ref_name_rdive {
 	$$=$2;
-	OP($$, OP_GET_ELEMENT);
+	O($$, OP_GET_ELEMENT);
 };
 name_expr_with_subvar_value: STRING subvar_get_writes {
 	$$=N(POOL); 
-	OP($$, OP_CREATE_EWPOOL);
+	O($$, OP_CREATE_EWPOOL);
 	P($$, $1);
-	OP($$, OP_WRITE);
+	O($$, OP_WRITE);
 	P($$, $2);
-	OP($$, OP_REDUCE_EWPOOL);
+	O($$, OP_REDUCE_EWPOOL);
 };
 subvar_ref_name_rdive: subvar_ref_name_rdive_read | subvar_ref_name_rdive_root;
 subvar_ref_name_rdive_read: STRING {
 	$$=N(POOL); 
-	OP($$, OP_WITH_READ);
+	O($$, OP_WITH_READ);
 	P($$, $1);
 };
 subvar_ref_name_rdive_root: ':' STRING {
 	$$=N(POOL); 
-	OP($$, OP_WITH_ROOT);
+	O($$, OP_WITH_ROOT);
 	P($$, $2);
 };
 subvar_get_writes: subvar__get_write | subvar_get_writes subvar__get_write { $$=$1; P($$, $2) };
 subvar__get_write: '$' subvar_ref_name_rdive {
 	$$=$2;
-	OP($$, OP_GET_ELEMENT__WRITE);
+	O($$, OP_GET_ELEMENT__WRITE);
 };
 
 class_prefix: STRING ':' {
@@ -339,32 +339,32 @@ class_prefix: STRING ':' {
 
 with: '$' name_without_curly_rdive '{' codes '}' {
 	$$=$2;
-	OP($$, OP_CREATE_RWPOOL);
+	O($$, OP_CREATE_RWPOOL);
 	P($$, $4);
-	OP($$, OP_REDUCE_RWPOOL);
-	OP($$, OP_WRITE);
+	O($$, OP_REDUCE_RWPOOL);
+	O($$, OP_WRITE);
 };
 
 /* expression */
 
 expression_value:
 	empty_value /* optimized $var() case */
-|	STRING /* optimized $var(STRING) case */
+|	number /* optimized $var(STRING) case */
 |	complex_expression /* $var(something complex) */
 ;
 complex_expression: expression_operand '*' expression_operand {
 	$$=$1; // stack: first operand
 	P($$, $3); // stack: first,second operands
-	OP($$, OP_MUL); // value=first*second; stack: value
+	O($$, OP_MUL); // value=first*second; stack: value
 };
-expression_operand: STRING;
+expression_operand: number;
 
 /*
 complex_expression_value: complex_expression {
 	$$=N(POOL); 
-	OP($$, OP_CREATE_SWPOOL); /* stack: empty write context * /
+	O($$, OP_CREATE_SWPOOL); /* stack: empty write context * /
 	P($$, $1); /* some codes to that context * /
-	OP($$, OP_REDUCE_SWPOOL); /* context=pop; stack: context.get_string() * /
+	O($$, OP_REDUCE_SWPOOL); /* context=pop; stack: context.get_string() * /
 };
 */
 
@@ -373,12 +373,16 @@ complex_expression_value: complex_expression {
 write_str_literal: STRING {
 	if(SLA2S($1)->size()) {
 		$$=$1;
-		OP($$, OP_WRITE);
+		O($$, OP_WRITE);
 	} else {
 		// optimized case of special end of macro. see yylex
 		$$=N(POOL);
 	}
 };
+number: STRING {
+	change_string_literal_to_double_literal($$=$1);
+};
+
 empty_value: /* empty */ { $$=SL(NEW VString(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 

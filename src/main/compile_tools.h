@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.18 2001/03/06 12:00:44 paf Exp $
+  $Id: compile_tools.h,v 1.19 2001/03/06 14:28:35 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -59,7 +59,7 @@ inline Array/*<op>*/ *N(Pool& pool) {
 }
 
 // Assembler instruction // append ordinary instruction to ops
-inline void OP(Array/*<op>*/ *result, enum OPCODE code) {
+inline void O(Array/*<op>*/ *result, enum OPCODE code) {
 	Operation op; op.code=code;
 	*result+=op.cast;
 }
@@ -89,6 +89,8 @@ void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array);
 Array *SL(VString *vstring);
 // Literal Array to(2) String // return string value from literal array OP+string array
 String *SLA2S(Array *literal_string_array, int offset=0);
+
+void change_string_literal_to_double_literal(Array *literal_string_array);
 
 // Class Literal // returns array with 
 // first: OP_CLASS instruction

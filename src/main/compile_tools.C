@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.14 2001/02/25 08:12:22 paf Exp $
+  $Id: compile_tools.C,v 1.15 2001/03/06 14:28:35 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -7,6 +7,7 @@
 #include "pa_array.h"
 #include "pa_exception.h"
 #include "pa_vstring.h"
+#include "pa_vdouble.h"
 
 void PVS(Array/*<op>*/ *result, VString *vstring) {
 	// append OP_STRING
@@ -57,6 +58,13 @@ String *SLA2S(Array *literal_string_array, int offset) {
 		return 0;
 
 	return static_cast<VString *>(literal_string_array->get(offset+1))->get_string();
+}
+
+void change_string_literal_to_double_literal(Array *literal_string_array) {
+	VString *vstring=static_cast<VString *>(literal_string_array->get(1));
+	Pool& pool=vstring->pool();
+	VDouble *vdouble=new(pool) VDouble(pool, vstring->get_double());
+	literal_string_array->put(1, vdouble);
 }
 
 

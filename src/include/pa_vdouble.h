@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vdouble.h,v 1.2 2001/03/06 14:09:35 paf Exp $
+  $Id: pa_vdouble.h,v 1.3 2001/03/06 14:28:34 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -8,7 +8,7 @@
 #include "pa_value.h"
 #include "pa_common.h"
 
-#define MAX_DOUBLE_STRING 20
+#define MAX_DOUBLE_AS_STRING 20
 
 class VDouble : public Value {
 public: // Value
@@ -17,8 +17,8 @@ public: // Value
 	const char *type() const { return "Double"; }
 	// double: value
 	String *get_string() {
-		char *buf=static_cast<char *>(pool().malloc(MAX_DOUBLE_STRING));
-		snprintf(buf, MAX_DOUBLE_STRING, "%f", value);
+		char *buf=static_cast<char *>(pool().malloc(MAX_DOUBLE_AS_STRING));
+		snprintf(buf, MAX_DOUBLE_AS_STRING, "%g", value);
 		String *result=NEW String(pool());
 		result->APPEND_CONST(buf);
 		return result;
