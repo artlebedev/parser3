@@ -4,13 +4,13 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_md5c.c,v 1.1 2002/06/21 13:14:34 paf Exp $
+	$Id: pa_md5c.c,v 1.2 2002/06/21 13:34:54 paf Exp $
 */
-
-#include "pa_md5.h"
 
 #include "ap_config.h"
 #include "ap_md5.h"
+
+#include "pa_md5.h"
 
 void pa_MD5Init(PA_MD5_CTX *context) { ap_MD5Init((AP_MD5_CTX*)context); }
 void pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input,

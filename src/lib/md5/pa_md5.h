@@ -5,7 +5,7 @@
 
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 
-	$Id: pa_md5.h,v 1.1 2002/06/21 12:46:40 paf Exp $
+	$Id: pa_md5.h,v 1.2 2002/06/21 13:34:54 paf Exp $
 */
 
 /*
@@ -95,8 +95,8 @@
  *
  */
 
-#ifndef PA_APACHE_MD5_H
-#define PA_APACHE_MD5_H
+#ifndef PA_MD5_H
+#define PA_MD5_H
 
 #define PA_API_EXPORT(rtype) rtype
 
@@ -104,12 +104,16 @@
 extern "C" {
 #endif
 
+#ifndef APACHE_MD5_H
+
 /* MD5.H - header file for MD5C.C */
 
 #define MD5_DIGESTSIZE 16
 
 /* UINT4 defines a four byte word */
 typedef unsigned int UINT4;
+
+#endif
 
 /* MD5 context. */
 typedef struct {
@@ -139,4 +143,4 @@ PA_API_EXPORT(void) pa_to64(char *s, unsigned long v, int n);
 }
 #endif
 
-#endif	/* !PA_APACHE_MD5_H */
+#endif	/* !PA_MD5_H */

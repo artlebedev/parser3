@@ -82,8 +82,8 @@ mysql_client = @mysql_client@
 oracle_client = @oracle_client@
 pgsql_client = @pgsql_client@
 sqldriversdir = @sqldriversdir@
-@COMPILE_APACHE13_MODULE_TRUE@SUBDIRS = patches libltdl pcre md5
-@COMPILE_APACHE13_MODULE_FALSE@SUBDIRS = patches libltdl pcre
+
+SUBDIRS = patches libltdl pcre md5
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -94,7 +94,6 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DIST_SUBDIRS =  patches libltdl pcre md5 patches libltdl pcre
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
@@ -214,7 +213,7 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
-	for subdir in $(DIST_SUBDIRS); do \
+	for subdir in $(SUBDIRS); do \
 	  if test "$$subdir" = .; then :; else \
 	    test -d $(distdir)/$$subdir \
 	    || mkdir $(distdir)/$$subdir \
