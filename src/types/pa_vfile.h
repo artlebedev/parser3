@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vfile.h,v 1.37 2001/11/05 11:46:32 paf Exp $
+	$Id: pa_vfile.h,v 1.38 2002/01/25 11:33:46 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -67,7 +67,7 @@ public: // usage
 	
 	void save(const String& file_spec, bool is_text) {
 		if(fvalue_ptr)
-			file_write(pool(), file_spec, fvalue_ptr, fvalue_size, is_text);
+			file_write(file_spec, fvalue_ptr, fvalue_size, is_text);
 		else
 			throw Exception(0, 0,
 				&file_spec,

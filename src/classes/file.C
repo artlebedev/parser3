@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.67 2001/12/15 21:28:17 paf Exp $
+	$Id: file.C,v 1.68 2002/01/25 11:33:45 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -61,20 +61,18 @@ static void _save(Request& r, const String&, MethodParams *params) {
 }
 
 static void _delete(Request& r, const String&, MethodParams *params) {
-	Pool& pool=r.pool();
 	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
 
 	// unlink
-	file_delete(pool, r.absolute(vfile_name.as_string()));
+	file_delete(r.absolute(vfile_name.as_string()));
 }
 
 static void _move(Request& r, const String&, MethodParams *params) {
-	Pool& pool=r.pool();
 	Value& vfrom_file_name=params->as_no_junction(0, "from file name must not be code");
 	Value& vto_file_name=params->as_no_junction(1, "to file name must not be code");
 
 	// move
-	file_move(pool, 
+	file_move(
 		r.absolute(vfrom_file_name.as_string()),
 		r.absolute(vto_file_name.as_string()));
 }

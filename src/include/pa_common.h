@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.69 2001/12/27 19:57:08 paf Exp $
+	$Id: pa_common.h,v 1.70 2002/01/25 11:33:46 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -109,7 +109,7 @@ bool file_read(Pool& pool, const String& file_spec,
 	write data to specified file using pool, 
 	throws an exception in case of problems
 */
-void file_write(Pool& pool, 
+void file_write(
 				const String& file_spec,
 				const void *data, size_t size, 
 				bool as_text,
@@ -119,12 +119,12 @@ void file_write(Pool& pool,
 	delete specified file 
 	throws an exception in case of problems
 */
-bool file_delete(Pool& pool, const String& file_spec, bool fail_on_read_problem=true);
+bool file_delete(const String& file_spec, bool fail_on_read_problem=true);
 /**
 	move specified file 
 	throws an exception in case of problems
 */
-void file_move(Pool& pool, const String& old_spec, const String& new_spec);
+void file_move(const String& old_spec, const String& new_spec);
 
 bool file_readable(const String& file_spec);
 bool dir_readable(const String& file_spec);

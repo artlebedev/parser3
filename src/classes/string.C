@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.93 2002/01/16 10:28:33 paf Exp $
+	$Id: string.C,v 1.94 2002/01/25 11:33:45 paf Exp $
 */
 
 #include "classes.h"
@@ -421,7 +421,6 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 }
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
 	const String& file_name=params->as_string(params->size()-1, 
 		"file name must be string");
 
@@ -440,7 +439,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 
 	// write
 	const char *buf=src.cstr(String::UL_UNSPECIFIED);
-	file_write(pool, r.absolute(file_name), 
+	file_write(r.absolute(file_name), 
 		buf, strlen(buf), true, do_append);
 }
 

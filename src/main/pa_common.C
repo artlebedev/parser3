@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.94 2001/12/13 10:47:34 paf Exp $
+	$Id: pa_common.C,v 1.95 2002/01/25 11:33:46 paf Exp $
 */
 
 #include "pa_common.h"
@@ -205,7 +205,7 @@ static void create_dir_for_file(const String& file_spec) {
 	}
 }
 
-void file_write(Pool& pool, 
+void file_write(
 				const String& file_spec, 
 				const void *data, size_t size, 
 				bool as_text,
@@ -242,7 +242,7 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 	
 	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::UL_FILE_SPEC));
 }
-bool file_delete(Pool& pool, const String& file_spec, bool fail_on_read_problem) {
+bool file_delete(const String& file_spec, bool fail_on_read_problem) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	if(unlink(fname)!=0)
 		if(fail_on_read_problem)
@@ -256,7 +256,7 @@ bool file_delete(Pool& pool, const String& file_spec, bool fail_on_read_problem)
 	rmdir(file_spec, 1);
 	return true;
 }
-void file_move(Pool& pool, const String& old_spec, const String& new_spec) {
+void file_move(const String& old_spec, const String& new_spec) {
 	const char *old_spec_cstr=old_spec.cstr(String::UL_FILE_SPEC);
 	const char *new_spec_cstr=new_spec.cstr(String::UL_FILE_SPEC);
 	

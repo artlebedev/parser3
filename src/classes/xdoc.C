@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.76 2002/01/24 15:11:59 paf Exp $
+	$Id: xdoc.C,v 1.77 2002/01/25 11:33:46 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -608,7 +608,7 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 		gnome_buf=(char *)outputBuffer->buffer->content;
 	}
 	if(file_spec)
-		file_write(pool, 
+		file_write(
 					*file_spec,
 					gnome_buf, gnome_size, 
 					true/*as_text*/);

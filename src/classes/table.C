@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.140 2002/01/22 08:59:59 paf Exp $
+	$Id: table.C,v 1.141 2002/01/25 11:33:45 paf Exp $
 */
 
 #include "classes.h"
@@ -190,7 +190,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	}
 
 	// write
-	file_write(pool, r.absolute(vfile_name.as_string()), 
+	file_write(r.absolute(vfile_name.as_string()), 
 		sdata.cstr(), sdata.size(), true, do_append);
 }
 

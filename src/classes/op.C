@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.67 2002/01/16 10:28:33 paf Exp $
+	$Id: op.C,v 1.68 2002/01/25 11:33:45 paf Exp $
 */
 
 #include "classes.h"
@@ -338,10 +338,10 @@ struct Data_string_serialized_prolog {
 };
 #endif
 
-void cache_delete(Pool& pool, const String& file_spec) {
-	file_delete(pool, file_spec, false/*fail_on_read_problem*/);
+void cache_delete(const String& file_spec) {
+	file_delete(file_spec, false/*fail_on_read_problem*/);
 }
-void cache_put(Pool& pool, const String& file_spec, const String& data_string) {
+void cache_put(const String& file_spec, const String& data_string) {
 	void *data; size_t data_size;
 	data_string.serialize(
 		sizeof(Data_string_serialized_prolog), 
@@ -351,7 +351,7 @@ void cache_put(Pool& pool, const String& file_spec, const String& data_string) {
 
 	prolog.version=DATA_STRING_SERIALIZED_VERSION;
 
-	file_write(pool, 
+	file_write(
 				file_spec, 
 				data, data_size, 
 				false/*as_text*/);
@@ -390,7 +390,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	// file_spec, expires, body code
 	const String &file_spec=r.absolute(params->as_string(0, "filespec must be string"));
 	if(params->size()==1) { // delete
-		cache_delete(pool, file_spec);
+		cache_delete(file_spec);
 		return;
 	}
 
@@ -403,7 +403,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 		// {file_spec} modification time
 		if(!file_stat(file_spec, size, atime, mtime, ctime, false/*no exception on error*/) 
 			|| (time(0)-mtime) > lifespan) // cached file expired
-			cache_delete(pool, file_spec);
+			cache_delete(file_spec);
 		else
 			if(String *cached_body=cache_get(pool, file_spec)) { // have cached copy?
 				// write it out 
@@ -412,14 +412,14 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 				return;
 			}
 	} else // 'lifespan'=0, forget cached copy
-		cache_delete(pool, file_spec);
+		cache_delete(file_spec);
 	
 	// process
 	Value& processed_body=r.process(body_code);
 	
 	// put it to cache if 'lifespan' specified
 	if(lifespan)
-		cache_put(pool, file_spec, processed_body.as_string());
+		cache_put(file_spec, processed_body.as_string());
 
 	// write it out 
 	r.write_assign_lang(processed_body);
