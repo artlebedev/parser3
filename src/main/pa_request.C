@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_request.C,v 1.12 2001/03/11 08:02:06 paf Exp $
+	$Id: pa_request.C,v 1.13 2001/03/11 08:12:11 paf Exp $
 */
 
 #include "pa_request.h"
@@ -45,7 +45,7 @@ void Request::core() {
 			main_class_name, 0, 
 			false/*ignore possible error*/);
 
-		// TODO: использовать AUTO:limits здесь, пока их не сломали враги
+		// TODO: использовать $MAIN:limits здесь, пока их не сломали враги
 
 		// TODO: load site auto.p files, all assigned bases from upper dir
 		char *site_auto_file="Y:\\parser3\\src\\auto.p";

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_vhash.h,v 1.1 2001/03/11 07:52:45 paf Exp $
+	$Id: pa_vhash.h,v 1.2 2001/03/11 08:12:12 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -16,7 +16,7 @@ class VHash : public Value {
 public: // value
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "fvalue"; }
+	const char *type() const { return "hash"; }
 
 	// value: (key)=value
 	Value *get_element(const String& name) { 
