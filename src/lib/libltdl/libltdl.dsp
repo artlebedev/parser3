@@ -133,5 +133,49 @@ SOURCE=.\config_fixed.h
 SOURCE=.\ltdl.h
 # End Source File
 # End Group
+# Begin Group "gnu"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\acinclude.m4
+# End Source File
+# Begin Source File
+
+SOURCE=.\config.guess
+# End Source File
+# Begin Source File
+
+SOURCE=.\config.sub
+# End Source File
+# Begin Source File
+
+SOURCE=.\config_auto.h.in
+# End Source File
+# Begin Source File
+
+SOURCE=.\configure
+# End Source File
+# Begin Source File
+
+SOURCE=.\configure.in
+# End Source File
+# Begin Source File
+
+SOURCE=".\install-sh"
+# End Source File
+# Begin Source File
+
+SOURCE=.\Makefile.am
+# End Source File
+# Begin Source File
+
+SOURCE=.\Makefile.in
+# End Source File
+# Begin Source File
+
+SOURCE=.\README
+# End Source File
+# End Group
 # End Target
 # End Project
