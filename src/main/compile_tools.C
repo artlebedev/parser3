@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.9 2001/02/22 13:58:43 paf Exp $
+  $Id: compile_tools.C,v 1.10 2001/02/22 14:45:27 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -23,7 +23,7 @@ Array *L(VString *vstring) {
 }
 
 String *LA2S(Array *literal_string_array, int offset) {
-	return static_cast<Value *>(literal_string_array->get(offset+1))->get_string();
+	return static_cast<VString *>(literal_string_array->get(offset+1))->get_string();
 }
 
 

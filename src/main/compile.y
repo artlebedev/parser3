@@ -618,7 +618,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 		}
 		if(c==0) {
 			result=-1;
-			PC->source--;  PC->col--;
+//			PC->source--;  PC->col--;
 			break;
 		}
 	}
