@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.31 2001/04/28 13:49:22 paf Exp $
+	$Id: mod_parser3.C,v 1.32 2001/04/28 16:04:55 paf Exp $
 */
 
 #include "httpd.h"
@@ -17,7 +17,7 @@
 #include "util_script.h"
 
 #include "pa_sapi.h"
-#include "pa_methoded.h"
+#include "classes.h"
 #include "pa_common.h"
 #include "pa_globals.h"
 #include "pa_request.h"
