@@ -110,8 +110,8 @@ CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 HEADERS =  $(noinst_HEADERS)
 
-DIST_COMMON =  README Makefile.am Makefile.in acinclude.m4 configure \
-configure.in install-sh
+DIST_COMMON =  README Makefile.am Makefile.in acinclude.m4 config.guess \
+config.sub configure configure.in install-sh
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
