@@ -1,3 +1,17 @@
+/** @file
+	Parser: includes all Configure-d headers
+
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: pa_config_includes.h,v 1.5 2001/04/26 15:09:05 paf Exp $
+
+
+	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
+	fixed otherwise.
+*/
+
 #if HAVE_CONFIG_H
 #	include "pa_config_auto.h"
 #else

@@ -100,6 +100,14 @@ SOURCE=.\parser3mysql.C
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=.\config_fixed.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\config_includes.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\pa_sql_driver.h
 # End Source File
 # End Group

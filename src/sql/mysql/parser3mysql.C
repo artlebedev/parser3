@@ -1,11 +1,11 @@
 /** @file
-	Parser: MySQL driver.
+	Parser MySQL driver.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.14 2001/04/17 19:00:51 paf Exp $
+	$Id: parser3mysql.C,v 1.15 2001/04/26 15:09:08 paf Exp $
 */
 
 #include "config_includes.h"

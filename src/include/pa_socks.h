@@ -1,11 +1,11 @@
-/** @file
-	Parser: executor part of request class.
+/**	@file
+	Parser: socks initialization/finalization decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_socks.h,v 1.1 2001/04/07 14:23:31 paf Exp $
+	$Id: pa_socks.h,v 1.2 2001/04/26 15:14:10 paf Exp $
 */
 
 #ifndef PA_SOCKS_H

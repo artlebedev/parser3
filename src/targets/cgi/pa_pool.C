@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: CGI memory manager impl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.3 2001/03/23 19:25:17 paf Exp $
+	$Id: pa_pool.C,v 1.4 2001/04/26 15:09:13 paf Exp $
 */
 
 #include <stdlib.h>

@@ -1,11 +1,11 @@
-/*
+/**	@file
 	Parser: socks initialization/finalization.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_socks.C,v 1.2 2001/04/17 19:00:41 paf Exp $
+	$Id: pa_socks.C,v 1.3 2001/04/26 15:14:18 paf Exp $
 */
 
 #define NO_UNISTD_H
