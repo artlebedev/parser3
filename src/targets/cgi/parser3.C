@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.8 2001/03/14 09:06:28 paf Exp $
+	$Id: parser3.C,v 1.9 2001/03/14 09:12:06 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -23,6 +23,7 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_common.h"
+#include "vform_fields_fill.h"
 
 Pool pool; // global pool
 
@@ -55,16 +56,6 @@ LONG WINAPI TopLevelExceptionFilter (
 #	endif
 #endif
 
-void fill_vform_fields(Pool& pool, bool cgi, Hash& fields) {
-	String& ename=*new(pool) String(pool);
-	ename.APPEND_CONST("test");
-
-	String& evalue=*new(pool) String(pool);
-	evalue.APPEND_TAINTED("<value>", 0, "form", 0);
-
-	fields.put(ename, new(pool) VString(evalue));
-}
-
 int main(int argc, char *argv[]) {
 	// were we started as CGI?
 	bool cgi=
@@ -83,7 +74,7 @@ int main(int argc, char *argv[]) {
 #	endif
 #endif
 
-		fill_globals(pool);
+		globals_init(pool);
 		
 		// TODO: ifdef WIN32 flip \\ to /
 		const char *document_root="Y:/parser3/src/";
@@ -97,7 +88,7 @@ int main(int argc, char *argv[]) {
 			);
 		
 		// fill user passed forms
-		fill_vform_fields(pool, cgi, request.form_class.fields());
+		vform_fields_fill(pool, cgi, request.form_class.fields());
 		
 		// some root-controlled location
 		char *sys_auto_path1;

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.1 2001/03/14 08:50:04 paf Exp $
+	$Id: pa_globals.C,v 1.2 2001/03/14 09:12:05 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -31,7 +31,7 @@ String *form_class_name;
 Hash *untaint_lang_name2enum;
 
 
-void fill_globals(Pool& pool) {
+void globals_init(Pool& pool) {
 	#define NEW_STRING(name, value)  name=new(pool) String(pool); name->APPEND_CONST(value)
 	#define LOCAL_STRING(name, value)  String name(pool); name.APPEND_CONST(value)
 

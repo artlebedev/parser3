@@ -106,6 +106,14 @@ SOURCE=.\pa_vform.C
 
 SOURCE=.\parser3.C
 # End Source File
+# Begin Source File
+
+SOURCE=.\vform_fields_fill.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\vform_fields_fill.h
+# End Source File
 # End Group
 # End Target
 # End Project
