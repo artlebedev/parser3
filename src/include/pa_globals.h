@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.45 2001/04/10 10:32:08 paf Exp $
+	$Id: pa_globals.h,v 1.46 2001/04/11 08:36:16 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -29,6 +29,7 @@ class Table;
 #define EXPIRES_NAME "expires"
 #define PATH_NAME "path"
 #define NAME_NAME "name"
+#define NONAME_DAT "noname.dat"
 #define SIZE_NAME "size"
 #define TEXT_NAME "text"
 

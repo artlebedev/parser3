@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.15 2001/04/11 08:13:43 paf Exp $
+	$Id: pa_vfile.C,v 1.16 2001/04/11 08:36:22 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -35,7 +35,7 @@ void VFile::set(bool tainted,
 			lfile_name=after_slash;
 		
 	} else
-		lfile_name="noname.dat";
+		lfile_name=NONAME_DAT;
 	String& sfile_name=*NEW String(pool());
 	sfile_name.APPEND(lfile_name, 0, String::UL_FILE_NAME, origin_file, 0);
 	ffields.put(*name_name, NEW VString(sfile_name));

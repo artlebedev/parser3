@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.79 2001/04/09 15:48:56 paf Exp $
+	$Id: pa_string.h,v 1.80 2001/04/11 08:36:16 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -156,6 +156,11 @@ public:
 		int partial; // unused
 		return cmp(partial, src_ptr, src_size)==0; 
 	}
+	bool operator != (const char* src_ptr) const { 
+		int partial; // unused
+		return cmp(partial, src_ptr, 0)!=0; 
+	}
+
 
 	/** 
 		appends other String.

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.110 2001/04/11 07:44:15 paf Exp $
+	$Id: pa_request.C,v 1.111 2001/04/11 08:36:19 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -537,11 +537,12 @@ void Request::output_result(const VFile& body_file, bool header_only) {
 	}
 
 	// content-disposition
-	if(VString *vfile_name=static_cast<VString *>(body_file.fields().get(*name_name))) {
-		VHash& vhash=*NEW VHash(pool());
-		vhash.hash().put(*content_disposition_filename_name, vfile_name);
-		response.fields().put(*content_disposition_name, &vhash);
-	}
+	if(VString *vfile_name=static_cast<VString *>(body_file.fields().get(*name_name)))
+		if(vfile_name->string()!=NONAME_DAT) {
+			VHash& vhash=*NEW VHash(pool());
+			vhash.hash().put(*content_disposition_filename_name, vfile_name);
+			response.fields().put(*content_disposition_name, &vhash);
+		}
 
 	// prepare header: $response:fields without :body
 	response.fields().for_each(add_header_attribute, /*excluding*/ body_name);

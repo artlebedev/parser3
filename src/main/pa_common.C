@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.45 2001/04/10 11:24:00 paf Exp $
+	$Id: pa_common.C,v 1.46 2001/04/11 08:36:19 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -83,7 +83,7 @@ bool file_read(Pool& pool, const String& file_spec,
 
 		if(read_size>=0 && read_size<=max_size) {
 			if(as_text)
-				((char *)data)[read_size]=0;
+				((char*&)data)[read_size]=0;
 		} else
 			PTHROW(0, 0, 
 				&file_spec, 
@@ -285,8 +285,7 @@ static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *aval
 	Attributed_meaning_info& ami=*static_cast<Attributed_meaning_info *>(info);
 
 	// ...; charset=windows1251
-	if(ami.header->size())
-		ami.header->APPEND_CONST("; ");
+	ami.header->APPEND_CONST("; ");
 	ami.header->append(akey, ami.lang, true);
 	ami.header->APPEND_CONST("=");
 	ami.header->append(static_cast<Value *>(avalue)->as_string(), 
