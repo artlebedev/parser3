@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.8 2001/02/21 07:42:22 paf Exp $
+  $Id: execute.C,v 1.9 2001/02/21 11:19:19 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -23,31 +23,25 @@ char *opcode_name[]={
 	"CALL"
 };
 
-void dump(int level, const Array *ops) {
-	if(!ops)
-		return;
-
-	int size=ops->size();
+void dump(int level, const Array& ops) {
+	int size=ops.size();
 	for(int i=0; i<size; i++) {
-		int code=reinterpret_cast<int>(ops->raw_get(i));
+		int code=reinterpret_cast<int>(ops.raw_get(i));
 		printf("%*s%s", level*4, "", opcode_name[code]);
 
 		if(code==OP_STRING) {
-			printf(" \"%s\"", static_cast<const String *>(ops->raw_get(++i))->cstr());
+			printf(" \"%s\"", static_cast<const String *>(ops.raw_get(++i))->cstr());
 		}
 		printf("\n");
 
 		if(code==OP_CODE_ARRAY) {
-			const Array *local_ops=reinterpret_cast<const Array *>(ops->raw_get(++i));
-			dump(level+1, local_ops);
+			const Array *local_ops=reinterpret_cast<const Array *>(ops.raw_get(++i));
+			dump(level+1, *local_ops);
 		}
 	}
 }
 
-void execute(Pool *pool, const Array *ops) {
-	if(!ops)
-		return;
-
+void execute(Pool& pool, const Array& ops) {
 	puts("---------------------------");
 	dump(0, ops);
 	puts("---------------------------");

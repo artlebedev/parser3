@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.9 2001/02/21 11:10:02 paf Exp $
+  $Id: pa_value.h,v 1.10 2001/02/21 11:18:57 paf Exp $
 */
 
 /*
@@ -85,7 +85,7 @@ public:
 	virtual Method_ref *get_method_ref() { failed("extracting method reference"); return 0; }
 
 	// junction: auto_calc,root,self,rcontext,wcontext, code
-	virtual Junction *get_junction() { failed("getting junction"); }
+	virtual Junction *get_junction() { failed("getting junction"); return 0; }
 
 	// hash: (key)=value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class

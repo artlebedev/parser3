@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.10 2001/02/21 11:13:37 paf Exp $
+  $Id: parser.C,v 1.11 2001/02/21 11:19:25 paf Exp $
 */
 
 #include <stdio.h>
@@ -167,17 +167,17 @@ int main(int argc, char *argv[]) {
 			}
 
 			{
-				VClass *class_RUN=request.classes().get(RUN);
+				VClass *class_RUN=static_cast<VClass *>(request.classes().get(name_RUN));
 				String name_main(pool);
 				name_main.APPEND_CONST("main");
-				Method *method_main=vclass.get_method(name_main);
+				Method *method_main=class_RUN->get_method(name_main);
 				if(!method_main)
 					request.exception().raise(0,0,
-						class_RUN.name(),
+						&class_RUN->name(),
 						"no 'main' method");
 
-				Array *code=method_main->code;
-				execute(&pool, code);
+				Array& code=method_main->code;
+				execute(pool, code);
 			}
 
 		} else {

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.14 2001/02/20 18:45:52 paf Exp $
+  $Id: pa_array.C,v 1.15 2001/02/21 11:19:20 paf Exp $
 */
 
 #include <string.h>
@@ -33,7 +33,7 @@ void Array::expand(int chunk_rows) {
 }
 
 
-Array& Array::operator += (const Item *src) {
+Array& Array::operator += (Item *src) {
 	if(chunk_is_full())
 		expand(tail->count*CR_GROW_PERCENT/100);
 
@@ -43,7 +43,7 @@ Array& Array::operator += (const Item *src) {
 	return *this;
 }
 
-const Array::Item *Array::get(int index) const {
+Array::Item *Array::get(int index) const {
 	if(!(index>=0 && index<size())) {
 		pool().exception().raise(0, 0, 0, 
 			"Array::get(%d) out of range [0..%d]", index, size()-1);

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.14 2001/02/20 18:45:51 paf Exp $
+  $Id: pa_array.h,v 1.15 2001/02/21 11:18:57 paf Exp $
 */
 
 /*
@@ -39,9 +39,9 @@ public:
 	Array(Pool& apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
 	int size() const { return fused_rows; }
-	Array& operator += (const Item *src);
+	Array& operator += (Item *src);
 	Array& append_array(const Array& src);
-	const Item *raw_get(int index) const {
+	Item *raw_get(int index) const {
 		// considering these true:
 		//   index increments from 0 to size()-1
 		//   index>=0 && index<size()
@@ -57,7 +57,7 @@ public:
 		return cache_chunk->rows[index-cache_chunk_base].item;
 	}
 
-	const Item *get(int index) const;
+	Item *get(int index) const;
 	const char *get_cstr(int index) const { 
 		return static_cast<const char *>(get(index)); 
 	}
@@ -71,7 +71,7 @@ private:
 		// the number of rows in chunk
 		int count;
 		union Row {
-			const Item *item;
+			Item *item;
 			Chunk *link;  // link to the next chunk in chain
 		} rows[1];
 		// next rows are here
