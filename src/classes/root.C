@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.21 2001/03/12 09:40:59 paf Exp $
+	$Id: root.C,v 1.22 2001/03/12 10:21:23 paf Exp $
 */
 
 #include <string.h>
@@ -19,14 +19,14 @@ static void _if(Request& r, const String&, Array *params) {
 			false/*don't intercept string*/).get_bool();
 	if(condition) {
 		Value& value=r.process(*static_cast<Value *>(params->get(1)));
-		r.wcontext->write(value, String::Untaint_lang::PASS_APPENDED);
+		r.write_pass_lang(value);
 	} else if(params->size()==3) {
 		Value& value=r.process(*static_cast<Value *>(params->get(2)));
-		r.wcontext->write(value, String::Untaint_lang::PASS_APPENDED);
+		r.write_pass_lang(value);
 	}
 }
 
-static void _untaint(Request& r, const String& name, Array *params) {
+static void _untaint(Request& r, const String& method_name, Array *params) {
 	const String& lang_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
 	String::Untaint_lang lang=static_cast<String::Untaint_lang>(
 		untaint_lang_name_to_enum->get_int(lang_name));
@@ -40,15 +40,15 @@ static void _untaint(Request& r, const String& name, Array *params) {
 	// forcing ^untaint[]{this param type}
 	if(!value->get_junction())
 		R_THROW(0, 0,
-			&name,
+			&method_name,
 			"body must be junction");
 
 	value=&r.process(*value);
-	r.wcontext->write(*value, String::Untaint_lang::PASS_APPENDED);
+	r.write_pass_lang(*value);
 }
 	
 
-static void _process(Request& r, const String& name, Array *params) {
+static void _process(Request& r, const String& method_name, Array *params) {
 	// evaluate source to process
 	const String& source=r.process(*static_cast<Value *>(params->get(0))).as_string();
 
@@ -59,23 +59,25 @@ static void _process(Request& r, const String& name, Array *params) {
 	const Origin& origin=source.origin();
 	snprintf(place, MAX_STRING, "%s(%d) %s", 
 		origin.file, 1+origin.line,
-		name.cstr());
+		method_name.cstr());
 #else
-	strncpy(place, MAX_STRING, name.cstr());
+	strncpy(place, MAX_STRING, method_name.cstr());
 #endif	
 
 	VClass& self_class=*r.self->get_class();
-	// temporary zero @main so to maybe-replace it in processed code
-	Temp_method temp_method(self_class, *main_method_name, 0);
-
-	// process source code, append processed methods to 'self' class
-	// maybe-define new @main
-	r.use_buf(source.cstr(), place, &self_class);
-
-	// maybe-execute @main[]
-	if(const Method *method=self_class.get_method(*main_method_name)) {
-		// execute!	
-		r.execute(*method->parser_code);
+	{
+		// temporary zero @main so to maybe-replace it in processed code
+		Temp_method temp_method(self_class, *main_method_name, 0);
+		
+		// process source code, append processed methods to 'self' class
+		// maybe-define new @main
+		r.use_buf(source.cstr(), place, &self_class);
+		
+		// maybe-execute @main[]
+		if(const Method *method=self_class.get_method(*main_method_name)) {
+			// execute!	
+			r.execute(*method->parser_code);
+		}
 	}
 }
 	

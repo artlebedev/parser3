@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.4 2001/03/12 09:08:52 paf Exp $
+	$Id: pa_value.h,v 1.5 2001/03/12 10:21:24 paf Exp $
 */
 
 /*
@@ -28,7 +28,7 @@ class WContext;
 class VAliased;
 class Request;
 
-typedef void (*Native_code_ptr)(Request& request, const String& name, Array *params);
+typedef void (*Native_code_ptr)(Request& request, const String& method_name, Array *params);
 
 class Method : public Pooled {
 public:
