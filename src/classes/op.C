@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.93 2002/04/19 08:54:35 paf Exp $
+	$Id: op.C,v 1.94 2002/04/29 06:27:29 paf Exp $
 */
 
 #include "classes.h"
@@ -533,7 +533,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 VHash& exception2vhash(Pool& pool, const Exception& e) {
 	VHash& result=*new(pool) VHash(pool);
 	Hash& hash=result.hash(0);
-	if(const char *type=e.type())
+	if(const char *type=e.type(true))
 		hash.put(*exception_type_part_name, new(pool) VString(*new(pool) String(pool, type)));
 	if(const String *asource=e.problem_source()) {
 		String& source=*new(pool) String(pool); 
@@ -548,7 +548,7 @@ VHash& exception2vhash(Pool& pool, const Exception& e) {
 			new(pool) VInt(pool, 1+origin.line));
 #endif
 	}
-	if(const char *ecomment=e.comment()) {
+	if(const char *ecomment=e.comment(true)) {
 		int comment_size=strlen(ecomment);
 		char *pcomment=(char *)pool.malloc(comment_size);
 		memcpy(pcomment, ecomment, comment_size);
@@ -629,7 +629,7 @@ static void _throw_operator(Request& r, const String& method_name, MethodParams 
 		const char *type=params->as_string(0, "type must be string").cstr();
 		const String& source=params->as_string(1, "source must be string");
 		const char *comment=params->size()>2?params->as_string(2, "comment must be string").cstr():0;
-		throw Exception(type, &source, comment);
+		throw Exception(type, &source, "%s", comment);
 	}
 }
 	

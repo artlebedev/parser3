@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.34 2002/04/29 05:59:33 paf Exp $
+	$Id: pa_exception.h,v 1.35 2002/04/29 06:27:29 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -36,13 +36,24 @@ public:
 #endif
 
 	/// extracts exception type
-	const char *type() const { return ftype; }
+	const char *type(bool can_be_empty=false) const { 
+		if(can_be_empty)
+			return ftype; 
+		else
+			return ftype?ftype:"<no type>";
+	}
 	/// extracts exception problem_source
 	const String *problem_source() const { 
 		return fproblem_source && fproblem_source->size()?fproblem_source:0; 
 	}
 	/// extracts exception comment
-	const char *comment() const { return fcomment; }
+	const char *comment(bool can_be_empty=false) const { 
+		const char *result=fcomment && *fcomment?fcomment:0;
+		if(can_be_empty)
+			return result; 
+		else
+			return result?result:"<no comment>";
+	}
 
 private:
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.205 2002/04/29 05:59:33 paf Exp $
+	$Id: pa_request.C,v 1.206 2002/04/29 06:27:29 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -323,15 +323,14 @@ t[9]-t[3]
 #endif
 					problem_source->cstr(),
 					e.comment(),
-					e.type()?e.type():"-"
+					e.type()
 				);
 			else
 				SAPI::log(pool(),
 					"%s: "
 					"%s [%s]",
 					info.uri,
-					e.comment(),
-					e.type()?e.type():"-"
+					e.comment(), e.type()
 				);
 
 			// reset language to default
@@ -405,9 +404,9 @@ t[9]-t[3]
 					printed+=snprintf(buf+printed, MAX_STRING-printed, "'%s' ", 
 						problem_source->cstr());
 				}
-				printed+=snprintf(buf+printed, MAX_STRING-printed, "%s", 
-					e.comment());
-				if(const char *type=e.type()) 
+				if(const char *comment=e.comment(true))
+					printed+=snprintf(buf+printed, MAX_STRING-printed, "%s", comment);
+				if(const char *type=e.type(true)) 
 					printed+=snprintf(buf+printed, MAX_STRING-printed, "  type: %s",  type);
 
 				// future $response:content-type
