@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.166 2002/04/04 07:57:50 paf Exp $
+	$Id: parser3.C,v 1.167 2002/04/04 08:04:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -196,12 +196,19 @@ void SAPI::send_body(Pool& , const void *buf, size_t size) {
 //
 
 void full_file_spec(const char *file_name, char *buf, size_t buf_size) {
-	if(file_name && !strchr(file_name, '/')) {
-		char cwd[MAX_STRING];  getcwd(cwd, MAX_STRING);
-		snprintf(buf, buf_size, "%s/%s", cwd, file_name);
-	} else {
-		strncpy(buf, file_name, buf_size);
-	}
+	if(file_name)
+		if(file_name[0]=='/' 
+#ifdef WIN32
+			|| (file_name[0] && file_name[1]==':')
+#endif
+			) 
+			strncpy(buf, file_name, buf_size);
+		else {
+			char cwd[MAX_STRING];  getcwd(cwd, MAX_STRING);
+			snprintf(buf, buf_size, "%s/%s", cwd, file_name);
+		}
+	else
+		buf[0]=0;
 #ifdef WIN32
 	back_slashes_to_slashes(buf);
 #endif
