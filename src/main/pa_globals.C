@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2003/01/21 15:51:14 $";
+static const char* IDENT_GLOBALS_C="$Date: 2003/04/04 08:16:20 $";
 
 #include "pa_config_includes.h"
 
@@ -584,7 +584,7 @@ void pa_globals_init(Pool& pool) {
 }
 
 #if defined(XML) && defined(_MSC_VER)
-#	define GNOME_LIBS "/parser3project/win32xml/win32/gnome"
+#	define GNOME_LIBS "../../../../win32xml/win32/gnome"
 #	pragma comment(lib, GNOME_LIBS "/glib/lib/libglib-1.3-11.lib")
 #	ifdef _DEBUG
 #		pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/dsp/libxml2_so_debug/libxml2.lib")
