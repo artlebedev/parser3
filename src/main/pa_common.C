@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/06/20 09:56:01 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/07/21 07:07:16 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -255,6 +255,9 @@ static int http_request(String& response,
 #endif
 }
 
+#undef CRLF
+#define CRLF "\r\n"
+
 #ifndef DOXYGEN
 struct Http_pass_header_info {
 	String* request;
@@ -268,7 +271,7 @@ static void http_pass_header(const Hash::Key& key, Hash::Val *value, void *info)
     
     *(i.request)<<key<<": "
 		<< attributed_meaning_to_string(*static_cast<Value *>(value), String::UL_HTTP_HEADER, false)
-		<<"\n"; 
+		<< CRLF; 
 	
 	if(key.change_case(pool, String::CC_UPPER)=="USER-AGENT")
 		i.user_agent_specified=true;
@@ -329,7 +332,7 @@ static void file_read_http(Pool& pool, const String& file_spec,
 
 	//making request
 	String request(pool);
-	request<< method <<" "<< uri <<" HTTP/1.0\nHost: "<< host<<"\n"; 
+	request<< method <<" "<< uri <<" HTTP/1.0" CRLF "Host: "<< host<< CRLF; 
 	bool user_agent_specified=false;
 	if(vheaders && !vheaders->is_string()) { // allow empty
 		if(Hash *headers=vheaders->get_hash(&connect_string)) {
@@ -342,8 +345,8 @@ static void file_read_http(Pool& pool, const String& file_spec,
 				"headers param must be hash"); 
 	};
 	if(!user_agent_specified) // defaulting
-		request << "user-agent: " DEFAULT_USER_AGENT "\n";
-	request<<"\n"; 
+		request << "user-agent: " DEFAULT_USER_AGENT CRLF;
+	request<<CRLF; 
 	
 	//sending request
 	String response(pool); 
@@ -352,7 +355,7 @@ static void file_read_http(Pool& pool, const String& file_spec,
 		timeout, fail_on_status_ne_200); 
 	
 	//processing results	
-	int pos=response.pos("\r\n\r\n", 4); 
+	int pos=response.pos(CRLF CRLF, 4); 
 	if(pos<1){
 		throw Exception("http.response", 
 			&connect_string,
@@ -368,7 +371,7 @@ static void file_read_http(Pool& pool, const String& file_spec,
 	Hash& tables=vtables->hash(0);
 
 	size_t pos_after_ref=0;
-	header_block.split(aheaders, &pos_after_ref, "\r\n", 2); 
+	header_block.split(aheaders, &pos_after_ref, CRLF, 2); 
 	
 	//processing headers
 	for(int i=1;i<aheaders.size();i++) {
