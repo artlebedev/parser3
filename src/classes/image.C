@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.3 2001/04/10 14:00:02 paf Exp $
+	$Id: image.C,v 1.4 2001/04/10 14:18:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -272,18 +272,26 @@ static void _measure(Request& r, const String& method_name, Array *params) {
 	static_cast<VImage *>(r.self)->set(*file_name, width, height);
 }
 
+struct Attrib_info {
+	String *tag;
+	Hash *skip;
+};
 static void append_attrib_pair(const Hash::Key& key, Hash::Val *val, void *info) {
-	String& tag=*static_cast<String *>(info);
+	Attrib_info& ai=*static_cast<Attrib_info *>(info);
+
+	if(ai.skip && ai.skip->get(key))
+		return;
+
 	Value& value=*static_cast<Value *>(val);
 	// src="a.gif" width=123 ismap[=-1]
-	tag << " " << key;
+	*ai.tag << " " << key;
 	if(value.is_string() || value.as_double()>=0) {
-		tag << "=";
+		*ai.tag << "=";
 		if(value.is_string())
-			tag << "\"";
-		tag << value.as_string();
+			*ai.tag << "\"";
+		*ai.tag << value.as_string();
 		if(value.is_string())
-			tag << "\"";
+			*ai.tag << "\"";
 	}
 }
 /// ^image.html[]
@@ -293,7 +301,22 @@ static void _html(Request& r, const String& method_name, Array *params) {
 
 	String tag(pool);
 	tag << "<img";
-	static_cast<VImage *>(r.self)->fields().for_each(append_attrib_pair, &tag);
+
+	Hash& fields=static_cast<VImage *>(r.self)->fields();
+	Hash *temporary=0;
+
+	if(params->size()) {
+		if(temporary=static_cast<Value *>(params->get(0))->get_hash()) {
+			Attrib_info attrib_info={&tag, 0};
+			temporary->for_each(append_attrib_pair, &attrib_info);
+		} else
+			PTHROW(0, 0,
+				&method_name,
+				"parameter must be hash");
+	}
+
+	Attrib_info attrib_info={&tag, temporary};
+	fields.for_each(append_attrib_pair, &attrib_info);
 	tag << ">";
 	r.write_pass_lang(tag);
 }
