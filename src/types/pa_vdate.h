@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char* IDENT_VDATE_H="$Date: 2003/01/21 15:51:18 $";
+static const char* IDENT_VDATE_H="$Date: 2003/09/01 12:27:27 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -23,6 +23,12 @@ static const char* IDENT_VDATE_H="$Date: 2003/01/21 15:51:18 $";
 // externs
 
 extern Methoded *date_class;
+
+inline void set_tz(const char* tz, char* buf, size_t buf_size) {
+	snprintf(buf, buf_size, "TZ=%s", tz?tz:"");
+	putenv(buf);
+	tzset();
+}
 
 /// value of type 'date'. implemented with @c time_t
 class VDate : public VStateless_object {
@@ -48,8 +54,23 @@ public: // Value
 		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
 			return result;
 
+		// $TZ
+		if(aname=="TZ") 
+			return NEW VString(*ftz);
+
 		// $year month day  hour minute second  weekday
+
+		const char* saved_tz=0;
+		static char saved_tz_pair[MAX_STRING];
+		static char temp_tz_pair[MAX_STRING];
+		if(ftz_cstr) {
+			saved_tz=getenv("TZ");
+			::set_tz(ftz_cstr, temp_tz_pair, sizeof(temp_tz_pair));
+		}
 		tm *tmOut=localtime(&ftime);
+		if(saved_tz)
+			::set_tz(saved_tz, saved_tz_pair, sizeof(saved_tz_pair));
+
 		int result;
 		if(aname=="year") result=1900+tmOut->tm_year;
 		else if(aname=="month") result=1+tmOut->tm_mon;
@@ -72,10 +93,16 @@ public: // usage
 
 	time_t get_time() const { return ftime; }
 	void set_time(time_t atime) { ftime=atime; }
+	void set_tz(const String* atz) { 
+		if(ftz=atz)
+			ftz_cstr=ftz->cstr();
+	}
 
 private:
 
 	time_t ftime;
+	const String* ftz;
+	const char* ftz_cstr;
 
 };
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2003/04/11 15:00:04 $";
+static const char* IDENT_DATE_C="$Date: 2003/09/01 12:27:27 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -145,7 +145,6 @@ static void _sql_string(Request& r, const String& method_name, MethodParams *) {
 	r.write_assign_lang(string);
 }
 
-
 static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDate *vdate=static_cast<VDate *>(r.get_self());
@@ -158,10 +157,14 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	if(what=="year") offset=&oyear;
 	else if(what=="month") offset=&omonth;
 	else if(what=="day") offset=&oday;
-	else
+	else if(what=="TZ") {
+		const String& argument_tz=params->as_string(1, "'TZ' must be string");
+		vdate->set_tz(&argument_tz);
+		return;
+	} else
 		throw Exception("parser.runtime",
 			&what,
-			"must be year|month|day");
+			"must be year|month|day|TZ");
 	
 	*offset=params->as_int(1, "offset must be int", r);
 
@@ -169,7 +172,7 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	tm tmIn=*localtime(&self_time);
 	tm tmSaved=tmIn;
 	int adjust_day=0;
-	time_t t_changed_date;
+	time_t changed_time;
 	while(true) {
 		tmIn.tm_year+=oyear;
 		tmIn.tm_mon+=omonth;
@@ -178,8 +181,8 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 		tmIn.tm_min=0;
 		tmIn.tm_sec=0;
 		int saved_mon=(tmIn.tm_mon+12*100)%12; // crossing year boundary backwards
-		t_changed_date=mktime/*normalizetime*/(&tmIn);
-		if(t_changed_date<0)
+		changed_time=mktime/*normalizetime*/(&tmIn);
+		if(changed_time<0)
 			throw Exception(0,
 				&method_name,
 				"bad resulting time (rolled out of valid date range)");
@@ -195,12 +198,12 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 			break;			
 	}
 
-	tm *tmOut=localtime(&t_changed_date);
+	tm *tmOut=localtime(&changed_time);
 	if(!tmOut)
 		throw Exception(0,
 			&method_name,
-			"bad resulting time (seconds from epoch=%d)", t_changed_date);
-    
+			"bad resulting time (seconds from epoch=%d)", changed_time);
+
 	tmOut->tm_hour=tmSaved.tm_hour;
 	tmOut->tm_min=tmSaved.tm_min;
 	tmOut->tm_sec=tmSaved.tm_sec;

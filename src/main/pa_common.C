@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/07/21 07:07:16 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/09/01 12:27:27 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -831,7 +831,7 @@ size_t stdout_write(const void *buf, size_t size) {
 
 	return size;
 #else
-	return fwrite(buf, 1, size, stdout); 
+	return write(1/*handleof(stdout)*/, buf, size, stdout); 
 #endif
 }
 

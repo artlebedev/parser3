@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2003/04/11 15:00:05 $";
+static const char* IDENT_COMMON_H="$Date: 2003/09/01 12:27:27 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -52,6 +52,10 @@ inline long lseek( int handle, long offset, int origin ) { return _lseek(handle,
 
 #ifndef putenv
 #	define putenv _putenv
+#endif
+
+#ifndef tzset
+#	define tzset _tzset
 #endif
 
 #endif
