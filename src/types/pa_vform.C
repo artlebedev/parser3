@@ -1,13 +1,13 @@
 /**	@file
 	Parser: @b form class.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char* IDENT_VFORM_C="$Date: 2002/12/04 11:45:34 $";
+static const char* IDENT_VFORM_C="$Date: 2003/01/21 15:51:19 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"

@@ -1,11 +1,11 @@
 /** @file
 	Parser: Charset connection implementation.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSET_C="$Date: 2002/12/23 08:03:03 $";
+static const char* IDENT_CHARSET_C="$Date: 2003/01/21 15:51:13 $";
 
 #include "pa_charset.h"
 

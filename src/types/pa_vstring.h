@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b string parser class decl.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-static const char* IDENT_VSTRING_H="$Date: 2002/10/31 15:01:57 $";
+static const char* IDENT_VSTRING_H="$Date: 2003/01/21 15:51:21 $";
 
 #include <stdlib.h>
 

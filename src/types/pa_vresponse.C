@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b response class.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VRESPONSE_C="$Date: 2002/11/29 08:06:59 $";
+static const char* IDENT_VRESPONSE_C="$Date: 2003/01/21 15:51:20 $";
 
 #include "pa_vresponse.h"
 #include "pa_charsets.h"

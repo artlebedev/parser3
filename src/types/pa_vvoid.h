@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b void parser class.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-static const char* IDENT_VVOID_H="$Date: 2002/12/09 15:34:19 $";
+static const char* IDENT_VVOID_H="$Date: 2003/01/21 15:51:21 $";
 
 #include "classes.h"
 #include "pa_vstateless_object.h"

@@ -1,13 +1,13 @@
 /** @file
 	Parser: @b dom parser class.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2002/10/15 15:12:57 $";
+static const char* IDENT_XNODE_C="$Date: 2003/01/21 15:51:08 $";
 
 #include "pa_charset.h"
 #include "pa_request.h"

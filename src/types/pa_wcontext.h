@@ -1,14 +1,14 @@
 /**	@file
 	Parser: write context class decl.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char* IDENT_WCONTEXT_H="$Date: 2002/09/10 14:56:34 $";
+static const char* IDENT_WCONTEXT_H="$Date: 2003/01/21 15:51:22 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -108,8 +108,6 @@ public: // usage
 
 	void set_somebody_entered_some_class() { flags.entered_class=1; }
 	bool get_somebody_entered_some_class() { return flags.entered_class!=0; }
-
-	WContext *parent() { return fparent; }
 
 private:
 

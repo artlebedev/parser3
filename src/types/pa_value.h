@@ -1,14 +1,14 @@
 /** @file
 	Parser: Value, Method, Junction class decls.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/10/31 15:01:54 $";
+static const char* IDENT_VALUE_H="$Date: 2003/01/21 15:51:17 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"

@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b $MAIN:CTYPE character types for Perl-Compatible Regular Expressions
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
@@ -42,7 +42,7 @@ and semantics are as close as possible to those of the Perl 5 language.
 	   
 		See the file Tech.Notes for some information on the internals.
 */
-static const char *RCSId="$Date: 2002/08/01 11:41:17 $"; 
+static const char *RCSId="$Date: 2003/01/21 15:51:12 $"; 
 
 #include <ctype.h>
 #include <stdio.h>

@@ -1,7 +1,7 @@
 /** @file
 	Parser: sql driver interface.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 
@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char* IDENT_SQL_DRIVER_H="$Date: 2002/12/14 12:43:26 $";
+static const char* IDENT_SQL_DRIVER_H="$Date: 2003/01/21 15:51:16 $";
 
 #include <sys/types.h>
 

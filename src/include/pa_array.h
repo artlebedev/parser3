@@ -1,14 +1,14 @@
 /** @file
 	Parser: Array & Array_iter classes decls.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char* IDENT_ARRAY_Y="$Date: 2002/08/06 14:23:22 $";
+static const char* IDENT_ARRAY_Y="$Date: 2003/01/21 15:51:09 $";
 
 #include "pa_pool.h"
 #include "pa_types.h"

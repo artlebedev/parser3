@@ -1,14 +1,14 @@
 /** @file
 	Parser: commonly used functions.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2002/12/02 10:07:39 $";
+static const char* IDENT_COMMON_H="$Date: 2003/01/21 15:51:09 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"

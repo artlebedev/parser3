@@ -2,7 +2,7 @@
 	Parser: "pack" attribute, use just before structures to be packed.
 	@see pa_pragma_pack_end.h
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 

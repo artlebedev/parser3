@@ -1,14 +1,14 @@
 /** @file
 	Parser: global decls.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2003/01/16 09:07:20 $";
+static const char* IDENT_GLOBALS_H="$Date: 2003/01/21 15:51:10 $";
 
 #include "pa_pool.h"
 

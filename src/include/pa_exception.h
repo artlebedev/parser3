@@ -1,14 +1,14 @@
 /** @file
 	Parser: exception decls.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char* IDENT_EXCEPTION_H="$Date: 2002/08/01 11:41:15 $";
+static const char* IDENT_EXCEPTION_H="$Date: 2003/01/21 15:51:10 $";
 
 #include "pa_types.h"
 #include "pa_string.h"

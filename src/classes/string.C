@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b string parser class.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/12/09 12:19:16 $";
+static const char* IDENT_STRING_C="$Date: 2003/01/21 15:51:07 $";
 
 #include "classes.h"
 #include "pa_request.h"

@@ -1,7 +1,7 @@
 /**	@file
 	Parser: @b object class impl.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char* IDENT_VOBJECT_C="$Date: 2002/10/31 15:13:32 $";
+static const char* IDENT_VOBJECT_C="$Date: 2003/01/21 15:51:20 $";
 
 Value *VObject::as(const char *atype, bool looking_up) { 
 	if(!looking_up)

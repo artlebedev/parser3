@@ -1,11 +1,11 @@
 /** @file
 	Parser: request class main part. @see compile.C and execute.C.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/12/19 10:17:42 $";
+static const char* IDENT_REQUEST_C="$Date: 2003/01/21 15:51:14 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"

@@ -1,14 +1,14 @@
 /** @file
 	Parser: request class decl.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/12/19 10:17:41 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/01/21 15:51:11 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"

@@ -1,11 +1,11 @@
 /** @file
 	Parser: stub to pass MD5 func calls to apache 1.3 core.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MD5C_C="$Date: 2002/08/01 11:41:20 $";
+static const char* IDENT_MD5C_C="$Date: 2003/01/21 15:51:16 $";
 
 #include "ap_config.h"
 #include "ap_md5.h"

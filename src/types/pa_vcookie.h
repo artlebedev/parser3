@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b cookie class decls.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
 
-static const char* IDENT_VCOOKIE_H="$Date: 2002/10/31 15:01:55 $";
+static const char* IDENT_VCOOKIE_H="$Date: 2003/01/21 15:51:18 $";
 
 #include "pa_hash.h"
 #include "pa_common.h"

@@ -1,11 +1,11 @@
 /**	@file
 	Parser: write context class.
 
-	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_WCONTEXT_C="$Date: 2002/09/10 12:02:24 $";
+static const char* IDENT_WCONTEXT_C="$Date: 2003/01/21 15:51:22 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"
