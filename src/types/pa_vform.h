@@ -5,13 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.17 2001/04/28 08:44:16 paf Exp $
+	$Id: pa_vform.h,v 1.18 2001/04/28 13:49:27 paf Exp $
 */
 
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-#include "classes.h"
+#include "pa_methoded.h"
 #include "pa_common.h"
 
 extern Methoded *form_base_class;

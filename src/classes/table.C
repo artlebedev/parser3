@@ -5,14 +5,14 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.66 2001/04/28 08:43:48 paf Exp $
+	$Id: table.C,v 1.67 2001/04/28 13:49:14 paf Exp $
 */
 
 #include "pa_config_includes.h"
 
 #include "pcre.h"
 
-#include "classes.h"
+#include "pa_methoded.h"
 #include "pa_common.h"
 #include "pa_request.h"
 #include "pa_vtable.h"

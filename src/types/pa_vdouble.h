@@ -5,13 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.17 2001/04/28 08:44:15 paf Exp $
+	$Id: pa_vdouble.h,v 1.18 2001/04/28 13:49:26 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#include "classes.h"
+#include "pa_methoded.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
 

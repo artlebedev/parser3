@@ -5,13 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.18 2001/04/28 08:44:16 paf Exp $
+	$Id: pa_vint.h,v 1.19 2001/04/28 13:49:27 paf Exp $
 */
 
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-#include "classes.h"
+#include "pa_methoded.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
 

@@ -425,14 +425,6 @@ SOURCE=..\types\pa_wwrapper.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\classes\classes.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\classes.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\classes\classes.inc
 # End Source File
 # Begin Source File

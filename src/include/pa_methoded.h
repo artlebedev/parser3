@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: classes.h,v 1.3 2001/04/28 10:58:25 paf Exp $
+	$Id: pa_methoded.h,v 1.1 2001/04/28 13:49:17 paf Exp $
 */
 
 #ifndef PA_METHODED_H
