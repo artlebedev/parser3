@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vcookie.C,v 1.36 2002/02/08 15:07:47 paf Exp $
+	$Id: pa_vcookie.C,v 1.37 2002/02/08 15:19:10 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -51,6 +51,10 @@ void VCookie::put_element(const String& name, Value *value) {
 }
 
 static char *search_stop(char*& current, char cstop_at) {
+	// sanity check
+	if(!current)
+		return 0;
+
 	// skip leading WS
 	while(*current==' ' || *current=='\t')
 		current++;
