@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/08/21 10:52:49 $";
+static const char* IDENT_STRING_C="$Date: 2002/09/17 14:22:29 $";
 
 #include "pcre.h"
 
@@ -620,33 +620,53 @@ String& String::change_case(Pool& pool,
 
 /// @test if in some piece were found no dict words, append it, not it's duplicate
 String& String::replace(Pool& pool, Dictionary& dict) const {
-//	return reconstruct(pool).replace_in_reconstructed(pool, dict);
-	String& result=*new(pool) String(pool);
+	char *lcstr=cstr();
+	const char *current=lcstr;
 
+	String& result=*new(pool) String(pool);
 	STRING_FOREACH_ROW(
-		const char *src=row->item.ptr; 
-		size_t src_size=row->item.size;
-		char *new_cstr=(char *)pool.malloc((size_t)ceil(src_size*dict.max_ratio()), 14);
+IFNDEF_NO_STRING_ORIGIN(
+		const char *joined_origin_file=row->item.origin.file;
+		const size_t joined_origin_line=row->item.origin.line;
+);
+		uchar joined_lang=row->item.lang;
+		const char *joined_ptr=current;
+		// calc size
+		size_t joined_size=0;
+		STRING_PREPARED_FOREACH_ROW(*this, 
+			if(row->item.lang==joined_lang)
+				joined_size+=row->item.size;
+			else
+				break; // before non-ours
+		);
+		current+=joined_size;
+
+		// pointers are after joined piece
+		// & one step back, see STRING_FOREACH_ROW
+		--row;  ++countdown;
+		
+		char *new_cstr=(char *)pool.malloc((size_t)ceil(joined_size*dict.max_ratio()), 14);
 		char *dest=new_cstr;
-		while(src_size) {
-			// there is a row where first column starts 'src'
-			if(Table::Item *item=dict.first_that_starts(src, src_size)) {
+		while(joined_size) {
+			// there is a row where first column starts 'joined_ptr'
+			if(Table::Item *item=dict.first_that_starts(joined_ptr, joined_size)) {
 				// get a=>b values
 				const String& a=*static_cast<Array *>(item)->get_string(0);
 				const String& b=*static_cast<Array *>(item)->get_string(1);
-				// skip 'a' in 'src' && reduce work size
-				src+=a.size();  src_size-=a.size();
+				// skip 'a' in 'joined_ptr' && reduce work size
+				joined_ptr+=a.size();  joined_size-=a.size();
 				// write 'b' to 'dest' && skip 'b' in 'dest'
 				b.store_to(dest);  dest+=b.size();
 			} else {
 				// write a char to b && reduce work size
-				*dest++=*src++;  src_size--;
+				*dest++=*joined_ptr++;  joined_size--;
 			}
 		}
 
-		result.APPEND(new_cstr, dest-new_cstr, row->item.lang,
-			row->item.origin.file, row->item.origin.line);
+		result.APPEND(new_cstr, dest-new_cstr, joined_lang,
+			joined_origin_file, joined_origin_line);
 	);
+
 	return result;
 }
 
