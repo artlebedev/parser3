@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: date.C,v 1.5 2001/09/04 09:07:04 parser Exp $
+	$Id: date.C,v 1.6 2001/09/04 10:50:19 parser Exp $
 */
-static const char *RCSId="$Id: date.C,v 1.5 2001/09/04 09:07:04 parser Exp $"; 
+static const char *RCSId="$Id: date.C,v 1.6 2001/09/04 10:50:19 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -136,7 +136,7 @@ MDate::MDate(Pool& apool) : Methoded(apool) {
 	// ^set(float days)
 	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 6);
 
-	// ^string[]
+	// ^sql-string[]
 	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 0);
 
 	// ^roll(year|month|day;+/- 1)
