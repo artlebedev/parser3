@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2004/04/01 11:43:54 $";
+static const char * const IDENT_PARSER3_C="$Date: 2004/04/02 13:48:09 $";
 
 #include "pa_config_includes.h"
 
@@ -33,6 +33,7 @@ static const char * const IDENT_PARSER3_C="$Date: 2004/04/01 11:43:54 $";
 
 #define REDIRECT_PREFIX "REDIRECT_"
 #define PARSER_CONFIG_ENV_NAME "CGI_PARSER_CONFIG"
+#define PARSER_LOG_ENV_NAME "CGI_PARSER_LOG"
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
@@ -57,7 +58,15 @@ static void log(const char* fmt, va_list args) {
 	bool opened=false;
 	FILE *f=0;
 
-	if(config_filespec_cstr) {
+	const char* log_by_env=getenv(PARSER_LOG_ENV_NAME);
+	if(!log_by_env)
+		log_by_env=getenv(REDIRECT_PREFIX PARSER_LOG_ENV_NAME);
+	if(log_by_env) {
+		f=fopen(log_by_env, "at");
+		opened=f!=0;
+	}
+
+	if(!opened && config_filespec_cstr) {
 		char beside_config_path[MAX_STRING];
 		strncpy(beside_config_path, config_filespec_cstr, MAX_STRING-1);  beside_config_path[MAX_STRING-1]=0;
 		if(!(
