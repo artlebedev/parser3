@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/12/25 10:48:50 $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/12/25 10:49:42 $";
 
 #include "pa_config_includes.h"
 
@@ -391,6 +391,7 @@ void pa_globals_init(Pool& pool) {
 	ULN("sql", SQL);
 	ULN("js", JS);
 	ULN("xml", XML);
+	ULN("optimized-xml", XML|String::UL_OPTIMIZE_BIT);
 	ULN("html", HTML);
 	ULN("optimized-html", HTML|String::UL_OPTIMIZE_BIT);
 
