@@ -85,7 +85,7 @@ Xне сделано, видимо, не будет сделано
         default as-is
     !^taint[[lang]][код]
         default "just tainted, language unknown"
-    !^process[строка, которая будет process-ed, как код]
+    !^process{строка, которая будет process-ed, как код}
     !^connect[protocol://строка соединения]]{код с ^sql[...]-ями}
         !mysql://user:pass@{host[:port]|[/unix/socket]}/database?
             charset=cp1251_koi8&
@@ -558,6 +558,8 @@ Xhashfile
     !^date::now(смещение в днях) выдаёт сейчас+смещение
     !^date::create(дней с epoch) // старое имя set
     !^date::create(year;month[;day[;hour[;minute[;second]]]]) // старое имя set
+    ^date::sql-create[дата в формате %Y-%m-%d %H:%M:%S]
+        для удобного создания по значению из базы
     !$date.year month day  hour minute second  weekday read-only    
     !^date.roll[year|month|day](+-смещение) сдвигает дату
     !^date.sql-string[] %Y-%m-%d %H:%M:%S

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: int.C,v 1.41 2002/03/27 15:30:34 paf Exp $
+	$Id: int.C,v 1.42 2002/04/09 06:47:05 paf Exp $
 */
 
 #include "classes.h"
@@ -31,16 +31,22 @@ public: // Methoded
 
 // methods
 
-static void _int(Request& r, const String& method_name, MethodParams *) {
+static void _int(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
+	Value *default_code=params->size()>0?
+		default_code=&params->as_junction(0, "default must be int"):0; // (default)
+
 	VInt *vint=static_cast<VInt *>(r.self);
 	Value& result=*new(pool) VInt(pool, vint->get_int());
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
 
-static void _double(Request& r, const String& method_name, MethodParams *) {
+static void _double(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
+	Value *default_code=params->size()>0?
+		default_code=&params->as_junction(0, "default must be double"):0; // (default)
+
 	VInt *vint=static_cast<VInt *>(r.self);
 	Value& result=*new(pool) VDouble(pool, vint->as_double());
 	result.set_name(method_name);
@@ -102,10 +108,10 @@ MInt::MInt(Pool& apool) : Methoded(apool) {
 
 
 	// ^int.int[]
-	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
+	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
 
 	// ^int.double[]
-	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
+	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 1);
 
 	// ^int.inc[] 
 	// ^int.inc[offset]
