@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.11 2001/03/18 13:38:47 paf Exp $
+	$Id: pa_globals.C,v 1.12 2001/03/18 14:45:27 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -113,6 +113,8 @@ void globals_init(Pool& pool) {
 	untaint_lang_name2enum=new(pool) Hash(pool);
 	String as_is(pool, "as-is");  
 	untaint_lang_name2enum->put(as_is, (int)String::Untaint_lang::AS_IS);
+	String uri(pool, "uri");  
+	untaint_lang_name2enum->put(uri, (int)String::Untaint_lang::URI);
 	String table(pool, "table");
 	untaint_lang_name2enum->put(table, (int)String::Untaint_lang::TABLE);
 	String sql(pool, "sql");

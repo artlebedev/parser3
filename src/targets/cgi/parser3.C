@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.18 2001/03/18 13:22:08 paf Exp $
+	$Id: parser3.C,v 1.19 2001/03/18 14:45:30 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -55,6 +55,8 @@ LONG WINAPI TopLevelExceptionFilter (
 #	endif
 #endif
 
+// service funcs
+
 int read_post(char *buf, int max_bytes) {
 	int read_size=0;
 	do {
@@ -68,15 +70,16 @@ int read_post(char *buf, int max_bytes) {
 	return read_size;
 }
 
-void stdout_write_header_attribute(const Hash::Key& key, Hash::Value *value, void *info) {
-	String *key_to_exclude=static_cast<String *>(info);
-	if(key==*key_to_exclude || !value)
-		return;
-
-	printf("%s: %s\n", 
-		key.cstr(), 
-		static_cast<Value *>(value)->as_string().cstr());
+void output_header_attribute(const char *key, const char *value) {
+	printf("%s: %s\n", key, value);
 }
+
+void output_body(const char *buf, size_t size) {
+	puts(""); // header | body  delimiter
+	stdout_write(buf, size);
+}
+
+// main
 
 int main(int argc, char *argv[]) {
 	//TODO: umask(2);
@@ -88,6 +91,8 @@ int main(int argc, char *argv[]) {
 
 	// Service funcs 
 	service_funcs.read_post=read_post;
+	service_funcs.output_header_attribute=output_header_attribute;
+	service_funcs.output_body=output_body;
 	
 	// were we started as CGI?
 	bool cgi=
@@ -170,27 +175,9 @@ int main(int argc, char *argv[]) {
 		request.core(pool.exception(),
 			sys_auto_path1, 
 			sys_auto_path2);
-
-		// extract request.response body
-		Value *body_value=static_cast<Value *>(
-			request.response.fields().get(*body_name));
-		const char *body=body_value?
-			body_value->as_string().cstr():"no body";// TODO: IMAGE&FILE
-
-		// OK. write out the result
-		if(cgi) {
-			// header: response fields 
-			request.response.fields().foreach(stdout_write_header_attribute,
-				body_name);
-			
-			// header: content-length
-			printf(
-				"content-length: %d\n"
-				"\n", 
-				strlen(body));
-		}
-		// body
-		stdout_write(body);
+		// no actions with request' data past this point
+		// request.exception not not handled here, but all
+		// request' data are associated with it's pool=exception
 
 			// must be last in PTRY{}PCATCH
 #ifdef WIN32
@@ -206,17 +193,18 @@ int main(int argc, char *argv[]) {
 		// @prepare to .core()
 		// @request.core when reporting request exception
 		// @write result
-		const char *error=e.comment();
+		const char *body=e.comment();
+		int content_length=strlen(body);
 
-		if(cgi) {
-			printf(
-				"Content-type: text/plain\n"
-				"Content-length: %d\n"
-				"\n", 
-				strlen(error));
-			stdout_write(error);
-		} else
-			fputs(error, stderr);
+		// header
+		(*service_funcs.output_header_attribute)("content-type", "text/plain");
+		char content_length_cstr[MAX_NUMBER];
+		snprintf(content_length_cstr, MAX_NUMBER, "%d", content_length);
+		(*service_funcs.output_header_attribute)("content-length", 
+			content_length_cstr);
+
+		// body
+		(*service_funcs.output_body)(body, content_length);
 
 		// unsuccessful finish
 		return 1;

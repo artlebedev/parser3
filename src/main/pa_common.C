@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.12 2001/03/13 18:32:47 paf Exp $
+	$Id: pa_common.C,v 1.13 2001/03/18 14:45:27 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -122,9 +122,8 @@ char *format(Pool& pool, double value, char *fmt) {
 	return result;
 }
 
-size_t stdout_write(const char *buf) {
+size_t stdout_write(const char *buf, size_t size) {
 #ifdef WIN32
-	int size=strlen(buf);
 	do{
 		int chunk_written=fwrite(buf, 1, min(8*0x400, size), stdout);
 		if(chunk_written<=0)
@@ -135,6 +134,6 @@ size_t stdout_write(const char *buf) {
 
 	return size;
 #else
-	return fwrite(buf, 1, strlen(buf), stdout);
+	return fwrite(buf, 1, size, stdout);
 #endif
 }

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.58 2001/03/18 13:22:05 paf Exp $
+	$Id: pa_request.h,v 1.59 2001/03/18 14:45:26 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -91,6 +91,10 @@ public:
 	void write_no_lang(String& astring) {
 		wcontext->write(astring, String::Untaint_lang::NO);
 	}
+	// appending string, passing language built into string being written
+	void write_pass_lang(String& astring) {
+		wcontext->write(astring, String::Untaint_lang::PASS_APPEND); 
+	}
 	// appending possible string, assigning untaint language
 	void write_assign_lang(Value& avalue) {
 		wcontext->write(avalue, flang); 
@@ -174,6 +178,9 @@ private: // lang manipulation
 		flang=alang;
 	}
 
+private:
+
+	void output_result(const String& body_string);
 };
 
 class Temp_lang {

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.41 2001/03/18 13:38:45 paf Exp $
+	$Id: root.C,v 1.42 2001/03/18 14:45:25 paf Exp $
 */
 
 #include <string.h>
@@ -48,16 +48,37 @@ static void _untaint(Request& r, const String& method_name, Array *params) {
 			"invalid untaint language");
 
 	{
-		Temp_lang temp_lang(r, lang);
 		Value *vbody=static_cast<Value *>(params->get(1));
 		// forcing ^untaint[]{this param type}
 		r.fail_if_junction_(false, *vbody, 
 			method_name, "body must be junction");
 		
-		r.write_pass_lang(r.process(*vbody));
+		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
+		r.write_pass_lang(r.process(*vbody)); // process marking tainted with that lang
 	}
 }
-	
+
+static void _taint(Request& r, const String& method_name, Array *params) {
+	const String& lang_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
+	String::Untaint_lang lang=static_cast<String::Untaint_lang>(
+		untaint_lang_name2enum->get_int(lang_name));
+	if(!lang)
+		RTHROW(0, 0,
+			&lang_name,
+			"invalid taint language");
+
+	{
+		Value *vbody=static_cast<Value *>(params->get(1));
+		// forcing ^untaint[]{this param type}
+		r.fail_if_junction_(false, *vbody, 
+			method_name, "body must be junction");
+		
+		Temp_lang temp_lang(r, String::Untaint_lang::AS_IS); // set temporarily as-is language
+		String result(r.process(*vbody).as_string()); // process marking tainted with that lang
+		result.change_lang(lang); // switch result language to specified
+		r.write_pass_lang(result);
+	}
+}
 
 static void _process(Request& r, const String& method_name, Array *params) {
 	// calculate pseudo file name of processed chars
@@ -245,8 +266,11 @@ void initialize_root_class(Pool& pool, VStateless_class& vclass) {
 	// ^if(condition){code-when-true}{code-when-false}
 	vclass.add_native_method("if", _if, 2, 3);
 
-	// ^untaint[as-is|sql|js|html|html-typo]{code}
+	// ^untaint[as-is|uri|sql|js|html|html-typo]{code}
 	vclass.add_native_method("untaint", _untaint, 2, 2);
+
+	// ^taint[as-is|uri|sql|js|html|html-typo]{code}
+	vclass.add_native_method("taint", _taint, 2, 2);
 
 	// ^process[code]
 	vclass.add_native_method("process", _process, 1, 1);

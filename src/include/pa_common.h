@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.12 2001/03/14 09:02:51 paf Exp $
+	$Id: pa_common.h,v 1.13 2001/03/18 14:45:26 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -42,6 +42,6 @@ inline int max(int a,int b) { return a>b?a:b; }
 inline int min(int a,int b){ return a<b?a:b; }
 #endif
 
-size_t stdout_write(const char *buf);
+size_t stdout_write(const char *buf, size_t size);
 
 #endif

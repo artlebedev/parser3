@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.37 2001/03/18 13:38:47 paf Exp $
+	$Id: pa_string.h,v 1.38 2001/03/18 14:45:26 paf Exp $
 */
 
 /*
@@ -66,6 +66,7 @@ public:
 			// leave language built into string being appended
 			// just a flag, that value not stored
 		AS_IS,
+		URI,
 		TABLE,
 		SQL,
 		JS,

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.9 2001/03/18 11:58:18 paf Exp $
+	$Id: pa_globals.h,v 1.10 2001/03/18 14:45:26 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -40,6 +40,8 @@
 
 struct Service_funcs {
 	int (*read_post)(char *buf, int max_bytes);
+	void (*output_header_attribute)(const char *key, const char *value);
+	void (*output_body)(const char *buf, size_t size);
 };
 
 

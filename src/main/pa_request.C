@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.44 2001/03/18 13:38:48 paf Exp $
+	$Id: pa_request.C,v 1.45 2001/03/18 14:45:27 paf Exp $
 */
 
 #include <string.h>
@@ -51,6 +51,22 @@ Request::Request(Pool& apool,
 	classes().put(*request_class_name, &request);	
 	// response class
 	classes().put(*response_class_name, &response);	
+}
+
+void output_response_attribute(const Hash::Key& key, Hash::Value *value, void *info) {
+	String *key_to_exclude=static_cast<String *>(info);
+	if(key==*key_to_exclude || !value)
+		return;
+
+	String key_string(key);
+	key_string.change_lang(String::Untaint_lang::URI);
+
+	String value_string=static_cast<Value *>(value)->as_string();
+	value_string.change_lang(String::Untaint_lang::URI);
+
+	(*service_funcs.output_header_attribute)(
+		key.cstr(), 
+		value_string.cstr());
 }
 
 void Request::core(Exception& system_exception,
@@ -126,8 +142,14 @@ void Request::core(Exception& system_exception,
 			0, 
 			"'"MAIN_METHOD_NAME"' method not found");
 
-		// store 'body' unless response already have one
-		response.fields().put_dont_replace(*body_name, NEW VString(*body_string));
+		// extract response body
+		Value *body_value=static_cast<Value *>(
+			response.fields().get(*body_name));
+		if(body_value) // there is some $request.body
+			body_string=&body_value->as_string();// TODO: IMAGE&FILE
+
+		// OK. write out the result
+		output_result(*body_string);
 	} 
 	CATCH(e) {
 		TRY {
@@ -261,10 +283,11 @@ void Request::core(Exception& system_exception,
 				body_string=NEW String(pool(), buf);
 			}
 
-			// store $response:content-type
+			// set $response:content-type
 			response.fields().put(*content_type_name, content_type);
-			// store $response:body
-			response.fields().put(*body_name, NEW VString(*body_string));
+
+			// ERROR. write it out
+			output_result(*body_string);
 		}
 		CATCH(e) {
 			// exception in request exception handler
@@ -335,4 +358,19 @@ char *Request::absolute(const char *name) {
 		return result;
 	} else 
 		return relative(info.uri, name);
+}
+
+void Request::output_result(const String& body_string) {
+	// header: response fields 
+	response.fields().foreach(output_response_attribute, /*excluding*/ body_name);
+	const char *body=body_string.cstr();
+	if(size_t content_length=strlen(body)) {
+		// header: content-length
+		char content_length_cstr[MAX_NUMBER];
+		snprintf(content_length_cstr, MAX_NUMBER, "%d", content_length);
+		(*service_funcs.output_header_attribute)("content-length", 
+			content_length_cstr);
+		// body
+		(*service_funcs.output_body)(body, content_length);
+	}
 }
