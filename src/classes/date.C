@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2003/11/03 11:06:18 $";
+static const char* IDENT_DATE_C="$Date: 2003/11/03 11:10:28 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -385,10 +385,14 @@ static void _unix_timestamp(Request& r, MethodParams& params) {
 		// ^date.unix-timestamp[]
 		r.write_no_lang(*new VInt((int)vdate.get_time()));
 	} else {
-			// ^unix-timestamp(time_t)
-			time_t t=(time_t)params.as_int(0, "Unix timestamp must be integer", r);
+		if(vdate.get_time())
+			throw Exception(0,
+				0,
+				"date object already constructed");
+		// ^unix-timestamp(time_t)
+		time_t t=(time_t)params.as_int(0, "Unix timestamp must be integer", r);
 
-			vdate.set_time(t);
+		vdate.set_time(t);
 	}
 }
 
