@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/10/21 04:45:19 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/10/22 07:15:47 $";
 
 #include "pa_hash.h"
 #include "pa_wcontext.h"
@@ -72,9 +72,7 @@ private:
 	public:
 		Value& value() const { return *fvalue; }
 		const String& string() const { 
-			const String* result=fvalue->get_string();
-			assert(result);
-			return *result; 
+			return fvalue->as_string();
 		}
 		ArrayOperation& ops() const { return *fops; }
 		VMethodFrame& method_frame() const { return *fmethod_frame; }
