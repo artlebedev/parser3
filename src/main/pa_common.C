@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/11/06 08:48:59 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/11/06 14:11:14 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -62,62 +62,6 @@ int PASCAL closesocket(SOCKET);
 #	else
 #		error you must have either ftruncate function or _O_TRUNC bit declared
 #	endif
-#endif
-
-// locking constants
-//#define PA_DEBUG_NO_LOCKING
-
-#ifdef PA_DEBUG_NO_LOCKING
-
-#ifdef HAVE_FLOCK
-
-static int pa_lock_shared_blocking(int fd) { return flock(fd, LOCK_SH); }
-static int pa_lock_exclusive_blocking(int fd) { return flock(fd, LOCK_EX); }
-static int pa_lock_exclusive_nonblocking(int fd) { return flock(fd, LOCK_EX || LOCK_NB); }
-static int pa_unlock(int fd) { return flock(fd, LOCK_UN); }
-
-#else
-#ifdef HAVE__LOCKING
-
-#define FLOCK(operation) lseek(fd, 0, SEEK_SET);  return _locking(fd, operation, 1)
-static int pa_lock_shared_blocking(int fd) { FLOCK(_LK_LOCK); }
-static int pa_lock_exclusive_blocking(int fd) { FLOCK(_LK_LOCK); }
-static int pa_lock_exclusive_nonblocking(int fd) { FLOCK(_LK_NBLCK); }
-static int pa_unlock(int fd) { FLOCK(_LK_UNLCK); }
-
-#else
-#ifdef HAVE_FCNTL
-
-#define FLOCK(cmd, arg) struct flock ls={arg, SEEK_SET};  return fcntl(fd, cmd, &ls)
-static int pa_lock_shared_blocking(int fd) { FLOCK(F_SETLKW, F_RDLCK); }
-static int pa_lock_exclusive_blocking(int fd) { FLOCK(F_SETLKW, F_WRLCK); }
-static int pa_lock_exclusive_nonblocking(int fd) { FLOCK(F_SETLK, F_RDLCK); }
-static int pa_unlock(int fd) { FLOCK(F_SETLK, F_UNLCK); }
-
-#else
-#ifdef HAVE_LOCKF
-
-#define FLOCK(fd, operation) lseek(fd, 0, SEEK_SET);  return lockf(fd, operation, 1)
-static int pa_lock_shared_blocking(int fd) { FLOCK(F_LOCK); } // on intel solaris man doesn't have doc on shared blocking
-static int pa_lock_exclusive_blocking(int fd) { FLOCK(F_LOCK); }
-static int pa_lock_exclusive_nonblocking(int fd) { FLOCK(F_TLOCK); }
-static int pa_unlock(int fd) { FLOCK(F_TLOCK); }
-
-#else
-
-#error unable to find file locking func
-
-#endif
-#endif
-#endif
-#endif
-
-#else
-static int pa_lock_shared_blocking(int fd) { return 0; }
-static int pa_lock_exclusive_blocking(int fd) { return 0; }
-static int pa_lock_exclusive_nonblocking(int fd) { return 0; }
-static int pa_unlock(int fd) { return 0; }
-
 #endif
 
 // defines for globals
