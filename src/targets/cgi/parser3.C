@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.67 2001/04/20 14:18:52 paf Exp $
+	$Id: parser3.C,v 1.68 2001/04/23 10:31:56 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -19,8 +19,7 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_socks.h"
-
-/// @test disable /cgi-bin/parser3/auto.p
+#include "pa_version.h"
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
@@ -101,7 +100,7 @@ size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
 }
 
 void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) {
-	if(1||cgi)
+	if(cgi)
 		printf("%s: %s\n", key, value);
 }
 
@@ -174,7 +173,7 @@ int main(int argc, char *argv[]) {
 		if(!filespec_to_process)
 			PTHROW(0, 0,
 				0,
-				"no file to process");
+				"Parser/%s", PARSER_VERSION);
 
 		// Request info
 		Request::Info request_info;
@@ -202,7 +201,7 @@ int main(int argc, char *argv[]) {
 		request_info.method=request_method;
 		const char *query_string=SAPI::get_env(pool, "QUERY_STRING");
 		request_info.query_string=query_string;
-		if(cgi) 
+		if(cgi) {
 			if(const char *env_request_uri=SAPI::get_env(pool, "REQUEST_URI"))
 				request_info.uri=env_request_uri;
 			else if(const char *path_info=SAPI::get_env(pool, "PATH_INFO"))
@@ -220,7 +219,14 @@ int main(int argc, char *argv[]) {
 				PTHROW(0, 0,
 					0,
 					"CGI: no PATH_INFO defined(in reinventing REQUEST_URI)");
-		else
+
+			const char *script_name=SAPI::get_env(pool, "SCRIPT_NAME");
+			if(script_name &&
+				strncmp(request_info.uri,script_name, strlen(script_name))==0)
+				PTHROW(0, 0,
+					0,
+					"CGI: illegal call");
+		} else
 			request_info.uri=0;
 
 		request_info.content_type=SAPI::get_env(pool, "CONTENT_TYPE");
