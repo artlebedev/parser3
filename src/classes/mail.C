@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2003/11/21 12:38:20 $";
+static const char * const IDENT_MAIL_C="$Date: 2003/11/21 12:44:41 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -20,7 +20,7 @@ static const char * const IDENT_MAIL_C="$Date: 2003/11/21 12:38:20 $";
 #include "pa_vmail.h"
 
 #ifdef _MSC_VER
-#	include "smtp/smtp.h"
+#	include "smtp.h"
 #endif
 
 // defines
