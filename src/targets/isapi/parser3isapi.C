@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.63 2002/02/08 08:30:18 paf Exp $
+	$Id: parser3isapi.C,v 1.64 2002/03/04 10:03:07 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -13,12 +13,6 @@
 
 #include "pa_config_includes.h"
 
-#include <windows.h>
-#include <process.h>
-#include <new.h>
-
-#include <httpext.h>
-
 #include "pa_sapi.h"
 #include "pa_globals.h"
 #include "pa_request.h"
@@ -26,9 +20,11 @@
 #include "pool_storage.h"
 #include "pa_socks.h"
 
-#ifdef XML
-#include <XalanTransformer/XalanCAPI.h>
-#endif
+#include <windows.h>
+#include <process.h>
+#include <new.h>
+
+#include <httpext.h>
 
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
 
@@ -42,9 +38,6 @@ extern const char *gd_RCSIds[];
 extern const char *classes_RCSIds[];
 extern const char *types_RCSIds[];
 extern const char *parser3isapi_RCSIds[];
-#ifdef XML
-extern const char *xalan_patched_RCSIds[];
-#endif
 const char **RCSIds[]={
 	main_RCSIds,
 #ifdef USE_SMTP
@@ -54,9 +47,6 @@ const char **RCSIds[]={
 	classes_RCSIds,
 	types_RCSIds,
 	parser3isapi_RCSIds,
-#ifdef XML
-	xalan_patched_RCSIds,
-#endif
 	0
 };
 
@@ -72,24 +62,6 @@ struct SAPI_func_context {
 	String *header;
 	DWORD http_response_code;
 };
-#endif
-
-#ifdef XML
-/**
- * Terminate Xalan and Xerces.
- *
- * Should be called only once per process after deleting all
- * instances of XalanTransformer.  Once a process has called
- * this function, it cannot use the API for the remaining
- * lifetime of the process.
-
-	
-	this requirement is fullfilled by using Pool::register_cleanup
- */
-void callXalanTerminate(void *) {
-	//_asm int 3;
-	XalanTerminate();
-}
 #endif
 
 // goes to 'cs-uri-query' log file field. webmaster: switch it ON[default OFF].
@@ -187,10 +159,7 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 void SAPI::send_header(Pool& pool) {
 	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.get_context());
 
-/*	ctx.header->APPEND_CONST(
-		"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
-		"\r\n");
-*/	HSE_SEND_HEADER_EX_INFO header_info;
+	HSE_SEND_HEADER_EX_INFO header_info;
 
 	char status_buf[MAX_STATUS_LENGTH];
 	switch(ctx.http_response_code) {
@@ -247,18 +216,6 @@ static bool parser_init() {
 	try {
 		// init socks
 		init_socks(pool);
-
-#ifdef XML
-		/**
-		* Initialize Xerces and Xalan.
-		*
-		* Should be called only once per process before making
-		* any other API calls.
-		*/
-		//_asm int 3;
-		XalanInitialize();
-		pool.register_cleanup(callXalanTerminate, 0);
-#endif
 
 		// init global classes
 		init_methoded_array(pool);
@@ -401,19 +358,6 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	};
 	pool.set_context(&ctx);// no allocations before this line!
 	
-#ifdef XML
-	/**
-	 * Initialize Xerces and Xalan.
-	 *
-	 * Should be called only once per process before making
-	 * any other API calls.
-	 */
-	//_asm int 3;
-	XalanInitialize();
-	pool.register_cleanup(callXalanTerminate, 0);
-#endif
-
-
 	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;
 	try { // global try
 		call_real_parser_handler__do_SEH(pool, lpECB, header_only);
@@ -456,6 +400,5 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 
 		// unsuccessful finish
 	}
-	
 	return HSE_STATUS_SUCCESS_AND_KEEP_CONN;
 }
