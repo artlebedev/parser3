@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.20 2001/02/23 18:12:44 paf Exp $
+  $Id: pa_value.h,v 1.21 2001/02/23 21:59:07 paf Exp $
 */
 
 /*
@@ -49,7 +49,7 @@ class Operator : public Method {
 };
 */
 
-class Junction : Pooled {
+class Junction : public Pooled {
 public:
 
 	Junction(Pool& apool,
@@ -66,11 +66,11 @@ public:
 		code(acode) {
 	}
 
-	const Method *method;
-	const Value *root;
-	const Value *self;
-	const Value *rcontext;
-	const Array *code;
+	Method *method;
+	Value *root;
+	Value *self;
+	Value *rcontext;
+	Array *code;
 };
 
 class Value : public Pooled {
@@ -86,10 +86,10 @@ public: // Value
 	virtual String *get_string() { return 0; }
 	
 	// string: value
-	virtual void put_string(String *astring) { failed("storing string to %s"); }
+	virtual void put_string(String *astring) { failed("storing string to %s:%s"); }
 
 	// junction: auto_calc,root,self,rcontext,wcontext, code
-	virtual Junction *get_junction() { failed("getting junction from %s"); return 0; }
+	virtual Junction *get_junction() { failed("can not call '%s', is not a method or a junction (it is '%s')"); return 0; }
 
 	// hash: (key)=value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
@@ -97,13 +97,13 @@ public: // Value
 	// operator_class: (field)=value - static values only
 	// wcontext: transparent
 	// frame: my or self_transparent
-	virtual Value *get_element(const String& name) { failed("getting element from %s"); return 0; }
+	virtual Value *get_element(const String& name) { failed("getting element from %s:%s"); return 0; }
 	
 	// hash: (key)=value
 	// object_class, operator_class: (field)=value - static values only
 	// wcontext: transparent
 	// frame: my or self_transparent
-	virtual void put_element(const String& name, Value *value) { failed("putting element to %s"); }
+	virtual void put_element(const String& name, Value *value) { failed("putting element to %s:%s"); }
 
 	// object_class, object_instance: object_class
 	// frame: transparent
@@ -113,7 +113,7 @@ public: // Value
 	// object_class: true when this class is this or derived from 'ancestor'
 	// frame: transparent
 	// wcontext: transparent
-	virtual bool is_or_derived_from(VClass& ancestor) { failed("thoghts of ancestors of %s"); return false; }
+	virtual bool is_or_derived_from(VClass& ancestor) { failed("thoghts of ancestors of %s:%s"); return false; }
 
 public: // usage
 
@@ -124,7 +124,7 @@ public: // usage
 	String& as_string() {
 		String *result=get_string(); 
 		if(!result)
-			failed("getting string of %s");
+			failed("getting string of %s:%s");
 		return *result;
 	}
 

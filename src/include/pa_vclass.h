@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.7 2001/02/23 18:12:44 paf Exp $
+  $Id: pa_vclass.h,v 1.8 2001/02/23 21:59:07 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -7,6 +7,7 @@
 
 #include "pa_value.h"
 #include "pa_vhash.h"
+#include "pa_vjunction.h"
 
 class VClass : public Value {
 public: // Value
@@ -22,8 +23,7 @@ public: // Value
 
 		// $method=junction(this+method)
 		if(Method *method=static_cast<Method *>(methods.get(name))) {
-			Pool& p=pool();
-			Junction *j=new(p) Junction(p, 
+			Junction& j=*NEW Junction(pool(), 
 				method,
 				this,this,this,0);
 

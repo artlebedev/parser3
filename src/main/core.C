@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.29 2001/02/23 17:12:58 paf Exp $
+$Id: core.C,v 1.30 2001/02/23 21:59:07 paf Exp $
 */
 
 #include "pa_request.h"
@@ -79,11 +79,19 @@ char *Request::execute_MAIN(VClass *class_RUN) {
 	String name_main(pool());
 	name_main.APPEND_CONST(MAIN_METHOD_NAME);
 
-	Method *method_main=class_RUN->get_method(name_main);
-	if(!method_main)
+	Value *value_main=class_RUN->get_element(name_main);
+	if(!value_main)
 		THROW(0,0,
 			&class_RUN->name(),
 			"no '"MAIN_METHOD_NAME"' method in class");
+
+	Junction *junction_main=value_main->get_junction();
+	const Method *method_main=junction_main->method;
+
+	if(!method_main)
+		THROW(0,0,
+			&class_RUN->name(),
+			"'"MAIN_METHOD_NAME"' in class is not a method");
 
 	// execute!	
 	execute(method_main->code);

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.30 2001/02/23 17:48:00 paf Exp $
+  $Id: execute.C,v 1.31 2001/02/23 21:59:07 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -179,16 +179,17 @@ void Request::execute(Array& ops) {
 
 		case OP_GET_METHOD_FRAME:
 			{
-				String& name=POP_SR();  // это бывает junction, не name
-				Value *ncontext=static_cast<Value *>(stack[0]);
+				Value *vjunction=POP();
 				// [self/class?;params;local;code/native_code](name)
-				Method *method=ncontext->get_method(name);
-				if(!method)
+				Junction *junction=vjunction->get_junction();
+
+				if(!junction)
 					THROW(0,0,
-						&name,
-						"method not found in %s", ncontext->name()->cstr());
+						vjunction->name(),
+						"not a method");
+
 				//unless(method) method=operators.get_method[...;code/native_code](name)
-				VFrame *frame=NEW VFrame(pool(), *method);
+				VFrame *frame=NEW VFrame(pool(), *junction);
 				PUSH(frame);
 				break;
 			}
@@ -204,15 +205,14 @@ void Request::execute(Array& ops) {
 			{
 				printf("->\n");
 				VFrame *frame=static_cast<VFrame *>(POP());
-				Value *ncontext=POP();
 				PUSH(root);  PUSH(self);  PUSH(rcontext);  PUSH(wcontext);
 				//left_class=ncontext.get_class()
 				//right_class=frame.self.get_class()
 				//self=f(left_class[thoughts' food], right_self[junction], right_class[static], wcontext.value()[dynamic], new(right_class)[construct])
-				self=rcontext;
+				self=frame->junction.self;
 				frame->set_self(self);
 				root=rcontext=wcontext=frame;
-				execute(frame->method.code);
+				execute(frame->junction.method->code);
 				Value *value=wcontext->value();
 				wcontext=static_cast<WContext *>(POP());  rcontext=POP();  self=POP();  root=POP();
 				wcontext->write(value);

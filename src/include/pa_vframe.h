@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vframe.h,v 1.2 2001/02/23 18:12:44 paf Exp $
+  $Id: pa_vframe.h,v 1.3 2001/02/23 21:59:07 paf Exp $
 */
 
 #ifndef PA_VFRAME_H
@@ -33,15 +33,15 @@ public: // Value
 
 public: // usage
 
-	VFrame(Pool& apool, Method& amethod) : WContext(apool, 0 /* empty */),
-		method(amethod),
+	VFrame(Pool& apool, const Junction& ajunction) : WContext(apool, 0 /* empty */),
+		junction(ajunction),
 		store_param_index(0),
 		my(apool),
 		self(0) {
 		// those are flags that name is local == to be looked up in 'my'
-		for(int i=0; i<method.locals_names.size(); i++) {
+		for(int i=0; i<junction.method->locals_names.size(); i++) {
 			my.put(
-				*static_cast<String *>(method.locals_names.get(i)), 
+				*static_cast<String *>(junction.method->locals_names.get(i)), 
 				NEW VUnknown(pool()));
 		}
 	}
@@ -52,17 +52,17 @@ public: // usage
 		if(params_filled())
 			THROW(0,0,
 				name(),
-				"call: too many params (max=%d)", method.params_names.size());
+				"call: too many params (max=%d)", junction.method->params_names.size());
 		
-		my.put(*static_cast<String *>(method.params_names.get(store_param_index++)), value);
+		my.put(*static_cast<String *>(junction.method->params_names.get(store_param_index++)), value);
 	}
 	bool params_filled() {
-		return store_param_index==method.params_names.size();
+		return store_param_index==junction.method->params_names.size();
 	}
 
 public:
 	
-	const Method& method;
+	const Junction& junction;
 
 private:
 	int store_param_index;
