@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_table.C,v 1.7 2001/10/28 11:49:41 paf Exp $
+	$Id: pa_db_table.C,v 1.8 2001/10/28 14:19:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -109,10 +109,16 @@ void DB_Table::check(const char *operation, const String *source, int error) {
 #endif
 
 	default:
-		throw Exception(0, 0, 
-			source, 
-			"action failed. db %s error: %s (%d), real filename '%s'", 
-			operation, strerror(error), error, file_name_cstr);
+		if(error<0)
+			throw Exception(0, 0, 
+				source, 
+				"action failed. db %s error: %d, real filename '%s'", 
+				operation, error, file_name_cstr);
+		else
+			throw Exception(0, 0, 
+				source, 
+				"action failed. db %s error: %s (%d), real filename '%s'", 
+				operation, strerror(error), error, file_name_cstr);
 	}
 }
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.20 2001/10/28 11:40:48 paf Exp $
+	$Id: pa_db_connection.C,v 1.21 2001/10/28 14:19:27 paf Exp $
 
 	developed with LIBDB 2.7.4
 */
@@ -123,17 +123,33 @@ void DB_Connection::check(const char *operation, const String *source, int error
 		break; 
 	
 	default:
-		throw Exception(0, 0, 
-			source, 
-			"db %s error: %s (%d)", 
-			operation, strerror(error), error);
+		if(error<0)
+			throw Exception(0, 0, 
+				source, 
+				"db %s error: %d", 
+				operation, error);
+		else
+			throw Exception(0, 0, 
+				source, 
+				"db %s error: %s (%d)", 
+				operation, strerror(error), error);
 	}
 }
 
 DB_Table_ptr DB_Connection::get_table_ptr(const String& request_file_name, const String *source) {
 	// checkpoint
-	check("checkpoint", source, 
-		txn_checkpoint(dbenv.tx_info, 0/*kbyte*/, DB_CHECKPOINT_MINUTES/*min*/));
+	{
+		int error=txn_checkpoint(dbenv.tx_info, 0/*kbyte*/, DB_CHECKPOINT_MINUTES/*min*/);
+		/*
+		DB_INCOMPLETE if there were pages that needed to be written 
+		but that memp_sync was unable to write immediately. 
+		In this case, the txn_checkpoint call should be retried. 
+
+		we'll just ignore that
+		*/
+		if(error!=DB_INCOMPLETE)
+			check("checkpoint", source, error);
+	}
 
 	// first trying to get cached table
 	DB_Table *result=get_table_from_cache(request_file_name);
