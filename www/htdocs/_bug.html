@@ -1,8 +1,5 @@
-@main[]
-^file::load[text;http://195.218.200.166/]
-
-@leechy[]
 $xdoc[^xdoc::load[_bug.xml]]
+^xdoc.save[_bug_saved_before_transform.xml]
 $xdoc[^xdoc.transform[_bug.xsl]]
-^xdoc.save[_bug_saved.xml]
+^xdoc.save[_bug_saved_after_transform.xml]
 OK?

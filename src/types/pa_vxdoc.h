@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char * const IDENT_VXDOC_H="$Date: 2004/02/17 14:22:29 $";
+static const char * const IDENT_VXDOC_H="$Date: 2004/03/01 12:12:28 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -53,7 +53,6 @@ public: // usage
 		VXnode(acharsets, 0), 
 		fdocument(0) {
 		assign_document(adocument); // not adding ref, owning a doc
-		memset(&output_options, 0, sizeof(output_options));
 	}
 
 	override ~VXdoc() {
@@ -90,10 +89,15 @@ public:
 		const String* method;            /* the output method */
 		const String* encoding;          /* encoding string */
 		const String* mediaType;         /* media-type string */
-		bool indent;                 /* should output being indented */
+		int indent;                 /* should output being indented */
 		const String* version;           /* version string */
-		bool standalone;             /* standalone = "yes" | "no" */
-		bool omitXmlDeclaration;     /* omit-xml-declaration = "yes" | "no" */
+		int standalone;             /* standalone = "yes" | "no" */
+		int omitXmlDeclaration;     /* omit-xml-declaration = "yes" | "no" */
+
+		Output_options() {
+			memset(this, 0, sizeof(*this));
+			indent=standalone=omitXmlDeclaration=-1;
+		};
 	} output_options;
 
 private:

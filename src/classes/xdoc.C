@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/02/20 13:19:08 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/03/01 12:12:28 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -521,13 +521,13 @@ static void param_option_over_output_option(
 }
 static void param_option_over_output_option(
 					    HashStringValue& param_options, const char* option_name,
-					    bool& output_option) {
+					    int& output_option) {
 	if(Value* value=param_options.get(String::Body(option_name))) {
 		const String& s=value->as_string();
 		if(s=="yes")
-			output_option=true;
+			output_option=1;
 		else if(s=="no")
-			output_option=false;
+			output_option=0;
 		else
 			throw Exception("parser.runtime",
 				&s,
@@ -636,20 +636,20 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 			0,
 			"xsltNewStylesheet failed");
 
-	#define OOS2STYLE(name) \
+	#define OOSTRING2STYLE(name) \
 		stylesheet->name=oo.name?BAD_CAST xmlMemStrdup(r.transcode(*oo.name)->str):0
-	#define OOE2STYLE(name) \
-		stylesheet->name=oo.name
+	#define OOBOOL2STYLE(name) \
+		if(oo.name>=0) stylesheet->name=oo.name
 
-	OOS2STYLE(method);
-	OOS2STYLE(encoding);
-	OOS2STYLE(mediaType);
-//	OOS2STYLE(doctypeSystem);
-//	OOS2STYLE(doctypePublic);
-	OOE2STYLE(indent);
-	OOS2STYLE(version);
-	OOE2STYLE(standalone);
-	OOE2STYLE(omitXmlDeclaration);
+	OOSTRING2STYLE(method);
+	OOSTRING2STYLE(encoding);
+	OOSTRING2STYLE(mediaType);
+//	OOSTRING2STYLE(doctypeSystem);
+//	OOSTRING2STYLE(doctypePublic);
+	OOBOOL2STYLE(indent);
+	OOSTRING2STYLE(version);
+	OOBOOL2STYLE(standalone);
+	OOBOOL2STYLE(omitXmlDeclaration);
 
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
 	document->encoding=BAD_CAST xmlMemStrdup(render_encoding);
@@ -798,10 +798,10 @@ static VXdoc& _transform(Request& r, const String* stylesheet_source,
 	oo.method=stylesheet->method?&r.transcode(stylesheet->method):0;
 	oo.encoding=stylesheet->encoding?&r.transcode(stylesheet->encoding):0;
 	oo.mediaType=stylesheet->mediaType?&r.transcode(stylesheet->mediaType):0;
-	oo.indent=stylesheet->indent!=0;
+	oo.indent=stylesheet->indent;
 	oo.version=stylesheet->version?&r.transcode(stylesheet->version):0;
-	oo.standalone=stylesheet->standalone!=0;
-	oo.omitXmlDeclaration=stylesheet->omitXmlDeclaration!=0;
+	oo.standalone=stylesheet->standalone;
+	oo.omitXmlDeclaration=stylesheet->omitXmlDeclaration;
 
 	// return
 	return result;

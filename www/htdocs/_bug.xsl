@@ -5,9 +5,9 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <!--method="html"-->
 
-<xsl:output 
+<!--xsl:output 
     omit-xml-declaration="no"
-	/>
+	/-->
 	
 	<xsl:template match="/doc">
 		<html>
