@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/10/15 14:28:57 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/10/16 08:24:55 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -167,7 +167,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_WITH_SELF: 
 			{
-				PUSH(self);
+				PUSH(get_self());
 				break;
 			}
 		case OP_WITH_READ: 
@@ -209,7 +209,7 @@ void Request::execute(const Array& ops) {
 				debug_dump(pool(), 1, *local_ops);
 #endif				
 				Junction& j=*NEW Junction(pool(), 
-					*self, 0,
+					*get_self(), 0,
 					method_frame, 
 					rcontext, 
 					wcontext, 
@@ -347,7 +347,7 @@ void Request::execute(const Array& ops) {
 				// in .process we would test that field 
 				// in decision "which wwrapper to use"
 				Junction& j=*NEW Junction(pool(), 
-					*self, 0,
+					*get_self(), 0,
 					method_frame, 
 					rcontext, 
 					op.code==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
@@ -411,12 +411,12 @@ void Request::execute(const Array& ops) {
 					POP();
 				}
 				frame.fill_unspecified_params();
-				Value *saved_self=self; 
 				VMethodFrame *saved_method_frame=method_frame;
 				Value *saved_rcontext=rcontext;
 				WContext *saved_wcontext=wcontext;
 				
 				VStateless_class *called_class=frame.junction.self.get_class();
+				Value *new_self=get_self();
 				if(wcontext->get_constructing()) {
 					wcontext->set_constructing(false);
 					if(frame.junction.method->call_type!=Method::CT_STATIC) {
@@ -424,14 +424,14 @@ void Request::execute(const Array& ops) {
 
 						if(Value *value=called_class->create_new_value(pool())) {
 							// some stateless_class creatable derivates
-							self=value;
+							new_self=value;
 						} else 
 							throw Exception("parser.runtime",
 								&frame.name(),
 								"is not a constructor, system class '%s' can be constructed only implicitly", 
 								called_class->name().cstr());
 
-						frame.write(*self, 
+						frame.write(*new_self, 
 							String::UL_CLEAN  // not used, always an object, not string
 						);
 					} else
@@ -439,9 +439,9 @@ void Request::execute(const Array& ops) {
 							&frame.name(),
 							"method is static and can not be used as constructor");
 				} else
-					self=&frame.junction.self;
+					new_self=&frame.junction.self;
 
-				frame.set_self(*self);
+				frame.set_self(*new_self);
 
 				// see OP_PREPARE_TO_EXPRESSION
 				frame.set_in_expression(wcontext->get_in_expression());
@@ -450,7 +450,7 @@ void Request::execute(const Array& ops) {
 				{
 					const Method& method=*frame.junction.method;
 					Method::Call_type call_type=
-						called_class==self ? Method::CT_STATIC : Method::CT_DYNAMIC;
+						called_class==new_self ? Method::CT_STATIC : Method::CT_DYNAMIC;
 					if(
 						method.call_type==Method::CT_ANY ||
 						method.call_type==call_type) { // allowed call type?
@@ -482,7 +482,6 @@ void Request::execute(const Array& ops) {
 				wcontext=saved_wcontext;
 				rcontext=saved_rcontext;
 				method_frame=saved_method_frame;
-				self=saved_self;
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
 				if(const String *s=value->get_string())
@@ -839,7 +838,7 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 			if(VStateless_class *called_class=ncontext->get_class())
 				if(VStateless_class *read_class=rcontext->get_class())
 					if(read_class->derived_from(*called_class)) // current derived from called
-						if(Value *base_object=self->base_object()) { // doing DYNAMIC call
+						if(Value *base_object=get_self()->base_object()) { // doing DYNAMIC call
 							Temp_derived temp_derived(*base_object, 0); // temporarily prevent go-back-down virtual calls
 							value=base_object->get_element(name, base_object, false); // virtual-up lookup starting from parent
 							goto _void;
@@ -882,12 +881,10 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 				0,
 				"junction used outside of context");
 
-		Value *saved_self=self; 
 		VMethodFrame *saved_method_frame=method_frame;  
 		Value *saved_rcontext=rcontext;  
 		WContext *saved_wcontext=wcontext;
 		
-		self=&junction->self;
 		method_frame=junction->method_frame;
 		rcontext=junction->rcontext;
 
@@ -922,7 +919,6 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 		wcontext=saved_wcontext;
 		rcontext=saved_rcontext;
 		method_frame=saved_method_frame;
-		self=saved_self;
 		
 #ifdef DEBUG_EXECUTE
 		debug_printf(pool(), "<-ja returned");
@@ -934,13 +930,12 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 }
 
 const String& Request::execute_method(VMethodFrame& amethod_frame, const Method& method) {
-	Value *saved_self=self; 
 	VMethodFrame *saved_method_frame=method_frame;  
 	Value *saved_rcontext=rcontext;  
 	WContext *saved_wcontext=wcontext;
 	
 	// initialize contexts
-	self=rcontext=wcontext=method_frame=&amethod_frame;
+	rcontext=wcontext=method_frame=&amethod_frame;
 	
 	// execute!	
 	execute(*method.parser_code);
@@ -951,7 +946,6 @@ const String& Request::execute_method(VMethodFrame& amethod_frame, const Method&
 	wcontext=saved_wcontext;
 	rcontext=saved_rcontext;
 	method_frame=saved_method_frame;
-	self=saved_self;
 	
 	// return
 	return result;
@@ -960,23 +954,17 @@ const String& Request::execute_method(VMethodFrame& amethod_frame, const Method&
 void Request::execute_method(Value& aself, 
 							 const Method& method, VString *optional_param,
 							 const String **return_string) {
-	Value *saved_self=self; 
 	VMethodFrame *saved_method_frame=method_frame;  
 	Value *saved_rcontext=rcontext;  
 	WContext *saved_wcontext=wcontext;
 	
-	// initialize contexts
-	//method_frame=rcontext=self=&aself;
-	self=&aself;	
-//	WWrapper local(pool(), &aself, wcontext);
-//	wcontext=&local; 
-	Junction local_junction(pool(), *self, &method, 0,0,0,0);
+	Junction local_junction(pool(), aself, &method, 0,0,0,0);
 	VMethodFrame local_frame(pool(), method.name, local_junction, method_frame/*caller*/);
 	if(optional_param && local_frame.can_store_param()) {
 		local_frame.store_param(optional_param);
 		local_frame.fill_unspecified_params();
 	}
-	local_frame.set_self(*self);
+	local_frame.set_self(aself);
 	rcontext=wcontext=method_frame=&local_frame; 
 
 	// prevent non-string writes for better error reporting
@@ -994,7 +982,6 @@ void Request::execute_method(Value& aself,
 	wcontext=saved_wcontext;
 	rcontext=saved_rcontext;
 	method_frame=saved_method_frame;
-	self=saved_self;
 }
 
 void Request::execute_nonvirtual_method(VStateless_class& aclass, 

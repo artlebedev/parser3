@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/10/16 07:32:51 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/10/16 08:22:14 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -68,7 +68,7 @@ Request::Request(Pool& apool,
 #ifdef RESOURCES_DEBUG
 	, sql_connect_time(0),sql_request_time(0)
 #endif
-	, self(0), method_frame(0), rcontext(0), wcontext(0)
+	, method_frame(0), rcontext(0), wcontext(0)
 {
 	// default charsets
 	pool().set_source_charset(*utf8_charset);
@@ -117,6 +117,8 @@ Request::~Request() {
 	}
 #endif
 }
+
+Value *Request::get_self() { return method_frame?&method_frame->self():0; }
 
 static void load_charset(const Hash::Key& akey, Hash::Val *avalue, void *) {
 	charsets->load_charset(akey, static_cast<Value *>(avalue)->as_string());

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/16 07:32:51 $";
+static const char* IDENT_OP_C="$Date: 2002/10/16 08:22:13 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -152,8 +152,6 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 	// after restoring current-request-lang
 	// maybe-execute @main[]
 	if(main_method) {
-		// temporarily set request's self to target_self
-		Temp_request_self trs(r, target_self);
 		// temporarily set method_frame's self to target_self
 		Temp_method_frame_self tmfs(*r.get_method_frame(), target_self);
 		// execute!	

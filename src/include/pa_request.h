@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/10/15 14:28:57 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/10/16 08:22:14 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -256,7 +256,6 @@ private:
 	/// execution stack
 	Stack stack;
 	/// contexts
-	Value *self;
 	VMethodFrame *method_frame;
 	Value *rcontext;
 	WContext *wcontext;
@@ -268,8 +267,8 @@ private:
 
 public: // status read methods
 
-	Value *get_self() { return self; }
 	VMethodFrame *get_method_frame() { return method_frame; }
+	Value *get_self();
 
 private: // core data
 
@@ -359,7 +358,6 @@ class Request_context_saver {
 	/// execution stack
 	int stack;
 	/// contexts
-	Value *self;
 	VMethodFrame *method_frame;
 	Value *rcontext;
 	WContext *wcontext;
@@ -372,7 +370,6 @@ public:
 	Request_context_saver(Request& ar) : 
 		exception_trace(ar.exception_trace.top_index()),	
 		stack(ar.stack.top_index()),
-		self(ar.self),
 		method_frame(ar.method_frame),
 		rcontext(ar.rcontext),
 		wcontext(ar.wcontext),
@@ -382,24 +379,9 @@ public:
 	void restore() {
 		fr.exception_trace.top_index(exception_trace);
 		fr.stack.top_index(stack);
-		fr.self=self; fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;
+		fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;
 		fr.flang=flang;
 		fr.fconnection=fconnection;
-	}
-};
-
-///	Auto-object used for temporary changing Request::self.
-class Temp_request_self {
-	Request& frequest;
-	Value *saved_self;
-public:
-	Temp_request_self(Request& arequest, Value& aself) :
-		frequest(arequest),
-		saved_self(arequest.self) {
-		frequest.self=&aself;
-	}
-	~Temp_request_self() {
-		frequest.self=saved_self;
 	}
 };
 

@@ -38,3 +38,7 @@ $ipt[3]
 $field[derived field value]
 ^process{^^test2[]}
 
+
+@explodejunction[param]
+$param
+junction exploded<br>
