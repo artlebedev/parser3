@@ -1,4 +1,5 @@
 @main[]
+^regexp2[]
 #^ttablerem[]
 #^pcre[]
 #^regexp[]<hr>
@@ -6,16 +7,14 @@
 #^exec[]
 #^fori[]
 #^tconnect[]
-^xslt[]
+#^xslt[]
 #^header[]
-#^xpath[]
 OK
 
-#@xpath[]
-#^xdata[]
-#$people[^xdoc.select[*/man]]
-##^show1[]
-#^show-xnodes1[$people]<hr>
+@regexp2[]
+$s[select]
+$s[^s.match[^^\s][]{!}]
+$s
 
 @header[]
 $response:refresh[0^; url=http://design.ru?a=0]

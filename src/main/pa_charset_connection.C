@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_connection.C,v 1.7 2001/10/05 07:29:33 parser Exp $
+	$Id: pa_charset_connection.C,v 1.8 2001/10/05 10:36:43 parser Exp $
 */
 
 #include "pa_charset_connection.h"
@@ -31,8 +31,6 @@
 //
 
 inline void prepare_case_tables(unsigned char *tables) {
-	memset(tables, 0, sizeof(tables));
-
 	unsigned char *lcc_table=tables+lcc_offset;
 	unsigned char *fcc_table=tables+fcc_offset;
 	for(int i=0; i<0x100; i++)
@@ -150,6 +148,7 @@ private :
 void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 	// pcre_tables
 	// lowcase, flipcase, bits digit+word+whitespace, masks
+	memset(fpcre_tables, 0, sizeof(fpcre_tables));
 	prepare_case_tables(fpcre_tables);
 	cstr2ctypes(fpcre_tables, (const unsigned char *)"*+?{^.$|()[", ctype_meta);
 
