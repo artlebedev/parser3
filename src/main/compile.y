@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.50 2001/03/06 12:57:30 paf Exp $
+  $Id: compile.y,v 1.51 2001/03/06 13:07:03 paf Exp $
 */
 
 %{
@@ -525,14 +525,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				lexical_brackets_nestage++;
 				RC;
 			case '+': case '-': case '*': case '/': case '%': 
-				RC;
 			case '&': case '|': 
-				if(*PC->source==c) { // &&  ||
-					result=c=='&'?LOGICAL_AND:LOGICAL_OR;
-					PC->source++;  PC->col++;
-				} else
-					result=c;				
-				goto break2;
 			case '<': case '>': case '=': case '!':
 			case ';':
 				RC;
@@ -540,10 +533,16 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				push_LS(PC, LS_EXPRESSION_STRING);
 				RC;
 			case 'l': case 'g': case 'e': case 'n':
-				if(end==begin) {
-					case(*PC->source) {
+				if(end==begin) // right after whitespace
+					switch(char next_c=*PC->source) {
+//					case '?': // ok [and bad cases, yacc would bark at them]
+					case 't': // lt gt [et nt]
+					case 'e': // le ge ne [ee]
+					case 'q': // eq [lq gq nq]
+						PC->source++;  PC->col++;
+						PC->pending_state=next_c;
+						return c;
 					}
-				}
 				break;
 			case ' ': case '\t': case '\n':
 				if(end!=begin) {
