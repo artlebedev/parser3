@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.83 2001/05/21 17:13:57 parser Exp $
+	$Id: table.C,v 1.84 2001/06/27 12:44:32 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -246,7 +246,7 @@ static void store_column_item_to_hash(Array::Item *item, void *info) {
 	if(const String *column_item=ri.table->item(column_name))
 		value=new(*ri.pool) VString(*column_item);
 	else
-		value=new(*ri.pool) VNothing(*ri.pool);
+		value=new(*ri.pool) VVoid(*ri.pool);
 	ri.hash->put(column_name, value);
 }
 static void _record(Request& r, const String& method_name, MethodParams *) {

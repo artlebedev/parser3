@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.140 2001/06/27 12:44:32 parser Exp $
+	$Id: compile.y,v 1.141 2001/06/27 12:47:44 parser Exp $
 */
 
 /**
@@ -34,7 +34,7 @@
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
 #include "pa_globals.h"
-#include "pa_vnothing.h"
+#include "pa_vvoid.h"
 
 #define SELF_ELEMENT_NAME "self"
 #define USE_CONTROL_METHOD_NAME "USE"

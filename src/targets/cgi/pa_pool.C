@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.16 2001/05/21 17:13:57 parser Exp $
+	$Id: pa_pool.C,v 1.17 2001/06/27 12:44:33 parser Exp $
 */
 
 #include <stdlib.h>
@@ -62,7 +62,7 @@
 #include "pa_vstateless_object.h"
 #include "pa_vstring.h"
 #include "pa_vtable.h"
-#include "pa_vnothing.h"
+#include "pa_vvoid.h"
 #include "pa_wcontext.h"
 #include "pa_wwrapper.h"
 
@@ -127,7 +127,7 @@ ST(VStateless_class);
 ST(VStateless_object);
 ST(VString);
 ST(VTable);
-ST(VNothing);
+ST(VVoid);
 ST(WContext);
 ST(WWrapper);
 

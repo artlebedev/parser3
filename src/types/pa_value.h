@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.62 2001/05/21 17:13:57 parser Exp $
+	$Id: pa_value.h,v 1.63 2001/06/27 12:44:33 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -38,7 +38,7 @@ public: // Value
 	
 	/** is this value defined?
 		@return for
-		- VNothing: false
+		- VVoid: false
 		- others: true
 	*/
 	virtual bool is_defined() const { return true; }
@@ -56,7 +56,7 @@ public: // Value
 		- VBool: this
 		- VDouble: this
 		- VInt: this
-		- VNothing: this
+		- VVoid: this
 		- VFile: this
 		- VImage: this
 	*/
@@ -74,7 +74,7 @@ public: // Value
 	/** extract const String
 		@return for
 		- VString: value
-		- VNothing: ""
+		- VVoid: ""
 		- VDouble: value
 		- VBool: must be 0: so in ^if(1>2) it would'nt become "FALSE" string which is 'true'
 		- others: 0
@@ -88,7 +88,7 @@ public: // Value
 		- VDouble: value
 		- VInt: value
 		- VBool: value
-		- VNothing: 0
+		- VVoid: 0
 	*/
 	virtual double as_double() { bark("(%s) does not have numerical (double) value"); return 0; }
 	
@@ -97,13 +97,13 @@ public: // Value
 		- VDouble: value
 		- VInt: value
 		- VBool: value
-		- VNothing: 0
+		- VVoid: 0
 	*/
 	virtual int as_int () { bark("(%s) does not have numerical (int) value"); return 0; }
 
 	/** extract bool
 		@return for
-		- VNothing: false
+		- VVoid: false
 		- VBool: value
 		- VInt: 0 or !0
 		- VDouble: 0 or !0

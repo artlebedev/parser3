@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.25 2001/05/21 17:13:57 parser Exp $
+	$Id: pa_vtable.h,v 1.26 2001/06/27 12:44:33 parser Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -13,7 +13,7 @@
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
-#include "pa_vnothing.h"
+#include "pa_vvoid.h"
 
 extern Methoded *table_class;
 
@@ -33,7 +33,7 @@ public: // Value
 				if(const String *string=ftable->item(index)) // there is such column
 					return NEW VString(*string);
 				else
-					return NEW VNothing(pool());
+					return NEW VVoid(pool());
 		}
 
 		// methods

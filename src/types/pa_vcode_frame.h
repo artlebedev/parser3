@@ -5,14 +5,14 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcode_frame.h,v 1.5 2001/05/21 17:12:58 parser Exp $
+	$Id: pa_vcode_frame.h,v 1.6 2001/06/27 12:44:33 parser Exp $
 */
 
 #ifndef PA_VCODE_FRAME_H
 #define PA_VCODE_FRAME_H
 
 #include "pa_wwrapper.h"
-#include "pa_vnothing.h"
+#include "pa_vvoid.h"
 
 /// specialized write wrapper, intercepting string writes
 class VCodeFrame : public WWrapper {

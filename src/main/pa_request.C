@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.137 2001/05/24 10:17:06 parser Exp $
+	$Id: pa_request.C,v 1.138 2001/06/27 12:44:33 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -379,7 +379,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 							}
 #endif
 							frame.store_param(method->name, 
-								origin_value?origin_value:NEW VNothing(pool()));
+								origin_value?origin_value:NEW VVoid(pool()));
 
 							// source
 							Value *source_value=0;
@@ -390,7 +390,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 								source_value=NEW VString(problem_source_copy);
 							}
 							frame.store_param(method->name, 
-								source_value?source_value:NEW VNothing(pool()));
+								source_value?source_value:NEW VVoid(pool()));
 
 							// comment
 							String *comment_value=NEW String(pool(),
@@ -405,7 +405,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 								type_value=NEW VString(type_copy.append(*e.type(), 
 									flang, true));
 							} else
-								type_value=NEW VNothing(pool());
+								type_value=NEW VVoid(pool());
 							frame.store_param(method->name, type_value);
 
 							// code
@@ -415,7 +415,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 								code_value=NEW VString(code_copy.append(*e.code(), 
 									flang, true));
 							} else
-								code_value=NEW VNothing(pool());
+								code_value=NEW VVoid(pool());
 							frame.store_param(method->name, code_value);
 
 							// future $response:body=
