@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/04/11 15:51:29 $";
+static const char* IDENT_TABLE_C="$Date: 2003/04/14 12:08:16 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -636,6 +636,10 @@ static void _join(Request& r, const String& method_name, MethodParams *params) {
 			&method_name, 
 			"source and destination are same table");
 
+	if(o.reverse)
+		throw Exception(0,
+			&method_name,
+			"not implemented in this version, please upgrade");
 	if(const Array *dest_columns=dest.columns()) { // dest is named
 		int saved_src_current=src.current();
 		int m=src.size()-o.offset;
