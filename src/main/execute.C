@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.215 2002/01/31 16:39:01 paf Exp $
+	$Id: execute.C,v 1.216 2002/01/31 17:03:27 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -797,14 +797,16 @@ void Request::execute(const Array& ops) {
 Value *Request::get_element(bool can_call_operator) {
 	const String& name=POP_NAME();
 	Value *ncontext=POP();
-	Value *value=ncontext->get_element(name);
-	if(!value && can_call_operator)
-		if(Method* method=OP.get_method(name)) { // maybe operator?
+	Value *value=0;
+	if(can_call_operator)
+		if(Method* method=OP.get_method(name)) { // looking operator of that name FIRST
 			// as if that method were in self and we have normal dynamic method here
 			Junction& junction=*NEW Junction(pool(), 
 				*root, self->get_class(), method, 0,0,0,0);
 			value=NEW VJunction(junction);
 		}
+	if(!value)
+		value=ncontext->get_element(name);
 	if(value)
 		value=&process(*value, &name); // process possible code-junction
 	else {
