@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.65 2001/03/07 10:35:41 paf Exp $
+  $Id: compile.y,v 1.66 2001/03/07 10:45:49 paf Exp $
 */
 
 %{
@@ -188,7 +188,7 @@ action: get | put | with | call;
 
 get: get_value {
 	$$=$1; /* stack: resulting value */
-	O($$, OP_WRITE); /* value=pop; write(value) */
+	O($$, OP_WRITE); /* value=pop; wcontext.write(value) */
 };
 get_value: '$' get_name_value { $$=$2 }
 get_name_value: name_without_curly_rdive EON | name_in_curly_rdive;
@@ -273,11 +273,15 @@ codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
 
 /* call */
 
-call: '^' call_name store_params EON { /* ^field.$method{vasya} */
+call: call_value {
+	$$=$1; /* stack: value */
+	O($$, OP_WRITE); /* value=pop; wcontext.write(value) */
+};
+call_value: '^' call_name store_params EON { /* ^field.$method{vasya} */
 	$$=$2; /* with_xxx,diving code; stack: context,method_junction */
 	O($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
 	P($$, $3); /* filling method_frame.store_params */
-	O($$, OP_CALL); /* method_frame=pop; ncontext=pop; call(ncontext,method_frame) */
+	O($$, OP_CALL); /* method_frame=pop; ncontext=pop; call(ncontext,method_frame) stack: value */
 };
 
 call_name: name_without_curly_rdive;
@@ -396,6 +400,7 @@ optimized_expr: expr {
 expr: 
 	STRING
 |	get_value
+|	call_value
 |	'"' string_inside_quotes_value '"' { $$ = $2; }
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
