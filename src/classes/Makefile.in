@@ -83,10 +83,14 @@ XML_INCLUDES = @XML_INCLUDES@
 XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 host_os = @host_os@
-@COMPILE_XML_TRUE@SUBDIRS = gd xalan-patched
-@COMPILE_XML_FALSE@SUBDIRS = gd
+@COMPILE_XML_TRUE@PATCHES_SUBDIR = xalan-patched
+@COMPILE_XML_FALSE@PATCHES_SUBDIR = 
+@COMPILE_XML_TRUE@PATCHES_INCLUDES = -I$(PATCHES_SUBDIR)
+@COMPILE_XML_FALSE@PATCHES_INCLUDES = 
 
-INCLUDES = -I../types -I../sql -I../pcre -Igd -Ixalan-patched @XML_INCLUDES@
+SUBDIRS = gd $(PATCHES_SUBDIR)
+
+INCLUDES = -I../types -I../sql -I../pcre -Igd $(PATCHES_INCLUDES) @XML_INCLUDES@
 
 noinst_LIBRARIES = libclasses.a
 libclasses_a_SOURCES = classes.C double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C ident.C
@@ -123,7 +127,7 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DIST_SUBDIRS =  gd xalan-patched gd
+DIST_SUBDIRS =  gd xalan-patched
 DEP_FILES =  .deps/classes.P .deps/date.P .deps/double.P .deps/file.P \
 .deps/form.P .deps/hash.P .deps/ident.P .deps/image.P .deps/int.P \
 .deps/mail.P .deps/math.P .deps/op.P .deps/response.P .deps/string.P \

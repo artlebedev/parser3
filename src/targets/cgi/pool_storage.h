@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pool_storage.h,v 1.2 2001/10/24 16:20:39 parser Exp $
+	$Id: pool_storage.h,v 1.3 2001/10/24 16:32:07 parser Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
@@ -18,10 +18,10 @@
 	@todo implement at least simple suballocations
 */
 
-class Pool_storage;
+//class Pool_storage;
 
 	template<class T> class List {
-		friend Pool_storage;
+//		friend Pool_storage;
 	public:
 		List(int preallocate) : 
 			items((T *)::malloc(preallocate*sizeof(T))),
