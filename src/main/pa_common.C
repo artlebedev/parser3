@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/04/06 10:08:15 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/04/06 14:18:00 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1266,7 +1266,7 @@ static char *base64_alphabet =
 static size_t
 g_mime_utils_base64_encode_step (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save)
 {
-	const register unsigned char *inptr;
+	register const unsigned char *inptr;
 	register unsigned char *outptr;
 	
 	if (inlen <= 0)
