@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.27 2001/05/24 10:17:06 parser Exp $
+	$Id: op.C,v 1.28 2001/06/27 14:23:21 parser Exp $
 */
 
 #include "classes.h"
@@ -25,6 +25,9 @@
 
 #define MAIN_SQL_NAME "SQL"
 #define MAIN_SQL_DRIVERS_NAME "drivers"
+
+#define SWITCH_DATA_NAME "SWITCH-DATA"
+#define DEFAULT_VALUE "DEFAULT"
 
 // local variable
 
@@ -317,6 +320,54 @@ static void _connect(Request& r, const String&, MethodParams *params) {
 			rethrow_me.comment());
 }
 
+static String *switch_data_name;
+static String *default_value;
+
+struct Switch_data {
+	Value *searching;
+	Value *found;
+	Value *_default;
+};
+
+static void _switch(Request& r, const String&, MethodParams *params) {
+	void *backup=r.classes_conf.get(*switch_data_name);
+	Switch_data data={&r.process(params->get(0))};	
+	r.classes_conf.put(*switch_data_name, &data);
+
+	r.process(params->get_junction(1, "switch cases must be code")); // and ignore result
+
+	r.classes_conf.put(*switch_data_name, backup);
+
+	if(Value *code=data.found ? data.found : data._default)
+		r.write_pass_lang(r.process(*code));
+}
+
+static void _case(Request& r, const String&, MethodParams *params) {
+	Switch_data& data=*static_cast<Switch_data *>(r.classes_conf.get(*switch_data_name));
+
+	int count=params->size();
+	Value *code=&params->get_junction(--count, "case result must be code");
+	for(int i=0; i<count; i++) {
+		Value& value=r.process(params->get(i));
+
+		if(value.as_string() == *default_value) {
+			data._default=code;
+			break;
+		}
+
+		bool matches;
+		if(data.searching->is_string())
+			matches=data.searching->as_string() == value.as_string();
+		else
+			matches=data.searching->as_double() == value.as_double();
+
+		if(matches) {
+			data.found=code;
+			break;
+		}
+	}
+}
+
 // constructor
 
 MOP::MOP(Pool& apool) : Methoded(apool),
@@ -324,6 +375,9 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	main_sql_drivers_name(apool, MAIN_SQL_DRIVERS_NAME)
 {
 	set_name(*NEW String(pool(), OP_CLASS_NAME));
+
+	switch_data_name=NEW String(pool(), SWITCH_DATA_NAME);
+	default_value=NEW String(pool(), DEFAULT_VALUE);
 
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
@@ -384,6 +438,13 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
 	add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
 
+	// switch
+
+	// ^switch[value]{cases}
+	add_native_method("switch", Method::CT_ANY, _switch, 2, 2);
+
+	// ^case[value]{code}
+	add_native_method("case", Method::CT_ANY, _case, 2, 1000);
 }
 
 // constructor & configurator
