@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.3 2001/03/11 12:22:00 paf Exp $
+	$Id: pa_vint.h,v 1.4 2001/03/11 21:23:59 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -15,7 +15,7 @@
 
 #define MAX_INT_AS_STRING 20
 
-class VInt : public VObject_base {
+class VInt : public VStateless_object {
 public: // Value
 
 	// all: for error reporting after fail(), etc
@@ -38,7 +38,7 @@ public: // Value
 
 public: // usage
 
-	VInt(Pool& apool, int ainteger) : VObject_base(apool, *int_class), 
+	VInt(Pool& apool, int ainteger) : VStateless_object(apool, *int_class), 
 		finteger(ainteger) {
 	}
 

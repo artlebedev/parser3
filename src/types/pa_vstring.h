@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.3 2001/03/11 12:22:01 paf Exp $
+	$Id: pa_vstring.h,v 1.4 2001/03/11 21:23:59 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -12,11 +12,11 @@
 #include <stdlib.h>
 
 #include "pa_value.h"
-#include "pa_vobject_base.h"
+#include "pa_vstateless_object.h"
 #include "pa_vdouble.h"
 #include "_string.h"
 
-class VString : public VObject_base {
+class VString : public VStateless_object {
 public: // Value
 
 	// all: for error reporting after fail(), etc
@@ -32,11 +32,11 @@ public: // Value
 
 public: // usage
 
-	VString(Pool& apool) : VObject_base(apool, *string_class), 
+	VString(Pool& apool) : VStateless_object(apool, *string_class), 
 		fvalue(*new(string_class->pool()) String(string_class->pool())) {
 	}
 
-	VString(const String& avalue) : VObject_base(avalue.pool(), *string_class),
+	VString(const String& avalue) : VStateless_object(avalue.pool(), *string_class),
 		fvalue(avalue) {
 	}
 

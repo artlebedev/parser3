@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.3 2001/03/11 12:22:00 paf Exp $
+	$Id: pa_vdouble.h,v 1.4 2001/03/11 21:23:59 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -15,7 +15,7 @@
 
 #define MAX_DOUBLE_AS_STRING 20
 
-class VDouble : public VObject_base {
+class VDouble : public VStateless_object {
 public: // Value
 
 	// all: for error reporting after fail(), etc
@@ -38,7 +38,7 @@ public: // Value
 
 public: // usage
 
-	VDouble(Pool& apool, double adouble) : VObject_base(apool, *double_class), 
+	VDouble(Pool& apool, double adouble) : VStateless_object(apool, *double_class), 
 		fdouble(adouble) {
 	}
 
