@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.35 2001/10/26 12:21:35 paf Exp $
+	$Id: xdoc.C,v 1.36 2001/10/26 12:23:16 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -649,6 +649,11 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 
 	// transform
 	try {
+		// note: 
+		//   actually, never found any difference between the two
+		//   but still there some extra "xerces" words at start of transform body
+		//   wich were originally "xalan"
+		//   not daring to change that
 		if(vdoc.has_parsed_source()) { // set|load, not create?
 			vdoc.transformer().transform2(
 				vdoc.get_parsed_source(pool, &method_name), 
