@@ -212,7 +212,15 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         если ломается преобразование, берётся default
     !^имя.format{формат} %d  %.2f %02d...
     !^строка.match[шаблон][[опции поиска]]  $prematch $match $postmatch $1 $2...
+    	опции поиска=
+		i CASELESS
+		x whitespace in regex ignored
+		s singleline = $ считается концом всего текста
+		m multiline = $ считается концом строки[\n], не концом всего текста
+		g найти все вхождения, а не одно
     !^строка.match[шаблон][опции поиска]{замена}
+    	опции поиска+=
+		g заменить все вхождения, а не одно
     !^строка.{l|r}split[разделитель] таблица из столбца $piece
     !^строка.upper|lower[] 
     X^строка.truncate(предел терпенья) стиль :(
