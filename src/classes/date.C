@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2004/04/08 11:26:54 $";
+static const char * const IDENT_DATE_C="$Date: 2004/04/15 15:39:52 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -118,7 +118,6 @@ date_part_set:
 static void _create(Request& r, MethodParams& params) {
 	VDate& vdate=GET_SELF(r, VDate);
 
-	tm tmIn;
 	if(params.count()==1) { 
 		// ^create[2002-04-25 18:14:00]
 		// ^create[18:14:00]
