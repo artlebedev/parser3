@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.24 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vcookie.C,v 1.25 2001/10/08 14:21:05 parser Exp $
 */
 
 #include "pa_sapi.h"
@@ -89,6 +89,24 @@ static VString *expires_timestamp(Pool& pool, double days_till_expire) {
 	return new(pool) VString(*new(pool) String(pool, buf));
 }
 
+/*
+	@test http://www.netscape.com/newsref/std/cookie_spec.html
+	When sending cookies to a server, 
+	all cookies with a more specific path mapping should be sent before cookies 
+	with less specific path mappings. 
+	For example, a cookie "name1=foo" with a path mapping of "/" should be sent after 
+	a cookie "name1=foo2" with a path mapping of "/bar" if they are both to be sent. 
+
+  There are limitations on the number of cookies that a client can store at any one time. 
+  This is a specification of the minimum number of cookies that a client should be prepared 
+  to receive and store. 
+	300 total cookies 
+	4 kilobytes per cookie, where the name and the OPAQUE_STRING combine 
+		to form the 4 kilobyte limit. 
+	20 cookies per server or domain. (note that completely specified hosts 
+		and domains are treated as separate entities and have a 20 cookie limitation 
+		for each, not combined) 
+*/
 static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) {
 	Pool& pool=aattribute.pool();
 	String string(pool);
@@ -126,8 +144,16 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 			meaning=wrap_meaning;
 		}
 	} else {// removing value
+		/*
+			http://www.netscape.com/newsref/std/cookie_spec.html
+			to delete a cookie, it can do so by returning a cookie with the same name, 
+			and an expires time which is in the past
+		*/
+
 		// Set-Cookie: (attribute)=; path=/
 		meaning=new(pool) VHash(pool);
+		wrap_meaning->get_hash()->put(*expires_name, 
+			expires_timestamp(pool, -DEFAULT_EXPIRES_DAYS));
 	}
 	// defaulting path
 	if(!meaning->get_hash()->get(*path_name))
