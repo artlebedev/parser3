@@ -1,0 +1,5 @@
+^if(!новая форма){
+	$e[^if(редактируем){^таблица.record[]}{^FORM:fields[]}]
+}
+<form>
+<input name=age value="$e.age">

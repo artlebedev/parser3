@@ -1,0 +1,735 @@
+!сделано
+Xне сделано, видимо, не будет сделано
+без значка - будет сделано
+
+
+операторы
+    !^eval(выражение)[формат] выражение, кроме обычных функций::
+        !из неочевидных операторов:
+            # побитный xor
+            ## логический xor
+            ~ побитное отрицание
+            \ целочисленное деление 10/3=3
+        !def для проверки defined,
+            пустая строка не defined
+            пустая таблица не defined
+            пустой hash не defined
+        !eq ne lt gt le ge для сравнения строк, 
+        !in "/dir/" для проверки[раньше ^start]
+            ["внутри не допустимы, если надо сравнить со сложным, 
+            пусть это будет переменная].
+        !is 'type' для проверки типа левого операнда, 
+            скажем, можно проверить, "не hash ли параметр метода?"
+        !-f для проверки существования файла на диске,
+        !-d для проверки существования каталога на диске,
+        !строка в кавычках|апострофах - строка, без кавычек|апострофов строка до 
+            ближайшего whitespace
+        !числовой литерал бывает 0xABC
+        !приоритеты:
+           /* logical */
+           %left "##"
+           %left "||"
+           %left "&&"
+           %left '<' '>' "<=" ">="   "lt" "gt" "le" "ge"
+           %left "==" "!="  "eq" "ne"
+           %left "is" "def" "in" "-f" "-d"
+           %left '!'
+
+           /* bitwise */
+           %left '#'
+           %left '|'
+           %left '&' 
+           %left '~'
+
+           /* numerical */
+           %left '-' '+'
+           %left '*' '/' '%' '\\'
+           %left NEG     /* negation: unary - */
+    !^if(условие){когда да}{когда нет}
+    !^switch[значение]{^case[вариант1[;вариант2...]]{действие}^case[DEFAULT]{действие по умолчанию}}
+    !^while(условие){тело}
+    !^for[i](0;4){тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
+    X^exit[] + - прекращяет обработку запроса. 
+        удобно сделать после выставления 401 ошибки
+    X^return[результат] + - отваливает из выполнения метода, 
+        выдавая нестандартный результат
+    X^break[] + - обрывает цикл
+    X^continue[] + - обрывает итерацию цикла
+    !^use[модуль]
+    !^untaint[[as-is|file-spec|http-header|mail-header|uri|table|sql|js|xml|html|optimized-html]]{код}
+        default as-is
+    !^taint[[lang]][код]
+        default "just tainted, language unknown"
+    !^process[строка, которая будет process-ed, как код]
+    !^connect[protocol://строка соединения]]{код с ^sql[...]-ями}
+        !mysql://user:pass@{host[:port]|[/unix/socket]}/database?
+            charset=cp1251_koi8&
+            timeout=3&
+            compress=1&
+            named_pipe=1
+
+        !pgsql://user:pass@{host[:port]|[local]}/database
+        
+        oracle://user:pass@service?
+            NLS_LANG=RUSSIAN_AMERICA.CL8MSWIN1251&
+            NLS_LANGUAGE  language-dependent conventions
+            NLS_TERRITORY  territory-dependent conventions
+            NLS_DATE_FORMAT=YYYY-MM-DD HH24:MI:SS
+            NLS_DATE_LANGUAGE  language for day and month names
+            NLS_NUMERIC_CHARACTERS  decimal character and group separator
+            NLS_CURRENCY  local currency symbol
+            NLS_ISO_CURRENCY  ISO currency symbol
+            NLS_SORT  sort sequence
+            ORA_ENCRYPT_LOGIN=TRUE
+
+        !odbc://DSN=dsn^;UID=user^;PWD=password
+
+        для работы connect нужно, чтобы заранее(рекомендуется в системном parser3)
+        была определена таблица
+#sql drivers
+$SQL[
+    $.drivers[^table::set{protocol    driver    client
+mysql    /www/parser3/libparser3mysql.so    /usr/local/lib/mysql/libmysqlclient.so
+pgsql    /www/parser3/libparser3pgsql.so    /usr/local/pgsql/lib/libpq.so
+oracle    /www/parser3/libparser3oracle.so    /u01/app/oracle/product/8.1.5/lib/libclntsh.so?ORACLE_HOME=/u01/app/oracle/product/8.1.5&ORA_NLS33=/u01/app/oracle/product/8.1.5/ocommon/nls/admin/data
+odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
+}]
+]
+        !в таблице у oracle в столбце клиентской библиотеки
+        допустимо задать environment параметры инициализации(если они не заданы иначе заранее),
+        допустимы имена, начинающиеся на NLS_ ORA_ и ORACLE_, или оканчивающиеся на +
+        под win32 
+            необходим PATH+=^;C:\Oracle\Ora81\bin
+        к сведению: 
+          ORA_NLS33 нужен для считывания файлика с клиентской кодировкой(задаваемой NLS_LANG)
+             если кодировка не по-умолчанию, обязательно указать в .drivers,
+             иначе будет сообщение про неправильный NLS параметр
+             (имеют в виду, что не нашли кодировку из NLS_LANG)
+          ORACLE_HOME нужен для считывания текстов сообщений об ошибках,
+        можно указывать и в строке соединения, но глобален, и лучше вынести за скобки,
+        в отличие от клиентской кодировки NLS_LANG, и прочего.
+
+        ВНИМАНИЕ: при работе с большими текстовыми блоками в oracle&pgsql[а лучше всегда],
+        ставить такой префикс перед открывающим апострофом, впритык, везде без проблелов
+        /**имя_поля**/'literal'
+    !^rem{}
+    !^error[текст]
+
+    Xесть глобальный флажок в свойствах/командной строке "не оптимизировать"
+    !и есть исключение: ^untaint[html]{код} не оптимизируется безотностительно флажка
+
+    !у всех макросов есть локальная переменная $result, если в неё что положить,
+    !то _это_ будет результатом макроса, а не его тело
+
+    !use(^use или @USE) ищет файл...
+    !1. ...если путь начинается с /, то считается, что это путь от корня веб пространства
+    !есть глобальная строка/таблица $MAIN:CLASS_PATH с путём/путями к каталогу с классами.
+        !корень путя/путей считается от корня веб пространства.
+    !2. ...относительно строчки из table $MAIN:CLASS_PATH, снизу вверх
+       задавайте её в parser3.conf вашего сайта
+
+    !глобальная табличка $CHARSETS[$.название[имя файла]]
+    !задаёт какие буквы считаются какими(whitespace, letter, etc), а также их unicode
+    !формат: tab delimited файл, с заголовком:
+    !    char    white-space    digit    hex-digit    letter    word    lowercase    unicode1    unicode2    
+    !    A            x    x    x    a    0x0041    0xFF21
+    ! где char и lowercase могут быть буквами, а могут быть и 0xКОДАМИ
+    ! если символ имеет единственное unicode представление, равное самому символу, 
+    ! можно не указывать unicode
+    !всегда есть кодировка UTF-8, 
+    !она является кодировкой по-умолчанию для request и response
+    !ВНИМАНИЕ: имя кодировки case sensitive
+
+синтаксис
+    !$имя[новое значение]
+    !$имя(математическое выражение нового значения)
+    !$имя{код нового значения}
+    !$имя whitespace или ${имя}неважно  подстановка значения
+    !^имя параметры  вызов
+    !$имя.CLASS класс значения
+    !$имя[$.key[] () {}]  конструктор элемента переменной-хэша $имя.key
+    !^method[$.key[] () {}] конструктор элемента параметра-хеша $parameter.key
+    $CLASS.имя  обращение к переменной класса
+
+    имя заканчивается перед: пробел tab linefeed ; ] } ) " < >  + * / % & | = ! ' , ? {уточнить}
+    т.е. можно
+    $имя,aaaa
+    но если нужно после имени букву, скажем -, то
+    ${имя}-
+    в выражениях + и - являются дополнительными концами имени
+    !можно обращаться к составным объектам так: $name.subname
+    !где subname бывает:
+    !    строка
+    !    $переменная
+    !    строка$переменная
+    !    [код, вычисляющий строку]
+    например: $хэш[$.возраст(88)] $достать[$.поле[возраст]] ^хэш.[$достать.поле].format{%05d}
+
+параметры:=один или много параметров
+параметр:=
+    !(математическое выражение) вычисляется много раз внутри вызова, 
+|    ![код] вычисляется один раз перед вызовом, 
+|    !{код} вычисляется 0 или много раз внутри вызова, 
+    !везде допустимы ; внутри - делает много параметров в одних скобках
+
+
+!void
+    !^имя.int[]  (default) 
+        0 или default
+    !^имя.double[] (default)
+        0 или default
+    !^void:sql{запрос без результата}
+
+!int,double
+    !^имя.int[]  целочисленное значение 
+    !^имя.double[]+  double значение 
+    !^имя.inc(на сколько +)
+    !^имя.dec(на сколько -)
+    !^имя.mul(на сколько *)
+    !^имя.div(на сколько /)
+    !^имя.mod(на сколько %)
+    !^имя.format[формат]
+    !^int/double:sql{query}[[$.limit(2) $.offset(4) $.default(0)]]
+        запрос, результат которого должен быть один столбец/одна строка
+
+!string
+    !в выражении 
+        !def значение равно "не пуста?"
+        !логическое/числовое значение равно попытке преобразовывания к double,
+            пустая строка тихо преобразуется к 0    
+
+        пример:
+        ^if(def $form:name) не пуста?
+        ^if($user.isAlive) истина? [автопреобразование к числу, не ноль?]
+    !^string::sql{query}[[$.limit(2) $.offset(4) $.default[n/a]]]
+        результат запроса должен быть один столбец/одна строка
+    !^имя.int[] .int(default) целочисленное значение строки. 
+        если ломается преобразование, берётся default
+    !^имя.double[]+ .double(default)  double значение строки
+        если ломается преобразование, берётся default
+    !^имя.format{формат} %d  %.2f %02d...
+    !^строка.match[шаблон][[опции поиска]]  $prematch $match $postmatch $1 $2...
+    !^строка.match[шаблон][опции поиска]{замена}
+    !^строка.{l|r}split[разделитель] таблица из столбца $piece
+    !^строка.upper|lower[] 
+    X^строка.truncate(предел терпенья) стиль :(
+    !^строка.length[]
+    !^строка.mid(P[;N])
+        без N - "до конца строки"
+    !^строка.left(N)
+    !^строка.right(N)
+    !^строка.pos[подстрока]
+        <0 = не найдено
+    !^строка.replace[$таблица_подстановок_строка_на_строку]
+    !^строка.save[[append;]путь]
+
+!table
+    в выражении 
+        логическое значение равно "не пуста?"
+        числовое значение равно count[]
+    !^table::set[[nameless]]{данные}
+    !^table::load[[nameless;]путь]
+        !если не nameless, названия колонок берутся из первой строки
+        !пустые строки, и строки в первой колонке содержащие '#', игнорируются        
+    !^table::sql{query}[[$.limit(2) $.offset(4)]]
+    !^таблица.save[[nameless|append;]путь]
+    !$таблица.поле
+    !$таблица.fields+  из named таблицы выдаёт текущую запись как Hash
+    !^таблица.menu{тело}[разделитель]
+    !^таблица.offset[[whence]](5) сдвигает; без параметра - печатает offset
+        !whence=cur|set
+        !без whence - это cur
+    !^таблица.count[]
+    !^таблица.line[] 1-based offset
+    !^таблица.sort{{ключеделатель строка}|(ключеделатель число)}[{desc|asc}] default=asc
+    !^таблица.append{данные}
+    X^таблица.insert{данные}[(n)] добавить запись 
+        на текущую позицию [добавить запись на позицию n]
+    X^таблица.remove(position[;count]) - стирает запись 
+        из текущей позиции [стирает запись из конкретной позиции] 
+            [стирает count записей]
+    !^таблица.join[таблица] - добавляет записи из таблицы. 
+        таблицы должны иметь одинаковую структуру.
+    !^таблица.flip[] выдаёт транспонированную, надо куда-то сложить, потом пользовать
+    !^таблица.locate[поле;значение] выдаёт bool
+    !^таблица.hash[поле, что будет ключом][[поле значений|table поля значений]]+
+        значением $hash.ключ будет hash в котором поля значений будут ключами
+        поля значений могут быть не указаны, тогда ими будут все столбцы, включая ключевой
+    !^таблица.columns[]+ таблица из одного столбца $column
+
+!hash
+    !в выражении 
+        !логическое значение равно "не пуста?"
+        !числовое значение равно _count[]
+    !$hash.ключ
+        !_default - специальный ключ, если задан, 
+        то при обращении по ключу, которому нет соответствия, выдаётся _default значение 
+    !^hash::create[[!copy_from_hash|!copy_from_hashfile]]
+        создаёт новый hash, копию старого
+    !^hash.add[слагаемое]
+        перезаписывает одноимённые
+    !^hash.sub[вычитаемое]
+    !^a.union[b] = объединение
+    !^a.intersection[b] = пересечение
+    !^a.intersects[b] = bool
+    !^hash::sql{запрос}[[$.limit(2) $.offset(4)]]
+        получается hash(ключи=значения первая колонка ответа)
+        of hash(ключи=названия остальных колонкок ответа)
+    !^hash._keys[]+ таблица из одного столбца $key
+    !^hash._count[]
+    !^foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
+    !^delete[ключ]  удалить ключ
+
+!form
+    [берётся первый элемент из одноимённых из GET, потом первый из POST]
+    !$form:поле = string/file 
+    !$form:fields = hash со всеми полями формы
+    !$form:tables.поле = table с одним столбцом "field" со значениями "поля"
+
+!env
+    !$env:переменная
+
+!cookie
+    !$cookie:имя считать старое или свежезаданное
+    !$cookie:имя[значение] на 90 дней
+    !$cookie:имя[$.value[значение]  $.expires(дней) или $.expires[session]]
+
+!request
+    !$request:query    
+    !$request:uri
+    X!$request:browser  это hash, поля:
+        !$type = ie/nn и !$version = номер, скажем 5.5       
+    X$request:user
+    X$request:password
+    !$request:charset
+        Кодировка исходного документа 
+        !используется при upper/lower и match[][i]
+        ПРЕДУПРЕЖДЕНИЕ: класс form получает свои поля после обработки всех auto класса MAIN
+        поэтому необходимо задать $request/response:charset в одном из них. не после.
+
+!response
+    !$response:поле[значение]  и можно считать старое -- $response:поле
+        !значение может быть string а может быть hash:
+        ! $value[abc] field: {abc}<<часть
+        ! $attribute[zzz] field: abc; {attribute=zzz}<<часть
+    !$response:body[DATA]  замещает стандартный ответ
+    !^response:clear[] забыть все заданные response поля
+    !$response:charset
+        кодировка клиента т.е. та, 
+        1) из которой будут перекодированы $form:поля после забирания из browser'а
+        2) в которую документ будет перекодирован перед отдаванием в browser
+        3) в которую будет перекодирован текст языка uri
+        не добавляет к content-type ничего, если хочется, это надо сделать вручную
+        ПРЕДУПРЕЖДЕНИЕ: класс form получает свои поля после обработки всех auto класса MAIN
+        поэтому необходимо задать $request/response:charset в одном из них. не после.
+
+!hashfile
+    !^hashfile::open[$DB_HOME;filename]
+    !^hashfile.clear[]
+        забыть всё
+    !.ключ[значение]  положить значение навечно
+    !.ключ[$.value[значение] $.expires(секунд)}  положить значение на expires секунд
+    !.ключ  достать
+    !^cache[ключ](секунд){код}
+        !суть то же, что и "положить+достать", но за один раз и компактнее
+        !если 0секунд, значит не кэшировать, а старый такой стереть
+        !внутри {кода} может быть вызван ^delete[]
+    !^delete[[ключ]]  удалить ключ
+        !буде вызван без параметра изнутри cache, отменяет кэширование блока:
+        !блок не будет скэширован, его старое значение будет стёрто
+    !^hash[]
+        преобразовать в обычный hash
+    !^foreach[key|value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
+
+
+    примеры:
+    $uids[^hashfile::assign[/db/uids]]
+    $code:clear[/db/cache]]
+    $code[^hashfile::assign[/db/cache]]
+    
+    $random[23847387taduigh345XGHWElxjgdjg]
+    $uids.$random[$.value[$uid] $.expires(60*30)]
+    $uid[$persistent.logins.$random]
+
+    ^code.cache[заголовки новостей](35){....}
+
+!mail
+    !:send[$.header-field[] $.charset[кодировка письма] $.body[когда body не строка, 
+        а hash, отсылается multipart письмо]]
+    !если charset указан, письмо перекодируется в этот charset
+    !content-type.charset не влияет на перекодирование
+    !если body указан строкой, то это текст письма, никаких вложений.
+    !если body указан hash, то это части, будут собраны текстовые блоки, затем вложения
+    !если имя части начинается со слова text, то это текстовый блок.
+    !если имя части начинается со слова attach, то это вложение, формат задания::
+        !$attach[$.format[!uue|Xbase64] $.value[DATA] $.file-name[user-file-name]]
+    !после имени части может идти целое число, части пойдут в порядке чисел.
+    !важно: при multipart не указывать content-type
+        ^mail:send[
+#           по-умолчанию, совпадает с source encoding.
+#           задаёт кодировку body
+            $.charset[windows-1251] 
+#           нет умолчания
+            $.content-type[$.value[text/plain] $.charset[windows-1251]]
+            $.from["вася" <vasya@design.ru>]
+            $.to["петя" <petya@design.ru>]
+            $.subject[пойдём пивка]
+            $.body[
+                слова
+            ]
+        ]
+        ^mail:send[
+            $.from["вася" <vasya@design.ru>]
+            $.to["петя" <petya@design.ru>]
+            $.subject[пойдём пивка]
+            $.body[
+                $.text[
+#                   задаёт кодировку body
+                    $.charset[windows-1251]
+#                   нет умолчания
+                    $.content-type[$.value[text/plain] $.charset[windows-1251]]
+                    $.body[слова]
+                ]
+#для удобства скриптования можно указать только одну часть, при этом не будет multipart
+                $.attach[
+                   $.value[^file::load[my beloved.doc]]
+                   $.file-name[мой любимый.doc]
+                ]
+                $.attach2[
+                   $.value[^file::load[my beloved.doc]]
+                   $.file-name[мой любимый.doc]
+               ]
+            ]
+        ]
+
+!image
+    !$картинка[^image::measure[DATA]]
+        смотрит на .ext case insensitive, 
+        умеет мерить пока только .gif и .jpg .jpeg
+    !$картинка.src .width .height
+    !$картинка.line-width  число=ширина линий
+       !$картинка.line-style строка=стиль линий '*** * '='*** * *** * *** * '
+    !^картинка.html[[hash]] = <img ...>
+    !^image::load[фон.gif]
+        только gif пока
+    !^image::create(размер X;размер Y[;цвет фона default белый]])
+    !^картинка.line(x0;y0;x1;y1;0xffFFff)
+    !^картинка.fill(x;y;0xffFFff)
+    !^картинка.rectangle(x0;y0;x1;y1;0xffFFff)
+    !^картинка.bar(x0;y0;x1;y1;0xffFFff)
+    !^картинка.replace(hex-цвет1;hex-цвет2)[table x:y вершины_многоугольника]
+    !^картинка.polyline+(цвет)[table x:y точки]
+    !^картинка.polygon(цвет)[table x:y вершины_многоугольника]
+    !^картинка.polybar(цвет)[table x;y вершины_многоугольника]
+    !^картинка.font[набор_букв;имя_файла_шрифта.gif](ширина_пробела[;ширина_символа])
+        высота символа = высота картинки/количество букв в наборе
+        если указана ширина_символа, то monospaced, если 0, то ширина_символа = ширине gif
+    !^картинка.text(x;y)[текст_надписи] AS_IS
+    !^картинка.length[текст_надписи] AS_IS
+    !^картинка.gif[] -- кодирует в FILE с content-type=image/gif
+    !^картинка.arc(center x;center y;width;height;start in degrees;end in degrees;color)
+    !^картинка.sector(center x;center y;width;height;start in degrees;end in degrees;color)
+    !^картинка.circle(center x;center y;r;color)
+    !^картинка.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h[;tolerance]]])
+        при заданных dest_w/dest_h делает изменение размера кусочка
+            при уменьшении делает resample
+            годится только для уменьшения простой[малоцветной] дребедени вроде графиков/pie,
+            для thumbnais не годится.
+        при не указанном dest_h сохраняет aspect ratio
+        tolerance - некое число[квадрат расстояния в RGB пространстве до искомого цвета], 
+        определяющее прожорливость выделялки цветов из палитры [default=150]
+            меньше - точнее приближает цвета, но они быстро кончаются
+            больше - неточно приближает цвет, но бОльшей части хватит
+
+!file
+    !$файл_из_post.name 
+    !$файл_из_post.size 
+    !$файлtиз_post.text
+    !^файл.save[text|binary;имя файла]
+    !^file:delete[имя файла]
+    !^file:find[имя файла][{когда не нашли}]
+    !^file:list[путь[;шаблон]] = table с колонкой name
+    !^file::load[text|binary;!big.zip[;!domain_press_release_2001_03_01.zip]]
+    !$файл_который_был_loaded.size
+    !^file::stat[имя файла]
+    !$файл_который_был_stated.size !.adate !.mdate !.cdate
+    !^file::cgi[имя файла[;env hash[;1cmd[;2line[;3ar[;4g[;5s]]]]]]]
+        возвращённый заголовок рассыпается на $поля
+        $status
+        $stderr
+    !^file::exec[имя файла[;env hash[;1cmd[;2line[;3ar[;4g[;5s;...under win32 max 10 args]]]]]]]
+    !^file:move[старое имя файла;новое имя файла] 
+        можно переименовывать и двигать каталоги[win32: но не через границу дисков]
+        каталоги для dest создаются с правами 775
+        каталог старого файла стирается, если после move он остаётся пуст
+    !^file:lock[имя файла]{код}
+    	файл при необходимости создаётся
+    	блокируется
+    	выполняется код
+    	разблокируется
+
+!math
+    !$math:PI
+    !^math:round floor ceiling 
+    !^math:trunc frac
+    !^math:abs sign 
+    !^math:exp log 
+    !^math:sin asin cos acos tan atan 
+    !^math:degrees radians
+    !^math:pow sqrt
+    !^math:random(ширина диапазона)
+
+!date
+    !время типа time можно использовать в выражениях, подставляет 
+    	количество дней с epoch [1 января 1970 (UTC)], дробное
+    !всё происходит в localtime, 
+    !временная зона задаётся вне parser средствами OS
+    !^date::now[]
+    !^date::set(дней с epoch)
+    !^date::set(year;month;day[;hour[;minute[;second]]])
+    !$date.year month day  hour minute second  weekday read-only    
+    !^date.roll[year|month|day](+/- 1) сдвигает дату
+    !^date.sql-string[] %Y-%m-%d %H:%M:%S
+        where published='$дата.sql-string[]'
+    !^date:calendar[rus|eng;год;месяц] выдаёт таблицу
+    !^date:calendar[rus|eng;год;месяц;день] выдаёт таблицу
+    
+xdoc(xnode)
+    DOM1 attributes:
+    !readonly attribute DocumentType doctype
+    Xreadonly attribute DOMImplementation implementation
+    !readonly attribute Element documentElement
+
+    DOM1 methods:
+    !Element createElement(in DOMString tagName)
+    !DocumentFragment createDocumentFragment()
+    !Text createTextNode(in DOMString data)
+    !Comment createComment(in DOMString data)
+    !CDATASection createCDATASection(in DOMString data)
+    !ProcessingInstruction createProcessingInstruction(in DOMString target,in DOMString data)
+    !Attr createAttribute(in DOMString name)
+    !EntityReference createEntityReference(in DOMString name)
+    !NodeList getElementsByTagName(in DOMString tagname)
+
+    DOM2 some methods:
+    !^.getElementById[elementId] = xnode
+        The DOM implementation must have information that says which attributes are of type ID. 
+        Attributes with the name "ID" are not of type ID unless so defined. 
+        Implementations that do not know whether attributes are of type ID or not 
+        are expected to return null.
+    !^.getElementsByTagNameNS[namespaceURI;localName] = array of nodes
+
+    !кодировка строк и умолчание для $.encoding 
+    !равно текущей кодировке выходной страницы,
+        $response:charset
+    ::sql{...}
+    !::set{<string/>}
+    !::create[qualifiedName]
+    !::load[file.xml]
+    !.transform[rules.xsl][[params hash]] выдаёт dom
+        шаблон кэшируется, кэш обновляется при изменении даты файла шаблона,
+        или изменении даты файла "имя шаблона.stamp"[проверка даты stamp приоритетнее]
+        <xsl:output
+        !method = "xml" | "html" | "text"
+            X| qname-but-not-ncname 
+        !version = nmtoken 
+        !encoding = string 
+        !omit-xml-declaration = "yes" | "no"
+        !standalone = "yes" | "no"
+        X[передал, но xsltSaveResultTo не использовал его]doctype-public = string 
+            Xесли начинается с "-//W3C//DTD XHTML" то будет выводить XHTML
+        X[передал, но xsltSaveResultTo не использовал его]doctype-system = string 
+        !cdata-section-elements = qnames 
+        !indent = "yes" | "no"
+        !media-type = string /> 
+
+    !.string[output options]
+    !.save[file.xml;output options] с шапкой
+    !.file[output options] = file
+        output options идентичны атрибутам xsl:output 
+        	[исключение: игнорируется cdata-section-elements, нужно будет, сделаю]
+        выдаёт media-type при подстановке $response:body[сюда]
+
+
+!xnode
+    DOM1 attributes:
+    !$node.nodeName
+    !$node.nodeValue
+    !$node.nodeType = int
+      ELEMENT_NODE                   = 1 
+      ATTRIBUTE_NODE                 = 2 
+      TEXT_NODE                      = 3 
+      CDATA_SECTION_NODE             = 4 
+      ENTITY_REFERENCE_NODE          = 5 
+      ENTITY_NODE                    = 6 
+      PROCESSING_INSTRUCTION_NODE    = 7 
+      COMMENT_NODE                   = 8 
+      DOCUMENT_NODE                  = 9 
+      DOCUMENT_TYPE_NODE             = 10 
+      DOCUMENT_FRAGMENT_NODE         = 11 
+      NOTATION_NODE                  = 12 
+            $vasyaNode.type==$xnode:ELEMENT_NODE
+    !$node.parentNode
+    !$node.childNodes = array of nodes
+    !$node.firstChild
+    !$node.lastChild
+    !$node.previousSibling
+    !$node.nextSibling
+    !$node.ownerDocument = xdoc
+    !$element_node.attributes = hash of xnodes
+    !$element_node.tagName
+    !$attribute_node.specified = boolean
+        true if the attribute received its value explicitly in the XML document, 
+        or if a value was assigned programatically with the setValue function.
+        false if the attribute value came from the default value declared in the document's DTD. 
+    $text_node/cdata_node/comment_node.substringData
+    !$pi_node.target = target of this processing instruction
+        XML defines this as being the first token following the markup 
+        that begins the processing instruction.
+    document_node.
+        readonly attribute DocumentType doctype
+        readonly attribute DOMImplementation implementation    
+        readonly attribute Element documentElement
+    document_type_node.
+        !readonly attribute DOMString name
+        readonly attribute NamedNodeMap entities
+        readonly attribute NamedNodeMap notations
+    !notation_node.
+        !readonly attribute DOMString publicId
+        !readonly attribute DOMString systemId
+
+    !DOM1 node methods:
+    !Node insertBefore(in Node newChild,in Node refChild)
+    !Node replaceChild(in Node newChild,in Node oldChild)
+    !Node removeChild(in Node oldChild)
+    !Node appendChild(in Node newChild)
+    !boolean hasChildNodes()
+    !Node cloneNode(in boolean deep)
+
+    !DOM1 element methods:
+    !DOMString getAttribute(in DOMString name)
+    !void setAttribute(in DOMString name, in DOMString value) raises(DOMException)
+    !void removeAttribute(in DOMString name) raises(DOMException)
+    !Attr getAttributeNode(in DOMString name)
+    !Attr setAttributeNode(in Attr newAttr) raises(DOMException)
+    !/*Attr*/ removeAttributeNode(in Attr oldAttr) raises(DOMException)
+    !NodeList getElementsByTagName(in DOMString name)
+    !void normalize()
+
+
+    !Introduced in DOM Level 2:
+    !Node importNode(in Node importedNode, in boolean deep) raises(DOMException)
+
+
+    !XPath:
+    !^node.select[xpath/query/expression] = array of nodes, 
+    	empty array if nothing found
+    !^node.selectSingle[xpath/query/expression] = first node if any
+    !^node.selectBool[xpath/query/expression] = bool if any
+    !^node.selectNumber[xpath/query/expression] = double if any
+    !^node.selectString[xpath/query/expression] = string if any
+
+    !error codes(пока придут как текст в случае соответствующих ошибок):
+        INDEX_SIZE_ERR
+        If index or size is negative, or greater
+        than the allowed value
+        DOMSTRING_SIZE_ERR
+        If the specified range of text does not
+        fit into a DOMString
+        HIERARCHY_REQUEST_ERR
+        If any node is inserted somewhere it
+        doesn't belong
+        WRONG_DOCUMENT_ERR
+        If a node is used in a different
+        document than the one that created it
+        (that doesn't support it)
+        INVALID_CHARACTER_ERR
+        If an invalid character is specified,
+        such as in a name.
+        NO_DATA_ALLOWED_ERR
+        If data is specified for a node which
+        does not support data
+        NO_MODIFICATION_ALLOWED_ERR
+        If an attempt is made to modify an
+        object where modifications are not
+        allowed
+        NOT_FOUND_ERR
+        If an attempt was made to reference a
+        node in a context where it does not
+        exist
+        NOT_SUPPORTED_ERR
+        If the implementation does not support
+        the type of object requested
+        INUSE_ATTRIBUTE_ERR
+        If an attempt is made to add an
+        attribute that is already inuse
+        elsewhere
+
+!status
+    !чтобы класс был доступен, в apache нужно сказать 
+    <Location /parser-status.html>
+    ParserStatusAllowed
+    </Location>
+    !в cgi доступен везде
+    !в isapi не доступен нигде
+
+    !$status:sql hash
+        !cache table
+            url    time    
+            url    time    
+            url    time    
+    !$status:db hash
+        !cache hash db_home=>tables table
+            name    time    users
+            name    time    users
+            name    time    users
+    !$status:stylesheet
+        !cache table
+            file    time
+            file    time
+            file    time
+    !$status:charset hash
+        !cache table
+            file
+            file
+            file
+
+!MAIN
+    это класс, загружаемый на автомате из parser3.conf, 
+    кучи auto.p и запрашиваемого документа:
+        !parser3.conf 
+            cgi: 
+                1) configure sysconfdir|windows directory 
+                2)рядом с бинарником parser'а 
+            isapi: windows directory
+            apache module: 
+                1) ParserRootConfig [httpd.conf only] 
+                2) ParserSiteConfig [can be in .htaccess]
+        !auto.p вниз от DOCUMENT_ROOT/ по дереву до каталога с обрабатываемым файлом включительно
+    класс собирается из всех этих файлов, последующие становятся родителями предыдущих
+    имя последнего загруженного MAIN, имён у предыдущих нет
+    
+    !после загрузки MAIN класса вызывается его @main[]
+    !результат которого передаётся в его @post-process[data] if($data is string) ...
+    !результат которого отдаётся пользователю
+
+    !если встречается ошибка, её можно красиво сообщить пользователю, 
+    !определив
+    !@exception[origin;source;comment;type;code;stack]
+    !origin файл(строка) где случилась проблема
+    !source строка, из-за которой случилась проблема
+    !comment комментарий english
+    !type строка "тип проблемы" (пока пусто)
+    !code строка "код проблемы" (пока пусто)
+    !stack табличка из колонок origin name,
+        там лежат в обратном порядке имена[name] и места вызовов[origin] 
+        операторов/методов, приведших к ошибке.
+
+    !нужно выключить русский apache: CharsetDisable on
+
+
+!DATA::=string | file
+
+---
+    если в MAIN будет определён флаг $ORIGINS(1) то вместо обычного вывода страницы будет
+    выдан список фрагментов результата с указанием их происхождения

@@ -1,10 +1,11 @@
+#@test why not INCLUDES=?
 INCLUDES := $(INCLUDES) -I../../classes -I../../types $(INCLTDL) -I../../sql -I../../pcre -I$(APACHE13)/src/include -I$(APACHE13)/src/os/unix -I$(APACHE13)/src/os/win32 @XML_INCLUDES@
 
 noinst_LIBRARIES = libmod_parser3.a
 libmod_parser3_a_SOURCES = pa_pool.C pa_threads.C mod_parser3.C ident.C
 noinst_DATA = apache_build_instruction
 
-IDENT_AWK = ../../ident.awk
+IDENT_AWK = $(top_srcdir)/ident.awk
 IDENT_DEPS = *.C
 
 ident.C: $(IDENT_AWK) $(IDENT_DEPS) Makefile.am

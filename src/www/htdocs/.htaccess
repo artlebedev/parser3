@@ -1,6 +1,0 @@
-AddHandler parser-cgi-html .cgihtml
-Action parser-cgi-html /cgi-bin/parser3
-addHandler parser3-handler .html
-
-
-errordocument 404 /404.html

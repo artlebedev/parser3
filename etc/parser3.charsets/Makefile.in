@@ -78,17 +78,19 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
+PARSER_ROOT_CONFIG_DIR = @PARSER_ROOT_CONFIG_DIR@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
 XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 host_os = @host_os@
+sqldriversdir = @sqldriversdir@
 
 charsetsdir = @charsetsdir@
 charsets_DATA = windows-1251.cfg koi8-r.cfg
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ../../include/pa_config_auto.h
+CONFIG_HEADER = ../../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
 DATA =  $(charsets_DATA)
 

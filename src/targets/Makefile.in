@@ -38,7 +38,7 @@ pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 
-top_builddir = ..
+top_builddir = ../..
 
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
@@ -78,6 +78,7 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
+PARSER_ROOT_CONFIG_DIR = @PARSER_ROOT_CONFIG_DIR@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
@@ -85,11 +86,12 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 charsetsdir = @charsetsdir@
 host_os = @host_os@
+sqldriversdir = @sqldriversdir@
 #don't compile apache
 @COMPILE_APACHE13_MODULE_TRUE@SUBDIRS = cgi apache13
 @COMPILE_APACHE13_MODULE_FALSE@SUBDIRS = cgi
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ../include/pa_config_auto.h
+CONFIG_HEADER = ../../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
 DIST_COMMON =  Makefile.am Makefile.in
 
@@ -102,7 +104,7 @@ DIST_SUBDIRS =  cgi apache13 cgi
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu targets/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/targets/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -200,14 +202,14 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = targets
+subdir = src/targets
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu targets/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/targets/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \

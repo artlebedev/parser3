@@ -38,7 +38,7 @@ pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 
-top_builddir = ..
+top_builddir = ../..
 
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
@@ -78,6 +78,7 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
+PARSER_ROOT_CONFIG_DIR = @PARSER_ROOT_CONFIG_DIR@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
@@ -85,6 +86,7 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 charsetsdir = @charsetsdir@
 host_os = @host_os@
+sqldriversdir = @sqldriversdir@
 
 SUBDIRS = gd
 
@@ -96,15 +98,15 @@ libclasses_a_SOURCES = double.C file.C form.C image.C int.C mail.C op.C math.C r
 CLASSES_INC_DEPS = *.C
 CLEANFILES = classes.inc
 
-IDENT_AWK = ../ident.awk
+IDENT_AWK = $(top_srcdir)/ident.awk
 IDENT_DEPS = *.awk *.h *.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ../include/pa_config_auto.h
+CONFIG_HEADER = ../../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
 LIBRARIES =  $(noinst_LIBRARIES)
 
 
-DEFS = @DEFS@ -I. -I$(srcdir) -I../include
+DEFS = @DEFS@ -I. -I$(srcdir) -I../../src/include
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
@@ -136,7 +138,7 @@ all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .C .S .c .lo .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu classes/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/classes/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -284,14 +286,14 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = classes
+subdir = src/classes
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu classes/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/classes/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \

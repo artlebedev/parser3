@@ -1,0 +1,242 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "ApacheModuleParser3"=.\src\targets\apache13\ApacheModuleParser3.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name main
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libltdl
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name pcre
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name gd
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name parser3mysql
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name parser3oracle
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name parser3pgsql
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name parser3odbc
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name classes
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name types
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name smtp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "classes"=.\src\classes\classes.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "gd"=.\src\classes\gd\gd.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "libltdl"=.\src\libltdl\libltdl.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "main"=.\src\main\main.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "parser3"=.\src\targets\cgi\parser3.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name main
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libltdl
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name pcre
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name gd
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name classes
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name types
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name smtp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "parser3isapi"=.\src\targets\isapi\parser3isapi.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name main
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libltdl
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name pcre
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name gd
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libltdl_mysql
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name classes
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name types
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name smtp
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "pcre"=.\src\pcre\pcre.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name pcre_dftables
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "pcre_ctype"=.\src\pcre\pcre_parser_ctype.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "pcre_dftables"=.\src\pcre\pcre_dftables.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "smtp"=.\src\classes\smtp\smtp.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "types"=.\src\types\types.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

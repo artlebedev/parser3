@@ -78,6 +78,7 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
+PARSER_ROOT_CONFIG_DIR = @PARSER_ROOT_CONFIG_DIR@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
@@ -85,12 +86,13 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 charsetsdir = @charsetsdir@
 host_os = @host_os@
+sqldriversdir = @sqldriversdir@
 
 SUBDIRS = parser3.charsets
 
 sysconf_DATA = parser3.conf
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ../include/pa_config_auto.h
+CONFIG_HEADER = ../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =  parser3.conf
 DATA =  $(sysconf_DATA)
 

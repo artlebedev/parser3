@@ -38,7 +38,7 @@ pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 
-top_builddir = ../..
+top_builddir = ../../..
 
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
@@ -78,6 +78,7 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
+PARSER_ROOT_CONFIG_DIR = @PARSER_ROOT_CONFIG_DIR@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
@@ -85,25 +86,23 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 charsetsdir = @charsetsdir@
 host_os = @host_os@
+sqldriversdir = @sqldriversdir@
 
 INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql -I../../pcre @XML_INCLUDES@
 
-#for sysadmin-controlled auto.p
-AM_CPPFLAGS := $(AM_CPPFLAGS) -DSYSCONFDIR=\"$(sysconfdir)\"
-
 bin_PROGRAMS = parser3
-parser3_SOURCES = pa_pool.C pa_threads.C parser3.C ident.C
+parser3_SOURCES = pa_config_paths.h pa_pool.C pa_threads.C parser3.C ident.C
 parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../pcre/libpcre.a @XML_LIBS@ @DB2_LIBS@
 
-IDENT_AWK = ../../ident.awk
+IDENT_AWK = $(top_srcdir)/ident.awk
 IDENT_DEPS = *.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ../../include/pa_config_auto.h
-CONFIG_CLEAN_FILES = 
+CONFIG_HEADER = ../../../src/include/pa_config_auto.h
+CONFIG_CLEAN_FILES =  pa_config_paths.h
 PROGRAMS =  $(bin_PROGRAMS)
 
 
-DEFS = @DEFS@ -I. -I$(srcdir) -I../../include
+DEFS = @DEFS@ -I. -I$(srcdir) -I../../../src/include
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
@@ -117,7 +116,12 @@ CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
-DIST_COMMON =  Makefile.am Makefile.in
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+DIST_COMMON =  Makefile.am Makefile.in pa_config_paths.h.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
@@ -133,12 +137,14 @@ all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .C .S .c .lo .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu targets/cgi/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/targets/cgi/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
+pa_config_paths.h: $(top_builddir)/config.status pa_config_paths.h.in
+	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 mostlyclean-binPROGRAMS:
 
@@ -236,14 +242,14 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = targets/cgi
+subdir = src/targets/cgi
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu targets/cgi/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/targets/cgi/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \

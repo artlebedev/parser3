@@ -1,0 +1,105 @@
+0.Assuming your perform your builds in $D directory 
+  and suggested subdirectories.
+
+1.What is the process to compile Parser3? 
+
+  As most UNIX libraries libxml follows the "standard":
+
+  mkdir $D/parser3project
+  cd $D/parser3project
+  gunzip -c parser3src.xxx.tar.gz | tar xvf -
+  cd parser3/src
+  ./configure --prefix=/usr/local
+  make install
+
+  By default your would get 'parser3' binary without support of these features:
+	* cache(hashfile class) 
+	* xml(xdoc and xnode classes)
+
+  Installation layout:
+    $prefix/bin/
+      parser3             -- CGI and command line Parser3 interpreter
+    $prefix/etc/
+      parser3.conf        -- main configuration file
+      parser3.charsets/   -- charset definition files
+        windows-1251.cfg
+        koi8-r.cfg 
+
+2.What other libraries are needed to compile/install libxml ? 
+
+  * You can compile and use parser without any additional libraries.
+    That would be 'basic' version of it.
+
+
+  * In case you wish cache(hashfile class) support you need library
+      libdb 2.x.x >= 2.7.7
+    on your system, and specify it to Parser3 configure script.
+
+    Installation sequence of this library to $D/BerkeleyDB:
+      cd db-2.x.x
+      cd build_unix
+      ../dist/configure --prefix=$D
+      make install
+
+
+    Parser3 configure option is --with-db2=$D/BerkeleyDB
+
+
+  * In case you wish xml(xdoc and xnode classes) support you need libraries
+      libxml2 >= 2.3.6
+      libxslt >= 1.0.9
+      glib >= 1.2.10
+      gdome2 >= 0.7.0
+    on your system, and specify path to them to Parser3 configure script.
+
+    Sources of these two libraries must be patched prior to compile: 
+      * libxml2
+      * libxslt
+
+    Installation sequence of these libraries to $D/gnome:
+
+    libxml2: 
+
+    cd libxml2-x.x.x
+    patch -p0 < $D/parser3project/parser3/src/patches/libxml_error_column_tab.patch
+    patch -p0 < $D/parser3project/parser3/src/patches/libxml_htmloutput_of_xslemptyattr_emptyquotes.patch
+    patch -p0 < $D/parser3project/parser3/src/patches/libxml_transcoder_context1.patch
+    patch -p0 < $D/parser3project/parser3/src/patches/libxml_transcoder_context2.patch
+    patch -p0 < $D/parser3project/parser3/src/patches/libxml_transcoder_context3.patch
+    patch -p0 < $D/parser3project/parser3/src/patches/libxml_transcoder_context4.patch
+    ./configure --prefix=$D/gnome
+    make install
+
+    libxslt:
+
+    cd libxslt-x.x.x
+    patch -p0 < $D/parser3project/parser3/src/patches/libxslt_html_output_no_charset_meta.patch
+    ./configure --with-libxml-prefix=$D/gnome --prefix=$D/gnome --without-debug --without-debugger
+    make install
+
+    glib: [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz]
+
+    cd glib-x.x.x
+    ./configure --prefix=$D/gnome 
+    make install
+
+    gdome2:
+
+    ./configure --with-glib-prefix=$D/gnome --disable-glibtest --with-libxml-prefix=$D/gnome --prefix=$D/gnome
+    make install
+
+    And patch+copy these additional headers into install includes directory
+
+	patch -p0 < $D/parser3project/parser3/src/patches/libgdome_cpp_syntax1.patch
+	patch -p0 < $D/parser3project/parser3/src/patches/libgdome_cpp_syntax2.patch
+    mkdir $D/gnome/include/libgdome/gdomecore
+    cp libgdome/gdomecore/gdome-xml-node.h $D/gnome/include/libgdome/gdomecore
+    cp libgdome/gdomecore/gdome-xml-document.h $D/gnome/include/libgdome/gdomecore
+    
+
+    Parser3 configure option is --with-gnome-xml=$D/gnome
+
+ 
+Alexandr Petrosian(PAF) <paf@design.ru>
+
+$Id: INSTALL,v 1.1 2002/01/31 10:20:14 paf Exp $

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.150 2001/12/28 14:06:52 paf Exp $
+	$Id: parser3.C,v 1.151 2002/01/31 10:20:21 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -12,6 +12,8 @@
 #if _MSC_VER
 #	include <new.h>
 #	include <crtdbg.h>
+#else
+#	include "pa_config_paths.h"
 #endif
 
 #include "pa_sapi.h"
@@ -291,8 +293,8 @@ void real_parser_handler(
 		true /* status_allowed */);
 	
 	// some root-controlled location
-#ifdef SYSCONFDIR
-	const char *root_config_filespec=SYSCONFDIR "/" CONFIG_FILE_NAME;
+#ifdef PARSER_ROOT_CONFIG_DIR
+	const char *root_config_filespec=PARSER_ROOT_CONFIG_DIR "/" CONFIG_FILE_NAME;
 #else
 #	ifdef WIN32
 	// c:\windows

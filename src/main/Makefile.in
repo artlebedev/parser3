@@ -38,7 +38,7 @@ pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 
-top_builddir = ..
+top_builddir = ../..
 
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
@@ -78,6 +78,7 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
+PARSER_ROOT_CONFIG_DIR = @PARSER_ROOT_CONFIG_DIR@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
@@ -85,21 +86,22 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 charsetsdir = @charsetsdir@
 host_os = @host_os@
+sqldriversdir = @sqldriversdir@
 
-INCLUDES = -I../types -I../classes -I../classes/xalan-patched -I../sql -I../pcre $(INCLTDL) @XML_INCLUDES@ @DB2_INCLUDES@
+INCLUDES = -I../types -I../classes -I../sql -I../pcre $(INCLTDL) @XML_INCLUDES@ @DB2_INCLUDES@
 
 noinst_LIBRARIES = libmain.a
 libmain_a_SOURCES = compile.C compile.tab.C compile_tools.C execute.C pa_array.C pa_common.C pa_exception.C pa_globals.C pa_hash.C pa_pool.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_sql_driver_manager.C pa_dictionary.C pa_stylesheet_manager.C pa_db_connection.C pa_db_manager.C pa_db_table.C pa_cache_managers.C pa_charset.C pa_charsets.C ident.C
 
-IDENT_AWK = ../ident.awk
+IDENT_AWK = $(top_srcdir)/ident.awk
 IDENT_DEPS = *.h *.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
-CONFIG_HEADER = ../include/pa_config_auto.h
+CONFIG_HEADER = ../../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
 LIBRARIES =  $(noinst_LIBRARIES)
 
 
-DEFS = @DEFS@ -I. -I$(srcdir) -I../include
+DEFS = @DEFS@ -I. -I$(srcdir) -I../../src/include
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
@@ -139,7 +141,7 @@ all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .C .S .c .lo .o .s
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu main/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu src/main/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -227,14 +229,14 @@ maintainer-clean-tags:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = main
+subdir = src/main
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu main/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu src/main/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
