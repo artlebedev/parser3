@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.74 2001/05/08 08:14:48 paf Exp $
+	$Id: table.C,v 1.75 2001/05/08 08:16:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -226,13 +226,11 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	table.set_current(saved_current); vtable.unlock();
 }
 
-/// @test make bool returning func
 static void _empty(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
 	Table& table=static_cast<VTable *>(r.self)->table();
-	if(table.size()==0)
-		r.write_pass_lang(r.process(params->get(0)));
-	else if(params->size()>1)
-		r.write_pass_lang(r.process(params->get(1)));
+	
+	r.write_no_lang(*new(pool) VBool(pool, table.size()==0));
 }
 
 /// used by table: _record / store_column_item_to_hash
@@ -663,9 +661,8 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 	// ^table.menu{code}[delim]
 	add_native_method("menu", Method::CT_DYNAMIC, _menu, 1, 2);
 
-	// ^table.empty{code-when-empty}  
-	// ^table.empty{code-when-empty}{code-when-not}
-	add_native_method("empty", Method::CT_DYNAMIC, _empty, 1, 2);
+	// ^table.empty[]
+	add_native_method("empty", Method::CT_DYNAMIC, _empty, 0, 0);
 
 	// ^table.record[]
 	add_native_method("record", Method::CT_DYNAMIC, _record, 0, 0);
