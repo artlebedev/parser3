@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.29 2001/03/12 18:34:33 paf Exp $
+	$Id: root.C,v 1.30 2001/03/12 20:36:52 paf Exp $
 */
 
 #include <string.h>
@@ -135,9 +135,9 @@ static double round(double op) { return floor(op+0.5); }
 static double sign(double op) { return op > 0 ? 1 : ( op < 0 ? -1 : 0 ); }
 
 static void _math_one_double_op(
-									 Request& r, 
-									 const String& method_name, Array *params,
-									 math_one_double_op_func_ptr func) {
+								Request& r, 
+								const String& method_name, Array *params,
+								math_one_double_op_func_ptr func) {
 	Pool& pool=r.pool();
 	Value& param=*static_cast<Value *>(params->get(0));
 

@@ -3,13 +3,14 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.5 2001/03/12 18:19:36 paf Exp $
+	$Id: table.C,v 1.6 2001/03/12 20:36:52 paf Exp $
 */
 
 #include "pa_request.h"
 #include "_table.h"
 #include "pa_vtable.h"
 #include "pa_common.h"
+#include "pa_vint.h"
 
 // global var
 
@@ -85,10 +86,46 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	set_or_load(r, method_name, params, true);
 }
 
+static void _count(Request& r, const String&, Array *) {
+	Pool& pool=r.pool();
+	Value& value=*new(pool) VInt(pool, r.self->as_vtable().table().size());
+	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+}
+
+static void _line(Request& r, const String&, Array *) {
+	Pool& pool=r.pool();
+	Value& value=*new(pool) VInt(pool, 1+r.self->as_vtable().table().get_current());
+	r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+}
+
+static void _offset(Request& r, const String&, Array *params) {
+	Pool& pool=r.pool();
+	Table& table=r.self->as_vtable().table();
+	if(params->size()) {
+		if(int size=table.size()) {
+			int offset=static_cast<int>(
+				r.process(*static_cast<Value *>(params->get(0))).get_double());
+			table.set_current((table.get_current()+offset+size)%size);
+		}
+	} else {
+		Value& value=*new(pool) VInt(pool, table.get_current());
+		r.wcontext->write(value, String::Untaint_lang::NO /*always object, not string*/);
+	}
+}
+
 void initialize_table_class(Pool& pool, VClass& vclass) {
 	// ^table.set[data]  ^table.set[nameless;data]
 	vclass.add_native_method("set", _set, 1, 2);
 
 	// ^table.load[file]  ^table.load[nameless;file]
 	vclass.add_native_method("load", _load, 1, 2);
+
+	// ^table.count[]
+	vclass.add_native_method("count", _count, 0, 0);
+
+	// ^table.line[]
+	vclass.add_native_method("line", _line, 0, 0);
+
+	// ^table.offset[]  ^table.offset[offset]
+	vclass.add_native_method("offset", _offset, 0, 1);
 }	
