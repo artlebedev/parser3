@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcode_frame.h,v 1.6 2001/06/27 12:44:33 parser Exp $
+	$Id: pa_vcode_frame.h,v 1.7 2001/07/26 12:25:37 parser Exp $
 */
 
 #ifndef PA_VCODE_FRAME_H
@@ -30,7 +30,7 @@ public: // WContext
 public: // usage
 
 	VCodeFrame(Pool& apool, WContext& awcontext) : 
-		WWrapper(apool, &awcontext, awcontext.constructing()) {
+		WWrapper(apool, &awcontext) {
 	}
 
 };

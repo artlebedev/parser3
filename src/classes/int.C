@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.29 2001/07/13 12:13:50 parser Exp $
+	$Id: int.C,v 1.30 2001/07/26 12:25:37 parser Exp $
 */
-static const char *RCSId="$Id: int.C,v 1.29 2001/07/13 12:13:50 parser Exp $"; 
+static const char *RCSId="$Id: int.C,v 1.30 2001/07/26 12:25:37 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -118,9 +118,9 @@ MInt::MInt(Pool& apool) : Methoded(apool) {
 	// ^int.format{format}
 	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
 
+	// ^int:sql[query]
 	// ^int:sql[query](default)
-	// ^int:sql[query](default)(offset)
-	add_native_method("sql", Method::CT_STATIC, _sql, 2, 3);
+	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 }
 // global variable
 

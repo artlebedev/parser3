@@ -1,6 +1,9 @@
 @main[]
 ^connect[odbc://dsn=voz7^;uid=voz^;pwd=pwd]{
 #    ^void::sql{insert into хрен (a) values (1)}
+	$id(^int:sql{select 5})
+	$id
+
 	$пресса[^table::sql{select * from press where header='$form:h'}]
 	^пресса.menu{
 		$пресса.id, $пресса.date_row, $пресса.header, $пресса.short_text^rem{, $пресса.full_text}, $пресса.mode

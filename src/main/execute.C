@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.185 2001/07/26 10:47:02 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.186 2001/07/26 12:25:37 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -41,7 +41,7 @@ char *opcode_name[]={
   	"CREATE_SWPOOL",	"REDUCE_SWPOOL",
 	"GET_METHOD_FRAME",
 	"STORE_PARAM",
-	"CALL_CONSTRUCTOR",	"OP_CALL_METHOD",
+	"PREPARE_TO_CONSTRUCT_OBJECT",	"CALL",
 
 	// expression ops: unary
 	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS",
@@ -290,7 +290,7 @@ void Request::execute(const Array& ops) {
 				PUSH(wcontext);
 				PUSH((void *)flang);
 				flang=String::UL_PASS_APPENDED;
-				wcontext=NEW WWrapper(pool(), 0 /*empty*/, true /*constructing*/);
+				wcontext=NEW WWrapper(pool(), 0 /*empty*/);
 				break;
 			}
 		case OP_REDUCE_EWPOOL:
@@ -305,7 +305,7 @@ void Request::execute(const Array& ops) {
 		case OP_CREATE_SWPOOL:
 			{
 				PUSH(wcontext);
-				wcontext=NEW WWrapper(pool(), 0 /*empty*/, false /*not constructing*/);
+				wcontext=NEW WWrapper(pool(), 0 /*empty*/);
 				break;
 			}
 		case OP_REDUCE_SWPOOL:
@@ -350,8 +350,12 @@ void Request::execute(const Array& ops) {
 				break;
 			}
 
-		case OP_CALL_METHOD:
-		case OP_CALL_CONSTRUCTOR:
+		case OP_PREPARE_TO_CONSTRUCT_OBJECT:
+			{
+				wcontext->constructing(true);
+				break;
+			}
+		case OP_CALL:
 			{
 #ifdef DEBUG_EXECUTE
 				debug_printf(pool(), "->\n");
@@ -364,7 +368,8 @@ void Request::execute(const Array& ops) {
 				PUSH(wcontext); 
 				
 				VStateless_class *called_class=frame->junction.self.get_class();
-				if(op.code==OP_CALL_CONSTRUCTOR) {
+				if(wcontext->constructing()) {
+					wcontext->constructing(false);
 					if(frame->junction.method->call_type!=Method::CT_STATIC) {
 						// this is a constructor call
 
@@ -772,7 +777,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 			frame=NEW VCodeFrame(pool(), *junction->wcontext);  
 		} else {
 			// plain wwrapper
-			frame=NEW WWrapper(pool(), 0/*empty*/, false/*not constructing*/);
+			frame=NEW WWrapper(pool(), 0/*empty*/);
 		}
 		
 		//frame->set_name(value.name());
@@ -814,7 +819,7 @@ const String *Request::execute_method(Value& aself, const Method& method,
 	
 	// initialize contexts
 	root=rcontext=self=&aself;
-	wcontext=NEW WWrapper(pool(), &aself, false /*not constructing*/);
+	wcontext=NEW WWrapper(pool(), &aself);
 	
 	// execute!	
 	execute(*method.parser_code);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.15 2001/05/07 14:00:55 paf Exp $
+	$Id: pa_wcontext.h,v 1.16 2001/07/26 12:25:37 parser Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -54,22 +54,14 @@ public: // WContext
 		wmethod_frame first checks for $result and if there is one, returns it instead
 	*/
 	virtual Value *result() {
-		// not constructing anymore [if were constructing]
-		// so to allow method calls after real constructor-method call
-		// sample:
-		//	$complex[
-		//		$class:constructor[$i]
-		//		^i.inc[]  ^rem{allow such calls}
-		//		$field[$1]
-		fconstructing=false;
 		return fvalue?fvalue:NEW VString(fstring);
 	}
 
 public: // usage
 
-	WContext(Pool& apool, Value *avalue, bool aconstructing) : Value(apool), 
+	WContext(Pool& apool, Value *avalue) : Value(apool), 
 		fstring(*new(apool) String(apool)),
-		fconstructing(aconstructing), fvalue(avalue),
+		fconstructing(false), fvalue(avalue),
 		fsomebody_entered_some_class(false),
 		fsomebody_entered_some_object(0){
 	}

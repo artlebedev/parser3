@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.13 2001/07/26 10:47:03 parser Exp $
+	$Id: pa_vmethod_frame.h,v 1.14 2001/07/26 12:25:37 parser Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -58,7 +58,7 @@ public: // usage
 	VMethodFrame(Pool& apool, 
 		const String& name,
 		const Junction& ajunction/*info: always method-junction*/) : 
-		WContext(apool, 0 /* empty */, false /* not constructing */),
+		WContext(apool, 0 /* empty */),
 
 		junction(ajunction),
 		store_param_index(0),

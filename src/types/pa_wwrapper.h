@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wwrapper.h,v 1.9 2001/05/07 14:00:55 paf Exp $
+	$Id: pa_wwrapper.h,v 1.10 2001/07/26 12:25:37 parser Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -43,8 +43,8 @@ public: // Value
 
 public: // usage
 
-	WWrapper(Pool& apool, Value *avalue, bool aconstructed) : 
-		WContext(apool, avalue, aconstructed) {
+	WWrapper(Pool& apool, Value *avalue) : 
+		WContext(apool, avalue) {
 	}
 	
 private:

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_opcode.h,v 1.4 2001/07/26 10:47:02 parser Exp $
+	$Id: pa_opcode.h,v 1.5 2001/07/26 12:25:37 parser Exp $
 */
 
 #ifndef CODE_H
@@ -36,7 +36,7 @@ enum OPCODE {
   	OP_CREATE_SWPOOL,	OP_REDUCE_SWPOOL,
 	OP_GET_METHOD_FRAME,
 	OP_STORE_PARAM,
-	OP_CALL_CONSTRUCTOR,	OP_CALL_METHOD,
+	OP_PREPARE_TO_CONSTRUCT_OBJECT, OP_CALL,
 	//@}
 
 	//@{

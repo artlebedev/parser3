@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.66 2001/07/25 09:57:33 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.67 2001/07/26 12:25:37 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -314,8 +314,6 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 
 	Value& statement=params->as_junction(0, "statement must be code");
 
-	ulong offset=(ulong)(params->size()>2?params->as_int(2, r):0);
-
 	Temp_lang temp_lang(r, String::UL_SQL);
 	const String& statement_string=r.process(statement).as_string();
 	const char *statement_cstr=
@@ -324,7 +322,7 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 	bool need_rethrow=false; Exception rethrow_me;
 	PTRY {
 		r.connection->query(
-			statement_cstr, offset, 0,
+			statement_cstr, 0, 0,
 			handlers);
 	}
 	PCATCH(e) { // query problem
@@ -400,9 +398,9 @@ MString::MString(Pool& apool) : Methoded(apool) {
 	// ^string.tolower[]
 	add_native_method("lower", Method::CT_DYNAMIC, _lower, 0, 0);
 
+	// ^string:sql[query]
 	// ^string:sql[query]{default}
-	// ^string:sql[query]{default}(offset)
-	add_native_method("sql", Method::CT_STATIC, _sql, 2, 3);
+	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 }	
 
 // global variable

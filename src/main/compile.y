@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.154 2001/07/26 10:47:02 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.155 2001/07/26 12:25:37 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -263,7 +263,7 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 	}
 	/* diving code; stack: current context */
 };
-name_without_curly_rdive_class: class_prefix_get name_without_curly_rdive_code { $$=$1; P($$, $2) };
+name_without_curly_rdive_class: class_prefix name_without_curly_rdive_code { $$=$1; P($$, $2) };
 name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; P($$, $2) };
 
 /* put */
@@ -290,7 +290,7 @@ name_expr_wdive_write: name_expr_dive_code {
 	}
 	/* diving code; stack: current context */
 };
-name_expr_wdive_class: class_prefix_get name_expr_dive_code { $$=$1; P($$, $2) };
+name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
 
 construct: 
 	construct_square | 
@@ -348,9 +348,7 @@ call_value: '^' { PC.object_constructor_allowed=true }
 				params_code=0; // ^zzz[] case. don't append lone empty param.
 	if(params_code)
 		P($$, params_code); // filling method_frame.store_params
-	O($$, 
-		PC.object_constructing?(PC.object_constructing=false),OP_CALL_CONSTRUCTOR:
-		OP_CALL_METHOD); // method_frame=pop; ncontext=pop; call(ncontext,method_frame) stack: value
+	O($$, OP_CALL); // method_frame=pop; ncontext=pop; call(ncontext,method_frame) stack: value
 };
 
 call_name: name_without_curly_rdive;
@@ -444,22 +442,21 @@ subvar__get_write: '$' subvar_ref_name_rdive {
 	O($$, OP_GET_ELEMENT__WRITE);
 };
 
-class_prefix_get: class_prefix {
-	$$=$1; // stack: class name string
-	O($$, OP_GET_CLASS);
-};
 class_prefix:
 	class_static_prefix
 |	class_constructor_prefix
 ;
-class_static_prefix: STRING ':';
-class_constructor_prefix: STRING ':' ':' {
+class_static_prefix: STRING ':' {
+	$$=$1; // stack: class name string
+	O($$, OP_GET_CLASS);
+};
+class_constructor_prefix: class_static_prefix ':' {
 	$$=$1;
 	if(!PC.object_constructor_allowed) {
 		strcpy(PC.error, ":: not allowed here");
 		YYERROR;
 	}
-	PC.object_constructing=true;
+	O($$, OP_PREPARE_TO_CONSTRUCT_OBJECT);
 };
 
 

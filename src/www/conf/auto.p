@@ -1,5 +1,5 @@
 @auto[]
-$user-html[^table:set{user	html	comment
+$user-html[^table::set{user	html	comment
 <<	&laquo^;	длинные user вперёд
 >>	&raquo^;
 \n\n	<p>	!эти есть в таблице по умолчанию
@@ -16,13 +16,13 @@ _	&nbsp^;
 }]
 #$if(!($SQL is hash)){$SQL[$z[z]]}
 $SQL[
-	$drivers[^table:set{protocol	driver	client
+	$drivers[^table::set{protocol	driver	client
 mysql	d:/y/parser3\src\sql\mysql\release\parser3mysql.dll	d:/y/parser3\src\sql\mysql\mySQL32\lib\opt\libmySQL.dll
 }]
 ]
 
 #for ^file:load[name;user-name;mime-type << autodetection]
-$MIME-TYPES[^table:set{ext	mime-type
+$MIME-TYPES[^table::set{ext	mime-type
 zip	application/zip
 doc	application/msword
 xls	application/vnd.ms-excel
@@ -95,7 +95,7 @@ $MAIL[
 ]
 
 @exception[origin;source;comment;type;code][i;j]
-<body bgcolor=yellow>
+<body bgcolor=white>
 <font color=black>
 CONF_ERROR:
 ^if(def $source){$origin '$source'}
