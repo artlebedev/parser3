@@ -5,3 +5,7 @@
 $dom[^dom::load[test.xml]]
 ^dom.save[windows-1251;write.xml]
 ^dom.string[windows-1251]
+$פאיכ[^dom.file[windows-1251]]
+^פאיכ.save[binary;writefile.xml]
+$response:body[$פאיכ]
+OK

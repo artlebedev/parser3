@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.8 2001/09/10 09:51:14 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.9 2001/09/10 11:17:41 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -15,6 +15,7 @@ static const char *RCSId="$Id: dom.C,v 1.8 2001/09/10 09:51:14 parser Exp $";
 #include "classes.h"
 #include "pa_request.h"
 #include "pa_vdom.h"
+#include "pa_vfile.h"
 
 #include <Include/PlatformDefinitions.hpp>
 #include <util/PlatformUtils.hpp>
@@ -168,8 +169,8 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 
 	try {
 		XalanDocument *document=parsedSource->getDocument();
-		String *parserString=new(pool) String(pool);
-		ParserStringOutputStream stream(*parserString);
+		String parserString=*new(pool) String(pool);
+		ParserStringOutputStream stream(parserString);
 		XalanOutputStreamPrintWriter writer(stream);
 		FormatterToXML formatterListener(writer,
 			XalanDOMString(),  // version
@@ -185,11 +186,50 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 		treeWalker.traverse(document); // Walk the document and produce the XML...
 
 		// write out result
-		r.write_no_lang(*parserString);
+		r.write_no_lang(parserString);
 	} catch(const XSLException& e) {
 		_throw(pool, &method_name, e);
 	}
 }
+
+
+static void _file(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VDOM& vDOM=*static_cast<VDOM *>(r.self);
+
+	// encoding
+	const char *encoding=params->as_string(0, "encoding must not be code").cstr();
+
+	XalanParsedSource* parsedSource=vDOM.getParsedSource();
+	if(!parsedSource)
+		PTHROW(0, 0,
+			&method_name,
+			"on empty document");
+
+	try {
+		XalanDocument *document=parsedSource->getDocument();
+		String& parserString=*new(pool) String(pool);
+		ParserStringOutputStream stream(parserString);
+		XalanOutputStreamPrintWriter writer(stream);
+		FormatterToXML formatterListener(writer,
+			XalanDOMString(),  // version
+			true , // doIndent
+			4, // indent 
+			XalanDOMString(encoding, strlen(encoding))  // encoding
+		);
+		FormatterTreeWalker treeWalker(formatterListener);
+		treeWalker.traverse(document); // Walk the document and produce the XML...
+
+		// write out result
+		VFile& vfile=*new(pool) VFile(pool);
+		const char *cstr=parserString.cstr();
+		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*filename*/, new(pool) String(pool, "text/xml"));
+		r.write_no_lang(vfile);
+	} catch(const XSLException& e) {
+		_throw(pool, &method_name, e);
+	}
+}
+
 
 // constructor
 
@@ -199,11 +239,14 @@ MDom::MDom(Pool& apool) : Methoded(apool) {
 	// ^dom::load[some.xml]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
 
-	// ^dom.save[some.xml]
+	// ^dom.save[encoding;some.xml]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 2);
 
-	// ^dom.string[windows-1251] <doc/>
+	// ^dom.string[encoding] <doc/>
 	add_native_method("string", Method::CT_DYNAMIC, _string, 1, 1);
+
+	// ^dom.file[encoding] file with "<doc/>"
+	add_native_method("file", Method::CT_DYNAMIC, _file, 1, 1);
 
 }
 // global variable
