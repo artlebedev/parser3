@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/04/25 11:56:36 $";
+static const char* IDENT_MATH_C="$Date: 2003/05/26 09:32:29 $";
 
 #include "pa_common.h"
 #include "pa_vint.h"
@@ -148,7 +148,7 @@ static void random(void *buffer, size_t size) {
 static inline int _random(uint top) {
 	uint raw;
 	random(&raw, sizeof(raw));
-	return int(double(raw) / 0x100000000 * top );
+	return int(double(raw) / 0xFFFFFFFFu * top );
 }
 static void _random(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
