@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.104 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_string.C,v 1.105 2001/10/05 14:48:58 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -655,6 +655,7 @@ break2:
 }
 
 String& String::replace(Pool& pool, Dictionary& dict) const {
+	
 	String& result=*new(pool) String(pool);
 	const Chunk *chunk=&head; 
 	do {
@@ -673,18 +674,13 @@ String& String::replace(Pool& pool, Dictionary& dict) const {
 					// get a=>b values
 					const String& a=*static_cast<Array *>(item)->get_string(0);
 					const String& b=*static_cast<Array *>(item)->get_string(1);
-					// skip 'a' in 'src'
-					src+=a.size();
-					// write 'b' to 'dest'
-					b.store_to(dest);
-					// skip 'b' in 'dest'
-					dest+=b.size();
-					// reduce work size
-					src_size-=a.size();
+					// skip 'a' in 'src' && reduce work size
+					src+=a.size();  src_size-=a.size();
+					// write 'b' to 'dest' && skip 'b' in 'dest'
+					b.store_to(dest);  dest+=b.size();
 				} else {
-					*dest++=*src++;
-					// reduce work size
-					src_size--;
+					// write a char to b && reduce work size
+					*dest++=*src++;  src_size--;
 				}
 			}
 
