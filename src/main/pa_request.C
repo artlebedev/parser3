@@ -4,13 +4,11 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.179 2001/11/08 11:52:34 paf Exp $
+	$Id: pa_request.C,v 1.180 2001/11/14 11:36:39 paf Exp $
 */
 
 #include "pa_config_includes.h"
 
-//#include "pcre.h"
-//#include "internal.h"
 extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 
 #include "pa_sapi.h"
@@ -27,6 +25,10 @@ extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 #include "pa_dictionary.h"
 #include "pa_charset_manager.h"
 #include "pa_charset_connection.h"
+
+// defines
+
+#define ORIGIN_FILE_LINE_FORMAT "%.300s(%d)"
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
@@ -116,6 +118,9 @@ Request::Request(Pool& apool,
 	the file user requested us to process
 	all located classes become children of one another,
 	composing class we name 'MAIN'
+
+	@test log stack trace
+
 */
 void Request::core(
 				   const char *root_config_filespec, bool root_config_fail_on_read_problem,
@@ -281,7 +286,7 @@ void Request::core(
 			if(problem_source && problem_source->size())
 				SAPI::log(pool(),
 #ifndef NO_STRING_ORIGIN
-					"%s(%d): "
+					ORIGIN_FILE_LINE_FORMAT": "
 #endif
 					"'%s' %s [%s %s]",
 #ifndef NO_STRING_ORIGIN
@@ -299,9 +304,7 @@ void Request::core(
 					e.comment(),
 					e.type()?e.type()->cstr():"-",
 					e.code()?e.code()->cstr():"-"
-					);
-
-			/// @test log stack trace
+				);
 
 			// reset language to default
 			flang=fdefault_lang;
@@ -333,7 +336,7 @@ void Request::core(
 								const Origin& origin=problem_source->origin();
 								if(origin.file) {
 									char *buf=(char *)malloc(MAX_STRING);
-									size_t buf_size=snprintf(buf, MAX_STRING, "%s(%d)", 
+									size_t buf_size=snprintf(buf, MAX_STRING, ORIGIN_FILE_LINE_FORMAT, 
 										origin.file, 1+origin.line);
 									origin_value=NEW VString(*NEW String(pool(),
 										buf, buf_size, true));
@@ -395,7 +398,7 @@ void Request::core(
 								const Origin& origin=name->origin();
 								if(origin.file) {
 									char *buf=(char *)malloc(MAX_STRING);
-									size_t buf_size=snprintf(buf, MAX_STRING, "%s(%d)", 
+									size_t buf_size=snprintf(buf, MAX_STRING, ORIGIN_FILE_LINE_FORMAT, 
 										origin.file, 1+origin.line);
 									row+=NEW String(pool(), buf, buf_size, true); // origin column
 								}
@@ -422,8 +425,10 @@ void Request::core(
 #ifndef NO_STRING_ORIGIN
 					const Origin& origin=problem_source->origin();
 					if(origin.file)
-						printed+=snprintf(buf+printed, MAX_STRING-printed, "%s(%d): ", 
-						origin.file, 1+origin.line);
+						printed+=snprintf(buf+printed, MAX_STRING-printed, 
+							ORIGIN_FILE_LINE_FORMAT": ", 
+							origin.file, 1+origin.line
+						);
 #endif
 					printed+=snprintf(buf+printed, MAX_STRING-printed, "'%s' ", 
 						problem_source->cstr());
