@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/12/09 13:11:26 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/12/17 12:46:55 $";
 
 #include "pa_config_includes.h"
 
@@ -157,8 +157,13 @@ void SAPI::die(const char *fmt, ...) {
 	// body
 	SAPI::send_body(global_pool, body, content_length);
 
+#ifdef WIN32
+	// IIS with abort failes to show STDOUT, it just barks "abnormal program termination"
+	exit(1);
+#else
 	// exit & try to produce core dump
 	abort();
+#endif
 }
 
 const char *SAPI::get_env(Pool& , const char *name) {
@@ -300,9 +305,18 @@ static void real_parser_handler(
 	const char *query_string=SAPI::get_env(request_pool, "QUERY_STRING");
 	request_info.query_string=query_string;
 	if(cgi) {
-		if(const char *env_request_uri=SAPI::get_env(request_pool, "REQUEST_URI"))
+		// few absolute obligatory
+		const char *path_info=SAPI::get_env(request_pool, "PATH_INFO");
+		if(!path_info)
+			SAPI::die("CGI: illegal call (missing PATH_INFO)");
+		const char *script_name=SAPI::get_env(request_pool, "SCRIPT_NAME");
+		if(!script_name)
+				SAPI::die("CGI: illegal call (missing SCRIPT_NAME)");
+
+		const char *env_request_uri=SAPI::get_env(request_pool, "REQUEST_URI");
+		if(env_request_uri)
 			request_info.uri=env_request_uri;
-		else if(const char *path_info=SAPI::get_env(request_pool, "PATH_INFO"))
+		else 
 			if(query_string) {
 				char *reconstructed_uri=(char *)request_pool.malloc(
 					strlen(path_info)+1/*'?'*/+
@@ -313,19 +327,43 @@ static void real_parser_handler(
 				request_info.uri=reconstructed_uri;
 			} else
 				request_info.uri=path_info;
-		else
-			throw Exception("parser.runtime",
-				0,
-				"CGI: no PATH_INFO defined(in reinventing REQUEST_URI)");
-			
-			// they've changed this under IIS5.
-			if(const char *script_name=SAPI::get_env(request_pool, "SCRIPT_NAME")) {
-				size_t script_name_len=strlen(script_name);
-				size_t uri_len=strlen(request_info.uri);
-				if(strncmp(request_info.uri,script_name, script_name_len)==0 &&
-					script_name_len != uri_len) // under IIS they are the same
-					SAPI::die("CGI: illegal call");
-			}
+
+		if(env_request_uri) { // apache & others stuck to standards
+			/*
+				http://parser3/env.html?123  =OK
+				$request:uri=/env.html?123
+				REQUEST_URI='/env.html?123'
+				SCRIPT_NAME='/cgi-bin/parser3'
+				PATH_INFO='/env.html'
+
+				http://parser3/cgi-bin/parser3/env.html?123 =ERROR
+				$request:uri=/cgi-bin/parser3/env.html?123
+				REQUEST_URI='/cgi-bin/parser3/env.html?123'
+				SCRIPT_NAME='/cgi-bin/parser3'
+				PATH_INFO='/env.html'
+			*/
+			size_t script_name_len=strlen(script_name);
+			size_t uri_len=strlen(env_request_uri);
+			if(strncmp(env_request_uri, script_name, script_name_len)==0 &&
+				script_name_len != uri_len) // under IIS they are the same
+				SAPI::die("CGI: illegal call (1)");
+		} else { // seen on IIS5
+			/*
+				http://nestle/env.html?123 =OK
+				$request:uri=/env.html?123
+				REQUEST_URI=''
+				SCRIPT_NAME='/env.html'
+				PATH_INFO='/env.html'
+
+				http://nestle/cgi-bin/parser3.exe/env.html =ERROR
+				$request:uri=/env.html
+				REQUEST_URI=''
+				SCRIPT_NAME='/cgi-bin/parser3.exe'
+				PATH_INFO='/env.html'
+			*/
+			if(strcmp(script_name, path_info)!=0)
+				SAPI::die("CGI: illegal call (2)");
+		}
 	} else
 		request_info.uri="";
 	
