@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2002/11/21 09:18:19 $";
+static const char* IDENT_COMMON_H="$Date: 2002/11/21 12:47:18 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -90,6 +90,7 @@ void fix_line_breaks(
 					 );
 
 typedef void (*File_read_action)(Pool& pool,
+								 struct stat& finfo,
 								 int f, 
 								 const String& file_spec, const char *fname, bool as_text,
 								 void *context);

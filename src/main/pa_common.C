@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/21 09:18:19 $";
+static const char* IDENT_COMMON_C="$Date: 2002/11/21 12:47:23 $";
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -118,18 +118,11 @@ struct File_read_action_info {
 };
 #endif
 static void file_read_action(Pool& pool,
+							 struct stat& finfo,
 							 int f, 
 							 const String& file_spec, const char *fname, bool as_text,
 							 void *context) {
 	File_read_action_info& info=*static_cast<File_read_action_info *>(context);
-
-    struct stat finfo;
-	if(stat(fname, &finfo)!=0)
-		throw Exception("file.missing", // hardly possible: we just opened it OK
-			&file_spec, 
-			"stat failed: %s (%d), actual filename '%s'", 
-				strerror(errno), errno, fname);
-
 	if(size_t to_read_size=(size_t)finfo.st_size) { 
 		*info.data=pool.malloc(to_read_size+(as_text?1:0), 3);
 		*info.data_size=(size_t)read(f, *info.data, to_read_size);
@@ -188,6 +181,13 @@ bool file_read_action_under_lock(Pool& pool, const String& file_spec,
 						"shared lock failed: %s (%d), actual filename '%s'", 
 							strerror(errno), errno, fname);
 
+			struct stat finfo;
+			if(stat(fname, &finfo)!=0)
+				throw Exception("file.missing", // hardly possible: we just opened it OK
+					&file_spec, 
+					"stat failed: %s (%d), actual filename '%s'", 
+						strerror(errno), errno, fname);
+
 #ifdef NO_FOREIGN_GROUP_FILES
 			if(finfo.st_gid/*foreign?*/!=getegid()) {
 				throw Exception("parser.runtime",
@@ -196,7 +196,7 @@ bool file_read_action_under_lock(Pool& pool, const String& file_spec,
 						fname);
 #endif
 
-			action(pool, f, file_spec, fname, as_text, context);
+			action(pool, finfo, f, file_spec, fname, as_text, context);
 		} catch(...) {
 			unlock(f);close(f);
 			if(fail_on_read_problem)
