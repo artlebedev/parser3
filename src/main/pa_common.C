@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/01/22 07:11:28 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/02/03 16:41:52 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -185,7 +185,7 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 	else
 		throw Exception("http.response",
 			0,
-			"bad response from host - no status found (size=%lu)", response_size); 
+			"bad response from host - no status found (size=%u)", response_size); 
 }
 
 /* ********************** request *************************** */
@@ -544,7 +544,7 @@ static void file_read_action(
 		if(ssize_t(*info.data_size)<0 || *info.data_size>to_read_size)
 			throw Exception(0, 
 				&file_spec, 
-				"read failed: actually read %l bytes count not in [0..%lu] valid range", 
+				"read failed: actually read %u bytes count not in [0..%u] valid range", 
 					*info.data_size, to_read_size); 
 	} else { // empty file
 		if(as_text) {
