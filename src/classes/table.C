@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/10/23 09:32:17 $";
+static const char* IDENT_TABLE_C="$Date: 2002/10/23 10:04:54 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -311,7 +311,7 @@ struct Row_info {
 	Array *value_fields;
 	Hash *hash;
 	bool distinct;
-	int index;
+	int row;
 };
 #endif
 static void table_row_to_hash(Array::Item *value, void *info) {
@@ -321,7 +321,7 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 
 	const String *key;
 	if(ri.key_code) {
-		ri.table->set_current(ri.index++); // change context row
+		ri.table->set_current(ri.row++); // change context row
 		StringOrValue sv_processed=ri.r->process(*ri.key_code);
 		key=&sv_processed.as_string();
 	} else
