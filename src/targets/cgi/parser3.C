@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/08/05 14:00:42 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/08/14 09:20:53 $";
 
 #include "pa_config_includes.h"
 
@@ -50,6 +50,8 @@ extern ulong
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
 
 static const char *argv0;
+static char beside_binary_path[MAX_STRING];
+
 static Pool *pool; // global pool [dont describe to doxygen: it confuses it with param names]
 static bool cgi; ///< we were started as CGI?
 static bool mail_received=false; ///< we were started with -m option? [asked to parse incoming message to $mail:received]
@@ -60,15 +62,13 @@ static void log(const char *fmt, va_list args) {
 	bool opened;
 	FILE *f=0;
 
-	if(argv0) {
-		// beside by binary
-		char file_spec[MAX_STRING];
-		strncpy(file_spec, argv0, MAX_STRING-1);  file_spec[MAX_STRING-1]=0; // filespec of my binary
-		rsplit(file_spec, '/');  rsplit(file_spec, '\\');// strip filename
-		strcat(file_spec, "/parser3.log");
-		f=fopen(file_spec, "at");
-	}
+	// try beside by binary first
+	char file_spec[MAX_STRING];
+	snprintf(file_spec, MAX_STRING, 
+		"%s/parser3.log", beside_binary_path);
+	f=fopen(file_spec, "at");
 	opened=f!=0;
+	// fallback to stderr
 	if(!opened)
 		f=stderr;
 
@@ -311,16 +311,6 @@ static void real_parser_handler(
 	if(config_by_env)
 		config_filespec_cstr=config_by_env;
 	else {
-	// beside by binary
-	// @todo full path, not ./!
-		char beside_binary_path[MAX_STRING];
-		strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
-		if(!(
-			rsplit(beside_binary_path, '/') || 
-			rsplit(beside_binary_path, '\\'))) { // strip filename
-			// no path, just filename
-			beside_binary_path[0]='.'; beside_binary_path[1]=0;
-		}
 		snprintf(config_filespec_buf, MAX_STRING, 
 			"%s/%s", 
 			beside_binary_path, AUTO_FILE_NAME);
@@ -424,7 +414,18 @@ int main(int argc, char *argv[]) {
 //	_crtBreakAlloc=33112;
 #endif
 //	_asm int 3;
-	argv0=argv[0];
+	{
+		argv0=argv[0];
+		// beside by binary
+		// @todo full path, not ./!
+		strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
+		if(!(
+			rsplit(beside_binary_path, '/') || 
+			rsplit(beside_binary_path, '\\'))) { // strip filename
+			// no path, just filename
+			beside_binary_path[0]='.'; beside_binary_path[1]=0;
+		}
+	}
 
 	umask(2);
 

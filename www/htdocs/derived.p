@@ -15,7 +15,7 @@ $derived_var[derived_var_val]
 aval}
 
 @test[]
-$a[overridden] should be error
+$a[overridden]
 ^^append{appeded} ^append{appeded}<br>
 ^^count[]=^count[]<br>
 ^offset(+1)
@@ -24,6 +24,7 @@ $a[overridden] should be error
 $x[x] ^$x=$x<br>
 #^$table:x=$table:x<br> sould be error
 ^$CLASS.derived_var=$CLASS.derived_var<br>
+^$derived_var=$derived_var<br>
 
 @test2[]
 derived_test2
