@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.h,v 1.3 2001/02/21 06:21:19 paf Exp $
+  $Id: compile_tools.h,v 1.4 2001/02/21 06:59:43 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -22,10 +22,11 @@ enum lexical_state {
 struct parse_control {
 	/* input */
 	Pool *pool;
+	Exception *exception;
 #ifndef NO_CSTRING_ORIGIN
 	char *source;
 	char *file;
-	int line;
+	int line, col;
 #endif
 	/* state */
 	int pending_state/*=0*/;

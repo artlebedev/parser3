@@ -4,6 +4,7 @@
 #define YYLEX_PARAM pc
 #define YYDEBUG 1
 #define YYERROR_VERBOSE
+#define yyerror(msg) real_yyerror((parse_control *)pc, msg)
 #define YYPRINT(file, type, value)   yyprint (file, type, value)
 
 #include <stdio.h>
@@ -13,18 +14,18 @@
 #include "pa_exception.h"
 #include "compile_tools.h"
 
-int yyerror (char *s);
+int real_yyerror (parse_control *pc, char *s);
 static void yyprint (FILE *file, int type, YYSTYPE value);
 int yylex(YYSTYPE *lvalp, void *pc);
 
 
-#define PC ((struct parse_control *)pc)
+#define PC ((parse_control *)pc)
 %}
 
 %pure_parser
 
-%token BREAK
-%token STR_LITERAL
+%token END_OF_NAME
+%token STRING
 %token BOGUS
 
 %%
@@ -48,7 +49,7 @@ get: '$' any_name {
 	OP($$,OP_WRITE); /* value=pop; write(value) */
 };
 
-any_name: name_without_curly_rdive BREAK | name_in_curly_rdive;
+any_name: name_without_curly_rdive END_OF_NAME | name_in_curly_rdive;
 
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
 name_without_curly_rdive: name_rdive {
@@ -86,7 +87,7 @@ constructor_value:
 ;
 constructor_one_param_value: 
 	empty_value /* optimized $var() case */
-|	STR_LITERAL /* optimized $var(STR_LITERAL) case */
+|	STRING /* optimized $var(STRING) case */
 |	complex_constructor_param_value /* $var(something complex) */
 ;
 empty_value: empty;
@@ -100,7 +101,7 @@ complex_constructor_param_body:
 	codes__excluding_sole_str_literal
 |	codes__str__followed_by__excluding_sole_str_literal
 ;
-constructor_two_params_value: STR_LITERAL ';' constructor_one_param_value {
+constructor_two_params_value: STRING ';' constructor_one_param_value {
 	const String *operator_or_fmtS=LA2S($1);
 	char *operator_or_fmt=operator_or_fmtS->cstr();
 	$$=N(PC->pool);
@@ -124,7 +125,7 @@ constructor_two_params_value: STR_LITERAL ';' constructor_one_param_value {
 
 /* call */
 
-call: '^' name_expr_dive store_params BREAK { /* ^field.$method{vasya} */
+call: '^' name_expr_dive store_params END_OF_NAME { /* ^field.$method{vasya} */
 /*
 	TODO: подсмотреть в $3, и если там в первом элементе первая буква ":"
 		то выкинуть её и делать не OP_WITH_READ, а WITH_ROOT
@@ -180,10 +181,10 @@ name_advance2: name_expr_value {
 	$$=$1; /* stack: context,name */
 	OP($$,OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 }
-|	STR_LITERAL BOGUS
+|	STRING BOGUS
 ;
 name_expr_value: 
-	STR_LITERAL /* subname_is_const */
+	STRING /* subname_is_const */
 |	name_expr_subvar_value /* $subname_is_var_value */
 |	name_expr_with_subvar_value /* xxx$part_of_subname_is_var_value[$...] */
 ;
@@ -191,7 +192,7 @@ name_expr_subvar_value: '$' subvar_ref_name_rdive {
 	$$=$2;
 	OP($$,OP_GET_ELEMENT);
 };
-name_expr_with_subvar_value: STR_LITERAL subvar_get_writes {
+name_expr_with_subvar_value: STRING subvar_get_writes {
 	$$=N(PC->pool); 
 	OP($$, OP_CREATE_EWPOOL);
 	P($$,$1);
@@ -199,7 +200,7 @@ name_expr_with_subvar_value: STR_LITERAL subvar_get_writes {
 	P($$,$2);
 	OP($$,OP_REDUCE_EWPOOL);
 };
-subvar_ref_name_rdive: STR_LITERAL {
+subvar_ref_name_rdive: STRING {
 /*
 	TODO: подсмотреть в $1, и если там в первом элементе первая буква ":"
 		то выкинуть её и делать не OP_WITH_READ, а WITH_ROOT
@@ -239,7 +240,7 @@ codes__excluding_sole_str_literal:
 		P($$,$2);
 }
 ;
-write_str_literal: STR_LITERAL {
+write_str_literal: STRING {
 	$$=$1;
 	OP($$,OP_WRITE);
 };
@@ -285,8 +286,11 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 	while(1) {
 		c=*PC->source++;
 
-		if(c=='\n')
+		if(c=='\n') {
 			PC->line++;
+			PC->col=1;
+		}
+			PC->col++;
 
 		/* escaping: ^^ ^$ ^; ^) ^} ^( ^{ */
 		if(c=='^') {
@@ -326,11 +330,11 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				c==' '|| c=='\t' || c=='\n' || 
 				c==')' || c=='}') {
 				pop_LS(PC);
-				PC->source--;
-				result=BREAK;
+				PC->source--;	PC->col--;
+				result=END_OF_NAME;
 				goto break2;
 			}
-			if(PC->source==start && c=='{') { /* ${name}, no need of BREAK, switching LS */
+			if(PC->source==start && c=='{') { /* ${name}, no need of END_OF_NAME, switching LS */
 				PC->ls=LS_VAR_NAME_CURLY; 
 				result=c;
 				goto break2;
@@ -486,35 +490,41 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				goto break2;
 			}					   
 			pop_LS(PC);
-			PC->source--;
-			result=BREAK;
+			PC->source--;  PC->col--;
+			result=END_OF_NAME;
 			goto break2;
 		}
 		if (c == 0) {
 			result=-1;
+			PC->source--;  PC->col--;
 			break;
 		}
 	}
 
 break2:
-	if(PC->source-1<=start)
+	if(PC->source-1==start)
 		return result;
 	else {
 		PC->pending_state=result;
 		/* append last piece */
-		PC->string->APPEND(start, PC->source-start-1, PC->file, start_line);
-		/* create STR_LITERAL value: array of OP_STRING+string */
+		PC->string->APPEND(start, PC->source-start-1, PC->file, start_line/*, start_col*/);
+		/* create STRING value: array of OP_STRING+string */
 		*lvalp=L(PC->string);
 		/* new pieces storage */
 		PC->string=new(*PC->pool) String(*PC->pool);
 		/* go */
-		return STR_LITERAL;
+		return STRING;
 	}
 }
 
-int yyerror (char *s)  /* Called by yyparse on error */
+int real_yyerror (parse_control *pc, char *s)  /* Called by yyparse on error */
      {
-       printf ("[%s]\n", s);
+       fprintf (stderr, "[%s]\n", s);
+	   
+		pc->exception->raise(0,0,
+			0,
+			"%s after %s[%d:%d]", s, pc->file, pc->line, pc->col-1);
+		// never returns
 	   return 1;
      }
 
@@ -524,7 +534,7 @@ static void
           int type,
           YYSTYPE value)
      {
-       if (type == STR_LITERAL)
+       if (type == STRING)
          fprintf (file, " \"%s\"", LA2S(value)->cstr());
      }
 

@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.3 2001/02/21 06:21:19 paf Exp $
+  $Id: compile.C,v 1.4 2001/02/21 06:59:43 paf Exp $
 */
 
 #include "pa_string.h"
@@ -7,6 +7,7 @@
 #include "code.h"
 #include "compile_tools.h"
 #include "compile.h"
+#include "pa_exception.h"
 
 #include <stdio.h>
 
@@ -17,22 +18,26 @@ Array *real_compile(COMPILE_PARAMS) {
 	if(!source)
 		return 0;
 
-	yydebug=1;
+	Pool& pool=request.pool();
+
+	///yydebug=1;
 	struct parse_control pc;
 	/* input */
-	pc.pool=pool;
+	pc.pool=&pool;
+	pc.exception=&request.exception();
 	pc.source=source;
 #ifndef NO_STRING_ORIGIN
 	pc.file=file;
-	pc.line=1;
+	pc.line=pc.col=1;
 #endif
 	/* state to initial */
 	pc.pending_state=0;
-	pc.string=new(*pool) String(*pool);
+	pc.string=new(pool) String(pool);
 	pc.ls=LS_USER;
 	pc.sp=0;
 	/* parse! */
-	int parse_error=yyparse(&pc);
+	yyparse(&pc);
+	
 	/* result */
-	return parse_error?0:static_cast<Array *>(pc.result);
+	return pc.result;
 }

@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.8 2001/02/20 19:21:13 paf Exp $
+  $Id: parser.C,v 1.9 2001/02/21 06:59:44 paf Exp $
 */
 
 #include <stdio.h>
@@ -147,8 +147,8 @@ int main(int argc, char *argv[]) {
 */
 			// compile
 			char *file="c:\\temp\\test.p";
-			char *source=file_read(pool, file);
-			Array *ops=COMPILE(&pool, source, file);
+			char *source=file_read(request.pool(), file);
+			Array *ops=COMPILE(request, source, file);
 			execute(&pool, ops);
 
 		} else {
