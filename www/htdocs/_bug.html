@@ -1,7 +1,7 @@
 $request:charset[windows-1251]
 $response:charset[windows-1251]
 
-
-^nothing.left(10)
-^nothing.right(10)
-^nothing.mid(1;10)
+^connect[mysql://root@localhost/aval?ClientCharset=koi8-r]{
+	$t[^table::sql{select * from paf2}]
+	^t.save[_bug.txt]OK
+}
