@@ -1,3 +1,7 @@
+/*
+  $Id: pa_string.C,v 1.4 2001/01/26 15:38:34 paf Exp $
+*/
+
 #include <string.h>
 
 #include "pa_pool.h"
@@ -52,9 +56,6 @@ size_t String::size() {
 break2:
 	return result;
 }
-/*
-  $Id: pa_string.C,v 1.3 2001/01/26 15:32:52 paf Exp $
-*/
 
 char *String::c_str() {
 	char *result=static_cast<char *>(pool->alloc(size()+1));

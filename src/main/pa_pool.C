@@ -1,3 +1,7 @@
+/*
+  $Id: pa_pool.C,v 1.2 2001/01/26 15:32:52 paf Exp $
+*/
+
 #include <stdlib.h>
 
 #include "pa_pool.h"
