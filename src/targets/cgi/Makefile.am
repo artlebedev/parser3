@@ -1,3 +1,6 @@
+#this read configure.in comment on stdc++ about next line
+CXXLD=$(CC)
+
 INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql -I../../pcre @XML_INCLUDES@
 
 bin_PROGRAMS = parser3

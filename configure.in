@@ -35,7 +35,7 @@ fi
 ]
 )
 
-AC_ARG_WITH(apache13,[  --with-apache13[=D]     D is the Apache13 source distribution directory
+AC_ARG_WITH(apache13,[  --with-apache13=D       D is the Apache13 source distribution directory
                           builds library for apache_module using that dir
                           (do not add /src)],
 	APACHE13=$withval
@@ -47,12 +47,17 @@ AC_SUBST(APACHE13)
 AM_CONDITIONAL(COMPILE_APACHE13_MODULE, test -n "$APACHE13")
 
 
-AC_ARG_WITH(pathlink,[  --with-pathlink[=LKEY]  put dynamic libraries paths to binary
+AC_ARG_WITH(pathlink,[  --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)],
 	LD_PATHLINK=$withval
 )
 
-AC_ARG_WITH(gnome-xml,[  --with-gnome-xml[=D]    D is the directory where
+AC_ARG_WITH(glib-config,[  --with-glib-config=FILE FILE is glib library
+                          configuration file (search for glib*-config)],
+	GLIB_CONFIG=$withval
+)
+
+AC_ARG_WITH(gnome-xml,[  --with-gnome-xml=D      D is the directory where
                           Gnome XML libraries are installed],[
     GNOME_XML=$withval
     XMLBIN_DIR="$GNOME_XML/bin"
@@ -81,16 +86,18 @@ AC_ARG_WITH(gnome-xml,[  --with-gnome-xml[=D]    D is the directory where
     if test -z "$LIBEXSLT_SO_NAME"; then
 	AC_MSG_ERROR($LIBXML_DIR does not containt EXSLT dynamic library)
     fi
-		    
-    GLIB_CONFIG=$XMLBIN_DIR/glib-config
-    if test \! -x $GLIB_CONFIG; then
-        GLIB_CONFIG=glib-config
+
+    if test -z "$GLIB_CONFIG"; then
+	    GLIB_CONFIG=$XMLBIN_DIR/glib-config
+	    if test \! -x $GLIB_CONFIG; then
+	        GLIB_CONFIG=glib-config
+	    fi
     fi
     GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
     GLIB_LIBS=`$GLIB_CONFIG --libs`
 
     XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC_DIR -I$XMLINC_DIR/libgdome -I$XMLINC_DIR/libxml2"
-    XML_LIBS="-L$XMLLIB_DIR -lglib -l$LIBXML2_SO_NAME -l$LIBGDOME_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
+    XML_LIBS="$GLIB_LIBS -L$XMLLIB_DIR -l$LIBXML2_SO_NAME -l$LIBGDOME_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
     if test \! -z "$LD_PATHLINK"; then
 	XML_LIBS="$XML_LIBS -Wl,$LD_PATHLINK -Wl,$XMLLIB_DIR"
     fi
@@ -287,9 +294,17 @@ dnl )
 
 dnl Apache libs
 APACHE_LIBS=$LIBS
-AC_CHECK_LIB(stdc++, __builtin_new,
-	APACHE_LIBS="$APACHE_LIBS -lstdc++ -lm"
-)
+dnl append stdc++ to libs list commented
+dnl 1. because binary seem to work without it
+dnl purpose of this: remove strange name dependance
+dnl for linker creates reference not for libstc++.xx but
+dnl for something specific to local system,
+dnl thus reducing binary compatibility
+dnl 2. for same reason linker of targets/cgi/parser3 changed to
+dnl "C" compiler from "C++" compiler
+dnl AC_CHECK_LIB(stdc++, __builtin_new,
+dnl 	APACHE_LIBS="$APACHE_LIBS -lstdc++"
+dnl )
 AC_SUBST(APACHE_LIBS)
 
 

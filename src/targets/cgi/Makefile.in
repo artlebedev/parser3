@@ -10,6 +10,8 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+#this read configure.in comment on stdc++ about next line
+
 
 SHELL = @SHELL@
 
@@ -88,6 +90,8 @@ host_os = @host_os@
 rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
+CXXLD = $(CC)
+
 INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql -I../../pcre @XML_INCLUDES@
 
 bin_PROGRAMS = parser3
@@ -117,7 +121,6 @@ parser3_LDFLAGS =
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(LDFLAGS) -o $@
 HEADERS =  $(noinst_HEADERS)
 

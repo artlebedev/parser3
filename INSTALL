@@ -30,9 +30,10 @@
     $prefix/etc/
       parser3.conf        -- main configuration file
       parser3.charsets/   -- charset definition files
-        windows-1251.cfg  -- cyrillic charset [windows-1251 encoding]
         koi8-r.cfg        -- cyrillic charset [KOI8-R encoding]
         windows-1250.cfg  -- central europian charset [windows-1250 encoding]
+        windows-1251.cfg  -- cyrillic charset [windows-1251 encoding]
+        windows-1257.cfg  -- baltic charset [windows-1257 encoding]
 
   NOTE:
     For subsequent compilations+installs 
@@ -114,9 +115,14 @@
     cp libgdome/gdomecore/gdome-xml-document.h $D/gnome/include/libgdome/gdomecore
     
 
-    Parser3 configure option is --with-gnome-xml=$D/gnome
+    Parser3 configure option:
+        --with-gnome-xml=$D/gnome
 
+    NOTE:
+    In case your glib as installed into some other prefix,
+    specify it's configuration file with
+        --with-glib-config=/path/to/your/glib-config
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.4 2002/02/08 11:14:18 paf Exp $
+$Id: INSTALL,v 1.5 2002/02/13 13:04:33 paf Exp $
