@@ -20,6 +20,13 @@
 	* cache(hashfile class) 
 	* xml(xdoc and xnode classes)
 
+
+  In case you're not root on machine you're installing Parser,
+  we recommend you to do:
+  ./configure --prefix=/your/home/parser3install
+  and afterwards copy parser3install/bin/parser3 to your CGI directory
+  or make a symlink [if your web server configured to follow symlinks].
+
 2.What is the process to install Parser3?
 
   make install
@@ -125,4 +132,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.5 2002/02/13 13:04:33 paf Exp $
+$Id: INSTALL,v 1.6 2002/02/18 12:01:33 paf Exp $
