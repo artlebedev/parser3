@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2004/07/21 13:53:20 $";
+static const char * const IDENT_VMAIL_C="$Date: 2004/07/28 13:43:58 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -365,7 +365,7 @@ void VMail::fill_received(Request&
 typedef int (*string_contains_char_which_check)(int);
 static bool string_contains_char_which(const char* string, string_contains_char_which_check check) {
 	while(char c=*string++) {
-		if(check(c))
+		if(check((unsigned char)c))
 			return true;
 	}
 	return false;
@@ -376,14 +376,14 @@ static char *trimBoth(char *s) {
 		return 0;
 
 	// trim head whitespace
-	while(*s && isspace(*s))
+	while(*s && isspace((unsigned char)*s))
 		s++;
 	// trim tail whitespace
 	char *tail=s+strlen(s);
 	if(tail>s) {
 		do {
 			--tail;
-			if(isspace(*tail))
+			if(isspace((unsigned char)*tail))
 				*tail=0;
 		} while(tail>s);
 	}

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/05/26 08:25:55 $";
+static const char * const IDENT_STRING_C="$Date: 2004/07/28 13:43:58 $";
 
 #include "pcre.h"
 
@@ -21,7 +21,7 @@ int pa_atoi(const char* str, const String* problem_source) {
 	if(!str)
 		return 0;
 
-	while(*str && isspace(*str))
+	while(*str && isspace((unsigned char)*str))
 		str++;
 	if(!*str)
 		return 0;
@@ -41,7 +41,7 @@ int pa_atoi(const char* str, const String* problem_source) {
 		result=(int)strtol(str, &error_pos, 0);
 
 	while(char c=*error_pos++)
-		if(!isspace(c))
+		if(!isspace((unsigned char)c))
 			throw Exception("number.format",
 				problem_source,
 				problem_source?"invalid number (int)": "'%s' is invalid number (int)", str);
@@ -53,7 +53,7 @@ double pa_atod(const char* str, const String* problem_source) {
 	if(!str)
 		return 0;
 
-	while(*str && isspace(*str))
+	while(*str && isspace((unsigned char)*str))
 		str++;
 	if(!*str)
 		return 0;
@@ -70,7 +70,7 @@ double pa_atod(const char* str, const String* problem_source) {
 		result=(double)strtod(str, &error_pos);
 
 	while(char c=*error_pos++)
-		if(!isspace(c))
+		if(!isspace((unsigned char)c))
 			throw Exception("number.format",
 				problem_source,
 				problem_source?"invalid number (double)": "'%s' is invalid number (double)", str);
