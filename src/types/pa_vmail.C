@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/09/16 07:08:49 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/09/24 11:45:38 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -223,6 +223,22 @@ static void MimePart2body(GMimePart *part,
 	}
 }
 
+int gmt_offset() {
+#if defined(HAVE_TIMEZONE) && defined(HAVE_DAYLIGHT)
+	return timezone+(daylight?60*60*(timezone<0?-1:timezone>0?+1:0):0);
+#else
+	time_t t=time(0);
+	tm *tm=localtime(&t);
+#if defined(HAVE_TM_GMTOFF)
+	return tm->tm_gmtoff;
+#elif defined(HAVE_TM_TZADJ)
+	return tm->tm_tzadj;
+#else
+#error neither HAVE_TIMEZONE&HAVE_DAYIGHT nor HAVE_TM_GMTOFF nor HAVE_TM_TZADJ defined
+#endif
+#endif
+}
+
 static void parse(Request& r, GMimeStream *stream, Hash& received) {
 	Pool& pool=received.pool();
 
@@ -257,10 +273,11 @@ static void parse(Request& r, GMimeStream *stream, Hash& received) {
 		int tt_offset = 
 			((messageHeader->gmt_offset / 100) *(60 * 60)) 
 			+(messageHeader->gmt_offset % 100) * 60;			
+
 		putReceived(received, "date", 
 			messageHeader->date // local sender
 			-tt_offset // move local sender to GMT sender
-			-(timezone+(daylight?60*60*sign(timezone):0)) // move GMT sender to our local time
+			-gmt_offset() // move GMT sender to our local time
 		);
 		// .message-id
 		putReceived(received, "message-id", messageHeader->message_id);

@@ -473,6 +473,48 @@ dnl We require qsort(3) and select(2).
 AC_CHECK_FUNCS(qsort, , AC_MSG_ERROR([No qsort library function.]))
 AC_CHECK_FUNCS(select, , AC_MSG_ERROR([No select library function.]))
 
+dnl For correct mail receiving we need to know local offset from GMT
+dnl it be timezone+(daylight?60*60*sign(timezone):0)
+dnl or it can be tm.tm_gmtoff
+dnl or it can be tm.tm_tzadj
+
+AC_MSG_CHECKING(for timezone variable)
+AC_TRY_COMPILE([#include <time.h>],        
+[
+time_t test=timezone;
+],                                         
+AC_DEFINE(HAVE_TIMEZONE)                  
+AC_MSG_RESULT(yes),                        
+AC_MSG_RESULT(no))                         
+
+AC_MSG_CHECKING(for daylight variable)
+AC_TRY_COMPILE([#include <time.h>],        
+[
+int test=daylight;
+],                                         
+AC_DEFINE(HAVE_DAYLIGHT)              
+AC_MSG_RESULT(yes),                        
+AC_MSG_RESULT(no))                         
+
+AC_MSG_CHECKING(for tm_gmtoff in struct tm)
+AC_TRY_COMPILE([#include <time.h>],        
+[struct tm tm;                             
+tm.tm_gmtoff=0;                            
+],                                         
+AC_DEFINE(HAVE_TM_GMTOFF)                  
+AC_MSG_RESULT(yes),                        
+AC_MSG_RESULT(no))                         
+
+AC_MSG_CHECKING(for tm_tzadj in struct tm)
+AC_TRY_COMPILE([#include <time.h>],        
+[struct tm tm;                             
+tm.tm_tzadj=0;                            
+],                                         
+AC_DEFINE(HAVE_TM_TZADJ)                  
+AC_MSG_RESULT(yes),                        
+AC_MSG_RESULT(no))                         
+
+
 AC_MSG_CHECKING(whether compiler supports pragma pack)
 AC_TRY_COMPILE(
 #pragma pack(1)

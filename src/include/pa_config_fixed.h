@@ -10,7 +10,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-static const char* IDENT_CONFIG_FIXED_H="$Date: 2002/09/13 11:08:18 $";
+static const char* IDENT_CONFIG_FIXED_H="$Date: 2002/09/24 11:41:04 $";
 
 #define inline  __inline
 #define HAVE_STDARG_H
@@ -33,6 +33,8 @@ static const char* IDENT_CONFIG_FIXED_H="$Date: 2002/09/13 11:08:18 $";
 #define HAVE_SYS_TYPES_H
 #define HAVE_WINSOCK_H
 #define HAVE__LOCKING
+#define HAVE_TIMEZONE
+#define HAVE_DAYLIGHT
 #define HAVE_PRAGMA_PACK
 #define USE_SMTP
 #define PA_WITH_SJLJ_EXCEPTIONS

@@ -3230,10 +3230,120 @@ fi
 done
 
 
-echo $ac_n "checking whether compiler supports pragma pack""... $ac_c" 1>&6
-echo "configure:3235: checking whether compiler supports pragma pack" >&5
+
+echo $ac_n "checking for timezone variable""... $ac_c" 1>&6
+echo "configure:3236: checking for timezone variable" >&5
 cat > conftest.$ac_ext <<EOF
-#line 3237 "configure"
+#line 3238 "configure"
+#include "confdefs.h"
+#include <time.h>
+int main() {
+
+time_t test=timezone;
+
+; return 0; }
+EOF
+if { (eval echo configure:3247: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+  rm -rf conftest*
+  cat >> confdefs.h <<\EOF
+#define HAVE_TIMEZONE 1
+EOF
+                  
+echo "$ac_t""yes" 1>&6
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  echo "$ac_t""no" 1>&6
+fi
+rm -f conftest*                         
+
+echo $ac_n "checking for daylight variable""... $ac_c" 1>&6
+echo "configure:3263: checking for daylight variable" >&5
+cat > conftest.$ac_ext <<EOF
+#line 3265 "configure"
+#include "confdefs.h"
+#include <time.h>
+int main() {
+
+int test=daylight;
+
+; return 0; }
+EOF
+if { (eval echo configure:3274: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+  rm -rf conftest*
+  cat >> confdefs.h <<\EOF
+#define HAVE_DAYLIGHT 1
+EOF
+              
+echo "$ac_t""yes" 1>&6
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  echo "$ac_t""no" 1>&6
+fi
+rm -f conftest*                         
+
+echo $ac_n "checking for tm_gmtoff in struct tm""... $ac_c" 1>&6
+echo "configure:3290: checking for tm_gmtoff in struct tm" >&5
+cat > conftest.$ac_ext <<EOF
+#line 3292 "configure"
+#include "confdefs.h"
+#include <time.h>
+int main() {
+struct tm tm;                             
+tm.tm_gmtoff=0;                            
+
+; return 0; }
+EOF
+if { (eval echo configure:3301: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+  rm -rf conftest*
+  cat >> confdefs.h <<\EOF
+#define HAVE_TM_GMTOFF 1
+EOF
+                  
+echo "$ac_t""yes" 1>&6
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  echo "$ac_t""no" 1>&6
+fi
+rm -f conftest*                         
+
+echo $ac_n "checking for tm_tzadj in struct tm""... $ac_c" 1>&6
+echo "configure:3317: checking for tm_tzadj in struct tm" >&5
+cat > conftest.$ac_ext <<EOF
+#line 3319 "configure"
+#include "confdefs.h"
+#include <time.h>
+int main() {
+struct tm tm;                             
+tm.tm_tzadj=0;                            
+
+; return 0; }
+EOF
+if { (eval echo configure:3328: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+  rm -rf conftest*
+  cat >> confdefs.h <<\EOF
+#define HAVE_TM_TZADJ 1
+EOF
+                  
+echo "$ac_t""yes" 1>&6
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  echo "$ac_t""no" 1>&6
+fi
+rm -f conftest*                         
+
+
+echo $ac_n "checking whether compiler supports pragma pack""... $ac_c" 1>&6
+echo "configure:3345: checking whether compiler supports pragma pack" >&5
+cat > conftest.$ac_ext <<EOF
+#line 3347 "configure"
 #include "confdefs.h"
 #pragma pack(1)
 struct _1_byte {
@@ -3245,7 +3355,7 @@ int main() {
 
 ; return 0; }
 EOF
-if { (eval echo configure:3249: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:3359: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   
     echo "$ac_t""yes" 1>&6
@@ -3264,9 +3374,9 @@ fi
 rm -f conftest*
 
 echo $ac_n "checking for set_new_handler""... $ac_c" 1>&6
-echo "configure:3268: checking for set_new_handler" >&5
+echo "configure:3378: checking for set_new_handler" >&5
 cat > conftest.$ac_ext <<EOF
-#line 3270 "configure"
+#line 3380 "configure"
 #include "confdefs.h"
 #ifdef HAVE_NEW
 #include <new>
@@ -3278,7 +3388,7 @@ std::set_new_handler(failed_new);
 
 ; return 0; }
 EOF
-if { (eval echo configure:3282: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:3392: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   
     echo "$ac_t""yes" 1>&6
