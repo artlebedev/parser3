@@ -10,7 +10,7 @@
 #ifndef PA_STYLESHEET_MANAGER_H
 #define PA_STYLESHEET_MANAGER_H
 
-static const char * const IDENT_STYLESHEET_MANAGER_H="$Date: 2003/11/28 10:27:00 $";
+static const char * const IDENT_STYLESHEET_MANAGER_H="$Date: 2003/12/11 09:25:50 $";
 
 
 #include "pa_hash.h"
@@ -61,6 +61,6 @@ public: // Cache_manager
 };
 
 /// global
-extern Stylesheet_manager stylesheet_manager;
+extern Stylesheet_manager* stylesheet_manager;
 
 #endif

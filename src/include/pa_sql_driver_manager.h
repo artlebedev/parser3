@@ -9,7 +9,7 @@
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_H="$Date: 2003/11/20 16:34:25 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_H="$Date: 2003/12/11 09:25:50 $";
 
 
 #include "pa_sql_driver.h"
@@ -83,6 +83,6 @@ public: // Cache_manager
 };
 
 /// global
-extern SQL_Driver_manager SQL_driver_manager;
+extern SQL_Driver_manager* SQL_driver_manager;
 
 #endif

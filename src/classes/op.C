@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2003/11/20 17:46:01 $";
+static const char * const IDENT_OP_C="$Date: 2003/12/11 09:25:50 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -283,7 +283,7 @@ struct timeval mt[2];
 gettimeofday(&mt[0],NULL);
 #endif
 	// connect
-	SQL_Connection* connection=SQL_driver_manager.get_connection(url.as_string(), 
+	SQL_Connection* connection=SQL_driver_manager->get_connection(url.as_string(), 
 		protocol2driver_and_client);
 
 #ifdef RESOURCES_DEBUG

@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char * const IDENT_SQL_CONNECTION_H="$Date: 2003/12/10 14:54:53 $";
+static const char * const IDENT_SQL_CONNECTION_H="$Date: 2003/12/11 09:25:50 $";
 
 
 #include "pa_sql_driver.h"
@@ -170,7 +170,7 @@ public:
 		} else
 			commit();
 
-		SQL_driver_manager.close_connection(furl, this);
+		SQL_driver_manager->close_connection(furl, this);
 	}
 
 };

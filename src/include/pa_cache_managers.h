@@ -4,13 +4,13 @@
 	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Date: 2003/11/20 17:07:44 $
+	$Date: 2003/12/11 09:25:50 $
 */
 
 #ifndef PA_CACHE_MANAGERS_H
 #define PA_CACHE_MANAGERS_H
 
-static const char * const IDENT_CACHE_MANAGERS_H="$Date: 2003/11/20 17:07:44 $";
+static const char * const IDENT_CACHE_MANAGERS_H="$Date: 2003/12/11 09:25:50 $";
 
 #include "pa_hash.h"
 #include "pa_value.h"
@@ -29,6 +29,8 @@ public:
 /// maintains name=>Cache_manager association, can expire its contents
 class Cache_managers: public Hash<const String::Body, Cache_manager*> {
 public:
+	Cache_managers();
+
 	/// maybe-expires all caches it contains, each cache manager desides it itself
 	void maybe_expire();
 

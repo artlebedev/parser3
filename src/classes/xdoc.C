@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2003/12/10 14:17:43 $";
+static const char * const IDENT_XDOC_C="$Date: 2003/12/11 09:25:50 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -686,7 +686,7 @@ static void _file(Request& r, MethodParams& params) {
 		value_name, 
 		new VString(*oo.mediaType));
 	vhcontent_type.hash().put(
-		String::Body("charset"), 
+		"charset", 
 		new VString(*oo.encoding));
 
 	vfile.set(false/*tainted*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, 
@@ -839,7 +839,7 @@ static void _transform(Request& r, MethodParams& params) {
 		// extablish stylesheet connection
 		const String& stylesheet_filespec=
 			r.absolute(params.as_string(0, "stylesheet must be file name (string) or DOM document (xdoc)"));
-		Stylesheet_connection_ptr connection=stylesheet_manager.get_connection(stylesheet_filespec);
+		Stylesheet_connection_ptr connection=stylesheet_manager->get_connection(stylesheet_filespec);
 
 		// load and compile file to stylesheet [or get cached if any]
 		// transform!

@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2003/12/11 09:22:09 $";
+static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2003/12/11 09:25:50 $";
 
 #include "pa_stylesheet_manager.h"
 #include "pa_exception.h"
@@ -44,7 +44,7 @@ static void expire_connections(
 // Stylesheet_connection methods
 
 void Stylesheet_connection::close() {
-	stylesheet_manager.close_connection(ffile_spec, *this);
+	stylesheet_manager->close_connection(ffile_spec, *this);
 }
 
 // Stylesheet_manager methods
