@@ -110,8 +110,9 @@ Xне сделано, видимо, не будет сделано
             autocommit если выставить в 0, будет делать commit/rollback
 
         !pgsql://user:pass@{host[:port]|[local]}/database?
-            client_encoding=win,[to-find-out]&
-            datestyle=ISO,SQL,Postgres,European,NonEuropean=US,German,DEFAULT=ISO
+            client_encoding=win,[to-find-out]
+            &datestyle=ISO,SQL,Postgres,European,NonEuropean=US,German,DEFAULT=ISO
+            &ClientCharset=parser-charset << charset in which parser thinks client works
         
         !oracle://user:pass@service?
             NLS_LANG=RUSSIAN_AMERICA.CL8MSWIN1251&
