@@ -7,11 +7,9 @@
 - @ref String
 - @ref Compiler
 - @ref Executor
-- @ref module
 - @ref Value
 - @ref Class
 - @ref Object
-- @ref Aliased
 - @ref Methoded
 
 @section Part2  Часть 2

@@ -16,19 +16,6 @@ Pooled::malloc и Pooled::calloc, а также функцию Pooled::pool() для доступа к са
 		"проблема %d", error_code);
 @endcode
 
-"Класс ошибки" следует задать один из системных, придумать хороших свой, или не задавать вовсе.
-Системные классы ошибок:
-- parser.compile     
-- parser.runtime     
-- number.zerodivision
-- number.format      
-- file.missing       
-- file.access        
-- image.format       
-- sql.connect        
-- sql.execute        
-- xml                
-- smtp.connect       
-- smtp.execute       
-
+"Класс ошибки" следует задать один из <a href="http://parser.ru/docs/lang/parserexceptions.htm">системных</a>, 
+придумать хороших свой, или не задавать вовсе.
 */
