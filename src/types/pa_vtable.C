@@ -1,10 +1,10 @@
 /** @file
 	Parser: @b table class.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vtable.C,v 1.11 2002/02/08 08:31:32 paf Exp $
+	$Id: pa_vtable.C,v 1.13 2002/03/27 15:30:39 paf Exp $
 */
 
 #include "pa_vtable.h"
@@ -58,7 +58,7 @@ Value *VTable::get_element(const String& name) {
 				return NEW VVoid(pool());
 	}
 
-	throw Exception(0, 0,
+	throw Exception("parser.runtime",
 		&name, 
 		"column not found");
 	return 0; //unreached

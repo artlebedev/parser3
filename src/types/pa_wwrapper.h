@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wwrapper.h,v 1.16 2002/02/08 08:30:21 paf Exp $
+	$Id: pa_wwrapper.h,v 1.17 2002/03/27 15:30:39 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -50,7 +50,7 @@ private:
 	// raises an exception on 0 value
 	Value *check_value() const {
 		if(!fvalue)
-			throw Exception(0,0,
+			throw Exception(0,
 				0,
 				"accessing wrapper without value");
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.77 2002/03/27 13:33:31 paf Exp $
+	$Id: op.C,v 1.78 2002/03/27 15:30:34 paf Exp $
 */
 
 #include "classes.h"
@@ -59,7 +59,7 @@ static void _untaint(Request& r, const String& method_name, MethodParams *params
 		const String& lang_name=params->as_string(0, "lang must be string");
 		lang=untaint_lang_name2enum->get_int(lang_name);
 		if(!lang)
-			throw Exception(0, 0,
+			throw Exception(0,
 				&lang_name,
 				"invalid taint language");
 	}
@@ -82,7 +82,7 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 		const String& lang_name=params->as_string(0, "lang must be string");
 		lang=untaint_lang_name2enum->get_int(lang_name);
 		if(!lang)
-			throw Exception(0, 0,
+			throw Exception(0,
 				&lang_name,
 				"invalid taint language");
 	}
@@ -157,7 +157,7 @@ static void _while(Request& r, const String& method_name, MethodParams *params) 
 	int endless_loop_count=0;
 	while(true) {
 		if(++endless_loop_count>=MAX_LOOPS) // endless loop?
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&method_name,
 				"endless loop detected");
 
@@ -188,7 +188,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 	Value *delim_maybe_code=params->size()>4?&params->get(4):0;
 
 	if(to-from>=MAX_LOOPS) // too long loop?
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			"endless loop detected");
 
@@ -291,7 +291,7 @@ static void _case(Request& r, const String& method_name, MethodParams *params) {
 
 	Switch_data *data=static_cast<Switch_data *>(r.classes_conf.get(*switch_data_name));
 	if(!data)
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			"without switch");
 
@@ -459,7 +459,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 				retry=0; // prolonging our wait, than could cache_get it, without processing body_code
 			}
 		}
-		throw Exception(0, 0,
+		throw Exception(0,
 			&file_spec,
 			"locking problem");
 	} else { 
@@ -479,8 +479,8 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 VHash& exception2vhash(Pool& pool, const Exception& e) {
 	VHash& result=*new(pool) VHash(pool);
 	Hash& hash=result.hash(0);
-	if(const String *type=e.type())
-		hash.put(*exception_type_part_name, new(pool) VString(*type));
+	if(const char *type=e.type())
+		hash.put(*exception_type_part_name, new(pool) VString(*new(pool) String(pool, type)));
 	if(const String *asource=e.problem_source()) {
 		String& source=*new(pool) String(pool); 
 		source.append(*asource, String::UL_TAINTED, true/*forced*/);
@@ -554,9 +554,9 @@ static void _throw_operator(Request& r, const String& method_name, MethodParams 
 	if(params->size()==1) {
 		Value& param0=params->get(0);
 		if(Hash *hash=param0.get_hash(&method_name)) {
-			const String *type=0;
+			const char *type=0;
 			if(Value *value=static_cast<Value *>(hash->get(*exception_type_part_name)))
-				type=&value->as_string();
+				type=value->as_string().cstr();
 			const String *source=0;
 			if(Value *value=static_cast<Value *>(hash->get(*exception_source_part_name)))
 				source=&value->as_string();
@@ -565,20 +565,18 @@ static void _throw_operator(Request& r, const String& method_name, MethodParams 
 				static_cast<Value *>(hash->get(*exception_comment_part_name)))
 				comment=value->as_string().cstr();
 
-			throw Exception(type, 0,
+			throw Exception(type,
 				source?source:&method_name,
 				comment);
 		} else
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&method_name,
 				"one-param version has hash param");
 	} else {
-		const String& type=params->as_string(0, "type must be string");
+		const char *type=params->as_string(0, "type must be string").cstr();
 		const String& source=params->as_string(1, "source must be string");
 		const char *comment=params->as_string(2, "comment must be string").cstr();
-		throw Exception(&type, 0,
-			&source,
-			comment);
+		throw Exception(type, &source, comment);
 	}
 }
 	

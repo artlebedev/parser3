@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: untaint.C,v 1.98 2002/02/28 15:40:40 paf Exp $
+	$Id: untaint.C,v 1.99 2002/03/27 15:30:37 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -162,7 +162,7 @@ inline bool need_quote_http_header(const char *ptr, size_t size) {
 */
 String& String::append(const String& src, uchar lang, bool forced) {
 	if(!last_chunk) // growth stopped [we're appended as string to somebody]
-		throw Exception(0, 0,
+		throw Exception(0,
 			this,
 			"string growth stopped (append string)");
 
@@ -436,7 +436,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			if(connection)
 				dest+=connection->quote(dest, row->item.ptr, row->item.size);
 			else
-				throw Exception(0, 0,
+				throw Exception(0,
 					this,
 					"untaint in SQL language failed - no connection specified");
 			break;
@@ -470,7 +470,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			});
 			break;
 		default:
-			throw Exception(0, 0, 
+			throw Exception(0, 
 				this, 
 				"unknown untaint language #%d", 
 					static_cast<int>(row->item.lang)); // sould never
@@ -517,7 +517,7 @@ IFNDEF_NO_STRING_ORIGIN(
 );
 		uchar show_lang=row->item.lang & ~UL_OPTIMIZE_BIT;
 		if(show_lang>=sizeof(String_Untaint_lang_name)/sizeof(String_Untaint_lang_name[0]))
-			throw Exception(0, 0, 
+			throw Exception(0, 
 				this, 
 				"unknown untaint language #%d", 
 					static_cast<int>(show_lang)); // sould never

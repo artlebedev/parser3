@@ -7,7 +7,8 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^roll2[]
+^exceptionTypes[]
+#^roll2[]
 #^rolls[]
 #^exceptions1[]
 #^locate_by_expr[]
@@ -111,6 +112,20 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 <hr>
 OK
 
+@exceptionTypes[]
+#    parser.compile       ^test[}                компил€ци€ (непарна€ скобка, ...)
+#    parser.runtime       ^if(0).                параметры (больше/меньше, чем нужно, не тех типов, ...)
+#    number.zerodivision  ^eval(1/0) ^eval(1%0)
+#    number.format        ^eval(abc*5)
+#    file.missing         ^file:delete[delme]                       not found
+#    file.access          ^table::load[.]                       no rights
+#    image.format         ^image::measure[index.html]                        not gif/jpg
+#    sql.connect          ^connect[mysql://baduser:pass@host/db]{}                       not found/timeout
+#    sql.execute          ^connect[mysql://okuser:pass@host/db]{^void:sql{select bad}}                       syntax error
+#    xml                  ^xdoc::create{<forgot?>}                       any error in xml/xslt libs
+#    smtp.connect                                not found/timeout
+#    smtp.execute                                communication error
+
 @roll2[]
 $d[^date::create(2002;4;2;2;2;3)] ^d.sql-string[]<br>
 ^d.roll[day](+365*3+1) ^d.sql-string[]<br>
@@ -156,8 +171,8 @@ $d[^date::create(2002;10;19)]
 	^throw[custom1;paf;is stupid]
 }{
 	^if($exception.type eq custom1){
-		$exception.handled(1)
-#	^throw[$exception]
+#		$exception.handled(1)
+	^throw[$exception]
 		type=$exception.type<br>
 	    source=$exception.source<br>
 	    file=$exception.file<br>

@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.22 2002/03/18 08:16:15 paf Exp $
+	$Id: pa_charset.C,v 1.23 2002/03/27 15:30:36 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -153,7 +153,7 @@ void Charset::loadDefinition(const String& request_file_spec) {
 			case 8:
 				// charset
 				if(tables.toTableSize>MAX_CHARSET_UNI_CODES)
-					throw Exception(0, 0,
+					throw Exception("parser.runtime",
 						&request_file_spec,
 						"charset must contain not more then %d unicode values", MAX_CHARSET_UNI_CODES);
 
@@ -404,7 +404,7 @@ static size_t transcodeFromUTF8(
                      break;
 
             default:
-                throw Exception(0, 0,
+                throw Exception(0,
 					0,
 					"transcodeFromUTF8 error: wrong trailingBytes value(%d)", trailingBytes);
         }
@@ -416,7 +416,7 @@ static size_t transcodeFromUTF8(
         if(!(tmpVal & 0xFFFF0000))
             *outPtr++= xlatOneTo(tmpVal, tables);
 		else
-			throw Exception(0, 0,
+			throw Exception(0,
 				0,
 				"transcodeFromUTF8 error: too big tmpVal(0x%08X)", tmpVal);
 	}
@@ -539,7 +539,7 @@ void Charset::initTranscoder(const String *source, const char *name_cstr) {
 
 xmlCharEncodingHandler *Charset::transcoder(const String *source) {
 	if(!ftranscoder)
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			source,
 			"unsupported encoding");
 	return ftranscoder;
@@ -562,7 +562,7 @@ const char *Charset::transcode_cstr(xmlChar *s) {
 	} else
 		memcpy(out, s, size=inlen);
 	if(size<0)
-		throw Exception(0, 0,
+		throw Exception(0,
 			0,
 			"transcode_cstr failed (%d)", size);
 
@@ -594,7 +594,7 @@ GdomeDOMString_auto_ptr Charset::transcode_buf(const char *buf, size_t buf_size)
 		memcpy(out, buf, size=buf_size);
 	
 	if(size<0)
-		throw Exception(0, 0,
+		throw Exception(0,
 			0,
 			"transcode_buf failed (%d)", size);
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstatus.C,v 1.6 2002/02/08 08:30:20 paf Exp $
+	$Id: pa_vstatus.C,v 1.7 2002/03/27 15:30:38 paf Exp $
 */
 
 #include "pa_vstatus.h"
@@ -28,7 +28,7 @@ Value *VStatus::get_element(const String& aname) {
 		VHash& rusage=*NEW VHash(pool());
 	    struct rusage u;
 	    if(int error=getrusage(RUSAGE_SELF,&u))
-			throw Exception(0, 0,
+			throw Exception(0,
 				&aname,
 				"getrusage failed (%d)", error);
 

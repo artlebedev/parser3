@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.40 2002/02/26 12:49:45 paf Exp $
+	$Id: xnode.C,v 1.41 2002/03/27 15:30:35 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -103,7 +103,7 @@ GdomeNode *as_node(Pool& pool, const String& method_name, MethodParams *params,
 	Value& value=params->as_no_junction(index, msg);
 	if(!(strcmp(value.type(), VXNODE_TYPE)==0 
 		|| strcmp(value.type(), VXDOC_TYPE)==0))
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			msg);
 
@@ -118,7 +118,7 @@ GdomeAttr * as_attr(Pool& pool, const String& method_name, MethodParams *params,
 	GdomeNode *node=as_node(pool, method_name, params, index, msg);
 	GdomeException exc;
 	if(gdome_n_nodeType(node, &exc)!=GDOME_ATTRIBUTE_NODE)
-		throw Exception(0, 0, 
+		throw Exception("parser.runtime",
 			&method_name,
 			msg);
 
@@ -143,7 +143,7 @@ static void _insertBefore(Request& r, const String& method_name, MethodParams *p
 		VXnode& result=*new(pool) VXnode(pool, retNode);
 		r.write_no_lang(result);		
 	} else
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 }
@@ -161,7 +161,7 @@ static void _replaceChild(Request& r, const String& method_name, MethodParams *p
 		// write out result
 		r.write_no_lang(*new(pool) VXnode(pool, retNode));		
 	} else
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 }
@@ -178,7 +178,7 @@ static void _removeChild(Request& r, const String& method_name, MethodParams *pa
 		// write out result
 		r.write_no_lang(*new(pool) VXnode(pool, retNode));
 	} else
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 }
@@ -195,7 +195,7 @@ static void _appendChild(Request& r, const String& method_name, MethodParams *pa
 		// write out result
 		r.write_no_lang(*new(pool) VXnode(pool, retNode));		
 	}  else
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 }
@@ -237,7 +237,7 @@ GdomeElement *get_self_element(Request& r, const String& method_name) {
 
 	GdomeException exc;
 	if(gdome_n_nodeType(node, &exc)!=GDOME_ELEMENT_NODE)
-		throw Exception(0, 0, 
+		throw Exception("parser.runtime",
 			&method_name,
 			"method can be called on node of ELEMENT type");
 
@@ -270,7 +270,7 @@ static void _setAttribute(Request& r, const String& method_name, MethodParams *p
 		pool.transcode(attribute_value).get(),
 		&exc);
 	if(exc)
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 }
@@ -284,7 +284,7 @@ static void _removeAttribute(Request& r, const String& method_name, MethodParams
 	GdomeException exc;
 	gdome_el_removeAttribute(element, pool.transcode(name).get(), &exc);
 	if(exc)
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 }
@@ -301,7 +301,7 @@ static void _getAttributeNode(Request& r, const String& method_name, MethodParam
 		VXnode& result=*new(pool) VXnode(pool, (GdomeNode *)attr);
 		r.write_no_lang(result);
 	} else if(exc)
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 }	
@@ -318,7 +318,7 @@ static void _setAttributeNode(Request& r, const String& method_name, MethodParam
 		VXnode& result=*new(pool) VXnode(pool, (GdomeNode *)returnAttr);
 		r.write_no_lang(result);
 	} else
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 }	
@@ -332,7 +332,7 @@ static void _removeAttributeNode(Request& r, const String& method_name, MethodPa
 	GdomeException exc;
 	gdome_el_removeAttributeNode(element, oldAttr, &exc);
 	if(exc)
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 }	
@@ -360,7 +360,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 			result.hash(0).put(skey, new(pool) VXnode(pool, gdome_nl_item(nodes, i, &exc)));
 		}
 	} else if(exc)
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 
@@ -410,7 +410,7 @@ static void _normalize(Request& r, const String& method_name, MethodParams *) {
 	GdomeException exc;
 	gdome_n_normalize(selfNode, &exc);
 	if(exc)
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 }
@@ -441,9 +441,7 @@ static void _selectX(Request& r, const String& method_name, MethodParams *params
 
 	if(xmlHaveGenericErrors()) {
 		GdomeException exc=0;
-		throw Exception(0, 0,
-			&expression, 
-			exc);
+		throw Exception(&expression, exc);
 	}
 
 	Value *result=0;
@@ -481,7 +479,7 @@ static void selectNodesHandler(Pool& pool,
 			}
 		break;
 	default: 
-		throw Exception(0, 0,
+		throw Exception(0,
 			&expression,
 			"wrong xmlXPathEvalExpression result type (%d)", res->type);
 		break; // never
@@ -498,7 +496,7 @@ static void selectNodeHandler(Pool& pool,
 	case XPATH_NODESET: 
 		if(res->nodesetval && res->nodesetval->nodeNr) { // empty result strangly has NODESET  res->type
 			if(res->nodesetval->nodeNr>1)
-				throw Exception(0, 0,
+				throw Exception("parser.runtime",
 				&expression,
 				"resulted not in a single node (%d)", res->nodesetval->nodeNr);
 			
@@ -518,7 +516,7 @@ static void selectNodeHandler(Pool& pool,
 					gdome_str_mkref_dup((const gchar *)res->stringval)).get()));
 		break;
 	default: 
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&expression,
 			"wrong xmlXPathEvalExpression result type (%d)", res->type);
 		break; // never
@@ -538,7 +536,7 @@ static void selectBoolHandler(Pool& pool,
 			break;
 		// else[nodeset] fall down to default
 	default: 
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&expression,
 			"wrong xmlXPathEvalExpression result type (%d)", res->type);
 		break; // never
@@ -558,7 +556,7 @@ static void selectNumberHandler(Pool& pool,
 			break;
 		// else[nodeset] fall down to default
 	default: 
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&expression,
 			"wrong xmlXPathEvalExpression result type (%d)", res->type);
 		break; // never
@@ -583,7 +581,7 @@ static void selectStringHandler(Pool& pool,
 			break;
 		// else[nodeset] fall down to default
 	default: 
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&expression,
 			"wrong xmlXPathEvalExpression result type (%d)", res->type);
 		break; // never

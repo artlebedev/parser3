@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.105 2002/03/11 10:39:07 paf Exp $
+	$Id: pa_common.C,v 1.106 2002/03/27 15:30:36 paf Exp $
 */
 
 #include "pa_common.h"
@@ -139,7 +139,7 @@ bool file_read(Pool& pool, const String& file_spec,
     if((f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
 		lock_shared_blocking(f);		
 		if(stat(fname, &finfo)!=0) {
-			Exception e(0, 0, 
+			Exception e("file.missing",
 					&file_spec, 
 					"stat failed: %s (%d), actual filename '%s'", 
 						strerror(errno), errno, fname);
@@ -151,7 +151,7 @@ bool file_read(Pool& pool, const String& file_spec,
 		}
 #ifdef NO_FOREIGN_GROUP_FILES
 		if(finfo.st_gid/*foreign?*/!=getegid()) {
-			Exception e(0, 0,
+			Exception e("parser.runtime", 0,
 				&file_spec,
 				"parser reading files of foreign group disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
 					fname);
@@ -182,7 +182,7 @@ bool file_read(Pool& pool, const String& file_spec,
 			return true;
 
 		if(int(data_size)<0 || data_size>max_size)
-			throw Exception(0, 0, 
+			throw Exception(0,
 				&file_spec, 
 				"read failed: actually read %d bytes count not in [0..%lu] valid range", 
 					data_size, (unsigned long)max_size); //never
@@ -195,7 +195,7 @@ bool file_read(Pool& pool, const String& file_spec,
 		return true;
     }
 	if(fail_on_read_problem)
-		throw Exception(0, 0, 
+		throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
 			&file_spec, 
 			"read failed: %s (%d), actual filename '%s'", 
 				strerror(errno), errno, fname);
@@ -251,7 +251,7 @@ bool file_write_action_under_lock(
 		close(f);
 		return true;
 	} else
-		throw Exception(0, 0, 
+		throw Exception(errno==EACCES?"file.access":0,
 			&file_spec, 
 			"%s failed: %s (%d), actual filename '%s'", 
 				action_name, strerror(errno), errno, fname);
@@ -293,7 +293,7 @@ bool file_delete(const String& file_spec, bool fail_on_read_problem) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	if(unlink(fname)!=0)
 		if(fail_on_read_problem)
-			throw Exception(0, 0, 
+			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
 				&file_spec, 
 				"unlink failed: %s (%d), actual filename '%s'", 
 					strerror(errno), errno, fname);
@@ -310,7 +310,7 @@ void file_move(const String& old_spec, const String& new_spec) {
 	create_dir_for_file(new_spec);
 
 	if(rename(old_spec_cstr, new_spec_cstr)!=0)
-		throw Exception(0, 0, 
+		throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
 			&old_spec, 
 			"rename failed: %s (%d), actual filename '%s' to '%s'", 
 				strerror(errno), errno, old_spec_cstr, new_spec_cstr);
@@ -355,7 +355,7 @@ bool file_stat(const String& file_spec,
     struct stat finfo;
 	if(stat(fname, &finfo)!=0)
 		if(fail_on_read_problem)
-			throw Exception(0, 0, 
+			throw Exception("file.missing",
 				&file_spec, 
 				"getting file size failed: %s (%d), real filename '%s'", 
 					strerror(errno), errno, fname);

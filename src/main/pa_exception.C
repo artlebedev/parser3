@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.39 2002/03/13 13:00:02 paf Exp $
+	$Id: pa_exception.C,v 1.40 2002/03/27 15:30:36 paf Exp $
 */
 
 #include "pa_common.h"
@@ -13,16 +13,16 @@
 #include "pa_sapi.h"
 
 Exception::Exception() {
-	ftype=fcode=fproblem_source=0;
+	ftype=0;
+	fproblem_source=0;
 	owns_comment=false; fcomment=0;
 }
-Exception::Exception(const String *atype, const String *acode,
+Exception::Exception(const char *atype, 
 					  const String *aproblem_source, 
 					  const char *comment_fmt, ...) {
 	//_asm int 3;
 //__asm__("int3");
 	ftype=atype;
-	fcode=acode;
 	fproblem_source=aproblem_source;
 	owns_comment=true;
 
@@ -39,7 +39,6 @@ Exception::Exception(const String *atype, const String *acode,
 }
 Exception::Exception(const Exception& src) : 
 	ftype(src.ftype),
-	fcode(src.fcode),
 	fproblem_source(src.fproblem_source),
 	fcomment(src.fcomment),
 	owns_comment(src.owns_comment) {
@@ -48,7 +47,6 @@ Exception::Exception(const Exception& src) :
 }
 Exception& Exception::operator =(const Exception& src) {
 	ftype=src.ftype;
-	fcode=src.fcode;
 	fproblem_source=src.fproblem_source;
 
 	if(owns_comment)
@@ -66,11 +64,9 @@ Exception::~Exception() {
 
 #ifdef XML
 Exception::Exception(
-	const String *atype, const String *acode,
 	const String *aproblem_source, 
 	GdomeException& exc) :
-	ftype(atype),
-	fcode(acode),
+	ftype("xml"),
 	fproblem_source(aproblem_source),
 	owns_comment(true) {
 

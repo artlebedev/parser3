@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: int.C,v 1.40 2002/02/08 08:30:10 paf Exp $
+	$Id: int.C,v 1.41 2002/03/27 15:30:34 paf Exp $
 */
 
 #include "classes.h"
@@ -85,7 +85,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		if(default_code)
 			val=r.process(*default_code).as_int();
 		else {
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&method_name,
 				"produced no result, but no default option specified");
 			val=0; //calm, compiler

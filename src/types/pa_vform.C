@@ -2,10 +2,10 @@
 	Parser: @b form class.
 	based on The CGI_C library, by Thomas Boutell.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 	
-	$Id: pa_vform.C,v 1.52 2002/02/08 08:31:32 paf Exp $
+	$Id: pa_vform.C,v 1.54 2002/03/27 15:30:38 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -144,7 +144,7 @@ void VForm::ParseMimeInput(
 		*boundary=getAttributeValue(content_type, "boundary=", strlen(content_type)), 
 	    *lastData=&data[length];
 	if(!boundary) 
-		throw Exception(0, 0, 
+		throw Exception(0, 
 			0, 
 			"VForm::ParseMimeInput no boundary attribute of Content-Type");
 

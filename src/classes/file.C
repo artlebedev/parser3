@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.73 2002/03/25 11:55:26 paf Exp $
+	$Id: file.C,v 1.74 2002/03/27 15:30:33 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -252,7 +252,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 		}
 		if(pos<0) {
 			delim_size=0; // calm down, compiler
-			throw Exception(0, 0,
+			throw Exception(0,
 				&method_name,
 				"output does not contain CGI header; exit code=%d; outsize=%u; out: \"%s\"; errsize=%u; err: \"%s\"", 
 					status, 
@@ -314,7 +314,7 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 			pool.get_client_charset().pcre_tables);
 
 		if(!regexp_code)
-			throw Exception(0, 0, 
+			throw Exception(0, 
 				&regexp->mid(erroffset, regexp->size()), 
 				"regular expression syntax error - %s", errptr);
 
@@ -342,7 +342,7 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 				suits=false;
 			else if(exec_result<0) {
 				(*pcre_free)(regexp_code);
-				throw Exception(0, 0, 
+				throw Exception(0, 
 					regexp, 
 					"regular expression execute (%d)", 
 						exec_result);

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.C,v 1.45 2002/02/08 08:30:14 paf Exp $
+	$Id: compile_tools.C,v 1.46 2002/03/27 15:30:35 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -93,11 +93,11 @@ void push_LS(parse_control& pc, lexical_state new_state) {
 		pc.ls_stack[pc.ls_sp++]=pc.ls;  
 		pc.ls=new_state;
 	} else
-		throw Exception(0, 0, 0, "push_LS: ls_stack overflow");
+		throw Exception(0, 0, "push_LS: ls_stack overflow");
 }
 void pop_LS(parse_control& pc) {
 	if(--pc.ls_sp>=0)
 		pc.ls=pc.ls_stack[pc.ls_sp];
 	else
-		throw Exception(0, 0, 0, "pop_LS: ls_stack underflow");
+		throw Exception(0, 0, "pop_LS: ls_stack underflow");
 }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.97 2002/02/08 08:30:10 paf Exp $
+	$Id: string.C,v 1.98 2002/03/27 15:30:34 paf Exp $
 */
 
 #include "classes.h"
@@ -308,7 +308,7 @@ public:
 
 	void add_column(void *ptr, size_t size) {
 		if(got_column)
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&statement_string,
 				"result must contain exactly one column");
 		got_column=true;
@@ -317,7 +317,7 @@ public:
 	void add_row() { /* ignore */ }
 	void add_row_cell(void *ptr, size_t size) {
 		if(got_cell)
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&statement_string,
 				"result must not contain more then one row");
 		got_cell=true;
@@ -353,12 +353,12 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 					offset=(ulong)r.process(*voffset).as_double();
 				if(default_code=(Value *)options->get(*sql_default_name)) {
 					if(!default_code->get_junction())
-						throw Exception(0, 0,
+						throw Exception("parser.runtime",
 							&method_name,
 							"default option must be code");
 				}
 			} else
-				throw Exception(0, 0,
+				throw Exception("parser.runtime",
 					&method_name,
 					"options must be hash");
 	} else
@@ -375,7 +375,7 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 			handlers);
 	} catch(const Exception& e) { // query problem
 		// give more specific source [were url]
-		throw Exception(e.type(), e.code(),
+		throw Exception("sql.execute",
 			&statement_string, 
 			"%s", e.comment());
 	}
@@ -398,7 +398,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			if(!string)
 				string=new(pool) String(pool);
 		} else
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&method_name,
 				"produced no result, but no default option specified");
 	}
@@ -413,7 +413,7 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 
 	Table *table=params->as_no_junction(0, "parameter must not be code").get_table();
 	if(!table)
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			"parameter must be table");
 
@@ -433,7 +433,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		if(mode=="append")
 			do_append=true;
 		else
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&mode,
 				"unknown mode, must be 'append'");
 	}		

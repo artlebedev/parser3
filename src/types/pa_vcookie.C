@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vcookie.C,v 1.42 2002/02/22 11:36:01 paf Exp $
+	$Id: pa_vcookie.C,v 1.43 2002/03/27 15:30:38 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -110,7 +110,7 @@ static VString *expires_timestamp(Pool&pool, const String *source, double days_t
 	time_t when=time(NULL)+(time_t)(60*60*24*days_till_expire);
 	struct tm *tms=gmtime(&when);
 	if(!tms)
-		throw Exception(0, 0,
+		throw Exception(0,
 			source,
 			"bad expires time (seconds from epoch=%ld)", when);
 	char *buf=(char *)pool.malloc(MAX_STRING);

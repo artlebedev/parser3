@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.196 2002/03/27 13:33:32 paf Exp $
+	$Id: pa_request.C,v 1.197 2002/03/27 15:30:36 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -161,7 +161,7 @@ gettimeofday(&mt[0],NULL);
 				if(Hash *charsets=vcharsets->get_hash(0))
 					charsets->for_each(load_charset);
 				else
-					throw Exception(0, 0,
+					throw Exception("parser.runtime",
 						&vcharsets->name(),
 						"must be hash");
 			}
@@ -239,7 +239,7 @@ gettimeofday(&mt[1],NULL);
 		// execute @main[]
 		const String *body_string=execute_virtual_method(*main_class, *main_method_name);
 		if(!body_string)
-			throw Exception(0,0,
+			throw Exception("parser.runtime",
 				0, 
 				"'"MAIN_METHOD_NAME"' method not found");
 
@@ -315,22 +315,20 @@ t[9]-t[3]
 #ifndef NO_STRING_ORIGIN
 					ORIGIN_FILE_LINE_FORMAT": "
 #endif
-					"'%s' %s [%s %s]",
+					"'%s' %s [%s]",
 #ifndef NO_STRING_ORIGIN
 					problem_source->origin().file?problem_source->origin().file:"global",
 					problem_source->origin().line,
 #endif
 					problem_source->cstr(),
 					e.comment(),
-					e.type()?e.type()->cstr():"-",
-					e.code()?e.code()->cstr():"-"
+					e.type()?e.type():"-"
 				);
 			else
 				SAPI::log(pool(),
-					"%s [%s %s]",
+					"%s [%s]",
 					e.comment(),
-					e.type()?e.type()->cstr():"-",
-					e.code()?e.code()->cstr():"-"
+					e.type()?e.type():"-"
 				);
 
 			// reset language to default
@@ -408,15 +406,8 @@ t[9]-t[3]
 				}
 				printed+=snprintf(buf+printed, MAX_STRING-printed, "%s", 
 					e.comment());
-				const String *type=e.type();
-				if(type) {
-					printed+=snprintf(buf+printed, MAX_STRING-printed, "  type: %s", 
-						type->cstr());
-					const String *code=e.code();
-					if(code)
-						printed+=snprintf(buf+printed, MAX_STRING-printed, ", code: %s", 
-						code->cstr());
-				}
+				if(const char *type=e.type()) 
+					printed+=snprintf(buf+printed, MAX_STRING-printed, "  type: %s",  type);
 
 				// future $response:content-type
 				response.fields().put(*content_type_name, 
@@ -464,16 +455,16 @@ VStateless_class *Request::use_file(const String& file_name,
 							break; // found along class_path
 					}
 				} else
-					throw Exception(0, 0,
+					throw Exception("parser.runtime",
 						&element->name(),
 						"must be string or table");
 				if(!file_spec)
-					throw Exception(0, 0,
+					throw Exception("parser.runtime",
 						&file_name,
 						"not found along " MAIN_CLASS_NAME ":" CLASS_PATH_NAME);
 			}
 		if(!file_spec)
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&file_name,
 				"usage failed - no " MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
 	}
@@ -589,7 +580,7 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 				if(const String *result=mime_types->item(1))
 					return *result;
 				else
-					throw Exception(0, 0,
+					throw Exception("parser.runtime",
 						mime_types->origin_string(),
 						"MIME-TYPE table column elements must not be empty");
 		}

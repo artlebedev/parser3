@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.164 2002/03/25 12:21:48 paf Exp $
+	$Id: parser3.C,v 1.165 2002/03/27 15:30:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -240,9 +240,9 @@ void real_parser_handler(
 			memcpy(buf, filespec_to_process, len); buf[len]=0;
 			request_info.document_root=buf;
 		} else
-			throw Exception(0, 0,
-			0,
-			"CGI: no PATH_INFO defined(in reinventing DOCUMENT_ROOT)");
+			throw Exception("parser.runtime",
+				0,
+				"CGI: no PATH_INFO defined(in reinventing DOCUMENT_ROOT)");
 	} else {
 		char buf[MAX_STRING];
 		strncpy(buf, filespec_to_process, MAX_STRING-1); buf[MAX_STRING-1]=0;
@@ -270,9 +270,9 @@ void real_parser_handler(
 			} else
 				request_info.uri=path_info;
 			else
-				throw Exception(0, 0,
-				0,
-				"CGI: no PATH_INFO defined(in reinventing REQUEST_URI)");
+				throw Exception("parser.runtime",
+					0,
+					"CGI: no PATH_INFO defined(in reinventing REQUEST_URI)");
 			
 #ifndef WIN32
 			// they've changed this under IIS5.
@@ -393,13 +393,13 @@ void call_real_parser_handler__do_SEH(
 		
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
-				throw Exception(0, 0,
-				0,
-				"Exception 0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
+				throw Exception(0,
+					0,
+					"Exception 0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
 			else
-				throw Exception(0, 0, 0, "Exception <no exception record>");
+				throw Exception(0, 0, "Exception <no exception record>");
 			else
-				throw Exception(0, 0, 0, "Exception <no exception information>");
+				throw Exception(0, 0, "Exception <no exception information>");
 	}
 #endif
 }

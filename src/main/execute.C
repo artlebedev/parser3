@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.222 2002/03/27 13:33:32 paf Exp $
+	$Id: execute.C,v 1.223 2002/03/27 15:30:35 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -179,7 +179,7 @@ void Request::execute(const Array& ops) {
 				const String& name=POP_NAME();
 				value=static_cast<Value *>(classes().get(name));
 				if(!value) 
-					throw Exception(0,0,
+					throw Exception("parser.runtime",
 						&name,
 						"class is undefined"); 
 
@@ -368,7 +368,7 @@ void Request::execute(const Array& ops) {
 				//	not a code-junction
 				Junction *junction=value->get_junction();
 				if(!junction)
-					throw Exception(0, 0,
+					throw Exception("parser.runtime",
 						&value->name(),
 						"(%s) not a method or junction, can not call it",
 							value->type()); 
@@ -419,7 +419,7 @@ void Request::execute(const Array& ops) {
 							// some stateless_class creatable derivates
 							self=value;
 						} else 
-							throw Exception(0, 0,
+							throw Exception("parser.runtime",
 								&frame->name(),
 								"is not a constructor, system class '%s' can be constructed only implicitly", 
 								called_class->name().cstr());
@@ -428,7 +428,7 @@ void Request::execute(const Array& ops) {
 							String::UL_CLEAN  // not used, always an object, not string
 						);
 					} else
-						throw Exception(0, 0,
+						throw Exception("parser.runtime",
 							&frame->name(),
 							"method is static and can not be used as constructor");
 				} else {
@@ -477,7 +477,7 @@ void Request::execute(const Array& ops) {
 								{ // anti_endless_execute_recoursion
 									if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
 										anti_endless_execute_recoursion=0; // give @exception a chance
-										throw Exception(0, 0,
+										throw Exception("parser.runtime",
 											&frame->name(),
 											"call canceled - endless recursion detected");
 									}
@@ -491,7 +491,7 @@ void Request::execute(const Array& ops) {
 							/*re*/throw;
 						}
 					} else
-						throw Exception(0, 0,
+						throw Exception("parser.runtime",
 							&frame->name(),
 							"is not allowed to be called %s", 
 								call_type==Method::CT_STATIC?"statically":"dynamically");
@@ -607,7 +607,7 @@ void Request::execute(const Array& ops) {
 					if(!problem_source->origin().file)
 						problem_source=&b->name();
 #endif
-					throw Exception(0, 0,
+					throw Exception("number.zerodivision",
 						problem_source,
 						"Division by zero");
 				}
@@ -629,7 +629,7 @@ void Request::execute(const Array& ops) {
 					if(!problem_source->origin().file)
 						problem_source=&b->name();
 #endif
-					throw Exception(0, 0,
+					throw Exception("number.zerodivision",
 						problem_source,
 						"Modulus by zero");
 				}
@@ -651,7 +651,7 @@ void Request::execute(const Array& ops) {
 					if(!problem_source->origin().file)
 						problem_source=&b->name();
 #endif
-					throw Exception(0, 0,
+					throw Exception("number.zerodivision",
 						problem_source,
 						"Division by zero");
 				}
@@ -817,7 +817,7 @@ void Request::execute(const Array& ops) {
 			}
 
 		default:
-			throw Exception(0,0,
+			throw Exception(0,
 				0,
 				"invalid opcode %d", op.code); 
 		}
@@ -892,7 +892,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 		{ // anti_endless_execute_recoursion
 			if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
 				anti_endless_execute_recoursion=0; // give @exception a chance
-				throw Exception(0, 0,
+				throw Exception("parser.runtime",
 					name,
 					"junction evaluation canceled - endless recursion detected");
 			}

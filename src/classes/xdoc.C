@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.86 2002/02/19 15:03:10 paf Exp $
+	$Id: xdoc.C,v 1.87 2002/03/27 15:30:34 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -155,7 +155,7 @@ private:
 static void writeNode(Request& r,  const String& method_name, GdomeNode *node, 
 					  GdomeException exc) {
 	if(!node || exc)
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 
@@ -301,7 +301,7 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
 	} else if(exc || xmlHaveGenericErrors())
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 }
@@ -320,7 +320,7 @@ static void _importNode(Request& r, const String& method_name, MethodParams *par
 		importedNode,
 		deep, &exc);
 	if(exc)
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 
@@ -351,7 +351,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 			));
 		if(!document || xmlHaveGenericErrors()) {
 			GdomeException exc=0;
-			throw Exception(0, 0, 
+			throw Exception(
 				&method_name, 
 				exc);
 		}
@@ -367,7 +367,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 			0/*systemId* /, 
 			&exc);
 		if(!documentType || exc || xmlHaveGenericErrors())
-			throw Exception(0, 0, 
+			throw Exception(
 				&method_name, 
 				exc);
 		*/
@@ -377,7 +377,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 			0/*doctype*/, 
 			&exc);
 		if(!document || exc || xmlHaveGenericErrors())
-			throw Exception(0, 0, 
+			throw Exception(
 				&method_name, 
 				exc);
 
@@ -399,7 +399,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 		gdome_xml_n_mkref((xmlNode *)xmlParseFile(uri.cstr()));
 	if(!document || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
-		throw Exception(0, 0, 
+		throw Exception(
 			&uri, 
 			exc);
 	}
@@ -426,7 +426,7 @@ static void param_option_over_output_option(Pool& pool,
 		else if(s=="no")
 			output_option=false;
 		else
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&s,
 				"%s must be either 'yes' or 'no'", option_name);
 	}
@@ -507,7 +507,7 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 	const char *encoding_cstr=oo.encoding->cstr();
 	xmlCharEncodingHandler *encoder=xmlFindCharEncodingHandler(encoding_cstr);
 	if(!encoder)
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			"encoding '%s' not supported", encoding_cstr);
 	// UTF-8 encoder contains empty input/output converters, 
@@ -520,7 +520,7 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 
 	xsltStylesheet_auto_ptr stylesheet(xsltNewStylesheet());
 	if(!stylesheet.get())
-		throw Exception(0, 0,
+		throw Exception(0,
 			&method_name,
 			"xsltNewStylesheet failed");
 
@@ -542,7 +542,7 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document(&method_name));
 	if(xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0) {
 		GdomeException exc=0;
-		throw Exception(0, 0, 
+		throw Exception(
 			&method_name, 
 			exc);
 	}
@@ -646,7 +646,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 				params->for_each(add_xslt_param, transform_params);
 				transform_params[params->size()*2]=0;				
 			} else
-				throw Exception(0, 0,
+				throw Exception("parser.runtime",
 					&method_name,
 					"transform parameters parameter must be hash");
 	}
@@ -669,7 +669,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		transformContext.get());
 	if(!transformed || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
-		throw Exception(0, 0,
+		throw Exception(
 			&stylesheet_filespec, 
 			exc);
 	}
@@ -679,7 +679,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	// constructing result
 	GdomeDocument *gdomeDocument=gdome_xml_doc_mkref(transformed);
 	if(!gdomeDocument)
-		throw Exception(0, 0,
+		throw Exception(0,
 			&method_name,
 			"gdome_xml_doc_mkref failed");
 	VXdoc& result=*new(pool) VXdoc(pool, gdomeDocument);

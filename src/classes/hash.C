@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hash.C,v 1.35 2002/02/08 08:30:10 paf Exp $
+	$Id: hash.C,v 1.36 2002/03/27 15:30:34 paf Exp $
 */
 
 #include "classes.h"
@@ -57,7 +57,7 @@ public:
 	}
 	void before_rows() { 
 		if(columns.size()<=1)
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&method_name,
 				"column count must be more than 1 to create a hash");
 	}
@@ -210,7 +210,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 				if(Value *voffset=(Value *)options->get(*sql_offset_name))
 					offset=(ulong)r.process(*voffset).as_double();
 			} else
-				throw Exception(0, 0,
+				throw Exception("parser.runtime",
 					&method_name,
 					"options must be hash");
 	}

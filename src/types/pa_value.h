@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_value.h,v 1.79 2002/02/08 08:30:18 paf Exp $
+	$Id: pa_value.h,v 1.80 2002/03/27 15:30:38 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -232,7 +232,7 @@ protected:
 	/// throws exception specifying bark-reason and name() type() of problematic value
 	void bark(char *reason, 
 		const char *alt_reason=0, const String *problem_source=0) const {
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			problem_source?problem_source:&name(),
 			problem_source?alt_reason:reason, type());
 	}
@@ -355,7 +355,7 @@ public:
 
 		int actual_count=actual_numbered_params?actual_numbered_params->size():0;
 		if(actual_count<min_numbered_params_count) // not proper count? bark
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&actual_name,
 				"native method of %s (%s) accepts minimum %d parameter(s) (%d present)", 
 					self.name().cstr(),

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.51 2002/02/08 08:30:16 paf Exp $
+	$Id: pa_pool.C,v 1.52 2002/03/27 15:30:36 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -36,7 +36,7 @@ void Pool::set_source_charset(Charset& acharset) {
 }
 Charset& Pool::get_source_charset() { 
 	if(!source_charset)
-		throw Exception(0, 0,
+		throw Exception(0,
 			0,
 			"no source charset defined yet");
 	return *source_charset; 
@@ -47,7 +47,7 @@ void Pool::set_client_charset(Charset& acharset) {
 }
 Charset& Pool::get_client_charset() { 
 	if(!client_charset)
-		throw Exception(0, 0,
+		throw Exception(0,
 			0,
 			"no client charset defined yet");
 	return *client_charset; 

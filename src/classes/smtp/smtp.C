@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: smtp.C,v 1.9 2002/02/08 08:30:11 paf Exp $
+	$Id: smtp.C,v 1.10 2002/03/27 15:30:35 paf Exp $
 
 	Parts of the code here is based upon an early gensock and blat
 */
@@ -56,7 +56,7 @@ ConnectToHost(const char *hostname, const char *service)
 
     CloseConnect();
 
-    throw Exception(0, 0,
+    throw Exception("smtp.connect",
 		&origin_string,
 		"connect to %s:%s failed", 
 			hostname, service);
@@ -222,7 +222,7 @@ SendLine(const char *data, unsigned long length)
     while( length > 0 ) 
     {
         if( SOCKET_ERROR == select(0, NULL, &fds, NULL, &timeout) ) 
-            throw Exception(0, 0,
+            throw Exception("smtp.execute",
 				&origin_string,
 		        "connection::put_data() unexpected error from select: %d",
 					WSAGetLastError());
@@ -247,7 +247,7 @@ SendLine(const char *data, unsigned long length)
 	                break;
 
                 default:
-					throw Exception(0, 0,
+					throw Exception("smtp.execute",
 						&origin_string,
 		                "connection::put_data() unexpected error from send(): %d",
 							ws_error);
@@ -321,7 +321,7 @@ SendSmtpError(const char * message)
 	SendLine("QUIT\r\n", 6);
 	CloseConnect();
 
-	throw Exception(0, 0,
+	throw Exception("smtp.execute",
 		&origin_string,
 		"failed: %s", message);
 }
@@ -413,7 +413,7 @@ open_socket( const char *server, const char *service )
 	ConnectToHost(server, service);
 
     if( gethostname(my_hostname, sizeof(my_hostname)) )
-		throw Exception(0, 0,
+		throw Exception("smtp.connect",
 			&origin_string,
 			"lookup of '%s' failed", my_hostname);
 }
@@ -464,7 +464,7 @@ prepare_message(char *from, char *to, const char *server, const char *service)
 		SendLine(out_data, lstrlen(out_data) );
 
 		if( 250 != get_line() )
-			throw Exception(0, 0,
+			throw Exception("smtp.execute",
 				&origin_string,
 				"The mail server doesn't like the name %s. Have you set the 'To: ' field correctly?", 
 					ptr);

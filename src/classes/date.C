@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.21 2002/03/26 12:19:06 paf Exp $
+	$Id: date.C,v 1.22 2002/03/27 15:30:33 paf Exp $
 */
 
 #include "classes.h"
@@ -60,11 +60,11 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		if(params->size()>5) tmIn.tm_sec=params->as_int(5, "seconds must be int", r);
 		time=mktime(&tmIn);
 		if(time<0)
-			throw Exception(0, 0,
+			throw Exception(0,
 				&method_name,
 				"invalid datetime");
 	} else
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			"invalid params count, must be 1 or >=3");
 	vdate->set_time(time);
@@ -100,7 +100,7 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	else if(what=="month") offset=&omonth;
 	else if(what=="day") offset=&oday;
 	else
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&what,
 			"must be year|month|day");
 	
@@ -118,13 +118,13 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	tmIn.tm_sec=0;
 	time_t t=mktime/*normalizetime*/(&tmIn);
 	if(t<0)
-		throw Exception(0, 0,
+		throw Exception(0,
 		&method_name,
 		"bad resulting time (after roll)");
 
     tm *tmOut=localtime(&t);
 	if(!tmOut)
-		throw Exception(0, 0,
+		throw Exception(0,
 			&method_name,
 			"bad resulting time (seconds from epoch=%ld)", t);
     
@@ -137,12 +137,12 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 		if(
 			tmOut->tm_hour!=tmSaved.tm_hour
 			||tmOut->tm_min!=tmSaved.tm_min)
-			throw Exception(0, 0,
+			throw Exception(0,
 				&method_name,
 				"bad resulting time (timeline hole)");
 
 		if(t<0)
-			throw Exception(0, 0,
+			throw Exception(0,
 				&method_name,
 				"bad resulting time (after reconstruction)");
 		
@@ -161,7 +161,7 @@ static Table *fill_month_days(Request& r,
     tm tmIn={0, 0, 0, 1, month, year-1900};
     time_t t=mktime(&tmIn);
 	if(t<0)
-		throw Exception(0, 0, 
+		throw Exception(0, 
 			&method_name, 
 			"invalid date");
     tm *tmOut=localtime(&t);
@@ -205,7 +205,7 @@ static Table *fill_week_days(Request& r,
     tm tmIn={0, 0, 18, day, month, year-1900};
     time_t t=mktime(&tmIn);
 	if(t<0)
-		throw Exception(0, 0, 
+		throw Exception(0, 
 			&method_name, 
 			"invalid date");
     tm *tmOut=localtime(&t);
@@ -247,7 +247,7 @@ static void _calendar(Request& r, const String& method_name, MethodParams *param
 	else if(what=="eng")
 		rus=false;
 	else
-		throw Exception(0, 0, 
+		throw Exception("parser.runtime", 
 			&what, 
 			"must be rus|eng");
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.18 2002/02/28 14:31:48 paf Exp $
+	$Id: mod_parser3.C,v 1.19 2002/03/27 15:30:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -269,13 +269,13 @@ void call_real_parser_handler__do_SEH(Pool& pool, request_rec *r) {
 		
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
-				throw Exception(0, 0,
+				throw Exception(0,
 					0,
 					"Exception 0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
 			else
-				throw Exception(0, 0, 0, "Exception <no exception record>");
+				throw Exception(0, 0, "Exception <no exception record>");
 			else
-				throw Exception(0, 0, 0, "Exception <no exception information>");
+				throw Exception(0, 0, "Exception <no exception information>");
 	}
 #endif
 }

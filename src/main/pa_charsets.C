@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charsets.C,v 1.7 2002/02/28 15:40:31 paf Exp $
+	$Id: pa_charsets.C,v 1.8 2002/03/27 15:30:36 paf Exp $
 */
 
 #include "pa_charsets.h"
@@ -31,7 +31,7 @@ Charset& Charsets::get_charset(const String& name) {
 	if(Charset *result=(Charset *)get(name))
 		return *result;
 	else
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&name,
 			"unknown charset");
 }

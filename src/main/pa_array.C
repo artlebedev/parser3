@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_array.C,v 1.47 2002/02/08 08:30:15 paf Exp $
+	$Id: pa_array.C,v 1.48 2002/03/27 15:30:36 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -54,7 +54,7 @@ Array& Array::operator += (Item *src) {
 
 Array::Item *Array::get(int index) const {
 	if(!(index>=0 && index<size())) {
-		throw Exception(0, 0, 0, 
+		throw Exception(0, 0,
 			"Array::get(%d) out of range [0..%d]", index, size()-1);
 		return 0; // never
 	}
@@ -74,7 +74,7 @@ Array::Item *Array::get(int index) const {
 
 void Array::put(int index, Item *item) {
 	if(!(index>=0 && index<size())) {
-		throw Exception(0, 0, 0, 
+		throw Exception(0, 0, 
 			"Array::put(%d) out of range [0..%d]", index, size()-1);
 		return; // never
 	}

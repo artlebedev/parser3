@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.124 2002/03/27 13:33:32 paf Exp $
+	$Id: pa_request.h,v 1.125 2002/03/27 15:30:35 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -165,7 +165,7 @@ public:
 	/// returns current SQL connection if any
 	SQL_Connection *connection(const String *source) { 
 		if(!fconnection && source)
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				source,
 				"outside of 'connect' operator");
 
@@ -364,7 +364,7 @@ private:
 	Value& get_as(int index, bool as_junction, const char *msg) { 
 		Value& result=get(index);
 		if((result.get_junction()!=0) ^ as_junction)
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&fmethod_name,
 				"%s (parameter #%d)", msg, 1+index);
 

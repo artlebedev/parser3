@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: form.C,v 1.21 2002/02/08 08:30:09 paf Exp $
+	$Id: form.C,v 1.22 2002/03/27 15:30:33 paf Exp $
 */
 
 #include "classes.h"
@@ -57,12 +57,12 @@ void MForm::configure_admin(Request& r) {
 		size_t max_post_size=value?value:MAX_POST_SIZE_DEFAULT;
 		
 		if(r.info.content_length>max_post_size)
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				0,
 				"posted content_length(%u) > max_post_size(%u)",
 					r.post_size, max_post_size);
 		if(r.info.content_length<0)
-			throw Exception(0, 0,
+			throw Exception(0,
 				0,
 				"posted content_length(%u) < 0",
 					r.post_size);
@@ -73,7 +73,7 @@ void MForm::configure_admin(Request& r) {
 			r.post_size=SAPI::read_post(pool, r.post_data, r.info.content_length);
 		}
 		if(r.post_size!=r.info.content_length)
-			throw Exception(0, 0, 
+			throw Exception(0, 
 				0, 
 				"post_size(%u)!=content_length(%u)", 
 					r.post_size, r.info.content_length);

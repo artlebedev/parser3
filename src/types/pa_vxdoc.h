@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxdoc.h,v 1.19 2002/02/08 08:30:21 paf Exp $
+	$Id: pa_vxdoc.h,v 1.20 2002/03/27 15:30:39 paf Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -92,7 +92,7 @@ public:
 	}
 	GdomeDocument *get_document(const String *source) { 
 		if(!fdocument)
-			throw Exception(0, 0,
+			throw Exception(0,
 				source,
 				"can not be applied to uninitialized instance");
 		return fdocument; 

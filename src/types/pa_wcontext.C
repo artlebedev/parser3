@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.C,v 1.16 2002/03/27 13:42:52 paf Exp $
+	$Id: pa_wcontext.C,v 1.17 2002/03/27 15:30:39 paf Exp $
 */
 
 #include "pa_wcontext.h"
@@ -20,12 +20,12 @@ void WContext::write(Value& avalue) {
 	if(fvalue) { // already have value?
 		// must not construct twice
 		if(avalue.name()==UNNAMED_NAME)
-			throw Exception(0,0,  
+			throw Exception("parser.runtime",
 				&fvalue->name(),
 				"(%s) may not be overwritten with '%s' (%s), use constructor instead",
 				fvalue->type(), avalue.name().cstr(), avalue.type());
 		else
-			throw Exception(0,0,
+			throw Exception("parser.runtime",
 				&avalue.name(),
 				"(%s) illegal assignment attempt to '%s' (%s), use constructor instead",
 				avalue.type(), fvalue->name().cstr(), fvalue->type());

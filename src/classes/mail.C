@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.59 2002/03/27 13:12:29 paf Exp $
+	$Id: mail.C,v 1.60 2002/03/27 15:30:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -137,7 +137,7 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 	if(Value *value=static_cast<Value *>(attach_hash.get(*value_name)))
 		vfile=value->as_vfile(String::UL_AS_IS); // bad with html attaches. todo: solve
 	else
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&origin_string,
 			"has no $value");
 
@@ -160,7 +160,7 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 	if(!type/*default = uue*/ || *type=="uue") {
 		uuencode(result, file_name_cstr, *vfile);
 	} else // for now
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			type,
 			"unknown attachment encode format");
 	
@@ -216,7 +216,7 @@ static int get_part_name_weight(const Hash::Key& part_name) {
 		cstr+=6;
 		offset=ATTACHMENT_WEIGHT;
 	} else
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&part_name,
 			"is neither text# nor attach#");
 
@@ -298,7 +298,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 						result << letter_hash_to_string(r, method_name, *part_hash, 
 							level+1, 0, 0);
 				else
-					throw Exception(0, 0,
+					throw Exception("parser.runtime",
 						seq[i].name,
 						"part is not hash");
 			}
@@ -322,7 +322,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			result.APPEND_CLEAN((const char*)mail_ptr, mail_size, 0, 0);
 		}
 	} else 
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			"has no $body");
 
@@ -339,11 +339,11 @@ static void sendmail(Request& r, const String& method_name,
 
 #ifdef _MSC_VER
 	if(!from)
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			"has no 'from' header specified");
 	if(!to)
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			"has no 'to' header specified");
 
@@ -360,7 +360,7 @@ static void sendmail(Request& r, const String& method_name,
 
 		smtp.Send(server, port, letter_cstr, from->cstr(), to->cstr());
 	} else
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			"$"MAIN_CLASS_NAME":"MAIL_NAME".SMTP not defined");
 #else
@@ -377,7 +377,7 @@ static void sendmail(Request& r, const String& method_name,
 		if(Value *sendmail_value=static_cast<Value *>(mail_conf->get(String(pool, sendmailkey_cstr))))
 			sendmail_command=&sendmail_value->as_string();
 		else
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&method_name,
 				"$"MAIN_CLASS_NAME":"MAIL_NAME".%s not defined", 
 				sendmailkey_cstr);
@@ -403,7 +403,7 @@ static void sendmail(Request& r, const String& method_name,
 	}
 
 	if(!file_executable(*file_spec))
-		throw Exception(0, 0,
+		throw Exception(0,
 			file_spec, 
 			"is not executable."
 #ifdef PA_FORCED_SENDMAIL
@@ -428,7 +428,7 @@ static void sendmail(Request& r, const String& method_name,
 		&argv,
 		in, out, err);
 	if(exit_status || err.size())
-		throw Exception(0, 0,
+		throw Exception(0,
 			&method_name,
 			"'%s' reported problem: %s (%d)",
 				file_spec->cstr(),
@@ -446,7 +446,7 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 	Value& vhash=params->as_no_junction(0, "message must not be code");
 	Hash *hash=vhash.get_hash(&method_name);
 	if(!hash)
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			"message must be hash");
 
@@ -478,7 +478,7 @@ void MMail::configure_user(Request& r) {
 		if(Hash *mail_conf=mail_element->get_hash(0))
 			r.classes_conf.put(name(), mail_conf);
 		else
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				0,
 				"$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
 }

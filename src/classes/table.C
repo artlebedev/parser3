@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.145 2002/03/15 10:08:13 paf Exp $
+	$Id: table.C,v 1.146 2002/03/27 15:30:34 paf Exp $
 */
 
 #include "classes.h"
@@ -140,7 +140,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	static_cast<VTable *>(r.self)->set_table(table);
 }
 
-/// @todo "z\nz" "zzz""zz"
+/// @todo "x\nx" "xxx""xx"
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	Value& vfile_name=params->as_no_junction(params->size()-1, 
@@ -178,7 +178,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		else if(mode=="nameless")
 			/*ok, already skipped names output*/;
 		else
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&mode,
 				"unknown mode, must be 'append'");
 
@@ -227,7 +227,7 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 		    else if(whence=="set")
 				absolute=true;
 		    else
-				throw Exception(0, 0,
+				throw Exception("parser.runtime",
 					&whence,
 					"is invalid whence, valid are 'cur' or 'set'");
 		}		    
@@ -315,7 +315,7 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 						value_fields+=self_table.column_name2index(value_field_name, true);
 					}
 				} else
-					throw Exception(0, 0,
+					throw Exception("parser.runtime",
 						&method_name,
 						"value field(s) must be string or self_table"
 					);
@@ -404,7 +404,7 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 
 static bool _locate_expression(Request& r, const String& method_name, MethodParams *params) {
 	if(params->size()>1)
-		throw Exception(0, 0, 
+		throw Exception("parser.runtime", 
 			&method_name,
 			"locate by expression has only one parameter - expression");
 
@@ -425,7 +425,7 @@ static bool _locate_expression(Request& r, const String& method_name, MethodPara
 }
 static bool _locate_name_value(Request& r, const String& method_name, MethodParams *params) {
 	if(params->size()>2)
-		throw Exception(0, 0, 
+		throw Exception("parser.runtime", 
 			&method_name,
 			"locate by name and value has only two parameters - name and value");
 
@@ -486,14 +486,14 @@ static void _join(Request& r, const String& method_name, MethodParams *params) {
 
 	Table *maybe_src=params->as_no_junction(0, "table ref must not be code").get_table();
 	if(!maybe_src)
-		throw Exception(0, 0, 
+		throw Exception("parser.runtime", 
 			&method_name, 
 			"source is not a table");
 
 	Table& src=*maybe_src;
 	Table& dest=static_cast<VTable *>(r.self)->table();
 	if(&src == &dest)
-		throw Exception(0, 0, 
+		throw Exception("parser.runtime", 
 			&method_name, 
 			"source and destination are same table");
 
@@ -578,7 +578,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 				if(Value *voffset=(Value *)options->get(*sql_offset_name))
 					offset=(ulong)r.process(*voffset).as_double();
 			} else
-				throw Exception(0, 0,
+				throw Exception("parser.runtime",
 					&method_name,
 					"options must be hash");
 	}
@@ -611,7 +611,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 #endif	    			
 	} catch(const Exception& e) { // query problem
 		// more specific source [were url]
-		throw Exception(e.type(), e.code(), 
+		throw Exception("sql.execute", 
 			&statement_string, 
 			"%s", e.comment());
 	}

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.32 2002/03/18 15:29:45 paf Exp $
+	$Id: pa_exception.h,v 1.33 2002/03/27 15:30:35 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -22,7 +22,7 @@ public:
 
 	Exception();
 	Exception(
-		const String *atype, const String *acode,
+		const char *atype,
 		const String *aproblem_source, 
 		const char *comment_fmt, ...);
 	Exception(const Exception& src);
@@ -31,15 +31,12 @@ public:
 
 #ifdef XML
 	Exception(
-		const String *atype, const String *acode,
 		const String *aproblem_source, 
 		GdomeException& exc);
 #endif
 
 	/// extracts exception type
-	const String *type() const { return ftype; }
-	/// extracts exception code
-	const String *code() const { return fcode; }
+	const char *type() const { return ftype; }
 	/// extracts exception problem_source
 	const String *problem_source() const { return fproblem_source; }
 	/// extracts exception comment
@@ -47,9 +44,9 @@ public:
 
 private:
 
-	const String *ftype, *fcode, *fproblem_source;
-	bool owns_comment;
-	char *fcomment;
+	const char *ftype;
+	const String *fproblem_source;
+	bool owns_comment; char *fcomment;
 
 };
 

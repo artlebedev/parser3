@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: void.C,v 1.16 2002/02/08 08:30:10 paf Exp $
+	$Id: void.C,v 1.17 2002/03/27 15:30:34 paf Exp $
 */
 
 #include "classes.h"
@@ -52,7 +52,7 @@ public:
 	void add_column(void *ptr, size_t size) { /* ignore */ }
 	void before_rows() {
 		// there are some result rows, which is wrong
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&statement_string,
 			"must return nothing");
 	}
@@ -80,7 +80,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			handlers);
 	} catch(const Exception& e) {
 		// more specific source [were url]
-		throw Exception(e.type(), e.code(),
+		throw Exception("sql.execute", 
 			&statement_string, 
 			"%s", e.comment());
 	}

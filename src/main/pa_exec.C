@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.33 2002/03/26 17:01:49 paf Exp $
+	$Id: pa_exec.C,v 1.34 2002/03/27 15:30:36 paf Exp $
 
 
 	@todo setrlimit
@@ -312,7 +312,7 @@ int pa_exec(
 
 #ifdef NO_PA_EXECS
 	if(!forced_allow)
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&file_spec,
 			"parser execs are disabled [recompile parser without --disable-execs configure option]");
 #endif
@@ -360,7 +360,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		if(error_size>3) // ".\r\n"
 			szErrorDesc[error_size-3]=0;
             
-		throw Exception(0, 0,
+		throw Exception(0,
 			&file_spec,
 			"(real command line=\"%s\") exec failed - %s (%ld)",
 				cmd,
@@ -376,13 +376,13 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	if(!forced_allow) {
 		struct stat finfo;
 		if(stat(file_spec_cstr, &finfo)!=0)
-			throw Exception(0, 0, 
+			throw Exception("file.missing", 
 					&file_spec, 
 					"stat failed: %s (%d), actual filename '%s'", 
 						strerror(errno), errno, file_spec_cstr);
 
 		if(finfo.st_gid/*foreign?*/!=getegid())
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&file_spec,
 				"parser executing files of foreign group is	disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
 					file_spec_cstr);
@@ -394,7 +394,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		const int argv_size=argv->size();
 		const int argv_max=sizeof(argv_cstrs)/sizeof(argv_cstrs[0])-1-1;
 		if(argv_size>argv_max)
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				&file_spec,
 				"too many arguments (%d > max %d)", argv_size, argv_max);
 		for(int i=0; i<argv_size; i++)
@@ -426,7 +426,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 
 		return get_exit_status(pid); // negative may mean "-errno[execl()]"
 	} else 
-		throw Exception(0, 0,
+		throw Exception(0,
 			&file_spec,
 			"pipe error");
 #endif

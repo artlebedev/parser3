@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vmethod_frame.h,v 1.22 2002/02/08 08:30:20 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.23 2002/03/27 15:30:38 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -110,7 +110,7 @@ public: // usage
 			method.params_names?method.params_names->size():
 			0;
 		if(store_param_index==max_params)
-			throw Exception(0,0,
+			throw Exception("parser.runtime",
 				&actual_method_name,
 				"method of %s (%s) accepts maximum %d parameter(s)", 
 					junction.self.name().cstr(),

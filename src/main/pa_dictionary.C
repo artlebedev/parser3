@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_dictionary.C,v 1.13 2002/02/20 10:40:08 paf Exp $
+	$Id: pa_dictionary.C,v 1.14 2002/03/27 15:30:36 paf Exp $
 */
 
 #include "pa_dictionary.h"
@@ -19,7 +19,7 @@ void Dictionary::add_first(Array::Item *value, void *info) {
 	// empty 'a' check
 	if(a.is_empty()) {
 		Pool& pool=self.pool();
-		throw Exception(0, 0, 
+		throw Exception("parser.runtime",
 			&a, 
 			"dictionary table 'from' column elements must not be empty");
 	}

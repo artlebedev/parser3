@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.148 2002/03/04 10:03:35 paf Exp $
+	$Id: pa_string.C,v 1.149 2002/03/27 15:30:37 paf Exp $
 */
 
 #include "pcre.h"
@@ -81,7 +81,7 @@ void String::expand() {
 
 String& String::real_append(STRING_APPEND_PARAMS) {
 	if(!last_chunk) // growth stopped [we're appended as string to somebody]
-		throw Exception(0, 0,
+		throw Exception(0,
 			this,
 			"string growth stopped (append cstr)");
 
@@ -131,7 +131,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 
 char String::first_char() const {
 	if(is_empty())
-		throw Exception(0, 0,
+		throw Exception(0,
 			this,
 			"getting first char of empty string");
 
@@ -473,7 +473,7 @@ bool String::match(
 				   bool *was_global) const { 
 
 	if(regexp.is_empty())
-		throw Exception(0, 0,
+		throw Exception(0,
 			aorigin,
 			"regexp is empty");
 	const char *pattern=regexp.cstr();
@@ -487,14 +487,14 @@ bool String::match(
 		pool().get_source_charset().pcre_tables);
 
 	if(!code)
-		throw Exception(0, 0,
+		throw Exception(0,
 			&regexp.mid(erroffset, regexp.size()),
 			"regular expression syntax error - %s", errptr);
 	
 	int info_substrings=pcre_info(code, 0, 0);
 	if(info_substrings<0) {
 		pcre_free(code);
-		throw Exception(0, 0,
+		throw Exception(0,
 			aorigin,
 			"pcre_info error (%d)", 
 				info_substrings);
@@ -534,7 +534,7 @@ bool String::match(
 
 		if(exec_substrings<0) {
 			pcre_free(code);
-			throw Exception(0, 0,
+			throw Exception(0,
 				aorigin,
 				"regular expression execute error (%d)", 
 					exec_substrings);
@@ -583,7 +583,7 @@ String& String::change_case(Pool& pool,
 		b=0;
 		break;
 	default:
-		throw Exception(0, 0, 
+		throw Exception(0, 
 			this, 
 			"unknown change case kind #%d", 
 				static_cast<int>(kind)); // never
@@ -733,7 +733,7 @@ double String::as_double() const {
 		result=(double)strtod(cstr, &error_pos);
 
 	if(*error_pos/*not EOS*/)
-		throw Exception(0, 0,
+		throw Exception("number.format",
 			this,
 			"invalid number (double)");
 
@@ -761,7 +761,7 @@ int String::as_int() const {
 		result=(int)strtol(cstr, &error_pos, 0);
 
 	if(*error_pos/*not EOS*/)
-		throw Exception(0, 0,
+		throw Exception("number.format",
 			this,
 			"invalid number (int)");
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: math.C,v 1.15 2002/02/19 15:05:27 paf Exp $
+	$Id: math.C,v 1.16 2002/03/27 15:30:34 paf Exp $
 */
 
 #include "pa_common.h"
@@ -40,7 +40,7 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
 	Value& range=params->as_junction(0, "range must be expression");
     double top=r.process(range).as_double();
     if(top<=1)
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&method_name,
 			"top must be above 1 (%g)", top);
 	

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vhash.h,v 1.29 2002/02/08 08:30:19 paf Exp $
+	$Id: pa_vhash.h,v 1.30 2002/03/27 15:30:38 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -90,7 +90,7 @@ public: // usage
 
 	void check_lock(const String *source) {
 		if(locked)
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				source,
 				"can not modify hash (locked)");
 	}

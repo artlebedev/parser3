@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.C,v 1.61 2002/02/08 08:30:16 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.62 2002/03/27 15:30:37 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -56,7 +56,7 @@ public:
 	*/
 	virtual void _throw(const char *comment) { 
 		// hiding passwords and addresses from accidental show [imagine user forgot @exception]
-		e=Exception(0, 0, 
+		e=Exception("sql.connect", 
 			&url_without_login(pool(), furl),
 			comment); 
 
@@ -107,7 +107,7 @@ SQL_Connection_ptr SQL_Driver_manager::get_connection(const String& request_url,
 
 	// we have table for locating protocol's library
 	if(!protocol2driver_and_client)
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			&request_url,
 			"$"MAIN_SQL_NAME":"MAIN_SQL_DRIVERS_NAME" table must be defined");
 
@@ -130,9 +130,9 @@ SQL_Connection_ptr SQL_Driver_manager::get_connection(const String& request_url,
 	else { // no cached connection or it were unpingabe: connect/reconnect
 		int pos=request_url.pos("://", 3);
 		if(pos<0)
-			throw Exception(0, 0,
+			throw Exception("parser.runtime",
 				request_url.size()?&request_url:&request_origin,
-				"connection string must start with protocol://"); // NOTE: not THROW, but PTHROW
+				"connection string must start with protocol://");
 
 		// make global_url C-string on global pool
 		request_url_cstr=request_url.cstr();
@@ -160,33 +160,33 @@ SQL_Connection_ptr SQL_Driver_manager::get_connection(const String& request_url,
 			const String *dlopen_file_spec=0;
 			if(protocol2driver_and_client->locate(0, global_protocol)) {
 				if(!(library=protocol2driver_and_client->item(1)) || library->size()==0)
-					throw Exception(0, 0,
+					throw Exception("parser.runtime",
 						protocol2driver_and_client->origin_string(),
 						"driver library column for protocol '%s' is empty", 
 							request_protocol_cstr);
 				dlopen_file_spec=protocol2driver_and_client->item(2);
 			} else
-				throw Exception(0, 0,
+				throw Exception("parser.runtime",
 					&request_url,
 					"undefined protocol '%s'", 
 						request_protocol_cstr);
 
 			if(lt_dlinit())
-				throw Exception(0, 0,
+				throw Exception(0,
 					library,
 					"prepare to dynamic loading failed, %s", lt_dlerror());
 
 			const char *filename=library->cstr(String::UL_FILE_SPEC);
 			lt_dlhandle handle=lt_dlopen(filename);
 			if (!handle)
-				throw Exception(0, 0,
+				throw Exception(0,
 					library,
 					"can not open the module, %s", lt_dlerror());
 
 			SQL_Driver_create_func create=(SQL_Driver_create_func)lt_dlsym(handle, 
 				SQL_DRIVER_CREATE_NAME);
 			if(!create)
-				throw Exception(0, 0,
+				throw Exception(0,
 					library,
 					"function '"SQL_DRIVER_CREATE_NAME"' was not found");
 
@@ -196,7 +196,7 @@ SQL_Connection_ptr SQL_Driver_manager::get_connection(const String& request_url,
 			// validate driver api version
 			int driver_api_version=driver->api_version();
 			if(driver_api_version!=SQL_DRIVER_API_VERSION)
-				throw Exception(0, 0,
+				throw Exception(0,
 					library,
 					"driver implements API version 0x%04X not equal to 0x%04X",
 						driver_api_version, SQL_DRIVER_API_VERSION);
@@ -207,7 +207,7 @@ SQL_Connection_ptr SQL_Driver_manager::get_connection(const String& request_url,
 				dlopen_file_spec->cstr(String::UL_AS_IS):0;
 			if(const char *error=driver->initialize(
 				dlopen_file_spec_cstr))
-				throw Exception(0, 0,
+				throw Exception(0,
 					library,
 					"driver failed to initialize client library '%s', %s",
 						dlopen_file_spec_cstr?dlopen_file_spec_cstr:"unspecifed", 

@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.66 2002/03/05 09:31:08 paf Exp $
+	$Id: parser3isapi.C,v 1.67 2002/03/27 15:30:38 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -283,7 +283,7 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 		strncpy(buf, filespec_to_process, len); buf[len]=0;
 		request_info.document_root=buf;
 	} else
-		throw Exception(0, 0,
+		throw Exception("parser.runtime",
 			0,
 			"ISAPI: no PATH_INFO defined (in reinventing DOCUMENT_ROOT)");
 
@@ -361,13 +361,13 @@ void call_real_parser_handler__do_SEH(Pool& pool,
 		
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
-				throw Exception(0, 0,
+				throw Exception(0,
 				0,
 				"Exception 0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
 			else
-				throw Exception(0, 0, 0, "Exception <no exception record>");
+				throw Exception(0, 0, "Exception <no exception record>");
 			else
-				throw Exception(0, 0, 0, "Exception <no exception information>");
+				throw Exception(0, 0, "Exception <no exception information>");
 	}
 #endif
 }
