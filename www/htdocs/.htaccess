@@ -28,3 +28,7 @@ allow from 213.152.135
 #    AuthName "parser3"
 #    AuthUserFile Y:\parser3project\parser3\www\htdocs\.htpasswd
 #    Require valid-user
+
+RewriteEngine On
+RewriteCond %{REQUEST_URI} ^/banner$
+RewriteRule .* /banner.html?key=${variant:key}

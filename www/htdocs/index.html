@@ -302,7 +302,17 @@ OK
 #^quickregexatend[]
 #^docsamplehttpfileload[]
 #^datecreatecolon[]
-^exifdocsample[]
+#^exifdocsample[]
+#^rusagetv[]
+^varmethnameconflict[]
+
+@varmethnameconflict[]
+$varmethnameconflict[1]
+^varmethnameconflict.format[%03d]
+
+@rusagetv[]
+$s[$status:rusage]
+^s.tv_sec.format[%.0f].^s.tv_usec.format[%06.0f]
 
 @exifdocsample[]
 $image[^image::measure[jpg/DSC00003.JPG]]

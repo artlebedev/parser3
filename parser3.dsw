@@ -100,13 +100,13 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libltdl"=.\src\lib\libltdl\libltdl.dsp - Package Owner=<4>
+Project: "libltdl"=.\src\lib\ltdl\libltdl.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
     libltdl
-    .\src\lib\libltdl
+    .\src\lib\ltdl
     end source code control
 }}}
 
