@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.9 2001/10/02 17:12:53 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.10 2001/10/09 14:25:30 parser Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -16,7 +16,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-#include <XalanTransformer/XalanTransformer.hpp>
+#include "XalanTransformer2.hpp"
 
 // defines
 
@@ -30,7 +30,7 @@ class Stylesheet_connection : public Pooled {
 public:
 
 	Stylesheet_connection(Pool& pool, const String& afile_spec) : Pooled(pool),
-		ftransformer(new XalanTransformer),
+		ftransformer(new XalanTransformer2),
 
 		ffile_spec(afile_spec),
 		time_used(0),
@@ -79,11 +79,24 @@ private:
 	void load(time_t new_disk_time) {
 		Pool& pool=*fservices_pool;
 
-		int error=ftransformer->compileStylesheet(ffile_spec.cstr(String::UL_FILE_SPEC), fstylesheet);
-		if(error)
-			PTHROW(0, 0,
-				&ffile_spec,
-				ftransformer->getLastError());
+		try{
+			ftransformer->compileStylesheet2(ffile_spec.cstr(String::UL_FILE_SPEC), fstylesheet);
+		}
+		catch (XSLException& e)	{
+			pool._throw(&ffile_spec, e);
+		}
+		catch (SAXParseException& e)	{
+			pool._throw(&ffile_spec, e);
+		}
+		catch (SAXException& e)	{
+			pool._throw(&ffile_spec, e);
+		}
+		catch (XMLException& e) {
+			pool._throw(&ffile_spec, e);
+		}
+		catch(const XalanDOMException&	e)	{
+			pool._throw(&ffile_spec, e);
+		}
 
 		prev_disk_time=new_disk_time;
 	}
@@ -112,7 +125,7 @@ private:
 
 private:
 
-	XalanTransformer *ftransformer;
+	XalanTransformer2 *ftransformer;
 
 	Pool *fservices_pool;
 };

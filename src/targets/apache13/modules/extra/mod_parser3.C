@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.47 2001/10/08 09:04:08 parser Exp $
+	$Id: mod_parser3.C,v 1.48 2001/10/09 14:25:30 parser Exp $
 */
 
 #include "httpd.h"
@@ -51,6 +51,9 @@ const char **RCSIds[]={
 	classes_RCSIds,
 	types_RCSIds,
 	ApacheModuleParser3_RCSIds,
+#ifdef XML
+	xalan_patched_RCSIds,
+#endif
 	0
 };
 

@@ -1,10 +1,10 @@
 /** @file
-	Parser: @b DOM parser class decl.
+	Parser: @b xdoc parser class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxdoc.h,v 1.4 2001/10/09 08:13:04 parser Exp $
+	$Id: pa_vxdoc.h,v 1.5 2001/10/09 14:25:30 parser Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -17,7 +17,7 @@
 
 #include <sax/HandlerBase.hpp>
 #include <XercesParserLiaison/XercesParserLiaison.hpp>
-#include <XalanTransformer/XalanTransformer.hpp>
+#include "XalanTransformer2.hpp"
 #include <XalanTransformer/XalanParsedSource.hpp>
 #include <XalanSourceTree/XalanSourceTreeParserLiaison.hpp>
 
@@ -25,7 +25,7 @@ extern Methoded *Xdoc_class;
 
 void VXdoc_cleanup(void *);
 
-/// value of type 'dom'. implemented with XalanDocument & co
+/// value of type 'xdoc'. implemented with XalanDocument & co
 class VXdoc : public VXnode {
 	friend void VXdoc_cleanup(void *);
 public: // Value
@@ -64,7 +64,7 @@ public: // usage
 		fparsed_source(0),
 		fdocument(adocument) {
 		register_cleanup(VXdoc_cleanup, this);
-		ftransformer=new XalanTransformer;
+		ftransformer=new XalanTransformer2;
 		fparser_liaison=new XercesParserLiaison;
 		ferror_handler=new HandlerBase;
 		fparser_liaison->setErrorHandler(ferror_handler); // disable stderr output
@@ -78,7 +78,7 @@ private:
 	}
 public:
 
-	XalanTransformer& transformer() {return *ftransformer; }
+	XalanTransformer2& transformer() {return *ftransformer; }
 	XercesParserLiaison& parser_liaison() { return *fparser_liaison; }
 
 	void set_parsed_source(const XalanParsedSource& aparsed_source) { 
@@ -106,7 +106,7 @@ public:
 
 private:
 
-	XalanTransformer *ftransformer;
+	XalanTransformer2 *ftransformer;
 	XercesParserLiaison	*fparser_liaison;
 	ErrorHandler *ferror_handler;
 

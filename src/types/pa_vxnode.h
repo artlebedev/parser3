@@ -1,10 +1,10 @@
 /** @file
-	Parser: @b DOM parser class decl.
+	Parser: @b xnode parser class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxnode.h,v 1.2 2001/10/09 08:13:04 parser Exp $
+	$Id: pa_vxnode.h,v 1.3 2001/10/09 14:25:30 parser Exp $
 */
 
 #ifndef PA_VXNODE_H
@@ -21,7 +21,7 @@ extern Methoded *Xnode_class;
 
 //void VXnode_cleanup(void *);
 
-/// value of type 'dnode'. implemented with XalanNode
+/// value of type 'xnode'. implemented with XalanNode
 class VXnode : public VStateless_object {
 	//friend void VXnode_cleanup(void *);
 public: // Value

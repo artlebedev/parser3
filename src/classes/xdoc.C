@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.12 2001/10/08 08:35:56 parser Exp $
+	$Id: xdoc.C,v 1.13 2001/10/09 14:25:30 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -20,7 +20,7 @@
 #include <Include/PlatformDefinitions.hpp>
 #include <util/PlatformUtils.hpp>
 #include <util/TransENameMap.hpp>
-#include <XalanTransformer/XalanTransformer.hpp>
+#include "XalanTransformer2.hpp"
 #include <XalanTransformer/XalanParsedSource.hpp>
 #	include <XalanTransformer/XalanDefaultParsedSource.hpp>
 #	include <XalanSourceTree/XalanSourceTreeDocument.hpp>
@@ -389,7 +389,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 
 static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning, 
 						   void *info) {
-	XalanTransformer& transformer=*static_cast<XalanTransformer *>(info);
+	XalanTransformer2& transformer=*static_cast<XalanTransformer2 *>(info);
 	const char *attribute_cstr=aattribute.cstr();
 	const char *meaning_cstr=static_cast<Value *>(ameaning)->as_string().cstr();
 
@@ -424,18 +424,34 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 
 	// target
 	XalanDocument* target=vdoc.parser_liaison().createDocument();
-	XSLTResultTarget domResultTarget(target);
 
 	// transform
-	int error=vdoc.transformer().transform(
-		parsed_source, 
-		&connection.stylesheet(true/*nocache*/), 
-		domResultTarget);
-	connection.close();
-	if(error)
-		PTHROW(0, 0,
-			&stylesheet_file_name,
-			vdoc.transformer().getLastError());
+	try {
+		vdoc.transformer().transform2(
+			parsed_source, 
+			&connection.stylesheet(true/*nocache*/), 
+			target);
+	}
+	catch (XSLException& e)	{
+		connection.close();
+		r._throw(&stylesheet_file_name, e);
+	}
+	catch (SAXParseException& e)	{
+		connection.close();
+		r._throw(&stylesheet_file_name, e);
+	}
+	catch (SAXException& e)	{
+		connection.close();
+		r._throw(&stylesheet_file_name, e);
+	}
+	catch (XMLException& e) {
+		connection.close();
+		r._throw(&stylesheet_file_name, e);
+	}
+	catch(const XalanDOMException&	e)	{
+		connection.close();
+		r._throw(&stylesheet_file_name, e);
+	}
 
 	// write out result
 	VXdoc& result=*new(pool) VXdoc(pool);

@@ -1,3 +1,16 @@
+/** @file
+	Parser: patched transform method to 
+		1. return exceptions 
+		2. pass string params
+	impl.
+
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: XalanTransformer2.hpp,v 1.2 2001/10/09 14:25:15 parser Exp $
+
+	based on:
+*/
 /*
  * The Apache Software License, Version 1.1
  *
@@ -90,22 +103,22 @@ class XalanTransformerOutputStream;
 /**
  * This is a simple C++ interface for some common usage patterns. It's 
  * the user's responsibility to call initialize and terminate for Xerces 
- * and Xalan before creating and after deleting any XalanTransformer  
+ * and Xalan before creating and after deleting any XalanTransformer2  
  * instances.
 */
-class XALAN_TRANSFORMER_EXPORT XalanTransformer
+class /*XALAN_TRANSFORMER_EXPORT*/ XalanTransformer2
 {
 public:
 	
-	XalanTransformer();
+	XalanTransformer2();
 
 	virtual
-	~XalanTransformer();
+	~XalanTransformer2();
 
 	/**
 	 * Initialize Xalan.
 	 * Should be called only once per process before creating any
-	 * instances of XalanTransformer. See class XSLTInit.
+	 * instances of XalanTransformer2. See class XSLTInit.
 	 */
 	static void
 	initialize();
@@ -113,7 +126,7 @@ public:
 	/**
 	 * Terminate Xalan.
 	 * Should be called only once per process after deleting all
-	 * instances of XalanTransformer. See class XSLTInit.
+	 * instances of XalanTransformer2. See class XSLTInit.
 	 */
 	static void
 	terminate();
@@ -144,6 +157,22 @@ public:
 	 */
 	int
 	transform(
+			const XalanParsedSource&		theParsedXML, 
+			const XalanCompiledStylesheet*	theCompiledStylesheet,
+			const XSLTResultTarget& 		theResultTarget);
+
+// PAF@design.ru
+	/**
+	 * Transform will apply the compiled stylesheet to the parsed xml source
+	 * and write the transformation output to the target. 
+	 *
+	 * @param theParsedXML			the parsed input source
+	 * @param theCompiledStylesheet pointer to a compiled stylesheet
+	 * @param theResultTarget		output source 
+	 * @throws exceptions: XSLException, SAXException, XMLException, XalanDOMException
+	 */
+	void
+	transform2(
 			const XalanParsedSource&		theParsedXML, 
 			const XalanCompiledStylesheet*	theCompiledStylesheet,
 			const XSLTResultTarget& 		theResultTarget);
@@ -275,9 +304,9 @@ public:
 
 	/**
 	 * Creates a compeled stylesheet.  The input source can be 
-	 * a file name, a stream or a root node.   The XalanTransformer
+	 * a file name, a stream or a root node.   The XalanTransformer2
 	 * instance owns the XalanCompiledStylesheet instance and will
-	 * delete it when the XalanTransformer instance goes out of scope,
+	 * delete it when the XalanTransformer2 instance goes out of scope,
 	 * or you explicitly call destroyStylesheet().	You must not delete
 	 * the instance yourself.
 	 *
@@ -291,6 +320,23 @@ public:
 			const XalanCompiledStylesheet*& 	theCompiledStylesheet);
 
 	/**
+	 * Creates a compeled stylesheet.  The input source can be 
+	 * a file name, a stream or a root node.   The XalanTransformer2
+	 * instance owns the XalanCompiledStylesheet instance and will
+	 * delete it when the XalanTransformer2 instance goes out of scope,
+	 * or you explicitly call destroyStylesheet().	You must not delete
+	 * the instance yourself.
+	 *
+	 * @param theStylesheetSource input source
+	 * @param theCompiledStylesheet a reference to a pointer to a XalanCompileStylesheet.
+	 * @throws exceptions: XSLException, SAXException, XMLException, XalanDOMException
+	 */
+	void
+	compileStylesheet2(
+			const XSLTInputSource&				theStylesheetSource,
+			const XalanCompiledStylesheet*& 	theCompiledStylesheet); // PAF@design.ru
+
+	/**
 	 * Destroy a XalanCompiledStylesheet instance created by a previous
 	 * call to compileStylesheet().
 	 *
@@ -302,9 +348,9 @@ public:
 
 	/**
 	 * Parse a source XML document.  The input source can be 
-	 * a file name, a stream or a root node.  The XalanTransformer
+	 * a file name, a stream or a root node.  The XalanTransformer2
 	 * instance owns the XalanParsedSource instance and will
-	 * delete it when the XalanTransformer instance goes out of scope,
+	 * delete it when the XalanTransformer2 instance goes out of scope,
 	 * or you explicitly call destroyParsedSource().  You must not
 	 * delete the instance yourself.
 	 *
@@ -330,9 +376,9 @@ public:
 
 	/**
 	 * Create a document builder.  Using the document builder, you
-	 * can construct a document using SAX2 interfaces.	The XalanTransformer
+	 * can construct a document using SAX2 interfaces.	The XalanTransformer2
 	 * instance owns the document builder and will delete it when the
-	 * XalanTransformer instance goes out of scope, or you explicitly call
+	 * XalanTransformer2 instance goes out of scope, or you explicitly call
 	 * deleteDocumentBuilder().  You must not delete the instance yourself.
 	 *
 	 * @return	a pointer to a XalanDocumentBuilder instance or 0 for failure.
@@ -441,7 +487,7 @@ public:
 	public:
 
 		EnsureDestroyParsedSource(
-				XalanTransformer&			theTransformer,
+				XalanTransformer2&			theTransformer,
 				const XalanParsedSource*	theParsedSource) :
 			m_transformer(theTransformer),
 			m_parsedSource(theParsedSource)
@@ -455,7 +501,7 @@ public:
 
 	private:
 
-		XalanTransformer&				m_transformer;
+		XalanTransformer2&				m_transformer;
 
 		const XalanParsedSource* const	m_parsedSource;
 	};
@@ -463,7 +509,7 @@ public:
 	struct EnsureDestroyCompiledStylesheet
 	{
 		EnsureDestroyCompiledStylesheet(
-				XalanTransformer&				theTransformer,
+				XalanTransformer2&				theTransformer,
 				const XalanCompiledStylesheet*	theCompiledStylesheet) :
 			m_transformer(theTransformer),
 			m_compiledStylesheet(theCompiledStylesheet)
@@ -477,7 +523,7 @@ public:
 
 	private:
 
-		XalanTransformer&						m_transformer;
+		XalanTransformer2&						m_transformer;
 
 		const XalanCompiledStylesheet* const	m_compiledStylesheet;
 	};
@@ -485,7 +531,7 @@ public:
 	struct EnsureDestroyDocumentBuilder
 	{
 		EnsureDestroyDocumentBuilder(
-				XalanTransformer&		theTransformer,
+				XalanTransformer2&		theTransformer,
 				XalanDocumentBuilder*	theDocumentBuilder) :
 			m_transformer(theTransformer),
 			m_documentBuilder(theDocumentBuilder)
@@ -499,7 +545,7 @@ public:
 
 	private:
 
-		XalanTransformer&			m_transformer;
+		XalanTransformer2&			m_transformer;
 
 		XalanDocumentBuilder* const m_documentBuilder;
 	};
@@ -515,7 +561,7 @@ private:
 	{
 	public:
 
-		EnsureReset(XalanTransformer&	theTransformer) :
+		EnsureReset(XalanTransformer2&	theTransformer) :
 			m_transformer(theTransformer)
 		{
 		}
@@ -524,7 +570,7 @@ private:
 
 	private:
 
-		XalanTransformer&	m_transformer;
+		XalanTransformer2&	m_transformer;
 	};
 
 	friend class EnsureReset;
