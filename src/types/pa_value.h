@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.68 2001/07/24 15:43:56 parser Exp $
+	$Id: pa_value.h,v 1.69 2001/08/10 10:24:09 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -40,6 +40,7 @@ public: // Value
 	/** is this value defined?
 		@return for
 		- VVoid: false
+		- VString: eq ''=false, ne ''=true
 		- others: true
 	*/
 	virtual bool is_defined() const { return true; }
