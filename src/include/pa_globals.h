@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.69 2001/11/16 12:38:43 paf Exp $
+	$Id: pa_globals.h,v 1.70 2001/12/14 13:02:32 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -102,7 +102,6 @@ extern String *main_method_name;
 extern String *main_class_name;
 
 
-extern String *defaults_name;
 extern String *charsets_name;
 
 extern String *mime_types_name;

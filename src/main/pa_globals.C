@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.93 2001/12/13 11:09:47 paf Exp $
+	$Id: pa_globals.C,v 1.94 2001/12/14 13:02:32 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -50,7 +50,6 @@ String *string_pre_match_name;
 String *string_match_name;
 String *string_post_match_name;
 
-String *defaults_name;
 String *charsets_name;
 String *mime_types_name;
 String *vfile_mime_type_name;
@@ -150,7 +149,6 @@ void pa_globals_init(Pool& pool) {
 	string_post_match_name=NEW String(pool, STRING_POST_MATCH_NAME);
 
 
-	defaults_name=NEW String(pool, DEFAULTS_NAME);
 	charsets_name=NEW String(pool, CHARSETS_NAME);
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
 	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
