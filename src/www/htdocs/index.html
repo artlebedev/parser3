@@ -24,8 +24,41 @@ $n
 ($a,$b)
 
 @post-process[data]
-($data)
+(<BR>$data)<BR>
+
+@mt[s;m]
+$m ^if(^s.match{$:m}[i]){matches}{do not match} $s<BR>
+
 @main[]
+$s[abcß]
+$sm[^s.match{(.)}[g]]
+^^"$s".match{(.)}[g]:<BR>
+^sm.menu{
+	^line[]:<BR>
+	^$pre-match=$pre-match<BR>
+	^$match=$match<BR>
+	^$post-match=$post-match<BR>
+	^$1=$1<BR>
+}
+<HR>
+$sm[^s.match{(.)}[]]
+^^"$s".match{(.)}[]:<BR>
+^sm.menu{
+	^line[]:<BR>
+	^$pre-match=$pre-match<BR>
+	^$match=$match<BR>
+	^$post-match=$post-match<BR>
+	^$1=$1<BR>
+}
+<HR>
+^mt[$s;ÿ]
+^mt[$s;b]
+^mt[$s;^^b]
+^mt[$s;^^a]
+^mt[$s;x]
+
+<HR>
+
 $dest[^table:set[nameless]{
 $form:d11	d12	d13
 d21	d22	d23

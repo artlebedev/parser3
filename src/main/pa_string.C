@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.62 2001/04/03 09:58:10 paf Exp $
+	$Id: pa_string.C,v 1.63 2001/04/03 14:39:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,10 +25,6 @@
 #include "pcre.h"
 
 //#include "pa_sapi.h"
-
-// consts
-
-const int MAX_MATCH_COLUMNS=20;
 
 // String
 
@@ -462,66 +458,125 @@ void String::split(Array& result,
 	}
 }
 
+/// @test really @b test: s x m [tested: i & g ]
+static void regex_options(char *options, int *result){
+    struct Regex_option {
+		char key;
+		int clear, set;
+		int *result;
+    } regex_option[]={
+		{'i', 0, PCRE_CASELESS, result}, // a=A
+		{'s', 0, PCRE_DOTALL, result}, // \n\n$
+		{'x', 0, PCRE_EXTENDED, result}, // whitespace in regex ignored
+		{'m', PCRE_DOTALL, PCRE_MULTILINE, result}, // ^aaa\n$^bbb\n$
+		{'g', 0, true, result+1}, // many rows
+		{0},
+    };
+	result[0]=PCRE_EXTRA | PCRE_DOTALL;
+	result[1]=0;
+
+    if(options) 
+		for(Regex_option *o=regex_option; o->key; o++) 
+			if(
+				strchr(options, o->key) || 
+				strchr(options, toupper(o->key))) {
+				*(o->result)&=~o->clear;
+				*(o->result)|=o->set;
+			}
+}
+
 /// @test setlocale param to auto.p  @test pcre_malloc & pcre_free substs
 bool String::match(const String *aorigin,
 				   const String& regexp, 
-				   const String& options,
+				   const String *options,
 				   Table **table) const { 
-	SYNCHRONIZED(true);
-	static const unsigned char *tables=0;
-	if(!tables) {
-		setlocale(LC_CTYPE, "ru");
-		tables = pcre_maketables();
+	static const unsigned char *tables=0; {	SYNCHRONIZED(true);
+		if(!tables) {
+			setlocale(LC_CTYPE, "ru");
+			tables=pcre_maketables();
+		}
 	}
 	const char *pattern=regexp.cstr();
 	const char *errptr;
 	int erroffset;
-	pcre *code=pcre_compile(pattern, 0, 
+    int option_bits[2];  regex_options(options?options->cstr():0, option_bits);
+	pcre *code=pcre_compile(pattern, option_bits[0], 
 		&errptr, &erroffset,
 		tables);
 
-	if(!code)
+	if(!code) {
 		THROW(0, 0,
 			&regexp.piece(erroffset, regexp.size()),
 			errptr);
+	}
 	
-	int ovecsize;
-	int *ovector=(int *)malloc(sizeof(int)*(ovecsize=(1/*.match*/+MAX_MATCH_COLUMNS)*3));
-	const char *subject=cstr();
-	int length=strlen(subject);
-	int exec_result=pcre_exec(code, 0,
-          subject, length, 0/*startoffset*/,
-          0/*options*/, ovector, ovecsize);
-
-	if(exec_result==PCRE_ERROR_NOMATCH) {
-		*table=0;
-		return false;
+	int info_substrings=pcre_info(code, 0, 0);
+	if(info_substrings<0) {
+		(*pcre_free)(code);
+		THROW(0, 0,
+		aorigin,
+		"pcre_info error #%d", 
+			info_substrings);
 	}
 
-	if(exec_result<0)
-		THROW(0, 0,
-			0,
-			"pcre_exec failed");
+	int startoffset=0;
+	const char *subject=cstr();
+	int length=strlen(subject);
+	int ovecsize;
+	int *ovector=(int *)malloc(sizeof(int)*
+		(ovecsize=(3/*pre/match/post*/+info_substrings)*3));
 
-	if(exec_result==0)
-		THROW(0, 0,
-			aorigin,
-			"produced more substrings than maximum handled by Parser, which is %d",
-				MAX_MATCH_COLUMNS);
-
+	// create table
 	Array& columns=*NEW Array(pool());
-	columns+=string_match_name; // .match column name
-	Array& row=*NEW Array(pool());
-	row+=&piece(ovector[0], ovector[1]); // match column value
-	
-	for(int i=1; i<exec_result; i++) {
+	columns+=string_pre_match_name;
+	columns+=string_match_name;
+	columns+=string_post_match_name;
+	for(int i=1; i<=info_substrings; i++) {
 		char *column=(char *)malloc(MAX_NUMBER);
 		snprintf(column, MAX_NUMBER, "%d", i);
 		columns+=NEW String(pool(), column); // .i column name
-		row+=&piece(ovector[i*2+0], ovector[i*2+1]); // .i column value
 	}
-	
 	*table=NEW Table(pool(), aorigin, &columns);
-	(**table)+=&row;
-	return true;
+
+	while(true) {
+		int exec_substrings=pcre_exec(code, 0,
+			subject, length, startoffset,
+			0/*option_bits[0]*/, ovector, ovecsize);
+		
+		if(exec_substrings==PCRE_ERROR_NOMATCH) {
+			(*pcre_free)(code);
+			return option_bits[1]!=0; // global=true+table, not global=false
+		}
+
+		if(exec_substrings<0) {
+			(*pcre_free)(code);
+			THROW(0, 0,
+				aorigin,
+				"pcre_exec error #%d", 
+					exec_substrings);
+		}
+
+		Array& row=*NEW Array(pool());
+		row+=&piece(0, ovector[0]); // pre-match
+		row+=&piece(ovector[0], ovector[1]); // match
+		row+=&piece(ovector[1], size()); // post-match
+		
+		for(int i=1; i<exec_substrings; i++) {
+			// -1:-1 case handled peacefully by piece() itself
+			row+=&piece(ovector[i*2+0], ovector[i*2+1]); // .i column value
+		}
+		
+		(**table)+=&row;
+
+		if(!option_bits[1]) { // not global
+			(*pcre_free)(code);
+			return true;
+		}
+
+		startoffset=ovector[1];
+/*
+		if(option_bits[0] & PCRE_MULTILINE)
+			option_bits[0]|=PCRE_NOTBOL; // start of subject+startoffset not BOL
+*/
+	}
 }

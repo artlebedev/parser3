@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_threads.h,v 1.11 2001/03/23 13:08:09 paf Exp $
+	$Id: pa_threads.h,v 1.12 2001/04/03 14:39:02 paf Exp $
 */
 
 #ifndef PA_THREADS_H
@@ -61,9 +61,15 @@ public:
 */
 #define SYNCHRONIZED(athread_safe) AutoSYNCHRONIZED autoSYNCHRONIZED(athread_safe)
 
+#define SYNCH_LOCK global_mutex.acqire()
+#define SYNCH_UNLOCK global_mutex.release()
+
 #else // not MULTITHREAD-ed
 
 #define SYNCHRONIZED(athread_safe) /* do nothing */
+
+#define SYNCH_LOCK 
+#define SYNCH_UNLOCK 
 
 #endif
 

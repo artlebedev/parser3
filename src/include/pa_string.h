@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.64 2001/04/03 09:58:09 paf Exp $
+	$Id: pa_string.h,v 1.65 2001/04/03 14:39:02 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -186,7 +186,7 @@ public:
 
 	bool match(const String *aorigin,
 		const String& regexp, 
-		const String& options,
+		const String *options,
 		Table **table) const;
 
 #ifndef NO_STRING_ORIGIN

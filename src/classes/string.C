@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.25 2001/04/03 09:58:07 paf Exp $
+	$Id: string.C,v 1.26 2001/04/03 14:38:58 paf Exp $
 */
 
 #include "pa_request.h"
@@ -145,24 +145,30 @@ static void _match(Request& r, const String& method_name, Array *params) {
 	// forcing {this param type}
 	r.fail_if_junction_(false, regexp, method_name, "regexp must be junction");
 
-	Value& options=*static_cast<Value *>(params->get(1));
-	// forcing {this param type}
-	r.fail_if_junction_(true, options, method_name, "options must not be junction");
+	const String *options=0;
+	if(params->size()>1) {
+		Value& value=*static_cast<Value *>(params->get(1));
+		// forcing {this param type}
+		r.fail_if_junction_(true, value, method_name, "options must not be junction");
+		options=&value.as_string();
+	}
 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	Table *table;
 	Value *result;
 	if(string.match(&method_name, 
-		r.process(regexp).as_string(), options.as_string(),
+		r.process(regexp).as_string(), options,
 		&table)) {
 		// matched
-		if(table->columns()->size()==1) // just matched, no substrings
+		if(table->columns()->size()==3 && // just matched[3=pre/match/post], no substrings
+			table->size()==1)  // just one row, not Global search
 			result=new(pool) VBool(pool, true);
 		else // table of match column+substring columns
 			result=new(pool) VTable(pool, table);
-	} else // not matched
+	} else // not global & not matched
 		result=new(pool) VBool(pool, false);
 
+	result->set_name(method_name);
 	r.write_no_lang(*result);
 }
 
@@ -197,6 +203,6 @@ void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 	vclass.add_native_method("rsplit", Method::CT_DYNAMIC, _rsplit, 1, 1);
 
 	// ^string.match{regexp}[options]
-	vclass.add_native_method("match", Method::CT_DYNAMIC, _match, 2, 2);
+	vclass.add_native_method("match", Method::CT_DYNAMIC, _match, 1, 2);
 }	
 
