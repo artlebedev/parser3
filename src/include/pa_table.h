@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.12 2001/03/12 13:13:20 paf Exp $
+	$Id: pa_table.h,v 1.13 2001/03/12 20:55:15 paf Exp $
 */
 
 /*
@@ -35,7 +35,6 @@ public:
 
 	void set_current(int acurrent) { fcurrent=acurrent; }
 	int get_current() { return fcurrent; }
-	void inc_current() { fcurrent++; }
 
 	const String *item(const String& column_name);
 

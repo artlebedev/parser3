@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.6 2001/03/12 20:36:52 paf Exp $
+	$Id: table.C,v 1.7 2001/03/12 20:55:14 paf Exp $
 */
 
 #include "pa_request.h"
@@ -113,6 +113,30 @@ static void _offset(Request& r, const String&, Array *params) {
 	}
 }
 
+static void _menu(Request& r, const String& method_name, Array *params) {
+	Value& body_code=*static_cast<Value *>(params->get(0));
+	// forcing ^menu{this param type}
+	r.fail_if_junction_(false, body_code, 
+		method_name, "body must be junction");
+	
+	Value *delim_code=params->size()==2?static_cast<Value *>(params->get(1)):0;
+
+	Table& table=r.self->as_vtable().table();
+	bool need_delim=false;
+	for(int i=0; i<table.size(); i++) {
+		table.set_current(i);
+
+		Value& processed_body=r.process(body_code);
+		if(delim_code) { // delimiter set?
+			const String *string=processed_body.get_string();
+			if(need_delim && string && string->size()) // need delim & iteration produced string?
+				r.write_pass_lang(r.process(*delim_code));
+			need_delim=true;
+		}
+		r.write_pass_lang(processed_body);
+	}
+}
+
 void initialize_table_class(Pool& pool, VClass& vclass) {
 	// ^table.set[data]  ^table.set[nameless;data]
 	vclass.add_native_method("set", _set, 1, 2);
@@ -128,4 +152,7 @@ void initialize_table_class(Pool& pool, VClass& vclass) {
 
 	// ^table.offset[]  ^table.offset[offset]
 	vclass.add_native_method("offset", _offset, 0, 1);
+
+	// ^table.menu{code}  ^table.menu{code}[delim]
+	vclass.add_native_method("menu", _menu, 1, 2);
 }	
