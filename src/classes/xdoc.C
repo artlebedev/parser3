@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.19 2001/10/18 06:38:11 parser Exp $
+	$Id: xdoc.C,v 1.20 2001/10/18 06:47:20 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -73,7 +73,7 @@ static void _createElement(Request& r, const String& method_name, MethodParams *
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *tagName=params->as_string(0, "tagName must not be code").cstr(String::UL_AS_IS);
+	const char *tagName=params->as_string(0, "tagName must be string").cstr(String::UL_XML);
 
 	try {
 		XalanNode *node=
@@ -105,7 +105,7 @@ static void _createTextNode(Request& r, const String& method_name, MethodParams 
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *data=params->as_string(0, "data must not be code").cstr(String::UL_AS_IS);
+	const char *data=params->as_string(0, "data must be string").cstr(String::UL_XML);
 
 	XalanNode *node=
 		vdoc.get_document(pool, &method_name).
@@ -120,7 +120,7 @@ static void _createComment(Request& r, const String& method_name, MethodParams *
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *data=params->as_string(0, "data must not be code").cstr(String::UL_AS_IS);
+	const char *data=params->as_string(0, "data must be string").cstr(String::UL_XML);
 
 	XalanNode *node=
 		vdoc.get_document(pool, &method_name).
@@ -135,7 +135,7 @@ static void _createCDATASection(Request& r, const String& method_name, MethodPar
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *data=params->as_string(0, "data must not be code").cstr(String::UL_AS_IS);
+	const char *data=params->as_string(0, "data must be string").cstr(String::UL_XML);
 
 	try {
 		XalanNode *node=
@@ -154,8 +154,8 @@ static void _createProcessingInstruction(Request& r, const String& method_name, 
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *target=params->as_string(0, "target must not be code").cstr(String::UL_AS_IS);
-	const char *data=params->as_string(1, "data must not be code").cstr(String::UL_AS_IS);
+	const char *target=params->as_string(0, "target must be string").cstr(String::UL_XML);
+	const char *data=params->as_string(1, "data must be string").cstr(String::UL_XML);
 
 	try {
 		XalanNode *node=
@@ -174,7 +174,7 @@ static void _createAttribute(Request& r, const String& method_name, MethodParams
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *name=params->as_string(0, "name must not be code").cstr(String::UL_AS_IS);
+	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
 
 	try {
 		XalanNode *node=
@@ -192,7 +192,7 @@ static void _createEntityReference(Request& r, const String& method_name, Method
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const char *name=params->as_string(0, "name must not be code").cstr(String::UL_AS_IS);
+	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
 
 	try {
 		XalanNode *node=
@@ -212,7 +212,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
 	// tagname
-	const char *name=params->as_string(0, "name must not be code").cstr(String::UL_AS_IS);
+	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
 
 	VHash& result=*new(pool) VHash(pool);
 	if(const XalanNodeList *nodes=
@@ -238,8 +238,8 @@ static void _getElementsByTagNameNS(Request& r, const String& method_name, Metho
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
 	// namespaceURI;localName
-	const char *namespaceURI=params->as_string(0, "namespaceURI must not be code").cstr(String::UL_AS_IS);
-	const char *localName=params->as_string(0, "localName must not be code").cstr(String::UL_AS_IS);
+	const char *namespaceURI=params->as_string(0, "namespaceURI must be string").cstr(String::UL_XML);
+	const char *localName=params->as_string(0, "localName must be string").cstr(String::UL_XML);
 
 	VHash& result=*new(pool) VHash(pool);
 	if(const XalanNodeList *nodes=
@@ -375,7 +375,7 @@ static void create_optioned_listener(
 	XalanDOMString xalan_encoding;
 
 	if(params->size()>index) {
-		Value& voptions=params->as_no_junction(index, "options must not be code");
+		Value& voptions=params->as_no_junction(index, "options must be string");
 		if(voptions.is_defined()) {
 			if(Hash *options=voptions.get_hash()) {
 				// $.method[xml|html|text]
@@ -432,7 +432,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
 	// filespec
-	const String& file_name=params->as_string(0, "file name must not be code");
+	const String& file_name=params->as_string(0, "file name must be string");
 	const char *filespec=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
 	
 	// node
@@ -555,12 +555,10 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	Value& vqualifiedName=params->as_junction(0, "qualifiedName must be code");
-	Temp_lang temp_lang(r, String::UL_XML);
-	const String& qualifiedName=r.process(vqualifiedName).as_string();
+	const String& squalifiedName=params->as_string(0, "qualifiedName must be string");
 
 	String xml(pool, "<?xml version=\"1.0\"?>\n");
-	xml << "<" << qualifiedName << " />";
+	xml << "<" << squalifiedName.cstr(String::UL_XML) << " />";
 
 	std::istrstream stream(xml.cstr());
 
@@ -594,7 +592,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
 	// filespec
-	const String& file_name=params->as_string(0, "file name must not be code");
+	const String& file_name=params->as_string(0, "file name must be string");
 	const char *filespec=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
 	
 	const XalanParsedSource* parsedSource;
@@ -637,7 +635,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 
 	// params
 	if(params->size()>1) {
-		Value& vparams=params->as_no_junction(1, "transform parameters parameter must not be code");
+		Value& vparams=params->as_no_junction(1, "transform parameters parameter must be string");
 		if(vparams.is_defined())
 			if(Hash *params=vparams.get_hash())
 				params->for_each(add_xslt_param, &vdoc.transformer());
@@ -651,7 +649,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	const XalanParsedSource &parsed_source=vdoc.get_parsed_source(pool, &method_name);
 
 	// stylesheet
-	const String& stylesheet_file_name=params->as_string(0, "file name must not be code");
+	const String& stylesheet_file_name=params->as_string(0, "file name must be string");
 	const String& stylesheet_filespec=r.absolute(stylesheet_file_name);
 	//_asm int 3;
 	Stylesheet_connection& connection=XSLT_stylesheet_manager->get_connection(stylesheet_filespec);
@@ -698,7 +696,7 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
 	// elementId
-	const char *elementId=params->as_string(0, "elementID must not be code").cstr(String::UL_AS_IS);
+	const char *elementId=params->as_string(0, "elementID must be string").cstr(String::UL_XML);
 
 	if(XalanNode *node=
 		vdoc.get_document(pool, &method_name).getElementById(XalanDOMString(elementId))) {

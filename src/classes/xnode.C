@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.8 2001/10/16 14:44:40 parser Exp $
+	$Id: xnode.C,v 1.9 2001/10/18 06:47:20 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -166,7 +166,7 @@ XalanElement& get_self_element(Request& r, const String& method_name) {
 static void _getAttribute(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	XalanElement& element=get_self_element(r, method_name);
-	const char *name=params->as_string(0, "name must not be code").cstr(String::UL_AS_IS);
+	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
 
 	const XalanDOMString& attribute_value=element.getAttribute(XalanDOMString(name));
 	// write out result
@@ -177,8 +177,8 @@ static void _getAttribute(Request& r, const String& method_name, MethodParams *p
 static void _setAttribute(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	XalanElement& element=get_self_element(r, method_name);
-	const char *name=params->as_string(0, "name must not be code").cstr(String::UL_AS_IS);
-	const char *attribute_value=params->as_string(1, "value must not be code").cstr(String::UL_AS_IS);
+	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
+	const char *attribute_value=params->as_string(1, "value must be string").cstr(String::UL_XML);
 
 	try {
 		element.setAttribute(
@@ -193,7 +193,7 @@ static void _setAttribute(Request& r, const String& method_name, MethodParams *p
 static void _removeAttribute(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	XalanElement& element=get_self_element(r, method_name);
-	const char *name=params->as_string(0, "name must not be code").cstr(String::UL_AS_IS);
+	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
 
 	try {
 		element.removeAttribute(XalanDOMString(name));
@@ -206,7 +206,7 @@ static void _removeAttribute(Request& r, const String& method_name, MethodParams
 static void _getAttributeNode(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	XalanElement& element=get_self_element(r, method_name);
-	const char *name=params->as_string(0, "name must not be code").cstr(String::UL_AS_IS);
+	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
 
 	if(XalanAttr *attr=element.getAttributeNode(XalanDOMString(name))) {
 		// write out result
@@ -250,7 +250,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 	Pool& pool=r.pool();
 	XalanElement& element=get_self_element(r, method_name);
 
-	const char *name=params->as_string(0, "name must not be code").cstr(String::UL_AS_IS);
+	const char *name=params->as_string(0, "name must be string").cstr(String::UL_XML);
 
 	VHash& result=*new(pool) VHash(pool);
 	if(const XalanNodeList *nodes=
@@ -285,7 +285,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
 	// expression
-	const String& expression=params->as_string(0, "expression must not be code");
+	const String& expression=params->as_string(0, "expression must be string");
 	const char *expression_cstr=expression.cstr(String::UL_AS_IS);
 	XalanDOMString dstring(expression_cstr);
 	const XalanDOMChar *expression_dcstr=dstring.c_str();
@@ -317,13 +317,13 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 	}
 }
 
-static void _select_single(Request& r, const String& method_name, MethodParams *params) {
+static void _selectSingle(Request& r, const String& method_name, MethodParams *params) {
 //	_asm int 3;
 	Pool& pool=r.pool();
 	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
 	// expression
-	const String& expression=params->as_string(0, "expression must not be code");
+	const String& expression=params->as_string(0, "expression must be string");
 	const char *expression_cstr=expression.cstr(String::UL_AS_IS);
 	XalanDOMString dstring(expression_cstr);
 	const XalanDOMChar *expression_dcstr=dstring.c_str();
@@ -394,7 +394,7 @@ MXnode::MXnode(Pool& apool) : Methoded(apool),
 	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
 
 	// ^node.selectSingle[/some/xpath/query] = first dnode
-	add_native_method("selectSingle", Method::CT_DYNAMIC, _select_single, 1, 1);
+	add_native_method("selectSingle", Method::CT_DYNAMIC, _selectSingle, 1, 1);
 
 	// consts
 
