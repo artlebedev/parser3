@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2004/02/19 15:16:53 $";
+static const char * const IDENT_DATE_C="$Date: 2004/02/19 15:25:10 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -72,14 +72,12 @@ static int to_tm_year(int iyear) {
 // 2002-04-25 18:14:00
 // 18:14:00
 // 2002:04:25 [+maybe time]
-/*not static, used in image.C*/ time_t cstr_to_time_t(char *cstr, bool fail_on_error) {
-	if( !cstr || !*cstr ) {
-		if(fail_on_error)
-			throw Exception(0,
-				0,
-				"empty string is not valid datetime");
-		return 0;
-	}
+/*not static, used in image.C*/ time_t cstr_to_time_t(char *cstr) {
+	if( !cstr || !*cstr )
+		throw Exception(0,
+			0,
+			"empty string is not valid datetime");
+
 	char *cur=cstr;
 	int date_delim=isdigit(cur[0])&&isdigit(cur[1])&&isdigit(cur[2])&&isdigit(cur[3])&&cur[4]==':'?':'
 		:'-';
@@ -109,15 +107,18 @@ static int to_tm_year(int iyear) {
 	tmIn.tm_mon=month?pa_atoi(month)-1:0;
 	tmIn.tm_mday=mday?pa_atoi(mday):1;
 date_part_set:
-	tmIn.tm_hour=hour?pa_atoi(hour):0;
+	int savedHour=tmIn.tm_hour=hour?pa_atoi(hour):0;
 	tmIn.tm_min=min?pa_atoi(min):0;
-	tmIn.tm_sec=sec?pa_atoi(sec):0;
+	tmIn.tm_sec=sec?pa_atoi(sec):0;	
 	time_t result=mktime(&tmIn);
+	if(tmIn.tm_hour!=savedHour)
+		throw Exception(0,
+			0, //report_error_origin,
+			"invalid datetime: spring daylightsaving hour hole");
 	if(result<0)
-		if(fail_on_error)
-			throw Exception(0,
-				0, //report_error_origin,
-				"invalid datetime");
+		throw Exception(0,
+			0, //report_error_origin,
+			"invalid datetime");
 
 	return result;
 }
@@ -130,7 +131,7 @@ static void _create(Request& r, MethodParams& params) {
 		// ^create[2002-04-25 18:14:00]
 		// ^create[18:14:00]
 		if(const String* sdate=params[0].get_string())
-			t=cstr_to_time_t(sdate->cstrm(), true);
+			t=cstr_to_time_t(sdate->cstrm());
 		else { // ^create(float days)
 			t=(time_t)round(params.as_double(0, "float days must be double", r)*SECS_PER_DAY);
 			if(t<0 || !localtime(&t))
@@ -144,10 +145,15 @@ static void _create(Request& r, MethodParams& params) {
 		tmIn.tm_year=to_tm_year(params.as_int(0, "year must be int", r));
 		tmIn.tm_mon=params.as_int(1, "month must be int", r)-1;
 		tmIn.tm_mday=params.count()>2?params.as_int(2, "mday must be int", r):1;
-		if(params.count()>3) tmIn.tm_hour=params.as_int(3, "hour must be int", r);
+		int savedHour=0;
+		if(params.count()>3) savedHour=tmIn.tm_hour=params.as_int(3, "hour must be int", r);
 		if(params.count()>4) tmIn.tm_min=params.as_int(4, "minutes must be int", r);
 		if(params.count()>5) tmIn.tm_sec=params.as_int(5, "seconds must be int", r);
 		t=mktime(&tmIn);
+		if(tmIn.tm_hour!=savedHour)
+			throw Exception(0,
+				0, //report_error_origin,
+				"invalid datetime: spring daylightsaving hour hole");
 		if(t<0)
 			throw Exception(0,
 				0,
