@@ -4,8 +4,9 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.29 2001/10/19 14:15:23 parser Exp $
+	$Id: xdoc.C,v 1.30 2001/10/19 14:42:53 parser Exp $
 */
+#include "pa_types.h"
 #include "classes.h"
 #ifdef XML
 
@@ -38,7 +39,7 @@
 #include <XalanDOM/XalanDocumentFragment.hpp>
 #include <XalanDOM/XalanCDATASection.hpp>
 #include <XalanDOM/XalanEntityReference.hpp>
-#include <DOM/DOM_Document.hpp>
+#include <dom/DOM_Document.hpp>
 #include <XercesParserLiaison/XercesDocumentBridge.hpp>
 #include <XalanTransformer/XercesDOMParsedSource.hpp>
 
@@ -81,7 +82,7 @@ static void _createElement(Request& r, const String& method_name, MethodParams *
 	try {
 		XalanNode *node=
 			vdoc.get_document(pool, &method_name).
-			createElement(pool.transcode(tagName));
+			createElement(*pool.transcode(tagName));
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
@@ -112,7 +113,7 @@ static void _createTextNode(Request& r, const String& method_name, MethodParams 
 
 	XalanNode *node=
 		vdoc.get_document(pool, &method_name).
-		createTextNode(pool.transcode(data));
+		createTextNode(*pool.transcode(data));
 	// write out result
 	VXnode& result=*new(pool) VXnode(pool, node);
 	r.write_no_lang(result);
@@ -127,7 +128,7 @@ static void _createComment(Request& r, const String& method_name, MethodParams *
 
 	XalanNode *node=
 		vdoc.get_document(pool, &method_name).
-		createComment(pool.transcode(data));
+		createComment(*pool.transcode(data));
 	// write out result
 	VXnode& result=*new(pool) VXnode(pool, node);
 	r.write_no_lang(result);
@@ -143,7 +144,7 @@ static void _createCDATASection(Request& r, const String& method_name, MethodPar
 	try {
 		XalanNode *node=
 			vdoc.get_document(pool, &method_name).
-			createCDATASection(pool.transcode(data));
+			createCDATASection(*pool.transcode(data));
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
@@ -163,7 +164,7 @@ static void _createProcessingInstruction(Request& r, const String& method_name, 
 	try {
 		XalanNode *node=
 			vdoc.get_document(pool, &method_name).
-			createProcessingInstruction(pool.transcode(target), pool.transcode(data));
+			createProcessingInstruction(*pool.transcode(target), *pool.transcode(data));
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
@@ -182,7 +183,7 @@ static void _createAttribute(Request& r, const String& method_name, MethodParams
 	try {
 		XalanNode *node=
 			vdoc.get_document(pool, &method_name).
-			createAttribute(pool.transcode(name));
+			createAttribute(*pool.transcode(name));
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
@@ -200,7 +201,7 @@ static void _createEntityReference(Request& r, const String& method_name, Method
 	try {
 		XalanNode *node=
 			vdoc.get_document(pool, &method_name).
-			createEntityReference(pool.transcode(name));
+			createEntityReference(*pool.transcode(name));
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);
@@ -572,7 +573,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		false /*don' buildBridge -- too early, empty document*/);
 
 	/// +createXMLDecl ?
-	document.appendChild(document.createElement(pool.transcode(qualifiedName)));
+	document.appendChild(document.createElement(*pool.transcode(qualifiedName)));
 
 	// replace any previous document
 	vdoc.set_document(document, true/*owns*/);
@@ -752,7 +753,7 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 	const String& elementId=params->as_string(0, "elementID must be string");
 
 	if(XalanNode *node=
-		vdoc.get_document(pool, &method_name).getElementById(pool.transcode(elementId))) {
+		vdoc.get_document(pool, &method_name).getElementById(*pool.transcode(elementId))) {
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
 		r.write_no_lang(result);

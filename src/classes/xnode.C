@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.12 2001/10/19 14:15:23 parser Exp $
+	$Id: xnode.C,v 1.13 2001/10/19 14:42:53 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -184,7 +184,7 @@ static void _getAttribute(Request& r, const String& method_name, MethodParams *p
 	XalanElement& element=get_self_element(r, method_name);
 	const String& name=params->as_string(0, "name must be string");
 
-	const XalanDOMString& attribute_value=element.getAttribute(pool.transcode(name));
+	const XalanDOMString& attribute_value=element.getAttribute(*pool.transcode(name));
 	// write out result
 	r.write_no_lang(*new(pool) VString(pool.transcode(attribute_value)));
 }
@@ -198,8 +198,8 @@ static void _setAttribute(Request& r, const String& method_name, MethodParams *p
 
 	try {
 		element.setAttribute(
-			pool.transcode(name), 
-			pool.transcode(attribute_value));
+			*pool.transcode(name), 
+			*pool.transcode(attribute_value));
 	} catch(const XalanDOMException& e)	{
 		Exception::convert(pool, &method_name, e);
 	}
@@ -212,7 +212,7 @@ static void _removeAttribute(Request& r, const String& method_name, MethodParams
 	const String& name=params->as_string(0, "name must be string");
 
 	try {
-		element.removeAttribute(pool.transcode(name));
+		element.removeAttribute(*pool.transcode(name));
 	} catch(const XalanDOMException& e)	{
 		Exception::convert(pool, &method_name, e);
 	}
@@ -224,7 +224,7 @@ static void _getAttributeNode(Request& r, const String& method_name, MethodParam
 	XalanElement& element=get_self_element(r, method_name);
 	const String& name=params->as_string(0, "name must be string");
 
-	if(XalanAttr *attr=element.getAttributeNode(pool.transcode(name))) {
+	if(XalanAttr *attr=element.getAttributeNode(*pool.transcode(name))) {
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, attr);
 		r.write_no_lang(result);
@@ -270,7 +270,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 
 	VHash& result=*new(pool) VHash(pool);
 	if(const XalanNodeList *nodes=
-		element.getElementsByTagName(pool.transcode(name))) {
+		element.getElementsByTagName(*pool.transcode(name))) {
 		for(int i=0; i<nodes->getLength(); i++) {
 			String& skey=*new(pool) String(pool);
 			{

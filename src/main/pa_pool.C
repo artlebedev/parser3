@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.35 2001/10/19 14:15:23 parser Exp $
+	$Id: pa_pool.C,v 1.36 2001/10/19 14:42:53 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -95,14 +95,13 @@ String& Pool::transcode(const XalanDOMString& s) {
 	return *new(*this) String(*this, transcode_cstr(s)); 
 }
 
-/// @test who would free up result?
-XalanDOMString& Pool::transcode_buf(const char *buf, size_t buf_size) { 
+std::auto_ptr<XalanDOMString> Pool::transcode_buf(const char *buf, size_t buf_size) { 
 	update_transcoder();
 
 	unsigned int dest_size=0;
 	XMLCh* dest=(XMLCh *)malloc((buf_size+1)*sizeof(XMLCh));
 	unsigned char *charSizes=(unsigned char *)malloc(buf_size*sizeof(unsigned char));
-	XalanDOMString *result;
+	std::auto_ptr<XalanDOMString> result;
 	try {
 		if(transcoder) {
 			unsigned int bytesEaten;
@@ -113,15 +112,15 @@ XalanDOMString& Pool::transcode_buf(const char *buf, size_t buf_size) {
 				bytesEaten,
 				charSizes
 			);
-			result=new XalanDOMString(dest, dest_size);
+			result=std::auto_ptr<XalanDOMString>(new XalanDOMString(dest, dest_size));
 		}
 	} catch(XMLException& e) {
 		Exception::convert(*this, 0, e);
 	}
 	
-	return *result;
+	return result;
 }
-XalanDOMString& Pool::transcode(const String& s) { 
+std::auto_ptr<XalanDOMString> Pool::transcode(const String& s) { 
 	const char *cstr=s.cstr(String::UL_XML);
 
 	return transcode_buf(cstr, strlen(cstr)); 

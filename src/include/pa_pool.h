@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.64 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_pool.h,v 1.65 2001/10/19 14:42:53 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -14,6 +14,7 @@
 #include "pa_config_includes.h"
 
 #ifdef XML
+#include< memory>
 #include <XalanDOM/XalanDOMString.hpp>
 #include <util/TransService.hpp>
 #endif
@@ -105,9 +106,9 @@ public:
 	/// converts Xalan string to parser String
 	String& transcode(const XalanDOMString& s);
 	/// converts char * to Xalan string
-	XalanDOMString& Pool::transcode_buf(const char *buf, size_t buf_size);
+	std::auto_ptr< XalanDOMString> transcode_buf(const char *buf, size_t buf_size);
 	/// converts parser String to Xalan string
-	XalanDOMString& Pool::transcode(const String& s);
+	std::auto_ptr<XalanDOMString> transcode(const String& s);
 
 private:
 

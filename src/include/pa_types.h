@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.27 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_types.h,v 1.28 2001/10/19 14:42:53 parser Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -22,6 +22,9 @@
 
 // assignment operator could not be generated
 //#pragma warning(disable:4512) 
+
+// identifier was truncated to '255' characters in the debug information
+#pragma warning(disable:4786)
 
 #endif
 
