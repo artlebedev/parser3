@@ -15,6 +15,7 @@ $derived_var[derived_var_val]
 aval}
 
 @test[]
+$a[overridden]
 ^^append{appeded} ^append{appeded}<br>
 ^^count[]=^count[]<br>
 ^offset(+1)
