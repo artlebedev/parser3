@@ -12,18 +12,10 @@ Action parsed-html /cgi-bin/debug/parser3
 #Action parsed-html /cgi-bin/release308/parser3
 #Action parsed-html /cgi-bin/release311/parser3
 
-#addtype 'multipart/related;boundary="===== This is the multipart mime bounda=====184532178"'  html
-#addtype	application/x-x509-user-cert cer
-
-
 RewriteEngine on
 RewriteBase /
 
-
-RewriteRule ^(_|maximized) - [L]
-
-RewriteRule ^parser- - [L]
-
+RewriteRule ^maximized.htm$ - [L]
 
 RewriteCond %{REQUEST_URI} !\.
 RewriteRule ^(.+[^/])$ http://%{SERVER_NAME}/$1/ [L,R,QSA]
@@ -34,8 +26,10 @@ RewriteRule (.*) /_doc.html?request=/404/ [L]
 
 RewriteRule (where2buy/moscow/)metro.gif  /_doc.html?request=$1&image=yes [L,QSA]
 RewriteRule (tariffs/.*/)full/  /_doc.html?request=$1&full=yes [L,QSA]
+RewriteRule (search/)full/  /_doc.html?request=$1&map=full [L,QSA]
 
 RewriteCond %{REQUEST_URI} !(gif|jpg|png|js|css|exe|zip|rar|pdf|rtf|doc|xls|ppt|swf|ipx|txt|xslt|xsl|dtd|tif|eps|tiff|ico|ent|chm|cfm|gz)$
+RewriteCond %{REQUEST_URI} !/_
 RewriteRule (.*)  /_doc.html?request=$1 [L,QSA]
 
 

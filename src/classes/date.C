@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2003/11/27 10:20:32 $";
+static const char * const IDENT_DATE_C="$Date: 2004/01/30 09:39:45 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -60,12 +60,22 @@ static void _now(Request& r, MethodParams& params) {
 	vdate.set_time(t);
 }
 
-static int NN_year_to_NNNN(int year) {
-	if(year<70) // 0..69 -> 100..169 [2000..2069]
-		year+=100;
-	if(year>=1900)
-		year-=1900;
-	return year;
+/// shrinked range: 1970/1/1 to 2038/1/1
+static int check_year(int iyear) {
+	if(iyear<1970 || iyear>2038)
+		throw Exception(0,
+			0,
+			"year '%d' is out of valid range", iyear);
+	return iyear;
+}
+
+static int ato_year(const char* syear) {
+	int iyear=atoi(syear);
+	if(iyear==0)
+		throw Exception(0,
+			0,
+			"invalid year: '%s'", syear);
+	return check_year(iyear);
 }
 
 // 2002-04-25 18:14:00
@@ -104,7 +114,7 @@ static int NN_year_to_NNNN(int year) {
 			goto date_part_set;
 		} else
 			hour=min=sec=0; // not YYYY- & not HH: = just YYYY					
-	tmIn.tm_year=NN_year_to_NNNN(atoi(year));
+	tmIn.tm_year=ato_year(year);
 	tmIn.tm_mon=month?atoi(month)-1:0;
 	tmIn.tm_mday=mday?atoi(mday):1;
 date_part_set:
@@ -140,7 +150,7 @@ static void _create(Request& r, MethodParams& params) {
 	} else if(params.count()>=2) { // ^create(y;m;d[;h[;m[;s]]])
 		tm tmIn; memset(&tmIn, 0, sizeof(tmIn));
 		tmIn.tm_isdst=-1;
-		tmIn.tm_year=NN_year_to_NNNN(params.as_int(0, "year must be int", r));
+		tmIn.tm_year=check_year(params.as_int(0, "year must be int", r));
 		tmIn.tm_mon=params.as_int(1, "month must be int", r)-1;
 		tmIn.tm_mday=params.count()>2?params.as_int(2, "mday must be int", r):1;
 		if(params.count()>3) tmIn.tm_hour=params.as_int(3, "hour must be int", r);
