@@ -1,5 +1,5 @@
 --- libxslt/xsltutils.c.0	Sat Dec  1 06:55:00 2001
-+++ libxslt/xsltutils.c	Wed Jan 23 14:28:00 2002
++++ libxslt/xsltutils.c	Wed Jan 23 14:40:49 2002
 @@ -798,11 +798,6 @@
  
      if ((method != NULL) &&
@@ -12,3 +12,15 @@
  	if (indent != 0)
  	    indent = 1;
  	htmlDocContentDumpFormatOutput(buf, result, (const char *) encoding,
+@@ -810,11 +805,6 @@
+ 	xmlOutputBufferFlush(buf);
+     } else if ((method != NULL) &&
+ 	(xmlStrEqual(method, (const xmlChar *) "xhtml"))) {
+-	if (encoding != NULL) {
+-	    htmlSetMetaEncoding(result, (const xmlChar *) encoding);
+-	} else {
+-	    htmlSetMetaEncoding(result, (const xmlChar *) "UTF-8");
+-	}
+ 	htmlDocContentDumpOutput(buf, result, (const char *) encoding);
+ 	xmlOutputBufferFlush(buf);
+     } else if ((method != NULL) &&
