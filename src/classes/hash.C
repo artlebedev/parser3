@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.21 2001/10/11 12:04:19 parser Exp $
+	$Id: hash.C,v 1.22 2001/10/11 12:43:28 parser Exp $
 */
 
 #include "classes.h"
@@ -13,6 +13,7 @@
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
 #include "pa_vtable.h"
+#include "pa_vbool.h"
 
 // defines
 
@@ -89,20 +90,112 @@ private:
 };
 #endif
 
-static void copy_pair_to(const Hash::Key& key, Hash::Val *value, void *info) {
+static void copy_all_overwrite_to(const Hash::Key& key, Hash::Val *value, void *info) {
 	Hash& dest=*static_cast<Hash *>(info);
 	dest.put(key, value);
 }
 
-static void _create_or_append(Request& r, const String& method_name, MethodParams *params) {
+static void _create_or_add(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	
 	if(params->size()) {
-		Value& vsrc=params->as_no_junction(0, "copy_from must be hash");
-		if(Hash *src=vsrc.get_hash())
-			src->for_each(copy_pair_to, &static_cast<VHash *>(r.self)->hash());
+		Value& vb=params->as_no_junction(0, "param must be hash");
+		if(Hash *b=vb.get_hash())
+			b->for_each(copy_all_overwrite_to, &static_cast<VHash *>(r.self)->hash());
 	}
 }
+
+static void remove_key_from(const Hash::Key& key, Hash::Val *value, void *info) {
+	Hash& dest=*static_cast<Hash *>(info);
+	dest.put(key, 0);
+}
+
+static void _sub(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	
+	Value& vb=params->as_no_junction(0, "param must be hash");
+	if(Hash *b=vb.get_hash())
+		b->for_each(remove_key_from, &static_cast<VHash *>(r.self)->hash());
+}
+
+static void copy_all_dontoverwrite_to(const Hash::Key& key, Hash::Val *value, void *info) {
+	Hash& dest=*static_cast<Hash *>(info);
+	dest.put_dont_replace(key, value);
+}
+
+static void _union(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	// dest = copy of self
+	Hash& dest=*new(pool) Hash(static_cast<VHash *>(r.self)->hash());
+	// dest += b
+	Value& vb=params->as_no_junction(0, "param must be hash");
+	if(Hash *b=vb.get_hash())
+		b->for_each(copy_all_dontoverwrite_to, &dest);
+
+	// return result
+	Value& result=*new(pool) VHash(pool, dest);
+	result.set_name(method_name);
+	r.write_no_lang(result);
+}
+
+#ifndef DOXYGEN
+struct Copy_intersection_to_info {
+	Hash *b;
+	Hash *dest;
+};
+#endif
+
+static void copy_intersection_to(const Hash::Key& key, Hash::Val *value, void *info) {
+	Copy_intersection_to_info& i=*static_cast<Copy_intersection_to_info *>(info);
+
+	if(i.b->get(key))
+		i.dest->put_dont_replace(key, value);
+}
+
+static void _intersection(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	// dest = copy of self
+	Hash& dest=*new(pool) Hash(pool);
+	// dest += b
+	Value& vb=params->as_no_junction(0, "param must be hash");
+	if(Hash *b=vb.get_hash()) {
+		Copy_intersection_to_info info={
+			b,
+			&dest
+		};
+		static_cast<VHash *>(r.self)->hash().for_each(copy_intersection_to, &info);
+	}
+
+	// return result
+	Value& result=*new(pool) VHash(pool, dest);
+	result.set_name(method_name);
+	r.write_no_lang(result);
+}
+
+static void *intersects(const Hash::Key& key, Hash::Val *value, void *info) {
+	return static_cast<Hash *>(info)->get(key);
+}
+
+static void _intersects(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	bool yes=false;
+
+	// dest = copy of self
+	Hash& dest=*new(pool) Hash(pool);
+	// dest += b
+	Value& vb=params->as_no_junction(0, "param must be hash");
+	if(Hash *b=vb.get_hash())
+		yes=static_cast<VHash *>(r.self)->hash().first_that(intersects, b)!=0;
+
+	// return result
+	Value& result=*new(pool) VBool(pool, yes);
+	result.set_name(method_name);
+	r.write_no_lang(result);
+}
+
 
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -175,9 +268,9 @@ static void _keys(Request& r, const String& method_name, MethodParams *) {
 static void _count(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 
-	Value& value=*new(pool) VInt(pool, static_cast<VHash *>(r.self)->hash().size());
-	value.set_name(method_name);
-	r.write_no_lang(value);
+	Value& result=*new(pool) VInt(pool, static_cast<VHash *>(r.self)->hash().size());
+	result.set_name(method_name);
+	r.write_no_lang(result);
 }
 
 // constructor
@@ -186,9 +279,17 @@ MHash::MHash(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), HASH_CLASS_NAME));
 
 	// ^hash::create[[copy_from]]
-	add_native_method("create", Method::CT_DYNAMIC, _create_or_append, 0, 1);
-	// ^hash::append[[copy_from]]
-	add_native_method("append", Method::CT_DYNAMIC, _create_or_append, 1, 1);
+	add_native_method("create", Method::CT_DYNAMIC, _create_or_add, 0, 1);
+	// ^hash.add[add_from]
+	add_native_method("add", Method::CT_DYNAMIC, _create_or_add, 1, 1);
+	// ^hash.sub[sub_from]
+	add_native_method("sub", Method::CT_DYNAMIC, _sub, 1, 1);
+	// ^a.union[b] = hash
+	add_native_method("union", Method::CT_DYNAMIC, _union, 1, 1);
+	// ^a.intersection[b] = hash
+	add_native_method("intersection", Method::CT_DYNAMIC, _intersection, 1, 1);
+	// ^a.intersects[b] = bool
+	add_native_method("intersects", Method::CT_DYNAMIC, _intersects, 1, 1);
 
 	// ^hash:sql[query][(count[;offset])]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);
