@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.65 2001/03/22 17:13:47 paf Exp $
+	$Id: pa_request.C,v 1.66 2001/03/22 21:33:33 paf Exp $
 */
 
 #include <string.h>
@@ -368,7 +368,7 @@ void Request::output_result(const String& body_string, bool header_only) {
 	// prepare header: content-length
 	if(content_length) { // useful for redirecting [header "location: http://..."]
 		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%d", content_length);
+		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
 		(*service_funcs.add_header_attribute)(pool(), "content-length", content_length_cstr);
 	}
 

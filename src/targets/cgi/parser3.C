@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.33 2001/03/22 17:13:51 paf Exp $
+	$Id: parser3.C,v 1.34 2001/03/22 21:33:37 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -230,7 +230,7 @@ int main(int argc, char *argv[]) {
 		// header
 		(*service_funcs.output_header_attribute)("content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%d", content_length);
+		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
 		(*service_funcs.output_header_attribute)("content-length", 
 			content_length_cstr);
 

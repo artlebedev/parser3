@@ -95,8 +95,10 @@ static void add_header_attribute(Pool& pool, const char *key, const char *value)
 static void send_header(Pool& pool) {
 	Service_func_context& ctx=*static_cast<Service_func_context *>(pool.context());
 
-	ctx.header->APPEND_CONST("Cache-Control: no-cache\n");
-	ctx.header->APPEND_CONST("\n");
+	ctx.header->APPEND_CONST(
+		"Connection: keep-alive\n"
+		"Cache-Control: no-cache\n"
+		"\n");
 	HSE_SEND_HEADER_EX_INFO header_info;
 
 	char status_buf[MAX_STATUS_LENGTH];
@@ -173,7 +175,16 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 	return TRUE;
 }
 
-/// ISAPI // main workhorse
+/** 
+	ISAPI // main workhorse
+
+	@todo 
+		think of a better way than @c APPL_PHYSICAL_PATH
+		of obtaining the @c DOCUMENT_ROOT
+		because this only gets "the place where last IIS Application was set"
+		and if someone would redefine Application settings below the /
+		all ^table:load[/test] would open not /test but /below/test
+*/
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	Pool pool;
 	// TODO r->no_cache=1;
@@ -189,20 +200,22 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		};
 		pool.set_context(&ctx);
 		
-		const char *filespec_to_process=lpECB->lpszPathTranslated;
-		
 		// Request info
 		Request::Info request_info;
 		
-		const char *document_root=0; // todo: get from somewhere?
-		if(!document_root) {
-			static char fake_document_root[MAX_STRING];
-			strncpy(fake_document_root, filespec_to_process, MAX_STRING);
-			rsplit(fake_document_root, '/');  rsplit(fake_document_root, '\\');// strip filename
-			document_root=fake_document_root;
-		}
-		request_info.document_root=document_root;
-		request_info.path_translated=filespec_to_process;
+		char document_root_buf[MAX_STRING];
+		DWORD document_root_len;
+		if (lpECB->GetServerVariable(lpECB->ConnID, "APPL_PHYSICAL_PATH", 
+			document_root_buf, &document_root_len)) {
+			document_root_buf[document_root_len]=0;
+			request_info.document_root=document_root_buf;
+		} else
+			PTHROW(0, 0,
+				0,
+				"no server variable APPL_PHYSICAL_PATH (error #%lu)",
+					GetLastError()); // never
+
+		request_info.path_translated=lpECB->lpszPathTranslated;
 		request_info.method=lpECB->lpszMethod;
 		request_info.query_string=lpECB->lpszQueryString;
 		char reconstructed_uri[MAX_STRING];
@@ -262,7 +275,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		// prepare header
 		(*service_funcs.add_header_attribute)(pool, "content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%d", content_length);
+		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
 		(*service_funcs.add_header_attribute)(pool, "content-length", 
 			content_length_cstr);
 
@@ -278,7 +291,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	}
 	PEND_CATCH
 	
-	return HSE_STATUS_SUCCESS;
+	return HSE_STATUS_SUCCESS_AND_KEEP_CONN;
 }
 
 

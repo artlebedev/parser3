@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.11 2001/03/22 17:13:49 paf Exp $
+	$Id: mod_parser3.C,v 1.12 2001/03/22 21:33:34 paf Exp $
 */
 
 #include "httpd.h"
@@ -572,7 +572,7 @@ static int parser_handler(request_rec *r)
 		// prepare header
 		(*service_funcs.add_header_attribute)(pool, "content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%d", content_length);
+		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
 		(*service_funcs.add_header_attribute)(pool, "content-length", 
 			content_length_cstr);
 
