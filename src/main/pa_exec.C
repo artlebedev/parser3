@@ -4,7 +4,10 @@
 	Copyright(c) 2000,2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.17 2001/11/05 11:46:28 paf Exp $
+	$Id: pa_exec.C,v 1.18 2001/11/10 16:11:33 paf Exp $
+
+
+	@todo setrlimit
 */
 
 #include "pa_config_includes.h"
