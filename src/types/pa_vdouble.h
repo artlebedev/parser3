@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.20 2001/05/07 14:00:53 paf Exp $
+	$Id: pa_vdouble.h,v 1.21 2001/05/11 17:45:10 parser Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -33,6 +33,8 @@ public: // Value
 	}
 	/// VDouble: fdouble
 	double as_double() { return fdouble; }
+	/// VDouble: fdouble
+	int as_int() { return (int)fdouble; }
 	/// VDouble: 0 or !0
 	bool as_bool() { return fdouble!=0; }
 

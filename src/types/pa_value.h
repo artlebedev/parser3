@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.58 2001/05/10 12:49:26 paf Exp $
+	$Id: pa_value.h,v 1.59 2001/05/11 17:45:10 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -33,19 +33,23 @@ public: // Value
 
 	/// all: value type, used for error reporting and 'is' expression operator
 	virtual const char *type() const =0;
+	
 	const String& name() const { return *fname; }
+	
 	/** is this value defined?
 		@return for
 		- VUnknown: false
 		- others: true
 	*/
 	virtual bool is_defined() const { return true; }
+	
 	/** is this value string?
 		@return for
 		- VString: true
 		- others: false
 	*/
 	virtual bool is_string() const { return false; }
+	
 	/** what's the meaning of this value in context of expression?
 		@return for
 		- VString: fstring as VDouble or this depending on return_string_as_is
@@ -59,12 +63,14 @@ public: // Value
 	virtual Value *as_expr_result(bool return_string_as_is=false) { 
 		bark("(%s) can not be used in expression"); return 0; 
 	}
+	
 	/** extract Hash
 		@return for
 		- VHash: fhash
 		- VResponse: ffields
 	*/
 	virtual Hash *get_hash() { return 0; }
+	
 	/** extract const String
 		@return for
 		- VString: value
@@ -75,15 +81,26 @@ public: // Value
 		- WContext: accumulated fstring
 	*/
 	virtual const String *get_string() { return 0; }
+	
 	/** extract double
 		@return for
 		- VString: value
 		- VDouble: value
-		- VInt: finteger
+		- VInt: value
 		- VBool: value
 		- VUnknown: 0
 	*/
-	virtual double as_double() { bark("(%s) does not have numerical value"); return 0; }
+	virtual double as_double() { bark("(%s) does not have numerical (double) value"); return 0; }
+	
+	/**	extract integer
+		- VString: value
+		- VDouble: value
+		- VInt: value
+		- VBool: value
+		- VUnknown: 0
+	*/
+	virtual int as_int () { bark("(%s) does not have numerical (int) value"); return 0; }
+
 	/** extract bool
 		@return for
 		- VUnknown: false
@@ -93,6 +110,7 @@ public: // Value
 		- VFile: true
 	*/
 	virtual bool as_bool() { bark("(%s) does not have logical value"); return 0; }
+	
 	/** extract file
 		@return for
 		- VFile: this
@@ -102,11 +120,13 @@ public: // Value
 	virtual const VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED) const { 
 		bark("(%s) does not have file value"); return 0; 
 	}
+	
 	/** extract Junction
 		@return for
 		- junction: itself
 	*/
 	virtual Junction *get_junction() { return 0; }
+	
 	/** extract Value element
 		@return for
 		- VHash: (key)=value
@@ -126,6 +146,7 @@ public: // Value
 		- VFile: method,field
 		*/
 	virtual Value *get_element(const String& name) { bark("(%s) has no elements"); return 0; }
+	
 	/** store Value element under @a name
 		@return for
 		- VHash: (key)=value
@@ -138,6 +159,7 @@ public: // Value
 		- VCookie: field
 	*/
 	virtual void put_element(const String& name, Value *value) { bark("(%s) does not accept elements"); }
+	
 	/** extract VStateless_class
 		@return for
 		- VStateless_class: this
@@ -146,6 +168,7 @@ public: // Value
 		- VHash: 0
 	*/
 	virtual VStateless_class *get_class() { return 0; }
+	
 	/** extract VAliased
 		@return for
 		- VAliased: this

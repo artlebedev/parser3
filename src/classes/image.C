@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.25 2001/05/07 15:31:36 paf Exp $
+	$Id: image.C,v 1.26 2001/05/11 17:45:10 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -297,7 +297,7 @@ static void append_attrib_pair(const Hash::Key& key, Hash::Val *val, void *info)
 	Value& value=*static_cast<Value *>(val);
 	// src="a.gif" width=123 ismap[=-1]
 	*ai.tag << " " << key;
-	if(value.is_string() || value.as_double()>=0)
+	if(value.is_string() || value.as_int()>=0)
 		*ai.tag << "=\"" << value.as_string() << "\"";
 }
 static void _html(Request& r, const String& method_name, MethodParams *params) {
@@ -362,11 +362,11 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	int width=(int)r.process(params->get(0)).as_double();
-	int height=(int)r.process(params->get(1)).as_double();
+	int width=r.process(params->get(0)).as_int();
+	int height=r.process(params->get(1)).as_int();
 	int bgcolor_value=0xffFFff;
 	if(params->size()>2)
-		bgcolor_value=(int)r.process(params->get(2)).as_double();
+		bgcolor_value=r.process(params->get(2)).as_int();
 	gdImage& image=*new(pool) gdImage(pool);
 	image.Create(width, height);
 	image.FilledRectangle(0, 0, width-1, height-1, image.Color(bgcolor_value));
@@ -404,11 +404,11 @@ static void _line(Request& r, const String& method_name, MethodParams *params) {
 			"does not contain an image");
 
 	image->Line(
-		(int)r.process(params->get(0)).as_double(), 
-		(int)r.process(params->get(1)).as_double(), 
-		(int)r.process(params->get(2)).as_double(), 
-		(int)r.process(params->get(3)).as_double(), 
-		image->Color((int)r.process(params->get(4)).as_double()));
+		r.process(params->get(0)).as_int(), 
+		r.process(params->get(1)).as_int(), 
+		r.process(params->get(2)).as_int(), 
+		r.process(params->get(3)).as_int(), 
+		image->Color(r.process(params->get(4)).as_int()));
 }
 
 static void _fill(Request& r, const String& method_name, MethodParams *params) {
@@ -421,9 +421,9 @@ static void _fill(Request& r, const String& method_name, MethodParams *params) {
 			"does not contain an image");
 
 	image->Fill(
-		(int)r.process(params->get(0)).as_double(), 
-		(int)r.process(params->get(1)).as_double(), 
-		image->Color((int)r.process(params->get(2)).as_double()));
+		r.process(params->get(0)).as_int(), 
+		r.process(params->get(1)).as_int(), 
+		image->Color(r.process(params->get(2)).as_int()));
 }
 
 static void _rectangle(Request& r, const String& method_name, MethodParams *params) {
@@ -436,11 +436,11 @@ static void _rectangle(Request& r, const String& method_name, MethodParams *para
 			"does not contain an image");
 
 	image->Rectangle(
-		(int)r.process(params->get(0)).as_double(), 
-		(int)r.process(params->get(1)).as_double(), 
-		(int)r.process(params->get(2)).as_double(), 
-		(int)r.process(params->get(3)).as_double(), 
-		image->Color((int)r.process(params->get(4)).as_double()));
+		r.process(params->get(0)).as_int(), 
+		r.process(params->get(1)).as_int(), 
+		r.process(params->get(2)).as_int(), 
+		r.process(params->get(3)).as_int(), 
+		image->Color(r.process(params->get(4)).as_int()));
 }
 
 static void _bar(Request& r, const String& method_name, MethodParams *params) {
@@ -453,11 +453,11 @@ static void _bar(Request& r, const String& method_name, MethodParams *params) {
 			"does not contain an image");
 
 	image->FilledRectangle(
-		(int)r.process(params->get(0)).as_double(), 
-		(int)r.process(params->get(1)).as_double(), 
-		(int)r.process(params->get(2)).as_double(), 
-		(int)r.process(params->get(3)).as_double(), 
-		image->Color((int)r.process(params->get(4)).as_double()));
+		r.process(params->get(0)).as_int(), 
+		r.process(params->get(1)).as_int(), 
+		r.process(params->get(2)).as_int(), 
+		r.process(params->get(3)).as_int(), 
+		image->Color(r.process(params->get(4)).as_int()));
 }
 
 static void _replace(Request& r, const String& method_name, MethodParams *params) {
@@ -478,12 +478,12 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 	
 	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
 	for(int i=0; i<n; i++) {
-		p[i].x=(int)r.process(params->get(2+i*2+0)).as_double();
-		p[i].y=(int)r.process(params->get(2+i*2+1)).as_double();
+		p[i].x=r.process(params->get(2+i*2+0)).as_int();
+		p[i].y=r.process(params->get(2+i*2+1)).as_int();
 	}
 	image->FilledPolygonReplaceColor(p, n, 
-		image->Color((int)r.process(params->get(0)).as_double()), // src color
-		image->Color((int)r.process(params->get(1)).as_double()));// dest color
+		image->Color(r.process(params->get(0)).as_int()), // src color
+		image->Color(r.process(params->get(1)).as_int()));// dest color
 }
 
 static void _polygon(Request& r, const String& method_name, MethodParams *params) {
@@ -504,11 +504,11 @@ static void _polygon(Request& r, const String& method_name, MethodParams *params
 	
 	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
 	for(int i=0; i<n; i++) {
-		p[i].x=(int)r.process(params->get(1+i*2+0)).as_double();
-		p[i].y=(int)r.process(params->get(1+i*2+1)).as_double();
+		p[i].x=r.process(params->get(1+i*2+0)).as_int();
+		p[i].y=r.process(params->get(1+i*2+1)).as_int();
 	}
 	image->Polygon(p, n, 
-		image->Color((int)r.process(params->get(0)).as_double()));
+		image->Color(r.process(params->get(0)).as_int()));
 }
 
 static void _polybar(Request& r, const String& method_name, MethodParams *params) {
@@ -529,11 +529,11 @@ static void _polybar(Request& r, const String& method_name, MethodParams *params
 	
 	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
 	for(int i=0; i<n; i++) {
-		p[i].x=(int)r.process(params->get(1+i*2+0)).as_double();
-		p[i].y=(int)r.process(params->get(1+i*2+1)).as_double();
+		p[i].x=r.process(params->get(1+i*2+0)).as_int();
+		p[i].y=r.process(params->get(1+i*2+1)).as_int();
 	}
 	image->FilledPolygon(p, n, 
-		image->Color((int)r.process(params->get(0)).as_double()));
+		image->Color(r.process(params->get(0)).as_int()));
 }
 
 // font
@@ -608,9 +608,9 @@ static void _font(Request& r, const String& method_name, MethodParams *params) {
 
 	Value& valphabet=params->get_no_junction(0, "alphabet must not be code");
 	Value& file_name=params->get_no_junction(1, "file_name must not be code");
-	int height=(int)r.process(params->get(2)).as_double();
+	int height=r.process(params->get(2)).as_int();
 
-	int width=params->size()>3?(int)r.process(params->get(3)).as_double():0;
+	int width=params->size()>3?r.process(params->get(3)).as_int():0;
 
 	static_cast<VImage *>(r.self)->font=new(pool) Font(pool, 
 		valphabet.as_string(), 
@@ -621,8 +621,8 @@ static void _font(Request& r, const String& method_name, MethodParams *params) {
 static void _text(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	int x=(int)r.process(params->get(0)).as_double();
-	int y=(int)r.process(params->get(1)).as_double();
+	int x=r.process(params->get(0)).as_int();
+	int y=r.process(params->get(1)).as_int();
 	const String& s=r.process(params->get(2)).as_string();
 
 	VImage& vimage=*static_cast<VImage *>(r.self);

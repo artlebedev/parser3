@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.47 2001/05/08 06:07:47 paf Exp $
+	$Id: string.C,v 1.48 2001/05/11 17:45:10 parser Exp $
 */
 
 #include "classes.h"
@@ -40,7 +40,7 @@ static void _length(Request& r, const String& method_name, MethodParams *) {
 
 static void _int(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	Value& result=*new(pool) VInt(pool, (int)r.self->as_double());
+	Value& result=*new(pool) VInt(pool, r.self->as_int());
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }

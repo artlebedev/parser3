@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: unknown.C,v 1.6 2001/05/04 10:42:37 paf Exp $
+	$Id: unknown.C,v 1.7 2001/05/11 17:45:10 parser Exp $
 */
 
 #include "classes.h"
@@ -32,7 +32,7 @@ public: // Methoded
 static void _int(Request& r, const String&, MethodParams *) {
 	Pool& pool=r.pool();
 	VInt *vunknown=static_cast<VInt *>(r.self);
-	Value& value=*new(pool) VInt(pool, (int)vunknown->as_double());
+	Value& value=*new(pool) VInt(pool, vunknown->as_int());
 	r.write_no_lang(value);
 }
 

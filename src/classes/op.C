@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.17 2001/05/08 06:13:00 paf Exp $
+	$Id: op.C,v 1.18 2001/05/11 17:45:10 parser Exp $
 */
 
 #include "classes.h"
@@ -14,6 +14,10 @@
 #include "pa_request.h"
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
+
+// limits
+
+#define MAX_LOOPS 10000
 
 // defines
 
@@ -149,7 +153,7 @@ static void _while(Request& r, const String& method_name, MethodParams *params) 
 	// while...
 	int endless_loop_count=0;
 	while(true) {
-		if(++endless_loop_count>=1973) // endless loop?
+		if(++endless_loop_count>=MAX_LOOPS) // endless loop?
 			PTHROW(0, 0,
 				&method_name,
 				"endless loop detected");
@@ -175,8 +179,8 @@ static void _use(Request& r, const String& method_name, MethodParams *params) {
 static void _for(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	const String& var_name=r.process(params->get(0)).as_string();
-	int from=(int)r.process(params->get(1)).as_double();
-	int to=(int)r.process(params->get(2)).as_double();
+	int from=r.process(params->get(1)).as_int();
+	int to=r.process(params->get(2)).as_int();
 	Value& body_code=params->get_junction(3, "body must be code");
 	Value *delim_code=params->size()==3+1+1?&params->get(3+1):0;
 
@@ -184,7 +188,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 	VInt *vint=new(pool) VInt(pool, 0);
 	int endless_loop_count=0;
 	for(int i=from; i<=to; i++) {
-		if(++endless_loop_count>=2001) // endless loop?
+		if(++endless_loop_count>=MAX_LOOPS) // endless loop?
 			PTHROW(0, 0,
 				&method_name,
 				"endless loop detected");

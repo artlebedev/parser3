@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.79 2001/05/08 10:39:20 paf Exp $
+	$Id: table.C,v 1.80 2001/05/11 17:45:10 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -195,7 +195,7 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(params->size()) {
 		Value& offset_expr=params->get_junction(0, "offset must be expression");
-		table.shift((int)r.process(offset_expr).as_double());
+		table.shift(r.process(offset_expr).as_int());
 	} else {
 		Value& value=*new(pool) VInt(pool, table.current());
 		r.write_no_lang(value);

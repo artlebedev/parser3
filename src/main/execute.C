@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.154 2001/05/08 05:50:01 paf Exp $
+	$Id: execute.C,v 1.155 2001/05/11 17:45:10 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -440,7 +440,7 @@ void Request::execute(const Array& ops) {
 		case OP_INV:
 			{
 				Value *operand=POP();
-				Value *value=NEW VDouble(pool(), ~(int)operand->as_double());
+				Value *value=NEW VDouble(pool(), ~operand->as_int());
 				PUSH(value);
 				break;
 			}
@@ -517,8 +517,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					(int)a->as_double() %
-					(int)b->as_double());
+					a->as_int() %
+					b->as_int());
 				PUSH(value);
 				break;
 			}
@@ -526,8 +526,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					(int)a->as_double() &
-					(int)b->as_double());
+					a->as_int() &
+					b->as_int());
 				PUSH(value);
 				break;
 			}
@@ -535,8 +535,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					(int)a->as_double() |
-					(int)b->as_double());
+					a->as_int() |
+					b->as_int());
 				PUSH(value);
 				break;
 			}
@@ -544,8 +544,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VDouble(pool(), 
-					(int)a->as_double() ^
-					(int)b->as_double());
+					a->as_int() ^
+					b->as_int());
 				PUSH(value);
 				break;
 			}

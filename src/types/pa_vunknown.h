@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vunknown.h,v 1.12 2001/05/07 14:00:55 paf Exp $
+	$Id: pa_vunknown.h,v 1.13 2001/05/11 17:45:10 parser Exp $
 */
 
 #ifndef PA_VUNKNOWN_H
@@ -28,6 +28,8 @@ public: // Value
 	bool is_defined() const { return false; }
 	/// VUnknown: 0
 	double as_double() { return 0; }
+	/// VUnknown: 0
+	int as_int() { return 0; }
 	/// VUnknown: this
 	Value *as_expr_result(bool return_string_as_is=false) { return this; }
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vbool.h,v 1.9 2001/05/07 14:00:53 paf Exp $
+	$Id: pa_vbool.h,v 1.10 2001/05/11 17:45:10 parser Exp $
 */
 
 #ifndef PA_VBOOL_H
@@ -27,6 +27,8 @@ public: // Value
 	bool as_bool() { return fbool; }
 	/// VBool: fbool
 	double as_double() { return fbool; }
+	/// VBool: fbool
+	int as_int() { return fbool; }
 
 public: // usage
 

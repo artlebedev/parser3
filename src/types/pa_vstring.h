@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.25 2001/05/07 14:00:55 paf Exp $
+	$Id: pa_vstring.h,v 1.26 2001/05/11 17:45:10 parser Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -48,7 +48,25 @@ public: // Value
 		if(error_pos && *error_pos)
 			THROW(0, 0,
 				&fstring,
-				"invalid number");
+				"invalid number (double)");
+
+		return result;
+	}
+	/// VString: fstring
+	int as_int() { 
+		int result;
+		const char *cstr=fstring.cstr();
+		char *error_pos=0;
+		// 0xABC
+		if(cstr[0]=='0' && (cstr[1]=='x' || cstr[1]=='X'))
+			result=(int)(unsigned long)strtol(cstr, &error_pos, 0);
+		else
+			result=(int)strtol(cstr, &error_pos, 0);
+
+		if(error_pos && *error_pos)
+			THROW(0, 0,
+				&fstring,
+				"invalid number (int)");
 
 		return result;
 	}

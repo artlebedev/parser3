@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.27 2001/05/08 06:07:47 paf Exp $
+	$Id: double.C,v 1.28 2001/05/11 17:45:10 parser Exp $
 */
 
 #include "classes.h"
@@ -35,7 +35,7 @@ public: // Methoded
 static void _int(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
-	Value& result=*new(pool) VInt(pool, (int)vdouble->as_double());
+	Value& result=*new(pool) VInt(pool, vdouble->as_int());
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
