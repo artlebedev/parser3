@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.51 2001/05/19 16:37:39 parser Exp $
+	$Id: string.C,v 1.52 2001/05/19 18:35:40 parser Exp $
 */
 
 #include "classes.h"
@@ -169,7 +169,8 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 			vtable.set_name(*ai.origin);
 
 			Junction *junction=ai.replacement_code->get_junction();
-			junction->rcontext=junction->root=&vtable;
+			junction->rcontext=/*must be some way to get to 
+							   outside world junction->root=*/&vtable;
 			Value& replaced=ai.request->process(*ai.replacement_code, ai.origin, false);
 
 			/*
