@@ -239,6 +239,10 @@ SOURCE=.\untaint.C
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\types\pa_valiased.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_valiased.h
 # End Source File
 # Begin Source File

@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: form class decls.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.9 2001/03/19 20:07:39 paf Exp $
+	$Id: pa_vform.h,v 1.10 2001/03/19 22:44:23 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -15,6 +17,21 @@
 
 class Request;
 
+/**
+	derivates from VStateless_class so that :CLASS element referred to this.
+
+	and users could do such tricks:
+	@verbatim
+		^rem{pass somebody something with elements}
+
+		^rem{this time that would be elements of a form}
+		^somebody[^form:CLASS]
+
+		^rem{this time that would be elements of a table record}
+		$news[^table:sql[select * from news]]
+		^somebody[^news.record[]]
+	@endverbatim
+*/
 class VForm : public VStateless_class {
 public: // Value
 	
