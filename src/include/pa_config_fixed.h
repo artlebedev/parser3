@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_config_fixed.h,v 1.6 2001/05/10 17:28:11 paf Exp $
+	$Id: pa_config_fixed.h,v 1.7 2001/05/17 09:47:17 parser Exp $
 
 
 	tested only with MS Visual C++ V6
@@ -25,3 +25,6 @@
 #define HAVE_STDLIB_H
 #define HAVE_STRING_H
 #define HAVE_DIRECT_H
+
+/// @todo automake determination
+#define MULTITHREAD

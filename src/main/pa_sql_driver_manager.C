@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.12 2001/05/17 08:42:22 parser Exp $
+	$Id: pa_sql_driver_manager.C,v 1.13 2001/05/17 09:47:17 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -52,8 +52,6 @@ private:
 /// @param request_url protocol://[driver-dependent]
 SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url, 
 												   Table *protocol2driver_and_client) {
-	SYNCHRONIZED(true);
-
 	Pool& pool=request_url.pool(); // request pool											   
 
 	// we have table for locating protocol's library
@@ -171,8 +169,6 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 
 void SQL_Driver_manager::close_connection(const String& url, 
 										  SQL_Connection& connection) {
-	SYNCHRONIZED(true);
-
 	put_connection_to_cache(url, connection);
 }
 
@@ -180,6 +176,8 @@ void SQL_Driver_manager::close_connection(const String& url,
 // driver cache
 
 SQL_Driver *SQL_Driver_manager::get_driver_from_cache(const String& protocol) {
+	SYNCHRONIZED;
+
 	if(SQL_Driver *result=static_cast<SQL_Driver *>(driver_cache.get(protocol)))
 		return result;
 
@@ -188,12 +186,16 @@ SQL_Driver *SQL_Driver_manager::get_driver_from_cache(const String& protocol) {
 
 void SQL_Driver_manager::put_driver_to_cache(const String& protocol, 
 											 SQL_Driver& driver) {
+	SYNCHRONIZED;
+
 	driver_cache.put(protocol, &driver);
 }
 
 // connection cache
 
 SQL_Connection *SQL_Driver_manager::get_connection_from_cache(const String& url) { 
+	SYNCHRONIZED;
+
 	if(Stack *connections=static_cast<Stack *>(connection_cache.get(url)))
 		if(connections->size()) // there are cached connections to that 'url'
 			return static_cast<SQL_Connection *>(connections->pop());
@@ -204,6 +206,8 @@ SQL_Connection *SQL_Driver_manager::get_connection_from_cache(const String& url)
 /// @todo cache expiration[use SQL_Driver::disconnect]
 void SQL_Driver_manager::put_connection_to_cache(const String& url, 
 												 SQL_Connection& connection) { 
+	SYNCHRONIZED;
+
 	Stack *connections;
 	if(!(connections=static_cast<Stack *>(connection_cache.get(url)))) {
 		// there are no cached connections to that 'url' yet 

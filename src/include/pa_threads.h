@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_threads.h,v 1.12 2001/04/03 14:39:02 paf Exp $
+	$Id: pa_threads.h,v 1.13 2001/05/17 09:47:17 parser Exp $
 */
 
 #ifndef PA_THREADS_H
@@ -18,12 +18,17 @@
 
 #ifdef MULTITHREAD
 
+class AutoSYNCHRONIZED;
+
 /// simple semaphore object
 class Mutex {
+	friend AutoSYNCHRONIZED;
+private:
 	uint handle;
 public:
 	Mutex();
 	~Mutex();
+private: // for AutoSYNCHRONIZED
 	void acquire();
 	void release();
 };
@@ -36,41 +41,25 @@ extern Mutex global_mutex;
 	Use it with SYNCHRONIZED macro
 */
 class AutoSYNCHRONIZED {
-	bool thread_safe;
 public:
-	AutoSYNCHRONIZED(bool athread_safe) : thread_safe(athread_safe) { 
-		if(thread_safe)
-			global_mutex.acquire(); 
-	}
-	~AutoSYNCHRONIZED() { 
-		if(thread_safe)
-			global_mutex.release(); 
-	}
+	AutoSYNCHRONIZED() { global_mutex.acquire(); }
+	~AutoSYNCHRONIZED() { global_mutex.release(); }
 };
 
 /** 
 	put it to first line of a function to ensure thread safety.
 	@verbatim
-		void someclass::somefunc(...) { SYNCHRONIZED(thread_safe);
+		void someclass::somefunc(...) { SYNCHRONIZED;
 			...
 		}
 	@endverbatim
 
-	considering @a thread_safe to be the object field to flag 
-	whether safety is really needed in this particular object instance
+	WARNING: don't use THROW or PTHROW with such thread safety mechanizm -
+	longjump would leave global_mutex acquired, which is wrong!
 */
-#define SYNCHRONIZED(athread_safe) AutoSYNCHRONIZED autoSYNCHRONIZED(athread_safe)
-
-#define SYNCH_LOCK global_mutex.acqire()
-#define SYNCH_UNLOCK global_mutex.release()
-
+#	define SYNCHRONIZED AutoSYNCHRONIZED autoSYNCHRONIZED()
 #else // not MULTITHREAD-ed
-
-#define SYNCHRONIZED(athread_safe) /* do nothing */
-
-#define SYNCH_LOCK 
-#define SYNCH_UNLOCK 
-
+#	define SYNCHRONIZED /* do nothing */
 #endif
 
 
