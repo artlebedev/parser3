@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 08:49:56 $";
+static const char* IDENT="$Date: 2003/11/06 09:06:09 $";
 
 #include "apr_file_io.h"
 
@@ -100,7 +100,15 @@ APR_DECLARE(apr_status_t) apr_file_info_get(apr_finfo_t *finfo,
                                           apr_int32_t wanted,
                                           apr_file_t *file)
 {
-	return APR_SUCCESS;
+    struct stat info;
+
+    if (fstat(file->handle, &info) == 0) {
+		finfo->size=info.st_size;
+        return APR_SUCCESS;
+    }
+    else {
+        return errno;
+    }
 }
 
 
@@ -108,7 +116,7 @@ APR_DECLARE(apr_status_t) apr_file_seek(apr_file_t *file,
                                    apr_seek_where_t where,
                                    apr_off_t *offset)
 {
-	return APR_SUCCESS;
+	return lseek(file->handle, *offset, where);
 }
 
 
@@ -116,6 +124,12 @@ APR_DECLARE(apr_status_t) apr_file_read_full(apr_file_t *file, void *buf,
                                         apr_size_t nbytes,
                                         apr_size_t *bytes_read)
 {
+	int bytesread = read(file->handle, buf, nbytes);
+    if (bytesread == 0)
+        return APR_EOF;
+    else if (bytesread == -1)
+        return errno;
+
 	return APR_SUCCESS;
 }
 
@@ -124,5 +138,15 @@ APR_DECLARE(apr_status_t) apr_file_write_full(apr_file_t *file, const void *buf,
                                          apr_size_t nbytes, 
                                          apr_size_t *bytes_written)
 {
+    apr_size_t rv;
+    do {
+        rv = write(file->handle, buf, nbytes);
+    } while (rv == (apr_size_t)-1 && errno == EINTR);
+
+    if (rv == (apr_size_t)-1) {
+        *bytes_written = 0;
+        return errno;
+    }
+	*bytes_written=rv;
 	return APR_SUCCESS;
 }
