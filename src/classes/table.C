@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.57 2001/04/06 08:55:18 paf Exp $
+	$Id: table.C,v 1.58 2001/04/06 12:34:50 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,6 +15,7 @@
 #include "pa_vtable.h"
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
+#include "pa_dir.h"
 
 // global var
 
@@ -505,8 +506,39 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 	static_cast<VTable *>(r.self)->set_table(table);
 }
 
-// initialize
+/// ^table:dir[path]
+/// ^table:dir[path][regexp]
+static void _dir(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
 
+	Value& relative_path=*static_cast<Value *>(params->get(0));
+	// forcing [path]
+	r.fail_if_junction_(true, relative_path, method_name, "path must not be code");
+
+	const char* absolute_path_cstr=r.absolute(relative_path.as_string())
+		.cstr(String::UL_FILE_NAME);
+
+	Array& columns=*new(pool) Array(pool);
+	columns+=new(pool) String(pool, "name");	
+	Table& table=*new(pool) Table(pool, &method_name, &columns);
+
+	LOAD_DIR(absolute_path_cstr, 
+		Array& row=*new(pool) Array(pool);
+		size_t file_name_size=strlen(ffblk.ff_name);
+		char *file_name=(char *)r.malloc(file_name_size);
+		memcpy(file_name, ffblk.ff_name, file_name_size);
+		String &string=*new(pool) String(pool);
+		string.APPEND_TAINTED(file_name, file_name_size, 
+			method_name.origin().file, method_name.origin().line);
+		row+=&string;
+		table+=&row;
+	);
+
+	// replace any previous table value
+	static_cast<VTable *>(r.self)->set_table(table);
+}
+
+// initialize
 void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 	// ^table:set{data}
 	// ^table:set[nameless]{data}
@@ -563,4 +595,8 @@ void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^table:sql[query][(count[;offset])]
 	vclass.add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);
+
+	// ^table:dir[path]
+	// ^table:dir[path][regexp]
+	vclass.add_native_method("dir", Method::CT_DYNAMIC, _dir, 1, 2);
 }

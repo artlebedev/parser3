@@ -1,0 +1,83 @@
+/** @file
+	Parser: directory scanning for different OS-es decls.
+
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: pa_dir.h,v 1.1 2001/04/06 12:34:52 paf Exp $
+*/
+
+#ifndef PA_DIR_H
+#define PA_DIR_H
+
+#ifdef WIN32
+
+#include <windows.h>
+
+#define MAXPATH MAX_PATH
+#define FA_DIREC FILE_ATTRIBUTE_DIRECTORY
+
+
+struct ffblk {
+    DWORD ff_attrib;/*dwFileAttributes;*/
+    FILETIME ftCreationTime;
+    FILETIME ftLastAccessTime;
+    FILETIME ftLastWriteTime;
+    DWORD nFileSizeHigh;
+    DWORD nFileSizeLow;
+    DWORD dwReserved0;
+    DWORD dwReserved1;
+    CHAR   ff_name[ MAX_PATH ];/*cFileName[ MAX_PATH ];*/
+    CHAR   cAlternateFileName[ 14 ];
+	/*helper*/
+	HANDLE handle;
+
+/*	
+	
+	unsigned char  ff_attrib __attribute__((packed));
+  unsigned short ff_ftime __attribute__((packed));
+  unsigned short ff_fdate __attribute__((packed));
+  unsigned long  ff_fsize __attribute__((packed));
+  char ff_name[260] __attribute__((packed));
+ */
+};
+
+#else
+
+#include <strings.h>	
+#include <sys/types.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
+#define MAXPATH 1000 /*NAME_MAX*/
+#define FA_DIREC S_IFDIR
+
+struct ffblk {
+	/*as if in windows :)*/
+    unsigned char ff_attrib;
+    char ff_name[ MAXPATH ];
+	/*helpers*/
+	DIR *dir;
+	char filePath[MAXPATH];
+};
+
+#endif
+
+bool findfirst(const char *_pathname, struct ffblk *_ffblk, int _attrib);
+bool findnext(struct ffblk *_ffblk);
+void findclose(struct ffblk *_ffblk);
+
+#define LOAD_DIR(dir,action) {\
+    ffblk ffblk; \
+    bool done=findfirst(dir, &ffblk, 0); \
+	while(!done) { \
+		if(*ffblk.ff_name && ffblk.ff_name[0]!='.') {\
+			action; \
+		} \
+		done=findnext(&ffblk); \
+    } \
+	findclose(&ffblk); \
+} 
+
+#endif

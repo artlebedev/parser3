@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.140 2001/04/06 10:32:20 paf Exp $
+	$Id: execute.C,v 1.141 2001/04/06 12:34:54 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -665,9 +665,12 @@ Value *Request::get_element() {
 	Value *ncontext=POP();
 	Value *value=ncontext->get_element(name);
 	if(!value)
-		if(Method* method=OP.get_method(name)) // operator?
-			value=NEW VJunction(*NEW Junction(pool(), 
-				*self, self->get_class(), method, 0,0,0,0));
+		if(Method* method=OP.get_method(name)) { // operator?
+			// as if that method were in self and we have normal dynamic method here
+			Junction& junction=*NEW Junction(pool(), 
+				*self, self->get_class(), method, 0,0,0,0);
+			value=NEW VJunction(junction);
+		}
 	if(value)
 		value=&process(*value, &name); // process possible code-junction
 	else {

@@ -106,6 +106,10 @@ SOURCE=..\include\pa_config_includes.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_dir.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_exception.h
 # End Source File
 # Begin Source File
@@ -218,6 +222,10 @@ SOURCE=.\pa_array.C
 # Begin Source File
 
 SOURCE=.\pa_common.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_dir.C
 # End Source File
 # Begin Source File
 
