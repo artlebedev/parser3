@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.130 2001/03/27 18:06:10 paf Exp $
+	$Id: execute.C,v 1.131 2001/03/27 18:24:38 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -153,7 +153,7 @@ void Request::execute(const Array& ops) {
 						&frame->junction.self /* ^t.menu{} */:rcontext/* ^if() */, 
 					op.code==OP_EXPR_CODE__STORE_PARAM?
 						0:wcontext->somebody_entered_some_object()>1?
-							&frame->junction.self /* ^t.menu{} */:wcontext/* ^if() */, 
+							frame/* ^t.menu{} */:wcontext/* ^if() */, 
 					local_ops);
 				
 				Value *value=NEW VJunction(j);

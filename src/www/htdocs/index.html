@@ -1,5 +1,5 @@
 @auto[]
-$html-typo[^table:set{user	html	comment
+!!$html-typo[^table:set{user	html	comment
 <<	&laquo^;	длинные user вперёд
 >>	&raquo^;
 \n\n	<p>	!эти есть в таблице по умолчанию
@@ -96,7 +96,7 @@ $result[^if(^test.length[]){$test}{$def}]
 <body bgcolor=black>
 <font color=white>
 ERROR:
-^rem{TODO: checkif(def $source)}$origin '$source'
+^if(def $source){$origin '$source'}
 ${comment}.
 ^if(def $type){type=$type}
 ^if(def $code){code=$code}
@@ -104,4 +104,3 @@ ${comment}.
 @auto_test[]
 ^BASE.auto_test[]
 <li>${request:uri}!
-

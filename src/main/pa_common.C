@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.32 2001/03/27 15:37:51 paf Exp $
+	$Id: pa_common.C,v 1.33 2001/03/27 18:24:38 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -45,32 +45,39 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
 
 
 char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_problem) {
-    int f;
-    struct stat finfo;
 	char *fname=file_spec.cstr();
-    if(!stat(fname,&finfo) &&(f=open(fname,O_RDONLY|_O_TEXT))>=0) {
+	int f;
+    struct stat finfo;
+
+	// first open, next stat:
+	// directory update of NTFS symbolic links performed on open.
+	// ex: 
+	//   a.html:^test[] and b.html hardlink to a.html
+	//   user inserts ! before ^test in a.html
+	//   directory entry of b.html in NTFS not updated at once,
+	//   they delay update till open, so we must not do stat before that
+    if((f=open(fname, O_RDONLY|_O_TEXT))>=0 && stat(fname, &finfo)==0) {
 		/*if(exclusive)
 			flock(f, LOCK_EX);*/
-
 		char *result=(char *)pool.malloc(finfo.st_size+1);
-		int read_size=read(f,result,finfo.st_size);
+		int read_size=read(f, result, finfo.st_size);
 		/*if(exclusive)
 			flock(f, LOCK_UN);*/
 		close(f);
 
 		if(read_size>=0 && read_size<=finfo.st_size) 
-			result[read_size]='\0';
+			result[read_size]=0;
 		else
-			PTHROW(0, 0,
-				&file_spec,
-				"read failed: actually read %d bytes count not in [0..%ul] valid range",
+			PTHROW(0, 0, 
+				&file_spec, 
+				"read failed: actually read %d bytes count not in [0..%ul] valid range", 
 					read_size, (unsigned long)finfo.st_size);
 		
 		return result;//prepare_config(result, remove_empty_lines);
     }
 	if(fail_on_read_problem)
-		PTHROW(0, 0,
-			&file_spec,
+		PTHROW(0, 0, 
+			&file_spec, 
 			"read failed: %s (#%d)", strerror(errno), errno);
     return 0;
 }
@@ -78,12 +85,12 @@ char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_prob
 void file_write(Pool& pool, 
 				const String& file_spec, 
 				const char *data, size_t size, 
-				bool as_text/*,
+				bool as_text/*, 
 				bool exclusive*/) {
 	char *fname=file_spec.cstr();
 	int f;
 	if(access(fname, F_OK)!=0) {/*no*/
-		if((f=open(fname,O_WRONLY|O_CREAT|_O_BINARY,0666))>0)
+		if((f=open(fname, O_WRONLY|O_CREAT|_O_BINARY, 0666))>0)
 			close(f);
 	}
 	if(access(fname, R_OK|W_OK)==0) {
@@ -93,13 +100,13 @@ void file_write(Pool& pool,
 #endif
 		;
 		mode|=as_text?_O_TEXT:_O_BINARY;
-		if((f=open(fname,mode,0666))>=0) {
+		if((f=open(fname, mode, 0666))>=0) {
 			/*if(exclusive)
 				flock(f, LOCK_EX);*/
 			
-			if(size) write(f,data,size);
+			if(size) write(f, data, size);
 #ifndef WIN32
-			ftruncate(f,size);
+			ftruncate(f, size);
 #endif
 			/*if(exclusive)
 				flock(f, LOCK_UN);*/
@@ -107,15 +114,15 @@ void file_write(Pool& pool,
 			return;
 		}
 	}
-	PTHROW(0, 0,
-		&file_spec,
+	PTHROW(0, 0, 
+		&file_spec, 
 		"write failed: %s (#%d)", strerror(errno), errno);
 }
 
 void file_delete(Pool& pool, const String& file_spec) {
 	if(unlink(file_spec.cstr())!=0)
-		PTHROW(0, 0,
-			&file_spec,
+		PTHROW(0, 0, 
+			&file_spec, 
 			"unlink failed: %s (#%d)", strerror(errno), errno);
 }
 
@@ -169,13 +176,13 @@ char *format(Pool& pool, double value, char *fmt) {
 	if(fmt)
 		if(strpbrk(fmt, "diouxX"))
 			if(strpbrk(fmt, "ouxX"))
-				snprintf(result, MAX_NUMBER, fmt,(uint)value );
+				snprintf(result, MAX_NUMBER, fmt, (uint)value );
 			else
-				snprintf(result, MAX_NUMBER, fmt,(int)value );
+				snprintf(result, MAX_NUMBER, fmt, (int)value );
 		else
 			snprintf(result, MAX_NUMBER, fmt, value);
 	else
-		snprintf(result, MAX_NUMBER, "%d",(int)value);
+		snprintf(result, MAX_NUMBER, "%d", (int)value);
 	
 	return result;
 }
@@ -199,8 +206,8 @@ size_t stdout_write(const char *buf, size_t size) {
 const char *unescape_chars(Pool& pool, const char *cp, int len) {
 	char *s=(char *)pool.malloc(len + 1);
 	enum EscapeState {
-		EscapeRest,
-		EscapeFirst,
+		EscapeRest, 
+		EscapeFirst, 
 		EscapeSecond
 	} escapeState=EscapeRest;
 	int escapedValue=0;
