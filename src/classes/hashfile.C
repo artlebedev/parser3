@@ -6,7 +6,7 @@
 */
 
 
-static const char* IDENT="$Id: hashfile.C,v 1.26 2003/11/06 10:25:40 paf Exp $";
+static const char* IDENT="$Id: hashfile.C,v 1.27 2003/11/06 11:12:44 paf Exp $";
 
 #include "classes.h"
 
@@ -61,47 +61,56 @@ static void _clear(Request& r, MethodParams&) {
 	self.clear();
 }
 
-#if LATER
+#ifndef DOXYGEN
+struct Hashfile_foreach_info {
+	Request* r;
+	const String* key_var_name;
+	const String* value_var_name;
+	Value* body_code;
+	Value* delim_maybe_code;
+
+	Value* var_context;
+	VString* vkey;
+	VString* vvalue;
+	bool need_delim;
+};
+#endif
+static void one_foreach_cycle(const String::Body key, const String& value, void* ainfo) {
+	Hashfile_foreach_info& info=*static_cast<Hashfile_foreach_info*>(ainfo);
+	info.vkey->set_string(*new String(key, String::L_TAINTED));
+	info.vvalue->set_string(value);
+	info.var_context->put_element(*info.key_var_name, info.vkey, false);
+	info.var_context->put_element(*info.value_var_name, info.vvalue, false);
+
+	StringOrValue sv_processed=info.r->process(*info.body_code);
+	const String* s_processed=sv_processed.get_string();
+	if(info.delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
+		if(info.need_delim) // need delim & iteration produced string?
+			info.r->write_pass_lang(info.r->process(*info.delim_maybe_code));
+		info.need_delim=true;
+	}
+	info.r->write_pass_lang(sv_processed);
+}
 static void _foreach(Request& r, MethodParams& params) {
 	VHashfile& self=GET_SELF(r, VHashfile);
 
-	const String& key_var_name=params.as_string(0, "key-var name must be string");
-	const String& value_var_name=params.as_string(1, "value-var name must be string");
-	Value& body_code=params.as_junction(2, "body must be code");
-	Value *delim_maybe_code=params.size()>3?&params.get(3):0;
+	Hashfile_foreach_info info;
+	
+	info.r=&r;
+	info.key_var_name=&params.as_string(0, "key-var name must be string");
+	info.value_var_name=&params.as_string(1, "value-var name must be string");
+	info.body_code=&params.as_junction(2, "body must be code");
+	info.delim_maybe_code=params.count()>3?params.get(3):0;
 
-	bool need_delim=false;
-	Value& var_context=*body_code.get_junction()->wcontext;
-	VString& vkey=*new(pool) VString(pool);
-	VString& vvalue=*new(pool) VString(pool);
+	info.var_context=info.body_code->get_junction()->wcontext;
+	info.vkey=new VString;
+	info.vvalue=new VString;
 
-	DB_Cursor cursor(*self.get_table_ptr(&method_name), &method_name);
-	while(true) {
-		String *key;
-		String *data;
-		if(!cursor.get(pool, key, data, DB_NEXT))
-			break;
+	info.need_delim=false;
 
-		if(!key) 
-			continue; // expired
-
-		vkey.set_string(*key);
-		vvalue.set_string(*data);
-		var_context.put_element(key_var_name, &vkey);
-		var_context.put_element(value_var_name, &vvalue);
-
-		Value& processed_body=r.process(body_code);
-		if(delim_maybe_code) { // delimiter set?
-			const String *string=processed_body.get_string();
-			if(need_delim && string && string->size()) // need delim & iteration produced string?
-				r.write_pass_lang(r.process(*delim_maybe_code));
-			need_delim=true;
-		}
-		r.write_pass_lang(processed_body);
-	}
+	self.for_each(one_foreach_cycle, &info);
 }
 
-#endif
 // constructor
 
 MHashfile::MHashfile(): Methoded("hashfile") {
@@ -114,5 +123,5 @@ MHashfile::MHashfile(): Methoded("hashfile") {
 	// ^hashfile.clear[]
 	add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
 	// ^hashfile.foreach[key;value]{code}[delim]
-//	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
+	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
 }
