@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.179 2002/06/03 15:02:41 paf Exp $
+	$Id: parser3.C,v 1.180 2002/06/11 12:20:42 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -165,6 +165,16 @@ const char *SAPI::get_env(Pool& , const char *name) {
 	return getenv(name);
 }
 
+const char *const *SAPI::environment(Pool&) {
+#ifdef _MSC_VER
+	extern char **_environ;
+	return _environ;
+#else
+	extern char **environ;
+	return environ;
+#endif
+}
+
 size_t SAPI::read_post(Pool& , char *buf, size_t max_bytes) {
 	size_t read_size=0;
 	do {
@@ -300,7 +310,6 @@ void real_parser_handler(
 	const char *content_length=SAPI::get_env(*pool, "CONTENT_LENGTH");
 	request_info.content_length=(content_length?atoi(content_length):0);
 	request_info.cookie=SAPI::get_env(*pool, "HTTP_COOKIE");
-	request_info.user_agent=SAPI::get_env(*pool, "HTTP_USER_AGENT");
 	
 	// prepare to process request
 	Request request(*pool,

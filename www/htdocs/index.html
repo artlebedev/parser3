@@ -160,7 +160,15 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^pngsize[]
 #^checkList[]
 #^datetest[]
-^tserge[]
+#^tserge[]
+^envt[]
+
+@envt[]
+$f[^file::exec[showenv.cmd]]
+$f.status<br>
+$f.stderr<br>
+<pre>$f.text</pre>
+
 
 @tserge[]
 ^if(" 09 "){y}

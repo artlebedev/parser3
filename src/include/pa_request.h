@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.134 2002/05/07 07:39:18 paf Exp $
+	$Id: pa_request.h,v 1.135 2002/06/11 12:20:41 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -81,7 +81,6 @@ public:
 		const char *content_type;
 		size_t content_length;
 		const char *cookie;
-		const char *user_agent;
 	};
 	
 	Request(Pool& apool,

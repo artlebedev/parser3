@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.71 2002/05/07 07:39:19 paf Exp $
+	$Id: parser3isapi.C,v 1.72 2002/06/11 12:20:42 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -117,6 +117,68 @@ const char *SAPI::get_env(Pool& pool, const char *name) {
 	}
 		
 	return 0;
+}
+
+static int grep_char(const char *s, char c) {
+	int result=0;
+	if(s) {
+		while(s=strchr(s, c)) {
+			s++; // skip found c
+			result++;
+		}
+	}
+	return result;
+}
+static const char *mk_env_pair(Pool& pool, const char *key, const char *value) {
+	char *result=(char *)pool.malloc(strlen(key)+1/*=*/+strlen(value)+1/*0*/);
+	strcpy(result, key); strcat(result, "="); strcat(result, value);
+	return result;
+}
+const char *const *SAPI::environment(Pool& pool) {
+	const char *IIS51vars[]={
+		"APPL_MD_PATH", "APPL_PHYSICAL_PATH",
+		"AUTH_PASSWORD", "AUTH_TYPE", "AUTH_USER",
+		"CERT_COOKIE", "CERT_FLAGS", "CERT_ISSUER", "CERT_KEYSIZE", "CERT_SECRETKEYSIZE",
+		"CERT_SERIALNUMBER", "CERT_SERVER_ISSUER", "CERT_SERVER_SUBJECT", "CERT_SUBJECT",
+		"CONTENT_LENGTH", "CONTENT_TYPE",
+		"LOGON_USER",
+		"HTTPS", "HTTPS_KEYSIZE", "HTTPS_SECRETKEYSIZE", "HTTPS_SERVER_ISSUER", "HTTPS_SERVER_SUBJECT",
+		"INSTANCE_ID", 	"INSTANCE_META_PATH",
+		"PATH_INFO", 	"PATH_TRANSLATED",
+		"QUERY_STRING",
+		"REMOTE_ADDR", "REMOTE_HOST", "REMOTE_USER", "REQUEST_METHOD",
+		"SCRIPT_NAME",
+		"SERVER_NAME", "SERVER_PORT", "SERVER_PORT_SECURE", "SERVER_PROTOCOL", "SERVER_SOFTWARE",
+		"URL",
+	};
+	const int IIS51var_count=sizeof(IIS51vars)/sizeof(*IIS51vars);
+
+	// we know this buf is writable
+	char *all_http_vars=const_cast<char *>(SAPI::get_env(pool, "ALL_HTTP"));
+	const int http_var_count=grep_char(all_http_vars, '\n')+1/*\n for theoretical(never saw) this \0*/;
+	
+	const char **result=
+		(const char **)pool.malloc(sizeof(char *)*(IIS51var_count+http_var_count+1/*0*/));
+	const char **cur=result;
+
+	// IIS5.1 vars
+	for(int i=0; i<IIS51var_count; i++) {
+		const char *key=IIS51vars[i];
+		if(const char *value=SAPI::get_env(pool, key))
+			*cur++=mk_env_pair(pool, key, value);
+	}
+
+	// HTTP_* vars
+	if(char *s=all_http_vars) {
+		while(char *key=lsplit(&s, '\n'))
+			if(char *value=lsplit(key, ':'))
+				*cur++=mk_env_pair(pool, key, value);
+	}
+	
+	// mark EOE
+	*cur=0; 
+
+	return result;
 }
 
 size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
@@ -310,7 +372,6 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 	request_info.content_type=lpECB->lpszContentType;
 	request_info.content_length=lpECB->cbTotalBytes;
 	request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
-	request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
 
 	
 	// prepare to process request

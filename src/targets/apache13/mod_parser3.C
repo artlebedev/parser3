@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.20 2002/06/04 09:22:08 paf Exp $
+	$Id: mod_parser3.C,v 1.21 2002/06/11 12:20:42 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -150,6 +150,35 @@ const char *SAPI::get_env(Pool& pool, const char *name) {
  	return (const char *)ap_table_get(r->subprocess_env, name);
 }
 
+#ifndef DOXYGEN
+struct SAPI_environment_append_info {
+	Pool *pool;
+	const char **cur;
+};
+#endif
+static const char *mk_env_pair(Pool& pool, const char *key, const char *value) {
+	char *result=(char *)pool.malloc(strlen(key)+1/*=*/+strlen(value)+1/*0*/);
+	strcpy(result, key); strcat(result, "="); strcat(result, value);
+	return result;
+}
+static int SAPI_environment_append(void *d, const char *k, const char *val) {
+	if( k && val ) {
+		SAPI_environment_append_info& info=
+			*static_cast<SAPI_environment_append_info *>(d);
+		*info.cur++=mk_env_pair(*info.pool, k, val);
+	}
+	return 1/*true*/;
+}
+const char *const *SAPI::environment(Pool& pool) {
+	request_rec *r=static_cast<request_rec *>(pool.get_context());
+ 	const table *t=r->subprocess_env;
+	const char **result=
+		(const char **)pool.malloc(sizeof(char *)*(ap_table_elts(t)->nelts+1/*0*/));
+	SAPI_environment_append_info info={&pool, result};
+	ap_table_do(SAPI_environment_append, &info, t, 0); *info.cur=0; // mark EOE
+	return result;
+}
+
 size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
 	request_rec *r=static_cast<request_rec *>(pool.get_context());
 
@@ -235,7 +264,6 @@ static void real_parser_handler(Pool& pool, request_rec *r) {
 	const char *content_length=SAPI::get_env(pool, "CONTENT_LENGTH");
 	request_info.content_length=content_length?atoi(content_length):0;
 	request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
-	request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
 
     // config
 	Parser_module_config *dcfg=our_dconfig(r);

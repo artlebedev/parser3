@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.81 2002/04/19 11:18:04 paf Exp $
+	$Id: file.C,v 1.82 2002/06/11 12:20:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -177,6 +177,8 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			name##value.APPEND_CONST(value_cstr); \
 			env.put(name##key, &name##value); \
 		}
+	// passing SAPI::environment
+	/*
 	#define EPASS(name) \
 		String name##key(pool, #name); \
 		String name##value(pool); \
@@ -184,6 +186,25 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			name##value.APPEND_CONST(value_cstr); \
 			env.put(name##key, &name##value); \
 		}
+
+	EPASS(SERVER_PROTOCOL);
+	EPASS(SERVER_NAME);
+	EPASS(SERVER_PORT);
+	EPASS(REMOTE_ADDR);
+	EPASS(REMOTE_HOST);
+	EPASS(REMOTE_USER);
+	EPASS(HTTP_REFERER);
+	EPASS(HTTP_USER_AGENT);
+	EPASS(HTTP_COOKIE);
+	*/
+	if(const char *const *pairs=SAPI::environment(pool)) {
+		while(const char *pair=*pairs++)
+			if(const char *eq_at=strchr(pair, '=')) {
+				String& key=*new(pool) String(pool, pair, eq_at-pair);
+				String& value=*new(pool) String(pool, eq_at+1);
+				env.put(key, &value);
+			}
+	}
 
 	// const
 	ECSTR(GATEWAY_INTERFACE, "CGI/1.1");
@@ -198,22 +219,9 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	snprintf(content_length_cstr, MAX_NUMBER, "%u", r.info.content_length);
 	String content_length(pool, content_length_cstr);
 	ECSTR(CONTENT_LENGTH, content_length_cstr);
-	ECSTR(HTTP_COOKIE, r.info.cookie);
-	ECSTR(HTTP_USER_AGENT, r.info.user_agent);
-	// passing some SAPI:get_env-s
-	EPASS(SERVER_PROTOCOL);
-	EPASS(SERVER_NAME);
-	EPASS(SERVER_PORT);
-	EPASS(HTTP_REFERER);
-	EPASS(REMOTE_ADDR);
-	EPASS(REMOTE_HOST);
-	EPASS(REMOTE_USER);
-	// SCRIPT_NAME
+	// SCRIPT_*
 	env.put(*new(pool) String(pool, "SCRIPT_NAME"), &script_name);
-#ifdef WIN32
-	// WIN32 shell
-	EPASS(COMSPEC);
-#endif
+	//env.put(*new(pool) String(pool, "SCRIPT_FILENAME"), ??&script_name);
 
 	if(params->size()>1) {
 		Value& venv=params->as_no_junction(1, "env must not be code");
