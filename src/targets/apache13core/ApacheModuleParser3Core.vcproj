@@ -120,7 +120,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\mod_parser3.C">
+			RelativePath=".\mod_parser3_core.C">
 		</File>
 		<File
 			RelativePath="pa_threads.C">

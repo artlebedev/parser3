@@ -3,6 +3,6 @@ INCLUDES := $(INCLUDES) -I../apache13 -I../../classes -I../../types $(INCLTDL) -
 
 noinst_LIBRARIES = libmod_parser3core.a
 libmod_parser3core_a_DEPENDENCIES=Makefile ../apache13/pa_httpd.h
-libmod_parser3core_a_SOURCES = pa_threads.C mod_parser3.C
+libmod_parser3core_a_SOURCES = pa_threads.C mod_parser3_core.C
 
 EXTRA_DIST = ApacheModuleParser3Core.vcproj
