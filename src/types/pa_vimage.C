@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vimage.C,v 1.5 2001/04/11 17:00:58 paf Exp $
+	$Id: pa_vimage.C,v 1.6 2001/04/11 17:06:14 paf Exp $
 */
 
 #include "pa_vimage.h"
@@ -13,7 +13,7 @@
 #include "pa_vstring.h"
 
 void VImage::set(const String *src, int width, int height,
-				 gdImagePtr aimage) {
+				 gdImage* aimage) {
 	image=aimage;
 
 	// $src

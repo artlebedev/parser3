@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.8 2001/04/11 17:00:53 paf Exp $
+	$Id: image.C,v 1.9 2001/04/11 17:06:10 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -328,13 +328,14 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	const String& file_name=vfile_name.as_string();
 
 	const char *file_name_cstr=r.absolute(file_name).cstr(String::UL_FILE_NAME);
+	gdImage image(pool);
 	if(FILE *f=fopen(file_name_cstr, "rb")) {
-		gdImagePtr image=gdImageCreateFromGif(f);
-		int width=gdImageSX(image);
-		int height=gdImageSY(image);
+		image.CreateFromGif(f);
+		int width=image.SX();
+		int height=image.SY();
 		fclose(f);
 
-		static_cast<VImage *>(r.self)->set(&file_name, width, height, image);
+		static_cast<VImage *>(r.self)->set(&file_name, width, height, &image);
 	} else
 		PTHROW(0, 0,
 			&method_name,
@@ -364,7 +365,7 @@ static void _create(Request& r, const String& method_name, Array *params) {
 static void _gif(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
-	gdImagePtr image=static_cast<VImage *>(r.self)->image;
+	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
 		PTHROW(0, 0,
 			&method_name,
