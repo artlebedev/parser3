@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.37 2001/02/25 08:50:13 paf Exp $
+$Id: core.C,v 1.38 2001/02/25 09:14:02 paf Exp $
 */
 
 #include "pa_request.h"
@@ -48,21 +48,21 @@ void Request::core() {
 	END_CATCH
 }
 
-void Request::use(char *file, String *name) {
+void Request::use(char *file, String *alias) {
 	char *source=file_read(pool(), file);
 	if(!source)
 		THROW(0,0,
 			0,
 			"use: can not read '%s' file", file);
 
-	VClass& vclass=COMPILE(source, file);
-	if(name) // they forced some name?
-		vclass.set_name(*name);
-	name=vclass.name();
-	if(!name)
+	VClass& vclass=COMPILE(source, alias, file);
+	String *vclass_name=vclass.name();
+	if(!vclass_name)
 		return; //TODO: add operators 
 	classes_array()+=&vclass;
-	classes().put(*name, &vclass);
+	classes().put(*vclass_name, &vclass);
+	if(alias)
+		classes().put(*alias, &vclass);
 }
 
 char *Request::execute_MAIN() {

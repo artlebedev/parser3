@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.13 2001/02/25 08:50:12 paf Exp $
+  $Id: pa_request.h,v 1.14 2001/02/25 09:14:01 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -17,11 +17,11 @@
 #define NAME_RUN "RUN"
 
 #ifndef NO_STRING_ORIGIN
-#	define COMPILE_PARAMS char *source, char *file
-#	define COMPILE(source, file) real_compile(source, file)
+#	define COMPILE_PARAMS char *source, String *default_name, char *file
+#	define COMPILE(source, default_name, file) real_compile(source, default_name, file)
 #else
-#	define COMPILE_PARAMS char *source
-#	define COMPILE(source, file) real_compile(source)
+#	define COMPILE_PARAMS char *source, String *default_name
+#	define COMPILE(source, default_name, file) real_compile(source, default_name)
 #endif
 
 class Local_request_exception;
@@ -59,7 +59,7 @@ private: // core data
 
 public: // core.C
 
-	void use(char *file, String *name);
+	void use(char *file, String *alias);
 
 private: // core.C
 

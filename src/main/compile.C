@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.18 2001/02/24 15:26:03 paf Exp $
+  $Id: compile.C,v 1.19 2001/02/25 09:14:02 paf Exp $
 */
 
 #include "pa_request.h"
@@ -21,9 +21,10 @@ VClass& Request::real_compile(COMPILE_PARAMS) {
 	// input 
 	pc.pool=&pool();
 	pc.request=this;
-	pc.vclass=NEW VClass(pool());
-	if(!source)
-		return *pc.vclass;
+	VClass *vclass=NEW VClass(pool());
+	if(default_name) // they forced some default_name?
+		vclass->set_name(*default_name);
+	pc.vclass=vclass;
 
 	pc.source=source;
 #ifndef NO_STRING_ORIGIN
