@@ -281,7 +281,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         логическое значение равно "не пуста?"
         числовое значение равно count[]
     !^table::create[[nameless]]{данные} старое имя "set"
-    ^table::create[table][[$.limit(1) $.offset(5) $.offset[cur]]]
+    !^table::create[table][[$.limit(1) $.offset(5) $.offset[cur]]]
         клонирует таблицу    
     !^table::load[[nameless;]путь]
         !если не nameless, названия колонок берутся из первой строки
@@ -303,7 +303,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     X^таблица.remove(position[;count]) - стирает запись 
         из текущей позиции [стирает запись из конкретной позиции] 
             [стирает count записей]
-    ^таблица.join[таблица][$.limit(1) $.offset(5) $.offset[cur]]	 - добавляет записи из таблицы. 
+    !^таблица.join[таблица][$.limit(1) $.offset(5) $.offset[cur]]	 - добавляет записи из таблицы. 
         таблицы должны иметь одинаковую структуру.
     !^таблица.flip[] выдаёт транспонированную, надо куда-то сложить, потом пользовать
     !^таблица.locate[поле;значение] передвигает текущую строку, если найдёт. выдаёт bool
