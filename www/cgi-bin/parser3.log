@@ -42,3 +42,17 @@
 ] global(0): 'unnamed' body must be code (parameter #1) [parser.runtime]
 [Mon Apr 15 17:36:13 2002
 ] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(9): 'process' body must be code (parameter #1) [parser.runtime]
+[Tue Apr 16 11:26:35 2002
+] c:\drives\y\PARSER~3\parser3\www\cgi-bin/parser3.conf(2): 'windows-1251' unknown charset [parser.runtime]
+[Tue Apr 16 11:26:43 2002
+] user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/_doc.cgihtml' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/_doc.cgihtml' [file.missing]
+[Tue Apr 16 11:26:54 2002
+] c:/drives/y/parser3project/parser3/www/htdocs//../data/classes/engine_aval.p(146): 'c:/drives/y/parser3project/parser3/www/htdocs//../exec/rbl' (real command line="c:/drives/y/parser3project/parser3/www/htdocs//../exec/rbl") exec failed - The system cannot find the path specified (3) [-]
+[Tue Apr 16 11:27:34 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/auto.p(170): 'utime' string method not found [parser.runtime]
+[Tue Apr 16 11:28:15 2002
+] c:/drives/y/parser3project/parser3/www/htdocs//../data/classes/engine.p(629): '|	SELECT|		block.name,|		block.block_id AS id,|		block.is_not_empty,|		block.sort_order|	FROM|		block,|		block_to_object|	WHERE|		block.is_published = 1 AND|		block_to_object.object_id =  AND|		block.block_id = block_to_object.block_id|	ORDER BY|		block.sort_order|' You have an error in your SQL syntax near 'AND|		block.block_id = block_to_object.block_id|	ORDER BY|		block.sort_order|' at line 12 [sql.execute]
+[Tue Apr 16 11:30:57 2002
+] c:/drives/y/parser3project/parser3/www/htdocs//../data/classes/engine.p(629): '|	SELECT|		block.name,|		block.block_id AS id,|		block.is_not_empty,|		block.sort_order|	FROM|		block,|		block_to_object|	WHERE|		block.is_published = 1 AND|		block_to_object.object_id =  AND|		block.block_id = block_to_object.block_id|	ORDER BY|		block.sort_order|' You have an error in your SQL syntax near 'AND|		block.block_id = block_to_object.block_id|	ORDER BY|		block.sort_order|' at line 12 [sql.execute]
+[Tue Apr 16 11:30:59 2002
+] c:/drives/y/parser3project/parser3/www/htdocs//../data/classes/engine.p(629): '|	SELECT|		block.name,|		block.block_id AS id,|		block.is_not_empty,|		block.sort_order|	FROM|		block,|		block_to_object|	WHERE|		block.is_published = 1 AND|		block_to_object.object_id =  AND|		block.block_id = block_to_object.block_id|	ORDER BY|		block.sort_order|' You have an error in your SQL syntax near 'AND|		block.block_id = block_to_object.block_id|	ORDER BY|		block.sort_order|' at line 12 [sql.execute]

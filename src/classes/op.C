@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.86 2002/04/15 13:17:04 paf Exp $
+	$Id: op.C,v 1.87 2002/04/16 08:05:09 paf Exp $
 */
 
 #include "classes.h"
@@ -107,7 +107,7 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 #ifndef NO_STRING_ORIGIN
 	const Origin& origin=method_name.origin();
 	snprintf(place, MAX_STRING, "%s(%d) %s", 
-		origin.file, 1+origin.line,
+		origin.file?origin.file:"unknown_file", 1+origin.line,
 		method_name.cstr());
 #else
 	strncpy(place, method_name.cstr(), MAX_STRING-1); place[MAX_STRING-1]=0;
