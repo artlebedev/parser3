@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.16 2001/09/11 09:14:04 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.17 2001/09/11 09:20:57 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -59,22 +59,15 @@ public: // Methoded
 
 // methods
 
-/*
-class istrstream : public istream {
-public:
-    explicit istrstream(const char *s);
-    explicit istrstream(char *s);
-    istrstream(const char *s, streamsize n);
-    istrstream(char *s, streamsize n);
-    strstreambuf *rdbuf() const;
-    char *str();
-    };
-*/
 static void _set(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDom& vDom=*static_cast<VDom *>(r.self);
 
-	std::istrstream stream(params->as_string(0, "parameter must not be code").cstr(String::UL_AS_IS));
+	Value& vxml=params->as_junction(0, "xml must be code");
+	Temp_lang temp_lang(r, String::UL_XML);
+	const String& xml=r.process(vxml).as_string();
+
+	std::istrstream stream(xml.cstr());
 	XalanParsedSource* parsedSource;
 	int error=vDom.get_transformer().parseSource(&stream, parsedSource);
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.71 2001/09/06 08:25:08 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.72 2001/09/11 09:20:57 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -177,6 +177,7 @@ void pa_globals_init(Pool& pool) {
 	ULN(table, "table", TABLE);
 	ULN(sql, "sql", SQL);
 	ULN(js, "js", JS);
+	ULN(xml, "xml", XML);
 	ULN(html, "html", HTML);
 	ULN(user_html, "user-html", USER_HTML);
 

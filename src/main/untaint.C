@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: untaint.C,v 1.60 2001/08/28 10:30:28 parser Exp $"; 
+static const char *RCSId="$Id: untaint.C,v 1.61 2001/09/11 09:20:57 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -294,13 +294,22 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					_default;
 				});
 				break;
+			case UL_XML:
+				escape(switch(*src) {
+					case '&': to_string("&amp;", 5);  break;
+					case '>': to_string("&gt;", 4);  break;
+					case '<': to_string("&lt;", 4);  break;
+					case '"': to_string("&quot;", 6);  break;
+					case '\'': to_string("&apos;", 6);  break;
+					_default;
+				});
+				break;
 			case UL_HTML:
 				escape(switch(*src) {
 					case '&': to_string("&amp;", 5);  break;
 					case '>': to_string("&gt;", 4);  break;
 					case '<': to_string("&lt;", 4);  break;
 					case '"': to_string("&quot;", 6);  break;
-					//TODO: XSLT case '\'': to_string("&apos;", 6);  break;
 					_default;
 				});
 				break;
@@ -333,7 +342,6 @@ char *String::store_to(char *dest, Untaint_lang lang,
 						case '\n': 
 							to_string("\\n", 2);
 							break;
-						//TODO: XSLT case '\'': to_string("&apos;", 6);  break;
 						_default;
 					});
 					*dest=0;

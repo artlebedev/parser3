@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.101 2001/08/28 09:27:42 parser Exp $
+	$Id: pa_string.h,v 1.102 2001/09/11 09:20:57 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -106,6 +106,7 @@ public:
 		UL_TABLE,     ///< ^table:set body
 		UL_SQL,       ///< ^table:sql body
 		UL_JS,        ///< JavaScript code
+		UL_XML,		///< ^dom:set xml
 		UL_HTML,      ///< HTML code (for editing)
 		UL_USER_HTML  ///< HTML code with USER chars
 	};
