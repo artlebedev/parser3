@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2004/03/25 11:50:10 $";
+static const char * const IDENT_TABLE_C="$Date: 2004/03/30 08:33:05 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -251,7 +251,8 @@ static void skip_empty_and_comment_lines( char** data_ref ) {
 		while( char c=*data ) {
 			if( c== '\n' || c == '#' ) {
 				/*nowhere=*/getrow(&data); // remove empty&comment lines
-				*data_ref=data;
+				if(!(*data_ref=data))
+					break;
 				continue;
 			}
 			break;
