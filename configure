@@ -3074,24 +3074,17 @@ echo "configure:3074: checking whether compiler supports pragma pack" >&5
 cat > conftest.$ac_ext <<EOF
 #line 3076 "configure"
 #include "confdefs.h"
+#pragma pack(1)
+struct _1_byte {
+	char c;
+};
+#pragma pack()
 
 int main() {
-#pragma pack(1)
-struct must_be_1_byte {
-	char c;
-	int i;
-} s;
-#pragma pack()
-if(sizeof(must_be_1_byte)!=1)
-	return 1;
-/* must not hang here: seen on sparc arch -- compiler generated even address-accessing instructions here */
-s.i=123; /* asm:st /*
-if(s.i!=123) /* asm:lduh */
-    return 1;
 
 ; return 0; }
 EOF
-if { (eval echo configure:3095: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:3088: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   
     echo "$ac_t""yes" 1>&6
@@ -3110,9 +3103,9 @@ fi
 rm -f conftest*
 
 echo $ac_n "checking for set_new_handler""... $ac_c" 1>&6
-echo "configure:3114: checking for set_new_handler" >&5
+echo "configure:3107: checking for set_new_handler" >&5
 cat > conftest.$ac_ext <<EOF
-#line 3116 "configure"
+#line 3109 "configure"
 #include "confdefs.h"
 #ifdef HAVE_NEW
 #include <new>
@@ -3124,7 +3117,7 @@ std::set_new_handler(failed_new);
 
 ; return 0; }
 EOF
-if { (eval echo configure:3128: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:3121: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   
     echo "$ac_t""yes" 1>&6

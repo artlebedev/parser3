@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_types.h,v 1.40 2002/04/17 14:26:13 paf Exp $
+	$Id: pa_types.h,v 1.41 2002/06/18 09:51:36 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -60,6 +60,8 @@ typedef unsigned long ulong;
 #ifndef NO_STRING_ORIGIN
 /// all String pieces hold information of where they come from
 
+// all classes that are members parents of packed class [String] 
+// sould be packed also to avoid sparc odd st/lduh problem
 #include "pa_pragma_pack_begin.h"
 struct Origin {
 	const char *file;  ///< macros file name | load file name | sql query text

@@ -5,7 +5,7 @@
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.h,v 1.79 2002/04/17 14:26:12 paf Exp $
+	$Id: pa_pool.h,v 1.80 2002/06/18 09:51:36 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -141,6 +141,10 @@ private: //disabled
 
 	@see NEW
 */
+
+// all classes that are members parents of packed class [String] 
+// sould be packed also to avoid sparc odd st/lduh problem
+#include "pa_pragma_pack_begin.h"
 class Pooled {
 	// the pool i'm allocated on
 	Pool *fpool;
@@ -175,6 +179,7 @@ public:
 #endif
 	//}
 };
+#include "pa_pragma_pack_end.h"
 /// useful macro for creating objects on current Pooled object Pooled::pool()
 #define NEW new(pool())
 
