@@ -94,8 +94,8 @@ fi
 
 dnl Check for command to grab the raw symbol name followed
 dnl by C symbol name from nm.
-dnl AC_REQUIRE([AC_CANONICAL_HOST])dnl
-dnl AC_REQUIRE([AC_PROG_NM])dnl
+AC_CANONICAL_HOST
+AC_PROG_NM
 # Check for command to grab the raw symbol name followed by C symbol from nm.
 AC_MSG_CHECKING([command to parse $NM output])
 AC_CACHE_VAL(ac_cv_sys_global_symbol_pipe,
