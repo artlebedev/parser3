@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.73 2001/05/08 06:42:54 paf Exp $
+	$Id: table.C,v 1.74 2001/05/08 08:14:48 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -193,9 +193,10 @@ static void _line(Request& r, const String& method_name, MethodParams *) {
 static void _offset(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	Table& table=static_cast<VTable *>(r.self)->table();
-	if(params->size())
-		table.shift((int)r.process(params->get(0)).as_double());
-	else {
+	if(params->size()) {
+		Value& offset_expr=params->get_junction(0, "offset must be expression");
+		table.shift((int)r.process(offset_expr).as_double());
+	} else {
 		Value& value=*new(pool) VInt(pool, table.current());
 		r.write_no_lang(value);
 	}
@@ -225,6 +226,7 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 	table.set_current(saved_current); vtable.unlock();
 }
 
+/// @test make bool returning func
 static void _empty(Request& r, const String& method_name, MethodParams *params) {
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(table.size()==0)
@@ -249,7 +251,7 @@ static void store_column_item_to_hash(Array::Item *item, void *info) {
 		value=new(*ri.pool) VUnknown(*ri.pool);
 	ri.hash->put(column_name, value);
 }
-static void _record(Request& r, const String& method_name, MethodParams *params) {
+static void _record(Request& r, const String& method_name, MethodParams *) {
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(const Array *columns=table.columns()) {
 		Pool& pool=r.pool();
@@ -261,6 +263,78 @@ static void _record(Request& r, const String& method_name, MethodParams *params)
 	}
 }
 
+/// used by table: _hash / table_row_to_hash
+struct Row_info {
+	Table *table;
+	int key_field;
+	Array *value_fields;
+	Hash *hash;
+};
+static void table_row_to_hash(Array::Item *value, void *info) {
+	Array& row=*static_cast<Array *>(value);
+	Row_info& ri=*static_cast<Row_info *>(info);
+	Pool& pool=ri.table->pool();
+
+	Value *result;
+	if(ri.value_fields->size()==1) { // key=value [not valueS]
+		int value_field=ri.value_fields->get_int(0);
+		if(value_field<row.size())
+			result=new(pool) VString(*row.get_string(value_field));
+		else
+			result=0;
+	} else {
+		VHash& vhash=*new(pool) VHash(pool);
+		Hash& hash=*vhash.get_hash();
+		for(int i=0; i<ri.value_fields->size(); i++) {
+			int value_field=ri.value_fields->get_int(i);
+			if(value_field<row.size())
+				hash.put(
+					*ri.table->columns()->get_string(value_field),
+					new(pool) VString(*row.get_string(value_field)));
+		}
+		
+		result=&vhash;
+	}
+	
+	if(ri.key_field<row.size())
+		ri.hash->put(*row.get_string(ri.key_field), result);
+}
+static void _hash(Request& r, const String& method_name, MethodParams *params) {
+	Table& table=static_cast<VTable *>(r.self)->table();
+	if(const Array *columns=table.columns()) 
+		if(columns->size()>1) {
+			Pool& pool=r.pool();
+
+			const String& key_field_name=params->get_no_junction(0, 
+				"key field name must not be code").as_string();
+			int key_field=table.column_name2index(key_field_name, true);
+			int value_fields_count=params->size()-1;
+			bool value_fields_by_params=value_fields_count!=0;
+			if(!value_fields_by_params)
+				value_fields_count=columns->size()-1; // all columns except key
+			Array value_fields(pool, value_fields_count);
+			if(value_fields_by_params) {
+				for(int i=1; i<params->size(); i++) {
+					const String& value_field_name=params->get_no_junction(i,
+						"value field name must not be code").as_string();
+					value_fields+=table.column_name2index(value_field_name, true);
+				}
+			} else { // by all columns except key
+				for(int i=0; i<columns->size(); i++)
+					if(i!=key_field)
+						value_fields+=i;
+			}
+
+			// integers: key_field & value_fields
+			Value& result=*new(pool) VHash(pool);
+			Row_info row_info={&table, key_field, &value_fields, result.get_hash()};
+			table.for_each(table_row_to_hash, &row_info);
+			result.set_name(method_name);
+			r.write_no_lang(result);
+		}
+}
+
+/// used by table: _sort / sort_cmp_string|sort_cmp_double
 struct Seq_item {
 	Array *row;
 	union {
@@ -595,6 +669,12 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 
 	// ^table.record[]
 	add_native_method("record", Method::CT_DYNAMIC, _record, 0, 0);
+
+	/** @fn _hash
+		^table:hash[key field name]
+		^table:hash[key field name][value field name;...]
+	*/
+	add_native_method("hash", Method::CT_DYNAMIC, _hash, 1, 1000);
 
 	// ^table.sort{string-key-maker} ^table.sort{string-key-maker}[asc|desc]
 	// ^table.sort(numeric-key-maker) ^table.sort(numeric-key-maker)[asc|desc]

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.36 2001/04/26 14:55:25 paf Exp $
+	$Id: pa_array.h,v 1.37 2001/05/08 08:14:53 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -81,9 +81,11 @@ public:
 	int size() const { return fused_rows; }
 	/// append Item to array
 	Array& operator += (Item *src);
+	/// append int value to array
+	Array& operator += (int value) { return *this+=reinterpret_cast<Item *>(value); }
 
 	/// dirty hack to allow constant items storage. I long for Array<const Item*>
-	Array& operator += (const Item *src) { return *this+=const_cast<Item*>(src); }
+	Array& operator += (const Item *src) { return *this+=const_cast<Item *>(src); }
 
 	/// append other Array portion to this one. starting from offset
 	Array& append_array(const Array& src, int offset=0);
@@ -108,6 +110,8 @@ public:
 	}
 
 	Item *get(int index) const;
+	int get_int(int index) const { return reinterpret_cast<int>(get(index)); }
+
 	void put(int index, Item *item);
 	/// convinient way to get strings from Array. I long for Array<const String *>
 	const String *get_string(int index) const { 

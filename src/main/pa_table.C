@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.28 2001/05/07 15:31:46 paf Exp $
+	$Id: pa_table.C,v 1.29 2001/05/08 08:14:56 paf Exp $
 */
 
 #include <stdlib.h>
@@ -32,10 +32,15 @@ Table::Table(Pool& apool,
 		}
 }
 
-int Table::column_name2index(const String& column_name) const {
-	if(fcolumns) // named
-		return name2number.get_int(column_name)-1; // -1 = column not found
-	else { // nameless
+int Table::column_name2index(const String& column_name, bool bark) const {
+	if(fcolumns) {// named
+		int result=name2number.get_int(column_name)-1; // -1 = column not found
+		if(bark && result<0)
+			THROW(0, 0,
+				&column_name,
+				"column not found");
+		return result;
+	} else { // nameless
 		char *error_pos=0;
 		int result=(int)strtol(column_name.cstr(), &error_pos, 0);
 		if(error_pos && *error_pos)
@@ -67,12 +72,7 @@ bool Table::locate(int column, const String& value) {
 }
 
 bool Table::locate(const String& column, const String& value) {
-	int index=column_name2index(column);
-	if(index<0)
-		THROW(0, 0,
-			&column,
-			"column not found (locate)");
-	return locate(index, value);
+	return locate(column_name2index(column, true), value);
 }
 
 void Table::shift(int offset) {

@@ -1,9 +1,17 @@
 @main[]
 $t2[^table:set{key	a	b
-1	a1	b1
+1	a1
 2	a2	b2
 }]
-^t2.record[]
+^t2.offset(1)
+$t2.b
+$r[^t2.record[]]
+<hr>
+$th[^t2.hash[b]]
+^$th.b2.a=$th.b2.a<br>
+<hr>
+$th[^t2.hash[key;a]]
+^$th.2=$th.2<br>
 <hr>
 #^OP:eval(1<2)
 

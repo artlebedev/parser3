@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.31 2001/05/07 15:31:43 paf Exp $
+	$Id: pa_table.h,v 1.32 2001/05/08 08:14:53 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -50,15 +50,17 @@ public:
 	int current() { return fcurrent; }
 	void shift(int offset);
 
-	/// @return column index from @a column_name. '<0' if no such column
-	int column_name2index(const String& column) const;
+	/** @return column index from @a column_name. '<0' if no such column
+		if no such colum conditionally 'bark'
+	*/
+	int column_name2index(const String& column, bool bark) const;
 
 	/// @return item from @a column
 	const String *item(int column) const;
 
 	/// @return item from @a column. '0' if no such column
 	const String *item(const String& column) const {
-		int index=column_name2index(column);
+		int index=column_name2index(column, false);
 		return index>=0?item(index):0;
 	}
 

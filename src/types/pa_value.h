@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.55 2001/05/08 05:50:04 paf Exp $
+	$Id: pa_value.h,v 1.56 2001/05/08 08:15:00 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -256,7 +256,7 @@ private:
 		if((result.get_junction()!=0) ^ as_junction)
 			THROW(0, 0,
 				&fmethod_name,
-				msg);
+				"%s", msg);
 		return result;
 	}
 
