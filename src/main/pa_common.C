@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/09/26 13:37:20 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/09/29 06:52:17 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -623,7 +623,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 		// UTF-8 signature: EF BB BF
 		if(result.length>=3) {
 			char *in=(char *)result.str;
-			if(strncmp(in, "\xEB\xBB\xBF", 3)==0) {
+			if(strncmp(in, "\xEF\xBB\xBF", 3)==0) {
 				result.str=in+3; result.length-=3;// skip prefix
 			}
 		}
