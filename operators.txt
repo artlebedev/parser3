@@ -662,10 +662,15 @@ xdoc(xnode)
         true if the attribute received its value explicitly in the XML document, 
         or if a value was assigned programatically with the setValue function.
         false if the attribute value came from the default value declared in the document's DTD. 
+    !$attribute_node.name
+    !$attribute_node.value
     $text_node/cdata_node/comment_node.substringData
     !$pi_node.target = target of this processing instruction
         XML defines this as being the first token following the markup 
         that begins the processing instruction.
+    !$pi_node.data = The content of this processing instruction
+        This is from the first non white space character after the target 
+        to the character immediately preceding the ?>. 
     document_node.
         readonly attribute DocumentType doctype
         readonly attribute DOMImplementation implementation    

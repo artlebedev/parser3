@@ -1,10 +1,10 @@
 /** @node
 	Parser: @b dnode parser type.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxnode.C,v 1.15 2002/02/08 08:31:33 paf Exp $
+	$Id: pa_vxnode.C,v 1.17 2002/06/14 12:45:15 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -90,6 +90,10 @@ Value *VXnode::get_element(const String& name) {
 		case GDOME_ATTRIBUTE_NODE: 
 			if(name=="specified")
 				return NEW VBool(pool(), gdome_a_specified(GDOME_A(selfNode), &exc)!=0);
+			else if(name=="name")
+				return NEW VString(transcode(gdome_a_name(GDOME_A(selfNode), &exc)));
+			else if(name=="value")
+				return NEW VString(transcode(gdome_a_value(GDOME_A(selfNode), &exc)));			
 			break;
 /*
 		case GDOME_COMMENT_NODE: 
@@ -98,6 +102,8 @@ Value *VXnode::get_element(const String& name) {
 		case GDOME_PROCESSING_INSTRUCTION_NODE: 
 			if(name=="target")
 				return NEW VString(transcode(gdome_pi_target(GDOME_PI(selfNode), &exc)));
+			else if(name=="data")
+				return NEW VString(transcode(gdome_pi_data(GDOME_PI(selfNode), &exc)));				
 			break;
 		case GDOME_DOCUMENT_TYPE_NODE: 
 			{
