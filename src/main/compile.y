@@ -5,7 +5,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.210 2004/04/06 14:08:41 paf Exp $
+	$Id: compile.y,v 1.211 2004/04/06 14:12:45 paf Exp $
 */
 
 /**
@@ -343,9 +343,14 @@ construct:
 |	construct_round
 |	construct_curly
 ;
-construct_square: '[' any_constructor_code_value ']' {
+construct_square: '[' {
+	// allow $result_or_other_variable[ letters here any time ]
+	*reinterpret_cast<bool*>(&$$)=PC.explicit_result; PC.explicit_result=false;
+} any_constructor_code_value {
+	PC.explicit_result=reinterpret_cast<bool>($2);
+} ']' {
 	// stack: context, name
-	$$=$2; // stack: context, name, value
+	$$=$3; // stack: context, name, value
 	O(*$$, OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 }
 ;
@@ -413,7 +418,7 @@ store_param:
 |	store_curly_param
 ;
 store_square_param: '[' {
-	// allow ^call[ whitespace here any time ]
+	// allow ^call[ letters here any time ]
 	*reinterpret_cast<bool*>(&$$)=PC.explicit_result; PC.explicit_result=false;
 } store_code_param_parts {
 	PC.explicit_result=reinterpret_cast<bool>($2);
