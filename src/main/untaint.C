@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.64 2001/10/05 16:26:05 parser Exp $
+	$Id: untaint.C,v 1.65 2001/10/08 08:52:45 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -397,8 +397,10 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					dest=dest_before_origins;
 				else {
 					for(char *p=dest_after_origins; p<dest; p++)
-						if(*p=='\n')
-							*p='|';
+						switch(*p) {
+							case '\n': *p='|'; break;
+							case '\r': *p=' '; break;
+						}
 
 					to_char('\n');
 				}
