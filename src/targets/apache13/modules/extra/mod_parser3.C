@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.29 2001/04/28 08:44:06 paf Exp $
+	$Id: mod_parser3.C,v 1.30 2001/04/28 13:38:18 paf Exp $
 */
 
 #include "httpd.h"
@@ -194,7 +194,7 @@ static int parser_handler(request_rec *r)
 		// prepare to process request
 		Request request(pool,
 			request_info,
-			String::UL_HTML_TYPO
+			String::UL_USER_HTML
 			);
 		
 		// process the request

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.46 2001/04/23 10:23:40 paf Exp $
+	$Id: untaint.C,v 1.47 2001/04/28 13:38:15 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -257,7 +257,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					_default;
 				});
 				break;
-			case UL_HTML_TYPO: {
+			case UL_USER_HTML: {
 				// tainted, untaint language: html-typo
 				char *html_for_typo=(char *)malloc(size()*2/* '\n' -> '\' 'n' */+1);
 				// note:

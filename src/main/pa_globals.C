@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.59 2001/04/28 13:31:14 paf Exp $
+	$Id: pa_globals.C,v 1.60 2001/04/28 13:38:15 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -42,8 +42,6 @@ String *string_pre_match_name;
 String *string_match_name;
 String *string_post_match_name;
 
-String *post_max_size_name;
-
 String *defaults_name;
 String *ctype_name;
 String *ctype_white_space_name;
@@ -54,10 +52,6 @@ String *ctype_word_name;
 String *ctype_lowercase_name;
 String *mime_types_name;
 String *vfile_mime_type_name;
-String *mail_name;
-
-String *main_sql_name;
-String *main_sql_drivers_name;
 
 Hash *untaint_lang_name2enum;
 
@@ -145,26 +139,19 @@ void pa_globals_init(Pool& pool) {
 	
 	// hashes
 	untaint_lang_name2enum=NEW Hash(pool);
-	String as_is(pool, "as-is");  
-	untaint_lang_name2enum->put(as_is, (int)String::UL_AS_IS);
-	String file_name(pool, "file-name");  
-	untaint_lang_name2enum->put(file_name, (int)String::UL_FILE_NAME);
-	String http_header(pool, "http-header");  
-	untaint_lang_name2enum->put(http_header, (int)String::UL_HTTP_HEADER);
-	String mail_header(pool, "mail-header");  
-	untaint_lang_name2enum->put(mail_header, (int)String::UL_MAIL_HEADER);
-	String uri(pool, "uri");  
-	untaint_lang_name2enum->put(uri, (int)String::UL_URI);
-	String table(pool, "table");
-	untaint_lang_name2enum->put(table, (int)String::UL_TABLE);
-	String sql(pool, "sql");
-	untaint_lang_name2enum->put(sql, (int)String::UL_SQL);
-	String js(pool, "js");
-	untaint_lang_name2enum->put(js, (int)String::UL_JS);
-	String html(pool, "html");
-	untaint_lang_name2enum->put(html, (int)String::UL_HTML);
-	String html_typo(pool, "html-typo");
-	untaint_lang_name2enum->put(html_typo, (int)String::UL_HTML_TYPO);
+	#define ULN(var, cstr, LANG) \
+		String var(pool, cstr); \
+		untaint_lang_name2enum->put(var, (int)String::UL_##LANG);
+	ULN(as_is, "as-is", AS_IS);
+	ULN(file_name, "file-name", FILE_NAME);
+	ULN(http_header, "http-header", HTTP_HEADER);
+	ULN(mail_header, "mail-header", MAIL_HEADER);
+	ULN(uri, "uri", URI);
+	ULN(table, "table", TABLE);
+	ULN(sql, "sql", SQL);
+	ULN(js, "js", JS);
+	ULN(html, "html", HTML);
+	ULN(user_html, "user-html", USER_HTML);
 
 	// tables
 	default_typo_table=NEW Table(pool, 0, 0);

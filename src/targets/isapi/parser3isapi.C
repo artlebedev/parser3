@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.32 2001/04/28 08:44:12 paf Exp $
+	$Id: parser3isapi.C,v 1.33 2001/04/28 13:38:23 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -272,7 +272,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		// prepare to process request
 		Request request(pool,
 			request_info,
-			String::UL_HTML_TYPO
+			String::UL_USER_HTML
 			);
 
 		// some root-controlled location
