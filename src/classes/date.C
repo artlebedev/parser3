@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2002/09/18 08:52:47 $";
+static const char* IDENT_DATE_C="$Date: 2002/09/23 09:34:00 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -93,7 +93,7 @@ date_part_set:
 					sdate,
 					"invalid datetime");
 		} else { // ^create(float days)
-			t=(time_t)(params->as_double(0, "float days must be double", r)*SECS_PER_DAY);
+			t=(time_t)round(params->as_double(0, "float days must be double", r)*SECS_PER_DAY);
 			if(t<0 || !localtime(&t))
 				throw Exception(0,
 					&method_name,
