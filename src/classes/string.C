@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.90 2001/11/09 12:09:53 paf Exp $
+	$Id: string.C,v 1.91 2001/12/13 13:01:44 paf Exp $
 */
 
 #include "classes.h"
@@ -258,7 +258,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 		else 
 			result=new(pool) VBool(pool, matched);			
 	} else { // replace
-		Value& replacement_code=params->as_junction(2, "replacement code must be code");
+		Value& replacement_code=params->as_junction(2, "replacement param must be code");
 
 		String& dest=*new(pool) String(pool);
 		Replace_action_info replace_action_info={
