@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.118 2001/10/09 14:25:30 parser Exp $
+	$Id: parser3.C,v 1.119 2001/10/09 14:30:19 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -32,6 +32,9 @@ extern const char *gd_RCSIds[];
 extern const char *classes_RCSIds[];
 extern const char *types_RCSIds[];
 extern const char *parser3_RCSIds[];
+#ifdef XML
+extern const char *xalan_patched_RCSIds[];
+#endif
 const char **RCSIds[]={
 	main_RCSIds,
 #ifdef USE_SMTP
