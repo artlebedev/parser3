@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.64 2002/03/04 10:03:07 paf Exp $
+	$Id: parser3isapi.C,v 1.65 2002/03/05 07:48:07 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -50,6 +50,10 @@ const char **RCSIds[]={
 	0
 };
 
+// globals
+
+char argv0[MAX_STRING]="";
+
 // SAPI
 
 #ifndef DOXYGEN
@@ -83,6 +87,12 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 
 /// @todo event log
 void SAPI::die(const char *fmt, ...) {
+	if(FILE *log=fopen("c:\\die.log", "at")) {
+		va_list args;
+		va_start(args,fmt);
+		vfprintf(log, fmt, args);
+		fclose(log);
+	}
 	exit(1);
 }
 
@@ -212,16 +222,16 @@ static bool parser_init() {
 
 	_set_new_handler(failed_new);
 
-	static Pool pool(0); // global pool
+	static Pool_storage pool_storage;
+	static Pool pool(&pool_storage); // global pool
 	try {
 		// init socks
 		init_socks(pool);
-
 		// init global classes
 		init_methoded_array(pool);
 		// init global variables
 		pa_globals_init(pool);
-		
+
 		// successful finish
 		return true;
 	} catch(const Exception& e) { // global problem 
@@ -313,10 +323,24 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 		"%s/%s", 
 		root_config_path, CONFIG_FILE_NAME);
 
+	// beside by binary
+	static char site_config_path[MAX_STRING];
+	strncpy(site_config_path, argv0, MAX_STRING-1);  site_config_path[MAX_STRING-1]=0; // filespec of my binary
+	if(!(
+		rsplit(site_config_path, '/') || 
+		rsplit(site_config_path, '\\'))) { // strip filename
+		// no path, just filename
+		site_config_path[0]='.'; site_config_path[1]=0;
+	}	
+	char site_config_filespec[MAX_STRING];
+	snprintf(site_config_filespec, MAX_STRING, 
+		"%s/%s", 
+		site_config_path, CONFIG_FILE_NAME);
+
 	// process the request
 	request.core(
-		root_config_filespec, false/*may be abcent*/, // /path/to/admin/auto.p
-		0/*parser_site_auto_path*/, false, // /path/to/site/auto.p
+		root_config_filespec, false /*don't fail_on_read_problem*/, // /path/to/admin/parser3.conf
+		site_config_filespec, false /*don't fail_on_read_problem*/, // /path/to/site/parser3.conf
 		header_only);
 }
 
@@ -400,5 +424,51 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 
 		// unsuccessful finish
 	}
+/*
+		const char *body="test";
+
+		//
+		int content_length=strlen(body);
+
+		// prepare header // not using SAPI func wich allocates on pool
+		char header_buf[MAX_STRING];
+		int header_len=snprintf(header_buf, MAX_STRING,
+			"content-type: text/plain\r\n"
+			"content-length: %lu\r\n"
+			"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
+			"\r\n",
+			content_length);
+		HSE_SEND_HEADER_EX_INFO header_info;
+		header_info.pszStatus="200 OK";
+		header_info.cchStatus=strlen(header_info.pszStatus);
+		header_info.pszHeader=header_buf;
+		header_info.cchHeader=header_len;
+		header_info.fKeepConn=true;
+		
+	// send header
+		lpECB->dwHttpStatusCode=200;
+		lpECB->ServerSupportFunction(lpECB->ConnID, 
+			HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
+
+		// send body
+	DWORD num_bytes=content_length;
+	lpECB->WriteClient(lpECB->ConnID, 
+		(void *)body, &num_bytes, HSE_IO_SYNC);
+*/
 	return HSE_STATUS_SUCCESS_AND_KEEP_CONN;
+}
+
+BOOL WINAPI DllMain(
+  HINSTANCE hinstDLL,  // handle to the DLL module
+  DWORD fdwReason,     // reason for calling function
+  LPVOID lpvReserved   // reserved
+  ) {
+
+	GetModuleFileName(
+	  hinstDLL,    // handle to module
+	  argv0,  // file name of module
+	  sizeof(argv0)         // size of buffer
+	);
+
+	return TRUE;
 }

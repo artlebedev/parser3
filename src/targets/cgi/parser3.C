@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.162 2002/02/20 12:40:24 paf Exp $
+	$Id: parser3.C,v 1.163 2002/03/05 07:48:07 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -338,7 +338,6 @@ void real_parser_handler(
 		// no path, just filename
 		site_config_path[0]='.'; site_config_path[1]=0;
 	}
-	
 	char site_config_filespec[MAX_STRING];
 	snprintf(site_config_filespec, MAX_STRING, 
 		"%s/%s", 
@@ -346,8 +345,8 @@ void real_parser_handler(
 	
 	// process the request
 	request.core(
-		root_config_filespec, false,
-		site_config_filespec, false,
+		root_config_filespec, false /*don't fail_on_read_problem*/,
+		site_config_filespec, false /*don't fail_on_read_problem*/,
 		header_only);
 	
 	//

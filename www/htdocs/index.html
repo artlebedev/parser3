@@ -7,7 +7,10 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^execlangs[]
+^method_junction_params{...}
+
+#^verifyCookie[paf]
+#^execlangs[]
 #$t[^tobjeresult[]]$t.a
 #^xmlprobs[]
 #^doubleprobs[]
@@ -104,6 +107,17 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@method_junction_params[param]
+^if($param is junction){junction}{ne junction}
+
+@verifyCookie[value] 
+^if($cookie:dummyvote eq $value){ 
+	$result(1) 
+}{ 
+	$cookie:dummyvote[$value] 
+	$result(0) 
+}
 
 @execlangs[]
 $f[^file::exec[test.pl]]
