@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Date: 2002/11/20 09:44:43 $";
+static const char* IDENT_EXEC_C="$Date: 2002/11/20 10:04:36 $";
 
 #include "pa_config_includes.h"
 
@@ -419,7 +419,8 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	if(pid) {
 		// in child
 		const char *in_cstr=in.cstr();
-		write(pipe_write, in_cstr, in.size());
+		if(*in) // there is some in data
+			write(pipe_write, in_cstr, in.size());
 		close(pipe_write);
 		read_pipe(out, pipe_read, file_spec_cstr, String::UL_AS_IS);
 		close(pipe_read);
