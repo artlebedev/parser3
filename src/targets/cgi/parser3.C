@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/11/20 13:37:23 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/11/20 14:05:34 $";
 
 #include "pa_config_includes.h"
 
@@ -378,6 +378,12 @@ static void real_parser_handler(
 
 	// no request [prevent signal handlers from accessing invalid memory]
 	::request=0;
+#ifdef SIGUSR1
+    signal(SIGUSR1, SIG_DFL);
+#endif
+#ifdef SIGPIPE
+	signal(SIGPIPE, SIG_DFL);
+#endif
 	
 	//
 	done_socks();
