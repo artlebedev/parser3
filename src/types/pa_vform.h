@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.20 2001/05/07 14:00:53 paf Exp $
+	$Id: pa_vform.h,v 1.21 2001/07/20 09:40:46 parser Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -38,9 +38,9 @@ public: // Value
 	
 	const char *type() const { return "form"; }
 
-	// form: CLASS,BASE,method,field
+	// form: CLASS,method,field
 	Value *get_element(const String& aname) {
-		// $CLASS,$BASE,$method
+		// $CLASS,$method
 		if(Value *result=VStateless_class::get_element(aname))
 			return result;
 

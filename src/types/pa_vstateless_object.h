@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_object.h,v 1.9 2001/05/10 12:49:27 paf Exp $
+	$Id: pa_vstateless_object.h,v 1.10 2001/07/20 09:40:46 parser Exp $
 */
 
 #ifndef PA_VSTATELESS_OBJECT_H
@@ -27,7 +27,7 @@ public: // Value
 
 	/// VStateless_object: +$method
 	Value *get_element(const String& name) {
-		// $CLASS, $BASE
+		// $CLASS
 		if(Value *result=VAliased::get_element(name))
 			return result;
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmath.h,v 1.1 2001/07/06 11:13:35 parser Exp $
+	$Id: pa_vmath.h,v 1.2 2001/07/20 09:40:46 parser Exp $
 */
 
 #ifndef PA_VMATH_H
@@ -26,9 +26,9 @@ public: // Value
 	
 	const char *type() const { return "math"; }
 
-	// math: CLASS,BASE,method,field
+	// math: CLASS,method,field
 	Value *get_element(const String& aname) {
-		// $CLASS,$BASE,$method
+		// $CLASS,$method
 		if(Value *result=VStateless_class::get_element(aname))
 			return result;
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcookie.h,v 1.10 2001/05/07 14:00:53 paf Exp $
+	$Id: pa_vcookie.h,v 1.11 2001/07/20 09:40:46 parser Exp $
 */
 
 #ifndef PA_VCOOKIE_H
@@ -25,7 +25,7 @@ public: // Value
 	
 	const char *type() const { return "cookie"; }
 
-	// cookie: CLASS,BASE,method,field
+	// cookie: CLASS,method,field
 	Value *get_element(const String& aname);
 	// cookie: field
 	void put_element(const String& aname, Value *avalue);

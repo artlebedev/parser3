@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.179 2001/07/18 10:06:04 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.180 2001/07/20 09:40:46 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -373,10 +373,12 @@ void Request::execute(const Array& ops) {
 				PUSH(wcontext); 
 				
 				VStateless_class *called_class=frame->junction.self.get_class();
-				// not ^name.method call and
+				// not ^name.method call, name:method call; and
 				// is context object or class & is it my class or my parent's class and?
 				VStateless_class *read_class=rcontext->get_class();
-				if(!wcontext->somebody_entered_some_object() && 
+				if(
+					!(wcontext->somebody_entered_some_object() &&
+					!wcontext->somebody_entered_some_class()) && 
 					read_class && read_class->is_or_derived_from(*called_class)) // yes
 					self=rcontext; // class dynamic call
 				else // no, not me or relative of mine (total stranger)

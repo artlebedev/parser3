@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhash.h,v 1.14 2001/05/08 10:39:23 paf Exp $
+	$Id: pa_vhash.h,v 1.15 2001/07/20 09:40:46 parser Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -30,7 +30,7 @@ public: // value
 
 	/// VHash: (key)=value
 	Value *get_element(const String& name) { 
-		// $CLASS,$BASE,$method
+		// $CLASS,$method
 		if(Value *result=VStateless_class::get_element(name))
 			return result;
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdate.h,v 1.2 2001/07/07 17:59:02 parser Exp $
+	$Id: pa_vdate.h,v 1.3 2001/07/20 09:40:46 parser Exp $
 */
 
 #ifndef PA_VDATE_H
@@ -34,9 +34,9 @@ public: // Value
 	bool as_bool() { return ftime!=0; }
 
 
-	/// VDate: CLASS,BASE,method,field
+	/// VDate: CLASS,method,field
 	Value *get_element(const String& aname) {
-		// $CLASS,$BASE,$method
+		// $CLASS,$method
 		if(Value *result=VStateless_object::get_element(aname))
 			return result;
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.27 2001/07/18 10:06:04 parser Exp $
+	$Id: pa_vfile.h,v 1.28 2001/07/20 09:40:46 parser Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -39,9 +39,9 @@ public: // Value
 		return this; 
 	}
 
-	/// VFile: CLASS,BASE,method,field
+	/// VFile: CLASS,method,field
 	Value *VFile::get_element(const String& aname) {
-		// $CLASS,$BASE,$method
+		// $CLASS,$method
 		if(Value *result=VStateless_object::get_element(aname))
 			return result;
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.h,v 1.12 2001/04/02 16:00:16 paf Exp $
+	$Id: pa_valiased.h,v 1.13 2001/07/20 09:40:46 parser Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -60,13 +60,13 @@ public: // creation
 	/// VAliased: this
 	VAliased *get_aliased() { return this; }
 
-	/// VAliased: $CLASS, $BASE
+	/// VAliased: $CLASS
 	Value *get_element(const String& aname);
 
 protected: // VAliased
 
 /**
-	used in get_element for getting $CLASS and $BASE.
+	used in get_element for getting $CLASS.
 
 	to disable those elements classes can override 
 	this method with @c {return true;}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.66 2001/07/18 10:06:04 parser Exp $
+	$Id: pa_value.h,v 1.67 2001/07/20 09:40:46 parser Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -136,7 +136,7 @@ public: // Value
 	/** extract Value element
 		@return for
 		- VHash: (key)=value
-		- VAliased: sometimes $CLASS, $BASE [see VAliased::hide_class()]
+		- VAliased: sometimes $CLASS [see VAliased::hide_class()]
 		- VStateless_class: +$method
 		- VStateless_object: +$method
 		- VClass: (field)=STATIC value;(method)=method_ref with self=object_class
@@ -144,20 +144,20 @@ public: // Value
 		- VMethodFrame: my or self_transparent
 		- VTable: columns,methods
 		- VEnv: field
-		- VForm: CLASS,BASE,method,field
+		- VForm: CLASS,method,field
 		- VString: $method
 		- VRequest: fields
 		- VResponse: method,fields
 		- VCookie: field
 		- VFile: method,field
-		- VDate: CLASS,BASE,method,field
+		- VDate: CLASS,method,field
 		*/
 	virtual Value *get_element(const String& name) { bark("(%s) has no elements"); return 0; }
 	
 	/** store Value element under @a name
 		@return for
 		- VHash: (key)=value
-		- VStateless_object: (CLASS)=vclass;(BASE)=base;(method)=method_ref
+		- VStateless_object: (CLASS)=vclass;(method)=method_ref
 		- VStateless_class: (field)=value - static values only
 		- VStateless_object: (field)=value
 		- VCodeFrame: wcontext_transparent

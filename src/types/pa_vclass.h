@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.16 2001/05/10 12:49:27 paf Exp $
+	$Id: pa_vclass.h,v 1.17 2001/07/20 09:40:46 parser Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -30,7 +30,7 @@ public: // Value
 		if(Value *result=get_field(aname))
 			return result;
 		
-		// $CLASS,$BASE,$method
+		// $CLASS,$method
 		return VStateless_class::get_element(aname);
 	}
 

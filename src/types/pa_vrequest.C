@@ -5,13 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vrequest.C,v 1.6 2001/05/10 13:10:37 paf Exp $
+	$Id: pa_vrequest.C,v 1.7 2001/07/20 09:40:46 parser Exp $
 */
 
 #include "pa_vrequest.h"
 #include "pa_request.h"
 
-// request: CLASS,BASE,method,field
+// request: CLASS,method,field
 Value *VRequest::get_element(const String& aname) {
 	// $browser
 	if(aname=="browser") {

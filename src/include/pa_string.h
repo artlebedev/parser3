@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.98 2001/07/18 10:06:04 parser Exp $
+	$Id: pa_string.h,v 1.99 2001/07/20 09:40:46 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -213,7 +213,8 @@ public:
 		const String& regexp, 
 		const String *options,
 		Table **table,
-		Row_action row_action, void *info) const;
+		Row_action row_action, void *info,
+		bool *was_global=0) const;
 	enum Change_case_kind {
 		CC_UPPER,
 		CC_LOWER

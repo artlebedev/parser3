@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.63 2001/07/18 10:06:04 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.64 2001/07/20 09:40:46 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -214,17 +214,19 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	Table *table;
 	if(params->size()<3) { // search
+		bool was_global;
 		bool matched=src.match(r.pcre_tables,
 			&method_name, 
 			regexp.as_string(), options,
 			&table,
-			search_action, 0);
+			search_action, 0,
+			&was_global);
 		// matched
-		if(table->columns()->size()==3 && // just matched[3=pre/match/post], no substrings
-			table->size()<=1)  // just one row, not /g_lobal search
-			result=new(pool) VBool(pool, matched);
-		else // table of pre/match/post+substrings
-			result=new(pool) VTable(pool, table);
+		// not (just matched[3=pre/match/post], no substrings) or Global search
+		if(table->columns()->size()>3 || was_global) 
+			result=new(pool) VTable(pool, table); // table of pre/match/post+substrings
+		else 
+			result=new(pool) VBool(pool, matched);			
 	} else { // replace
 		Value& replacement_code=params->as_junction(2, "replacement code must be code");
 

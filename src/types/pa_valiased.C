@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.C,v 1.7 2001/04/06 10:24:14 paf Exp $
+	$Id: pa_valiased.C,v 1.8 2001/07/20 09:40:46 parser Exp $
 */
 
 #include "pa_valiased.h"
@@ -24,19 +24,5 @@ Value *VAliased::get_element(const String& aname) {
 			return fclass_alias;			
 	}
 
-	// $BASE=my parent
-	if(aname==BASE_NAME) {
-		if(hide_class()) 
-			bark("%s has no "BASE_NAME" element");
-		else {
-			if(Value *result=fclass_alias->base())
-				return result;
-			else
-				THROW(0, 0,
-					&aname,
-					"undefined");
-		}
-	}
-	
 	return 0;
 }

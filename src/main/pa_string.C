@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_string.C,v 1.94 2001/07/18 10:06:04 parser Exp $"; 
+static const char *RCSId="$Id: pa_string.C,v 1.95 2001/07/20 09:40:46 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -493,7 +493,8 @@ bool String::match(const unsigned char *pcre_tables,
 				   const String& regexp, 
 				   const String *options,
 				   Table **table,
-				   Row_action row_action, void *info) const { 
+				   Row_action row_action, void *info,
+				   bool *was_global) const { 
 
 	if(!regexp.size())
 		THROW(0, 0,
@@ -503,6 +504,8 @@ bool String::match(const unsigned char *pcre_tables,
 	const char *errptr;
 	int erroffset;
     int option_bits[2];  regex_options(options?options->cstr():0, option_bits);
+	if(was_global)
+		*was_global=option_bits[1]!=0;
 	pcre *code=pcre_compile(pattern, option_bits[0], 
 		&errptr, &erroffset,
 		pcre_tables);
