@@ -283,7 +283,28 @@ OK
 #^selectSingleoct[]
 #^compilebug[]
 #^badhashcreate[]
-^badsendmail[]
+#^badsendmail[]
+#^keygenedhash[]<br>
+#<hr>[$env:HTTP_REFERER]
+#$response:Content-TypE[bad]
+^emailhead2[]
+
+@emailhead2[]
+^mail:send[
+	$.charset[koi8-r]
+	$.from[paf@design.ru]
+	$.to[paf@mail]
+	$.reply-to[^taint[agat] <^taint[ag_7k@mail.ru]>]
+	$.subject[test]
+]
+
+@keygenedhash[]
+$table[^table::create{key	value
+1	a
+2	b
+}]
+$hash[^table.hash($table.key*2)]
+'$hash.4.value' must be 'b'
 
 @badsendmail[]
 ^mail:send[
