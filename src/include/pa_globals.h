@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2003/11/06 08:22:49 $";
+static const char* IDENT_GLOBALS_H="$Date: 2003/11/06 09:11:35 $";
 
 
 #include "pa_hash.h"
@@ -16,6 +16,7 @@ static const char* IDENT_GLOBALS_H="$Date: 2003/11/06 08:22:49 $";
 
 #ifdef XML
 #	include "libxml/tree.h"
+#	include "gdome.h"
 #endif
 
 class Dictionary;

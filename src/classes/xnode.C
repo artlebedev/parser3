@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_XNODE_C="$Date: 2003/11/06 09:15:16 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -16,6 +16,7 @@ static const char* IDENT_XNODE_C="$Date: 2003/09/25 09:15:02 $";
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
 #include "pa_vvoid.h"
+#include "pa_xml_exception.h"
 
 #include "xnode.h"
 
@@ -146,7 +147,7 @@ static void _insertBefore(Request& r, MethodParams& params) {
 		// write out result
 		r.write_no_lang(*new VXnode(&r.charsets, retNode));
 	} else
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 }
 
 // Node replaceChild(in Node newChild,in Node oldChild) raises(DOMException);
@@ -161,7 +162,7 @@ static void _replaceChild(Request& r, MethodParams& params) {
 		// write out result
 		r.write_no_lang(*new VXnode(&r.charsets, retNode));
 	} else
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 }
 
 // Node removeChild(in Node oldChild) raises(DOMException);
@@ -175,7 +176,7 @@ static void _removeChild(Request& r, MethodParams& params) {
 		// write out result
 		r.write_no_lang(*new VXnode(&r.charsets, retNode));
 	} else
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 }
 
 // Node appendChild(in Node newChild) raises(DOMException);
@@ -189,7 +190,7 @@ static void _appendChild(Request& r, MethodParams& params) {
 		// write out result
 		r.write_no_lang(*new VXnode(&r.charsets, retNode));		
 	}  else
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 }
 
 // boolean hasChildNodes();
@@ -256,7 +257,7 @@ static void _setAttribute(Request& r, MethodParams& params) {
 		r.transcode(attribute_value).use(),
 		&exc);
 	if(exc)
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 }
 
 // void removeAttribute(in DOMString name) raises(DOMException);
@@ -267,7 +268,7 @@ static void _removeAttribute(Request& r, MethodParams& params) {
 	GdomeException exc;
 	gdome_el_removeAttribute(element, r.transcode(name).use(), &exc);
 	if(exc)
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 }
 
 // Attr getAttributeNode(in DOMString name);
@@ -281,9 +282,7 @@ static void _getAttributeNode(Request& r, MethodParams& params) {
 		// write out result
 		r.write_no_lang(*new VXnode(&r.charsets, (GdomeNode* )attr));
 	} else if(exc)
-		throw Exception(
-			0, 
-			exc);
+		throw XmlException(0, exc);
 }	
 
 // Attr setAttributeNode(in Attr newAttr) raises(DOMException);
@@ -296,9 +295,7 @@ static void _setAttributeNode(Request& r, MethodParams& params) {
 		// write out result
 		r.write_no_lang(*new VXnode(&r.charsets, (GdomeNode* )returnAttr));
 	} else
-		throw Exception(
-			0, 
-			exc);
+		throw XmlException(0, exc);
 }	
 
 // Attr removeAttributeNode(in Attr oldAttr) raises(DOMException);
@@ -309,9 +306,7 @@ static void _removeAttributeNode(Request& r, MethodParams& params) {
 	GdomeException exc;
 	gdome_el_removeAttributeNode(element, oldAttr, &exc);
 	if(exc)
-		throw Exception(
-			0, 
-			exc);
+		throw XmlException(0, exc);
 }	
 
 // NodeList getElementsByTagName(in DOMString name);
@@ -330,9 +325,7 @@ static void _getElementsByTagName(Request& r, MethodParams& params) {
 				String::Body::Format(i), 
 				new VXnode(&r.charsets, gdome_nl_item(nodes, i, &exc)));
 	} else if(exc)
-		throw Exception(
-			0, 
-			exc);
+		throw XmlException(0, exc);
 
 	// write out result
 	r.write_no_lang(result);
@@ -370,7 +363,7 @@ static void _setAttributeNS(Request& r, MethodParams& params) {
 		r.transcode(attribute_value).use(),
 		&exc);
 	if(exc)
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 }
 
 // void removeAttributeNS(in DOMString namespaceURI, in DOMString localName) raises(DOMException);
@@ -385,7 +378,7 @@ static void _removeAttributeNS(Request& r, MethodParams& params) {
 	r.transcode(localName).use(), 
 	&exc);
 	if(exc)
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 }
 
 // Attr getAttributeNodeNS(in DOMString namespaceURI, in DOMString localName);
@@ -400,9 +393,7 @@ static void _getAttributeNodeNS(Request& r, MethodParams& params) {
 		// write out result
 		r.write_no_lang(*new VXnode(&r.charsets, (GdomeNode* )attr));
 	} else if(exc)
-		throw Exception(
-			0, 
-			exc);
+		throw XmlException(0, exc);
 }
 
 // Attr setAttributeNodeNS(in Attr newAttr) raises(DOMException);
@@ -415,9 +406,7 @@ static void _setAttributeNodeNS(Request& r, MethodParams& params) {
 		// write out result
 		r.write_no_lang(*new VXnode(&r.charsets, (GdomeNode* )returnAttr));
 	} else
-		throw Exception(
-			0, 
-			exc);
+		throw XmlException(0, exc);
 }
 
 // boolean hasAttribute(in DOMString name) raises(DOMException);
@@ -484,9 +473,7 @@ static void _normalize(Request& r, MethodParams&) {
 	GdomeException exc;
 	gdome_n_normalize(selfNode, &exc);
 	if(exc)
-		throw Exception(
-			0, 
-			exc);
+		throw XmlException(0, exc);
 }
 
 static void _selectX(Request& r, MethodParams& params,
@@ -513,7 +500,7 @@ static void _selectX(Request& r, MethodParams& params,
 
 	if(xmlHaveGenericErrors()) {
 		GdomeException exc=0;
-		throw Exception(&expression, exc);
+		throw XmlException(&expression, exc);
 	}
 
 	Value* result=0;

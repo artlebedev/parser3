@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2003/11/06 08:22:48 $";
+static const char* IDENT_XDOC_C="$Date: 2003/11/06 09:15:16 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -332,7 +332,7 @@ static void _getElementsByTagName(Request& r, MethodParams& params) {
 				String::Body::Format(i), 
 				new VXnode(&r.charsets, gdome_nl_item(nodes, i, &exc)));
 	} else if(exc)
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 
 	// write out result
 	r.write_no_lang(result);
@@ -378,9 +378,7 @@ static void _getElementById(Request& r, MethodParams& params) {
 		// write out result
 		r.write_no_lang(*new VXnode(&r.charsets, node));
 	} else if(exc || xmlHaveGenericErrors())
-		throw Exception(
-			&elementId, 
-			exc);
+		throw XmlException(&elementId, exc);
 }
 
 static void _importNode(Request& r, MethodParams& params) {
@@ -396,7 +394,7 @@ static void _importNode(Request& r, MethodParams& params) {
 		importedNode,
 		deep, &exc);
 	if(exc)
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 
 	// write out result
 	r.write_no_lang(*new VXnode(&r.charsets, outputNode));
@@ -425,7 +423,7 @@ static void _create(Request& r, MethodParams& params) {
 		//printf("document=0x%p\n", document);
 		if(!document || xmlHaveGenericErrors()) {
 			GdomeException exc=0;
-			throw Exception(0, exc);
+			throw XmlException(0, exc);
 		}
 
 		// must be last action in if, see after if}
@@ -452,7 +450,7 @@ static void _create(Request& r, MethodParams& params) {
 			0/*doctype*/, 
 			&exc);
 		if(!document || exc || xmlHaveGenericErrors())
-			throw Exception(0, exc);
+			throw XmlException(0, exc);
 
 		set_encoding=true;
 		// must be last action in if, see after if}
@@ -499,7 +497,7 @@ static void _load(Request& r, MethodParams& params) {
 		gdome_xml_n_mkref((xmlNode *)xmlParseMemory(file.str, file.length));
 	if(!document || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
-		throw Exception(&uri, exc);
+		throw XmlException(&uri, exc);
 	}
 	// must be first action after if}
 	// replace any previous parsed source
@@ -652,7 +650,7 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
 	if(xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0) {
 		GdomeException exc=0;
-		throw Exception(0, exc);
+		throw XmlException(0, exc);
 	}
 
 	// write out result
@@ -756,7 +754,7 @@ static VXdoc& _transform(Request& r, const String* stylesheet_source,
 		transformContext.get());
 	if(!transformed || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
-		throw Exception(stylesheet_source, exc);
+		throw XmlException(stylesheet_source, exc);
 	}
 
 	//gdome_xml_doc_mkref dislikes XML_HTML_DOCUMENT_NODE  type, fixing
@@ -833,7 +831,7 @@ static void _transform(Request& r, MethodParams& params) {
 		stylesheet_ptr->doc=0;
 		if(xmlHaveGenericErrors()) {
 			GdomeException exc=0;
-			throw Exception(0, exc);
+			throw XmlException(0, exc);
 		}
 		if(!stylesheet_ptr.get())
 			throw Exception("xml",

@@ -8,13 +8,13 @@
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-static const char* IDENT_STYLESHEET_CONNECTION_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_STYLESHEET_CONNECTION_H="$Date: 2003/11/06 09:11:35 $";
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"
 
 
-#include "pa_exception.h"
+#include "pa_xml_exception.h"
 #include "pa_common.h"
 #include "pa_globals.h"
 
@@ -84,7 +84,7 @@ private:
 		xmlDoValidityCheckingDefaultValue = saved;//
 		if(xmlHaveGenericErrors()) {
 			GdomeException exc=0;
-			throw Exception(&ffile_spec, exc);
+			throw XmlException(&ffile_spec, exc);
 		}
 		if(!nstylesheet)
 			throw Exception("file.missing",
