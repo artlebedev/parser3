@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: image.C,v 1.71 2002/04/18 10:50:59 paf Exp $
+	$Id: image.C,v 1.72 2002/05/16 16:18:19 paf Exp $
 */
 
 /*
@@ -79,9 +79,19 @@ private:
 };
 #endif
 
+/// PNG file header
+struct PNG_Header {
+	char dummy[12];
+	char signature[4]; //< must be "IHDR"
+	unsigned char high_width[2]; //< image width high bytes [we ignore for now]
+	unsigned char width[2]; //< image width low bytes
+	unsigned char high_height[2]; //< image height high bytes [we ignore for now]
+	unsigned char height[4]; //< image height
+};
+
 /// GIF file header
 struct GIF_Header {
-	char       type[3];         // 'GIF'
+	char       signature[3];         // 'GIF'
 	char       version[3];
 	unsigned char       width[2];
 	unsigned char       height[2];
@@ -129,7 +139,7 @@ void measure_gif(Pool& pool, const String *origin_string,
 			"not GIF file - too small");
 	GIF_Header *head=(GIF_Header *)buf;
 
-	if(strncmp(head->type, "GIF", 3)!=0)
+	if(strncmp(head->signature, "GIF", 3)!=0)
 		throw Exception("image.format", 
 			origin_string, 
 			"not GIF file - wrong signature");	
@@ -195,6 +205,26 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 			"broken JPEG file - size frame not found");
 }
 
+void measure_png(Pool& pool, const String *origin_string, 
+			 Measure_reader& reader, int& width, int& height) {
+
+	void *buf;
+	const int head_size=sizeof(PNG_Header);
+	if(reader.read(buf, head_size)<head_size)
+		throw Exception("image.format", 
+			origin_string, 
+			"not PNG file - too small");
+	PNG_Header *head=(PNG_Header *)buf;
+
+	if(strncmp(head->signature, "IHDR", 4)!=0)
+		throw Exception("image.format", 
+			origin_string, 
+			"not PNG file - wrong signature");	
+
+	width=big_endian_to_int(head->width);
+	height=big_endian_to_int(head->height);
+}
+
 // measure center
 
 void measure(Pool& pool, const String& file_name, 
@@ -205,6 +235,8 @@ void measure(Pool& pool, const String& file_name,
 			measure_gif(pool, &file_name, reader, width, height);
 		else if(strcasecmp(cext, "JPG")==0 || strcasecmp(cext, "JPEG")==0) 
 			measure_jpeg(pool, &file_name, reader, width, height);
+		else if(strcasecmp(cext, "PNG")==0)
+			measure_png(pool, &file_name, reader, width, height);
 		else
 			throw Exception("image.format", 
 				&file_name, 

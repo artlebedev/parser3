@@ -153,13 +153,42 @@ OK
 #^xpath2[]
 #^callindirect[]
 #^junctionprob[]
-^datecreatestring2[]
+#^datecreatestring2[]
+#^tstoredproc[]
+#^tstoredproc2[]
+#^forkeys[]
+^pngsize[]
+
+@pngsize[]
+$i[^image::measure[test.png]]
+^i.html[]
+
+
+@forkeys[]
+$text[^form:fields.foreach[key;val]{$key=$val
+}]
+^text.save[ttt.txt]
+=$text=
+
+
+@tstoredproc2[]
+^connect[odbc://DSN=nestle^;UID=nestle^;PWD=mbm32]{
+	^void:sql{exec pafvoid}
+}
+
+@tstoredproc[]
+^connect[odbc://DSN=nestle^;UID=nestle^;PWD=mbm32]{
+	$t[^table::sql{exec pafproc}]
+#	$t[^table::sql{{call pafproc}}]
+	$c[^t.columns[]]
+	^c.menu{$c.column}[<br>]
+}
 
 @datecreatestring2[]
 <table border=1>
 ^datecreatestring2show[2000]
 ^datecreatestring2show[2000-02]
-^datecreatestring2show[2000-02-03]
+^datecreatestring2show[2000-2-03]
 ^datecreatestring2show[2000-02-03 15]
 ^datecreatestring2show[2000-02-03 15:30] 
 ^datecreatestring2show[2000-02-03 15:30:04] 
