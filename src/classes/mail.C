@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.70 2002/07/31 14:31:01 paf Exp $
+	$Id: mail.C,v 1.71 2002/07/31 14:35:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -326,8 +326,8 @@ static void sendmail(Request& r, const String& method_name,
 	int at_postmaster=sendmail_command->pos("postmaster");
 	if(at_postmaster>0) {
 		String& reconstructed=sendmail_command->mid(0, at_postmaster);
-		reconstructed.append(*from);
-		reconstructed.append(sendmail_command->mid(at_postmaster+10/*postmaster*/));
+		reconstructed << *from;
+		reconstructed << sendmail_command->mid(at_postmaster+10/*postmaster*/, sendmail_command->size());
 		sendmail_command=&reconstructed;
 	}
 
