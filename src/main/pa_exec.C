@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.21 2002/01/25 12:59:05 paf Exp $
+	$Id: pa_exec.C,v 1.22 2002/01/25 12:59:43 paf Exp $
 
 
 	@todo setrlimit
@@ -393,7 +393,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		argv_cstrs[0], argv_cstrs[1], argv_cstrs[2], argv_cstrs[3], argv_cstrs[4],
 		argv_cstrs[5], argv_cstrs[6], argv_cstrs[7], argv_cstrs[8], argv_cstrs[9],
 		env_cstrs,
-		&pipe_write, &pipe_read, &pipe_err));
+		&pipe_write, &pipe_read, &pipe_err);
     if (pwd) 
 		chdir(pwd);
 	if(pid) {

@@ -4,7 +4,8 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^tlock[]
+^exec2[]
+#^tlock[]
 #^xmloutattrwithoutvalue[]
 #^precisionProblem[]
 #^xpath[]
@@ -89,6 +90,11 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@exec2[]
+$a[^file::exec[bin/t.cmd]]
+<pre>^taint[$a.text]</pre>|$a.status|$a.stderr<hr>
+
 
 @tlock[]
 ^file:lock[lockfile]{
