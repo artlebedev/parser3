@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2003/11/20 16:34:24 $";
+static const char * const IDENT_XNODE_C="$Date: 2004/02/03 16:27:54 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -232,7 +232,7 @@ GdomeElement* get_self_element(Request& r) {
 
 
 
-// DOMString getAttribute(in DOMString name);
+/// @bug attribute_value must be freed!  [// DOMString getAttribute(in DOMString name);
 static void _getAttribute(Request& r, MethodParams& params) {
 	GdomeElement* element=get_self_element(r);
 	const String& name=params.as_string(0, "name must be string");
