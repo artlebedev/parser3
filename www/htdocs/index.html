@@ -257,9 +257,16 @@ $response:charset[windows-1251]
 #^virtualtest[]
 #^xml[]
 #^mail4[]
-^voidconstructorpass[]
+#^voidconstructorpass[]
+@rusage2[]
 <hr>
 OK
+
+@rusage2[]
+$s[$status:rusage]
+
+^s.tv_sec.format[%.0f].^s.tv_usec.format[%06.0f]
+
 
 @voidconstructorpass[]
 $a[$form:a]

@@ -465,6 +465,7 @@ _locking \
 fcntl \
 lockf \
 getrusage \
+gettimeofday \
 crypt
 )
 

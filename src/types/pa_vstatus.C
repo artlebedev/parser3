@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VSTATUS_C="$Date: 2002/08/14 14:18:31 $";
+static const char* IDENT_VSTATUS_C="$Date: 2002/10/14 08:29:29 $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"
@@ -27,10 +27,18 @@ Value *VStatus::get_element(const String& aname, Value * /*aself*/, bool /*looki
 	if(aname=="rusage") {
 		VHash& rusage=*NEW VHash(pool());
 	    struct rusage u;
-	    if(int error=getrusage(RUSAGE_SELF,&u))
+	    if(getrusage(RUSAGE_SELF,&u)<0)
 			throw Exception(0,
 				&aname,
-				"getrusage failed (%d)", error);
+				"getrusage failed (#%d)", errno);
+
+#ifdef HAVE_GETTIMEOFDAY
+		struct timeval tp;
+		if(gettimeofday(&tp, NULL)<0)
+			throw Exception(0,
+				&aname,
+				"gettimeofday failed (#%d)", errno);
+#endif
 
 		Hash& hash=rusage.hash(&aname);
 		hash.put(*NEW String(pool(), "utime"), NEW VDouble(pool(), 
@@ -41,6 +49,11 @@ Value *VStatus::get_element(const String& aname, Value * /*aself*/, bool /*looki
 		hash.put(*NEW String(pool(), "ixrss"), NEW VDouble(pool(), u.ru_ixrss));
 		hash.put(*NEW String(pool(), "idrss"), NEW VDouble(pool(), u.ru_idrss));
 		hash.put(*NEW String(pool(), "isrss"), NEW VDouble(pool(), u.ru_isrss));
+
+#ifdef HAVE_GETTIMEOFDAY
+		hash.put(*NEW String(pool(), "tv_sec"), NEW VDouble(pool(), tp.tv_sec));
+		hash.put(*NEW String(pool(), "tv_usec"), NEW VDouble(pool(), tp.tv_usec));
+#endif
 
 		return &rusage;
 	}

@@ -223,10 +223,10 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 
 
 !void
-	!^имя.length[]
-		0
-	!^имя.pos[...]
-		-1
+    !^имя.length[]
+    	0
+    !^имя.pos[...]
+        -1
     !^имя.int[]  (default) 
         0 или default
     !^имя.double[] (default)
@@ -320,7 +320,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     X^таблица.remove(position[;count]) - стирает запись 
         из текущей позиции [стирает запись из конкретной позиции] 
             [стирает count записей]
-    !^таблица.join[таблица][$.limit(1) $.offset(5) $.offset[cur]]	 - добавляет записи из таблицы. 
+    !^таблица.join[таблица][$.limit(1) $.offset(5) $.offset[cur]]     - добавляет записи из таблицы. 
         таблицы должны иметь одинаковую структуру.
     !^таблица.flip[] выдаёт транспонированную, надо куда-то сложить, потом пользовать
     !^таблица.locate[поле;значение] передвигает текущую строку, если найдёт. выдаёт bool
@@ -330,8 +330,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         поля значений могут быть не указаны, тогда ими будут все столбцы, включая ключевой
     !^таблица.columns[]+ таблица из одного столбца $column
     !$отобранное[^таблица.select(выражение)] = таблица из тех же столбцов и строк, у которых условие совпало
-	    $adults[^man.select($man.age>=18)]
-	^таблица.color[цвет1;цвет2]
+        $adults[^man.select($man.age>=18)]
+    ^таблица.color[цвет1;цвет2]
 
 
 !hash
@@ -834,7 +834,7 @@ xdoc(xnode)
         does not support data
         NO_MODIFICATION_ALLOWED_ERR
         If an attempt is made to modify an
-        object where modifications are not
+            object where modifications are not
         allowed
         NOT_FOUND_ERR
         If an attempt was made to reference a
@@ -884,6 +884,11 @@ xdoc(xnode)
         !ixrss integral shared text memory size
         !idrss integral unshared data size
         !isrss integral unshared stack size
+        !tv_sec
+        !tv_usec
+           $s[$status:rusage]
+           ^s.tv_sec.format[%.0f].^s.tv_usec.format[%06.0f]
+
 
 !DATA::=string | file
 
