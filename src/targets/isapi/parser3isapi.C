@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.55 2001/10/22 16:44:43 parser Exp $
+	$Id: parser3isapi.C,v 1.56 2001/10/24 16:52:25 parser Exp $
 */
 
 #ifndef _MSC_VER
@@ -109,7 +109,7 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 }
 
 /// @todo event log
-void SAPI::die(Pool& pool, const char *fmt, ...) {
+void SAPI::die(const char *fmt, ...) {
 	exit(1);
 }
 
