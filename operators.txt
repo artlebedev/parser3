@@ -101,6 +101,7 @@ Xне сделано, видимо, не будет сделано
       по умолчанию, методы компилируются в $self [в случае оператора, $self=$MAIN:CLASS]
     !^connect[protocol://строка соединения]]{код с ^sql[...]-ями}
         !mysql://user:pass@{host[:port]|[/unix/socket]}/database?
+            ClientCharset=parser-charset << charset in which parser thinks client works
             charset=cp1251_koi8&
             timeout=3&
             compress=1&
