@@ -84,6 +84,9 @@
 /* DB2-abled parser */
 #undef DB2
 
+/* compiler supports pragma pack */
+#undef HAVE_PRAGMA_PACK
+
 /* Windows32 target platform */
 #undef WIN32
 
