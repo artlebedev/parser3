@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2004/09/17 11:56:51 $";
+static const char * const IDENT_FILE_C="$Date: 2004/12/23 15:36:12 $";
 
 #include "pa_config_includes.h"
 
@@ -32,6 +32,8 @@ static const char * const IDENT_FILE_C="$Date: 2004/09/17 11:56:51 $";
 #define BINARY_MODE_NAME "binary"
 #define STDIN_EXEC_PARAM_NAME "stdin"
 #define CHARSET_EXEC_PARAM_NAME "charset"
+
+#define NAME_NAME "name"
 
 // class
 
@@ -644,8 +646,8 @@ class File_sql_event_handlers: public SQL_Driver_query_event_handlers {
 	int got_cells;
 public:
 	String::C value;
-	String* user_file_name;
-	String* user_content_type;
+	const String* user_file_name;
+	const String* user_content_type;
 public:
 	File_sql_event_handlers(
 		const String& astatement_string, const char* astatement_cstr):
@@ -671,10 +673,12 @@ public:
 					value=String::C(str, length); 
 					break;
 				case 1:
-					user_file_name=new String(str, length, true);
+					if(!user_file_name) // user not specified?
+						user_file_name=new String(str, length, true);
 					break;
 				case 2:
-					user_content_type=new String(str, length, true);
+					if(!user_content_type) // user not specified?
+						user_content_type=new String(str, length, true);
 					break;
 				default:
 					error=SQL_Error("parser.runtime", "result must not contain more then one row, three rows");
@@ -689,17 +693,33 @@ public:
 };
 #endif
 static void _sql(Request& r, MethodParams& params) {
-	const String* user_file_name=0;
-	if(params.get(0)->is_string())
-		user_file_name=&params.get(0)->as_string();
-
-	Value& statement=params.as_junction(params.count()-1, "statement must be code");
+	Value& statement=params.as_junction(0, "statement must be code");
 
 	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
 	const char* statement_cstr=
 		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
 	File_sql_event_handlers handlers(statement_string, statement_cstr);
+
+	if(params.count()>1)
+		if(HashStringValue* options=
+			params.as_no_junction(1, "param must not be code").get_hash()) {
+			int valid_options=0;
+			if(Value* vfilename=options->get(NAME_NAME)) {
+				valid_options++;
+				handlers.user_file_name=&vfilename->as_string();
+			}
+			if(Value* vcontent_type=options->get(CONTENT_TYPE_NAME)) {
+				valid_options++;
+				handlers.user_content_type=&vcontent_type->as_string();
+			}
+			if(valid_options!=options->count())
+				throw Exception("parser.runtime",
+					0,
+					"called with invalid option");
+		}
+
+
 	r.connection()->query(
 		statement_cstr, 
 		0, 0,
@@ -712,10 +732,7 @@ static void _sql(Request& r, MethodParams& params) {
 			0,
 			"produced no result");
 
-	if(!user_file_name)
-		user_file_name=handlers.user_file_name;
-
-	const char* user_file_name_cstr=user_file_name? user_file_name->cstr(): 0;
+	const char* user_file_name_cstr=handlers.user_file_name? handlers.user_file_name->cstr(): 0;
 
 	VString* vcontent_type=handlers.user_content_type? 
 		new VString(*handlers.user_content_type)
