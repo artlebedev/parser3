@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b image parser class.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.15 2001/04/12 14:50:26 paf Exp $
+	$Id: image.C,v 1.16 2001/04/12 16:26:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -31,8 +31,8 @@ VStateless_class *image_class;
 
 class Measure_reader {
 public:
-	enum { READ_CHUNK_SIZE=0x400 }; // 1K
-	typedef size_t (*Func)(void *& buf, size_t limit, void *info);
+	enum { READ_CHUNK_SIZE=0x400 };// 1K
+	typedef size_t(*Func)(void *& buf, size_t limit, void *info);
 
 	Measure_reader(Func afunc, void *ainfo) : 
 		func(afunc), info(ainfo), 
@@ -45,7 +45,7 @@ public:
 				size=(*func)(chunk, READ_CHUNK_SIZE, info);
 				offset=0;
 			} else
-				return 0; // as if EOF
+				return 0;// as if EOF
 		if(!size) // EOF
 			return 0;
 			
@@ -67,7 +67,7 @@ private:
 
 // GIF
 struct GIF_Header {
-	char       type[3];          // 'GIF'
+	char       type[3];         // 'GIF'
 	char       version[3];
 	unsigned char       width[2];
 	unsigned char       height[2];
@@ -78,28 +78,28 @@ struct GIF_Header {
 
 // JPEG
 struct JFIF_Header {
-	char length[2];               // length of JFIF segment marker
-	char identifier[5];           // JFIF identifier
-	char version[2];              // version
-	char units;                   // units X of Y pixel density
-	char xdensity[2];             // X pixel density
-	char ydensity[2];             // X pixel density
-	char xthumbnails;             // width of thumbnails
-	char ythumbnails;             // height of thumbnails
-	char reserved;                // reserved
+	char length[2];              // length of JFIF segment marker
+	char identifier[5];          // JFIF identifier
+	char version[2];             // version
+	char units;                  // units X of Y pixel density
+	char xdensity[2];            // X pixel density
+	char ydensity[2];            // X pixel density
+	char xthumbnails;            // width of thumbnails
+	char ythumbnails;            // height of thumbnails
+	char reserved;               // reserved
 };
 struct JPG_Frame {
-	char length[2];                // length of image marker
-	char data;                     // data precision of bits/sample
-	char height[2];                // image height
-	char width[2];                 // image width
-	char numComponents;            // number of color components
+	char length[2];               // length of image marker
+	char data;                    // data precision of bits/sample
+	char height[2];               // image height
+	char width[2];                // image width
+	char numComponents;           // number of color components
 };
 
 //
 
 inline short bytes_to_int(unsigned char HI, unsigned char LO) {
-	return (short)((HI<<8) + LO);
+	return(short)((HI<<8) + LO);
 }
 
 void measure_gif(Pool& pool, const String *origin_string, 
@@ -184,8 +184,8 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 		width=bytes_to_int(h.width[0], h.width[1]);
 		height=bytes_to_int(h.height[0], h.height[1]);
 	} else
-		PTHROW(0, 0,
-			origin_string,
+		PTHROW(0, 0, 
+			origin_string, 
 			"broken JPEG file - APP0 frame not found");			
 }
 
@@ -252,7 +252,7 @@ static void _measure(Request& r, const String& method_name, Array *params) {
 	// forcing [this body type]
 	r.fail_if_junction_(true, data, method_name, "data must not be code");
 
-	void *info; Measure_reader::Func read_func; 
+	void *info;Measure_reader::Func read_func;
 	Read_mem_info read_mem_info;
 	Read_disk_info read_disk_info;
 	const String *file_name;
@@ -260,13 +260,13 @@ static void _measure(Request& r, const String& method_name, Array *params) {
 		file_name=data.get_string();
 		read_disk_info.file_spec=&r.absolute(*file_name);
 		read_disk_info.offset=0;
-		info=&read_disk_info; read_func=read_disk;
+		info=&read_disk_info;read_func=read_disk;
 	} else {
 		const VFile& vfile=*data.as_vfile();
 		file_name=&static_cast<Value *>(vfile.fields().get(*name_name))->as_string();
 		read_mem_info.ptr=(unsigned char *)vfile.value_ptr();
 		read_mem_info.eof=read_mem_info.ptr+vfile.value_size();
-		info=&read_mem_info; read_func=read_mem;
+		info=&read_mem_info;read_func=read_mem;
 	}
 
 	Measure_reader reader(read_func, info);
@@ -308,8 +308,8 @@ static void _html(Request& r, const String& method_name, Array *params) {
 			Attrib_info attrib_info={&tag, 0};
 			attribs->for_each(append_attrib_pair, &attrib_info);
 		} else
-			PTHROW(0, 0,
-				&method_name,
+			PTHROW(0, 0, 
+				&method_name, 
 				"attributes must be must be hash");
 
 	Attrib_info attrib_info={&tag, attribs};
@@ -317,6 +317,25 @@ static void _html(Request& r, const String& method_name, Array *params) {
 	tag << " />";
 	r.write_pass_lang(tag);
 }
+
+static gdImage *load(Request& r, const String& method_name, 
+					 const String& file_name){
+	Pool& pool=r.pool();
+
+	const char *file_name_cstr=r.absolute(file_name).cstr(String::UL_FILE_NAME);
+	if(FILE *f=fopen(file_name_cstr, "rb")) {
+		gdImage& image=*new(pool) gdImage(pool);
+		image.CreateFromGif(f);
+		fclose(f);
+		return &image;
+	} else {
+		PTHROW(0, 0, 
+			&method_name, 
+			"can not open '%s'", file_name_cstr);
+		return 0;
+	}
+}
+
 
 /// ^image.load[background.gif]
 static void _load(Request& r, const String& method_name, Array *params) {
@@ -327,19 +346,10 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, vfile_name, method_name, "file name must not be code");
 	const String& file_name=vfile_name.as_string();
 
-	const char *file_name_cstr=r.absolute(file_name).cstr(String::UL_FILE_NAME);
-	gdImage& image=*new(pool) gdImage(pool);
-	if(FILE *f=fopen(file_name_cstr, "rb")) {
-		image.CreateFromGif(f);
-		int width=image.SX();
-		int height=image.SY();
-		fclose(f);
-
-		static_cast<VImage *>(r.self)->set(&file_name, width, height, &image);
-	} else
-		PTHROW(0, 0,
-			&method_name,
-			"can not open background image '%s'", file_name_cstr);
+	gdImage& image=*load(r, method_name, file_name);
+	int width=image.SX();
+	int height=image.SY();
+	static_cast<VImage *>(r.self)->set(&file_name, width, height, &image);
 }
 
 /// ^image.create[width;height] bgcolor=white
@@ -365,13 +375,13 @@ static void _gif(Request& r, const String& method_name, Array *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"does not contain an image");
 
 	// could _ but don't thing it's wise to use $image.src for vfile.name
 
-	String out(pool);  image->Gif(out);
+	String out(pool); image->Gif(out);
 	
 	VFile& vfile=*new(pool) VFile(pool);
 	String& image_gif=*new(pool) String(pool, "image/gif");
@@ -386,15 +396,15 @@ static void _line(Request& r, const String& method_name, Array *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"does not contain an image");
 
 	image->Line(
-		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(),
-		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(),
-		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(),
-		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(), 
+		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(), 
+		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(), 
+		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(), 
 		image->Color((int)r.process(*static_cast<Value *>(params->get(4))).as_double()));
 }
 
@@ -404,13 +414,13 @@ static void _fill(Request& r, const String& method_name, Array *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"does not contain an image");
 
 	image->Fill(
-		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(),
-		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(), 
+		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(), 
 		image->Color((int)r.process(*static_cast<Value *>(params->get(2))).as_double()));
 }
 
@@ -420,15 +430,15 @@ static void _rectangle(Request& r, const String& method_name, Array *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"does not contain an image");
 
 	image->Rectangle(
-		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(),
-		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(),
-		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(),
-		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(), 
+		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(), 
+		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(), 
+		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(), 
 		image->Color((int)r.process(*static_cast<Value *>(params->get(4))).as_double()));
 }
 
@@ -438,15 +448,15 @@ static void _bar(Request& r, const String& method_name, Array *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"does not contain an image");
 
 	image->FilledRectangle(
-		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(),
-		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(),
-		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(),
-		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(), 
+		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(), 
+		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(), 
+		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(), 
 		image->Color((int)r.process(*static_cast<Value *>(params->get(4))).as_double()));
 }
 
@@ -456,13 +466,13 @@ static void _replace(Request& r, const String& method_name, Array *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"does not contain an image");
 
 	if((params->size()-2)%2) // I see your thoughts, but that's more readable
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"y coordinate missing");
 
 	int n=(params->size()-2)/2;
@@ -472,9 +482,9 @@ static void _replace(Request& r, const String& method_name, Array *params) {
 		p[i].x=(int)r.process(*static_cast<Value *>(params->get(2+i*2+0))).as_double();
 		p[i].y=(int)r.process(*static_cast<Value *>(params->get(2+i*2+1))).as_double();
 	}
-	image->FilledPolygonReplaceColor(p, n,
+	image->FilledPolygonReplaceColor(p, n, 
 		image->Color((int)r.process(*static_cast<Value *>(params->get(0))).as_double()), // src color
-		image->Color((int)r.process(*static_cast<Value *>(params->get(1))).as_double())); // dest color
+		image->Color((int)r.process(*static_cast<Value *>(params->get(1))).as_double()));// dest color
 }
 
 /// ^image.polygon(color)(x;y)... point coord pairs
@@ -483,13 +493,13 @@ static void _polygon(Request& r, const String& method_name, Array *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"does not contain an image");
 
 	if((params->size()-1)%2) // [I see..] see now?
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"y coordinate missing");
 
 	int n=(params->size()-1)/2;
@@ -499,7 +509,7 @@ static void _polygon(Request& r, const String& method_name, Array *params) {
 		p[i].x=(int)r.process(*static_cast<Value *>(params->get(1+i*2+0))).as_double();
 		p[i].y=(int)r.process(*static_cast<Value *>(params->get(1+i*2+1))).as_double();
 	}
-	image->Polygon(p, n,
+	image->Polygon(p, n, 
 		image->Color((int)r.process(*static_cast<Value *>(params->get(0))).as_double()));
 }
 
@@ -509,13 +519,13 @@ static void _polybar(Request& r, const String& method_name, Array *params) {
 
 	gdImage *image=static_cast<VImage *>(r.self)->image;
 	if(!image)
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"does not contain an image");
 
 	if((params->size()-1)%2) // [I see..] see now?
-		PTHROW(0, 0,
-			&method_name,
+		PTHROW(0, 0, 
+			&method_name, 
 			"y coordinate missing");
 
 	int n=(params->size()-1)/2;
@@ -525,8 +535,124 @@ static void _polybar(Request& r, const String& method_name, Array *params) {
 		p[i].x=(int)r.process(*static_cast<Value *>(params->get(1+i*2+0))).as_double();
 		p[i].y=(int)r.process(*static_cast<Value *>(params->get(1+i*2+1))).as_double();
 	}
-	image->FilledPolygon(p, n,
+	image->FilledPolygon(p, n, 
 		image->Color((int)r.process(*static_cast<Value *>(params->get(0))).as_double()));
+}
+
+// font
+
+#define Y(y)(y+index*height+1)
+class Font : public Pooled {
+public:
+	
+	int height;	    /* Font heigth */
+	int space;	    /* Default char width */
+	gdImage& ifont;
+	const String& alphabet;
+	
+	Font(Pool& pool, 
+		const String& aalphabet, 
+		gdImage& aifont, int aheight, int aspace) : Pooled(pool), 
+		alphabet(aalphabet), 
+		height(aheight), space(aspace), 
+		ifont(aifont) {
+	}
+	
+	/* ******************************** char ********************************** */
+	
+	int index_of(char ch) {
+		if(ch==' ') return -1;
+		return alphabet.pos(&ch, 1);
+	}
+	
+	int index_width(int index) {
+		if(index<0)
+			index=index_of('.');
+		if(index<0) 
+			return 0;
+		int tr=ifont.GetTransparent();
+		for(int x=ifont.SX()-1; x>0; x--) {
+			for(int y=0; y<height-1; y++)
+				if(ifont.GetPixel(x, Y(y))!=tr) 
+					return x+2;
+		}
+		return 0;
+	}
+	
+	void index_display(gdImage& image, int x, int y, int index){
+		if(index>=0) 
+			ifont.Copy(image, x, y, 0, Y(0), index_width(index), height-1);
+	}
+	
+	/* ******************************** string ********************************** */
+	/*
+	int string_width(const char *cstr){
+		int result=0;
+		for(; *cstr; cstr++)
+			result+=index_width(index_of(*cstr));
+		return result;
+	}
+	*/
+	
+	void string_display(gdImage& image, int x, int y, const String& s){
+		const char *cstr=s.cstr(String::UL_AS_IS);
+		if(cstr) for(; *cstr; cstr++) {
+			int index=index_of(*cstr);
+			index_display(image, x, y, index);
+			x+=space ? space : index_width(index);
+		}
+	}
+	
+};
+/// ^image.font[alPHAbet;font-file-name.gif](height)
+/// ^image.font[alPHAbet;font-file-name.gif](height;width)
+static void _font(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	Value& valphabet=*static_cast<Value *>(params->get(0));
+	// forcing [this body type]
+	r.fail_if_junction_(true, valphabet, method_name, "alphabet must not be code");
+
+	Value& file_name=*static_cast<Value *>(params->get(1));
+	// forcing [this body type]
+	r.fail_if_junction_(true, file_name, method_name, "file_name must not be code");
+
+	Value& vheight=*static_cast<Value *>(params->get(2));
+	int height=(int)r.process(vheight).as_double();
+
+	int width=0;
+	if(params->size()>3) {
+		Value& vwidth=*static_cast<Value *>(params->get(3));
+		width=(int)r.process(vwidth).as_double();
+	}
+
+	static_cast<VImage *>(r.self)->font=new(pool) Font(pool, 
+		valphabet.as_string(), 
+		*load(r, method_name, file_name.as_string()), 
+		height, width);
+}
+
+/// ^image.text(x;y)[text]
+static void _text(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	int x=(int)r.process(*static_cast<Value *>(params->get(0))).as_double();
+	int y=(int)r.process(*static_cast<Value *>(params->get(1))).as_double();
+	const String& s=
+		r.process(*static_cast<Value *>(params->get(2))).as_string();
+
+	VImage& vimage=*static_cast<VImage *>(r.self);
+	if(vimage.image)
+		if(vimage.font)
+			vimage.font->string_display(*vimage.image, x, y, s);
+		else
+			PTHROW(0, 0,
+				&method_name,
+				"set the font first");
+	else
+		PTHROW(0, 0, 
+			&method_name, 
+			"does not contain an image");
 }
 
 // initialize
@@ -569,4 +695,11 @@ void initialize_image_class(Pool& pool, VStateless_class& vclass) {
 	/// ^image.polybar(color)(x;y)... point coord pairs
 	vclass.add_native_method("polybar", Method::CT_DYNAMIC, _polybar, 1+3*2, 1+100*2);
 
+    /// ^image.font[alPHAbet;font-file-name.gif](height)
+    /// ^image.font[alPHAbet;font-file-name.gif](height;width)
+	vclass.add_native_method("font", Method::CT_DYNAMIC, _font, 3, 4);
+
+    /// ^image.text(x;y)[text]
+	vclass.add_native_method("text", Method::CT_DYNAMIC, _text, 3, 3);
+	
 }

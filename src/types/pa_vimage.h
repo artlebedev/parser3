@@ -5,18 +5,18 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.6 2001/04/11 17:06:14 paf Exp $
+	$Id: pa_vimage.h,v 1.7 2001/04/12 16:26:23 paf Exp $
 */
 
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-#include "gif.h"
-
 #include "pa_common.h"
 //#include "pa_globals.h"
 #include "pa_vstateless_object.h"
 #include "_image.h"
+
+class gdImage; class Font;
 
 /** holds <img> attributes 
 	and [image itself]
@@ -51,7 +51,8 @@ protected: // VAliased
 public: // usage
 
 	VImage::VImage(Pool& apool) : VStateless_object(apool, *image_class),
-		ffields(apool) {
+		ffields(apool),
+		image(0), font(0) {
 	}
 
 	void set(const String *src, int width, int height,
@@ -69,7 +70,7 @@ public: // usage
 
 public:
 
-	gdImage *image;
+	gdImage *image; Font *font;
 
 private:
 

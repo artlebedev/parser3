@@ -31,6 +31,22 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
+image:create<BR>
+$itext[^image:create(300;100)]
+$itext{
+^font[ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞ‗אבגדהוזחטיךכלםמןנסעףפץצקרשתûü‎‏ÿ0123456789-+=!\"%:,.^^^;<>?@()[]'&*/;font.gif](13)
+^^text(10;10)[ÏÀÔ סהוכאכ ‎עמ]<BR>
+^text(10;10)[ÏÀÔ סהוכאכ ‎עמ]
+^font[ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞ‗אבגדהוזחטיךכלםמןנסעףפץצקרשתûü‎‏ÿ0123456789-+=!\"%:,.^^^;<>?@()[]'&*/;font.gif](13;8)
+^^text(10;30)[ÏÀÔ סהוכאכ ‎עמ fixed]<BR>
+^text(10;30)[ÏÀÔ סהוכאכ ‎עמ fixed]
+}
+$ff[^itext.gif[]]
+^ff.save[itext.gif]
+^itext.html[$src[itext.gif]]
+
+
+<HR>
 $t[^table:set{id}]
 ^^t.id.int[]=^t.id.int[]<BR>
 ^^hren.double[]=^hren.double[]<BR>
