@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2002/12/05 15:00:00 $";
+static const char* IDENT_MAIL_C="$Date: 2002/12/19 08:34:32 $";
 
 #include "pa_config_includes.h"
 
@@ -281,15 +281,16 @@ static void sendmail(Request& r, const String& method_name,
 	Hash *mail_conf=static_cast<Hash *>(r.classes_conf.get(mail_base_class->name()));
 
 	const char *exception_type="email.format";
-	if(!from)
+	if(!from) // we use in sendmail -f {from} && SMTP MAIL from: {from}
 		throw Exception(exception_type,
 			&method_name,
 			"parameter does not specify 'from' header field");
-	if(!to)
+
+#ifdef _MSC_VER
+	if(!to) // we use only in SMTP RCPT to: {to}
 		throw Exception(exception_type,
 			&method_name,
 			"parameter does not specify 'to' header field");
-#ifdef _MSC_VER
 
 	SMTP& smtp=*new(pool) SMTP(pool, method_name);
 	Value *server_port;
@@ -403,10 +404,10 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 			&method_name,
 			"message must be hash");
 
-	const String *from;
-	String *to;
+	const String *from=0;
+	String *to=0;
 	String **to_param=
-#ifdef WIN32
+#ifdef _MSC_VER
 		&to
 #else
 		0
