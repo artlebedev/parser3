@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.h,v 1.9 2002/01/15 13:18:43 paf Exp $
+	$Id: pa_charset.h,v 1.10 2002/01/25 09:32:06 paf Exp $
 */
 
 #ifndef PA_CHARSET_H
@@ -26,37 +26,17 @@ namespace PCRE {
 
 // defines
 
-#ifdef XML
-/*#	include <util/XercesDefs.hpp>
-#	include <util/TransService.hpp>
-#	define Charset_TransRec XMLTransService::TransRec
-*/
-
 #	ifndef XMLCh 
-#		define XMLCh unsigned int
+		typedef unsigned int XMLCh;
 #	endif
 #	ifndef XMLByte
-#		define XMLByte unsigned char
+#		typedef unsigned char XMLByte;
 #	endif
 
-	struct Charset_TransRec {
-		XMLCh intCh;
-		XMLByte extCh;
-	};
-
-#else
-#	ifndef XMLCh 
-#		define XMLCh unsigned int
-#	endif
-#	ifndef XMLByte
-#		define XMLByte unsigned char
-#	endif
-
-	struct Charset_TransRec {
-		XMLCh intCh;
-		XMLByte extCh;
-	};
-#endif
+struct Charset_TransRec {
+	XMLCh intCh;
+	XMLByte extCh;
+};
 
 /**	charset holds name & transcode tables 
 	registers Xerces transcoders

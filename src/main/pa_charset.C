@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.17 2002/01/21 17:17:27 paf Exp $
+	$Id: pa_charset.C,v 1.18 2002/01/25 09:32:07 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -337,17 +337,17 @@ static int transcodeToUTF8(
         //  here, so bump up the output pointer and work down as we go.
         outPtr+= encodedBytes;
         switch(encodedBytes) {
-            case 6: *--outPtr = (XMLByte)((curVal | 0x80UL) & 0xBFUL);
+            case 6: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
                      curVal>>= 6;
-            case 5: *--outPtr = (XMLByte)((curVal | 0x80UL) & 0xBFUL);
+            case 5: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
                      curVal>>= 6;
-            case 4: *--outPtr = (XMLByte)((curVal | 0x80UL) & 0xBFUL);
+            case 4: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
                      curVal>>= 6;
-            case 3: *--outPtr = (XMLByte)((curVal | 0x80UL) & 0xBFUL);
+            case 3: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
                      curVal>>= 6;
-            case 2: *--outPtr = (XMLByte)((curVal | 0x80UL) & 0xBFUL);
+            case 2: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
                      curVal>>= 6;
-            case 1: *--outPtr = (XMLByte)(curVal | gFirstByteMark[encodedBytes]);
+            case 1: *--outPtr = XMLByte(curVal | gFirstByteMark[encodedBytes]);
         }
 
         // Add the encoded bytes back in again to indicate we've eaten them
