@@ -3,13 +3,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: core.C,v 1.54 2001/03/10 17:10:39 paf Exp $
+	$Id: core.C,v 1.55 2001/03/11 07:52:42 paf Exp $
 */
 
 #include "core.h"
-#include "classes/_string.h"
-#include "classes/_double.h"
-#include "classes/_int.h"
+#include "_string.h"
+#include "_double.h"
+#include "_int.h"
 #include "pa_request.h"
 
 String *unnamed_name;

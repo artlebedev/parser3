@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_vunknown.h,v 1.9 2001/03/10 16:34:37 paf Exp $
+	$Id: pa_vunknown.h,v 1.1 2001/03/11 07:52:46 paf Exp $
 */
 
 #ifndef PA_VUNKNOWN_H

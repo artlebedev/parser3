@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_vcframe.h,v 1.7 2001/03/10 16:34:36 paf Exp $
+	$Id: pa_vcframe.h,v 1.1 2001/03/11 07:52:45 paf Exp $
 */
 
 #ifndef PA_VCFRAME_H
@@ -24,7 +24,9 @@ public: // Value
 public: // WContext
 
 	// codeframe: intercepting string writes 
-	void write(const String& astring, String::Untaint_lang lang);
+	void write(const String& astring, String::Untaint_lang lang) {
+		string.append(astring, lang);
+	}
 
 public: // usage
 

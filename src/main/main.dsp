@@ -166,18 +166,6 @@ SOURCE=.\pa_string.C
 
 SOURCE=.\pa_table.C
 # End Source File
-# Begin Source File
-
-SOURCE=.\pa_value.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vclass.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_wcontext.C
-# End Source File
 # End Group
 # Begin Group "include"
 
@@ -234,66 +222,6 @@ SOURCE=..\include\pa_threads.h
 
 SOURCE=..\include\pa_types.h
 # End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_valiased.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_value.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_vbool.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_vcframe.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_vclass.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_vdouble.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_vhash.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_vint.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_vjunction.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_vmframe.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_vobject.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_vstring.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_vunknown.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_wcontext.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_wwrapper.h
-# End Source File
 # End Group
 # Begin Group "classes"
 
@@ -337,6 +265,70 @@ SOURCE=..\classes\root.C
 # Begin Source File
 
 SOURCE=..\classes\string.C
+# End Source File
+# End Group
+# Begin Group "types"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\types\pa_valiased.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_value.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vbool.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vcframe.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vclass.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vdouble.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vhash.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vint.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vjunction.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vmframe.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vobject.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vstring.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vunknown.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_wcontext.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_wwrapper.h
 # End Source File
 # End Group
 # End Target

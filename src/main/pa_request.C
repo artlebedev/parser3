@@ -3,15 +3,15 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_request.C,v 1.10 2001/03/10 17:10:39 paf Exp $
+	$Id: pa_request.C,v 1.11 2001/03/11 07:52:43 paf Exp $
 */
 
 #include "pa_request.h"
 #include "pa_wwrapper.h"
 #include "pa_common.h"
 #include "pa_vclass.h"
-#include "classes/_root.h"
-#include "classes/_env.h"
+#include "_root.h"
+#include "_env.h"
 #include "core.h"
 
 #include <stdio.h>

@@ -3,7 +3,18 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: compile.y,v 1.87 2001/03/10 16:34:38 paf Exp $
+	$Id: compile.y,v 1.88 2001/03/11 07:52:42 paf Exp $
+*/
+
+/*
+	TODO.parser4: 
+		cache compiled code from request to request. to do that...
+		1:	make method definitions, @CLASS, @BASE, @USE instructions,
+			which would be executed afterwards, and actions
+			now performed at compile time would be delayed to run time.
+		2:	make cache expiration on time and on disk-change of class source
+		3:	in apache use subpools for compiled class storage
+		4:	in iis make up specialized Pool object for that
 */
 
 %{
@@ -90,8 +101,7 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %left NEG     /* negation: unary - */
 
 %%
-
-all: /* TODO: у ^execute непременно задать какой-то name, см. 'RUN' */
+all:
 	one_big_piece {
 	Method& method=*NEW Method(POOL, 
 		*main_method_name, 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_vdouble.h,v 1.12 2001/03/10 16:34:36 paf Exp $
+	$Id: pa_vdouble.h,v 1.1 2001/03/11 07:52:45 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -11,7 +11,7 @@
 
 #include "pa_value.h"
 #include "pa_common.h"
-#include "classes/_double.h"
+#include "_double.h"
 
 #define MAX_DOUBLE_AS_STRING 20
 

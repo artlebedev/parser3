@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_vstring.h,v 1.17 2001/03/10 16:34:37 paf Exp $
+	$Id: pa_vstring.h,v 1.1 2001/03/11 07:52:46 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -14,7 +14,7 @@
 #include "pa_value.h"
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
-#include "classes/_string.h"
+#include "_string.h"
 
 class VString : public VObject {
 public: // Value

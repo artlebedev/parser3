@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_wcontext.C,v 1.10 2001/03/10 16:34:40 paf Exp $
+	$Id: pa_wcontext.C,v 1.1 2001/03/11 07:52:46 paf Exp $
 */
 
 #include "pa_wcontext.h"

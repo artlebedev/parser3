@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_vbool.h,v 1.7 2001/03/10 16:34:36 paf Exp $
+	$Id: pa_vbool.h,v 1.1 2001/03/11 07:52:45 paf Exp $
 */
 
 #ifndef PA_VBOOL_H
