@@ -130,14 +130,18 @@ void process_var(method_self_n_params_n_locals& root, Value& self,
 			String& name=static_cast<String&>(names.get[steps]);
 			WContext local_wcontext(pool /* empty */);
 			// evaluate constructor-code in that context
-			process(root, self, arcontext, local_wcontext, iter, ')');
+			process(root, self, 
+				arcontext, local_wcontext, 
+				iter, var_or_method_start_or_constructor_stop);
 			// store constructed value under 'name'
 			context->put_element(name, local_wcontext.value());
 		} else { // =='['  .name[with-code]
 			// prepare context
 			WContext local_context(pool, context);
 			// evaluate with-code in that context
-			process(root, self, local_context, local_context, iter, ']');
+			process(root, self, 
+				local_context, local_context, 
+				iter, var_or_method_start_or_block_stop);
 			// emit result
 			awcontext.write(local_context);
 		}
@@ -245,7 +249,7 @@ void process_method(method_self_n_params_n_locals& root, Value& self,
 	process(
 		local_rcontext/* $:vars */, context /* $self.vars */,
 		local_rcontext, local_wcontext, 
-		local_iter, 0);
+		local_iter, var_or_method_start);
 	// emit result
 	awcontext.write(local_wcontext);
 }
