@@ -4,10 +4,8 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
-
-	$Id: pa_dir.C,v 1.4 2001/06/28 07:41:59 parser Exp $
 */
-static char *RCSId="$Id: pa_dir.C,v 1.4 2001/06/28 07:41:59 parser Exp $"; 
+static const char *RCSId="$Id: pa_dir.C,v 1.5 2001/06/28 07:44:17 parser Exp $"; 
 
 #include "pa_dir.h"
 #include "pa_common.h"

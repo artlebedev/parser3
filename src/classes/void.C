@@ -4,10 +4,8 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
-
-	$Id: void.C,v 1.2 2001/06/28 07:41:59 parser Exp $
 */
-static char *RCSId="$Id: void.C,v 1.2 2001/06/28 07:41:59 parser Exp $"; 
+static const char *RCSId="$Id: void.C,v 1.3 2001/06/28 07:44:17 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"

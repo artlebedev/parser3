@@ -4,10 +4,8 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
-
-	$Id: untaint.C,v 1.52 2001/06/28 07:41:59 parser Exp $
 */
-static char *RCSId="$Id: untaint.C,v 1.52 2001/06/28 07:41:59 parser Exp $"; 
+static const char *RCSId="$Id: untaint.C,v 1.53 2001/06/28 07:44:17 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"

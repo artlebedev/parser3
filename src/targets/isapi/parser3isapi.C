@@ -4,10 +4,8 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
-
-	$Id: parser3isapi.C,v 1.34 2001/06/28 07:41:59 parser Exp $
 */
-static char *RCSId="$Id: parser3isapi.C,v 1.34 2001/06/28 07:41:59 parser Exp $"; 
+static const char *RCSId="$Id: parser3isapi.C,v 1.35 2001/06/28 07:44:17 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]

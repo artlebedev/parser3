@@ -4,10 +4,9 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
-
-	$Id: compile.y,v 1.143 2001/06/28 07:41:59 parser Exp $
 */
-static char *RCSId="$Id: compile.y,v 1.143 2001/06/28 07:41:59 parser Exp $"; 
+%{
+static char *RCSId="$Id: compile.y,v 1.144 2001/06/28 07:45:21 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -20,7 +19,6 @@ static char *RCSId="$Id: compile.y,v 1.143 2001/06/28 07:41:59 parser Exp $";
 		-#:	in iis make up specialized Pool object for that
 */
 
-%{
 #define YYSTYPE  Array/*<Operation>*/ *
 #define YYPARSE_PARAM  pc
 #define YYLEX_PARAM  pc

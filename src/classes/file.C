@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.37 2001/06/28 07:41:59 parser Exp $
+	$Id: file.C,v 1.38 2001/06/28 07:44:17 parser Exp $
 */
-static char *RCSId="$Id: file.C,v 1.37 2001/06/28 07:41:59 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.38 2001/06/28 07:44:17 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
