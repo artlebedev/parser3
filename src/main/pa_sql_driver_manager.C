@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2002/08/01 11:41:19 $";
+static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2002/09/04 14:59:54 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -50,20 +50,34 @@ public:
 	virtual void *calloc(size_t size) { return Pooled::calloc(size); }
 
 	/**
+		normally we can't 'throw' from dynamic library, so
 		the idea is to #1 jump to C++ some function to main body, where
 		every function stack frame has exception unwind information
 		and from there... #2 propagate_exception()
+
+        but when parser configured --with-sjlj-exceptions
+		one can simply 'throw' from dynamic library.
+		[sad story: one can not longjump/throw due to some bug in gcc as of 3.2.1 version]
 	*/
 	virtual void _throw(const char *comment) { 
 		// hiding passwords and addresses from accidental show [imagine user forgot @exception]
-		e=Exception("sql.connect", 
-			&url_without_login(pool(), furl),
-			comment); 
+#ifdef PA_WITH_SJLJ_EXCEPTIONS
+		throw
+#else
+		e=
+#endif
+			Exception("sql.connect", 
+				&url_without_login(pool(), furl),
+				comment); 
 
+#ifndef PA_WITH_SJLJ_EXCEPTIONS
 		longjmp(mark, 1);
+#endif
 	}
 	virtual void propagate_exception() {
+#ifndef PA_WITH_SJLJ_EXCEPTIONS
 		throw e;
+#endif
 	}
 
 private:

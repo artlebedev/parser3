@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char* IDENT_SQL_CONNECTION_H="$Date: 2002/08/15 10:38:18 $";
+static const char* IDENT_SQL_CONNECTION_H="$Date: 2002/09/04 14:59:54 $";
 
 #include "pa_pool.h"
 #include "pa_sql_driver.h"
@@ -17,11 +17,15 @@ static const char* IDENT_SQL_CONNECTION_H="$Date: 2002/08/15 10:38:18 $";
 // defines
 
 /// @see SQL_Driver_services_impl::_throw
-#define SQL_CONNECTION_SERVICED_FUNC_GUARDED(actions) \
-	if(!fservices || !setjmp(fservices->mark)) { \
-		actions; \
-	} else \
-		fservices->propagate_exception();
+#ifdef PA_WITH_SJLJ_EXCEPTIONS
+	#define SQL_CONNECTION_SERVICED_FUNC_GUARDED(actions) actions
+#else
+	#define SQL_CONNECTION_SERVICED_FUNC_GUARDED(actions) \
+		if(!fservices || !setjmp(fservices->mark)) { \
+			actions; \
+		} else \
+			fservices->propagate_exception();
+#endif
 
 /// SQL connection. handy wrapper around low level SQL_Driver
 class SQL_Connection : public Pooled {
