@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2002/12/19 08:34:32 $";
+static const char* IDENT_MAIL_C="$Date: 2002/12/24 08:41:55 $";
 
 #include "pa_config_includes.h"
 
@@ -314,11 +314,14 @@ static void sendmail(Request& r, const String& method_name,
 	// $MAIN:MAIL.sendmail["/usr/lib/sendmail -t -i  -f postmaster"] default
 
 	const String *sendmail_command;
-#ifdef PA_FORCED_SENDMAIL
-	sendmail_command=new(pool) String(pool, PA_FORCED_SENDMAIL);
-#else
 	const char *sendmailkey_cstr="sendmail";
 	if(mail_conf) {
+#ifdef PA_FORCED_SENDMAIL
+		throw Exception("parser.runtime",
+			&method_name,
+			"Parser was configured with --with-sendmail="PA_FORCED_SENDMAIL
+			" key, to change sendmail you should reconfigure and recompie it").;
+#else
 		if(Value *sendmail_value=static_cast<Value *>(mail_conf->get(String(pool, sendmailkey_cstr))))
 			sendmail_command=&sendmail_value->as_string();
 		else
@@ -326,14 +329,18 @@ static void sendmail(Request& r, const String& method_name,
 				&method_name,
 				"$"MAIN_CLASS_NAME":"MAIL_NAME".%s not defined", 
 				sendmailkey_cstr);
+#endif
 	} else {
+#ifdef PA_FORCED_SENDMAIL
+		sendmail_command=new(pool) String(pool, PA_FORCED_SENDMAIL);
+#else
 		String *test=new(pool) String(pool, "/usr/sbin/sendmail");
 		if(!file_executable(*test))
 			test=new(pool) String(pool, "/usr/lib/sendmail");
 		test->APPEND_CONST(" -t -i -f postmaster");
 		sendmail_command=test;
-	}
 #endif
+	}
 
 	// we know sendmail_command here, should replace "postmaster" with "$from" from message
 	int at_postmaster=sendmail_command->pos("postmaster");
