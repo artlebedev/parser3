@@ -520,7 +520,45 @@ AC_LANG_POP
 dnl We require qsort(3) and select(2).
 
 AC_CHECK_FUNCS(qsort, , AC_MSG_ERROR([No qsort library function.]))
-AC_CHECK_FUNCS(select, , AC_MSG_ERROR([No select library function.]))
+
+AC_MSG_CHECKING(for select)
+AC_TRY_RUN([
+
+#ifdef HAVE_SYS_SELECT_H
+#	include <sys/select.h>
+#endif
+
+#ifdef HAVE_SYS_SOCKET_H
+#	include <sys/socket.h>
+#endif
+
+#if TIME_WITH_SYS_TIME
+#	include <sys/time.h>
+#	include <time.h>
+#else
+#	ifdef HAVE_SYS_TIME_H
+#		include <sys/time.h>
+#	else
+#		include <time.h>
+#	endif
+#endif
+
+#ifdef	__STDC__
+int (*f)(int, fd_set *, fd_set *, fd_set *, struct timeval *)=select;
+#else
+int (*f)()=select;
+#endif	/* __STDC__ */
+
+int
+main ()
+{
+	return f != select;
+}
+],
+AC_DEFINE(HAVE_SELECT,,have 'select' library function)
+AC_MSG_RESULT(yes),                        
+AC_MSG_ERROR([No select library function.])
+)
 
 dnl For correct mail receiving we need to know local offset from GMT
 dnl it be timezone+(daylight?60*60*sign(timezone):0)
