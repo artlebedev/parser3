@@ -8,7 +8,7 @@
     <!--xsl:output method="xml" omit-xml-declaration="no" encoding="windows-1251" indent="no" /-->
 
     <xsl:template match="document">
-        <document><xsl:apply-templates select="block ! map | h1 | h2 | h3 | form | img | table | roaming-city-operators | tariffs-short | tariffs-long | phone | form-sendsms | script"/></document>
+        <document><xsl:apply-templates select="block | map | h1 | h2 | h3 | form | img | table | roaming-city-operators | tariffs-short | tariffs-long | phone | form-sendsms | script"/></document>
     </xsl:template>
     
     <xsl:template match="script">

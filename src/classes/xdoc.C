@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.67 2002/01/21 16:44:48 paf Exp $
+	$Id: xdoc.C,v 1.68 2002/01/21 16:53:17 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -717,7 +717,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	if(!transformed || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
 		throw Exception(0, 0,
-			&method_name, 
+			&stylesheet_filespec, 
 			exc);
 	}
 
