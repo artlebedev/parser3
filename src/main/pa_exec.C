@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.28 2002/03/11 07:53:16 paf Exp $
+	$Id: pa_exec.C,v 1.29 2002/03/11 08:00:01 paf Exp $
 
 
 	@todo setrlimit
@@ -298,6 +298,8 @@ int pa_exec(const String& file_spec,
 	throw Exception(0, 0,
 		&file_spec,
 		"parser execs are disabled [recompile parser without --disable-execs configure option]");
+
+#else
 
 #ifdef WIN32
 

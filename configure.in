@@ -35,6 +35,15 @@ fi
 ]
 )
 
+AC_ARG_ENABLE(execs, [  --disable-execs         to disable any execs
+                          (file::exec, file::cgi, unix mail:send)],
+[
+if test "$enableval" = "no"; then
+	AC_DEFINE(NO_PA_EXECS,,pa_exec disabled)
+fi
+]
+)
+
 AC_ARG_WITH(pathlink,[  --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)],
 	LD_PATHLINK=$withval

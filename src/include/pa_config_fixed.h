@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_fixed.h,v 1.39 2002/02/20 09:13:07 paf Exp $
+	$Id: pa_config_fixed.h,v 1.40 2002/03/11 07:53:16 paf Exp $
 
 
 	tested only with MS Visual C++ V6
@@ -33,5 +33,11 @@
 #define HAVE_PRAGMA_PACK
 #define USE_SMTP
 
+// no string origin tracking
 //#define NO_STRING_ORIGIN
+
+// disable any execs (file::exec, file::cgi, unix mail:send)
+//#define NO_PA_EXECS
+
+// xml-abled parser
 #define XML

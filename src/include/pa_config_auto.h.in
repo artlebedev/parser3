@@ -144,6 +144,9 @@
 /* no string origin tracking */
 #undef NO_STRING_ORIGIN
 
+/* pa_exec disabled */
+#undef NO_PA_EXECS
+
 /* xml-abled parser */
 #undef XML
 
