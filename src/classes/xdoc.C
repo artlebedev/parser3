@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.34 2001/10/23 14:43:44 parser Exp $
+	$Id: xdoc.C,v 1.35 2001/10/26 12:21:35 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -621,69 +621,7 @@ static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning,
 		XalanDOMString(attribute_cstr),  
 		XalanDOMString(meaning_cstr));
 }
-/*
-static void _transform(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	// params
-	if(params->size()>1) {
-		Value& vparams=params->as_no_junction(1, "transform parameters parameter must be string");
-		if(vparams.is_defined())
-			if(Hash *params=vparams.get_hash())
-				params->for_each(add_xslt_param, &vdoc.transformer());
-			else
-				throw Exception(0, 0,
-					&method_name,
-					"transform parameters parameter must be hash");
-	}
-
-	// source
-	const XalanParsedSource &parsed_source=vdoc.get_parsed_source(pool, &method_name);
-
-	// stylesheet
-	const String& stylesheet_file_name=params->as_string(0, "file name must be string");
-	const String& stylesheet_filespec=r.absolute(stylesheet_file_name);
-	//_asm int 3;
-	Stylesheet_connection& connection=XSLT_stylesheet_manager->get_connection(stylesheet_filespec);
-
-	// target
-	XalanDocument* target=vdoc.parser_liaison().createDocument();
-
-	// transform
-	try {
-		vdoc.transformer().transform2(
-			parsed_source, 
-			&connection.stylesheet(true/*nocache* /), 
-			target);
-	}
-	catch (XSLException& e)	{
-		connection.close();
-		Exception::provide_source(pool, &stylesheet_file_name, e);
-	}
-	catch (SAXParseException& e)	{
-		connection.close();
-		Exception::provide_source(pool, &stylesheet_file_name, e);
-	}
-	catch (SAXException& e)	{
-		connection.close();
-		Exception::provide_source(pool, &stylesheet_file_name, e);
-	}
-	catch (XMLException& e) {
-		connection.close();
-		Exception::provide_source(pool, &stylesheet_file_name, e);
-	}
-	catch(const XalanDOMException& e)	{
-		connection.close();
-		Exception::provide_source(pool, &stylesheet_file_name, e);
-	}
-
-	// write out result
-	VXdoc& result=*new(pool) VXdoc(pool);
-	result.set_document(*target);
-	r.write_no_lang(result);
-}
-*/
 static void _transform(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
@@ -700,9 +638,6 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 					"transform parameters parameter must be hash");
 	}
 
-	// source
-	XalanDocument &xalan_document=vdoc.get_document(pool, &method_name);
-
 	// stylesheet
 	const String& stylesheet_file_name=params->as_string(0, "file name must be string");
 	const String& stylesheet_filespec=r.absolute(stylesheet_file_name);
@@ -710,14 +645,22 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	Stylesheet_connection& connection=stylesheet_manager->get_connection(stylesheet_filespec);
 
 	// target
-	XalanDocument* target=vdoc.parser_liaison().createDocument();
+	XalanDocument* target=vdoc.parser_xerces_liaison().createDocument();
 
 	// transform
 	try {
-		vdoc.transformer().transform2(
-			&xalan_document, 
-			&connection.stylesheet(true/*nocache*/), 
-			target);
+		if(vdoc.has_parsed_source()) { // set|load, not create?
+			vdoc.transformer().transform2(
+				vdoc.get_parsed_source(pool, &method_name), 
+				&connection.stylesheet(true/*nocache*/), 
+				target);
+		} else {
+			target=vdoc.parser_xerces_liaison().createDocument();
+			vdoc.transformer().transform2(
+				vdoc.get_document(pool, &method_name), 
+				&connection.stylesheet(true/*nocache*/), 
+				target);
+		}
 	}
 	catch (XSLException& e)	{
 		connection.close();

@@ -7,7 +7,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: XalanTransformer2.cpp,v 1.6 2001/10/18 11:49:02 parser Exp $
+	$Id: XalanTransformer2.cpp,v 1.7 2001/10/26 12:21:29 paf Exp $
 
 	based on:
 */
@@ -1107,7 +1107,7 @@ XalanTransformer2::EnsureReset::~EnsureReset()
 }
 
 // PAF@design.ru
-/*
+
 void
 XalanTransformer2::transform2(
 			const XalanParsedSource&		theParsedXML, 
@@ -1142,13 +1142,6 @@ XalanTransformer2::transform2(
 			theXPathFactory);
 
 	theXSLTProcessorEnvSupport.setProcessor(&theProcessor);
-
-	// Create a problem listener and send output to a XalanDOMString.
-	//DOMStringPrintWriter	thePrintWriter(theErrorMessage);
-	
-	//ProblemListenerDefault	theProblemListener(&thePrintWriter);
-
-	//theProcessor.setProblemListener(&theProblemListener);
 
 	// Since the result target is not const in our
 	// internal intefaces, we'll pass in a local copy
@@ -1192,10 +1185,11 @@ XalanTransformer2::transform2(
 				tempResultTarget,					
 				*m_stylesheetExecutionContext);
 }
-*/
+
+
 void
 XalanTransformer2::transform2(
-			XalanDocument		*theDocument, 
+			XalanDocument&		theDocument, 
 			const XalanCompiledStylesheet*	theCompiledStylesheet,
 			const XSLTResultTarget& 		theResultTarget)
 {
@@ -1269,7 +1263,7 @@ XalanTransformer2::transform2(
 
 	// Do the transformation...
 	theProcessor.process(
-				theDocument, 	
+				&theDocument, 	
 				tempResultTarget,					
 				*m_stylesheetExecutionContext);
 }

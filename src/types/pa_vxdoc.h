@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxdoc.h,v 1.10 2001/10/19 14:56:17 parser Exp $
+	$Id: pa_vxdoc.h,v 1.11 2001/10/26 12:21:42 paf Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -56,14 +56,16 @@ public: // usage
 
 	VXdoc(Pool& apool, XalanDocument *adocument, bool aowns_document) : VXnode(apool, 0, false, *Xdoc_class), 
 		ftransformer(0),
-		fparser_liaison(0), ferror_handler(0),
+		fparser_xalan_liaison(0), fparser_xerces_liaison(0), ferror_handler(0),
 		fparsed_source(0),
 		fdocument(adocument), fowns_document(aowns_document) {
 		register_cleanup(VXdoc_cleanup, this);
 		ftransformer=new XalanTransformer2;
-		fparser_liaison=new XercesParserLiaison;
+		//fparser_xalan_liaison=new XalanSourceTreeParserLiaison;
+		fparser_xerces_liaison=new XercesParserLiaison;
 		ferror_handler=new HandlerBase;
-		fparser_liaison->setErrorHandler(ferror_handler); // disable stderr output
+		//fparser_xalan_liaison->setErrorHandler(ferror_handler); // disable stderr output
+		fparser_xerces_liaison->setErrorHandler(ferror_handler); // disable stderr output
 	}
 private:
 	void cleanup() {
@@ -72,14 +74,17 @@ private:
 
 		delete fparsed_source;
 		delete ftransformer;
-		delete fparser_liaison;
+		//delete fparser_xalan_liaison;
+		delete fparser_xerces_liaison;
 		delete ferror_handler;
 	}
 public:
 
 	XalanTransformer2& transformer() {return *ftransformer; }
-	XercesParserLiaison& parser_liaison() { return *fparser_liaison; }
+	//XalanSourceTreeParserLiaison& parser_xalan_liaison() { return *fparser_xalan_liaison; }
+	XercesParserLiaison& parser_xerces_liaison() { return *fparser_xerces_liaison; }
 
+	bool has_parsed_source() { return fparsed_source!=0; }
 	void set_parsed_source(const XalanParsedSource& aparsed_source) { 
 		delete fparsed_source; // delete prev
 		fparsed_source=&aparsed_source; 
@@ -112,7 +117,8 @@ public:
 private:
 
 	XalanTransformer2 *ftransformer;
-	XercesParserLiaison	*fparser_liaison;
+	XalanSourceTreeParserLiaison *fparser_xalan_liaison;
+	XercesParserLiaison	*fparser_xerces_liaison;
 	ErrorHandler *ferror_handler;
 
 	const XalanParsedSource *fparsed_source;

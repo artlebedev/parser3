@@ -7,7 +7,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: XalanTransformer2.hpp,v 1.3 2001/10/18 11:49:02 parser Exp $
+	$Id: XalanTransformer2.hpp,v 1.4 2001/10/26 12:21:29 paf Exp $
 
 	based on:
 */
@@ -171,14 +171,15 @@ public:
 	 * @param theResultTarget		output source 
 	 * @throws exceptions: XSLException, SAXException, XMLException, XalanDOMException
 	 */
-/*	void
+	void
 	transform2(
 			const XalanParsedSource&		theParsedXML, 
 			const XalanCompiledStylesheet*	theCompiledStylesheet,
-			const XSLTResultTarget& 		theResultTarget);*/
+			const XSLTResultTarget& 		theResultTarget);
+
 	void
 	transform2(
-			XalanDocument		*theDocument, 
+			XalanDocument&		theDocument, 
 			const XalanCompiledStylesheet*	theCompiledStylesheet,
 			const XSLTResultTarget& 		theResultTarget);
 	/**
