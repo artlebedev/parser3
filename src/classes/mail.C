@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.51 2002/02/06 08:40:20 paf Exp $
+	$Id: mail.C,v 1.52 2002/02/06 08:54:22 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -369,37 +369,38 @@ static void sendmail(Request& r, const String& method_name,
 	// $MAIN:MAIL.sendmail["/usr/lib/sendmail -t"] default
 
 	const char *sendmailkey_cstr="sendmail";
-	const String *sendmail_string;
+	const String *sendmail_command;
 	if(mail_conf) {
 		if(Value *sendmail_value=static_cast<Value *>(mail_conf->get(String(pool, sendmailkey_cstr))))
-			sendmail_string=&sendmail_value->as_string();
+			sendmail_command=&sendmail_value->as_string();
 		else
 			throw Exception(0, 0,
 				&method_name,
 				"$"MAIN_CLASS_NAME":"MAIL_NAME".%s not defined", 
 				sendmailkey_cstr);
 	} else {
-		sendmail_string=new(pool) String(pool, "/usr/sbin/sendmail");
-		if(!file_executable(*sendmail_string))
-			sendmail_string=new(pool) String(pool, "/usr/lib/sendmail");
-		sendmail_string->APPEND_CONST("-t");
+		String *test=new(pool) String(pool, "/usr/sbin/sendmail");
+		if(!file_executable(*test))
+			test=new(pool) String(pool, "/usr/lib/sendmail");
+		test->APPEND_CONST(" -t");
+		sendmail_command=test;
 	}
 
-	// we know sendmail_string here
+	// we know sendmail_command here
 	Array argv(pool);
 	const String *file_spec;
-	int after_file_spec=sendmail_string->pos(" ", 1);
+	int after_file_spec=sendmail_command->pos(" ", 1);
 	if(after_file_spec<=0)
-		file_spec=sendmail_string;
+		file_spec=sendmail_command;
 	else {
-		size_t pos_after=after_file_spec+1;
-		file_spec=&sendmail_string->mid(0, pos_after);
-		sendmail_string->split(argv, &pos_after, " ", 1, String::UL_AS_IS);
+		size_t pos_after=after_file_spec;
+		file_spec=&sendmail_command->mid(0, pos_after++);
+		sendmail_command->split(argv, &pos_after, " ", 1, String::UL_AS_IS);
 	}
 
-	if(!file_executable(*sendmail_string))
+	if(!file_executable(*file_spec))
 		throw Exception(0, 0,
-			sendmail_string,
+			file_spec,
 			"is not executable. Set $"MAIN_CLASS_NAME":"MAIL_NAME".%s with appropriate sendmail command", 
 				sendmailkey_cstr);
 
