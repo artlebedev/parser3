@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2003/12/11 09:25:50 $";
+static const char * const IDENT_XDOC_C="$Date: 2003/12/11 09:36:51 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -686,7 +686,7 @@ static void _file(Request& r, MethodParams& params) {
 		value_name, 
 		new VString(*oo.mediaType));
 	vhcontent_type.hash().put(
-		"charset", 
+		String::Body("charset"), 
 		new VString(*oo.encoding));
 
 	vfile.set(false/*tainted*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2003/12/11 09:25:49 $";
+static const char * const IDENT_FILE_C="$Date: 2003/12/11 09:36:51 $";
 
 #include "pa_config_includes.h"
 
@@ -284,8 +284,8 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	//String content_length(content_length_cstr);
 	ECSTR(CONTENT_LENGTH, content_length_cstr);
 	// SCRIPT_*
-	env.put("SCRIPT_NAME", script_name);
-	//env.put("SCRIPT_FILENAME", ??&script_name);
+	env.put(String::Body("SCRIPT_NAME"), script_name);
+	//env.put(String::Body("SCRIPT_FILENAME"), ??&script_name);
 
 	bool stdin_specified=false;
 	// environment & stdin from param
@@ -412,7 +412,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	// $stderr
 	if(real_err->length())
 		self.fields().put(
-			"stderr",
+			String::Body("stderr"),
 			new VString(*real_err));
 }
 static void _exec(Request& r, MethodParams& params) {
