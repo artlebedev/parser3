@@ -245,9 +245,16 @@ $response:charset[windows-1251]
 #^table2hash_onecolumn[]
 #^crossopvars[]
 #^three[]
-^badLangAfterCatch[]
+#^badLangAfterCatch[]
+^zeroinstdin[]
 <hr>
 OK
+
+@zeroinstdin[]
+#$f[^file::exec[a.pl;$.stdin[$.shit[]]]]
+$f[^file::exec[a.pl;$.stdin[^file::load[binary;1z2.txt]]]]
+=$f.text=
+^f.save[binary;1z2.out]
 
 @badLangAfterCatch[]
 ^try{

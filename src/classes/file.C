@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/09/18 08:52:47 $";
+static const char* IDENT_FILE_C="$Date: 2002/09/18 09:44:51 $";
 
 #include "pa_config_includes.h"
 
@@ -168,21 +168,21 @@ static bool is_safe_env_key(const char *key) {
 #ifndef DOXYGEN
 struct Append_env_pair_info {
 	Hash* hash;
-	const String* sstdin;
+	Value* vstdin;
 };
 #endif
-static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) {
+static void append_env_pair(const Hash::Key& key, Hash::Val *avalue, void *info) {
 	Append_env_pair_info& pi=*static_cast<Append_env_pair_info *>(info);
-	const String& svalue=static_cast<Value *>(value)->as_string();
+	Value& value=*static_cast<Value *>(avalue);
 
 	if(key==STDIN_EXEC_PARAM_NAME) {
-		pi.sstdin=&svalue;
+		pi.vstdin=&value;
 	} else {
 		if(!is_safe_env_key(key.cstr()))
 			throw Exception("parser.runtime",
 				&key,
 				"not safe environment variable");
-		pi.hash->put(key, &svalue);
+		pi.hash->put(key, &value.as_string());
 	}
 }
 #ifndef DOXYGEN
@@ -255,8 +255,17 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 		if(Hash *user_env=venv.get_hash(&method_name)) {
 			Append_env_pair_info info={&env};
 			user_env->for_each(append_env_pair, &info);
-			if(info.sstdin)
-				in.append(*info.sstdin, String::UL_CLEAN, true);
+			if(info.vstdin)
+				if(info.vstdin->is_string())
+					in.append(*info.vstdin->get_string(), String::UL_CLEAN, true);
+				else
+					if(VFile *vfile=static_cast<VFile *>(info.vstdin->as("file", false)))
+						in.APPEND_TAINTED((const char *)vfile->value_ptr(), vfile->value_size(),
+							"$.stdin[assigned]", 0);
+					else
+						throw Exception("parser.runtime",
+							&method_name,
+							STDIN_EXEC_PARAM_NAME " parameter must be string or file");
 		}
 	}
 
