@@ -1,3 +1,5 @@
+SUBDIRS = hook
+
 #@test why not INCLUDES=?
 INCLUDES := $(INCLUDES) -I../../classes -I../../types $(INCLTDL) -I../../sql -I../../lib/pcre -I../../lib/md5 -I$(APACHE13)/src/include -I$(APACHE13)/src/os/unix -I$(APACHE13)/src/os/win32 @XML_INCLUDES@
 
