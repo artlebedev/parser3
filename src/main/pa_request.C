@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>
 
-	$Id: pa_request.C,v 1.11 2001/03/11 07:52:43 paf Exp $
+	$Id: pa_request.C,v 1.12 2001/03/11 08:02:06 paf Exp $
 */
 
 #include "pa_request.h"
@@ -40,29 +40,29 @@ void Request::core() {
 	TRY {
 		// loading system auto.p
 		char *sys_auto_file="C:\\temp\\auto.p";
-		VClass *auto_class=use(
+		VClass *main_class=use(
 			sys_auto_file, 
-			run_class_name, 0, 
+			main_class_name, 0, 
 			false/*ignore possible error*/);
 
 		// TODO: использовать AUTO:limits здесь, пока их не сломали враги
 
 		// TODO: load site auto.p files, all assigned bases from upper dir
 		char *site_auto_file="Y:\\parser3\\src\\auto.p";
-		auto_class=use(
+		main_class=use(
 			site_auto_file, 
-			run_class_name, auto_class, 
+			main_class_name, main_class, 
 			false/*ignore possible error*/);
 
 		// there must be some auto.p
-		if(!auto_class)
+		if(!main_class)
 			THROW(0,0,
 				0,
 				"'auto.p' not found");
 
 		// compiling requested file
 		char *test_file="Y:\\parser3\\src\\test.p";
-		use(test_file, run_class_name, auto_class);
+		use(test_file, main_class_name, main_class);
 
 		// executing some @main[]
 		char *result=execute_MAIN();
@@ -96,7 +96,7 @@ VClass *Request::use(char *file, String *name, VClass *base_class, bool fail_on_
 	// TODO: обнаружить|решить cyclic dependences
 	char *source=file_read(pool(), file, fail_on_read_problem);
 	if(!source)
-		return 0;
+		return base_class;
 
 	// compile loaded class
 	VClass& vclass=COMPILE(source, name, base_class, file);

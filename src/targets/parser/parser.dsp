@@ -83,18 +83,6 @@ LINK32=link.exe
 
 # Name "parser - Win32 Release"
 # Name "parser - Win32 Debug"
-# Begin Group "targets"
-
-# PROP Default_Filter "C;cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Source File
-
-SOURCE=.\pa_pool.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\parser.C
-# End Source File
-# End Group
 # Begin Group "include"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
@@ -113,6 +101,18 @@ SOURCE=..\..\include\pa_string.h
 # Begin Source File
 
 SOURCE=..\..\include\pa_types.h
+# End Source File
+# End Group
+# Begin Group "targets"
+
+# PROP Default_Filter "C;cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+
+SOURCE=.\pa_pool.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\parser.C
 # End Source File
 # End Group
 # End Target

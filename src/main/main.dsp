@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Za /W3 /O2 /I ".." /I "..\include" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /Za /W3 /O2 /I ".." /I "..\include" /I "..\types" /I "..\classes" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Za /W3 /Gm /Zi /Od /I ".." /I "..\include" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
+# ADD CPP /nologo /Za /W3 /Gm /Zi /Od /I ".." /I "..\include" /I "..\types" /I "..\classes" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
 # SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -81,92 +81,6 @@ LIB32=link.exe -lib
 
 # Name "main - Win32 Release"
 # Name "main - Win32 Debug"
-# Begin Group "main"
-
-# PROP Default_Filter "C;cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Source File
-
-SOURCE=.\compile.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\compile.tab.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\compile.y
-
-!IF  "$(CFG)" == "main - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "main - Win32 Debug"
-
-# Begin Custom Build
-InputPath=.\compile.y
-InputName=compile
-
-"compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	call VCVARS32 
-	d:\cygwin\bin\bison -v $(InputName).y 
-	ren compile.tab.c compile.tab.C 
-	
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\compile_tools.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\compile_tools.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\core.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\execute.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_array.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_cframe.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_common.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_exception.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_hash.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_pool.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_request.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_string.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_table.C
-# End Source File
-# End Group
 # Begin Group "include"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
@@ -223,6 +137,171 @@ SOURCE=..\include\pa_threads.h
 SOURCE=..\include\pa_types.h
 # End Source File
 # End Group
+# Begin Group "main"
+
+# PROP Default_Filter "C;cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+
+SOURCE=.\compile.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\compile.tab.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\compile.y
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+# Begin Custom Build
+InputPath=.\compile.y
+InputName=compile
+
+"compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	call VCVARS32 
+	d:\cygwin\bin\bison -v $(InputName).y 
+	ren compile.tab.c compile.tab.C 
+	
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# Begin Custom Build
+InputPath=.\compile.y
+InputName=compile
+
+"compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	call VCVARS32 
+	d:\cygwin\bin\bison -v $(InputName).y 
+	ren compile.tab.c compile.tab.C 
+	
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\compile_tools.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\compile_tools.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\core.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\execute.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_array.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_common.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_exception.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_hash.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_pool.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_request.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_string.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_table.C
+# End Source File
+# End Group
+# Begin Group "types"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\types\pa_valiased.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_value.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vbool.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vcframe.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vclass.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vclass.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vdouble.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vhash.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vint.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vjunction.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vmframe.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vobject.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vstring.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vunknown.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_wcontext.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_wcontext.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_wwrapper.h
+# End Source File
+# End Group
 # Begin Group "classes"
 
 # PROP Default_Filter ""
@@ -265,70 +344,6 @@ SOURCE=..\classes\root.C
 # Begin Source File
 
 SOURCE=..\classes\string.C
-# End Source File
-# End Group
-# Begin Group "types"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\types\pa_valiased.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_value.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vbool.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vcframe.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vclass.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vdouble.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vhash.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vint.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vjunction.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vmframe.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vobject.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vstring.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vunknown.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_wcontext.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_wwrapper.h
 # End Source File
 # End Group
 # End Target
