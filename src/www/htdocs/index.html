@@ -1,6 +1,6 @@
 @main[]
-^domedit[]
-#^domxslt[]
+#^domedit[]
+^domxslt[]
 #^lsplit2[]
 #^faceesize[]
 #^imageresize[]
@@ -238,7 +238,8 @@ $env:HTTP_COOKIE<br>
 
 @xslt[]
 ^xdata[]
-^show-xdoc2[^xdoc.transform[global.xsl;$.param1[123/]]]
+$transformed[^xdoc.transform[global.xsl;$.param1[123/]]]
+^show-xdoc2[$transformed]
 
 @regexp2[]
 $s[  select]

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.23 2001/10/18 10:24:25 parser Exp $
+	$Id: xdoc.C,v 1.24 2001/10/18 11:49:02 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -625,6 +625,7 @@ static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning,
 		XalanDOMString(attribute_cstr),  
 		XalanDOMString(meaning_cstr));
 }
+/*
 static void _transform(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
@@ -657,6 +658,68 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	try {
 		vdoc.transformer().transform2(
 			parsed_source, 
+			&connection.stylesheet(true/*nocache* /), 
+			target);
+	}
+	catch (XSLException& e)	{
+		connection.close();
+		pool.exception()._throw(pool, &stylesheet_file_name, e);
+	}
+	catch (SAXParseException& e)	{
+		connection.close();
+		pool.exception()._throw(pool, &stylesheet_file_name, e);
+	}
+	catch (SAXException& e)	{
+		connection.close();
+		pool.exception()._throw(pool, &stylesheet_file_name, e);
+	}
+	catch (XMLException& e) {
+		connection.close();
+		pool.exception()._throw(pool, &stylesheet_file_name, e);
+	}
+	catch(const XalanDOMException& e)	{
+		connection.close();
+		pool.exception()._throw(pool, &stylesheet_file_name, e);
+	}
+
+	// write out result
+	VXdoc& result=*new(pool) VXdoc(pool);
+	result.set_document(*target);
+	r.write_no_lang(result);
+}
+*/
+static void _transform(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	// params
+	if(params->size()>1) {
+		Value& vparams=params->as_no_junction(1, "transform parameters parameter must be string");
+		if(vparams.is_defined())
+			if(Hash *params=vparams.get_hash())
+				params->for_each(add_xslt_param, &vdoc.transformer());
+			else
+				PTHROW(0, 0,
+					&method_name,
+					"transform parameters parameter must be hash");
+	}
+
+	// source
+	XalanDocument &xalan_document=vdoc.get_document(pool, &method_name);
+
+	// stylesheet
+	const String& stylesheet_file_name=params->as_string(0, "file name must be string");
+	const String& stylesheet_filespec=r.absolute(stylesheet_file_name);
+	//_asm int 3;
+	Stylesheet_connection& connection=XSLT_stylesheet_manager->get_connection(stylesheet_filespec);
+
+	// target
+	XalanDocument* target=vdoc.parser_liaison().createDocument();
+
+	// transform
+	try {
+		vdoc.transformer().transform2(
+			&xalan_document, 
 			&connection.stylesheet(true/*nocache*/), 
 			target);
 	}

@@ -7,7 +7,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: XalanTransformer2.cpp,v 1.5 2001/10/18 10:22:57 parser Exp $
+	$Id: XalanTransformer2.cpp,v 1.6 2001/10/18 11:49:02 parser Exp $
 
 	based on:
 */
@@ -119,6 +119,9 @@
 #include "XalanTransformer/XalanTransformerOutputStream.hpp"
 #include "XalanTransformer/XercesDOMParsedSource.hpp"
 
+
+#include "XercesParserLiaison/XercesDOMSupport.hpp"
+#include "XMLSupport/XMLParserLiaisonDefault.hpp"
 
 
 XSLTInit*	XalanTransformer2::s_xsltInit = 0;
@@ -1104,7 +1107,7 @@ XalanTransformer2::EnsureReset::~EnsureReset()
 }
 
 // PAF@design.ru
-
+/*
 void
 XalanTransformer2::transform2(
 			const XalanParsedSource&		theParsedXML, 
@@ -1189,10 +1192,10 @@ XalanTransformer2::transform2(
 				tempResultTarget,					
 				*m_stylesheetExecutionContext);
 }
-/*
+*/
 void
-XalanTransformer2::transformXerces(
-			const XalanDocument&		theDocument, 
+XalanTransformer2::transform2(
+			XalanDocument		*theDocument, 
 			const XalanCompiledStylesheet*	theCompiledStylesheet,
 			const XSLTResultTarget& 		theResultTarget)
 {
@@ -1200,13 +1203,9 @@ XalanTransformer2::transformXerces(
 	using std::for_each;
 #endif
 
-	// Create the helper object that is necessary for running the processor...
-	XalanAutoPtr<XalanParsedSourceHelper>	theHelper(theParsedXML.createHelper());
-	assert(theHelper.get() != 0);
+	XercesDOMSupport  					theDOMSupport;
 
-	DOMSupport& 					theDOMSupport = theHelper->getDOMSupport();
-
-	XMLParserLiaison&				theParserLiaison = theHelper->getParserLiaison();
+	XercesParserLiaison  theParserLiaison(theDOMSupport);
 
 	// Create some more support objects...
 	XSLTProcessorEnvSupportDefault	theXSLTProcessorEnvSupport;
@@ -1270,9 +1269,9 @@ XalanTransformer2::transformXerces(
 
 	// Do the transformation...
 	theProcessor.process(
-				theParsedXML.getDocument(), 	
+				theDocument, 	
 				tempResultTarget,					
 				*m_stylesheetExecutionContext);
 }
-*/
+
 #endif
