@@ -213,14 +213,6 @@ SOURCE=.\pa_vhash.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\pa_vhashfile.C
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_vhashfile.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\pa_vimage.C
 # End Source File
 # Begin Source File

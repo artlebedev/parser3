@@ -271,30 +271,6 @@ SOURCE=..\include\pa_config_includes.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\pa_db_connection.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_db_connection.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_db_manager.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_db_manager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\pa_db_table.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_db_table.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\pa_dictionary.C
 # End Source File
 # Begin Source File

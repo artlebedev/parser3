@@ -278,7 +278,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !$hash.ключ
         !_default - специальный ключ, если задан, 
         то при обращении по ключу, которому нет соответствия, выдаётся _default значение 
-    !^hash::create[[!copy_from_hash|!copy_from_hashfile]]
+    !^hash::create[[!copy_from_hash|Xcopy_from_hashfile]]
         создаёт новый hash, копию старого
     !^hash.add[слагаемое]
         перезаписывает одноимённые
@@ -337,7 +337,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         ПРЕДУПРЕЖДЕНИЕ: класс form получает свои поля после обработки всех auto класса MAIN
         поэтому необходимо задать $request/response:charset в одном из них. не после.
 
-!hashfile
+Xhashfile
     !^hashfile::open[$DB_HOME;filename]
     !^hashfile.clear[]
         забыть всё
