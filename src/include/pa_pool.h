@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.53 2001/09/15 11:48:41 parser Exp $
+	$Id: pa_pool.h,v 1.54 2001/09/15 13:20:22 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -48,7 +48,10 @@ public:
 	}
 
 	/// registers a routine to clean up non-pooled allocations
-	void register_cleanup(void (*cleanup) (void *), void *data);
+	void register_cleanup(void (*cleanup) (void *), void *data) {
+		if(!real_register_cleanup(cleanup, data))
+			fail_register_cleanup();
+	}
 
 	/// current exception object of the pool
 	Exception& exception() const { return *fexception; }
@@ -65,6 +68,7 @@ private:
 	/// @name implementation defined
     void *real_malloc(size_t size/*, int place*/);
     void *real_calloc(size_t size);
+	bool real_register_cleanup(void (*cleanup) (void *), void *data);
 	//}
 
 private: 
@@ -74,13 +78,16 @@ private:
 		if(ptr)
 			return ptr;
 
-		fail(size);
+		fail_alloc(size);
 
 		// never reached
 		return 0;
 	}
-	/// throws proper exception
-	void fail(size_t size) const;
+	/// throws allocation exception
+	void fail_alloc(size_t size) const;
+
+	/// throws register cleanup exception
+	void fail_register_cleanup() const;
 
 private: // exception handling
 

@@ -83,9 +83,9 @@ LINK32=link.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Stopping inetinfo...
-PreLink_Cmds=CD ..\..\win32tools	istop
+PreLink_Cmds=cd ..\..\win32tools	istop
 PostBuild_Desc=Starting inetinfo...
-PostBuild_Cmds=CD ..\..\win32tools	istart
+PostBuild_Cmds=cd ..\..\win32tools	istart
 # End Special Build Tool
 
 !ENDIF 

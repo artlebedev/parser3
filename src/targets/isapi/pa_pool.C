@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.4 2001/09/15 11:48:41 parser Exp $
+	$Id: pa_pool.C,v 1.5 2001/09/15 13:20:22 parser Exp $
 */
 
 #include <stdlib.h>
@@ -23,12 +23,6 @@ void *Pool::real_calloc(size_t size) {
 		static_cast<Pool_storage *>(fstorage)->calloc(size): ::calloc(size, 1);
 }
 
-void Pool::register_cleanup(void (*cleanup) (void *), void *data) {
-	if(fstorage)
-		static_cast<Pool_storage *>(fstorage)->register_cleanup(cleanup, data);
-	else
-		Pool& pool=this;
-		PTHROW(0, 0,
-			0,
-			"can not register cleanup on system pool");
+bool Pool::real_register_cleanup(void (*cleanup) (void *), void *data) {
+	return fstorage!=0 && static_cast<Pool_storage *>(fstorage)->register_cleanup(cleanup, data);
 }
