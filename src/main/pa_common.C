@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/02/24 12:26:48 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/03/21 07:07:06 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -193,7 +193,7 @@ static int http_request(String& response,
 			"zero hostname");  //never
 
 #ifdef PA_USE_ALARM
-    signal(SIGALRM, timeout_handler); 
+	signal(SIGALRM, timeout_handler); 
 #endif
 	int sock=-1;
 #ifdef PA_USE_ALARM
@@ -206,14 +206,15 @@ static int http_request(String& response,
 		throw Exception("http.timeout", 
 			origin_string, 
 			"timeout occured while retrieving document"); 
+		return 0; // never
 	} else {
 		alarm(timeout); 
 #endif
-	try {
-		int result;
+		try {
+			int result;
 			struct sockaddr_in dest;
-		
-    		if(!set_addr(&dest, host, port))
+
+	    		if(!set_addr(&dest, host, port))
 				throw Exception("http.host", 
 					origin_string, 
 					"can not resolve hostname \"%s\"", host); 
@@ -236,16 +237,16 @@ static int http_request(String& response,
 			closesocket(sock); 
 #ifdef PA_USE_ALARM
 			alarm(0); 
-		}
 #endif
-		return result;
-	} catch(...) {
-		if(sock>=0) 
-			closesocket(sock); 
+		} catch(...) {
 #ifdef PA_USE_ALARM
-		alarm(0); 
+			alarm(0); 
 #endif
-		/*re*/throw;
+			if(sock>=0) 
+				closesocket(sock); 
+			/*re*/throw;
+		}
+		return result;
 	}
 }
 
