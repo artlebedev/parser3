@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.102 2001/03/13 14:06:55 paf Exp $
+	$Id: execute.C,v 1.103 2001/03/13 14:28:51 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -50,7 +50,8 @@ char *opcode_name[]={
 	"BIN_AND", "BIN_OR", "BIN_XOR",
 	"LOG_AND", "LOG_OR", "LOG_XOR",
 	"NUM_LT", "NUM_GT", "NUM_LE", "NUM_GE", "NUM_EQ", "NUM_NE",
-	"STR_LT", "STR_GT", "STR_LE", "STR_GE", "STR_EQ", "STR_NE"
+	"STR_LT", "STR_GT", "STR_LE", "STR_GE", "STR_EQ", "STR_NE",
+	"IS"
 };
 
 void dump(int level, const Array& ops) {
@@ -566,6 +567,13 @@ void Request::execute(const Array& ops) {
 			{
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VBool(pool(), a->as_string() != b->as_string());
+				PUSH(value);
+				break;
+			}
+		case OP_IS:
+			{
+				Value *b=POP();  Value *a=POP();
+				Value *value=NEW VBool(pool(), b->as_string() == a->type());
 				PUSH(value);
 				break;
 			}

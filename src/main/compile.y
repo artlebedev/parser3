@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.94 2001/03/13 09:05:31 paf Exp $
+	$Id: compile.y,v 1.95 2001/03/13 14:28:51 paf Exp $
 */
 
 /*
@@ -79,8 +79,10 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %token DEF "def"
 %token IN "in"
 %token FEXISTS "-f"
+%token IS "is"
 
 /* logical */
+%left "is"
 %left "lt" "gt" "le" "ge"
 %left "eq" "ne"
 %left '<' '>' "<=" ">=" "##"
@@ -498,6 +500,7 @@ expr:
 |	expr "ge" expr { $$=$1;  P($$, $3);  O($$, OP_STR_GE) }
 |	expr "eq" expr { $$=$1;  P($$, $3);  O($$, OP_STR_EQ) }
 |	expr "ne" expr { $$=$1;  P($$, $3);  O($$, OP_STR_NE) }
+|	expr "is" expr { $$=$1;  P($$, $3);  O($$, OP_IS) }
 ;
 
 string_inside_quotes_value: maybe_codes {
@@ -747,10 +750,19 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				break;
 			case 'i':
 				if(end==begin) // right after whitespace
-					if(PC->source[0]=='n') { // in
-						skip_analized=1;
-						result=IN;
-						goto break2;
+					switch(PC->source[0]) {
+					case 'n': 
+						{ // in
+							skip_analized=1;
+							result=IN;
+							goto break2;
+						}
+					case 's': 
+						{ // is
+							skip_analized=1;
+							result=IS;
+							goto break2;
+						}
 					}
 				break;
 			case 'd':

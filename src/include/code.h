@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: code.h,v 1.20 2001/03/11 08:16:32 paf Exp $
+	$Id: code.h,v 1.21 2001/03/13 14:28:50 paf Exp $
 */
 
 #ifndef CODE_H
@@ -36,7 +36,8 @@ enum OPCODE {
 	OP_BIN_AND, OP_BIN_OR, OP_BIN_XOR,
 	OP_LOG_AND, OP_LOG_OR, OP_LOG_XOR,
 	OP_NUM_LT, OP_NUM_GT, OP_NUM_LE, OP_NUM_GE, OP_NUM_EQ, OP_NUM_NE,
-	OP_STR_LT, OP_STR_GT, OP_STR_LE, OP_STR_GE, OP_STR_EQ, OP_STR_NE
+	OP_STR_LT, OP_STR_GT, OP_STR_LE, OP_STR_GE, OP_STR_EQ, OP_STR_NE,
+	OP_IS
 };
 
 union Operation {

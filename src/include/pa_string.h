@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.33 2001/03/12 13:13:20 paf Exp $
+	$Id: pa_string.h,v 1.34 2001/03/13 14:28:50 paf Exp $
 */
 
 /*
@@ -93,7 +93,7 @@ public:
 	}
 	bool operator != (const String& src) const { return cmp(src)!=0; }
 
-	bool operator == (char* src) const;
+	bool operator == (const char* b_ptr) const;
 	String& append(const String& src, Untaint_lang lang);
 
 	uint hash_code() const;

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.38 2001/03/11 10:54:39 paf Exp $
+	$Id: pa_string.C,v 1.39 2001/03/13 14:28:51 paf Exp $
 */
 
 #include <string.h>
@@ -263,7 +263,7 @@ int String::cmp(const String& src) const {
 	return result;
 }
 
-bool String::operator == (char* b_ptr) const {
+bool String::operator == (const char* b_ptr) const {
 	size_t b_size=b_ptr?strlen(b_ptr):0;
 	if(size() != b_size)
 		return false;
