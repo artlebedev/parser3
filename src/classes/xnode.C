@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2004/10/21 06:37:50 $";
+static const char * const IDENT_XNODE_C="$Date: 2005/02/02 15:54:14 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -19,12 +19,6 @@ static const char * const IDENT_XNODE_C="$Date: 2004/10/21 06:37:50 $";
 #include "pa_xml_exception.h"
 
 #include "xnode.h"
-
-extern "C" {
-#include "gdomecore/gdome-xml-node.h"
-#include "gdomecore/gdome-xml-document.h"
-};
-#include "gdome.h"
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 

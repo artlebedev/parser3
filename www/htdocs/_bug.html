@@ -1,29 +1,3 @@
-@main[]
-^first[]
-^if(def $error){
-	^if(^error.pos[koshmar]>=0){
-	  $error, TODO:recover
-	}{
-	  $error, TODO:die
-	}
-}
-@first[]
-^second[]
-^if(!def $error){
-	working1
-}
-@second[]
-^if(^math:random(2)){
-  $error[koshmar,test1]
-}
-^if(!def $error){
-	working2
-
-    ^if(^math:random(2)){
-      $error[uzhas,test2]
-    }
-    ^if(!def $error){
-    	working3
-    }
-}
-
+$a[$form:a]
+$b(^a.int(0))
+$b
