@@ -1,3 +1,507 @@
+2004-02-27  paf
+	* www/htdocs/_bug.html 1.12:
+	* www/htdocs/_bug.txt 1.1:
+		just test:  file::load[text;http:// $.text utf-8 signature, line ends OK
+		http://i2/tasks/edit/?id=4629476859594276758
+
+	* src/main/untaint.C 1.131:
+		speed: there's no \n chars in output [normally], so no need to optimize them
+		they could be retrived from databases, though. but
+		1. should be replaced
+		2. if not optimized, no harm done
+
+	* operators.txt 1.153:
+	* src/classes/string.C 1.133:
+	* src/include/pa_string.h 1.157:
+	* src/main/pa_string.C 1.195:
+	* www/htdocs/_bug.html 1.14:
+		new method: ^string.trim[start|both|end[;chars]]        default 'chars' -- whitespace chars
+		  started, only start works
+
+	* src/lib/smtp/smtp.h 1.5:
+		bugfix: SMTP buffer overflow could allow malicious SMTP server to attack as by returning too long status responses
+		http://i2/tasks/edit/?id=4629448401140924947
+
+	* www/htdocs/_bug.html 1.13:
+	* www/htdocs/_bug.xml 1.1:
+	* www/htdocs/_bug.xsl 1.10:
+		bug discovered: todo! xdoc::create+save != xdoc.transform&no
+		xsl:output>+save
+
+	* operators.txt 1.154:
+	* src/classes/string.C 1.134:
+	* src/main/pa_string.C 1.196:
+	* www/htdocs/_bug.html 1.15:
+		new method: ^string.trim[start|both|end[;chars]]        default 'chars' -- whitespace chars
+		finished
+
+	* src/main/pa_exec.C 1.58:
+		bugfix: waitpid could be interrupted -- ^file::exec/cgi could return invalid status & zombie child can remain for short period until process exists [very bad in mod_parser3]
+		http://i2/tasks/edit/?id=4629451867179521923
+
+	* Makefile.am 1.43:
+	* Makefile.in 1.57:
+	* acinclude.m4 1.30:
+	* aclocal.m4 1.33:
+	* acsite.m4 1.8:
+	* configure 1.76:
+	* configure.in 1.75:
+		*** empty log message ***
+
+	* src/main/compile.C 1.74:
+		bugfix: line numbers after ^process{}[$.line(-10]] can be
+		negative, allowed to print they as signed
+
+2004-02-26  paf
+	* operators.txt 1.151:
+	* operators.txt 1.152:
+	* src/classes/op.C 1.146:
+	* src/include/pa_request.h 1.175:
+	* src/main/compile.C 1.73:
+	* src/main/compile_tools.h 1.73:
+	* src/main/pa_request.C 1.266:
+	* www/htdocs/_bug.html 1.11:
+	* www/htdocs/_bug.p 1.1:
+	* www/htdocs/_bug.xsl 1.9:
+		feature: ^process...{CODE}[now has options]
+		which are
+		        $.main[to what to rename @main]
+		        $.file[file, from which (user says) goes that CODE]
+		        $.lineno(line number in that file, where CODE starts. may be negative)
+
+2004-02-25  paf
+	* www/htdocs/_bug.html 1.10:
+	* www/htdocs/_bug.xsl 1.8:
+		xhtml: &#9; as resutl of <xsl:attribute>[tab]  is OK
+
+	* src/classes/hash.C 1.67:
+		feature: ^hash::sql{one colum result} now produces hash of
+		column=>1
+
+	* src/lib/smtp/smtp.h 1.4:
+		beauty: couple of #ifdef-s to compile even with incomplete
+		errno constants set
+
+	* etc/parser3.charsets/Makefile.am 1.5:
+	* etc/parser3.charsets/Makefile.in 1.20:
+		bugfix: @sysconfdir@ used [were old @charsetsdir@ recently
+		erased from configure.in]
+
+2004-02-24  paf
+	* src/lib/smtp/smtp.C 1.4:
+		smtp on unix: compiled on win32
+
+	* src/lib/smtp/smtp.C 1.7:
+		smtp on unix: authors of lib/smtp never read "man select"
+
+	* src/lib/smtp/Makefile.am 1.2:
+	* src/lib/smtp/Makefile.in 1.4:
+	* src/lib/smtp/comms.C 1.3:
+	* src/lib/smtp/smtp.C 1.3:
+	* src/lib/smtp/smtp.h 1.3:
+	* src/targets/cgi/Makefile.am 1.51:
+	* src/targets/cgi/Makefile.in 1.68:
+		started porting smtp to unix [testing on solaris]
+
+	* src/main/pa_os.C 1.6:
+		beauty: <0 better then ==-1
+
+	* src/classes/Makefile.am 1.49:
+	* src/classes/Makefile.in 1.61:
+	* src/classes/mail.C 1.101:
+	* src/lib/smtp/comms.C 1.4:
+	* src/lib/smtp/smtp.C 1.5:
+	* src/lib/smtp/smtp.C 1.6:
+		smtp on unix: steps to work on unix
+
+	* src/classes/mail.C 1.102:
+	* src/classes/mail.C 1.103:
+	* src/types/pa_vmail.C 1.59:
+	* src/types/pa_vmail.h 1.15:
+		smtp on unix: steps to work on unix [extracted 'to']
+
+2004-02-20  paf
+	* src/classes/xdoc.C 1.142:
+	* www/htdocs/_bug.xsl 1.7:
+		beauty: ugly code removed, thanks to egr for pointing that out
+
+	* src/classes/xdoc.C 1.141:
+	* www/htdocs/_bug.html 1.9:
+	* www/htdocs/_bug.xsl 1.6:
+		bugfix: <tag attr="&#digital_entity;" bug fixed again [same
+		solution, mistanenly removed one line]
+
+2004-02-19  paf
+	* src/classes/date.C 1.64:
+	* src/classes/image.C 1.106:
+	* www/htdocs/_bug.html 1.8:
+		beauty: date::create[bad date time in daylightsaving hole] now
+		throws error
+
+	* src/classes/date.C 1.65:
+	* src/classes/image.C 1.107:
+	* src/types/pa_vdate.h 1.32:
+		feature: date::create from bad datetime in spring
+		daylightsaving hole now OK for all platforms [on some platforms
+		it failed]
+
+	* src/classes/date.C 1.63:
+		comment: mistake fixed
+
+2004-02-18  paf
+	* src/classes/xdoc.C 1.138:
+	* www/htdocs/_bug.html 1.1:
+	* www/htdocs/_bug.xsl 1.1:
+		feature: reimplemented xhtml output, see /.xsl for sample
+
+	* src/classes/xdoc.C 1.139:
+	* www/htdocs/_bug.xsl 1.2:
+		beauty: xhtml doctype-public/system forcly turns off omit-xml-declaration
+
+	* src/classes/xdoc.C 1.140:
+	* src/include/pa_charset.h 1.30:
+	* www/htdocs/_bug.html 1.2:
+	* www/htdocs/_bug.html 1.3:
+	* www/htdocs/_bug.html 1.4:
+	* www/htdocs/_bug.html 1.5:
+	* www/htdocs/_bug.xsl 1.3:
+	* www/htdocs/_bug.xsl 1.4:
+		beauty: xdoc.string now renderes in $request:charset, but in header puts $response:charset
+		todo: make that default only so that coder could override that
+
+	* www/htdocs/_bug.html 1.6:
+	* www/htdocs/_bug.html 1.7:
+	* www/htdocs/_bug.xsl 1.5:
+		beauty: coder can override save/file encoding by specifying it
+		in xsl:output or in save/file hash-options
+
+2004-02-17  paf
+	* src/main/untaint.C 1.130:
+		bugfix: one last char prior to "spaces<" were not made quoted-printable
+
+	* src/main/pa_uue.C 1.8:
+		bugfix: uuencoded finish char adding violated string invariant
+
+	* src/classes/xdoc.C 1.134:
+		new: xhtml now works [libxslt prevented libxml to do the work]
+		<xsl:output
+			method="html"
+			doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
+			doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+			/>
+
+	* src/classes/xdoc.C 1.135:
+		bugfound: meta again, now somewhere in xhtml part of libxml
+
+	* src/types/pa_vxdoc.h 1.37:
+		bugfix: ^xdoc::transform [note double :] caused assertion
+
+	* src/classes/xdoc.C 1.133:
+		beauty: no <meta ... charset generated
+
+	* src/classes/xdoc.C 1.136:
+		beauty: method=html outputxmlbuffer not copied extra time
+
+	* src/classes/xdoc.C 1.137:
+		beauty: needless helper class removed
+
+	* src/classes/hash.C 1.66:
+		bugfix: ^hash.add[$hash] ^hash.sub[$hash] could hang. now such
+		add does nothing, sub clears $hash
+
+2004-02-16  paf
+	* src/main/pa_globals.C 1.173:
+		bugfix: xml errors copy from library now cleared [were not
+		cleared properly]
+
+2004-02-13  paf
+	* bin/Makefile.in 1.11:
+	* etc/Makefile.in 1.16:
+	* etc/parser3.charsets/Makefile.in 1.19:
+	* src/Makefile.in 1.57:
+	* src/classes/Makefile.in 1.60:
+	* src/include/Makefile.in 1.18:
+	* src/include/pa_version.h 1.13:
+	* src/lib/Makefile.in 1.13:
+	* src/lib/cord/Makefile.in 1.4:
+	* src/lib/cord/include/Makefile.in 1.3:
+	* src/lib/cord/include/private/Makefile.in 1.3:
+	* src/lib/gc/Makefile.in 1.3:
+	* src/lib/gc/include/Makefile.in 1.3:
+	* src/lib/gd/Makefile.in 1.3:
+	* src/lib/ltdl/Makefile.in 1.6:
+	* src/lib/md5/Makefile.in 1.9:
+	* src/lib/patches/Makefile.in 1.13:
+	* src/lib/pcre/Makefile.in 1.11:
+	* src/lib/sdbm/Makefile.in 1.2:
+	* src/lib/sdbm/apr-include/Makefile.in 1.2:
+	* src/lib/smtp/Makefile.in 1.3:
+	* src/main/Makefile.in 1.57:
+	* src/sql/Makefile.in 1.13:
+	* src/targets/Makefile.in 1.44:
+	* src/targets/apache13/Makefile.in 1.49:
+	* src/targets/apache13core/Makefile.in 1.6:
+	* src/targets/cgi/Makefile.in 1.67:
+	* src/targets/isapi/Makefile.in 1.14:
+	* src/types/Makefile.in 1.55:
+		prerelease
+
+	* src/classes/xdoc.C 1.132:
+	* src/include/pa_stylesheet_connection.h 1.39:
+	* src/include/pa_xml_io.h 1.3:
+	* src/main/Makefile.am 1.44:
+	* src/main/compile.tab.C 1.95:
+	* src/main/main.vcproj 1.13:
+	* src/main/pa_globals.C 1.172:
+	* src/main/pa_stylesheet_connection.C 1.1:
+	* src/main/pa_xml_io.C 1.17:
+		change: .xsl.stamp now not used, introducing dependencies
+		timestamp check
+
+	* bin/auto.p.dist.in 1.11:
+	* configure.in 1.73:
+		auto.p: @conf made relative
+
+	* Makefile.am 1.42:
+	* Makefile.in 1.56:
+	* acinclude.m4 1.29:
+	* aclocal.m4 1.32:
+	* acsite.m4 1.7:
+	* configure 1.75:
+	* configure.in 1.74:
+		*** empty log message ***
+
+2004-02-12  paf
+	* src/include/pa_sapi.h 1.25:
+		2004
+
+	* INSTALL 1.36:
+		--without-threads
+
+	* src/types/pa_vform.C 1.80:
+		bugfix: empty values[recently allowed] ruined empty <input type
+		file> submits. parser thought there were nameless empty file
+		and $form:field got value of type 'file'
+
+2004-02-11  paf
+	* parser3.sln 1.9:
+	* src/classes/classes.vcproj 1.6:
+	* src/classes/classes.vcproj 1.7:
+	* src/lib/gd/gd.vcproj 1.2:
+	* src/lib/gd/gd.vcproj 1.3:
+	* src/lib/smtp/smtp.vcproj 1.2:
+	* src/lib/smtp/smtp.vcproj 1.3:
+	* src/main/compile.tab.C 1.94:
+	* src/main/main.vcproj 1.8:
+	* src/main/main.vcproj 1.9:
+	* src/main/pa_globals.C 1.167:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.6:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.7:
+	* src/targets/cgi/parser3.vcproj 1.6:
+	* src/targets/cgi/parser3.vcproj 1.7:
+	* src/targets/isapi/parser3isapi.vcproj 1.3:
+	* src/targets/isapi/parser3isapi.vcproj 1.4:
+	* src/types/types.vcproj 1.7:
+	* src/types/types.vcproj 1.8:
+	* www/htdocs/.htaccess 1.27:
+		started changes to reflect libxml xsl new folders
+
+	* src/classes/classes.vcproj 1.8:
+	* src/classes/classes.vcproj 1.9:
+	* src/lib/gd/gd.vcproj 1.4:
+	* src/lib/gd/gd.vcproj 1.5:
+	* src/lib/smtp/smtp.vcproj 1.4:
+	* src/main/main.vcproj 1.10:
+	* src/main/main.vcproj 1.11:
+	* src/main/pa_globals.C 1.168:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.8:
+	* src/targets/cgi/parser3.vcproj 1.8:
+	* src/targets/cgi/parser3.vcproj 1.9:
+	* src/targets/isapi/parser3isapi.vcproj 1.5:
+	* src/types/types.vcproj 1.10:
+	* src/types/types.vcproj 1.9:
+		continued changes to reflect libxml xsl new folders
+
+	* src/classes/classes.vcproj 1.10:
+	* src/lib/gd/gd.vcproj 1.6:
+	* src/lib/pcre/pcre.vcproj 1.2:
+	* src/lib/pcre/pcre_dftables.vcproj 1.3:
+	* src/lib/pcre/pcre_parser_ctype.vcproj 1.3:
+	* src/lib/sdbm/sdbm.vcproj 1.4:
+	* src/lib/smtp/smtp.vcproj 1.5:
+	* src/main/main.vcproj 1.12:
+	* src/main/pa_globals.C 1.169:
+	* src/targets/apache13/ApacheModuleParser3.vcproj 1.6:
+	* src/targets/cgi/parser3.C 1.223:
+	* src/targets/cgi/parser3.vcproj 1.10:
+	* src/targets/isapi/parser3isapi.vcproj 1.6:
+	* src/types/types.vcproj 1.11:
+		migrated to latest libxml[2.6.5] and libgdome[1.1.2]
+		simplified lib build processes
+
+	* src/classes/classes.C 1.21:
+	* src/classes/classes.h 1.26:
+	* src/classes/date.C 1.62:
+	* src/classes/double.C 1.57:
+	* src/classes/file.C 1.120:
+	* src/classes/form.C 1.38:
+	* src/classes/hash.C 1.65:
+	* src/classes/hashfile.C 1.33:
+	* src/classes/image.C 1.105:
+	* src/classes/int.C 1.53:
+	* src/classes/mail.C 1.100:
+	* src/classes/math.C 1.38:
+	* src/classes/memory.C 1.6:
+	* src/classes/op.C 1.145:
+	* src/classes/response.C 1.26:
+	* src/classes/string.C 1.132:
+	* src/classes/table.C 1.196:
+	* src/classes/void.C 1.31:
+	* src/classes/xdoc.C 1.131:
+	* src/classes/xnode.C 1.65:
+	* src/classes/xnode.h 1.21:
+	* src/include/pa_array.h 1.64:
+	* src/include/pa_cache_managers.h 1.16:
+	* src/include/pa_charset.h 1.29:
+	* src/include/pa_charsets.h 1.12:
+	* src/include/pa_common.h 1.98:
+	* src/include/pa_config_fixed.h 1.63:
+	* src/include/pa_config_includes.h 1.28:
+	* src/include/pa_dictionary.h 1.17:
+	* src/include/pa_dir.h 1.16:
+	* src/include/pa_exception.h 1.43:
+	* src/include/pa_exec.h 1.15:
+	* src/include/pa_globals.h 1.109:
+	* src/include/pa_hash.h 1.62:
+	* src/include/pa_memory.h 1.11:
+	* src/include/pa_opcode.h 1.27:
+	* src/include/pa_operation.h 1.5:
+	* src/include/pa_os.h 1.4:
+	* src/include/pa_request.h 1.174:
+	* src/include/pa_request_charsets.h 1.4:
+	* src/include/pa_request_info.h 1.4:
+	* src/include/pa_socks.h 1.14:
+	* src/include/pa_sql_connection.h 1.38:
+	* src/include/pa_sql_driver_manager.h 1.32:
+	* src/include/pa_stack.h 1.22:
+	* src/include/pa_string.h 1.156:
+	* src/include/pa_stylesheet_connection.h 1.38:
+	* src/include/pa_stylesheet_manager.h 1.21:
+	* src/include/pa_table.h 1.57:
+	* src/include/pa_threads.h 1.29:
+	* src/include/pa_types.h 1.48:
+	* src/include/pa_uue.h 1.7:
+	* src/include/pa_xml_exception.h 1.3:
+	* src/include/pa_xml_io.h 1.2:
+	* src/lib/gd/gif.C 1.2:
+	* src/lib/gd/gif.h 1.2:
+	* src/lib/gd/gifio.C 1.2:
+	* src/lib/md5/pa_md5.h 1.10:
+	* src/lib/md5/pa_md5c.c 1.12:
+	* src/lib/smtp/comms.C 1.2:
+	* src/lib/smtp/smtp.C 1.2:
+	* src/lib/smtp/smtp.h 1.2:
+	* src/main/compile.C 1.72:
+	* src/main/compile_tools.C 1.57:
+	* src/main/compile_tools.h 1.72:
+	* src/main/execute.C 1.305:
+	* src/main/pa_cache_managers.C 1.13:
+	* src/main/pa_charset.C 1.48:
+	* src/main/pa_charsets.C 1.15:
+	* src/main/pa_common.C 1.174:
+	* src/main/pa_dictionary.C 1.22:
+	* src/main/pa_dir.C 1.19:
+	* src/main/pa_exception.C 1.47:
+	* src/main/pa_exec.C 1.57:
+	* src/main/pa_globals.C 1.171:
+	* src/main/pa_memory.C 1.5:
+	* src/main/pa_os.C 1.5:
+	* src/main/pa_request.C 1.265:
+	* src/main/pa_socks.C 1.21:
+	* src/main/pa_sql_driver_manager.C 1.82:
+	* src/main/pa_string.C 1.194:
+	* src/main/pa_stylesheet_manager.C 1.26:
+	* src/main/pa_table.C 1.60:
+	* src/main/pa_uue.C 1.7:
+	* src/main/pa_xml_exception.C 1.3:
+	* src/main/pa_xml_io.C 1.16:
+	* src/main/untaint.C 1.129:
+	* src/sql/pa_sql_driver.h 1.38:
+	* src/targets/apache13/mod_parser3.c 1.10:
+	* src/targets/apache13core/mod_parser3_core.C 1.3:
+	* src/targets/apache13core/pa_threads.C 1.4:
+	* src/targets/cgi/pa_threads.C 1.15:
+	* src/targets/isapi/pa_threads.C 1.16:
+	* src/targets/isapi/parser3isapi.C 1.87:
+	* src/types/pa_junction.h 1.4:
+	* src/types/pa_method.h 1.4:
+	* src/types/pa_value.C 1.16:
+	* src/types/pa_value.h 1.118:
+	* src/types/pa_vbool.h 1.24:
+	* src/types/pa_vclass.C 1.20:
+	* src/types/pa_vclass.h 1.43:
+	* src/types/pa_vcode_frame.h 1.27:
+	* src/types/pa_vconsole.h 1.5:
+	* src/types/pa_vcookie.C 1.63:
+	* src/types/pa_vcookie.h 1.26:
+	* src/types/pa_vdate.h 1.31:
+	* src/types/pa_vdouble.h 1.45:
+	* src/types/pa_venv.h 1.31:
+	* src/types/pa_vfile.C 1.40:
+	* src/types/pa_vfile.h 1.56:
+	* src/types/pa_vform.C 1.79:
+	* src/types/pa_vform.h 1.49:
+	* src/types/pa_vhash.h 1.50:
+	* src/types/pa_vhashfile.h 1.27:
+	* src/types/pa_vimage.C 1.29:
+	* src/types/pa_vimage.h 1.39:
+	* src/types/pa_vint.h 1.41:
+	* src/types/pa_vjunction.h 1.22:
+	* src/types/pa_vmail.C 1.58:
+	* src/types/pa_vmail.h 1.14:
+	* src/types/pa_vmath.C 1.7:
+	* src/types/pa_vmath.h 1.17:
+	* src/types/pa_vmemory.h 1.4:
+	* src/types/pa_vmethod_frame.C 1.5:
+	* src/types/pa_vmethod_frame.h 1.49:
+	* src/types/pa_vobject.C 1.16:
+	* src/types/pa_vobject.h 1.42:
+	* src/types/pa_vrequest.C 1.32:
+	* src/types/pa_vrequest.h 1.28:
+	* src/types/pa_vresponse.C 1.20:
+	* src/types/pa_vresponse.h 1.35:
+	* src/types/pa_vstateless_class.C 1.22:
+	* src/types/pa_vstateless_class.h 1.48:
+	* src/types/pa_vstateless_object.h 1.31:
+	* src/types/pa_vstatus.C 1.24:
+	* src/types/pa_vstatus.h 1.18:
+	* src/types/pa_vstring.C 1.25:
+	* src/types/pa_vstring.h 1.58:
+	* src/types/pa_vtable.C 1.25:
+	* src/types/pa_vtable.h 1.52:
+	* src/types/pa_vvoid.h 1.21:
+	* src/types/pa_vxdoc.C 1.27:
+	* src/types/pa_vxdoc.h 1.36:
+	* src/types/pa_vxnode.C 1.37:
+	* src/types/pa_vxnode.h 1.29:
+	* src/types/pa_wcontext.C 1.28:
+	* src/types/pa_wcontext.h 1.46:
+	* src/types/pa_wwrapper.h 1.31:
+		2004
+
+	* src/main/pa_globals.C 1.170:
+		beauty: typo caused gc.log warnings with debug version of gc.dll
+
+2004-02-10  paf
+	* INSTALL 1.34:
+		critical: prior to 1.0.30 had bug: "a segfault on pattern
+		compilation errors", on which spent 4 hours worktime. use
+		versions higher than that. recommended now latest up to date
+
+	* INSTALL 1.35:
+		critical: libxslt1.1.2 wanted at least libxml2.6.3 to compile. 
+		recommened latest libxml up to date
+
 2004-02-06  paf
 	* src/main/untaint.C 1.128:
 		beauty: removed old def/ifdef
@@ -10995,7 +11499,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2004/02/11 09:18:22 $
+		$Date: 2004/02/27 15:37:40 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -18155,7 +18659,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.33 2004/02/11 09:18:22 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.34 2004/02/27 15:37:40 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -18198,7 +18702,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.33 2004/02/11 09:18:22 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.34 2004/02/27 15:37:40 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -23561,7 +24065,7 @@
 	* src/main/pa_pool.C 1.2:
 	* src/main/pa_string.C 1.3:
 	* src/main/pa_string.C 1.4:
-		$Id: ChangeLog,v 1.33 2004/02/11 09:18:22 paf Exp $ check
+		$Id: ChangeLog,v 1.34 2004/02/27 15:37:40 paf Exp $ check
 
 	* src/include/pa_pool.h 1.5:
 	* src/include/pa_string.h 1.2:
