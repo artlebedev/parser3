@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/10/09 11:49:14 $";
+static const char* IDENT_STRING_C="$Date: 2002/10/29 10:19:40 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -502,7 +502,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	}		
 
 	// write
-	const char *buf=src.cstr(String::UL_UNSPECIFIED);
+	const char *buf=src.cstr(String::UL_UNSPECIFIED, r.connection(0/*no error if none*/));
 	file_write(r.absolute(file_name), 
 		buf, strlen(buf), true, do_append);
 }
