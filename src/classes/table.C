@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.144 2002/02/08 08:30:10 paf Exp $
+	$Id: table.C,v 1.145 2002/03/15 10:08:13 paf Exp $
 */
 
 #include "classes.h"
@@ -402,15 +402,46 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 	static_cast<VTable *>(r.self)->set_table(new_table);
 }
 
-static void _locate(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static bool _locate_expression(Request& r, const String& method_name, MethodParams *params) {
+	if(params->size()>1)
+		throw Exception(0, 0, 
+			&method_name,
+			"locate by expression has only one parameter - expression");
+
+	Value& expression_code=params->as_junction(0, "must be expression");
 
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	Table& table=vtable.table();
-	Value& result=*new(pool) VBool(pool, table.locate(
+	int saved_current=table.current();
+	int size=table.size();
+	for(int row=0; row<size; row++) {
+		table.set_current(row);
+
+		if(r.process(expression_code).as_bool())
+			return true;
+	}
+	table.set_current(saved_current);
+	return false;
+}
+static bool _locate_name_value(Request& r, const String& method_name, MethodParams *params) {
+	if(params->size()>2)
+		throw Exception(0, 0, 
+			&method_name,
+			"locate by name and value has only two parameters - name and value");
+
+	VTable& vtable=*static_cast<VTable *>(r.self);
+	Table& table=vtable.table();
+	return table.locate(
 		params->as_string(0, "column name must be string"),
 		params->as_string(1, "value must be string")
-	));
+	);
+}
+static void _locate(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	Value& result=*new(pool) VBool(pool, 
+		params->get(0).get_junction()?
+		_locate_expression(r, method_name, params) :
+		_locate_name_value(r, method_name, params));
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
@@ -659,7 +690,7 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 	add_native_method("sort", Method::CT_DYNAMIC, _sort, 1, 2);
 
 	// ^table.locate[field;value]
-	add_native_method("locate", Method::CT_DYNAMIC, _locate, 2, 2);
+	add_native_method("locate", Method::CT_DYNAMIC, _locate, 1, 2);
 
 	// ^table.flip[]
 	add_native_method("flip", Method::CT_DYNAMIC, _flip, 0, 0);
