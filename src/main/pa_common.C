@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.36 2001/04/03 06:23:05 paf Exp $
+	$Id: pa_common.C,v 1.37 2001/04/03 07:32:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -182,6 +182,7 @@ char *rsplit(char *string, char delim) {
     return NULL;	
 }
 
+/// @todo less stupid type detection
 char *format(Pool& pool, double value, char *fmt) {
 	char *result=(char *)pool.malloc(MAX_NUMBER);
 	if(fmt)

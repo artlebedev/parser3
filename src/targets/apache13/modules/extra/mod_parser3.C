@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.20 2001/03/28 14:41:29 paf Exp $
+	$Id: mod_parser3.C,v 1.21 2001/04/03 07:32:47 paf Exp $
 */
 
 #include "httpd.h"
@@ -133,7 +133,7 @@ void SAPI::send_header(Pool& pool) {
 	ap_kill_timeout(r);
 }
 
-void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
+void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
     ap_hard_timeout("Send body", r);
@@ -156,7 +156,7 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 /**
 	main workhorse
 	
-	@todo parser4: intelligent cache-control
+	@todo intelligent cache-control
 */
 static int parser_handler(request_rec *r)
 {

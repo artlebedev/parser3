@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pool_storage.h,v 1.3 2001/03/26 09:09:47 paf Exp $
+	$Id: pool_storage.h,v 1.4 2001/04/03 07:32:49 paf Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
@@ -16,7 +16,7 @@
 /**
 	Dumb pool allocations accounter
 	
-	@todo parser4: implement at least simple suballocations
+	@todo implement at least simple suballocations
 */
 class Pool_storage {
 public:

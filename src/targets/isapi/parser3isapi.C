@@ -97,7 +97,7 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 	}
 }
 
-/// @todo parser4: intelligent cache-control
+/// @todo intelligent cache-control
 void SAPI::send_header(Pool& pool) {
 	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
@@ -134,12 +134,12 @@ void SAPI::send_header(Pool& pool) {
 		HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
 }
 
-void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
+void SAPI::send_body(Pool& pool, const void *buf, size_t size) {
 	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 
 	DWORD num_bytes=size;
 	ctx.lpECB->WriteClient(ctx.lpECB->ConnID, 
-		const_cast<char *>(buf), &num_bytes, HSE_IO_SYNC);
+		const_cast<void *>(buf), &num_bytes, HSE_IO_SYNC);
 }
 
 // goes to 'cs-uri-query' log file field. webmaster: switch it ON[default OFF].
@@ -191,7 +191,7 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 /** 
 	ISAPI // main workhorse
 
-	@todo parser4:
+	@todo 
 		IIS: remove trailing default-document[index.html] from $request.uri.
 		to do that we need to consult metabase,
 		wich is tested&works but seems slow runtime 

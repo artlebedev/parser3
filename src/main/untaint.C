@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.29 2001/04/03 05:23:41 paf Exp $
+	$Id: untaint.C,v 1.30 2001/04/03 07:32:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -71,7 +71,10 @@ static bool typo_present(Array::Item *value, const void *info) {
 		partial==1; // typo left column starts 'src'
 }
 
-/// @test optimize whitespaces for all but 'html'
+/**
+	@test optimize whitespaces for all but 'html'
+	@todo fix theoretical \n mem overrun in TYPO replacements
+*/
 char *String::store_to(char *dest) const {
 	// $MAIN:html-typo table
 	Table *user_typo_table=static_cast<Table *>(pool().tag());
@@ -161,7 +164,6 @@ char *String::store_to(char *dest) const {
 				//   and rather replace \ and n into huge strings
 				//   thus causing memory overrun
 				//   this can be dealed by allocating *2 memory, but that's too expensive
-				// todo parser4: fix that
 				size_t html_for_typo_size;
 				{ // local dest
 					char *dest=html_for_typo;
