@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.87 2001/06/29 08:35:26 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.88 2001/07/02 13:24:32 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -618,6 +618,28 @@ static void _dir(Request& r, const String& method_name, MethodParams *params) {
 	static_cast<VTable *>(r.self)->set_table(table);
 }
 
+static void _columns(Request& r, const String& method_name, MethodParams *) {
+	Pool& pool=r.pool();
+
+	Array& result_columns=*new(pool) Array(pool);
+	result_columns+=new(pool) String(pool, "name");
+	Table& result_table=*new(pool) Table(pool, &method_name, &result_columns);
+
+	Table& source_table=static_cast<VTable *>(r.self)->table();
+	if(const Array *source_columns=source_table.columns()) {
+		int size=source_columns->quick_size();
+		for(int i=0; i<size; i++) {
+			Array& result_row=*new(pool) Array(pool);
+			result_row+=source_columns->quick_get(i);
+			result_table+=&result_row;
+		}
+	}
+
+	VTable& result=*new(pool) VTable(pool, &result_table);
+	result.set_name(method_name);
+	r.write_no_lang(result);
+}
+
 // constructor
 
 MTable::MTable(Pool& apool) : Methoded(apool) {
@@ -682,6 +704,9 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 	// ^table:dir[path]
 	// ^table:dir[path][regexp]
 	add_native_method("dir", Method::CT_DYNAMIC, _dir, 1, 2);
+
+	// ^table:columns[]
+	add_native_method("columns", Method::CT_DYNAMIC, _columns, 0, 0);
 }
 
 // global variable
