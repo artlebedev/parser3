@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.14 2001/04/10 07:41:46 paf Exp $
+	$Id: mail.C,v 1.15 2001/04/10 07:47:38 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -218,6 +218,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 
 	// prepare header: 'hash' without "body"
 	String& result=*new(pool) String(pool);
+	*from=*to=0;
 	Mail_info mail_info={
 		/*excluding*/ body_name,
 		&result,
@@ -280,15 +281,15 @@ static void sendmail(Request& r, const String& method_name,
 
 	char *letter_cstr=letter.cstr();
 
-#ifndef WIN32
+#ifdef WIN32
 	if(!from)
 		PTHROW(0, 0,
 			&method_name,
-			"not specified 'from'");
+			"has no 'from' header specified");
 	if(!to)
 		PTHROW(0, 0,
 			&method_name,
-			"not specified 'to'");
+			"has no 'to' header specified");
 
 	SMTP& smtp=*new(pool) SMTP(pool, method_name);
 	Value *server_port;
