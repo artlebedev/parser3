@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.171 2001/06/29 14:16:09 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.172 2001/06/29 14:16:29 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -537,7 +537,7 @@ void Request::execute(const Array& ops) {
 					const String *problem_source=&b->as_string();
 #ifndef NO_STRING_ORIGIN
 					if(!problem_source->origin().file)
-						problem_source=b->name();
+						problem_source=&b->name();
 #endif
 					THROW(0, 0,
 						problem_source,
@@ -559,7 +559,7 @@ void Request::execute(const Array& ops) {
 					const String *problem_source=&b->as_string();
 #ifndef NO_STRING_ORIGIN
 					if(!problem_source->origin().file)
-						problem_source=b->name();
+						problem_source=&b->name();
 #endif
 					THROW(0, 0,
 						problem_source,
