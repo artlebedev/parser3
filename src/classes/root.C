@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.18 2001/03/12 09:08:46 paf Exp $
+	$Id: root.C,v 1.19 2001/03/12 09:31:26 paf Exp $
 */
 
 #include <string.h>
@@ -63,21 +63,22 @@ static void _process(Request& r, const String& name, Array *params) {
 #else
 	strncpy(place, MAX_STRING, name.cstr());
 #endif	
-	r.use_buf(source.cstr(), place, r.self->get_class());
 
-	// execute @main[]
+	VClass &self_class=*r.self->get_class();
+	// temporarily zeroing @main so to maybe-replace it in processed code
+	Temp_method temp_method(self_class, *main_method_name, 0);
+
+	// maybe-define new @main
+	r.use_buf(source.cstr(), place, &self_class);
+
+	// maybe-execute @main[]
 	if(Value *value=r.self->get_element(*main_method_name)) { // found some 'main' element
 		if(Junction *junction=value->get_junction()) // it even has junction!
 			if(const Method *method=junction->method) { // and junction is method-junction! call it
 				// execute!	
 				r.execute(*method->parser_code);
-				return;
 			}
 	}
-
-	R_THROW(0, 0,
-		&name, 
-		"'"MAIN_METHOD_NAME"' method not found");
 }
 	
 

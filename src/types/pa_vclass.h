@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.3 2001/03/11 08:44:42 paf Exp $
+	$Id: pa_vclass.h,v 1.4 2001/03/12 09:31:26 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -16,7 +16,10 @@
 #define CLASS_NAME "CLASS"
 #define BASE_NAME "BASE"
 
+class Temp_method;
+
 class VClass : public VAliased {
+	friend Temp_method;
 public: // Value
 	
 	// all: for error reporting after fail(), etc
@@ -69,7 +72,8 @@ public: // usage
 	}
 
 	void set_field(const String& name, Value *value) {
-		value->set_name(name);
+		if(value) // used in ^process to temporarily remove @main
+			value->set_name(name);
 		if(fbase && fbase->replace_field(name, value))
 			return;
 
@@ -90,12 +94,38 @@ private:
 			(fbase && fbase->replace_field(name, value)) ||
 			ffields.put_replace(name, value);
 	}
+
+private: // Temp_method
+
+	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
+	Method *get_method(const String& name) { 
+		return static_cast<Method *>(fmethods.get(name)); 
+	}
+
+	// object_class, operator_class: (field)=value - static values only
+	void put_method(const String& name, Method *method) { fmethods.put(name, method); }
 	
 private:
 
 	VClass *fbase;
 	Hash ffields;
 	Hash fmethods;
+};
+
+class Temp_method {
+	VClass& fclass;
+	const String& fname;
+	Method *saved_method;
+public:
+	Temp_method(VClass& aclass, const String& aname, Method *amethod) : 
+		fclass(aclass),
+		fname(aname),
+		saved_method(aclass.get_method(aname)) {
+		fclass.put_method(aname, amethod);
+	}
+	~Temp_method() { 
+		fclass.put_method(fname, saved_method);
+	}
 };
 
 #endif
