@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.24 2002/03/29 10:26:00 paf Exp $
+	$Id: date.C,v 1.25 2002/04/15 11:34:24 paf Exp $
 */
 
 #include "classes.h"
@@ -87,8 +87,7 @@ static void _sql_string(Request& r, const String& method_name, MethodParams *) {
 	string.APPEND_CLEAN(buf, size, 
 		method_name.origin().file, 
 		method_name.origin().line);
-	Value& result=*new(pool) VString(string);
-	r.write_assign_lang(result);
+	r.write_assign_lang(string);
 }
 
 

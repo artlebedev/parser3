@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.101 2002/04/15 10:35:21 paf Exp $
+	$Id: string.C,v 1.102 2002/04/15 11:34:24 paf Exp $
 */
 
 #include "classes.h"
@@ -99,7 +99,7 @@ static void _left(Request& r, const String&, MethodParams *params) {
 	size_t n=(size_t)params->as_int(0, "n must be int", r);
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
-	r.write_assign_lang(*new(pool) VString(string.mid(0, n)));
+	r.write_assign_lang(string.mid(0, n));
 }
 
 static void _right(Request& r, const String&, MethodParams *params) {
@@ -108,7 +108,7 @@ static void _right(Request& r, const String&, MethodParams *params) {
 	size_t n=(size_t)params->as_int(0, "n must be int", r);
 	
 	const String& string=*static_cast<VString *>(r.self)->get_string();
-	r.write_assign_lang(*new(pool) VString(string.mid(string.size()-n, string.size())));
+	r.write_assign_lang(string.mid(string.size()-n, string.size()));
 }
 
 static void _mid(Request& r, const String&, MethodParams *params) {
@@ -120,7 +120,7 @@ static void _mid(Request& r, const String&, MethodParams *params) {
 	size_t n=params->size()>1?
 		(size_t)params->as_int(1, "n must be int", r):string.size();
 	
-	r.write_assign_lang(*new(pool) VString(string.mid(p, p+n)));
+	r.write_assign_lang(string.mid(p, p+n));
 }
 
 static void _pos(Request& r, const String& method_name, MethodParams *params) {
@@ -240,7 +240,6 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 		params->size()>1?
 		&params->as_no_junction(1, "options must not be code").as_string():0;
 
-	Value *result;
 	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 	Table *table;
 	if(params->size()<3) { // search
@@ -251,19 +250,22 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 			&table,
 			search_action, 0,
 			&was_global);
+		Value *result;
 		// matched
 		// not (just matched[3=pre/match/post], no substrings) or Global search
 		if(table->columns()->size()>3 || was_global) 
 			result=new(pool) VTable(pool, table); // table of pre/match/post+substrings
 		else 
 			result=new(pool) VBool(pool, matched);			
+		result->set_name(method_name);
+		r.write_assign_lang(*result);
 	} else { // replace
 		Value& replacement_code=params->as_junction(2, "replacement param must be code");
 
-		String& dest=*new(pool) String(pool);
+		String& result=*new(pool) String(pool);
 		Replace_action_info replace_action_info={
 			&r, &method_name,
-			&src, &dest,
+			&src, &result,
 			&replacement_code,
 			&src
 		};
@@ -272,10 +274,8 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 			r.process_to_string(regexp), options,
 			&table,
 			replace_action, &replace_action_info);
-		result=new(pool) VString(dest);
+		r.write_assign_lang(result);
 	}
-	result->set_name(method_name);
-	r.write_assign_lang(*result);
 }
 
 static void change_case(Request& r, const String& method_name, MethodParams *params, 
@@ -283,8 +283,7 @@ static void change_case(Request& r, const String& method_name, MethodParams *par
 	Pool& pool=r.pool();
 	const String& src=*static_cast<VString *>(r.self)->get_string();
 
-	r.write_assign_lang(*new(pool) VString(src.change_case(pool, 
-		kind)));
+	r.write_assign_lang(src.change_case(pool, kind));
 }
 static void _upper(Request& r, const String& method_name, MethodParams *params) {
 	change_case(r, method_name, params, String::CC_UPPER);
@@ -402,9 +401,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 				"produced no result, but no default option specified");
 	}
 
-	VString& result=*new(pool) VString(*string);
-	result.set_name(method_name);
-	r.write_assign_lang(result);
+	r.write_assign_lang(*string);
 }
 
 static void _replace(Request& r, const String& method_name, MethodParams *params) {
@@ -418,7 +415,7 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 			"parameter must be table");
 
 	Dictionary dict(*table);
-	r.write_assign_lang(*new(pool) VString(src.replace(pool, dict)));
+	r.write_assign_lang(src.replace(pool, dict));
 }
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {

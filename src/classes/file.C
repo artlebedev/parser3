@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.75 2002/04/10 09:53:13 paf Exp $
+	$Id: file.C,v 1.76 2002/04/15 11:34:24 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -85,18 +85,18 @@ static void _find(Request& r, const String& method_name, MethodParams *params) {
 
 	// passed file name simply exists in current dir
 	if(file_readable(r.absolute(lfile_name))) {
-		r.write_no_lang(*new(pool) VString(lfile_name));
+		r.write_no_lang(lfile_name);
 		return;
 	}
 
 	// scan .. dirs for result
 	for(int i=0; i<FIND_MONKEY_MAX_HOPS; i++) {
-		String test_name(pool);
+		String local_test_name(pool);
 		for(int j=0; j<i; j++)
-			test_name.APPEND_CONST("../");
-		test_name.append(lfile_name, String::UL_CLEAN);
-		if(file_readable(r.absolute(test_name))) {
-			r.write_no_lang(*new(pool) VString(*new(pool) String(test_name)));
+			local_test_name.APPEND_CONST("../");
+		local_test_name.append(lfile_name, String::UL_CLEAN);
+		if(file_readable(r.absolute(local_test_name))) {
+			r.write_no_lang(*new(pool) String(local_test_name));
 			return;
 		}
 	}

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.42 2002/03/28 14:02:30 paf Exp $
+	$Id: xnode.C,v 1.43 2002/04/15 11:34:24 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -254,7 +254,7 @@ static void _getAttribute(Request& r, const String& method_name, MethodParams *p
 	GdomeDOMString *attribute_value=
 		gdome_el_getAttribute(element, pool.transcode(name).get(), &exc);
 	// write out result
-	r.write_no_lang(*new(pool) VString(pool.transcode(attribute_value)));
+	r.write_no_lang(pool.transcode(attribute_value));
 }
 
 // void setAttribute(in DOMString name, in DOMString value) raises(DOMException);

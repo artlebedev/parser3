@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.129 2002/04/15 10:35:22 paf Exp $
+	$Id: pa_request.h,v 1.130 2002/04/15 11:34:24 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -133,9 +133,7 @@ public:
 		VStateless_class *base_class=0); // core.C
 
 	/// processes any code-junction there may be inside of @a value
-	StringOrValue process(Value& input_value,
-		bool intercept_string,
-		void (*postexecute)(void *info)=0, void *postexecute_info=0); // execute.C
+	StringOrValue process(Value& input_value, bool intercept_string); // execute.C
 	//@{ convinient helpers
 	const String& process_to_string(Value& input_value) {
 		return process(input_value, true/*intercept_string*/).as_string();

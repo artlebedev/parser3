@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.61 2002/04/01 09:37:50 paf Exp $
+	$Id: mail.C,v 1.62 2002/04/15 11:34:24 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -459,7 +459,6 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 	const String *from, *to;
 	const String& letter=letter_hash_to_string(r, method_name, *hash, 0, &from, &to);
 
-//	r.write_assign_lang(*new(pool) VString(letter));
 	sendmail(r, method_name, letter, from, to);
 }
 
