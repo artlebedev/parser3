@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.113 2001/04/15 13:12:22 paf Exp $
+	$Id: pa_request.C,v 1.114 2001/04/18 16:46:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -283,7 +283,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		TRY {
 			// log the beast
 			const String *problem_source=e.problem_source();
-			if(problem_source)
+			if(problem_source && problem_source->size())
 				SAPI::log(pool(),
 #ifndef NO_STRING_ORIGIN
 					"%s(%d): "
@@ -330,7 +330,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 							// origin
 							Value *origin_value=0;
 #ifndef NO_STRING_ORIGIN
-							if(problem_source) {
+							if(problem_source && problem_source->size()) {
 								const Origin& origin=problem_source->origin();
 								if(origin.file) {
 									char *buf=(char *)malloc(MAX_STRING);
@@ -347,7 +347,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 							// source
 							Value *source_value=0;
-							if(problem_source) {
+							if(problem_source && problem_source->size()) {
 								String& problem_source_copy=*NEW String(pool());
 								problem_source_copy.append(*problem_source, 
 									flang, true);
