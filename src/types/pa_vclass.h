@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vclass.h,v 1.21 2001/11/05 11:46:31 paf Exp $
+	$Id: pa_vclass.h,v 1.22 2001/11/14 07:46:42 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -13,6 +13,7 @@
 #include "pa_vstateless_class.h"
 //#include "pa_vhash.h"
 #include "pa_vjunction.h"
+#include "pa_vobject.h"
 
 /**	stores 
 	- base: VClass::base()
@@ -41,6 +42,11 @@ public: // Value
 	// VClass: (field)=value - static values only
 	void put_element(const String& name, Value *value) {
 		set_field(name, value);
+	}
+
+	/// @returns object of this class
+	virtual Value *create_new_value(Pool& ) { 
+		return NEW VObject(pool(), *this);
 	}
 
 public: // usage

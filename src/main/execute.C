@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.203 2001/11/05 11:46:27 paf Exp $
+	$Id: execute.C,v 1.204 2001/11/14 07:46:42 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -371,12 +371,14 @@ void Request::execute(const Array& ops) {
 						// this is a constructor call
 
 						if(Value *value=called_class->create_new_value(pool())) {
-							// some stateless_object creatable derivates
+							// some stateless_class creatable derivates
 							self=value;
-						} else {
-							// stateful object
-							self=NEW VObject(pool(), *called_class);
-						}
+						} else 
+							throw Exception(0, 0,
+								&frame->name(),
+								"is not a constructor, system class '%s' can be constructed only implicitly", 
+								called_class->name().cstr());
+
 						frame->write(*self, 
 							String::UL_CLEAN  // not used, always an object, not string
 						);

@@ -1,6 +1,7 @@
 @main[]
+^badconstructors[]
 #^xloadwrongtable[]
-^xsetwrongtable[]
+#^xsetwrongtable[]
 #^if($form:test){y}{n}
 #^tablecolumnerror[]
 #^roll[]
@@ -65,6 +66,12 @@
 #^xml[]
 #^header[]
 OK
+
+@badconstructors[]
+$bred[^string::length[]]
+$bred[^response::clear[]]
+$bred[^int::int[]]
+
 
 @xloadwrongtable[]
 $constr[^xdoc::load[wrongtable.xml]]

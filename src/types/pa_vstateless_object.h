@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstateless_object.h,v 1.12 2001/11/05 11:46:34 paf Exp $
+	$Id: pa_vstateless_object.h,v 1.13 2001/11/14 07:46:42 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_OBJECT_H
@@ -12,7 +12,7 @@
 
 #include "pa_valiased.h"
 #include "pa_vjunction.h"
-#include "pa_vclass.h"
+#include "pa_vstateless_class.h"
 
 /**	the object of some class. 
 	

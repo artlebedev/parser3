@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vobject.h,v 1.13 2001/11/05 11:46:33 paf Exp $
+	$Id: pa_vobject.h,v 1.14 2001/11/14 07:46:42 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -14,7 +14,6 @@
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
 #include "pa_vstateless_object.h"
-
 
 /**	parser class instance,
 	stores fields VObject::ffields (dynamic, not static, which are stored in class).
