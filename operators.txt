@@ -560,14 +560,10 @@ Xhashfile
     !^date::create(year;month[;day[;hour[;minute[;second]]]]) // старое имя set
     ^date::sql-create[дата в формате %Y-%m-%d %H:%M:%S]
         для удобного создания по значению из базы
-<<<<<<< operators.txt
         формат1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
         формат2: %H:%M[:%S]
     !$date.year month day  hour minute second  weekday todo:yearday
         read-only
-=======
-    !$date.year month day  hour minute second  weekday read-only    
->>>>>>> 1.34
     !^date.roll[year|month|day](+-смещение) сдвигает дату
     !^date.sql-string[] %Y-%m-%d %H:%M:%S
         where published='$дата.sql-string[]'
