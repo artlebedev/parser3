@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.32 2001/04/03 17:01:01 paf Exp $
+	$Id: string.C,v 1.33 2001/04/03 17:15:06 paf Exp $
 */
 
 #include "pa_request.h"
@@ -137,7 +137,7 @@ static void _rsplit(Request& r, const String& method_name, Array *params) {
 	r.write_no_lang(*new(pool) VTable(pool, &table));
 }
 
-static void search_row_action(Table& table, Array *row, int, int, void *) {
+static void search_action(Table& table, Array *row, int, int, void *) {
 	if(row)
 		table+=row;
 }
@@ -148,7 +148,7 @@ struct Replace_action_info {
 	Value *replacement_code;
 	const String *post_match;
 };
-static void replace_row_action(Table& table, Array *row, int start, int finish, 
+static void replace_action(Table& table, Array *row, int start, int finish, 
 							   void *info) {
 	Replace_action_info& ai=*static_cast<Replace_action_info *>(info);
 	if(row) { // begin&middle
@@ -205,7 +205,7 @@ static void _match(Request& r, const String& method_name, Array *params) {
 		if(src.match(&method_name, 
 			regexp.as_string(), options,
 			&table,
-			search_row_action, 0)) {
+			search_action, 0)) {
 			// matched
 			if(table->columns()->size()==3 && // just matched[3=pre/match/post], no substrings
 				table->size()==1)  // just one row, not /g_lobal search
@@ -230,7 +230,7 @@ static void _match(Request& r, const String& method_name, Array *params) {
 		src.match(&method_name, 
 			r.process(regexp).as_string(), options,
 			&table,
-			replace_row_action, &replace_action_info);
+			replace_action, &replace_action_info);
 		result=new(pool) VString(dest);
 	}
 	result->set_name(method_name);

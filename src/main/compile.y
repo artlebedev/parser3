@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.122 2001/03/30 05:52:17 paf Exp $
+	$Id: compile.y,v 1.123 2001/04/03 17:15:07 paf Exp $
 */
 
 /**
@@ -347,8 +347,15 @@ call: call_value {
 call_value: '^' call_name store_params EON { /* ^field.$method{vasya} */
 	$$=$2; /* with_xxx,diving code; stack: context,method_junction */
 	O($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
-	P($$, $3); /* filling method_frame.store_params */
-	O($$, OP_CALL); /* method_frame=pop; ncontext=pop; call(ncontext,method_frame) stack: value */
+
+	YYSTYPE params_code=$3;
+	if(params_code->size()==3) // probably [] case. [OP_VALUE + Unknown + STORE_PARAM]
+		if(Value *value=LA2V(params_code)) // it is OP_VALUE + value?
+			if(!value->is_defined()) // value is VUnknown?
+				params_code=0; // ^zzz[] case. don't append lone empty param.
+	if(params_code)
+		P($$, params_code); // filling method_frame.store_params
+	O($$, OP_CALL); // method_frame=pop; ncontext=pop; call(ncontext,method_frame) stack: value
 };
 
 call_name: name_without_curly_rdive;
@@ -359,16 +366,7 @@ store_param:
 |	store_round_param
 |	store_curly_param
 ;
-store_square_param: '[' store_code_param_parts ']' {
-	YYSTYPE params_code=$2;
-	if(params_code->size()==3) // probably [] case. [OP_VALUE + Unknown + STORE_PARAM]
-		if(!LA2V(params_code)->is_defined()) { // value is VUnknown?
-			$$=N(POOL);  // ^zzz[] case. don't append lone empty param.
-			break;
-		}
-
-	$$=params_code;
-};
+store_square_param: '[' store_code_param_parts ']' {$$=$2};
 store_round_param: '(' store_expr_param_parts ')' {$$=$2};
 store_curly_param: '{' store_curly_param_parts '}' {$$=$2};
 store_code_param_parts:
