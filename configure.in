@@ -611,36 +611,6 @@ dnl fi
 dnl ]
 dnl )
 
-dnl install directories
-
-# expand apostrophed
-e_prefix=$prefix
-test "x$e_prefix" = xNONE && e_prefix=$ac_default_prefix
-
-e_sysconfdir=$sysconfdir
-test "$e_sysconfdir" = "\${prefix}/etc" && e_sysconfdir="${e_prefix}/etc"
-
-dnl these are used to fill in etc/parser3.conf
-
-charsetsdir=$e_sysconfdir/parser3.charsets
-AC_SUBST(charsetsdir)
-
-# expand apostrophed
-e_libdir=$libdir
-if test "$e_libdir" = "\${exec_prefix}/lib"; then
-
-	# Let make expand exec_prefix.
-	e_exec_prefix=$exec_prefix
-	test "x$e_exec_prefix" = xNONE && e_exec_prefix=$e_prefix
-
-	# expand apostrophed
-	test "$e_libdir" = "\${exec_prefix}/lib" && e_libdir="${e_exec_prefix}/lib"
-fi
-
-sqldriversdir=$e_libdir
-AC_SUBST(sqldriversdir)
-
-
 dnl Output header and makefiles
 
 AH_TEMPLATE([HAVE_DLD],[Define if you have the GNU dld library])
