@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.209 2002/06/12 11:40:32 paf Exp $
+	$Id: pa_request.C,v 1.210 2002/06/12 12:50:32 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -136,10 +136,10 @@ void Request::configure_admin(VStateless_class& conf_class, const String *source
 	if(Value *vcharsets=conf_class.get_element(*charsets_name)) {
 		if(Hash *charsets=vcharsets->get_hash(0))
 			charsets->for_each(load_charset);
-		else
+		else if(!vcharsets->get_string())
 			throw Exception("parser.runtime",
 				0,
-				"$" CHARSETS_NAME " must be hash");
+				"$" MAIN_CLASS_NAME ":" CHARSETS_NAME " must be hash");
 	}
 
 	// configure root options

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.64 2002/06/10 11:56:22 paf Exp $
+	$Id: mail.C,v 1.65 2002/06/12 12:50:32 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -477,10 +477,10 @@ void MMail::configure_user(Request& r) {
 	if(Value *mail_element=r.main_class->get_element(mail_name))
 		if(Hash *mail_conf=mail_element->get_hash(0))
 			r.classes_conf.put(name(), mail_conf);
-		else
+		else if(!mail_element->get_string())
 			throw Exception("parser.runtime",
 				0,
-				"$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
+				"$" MAIN_CLASS_NAME ":" MAIL_NAME " is not hash");
 }
 
 // creator
