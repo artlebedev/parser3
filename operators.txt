@@ -548,7 +548,7 @@ Xhashfile
     !^date::create(дней с epoch) // старое им€ set
     !^date::create(year;month;day[;hour[;minute[;second]]]) // старое им€ set
     !$date.year month day  hour minute second  weekday read-only    
-    !^date.roll[year|month|day](+/- 1) сдвигает дату
+    !^date.roll[year|month|day](+-смещение) сдвигает дату
     !^date.sql-string[] %Y-%m-%d %H:%M:%S
         where published='$дата.sql-string[]'
     !^date:calendar[rus|eng;год;мес€ц] выдаЄт неименованную таблицу 
