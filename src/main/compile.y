@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.55 2001/03/06 15:02:48 paf Exp $
+  $Id: compile.y,v 1.56 2001/03/06 15:30:49 paf Exp $
 */
 
 %{
@@ -42,10 +42,15 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %token STRING
 %token BOGUS
 
+/* numerical */
 %left '-' '+'
 %left '*' '/'
-%left NEG     /* negation--unary minus */
-/*%right '^'    /* exponentiation        */
+%left NEG     /* negation: unary - */
+/* bitwise */
+%left INV     /* invertion: unary ~ */
+
+/* logical */
+%left NOT     /* not: unary ! */
 
 %%
 
@@ -222,7 +227,7 @@ name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
 
 constructor_value: 
 	'[' any_constructor_code_value ']' { $$=$2 }
-|	'(' any_expression ')' { $$=$2 }
+|	'(' any_expr ')' { $$=$2 }
 ;
 any_constructor_code_value: 
 	empty_string_value /* optimized $var[] case */
@@ -349,39 +354,52 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 	O($$, OP_WRITE);
 };
 
-/* expression */
+/* expr */
 
-any_expression:
+any_expr:
 	empty_double_value /* optimized $var() case */
-/*|	number /* optimized $var(number) case */
-|	expression /* $var(something complex) */
+|	expr /* $var(something) */
 ;
-expression: 
+expr: 
 	number
-|	expression '+' expression {
+|	expr '+' expr {
 	$$=$1; // stack: first operand
 	P($$, $3); // stack: first,second operands
-	O($$, OP_ADD); // value=first*second; stack: value
+	O($$, OP_ADD); // value=first+second; stack: value
 }
-|	expression '-' expression {
+|	expr '-' expr {
 	$$=$1; // stack: first operand
 	P($$, $3); // stack: first,second operands
-	O($$, OP_SUB); // value=first*second; stack: value
+	O($$, OP_SUB); // value=first-second; stack: value
 }
-|	expression '*' expression {
+|	expr '*' expr {
 	$$=$1; // stack: first operand
 	P($$, $3); // stack: first,second operands
 	O($$, OP_MUL); // value=first*second; stack: value
 }
-|	expression '/' expression {
+|	expr '/' expr {
 	$$=$1; // stack: first operand
 	P($$, $3); // stack: first,second operands
-	O($$, OP_DIV); // value=first*second; stack: value
-};
+	O($$, OP_DIV); // value=first/second; stack: value
+}
+|	'-' expr %prec NEG {
+	$$=$2; // stack: operand
+	O($$, OP_NEG); // value=-operand; stack: value
+}
+|	'~' expr %prec INV {
+	$$=$2; // stack: operand
+	O($$, OP_INV); // value=~operand; stack: value
+}
+|	'!' expr %prec NOT {
+	$$=$2; // stack: operand
+	O($$, OP_NOT); // value=!operand; stack: value
+}
+|	'(' expr ')' { $$ = $2; }
+;
 
 
 /*
-complex_expression_value: complex_expression {
+complex_expr_value: complex_expr {
 	$$=N(POOL); 
 	O($$, OP_CREATE_SWPOOL); /* stack: empty write context * /
 	P($$, $1); /* some codes to that context * /
@@ -579,8 +597,9 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				lexical_brackets_nestage++;
 				RC;
 			case '+': case '-': case '*': case '/': case '%': 
+			case '!': case '~':
 			case '&': case '|': 
-			case '<': case '>': case '=': case '!':
+			case '<': case '>': case '=': 
 			case ';':
 				RC;
 			case '"':
@@ -614,7 +633,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 		case LS_VAR_NAME_SIMPLE:
 		case LS_VAR_NAME_IN_EXPRESSION:
 			if(PC->ls==LS_VAR_NAME_IN_EXPRESSION) {
-				// name in expression ends also before binary operators 
+				// name in expr ends also before binary operators 
 				switch(c) {
 				case '+': case '-': case '*': case '/': case '%': 
 				case '&': case '|': 

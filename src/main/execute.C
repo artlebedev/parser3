@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.53 2001/03/06 15:02:48 paf Exp $
+  $Id: execute.C,v 1.54 2001/03/06 15:30:49 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -12,6 +12,7 @@
 #include "pa_vmframe.h"
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
+#include "pa_vbool.h"
 
 #include <stdio.h>
 
@@ -334,6 +335,28 @@ void Request::execute(const Array& ops) {
 				Value *value=NEW VDouble(pool(), 
 					a->get_double() /
 					b->get_double());
+				PUSH(value);
+				break;
+			}
+		case OP_NEG:
+			{
+				Value *operand=POP();
+				Value *value=NEW VDouble(pool(), -operand->get_double());
+				PUSH(value);
+				break;
+			}
+		case OP_INV:
+			{
+				Value *operand=POP();
+				Value *value=NEW VDouble(pool(), 
+					~static_cast<int>(operand->get_double()));
+				PUSH(value);
+				break;
+			}
+		case OP_NOT:
+			{
+				Value *operand=POP();
+				Value *value=NEW VBool(pool(), !operand->get_bool());
 				PUSH(value);
 				break;
 			}

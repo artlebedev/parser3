@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.38 2001/03/06 14:09:35 paf Exp $
+  $Id: pa_value.h,v 1.39 2001/03/06 15:30:48 paf Exp $
 */
 
 /*
@@ -93,11 +93,16 @@ public: // Value
 	virtual String *get_string() { return 0; }
 	
 	// string: value
-	virtual void put_string(String *astring) { failed("storing string to '%s'"); }
-
-	// string: value
 	// double: value
+	// bool: value
 	virtual double get_double() { failed("getting numerical value of '%s'"); return 0; }
+
+	// unknown: false
+	// bool: value
+	// double: 0 or !0
+	// string: empty or not
+	// others: true // junction true == method defined. others 
+	virtual bool get_bool() { return true; }
 
 	// junction: auto_calc,root,self,rcontext,wcontext, code
 	virtual Junction *get_junction() { return 0; }

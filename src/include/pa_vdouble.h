@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vdouble.h,v 1.4 2001/03/06 15:02:46 paf Exp $
+  $Id: pa_vdouble.h,v 1.5 2001/03/06 15:30:48 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -25,6 +25,8 @@ public: // Value
 	};
 	// double: value
 	double get_double() { return value; };
+	// double: 0 or !0
+	bool get_bool() { return value!=0; };
 
 public: // usage
 

@@ -236,6 +236,10 @@ SOURCE=..\include\pa_value.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_vbool.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_vcframe.h
 # End Source File
 # Begin Source File

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vunknown.h,v 1.2 2001/03/06 15:02:47 paf Exp $
+  $Id: pa_vunknown.h,v 1.3 2001/03/06 15:30:48 paf Exp $
 */
 
 #ifndef PA_VUNKNOWN_H
@@ -14,7 +14,8 @@ public: // Value
 	const char *type() const { return "unknown"; }
 
 	// unknown: ""
-	virtual String *get_string() { return &empty; }
+	String *get_string() { return &empty; }
+	bool get_bool() { return false; }
 
 public: // usage
 
