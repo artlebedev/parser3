@@ -1,10 +1,24 @@
 @main[]
+^mail[]
 #^exec[]
 #^fori[]
 #^connect[mysql://hren]{^void:sql{nothing}}
-$response:content-type[$.value[text/html] $.charset[windows-125odin]]
-^xslt[]
+#$response:content-type[$.value[text/html] $.charset[windows-125odin]]
+#^xslt[]
 OK
+
+@mail[]
+#$ORIGINS(1)
+^mail:send[
+	$.from[paf@design.ru]
+	$.to[paf@design.ru]
+	$.body[1
+	
+	2
+	
+	
+		3]
+]
 
 @exec[]
 $a[^file::exec[fc.exe;a;b]]

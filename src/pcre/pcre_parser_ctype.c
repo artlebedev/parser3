@@ -42,7 +42,7 @@ and semantics are as close as possible to those of the Perl 5 language.
 	   
 		See the file Tech.Notes for some information on the internals.
 */
-static const char *RCSId="$Id: pcre_parser_ctype.c,v 1.5 2001/09/21 14:46:09 parser Exp $"; 
+static const char *RCSId="$Id: pcre_parser_ctype.c,v 1.6 2001/09/28 15:58:26 parser Exp $"; 
 
 #include <ctype.h>
 #include <stdio.h>
@@ -55,54 +55,64 @@ static const char *RCSId="$Id: pcre_parser_ctype.c,v 1.5 2001/09/21 14:46:09 par
 
 #define TABLE_WRAP_COL 62
 
-size_t out_c(int c) {
-	return printf(
+const char *out_c(char *buf, int c) {
+	sprintf(buf,
 		isprint(c)&&
 		!isspace(c) &&
-		!(c>=128&&c<192)?
-		strchr("^$;()[]{}\"", c)==0?"%c":"^%c":"^#%02X", c);
+		c!='#' &&
+		c!='"' &&
+		c<128?
+		"%c":"0x%02X", c);
+	return buf;
 }
 
-void ctype_out(unsigned const char *bit_table, 
-			   unsigned char bit, 
-			   const char *name) {
-	int c;
-	int printed=0;
+#define MAX_UCM 2
+unsigned int ucm[0x100][MAX_UCM];
 
-	printf("    ");
-	printf("$.%s[", name);
-	for(c=0; c<0x100; c++)
-		if(bit_table[c] & bit) {
-			if(!printed || printed > TABLE_WRAP_COL) {
-				printf("\n        "); printed=0;
-			}
-			printed+=out_c(c);
-		}
-	printf("]\n");
-}
+int read_ucm(const char *file) {
+	unsigned int unicode;
+	unsigned int ch;
+	char buf[0x400];
+	int i;
+	int ok;
 
-void case_out(unsigned const char *case_table, const char *name) {
-	int c;
-	int printed=0;
-	printf("    ");
-	printf("$.%s[", name);
-	for(c=0; c<0x100; c++)
-		if(case_table[c] != c) {
-			if(!printed || printed > TABLE_WRAP_COL) {
-				printf("\n        "); printed=0;
-			}
-			printed+=out_c(c);
-			printed+=out_c(case_table[c]);
+	FILE *f=fopen(file, "rt");
+	
+	if(!f)
+		return 1;
+
+	memset(ucm, 0, sizeof(ucm));
+
+	while(!feof(f)) {
+		fgets(buf, sizeof(buf), f);
+		if(sscanf(buf, "<U%04X> \\x%02X", &unicode, &ch)) {
+			ok=0;
+			for(i=0; i<MAX_UCM; i++)
+				if(ucm[ch][i]==0) {
+					ucm[ch][i]=unicode;
+					ok=1;
+					break;
+				}
+			if(!ok)
+				return 2;
 		}
-	printf("]\n");
+	}
+
+	fclose(f);
+	return 0;
 }
 
 int main(int argc, char *argv[])
 {
 	unsigned const char *tables, *ctypes_table, *case_table;
+	unsigned int c;
+	char buf_c[0x100];
+	char buf_lc[0x100];
+	int error;
+	int i, printed;
 
-	if(argc<2) {
-		printf("Usage: %s Russian_Russia.1251   (locale-name)\n", argv[0]?argv[0]:"pcre_parser_ctype");
+	if(argc<3) {
+		printf("Usage: %s Russian_Russia.1251 ibm-1251.ucm  (locale-name)\n", argv[0]?argv[0]:"pcre_parser_ctype");
 		return 1;
 	}
 
@@ -111,20 +121,66 @@ int main(int argc, char *argv[])
 		printf("locale '%s' is invalid", argv[1]);
 		return 2;
 	}
+	// ibm-1251.ucm
+	error=read_ucm(argv[2]);
+	if(error) {
+		switch(error) {
+		case 1:
+			printf("could not read '%s'", argv[2]);
+			break;
+		case 2:
+			printf("could store all unicode variants of  '%s'", argv[2]);
+			break;
+		default: 
+			printf("problem with '%s'", argv[2]);
+			break;
+		}
+		return 3;
+	}
+
 	tables = pcre_maketables();
 	ctypes_table=tables+ctypes_offset;
 	case_table=tables+lcc_offset;
 	
-	printf("$CTYPE[\n");
+	printf(
+		"char\t"
+		"white-space\t"
+		"digit\t"
+		"hex-digit\t"
+		"letter\t"
+		"word\t"
+		"lowercase\t"
+		"unicode1\t"
+		"unicode2\t"
+		"\n");
 	
-	ctype_out(ctypes_table, ctype_space, "white-space");
-	ctype_out(ctypes_table, ctype_digit, "digit");
-	ctype_out(ctypes_table, ctype_xdigit, "hex-digit");
-	ctype_out(ctypes_table, ctype_letter, "letter");
-	ctype_out(ctypes_table, ctype_word, "word");
-	printf("\n");
-	case_out(case_table, "lowercase");
+	for(c=0; c<0x100; c++)
+		if(
+			ctypes_table[c]&(ctype_space|ctype_digit|ctype_xdigit|ctype_letter|ctype_word) || 
+			c!=case_table[c] || 
+			!(c==ucm[c][0] && ucm[c][1]==0)) {
+			printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t", 
+				out_c(buf_c, c),
+				ctypes_table[c]&ctype_space?"x":"",
+				ctypes_table[c]&ctype_digit?"x":"",
+				ctypes_table[c]&ctype_xdigit?"x":"",
+				ctypes_table[c]&ctype_letter?"x":"",
+				ctypes_table[c]&ctype_word?"x":"",
+				case_table[c]&&c!=case_table[c]?out_c(buf_lc, case_table[c]):""				
+			);
+			if(!(c==ucm[c][0] && ucm[c][1]==0)) {
+				printed=0;
+				for(i=0; i<MAX_UCM; i++) {
+					if(ucm[c][i]) {
+						if(printed!=0)
+							printf("\t");
+						printf("0x%04X", ucm[c][i]);
+						printed++;
+					}
+				}
+			}
+			printf("\n");
+		}
 
-	printf("]\n\n");
 	return 0;
 }

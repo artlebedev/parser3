@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.5 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.6 2001/09/28 15:58:26 parser Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -62,8 +62,9 @@ public:
 
 	bool connected() { return fstylesheet!=0; }
 
-	const XalanCompiledStylesheet& stylesheet() { 
-		if(time_t new_disk_time=get_new_disk_time())
+	const XalanCompiledStylesheet& stylesheet(bool nocache) { 
+		time_t new_disk_time=get_new_disk_time();
+		if(nocache || new_disk_time)
 			load(new_disk_time);
 		return *fstylesheet; 
 	}

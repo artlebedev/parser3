@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.156 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_request.C,v 1.157 2001/09/28 15:58:15 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -34,57 +34,6 @@ const char *DEFAULT_CONTENT_TYPE="text/html";
 const char *ORIGINS_CONTENT_TYPE="text/plain";
 
 Methoded *MOP_create(Pool&);
-
-//
-Request::Request(Pool& apool,
-				 Info& ainfo,
-				 String::Untaint_lang adefault_lang) : Pooled(apool),
-	stack(apool),
-	OP(*MOP_create(apool)),
-	env(apool),
-	form(apool),
-	math(apool),
-	request(apool, *this),
-	response(apool),
-	cookie(apool),
-	fclasses(apool),
-	fdefault_lang(adefault_lang), flang(adefault_lang),
-	info(ainfo),
-	post_data(0), post_size(0),
-	used_files(apool),
-	default_content_type(0),
-	mime_types(0),
-	main_class(0),
-	connection(0),
-	pcre_tables(0),
-	classes_conf(apool),
-	anti_endless_execute_recoursion(0)
-{
-	/// directly used
-	// operators
-	OP.register_directly_used(*this);
-	// classes:
-	// table, file, random, mail, image, ...
-	methoded_array->register_directly_used(*this);
-
-	/// methodless
-	// env class
-	classes().put(*NEW String(pool(), ENV_CLASS_NAME), &env);
-	// request class
-	classes().put(*NEW String(pool(), REQUEST_CLASS_NAME), &request);	
-	// cookie class
-	classes().put(*NEW String(pool(), COOKIE_CLASS_NAME), &cookie);
-
-	/// methoded
-	// response class
-	classes().put(response.get_class()->name(), &response);	
-
-	/// bases used
-	// form class
-	classes().put(form.get_class()->base()->name(), &form);	
-	// math class
-	classes().put(math.get_class()->base()->name(), &math);	
-}
 
 static void element2ctypes(unsigned char *tables, 
 	Value& ctype, const String& name, 
@@ -144,6 +93,57 @@ static void element2case(unsigned char *tables, Value& ctype, const String& name
 		} else
 			from=c;
 	}
+}
+
+//
+Request::Request(Pool& apool,
+				 Info& ainfo,
+				 String::Untaint_lang adefault_lang) : Pooled(apool),
+	stack(apool),
+	OP(*MOP_create(apool)),
+	env(apool),
+	form(apool),
+	math(apool),
+	request(apool, *this),
+	response(apool),
+	cookie(apool),
+	fclasses(apool),
+	fdefault_lang(adefault_lang), flang(adefault_lang),
+	info(ainfo),
+	post_data(0), post_size(0),
+	used_files(apool),
+	default_content_type(0),
+	mime_types(0),
+	main_class(0),
+	connection(0),
+	pcre_tables(0),
+	classes_conf(apool),
+	anti_endless_execute_recoursion(0)
+{
+	/// directly used
+	// operators
+	OP.register_directly_used(*this);
+	// classes:
+	// table, file, random, mail, image, ...
+	methoded_array->register_directly_used(*this);
+
+	/// methodless
+	// env class
+	classes().put(*NEW String(pool(), ENV_CLASS_NAME), &env);
+	// request class
+	classes().put(*NEW String(pool(), REQUEST_CLASS_NAME), &request);	
+	// cookie class
+	classes().put(*NEW String(pool(), COOKIE_CLASS_NAME), &cookie);
+
+	/// methoded
+	// response class
+	classes().put(response.get_class()->name(), &response);	
+
+	/// bases used
+	// form class
+	classes().put(form.get_class()->base()->name(), &form);	
+	// math class
+	classes().put(math.get_class()->base()->name(), &math);	
 }
 
 /**

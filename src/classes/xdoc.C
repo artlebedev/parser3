@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.5 2001/09/28 09:37:09 parser Exp $
+	$Id: xdoc.C,v 1.6 2001/09/28 15:58:26 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -319,7 +319,7 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 	// transform
 	int error=vdoc.transformer().transform(
 		parsed_source, 
-		&connection.stylesheet(), 
+		&connection.stylesheet(true/*nocache*/), 
 		domResultTarget);
 	connection.close();
 	if(error)

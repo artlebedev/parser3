@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.39 2001/09/26 10:32:25 parser Exp $
+	$Id: mail.C,v 1.40 2001/09/28 15:58:26 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -305,7 +305,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 		} else {
 			result << 
 				"\n" << // header|body separator
-				body_element->as_string();  // body
+				body_element->as_string().cstr(String::UL_AS_IS);  // body
 		}
 	} else 
 		PTHROW(0, 0,
