@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.75 2002/02/20 09:13:07 paf Exp $
+	$Id: pa_common.h,v 1.76 2002/03/26 17:01:49 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -162,7 +162,7 @@ bool file_stat(const String& file_spec,
 	or to zero if no @a delim were found.
 */
 char *getrow(char **row_ref,char delim='\n');
-//char *lsplit(char *string, char delim);
+char *lsplit(char *string, char delim);
 char *lsplit(char **string_ref,char delim);
 char *rsplit(char *string, char delim);
 char *format(Pool& pool, double value, char *fmt);

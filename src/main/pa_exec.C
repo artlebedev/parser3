@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.32 2002/03/25 11:55:26 paf Exp $
+	$Id: pa_exec.C,v 1.33 2002/03/26 17:01:49 paf Exp $
 
 
 	@todo setrlimit
@@ -73,6 +73,7 @@ static BOOL WINAPI CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
 	// calculating script's directory
 	char dir[MAX_STRING];
 	strncpy(dir, szCmdLine, MAX_STRING-1); dir[MAX_STRING-1]=0;
+	lsplit(dir,' '); // trim arguments
 	rsplit(dir,'/'); rsplit(dir,'\\'); // trim filename
 	chdir(dir);
 
