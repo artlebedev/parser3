@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/08/07 13:24:30 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/08/08 14:04:48 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -1007,6 +1007,10 @@ void Request::execute_method(Value& aself,
 	}
 	local_frame.set_self(*self);
 	root=rcontext=wcontext=&local_frame; 
+
+	// prevent non-string writes for better error reporting
+	if(return_string)
+		wcontext->write(local_frame);
 	
 	// execute!	
 	execute(*method.parser_code);
