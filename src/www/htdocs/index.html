@@ -31,6 +31,26 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
+^mail:send[
+    $to[paf@design.ru]
+    $from[paf@design.ru]
+	$body[
+		$1[
+			$content-type[
+			    $value[text/plain]
+	    		$charset[windows-1251]
+			]
+			$body[привет, PAF.
+
+sincerily yours,
+PAF
+]
+		]
+		$attach[uue;test]
+	]
+]
+<HR>
+
 ^rem{^mail:send[
 	$content-type[
 	    $value[text/plain]

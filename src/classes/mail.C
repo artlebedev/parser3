@@ -5,24 +5,23 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.5 2001/04/07 13:56:44 paf Exp $
+	$Id: mail.C,v 1.6 2001/04/07 15:16:26 paf Exp $
 */
 
 #include "pa_config_includes.h"
-
-#include "_mail.h"
-#include "pa_common.h"
-#include "pa_request.h"
 
 #ifdef WIN32
 #	include "smtp/smtp.h"
 #endif
 
+#include "_mail.h"
+#include "pa_common.h"
+#include "pa_request.h"
+#include "pa_vfile.h"
+
 // global var
 
 VStateless_class *mail_class;
-
-// consts
 
 // methods
 
@@ -197,11 +196,73 @@ static void _send(Request& r, const String& method_name, Array *params) {
 	const String *from, *to;
 	const String& letter=letter_hash_to_string(r, method_name, *hash, 0, &from, &to);
 
-	sendmail(r, method_name, letter, from, to);
+	r.write_assign_lang(*new(pool) VString(letter));
+	//sendmail(r, method_name, letter, from, to);
+}
+
+/// ^mail:attach[uue|base64;DATA]
+/// ^mail:attach[uue|base64;DATA;user-file-name]
+static void _attach(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	Value& vtype=*static_cast<Value *>(params->get(0));
+	// forcing [this vtype]
+	r.fail_if_junction_(true, vtype, method_name, "type must not be code");
+
+	Value& vdata=*static_cast<Value *>(params->get(1));
+	// forcing [this vtype]
+	r.fail_if_junction_(true, vdata, method_name, "data must not be code");
+	const VFile& vfile=*vdata.as_vfile();
+
+	Value *user_file_name;
+	if(params->size()>2) {
+		user_file_name=static_cast<Value *>(params->get(0));
+		// forcing [this vtype]
+		r.fail_if_junction_(true, *user_file_name, method_name, 
+			"user file name must not be code");
+	} else {
+		user_file_name=static_cast<Value *>(vfile.fields().get(*name_name));
+	}
+
+	VHash& result=*new(pool) VHash(pool);
+
+	{ // content-disposition: attachment; filename='user_file_name'
+		VHash& content_disposition=*new(pool) VHash(pool);
+		content_disposition.hash().put(*value_name,
+			new(pool) VString(*new(pool) String(pool, "attachment")));
+		content_disposition.hash().put(
+			*new(pool) String(pool, "filename"),
+			user_file_name);
+		result.hash().put(*new(pool) String(pool, "content-disposition"),
+			&content_disposition);
+	}
+
+	const String& type=vtype.as_string();
+	if(type=="uue") {
+		{ // content-transfer-encoding: x-uuencode
+			VString& content_transfer_encoding=*new(pool) VString(
+				*new(pool) String(pool, "x-uuencode"));
+			result.hash().put(*new(pool) String(pool, "content-transfer-encoding"),
+				&content_transfer_encoding);
+		}
+
+		result.hash().put(*body_name, 
+			new(pool) String(pool, "todo"));
+	} else 
+		PTHROW(0, 0,
+			&type,
+			"unknown encode type");
+
+	result.set_name(*new(pool) String(pool, "100")); // so that would go last
+	r.write_no_lang(result);
 }
 
 // initialize
 void initialize_mail_class(Pool& pool, VStateless_class& vclass) {
 	// ^mail:send{hash}
 	vclass.add_native_method("send", Method::CT_STATIC, _send, 1, 1);
+
+	// ^mail:encode[uue|base64;DATA]
+	// ^mail:encode[uue|base64;DATA;user-file-name]
+	vclass.add_native_method("attach", Method::CT_ANY, _attach, 2, 3);
 }
