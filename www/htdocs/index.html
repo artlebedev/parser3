@@ -30,6 +30,7 @@ $selffilespec[$filespec]
 #	^process{	^^h[]}
 #	^process{^string:sql{select '1
 #	^^hello[]' }]	}
+#	^double:sql{select '2*' ; }
 #}
 #^eval(2)
 #^tcrashlocaljunctionsv2[]
@@ -220,9 +221,26 @@ $selffilespec[$filespec]
 #^voidpostest[]
 #^virtualtest[]
 #^badcolumntest[]
-^delimiters[]
+#^delimiters[]
+^новый-split[]
+#^грязные-cookie[]
 <hr>
 OK
+                 
+@грязные-cookie[]
+#$a[
+
+@новый-split[]
+$abc[a.b.c]
+#$table[^abc.split[.]]
+#$table[^abc.split[.;l]]
+#$table[^abc.split[.;v]]
+$table[^abc.split[.;lv]]
+^table.menu{$table.piece}[,]
+<hr>
+#$table[^abc.split[.;h]]
+$table[^abc.split[.;hr]]
+$table.0,$table.1,$table.2<br>
 
 @delimiters[]
 $a#1[1]<br>

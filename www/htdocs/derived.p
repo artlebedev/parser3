@@ -17,3 +17,4 @@ $derived_var[$aderived_param]
 
 @test2[]
 derived_test2
+^shit[]

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/08/15 10:38:18 $";
+static const char* IDENT_STRING_C="$Date: 2002/08/28 10:53:58 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -121,54 +121,131 @@ static void _pos(Request& r, const String& method_name, MethodParams *params) {
 	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
 }
 
-static void split_list(Request& r, const String& method_name, MethodParams *params,
+static void split_list(Request& r, const String& method_name, 
+					   MethodParams *params, int paramIndex,
 					   const String& string, 
 					   Array& result) {
-	Value& delim_value=params->as_no_junction(0, "delimiter must not be code");
+	Value& delim_value=params->as_no_junction(paramIndex, "delimiter must not be code");
 
 	string.split(result, 0, delim_value.as_string());
 }
 
-static void _lsplit(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	const String& string=*r.self->get_string();
+#define SPLIT_LEFT 0x0001
+#define SPLIT_RIGHT 0x0010
+#define SPLIT_HORIZONTAL 0x0100
+#define SPLIT_VERTICAL 0x1000
 
-	Array pieces(pool);
-	split_list(r, method_name, params, string, pieces);
+static int split_options(const String *options) {
+    struct Split_option {
+		const char *keyL;
+		const char *keyU;
+		int setBit;
+		int checkBit;
+    } split_option[]={
+		{"l", "L", SPLIT_LEFT, SPLIT_RIGHT}, // 0xVHRL
+		{"r", "R", SPLIT_RIGHT, SPLIT_LEFT},
+		{"h", "H", SPLIT_HORIZONTAL, SPLIT_VERTICAL},
+		{"v", "V", SPLIT_VERTICAL, SPLIT_HORIZONTAL},
+		{0}
+    };
 
-	Array& columns=*new(pool) Array(pool);
-	columns+=new(pool) String(pool, "piece");
-
-	Table& table=*new(pool) Table(pool, &string, 
-		&columns, pieces.size());
-	Array_iter i(pieces);
-	while(i.has_next()) {
-		Array& row=*new(pool) Array(pool);
-		row+=i.next();
-		table+=&row;
+	int result=0;
+    if(options) {
+		for(Split_option *o=split_option; o->keyL; o++) 
+			if(options->pos(o->keyL)>=0
+				|| (o->keyU && options->pos(o->keyU)>=0)) {
+				if(result & o->checkBit)
+					throw Exception("parser.runtime",
+						options,
+						"conflicting split options");
+				result |= o->setBit;
+			}
 	}
-	r.write_no_lang(*new(pool) VTable(pool, &table));
+
+	return result;
 }
 
-static void _rsplit(Request& r, const String& method_name, MethodParams *params) {
+static Table *split_vertical(Request& r, const String& string, Array& pieces, bool right) {
 	Pool& pool=r.pool();
-	const String& string=*r.self->get_string();
-
-	Array pieces(pool);
-	split_list(r, method_name, params, string, pieces);
 
 	Array& columns=*new(pool) Array(pool);
 	columns+=new(pool) String(pool, "piece");
 
 	Table& table=*new(pool) Table(pool, &string, 
 		&columns, pieces.size());
-	for(int i=pieces.size(); --i>=0; ) {
-		Array& row=*new(pool) Array(pool);
-		row+=pieces.get(i);
-		table+=&row;
+	if(right) { // right
+		for(int i=pieces.size(); --i>=0; ) {
+			Array& row=*new(pool) Array(pool);
+			row+=pieces.get(i);
+			table+=&row;
+		}
+	} else { // left
+		Array_iter i(pieces);
+		while(i.has_next()) {
+			Array& row=*new(pool) Array(pool);
+			row+=i.next();
+			table+=&row;
+		}
 	}
 
-	r.write_no_lang(*new(pool) VTable(pool, &table));
+	return &table;
+}
+
+static Table *split_horizontal(Request& r, const String& string, Array& pieces, bool right) {
+	Pool& pool=r.pool();
+
+	Table& table=*new(pool) Table(pool, &string, 0 /* nameless */);
+	Array& row=*new(pool) Array(pool);
+	if(right) { // right
+		for(int i=pieces.size(); --i>=0; ) {
+			row+=pieces.get(i);
+		}
+	} else { // left
+		Array_iter i(pieces);
+		while(i.has_next()) {
+			row+=i.next();
+		}
+	}
+	table+=&row;
+
+	return &table;
+}
+
+static void split_with_options(Request& r, const String& method_name, MethodParams *params,
+							   int bits) {
+	Pool& pool=r.pool();
+	const String& string=*r.self->get_string();
+
+	Array pieces(pool);
+	split_list(r, method_name, params, 0,
+		string, pieces);
+
+	if(!bits) {
+		const String *options=0;
+		if(params->size()>1) {
+			options=&params->as_string(1, "options must not be code");
+		}
+		bits=split_options(options);
+	}
+
+	bool right=(bits & SPLIT_RIGHT) != 0;
+	bool horizontal=(bits & SPLIT_HORIZONTAL) !=0;
+	Table *table;
+	if(horizontal)
+		table=split_horizontal(r, string, pieces, right);
+	else
+		table=split_vertical(r, string, pieces, right);
+
+	r.write_no_lang(*new(pool) VTable(pool, table));
+}
+static void _split(Request& r, const String& method_name, MethodParams *params) {
+	split_with_options(r, method_name, params, 0 /* maybe-determine from param #2 */);
+}
+static void _lsplit(Request& r, const String& method_name, MethodParams *params) {
+	split_with_options(r, method_name, params, SPLIT_LEFT);
+}
+static void _rsplit(Request& r, const String& method_name, MethodParams *params) {
+	split_with_options(r, method_name, params, SPLIT_RIGHT);
 }
 
 static void search_action(Table& table, Array *row, int, int, int, int, void *) {
@@ -451,11 +528,15 @@ MString::MString(Pool& apool) : Methoded(apool, "string") {
 	// ^string.pos[substr]
 	add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 1);
 
-	// ^string.lsplit[delim]
-	add_native_method("lsplit", Method::CT_DYNAMIC, _lsplit, 1, 1);
-	// ^string.rsplit[delim]
-	add_native_method("rsplit", Method::CT_DYNAMIC, _rsplit, 1, 1);
-
+	// ^string.split[delim]
+	// ^string.split[delim][options]
+	add_native_method("split", Method::CT_DYNAMIC, _split, 1, 2);
+		// old names for backward compatibility
+		// ^string.lsplit[delim]
+		add_native_method("lsplit", Method::CT_DYNAMIC, _lsplit, 1, 1);
+		// ^string.rsplit[delim]
+		add_native_method("rsplit", Method::CT_DYNAMIC, _rsplit, 1, 1);
+	
 	// ^string.match[regexp][options]
 	// ^string.match[regexp][options]{replacement-code}
 	add_native_method("match", Method::CT_DYNAMIC, _match, 1, 3);
