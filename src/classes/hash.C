@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2003/11/20 16:34:23 $";
+static const char * const IDENT_HASH_C="$Date: 2003/11/20 17:07:43 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -307,13 +307,15 @@ static void one_foreach_cycle(
 	info->r->write_pass_lang(sv_processed);
 }
 static void _foreach(Request& r, MethodParams& params) {
-	Foreach_info info={0};
-	info.r=&r;
-	info.key_var_name=&params.as_string(0, "key-var name must be string");
-	info.value_var_name=&params.as_string(1, "value-var name must be string");
-	info.body_code=&params.as_junction(2, "body must be code");
-	info.delim_maybe_code=params.count()>3?params.get(3):0;
-	info.vkey=new VString;
+	Foreach_info info={
+		&r,
+		&params.as_string(0, "key-var name must be string"),
+		&params.as_string(1, "value-var name must be string"),
+		&params.as_junction(2, "body must be code"),
+		params.count()>3?params.get(3):0,
+		vkey=new VString,
+		false
+	};
 
 	VHash& self=GET_SELF(r, VHash);
 	HashStringValue& hash=self.hash();

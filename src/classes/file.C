@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2003/11/20 16:34:23 $";
+static const char * const IDENT_FILE_C="$Date: 2003/11/20 17:07:43 $";
 
 #include "pa_config_includes.h"
 
@@ -294,7 +294,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	if(params.count()>1) {
 		Value& venv=params.as_no_junction(1, "env must not be code");
 		if(HashStringValue* user_env=venv.get_hash()) {
-			Append_env_pair_info info={&env};
+			Append_env_pair_info info={&env, 0, 0};
 			user_env->for_each(append_env_pair, &info);
 			// $.stdin
 			if(info.vstdin) {
@@ -398,7 +398,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 		ArrayString rows;
 		size_t pos_after=0;
 		header->split(rows, pos_after, eol_marker);
-		Pass_cgi_header_attribute_info info={0};
+		Pass_cgi_header_attribute_info info={0, 0, 0};
 		info.charset=&r.charsets.source();
 		info.fields=&self.fields();
 		rows.for_each(pass_cgi_header_attribute, &info);
@@ -501,10 +501,11 @@ static void lock_execute_body(int , void *ainfo) {
 	info.r->write_assign_lang(info.r->process(*info.body_code));
 };
 static void _lock(Request& r, MethodParams& params) {
-	Lock_execute_body_info info={0};
-	info.r=&r;
 	const String& file_spec=r.absolute(params.as_string(0, "file name must be string"));
-	info.body_code=&params.as_junction(1, "body must be code");
+	Lock_execute_body_info info={
+		&r, 
+		&params.as_junction(1, "body must be code");
+	};
 
 	file_write_action_under_lock(file_spec, "lock", lock_execute_body, &info);
 }
@@ -513,7 +514,7 @@ static int lastposafter(const String& s, size_t after, const char* substr, size_
 	size_t size=0; // just to calm down compiler
 	if(beforelast)
 		size=s.length();
-	int at;
+	size_t at;
 	while((at=s.pos(String::Body(substr, substr_size), after))!=STRING_NOT_FOUND) {
 		size_t newafter=at+substr_size/*skip substr*/;
 		if(beforelast && newafter==size)
