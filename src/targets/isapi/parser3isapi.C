@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/02/11 15:33:17 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/03/01 14:27:41 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -293,6 +293,16 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 */
 
 void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
+	// collect garbage from prev request
+#ifndef PA_DEBUG_DISABLE_GC
+	{
+		int saved=GC_dont_gc;
+		GC_dont_gc=0;
+		GC_gcollect();
+		GC_dont_gc=saved;
+	}
+#endif
+	
 	SAPI_info.header=new String;
 	LPEXTENSION_CONTROL_BLOCK lpECB=SAPI_info.lpECB;
 	
