@@ -78,8 +78,8 @@ RANLIB = @RANLIB@
 VERSION = @VERSION@
 YACC = @YACC@
 host_os = @host_os@
-@WITHOUT_APACHE13_TRUE@SUBDIRS = 
-@WITHOUT_APACHE13_FALSE@SUBDIRS = modules
+
+@COMPILE_APACHE13_MODULE_TRUE@SUBDIRS = modules
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -289,6 +289,7 @@ uninstall-am uninstall all-redirect all-am all installdirs-am \
 installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
+#don't compile apache
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
