@@ -7,7 +7,7 @@
 
 #include "pa_vobject.h"
 
-static const char* IDENT_VOBJECT_C="$Date: 2002/08/13 15:23:16 $";
+static const char* IDENT_VOBJECT_C="$Date: 2002/08/13 15:35:45 $";
 
 /// VObject: true, todo: z base table can be 33
 Value *VObject::as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
@@ -55,16 +55,23 @@ bool VObject::put_element(const String& aname, Value *avalue, bool replace) {
 	//   will not check for '$method_name(subst)' trick
 	//   -same-
 
-	// downwards: same as upwards
+	if(!replace) { 
+		// for first call, pass call to last derived VObject
+		if(get_last_derived()->put_element(aname, avalue, true))
+			return true;
 
-	if(fderived && fderived->put_element(aname, avalue, true))
-		return true; // replaced in derived
+		ffields.put(aname, avalue);
+		return false;
+	}
 
+	// replace
 	// upwards: copied from VClass::put_element...
 
 	try {
 		if(fbase && fbase->put_element(aname, avalue, true))
 			return true; // replaced in base
+
+		return ffields.put_replace(aname, avalue);
 	} catch(Exception) { 
 		/* ignore "can not store to table&co errors for nonexistent elements */ 
 		bool error;
@@ -77,11 +84,7 @@ bool VObject::put_element(const String& aname, Value *avalue, bool replace) {
 			/*re*/throw;
 	}
 
-	if(replace)
-		return ffields.put_replace(aname, avalue);
-	else {
-		ffields.put(aname, avalue);
-		return false;
-	}
+	// could not put to any base of last child
+	return false;
 }
 
