@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.15 2001/10/29 08:05:37 paf Exp $
+	$Id: pa_sql_connection.h,v 1.16 2001/10/29 17:34:24 paf Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -19,7 +19,7 @@
 
 /// @see SQL_Driver_services_impl::_throw
 #define SQL_CONNECTION_FUNC_GUARDED(actions) \
-	if(!setjmp(fservices->mark)) { \
+	if(!fservices || !setjmp(fservices->mark)) { \
 		actions; \
 	} else \
 		fservices->propagate_exception();
@@ -57,9 +57,7 @@ public:
 		);
 	}
 	void disconnect() { 
-		SQL_CONNECTION_FUNC_GUARDED(
-			fdriver.disconnect(fconnection); fconnection=0; 
-		);
+		fdriver.disconnect(fconnection); fconnection=0; 
 	}
 	void commit() { 
 		SQL_CONNECTION_FUNC_GUARDED(
