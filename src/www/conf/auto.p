@@ -36,11 +36,6 @@ $CTYPE[
 ]
 
 
-$SQL[
-	$drivers[^table:set{protocol	driver	client
-mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll	Y:\parser3\src\sql\mysql\mySQL32\lib\opt\libmySQL.dll
-}]
-]
 $MAIL[
 	$SMTP[mail.office.design.ru]
 #	$prog1[/usr/sbin/sendmail -t]
