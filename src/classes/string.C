@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/03/01 08:52:24 $";
+static const char * const IDENT_STRING_C="$Date: 2004/03/01 08:54:16 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -516,9 +516,14 @@ static void _trim(Request& r, MethodParams& params) {
 				&skind,
 				"'kind' should be one of "TRIM_START_OPTION", "TRIM_BOTH_OPTION", "TRIM_END_OPTION);
 
-		if(params.count()>1)
-			chars=params.as_string(1, 
-			"'chars' must be string").cstr();
+		if(params.count()>1) {
+			const String& schars=params.as_string(1, "'chars' must be string");
+			if(!schars.length())
+				throw Exception("parser.runtime",
+					0,
+					"'chars' must not be empty");
+			chars=schars.cstr();
+		}
 	}
 
 	r.write_assign_lang(src.trim(kind, chars));
