@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.61 2001/03/07 09:29:54 paf Exp $
+  $Id: compile.y,v 1.62 2001/03/07 09:47:39 paf Exp $
 */
 
 %{
@@ -385,10 +385,15 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 
 any_expr:
 	empty_double_value /* optimized $var() case */
-|	expr /* $var(something) */
+|	optimized_expr /* $var(something) */
 ;
+optimized_expr: expr {
+	if(($$=$1)->size()==2) { // only one string literal in there?
+		change_string_literal_to_double_literal($$); // make that string literal Double
+	}
+};
 expr: 
-	number
+	STRING
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
 |	'-' expr %prec NEG { $$=$2;  O($$, OP_NEG) }
@@ -435,19 +440,6 @@ complex_expr_value: complex_expr {
 write_str_literal: STRING {
 	$$=$1;
 	O($$, OP_WRITE);
-	/*
-					   
-					   if(SLA2S($1)->size()) {
-		$$=$1;
-		O($$, OP_WRITE);
-	} else {
-		// optimized case of special end of macro. see yylex
-		$$=N(POOL);
-	}
-	*/
-};
-number: STRING {
-	change_string_literal_to_double_literal($$=$1);
 };
 
 empty_double_value: /* empty */ { $$=VL(NEW VDouble(POOL)) };
@@ -656,13 +648,16 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 					switch(*PC->source) {
 //					case '?': // ok [and bad cases, yacc would bark at them]
 					case 't': // lt gt [et nt]
-						result=c=='l'?SLT:c=='g'?SGT:BAD_STRING_COMPARISON_OPERATOR; 
+						result=c=='l'?SLT:c=='g'?SGT:BAD_STRING_COMPARISON_OPERATOR;
+						skip_analized_char=true;
 						goto break2;
 					case 'e': // le ge ne [ee]
 						result=c=='l'?SLE:c=='g'?SGE:c=='n'?SNE:BAD_STRING_COMPARISON_OPERATOR;
+						skip_analized_char=true;
 						goto break2;
 					case 'q': // eq [lq gq nq]
 						result=c=='e'?SEQ:BAD_STRING_COMPARISON_OPERATOR;
+						skip_analized_char=true;
 						goto break2;
 					}
 				break;
