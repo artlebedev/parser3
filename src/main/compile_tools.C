@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.C,v 1.49 2002/04/18 11:41:29 paf Exp $
+	$Id: compile_tools.C,v 1.50 2002/06/10 14:13:08 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -32,9 +32,13 @@ Value *LA2V(Array *literal_string_array, int offset) {
 }
 
 void change_string_literal_to_double_literal(Array *literal_string_array) {
-	VString *vstring=static_cast<VString *>(literal_string_array->get(1));
-	Value *value=vstring->as_expr_result();
-	literal_string_array->put(1, value);
+	Operation op;
+	op.cast=literal_string_array->get(0);
+	if(op.code==OP_VALUE) {
+		VString *vstring=static_cast<VString *>(literal_string_array->get(1));
+		Value *value=vstring->as_expr_result();
+		literal_string_array->put(1, value);
+	}
 }
 void changetail_or_append(Array *opcodes, 
 						  OPCODE find, bool with_argument, OPCODE replace, OPCODE notfound) {

@@ -89,3 +89,6 @@
 [Mon Jun 10 17:32:02 2002] /index.cgihtml: user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml' [file.missing]
 [Mon Jun 10 17:42:27 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(168:1): parse error, expecting `'\"'' [parser.compile]
 [Mon Jun 10 17:47:08 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(165): ' 2 z' invalid number (double) [number.format]
+[Mon Jun 10 17:49:39 2002] /t.cgihtml: user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/t.cgihtml' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/t.cgihtml' [file.missing]
+[Mon Jun 10 17:49:40 2002] /t.cgihtml: user-request(0): 'c:/drives/y/parser3project/parser3/www/htdocs/t.cgihtml' read failed: No such file or directory (2), actual filename 'c:/drives/y/parser3project/parser3/www/htdocs/t.cgihtml' [file.missing]
+[Mon Jun 10 18:09:30 2002] /t.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/t.cgihtml(1:12): parse error, expecting `';'' or `'}'' [parser.compile]
