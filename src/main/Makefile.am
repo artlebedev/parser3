@@ -7,4 +7,4 @@ libmain_a_SOURCES = pa_common.C compile.tab.C compile.C compile_tools.C execute.
 compile.tab.C: compile.y
 	bison -v $< -o $@
 
-EXTRA_DIST = compile.y main.dsp
+EXTRA_DIST = compile.y main.vcproj

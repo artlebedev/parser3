@@ -1,6 +1,6 @@
 SUBDIRS = src etc bin
 
-EXTRA_DIST = operators.txt parser3.dsw 
+EXTRA_DIST = operators.txt parser3.sln
 
 update:
 	cvs update

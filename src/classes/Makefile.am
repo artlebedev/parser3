@@ -15,4 +15,4 @@ CLEANFILES = classes.inc
 
 classes.C: classes.inc
 
-EXTRA_DIST = classes.dsp
+EXTRA_DIST = classes.vcproj
