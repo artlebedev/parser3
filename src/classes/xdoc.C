@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2002/08/15 09:07:49 $";
+static const char* IDENT_XDOC_C="$Date: 2002/08/19 09:48:39 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -284,6 +284,73 @@ static void _createEntityReference(Request& r, const String& method_name, Method
 		pool.transcode(name).get(),
 		&exc);
 	writeNode(r, method_name, node, exc);
+}
+
+// NodeList getElementsByTagName(in DOMString name);
+static void _getElementsByTagName(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	const String& name=params->as_string(0, "name must be string");
+
+	VHash& result=*new(pool) VHash(pool);
+	GdomeException exc;
+	if(GdomeNodeList *nodes=
+		gdome_doc_getElementsByTagName(
+			vdoc.get_document(&method_name), 
+			pool.transcode(name).get(), 
+			&exc)) {
+		gulong length=gdome_nl_length(nodes, &exc);
+		for(gulong i=0; i<length; i++) {
+			String& skey=*new(pool) String(pool);
+			{
+				char *buf=(char *)pool.malloc(MAX_NUMBER);
+				snprintf(buf, MAX_NUMBER, "%d", i);
+				skey << buf;
+			}
+
+			result.hash(0).put(skey, new(pool) VXnode(pool, gdome_nl_item(nodes, i, &exc)));
+		}
+	} else if(exc)
+		throw Exception(
+			&method_name, 
+			exc);
+
+	// write out result
+	r.write_no_lang(result);
+}
+
+static void _getElementsByTagNameNS(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
+
+	// namespaceURI;localName
+	const String& namespaceURI=params->as_string(0, "namespaceURI must be string");
+	const String& localName=params->as_string(1, "localName must be string");
+
+	GdomeException exc;
+	VHash& result=*new(pool) VHash(pool);
+	if(GdomeNodeList *nodes=
+		gdome_doc_getElementsByTagNameNS(
+			vdoc.get_document(&method_name), 
+			pool.transcode(namespaceURI).get(),
+			pool.transcode(localName).get(),
+			&exc)) {
+		gulong length=gdome_nl_length(nodes, &exc);
+		for(gulong i=0; i<length; i++) {
+			String& skey=*new(pool) String(pool);
+			{
+				char *buf=(char *)pool.malloc(MAX_NUMBER);
+				snprintf(buf, MAX_NUMBER, "%d", i);
+				skey << buf;
+			}
+
+			result.hash(0).put(skey, new(pool) VXnode(pool, gdome_nl_item(nodes, i, &exc)));
+		}
+	}
+
+	// write out result
+	r.write_no_lang(result);
 }
 
 static void _getElementById(Request& r, const String& method_name, MethodParams *params) {
@@ -787,6 +854,8 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool, XDOC_CLASS_NAME, Xnode_class) {
 	add_native_method("createAttribute", Method::CT_DYNAMIC, _createAttribute, 1, 1);
 	// EntityReference createEntityReference(in DOMString name) raises(DOMException);
 	add_native_method("createEntityReference", Method::CT_DYNAMIC, _createEntityReference, 1, 1);
+	// NodeList getElementsByTagName(in DOMString name);
+	add_native_method("getElementsByTagName", Method::CT_DYNAMIC, _getElementsByTagName, 1, 1);
 
 	/// DOM2
 
@@ -795,6 +864,9 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool, XDOC_CLASS_NAME, Xnode_class) {
 
     // Node (in Node importedNode, in boolean deep) raises(DOMException)
 	add_native_method("importNode", Method::CT_DYNAMIC, _importNode, 2, 2);
+
+	// NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName);
+	add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
 
 	/// parser
 	
