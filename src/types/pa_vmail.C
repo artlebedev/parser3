@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2003/01/21 15:51:19 $";
+static const char* IDENT_VMAIL_C="$Date: 2003/02/24 15:21:31 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -579,15 +579,16 @@ static const String& text_value_to_string(Request& r, const String *source,
 	result << "\n"; 
 
 	// body
+	const String* body=0;
 	switch(pt) {
 	case P_TEXT:
-		result<<text_value->as_string();
+		body=&text_value->as_string();
 		break;
 	case P_HTML: 
 		{
 			Temp_lang temp_lang(r, String::UL_HTML | String::UL_OPTIMIZE_BIT);
 			if(Junction *junction=text_value->get_junction())
-				result << r.process_to_string(*text_value);
+				body=&r.process_to_string(*text_value);
 			else
 				throw Exception("parser.runtime",
 					source,
@@ -595,6 +596,16 @@ static const String& text_value_to_string(Request& r, const String *source,
 
 			break;
 		}
+	}
+	if(body) {
+		const char *body_ptr=body->cstr(String::UL_UNSPECIFIED);  // body
+		size_t body_size=strlen(body_ptr);  // body
+		const void *mail_ptr;
+		size_t mail_size;
+		Charset::transcode(pool, 
+			pool.get_source_charset(), body_ptr, body_size,
+			*info.charset/*always set - either mail.charset or $request:charset*/, mail_ptr, mail_size);
+		result.APPEND_CLEAN((const char*)mail_ptr, mail_size, 0, 0);
 	}
 
 	return result;
