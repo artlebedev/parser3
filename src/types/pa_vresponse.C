@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VRESPONSE_C="$Date: 2002/09/18 07:42:51 $";
+static const char* IDENT_VRESPONSE_C="$Date: 2002/10/25 08:05:05 $";
 
 #include "pa_vresponse.h"
 #include "pa_charsets.h"
@@ -23,7 +23,7 @@ Value *VResponse::get_element(const String& aname, Value *aself, bool looking_up
 		return result;
 	
 	// $field
-	return static_cast<Value *>(ffields.get(aname));
+	return static_cast<Value *>(ffields.get(aname.change_case(pool(), String::CC_LOWER)));
 }
 
 bool VResponse::put_element(const String& aname, Value *avalue, bool /*replace*/) { 
@@ -31,7 +31,7 @@ bool VResponse::put_element(const String& aname, Value *avalue, bool /*replace*/
 	if(aname==CHARSET_NAME)
 		pool().set_client_charset(charsets->get_charset(avalue->as_string()));
 	else
-		ffields.put(aname, avalue);
+		ffields.put(aname.change_case(pool(), String::CC_LOWER), avalue);
 
 	return true;
 }
