@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.52 2001/03/25 08:52:36 paf Exp $
+	$Id: pa_string.C,v 1.53 2001/03/29 15:00:22 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -14,6 +14,7 @@
 #include "pa_string.h"
 #include "pa_hash.h"
 #include "pa_exception.h"
+#include "pa_common.h"
 
 // String
 
@@ -30,7 +31,7 @@ String::String(Pool& apool, const char *src, bool tainted) :
 		if(tainted)
 			APPEND_TAINTED(src, 0, 0, 0);
 		else
-			APPEND(src, 0, 0, 0);
+			APPEND_CONST(src);
 }
 
 void String::expand() {
@@ -352,3 +353,37 @@ const Origin& String::origin() const {
 	return append_here[-1].item.origin; 
 }
 #endif
+
+String& String::piece(size_t start, size_t finish) const {
+	start=max(0, start);
+	finish=min(size(), finish);
+
+	String& result=*NEW String(pool());
+
+	size_t pos=0;
+	const Chunk *chunk=&head; 
+	do {
+		const Chunk::Row *row=chunk->rows;
+		for(int i=0; i<chunk->count; pos+=row->item.size, i++, row++) {
+			if(row==append_here)
+				goto break2;
+
+			if(start>=pos) { // started now or already?
+				size_t item_finish=pos+row->item.size;
+				bool started=start < item_finish; // started now?
+				bool finished=finish < item_finish; // finished now?
+				size_t offset=started?start-pos:0;
+				size_t size=finished?finish-pos:row->item.size;
+				result.APPEND(
+					row->item.ptr+offset, size-offset, 
+					row->item.lang,
+					row->item.origin.file, row->item.origin.line);
+				if(finished)
+					goto break2;
+			}
+		}
+		chunk=row->link;
+	} while(chunk);
+break2:
+	return result;
+}

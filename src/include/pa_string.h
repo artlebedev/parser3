@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.53 2001/03/25 10:14:38 paf Exp $
+	$Id: pa_string.h,v 1.54 2001/03/29 15:00:20 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -31,26 +31,26 @@
 		const char *src, size_t size,  \
 		String::Untaint_lang lang, \
 		const char *file, uint line
-/// appends clean piece to String  @see String::real_append
-#	define APPEND(src, size, file, line) \
-	real_append(src, size, String::UL_NO, file, line)
-/// appends tainted piece to String  @see String::real_append
-#	define APPEND_TAINTED(src, size, file, line) \
-	real_append(src, size, String::UL_YES, file, line)
+/// appends piece to String  @see String::real_append
+#	define APPEND(src, size, lang, file, line) \
+		real_append(src, size, lang, file, line)
 #else
 #	define STRING_APPEND_PARAMS \
 		const char *src, \
 		size_t size, \
 		String::Untaint_lang lang
-/// appends clean piece to String  @see String::real_append
-#	define APPEND(src, size, file, line) \
-	real_append(src, size, String::UL_NO)
-/// appends tainted piece to String  @see String::real_append
-#	define APPEND_TAINTED(src, size, file, line) \
-	real_append(src, size, String::UL_YES)
+/// appends piece to String  @see String::real_append
+#	define APPEND(src, size, lang, file, line) \
+		real_append(src, size, lang)
 #endif
+/// appends clean piece to String  @see String::real_append
+#define APPEND_CLEAN(src, size, file, line) \
+	APPEND(src, size, String::UL_NO, file, line)
+/// appends tainted piece to String  @see String::real_append
+#define APPEND_TAINTED(src, size, file, line) \
+	APPEND(src, size, String::UL_YES, file, line)
 /// handy: appends const char* piece to String  @see String::real_append
-#define	APPEND_CONST(src) APPEND(src, 0, 0, 0)
+#define	APPEND_CONST(src) APPEND_CLEAN(src, 0, 0, 0)
 
 /** 
 	Pooled string.
@@ -115,7 +115,7 @@ public:
 		return result;
 	}
 	/** append fragment
-		@see APPEND, APPEND_TAINTED, APPEND_CONST
+		@see APPEND_CLEAN, APPEND_TAINTED, APPEND_CONST
 	*/
 	String& real_append(STRING_APPEND_PARAMS);
 	/// @return <0 ==0 or >0 depending on comparison result
@@ -158,6 +158,9 @@ public:
 
 	/// simple hash code of string. used by Hash
 	uint hash_code() const;
+
+	/// extracts [start, finish) piece of string
+	String& piece(size_t start, size_t finish) const;
 
 #ifndef NO_STRING_ORIGIN
 	/// origin of string. calculated by first row

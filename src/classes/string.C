@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.14 2001/03/29 09:31:42 paf Exp $
+	$Id: string.C,v 1.15 2001/03/29 15:00:19 paf Exp $
 */
 
 #include "pa_request.h"
@@ -19,7 +19,7 @@ VStateless_class *string_class;
 
 static void _length(Request& r, const String&, Array *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VDouble(pool, r.self->as_string().size());
+	Value& value=*new(pool) VDouble(pool, r.self->get_string()->size());
 	r.write_no_lang(value);
 }
 
@@ -48,6 +48,34 @@ void _string_format(Request& r, const String& method_name, Array *params) {
 	r.write_no_lang(String(pool, buf));
 }
 
+void _left(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
+	
+	const String& string=*static_cast<VString *>(r.self)->get_string();
+	r.write_assign_lang(*new(pool) VString(string.piece(0, n)));
+}
+
+void _right(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
+	
+	const String& string=*static_cast<VString *>(r.self)->get_string();
+	r.write_assign_lang(*new(pool) VString(string.piece(string.size()-n, string.size())));
+}
+
+void _mid(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	size_t p=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
+	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(1))).as_double();
+	
+	const String& string=*static_cast<VString *>(r.self)->get_string();
+	r.write_assign_lang(*new(pool) VString(string.piece(p, p+n)));
+}
+
 // initialize
 
 void initialize_string_class(Pool& pool, VStateless_class& vclass) {
@@ -63,7 +91,11 @@ void initialize_string_class(Pool& pool, VStateless_class& vclass) {
 	// ^string.format[]
 	vclass.add_native_method("format", _string_format, 1, 1);
 
-	// ^string.toupper[]
-	//vclass.add_native_method("toupper", _toupper, 0, 0);
+	// ^string.left(n)
+	vclass.add_native_method("left", _left, 1, 1);
+	// ^string.right(n)
+	vclass.add_native_method("right", _right, 1, 1);
+	// ^string.mid(p;n)
+	vclass.add_native_method("mid", _mid, 2, 2);
 }	
 

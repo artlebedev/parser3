@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.120 2001/03/29 09:31:43 paf Exp $
+	$Id: compile.y,v 1.121 2001/03/29 15:00:21 paf Exp $
 */
 
 /**
@@ -588,7 +588,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case '"': 
 				if(end!=begin) {
 					// append piece till ^
-					PC.string->APPEND(begin, end-begin, PC.file, begin_line);
+					PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
 				}
 				// reset piece 'begin' position & line
 				begin=PC.source; // ^
@@ -602,7 +602,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case '#':
 				if(end!=begin) {
 					// append piece till ^
-					PC.string->APPEND(begin, end-begin, PC.file, begin_line);
+					PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
 				}
 				// #HH ?
 				if(PC.source[0]=='#' && PC.source[1] && PC.source[2]) {
@@ -615,7 +615,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 						goto break2; // wrong hex value[no ^#00 chars allowed]: bail out
 					}
 					// append char(hex(HH))
-					PC.string->APPEND(hex, 1, PC.file, begin_line);
+					PC.string->APPEND_CLEAN(hex, 1, PC.file, begin_line);
 					// skip over ^#HH
 					PC.source+=3;
 					PC.col+=3;
@@ -630,7 +630,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		if(c=='#' && PC.col==1) {
 			if(end!=begin) {
 				// append piece till #
-				PC.string->APPEND(begin, end-begin, PC.file, begin_line);
+				PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
 			}
 			// fall into COMMENT lexical state [wait for \n]
 			push_LS(PC, LS_COMMENT);
@@ -1056,7 +1056,7 @@ break2:
 		}
 		if(end!=begin) { // last piece still alive?
 			// append it
-			PC.string->APPEND(begin, end-begin, PC.file, begin_line/*, start_col*/);
+			PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line/*, start_col*/);
 		}
 	}
 	if(PC.string->size()) { // something accumulated?

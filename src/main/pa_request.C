@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.87 2001/03/29 08:34:48 paf Exp $
+	$Id: pa_request.C,v 1.88 2001/03/29 15:00:22 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -106,7 +106,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// loading root auto.p 
 		if(root_auto_path) {
 			String& filespec=*NEW String(pool());
-			filespec.APPEND(root_auto_path, 0, "root_auto", 0);
+			filespec.APPEND_CLEAN(root_auto_path, 0, "root_auto", 0);
 			filespec.APPEND_CONST("/" AUTO_FILE_NAME);
 			main_class=use_file(
 				filespec, root_auto_fail,
@@ -131,7 +131,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// loading site auto.p
 		if(site_auto_path) {
 			String& filespec=*NEW String(pool());
-			filespec.APPEND(site_auto_path, 0, "site_auto", 0);
+			filespec.APPEND_CLEAN(site_auto_path, 0, "site_auto", 0);
 			filespec.APPEND_CONST("/" AUTO_FILE_NAME);
 			main_class=use_file(
 				filespec, site_auto_fail,
@@ -167,7 +167,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 					append_here++/* / */;
 
 					String& sfile_spec=*NEW String(pool());
-					sfile_spec.APPEND(file_spec, 0, "scanned", 0);
+					sfile_spec.APPEND_CLEAN(file_spec, 0, "scanned", 0);
 					main_class=use_file(sfile_spec, false/*ignore read problem*/,
 						main_class_name, main_class);
 				} else
@@ -177,7 +177,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 		// compiling requested file
 		String& spath_translated=*NEW String(pool());
-		spath_translated.APPEND(info.path_translated, 0, "user-request", 0);
+		spath_translated.APPEND_CLEAN(info.path_translated, 0, "user-request", 0);
 		main_class=use_file(spath_translated, true/*don't ignore read problem*/,
 			main_class_name, main_class);
 

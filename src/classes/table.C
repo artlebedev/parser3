@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.37 2001/03/28 09:01:20 paf Exp $
+	$Id: table.C,v 1.38 2001/03/29 15:00:19 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -63,7 +63,7 @@ static void set_or_load(
 		if(char *row_chars=getrow(&data)) 
 			do {
 				String *name=new(pool) String(pool);
-				name->APPEND(lsplit(&row_chars, '\t'), 0, file, line++);
+				name->APPEND_CLEAN(lsplit(&row_chars, '\t'), 0, file, line++);
 				*columns+=name;
 			} while(row_chars);
 	}
@@ -77,7 +77,7 @@ static void set_or_load(
 		Array *row=new(pool) Array(pool);
 		while(char *cell_chars=lsplit(&row_chars, '\t')) {
 			String *cell=new(pool) String(pool);
-			cell->APPEND(cell_chars, 0, file, line);
+			cell->APPEND_CLEAN(cell_chars, 0, file, line);
 			*row+=cell;
 		}
 		line++;

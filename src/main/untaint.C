@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.26 2001/03/29 08:34:48 paf Exp $
+	$Id: untaint.C,v 1.27 2001/03/29 15:00:22 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -80,7 +80,7 @@ char *String::store_to(char *dest) const {
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(int i=0; i<chunk->count; i++) {
+		for(int i=0; i<chunk->count; i++, row++) {
 			if(row==append_here)
 				goto break2;
 
@@ -230,7 +230,6 @@ char *String::store_to(char *dest) const {
 						static_cast<int>(row->item.lang), 
 						i);
 			}
-			row++;
 		}
 		chunk=row->link;
 	} while(chunk);
