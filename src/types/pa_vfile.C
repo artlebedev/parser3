@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.12 2001/04/09 10:08:33 paf Exp $
+	$Id: pa_vfile.C,v 1.13 2001/04/09 11:30:44 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -14,7 +14,8 @@
 #include "pa_vstring.h"
 #include "pa_vint.h"
 
-void VFile::set(const void *avalue_ptr, size_t avalue_size,
+void VFile::set(bool tainted, 
+				const void *avalue_ptr, size_t avalue_size,
 				const char *afile_name,
 				const String *mime_type) {
 	fvalue_ptr=avalue_ptr;
@@ -37,8 +38,9 @@ void VFile::set(const void *avalue_ptr, size_t avalue_size,
 	String& text=*NEW String(pool());
 	char *premature_zero_pos=(char *)memchr(fvalue_ptr, 0, fvalue_size);
 	if(premature_zero_pos!=fvalue_ptr)
-		text.APPEND_TAINTED((char *)fvalue_ptr, 
+		text.APPEND((char *)fvalue_ptr, 
 			premature_zero_pos?premature_zero_pos-(char *)fvalue_ptr:fvalue_size, 
+			tainted? String::UL_TAINTED : String::UL_CLEAN,
 			"user <input type=file>", 0);
 	ffields.put(*text_name, NEW VString(text));
 	// $mime-type

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.21 2001/04/09 09:48:30 paf Exp $
+	$Id: pa_vform.C,v 1.22 2001/04/09 11:30:44 paf Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
@@ -162,7 +162,7 @@ void VForm::AppendFormEntry(const char *aname,
 	Value *value;
 	if(file_name) {
 		VFile *vfile=NEW VFile(pool());
-		vfile->set(value_ptr, value_size, file_name);
+		vfile->set(true/*tainted*/, value_ptr, value_size, file_name);
 		value=vfile;
 	} else {
 		String& string=*NEW String(pool());

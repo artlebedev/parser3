@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.50 2001/04/09 10:08:31 paf Exp $
+	$Id: pa_globals.C,v 1.51 2001/04/09 11:30:40 paf Exp $
 */
 
 #include "pcre.h"
@@ -24,7 +24,6 @@
 #include "_random.h"
 #include "pa_sql_driver_manager.h"
 #include "_mail.h"
-#include "_exec.h"
 
 String *html_typo_name;
 String *content_type_name;
@@ -59,7 +58,6 @@ String *response_class_name;
 String *cookie_class_name;
 String *random_class_name;
 String *mail_class_name;
-String *exec_class_name;
 
 String *result_var_name;
 String *string_pre_match_name;
@@ -158,7 +156,6 @@ void pa_globals_init(Pool& pool) {
 	cookie_class_name=NEW String(pool, COOKIE_CLASS_NAME);
 	random_class_name=NEW String(pool, RANDOM_CLASS_NAME);
 	mail_class_name=NEW String(pool, MAIL_CLASS_NAME);
-	exec_class_name=NEW String(pool, EXEC_CLASS_NAME);
 
 	result_var_name=NEW String(pool, RESULT_VAR_NAME);
 	string_pre_match_name=NEW String(pool, STRING_PRE_MATCH_NAME);
@@ -262,7 +259,6 @@ void pa_globals_init(Pool& pool) {
 	initialize_response_class(pool, *(response_class=NEW VStateless_class(pool)));
 	initialize_random_class(pool, *(random_class=NEW VStateless_class(pool)));
 	initialize_mail_class(pool, *(mail_class=NEW VStateless_class(pool)));
-	initialize_exec_class(pool, *(exec_class=NEW VStateless_class(pool)));
 
 	// stateless base classes
 	initialize_form_base_class(pool, *(form_base_class=NEW VStateless_class(pool)));  form_base_class->set_name(*form_class_name);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.106 2001/04/09 10:08:31 paf Exp $
+	$Id: pa_request.C,v 1.107 2001/04/09 11:30:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -83,8 +83,6 @@ Request::Request(Pool& apool,
 	classes().put(*cookie_class_name, &cookie);
 	// mail class
 	classes().put(*mail_class_name, mail_class);
-	// exec class
-	classes().put(*exec_class_name, exec_class);
 }
 
 /**

@@ -429,10 +429,6 @@ SOURCE=..\classes\_double.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\classes\_exec.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\classes\_file.h
 # End Source File
 # Begin Source File
@@ -470,10 +466,6 @@ SOURCE=..\classes\_table.h
 # Begin Source File
 
 SOURCE=..\classes\double.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\exec.C
 # End Source File
 # Begin Source File
 

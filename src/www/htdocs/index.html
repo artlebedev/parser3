@@ -31,7 +31,8 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
-^exec:cgi[env.pl]
+$e[^file:cgi[env.pl]]
+$e.text
 <HR>
 
 ^rem{^mail:send[

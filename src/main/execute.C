@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.142 2001/04/09 10:08:30 paf Exp $
+	$Id: execute.C,v 1.143 2001/04/09 11:30:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -177,7 +177,7 @@ void Request::execute(const Array& ops) {
 				if(!value) 
 					THROW(0,0,
 						&name,
-						"class undefined"); 
+						"class is undefined"); 
 
 				PUSH(value);
 				break;
