@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2002/09/12 08:37:32 $";
+static const char* IDENT_UNTAINT_C="$Date: 2002/09/12 08:48:26 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -414,7 +414,9 @@ char *String::store_to(char *dest, Untaint_lang lang,
 						if(*tail=='<')
 							break;
 				}
-				const char *stop=*tail--=='<'?tail:0;
+				const char *stop=*tail=='<'?tail:0;
+				while(stop>src && stop[-1]==' ')
+					--stop;
 
 				bool closed=false;
 				for(int size=mail_size; size--; src++) {
