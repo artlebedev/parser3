@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.61 2001/04/02 15:59:35 paf Exp $
+	$Id: pa_string.h,v 1.62 2001/04/03 05:23:40 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -45,12 +45,14 @@
 #endif
 /// appends clean piece to String  @see String::real_append
 #define APPEND_CLEAN(src, size, file, line) \
-	APPEND(src, size, String::UL_NO, file, line)
+	APPEND(src, size, String::UL_CLEAN, file, line)
 /// appends tainted piece to String  @see String::real_append
 #define APPEND_TAINTED(src, size, file, line) \
-	APPEND(src, size, String::UL_YES, file, line)
+	APPEND(src, size, String::UL_TAINTED, file, line)
 /// handy: appends const char* piece to String  @see String::real_append
 #define	APPEND_CONST(src) APPEND_CLEAN(src, 0, 0, 0)
+
+class Array;
 
 /** 
 	Pooled string.
@@ -83,8 +85,8 @@ public:
 	/// piece is tainted or not. the language to use when detaint 
 	enum Untaint_lang {
 		UL_UNKNOWN=0, ///< zero value handy for hash lookup @see untaint_lang_name2enum
-		UL_NO, ///< clean
-		UL_YES,  ///< tainted, untaint language as assigned later 
+		UL_CLEAN, ///< clean
+		UL_TAINTED,  ///< tainted, untaint language as assigned later 
 		// untaint languages. assigned by ^untaint[lang]{...}
 		UL_PASS_APPENDED,
 			/**<
@@ -119,7 +121,8 @@ public:
 	*/
 	String& real_append(STRING_APPEND_PARAMS);
 	/// @return <0 ==0 or >0 depending on comparison result
-	int cmp (int& partial, const String& src, size_t this_offset=0) const;
+	int cmp (int& partial, const String& src, 
+		size_t this_offset=0, Untaint_lang lang=UL_UNKNOWN) const;
 	bool operator < (const String& src) const {	int p; return cmp(p, src)<0; }
 	bool operator > (const String& src) const {	int p; return cmp(p, src)>0; }
 	bool operator <= (const String& src) const { int p; return cmp(p, src)<=0; }
@@ -140,7 +143,7 @@ public:
 			-  2: means @src starts @this
 	*/
 	int cmp(int& partial, const char* src_ptr, size_t src_size=0, 
-		size_t this_offset=0) const;
+		size_t this_offset=0, Untaint_lang lang=UL_UNKNOWN) const;
 	bool operator == (const char* src_ptr) const { 
 		size_t src_size=src_ptr?strlen(src_ptr):0;
 		if(size() != src_size)
@@ -164,9 +167,21 @@ public:
 	String& piece(size_t start, size_t finish) const;
 
 	/// @return position of substr in string, -1 means "not found" [String version]
-	int pos(const String& substr, size_t this_offset=0) const;
+	int pos(const String& substr, 
+		size_t this_offset=0, Untaint_lang lang=UL_UNKNOWN) const;
 	/// @return position of substr in string, -1 means "not found" [const char* version]
-	int pos(const char *substr, size_t result) const;
+	int pos(const char *substr, size_t substr_size, 
+		size_t this_offset=0, Untaint_lang lang=UL_UNKNOWN) const;
+
+	void split(Array& result, 
+		size_t *pos_after_ref, 
+		const char *delim, size_t delim_size, 
+		Untaint_lang lang, int limit=-1) const;
+	void split(Array& result, 
+		size_t *pos_after_ref, 
+		const String& delim, 
+		Untaint_lang lang, int limit=-1) const;
+
 
 #ifndef NO_STRING_ORIGIN
 	/// origin of string. calculated by first row
@@ -218,7 +233,6 @@ private:
 		return append_here == link_row;
 	}
 	void expand();
-	void set_lang(Chunk::Row *row, Untaint_lang lang, bool forced, size_t size);
 	char *String::store_to(char *dest) const;
 
 private: //disabled

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.135 2001/04/02 09:29:19 paf Exp $
+	$Id: execute.C,v 1.136 2001/04/03 05:23:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -374,7 +374,7 @@ void Request::execute(const Array& ops) {
 						else // stateful object
 							self=NEW VObject(pool(), *called_class);
 						frame->write(*self, 
-							String::UL_NO  // not used, always an object, not string
+							String::UL_CLEAN  // not used, always an object, not string
 						);
 					} else 
 						self=&frame->junction.self; // no, static or simple dynamic call

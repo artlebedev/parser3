@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.73 2001/03/29 08:34:47 paf Exp $
+	$Id: pa_request.h,v 1.74 2001/04/03 05:23:40 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -104,7 +104,7 @@ public:
 
 	/// appending, sure of clean string inside
 	void write_no_lang(const String& astring) {
-		wcontext->write(astring, String::UL_NO);
+		wcontext->write(astring, String::UL_CLEAN);
 	}
 	/// appending string, passing language built into string being written
 	void write_pass_lang(const String& astring) {
@@ -120,7 +120,7 @@ public:
 	}
 	/// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
-		wcontext->write(avalue, String::UL_NO);
+		wcontext->write(avalue, String::UL_CLEAN);
 	}
 	/// appending sure value, not VString
 	void write_expr_result(Value& avalue) {

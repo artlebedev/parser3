@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.14 2001/03/30 05:51:12 paf Exp $
+	$Id: file.C,v 1.15 2001/04/03 05:23:36 paf Exp $
 */
 
 #include "pa_request.h"
@@ -80,7 +80,7 @@ static void _find(Request& r, const String& method_name, Array *params) {
 		String test_name(pool);
 		for(int j=0; j<i; j++)
 			test_name.APPEND_CONST("../");
-		test_name.append(lfile_name, String::UL_NO);
+		test_name.append(lfile_name, String::UL_CLEAN);
 		if(file_readable(r.absolute(test_name))) {
 			r.write_no_lang(*new(pool) VString(*new(pool) String(test_name)));
 			return;

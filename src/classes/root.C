@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.53 2001/03/30 05:51:12 paf Exp $
+	$Id: root.C,v 1.54 2001/04/03 05:23:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -59,22 +59,26 @@ static void _untaint(Request& r, const String& method_name, Array *params) {
 }
 
 static void _taint(Request& r, const String& method_name, Array *params) {
-	const String& lang_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
-	String::Untaint_lang lang=static_cast<String::Untaint_lang>(
-		untaint_lang_name2enum->get_int(lang_name));
-	if(!lang)
-		RTHROW(0, 0,
+	String::Untaint_lang lang;
+	if(params->size()==1)
+		lang=String::UL_TAINTED; // mark as simply 'tainted'. useful in table:set
+	else {
+		const String& lang_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
+		lang=static_cast<String::Untaint_lang>(
+			untaint_lang_name2enum->get_int(lang_name));
+		if(!lang)
+			RTHROW(0, 0,
 			&lang_name,
 			"invalid taint language");
+	}
 
 	{
-		Value *vbody=static_cast<Value *>(params->get(1));
-		// forcing ^untaint[]{this param type}
-		r.fail_if_junction_(true, *vbody, 
-			method_name, "body must not be junction");
+		Value *vbody=static_cast<Value *>(params->get(params->size()-1));
+		// forcing {this param type}
+		r.fail_if_junction_(true, *vbody, method_name, "body must not be junction");
 		
 		// set temporarily as-is language
-		Temp_lang temp_lang(r, String::UL_AS_IS);
+		Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 		String result(r.pool());
 		result.append(
 			r.process(*vbody).as_string(),  // process marking tainted with that lang
@@ -274,7 +278,7 @@ void initialize_root_class(Pool& pool, VStateless_class& vclass) {
 	vclass.add_native_method("untaint", Method::CT_ANY, _untaint, 2, 2);
 
 	// ^taint[as-is|uri|sql|js|html|html-typo]{code}
-	vclass.add_native_method("taint", Method::CT_ANY, _taint, 2, 2);
+	vclass.add_native_method("taint", Method::CT_ANY, _taint, 1, 2);
 
 	// ^process[code]
 	vclass.add_native_method("process", Method::CT_ANY, _process, 1, 1);

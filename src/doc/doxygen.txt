@@ -1,5 +1,5 @@
 /** @mainpage
-@todo contents
+@test contents
 
 @section Compiler Compiler
 @section Executor Executor

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.28 2001/03/29 16:12:46 paf Exp $
+	$Id: untaint.C,v 1.29 2001/04/03 05:23:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -71,7 +71,7 @@ static bool typo_present(Array::Item *value, const void *info) {
 		partial==1; // typo left column starts 'src'
 }
 
-/// @todo @b now: optimize whitespaces for all but 'html'
+/// @test optimize whitespaces for all but 'html'
 char *String::store_to(char *dest) const {
 	// $MAIN:html-typo table
 	Table *user_typo_table=static_cast<Table *>(pool().tag());
@@ -87,9 +87,9 @@ char *String::store_to(char *dest) const {
 			// WARNING:
 			//	string can grow only UNTAINT_TIMES_BIGGER
 			switch(row->item.lang) {
-			case UL_NO:
+			case UL_CLEAN:
 				// clean piece
-			case UL_YES:
+			case UL_TAINTED:
 				// tainted piece, but undefined untaint language
 				// for VString.as_double of tainted values
 				// for ^process{body} evaluation

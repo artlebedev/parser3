@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.22 2001/03/30 05:51:12 paf Exp $
+	$Id: string.C,v 1.23 2001/04/03 05:23:37 paf Exp $
 */
 
 #include "pa_request.h"
@@ -88,28 +88,15 @@ static void _pos(Request& r, const String& method_name, Array *params) {
 }
 
 static void split_list(Request& r, const String& method_name, Array *params,
-					   const String& string, Array& list) {
+					   const String& string, 
+					   Array& result) {
 	Pool& pool=r.pool();
 
 	Value& delim_value=*static_cast<Value *>(params->get(0));
 	// forcing [this param type]
 	r.fail_if_junction_(true, delim_value, method_name, "delimiter must not be junction");
-	const String& delim=delim_value.as_string();
-	
-	if(delim.size()) {
-		size_t pos_after=0;
-		int pos_before;
-		// while we have 'delim' in 'string'...
-		while((pos_before=string.pos(delim, pos_after))>=0) {
-			list+=&string.piece(pos_after, pos_before);
-			pos_after=pos_before+delim.size();
-		}
-		// last piece
-		if(pos_after<string.size()) 
-			list+=&string.piece(pos_after, string.size());
-	} else { // empty delim
-		list+=&string;
-	}
+
+	string.split(result, 0, delim_value.as_string(), String::UL_CLEAN, -1);
 }
 
 static void _lsplit(Request& r, const String& method_name, Array *params) {

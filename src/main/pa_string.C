@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.59 2001/04/02 15:59:56 paf Exp $
+	$Id: pa_string.C,v 1.60 2001/04/03 05:23:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,6 +15,10 @@
 #include "pa_hash.h"
 #include "pa_exception.h"
 #include "pa_common.h"
+#include "pa_array.h"
+#include "pa_globals.h"
+
+//#include "pa_sapi.h"
 
 // String
 
@@ -103,85 +107,23 @@ String::String(const String& src) :	Pooled(src.pool()) {
 }
 
 String& String::append(const String& src, Untaint_lang lang, bool forced) {
-	size_t src_used_rows=src.fused_rows;
-	size_t dst_free_rows=link_row-append_here;
-	
-	if(src_used_rows<=dst_free_rows) {
-		// all new rows fit size_to last chunk
-		memcpy(append_here, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
-		set_lang(append_here, lang, forced, src_used_rows);
-		append_here+=src_used_rows;
-	} else {
-		// not all new rows fit size_to last chunk: shrinking it to used part,
-		size_t used_rows=last_chunk->count-dst_free_rows;
-		//size_t *countp=append_here
-		link_row=&last_chunk->rows[last_chunk->count=used_rows];
-		//   allocating only enough mem to fit src string rows
-		//   next append would allocate a new chunk
-		last_chunk=static_cast<Chunk *>(
-			malloc(sizeof(size_t)+sizeof(Chunk::Row)*src_used_rows+sizeof(Chunk *)));
-		last_chunk->count=src_used_rows;
-		link_row->link=last_chunk;
-		append_here=link_row=&last_chunk->rows[src_used_rows];
-
-		const Chunk *old_chunk=&src.head; 
-		Chunk::Row *new_rows=last_chunk->rows;
-		size_t rows_left_to_copy=src_used_rows;
-		while(true) {
-			size_t old_count=old_chunk->count;
-			Chunk *next_chunk=old_chunk->rows[old_count].link;
-			if(next_chunk) {
-				// not last source chunk
-				// taking it all
-				memcpy(new_rows, old_chunk->rows, sizeof(Chunk::Row)*old_count);
-				set_lang(new_rows, lang, forced, old_count);
-				new_rows+=old_count;
-				rows_left_to_copy-=old_count;
-
-				old_chunk=next_chunk;
-			} else {
-				// the last source chunk
-				// taking only those rows of chunk that _left_to_copy
-				memcpy(new_rows, old_chunk->rows, sizeof(Chunk::Row)*rows_left_to_copy);
-				set_lang(new_rows, lang, forced, rows_left_to_copy);
-				break;
-			}
-		}
-		link_row->link=0;
-	}
-	fused_rows+=src_used_rows;
-	fsize+=src.fsize;
-
-	return *this;
-}
-void String::set_lang(Chunk::Row *row, Untaint_lang lang, bool forced, size_t size) {
-	if(lang==UL_PASS_APPENDED)
-		return;
-
-	while(size--) {
-		Untaint_lang& item_lang=(row++)->item.lang;
-		if(item_lang==UL_YES || forced) // tasize_ted? need untasize_t language assignment
-			item_lang=lang;  // assign untasize_t language
-	}
-}
-
-/*void String::change_lang(Untaint_lang lang) {
-	Chunk *chunk=&head; 
+	const Chunk *chunk=&src.head; 
 	do {
-		Chunk::Row *row=chunk->rows;
-		for(size_t i=0; i<chunk->count; i++) {
-			if(row==append_here)
+		const Chunk::Row *row=chunk->rows;
+		for(size_t i=0; i<chunk->count; i++, row++) {
+			if(row==src.append_here)
 				goto break2;
-
-			row->item.lang=lang;
-			row++;
+			
+			APPEND(row->item.ptr, row->item.size, 
+				(lang!=UL_PASS_APPENDED && (row->item.lang==UL_TAINTED || forced))?lang:row->item.lang,
+				row->item.origin.file, row->item.origin.line);
 		}
 		chunk=row->link;
 	} while(chunk);
 break2:
-	return;
+	return *this;
 }
-*/
+
 String& String::real_append(STRING_APPEND_PARAMS) {
 	if(!src)
 		return *this;
@@ -224,7 +166,9 @@ break2:
 	return result;
 }
 
-int String::cmp(int& partial, const String& src, size_t this_offset) const {
+/// @todo move 'lang' skipping to pos
+int String::cmp(int& partial, const String& src, 
+				size_t this_offset, Untaint_lang lang) const {
 	partial=-1;
 	this_offset=min(this_offset, size()-1);
 
@@ -241,44 +185,55 @@ int String::cmp(int& partial, const String& src, size_t this_offset) const {
 	bool a_break=false;
 	bool b_break=false;
 	size_t result;
-	for(size_t pos=0; true; pos+=a_row->item.size) {
+	size_t pos=0; 
+	while(true) {
 		a_break=a_row==a_end;
 		b_break=b_row==b_end;
 		if(a_break || b_break)
 			break;
 
 		if(pos+a_row->item.size > this_offset) {
+			if(lang!=UL_UNKNOWN && a_row->item.lang!=lang) 
+				return -1; // wrong lang -- bail out
+
 			int size_diff=
 				(a_row->item.size-a_offset)-
 				(b_row->item.size-b_offset);
 			
 			if(size_diff==0) { // a has same size as b
-				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset);
+				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, 
+					a_row->item.size-a_offset);
 				if(result)
 					return result;
+				pos+=a_row->item.size;
 				a_row++; a_countdown--; a_offset=0;
 				b_row++; b_countdown--; b_offset=0;
 			} else if (size_diff>0) { // a longer
-				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, b_row->item.size-b_offset);
+				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, 
+					b_row->item.size-b_offset);
 				if(result)
 					return result;
 				a_offset+=b_row->item.size-b_offset;
 				b_row++; b_countdown--; b_offset=0;
 			} else { // b longer
-				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset);
+				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, 
+					a_row->item.size-a_offset);
 				if(result)
 					return result;
 				b_offset+=a_row->item.size-a_offset;
+				pos+=a_row->item.size;
 				a_row++; a_countdown--; a_offset=0;
 			}
-
+			
 			if(!b_countdown) {
 				b_chunk=b_row->link;
 				b_row=b_chunk->rows;
 				b_countdown=b_chunk->count;
 			}
 		} else {
-			a_row++; a_countdown--; a_offset-=a_row->item.size;
+			a_offset-=a_row->item.size;
+			pos+=a_row->item.size;
+			a_row++; a_countdown--; 
 		}
 
 		if(!a_countdown) {
@@ -296,8 +251,9 @@ int String::cmp(int& partial, const String& src, size_t this_offset) const {
 	}
 }
 
+/// @todo move 'lang' skipping to pos
 int String::cmp(int& partial, const char* b_ptr, size_t src_size, 
-				size_t this_offset) const {
+				size_t this_offset, Untaint_lang lang) const {
 	partial=-1;
 	size_t b_size=src_size?src_size:b_ptr?strlen(b_ptr):0;
 	this_offset=min(this_offset, size()-1);
@@ -310,12 +266,16 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 	size_t a_countdown=a_chunk->count;
 	bool a_break=false;
 	bool b_break=false;
-	for(size_t pos=0; true; pos+=a_row->item.size) {
+	size_t pos=0;
+	while(true) {
 		a_break=a_row==a_end;
 		if(a_break || b_break)
 			break;
 
 		if(pos+a_row->item.size > this_offset) {
+			if(lang!=UL_UNKNOWN && a_row->item.lang!=lang) 
+				return -1; // wrong lang -- bail out
+
 			int size_diff=
 				(a_row->item.size-a_offset)-
 				(b_size-b_offset);
@@ -324,6 +284,7 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 				if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
 					a_row->item.size-a_offset)!=0)
 					return result;
+				pos+=a_row->item.size;
 				a_row++; a_countdown--; a_offset=0;
 				b_break=true;
 			} else if (size_diff>0) { // a longer
@@ -337,10 +298,13 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 					a_row->item.size-a_offset)!=0)
 					return result;
 				b_offset+=a_row->item.size-a_offset;
+				pos+=a_row->item.size;
 				a_row++; a_countdown--; a_offset=0;
 			}
 		} else {
-			a_row++; a_countdown--; a_offset-=a_row->item.size;
+			a_offset-=a_row->item.size; 
+			pos+=a_row->item.size;
+			a_row++; a_countdown--; 
 		}
 
 		if(!a_countdown) {
@@ -375,6 +339,8 @@ const Origin& String::origin() const {
 String& String::piece(size_t start, size_t finish) const {
 	start=max(0, start);
 	finish=min(size(), finish);
+	if(start==finish)
+		return *empty_string;
 
 	String& result=*NEW String(pool());
 
@@ -386,10 +352,10 @@ String& String::piece(size_t start, size_t finish) const {
 			if(row==append_here)
 				goto break2;
 
-			if(start>=pos) { // started now or already?
-				size_t item_finish=pos+row->item.size;
-				bool started=start < item_finish; // started now?
-				bool finished=finish < item_finish; // finished now?
+			size_t item_finish=pos+row->item.size;
+			if(item_finish > start) { // started now or already?
+				bool started=result.size()==0; // started now?
+				bool finished=finish <= item_finish; // finished now?
 				size_t offset=started?start-pos:0;
 				size_t size=finished?finish-pos:row->item.size;
 				result.APPEND(
@@ -403,12 +369,15 @@ String& String::piece(size_t start, size_t finish) const {
 		chunk=row->link;
 	} while(chunk);
 break2:
+//	SAPI::log(pool(), "piece of '%s' from %d to %d is '%s'",
+		//cstr(), start, finish, result.cstr());
 	return result;
 }
 
-int String::pos(const String& substr, size_t result) const {
+int String::pos(const String& substr, 
+				size_t result, Untaint_lang lang) const {
 	for(; result<size(); result++) {
-		int partial; cmp(partial, substr, result);
+		int partial; cmp(partial, substr, result, lang);
 		if(
 			partial==0 || // full match
 			partial==2) // 'substr' starts 'this'+'result'
@@ -418,9 +387,10 @@ int String::pos(const String& substr, size_t result) const {
 	return -1;
 }
 
-int String::pos(const char *substr, size_t result) const {
+int String::pos(const char *substr, size_t substr_size, 
+				size_t result, Untaint_lang lang) const {
 	for(; result<size(); result++) {
-		int partial; cmp(partial, substr, 0, result);
+		int partial; cmp(partial, substr, substr_size, result, lang);
 		if(
 			partial==0 || // full match
 			partial==2) // 'substr' starts 'this'+'result'
@@ -428,4 +398,56 @@ int String::pos(const char *substr, size_t result) const {
 	}
 	
 	return -1;
+}
+
+void String::split(Array& result, 
+				   size_t* pos_after_ref, 
+				   const char *delim, size_t delim_size, 
+				   Untaint_lang lang, int limit) const {
+	if(delim_size) {
+		size_t pos_after=pos_after_ref?*pos_after_ref:0;
+		int pos_before;
+		// while we have 'delim'...
+		for(; (pos_before=pos(delim, delim_size, pos_after, lang))>=0 && limit; limit--) {
+			result+=&piece(pos_after, pos_before);
+			pos_after=pos_before+delim_size;
+		}
+		// last piece
+		if(pos_after<size() && limit) {
+			result+=&piece(pos_after, size());
+			pos_after=size();
+		}
+		if(pos_after_ref)
+			*pos_after_ref=pos_after;
+	} else { // empty delim
+		result+=this;
+		if(pos_after_ref)
+			*pos_after_ref+=size();
+	}
+}
+
+void String::split(Array& result, 
+				   size_t* pos_after_ref, 
+				   const String& delim, Untaint_lang lang, 
+				   int limit) const {
+	if(delim.size()) {
+		size_t pos_after=pos_after_ref?*pos_after_ref:0;
+		int pos_before;
+		// while we have 'delim'...
+		for(; (pos_before=pos(delim, pos_after, lang))>=0 && limit; limit--) {
+			result+=&piece(pos_after, pos_before);
+			pos_after=pos_before+delim.size();
+		}
+		// last piece
+		if(pos_after<size() && limit) {
+			result+=&piece(pos_after, size());
+			pos_after=size();
+		}
+		if(pos_after_ref)
+			*pos_after_ref=pos_after;
+	} else { // empty delim
+		result+=this;
+		if(pos_after_ref)
+			*pos_after_ref+=size();
+	}
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.33 2001/04/02 09:29:17 paf Exp $
+	$Id: pa_array.h,v 1.34 2001/04/03 05:23:40 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -108,6 +108,9 @@ public:
 	/// convinient way to get strings from Array. I long for Array<const String *>
 	const String *get_string(int index) const { 
 		return const_cast<const String *>(static_cast<String *>(get(index))); 
+	}
+	const String *quick_get_string(int index) const { 
+		return const_cast<const String *>(static_cast<String *>(quick_get(index))); 
 	}
 
 	/// iterate over all elements

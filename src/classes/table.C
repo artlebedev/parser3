@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.43 2001/04/02 15:59:06 paf Exp $
+	$Id: table.C,v 1.44 2001/04/03 05:23:37 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -20,33 +20,63 @@
 VStateless_class *table_class;
 
 // methods
-/// @test remove CONFIG untaint, make pos() searches in String
-static void set_or_load(
-						Request& r, 
-						const String& method_name, Array *params, 
-						bool is_load) {
+static void _set(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 	// data is last parameter
-	Value *vdata_or_filename=static_cast<Value *>(params->get(params->size()-1));
-	// forcing
-	// ^load[this file name type]
-	// ^set{this body type}
-	r.fail_if_junction_(is_load, *vdata_or_filename, 
-		method_name, is_load?"file name must not be junction":"body must be junction");
+	Value *vdata=static_cast<Value *>(params->get(params->size()-1));
+	// forcing {this body type}
+	r.fail_if_junction_(false, *vdata, method_name, "body must be junction");
 
-	// data or table_name
-	char *data;
-	if(is_load) {
-		// forcing untaint language
-		String ltable_name(pool);
-		ltable_name.append(vdata_or_filename->as_string(), String::UL_FILE_NAME, true);
-		// loading text
-		data=file_read_text(pool, r.absolute(ltable_name));
+	Temp_lang temp_lang(r, String::UL_AS_IS);
+	const String& data=r.process(*vdata).as_string();
+
+	size_t pos_after=0;
+	// parse columns
+	Array *columns;
+	if(params->size()==2) {
+		columns=0;
 	} else {
-		// suggesting untaint language
-		Temp_lang temp_lang(r, String::UL_TABLE);
-		data=r.process(*vdata_or_filename).as_string().cstr();
+		columns=new(pool) Array(pool);
+
+		Array head(pool);
+		data.split(head, &pos_after, "\n", 1, String::UL_CLEAN, 1);
+		if(head.size())
+			head.get_string(0)->split(*columns, 0, "\t", 1, String::UL_CLEAN);
 	}
+
+	Table& table=*new(pool) Table(pool, &method_name, columns);
+	// parse cells
+	Array rows(pool);
+	data.split(rows, &pos_after, "\n", 1, String::UL_CLEAN);
+	int size=rows.quick_size();
+	for(int i=0; i<size; i++) {
+		Array& row=*new(pool) Array(pool);
+		const String& string=*rows.quick_get_string(i);
+		// remove empty lines
+		if(!string.size())
+			continue;
+
+		string.split(row, 0, "\t", 1, String::UL_CLEAN);
+		table+=&row;
+	}
+
+	// replace any previous table value
+	static_cast<VTable *>(r.self)->set_table(table);
+}
+
+static void _load(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+	// filename is last parameter
+	Value *vfilename=static_cast<Value *>(params->get(params->size()-1));
+	// forcing [this file name type]
+	r.fail_if_junction_(true, *vfilename, 
+		method_name, "file name must not be junction");
+
+	// forcing untaint language
+	String lfilename(pool);
+	lfilename.append(vfilename->as_string(), String::UL_FILE_NAME, true);
+	// loading text
+	char *data=file_read_text(pool, r.absolute(lfilename));
 
 	// parse columns
 	Array *columns;
@@ -63,6 +93,7 @@ static void set_or_load(
 		if(char *row_chars=getrow(&data)) 
 			do {
 				String *name=new(pool) String(pool);
+				// never reaches user, can mark it 'clean'
 				name->APPEND_CLEAN(lsplit(&row_chars, '\t'), 0, file, line++);
 				*columns+=name;
 			} while(row_chars);
@@ -77,7 +108,7 @@ static void set_or_load(
 		Array *row=new(pool) Array(pool);
 		while(char *cell_chars=lsplit(&row_chars, '\t')) {
 			String *cell=new(pool) String(pool);
-			cell->APPEND_CLEAN(cell_chars, 0, file, line);
+			cell->APPEND_TAINTED(cell_chars, 0, file, line);
 			*row+=cell;
 		}
 		line++;
@@ -87,18 +118,11 @@ static void set_or_load(
 	// replace any previous table value
 	static_cast<VTable *>(r.self)->set_table(table);
 }
-static void _set(Request& r, const String& method_name, Array *params) {
-	set_or_load(r, method_name, params, false);
-}
-static void _load(Request& r, const String& method_name, Array *params) {
-	set_or_load(r, method_name, params, true);
-}
 
 static void _save(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 	Value *vtable_name=static_cast<Value *>(params->get(params->size()-1));
-	// forcing
-	// ^save[this body type]
+	// forcing this body type]
 	r.fail_if_junction_(true, *vtable_name, 
 		method_name, "file name must not be junction");
 
@@ -353,7 +377,7 @@ static void _flip(Request& r, const String& method_name, Array *params) {
 	vtable.set_table(new_table);
 }
 
-/// @test require \t to be clean [UL_NO]
+/// @test use String::split
 static void _append(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 	// data is last parameter
@@ -367,7 +391,7 @@ static void _append(Request& r, const String& method_name, Array *params) {
 	Array& row=*new(pool) Array(pool);
 	size_t pos_after=0;
 	int pos_before;
-	while((pos_before=string.pos("\t", pos_after))>=0) {
+	while((pos_before=string.pos("\t", 1, pos_after, String::UL_CLEAN))>=0) {
 		row+=&string.piece(pos_after, pos_before);
 		pos_after=pos_before+1/*\t*/;
 	}
