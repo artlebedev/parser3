@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.114 2001/04/18 16:46:37 paf Exp $
+	$Id: pa_request.C,v 1.115 2001/04/19 11:57:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -96,7 +96,7 @@ Request::Request(Pool& apool,
 	all located classes become children of one another,
 	composing class we name 'MAIN'
 
-	@test get read of setlocale
+	@test get rid of setlocale
 */
 void Request::core(const char *root_auto_path, bool root_auto_fail,
 				   const char *site_auto_path, bool site_auto_fail,
@@ -158,36 +158,30 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// to the one beside requested file.
 		// all assigned bases from upper dir
 		{
-			/* /document/root */
-			char *file_spec=
-				(char *)malloc(strlen(info.path_translated)+strlen(AUTO_FILE_NAME)+1);
-			size_t document_root_size=strlen(info.document_root);
-			if(info.document_root[document_root_size-1]=='/')
-				document_root_size--;
-			memcpy(file_spec, info.document_root, document_root_size);
-
-			/* /requested/file.html */
-			char *branches=(char *)malloc(strlen(info.path_translated)+1);
-			strcpy(branches, info.path_translated+document_root_size);
-			char *next=branches;
-			char *append_here=file_spec+document_root_size;
-
-			size_t slash_auto_p_size=strlen("/" AUTO_FILE_NAME);
-			while(true) {
-				char *step=lsplit(&next, '/');
-				if(next) { // not 'file.html' part
-					size_t step_size=strlen(step);
-					memcpy(append_here, step, step_size);
-					append_here+=step_size;
-					memcpy(append_here, "/" AUTO_FILE_NAME, slash_auto_p_size+1);
-					append_here++/* / */;
-
-					String& sfile_spec=*NEW String(pool());
-					sfile_spec.APPEND_CLEAN(file_spec, 0, "scanned", 0);
-					main_class=use_file(sfile_spec, false/*ignore read problem*/,
-						main_class_name, main_class);
-				} else
-					break;
+			Array ladder(pool());
+			const char *after=info.path_translated;
+			size_t drlen=strlen(info.document_root);
+			if(memcmp(after, info.document_root, drlen)==0) {
+				after+=drlen;
+				if(after[-1]=='/') 
+					--after;
+			}
+			
+			while(const char *before=strchr(after, '/')) {
+				String& step=*NEW String(pool());
+				if(after!=info.path_translated) {
+					step.APPEND_CLEAN(
+						info.path_translated, before+1/* / */-info.path_translated,
+						"path-translated-scanned", ladder.size());
+					step << AUTO_FILE_NAME;
+					ladder+=&step;
+				}
+				after=before+1;
+			}
+			for(int i=ladder.size(); --i>=0; ) {
+				const String& sfile_spec=*ladder.get_string(i);
+				main_class=use_file(sfile_spec, false/*ignore read problem*/,
+					main_class_name, main_class);
 			}
 		}
 
@@ -473,6 +467,7 @@ VStateless_class *Request::use_buf(const char *source, const char *file,
 	return &cclass;
 }
 
+/// @test with commandline start "parser3 a.html" so that ^load[a.cfg] worked! [now doesnt]
 const String& Request::relative(const char *apath, const String& relative_name) {
 	int lpath_buf_size=strlen(apath)+1;
     char *lpath=(char *)malloc(lpath_buf_size);

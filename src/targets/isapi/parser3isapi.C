@@ -1,3 +1,13 @@
+/** @file
+	Parser: IIS extension.
+
+	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
+
+	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: parser3isapi.C,v 1.29 2001/04/19 11:57:05 paf Exp $
+*/
+
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
 #endif
