@@ -1,22 +1,11 @@
-
-
-
-#################################################################
-# тут описаны следующие макросы :
-# default[val;deflt]
-# ifdef[value;deflt;undef]
-# color[color1;color2]
-# load[file]
-# include[file]
-# trim[string;char]
-# getFileExt[file]
-
-
-  
-
-#################################################################
-# старый добрый default
 @main[]
+^connect[odbc://dsn=voz7^;uid=voz^;pwd=pwd]{
+	$пресса[^table:sql{select * from press where header='$form:h'}]
+	^пресса.menu{
+		$пресса.id, $пресса.date_row, $пресса.header, $пресса.short_text^rem{, $пресса.full_text}, $пресса.mode
+	}[<br>]
+}
+<hr>
 #$response:status[404]
 #$response:location[/inh.html]
 #<hr>
