@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/11/28 08:38:14 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/28 09:12:27 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -924,7 +924,7 @@ public:
 			return spacebarspace;
 		int tr=ifont.GetTransparent();
 		for(int x=ifont.SX()-1; x>=0; x--) {
-			for(int y=0; y<height-1; y++)
+			for(int y=0; y<height; y++)
 				if(ifont.GetPixel(x, Y(y))!=tr) 
 					return x+1;
 		}
