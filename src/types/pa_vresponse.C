@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VRESPONSE_C="$Date: 2002/09/13 10:43:26 $";
+static const char* IDENT_VRESPONSE_C="$Date: 2002/09/18 07:42:51 $";
 
 #include "pa_vresponse.h"
 #include "pa_charsets.h"
@@ -59,7 +59,7 @@ static void append_attribute_meaning(String& result,
 									 Value& value, String::Untaint_lang lang,
 									 bool forced=false) {
 	if(const String *string=value.get_string())
-		result.append(*string, lang, forced);
+		result.append(string->join_chains(result.pool(), 0), lang, forced);
 	else
 		if(Value *vdate=value.as(VDATE_TYPE, false)) {
 			char *buf=(char *)result.malloc(MAX_STRING);
