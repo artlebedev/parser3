@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.8 2001/02/25 17:58:29 paf Exp $
+  $Id: pa_vmframe.h,v 1.9 2001/02/25 18:02:12 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -31,7 +31,7 @@ public: // Value
 	VClass* get_class() { return self->get_class(); }
 
 	// methodframe: self_transparent
-	Value *get_aliased() { return self->get_aliased(); }
+	VAliased *get_aliased() { return self->get_aliased(); }
 
 public: // usage
 

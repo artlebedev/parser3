@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.19 2001/02/25 17:33:43 paf Exp $
+  $Id: pa_wcontext.h,v 1.20 2001/02/25 18:02:12 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -20,7 +20,7 @@ public: // Value
 	// WContext: none yet | transparent
 	VClass *get_class() { return fvalue?fvalue->get_class():0; }
 	// wcontext: transparent
-	Value *get_aliased() { return fvalue?fvalue->get_aliased():0; }
+	VAliased *get_aliased() { return fvalue?fvalue->get_aliased():0; }
 
 public: // WContext
 

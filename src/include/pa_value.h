@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.35 2001/02/25 17:58:28 paf Exp $
+  $Id: pa_value.h,v 1.36 2001/02/25 18:02:12 paf Exp $
 */
 
 /*
@@ -119,7 +119,7 @@ public: // Value
 	// valiased: this
 	// wcontext: transparent
 	// methodframe: self_transparent
-	virtual Value *get_aliased() { return 0; }
+	virtual VAliased *get_aliased() { return 0; }
 
 public: // usage
 

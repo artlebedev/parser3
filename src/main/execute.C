@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.47 2001/02/25 17:35:49 paf Exp $
+  $Id: execute.C,v 1.48 2001/02/25 18:02:12 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -251,7 +251,9 @@ void Request::execute(const Array& ops) {
 				frame->set_self(*self);
 				root=rcontext=wcontext=frame;
 				{
-					VAliased *aliased=reinterpret_cast<VAliased *>(self->get_aliased());
+					// take object or class from any wrappers
+					VAliased *aliased=self->get_aliased();
+					// substitute class alias to the class they are called AS
 					Temp_alias temp_alias(*aliased, *frame->junction.vclass);
 					execute(frame->junction.method->code);
 				}
