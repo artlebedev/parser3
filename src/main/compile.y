@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.131 2001/05/10 12:42:34 paf Exp $
+	$Id: compile.y,v 1.132 2001/05/10 12:57:25 paf Exp $
 */
 
 /**
@@ -125,7 +125,7 @@ one_big_piece: maybe_codes;
 method: control_method | code_method;
 
 control_method: '@' STRING '\n' 
-				control_strings {
+				maybe_control_strings {
 	const String& command=*LA2S($2);
 	YYSTYPE strings_code=$4;
 	if(command==END_CONTROL_METHOD_NAME && strings_code->size()==0)
@@ -193,6 +193,7 @@ control_method: '@' STRING '\n'
 		YYERROR;
 	}
 };
+maybe_control_strings: empty | control_strings;
 control_strings: control_string | control_strings control_string { $$=$1; P($$, $2) };
 control_string: maybe_string '\n';
 maybe_string: empty | STRING;
