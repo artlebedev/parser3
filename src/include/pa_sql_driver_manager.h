@@ -9,7 +9,7 @@
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
 
-static const char* IDENT_SQL_DRIVER_MANAGER_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_SQL_DRIVER_MANAGER_H="$Date: 2003/09/25 09:15:02 $";
 
 
 #include "pa_sql_driver.h"
@@ -32,9 +32,9 @@ class SQL_Connection;
 class SQL_Driver_manager: public Cache_manager {
 public:
 
-	typedef Hash<const StringBody, SQL_Driver *> driver_cache_type;
+	typedef Hash<const String::Body, SQL_Driver *> driver_cache_type;
 	typedef Stack<SQL_Connection*> connection_cache_element_base_type;
-	typedef Hash<const StringBody, connection_cache_element_base_type*> connection_cache_type;
+	typedef Hash<const String::Body, connection_cache_element_base_type*> connection_cache_type;
 
 private:
 	

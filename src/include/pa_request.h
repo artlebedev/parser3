@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/09/25 09:15:02 $";
 
 #include "pa_hash.h"
 #include "pa_wcontext.h"
@@ -111,9 +111,9 @@ private:
 	HashStringValue fclasses;
 
 	/// already used files to avoid cyclic uses
-	Hash<const StringBody, bool> used_files;
+	Hash<const String::Body, bool> used_files;
 	/// list of all used files, Operation::file_no = index to it
-	Array<StringBody> file_list;
+	Array<String::Body> file_list;
 
 	/**	endless execute(execute(... preventing counter 
 		@see ANTI_ENDLESS_EXECUTE_RECOURSION
@@ -143,7 +143,7 @@ public:
 	bool finterrupted;
 
 public:
-	size_t register_file(StringBody file_spec);
+	size_t register_file(String::Body file_spec);
 
 	struct Exception_details {
 		const Trace trace;
@@ -338,7 +338,7 @@ public: // charset helpers
 	/// @see Charset::transcode
 	GdomeDOMString_auto_ptr transcode(const String& s);
 	/// @see Charset::transcode
-	GdomeDOMString_auto_ptr transcode(const StringBody s);
+	GdomeDOMString_auto_ptr transcode(const String::Body s);
 	/// @see Charset::transcode
 	const String& transcode(GdomeDOMString* s);
 	/// @see Charset::transcode

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/07/24 11:31:24 $";
+static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/09/25 09:15:03 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -56,7 +56,7 @@ static void expire_connections(SQL_Driver_manager::connection_cache_type::key_ty
 SQL_Driver_manager::SQL_Driver_manager(): 
 	prev_expiration_pass_time(0), is_dlinited(false) {
 
-	cache_managers.put(StringBody("sql"), this);
+	cache_managers.put(String::Body("sql"), this);
 }
 
 SQL_Driver_manager::~SQL_Driver_manager() {

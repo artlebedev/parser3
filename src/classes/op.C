@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_OP_C="$Date: 2003/09/25 09:15:02 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -50,11 +50,11 @@ static const String exception_var_name(EXCEPTION_VAR_NAME);
 
 // helpers
 
-class Untaint_lang_name2enum: public Hash<const StringBody, String::Language> {
+class Untaint_lang_name2enum: public Hash<const String::Body, String::Language> {
 public:
 	Untaint_lang_name2enum() {
 		#define ULN(name, LANG) \
-			put(StringBody(name), (value_type)(String::L_##LANG));
+			put(String::Body(name), (value_type)(String::L_##LANG));
 		ULN("as-is", AS_IS);
 		ULN("optimized-as-is", AS_IS|String::L_OPTIMIZE_BIT);
 		ULN("file-spec", FILE_SPEC);
@@ -321,7 +321,7 @@ public:
 #endif
 static void _switch(Request& r, MethodParams& params) {
 	Switch_data* data=new Switch_data(r, r.process_to_value(params[0]));
-	Temp_hash_value<const StringBody, PA_Object*> 
+	Temp_hash_value<const String::Body, PA_Object*> 
 		switch_data_setter(r.classes_conf, switch_data_name, data);
 
 	Value& cases_code=params.as_junction(1, "switch cases must be code");
@@ -515,7 +515,7 @@ static void _cache(Request& r, MethodParams& params) {
 	const String& file_spec=r.absolute(params.as_string(0, "filespec must be string"));
 
 	Cache_data* data=new Cache_data;
-	Temp_hash_value<const StringBody, PA_Object*> 
+	Temp_hash_value<const String::Body, PA_Object*> 
 		cache_data_setter(r.classes_conf, cache_data_name, data);
 	data->expires=as_expires(r, params, 1, now);
 	Value& body_code=params.as_junction(2, "body must be code");

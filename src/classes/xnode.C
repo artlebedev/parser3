@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2003/09/22 11:47:29 $";
+static const char* IDENT_XNODE_C="$Date: 2003/09/25 09:15:02 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -327,7 +327,7 @@ static void _getElementsByTagName(Request& r, MethodParams& params) {
 		gulong length=gdome_nl_length(nodes, &exc);
 		for(gulong i=0; i<length; i++)
 			result.hash().put(
-				StringBody::Format(i), 
+				String::Body::Format(i), 
 				new VXnode(&r.charsets, gdome_nl_item(nodes, i, &exc)));
 	} else if(exc)
 		throw Exception(
@@ -468,7 +468,7 @@ static void _getElementsByTagNameNS(Request& r, MethodParams& params) {
 		gulong length=gdome_nl_length(nodes, &exc);
 		for(gulong i=0; i<length; i++)
 			result.hash().put(
-				StringBody::Format(i), 
+				String::Body::Format(i), 
 				new VXnode(&r.charsets, gdome_nl_item(nodes, i, &exc)));
 	}
 
@@ -537,7 +537,7 @@ static void selectNodesHandler(Request& r,
 				HashStringValue& hash=vhash.hash();
 				for(int i=0; i<size; i++)
 					hash.put(
-						StringBody::Format(i), 
+						String::Body::Format(i), 
 						new VXnode(
 							&r.charsets, 
 							gdome_xml_n_mkref(res->nodesetval->nodeTab[i])));
@@ -750,7 +750,7 @@ MXnode::MXnode(const char* aname, VStateless_class *abase):
 	// consts
 
 #define CONST(name) \
-	consts.put(StringBody(#name), new VInt(GDOME_##name))
+	consts.put(String::Body(#name), new VInt(GDOME_##name))
 
 	CONST(ELEMENT_NODE);
 	CONST(ATTRIBUTE_NODE);

@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXNODE_C="$Date: 2003/08/19 12:07:36 $";
+static const char* IDENT_VXNODE_C="$Date: 2003/09/25 09:15:03 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -44,7 +44,7 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 			int i=0;
 			do {
 				result->hash().put(
-					StringBody::Format(i++), 
+					String::Body::Format(i++), 
 					new VXnode(fcharsets, currentNode));
 			} while(currentNode=gdome_n_nextSibling(currentNode, &exc));
 			return result;

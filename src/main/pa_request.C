@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2003/07/24 11:31:24 $";
+static const char* IDENT_REQUEST_C="$Date: 2003/09/25 09:15:03 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -132,8 +132,8 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	mime_types(0)
 {
 	// file_no=0 => unknown
-	file_list+=StringBody("UNKNOWN");
-	file_list+=StringBody("-body of process-"); // pseudo_file_no__process
+	file_list+=String::Body("UNKNOWN");
+	file_list+=String::Body("-body of process-"); // pseudo_file_no__process
 
 	// maybe expire old caches
 	cache_managers.maybe_expire();
@@ -147,14 +147,14 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 
 	/// methodless
 	// env class
-	classes().put(StringBody(ENV_CLASS_NAME), new VEnv(asapi_info));
+	classes().put(String::Body(ENV_CLASS_NAME), new VEnv(asapi_info));
 	// status class
 	if(status_allowed)
-		classes().put(StringBody(STATUS_CLASS_NAME), new VStatus());
+		classes().put(String::Body(STATUS_CLASS_NAME), new VStatus());
 	// request class
-	classes().put(StringBody(REQUEST_CLASS_NAME), new VRequest(arequest_info, charsets));	
+	classes().put(String::Body(REQUEST_CLASS_NAME), new VRequest(arequest_info, charsets));	
 	// cookie class
-	classes().put(StringBody(COOKIE_CLASS_NAME), &cookie);
+	classes().put(String::Body(COOKIE_CLASS_NAME), &cookie);
 
 	/// methoded
 	// response class
@@ -192,7 +192,7 @@ Value& Request::get_self() { return method_frame/*always have!*/->self(); }
 static void load_charset(HashStringValue::key_type akey, 
 			 HashStringValue::value_type avalue, 
 			 Request_charsets* charsets) {
-	const StringBody NAME=String(akey, String::L_CLEAN).change_case(charsets->source(), String::CC_UPPER);
+	const String::Body NAME=String(akey, String::L_CLEAN).change_case(charsets->source(), String::CC_UPPER);
 	::charsets.load_charset(*charsets, NAME, avalue->as_string());
 }
 void Request::configure_admin(VStateless_class& conf_class) {
@@ -464,8 +464,8 @@ if(!exception_trace.is_empty()/*signed!*/)
 		Operation::Origin origin=trace.origin();
 		if(origin.file_no) {
 			*row+=new String(file_list[origin.file_no], String::L_TAINTED); // 'file' column
-			*row+=new String(StringBody::Format(1+origin.line), String::L_CLEAN); // 'lineno' column
-			*row+=new String(StringBody::Format(1+origin.col), String::L_CLEAN); // 'colno' column
+			*row+=new String(String::Body::Format(1+origin.line), String::L_CLEAN); // 'lineno' column
+			*row+=new String(String::Body::Format(1+origin.col), String::L_CLEAN); // 'colno' column
 		}
 		stack_trace+=row;
 	}
@@ -518,7 +518,7 @@ body_string=&execute_method(frame, *method);
 	}
 }
 
-size_t Request::register_file(StringBody file_spec) {
+size_t Request::register_file(String::Body file_spec) {
 	file_list+=file_spec;
 	return file_list.count()-1;
 }
@@ -715,7 +715,7 @@ GdomeDOMString_auto_ptr Request::transcode(const String& s) {
 	return charsets.source().transcode(s);
 }
 
-GdomeDOMString_auto_ptr Request::transcode(const StringBody s) {
+GdomeDOMString_auto_ptr Request::transcode(const String::Body s) {
 	return charsets.source().transcode(s);
 }
 
@@ -767,10 +767,10 @@ Request::Exception_details Request::get_details(const Exception& e) {
 	// $.file lineno colno
 	if(trace) {
 		const Operation::Origin origin=trace.origin();
-		hash.put(StringBody("file"),
+		hash.put(String::Body("file"),
 			new VString(*new String(file_list[origin.file_no], String::L_TAINTED)));
-		hash.put(StringBody("lineno"), new VInt(1+origin.line));
-		hash.put(StringBody("colno"), new VInt(1+origin.col));
+		hash.put(String::Body("lineno"), new VInt(1+origin.line));
+		hash.put(String::Body("colno"), new VInt(1+origin.col));
 	}
 
 	// $.comment

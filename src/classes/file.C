@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2003/07/24 11:31:19 $";
+static const char* IDENT_FILE_C="$Date: 2003/09/25 09:15:02 $";
 
 #include "pa_config_includes.h"
 
@@ -98,9 +98,9 @@ static const char* suexec_safe_env_lst[]={
 
 // statics
 
-static const StringBody adate_name("adate");
-static const StringBody mdate_name("mdate");
-static const StringBody cdate_name("cdate");
+static const String::Body adate_name("adate");
+static const String::Body mdate_name("mdate");
+static const String::Body cdate_name("cdate");
 
 // methods
 
@@ -258,8 +258,8 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	#define ECSTR(name, value_cstr) \
 		if(value_cstr) \
 			env.put( \
-				StringBody(#name), \
-				StringBody(value_cstr, 0)); \
+				String::Body(#name), \
+				String::Body(value_cstr, 0)); \
 	// passing SAPI::environment
 	if(const char *const *pairs=SAPI::environment(r.sapi_info)) {
 		while(const char* pair=*pairs++)
@@ -284,8 +284,8 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	//String content_length(content_length_cstr);
 	ECSTR(CONTENT_LENGTH, content_length_cstr);
 	// SCRIPT_*
-	env.put(StringBody("SCRIPT_NAME"), script_name);
-	//env.put(StringBody("SCRIPT_FILENAME"), ??&script_name);
+	env.put(String::Body("SCRIPT_NAME"), script_name);
+	//env.put(String::Body("SCRIPT_FILENAME"), ??&script_name);
 
 	bool stdin_specified=false;
 	// environment & stdin from param
@@ -413,7 +413,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	// $stderr
 	if(real_err->length())
 		self.fields().put(
-			StringBody("stderr"),
+			String::Body("stderr"),
 			new VString(*real_err));
 }
 static void _exec(Request& r, MethodParams& params) {
@@ -513,7 +513,7 @@ static int lastposafter(const String& s, size_t after, const char* substr, size_
 	if(beforelast)
 		size=s.length();
 	int at;
-	while((at=s.pos(StringBody(substr, substr_size), after))!=STRING_NOT_FOUND) {
+	while((at=s.pos(String::Body(substr, substr_size), after))!=STRING_NOT_FOUND) {
 		size_t newafter=at+substr_size/*skip substr*/;
 		if(beforelast && newafter==size)
 			break;

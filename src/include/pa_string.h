@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char* IDENT_STRING_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_STRING_H="$Date: 2003/09/25 09:15:02 $";
 
 // includes
 
@@ -19,6 +19,11 @@ extern "C" { // cord's author forgot to do that
 #define CORD_NO_IO
 #include "cord.h"
 };
+
+// cord extension
+/* Returns true if x does contain                                       */
+/* char not_c at positions i..i+n. Value i,i+n must be < CORD_len(x).	*/
+int CORD_range_contains_chr_greater_then(CORD x, size_t i, size_t n, int c);
 
 // forwards
 
@@ -33,121 +38,36 @@ typedef Array<const String*> ArrayString;
 /// this is result of pos functions which mean that substr were not found
 #define STRING_NOT_FOUND ((size_t)-1)
 
-class StringBody {
-
-	CORD body;
-
-public:
-
-	StringBody(): body(CORD_EMPTY) {}
-	StringBody(CORD abody): body(abody) {
-		assert(!body // no body
-			|| *body // ordinary string
-			|| body[1]==1 // CONCAT_HDR
-			|| body[1]==4 // FN_HDR 
-			|| body[1]==6 // SUBSTR_HDR 
-			);
-	}
-	/// WARNING: length is only HELPER length, str in ANY case should be zero-terminated
-	StringBody(const char* str, size_t helper_length): body(CORD_EMPTY) {
-		append_know_length(str, helper_length?helper_length:strlen(str));
-	}
-	static StringBody Format(int value);
-
-	void clear() { body=CORD_EMPTY; }
-
-	bool operator! () const { return is_empty(); }
-
-	uint hash_code() const;
-
-	const char* cstr() const { return CORD_to_const_char_star(body); }
-	char* cstrm() const { return CORD_to_char_star(body); }
-
-	size_t length() const { return CORD_len(body); }
-
-	bool is_empty() const { return body==CORD_EMPTY; }
-
-	void append_know_length(const char *str, size_t known_length) {
-		if(known_length)
-			body=CORD_cat_char_star(body, str, known_length);
-	}
-	void append_strdup_know_length(const char* str, size_t known_length) {
-		if(known_length)
-			append_know_length(pa_strdup(str, known_length), known_length);
-	}
-	void append(char c) { body=CORD_cat_char(body, c); }
-	StringBody& operator << (const StringBody src) { body=CORD_cat(body, src.body); return *this; }
-	StringBody& operator << (const char* str) { append_know_length(str, strlen(str)); return *this; }
-
-	// could not figure out why this operator is needed [should do this chain: string->simple->==]
-	bool operator < (const StringBody src) const { return CORD_cmp(body, src.body)<0; }
-	bool operator > (const StringBody src) const { return CORD_cmp(body, src.body)>0; }
-	bool operator <= (const StringBody src) const { return CORD_cmp(body, src.body)<=0; }
-	bool operator >= (const StringBody src) const { return CORD_cmp(body, src.body)>=0; }
-	bool operator != (const StringBody src) const { return CORD_cmp(body, src.body)!=0; }
-	bool operator == (const StringBody src) const { return CORD_cmp(body, src.body)==0; }
-
-	int ncmp(size_t x_begin, const StringBody y, size_t y_begin, size_t size) const {
-		return CORD_ncmp(body, x_begin, y.body, y_begin, size);
-	}
-
-	char fetch(size_t index) const { return CORD_fetch(body, index); }
-	StringBody mid(size_t index, size_t length) const { return CORD_substr(body, index, length); }
-	size_t pos(const char* substr, size_t offset=0) const { return CORD_str(body, offset, substr); }
-	size_t pos(const StringBody substr, size_t offset=0) const { 
-		if(!substr.length())
-			return STRING_NOT_FOUND; // in this case CORD_str returns 0 [parser users got used to -1]
-		return CORD_str(body, offset, substr.body); 
-	}
-	size_t pos(char c, 
-		size_t offset=0) const {
-		return CORD_chr(body, offset, c);
-	}
-
-	template<typename I> void for_each(int (*callback)(const char* s, I), I info) const {
-		CORD_iter5(body, 0, 0, (CORD_batched_iter_fn)callback, info);
-	}
-
-	void set_pos(CORD_pos& pos, size_t index) const { CORD_set_pos(pos, body, index); }
-
-	StringBody normalize() const {
-		return StringBody(CORD_balance(body));
-	}
-
-	void dump() const {
-		CORD_dump(body);
-	}
-};
-
+template<typename T>
+inline size_t get_length(T current) {
+	return current;
+}
 /** 
-	String which knows the language of all it's fragments.
+	String which knows the lang of all it's langs.
 
 	All pieces remember 
 	- whether they are tainted or not, 
-	  and the language which should be used to detaint them
+	  and the lang which should be used to detaint them
 */
 class String: public PA_Object {
-
-//	friend class StringBody;
-
 public:
 
-	/** piece is tainted or not. the language to use when detaint
+	/** piece is tainted or not. the lang to use when detaint
 		remember to change String_Untaint_lang_name @ untaint.C along
 	*/
 	enum Language {
-		L_UNSPECIFIED=0, ///< zero value handy for hash lookup @see untaint_lang_name2enum
+		L_UNSPECIFIED=0, ///< no real string has parts of this lange: it's just convinient to check when string's empty
 		// these two must go before others, there are checks for >L_AS_IS
-		L_CLEAN, ///< clean
+		L_CLEAN='1', ///< clean
 		L_AS_IS,     ///< leave all characters intact
 
 		L_PASS_APPENDED,
 			/**<
-				leave language built into string being appended.
+				leave lang built into string being appended.
 				just a flag, that value not stored
 			*/
-		L_TAINTED,  ///< tainted, untaint language as assigned later 
-		// untaint languages. assigned by ^untaint[lang]{...}
+		L_TAINTED,  ///< tainted, untaint lang as assigned later 
+		// untaint langs. assigned by ^untaint[lang]{...}
 		L_FILE_SPEC, ///< file specification
 		L_HTTP_HEADER,    ///< text in HTTP response header
 		L_MAIL_HEADER,    ///< text in mail header
@@ -157,52 +77,220 @@ public:
 		L_JS,        ///< JavaScript code
 		L_XML,		///< ^dom:set xml
 		L_HTML,      ///< HTML code (for editing)
-		L_OPTIMIZE_BIT = 0x8000  ///< flag, requiring cstr whitespace optimization
+		L_OPTIMIZE_BIT = 0x80  ///< flag, requiring cstr whitespace optimization
 	};
 
-	struct Fragment { 
-		Language lang; ///< untaint flag, later untaint language
-		size_t length;  ///< length
-		Fragment(Language alang, size_t asize): lang(alang), length(asize) {
-			assert(alang!=L_UNSPECIFIED);
-			assert(asize!=0);
-			assert(asize!=(size_t)-1);
-		}
-	};
+	class Languages {
 
-	class ArrayFragment: public Array<Fragment> {
-		void append(element_type src) {
-			*static_cast<Array<Fragment> *>(this)+=src;
+		union {
+			struct {
+				Language lang:8;
+				int is_not_just_lang:sizeof(CORD)*8-8;
+			};
+			CORD langs;
+		};
+
+		template<typename C>
+		CORD make_langs(C current) const {
+			return is_not_just_lang?
+				langs
+				:CORD_chars((char)lang, get_length(current));
 		}
-		/// hiding from accidental USE, use append_positions
-		void append(const ArrayFragment& src, int offset, int limit) { 
-			static_cast<Array<Fragment> *>(this)->append(src, offset, limit);
+
+		CORD make_langs(size_t aoffset, size_t alength)  const {
+			return is_not_just_lang?
+				CORD_substr(langs, aoffset, alength)
+				:CORD_chars((char)lang, alength);
 		}
+
+		/// appending when 'langs' already contain something [simple cases hanled elsewhere]
+		template<typename C>
+		void append(C current, 
+			const CORD to_nonempty_target_langs) {
+			assert(langs);
+
+			if(is_not_just_lang)
+				langs=CORD_cat(langs, to_nonempty_target_langs);
+			else { // we were "just lang"
+				size_t current_size=get_length(current);
+				assert(current_size);
+				langs=CORD_cat(
+					CORD_chars((char)lang, current_size),  // first piece [making from just 'lang']
+					to_nonempty_target_langs); // new piece
+			}
+		}
+
 	public:
-		ArrayFragment& operator += (element_type src) {
-			if(size_t lcount=count()) { // not empty?
-				// try to join with last
-				Fragment& last=get_ref(lcount-1);
-				if(last.lang==src.lang) {
-					last.length+=src.length;
-					return *this;
-				}
-			}
-			append(src);
-			return *this;
-		}
-		void append(const ArrayFragment& src) { append(src, 0, ARRAY_OPTION_LIMIT_ALL); }
-		void append_positions(const ArrayFragment& src, size_t substr_begin, size_t substr_end);
 
-		size_t length() {
-			size_t result=0;
-			for(Array_iterator<element_type> i(*this); i.has_next(); ) {
-				const Fragment fragment=i.next();
-				result+=fragment.length;
-			}
-			return result;
+		const char* v() const;
+
+		Languages(): langs(0) {}
+		Languages(Language alang): lang(alang), is_not_just_lang(0) {}
+
+		/// MUST be called exactly prior to modification of current [uses it's length]
+		template<typename C>
+		void append(C current, Language alang, size_t asize) {
+			assert(alang);
+			assert(asize);
+
+			if(!is_not_just_lang)
+				if(lang) {
+					if(lang==alang) // same length? ignoring
+						return;
+				} else {
+					lang=alang; // to uninitialized
+					return;
+				}
+
+			append(current, CORD_chars((char)alang, asize));
+		}
+
+		/// MUST be called exactly prior to modification of current [uses it's length]
+		template<typename C>
+		void append(C current, size_t appending_length, 
+			const Languages src) {
+			assert(appending_length);
+
+			if(!langs)
+				langs=src.langs; // to uninitialized
+			else if(!src.is_not_just_lang)
+				append(current, src.lang, appending_length); // simplifying when simple source
+			else
+				append(current, src.make_langs(appending_length));
+		}
+		
+		/// MUST be called exactly prior to modification of current [uses it's length]
+		template<typename C>
+		void append(C current,
+			const Languages src, size_t aoffset, size_t alength) {
+			assert(alength);
+
+			if(!langs) // to uninitialized?
+				if(src.is_not_just_lang)
+					langs=CORD_substr(src.langs, aoffset, alength); // to uninitialized complex
+				else
+					lang=src.lang; // to uninitialized simple
+			else 
+				if(!is_not_just_lang && !src.is_not_just_lang && lang==src.lang) // both simple & of same language?
+					return; // ignoring
+				else
+					append(current, src.make_langs(aoffset, alength));
+		}
+
+		/// checks if we have lang<=alang all from aoffset to aoffset+alength
+		bool check_lang(Language alang, size_t aoffset, size_t alength) const {
+			if(alang==L_UNSPECIFIED) // ignore lang?
+				return true;
+
+			if(is_not_just_lang)
+				return CORD_range_contains_chr_greater_then(langs, aoffset, alength, (unsigned)alang)==0;
+			else
+				return lang<=alang;
+		}
+
+		template<typename C, typename I> 
+		void for_each(C current, 
+			int callback(char, size_t, I), I info) const {
+			
+			if(is_not_just_lang)
+				CORD_block_iter(langs, 0, (CORD_block_iter_fn)callback, info);
+			else
+				callback(lang, get_length(current), info);
+		}
+
+		bool invariant(size_t current_length) {
+			if(!langs)
+				return current_length==0;
+			if(is_not_just_lang)
+				return CORD_len(langs)==current_length;
+			return true; // uncheckable, actually
 		}
 	};
+
+	class Body {
+
+		CORD body;
+
+	public:
+
+		const char* v() const;
+
+		Body(): body(CORD_EMPTY) {}
+		Body(CORD abody): body(abody) {
+			assert(!body // no body
+				|| *body // ordinary string
+				|| body[1]==1 // CONCAT_HDR
+				|| body[1]==4 // FN_HDR 
+				|| body[1]==6 // SUBSTR_HDR 
+				);
+		}
+		/// WARNING: length is only HELPER length, str in ANY case should be zero-terminated
+		Body(const char* str, size_t helper_length): body(CORD_EMPTY) {
+			append_know_length(str, helper_length?helper_length:strlen(str));
+		}
+		static Body Format(int value);
+
+		void clear() { body=CORD_EMPTY; }
+
+		bool operator! () const { return is_empty(); }
+
+		uint hash_code() const;
+
+		const char* cstr() const { return CORD_to_const_char_star(body); }
+		char* cstrm() const { return CORD_to_char_star(body); }
+
+		size_t length() const { return CORD_len(body); }
+
+		bool is_empty() const { return body==CORD_EMPTY; }
+
+		void append_know_length(const char *str, size_t known_length) {
+			if(known_length)
+				body=CORD_cat_char_star(body, str, known_length);
+		}
+		void append_strdup_know_length(const char* str, size_t known_length) {
+			if(known_length)
+				append_know_length(pa_strdup(str, known_length), known_length);
+		}
+		void append(char c) { body=CORD_cat_char(body, c); }
+		Body& operator << (const Body src) { body=CORD_cat(body, src.body); return *this; }
+		Body& operator << (const char* str) { append_know_length(str, strlen(str)); return *this; }
+
+		// could not figure out why this operator is needed [should do this chain: string->simple->==]
+		bool operator < (const Body src) const { return CORD_cmp(body, src.body)<0; }
+		bool operator > (const Body src) const { return CORD_cmp(body, src.body)>0; }
+		bool operator <= (const Body src) const { return CORD_cmp(body, src.body)<=0; }
+		bool operator >= (const Body src) const { return CORD_cmp(body, src.body)>=0; }
+		bool operator != (const Body src) const { return CORD_cmp(body, src.body)!=0; }
+		bool operator == (const Body src) const { return CORD_cmp(body, src.body)==0; }
+
+		int ncmp(size_t x_begin, const Body y, size_t y_begin, size_t size) const {
+			return CORD_ncmp(body, x_begin, y.body, y_begin, size);
+		}
+
+		char fetch(size_t index) const { return CORD_fetch(body, index); }
+		Body mid(size_t index, size_t length) const { return CORD_substr(body, index, length); }
+		size_t pos(const char* substr, size_t offset=0) const { return CORD_str(body, offset, substr); }
+		size_t pos(const Body substr, size_t offset=0) const { 
+			if(!substr.length())
+				return STRING_NOT_FOUND; // in this case CORD_str returns 0 [parser users got used to -1]
+			return CORD_str(body, offset, substr.body); 
+		}
+		size_t pos(char c, 
+			size_t offset=0) const {
+			return CORD_chr(body, offset, c);
+		}
+
+	/*	template<typename I> void for_each(int (*callback)(const char* s, I), I info) const {
+			CORD_iter5(body, 0, 0, (CORD_batched_iter_fn)callback, info);
+		}*/
+
+		void set_pos(CORD_pos& pos, size_t index) const { CORD_set_pos(pos, body, index); }
+
+		/*Body normalize() const {
+			return Body(CORD_balance(body));
+		}*/
+	};
+
 
 	struct C {
 		const char *str;
@@ -220,29 +308,34 @@ public:
 
 private:
 
-	StringBody body; ///< all characters of string
-	ArrayFragment fragments; ///< fragment language+length info
+	Languages langs; ///< string characters lang
+	Body body; ///< all characters of string
+
+	const char* v() const;
+
+#define ASSERT_STRING_INVARIANT(string) \
+	assert((string).langs.invariant((string).body.length()))
 
 public:
 
 	explicit String(const char* cstr=0, size_t helper_length=0, bool tainted=false);
 	explicit String(const C cstr, bool tainted=false);
-	String(const String& src);
-	String(StringBody abody, Language alang): body(abody) {
-		fragments+=Fragment(alang, abody.length());
+	String(Body abody, Language alang): body(abody), langs(alang) {
+		assert(!body.is_empty());
+		ASSERT_STRING_INVARIANT(*this);
+	}
+	String(const String& src): body(src.body), langs(src.langs) {
+		ASSERT_STRING_INVARIANT(*this);
 	}
 
-#define ASSERT_STRING_INVARIANT(string) \
-	assert((string).body.length()==(string).fragments.length())
-
 	/// for convinient hash lookup
-	operator const StringBody() const { return body; }
+	operator const Body() const { return body; }
 
 	bool is_empty() const { return body.is_empty(); }
 	size_t length() const { return body.length(); }
 
 	/// convert to CORD. if 'lang' known, forcing 'lang' to it
-	StringBody cstr_to_string_body(Language lang=L_AS_IS, 
+	Body cstr_to_string_body(Language lang=L_AS_IS, 
 		SQL_Connection* connection=0,
 		const Request_charsets *charsets=0) const;
 
@@ -262,22 +355,22 @@ public:
 	Cm serialize(size_t prolog_size) const;
 	/// appends pieces from buf to self
 	bool deserialize(size_t prolog_size, void *buf, size_t buf_size);
-	/// @see StringBody::append_know_length
+	/// @see Body::append_know_length
 	String& append_know_length(const char* str, size_t known_length, Language lang);
-	/// @see StringBody::append_help_length
+	/// @see Body::append_help_length
 	String& append_help_length(const char* str, size_t helper_length, Language lang);
 	String& append_strdup(const char* str, size_t helper_length, Language lang);
 
-	bool operator == (const char* y) const { return body==StringBody(y); }
-	bool operator != (const char* y) const { return body!=StringBody(y); }
+	bool operator == (const char* y) const { return body==Body(y); }
+	bool operator != (const char* y) const { return body!=Body(y); }
 
 	/// this starts with y
 	bool starts_with(const char* y) const {
-		return body.ncmp(0/*x_begin*/, StringBody(y), 0/*y_begin*/, strlen(y))==0;
+		return body.ncmp(0/*x_begin*/, Body(y), 0/*y_begin*/, strlen(y))==0;
 	}
 	/// x starts with this
 	bool this_starts(const char* x) const {
-		return StringBody(x).ncmp(0/*x_begin*/, body, 0/*y_begin*/, length())==0;
+		return Body(x).ncmp(0/*x_begin*/, body, 0/*y_begin*/, length())==0;
 	}
 
 	String& append_to(String& dest, Language lang, bool forced) const;
@@ -286,9 +379,9 @@ public:
 	}
 	String& operator << (const String& src) { return append(src, L_PASS_APPENDED); }
 	String& operator << (const char* src) { return append_help_length(src, 0, L_AS_IS); }
-	String& operator << (const StringBody src) { 
+	String& operator << (const Body src) { 
+		langs.append(body, L_AS_IS, src.length());
 		body<<src;
-		fragments+=Fragment(L_AS_IS, src.length());
 		return *this;
 	}
 
@@ -312,7 +405,7 @@ public:
 		but when specified: look for substring that lies in ONE fragment in THAT lang
 		@return position of substr in string, -1 means "not found" [const char* version]
 	*/
-	size_t pos(const StringBody substr, 
+	size_t pos(const Body substr, 
 		size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
 	/// String version of @see pos(const char*, int, Language)
 	size_t pos(const String& substr, 
@@ -363,8 +456,13 @@ private: //disabled
 
 };
 
+template<>
+inline size_t get_length<String::Body>(String::Body body) {
+	return body.length();
+}
+
 /// simple hash code of string. used by Hash
-inline uint hash_code(const StringBody self) {
+inline uint hash_code(const String::Body self) {
 	return self.hash_code();
 }
 

@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2003/08/19 08:36:08 $";
+static const char* IDENT_VMAIL_C="$Date: 2003/09/25 09:15:03 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -103,7 +103,7 @@ static void putReceived(Charset& source_charset,
 static void putReceived(HashStringValue& received, const char* must_clone_name, time_t value) {
 	if(must_clone_name)
 		received.put(
-			StringBody(pa_strdup(must_clone_name)), 
+			String::Body(pa_strdup(must_clone_name)), 
 			new VDate(value)
 		);
 }

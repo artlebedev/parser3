@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char* IDENT_COMPILE_TOOLS_H="$Date: 2003/07/24 11:31:23 $";
+static const char* IDENT_COMPILE_TOOLS_H="$Date: 2003/09/25 09:15:03 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -70,7 +70,7 @@ public:
 	/// @name state; initially
 	bool trim_bof;
 	int pending_state; ///< i=0
-	StringBody string; ///< lexical string accumulator
+	String::Body string; ///< lexical string accumulator
 	Pos string_start;
 	
 #define MAX_LEXICAL_STATES 100

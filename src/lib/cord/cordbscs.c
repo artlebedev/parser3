@@ -98,6 +98,8 @@ typedef union {
 #define SHORT_LIMIT (sizeof(CordRep) - 1)
 	/* Cords shorter than this are C strings */
 
+/* paf: using knowledge of interal structure to speedup */
+char CORD_nul_func(size_t i, void * client_data);
 
 /* Dump the internal representation of x to stdout, with initial 	*/
 /* indentation level n.							*/
@@ -274,8 +276,6 @@ CORD CORD_cat(CORD x, CORD y)
     }
 }
 
-
-
 CORD CORD_from_fn(CORD_fn fn, void * client_data, size_t len)
 {
     if (len <= 0) return(0);
@@ -310,6 +310,21 @@ CORD CORD_from_fn(CORD_fn fn, void * client_data, size_t len)
     	result->client_data = client_data;
     	return((CORD) result);
     }
+}
+
+CORD CORD_from_fn_gen(CORD_fn fn, void * client_data, size_t len)
+{
+	register struct Function * result;
+    if (len <= 0) return(0);
+
+	result = GC_NEW(struct Function);
+	if (result == 0) OUT_OF_MEMORY;
+	result->header = FN_HDR;
+	/* depth is already 0 */
+	result->len = len;
+	result->fn = fn;
+	result->client_data = client_data;
+	return((CORD) result);
 }
 
 size_t CORD_len(CORD x)
@@ -469,6 +484,7 @@ CORD CORD_substr(CORD x, size_t i, size_t n)
 int CORD_iter5(CORD x, size_t i, CORD_iter_fn f1,
 			 CORD_batched_iter_fn f2, void * client_data)
 {
+	int result;
     if (x == 0) return(0);
     if (CORD_IS_STRING(x)) {
     	register const char* p = x+i;
@@ -478,16 +494,14 @@ int CORD_iter5(CORD x, size_t i, CORD_iter_fn f1,
             return((*f2)(p, client_data));
         } else {
 	    while (*p) {
-                if ((*f1)(*p, client_data)) return(1);
+                if (result=(*f1)(*p, client_data)) 
+					return result;
                 p++;
 	    }
 	    return(0);
         }
     } else if (IS_CONCATENATION(x)) {
-    	register struct Concatenation * conc
-    			= &(((CordRep *)x) -> concatenation);
-    	
-    	
+    	register struct Concatenation * conc = &(((CordRep *)x) -> concatenation);
     	if (i > 0) {
     	    register size_t left_len = LEFT_LEN(conc);
     	    
@@ -496,9 +510,8 @@ int CORD_iter5(CORD x, size_t i, CORD_iter_fn f1,
     	        		  client_data));
     	    }
     	}
-    	if (CORD_iter5(conc -> left, i, f1, f2, client_data)) {
-    	    return(1);
-    	}
+		result=CORD_iter5(conc -> left, i, f1, f2, client_data);
+    	if (result) return result;
     	return(CORD_iter5(conc -> right, 0, f1, f2, client_data));
     } else /* function */ {
         register struct Function * f = &(((CordRep *)x) -> function);
@@ -506,14 +519,71 @@ int CORD_iter5(CORD x, size_t i, CORD_iter_fn f1,
         register size_t lim = f -> len;
         
         for (j = i; j < lim; j++) {
-            if ((*f1)((*(f -> fn))(j, f -> client_data), client_data)) {
-                return(1);
-            }
+            if (result=(*f1)((*(f -> fn))(j, f -> client_data), client_data)) 
+				return result;
         }
         return(0);
     }
 }
+
+/* See cord.h for definition.  We assume i is in range.	*/
+int CORD_block_iter(CORD x, size_t i, CORD_block_iter_fn fb, void * client_data)
+{
+	int result;
+    if (x == 0) return(0);
+    if (CORD_IS_STRING(x)) {
+    	register const char* p = x+i;
+		const char *b=p;
+		char bc=*b;
+		int pc;
+    	
+    	if (bc == '\0') ABORT("2nd arg to CORD_iter5 too big");
+	    do {
+			pc=*++p;
+			if(pc!=bc) {
+				if (result=fb(bc, p-b, client_data)) 
+					return result;
+				b=p; bc=pc;
+			}
+	    } while (pc);
+	    return(0);
+    } else if (IS_CONCATENATION(x)) {
+    	register struct Concatenation * conc= &(((CordRep *)x) -> concatenation);
+    	if (i > 0) {
+    	    register size_t left_len = LEFT_LEN(conc);
+    	    
+    	    if (i >= left_len) {
+    	        return(CORD_block_iter(conc -> right, i - left_len, fb, client_data));
+    	    }
+    	}
+		result=CORD_block_iter(conc -> left, i, fb, client_data);
+    	if (result) return result;
+    	return(CORD_block_iter(conc -> right, 0, fb, client_data));
+    } else /* function */ {
+        register struct Function * f = &(((CordRep *)x) -> function);
+        register size_t lim = f -> len;
+        
+		if(f->fn == CORD_nul_func ) {
+			if (result=fb((char)(unsigned long)f -> client_data, f -> len-i, client_data)) return result;
+		} else if(f->fn == CORD_apply_access_fn) {
+			register struct substr_args *descr = (struct substr_args *)f->client_data;
+			register struct Function * fn_cord = &(descr->sa_cord->function);
+
+			if(fn_cord->fn == CORD_nul_func ) {
+				if (result=fb((char)(unsigned long)fn_cord->client_data, f -> len-i, client_data)) 
+					return result;
+			} else
+				ABORT("CORD_block_iter:CORD_apply_access_fn:unknown_fn should not happen");
+		} else {
+			if(f->fn == CORD_index_access_fn)
+				ABORT("CORD_block_iter:CORD_index_access_fn should not happen");
+			ABORT("CORD_block_iter:unknown_fn should not happen");
+		}
+    }
+	return(0);
+}
 			
+
 #undef CORD_iter
 int CORD_iter(CORD x, CORD_iter_fn f1, void * client_data)
 {

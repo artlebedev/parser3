@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VIMAGE_C="$Date: 2003/07/24 11:31:26 $";
+static const char* IDENT_VIMAGE_C="$Date: 2003/09/25 09:15:03 $";
 
 #include "pa_vimage.h"
 #include "pa_vint.h"
@@ -20,20 +20,20 @@ void VImage::set(const String* src, int width, int height,
 
 	// $src
 	if(src)
-		ffields.put(StringBody("src"), new VString(*src));
+		ffields.put(String::Body("src"), new VString(*src));
 	// $width
 	if(width)
-		ffields.put(StringBody("width"), new VInt(width));
+		ffields.put(String::Body("width"), new VInt(width));
 	// $height
 	if(height)
-		ffields.put(StringBody("height"), new VInt(height));
+		ffields.put(String::Body("height"), new VInt(height));
 	// defaults
 	// $border(0)
-	ffields.put(StringBody("border"), new VInt(0));
+	ffields.put(String::Body("border"), new VInt(0));
 
 	// internals, take a look at image.C append_attrib_pair before update
 	// $line-width(1) 
-	ffields.put(StringBody("line-width"), new VInt(1));
+	ffields.put(String::Body("line-width"), new VInt(1));
 }
 
 

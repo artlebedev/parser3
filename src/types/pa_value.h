@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2003/08/19 12:07:35 $";
+static const char* IDENT_VALUE_H="$Date: 2003/09/25 09:15:03 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -23,8 +23,8 @@ class Junction;
 class Method;
 template<typename K, typename V> class Hash;
 class Value;
-typedef Hash<const StringBody, Value*> HashStringValue; 
-typedef Hash<const StringBody, PA_Object*> HashStringObject;
+typedef Hash<const String::Body, Value*> HashStringValue; 
+typedef Hash<const String::Body, PA_Object*> HashStringObject;
 typedef Array<Value*> ArrayValue;
 class MethodParams;
 class VObject;

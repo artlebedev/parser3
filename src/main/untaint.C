@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2003/08/18 08:27:41 $";
+static const char* IDENT_UNTAINT_C="$Date: 2003/09/25 09:15:03 $";
 
 
 #include "pa_string.h"
@@ -59,21 +59,21 @@ extern "C" { // author forgot to do that
 
 
 #define escape(action) \
-	for(; fragment_length--; CORD_next(pos)) { \
-		char c=CORD_pos_fetch(pos); \
+	for(; fragment_length--; CORD_next(info->pos)) { \
+		char c=CORD_pos_fetch(info->pos); \
 		action \
 	}
-#define _default  default: CORD_ec_append(result, c); break
+#define _default  default: CORD_ec_append(info->result, c); break
 #define encode(need_encode_func, prefix, otherwise)  \
 	if(need_encode_func(c)) { \
 		static const char* hex="0123456789ABCDEF"; \
-		CORD_ec_append(result, prefix); \
-		CORD_ec_append(result, hex[((unsigned char)c)/0x10]); \
-		CORD_ec_append(result, hex[((unsigned char)c)%0x10]); \
+		CORD_ec_append(info->result, prefix); \
+		CORD_ec_append(info->result, hex[((unsigned char)c)/0x10]); \
+		CORD_ec_append(info->result, hex[((unsigned char)c)%0x10]); \
 	} else \
-		CORD_ec_append(result, otherwise);
-#define to_char(c)  CORD_ec_append(result, c)
-#define to_string(s)  CORD_ec_append_cord(result, s)
+		CORD_ec_append(info->result, otherwise);
+#define to_char(c)  CORD_ec_append(info->result, c)
+#define to_string(s)  CORD_ec_append_cord(info->result, s)
 
 inline bool need_file_encode(unsigned char c){
 	// russian letters and space ENABLED
@@ -167,6 +167,43 @@ inline bool need_quote_http_header(const char* ptr, size_t size) {
 	return false;
 }
 
+#ifndef DOXYGEN
+struct Append_fragment_info {
+	String::Language lang;
+	const String::Body dest_body;
+	String::Languages* dest_languages;
+	size_t dest_body_plan_length;
+};
+#endif
+int append_fragment_optimizing(char alang, size_t asize, Append_fragment_info* info) {
+	const String::Language lang=(String::Language)(unsigned char)alang;
+	// main idea here:
+	// tainted piece would get OPTIMIZED bit from 'lang'
+	// clean piece would be marked OPTIMIZED manually
+	// pieces with determined languages [not tainted|clean] would retain theirs langs
+	info->dest_languages->append(info->dest_body_plan_length, 
+		lang==String::Language::L_TAINTED?
+			info->lang
+			:lang==String::Language::L_CLEAN?
+				(String::Language)(String::Language::L_CLEAN|String::Language::L_OPTIMIZE_BIT) // ORing with OPTIMIZED flag
+				:lang,
+		asize);
+	info->dest_body_plan_length+=asize;
+
+	return 0; // 0=continue
+}
+int append_fragment_nonoptimizing(char alang, size_t asize, Append_fragment_info* info) {
+	const String::Language lang=(String::Language)(unsigned char)alang;
+	// The core idea: tainted pieces got marked with context's lang
+	info->dest_languages->append(info->dest_body_plan_length, 
+		lang==String::Language::L_TAINTED?
+			info->lang
+			:lang,
+		asize);
+	info->dest_body_plan_length+=asize;
+
+	return 0; // 0=continue
+}
 
 /** 
 	appends to other String,
@@ -178,36 +215,21 @@ String& String::append_to(String& dest, Language lang, bool forced) const {
 	if(is_empty())
 		return dest;
 
-	// first: letters
-	dest.body<<body;
-
-	// next: fragment infos
+	// first: fragment infos
 	
 	if(lang==L_PASS_APPENDED) // without language-change?
-		dest.fragments.append(fragments);
+		dest.langs.append(dest.body, body.length(), langs);
 	else if(forced) //forcing passed lang?
-		dest.fragments+=Fragment(lang, length());
-	else if(lang&L_OPTIMIZE_BIT) {
-		for(Array_iterator<ArrayFragment::element_type> i(fragments); i.has_next(); ) {
-			const Fragment fragment=i.next();
-			// main idea here:
-			// tainted piece would get OPTIMIZED bit from 'lang'
-			// clean piece would be marked OPTIMIZED manually
-			// pieces with determined languages [not tainted|clean] would retain theirs langs
-			dest.fragments+=Fragment(static_cast<Language>(
-				fragment.lang==L_TAINTED?lang:(
-					fragment.lang==L_CLEAN?L_CLEAN|L_OPTIMIZE_BIT: // ORing with OPTIMIZED flag
-						fragment.lang)),
-				fragment.length);
-		}
-	} else { // The core idea: tainted pieces got marked with context's lang
-		for(Array_iterator<ArrayFragment::element_type> i(fragments); i.has_next(); ) {
-			const Fragment fragment=i.next();
-			dest.fragments+=Fragment(
-				fragment.lang==L_TAINTED?lang:fragment.lang,
-				fragment.length);
-		}
+		dest.langs.append(dest.body, lang, length());
+	else { 
+		Append_fragment_info info={lang, dest.body, &dest.langs, dest.body.length()};
+	    langs.for_each(body, lang&L_OPTIMIZE_BIT?
+			append_fragment_optimizing
+			:append_fragment_nonoptimizing, &info);
 	}
+
+	// next: letters
+	dest.body<<body;
 
 	ASSERT_STRING_INVARIANT(dest);
 	return dest;
@@ -285,178 +307,213 @@ inline void pa_CORD_pos_advance(CORD_pos pos, size_t n) {
 		}
 	}
 }
-StringBody String::cstr_to_string_body(Language lang, 
-		  SQL_Connection* connection,
-		  const Request_charsets *charsets) const {
-	CORD_ec result; CORD_ec_init(result);
-	CORD_pos pos; body.set_pos(pos, 0);
 
-	bool whitespace=true;
+#ifndef DOXYGEN
+struct Cstr_to_string_body_block_info {
+	// input
+	String::Language lang;
+	SQL_Connection* connection;
+	const Request_charsets* charsets;
+	const String::Body* body;
 
-	size_t fragment_begin=0;
-	size_t fragment_end;
-	for(Array_iterator<Fragment> i(fragments); i.has_next(); fragment_begin=fragment_end) {
-		const Fragment fragment=i.next();
-		size_t fragment_length=fragment.length;
-		fragment_end=fragment_begin+fragment_length;
-		//fprintf(stderr, "%d, %d\n", fragment.lang, fragment.length);
+	// output
+	CORD_ec result;
 
-		Language to_lang=lang==L_UNSPECIFIED?fragment.lang:lang;
-		bool optimize=(to_lang & L_OPTIMIZE_BIT)!=0;
-		if(!optimize)
-			whitespace=false;
-			
-		switch(to_lang & ~L_OPTIMIZE_BIT) {
-		case L_CLEAN:
-		case L_TAINTED:
-		case L_AS_IS:
-			// clean piece
-
-			// tainted piece, but undefined untaint language
-			// for VString.as_double of tainted values
-			// for ^process{body} evaluation
-
-			// tainted, untaint language: as-is
-			ec_append(result, optimize, whitespace, pos, fragment_length);
-			break;
-		case L_FILE_SPEC:
-			// tainted, untaint language: file [name]
-			escape(
-				// Macintosh has problems with small Russian letter 'r'
-				if( c=='\xF0' && charsets && charsets->source().NAME()=="WINDOWS-1251" ) {
-					// fixing that letter for most common charset
-					to_char('p');
-				} else // fallback to default
-					encode(need_file_encode, '_', c); 
-			);
-			break;
-		case L_URI:
-			// tainted, untaint language: uri
-			{
-				const char *fragment_str=body.mid(fragment_begin, fragment_length).cstr();
-				// skip source [we use recoded version]
-				pa_CORD_pos_advance(pos, fragment_length);
-				String::C output(fragment_str, fragment_length);
-				if(charsets) 
-					output=Charset::transcode(output, 
-						charsets->source(), 
-						charsets->client());
-
-				char c;
-				for(const char* src=output.str; c=*src++; ) 
-					encode(need_uri_encode, '%', c);
-			}
-			break;
-		case L_HTTP_HEADER:
-			// tainted, untaint language: http-field-content-text
-			escape(
-				encode(need_uri_encode, '%', c);
-			);
-			break;
-		case L_MAIL_HEADER:
-			// tainted, untaint language: mail-header
-			// http://www.ietf.org/rfc/rfc2047.txt
-			if(charsets) {
-				size_t mail_size;
-				const char *mail_ptr=
-					body.mid(fragment_begin, mail_size=fragment_length).cstr();
-				// skip source [we use recoded version]
-				pa_CORD_pos_advance(pos, mail_size);
-
-				const char* charset_name=charsets->mail().NAME().cstr();
-
-				// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
-				bool to_quoted_printable=false;
-
-				bool email=false;
-				uchar c;
-				for(const char* src=mail_ptr; c=(uchar)*src++; ) {
-					//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
-					if(to_quoted_printable && (c==',' || addr_spec_soon(src) || c == '"')) {
-						email=c=='<';
-						to_string("?=");
-						to_quoted_printable=false;
-					}
-					if(!email && (
-						!to_quoted_printable && (c & 0x80)  // starting quote-printable-encoding on first 8bit char
-						|| to_quoted_printable && !mail_header_char_valid_within_Qencoded(c)
-						)) {
-						if(!to_quoted_printable) {
-							to_string("=?");
-							to_string(charset_name);
-							to_string("?Q?");
-							to_quoted_printable=true;
-						}
-						encode(mail_header_nonspace_char, '=', '_'); 
-					} else
-						to_char(c);
-					if(c=='>')
-						email=false;
-				}
-				if(to_quoted_printable) // close
-					to_string("?=");
-			
-			} else
-				ec_append(result, optimize, whitespace, pos, fragment_length);
-			break;
-		case L_TABLE: 
-			// tainted, untaint language: table
-			escape(switch(c) {
-				case '\t': to_char(' ');  break;
-				case '\n': to_char(' ');  break;
-				_default;
-			});
-			break;
-#ifdef PA_SQL
-		case L_SQL:
-			// tainted, untaint language: sql
-			if(connection) {
-				const char *fragment_str=body.mid(fragment_begin, fragment_length).cstr();
-				// skip source [we use recoded version]
-				pa_CORD_pos_advance(pos, fragment_length);
-
-				to_string(connection->quote(fragment_str, fragment_length));
-			} else
-				throw Exception(0,
-					0,
-					"untaint in SQL language failed - no connection specified");
-			break;
+	// private
+	CORD_pos pos;
+	size_t fragment_begin;
+	bool whitespace;
+};
 #endif
-		case L_JS:
-			escape(switch(c) {
-				case '"': to_string("\\\"");  break;
-				case '\'': to_string("\\'");  break;
-				case '\n': to_string("\\n");  break;
-				case '\\': to_string("\\\\");  break;
-				case '\xFF': to_string("\\\xFF");  break;
-				_default;
-			});
-			break;
-		case L_XML:
-			escape(switch(c) {
-				case '&': to_string("&amp;");  break;
-				case '>': to_string("&gt;");  break;
-				case '<': to_string("&lt;");  break;
-				case '"': to_string("&quot;");  break;
-				case '\'': to_string("&apos;");  break;
-				_default;
-			});
-			break;
-		case L_HTML:
-			escape(switch(c) {
-				case '&': to_string("&amp;");  break;
-				case '>': to_string("&gt;");  break;
-				case '<': to_string("&lt;");  break;
-				case '"': to_string("&quot;");  break;
-				_default;
-			});
-			break;
-		default:
-			SAPI::die("unknown untaint language #%d", 
-				static_cast<int>(to_lang)); // should never
-			break; // never
+int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string_body_block_info* info) {
+	const String::Language fragment_lang=(String::Language)(unsigned char)alang;
+	bool& whitespace=info->whitespace;
+	size_t fragment_end=info->fragment_begin+fragment_length;
+	//fprintf(stderr, "%d, %d\n", fragment.lang, fragment.length);
+
+	
+	String::Language to_lang=info->lang==String::Language::L_UNSPECIFIED?fragment_lang:info->lang;
+	bool optimize=(to_lang & String::Language::L_OPTIMIZE_BIT)!=0;
+	if(!optimize)
+		whitespace=false;
+		
+	switch(to_lang & ~String::Language::L_OPTIMIZE_BIT) {
+	case String::Language::L_CLEAN:
+	case String::Language::L_TAINTED:
+	case String::Language::L_AS_IS:
+		// clean piece
+
+		// tainted piece, but undefined untaint language
+		// for VString.as_double of tainted values
+		// for ^process{body} evaluation
+
+		// tainted, untaint language: as-is
+		ec_append(info->result, optimize, whitespace, info->pos, fragment_length);
+		break;
+	case String::Language::L_FILE_SPEC:
+		// tainted, untaint language: file [name]
+		escape(
+			// Macintosh has problems with small Russian letter 'r'
+			if( c=='\xF0' && info->charsets && info->charsets->source().NAME()=="WINDOWS-1251" ) {
+				// fixing that letter for most common charset
+				to_char('p');
+			} else // fallback to default
+				encode(need_file_encode, '_', c); 
+		);
+		break;
+	case String::Language::L_URI:
+		// tainted, untaint language: uri
+		{
+			const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();
+			// skip source [we use recoded version]
+			pa_CORD_pos_advance(info->pos, fragment_length);
+			String::C output(fragment_str, fragment_length);
+			if(info->charsets) 
+				output=Charset::transcode(output, 
+					info->charsets->source(), 
+					info->charsets->client());
+
+			char c;
+			for(const char* src=output.str; c=*src++; ) 
+				encode(need_uri_encode, '%', c);
 		}
+		break;
+	case String::Language::L_HTTP_HEADER:
+		// tainted, untaint language: http-field-content-text
+		escape(
+			encode(need_uri_encode, '%', c);
+		);
+		break;
+	case String::Language::L_MAIL_HEADER:
+		// tainted, untaint language: mail-header
+		// http://www.ietf.org/rfc/rfc2047.txt
+		if(info->charsets) {
+			size_t mail_size;
+			const char *mail_ptr=
+				info->body->mid(info->fragment_begin, mail_size=fragment_length).cstr();
+			// skip source [we use recoded version]
+			pa_CORD_pos_advance(info->pos, mail_size);
+
+			const char* charset_name=info->charsets->mail().NAME().cstr();
+
+			// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
+			bool to_quoted_printable=false;
+
+			bool email=false;
+			uchar c;
+			for(const char* src=mail_ptr; c=(uchar)*src++; ) {
+				//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
+				if(to_quoted_printable && (c==',' || addr_spec_soon(src) || c == '"')) {
+					email=c=='<';
+					to_string("?=");
+					to_quoted_printable=false;
+				}
+				if(!email && (
+					!to_quoted_printable && (c & 0x80)  // starting quote-printable-encoding on first 8bit char
+					|| to_quoted_printable && !mail_header_char_valid_within_Qencoded(c)
+					)) {
+					if(!to_quoted_printable) {
+						to_string("=?");
+						to_string(charset_name);
+						to_string("?Q?");
+						to_quoted_printable=true;
+					}
+					encode(mail_header_nonspace_char, '=', '_'); 
+				} else
+					to_char(c);
+				if(c=='>')
+					email=false;
+			}
+			if(to_quoted_printable) // close
+				to_string("?=");
+		
+		} else
+			ec_append(info->result, optimize, whitespace, info->pos, fragment_length);
+		break;
+	case String::Language::L_TABLE: 
+		// tainted, untaint language: table
+		escape(switch(c) {
+			case '\t': to_char(' ');  break;
+			case '\n': to_char(' ');  break;
+			_default;
+		});
+		break;
+#ifdef PA_SQL
+	case String::Language::L_SQL:
+		// tainted, untaint language: sql
+		if(info->connection) {
+			const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();
+			// skip source [we use recoded version]
+			pa_CORD_pos_advance(info->pos, fragment_length);
+
+			to_string(info->connection->quote(fragment_str, fragment_length));
+		} else
+			throw Exception(0,
+				0,
+				"untaint in SQL language failed - no connection specified");
+		break;
+#endif
+	case String::Language::L_JS:
+		escape(switch(c) {
+			case '"': to_string("\\\"");  break;
+			case '\'': to_string("\\'");  break;
+			case '\n': to_string("\\n");  break;
+			case '\\': to_string("\\\\");  break;
+			case '\xFF': to_string("\\\xFF");  break;
+			_default;
+		});
+		break;
+	case String::Language::L_XML:
+		escape(switch(c) {
+			case '&': to_string("&amp;");  break;
+			case '>': to_string("&gt;");  break;
+			case '<': to_string("&lt;");  break;
+			case '"': to_string("&quot;");  break;
+			case '\'': to_string("&apos;");  break;
+			_default;
+		});
+		break;
+	case String::Language::L_HTML:
+		escape(switch(c) {
+			case '&': to_string("&amp;");  break;
+			case '>': to_string("&gt;");  break;
+			case '<': to_string("&lt;");  break;
+			case '"': to_string("&quot;");  break;
+			_default;
+		});
+		break;
+	default:
+		assert(!"should never");
+		SAPI::die("unknown untaint language #%d", 
+			static_cast<int>(to_lang)); // should never
+		break; // never
 	}
 
-	return StringBody(CORD_ec_to_cord(result));
+	info->fragment_begin=fragment_end;
+
+	return 0; // 0=continue
+}
+
+
+String::Body String::cstr_to_string_body(Language lang, 
+		  SQL_Connection* connection,
+		  const Request_charsets *charsets) const {
+
+	Cstr_to_string_body_block_info info;
+	// input
+	info.lang=lang;
+	info.connection=connection;
+	info.charsets=charsets;
+	info.body=&body;
+	// output
+	CORD_ec_init(info.result);
+	// private
+	body.set_pos(info.pos, 0);
+	info.fragment_begin=0;
+	info.whitespace=true;
+
+	if(!is_empty())
+		langs.for_each(body, cstr_to_string_body_block, &info);
+
+	return String::Body(CORD_ec_to_cord(info.result));
 }

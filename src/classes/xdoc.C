@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2003/09/22 09:02:24 $";
+static const char* IDENT_XDOC_C="$Date: 2003/09/25 09:15:02 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -328,7 +328,7 @@ static void _getElementsByTagName(Request& r, MethodParams& params) {
 		gulong length=gdome_nl_length(nodes, &exc);
 		for(gulong i=0; i<length; i++)
 			result.hash().put(
-				StringBody::Format(i), 
+				String::Body::Format(i), 
 				new VXnode(&r.charsets, gdome_nl_item(nodes, i, &exc)));
 	} else if(exc)
 		throw Exception(0, exc);
@@ -355,7 +355,7 @@ static void _getElementsByTagNameNS(Request& r, MethodParams& params) {
 		gulong length=gdome_nl_length(nodes, &exc);
 		for(gulong i=0; i<length; i++)
 			result.hash().put(
-				StringBody::Format(i), 
+				String::Body::Format(i), 
 				new VXnode(&r.charsets, gdome_nl_item(nodes, i, &exc)));
 	}
 
@@ -518,13 +518,13 @@ static void _load(Request& r, MethodParams& params) {
 static void param_option_over_output_option(
 					    HashStringValue& param_options, const char* option_name,
 					    const String*& output_option) {
-	if(Value* value=param_options.get(StringBody(option_name)))
+	if(Value* value=param_options.get(String::Body(option_name)))
 		output_option=&value->as_string();
 }
 static void param_option_over_output_option(
 					    HashStringValue& param_options, const char* option_name,
 					    bool& output_option) {
-	if(Value* value=param_options.get(StringBody(option_name))) {
+	if(Value* value=param_options.get(String::Body(option_name))) {
 		const String& s=value->as_string();
 		if(s=="yes")
 			output_option=true;
@@ -561,7 +561,7 @@ static void prepare_output_options(Request& r,
 		if(voptions.is_defined()) {
 			if(HashStringValue *options=voptions.get_hash()) {
 				// $.method[xml|html|text]
-				if(Value* vmethod=options->get(StringBody(XDOC_OUTPUT_METHOD_OPTION_NAME)))
+				if(Value* vmethod=options->get(String::Body(XDOC_OUTPUT_METHOD_OPTION_NAME)))
 					oo.method=&vmethod->as_string();
 
 				// $.version[1.0]
@@ -692,7 +692,7 @@ static void _file(Request& r, MethodParams& params) {
 		value_name, 
 		new VString(*oo.mediaType));
 	vhcontent_type.hash().put(
-		StringBody("charset"), 
+		String::Body("charset"), 
 		new VString(*oo.encoding));
 
 	vfile.set(false/*tainted*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, 

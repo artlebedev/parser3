@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_MAIL_C="$Date: 2003/09/25 09:15:02 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -80,7 +80,7 @@ static void sendmail(Request& r,
 	Value* server_port;
 	// $MAIN:MAIL.SMTP[mail.yourdomain.ru[:port]]
 	if(vmail_conf && 
-		(server_port=vmail_conf->get_hash()->get(StringBody("SMTP")))) {
+		(server_port=vmail_conf->get_hash()->get(String::Body("SMTP")))) {
 		char* server=server_port->as_string().cstrm();
 		const char* port=rsplit(server, ':');
 		if(!port)

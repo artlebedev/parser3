@@ -10,7 +10,7 @@
 #ifndef PA_STYLESHEET_MANAGER_H
 #define PA_STYLESHEET_MANAGER_H
 
-static const char* IDENT_STYLESHEET_MANAGER_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_STYLESHEET_MANAGER_H="$Date: 2003/09/25 09:15:02 $";
 
 
 #include "pa_hash.h"
@@ -49,7 +49,7 @@ private: // for stylesheet
 
 public:
 	typedef Stack<Stylesheet_connection*> connection_cache_value_type;
-	typedef Hash<const StringBody, connection_cache_value_type*> connection_cache_type;
+	typedef Hash<const String::Body, connection_cache_value_type*> connection_cache_type;
 private:
 	connection_cache_type connection_cache;
 

@@ -11,20 +11,20 @@
 #ifndef PA_CHARSETS_H
 #define PA_CHARSETS_H
 
-static const char* IDENT_CHARSETS_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_CHARSETS_H="$Date: 2003/09/25 09:15:02 $";
 
 #include "pa_hash.h"
 #include "pa_charset.h"
 
 /// convention: use UPPERCASE keys
-class Charsets: public Hash<const StringBody, Charset*> {
+class Charsets: public Hash<const String::Body, Charset*> {
 public:
 
 	Charsets();
 
-	Charset& get(const StringBody ANAME);
+	Charset& get(const String::Body ANAME);
 
-	void load_charset(Request_charsets& charsets, const StringBody ANAME, const String& afile_spec);
+	void load_charset(Request_charsets& charsets, const String::Body ANAME, const String& afile_spec);
 };
 
 //@{ globals

@@ -8,13 +8,13 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_COMMON_H="$Date: 2003/09/25 09:15:02 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
 
 class Value;
-typedef Hash<const StringBody , Value*> HashStringValue;
+typedef Hash<const String::Body , Value*> HashStringValue;
 
 // replace system s*nprintf with our versions
 #undef vsnprintf 

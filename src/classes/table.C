@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/07/24 11:31:20 $";
+static const char* IDENT_TABLE_C="$Date: 2003/09/25 09:15:02 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -207,8 +207,9 @@ static void _load(Request& r, MethodParams& params) {
 	}
 
 	// parse cells
-	Table& table=*new Table(columns);
+	Table& table=*new Table(columns);//что-то очень плохое с realloc'ом: 1000 сильно помогает
 	char *row_chars;
+	int cells=0;
 	while(row_chars=getrow(&data)) {
 		// remove empty&comment lines
 		if(!*row_chars || *row_chars == '#')
@@ -216,6 +217,7 @@ static void _load(Request& r, MethodParams& params) {
 		Table::element_type row(new ArrayString);
 		while(char *cell_chars=lsplit(&row_chars, '\t')) {
 			*row+=new String(cell_chars, 0, true);
+			cells++;
 		}
 		table+=row;
 	};

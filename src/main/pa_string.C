@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/08/18 08:27:41 $";
+static const char* IDENT_STRING_C="$Date: 2003/09/25 09:15:03 $";
 
 #include "pcre.h"
 
@@ -14,6 +14,32 @@ static const char* IDENT_STRING_C="$Date: 2003/08/18 08:27:41 $";
 #include "pa_table.h"
 #include "pa_dictionary.h"
 #include "pa_charset.h"
+
+// cord lib extension
+
+#ifndef DOXYGEN
+typedef struct {
+    ssize_t countdown;
+    char target;	/* Character we're looking for	*/
+} chr_data;
+#endif
+static int CORD_range_contains_chr_greater_then_proc(char c, size_t size, void* client_data)
+{
+    register chr_data * d = (chr_data *)client_data;
+    
+    if (d -> countdown<=0) return(2);
+    d -> countdown -= size;
+    if (c > d -> target) return(1);
+    return(0);
+}
+int CORD_range_contains_chr_greater_then(CORD x, size_t i, size_t n, int c)
+{
+    chr_data d;
+
+    d.countdown = n;
+    d.target = c;
+    return(CORD_block_iter(x, i, CORD_range_contains_chr_greater_then_proc, &d) == 1/*alternatives: 0 normally ended, 2=struck 'n'*/);
+}
 
 // helpers
 
@@ -28,64 +54,19 @@ public:
 		*this+=new String("match");
 		*this+=new String("postmatch");
 		for(int i=0; i<MAX_MATCH_GROUPS; i++) {
-			*this+=new String(StringBody::Format(1+i), String::L_CLEAN);
+			*this+=new String(String::Body::Format(1+i), String::L_CLEAN);
 		}
 	}
 };
 
 Table string_match_table_template(new String_match_table_template_columns);
 
-// String::ArrayFragment methods
+// String::Body methods
 
-void String::ArrayFragment::append_positions(const ArrayFragment& src, 
-					     size_t substr_begin, size_t substr_end) {
-	if(substr_begin==substr_end)
-		return;
-
-//	FILE *err=fopen("append.log", "wt");
-
-	size_t fragment_begin=0;
-	size_t fragment_end;
-	for(Array_iterator<element_type> i(src); ; fragment_begin=fragment_end) {
-		const Fragment fragment=i.next();
-		fragment_end=fragment_begin+fragment.length;		
-		//fprintf(err, "1end=%u\n", fragment_end);fflush(err);
-
-		// not reached fragments which may include 'substr'?
-		if(!(substr_begin>=fragment_begin && substr_begin<fragment_end))
-			continue;
-
-		// found first fragment including piece of 'substr'
-		if(substr_end<=fragment_end) // fits into first fragment?
-			*this+=Fragment(fragment.lang, substr_end-substr_begin);
-		else { // spans more then one fragment
-			*this+=Fragment(fragment.lang, fragment_end-substr_begin);
-			while(true) {
-				const Fragment fragment=i.next();
-				fragment_end=(fragment_begin=fragment_end)+fragment.length;
-				//fprintf(err, "2end=%u\n", fragment_end);fflush(err);
-
-				if(substr_end>fragment_end) // are there still more?
-					append(Fragment(fragment.lang, fragment.length)); // appending whole fragment
-				else { // no, it was last
-					append(Fragment(fragment.lang, substr_end-fragment_begin));
-					//fclose(err);
-					return;
-				}
-			}
-		}
-
-		break;
-	}
-	//fclose(err);
-}
-
-// StringBody methods
-
-StringBody StringBody::Format(int value) {
+String::Body String::Body::Format(int value) {
 	char local[MAX_NUMBER];
 	size_t length=snprintf(local, MAX_NUMBER, "%d", value);
-	return StringBody(pa_strdup(local, length), length);
+	return String::Body(pa_strdup(local, length), length);
 }
 
 static int CORD_batched_iter_fn_generic_hash_code(char c, void * client_data) {
@@ -98,7 +79,7 @@ static int CORD_batched_iter_fn_generic_hash_code(const char*  s, void * client_
 	generic_hash_code(result, s);
 	return 0;
 };
-uint StringBody::hash_code() const {
+uint String::Body::hash_code() const {
 	uint result=0;
 	CORD_iter5(body, 0,
 		CORD_batched_iter_fn_generic_hash_code, 
@@ -115,17 +96,14 @@ String::String(const String::C cstr, bool tainted): body(CORD_EMPTY) {
 	append_know_length(cstr.str, cstr.length, tainted?L_TAINTED:L_CLEAN);
 }
 
-String::String(const String& src): body(src.body) {
-	fragments.append(src.fragments);
-	ASSERT_STRING_INVARIANT(*this);
-}
-
 String& String::append_know_length(const char* str, size_t known_length, Language lang) {
 	if(!known_length)
 		return *this;
 
+	// first: langs
+	langs.append(body, lang, known_length);
+	// next: letters themselves
 	body.append_know_length(str, known_length);
-	fragments+=Fragment(lang, known_length);
 
 	ASSERT_STRING_INVARIANT(*this);
 	return *this;
@@ -144,8 +122,10 @@ String& String::append_strdup(const char* str, size_t helper_length, Language la
 	if(!known_length)
 		return *this;
 
+	// first: langs
+	langs.append(body, lang, known_length);
+	// next: letters themselves
 	body.append_strdup_know_length(str, known_length);
-	fragments+=Fragment(lang, known_length);
 
 	ASSERT_STRING_INVARIANT(*this);
 	return *this;
@@ -158,14 +138,14 @@ String& String::mid(size_t substr_begin, size_t substr_end) const {
 	size_t self_length=length();
 	substr_begin=min(substr_begin, self_length);
 	substr_end=min(max(substr_end, substr_begin), self_length);
-	if(substr_begin==substr_end)
+	size_t substr_length=substr_end-substr_begin;
+	if(!substr_length)
 		return result;
 
-	// first: letters themselves
-	result.body=body.mid(substr_begin, substr_end-substr_begin);
-
-	// next: their langs
-	result.fragments.append_positions(fragments, substr_begin, substr_end);
+	// first: their langs
+	result.langs.append(result.body, langs, substr_begin, substr_length);
+	// next: letters themselves
+	result.body=body.mid(substr_begin, substr_length);
 
 //	SAPI::log("piece of '%s' from %d to %d is '%s'",
 		//cstr(), substr_begin, substr_end, result.cstr());
@@ -173,51 +153,12 @@ String& String::mid(size_t substr_begin, size_t substr_end) const {
 	return result;
 }
 
-size_t String::pos(const StringBody substr, 
-		   size_t this_offset, Language lang) const {
-	// first: letters themselves
+size_t String::pos(const String::Body substr, size_t this_offset, Language lang) const {
 	size_t substr_begin=body.pos(substr, this_offset);
-	if(substr_begin==CORD_NOT_FOUND)
+	if(substr_begin==CORD_NOT_FOUND || !langs.check_lang(lang, substr_begin, substr.length()))
 		return STRING_NOT_FOUND;
 
-	// next: check the lang when specified
-
-	if(lang==L_UNSPECIFIED) // ignore lang?
-		return substr_begin;
-
-	// substr must be in one fragment, and fragments' lang must = lang
-	size_t substr_end=substr_begin+substr.length();
-	size_t fragment_begin=0;
-	size_t fragment_end;
-	for(Array_iterator<ArrayFragment::element_type> i(fragments); i.has_next(); fragment_begin=fragment_end) {
-		const Fragment fragment=i.next();
-		fragment_end=fragment_begin+fragment.length;
-
-		if(substr_begin<fragment_begin) // not reached fragments which may include 'result'?
-			continue;
-		if(substr_begin>=fragment_end) // begin of substr OUT of current fragment?
-			continue;
-		
-		if(substr_end>fragment_end) // end of substr OUT of current fragment?
-			throw Exception(0, // (*) see below
-				this,
-				"searching for '%s' starting from %ud problem: found begin in one fragment, but end in another",
-					substr.cstr(), this_offset);
-
-		if(fragment.lang<=lang)
-			return substr_begin;
-		else { // bad lang...
-			/// WARNING: this possibly skips assert (*), but it's fast
-			substr_begin=body.pos(substr, fragment_end/*...search AFTER for more*/);
-			if(substr_begin==CORD_NOT_FOUND)
-				return STRING_NOT_FOUND;
-
-			size_t substr_end=substr_begin+substr.length();
-			// and continuing with next fragment
-		}
-	}	
-
-	return STRING_NOT_FOUND;
+	return substr_begin;
 }
 
 size_t String::pos(const String& substr, 
@@ -443,8 +384,8 @@ String& String::change_case(Charset& source_charset, Change_case_kind kind) cons
 
 		*dest++=(char)c;
 	}
+	result.langs=langs;
 	result.body=new_cstr;
-	result.fragments.append(fragments);
 
 	return result;
 }
@@ -459,8 +400,8 @@ const String& String::replace(const Dictionary& dict) const {
 		if(Table::element_type row=dict.first_that_begins(current)) {
 			// prematch
 			if(size_t prematch_length=current-prematch_begin) {
+				result.langs.append(result.body, langs, prematch_begin-old_cstr, current-old_cstr);
 				result.body.append_strdup_know_length(prematch_begin, prematch_length);
-				result.fragments.append_positions(fragments, prematch_begin-old_cstr, current-old_cstr);
 			}
 
 			// match
@@ -479,8 +420,8 @@ const String& String::replace(const Dictionary& dict) const {
 
 	// postmatch
 	if(size_t postmatch_length=current-prematch_begin) {
+		result.langs.append(result.body, langs, prematch_begin-old_cstr, current-old_cstr);
 		result.body.append_strdup_know_length(prematch_begin, postmatch_length);
-		result.fragments.append_positions(fragments, prematch_begin-old_cstr, current-old_cstr);
 	}
 
 	ASSERT_STRING_INVARIANT(result);
@@ -561,11 +502,12 @@ static int serialize_body_piece(const char* s, char** cur) {
 	return 0;
 };
 String::Cm String::serialize(size_t prolog_length) const {
+#if TODO
 	//_asm int 3;
 	size_t buf_length=
 		prolog_length
 		+sizeof(size_t)
-		+fragments.count()*(sizeof(Language)+sizeof(size_t))
+		+langs.count()*(sizeof(Language)+sizeof(size_t))
 		+length();
 	String::Cm result(new(PointerFreeGC) char[buf_length], buf_length);
 
@@ -573,12 +515,12 @@ String::Cm String::serialize(size_t prolog_length) const {
 	char *cur=result.str+prolog_length;
 
 
-	// 2: fragments.count
-	size_t fragments_count=fragments.count();
+	// 2: langs.count
+	size_t fragments_count=langs.count();
 	memcpy(cur, &fragments_count, sizeof(fragments_count));  cur+=sizeof(fragments_count);
 
 	// 3: lang info
-	for(Array_iterator<ArrayFragment::element_type> i(fragments); i.has_next(); ) {
+	for(Array_iterator<ArrayFragment::element_type> i(langs); i.has_next(); ) {
 		const Fragment fragment=i.next();
 		// lang
 		memcpy(cur, &fragment.lang, sizeof(fragment.lang));  cur+=sizeof(fragment.lang);
@@ -590,8 +532,11 @@ String::Cm String::serialize(size_t prolog_length) const {
 	body.for_each(serialize_body_piece, &cur);
 
 	return result;
+#endif
+	return String::Cm(0, 0);
 }
 bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
+#if TODO
 	if(buf_length<=prolog_length)
 		return false;
 	buf_length-=prolog_length;
@@ -599,8 +544,8 @@ bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
 	// 1: prolog
 	const char* cur=(const char* )buf+prolog_length;
 
-	// 2: fragments.count
-	if(buf_length<sizeof(size_t)) // fragments.count don't fit?
+	// 2: langs.count
+	if(buf_length<sizeof(size_t)) // langs.count don't fit?
 		return false;
 	size_t fragments_count=*reinterpret_cast<const size_t*>(cur);  cur+=sizeof(size_t);
 	buf_length-=sizeof(size_t);
@@ -615,7 +560,7 @@ bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
 
 			Language lang=*reinterpret_cast<const Language *>(cur);  cur+=sizeof(Language);
 			size_t fragment_length=*reinterpret_cast<const size_t*>(cur);  cur+=sizeof(size_t);
-			fragments+=Fragment(lang, fragment_length);
+			langs+=Fragment(lang, fragment_length);
 			total_length+=fragment_length;
 
 			buf_length-=piece_length;
@@ -625,9 +570,36 @@ bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
 		if(buf_length!=total_length)
 			return false;
 
-		body=StringBody(cur, buf_length);
+		body=String::Body(cur, buf_length);
 	}
 
 	ASSERT_STRING_INVARIANT(*this);
 	return true;
+#endif
+	return false;
+}
+
+const char* String::Body::v() const {
+	return CORD_to_const_char_star(body);
+}
+const char* String::Languages::v() const {
+	if(is_not_just_lang)
+		return CORD_to_const_char_star(langs);
+	else
+		return (const char*)&langs;
+}
+const char* String::v() const {
+#define LIMIT_VIEW 20
+	char* buf=(char*)malloc(MAX_STRING);
+	const char*body_view=body.v();
+	const char*langs_view=langs.v();
+	snprintf(buf, MAX_STRING, 
+		"%.*s%s}   "
+		"{%d:%s",
+		LIMIT_VIEW, langs_view, strlen(langs_view)>LIMIT_VIEW?"...":"",
+		strlen(body_view), body_view
+	);
+
+	return buf;
+#undef LIMIT_VIEW
 }

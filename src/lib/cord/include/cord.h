@@ -99,6 +99,9 @@ typedef char (* CORD_fn)(size_t i, void * client_data);
 /* Turn a functional description into a cord. 	*/
 CORD CORD_from_fn(CORD_fn fn, void * client_data, size_t len);
 
+/* Turn a functional description into a cord, only conjunction&func. 	*/
+CORD CORD_from_fn_gen(CORD_fn fn, void * client_data, size_t len);
+
 /* Return the substring (subcord really) of x with length at most n,	*/
 /* starting at position i.  (The initial character has position 0.)	*/
 CORD CORD_substr(CORD x, size_t i, size_t n);
@@ -122,6 +125,10 @@ CORD CORD_balance(CORD x);
 /* Function to iteratively apply to individual characters in cord.	*/
 typedef int (* CORD_iter_fn)(char c, void * client_data);
 
+/* Function to iteratively apply to individual block in cord.	*/
+typedef int (* CORD_block_iter_fn)(char c, size_t len, void* client_data);
+
+
 /* Function to apply to substrings of a cord.  Each substring is a 	*/
 /* a C character string, not a general cord.				*/
 typedef int (* CORD_batched_iter_fn)(const char * s, void * client_data);
@@ -137,6 +144,9 @@ typedef int (* CORD_batched_iter_fn)(const char * s, void * client_data);
 /* The specified value of i must be < CORD_len(x).			*/
 int CORD_iter5(CORD x, size_t i, CORD_iter_fn f1,
 	       CORD_batched_iter_fn f2, void * client_data);
+
+/* iterate over function block in cord */
+int CORD_block_iter(CORD x, size_t i, CORD_block_iter_fn f1, void * client_data);
 
 /* A simpler version that starts at 0, and without f2:	*/
 int CORD_iter(CORD x, CORD_iter_fn f1, void * client_data);
@@ -209,7 +219,6 @@ void CORD_dump(CORD x);
 
 /* Concatenate a character to the end of a cord.	*/
 CORD CORD_cat_char(CORD x, char c);
-
 /* Concatenate n cords.	*/
 CORD CORD_catn(int n, /* CORD */ ...);
 

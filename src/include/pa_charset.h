@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char* IDENT_CHARSET_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_CHARSET_H="$Date: 2003/09/25 09:15:02 $";
 
 
 #include "pa_exception.h"
@@ -50,7 +50,7 @@ struct Charset_TransRec {
 	XMLByte extCh;
 };
 
-typedef Hash<const StringBody, StringBody> HashStringString;
+typedef Hash<const String::Body, String::Body> HashStringString;
 
 /**	charset holds name & transcode tables 
 	registers libxml transcoders
@@ -58,9 +58,9 @@ typedef Hash<const StringBody, StringBody> HashStringString;
 class Charset: public PA_Object {
 public:
 
-	Charset(Request_charsets* charsets, const StringBody ANAME, const String* afile_spec);
+	Charset(Request_charsets* charsets, const String::Body ANAME, const String* afile_spec);
 	
-	const StringBody NAME() const { return FNAME; }
+	const String::Body NAME() const { return FNAME; }
 
 	bool isUTF8() const { return fisUTF8; }
 
@@ -73,7 +73,7 @@ public:
 		const Charset& source_transcoder, 
 		const Charset& dest_transcoder);
 
-	static StringBody transcode(const StringBody src,
+	static String::Body transcode(const String::Body src,
 		const Charset& source_transcoder, 
 		const Charset& dest_transcoder);
 
@@ -86,7 +86,7 @@ public:
 		const Charset& dest_transcoder);
 
 #ifdef XML
-	xmlCharEncodingHandler& transcoder(const StringBody NAME);
+	xmlCharEncodingHandler& transcoder(const String::Body NAME);
 #endif
 
 public:
@@ -114,7 +114,7 @@ public:
 
 private:
 
-	const StringBody FNAME;
+	const String::Body FNAME;
 	char* FNAME_CSTR;
 	bool fisUTF8;
 	Tables tables;
@@ -123,7 +123,7 @@ private:
 
 private:
 	void addEncoding(char* name_cstr);
-	void initTranscoder(const StringBody name, const char* name_cstr);
+	void initTranscoder(const String::Body name, const char* name_cstr);
 	
 public:
 	/// converts GdomeDOMString string to char* 
@@ -143,8 +143,8 @@ public:
 	GdomeDOMString_auto_ptr transcode_buf2dom(const char* buf, size_t buf_size);
 	/// converts parser String to GdomeDOMString
 	GdomeDOMString_auto_ptr transcode(const String& s);
-	/// converts parser StringBody to GdomeDOMString
-	GdomeDOMString_auto_ptr transcode(const StringBody s);
+	/// converts parser String::Body to GdomeDOMString
+	GdomeDOMString_auto_ptr transcode(const String::Body s);
 
 private:
 

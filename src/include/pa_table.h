@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-static const char* IDENT_TABLE_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_TABLE_H="$Date: 2003/09/25 09:15:02 $";
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -128,7 +128,7 @@ private:
 	columns_type fcolumns;
 
 	/// column name->number lookup table
-	typedef Hash<const StringBody, int> name2number_hash_class;
+	typedef Hash<const String::Body, int> name2number_hash_class;
 	name2number_hash_class* name2number;
 
 	/// is that @c index falid?

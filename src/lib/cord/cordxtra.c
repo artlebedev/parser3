@@ -298,7 +298,7 @@ int CORD_chr_proc(char c, void * client_data)
     (d -> pos) ++;
     return(0);
 }
-
+          
 int CORD_rchr_proc(char c, void * client_data)
 {
     register chr_data * d = (chr_data *)client_data;
@@ -430,6 +430,11 @@ void CORD_ec_append_cord(CORD_ec x, CORD s)
 char CORD_nul_func(size_t i, void * client_data)
 {
     return((char)(unsigned long)client_data);
+}
+
+CORD CORD_chars_block(char c, size_t i)
+{
+    return(CORD_from_fn_gen(CORD_nul_func, (void *)(unsigned long)c, i));
 }
 
 

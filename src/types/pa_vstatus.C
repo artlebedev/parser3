@@ -7,7 +7,7 @@
 	Win32 rusage author: Victor Fedoseev <vvf_ru@mail.ru>
 */
 
-static const char* IDENT_VSTATUS_C="$Date: 2003/07/24 11:31:26 $";
+static const char* IDENT_VSTATUS_C="$Date: 2003/09/25 09:15:03 $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"
@@ -77,13 +77,13 @@ Value& rusage_element() {
 				// dwHighDateTime & dwLowDateTime - 1/10 000 000 seconds in 64 bit
 				/* the amount of time that the process has executed in user mode */
 				d1 = double((LONGLONG)UserTime.ft_scalar)/10000000.0;
-				hash.put(StringBody("utime"),  new VDouble(d1));
-//					hash.put(StringBody("UserTime"),  new VDouble(d1));
+				hash.put(String::Body("utime"),  new VDouble(d1));
+//					hash.put(String::Body("UserTime"),  new VDouble(d1));
 				
 				/* the amount of time that the process has executed in kernel mode */
 				d1 = double((LONGLONG)KernelTime.ft_scalar)/10000000.0;
-				hash.put(StringBody("stime"),  new VDouble(d1));
-//					hash.put(StringBody("KernelTime"),  new VDouble( d1));
+				hash.put(String::Body("stime"),  new VDouble(d1));
+//					hash.put(String::Body("KernelTime"),  new VDouble( d1));
 			}
 		}
 
@@ -93,22 +93,22 @@ Value& rusage_element() {
 			IO_COUNTERS_ ioc;
 			if(pGetProcessIoCounters(hProc, &ioc)){
 				/* Specifies the number of I/O operations performed, other than read and write operations */
-				hash.put(StringBody(     "OtherOperationCount"),
+				hash.put(String::Body(     "OtherOperationCount"),
 					new VDouble(double((LONGLONG)ioc.OtherOperationCount)));
 				/* Specifies the number of bytes transferred during operations other than read and write operations */
-				hash.put(StringBody(     "OtherTransferCount"),
+				hash.put(String::Body(     "OtherTransferCount"),
 					new VDouble(double((LONGLONG)ioc.OtherTransferCount)/1024.0));
 				/* Specifies the number of read operations performed */
-				hash.put(StringBody(     "ReadOperationCount"),
+				hash.put(String::Body(     "ReadOperationCount"),
 					new VDouble(double((LONGLONG)ioc.ReadOperationCount)));
 				/* Specifies the number of bytes read */
-				hash.put(StringBody(     "ReadTransferCount"),
+				hash.put(String::Body(     "ReadTransferCount"),
 					new VDouble(double((LONGLONG)ioc.ReadTransferCount)/1024.0));
 				/* Specifies the number of write operations performed */
-				hash.put(StringBody(     "WriteOperationCount"),
+				hash.put(String::Body(     "WriteOperationCount"),
 					new VDouble(double((LONGLONG)ioc.WriteOperationCount)));
 				/* Specifies the number of bytes written */
-				hash.put(StringBody(     "WriteTransferCount"),
+				hash.put(String::Body(     "WriteTransferCount"),
 					new VDouble(double((LONGLONG)ioc.WriteTransferCount)/1024.0));
 			}
 		}
@@ -130,20 +130,20 @@ Value& rusage_element() {
 			if(pGetProcessMemoryInfo(hProc, &pmc, sizeof(PROCESS_MEMORY_COUNTERS))){
 				/* The peak working set size */
 				d1 = double(pmc.PeakWorkingSetSize)/1024.0;
-				hash.put(StringBody("maxrss"), new VDouble(d1));
-//					hash.put(StringBody("PeakWorkingSetSize")),  new VDouble( d1)));
+				hash.put(String::Body("maxrss"), new VDouble(d1));
+//					hash.put(String::Body("PeakWorkingSetSize")),  new VDouble( d1)));
 				/* The peak nonpaged pool usage */
 				d1 = double(pmc.QuotaPeakNonPagedPoolUsage)/1024.0;
-//					hash.put(StringBody("ixrss"), new VDouble(d1));
-				hash.put(StringBody("QuotaPeakNonPagedPoolUsage"),  new VDouble( d1));
+//					hash.put(String::Body("ixrss"), new VDouble(d1));
+				hash.put(String::Body("QuotaPeakNonPagedPoolUsage"),  new VDouble( d1));
 				/* The peak paged pool usage */
 				d1 = double(pmc.QuotaPeakPagedPoolUsage)/1024.0;
-//					hash.put(StringBody("idrss"),  new VDouble( d1));
-				hash.put(StringBody("QuotaPeakPagedPoolUsage"),  new VDouble( d1));
+//					hash.put(String::Body("idrss"),  new VDouble( d1));
+				hash.put(String::Body("QuotaPeakPagedPoolUsage"),  new VDouble( d1));
 				/* The peak pagefile usage */
 				d1 = double(pmc.PeakPagefileUsage)/1024.0;
-//					hash.put(StringBody("isrss"),  new VDouble( d1));
-				hash.put(StringBody("PeakPagefileUsage"),  new VDouble( d1));
+//					hash.put(String::Body("isrss"),  new VDouble( d1));
+				hash.put(String::Body("PeakPagefileUsage"),  new VDouble( d1));
 			}
 		}
 		FreeLibrary(hMod);
@@ -155,8 +155,8 @@ GetSystemTimeAsFileTime( &(ft.ft_struct) );
 	ft.ft_scalar -= EPOCH_BIAS;
 	ui64 tv_sec = ft.ft_scalar/10000000i64;
 	ui64 tv_usec = (ft.ft_scalar-tv_sec*10000000i64)/10i64;
-	hash.put(StringBody("tv_sec"), new VDouble(double((LONGLONG)tv_sec)));
-	hash.put(StringBody("tv_usec"), new VDouble(double((LONGLONG)tv_usec)));
+	hash.put(String::Body("tv_sec"), new VDouble(double((LONGLONG)tv_sec)));
+	hash.put(String::Body("tv_usec"), new VDouble(double((LONGLONG)tv_usec)));
 
 #else
 
@@ -167,14 +167,14 @@ GetSystemTimeAsFileTime( &(ft.ft_struct) );
 			0,
 			"getrusage failed (#%d)", errno);
 
-	hash.put(StringBody("utime"), new VDouble(
+	hash.put(String::Body("utime"), new VDouble(
 		u.ru_utime.tv_sec+u.ru_utime.tv_usec/1000000.0));
-	hash.put(StringBody("stime"), new VDouble(
+	hash.put(String::Body("stime"), new VDouble(
 		u.ru_stime.tv_sec+u.ru_stime.tv_usec/1000000.0));
-	hash.put(StringBody("maxrss"), new VDouble(u.ru_maxrss));
-	hash.put(StringBody("ixrss"), new VDouble(u.ru_ixrss));
-	hash.put(StringBody("idrss"), new VDouble(u.ru_idrss));
-	hash.put(StringBody("isrss"), new VDouble(u.ru_isrss));
+	hash.put(String::Body("maxrss"), new VDouble(u.ru_maxrss));
+	hash.put(String::Body("ixrss"), new VDouble(u.ru_ixrss));
+	hash.put(String::Body("idrss"), new VDouble(u.ru_idrss));
+	hash.put(String::Body("isrss"), new VDouble(u.ru_isrss));
 #endif
 
 #ifdef HAVE_GETTIMEOFDAY
@@ -184,8 +184,8 @@ GetSystemTimeAsFileTime( &(ft.ft_struct) );
 			0,
 			"gettimeofday failed (#%d)", errno);
 
-	hash.put(StringBody("tv_sec"), new VDouble(tp.tv_sec));
-	hash.put(StringBody("tv_usec"), new VDouble(tp.tv_usec));
+	hash.put(String::Body("tv_sec"), new VDouble(tp.tv_sec));
+	hash.put(String::Body("tv_usec"), new VDouble(tp.tv_usec));
 #endif
 
 #endif
@@ -202,10 +202,10 @@ Value& memory_element() {
 	size_t bytes_since_gc=GC_get_bytes_since_gc();
 	size_t total_bytes=GC_get_total_bytes();
 
-	hash.put(StringBody("used"), new VDouble((heap_size-free_bytes)/1024.0));
-	hash.put(StringBody("free"), new VDouble(free_bytes/1024.0));
-	hash.put(StringBody("ever_allocated_since_compact"), new VDouble(bytes_since_gc/1024.0));
-	hash.put(StringBody("ever_allocated_since_start"), new VDouble(total_bytes/1024.0));
+	hash.put(String::Body("used"), new VDouble((heap_size-free_bytes)/1024.0));
+	hash.put(String::Body("free"), new VDouble(free_bytes/1024.0));
+	hash.put(String::Body("ever_allocated_since_compact"), new VDouble(bytes_since_gc/1024.0));
+	hash.put(String::Body("ever_allocated_since_start"), new VDouble(total_bytes/1024.0));
 
 	return memory;
 }

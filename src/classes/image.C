@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2003/09/01 07:12:23 $";
+static const char* IDENT_IMAGE_C="$Date: 2003/09/25 09:15:02 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -427,7 +427,7 @@ static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format,
 	HashStringValue& hash=result->hash();
 	for(uint i=0; i<components_count; i++, value+=component_size) {
 		hash.put(
-			StringBody::Format(i),
+			String::Body::Format(i),
 			parse_IFD_entry_formatted_one_value(is_big, format, component_size, value));
 	}
 
@@ -512,9 +512,9 @@ static void parse_IFD_entry(HashStringValue& hash,
 	
 	if(Value* value=parse_IFD_entry_value(is_big, reader, tiff_base, entry)) {
 		if(const char* name=exif_tag_value2name.get(tag))
-			hash.put(StringBody(name), value);
+			hash.put(String::Body(name), value);
 		else
-			hash.put(StringBody::Format(tag), value);
+			hash.put(String::Body::Format(tag), value);
 	}
 }
 

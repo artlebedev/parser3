@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSET_C="$Date: 2003/08/18 08:27:40 $";
+static const char* IDENT_CHARSET_C="$Date: 2003/09/25 09:15:03 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -68,7 +68,7 @@ static void element2case(unsigned char from, unsigned char to,
 // methods
 
 extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
-Charset::Charset(Request_charsets* charsets, const StringBody ANAME, const String* afile_spec): 
+Charset::Charset(Request_charsets* charsets, const String::Body ANAME, const String* afile_spec): 
 	FNAME(ANAME),
 	FNAME_CSTR(ANAME.cstrm()) {
 
@@ -544,12 +544,12 @@ void Charset::addEncoding(char *name_cstr) {
 
 }
 
-void Charset::initTranscoder(const StringBody NAME, const char* name_cstr) {
+void Charset::initTranscoder(const String::Body NAME, const char* name_cstr) {
 	ftranscoder=xmlFindCharEncodingHandler(name_cstr);
 	transcoder(NAME); // check right way
 }
 
-xmlCharEncodingHandler& Charset::transcoder(const StringBody NAME) {
+xmlCharEncodingHandler& Charset::transcoder(const String::Body NAME) {
 	if(!ftranscoder)
 		throw Exception("parser.runtime",
 			new String(NAME, String::L_TAINTED),
@@ -641,14 +641,14 @@ GdomeDOMString_auto_ptr Charset::transcode(const String& s) {
 
 	return transcode_buf2dom(cstr, strlen(cstr)); 
 }
-GdomeDOMString_auto_ptr Charset::transcode(const StringBody s) { 
+GdomeDOMString_auto_ptr Charset::transcode(const String::Body s) { 
 	const char* cstr=s.cstr();
 
 	return transcode_buf2dom(cstr, s.length()); 
 }
 #endif
 
-StringBody Charset::transcode(const StringBody src, 
+String::Body Charset::transcode(const String::Body src, 
 	const Charset& source_transcoder, 
 	const Charset& dest_transcoder) {
 
@@ -659,7 +659,7 @@ StringBody Charset::transcode(const StringBody src,
 		source_transcoder,
 		dest_transcoder);
 
-	return StringBody(dest.str, dest.length);
+	return String::Body(dest.str, dest.length);
 }
 
 String& Charset::transcode(const String& src, 
@@ -668,7 +668,7 @@ String& Charset::transcode(const String& src,
 	if(!src.length())
 		return *new String("", 0, false);
 
-	return *new String(transcode((StringBody)src, source_transcoder, dest_transcoder), String::L_CLEAN);
+	return *new String(transcode((String::Body)src, source_transcoder, dest_transcoder), String::L_CLEAN);
 }
 
 void Charset::transcode(ArrayString& src,
@@ -684,8 +684,8 @@ struct Transcode_pair_info {
 	const Charset* dest_transcoder;
 };
 #endif
-static void transcode_pair(const StringBody akey, 
-			 StringBody& avalue, 
+static void transcode_pair(const String::Body akey, 
+			 String::Body& avalue, 
 			 Transcode_pair_info* info) {
 	avalue=Charset::transcode(avalue,
 		*info->source_transcoder, 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/09/19 09:58:26 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/09/25 09:15:03 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -341,7 +341,7 @@ static void http_pass_header(HashStringValue::key_type key,
 
 
 static Charset* detect_charset(Charset& source_charset, const String& content_type_value) {
-	const StringBody CONTENT_TYPE_VALUE=
+	const String::Body CONTENT_TYPE_VALUE=
 		content_type_value.change_case(source_charset, String::CC_UPPER);
 	// content-type: xxx/xxx; source_charset=WE-NEED-THIS
 	// content-type: xxx/xxx; source_charset="WE-NEED-THIS"
@@ -363,7 +363,7 @@ static Charset* detect_charset(Charset& source_charset, const String& content_ty
 			if(delim_pos!=STRING_NOT_FOUND)
 				charset_end=delim_pos;
 		}
-		const StringBody CHARSET_NAME_BODY=
+		const String::Body CHARSET_NAME_BODY=
 			CONTENT_TYPE_VALUE.mid(charset_begin, charset_end);
 
 		return &charsets.get(CHARSET_NAME_BODY);
@@ -518,7 +518,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 			throw Exception("http.response", 
 				&connect_string,
 				"bad response from host - bad header \"%s\"", line.cstr());
-		const StringBody HEADER_NAME=
+		const String::Body HEADER_NAME=
 			line.mid(0, pos).change_case(charsets.source(), String::CC_UPPER);
 		const String& header_value=line.mid(pos+2, line.length());
 		if(HEADER_NAME=="CONTENT-TYPE")

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSETS_C="$Date: 2003/07/24 11:31:23 $";
+static const char* IDENT_CHARSETS_C="$Date: 2003/09/25 09:15:03 $";
 
 #include "pa_charsets.h"
 
@@ -25,7 +25,7 @@ Charsets::Charsets() {
 	put(UTF8_charset.NAME(), &UTF8_charset);
 }
 
-Charset& Charsets::get(const StringBody ANAME) {
+Charset& Charsets::get(const String::Body ANAME) {
 	if(Charset* result=Hash<key_type, value_type>::get(ANAME))
 		return *result;
 	else
@@ -34,7 +34,7 @@ Charset& Charsets::get(const StringBody ANAME) {
 			"unknown charset");
 }
 
-void Charsets::load_charset(Request_charsets& charsets, const StringBody ANAME, const String& afile_spec) {
+void Charsets::load_charset(Request_charsets& charsets, const String::Body ANAME, const String& afile_spec) {
 	//we know that charset?
 	if(Hash<key_type, value_type>::get(ANAME)) 
 		return; // don't load it then

@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2003/07/24 11:31:26 $";
+static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2003/09/25 09:15:03 $";
 
 // include
 
@@ -38,7 +38,7 @@ class VStateless_class: public Value {
 
 	const String* fname;
 	mutable const char* fname_cstr;
-	Hash<const StringBody, Method*> fmethods;
+	Hash<const String::Body, Method*> fmethods;
 
 	bool flocked;
 
