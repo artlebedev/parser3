@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.27 2002/03/01 10:09:56 paf Exp $
+	$Id: pa_exec.C,v 1.28 2002/03/11 07:53:16 paf Exp $
 
 
 	@todo setrlimit
@@ -293,6 +293,12 @@ int pa_exec(const String& file_spec,
 			const String& in, String& out, String& err) {
 	Pool& pool=file_spec.pool();
 
+#ifdef NO_PA_EXECS
+
+	throw Exception(0, 0,
+		&file_spec,
+		"parser execs are disabled [recompile parser without --disable-execs configure option]");
+
 #ifdef WIN32
 
 	char pwd[MAX_STRING];
@@ -402,6 +408,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		throw Exception(0, 0,
 			&file_spec,
 			"pipe error");
+#endif
 #endif
 
 	return 0;
