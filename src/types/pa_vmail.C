@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/08/13 15:55:44 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/08/14 13:00:41 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -85,7 +85,9 @@ static void putReceived(Hash& received, const char *name, const char *value, siz
 
 		const void *value_dest_body;
 		size_t value_dest_content_length;
-		UTF8toSource(pool, value, value_size, value_dest_body, value_dest_content_length);
+		// UTF8toSource(pool, value, value_size, value_dest_body, value_dest_content_length);
+		value_dest_body=value;
+		value_dest_content_length=value_size;
 		
 		putReceived(received, name, 
 			new(pool) VString(
