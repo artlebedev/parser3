@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_table.C,v 1.6 2001/10/28 11:40:48 paf Exp $
+	$Id: pa_db_table.C,v 1.7 2001/10/28 11:49:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -16,12 +16,11 @@
 
 // defines
 
-#if DB_VERSION_MINOR >= 7
+#ifdef DB_RMW
 #	define DEADLOCK_POSSIBILITY_REDUCTION_FLAGS DB_RMW
 #else
 #	define DEADLOCK_POSSIBILITY_REDUCTION_FLAGS 0
 #endif
-
 
 // consts
 
