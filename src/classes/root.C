@@ -3,10 +3,10 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.47 2001/03/21 14:06:42 paf Exp $
+	$Id: root.C,v 1.48 2001/03/23 13:08:07 paf Exp $
 */
 
-#include <string.h>
+#include "pa_config_includes.h"
 #include <math.h>
 
 #include "pa_common.h"

@@ -5,10 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.69 2001/03/23 10:27:31 paf Exp $
+	$Id: pa_request.C,v 1.70 2001/03/23 13:08:11 paf Exp $
 */
 
-#include <string.h>
+#include "pa_config_includes.h"
 
 #include "pa_sapi.h"
 #include "pa_common.h"

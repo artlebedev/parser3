@@ -5,9 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.122 2001/03/21 14:06:45 paf Exp $
+	$Id: execute.C,v 1.123 2001/03/23 13:08:10 paf Exp $
 */
 
+#include "pa_config_includes.h"
 #include "code.h"
 #include "pa_array.h" 
 #include "pa_request.h"
@@ -22,7 +23,6 @@
 #include "pa_vtable.h"
 
 #include <stdio.h>
-#include <string.h>
 
 #define PUSH(value) stack.push(value)
 #define POP() static_cast<Value *>(stack.pop())

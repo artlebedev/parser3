@@ -5,10 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.16 2001/03/22 16:38:21 paf Exp $
+	$Id: pa_pool.C,v 1.17 2001/03/23 13:08:11 paf Exp $
 */
 
-#include <string.h>
+#include "pa_config_includes.h"
 
 #include "pa_pool.h"
 #include "pa_exception.h"

@@ -5,24 +5,21 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.20 2001/03/21 14:06:43 paf Exp $
+	$Id: pa_common.h,v 1.21 2001/03/23 13:08:08 paf Exp $
 */
 
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#ifdef HAVE_CONFIG_H
-#	include "pa_config.h"
-#endif
-
+#include "pa_config_includes.h"
 #include <stdio.h>
-#include <stdarg.h>
+
 #include "pa_pool.h"
 
 class String;
 class Value;
 
-#ifdef WIN32
+#if _MSC_VER
 
 #ifndef open
 #	define open _open
@@ -32,6 +29,9 @@ class Value;
 #endif
 #ifndef read
 #	define read _read
+#endif
+#ifndef write
+#	define write _write
 #endif
 #ifndef stat
 #	define stat _stat

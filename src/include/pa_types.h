@@ -5,23 +5,19 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.22 2001/03/22 11:19:10 paf Exp $
+	$Id: pa_types.h,v 1.23 2001/03/23 13:08:09 paf Exp $
 */
 
 #ifndef PA_TYPES_H
 #define PA_TYPES_H
 
-#ifdef HAVE_CONFIG_H
-#	include "pa_config.h"
-#endif
+#include "pa_config_includes.h"
 
-#ifdef WIN32
-#	if _MSC_VER
-#		pragma warning(disable:4355)   // disable C4355 warning about using this
-		                               // in calls to parent constructors
-#		pragma warning(disable:4065)   // switch statement contains 'default' 
-									   // but no 'case' labels
-#	endif
+#if _MSC_VER
+#	pragma warning(disable:4355)   // disable C4355 warning about using this
+	                               // in calls to parent constructors
+#	pragma warning(disable:4065)   // switch statement contains 'default' 
+								   // but no 'case' labels
 #endif
 
 /// for rare cases of undefined length using this-sized strings

@@ -1,8 +1,10 @@
 @main[]
+
 $t[^table:load[/test.cfg]]
 ^$t.a=$t.a<BR>
 
 ^$env:REMOTE_ADDR=$env:REMOTE_ADDR<BR>
+^$env:REQUEST_URI=$env:REQUEST_URI<BR>
 
 ^rem{
 $response:body[]

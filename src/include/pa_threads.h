@@ -5,15 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_threads.h,v 1.10 2001/03/20 06:45:18 paf Exp $
+	$Id: pa_threads.h,v 1.11 2001/03/23 13:08:09 paf Exp $
 */
 
 #ifndef PA_THREADS_H
 #define PA_THREADS_H
 
-#ifdef HAVE_CONFIG_H
-#	include "pa_config.h"
-#endif
+#include "pa_config_includes.h"
 
 #include "pa_types.h"
 

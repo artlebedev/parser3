@@ -1,5 +1,5 @@
 #ifndef _MSC_VER
-#	error compile ISAPI module with MSVC
+#	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
 #endif
 
 #include <windows.h>
@@ -174,6 +174,11 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 		because this only gets "the place where last IIS Application was set"
 		and if someone would redefine Application settings below the /
 		all ^table:load[/test] would open not /test but /below/test
+
+	@todo 
+		IIS: remove trailing default-document[index.html] from $request.uri.
+		to do that we need to consult metabase,
+		wich is tested but seems slow.
 */
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	Pool pool;

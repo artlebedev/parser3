@@ -5,25 +5,16 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.21 2001/03/22 12:09:59 paf Exp $
+	$Id: pa_common.C,v 1.22 2001/03/23 13:08:10 paf Exp $
 */
 
-#ifdef HAVE_CONFIG_H
-#	include "pa_config.h"
-#endif
+#include "pa_config_includes.h"
 
 #include <fcntl.h>
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <io.h>
 #include <stdio.h>
-#include <string.h>
 #include <errno.h>
-
-#ifdef WIN32
-#else
-#	include <unistd.h>
-#endif
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -34,7 +25,7 @@
 #include "pa_hash.h"
 #include "pa_string.h"
 
-#ifdef WIN32
+#if _MSC_VER
 
 int __vsnprintf(char *b, size_t s, const char *f, va_list l) {
 	int r=_vsnprintf(b, --s, f, l);

@@ -5,15 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.48 2001/03/21 14:06:44 paf Exp $
+	$Id: pa_string.h,v 1.49 2001/03/23 13:08:09 paf Exp $
 */
 
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#ifdef HAVE_CONFIG_H
-#	include "pa_config.h"
-#endif
+#include "pa_config_includes.h"
 
 #include <stddef.h>
 

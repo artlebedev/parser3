@@ -5,10 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.23 2001/03/21 14:06:42 paf Exp $
+	$Id: table.C,v 1.24 2001/03/23 13:08:08 paf Exp $
 */
 
-#include <string.h>
+#include "pa_config_includes.h"
 #include "pa_common.h"
 #include "pa_request.h"
 #include "_table.h"

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.27 2001/03/19 17:56:28 paf Exp $
+	$Id: pa_hash.C,v 1.28 2001/03/23 13:08:10 paf Exp $
 */
 
 /*
@@ -16,7 +16,7 @@
 	For more information about Zend please visit http://www.zend.com/
 */
 
-#include <string.h>
+#include "pa_config_includes.h"
 
 #include "pa_hash.h"
 #include "pa_threads.h"

@@ -5,29 +5,18 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.39 2001/03/23 11:07:07 paf Exp $
+	$Id: parser3.C,v 1.40 2001/03/23 13:08:12 paf Exp $
 */
 
-#ifdef HAVE_CONFIG_H
-#	include "pa_config.h"
-#endif
-
+#include "pa_config_includes.h"
 
 #ifdef WIN32
 #	include <windows.h>
-#	include <io.h>
-#else
-#	include <unistd.h>
 #endif
 
-//\ifwin32
 #include <io.h>
-//#include <fcntl.h>
-//\endifwin32
-
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include <fcntl.h>
 
 #include "pa_sapi.h"
@@ -35,11 +24,11 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 
-Pool pool; // global pool
+Pool pool; // global pool [dont describe to doxygen: it confuses it with param names]
 bool cgi; ///< we were started as CGI?
 
-#if _MSC_VER
-// intercept global system errors
+#ifdef WIN32
+/// global system errors into parser exceptions converter
 static LONG WINAPI TopLevelExceptionFilter (struct _EXCEPTION_POINTERS *ExceptionInfo) {
 	char buf[MAX_STRING];
 	if(ExceptionInfo && ExceptionInfo->ExceptionRecord) {
@@ -58,14 +47,14 @@ static LONG WINAPI TopLevelExceptionFilter (struct _EXCEPTION_POINTERS *Exceptio
 }
 #endif
 
-//\if
+#ifdef WIN32
 static void fix_slashes(char *s) {
 	if(s)
 		for(; *s; s++)
 			if(*s=='\\')
 				*s='/';
 }
-//\endif
+#endif
 
 //@{
 /// SAPI funcs decl
@@ -106,9 +95,14 @@ void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 }
 //@}
 
-// main
+/**
+	main workhorse
 
-#include <stdlib.h>
+	@todo 
+		IIS: remove trailing default-document[index.html] from $request.uri.
+		to do that we need to consult metabase,
+		wich is tested but seems slow.
+*/
 int main(int argc, char *argv[]) {
 	umask(2);
 
@@ -142,7 +136,7 @@ int main(int argc, char *argv[]) {
 	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
-#if _MSC_VER
+#ifdef WIN32
 		SetUnhandledExceptionFilter(&TopLevelExceptionFilter);
 		//TODO: initSocks();
 #endif
@@ -161,10 +155,10 @@ int main(int argc, char *argv[]) {
 			if(const char *env_document_root=getenv("DOCUMENT_ROOT"))
 				request_info.document_root=env_document_root;
 			else if(const char *path_info=getenv("PATH_INFO")) {
-				// under IIS for sure
-				static char buf[MAX_STRING];
+				// IIS
 				size_t len=strlen(filespec_to_process)-strlen(path_info);
-				strncpy(buf, filespec_to_process, min(MAX_STRING-1, len));
+				char *buf=(char *)pool.malloc(len+1);
+				strncpy(buf, filespec_to_process, len);
 				buf[len]=0;
 				request_info.document_root=buf;
 			} else
@@ -179,8 +173,26 @@ int main(int argc, char *argv[]) {
 		}
 		request_info.path_translated=filespec_to_process;
 		request_info.method=request_method;
-		request_info.query_string=getenv("QUERY_STRING");
-		request_info.uri=getenv("REQUEST_URI");
+		const char *query_string=getenv("QUERY_STRING");
+		request_info.query_string=query_string;
+		if(const char *env_request_uri=getenv("REQUEST_URI"))
+			request_info.uri=env_request_uri;
+		else if (const char *path_info=getenv("PATH_INFO")) {
+			if(query_string) {
+				char *reconstructed_uri=(char *)malloc(
+					strlen(path_info)+1/*'?'*/+
+					strlen(query_string)+1/*0*/);
+				strcpy(reconstructed_uri, path_info);
+				strcat(reconstructed_uri, "?");
+				strcat(reconstructed_uri, query_string);
+				request_info.uri=reconstructed_uri;
+			} else
+				request_info.uri=path_info;
+		} else
+			PTHROW(0, 0,
+				0,
+				"CGI: no PATH_INFO defined (in reinventing REQUEST_URI)");
+
 		request_info.content_type=getenv("CONTENT_TYPE");
 		const char *content_length=getenv("CONTENT_LENGTH");
 		request_info.content_length=(content_length?atoi(content_length):0);
@@ -198,7 +210,7 @@ int main(int argc, char *argv[]) {
 		static char root_auto_path[MAX_STRING];
 		GetWindowsDirectory(root_auto_path, MAX_STRING);
 #else
-		// ~nobody
+		// ~nobody  todo: figure out a better place
 		char *root_auto_path=getenv("HOME");
 #endif
 		
@@ -214,7 +226,7 @@ int main(int argc, char *argv[]) {
 			header_only);
 
 		// must be last in PTRY{}PCATCH
-#if _MSC_VER
+#ifdef WIN32
 		SetUnhandledExceptionFilter(0);
 #endif
 		// successful finish
