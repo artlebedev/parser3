@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2003/09/22 07:05:53 $";
+static const char* IDENT_XNODE_C="$Date: 2003/09/22 11:47:29 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -340,7 +340,7 @@ static void _getElementsByTagName(Request& r, MethodParams& params) {
 
 // DOM 2
 
-// DOMString getAttributeNS(in DOMString name);
+// DOMString getAttributeNS(in DOMString namespaceURI, in DOMString localName);
 static void _getAttributeNS(Request& r, MethodParams& params) {
 	GdomeElement* element=get_self_element(r);
 	
@@ -356,7 +356,7 @@ static void _getAttributeNS(Request& r, MethodParams& params) {
 	r.write_no_lang(r.transcode(attribute_value));
 }
 
-// void setAttributeNS(in DOMString name, in DOMString value) raises(DOMException);
+// void setAttributeNS(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value) raises(DOMException);
 static void _setAttributeNS(Request& r, MethodParams& params) {
 	GdomeElement* element=get_self_element(r);
 	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
@@ -373,7 +373,7 @@ static void _setAttributeNS(Request& r, MethodParams& params) {
 		throw Exception(0, exc);
 }
 
-// void removeAttributeNS(in DOMString name) raises(DOMException);
+// void removeAttributeNS(in DOMString namespaceURI, in DOMString localName) raises(DOMException);
 static void _removeAttributeNS(Request& r, MethodParams& params) {
 	GdomeElement* element=get_self_element(r);
 	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
@@ -388,7 +388,7 @@ static void _removeAttributeNS(Request& r, MethodParams& params) {
 		throw Exception(0, exc);
 }
 
-// Attr getAttributeNodeNS(in DOMString name);
+// Attr getAttributeNodeNS(in DOMString namespaceURI, in DOMString localName);
 static void _getAttributeNodeNS(Request& r, MethodParams& params) {
 	GdomeElement* element=get_self_element(r);
 	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
@@ -420,7 +420,7 @@ static void _setAttributeNodeNS(Request& r, MethodParams& params) {
 			exc);
 }
 
-// boolean hasAttribute();
+// boolean hasAttribute(in DOMString name) raises(DOMException);
 static void _hasAttribute(Request& r, MethodParams& params) {
 	GdomeElement* element=get_self_element(r);
 
@@ -434,7 +434,7 @@ static void _hasAttribute(Request& r, MethodParams& params) {
 	r.write_no_lang(*new VBool(result));
 }
 
-// boolean hasAttributeNS();
+// boolean hasAttributeNS(n DOMString namespaceURI, in DOMString localName) raises(DOMException);
 static void _hasAttributeNS(Request& r, MethodParams& params) {
 	GdomeElement* element=get_self_element(r);
 
@@ -719,19 +719,19 @@ MXnode::MXnode(const char* aname, VStateless_class *abase):
 
 	/// DOM2 element
 
-	// DOMString getAttributeNS(in DOMString name);
+	// DOMString getAttributeNS(in DOMString namespaceURI, in DOMString localName);
 	add_native_method("getAttributeNS", Method::CT_DYNAMIC, _getAttributeNS, 2, 2);
-	// void setAttributeNS(in DOMString name, in DOMString value) raises(DOMException);
+	// void setAttributeNS(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value) raises(DOMException);
 	add_native_method("setAttributeNS", Method::CT_DYNAMIC, _setAttributeNS, 3, 3);
-	// void removeAttributeNS(in DOMString name) raises(DOMException);
+	// void removeAttributeNS(in DOMString namespaceURI, in DOMString localName) raises(DOMException);
 	add_native_method("removeAttributeNS", Method::CT_DYNAMIC, _removeAttributeNS, 2, 2);
-	// Attr getAttributeNodeNS(in DOMString name);
+	// Attr getAttributeNodeNS(in DOMString namespaceURI, in DOMString localName);
 	add_native_method("getAttributeNodeNS", Method::CT_DYNAMIC, _getAttributeNodeNS, 2, 2);
 	// Attr setAttributeNodeNS(in Attr newAttr) raises(DOMException);
 	add_native_method("setAttributeNodeNS", Method::CT_DYNAMIC, _setAttributeNodeNS, 1, 1);
-	// boolean hasAttribute(in Attr newAttr) raises(DOMException);
+	// boolean hasAttribute(in DOMString name) raises(DOMException);
 	add_native_method("hasAttribute", Method::CT_DYNAMIC, _hasAttribute, 1, 1);
-	// boolean hasAttributeNS(in Attr newAttr) raises(DOMException);
+	// boolean hasAttributeNS(in DOMString namespaceURI, in DOMString localName) raises(DOMException);
 	add_native_method("hasAttributeNS", Method::CT_DYNAMIC, _hasAttributeNS, 2, 2);
 
 	/// parser
