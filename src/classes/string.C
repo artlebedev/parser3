@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.46 2001/05/07 15:31:36 paf Exp $
+	$Id: string.C,v 1.47 2001/05/08 06:07:47 paf Exp $
 */
 
 #include "classes.h"
@@ -31,22 +31,25 @@ public: // Methoded
 
 // methods
 
-static void _length(Request& r, const String&, MethodParams *) {
+static void _length(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VDouble(pool, r.self->get_string()->size());
-	r.write_no_lang(value);
+	Value& result=*new(pool) VDouble(pool, r.self->get_string()->size());
+	result.set_name(method_name);
+	r.write_no_lang(result);
 }
 
-static void _int(Request& r, const String&, MethodParams *) {
+static void _int(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VInt(pool, (int)r.self->as_double());
-	r.write_no_lang(value);
+	Value& result=*new(pool) VInt(pool, (int)r.self->as_double());
+	result.set_name(method_name);
+	r.write_no_lang(result);
 }
 
-static void _double(Request& r, const String&, MethodParams *) {
+static void _double(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VDouble(pool, r.self->as_double());
-	r.write_no_lang(value);
+	Value& result=*new(pool) VDouble(pool, r.self->as_double());
+	result.set_name(method_name);
+	r.write_no_lang(result);
 }
 
 /*not static*/void _string_format(Request& r, const String& method_name, MethodParams *params) {

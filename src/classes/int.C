@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.23 2001/05/04 10:42:36 paf Exp $
+	$Id: int.C,v 1.24 2001/05/08 06:07:47 paf Exp $
 */
 
 #include "classes.h"
@@ -32,18 +32,20 @@ public: // Methoded
 
 // methods
 
-static void _int(Request& r, const String&, MethodParams *) {
+static void _int(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	VInt *vint=static_cast<VInt *>(r.self);
-	Value& value=*new(pool) VInt(pool, vint->get_int());
-	r.write_no_lang(value);
+	Value& result=*new(pool) VInt(pool, vint->get_int());
+	result.set_name(method_name);
+	r.write_no_lang(result);
 }
 
-static void _double(Request& r, const String&, MethodParams *) {
+static void _double(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	VInt *vint=static_cast<VInt *>(r.self);
-	Value& value=*new(pool) VDouble(pool, vint->as_double());
-	r.write_no_lang(value);
+	Value& result=*new(pool) VDouble(pool, vint->as_double());
+	result.set_name(method_name);
+	r.write_no_lang(result);
 }
 
 typedef void (*vint_op_func_ptr)(VInt& vint, double param);

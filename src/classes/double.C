@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.26 2001/05/04 10:42:35 paf Exp $
+	$Id: double.C,v 1.27 2001/05/08 06:07:47 paf Exp $
 */
 
 #include "classes.h"
@@ -32,18 +32,20 @@ public: // Methoded
 
 // methods
 
-static void _int(Request& r, const String&, MethodParams *) {
+static void _int(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
-	Value& value=*new(pool) VInt(pool, (int)vdouble->as_double());
-	r.write_no_lang(value);
+	Value& result=*new(pool) VInt(pool, (int)vdouble->as_double());
+	result.set_name(method_name);
+	r.write_no_lang(result);
 }
 
-static void _double(Request& r, const String&, MethodParams *) {
+static void _double(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
-	Value& value=*new(pool) VDouble(pool, vdouble->as_double());
-	r.write_no_lang(value);
+	Value& result=*new(pool) VDouble(pool, vdouble->as_double());
+	result.set_name(method_name);
+	r.write_no_lang(result);
 }
 
 typedef void (*vdouble_op_func_ptr)(VDouble& vdouble, double param);

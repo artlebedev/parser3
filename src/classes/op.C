@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.15 2001/05/08 06:00:34 paf Exp $
+	$Id: op.C,v 1.16 2001/05/08 06:07:47 paf Exp $
 */
 
 #include "classes.h"
@@ -206,7 +206,7 @@ static void _eval(Request& r, const String& method_name, MethodParams *params) {
 	Value& expr=params->get_junction(0, "need expression");
 	// evaluate expresion
 	Value *result=r.process(expr, 
-		&method_name,
+		0/*no name YET*/,
 		true/*don't intercept string*/).as_expr_result();
 	if(params->size()==2) {
 		Value& fmt=params->get_no_junction(1, "fmt must not be code");
@@ -216,6 +216,7 @@ static void _eval(Request& r, const String& method_name, MethodParams *params) {
 		string.APPEND_CONST(format(pool, result->as_double(), fmt.as_string().cstr()));
 		result=new(pool) VString(string);
 	}
+	result->set_name(method_name);
 	r.write_no_lang(*result);
 }
 
@@ -232,6 +233,7 @@ static void double_one_op(
 	Value& param=params->get_junction(0, "parameter must be expression");
 
 	Value& result=*new(pool) VDouble(pool, (*func)(r.process(param).as_double()));
+	result.set_name(method_name);
 	r.write_no_lang(result);
 }
 
