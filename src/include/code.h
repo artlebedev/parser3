@@ -1,5 +1,5 @@
 /*
-  $Id: code.h,v 1.12 2001/03/06 14:32:17 paf Exp $
+  $Id: code.h,v 1.13 2001/03/06 15:55:34 paf Exp $
 */
 
 #ifndef CODE_H
@@ -31,8 +31,7 @@ enum OPCODE {
 	OP_BIN_AND, OP_BIN_OR,
 	OP_LOG_AND, OP_LOG_OR,
 	OP_NUM_LT, OP_NUM_GT, OP_NUM_LE, OP_NUM_GE, OP_NUM_EQ, OP_NUM_NE,
-	OP_STR_LT, OP_STR_GT, OP_STR_LE, OP_STR_GE, OP_STR_EQ, OP_STR_NE,
-	OP_XOR
+	OP_STR_LT, OP_STR_GT, OP_STR_LE, OP_STR_GE, OP_STR_EQ, OP_STR_NE
 };
 
 union Operation {

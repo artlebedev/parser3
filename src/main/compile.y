@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.56 2001/03/06 15:30:49 paf Exp $
+  $Id: compile.y,v 1.57 2001/03/06 15:55:35 paf Exp $
 */
 
 %{
@@ -42,15 +42,21 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %token STRING
 %token BOGUS
 
-/* numerical */
-%left '-' '+'
-%left '*' '/'
-%left NEG     /* negation: unary - */
+/* logical */
+%left '<' '>' "<=" ">="
+%left "==" "!="
+%left "||"
+%left "&&"
+%left NOT     /* not: unary ! */
+
 /* bitwise */
+%left '&' '|'
 %left INV     /* invertion: unary ~ */
 
-/* logical */
-%left NOT     /* not: unary ! */
+/* numerical */
+%left '-' '+'
+%left '*' '/' '%'
+%left NEG     /* negation: unary - */
 
 %%
 
@@ -362,26 +368,6 @@ any_expr:
 ;
 expr: 
 	number
-|	expr '+' expr {
-	$$=$1; // stack: first operand
-	P($$, $3); // stack: first,second operands
-	O($$, OP_ADD); // value=first+second; stack: value
-}
-|	expr '-' expr {
-	$$=$1; // stack: first operand
-	P($$, $3); // stack: first,second operands
-	O($$, OP_SUB); // value=first-second; stack: value
-}
-|	expr '*' expr {
-	$$=$1; // stack: first operand
-	P($$, $3); // stack: first,second operands
-	O($$, OP_MUL); // value=first*second; stack: value
-}
-|	expr '/' expr {
-	$$=$1; // stack: first operand
-	P($$, $3); // stack: first,second operands
-	O($$, OP_DIV); // value=first/second; stack: value
-}
 |	'-' expr %prec NEG {
 	$$=$2; // stack: operand
 	O($$, OP_NEG); // value=-operand; stack: value
@@ -394,6 +380,85 @@ expr:
 	$$=$2; // stack: operand
 	O($$, OP_NOT); // value=!operand; stack: value
 }
+/*todo: def in fexists*/
+|	expr '-' expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_SUB); // value=first-second; stack: value
+}
+|	expr '+' expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_ADD); // value=first+second; stack: value
+}
+|	expr '*' expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_MUL); // value=first*second; stack: value
+}
+|	expr '/' expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_DIV); // value=first/second; stack: value
+}
+|	expr '%' expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_MOD); // value=first%second; stack: value
+}
+|	expr '&' expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_BIN_AND); // value=first&second; stack: value
+}
+|	expr '|' expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_BIN_OR); // value=first|second; stack: value
+}
+|	expr "&&" expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_LOG_AND); // value=first&&second; stack: value
+}
+|	expr "||" expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_LOG_OR); // value=first||second; stack: value
+}
+|	expr '<' expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_NUM_LT); // value=first<second; stack: value
+}
+|	expr '>' expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_NUM_GT); // value=first>second; stack: value
+}
+|	expr "<=" expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_NUM_LE); // value=first<=second; stack: value
+}
+|	expr ">=" expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_NUM_GE); // value=first>=second; stack: value
+}
+|	expr "==" expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_NUM_EQ); // value=first==second; stack: value
+}
+|	expr "!=" expr {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	O($$, OP_NUM_NE); // value=first!=second; stack: value
+}
+/*
+	OP_STR_LT, OP_STR_GT, OP_STR_LE, OP_STR_GE, OP_STR_EQ, OP_STR_NE
+*/
 |	'(' expr ')' { $$ = $2; }
 ;
 
