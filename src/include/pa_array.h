@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.45 2001/10/29 08:23:48 paf Exp $
+	$Id: pa_array.h,v 1.46 2001/10/29 15:27:02 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -129,9 +129,6 @@ private:
 	// array size
 	int fused_rows;
 
-	mutable int cache_chunk_base;
-	mutable Chunk *cache_chunk;
-	
 private:
 
 	bool chunk_is_full() {

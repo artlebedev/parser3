@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.C,v 1.41 2001/10/29 13:04:46 paf Exp $
+	$Id: pa_array.C,v 1.42 2001/10/29 15:27:02 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -23,9 +23,6 @@ Array::Array(Pool& apool, int initial_rows) :
 	link_row=&head->rows[initial_rows];
 	link_row->link=0;
 	fused_rows=0;
-
-	cache_chunk_base=0;
-	cache_chunk=head;
 }
 
 void Array::expand(int chunk_rows) {
@@ -56,20 +53,17 @@ Array::Item *Array::get(int index) const {
 		return 0; // never
 	}
 
-	// if they ask index to the left of cached position, forget cache
-	if(index<cache_chunk_base) {
-		cache_chunk_base=0;
-		cache_chunk=head;
-	}
+	int base=0;
+	Chunk *chunk=head;
 
 	// navigate to chunk with "index" row
-	while(!(index>=cache_chunk_base && index<cache_chunk_base+cache_chunk->count)) {
-		int count=cache_chunk->count;
-		cache_chunk_base+=count;
-		cache_chunk=cache_chunk->rows[count].link;
+	while(!(index>=base && index<base+chunk->count)) {
+		int count=chunk->count;
+		base+=count;
+		chunk=chunk->rows[count].link;
 	}
 
-	return cache_chunk->rows[index-cache_chunk_base].item;
+	return chunk->rows[index-base].item;
 }
 
 void Array::put(int index, Item *item) {
@@ -79,20 +73,17 @@ void Array::put(int index, Item *item) {
 		return; // never
 	}
 
-	// if they ask index to the left of cached position, forget cache
-	if(index<cache_chunk_base) {
-		cache_chunk_base=0;
-		cache_chunk=head;
-	}
+	int base=0;
+	Chunk *chunk=head;
 
 	// navigate to chunk with "index" row
-	while(!(index>=cache_chunk_base && index<cache_chunk_base+cache_chunk->count)) {
-		int count=cache_chunk->count;
-		cache_chunk_base+=count;
-		cache_chunk=cache_chunk->rows[count].link;
+	while(!(index>=base && index<base+chunk->count)) {
+		int count=chunk->count;
+		base+=count;
+		chunk=chunk->rows[count].link;
 	}
 
-	cache_chunk->rows[index-cache_chunk_base].item=item;
+	chunk->rows[index-base].item=item;
 }
 
 Array& Array::append_array(const Array& src, int offset) {
