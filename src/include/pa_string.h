@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2003/11/20 16:34:25 $";
+static const char * const IDENT_STRING_H="$Date: 2003/12/17 07:34:11 $";
 
 // includes
 
@@ -355,7 +355,6 @@ public:
 	explicit String(const char* cstr=0, size_t helper_length=0, bool tainted=false);
 	explicit String(const C cstr, bool tainted=false);
 	String(Body abody, Language alang): body(abody), langs(alang) {
-		assert(!body.is_empty());
 		ASSERT_STRING_INVARIANT(*this);
 	}
 	String(const String& src): body(src.body), langs(src.langs) {
