@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.14 2001/04/26 15:01:51 paf Exp $
+	$Id: pa_vclass.h,v 1.15 2001/05/07 14:00:53 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -22,7 +22,6 @@
 class VClass : public VStateless_class {
 public: // Value
 	
-	// all: for error reporting after fail(), etc
 	const char *type() const { return "class"; }
 
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class

@@ -1,3 +1,3 @@
 CD html
 START /b /low "D:\Program Files\HTML Help Workshop\hhc.exe" index.hhp
-MOVE *.chm *.chi ..\chm
+MOVE *.ch% ..\chm

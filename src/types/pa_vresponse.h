@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vresponse.h,v 1.9 2001/04/28 08:44:16 paf Exp $
+	$Id: pa_vresponse.h,v 1.10 2001/05/07 14:00:54 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -22,7 +22,6 @@ class Response;
 class VResponse : public VStateless_object {
 public: // Value
 	
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "response"; }
 
 	/// Response: ffields

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vint.h,v 1.20 2001/04/28 15:22:50 paf Exp $
+	$Id: pa_vint.h,v 1.21 2001/05/07 14:00:54 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -21,7 +21,6 @@ extern Methoded *int_class;
 class VInt : public VStateless_object {
 public: // Value
 
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "int"; }
 	/// VInt: this
 	Value *as_expr_result(bool return_string_as_is=false) { return this; }

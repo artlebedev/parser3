@@ -3,8 +3,7 @@
 @end
 
 @main[]
-$uri[^taint[/aaaa.html]]
-$splitURI[^uri.lsplit[/]]
+$splitURI[$request:uri.lsplit[/]]
 $splitURI.0!$splitURI.1
 <HR>
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.14 2001/04/28 09:14:53 paf Exp $
+	$Id: pa_wcontext.h,v 1.15 2001/05/07 14:00:55 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -25,7 +25,6 @@ class WContext : public Value {
 	friend Request;
 public: // Value
 
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "wcontext"; }
 	/// WContext: accumulated fstring
 	const String *get_string() { return &fstring; };

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.11 2001/04/28 08:44:16 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.12 2001/05/07 14:00:54 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -28,7 +28,6 @@ class VStateless_class : public VAliased {
 	friend Temp_method;
 public: // Value
 	
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "stateless_class"; }
 
 	/// VStateless_class: this

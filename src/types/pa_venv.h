@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_venv.h,v 1.15 2001/04/28 08:44:15 paf Exp $
+	$Id: pa_venv.h,v 1.16 2001/05/07 14:00:53 paf Exp $
 */
 
 #ifndef PA_VENV_H
@@ -22,7 +22,6 @@
 class VEnv : public Value {
 public: // Value
 	
-	// all: for error reporting after fail(), etc
 	const char *type() const { return "env"; }
 
 	// VEnv: field

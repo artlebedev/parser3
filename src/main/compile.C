@@ -5,10 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.35 2001/04/06 10:32:20 paf Exp $
+	$Id: compile.C,v 1.36 2001/05/07 14:00:49 paf Exp $
 */
 
-#include "code.h"
+#include "pa_opcode.h"
 #include "pa_request.h"
 #include "pa_string.h"
 #include "pa_array.h"

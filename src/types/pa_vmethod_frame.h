@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.5 2001/04/26 15:01:52 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.6 2001/05/07 14:00:54 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -22,7 +22,6 @@
 class VMethodFrame : public WContext {
 public: // Value
 
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "method_frame"; }
 	/// VMethodFrame: my or self_transparent
 	Value *get_element(const String& name) { 

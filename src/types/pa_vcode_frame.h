@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcode_frame.h,v 1.3 2001/04/26 15:01:51 paf Exp $
+	$Id: pa_vcode_frame.h,v 1.4 2001/05/07 14:00:53 paf Exp $
 */
 
 #ifndef PA_VCODE_FRAME_H
@@ -18,7 +18,6 @@
 class VCodeFrame : public WWrapper {
 public: // Value
 
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "code_frame"; }
 
 public: // WContext

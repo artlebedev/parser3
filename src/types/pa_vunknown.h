@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vunknown.h,v 1.11 2001/04/28 08:44:17 paf Exp $
+	$Id: pa_vunknown.h,v 1.12 2001/05/07 14:00:55 paf Exp $
 */
 
 #ifndef PA_VUNKNOWN_H
@@ -20,7 +20,6 @@ extern Methoded *unknown_class;
 class VUnknown : public VStateless_object {
 public: // Value
 
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "unknown"; }
 
 	/// VUnknown: ""

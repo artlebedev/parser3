@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wwrapper.h,v 1.8 2001/04/26 15:01:53 paf Exp $
+	$Id: pa_wwrapper.h,v 1.9 2001/05/07 14:00:55 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -18,7 +18,6 @@
 class WWrapper : public WContext {
 public: // Value
 
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "wwrapper"; }
 	/// WWrapper: transparent
 	Value *get_element(const String& name) { return check_value()->get_element(name); }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.12 2001/04/28 15:22:50 paf Exp $
+	$Id: pa_vimage.h,v 1.13 2001/05/07 14:00:54 paf Exp $
 */
 
 #ifndef PA_VIMAGE_H
@@ -25,7 +25,6 @@ extern Methoded *image_class;
 class VImage : public VStateless_object {
 public: // Value
 	
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "image"; }
 
 	/// VImage: this

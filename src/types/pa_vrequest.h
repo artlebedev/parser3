@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vrequest.h,v 1.9 2001/04/28 08:44:16 paf Exp $
+	$Id: pa_vrequest.h,v 1.10 2001/05/07 14:00:54 paf Exp $
 */
 
 #ifndef PA_VREQUEST_H
@@ -23,7 +23,6 @@ class Request;
 class VRequest : public Value {
 public: // Value
 	
-	// all: for error reporting after fail(), etc
 	const char *type() const { return "request"; }
 
 	// request: fields

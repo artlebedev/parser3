@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.24 2001/04/28 08:44:17 paf Exp $
+	$Id: pa_vstring.h,v 1.25 2001/05/07 14:00:55 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -22,7 +22,6 @@ extern Methoded *string_class;
 class VString : public VStateless_object {
 public: // Value
 
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "string"; }
 	/// VString: true
 	bool is_string() const { return true; }

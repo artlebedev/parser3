@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.19 2001/05/07 13:30:07 paf Exp $
+	$Id: pa_vtable.h,v 1.20 2001/05/07 14:00:55 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -21,7 +21,6 @@ extern Methoded *table_class;
 class VTable : public VStateless_object {
 public: // Value
 
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "table"; }
 	/// extract VTable
 	Table *get_table() { return ftable; }

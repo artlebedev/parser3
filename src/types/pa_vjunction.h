@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vjunction.h,v 1.5 2001/05/07 13:30:07 paf Exp $
+	$Id: pa_vjunction.h,v 1.6 2001/05/07 14:00:54 paf Exp $
 */
 
 #ifndef PA_VJUNCTION_H
@@ -17,7 +17,6 @@
 class VJunction : public Value {
 public: // VJunction
 
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "junction"; }
 
 	/// VJunction: method, root,self,rcontext, code

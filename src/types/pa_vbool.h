@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vbool.h,v 1.8 2001/04/26 15:01:50 paf Exp $
+	$Id: pa_vbool.h,v 1.9 2001/05/07 14:00:53 paf Exp $
 */
 
 #ifndef PA_VBOOL_H
@@ -20,7 +20,6 @@
 class VBool : public Value {
 public: // Value
 
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "bool"; }
 	/// VBool: this
 	Value *as_expr_result(bool return_string_as_is=false) { return this; }

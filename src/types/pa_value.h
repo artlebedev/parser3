@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.52 2001/05/07 08:29:48 paf Exp $
+	$Id: pa_value.h,v 1.53 2001/05/07 14:00:53 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -31,9 +31,8 @@ class VFile;
 class Value : public Pooled {
 public: // Value
 
-	/// - all: for error reporting after fail(), etc
+	/// all: value type, used for error reporting and 'is' expression operator
 	virtual const char *type() const =0;
-	/// - all: for error reporting after fail(), etc
 	const String& name() const { return *fname; }
 	/** is this value defined?
 		@return for
@@ -270,7 +269,7 @@ private:
 /**
 	native code method
 	params can be NULL when 
-	method min&max params (@see VStateless_class::add_native_method)
+	method min&max params (see VStateless_class::add_native_method)
 	counts are zero.	
 */
 typedef void (*Native_code_ptr)(Request& request, 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: code.h,v 1.28 2001/05/07 13:29:59 paf Exp $
+	$Id: pa_opcode.h,v 1.1 2001/05/07 14:00:46 paf Exp $
 */
 
 #ifndef CODE_H
@@ -19,7 +19,8 @@ class Array;
 
 ///	Compiled operation code
 enum OPCODE {
-	//@{ @name literals
+	//@{ 
+	/// @name literals
 	OP_VALUE,  OP_CURLY_CODE__STORE_PARAM,  OP_EXPR_CODE__STORE_PARAM,
 	//@}
 

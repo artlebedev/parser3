@@ -5,11 +5,11 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.151 2001/05/04 11:08:09 paf Exp $
+	$Id: execute.C,v 1.152 2001/05/07 14:00:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
-#include "code.h"
+#include "pa_opcode.h"
 #include "pa_array.h" 
 #include "pa_request.h"
 #include "pa_vstring.h"

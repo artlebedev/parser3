@@ -12,10 +12,9 @@
 class VExample2 : public Value {
 public: // Value
 	
-	// all: for error reporting after fail(), etc
 	const char *type() const { return "example2"; }
 
-	// VEnv: field
+	/// VEnv: field
 	Value *get_element(const String& aname) {
 		// показания датчика
 		double temperature=25;

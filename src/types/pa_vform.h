@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.19 2001/04/28 15:22:50 paf Exp $
+	$Id: pa_vform.h,v 1.20 2001/05/07 14:00:53 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -36,7 +36,6 @@ class Request;
 class VForm : public VStateless_class {
 public: // Value
 	
-	// all: for error reporting after fail(), etc
 	const char *type() const { return "form"; }
 
 	// form: CLASS,BASE,method,field

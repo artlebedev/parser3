@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.25 2001/04/28 15:22:50 paf Exp $
+	$Id: pa_vfile.h,v 1.26 2001/05/07 14:00:53 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -25,7 +25,6 @@ extern Methoded *file_class;
 class VFile : public VStateless_object {
 public: // Value
 	
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "file"; }
 
 	/// VFile: this

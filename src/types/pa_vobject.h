@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vobject.h,v 1.7 2001/04/26 15:01:52 paf Exp $
+	$Id: pa_vobject.h,v 1.8 2001/05/07 14:00:54 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -23,7 +23,6 @@
 class VObject : public VStateless_object {
 public: // Value
 	
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "object"; }
 
 	/// VObject : (field)=value;(CLASS)=vclass;(method)=method_ref

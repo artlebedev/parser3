@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdouble.h,v 1.19 2001/04/28 15:22:50 paf Exp $
+	$Id: pa_vdouble.h,v 1.20 2001/05/07 14:00:53 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -21,7 +21,6 @@ extern Methoded *double_class;
 class VDouble : public VStateless_object {
 public: // Value
 
-	/// all: for error reporting after fail(), etc
 	const char *type() const { return "double"; }
 	/// VDouble: this
 	Value *as_expr_result(bool return_string_as_is=false) { return this; }
