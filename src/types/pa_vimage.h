@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.20 2001/10/16 06:46:25 parser Exp $
+	$Id: pa_vimage.h,v 1.21 2001/10/17 12:27:04 parser Exp $
 */
 
 #ifndef PA_VIMAGE_H
@@ -67,14 +67,6 @@ public: // usage
 
 	void set(const String *src, int width, int height,
 		gdImage *aimage=0);
-	void save(const String& image_spec) {
-		/*if(fvalue_ptr)
-			image_write(pool(), image_spec, fvalue_ptr, fvalue_size, false);
-		else
-			THROW(0, 0,
-				&image_spec,
-				"saving unassigned image"); //never*/
-	}
 
 	Hash fields() const { return ffields; }
 
