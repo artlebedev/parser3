@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.89 2002/04/16 08:22:19 paf Exp $
+	$Id: op.C,v 1.90 2002/04/17 12:20:14 paf Exp $
 */
 
 #include "classes.h"
@@ -92,7 +92,7 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 	{
 		Value& vbody=params->as_no_junction(params->size()-1, "body must not be code");
 		
-		String result(r.pool());
+		String& result=*new(pool) String(pool);
 		result.append(
 			vbody.as_string(),  // process marking tainted with that lang
 			lang, true);  // force result language to specified
