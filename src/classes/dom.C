@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.15 2001/09/11 08:49:22 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.16 2001/09/11 09:14:04 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -17,12 +17,12 @@ static const char *RCSId="$Id: dom.C,v 1.15 2001/09/11 08:49:22 parser Exp $";
 #include "pa_vdom.h"
 #include "pa_vfile.h"
 
+#include <strstream>
 #include <Include/PlatformDefinitions.hpp>
 #include <util/PlatformUtils.hpp>
 #include <util/XMLString.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
 #include <XalanTransformer/XalanParsedSource.hpp>
-//#include <XalanTransformer/XercesDOMParsedSource.hpp>
 #include <PlatformSupport/XalanFileOutputStream.hpp>
 #include <PlatformSupport/XalanOutputStreamPrintWriter.hpp>
 #include <PlatformSupport/DOMStringPrintWriter.hpp>
@@ -30,7 +30,6 @@ static const char *RCSId="$Id: dom.C,v 1.15 2001/09/11 08:49:22 parser Exp $";
 #include <XMLSupport/FormatterToHTML.hpp>
 #include <XMLSupport/FormatterToText.hpp>
 #include <XMLSupport/FormatterTreeWalker.hpp>
-//#include <XercesParserLiaison/XercesDOMSupport.hpp>
 
 // defines
 
@@ -59,6 +58,34 @@ public: // Methoded
 };
 
 // methods
+
+/*
+class istrstream : public istream {
+public:
+    explicit istrstream(const char *s);
+    explicit istrstream(char *s);
+    istrstream(const char *s, streamsize n);
+    istrstream(char *s, streamsize n);
+    strstreambuf *rdbuf() const;
+    char *str();
+    };
+*/
+static void _set(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VDom& vDom=*static_cast<VDom *>(r.self);
+
+	std::istrstream stream(params->as_string(0, "parameter must not be code").cstr(String::UL_AS_IS));
+	XalanParsedSource* parsedSource;
+	int error=vDom.get_transformer().parseSource(&stream, parsedSource);
+
+	if(error)
+		PTHROW(0, 0,
+			&method_name,
+			vDom.get_transformer().getLastError());
+
+	// replace any previous parsed source
+	vDom.set_parsed_source(*parsedSource);
+}
 
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -150,7 +177,7 @@ FormatterListener *create_optioned_listener(Pool& pool,
 		} else
 			PTHROW(0, 0,
 				&method_name,
-				"params must be hash");
+				"options must be hash");
 	}
 
 	if(!method/*default='xml'*/ || *method == DOM_OUTPUT_METHOD_OPTION_VALUE_XML)
@@ -313,6 +340,9 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 
 MDom::MDom(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), DOM_CLASS_NAME));
+
+	// ^dom::set[<some>xml</some>]
+	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 1);
 
 	// ^dom::load[some.xml]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);

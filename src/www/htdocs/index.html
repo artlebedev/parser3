@@ -1,9 +1,17 @@
 @main[]
+^testdom4[]
 #^testdom3[]
 #^testdom2[]
 #^testdom1[]
-^testdom0[]
+#^testdom0[]
 OK
+
+@testdom4[]
+$dom[^dom::set[<?xml version="1.0" encoding="windows-1251"?>
+
+<doc>testing проверка ПРОВЕРКА</doc>
+]]
+$response:body[^dom.file[$.encoding[windows-1251]]]
 
 @testdom3[]
 $dom[^dom::load[test.xml]]
@@ -21,7 +29,7 @@ $dom[^dom::load[test.xml]]
 @testdom1[]
 $dom[^dom::load[test.xml]]
 $dom[^dom.xslt[test.xsl;$.param1(48)]]
-$response:body[^dom.file[windows-1251]]
+$response:body[^dom.file[$.encoding[windows-1251]]]
 
 @testdom0[]
 $dom[^dom::load[test.xml]]

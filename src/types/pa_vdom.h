@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.5 2001/09/11 08:43:39 parser Exp $
+	$Id: pa_vdom.h,v 1.6 2001/09/11 09:14:04 parser Exp $
 */
 
 #ifndef PA_VDOM_H
@@ -57,7 +57,7 @@ public: // usage
 		if(!fparsed_source)
 			PTHROW(0, 0,
 				source,
-				"can not be performed on this instance (xslt[xslt] not supported)");
+				"can not be performed on this instance (xslt[xslt] not supported, use save+xslt[load])");
 		return *fparsed_source; 
 	}
 
