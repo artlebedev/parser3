@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vcookie.h,v 1.15 2002/02/08 08:30:19 paf Exp $
+	$Id: pa_vcookie.h,v 1.16 2002/04/18 15:33:32 paf Exp $
 */
 
 #ifndef PA_VCOOKIE_H
@@ -23,6 +23,8 @@ class VCookie : public Value {
 public: // Value
 	
 	const char *type() const { return "cookie"; }
+	/// VCookie: 0
+	VStateless_class *get_class() { return 0; }
 
 	// cookie: CLASS,method,field
 	Value *get_element(const String& aname);

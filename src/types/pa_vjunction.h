@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vjunction.h,v 1.12 2002/02/08 08:30:20 paf Exp $
+	$Id: pa_vjunction.h,v 1.13 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VJUNCTION_H
@@ -18,6 +18,9 @@ class VJunction : public Value {
 public: // VJunction
 
 	const char *type() const { return "junction"; }
+
+	/// VJunction: 0
+	VStateless_class *get_class() { return 0; }
 
 	/// VJunction: true
 	bool as_bool() const { return true; }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vdate.h,v 1.9 2002/03/28 14:26:49 paf Exp $
+	$Id: pa_vdate.h,v 1.10 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VDATE_H
@@ -28,6 +28,8 @@ class VDate : public VStateless_object {
 public: // Value
 
 	const char *type() const { return VDATE_TYPE; }
+	VStateless_class *get_class() { return date_class; }
+	
 	/// VDate: ftime -> float days
 	Value *as_expr_result(bool return_string_as_is=false) {
 		return NEW VDouble(pool(), as_double());
@@ -66,7 +68,7 @@ protected: // VAliased
 
 public: // usage
 
-	VDate(Pool& apool, time_t adate) : VStateless_object(apool, *date_class), 
+	VDate(Pool& apool, time_t adate) : VStateless_object(apool), 
 		ftime(adate) {
 	}
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hash.C,v 1.39 2002/04/18 10:50:59 paf Exp $
+	$Id: hash.C,v 1.40 2002/04/18 15:33:32 paf Exp $
 */
 
 #include "classes.h"
@@ -340,10 +340,10 @@ MHash::MHash(Pool& apool) : Methoded(apool, "hash")
 
 // global variable
 
-Methoded *hash_base_class;
+Methoded *hash_class;
 
 // creator
 
 Methoded *MHash_create(Pool& pool) {
-	return hash_base_class=new(pool) MHash(pool);
+	return hash_class=new(pool) MHash(pool);
 }

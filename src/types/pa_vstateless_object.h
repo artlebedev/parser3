@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstateless_object.h,v 1.16 2002/04/18 14:35:13 paf Exp $
+	$Id: pa_vstateless_object.h,v 1.17 2002/04/18 15:33:34 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_OBJECT_H
@@ -21,9 +21,6 @@
 class VStateless_object : public VAliased {
 public: // Value
 	
-	/// VStateless_object: fclass_real
-	VStateless_class *get_class() { return &fclass_real; }
-
 	/// VStateless_object: +$method
 	Value *get_element(const String& name) {
 		// $CLASS
@@ -31,7 +28,7 @@ public: // Value
 			return result;
 
 		// $method=junction(self+class+method)
-		if(Junction *junction=fclass_real.get_junction(*this, name))
+		if(Junction *junction=get_class()->get_junction(*this, name))
 			return NEW VJunction(*junction);
 
 		return 0;
@@ -39,13 +36,8 @@ public: // Value
 
 public: // creation
 
-	VStateless_object(Pool& apool, VStateless_class& aclass_real) : VAliased(apool), 
-		fclass_real(aclass_real) {
-	}
+	VStateless_object(Pool& apool) : VAliased(apool) {}
 
-private:
-
-	VStateless_class& fclass_real;
 };
 
 #endif

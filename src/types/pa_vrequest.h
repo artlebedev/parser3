@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vrequest.h,v 1.16 2002/02/08 08:30:20 paf Exp $
+	$Id: pa_vrequest.h,v 1.17 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VREQUEST_H
@@ -21,10 +21,12 @@ class Request;
 class VRequest : public Value {
 public: // Value
 	
-	virtual const char *type() const { return "request"; }
+	const char *type() const { return "request"; }
+	/// VRequest: 0
+	VStateless_class *get_class() { return 0; }
 
 	/// request: fields
-	virtual Value *get_element(const String& name);
+	Value *get_element(const String& name);
 
 	/// request: (key)=value
 	void put_element(const String& name, Value *value);

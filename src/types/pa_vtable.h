@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vtable.h,v 1.37 2002/02/08 08:30:21 paf Exp $
+	$Id: pa_vtable.h,v 1.38 2002/04/18 15:33:34 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -24,6 +24,7 @@ class VTable : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "table"; }
+	VStateless_class *get_class() { return table_class; }
 	/// VTable: count
 	int as_int() const { return table().size(); }
 	/// VTable: count
@@ -46,7 +47,7 @@ protected: // VAliased
 
 public: // usage
 
-	VTable(Pool& apool, Table* atable=0) : VStateless_object(apool, *table_class), 
+	VTable(Pool& apool, Table* atable=0) : VStateless_object(apool), 
 		ftable(atable) {
 	}
 	void set_table(Table& avalue) { 

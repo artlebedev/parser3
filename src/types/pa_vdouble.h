@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vdouble.h,v 1.36 2002/04/18 10:51:01 paf Exp $
+	$Id: pa_vdouble.h,v 1.37 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -21,6 +21,8 @@ class VDouble : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "double"; }
+	VStateless_class *get_class() { return double_class; }
+
 	/// VDouble: clone
 	Value *as_expr_result(bool ) { return NEW VDouble(pool(), fdouble); }
 
@@ -53,7 +55,7 @@ protected: // VAliased
 
 public: // usage
 
-	VDouble(Pool& apool, double adouble) : VStateless_object(apool, *double_class), 
+	VDouble(Pool& apool, double adouble) : VStateless_object(apool), 
 		fdouble(adouble) {
 	}
 

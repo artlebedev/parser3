@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vimage.h,v 1.24 2002/02/08 08:30:19 paf Exp $
+	$Id: pa_vimage.h,v 1.25 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VIMAGE_H
@@ -33,6 +33,7 @@ class VImage : public VStateless_object {
 public: // Value
 	
 	const char *type() const { return VIMAGE_TYPE; }
+	VStateless_class *get_class() { return image_class; }
 
 	/// VImage: true
 	bool as_bool() const { return true; }
@@ -60,7 +61,7 @@ protected: // VAliased
 
 public: // usage
 
-	VImage::VImage(Pool& apool) : VStateless_object(apool, *image_class),
+	VImage::VImage(Pool& apool) : VStateless_object(apool),
 		ffields(apool),
 		image(0), font(0) {
 	}

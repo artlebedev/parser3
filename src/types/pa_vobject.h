@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vobject.h,v 1.17 2002/04/18 13:55:06 paf Exp $
+	$Id: pa_vobject.h,v 1.18 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -16,6 +16,7 @@
 #include "pa_vstateless_object.h"
 
 /**	parser class instance,
+	stores class VObject::fclass_real;
 	stores fields VObject::ffields (dynamic, not static, which are stored in class).
 */
 class VObject : public VStateless_object {
@@ -23,6 +24,8 @@ public: // Value
 	
 	const char *type() const { return "object"; }
 
+	/// VObject: fclass_real
+	VStateless_class *get_class() { return &fclass_real; }
 	/// VObject : true
 	Value *as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
 	/// VObject : true
@@ -52,14 +55,14 @@ public: // Value
 
 public: // creation
 
-	VObject(Pool& apool, VStateless_class& aclass_real) : 
-		VStateless_object(apool, aclass_real), 
-
+	VObject(Pool& apool, VStateless_class& aclass_real) : VStateless_object(apool), 
+		fclass_real(aclass_real),
 		ffields(apool) {
 	}
 
 private:
 
+	VStateless_class& fclass_real;
 	Hash ffields;
 };
 

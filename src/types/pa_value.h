@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_value.h,v 1.84 2002/04/18 10:51:01 paf Exp $
+	$Id: pa_value.h,v 1.85 2002/04/18 15:33:32 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -181,12 +181,18 @@ public: // Value
 	
 	/** extract VStateless_class
 		@return for
+		- VX: x_class
 		- VStateless_class: this
 		- VStateless_object: fclass_real
 		- WContext: none yet | transparent
-		- VHash: 0
+		these are methodless classes:
+		- VBool: 0
+		- VJunction: 0
+		- VEnv: 0
+		- VRequest: 0
+		- VCookie: 0
 	*/
-	virtual VStateless_class *get_class() { return 0; }
+	virtual VStateless_class *get_class()=0;
 	
 	/** extract VAliased
 		@return for

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vhash.h,v 1.32 2002/04/18 10:51:02 paf Exp $
+	$Id: pa_vhash.h,v 1.33 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -17,7 +17,7 @@
 
 // externs
 
-extern Methoded *hash_base_class;
+extern Methoded *hash_class;
 
 // forwards
 
@@ -29,6 +29,7 @@ class VHash : public VStateless_object {
 public: // value
 
 	const char *type() const { return "hash"; }
+	VStateless_class *get_class() { return hash_class; }
 
 	/// VHash: finteger
 	int as_int() const { return fhash.size(); }
@@ -43,9 +44,6 @@ public: // value
 
 	/// VHash: fhash
 	Hash *get_hash(const String *source) { return &hash(source); }
-
-	/// VHash: 0
-	VStateless_class *get_class() { return 0; }
 
 	/// VHash: (key)=value
 	Value *get_element(const String& name) { 
@@ -68,11 +66,11 @@ public: // value
 
 public: // usage
 
-	VHash(Pool& apool) : VStateless_object(apool, *hash_base_class), 
+	VHash(Pool& apool) : VStateless_object(apool), 
 		fhash(apool), locked(false) {
 	}
 
-	VHash(Pool& apool, const Hash& source) : VStateless_object(apool, *hash_base_class), 
+	VHash(Pool& apool, const Hash& source) : VStateless_object(apool), 
 		fhash(source), locked(false) {
 	}
 

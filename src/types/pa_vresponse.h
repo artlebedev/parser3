@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vresponse.h,v 1.21 2002/02/08 08:30:20 paf Exp $
+	$Id: pa_vresponse.h,v 1.22 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -27,6 +27,7 @@ class VResponse : public VStateless_object {
 public: // Value
 	
 	const char *type() const { return "response"; }
+	VStateless_class *get_class() { return response_class; }
 
 	/// Response: ffields
 	Hash *get_hash(const String * /*source*/) { return &ffields; }
@@ -44,7 +45,7 @@ protected: // VAliased
 
 public: // usage
 
-	VResponse(Pool& apool) : VStateless_object(apool, *response_class),
+	VResponse(Pool& apool) : VStateless_object(apool),
 		ffields(apool) {
 	}
 public:	

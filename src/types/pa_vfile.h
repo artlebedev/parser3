@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vfile.h,v 1.41 2002/03/27 15:30:38 paf Exp $
+	$Id: pa_vfile.h,v 1.42 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -25,6 +25,7 @@ class VFile : public VStateless_object {
 public: // Value
 	
 	const char *type() const { return "file"; }
+	VStateless_class *get_class() { return file_class; }
 
 	/// VFile: true
 	bool as_bool() const { return true; }
@@ -55,7 +56,7 @@ protected: // VAliased
 
 public: // usage
 
-	VFile::VFile(Pool& apool) : VStateless_object(apool, *file_class),
+	VFile::VFile(Pool& apool) : VStateless_object(apool),
 		fvalue_ptr(0),
 		fvalue_size(0),
 		ffields(apool) {

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vbool.h,v 1.17 2002/02/08 08:30:18 paf Exp $
+	$Id: pa_vbool.h,v 1.18 2002/04/18 15:33:32 paf Exp $
 */
 
 #ifndef PA_VBOOL_H
@@ -20,6 +20,8 @@ class VBool : public Value {
 public: // Value
 
 	const char *type() const { return "bool"; }
+	/// VBool: 0
+	VStateless_class *get_class() { return 0; }
 	/// VBool: clone
 	Value *as_expr_result(bool) { return NEW VBool(pool(), fbool); }
 	/// VBool: fbool

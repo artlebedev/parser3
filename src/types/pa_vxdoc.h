@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxdoc.h,v 1.20 2002/03/27 15:30:39 paf Exp $
+	$Id: pa_vxdoc.h,v 1.21 2002/04/18 15:33:34 paf Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -39,6 +39,7 @@ class VXdoc : public VXnode {
 public: // Value
 
 	const char *type() const { return VXDOC_TYPE; }
+	VStateless_class *get_class() { return Xdoc_class; }
 
 	/// VXdoc: true
 	bool as_bool() const { return true; }
@@ -64,7 +65,7 @@ public: // VDNode
 public: // usage
 
 	VXdoc(Pool& apool, GdomeDocument *adocument) : 
-		VXnode(apool, 0, *Xdoc_class), 
+		VXnode(apool, 0), 
 		fdocument(adocument/*not adding ref, owning a doc*/) {
 //		ftransformer(0) 
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vint.h,v 1.33 2002/04/18 10:51:02 paf Exp $
+	$Id: pa_vint.h,v 1.34 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -21,6 +21,8 @@ class VInt : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "int"; }
+	VStateless_class *get_class() { return int_class; }
+
 	/// VInt: clone
 	Value *as_expr_result(bool ) { return NEW VInt(pool(), finteger); }
 
@@ -52,7 +54,7 @@ protected: // VAliased
 
 public: // usage
 
-	VInt(Pool& apool, int ainteger) : VStateless_object(apool, *int_class), 
+	VInt(Pool& apool, int ainteger) : VStateless_object(apool), 
 		finteger(ainteger) {
 	}
 

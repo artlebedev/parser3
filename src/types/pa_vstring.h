@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstring.h,v 1.43 2002/04/18 14:35:13 paf Exp $
+	$Id: pa_vstring.h,v 1.44 2002/04/18 15:33:34 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -17,42 +17,12 @@
 
 extern Methoded *string_class;
 
-/**	the string object of string class. 
-	specialized light version for VString
-	
-	"of some class" means "with some set of methods".
-*/
-class VStateless_string_object : public VAliased {
-public: // Value
-	
-	/// VStateless_string_object: fclass_real
-	VStateless_class *get_class() { return string_class; }
-
-	/// VStateless_string_object: +$method
-	Value *get_element(const String& name) {
-		// $CLASS << actually abscent due to VString::hide_class=true, but for possible future VAliased::get_element implementation changes...
-		if(Value *result=VAliased::get_element(name))
-			return result;
-
-		// $method=junction(self+class+method)
-		if(Junction *junction=string_class->get_junction(*this, name))
-			return NEW VJunction(*junction);
-
-		return 0;
-	}
-
-public: // creation
-
-	VStateless_string_object(Pool& apool) : VAliased(apool) {}
-
-};
-
-
 /// value of type 'string'. implemented with @c String
-class VString : public VStateless_string_object {
+class VString : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "string"; }
+	VStateless_class *get_class() { return string_class; }
 	/// VString: eq ''=false, ne ''=true
 	bool is_defined() const { return !fstring->is_empty(); }
 	/// VString: 0 or !0
@@ -80,7 +50,7 @@ public: // Value
 	/// VString: $method
 	Value *get_element(const String& name) {
 		// $method
-		if(Value *result=VStateless_string_object::get_element(name))
+		if(Value *result=VStateless_object::get_element(name))
 			return result;
 
 		// bad $string.field
@@ -95,11 +65,11 @@ protected: // VAliased
 
 public: // usage
 
-/*	VString(Pool& apool) : VStateless_string_object(apool), 
+/*	VString(Pool& apool) : VStateless_object(apool), 
 		fstring(new(apool) String(apool)) {
 	}
 */
-	VString(const String& avalue) : VStateless_string_object(avalue.pool()),
+	VString(const String& avalue) : VStateless_object(avalue.pool()),
 		fstring(&avalue) {
 	}
 

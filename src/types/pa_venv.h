@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_venv.h,v 1.20 2002/02/08 08:30:19 paf Exp $
+	$Id: pa_venv.h,v 1.21 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VENV_H
@@ -22,6 +22,8 @@ class VEnv : public Value {
 public: // Value
 	
 	const char *type() const { return "env"; }
+	/// VEnv: 0
+	VStateless_class *get_class() { return 0; }
 
 	// VEnv: field
 	Value *get_element(const String& aname) {

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstateless_class.h,v 1.25 2002/04/18 14:35:13 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.26 2002/04/18 15:33:33 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -74,7 +74,7 @@ public: // usage
 		fname=&aname; 
 	}
 
-	Method *get_method(const String& name) { 
+	Method *get_method(const String& name) const { 
 		return static_cast<Method *>(fmethods.get(name)); 
 	}
 

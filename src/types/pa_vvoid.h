@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vvoid.h,v 1.8 2002/02/08 08:30:21 paf Exp $
+	$Id: pa_vvoid.h,v 1.9 2002/04/18 15:33:34 paf Exp $
 */
 
 #ifndef PA_VVOID_H
@@ -21,6 +21,7 @@ class VVoid : public VStateless_object {
 public: // Value
 
 	const char *type() const { return "void"; }
+	VStateless_class *get_class() { return void_class; }
 
 	/// VVoid: ""
 	const String *get_string() { return NEW String(pool()); }
@@ -47,8 +48,7 @@ public: // Value
 
 public: // usage
 
-	VVoid(Pool& apool) : VStateless_object(apool, *void_class) {
-	}
+	VVoid(Pool& apool) : VStateless_object(apool) {}
 
 };
 
