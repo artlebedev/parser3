@@ -149,7 +149,7 @@ target_alias = @target_alias@
 
 noinst_HEADERS = smtp.h
 EXTRA_DIST = comms.C smtp.C smtp.vcproj
-subdir = src/classes/smtp
+subdir = src/lib/smtp
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =
@@ -162,7 +162,7 @@ all: all-am
 .SUFFIXES:
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/classes/smtp/Makefile
+	  $(AUTOMAKE) --gnu  src/lib/smtp/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
 uninstall-info-am:

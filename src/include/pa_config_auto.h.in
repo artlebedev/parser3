@@ -103,7 +103,7 @@
    function. */
 #undef HAVE_ROUND
 
-/* Define to 1 if you have the `select' function. */
+/* have 'select' library function */
 #undef HAVE_SELECT
 
 /* Define to 1 if you have the <setjmp.h> header file. */

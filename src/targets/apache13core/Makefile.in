@@ -150,7 +150,7 @@ INCLUDES := $(INCLUDES) -I../apache13 -I../../classes -I../../types $(INCLTDL) -
 
 noinst_LIBRARIES = libmod_parser3core.a
 libmod_parser3core_a_DEPENDENCIES = Makefile ../apache13/pa_httpd.h
-libmod_parser3core_a_SOURCES = pa_threads.C mod_parser3.C
+libmod_parser3core_a_SOURCES = pa_threads.C mod_parser3_core.C
 
 EXTRA_DIST = ApacheModuleParser3Core.vcproj
 subdir = src/targets/apache13core
@@ -162,13 +162,13 @@ LIBRARIES = $(noinst_LIBRARIES)
 libmod_parser3core_a_AR = $(AR) cru
 libmod_parser3core_a_LIBADD =
 am_libmod_parser3core_a_OBJECTS = pa_threads.$(OBJEXT) \
-	mod_parser3.$(OBJEXT)
+	mod_parser3_core.$(OBJEXT)
 libmod_parser3core_a_OBJECTS = $(am_libmod_parser3core_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/mod_parser3.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/mod_parser3_core.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_threads.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -204,7 +204,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_parser3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_parser3_core.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_threads.Po@am__quote@
 
 distclean-depend:
