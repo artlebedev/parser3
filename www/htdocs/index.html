@@ -1,39 +1,72 @@
-@main[][l]
-$request[^trim[$form:request;/]]
-$request[^trim[/branches/moscow/tariff/;/]]
-#$request[^trim[/branches/regional/;/]]
-$mode[^if(def $form:mode){^trim[^form:mode.lower[]]}]
+<!-- Copyright (c) Art. Lebedev Studio | http://www.design.ru/ -->
+<html>
+<head>
+<title>nestle</title>
+<style>
 
-^if(def $form:print){
-	$stylesheetType[PRINT]
-}{
-	$stylesheetType[HTML]
+.navigation {
+	font-size: 13px;
+	font-weight:bold;
 }
 
-$default_cache_time(3600)
-$cache_cfg[^load[named;/_cache.cfg]]
-^cache_cfg.menu{
-	^if($cache_cfg.url eq "//"){
-		^if(!def $request){
-			$cache_time[$cache_cfg.time]
-		}
-	}{
-		^if(^request.match[^^^trim[$cache_cfg.url;/]][]){
-			$cache_time[$cache_cfg.time]
-		}
-	}
+.usual_link {
+	color: #686a6c;
 }
-$cache_key[^request:query.match[^^([^^=]*=)][]{}_${platform}_${browser}_$stylesheetType]
-$cache_time(^if($env:REQUEST_METHOD eq POST){0}{^if(def $cache_time){$cache_time}{$default_cache_time}})
 
-# РґР» РѕР»Р°РґРєРё...
-# ^$cache_time=$cache_time<br />^$cache_key=$cache_key
+</style>
+</head>
 
-#$hashData[^hashfile::open[$DB_HOME;data.dat]]
-#^hashData.cache[$cache_key]($cache_time){
-	^MAIN:pSQL.server{
-		$object[^engine_mdm::dataInit[$request;$stylesheetType;$mode]]
-		^object.execute[]
-	}
-#}
-#end main
+<body bgcolor="#ffffff" leftmargin="0" topmargin="0" rightmargin="0" marginwidth="0" marginheight="0" link="#2772af" vlink="#2772af">
+<table width="100%" border="1" cellspacing="0" cellpadding="0">
+<tr valign="top">
+	<td><img src="/i/home.jpg" width="775" height="586" border="0" /></td>
+</tr>
+</table>
+<br />
+<center>
+<table width="80%" border="0" cellspacing="0" cellpadding="0">
+<tr valign="top">
+<td><img src="/i/r1-small-white.gif" width="5" height="5" border="0" /></td>
+<td rowspan="3" width="100%" align="center" valign="middle" style="border-top:#686a6c 1px solid; border-bottom:#686a6c 1px solid">
+<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<tr align="center">
+<td class="navigation" nowrap><font color="#ffffff"><a href="/about/" class="usual_link">О Нестле</a>
+</font></td>
+<td class="navigation" nowrap><font color="#ffffff"><a href="/products/" class="usual_link">Продукты</a>
+</font></td>
+<td class="navigation" nowrap><font color="#ffffff"><a href="/family/" class="usual_link">Для всей семьи</a>
+</font></td>
+<td class="navigation" nowrap><font color="#ffffff"><a href="/business/" class="usual_link">Для бизнеса</a>
+</font></td>
+<td class="navigation" nowrap><font color="#ffffff"><a href="/news/" class="usual_link">Новости</a>
+</font></td>
+<td class="navigation" nowrap><font color="#ffffff"><a href="/cafe/" class="usual_link">Кафе Нескафе</a>
+</font></td>
+</tr>
+</table>
+</td>
+<td><img src="/i/r2-small-white.gif" width="5" height="5" border="0" /></td>
+</tr>
+<tr>
+<td style="border-left:#686a6c 1px solid">
+<table width="1" height="12" cellpadding="0" cellspacing="0" border="0">
+<tr><td width="1" height="12"></td></tr>
+</table>
+</td>
+<td style="border-right:#686a6c 1px solid">
+<table width="1" height="12" cellpadding="0" cellspacing="0" border="0">
+<tr><td width="1" height="12"></td></tr>
+</table>
+</td>
+</tr>
+<tr>
+<td ><img src="/i/r3-small-white.gif" width="5" height="5" border="0" /></td>
+<td><img src="/i/r4-small-white.gif" width="5" height="5" border="0" /></td>
+</tr>
+</table>
+</center>
+<table width="1" height="20" cellpadding="0" cellspacing="0" border="0">
+<tr><td width="1" height="20"></td></tr>
+</table>
+</body>
+</html>

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.130 2002/02/21 14:36:54 paf Exp $
+	$Id: pa_string.h,v 1.131 2002/02/22 12:14:11 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -298,9 +298,8 @@ private: //disabled
 			row=chunk->rows; \
 			countdown=chunk->count; \
 		}; \
-		countdown--;\
 		{ body } \
-		row++; \
+		row++; countdown--; \
 	} 
 
 #define STRING_PREFIX_FOREACH_ROW(self, body) { \
