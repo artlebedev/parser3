@@ -105,7 +105,7 @@ Project: "libltdl"=.\src\lib\ltdl\libltdl.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    libltdl
+    parser3/src/lib/ltdl
     .\src\lib\ltdl
     end source code control
 }}}
