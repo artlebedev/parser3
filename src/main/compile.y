@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.186 2002/04/18 11:41:29 paf Exp $
+	$Id: compile.y,v 1.186.2.1 2002/05/07 07:23:10 paf Exp $
 */
 
 /**
@@ -107,12 +107,12 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 all: 
 	one_big_piece {
 	Method& method=*NEW Method(POOL, 
-		*main_method_name, 
+		PC.request->main_method_name, 
 		Method::CT_ANY,
 		0, 0, /*min, max numbered_params_count*/
 		0/*param_names*/, 0/*local_names*/, 
 		$1/*parser_code*/, 0/*native_code*/);
-	PC.cclass->add_method(*main_method_name, method);
+	PC.cclass->add_method(PC.request->main_method_name, method);
 }
 |	methods;
 

@@ -38,7 +38,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.52 2002/04/24 09:53:02 paf Exp $
+	$Id: compile.tab.C,v 1.52.2.1 2002/05/07 07:23:10 paf Exp $
 */
 
 /**
@@ -1014,12 +1014,12 @@ case 1:
 #line 108 "compile.y"
 {
 	Method& method=*NEW Method(POOL, 
-		*main_method_name, 
+		PC.request->main_method_name, 
 		Method::CT_ANY,
 		0, 0, /*min, max numbered_params_count*/
 		0/*param_names*/, 0/*local_names*/, 
 		yyvsp[0]/*parser_code*/, 0/*native_code*/);
-	PC.cclass->add_method(*main_method_name, method);
+	PC.cclass->add_method(PC.request->main_method_name, method);
 ;
     break;}
 case 8:

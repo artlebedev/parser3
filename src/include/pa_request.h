@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.133 2002/04/19 11:59:43 paf Exp $
+	$Id: pa_request.h,v 1.133.2.1 2002/05/07 07:23:09 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -32,6 +32,7 @@
 
 // consts
 
+#define MAIN_METHOD_NAME "main"
 const uint ANTI_ENDLESS_EXECUTE_RECOURSION=500;
 
 // defines
@@ -229,6 +230,9 @@ public:
 	/// user's post data
 	char *post_data;  size_t post_size;
 
+	/// name of 'main' method
+	const String main_method_name;
+	
 	/// operators are methods of this class
 	Methoded& OP;
 	/// $env:fields

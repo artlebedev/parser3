@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.69.2.1 2002/05/06 10:50:24 paf Exp $
+	$Id: parser3isapi.C,v 1.69.2.2 2002/05/07 07:23:11 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -215,6 +215,9 @@ int failed_new(size_t size) {
 	return 0; // not reached
 }
 
+#ifdef _DEBUG
+static Pool_storage *global_pool_storagep;
+#endif
 static bool parser_init() {
 	static bool globals_inited=false;
 	if(globals_inited)
@@ -224,6 +227,9 @@ static bool parser_init() {
 	_set_new_handler(failed_new);
 
 	static Pool_storage pool_storage;
+#ifdef _DEBUG
+	global_pool_storagep=&pool_storage;
+#endif
 	static Pool pool(&pool_storage); // global pool
 	try {
 		// init socks
@@ -377,8 +383,7 @@ void call_real_parser_handler__do_SEH(Pool& pool,
 #endif
 }
 
-
-DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
+inline DWORD RealHttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	Pool_storage pool_storage;
 	Pool pool(&pool_storage); // no allocations until assigned context [for reporting]
 	SAPI_func_context ctx={
@@ -387,7 +392,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		200 // default http_response_code
 	};
 	pool.set_context(&ctx);// no allocations before this line!
-	
+
 	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;
 	try { // global try
 		call_real_parser_handler__do_SEH(pool, lpECB, header_only);
@@ -461,8 +466,35 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	lpECB->WriteClient(lpECB->ConnID, 
 		(void *)body, &num_bytes, HSE_IO_SYNC);
 */
-
 	return HSE_STATUS_SUCCESS_AND_KEEP_CONN;
+}
+
+#ifdef _DEBUG
+//for memory leaks detection only
+#undef _WINDOWS_
+#include <afx.h>
+#endif
+DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
+// Declare the variables needed
+#ifdef _DEBUG
+//	_crtBreakAlloc=97779;//97777; //997;
+
+    CMemoryState oldMemState, newMemState, diffMemState;
+    oldMemState.Checkpoint();
+#endif
+	
+	DWORD result=RealHttpExtensionProc(lpECB);
+
+#ifdef _DEBUG
+    newMemState.Checkpoint();
+    if( diffMemState.Difference( oldMemState, newMemState ) )
+    {
+        TRACE( "Memory leaked!\n" );
+		diffMemState.DumpStatistics( );
+		diffMemState.DumpAllObjectsSince();
+    }
+#endif
+	return result;
 }
 
 BOOL WINAPI DllMain(

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.204 2002/04/19 11:59:44 paf Exp $
+	$Id: pa_request.C,v 1.204.2.1 2002/05/07 07:23:11 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -21,6 +21,9 @@
 #include "pa_dictionary.h"
 #include "pa_charsets.h"
 #include "pa_charset.h"
+
+const char *POST_PROCESS_METHOD_NAME="postprocess";
+const char *UNHANDLED_EXCEPTION_METHOD_NAME="unhandled_exception";
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
@@ -43,6 +46,7 @@ Request::Request(Pool& apool,
 				 Info& ainfo,
 				 uchar adefault_lang,
 				 bool status_allowed) : Pooled(apool),
+	main_method_name(apool, MAIN_METHOD_NAME),
 	stack(apool),
 	OP(*MOP_create(apool)),
 	env(apool),
@@ -238,7 +242,7 @@ gettimeofday(&mt[0],NULL);
 gettimeofday(&mt[1],NULL);
 #endif
 		// execute @main[]
-		const String *body_string=execute_virtual_method(*main_class, *main_method_name);
+		const String *body_string=execute_virtual_method(*main_class, main_method_name);
 		if(!body_string)
 			throw Exception("parser.runtime",
 				0, 
@@ -252,7 +256,7 @@ gettimeofday(&mt[2],NULL);
 		VString body_vstring_before_post_process(*body_string);
 		VString *body_vstring_after_post_process=&body_vstring_before_post_process;
 		// @postprocess
-		if(Value *value=main_class->get_element(*post_process_method_name))
+		if(Value *value=main_class->get_element(*NEW String(pool(), POST_PROCESS_METHOD_NAME)))
 			if(Junction *junction=value->get_junction())
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
@@ -347,7 +351,8 @@ t[9]-t[3]
 			if(main_class) { // we've managed to end up with some main_class
 				// maybe we'd be lucky enough as to report an error
 				// in a gracefull way...
-				if(Value *value=main_class->get_element(*unhandled_exception_method_name))
+				if(Value *value=main_class->get_element(
+					*NEW String(pool(), UNHANDLED_EXCEPTION_METHOD_NAME)))
 					if(Junction *junction=value->get_junction())
 						if(const Method *method=junction->method) {
 		 					// preparing to pass parameters to 

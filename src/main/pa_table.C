@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_table.C,v 1.46 2002/04/22 14:11:28 paf Exp $
+	$Id: pa_table.C,v 1.46.2.1 2002/05/07 07:23:11 paf Exp $
 */
 
 #include <stdlib.h>
@@ -22,7 +22,7 @@ Table::Table(Pool& apool,
 	forigin_string(aorigin_string),
 	fcurrent(0),
 	fcolumns(acolumns), 
-	name2number(pool()) {
+	name2number(*NEW Hash(pool())) {
 
 	if(fcolumns)
 		for(int i=0; i<fcolumns->size(); i++) {
