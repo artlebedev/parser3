@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.105 2002/01/23 09:47:02 paf Exp $
+	$Id: pa_globals.C,v 1.106 2002/01/23 11:59:59 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -359,7 +359,7 @@ void pa_globals_init(Pool& pool) {
 #	pragma comment(lib, XML_LIBS "/glib/lib/libglib-1.3-11.lib")
 #	pragma comment(lib, XML_LIBS "/libxml2-2.4.12/win32/dsp/libxml2_so/libxml2.lib")
 #	pragma comment(lib, XML_LIBS "/libxslt-1.0.9/win32/dsp/libexslt_so/libexslt.lib")
-#	pragma comment(lib, XML_LIBS "/libxslt-1.0.9/win32/dsp/libxslt_a/libxslt.lib")
+#	pragma comment(lib, XML_LIBS "/libxslt-1.0.9/win32/dsp/libxslt_so/libxslt.lib")
 #	ifdef _DEBUG
 #		pragma comment(lib, XML_LIBS "/gdome2-0.7.0/win32/dsp/Debug/libgdome.lib")
 #	else
