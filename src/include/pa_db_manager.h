@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.h,v 1.4 2001/10/26 13:48:18 paf Exp $
+	$Id: pa_db_manager.h,v 1.5 2001/10/28 11:40:48 paf Exp $
 */
 
 #ifndef PA_DB_MANAGER_H
@@ -15,7 +15,7 @@
 #include "pa_pool.h"
 #include "pa_hash.h"
 #include "pa_db_connection.h"
-\
+
 // defines
 
 // forwards

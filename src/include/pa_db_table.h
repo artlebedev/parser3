@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_table.h,v 1.5 2001/10/27 13:00:09 paf Exp $
+	$Id: pa_db_table.h,v 1.6 2001/10/28 11:40:48 paf Exp $
 */
 
 #ifndef PA_DB_TABLE_H
@@ -16,6 +16,9 @@
 
 #ifdef DB2
 #	include <db.h>
+#	if DB_VERSION_MAJOR != 2
+#		error Parser needs DB 2.x.x version of libdb to compile
+#	endif
 #endif
 
 // defines

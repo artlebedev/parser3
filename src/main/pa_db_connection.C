@@ -4,7 +4,9 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.19 2001/10/27 13:00:09 paf Exp $
+	$Id: pa_db_connection.C,v 1.20 2001/10/28 11:40:48 paf Exp $
+
+	developed with LIBDB 2.7.4
 */
 
 #include "pa_config_includes.h"
@@ -90,7 +92,9 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 	memset(&dbenv, 0, sizeof(dbenv));
 	
 	// error handlers
+#if DB_VERSION_MINOR >= 7
 	dbenv.db_paniccall=db_paniccall;
+#endif
 	dbenv.db_errcall=db_errcall;
 
 	// init

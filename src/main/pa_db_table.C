@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_table.C,v 1.5 2001/10/27 13:00:09 paf Exp $
+	$Id: pa_db_table.C,v 1.6 2001/10/28 11:40:48 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -16,7 +16,12 @@
 
 // defines
 
-#define DEADLOCK_POSSIBILITY_REDUCTION_FLAGS DB_RMW
+#if DB_VERSION_MINOR >= 7
+#	define DEADLOCK_POSSIBILITY_REDUCTION_FLAGS DB_RMW
+#else
+#	define DEADLOCK_POSSIBILITY_REDUCTION_FLAGS 0
+#endif
+
 
 // consts
 
@@ -96,12 +101,14 @@ void DB_Table::check(const char *operation, const String *source, int error) {
 		// thrown as an error
 		break; 
 
+#ifdef DB_RUNRECOVERY
 	case DB_RUNRECOVERY:
 		throw Exception(0, 0, 
 			source,
 			"action failed, RUN RECOVERY UTILITY. db %s error, real filename '%s'", 
 			operation, file_name_cstr);
-		
+#endif
+
 	default:
 		throw Exception(0, 0, 
 			source, 
@@ -234,7 +241,11 @@ DB_Cursor::DB_Cursor(
 	cursor(0) {
 
 	check("cursor", fsource, ftable.db->cursor(ftable.db,
-		transaction?transaction->id():0, &cursor, 0/*flags*/));
+		transaction?transaction->id():0, &cursor
+#if DB_VERSION_MINOR >= 7
+		, 0/*flags*/
+#endif
+		));
 }
 
 DB_Cursor::~DB_Cursor() {
