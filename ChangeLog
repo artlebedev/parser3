@@ -1,3 +1,1778 @@
+2003-02-21  paf
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.15:
+		MAKE_TEST must be used inside of 'make tests' only
+		[it's not forcing CGI mode now]
+		now use -H to output CGI header when parser used in command line [useful for tests also]
+
+	* src/classes/file.C [autoptr] 1.107.2.14:
+	* src/classes/gd/gif.C [autoptr] 1.30.2.4:
+	* src/classes/gd/gif.h [autoptr] 1.23.2.5:
+	* src/classes/image.C [autoptr] 1.90.2.11:
+	* src/classes/mail.C [autoptr] 1.88.2.11:
+	* src/classes/op.C [autoptr] 1.127.2.16:
+	* src/classes/xdoc.C [autoptr] 1.108.2.11:
+	* src/main/pa_charset.C [autoptr] 1.33.2.11:
+	* src/main/pa_exec.C [autoptr] 1.48.2.14:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.14:
+	* src/main/pa_stylesheet_manager.C [autoptr] 1.16.2.4:
+	* src/types/pa_vimage.C [autoptr] 1.22.2.7:
+	* src/types/pa_vxdoc.h [autoptr] 1.31.2.4:
+		fixed all cstr's that must use pool [as the one in ^process]
+
+	* src/include/pa_array.h [autoptr] 1.57.2.25:
+	* src/include/pa_exception.h [autoptr] 1.38.2.15:
+	* src/include/pa_memory.h [autoptr] 1.1.2.1:
+	* src/include/pa_pool.h [autoptr] 1.86.2.31:
+	* src/main/Makefile.am [autoptr] 1.35.6.3:
+	* src/main/main.dsp [autoptr] 1.161.6.12:
+	* src/main/pa_array.C [autoptr] 1.54.2.5:
+	* src/main/pa_memory.C [autoptr] 1.1.2.1:
+	* src/main/pa_pool.C [autoptr] 1.59.2.5:
+		reorganized memory handling files
+
+	* src/include/pa_memory.h [autoptr] 1.1.2.2:
+	* src/main/pa_memory.C [autoptr] 1.1.2.2:
+		inlined memory handling pa_*
+
+	* src/main/execute.C [autoptr] 1.295.2.17:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.11:
+	* www/htdocs/autoptr.html [autoptr] 1.1.2.3:
+		release mode now compiles OK
+		test to show benefits of free
+
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.14:
+		MAKE_TEST environment variable switches on CGI mode, and is
+		used in regression tests
+
+	* operators.txt [autoptr] 1.109.2.1:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.16:
+	* src/types/pa_vcookie.C [autoptr] 1.55.2.8:
+		$cookie:name[$.expires[date << can be now]]
+		
+		written makefile with regression tests [raw]
+
+	* src/include/pa_request.h [autoptr] 1.160.2.26:
+	* src/main/pa_request.C [autoptr] 1.245.2.27:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.13:
+	* src/types/pa_vcookie.h [autoptr] 1.23.2.6:
+	* src/types/pa_venv.h [autoptr] 1.28.2.4:
+		env fixed
+
+	* src/main/pa_array.C [autoptr] 1.54.2.4:
+		pool::format_integer terminator fixed
+
+	* src/include/pa_memory.h 1.1:
+		file pa_memory.h was initially added on branch autoptr.
+
+	* src/main/pa_memory.C 1.1:
+		file pa_memory.C was initially added on branch autoptr.
+
+	* src/classes/op.C [autoptr] 1.127.2.15:
+		fixed process.
+		sould now check for all cstr's -- some must use pool [as the one in ^process]
+
+2003-02-20  paf
+	* www/htdocs/autoptr.html 1.1:
+		file autoptr.html was initially added on branch autoptr.
+
+	* src/include/pa_config_fixed.h [autoptr] 1.54.2.2:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.10:
+		form values passed OK now
+
+	* src/classes/date.C [autoptr] 1.42.2.10:
+	* src/classes/double.C [autoptr] 1.53.2.7:
+	* src/classes/file.C [autoptr] 1.107.2.13:
+	* src/classes/hash.C [autoptr] 1.54.2.10:
+	* src/classes/image.C [autoptr] 1.90.2.10:
+	* src/classes/int.C [autoptr] 1.49.2.6:
+	* src/classes/mail.C [autoptr] 1.88.2.10:
+	* src/classes/math.C [autoptr] 1.24.2.9:
+	* src/classes/op.C [autoptr] 1.127.2.13:
+	* src/classes/response.C [autoptr] 1.23.2.6:
+	* src/classes/string.C [autoptr] 1.125.2.10:
+	* src/classes/table.C [autoptr] 1.172.2.10:
+	* src/classes/void.C [autoptr] 1.28.2.4:
+	* src/classes/xdoc.C [autoptr] 1.108.2.10:
+	* src/classes/xnode.C [autoptr] 1.54.2.7:
+	* src/main/pa_string.C [autoptr] 1.172.2.17:
+	* src/types/pa_method.h [autoptr] 1.1.2.4:
+	* src/types/pa_value.C [autoptr] 1.9.2.14:
+	* src/types/pa_vmethod_frame.h [autoptr] 1.45.2.8:
+	* www/htdocs/autoptr.html [autoptr] 1.1.2.1:
+		string cmp fixed
+
+2003-02-19  paf
+	* src/classes/form.C [autoptr] 1.34.2.6:
+	* src/classes/smtp/smtp.C [autoptr] 1.20.2.3:
+	* src/classes/smtp/smtp.h [autoptr] 1.11.2.4:
+	* src/include/pa_charset.h [autoptr] 1.20.2.12:
+	* src/include/pa_pool.h [autoptr] 1.86.2.30:
+	* src/main/pa_charset.C [autoptr] 1.33.2.10:
+	* src/main/pa_exception.C [autoptr] 1.43.2.13:
+	* src/main/pa_request.C [autoptr] 1.245.2.25:
+	* src/main/pa_stylesheet_manager.C [autoptr] 1.16.2.3:
+	* src/targets/apache13/ApacheModuleParser3.dsp [autoptr] 1.16.12.1:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.8:
+	* src/targets/isapi/parser3isapi.dsp [autoptr] 1.41.12.1:
+	* src/types/pa_vcookie.C [autoptr] 1.55.2.7:
+	* src/types/pa_vform.C [autoptr] 1.74.2.9:
+	* src/types/pa_vmail.C [autoptr] 1.40.2.9:
+	* src/types/pa_vxnode.C [autoptr] 1.30.2.2:
+		found&kill all remaning leaks resulted from pooled::malloc calls
+		[excluding in gd -- planning complete rewrite extremely ugly code]
+
+	* src/targets/apache13/pa_pool.C [autoptr] 1.8.2.2:
+	* src/targets/isapi/pa_pool.C [autoptr] 1.16.2.2:
+	* src/targets/isapi/pool_storage.h [autoptr] 1.19.2.2:
+		removed unneeded files
+
+2003-02-17  paf
+	* src/classes/classes.C [autoptr] 1.18.2.4:
+	* src/include/pa_array.h [autoptr] 1.57.2.22:
+	* src/include/pa_hash.h [autoptr] 1.58.2.16:
+	* src/include/pa_pool.h [autoptr] 1.86.2.29:
+	* src/include/pa_request.h [autoptr] 1.160.2.23:
+	* src/main/pa_request.C [autoptr] 1.245.2.20:
+	* src/main/pa_string.C [autoptr] 1.172.2.16:
+	* src/main/untaint.C [autoptr] 1.115.2.10:
+	* src/types/pa_value.h [autoptr] 1.109.2.23:
+	* src/types/pa_vint.h [autoptr] 1.38.2.10:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.12:
+	* src/types/pa_vstring.h [autoptr] 1.54.2.10:
+	* src/types/pa_vvoid.h [autoptr] 1.17.2.7:
+	* src/types/pa_wcontext.h [autoptr] 1.42.2.7:
+		class fields of simple type not initialized with zeros :(
+		while class fields of class types initialized with default constructors.
+		learn C++
+
+	* src/main/execute.C [autoptr] 1.295.2.11:
+	* src/main/pa_request.C [autoptr] 1.245.2.21:
+	* src/types/pa_vmethod_frame.C [autoptr] 1.1.2.5:
+		first letters out OK
+
+	* src/classes/classes.awk [autoptr] 1.6.6.2:
+	* src/classes/double.C [autoptr] 1.53.2.5:
+	* src/classes/file.C [autoptr] 1.107.2.11:
+	* src/classes/form.C [autoptr] 1.34.2.5:
+	* src/classes/image.C [autoptr] 1.90.2.8:
+	* src/classes/int.C [autoptr] 1.49.2.4:
+	* src/classes/mail.C [autoptr] 1.88.2.8:
+	* src/classes/math.C [autoptr] 1.24.2.7:
+	* src/classes/xdoc.C [autoptr] 1.108.2.7:
+	* src/classes/xnode.C [autoptr] 1.54.2.5:
+	* src/include/pa_array.h [autoptr] 1.57.2.21:
+	* src/include/pa_string.h [autoptr] 1.144.2.24:
+	* src/main/pa_exec.C [autoptr] 1.48.2.13:
+	* src/types/pa_vmail.C [autoptr] 1.40.2.7:
+		parser3.exe - 0 error(s), 0 warning(s)
+
+	* src/classes/date.C [autoptr] 1.42.2.8:
+	* src/classes/op.C [autoptr] 1.127.2.12:
+	* src/classes/table.C [autoptr] 1.172.2.8:
+	* src/classes/xdoc.C [autoptr] 1.108.2.8:
+	* src/classes/xnode.C [autoptr] 1.54.2.6:
+	* src/include/pa_array.h [autoptr] 1.57.2.24:
+	* src/include/pa_charset.h [autoptr] 1.20.2.11:
+	* src/main/Makefile.am [autoptr] 1.35.6.2:
+	* src/main/main.dsp [autoptr] 1.161.6.11:
+	* src/main/pa_charset.C [autoptr] 1.33.2.8:
+	* src/main/pa_common.C [autoptr] 1.143.2.20:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.13:
+	* src/main/pa_stylesheet_manager.C [autoptr] 1.16.2.2:
+	* src/targets/apache13/mod_parser3.C [autoptr] 1.28.2.4:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.6:
+	* src/targets/isapi/parser3isapi.C [autoptr] 1.82.2.4:
+	* src/types/pa_vmail.C [autoptr] 1.40.2.8:
+		fixed more leaks resulted from pooled::malloc calls
+
+	* src/include/pa_stack.h [autoptr] 1.17.2.4:
+	* src/main/compile.C [autoptr] 1.69.2.6:
+	* src/main/execute.C [autoptr] 1.295.2.13:
+	* src/main/pa_request.C [autoptr] 1.245.2.23:
+		stack-stored items need extra .ref to prevent object_ptr from
+		delete[them]
+
+	* src/main/pa_request.C [autoptr] 1.245.2.22:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.5:
+	* src/types/pa_vfile.C [autoptr] 1.36.2.10:
+		couple mem leaks rusulted from old pooled::malloc usage.
+		todo:find more like those
+
+	* src/main/execute.C [autoptr] 1.295.2.14:
+	* src/targets/cgi/pa_pool.C [autoptr] 1.41.2.2:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.7:
+	* src/targets/cgi/pool_storage.h [autoptr] 1.13.2.2:
+		few bugs in debug output fixed
+
+	* src/include/pa_array.h [autoptr] 1.57.2.23:
+	* src/include/pa_request.h [autoptr] 1.160.2.24:
+	* src/main/execute.C [autoptr] 1.295.2.12:
+		stackItem fixed [there were no string on stack before]
+
+	* src/classes/date.C [autoptr] 1.42.2.9:
+	* src/classes/double.C [autoptr] 1.53.2.6:
+	* src/classes/file.C [autoptr] 1.107.2.12:
+	* src/classes/image.C [autoptr] 1.90.2.9:
+	* src/classes/int.C [autoptr] 1.49.2.5:
+	* src/classes/mail.C [autoptr] 1.88.2.9:
+	* src/classes/math.C [autoptr] 1.24.2.8:
+	* src/classes/response.C [autoptr] 1.23.2.5:
+	* src/classes/string.C [autoptr] 1.125.2.9:
+	* src/classes/table.C [autoptr] 1.172.2.9:
+	* src/classes/xdoc.C [autoptr] 1.108.2.9:
+	* src/classes/xnode.h [autoptr] 1.18.2.4:
+	* src/include/pa_stack.h [autoptr] 1.17.2.5:
+	* src/include/pa_stylesheet_connection.h [autoptr] 1.32.2.2:
+	* src/include/pa_stylesheet_manager.h [autoptr] 1.15.2.2:
+	* src/sql/pa_sql_driver.h [autoptr] 1.34.2.3:
+	* src/types/pa_vdate.h [autoptr] 1.24.2.5:
+	* src/types/pa_vdouble.h [autoptr] 1.42.2.9:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.15:
+	* src/types/pa_vform.C [autoptr] 1.74.2.8:
+	* src/types/pa_vform.h [autoptr] 1.45.2.8:
+	* src/types/pa_vimage.h [autoptr] 1.34.2.7:
+	* src/types/pa_vstatus.h [autoptr] 1.15.2.7:
+	* src/types/pa_vstring.h [autoptr] 1.54.2.11:
+	* src/types/pa_vtable.h [autoptr] 1.48.2.8:
+	* src/types/pa_vvoid.h [autoptr] 1.17.2.8:
+	* src/types/pa_vxdoc.h [autoptr] 1.31.2.3:
+	* src/types/pa_vxnode.h [autoptr] 1.22.2.3:
+	* src/types/pa_wcontext.h [autoptr] 1.42.2.8:
+	* src/types/pa_wwrapper.h [autoptr] 1.28.2.3:
+		fixed all remained bugs of unitialized simple-typed field
+
+	* src/classes/classes.C [autoptr] 1.18.2.5:
+	* src/classes/classes.h [autoptr] 1.23.2.8:
+	* src/main/execute.C [autoptr] 1.295.2.15:
+	* src/main/pa_charset.C [autoptr] 1.33.2.9:
+	* src/main/pa_request.C [autoptr] 1.245.2.24:
+		another bug of unitialized simple-typed field fixed.
+		todo: find&kill all like that one
+
+	* src/main/compile.C [autoptr] 1.69.2.5:
+	* src/main/compile_tools.C [autoptr] 1.54.2.5:
+		2*2!
+
+2003-02-14  paf
+	* src/classes/classes.dsp [autoptr] 1.25.10.4:
+	* src/classes/op.C [autoptr] 1.127.2.10:
+	* src/classes/string.C [autoptr] 1.125.2.8:
+	* src/classes/table.C [autoptr] 1.172.2.7:
+	* src/include/pa_common.h [autoptr] 1.89.2.11:
+	* src/include/pa_globals.h [autoptr] 1.101.2.14:
+	* src/include/pa_pool.h [autoptr] 1.86.2.28:
+	* src/include/pa_request.h [autoptr] 1.160.2.20:
+	* src/main/pa_globals.C [autoptr] 1.152.2.15:
+	* src/main/pa_request.C [autoptr] 1.245.2.16:
+	* src/types/pa_value.h [autoptr] 1.109.2.22:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.12:
+	* src/types/pa_vint.h [autoptr] 1.38.2.9:
+	* src/types/types.dsp [autoptr] 1.35.10.7:
+		op compiled
+
+	* src/classes/classes.C [autoptr] 1.18.2.3:
+	* src/classes/classes.awk [autoptr] 1.6.6.1:
+	* src/classes/file.C [autoptr] 1.107.2.9:
+	* src/classes/hash.C [autoptr] 1.54.2.9:
+	* src/classes/mail.C [autoptr] 1.88.2.7:
+	* src/classes/op.C [autoptr] 1.127.2.11:
+	* src/include/pa_common.h [autoptr] 1.89.2.12:
+	* src/include/pa_request.h [autoptr] 1.160.2.21:
+	* src/include/pa_sapi.h [autoptr] 1.22.2.6:
+	* src/main/pa_common.C [autoptr] 1.143.2.18:
+	* src/main/pa_request.C [autoptr] 1.245.2.17:
+	* src/targets/apache13/mod_parser3.C [autoptr] 1.28.2.3:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.3:
+	* src/targets/cgi/parser3.dsp [autoptr] 1.60.10.1:
+	* src/targets/isapi/parser3isapi.C [autoptr] 1.82.2.3:
+		classes.lib - 0 error(s), 0 warning(s)
+		parser.C compiled
+
+	* src/classes/classes.dsp [autoptr] 1.25.10.3:
+	* src/classes/response.C [autoptr] 1.23.2.4:
+	* src/classes/string.C [autoptr] 1.125.2.7:
+	* src/include/pa_dictionary.h [autoptr] 1.13.2.7:
+	* src/include/pa_string.h [autoptr] 1.144.2.23:
+	* src/main/pa_string.C [autoptr] 1.172.2.15:
+	* src/main/untaint.C [autoptr] 1.115.2.9:
+	* src/types/pa_vtable.h [autoptr] 1.48.2.7:
+		string, response compiled
+
+	* src/classes/file.C [autoptr] 1.107.2.10:
+	* src/include/pa_request.h [autoptr] 1.160.2.22:
+	* src/main/pa_request.C [autoptr] 1.245.2.18:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.12:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.4:
+	* src/types/pa_vfile.C [autoptr] 1.36.2.9:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.14:
+	* src/types/pa_vform.C [autoptr] 1.74.2.7:
+	* src/types/pa_vimage.C [autoptr] 1.22.2.6:
+	* src/types/pa_vtable.C [autoptr] 1.21.2.5:
+		all compiled, only 14 link errors :)
+
+	* src/types/pa_vhash.C 1.1:
+		file pa_vhash.C was initially added on branch autoptr.
+
+	* src/include/pa_common.h [autoptr] 1.89.2.13:
+	* src/main/pa_common.C [autoptr] 1.143.2.19:
+	* src/main/pa_request.C [autoptr] 1.245.2.19:
+		13 link errors
+
+2003-02-07  paf
+	* src/classes/table.C [autoptr] 1.172.2.6:
+	* src/types/pa_vtable.h [autoptr] 1.48.2.6:
+		table compiled
+
+2003-02-06  paf
+	* src/classes/image.C [autoptr] 1.90.2.7:
+	* src/classes/string.C [autoptr] 1.125.2.6:
+	* src/classes/xdoc.C [autoptr] 1.108.2.6:
+	* src/include/pa_common.h [autoptr] 1.89.2.10:
+	* src/include/pa_hash.h [autoptr] 1.58.2.15:
+	* src/main/pa_common.C [autoptr] 1.143.2.17:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.13:
+	* src/types/pa_vimage.h [autoptr] 1.34.2.6:
+		image compiled
+
+	* src/classes/mail.C [autoptr] 1.88.2.6:
+	* src/classes/smtp/smtp.h [autoptr] 1.11.2.3:
+	* src/include/pa_request.h [autoptr] 1.160.2.19:
+	* src/main/pa_request.C [autoptr] 1.245.2.15:
+		mail compiled
+
+	* src/classes/hash.C [autoptr] 1.54.2.7:
+	* src/include/pa_hash.h [autoptr] 1.58.2.14:
+	* src/include/pa_table.h [autoptr] 1.48.2.11:
+	* src/types/pa_vstring.h [autoptr] 1.54.2.9:
+		hash compiled
+
+	* src/classes/classes.dsp [autoptr] 1.25.10.2:
+	* src/classes/file.C [autoptr] 1.107.2.7:
+	* src/include/pa_common.h [autoptr] 1.89.2.9:
+	* src/include/pa_exec.h [autoptr] 1.11.2.5:
+	* src/main/pa_common.C [autoptr] 1.143.2.16:
+	* src/main/pa_exec.C [autoptr] 1.48.2.12:
+	* src/types/pa_vfile.C [autoptr] 1.36.2.8:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.12:
+		file compiled
+
+	* src/classes/file.C [autoptr] 1.107.2.8:
+	* src/classes/form.C [autoptr] 1.34.2.4:
+		form compiled
+
+	* src/classes/hash.C [autoptr] 1.54.2.8:
+	* src/classes/math.C [autoptr] 1.24.2.6:
+	* src/types/pa_vmath.C [autoptr] 1.1.2.8:
+	* src/types/pa_vmath.h [autoptr] 1.14.2.4:
+		math compiled [win32]
+
+2003-02-04  paf
+	* src/classes/date.C [autoptr] 1.42.2.5:
+	* src/classes/double.C [autoptr] 1.53.2.3:
+	* src/classes/file.C [autoptr] 1.107.2.5:
+	* src/classes/form.C [autoptr] 1.34.2.3:
+	* src/classes/hash.C [autoptr] 1.54.2.4:
+	* src/classes/image.C [autoptr] 1.90.2.5:
+	* src/classes/int.C [autoptr] 1.49.2.3:
+	* src/classes/mail.C [autoptr] 1.88.2.4:
+	* src/classes/math.C [autoptr] 1.24.2.4:
+	* src/classes/op.C [autoptr] 1.127.2.8:
+	* src/classes/response.C [autoptr] 1.23.2.3:
+	* src/classes/string.C [autoptr] 1.125.2.4:
+	* src/classes/table.C [autoptr] 1.172.2.4:
+	* src/classes/void.C [autoptr] 1.28.2.3:
+	* src/classes/xdoc.C [autoptr] 1.108.2.4:
+	* src/classes/xnode.C [autoptr] 1.54.2.3:
+	* src/types/pa_vdouble.h [autoptr] 1.42.2.8:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.10:
+	* src/types/pa_vint.h [autoptr] 1.38.2.8:
+	* src/types/pa_vstring.h [autoptr] 1.54.2.8:
+	* src/types/pa_vtable.h [autoptr] 1.48.2.5:
+	* src/types/pa_vxdoc.h [autoptr] 1.31.2.2:
+	* src/types/pa_vxnode.h [autoptr] 1.22.2.2:
+		int compiled
+
+	* src/types/pa_value.C [autoptr] 1.9.2.12:
+	* src/types/pa_value_includes.h [autoptr] 1.1.2.4:
+	* src/types/pa_vrequest.C [autoptr] 1.27.2.8:
+		trying to remove stupid value_includes.h
+
+	* src/classes/date.C [autoptr] 1.42.2.4:
+	* src/classes/double.C [autoptr] 1.53.2.2:
+	* src/classes/file.C [autoptr] 1.107.2.4:
+	* src/classes/hash.C [autoptr] 1.54.2.3:
+	* src/classes/image.C [autoptr] 1.90.2.4:
+	* src/classes/int.C [autoptr] 1.49.2.2:
+	* src/classes/mail.C [autoptr] 1.88.2.3:
+	* src/classes/math.C [autoptr] 1.24.2.3:
+	* src/classes/op.C [autoptr] 1.127.2.7:
+	* src/classes/response.C [autoptr] 1.23.2.2:
+	* src/classes/smtp/smtp.C [autoptr] 1.20.2.2:
+	* src/classes/smtp/smtp.h [autoptr] 1.11.2.2:
+	* src/classes/string.C [autoptr] 1.125.2.3:
+	* src/classes/table.C [autoptr] 1.172.2.3:
+	* src/classes/void.C [autoptr] 1.28.2.2:
+	* src/classes/xdoc.C [autoptr] 1.108.2.3:
+	* src/classes/xnode.C [autoptr] 1.54.2.2:
+	* src/classes/xnode.h [autoptr] 1.18.2.3:
+	* src/types/pa_vvoid.h [autoptr] 1.17.2.6:
+		void  compiled :)
+
+	* src/classes/date.C [autoptr] 1.42.2.7:
+	* src/classes/hash.C [autoptr] 1.54.2.6:
+	* src/include/pa_exec.h [autoptr] 1.11.2.4:
+	* src/include/pa_hash.h [autoptr] 1.58.2.13:
+	* src/include/pa_request.h [autoptr] 1.160.2.18:
+	* src/include/pa_string.h [autoptr] 1.144.2.22:
+	* src/include/pa_table.h [autoptr] 1.48.2.10:
+	* src/main/pa_common.C [autoptr] 1.143.2.15:
+	* src/main/pa_exec.C [autoptr] 1.48.2.11:
+	* src/main/pa_string.C [autoptr] 1.172.2.14:
+	* src/types/pa_method.h [autoptr] 1.1.2.3:
+	* src/types/pa_vform.C [autoptr] 1.74.2.6:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.11:
+		hash 50% compiled
+
+	* src/types/pa_method.h 1.1:
+		file pa_method.h was initially added on branch autoptr.
+
+	* src/classes/gd/gif.C [autoptr] 1.30.2.3:
+	* src/include/pa_globals.h [autoptr] 1.101.2.13:
+	* src/main/pa_cache_managers.C [autoptr] 1.7.2.5:
+	* src/main/pa_charset.C [autoptr] 1.33.2.7:
+	* src/main/pa_charsets.C [autoptr] 1.11.2.9:
+	* src/main/pa_common.C [autoptr] 1.143.2.14:
+	* src/main/pa_dir.C [autoptr] 1.14.2.3:
+	* src/main/pa_exception.C [autoptr] 1.43.2.12:
+	* src/main/pa_exec.C [autoptr] 1.48.2.10:
+	* src/main/pa_globals.C [autoptr] 1.152.2.13:
+	* src/main/pa_pool.C [autoptr] 1.59.2.4:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.11:
+	* src/main/pa_string.C [autoptr] 1.172.2.12:
+	* src/main/pa_uue.C [autoptr] 1.4.2.5:
+	* src/main/untaint.C [autoptr] 1.115.2.8:
+	* src/types/pa_value.C [autoptr] 1.9.2.13:
+	* src/types/pa_vcookie.C [autoptr] 1.55.2.6:
+	* src/types/pa_vfile.C [autoptr] 1.36.2.7:
+	* src/types/pa_vimage.C [autoptr] 1.22.2.5:
+	* src/types/pa_vmath.C [autoptr] 1.1.2.7:
+	* src/types/pa_vrequest.C [autoptr] 1.27.2.9:
+	* src/types/pa_vresponse.C [autoptr] 1.17.2.6:
+	* src/types/pa_vstateless_class.C [autoptr] 1.19.2.6:
+	* src/types/pa_vstatus.C [autoptr] 1.15.2.5:
+	* src/types/pa_vstring.C [autoptr] 1.22.2.3:
+	* src/types/pa_vtable.C [autoptr] 1.21.2.4:
+	* src/types/pa_wcontext.C [autoptr] 1.24.2.5:
+	* src/types/types.dsp [autoptr] 1.35.10.6:
+		removed stupid value_includes.h
+
+	* src/main/pa_exec.C [autoptr] 1.48.2.8:
+		libmain.a compiled on six [unix]
+
+	* src/include/pa_config_includes.h [autoptr] 1.23.2.5:
+	* src/include/pa_dictionary.h [autoptr] 1.13.2.6:
+	* src/main/pa_common.C [autoptr] 1.143.2.13:
+	* src/main/pa_dictionary.C [autoptr] 1.17.2.6:
+	* src/main/pa_exec.C [autoptr] 1.48.2.7:
+	* src/main/pa_socks.C [autoptr] 1.18.2.5:
+		libmain.a gcc
+		and
+		mail.lib msvc++
+		compiled
+
+	* src/include/pa_array.h [autoptr] 1.57.2.20:
+	* src/include/pa_config_includes.h [autoptr] 1.23.2.4:
+	* src/include/pa_dictionary.h [autoptr] 1.13.2.5:
+	* src/main/pa_dictionary.C [autoptr] 1.17.2.5:
+	* src/main/pa_exec.C [autoptr] 1.48.2.6:
+	* src/main/pa_socks.C [autoptr] 1.18.2.4:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.10:
+		gcc libmain.a compiled
+
+	* src/include/pa_globals.h [autoptr] 1.101.2.12:
+	* src/include/pa_request.h [autoptr] 1.160.2.16:
+	* src/types/pa_value.C [autoptr] 1.9.2.11:
+	* src/types/pa_value.h [autoptr] 1.109.2.21:
+	* src/types/pa_vclass.C [autoptr] 1.16.2.5:
+	* src/types/pa_vcookie.C [autoptr] 1.55.2.5:
+	* src/types/pa_vdate.h [autoptr] 1.24.2.4:
+	* src/types/pa_vfile.C [autoptr] 1.36.2.6:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.11:
+	* src/types/pa_vmail.C [autoptr] 1.40.2.6:
+	* src/types/pa_vobject.C [autoptr] 1.12.2.6:
+	* src/types/pa_vrequest.C [autoptr] 1.27.2.7:
+	* src/types/pa_vstateless_class.C [autoptr] 1.19.2.5:
+	* src/types/pa_vstatus.C [autoptr] 1.15.2.4:
+	* src/types/pa_vtable.C [autoptr] 1.21.2.3:
+		libtypes.a compiled gcc
+
+	* src/classes/classes.dsp [autoptr] 1.25.10.1:
+	* src/classes/double.C [autoptr] 1.53.2.4:
+		double compiled
+
+	* src/main/pa_globals.C [release_3_0_0007] 1.148.2.1:
+		merged changes from 1.149-1.150 (stupid name conflicts)
+
+	* src/include/pa_array.h [autoptr] 1.57.2.19:
+	* src/include/pa_pool.h [autoptr] 1.86.2.27:
+	* src/main/Makefile.am [autoptr] 1.35.6.1:
+	* src/main/Makefile.in [autoptr] 1.50.2.2:
+	* src/main/compile.tab.C [autoptr] 1.81.2.7:
+	* src/main/compile.y [autoptr] 1.204.2.6:
+	* src/main/execute.C [autoptr] 1.295.2.10:
+	* src/main/pa_request.C [autoptr] 1.245.2.14:
+	* src/main/untaint.C [autoptr] 1.115.2.7:
+	* src/types/pa_junction.h [autoptr] 1.1.2.2:
+	* src/types/pa_method.h [autoptr] 1.1.2.2:
+	* src/types/pa_value.h [autoptr] 1.109.2.20:
+	* src/types/pa_value_includes.h [autoptr] 1.1.2.3:
+	* src/types/pa_vimage.h [autoptr] 1.34.2.5:
+		*** empty log message ***
+
+	* src/main/pa_exec.C [autoptr] 1.48.2.9:
+		pa_exec compiled on win32
+
+	* src/classes/date.C [autoptr] 1.42.2.6:
+	* src/classes/file.C [autoptr] 1.107.2.6:
+	* src/classes/hash.C [autoptr] 1.54.2.5:
+	* src/classes/image.C [autoptr] 1.90.2.6:
+	* src/classes/mail.C [autoptr] 1.88.2.5:
+	* src/classes/math.C [autoptr] 1.24.2.5:
+	* src/classes/op.C [autoptr] 1.127.2.9:
+	* src/classes/string.C [autoptr] 1.125.2.5:
+	* src/classes/table.C [autoptr] 1.172.2.5:
+	* src/classes/xdoc.C [autoptr] 1.108.2.5:
+	* src/classes/xnode.C [autoptr] 1.54.2.4:
+	* src/include/pa_request.h [autoptr] 1.160.2.17:
+	* src/main/pa_globals.C [autoptr] 1.152.2.14:
+	* src/main/pa_string.C [autoptr] 1.172.2.13:
+		date compiled
+
+	* src/types/pa_junction.h 1.1:
+		file pa_junction.h was initially added on branch autoptr.
+
+	* src/main/compile_tools.h [autoptr] 1.67.2.8:
+	* src/main/execute.C [autoptr] 1.295.2.9:
+	* src/main/pa_table.C [autoptr] 1.53.2.9:
+	* src/types/pa_vmethod_frame.h [autoptr] 1.45.2.7:
+	* src/types/pa_vvoid.h [autoptr] 1.17.2.5:
+		yuk: gcc on cygwin yelds "virtual memory exhausted" while
+		trying to compile execute.C [eating up to 127MB]
+
+2003-02-03  paf
+	* src/types/pa_vstateless_class.C [autoptr] 1.19.2.4:
+		vstateless_class compiled
+
+	* src/include/pa_request.h [autoptr] 1.160.2.13:
+	* src/main/execute.C [autoptr] 1.295.2.7:
+	* src/main/pa_request.C [autoptr] 1.245.2.8:
+	* src/types/pa_value.h [autoptr] 1.109.2.16:
+	* src/types/pa_vmethod_frame.h [autoptr] 1.45.2.6:
+		execute compiled
+
+	* src/types/pa_vresponse.C [autoptr] 1.17.2.5:
+	* src/types/pa_vresponse.h [autoptr] 1.32.2.6:
+		vresponse compiled
+
+	* src/types/pa_value.C [autoptr] 1.9.2.9:
+	* src/types/pa_value.h [autoptr] 1.109.2.18:
+	* src/types/pa_vclass.C [autoptr] 1.16.2.4:
+	* src/types/pa_vclass.h [autoptr] 1.39.2.5:
+	* src/types/pa_vobject.C [autoptr] 1.12.2.5:
+	* src/types/pa_vobject.h [autoptr] 1.38.2.8:
+		vobject compiled
+
+	* src/types/pa_vtable.C [autoptr] 1.21.2.2:
+		vtable compiled
+
+	* src/types/pa_vmath.C [autoptr] 1.1.2.6:
+	* src/types/pa_vmethod_frame.C [autoptr] 1.1.2.4:
+		vmath compiled
+
+	* src/include/pa_config_includes.h [autoptr] 1.23.2.2:
+	* src/include/pa_hash.h [autoptr] 1.58.2.12:
+	* src/include/pa_operation.h [autoptr] 1.1.2.6:
+	* src/include/pa_pool.h [autoptr] 1.86.2.26:
+	* src/include/pa_string.h [autoptr] 1.144.2.21:
+	* src/main/pa_common.C [autoptr] 1.143.2.12:
+	* src/types/pa_value.C [autoptr] 1.9.2.10:
+	* src/types/pa_value.h [autoptr] 1.109.2.19:
+	* src/types/pa_vdouble.h [autoptr] 1.42.2.7:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.10:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.9:
+	* src/types/pa_vint.h [autoptr] 1.38.2.7:
+	* src/types/pa_vjunction.h [autoptr] 1.19.2.5:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.11:
+	* src/types/pa_vstring.h [autoptr] 1.54.2.7:
+	* src/types/types.dsp [autoptr] 1.35.10.5:
+		started gcc compiling
+		pa_common compiled
+
+	* src/include/pa_pool.h [autoptr] 1.86.2.23:
+	* src/main/pa_request.C [autoptr] 1.245.2.10:
+	* src/types/pa_value.C [autoptr] 1.9.2.8:
+	* src/types/pa_vclass.C [autoptr] 1.16.2.3:
+	* src/types/pa_vcookie.C [autoptr] 1.55.2.4:
+	* src/types/pa_vcookie.h [autoptr] 1.23.2.5:
+	* src/types/pa_vform.C [autoptr] 1.74.2.4:
+	* src/types/pa_vform.h [autoptr] 1.45.2.7:
+	* src/types/pa_vobject.h [autoptr] 1.38.2.7:
+		vform compiled
+
+	* src/include/Makefile.am [autoptr] 1.3.14.1:
+	* src/include/Makefile.in [autoptr] 1.11.2.1:
+	* src/include/pa_hash.h [autoptr] 1.58.2.11:
+	* src/include/pa_pool.h [autoptr] 1.86.2.24:
+		gcc refused to compile _P identifier. it replaced it to some
+		strange 0x0000040
+
+	* configure [autoptr] 1.66.2.2:
+	* configure.in [autoptr] 1.62.2.2:
+	* src/Makefile.in [autoptr] 1.55.2.1:
+	* src/include/Makefile.in [autoptr] 1.11.2.2:
+	* src/include/pa_config_auto.h.in [autoptr] 1.37.2.1:
+	* src/include/pa_config_auto.h.in [autoptr] 1.37.2.2:
+	* src/include/pa_string.h [autoptr] 1.144.2.20:
+	* src/main/Makefile.in [autoptr] 1.50.2.1:
+		*** empty log message ***
+
+	* src/types/pa_vstring.C [autoptr] 1.22.2.2:
+	* src/types/pa_vstring.h [autoptr] 1.54.2.6:
+		vstring compiled
+
+	* src/include/pa_request.h [autoptr] 1.160.2.14:
+	* src/main/execute.C [autoptr] 1.295.2.8:
+	* src/main/pa_request.C [autoptr] 1.245.2.9:
+		main.lib - 0 error(s), 0 warning(s)
+
+	* src/types/pa_vrequest.C [autoptr] 1.27.2.6:
+		vrequest compiled
+
+	* src/classes/form.C [autoptr] 1.34.2.2:
+	* src/classes/mail.C [autoptr] 1.88.2.2:
+	* src/include/pa_request.h [autoptr] 1.160.2.15:
+	* src/main/pa_globals.C [autoptr] 1.152.2.12:
+	* src/main/pa_request.C [autoptr] 1.245.2.11:
+	* src/types/pa_value.h [autoptr] 1.109.2.17:
+	* src/types/pa_vform.C [autoptr] 1.74.2.5:
+	* src/types/pa_vmail.C [autoptr] 1.40.2.5:
+	* src/types/pa_vmail.h [autoptr] 1.9.2.4:
+		vmail compiled
+
+	* src/types/pa_vimage.C [autoptr] 1.22.2.4:
+	* src/types/pa_vimage.h [autoptr] 1.34.2.4:
+		vimage compiled
+
+	* src/include/pa_exception.h [autoptr] 1.38.2.14:
+	* src/include/pa_pool.h [autoptr] 1.86.2.25:
+	* src/main/pa_exception.C [autoptr] 1.43.2.11:
+		exception gcc change #1
+
+	* src/include/pa_cache_managers.h [autoptr] 1.9.2.6:
+	* src/main/pa_request.C [autoptr] 1.245.2.12:
+	* src/types/pa_vstatus.C [autoptr] 1.15.2.2:
+	* src/types/pa_vstatus.h [autoptr] 1.15.2.6:
+		vstatus compiled
+
+2003-01-31  paf
+	* src/classes/classes.C [autoptr] 1.18.2.2:
+	* src/classes/classes.h [autoptr] 1.23.2.7:
+	* src/classes/date.C [autoptr] 1.42.2.3:
+	* src/classes/double.C [autoptr] 1.53.2.1:
+	* src/classes/file.C [autoptr] 1.107.2.3:
+	* src/classes/form.C [autoptr] 1.34.2.1:
+	* src/classes/gd/gif.C [autoptr] 1.30.2.2:
+	* src/classes/gd/gif.h [autoptr] 1.23.2.4:
+	* src/classes/gd/gifio.C [autoptr] 1.21.2.2:
+	* src/classes/hash.C [autoptr] 1.54.2.2:
+	* src/classes/image.C [autoptr] 1.90.2.3:
+	* src/classes/int.C [autoptr] 1.49.2.1:
+	* src/classes/mail.C [autoptr] 1.88.2.1:
+	* src/classes/math.C [autoptr] 1.24.2.2:
+	* src/classes/op.C [autoptr] 1.127.2.5:
+	* src/classes/response.C [autoptr] 1.23.2.1:
+	* src/classes/smtp/comms.C [autoptr] 1.11.2.1:
+	* src/classes/smtp/smtp.C [autoptr] 1.20.2.1:
+	* src/classes/smtp/smtp.h [autoptr] 1.11.2.1:
+	* src/classes/string.C [autoptr] 1.125.2.1:
+	* src/classes/table.C [autoptr] 1.172.2.2:
+	* src/classes/void.C [autoptr] 1.28.2.1:
+	* src/classes/xdoc.C [autoptr] 1.108.2.2:
+	* src/classes/xnode.C [autoptr] 1.54.2.1:
+	* src/classes/xnode.h [autoptr] 1.18.2.2:
+	* src/include/pa_array.h [autoptr] 1.57.2.16:
+	* src/include/pa_cache_managers.h [autoptr] 1.9.2.5:
+	* src/include/pa_charset.h [autoptr] 1.20.2.10:
+	* src/include/pa_charsets.h [autoptr] 1.8.2.7:
+	* src/include/pa_common.h [autoptr] 1.89.2.7:
+	* src/include/pa_config_fixed.h [autoptr] 1.54.2.1:
+	* src/include/pa_config_includes.h [autoptr] 1.23.2.1:
+	* src/include/pa_dictionary.h [autoptr] 1.13.2.4:
+	* src/include/pa_dir.h [autoptr] 1.13.2.1:
+	* src/include/pa_exception.h [autoptr] 1.38.2.13:
+	* src/include/pa_exec.h [autoptr] 1.11.2.3:
+	* src/include/pa_globals.h [autoptr] 1.101.2.10:
+	* src/include/pa_hash.h [autoptr] 1.58.2.10:
+	* src/include/pa_opcode.h [autoptr] 1.24.2.2:
+	* src/include/pa_operation.h [autoptr] 1.1.2.4:
+	* src/include/pa_pool.h [autoptr] 1.86.2.22:
+	* src/include/pa_request.h [autoptr] 1.160.2.9:
+	* src/include/pa_request_charsets.h [autoptr] 1.1.2.3:
+	* src/include/pa_request_info.h [autoptr] 1.1.2.4:
+	* src/include/pa_sapi.h [autoptr] 1.22.2.4:
+	* src/include/pa_socks.h [autoptr] 1.11.2.2:
+	* src/include/pa_sql_connection.h [autoptr] 1.30.2.6:
+	* src/include/pa_sql_driver_manager.h [autoptr] 1.26.2.7:
+	* src/include/pa_stack.h [autoptr] 1.17.2.3:
+	* src/include/pa_string.h [autoptr] 1.144.2.18:
+	* src/include/pa_stylesheet_connection.h [autoptr] 1.32.2.1:
+	* src/include/pa_stylesheet_manager.h [autoptr] 1.15.2.1:
+	* src/include/pa_table.h [autoptr] 1.48.2.9:
+	* src/include/pa_threads.h [autoptr] 1.26.2.1:
+	* src/include/pa_types.h [autoptr] 1.44.2.2:
+	* src/include/pa_uue.h [autoptr] 1.4.2.3:
+	* src/lib/ltdl/config_fixed.h [autoptr] 1.2.2.2:
+	* src/lib/ltdl/ltdl.c [autoptr] 1.3.2.1:
+	* src/lib/ltdl/ltdl.h [autoptr] 1.2.2.1:
+	* src/lib/md5/pa_md5.h [autoptr] 1.5.2.1:
+	* src/lib/md5/pa_md5c.c [autoptr] 1.6.2.1:
+	* src/lib/pcre/dftables.c [autoptr] 1.1.14.1:
+	* src/lib/pcre/get.c [autoptr] 1.1.14.1:
+	* src/lib/pcre/maketables.c [autoptr] 1.1.14.1:
+	* src/lib/pcre/pcre.c [autoptr] 1.1.14.1:
+	* src/lib/pcre/pcre.h [autoptr] 1.1.14.1:
+	* src/lib/pcre/pcre_parser_ctype.c [autoptr] 1.3.2.1:
+	* src/lib/pcre/study.c [autoptr] 1.1.14.1:
+	* src/main/compile.C [autoptr] 1.69.2.4:
+	* src/main/compile.tab.C [autoptr] 1.81.2.4:
+	* src/main/compile.y [autoptr] 1.204.2.3:
+	* src/main/compile_tools.C [autoptr] 1.54.2.4:
+	* src/main/compile_tools.h [autoptr] 1.67.2.6:
+	* src/main/execute.C [autoptr] 1.295.2.4:
+	* src/main/main.dsp [autoptr] 1.161.6.8:
+	* src/main/pa_cache_managers.C [autoptr] 1.7.2.4:
+	* src/main/pa_charset.C [autoptr] 1.33.2.6:
+	* src/main/pa_charsets.C [autoptr] 1.11.2.8:
+	* src/main/pa_common.C [autoptr] 1.143.2.10:
+	* src/main/pa_dictionary.C [autoptr] 1.17.2.4:
+	* src/main/pa_dir.C [autoptr] 1.14.2.2:
+	* src/main/pa_exception.C [autoptr] 1.43.2.10:
+	* src/main/pa_exec.C [autoptr] 1.48.2.5:
+	* src/main/pa_globals.C [autoptr] 1.152.2.10:
+	* src/main/pa_pool.C [autoptr] 1.59.2.3:
+	* src/main/pa_request.C [autoptr] 1.245.2.5:
+	* src/main/pa_socks.C [autoptr] 1.18.2.3:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.9:
+	* src/main/pa_string.C [autoptr] 1.172.2.11:
+	* src/main/pa_stylesheet_manager.C [autoptr] 1.16.2.1:
+	* src/main/pa_table.C [autoptr] 1.53.2.8:
+	* src/main/pa_uue.C [autoptr] 1.4.2.4:
+	* src/main/untaint.C [autoptr] 1.115.2.6:
+	* src/sql/pa_sql_driver.h [autoptr] 1.34.2.2:
+	* src/targets/apache13/mod_parser3.C [autoptr] 1.28.2.1:
+	* src/targets/apache13/pa_md5c.c [autoptr] 1.5.2.1:
+	* src/targets/apache13/pa_pool.C [autoptr] 1.8.2.1:
+	* src/targets/apache13/pa_threads.C [autoptr] 1.11.2.1:
+	* src/targets/cgi/getopt.c [autoptr] 1.2.6.1:
+	* src/targets/cgi/getopt.h [autoptr] 1.2.10.1:
+	* src/targets/cgi/pa_pool.C [autoptr] 1.41.2.1:
+	* src/targets/cgi/pa_threads.C [autoptr] 1.12.2.1:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.1:
+	* src/targets/cgi/pool_storage.h [autoptr] 1.13.2.1:
+	* src/targets/isapi/pa_pool.C [autoptr] 1.16.2.1:
+	* src/targets/isapi/pa_threads.C [autoptr] 1.13.2.1:
+	* src/targets/isapi/parser3isapi.C [autoptr] 1.82.2.1:
+	* src/targets/isapi/pool_storage.h [autoptr] 1.19.2.1:
+	* src/types/pa_value.C [autoptr] 1.9.2.7:
+	* src/types/pa_value.h [autoptr] 1.109.2.14:
+	* src/types/pa_value_includes.h [autoptr] 1.1.2.2:
+	* src/types/pa_vbool.h [autoptr] 1.21.2.3:
+	* src/types/pa_vclass.C [autoptr] 1.16.2.2:
+	* src/types/pa_vclass.h [autoptr] 1.39.2.4:
+	* src/types/pa_vcode_frame.h [autoptr] 1.24.2.1:
+	* src/types/pa_vcookie.C [autoptr] 1.55.2.3:
+	* src/types/pa_vcookie.h [autoptr] 1.23.2.3:
+	* src/types/pa_vdate.h [autoptr] 1.24.2.3:
+	* src/types/pa_vdouble.h [autoptr] 1.42.2.6:
+	* src/types/pa_venv.h [autoptr] 1.28.2.3:
+	* src/types/pa_vfile.C [autoptr] 1.36.2.4:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.8:
+	* src/types/pa_vform.C [autoptr] 1.74.2.3:
+	* src/types/pa_vform.h [autoptr] 1.45.2.5:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.7:
+	* src/types/pa_vimage.C [autoptr] 1.22.2.3:
+	* src/types/pa_vimage.h [autoptr] 1.34.2.3:
+	* src/types/pa_vint.h [autoptr] 1.38.2.6:
+	* src/types/pa_vjunction.h [autoptr] 1.19.2.3:
+	* src/types/pa_vmail.C [autoptr] 1.40.2.3:
+	* src/types/pa_vmail.h [autoptr] 1.9.2.2:
+	* src/types/pa_vmath.C [autoptr] 1.1.2.5:
+	* src/types/pa_vmath.h [autoptr] 1.14.2.3:
+	* src/types/pa_vmethod_frame.C [autoptr] 1.1.2.3:
+	* src/types/pa_vmethod_frame.h [autoptr] 1.45.2.5:
+	* src/types/pa_vobject.C [autoptr] 1.12.2.4:
+	* src/types/pa_vobject.h [autoptr] 1.38.2.6:
+	* src/types/pa_vrequest.C [autoptr] 1.27.2.5:
+	* src/types/pa_vrequest.h [autoptr] 1.25.2.3:
+	* src/types/pa_vresponse.C [autoptr] 1.17.2.4:
+	* src/types/pa_vresponse.h [autoptr] 1.32.2.4:
+	* src/types/pa_vstateless_class.C [autoptr] 1.19.2.3:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.10:
+	* src/types/pa_vstateless_object.h [autoptr] 1.28.2.4:
+	* src/types/pa_vstatus.C [autoptr] 1.15.2.1:
+	* src/types/pa_vstatus.h [autoptr] 1.15.2.5:
+	* src/types/pa_vstring.C [autoptr] 1.22.2.1:
+	* src/types/pa_vstring.h [autoptr] 1.54.2.5:
+	* src/types/pa_vtable.C [autoptr] 1.21.2.1:
+	* src/types/pa_vtable.h [autoptr] 1.48.2.3:
+	* src/types/pa_vvoid.h [autoptr] 1.17.2.4:
+	* src/types/pa_vxdoc.C [autoptr] 1.23.2.1:
+	* src/types/pa_vxdoc.h [autoptr] 1.31.2.1:
+	* src/types/pa_vxnode.C [autoptr] 1.30.2.1:
+	* src/types/pa_vxnode.h [autoptr] 1.22.2.1:
+	* src/types/pa_wcontext.C [autoptr] 1.24.2.3:
+	* src/types/pa_wcontext.h [autoptr] 1.42.2.5:
+	* src/types/pa_wwrapper.h [autoptr] 1.28.2.2:
+		grammar compiled
+
+	* src/classes/op.C [autoptr] 1.127.2.6:
+	* src/classes/string.C [autoptr] 1.125.2.2:
+	* src/include/pa_common.h [autoptr] 1.89.2.8:
+	* src/include/pa_globals.h [autoptr] 1.101.2.11:
+	* src/include/pa_request.h [autoptr] 1.160.2.10:
+	* src/include/pa_sql_connection.h [autoptr] 1.30.2.7:
+	* src/main/compile.tab.C [autoptr] 1.81.2.5:
+	* src/main/compile.y [autoptr] 1.204.2.4:
+	* src/main/execute.C [autoptr] 1.295.2.5:
+	* src/main/main.dsp [autoptr] 1.161.6.9:
+	* src/main/pa_common.C [autoptr] 1.143.2.11:
+	* src/main/pa_globals.C [autoptr] 1.152.2.11:
+	* src/main/pa_request.C [autoptr] 1.245.2.6:
+	* src/types/pa_value.h [autoptr] 1.109.2.15:
+	* src/types/pa_vcode_frame.h [autoptr] 1.24.2.2:
+	* src/types/pa_vcookie.h [autoptr] 1.23.2.4:
+	* src/types/pa_vform.h [autoptr] 1.45.2.6:
+	* src/types/pa_vmail.C [autoptr] 1.40.2.4:
+	* src/types/pa_vmail.h [autoptr] 1.9.2.3:
+	* src/types/pa_vresponse.h [autoptr] 1.32.2.5:
+	* src/types/pa_vtable.h [autoptr] 1.48.2.4:
+	* src/types/pa_wcontext.C [autoptr] 1.24.2.4:
+	* src/types/pa_wcontext.h [autoptr] 1.42.2.6:
+	* src/types/types.dsp [autoptr] 1.35.10.4:
+		most pa_request compiled
+
+	* src/include/pa_array.h [autoptr] 1.57.2.17:
+	* src/include/pa_operation.h [autoptr] 1.1.2.5:
+	* src/include/pa_request.h [autoptr] 1.160.2.12:
+	* src/main/execute.C [autoptr] 1.295.2.6:
+	* src/main/main.dsp [autoptr] 1.161.6.10:
+	* src/types/pa_vjunction.h [autoptr] 1.19.2.4:
+		started last file from main library: execute
+
+	* src/include/pa_request.h [autoptr] 1.160.2.11:
+	* src/include/pa_sapi.h [autoptr] 1.22.2.5:
+	* src/main/compile.tab.C [autoptr] 1.81.2.6:
+	* src/main/compile.y [autoptr] 1.204.2.5:
+	* src/main/compile_tools.h [autoptr] 1.67.2.7:
+	* src/main/pa_request.C [autoptr] 1.245.2.7:
+	* src/targets/apache13/mod_parser3.C [autoptr] 1.28.2.2:
+	* src/targets/cgi/parser3.C [autoptr] 1.216.2.2:
+	* src/targets/isapi/parser3isapi.C [autoptr] 1.82.2.2:
+	* src/types/pa_vfile.C [autoptr] 1.36.2.5:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.9:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.8:
+		pa_request compiled
+
+	* src/classes/classes.h [autoptr] 1.23.2.6:
+	* src/classes/op.C [autoptr] 1.127.2.4:
+	* src/include/pa_cache_managers.h [autoptr] 1.9.2.4:
+	* src/include/pa_charset.h [autoptr] 1.20.2.9:
+	* src/include/pa_charsets.h [autoptr] 1.8.2.6:
+	* src/include/pa_common.h [autoptr] 1.89.2.6:
+	* src/include/pa_dictionary.h [autoptr] 1.13.2.3:
+	* src/include/pa_exception.h [autoptr] 1.38.2.12:
+	* src/include/pa_exec.h [autoptr] 1.11.2.2:
+	* src/include/pa_pool.h [autoptr] 1.86.2.21:
+	* src/include/pa_request.h [autoptr] 1.160.2.8:
+	* src/include/pa_sapi.h [autoptr] 1.22.2.3:
+	* src/include/pa_sql_connection.h [autoptr] 1.30.2.5:
+	* src/include/pa_sql_driver_manager.h [autoptr] 1.26.2.6:
+	* src/include/pa_string.h [autoptr] 1.144.2.17:
+	* src/include/pa_table.h [autoptr] 1.48.2.8:
+	* src/include/pa_uue.h [autoptr] 1.4.2.2:
+	* src/main/compile.C [autoptr] 1.69.2.3:
+	* src/main/compile.tab.C [autoptr] 1.81.2.3:
+	* src/main/compile_tools.C [autoptr] 1.54.2.3:
+	* src/main/compile_tools.h [autoptr] 1.67.2.5:
+	* src/main/main.dsp [autoptr] 1.161.6.7:
+	* src/main/pa_charset.C [autoptr] 1.33.2.5:
+	* src/main/pa_charsets.C [autoptr] 1.11.2.7:
+	* src/main/pa_common.C [autoptr] 1.143.2.9:
+	* src/main/pa_dictionary.C [autoptr] 1.17.2.3:
+	* src/main/pa_exception.C [autoptr] 1.43.2.9:
+	* src/main/pa_exec.C [autoptr] 1.48.2.4:
+	* src/main/pa_request.C [autoptr] 1.245.2.4:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.8:
+	* src/main/pa_string.C [autoptr] 1.172.2.10:
+	* src/main/pa_table.C [autoptr] 1.53.2.7:
+	* src/main/pa_uue.C [autoptr] 1.4.2.3:
+	* src/main/untaint.C [autoptr] 1.115.2.5:
+	* src/types/pa_value.C [autoptr] 1.9.2.6:
+	* src/types/pa_value.h [autoptr] 1.109.2.13:
+	* src/types/pa_vclass.h [autoptr] 1.39.2.3:
+	* src/types/pa_vcookie.C [autoptr] 1.55.2.2:
+	* src/types/pa_vcookie.h [autoptr] 1.23.2.2:
+	* src/types/pa_vdate.h [autoptr] 1.24.2.2:
+	* src/types/pa_vdouble.h [autoptr] 1.42.2.5:
+	* src/types/pa_venv.h [autoptr] 1.28.2.2:
+	* src/types/pa_vfile.C [autoptr] 1.36.2.3:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.7:
+	* src/types/pa_vform.h [autoptr] 1.45.2.4:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.6:
+	* src/types/pa_vimage.C [autoptr] 1.22.2.2:
+	* src/types/pa_vimage.h [autoptr] 1.34.2.2:
+	* src/types/pa_vint.h [autoptr] 1.38.2.5:
+	* src/types/pa_vmail.C [autoptr] 1.40.2.2:
+	* src/types/pa_vmail.h [autoptr] 1.9.2.1:
+	* src/types/pa_vmath.C [autoptr] 1.1.2.4:
+	* src/types/pa_vmath.h [autoptr] 1.14.2.2:
+	* src/types/pa_vmethod_frame.C [autoptr] 1.1.2.2:
+	* src/types/pa_vmethod_frame.h [autoptr] 1.45.2.4:
+	* src/types/pa_vobject.C [autoptr] 1.12.2.3:
+	* src/types/pa_vobject.h [autoptr] 1.38.2.5:
+	* src/types/pa_vrequest.C [autoptr] 1.27.2.4:
+	* src/types/pa_vrequest.h [autoptr] 1.25.2.2:
+	* src/types/pa_vresponse.C [autoptr] 1.17.2.3:
+	* src/types/pa_vresponse.h [autoptr] 1.32.2.3:
+	* src/types/pa_vstateless_class.C [autoptr] 1.19.2.2:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.9:
+	* src/types/pa_vstateless_object.h [autoptr] 1.28.2.3:
+	* src/types/pa_vstatus.h [autoptr] 1.15.2.4:
+	* src/types/pa_vstring.h [autoptr] 1.54.2.4:
+	* src/types/pa_vtable.h [autoptr] 1.48.2.2:
+	* src/types/pa_vvoid.h [autoptr] 1.17.2.3:
+	* src/types/pa_wcontext.C [autoptr] 1.24.2.2:
+	* src/types/pa_wcontext.h [autoptr] 1.42.2.4:
+	* src/types/pa_wwrapper.h [autoptr] 1.28.2.1:
+	* www/htdocs/.htaccess [autoptr] 1.12.6.1:
+		ConstStringPtr died, long live StringPtr
+
+2003-01-30  paf
+	* src/classes/classes.h [autoptr] 1.23.2.5:
+	* src/include/pa_pool.h [autoptr] 1.86.2.20:
+	* src/main/compile.C [autoptr] 1.69.2.2:
+	* src/main/compile.tab.C [autoptr] 1.81.2.1:
+	* src/types/pa_value.h [autoptr] 1.109.2.12:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.6:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.5:
+	* src/types/pa_vmethod_frame.h [autoptr] 1.45.2.3:
+	* src/types/pa_vstateless_class.C [autoptr] 1.19.2.1:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.8:
+	* src/types/types.dsp [autoptr] 1.35.10.3:
+		vstateless_class compiled
+
+	* src/classes/gd/gif.h [autoptr] 1.23.2.3:
+	* src/include/pa_charset.h [autoptr] 1.20.2.8:
+	* src/include/pa_request.h [autoptr] 1.160.2.7:
+	* src/include/pa_sql_driver_manager.h [autoptr] 1.26.2.5:
+	* src/main/compile.tab.C [autoptr] 1.81.2.2:
+	* src/main/compile.y [autoptr] 1.204.2.2:
+	* src/main/compile_tools.h [autoptr] 1.67.2.4:
+	* src/main/pa_request.C [autoptr] 1.245.2.3:
+	* src/types/pa_vobject.h [autoptr] 1.38.2.4:
+	* src/types/pa_vstatus.h [autoptr] 1.15.2.3:
+		grammar compiled
+
+	* src/include/pa_opcode.h [autoptr] 1.24.2.1:
+	* src/main/compile_tools.h [autoptr] 1.67.2.1:
+	* src/main/execute.C [autoptr] 1.295.2.3:
+	* src/main/main.dsp [autoptr] 1.161.6.6:
+	* src/types/pa_value.C [autoptr] 1.9.2.5:
+	* src/types/pa_value.h [autoptr] 1.109.2.11:
+	* src/types/pa_vmethod_frame.h [autoptr] 1.45.2.2:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.7:
+		value compiled
+
+	* src/types/pa_vmethod_frame.C 1.1:
+		file pa_vmethod_frame.C was initially added on branch autoptr.
+
+	* src/include/pa_array.h [autoptr] 1.57.2.15:
+	* src/include/pa_operation.h [autoptr] 1.1.2.3:
+	* src/include/pa_table.h [autoptr] 1.48.2.7:
+	* src/main/compile_tools.C [autoptr] 1.54.2.2:
+	* src/main/compile_tools.h [autoptr] 1.67.2.3:
+	* src/main/pa_table.C [autoptr] 1.53.2.6:
+		compile_tools compiled
+
+	* src/main/compile.C [autoptr] 1.69.2.1:
+		compile compiled
+
+	* ltmain.sh 1.5:
+		*** empty log message ***
+
+	* src/include/pa_operation.h [autoptr] 1.1.2.2:
+	* src/main/compile.y [autoptr] 1.204.2.1:
+	* src/main/compile_tools.C [autoptr] 1.54.2.1:
+	* src/main/compile_tools.h [autoptr] 1.67.2.2:
+		started compile_tools. vagues ideas of how to free compiled code
+
+	* src/include/pa_operation.h 1.1:
+		file pa_operation.h was initially added on branch autoptr.
+
+2003-01-29  paf
+	* src/include/pa_request_charsets.h [autoptr] 1.1.2.2:
+	* src/include/pa_request_info.h [autoptr] 1.1.2.3:
+	* src/main/main.dsp [autoptr] 1.161.6.5:
+	* src/main/untaint.C [autoptr] 1.115.2.4:
+		more compiled
+
+	* src/include/pa_globals.h [autoptr] 1.101.2.9:
+	* src/include/pa_request.h [autoptr] 1.160.2.6:
+	* src/main/pa_globals.C [autoptr] 1.152.2.9:
+	* src/main/pa_request.C [autoptr] 1.245.2.2:
+	* src/types/pa_value.h [autoptr] 1.109.2.10:
+	* src/types/pa_vmethod_frame.h [autoptr] 1.45.2.1:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.6:
+	* src/types/pa_wcontext.h [autoptr] 1.42.2.3:
+	* src/types/types.dsp [autoptr] 1.35.10.2:
+		vmethodframe, pa_request.h compiled
+
+	* src/classes/file.C [autoptr] 1.107.2.2:
+	* src/include/pa_globals.h [autoptr] 1.101.2.8:
+	* src/main/pa_globals.C [autoptr] 1.152.2.8:
+	* src/types/pa_value.C [autoptr] 1.9.2.4:
+	* src/types/pa_value.h [autoptr] 1.109.2.9:
+	* src/types/pa_vfile.C [autoptr] 1.36.2.1:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.4:
+		vfile compiled
+
+	* src/lib/ltdl/config_fixed.h [autoptr] 1.2.2.1:
+		libltdl compiled without warnings now
+
+	* src/classes/classes.h [autoptr] 1.23.2.3:
+	* src/classes/math.C [autoptr] 1.24.2.1:
+	* src/include/pa_pool.h [autoptr] 1.86.2.17:
+	* src/include/pa_request.h [autoptr] 1.160.2.3:
+	* src/include/pa_sapi.h [autoptr] 1.22.2.2:
+	* src/include/pa_string.h [autoptr] 1.144.2.13:
+	* src/main/main.dsp [autoptr] 1.161.6.3:
+	* src/types/pa_value.h [autoptr] 1.109.2.5:
+	* src/types/pa_vbool.h [autoptr] 1.21.2.2:
+	* src/types/pa_vclass.h [autoptr] 1.39.2.2:
+	* src/types/pa_vdouble.h [autoptr] 1.42.2.3:
+	* src/types/pa_venv.h [autoptr] 1.28.2.1:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.2:
+	* src/types/pa_vform.C [autoptr] 1.74.2.1:
+	* src/types/pa_vform.h [autoptr] 1.45.2.1:
+	* src/types/pa_vjunction.h [autoptr] 1.19.2.2:
+	* src/types/pa_vmath.C [autoptr] 1.1.2.2:
+	* src/types/pa_vmath.h [autoptr] 1.14.2.1:
+	* src/types/pa_vobject.h [autoptr] 1.38.2.2:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.4:
+	* src/types/pa_vstateless_object.h [autoptr] 1.28.2.2:
+	* src/types/pa_vstatus.h [autoptr] 1.15.2.2:
+	* src/types/pa_vstring.h [autoptr] 1.54.2.2:
+	* src/types/types.dsp [autoptr] 1.35.10.1:
+		vmath compiled
+
+	* src/types/pa_vmath.C 1.1:
+		file pa_vmath.C was initially added on branch autoptr.
+
+	* src/include/pa_common.h [autoptr] 1.89.2.5:
+	* src/include/pa_globals.h [autoptr] 1.101.2.7:
+	* src/include/pa_string.h [autoptr] 1.144.2.16:
+	* src/main/pa_globals.C [autoptr] 1.152.2.7:
+	* src/types/pa_value.C [autoptr] 1.9.2.3:
+	* src/types/pa_value.h [autoptr] 1.109.2.8:
+	* src/types/pa_vcookie.C [autoptr] 1.55.2.1:
+	* src/types/pa_vcookie.h [autoptr] 1.23.2.1:
+	* src/types/pa_vform.C [autoptr] 1.74.2.2:
+	* src/types/pa_vform.h [autoptr] 1.45.2.3:
+		vcookie compiled
+
+	* src/include/pa_request_info.h 1.1:
+		file pa_request_info.h was initially added on branch autoptr.
+
+	* src/classes/gd/gd.dsp [autoptr] 1.26.10.1:
+	* src/classes/gd/gif.C [autoptr] 1.30.2.1:
+	* src/classes/gd/gif.h [autoptr] 1.23.2.1:
+	* src/classes/gd/gif.h [autoptr] 1.23.2.2:
+	* src/classes/gd/gifio.C [autoptr] 1.21.2.1:
+	* src/include/pa_array.h [autoptr] 1.57.2.14:
+	* src/include/pa_exception.h [autoptr] 1.38.2.11:
+	* src/include/pa_pool.h [autoptr] 1.86.2.19:
+	* src/main/pa_exception.C [autoptr] 1.43.2.8:
+	* src/types/pa_vfile.C [autoptr] 1.36.2.2:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.5:
+	* src/types/pa_vimage.C [autoptr] 1.22.2.1:
+	* src/types/pa_vimage.h [autoptr] 1.34.2.1:
+		gd compiled
+
+	* src/include/pa_exception.h [autoptr] 1.38.2.10:
+	* src/main/pa_cache_managers.C [autoptr] 1.7.2.3:
+	* src/main/pa_charsets.C [autoptr] 1.11.2.6:
+	* src/main/pa_common.C [autoptr] 1.143.2.8:
+	* src/main/pa_dir.C [autoptr] 1.14.2.1:
+	* src/main/pa_exception.C [autoptr] 1.43.2.7:
+	* src/main/pa_exec.C [autoptr] 1.48.2.3:
+	* src/main/pa_pool.C [autoptr] 1.59.2.2:
+	* src/main/pa_socks.C [autoptr] 1.18.2.2:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.7:
+	* src/main/pa_string.C [autoptr] 1.172.2.9:
+	* src/main/pa_uue.C [autoptr] 1.4.2.2:
+		#include "pa_value_includes.h"
+		everywhere in main
+
+	* src/include/pa_charsets.h [autoptr] 1.8.2.5:
+	* src/include/pa_request.h [autoptr] 1.160.2.5:
+	* src/include/pa_request_info.h [autoptr] 1.1.2.2:
+	* src/include/pa_string.h [autoptr] 1.144.2.15:
+	* src/main/pa_charsets.C [autoptr] 1.11.2.5:
+	* src/types/pa_value.h [autoptr] 1.109.2.7:
+	* src/types/pa_vdate.h [autoptr] 1.24.2.1:
+	* src/types/pa_vform.h [autoptr] 1.45.2.2:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.4:
+	* src/types/pa_vobject.C [autoptr] 1.12.2.2:
+	* src/types/pa_vobject.h [autoptr] 1.38.2.3:
+	* src/types/pa_vrequest.C [autoptr] 1.27.2.2:
+	* src/types/pa_vrequest.C [autoptr] 1.27.2.3:
+	* src/types/pa_vresponse.C [autoptr] 1.17.2.1:
+	* src/types/pa_vresponse.C [autoptr] 1.17.2.2:
+	* src/types/pa_vresponse.h [autoptr] 1.32.2.1:
+	* src/types/pa_vresponse.h [autoptr] 1.32.2.2:
+	* src/types/pa_wcontext.h [autoptr] 1.42.2.2:
+		vrequest compiled
+
+	* src/types/pa_value_includes.h 1.1:
+		file pa_value_includes.h was initially added on branch autoptr.
+
+	* src/classes/classes.h [autoptr] 1.23.2.4:
+	* src/include/pa_charset.h [autoptr] 1.20.2.7:
+	* src/include/pa_charsets.h [autoptr] 1.8.2.4:
+	* src/include/pa_globals.h [autoptr] 1.101.2.6:
+	* src/include/pa_pool.h [autoptr] 1.86.2.18:
+	* src/include/pa_request.h [autoptr] 1.160.2.4:
+	* src/include/pa_string.h [autoptr] 1.144.2.14:
+	* src/main/main.dsp [autoptr] 1.161.6.4:
+	* src/main/pa_charset.C [autoptr] 1.33.2.4:
+	* src/main/pa_charsets.C [autoptr] 1.11.2.4:
+	* src/main/pa_globals.C [autoptr] 1.152.2.6:
+	* src/main/untaint.C [autoptr] 1.115.2.3:
+	* src/types/pa_value.h [autoptr] 1.109.2.6:
+	* src/types/pa_vdouble.h [autoptr] 1.42.2.4:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.3:
+	* src/types/pa_vint.h [autoptr] 1.38.2.4:
+	* src/types/pa_vmath.C [autoptr] 1.1.2.3:
+	* src/types/pa_vrequest.C [autoptr] 1.27.2.1:
+	* src/types/pa_vrequest.h [autoptr] 1.25.2.1:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.5:
+	* src/types/pa_vstring.h [autoptr] 1.54.2.3:
+	* src/types/pa_vvoid.h [autoptr] 1.17.2.2:
+		vrequest,vdouble,vint compiled
+
+	* src/include/pa_request_charsets.h 1.1:
+		file pa_request_charsets.h was initially added on branch
+		autoptr.
+
+2003-01-28  paf
+	* src/include/pa_charset.h [autoptr] 1.20.2.6:
+	* src/include/pa_exception.h [autoptr] 1.38.2.9:
+	* src/include/pa_request.h [autoptr] 1.160.2.2:
+	* src/include/pa_string.h [autoptr] 1.144.2.12:
+	* src/main/untaint.C [autoptr] 1.115.2.2:
+		untaint compiled
+
+	* src/include/pa_charset.h [autoptr] 1.20.2.5:
+	* src/main/pa_charset.C [autoptr] 1.33.2.3:
+	* src/main/pa_charsets.C [autoptr] 1.11.2.3:
+		charset/s simplified [charset::pool_for_load introduced]
+
+	* src/include/pa_cache_managers.h [autoptr] 1.9.2.3:
+	* src/main/pa_cache_managers.C [autoptr] 1.7.2.2:
+	* src/main/pa_globals.C [autoptr] 1.152.2.5:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.6:
+		globals compiled
+
+	* src/include/pa_array.h [autoptr] 1.57.2.11:
+	* src/include/pa_charset.h [autoptr] 1.20.2.3:
+	* src/include/pa_charsets.h [autoptr] 1.8.2.1:
+	* src/include/pa_pool.h [autoptr] 1.86.2.13:
+	* src/include/pa_sql_connection.h [autoptr] 1.30.2.4:
+	* src/include/pa_sql_driver_manager.h [autoptr] 1.26.2.4:
+	* src/include/pa_stack.h [autoptr] 1.17.2.2:
+	* src/include/pa_string.h [autoptr] 1.144.2.9:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.4:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.3:
+	* src/types/pa_vint.h [autoptr] 1.38.2.3:
+		sql_driver_manager compiled
+
+	* src/classes/date.C [autoptr] 1.42.2.1:
+	* src/include/pa_charset.h [autoptr] 1.20.2.4:
+	* src/include/pa_charsets.h [autoptr] 1.8.2.2:
+	* src/include/pa_charsets.h [autoptr] 1.8.2.3:
+	* src/include/pa_globals.h [autoptr] 1.101.2.5:
+	* src/main/pa_charset.C [autoptr] 1.33.2.2:
+	* src/main/pa_charsets.C [autoptr] 1.11.2.1:
+	* src/main/pa_charsets.C [autoptr] 1.11.2.2:
+	* src/main/pa_globals.C [autoptr] 1.152.2.4:
+	* src/main/pa_request.C [autoptr] 1.245.2.1:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.5:
+		pa_charsets compiled
+
+	* etc/parser3.charsets/koi8-r.cfg 1.3:
+	* etc/parser3.charsets/windows-1251.cfg 1.7:
+		ukranian letter i with two dots added to koi,
+		all ukranian letters added to win1251.
+		
+		typographic simbol 0xb9 deleted from win1251 [strange one & were abscent from koi]
+
+	* src/include/pa_pool.h [autoptr] 1.86.2.14:
+	* src/main/pa_common.C [autoptr] 1.143.2.7:
+	* src/types/pa_vdouble.h [autoptr] 1.42.2.2:
+		common compiled
+
+	* src/classes/classes.h [autoptr] 1.23.2.2:
+	* src/classes/date.C [autoptr] 1.42.2.2:
+	* src/classes/file.C [autoptr] 1.107.2.1:
+	* src/classes/hash.C [autoptr] 1.54.2.1:
+	* src/classes/image.C [autoptr] 1.90.2.2:
+	* src/classes/table.C [autoptr] 1.172.2.1:
+	* src/classes/xdoc.C [autoptr] 1.108.2.1:
+	* src/classes/xnode.h [autoptr] 1.18.2.1:
+	* src/main/execute.C [autoptr] 1.295.2.2:
+	* src/main/main.dsp [autoptr] 1.161.6.2:
+	* src/types/pa_value.h [autoptr] 1.109.2.4:
+	* src/types/pa_vclass.C [autoptr] 1.16.2.1:
+	* src/types/pa_vclass.h [autoptr] 1.39.2.1:
+	* src/types/pa_vobject.C [autoptr] 1.12.2.1:
+	* src/types/pa_vobject.h [autoptr] 1.38.2.1:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.3:
+		started main: compile_tools
+
+	* src/include/pa_array.h [autoptr] 1.57.2.13:
+	* src/include/pa_string.h [autoptr] 1.144.2.11:
+	* src/main/execute.C [autoptr] 1.295.2.1:
+	* src/main/untaint.C [autoptr] 1.115.2.1:
+	* src/types/pa_vmail.C [autoptr] 1.40.2.1:
+		more compiled.
+		struck with string::store_to needing to know source/client charsets
+
+	* src/include/pa_exception.h [autoptr] 1.38.2.8:
+	* src/include/pa_uue.h [autoptr] 1.4.2.1:
+	* src/main/pa_uue.C [autoptr] 1.4.2.1:
+	* src/types/pa_vfile.h [autoptr] 1.52.2.1:
+		uue compiled
+
+	* src/include/pa_table.h [autoptr] 1.48.2.6:
+	* src/main/pa_string.C [autoptr] 1.172.2.8:
+	* src/main/pa_table.C [autoptr] 1.53.2.5:
+		table compiled
+
+	* src/include/pa_array.h [autoptr] 1.57.2.12:
+	* src/include/pa_exec.h [autoptr] 1.11.2.1:
+	* src/include/pa_hash.h [autoptr] 1.58.2.9:
+	* src/include/pa_pool.h [autoptr] 1.86.2.15:
+	* src/main/pa_exec.C [autoptr] 1.48.2.2:
+		pa_exec win32 compiled
+
+2003-01-27  paf
+	* src/include/pa_array.h [autoptr] 1.57.2.9:
+	* src/include/pa_common.h [autoptr] 1.89.2.4:
+	* src/include/pa_hash.h [autoptr] 1.58.2.7:
+	* src/include/pa_pool.h [autoptr] 1.86.2.9:
+	* src/include/pa_string.h [autoptr] 1.144.2.7:
+	* src/main/pa_common.C [autoptr] 1.143.2.4:
+	* src/main/pa_string.C [autoptr] 1.172.2.6:
+	* src/types/pa_value.C [autoptr] 1.9.2.2:
+	* src/types/pa_value.h [autoptr] 1.109.2.3:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.2:
+	* src/types/pa_vint.h [autoptr] 1.38.2.2:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.2:
+	* src/types/pa_wcontext.C [autoptr] 1.24.2.1:
+	* src/types/pa_wcontext.h [autoptr] 1.42.2.1:
+		wcontext compiled
+
+	* src/include/pa_exception.h [autoptr] 1.38.2.6:
+	* src/include/pa_sql_connection.h [autoptr] 1.30.2.3:
+	* src/include/pa_sql_driver_manager.h [autoptr] 1.26.2.3:
+	* src/include/pa_string.h [autoptr] 1.144.2.8:
+	* src/main/pa_common.C [autoptr] 1.143.2.6:
+	* src/main/pa_exec.C [autoptr] 1.48.2.1:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.3:
+	* src/sql/pa_sql_driver.h [autoptr] 1.34.2.1:
+		paused on sql_manager
+
+	* src/classes/op.C [autoptr] 1.127.2.3:
+	* src/include/pa_globals.h [autoptr] 1.101.2.4:
+	* src/include/pa_hash.h [autoptr] 1.58.2.8:
+	* src/include/pa_sql_connection.h [autoptr] 1.30.2.1:
+	* src/include/pa_sql_driver_manager.h [autoptr] 1.26.2.1:
+	* src/include/pa_table.h [autoptr] 1.48.2.5:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.1:
+	* src/main/pa_table.C [autoptr] 1.53.2.4:
+		table compiled
+
+	* src/include/pa_pool.h [autoptr] 1.86.2.10:
+	* src/main/pa_common.C [autoptr] 1.143.2.5:
+		common compiled
+
+	* src/include/pa_cache_managers.h [autoptr] 1.9.2.1:
+	* src/main/pa_cache_managers.C [autoptr] 1.7.2.1:
+		cache_managers compiled
+
+	* src/include/pa_cache_managers.h [autoptr] 1.9.2.2:
+	* src/include/pa_pool.h [autoptr] 1.86.2.12:
+	* src/include/pa_sql_connection.h [autoptr] 1.30.2.2:
+	* src/include/pa_sql_driver_manager.h [autoptr] 1.26.2.2:
+	* src/include/pa_stack.h [autoptr] 1.17.2.1:
+	* src/main/pa_sql_driver_manager.C [autoptr] 1.69.2.2:
+	* src/types/pa_vtable.h [autoptr] 1.48.2.1:
+	* src/types/pa_vvoid.h [autoptr] 1.17.2.1:
+		vtable compiled
+
+	* src/include/pa_array.h [autoptr] 1.57.2.10:
+	* src/include/pa_charset.h [autoptr] 1.20.2.2:
+	* src/include/pa_pool.h [autoptr] 1.86.2.11:
+	* src/main/pa_charset.C [autoptr] 1.33.2.1:
+		charset compiled
+
+2003-01-24  paf
+	* src/classes/classes.C [autoptr] 1.18.2.1:
+	* src/classes/classes.h [autoptr] 1.23.2.1:
+	* src/include/pa_array.h [autoptr] 1.57.2.8:
+	* src/include/pa_common.h [autoptr] 1.89.2.3:
+	* src/include/pa_globals.h [autoptr] 1.101.2.3:
+	* src/include/pa_hash.h [autoptr] 1.58.2.6:
+	* src/include/pa_pool.h [autoptr] 1.86.2.8:
+	* src/include/pa_string.h [autoptr] 1.144.2.6:
+	* src/main/pa_common.C [autoptr] 1.143.2.3:
+	* src/main/pa_globals.C [autoptr] 1.152.2.3:
+	* src/main/pa_string.C [autoptr] 1.172.2.5:
+	* src/types/pa_value.h [autoptr] 1.109.2.2:
+	* src/types/pa_vbool.h [autoptr] 1.21.2.1:
+	* src/types/pa_vdouble.h [autoptr] 1.42.2.1:
+	* src/types/pa_vhash.h [autoptr] 1.43.2.1:
+	* src/types/pa_vint.h [autoptr] 1.38.2.1:
+	* src/types/pa_vjunction.h [autoptr] 1.19.2.1:
+	* src/types/pa_vstateless_class.h [autoptr] 1.42.2.1:
+	* src/types/pa_vstateless_object.h [autoptr] 1.28.2.1:
+	* src/types/pa_vstatus.h [autoptr] 1.15.2.1:
+	* src/types/pa_vstring.h [autoptr] 1.54.2.1:
+		more patched
+
+	* src/classes/op.C [autoptr] 1.127.2.2:
+	* src/include/pa_array.h [autoptr] 1.57.2.7:
+	* src/include/pa_exception.h [autoptr] 1.38.2.5:
+	* src/include/pa_hash.h [autoptr] 1.58.2.5:
+	* src/include/pa_pool.h [autoptr] 1.86.2.7:
+	* src/include/pa_string.h [autoptr] 1.144.2.5:
+	* src/include/pa_table.h [autoptr] 1.48.2.4:
+	* src/main/pa_dictionary.C [autoptr] 1.17.2.2:
+	* src/main/pa_exception.C [autoptr] 1.43.2.5:
+	* src/main/pa_string.C [autoptr] 1.172.2.4:
+	* src/main/pa_table.C [autoptr] 1.53.2.3:
+		string compiled
+
+	* src/include/pa_array.h [autoptr] 1.57.2.6:
+	* src/include/pa_common.h [autoptr] 1.89.2.2:
+	* src/include/pa_dictionary.h [autoptr] 1.13.2.2:
+	* src/include/pa_exception.h [autoptr] 1.38.2.4:
+	* src/include/pa_pool.h [autoptr] 1.86.2.6:
+	* src/include/pa_string.h [autoptr] 1.144.2.4:
+	* src/include/pa_table.h [autoptr] 1.48.2.3:
+	* src/main/pa_common.C [autoptr] 1.143.2.2:
+	* src/main/pa_dictionary.C [autoptr] 1.17.2.1:
+	* src/main/pa_exception.C [autoptr] 1.43.2.4:
+	* src/main/pa_string.C [autoptr] 1.172.2.3:
+		dictionary compiled
+
+2003-01-23  paf
+	* src/include/pa_array.h [autoptr] 1.57.2.4:
+	* src/include/pa_exception.h [autoptr] 1.38.2.2:
+	* src/include/pa_hash.h [autoptr] 1.58.2.4:
+	* src/include/pa_pool.h [autoptr] 1.86.2.4:
+	* src/include/pa_table.h [autoptr] 1.48.2.2:
+	* src/main/pa_exception.C [autoptr] 1.43.2.2:
+	* src/main/pa_table.C [autoptr] 1.53.2.2:
+		table compiled
+
+	* src/include/pa_array.h [autoptr] 1.57.2.2:
+	* src/include/pa_hash.h [autoptr] 1.58.2.2:
+	* src/include/pa_pool.h [autoptr] 1.86.2.2:
+	* src/main/main.dsp [autoptr] 1.161.6.1:
+		continued with Hash
+
+	* src/include/pa_array.h [autoptr] 1.57.2.5:
+	* src/include/pa_common.h [autoptr] 1.89.2.1:
+	* src/include/pa_exception.h [autoptr] 1.38.2.3:
+	* src/include/pa_globals.h [autoptr] 1.101.2.2:
+	* src/include/pa_pool.h [autoptr] 1.86.2.5:
+	* src/include/pa_request.h [autoptr] 1.160.2.1:
+	* src/include/pa_string.h [autoptr] 1.144.2.3:
+	* src/main/pa_common.C [autoptr] 1.143.2.1:
+	* src/main/pa_exception.C [autoptr] 1.43.2.3:
+	* src/main/pa_globals.C [autoptr] 1.152.2.2:
+	* src/types/pa_value.C [autoptr] 1.9.2.1:
+	* src/types/pa_value.h [autoptr] 1.109.2.1:
+		resurrected pool in new sense: now it's factory, producing
+		accounting memory chunks for read[autofree] buffers
+
+	* src/classes/image.C [autoptr] 1.90.2.1:
+	* src/classes/op.C [autoptr] 1.127.2.1:
+	* src/include/pa_array.h [autoptr] 1.57.2.3:
+	* src/include/pa_exception.h [autoptr] 1.38.2.1:
+	* src/include/pa_globals.h [autoptr] 1.101.2.1:
+	* src/include/pa_hash.h [autoptr] 1.58.2.3:
+	* src/include/pa_pool.h [autoptr] 1.86.2.3:
+	* src/include/pa_pragma_pack_begin.h [autoptr] 1.6.2.1:
+	* src/include/pa_pragma_pack_end.h [autoptr] 1.6.2.1:
+	* src/include/pa_sapi.h [autoptr] 1.22.2.1:
+	* src/include/pa_string.h [autoptr] 1.144.2.2:
+	* src/include/pa_table.h [autoptr] 1.48.2.1:
+	* src/include/pa_types.h [autoptr] 1.44.2.1:
+	* src/main/pa_exception.C [autoptr] 1.43.2.1:
+	* src/main/pa_globals.C [autoptr] 1.152.2.1:
+	* src/main/pa_string.C [autoptr] 1.172.2.2:
+	* src/main/pa_table.C [autoptr] 1.53.2.1:
+		aint that easy
+
+	* src/main/pa_common.C 1.144:
+		connect_string allocated on heap[wes on stack] now. and exception can be reported OK now [can be reported outside of pro
+		c with that stack]
+
+	* src/lib/pcre/8859-1.ucm 1.1:
+		file 8859-1.ucm was initially added on branch autoptr.
+
+2003-01-22  paf
+	* src/include/pa_array.h [autoptr] 1.57.2.1:
+	* src/include/pa_charset.h [autoptr] 1.20.2.1:
+	* src/include/pa_dictionary.h [autoptr] 1.13.2.1:
+	* src/include/pa_hash.h [autoptr] 1.58.2.1:
+	* src/include/pa_pool.h [autoptr] 1.86.2.1:
+	* src/include/pa_string.h [autoptr] 1.144.2.1:
+	* src/main/pa_array.C [autoptr] 1.54.2.1:
+	* src/main/pa_hash.C [autoptr] 1.53.2.1:
+	* src/main/pa_pool.C [autoptr] 1.59.2.1:
+	* src/main/pa_string.C [autoptr] 1.172.2.1:
+		started auto_ptr.
+		PA_Object is base: contains references_count.
+		auto_ptr template calls add_ref/release
+
+2003-01-21  paf
+	* src/classes/classes.C 1.18:
+	* src/classes/classes.h 1.23:
+	* src/classes/date.C 1.42:
+	* src/classes/double.C 1.53:
+	* src/classes/file.C 1.107:
+	* src/classes/form.C 1.34:
+	* src/classes/gd/gif.C 1.30:
+	* src/classes/gd/gif.h 1.23:
+	* src/classes/gd/gifio.C 1.21:
+	* src/classes/hash.C 1.54:
+	* src/classes/image.C 1.90:
+	* src/classes/int.C 1.49:
+	* src/classes/mail.C 1.88:
+	* src/classes/math.C 1.24:
+	* src/classes/op.C 1.127:
+	* src/classes/response.C 1.23:
+	* src/classes/smtp/comms.C 1.11:
+	* src/classes/smtp/smtp.C 1.20:
+	* src/classes/smtp/smtp.h 1.11:
+	* src/classes/string.C 1.125:
+	* src/classes/table.C 1.172:
+	* src/classes/void.C 1.28:
+	* src/classes/xdoc.C 1.108:
+	* src/classes/xnode.C 1.54:
+	* src/classes/xnode.h 1.18:
+	* src/include/pa_array.h 1.57:
+	* src/include/pa_cache_managers.h 1.9:
+	* src/include/pa_charset.h 1.20:
+	* src/include/pa_charsets.h 1.8:
+	* src/include/pa_common.h 1.89:
+	* src/include/pa_config_fixed.h 1.54:
+	* src/include/pa_config_includes.h 1.23:
+	* src/include/pa_dictionary.h 1.13:
+	* src/include/pa_dir.h 1.13:
+	* src/include/pa_exception.h 1.38:
+	* src/include/pa_exec.h 1.11:
+	* src/include/pa_globals.h 1.101:
+	* src/include/pa_hash.h 1.58:
+	* src/include/pa_opcode.h 1.24:
+	* src/include/pa_pool.h 1.86:
+	* src/include/pa_pragma_pack_begin.h 1.6:
+	* src/include/pa_pragma_pack_end.h 1.6:
+	* src/include/pa_request.h 1.160:
+	* src/include/pa_sapi.h 1.22:
+	* src/include/pa_socks.h 1.11:
+	* src/include/pa_sql_connection.h 1.30:
+	* src/include/pa_sql_driver_manager.h 1.26:
+	* src/include/pa_stack.h 1.17:
+	* src/include/pa_string.h 1.144:
+	* src/include/pa_stylesheet_connection.h 1.32:
+	* src/include/pa_stylesheet_manager.h 1.15:
+	* src/include/pa_table.h 1.48:
+	* src/include/pa_threads.h 1.26:
+	* src/include/pa_types.h 1.44:
+	* src/include/pa_uue.h 1.4:
+	* src/lib/md5/pa_md5.h 1.5:
+	* src/lib/md5/pa_md5c.c 1.6:
+	* src/lib/pcre/pcre_parser_ctype.c 1.3:
+	* src/main/compile.C 1.69:
+	* src/main/compile.tab.C 1.80:
+	* src/main/compile.y 1.204:
+	* src/main/compile_tools.C 1.54:
+	* src/main/compile_tools.h 1.67:
+	* src/main/execute.C 1.295:
+	* src/main/pa_array.C 1.54:
+	* src/main/pa_cache_managers.C 1.7:
+	* src/main/pa_charset.C 1.33:
+	* src/main/pa_charsets.C 1.11:
+	* src/main/pa_common.C 1.143:
+	* src/main/pa_dictionary.C 1.17:
+	* src/main/pa_dir.C 1.14:
+	* src/main/pa_exception.C 1.43:
+	* src/main/pa_exec.C 1.48:
+	* src/main/pa_globals.C 1.152:
+	* src/main/pa_hash.C 1.53:
+	* src/main/pa_pool.C 1.59:
+	* src/main/pa_request.C 1.245:
+	* src/main/pa_socks.C 1.18:
+	* src/main/pa_sql_driver_manager.C 1.69:
+	* src/main/pa_string.C 1.172:
+	* src/main/pa_stylesheet_manager.C 1.16:
+	* src/main/pa_table.C 1.53:
+	* src/main/pa_uue.C 1.4:
+	* src/main/untaint.C 1.115:
+	* src/sql/pa_sql_driver.h 1.34:
+	* src/targets/apache13/mod_parser3.C 1.28:
+	* src/targets/apache13/pa_md5c.c 1.5:
+	* src/targets/apache13/pa_pool.C 1.8:
+	* src/targets/apache13/pa_threads.C 1.11:
+	* src/targets/cgi/pa_pool.C 1.41:
+	* src/targets/cgi/pa_threads.C 1.12:
+	* src/targets/cgi/parser3.C 1.216:
+	* src/targets/cgi/pool_storage.h 1.13:
+	* src/targets/isapi/pa_pool.C 1.16:
+	* src/targets/isapi/pa_threads.C 1.13:
+	* src/targets/isapi/parser3isapi.C 1.82:
+	* src/targets/isapi/pool_storage.h 1.19:
+	* src/types/pa_value.C 1.9:
+	* src/types/pa_value.h 1.109:
+	* src/types/pa_vbool.h 1.21:
+	* src/types/pa_vclass.C 1.16:
+	* src/types/pa_vclass.h 1.39:
+	* src/types/pa_vcode_frame.h 1.24:
+	* src/types/pa_vcookie.C 1.55:
+	* src/types/pa_vcookie.h 1.23:
+	* src/types/pa_vdate.h 1.24:
+	* src/types/pa_vdouble.h 1.42:
+	* src/types/pa_venv.h 1.28:
+	* src/types/pa_vfile.C 1.36:
+	* src/types/pa_vfile.h 1.52:
+	* src/types/pa_vform.C 1.74:
+	* src/types/pa_vform.h 1.45:
+	* src/types/pa_vhash.h 1.43:
+	* src/types/pa_vimage.C 1.22:
+	* src/types/pa_vimage.h 1.34:
+	* src/types/pa_vint.h 1.38:
+	* src/types/pa_vjunction.h 1.19:
+	* src/types/pa_vmail.C 1.40:
+	* src/types/pa_vmail.h 1.9:
+	* src/types/pa_vmath.h 1.14:
+	* src/types/pa_vmethod_frame.h 1.45:
+	* src/types/pa_vobject.C 1.12:
+	* src/types/pa_vobject.h 1.38:
+	* src/types/pa_vrequest.C 1.27:
+	* src/types/pa_vrequest.h 1.25:
+	* src/types/pa_vresponse.C 1.17:
+	* src/types/pa_vresponse.h 1.32:
+	* src/types/pa_vstateless_class.C 1.19:
+	* src/types/pa_vstateless_class.h 1.42:
+	* src/types/pa_vstateless_object.h 1.28:
+	* src/types/pa_vstatus.C 1.15:
+	* src/types/pa_vstatus.h 1.15:
+	* src/types/pa_vstring.C 1.22:
+	* src/types/pa_vstring.h 1.54:
+	* src/types/pa_vtable.C 1.21:
+	* src/types/pa_vtable.h 1.48:
+	* src/types/pa_vvoid.h 1.17:
+	* src/types/pa_vxdoc.C 1.23:
+	* src/types/pa_vxdoc.h 1.31:
+	* src/types/pa_vxnode.C 1.30:
+	* src/types/pa_vxnode.h 1.22:
+	* src/types/pa_wcontext.C 1.24:
+	* src/types/pa_wcontext.h 1.42:
+	* src/types/pa_wwrapper.h 1.28:
+		2002->2003
+
+2003-01-16  paf
+	* operators.txt 1.108:
+	* src/include/pa_config_fixed.h 1.53:
+	* src/main/pa_common.C 1.141:
+	* www/htdocs/index.html 1.208:
+		http request now return status. and not fail on status!=200
+
+	* operators.txt 1.109:
+	* src/include/pa_globals.h 1.100:
+	* src/main/pa_common.C 1.142:
+	* src/main/pa_globals.C 1.151:
+	* www/htdocs/index.html 1.209:
+		http://
+		introducing
+			$.any-status(1)
+
+	* src/classes/gd/gif.C 1.29:
+	* www/htdocs/index.html 1.210:
+		image.copy fixed transparent resampling
+
+	* bin/Makefile.in 1.9:
+	* etc/Makefile.in 1.14:
+	* etc/parser3.charsets/Makefile.in 1.17:
+	* src/Makefile.in 1.55:
+	* src/classes/Makefile.in 1.53:
+	* src/classes/gd/Makefile.in 1.43:
+	* src/classes/smtp/Makefile.in 1.12:
+	* src/include/Makefile.in 1.11:
+	* src/lib/Makefile.in 1.8:
+	* src/lib/md5/Makefile.in 1.6:
+	* src/lib/patches/Makefile.in 1.10:
+	* src/lib/pcre/Makefile.in 1.8:
+	* src/main/Makefile.in 1.50:
+	* src/sql/Makefile.in 1.11:
+	* src/targets/Makefile.in 1.42:
+	* src/targets/cgi/Makefile.in 1.62:
+	* src/targets/isapi/Makefile.in 1.11:
+	* src/types/Makefile.in 1.50:
+		proper AC_LANG_ switching to fix qsort detection bug
+
+2003-01-15  paf
+	* src/main/pa_globals.C 1.150:
+		localized pa_xmlFileRead/Close
+
+2003-01-14  paf
+	* src/lib/ltdl/config.guess 1.2:
+	* src/lib/ltdl/config.sub 1.2:
+	* src/lib/ltdl/install-sh 1.2:
+	* src/lib/ltdl/missing 1.2:
+	* src/lib/ltdl/mkinstalldirs 1.2:
+		removed some ancient files [they in / really]
+
+	* src/lib/ltdl/config_fixed.h 1.2:
+	* src/lib/ltdl/libltdl.dsp 1.3:
+	* src/lib/ltdl/ltdl.c 1.3:
+		ltdl.c regretfully needed patch in two places.
+		in config_fixed.h made stubs for lib to compile in MSVC
+
+	* src/lib/ltdl/aclocal.m4 1.1:
+		*** empty log message ***
+
+2003-01-13  paf
+	* config.guess 1.3:
+	* config.sub 1.4:
+	* ltmain.sh 1.4:
+	* src/targets/apache13/Makefile.in 1.44:
+	* src/targets/apache13/hook/Makefile.in 1.6:
+		removed last piece of configure.in(libtool) hacks
+
+	* src/lib/ltdl/COPYING.LIB 1.1:
+	* src/lib/ltdl/Makefile.in 1.4:
+	* src/lib/ltdl/acinclude.m4 1.2:
+	* src/lib/ltdl/config.h 1.2:
+	* src/lib/ltdl/config_auto.h.in 1.3:
+	* src/lib/ltdl/configure 1.4:
+	* src/lib/ltdl/configure.in 1.4:
+	* src/lib/ltdl/libltdl.dsp 1.2:
+	* src/lib/ltdl/ltdl.c 1.2:
+	* src/lib/ltdl/ltdl.h 1.2:
+		moved to latest libtool (1.4.3)
+
+2003-01-10  paf
+	* src/lib/patches/Makefile.am 1.3:
+	* src/lib/patches/Makefile.in 1.9:
+	* src/lib/patches/libgdome_cpp_syntax1.patch 1.2:
+	* src/lib/patches/libgdome_cpp_syntax2.patch 1.2:
+	* src/lib/patches/libgdome_morestatic.patch 1.2:
+	* src/lib/patches/libxml_error_column_tab.patch 1.2:
+	* src/lib/patches/libxml_htmloutput_of_xslemptyattr_emptyquotes.patch 1.2:
+	* src/lib/patches/libxml_transcoder_context1.patch 1.2:
+	* src/lib/patches/libxml_transcoder_context2.patch 1.2:
+	* src/lib/patches/libxml_transcoder_context3.patch 1.2:
+	* src/lib/patches/libxml_transcoder_context4.patch 1.2:
+	* src/lib/patches/libxslt_html_output_no_charset_meta.patch 1.2:
+	* src/main/pa_globals.C 1.149:
+		moved to latest xml lib versions, changed patches.
+		      libxml2 >= 2.5.1 [ftp://xmlsoft.org/libxml2-2.5.1.tar.gz]
+		      libxslt >= 1.0.23 [ftp://xmlsoft.org/libxslt-1.0.23.tar.gz]
+		      gdome2 >= 0.7.2 [http://gdome2.cs.unibo.it/tarball/gdome2-0.7.2.tar.gz]
+
+	* INSTALL 1.31:
+		moved to latest versions of xml libs
+		      libxml2 >= 2.5.1 [ftp://xmlsoft.org/libxml2-2.5.1.tar.gz]
+		      libxslt >= 1.0.23 [ftp://xmlsoft.org/libxslt-1.0.23.tar.gz]
+		      gdome2 >= 0.7.2 [http://gdome2.cs.unibo.it/tarball/gdome2-0.7.2.tar.gz]
+
+	* src/lib/patches/libxml2.patch 1.1:
+		moved to libxml2 2.5.1, only these patches left:
+		* fixing \t chars to spaces in error position reporting
+		* adding context to conversion functions
+
+	* src/lib/patches/gdome2.patch 1.1:
+		moved to gdome 0.7.2, one extern const patch left; making some strings more static  still needed.
+		Paolo said that he would incorporate this patch in upcoming version of gdome.
+
+	* src/lib/ltdl/configure 1.3:
+	* src/lib/ltdl/configure.in 1.3:
+		PROG_NM
+
+	* src/lib/patches/libxslt.patch 1.1:
+		moved to libxslt 1.0.23. still need a patch which suppresses
+		htmlSetMetaEncoding calls
+
+2003-01-09  paf
+	* bin/Makefile.in 1.8:
+	* config.guess 1.2:
+	* config.sub 1.3:
+	* etc/Makefile.in 1.13:
+	* etc/parser3.charsets/Makefile.in 1.16:
+	* missing 1.2:
+	* mkinstalldirs 1.2:
+	* src/Makefile.in 1.54:
+	* src/classes/Makefile.in 1.52:
+	* src/classes/gd/Makefile.in 1.42:
+	* src/classes/smtp/Makefile.in 1.11:
+	* src/include/Makefile.in 1.10:
+	* src/include/pa_config_auto.h.in 1.37:
+	* src/lib/Makefile.in 1.7:
+	* src/lib/ltdl/Makefile.in 1.3:
+	* src/lib/ltdl/config_auto.h.in 1.2:
+	* src/lib/ltdl/configure 1.2:
+	* src/lib/ltdl/configure.in 1.2:
+	* src/lib/md5/Makefile.in 1.5:
+	* src/lib/patches/Makefile.in 1.8:
+	* src/lib/pcre/Makefile.in 1.7:
+	* src/main/Makefile.in 1.49:
+	* src/sql/Makefile.in 1.10:
+	* src/targets/Makefile.in 1.41:
+	* src/targets/apache13/Makefile.in 1.43:
+	* src/targets/apache13/hook/Makefile.in 1.5:
+	* src/targets/cgi/Makefile.am 1.46:
+	* src/targets/cgi/Makefile.in 1.61:
+	* src/targets/isapi/Makefile.in 1.10:
+	* src/types/Makefile.in 1.49:
+		moved to autoconf 2.57 & automake 1.7.2
+
+	* depcomp 1.1:
+		moving to automake 1.7.2
+
+	* INSTALL 1.30:
+		xml,xslt,gdome lib urls updated
+
+	* Makefile.am 1.30:
+	* Makefile.in 1.44:
+	* src/lib/ltdl/missing 1.1:
+	* src/lib/ltdl/mkinstalldirs 1.1:
+		*** empty log message ***
+
 2002-12-27  paf
 	* src/doc/aliased.dox 1.5:
 	* src/doc/index.dox 1.4:
@@ -2342,7 +4117,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2002/12/27 14:44:37 $
+		$Date: 2003/03/13 08:03:14 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -9714,7 +11489,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.21 2002/12/27 14:44:37 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.22 2003/03/13 08:03:14 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -9757,7 +11532,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.21 2002/12/27 14:44:37 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.22 2003/03/13 08:03:14 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -15203,7 +16978,7 @@
 	* src/targets/parser.C 1.3:
 	* src/targets/parser.dsp 1.2:
 	* src/targets/parser.dsp 1.3:
-		$Id: ChangeLog,v 1.21 2002/12/27 14:44:37 paf Exp $ check
+		$Id: ChangeLog,v 1.22 2003/03/13 08:03:14 paf Exp $ check
 
 	* src/targets/parser.C 1.2:
 		$id$ check
