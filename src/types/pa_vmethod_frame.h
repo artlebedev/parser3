@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.17 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_vmethod_frame.h,v 1.18 2001/11/01 14:59:57 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -81,14 +81,12 @@ public: // usage
 					// speedup: not checking for clash with "result" name
 					Value *value=NEW VVoid(pool());
 					const String& name=*method.locals_names->get_string(i);
-					my->put(name, value);
-					value->set_name(name);
+					set_my_variable(name, value);
 				}
 			}
 			{ // always there is one local: $result
 				fresult_initial_void=NEW VVoid(pool());
-				my->put(*result_var_name, fresult_initial_void);
-				fresult_initial_void->set_name(*result_var_name);
+				set_my_variable(*result_var_name, fresult_initial_void);
 			}
 		}
 	}
@@ -115,8 +113,7 @@ public: // usage
 		} else { // named param
 			// speedup: not checking for clash with "result" name
 			const String& name=*method.params_names->get_string(store_param_index);
-			my->put(name, value); // remember param
-			value->set_name(name); // set param's 'name'
+			set_my_variable(name, value);
 		}
 		store_param_index++;
 	}
@@ -132,6 +129,13 @@ public: // usage
 	}
 
 	MethodParams *numbered_params() { return fnumbered_params; }
+
+private:
+
+	void set_my_variable(const String& name, Value *value) {
+		my->put(name, value); // remember param
+		value->set_name(name); // set param's 'name'
+	}
 
 public:
 	

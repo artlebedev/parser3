@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.53 2001/10/19 12:43:29 parser Exp $
+	$Id: op.C,v 1.54 2001/11/01 14:59:57 paf Exp $
 */
 
 #include "classes.h"
@@ -179,13 +179,14 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 	bool need_delim=false;
 	VInt *vint=new(pool) VInt(pool, 0);
 	int endless_loop_count=0;
+	Value& var_context=*body_code.get_junction()->wcontext;
 	for(int i=from; i<=to; i++) {
 		if(++endless_loop_count>=MAX_LOOPS) // endless loop?
 			throw Exception(0, 0,
 				&method_name,
 				"endless loop detected");
 		vint->set_int(i);
-		r.self/*root*/->put_element(var_name, vint);
+		var_context.put_element(var_name, vint);
 
 		Value& processed_body=r.process(body_code);
 		if(delim_maybe_code) { // delimiter set?
@@ -353,7 +354,7 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	// ^use[file]
 	add_native_method("use", Method::CT_ANY, _use, 1, 1);
 
-	// ^for[i;from-number;to-number-inclusive]{code}[delim]
+	// ^for[i](from-number;to-number-inclusive){code}[delim]
 	add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1);
 
 	// ^eval(expr)

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.37 2001/10/29 13:04:47 paf Exp $
+	$Id: pa_vstring.h,v 1.38 2001/11/01 14:59:57 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -23,7 +23,7 @@ public: // Value
 
 	const char *type() const { return "string"; }
 	/// VString: eq ''=false, ne ''=true
-	bool is_defined() const { return fstring.size()!=0; }
+	bool is_defined() const { return fstring->size()!=0; }
 	/// VString: 0 or !0
 	bool as_bool() const { return as_double()!=0; }
 	/// VString: true
@@ -36,11 +36,11 @@ public: // Value
 			return NEW VDouble(pool(), as_double()); 
 	}
 	/// VString: fstring
-	const String *get_string() { return &fstring; };
+	const String *get_string() { return fstring; };
 	/// VString: fstring
-	double as_double() const { return fstring.as_double(); }
+	double as_double() const { return fstring->as_double(); }
 	/// VString: fstring
-	int as_int() const { return fstring.as_int(); }
+	int as_int() const { return fstring->as_int(); }
 
 	/// VString: vfile
 	VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED,
@@ -65,17 +65,18 @@ protected: // VAliased
 public: // usage
 
 	VString(Pool& apool) : VStateless_object(apool, *string_class), 
-		fstring(*new(apool) String(apool)) {
+		fstring(new(apool) String(apool)) {
 	}
 
 	VString(const String& avalue) : VStateless_object(avalue.pool(), *string_class),
-		fstring(avalue) {
+		fstring(&avalue) {
 	}
 
-	const String& string() { return fstring; }
+	const String& string() { return *fstring; }
+	void set_string(const String& astring) { fstring=&astring; }
 
 private:
-	const String& fstring;
+	const String *fstring;
 
 };
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.25 2001/11/01 10:59:25 paf Exp $
+	$Id: hash.C,v 1.26 2001/11/01 14:59:57 paf Exp $
 */
 
 #include "classes.h"
@@ -14,6 +14,7 @@
 #include "pa_sql_connection.h"
 #include "pa_vtable.h"
 #include "pa_vbool.h"
+#include "pa_vmethod_frame.h"
 
 // defines
 
@@ -269,6 +270,57 @@ static void _delete(Request& r, const String& method_name, MethodParams *params)
 	static_cast<VHash *>(r.self)->hash().remove(params->as_string(0, "key must be string"));
 }
 
+#ifndef DOXYGEN
+struct Foreach_info {
+	Request *r;
+	const String* key_var_name;
+	const String* value_var_name;
+	Value *body_code;
+	Value *delim_maybe_code;
+
+	Value *var_context;
+	VString *vkey;
+	bool need_delim;
+};
+#endif
+
+static void one_foreach_cycle(const Hash::Key& akey, Hash::Val *avalue, 
+										  void *info) {
+	Foreach_info& i=*static_cast<Foreach_info *>(info);
+
+	i.vkey->set_string(akey);
+	i.var_context->put_element(*i.key_var_name, i.vkey);
+	i.var_context->put_element(*i.value_var_name, static_cast<Value *>(avalue));
+
+	Value& processed_body=i.r->process(*i.body_code);
+	if(i.delim_maybe_code) { // delimiter set?
+		const String *string=processed_body.get_string();
+		if(i.need_delim && string && string->size()) // need delim & iteration produced string?
+			i.r->write_pass_lang(i.r->process(*i.delim_maybe_code));
+		i.need_delim=true;
+	}
+	i.r->write_pass_lang(processed_body);
+}
+static void _foreach(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	const String& key_var_name=params->as_string(0, "key-var name must be string");
+	const String& value_var_name=params->as_string(1, "value-var name must be string");
+	Value& body_code=params->as_junction(2, "body must be code");
+	Value *delim_maybe_code=params->size()>3?&params->get(3):0;
+
+	Foreach_info info={
+		&r,
+		&key_var_name, &value_var_name,
+		&body_code,
+		delim_maybe_code,
+
+		body_code.get_junction()->wcontext, 
+		new(pool) VString(pool),
+		false
+	};
+	static_cast<VHash *>(r.self)->hash().for_each(one_foreach_cycle, &info);
+}
+
 // constructor
 
 MHash::MHash(Pool& apool) : Methoded(apool) {
@@ -298,6 +350,12 @@ MHash::MHash(Pool& apool) : Methoded(apool) {
 
 	// ^hash._count[]
 	add_native_method("_count", Method::CT_DYNAMIC, _count, 0, 0);	
+
+	// ^hash.foreach[key;value]{code}[delim]
+	Array *for_each_locals=NEW Array(pool(), 2);
+	*for_each_locals += NEW String(pool(), "key");
+
+	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
 }
 
 // global variable

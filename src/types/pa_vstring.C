@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vstring.C,v 1.11 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_vstring.C,v 1.12 2001/11/01 14:59:57 paf Exp $
 */
 
 #include "pa_vstring.h"
@@ -13,8 +13,8 @@
 VFile *VString::as_vfile(String::Untaint_lang lang,
 		bool origins_mode) {
 	VFile& result=*NEW VFile(pool());
-	fstring.set_origins_mode(origins_mode);
-	const char *cstr=fstring.cstr(lang);
+	fstring->set_origins_mode(origins_mode);
+	const char *cstr=fstring->cstr(lang);
 	result.set(false/*not tainted*/, cstr, strlen(cstr));
 	return &result;
 }

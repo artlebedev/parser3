@@ -1,5 +1,6 @@
 @main[]
-^thashdelete[]
+^thashforeach[]
+#^thashdelete[]
 #^connect[mysql://user:pass@cd.rinet.ru/db]{^void:sql{z} }
 #^tappend[]
 #^sappend[]
@@ -53,6 +54,15 @@
 #^xml[]
 #^header[]
 OK
+
+@thashforeach[]
+$h[
+	$.a[1] 
+	$.b[2]
+]
+^h.foreach[key;value]{
+	$key=$value<br>
+}
 
 @thashdelete[]
 $h[$.a[1] $.b[2]]
