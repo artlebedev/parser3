@@ -8,7 +8,7 @@
 #ifndef PA_STACK_H
 #define PA_STACK_H
 
-static const char* IDENT_STACK_H="$Date: 2003/07/24 11:31:21 $";
+static const char* IDENT_STACK_H="$Date: 2003/09/26 11:23:37 $";
 
 #include "pa_config_includes.h"
 #include "pa_array.h"
@@ -41,8 +41,8 @@ public:
 
 	/// call this prior to collecting garbage [in unused part of stack there may be pointers(unused)]
 	void wipe_unused() {
-		if(!is_full())
-			memset(&felements[fused], 0, (fallocated-fused)*sizeof(T));
+		if(size_t above_top_size=fused-ftop)
+			memset(&felements[ftop], 0, above_top_size*sizeof(T));
 	}
 
 protected:
