@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.61 2001/04/15 13:12:18 paf Exp $
+	$Id: table.C,v 1.62 2001/04/15 13:32:39 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -213,9 +213,9 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 static void _empty(Request& r, const String& method_name, MethodParams *params) {
 	Table& table=static_cast<VTable *>(r.self)->table();
 	if(table.size()==0)
-		r.write_pass_lang(params->get(0));
-	else if(params->size()==2)
-		r.write_pass_lang(params->get(1));
+		r.write_pass_lang(r.process(params->get(0)));
+	else if(params->size()>1)
+		r.write_pass_lang(r.process(params->get(1)));
 }
 
 struct Record_info {
