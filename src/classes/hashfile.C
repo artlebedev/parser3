@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.8 2001/10/24 11:06:26 parser Exp $
+	$Id: hashfile.C,v 1.9 2001/10/25 13:17:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -37,14 +37,25 @@ static void _open(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VHashfile& self=*static_cast<VHashfile *>(r.self);
 	
-	// file_spec
-	const String &file_spec=params->as_string(0, "filename must be string");
+	// db_home & file_name
+	const String &db_home=params->as_string(0, "DB_HOME must be string");
+	const String &file_name=params->as_string(1, "filename must be string");
 
-	self.set_connection(
-		DB_manager->get_connection(
-			r.absolute(file_spec), 
-			method_name)
+	self.set_table(
+		DB_manager->get_connection(db_home, method_name)
+		.get_table(file_name, method_name)
 	);
+}
+
+static void _clear(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	
+	// db_home & file_name
+	const String &db_home=params->as_string(0, "DB_HOME must be string");
+	const String &file_name=params->as_string(1, "filename must be string");
+
+	DB_manager->get_connection(db_home, method_name)
+		.clear_dbfile(file_name);
 }
 
 
@@ -55,11 +66,11 @@ static void _transaction(Request& r, const String& method_name, MethodParams *pa
 	// body code
 	Value& body_code=params->as_junction(0, "body must be code");
 
-	// connection
-	DB_Connection& connection=self.get_connection(&method_name);
+	// table
+	DB_Table& table=self.get_table(&method_name);
 
 	// transaction
-	Auto_transaction transaction(connection);
+	Auto_transaction transaction(table);
 
 	// execute body
 	try {
@@ -69,15 +80,6 @@ static void _transaction(Request& r, const String& method_name, MethodParams *pa
 		
 		/*re*/throw; 
 	}
-}
-
-static void _clear(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	
-	// file_spec
-	const String &file_spec=params->as_string(0, "filename must be string");
-
-	DB_manager->clear_dbfile(r.absolute(file_spec));
 }
 
 static void _hash(Request& r, const String& method_name, MethodParams *params) {
@@ -99,22 +101,22 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	double expires=params->as_double(1, "expires must be number", r);
 	Value& body_code=params->as_junction(2, "body must be code");
 
-	// connection
-	DB_Connection& connection=self.get_connection(&method_name);
+	// table
+	DB_Table& table=self.get_table(&method_name);
 
 	// transaction
-	Auto_transaction transaction(connection);
+	Auto_transaction transaction(table);
 
 	// execute body
 	try {
 		if(expires) { // 'expires' specified? try cached copy...
-			if(String *cached_body=connection.get(key)) { // have cached copy?
+			if(String *cached_body=table.get(key)) { // have cached copy?
 				r.write_assign_lang(*cached_body);
 				// happy with it
 				return;
 			}
 		} else // 'expires'=0, forget cached copy
-			connection.remove(key);
+			table.remove(key);
 
 		// save
 		Autosave_marked_to_cancel_cache saved(self);
@@ -125,7 +127,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 		
 		// put it to cache if 'expires' specified & never called ^delete[]
 		if(expires && !self.marked_to_cancel_cache())
-			connection.put(key, processed_body.as_string(), time(0)+(time_t)expires);
+			table.put(key, processed_body.as_string(), time(0)+(time_t)expires);
 	} catch(...) { // process/commit problem
 		transaction.mark_to_rollback();
 		
@@ -142,10 +144,10 @@ static void _delete(Request& r, const String& method_name, MethodParams *params)
 	else {
 		// key
 		const String &key=params->as_string(0, "key must be string");
-		// connection
-		DB_Connection& connection=self.get_connection(&method_name);
+		// table
+		DB_Table& table=self.get_table(&method_name);
 		// remove
-		connection.remove(key);
+		table.remove(key);
 	}
 }
 
@@ -154,12 +156,12 @@ static void _delete(Request& r, const String& method_name, MethodParams *params)
 MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), HASH_CLASS_NAME));
 
-	// ^hashfile::open[filename]
-	add_native_method("open", Method::CT_DYNAMIC, _open, 1, 1);
+	// ^hashfile::open[db_home;filename]
+	add_native_method("open", Method::CT_DYNAMIC, _open, 2, 2);
+	// ^hashfile:clear[db_home;filename]
+	add_native_method("clear", Method::CT_STATIC, _clear, 2, 2);
 	// ^transaction{code}
 	add_native_method("transaction", Method::CT_DYNAMIC, _transaction, 1, 1);
-	// ^hashfile:clear[filename]
-	add_native_method("clear", Method::CT_STATIC, _clear, 1, 1);
 	// ^hash[]
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
 	// ^cache[key](seconds){code}

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.55 2001/10/24 16:33:02 parser Exp $
+	$Id: pa_common.h,v 1.56 2001/10/25 13:17:53 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -17,25 +17,14 @@
 class Value;
 
 #if _MSC_VER
-
-#ifndef open
-#	define open _open
-#endif
-#ifndef close
-#	define close _close
-#endif
-#ifndef read
-#	define read _read
-#endif
-#ifndef write
-#	define write _write
-#endif
-#ifndef stat
-#	define stat _stat
-#endif
-#ifndef lseek
-#	define lseek _lseek
-#endif
+/*
+inline int open( const char *filename, int oflag ) { return _open(filename, oflag); }
+inline int close( int handle ) { return _close(handle); }
+inline int read( int handle, void *buffer, unsigned int count ) { return _read(handle,buffer,count); }
+inline int write( int handle, const void *buffer, unsigned int count ) { return _write(handle,buffer,count); }
+inline int stat( const char *path, struct _stat *buffer ) { return _stat(path, buffer); }
+inline long lseek( int handle, long offset, int origin ) { return _lseek(handle, offset, origin); }
+*/
 
 #ifndef vsnprintf
 int __vsnprintf(char *, size_t, const char *, va_list);

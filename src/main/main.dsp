@@ -264,6 +264,14 @@ SOURCE=..\include\pa_db_manager.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_db_table.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_db_table.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_dictionary.C
 # End Source File
 # Begin Source File

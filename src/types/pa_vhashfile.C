@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vhashfile.C,v 1.9 2001/10/24 10:09:13 parser Exp $
+	$Id: pa_vhashfile.C,v 1.10 2001/10/25 13:17:54 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,7 +15,6 @@
 #include "pa_vhashfile.h"
 #include "pa_threads.h"
 #include "pa_globals.h"
-//#include "pa_reque
 
 // methods
 
@@ -46,11 +45,11 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 	} else
 		value_string=&avalue->as_string();
 
-	get_connection(&aname).put(aname, *value_string, time_to_die);
+	get_table(&aname).put(aname, *value_string, time_to_die);
 }
 
 Value *VHashfile::get_field(const String& name) {
-	if(String *string=get_connection(&name).get(name))
+	if(String *string=get_table(&name).get(name))
 		return NEW VString(*string);
 	else
 		return 0;
@@ -58,7 +57,7 @@ Value *VHashfile::get_field(const String& name) {
 
 Hash *VHashfile::get_hash(const String *source) {
 	Hash& result=*NEW Hash(pool());
-	DB_Cursor cursor(get_connection(source), source);
+	DB_Cursor cursor(get_table(source), source);
 
 	while(true) {
 		String *key;

@@ -5,19 +5,15 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.h,v 1.2 2001/10/23 12:41:05 parser Exp $
+	$Id: pa_db_manager.h,v 1.3 2001/10/25 13:17:53 paf Exp $
 */
 
-#ifndef PA_DB_DRIVER_MANAGER_H
-#define PA_DB_DRIVER_MANAGER_H
+#ifndef PA_DB_MANAGER_H
+#define PA_DB_MANAGER_H
 
 #include "pa_config_includes.h"
 #include "pa_pool.h"
 #include "pa_hash.h"
-
-#ifdef HAVE_DB_H
-#	include <db.h>
-#endif
 
 // defines
 
@@ -34,17 +30,16 @@ public:
 	~DB_Manager();
 
 	/** 
-		connect to specified file_spec, 
+		connect to specified db_home, 
 		using driver dynamic library found in table, if not loaded yet
 		checks driver version
 	*/
-	DB_Connection& get_connection(const String& file_spec, const String& request_origin);
-	void clear_dbfile(const String& file_spec);
+	DB_Connection& get_connection(const String& db_home, const String& request_origin);
 
-private: // connection cache
+private: // connection cache, never expires
 
-	DB_Connection *get_connection_from_cache(const String& file_spec);
-	void put_connection_to_cache(const String& file_spec, DB_Connection& connection);
+	DB_Connection *get_connection_from_cache(const String& db_home);
+	void put_connection_to_cache(const String& db_home, DB_Connection& connection);
 	void maybe_expire_connection_cache();
 private:
 	time_t prev_expiration_pass_time;
@@ -52,16 +47,12 @@ private:
 private: // for DB_Connection
 
 	/// caches connection
-	void close_connection(const String& file_spec, DB_Connection& connection);
+	void close_connection(const String& db_home, DB_Connection& connection);
 
 private:
 
 	Hash connection_cache;
-	DB_ENV dbenv;
 
-private:
-
-	void check(const char *operation, const String *source, int error);
 };
 
 /// global

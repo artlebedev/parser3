@@ -71,8 +71,15 @@ $hash[^hf.hash[]]
 <hr>
 
 @tcounter[]
-#^hashfile:clear[counter]
-$counter[^hashfile::open[counter]]
+^tcounterone[$DB_HOME]
+other root:
+^tcounterone[${DB_HOME}2]
+again, first:
+^tcounterone[$DB_HOME]
+
+@tcounterone[DB_HOME]
+#^hashfile:clear[$DB_HOME;counter]
+$counter[^hashfile::open[$DB_HOME;counter]]
 ^counter.transaction{
 #	$counter.value(10)
 	$counter.value($counter.value+1)
@@ -80,9 +87,11 @@ $counter[^hashfile::open[counter]]
 	$counter.value
 }
 <hr>
+^rem{
 $hash[^counter.hash[]]
 =$hash.value=
 <hr>
+}
 
 @tablehash[]
 $productList[^table::set{id	name

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhashfile.h,v 1.7 2001/10/24 11:06:26 parser Exp $
+	$Id: pa_vhashfile.h,v 1.8 2001/10/25 13:17:54 paf Exp $
 */
 
 #ifndef PA_VHASHFILE_H
@@ -14,7 +14,7 @@
 #include "pa_value.h"
 #include "pa_hash.h"
 #include "pa_vint.h"
-#include "pa_db_connection.h"
+#include "pa_db_table.h"
 
 // externs
 
@@ -59,24 +59,24 @@ public: // value
 public: // usage
 
 	VHashfile(Pool& apool) : VStateless_class(apool, hashfile_base_class),
-		fconnection(0), fmarked_to_cancel_cache(false) {
+		ftable(0), fmarked_to_cancel_cache(false) {
 		register_cleanup(VHashfile_cleanup, this);
 	}
 private:
 	void cleanup() {
-		if(fconnection)
-			fconnection->close();  // cache it
+		if(ftable)
+			ftable->close();  // cache it
 	}
 public:
 
-	void set_connection(DB_Connection& aconnection) { fconnection=&aconnection; }
-	DB_Connection& get_connection(const String *source) const { 
-		if(!fconnection)
+	void set_table(DB_Table& atable) { ftable=&atable; }
+	DB_Table& get_table(const String *source) const { 
+		if(!ftable)
 			throw Exception(0, 0,
 				source,
 				"can not be applied to uninitialized instance");
 
-		return *fconnection;
+		return *ftable;
 	}
 
 	void mark_to_cancel_cache() { fmarked_to_cancel_cache=true; }
@@ -89,12 +89,12 @@ private:
 
 private:
 
-	DB_Connection *fconnection;
+	DB_Table *ftable;
 	bool fmarked_to_cancel_cache;
 
 };
 
-///	Auto-object used for temporary changing DB_Connection::tid.
+///	Auto-object used for temporary changing DB_Table::tid.
 class Autosave_marked_to_cancel_cache {
 	VHashfile& fhashfile;
 	bool saved;

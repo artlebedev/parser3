@@ -1,10 +1,11 @@
 /** @file
-	Parser: sql db decl.
+	Parser: sql driver connection decl.
+	global sql driver connection, must be thread-safe
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.h,v 1.8 2001/10/25 09:48:18 paf Exp $
+	$Id: pa_db_connection.h,v 1.9 2001/10/25 13:17:53 paf Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
@@ -12,8 +13,8 @@
 
 #include "pa_config_includes.h"
 #include "pa_pool.h"
+#include "pa_hash.h"
 #include "pa_db_manager.h"
-#include "pa_globals.h"
 
 #ifdef HAVE_DB_H
 #	include <db.h>
@@ -21,24 +22,16 @@
 
 // defines
 
-#define PA_DB_ACCESS_METHOD DB_BTREE
-
 // forwards
 
-class Auto_transaction;
-class DB_Cursor;
+class DB_Table;
 
-// class
-
-/// DB connection. handy wrapper around low level <db.h> calls
+/// sql driver connection
 class DB_Connection : public Pooled {
-	friend Auto_transaction;
-	friend DB_Cursor;
+	friend DB_Table;
 public:
 
-	DB_Connection(Pool& pool, const String& afile_spec, DB_ENV& adbenv);
-	
-	//const String& url() { return ffile_spec; }
+	DB_Connection(Pool& pool, const String& db_home);
 
 	void set_services(Pool *aservices_pool) {
 		time_used=time(0); // they started to use at this time
@@ -49,117 +42,48 @@ public:
 	}
 
 	void close() {
-		DB_manager->close_connection(ffile_spec, *this);
+		DB_manager->close_connection(fdb_home, *this);
 	}
-
-	bool connected() { return db!=0; }
+	bool connected() { return fconnected; }
 	void connect();
 	void disconnect();	
-	bool ping() { return !needs_recovery; }
+	bool ping() { return errors==0; }
 
-	void put(const String& key, const String& data, time_t time_to_die);
-	String *get(const String& key);
-	void remove(const String& key);
+	/**
+		connect to specified file_name, 
+		using driver dynamic library found in table, if not loaded yet
+		checks driver version
+	*/
+	DB_Table& get_table(const String& file_name, const String& request_origin);
+	void clear_dbfile(const String& file_name);
+
+private: // table cache
+
+	DB_Table *get_table_from_cache(const String& file_name);
+	void put_table_to_cache(const String& file_name, DB_Table& table);
+	void maybe_expire_table_cache();
+private:
+	time_t prev_expiration_pass_time;
+
+private: // for DB_Table
+
+	/// caches table
+	void close_table(const String& file_name, DB_Table& table);
 
 private:
 
-	DB_ENV& fdbenv;
-	const String& ffile_spec; const char *file_spec_cstr;
-	Pool *fservices_pool;
-	DB *db;
-	bool needs_recovery;
-	DB_TXN *ftid;
 	time_t time_used;
+	Pool *fservices_pool;
 
-private: // transaction
+	const String& fdb_home;
+	bool fconnected;
+	DB_ENV dbenv;
+	int errors;
+	Hash table_cache;
 
-	/// commits current transaction, restores previous transaction handle
-	void commit_restore(DB_TXN *atid) { 
-		if(ftid)
-			check("txn_commit", &ffile_spec, txn_commit(ftid)); 
-
-		ftid=atid;
-	}
-	
-	/// rolls current transaction back, restores previous transaction handle
-	void rollback_restore(DB_TXN *atid) {
-		if(ftid)
-			check("txn_abort", &ffile_spec, txn_abort(ftid));
-
-		ftid=atid;
-	}
-	
-	/// stars new current trunsaction @returns previous transaction handle
-	DB_TXN *transaction_begin_save() {
-		DB_TXN *parent=ftid;
-		check("txn_begin", &ffile_spec, ::txn_begin(fdbenv.tx_info, parent, &ftid));
-
-		return parent;
-	}
-	
 private:
 
 	void check(const char *operation, const String *source, int error);
-	void *malloc(size_t size) { return fservices_pool->malloc(size); }
-	void *calloc(size_t size) { return fservices_pool->calloc(size); }
-	/// pass empty dbt, would fill it from string
-	void key_string_to_dbt(const String& key_string, DBT& key_result);
-	/// @returns new string
-	String& key_dbt_to_string(const DBT& key_dbt);
-	/// pass empty dbt, would fill it from string
-	void data_string_to_dbt(const String& data_string,  time_t time_to_die, 
-		DBT& data_result);
-	/// @returns new string if it not expired
-	String *data_dbt_to_string(const DBT& data_dbt);
-
-};
-
-///	Auto-object used for temporary changing DB_Connection::tid.
-class Auto_transaction {
-	DB_Connection& fconnection;
-	bool marked_to_rollback;
-	DB_TXN *saved_tid;
-public:
-	Auto_transaction(DB_Connection& aconnection) : 
-		fconnection(aconnection), marked_to_rollback(false),
-		saved_tid(aconnection.transaction_begin_save()) {
-	}
-	~Auto_transaction() { 
-		if(marked_to_rollback)
-			fconnection.rollback_restore(saved_tid);
-		else
-			fconnection.commit_restore(saved_tid);
-	}
-	void mark_to_rollback() {
-		marked_to_rollback=true;
-	}
-};
-
-/// DB cursor. handy wrapper around low level <db.h> calls
-class DB_Cursor {
-	friend DB_Connection;
-public:
-	DB_Cursor(DB_Connection& aconnection, const String *asource);
-	~DB_Cursor();
-	/// pass empty strings to key&data, would fill them
-	bool get(String *& key, String *& data, u_int32_t flags);
-	void remove(u_int32_t flags);
-private:
-	const String *fsource;
-	DB_Connection& fconnection;
-	DBC *cursor;
-private:
-	void check(const char *operation, const String *source, int error) {
-		fconnection.check(operation, source, error);
-	}
-	/// @returns new string
-	String& key_dbt_to_string(DBT& key_dbt) {
-		return fconnection.key_dbt_to_string(key_dbt);
-	}
-	/// @returns new string if it not expired
-	String *data_dbt_to_string(const DBT& data_dbt) {	
-		return fconnection.data_dbt_to_string(data_dbt);
-	}
 };
 
 #endif

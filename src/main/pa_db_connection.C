@@ -1,36 +1,138 @@
 /** @file
-	Parser: Charset connection implementation.
+	Parser: sql driver connection implementation.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.10 2001/10/24 14:11:25 parser Exp $
+	$Id: pa_db_connection.C,v 1.11 2001/10/25 13:17:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
 #ifdef HAVE_LIBDB
 
 #include "pa_db_connection.h"
+#include "pa_db_table.h"
 #include "pa_exception.h"
-
-// defines
-
-#define READ_ADDITIONAL_FLAGS DB_RMW
+#include "pa_threads.h"
+#include "pa_stack.h"
+#include "pa_common.h"
 
 // consts
 
-const int DATA_STRING_SERIALIZED_VERSION=0x0100;
+const int EXPIRE_UNUSED_TABLE_SECONDS=60;
+const int CHECK_EXPIRED_TABLES_SECONDS=EXPIRE_UNUSED_TABLE_SECONDS*2;
 
-// helper types
+const char *DB_WARNING1="Finding last valid log LSN";
 
-#ifndef DOXYGEN
-struct Data_string_serialized_prolog {
-	int version;
-	time_t time_to_die;
-};
-#endif
+// callbacks
+
+static void db_paniccall(DB_ENV *dbenv, int error) {
+	throw Exception(0, 0, 
+		0, 
+		"db_panic: %s (%d)", 
+		strerror(error), error);
+}
+
+static void db_errcall(const char *, char *buffer) {
+	// were it warning?
+	if(strncmp(buffer, DB_WARNING1, strlen(DB_WARNING1))==0)
+		return;
+
+	throw Exception(0, 0, 
+		0, 
+		"db_err: %s", 
+		buffer);
+}
+
+static void expire_table(Array::Item *value, void *info) {
+	DB_Table& table=*static_cast<DB_Table *>(value);
+	time_t older_dies=reinterpret_cast<time_t>(info);
+
+	if(table.connected() && table.expired(older_dies))
+		table.disconnect();
+}
+static void expire_tables(const Hash::Key& key, Hash::Val *value, void *info) {
+	Stack& stack=*static_cast<Stack *>(value);
+	for(int i=0; i<=stack.top_index(); i++)
+		expire_table(stack.get(i), info);
+}
 
 // DB_Connection
+
+DB_Connection::DB_Connection(Pool& pool, const String& adb_home) : Pooled(pool),
+	time_used(0), fservices_pool(0), 
+	fdb_home(adb_home), fconnected(false), errors(0),
+	table_cache(pool),
+	prev_expiration_pass_time(0) {
+}
+
+void DB_Connection::connect() {
+	//_asm  int 3;
+	memset(&dbenv, 0, sizeof(dbenv));
+	dbenv.db_paniccall=db_paniccall;
+	dbenv.db_errcall=db_errcall;
+
+	char DB_DATA_DIR__VALUE[MAX_STRING];
+	char DB_LOG_DIR__VALUE[MAX_STRING];
+	char DB_TMP_DIR__VALUE[MAX_STRING];
+
+	const char *db_home_cstr=fdb_home.cstr(String::UL_FILE_SPEC);
+
+	snprintf(DB_DATA_DIR__VALUE, MAX_STRING, "DB_DATA_DIR %s", db_home_cstr);
+	snprintf(DB_LOG_DIR__VALUE, MAX_STRING, "DB_LOG_DIR %s", db_home_cstr);
+	snprintf(DB_TMP_DIR__VALUE, MAX_STRING, "DB_TMP_DIR %s", db_home_cstr);
+
+	char *db_config[] = {
+		DB_DATA_DIR__VALUE,
+		DB_LOG_DIR__VALUE,
+		DB_TMP_DIR__VALUE, 
+		0
+	};
+
+	u_int32_t flags=
+		DB_CREATE 
+		| DB_INIT_MPOOL | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_TXN;
+
+	try {
+		// 1: trying to open with SOFT RECOVER option set
+		check("db_appinit soft recover", &fdb_home, db_appinit(
+			db_home_cstr,
+			db_config, 
+			&dbenv, 
+			flags | DB_RECOVER
+		));
+	} catch(...) {
+		try {
+			// 2: trying to open WITHOUT SOFT RECOVER option set
+			check("db_appinit no recover", &fdb_home, db_appinit(
+				db_home_cstr,
+				db_config, 
+				&dbenv, 
+				flags
+			));
+		} catch(...) {
+			// 3: trying to open with FATAL RECOVER option set
+			check("db_appinit fatal recover", &fdb_home, db_appinit(
+				db_home_cstr,
+				db_config, 
+				&dbenv, 
+				flags | DB_RECOVER_FATAL
+			));
+		}
+	}
+
+	fconnected=true;
+}
+
+void DB_Connection::disconnect() {
+	// close tables
+	table_cache.for_each(expire_tables, 
+		reinterpret_cast<void *>(0/* =in the past = expire[close] all*/));
+	
+	// destroy connection data
+	check("db_appexit", &fdb_home, db_appexit(&dbenv));  fconnected=false;
+}
+
 
 void DB_Connection::check(const char *operation, const String *source, int error) {
 	switch(error) {
@@ -38,167 +140,112 @@ void DB_Connection::check(const char *operation, const String *source, int error
 		// no error
 		break; 
 	
-	case DB_KEYEXIST:
-		// DB_KEYEXIST is a "normal" return, so should not be
-		// thrown as an error
-		break; 
-
-	case DB_RUNRECOVERY:
-		// mark as unsafe, so not to cache it
-		needs_recovery=true;
-		throw Exception(0, 0, 
-			source,
-			"action failed, RUN RECOVERY UTILITY. db %s error, real filename '%s'", 
-			operation, file_spec_cstr);
-		
 	default:
+		errors++;
 		throw Exception(0, 0, 
 			source, 
-			"action failed. db %s error: %s (%d), real filename '%s'", 
-			operation, strerror(error), error, file_spec_cstr);
+			"db %s error: %s (%d)", 
+			operation, strerror(error), error);
 	}
 }
 
-void DB_Connection::key_string_to_dbt(const String& key_string, DBT& key_result) {
-	memset(&key_result, 0, sizeof(key_result));
-	key_result.data=key_string.cstr(String::UL_AS_IS);
-	key_result.size=key_string.size();
-}
+DB_Table& DB_Connection::get_table(const String& request_file_name,
+												   const String& request_origin) {
+	Pool& pool=request_origin.pool(); // request pool											   
 
-String& DB_Connection::key_dbt_to_string(const DBT& key_dbt) {
-	String& result=*new(*fservices_pool) String(*fservices_pool);
-	if(key_dbt.size) {
-		char *request_data=(char *)malloc(key_dbt.size);
-		memcpy(request_data, key_dbt.data, key_dbt.size);
-		result.APPEND_TAINTED(request_data, key_dbt.size, file_spec_cstr, 0/*line*/);
+	// first trying to get cached table
+	DB_Table *result=get_table_from_cache(request_file_name);
+	if(result && !result->ping()) { // we have some cached table, is it pingable?
+		result->disconnect(); // kill unpingabe=dead table
+		result=0;
 	}
-	return result;
+
+	char *request_file_name_cstr;
+	if(result)
+		request_file_name_cstr=0; // calm, compiler
+	else { // no cached table
+		// make global_file_name C-string on global pool
+		request_file_name_cstr=request_file_name.cstr(String::UL_AS_IS);
+		char *global_file_name_cstr=(char *)malloc(strlen(request_file_name_cstr)+1);
+		strcpy(global_file_name_cstr, request_file_name_cstr);
+		// make global_file_name string on global pool
+		String& global_file_name=*new(this->pool()) String(this->pool(), global_file_name_cstr);
+		
+		// allocate in global pool 
+		// associate with services[request]
+		// NOTE: never freed up!
+		result=new(this->pool()) DB_Table(this->pool(), global_file_name, *this);
+	}
+
+	// associate with services[request]  (deassociates at close)
+	result->set_services(&pool); 
+	// if not connected yet, do that now, when result has services
+	if(!result->connected())
+		result->connect();
+	// return it
+	return *result;
 }
-
-void DB_Connection::data_string_to_dbt(const String& data_string, time_t time_to_die, 
-									   DBT& data_result) {
-	memset(&data_result, 0, sizeof(data_result));
-
-	data_string.serialize(
-		sizeof(Data_string_serialized_prolog), 
-		data_result.data, data_result.size);
-
-	Data_string_serialized_prolog& prolog=
-		*static_cast<Data_string_serialized_prolog *>(data_result.data);
-
-	prolog.version=DATA_STRING_SERIALIZED_VERSION;
-	prolog.time_to_die=time_to_die;
-}
-
-String *DB_Connection::data_dbt_to_string(const DBT& data_dbt) {
-	Data_string_serialized_prolog& prolog=
-		*static_cast<Data_string_serialized_prolog *>(data_dbt.data);
-
-	if(prolog.version!=DATA_STRING_SERIALIZED_VERSION)
-		throw Exception(0, 0,
-			&ffile_spec,
-			"data string version 0x%04X not equal to 0x%04X, recreate file",
-				prolog.version, DATA_STRING_SERIALIZED_VERSION);
-
-	if(prolog.time_to_die/*specified*/ && prolog.time_to_die <= time(0)/*expired*/)
-		return 0;
-
-	String& result=*new(*fservices_pool) String(*fservices_pool);
-	result.deserialize(
-		sizeof(Data_string_serialized_prolog), 
-		data_dbt.data, data_dbt.size, file_spec_cstr);
-	return &result;
-}
-
-DB_Connection::DB_Connection(Pool& pool, const String& afile_spec, DB_ENV& adbenv) : Pooled(pool),
-	fdbenv(adbenv),
-	ffile_spec(afile_spec), file_spec_cstr(afile_spec.cstr(String::UL_FILE_SPEC)),
-	fservices_pool(0), db(0), ftid(0), needs_recovery(false), 
-	time_used(0) {
-}
-
-void DB_Connection::connect() { 
-	// open
+void DB_Connection::clear_dbfile(const String& file_name) {
+	// open&clear
+	DB *db;
 	DB_INFO dbinfo;
 	memset(&dbinfo, 0, sizeof(dbinfo));
-	check("open/create", &ffile_spec, db_open(
-		file_spec_cstr, 
+	check("open(clear)", &file_name, db_open(
+		file_name.cstr(String::UL_FILE_SPEC), 
 		PA_DB_ACCESS_METHOD, 
-		DB_CREATE /* used in single thread, no need for |DB_THREAD*/,
+		DB_CREATE | DB_TRUNCATE/* used in single thread, no need for |DB_THREAD*/,
 		0666, 
-		&fdbenv, &dbinfo, &db));
-}
-/// @todo this one of reasons of not having ^try for now
-void DB_Connection::disconnect() { 
-	check("close", &ffile_spec, db->close(db, 0/*flags*/));  db=0; 
+		&dbenv, &dbinfo, &db));
+
+	check("close", &file_name, db->close(db, 0/*flags*/));  db=0; 
 }
 
-void DB_Connection::put(const String& key, const String& data, time_t time_to_die) {
-	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
-	DBT dbt_data;  data_string_to_dbt(data, time_to_die, dbt_data);
-	check("put", &key, db->put(db, ftid, &dbt_key, &dbt_data, 0/*flags*/));
+void DB_Connection::close_table(const String& file_name, 
+										  DB_Table& table) {
+	// deassociate from services[request]
+	table.set_services(0);
+	put_table_to_cache(file_name, table);
 }
 
-String *DB_Connection::get(const String& key) {
-	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
-	DBT dbt_data={0}; // must be zeroed
-	int error=db->get(db, ftid, &dbt_key, &dbt_data, READ_ADDITIONAL_FLAGS/*flags*/);
-	if(error==DB_NOTFOUND)
-		return 0;
-	else {
-		check("get", &key, error);
-		String *result=data_dbt_to_string(dbt_data);
-		if(!result) // save efforts by deleting expired keys
-			check("del expired", &key, db->del(db, ftid, &dbt_key, 0/*flags*/));
-		return result;
-	}		
+
+// table cache
+/// @todo get rid of memory spending Stack [zeros deep inside got accumulated]
+DB_Table *DB_Connection::get_table_from_cache(const String& file_name) { 
+	SYNCHRONIZED;
+
+	maybe_expire_table_cache();
+
+	if(Stack *tables=static_cast<Stack *>(table_cache.get(file_name)))
+		while(tables->top_index()>=0) { // there are cached tables to that 'file_name'
+			DB_Table *result=static_cast<DB_Table *>(tables->pop());
+			if(result->connected()) // not expired?
+				return result;
+		}
+
+	return 0;
 }
 
-void DB_Connection::remove(const String& key) {
-	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
+void DB_Connection::put_table_to_cache(const String& file_name, 
+												 DB_Table& table) { 
+	SYNCHRONIZED;
 
-	int error=db->del(db, ftid, &dbt_key, 0/*flags*/);
-	if(error!=DB_NOTFOUND)
-		check("del", &key, error);
+	Stack *tables=static_cast<Stack *>(table_cache.get(file_name));
+	if(!tables) { // there are no cached tables to that 'file_name' yet?
+		tables=NEW Stack(pool()); // NOTE: never freed up!
+		table_cache.put(file_name, tables);
+	}	
+	tables->push(&table);
 }
 
-// DB_Cursor
+void DB_Connection::maybe_expire_table_cache() {
+	time_t now=time(0);
 
-DB_Cursor::DB_Cursor(
-					 DB_Connection& aconnection, 
-					 const String *asource) : fsource(asource), fconnection(aconnection), cursor(0) {
-	check("cursor", fsource, fconnection.db->cursor(fconnection.db,
-		fconnection.ftid, &cursor, 0/*flags*/));
-}
+	if(prev_expiration_pass_time<now-CHECK_EXPIRED_TABLES_SECONDS) {
+		table_cache.for_each(expire_tables, 
+			reinterpret_cast<void *>(now-EXPIRE_UNUSED_TABLE_SECONDS));
 
-DB_Cursor::~DB_Cursor() {
-	if(cursor) {
-		check("c_close", fsource, cursor->c_close(cursor));  cursor=0;
+		prev_expiration_pass_time=now;
 	}
-}
-
-bool DB_Cursor::get(String *& key, String *& data, u_int32_t flags) {
-	DBT dbt_key={0}; // must be zeroed
-	DBT dbt_data={0}; // must be zeroed
-	
-	int error=cursor->c_get(cursor, &dbt_key, &dbt_data, flags | READ_ADDITIONAL_FLAGS);
-	if(error==DB_NOTFOUND)
-		return false;
-
-	check("c_get", fsource, error);
-
-	if(data=data_dbt_to_string(dbt_data)) // not expired
-		key=&key_dbt_to_string(dbt_key);
-	else {
-		// save efforts by deleting expired keys
-		remove(0/*flags*/);
-		key=0;
-	}
-	return true;
-}
-
-void DB_Cursor::remove(u_int32_t flags) {
-	check("c_del", fsource,  cursor->c_del(cursor, flags));
 }
 
 #endif
