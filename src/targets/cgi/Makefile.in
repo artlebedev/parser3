@@ -76,13 +76,14 @@ OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
+XML_SRC = @XML_SRC@
 YACC = @YACC@
 host_os = @host_os@
 
 INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql
 
 #for sysadmin-controlled auto.p
-CPPFLAGS =  -DSYSCONFDIR=\"$(sysconfdir)\"
+CPPFLAGS := $(CPPFLAGS) -DSYSCONFDIR=\"$(sysconfdir)\"
 
 bin_PROGRAMS = parser3
 parser3_SOURCES = pa_pool.C pa_threads.C parser3.C
@@ -111,7 +112,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/pa_pool.P .deps/pa_threads.P .deps/parser3.P
 SOURCES = $(parser3_SOURCES)
@@ -235,7 +236,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
