@@ -1,11 +1,11 @@
 /** @file
-	Parser MySQL driver: includes all Configure-d headers
+	Parser PgSQL driver: includes all Configure-d headers
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: config_includes.h,v 1.1 2001/07/30 15:32:18 parser Exp $
+	$Id: config_includes.h,v 1.2 2001/07/31 07:34:53 parser Exp $
 
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
