@@ -39,7 +39,7 @@
     $prefix/etc/
       parser3.charsets/   -- charset definition files
         koi8-r.cfg        -- cyrillic charset [KOI8-R encoding]
-        windows-1250.cfg  -- central europian charset [windows-1250 encoding]
+        windows-1250.cfg  -- central European charset [windows-1250 encoding]
         windows-1251.cfg  -- cyrillic charset [windows-1251 encoding]
         windows-1257.cfg  -- baltic charset [windows-1257 encoding]
 
@@ -138,7 +138,7 @@
         --with-glib-config=/path/to/your/glib-config
     NOTE:
     In case you are using SHARED mime library, you may want to link in direct path to it,
-    use this key to specify which linker key to use do do that:
+    use this key to specify which linker key to use to do that:
         --with-pathlink=LKEY    put dynamic libraries paths to binary
                                 using linker key (-R, -rpath-link)
 
@@ -186,4 +186,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.31 2003/01/10 16:44:57 paf Exp $
+$Id: INSTALL,v 1.32 2003/05/12 06:35:16 paf Exp $
