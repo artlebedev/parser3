@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2004/06/22 14:12:57 $";
+static const char * const IDENT_HASH_C="$Date: 2004/11/24 07:33:51 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -123,10 +123,14 @@ static void _create_or_add(Request& r, MethodParams& params) {
 	if(params.count()) {
 		Value& vsrc=params.as_no_junction(0, "param must be hash");
 		if(HashStringValue* src=vsrc.get_hash()) {
-			HashStringValue* self=&(GET_SELF(r, VHash).hash());
-			if(src==self) // same: doing nothing
+			VHash& self=GET_SELF(r, VHash);
+			HashStringValue* self_hash=&(self.hash());
+			if(src==self_hash) // same: doing nothing
 				return;
-			src->for_each(copy_all_overwrite_to, self);
+			src->for_each(copy_all_overwrite_to, self_hash);
+
+			if(VHash* vhash_src=static_cast<VHash*>(vsrc.as(VHASH_TYPE, false)))
+				self.set_default(vhash_src->get_default());
 		}
 	}
 }
