@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2003/11/24 12:47:21 $";
+static const char * const IDENT_VFORM_C="$Date: 2004/02/02 09:18:17 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -192,9 +192,9 @@ void VForm::ParseMimeInput(
 			char *attr=getAttributeValue(dataStart, " name=", headerSize), 
 			     *fName=getAttributeValue(dataStart, " filename=", headerSize);
 
-			if(attr && valueSize) {
+			if(attr) {
 				/* OK, we have a new pair, add it to the list. */
-				AppendFormEntry(attr, &dataStart[headerSize+1], valueSize, fName);
+				AppendFormEntry(attr, valueSize? &dataStart[headerSize+1]: "", valueSize, fName);
 			}
 		}
 		data=(dataEnd-strlen(boundary));
