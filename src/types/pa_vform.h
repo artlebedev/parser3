@@ -1,23 +1,31 @@
 /** @file
 	Parser: @b form class decls.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char* IDENT_VFORM_H="$Date: 2003/01/21 15:51:19 $";
+static const char* IDENT_VFORM_H="$Date: 2003/07/24 11:31:26 $";
+
+// includes
 
 #include "classes.h"
 #include "pa_common.h"
+#include "pa_value.h"
+
+// defines
 
 #define FORM_FIELDS_ELEMENT_NAME "fields"
 #define FORM_TABLES_ELEMENT_NAME "tables"
 #define FORM_IMAP_ELEMENT_NAME "imap"
 
-class Request;
+// forwards
+
+class Request_info;
+class Request_charsets;
 
 /**
 	derivates from VStateless_class so that :CLASS element referred to @a this.
@@ -34,45 +42,45 @@ class Request;
 		^somebody[^news.record[]]
 	@endverbatim
 */
-class VForm : public VStateless_class {
+class VForm: public VStateless_class {
 public: // Value
 	
-	const char *type() const { return "form"; }
+	const char* type() const { return "form"; }
 	
 	// form: CLASS,method,field,tables field
-	Value *get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 
 public: // usage
 
-	VForm(Pool& apool);
+	VForm();
 	
-	void fill_fields_and_tables(Request& request);
+	void fill_fields_and_tables(Request_charsets& acharsets, Request_info& request_info);
 
 private:
 
-	char *strpart(const char *str, size_t len);
-	char *getAttributeValue(const char *data,char *attr,size_t len);
-	void UnescapeChars(char **sp, const char *cp, size_t len);
-	void ParseGetFormInput(const char *query_string, size_t length);
-	void ParseFormInput(const char *data, size_t length);
-	void ParseMimeInput(char *content_type, const char *data, size_t length);
+	Request_charsets* fcharsets;
+
+	char *strpart(const char* str, size_t len);
+	char *getAttributeValue(const char* data,char *attr,size_t len);
+	void UnescapeChars(char **sp, const char* cp, size_t len);
+	void ParseGetFormInput(const char* query_string, size_t length);
+	void ParseFormInput(const char* data, size_t length);
+	void ParseMimeInput(char *content_type, const char* data, size_t length);
 	void AppendFormEntry(
-		const char *name, 
-		const char *value_ptr, const size_t value_size,
-		const char *file_name=0);
+		const char* cname_cstr, 
+		const char* raw_cvalue_ptr, const size_t raw_cvalue_size,
+		const char* copy_me_file_name_cstr=0);
 
 private:
 
 	bool filled;
-	Hash fields;
-	Hash tables;
-	Hash imap;
+	HashStringValue fields;
+	HashStringValue tables;
+	HashStringValue imap;
 
 private:
 
-	void transcode(
-		const void *source_body, size_t source_content_length,
-		const void *& dest_body, size_t& dest_content_length);
+	String::C transcode(const char* client, size_t client_size);
 
 };
 

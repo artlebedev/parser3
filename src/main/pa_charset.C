@@ -1,26 +1,18 @@
 /** @file
 	Parser: Charset connection implementation.
 
-	Copyright(c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSET_C="$Date: 2003/03/21 09:43:48 $";
+static const char* IDENT_CHARSET_C="$Date: 2003/07/24 11:31:23 $";
 
 #include "pa_charset.h"
-#include "pa_array.h"
-#include "pa_hash.h"
+#include "pa_charsets.h"
 
 #ifdef XML
 #include "libxml/encoding.h"
 #endif
-
-// globals
-
-
-// consts
-
-#define MAX_CHARSET_UNI_CODES 500
 
 // helpers
 
@@ -39,7 +31,7 @@ inline void cstr2ctypes(unsigned char *tables, const unsigned char *cstr,
 		ctypes_table[c]|=bit;
 	}
 }
-inline unsigned int to_wchar_code(const char *cstr) {
+inline unsigned int to_wchar_code(const char* cstr) {
 	if(!cstr || !*cstr)
 		return 0;
 	if(cstr[1]==0)
@@ -48,7 +40,7 @@ inline unsigned int to_wchar_code(const char *cstr) {
 	char *error_pos;
 	return(unsigned int)strtol(cstr, &error_pos, 0);
 }
-inline bool to_bool(const char *cstr) {
+inline bool to_bool(const char* cstr) {
 	return cstr && *cstr!=0;
 }
 static void element2ctypes(unsigned char c, bool belongs,
@@ -76,18 +68,15 @@ static void element2case(unsigned char from, unsigned char to,
 // methods
 
 extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
-Charset::Charset(Pool& apool, const String& aname, const String *request_file_spec): Pooled(apool),
-	fname(aname) {
+Charset::Charset(Request_charsets* charsets, const StringBody ANAME, const String* afile_spec): 
+	FNAME(ANAME),
+	FNAME_CSTR(ANAME.cstrm()) {
 
-	char *name_cstr=fname.cstr();
-    for(char *c=name_cstr; *c; c++)
-        *c = toupper(*c);
-
-	if(request_file_spec) {
+	if(afile_spec) {
 		fisUTF8=false;
-		loadDefinition(*request_file_spec);
+		load_definition(*charsets, *afile_spec);
 #ifdef XML
-		addEncoding(name_cstr);
+		addEncoding(FNAME_CSTR);
 #endif
 	} else {
 		fisUTF8=true;
@@ -96,17 +85,11 @@ Charset::Charset(Pool& apool, const String& aname, const String *request_file_sp
 	}
 
 #ifdef XML
-	initTranscoder(&aname, name_cstr);
+	initTranscoder(FNAME, FNAME_CSTR);
 #endif
 }
 
-Charset::~Charset() {
-#ifdef XML
-	// not deleting transcoder, that's not our business
-#endif
-}
-
-void Charset::loadDefinition(const String& request_file_spec) {
+void Charset::load_definition(Request_charsets& charsets, const String& afile_spec) {
 	// pcre_tables
 	// lowcase, flipcase, bits digit+word+whitespace, masks
 
@@ -117,16 +100,14 @@ void Charset::loadDefinition(const String& request_file_spec) {
 	cstr2ctypes(pcre_tables,(const unsigned char *)"*+?{^.$|()[", ctype_meta);
 
 	// charset
-	memset(tables.fromTable, 0, sizeof(tables.fromTable));
-	tables.toTable=(Charset_TransRec *)calloc(sizeof(Charset_TransRec)*MAX_CHARSET_UNI_CODES);
-	tables.toTableSize=0;
+	memset(&tables, 0, sizeof(tables));
 	// strangly vital
 	tables.toTable[tables.toTableSize].intCh=0;
 	tables.toTable[tables.toTableSize].extCh=(XMLByte)0;
 	tables.toTableSize++;
 
 	// loading text
-	char *data=file_read_text(pool(), request_file_spec);
+	char *data=file_read_text(charsets, afile_spec);
 
 	// ignore header
 	getrow(&data);
@@ -156,7 +137,7 @@ void Charset::loadDefinition(const String& request_file_spec) {
 				// charset
 				if(tables.toTableSize>MAX_CHARSET_UNI_CODES)
 					throw Exception("parser.runtime",
-						&request_file_spec,
+						&afile_spec,
 						"charset must contain not more then %d unicode values", MAX_CHARSET_UNI_CODES);
 
 				XMLCh unicode=(XMLCh)to_wchar_code(cell);
@@ -193,59 +174,44 @@ void Charset::sort_ToTable() {
 }
 
 static XMLByte xlatOneTo(const XMLCh toXlat,
-						 const Charset::Tables& tables,
-						 XMLByte not_found) {
-    unsigned int    lowOfs = 0;
-    unsigned int    hiOfs = tables.toTableSize - 1;
-    XMLByte         curByte = 0;
-    do {
-        // Calc the mid point of the low and high offset.
-        const unsigned int midOfs =((hiOfs - lowOfs) / 2)+lowOfs;
-
-        //  If our test char is greater than the mid point char, then
-        //  we move up to the upper half. Else we move to the lower
-        //  half. If its equal, then its our guy.
-        if(toXlat>tables.toTable[midOfs].intCh)
-            lowOfs = midOfs;
+			 const Charset::Tables& tables,
+			 XMLByte not_found) {
+	unsigned int    lowOfs = 0;
+	unsigned int    hiOfs = tables.toTableSize - 1;
+	XMLByte         curByte = 0;
+	do {
+		// Calc the mid point of the low and high offset.
+		const unsigned int midOfs =((hiOfs - lowOfs) / 2)+lowOfs;
+		
+		//  If our test char is greater than the mid point char, then
+		//  we move up to the upper half. Else we move to the lower
+		//  half. If its equal, then its our guy.
+		if(toXlat>tables.toTable[midOfs].intCh)
+			lowOfs = midOfs;
 		else if(toXlat<tables.toTable[midOfs].intCh)
 			hiOfs = midOfs;
 		else
 			return tables.toTable[midOfs].extCh;
 	} while(lowOfs+1<hiOfs);
-
-    return not_found;
+	
+	return not_found;
 }
 
-void Charset::transcode(Pool& pool,
-	const Charset& source_charset, const void *source_body, size_t source_content_length,
-	const Charset& dest_charset, const void *& dest_body, size_t& dest_content_length
-	) {
-	if(!source_content_length) {
-		dest_body=0;
-		dest_content_length=0;
-		return;
-	}
+String::C Charset::transcode(const String::C src,
+	const Charset& source_charset, 
+	const Charset& dest_charset) {
+	if(!src.length)
+		return String::C("", 0);
 
 	switch((source_charset.isUTF8()?0x10:0x00)|(dest_charset.isUTF8()?0x01:0x00)) {
 		default: // 0x00
-			source_charset.transcodeToCharset(pool, dest_charset,
-				source_body, source_content_length,
-				dest_body, dest_content_length);
-			break;
+			return source_charset.transcodeToCharset(src, dest_charset);
 		case 0x01:
-			source_charset.transcodeToUTF8(pool,
-				source_body, source_content_length,
-				dest_body, dest_content_length);
-			break;
+			return source_charset.transcodeToUTF8(src);
 		case 0x10:
-			dest_charset.transcodeFromUTF8(pool,
-				source_body, source_content_length,
-				dest_body, dest_content_length);
-			break;
+			return dest_charset.transcodeFromUTF8(src);
 		case 0x11:
-			dest_body=source_body;
-			dest_content_length=source_content_length;
-			break;
+			return src;
 	}
 }
 
@@ -290,79 +256,78 @@ static const XMLByte gFirstByteMark[7] = {
     0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
 };
 
-static int transcodeToUTF8(
-							const XMLByte* srcData, size_t& srcLen,
-							XMLByte *toFill, size_t& toFillLen,
-							const Charset::Tables& tables) {
+static int transcodeToUTF8(const XMLByte* srcData, size_t& srcLen,
+			   XMLByte *toFill, size_t& toFillLen,
+			   const Charset::Tables& tables) {
 	const XMLByte* srcPtr=srcData;
 	const XMLByte* srcEnd=srcData+srcLen;
 	XMLByte* outPtr=toFill;
 	XMLByte* outEnd=toFill+toFillLen;
 
-    while(srcPtr<srcEnd) {
-        uint curVal = tables.fromTable[*srcPtr];
+	while(srcPtr<srcEnd) {
+		uint curVal = tables.fromTable[*srcPtr];
 		if(!curVal) {
-            // use the replacement character
-            *outPtr++= '?';
-            srcPtr++;
-            continue;
-        }
+			// use the replacement character
+			*outPtr++= '?';
+			srcPtr++;
+			continue;
+		}
 
-        // Figure out how many bytes we need
-        unsigned int encodedBytes;
-        if(curVal<0x80)
-            encodedBytes = 1;
-        else if(curVal<0x800)
-            encodedBytes = 2;
-        else if(curVal<0x10000)
-            encodedBytes = 3;
-        else if(curVal<0x200000)
-            encodedBytes = 4;
-        else if(curVal<0x4000000)
-            encodedBytes = 5;
-        else if(curVal<= 0x7FFFFFFF)
-            encodedBytes = 6;
-        else {
-            // use the replacement character
-            *outPtr++= '?';
-            srcPtr++;
-            continue;
-        }
+		// Figure out how many bytes we need
+		unsigned int encodedBytes;
+		if(curVal<0x80)
+			encodedBytes = 1;
+		else if(curVal<0x800)
+			encodedBytes = 2;
+		else if(curVal<0x10000)
+			encodedBytes = 3;
+		else if(curVal<0x200000)
+			encodedBytes = 4;
+		else if(curVal<0x4000000)
+			encodedBytes = 5;
+		else if(curVal<= 0x7FFFFFFF)
+			encodedBytes = 6;
+		else {
+			// use the replacement character
+			*outPtr++= '?';
+			srcPtr++;
+			continue;
+		}
 
-        //  If we cannot fully get this char into the output buffer
-        if (outPtr + encodedBytes > outEnd)
-            break;
-
-        // We can do it, so update the source index
-        srcPtr++;
-
-        //  And spit out the bytes. We spit them out in reverse order
-        //  here, so bump up the output pointer and work down as we go.
-        outPtr+= encodedBytes;
-        switch(encodedBytes) {
-            case 6: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-                     curVal>>= 6;
-            case 5: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-                     curVal>>= 6;
-            case 4: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-                     curVal>>= 6;
-            case 3: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-                     curVal>>= 6;
-            case 2: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-                     curVal>>= 6;
-            case 1: *--outPtr = XMLByte(curVal | gFirstByteMark[encodedBytes]);
-        }
-
-        // Add the encoded bytes back in again to indicate we've eaten them
-        outPtr+= encodedBytes;
-    }
-
-    // Update the bytes eaten
-    srcLen = srcPtr - srcData;
-
-    // Return the characters read
-    toFillLen = outPtr - toFill;
-
+		//  If we cannot fully get this char into the output buffer
+		if (outPtr + encodedBytes > outEnd)
+			break;
+		
+		// We can do it, so update the source index
+		srcPtr++;
+		
+		//  And spit out the bytes. We spit them out in reverse order
+		//  here, so bump up the output pointer and work down as we go.
+		outPtr+= encodedBytes;
+		switch(encodedBytes) {
+		case 6: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+			curVal>>= 6;
+		case 5: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+			curVal>>= 6;
+		case 4: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+			curVal>>= 6;
+		case 3: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+			curVal>>= 6;
+		case 2: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+			curVal>>= 6;
+		case 1: *--outPtr = XMLByte(curVal | gFirstByteMark[encodedBytes]);
+		}
+		
+		// Add the encoded bytes back in again to indicate we've eaten them
+		outPtr+= encodedBytes;
+	}
+	
+	// Update the bytes eaten
+	srcLen = srcPtr - srcData;
+	
+	// Return the characters read
+	toFillLen = outPtr - toFill;
+	
 	//return srcPtr==srcEnd?(int)toFillLen:-1;
 /*
 xmlCharEncodingInputFunc
@@ -374,73 +339,72 @@ of ocetes consumed.
 	return 0;
 }
 /// @todo digital entites only when xml/html output [at output in html/xml mode, in html part of a letter]
-static int transcodeFromUTF8(
-								const XMLByte *srcData, size_t& srcLen,
-								XMLByte* toFill, size_t& toFillLen,
-								const Charset::Tables& tables) {
+static int transcodeFromUTF8(const XMLByte* srcData, size_t& srcLen,
+			     XMLByte* toFill, size_t& toFillLen,
+			     const Charset::Tables& tables) {
 	const XMLByte* srcPtr=srcData;
 	const XMLByte* srcEnd=srcData+srcLen;
 	XMLByte* outPtr=toFill;
 	XMLByte* outEnd=toFill+toFillLen;
 
-    //  We now loop until we either run out of input data, or room to store
-    while ((srcPtr < srcEnd) && (outPtr < outEnd)) {
-        // Get the next leading byte out
-        const XMLByte firstByte = *srcPtr;
-
-        // Special-case ASCII, which is a leading byte value of<= 127
-        if(firstByte<= 127) {
-            *outPtr++= firstByte;
-            srcPtr++;
-            continue;
-        }
-
-        // See how many trailing src bytes this sequence is going to require
-        const unsigned int trailingBytes = gUTFBytes[firstByte];
-
-        //  If there are not enough source bytes to do this one, then we
-        //  are done. Note that we done>= here because we are implicitly
-        //  counting the 1 byte we get no matter what.
-        if(srcPtr+trailingBytes>= srcEnd)
-            break;
-
-        // Looks ok, so lets build up the value
-        uint tmpVal=0;
-        switch(trailingBytes) {
-            case 5: tmpVal+=*srcPtr++; tmpVal<<=6;
-            case 4: tmpVal+=*srcPtr++; tmpVal<<=6;
-            case 3: tmpVal+=*srcPtr++; tmpVal<<=6;
-            case 2: tmpVal+=*srcPtr++; tmpVal<<=6;
-            case 1: tmpVal+=*srcPtr++; tmpVal<<=6;
-            case 0: tmpVal+=*srcPtr++;
-                     break;
-
-            default:
-                throw Exception(0,
-					0,
-					"transcodeFromUTF8 error: wrong trailingBytes value(%d)", trailingBytes);
-        }
-        tmpVal-=gUTFOffsets[trailingBytes];
-
-        //  If it will fit into a single char, then put it in. Otherwise
-        //  fail [*encode it as a surrogate pair. If its not valid, use the
-        //  replacement char.*]
-        if(!(tmpVal & 0xFFFF0000)) {
+	//  We now loop until we either run out of input data, or room to store
+	while ((srcPtr < srcEnd) && (outPtr < outEnd)) {
+		// Get the next leading byte out
+		const XMLByte firstByte =* srcPtr;
+		
+		// Special-case ASCII, which is a leading byte value of<= 127
+		if(firstByte<= 127) {
+			*outPtr++= firstByte;
+			srcPtr++;
+			continue;
+		}
+		
+		// See how many trailing src bytes this sequence is going to require
+		const unsigned int trailingBytes = gUTFBytes[firstByte];
+		
+		//  If there are not enough source bytes to do this one, then we
+		//  are done. Note that we done>= here because we are implicitly
+		//  counting the 1 byte we get no matter what.
+		if(srcPtr+trailingBytes>= srcEnd)
+			break;
+		
+		// Looks ok, so lets build up the value
+		uint tmpVal=0;
+		switch(trailingBytes) {
+		case 5: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 4: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 3: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 2: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 1: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 0: tmpVal+=*srcPtr++;
+			break;
+			
+		default:
+			throw Exception(0,
+				0,
+				"transcodeFromUTF8 error: wrong trailingBytes value(%d)", trailingBytes);
+		}
+		tmpVal-=gUTFOffsets[trailingBytes];
+		
+		//  If it will fit into a single char, then put it in. Otherwise
+		//  fail [*encode it as a surrogate pair. If its not valid, use the
+		//  replacement char.*]
+		if(!(tmpVal & 0xFFFF0000)) {
 			if(XMLByte xlat=xlatOneTo(tmpVal, tables, 0))
 				*outPtr++=xlat;
 			else 
 				outPtr+=sprintf((char *)outPtr, "&#%d;", tmpVal); // &#decimal;
 		} else
 			throw Exception(0,
-				0,
-				"transcodeFromUTF8 error: too big tmpVal(0x%08X)", tmpVal);
+			0,
+			"transcodeFromUTF8 error: too big tmpVal(0x%08X)", tmpVal);
 	}
-
-    // Update the bytes eaten
-    srcLen = srcPtr - srcData;
-
-    // Return the characters read
-    toFillLen = outPtr - toFill;
+	
+	// Update the bytes eaten
+	srcLen = srcPtr - srcData;
+	
+	// Return the characters read
+	toFillLen = outPtr - toFill;
 
 	//return srcPtr==srcEnd?(int)toFillLen:-1;
 /*
@@ -454,134 +418,161 @@ of ocetes consumed.
 }
 
 /// @todo not so memory-hungry with prescan
-void Charset::transcodeToUTF8(Pool& pool,
-								 const void *source_body, size_t source_content_length,
-								 const void *& adest_body, size_t& dest_content_length) const {
-	dest_content_length=source_content_length*6/*so that surly enough, max utf8 seq len=6*/;
-	XMLByte *dest_body=(XMLByte*)pool.malloc(dest_content_length);
+const String::C Charset::transcodeToUTF8(const String::C src) const {
+	size_t src_length=src.length;
+	size_t dest_length=src.length*6/*so that surly enough, max utf8 seq len=6*/;
+#ifndef NDEBUG
+	size_t saved_dest_length=dest_length;
+#endif
+	XMLByte *dest_body=new(PointerFreeGC) XMLByte[dest_length+1/*for terminator*/];
 
 	if(::transcodeToUTF8(
-		(XMLByte *)source_body, source_content_length,
-		dest_body, dest_content_length,
+		(XMLByte *)src.str, src_length,
+		dest_body, dest_length,
 		tables)<0)
 		throw(0, 0,
 			0,
 			"Charset::transcodeToUTF8 buffer overflow");
 
-	// return
-	adest_body=dest_body;
+	assert(dest_length<=saved_dest_length); dest_body[dest_length]=0; // terminator
+	return String::C((char*)dest_body, dest_length);
 }
-void Charset::transcodeFromUTF8(Pool& pool,
-								   const void *source_body, size_t source_content_length,
-								   const void *& adest_body, size_t& dest_content_length) const {
-	dest_content_length=source_content_length*6/*so that surly enough, "&#255;" has max ratio */;
-	XMLByte *dest_body=(XMLByte*)pool.malloc(dest_content_length);
+const String::C Charset::transcodeFromUTF8(const String::C src) const {
+	size_t src_length=src.length;
+	size_t dest_length=src.length*6/*so that surly enough, "&#255;" has max ratio */;
+#ifndef NDEBUG
+	size_t saved_dest_length=dest_length;
+#endif
+	XMLByte *dest_body=new(PointerFreeGC) XMLByte[dest_length+1/*for terminator*/];
 
 	if(::transcodeFromUTF8(
-		(XMLByte *)source_body, source_content_length,
-		dest_body, dest_content_length,
+		(XMLByte *)src.str, src_length,
+		dest_body, dest_length,
 		tables)<0)
 		throw(0, 0,
 			0,
-			"Charset::transcodeToUTF8 buffer overflow");
+			"Charset::transcodeFromUTF8 buffer overflow");
 
-	// return
-	adest_body=dest_body;
+	assert(dest_length<=saved_dest_length); dest_body[dest_length]=0; // terminator
+	return String::C((char*)dest_body, dest_length);
 }
 
 /// transcode using both charsets
-void Charset::transcodeToCharset(Pool& pool,
-									   const Charset& dest_charset,
-									   const void *source_body, size_t source_content_length,
-									   const void *& adest_body, size_t& adest_content_length) const {
-	if(&dest_charset==this) {
-		adest_body=source_body;
-		adest_content_length=source_content_length;
-	} else {
-		size_t dest_content_length=source_content_length;
-		unsigned char *dest_body=(unsigned char *)pool.malloc(dest_content_length);
+const String::C Charset::transcodeToCharset(const String::C src, 
+					    const Charset& dest_charset) const {
+	if(&dest_charset==this) 
+		return src;
+	else {
+		size_t dest_length=src.length;
+		XMLByte* dest_body=new(PointerFreeGC) XMLByte[dest_length+1/*for terminator*/];
 
-		const XMLByte* srcPtr=(XMLByte *)source_body;
-		const XMLByte* srcEnd=(XMLByte *)source_body+source_content_length;
-
-		for(XMLByte* outPtr=dest_body; srcPtr<srcEnd; srcPtr++) {
-			XMLCh curVal = tables.fromTable[*srcPtr];
-			if(curVal) 
-				*outPtr++=xlatOneTo(curVal, dest_charset.tables, '?');
-			else {
-				// use the replacement character
-				*outPtr++= '?';
-			}	
+		XMLByte* output=dest_body;
+		const XMLByte* input=(XMLByte *)src.str;
+		while(XMLCh c=*input++) {
+			XMLCh curVal = tables.fromTable[c];
+			*output++=curVal?
+				xlatOneTo(curVal, dest_charset.tables, '?') // OK
+				:'?'; // use the replacement character
 		}
 
-		adest_body=dest_body;
-		adest_content_length=dest_content_length;
+		dest_body[dest_length]=0; // terminator
+		return String::C((char*)dest_body, dest_length);
 	}
 }			
 
 #ifdef XML
-static int         xml256CharEncodingInputFunc     (
-													unsigned char *out,
-													int *outlen,
-													const unsigned char *in,
-													int *inlen, 
-													void *info) {
-	return transcodeToUTF8(
-							in, *(size_t*)inlen,
-							out, *(size_t*)outlen,
-							*(const Charset::Tables *)info);
-}
 
-static int         xml256CharEncodingOutputFunc    (
-													unsigned char *out,
-													int *outlen,
-													const unsigned char *in,
-													int *inlen, 
-													void *info) {
-	return transcodeFromUTF8(
-							in, *(size_t*)inlen,
-							out, *(size_t*)outlen,
-							*(const Charset::Tables *)info);
-}
+static const Charset::Tables* tables[MAX_CHARSETS];
 
+#define declareXml256ioFuncs(i) \
+	static int xml256CharEncodingInputFunc##i( \
+		unsigned char *out, int *outlen, \
+		const unsigned char *in, int *inlen) { \
+		return transcodeToUTF8( \
+			in, *(size_t*)inlen, \
+			out, *(size_t*)outlen, \
+			*tables[i]); \
+	} \
+	static int xml256CharEncodingOutputFunc##i( \
+		unsigned char *out, int *outlen, \
+		const unsigned char *in, int *inlen) { \
+		return transcodeFromUTF8( \
+			in, *(size_t*)inlen, \
+			out, *(size_t*)outlen, \
+			*tables[i]); \
+	}
+
+declareXml256ioFuncs(0)	declareXml256ioFuncs(1)
+declareXml256ioFuncs(2)	declareXml256ioFuncs(3)
+declareXml256ioFuncs(4)	declareXml256ioFuncs(5)
+declareXml256ioFuncs(6)	declareXml256ioFuncs(7)
+declareXml256ioFuncs(8)	declareXml256ioFuncs(9)
+
+static xmlCharEncodingInputFunc inputFuncs[MAX_CHARSETS]={
+	xml256CharEncodingInputFunc0,	xml256CharEncodingInputFunc1,
+	xml256CharEncodingInputFunc2,	xml256CharEncodingInputFunc3,
+	xml256CharEncodingInputFunc4,	xml256CharEncodingInputFunc5,
+	xml256CharEncodingInputFunc6,	xml256CharEncodingInputFunc7,
+	xml256CharEncodingInputFunc8,	xml256CharEncodingInputFunc9
+};
+static xmlCharEncodingOutputFunc outputFuncs[MAX_CHARSETS]={
+	xml256CharEncodingOutputFunc0,	xml256CharEncodingOutputFunc1,
+	xml256CharEncodingOutputFunc2,	xml256CharEncodingOutputFunc3,
+	xml256CharEncodingOutputFunc4,	xml256CharEncodingOutputFunc5,
+	xml256CharEncodingOutputFunc6,	xml256CharEncodingOutputFunc7,
+	xml256CharEncodingOutputFunc8,	xml256CharEncodingOutputFunc9
+};
+static size_t handlers_count=0;
 
 void Charset::addEncoding(char *name_cstr) {
-	xmlCharEncodingHandler *handler=
-		(xmlCharEncodingHandler *)malloc(sizeof(xmlCharEncodingHandler));
-	handler->name=name_cstr;
-	handler->input=xml256CharEncodingInputFunc; handler->inputInfo=&tables;
-	handler->output=xml256CharEncodingOutputFunc; handler->outputInfo=&tables;
+	if(handlers_count==MAX_CHARSETS)
+		throw Exception(0,
+			0,
+			"already allocated %d handlers, no space for new encoding '%s'",
+				MAX_CHARSETS, name_cstr);
+
+	xmlCharEncodingHandler* handler=new(PointerFreeGC) xmlCharEncodingHandler;
+	{
+		handler->name=name_cstr;
+		handler->input=inputFuncs[handlers_count]; 
+		handler->output=outputFuncs[handlers_count]; 
+		::tables[handlers_count]=&tables;
+		handlers_count++;
+	}
 	
 	xmlRegisterCharEncodingHandler(handler);
+
 }
 
-void Charset::initTranscoder(const String *source, const char *name_cstr) {
+void Charset::initTranscoder(const StringBody NAME, const char* name_cstr) {
 	ftranscoder=xmlFindCharEncodingHandler(name_cstr);
-	transcoder(source); // check right way
+	transcoder(NAME); // check right way
 }
 
-xmlCharEncodingHandler *Charset::transcoder(const String *source) {
+xmlCharEncodingHandler& Charset::transcoder(const StringBody NAME) {
 	if(!ftranscoder)
 		throw Exception("parser.runtime",
-			source,
+			new String(NAME, String::L_TAINTED),
 			"unsupported encoding");
-	return ftranscoder;
+	return *ftranscoder;
 }
 
-const char *Charset::transcode_cstr(xmlChar *s) {
+String::C Charset::transcode_cstr(xmlChar* s) {
 	if(!s)
-		return "";
+		return String::C("", 0);
 
-	int inlen=strlen((const char *)s);
-	int outlen=inlen+1; // max
-	char *out=(char *)malloc(outlen*sizeof(char));
+	int inlen=strlen((const char*)s);
+	int outlen=inlen; // max
+#ifndef NDEBUG
+	int saved_outlen=outlen;
+#endif
+	char *out=new(PointerFreeGC) char[outlen+1];
 	
 	int error;
-	if(xmlCharEncodingOutputFunc output=transcoder(0)->output) {
+	if(xmlCharEncodingOutputFunc output=transcoder(FNAME).output) {
 		error=output(
 			(unsigned char*)out, &outlen,
-			(const unsigned char*)s, &inlen,
-			transcoder(0)->outputInfo);
+			(const unsigned char*)s, &inlen);
 	} else {
 		memcpy(out, s, outlen=inlen);
 		error=0;
@@ -591,46 +582,45 @@ const char *Charset::transcode_cstr(xmlChar *s) {
 			0,
 			"transcode_cstr failed (%d)", error);
 
-	out[outlen/*surely would be less then on input*/]=0;
-	return out;
+	assert(outlen<=saved_outlen); out[outlen]=0;
+	return String::C(out, outlen);
 }
-String& Charset::transcode(xmlChar *s
-#ifndef NO_STRING_ORIGIN
-		, const String *origin
-#endif
-						   ) { 
-	String& result=*NEW String(pool());
-	result.APPEND_CLEAN(transcode_cstr(s), 0/*auto-size*/, origin->origin().file, origin->origin().line);
-	return result; 
+const String& Charset::transcode(xmlChar* s) { 
+	String::C cstr=transcode_cstr(s);
+	return *new String(cstr.str, cstr.length, true);
 }
-const char *Charset::transcode_cstr(GdomeDOMString *s) { 
-	return s?transcode_cstr(BAD_CAST s->str):"";
+String::C Charset::transcode_cstr(GdomeDOMString* s) { 
+	return s?transcode_cstr(BAD_CAST s->str)
+		:String::C("", 0);
 }
-String& Charset::transcode(GdomeDOMString *s
-#ifndef NO_STRING_ORIGIN
-		, const String *origin
-#endif
-						   ) { 
-	String& result=*NEW String(pool());
-	result.APPEND_CLEAN(transcode_cstr(s), 0/*auto-size*/, origin->origin().file, origin->origin().line);
-	return result; 
+const String& Charset::transcode(GdomeDOMString* s) { 
+	String::C cstr=transcode_cstr(s);
+	return *new String(cstr.str, cstr.length, true);
 }
 
 /// @test less memory using -maybe- xmlParserInputBufferCreateMem
-xmlChar *Charset::transcode_buf2xchar(const char *buf, size_t buf_size) {
-	unsigned char *out;
+xmlChar* Charset::transcode_buf2xchar(const char* buf, size_t buf_size) {
+	xmlChar* out;
 	int outlen;
 	int error;
-	if(xmlCharEncodingInputFunc input=transcoder(0)->input) {
+#ifndef NDEBUG
+	int saved_outlen;
+#endif
+	if(xmlCharEncodingInputFunc input=transcoder(FNAME).input) {
 		outlen=buf_size*6/*max*/;
-		out=(unsigned char*)malloc((outlen+1)*sizeof(unsigned char));
+#ifndef NDEBUG
+		saved_outlen=outlen;
+#endif
+		out=(xmlChar*)xmlMalloc(outlen+1);
 		error=input(
 			out, &outlen,
-			(const unsigned char *)buf,  (int *)&buf_size,
-			transcoder(0)->inputInfo);
+			(const unsigned char*)buf, (int*)&buf_size);
 	} else {
 		outlen=buf_size;
-		out=(unsigned char*)malloc((outlen+1)*sizeof(unsigned char));
+#ifndef NDEBUG
+		saved_outlen=outlen;
+#endif
+		out=(xmlChar*)xmlMalloc(outlen+1);
 		memcpy(out, buf, outlen);
 		error=0;
 	}
@@ -640,63 +630,70 @@ xmlChar *Charset::transcode_buf2xchar(const char *buf, size_t buf_size) {
 			0,
 			"transcode_buf failed (%d)", error);
 
-	out[outlen/*surely would be less then on input*/]=0;
-	return (xmlChar *)out;
+	assert(outlen<=saved_outlen); out[outlen]=0;
+	return out;
 }
-GdomeDOMString_auto_ptr Charset::transcode_buf2dom(const char *buf, size_t buf_size) { 
-	return GdomeDOMString_auto_ptr((gchar*)transcode_buf2xchar(buf, buf_size));
+GdomeDOMString_auto_ptr Charset::transcode_buf2dom(const char* buf, size_t buf_size) { 
+	return GdomeDOMString_auto_ptr(transcode_buf2xchar(buf, buf_size));
 }
 GdomeDOMString_auto_ptr Charset::transcode(const String& s) { 
-	const char *cstr=s.cstr(String::UL_UNSPECIFIED);
+	const char* cstr=s.cstr(String::L_UNSPECIFIED);
 
 	return transcode_buf2dom(cstr, strlen(cstr)); 
 }
-#endif
+GdomeDOMString_auto_ptr Charset::transcode(const StringBody s) { 
+	const char* cstr=s.cstr();
 
-String& Charset::transcode(Pool& pool, 
-	const Charset& source_transcoder, 
-	const Charset& dest_transcoder, 
-	const String& src) {
-
-	const char *src_ptr=src.cstr(String::UL_UNSPECIFIED);
-	size_t src_size=strlen(src_ptr);
-
-	const void *dest_ptr;
-	size_t dest_size;
-
-	Charset::transcode(pool, 
-		source_transcoder, (const void*)src_ptr, src_size,
-		dest_transcoder, dest_ptr, dest_size);
-
-	return *new(pool) String(pool, (const char*)dest_ptr, dest_size);
+	return transcode_buf2dom(cstr, s.length()); 
 }
 
-void Charset::transcode(Pool& pool, 
+StringBody Charset::transcode(const StringBody src, 
 	const Charset& source_transcoder, 
-	const Charset& dest_transcoder, 
-	Array& src) {
-	for(int i=0; i<src.size(); i++)
-		src.put(i, &transcode(pool, source_transcoder, dest_transcoder, *src.get_string(i)));
+	const Charset& dest_transcoder) {
+
+	const char *src_ptr=src.cstr();
+	size_t src_size=strlen(src_ptr);
+
+	String::C dest=Charset::transcode(String::C(src_ptr, src_size),
+		source_transcoder,
+		dest_transcoder);
+
+	return StringBody(dest.str, dest.length);
+}
+
+String& Charset::transcode(const String& src, 
+	const Charset& source_transcoder, 
+	const Charset& dest_transcoder) {
+	if(!src.length())
+		return *new String("", 0, false);
+
+	return *new String(transcode((StringBody)src, source_transcoder, dest_transcoder), String::L_CLEAN);
+}
+
+void Charset::transcode(ArrayString& src,
+	const Charset& source_transcoder, 
+	const Charset& dest_transcoder) {
+	for(size_t i=0; i<src.count(); i++)
+		src.put(i, &transcode(*src[i], source_transcoder, dest_transcoder));
 }
 
 #ifndef DOXYGEN
 struct Transcode_pair_info {
-	Pool* pool;
 	const Charset* source_transcoder;
 	const Charset* dest_transcoder;
 };
 #endif
-static void transcode_pair(const Hash::Key& key, Hash::Val *& value, void *raw_info) {
-	Transcode_pair_info& info=*static_cast<Transcode_pair_info*>(raw_info);
-	value=&Charset::transcode(*info.pool, 
-		*info.source_transcoder, 
-		*info.dest_transcoder, 
-		*static_cast<String*>(value));
+static void transcode_pair(const StringBody akey, 
+			 StringBody& avalue, 
+			 Transcode_pair_info* info) {
+	avalue=Charset::transcode(avalue,
+		*info->source_transcoder, 
+		*info->dest_transcoder);
 }
-void Charset::transcode(Pool& pool, 
+void Charset::transcode(HashStringString& src,
 	const Charset& source_transcoder, 
-	const Charset& dest_transcoder, 
-	Hash& src) {
-	Transcode_pair_info info={&pool, &source_transcoder, &dest_transcoder};
-	src.for_each(transcode_pair, &info);
+	const Charset& dest_transcoder) {
+	Transcode_pair_info info={&source_transcoder, &dest_transcoder};
+	src.for_each_ref(transcode_pair, &info);
 }
+#endif

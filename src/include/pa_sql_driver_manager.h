@@ -2,21 +2,22 @@
 	Parser: sql driver manager decl.
 	global sql driver manager, must be thread-safe
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
 
-static const char* IDENT_SQL_DRIVER_MANAGER_H="$Date: 2003/01/21 15:51:11 $";
+static const char* IDENT_SQL_DRIVER_MANAGER_H="$Date: 2003/07/24 11:31:21 $";
 
-#include "pa_pool.h"
+
 #include "pa_sql_driver.h"
 #include "pa_hash.h"
 #include "pa_table.h"
 #include "pa_string.h"
 #include "pa_cache_managers.h"
+#include "pa_stack.h"
 
 // defines
 
@@ -26,54 +27,62 @@ static const char* IDENT_SQL_DRIVER_MANAGER_H="$Date: 2003/01/21 15:51:11 $";
 // forwards
 
 class SQL_Connection;
-class SQL_Connection_ptr;
 
 /// sql driver manager
-class SQL_Driver_manager : public Cache_manager {
-	friend class SQL_Connection;
+class SQL_Driver_manager: public Cache_manager {
 public:
 
-	SQL_Driver_manager(Pool& apool);
-	virtual ~SQL_Driver_manager();
+	typedef Hash<const StringBody, SQL_Driver *> driver_cache_type;
+	typedef Stack<SQL_Connection*> connection_cache_element_base_type;
+	typedef Hash<const StringBody, connection_cache_element_base_type*> connection_cache_type;
+
+private:
+	
+	friend class SQL_Connection;
+
+	bool is_dlinited;
+	driver_cache_type driver_cache;
+	connection_cache_type connection_cache;
+
+public:
+
+	SQL_Driver_manager();
+	override ~SQL_Driver_manager();
 
 	/** 
 		connect to specified url, 
 		using driver dynamic library found in table, if not loaded yet
 		checks driver version
 	*/
-	SQL_Connection_ptr get_connection(const String& url, const String& request_origin,
-		Table *protocol2driver_and_client);
+	SQL_Connection* get_connection(const String& aurl, Table *protocol2driver_and_client);
 
 private: // driver cache
 
-	SQL_Driver *get_driver_from_cache(const String& protocol);
-	void put_driver_to_cache(const String& protocol, SQL_Driver& driver);
+	SQL_Driver *get_driver_from_cache(driver_cache_type::key_type protocol);
+	void put_driver_to_cache(driver_cache_type::key_type protocol, driver_cache_type::value_type driver);
 
 private: // connection cache
 
-	SQL_Connection *get_connection_from_cache(const String& url);
-	void put_connection_to_cache(const String& url, SQL_Connection& connection);
+	SQL_Connection* get_connection_from_cache(connection_cache_type::key_type url);
+	void put_connection_to_cache(connection_cache_type::key_type url, 
+		SQL_Connection* connection);
 private:
 	time_t prev_expiration_pass_time;
 
 private: // for SQL_Connection
 
 	/// caches connection
-	void close_connection(const String& url, SQL_Connection& connection);
-
-private:
-
-	Hash driver_cache;
-	Hash connection_cache;
+	void close_connection(connection_cache_type::key_type url, 
+		SQL_Connection* connection);
 
 public: // Cache_manager
 
-	virtual Value& get_status(Pool& pool, const String *source);
-	virtual void maybe_expire_cache();
+	override Value* get_status();
+	override void maybe_expire_cache();
 
 };
 
 /// global
-extern SQL_Driver_manager *SQL_driver_manager;
+extern SQL_Driver_manager SQL_driver_manager;
 
 #endif

@@ -13,6 +13,7 @@ commit:
 #	thus causing redundant remaking:
 #	aclocal+autoconf+automake
 
+	cvs commit -m "no message" -f acsite.m4
 	cvs commit -m "no message" -f acinclude.m4
 	cvs commit -m "no message" -f aclocal.m4
 	cvs commit -m "no message" -f Makefile.am

@@ -1,36 +1,36 @@
 /** @file
 	Parser: commonly used functions.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2003/04/11 15:00:05 $";
+static const char* IDENT_COMMON_H="$Date: 2003/07/24 11:31:21 $";
 
-#include "pa_pool.h"
 #include "pa_string.h"
+#include "pa_hash.h"
 
-class Hash;
 class Value;
+typedef Hash<const StringBody , Value*> HashStringValue;
 
 // replace system s*nprintf with our versions
 #undef vsnprintf 
-int __vsnprintf(char *, size_t, const char *, va_list);
+int __vsnprintf(char *, size_t, const char* , va_list);
 #define vsnprintf __vsnprintf 
 #undef snprintf
-int __snprintf(char *, size_t, const char *, ...);
+int __snprintf(char *, size_t, const char* , ...);
 #define snprintf __snprintf
 
 #if _MSC_VER
 /*
-inline int open( const char *filename, int oflag ) { return _open(filename, oflag); }
+inline int open( const char* filename, int oflag ) { return _open(filename, oflag); }
 inline int close( int handle ) { return _close(handle); }
 inline int read( int handle, void *buffer, unsigned int count ) { return _read(handle,buffer,count); }
 inline int write( int handle, const void *buffer, unsigned int count ) { return _write(handle,buffer,count); }
-inline int stat( const char *path, struct _stat *buffer ) { return _stat(path, buffer); }
+inline int stat( const char* path, struct _stat *buffer ) { return _stat(path, buffer); }
 inline long lseek( int handle, long offset, int origin ) { return _lseek(handle, offset, origin); }
 */
 
@@ -56,37 +56,6 @@ inline long lseek( int handle, long offset, int origin ) { return _lseek(handle,
 
 #endif
 
-#ifdef HAVE_TRUNC
-#	ifndef trunc
-extern "C" double trunc(double);
-#	endif
-#else
-inline double trunc(double param) { return param > 0? floor(param) : ceil(param); }
-#endif
-
-#ifdef HAVE_ROUND
-#	ifndef round
-extern "C" double round(double);
-#	endif
-#else
-inline double round(double param) { return floor(param+0.5); }
-#endif
-#ifdef HAVE_SIGN
-#	ifndef sign
-extern "C" double sign(double);
-#	endif
-#else
-inline double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 ); }
-#endif
-
-/**
-	$content-type[text/html] -> 
-		content-type: text/html
-	$content-type[$value[text/html] charset[windows-1251]] -> 
-		content-type: text/html; charset=windows-1251
-*/
-const String& attributed_meaning_to_string(Value& meaning, String::Untaint_lang lang, bool forced);
-
 /// yields to OS for secs secs and usecs milliseconds
 int pa_sleep(unsigned long secs, unsigned long usecs);
 
@@ -94,15 +63,15 @@ int pa_sleep(unsigned long secs, unsigned long usecs);
 	can't say that about other systems/ line break styles
 */
 void fix_line_breaks(
-					 char *buf,
-					 size_t& size ///< may change! used to speedup next actions
-					 );
+		     char *str,
+		     size_t& length///< may change! used to speedup next actions
+		     );
 
-typedef void (*File_read_action)(Pool& pool,
-								 struct stat& finfo,
-								 int f, 
-								 const String& file_spec, const char *fname, bool as_text,
-								 void *context);
+typedef void (*File_read_action)(
+				 struct stat& finfo,
+				 int f, 
+				 const String& file_spec, const char* fname, bool as_text,
+				 void *context);
 
 /**
 	shared-lock specified file, 
@@ -111,31 +80,41 @@ typedef void (*File_read_action)(Pool& pool,
 	
 	@returns true if read OK
 */
-bool file_read_action_under_lock(Pool& pool, const String& file_spec, 
-				const char *action_name, File_read_action action, void *context,
+bool file_read_action_under_lock(const String& file_spec, 
+				const char* action_name, File_read_action action, void *context,
 				bool as_text=false,
 				bool fail_on_read_problem=true);
 /**
-	read specified text file using pool, 
+	read specified text file using 
 	if fail_on_read_problem is true[default] throws an exception
+
+	WARNING: charset is used for http header case conversion, it's not a charset of input file!
 
   	@returns true if read OK
 */
-char *file_read_text(Pool& pool, 
+char *file_read_text(Request_charsets& charsets, 
 					 const String& file_spec, 
 					 bool fail_on_read_problem=true,
-					 Hash *options=0, Hash** out_fields=0);
+					 HashStringValue* options=0/*, HashStringValue* * out_fields=0*/);
+
+struct File_read_result {
+	bool success;
+	char* str; size_t length;
+	HashStringValue* headers;
+};
 
 /**
-	read specified file using pool, 
+	read specified file using 
 	if fail_on_read_problem is true[default] throws an exception
+
+	WARNING: charset is used for http header case conversion, it's not a charset of input file!
 
 	@returns true if read OK
 */
-bool file_read(Pool& pool, const String& file_spec, 
-			   void*& data, size_t& size, 
+File_read_result file_read(Request_charsets& charsets, 
+			   const String& file_spec, 
 			   bool as_text,
-			   Hash *options=0, Hash** out_fields=0,
+			   HashStringValue* options=0,
 			   bool fail_on_read_problem=true);
 
 typedef void (*File_write_action)(int f, void *context);
@@ -150,7 +129,7 @@ typedef void (*File_write_action)(int f, void *context);
 */
 bool file_write_action_under_lock(
 				const String& file_spec, 
-				const char *action_name, File_write_action action, void *context,
+				const char* action_name, File_write_action action, void *context,
 				bool as_text=false,
 				bool do_append=false,
 				bool do_block=true,
@@ -162,7 +141,7 @@ bool file_write_action_under_lock(
 */
 void file_write(
 				const String& file_spec,
-				const void *data, size_t size, 
+				const char* data, size_t size, 
 				bool as_text,
 				bool do_append=false);
 
@@ -177,11 +156,11 @@ bool file_delete(const String& file_spec, bool fail_on_read_problem=true);
 */
 void file_move(const String& old_spec, const String& new_spec);
 
-bool entry_exists(const char *fname, struct stat *afinfo=0);
+bool entry_exists(const char* fname, struct stat *afinfo=0);
 bool entry_exists(const String& file_spec);
 bool file_readable(const String& file_spec);
 bool dir_readable(const String& file_spec);
-String *file_readable(const String& path, const String& name);
+const String* file_readable(const String& path, const String& name);
 bool file_executable(const String& file_spec);
 
 bool file_stat(const String& file_spec, 
@@ -201,11 +180,11 @@ char *getrow(char **row_ref,char delim='\n');
 char *lsplit(char *string, char delim);
 char *lsplit(char **string_ref,char delim);
 char *rsplit(char *string, char delim);
-char *format(Pool& pool, double value, char *fmt);
+const char* format(double value, char *fmt);
 
 size_t stdout_write(const void *buf, size_t size);
 
-char *unescape_chars(Pool& pool, const char *cp, int len);
+char *unescape_chars(const char* cp, int len);
 
 #ifdef WIN32
 void back_slashes_to_slashes(char *s);
@@ -217,15 +196,19 @@ void back_slashes_to_slashes(char *s);
 		qsort(names,cnt,sizeof_names,func_addr)
 #endif
 
-bool StrEqNc(const char *s1, const char *s2, bool strict=true);
+bool StrEqNc(const char* s1, const char* s2, bool strict=true);
 
 #define SECS_PER_DAY (60*60*24)
 int getMonthDays(int year, int month);
 
 void remove_crlf(char *start, char *end);
 
-#ifdef PA_SAFE_MODE
-void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname);
-#endif
+#ifdef PA_SAFE_MODE 
+void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname); 
+#endif 
+
+// globals
+
+extern const String file_status_name;
 
 #endif

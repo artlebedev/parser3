@@ -1,1 +1,1 @@
-EXTRA_DIST = gdome2.patch libxml2.patch libxslt.patch
+EXTRA_DIST = gc.patch gdome2.patch

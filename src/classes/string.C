@@ -1,13 +1,15 @@
 /** @file
 	Parser: @b string parser class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/01/21 15:51:07 $";
+static const char* IDENT_STRING_C="$Date: 2003/07/24 11:31:20 $";
 
 #include "classes.h"
+#include "pa_vmethod_frame.h"
+
 #include "pa_request.h"
 #include "pa_vdouble.h"
 #include "pa_vint.h"
@@ -20,123 +22,123 @@ static const char* IDENT_STRING_C="$Date: 2003/01/21 15:51:07 $";
 
 // class
 
-class MString : public Methoded {
+class MString: public Methoded {
 public:
-	MString(Pool& pool);
+	MString();
 public: // Methoded
 	bool used_directly() { return true; }
 };
 
+// global variable
+
+DECLARE_CLASS_VAR(string, new MString, 0);
+
+// defines for statics
+
+#define MATCH_VAR_NAME "match"
+
+// statics
+
+static const String match_var_name(MATCH_VAR_NAME);
+
 // methods
 
-static void _length(Request& r, const String& method_name, MethodParams *) {
-	Pool& pool=r.pool();
-	double result=r.get_self()->get_string()->size();
-	r.write_no_lang(*new(pool) VDouble(pool, result));
+static void _length(Request& r, MethodParams&) {
+	double result=GET_SELF(r, VString).string().length();
+	r.write_no_lang(*new VDouble(result));
 }
 
-static void _int(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	const String *self_string=r.get_self()->get_string();
+static void _int(Request& r, MethodParams& params) {
+	const String& self_string=GET_SELF(r, VString).string();
 	int converted;
-	Value *default_code=params->size()>0?&params->as_junction(0, "default must be int"):0; // (default)
+	Value* default_code=params.count()>0?&params.as_junction(0, "default must be int")
+		:0; // (default)
 	try {
-		if(!self_string || self_string->is_empty())
+		if(self_string.is_empty())
 			throw Exception("parser.runtime",
-				&method_name,
+				0,
 				"parameter is empty string, error converting");
-		converted=self_string->as_int();
+		converted=self_string.as_int();
 	} catch(...) { // convert problem
-		if(!default_code) // we have a problem when no default
-			/*re*/throw;
-		else
+		if(default_code)
 			converted=r.process_to_value(*default_code).as_int();
-	}
-	r.write_no_lang(*new(pool) VInt(pool, converted));
-}
-
-static void _double(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	const String *self_string=r.get_self()->get_string();
-	double converted;
-	Value *default_code=params->size()>0?&params->as_junction(0, "default must be double"):0; // (default)
-	try {
-		if(!self_string || self_string->is_empty())
-			throw Exception("parser.runtime",
-				&method_name,
-				"parameter is empty string, error converting");
-		converted=self_string->as_double();
-	} catch(...) { // convert problem
-		if(!default_code) // we have a problem when no default
-			/*re*/throw;  
 		else
-			converted=r.process_to_value(*default_code).as_double();
+			rethrow; // we have a problem when no default			
 	}
-
-	r.write_no_lang(*new(pool) VDouble(pool, converted));
+	r.write_no_lang(*new VInt(converted));
 }
 
-/*not static*/void _string_format(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _double(Request& r, MethodParams& params) {
+	const String& self_string=GET_SELF(r, VString).string();
+	double converted;
+	Value* default_code=params.count()>0?&params.as_junction(0, "default must be double")
+		:0; // (default)
+	try {
+		if(self_string.is_empty())
+			throw Exception("parser.runtime",
+				0,
+				"parameter is empty string, error converting");
+		converted=self_string.as_double();
+	} catch(...) { // convert problem
+		if(default_code)
+			converted=r.process_to_value(*default_code).as_double();
+		else
+			rethrow; // we have a problem when no default
+	}
 
-	Value& fmt_maybe_code=params->get(0);
+	r.write_no_lang(*new VDouble(converted));
+}
+
+/*not static*/void _string_format(Request& r, MethodParams& params) {
+
+	Value& fmt_maybe_code=params[0];
 	// for some time due to stupid {} in original design
 	const String& fmt=r.process_to_string(fmt_maybe_code);
 
-	char *buf=format(pool, r.get_self()->as_double(), fmt.cstr());
+	const char* buf=format(r.get_self().as_double(), fmt.cstrm());
 
-	String result(pool);
-	result.APPEND_CLEAN(buf, 0, 
-		method_name.origin().file,
-		method_name.origin().line);
-	r.write_no_lang(result);
+	r.write_no_lang(String(buf));
 }
 
-static void _left(Request& r, const String&, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	size_t n=(size_t)params->as_int(0, "n must be int", r);
+static void _left(Request& r, MethodParams& params) {
+	size_t n=(size_t)params.as_int(0, "n must be int", r);
 	
-	const String& string=static_cast<VString *>(r.get_self())->string();
+	const String& string=GET_SELF(r, VString).string();
 	r.write_assign_lang(string.mid(0, n));
 }
 
-static void _right(Request& r, const String&, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	size_t n=(size_t)params->as_int(0, "n must be int", r);
+static void _right(Request& r, MethodParams& params) {
+	size_t n=(size_t)params.as_int(0, "n must be int", r);
 	
-	const String& string=static_cast<VString *>(r.get_self())->string();
-	r.write_assign_lang(string.mid(string.size()-n, string.size()));
+	const String& string=GET_SELF(r, VString).string();
+	r.write_assign_lang(string.mid(string.length()-n, string.length()));
 }
 
-static void _mid(Request& r, const String&, MethodParams *params) {
-	Pool& pool=r.pool();
-	const String& string=*r.get_self()->get_string();
+static void _mid(Request& r, MethodParams& params) {
+	const String& string=GET_SELF(r, VString).string();
 
-	size_t p=(size_t)max(0, params->as_int(0, "p must be int", r));
-	size_t n=params->size()>1?
-		(size_t)max(0, params->as_int(1, "n must be int", r)):string.size();
+	size_t p=(size_t)max(0, params.as_int(0, "p must be int", r));
+	size_t n=params.count()>1?
+		(size_t)max(0, params.as_int(1, "n must be int", r)):string.length();
 	
 	r.write_assign_lang(string.mid(p, p+n));
 }
 
-static void _pos(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	Value& substr=params->as_no_junction(0, "substr must not be code");
+static void _pos(Request& r, MethodParams& params) {
+	Value& substr=params.as_no_junction(0, "substr must not be code");
 	
-	const String& string=static_cast<VString *>(r.get_self())->string();
-	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
+	const String& string=GET_SELF(r, VString).string();
+	r.write_assign_lang(*new VInt((int)string.pos(substr.as_string())));
 }
 
-static void split_list(Request& r, const String& method_name, 
-					   MethodParams *params, int paramIndex,
-					   const String& string, 
-					   Array& result) {
-	Value& delim_value=params->as_no_junction(paramIndex, "delimiter must not be code");
+static void split_list(Request& r, 
+		       MethodParams& params, int paramIndex,
+		       const String& string, 
+		       ArrayString& result) {
+	Value& delim_value=params.as_no_junction(paramIndex, "delimiter must not be code");
 
-	string.split(result, 0, delim_value.as_string());
+	size_t pos_after=0;
+	string.split(result, pos_after, delim_value.as_string());
 }
 
 #define SPLIT_LEFT 0x0001
@@ -144,10 +146,10 @@ static void split_list(Request& r, const String& method_name,
 #define SPLIT_HORIZONTAL 0x0100
 #define SPLIT_VERTICAL 0x1000
 
-static int split_options(const String *options) {
+static int split_options(const String* options) {
     struct Split_option {
-		const char *keyL;
-		const char *keyU;
+		const char* keyL;
+		const char* keyU;
 		int setBit;
 		int checkBit;
     } split_option[]={
@@ -159,10 +161,10 @@ static int split_options(const String *options) {
     };
 
 	int result=0;
-    if(options) {
+	if(options) {
 		for(Split_option *o=split_option; o->keyL; o++) 
-			if(options->pos(o->keyL)>=0
-				|| (o->keyU && options->pos(o->keyU)>=0)) {
+			if(options->pos(o->keyL)!=STRING_NOT_FOUND 
+				|| (o->keyU && options->pos(o->keyU)!=STRING_NOT_FOUND)) {
 				if(result & o->checkBit)
 					throw Exception("parser.runtime",
 						options,
@@ -174,114 +176,102 @@ static int split_options(const String *options) {
 	return result;
 }
 
-static Table *split_vertical(Request& r, const String& string, Array& pieces, bool right) {
-	Pool& pool=r.pool();
+static Table& split_vertical(Request& r, ArrayString& pieces, bool right) {
 
-	Array& columns=*new(pool) Array(pool);
-	columns+=new(pool) String(pool, "piece");
+	Table::columns_type columns(new ArrayString);
+	*columns+=new String("piece");
 
-	Table& table=*new(pool) Table(pool, &string, 
-		&columns, pieces.size());
+	Table& table=*new Table(columns, pieces.count());
 	if(right) { // right
-		for(int i=pieces.size(); --i>=0; ) {
-			Array& row=*new(pool) Array(pool);
-			row+=pieces.get(i);
-			table+=&row;
+		for(int i=pieces.count(); --i>=0; ) {
+			Table::element_type row(new ArrayString);
+			*row+=pieces[i];
+			table+=row;
 		}
 	} else { // left
-		Array_iter i(pieces);
+		Array_iterator<const String*> i(pieces);
 		while(i.has_next()) {
-			Array& row=*new(pool) Array(pool);
-			row+=i.next();
-			table+=&row;
+			Table::element_type row(new ArrayString);
+			*row+=i.next();
+			table+=row;
 		}
 	}
 
-	return &table;
+	return table;
 }
 
-static Table *split_horizontal(Request& r, const String& string, Array& pieces, bool right) {
-	Pool& pool=r.pool();
-
-	Table& table=*new(pool) Table(pool, &string, 0 /* nameless */);
-	Array& row=*new(pool) Array(pool);
+static Table& split_horizontal(Request& r, ArrayString& pieces, bool right) {
+	Table& table=*new Table(Table::columns_type(0) /* nameless */);
+	Table::element_type row(new ArrayString(pieces.count()));
 	if(right) { // right
-		for(int i=pieces.size(); --i>=0; ) {
-			row+=pieces.get(i);
-		}
+		for(size_t i=pieces.count(); --i>=0; )
+			*row+=pieces[i];
 	} else { // left
-		Array_iter i(pieces);
-		while(i.has_next()) {
-			row+=i.next();
-		}
+		for(Array_iterator<const String*> i(pieces); i.has_next(); )
+			*row+=i.next();
 	}
-	table+=&row;
+	table+=row;
 
-	return &table;
+	return table;
 }
 
-static void split_with_options(Request& r, const String& method_name, MethodParams *params,
+static void split_with_options(Request& r, MethodParams& params,
 							   int bits) {
-	Pool& pool=r.pool();
-	const String& string=*r.get_self()->get_string();
+	const String& string=GET_SELF(r, VString).string();
 
-	Array pieces(pool);
-	split_list(r, method_name, params, 0,
-		string, pieces);
+	ArrayString pieces;
+	split_list(r, params, 0, string, pieces);
 
 	if(!bits) {
-		const String *options=0;
-		if(params->size()>1) {
-			options=&params->as_string(1, "options must not be code");
-		}
+		const String* options=0;
+		if(params.count()>1)
+			options=&params.as_string(1, "options must not be code");
+		
 		bits=split_options(options);
 	}
 
 	bool right=(bits & SPLIT_RIGHT) != 0;
 	bool horizontal=(bits & SPLIT_HORIZONTAL) !=0;
-	Table *table;
-	if(horizontal)
-		table=split_horizontal(r, string, pieces, right);
-	else
-		table=split_vertical(r, string, pieces, right);
+	Table& table=horizontal?split_horizontal(r, pieces, right)
+		:split_vertical(r, pieces, right);
 
-	r.write_no_lang(*new(pool) VTable(pool, table));
+	r.write_no_lang(*new VTable(&table));
 }
-static void _split(Request& r, const String& method_name, MethodParams *params) {
-	split_with_options(r, method_name, params, 0 /* maybe-determine from param #2 */);
+static void _split(Request& r, MethodParams& params) {
+	split_with_options(r, params, 0 /* maybe-determine from param #2 */);
 }
-static void _lsplit(Request& r, const String& method_name, MethodParams *params) {
-	split_with_options(r, method_name, params, SPLIT_LEFT);
+static void _lsplit(Request& r, MethodParams& params) {
+	split_with_options(r, params, SPLIT_LEFT);
 }
-static void _rsplit(Request& r, const String& method_name, MethodParams *params) {
-	split_with_options(r, method_name, params, SPLIT_RIGHT);
+static void _rsplit(Request& r, MethodParams& params) {
+	split_with_options(r, params, SPLIT_RIGHT);
 }
 
-static void search_action(Table& table, Array *row, int, int, int, int, void *) {
+static void search_action(Table& table, Table::element_type row, int, int, int, int, void *) {
 	if(row)
 		table+=row;
 }
 
 #ifndef DOXYGEN
 struct Replace_action_info {
-	Request *request;  const String *origin;
-	const String *src;  String *dest;
-	VTable *vtable;
-	Value *replacement_code;
+	Request* request;  
+	const String* src;  String* dest;
+	VTable* vtable;
+	Value* replacement_code;
 };
 #endif
 /// @todo they can do $global[$result] there, getting pointer to later-invalid local var, kill this
-static void replace_action(Table& table, Array *row, 
-						   int prestart, int prefinish, 
-						   int poststart, int postfinish,
-						   void *info) {
+static void replace_action(Table& table, ArrayString* row, 
+			   int prestart, int prefinish, 
+			   int poststart, int postfinish,
+			   void *info) {
 	Replace_action_info& ai=*static_cast<Replace_action_info *>(info);
 	if(row) { // begin&middle
 		// piece from last match['prestart'] to beginning of this match['prefinish']
 		if(prestart!=prefinish)
 			*ai.dest << ai.src->mid(prestart, prefinish);//ai.dest->APPEND_CONST("-");
 		// store found parts in one-record VTable
-		if(table.size()) // middle
+		if(table.count()) // middle
 			table.put(0, row);
 		else // begin
 			table+=row;
@@ -295,89 +285,81 @@ static void replace_action(Table& table, Array *row,
 }
 
 /// @todo use pcre:study somehow
-static void _match(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	Value& regexp=params->as_no_junction(0, "regexp must not be code");
+static void _match(Request& r, MethodParams& params) {
+	Value& regexp=params.as_no_junction(0, "regexp must not be code");
 
-	const String *options=
-		params->size()>1?
-		&params->as_no_junction(1, "options must not be code").as_string():0;
+	const String* options=
+		params.count()>1?
+		&params.as_no_junction(1, "options must not be code").as_string():0;
 
-	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
-	Table *table;
-	if(params->size()<3) { // search
-		const String& src=static_cast<VString *>(r.get_self())->string();
-
-		bool was_global;
-		bool matched=src.match(
-			&method_name, 
+	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
+	const String& src=GET_SELF(r, VString).string();
+	bool just_matched;
+	if(params.count()<3) { // search
+		Table* table=src.match(r.charsets.source(),
 			regexp.as_string(), options,
-			&table,
 			search_action, 0,
-			&was_global);
-		Value *result;
-		// matched
-		// not (just matched[3=pre/match/post], no substrings) or Global search
-		if(table->columns()->size()>3 || was_global) 
-			result=new(pool) VTable(pool, table/*TODO: clone this when table would be stacked!*/); // table of pre/match/post+substrings
+			just_matched);
+		Value* result;
+		if(table) 
+			result=new VTable(table); // table of pre/match/post+substrings
 		else 
-			result=new(pool) VBool(pool, matched);			
+			result=new VBool(just_matched);
 		r.write_assign_lang(*result);
 	} else { // replace
-		const String& src=*r.get_self()->get_string();
+		Value& replacement_code=params.as_junction(2, "replacement param must be code");
 
-		Value& replacement_code=params->as_junction(2, "replacement param must be code");
-
-		String& result=*new(pool) String(pool);
-		VTable vtable(pool);
-		Replace_action_info replace_action_info={
-			&r, &method_name,
-			&src, &result,
-			&vtable,
-			&replacement_code
-		};
+		String result;
+		VTable* vtable=new VTable;
+		Replace_action_info info={0};
+		info.request=&r;
+		info.src=&src;
+		info.dest=&result;
+		info.vtable=vtable;
+		info.replacement_code=&replacement_code;
 		Temp_value_element temp_match_var(
 			*replacement_code.get_junction()->method_frame, 
-			*match_var_name, &vtable);
-		src.match(
-			&method_name, 
+			match_var_name, vtable);
+		src.match(r.charsets.source(),
 			r.process_to_string(regexp), options,
-			&table,
-			replace_action, &replace_action_info);
+			replace_action, &info,
+			just_matched);
 		r.write_assign_lang(result);
 	}
 }
 
-static void change_case(Request& r, const String& method_name, MethodParams *params, 
+static void change_case(Request& r, MethodParams& params, 
 						String::Change_case_kind kind) {
-	Pool& pool=r.pool();
-	const String& src=static_cast<VString *>(r.get_self())->string();
+	const String& src=GET_SELF(r, VString).string();
 
-	r.write_assign_lang(src.change_case(pool, kind));
+	r.write_assign_lang(src.change_case(r.charsets.source(), kind));
 }
-static void _upper(Request& r, const String& method_name, MethodParams *params) {
-	change_case(r, method_name, params, String::CC_UPPER);
+static void _upper(Request& r, MethodParams& params) {
+	change_case(r, params, String::CC_UPPER);
 }
-static void _lower(Request& r, const String& method_name, MethodParams *params) {
-	change_case(r, method_name, params, String::CC_LOWER);
+static void _lower(Request& r, MethodParams& params) {
+	change_case(r, params, String::CC_LOWER);
 }
 
 #ifndef DOXYGEN
-class String_sql_event_handlers : public SQL_Driver_query_event_handlers {
+class String_sql_event_handlers: public SQL_Driver_query_event_handlers {
+	const String& statement_string; const char* statement_cstr;
+	bool got_column;
 public:
-	String_sql_event_handlers(Pool& apool, 
-		const String& astatement_string, const char *astatement_cstr):
-		pool(apool), 
-		statement_string(astatement_string),
-		statement_cstr(astatement_cstr),
-		got_column(false), got_cell(false) {
-		result=new(pool) String(pool);
-	}
+	bool got_cell;
+	String& result;
+public:
+	String_sql_event_handlers(
+		const String& astatement_string, const char* astatement_cstr):
+		statement_string(astatement_string), statement_cstr(astatement_cstr),
+		got_column(false),
+		got_cell(false),
+		result(*new String) {}
 
-	bool add_column(SQL_Error& error, void *ptr, size_t size) {
+	bool add_column(SQL_Error& error, const char* str, size_t /*length*/) {
 		if(got_column) {
 			error=SQL_Error("parser.runtime",
-				&statement_string,
+				//statement_string,
 				"result must contain exactly one column");
 			return true;
 		}
@@ -386,71 +368,65 @@ public:
 	}
 	bool before_rows(SQL_Error& /*error*/ ) { /* ignore */ return false; }
 	bool add_row(SQL_Error& /*error*/) { /* ignore */ return false; }
-	bool add_row_cell(SQL_Error& error, void *ptr, size_t size) {
+	bool add_row_cell(SQL_Error& error, const char* str, size_t length) {
 		if(got_cell) {
 			error=SQL_Error("parser.runtime",
-				&statement_string,
+				//statement_string,
 				"result must not contain more then one row");
 			return true;
 		}
 
 		try {
 			got_cell=true;
-			result->APPEND_TAINTED((const char *)ptr, size, statement_cstr, 0);
+			result.append_know_length(str, length, String::L_TAINTED);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in String_sql_event_handlers::add_row_cell");
 			return true;
 		}
 	}
-
-private:
-	Pool& pool;
-	const String& statement_string; const char *statement_cstr;
-	bool got_column;
-public:
-	bool got_cell;
-	String *result;
 };
 #endif
-const String* sql_result_string(Request& r, const String& method_name, MethodParams *params,
-								Hash *& options, Value *& default_code) {
-	Pool& pool=r.pool();
-
-	Value& statement=params->as_junction(0, "statement must be code");
+extern String sql_limit_name;
+extern String sql_offset_name;
+extern String sql_default_name;
+extern String sql_distinct_name;
+const String* sql_result_string(Request& r, MethodParams& params,
+				HashStringValue*& options, Value*& default_code) {
+	Value& statement=params.as_junction(0, "statement must be code");
 
 	ulong limit=0;
 	ulong offset=0;
 	default_code=0;
-	if(params->size()>1) {
-		Value& voptions=params->as_no_junction(1, "options must be hash, not code");
+	if(params.count()>1) {
+		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
 		if(!voptions.is_string())
-			if(options=voptions.get_hash(&method_name)) {
-				if(Value *vlimit=(Value *)options->get(*sql_limit_name))
+			if(options=voptions.get_hash()) {
+				if(Value* vlimit=options->get(sql_limit_name))
 					limit=(ulong)r.process_to_value(*vlimit).as_double();
-				if(Value *voffset=(Value *)options->get(*sql_offset_name))
+				if(Value* voffset=options->get(sql_offset_name))
 					offset=(ulong)r.process_to_value(*voffset).as_double();
-				if(default_code=(Value *)options->get(*sql_default_name)) {
-					if(Junction *default_junction=default_code->get_junction())
+				if(default_code=options->get(sql_default_name)) {
+					if(Junction* default_junction=default_code->get_junction())
 						;//default_junction->change_context(statement.get_junction());
 					else
 						throw Exception("parser.runtime",
-							&method_name,
+							0,
 							"default option must be code");
 				}
 			} else
 				throw Exception("parser.runtime",
-					&method_name,
+					0,
 					"options must be hash");
 	} else
 		options=0;
 
-	Temp_lang temp_lang(r, String::UL_SQL);
+	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
-	const char *statement_cstr=
-		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
-	String_sql_event_handlers handlers(pool, statement_string, statement_cstr);
-	r.connection(&method_name)->query(
+	const char* statement_cstr=
+		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
+	String_sql_event_handlers handlers(statement_string, statement_cstr);
+	r.connection()->query(
 		statement_cstr, offset, limit, 
 		handlers,
 		statement_string);
@@ -458,52 +434,48 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 	if(!handlers.got_cell)
 		return 0; // no lines, caller should return second param[default value]
 
-	return handlers.result;
+	return &handlers.result;
 }
 
-static void _sql(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _sql(Request& r, MethodParams& params) {
 
-	Hash *options;
-	Value *default_code;
-	const String *string=sql_result_string(r, method_name, params, options, default_code);
+	HashStringValue* options;
+	Value* default_code;
+	const String* string=sql_result_string(r, params, options, default_code);
 	if(!string) {
 		if(default_code) {
 			string=&r.process_to_string(*default_code);
-			if(!string)
-				string=new(pool) String(pool);
 		} else
 			throw Exception("parser.runtime",
-				&method_name,
+				0,
 				"produced no result, but no default option specified");
 	}
 
 	r.write_assign_lang(*string);
 }
 
-static void _replace(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	const String& src=*r.get_self()->get_string();
+static void _replace(Request& r, MethodParams& params) {
+	const String& src=GET_SELF(r, VString).string();
 
-	Table *table=params->as_no_junction(0, "parameter must not be code").get_table();
+	Table* table=params.as_no_junction(0, "parameter must not be code").get_table();
 	if(!table)
 		throw Exception("parser.runtime",
-			&method_name,
+			0,
 			"parameter must be table");
 
 	Dictionary dict(*table);
-	r.write_assign_lang(src.replace(pool, dict));
+	r.write_assign_lang(src.replace(dict));
 }
 
-static void _save(Request& r, const String& method_name, MethodParams *params) {
-	const String& file_name=params->as_string(params->size()-1, 
+static void _save(Request& r, MethodParams& params) {
+	const String& file_name=params.as_string(params.count()-1, 
 		"file name must be string");
 
-	const String& src=static_cast<VString *>(r.get_self())->string();
+	const String& src=GET_SELF(r, VString).string();
 
 	bool do_append=false;
-	if(params->size()>1) {
-		const String& mode=params->as_string(0, "mode must be string");
+	if(params.count()>1) {
+		const String& mode=params.as_string(0, "mode must be string");
 		if(mode=="append")
 			do_append=true;
 		else
@@ -513,18 +485,20 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	}		
 
 	// write
-	const char *buf=src.cstr(String::UL_UNSPECIFIED, r.connection(0/*no error if none*/));
+	const char* buf=src.cstr(String::L_UNSPECIFIED, r.connection(false/*no error if none*/));
 	file_write(r.absolute(file_name), 
 		buf, strlen(buf), true, do_append);
 }
 
-static void _normalize(Request& r, const String& method_name, MethodParams * /*params*/) {
- 	r.write_assign_lang(r.get_self()->get_string()->join_chains(r.pool(), 0/*cstr*/));
+static void _normalize(Request& r, MethodParams&) {
+	const String& src=GET_SELF(r, VString).string();
+
+	r.write_assign_lang(src);
 }
 
 // constructor
 
-MString::MString(Pool& apool) : Methoded(apool, "string") {
+MString::MString(): Methoded("string") {
 	// ^string.length[]
 	add_native_method("length", Method::CT_DYNAMIC, _length, 0, 0);
 	
@@ -579,13 +553,3 @@ MString::MString(Pool& apool) : Methoded(apool, "string") {
 	// ^string.normalize[]  
 	add_native_method("normalize", Method::CT_DYNAMIC, _normalize, 0, 0);
 }	
-
-// global variable
-
-Methoded *string_class;
-
-// creator
-
-Methoded *MString_create(Pool& pool) {
-	return string_class=new(pool) MString(pool);
-}

@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b date parser class decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char* IDENT_VDATE_H="$Date: 2003/01/21 15:51:18 $";
+static const char* IDENT_VDATE_H="$Date: 2003/07/24 11:31:25 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -19,33 +19,30 @@ static const char* IDENT_VDATE_H="$Date: 2003/01/21 15:51:18 $";
 
 #define VDATE_TYPE "date"
 
-
 // externs
 
-extern Methoded *date_class;
+extern Methoded* date_class;
 
 /// value of type 'date'. implemented with @c time_t
-class VDate : public VStateless_object {
+class VDate: public VStateless_object {
 public: // Value
 
-	const char *type() const { return VDATE_TYPE; }
-	VStateless_class *get_class() { return date_class; }
+	override const char* type() const { return VDATE_TYPE; }
+	override VStateless_class *get_class() { return date_class; }
 	
 	/// VDate: ftime -> float days
-	Value *as_expr_result(bool return_string_as_is=false) {
-		return NEW VDouble(pool(), as_double());
-	}
+	override Value& as_expr_result(bool return_string_as_is=false) { return *new VDouble(as_double()); }
 
 	/// VDate: ftime -> float days
-	double as_double() const { return ((double)ftime)/ SECS_PER_DAY; }
+	override double as_double() const { return ((double)ftime)/ SECS_PER_DAY; }
 	/// VDate: 0 or !0
-	bool as_bool() const { return ftime!=0; }
+	override bool as_bool() const { return ftime!=0; }
 
 
 	/// VDate: method,field
-	Value *get_element(const String& aname, Value& aself, bool looking_up) {
+	override Value* get_element(const String& aname, Value& aself, bool looking_up) {
 		// $method
-		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
+		if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
 			return result;
 
 		// $year month day  hour minute second  weekday
@@ -61,14 +58,12 @@ public: // Value
 		else if(aname=="yearday") result=tmOut->tm_yday;
 		else if(aname=="daylightsaving") result=tmOut->tm_isdst;
 		else { bark("%s field not found", 0, &aname); return 0; }
-		return NEW VInt(pool(), result);
+		return new VInt(result);
 	}
 
 public: // usage
 
-	VDate(Pool& apool, time_t adate) : VStateless_object(apool), 
-		ftime(adate) {
-	}
+	VDate(time_t atime): ftime(atime) {}
 
 	time_t get_time() const { return ftime; }
 	void set_time(time_t atime) { ftime=atime; }

@@ -1,52 +1,54 @@
 /** @file
 	Parser: @b double parser class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DOUBLE_C="$Date: 2003/01/21 15:51:06 $";
+static const char* IDENT_DOUBLE_C="$Date: 2003/07/24 11:31:19 $";
 
 #include "classes.h"
+#include "pa_vmethod_frame.h"
+
 #include "pa_request.h"
 #include "pa_vdouble.h"
 #include "pa_vint.h"
 
 // externs
 
-void _string_format(Request& r, const String& method_name, MethodParams *);
+void _string_format(Request& r, MethodParams&);
 
 // class
 
-class MDouble : public Methoded {
+class MDouble: public Methoded {
 public:
-	MDouble(Pool& pool);
+	MDouble();
 public: // Methoded
 	bool used_directly() { return true; }
 };
 
+// global variable
+
+DECLARE_CLASS_VAR(double, new MDouble, 0);
+
 // methods
 
-static void _int(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _int(Request& r, MethodParams& params) {
 	// just checking (default) syntax validity, never really using it  here, just for string.int compatibility
-	if(params->size()>0)
-		params->as_junction(0, "default must be int");
+	if(params.count()>0)
+		params.as_junction(0, "default must be int");
 
-	VDouble *vdouble=static_cast<VDouble *>(r.get_self());
-	Value& result=*new(pool) VInt(pool, vdouble->as_int());
-	r.write_no_lang(result);
+	VDouble& vdouble=GET_SELF(r, VDouble);
+	r.write_no_lang(*new VInt(vdouble.as_int()));
 }
 
-static void _double(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _double(Request& r, MethodParams& params) {
 	// just checking (default) syntax validity, never really using it  here, just for string.doube compatibility
-	if(params->size()>0)
-		params->as_junction(0, "default must be double");
+	if(params.count()>0)
+		params.as_junction(0, "default must be double");
 
-	VDouble *vdouble=static_cast<VDouble *>(r.get_self());
-	Value& result=*new(pool) VDouble(pool, vdouble->as_double());
-	r.write_no_lang(result);
+	VDouble& vdouble=GET_SELF(r, VDouble);
+	r.write_no_lang(*new VDouble(vdouble.as_double()));
 }
 
 typedef void (*vdouble_op_func_ptr)(VDouble& vdouble, double param);
@@ -57,49 +59,46 @@ static void __mul(VDouble& vdouble, double param) { vdouble.mul(param); }
 static void __div(VDouble& vdouble, double param) { vdouble.div(param); }
 static void __mod(VDouble& vdouble, double param) { vdouble.mod((int)param); }
 
-static void vdouble_op(Request& r, MethodParams *params, 
+static void vdouble_op(Request& r, MethodParams& params, 
 					   vdouble_op_func_ptr func) {
-	VDouble *vdouble=static_cast<VDouble *>(r.get_self());
-	double param=params->size()?
-			params->as_double(0, "param must be double", r):1/*used in inc/dec*/;
-	(*func)(*vdouble, param);
+	VDouble& vdouble=GET_SELF(r, VDouble);
+	double param=params.count()?
+			params.as_double(0, "param must be double", r):1/*used in inc/dec*/;
+	(*func)(vdouble, param);
 }
 
-static void _inc(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__inc); }
-static void _dec(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__dec); }
-static void _mul(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__mul); }
-static void _div(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__div); }
-static void _mod(Request& r, const String&, MethodParams *params) { vdouble_op(r, params, &__mod); }
+static void _inc(Request& r, MethodParams& params) { vdouble_op(r, params, &__inc); }
+static void _dec(Request& r, MethodParams& params) { vdouble_op(r, params, &__dec); }
+static void _mul(Request& r, MethodParams& params) { vdouble_op(r, params, &__mul); }
+static void _div(Request& r, MethodParams& params) { vdouble_op(r, params, &__div); }
+static void _mod(Request& r, MethodParams& params) { vdouble_op(r, params, &__mod); }
 
 // from string.C
 extern 
-const String* sql_result_string(Request& r, const String& method_name, MethodParams *params,
-								Hash *& options, Value *& default_code);
+const String* sql_result_string(Request& r, MethodParams& params,
+				HashStringValue*& options, Value*& default_code);
 
-static void _sql(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
+static void _sql(Request& r, MethodParams& params) {
 	double val;
-	Hash *options;
-	Value *default_code;
-	if(const String *string=sql_result_string(r, method_name, params, options, default_code))
+	HashStringValue* options;
+	Value* default_code;
+	if(const String* string=sql_result_string(r, params, options, default_code))
 		val=string->as_double();
 	else
 		if(default_code)
 			val=r.process_to_value(*default_code).as_double();
 		else {
 			throw Exception("parser.runtime",
-				&method_name,
+				0,
 				"produced no result, but no default option specified");
 			val=0; //calm, compiler
 		}
-	VDouble& result=*new(pool) VDouble(pool, val);
-	r.write_no_lang(result);
+	r.write_no_lang(*new VDouble(val));
 }
 
 // constructor
 
-MDouble::MDouble(Pool& apool) : Methoded(apool, "double") {
+MDouble::MDouble(): Methoded("double") {
 	// ^double.int[]
 	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
 
@@ -125,13 +124,4 @@ MDouble::MDouble(Pool& apool) : Methoded(apool, "double") {
 	// ^sql[query]
 	// ^sql[query][$.limit(1) $.offset(2) $.default(0.0)]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
-}
-// global variable
-
-Methoded *double_class;
-
-// creator
-
-Methoded *MDouble_create(Pool& pool) {
-	return double_class=new(pool) MDouble(pool);
 }

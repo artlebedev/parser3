@@ -41,7 +41,6 @@ AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
 APACHE13 = @APACHE13@
-APACHE_LIBS = @APACHE_LIBS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -53,20 +52,19 @@ COMPILE_APACHE13_MODULE_FALSE = @COMPILE_APACHE13_MODULE_FALSE@
 COMPILE_APACHE13_MODULE_TRUE = @COMPILE_APACHE13_MODULE_TRUE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CPP_LIBS = @CPP_LIBS@
 CXX = @CXX@
-CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
-DO_NOT_LINK_LIBSTDCPP_FALSE = @DO_NOT_LINK_LIBSTDCPP_FALSE@
-DO_NOT_LINK_LIBSTDCPP_TRUE = @DO_NOT_LINK_LIBSTDCPP_TRUE@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+GC_LIBS = @GC_LIBS@
 INCLTDL = @INCLTDL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -146,11 +144,11 @@ sqldriversdir = @sqldriversdir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I../types -I../classes -I../sql -I../lib/pcre $(INCLTDL) @XML_INCLUDES@
+INCLUDES = -I../types -I../classes -I../sql -I../lib/pcre -I../lib/gc/include -I../lib/cord/include $(INCLTDL) @XML_INCLUDES@
 
 noinst_HEADERS = compile_tools.h
 noinst_LIBRARIES = libmain.a
-libmain_a_SOURCES = pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_array.C pa_exception.C pa_globals.C pa_hash.C pa_pool.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_sql_driver_manager.C pa_dictionary.C pa_stylesheet_manager.C pa_cache_managers.C pa_charset.C pa_charsets.C pa_uue.C
+libmain_a_SOURCES = pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_exception.C pa_globals.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_sql_driver_manager.C pa_dictionary.C pa_stylesheet_manager.C pa_cache_managers.C pa_charset.C pa_charsets.C pa_uue.C
 
 EXTRA_DIST = compile.y main.dsp
 subdir = src/main
@@ -163,13 +161,13 @@ libmain_a_AR = $(AR) cru
 libmain_a_LIBADD =
 am_libmain_a_OBJECTS = pa_common.$(OBJEXT) compile.tab.$(OBJEXT) \
 	compile.$(OBJEXT) compile_tools.$(OBJEXT) execute.$(OBJEXT) \
-	pa_array.$(OBJEXT) pa_exception.$(OBJEXT) pa_globals.$(OBJEXT) \
-	pa_hash.$(OBJEXT) pa_pool.$(OBJEXT) pa_request.$(OBJEXT) \
-	pa_string.$(OBJEXT) pa_table.$(OBJEXT) untaint.$(OBJEXT) \
-	pa_dir.$(OBJEXT) pa_exec.$(OBJEXT) pa_socks.$(OBJEXT) \
-	pa_sql_driver_manager.$(OBJEXT) pa_dictionary.$(OBJEXT) \
-	pa_stylesheet_manager.$(OBJEXT) pa_cache_managers.$(OBJEXT) \
-	pa_charset.$(OBJEXT) pa_charsets.$(OBJEXT) pa_uue.$(OBJEXT)
+	pa_exception.$(OBJEXT) pa_globals.$(OBJEXT) pa_memory.$(OBJEXT) \
+	pa_request.$(OBJEXT) pa_string.$(OBJEXT) pa_table.$(OBJEXT) \
+	untaint.$(OBJEXT) pa_dir.$(OBJEXT) pa_exec.$(OBJEXT) \
+	pa_socks.$(OBJEXT) pa_sql_driver_manager.$(OBJEXT) \
+	pa_dictionary.$(OBJEXT) pa_stylesheet_manager.$(OBJEXT) \
+	pa_cache_managers.$(OBJEXT) pa_charset.$(OBJEXT) \
+	pa_charsets.$(OBJEXT) pa_uue.$(OBJEXT)
 libmain_a_OBJECTS = $(am_libmain_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/src/include
@@ -178,15 +176,13 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/compile.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/compile.tab.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/compile_tools.Po ./$(DEPDIR)/execute.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/pa_array.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_cache_managers.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_charset.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_charsets.Po ./$(DEPDIR)/pa_common.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_dictionary.Po ./$(DEPDIR)/pa_dir.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_exception.Po ./$(DEPDIR)/pa_exec.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/pa_globals.Po ./$(DEPDIR)/pa_hash.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/pa_pool.Po ./$(DEPDIR)/pa_request.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/pa_socks.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/pa_globals.Po ./$(DEPDIR)/pa_memory.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/pa_request.Po ./$(DEPDIR)/pa_socks.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_sql_driver_manager.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_string.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_stylesheet_manager.Po \
@@ -232,7 +228,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compile.tab.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compile_tools.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/execute.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_array.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_cache_managers.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_charset.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_charsets.Po@am__quote@
@@ -242,8 +237,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_exception.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_exec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_globals.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_hash.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_pool.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_memory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_request.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_socks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_sql_driver_manager.Po@am__quote@

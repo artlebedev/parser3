@@ -1,13 +1,15 @@
 /** @file
 	Parser: @b table parser class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/04/25 12:32:31 $";
+static const char* IDENT_TABLE_C="$Date: 2003/07/24 11:31:20 $";
 
 #include "classes.h"
+#include "pa_vmethod_frame.h"
+
 #include "pa_common.h"
 #include "pa_request.h"
 #include "pa_vtable.h"
@@ -17,28 +19,58 @@ static const char* IDENT_TABLE_C="$Date: 2003/04/25 12:32:31 $";
 
 // class
 
-class MTable : public Methoded {
+class MTable: public Methoded {
 public: // VStateless_class
-	Value *create_new_value(Pool& pool) { return new(pool) VTable(pool); }
+	Value* create_new_value() { return new VTable(); }
 
 public:
-	MTable(Pool& pool);
+	MTable();
 
 public: // Methoded
 	bool used_directly() { return true; }
 };
 
+// global variable
+
+DECLARE_CLASS_VAR(table, new MTable, 0);
+
+// defines for globals
+
+#define SQL_LIMIT_NAME "limit"
+#define SQL_OFFSET_NAME "offset"
+#define SQL_DEFAULT_NAME "default"
+#define SQL_DISTINCT_NAME "distinct"
+#define TABLE_REVERSE_NAME "reverse"
+
+// globals
+
+String sql_limit_name(SQL_LIMIT_NAME);
+String sql_offset_name(SQL_OFFSET_NAME);
+String sql_default_name(SQL_DEFAULT_NAME);
+String sql_distinct_name(SQL_DISTINCT_NAME);
+String table_reverse_name(TABLE_REVERSE_NAME);
+
 // methods
 
-static Table::Action_options get_action_options(Request& r, 
-				     const String& method_name, MethodParams *params, 
-				     const Table& source) {
+static Table::Action_options get_action_options(Request& r, MethodParams& params, 
+						const Table& source) {
 	Table::Action_options result;
-
-	if(!params->size())
+	if(!params.count())
 		return result;
 
-	Hash* options=params->get(params->size()-1).get_hash(&method_name);
+	Value& maybe_options=params.last();
+/* can not do it: 
+	want to enable ^table::create[$source;
+#		$.option[]
+	]
+	but there is ^table.locate[name;value]
+
+	if(maybe_options.is_string()) { // allow empty options
+		result.defined=true;
+		return result;
+	}
+*/
+	HashStringValue* options=maybe_options.get_hash();
 	if(!options)
 		return result;
 
@@ -46,11 +78,11 @@ static Table::Action_options get_action_options(Request& r,
 	bool defined_offset=false;
 
 	int valid_options=0;
-	if(Value *voffset=(Value *)options->get(*sql_offset_name)) {
+	if(Value* voffset=options->get(sql_offset_name)) {
 		valid_options++;
 		defined_offset=true;
 		if(voffset->is_string()) {
-			const String& soffset=*voffset->get_string();
+			const String&  soffset=*voffset->get_string();
 			if(soffset == "cur")
 				result.offset=source.current();
 			else
@@ -60,120 +92,114 @@ static Table::Action_options get_action_options(Request& r,
 		} else 
 			result.offset=r.process_to_value(*voffset).as_int();
 	}
-	if(Value *vlimit=(Value *)options->get(*sql_limit_name)) {
+	if(Value* vlimit=options->get(sql_limit_name)) {
 		valid_options++;
 		result.limit=r.process_to_value(*vlimit).as_int();
 	}
-	if(Value *vreverse=(Value *)options->get(*table_reverse_name)) {
-		valid_options++;
-		result.reverse=r.process_to_value(*vreverse).as_bool();
-		if(result.reverse && !defined_offset)
-			result.offset=source.size()-1;
-	}
-	if(valid_options!=options->size())
+	if(Value *vreverse=(Value *)options->get(table_reverse_name)) { 
+		valid_options++; 
+		result.reverse=r.process_to_value(*vreverse).as_bool(); 
+		if(result.reverse && !defined_offset) 
+			result.offset=source.count()-1; 
+	} 
+
+	if(valid_options!=options->count())
 		throw Exception("parser.runtime",
-			&method_name,
+			0,
 			"called with invalid option");
 
 	return result;
 }
 static void check_option_param(bool options_defined, 
-			  const String& method_name, MethodParams *params, 
-			  int next_param_index,
+			  MethodParams& params, size_t next_param_index,
 			  const char *msg) {
-	if(next_param_index+(options_defined?1:0) != params->size())
+	if(next_param_index+(options_defined?1:0) != params.count())
 		throw Exception("parser.runtime",
-			&method_name,
+			0,
 			"%s", msg);
 }
 
-static void _create(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _create(Request& r, MethodParams& params) {
 	// clone/copy part?
-	if(const Table *source=params->get(0).get_table()) {
-		Table::Action_options o=get_action_options(r, method_name, params, *source);
-		check_option_param(o.defined, method_name, params, 1, 
+	if(Table *source=params[0].get_table()) {
+		Table::Action_options o=get_action_options(r, params, *source);
+		check_option_param(o.defined, params, 1, 
 			"too many parameters");
-		static_cast<VTable *>(r.get_self())->
-			set_table(*new(pool) Table(pool, *source, o));
+		GET_SELF(r, VTable).set_table(*new Table(*source, o));
 		return;
 	}
 
 	// data is last parameter
-	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
-	const String& data=
-		r.process_to_string(params->as_junction(params->size()-1, "body must be code"));
+	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
+	const String&  data=
+		r.process_to_string(params.as_junction(params.count()-1, "body must be code"));
 
-	size_t pos_after=0;
 	// parse columns
-	Array *columns;
-	if(params->size()==2) {
-		columns=0;
+	size_t raw_pos_after=0;
+	Table::columns_type columns;
+	if(params.count()==2) {
+		columns=Table::columns_type(0); // nameless
 	} else {
-		columns=new(pool) Array(pool);
+		columns=Table::columns_type(new ArrayString);
 
-		Array head(pool);
-		data.split(head, &pos_after, "\n", 1, String::UL_AS_IS, 1);
-		if(head.size())
-			head.get_string(0)->split(*columns, 0, "\t", 1, String::UL_AS_IS);
+		ArrayString head;
+		data.split(head, raw_pos_after, "\n", String::L_AS_IS, 1);
+		if(head.count()) {
+			size_t col_pos_after=0;
+			head[0]->split(*columns, col_pos_after, "\t", String::L_AS_IS);
+		}
 	}
 
-	Table& table=*new(pool) Table(pool, &method_name, columns);
+	Table& table=*new Table(columns);
 	// parse cells
-	Array rows(pool);
-	data.split(rows, &pos_after, "\n", 1, String::UL_AS_IS);
-	Array_iter i(rows);
+
+	ArrayString rows;
+	data.split(rows, raw_pos_after, "\n", String::L_AS_IS);
+	Array_iterator<const String*> i(rows);
 	while(i.has_next()) {
-		Array& row=*new(pool) Array(pool);
-		const String& string=*i.next_string();
+		Table::element_type row(new ArrayString);
+		const String&  string=*i.next();
 		// remove comment lines
-		if(!string.size())
+		if(!string.length())
 			continue;
 
-		string.split(row, 0, "\t", 1, String::UL_AS_IS);
-		table+=&row;
+		size_t col_pos_after=0;
+		string.split(*row, col_pos_after, "\t", String::L_AS_IS);
+		table+=row;
 	}
 
 	// replace any previous table value
-	static_cast<VTable *>(r.get_self())->set_table(table);
+	GET_SELF(r, VTable).set_table(table);
 }
 
-static void _load(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	const String& first_param=params->as_string(0, "file name must be string");
+static void _load(Request& r, MethodParams& params) {
+	const String&  first_param=params.as_string(0, "file name must be string");
 	int filename_param_index=0;
 	bool nameless=first_param=="nameless";
 	if(nameless)
 		filename_param_index++;
-	int options_param_index=filename_param_index+1;
+	size_t options_param_index=filename_param_index+1;
 	
 	// loading text
-	char *data=file_read_text(pool, 
-		r.absolute(params->as_string(filename_param_index, "file name must be string")),
+	char *data=file_read_text(r.charsets,
+		r.absolute(params.as_string(filename_param_index, "file name must be string")),
 		true,
-		options_param_index<params->size()?params->as_no_junction(options_param_index, "additional params must be hash").get_hash(&method_name):0
+		options_param_index<params.count()?params.as_no_junction(options_param_index, "additional params must be hash").get_hash():0
 	);
 
 	// parse columns
-	Array *columns;
-#ifndef NO_STRING_ORIGIN
-	const Origin& origin=method_name.origin();
-	const char *file=origin.file;
-	uint line=origin.line;
-#endif
+	Table::columns_type columns;
 	if(nameless) {
-		columns=0; // nameless
+		columns=Table::columns_type(0); // nameless
 	} else {
-		columns=new(pool) Array(pool);
+		columns=Table::columns_type(new ArrayString);
 
 		while(char *row_chars=getrow(&data)) {
 			// remove empty&comment lines
 			if(!*row_chars || *row_chars == '#')
 				continue;
 			do {
-				String *name=new(pool) String(pool);
-				name->APPEND_TAINTED(lsplit(&row_chars, '\t'), 0, file, line++);
-				*columns+=name;
+				*columns+=new String(lsplit(&row_chars, '\t'), 0, true);
 			} while(row_chars);
 
 			break;
@@ -181,61 +207,53 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	}
 
 	// parse cells
-	Table& table=*new(pool) Table(pool, &method_name, columns);
+	Table& table=*new Table(columns);
 	char *row_chars;
 	while(row_chars=getrow(&data)) {
 		// remove empty&comment lines
 		if(!*row_chars || *row_chars == '#')
 			continue;
-		Array *row=new(pool) Array(pool);
+		Table::element_type row(new ArrayString);
 		while(char *cell_chars=lsplit(&row_chars, '\t')) {
-			String *cell=new(pool) String(pool);
-			cell->APPEND_TAINTED(cell_chars, 0, file, line);
-			*row+=cell;
+			*row+=new String(cell_chars, 0, true);
 		}
-#ifndef NO_STRING_ORIGIN
-		line++;
-#endif
 		table+=row;
 	};
 
 	// replace any previous table value
-	static_cast<VTable *>(r.get_self())->set_table(table);
+	GET_SELF(r, VTable).set_table(table);
 }
 
 /// @todo "x\nx" "xxx""xx"
-static void _save(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	Value& vfile_name=params->as_no_junction(params->size()-1, 
-		"file name must not be code");
+static void _save(Request& r, MethodParams& params) {
+	Value& vfile_name=params.as_no_junction(params.count()-1, "file name must not be code");
 
-	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
+	Table& table=GET_SELF(r, VTable).table();
 
 	bool do_append=false;
-	String sdata(pool);
-	if(params->size()==1) { // named output
+	String sdata;
+	if(params.count()==1) { // named output
 		// write out names line
 		if(table.columns()) { // named table
-			Array_iter i(*table.columns());
-			while(i.has_next()) {
-				sdata.append(*i.next_string(), //*static_cast<String *>(table.columns()->quick_get(column)), 
-					String::UL_TABLE);
+			for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+				sdata.append(*i.next(), String::L_TABLE);
 				if(i.has_next())
-					sdata.APPEND_CONST("\t");
+					sdata.append_know_length("\t", 1, String::L_CLEAN);
 			}
 		} else { // nameless table
-			if(int lsize=table.size()?static_cast<Array *>(table.get(0))->size():0)
+			if(int lsize=table.count()?table[0]->count():0)
 				for(int column=0; column<lsize; column++) {
-					char *cindex_tab=(char *)pool.malloc(MAX_NUMBER);
-					snprintf(cindex_tab, MAX_NUMBER, "%d\t", column);
-					sdata.APPEND_CONST(cindex_tab);
+					char *cindex_tab=new(PointerFreeGC) char[MAX_NUMBER];
+					sdata.append_know_length(cindex_tab, 
+						snprintf(cindex_tab, MAX_NUMBER, "%d\t", column),
+						String::L_CLEAN);
 				}
 			else
-				sdata.APPEND_CONST("empty nameless table");
+				sdata.append_help_length("empty nameless table", 0, String::L_CLEAN);
 		}
-		sdata.APPEND_CONST("\n");
+		sdata.append_know_length("\n", 1, String::L_CLEAN);
 	} else { // mode specified
-		const String& mode=params->as_string(0, "mode must be string");
+		const String&  mode=params.as_string(0, "mode must be string");
 		if(mode=="append")
 			do_append=true;
 		else if(mode=="nameless")
@@ -247,43 +265,37 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 
 	}
 	// data lines
-	Array_iter i(table);
+	Array_iterator<ArrayString*> i(table);
 	while(i.has_next()) {
-		Array_iter c(*static_cast<Array *>(i.next()));
-		while(c.has_next()) {
-			if(const String *s=c.next_string())
-				sdata.append(*s,
-					String::UL_TABLE);
+		for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+			sdata.append(*c.next(), String::L_TABLE);
 			if(c.has_next())
-				sdata.APPEND_CONST("\t");
+				sdata.append_know_length("\t", 1, String::L_CLEAN);
 		}
-		sdata.APPEND_CONST("\n");
+		sdata.append_know_length("\n", 1, String::L_CLEAN);
 	}
 
 	// write
 	file_write(r.absolute(vfile_name.as_string()), 
-		sdata.cstr(), sdata.size(), true, do_append);
+		sdata.cstr(), sdata.length(), true, do_append);
 }
 
-static void _count(Request& r, const String& method_name, MethodParams *) {
-	Pool& pool=r.pool();
-	int result=static_cast<VTable *>(r.get_self())->table(&method_name).size();
-	r.write_no_lang(*new(pool) VInt(pool, result));
+static void _count(Request& r, MethodParams&) {
+	int result=GET_SELF(r, VTable).table().count();
+	r.write_no_lang(*new VInt(result));
 }
 
-static void _line(Request& r, const String& method_name, MethodParams *) {
-	Pool& pool=r.pool();
-	int result=1+static_cast<VTable *>(r.get_self())->table(&method_name).current();
-	r.write_no_lang(*new(pool) VInt(pool, result));
+static void _line(Request& r, MethodParams&) {
+	int result=1+GET_SELF(r, VTable).table().current();
+	r.write_no_lang(*new VInt(result));
 }
 
-static void _offset(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
-	if(params->size()) {
+static void _offset(Request& r, MethodParams& params) {
+	Table& table=GET_SELF(r, VTable).table();
+	if(params.count()) {
 		bool absolute=false;
-		if(params->size()>1) {
-		    const String& whence=params->as_string(0, "whence must be string");
+		if(params.count()>1) {
+		    const String&  whence=params.as_string(0, "whence must be string");
 		    if(whence=="cur")
 				absolute=false;
 		    else if(whence=="set")
@@ -294,27 +306,27 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 					"is invalid whence, valid are 'cur' or 'set'");
 		}
 		
-		Value& offset_expr=params->as_junction(params->size()-1, "offset must be expression");
+		Value& offset_expr=params.as_junction(params.count()-1, "offset must be expression");
 		table.offset(absolute, r.process_to_value(offset_expr).as_int());
 	} else
-		r.write_no_lang(*new(pool) VInt(pool, table.current()));
+		r.write_no_lang(*new VInt(table.current()));
 }
 
-static void _menu(Request& r, const String& method_name, MethodParams *params) {
-	Value& body_code=params->as_junction(0, "body must be code");
+static void _menu(Request& r, MethodParams& params) {
+	Value& body_code=params.as_junction(0, "body must be code");
 	
-	Value *delim_maybe_code=params->size()>1?&params->get(1):0;
+	Value* delim_maybe_code=params.count()>1?&params[1]:0;
 
-	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
+	Table& table=GET_SELF(r, VTable).table();
 	bool need_delim=false;
 	int saved_current=table.current();
-	int size=table.size();
+	int size=table.count();
 	for(int row=0; row<size; row++) {
 		table.set_current(row);
 
 		StringOrValue sv_processed=r.process(body_code);
-		const String *s_processed=sv_processed.get_string();
-		if(delim_maybe_code && s_processed && s_processed->size()) { // delimiter set and we have body
+		const String* s_processed=sv_processed.get_string();
+		if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
 			if(need_delim) // need delim & iteration produced string?
 				r.write_pass_lang(r.process(*delim_maybe_code));
 			need_delim=true;
@@ -329,45 +341,41 @@ enum Table2hash_distint { D_ILLEGAL, D_FIRST, D_TABLES };
 struct Row_info {
 	Request *r;
 	Table *table;
-	Value *key_code;
-	int key_field;
-	Array *value_fields;
-	Hash *hash;
+	Value* key_code;
+	size_t key_field;
+	Array<int>* value_fields;
+	HashStringValue* hash;
 	Table2hash_distint distinct;
-	int row;
+	size_t row;
 };
 #endif
-static void table_row_to_hash(Array::Item *value, void *info) {
-	Array& row=*static_cast<Array *>(value);
-	Row_info& ri=*static_cast<Row_info *>(info);
-	Pool& pool=ri.table->pool();
-
-	const String *key;
-	if(ri.key_code) {
-		ri.table->set_current(ri.row++); // change context row
-		StringOrValue sv_processed=ri.r->process(*ri.key_code);
+static void table_row_to_hash(Table::element_type row, Row_info *info) {
+	const String* key;
+	if(info->key_code) {
+		info->table->set_current(info->row++); // change context row
+		StringOrValue sv_processed=info->r->process(*info->key_code);
 		key=&sv_processed.as_string();
 	} else
-		key=ri.key_field<row.size()?row.get_string(ri.key_field):0;
+		key=info->key_field<row->count()?row->get(info->key_field):0;
 
 	if(!key)
 		return; // ignore rows without key [too-short-record_array if-indexed]
 		
-	switch(ri.distinct) {
+	switch(info->distinct) {
 	case D_ILLEGAL: case D_FIRST:
 		{
-			VHash& result=*new(pool) VHash(pool);
-			Hash& hash=*result.get_hash(0);
-			for(int i=0; i<ri.value_fields->size(); i++) {
-				int value_field=ri.value_fields->get_int(i);
-				if(value_field<row.size())
+			VHash* vhash=new VHash;
+			HashStringValue& hash=vhash->hash();
+			for(Array_iterator<int> i(*info->value_fields); i.has_next(); ) {
+				size_t value_field=i.next();
+				if(value_field<row->count())
 					hash.put(
-						*ri.table->columns()->get_string(value_field), 
-						new(pool) VString(*row.get_string(value_field)));
+						*info->table->columns()->get(value_field), 
+						new VString(*row->get(value_field)));
 			}
 
-			if(ri.hash->put_dont_replace(*key, &result)) // put. existed?
-				if(ri.distinct==D_ILLEGAL)
+			if(info->hash->put_dont_replace(*key, vhash)) // put. existed?
+				if(info->distinct==D_ILLEGAL)
 					throw Exception("parser.runtime",
 						key,
 						"duplicate key");
@@ -375,40 +383,38 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 		break;
 	case D_TABLES:
 		{
-			VTable* vtable=(VTable*)ri.hash->get(*key); // put. table existed?
+			VTable* vtable=(VTable*)info->hash->get(*key); // put. table existed?
 			Table* table;
 			if(vtable) 
 				table=vtable->get_table();
 			else {
 				// no? creating table of same structure as source
 				Table::Action_options table_options(0, 0);
-				table=new(pool) Table(pool, *ri.table, table_options/*no rows, just structure*/);
-				ri.hash->put(*key, new(pool) VTable(pool, table));
+				table=new Table(*info->table, table_options/*no rows, just structure*/);
+				info->hash->put(*key, new VTable(table));
 			}
-			*table+=&row;
+			*table+=row;
 		}
 		break;
 	default:
 		throw Exception(0,
 			0,
-			"invalid distinct code (#%d)", ri.distinct);
+			"invalid distinct code (#%d)", info->distinct);
 	}
-
 }
-static void _hash(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	Table& self_table=static_cast<VTable *>(r.get_self())->table(&method_name);
-	Value& result=*new(pool) VHash(pool);
-	if(const Array *columns=self_table.columns())
-		if(columns->size()>0) {
+static void _hash(Request& r, MethodParams& params) {
+	Table& self_table=GET_SELF(r, VTable).table();
+	VHash& result=*new VHash;
+	if(Table::columns_type columns=self_table.columns())
+		if(columns->count()>0) {
 			Table2hash_distint distinct=D_ILLEGAL;
-			int param_index=params->size()-1;
+			int param_index=params.count()-1;
 			if(param_index>0) {
-				if(Hash *options=
-					params->as_no_junction(param_index, "param must not be code").get_hash(0)) {
+				if(HashStringValue* options=
+					params.as_no_junction(param_index, "param must not be code").get_hash()) {
 					--param_index;
 					int valid_options=0;
-					if(Value *vdistinct_code=(Value *)options->get(*sql_distinct_name)) {
+					if(Value* vdistinct_code=options->get(sql_distinct_name)) {
 						valid_options++;
 						Value& vdistinct_value=r.process_to_value(*vdistinct_code);
 						if(vdistinct_value.is_string()) {
@@ -422,64 +428,73 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 						} else
 							distinct=vdistinct_value.as_bool()?D_FIRST:D_ILLEGAL;
 					}
-					if(valid_options!=options->size())
+					if(valid_options!=options->count())
 						throw Exception("parser.runtime",
-							&method_name,
+							0,
 							"called with invalid option");
 				}
 			}
 			if(param_index==2) // bad options param type
 				throw Exception("parser.runtime",
-					&method_name,
+					0,
 					"options must be hash");
 
-			Array value_fields(pool);
+			Array<int> value_fields;
 			if(param_index>0) {
 				if(distinct!=D_ILLEGAL && distinct!=D_FIRST)
 					throw Exception("parser.runtime",
 						0,
 						"in distinct[tables] mode you may not specify value field(s)");
-				Value& value_fields_param=params->as_no_junction(param_index, "value field(s) must not be code");
+				Value& value_fields_param=params.as_no_junction(param_index, "value field(s) must not be code");
 				if(value_fields_param.is_string()) {
-					value_fields+=self_table.column_name2index(value_fields_param.as_string(), true);
-				} else if(Table *value_fields_table=value_fields_param.get_table()) {
-					for(int i=0; i<value_fields_table->size(); i++) {
-						const String& value_field_name=
-							*static_cast<Array *>(value_fields_table->get(i))->get_string(0);
-						value_fields+=self_table.column_name2index(value_field_name, true);
+					value_fields+=self_table.column_name2index(
+						*value_fields_param.get_string(), true);
+				} else if(Table* value_fields_table=value_fields_param.get_table()) {
+					for(Array_iterator<Table::element_type> i(*value_fields_table); 
+						i.has_next(); ) {
+						const String& value_field_name
+							=*i.next()->get(0);
+						value_fields
+							+=self_table.column_name2index(value_field_name, true);
 					}
 				} else
 					throw Exception("parser.runtime",
-						&method_name,
+						0,
 						"value field(s) must be string or self_table"
 					);
 			} else { // by all columns, including key
 				if(!(distinct!=D_ILLEGAL && distinct!=D_FIRST))
-					for(int i=0; i<columns->size(); i++)
+					for(size_t i=0; i<columns->count(); i++)
 						value_fields+=i;
 			}
 
-			Value& key_param=params->get(0);
-			Value *key_code=key_param.get_junction()?&key_param:0;
-			int key_field=key_code?-1
-				:self_table.column_name2index(key_param.as_string(), true);
 
-			Row_info row_info={&r, &self_table, 
-				key_code, key_field, &value_fields, 
-				result.get_hash(0), distinct};
+			{
+				Row_info info={0};
+				info.r=&r;
+				info.table=&self_table;
+				Value* key_param=&params[0];
+				info.key_code=key_param->get_junction()?key_param:0;
+				info.key_field=info.key_code?-1
+					:self_table.column_name2index(key_param->as_string(), true);
+				info.value_fields=&value_fields;
+				info.hash=&result.hash();
+				info.distinct=distinct;
+				info.row=0;
 
-			int saved_current=self_table.current();
-			self_table.for_each(table_row_to_hash, &row_info);
-			self_table.set_current(saved_current);
+				int saved_current=self_table.current();
+				self_table.for_each(table_row_to_hash, &info);
+				self_table.set_current(saved_current);
+			}
 		}
 	r.write_no_lang(result);
 }
 
 #ifndef DOXYGEN
 struct Table_seq_item {
-	Array *row;
+	ArrayString* row;
 	union {
-		char *c_str;
+		const char *c_str;
 		double d;
 	} value;
 };
@@ -500,30 +515,27 @@ static int sort_cmp_double(const void *a, const void *b) {
 	else 
 		return 0;
 }
-static void _sort(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	Value& key_maker=params->as_junction(0, "key-maker must be code");
+static void _sort(Request& r, MethodParams& params) {
+	Value& key_maker=params.as_junction(0, "key-maker must be code");
 
-	bool reverse=params->size()>1/*..[desc|asc|]*/?
-		reverse=params->as_no_junction(1, "order must not be code").as_string()=="desc":
+	bool reverse=params.count()>1/*..[desc|asc|]*/?
+		reverse=params.as_no_junction(1, "order must not be code").as_string()=="desc":
 		false; // default=asc
 
-	Table& old_table=static_cast<VTable *>(r.get_self())->table(&method_name);
-	if(old_table.size()==0)
-		return;
+	Table& old_table=GET_SELF(r, VTable).table();
+	Table& new_table=*new Table(old_table.columns());
 
-	Table& new_table=*new(pool) Table(pool, &method_name, old_table.columns());
-
-	Table_seq_item *seq=(Table_seq_item *)pool.malloc(sizeof(Table_seq_item)*old_table.size());
+	Table_seq_item* seq=new(PointerFreeGC) Table_seq_item[old_table.count()];
 	int i;
 
 	// calculate key values
 	bool key_values_are_strings=true;
-	for(i=0; i<old_table.size(); i++) {
+	int old_count=old_table.count();
+	for(i=0; i<old_count; i++) {
 		old_table.set_current(i);
 		// calculate key value
-		seq[i].row=(MethodParams *)old_table.get(i);
-		Value& value=*r.process_to_value(key_maker).as_expr_result(true/*return string as-is*/);
+		seq[i].row=old_table[i];
+		Value& value=r.process_to_value(key_maker).as_expr_result(true/*return string as-is*/);
 		if(i==0) // determining key values type by first one
 			key_values_are_strings=value.is_string();
 
@@ -533,157 +545,139 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 			seq[i].value.d=value.as_double();
 	}
 	// sort keys
-	_qsort(seq, old_table.size(), sizeof(Table_seq_item), 
+	_qsort(seq, old_count, sizeof(Table_seq_item), 
 		key_values_are_strings?sort_cmp_string:sort_cmp_double);
 
 	// reorder table as they require in 'seq'
-	for(i=0; i<old_table.size(); i++)
-		new_table+=seq[reverse?old_table.size()-1-i:i].row;
+	for(i=0; i<old_count; i++)
+		new_table+=Table::element_type(seq[reverse?old_count-1-i:i].row);
+
+	delete[] seq;
 
 	// replace any previous table value
-	static_cast<VTable *>(r.get_self())->set_table(new_table);
+	GET_SELF(r, VTable).set_table(new_table);
 }
 
 #ifndef DOXYGEN
-struct Locate_expression_func_info {
+struct Expression_is_true_info {
 	Request* r;
 	Value* expression_code;
 };
 #endif
-bool locate_expression_func(Table& self, void* ainfo) {
-	Locate_expression_func_info& info=*static_cast<Locate_expression_func_info*>(ainfo);
+static bool expression_is_true(Table& self, void* ainfo) {
+	Expression_is_true_info& info=*static_cast<Expression_is_true_info*>(ainfo);
 	return info.r->process_to_value(*info.expression_code).as_bool();
 }
 static bool _locate_expression(Table& table, Table::Action_options o,
-			       Request& r, const String& method_name, MethodParams *params) {
-	check_option_param(o.defined, method_name, params, 1,
+			       Request& r, MethodParams& params) {
+	check_option_param(o.defined, params, 1,
 		"locate by expression only has parameters: expression and, maybe, options");
-	Value& expression_code=params->as_junction(0, "must be expression");
+	Value& expression_code=params.as_junction(0, "must be expression");
 
-	Locate_expression_func_info info={&r, &expression_code};
-	return table.locate(locate_expression_func, &info, o);
+	Expression_is_true_info info={&r, &expression_code};
+	return table.table_first_that(expression_is_true, &info, o);
 }
 static bool _locate_name_value(Table& table, Table::Action_options o,
-			       Request& r, const String& method_name, MethodParams *params) {
-	check_option_param(o.defined, method_name, params, 2,
+			       Request& r, MethodParams& params) {
+	check_option_param(o.defined, params, 2,
 		"locate by locate by name has parameters: name, value and, maybe, options");
-	const String& name=params->as_string(0, "column name must be string");
-	const String& value=params->as_string(1, "value must be string");
-
+	const String& name=params.as_string(0, "column name must be string");
+	const String& value=params.as_string(1, "value must be string");
 	return table.locate(name, value, o);
 }
-static void _locate(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	Table& table=static_cast<VTable *>(r.get_self())->table(&method_name);
+static void _locate(Request& r, MethodParams& params) {
+	Table& table=GET_SELF(r, VTable).table();
 
-	Table::Action_options o=get_action_options(r, method_name, params, table);
+	Table::Action_options o=get_action_options(r, params, table);
 
-	bool result=params->get(0).get_junction()?
-		_locate_expression(table, o, r, method_name, params) :
-		_locate_name_value(table, o, r, method_name, params);
-	r.write_no_lang(*new(pool) VBool(pool, result));
+	bool result=params[0].get_junction()?
+		_locate_expression(table, o, r, params) :
+		_locate_name_value(table, o, r, params);
+	r.write_no_lang(*new VBool(result));
 }
 
-static void _flip(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	Table& old_table=static_cast<VTable *>(r.get_self())->table(&method_name);
-	Table& new_table=*new(pool) Table(pool, &method_name, 0/*nameless*/);
-	if(old_table.size())
-		if(int old_cols=old_table.at(0).size()) 
-			for(int column=0; column<old_cols; column++) {
-				Array& new_row=*new(pool) Array(pool, old_table.size());
-				for(int i=0; i<old_table.size(); i++) {
-					const Array& old_row=old_table.at(i);
-					new_row+=column<old_row.size()?old_row.get(column):new(pool) String(pool);
+
+static void _flip(Request& r, MethodParams& params) {
+	Table& old_table=GET_SELF(r, VTable).table();
+	Table& new_table=*new Table(old_table.columns());
+	if(size_t old_count=old_table.count())
+		if(size_t old_cols=old_table[0]->count()) 
+			for(size_t column=0; column<old_cols; column++) {
+				Table::element_type new_row(new ArrayString(old_count));
+				for(size_t i=0; i<old_count; i++) {
+					Table::element_type old_row=old_table[i];
+					*new_row+=column<old_row->count()?old_row->get(column):new String;
 				}
-				new_table+=&new_row;
+				new_table+=new_row;
 			}
 
-	r.write_no_lang(*new(pool) VTable(pool, &new_table));
+	r.write_no_lang(*new VTable(&new_table));
 }
 
-static void _append(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _append(Request& r, MethodParams& params) {
 	// data
-	Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
-	const String& string=
-		r.process_to_string(params->as_junction(0, "body must be code"));
+	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
+	const String& string=r.process_to_string(params.as_junction(0, "body must be code"));
 
 	// parse cells
-	Array& row=*new(pool) Array(pool);
-	string.split(row, 0, "\t", 1, String::UL_AS_IS);
+	Table::element_type row=new ArrayString;
+	size_t pos_after=0;
+	string.split(*row, pos_after, "\t", String::L_AS_IS);
 
-	static_cast<VTable *>(r.get_self())->table(&method_name)+=&row;
+	GET_SELF(r, VTable).table()+=row;
 }
 
-static void _join(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	Table* maybe_src=params->as_no_junction(0, "table ref must not be code").get_table();
+static void join_named_row(Table& src, Table* dest) {
+	Table::columns_type dest_columns=dest->columns();
+	size_t dest_columns_count=dest_columns->count();
+	Table::element_type dest_row(new ArrayString(dest_columns_count));
+	for(size_t dest_column=0; dest_column<dest_columns_count; dest_column++) {
+		const String* src_item=src.item(*dest_columns->get(dest_column));
+		*dest_row+=src_item?src_item:new String;
+	}
+	*dest+=dest_row;
+}
+static void join_nameless_row(Table& src, Table* dest) {
+	*dest+=src[src.current()];
+}
+static void _join(Request& r, MethodParams& params) {
+	Table* maybe_src=params.as_no_junction(0, "table ref must not be code").get_table();
 	if(!maybe_src)
 		throw Exception("parser.runtime", 
-			&method_name, 
+			0, 
 			"source is not a table");
 	Table& src=*maybe_src;
 
-	Table::Action_options o=get_action_options(r, method_name, params, src);
-	check_option_param(o.defined, method_name, params, 1,
+	Table::Action_options o=get_action_options(r, params, src);
+	check_option_param(o.defined, params, 1,
 		"invalid extra parameter");
 
-	Table& dest=static_cast<VTable *>(r.get_self())->table(&method_name);
+	Table& dest=GET_SELF(r, VTable).table();
 	if(&src == &dest)
 		throw Exception("parser.runtime", 
-			&method_name, 
+			0, 
 			"source and destination are same table");
 
-	if(o.reverse)
-		throw Exception(0,
-			&method_name,
-			"not implemented in this version, please upgrade");
-	if(const Array *dest_columns=dest.columns()) { // dest is named
-		int saved_src_current=src.current();
-		int m=src.size()-o.offset;
-		if(o.limit<0 || o.limit>m)
-			o.limit=m;
-		int end=o.offset+o.limit;
-		for(int src_row=o.offset; src_row<end; src_row++) {
-			src.set_current(src_row);
-			Array& dest_row=*new(pool) Array(pool);
-			for(int dest_column=0; dest_column<dest_columns->size(); dest_column++) {
-				const String *src_item=src.item(*dest_columns->get_string(dest_column));
-				dest_row+=src_item?src_item:new(pool) String(pool);
-			}
-			dest+=&dest_row;
-		}
-		src.set_current(saved_src_current);
-	} else { // dest is nameless
-		for(int src_row=0; src_row<src.size(); src_row++)
-			dest+=&src.at(src_row);
-	}
+	if(Table::columns_type dest_columns=dest.columns()) // dest is named
+		src.table_for_each(join_named_row, &dest, o);
+	else // dest is nameless
+		src.table_for_each(join_nameless_row, &dest, o);
 }
 
 #ifndef DOXYGEN
 class Table_sql_event_handlers: public SQL_Driver_query_event_handlers {
+	ArrayString& columns;
+	ArrayString* row;
 public:
-	Table_sql_event_handlers(Pool& apool, const String& amethod_name,
-		const String& astatement_string, const char *astatement_cstr) :
-		pool(apool), 
-		method_name(amethod_name),
-		statement_string(astatement_string),
-		statement_cstr(astatement_cstr),
-		columns(*new(pool) Array(pool)),
-		row(0), 
-		table(0)
-	{
+	Table* table;
+public:
+	Table_sql_event_handlers() :
+		columns(*new ArrayString), row(0), table(0) {
 	}
 
-	bool add_column(SQL_Error& error, void *ptr, size_t size) {
+	bool add_column(SQL_Error& error, const char *str, size_t length) {
 		try {
-			String *column=new(pool) String(pool);
-			column->APPEND_TAINTED(
-				(const char *)ptr, size, 
-				statement_cstr, 0);
-			columns+=column;
+			columns+=new String(str, length, true);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::add_column");
@@ -692,7 +686,7 @@ public:
 	}
 	bool before_rows(SQL_Error& error) { 
 		try {
-			table=new(pool) Table(pool, &method_name, &columns);
+			table=new Table(&columns);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::before_rows");
@@ -701,80 +695,66 @@ public:
 	}
 	bool add_row(SQL_Error& error) {
 		try {
-			(*table)+=(row=new(pool) Array(pool));
+			*table+=row=new ArrayString;
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::add_row");
 			return true;
 		}
 	}
-	bool add_row_cell(SQL_Error& error, void *ptr, size_t size) {
+	bool add_row_cell(SQL_Error& error, const char* str, size_t length) {
 		try {
-			String *cell=new(pool) String(pool);
-			if(size)
-				cell->APPEND_TAINTED(
-					(const char *)ptr, size, 
-					statement_cstr, table->size()-1);
-			(*row)+=cell;
+			String& cell=*new String;
+			if(length)
+				cell.append_know_length(str, length, String::L_TAINTED);
+			*row+=&cell;
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::add_row_cell");
 			return true;
 		}
 	}
-
-private:
-	Pool& pool;
-	const String& method_name;
-	const String& statement_string; const char *statement_cstr;
-	Array& columns;
-	Array *row;
-public:
-	Table *table;
 };
 #endif
-static void _sql(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	Value& statement=params->as_junction(0, "statement must be code");
+static void _sql(Request& r, MethodParams& params) {
+	Value& statement=params.as_junction(0, "statement must be code");
 
 	ulong limit=0;
 	ulong offset=0;
-	if(params->size()>1) {
-		Value& voptions=params->as_no_junction(1, "options must be hash, not code");
+	if(params.count()>1) {
+		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
 		if(!voptions.is_string())
-			if(Hash *options=voptions.get_hash(&method_name)) {
+			if(HashStringValue* options=voptions.get_hash()) {
 				int valid_options=0;
-				if(Value *vlimit=(Value *)options->get(*sql_limit_name)) {
+				if(Value* vlimit=options->get(sql_limit_name)) {
 					valid_options++;
 					limit=(ulong)r.process_to_value(*vlimit).as_double();
 				}
-				if(Value *voffset=(Value *)options->get(*sql_offset_name)) {
+				if(Value* voffset=options->get(sql_offset_name)) {
 					valid_options++;
 					offset=(ulong)r.process_to_value(*voffset).as_double();
 				}
-				if(valid_options!=options->size())
+				if(valid_options!=options->count())
 					throw Exception("parser.runtime",
-						&method_name,
+						0,
 						"called with invalid option");
 			} else
 				throw Exception("parser.runtime",
-					&method_name,
+					0,
 					"options must be hash");
 	}
 
-	Temp_lang temp_lang(r, String::UL_SQL);
-	const String& statement_string=r.process_to_string(statement);
-	const char *statement_cstr=
-		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
-	Table_sql_event_handlers handlers(pool, method_name,
-		statement_string, statement_cstr);
+	Temp_lang temp_lang(r, String::L_SQL);
+	const String&  statement_string=r.process_to_string(statement);
+	const char* statement_cstr=
+		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
+	Table_sql_event_handlers handlers;
 #ifdef RESOURCES_DEBUG
 	struct timeval mt[2];
 	//measure:before
 	gettimeofday(&mt[0],NULL);
 #endif	
-	r.connection(&method_name)->query(
+	r.connection()->query(
 		statement_cstr, offset, limit, 
 		handlers,
 		statement_string);
@@ -790,47 +770,40 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	r.sql_request_time+=t[1]-t[0];
 #endif	    			
 
-	Table *result=
-		handlers.table?handlers.table: // query resulted in table? return it
-		new(pool) Table(pool, &method_name, 0); // query returned no table, fake it
+	Table& result=
+		handlers.table?*handlers.table: // query resulted in table? return it
+		*new Table(Table::columns_type(0)); // query returned no table, fake it
 
 	// replace any previous table value
-	static_cast<VTable *>(r.get_self())->set_table(*result);
+	GET_SELF(r, VTable).set_table(result);
 }
 
-static void _columns(Request& r, const String& method_name, MethodParams *) {
-	Pool& pool=r.pool();
+static void _columns(Request& r, MethodParams&) {
 
-	Array& result_columns=*new(pool) Array(pool);
-	result_columns+=new(pool) String(pool, "column");
-	Table& result_table=*new(pool) Table(pool, &method_name, &result_columns);
+	Table::columns_type result_columns(new ArrayString);
+	*result_columns+=new String("column");
+	Table& result_table=*new Table(result_columns);
 
-	Table& source_table=static_cast<VTable *>(r.get_self())->table(&method_name);
-	if(const Array *source_columns=source_table.columns()) {
-		Array_iter i(*source_columns);
-		while(i.has_next()) {
-			Array& result_row=*new(pool) Array(pool);
-			result_row+=i.next();
-			result_table+=&result_row;
+	Table& source_table=GET_SELF(r, VTable).table();
+	if(Table::columns_type source_columns=source_table.columns()) {
+		for(Array_iterator<const String*> i(*source_columns); i.has_next(); ) {
+			Table::element_type result_row(new ArrayString);
+			*result_row+=i.next();
+			result_table+=result_row;
 		}
 	}
 
-	r.write_no_lang(*new(pool) VTable(pool, &result_table));
+	r.write_no_lang(*new VTable(&result_table));
 }
 
-static void _select(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _select(Request& r, MethodParams& params) {
+	Value& vcondition=params.as_junction(0, "condition must be expression");
 
-	Value& vcondition=params->as_junction(0, "condition must be expression");
-
-	Table& source_table=static_cast<VTable *>(r.get_self())->table(&method_name);
-	Table& result_table=*new(pool) Table(pool, 
-		source_table.origin_string(), 
-		source_table.columns()
-	);
+	Table& source_table=GET_SELF(r, VTable).table();
+	Table& result_table=*new Table(source_table.columns());
 
 	int saved_current=source_table.current();
-	int size=source_table.size();
+	int size=source_table.count();
 	for(int row=0; row<size; row++) {
 		source_table.set_current(row);
 
@@ -839,16 +812,16 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 				false/*don't intercept string*/).as_bool();
 
 		if(condition) // ...condition is true=
-			result_table+=&source_table.at(row); // =green light to go to result
+			result_table+=source_table[row]; // =green light to go to result
 	}
 	source_table.set_current(saved_current);
 
-	r.write_no_lang(*new(pool) VTable(pool, &result_table));
+	r.write_no_lang(*new VTable(&result_table));
 }
 
 // constructor
 
-MTable::MTable(Pool& apool) : Methoded(apool, "table") {
+MTable::MTable(): Methoded("table") {
 	// ^table::create{data}
 	// ^table::create[nameless]{data}
 	// ^table::create[table]
@@ -909,14 +882,4 @@ MTable::MTable(Pool& apool) : Methoded(apool, "table") {
 
 	// ^table.select(expression) = table
 	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
-}
-
-// global variable
-
-Methoded *table_class;
-
-// creator
-
-Methoded *MTable_create(Pool& pool) {
-	return table_class=new(pool) MTable(pool);
 }

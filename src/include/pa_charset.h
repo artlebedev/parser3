@@ -1,18 +1,20 @@
 /** @file
 	Parser: Charset connection decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char* IDENT_CHARSET_H="$Date: 2003/04/11 09:58:10 $";
+static const char* IDENT_CHARSET_H="$Date: 2003/07/24 11:31:21 $";
 
-#include "pa_pool.h"
+
 #include "pa_exception.h"
 #include "pa_common.h"
+#include "pa_hash.h"
+#include "pa_array.h"
 
 // hiding into namespace so to avoid stupid conflict
 namespace PCRE {
@@ -26,6 +28,10 @@ namespace PCRE {
 
 // defines
 
+#define MAX_CHARSETS 10
+
+#define MAX_CHARSET_UNI_CODES 500
+
 #	ifndef XMLCh 
 		typedef unsigned int XMLCh;
 #	endif
@@ -33,46 +39,54 @@ namespace PCRE {
 		typedef unsigned char XMLByte;
 #	endif
 
+// forwards
+
+class GdomeDOMString_auto_ptr;
+
+// helpers
+
 struct Charset_TransRec {
 	XMLCh intCh;
 	XMLByte extCh;
 };
 
+typedef Hash<const StringBody, StringBody> HashStringString;
+
 /**	charset holds name & transcode tables 
-	registers Xerces transcoders
+	registers libxml transcoders
 */
-class Charset : public Pooled {
+class Charset: public PA_Object {
 public:
 
-	Charset(Pool& apool, const String& aname, const String *request_file_spec);
-	Charset::~Charset();
+	Charset(Request_charsets* charsets, const StringBody ANAME, const String* afile_spec);
 	
-	const String& name() const { return fname; }
+	const StringBody NAME() const { return FNAME; }
 
 	bool isUTF8() const { return fisUTF8; }
 
-	static void transcode(Pool& pool,
-		const Charset& source_transcoder, const void *source_body, size_t source_content_length,
-		const Charset& dest_transcoder, const void *& dest_body, size_t& dest_content_length
+	static String::C transcode(const String::C src,
+		const Charset& source_transcoder, 
+		const Charset& dest_transcoder
 	);
 
-	static String& transcode(Pool& pool, 
+	static String& transcode(const String& src,
 		const Charset& source_transcoder, 
-		const Charset& dest_transcoder, 
-		const String& src);
+		const Charset& dest_transcoder);
 
-	static void transcode(Pool& pool, 
+	static StringBody transcode(const StringBody src,
 		const Charset& source_transcoder, 
-		const Charset& dest_transcoder, 
-		Array& src);
+		const Charset& dest_transcoder);
 
-	static void transcode(Pool& pool, 
+	static void transcode(ArrayString& src,
 		const Charset& source_transcoder, 
-		const Charset& dest_transcoder, 
-		Hash& src);
+		const Charset& dest_transcoder);
+
+	static void transcode(HashStringString& src,
+		const Charset& source_transcoder, 
+		const Charset& dest_transcoder);
 
 #ifdef XML
-	xmlCharEncodingHandler *transcoder(const String *source);
+	xmlCharEncodingHandler& transcoder(const StringBody NAME);
 #endif
 
 public:
@@ -81,70 +95,60 @@ public:
 
 private:
 
-	void loadDefinition(const String& request_file_spec);
+	void load_definition(Request_charsets& charsets, const String& afile_spec);
 	void sort_ToTable();
 
-	void transcodeToUTF8(Pool& pool,
-									 const void *source_body, size_t source_content_length,
-									 const void *& dest_body, size_t& dest_content_length) const;
-	void transcodeFromUTF8(Pool& pool,
-									   const void *source_body, size_t source_content_length,
-									   const void *& dest_body, size_t& dest_content_length) const;
-
-	void transcodeToCharset(Pool& pool,
-										   const Charset& dest_transcoder,
-										   const void *source_body, size_t source_content_length,
-										   const void *& dest_body, size_t& dest_content_length) const;
+	const String::C transcodeToUTF8(const String::C src) const;
+	const String::C transcodeFromUTF8(const String::C src) const;
+	
+	const String::C transcodeToCharset(const String::C src,
+		const Charset& dest_transcoder) const;
 
 public:
 
 	struct Tables {
 		XMLCh fromTable[0x100];
-		Charset_TransRec *toTable;
+		Charset_TransRec toTable[MAX_CHARSET_UNI_CODES];
 		uint toTableSize;
 	};
 
 private:
 
-	const String& fname;
+	const StringBody FNAME;
+	char* FNAME_CSTR;
 	bool fisUTF8;
 	Tables tables;
 
 #ifdef XML
 
 private:
-	void addEncoding(char *name_cstr);
-	void initTranscoder(const String *source, const char *name_cstr);
+	void addEncoding(char* name_cstr);
+	void initTranscoder(const StringBody name, const char* name_cstr);
 	
 public:
-	/// converts GdomeDOMString string to char *
-	const char *transcode_cstr(GdomeDOMString *s);
+	/// converts GdomeDOMString string to char* 
+	String::C transcode_cstr(GdomeDOMString* s);
 	/// converts GdomeDOMString string to parser String
-	String& transcode(GdomeDOMString *s
-#ifndef NO_STRING_ORIGIN
-		, const String *origin
-#endif
-		);
-	/// converts xmlChar* null-terminated string to char *
-	const char *transcode_cstr(xmlChar *s);
+	const String& transcode(GdomeDOMString* s);
+	/// converts xmlChar* null-terminated string to char* 
+	String::C transcode_cstr(xmlChar* s);
 	/// converts xmlChar* null-terminated string to parser String
-	String& transcode(xmlChar *s
-#ifndef NO_STRING_ORIGIN
-		, const String *origin
-#endif
-		);
-	/** converts sized char * to xmlChar*
-		@returns xmlChar * which caller should free
+	const String& transcode(xmlChar* s);
+
+	/** converts sized char*  to xmlChar*
+		@returns xmlChar*  WHICH CALLER SHOULD FREE
 	*/
-	xmlChar *transcode_buf2xchar(const char *buf, size_t buf_size);
-	/// converts char * to GdomeDOMString
-	GdomeDOMString_auto_ptr transcode_buf2dom(const char *buf, size_t buf_size);
+	xmlChar* transcode_buf2xchar(const char* buf, size_t buf_size);
+	/// converts char*  to GdomeDOMString
+	GdomeDOMString_auto_ptr transcode_buf2dom(const char* buf, size_t buf_size);
 	/// converts parser String to GdomeDOMString
 	GdomeDOMString_auto_ptr transcode(const String& s);
+	/// converts parser StringBody to GdomeDOMString
+	GdomeDOMString_auto_ptr transcode(const StringBody s);
 
 private:
 
-	xmlCharEncodingHandler *ftranscoder;
+	xmlCharEncodingHandler* ftranscoder;
 
 #endif
 
@@ -153,14 +157,16 @@ private:
 #ifdef XML
 /// Auto-object used to track GdomeDOMString usage
 class GdomeDOMString_auto_ptr {
-	GdomeDOMString *fstring;
+	GdomeDOMString* fstring;
 public:
-	explicit GdomeDOMString_auto_ptr(gchar *astring) : fstring(gdome_str_mkref(astring)) {}
-	explicit GdomeDOMString_auto_ptr(GdomeDOMString *astring) : fstring(astring) {
+	/// frees astring afterwards!!!
+	explicit GdomeDOMString_auto_ptr(xmlChar* astring) : fstring(gdome_str_mkref_xml(astring)) {}
+	explicit GdomeDOMString_auto_ptr(GdomeDOMString* astring=0) : fstring(astring) {
 		// not ref-ing, owning
 	}
 	~GdomeDOMString_auto_ptr() {
-		gdome_str_unref(fstring);
+		if(fstring)
+			gdome_str_unref(fstring);
 	}
 /*	GdomeDOMString* get() {
 		return fstring;
@@ -174,7 +180,7 @@ public:
 		return fstring;
 	}
 /*	GdomeDOMString& operator*() {
-		return *fstring;
+		return* fstring;
 	}*/
 
 	// copying
@@ -183,7 +189,7 @@ public:
 	}
 	GdomeDOMString_auto_ptr& operator =(const GdomeDOMString_auto_ptr& src) {
 		if(this == &src)
-			return *this;
+			return* this;
 
 		if(fstring)
 			gdome_str_unref(fstring);
@@ -191,7 +197,7 @@ public:
 		if(fstring)
 			gdome_str_ref(fstring);
 
-		return *this;
+		return* this;
 	}
 };
 #endif

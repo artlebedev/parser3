@@ -1,57 +1,47 @@
 /** @file
 	Parser: @b int parser class decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-static const char* IDENT_VINT_H="$Date: 2003/01/21 15:51:19 $";
+static const char* IDENT_VINT_H="$Date: 2003/07/24 11:31:26 $";
 
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
 
-extern Methoded *int_class;
+extern Methoded* int_class;
 
 /// value of type 'int'. implemented with @c int
-class VInt : public VStateless_object {
+class VInt: public VStateless_object {
 public: // Value
 
-	const char *type() const { return "int"; }
-	VStateless_class *get_class() { return int_class; }
+	override const char* type() const { return "int"; }
+	override VStateless_class *get_class() { return int_class; }
 
 	/// VInt: clone
-	Value *as_expr_result(bool ) { return NEW VInt(pool(), finteger); }
+	override Value& as_expr_result(bool) { return *new VInt(finteger); }
 
 	/// VInt: finteger
-	const String *get_string() {
+	override const String* get_string() {
 		char local_buf[MAX_NUMBER];
-		size_t size=snprintf(local_buf, MAX_NUMBER, "%d", finteger);
-
-		char *pool_buf=(char *)pool().malloc(size);
-		memcpy(pool_buf, local_buf, size);
-		
-		String *result=NEW String(pool());
-		result->APPEND_CLEAN(
-			pool_buf, size/*, 
-			name().origin().file, name().origin().line*/,0,0);
-		return result;
+		size_t length=snprintf(local_buf, MAX_NUMBER, "%d", finteger);
+		return new String(strdup(local_buf, length), length);
 	}
 	/// VInt: finteger
-	double as_double() const { return as_int(); }
+	override double as_double() const { return as_int(); }
 	/// VInt: finteger
-	int as_int() const { return finteger; }
+	override int as_int() const { return finteger; }
 	/// VInt: 0 or !0
-	bool as_bool() const { return finteger!=0; }
+	override bool as_bool() const { return finteger!=0; }
 
 public: // usage
 
-	VInt(Pool& apool, int ainteger) : VStateless_object(apool), 
-		finteger(ainteger) {
-	}
+	VInt(int ainteger): finteger(ainteger) {}
 
 	int get_int() { return finteger; }
 	void set_int(int ainteger) { finteger=ainteger; }

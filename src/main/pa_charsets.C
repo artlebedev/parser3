@@ -1,51 +1,43 @@
 /** @file
 	Parser: sql driver manager implementation.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSETS_C="$Date: 2003/01/21 15:51:13 $";
+static const char* IDENT_CHARSETS_C="$Date: 2003/07/24 11:31:23 $";
 
 #include "pa_charsets.h"
-#include "pa_charset.h"
+
+// defines for globals
+
+#define CHARSET_UTF8_NAME "UTF-8"
 
 // globals
 
-Charsets *charsets;
+Charset UTF8_charset(0, *new String(CHARSET_UTF8_NAME), 0/*no file=system*/);
 
-//
+Charsets charsets;
 
-Charsets::Charsets(Pool& apool) : Hash(apool) {
+// methods
+
+Charsets::Charsets() {
+	put(UTF8_charset.NAME(), &UTF8_charset);
 }
 
-static void destroy_charset(const Hash::Key& , Hash::Val *& value, void *) {
-	static_cast<Charset *>(value)->~Charset();	
-}
-
-Charsets::~Charsets() {
-	for_each(destroy_charset);
-}
-
-Charset& Charsets::get_charset(const String& name) {
-	if(Charset *result=(Charset *)get(name))
+Charset& Charsets::get(const StringBody ANAME) {
+	if(Charset* result=Hash<key_type, value_type>::get(ANAME))
 		return *result;
 	else
 		throw Exception("parser.runtime",
-			&name,
+			new String(ANAME, String::L_TAINTED),
 			"unknown charset");
 }
 
-void Charsets::load_charset(const String& request_name, const String& request_file_spec) {
+void Charsets::load_charset(Request_charsets& charsets, const StringBody ANAME, const String& afile_spec) {
 	//we know that charset?
-	if(get(request_name)) 
+	if(Hash<key_type, value_type>::get(ANAME)) 
 		return; // don't load it then
 
-	const char *name_cstr=request_name.cstr();
-	char *global_name_cstr=(char *)malloc(strlen(name_cstr)+1);
-	strcpy(global_name_cstr, name_cstr);
-	// make global_name string on global pool
-	String& global_name=*NEW String(pool(), global_name_cstr);
-	
-	put(global_name, NEW Charset(pool(), global_name, &request_file_spec));
+	put(ANAME, new Charset(&charsets, ANAME, &afile_spec));
 }

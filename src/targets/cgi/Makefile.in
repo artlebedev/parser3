@@ -41,7 +41,6 @@ AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
 APACHE13 = @APACHE13@
-APACHE_LIBS = @APACHE_LIBS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -53,20 +52,19 @@ COMPILE_APACHE13_MODULE_FALSE = @COMPILE_APACHE13_MODULE_FALSE@
 COMPILE_APACHE13_MODULE_TRUE = @COMPILE_APACHE13_MODULE_TRUE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CPP_LIBS = @CPP_LIBS@
 CXX = @CXX@
-CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
-DO_NOT_LINK_LIBSTDCPP_FALSE = @DO_NOT_LINK_LIBSTDCPP_FALSE@
-DO_NOT_LINK_LIBSTDCPP_TRUE = @DO_NOT_LINK_LIBSTDCPP_TRUE@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+GC_LIBS = @GC_LIBS@
 INCLTDL = @INCLTDL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -147,21 +145,20 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 
-#this read configure.in comment on stdc++ about next line
-@DO_NOT_LINK_LIBSTDCPP_TRUE@CXXLDtrue = $(CC)
-@DO_NOT_LINK_LIBSTDCPP_FALSE@CXXLDfalse = $(CXX)
+#by default c++ when running linker adds -lstdc++ (and -lm) which overrides 
+#our [default] setting of linking that that lib should be linked statically
+#so we're switching linker to gcc, which does not add anything
+CXXLD = $(CC)
 
-CXXLD = $(CXXLDtrue) $(CXXLDfalse)
-
-INCLUDES = -I../../classes -I../../types -I../../sql -I../../lib/pcre -I../../lib/md5 -I$(INCLTDL) @XML_INCLUDES@
-PA_LIBS = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a ../../lib/pcre/libpcre.a ../../lib/md5/libmd5.a $(LIBLTDL)
+INCLUDES = -I../../classes -I../../types -I../../sql -I../../lib/gc/include -I../../lib/cord/include -I../../lib/pcre -I../../lib/md5 -I$(INCLTDL) @XML_INCLUDES@
+PA_LIBS = ../../main/libmain.a ../../classes/libclasses.a ../../types/libtypes.a ../../main/libmain.a ../../classes/gd/libgd.a ../../lib/cord/libcord.a ../../lib/pcre/libpcre.a ../../lib/md5/libmd5.a $(LIBLTDL)
 
 bin_PROGRAMS = parser3
-noinst_HEADERS = pool_storage.h getopt.h
+noinst_HEADERS = getopt.h
 parser3_DEPENDENCIES = Makefile $(PA_LIBS)
-parser3_SOURCES = pa_pool.C pa_threads.C parser3.C getopt.c
-parser3_LDADD = $(PA_LIBS) $(LIBADD_DL) @XML_LIBS@ @MIME_LIBS@
-EXTRA_DIST = parser3.dsp
+parser3_SOURCES = pa_threads.C parser3.C getopt.c
+parser3_LDADD = $(PA_LIBS) $(LIBADD_DL) @GC_LIBS@ @XML_LIBS@ @MIME_LIBS@ @CPP_LIBS@
+EXTRA_DIST = parser3.dsp pp3.cmd
 subdir = src/targets/cgi
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
@@ -169,16 +166,16 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = parser3$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-am_parser3_OBJECTS = pa_pool.$(OBJEXT) pa_threads.$(OBJEXT) \
-	parser3.$(OBJEXT) getopt.$(OBJEXT)
+am_parser3_OBJECTS = pa_threads.$(OBJEXT) parser3.$(OBJEXT) \
+	getopt.$(OBJEXT)
 parser3_OBJECTS = $(am_parser3_OBJECTS)
 parser3_LDFLAGS =
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/getopt.Po ./$(DEPDIR)/pa_pool.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/pa_threads.Po ./$(DEPDIR)/parser3.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/getopt.Po ./$(DEPDIR)/pa_threads.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/parser3.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
@@ -237,7 +234,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getopt.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_pool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_threads.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser3.Po@am__quote@
 

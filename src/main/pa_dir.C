@@ -1,18 +1,18 @@
 /** @file
 	Parser: directory scanning for different OS-es.
 
-	Copyright (c) 2000,2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000,2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DIR_C="$Date: 2003/01/21 15:51:14 $";
+static const char* IDENT_DIR_C="$Date: 2003/07/24 11:31:23 $";
 
 #include "pa_common.h"
 #include "pa_dir.h"
 
 #ifdef WIN32
 
-bool findfirst(const char *_pathname, struct ffblk *_ffblk, int _attrib) {
+bool findfirst(const char* _pathname, struct ffblk *_ffblk, int _attrib) {
 	char mask[MAXPATH];
 	snprintf(mask, MAXPATH, "%s/*.*", _pathname);
 
@@ -29,7 +29,7 @@ void findclose(struct ffblk *_ffblk) {
 
 #else
 
-bool findfirst(const char *_pathname, struct ffblk *_ffblk, int _attrib) {
+bool findfirst(const char* _pathname, struct ffblk *_ffblk, int _attrib) {
     strncpy(_ffblk->filePath, _pathname, MAXPATH-1); _ffblk->filePath[MAXPATH-1]=0;
 	if(!(_ffblk->dir=opendir(_ffblk->filePath)))
         return true;

@@ -1,13 +1,13 @@
 /** @file
 	Parser: uuencoding impl.
 
-	Copyright(c) 2000,2001, 2003 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2000,2001-2003 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	@todo setrlimit
 */
 
-static const char* IDENT_UUE_C="$Date: 2003/01/21 15:51:15 $";
+static const char* IDENT_UUE_C="$Date: 2003/07/24 11:31:24 $";
 
 #include "pa_config_includes.h"
 
@@ -23,10 +23,10 @@ static unsigned char uue_table[64] = {
   'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
   'X', 'Y', 'Z', '[', '\\',']', '^', '_'
 };
-void pa_uuencode(String& result, const char *file_name_cstr, const VFile& vfile) {
+void pa_uuencode(String& result, const String& file_name, const VFile& vfile) {
 	//header
 	result << "content-transfer-encoding: x-uuencode\n" << "\n";
-	result << "begin 644 " << file_name_cstr << "\n";
+	result << "begin 644 " << file_name << "\n";
 
 	//body
 	const unsigned char *in=(const unsigned char *)vfile.value_ptr();
@@ -39,7 +39,7 @@ void pa_uuencode(String& result, const char *file_name_cstr, const VFile& vfile)
 		if((itemp+count)>(in+in_length)) 
 			count=in_length-(itemp-in);
 
-		char *buf=(char *)result.pool().malloc(MAX_STRING);
+		char *buf=new(PointerFreeGC) char[MAX_STRING];
 		char *optr=buf;
 		
 		/*
@@ -81,6 +81,6 @@ void pa_uuencode(String& result, const char *file_name_cstr, const VFile& vfile)
 	}
 	
 	//footer
-	result.APPEND_AS_IS((const char *)uue_table, 1/* one char */, 0, 0) << "\n"
+	result.append_know_length((const char* )uue_table, 1/* one char */, String::L_AS_IS) << "\n"
 		"end\n";
 }

@@ -14,16 +14,20 @@ echo "/* edit configure.in to change version number */" >> $srcdir/src/include/p
 echo "#define PARSER_VERSION \"$PARSER_VERSION\"" >> $srcdir/src/include/pa_version.h.new
 cmp $srcdir/src/include/pa_version.h.new $srcdir/src/include/pa_version.h >/dev/null 2>&1
 if test $? -ne 0 ; then
-    rm -f $srcdir/src/include/pa_version.h && mv $srcdir/src/include/pa_version.h.new $srcdir/src/include/pa_version.h && \
-    echo Updated $srcdir/src/include/pa_version.h
+	rm -f $srcdir/src/include/pa_version.h && mv $srcdir/src/include/pa_version.h.new $srcdir/src/include/pa_version.h && \
+	echo Updated $srcdir/src/include/pa_version.h
 else
 	rm -f $srcdir/src/include/pa_version.h.new
 fi
 
 
+
 dnl AC_CANONICAL_SYSTEM
 AC_CANONICAL_HOST
 AC_SUBST(host_os)
+case $host_os in
+  *cygwin* ) AC_DEFINE(CYGWIN,,using cygwin building environment);;
+esac
 
 dnl Checks for programs.
 AC_PROG_INSTALL
@@ -33,29 +37,36 @@ AC_PROG_AWK
 
 AC_PROG_YACC
 if test "$YACC" != "bison -y"; then
-    AC_MSG_WARN(to regenerate Parser grammar YOU WOULD NEED BISON)
+	AC_MSG_WARN(to regenerate Parser grammar YOU WOULD NEED BISON)
 else
-    AC_MSG_CHECKING(bison version)
-    oldIFS=$IFS; IFS=.
-    set `bison -V | sed -e 's/^GNU Bison version //'`
-    IFS=$oldIFS
-    if test "$1" = "1" -a "$2" -lt "25"; then
-        AC_MSG_WARN(Bison 1.25 or newer needed to regenerate Parser compiler (found $1.$2).)
-    fi
-    AC_MSG_RESULT($1.$2 (ok))
+	AC_MSG_CHECKING(bison version)
+	oldIFS=$IFS; IFS=.
+	set `bison -V | sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/$/./'`
+	IFS=$oldIFS
+	if test "$1" = "1" -a "$2" -lt "25"; then
+		AC_MSG_WARN(Bison 1.25 or newer needed to regenerate Parser compiler (found $1.$2).)
+	fi
+	AC_MSG_RESULT($1.$2 (ok))
 fi
 
 AC_PROG_CXX
 AC_PROG_CC
-dnl most tests sould be compiled with C compiler [especially qsort test]
-AC_LANG_C AC_C_INLINE
+dnl most tests should be compiled with C compiler [especially qsort test]
+AC_LANG_C 
+AC_C_INLINE
 
 dnl Arguments
 
-AC_ARG_ENABLE(safe-mode, [  --disable-safe-mode     to enable reading and executing
+AC_ARG_WITH(assertions, [  --with-assertions       to enable assertions],
+	AC_MSG_WARN(enabling assertions)
+,
+	AC_DEFINE(NDEBUG,,assertions disabled)
+)
+
+AC_ARG_ENABLE(safe-mode, [  --disable-safe-mode	  to enable reading and executing
                           files belonging to group+user other then effective],
 [
-    SAFE_MODE=$enableval
+	SAFE_MODE=$enableval
 ]
 )
 if test "$SAFE_MODE" = "no"; then
@@ -64,21 +75,12 @@ else
 	AC_DEFINE(PA_SAFE_MODE,,disabled reading of files belonging to group+user other then effective)
 fi
 
-AC_ARG_ENABLE(execs, [  --disable-execs         to disable any execs
+AC_ARG_ENABLE(execs, [  --disable-execs	  to disable any execs
                           (file::exec, file::cgi, unix mail:send)],
 [
 if test "$enableval" = "no"; then
 	AC_MSG_WARN(disabling file execs)
 	AC_DEFINE(NO_PA_EXECS,,pa_exec disabled)
-fi
-]
-)
-
-AC_ARG_ENABLE(string-origins, [  --disable-string-origins to switch off string origin tracking],
-[
-if test "$enableval" = "no"; then
-	AC_MSG_WARN(disabling string origin tracking)
-	AC_DEFINE(NO_STRING_ORIGIN,,no string origin tracking)
 fi
 ]
 )
@@ -117,13 +119,13 @@ PA_SUBSTCHARSET(koi8-r,koi8r)
 AC_MSG_CHECKING(for dynamic-link library extension)
 case "$host_os" in
 hpux9* | hpux10* | hpux11*)
-    dll_extension=sl
-    ;;
+	dll_extension=sl
+	;;
 cygwin)
-    dll_extension=dll
-    ;;
+	dll_extension=dll
+	;;
 *)
-    dll_extension=so
+	dll_extension=so
 esac
 AC_MSG_RESULT($dll_extension)
 AC_SUBST(dll_extension)
@@ -197,30 +199,51 @@ AC_ARG_WITH(pathlink,[  --with-pathlink=LKEY    put dynamic libraries paths to b
                           using linker key (-R, -rpath-link)],
 	LD_PATHLINK=$withval
 )
-AC_ARG_WITH(link-stdcpp, [  --with-link-stdcpp=PATH to directory with libstdc++
-  --without-link-stdcpp   to disable libstdc++ linkage,
-                          if you belive you do not need one],
-[
-LIBSTDCPP_PATH=$withval
-if test "$LIBSTDCPP_PATH" = "no"; then
-	AC_MSG_WARN(disabling libstdc++ linkage)
-else
-	if test -z "$LD_PATHLINK"; then
-	    AC_MSG_ERROR(when using --with-link-stdcpp one must specify --with-pathlink)
-	fi
-	LIBS="$LIBS -Wl,$LD_PATHLINK -Wl,$LIBSTDCPP_PATH"
-fi
-],
-#pseudo path, meaning still link libstdcpp. value needed to trick next _CONDITIONAL
-LIBSTDCPP_PATH=" "
-)
-AM_CONDITIONAL(DO_NOT_LINK_LIBSTDCPP, test "$LIBSTDCPP_PATH" = "no")
-
-
+AC_ARG_WITH(dynamic-stdcpp, [  --with-dynamic-stdcpp   link libstdc++ dynamically
+                          by default, libstdc++ is linked statically],[
+	AC_MSG_WARN(libstdc++ will be linked dynamically: this is probably incompatible with other platforms)
+	# this is for apache, it's linked with gcc and need to know
+	# and it would not harm linking with c++ toolchain
+	CPP_LIBS="-lstdc++"
+],[
+	CPP_LIBS="-Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"
+])
+AC_SUBST(CPP_LIBS)
 
 AC_ARG_WITH(sjlj-exceptions,[  --with-sjlj-exceptions  enable simple 'throw' from dynamic library],
 	AC_DEFINE(PA_WITH_SJLJ_EXCEPTIONS,,one can throw from dynamic library)
 )
+
+GC_LIB_NAME=gc
+AC_ARG_WITH(shared-gc,[  --with-shared-gc[=D]      D is the directory where
+                          Boehm garbage collecting library is installed (shared lib)],[
+	GC_LIBS="-L$withval -l$GC_LIB_NAME"
+])
+AC_ARG_WITH(static-gc,[  --with-static-gc[=D]      D is the directory where
+                          Boehm garbage collecting library is installed (static lib)],[
+	GC_LIBS="-L$withval -Wl,-Bstatic -l$GC_LIB_NAME -Wl,-Bdynamic"
+])
+if test -z "$GC_LIBS"; then
+	#undefined? use any found in system
+	GC_LIBS="-l$GC_LIB_NAME"
+	AC_MSG_WARN([neither --with-shared/static-gc were specified, hoping linker would find it])
+fi
+
+AC_MSG_CHECKING(for libgc)
+SAVE_LIBS=$LIBS
+LIBS="$LIBS $GC_LIBS"
+AC_TRY_LINK([
+	extern int GC_dont_gc;
+],[
+	GC_dont_gc=0;
+],
+	AC_MSG_RESULT(yes)
+,
+	AC_MSG_RESULT(no)
+	AC_MSG_ERROR(please specify path to libgc: --with-shared-gc OR --with-static-gc)
+)
+AC_SUBST(GC_LIBS)
+LIBS=$SAVE_LIBS
 
 
 AC_ARG_WITH(glib-config,[  --with-glib-config=FILE FILE is glib library
@@ -230,127 +253,127 @@ AC_ARG_WITH(glib-config,[  --with-glib-config=FILE FILE is glib library
 
 AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
                           Gnome XML libraries are installed (shared libs)],[
-    GNOME_XML=$withval
-    XMLBIN="$GNOME_XML/bin"
-    XMLINC="$GNOME_XML/include"
-    XMLLIB="$GNOME_XML/lib"
+	GNOME_XML=$withval
+	XMLBIN="$GNOME_XML/bin"
+	XMLINC="$GNOME_XML/include"
+	XMLLIB="$GNOME_XML/lib"
 
-    if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
-    	AC_MSG_ERROR($GNOME_XML does not seem to be valid Gnome installation directory)
-    fi
+	if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
+		AC_MSG_ERROR($GNOME_XML does not seem to be valid Gnome installation directory)
+	fi
 
-    AC_DEFINE(XML,,xml-abled parser (uses shared library))
-    
-    LIBXML2_SO_NAME=`cd $XMLLIB ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    LIBGDOME_SO_NAME=`cd $XMLLIB ; ls libgdome.?? libgdome.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    LIBXSLT_SO_NAME=`cd $XMLLIB ; ls libxslt.?? libxslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    LIBEXSLT_SO_NAME=`cd $XMLLIB ; ls libexslt.?? libexslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+	AC_DEFINE(XML,,xml-abled parser (uses shared library))
+	
+	LIBXML2_SO_NAME=`cd $XMLLIB ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+	LIBGDOME_SO_NAME=`cd $XMLLIB ; ls libgdome.?? libgdome.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+	LIBXSLT_SO_NAME=`cd $XMLLIB ; ls libxslt.?? libxslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+	LIBEXSLT_SO_NAME=`cd $XMLLIB ; ls libexslt.?? libexslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 
-    if test -z "$GLIB_CONFIG"; then
-	    GLIB_CONFIG=$XMLBIN/glib-config
-	    if test \! -x $GLIB_CONFIG; then
-	        GLIB_CONFIG=glib-config
-	    fi
-    fi
-    GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-    GLIB_LIBS=`$GLIB_CONFIG --libs`
+	if test -z "$GLIB_CONFIG"; then
+		GLIB_CONFIG=$XMLBIN/glib-config
+		if test \! -x $GLIB_CONFIG; then
+			GLIB_CONFIG=glib-config
+		fi
+	fi
+	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+	GLIB_LIBS=`$GLIB_CONFIG --libs`
 
-    XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
-    XML_LIBS="$GLIB_LIBS -L$XMLLIB -l$LIBXML2_SO_NAME -l$LIBGDOME_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
-    if test \! -z "$LD_PATHLINK"; then
+	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
+	XML_LIBS="$GLIB_LIBS -L$XMLLIB -l$LIBXML2_SO_NAME -l$LIBGDOME_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
+	if test \! -z "$LD_PATHLINK"; then
 	XML_LIBS="$XML_LIBS -Wl,$LD_PATHLINK -Wl,$XMLLIB"
-    fi
+	fi
 ])
 AC_ARG_WITH(static-xml,[  --with-static-xml=D     D is the directory where
                           Gnome XML libraries are installed (static libs)],[
-    GNOME_XML=$withval
-    XMLBIN="$GNOME_XML/bin"
-    XMLINC="$GNOME_XML/include"
-    XMLLIB="$GNOME_XML/lib"
+	GNOME_XML=$withval
+	XMLBIN="$GNOME_XML/bin"
+	XMLINC="$GNOME_XML/include"
+	XMLLIB="$GNOME_XML/lib"
 
-    if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
-    	AC_MSG_ERROR($GNOME_XML does not seem to be valid Gnome installation directory)
-    fi
+	if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
+		AC_MSG_ERROR($GNOME_XML does not seem to be valid Gnome installation directory)
+	fi
 
-    AC_DEFINE(XML,,xml-abled parser (uses static library))
+	AC_DEFINE(XML,,xml-abled parser (uses static library))
 
-    if test -z "$GLIB_CONFIG"; then
-	    GLIB_CONFIG=$XMLBIN/glib-config
-	    if test \! -x $GLIB_CONFIG; then
-	        GLIB_CONFIG=glib-config
-	    fi
-    fi
-    GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+	if test -z "$GLIB_CONFIG"; then
+		GLIB_CONFIG=$XMLBIN/glib-config
+		if test \! -x $GLIB_CONFIG; then
+			GLIB_CONFIG=glib-config
+		fi
+	fi
+	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
 
 dnl  '-L/usr/local/lib -lglib' -> /usr/local/lib
 changequote(, )dnl
-    GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
-    GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
+	GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
+	GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
 changequote([, ])dnl
-    XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
-    XML_LIBS="$XMLLIB/libgdome.a $XMLLIB/libxslt.a $XMLLIB/libexslt.a $XMLLIB/libxml2.a $GLIB_DIR/lib$GLIB_NAME.a"
+	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
+	XML_LIBS="$XMLLIB/libgdome.a $XMLLIB/libxslt.a $XMLLIB/libexslt.a $XMLLIB/libxml2.a $GLIB_DIR/lib$GLIB_NAME.a"
 ])
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
 
 AC_ARG_WITH(shared-mailreceive,[  --with-shared-mailreceive=D is the directory where
-                               Gnome MIME library is installed (shared lib)],[
-    GNOME_MIME=$withval
-    MIMEBIN="$GNOME_MIME/bin"
-    MIMEINC="$GNOME_MIME/include"
-    MIMELIB="$GNOME_MIME/lib"
+                          Gnome MIME library is installed (shared lib)],[
+	GNOME_MIME=$withval
+	MIMEBIN="$GNOME_MIME/bin"
+	MIMEINC="$GNOME_MIME/include"
+	MIMELIB="$GNOME_MIME/lib"
 
-    if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
-    	AC_MSG_ERROR($GNOME_MIME does not seem to be valid Gnome installation directory)
-    fi
+	if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
+		AC_MSG_ERROR($GNOME_MIME does not seem to be valid Gnome installation directory)
+	fi
 
-    AC_DEFINE(WITH_MAILRECEIVE,,has \$mail:received (uses shared library))
-    
-    LIBMIME_SO_NAME=`cd $MIMELIB ; ls libgmime.?? libgmime.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+	AC_DEFINE(WITH_MAILRECEIVE,,has \$mail:received (uses shared library))
+	
+	LIBMIME_SO_NAME=`cd $MIMELIB ; ls libgmime.?? libgmime.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 
-    if test -z "$GLIB_CONFIG"; then
-	    GLIB_CONFIG=$MIMEBIN/glib-config
-	    if test \! -x $GLIB_CONFIG; then
-	        GLIB_CONFIG=glib-config
-	    fi
-    fi
-    GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-    GLIB_LIBS=`$GLIB_CONFIG --libs`
+	if test -z "$GLIB_CONFIG"; then
+		GLIB_CONFIG=$MIMEBIN/glib-config
+		if test \! -x $GLIB_CONFIG; then
+			GLIB_CONFIG=glib-config
+		fi
+	fi
+	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+	GLIB_LIBS=`$GLIB_CONFIG --libs`
 
-    MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
-    MIME_LIBS="$GLIB_LIBS -L$MIMELIB -l$LIBMIME_SO_NAME"
-    if test \! -z "$LD_PATHLINK"; then
+	MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
+	MIME_LIBS="$GLIB_LIBS -L$MIMELIB -l$LIBMIME_SO_NAME"
+	if test \! -z "$LD_PATHLINK"; then
 	MIME_LIBS="$MIME_LIBS -Wl,$LD_PATHLINK -Wl,$MIMELIB"
-    fi
+	fi
 ])
 AC_ARG_WITH(static-mailreceive,[  --with-static-mailreceive=D is the directory where
                           Gnome MIME library is installed (static lib)],[
-    GNOME_MIME=$withval
-    MIMEBIN="$GNOME_MIME/bin"
-    MIMEINC="$GNOME_MIME/include"
-    MIMELIB="$GNOME_MIME/lib"
+	GNOME_MIME=$withval
+	MIMEBIN="$GNOME_MIME/bin"
+	MIMEINC="$GNOME_MIME/include"
+	MIMELIB="$GNOME_MIME/lib"
 
-    if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
-    	AC_MSG_ERROR($GNOME_MIME does not seem to be valid Gnome installation directory)
-    fi
+	if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
+		AC_MSG_ERROR($GNOME_MIME does not seem to be valid Gnome installation directory)
+	fi
 
-    AC_DEFINE(WITH_MAILRECEIVE,,has \$mail:received (uses static library))
+	AC_DEFINE(WITH_MAILRECEIVE,,has \$mail:received (uses static library))
 
-    if test -z "$GLIB_CONFIG"; then
-	    GLIB_CONFIG=$MIMEBIN/glib-config
-	    if test \! -x $GLIB_CONFIG; then
-	        GLIB_CONFIG=glib-config
-	    fi
-    fi
-    GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+	if test -z "$GLIB_CONFIG"; then
+		GLIB_CONFIG=$MIMEBIN/glib-config
+		if test \! -x $GLIB_CONFIG; then
+			GLIB_CONFIG=glib-config
+		fi
+	fi
+	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
 
 dnl  '-L/usr/local/lib -lglib' -> /usr/local/lib
 changequote(, )dnl
-    GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
-    GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
+	GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
+	GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
 changequote([, ])dnl
-    MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
-    MIME_LIBS="$MIMELIB/libgmime.a $GLIB_DIR/lib$GLIB_NAME.a"
+	MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
+	MIME_LIBS="$MIMELIB/libgmime.a $GLIB_DIR/lib$GLIB_NAME.a"
 ])
 AC_SUBST(MIME_INCLUDES)
 AC_SUBST(MIME_LIBS)
@@ -367,9 +390,9 @@ AC_ARG_WITH(apache13,[  --with-apache13=D       D is the Apache13 source distrib
                           builds library for apache_module using that dir
                           (do not add /src)],
 	APACHE13=$withval
-    if test \! -f "$APACHE13/src/include/httpd.h"; then
-    	AC_MSG_ERROR($APACHE13 does not seem to be valid Apache13 source distribution directory)
-    fi
+	if test \! -f "$APACHE13/src/include/httpd.h"; then
+		AC_MSG_ERROR($APACHE13 does not seem to be valid Apache13 source distribution directory)
+	fi
 )
 AC_SUBST(APACHE13)
 AM_CONDITIONAL(COMPILE_APACHE13_MODULE, test -n "$APACHE13")
@@ -388,7 +411,6 @@ AC_CONFIG_SUBDIRS(src/lib/ltdl)
 dnl detecting which libraries are needed to dynamic open
 AC_LTDL_DLLIB
 AC_SUBST(LIBADD_DL)
-LIBS="$LIBS $LIBADD_DL"
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 
@@ -403,6 +425,7 @@ dnl Checks for C header files.
 AC_HEADER_TIME
 
 AC_CHECK_HEADERS(
+assert.h \
 signal.h \
 unistd.h \
 process.h \
@@ -417,7 +440,6 @@ ctype.h \
 math.h \
 crypt.h \
 time.h sys/time.h \
-stdlib.h \
 string.h \
 direct.h \
 setjmp.h \
@@ -439,23 +461,23 @@ dnl Checks for libraries.
 dnl Some systems (Solaris 2.x) require libnsl (Network Services Library)
 case "$host" in
   *-sunos5.6* | *-solaris2.6*)
-      AC_CHECK_LIB(xnet, main)
+	  AC_CHECK_LIB(xnet, main)
   ;;
   *-sunos5* | *-solaris2*)
-      AC_CHECK_LIB(socket, main)
-      AC_CHECK_LIB(nsl, main)
+	  AC_CHECK_LIB(socket, main)
+	  AC_CHECK_LIB(nsl, main)
   ;;
   *-nec-sysv4*)
-      AC_CHECK_LIB(nsl, gethostbyname)
-      AC_CHECK_LIB(socket, socket)
+	  AC_CHECK_LIB(nsl, gethostbyname)
+	  AC_CHECK_LIB(socket, socket)
   ;;
   *-cygwin*)
-      AC_DEFINE(WIN32,,Windows32 target platform)
-      AC_CHECK_LIB(wsock32, socket)
+	  AC_DEFINE(WIN32,,Windows32 target platform)
+	  AC_CHECK_LIB(wsock32, socket)
   ;;
 # never tested this, only theoretically by letter from demos about parser2 build
   *-hpux*)
-      AC_CHECK_LIB(nsl, main)
+	  AC_CHECK_LIB(nsl, main)
   ;;
 esac
 
@@ -466,9 +488,6 @@ AC_CHECK_LIB(crypt, crypt)
 dnl Checks for functions.
 
 AC_CHECK_FUNCS(
-trunc \
-round \
-sign \
 flock \
 _locking \
 fcntl \
@@ -477,8 +496,20 @@ ftruncate \
 getrusage \
 gettimeofday \
 crypt \
-sigsetjmp siglongjmp
+siglongjmp
 )
+
+dnl on some linux[seen on 2.4] it's a macro 
+PA_CHECK_SIGSETJMP
+
+dnl see comment above
+AC_LANG_PUSH(C++)
+PA_CHECK_MATH_FUNCS_ONE_ARG(
+trunc \
+round \
+sign
+)
+AC_LANG_POP
 
 dnl We require qsort(3) and select(2).
 
@@ -491,80 +522,43 @@ dnl or it can be tm.tm_gmtoff
 dnl or it can be tm.tm_tzadj
 
 AC_MSG_CHECKING(for timezone variable)
-AC_TRY_COMPILE([#include <time.h>],        
+AC_TRY_COMPILE([#include <time.h>],		
 [
 time_t test=timezone;
-],                                         
-AC_DEFINE(HAVE_TIMEZONE)                  
+],                        				 
+AC_DEFINE(HAVE_TIMEZONE)				  
 AC_MSG_RESULT(yes),                        
 AC_MSG_RESULT(no))                         
 
 AC_MSG_CHECKING(for daylight variable)
-AC_TRY_COMPILE([#include <time.h>],        
+AC_TRY_COMPILE([#include <time.h>],		
 [
 int test=daylight;
-],                                         
-AC_DEFINE(HAVE_DAYLIGHT)              
+],                        				 
+AC_DEFINE(HAVE_DAYLIGHT)			  
 AC_MSG_RESULT(yes),                        
 AC_MSG_RESULT(no))                         
 
 AC_MSG_CHECKING(for tm_gmtoff in struct tm)
-AC_TRY_COMPILE([#include <time.h>],        
-[struct tm tm;                             
-tm.tm_gmtoff=0;                            
-],                                         
-AC_DEFINE(HAVE_TM_GMTOFF)                  
+AC_TRY_COMPILE([#include <time.h>],		
+[struct tm tm;                        	 
+tm.tm_gmtoff=0;                        	
+],                        				 
+AC_DEFINE(HAVE_TM_GMTOFF)				  
 AC_MSG_RESULT(yes),                        
 AC_MSG_RESULT(no))                         
 
 AC_MSG_CHECKING(for tm_tzadj in struct tm)
-AC_TRY_COMPILE([#include <time.h>],        
-[struct tm tm;                             
-tm.tm_tzadj=0;                            
-],                                         
-AC_DEFINE(HAVE_TM_TZADJ)                  
+AC_TRY_COMPILE([#include <time.h>],		
+[struct tm tm;                        	 
+tm.tm_tzadj=0;                        	
+],                        				 
+AC_DEFINE(HAVE_TM_TZADJ)				  
 AC_MSG_RESULT(yes),                        
 AC_MSG_RESULT(no))                         
 
 
-dnl these tests should go in C++ language {
-AC_LANG_CPLUSPLUS
-AC_CHECK_HEADERS(new)
-
-AC_MSG_CHECKING(whether compiler supports pragma pack)
-AC_TRY_COMPILE(
-#pragma pack(1)
-struct _1_byte {
-	char c;
-};
-#pragma pack()
-,,[
-    AC_MSG_RESULT(yes)
-	AC_DEFINE(HAVE_PRAGMA_PACK,,compiler supports pragma pack)
-],		
-    AC_MSG_RESULT(no)
-)
-
-AC_MSG_CHECKING(for set_new_handler)
-AC_TRY_COMPILE(
-#ifdef HAVE_NEW
-#include <new>
-#endif
-void failed_new() {}
-,
-std::set_new_handler(failed_new);
-,[
-    AC_MSG_RESULT(yes)
-	AC_DEFINE(HAVE_SET_NEW_HANDLER,,library has set_new_handler func)
-],		
-    AC_MSG_RESULT(no)
-)
-
-AC_LANG_C
-dnl } these tests sould go in C++ language, restoring default
-
-
-dnl AC_ARG_ENABLE(db, [  --enable-db             to enable 'hashfile' parser class],
+dnl AC_ARG_ENABLE(db, [  --enable-db			 to enable 'hashfile' parser class],
 dnl [
 dnl if test "$enableval" != "no"; then
 dnl AC_CHECK_HEADERS(db.h)
@@ -572,23 +566,6 @@ dnl AC_CHECK_LIB(db, __db_open)
 dnl fi
 dnl ]
 dnl )
-
-
-dnl Apache libs
-APACHE_LIBS="$LIBS $LIBADD_DL"
-dnl append stdc++ to libs list commented
-dnl 1. because binary seem to work without it
-dnl purpose of this: remove strange name dependance
-dnl for linker creates reference not for libstc++.xx but
-dnl for something specific to local system,
-dnl thus reducing binary compatibility
-dnl 2. for same reason linker of targets/cgi/parser3 changed to
-dnl "C" compiler from "C++" compiler
-dnl AC_CHECK_LIB(stdc++, __builtin_new,
-dnl 	APACHE_LIBS="$APACHE_LIBS -lstdc++"
-dnl )
-AC_SUBST(APACHE_LIBS)
-
 
 dnl install directories
 
@@ -608,12 +585,12 @@ AC_SUBST(charsetsdir)
 e_libdir=$libdir
 if test "$e_libdir" = "\${exec_prefix}/lib"; then
 
-    # Let make expand exec_prefix.
-    e_exec_prefix=$exec_prefix
-    test "x$e_exec_prefix" = xNONE && e_exec_prefix=$e_prefix
+	# Let make expand exec_prefix.
+	e_exec_prefix=$exec_prefix
+	test "x$e_exec_prefix" = xNONE && e_exec_prefix=$e_prefix
 
-    # expand apostrophed
-    test "$e_libdir" = "\${exec_prefix}/lib" && e_libdir="${e_exec_prefix}/lib"
+	# expand apostrophed
+	test "$e_libdir" = "\${exec_prefix}/lib" && e_libdir="${e_exec_prefix}/lib"
 fi
 
 sqldriversdir=$e_libdir
@@ -651,4 +628,4 @@ AH_TEMPLATE([HAVE_TM_TZADJ],
 
 
 AM_CONFIG_HEADER(src/include/pa_config_auto.h)
-AC_OUTPUT(Makefile src/Makefile src/types/Makefile src/classes/Makefile src/classes/gd/Makefile src/classes/smtp/Makefile src/include/Makefile src/main/Makefile src/sql/Makefile src/lib/Makefile src/lib/ltdl/Makefile src/lib/pcre/Makefile src/lib/md5/Makefile src/lib/patches/Makefile src/targets/Makefile src/targets/cgi/Makefile src/targets/apache13/Makefile src/targets/apache13/hook/Makefile src/targets/apache13/p3runConfigure src/targets/isapi/Makefile etc/Makefile etc/parser3.charsets/Makefile bin/Makefile bin/auto.p.dist)
+AC_OUTPUT(Makefile src/Makefile src/types/Makefile src/classes/Makefile src/classes/gd/Makefile src/classes/smtp/Makefile src/include/Makefile src/main/Makefile src/sql/Makefile src/lib/Makefile src/lib/patches/Makefile src/lib/gc/Makefile src/lib/gc/include/Makefile src/lib/cord/Makefile src/lib/cord/include/Makefile src/lib/cord/include/private/Makefile src/lib/ltdl/Makefile src/lib/pcre/Makefile src/lib/md5/Makefile src/targets/Makefile src/targets/cgi/Makefile src/targets/apache13/Makefile src/targets/apache13/hook/Makefile src/targets/apache13/p3runConfigure src/targets/isapi/Makefile etc/Makefile etc/parser3.charsets/Makefile bin/Makefile bin/auto.p.dist)

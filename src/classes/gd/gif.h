@@ -1,7 +1,7 @@
 /** @file
 	Parser: image manipulations decls.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 	based on:
 	gd.h: declarations file for the gifdraw module.
@@ -18,15 +18,47 @@
 #ifndef GIF_H
 #define GIF_H
 
-static const char* IDENT_GIF_H="$Date: 2003/01/21 15:51:08 $";
+static const char* IDENT_GIF_H="$Date: 2003/07/24 11:31:20 $";
 
 #include "pa_config_includes.h"
 
-#include "pa_pool.h"
-#include "pa_string.h"
+
+#include "pa_memory.h"
 
 #define gdMaxColors 0x100
 #define HSIZE  5003            /* 80% occupancy */
+
+struct gdBuf {
+	void *ptr;
+	size_t size;
+
+	gdBuf(void *aptr, size_t asize): ptr(aptr), size(asize) {}
+};
+
+class gdGrowingBuf: PA_Object {
+	unsigned char *fptr;
+	size_t fallocated;
+	size_t fused;
+
+	void expand(size_t delta) {
+		size_t new_allocated=fallocated+delta;
+		fptr=(unsigned char*)realloc(fptr, new_allocated);
+		fallocated=new_allocated;
+	}
+public:
+	operator gdBuf() { return gdBuf(fptr, fused); }
+
+	gdGrowingBuf(): fptr(0), fallocated(0), fused(0) {}
+
+	void append(unsigned char *abuf, size_t asize) {
+		ssize_t delta=asize-(fallocated-fused);
+		if(delta>0)
+			expand(delta+100);
+
+		memcpy(&fptr[fused], abuf, asize);
+		fused+=asize;
+	}
+};
 
 /** Image type. 
 	See functions below; you will not need to change
@@ -34,19 +66,18 @@ static const char* IDENT_GIF_H="$Date: 2003/01/21 15:51:08 $";
 	access sx, sy, the color table, and colorsTotal for 
 	read-only purposes. 
 */
-class gdImage : public Pooled {
+class gdImage: public PA_Object {
 
 public: 
 	
 	//@{
 	/// @name Functions to manipulate images
-	gdImage(Pool& pool) : Pooled(pool) {}
 	void Create(int asx, int asy);
 	bool CreateFromGif(FILE *fd);
 	void SetPixel(int x, int y, int color);
 	int GetPixel(int x, int y);
 	void Line(int x1, int y1, int x2, int y2, int color);
-	void StyledLine(int x1, int y1, int x2, int y2, int color, const char *lineStyle);
+	void StyledLine(int x1, int y1, int x2, int y2, int color, const char* lineStyle);
 	void Rectangle(int x1, int y1, int x2, int y2, int color);
 	void LineReplaceColor(int x1, int y1, int x2, int y2, int a, int b);
 	void FilledRectangle(int x1, int y1, int x2, int y2, int color);
@@ -72,7 +103,7 @@ public:
 	int BoundsSafe(int x, int y);
 	void DoSetPixel(int x, int y, int color);
 	
-	void Gif(String& out);
+	gdBuf Gif();
 	void Arc(int cx, int cy, int w, int h, int s, int e, int color);
 	void Sector(int cx, int cy, int w, int h, int s, int e, int color);
 	void FillToBorder(int x, int y, int border, int color);
@@ -80,7 +111,7 @@ public:
 	void Copy(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int w, int h);
 	void CopyResampled(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int dstW, int dstH, int srcW, int srcH, int tolerance);
 	void SetLineWidth(int width);
-	void SetLineStyle(const char *aLineStyle);
+	void SetLineStyle(const char* aLineStyle);
 	void SetInterlace(int interlaceArg); /* On or off(1 or 0) */
 	
 public: 
@@ -110,7 +141,7 @@ private:
 	int transparent;
 	int *polyInts;
 	int polyAllocated;
-	int lineWidth; const char *lineStyle;
+	int lineWidth; const char* lineStyle;
 	int interlace;
 
 private: // read gif
@@ -128,12 +159,12 @@ private: // read gif
 };
 
 ///	used by gdImage::Gif to produce buffer with bytes in GIF format
-class gdGifEncoder : public Pooled {
+class gdGifEncoder: public PA_Object {
 public:
 
-	gdGifEncoder(Pool& pool, gdImage& aim, String& afp);
+	gdGifEncoder(gdImage& aim);
 
-	void encode( 
+	gdBuf encode( 
 		int GWidth, int GHeight, 
 		int GInterlace, int Background, 
 		int Transparent, int BitsPerPixel, 
@@ -152,7 +183,7 @@ private:
 
 private:
 
-	void Putbyte(int c);
+	void Putbyte(unsigned char c);
 	void Putword(int w);
 	void Write(void *buf, size_t size);
 
@@ -170,7 +201,7 @@ private:
 private:
 	
 	gdImage& im;
-	String& fp;
+	gdGrowingBuf buf;
 
 	int Width, Height;
 	int curx, cury;

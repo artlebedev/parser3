@@ -309,7 +309,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os RANLIB ac_ct_RANLIB YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE commentcharset_windows1251 commentcharset_windows1250 commentcharset_windows1257 commentcharset_koi8r dll_extension mysql_client pgsql_client oracle_client DO_NOT_LINK_LIBSTDCPP_TRUE DO_NOT_LINK_LIBSTDCPP_FALSE XML_INCLUDES XML_LIBS MIME_INCLUDES MIME_LIBS APACHE13 COMPILE_APACHE13_MODULE_TRUE COMPILE_APACHE13_MODULE_FALSE INCLTDL LIBLTDL subdirs LIBADD_DL CPP EGREP CXXCPP APACHE_LIBS charsetsdir sqldriversdir LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os RANLIB ac_ct_RANLIB YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE commentcharset_windows1251 commentcharset_windows1250 commentcharset_windows1257 commentcharset_koi8r dll_extension mysql_client pgsql_client oracle_client CPP_LIBS GC_LIBS XML_INCLUDES XML_LIBS MIME_INCLUDES MIME_LIBS APACHE13 COMPILE_APACHE13_MODULE_TRUE COMPILE_APACHE13_MODULE_FALSE INCLTDL LIBLTDL subdirs LIBADD_DL CPP EGREP charsetsdir sqldriversdir LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -778,10 +778,6 @@ ac_env_CPP_set=${CPP+set}
 ac_env_CPP_value=$CPP
 ac_cv_env_CPP_set=${CPP+set}
 ac_cv_env_CPP_value=$CPP
-ac_env_CXXCPP_set=${CXXCPP+set}
-ac_env_CXXCPP_value=$CXXCPP
-ac_cv_env_CXXCPP_set=${CXXCPP+set}
-ac_cv_env_CXXCPP_value=$CXXCPP
 
 #
 # Report the --help message.
@@ -863,15 +859,15 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-dependency-tracking Speeds up one-time builds
   --enable-dependency-tracking  Do not reject slow dependency extractors
-  --disable-safe-mode     to enable reading and executing
+  --disable-safe-mode	  to enable reading and executing
                           files belonging to group+user other then effective
-  --disable-execs         to disable any execs
+  --disable-execs	  to disable any execs
                           (file::exec, file::cgi, unix mail:send)
-  --disable-string-origins to switch off string origin tracking
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-assertions       to enable assertions
   --with-charsets=CHARSET,CHARSET,...  Enables charsets in root config (windows-1251,
                           windows-1250 windows-1257 koi8-r; Default is windows-1251)
   --with-mysql-client=mysqlclientlib?withparams
@@ -882,10 +878,13 @@ Optional Packages:
                           Oracle client dynamic library
   --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)
-  --with-link-stdcpp=PATH to directory with libstdc++
-  --without-link-stdcpp   to disable libstdc++ linkage,
-                          if you belive you do not need one
+  --with-dynamic-stdcpp   link libstdc++ dynamically
+                          by default, libstdc++ is linked statically
   --with-sjlj-exceptions  enable simple 'throw' from dynamic library
+  --with-shared-gc=D      D is the directory where
+                          Boehm garbage collecting library is installed (shared lib)
+  --with-static-gc=D      D is the directory where
+                          Boehm garbage collecting library is installed (static lib)
   --with-glib-config=FILE FILE is glib library
                           configuration file (search for glib*-config)
   --with-shared-xml=D     D is the directory where
@@ -893,7 +892,7 @@ Optional Packages:
   --with-static-xml=D     D is the directory where
                           Gnome XML libraries are installed (static libs)
   --with-shared-mailreceive=D is the directory where
-                               Gnome MIME library is installed (shared lib)
+                          Gnome MIME library is installed (shared lib)
   --with-static-mailreceive=D is the directory where
                           Gnome MIME library is installed (static lib)
   \"--with-sendmail=COMMAND\" forces this command to send mail.
@@ -913,7 +912,6 @@ Some influential environment variables:
   CC          C compiler command
   CFLAGS      C compiler flags
   CPP         C preprocessor
-  CXXCPP      C++ preprocessor
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -1714,11 +1712,12 @@ echo "/* edit configure.in to change version number */" >> $srcdir/src/include/p
 echo "#define PARSER_VERSION \"$PARSER_VERSION\"" >> $srcdir/src/include/pa_version.h.new
 cmp $srcdir/src/include/pa_version.h.new $srcdir/src/include/pa_version.h >/dev/null 2>&1
 if test $? -ne 0 ; then
-    rm -f $srcdir/src/include/pa_version.h && mv $srcdir/src/include/pa_version.h.new $srcdir/src/include/pa_version.h && \
-    echo Updated $srcdir/src/include/pa_version.h
+	rm -f $srcdir/src/include/pa_version.h && mv $srcdir/src/include/pa_version.h.new $srcdir/src/include/pa_version.h && \
+	echo Updated $srcdir/src/include/pa_version.h
 else
 	rm -f $srcdir/src/include/pa_version.h.new
 fi
+
 
 
 # Make sure we can run config.sub.
@@ -1776,6 +1775,13 @@ host_os=`echo $ac_cv_host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 
 
 
+case $host_os in
+  *cygwin* )
+cat >>confdefs.h <<\_ACEOF
+#define CYGWIN
+_ACEOF
+;;
+esac
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -2046,19 +2052,19 @@ done
 test -n "$YACC" || YACC="yacc"
 
 if test "$YACC" != "bison -y"; then
-    { echo "$as_me:$LINENO: WARNING: to regenerate Parser grammar YOU WOULD NEED BISON" >&5
+	{ echo "$as_me:$LINENO: WARNING: to regenerate Parser grammar YOU WOULD NEED BISON" >&5
 echo "$as_me: WARNING: to regenerate Parser grammar YOU WOULD NEED BISON" >&2;}
 else
-    echo "$as_me:$LINENO: checking bison version" >&5
+	echo "$as_me:$LINENO: checking bison version" >&5
 echo $ECHO_N "checking bison version... $ECHO_C" >&6
-    oldIFS=$IFS; IFS=.
-    set `bison -V | sed -e 's/^GNU Bison version //'`
-    IFS=$oldIFS
-    if test "$1" = "1" -a "$2" -lt "25"; then
-        { echo "$as_me:$LINENO: WARNING: Bison 1.25 or newer needed to regenerate Parser compiler (found $1.$2)." >&5
+	oldIFS=$IFS; IFS=.
+	set `bison -V | sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/$/./'`
+	IFS=$oldIFS
+	if test "$1" = "1" -a "$2" -lt "25"; then
+		{ echo "$as_me:$LINENO: WARNING: Bison 1.25 or newer needed to regenerate Parser compiler (found $1.$2)." >&5
 echo "$as_me: WARNING: Bison 1.25 or newer needed to regenerate Parser compiler (found $1.$2)." >&2;}
-    fi
-    echo "$as_me:$LINENO: result: $1.$2 (ok)" >&5
+	fi
+	echo "$as_me:$LINENO: result: $1.$2 (ok)" >&5
 echo "${ECHO_T}$1.$2 (ok)" >&6
 fi
 
@@ -3491,6 +3497,7 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+
 echo "$as_me:$LINENO: checking for inline" >&5
 echo $ECHO_N "checking for inline... $ECHO_C" >&6
 if test "${ac_cv_c_inline+set}" = set; then
@@ -3551,11 +3558,27 @@ esac
 
 
 
+
+# Check whether --with-assertions or --without-assertions was given.
+if test "${with_assertions+set}" = set; then
+  withval="$with_assertions"
+  { echo "$as_me:$LINENO: WARNING: enabling assertions" >&5
+echo "$as_me: WARNING: enabling assertions" >&2;}
+
+else
+
+cat >>confdefs.h <<\_ACEOF
+#define NDEBUG
+_ACEOF
+
+
+fi;
+
 # Check whether --enable-safe-mode or --disable-safe-mode was given.
 if test "${enable_safe_mode+set}" = set; then
   enableval="$enable_safe_mode"
 
-    SAFE_MODE=$enableval
+	SAFE_MODE=$enableval
 
 
 fi;
@@ -3580,23 +3603,6 @@ echo "$as_me: WARNING: disabling file execs" >&2;}
 
 cat >>confdefs.h <<\_ACEOF
 #define NO_PA_EXECS
-_ACEOF
-
-fi
-
-
-fi;
-
-# Check whether --enable-string-origins or --disable-string-origins was given.
-if test "${enable_string_origins+set}" = set; then
-  enableval="$enable_string_origins"
-
-if test "$enableval" = "no"; then
-	{ echo "$as_me:$LINENO: WARNING: disabling string origin tracking" >&5
-echo "$as_me: WARNING: disabling string origin tracking" >&2;}
-
-cat >>confdefs.h <<\_ACEOF
-#define NO_STRING_ORIGIN
 _ACEOF
 
 fi
@@ -3675,13 +3681,13 @@ echo "$as_me:$LINENO: checking for dynamic-link library extension" >&5
 echo $ECHO_N "checking for dynamic-link library extension... $ECHO_C" >&6
 case "$host_os" in
 hpux9* | hpux10* | hpux11*)
-    dll_extension=sl
-    ;;
+	dll_extension=sl
+	;;
 cygwin)
-    dll_extension=dll
-    ;;
+	dll_extension=dll
+	;;
 *)
-    dll_extension=so
+	dll_extension=so
 esac
 echo "$as_me:$LINENO: result: $dll_extension" >&5
 echo "${ECHO_T}$dll_extension" >&6
@@ -3781,39 +3787,21 @@ if test "${with_pathlink+set}" = set; then
 
 fi;
 
-# Check whether --with-link-stdcpp or --without-link-stdcpp was given.
-if test "${with_link_stdcpp+set}" = set; then
-  withval="$with_link_stdcpp"
+# Check whether --with-dynamic-stdcpp or --without-dynamic-stdcpp was given.
+if test "${with_dynamic_stdcpp+set}" = set; then
+  withval="$with_dynamic_stdcpp"
 
-LIBSTDCPP_PATH=$withval
-if test "$LIBSTDCPP_PATH" = "no"; then
-	{ echo "$as_me:$LINENO: WARNING: disabling libstdc++ linkage" >&5
-echo "$as_me: WARNING: disabling libstdc++ linkage" >&2;}
-else
-	if test -z "$LD_PATHLINK"; then
-	    { { echo "$as_me:$LINENO: error: when using --with-link-stdcpp one must specify --with-pathlink" >&5
-echo "$as_me: error: when using --with-link-stdcpp one must specify --with-pathlink" >&2;}
-   { (exit 1); exit 1; }; }
-	fi
-	LIBS="$LIBS -Wl,$LD_PATHLINK -Wl,$LIBSTDCPP_PATH"
-fi
+	{ echo "$as_me:$LINENO: WARNING: libstdc++ will be linked dynamically: this is probably incompatible with other platforms" >&5
+echo "$as_me: WARNING: libstdc++ will be linked dynamically: this is probably incompatible with other platforms" >&2;}
+	# this is for apache, it's linked with gcc and need to know
+	# and it would not harm linking with c++ toolchain
+	CPP_LIBS="-lstdc++"
 
 else
-  #pseudo path, meaning still link libstdcpp. value needed to trick next _CONDITIONAL
-LIBSTDCPP_PATH=" "
+
+	CPP_LIBS="-Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"
 
 fi;
-
-
-if test "$LIBSTDCPP_PATH" = "no"; then
-  DO_NOT_LINK_LIBSTDCPP_TRUE=
-  DO_NOT_LINK_LIBSTDCPP_FALSE='#'
-else
-  DO_NOT_LINK_LIBSTDCPP_TRUE='#'
-  DO_NOT_LINK_LIBSTDCPP_FALSE=
-fi
-
-
 
 
 
@@ -3827,6 +3815,84 @@ _ACEOF
 
 
 fi;
+
+GC_LIB_NAME=gc
+
+# Check whether --with-shared-gc or --without-shared-gc was given.
+if test "${with_shared_gc+set}" = set; then
+  withval="$with_shared_gc"
+
+	GC_LIBS="-L$withval -l$GC_LIB_NAME"
+
+fi;
+
+# Check whether --with-static-gc or --without-static-gc was given.
+if test "${with_static_gc+set}" = set; then
+  withval="$with_static_gc"
+
+	GC_LIBS="-L$withval -Wl,-Bstatic -l$GC_LIB_NAME -Wl,-Bdynamic"
+
+fi;
+if test -z "$GC_LIBS"; then
+	#undefined? use any found in system
+	GC_LIBS="-l$GC_LIB_NAME"
+	{ echo "$as_me:$LINENO: WARNING: neither --with-shared/static-gc were specified, hoping linker would find it" >&5
+echo "$as_me: WARNING: neither --with-shared/static-gc were specified, hoping linker would find it" >&2;}
+fi
+
+echo "$as_me:$LINENO: checking for libgc" >&5
+echo $ECHO_N "checking for libgc... $ECHO_C" >&6
+SAVE_LIBS=$LIBS
+LIBS="$LIBS $GC_LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+	extern int GC_dont_gc;
+
+int
+main ()
+{
+
+	GC_dont_gc=0;
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+	{ { echo "$as_me:$LINENO: error: please specify path to libgc: --with-shared-gc OR --with-static-gc" >&5
+echo "$as_me: error: please specify path to libgc: --with-shared-gc OR --with-static-gc" >&2;}
+   { (exit 1); exit 1; }; }
+
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+
+LIBS=$SAVE_LIBS
 
 
 
@@ -3842,16 +3908,16 @@ fi;
 if test "${with_shared_xml+set}" = set; then
   withval="$with_shared_xml"
 
-    GNOME_XML=$withval
-    XMLBIN="$GNOME_XML/bin"
-    XMLINC="$GNOME_XML/include"
-    XMLLIB="$GNOME_XML/lib"
+	GNOME_XML=$withval
+	XMLBIN="$GNOME_XML/bin"
+	XMLINC="$GNOME_XML/include"
+	XMLLIB="$GNOME_XML/lib"
 
-    if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
-    	{ { echo "$as_me:$LINENO: error: $GNOME_XML does not seem to be valid Gnome installation directory" >&5
+	if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
+		{ { echo "$as_me:$LINENO: error: $GNOME_XML does not seem to be valid Gnome installation directory" >&5
 echo "$as_me: error: $GNOME_XML does not seem to be valid Gnome installation directory" >&2;}
    { (exit 1); exit 1; }; }
-    fi
+	fi
 
 
 cat >>confdefs.h <<\_ACEOF
@@ -3859,25 +3925,25 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 
-    LIBXML2_SO_NAME=`cd $XMLLIB ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    LIBGDOME_SO_NAME=`cd $XMLLIB ; ls libgdome.?? libgdome.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    LIBXSLT_SO_NAME=`cd $XMLLIB ; ls libxslt.?? libxslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    LIBEXSLT_SO_NAME=`cd $XMLLIB ; ls libexslt.?? libexslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+	LIBXML2_SO_NAME=`cd $XMLLIB ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+	LIBGDOME_SO_NAME=`cd $XMLLIB ; ls libgdome.?? libgdome.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+	LIBXSLT_SO_NAME=`cd $XMLLIB ; ls libxslt.?? libxslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+	LIBEXSLT_SO_NAME=`cd $XMLLIB ; ls libexslt.?? libexslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 
-    if test -z "$GLIB_CONFIG"; then
-	    GLIB_CONFIG=$XMLBIN/glib-config
-	    if test \! -x $GLIB_CONFIG; then
-	        GLIB_CONFIG=glib-config
-	    fi
-    fi
-    GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-    GLIB_LIBS=`$GLIB_CONFIG --libs`
+	if test -z "$GLIB_CONFIG"; then
+		GLIB_CONFIG=$XMLBIN/glib-config
+		if test \! -x $GLIB_CONFIG; then
+			GLIB_CONFIG=glib-config
+		fi
+	fi
+	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+	GLIB_LIBS=`$GLIB_CONFIG --libs`
 
-    XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
-    XML_LIBS="$GLIB_LIBS -L$XMLLIB -l$LIBXML2_SO_NAME -l$LIBGDOME_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
-    if test \! -z "$LD_PATHLINK"; then
+	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
+	XML_LIBS="$GLIB_LIBS -L$XMLLIB -l$LIBXML2_SO_NAME -l$LIBGDOME_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
+	if test \! -z "$LD_PATHLINK"; then
 	XML_LIBS="$XML_LIBS -Wl,$LD_PATHLINK -Wl,$XMLLIB"
-    fi
+	fi
 
 fi;
 
@@ -3885,16 +3951,16 @@ fi;
 if test "${with_static_xml+set}" = set; then
   withval="$with_static_xml"
 
-    GNOME_XML=$withval
-    XMLBIN="$GNOME_XML/bin"
-    XMLINC="$GNOME_XML/include"
-    XMLLIB="$GNOME_XML/lib"
+	GNOME_XML=$withval
+	XMLBIN="$GNOME_XML/bin"
+	XMLINC="$GNOME_XML/include"
+	XMLLIB="$GNOME_XML/lib"
 
-    if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
-    	{ { echo "$as_me:$LINENO: error: $GNOME_XML does not seem to be valid Gnome installation directory" >&5
+	if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
+		{ { echo "$as_me:$LINENO: error: $GNOME_XML does not seem to be valid Gnome installation directory" >&5
 echo "$as_me: error: $GNOME_XML does not seem to be valid Gnome installation directory" >&2;}
    { (exit 1); exit 1; }; }
-    fi
+	fi
 
 
 cat >>confdefs.h <<\_ACEOF
@@ -3902,18 +3968,18 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 
-    if test -z "$GLIB_CONFIG"; then
-	    GLIB_CONFIG=$XMLBIN/glib-config
-	    if test \! -x $GLIB_CONFIG; then
-	        GLIB_CONFIG=glib-config
-	    fi
-    fi
-    GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+	if test -z "$GLIB_CONFIG"; then
+		GLIB_CONFIG=$XMLBIN/glib-config
+		if test \! -x $GLIB_CONFIG; then
+			GLIB_CONFIG=glib-config
+		fi
+	fi
+	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
 
-    GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
-    GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
-    XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
-    XML_LIBS="$XMLLIB/libgdome.a $XMLLIB/libxslt.a $XMLLIB/libexslt.a $XMLLIB/libxml2.a $GLIB_DIR/lib$GLIB_NAME.a"
+	GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
+	GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
+	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
+	XML_LIBS="$XMLLIB/libgdome.a $XMLLIB/libxslt.a $XMLLIB/libexslt.a $XMLLIB/libxml2.a $GLIB_DIR/lib$GLIB_NAME.a"
 
 fi;
 
@@ -3924,16 +3990,16 @@ fi;
 if test "${with_shared_mailreceive+set}" = set; then
   withval="$with_shared_mailreceive"
 
-    GNOME_MIME=$withval
-    MIMEBIN="$GNOME_MIME/bin"
-    MIMEINC="$GNOME_MIME/include"
-    MIMELIB="$GNOME_MIME/lib"
+	GNOME_MIME=$withval
+	MIMEBIN="$GNOME_MIME/bin"
+	MIMEINC="$GNOME_MIME/include"
+	MIMELIB="$GNOME_MIME/lib"
 
-    if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
-    	{ { echo "$as_me:$LINENO: error: $GNOME_MIME does not seem to be valid Gnome installation directory" >&5
+	if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
+		{ { echo "$as_me:$LINENO: error: $GNOME_MIME does not seem to be valid Gnome installation directory" >&5
 echo "$as_me: error: $GNOME_MIME does not seem to be valid Gnome installation directory" >&2;}
    { (exit 1); exit 1; }; }
-    fi
+	fi
 
 
 cat >>confdefs.h <<\_ACEOF
@@ -3941,22 +4007,22 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 
-    LIBMIME_SO_NAME=`cd $MIMELIB ; ls libgmime.?? libgmime.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+	LIBMIME_SO_NAME=`cd $MIMELIB ; ls libgmime.?? libgmime.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 
-    if test -z "$GLIB_CONFIG"; then
-	    GLIB_CONFIG=$MIMEBIN/glib-config
-	    if test \! -x $GLIB_CONFIG; then
-	        GLIB_CONFIG=glib-config
-	    fi
-    fi
-    GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-    GLIB_LIBS=`$GLIB_CONFIG --libs`
+	if test -z "$GLIB_CONFIG"; then
+		GLIB_CONFIG=$MIMEBIN/glib-config
+		if test \! -x $GLIB_CONFIG; then
+			GLIB_CONFIG=glib-config
+		fi
+	fi
+	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+	GLIB_LIBS=`$GLIB_CONFIG --libs`
 
-    MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
-    MIME_LIBS="$GLIB_LIBS -L$MIMELIB -l$LIBMIME_SO_NAME"
-    if test \! -z "$LD_PATHLINK"; then
+	MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
+	MIME_LIBS="$GLIB_LIBS -L$MIMELIB -l$LIBMIME_SO_NAME"
+	if test \! -z "$LD_PATHLINK"; then
 	MIME_LIBS="$MIME_LIBS -Wl,$LD_PATHLINK -Wl,$MIMELIB"
-    fi
+	fi
 
 fi;
 
@@ -3964,16 +4030,16 @@ fi;
 if test "${with_static_mailreceive+set}" = set; then
   withval="$with_static_mailreceive"
 
-    GNOME_MIME=$withval
-    MIMEBIN="$GNOME_MIME/bin"
-    MIMEINC="$GNOME_MIME/include"
-    MIMELIB="$GNOME_MIME/lib"
+	GNOME_MIME=$withval
+	MIMEBIN="$GNOME_MIME/bin"
+	MIMEINC="$GNOME_MIME/include"
+	MIMELIB="$GNOME_MIME/lib"
 
-    if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
-    	{ { echo "$as_me:$LINENO: error: $GNOME_MIME does not seem to be valid Gnome installation directory" >&5
+	if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
+		{ { echo "$as_me:$LINENO: error: $GNOME_MIME does not seem to be valid Gnome installation directory" >&5
 echo "$as_me: error: $GNOME_MIME does not seem to be valid Gnome installation directory" >&2;}
    { (exit 1); exit 1; }; }
-    fi
+	fi
 
 
 cat >>confdefs.h <<\_ACEOF
@@ -3981,18 +4047,18 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 
-    if test -z "$GLIB_CONFIG"; then
-	    GLIB_CONFIG=$MIMEBIN/glib-config
-	    if test \! -x $GLIB_CONFIG; then
-	        GLIB_CONFIG=glib-config
-	    fi
-    fi
-    GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
+	if test -z "$GLIB_CONFIG"; then
+		GLIB_CONFIG=$MIMEBIN/glib-config
+		if test \! -x $GLIB_CONFIG; then
+			GLIB_CONFIG=glib-config
+		fi
+	fi
+	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
 
-    GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
-    GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
-    MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
-    MIME_LIBS="$MIMELIB/libgmime.a $GLIB_DIR/lib$GLIB_NAME.a"
+	GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
+	GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
+	MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
+	MIME_LIBS="$MIMELIB/libgmime.a $GLIB_DIR/lib$GLIB_NAME.a"
 
 fi;
 
@@ -4017,11 +4083,11 @@ fi;
 if test "${with_apache13+set}" = set; then
   withval="$with_apache13"
   APACHE13=$withval
-    if test \! -f "$APACHE13/src/include/httpd.h"; then
-    	{ { echo "$as_me:$LINENO: error: $APACHE13 does not seem to be valid Apache13 source distribution directory" >&5
+	if test \! -f "$APACHE13/src/include/httpd.h"; then
+		{ { echo "$as_me:$LINENO: error: $APACHE13 does not seem to be valid Apache13 source distribution directory" >&5
 echo "$as_me: error: $APACHE13 does not seem to be valid Apache13 source distribution directory" >&2;}
    { (exit 1); exit 1; }; }
-    fi
+	fi
 
 fi;
 
@@ -4527,7 +4593,6 @@ done
 fi
 
 
-LIBS="$LIBS $LIBADD_DL"
 
 
 ac_ext=c
@@ -5264,7 +5329,8 @@ fi
 
 
 
-for ac_header in signal.h \
+for ac_header in assert.h \
+signal.h \
 unistd.h \
 process.h \
 stddef.h \
@@ -5278,7 +5344,6 @@ ctype.h \
 math.h \
 crypt.h \
 time.h sys/time.h \
-stdlib.h \
 string.h \
 direct.h \
 setjmp.h \
@@ -6019,14 +6084,7 @@ fi
 
 
 
-
-
-
-
-for ac_func in trunc \
-round \
-sign \
-flock \
+for ac_func in flock \
 _locking \
 fcntl \
 lockf \
@@ -6034,7 +6092,7 @@ ftruncate \
 getrusage \
 gettimeofday \
 crypt \
-sigsetjmp siglongjmp
+siglongjmp
 
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -6117,6 +6175,142 @@ _ACEOF
 
 fi
 done
+
+
+
+pa_func=sigsetjmp
+echo "$as_me:$LINENO: checking for (maybe built-in) function $pa_func" >&5
+echo $ECHO_N "checking for (maybe built-in) function $pa_func... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#ifdef HAVE_SETJMP_H
+#	include <setjmp.h>
+#endif
+
+int
+main ()
+{
+
+        $pa_func(0,0);
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$pa_func" | $as_tr_cpp` 1
+_ACEOF
+
+
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+
+
+
+ac_ext=cc
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+
+
+
+
+
+
+for pa_func in trunc \
+round \
+sign
+
+do
+
+echo "$as_me:$LINENO: checking for (maybe built-in) math function $pa_func" >&5
+echo $ECHO_N "checking for (maybe built-in) math function $pa_func... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#ifdef HAVE_MATH_H
+#       include <math.h>
+#endif
+
+int
+main ()
+{
+
+        double result=$pa_func(1.6);
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+cat >>confdefs.h <<_ACEOF
+#define `echo "HAVE_$pa_func" | $as_tr_cpp`  1
+_ACEOF
+
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+
+done
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
@@ -6487,508 +6681,6 @@ fi
 rm -f conftest.$ac_objext conftest.$ac_ext
 
 
-ac_ext=cc
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-
-
-ac_ext=cc
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-echo "$as_me:$LINENO: checking how to run the C++ preprocessor" >&5
-echo $ECHO_N "checking how to run the C++ preprocessor... $ECHO_C" >&6
-if test -z "$CXXCPP"; then
-  if test "${ac_cv_prog_CXXCPP+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-      # Double quotes because CXXCPP needs to be expanded
-    for CXXCPP in "$CXX -E" "/lib/cpp"
-    do
-      ac_preproc_ok=false
-for ac_cxx_preproc_warn_flag in '' yes
-do
-  # Use a header file that comes with gcc, so configuring glibc
-  # with a fresh cross-compiler works.
-  # Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-  # <limits.h> exists even on freestanding compilers.
-  # On the NeXT, cc -E runs the code through the compiler's parser,
-  # not just through cpp. "Syntax error" is here to catch this case.
-  cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#ifdef __STDC__
-# include <limits.h>
-#else
-# include <assert.h>
-#endif
-                     Syntax error
-_ACEOF
-if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
-  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } >/dev/null; then
-  if test -s conftest.err; then
-    ac_cpp_err=$ac_cxx_preproc_warn_flag
-  else
-    ac_cpp_err=
-  fi
-else
-  ac_cpp_err=yes
-fi
-if test -z "$ac_cpp_err"; then
-  :
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-  # Broken: fails on valid input.
-continue
-fi
-rm -f conftest.err conftest.$ac_ext
-
-  # OK, works on sane cases.  Now check whether non-existent headers
-  # can be detected and how.
-  cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <ac_nonexistent.h>
-_ACEOF
-if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
-  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } >/dev/null; then
-  if test -s conftest.err; then
-    ac_cpp_err=$ac_cxx_preproc_warn_flag
-  else
-    ac_cpp_err=
-  fi
-else
-  ac_cpp_err=yes
-fi
-if test -z "$ac_cpp_err"; then
-  # Broken: success on invalid input.
-continue
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-  # Passes both tests.
-ac_preproc_ok=:
-break
-fi
-rm -f conftest.err conftest.$ac_ext
-
-done
-# Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
-rm -f conftest.err conftest.$ac_ext
-if $ac_preproc_ok; then
-  break
-fi
-
-    done
-    ac_cv_prog_CXXCPP=$CXXCPP
-
-fi
-  CXXCPP=$ac_cv_prog_CXXCPP
-else
-  ac_cv_prog_CXXCPP=$CXXCPP
-fi
-echo "$as_me:$LINENO: result: $CXXCPP" >&5
-echo "${ECHO_T}$CXXCPP" >&6
-ac_preproc_ok=false
-for ac_cxx_preproc_warn_flag in '' yes
-do
-  # Use a header file that comes with gcc, so configuring glibc
-  # with a fresh cross-compiler works.
-  # Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-  # <limits.h> exists even on freestanding compilers.
-  # On the NeXT, cc -E runs the code through the compiler's parser,
-  # not just through cpp. "Syntax error" is here to catch this case.
-  cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#ifdef __STDC__
-# include <limits.h>
-#else
-# include <assert.h>
-#endif
-                     Syntax error
-_ACEOF
-if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
-  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } >/dev/null; then
-  if test -s conftest.err; then
-    ac_cpp_err=$ac_cxx_preproc_warn_flag
-  else
-    ac_cpp_err=
-  fi
-else
-  ac_cpp_err=yes
-fi
-if test -z "$ac_cpp_err"; then
-  :
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-  # Broken: fails on valid input.
-continue
-fi
-rm -f conftest.err conftest.$ac_ext
-
-  # OK, works on sane cases.  Now check whether non-existent headers
-  # can be detected and how.
-  cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <ac_nonexistent.h>
-_ACEOF
-if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
-  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } >/dev/null; then
-  if test -s conftest.err; then
-    ac_cpp_err=$ac_cxx_preproc_warn_flag
-  else
-    ac_cpp_err=
-  fi
-else
-  ac_cpp_err=yes
-fi
-if test -z "$ac_cpp_err"; then
-  # Broken: success on invalid input.
-continue
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-  # Passes both tests.
-ac_preproc_ok=:
-break
-fi
-rm -f conftest.err conftest.$ac_ext
-
-done
-# Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
-rm -f conftest.err conftest.$ac_ext
-if $ac_preproc_ok; then
-  :
-else
-  { { echo "$as_me:$LINENO: error: C++ preprocessor \"$CXXCPP\" fails sanity check
-See \`config.log' for more details." >&5
-echo "$as_me: error: C++ preprocessor \"$CXXCPP\" fails sanity check
-See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-
-ac_ext=cc
-ac_cpp='$CXXCPP $CPPFLAGS'
-ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
-
-
-
-for ac_header in new
-do
-as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-if eval "test \"\${$as_ac_Header+set}\" = set"; then
-  echo "$as_me:$LINENO: checking for $ac_header" >&5
-echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
-if eval "test \"\${$as_ac_Header+set}\" = set"; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
-echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
-else
-  # Is the header compilable?
-echo "$as_me:$LINENO: checking $ac_header usability" >&5
-echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-$ac_includes_default
-#include <$ac_header>
-_ACEOF
-rm -f conftest.$ac_objext
-if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest.$ac_objext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_header_compiler=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-ac_header_compiler=no
-fi
-rm -f conftest.$ac_objext conftest.$ac_ext
-echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
-echo "${ECHO_T}$ac_header_compiler" >&6
-
-# Is the header present?
-echo "$as_me:$LINENO: checking $ac_header presence" >&5
-echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <$ac_header>
-_ACEOF
-if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
-  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } >/dev/null; then
-  if test -s conftest.err; then
-    ac_cpp_err=$ac_cxx_preproc_warn_flag
-  else
-    ac_cpp_err=
-  fi
-else
-  ac_cpp_err=yes
-fi
-if test -z "$ac_cpp_err"; then
-  ac_header_preproc=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-  ac_header_preproc=no
-fi
-rm -f conftest.err conftest.$ac_ext
-echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
-echo "${ECHO_T}$ac_header_preproc" >&6
-
-# So?  What about this header?
-case $ac_header_compiler:$ac_header_preproc in
-  yes:no )
-    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
-echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
-echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
-    (
-      cat <<\_ASBOX
-## ------------------------------------ ##
-## Report this to bug-autoconf@gnu.org. ##
-## ------------------------------------ ##
-_ASBOX
-    ) |
-      sed "s/^/$as_me: WARNING:     /" >&2
-    ;;
-  no:yes )
-    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
-echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: check for missing prerequisite headers?" >&5
-echo "$as_me: WARNING: $ac_header: check for missing prerequisite headers?" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
-echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
-    (
-      cat <<\_ASBOX
-## ------------------------------------ ##
-## Report this to bug-autoconf@gnu.org. ##
-## ------------------------------------ ##
-_ASBOX
-    ) |
-      sed "s/^/$as_me: WARNING:     /" >&2
-    ;;
-esac
-echo "$as_me:$LINENO: checking for $ac_header" >&5
-echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
-if eval "test \"\${$as_ac_Header+set}\" = set"; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  eval "$as_ac_Header=$ac_header_preproc"
-fi
-echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
-echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
-
-fi
-if test `eval echo '${'$as_ac_Header'}'` = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-
-done
-
-
-echo "$as_me:$LINENO: checking whether compiler supports pragma pack" >&5
-echo $ECHO_N "checking whether compiler supports pragma pack... $ECHO_C" >&6
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#pragma pack(1)
-struct _1_byte {
-	char c;
-};
-#pragma pack()
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext
-if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest.$ac_objext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-
-    echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6
-
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_PRAGMA_PACK
-_ACEOF
-
-
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-
-fi
-rm -f conftest.$ac_objext conftest.$ac_ext
-
-echo "$as_me:$LINENO: checking for set_new_handler" >&5
-echo $ECHO_N "checking for set_new_handler... $ECHO_C" >&6
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#ifdef HAVE_NEW
-#include <new>
-#endif
-void failed_new() {}
-
-int
-main ()
-{
-std::set_new_handler(failed_new);
-
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext
-if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest.$ac_objext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-
-    echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6
-
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_SET_NEW_HANDLER
-_ACEOF
-
-
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-
-fi
-rm -f conftest.$ac_objext conftest.$ac_ext
-
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-
-
-
-
-APACHE_LIBS="$LIBS $LIBADD_DL"
-
-
 
 
 # expand apostrophed
@@ -7006,12 +6698,12 @@ charsetsdir=$e_sysconfdir/parser3.charsets
 e_libdir=$libdir
 if test "$e_libdir" = "\${exec_prefix}/lib"; then
 
-    # Let make expand exec_prefix.
-    e_exec_prefix=$exec_prefix
-    test "x$e_exec_prefix" = xNONE && e_exec_prefix=$e_prefix
+	# Let make expand exec_prefix.
+	e_exec_prefix=$exec_prefix
+	test "x$e_exec_prefix" = xNONE && e_exec_prefix=$e_prefix
 
-    # expand apostrophed
-    test "$e_libdir" = "\${exec_prefix}/lib" && e_libdir="${e_exec_prefix}/lib"
+	# expand apostrophed
+	test "$e_libdir" = "\${exec_prefix}/lib" && e_libdir="${e_exec_prefix}/lib"
 fi
 
 sqldriversdir=$e_libdir
@@ -7050,7 +6742,7 @@ sqldriversdir=$e_libdir
 
           ac_config_headers="$ac_config_headers src/include/pa_config_auto.h"
 
-                                                                                                                                                                                                                                                ac_config_files="$ac_config_files Makefile src/Makefile src/types/Makefile src/classes/Makefile src/classes/gd/Makefile src/classes/smtp/Makefile src/include/Makefile src/main/Makefile src/sql/Makefile src/lib/Makefile src/lib/ltdl/Makefile src/lib/pcre/Makefile src/lib/md5/Makefile src/lib/patches/Makefile src/targets/Makefile src/targets/cgi/Makefile src/targets/apache13/Makefile src/targets/apache13/hook/Makefile src/targets/apache13/p3runConfigure src/targets/isapi/Makefile etc/Makefile etc/parser3.charsets/Makefile bin/Makefile bin/auto.p.dist"
+                                                                                                                                                                                                                                                                                                  ac_config_files="$ac_config_files Makefile src/Makefile src/types/Makefile src/classes/Makefile src/classes/gd/Makefile src/classes/smtp/Makefile src/include/Makefile src/main/Makefile src/sql/Makefile src/lib/Makefile src/lib/patches/Makefile src/lib/gc/Makefile src/lib/gc/include/Makefile src/lib/cord/Makefile src/lib/cord/include/Makefile src/lib/cord/include/private/Makefile src/lib/ltdl/Makefile src/lib/pcre/Makefile src/lib/md5/Makefile src/targets/Makefile src/targets/cgi/Makefile src/targets/apache13/Makefile src/targets/apache13/hook/Makefile src/targets/apache13/p3runConfigure src/targets/isapi/Makefile etc/Makefile etc/parser3.charsets/Makefile bin/Makefile bin/auto.p.dist"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -7160,13 +6852,6 @@ if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"am__fastdepCC\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"am__fastdepCC\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${DO_NOT_LINK_LIBSTDCPP_TRUE}" && test -z "${DO_NOT_LINK_LIBSTDCPP_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"DO_NOT_LINK_LIBSTDCPP\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"DO_NOT_LINK_LIBSTDCPP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -7630,10 +7315,15 @@ do
   "src/main/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/main/Makefile" ;;
   "src/sql/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/sql/Makefile" ;;
   "src/lib/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/Makefile" ;;
+  "src/lib/patches/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/patches/Makefile" ;;
+  "src/lib/gc/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/gc/Makefile" ;;
+  "src/lib/gc/include/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/gc/include/Makefile" ;;
+  "src/lib/cord/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/cord/Makefile" ;;
+  "src/lib/cord/include/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/cord/include/Makefile" ;;
+  "src/lib/cord/include/private/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/cord/include/private/Makefile" ;;
   "src/lib/ltdl/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/ltdl/Makefile" ;;
   "src/lib/pcre/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/pcre/Makefile" ;;
   "src/lib/md5/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/md5/Makefile" ;;
-  "src/lib/patches/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/patches/Makefile" ;;
   "src/targets/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/targets/Makefile" ;;
   "src/targets/cgi/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/targets/cgi/Makefile" ;;
   "src/targets/apache13/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/targets/apache13/Makefile" ;;
@@ -7791,8 +7481,8 @@ s,@dll_extension@,$dll_extension,;t t
 s,@mysql_client@,$mysql_client,;t t
 s,@pgsql_client@,$pgsql_client,;t t
 s,@oracle_client@,$oracle_client,;t t
-s,@DO_NOT_LINK_LIBSTDCPP_TRUE@,$DO_NOT_LINK_LIBSTDCPP_TRUE,;t t
-s,@DO_NOT_LINK_LIBSTDCPP_FALSE@,$DO_NOT_LINK_LIBSTDCPP_FALSE,;t t
+s,@CPP_LIBS@,$CPP_LIBS,;t t
+s,@GC_LIBS@,$GC_LIBS,;t t
 s,@XML_INCLUDES@,$XML_INCLUDES,;t t
 s,@XML_LIBS@,$XML_LIBS,;t t
 s,@MIME_INCLUDES@,$MIME_INCLUDES,;t t
@@ -7806,8 +7496,6 @@ s,@subdirs@,$subdirs,;t t
 s,@LIBADD_DL@,$LIBADD_DL,;t t
 s,@CPP@,$CPP,;t t
 s,@EGREP@,$EGREP,;t t
-s,@CXXCPP@,$CXXCPP,;t t
-s,@APACHE_LIBS@,$APACHE_LIBS,;t t
 s,@charsetsdir@,$charsetsdir,;t t
 s,@sqldriversdir@,$sqldriversdir,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t

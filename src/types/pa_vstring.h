@@ -1,78 +1,76 @@
 /**	@file
 	Parser: @b string parser class decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-static const char* IDENT_VSTRING_H="$Date: 2003/01/21 15:51:21 $";
+static const char* IDENT_VSTRING_H="$Date: 2003/07/24 11:31:26 $";
 
-#include <stdlib.h>
+// includes
 
 #include "pa_vstateless_object.h"
 #include "pa_vdouble.h"
 
-extern Methoded *string_class;
+// externs
+
+extern Methoded* string_class;
 
 /// value of type 'string'. implemented with @c String
-class VString : public VStateless_object {
+class VString: public VStateless_object {
 public: // Value
 
-	const char *type() const { return "string"; }
-	VStateless_class *get_class() { return string_class; }
+	override const char* type() const { return "string"; }
+	override VStateless_class *get_class() { return string_class; }
 	/// VString: eq ''=false, ne ''=true
-	bool is_defined() const { return !fstring->is_empty(); }
+	override bool is_defined() const { return !fstring->is_empty(); }
 	/// VString: 0 or !0
-	bool as_bool() const { return as_double()!=0; }
+	override bool as_bool() const { return as_double()!=0; }
 	/// VString: true
-	bool is_string() const { return true; }
+	override bool is_string() const { return true; }
 	/// VString: fstring as VDouble or this depending on return_string_as_is
-	Value *as_expr_result(bool return_string_as_is=false) { 
+	override Value& as_expr_result(bool return_string_as_is=false) { 
 		if(return_string_as_is)
-			return this;
+			return *this;
 		else
-			return NEW VDouble(pool(), as_double()); 
+			return *new VDouble(as_double());
 	}
 	/// VString: fstring
-	const String *get_string() { return fstring; };
+	override const String* get_string() { return fstring; };
 	/// VString: fstring
-	double as_double() const { return fstring->as_double(); }
+	override double as_double() const { return fstring->as_double(); }
 	/// VString: fstring
-	int as_int() const { return fstring->as_int(); }
+	override int as_int() const { return fstring->as_int(); }
 
 	/// VString: vfile
-	VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED,
-		bool origins_mode=false);
+	override VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED,
+		const Request_charsets *charsets=0);
 
 	/// VString: $method
-	Value *get_element(const String& aname, Value& aself, bool looking_up) {
+	override Value* get_element(const String& aname, Value& aself, bool looking_up) {
 		// $method
-		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
+		if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
 			return result;
 
 		// bad $string.field
-		bark("(%s) does not have fields",
-			"%s method not found", &aname);  return 0;
+		bark("is '%s', it does not have fields",
+			"%s method not found", &aname);  
+		return 0;
 	}
 
 public: // usage
 
-/*	VString(Pool& apool) : VStateless_object(apool), 
-		fstring(new(apool) String(apool)) {
-	}
-*/
-	VString(const String& avalue) : VStateless_object(avalue.pool()),
-		fstring(&avalue) {
-	}
+	VString(): fstring(new String) {}
+	VString(const String& avalue): fstring(&avalue) {}
 
 	const String& string() const { return *fstring; }
 	void set_string(const String& astring) { fstring=&astring; }
 
 private:
-	const String *fstring;
+	const String* fstring;
 
 };
 

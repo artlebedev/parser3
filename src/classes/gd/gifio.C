@@ -1,7 +1,7 @@
 /** @file
 	Parser: image manipulations impl2.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	based on: gd
@@ -35,19 +35,19 @@
  ** CompuServe Incorporated.
 */
 
-static const char* IDENT_GIFIO_C="$Date: 2003/01/21 15:51:08 $";
+static const char* IDENT_GIFIO_C="$Date: 2003/07/24 11:31:20 $";
 
 #include "gif.h"
 
 static int colorstobpp(int colors);
 
-void gdImage::Gif(String& out)
+gdBuf gdImage::Gif()
 {
 	int BitsPerPixel = colorstobpp(colorsTotal);
 	/* Clear any old values in statics strewn through the GIF code */
-	gdGifEncoder encoder(pool(), *this, out);
+	gdGifEncoder encoder(*this);
 	/* All set, let's do it. */
-	encoder.encode(
+	return encoder.encode(
 		sx, sy, interlace, 0, transparent, BitsPerPixel,
 		red, green, blue);
 }
@@ -170,7 +170,7 @@ gdGifEncoder::GIFNextPixel()
 
 /* public */
 
-void
+gdBuf
 gdGifEncoder::encode(int GWidth, int GHeight, 
 					 int GInterlace, int Background, int Transparent, int BitsPerPixel, 
 					 int *Red, int *Green, int *Blue)
@@ -219,7 +219,8 @@ gdGifEncoder::encode(int GWidth, int GHeight,
 	/*
 	* Write the Magic header
 	*/
-	fp << (Transparent < 0 ? "GIF87a" : "GIF89a");
+	Putbyte('G');Putbyte('I');Putbyte('F');
+	Putbyte('8');Putbyte(Transparent < 0?'7':'9');Putbyte('a');
 	
 	/*
 	* Write out the screen width and height
@@ -321,16 +322,16 @@ gdGifEncoder::encode(int GWidth, int GHeight,
 	* Write the GIF file terminator
 	*/
 	Putbyte( ';');
+
+	return buf;
 }
 
 /*
 * Write out a byte to the GIF file
 */
 void 
-gdGifEncoder::Putbyte(int c) {
-	char *p=(char *)malloc(1);
-	*p=c;
-	fp.APPEND_AS_IS(p, 1, 0, 0);
+gdGifEncoder::Putbyte(unsigned char c) {
+	buf.append(&c, 1);
 }
 /*
 * Write out a word to the GIF file
@@ -338,16 +339,14 @@ gdGifEncoder::Putbyte(int c) {
 void
 gdGifEncoder::Putword(int w)
 {
-	char *p=(char *)malloc(2);
-	p[0]=w & 0xff;
-	p[1]=(w / 256) & 0xff;
-	fp.APPEND_AS_IS(p, 2, 0, 0);
+	unsigned char b0=w & 0xff;
+	unsigned char b1=w >> 8;
+	buf.append(&b0, 1);
+	buf.append(&b1, 1);
 }
 
-void gdGifEncoder::Write(void *buf, size_t size) {
-	char *p=(char *)malloc(size);
-	memcpy(p, buf, size);
-	fp.APPEND_AS_IS(p, size, 0, 0);
+void gdGifEncoder::Write(void *abuf, size_t size) {
+	buf.append((unsigned char*)abuf, size);
 }
 
 /***************************************************************************
@@ -681,9 +680,8 @@ void
 	}
 }
 
-gdGifEncoder::gdGifEncoder(Pool& pool, gdImage& aim, String& afp) : Pooled(pool),
-	im(aim), 
-	fp(afp) {
+gdGifEncoder::gdGifEncoder(gdImage& aim): 
+	im(aim) {
 	/* Some of these are properly initialized later. What I'm doing
 	here is making sure code that depends on C's initialization
 	of statics doesn't break when the code gets called more

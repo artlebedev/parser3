@@ -1,198 +1,264 @@
 /** @file
-	Parser: Array & Array_iter classes decls.
+	Parser: Array & Array_iterator classes decls.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char* IDENT_ARRAY_Y="$Date: 2003/04/11 15:00:05 $";
+static const char* IDENT_ARRAY_Y="$Date: 2003/07/24 11:31:21 $";
 
-#include "pa_pool.h"
-#include "pa_types.h"
-#include "pa_string.h"
+// includes
 
-class Array_iter;
+#include "pa_memory.h"
+#include "pa_exception.h"
 
-/**	
-	Pooled Array.
+// forwards
 
-	Internal structure:
-	@verbatim
-		Array               Chunk0
-		======              ========
-		head--------------->[ptr]
-		append_here-------->[ptr]
-		link_row            ........
-				.			.
-				.			[ptr]
-				...........>[link to the next chunk]
-	@endverbatim
-*/
+template<typename T> class Array_iterator;
 
-class Array : public Pooled {
-	friend class Array_iter;
-public:
+// defines
 
-	/// Array item type
-	typedef void Item;
+#define ARRAY_OPTION_LIMIT_ALL ((size_t)-1)
 
-	/*/// for_each iterator function type, const info
-	typedef void (*For_each_func_const)(Item *value, const void *info);
-	*/
+/// Simple Array
+template<typename T> class Array: public PA_Object {
 
-	/// for_each iterator function type
-	typedef void (*For_each_func)(Item *value, void *info);
-	/*
-	/// for_each iterator function type, passing item storage address
-	typedef void (*For_each_func_storage)(Item ** value, void *info);
-	*/
+	friend class Array_iterator<T>;
 
-	/// first_that iterator function type, const info
-	typedef void *(*Item_that_func_const)(Item *value, const void *info);
+protected:
 
-	/// first_that iterator function type
-	typedef void *(*Item_that_func)(Item *value, void *info);
+	/// elements[growing size] here
+	T *felements;
 
-	enum {
-		CR_INITIAL_ROWS_DEFAULT=3, ///< default preallocated row count
-		CR_GROW_COUNT=3 ///< each time the Array chunk_is_full() array expanded()
-	};
-
-public:
-
-	Array(Pool& apool, int initial_rows=CR_INITIAL_ROWS_DEFAULT);
-
-	/// size Array. how many items are in it
-	int size() const { return fused_rows; }
-	/// append Item to array
-	Array& operator += (Item *src);
-	/// append int value to array
-	Array& operator += (int value) { return *this+=reinterpret_cast<Item *>(value); }
-
-	/// dirty hack to allow constant items storage. I long for Array<const Item*>
-	Array& operator += (const Item *src) { return *this+=const_cast<Item *>(src); }
-
-	/// append other Array portion to this one. starting from offset
-	Array& append_array(const Array& src, 
-		int offset=0, 
-		int limit=-1, //< negative limit means 'all'. zero limit means 'nothing'
-		bool reverse=false);
-
-	Item *get(int index) const;
-	int get_int(int index) const { return reinterpret_cast<int>(get(index)); }
-
-	void put(int index, Item *item);
-	void put_int(int index, int value) { put(index, reinterpret_cast<Item *>(value)); }
-	/// convinient way to get strings from Array. I long for Array<const String *>
-	const String *get_string(int index) const { 
-		return const_cast<const String *>(static_cast<String *>(get(index))); 
-	}
-
-	/*/// iterate over all elements, const info
-	void for_each(For_each_func_const func, const void *info=0) const;
-	*/
-
-	/// iterate over all elements
-	void for_each(For_each_func func, void *info=0) const;
-
-	/*/// iterate over all elements, passing address of item storage
-	void for_each(For_each_func_storage func, void *info=0);
-	*/
-
-	/// iterate over all elements until condition, const info
-	void* first_that(Item_that_func_const func, const void *info=0) const;
-
-	/// iterate over all elements until condition
-	void* first_that(Item_that_func func, void *info=0) const;
-
-private:
-
-	/// several record elements
-	struct Chunk {
-		int count;  ///< the number of rows in chunk
-		/// item or a link to next chunk union
-		union Row {
-			Item *item;
-			Chunk *link;  ///< link to the next chunk in chain
-		} rows[1];
-		// next rows are here
-	}
-		*head;  ///< the head chunk of the chunk chain
-
-	/** last allocated chunk
-		helps appending Arrays
-	*/
-	Chunk *tail;
-
-	/// next append would write to this record
-	Chunk::Row *append_here;
-	
-	/**	the address of place where lies address 
-		of the link to the next chunk to allocate
-	*/
-	Chunk::Row *link_row;
-
-private:
+	// allocated size
+	size_t fallocated;
 
 	// array size
-	int fused_rows;
+	size_t fused;
 
-private:
+public:
+	struct Action_options {
+		size_t offset;
+		size_t limit; //< ARRAY_OPTION_LIMIT_ALL means 'all'. zero limit means 'nothing'
+		bool reverse;
+		bool defined;
+		
+		Action_options(
+			size_t aoffset=0, 
+			size_t alimit=ARRAY_OPTION_LIMIT_ALL, 
+			bool areverse=false): 
+			offset(aoffset), limit(alimit), reverse(areverse), 
+			defined(false) {}
 
-	bool chunk_is_full() {
-		return append_here == link_row;
+		bool adjust(size_t count) {
+			if(!count || !limit)
+				return false;
+			size_t row=offset;
+			if(row>=count)
+				return false;
+			// max(limit)
+			size_t m=reverse?
+				offset
+				:count-offset;
+			if(!m)
+				return false;
+			// fix limit
+			if(limit==ARRAY_OPTION_LIMIT_ALL || limit>m)
+				limit=m;
+
+			return true;
+		}
+
+		
+	};
+
+	typedef T element_type;
+
+	Array(size_t initial=3):
+		fallocated(initial>3?initial:3),
+		fused(0)
+	{
+		felements=static_cast<T*>(malloc(fallocated*sizeof(T)));
 	}
-	void expand(int chunk_rows);
+
+	/// how many items are in Array
+	size_t count() const { return fused; }
+	/// append to array
+	Array& operator += (T src) {
+		if(is_full())
+			expand(2);
+
+		felements[fused++]=src;
+
+		return *this;
+	}
+
+	/// append other Array portion to this one. starting from offset
+	Array& append(const Array& src, 
+		size_t offset=0, 
+		size_t limit=ARRAY_OPTION_LIMIT_ALL, //< negative limit means 'all'. zero limit means 'nothing'
+		bool reverse=false) {
+
+		size_t src_count=src.count();
+		// skip tivials
+		if(!src_count || !limit || offset>=src_count)
+			return *this;
+		// max(limit)
+		size_t m=reverse?
+			1+offset
+			:src_count-offset;
+		if(!m)
+			return *this;
+		// fix limit
+		if(limit==ARRAY_OPTION_LIMIT_ALL || limit>m)
+			limit=m;
+
+		ssize_t delta=reverse?
+			(ssize_t)limit
+			:limit-(fallocated-fused);
+		if(delta>0)
+			expand(delta);
+
+		T* from=&src.felements[offset];
+		T* to=&felements[fused];
+		if(reverse) { // reverse
+			for(T* from_end=from-limit; from>from_end; --from)
+				*to++=*from;
+
+		} else { // forward
+			for(T* from_end=from+limit; from<from_end; from++)
+				*to++=*from;
+		}
+		
+		fused+=limit;
+		return *this;
+	}
+
+	/// get index-element
+	T get(size_t index) const {
+		assert(index>=0 && index<count());
+		return felements[index];
+	}
+
+	/// ref version of get
+	T& get_ref(size_t index) const {
+		assert(index>=0 && index<count());
+		return felements[index];
+	}
+
+	/// put index-element
+	void put(size_t index, T element) {
+		assert(index>=0 && index<count());
+		felements[index]=element;
+	}
+
+	T operator [](size_t index) const { return get(index); }
+
+	/// iterate over all elements
+	template<typename I> void for_each(void (*callback)(T, I), I info) const {
+		T *last=felements+fused;
+		for(T *current=felements; current<last; current++)
+			callback(*current, info);
+	}
+
+	/// iterate over all elements until condition becomes true, return that element
+	template<typename I> T first_that(bool (*callback)(T, I), I info) const {
+		T *last=felements+fused;
+		for(T *current=felements; current<last; current++)
+			if(callback(*current, info))
+				return *current;
+
+		return T(0);
+	}
+
+protected:
+
+	bool is_full() {
+		return fused == fallocated;
+	}
+	void expand(size_t delta) {
+		size_t new_allocated=fallocated+delta;
+		felements = (T *)realloc(felements, new_allocated*sizeof(T));
+		memset(&felements[fallocated], 0, delta*sizeof(T));
+		fallocated=new_allocated;
+	}
 
 private: //disabled
 
-	//Array(Array&) { }
+	Array(const Array&) {}
 	Array& operator = (const Array&) { return *this; }
 };
 
 
-/// handy array iterator
-class Array_iter {
+/** Array iterator, usage:
+	@code
+	// Array<T> a;
+	for(Array_iterator<T> i(a); i.has_next(); ) {
+		T& element=i.next();
+		...
+	}	
+	@endcode
+*/
+template<typename T> class Array_iterator {
+
+	const Array<T>& farray;
+	T *fcurrent;
+	T *flast;
+
 public:
 
-	Array_iter(const Array& aarray) : array(aarray),
-		chunk(aarray.head),
-		row(chunk->rows),
-		countdown(chunk->count) {
+	Array_iterator(const Array<T>& aarray): farray(aarray) {
+		fcurrent=farray.felements;
+		flast=farray.felements+farray.count();
 	}
 
 	/// there are still elements
 	bool has_next() {
-		return !(chunk==array.tail && row==array.append_here);
+		return fcurrent<flast;
 	}
 
-	/// quickly extracts next Array::Item
-	Array::Item *next() {
-		// assuming: never called after has_next()!
-		if(countdown==0) { // end of chunk?
-			chunk=row->link;
-			row=chunk->rows;
-			countdown=chunk->count;
-		}
-		Array::Item *result=row->item;
-		row++;  countdown--;
-		return result;
+	/// quickly extracts next Array element
+	const T next() {
+		return *(fcurrent++);
 	}
-
-	/// quickly extracts next Array::Item as const String
-	const String *next_string() { 
-		return const_cast<const String *>(static_cast<String *>(next())); 
-	}
-
-private:
-	const Array& array;
-	const Array::Chunk *chunk;
-	const Array::Chunk::Row *row;
-	int countdown;	
 
 };
+/*
+/** Nonconst array iterator, usage:
+	@code
+	// Array<T> a;
+	for(Array_iterator<T> i(a); i.has_next(); ) {
+		T& element=i.next();
+		...
+	}	
+	@endcode
+* /
+template<typename T> class Array_modifing_iterator {
 
+	Array<T>& farray;
+	T *fcurrent;
+	T *flast;
+
+public:
+
+	Array_modifing_iterator(Array<T>& aarray): farray(aarray) {
+		fcurrent=farray.felements;
+		flast=farray.felements+farray.count();
+	}
+
+	/// there are still elements
+	bool has_next() {
+		return fcurrent<flast;
+	}
+
+	/// quickly extracts next Array element
+	T& next() {
+		return *(fcurrent++);
+	}
+
+};
+*/
 #endif

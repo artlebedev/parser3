@@ -16,38 +16,48 @@ Package=<5>
 Package=<4>
 {{{
     Begin Project Dependency
-    Project_Dep_Name main
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name libltdl
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name pcre
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name gd
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name parser3mysql
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name parser3oracle
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name parser3pgsql
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name parser3odbc
+    Project_Dep_Name ApacheModuleParser3Core
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name classes
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name types
+    Project_Dep_Name cord
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name gd
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name libltdl
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name main
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name pcre
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name smtp
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name types
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "ApacheModuleParser3Core"=.\SRC\TARGETS\APACHE13CORE\ApacheModuleParser3Core.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    ApacheModuleParser3Core
+    .\src
+    end source code control
+}}}
+
+Package=<4>
+{{{
 }}}
 
 ###############################################################################
@@ -59,6 +69,22 @@ Package=<5>
     begin source code control
     classes
     .\src\classes
+    end source code control
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "cord"=.\src\lib\cord\cord.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    parser3/src/lib/cord
+    .\src\lib\cord
     end source code control
 }}}
 
@@ -105,7 +131,7 @@ Project: "libltdl"=.\src\lib\ltdl\libltdl.dsp - Package Owner=<4>
 Package=<5>
 {{{
     begin source code control
-    parser3/src/lib/ltdl
+    libltdl
     .\src\lib\ltdl
     end source code control
 }}}
@@ -184,6 +210,9 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name md5
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name cord
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -213,9 +242,6 @@ Package=<4>
     Project_Dep_Name gd
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name libltdl_mysql
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name classes
     End Project Dependency
     Begin Project Dependency
@@ -226,6 +252,9 @@ Package=<4>
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name md5
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name cord
     End Project Dependency
 }}}
 

@@ -1,13 +1,13 @@
 /**	@file
 	Parser: @b form class.
 
-	Copyright(c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char* IDENT_VFORM_C="$Date: 2003/01/21 15:51:19 $";
+static const char* IDENT_VFORM_C="$Date: 2003/07/24 11:31:26 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -25,7 +25,7 @@ static const char* IDENT_VFORM_C="$Date: 2003/01/21 15:51:19 $";
 
 // parse helper funcs
 
-static size_t getHeader(const char *data, size_t len){
+static size_t getHeader(const char* data, size_t len){
     size_t i;
     int enter=-1;
     if (data)
@@ -37,8 +37,8 @@ static size_t getHeader(const char *data, size_t len){
 		return 0;
 }
 
-static const char *searchAttribute(const char *data, 
-							 const char *attr,  //< expected to be lowercased
+static const char* searchAttribute(const char* data, 
+							 const char* attr,  //< expected to be lowercased
 							 size_t len){
     size_t i;
     if (data)
@@ -58,25 +58,22 @@ static const char *searchAttribute(const char *data,
 
 // VForm
 
-extern Methoded *form_base_class;
+extern Methoded* form_base_class;
 
-VForm::VForm(Pool& apool) : VStateless_class(apool, 0, form_base_class),
-	fields(apool),
-	tables(apool),
-	imap(apool),
+VForm::VForm(): VStateless_class(0, form_base_class),
+	fcharsets(0),
 	filled(false) {
 }
 
-char *VForm::strpart(const char *str, size_t len) {
-    char *result=(char *)malloc(len+1);
-    if (!result) return NULL;
+char *VForm::strpart(const char* str, size_t len) {
+    char *result=new(PointerFreeGC) char[len+1];
     memcpy(result, str, len);
     result[len]=0;
     return result;
 }
 
-char *VForm::getAttributeValue(const char *data, char *attr, size_t len) {
-    const char *value=searchAttribute(data, attr, len);
+char *VForm::getAttributeValue(const char* data, char *attr, size_t len) {
+    const char* value=searchAttribute(data, attr, len);
     if (value){
 		size_t i;
 		if (!(len-=value-data)) return NULL;
@@ -91,26 +88,25 @@ char *VForm::getAttributeValue(const char *data, char *attr, size_t len) {
     return NULL;
 }
 
-void VForm::transcode(
-	const void *client_body, size_t client_content_length,
-	const void *& source_body, size_t& source_content_length) {
-	Charset::transcode(pool(),
-		pool().get_client_charset(), client_body, client_content_length,
-		pool().get_source_charset(), source_body, source_content_length);
+String::C VForm::transcode(const char* client, size_t client_size) {
+	return Charset::transcode(
+		String::C(strdup(client, client_size), client_size),
+		fcharsets->client(),
+		fcharsets->source());
 }
 
-void VForm::ParseGetFormInput(const char *query_string, size_t length) {
+void VForm::ParseGetFormInput(const char* query_string, size_t length) {
 	ParseFormInput(query_string, length);
 }
 
 
-static int atoi(const char *data, size_t alength) {
+static int atoi(const char* data, size_t alength) {
 	char buf[MAX_STRING];
 	size_t length=min((int)alength, MAX_STRING-1);
 	strncpy(buf, data, length);
 	return atoi(buf);
 }
-void VForm::ParseFormInput(const char *data, size_t length) {
+void VForm::ParseFormInput(const char* data, size_t length) {
 	// cut out ?image_map_tail
 	{
 		for(size_t pos=0; pos<length; pos++) {
@@ -128,8 +124,8 @@ void VForm::ParseFormInput(const char *data, size_t length) {
 				if(aftercomma>start) { // ?x,y
 					int x=atoi(data+start, aftercomma-1-start);
 					int y=atoi(data+aftercomma, length-aftercomma);
-					imap.put(*NEW String(pool(), "x"), NEW VInt(pool(), x));
-					imap.put(*NEW String(pool(), "y"), NEW VInt(pool(), y));
+					imap.put(String("x"), new VInt(x));
+					imap.put(String("y"), new VInt(y));
 				} else { // ?qtail
 					AppendFormEntry("qtail", data+start, length-start);
 				}
@@ -159,8 +155,8 @@ void VForm::ParseFormInput(const char *data, size_t length) {
 			}
 		}
 
-		const char *attr=aftereq>start?unescape_chars(pool(), data+start, aftereq-1-start):"nameless";
-		char *value=unescape_chars(pool(), data+aftereq, finish-aftereq);
+		const char* attr=aftereq>start?unescape_chars(data+start, aftereq-1-start):"nameless";
+		char *value=unescape_chars(data+aftereq, finish-aftereq);
 		AppendFormEntry(attr, value, strlen(value));
 	}
 }
@@ -172,7 +168,7 @@ static char *pa_tolower(char *s) {
 }
 void VForm::ParseMimeInput(
 						   char *content_type, 
-						   const char *data, size_t length) {
+						   const char* data, size_t length) {
 /* Scan for mime-presented pairs, storing them as they are found. */
 	const char 
 		*boundary=pa_tolower(getAttributeValue(content_type, "boundary=", strlen(content_type))), 
@@ -203,106 +199,94 @@ void VForm::ParseMimeInput(
 	}
 }
 
-void VForm::AppendFormEntry(
-							const char *cname_cstr, 
-							const char *raw_cvalue_ptr, const size_t raw_cvalue_size, 
-							const char *file_name) {
-	const void *sname_ptr;
-	size_t sname_size;
-	transcode(
-		cname_cstr, strlen(cname_cstr),
-		sname_ptr, sname_size);
-	String& sname=*NEW String(pool(), (const char *)sname_ptr, sname_size);
+void VForm::AppendFormEntry(const char* cname_cstr, 
+			    const char* raw_cvalue_ptr, const size_t raw_cvalue_size, 
+			    const char* copy_me_file_name_cstr) {
+	const String& sname=*new String(transcode(cname_cstr, strlen(cname_cstr)));
 
-	Value *value;
-	if(file_name) {
-		VFile *vfile=NEW VFile(pool());
+	Value* value;
+	if(copy_me_file_name_cstr) {
+		VFile* vfile=new VFile;
 		// maybe transcode text/* files?
-		vfile->set(true/*tainted*/, raw_cvalue_ptr, raw_cvalue_size, file_name);
+		const String& sfile_name=*new String(strdup(copy_me_file_name_cstr));
+		vfile->set(true/*tainted*/, raw_cvalue_ptr, raw_cvalue_size, sfile_name.cstr());
 		value=vfile;
 	} else {
-		const char *premature_zero_pos=(const char *)memchr(raw_cvalue_ptr, 0, raw_cvalue_size);
-		size_t cvalue_size=premature_zero_pos?premature_zero_pos-(const char *)raw_cvalue_ptr
+		const char* premature_zero_pos=(const char* )memchr(raw_cvalue_ptr, 0, raw_cvalue_size);
+		size_t cvalue_size=premature_zero_pos?premature_zero_pos-(const char* )raw_cvalue_ptr
 			:raw_cvalue_size;
-		char *cvalue_ptr=(char *)copy(raw_cvalue_ptr, cvalue_size); 
+		char *cvalue_ptr=strdup(raw_cvalue_ptr, cvalue_size); 
 		fix_line_breaks(cvalue_ptr, cvalue_size);
-
-		const void *svalue_ptr; size_t svalue_size;
-		transcode(
-			cvalue_ptr, cvalue_size, // client [from]
-			svalue_ptr, svalue_size); // source [to]
-		
-		String& string=*NEW String(pool());
-		string.APPEND_TAINTED((const char*)svalue_ptr, svalue_size, "form", 0);
+		String& string=*new String(transcode(cvalue_ptr, cvalue_size), true);
 
 		// tables
 		{
-			Value *valready=(Value *)tables.get(sname);
-			bool existed=valready!=0;
-			Table *table;
-			if(existed) {
-				// second+ appearence
-				table=valready->get_table();
-			} else {
+			Value* vtable=tables.get(sname);
+			if(!vtable) {
 				// first appearence
-				Array& columns=*NEW Array(pool(), 1);
-				columns+=NEW String(pool(), "field");
-				table=NEW Table(pool(), 0, &columns);
+				Table::columns_type columns(new ArrayString(1));
+				*columns+=new String("field");
+
+				vtable=new VTable(new Table(columns));
+				tables.put(sname, vtable);
 			}
+			Table& table=*vtable->get_table();
+
 			// this string becomes next row
-			Array& row=*NEW Array(pool(), 1);
-			row+=&string;
-			*table+=&row;
-			// not existed before? add it
-			if(!existed)
-				tables.put(sname, NEW VTable(pool(), table));
+			Table::element_type row(new ArrayString(1));
+			*row+=&string;
+			table+=row;
 		}
-		value=NEW VString(string);
+		value=new VString(string);
 	}
 
 	fields.put_dont_replace(sname, value);
 }
 
-void VForm::fill_fields_and_tables(Request& request) {
+void VForm::fill_fields_and_tables(Request_charsets& acharsets, 
+				   Request_info& request_info) {
+	fcharsets=&acharsets;
+	try{
+
+	//request_info.query_string="a=123";
 	// parsing QS [GET and ?name=value from uri rewrite)]
-	if(request.info.query_string) {
-		size_t length=strlen(request.info.query_string);
-		char *buf=(char *)malloc(length);
-		memcpy(buf, request.info.query_string, length);
+	if(request_info.query_string) {
+		size_t length=strlen(request_info.query_string);
+		char *buf=strdup(request_info.query_string, length);
 		ParseGetFormInput(buf, length);
 	}
 
 #ifdef DEBUG_POST
-	request.info.method="POST";
+	request_info.method="POST";
 	void *data;
-	file_read(pool(), *NEW String(pool(), "opera.stdin"),  //"ie.stdin"), //
+	file_read(*new String("opera.stdin"),  //"ie.stdin"), //
 			   data, request.post_size, 
 			   false/*as_text*/);	
 	request.post_data=(char*)data;
-	request.info.content_type="multipart/form-data; boundary=----------mcqY2UDNcdEAoN1mLmne2i";
-	//request.info.content_type="multipart/form-data; boundary=---------------------------7d23111f44403a4";
+	request_info.content_type="multipart/form-data; boundary=----------mcqY2UDNcdEAoN1mLmne2i";
+	//request_info.content_type="multipart/form-data; boundary=---------------------------7d23111f44403a4";
 
 #endif
 
 	// parsing POST data
-	if(request.info.method) {
-		if(const char *content_type=request.info.content_type)
-			if(StrEqNc(request.info.method, "post", true)) {
+	if(request_info.method) {
+		if(const char* content_type=request_info.content_type)
+			if(StrEqNc(request_info.method, "post", true)) {
 				if(StrEqNc(content_type, "application/x-www-form-urlencoded", true)) 
-					ParseFormInput(request.post_data, request.post_size);
-				else if(StrEqNc(content_type, "multipart/form-data", 0)) {
-					size_t length=strlen(content_type)+1;
-					char *buf=(char *)malloc(length);
-					memcpy(buf, content_type, length);
-					ParseMimeInput(buf, request.post_data, request.post_size);
-				}
+					ParseFormInput(request_info.post_data, request_info.post_size);
+				else if(StrEqNc(content_type, "multipart/form-data", 0))
+					ParseMimeInput(strdup(content_type), 
+						request_info.post_data, request_info.post_size);
 			}
 	}
 
 	filled=true;
+	
+	fcharsets=0;
+	} catch(...) { fcharsets=0; rethrow; }
 }
 
-Value *VForm::get_element(const String& aname, Value& aself, bool looking_up) {
+Value* VForm::get_element(const String& aname, Value& aself, bool looking_up) {
 	if(!filled)
 		throw Exception("parser.runtime",
 			&aname,
@@ -310,19 +294,19 @@ Value *VForm::get_element(const String& aname, Value& aself, bool looking_up) {
 
 	// $fields
 	if(aname==FORM_FIELDS_ELEMENT_NAME)
-		return NEW VHash(pool(), Hash(fields));
+		return new VHash(fields);
 
 	// $tables
 	if(aname==FORM_TABLES_ELEMENT_NAME)
-		return NEW VHash(pool(), Hash(tables));
+		return new VHash(tables);
 
 	if(aname==FORM_IMAP_ELEMENT_NAME)
-		return NEW VHash(pool(), Hash(imap));
+		return new VHash(imap);
 
 	// $method
-	if(Value *result=VStateless_class::get_element(aname, aself, looking_up))
+	if(Value* result=VStateless_class::get_element(aname, aself, looking_up))
 		return result;
 
 	// $element
-	return static_cast<Value *>(fields.get(aname));
+	return fields.get(aname);
 }

@@ -1,15 +1,13 @@
 /** @file
 	Parser: program executing for different OS-es.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2000,2001-2003 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-  	portions by Victor Fedoseev" <vvf_ru@mail.ru> [January 23, 2003]
 
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Date: 2003/04/07 07:03:05 $";
+static const char* IDENT_EXEC_C="$Date: 2003/07/24 11:31:23 $";
 
 #include "pa_config_includes.h"
 
@@ -29,131 +27,142 @@ static const char* IDENT_EXEC_C="$Date: 2003/04/07 07:03:05 $";
 
 /// this func from http://www.ccas.ru/~posp/popov/spawn.htm
 static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
-					char *szEnv,
+										char *szEnv,
                                         PROCESS_INFORMATION* ppi, 
                                         LPHANDLE phInWrite,
                                         LPHANDLE phOutRead,
                                         LPHANDLE phErrRead)
 {
-    DWORD result=0;
+	DWORD result=0;
 	BOOL fCreated;
-    STARTUPINFO si;
-    SECURITY_ATTRIBUTES sa={0};
-    HANDLE hInRead;
-    HANDLE hOutWrite;
-    HANDLE hErrWrite;
-
-    // Create pipes
-    // initialize security attributes for handle inheritance (for WinNT)
-    sa.nLength=sizeof(sa);
-    sa.bInheritHandle=TRUE;
-    sa.lpSecurityDescriptor=NULL;
-
-    // create STDIN pipe
-    if(!CreatePipe(&hInRead, phInWrite, &sa, 0))
-        goto error;
-
-    // create STDOUT pipe
-    if(!CreatePipe(phOutRead, &hOutWrite, &sa, 0))
-        goto error;
-
-    // create STDERR pipe
-    if(!CreatePipe(phErrRead, &hErrWrite, &sa, 0))
-        goto error;
-
-    // process startup information
-    memset(&si, 0, sizeof(si));
-    si.cb=sizeof(si); 
-    si.dwFlags=STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
-    // child process' console must be hidden for Win95 compatibility
-    si.wShowWindow=SW_HIDE;
-    // assign "other" sides of pipes
-    si.hStdInput=hInRead;
-    si.hStdOutput=hOutWrite;
-    si.hStdError=hErrWrite;
-
+	STARTUPINFO si;
+	SECURITY_ATTRIBUTES sa={0};
+	HANDLE hInRead;
+	HANDLE hOutWrite;
+	HANDLE hErrWrite;
+	
+	// Create pipes
+	// initialize security attributes for handle inheritance (for WinNT)
+	sa.nLength=sizeof(sa);
+	sa.bInheritHandle=TRUE;
+	sa.lpSecurityDescriptor=NULL;
+	
+	// create STDIN pipe
+	if(!CreatePipe(&hInRead, phInWrite, &sa, 0))
+		goto error;
+	
+	// create STDOUT pipe
+	if(!CreatePipe(phOutRead, &hOutWrite, &sa, 0))
+		goto error;
+	
+	// create STDERR pipe
+	if(!CreatePipe(phErrRead, &hErrWrite, &sa, 0))
+		goto error;
+	
+	// process startup information
+	memset(&si, 0, sizeof(si));
+	si.cb=sizeof(si); 
+	si.dwFlags=STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+	// child process' console must be hidden for Win95 compatibility
+	si.wShowWindow=SW_HIDE;
+	// assign "other" sides of pipes
+	si.hStdInput=hInRead;
+	si.hStdOutput=hOutWrite;
+	si.hStdError=hErrWrite;
+	
 	// calculating script's directory
 	char dir[MAX_STRING];
 	strncpy(dir, szCmdLine, MAX_STRING-1); dir[MAX_STRING-1]=0;
 	lsplit(dir,' '); // trim arguments
 	rsplit(dir,'/'); rsplit(dir,'\\'); // trim filename
 	chdir(dir);
-
-    // Create a child process (suspended)
-    fCreated=CreateProcess(NULL,
-                              (LPTSTR)szCmdLine,
-                              NULL,
-                              NULL,
-                              TRUE,
-                              CREATE_NO_WINDOW,
-                              szEnv,
-                              dir,
-                              &si,
-                              ppi);
+	
+	// Create a child process (suspended)
+	fCreated=CreateProcess(NULL,
+		(LPTSTR)szCmdLine,
+		NULL,
+		NULL,
+		TRUE,
+		CREATE_NO_WINDOW,
+		szEnv,
+		dir,
+		&si,
+		ppi);
 	if(!fCreated)
 		result=GetLastError();
-
-    CloseHandle(hInRead);
-    CloseHandle(hOutWrite);
-    CloseHandle(hErrWrite);
-
-    if(!fCreated)
-        goto error;
-
-    return result;
-
+	
+	CloseHandle(hInRead);
+	CloseHandle(hOutWrite);
+	CloseHandle(hErrWrite);
+	
+	if(!fCreated)
+		goto error;
+	
+	return result;
+	
 error:
 	if(!result/*yet*/)
 		result=GetLastError(); // get it
-
-    CloseHandle(*phInWrite);
-    CloseHandle(*phOutRead);
-    CloseHandle(*phErrRead);
-
-    return result;
+	
+	CloseHandle(*phInWrite);
+	CloseHandle(*phOutRead);
+	CloseHandle(*phErrRead);
+	
+	return result;
 }
 
-static const char *buildCommand(Pool& pool, 
-								const String& origin_string,
-								const char *file_spec_cstr, const Array *argv) {
-	const char *result=file_spec_cstr;
+static void read_pipe(String& result, HANDLE hOutRead, String::Language lang){
+	while(true) {
+		char *buf=new(PointerFreeGC) char[MAX_STRING];
+		unsigned long size;
+		if(!ReadFile(hOutRead, buf, MAX_STRING-1, &size, NULL) || !size) 
+			break;
+		buf[size]=0;
+		result.append_know_length(buf, size, lang);
+	}
+}
+
+static const char* buildCommand(const char* file_spec_cstr, const ArrayString& argv) {
+	const char* result=file_spec_cstr;
 	if(FILE *f=fopen(file_spec_cstr, "r")) {
+		try {
 		char buf[MAX_STRING];
 		size_t size=fread(buf, 1, MAX_STRING-1, f);
 		if(size>2) {
 			buf[size]=0;
 			if(strncmp(buf, "#!", 2)==0) {
-				const char *begin=buf+2;
+				const char* begin=buf+2;
 				if(*begin==' ') // alx: were an old magic for some linux-es
 					begin++;
 				if(char *end=strchr(begin, '\n')) {
-					String string(pool);
-					string.APPEND_AS_IS(begin, end-begin, 
-						origin_string.origin().file, 0);
+					String string(pa_strdup(begin, end-begin));
 					string << " " << file_spec_cstr;
 					result=string.cstr();
 				}
 			}
 		}
+		} catch(...) {
+			fclose(f);
+			rethrow;
+		}
 		fclose(f);
 	}
-	if(argv) {
-		String buf(pool);
-		buf << result;
-		for(int i=0; i<argv->size(); i++) {
-			buf << " ";
-			buf << *argv->get_string(i);
+	{ // appending argv
+		String string(result);
+		for(size_t i=0; i<argv.count(); i++) {
+			string << " ";
+			string << *argv[i];
 		}
 
-		result=buf.cstr();
+		result=string.cstr();
 	}
 
 	return result;
 }
 
-#else // WIN32
+#else
 
-static pid_t execve_piped(const char *file_spec_cstr, 
+static pid_t execve_piped(const char* file_spec_cstr, 
 			char * const argv[], char * const env[],
 			int *pipe_in, int *pipe_out, int *pipe_err) {
 	pid_t pid;
@@ -268,104 +277,51 @@ static int get_exit_status(int pid) {
 		WEXITSTATUS(status) : -2;
 }
 
-#endif // WIN32
-
-static void read_pipe(String& result,
-#ifdef WIN32
-					  HANDLE hOutRead,
-#else // WIN32
-					   int file,
-#endif // WIN32
-					  const char *file_spec, 
-					  String::Untaint_lang lang,
-					  int *header_pos=0, const char **eol_marker=0, size_t *eol_marker_size=0){
-
-	if(header_pos) *header_pos = -1;
-	if(eol_marker) *eol_marker = "";
-	if(eol_marker_size) *eol_marker_size = 0;
-
-	int dos_seq_match = 0;
-	int unix_seq_match = 0;
-	int blk_pos = 0;
-	bool do_search = (header_pos || eol_marker || eol_marker_size);
-
+static void read_pipe(String& result, int file, String::Language lang){
 	while(true) {
-		char *buf=(char *)result.pool().malloc(MAX_STRING);
-#ifdef WIN32
-		unsigned long size, i;
-		if(!ReadFile(hOutRead, buf, MAX_STRING, &size, NULL) || !size) 
+		char *buf=new(PointerFreeGC) char[MAX_STRING];
+		ssize_t length=read(file, buf, MAX_STRING-1);
+		if(length<=0)
 			break;
-#else // WIN32
-		ssize_t i, size=read(file, buf, MAX_STRING);
-		if(size<=0)
-			break;
-#endif // WIN32
-		if(do_search){
-			for(i=0; i<size; ++i){
-				if(buf[i] == '\n'){
-					if(++unix_seq_match==2){
-						do_search = false;
-						if(header_pos) *header_pos = blk_pos+i-1;
-						if(eol_marker) *eol_marker = "\n";
-						if(eol_marker_size) *eol_marker_size = 1;
-						break;
-					}
-					if(dos_seq_match==1){
-						++dos_seq_match;
-					}else if(dos_seq_match==3){
-						do_search = false;
-						if(header_pos) *header_pos = blk_pos+i-3;
-						if(eol_marker) *eol_marker = "\r\n";
-						if(eol_marker_size) *eol_marker_size = 2;
-						break;
-					}else
-						dos_seq_match = 0;
-				}else if(buf[i] == '\r'){
-					unix_seq_match = 0;
-					if(dos_seq_match==0 || dos_seq_match==2)
-						++dos_seq_match;
-					else
-						dos_seq_match = 0;
-				}else if(buf[i] == 0){
-					// assuming that the header may not contain 0
-					do_search = false;
-					break;
-				}else{
-					dos_seq_match = 0;
-					unix_seq_match = 0;
-				}
-			}
-			blk_pos += size;
-		}
-		result.APPEND(buf, size, lang, file_spec, 0);
-    }
+		buf[length]=0;
+		result.append_know_length(buf, length, lang);
+	}
 }
 
+#endif
 
-///@test maybe here and at argv construction --- cstr(String::UL_UNSPECIFIED
-static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) {
+#ifndef DOXYGEN
+struct Append_env_pair_info {
 #ifdef WIN32
-	String& string=*static_cast<String *>(info);
-	
-	string << key << "=" << *static_cast<String *>(value);
-	string.APPEND_AS_IS("", 1, 0, 0); // zero byte
+	String& string;
+	Append_env_pair_info(String& astring): string(astring) {}
 #else
-	String string(key.pool());
-	string << key << "=" << *static_cast<String *>(value);
+	char **env_ref;
+#endif
+};
+#endif
+///@test maybe here and at argv construction --- cstr(String::L_UNSPECIFIED
+static void append_env_pair(HashStringString::key_type key, HashStringString::value_type value,
+		Append_env_pair_info *info) {
+#ifdef WIN32
+	info->string << key << "=" << value;
+	info->string.append_know_length("\1", 1, String::L_AS_IS); // placeholder for of zero byte
+#else
+	StringBody body;
+	body << key << "=" << value;
 
-	char ***env_ref=static_cast<char ***>(info);
-	**env_ref=string.cstr(String::UL_UNSPECIFIED);  (*env_ref)++;
+	*(info->env_ref++)=body.cstrm();
 #endif
 }
 
-int pa_exec(
-			bool forced_allow,
+/// @todonow unix part to smart_ptr
+PA_exec_result pa_exec(
+			bool forced_allow, 
 			const String& file_spec, 
-			const Hash *env,
-			const Array *argv,
-			const String& in, String& out, String& err,
-			int *header_pos, const char **eol_marker, size_t *eol_marker_size) {
-	Pool& pool=file_spec.pool();
+			const HashStringString* env, 
+			const ArrayString& argv, 
+			String& in) {
+	PA_exec_result result;
 
 #ifdef NO_PA_EXECS
 	if(!forced_allow)
@@ -374,25 +330,30 @@ int pa_exec(
 			"parser execs are disabled [recompile parser without --disable-execs configure option]");
 #endif
 
+	// execve needs non const
+	char* file_spec_cstr=file_spec.cstrm(String::L_FILE_SPEC); 
 #ifdef WIN32
 
 	PROCESS_INFORMATION pi;	
 	HANDLE hInWrite, hOutRead, hErrRead;
-	char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC); 
-	const char *cmd=buildCommand(file_spec.pool(), file_spec, file_spec_cstr, argv);
-	char *env_cstr=0;
+	const char* cmd=buildCommand(file_spec.cstr(String::L_FILE_SPEC), argv);
+	char* env_cstr;
 	if(env) {
-		String string(env->pool());
-		env->for_each(append_env_pair, &string);
-		env_cstr=string.cstr(String::UL_UNSPECIFIED);
+		String string;
+		Append_env_pair_info info(string);
+		env->for_each(append_env_pair, &info);
+		env_cstr=info.string.cstrm(String::L_UNSPECIFIED);
+		for(char* replacer=env_cstr; *replacer; replacer++)
+			if(*replacer=='\1')
+				*replacer=0;
 	}
 	if(DWORD error=CreateHiddenConsoleProcess(cmd, env_cstr, &pi, &hInWrite, &hOutRead, &hErrRead)) {
 		char szErrorDesc[MAX_STRING];
-		char *param="the file you tried to run";
+		const char* param="the file you tried to run";
 		size_t error_size=FormatMessage(
 			FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_ARGUMENT_ARRAY , NULL, error,
 			MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
-			szErrorDesc, sizeof(szErrorDesc), &param);
+			szErrorDesc, sizeof(szErrorDesc), (va_list *)&param);
 		if(error_size>3) // ".\r\n"
 			szErrorDesc[error_size-3]=0;
             
@@ -401,17 +362,17 @@ int pa_exec(
 			"exec failed - %s (%ld). Consider adding shbang line (#!x:\\interpreter\\command line)", 
 				error_size?szErrorDesc:"<unknown>", (long)error);
 	} else {
-		const char *in_cstr=in.cstr();
+		const char* in_cstr=in.cstr();
 		DWORD written_size;
-		WriteFile(hInWrite, in_cstr, in.size(), &written_size, NULL);
+		WriteFile(hInWrite, in_cstr, in.length(), &written_size, NULL);
 		// EOF for stupid text reads
 		// normally they should read CONTENT_LENGTH bytes,
 		// without this char
 		WriteFile(hInWrite, "\x1A", 1, &written_size, NULL);
 		CloseHandle(hInWrite);
-		read_pipe(out, hOutRead, file_spec_cstr, String::UL_AS_IS, header_pos, eol_marker, eol_marker_size);
+		read_pipe(result.out, hOutRead, String::L_AS_IS);
 		CloseHandle(hOutRead);
-		read_pipe(err, hErrRead, file_spec_cstr, String::UL_TAINTED);		
+		read_pipe(result.err, hErrRead, String::L_TAINTED);		
 		CloseHandle(hErrRead);
 /*	
 from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?rev=1.151&content-type=text/vnd.viewcvs-markup
@@ -426,41 +387,39 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 #else
 
 	int pipe_write, pipe_read, pipe_err;
-	char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC);
 
 #ifdef PA_SAFE_MODE
 	if(!forced_allow) {
 		struct stat finfo;
 		if(stat(file_spec_cstr, &finfo)!=0)
 			throw Exception("file.missing", 
-					&file_spec, 
-					"stat failed: %s (%d), actual filename '%s'", 
-						strerror(errno), errno, file_spec_cstr);
+				&file_spec, 
+				"stat failed: %s (%d), actual filename '%s'", 
+					strerror(errno), errno, file_spec_cstr);
 
 		check_safe_mode(finfo, file_spec, file_spec_cstr);
 	}
 #endif
 
-	char *argv_cstrs[1+10+1]={file_spec_cstr, 0};
-	if(argv) {
-		const int argv_size=argv->size();
-		const int argv_max=sizeof(argv_cstrs)/sizeof(argv_cstrs[0])-1-1;
-		if(argv_size>argv_max)
-			throw Exception("parser.runtime",
-				&file_spec,
-				"too many arguments (%d > max %d)", argv_size, argv_max);
-		for(int i=0; i<argv_size; i++)
-			argv_cstrs[1+i]=argv->get_string(i)->cstr();
-		argv_cstrs[1+argv_size]=0;
-	}
-	char **env_cstrs=0;
+	char* argv_cstrs[1+10+1]={file_spec_cstr, 0};
+	const int argv_size=argv.count();
+	const int argv_max=sizeof(argv_cstrs)/sizeof(argv_cstrs[0])-1-1;
+	if(argv_size>argv_max)
+		throw Exception("parser.runtime",
+			&file_spec,
+			"too many arguments (%d > max %d)", argv_size, argv_max);
+	for(int i=0; i<argv_size; i++)
+		argv_cstrs[1+i]=argv[i]->cstrm();
+	argv_cstrs[1+argv_size]=0;
+
+	char **env_cstrs;
 	if(env) {
-		env_cstrs=
-			(char **)env->pool().malloc(sizeof(char *)*(env->size()+1/*0*/));
-		char **env_ref=env_cstrs;
-		env->for_each(append_env_pair, &env_ref);
-		*env_ref=0;
-	}
+		env_cstrs=new(PointerFreeGC) char *[env->count()+1/*0*/];
+		Append_env_pair_info info={env_cstrs}; 
+		env->for_each(append_env_pair, &info);
+		*info.env_ref=0;
+	} else
+		env_cstrs=0;
 
 	pid_t pid=execve_piped(
 		file_spec_cstr,
@@ -468,21 +427,22 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		&pipe_write, &pipe_read, &pipe_err);
 	if(pid>0) {
 		// in child
-		const char *in_cstr=in.cstr();
-		if(*in_cstr) // there is some in data
-			write(pipe_write, in_cstr, in.size());
+		if(in.length()) {// there is some in data
+			const char* in_cstr=in.cstr();
+			write(pipe_write, in_cstr, in.length());
+		}
 		close(pipe_write);
-		read_pipe(out, pipe_read, file_spec_cstr, String::UL_AS_IS, header_pos, eol_marker, eol_marker_size);
+		read_pipe(result.out, pipe_read, String::L_AS_IS);
 		close(pipe_read);
-		read_pipe(err, pipe_err, file_spec_cstr, String::UL_TAINTED);
+		read_pipe(result.err, pipe_err, String::L_TAINTED);
 		close(pipe_err);
 
-		return get_exit_status(pid); // negative may mean "-errno[execl()]"
+		result.status=get_exit_status(pid); // negative may mean "-errno[execl()]"
 	} else 
 		throw Exception(0,
 			&file_spec,
 			"%s error: %s (%d)", pid<0?"fork":"pipe", strerror(errno), errno); 
 #endif
 
-	return 0;
+	return result;
 }

@@ -41,7 +41,6 @@ AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
 APACHE13 = @APACHE13@
-APACHE_LIBS = @APACHE_LIBS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -53,20 +52,19 @@ COMPILE_APACHE13_MODULE_FALSE = @COMPILE_APACHE13_MODULE_FALSE@
 COMPILE_APACHE13_MODULE_TRUE = @COMPILE_APACHE13_MODULE_TRUE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CPP_LIBS = @CPP_LIBS@
 CXX = @CXX@
-CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
-DO_NOT_LINK_LIBSTDCPP_FALSE = @DO_NOT_LINK_LIBSTDCPP_FALSE@
-DO_NOT_LINK_LIBSTDCPP_TRUE = @DO_NOT_LINK_LIBSTDCPP_TRUE@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+GC_LIBS = @GC_LIBS@
 INCLTDL = @INCLTDL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -146,12 +144,12 @@ sqldriversdir = @sqldriversdir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I../classes -I../sql -I../lib/pcre -I../classes/gd @XML_INCLUDES@ @MIME_INCLUDES@
+INCLUDES = -I../classes -I../sql -I../lib/pcre -I../lib/gc/include -I../lib/cord/include -I../classes/gd @XML_INCLUDES@ @MIME_INCLUDES@
 
 noinst_LIBRARIES = libtypes.a
-noinst_HEADERS = pa_value.h pa_vbool.h pa_vclass.h pa_vcode_frame.h pa_vcookie.h pa_vdate.h pa_vdouble.h pa_venv.h pa_vfile.h pa_vform.h pa_vhash.h pa_vimage.h pa_vint.h pa_vjunction.h pa_vmath.h pa_vmethod_frame.h pa_vobject.h pa_vrequest.h pa_vresponse.h pa_vstateless_class.h pa_vstateless_object.h pa_vstatus.h pa_vstring.h pa_vtable.h pa_vvoid.h pa_vxdoc.h pa_vxnode.h pa_wcontext.h pa_wwrapper.h pa_vmail.h
+noinst_HEADERS = pa_value.h pa_junction.h pa_method.h pa_vbool.h pa_vclass.h pa_vcode_frame.h pa_vcookie.h pa_vdate.h pa_vdouble.h pa_venv.h pa_vfile.h pa_vform.h pa_vhash.h pa_vimage.h pa_vint.h pa_vjunction.h pa_vmath.h pa_vmethod_frame.h pa_vobject.h pa_vrequest.h pa_vresponse.h pa_vstateless_class.h pa_vstateless_object.h pa_vstatus.h pa_vstring.h pa_vtable.h pa_vvoid.h pa_vxdoc.h pa_vxnode.h pa_wcontext.h pa_wwrapper.h pa_vmail.h pa_vmemory.h
 
-libtypes_a_SOURCES = pa_value.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vresponse.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vstatus.C pa_vmail.C pa_vobject.C pa_vclass.C
+libtypes_a_SOURCES = pa_value.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vresponse.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vstatus.C pa_vmail.C pa_vobject.C pa_vclass.C pa_vhash.C pa_vmath.C pa_vmethod_frame.C
 subdir = src/types
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
@@ -166,7 +164,8 @@ am_libtypes_a_OBJECTS = pa_value.$(OBJEXT) pa_vcookie.$(OBJEXT) \
 	pa_vstateless_class.$(OBJEXT) pa_vstring.$(OBJEXT) \
 	pa_wcontext.$(OBJEXT) pa_vtable.$(OBJEXT) pa_vxnode.$(OBJEXT) \
 	pa_vxdoc.$(OBJEXT) pa_vstatus.$(OBJEXT) pa_vmail.$(OBJEXT) \
-	pa_vobject.$(OBJEXT) pa_vclass.$(OBJEXT)
+	pa_vobject.$(OBJEXT) pa_vclass.$(OBJEXT) pa_vhash.$(OBJEXT) \
+	pa_vmath.$(OBJEXT) pa_vmethod_frame.$(OBJEXT)
 libtypes_a_OBJECTS = $(am_libtypes_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/src/include
@@ -174,8 +173,11 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/pa_value.Po ./$(DEPDIR)/pa_vclass.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_vcookie.Po ./$(DEPDIR)/pa_vfile.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/pa_vform.Po ./$(DEPDIR)/pa_vimage.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/pa_vmail.Po ./$(DEPDIR)/pa_vobject.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/pa_vform.Po ./$(DEPDIR)/pa_vhash.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/pa_vimage.Po ./$(DEPDIR)/pa_vmail.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/pa_vmath.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/pa_vmethod_frame.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/pa_vobject.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_vrequest.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_vresponse.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/pa_vstateless_class.Po \
@@ -223,8 +225,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vcookie.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vform.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vhash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vimage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmail.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmath.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmethod_frame.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vobject.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vrequest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vresponse.Po@am__quote@

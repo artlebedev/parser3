@@ -1,58 +1,70 @@
 /** @file
 	Parser: @b file parser type decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char* IDENT_VFILE_H="$Date: 2003/01/21 15:51:19 $";
+static const char* IDENT_VFILE_H="$Date: 2003/07/24 11:31:26 $";
 
-#include "classes.h"
+// include
+
 #include "pa_common.h"
 #include "pa_globals.h"
 #include "pa_vstateless_object.h"
+#include "pa_vbool.h"
 
-extern Methoded *file_class;
+// defines
+
+#define NONAME_DAT "noname.dat"
+
+// forwards
+
+class Methoded;
 
 /** holds received from user or read from disk file.
 
 	@see VForm
 */
-class VFile : public VStateless_object {
+class VFile: public VStateless_object {
+
+	const char* ffile_name_cstr;
+	const char* fvalue_ptr;
+	size_t fvalue_size;
+	HashStringValue ffields;
+
 public: // Value
 	
-	const char *type() const { return "file"; }
-	VStateless_class *get_class() { return file_class; }
+	override const char* type() const { return "file"; }
+	override VStateless_class *get_class();
 
 	/// VFile: true
-	bool as_bool() const { return true; }
+	override bool as_bool() const { return true; }
 
 	/// VFile: true
-	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), as_bool()); }
+	override Value& as_expr_result(bool return_string_as_is=false) { return *new VBool(as_bool()); }
 
 	/// VFile: this
-	VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED,
-		bool origins_mode=false) { 
-		return this; 
-	}
+	override VFile* as_vfile(String::Language /*lang*/, 
+		const Request_charsets* /*charsets*/) { return this; }
 
 	/// VFile: method,field
-	Value *get_element(const String& aname, Value& aself, bool looking_up);
+	override Value* get_element(const String& aname, Value& aself, bool looking_up);
 
 public: // usage
 
-	VFile::VFile(Pool& apool) : VStateless_object(apool),
-		fvalue_ptr(0),
-		fvalue_size(0),
-		ffields(apool) {
+	VFile::VFile(): fvalue_ptr(0), fvalue_size(0) {
 	}
 
-	void set(bool tainted, 
-		const void *avalue_ptr, size_t avalue_size, const char *afile_name=0,
-		Value *acontent_type=0);
+	/// WARNING: when setting text files be sure to append terminating zero to avalue_ptr
+	void set(
+		bool tainted, 
+		const char* avalue_ptr, size_t avalue_size,
+		const char* afile_name_cstr=0,
+		Value* acontent_type=0);
 	
 	void save(const String& file_spec, bool is_text) {
 		if(fvalue_ptr)
@@ -63,7 +75,7 @@ public: // usage
 				"saving stat-ed file");
 	}
 
-	const void *value_ptr() const { 
+	const char* value_ptr() const { 
 		if(!fvalue_ptr)
 			throw Exception("parser.runtime",
 				0,
@@ -72,18 +84,11 @@ public: // usage
 		return fvalue_ptr; 
 	}
 	size_t value_size() const { return fvalue_size; }
-	Hash& fields() { return ffields; }
-	const Hash& fields() const { return ffields; }
+	HashStringValue& fields() { return ffields; }
 
 private:
 
-	Value *fields_element();
-
-private:
-
-	const void *fvalue_ptr;
-	size_t fvalue_size;
-	Hash ffields;
+	Value* fields_element();
 
 };
 

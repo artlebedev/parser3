@@ -1,8 +1,8 @@
-INCLUDES = -I../types -I../classes -I../sql -I../lib/pcre $(INCLTDL) @XML_INCLUDES@
+INCLUDES = -I../types -I../classes -I../sql -I../lib/pcre -I../lib/gc/include -I../lib/cord/include $(INCLTDL) @XML_INCLUDES@
 
 noinst_HEADERS = compile_tools.h
 noinst_LIBRARIES = libmain.a
-libmain_a_SOURCES = pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_array.C pa_exception.C pa_globals.C pa_hash.C pa_pool.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_sql_driver_manager.C pa_dictionary.C pa_stylesheet_manager.C pa_cache_managers.C pa_charset.C pa_charsets.C pa_uue.C
+libmain_a_SOURCES = pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_exception.C pa_globals.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_sql_driver_manager.C pa_dictionary.C pa_stylesheet_manager.C pa_cache_managers.C pa_charset.C pa_charsets.C pa_uue.C
 
 compile.tab.C: compile.y
 	bison -v $< -o $@

@@ -1,14 +1,14 @@
 /** @file
 	Parser: generally used types & constants decls.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_TYPES_H
 #define PA_TYPES_H
 
-static const char* IDENT_TYPES_H="$Date: 2003/01/21 15:51:12 $";
+static const char* IDENT_TYPES_H="$Date: 2003/07/24 11:31:22 $";
 
 #include "pa_config_includes.h"
 
@@ -55,29 +55,5 @@ typedef unsigned long ulong;
 
 /// max value of integral type
 #define max_integral(type) ((1<<sizeof(type)*8)-1)
-
-
-#ifndef NO_STRING_ORIGIN
-/// all String pieces hold information of where they come from
-
-// all classes that are members parents of packed class [String] 
-// sould be packed also to avoid sparc odd st/lduh problem
-#include "pa_pragma_pack_begin.h"
-struct Origin {
-	const char *file;  ///< macros file name | load file name | sql query text
-	unsigned short line; ///< file line no | record no
-};
-#include "pa_pragma_pack_end.h"
-#define ORIGIN_FILE_LINE_FORMAT "%.300s(%d)"
-
-/** helper used from body from STRING_FOREACH_ROW 
-	to make preprocessor do if before macro expansion, 
-	not after[which is impossible and caused errors]
-*/
-#define IFNDEF_NO_STRING_ORIGIN(body) body
-
-#else
-#define IFNDEF_NO_STRING_ORIGIN(body)
-#endif
 
 #endif

@@ -1,51 +1,48 @@
 /** @file
 	Parser: @b math class decls.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMATH_H
 #define PA_VMATH_H
 
-static const char* IDENT_VMATH_H="$Date: 2003/01/21 15:51:20 $";
+static const char* IDENT_VMATH_H="$Date: 2003/07/24 11:31:26 $";
+
+// includes
 
 #include "classes.h"
 #include "pa_common.h"
 
-extern Methoded *math_base_class;
-extern Hash *math_consts;
+// defines
 
-class Request;
+#define PI 3.1415926535
 
 /**
 */
-class VMath : public VStateless_class {
+class VMath: public VStateless_class {
 public: // Value
 	
-	const char *type() const { return "math"; }
+	const char* type() const { return "math"; }
 
 	// math: CLASS,method,field
-	Value *get_element(const String& aname, Value& aself, bool looking_up) {
+	Value* get_element(const String& aname, Value& aself, bool looking_up) {
 		// $CLASS,$method
-		if(Value *result=VStateless_class::get_element(aname, aself, looking_up))
+		if(Value* result=VStateless_class::get_element(aname, aself, looking_up))
 			return result;
 
 		// $const
-		return static_cast<Value *>(fconsts.get(aname));
+		return fconsts.get(aname);
 	}
 
 public: // usage
 
-	VMath(Pool& apool) : VStateless_class(apool, 0, math_base_class),
-		fconsts(*math_consts) {
-	}
-
-	Hash& consts() { return fconsts; }
+	VMath();
 
 private:
 
-	Hash& fconsts;
+	HashStringValue fconsts;
 
 };
 

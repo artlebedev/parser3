@@ -1,48 +1,43 @@
 /** @file
 	Parser: @b cookie class decls.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
 
-static const char* IDENT_VCOOKIE_H="$Date: 2003/01/21 15:51:18 $";
+static const char* IDENT_VCOOKIE_H="$Date: 2003/07/24 11:31:25 $";
 
 #include "pa_hash.h"
 #include "pa_common.h"
 #include "pa_value.h"
-
-class Request;
+#include "pa_request_info.h"
+#include "pa_sapi.h"
 
 #define COOKIE_CLASS_NAME "cookie"
 
 /// cookie class
-class VCookie : public Value {
+class VCookie: public Value {
+
+	HashStringValue before, after, deleted;
+
 public: // Value
 	
-	const char *type() const { return "cookie"; }
+	override const char* type() const { return "cookie"; }
 	/// VCookie: 0
-	VStateless_class *get_class() { return 0; }
+	override VStateless_class *get_class() { return 0; }
 
 	// cookie: CLASS,method,field
-	Value *get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 	// cookie: field
-	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace);
+	override bool put_element(const String& aname, Value* avalue, bool replace);
 
 public: // usage
 
-	VCookie(Pool& apool) : Value(apool),
-		before(apool), after(apool), deleted(apool) {
-	}
-
-	void fill_fields(Request& request);
-	void output_result();
-
-private:
-
-	Hash before, after, deleted;
+	void fill_fields(Request_info& request_info);
+	void output_result(SAPI_Info& sapi_info);
 
 };
 

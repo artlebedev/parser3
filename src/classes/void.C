@@ -1,13 +1,15 @@
 /** @file
 	Parser: @b VOID parser class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VOID_C="$Date: 2003/01/21 15:51:08 $";
+static const char* IDENT_VOID_C="$Date: 2003/07/24 11:31:20 $";
 
 #include "classes.h"
+#include "pa_vmethod_frame.h"
+
 #include "pa_request.h"
 #include "pa_vint.h"
 #include "pa_vdouble.h"
@@ -16,76 +18,70 @@ static const char* IDENT_VOID_C="$Date: 2003/01/21 15:51:08 $";
 
 // class
 
-class MVoid : public Methoded {
+class MVoid: public Methoded {
 public:
-	MVoid(Pool& pool);
+	MVoid();
 public: // Methoded
 	bool used_directly() { return true; }
 };
 
+// global variable
+
+DECLARE_CLASS_VAR(void, new MVoid, 0);
+
 // methods
 
-static void _length(Request& r, const String&, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _length(Request& r, MethodParams&) {
 	// always zero
-	r.write_no_lang(*new(pool) VInt(pool, 0));
+	r.write_no_lang(*new VInt(0));
 }
 
-static void _pos(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	Value& substr=params->as_no_junction(0, "substr must not be code");
+static void _pos(Request& r, MethodParams& params) {
+	// just checking for consistency
+	params.as_no_junction(0, "substr must not be code");
 	// never found
-	r.write_assign_lang(*new(pool) VInt(pool, -1));
+	r.write_no_lang(*new VInt(-1));
 }
 
-static void _int(Request& r, const String&, MethodParams *params) {
-	Pool& pool=r.pool();
-	VVoid *vvoid=static_cast<VVoid *>(r.get_self());
-	r.write_no_lang(*new(pool) VInt(pool, 
-		params->size()==0?vvoid->as_int():params->as_int(0, "default must be int", r)));
+static void _int(Request& r, MethodParams& params) {
+	VVoid& vvoid=GET_SELF(r, VVoid);
+	r.write_no_lang(*new VInt(
+		params.count()==0?vvoid.as_int():params.as_int(0, "default must be int", r)));
 }
 
-static void _double(Request& r, const String&, MethodParams *params) {
-	Pool& pool=r.pool();
-	VVoid *vvoid=static_cast<VVoid *>(r.get_self());
-	r.write_no_lang(*new(pool) VDouble(pool, 
-		params->size()==0?vvoid->as_double():params->as_double(0, "default must be double", r)));
+static void _double(Request& r, MethodParams& params) {
+	VVoid& vvoid=GET_SELF(r, VVoid);
+	r.write_no_lang(*new VDouble(
+		params.count()==0?vvoid.as_double():params.as_double(0, "default must be double", r)));
 }
 
 #ifndef DOXYGEN
 class Void_sql_event_handlers: public SQL_Driver_query_event_handlers {
+	const String& statement_string;
 public:
-	Void_sql_event_handlers(Pool& apool, const String& astatement_string) :
-		pool(apool), statement_string(astatement_string) {
-	}
-	bool add_column(SQL_Error& /*error*/, void *ptr, size_t size) { /* ignore */ return false; }
+	Void_sql_event_handlers(const String& astatement_string): statement_string(astatement_string) {}
+	bool add_column(SQL_Error& /*error*/, const char* /*str*/, size_t /*length*/) { /* ignore */ return false; }
 	bool before_rows(SQL_Error& error) {
 		// there are some result rows, which is wrong
 		error=SQL_Error("parser.runtime",
-			&statement_string,
+			/*statement_string,*/
 			"must return nothing");
 		return true;
 	}
 	bool add_row(SQL_Error& /*error*/) { /* never */ return false; }
-	bool add_row_cell(SQL_Error& /*error*/, void *ptr, size_t size) { /* never */ return false; }
+	bool add_row_cell(SQL_Error& /*error*/, const char* /*str*/, size_t /*length*/) { /* never */ return false; }
 
-private:
-	Pool& pool;
-	const String& statement_string;
 };
 #endif
-static void _sql(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _sql(Request& r, MethodParams& params) {
+	Value& statement=params.as_junction(0, "statement must be code");
 
-	Value& statement=params->as_junction(0, "statement must be code");
-
-	Temp_lang temp_lang(r, String::UL_SQL);
+	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
-	const char *statement_cstr=
-		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
-	Void_sql_event_handlers handlers(pool, statement_string);
-	r.connection(&method_name)->query(
+	const char* statement_cstr=
+		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
+	Void_sql_event_handlers handlers(statement_string);
+	r.connection()->query(
 		statement_cstr, 0, 0,
 		handlers,
 		statement_string);
@@ -93,7 +89,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 
 // constructor
 
-MVoid::MVoid(Pool& apool) : Methoded(apool, "void") {
+MVoid::MVoid(): Methoded("void") {
 	// ^void.length[] 
 	add_native_method("length", Method::CT_DYNAMIC, _length, 0, 0);
 
@@ -110,14 +106,4 @@ MVoid::MVoid(Pool& apool) : Methoded(apool, "void") {
 
 	// ^sql[query]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 1);
-}
-
-// global variable
-
-Methoded *void_class;
-
-// creator
-
-Methoded *MVoid_create(Pool& pool) {
-	return void_class=new(pool) MVoid(pool);
 }

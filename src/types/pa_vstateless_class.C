@@ -1,33 +1,33 @@
 /**	@file
 	Parser: stateless class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char* IDENT_VSTATELESS_CLASS_C="$Date: 2003/01/21 15:51:20 $";
+static const char* IDENT_VSTATELESS_CLASS_C="$Date: 2003/07/24 11:31:26 $";
 
 #include "pa_vstateless_class.h"
-#include "pa_vstring.h"
 
+/// @TODO why? request must be different ptr from global [used in VStateless_class.add_method]
 void VStateless_class::add_method(const String& name, Method& method) {
-	if(&pool()!=&name.pool())
+	if(flocked)
 		throw Exception("parser.runtime",
 			&name,
 			"can not add method to system class (maybe you have forgotten .CLASS in ^process[$caller.CLASS]{...}?)");
+
 	put_method(name, &method);
 }
 
 void VStateless_class::add_native_method(
-	const char *cstr_name,
+	const char* cstr_name,
 	Method::Call_type call_type,
-	Native_code_ptr native_code,
+	NativeCodePtr native_code,
 	int min_numbered_params_count, int max_numbered_params_count) {
 
-	String& name=*NEW String(pool(), cstr_name);
+	const String& name=*new String(cstr_name);
 	
-	Method& method=*NEW Method(pool(),
-		name,
+	Method& method=*new Method(
 		call_type,
 		min_numbered_params_count, max_numbered_params_count,
 		0/*params_names*/, 0/*locals_names*/,
@@ -37,19 +37,17 @@ void VStateless_class::add_native_method(
 }
 
 /// VStateless_class: $CLASS, $method
-Value *VStateless_class::get_element(const String& aname, Value& aself, bool looking_up) {
+Value* VStateless_class::get_element(const String& aname, Value& aself, bool looking_up) {
 	// $CLASS
 	if(aname==CLASS_NAME)
 		return this;
-
 	// $method=junction(self+class+method)
-	if(Method *method=static_cast<Method *>(fmethods.get(aname)))
-		return new(aname.pool()) VJunction(
-		*new(aname.pool()) Junction(aname.pool(), aself, method, 0,0,0,0));
+	if(Method* method=get_method(aname))
+		return new VJunction(new Junction(aself, method, 0, 0, 0, 0));
 
 	// base monkey
 	if(fbase)
-		if(Value *lbase=aself.base()) // one check would be enough...
+		if(Value* lbase=aself.base()) // one check would be enough...
 			return fbase->get_element(aname, *lbase, looking_up);
 
 	return 0;

@@ -1,199 +1,137 @@
 /** @file
 	Parser: sql driver manager implementation.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/04/11 15:00:05 $";
+static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/07/24 11:31:24 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
+#include "pa_threads.h"
 #include "pa_sql_connection.h"
 #include "pa_exception.h"
 #include "pa_common.h"
-#include "pa_threads.h"
-#include "pa_stack.h"
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
 // globals
 
-SQL_Driver_manager *SQL_driver_manager;
+SQL_Driver_manager SQL_driver_manager;
 
 // consts
 
-const int EXPIRE_UNUSED_CONNECTION_SECONDS=60;
-const int CHECK_EXPIRED_CONNECTIONS_SECONDS=EXPIRE_UNUSED_CONNECTION_SECONDS*2;
+const time_t EXPIRE_UNUSED_CONNECTION_SECONDS=60;
+const time_t CHECK_EXPIRED_CONNECTIONS_SECONDS=EXPIRE_UNUSED_CONNECTION_SECONDS*2;
 
 // helpers
 
-const String& url_without_login(Pool& pool, const String& url) {
-	String& result=*new(pool) String(pool);
-	result << url.mid(0, url.pos(":")) << "://****";
+const String& SQL_Driver_services_impl::url_without_login() const {
+	String& result=*new String;
+	result << furl->mid(0, furl->pos(':')) << "://****";
 
-	int at_pos=url.pos("@");
-	if(at_pos>0)
-		result << url.mid(at_pos, url.size());
+	size_t at_pos=furl->pos('@');
+	if(at_pos!=STRING_NOT_FOUND)
+		result << furl->mid(at_pos, furl->length());
 
 	return result;
 }
 
-/// SQL_Driver_services Pooled implementation
-class SQL_Driver_services_impl : public SQL_Driver_services, public Pooled {
-public:
-	SQL_Driver_services_impl(Pool& apool, const String& aurl) : Pooled(apool),
-		furl(aurl) {
-	}
-
-	virtual void *malloc(size_t size) { return Pooled::malloc(size, 8); }
-	virtual void *calloc(size_t size) { return Pooled::calloc(size); }
-
-	/**
-		normally we can't 'throw' from dynamic library, so
-		the idea is to #1 jump to C++ some function to main body, where
-		every function stack frame has exception unwind information
-		and from there... #2 propagate_exception()
-
-        but when parser configured --with-sjlj-exceptions
-		one can simply 'throw' from dynamic library.
-		[sad story: one can not longjump/throw due to some bug in gcc as of 3.2.1 version]
-	*/
-	virtual void _throw(const SQL_Error& aexception) { 
-		// converting SQL_exception to parser Exception
-		// hiding passwords and addresses from accidental show [imagine user forgot @exception]
-#ifdef PA_WITH_SJLJ_EXCEPTIONS
-		throw
-#else
-		fexception=
-#endif
-			Exception(aexception.type(), 
-				aexception.problem_source()?static_cast<const String*>(aexception.problem_source())
-					:&url_without_login(pool(), furl),
-				aexception.comment()); 
-
-#ifndef PA_WITH_SJLJ_EXCEPTIONS
-		longjmp(mark, 1);
-#endif
-	}
-	virtual void propagate_exception() {
-#ifndef PA_WITH_SJLJ_EXCEPTIONS
-		throw fexception;
-#endif
-	}
-
-private:
-	const String& furl;
-	Exception fexception;
-};
-
 // helpers
 
-static void expire_connection(Array::Item *value, void *info) {
-	SQL_Connection& connection=*static_cast<SQL_Connection *>(value);
-	time_t older_dies=reinterpret_cast<time_t>(info);
-
+static void expire_connection(SQL_Connection& connection, time_t older_dies) {
 	if(connection.connected() && connection.expired(older_dies))
 		connection.disconnect();
 }
-static void expire_connections(const Hash::Key& key, Hash::Val *value, void *info) {
-	Stack& stack=*static_cast<Stack *>(value);
-	for(int i=0; i<=stack.top_index(); i++)
-		expire_connection(stack.get(i), info);
+static void expire_connections(SQL_Driver_manager::connection_cache_type::key_type /*key*/, 
+			       SQL_Driver_manager::connection_cache_type::value_type stack, 
+			       time_t older_dies) {
+	for(size_t i=0; i<stack->top(); i++)
+		expire_connection(*stack->get(i), older_dies);
 }
 
 // SQL_Driver_manager
 
-SQL_Driver_manager::SQL_Driver_manager(Pool& apool) : Cache_manager(apool),
-		driver_cache(apool),
-		connection_cache(apool),
-		prev_expiration_pass_time(0) {
+SQL_Driver_manager::SQL_Driver_manager(): 
+	prev_expiration_pass_time(0), is_dlinited(false) {
+
+	cache_managers.put(StringBody("sql"), this);
 }
 
 SQL_Driver_manager::~SQL_Driver_manager() {
-	connection_cache.for_each(expire_connections, 
-		reinterpret_cast<void *>(time(0)+1/*=in future=expire all*/));
+	connection_cache.for_each(expire_connections, time(0)+(time_t)1/*=in future=expire all*/);
+
+	if(is_dlinited)
+		lt_dlexit();
 }
 
-/// @param request_url protocol://[driver-dependent]
-SQL_Connection_ptr SQL_Driver_manager::get_connection(const String& request_url,
-												   const String& request_origin,
-												   Table *protocol2driver_and_client) {
-	Pool& pool=request_origin.pool(); // request pool											   
-
+/// @param aurl protocol://[driver-dependent]
+SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
+						   Table *protocol2driver_and_client) {
 	// we have table for locating protocol's library
 	if(!protocol2driver_and_client)
 		throw Exception("parser.runtime",
-			&request_url,
+			&aurl,
 			"$"MAIN_SQL_NAME":"MAIN_SQL_DRIVERS_NAME" table must be defined");
 
-	// construct services[request]  (deassociates at close)
-	SQL_Driver_services *services=new(pool) SQL_Driver_services_impl(pool, request_url); 
-
 	// first trying to get cached connection
-	SQL_Connection *connection=get_connection_from_cache(request_url);
+	SQL_Connection* connection=get_connection_from_cache(aurl);
 	if(connection) {
-		connection->set_services(services);
+		connection->set_url();
 		if(!connection->ping()) { // we have some cached connection, is it pingable?
 			connection->disconnect(); // kill unpingabe=dead connection
 			connection=0;
 		}
 	}
 
-	char *request_url_cstr;
+	char *url_cstr;
 	if(connection)
-		request_url_cstr=0; // calm, compiler
+		url_cstr=0; // calm, compiler
 	else { // no cached connection or it were unpingabe: connect/reconnect
-		int pos=request_url.pos("://", 3);
-		if(pos<0)
+		url_cstr=aurl.cstrm();
+		if(!strstr(url_cstr, "://"))
 			throw Exception("parser.runtime",
-				request_url.size()?&request_url:&request_origin,
+				aurl.length()?&aurl:0,
 				"connection string must start with protocol://");
 
-		// make global_url C-string on global pool
-		request_url_cstr=request_url.cstr();
-		char *global_url_cstr=(char *)malloc(strlen(request_url_cstr)+1);
-		strcpy(global_url_cstr, request_url_cstr);
-		// make global_url string on global pool
-		String& global_url=*new(this->pool()) String(this->pool(), global_url_cstr);
-		
-		char *request_protocol_cstr=lsplit(&request_url_cstr, ':');
+
+		char *protocol_cstr=lsplit(&url_cstr, ':');
 		// skip "//" after ':'
-		while(*request_url_cstr=='/')
-			request_url_cstr++;
-		// make global_protocol C-string on global pool
-		char *global_protocol_cstr=(char *)malloc(strlen(request_protocol_cstr)+1);
-		strcpy(global_protocol_cstr, request_protocol_cstr);
-		// make global_protocol string on global pool
-		String& global_protocol=*new(this->pool()) String(this->pool(), 
-			global_protocol_cstr);
+		while(*url_cstr=='/')
+			url_cstr++;
+		const String& protocol=*new String(protocol_cstr);
 
 		SQL_Driver *driver;
 		// first trying to get cached driver
-		if(!(driver=get_driver_from_cache(global_protocol))) {
+		if(!(driver=get_driver_from_cache(protocol))) {
 			// no cached
-			const String *library=0;
-			const String *dlopen_file_spec=0;
+			const String* library=0;
+			const String* dlopen_file_spec=0;
 			Table::Action_options options;
-			if(protocol2driver_and_client->locate(0, global_protocol, options)) {
-				if(!(library=protocol2driver_and_client->item(1)) || library->size()==0)
+			if(protocol2driver_and_client->locate(0, protocol, options)) {
+				if(!(library=protocol2driver_and_client->item(1)) || library->length()==0)
 					throw Exception("parser.runtime",
-						protocol2driver_and_client->origin_string(),
+						0,
 						"driver library column for protocol '%s' is empty", 
-							request_protocol_cstr);
+							protocol_cstr);
 				dlopen_file_spec=protocol2driver_and_client->item(2);
 			} else
 				throw Exception("parser.runtime",
-					&request_url,
+					&aurl,
 					"undefined protocol '%s'", 
-						request_protocol_cstr);
+						protocol_cstr);
 
-			if(lt_dlinit())
-				throw Exception(0,
-					library,
-					"prepare to dynamic loading failed, %s", lt_dlerror());
+			if(!is_dlinited) {
+				if(lt_dlinit())
+					throw Exception(0,
+						library,
+						"prepare to dynamic loading failed, %s", lt_dlerror());
 
-			const char *filename=library->cstr(String::UL_FILE_SPEC);
+				is_dlinited=true;
+			}
+
+			const char* filename=library->cstr(String::L_FILE_SPEC);
 			lt_dlhandle handle=lt_dlopen(filename);
 			if (!handle)
 				throw Exception(0,
@@ -219,67 +157,62 @@ SQL_Connection_ptr SQL_Driver_manager::get_connection(const String& request_url,
 						driver_api_version, SQL_DRIVER_API_VERSION);
 
 			// initialise by connecting to sql client dynamic link library
-			char *dlopen_file_spec_cstr=
-				dlopen_file_spec && dlopen_file_spec->size()?
-				dlopen_file_spec->cstr(String::UL_AS_IS):0;
-			if(const char *error=driver->initialize(
-				dlopen_file_spec_cstr))
+			char* dlopen_file_spec_cstr=
+				dlopen_file_spec && dlopen_file_spec->length()?
+				dlopen_file_spec->cstrm(String::L_AS_IS):0;
+			if(const char* error=driver->initialize(dlopen_file_spec_cstr))
 				throw Exception(0,
 					library,
 					"driver failed to initialize client library '%s', %s",
-						dlopen_file_spec_cstr?dlopen_file_spec_cstr:"unspecifed", 
+						dlopen_file_spec_cstr?dlopen_file_spec_cstr:"unspecifed",
 						error);
 
 			// cache it
-			put_driver_to_cache(global_protocol, *driver);
+			put_driver_to_cache(protocol, driver);
 		}
 	
-		// allocate in global pool 
-		// associate with services[request]
-		// NOTE: never freed up!
-		connection=new(this->pool()) SQL_Connection(this->pool(), global_url, *driver);
-		// associate with services[request]  (deassociates at close)
-		connection->set_services(services); 
+		connection=new SQL_Connection(aurl, *driver);
+		// associate with pool[request]  (deassociates at close)
+		connection->set_url(); 
 	}
 
 	// if not connected yet, do that now, when connection has services
 	if(!connection->connected())
-		connection->connect(request_url_cstr);
+		connection->connect(url_cstr);
 	// return autoclosing object for it
-	return SQL_Connection_ptr(connection);
+	return connection;
 }
 
-void SQL_Driver_manager::close_connection(const String& url, 
-										  SQL_Connection& connection) {
-	// deassociate from services[request]
-	connection.set_services(0);
+void SQL_Driver_manager::close_connection(connection_cache_type::key_type url, 
+					  SQL_Connection* connection) {
 	put_connection_to_cache(url, connection);
 }
 
 
 // driver cache
 
-SQL_Driver *SQL_Driver_manager::get_driver_from_cache(const String& protocol) {
+SQL_Driver *SQL_Driver_manager::get_driver_from_cache(driver_cache_type::key_type protocol) {
 	SYNCHRONIZED;
 
-	return static_cast<SQL_Driver *>(driver_cache.get(protocol));
+	return driver_cache.get(protocol);
 }
 
-void SQL_Driver_manager::put_driver_to_cache(const String& protocol, 
-											 SQL_Driver& driver) {
+void SQL_Driver_manager::put_driver_to_cache(
+											 driver_cache_type::key_type protocol, 
+											 driver_cache_type::value_type driver) {
 	SYNCHRONIZED;
 
-	driver_cache.put(protocol, &driver);
+	driver_cache.put(protocol, driver);
 }
 
 // connection cache
 /// @todo get rid of memory spending Stack [zeros deep inside got accumulated]
-SQL_Connection *SQL_Driver_manager::get_connection_from_cache(const String& url) { 
+SQL_Connection* SQL_Driver_manager::get_connection_from_cache(connection_cache_type::key_type url) { 
 	SYNCHRONIZED;
 
-	if(Stack *connections=static_cast<Stack *>(connection_cache.get(url)))
-		while(connections->top_index()>=0) { // there are cached connections to that 'url'
-			SQL_Connection *result=static_cast<SQL_Connection *>(connections->pop());
+	if(connection_cache_type::value_type connections=connection_cache.get(url))
+		while(!connections->is_empty()) { // there are cached connections to that 'url'
+			SQL_Connection* result=connections->pop();
 			if(result->connected()) // not expired?
 				return result;
 		}
@@ -287,46 +220,44 @@ SQL_Connection *SQL_Driver_manager::get_connection_from_cache(const String& url)
 	return 0;
 }
 
-void SQL_Driver_manager::put_connection_to_cache(const String& url, 
-												 SQL_Connection& connection) { 
+void SQL_Driver_manager::put_connection_to_cache(
+						 connection_cache_type::key_type url, 
+						 SQL_Connection* connection) { 
 	SYNCHRONIZED;
 
-	Stack *connections=static_cast<Stack *>(connection_cache.get(url));
+	connection_cache_type::value_type connections=connection_cache.get(url);
 	if(!connections) { // there are no cached connections to that 'url' yet?
-		connections=NEW Stack(pool()); // NOTE: never freed up!
+		connections=new connection_cache_element_base_type;
 		connection_cache.put(url, connections);
 	}	
-	connections->push(&connection);
+	connections->push(connection);
 }
 
 void SQL_Driver_manager::maybe_expire_cache() {
 	time_t now=time(0);
 
 	if(prev_expiration_pass_time<now-CHECK_EXPIRED_CONNECTIONS_SECONDS) {
-		connection_cache.for_each(expire_connections, 
-			reinterpret_cast<void *>(now-EXPIRE_UNUSED_CONNECTION_SECONDS));
+		connection_cache.for_each(expire_connections, time_t(now-EXPIRE_UNUSED_CONNECTION_SECONDS));
 
 		prev_expiration_pass_time=now;
 	}
 }
-
+/*
 static void add_connection_to_status_cache_table(Array::Item *value, void *info) {
-	SQL_Connection& connection=*static_cast<SQL_Connection *>(value);
+	SQL_Connection& connection=*static_cast<SQL_Connection* >(value);
 	Table& table=*static_cast<Table *>(info);
 
 	if(connection.connected()) {
-		Pool& pool=table.pool();
-		Array& row=*new(pool) Array(pool);
+		Array& row=*new Array();
 
 		// url
-		row+=&url_without_login(pool, connection.get_url());
+		row+=&url_without_login(connection.get_url());
 		// time
 		time_t time_used=connection.get_time_used();
-		const char *unsafe_time_cstr=ctime(&time_used);
+		const char* unsafe_time_cstr=ctime(&time_used);
 		int time_buf_size=strlen(unsafe_time_cstr);
-		char *safe_time_buf=(char *)pool.malloc(time_buf_size);
-		memcpy(safe_time_buf, unsafe_time_cstr, time_buf_size);
-		row+=new(pool) String(pool, safe_time_buf, time_buf_size);
+		char *safe_time_buf=pool.copy(unsafe_time_cstr, time_buf_size);
+		row+=new String(safe_time_buf, time_buf_size);
 
 		table+=&row;
 	}
@@ -336,21 +267,22 @@ static void add_connections_to_status_cache_table(const Hash::Key& key, Hash::Va
 	Array_iter iter(stack);
 	for(int countdown=stack.top_index(); countdown-->=0; )
 		add_connection_to_status_cache_table(iter.next(), info);
-}
-Value& SQL_Driver_manager::get_status(Pool& pool, const String *source) {
-	VHash& result=*new(pool) VHash(pool);
-	
+}*/
+/// @todo convert to object_ptr
+Value* SQL_Driver_manager::get_status() {
+	Value* result=new VHash;
+	/*
 	// cache
 	{
-		Array& columns=*new(pool) Array(pool);
-		columns+=new(pool) String(pool, "url");
-		columns+=new(pool) String(pool, "time");
-		Table& table=*new(pool) Table(pool, 0, &columns, connection_cache.size());
+		Array& columns=*new Array();
+		columns+=new String("url");
+		columns+=new String("time");
+		Table& table=*new Table(0, &columns, connection_cache.length());
 
 		connection_cache.for_each(add_connections_to_status_cache_table, &table);
 
-		result.hash(source).put(*new(pool) String(pool, "cache"), new(pool) VTable(pool, &table));
-	}
+		result.hash(source).put(*new String("cache"), new VTable(&table));
+	}*/
 
 	return result;
 }

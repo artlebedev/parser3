@@ -1,14 +1,16 @@
 /**	@file
 	Parser: @b class parser class decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char* IDENT_VCLASS_H="$Date: 2003/01/21 15:51:18 $";
+static const char* IDENT_VCLASS_H="$Date: 2003/07/24 11:31:25 $";
+
+// includes
 
 #include "pa_vstateless_class.h"
 #include "pa_vjunction.h"
@@ -17,31 +19,25 @@ static const char* IDENT_VCLASS_H="$Date: 2003/01/21 15:51:18 $";
 /**	stores 
 - static fields: VClass::ffields
 */
-class VClass : public VStateless_class {
+class VClass: public VStateless_class {
 public: // Value
 	
-	const char *type() const { return name_cstr(); }
+	const char* type() const { return name_cstr(); }
 
-	/*override*/ Value *as(const char *atype, bool looking_up);
+	override Value* as(const char* atype, bool looking_up);
 
 	/// VClass: true
-	Value *as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
+	override Value& as_expr_result(bool) { return *new VBool(as_bool()); }
 	/// VClass: true
-	bool as_bool() const { return true; }
+	override bool as_bool() const { return true; }
 
-	/*override*/ Value *get_element(const String& aname, Value& aself, bool /*looking_up*/);
-	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace);
-	/*override*/ Value *create_new_value(Pool& );
-
-public: // usage
-
-	VClass(Pool& apool) : VStateless_class(apool), 
-		ffields(apool) {
-	}
+	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	override bool put_element(const String& aname, Value* avalue, bool replace);
+	override Value* create_new_value();
 
 protected:
 		
-	bool replace_field(const String& name, Value *value) {
+	bool replace_field(const String& name, Value* value) {
 		return 
 			(fbase && fbase->replace_field(name, value)) ||
 			ffields.put_replace(name, value);
@@ -49,7 +45,7 @@ protected:
 
 private: // self
 
-	Hash ffields;
+	HashStringValue ffields;
 
 };
 

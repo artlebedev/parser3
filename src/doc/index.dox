@@ -3,7 +3,8 @@
 @section Part1  Часть 1
 
 - @ref Targets
-- @ref Pooled
+- @ref Memory
+- @ref Exceptions
 - @ref String
 - @ref Compiler
 - @ref Executor

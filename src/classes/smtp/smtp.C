@@ -1,21 +1,20 @@
 /** @file
 	Parser: SMTP sender.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char* IDENT_SMTP_C="$Date: 2003/01/21 15:51:09 $";
+static const char* IDENT_SMTP_C="$Date: 2003/07/24 11:31:20 $";
 
 #include "pa_exception.h"
 #include "smtp.h"
 
 //#define DEBUG_SHOW
 
-SMTP::SMTP(Pool& pool, const String& aorigin_string) : Pooled(pool),
-	origin_string(aorigin_string) {
+SMTP::SMTP() {
     the_socket  = 0;
     in_index    = 0;
     out_index   = 0;
@@ -29,10 +28,15 @@ SMTP::SMTP(Pool& pool, const String& aorigin_string) : Pooled(pool),
     last_winsock_error = 0;
 }
 
+SMTP::~SMTP() {
+	free(in_buffer);
+    free(out_buffer);
+}
+
 
 // ---------------------------------------------------------------------------
 void SMTP:: 
-ConnectToHost(const char *hostname, const char *service)
+ConnectToHost(const char* hostname, const char* service)
 {
     struct sockaddr_in	sa_in;
     int			        our_port;
@@ -59,7 +63,7 @@ ConnectToHost(const char *hostname, const char *service)
     CloseConnect();
 
     throw Exception("smtp.connect",
-		&origin_string,
+		0,
 		"connect to %s:%s failed", 
 			hostname, service);
 }
@@ -212,7 +216,7 @@ get_line( void )
 //---------------------------------------------------------------------------
 // returns 0 if all is OK
 void SMTP:: 
-SendLine(const char *data, unsigned long length)
+SendLine(const char* data, unsigned long length)
 {
     int         num_sent;
 
@@ -225,7 +229,7 @@ SendLine(const char *data, unsigned long length)
     {
         if( SOCKET_ERROR == select(0, NULL, &fds, NULL, &timeout) ) 
             throw Exception("smtp.execute",
-				&origin_string,
+				0,
 		        "connection::put_data() unexpected error from select: %d",
 					WSAGetLastError());
 
@@ -250,7 +254,7 @@ SendLine(const char *data, unsigned long length)
 
                 default:
 					throw Exception("smtp.execute",
-						&origin_string,
+						0,
 		                "connection::put_data() unexpected error from send(): %d",
 							ws_error);
             }
@@ -266,7 +270,7 @@ SendLine(const char *data, unsigned long length)
 //---------------------------------------------------------------------------
 // returns 0 if all is OK
 void SMTP:: 
-SendBuffer(const char *data, unsigned long length)
+SendBuffer(const char* data, unsigned long length)
 {
     DWORD             retval = 0;
     unsigned int    sorta_sent = 0;
@@ -318,13 +322,13 @@ CloseConnect()
 
 //----------------------------------------------------------------------
 void SMTP::
-SendSmtpError(const char * message)
+SendSmtpError(const char*  message)
 {
 	SendLine("QUIT\r\n", 6);
 	CloseConnect();
 
 	throw Exception("smtp.execute",
-		&origin_string,
+		0,
 		"failed: %s", message);
 }
 
@@ -333,7 +337,7 @@ SendSmtpError(const char * message)
 // returns 20, 21, 22, 23, 24, 25 if SendBuffer() fails
 // returns 26 if FlushBuffer() fails
 void SMTP::
-transform_and_send_edit_data(const char * editptr )
+transform_and_send_edit_data(const char*  editptr )
 {
 	const char      *index;
 	char            previous_char = 'x';
@@ -391,7 +395,7 @@ transform_and_send_edit_data(const char * editptr )
 // returns 16 if any get_line()'s fail
 // returns 20, 21, 22, 23, 24, 25, 26 if transform_and_send_edit_data() fails
 void SMTP::
-send_data(const char * message)
+send_data(const char*  message)
 {
 	transform_and_send_edit_data(message);
 	if( 250 != get_line() )
@@ -402,13 +406,13 @@ send_data(const char * message)
 // returns 0 if all is OK
 // returns 50, 51, 52 if fails
 void SMTP::
-open_socket( const char *server, const char *service )
+open_socket( const char* server, const char* service )
 {
 	ConnectToHost(server, service);
 
     if( gethostname(my_hostname, sizeof(my_hostname)) )
 		throw Exception("smtp.connect",
-			&origin_string,
+			0,
 			"lookup of '%s' failed", my_hostname);
 }
 
@@ -417,7 +421,7 @@ open_socket( const char *server, const char *service )
 // returns 50, 51, 52 if open_socket() fails
 // returns 10, 11, 12, 13, 14, 15 if any get_line()'s fail
 void SMTP::
-prepare_message(char *from, char *to, const char *server, const char *service)
+prepare_message(char *from, char *to, const char* server, const char* service)
 {
 	char	out_data[MAXOUTLINE];
 	char	*ptr;
@@ -459,7 +463,7 @@ prepare_message(char *from, char *to, const char *server, const char *service)
 
 		if( 250 != get_line() )
 			throw Exception("smtp.execute",
-				&origin_string,
+				0,
 				"The mail server doesn't like the name %s. Have you set the 'To: ' field correctly?", 
 					ptr);
 
@@ -502,7 +506,7 @@ static char *rsplit(char *string, char delim) {
 // returns 1 if MakeSmtpHeader() fails
 // returns 10, 11, 12, 13, 14, 15, 50, 51, 52 if prepare_message() fails
 void SMTP::
-Send(const char *server, const char *service, const char *msg, char *from, char *to)
+Send(const char* server, const char* service, const char* msg, char *from, char *to)
 {
 #ifdef DEBUG_SHOW
 	throw Exception("paf.debug",0,"from=%s|to=%s|msg=%s", from,to,msg);

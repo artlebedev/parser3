@@ -1,11 +1,11 @@
 /** @file
 	Parser: executor part of request class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2003/04/07 12:39:32 $";
+static const char* IDENT_EXECUTE_C="$Date: 2003/07/24 11:31:23 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -24,14 +24,6 @@ static const char* IDENT_EXECUTE_C="$Date: 2003/04/07 12:39:32 $";
 #include "pa_wwrapper.h"
 
 //#define DEBUG_EXECUTE
-//#define DEBUG_STRING_APPENDS_VS_EXPANDS
-
-
-#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
-ulong wcontext_result_size=0;
-#endif
-
-
 
 #ifdef DEBUG_EXECUTE
 char *opcode_name[]={
@@ -62,37 +54,37 @@ char *opcode_name[]={
 	"IS"
 };
 
-void va_debug_printf(Pool& pool, const char *fmt,va_list args) {
+void va_debug_printf(SAPI_Info& sapi_info, const char* fmt,va_list args) {
 	char buf[MAX_STRING];
 	vsnprintf(buf, MAX_STRING, fmt, args);
-	SAPI::log(pool, "%s", buf);
+	SAPI::log(sapi_info, "%s", buf);
 }
 
-void debug_printf(Pool& pool, const char *fmt, ...) {
+void debug_printf(SAPI_Info& sapi_info, const char* fmt, ...) {
     va_list args;
-    va_start(args,fmt);
-    va_debug_printf(pool,fmt,args);
+    va_start(args, fmt);
+    va_debug_printf(sapi_info, fmt, args);
     va_end(args);
 }
 
-void debug_dump(Pool& pool, int level, const Array& ops) {
-	Array_iter i(ops);
+void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
+	Array_iterator<Operation> i(ops);
 	while(i.has_next()) {
-		Operation op;
-		op.cast=i.next();
+		OPCODE opcode=i.next().code;
 
-		if(op.code==OP_VALUE || op.code==OP_STRING__WRITE) {
-			Value *value=static_cast<Value *>(i.next());
-			debug_printf(pool, 
+		if(opcode==OP_VALUE || opcode==OP_STRING__WRITE) {
+			Operation::Origin origin=i.next().origin;
+			Value& value=*i.next().value;
+			debug_printf(sapi_info, 
 				"%*s%s"
 				" \"%s\" %s", 
-				level*4, "", opcode_name[op.code],
-				value->get_string()->cstr(), value->type());
+				level*4, "", opcode_name[opcode],
+				value.get_string()->cstr(), value.type());
 			continue;
 		}
-		debug_printf(pool, "%*s%s", level*4, "", opcode_name[op.code]);
+		debug_printf(sapi_info, "%*s%s", level*4, "", opcode_name[opcode]);
 
-		switch(op.code) {
+		switch(opcode) {
 		case OP_CURLY_CODE__STORE_PARAM: 
 		case OP_EXPR_CODE__STORE_PARAM:
 		case OP_CURLY_CODE__CONSTRUCT:
@@ -100,52 +92,49 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 		case OP_OBJECT_POOL:  
 		case OP_STRING_POOL:
 		case OP_CALL:
-			const Array *local_ops=reinterpret_cast<const Array *>(i.next());
-			debug_dump(pool, level+1, *local_ops);
+		case OP_CALL__WRITE:
+			if(ArrayOperation* local_ops=i.next().ops)
+				debug_dump(sapi_info, level+1, *local_ops);
 		}
 	}
 }
 #endif
 
-#define PUSH(value) stack.push(value)
-#define POP() static_cast<Value *>(stack.pop())
-#define POP_NAME() static_cast<Value *>(stack.pop())->as_string()
-#define POP_CODE() static_cast<Array *>(stack.pop())
+// Request
 
-void Request::execute(const Array& ops) {
-//	_asm int 3;
+void Request::execute(ArrayOperation& ops) {
+	register Stack<StackItem>& stack=this->stack; // helps a lot on MSVC: 'esi'
+
+	const String* debug_name=0;  Operation::Origin debug_origin;  //bool is_debug_junction=false;
+	try{
 #ifdef DEBUG_EXECUTE
-	debug_printf(pool(), "source----------------------------\n");
-	debug_dump(pool(), 0, ops);
-	debug_printf(pool(), "execution-------------------------\n");
+	debug_printf(sapi_info, "source----------------------------\n");
+	debug_dump(sapi_info, 0, ops);
+	debug_printf(sapi_info, "execution-------------------------\n");
 #endif
-	const String *last_get_element_name=0;
-
-	Array_iter i(ops);
-	while(i.has_next()) {
-		if(interrupted())
+	for(Array_iterator<Operation> i(ops); i.has_next(); ) {
+		if(get_interrupted()) {
+			set_interrupted(false);
 			throw Exception("parser.interrupted",
 				0,
 				"execution stopped");
+		}
+		OPCODE opcode=i.next().code;
 
-		Operation op;
-		op.cast=i.next();
 #ifdef DEBUG_EXECUTE
-		debug_printf(pool(), "%d:%s", stack.top_index()+1, opcode_name[op.code]);
+		debug_printf(sapi_info, "%d:%s", stack.top_index()+1, opcode_name[opcode]);
 #endif
 
-		Value *value;
-		Value *a; Value *b;
-		Array *b_code;
-		switch(op.code) {
+		switch(opcode) {
 		// param in next instruction
 		case OP_VALUE:
 			{
-				value=static_cast<Value *>(i.next());
+				debug_origin=i.next().origin;
+				Value& value=*i.next().value;
 #ifdef DEBUG_EXECUTE
-				debug_printf(pool(), " \"%s\" %s", value->get_string()->cstr(), value->type());
+				debug_printf(sapi_info, " \"%s\" %s", value.get_string()->cstr(), value.type());
 #endif
-				PUSH(value);
+				stack.push(value);
 				break;
 			}
 		case OP_GET_CLASS:
@@ -153,31 +142,31 @@ void Request::execute(const Array& ops) {
 				// maybe they do ^class:method[] call, remember the fact
 				wcontext->set_somebody_entered_some_class();
 
-				const String& name=POP_NAME();
-				value=static_cast<Value *>(classes().get(name));
+				const String& name=stack.pop().string();
+				Value* value=classes().get(name);
 				if(!value) 
 					throw Exception("parser.runtime",
 						&name,
 						"class is undefined"); 
 
-				PUSH(value);
+				stack.push(*value);
 				break;
 			}
 			
 		// OP_WITH
 		case OP_WITH_ROOT:
 			{
-				PUSH(method_frame);
+				stack.push(*method_frame);
 				break;
 			}
 		case OP_WITH_SELF: 
 			{
-				PUSH(get_self());
+				stack.push(get_self());
 				break;
 			}
 		case OP_WITH_READ: 
 			{
-				PUSH(rcontext);
+				stack.push(*rcontext);
 				break;
 			}
 		case OP_WITH_WRITE: 
@@ -187,17 +176,17 @@ void Request::execute(const Array& ops) {
 						0,
 						"$.name outside of $name[...]");
 
-				PUSH(wcontext);
+				stack.push(*wcontext);
 				break;
 			}
 			
 		// OTHER ACTIONS BUT WITHs
 		case OP_CONSTRUCT_VALUE:
 			{
-				value=POP();
-				const String& name=POP_NAME();
-				Value *ncontext=POP();
-				ncontext->put_element(name, value, false);
+				Value& value=stack.pop().value();
+				const String& name=stack.pop().string();  debug_name=&name;
+				Value& ncontext=stack.pop().value();
+				ncontext.put_element(name, &value, false);
 				break;
 			}
 		case OP_CONSTRUCT_EXPR:
@@ -205,52 +194,51 @@ void Request::execute(const Array& ops) {
 				// see OP_PREPARE_TO_EXPRESSION
 				wcontext->set_in_expression(false);
 
-				value=POP();
-				const String& name=POP_NAME();
-				Value *ncontext=POP();
-				ncontext->put_element(name, value->as_expr_result(), false);
+				Value& value=stack.pop().value();
+				const String& name=stack.pop().string();  debug_name=&name;
+				Value& ncontext=stack.pop().value();
+				ncontext.put_element(name, &value.as_expr_result(), false);
 				break;
 			}
 		case OP_CURLY_CODE__CONSTRUCT:
 			{
-				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
+				ArrayOperation& local_ops=*i.next().ops;
 #ifdef DEBUG_EXECUTE
-				debug_printf(pool(), " (%d)\n", local_ops->size());
-				debug_dump(pool(), 1, *local_ops);
+				debug_printf(sapi_info, " (%d)\n", local_ops.count());
+				debug_dump(sapi_info, 1, local_ops);
 #endif				
-				Junction& j=*NEW Junction(pool(), 
-					*get_self(), 0,
+				Value& value=*new VJunction(new Junction( 
+					get_self(), 0,
 					method_frame, 
 					rcontext, 
 					wcontext, 
-					local_ops);
+					&local_ops));
 
-				value=NEW VJunction(j);
-				const String& name=POP_NAME();
-				Value *ncontext=POP();
-				ncontext->put_element(name, value, false);
+				const String& name=stack.pop().string();  debug_name=&name;
+				Value& ncontext=stack.pop().value();
+				ncontext.put_element(name, &value, false);
 				break;
 			}
 		case OP_NESTED_CODE:
 			{
-				Array *local_ops=static_cast<Array *>(i.next());
+				ArrayOperation& local_ops=*i.next().ops;
 #ifdef DEBUG_EXECUTE
-				debug_printf(pool(), " (%d)\n", local_ops->size());
-				debug_dump(pool(), 1, *local_ops);
+				debug_printf(sapi_info, " (%d)\n", local_ops.count());
+				debug_dump(sapi_info, 1, local_ops);
 #endif				
-				PUSH(local_ops);
+				stack.push(local_ops);
 				break;
 			}
 		case OP_WRITE_VALUE:
 			{
-				value=POP();
-				write_assign_lang(*value, last_get_element_name);
+				Value& value=stack.pop().value();
+				write_assign_lang(value);
 				break;
 			}
 		case OP_WRITE_EXPR_RESULT:
 			{
-				value=POP();
-				write_no_lang(*value->as_expr_result());
+				Value& value=stack.pop().value();
+				write_no_lang(value.as_expr_result());
 
 				// must be after write(result) and 
 				// see OP_PREPARE_TO_EXPRESSION
@@ -259,95 +247,101 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_STRING__WRITE:
 			{
-				VString *vstring=static_cast<VString *>(i.next());
+				i.next(); // ignore origin
+				Value* value=i.next().value;
 #ifdef DEBUG_EXECUTE
-				debug_printf(pool(), " \"%s\"", vstring->string().cstr());
+				debug_printf(sapi_info, " \"%s\"", value->get_string()->cstr());
 #endif
-				write_no_lang(vstring->string());
+				write_no_lang(*value->get_string());
 				break;
 			}
 			
 		case OP_GET_ELEMENT_OR_OPERATOR:
 			{
-				value=get_element(last_get_element_name, true);
-				PUSH(value);
+				const String& name=stack.pop().string();  debug_name=&name;
+				Value& ncontext=stack.pop().value();
+				Value& value=get_element(ncontext, name, true);
+				stack.push(value);
 				break;
 			}
 		case OP_GET_ELEMENT:
 			{
-				value=get_element(last_get_element_name, false);
-				PUSH(value);
+				const String& name=stack.pop().string();  debug_name=&name;
+				Value& ncontext=stack.pop().value();
+				Value& value=get_element(ncontext, name, false);
+				stack.push(value);
 				break;
 			}
 
 		case OP_GET_ELEMENT__WRITE:
 			{
-				value=get_element(last_get_element_name/*not followed by call, not needed really*/, false);
-				write_assign_lang(*value, last_get_element_name);
+				const String& name=stack.pop().string();  debug_name=&name;
+				Value& ncontext=stack.pop().value();
+				Value& value=get_element(ncontext, name, false);
+				write_assign_lang(value);
 				break;
 			}
 
 
 		case OP_OBJECT_POOL:
 			{
-				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
+				ArrayOperation& local_ops=*i.next().ops;
 				
 				WContext *saved_wcontext=wcontext;
-				uchar saved_lang= flang;
-				flang=String::UL_PASS_APPENDED;
-				WWrapper local(pool(), 0 /*empty*/, wcontext);
+				String::Language saved_lang=flang;
+				flang=String::L_PASS_APPENDED;
+				WWrapper local(0/*empty*/, wcontext);
 				wcontext=&local;
 
-				execute(*local_ops);
+				execute(local_ops);
 
-				value=&wcontext->result().as_value();
+				stack.push(wcontext->result().as_value());
 				flang=saved_lang;
 				wcontext=saved_wcontext;
-				PUSH(value);
 				break;
 			}
 			
 		case OP_STRING_POOL:
 			{
-				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
+				ArrayOperation& local_ops=*i.next().ops;
 
 				WContext *saved_wcontext=wcontext;
-				WWrapper local(pool(), 0 /*empty*/, wcontext);
+				WWrapper local(0 /*empty*/, wcontext);
 				wcontext=&local;
 
-				execute(*local_ops);
+				execute(local_ops);
 
+				Value* value;
 				// from "$a $b" part of expression taking only string value,
 				// ignoring any other content of wcontext
-				const String *string=wcontext->get_string();
-				Value *value;
-				if(string)
-					value=NEW VString(*string);
+				if(const String* string=wcontext->get_string())
+					value=new VString(*string);
 				else
-					NEW VVoid(pool());
+					value=new VVoid;
+				stack.push(*value);
+
 				wcontext=saved_wcontext;
-				PUSH(value);
 				break;
 			}
 
 		// CALL
 		case OP_STORE_PARAM:
 			{
-				value=POP();
-				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
-				// this op is executed from CALL local_ops only, so can not check method_frame_to_fill==0
-				frame->store_param(value);
+				Value& value=stack.pop().value();
+				VMethodFrame& frame=stack.upper_value().method_frame();
+				// this op is executed from CALL local_ops only, so may skip the check "method_frame_to_fill==0"
+				frame.store_param(value);
 				break;
 			}
 		case OP_CURLY_CODE__STORE_PARAM:
 		case OP_EXPR_CODE__STORE_PARAM:
 			{
 				// code
-				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
-				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
+				ArrayOperation& local_ops=*i.next().ops;
+				VMethodFrame& frame=stack.upper_value().method_frame();
 #ifdef DEBUG_EXECUTE
-				debug_printf(pool(), " (%d)\n", local_ops->size());
-				debug_dump(pool(), 1, *local_ops);
+				debug_printf(sapi_info, " (%d)\n", local_ops.count());
+				debug_dump(sapi_info, 1, local_ops);
 #endif				
 				// when they evaluate expression parameter,
 				// the object expression result
@@ -356,18 +350,15 @@ void Request::execute(const Array& ops) {
 				// hence, we zero junction.wcontext here, and later
 				// in .process we would test that field 
 				// in decision "which wwrapper to use"
-				Junction& j=*NEW Junction(pool(), 
-					*get_self(), 0,
+				Value& value=*new VJunction(new Junction(
+					get_self(), 0,
 					method_frame, 
 					rcontext, 
-					op.code==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
-					local_ops);
-				
-				value=NEW VJunction(j);
-
+					opcode==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
+					&local_ops));
 				// store param
 				// this op is executed from CALL local_ops only, so can not check method_frame_to_fill==0
-				frame->store_param(value);
+				frame.store_param(value);
 				break;
 			}
 
@@ -386,21 +377,29 @@ void Request::execute(const Array& ops) {
 		case OP_CALL:
 		case OP_CALL__WRITE:
 			{
-				Array *local_ops=static_cast<Array *>(i.next());
+				//is_debug_junction=true;
+				ArrayOperation* local_ops=i.next().ops;
 #ifdef DEBUG_EXECUTE
-				debug_printf(pool(), " (%d)\n", local_ops->size());
-				debug_dump(pool(), 1, *local_ops);
+				debug_printf(sapi_info, " (%d)\n", local_ops?local_ops->count():0);
+				if(local_ops)
+					debug_dump(sapi_info, 1, *local_ops);
 
-				debug_printf(pool(), "->\n");
+				debug_printf(sapi_info, "->\n");
 #endif
-				value=POP();
+				Value& value=stack.pop().value();
 
-				Junction *junction=value->get_junction();
-				if(!junction)
-					throw Exception("parser.runtime",
-						last_get_element_name, 
-						"(%s) not a method or junction, can not call it",
-							value->type());
+				Junction* junction=value.get_junction();
+				if(!junction) {
+					if(value.is("void"))
+						throw Exception("parser.runtime",
+							0,
+							"undefined method");
+					else
+						throw Exception("parser.runtime",
+							0,
+							"is '%s', not a method or junction, can not call it",
+								value.type());
+				}
 				/* no check needed, code compiled the way that that's impossible
 				// check: 
 				//	that this is method-junction, not a code-junction
@@ -409,44 +408,44 @@ void Request::execute(const Array& ops) {
 				//  ^junction[]
 				if(!junction->method)
 					throw Exception("parser.runtime",
-						last_get_element_name, 
-						"(%s) is code junction, can not call it",
-							value->type());
+						
+						"is '%s', it is code junction, can not call it",
+							value.type());
 				*/
 
-				VMethodFrame frame(pool(), *last_get_element_name, *junction, method_frame/*caller*/);
+				VMethodFrame frame(*junction, method_frame/*caller*/);
 				if(local_ops){ // store param code goes here
-					PUSH(&frame); // argument for *STORE_PARAM ops
+					stack.push(frame); // argument for *STORE_PARAM ops
 					execute(*local_ops);
-					POP();
+					stack.pop().value();
 				}
 				frame.fill_unspecified_params();
 				VMethodFrame *saved_method_frame=method_frame;
-				Value *saved_rcontext=rcontext;
+				Value* saved_rcontext=rcontext;
 				WContext *saved_wcontext=wcontext;
 				
-				VStateless_class *called_class=frame.junction.self.get_class();
-				Value *new_self=get_self();
+				VStateless_class& called_class=*frame.junction.self.get_class();
+				Value* new_self=&get_self();
 				if(wcontext->get_constructing()) {
 					wcontext->set_constructing(false);
 					if(frame.junction.method->call_type!=Method::CT_STATIC) {
 						// this is a constructor call
 
-						if(Value *value=called_class->create_new_value(pool())) {
+						if(Value* value=called_class.create_new_value()) {
 							// some stateless_class creatable derivates
 							new_self=value;
 						} else 
 							throw Exception("parser.runtime",
-								&frame.name(),
+								0, //&frame.name(),
 								"is not a constructor, system class '%s' can be constructed only implicitly", 
-								called_class->name().cstr());
+									called_class.name().cstr());
 
 						frame.write(*new_self, 
-							String::UL_CLEAN  // not used, always an object, not string
+							String::L_CLEAN  // not used, always an object, not string
 						);
 					} else
 						throw Exception("parser.runtime",
-							&frame.name(),
+							0, //&frame.name(),
 							"method is static and can not be used as constructor");
 				} else
 					new_self=&frame.junction.self;
@@ -460,29 +459,23 @@ void Request::execute(const Array& ops) {
 				{
 					const Method& method=*frame.junction.method;
 					Method::Call_type call_type=
-						called_class==new_self ? Method::CT_STATIC : Method::CT_DYNAMIC;
+						&called_class==new_self ? Method::CT_STATIC : Method::CT_DYNAMIC;
 					if(
 						method.call_type==Method::CT_ANY ||
 						method.call_type==call_type) { // allowed call type?
-						try {
-							method_frame=&frame;
-							if(method.native_code) { // native code?
-								method.check_actual_numbered_params(
-									frame.junction.self, 
-									frame.name(), frame.numbered_params());
-								method.native_code(
-									*this, 
-									frame.name(), frame.numbered_params()); // execute it
-							} else // parser code, execute it
-								recoursion_checked_execute(&frame.name(), *method.parser_code);
-						} catch(...) {
-							// record it to stack trace
-							exception_trace.push((void *)&frame.name());
-							/*re*/throw;
-						}
+						method_frame=&frame;
+						if(method.native_code) { // native code?
+							method.check_actual_numbered_params(
+								frame.junction.self, 
+								/*frame.name(), */frame.numbered_params());
+							method.native_code(
+								*this, 
+								*frame.numbered_params()); // execute it
+						} else // parser code, execute it
+							recoursion_checked_execute(/*frame.name(), */*method.parser_code);
 					} else
 						throw Exception("parser.runtime",
-							&frame.name(),
+							0, //&frame.name(),
 							"is not allowed to be called %s", 
 								call_type==Method::CT_STATIC?"statically":"dynamically");
 
@@ -493,345 +486,338 @@ void Request::execute(const Array& ops) {
 				rcontext=saved_rcontext;
 				method_frame=saved_method_frame;
 
-#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
-				if(const String *s=value->get_string())
-					wcontext_result_size+=s->used_rows()*sizeof(String::Chunk::Row);
-#endif
-
-				if(op.code==OP_CALL__WRITE) {
-					write_assign_lang(result, last_get_element_name);
+				if(opcode==OP_CALL__WRITE) {
+					write_assign_lang(result);
 				} else { // OP_CALL
-					PUSH(&result.as_value());
+					stack.push(result.as_value());
 				}
 				
 #ifdef DEBUG_EXECUTE
-				debug_printf(pool(), "<-returned");
+				debug_printf(sapi_info, "<-returned");
 #endif
+				//is_debug_junction=false;
 				break;
 			}
 
 		// expression ops: unary
 		case OP_NEG:
 			{
-				Value *operand=POP();
-				value=NEW VDouble(pool(), -operand->as_double());
-				PUSH(value);
+				Value& a=stack.pop().value();
+				Value& value=*new VDouble(-a.as_double());
+				stack.push(value);
 				break;
 			}
 		case OP_INV:
 			{
-				Value *operand=POP();
-				value=NEW VDouble(pool(), ~operand->as_int());
-				PUSH(value);
+				Value& a=stack.pop().value();
+				Value& value=*new VDouble(~a.as_int());
+				stack.push(value);
 				break;
 			}
 		case OP_NOT:
 			{
-				Value *operand=POP();
-				value=NEW VBool(pool(), !operand->as_bool());
-				PUSH(value);
+				Value& a=stack.pop().value();
+				Value& value=*new VBool(!a.as_bool());
+				stack.push(value);
 				break;
 			}
 		case OP_DEF:
 			{
-				Value *operand=POP();
-				value=NEW VBool(pool(), operand->is_defined());
-				PUSH(value);
+				Value& a=stack.pop().value();
+				Value& value=*new VBool(a.is_defined());
+				stack.push(value);
 				break;
 			}
 		case OP_IN:
 			{
-				/// @test String::cmp
-				Value *operand=POP();
-				const char *path=operand->as_string().cstr();
-				value=NEW VBool(pool(), 
-					info.uri && strncmp(path, info.uri, strlen(path))==0);
-				PUSH(value);
+				Value& a=stack.pop().value();
+				const String& path=a.as_string();
+				Value& value=*new VBool(request_info.uri && *request_info.uri && path.this_starts(request_info.uri));
+				stack.push(value);
 				break;
 			}
 		case OP_FEXISTS:
 			{
-				Value *operand=POP();
-				value=NEW VBool(pool(), 
-					file_readable(absolute(operand->as_string())));
-				PUSH(value);
+				Value& a=stack.pop().value();
+				Value& value=*new VBool(file_readable(absolute(a.as_string())));
+				stack.push(value);
 				break;
 			}
 		case OP_DEXISTS:
 			{
-				Value *operand=POP();
-				value=NEW VBool(pool(), 
-					dir_readable(absolute(operand->as_string())));
-				PUSH(value);
+				Value& a=stack.pop().value();
+				Value& value=*new VBool(dir_readable(absolute(a.as_string())));
+				stack.push(value);
 				break;
 			}
 
 		// expression ops: binary
 		case OP_SUB: 
 			{
-				b=POP();  a=POP();
-				value=NEW VDouble(pool(), a->as_double() - b->as_double());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VDouble(a.as_double() - b.as_double());
+				stack.push(value);
 				break;
 			}
 		case OP_ADD: 
 			{
-				b=POP();  a=POP();
-				value=NEW VDouble(pool(), a->as_double() + b->as_double());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VDouble(a.as_double() + b.as_double());
+				stack.push(value);
 				break;
 			}
 		case OP_MUL: 
 			{
-				b=POP();  a=POP();
-				value=NEW VDouble(pool(), a->as_double() * b->as_double());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VDouble(a.as_double() * b.as_double());
+				stack.push(value);
 				break;
 			}
 		case OP_DIV: 
 			{
-				b=POP();  a=POP();
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 
-				double a_double=a->as_double();
-				double b_double=b->as_double();
+				double a_double=a.as_double();
+				double b_double=b.as_double();
 
 				if(b_double == 0) {
-					const String *problem_source=&b->as_string();
+					//const String* problem_source=b.as_string();
 					throw Exception("number.zerodivision",
-						problem_source,
+						0, //problem_source,
 						"Division by zero");
 				}
 
-				value=NEW VDouble(pool(), a_double / b_double);
-				PUSH(value);
+				Value& value=*new VDouble(a_double / b_double);
+				stack.push(value);
 				break;
 			}
 		case OP_MOD: 
 			{
-				b=POP();  a=POP();
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 
-				double a_double=a->as_double();
-				double b_double=b->as_double();
+				double a_double=a.as_double();
+				double b_double=b.as_double();
 
 				if(b_double == 0) {
-					const String *problem_source=&b->as_string();
+					//const String* problem_source=b.as_string();
 					throw Exception("number.zerodivision",
-						problem_source,
+						0, //problem_source,
 						"Modulus by zero");
 				}
 
-				value=NEW VDouble(pool(), fmod(a_double, b_double));
-				PUSH(value);
+				Value& value=*new VDouble(fmod(a_double, b_double));
+				stack.push(value);
 				break;
 			}
 		case OP_INTDIV:
 			{
-				b=POP();  a=POP();
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 
-				int a_int=a->as_int();
-				int b_int=b->as_int();
+				int a_int=a.as_int();
+				int b_int=b.as_int();
 
 				if(b_int == 0) {
-					const String *problem_source=&b->as_string();
+					//const String* problem_source=b.as_string();
 					throw Exception("number.zerodivision",
-						problem_source,
+						0, //problem_source,
 						"Division by zero");
 				}
 
-				value=NEW VInt(pool(), a_int / b_int);
-				PUSH(value);
+				Value& value=*new VInt(a_int / b_int);
+				stack.push(value);
 				break;
 			}
 		case OP_BIN_SL:
 			{
-				b=POP();  a=POP();
-				value=NEW VInt(pool(), 
-					a->as_int() <<
-					b->as_int());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VInt(
+					a.as_int() <<
+					b.as_int());
+				stack.push(value);
 				break;
 			}
 		case OP_BIN_SR:
 			{
-				b=POP();  a=POP();
-				value=NEW VInt(pool(), 
-					a->as_int() >>
-					b->as_int());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VInt(
+					a.as_int() >>
+					b.as_int());
+				stack.push(value);
 				break;
 			}
 		case OP_BIN_AND:
 			{
-				b=POP();  a=POP();
-				value=NEW VInt(pool(), 
-					a->as_int() &
-					b->as_int());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VInt(
+					a.as_int() &
+					b.as_int());
+				stack.push(value);
 				break;
 			}
 		case OP_BIN_OR:
 			{
-				b=POP();  a=POP();
-				value=NEW VInt(pool(), 
-					a->as_int() |
-					b->as_int());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VInt(
+					a.as_int() |
+					b.as_int());
+				stack.push(value);
 				break;
 			}
 		case OP_BIN_XOR:
 			{
-				b=POP();  a=POP();
-				value=NEW VInt(pool(), 
-					a->as_int() ^
-					b->as_int());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VInt(
+					a.as_int() ^
+					b.as_int());
+				stack.push(value);
 				break;
 			}
 		case OP_LOG_AND:
 			{
-				b_code=POP_CODE();  a=POP();
+				ArrayOperation& local_ops=stack.pop().ops();  Value& a=stack.pop().value();
 				bool result;
-				if(a->as_bool()) {
-					execute(*b_code);
-					b=POP();
-					result=b->as_bool();
+				if(a.as_bool()) {
+					execute(local_ops);
+					Value& b=stack.pop().value();
+					result=b.as_bool();
 				} else
 					result=false;
-				value=NEW VBool(pool(), result);
-				PUSH(value);
+				Value& value=*new VBool(result);
+				stack.push(value);
 				break;
 			}
 		case OP_LOG_OR:
 			{
-				b_code=POP_CODE();  a=POP();
+				ArrayOperation& local_ops=stack.pop().ops();  Value& a=stack.pop().value();
 				bool result;
-				if(a->as_bool()) 
+				if(a.as_bool()) 
 					result=true;
 				else {
-					execute(*b_code);
-					b=POP();
-					result=b->as_bool();
+					execute(local_ops);
+					Value& b=stack.pop().value();
+					result=b.as_bool();
 				}
-				value=NEW VBool(pool(), result);
-				PUSH(value);
+				Value& value=*new VBool(result);
+				stack.push(value);
 				break;
 			}
 		case OP_LOG_XOR:
 			{
-				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_bool() ^ b->as_bool());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VBool(a.as_bool() ^ b.as_bool());
+				stack.push(value);
 				break;
 			}
 		case OP_NUM_LT: 
 			{
-				b=POP();  a=POP();
-				volatile double a_double=a->as_double(); 
-				volatile double b_double=b->as_double();
-				value=NEW VBool(pool(), a_double<b_double);
-				PUSH(value);
+				volatile double b_double=stack.pop().value().as_double();
+				volatile double a_double=stack.pop().value().as_double();
+				Value& value=*new VBool(a_double<b_double);
+				stack.push(value);
 				break;
 			}
 		case OP_NUM_GT: 
 			{
-				b=POP();  a=POP();
-				volatile double a_double=a->as_double(); 
-				volatile double b_double=b->as_double();
-				value=NEW VBool(pool(), a_double>b_double);
-				PUSH(value);
+				volatile double b_double=stack.pop().value().as_double();
+				volatile double a_double=stack.pop().value().as_double();
+				Value& value=*new VBool(a_double>b_double);
+				stack.push(value);
 				break;
 			}
 		case OP_NUM_LE: 
 			{
-				b=POP();  a=POP();
-				volatile double a_double=a->as_double(); 
-				volatile double b_double=b->as_double();
-				value=NEW VBool(pool(), a_double<=b_double);
-				PUSH(value);
+				volatile double b_double=stack.pop().value().as_double();
+				volatile double a_double=stack.pop().value().as_double();
+				Value& value=*new VBool(a_double<=b_double);
+				stack.push(value);
 				break;
 			}
 		case OP_NUM_GE: 
 			{
-				b=POP();  a=POP();
-				volatile double a_double=a->as_double(); 
-				volatile double b_double=b->as_double();
-				value=NEW VBool(pool(), a_double>=b_double);
-				PUSH(value);
+				volatile double b_double=stack.pop().value().as_double();
+				volatile double a_double=stack.pop().value().as_double();
+				Value& value=*new VBool(a_double>=b_double);
+				stack.push(value);
 				break;
 			}
 		case OP_NUM_EQ: 
 			{
-				b=POP();  a=POP();
-				volatile double a_double=a->as_double(); 
-				volatile double b_double=b->as_double();
-				value=NEW VBool(pool(), a_double==b_double);
-				PUSH(value);
+				volatile double b_double=stack.pop().value().as_double();
+				volatile double a_double=stack.pop().value().as_double();
+				Value& value=*new VBool(a_double==b_double);
+				stack.push(value);
 				break;
 			}
 		case OP_NUM_NE: 
 			{
-				b=POP();  a=POP();
-				volatile double a_double=a->as_double(); 
-				volatile double b_double=b->as_double();
-				value=NEW VBool(pool(), a_double!=b_double);
-				PUSH(value);
+				volatile double b_double=stack.pop().value().as_double();
+				volatile double a_double=stack.pop().value().as_double();
+				Value& value=*new VBool(a_double!=b_double);
+				stack.push(value);
 				break;
 			}
 		case OP_STR_LT: 
 			{
-				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_string() < b->as_string());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VBool(a.as_string() < b.as_string());
+				stack.push(value);
 				break;
 			}
 		case OP_STR_GT: 
 			{
-				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_string() > b->as_string());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VBool(a.as_string() > b.as_string());
+				stack.push(value);
 				break;
 			}
 		case OP_STR_LE: 
 			{
-				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_string() <= b->as_string());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VBool(a.as_string() <= b.as_string());
+				stack.push(value);
 				break;
 			}
 		case OP_STR_GE: 
 			{
-				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_string() >= b->as_string());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VBool(a.as_string() >= b.as_string());
+				stack.push(value);
 				break;
 			}
 		case OP_STR_EQ: 
 			{
-				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_string() == b->as_string());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VBool(a.as_string() == b.as_string());
+				stack.push(value);
 				break;
 			}
 		case OP_STR_NE: 
 			{
-				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_string() != b->as_string());
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VBool(a.as_string() != b.as_string());
+				stack.push(value);
 				break;
 			}
 		case OP_IS:
 			{
-				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->is(b->as_string().cstr()));
-				PUSH(value);
+				Value& b=stack.pop().value();  Value& a=stack.pop().value();
+				Value& value=*new VBool(a.is(b.as_string().cstr()));
+				stack.push(value);
 				break;
 			}
 
 		default:
 			throw Exception(0,
 				0,
-				"invalid opcode %d", op.code); 
+				"invalid opcode %d", opcode); 
 		}
+	}
+	} catch(...) {
+		// record it to stack trace
+		//if(is_debug_junction)
+			if(debug_name)
+				exception_trace.push(Trace(debug_name, debug_origin));
+		rethrow;
 	}
 }
 
@@ -839,47 +825,44 @@ void Request::execute(const Array& ops) {
 	@todo cache|prepare junctions
 	@bug ^superbase:method would dynamically call ^base:method if there is any
 */
-Value *Request::get_element(const String *& remember_name, bool can_call_operator) {
-	const String& name=POP_NAME();  remember_name=&name;
-	Value *ncontext=POP();
-	Value *value=0;
+Value& Request::get_element(Value& ncontext, const String& name, bool can_call_operator) {
+	Value* value=0;
 	if(can_call_operator) {
-		if(Method* method=main_class.get_method(name)) { // looking operator of that name FIRST
-			Junction& junction=*NEW Junction(pool(), 
-				main_class, method, 0,0,0,0);
-			value=NEW VJunction(junction);
-		}
+		if(Method* method=main_class.get_method(name)) // looking operator of that name FIRST
+			value=new VJunction(new Junction(
+				main_class, method, 0,0,0, 0));
 	}
 	if(!value) {
 		if(!wcontext->get_constructing() // not constructing
 			&& wcontext->get_somebody_entered_some_class() ) // ^class:method
-			if(VStateless_class *called_class=ncontext->get_class())
+			if(VStateless_class *called_class=ncontext.get_class())
 				if(VStateless_class *read_class=rcontext->get_class())
 					if(read_class->derived_from(*called_class)) // current derived from called
-						if(Value *base=get_self()->base()) { // doing DYNAMIC call
+						if(Value* base=get_self().base()) { // doing DYNAMIC call
 							Temp_derived temp_derived(*base, 0); // temporarily prevent go-back-down virtual calls
 							value=base->get_element(name, *base, false); // virtual-up lookup starting from parent
 							goto value_ready;
 						}
 	}
 	if(!value)
-		value=ncontext->get_element(name, *ncontext, false);
+		value=ncontext.get_element(name, ncontext, false);
 
 	if(value && wcontext->get_constructing())
-		if(Junction *junction=value->get_junction()) {
-			if(junction->self.get_class()!=ncontext)
+		if(Junction* junction=value->get_junction()) {
+			if(junction->self.get_class()!=&ncontext)
 				throw Exception("parser.runtime",
 					&name,
-					"constructor must be declared in class %s", ncontext->get_class()->name_cstr());
+					"constructor must be declared in class '%s'", 
+						ncontext.get_class()->name_cstr());
 		}
 
 value_ready:
 	if(value)
 		value=&process_to_value(*value); // process possible code-junction
 	else
-		value=NEW VVoid(pool());
+		value=new VVoid;
 
-	return value;
+	return *value;
 }
 
 /**	@param intercept_string
@@ -895,11 +878,11 @@ value_ready:
 */
 StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	StringOrValue result;
-	Junction *junction=input_value.get_junction();
+	Junction* junction=input_value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
 		// process it
 #ifdef DEBUG_EXECUTE
-		debug_printf(pool(), "ja->\n");
+		debug_printf(sapi_info, "ja->\n");
 #endif
 
 		if(!junction->method_frame)
@@ -908,7 +891,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 				"junction used outside of context");
 
 		VMethodFrame *saved_method_frame=method_frame;  
-		Value *saved_rcontext=rcontext;  
+		Value* saved_rcontext=rcontext;  
 		WContext *saved_wcontext=wcontext;
 		
 		method_frame=junction->method_frame;
@@ -921,11 +904,11 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 		if(using_code_frame) {
 			// almost plain wwrapper about junction wcontext, 
 			// BUT intercepts string writes
-			VCodeFrame local(pool(), *junction->wcontext, junction->wcontext);
+			VCodeFrame local(*junction->wcontext, junction->wcontext);
 			wcontext=&local;
 
 			// execute it
-			recoursion_checked_execute(0/*result_name*/, *junction->code);
+			recoursion_checked_execute(/*0/*result_name* /, */ *junction->code);
 			
 			// CodeFrame soul:
 			//   string writes were intercepted
@@ -933,11 +916,11 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 			result.set_string(*wcontext->get_string());
 		} else {
 			// plain wwrapper
-			WWrapper local(pool(), 0/*empty*/, wcontext);
+			WWrapper local(0/*empty*/, wcontext);
 			wcontext=&local;
 		
 			// execute it
-			recoursion_checked_execute(0/*result_name*/, *junction->code);
+			recoursion_checked_execute(/*0/*result_name* /, */ *junction->code);
 		
 			result=wcontext->result();
 		}
@@ -947,7 +930,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 		method_frame=saved_method_frame;
 		
 #ifdef DEBUG_EXECUTE
-		debug_printf(pool(), "<-ja returned");
+		debug_printf(sapi_info, "<-ja returned");
 #endif
 	} else {
 		result.set_value(input_value);
@@ -957,7 +940,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 
 const String& Request::execute_method(VMethodFrame& amethod_frame, const Method& method) {
 	VMethodFrame *saved_method_frame=method_frame;  
-	Value *saved_rcontext=rcontext;  
+	Value* saved_rcontext=rcontext;  
 	WContext *saved_wcontext=wcontext;
 	
 	// initialize contexts
@@ -977,63 +960,59 @@ const String& Request::execute_method(VMethodFrame& amethod_frame, const Method&
 	return result;
 }
 
-void Request::execute_method(Value& aself, 
-							 const Method& method, VString *optional_param,
-							 const String **return_string) {
+const String* Request::execute_method(Value& aself, 
+				      const Method& method, VString* optional_param,
+				      bool do_return_string) {
 	VMethodFrame *saved_method_frame=method_frame;  
-	Value *saved_rcontext=rcontext;  
+	Value* saved_rcontext=rcontext;  
 	WContext *saved_wcontext=wcontext;
 	
-	Junction local_junction(pool(), aself, &method, 0,0,0,0);
-	VMethodFrame local_frame(pool(), method.name, local_junction, method_frame/*caller*/);
+	Junction local_junction(aself, &method, 0,0,0, 0);
+	VMethodFrame local_frame(local_junction, method_frame/*caller*/);
 	if(optional_param && local_frame.can_store_param()) {
-		local_frame.store_param(optional_param);
+		local_frame.store_param(*optional_param);
 		local_frame.fill_unspecified_params();
 	}
 	local_frame.set_self(aself);
 	rcontext=wcontext=method_frame=&local_frame; 
 
 	// prevent non-string writes for better error reporting
-	if(return_string)
+	if(do_return_string)
 		wcontext->write(local_frame);
 	
 	// execute!	
 	execute(*method.parser_code);
 	
 	// result
-	const String *result=0;
-	if(return_string)
-		*return_string=&wcontext->result().as_string();
+	const String* result=0;
+	if(do_return_string)
+		result=&wcontext->result().as_string();
 	
 	wcontext=saved_wcontext;
 	rcontext=saved_rcontext;
 	method_frame=saved_method_frame;
+
+	return result;
 }
 
-void Request::execute_nonvirtual_method(VStateless_class& aclass, 
-												 const String& method_name, VString *optional_param,
-												 const String **return_string,
-												 const Method **return_method) {
-
-	const Method *method=aclass.get_method(method_name);
-	if(return_string)
-		*return_string=0;
-	if(return_method)
-		*return_method=method;
-
-	if(method)
-		execute_method(aclass, *method, optional_param, return_string);
+Request::Execute_nonvirtual_method_result 
+Request::execute_nonvirtual_method(VStateless_class& aclass, 
+				   const String& method_name, VString* optional_param,
+				   bool do_return_string) {
+	Execute_nonvirtual_method_result result;
+	result.method=aclass.get_method(method_name);
+	if(result.method)
+		result.string=execute_method(aclass, *result.method, optional_param, 
+			do_return_string);
+	return result;
 }
 
-const String *Request::execute_virtual_method(Value& aself, 
-											  const String& method_name) {
-	if(Value *value=aself.get_element(method_name, aself, false))
-		if(Junction *junction=value->get_junction())
-			if(const Method *method=junction->method) {
-				const String *result;
-				execute_method(aself, *method, 0/*no params*/, &result);
-				return result;
-			}
+const String* Request::execute_virtual_method(Value& aself, 
+					      const String& method_name) {
+	if(Value* value=aself.get_element(method_name, aself, false))
+		if(Junction* junction=value->get_junction())
+			if(const Method *method=junction->method) 
+				return execute_method(aself, *method, 0/*no params*/, true);
 			
 	return 0;
 }

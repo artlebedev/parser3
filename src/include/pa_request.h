@@ -1,31 +1,22 @@
 /** @file
 	Parser: request class decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/03/11 08:53:03 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/07/24 11:31:21 $";
 
-#include "pa_pool.h"
 #include "pa_hash.h"
 #include "pa_wcontext.h"
 #include "pa_value.h"
 #include "pa_stack.h"
-#include "pa_vclass.h"
-#include "pa_vobject.h"
-#include "pa_venv.h"
-#include "pa_vstatus.h"
-#include "pa_vform.h"
-#include "pa_vmail.h"
-#include "pa_vmath.h"
-#include "pa_vrequest.h"
-#include "pa_vresponse.h"
-#include "pa_vcookie.h"
-#include "pa_sql_driver_manager.h"
+#include "pa_request_info.h"
+#include "pa_request_charsets.h"
+#include "pa_sapi.h"
 
 #ifdef RESOURCES_DEBUG
 #include <sys/resource.h>
@@ -33,35 +24,145 @@ static const char* IDENT_REQUEST_H="$Date: 2003/03/11 08:53:03 $";
 
 // consts
 
-#define MAIN_METHOD_NAME "main"
 const uint ANTI_ENDLESS_EXECUTE_RECOURSION=1000;
+const size_t pseudo_file_no__process=1;
 
-// defines
-
-#ifndef NO_STRING_ORIGIN
-#	define COMPILE_PARAMS  \
-		VStateless_class& aclass, const char *source \
-		, const char *file
-#	define COMPILE(aclass, source, file)  \
-		real_compile(aclass, source, file)
-#else
-#	define COMPILE_PARAMS  \
-		VStateless_class& aclass, const char *source
-#	define COMPILE(aclass, source, file)  \
-		real_compile(aclass, source)
-#endif
+// forwards
 
 class Temp_lang;
 class Methoded;
 class VMethodFrame;
+class GdomeDOMString_auto_ptr;
+class VMail;
+class VForm;
+class VResponse;
+class VCookie;
+class VStateless_class;
 
 /// Main workhorse.
-class Request : public Pooled {
+class Request: public PA_Object {
 	friend class Temp_lang;
 	friend class Temp_connection;
 	friend class Request_context_saver;
 	friend class Temp_request_self;
+	friend class Exception_trace;
+
 public:
+	class Trace {
+		const String* fname;
+		Operation::Origin forigin;
+	public:
+		Trace(): fname(0) {}
+		void clear() { fname=0; }
+		operator bool() const { return fname!=0; }
+
+		Trace(const String* aname, const Operation::Origin aorigin):
+			fname(aname), forigin(aorigin) {}
+
+		const String* name() const { return fname; }
+		const Operation::Origin origin() const { return forigin; }
+	};
+
+
+private:
+	union StackItem {
+		Value* fvalue;
+		ArrayOperation* fops;
+		VMethodFrame* fmethod_frame;
+	public:
+		Value& value() const { return *fvalue; }
+		const String& string() const { 
+			const String* result=fvalue->get_string();
+			assert(result);
+			return *result; 
+		}
+		ArrayOperation& ops() const { return *fops; }
+		VMethodFrame& method_frame() const { return *fmethod_frame; }
+
+		/// needed to fill unused Array entries
+		StackItem() {}
+		StackItem(Value& avalue): fvalue(&avalue) {}		
+		StackItem(ArrayOperation& aops): fops(&aops) {}
+		StackItem(VMethodFrame& amethod_frame): fmethod_frame(&amethod_frame) {}
+	};
+
+	class Exception_trace: public Stack<Trace> {
+		size_t fbottom;
+	public:
+		Exception_trace(): fbottom(0) {}
+
+		size_t bottom_index() { return fbottom; }
+		element_type bottom_value() { return get(bottom_index()); }
+
+		void clear() {
+			ftop=fbottom=0;
+		}
+
+		bool is_empty() {
+			return ftop==fbottom;
+		}
+
+		const element_type extract_origin(const String*& problem_source);
+	};
+
+	///@{ core data
+
+	/// classes
+	HashStringValue fclasses;
+
+	/// already used files to avoid cyclic uses
+	Hash<const StringBody, bool> used_files;
+	/// list of all used files, Operation::file_no = index to it
+	Array<StringBody> file_list;
+
+	/**	endless execute(execute(... preventing counter 
+		@see ANTI_ENDLESS_EXECUTE_RECOURSION
+	*/
+	uint anti_endless_execute_recoursion;
+
+	///@}
+
+	/// execution stack
+	Stack<StackItem> stack;
+
+	/// exception stack trace
+	Exception_trace exception_trace;
+public:
+
+	//@{ request processing status
+	/// contexts
+	VMethodFrame* method_frame;
+	Value* rcontext;
+	WContext* wcontext;
+	/// current language
+	String::Language flang; 
+	/// current connection
+	SQL_Connection* fconnection;
+	//@}
+	/// interrupted flag, raised on signals [SIGPIPE]
+	bool finterrupted;
+
+public:
+	size_t register_file(StringBody file_spec);
+
+	struct Exception_details {
+		const Trace trace;
+		const String* problem_source;
+		VHash& vhash;
+
+		Exception_details(
+			const Trace atrace,
+			const String* aproblem_source,
+			VHash& avhash):
+			trace(atrace), problem_source(aproblem_source), vhash(avhash) {}
+
+	};
+	Exception_details get_details(const Exception& e);
+
+	/// @see Stack::wipe_unused
+	void wipe_unused_execution_stack() {
+		stack.wipe_unused();
+	}
 
 #ifdef RESOURCES_DEBUG
 	/// measures
@@ -69,29 +170,14 @@ public:
 	double sql_request_time;
 #endif	
 
-	/// some information from web server
-	class Info {
-	public:
-		const char *document_root;
-		const char *path_translated;
-		const char *method;
-		const char *query_string;
-		const char *uri;
-		const char *content_type;
-		size_t content_length;
-		const char *cookie;
-		bool mail_received;
-	};
-	
-	Request(Pool& apool,
-		Info& ainfo,
-		uchar adefault_lang, ///< all tainted data default untainting lang
+	Request(SAPI_Info& asapi_info, Request_info& arequest_info,
+		String::Language adefault_lang, ///< all tainted data default untainting lang
 		bool status_allowed ///<  status class allowed
 	);
 	~Request();
 
 	/// global classes
-	Hash& classes() { return fclasses; }
+	HashStringValue& classes() { return fclasses; }
 
 	/**
 		core request processing
@@ -99,19 +185,19 @@ public:
 		BEWARE: may throw exception to you: catch it!
 	*/
 	void core(
-		const char *config_filespec, ///< system config filespec
+		const char* config_filespec, ///< system config filespec
 		bool config_fail_on_read_problem, ///< fail if system config file not found
 		bool header_only);
 
 	/// executes ops
-	void execute(const Array& ops); // execute.C
+	void execute(ArrayOperation& ops); // execute.C
 	/// execute ops with anti-recoursion check
-	void recoursion_checked_execute(const String *name, const Array& ops) {
+	void recoursion_checked_execute(/*const String& name, */ArrayOperation& ops) {
 		// anti_endless_execute_recoursion
 		if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
 			anti_endless_execute_recoursion=0; // give @exception a chance
 			throw Exception("parser.runtime",
-				name,
+				0, //&name,
 				"call canceled - endless recursion detected");
 		}
 		execute(ops); // execute it
@@ -119,14 +205,17 @@ public:
 	}
 
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
-	VStateless_class *use_file(VStateless_class& aclass,
+	void use_file(VStateless_class& aclass,
 		const String& file_name, 
+		const String* main_alias=0,
 		bool ignore_class_path=false, 
-		bool fail_on_read_problem=true, bool fail_on_file_absence=true); // core.C
+		bool fail_on_read_problem=true, 
+		bool fail_on_file_absence=true); // pa_request.C
 	/// compiles a @a source buffer
-	VStateless_class *use_buf(VStateless_class& aclass,
-		const char *source, 
-		const String& filespec, const char *filespec_cstr); // core.C
+	void use_buf(VStateless_class& aclass,
+		const char* source, 
+		const String* main_alias,
+		uint file_no); // pa_request.C
 
 	/// processes any code-junction there may be inside of @a value
 	StringOrValue process(Value& input_value, bool intercept_string=true); // execute.C
@@ -142,23 +231,16 @@ public:
 	
 #define DEFINE_DUAL(modification) \
 	void write_##modification##_lang(StringOrValue dual) { \
-		if(const String *string=dual.get_string()) \
+		if(const String* string=dual.get_string()) \
 			write_##modification##_lang(*string); \
 		else \
 			write_##modification##_lang(*dual.get_value()); \
-	}
-#define DEFINE_DUAL_CHECKED(modification) \
-	void write_##modification##_lang(StringOrValue dual, const String *origin) { \
-		if(const String *string=dual.get_string()) \
-			write_##modification##_lang(*string); \
-		else \
-			write_##modification##_lang(*dual.get_value(), origin); \
 	}
 
 	/// appending, sure of clean string inside
 	void write_no_lang(const String& astring) {
 		wcontext->write(astring, 
-			String::UL_CLEAN | flang&String::UL_OPTIMIZE_BIT);
+			(String::Language)(String::L_CLEAN | flang&String::L_OPTIMIZE_BIT));
 	}
 	/// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
@@ -166,17 +248,16 @@ public:
 			wcontext->write(avalue);
 		else
 			wcontext->write(avalue, 
-				String::UL_CLEAN | flang&String::UL_OPTIMIZE_BIT);
+				(String::Language)(String::L_CLEAN | flang&String::L_OPTIMIZE_BIT));
 	}
-	//DEFINE_DUAL(no)
 
 	/// appending string, passing language built into string being written
 	void write_pass_lang(const String& astring) {
-		wcontext->write(astring, String::UL_PASS_APPENDED); 
+		wcontext->write(astring, String::L_PASS_APPENDED); 
 	}
 	/// appending possible string, passing language built into string being written
 	void write_pass_lang(Value& avalue) {
-		wcontext->write(avalue, String::UL_PASS_APPENDED); 
+		wcontext->write(avalue, String::L_PASS_APPENDED); 
 	}
 	DEFINE_DUAL(pass)
 
@@ -184,143 +265,125 @@ public:
 	void write_assign_lang(Value& avalue) {
 		wcontext->write(avalue, flang); 
 	}
-	/// appending possible string, assigning untaint language
-	void write_assign_lang(Value& avalue, const String *origin) {
-		wcontext->write(avalue, flang, origin); 
-	}
 	/// appending string, assigning untaint language
 	void write_assign_lang(const String& astring) {
 		wcontext->write(astring, flang); 
 	}
 	DEFINE_DUAL(assign)
-	DEFINE_DUAL_CHECKED(assign)
 
 	/// returns relative to @a path  path to @a file 
-	const String& relative(const char *apath, const String& relative_name);
+	const String& relative(const char* apath, const String& relative_name);
 
 	/// returns an absolute @a path to relative @a name
 	const String& absolute(const String& relative_name);
 
 	/// returns the mime type of 'user_file_name_cstr'
-	const String& mime_type_of(const char *user_file_name_cstr);
+	const String& mime_type_of(const char* user_file_name_cstr);
 
 	/// returns current SQL connection if any
-	SQL_Connection *connection(const String *source) { 
-		if(!fconnection && source)
+	SQL_Connection* connection(bool fail_on_error=true) { 
+		if(fail_on_error && !fconnection)
 			throw Exception("parser.runtime",
-				source,
+				0,
 				"outside of 'connect' operator");
 
 		return fconnection; 
 	}
 
-	bool origins_mode();
-
-	void interrupt() { finterrupted=true; }
-	bool interrupted() { return finterrupted; }
+	void set_interrupted(bool ainterrupted) { finterrupted=ainterrupted; }
+	bool get_interrupted() { return finterrupted; }
 
 public:
 	
 	/// info from web server
-	Info& info;
-	/// user's post data
-	const char *post_data;  size_t post_size;
+	Request_info& request_info;
 
-	/// name of 'main' method
-	const String main_method_name;
-	
+	/// info about ServerAPI
+	SAPI_Info& sapi_info;
+
+	/// source, client, mail charsets
+	Request_charsets charsets;
+
 	/// 'MAIN' class conglomerat & operators are methods of this class
-	VClass& main_class;
-	/// $env:fields
-	VEnv env;
-	/// $status:fields
-	VStatus status;
+	VStateless_class& main_class;
 	/// $form:elements
-	VForm form;
+	VForm& form;
 	/// $mail
-	VMail mail;
-	/// $math:constants
-	VMath math;
-	/// $request:elements
-	VRequest request;
+	VMail& mail;
 	/// $response:elements
-	VResponse response;
+	VResponse& response;
 	/// $cookie:elements
-	VCookie cookie;
+	VCookie& cookie;
 
 	/// classes configured data
-	Hash classes_conf;
-
-private:
-
-	//@{ request processing status
-	/// exception stack trace
-	Stack exception_trace;
-	/// execution stack
-	Stack stack;
-	/// contexts
-	VMethodFrame *method_frame;
-	Value *rcontext;
-	WContext *wcontext;
-	/// current language
-	uchar flang; 
-	/// current connection
-	SQL_Connection *fconnection;
-	//@}
-	/// interrupted flag, raised on signals [SIGPIPE]
-	bool finterrupted;
+	HashStringObject classes_conf;
 
 public: // status read methods
 
 	VMethodFrame *get_method_frame() { return method_frame; }
-	Value *get_self();
+	Value& get_self();
+#define GET_SELF(request, type) (static_cast<type &>(request.get_self()))
+	/* for strange reason call to this: 
+		r.get_self<VHash>() 
+		refuses to compile
 
-private: // core data
-
-	/// classes
-	Hash fclasses;
-
-	/// already used files to avoid cyclic uses
-	Hash used_files;
-
-	/**	endless execute(execute(... preventing counter 
-		@see ANTI_ENDLESS_EXECUTE_RECOURSION
+	template<typename T> T& get_self() {
+		return *static_cast<T*>(get_self().get());
+	}
 	*/
-	uint anti_endless_execute_recoursion;
+
+#ifdef XML
+public: // charset helpers
+
+	/// @see Charset::transcode
+	GdomeDOMString_auto_ptr transcode(const String& s);
+	/// @see Charset::transcode
+	GdomeDOMString_auto_ptr transcode(const StringBody s);
+	/// @see Charset::transcode
+	const String& transcode(GdomeDOMString* s);
+	/// @see Charset::transcode
+	const String& transcode(xmlChar* s);
+
+#endif
 
 private:
 
 	/// already executed some @conf method
 	bool configure_admin_done;
 
-	void configure_admin(VStateless_class& conf_class, const String *source);
+	void configure_admin(VStateless_class& conf_class);
 
 private: // compile.C
 
-	VStateless_class& real_compile(COMPILE_PARAMS);
+	VStateless_class& compile(VStateless_class* aclass, 
+		const char* source, const String* main_alias, 
+		uint file_no);
 
 private: // execute.C
 
 	/// for @postprocess[body]
 	const String& execute_method(VMethodFrame& amethodFrame, const Method& method);
 	//{ for @conf[filespec] and @auto[filespec]
-	void execute_method(Value& aself, 
-		const Method& method, VString *optional_param,
-		const String **return_string);
-	void execute_nonvirtual_method(VStateless_class& aclass, 
-		const String& method_name, VString *optional_param,
-		const String **return_string,
-		const Method **return_method=0);
+	const String* execute_method(Value& aself, 
+		const Method& method, VString* optional_param,
+		bool do_return_string);
+	struct Execute_nonvirtual_method_result {
+		const String* string;
+		Method* method;
+		Execute_nonvirtual_method_result(): string(0), method(0) {}
+	};
+	Execute_nonvirtual_method_result execute_nonvirtual_method(VStateless_class& aclass, 
+		const String& method_name, VString* optional_param,
+		bool do_return_string);
 	//}
 	/// for @main[]
-	const String *execute_virtual_method(Value& aself, const String& method_name);
+	const String* execute_virtual_method(Value& aself, const String& method_name);
 
-	Value *get_element(const String *& remember_name, bool can_call_operator);
+	Value& get_element(Value& ncontext, const String& name, bool can_call_operator);
 
 private: // defaults
 
-	const uchar fdefault_lang;
-	Value *default_content_type;
+	const String::Language fdefault_lang;
 
 private: // mime types
 
@@ -329,29 +392,29 @@ private: // mime types
 
 private: // lang manipulation
 
-	uchar set_lang(uchar alang) {
-		uchar result=flang;
+	String::Language set_lang(String::Language alang) {
+		String::Language result=flang;
 		flang=alang;
 		return result;
 	}
-	void restore_lang(uchar alang) {
+	void restore_lang(String::Language alang) {
 		flang=alang;
 	}
 
 private: // connection manipulation
 
-	SQL_Connection *set_connection(SQL_Connection *aconnection) {
-		SQL_Connection *result=fconnection;
+	SQL_Connection* set_connection(SQL_Connection* aconnection) {
+		SQL_Connection* result=fconnection;
 		fconnection=aconnection;
 		return result;
 	}
-	void restore_connection(SQL_Connection *aconnection) {
+	void restore_connection(SQL_Connection* aconnection) {
 		fconnection=aconnection;
 	}
 
 private:
 
-	void output_result(const VFile& body_file, bool header_only, bool as_attachment);
+	void output_result(VFile* body_file, bool header_only, bool as_attachment);
 };
 
 /// Auto-object used to save request context across ^try body
@@ -359,22 +422,22 @@ class Request_context_saver {
 	Request& fr;
 
 	/// exception stack trace
-	int exception_trace;
+	size_t exception_trace;
 	/// execution stack
-	int stack;
+	size_t stack;
 	/// contexts
-	VMethodFrame *method_frame;
-	Value *rcontext;
-	WContext *wcontext;
+	VMethodFrame* method_frame;
+	Value* rcontext;
+	WContext* wcontext;
 	/// current language
-	uchar flang; 
+	String::Language flang; 
 	/// current connection
-	SQL_Connection *fconnection;
+	SQL_Connection* fconnection;
 
 public:
 	Request_context_saver(Request& ar) : 
-		exception_trace(ar.exception_trace.top_index()),	
-		stack(ar.stack.top_index()),
+		exception_trace(ar.exception_trace.top()),	
+		stack(ar.stack.top()),
 		method_frame(ar.method_frame),
 		rcontext(ar.rcontext),
 		wcontext(ar.wcontext),
@@ -382,8 +445,8 @@ public:
 		fconnection(ar.fconnection),
 		fr(ar) {}
 	void restore() {
-		fr.exception_trace.top_index(exception_trace);
-		fr.stack.top_index(stack);
+		fr.exception_trace.top(exception_trace);
+		fr.stack.top(stack);
 		fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;
 		fr.flang=flang;
 		fr.fconnection=fconnection;
@@ -393,9 +456,9 @@ public:
 ///	Auto-object used for temporary changing Request::flang.
 class Temp_lang {
 	Request& frequest;
-	uchar saved_lang;
+	String::Language saved_lang;
 public:
-	Temp_lang(Request& arequest, uchar alang) : 
+	Temp_lang(Request& arequest, String::Language alang) : 
 		frequest(arequest),
 		saved_lang(arequest.set_lang(alang)) {
 	}
@@ -407,9 +470,9 @@ public:
 ///	Auto-object used for temporary changing Request::fconnection.
 class Temp_connection {
 	Request& frequest;
-	SQL_Connection *saved_connection;
+	SQL_Connection* saved_connection;
 public:
-	Temp_connection(Request& arequest, SQL_Connection *aconnection) : 
+	Temp_connection(Request& arequest, SQL_Connection* aconnection) : 
 		frequest(arequest),
 		saved_connection(arequest.set_connection(aconnection)) {
 	}
@@ -418,67 +481,30 @@ public:
 	}
 };
 
-/**
-	@b method parameters passed in this array.
-	contains handy typecast ad junction/not junction ensurers
 
-*/
-class MethodParams : public Array {
-public:
-	MethodParams(Pool& pool, const String& amethod_name) : Array(pool),
-		fmethod_name(amethod_name) {
-	}
+// defines for externs
 
-	/// handy typecast. I long for templates
-	Value& get(int index) { 
-		return *static_cast<Value *>(Array::get(index)); 
-	}
-	/// handy is-value-a-junction ensurer
-	Value& as_junction(int index, const char *msg) { 
-		return get_as(index, true, msg); 
-	}
-	/// handy value-is-not-a-junction ensurer
-	Value& as_no_junction(int index, const char *msg) { 
-		return get_as(index, false, msg); 
-	}
-	/// handy expression auto-processing to double
-	double as_double(int index, const char *msg, Request& r) { 
-		return get_processed(index, msg, r).as_double(); 
-	}
-	/// handy expression auto-processing to int
-	int as_int(int index, const char *msg, Request& r) { 
-		return get_processed(index, msg, r).as_int(); 
-	}
-	/// handy expression auto-processing to bool
-	bool as_bool(int index, const char *msg, Request& r) { 
-		return get_processed(index, msg, r).as_bool(); 
-	}
-	/// handy string ensurer
-	const String& as_string(int index, const char *msg) { 
-		return as_no_junction(index, msg).as_string(); 
-	}
+#define CONTENT_DISPOSITION_NAME "content-disposition"
+#define CONTENT_DISPOSITION_VALUE "attachment"
+#define CONTENT_DISPOSITION_FILENAME_NAME "filename"
 
-private:
+// externs
 
-	/// handy value-is/not-a-junction ensurer
-	Value& get_as(int index, bool as_junction, const char *msg) { 
-		Value& result=get(index);
-		if((result.get_junction()!=0) ^ as_junction)
-			throw Exception("parser.runtime",
-				&fmethod_name,
-				"%s (parameter #%d)", msg, 1+index);
+extern const String main_method_name;
+extern const String auto_method_name;
+extern const String body_name;
+extern const String content_disposition_name;
+extern const String content_disposition_value;
+extern const String content_disposition_filename_name;
 
-		return result;
-	}
+extern const String exception_type_part_name;
+extern const String exception_source_part_name;
+extern const String exception_comment_part_name;
+extern const String exception_handled_part_name;
 
-	Value& get_processed(int index, const char *msg, Request& r) {
-		return r.process_to_value(as_junction(index, msg), 0/*no name*/);
-	}
+// defines for statics
 
-private:
-
-	const String& fmethod_name;
-
-};
+#define MAIN_CLASS_NAME "MAIN"
+#define AUTO_FILE_NAME "auto.p"
 
 #endif

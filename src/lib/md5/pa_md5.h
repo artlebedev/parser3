@@ -3,7 +3,7 @@
 	Replaced ap_ to pa_ prefixes. linked into all targets but Apache-module target,
 	where linked targets/apache/pa_md5c.c stub instead.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 */
 
 /*
@@ -96,7 +96,7 @@
 #ifndef PA_MD5_H
 #define PA_MD5_H
 
-static const char* IDENT_MD5_H="$Date: 2003/04/15 07:17:42 $";
+static const char* IDENT_MD5_H="$Date: 2003/07/24 11:31:22 $";
 
 #define PA_API_EXPORT(rtype) rtype
 
@@ -129,15 +129,15 @@ typedef struct {
 #define PA_MD5PW_ID "$apr1$"
 #define PA_MD5PW_IDLEN 6
 
-PA_API_EXPORT(void) PA_MD5Init(PA_MD5_CTX *context);
-PA_API_EXPORT(void) PA_MD5Update(PA_MD5_CTX *context, const unsigned char *input,
+PA_API_EXPORT(void) pa_MD5Init(PA_MD5_CTX *context);
+PA_API_EXPORT(void) pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input,
 			      unsigned int inputLen);
-PA_API_EXPORT(void) PA_MD5Final(unsigned char digest[MD5_DIGESTSIZE],
+PA_API_EXPORT(void) pa_MD5Final(unsigned char digest[MD5_DIGESTSIZE],
 			     PA_MD5_CTX *context);
-PA_API_EXPORT(void) PA_MD5Encode(const unsigned char *password,
-			      const unsigned char *salt, int mix_in_magic_string,
-			      char *result_base64, size_t result_base64_size);
-PA_API_EXPORT(void) PA_to64(char *s, unsigned long v, int n);
+PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *password,
+			      const unsigned char *salt,
+			      char *result, size_t nbytes);
+PA_API_EXPORT(void) pa_to64(char *s, unsigned long v, int n);
 
 #ifdef __cplusplus
 }

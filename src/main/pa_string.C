@@ -1,452 +1,279 @@
 /** @file
-	Parser: string class. @see untasize_t.C.
+	Parser: string class. @see untalength_t.C.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/04/11 15:00:05 $";
+static const char* IDENT_STRING_C="$Date: 2003/07/24 11:31:24 $";
 
 #include "pcre.h"
 
-#include "pa_pool.h"
 #include "pa_string.h"
-#include "pa_hash.h"
 #include "pa_exception.h"
-#include "pa_common.h"
-#include "pa_array.h"
-#include "pa_globals.h"
 #include "pa_table.h"
 #include "pa_dictionary.h"
 #include "pa_charset.h"
 
-#define DEBUG_STRING_APPENDS_VS_EXPANDS
+// helpers
 
+/// String::match uses this as replace & global search table columns
 
-#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
-ulong string_piece_appends=0;
-#endif
+const int MAX_MATCH_GROUPS=100;
 
-String& String::OnPool(Pool& apool, const char *local_src, size_t src_size, bool tainted) {
-	if(local_src && *local_src) {
-		if(src_size==0)
-			src_size=strlen(local_src);
-		
-		char *pooled_src=(char *)apool.malloc(src_size);
-		memcpy(pooled_src, local_src, src_size);
-		return *new(apool) String(apool, pooled_src, src_size, tainted);
-	} else
-		return *new(apool) String(apool);
-}
-String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
-	Pooled(apool) {
-	last_chunk=&head.chunk;
-	head.chunk.count=CR_PREALLOCATED_COUNT;
-	append_here=head.chunk.rows;
-
-	if(src)
-		if(tainted)
-			APPEND_TAINTED(src, src_size, 0, 0);
-		else
-			APPEND_CLEAN(src, src_size, 0, 0);
-}
-
-String::String(const String& src) :	
-	Pooled(src.pool()) {
-	last_chunk=&head.chunk;
-	head.chunk.count=CR_PREALLOCATED_COUNT;
-	append_here=head.chunk.rows;
-
-	append(src, UL_PASS_APPENDED);
-}
-
-size_t  String::size() const {
-	size_t result=0;
-	STRING_FOREACH_ROW(
-			result+=row->item.size;
-	);
-	return result;
-}
-
-/// @todo not very optimal
-uint String::used_rows() const {
-	uint result=0;
-	STRING_FOREACH_ROW(
-		result++;
-	);
-	return result;
-}
-void String::expand() {
-	uint new_chunk_count=last_chunk->count+CR_GROW_COUNT;
-	if(new_chunk_count>max_integral(Chunk::count_type))
-		new_chunk_count=max_integral(Chunk::count_type);
-
-	Chunk *new_chunk=static_cast<Chunk *>(malloc(
-			sizeof(Chunk)// count+interpadding(?)+rows[CR_PREALLOCATED_COUNT]+tailpadding(??)
-			-sizeof(Chunk::rows_type) // PREALLOCATED rows
-			+sizeof(Chunk::Row)*new_chunk_count // neaded rows
-			+sizeof(Chunk *) // link size
-		, 10));
-	new_chunk->rows[new_chunk->count=new_chunk_count].link=0;
-	last_chunk->rows[last_chunk->count].link=new_chunk;
-	
-	last_chunk=new_chunk;
-	append_here=last_chunk->rows;
-}
-
-String& String::real_append(STRING_APPEND_PARAMS) {
-	if(!last_chunk) // growth stopped [we're appended as string to somebody]
-		throw Exception(0,
-			this,
-			"string growth stopped (append cstr)");
-
-	if(!src)
-		return *this;
-	if(!size)
-		size=strlen(src);
-	if(!size)
-		return *this;
-
-#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
-	string_piece_appends++;
-#endif
-
-	// manually unrolled to avoid extra check
-	while(size>max_integral(Chunk::Row::item_size_type)) {
-		if(chunk_is_full())
-			expand();
-
-		append_here->item.ptr=src;
-		append_here->item.size=max_integral(Chunk::Row::item_size_type);
-		append_here->item.lang=lang;
-#ifndef NO_STRING_ORIGIN
-		append_here->item.origin.file=file;
-		append_here->item.origin.line=line;
-#endif
-		append_here++;
-
-		src+=max_integral(Chunk::Row::item_size_type);
-		size-=max_integral(Chunk::Row::item_size_type);
+class String_match_table_template_columns: public ArrayString {
+public:
+	String_match_table_template_columns() {
+		*this+=new String("prematch");
+		*this+=new String("match");
+		*this+=new String("postmatch");
+		for(int i=0; i<MAX_MATCH_GROUPS; i++) {
+			*this+=new String(StringBody::Format(1+i), String::L_CLEAN);
+		}
 	}
+};
 
-	if(chunk_is_full())
-		expand();
+Table string_match_table_template(new String_match_table_template_columns);
 
-	append_here->item.ptr=src;
-	append_here->item.size=size;
-	append_here->item.lang=lang;
-#ifndef NO_STRING_ORIGIN
-	append_here->item.origin.file=file;
-	append_here->item.origin.line=line;
-#endif
-	append_here++;
+// String::ArrayFragment methods
 
+void String::ArrayFragment::append_positions(const ArrayFragment& src, 
+					     size_t substr_begin, size_t substr_end) {
+	if(substr_begin==substr_end)
+		return;
+
+//	FILE *err=fopen("append.log", "wt");
+
+	size_t fragment_begin=0;
+	size_t fragment_end;
+	for(Array_iterator<element_type> i(src); ; fragment_begin=fragment_end) {
+		const Fragment fragment=i.next();
+		fragment_end=fragment_begin+fragment.length;		
+		//fprintf(err, "1end=%u\n", fragment_end);fflush(err);
+
+		// not reached fragments which may include 'substr'?
+		if(!(substr_begin>=fragment_begin && substr_begin<fragment_end))
+			continue;
+
+		// found first fragment including piece of 'substr'
+		if(substr_end<=fragment_end) // fits into first fragment?
+			*this+=Fragment(fragment.lang, substr_end-substr_begin);
+		else { // spans more then one fragment
+			*this+=Fragment(fragment.lang, fragment_end-substr_begin);
+			while(true) {
+				const Fragment fragment=i.next();
+				fragment_end=(fragment_begin=fragment_end)+fragment.length;
+				//fprintf(err, "2end=%u\n", fragment_end);fflush(err);
+
+				if(substr_end>fragment_end) // are there still more?
+					append(Fragment(fragment.lang, fragment.length)); // appending whole fragment
+				else { // no, it was last
+					append(Fragment(fragment.lang, substr_end-fragment_begin));
+					//fclose(err);
+					return;
+				}
+			}
+		}
+
+		break;
+	}
+	//fclose(err);
+}
+
+// StringBody methods
+
+StringBody StringBody::Format(int value) {
+	char local[MAX_NUMBER];
+	size_t length=snprintf(local, MAX_NUMBER, "%d", value);
+	return StringBody(pa_strdup(local, length), length);
+}
+
+static int CORD_batched_iter_fn_generic_hash_code(char c, void * client_data) {
+	uint& result=*static_cast<uint*>(client_data);
+	generic_hash_code(result, c);
+	return 0;
+}
+static int CORD_batched_iter_fn_generic_hash_code(const char*  s, void * client_data) {
+	uint& result=*static_cast<uint*>(client_data);
+	generic_hash_code(result, s);
+	return 0;
+};
+uint StringBody::hash_code() const {
+	uint result=0;
+	CORD_iter5(body, 0,
+		CORD_batched_iter_fn_generic_hash_code, 
+		CORD_batched_iter_fn_generic_hash_code, &result);
+	return result;
+}
+
+// String methods
+
+String::String(const char* cstr, size_t helper_length, bool tainted): body(CORD_EMPTY) {
+	append_help_length(cstr, helper_length, tainted?L_TAINTED:L_CLEAN);
+}
+String::String(const String::C cstr, bool tainted): body(CORD_EMPTY) {
+	append_know_length(cstr.str, cstr.length, tainted?L_TAINTED:L_CLEAN);
+}
+
+String::String(const String& src): body(src.body) {
+	fragments.append(src.fragments);
+	ASSERT_STRING_INVARIANT(*this);
+}
+
+String& String::append_know_length(const char* str, size_t known_length, Language lang) {
+	if(!known_length)
+		return *this;
+
+	body.append_know_length(str, known_length);
+	fragments+=Fragment(lang, known_length);
+
+	ASSERT_STRING_INVARIANT(*this);
+	return *this;
+}
+String& String::append_help_length(const char* str, size_t helper_length, Language lang) {
+	if(!str)
+		return *this;
+	size_t known_length=helper_length?helper_length:strlen(str);
+	if(!known_length)
+		return *this;
+
+	return append_know_length(str, known_length, lang);
+}
+String& String::append_strdup(const char* str, size_t helper_length, Language lang) {
+	size_t known_length=helper_length?helper_length:strlen(str);
+	if(!known_length)
+		return *this;
+
+	body.append_strdup_know_length(str, known_length);
+	fragments+=Fragment(lang, known_length);
+
+	ASSERT_STRING_INVARIANT(*this);
 	return *this;
 }
 
-uint String::hash_code() const {
-	uint result=0;
-	STRING_FOREACH_ROW(
-			result=Hash::generic_code(result, row->item.ptr, row->item.size);
-	);
-	return result;
-}
+/// @todo check in doc: whether it documents NOW bad situation "abc".mid(-1, 3) =were?="ab"
+String& String::mid(size_t substr_begin, size_t substr_end) const {
+	String& result=*new String;
 
-/// @todo move 'lang' skipping to pos
-int String::cmp(int& partial, const String& src, 
-				size_t this_offset, Untaint_lang lang) const {
-	partial=-1;
-	size_t a_size=size();
-	this_offset=min(this_offset, a_size-1);
-
-	const Chunk *a_chunk=&head.chunk;
-	const Chunk *b_chunk=&src.head.chunk;
-	const Chunk::Row *a_row=a_chunk->rows;
-	const Chunk::Row *b_row=b_chunk->rows;
-	size_t a_offset=this_offset;
-	size_t b_offset=0;
-	Chunk::Row *a_end=append_here;
-	Chunk::Row *b_end=src.append_here;
-	uint a_countdown=a_chunk->count;
-	uint b_countdown=b_chunk->count;
-	int result;
-	size_t pos=0; 
-
-	bool a_break=a_size==0;
-	bool b_break=src.is_empty();
-	if(!(a_break || b_break)) while(true) {
-		if(pos+a_row->item.size > this_offset) {
-			if(lang!=UL_UNSPECIFIED && a_row->item.lang>lang) 
-				return -1; // wrong lang -- bail out
-
-			int size_diff=
-				(a_row->item.size-a_offset)-
-				(b_row->item.size-b_offset);
-			
-			if(size_diff==0) { // a has same size as b
-				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, 
-					a_row->item.size-a_offset);
-				if(result)
-					return result;
-				pos+=a_row->item.size;
-				a_row++; a_countdown--; a_offset=0;
-				b_row++; b_countdown--; b_offset=0;
-			} else if (size_diff>0) { // a longer
-				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, 
-					b_row->item.size-b_offset);
-				if(result)
-					return result;
-				a_offset+=b_row->item.size-b_offset;
-				b_row++; b_countdown--; b_offset=0;
-			} else { // b longer
-				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, 
-					a_row->item.size-a_offset);
-				if(result)
-					return result;
-				b_offset+=a_row->item.size-a_offset;
-				pos+=a_row->item.size;
-				a_row++; a_countdown--; a_offset=0;
-			}
-			if(b_break=b_row==b_end) {
-				a_break=a_row==a_end;
-				break;			
-			}
-			if(!b_countdown) {
-				b_chunk=b_row->link;
-				b_row=b_chunk->rows;
-				b_countdown=b_chunk->count;
-			}
-		} else {
-			a_offset-=a_row->item.size;
-			pos+=a_row->item.size;
-			a_row++; a_countdown--; 
-		}
-
-		if(a_break=a_row==a_end) {
-			b_break=b_row==b_end;
-			break;
-		}
-		if(!a_countdown) {
-			a_chunk=a_row->link;
-			a_row=a_chunk->rows;
-			a_countdown=a_chunk->count;
-		}
-	}
-	if(a_break==b_break) { // ended simultaneously
-		partial=0; return 0;
-	} else if(a_break) { // first bytes equal, but a ended before b
-		partial=1; return -1;
-	} else {
-		partial=2; return +1;
-	}
-}
-
-/// @todo move 'lang' skipping to pos
-int String::cmp(int& partial, const char* b_ptr, size_t src_size, 
-				size_t this_offset, Untaint_lang lang) const {
-	partial=-1;
-	size_t a_size=size();
-	size_t b_size=src_size?src_size:b_ptr?strlen(b_ptr):0;
-	this_offset=min(this_offset, a_size-1);
-
-	const Chunk *a_chunk=&head.chunk;
-	const Chunk::Row *a_row=a_chunk->rows;
-	size_t a_offset=this_offset;
-	size_t b_offset=0;
-	Chunk::Row *a_end=append_here;
-	uint a_countdown=a_chunk->count;
-	size_t pos=0;
-
-	bool a_break=a_size==0;
-	bool b_break=b_size==0;
-	if(!(a_break || b_break)) while(true) {
-		if(pos+a_row->item.size > this_offset) {
-			if(lang!=UL_UNSPECIFIED && a_row->item.lang>lang) 
-				return -1; // wrong lang -- bail out
-
-			int size_diff=
-				(a_row->item.size-a_offset)-
-				(b_size-b_offset);
-			
-			if(size_diff==0) { // a has same size as b
-				if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
-					a_row->item.size-a_offset)!=0)
-					return result;
-				pos+=a_row->item.size;
-				a_row++; a_countdown--; a_offset=0;
-				b_break=true;
-			} else if (size_diff>0) { // a longer
-				if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
-					b_size-b_offset)!=0)
-					return result;
-				a_offset+=b_size-b_offset;
-				b_break=true;
-			} else { // b longer
-				if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, 
-					a_row->item.size-a_offset)!=0)
-					return result;
-				b_offset+=a_row->item.size-a_offset;
-				pos+=a_row->item.size;
-				a_row++; a_countdown--; a_offset=0;
-			}
-		} else {
-			a_offset-=a_row->item.size; 
-			pos+=a_row->item.size;
-			a_row++; a_countdown--; 
-		}
-
-		a_break=a_row==a_end;
-		if(a_break || b_break)
-			break;
-		if(!a_countdown) {
-			a_chunk=a_row->link;
-			a_row=a_chunk->rows;
-			a_countdown=a_chunk->count;
-		}
-	}
-	if(a_break==b_break) { // ended simultaneously
-		partial=0; return 0;
-	} else if(a_break) { // first bytes equal, but a ended before b
-		partial=1; return -1;
-	} else {
-		partial=2; return +1;
-	}
-}
-
-#ifndef NO_STRING_ORIGIN
-const Origin& String::origin() const { 
-	if(is_empty()) {
-		static const Origin empty_origin={"empty string"};
-		return empty_origin;
-	}
-	
-	// determining origin by first piece or last appended piece
-	// because any of them can be constant=without origin: 
-	// ex: ^load[/file] "document_root" + "/file"
-	// when last peice is constant, 
-	// ex: parser_root_auto_path{dynamic} / auto.p{const}
-	// using first piece
-	Origin& first_origin=head.chunk.rows[0].item.origin;
-	return first_origin.file ? first_origin : append_here[-1].item.origin;
-}
-#endif
-
-String& String::mid(size_t start, size_t finish) const {
-	String& result=*NEW String(pool());
-
-	start=min(start, size());
-	finish=max(start, finish);
-	if(start==finish)
+	size_t self_length=length();
+	substr_begin=min(substr_begin, self_length);
+	substr_end=min(max(substr_end, substr_begin), self_length);
+	if(substr_begin==substr_end)
 		return result;
 
-	size_t pos=0;
-	STRING_FOREACH_ROW(
-		size_t item_finish=pos+row->item.size;
-		if(item_finish > start) { // started now or already?
-			bool started=result.is_empty(); // started now?
-			bool finished=finish <= item_finish; // finished now?
-			size_t offset=started?start-pos:0;
-			size_t size=finished?finish-pos:row->item.size;
-			result.APPEND(
-				row->item.ptr+offset, size-offset, 
-				row->item.lang,
-				row->item.origin.file, row->item.origin.line);
-			if(finished)
-				goto break2;
-		}
-		pos+=row->item.size;
-	);
-break2:
-//	SAPI::log(pool(), "piece of '%s' from %d to %d is '%s'",
-		//cstr(), start, finish, result.cstr());
+	// first: letters themselves
+	result.body=body.mid(substr_begin, substr_end-substr_begin);
+
+	// next: their langs
+	result.fragments.append_positions(fragments, substr_begin, substr_end);
+
+//	SAPI::log("piece of '%s' from %d to %d is '%s'",
+		//cstr(), substr_begin, substr_end, result.cstr());
+	ASSERT_STRING_INVARIANT(result);
 	return result;
 }
 
-int String::pos(const String& substr, 
-				int result, Untaint_lang lang) const {
-	size_t self_size=size();
-	for(; size_t(result)<self_size; result++) {
-		int partial; cmp(partial, substr, result, lang);
-		if(
-			partial==0 || // full match
-			partial==2) // 'substr' starts 'this'+'result'
-			return result;
-	}
-	
-	return -1;
+size_t String::pos(const StringBody substr, 
+		   size_t this_offset, Language lang) const {
+	// first: letters themselves
+	size_t substr_begin=body.pos(substr, this_offset);
+	if(substr_begin==CORD_NOT_FOUND)
+		return STRING_NOT_FOUND;
+
+	// next: check the lang when specified
+
+	if(lang==L_UNSPECIFIED) // ignore lang?
+		return substr_begin;
+
+	// substr must be in one fragment, and fragments' lang must = lang
+	size_t substr_end=substr_begin+substr.length();
+	size_t fragment_begin=0;
+	size_t fragment_end;
+	for(Array_iterator<ArrayFragment::element_type> i(fragments); i.has_next(); fragment_begin=fragment_end) {
+		const Fragment fragment=i.next();
+		fragment_end=fragment_begin+fragment.length;
+
+		if(substr_begin<fragment_begin) // not reached fragments which may include 'result'?
+			continue;
+		if(substr_begin>=fragment_end) // begin of substr OUT of current fragment?
+			continue;
+		
+		if(substr_end>fragment_end) // end of substr OUT of current fragment?
+			throw Exception(0, // (*) see below
+				this,
+				"searching for '%s' starting from %ud problem: found begin in one fragment, but end in another",
+					substr.cstr(), this_offset);
+
+		if(fragment.lang<=lang)
+			return substr_begin;
+		else { // bad lang...
+			/// WARNING: this possibly skips assert (*), but it's fast
+			substr_begin=body.pos(substr, fragment_end/*...search AFTER for more*/);
+			if(substr_begin==CORD_NOT_FOUND)
+				return STRING_NOT_FOUND;
+
+			size_t substr_end=substr_begin+substr.length();
+			// and continuing with next fragment
+		}
+	}	
+
+	return STRING_NOT_FOUND;
 }
 
-int String::pos(const char *substr, size_t substr_size, 
-				int result, Untaint_lang lang) const {
-	size_t self_size=size();
-	for(; size_t(result)<self_size; result++) {
-		int partial; cmp(partial, substr, substr_size, result, lang);
-		if(
-			partial==0 || // full match
-			partial==2) // 'substr' starts 'this'+'result'
-			return result;
-	}
-	
-	return -1;
+size_t String::pos(const String& substr, 
+				size_t this_offset, Language lang) const {
+	return pos(substr.body, this_offset, lang);
 }
 
-void String::split(Array& result, 
-				   size_t* pos_after_ref, 
-				   const char *delim, size_t delim_size, 
-				   Untaint_lang lang, int limit) const {
-	size_t self_size=size();
-	if(delim_size) {
-		size_t pos_after=pos_after_ref?*pos_after_ref:0;
+void String::split(ArrayString& result, 
+		   size_t& pos_after, 
+		   const char* delim, 
+		   Language lang, int limit) const {
+	size_t self_length=length();
+	if(size_t delim_length=strlen(delim)) {
 		int pos_before;
 		// while we have 'delim'...
-		for(; (pos_before=pos(delim, delim_size, pos_after, lang))>=0 && limit; limit--) {
+		for(; (pos_before=pos(delim, pos_after, lang))!=STRING_NOT_FOUND && limit; limit--) {
 			result+=&mid(pos_after, pos_before);
-			pos_after=pos_before+delim_size;
+			pos_after=pos_before+delim_length;
 		}
 		// last piece
-		if(pos_after<self_size && limit) {
-			result+=&mid(pos_after, self_size);
-			pos_after=self_size;
+		if(pos_after<self_length && limit) {
+			result+=&mid(pos_after, self_length);
+			pos_after=self_length;
 		}
-		if(pos_after_ref)
-			*pos_after_ref=pos_after;
 	} else { // empty delim
 		result+=this;
-		if(pos_after_ref)
-			*pos_after_ref+=self_size;
+		pos_after+=self_length;
 	}
 }
 
-void String::split(Array& result, 
-				   size_t* pos_after_ref, 
-				   const String& delim, Untaint_lang lang, 
-				   int limit) const {
+void String::split(ArrayString& result, 
+		   size_t& pos_after, 
+		   const String& delim, Language lang, 
+		   int limit) const {
 	if(!delim.is_empty()) {
-		size_t pos_after=pos_after_ref?*pos_after_ref:0;
 		int pos_before;
 		// while we have 'delim'...
-		for(; (pos_before=pos(delim, pos_after, lang))>=0 && limit; limit--) {
+		for(; (pos_before=pos(delim, pos_after, lang))!=STRING_NOT_FOUND && limit; limit--) {
 			result+=&mid(pos_after, pos_before);
-			pos_after=pos_before+delim.size();
+			pos_after=pos_before+delim.length();
 		}
 		// last piece
-		if(pos_after<size() && limit) {
-			result+=&mid(pos_after, size());
-			pos_after=size();
+		if(pos_after<length() && limit) {
+			result+=&mid(pos_after, length());
+			pos_after=length();
 		}
-		if(pos_after_ref)
-			*pos_after_ref=pos_after;
 	} else { // empty delim
 		result+=this;
-		if(pos_after_ref)
-			*pos_after_ref+=size();
+		pos_after+=length();
 	}
 }
 
-static void regex_options(const String *options, int *result, bool& need_pre_post_match){
+static void regex_options(const String* options, int *result, bool& need_pre_post_match){
     struct Regex_option {
-		const char *keyL;
-		const char *keyU;
+		const char* keyL;
+		const char* keyU;
 		int clear, set;
 		int *result;
 		bool *flag;
@@ -462,10 +289,10 @@ static void regex_options(const String *options, int *result, bool& need_pre_pos
 	result[0]=PCRE_EXTRA | PCRE_DOTALL | PCRE_DOLLAR_ENDONLY;
 	result[1]=0;
 
-    if(options) 
+    if(options && !options->is_empty()) 
 		for(Regex_option *o=regex_option; o->keyL; o++) 
-			if(options->pos(o->keyL)>=0
-				|| (o->keyU && options->pos(o->keyU)>=0)) {
+			if(options->pos(o->keyL)!=STRING_NOT_FOUND
+				|| (o->keyU && options->pos(o->keyU)!=STRING_NOT_FOUND)) {
 				if(o->flag)
 					*o->flag=true;
 				else { // result
@@ -475,95 +302,100 @@ static void regex_options(const String *options, int *result, bool& need_pre_pos
 			}
 }
 
-/// @todo make replacement Table stacked
-bool String::match(
-		   const String *aorigin,
-		   const String& regexp, 
-		   const String *options,
-		   Table **table,
-		   Row_action row_action, void *info,
-		   bool *was_global) const { 
-
+Table* String::match(Charset& source_charset,
+		     const String& regexp, 
+		     const String* options,
+		     Row_action row_action, void *info,
+		     bool& just_matched) const { 
 	if(regexp.is_empty())
 		throw Exception(0,
-			aorigin,
+			0,
 			"regexp is empty");
 
-	const char *pattern=regexp.cstr();
-	const char *errptr;
+	const char* pattern=regexp.cstr();
+	const char* errptr;
 	int erroffset;
 	bool need_pre_post_match=false;
-	int option_bits[2];  regex_options(options, option_bits, need_pre_post_match);
-	if(was_global)
-		*was_global=option_bits[1]!=0;
+	int option_bits[2]={0};  regex_options(options, option_bits, need_pre_post_match);
+	bool global=option_bits[1]!=0;
 	pcre *code=pcre_compile(pattern, option_bits[0], 
 		&errptr, &erroffset,
-		pool().get_source_charset().pcre_tables);
+		source_charset.pcre_tables);
 
 	if(!code)
 		throw Exception(0,
-			&regexp.mid(erroffset, regexp.size()),
+			&regexp.mid(erroffset, regexp.length()),
 			"regular expression syntax error - %s", errptr);
 	
-	int info_substrings=pcre_info(code, 0, 0);
-	if(info_substrings<0) {
+	int subpatterns=pcre_info(code, 0, 0);
+	if(subpatterns<0) {
 		pcre_free(code);
 		throw Exception(0,
-			aorigin,
+			&regexp,
 			"pcre_info error (%d)", 
-				info_substrings);
+				subpatterns);
 	}
 
-	const char *subject=cstr();
-	int length=strlen(subject);
-	const int ovecsize=(1/*match*/+MAX_STRING_MATCH_TABLE_COLUMNS)*3;
-	int ovector[ovecsize];
+	const char* subject=cstr();
+	size_t subject_length=strlen(subject);
+	const int oveclength=(1/*match*/+MAX_MATCH_GROUPS)*3;
+	int ovector[oveclength];
 
 	// create table
 	Table::Action_options table_options;
-	*table=NEW Table(pool(), *string_match_table_template, table_options);
+	Table& table=*new Table(string_match_table_template, table_options);
 
 	int exec_option_bits=0;
 	int prestart=0;
 	int poststart=0;
-	int postfinish=size();
+	int postfinish=length();
 	while(true) {
 		int exec_substrings=pcre_exec(code, 0,
-			subject, length, prestart,
-			exec_option_bits, ovector, ovecsize);
+			subject, subject_length, prestart,
+			exec_option_bits, ovector, oveclength);
 		
 		if(exec_substrings==PCRE_ERROR_NOMATCH) {
 			pcre_free(code);
-			row_action(**table, 0/*last time, no row*/, 0, 0, poststart, postfinish, info);
-			return option_bits[1]!=0; // global=true+table, not global=false
+			row_action(table, 0/*last time, no raw*/, 0, 0, poststart, postfinish, info);
+			if(global || subpatterns)
+				return &table; // global or with subpatterns=true+result
+			else {
+				just_matched=false; return 0; // not global=no result
+			}
 		}
 
 		if(exec_substrings<0) {
 			pcre_free(code);
 			throw Exception(0,
-				aorigin,
+				&regexp,
 				"regular expression execute error (%d)", 
 					exec_substrings);
 		}
 
 		int prefinish=ovector[0];
 		poststart=ovector[1];
-		Array& row=*NEW Array(pool());
-		row+=need_pre_post_match?&mid(0, prefinish):0; // .prematch column value
-		row+=need_pre_post_match?&mid(prefinish, poststart):0; // .match
-		row+=need_pre_post_match?&mid(poststart, postfinish):0; // .postmatch
+		ArrayString* row=new ArrayString;
+		if(need_pre_post_match) {
+			*row+=&mid(0, prefinish); // .prematch column value
+			*row+=&mid(prefinish, poststart); // .match
+			*row+=&mid(poststart, postfinish); // .postmatch
+		} else {
+			*row+=0; // .prematch column value
+			*row+=0; // .match
+			*row+=0; // .postmatch
+		}
 		
 		for(int i=1; i<exec_substrings; i++) {
 			// -1:-1 case handled peacefully by mid() itself
-			row+=&mid(ovector[i*2+0], ovector[i*2+1]); // .i column value
+			*row+=&mid(ovector[i*2+0], ovector[i*2+1]); // .i column value
 		}
 		
-		row_action(**table, &row, prestart, prefinish, poststart, postfinish, info);
+		row_action(table, row, prestart, prefinish, poststart, postfinish, info);
 
-		if(!option_bits[1] || prestart==poststart) { // not global | going to hang
+		if(!global || prestart==poststart) { // not global | going to hang
 			pcre_free(code);
-			row_action(**table, 0/*last time, no row*/, 0, 0, poststart, postfinish, info);
-			return true;
+			row_action(table, 0/*last time, no row*/, 0, 0, poststart, postfinish, info);
+			return &table;
 		}
 		prestart=poststart;
 
@@ -574,10 +406,12 @@ bool String::match(
 	}
 }
 
-String& String::change_case(Pool& pool, 
-							Change_case_kind kind) const {
-	const unsigned char *tables=pool.get_source_charset().pcre_tables;
-	String& result=*new(pool) String(pool);
+String& String::change_case(Charset& source_charset, Change_case_kind kind) const {
+	String& result=*new String();
+	if(is_empty())
+		return result;
+
+	const unsigned char *tables=source_charset.pcre_tables;
 
 	const unsigned char *a;
 	const unsigned char *b;
@@ -599,138 +433,78 @@ String& String::change_case(Pool& pool,
 		break; // never
 	}	
 
-	STRING_FOREACH_ROW(
-		char *new_cstr=(char *)pool.malloc(row->item.size, 12);
-		char *dest=new_cstr;
-		const char *src=row->item.ptr; 
-		for(int size=row->item.size; size--; src++) {
-			unsigned char c=a[(unsigned char)*src];
-			if(b)
-				c=b[c];
+	char* new_cstr=cstrm();
+	char *dest=new_cstr;
+	unsigned char index;
+	for(const char* current=new_cstr; index=(unsigned char)*current; current++) {
+		unsigned char c=a[index];
+		if(b)
+			c=b[c];
 
-			*dest++=(char)c;
-		}
-		
-		result.APPEND(new_cstr, row->item.size, 
-			row->item.lang,
-			row->item.origin.file, row->item.origin.line);
-	);
+		*dest++=(char)c;
+	}
+	result.body=new_cstr;
+	result.fragments.append(fragments);
 
 	return result;
 }
 
-/// @test if in some piece were found no dict words, append it, not it's duplicate
-String& String::replace(Pool& pool, Dictionary& dict) const {
-	char *lcstr=cstr();
-	const char *current=lcstr;
+const String& String::replace(const Dictionary& dict) const {
+	String& result=*new String();
+	const char* old_cstr=cstr();
+	const char* prematch_begin=old_cstr;
 
-	String& result=*new(pool) String(pool);
-	STRING_FOREACH_ROW(
-IFNDEF_NO_STRING_ORIGIN(
-		const char *joined_origin_file=row->item.origin.file;
-		const size_t joined_origin_line=row->item.origin.line;
-);
-		uchar joined_lang=row->item.lang;
-		const char *joined_ptr=current;
-		// calc size
-		size_t joined_size=0;
-		STRING_PREPARED_FOREACH_ROW(*this, 
-			if(row->item.lang==joined_lang)
-				joined_size+=row->item.size;
-			else
-				break; // before non-ours
-		);
-		current+=joined_size;
-
-		// pointers are after joined piece
-		// & one step back, see STRING_FOREACH_ROW
-		--row;  ++countdown;
-		
-		char *new_cstr=(char *)pool.malloc((size_t)ceil(joined_size*dict.max_ratio()), 14);
-		char *dest=new_cstr;
-		while(joined_size) {
-			// there is a row where first column starts 'joined_ptr'
-			if(Table::Item *item=dict.first_that_starts(joined_ptr, joined_size)) {
-				// get a=>b values
-				const String& a=*static_cast<Array *>(item)->get_string(0);
-				const String& b=*static_cast<Array *>(item)->get_string(1);
-				// skip 'a' in 'joined_ptr' && reduce work size
-				joined_ptr+=a.size();  joined_size-=a.size();
-				// write 'b' to 'dest' && skip 'b' in 'dest'
-				b.store_to(dest);  dest+=b.size();
-			} else {
-				// write a char to b && reduce work size
-				*dest++=*joined_ptr++;  joined_size--;
+	const char* current=old_cstr;
+	while(*current) {
+		if(Table::element_type row=dict.first_that_begins(current)) {
+			// prematch
+			if(size_t prematch_length=current-prematch_begin) {
+				result.body.append_strdup_know_length(prematch_begin, prematch_length);
+				result.fragments.append_positions(fragments, prematch_begin-old_cstr, current-old_cstr);
 			}
-		}
 
-		result.APPEND(new_cstr, dest-new_cstr, joined_lang,
-			joined_origin_file, joined_origin_line);
-	);
+			// match
 
-	return result;
-}
+			const String* a=row->get(0);
+			// skip 'a' in 'current'; move prematch_begin
+			current+=a->length(); prematch_begin=current;
 
-String& String::join_chains(Pool& pool, char** acstr) const {
-	char *lcstr=cstr();
-	const char *current=lcstr;
+			if(row->count()>1) { // are there any b?
+				const String* b=row->get(1);
+				result<<*b;
+			}
+		} else // simply advance
+			current++; 
+	}
 
-	String& result=*new(pool) String(pool);
-	STRING_FOREACH_ROW(
-IFNDEF_NO_STRING_ORIGIN(
-		const char *joined_origin_file=row->item.origin.file;
-		const size_t joined_origin_line=row->item.origin.line;
-);
-		uchar joined_lang=row->item.lang;
-		const char *joined_ptr=current;
-		// calc size
-		size_t joined_size=0;
-		STRING_PREPARED_FOREACH_ROW(*this, 
-			if(row->item.lang==joined_lang)
-				joined_size+=row->item.size;
-			else
-				break; // before non-ours
-		);
-		current+=joined_size;
+	// postmatch
+	if(size_t postmatch_length=current-prematch_begin) {
+		result.body.append_strdup_know_length(prematch_begin, postmatch_length);
+		result.fragments.append_positions(fragments, prematch_begin-old_cstr, current-old_cstr);
+	}
 
-		// pointers are after joined piece
-		// & one step back, see STRING_FOREACH_ROW
-		--row;  ++countdown;
-		
-		result.APPEND(joined_ptr, joined_size, joined_lang,
-			joined_origin_file, joined_origin_line);
-	);
-
-	if(acstr)
-		*acstr=lcstr;
+	ASSERT_STRING_INVARIANT(result);
 	return result;
 }
 
 double String::as_double() const { 
 	double result;
-	const char *cstr;
-	char buf[MAX_NUMBER];
-	if(head.chunk.rows+1==append_here) {
-		int size=min(head.chunk.rows[0].item.size, MAX_NUMBER-1);
-		memcpy(buf, head.chunk.rows[0].item.ptr, size);
-		buf[size]=0;
-		cstr=buf;
-	} else
-		cstr=this->cstr();
-	while(*cstr && isspace(*cstr))
-		cstr++;
-	if(!*cstr)
+	const char *str=cstr();
+
+	while(*str && isspace(*str))
+		str++;
+	if(!*str)
 		return 0;
 
 	char *error_pos;
 	// 0xABC
-	if(cstr[0]=='0')
-		if(cstr[1]=='x' || cstr[1]=='X')
-			result=(double)(unsigned long)strtol(cstr, &error_pos, 0);
+	if(str[0]=='0')
+		if(str[1]=='x' || str[1]=='X')
+			result=(double)(unsigned long)strtol(str, &error_pos, 0);
 		else
-			result=(double)strtod(cstr+1/*skip leading 0*/, &error_pos);
+			result=(double)strtod(str+1/*skip leading 0*/, &error_pos);
 	else
-		result=(double)strtod(cstr, &error_pos);
+		result=(double)strtod(str, &error_pos);
 
 	while(char c=*error_pos++)
 		if(!isspace(c))
@@ -742,29 +516,22 @@ double String::as_double() const {
 }
 int String::as_int() const { 
 	int result;
-	const char *cstr;
-	char buf[MAX_NUMBER];
-	if(head.chunk.rows+1==append_here) {
-		size_t size=min(head.chunk.rows[0].item.size, MAX_NUMBER-1);
-		memcpy(buf, head.chunk.rows[0].item.ptr, size);
-		buf[size]=0;
-		cstr=buf;
-	} else
-		cstr=this->cstr();
-	while(*cstr && isspace(*cstr))
-		cstr++;
-	if(!*cstr)
+	const char *str=cstr();
+
+	while(*str && isspace(*str))
+		str++;
+	if(!*str)
 		return 0;
 
 	char *error_pos;
 	// 0xABC
-	if(cstr[0]=='0')
-		if(cstr[1]=='x' || cstr[1]=='X')
-			result=(int)(unsigned long)strtol(cstr, &error_pos, 0);
+	if(str[0]=='0')
+		if(str[1]=='x' || str[1]=='X')
+			result=(int)(unsigned long)strtol(str, &error_pos, 0);
 		else
-			result=(int)strtol(cstr+1/*skip leading 0*/, &error_pos, 0);
+			result=(int)strtol(str+1/*skip leading 0*/, &error_pos, 0);
 	else
-		result=(int)strtol(cstr, &error_pos, 0);
+		result=(int)strtol(str, &error_pos, 0);
 
 	while(char c=*error_pos++)
 		if(!isspace(c))
@@ -775,66 +542,90 @@ int String::as_int() const {
 	return result;
 }
 
-inline void ushort2uchars(ushort word, uchar& byte1, uchar& byte2) {
-	byte1=word&0xFF;
-	byte2=word>>8;
+inline void uint2uchars(uint word, uchar *bytes) {
+	bytes[0]=word&0xFF;
+	bytes[1]=(word>>8)&0xFF;
+	bytes[2]=(word>>16)&0xFF;
+	bytes[3]=(word>>24)&0xFF;
 }
-inline ushort uchars2ushort(uchar byte1, uchar byte2) {
-	return (byte2<<8) | byte1;
+inline uint uchars2uint(uchar *bytes) {
+	return bytes[3]<<24
+		| bytes[2]<<16
+		| bytes[1]<<8
+		| bytes[0];
 }
-/* @todo maybe network order worth spending some effort?
-	don't bothering myself with network byte order,
-	am not planning to be able to move resulting file across platforms
-	for now
-*/
-void String::serialize(size_t prolog_size, void *& buf, size_t& buf_size) const {
-	buf_size=
-		prolog_size
-		+used_rows()*(sizeof(uchar)+sizeof(ushort))
-		+size();
-	buf=malloc(buf_size,15);
-	char *cur=(char *)buf+prolog_size;
 
-	STRING_FOREACH_ROW(
+static int serialize_body_piece(const char* s, char** cur) {
+	size_t length=strlen(s);
+	memcpy(*cur, s, length);  *cur+=length;
+	return 0;
+};
+String::Cm String::serialize(size_t prolog_length) const {
+	size_t buf_length=
+		prolog_length
+		+fragments.count()*(sizeof(Language)+sizeof(size_t))
+		+length();
+	String::Cm result(new(PointerFreeGC) char[buf_length], buf_length);
+
+	// 1: prolog
+	char *cur=result.str+prolog_length;
+
+
+	// 2: fragments.count
+	size_t fragments_count=fragments.count();
+	memcpy(cur, &fragments_count, sizeof(fragments_count));  cur+=sizeof(fragments_count);
+
+	// 3: lang info
+	for(Array_iterator<ArrayFragment::element_type> i(fragments); i.has_next(); ) {
+		const Fragment fragment=i.next();
 		// lang
-		memcpy(cur, &row->item.lang, sizeof(uchar));
-		cur+=sizeof(uchar);
-		// size
-		uchar byte1; uchar byte2;
-		ushort2uchars(row->item.size, byte1, byte2);
-		memcpy(cur, &byte1, sizeof(uchar)); cur+=sizeof(uchar);
-		memcpy(cur, &byte2, sizeof(uchar)); cur+=sizeof(uchar);
-		// bytes
-		memcpy(cur, row->item.ptr, row->item.size);
-		cur+=row->item.size;
-	);
-}
-bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size, const char *file) {
-	if(buf_size<=prolog_size)
-		return false;
-
-	char *cur=(char *)buf+prolog_size;
-	buf_size-=prolog_size;
-
-	while(buf_size) {
-		if(sizeof(uchar)+sizeof(ushort)>buf_size) // lang+size
-			return false;
-
-		uchar lang=*(uchar *)(cur);		
-		ushort size=uchars2ushort(
-			*(uchar*)(cur+sizeof(uchar)*1),
-			*(uchar*)(cur+sizeof(uchar)*2)
-		);
-
-		size_t piece_size=sizeof(uchar)+sizeof(ushort)+size;
-		if(piece_size>buf_size) // buffer overrun, can be on incomplete cache files
-			return false;
-
-		const char *ptr=(const char*)(cur+sizeof(uchar)*3); 
-		APPEND(ptr, size, lang, file, 0);
-
-		cur+=piece_size;
-		buf_size-=piece_size;
+		memcpy(cur, &fragment.lang, sizeof(fragment.lang));  cur+=sizeof(fragment.lang);
+		// length
+		memcpy(cur, &fragment.length, sizeof(fragment.length));  cur+=sizeof(fragment.length);
 	}
+
+	// 4: letters
+	body.for_each(serialize_body_piece, &cur);
+
+	return result;
+}
+bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
+	if(buf_length<=prolog_length)
+		return false;
+	buf_length-=prolog_length;
+
+	// 1: prolog
+	const char* cur=(const char* )buf+prolog_length;
+
+	// 2: fragments.count
+	if(buf_length<sizeof(size_t)) // fragments.count don't fit?
+		return false;
+	size_t fragments_count=*reinterpret_cast<const size_t*>(cur);  cur+=sizeof(size_t);
+	buf_length-=sizeof(size_t);
+	
+	if(fragments_count) {
+		// 3: lang info
+		size_t total_length=0;
+		for(size_t f=0; f<fragments_count; f++) {
+			size_t piece_length=sizeof(Language)+sizeof(size_t);
+			if(buf_length<piece_length) // lang+length
+				return false;
+
+			Language lang=*reinterpret_cast<const Language *>(cur);  cur+=sizeof(Language);
+			size_t fragment_length=*reinterpret_cast<const size_t*>(cur);  cur+=sizeof(size_t);
+			fragments+=Fragment(lang, fragment_length);
+			total_length+=fragment_length;
+
+			buf_length-=piece_length;
+		}
+
+		// 4: letters
+		if(buf_length!=total_length)
+			return false;
+
+		body=StringBody(cur, buf_length);
+	}
+
+	ASSERT_STRING_INVARIANT(*this);
 	return true;
 }

@@ -1,13 +1,15 @@
 /** @file
 	Parser: @b hash parser class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2003/04/25 11:39:54 $";
+static const char* IDENT_HASH_C="$Date: 2003/07/24 11:31:20 $";
 
 #include "classes.h"
+#include "pa_vmethod_frame.h"
+
 #include "pa_request.h"
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
@@ -18,42 +20,44 @@ static const char* IDENT_HASH_C="$Date: 2003/04/25 11:39:54 $";
 
 // class
 
-class MHash : public Methoded {
+class MHash: public Methoded {
 public: // VStateless_class
-	Value *create_new_value(Pool& pool) { return new(pool) VHash(pool); }
+	Value* create_new_value() { return new VHash(); }
 
 public:
-	MHash(Pool& pool);
+	MHash();
 public: // Methoded
 	bool used_directly() { return true; }
 };
+
+// global variable
+
+DECLARE_CLASS_VAR(hash, new MHash, 0);
 
 // methods
 
 #ifndef DOXYGEN
 class Hash_sql_event_handlers: public SQL_Driver_query_event_handlers {
+	const String& statement_string; const char* statement_cstr;
+	bool distinct;
+	HashStringValue& rows_hash;
+	HashStringValue* row_hash;
+	int column_index;
+	ArrayString columns;
 public:
-	Hash_sql_event_handlers(Pool& apool, const String& amethod_name,
-		const String& astatement_string, const char *astatement_cstr,
+	Hash_sql_event_handlers(
+		const String& astatement_string, const char* astatement_cstr,
 		bool adistinct,
-		Hash& arows_hash): 
-		pool(apool), 
-		method_name(amethod_name),
-		statement_string(astatement_string),
-		statement_cstr(astatement_cstr),
+		HashStringValue& arows_hash): 
+		statement_string(astatement_string), statement_cstr(astatement_cstr),
 		distinct(adistinct),
 		rows_hash(arows_hash),
-		columns(pool),
-		row_index(0) {
+		row_hash(0),
+		column_index(0) {
 	}
-	bool add_column(SQL_Error& error, void *ptr, size_t size) {
+	bool add_column(SQL_Error& error, const char* str, size_t length) {
 		try {
-			String *column=new(pool) String(pool);
-			column->APPEND_TAINTED(
-				(const char *)ptr, size, 
-				statement_cstr, 0);
-			columns+=column;
-
+			columns+=new String(str, length, true);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Hash_sql_event_handlers::add_column");
@@ -61,9 +65,9 @@ public:
 		}
 	}
 	bool before_rows(SQL_Error& error) { 
-		if(columns.size()<=1) {
+		if(columns.count()<=1) {
 			error=SQL_Error("parser.runtime",
-				&method_name,
+				/*method_name,*/
 				"column count must be more than 1 to create a hash");
 			return true;
 		}
@@ -74,25 +78,23 @@ public:
 		column_index=0;
 		return false;
 	}
-	bool add_row_cell(SQL_Error& error, void *ptr, size_t size) {
+	bool add_row_cell(SQL_Error& error, const char *ptr, size_t length) {
 		try {
-			String *cell=new(pool) String(pool);
-			if(size)
-				cell->APPEND_TAINTED(
-					(const char *)ptr, size, 
-					statement_cstr, row_index++);
+			String& cell=*new String;
+			if(length)
+				cell.append_know_length(ptr, length, String::L_TAINTED);
 			if(column_index==0) {
-				VHash *row_vhash=new(pool) VHash(pool);
-				row_hash=row_vhash->get_hash(0);
-				if(rows_hash.put_dont_replace(*cell, row_vhash)) // put. existed?
+				VHash* row_vhash=new VHash;
+				row_hash=&row_vhash->hash();
+				if(rows_hash.put_dont_replace(cell, row_vhash)) // put. existed?
 					if(!distinct) {
 						error=SQL_Error("parser.runtime",
-							cell,
+							/*cell,*/
 							"duplicate key");
 						return true;
 					}
 			} else
-				row_hash->put(*columns.get_string(column_index), new(pool) VString(*cell));
+				row_hash->put(*columns[column_index], new VString(cell));
 			column_index++;
 
 			return false;
@@ -102,219 +104,176 @@ public:
 		}
 	}
 
-private:
-	Pool& pool;
-	const String& method_name;
-	const String& statement_string; const char *statement_cstr;
-	bool distinct;
-	Hash& rows_hash;
-	Hash *row_hash;
-	int column_index;
-	Array columns;
-	int row_index;
 };
 #endif
 
-static void copy_all_overwrite_to(const Hash::Key& key, Hash::Val *value, void *info) {
-	Hash& dest=*static_cast<Hash *>(info);
-	dest.put(key, value);
+static void copy_all_overwrite_to(
+								  HashStringValue::key_type key, 
+								  HashStringValue::value_type value, 
+								  HashStringValue* dest) {
+	dest->put(key, value);
 }
-static void _create_or_add(Request& r, const String& method_name, MethodParams *params, 
-			   bool is_create) {
-	Pool& pool=r.pool();
-	
-	if(params->size()) {
-		Value& vb_maybehash=params->as_no_junction(0, "param must be hash");
-		if(VHash* vbh=static_cast<VHash*>(vb_maybehash.as("hash", false))) {
-			VHash& vah=*static_cast<VHash *>(r.get_self());
-
-			Hash& a=vah.hash(&method_name);
-			Hash& b=vbh->hash(&method_name);
-			b.for_each(copy_all_overwrite_to, &a);
-
-			if(is_create)
-				vah.set_default(vbh->get_default());
-		} else if(!vb_maybehash.is_string()) // allow ^hash::create[^rem{xxx}]
-			throw Exception("parser.runtime",
-				&method_name,
-				"param must be hash");
+static void _create_or_add(Request& r, MethodParams& params) {
+	if(params.count()) {
+		Value& vb=params.as_no_junction(0, "param must be hash");
+		if(HashStringValue* b=vb.get_hash())
+			b->for_each(copy_all_overwrite_to, &(GET_SELF(r, VHash).hash()));
 	}
 }
-static void _create(Request& r, const String& method_name, MethodParams *params) {
-	_create_or_add(r, method_name, params, true);
+
+static void remove_key_from(
+							HashStringValue::key_type key, 
+							HashStringValue::value_type /*value*/, 
+							HashStringValue* dest) {
+	dest->remove(key);
 }
-static void _add(Request& r, const String& method_name, MethodParams *params) {
-	_create_or_add(r, method_name, params, false);
+static void _sub(Request& r, MethodParams& params) {
+	Value& vb=params.as_no_junction(0, "param must be hash");
+	if(HashStringValue* b=vb.get_hash())
+		b->for_each(remove_key_from, &GET_SELF(r, VHash).hash());
 }
 
-
-static void remove_key_from(const Hash::Key& key, Hash::Val *value, void *info) {
-	Hash& dest=*static_cast<Hash *>(info);
-	dest.remove(key);
+static void copy_all_dontoverwrite_to(
+								  HashStringValue::key_type key, 
+								  HashStringValue::value_type value, 
+								  HashStringValue* dest) {
+	dest->put_dont_replace(key, value);
 }
-static void _sub(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	
-	Value& vb=params->as_no_junction(0, "param must be hash");
-	if(Hash *b=vb.get_hash(&method_name))
-		b->for_each(remove_key_from, &static_cast<VHash *>(r.get_self())->hash(&method_name));
-}
-
-static void copy_all_dontoverwrite_to(const Hash::Key& key, Hash::Val *value, void *info) {
-	Hash& dest=*static_cast<Hash *>(info);
-	dest.put_dont_replace(key, value);
-}
-static void _union(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
+static void _union(Request& r, MethodParams& params) {
 	// dest = copy of self
-	Hash& dest=*new(pool) Hash(static_cast<VHash *>(r.get_self())->hash(&method_name));
+	Value& result=*new VHash(GET_SELF(r, VHash).hash());
 	// dest += b
-	Value& vb=params->as_no_junction(0, "param must be hash");
-	if(Hash *b=vb.get_hash(&method_name))
-		b->for_each(copy_all_dontoverwrite_to, &dest);
+	Value& vb=params.as_no_junction(0, "param must be hash");
+	if(HashStringValue* b=vb.get_hash())
+		b->for_each(copy_all_dontoverwrite_to, result.get_hash());
 
 	// return result
-	Value& result=*new(pool) VHash(pool, dest);
 	r.write_no_lang(result);
 }
 
 #ifndef DOXYGEN
 struct Copy_intersection_to_info {
-	Hash *b;
-	Hash *dest;
+	HashStringValue* b;
+	HashStringValue* dest;
 };
 #endif
-
-static void copy_intersection_to(const Hash::Key& key, Hash::Val *value, void *info) {
-	Copy_intersection_to_info& i=*static_cast<Copy_intersection_to_info *>(info);
-
-	if(i.b->get(key))
-		i.dest->put_dont_replace(key, value);
+static void copy_intersection_to(
+								 HashStringValue::key_type key, 
+								 HashStringValue::value_type value, 
+								 Copy_intersection_to_info *info) {
+	if(info->b->get(key))
+		info->dest->put_dont_replace(key, value);
 }
-static void _intersection(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	// dest = copy of self
-	Hash& dest=*new(pool) Hash(pool);
+static void _intersection(Request& r, MethodParams& params) {
+	Value& result=*new VHash;
 	// dest += b
-	Value& vb=params->as_no_junction(0, "param must be hash");
-	if(Hash *b=vb.get_hash(&method_name)) {
-		Copy_intersection_to_info info={
-			b,
-			&dest
-		};
-		static_cast<VHash *>(r.get_self())->hash(&method_name).for_each(copy_intersection_to, &info);
+	Value& vb=params.as_no_junction(0, "param must be hash");
+	if(HashStringValue* b=vb.get_hash()) {
+		Copy_intersection_to_info info={b, result.get_hash()};
+		GET_SELF(r, VHash).hash().for_each(copy_intersection_to, &info);
 	}
 
 	// return result
-	r.write_no_lang(*new(pool) VHash(pool, dest));
+	r.write_no_lang(result);
 }
 
-static void *intersects(const Hash::Key& key, Hash::Val *value, void *info) {
-	return static_cast<Hash *>(info)->get(key);
+static bool intersects(
+					   HashStringValue::key_type key, 
+					   HashStringValue::value_type /*value*/, 
+					   HashStringValue* b) {
+	return b->get(key)!=0;
 }
 
-static void _intersects(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _intersects(Request& r, MethodParams& params) {
+	bool result=false;
 
-	bool yes=false;
-
-	// dest = copy of self
-	Hash& dest=*new(pool) Hash(pool);
-	// dest += b
-	Value& vb=params->as_no_junction(0, "param must be hash");
-	if(Hash *b=vb.get_hash(&method_name))
-		yes=static_cast<VHash *>(r.get_self())->hash(&method_name).first_that(intersects, b)!=0;
+	Value& vb=params.as_no_junction(0, "param must be hash");
+	if(HashStringValue* b=vb.get_hash())
+		result=GET_SELF(r, VHash).hash().first_that(intersects, b)!=0;
 
 	// return result
-	r.write_no_lang(*new(pool) VBool(pool, yes));
+	r.write_no_lang(*new VBool(result));
 }
 
 
-static void _sql(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	Value& statement=params->as_junction(0, "statement must be code");
+extern String sql_limit_name;
+extern String sql_offset_name;
+extern String sql_default_name;
+extern String sql_distinct_name;
+static void _sql(Request& r, MethodParams& params) {
+	Value& statement=params.as_junction(0, "statement must be code");
 
 	ulong limit=0;
 	ulong offset=0;
 	bool distinct=false;
-	if(params->size()>1) {
-		Value& voptions=params->as_no_junction(1, "options must be hash, not code");
+	if(params.count()>1) {
+		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
 		if(!voptions.is_string())
-			if(Hash *options=voptions.get_hash(&method_name)) {
+			if(HashStringValue* options=voptions.get_hash()) {
 				int valid_options=0;
-				if(Value *vlimit=(Value *)options->get(*sql_limit_name)) {
+				if(Value* vlimit=options->get(sql_limit_name)) {
 					valid_options++;
 					limit=(ulong)r.process_to_value(*vlimit).as_double();
 				}
-				if(Value *voffset=(Value *)options->get(*sql_offset_name)) {
+				if(Value* voffset=options->get(sql_offset_name)) {
 					valid_options++;
 					offset=(ulong)r.process_to_value(*voffset).as_double();
 				}
-				if(Value *vdistinct=(Value *)options->get(*sql_distinct_name)) {
+				if(Value* vdistinct=options->get(sql_distinct_name)) {
 					valid_options++;
 					distinct=r.process_to_value(*vdistinct).as_bool();
 				}
-				if(valid_options!=options->size())
+				if(valid_options!=options->count())
 					throw Exception("parser.runtime",
-						&method_name,
+						0,
 						"called with invalid option");
 			} else
 				throw Exception("parser.runtime",
-					&method_name,
+					0,
 					"options must be hash");
 	}
 
-	Temp_lang temp_lang(r, String::UL_SQL);
+	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
-	const char *statement_cstr=
-		statement_string.cstr(String::UL_UNSPECIFIED, r.connection(&method_name));
-	Hash& hash=static_cast<VHash *>(r.get_self())->hash(&method_name);
+	const char* statement_cstr=
+		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
+	HashStringValue& hash=GET_SELF(r, VHash).hash();
 	hash.clear();	
-	Hash_sql_event_handlers handlers(pool, method_name,
+	Hash_sql_event_handlers handlers(
 		statement_string, statement_cstr, 
 		distinct,
 		hash);
-
-	r.connection(&method_name)->query(
+	r.connection()->query(
 		statement_cstr, offset, limit,
 		handlers,
 		statement_string);
 }
 
-static void keys_collector(const Hash::Key& key, Hash::Val *value, void *info) {
-	Table& table=*static_cast<Table *>(info);
-	Pool& pool=table.pool();
-
-	Array& row=*new(pool) Array(pool);
-	row+=&key;
-	table+=&row;
+static void keys_collector(
+			   HashStringValue::key_type key, 
+			   HashStringValue::value_type value, 
+			   Table *table) {
+	Table::element_type row(new ArrayString);
+	*row+=new String(key, String::L_TAINTED);
+	*table+=row;
 }
-static void _keys(Request& r, const String& method_name, MethodParams *) {
-	Pool& pool=r.pool();
+static void _keys(Request& r, MethodParams&) {
+	Table::columns_type columns(new ArrayString);
+	*columns+=new String("key");
+	Table* table=new Table(columns);
 
-	Array& columns=*new(pool) Array(pool);
-	columns+=new(pool) String(pool, "key");
-	Table& table=*new(pool) Table(pool, &method_name, &columns);
+	GET_SELF(r, VHash).hash().for_each(keys_collector, table);
 
-	static_cast<VHash *>(r.get_self())->hash(&method_name).for_each(keys_collector, &table);
-
-	r.write_no_lang(*new(pool) VTable(pool, &table));
+	r.write_no_lang(*new VTable(table));
 }
 
-static void _count(Request& r, const String& method_name, MethodParams *) {
-	Pool& pool=r.pool();
-
-	r.write_no_lang(
-		*new(pool) VInt(pool, static_cast<VHash *>(r.get_self())->hash(&method_name).size()));
+static void _count(Request& r, MethodParams&) {
+	r.write_no_lang(*new VInt(GET_SELF(r, VHash).hash().count()));
 }
 
-static void _delete(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _delete(Request& r, MethodParams& params) {
 
-	static_cast<VHash *>(r.get_self())->hash(&method_name).remove(params->as_string(0, "key must be string"));
+	GET_SELF(r, VHash).hash().remove(params.as_string(0, "key must be string"));
 }
 
 #ifndef DOXYGEN
@@ -322,62 +281,54 @@ struct Foreach_info {
 	Request *r;
 	const String* key_var_name;
 	const String* value_var_name;
-	Value *body_code;
-	Value *delim_maybe_code;
+	Value* body_code;
+	Value* delim_maybe_code;
 
-	VString *vkey;
+	VString* vkey;
 	bool need_delim;
 };
 #endif
+static void one_foreach_cycle(						   
+			      HashStringValue::key_type akey, 
+			      HashStringValue::value_type avalue, 
+			      Foreach_info *info) {
+	info->vkey->set_string(*new String(akey, String::L_TAINTED));
+	Value& ncontext=*info->r->get_method_frame()->caller();
+	ncontext.put_element(*info->key_var_name, info->vkey, false);
+	ncontext.put_element(*info->value_var_name, avalue, false);
 
-static void one_foreach_cycle(const Hash::Key& akey, Hash::Val *avalue, 
-										  void *info) {
-	Foreach_info& i=*static_cast<Foreach_info *>(info);
-
-	i.vkey->set_string(akey);
-	Value& ncontext=*i.r->get_method_frame()->caller();
-	ncontext.put_element(*i.key_var_name, i.vkey, false);
-	ncontext.put_element(*i.value_var_name, static_cast<Value *>(avalue), false);
-
-	StringOrValue sv_processed=i.r->process(*i.body_code);
-	const String *s_processed=sv_processed.get_string();
-	if(i.delim_maybe_code && s_processed && s_processed->size()) { // delimiter set and we have body
-		if(i.need_delim) // need delim & iteration produced string?
-			i.r->write_pass_lang(i.r->process(*i.delim_maybe_code));
-		i.need_delim=true;
+	StringOrValue sv_processed=info->r->process(*info->body_code);
+	const String* s_processed=sv_processed.get_string();
+	if(info->delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
+		if(info->need_delim) // need delim & iteration produced string?
+			info->r->write_pass_lang(info->r->process(*info->delim_maybe_code));
+		info->need_delim=true;
 	}
-	i.r->write_pass_lang(sv_processed);
+	info->r->write_pass_lang(sv_processed);
 }
-static void _foreach(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	const String& key_var_name=params->as_string(0, "key-var name must be string");
-	const String& value_var_name=params->as_string(1, "value-var name must be string");
-	Value& body_code=params->as_junction(2, "body must be code");
-	Value *delim_maybe_code=params->size()>3?&params->get(3):0;
+static void _foreach(Request& r, MethodParams& params) {
+	Foreach_info info={0};
+	info.r=&r;
+	info.key_var_name=&params.as_string(0, "key-var name must be string");
+	info.value_var_name=&params.as_string(1, "value-var name must be string");
+	info.body_code=&params.as_junction(2, "body must be code");
+	info.delim_maybe_code=params.count()>3?params.get(3):0;
+	info.vkey=new VString;
 
-	Foreach_info info={
-		&r,
-		&key_var_name, &value_var_name,
-		&body_code,
-		delim_maybe_code,
-
-		new(pool) VString(pool),
-		false
-	};
-	VHash& self=*static_cast<VHash *>(r.get_self());
-	Hash& hash=self.hash(&method_name);
+	VHash& self=GET_SELF(r, VHash);
+	HashStringValue& hash=self.hash();
 	VHash_lock lock(self);
 	hash.for_each(one_foreach_cycle, &info);
 }
 
 // constructor
 
-MHash::MHash(Pool& apool) : Methoded(apool, "hash") 
+MHash::MHash(): Methoded("hash") 
 {
 	// ^hash::create[[copy_from]]
-	add_native_method("create", Method::CT_DYNAMIC, _create, 0, 1);
+	add_native_method("create", Method::CT_DYNAMIC, _create_or_add, 0, 1);
 	// ^hash.add[add_from]
-	add_native_method("add", Method::CT_DYNAMIC, _add, 1, 1);
+	add_native_method("add", Method::CT_DYNAMIC, _create_or_add, 1, 1);
 	// ^hash.sub[sub_from]
 	add_native_method("sub", Method::CT_DYNAMIC, _sub, 1, 1);
 	// ^a.union[b] = hash
@@ -401,14 +352,4 @@ MHash::MHash(Pool& apool) : Methoded(apool, "hash")
 
 	// ^hash.foreach[key;value]{code}[delim]
 	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
-}
-
-// global variable
-
-Methoded *hash_class;
-
-// creator
-
-Methoded *MHash_create(Pool& pool) {
-	return hash_class=new(pool) MHash(pool);
 }

@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b image parser class.
 
-	Copyright(c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2003/01/21 15:51:06 $";
+static const char* IDENT_IMAGE_C="$Date: 2003/07/24 11:31:20 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -18,6 +18,8 @@ static const char* IDENT_IMAGE_C="$Date: 2003/01/21 15:51:06 $";
 
 #include "pa_config_includes.h"
 
+#include "pa_vmethod_frame.h"
+
 #include "gif.h"
 
 #include "pa_common.h"
@@ -25,42 +27,155 @@ static const char* IDENT_IMAGE_C="$Date: 2003/01/21 15:51:06 $";
 #include "pa_vfile.h"
 #include "pa_vimage.h"
 #include "pa_vdate.h"
+#include "pa_table.h"
 
 // class
 
-class MImage : public Methoded {
+class MImage: public Methoded {
 public: // VStateless_class
-	Value *create_new_value(Pool& pool) { return new(pool) VImage(pool); }
+	Value* create_new_value() { return new VImage(); }
 
 public:
-	MImage(Pool& pool);
+	MImage();
 
 public: // Methoded
 	bool used_directly() { return true; }
 
 };
 
+// globals
+
+DECLARE_CLASS_VAR(image, new MImage, 0);
+
 // helpers
+
+/// value of exif tag -> it's value
+class EXIF_tag_value2name: public Hash<int, const char*> {
+public:
+	EXIF_tag_value2name() {
+	// image JPEG Exif
+		#define EXIF_TAG(tag, name) \
+			put(tag, #name);
+		// Tags used by IFD0 (main image)
+		EXIF_TAG(0x010e,	ImageDescription);
+		EXIF_TAG(0x010f,	Make);
+		EXIF_TAG(0x0110,	Model);
+		EXIF_TAG(0x0112,	Orientation);
+		EXIF_TAG(0x011a,	XResolution);
+		EXIF_TAG(0x011b,	YResolution);
+		EXIF_TAG(0x0128,	ResolutionUnit);
+		EXIF_TAG(0x0131,	Software);
+		EXIF_TAG(0x0132,	DateTime);
+		EXIF_TAG(0x013e,	WhitePoint);
+		EXIF_TAG(0x013f,	PrimaryChromaticities);
+		EXIF_TAG(0x0211,	YCbCrCoefficients);
+		EXIF_TAG(0x0213,	YCbCrPositioning);
+		EXIF_TAG(0x0214,	ReferenceBlackWhite);
+		EXIF_TAG(0x8298,	Copyright);
+		EXIF_TAG(0x8769,	ExifOffset);
+		// Tags used by Exif SubIFD
+		EXIF_TAG(0x829a,	ExposureTime);
+		EXIF_TAG(0x829d,	FNumber);
+		EXIF_TAG(0x8822,	ExposureProgram);
+		EXIF_TAG(0x8827,	ISOSpeedRatings);
+		EXIF_TAG(0x9000,	ExifVersion);
+		EXIF_TAG(0x9003,	DateTimeOriginal);
+		EXIF_TAG(0x9004,	DateTimeDigitized);
+		EXIF_TAG(0x9101,	ComponentsConfiguration);
+		EXIF_TAG(0x9102,	CompressedBitsPerPixel);
+		EXIF_TAG(0x9201,	ShutterSpeedValue);
+		EXIF_TAG(0x9202,	ApertureValue);
+		EXIF_TAG(0x9203,	BrightnessValue);
+		EXIF_TAG(0x9204,	ExposureBiasValue);
+		EXIF_TAG(0x9205,	MaxApertureValue);
+		EXIF_TAG(0x9206,	SubjectDistance);
+		EXIF_TAG(0x9207,	MeteringMode);
+		EXIF_TAG(0x9208,	LightSource);
+		EXIF_TAG(0x9209,	Flash);
+		EXIF_TAG(0x920a,	FocalLength);
+		EXIF_TAG(0x927c,	MakerNote);
+		EXIF_TAG(0x9286,	UserComment);
+		EXIF_TAG(0x9290,	SubsecTime);
+		EXIF_TAG(0x9291,	SubsecTimeOriginal);
+		EXIF_TAG(0x9292,	SubsecTimeDigitized);
+		EXIF_TAG(0xa000,	FlashPixVersion);
+		EXIF_TAG(0xa001,	ColorSpace);
+		EXIF_TAG(0xa002,	ExifImageWidth);
+		EXIF_TAG(0xa003,	ExifImageHeight);
+		EXIF_TAG(0xa004,	RelatedSoundFile);
+		EXIF_TAG(0xa005,	ExifInteroperabilityOffset);
+		EXIF_TAG(0xa20e,	FocalPlaneXResolution);
+		EXIF_TAG(0xa20f,	FocalPlaneYResolution);
+		EXIF_TAG(0xa210,	FocalPlaneResolutionUnit);
+		EXIF_TAG(0xa215,	ExposureIndex);
+		EXIF_TAG(0xa217,	SensingMethod);
+		EXIF_TAG(0xa300,	FileSource);
+		EXIF_TAG(0xa301,	SceneType);
+		EXIF_TAG(0xa302,	CFAPattern);
+		// Misc Tags
+		EXIF_TAG(0x00fe,	NewSubfileType);
+		EXIF_TAG(0x00ff,	SubfileType);
+		EXIF_TAG(0x012d,	TransferFunction);
+		EXIF_TAG(0x013b,	Artist);
+		EXIF_TAG(0x013d,	Predictor);
+		EXIF_TAG(0x0142,	TileWidth);
+		EXIF_TAG(0x0143,	TileLength);
+		EXIF_TAG(0x0144,	TileOffsets);
+		EXIF_TAG(0x0145,	TileByteCounts);
+		EXIF_TAG(0x014a,	SubIFDs);
+		EXIF_TAG(0x015b,	JPEGTables);
+		EXIF_TAG(0x828d,	CFARepeatPatternDim);
+		EXIF_TAG(0x828e,	CFAPattern);
+		EXIF_TAG(0x828f,	BatteryLevel);
+		EXIF_TAG(0x83bb,	IPTC/NAA);
+		EXIF_TAG(0x8773,	InterColorProfile);
+		EXIF_TAG(0x8824,	SpectralSensitivity);
+		EXIF_TAG(0x8825,	GPSInfo);
+		EXIF_TAG(0x8828,	OECF);
+		EXIF_TAG(0x8829,	Interlace);
+		EXIF_TAG(0x882a,	TimeZoneOffset);
+		EXIF_TAG(0x882b,	SelfTimerMode);
+		EXIF_TAG(0x920b,	FlashEnergy);
+		EXIF_TAG(0x920c,	SpatialFrequencyResponse);
+		EXIF_TAG(0x920d,	Noise);
+		EXIF_TAG(0x9211,	ImageNumber);
+		EXIF_TAG(0x9212,	SecurityClassification);
+		EXIF_TAG(0x9213,	ImageHistory);
+		EXIF_TAG(0x9214,	SubjectLocation);
+		EXIF_TAG(0x9215,	ExposureIndex);
+		EXIF_TAG(0x9216,	TIFF/EPStandardID);
+		EXIF_TAG(0xa20b,	FlashEnergy);
+		EXIF_TAG(0xa20c,	SpatialFrequencyResponse);
+		EXIF_TAG(0xa214,	SubjectLocation);
+		#undef EXIF_TAG
+	}
+} exif_tag_value2name;
+
 
 #ifndef DOXYGEN
 class Measure_reader {
 public:
-	virtual size_t read(const void *&buf, size_t limit)=0;
+	virtual size_t read(const char* &buf, size_t limit)=0;
 	virtual void seek(long value, int whence)=0;
 	virtual long tell()=0;
 };
 
 class Measure_file_reader: public Measure_reader {
+
+	;
+	const String& file_name; const char* fname;
+	int f;
+
 public:
-	Measure_file_reader(Pool& apool, int af, const String& afile_name, const char *afname): 
-		pool(apool), file_name(afile_name), fname(afname), f(af) {
+	Measure_file_reader(int af, const String& afile_name, const char* afname): 
+		file_name(afile_name), fname(afname), f(af) {
 	}
 
-	/*override*/size_t read(const void *&abuf, size_t limit) {
+	override size_t read(const char* &abuf, size_t limit) {
 		if(limit==0)
 			return 0;
 
-		void *lbuf=pool.malloc(limit);
+		char* lbuf=new(PointerFreeGC) char[limit];
 		size_t read_size=(size_t)::read(f, lbuf, limit);  abuf=lbuf;
 		if(ssize_t(read_size)<0 || read_size>limit)
 			throw Exception(0,
@@ -71,7 +186,7 @@ public:
 		return read_size;
 	}
 
-	/*override*/void seek(long value, int whence) {
+	override void seek(long value, int whence) {
 		if(lseek(f, value, whence)<0)
 			throw Exception("image.format",
 				&file_name, 
@@ -79,33 +194,39 @@ public:
 					value, whence, strerror(errno), errno, fname);
 	}
 
-	/*override*/long tell() { return lseek(f, 0, SEEK_CUR); }
+	override long tell() { return lseek(f, 0, SEEK_CUR); }
 
-private:
-	Pool& pool;
-	const String& file_name; const char *fname;
-	int f;
 };
 
 class Measure_buf_reader: public Measure_reader {
+
+	const char* buf; size_t size;
+	const String& file_name; 
+
+	size_t offset;
+
 public:
-	Measure_buf_reader(const void *abuf, size_t asize, const String& afile_name): 
+	Measure_buf_reader(const char* abuf, size_t asize, const String& afile_name): 
 		buf(abuf), size(asize), file_name(afile_name), offset(0) {
 	}
 	
-	/*override*/size_t read(const void *&abuf, size_t limit) {
+	override size_t read(const char* &abuf, size_t limit) {
 		size_t to_read=min(limit, size-offset);
-		abuf=(const char*)buf+offset;
+		abuf=buf+offset;
 		offset+=to_read;
 		return to_read;
 	}
 
-	/*override*/void seek(long value, int whence) {
+	override void seek(long value, int whence) {
 		size_t new_offset;
 		switch(whence) {
 		case SEEK_CUR: new_offset=offset+value; break;
 		case SEEK_SET: new_offset=(size_t)value; break;
-		default: throw Exception(0, 0, "whence #%d not supported", 0, whence); break; // never
+		default: 
+			throw Exception(0, 
+				0, 
+				"whence #%d not supported", 0, whence); 
+			break; // never
 		}
 		
 		if((ssize_t)new_offset<0 || new_offset>size)
@@ -116,14 +237,8 @@ public:
 		offset=new_offset;
 	}
 
-	/*override*/long tell() { return offset; }
+	override long tell() { return offset; }
 
-private:
-
-	const void *buf; size_t size;
-	const String& file_name; 
-
-	size_t offset;
 };
 
 #endif
@@ -164,7 +279,7 @@ struct JPG_Size_segment_body {
 };
 
 /// JPEG frame header
-struct JPG_Exif_segment_start {
+struct JPG_Exif_segment_begin {
 	char signature[6]; // Exif\0\0
 };
 
@@ -176,7 +291,7 @@ struct JPG_Exif_TIFF_header {
 };
 
 // JPEG Exif IFD start
-struct JPG_Exif_IFD_start {
+struct JPG_Exif_IFD_begin {
 	uchar directory_entry_count[2]; // the number of directory entry contains in this IFD
 };
 
@@ -212,60 +327,60 @@ inline uint endian_to_uint(bool is_big, const uchar *b /* [4] */) {
 		x_endian_to_uint(b[0], b[1], b[2], b[3]);
 }
 
-static void measure_gif(Pool& pool, const String *origin_string, 
+static void measure_gif(const String& origin_string, 
 			 Measure_reader& reader, ushort& width, ushort& height) {
 
-	const void *buf;
+	const char* buf;
 	const int head_size=sizeof(GIF_Header);
 	if(reader.read(buf, head_size)<head_size)
 		throw Exception("image.format", 
-			origin_string, 
+			&origin_string, 
 			"not GIF file - too small");
 	GIF_Header *head=(GIF_Header *)buf;
 
 	if(strncmp(head->signature, "GIF", 3)!=0)
 		throw Exception("image.format", 
-			origin_string, 
+			&origin_string, 
 			"not GIF file - wrong signature");	
 
 	width=endian_to_ushort(false, head->width);
 	height=endian_to_ushort(false, head->height);
 }
 
-static Value *parse_IFD_entry_formatted_one_value(Pool& pool,
+static Value* parse_IFD_entry_formatted_one_value(
 												  bool is_big,
 												  ushort format, 
 												  size_t component_size, 
 												  const uchar *value) {
 	switch(format) {
 	case 1: // unsigned byte
-		return new(pool) VInt(pool, (uchar)value[0]);
+		return new VInt((uchar)value[0]);
 	case 3: // unsigned short
-		return new(pool) VInt(pool, endian_to_ushort(is_big, value));
+		return new VInt(endian_to_ushort(is_big, value));
 	case 4: // unsigned long
 		 // 'double' because parser's Int is signed
-		return new(pool) VDouble(pool, endian_to_uint(is_big, value));
+		return new VDouble(endian_to_uint(is_big, value));
 	case 5: // unsigned rational
 		{
 			uint numerator=endian_to_uint(is_big, value); value+=component_size/2;
 			uint denominator=endian_to_uint(is_big, value);
 			if(!denominator)
 				return 0;
-			return new(pool) VDouble(pool, ((double)numerator)/denominator);
+			return new VDouble(((double)numerator)/denominator);
 		}
 	case 6: // signed byte
-		return new(pool) VInt(pool, (signed char)value[0]);
+		return new VInt((signed char)value[0]);
 	case 8: // signed short
-		return new(pool) VInt(pool, (signed short)endian_to_ushort(is_big, value));
+		return new VInt((signed short)endian_to_ushort(is_big, value));
 	case 9: // signed long
-		return new(pool) VInt(pool, (signed int)endian_to_uint(is_big, value));
+		return new VInt((signed int)endian_to_uint(is_big, value));
 	case 10: // signed rational
 		{
 			signed int numerator=(signed int)endian_to_uint(is_big, value); value+=component_size/2;
 			uint denominator=endian_to_uint(is_big, value);
 			if(!denominator)
 				return 0;
-			return new(pool) VDouble(pool, numerator/denominator);
+			return new VDouble(numerator/denominator);
 		}
 		/*
 	case 11: // single float
@@ -279,51 +394,47 @@ static Value *parse_IFD_entry_formatted_one_value(Pool& pool,
 }
 
 // date.C
-time_t cstr_to_time_t(char *cstr, const String *report_error_origin);
+time_t cstr_to_time_t(char *cstr, bool fail_on_error);
 
-static Value *parse_IFD_entry_formatted_value(Pool& pool,
-											  bool is_big, ushort format, 
-											  size_t component_size, uint components_count, 
-											  const uchar *value) {
+static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format, 
+					      size_t component_size, uint components_count, 
+					      const uchar *value) {
 	if(format==2) { // ascii string, exception: the only type with varying size
-		const char *cstr=(const char *)value;
-		size_t size=components_count;
+		const char* cstr=(const char* )value;
+		size_t length=components_count;
 		// Data format is "YYYY:MM:DD HH:MM:SS"+0x00, total 20bytes
-		if(size==JPEG_EXIF_DATE_CHARS 
+		if(length==JPEG_EXIF_DATE_CHARS 
 			&& isdigit(cstr[0])
-			&& cstr[JPEG_EXIF_DATE_CHARS-1]==0) {
+			&& cstr[length-1]==0) {
 			char cstr_writable[JPEG_EXIF_DATE_CHARS]; 
 			strcpy(cstr_writable, cstr);
 
-			time_t t=cstr_to_time_t(cstr_writable, 0/* do not throw exception, just return bad result */);
+			time_t t=cstr_to_time_t(cstr_writable, 
+				0/* do not throw exception, just return bad result */);
 			if(t>=0)
-				return new(pool) VDate(pool, t);
+				return new VDate(t);
 		}
 
-		if(const char *premature_zero_pos=(const char *)memchr(cstr, 0, size))
-			size=premature_zero_pos-cstr;
-		return new(pool) VString(*new(pool) String(pool, cstr, size, true/*tainted*/));
+		if(const char* premature_zero_pos=(const char* )memchr(cstr, 0, length))
+			length=premature_zero_pos-cstr;
+		return new VString(*new String(cstr, length, true/*tainted*/));
 	}
 
 	if(components_count==1)
-		return parse_IFD_entry_formatted_one_value(pool, is_big, format, component_size, value);
+		return parse_IFD_entry_formatted_one_value(is_big, format, component_size, value);
 
-	VHash& result=*new(pool) VHash(pool);
-	Hash& hash=result.hash(0);
+	VHash* result=new VHash;
+	HashStringValue& hash=result->hash();
 	for(uint i=0; i<components_count; i++, value+=component_size) {
-		String& skey=*new(pool) String(pool);
-		{
-			char *buf=(char *)pool.malloc(MAX_NUMBER);
-			snprintf(buf, MAX_NUMBER, "%d", i);
-			skey << buf;
-		}
-		hash.put(skey, parse_IFD_entry_formatted_one_value(pool, is_big, format, component_size, value));
+		hash.put(
+			StringBody::Format(i),
+			parse_IFD_entry_formatted_one_value(is_big, format, component_size, value));
 	}
 
-	return &result;
+	return result;
 }
 
-static Value *parse_IFD_entry_value(Pool& pool,
+static Value* parse_IFD_entry_value(
 									bool is_big, Measure_reader& reader, long tiff_base,
 									JPG_Exif_IFD_entry& entry) {
 	size_t format2component_size[]={
@@ -357,10 +468,10 @@ static Value *parse_IFD_entry_value(Pool& pool,
 	uint components_count=endian_to_uint(is_big, entry.components_count);
 	size_t value_size=component_size*components_count;
 	// If its size is over 4bytes, 'DDDDDDDD' contains the offset to data stored address
-	Value *result;
+	Value* result;
 
 	if(value_size<=4)
-		result=parse_IFD_entry_formatted_value(pool,
+		result=parse_IFD_entry_formatted_value(
 			is_big, format, 
 			component_size, components_count, 
 			entry.value_or_offset_to_it);
@@ -368,10 +479,10 @@ static Value *parse_IFD_entry_value(Pool& pool,
 		long remembered=reader.tell();
 		{
 			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it), SEEK_SET);
-			const void *value;
+			const char* value;
 			if(reader.read(value, value_size)<sizeof(value_size))
 				return 0;
-			result=parse_IFD_entry_formatted_value(pool,
+			result=parse_IFD_entry_formatted_value(
 				is_big, format, 
 				component_size, components_count, 
 				(const uchar*)value);
@@ -382,67 +493,57 @@ static Value *parse_IFD_entry_value(Pool& pool,
 	return result;
 }
 
-static void parse_IFD(Pool& pool,
-					  Hash& hash,
-					  bool is_big, Measure_reader& reader, long tiff_base);
+static void parse_IFD(HashStringValue& hash,
+		      bool is_big, Measure_reader& reader, long tiff_base);
 
-static void parse_IFD_entry(Pool& pool, Hash& hash,
-							bool is_big, Measure_reader& reader, long tiff_base,
-							JPG_Exif_IFD_entry& entry) {
+static void parse_IFD_entry(HashStringValue& hash,
+			    bool is_big, Measure_reader& reader, long tiff_base,
+			    JPG_Exif_IFD_entry& entry) {
 	ushort tag=endian_to_ushort(is_big, entry.tag);
 	if(tag==JPG_IFD_TAG_EXIF_OFFSET) {
 		long remembered=reader.tell();
 		{
 			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it), SEEK_SET);
-			parse_IFD(pool, hash, is_big, reader, tiff_base);
+			parse_IFD(hash, is_big, reader, tiff_base);
 		}
 		reader.seek(remembered, SEEK_SET);
 		return;
 	}
 	
-	if(Value *value=parse_IFD_entry_value(pool, is_big, reader, tiff_base, entry)) {
-		String& skey=*new(pool) String(pool);
-		{
-			char *buf=(char *)pool.malloc(MAX_NUMBER);
-			snprintf(buf, MAX_NUMBER, "%u", tag);
-			skey << buf;
-		}
-
-		if(const char *name=(const char *)exif_tag_value2name->get(skey))
-			hash.put(*new(pool) String(pool, name), value);
+	if(Value* value=parse_IFD_entry_value(is_big, reader, tiff_base, entry)) {
+		if(const char* name=exif_tag_value2name.get(tag))
+			hash.put(StringBody(name), value);
 		else
-			hash.put(skey, value);
+			hash.put(StringBody::Format(tag), value);
 	}
 }
 
-static void parse_IFD(Pool& pool,
-					  Hash& hash,
-					  bool is_big, Measure_reader& reader, long tiff_base) {
-	const void *buf;
-	if(reader.read(buf, sizeof(JPG_Exif_IFD_start))<sizeof(JPG_Exif_IFD_start))
+static void parse_IFD(
+		      HashStringValue& hash,
+		      bool is_big, Measure_reader& reader, long tiff_base) {
+	const char* buf;
+	if(reader.read(buf, sizeof(JPG_Exif_IFD_begin))<sizeof(JPG_Exif_IFD_begin))
 		return;
-	JPG_Exif_IFD_start *start=(JPG_Exif_IFD_start *)buf;
+	JPG_Exif_IFD_begin *start=(JPG_Exif_IFD_begin *)buf;
 
 	ushort directory_entry_count=endian_to_ushort(is_big, start->directory_entry_count);
 	for(int i=0; i<directory_entry_count; i++) {
 		if(reader.read(buf, sizeof(JPG_Exif_IFD_entry))<sizeof(JPG_Exif_IFD_entry))
 			return;
 
-		parse_IFD_entry(pool, hash, is_big, reader, tiff_base, *(JPG_Exif_IFD_entry *)buf);
+		parse_IFD_entry(hash, is_big, reader, tiff_base, *(JPG_Exif_IFD_entry *)buf);
 	}
 	// then goes: LLLLLLLL Offset to next IFD [not going there]
 }
 
-static Value *parse_exif(Pool& pool,
-					   Measure_reader& reader,
-					   const String *origin_string) {
-	const void *buf;
-	if(reader.read(buf, sizeof(JPG_Exif_segment_start))<sizeof(JPG_Exif_segment_start))
+static Value* parse_exif(Measure_reader& reader, const String& origin_string) {
+	const char* buf;
+	if(reader.read(buf, sizeof(JPG_Exif_segment_begin))<sizeof(JPG_Exif_segment_begin))
 		throw Exception("image.format", 
-			origin_string, 
+			&origin_string, 
 			"not JPEG file - can not fully read Exif segment start");
 
-	JPG_Exif_segment_start *start=(JPG_Exif_segment_start *)buf;
+	JPG_Exif_segment_begin *start=(JPG_Exif_segment_begin *)buf;
 	if(memcmp(start->signature, "Exif\0\0", 4+2)!=0) //signature invalid?
 		return 0; // ignore invalid block
 
@@ -456,16 +557,16 @@ static Value *parse_exif(Pool& pool,
 	uint first_IFD_offset=endian_to_uint(is_big, head->first_IFD_offset);
 	reader.seek(tiff_base+first_IFD_offset, SEEK_SET);
 
-	VHash& vhash=*new(pool) VHash(pool);
+	VHash* vhash=new VHash;
 
 	// IFD
-	parse_IFD(pool, vhash.hash(0), is_big, reader, tiff_base);
+	parse_IFD(vhash->hash(), is_big, reader, tiff_base);
 
-	return &vhash;
+	return vhash;
 }
 
-static void measure_jpeg(Pool& pool, const String *origin_string, 
-			 Measure_reader& reader, ushort& width, ushort& height, Value ** exif) {
+static void measure_jpeg(const String& origin_string, 
+			 Measure_reader& reader, ushort& width, ushort& height, Value** exif) {
 	// JFIF format markers
 	const uchar MARKER=0xFF;
 	const uchar CODE_SIZE_A=0xC0;
@@ -474,17 +575,17 @@ static void measure_jpeg(Pool& pool, const String *origin_string,
 	const uchar CODE_SIZE_D=0xC3;
 	const uchar CODE_EXIF=0xE1;
 
-	const void *buf;
+	const char* buf;
 	const size_t prefix_size=2;
 	if(reader.read(buf, prefix_size)<prefix_size)
 		throw Exception("image.format", 
-			origin_string, 
+			&origin_string, 
 			"not JPEG file - too small");
 	uchar *signature=(uchar *)buf;
 	
 	if(!(signature[0]==0xFF && signature[1]==0xD8)) 
 		throw Exception("image.format", 
-			origin_string, 
+			&origin_string, 
 			"not JPEG file - wrong signature");
 
 	while(true) {
@@ -496,14 +597,14 @@ static void measure_jpeg(Pool& pool, const String *origin_string,
         // Verify that it's a valid segment.
 		if(head->marker!=MARKER)
 			throw Exception("image.format", 
-				origin_string, 
+				&origin_string, 
 				"not JPEG file - marker not found");
 
 		switch(head->code) {
 		// http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html
 		case CODE_EXIF:
 			if(exif && !*exif) // seen .jpg with some xml under EXIF tag, after real exif block :)
-				*exif=parse_exif(pool, reader, origin_string);
+				*exif=parse_exif(reader, origin_string);
 			break;
 
 		case CODE_SIZE_A:
@@ -514,7 +615,7 @@ static void measure_jpeg(Pool& pool, const String *origin_string,
 				// Segments that contain size info
 				if(reader.read(buf, sizeof(JPG_Size_segment_body))<sizeof(JPG_Size_segment_body))
 					throw Exception("image.format", 
-						origin_string, 
+						&origin_string, 
 						"not JPEG file - can not fully read Size segment");
 				JPG_Size_segment_body *body=(JPG_Size_segment_body *)buf;
 				
@@ -528,24 +629,24 @@ static void measure_jpeg(Pool& pool, const String *origin_string,
 	}
 
 	throw Exception("image.format", 
-		origin_string, 
+		&origin_string, 
 		"broken JPEG file - size frame not found");
 }
 
-static void measure_png(Pool& pool, const String *origin_string, 
+static void measure_png(const String& origin_string, 
 			 Measure_reader& reader, ushort& width, ushort& height) {
 
-	const void *buf;
+	const char* buf;
 	const int head_size=sizeof(PNG_Header);
 	if(reader.read(buf, head_size)<head_size)
 		throw Exception("image.format", 
-			origin_string, 
+			&origin_string, 
 			"not PNG file - too small");
 	PNG_Header *head=(PNG_Header *)buf;
 
 	if(strncmp(head->signature, "IHDR", 4)!=0)
 		throw Exception("image.format", 
-			origin_string, 
+			&origin_string, 
 			"not PNG file - wrong signature");	
 
 	width=endian_to_ushort(true, head->width);
@@ -554,16 +655,17 @@ static void measure_png(Pool& pool, const String *origin_string,
 
 // measure center
 
-static void measure(Pool& pool, const String& file_name, 
-			 Measure_reader& reader, ushort& width, ushort& height, Value ** exif) {
-	if(const char *cext=strrchr(file_name.cstr(String::UL_FILE_SPEC), '.')) {
+static void measure(const String& file_name, 
+			 Measure_reader& reader, ushort& width, ushort& height, Value** exif) {
+	const char* file_name_cstr=file_name.cstr(String::L_FILE_SPEC);
+	if(const char* cext=strrchr(file_name_cstr, '.')) {
 		cext++;
 		if(strcasecmp(cext, "GIF")==0)
-			measure_gif(pool, &file_name, reader, width, height);
+			measure_gif(file_name, reader, width, height);
 		else if(strcasecmp(cext, "JPG")==0 || strcasecmp(cext, "JPEG")==0) 
-			measure_jpeg(pool, &file_name, reader, width, height, exif);
+			measure_jpeg(file_name, reader, width, height, exif);
 		else if(strcasecmp(cext, "PNG")==0)
-			measure_png(pool, &file_name, reader, width, height);
+			measure_png(file_name, reader, width, height);
 		else
 			throw Exception("image.format", 
 				&file_name, 
@@ -578,591 +680,553 @@ static void measure(Pool& pool, const String& file_name,
 
 #ifndef DOXYGEN
 struct File_measure_action_info {
-	ushort *width;
-	ushort *height;
-	Value ** exif;
-	const String *file_name;
+	ushort* width;
+	ushort* height;
+	Value** exif;
+	const String* file_name;
 };
 #endif
-static void file_measure_action(Pool& pool,
+static void file_measure_action(
 								struct stat& finfo, int f, 
-								const String& file_spec, const char *fname, bool as_text,
+								const String& file_spec, const char* fname, bool as_text,
 								void *context) {
 	File_measure_action_info& info=*static_cast<File_measure_action_info *>(context);
 
-	Measure_file_reader reader(pool, f, *info.file_name, fname);
-	measure(pool, *info.file_name, reader, *info.width, *info.height, info.exif);
+	Measure_file_reader reader(f, *info.file_name, fname);
+	measure(*info.file_name, reader, *info.width, *info.height, info.exif);
 }
 
-static void _measure(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	Value& data=params->as_no_junction(0, "data must not be code");
+static void _measure(Request& r, MethodParams& params) {
+	Value& data=params.as_no_junction(0, "data must not be code");
 
 	ushort width=0;
 	ushort height=0;
-	Value *exif=0;
-	const String *file_name;
+	Value* exif=0;
+	const String* file_name;
 	if(file_name=data.get_string()) {
-		File_measure_action_info info={&width, &height, &exif, file_name};
-		file_read_action_under_lock(pool, r.absolute(*file_name), 
+		File_measure_action_info info={0};
+		info.width=&width;
+		info.height=&height;
+		info.exif=&exif;
+		info.file_name=file_name;
+		file_read_action_under_lock(r.absolute(*file_name), 
 			"measure", file_measure_action, &info);
 	} else {
-		const VFile& vfile=*data.as_vfile();
-		file_name=&static_cast<Value *>(vfile.fields().get(*name_name))->as_string();
+		VFile* vfile=data.as_vfile();
+		file_name=&vfile->fields().get(name_name)->as_string();
 		Measure_buf_reader reader(
-			vfile.value_ptr(),
-			vfile.value_size(),
+			vfile->value_ptr(),
+			vfile->value_size(),
 			*file_name
 		);
-		measure(pool, *file_name, reader, width, height, &exif);
+		measure(*file_name, reader, width, height, &exif);
 	}
 
-	VImage &vimage=*static_cast<VImage *>(r.get_self());
-	vimage.set(file_name, width, height, 0, exif);
+	GET_SELF(r, VImage).set(file_name, width, height, 0, exif);
 }
 
 #ifndef DOXYGEN
 struct Attrib_info {
-	String *tag; ///< html tag being constructed
-	Hash *skip; ///< tag attributes not to append to tag string [to skip]
+	String* tag; ///< html tag being constructed
+	HashStringValue* skip; ///< tag attributes not to append to tag string [to skip]
 };
 #endif
-static void append_attrib_pair(const Hash::Key& key, Hash::Val *val, void *info) {
-	Attrib_info& ai=*static_cast<Attrib_info *>(info);
-
+static void append_attrib_pair(
+			       HashStringValue::key_type key, 
+			       HashStringValue::value_type value, 
+			       Attrib_info* info) {
 	// skip user-specified and internal(starting with "line-") attributes 
-	if(ai.skip && ai.skip->get(key) || key.pos("line-")==0)
+	if(info->skip && info->skip->get(key) || key.pos("line-")==0)
 		return;
 
-	Value& value=*static_cast<Value *>(val);
 	// src="a.gif" width=123 ismap[=-1]
-	*ai.tag << " " << key;
-	if(value.is_string() || value.as_int()>=0)
-		*ai.tag << "=\"" << value.as_string() << "\"";
+	*info->tag << " " << key;
+	if(value->is_string() || value->as_int()>=0)
+		*info->tag << "=\"" << value->as_string() << "\"";
 }
-static void _html(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _html(Request& r, MethodParams& params) {
 
-	String tag(pool);
+	String tag;
 	tag << "<img";
 
-	const Hash& fields=static_cast<VImage *>(r.get_self())->fields();
-	Hash *attribs=0;
+	const HashStringValue& fields=GET_SELF(r, VImage).fields();
+	HashStringValue* attribs=0;
 
-	if(params->size()) {
+	if(params.count()) {
 		// for backward compatibility: someday was ^html{}
-		Value &vattribs=r.process_to_value(params->get(0),
+		Value& vattribs=r.process_to_value(params[0],
 			/*0/*no name* /,*/
 			false/*don't intercept string*/);
 		if(!vattribs.is_string()) // allow empty
-			if(attribs=vattribs.get_hash(&method_name)) {
-				Attrib_info attrib_info={&tag, 0};
-				attribs->for_each(append_attrib_pair, &attrib_info);
+			if(attribs=vattribs.get_hash()) {
+				Attrib_info info={&tag};
+				attribs->for_each(append_attrib_pair, &info);
 			} else
 				throw Exception("parser.runtime", 
-					&method_name, 
+					0, 
 					"attributes must be hash");
 	}
 
-	Attrib_info attrib_info={&tag, attribs};
-	fields.for_each(append_attrib_pair, &attrib_info);
+	{
+		Attrib_info info={&tag, attribs};
+		fields.for_each(append_attrib_pair, &info);
+	}
 	tag << " />";
 	r.write_pass_lang(tag);
 }
 
 /// @test wrap FILE to auto-object
-static gdImage *load(Request& r, const String& method_name, 
+static gdImage* load(Request& r, 
 					 const String& file_name){
-	Pool& pool=r.pool();
-
-	const char *file_name_cstr=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
+	const char* file_name_cstr=r.absolute(file_name).cstr(String::L_FILE_SPEC);
 	if(FILE *f=fopen(file_name_cstr, "rb")) {
-		gdImage& image=*new(pool) gdImage(pool);
-		bool ok=image.CreateFromGif(f);
+		gdImage* image=new gdImage;
+		bool ok=image->CreateFromGif(f);
 		fclose(f);
 		if(!ok)
 			throw Exception("image.format", 
 				&file_name,
 				"is not in GIF format");
-		return &image;
+		return image;
 	} else {
 		throw Exception("file.missing", 
-			&method_name, 
+			0, 
 			"can not open '%s'", file_name_cstr);
 		return 0;
 	}
 }
 
 
-static void _load(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _load(Request& r, MethodParams& params) {
+	const String& file_name=params.as_string(0, "file name must not be code");
 
-	const String& file_name=params->as_string(0, "file name must not be code");
-
-	gdImage& image=*load(r, method_name, file_name);
-	int width=image.SX();
-	int height=image.SY();
-	static_cast<VImage *>(r.get_self())->set(&file_name, width, height, &image);
+	gdImage* image=load(r, file_name);
+	GET_SELF(r, VImage).set(&file_name, image->SX(), image->SY(), image);
 }
 
-static void _create(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _create(Request& r, MethodParams& params) {
 
-	int width=params->as_int(0, "width must be int", r);
-	int height=params->as_int(1, "height must be int", r);
+	int width=params.as_int(0, "width must be int", r);
+	int height=params.as_int(1, "height must be int", r);
 	int bgcolor_value=0xffFFff;
-	if(params->size()>2)
-		bgcolor_value=params->as_int(2, "color must be int", r);
-	gdImage& image=*new(pool) gdImage(pool);
-	image.Create(width, height);
-	image.FilledRectangle(0, 0, width-1, height-1, image.Color(bgcolor_value));
-	static_cast<VImage *>(r.get_self())->set(0, width, height, &image);
+	if(params.count()>2)
+		bgcolor_value=params.as_int(2, "color must be int", r);
+	gdImage* image=new gdImage;
+	image->Create(width, height);
+	image->FilledRectangle(0, 0, width-1, height-1, image->Color(bgcolor_value));
+	GET_SELF(r, VImage).set(0, width, height, image);
 }
 
-static void _gif(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _gif(Request& r, MethodParams& params) {
 
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
 	// could _ but don't thing it's wise to use $image.src for vfile.name
 
-	String out(pool); image->Gif(out);
+	gdBuf buf=image->Gif();
 	
-	VFile& vfile=*new(pool) VFile(pool);
-	Value *content_type=new(pool) VString(*new(pool) String(pool, "image/gif"));
+	VFile& vfile=*new VFile;
+	Value* content_type=new VString(*new String("image/gif"));
 	vfile.set(false/*not tainted*/, 
-		out.cstr(), out.size(), 0, content_type);
+		(const char*)buf.ptr, buf.size, 0, content_type);
 
 	r.write_no_lang(vfile);
 }
 
-static void _line(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _line(Request& r, MethodParams& params) {
 
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
 	image->Line(
-		params->as_int(0, "x0 must be int", r), 
-		params->as_int(1, "y0 must be int", r), 
-		params->as_int(2, "x1 must be int", r), 
-		params->as_int(3, "y1 must be int", r), 
-		image->Color(params->as_int(4, "color must be int", r)));
+		params.as_int(0, "x0 must be int", r), 
+		params.as_int(1, "y0 must be int", r), 
+		params.as_int(2, "x1 must be int", r), 
+		params.as_int(3, "y1 must be int", r), 
+		image->Color(params.as_int(4, "color must be int", r)));
 }
 
-static void _fill(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _fill(Request& r, MethodParams& params) {
 
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
 	image->Fill(
-		params->as_int(0, "x must be int", r), 
-		params->as_int(1, "y must be int", r), 
-		image->Color(params->as_int(2, "color must be int", r)));
+		params.as_int(0, "x must be int", r), 
+		params.as_int(1, "y must be int", r), 
+		image->Color(params.as_int(2, "color must be int", r)));
 }
 
-static void _rectangle(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _rectangle(Request& r, MethodParams& params) {
 
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
 	image->Rectangle(
-		params->as_int(0, "x0 must be int", r), 
-		params->as_int(1, "y0 must be int", r), 
-		params->as_int(2, "x1 must be int", r), 
-		params->as_int(3, "y1 must be int", r), 
-		image->Color(params->as_int(4, "color must be int", r)));
+		params.as_int(0, "x0 must be int", r), 
+		params.as_int(1, "y0 must be int", r), 
+		params.as_int(2, "x1 must be int", r), 
+		params.as_int(3, "y1 must be int", r), 
+		image->Color(params.as_int(4, "color must be int", r)));
 }
 
-static void _bar(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _bar(Request& r, MethodParams& params) {
 
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
 	image->FilledRectangle(
-		params->as_int(0, "x0 must be int", r), 
-		params->as_int(1, "y0 must be int", r), 
-		params->as_int(2, "x1 must be int", r), 
-		params->as_int(3, "y1 must be int", r), 
-		image->Color(params->as_int(4, "color must be int", r)));
+		params.as_int(0, "x0 must be int", r), 
+		params.as_int(1, "y0 must be int", r), 
+		params.as_int(2, "x1 must be int", r), 
+		params.as_int(3, "y1 must be int", r), 
+		image->Color(params.as_int(4, "color must be int", r)));
 }
 
 #ifndef DOXYGEN
-static void add_point(Array::Item *value, void *info) {
-	Array& row=*static_cast<Array *>(value);
-	gdImage::Point **p=static_cast<gdImage::Point **>(info);
-	
-	(**p).x=row.get_string(0)->as_int();
-	(**p).y=row.get_string(1)->as_int();
+static void add_point(Table::element_type row, 
+					  gdImage::Point **p) {
+	(**p).x=row->get(0)->as_int();
+	(**p).y=row->get(1)->as_int();
 	(*p)++;
 }
 #endif
-static void _replace(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _replace(Request& r, MethodParams& params) {
 
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
-	Table *table=params->as_no_junction(2, "coordinates must not be code").get_table();
+	Table* table=params.as_no_junction(2, "coordinates must not be code").get_table();
 	if(!table) 
 		throw Exception(0,
-			&method_name,
+			0,
 			"coordinates must be table");
 
-	gdImage::Point *all_p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*table->size());
+	gdImage::Point *all_p=new gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
-	image->FilledPolygonReplaceColor(all_p, table->size(), 
-		image->Color(params->as_int(0, "src color must be int", r)),
-		image->Color(params->as_int(1, "dest color must be int", r)));
+	image->FilledPolygonReplaceColor(all_p, table->count(), 
+		image->Color(params.as_int(0, "src color must be int", r)),
+		image->Color(params.as_int(1, "dest color must be int", r)));
 }
 
-static void _polyline(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _polyline(Request& r, MethodParams& params) {
 
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
-	Table *table=params->as_no_junction(1, "coordinates must not be code").get_table();
+	Table* table=params.as_no_junction(1, "coordinates must not be code").get_table();
 	if(!table) 
 		throw Exception(0,
-			&method_name,
+			0,
 			"coordinates must be table");
 
-	gdImage::Point *all_p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*table->size());
+	gdImage::Point* all_p=new gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
-	image->Polygon(all_p, table->size(), 
-		image->Color(params->as_int(0, "color must be int", r)),
+	image->Polygon(all_p, table->count(), 
+		image->Color(params.as_int(0, "color must be int", r)),
 		false/*not closed*/);
 }
 
-static void _polygon(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _polygon(Request& r, MethodParams& params) {
 
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
-	Table *table=params->as_no_junction(1, "coordinates must not be code").get_table();
+	Table* table=params.as_no_junction(1, "coordinates must not be code").get_table();
 	if(!table) 
 		throw Exception(0,
-			&method_name,
+			0,
 			"coordinates must be table");
 
-	gdImage::Point *all_p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*table->size());
+	gdImage::Point* all_p=new gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
-	image->Polygon(all_p, table->size(), 
-		image->Color(params->as_int(0, "color must be int", r)));
+	image->Polygon(all_p, table->count(), 
+		image->Color(params.as_int(0, "color must be int", r)));
 }
 
-static void _polybar(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _polybar(Request& r, MethodParams& params) {
 
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
-	Table *table=params->as_no_junction(1, "coordinates must not be code").get_table();
+	Table* table=params.as_no_junction(1, "coordinates must not be code").get_table();
 	if(!table) 
 		throw Exception("parser.runtime",
-			&method_name,
+			0,
 			"coordinates must be table");
 
-	gdImage::Point *all_p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*table->size());
+	gdImage::Point* all_p=new gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
 	table->for_each(add_point, &add_p);
-	image->FilledPolygon(all_p, table->size(), 
-		image->Color(params->as_int(0, "color must be int", r)));
+	image->FilledPolygon(all_p, table->count(), 
+		image->Color(params.as_int(0, "color must be int", r)));
 }
 
 // font
 
 #define Y(y)(y+index*height)
 
-/// simple gdImage-based font storage & text output 
-class Font: public Pooled {
-public:
-	
-	const static int letter_spacing;
-	int height;	    ///< Font heigth
-	int monospace;	    ///< Default char width
-	int spacebarspace; ///< spacebar width
-	gdImage& ifont;
-	const String& alphabet;
-	
-	Font(Pool& pool, 
-		const String& aalphabet, 
-		gdImage& aifont, int aheight, int amonospace, int aspacebarspace): Pooled(pool), 
-		alphabet(aalphabet), 
-		height(aheight), monospace(amonospace),  spacebarspace(aspacebarspace),
-		ifont(aifont) {
-	}
-	
-	/* ******************************** char ********************************** */
-	
-	int index_of(char ch) {
-		if(ch==' ') return -1;
-		return alphabet.pos(&ch, 1);
-	}
-	
-	int index_width(int index) {
-		if(index<0)
-			return spacebarspace;
-		int tr=ifont.GetTransparent();
-		for(int x=ifont.SX()-1; x>=0; x--) {
-			for(int y=0; y<height; y++)
-				if(ifont.GetPixel(x, Y(y))!=tr) 
-					return x+1;
-		}
-		return 0;
-	}
-	
-	void index_display(gdImage& image, int x, int y, int index){
-		if(index>=0) 
-			ifont.Copy(image, x, y, 0, Y(0), index_width(index), height);
-	}
-	
-	/* ******************************** string ********************************** */
-	
-	int step_width(int index) {
-		return letter_spacing + (monospace ? monospace : index_width(index));
-	}
+// Font class
 
-	// counts trailing letter_spacing, consider this OK. useful for contiuations
-	int string_width(const String& s){
-		const char *cstr=s.cstr();
-		int result=0;
-		for(; *cstr; cstr++)
-			result+=step_width(index_of(*cstr));
-		return result;
-	}
-	
-	void string_display(gdImage& image, int x, int y, const String& s){
-		const char *cstr=s.cstr();
-		if(cstr) for(; *cstr; cstr++) {
-			int index=index_of(*cstr);
-			index_display(image, x, y, index);
-			x+=step_width(index);
-		}
-	}
-	
-};
 const int Font::letter_spacing=1;
 
-static void _font(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+Font::Font(//, 
+	const String& aalphabet, 
+	gdImage* aifont, int aheight, int amonospace, int aspacebarspace):
+	alphabet(aalphabet), 
+	height(aheight), monospace(amonospace),  spacebarspace(aspacebarspace),
+	ifont(aifont) {
+}
 
-	const String& alphabet=params->as_string(0, "alphabet must not be code");
-	gdImage& image=*load(r, method_name, params->as_string(1, "file_name must not be code"));
-	int spacebar_width=params->as_int(2, "spacebar_width must be int", r);
+/* ******************************** char ********************************** */
+
+size_t Font::index_of(char ch) {
+	if(ch==' ') return STRING_NOT_FOUND;
+	return alphabet.pos(ch);
+}
+
+int Font::index_width(size_t index) {
+	if(index==STRING_NOT_FOUND)
+		return spacebarspace;
+	int tr=ifont->GetTransparent();
+	for(int x=ifont->SX()-1; x>=0; x--) {
+		for(int y=0; y<height; y++)
+			if(ifont->GetPixel(x, Y(y))!=tr) 
+				return x+1;
+	}
+	return 0;
+}
+
+void Font::index_display(gdImage* image, int x, int y, size_t index){
+	if(index!=STRING_NOT_FOUND) 
+		ifont->Copy(*image, x, y, 0, Y(0), index_width(index), height);
+}
+
+/* ******************************** string ********************************** */
+
+int Font::step_width(int index) {
+	return letter_spacing + (monospace ? monospace : index_width(index));
+}
+
+// counts trailing letter_spacing, consider this OK. useful for contiuations
+int Font::string_width(const String& s){
+	const char* cstr=s.cstr();
+	int result=0;
+	for(const char* current=cstr; *current; current++)
+		result+=step_width(index_of(*current));
+	return result;
+}
+
+void Font::string_display(gdImage* image, int x, int y, const String& s){
+	const char* cstr=s.cstr();
+	for(const char* current=cstr; *current; current++) {
+		size_t index=index_of(*current);
+		index_display(image, x, y, index);
+		x+=step_width(index);
+	}
+}
+
+//
+
+
+static void _font(Request& r, MethodParams& params) {
+	const String& alphabet=params.as_string(0, "alphabet must not be code");
+	gdImage* image=load(r, params.as_string(1, "file_name must not be code"));
+	int spacebar_width=params.as_int(2, "spacebar_width must be int", r);
 	int monospace_width;
-	if(params->size()>3) {
-		monospace_width=params->as_int(3, "monospace_width must be int", r);
+	if(params.count()>3) {
+		monospace_width=params.as_int(3, "monospace_width must be int", r);
 		if(!monospace_width)
-			monospace_width=image.SX();
+			monospace_width=image->SX();
 	} else
 		monospace_width=0;
 
-	if(!alphabet.size())
+	if(!alphabet.length())
 		throw Exception("parser.runtime",
-			&method_name,
+			0,
 			"alphabet must not be empty");
 
-	if(int remainder=image.SY() % alphabet.size())
+	if(int remainder=image->SY() % alphabet.length())
 		throw Exception("parser.runtime",
-			&method_name,
+			0,
 			"font-file height(%d) not divisable by alphabet size(%d), remainder=%d",
-				image.SY(), alphabet.size(), remainder);
+				image->SY(), alphabet.length(), remainder);
 	
-	static_cast<VImage *>(r.get_self())->font=new(pool) Font(pool, 
+	GET_SELF(r, VImage).font=new Font(
 		alphabet, 
 		image, 
-		image.SY() / alphabet.size(), monospace_width, spacebar_width);
+		image->SY() / alphabet.length(), monospace_width, spacebar_width);
 }
 
-static void _text(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _text(Request& r, MethodParams& params) {
+	int x=params.as_int(0, "x must be int", r);
+	int y=params.as_int(1, "y must be int", r);
+	const String& s=params.as_string(2, "text must not be code");
 
-	int x=params->as_int(0, "x must be int", r);
-	int y=params->as_int(1, "y must be int", r);
-	const String& s=params->as_string(2, "text must not be code");
-
-	VImage& vimage=*static_cast<VImage *>(r.get_self());
+	VImage& vimage=GET_SELF(r, VImage);
 	if(vimage.image)
 		if(vimage.font)
-			vimage.font->string_display(*vimage.image, x, y, s);
+			vimage.font->string_display(vimage.image, x, y, s);
 		else
 			throw Exception("parser.runtime",
-				&method_name,
+				0,
 				"set the font first");
 	else
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 }
 
-static void _length(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _length(Request& r, MethodParams& params) {
+	const String& s=params.as_string(0, "text must not be code");
 
-	const String& s=params->as_string(0, "text must not be code");
-
-	VImage& vimage=*static_cast<VImage *>(r.get_self());
+	VImage& vimage=GET_SELF(r, VImage);
 	if(vimage.image)
 		if(vimage.font) {
-			r.write_no_lang(*new(pool) VInt(pool, vimage.font->string_width(s)));
+			r.write_no_lang(*new VInt(vimage.font->string_width(s)));
 		} else
 			throw Exception("parser.runtime",
-				&method_name,
+				0,
 				"set the font first");
 	else
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 }
 
-static void _arc(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+static void _arc(Request& r, MethodParams& params) {
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
 	image->Arc(
-		params->as_int(0, "center_x must be int", r), 
-		params->as_int(1, "center_y must be int", r), 
-		params->as_int(2, "width must be int", r), 
-		params->as_int(3, "height must be int", r), 
-		params->as_int(4, "start degrees must be int", r), 
-		params->as_int(5, "end degrees must be int", r), 
-		image->Color(params->as_int(6, "cx must be int", r)));
+		params.as_int(0, "center_x must be int", r), 
+		params.as_int(1, "center_y must be int", r), 
+		params.as_int(2, "width must be int", r), 
+		params.as_int(3, "height must be int", r), 
+		params.as_int(4, "start degrees must be int", r), 
+		params.as_int(5, "end degrees must be int", r), 
+		image->Color(params.as_int(6, "cx must be int", r)));
 }
 
-static void _sector(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+static void _sector(Request& r, MethodParams& params) {
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
 	image->Sector(
-		params->as_int(0, "center_x must be int", r), 
-		params->as_int(1, "center_y must be int", r), 
-		params->as_int(2, "width must be int", r), 
-		params->as_int(3, "height must be int", r), 
-		params->as_int(4, "start degrees must be int", r), 
-		params->as_int(5, "end degrees must be int", r), 
-		image->Color(params->as_int(6, "color must be int", r)));
+		params.as_int(0, "center_x must be int", r), 
+		params.as_int(1, "center_y must be int", r), 
+		params.as_int(2, "width must be int", r), 
+		params.as_int(3, "height must be int", r), 
+		params.as_int(4, "start degrees must be int", r), 
+		params.as_int(5, "end degrees must be int", r), 
+		image->Color(params.as_int(6, "color must be int", r)));
 }
 
-static void _circle(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	gdImage *image=static_cast<VImage *>(r.get_self())->image;
+static void _circle(Request& r, MethodParams& params) {
+	gdImage* image=GET_SELF(r, VImage).image;
 	if(!image)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"does not contain an image");
 
-	int size=params->as_int(2, "radius must be int", r)*2;
+	int size=params.as_int(2, "radius must be int", r)*2;
 	image->Arc(
-		params->as_int(0, "center_x must be int", r), 
-		params->as_int(1, "center_y must be int", r), 
+		params.as_int(0, "center_x must be int", r), 
+		params.as_int(1, "center_y must be int", r), 
 		size, //w
 		size, //h
 		0, //s
 		360, //e
-		image->Color(params->as_int(3, "color must be int", r)));
+		image->Color(params.as_int(3, "color must be int", r)));
 }
 
-gdImage& as_image(Pool& pool, const String& method_name, MethodParams *params, 
-						int index, const char *msg) {
-	gdImage *src=0;
+gdImage* as_image(MethodParams& params, int index, const char* msg) {
+	gdImage* src=0;
 
-	Value& value=params->as_no_junction(index, msg);
+	Value& value=params.as_no_junction(index, msg);
 
-	if(Value *vimage=value.as(VIMAGE_TYPE, false)) {
+	if(Value* vimage=value.as(VIMAGE_TYPE, false)) {
 		src=static_cast<VImage *>(vimage)->image;
 		if(!src)
 			throw Exception("parser.runtime", 
-				&method_name, 
+				0, 
 				msg);
 	} else
 		throw Exception("parser.runtime", 
-			&method_name, 
+			0, 
 			msg);
 
-	return *src;
+	return src;
 }
 
-static void _copy(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	gdImage *dest=static_cast<VImage *>(r.get_self())->image;
+static void _copy(Request& r, MethodParams& params) {
+	gdImage* dest=GET_SELF(r, VImage).image;
 	if(!dest)
 		throw Exception(0, 
-			&method_name, 
+			0, 
 			"self does not contain an image");
 
-	gdImage& src=as_image(pool, method_name, params, 0, "src must be image");
+	gdImage* src=as_image(params, 0, "src must be image");
 
-	int sx=params->as_int(1, "src_x must be int", r);
-	int sy=params->as_int(2, "src_y must be int", r);
-	int sw=params->as_int(3, "src_w must be int", r);
-	int sh=params->as_int(4, "src_h must be int", r);
-	int dx=params->as_int(5, "dest_x must be int", r);
-	int dy=params->as_int(6, "dest_y must be int", r);
-	if(params->size()>1+2+2+2) {
-		int dw=params->as_int(1+2+2+2, "dest_w must be int", r);
-		int dh=(int)(params->size()>1+2+2+2+1?
-			params->as_int(1+2+2+2+1, "dest_h must be int", r):sh*(((double)dw)/((double)sw)));
-		int tolerance=params->size()>1+2+2+2+2?
-			params->as_int(1+2+2+2+2, "tolerance must be int", r):150;
+	int sx=params.as_int(1, "src_x must be int", r);
+	int sy=params.as_int(2, "src_y must be int", r);
+	int sw=params.as_int(3, "src_w must be int", r);
+	int sh=params.as_int(4, "src_h must be int", r);
+	int dx=params.as_int(5, "dest_x must be int", r);
+	int dy=params.as_int(6, "dest_y must be int", r);
+	if(params.count()>1+2+2+2) {
+		int dw=params.as_int(1+2+2+2, "dest_w must be int", r);
+		int dh=(int)(params.count()>1+2+2+2+1?
+			params.as_int(1+2+2+2+1, "dest_h must be int", r):sh*(((double)dw)/((double)sw)));
+		int tolerance=params.count()>1+2+2+2+2?
+			params.as_int(1+2+2+2+2, "tolerance must be int", r):150;
 
-		src.CopyResampled(*dest, dx, dy, sx, sy, dw, dh, sw, sh, tolerance);
+		src->CopyResampled(*dest, dx, dy, sx, sy, dw, dh, sw, sh, tolerance);
 	} else
-		src.Copy(*dest, dx, dy, sx, sy, sw, sh);
+		src->Copy(*dest, dx, dy, sx, sy, sw, sh);
 }
 
 
 // constructor
 
-MImage::MImage(Pool& apool) : Methoded(apool, "image") {
+MImage::MImage(): Methoded("image") {
 	// ^image:measure[DATA]
 	add_native_method("measure", Method::CT_DYNAMIC, _measure, 1, 1);
 
@@ -1225,14 +1289,4 @@ MImage::MImage(Pool& apool) : Methoded(apool, "image") {
 
 	// ^image.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h[;tolerance]]])
 	add_native_method("copy", Method::CT_DYNAMIC, _copy, 1+2+2+2, (1+2+2+2)+2+1);
-}
-
-// global variable
-
-Methoded *image_class;
-
-// creator
-
-Methoded *MImage_create(Pool& pool) {
-	return image_class=new(pool) MImage(pool);
 }

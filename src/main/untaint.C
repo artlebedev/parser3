@@ -1,50 +1,79 @@
 /** @file
 	Parser: String class part: untaint mechanizm.
 
-	Copyright(c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2003/04/18 10:12:05 $";
+static const char* IDENT_UNTAINT_C="$Date: 2003/07/24 11:31:24 $";
 
-#include "pa_pool.h"
+
 #include "pa_string.h"
 #include "pa_hash.h"
 #include "pa_exception.h"
 #include "pa_table.h"
 #include "pa_globals.h"
-#include "pa_sql_connection.h"
 #include "pa_dictionary.h"
 #include "pa_common.h"
 #include "pa_charset.h"
+#include "pa_request_charsets.h"
+#include "pa_sapi.h"
 
-//#define DEBUG_STRING_APPENDS_VS_EXPANDS
+extern "C" { // author forgot to do that
+#include "ec.h"
+}
 
-#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
-ulong string_string_shortcut_economy=0;
+#define PA_SQL
+
+#ifdef PA_SQL
+#include "pa_sql_connection.h"
 #endif
 
+// defines
+
+
+#undef CORD_ec_append
+// redefining to intercept flushes and implement whitespace optimization
+// of all consequent white space chars leaving only first one
+#define CORD_ec_append(x, c) \
+    {  \
+	bool skip=false; \
+	if(optimize) switch(c) { \
+	case ' ': case '\r': case '\n': case '\t': \
+		if(whitespace) \
+			skip=true; /*skipping subsequent*/ \
+		else \
+			whitespace=true; \
+		break; \
+	default: \
+		whitespace=false; \
+		break; \
+	} \
+	if(!skip) { \
+		if ((x)[0].ec_bufptr == (x)[0].ec_buf + CORD_BUFSZ) { \
+	  		CORD_ec_flush_buf(x); \
+		} \
+		*((x)[0].ec_bufptr)++ = (c); \
+	} \
+    }
+
+
 #define escape(action) \
-	{ \
-		const char *src=row->item.ptr; \
-		for(int size=row->item.size; size--; src++) \
-			action \
+	for(; fragment_length--; CORD_next(pos)) { \
+		char c=CORD_pos_fetch(pos); \
+		action \
 	}
-#define _default  default: *dest++=*src; break
-#define encode(need_encode_func, prefix)  \
-			if(need_encode_func(*src)) { \
-				static const char *hex="0123456789ABCDEF"; \
-				char chunk[3]={prefix}; \
-				chunk[1]=hex[((unsigned char)*src)/0x10]; \
-				chunk[2]=hex[((unsigned char)*src)%0x10]; \
-				memcpy(dest, chunk, 3);  dest+=3; \
-			} else \
-				*dest++=*src; \
-			break
-#define to_char(c)  *dest++=c
-#define to_string(b, bsize)  \
-		memcpy(dest, b, bsize); \
-		dest+=bsize; \
+#define _default  default: CORD_ec_append(result, c); break
+#define encode(need_encode_func, prefix, otherwise)  \
+	if(need_encode_func(c)) { \
+		static const char* hex="0123456789ABCDEF"; \
+		CORD_ec_append(result, prefix); \
+		CORD_ec_append(result, hex[((unsigned char)c)/0x10]); \
+		CORD_ec_append(result, hex[((unsigned char)c)%0x10]); \
+	} else \
+		CORD_ec_append(result, otherwise);
+#define to_char(c)  CORD_ec_append(result, c)
+#define to_string(s)  CORD_ec_append_cord(result, s)
 
 inline bool need_file_encode(unsigned char c){
 	// russian letters and space ENABLED
@@ -71,7 +100,7 @@ inline bool need_http_header_encode(unsigned char c){
 
 //
 
-static const char * String_Untaint_lang_name[]={
+static const char*  String_Untaint_lang_name[]={
 	"U", ///< zero value handy for hash lookup @see untaint_lang_name2enum
 	"C", ///< clean
 	"T",  ///< tainted, untaint language as assigned later 
@@ -131,212 +160,56 @@ quoted-pair    = "\" CHAR
 
   if(strchr("()<>@,;:\\\"/[]?={} \t", *ptr))
 */
-inline bool need_quote_http_header(const char *ptr, size_t size) {
+inline bool need_quote_http_header(const char* ptr, size_t size) {
 	for(; size--; ptr++)
 		if(strchr(";\\\"= \t" /* excluded ()<>@, :/ ? []{} */, *ptr))
 			return true;
 	return false;
 }
 
-//#include "pa_sapi.h"
+
 /** 
-	appends other String,
+	appends to other String,
 	marking all tainted pieces of it with @a lang.
 	or marking ALL pieces of it with a @a lang when @a forced to,
 	and propagating OPTIMIZE language bit.
-
-    using architecture advantage: after string-to-string-append string never modified.
-	algorithm:
-	if no language-change specified and src not yet appended to some other string[last_chunk!=0]
-		shrinking dest last_chunk[preparing it for linking],
-		///shrinking src last_chunk[preparing it to be linked, consequent dest.appends would go there],
-		linking[dest.last_chunk = src.head.chunk]
-	if some language-change specified or src already appended to some other string[last_chunk==0]
-		cloning pieces.
 */
-String& String::append(const String& src, uchar lang, bool forced) {
-	if(!last_chunk) // growth stopped [we're appended as string to somebody]
-		throw Exception(0,
-			this,
-			"string growth stopped (append string)");
+String& String::append_to(String& dest, Language lang, bool forced) const {
+	if(is_empty())
+		return dest;
 
-	if(src.is_empty())
-		return *this;
+	// first: letters
+	dest.body<<body;
 
-	// without language-chage, not-appended-before, big[not fitting our tail] string?
-	if(lang==UL_PASS_APPENDED 
-		&& src.last_chunk
-		&& (uint(&last_chunk->rows[last_chunk->count]-append_here) < src.used_rows())) {
-#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
-		string_string_shortcut_economy+=src.used_rows()*sizeof(String::Chunk::Row);
-#endif
-
-		// using fact: 
-		// src.head.chunk.count initally equeals this.head.chunk.count and shrinks-only, 
-		// so can't be more than this.head.chunk.count, 
-		// which means that we know that 
-		// src.head.chunk would fit into this.head.chunk
-		if(is_empty()) { // our head.chunk is empty
-			// they have more than head.chunk? we need all head.chunk : we need only filled-part of head.chunk
-			Chunk *src_head_link=src.head.chunk.rows[src.head.chunk.count].link;
-			size_t head_count=src_head_link?src.head.chunk.count:(src.append_here-src.head.chunk.rows);
-			// "your head.chunk is my head.chunk"
-			memcpy(head.chunk.rows, src.head.chunk.rows, sizeof(Chunk::Row)*(head_count));
-			if(src_head_link) {
-				// "your body is my body"
-				head.chunk.rows[head.chunk.count=head_count].link=src_head_link;
-				// "your last_chunk is mine now"
-				last_chunk=src.last_chunk;
-				// "your append_here is mine now"
-				append_here=src.append_here;
-			} else {
-				// "your last_chunk is mine now"
-				last_chunk=&head.chunk;
-				// "your append_here is recalc-mine now"
-				append_here=head.chunk.rows+head_count;
-			}
-		} else { // our head.chunk contains something
-			// "chopping off my tail-reserve"
-			last_chunk->count=append_here-last_chunk->rows;
-			// "you is my tail"
-			append_here->link=&src.head.chunk;
-			// "your last_chunk is mine now"
-			last_chunk=src.last_chunk;
-			// "your append_here is mine now"
-			append_here=src.append_here;
+	// next: fragment infos
+	
+	if(lang==L_PASS_APPENDED) // without language-change?
+		dest.fragments.append(fragments);
+	else if(forced) //forcing passed lang?
+		dest.fragments+=Fragment(lang, length());
+	else if(lang&L_OPTIMIZE_BIT) {
+		for(Array_iterator<ArrayFragment::element_type> i(fragments); i.has_next(); ) {
+			const Fragment fragment=i.next();
+			// main idea here:
+			// tainted piece would get OPTIMIZED bit from 'lang'
+			// clean piece would be marked OPTIMIZED manually
+			// pieces with determined languages [not tainted|clean] would retain theirs langs
+			dest.fragments+=Fragment(static_cast<Language>(
+				fragment.lang==L_TAINTED?lang:(
+					fragment.lang==L_CLEAN?L_CLEAN|L_OPTIMIZE_BIT: // ORing with OPTIMIZED flag
+						fragment.lang)),
+				fragment.length);
 		}
-
-		// stop-growing mark
-		src.last_chunk=0;
-		return *this;
+	} else { // The core idea: tainted pieces got marked with context's lang
+		for(Array_iterator<ArrayFragment::element_type> i(fragments); i.has_next(); ) {
+			const Fragment fragment=i.next();
+			dest.fragments+=Fragment(
+				fragment.lang==L_TAINTED?lang:fragment.lang,
+				fragment.length);
+		}
 	}
 
-	// manually unrolled code to avoid do{if(const)} constructs
-	if(forced) 
-		STRING_SRC_FOREACH_ROW(
-			APPEND(row->item.ptr, row->item.size, 
-				lang, //forcing passed lang
-				row->item.origin.file, row->item.origin.line);
-		)
-	else if(lang==UL_PASS_APPENDED) 
-		STRING_SRC_FOREACH_ROW(
-			APPEND(row->item.ptr, row->item.size, 
-				row->item.lang, // passing item's lang
-				row->item.origin.file, row->item.origin.line);
-		)
-	else if(lang&UL_OPTIMIZE_BIT) // main idea here
-		// tainted piece would get OPTIMIZED bit from 'lang'
-		// clean piece would be marked OPTIMIZED manually
-		// pieces with determined languages [not tainted|clean] would retain theirs langs
-		STRING_SRC_FOREACH_ROW(
-			APPEND(row->item.ptr, row->item.size, 
-				row->item.lang==UL_TAINTED?lang:(
-					row->item.lang==UL_CLEAN?UL_CLEAN|UL_OPTIMIZE_BIT: // ORing with OPTIMIZED flag
-						row->item.lang
-				), 
-				row->item.origin.file, row->item.origin.line);
-		)
-	else
-		STRING_SRC_FOREACH_ROW(
-			APPEND(row->item.ptr, row->item.size, 
-				row->item.lang==UL_TAINTED?lang:row->item.lang,
-				row->item.origin.file, row->item.origin.line);
-		);
-/*
-			for(Chunk::Row *row=last_chunk->rows; row<append_here; row++)
-				if(row->link==(void*)0xcdcdcdcd)
-					_asm int 3;*/
-	return *this;
-}
-
-size_t String::cstr_bufsize(Untaint_lang lang,
-							SQL_Connection *connection,
-							Charset *buf_charset) const {
-	size_t dest=1; // for terminating 0
-	STRING_FOREACH_ROW(
-		uchar to_lang=lang==UL_UNSPECIFIED?row->item.lang:lang;
-
-		switch(to_lang & ~UL_OPTIMIZE_BIT) {
-		case UL_CLEAN:
-		case UL_TAINTED:
-		case UL_AS_IS:
-			// clean piece
-
-			// tainted piece, but undefined untaint language
-			// for VString.as_double of tainted values
-			// for ^process{body} evaluation
-
-			// tainted, untaint language: as-is
-			dest+=row->item.size;
-			break;
-		case UL_FILE_SPEC:
-			// tainted, untaint language: file [name]
-			dest+=row->item.size*3/* worst: Z->%XX */;
-			break;
-		case UL_URI:
-			// tainted, untaint language: uri
-			dest+=row->item.size*6*3/* worst utf8 x worst Z->%XX */;
-			break;
-		case UL_HTTP_HEADER:
-			// tainted, untaint language: http-field-content-text
-			dest+=row->item.size*3/* worst: Z->%XX */;
-			break;
-		case UL_MAIL_HEADER:
-			// tainted, untaint language: mail-header
-			if(buf_charset) {
-				int parts_count=1;
-				const char *prev=row->item.ptr;
-				size_t size=row->item.size;
-				while(const char *comma_at=(const char*)memchr(prev, ',', size)) {
-					parts_count++;
-					size-=comma_at-prev;
-					prev=comma_at+1;
-				}
-				// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
-				dest+=
-					row->item.size*3+
-					parts_count*(buf_charset->name().size()+MAX_STRING/* worst: =?charset?Q?=%XX?= */);
-			} else
-				dest+=row->item.size;
-			break;
-		case UL_TABLE: 
-			// tainted, untaint language: table
-			dest+=row->item.size;
-			break;
-		case UL_SQL:
-			// tainted, untaint language: sql
-			if(connection)
-				dest+=connection->quote(0, row->item.ptr, row->item.size);
-			break;
-		case UL_JS:
-			escape(switch(*src) {
-				case '"': case '\'': case '\n': case '\\': case '\xFF':
-					dest+=2;  break;
-				default: 
-					dest++;  break;
-			});
-			break;
-		case UL_XML:
-			escape(switch(*src) {
-				case '&': case '>': case '<': case '"': case '\'': 
-					dest+= 6;  break;
-				default: 
-					dest++;  break;
-			});
-			break;
-		case UL_HTML:
-			escape(switch(*src) {
-				case '&': 
-				case '>': 
-				case '<': 
-				case '"': 
-					dest+=6;  break;
-				default: 
-					dest++;  break;
-			});
-			break;
-		}
-	);
+	ASSERT_STRING_INVARIANT(dest);
 	return dest;
 }
 
@@ -367,40 +240,68 @@ RFC
 		without "=", or one could not differ "=E0" and "russian letter a"
 		and without "_", or in would mean 0x20
 */
-static bool mail_header_char_valid_within_Qencoded(char c) {
+inline bool mail_header_char_valid_within_Qencoded(char c) {
 	return c>='A' && c<='Z'
 		|| c>='a' && c<='Z'
 		|| c>='0' && c<='9'
 		|| strchr("!*+-/", c);
 }
-char *String::store_to(char *dest, Untaint_lang lang, 
-					   SQL_Connection *connection,
-					   Charset *store_to_charset,
-					   const char *store_to_charset_name) const {
-	// WARNING:
-	//	 before any changes check cstr_bufsize first!!!
+/**
+	RFC 
+	Upper case should be used for hexadecimal digits "A" through "F"
+	The 8-bit hexadecimal value 20 (e.g., ISO-8859-1 SPACE) 
+	may be represented as "_" 
+*/
+inline bool mail_header_nonspace_char(char c) {
+	return c != 0x20;
+}
+inline void ec_append(CORD_ec& result, bool& optimize, bool& whitespace, CORD_pos pos, size_t size) {
+	while(size--) {
+		CORD_ec_append(result, CORD_pos_fetch(pos));
+		CORD_next(pos);
+	}
+}
+inline void pa_CORD_pos_advance(CORD_pos pos, size_t n) {
+	while(true) {
+		size_t avail=CORD_pos_chars_left(pos);
+		if(avail==0) {
+			CORD_next(pos);
+			if(!--n)
+				break;
+		} else if(avail<n) {
+			CORD_pos_advance(pos, avail);
+			n-=avail;
+		} else { // avail>=n
+			CORD_pos_advance(pos, n);
+			break;
+		}
+	}
+}
+StringBody String::cstr_to_string_body(Language lang, 
+		  SQL_Connection* connection,
+		  const Request_charsets *charsets) const {
+	CORD_ec result; CORD_ec_init(result);
+	CORD_pos pos; body.set_pos(pos, 0);
+
 	bool whitespace=true;
-//debug
-	const Chunk *chunk=&(*this).head.chunk;  \
-	const Chunk::Row *row=chunk->rows; \
-	uint countdown=chunk->count; \
-	while(row!=(*this).append_here) { \
-		if(countdown==0) { \
-			chunk=row->link; \
-			row=chunk->rows; \
-			countdown=chunk->count; \
-		};
-//*/
-//	STRING_FOREACH_ROW(
 
-		uchar to_lang=lang==UL_UNSPECIFIED?row->item.lang:lang;
+	size_t fragment_begin=0;
+	size_t fragment_end;
+	for(Array_iterator<Fragment> i(fragments); i.has_next(); fragment_begin=fragment_end) {
+		const Fragment fragment=i.next();
+		size_t fragment_length=fragment.length;
+		fragment_end=fragment_begin+fragment_length;
+		//fprintf(stderr, "%d, %d\n", fragment.lang, fragment.length);
 
-		char *start=dest;
-
-		switch(to_lang & ~UL_OPTIMIZE_BIT) {
-		case UL_CLEAN:
-		case UL_TAINTED:
-		case UL_AS_IS:
+		Language to_lang=lang==L_UNSPECIFIED?fragment.lang:lang;
+		bool optimize=(to_lang & L_OPTIMIZE_BIT)!=0;
+		if(!optimize)
+			whitespace=false;
+			
+		switch(to_lang & ~L_OPTIMIZE_BIT) {
+		case L_CLEAN:
+		case L_TAINTED:
+		case L_AS_IS:
 			// clean piece
 
 			// tainted piece, but undefined untaint language
@@ -408,202 +309,146 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			// for ^process{body} evaluation
 
 			// tainted, untaint language: as-is
-			memcpy(dest, row->item.ptr, row->item.size); 
-			dest+=row->item.size;
+			ec_append(result, optimize, whitespace, pos, fragment_length);
 			break;
-		case UL_FILE_SPEC:
+		case L_FILE_SPEC:
 			// tainted, untaint language: file [name]
 			escape(
 				// Macintosh has problems with small Russian letter 'r'
-				if( *src=='\xF0' && pool().get_source_charset().name()=="windows-1251" ) {
+				if( c=='\xF0' && charsets && charsets->source().NAME()=="WINDOWS-1251" ) {
 					// fixing that letter for most common charset
-					to_char('p');  
+					to_char('p');
 				} else // fallback to default
-					encode(need_file_encode, '_'); 
+					encode(need_file_encode, '_', c); 
 			);
 			break;
-		case UL_URI:
+		case L_URI:
 			// tainted, untaint language: uri
-			const void *client_ptr;
-			size_t client_size;
-			Charset::transcode(pool(), 
-				pool().get_source_charset(), row->item.ptr, row->item.size,
-				pool().get_client_charset(), client_ptr, client_size);
 			{
-				const char *src=(const char *)client_ptr;
-				for(int size=client_size; size--; src++) 
-					encode(need_uri_encode, '%');
+				const char *fragment_str=body.mid(fragment_begin, fragment_length).cstr();
+				// skip source [we use recoded version]
+				pa_CORD_pos_advance(pos, fragment_length);
+				String::C output(fragment_str, fragment_length);
+				if(charsets) 
+					output=Charset::transcode(output, 
+						charsets->source(), 
+						charsets->client());
+
+				char c;
+				for(const char* src=output.str; c=*src++; ) 
+					encode(need_uri_encode, '%', c);
 			}
 			break;
-		case UL_HTTP_HEADER:
+		case L_HTTP_HEADER:
 			// tainted, untaint language: http-field-content-text
 			escape(
-				encode(need_uri_encode, '%');
+				encode(need_uri_encode, '%', c);
 			);
 			break;
-		case UL_MAIL_HEADER:
+		case L_MAIL_HEADER:
 			// tainted, untaint language: mail-header
 			// http://www.ietf.org/rfc/rfc2047.txt
-			if(store_to_charset && store_to_charset_name) {
-				const void *mail_ptr;
+			if(charsets) {
 				size_t mail_size;
-				Charset::transcode(pool(), 
-					pool().get_source_charset(), row->item.ptr, row->item.size,
-					*store_to_charset, mail_ptr, mail_size);
+				const char *mail_ptr=
+					body.mid(fragment_begin, mail_size=fragment_length).cstr();
+				// skip source [we use recoded version]
+				pa_CORD_pos_advance(pos, mail_size);
+
+				const char* charset_name=charsets->mail().NAME().cstr();
 
 				// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
-				const char *src=(const char *)mail_ptr;
 				bool to_quoted_printable=false;
 
 				bool email=false;
-				for(const char *end=src+mail_size; src<end; src++) {
+				uchar c;
+				for(const char* src=mail_ptr; c=(uchar)*src++; ) {
 					//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
-					if(to_quoted_printable && (*src==',' || *src=='<')) {
-						email=*src=='<';
-						dest+=sprintf(dest, "?=");
+					if(to_quoted_printable && (c==',' || c=='<')) {
+						email=c=='<';
+						to_string("?=");
 						to_quoted_printable=false;
 					}
 					if(!email && (
-						!to_quoted_printable && (*src & 0x80)  // starting quote-printable-encoding on first 8bit char
-						|| to_quoted_printable && !mail_header_char_valid_within_Qencoded(*src)
+						!to_quoted_printable && (c & 0x80)  // starting quote-printable-encoding on first 8bit char
+						|| to_quoted_printable && !mail_header_char_valid_within_Qencoded(c)
 						)) {
 						if(!to_quoted_printable) {
-							dest+=sprintf(dest, "=?%s?Q?", store_to_charset_name);
+							to_string("=?");
+							to_string(charset_name);
+							to_string("?Q?");
 							to_quoted_printable=true;
 						}
-						//RFC Upper case should be used for hexadecimal digits "A" through "F"
-						if(*src == 0x20) // RFC The 8-bit hexadecimal value 20 (e.g., ISO-8859-1 SPACE) 
-							*dest++='_'; // RFC may be represented as "_" 
-						else
-							dest+=sprintf(dest, "=%02X", *src & 0xFF);
+						encode(mail_header_nonspace_char, '=', '_'); 
 					} else
-						*dest++=*src;
-					if(*src=='>')
+						to_char(c);
+					if(c=='>')
 						email=false;
 				}
 				if(to_quoted_printable) // close
-					dest+=sprintf(dest, "?=");
+					to_string("?=");
 			
-			} else {
-				memcpy(dest, row->item.ptr, row->item.size); 
-				dest+=row->item.size;
-			}
+			} else
+				ec_append(result, optimize, whitespace, pos, fragment_length);
 			break;
-		case UL_TABLE: 
+		case L_TABLE: 
 			// tainted, untaint language: table
-			escape(switch(*src) {
+			escape(switch(c) {
 				case '\t': to_char(' ');  break;
 				case '\n': to_char(' ');  break;
 				_default;
 			});
 			break;
-		case UL_SQL:
+#ifdef PA_SQL
+		case L_SQL:
 			// tainted, untaint language: sql
-			if(connection)
-				dest+=connection->quote(dest, row->item.ptr, row->item.size);
-			else
+			if(connection) {
+				const char *fragment_str=body.mid(fragment_begin, fragment_length).cstr();
+				// skip source [we use recoded version]
+				pa_CORD_pos_advance(pos, fragment_length);
+
+				to_string(connection->quote(fragment_str, fragment_length));
+			} else
 				throw Exception(0,
-					this,
+					0,
 					"untaint in SQL language failed - no connection specified");
 			break;
-		case UL_JS:
-			escape(switch(*src) {
-				case '"': to_string("\\\"", 2);  break;
-				case '\'': to_string("\\'", 2);  break;
-				case '\n': to_string("\\n", 2);  break;
-				case '\\': to_string("\\\\", 2);  break;
-				case '\xFF': to_string("\\\xFF", 2);  break;
+#endif
+		case L_JS:
+			escape(switch(c) {
+				case '"': to_string("\\\"");  break;
+				case '\'': to_string("\\'");  break;
+				case '\n': to_string("\\n");  break;
+				case '\\': to_string("\\\\");  break;
+				case '\xFF': to_string("\\\xFF");  break;
 				_default;
 			});
 			break;
-		case UL_XML:
-			escape(switch(*src) {
-				case '&': to_string("&amp;", 5);  break;
-				case '>': to_string("&gt;", 4);  break;
-				case '<': to_string("&lt;", 4);  break;
-				case '"': to_string("&quot;", 6);  break;
-				case '\'': to_string("&apos;", 6);  break;
+		case L_XML:
+			escape(switch(c) {
+				case '&': to_string("&amp;");  break;
+				case '>': to_string("&gt;");  break;
+				case '<': to_string("&lt;");  break;
+				case '"': to_string("&quot;");  break;
+				case '\'': to_string("&apos;");  break;
 				_default;
 			});
 			break;
-		case UL_HTML:
-			escape(switch(*src) {
-				case '&': to_string("&amp;", 5);  break;
-				case '>': to_string("&gt;", 4);  break;
-				case '<': to_string("&lt;", 4);  break;
-				case '"': to_string("&quot;", 6);  break;
+		case L_HTML:
+			escape(switch(c) {
+				case '&': to_string("&amp;");  break;
+				case '>': to_string("&gt;");  break;
+				case '<': to_string("&lt;");  break;
+				case '"': to_string("&quot;");  break;
 				_default;
 			});
 			break;
 		default:
-			throw Exception(0, 
-				this, 
-				"unknown untaint language #%d", 
-					static_cast<int>(to_lang)); // should never
+			SAPI::die("unknown untaint language #%d", 
+				static_cast<int>(to_lang)); // should never
 			break; // never
 		}
+	}
 
-		if(to_lang & UL_OPTIMIZE_BIT) { 
-			// optimizing whitespace
-			char *stop=dest;  dest=start;
-			for(char *src=start; src<stop; src++)
-				switch(*src) {
-				// of all consequent white space chars leaving only first one
-				case ' ': case '\r': case '\n': case '\t':
-					if(!whitespace) {
-						*dest++=*src;
-						whitespace=true;
-					}
-					break;
-				default:
-					whitespace=false;
-					*dest++=*src;
-					break;
-				};
-		} else // piece without optimization
-//debug
-			whitespace=false;
-		row++; countdown--; \
-	} 
-/*
-	);
-*/
-	return dest;
-}
-
-char *String::cstr_debug_origins() const {
-	//_asm int 3;
-	char *result=(char *)malloc(size()+used_rows()*MAX_STRING*2);
-	char *dest=result;
-	
-	STRING_FOREACH_ROW(
-IFNDEF_NO_STRING_ORIGIN(
-		if(row->item.origin.file)
-			dest+=sprintf(dest, ORIGIN_FILE_LINE_FORMAT,
-				row->item.origin.file,
-				1+row->item.origin.line);
-		else
-			dest+=sprintf(dest, "<unknown>");
-);
-		uchar show_lang=row->item.lang & ~UL_OPTIMIZE_BIT;
-		if(show_lang>=sizeof(String_Untaint_lang_name)/sizeof(String_Untaint_lang_name[0]))
-			throw Exception(0, 
-				this, 
-				"unknown untaint language #%d", 
-					static_cast<int>(show_lang)); // sould never
-
-		dest+=sprintf(dest, "#%s%s: ",
-			String_Untaint_lang_name[show_lang],
-			row->item.lang & UL_OPTIMIZE_BIT?".O":"");
-		char *dest_after_origins=dest;
-
-		memcpy(dest, row->item.ptr, row->item.size); 
-		dest+=row->item.size;
-
-		remove_crlf(dest_after_origins, dest);
-		to_char('\n');
-	);
-
-	*dest=0;
-	return result;
+	return StringBody(CORD_ec_to_cord(result));
 }

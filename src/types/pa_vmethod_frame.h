@@ -1,49 +1,115 @@
 /** @file
 	Parser: @b method_frame write context
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char* IDENT_VMETHOD_FRAME_H="$Date: 2003/01/21 15:51:20 $";
+static const char* IDENT_VMETHOD_FRAME_H="$Date: 2003/07/24 11:31:26 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
 #include "pa_vjunction.h"
-#include "pa_request.h"
 
 // defines
 
 #define CALLER_ELEMENT_NAME "caller"
 #define SELF_ELEMENT_NAME "self"
 
+// forwards
+
+class Request;
+
+/**
+	@b method parameters passed in this array.
+	contains handy typecast ad junction/not junction ensurers
+
+*/
+class MethodParams: public Array<Value*> {
+public:
+	Value& operator[] (size_t index) { return *get(index); }
+
+	Value& last() { return *get(count()-1); }
+
+	/// handy is-value-a-junction ensurer
+	Value& as_junction(int index, const char* msg) { 
+		return get_as(index, true, msg); 
+	}
+	/// handy value-is-not-a-junction ensurer
+	Value& as_no_junction(int index, const char* msg) { 
+		return get_as(index, false, msg); 
+	}
+	/// handy expression auto-processing to double
+	double as_double(int index, const char* msg, Request& r) { 
+		return get_processed(index, msg, r).as_double(); 
+	}
+	/// handy expression auto-processing to int
+	int as_int(int index, const char* msg, Request& r) { 
+		return get_processed(index, msg, r).as_int(); 
+	}
+	/// handy expression auto-processing to bool
+	bool as_bool(int index, const char* msg, Request& r) { 
+		return get_processed(index, msg, r).as_bool(); 
+	}
+	/// handy string ensurer
+	const String& as_string(int index, const char* msg) { 
+		return as_no_junction(index, msg).as_string();
+	}
+
+private:
+
+	/// handy value-is/not-a-junction ensurer
+	Value& get_as(int index, bool as_junction, const char* msg) { 
+		Value* result=get(index);
+		if((result->get_junction()!=0) ^ as_junction)
+			throw Exception("parser.runtime",
+				0,
+				"%s (parameter #%d)", msg, 1+index);
+
+		return *result;
+	}
+
+	Value& get_processed(int index, const char* msg, Request& r);
+
+};
+
 /**	Method frame write context
 	accepts values written by method code
 	also handles method parameters and local variables
 */
-class VMethodFrame : public WContext {
+class VMethodFrame: public WContext {
+
+//	const String& fname;
+	VMethodFrame *fcaller;
+
+	size_t store_param_index;
+	HashStringValue* my;/*OR*/MethodParams* fnumbered_params;
+	Value* fself;
+
+	Value* fresult_initial_void;
+
 public: // Value
 
-	const char *type() const { return "method_frame"; }
+	override const char* type() const { return "method_frame"; }
 
 	/// VMethodFrame: $result | parent get_string(=accumulated fstring)
-	const String *get_string() { 
+	override const String* get_string() { 
 		// check the $result value
-		Value *result=get_result_variable();
+		Value* result=get_result_variable();
 		// if we have one, return it's string value, else return as usual: accumulated fstring or fvalue
 		return result ? result->get_string() : WContext::get_string();
 	}
 	
 	/// VMethodFrame: my or self_transparent or $caller
-	Value *get_element(const String& aname, Value& aself, bool looking_up) { 
-		if(junction.method->max_numbered_params_count==0) {
-			if(Value *result=static_cast<Value *>(my.get(aname)))
+	override Value* get_element(const String& aname, Value& aself, bool looking_up) { 
+		if(my) {
+			if(Value* result=my->get(aname))
 				return result;
 		}
-		if(Value *result=self().get_element(aname, aself, looking_up))
+		if(Value* result=self().get_element(aname, aself, looking_up))
 			return result;
 
 		if(aname==CALLER_ELEMENT_NAME)
@@ -55,67 +121,40 @@ public: // Value
 		return 0;
 	}
 	/// VMethodFrame: my or self_transparent
-	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace) { 
-		if(junction.method->max_numbered_params_count==0 && my.put_replace(aname, avalue))
+	override bool put_element(const String& aname, Value* avalue, bool replace) { 
+		if(my && my->put_replace(aname, avalue))
 			return true;
 
 		return self().put_element(aname, avalue, replace);
 	}
 
 	/// VMethodFrame: self_transparent
-	/*override*/ VStateless_class* get_class() { return self().get_class(); }
+	override VStateless_class* get_class() { return self().get_class(); }
 
 	/// VMethodFrame: self_transparent
-	/*override*/ Value *base() { return self().base(); }
+	override Value* base() { return self().base(); }
 
 public: // WContext
 
-	/* override */ StringOrValue result() {
+	override StringOrValue result() {
 		// check the $result value
-		Value *result_value=get_result_variable();
+		Value* result_value=get_result_variable();
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue
 		return result_value ? StringOrValue(0, result_value) : WContext::result();
 	}
 
-public: // usage
-
-	VMethodFrame(Pool& apool, 
-		const String& aname,
-		const Junction& ajunction/*info: always method-junction*/,
-		VMethodFrame *acaller) : 
-		WContext(apool, 0 /* empty */, 0 /* no parent, junctions can be reattached only up to VMethodFrame */ ),
-
-		fname(aname),
-		junction(ajunction),
-		fcaller(acaller),
-		store_param_index(0),
-
-		my(apool),
-		fnumbered_params(apool, aname),
-
-		fself(0),
-		fresult_initial_void(0) {
-
-		if(has_my()) { // this method uses named params?
-			const Method &method=*junction.method;
-			if(method.locals_names) { // are there any local var names?
-				// remember them
-				// those are flags that fname is local == to be looked up in 'my'
-				for(int i=0; i<method.locals_names->size(); i++) {
-					// speedup: not checking for clash with "result" fname
-					Value *value=NEW VVoid(pool());
-					const String& fname=*method.locals_names->get_string(i);
-					set_my_variable(fname, value);
-				}
-			}
-			{ // always there is one local: $result
-				fresult_initial_void=NEW VVoid(pool());
-				set_my_variable(*result_var_name, fresult_initial_void);
-			}
-		}
+	void write(Value& avalue, String::Language alang) {
+		WContext::write(avalue, alang);
 	}
 
-	const String& name() { return fname; }
+public: // usage
+
+	VMethodFrame(
+		//const String& aname,
+		const Junction& ajunction/*info: always method-junction*/,
+		VMethodFrame *acaller);
+
+//	const String& name() { return fname; }
 	VMethodFrame *caller() { return fcaller; }
 
 	void set_self(Value& aself) { fself=&aself; }
@@ -124,88 +163,70 @@ public: // usage
 
 	bool can_store_param() {
 		const Method& method=*junction.method;
-		return method.params_names && store_param_index<method.params_names->size();
+		return method.params_names && store_param_index<method.params_names->count();
 	}
-	void store_param(Value *value) {
+	void store_param(Value& value) {
 		const Method& method=*junction.method;
-		int max_params=
+		size_t max_params=
 			method.max_numbered_params_count?method.max_numbered_params_count:
-			method.params_names?method.params_names->size():
+			method.params_names?method.params_names->count():
 			0;
 		if(store_param_index==max_params)
 			throw Exception("parser.runtime",
-				&name(),
+				0, //&name(),
 				"method of %s (%s) accepts maximum %d parameter(s)", 
 					junction.self.get_class()->name_cstr(),
 					junction.self.type(),
 					max_params);
 		
-		if(method.max_numbered_params_count) { // are this method params numbered?
-			fnumbered_params+=value;
+		if(fnumbered_params) { // are this method params numbered?
+			*fnumbered_params+=&value;
 		} else { // named param
 			// speedup: not checking for clash with "result" fname
-			const String& fname=*method.params_names->get_string(store_param_index);
+			const String& fname=*(*method.params_names)[store_param_index];
 			set_my_variable(fname, value);
 		}
 		store_param_index++;
 	}
 	void fill_unspecified_params() {
 		const Method &method=*junction.method;
-		if(method.params_names) // there are any named parameters might need filling?
-			for(; store_param_index<method.params_names->size(); store_param_index++) {
-				const String& fname=*method.params_names->get_string(store_param_index);
-				my.put(fname, NEW VVoid(pool()));
+		if(method.params_names) { // there are any named parameters might need filling?
+			size_t param_count=method.params_names->count();
+			for(; store_param_index<param_count; store_param_index++) {
+				const String& fname=*(*method.params_names)[store_param_index];
+				my->put(fname, new VVoid);
 			}
+		}
 	}
 
-	MethodParams *numbered_params() { return &fnumbered_params; }
+	MethodParams* numbered_params() { return fnumbered_params; }
 
 private:
 
-	bool has_my() {
-		return junction.method->max_numbered_params_count==0;
+	void set_my_variable(const String& fname, Value& value) {
+		my->put(fname, &value); // remember param
 	}
 
-	void set_my_variable(const String& fname, Value *value) {
-		my.put(fname, value); // remember param
-	}
-
-	Value *get_result_variable() {
-		Value *result=has_my()?static_cast<Value*>(my.get(*result_var_name)):0;
-		return result && result!=fresult_initial_void ? result : 0;
-	}
+	Value* get_result_variable();
 
 public:
 	
 	const Junction& junction;
-
-private:
-
-	const String& fname;
-	VMethodFrame *fcaller;
-
-	int store_param_index;
-	Hash my;/*OR*/MethodParams fnumbered_params;
-	Value *fself;
-
-private:
-
-	Value *fresult_initial_void;
 
 };
 
 ///	Auto-object used for temporary changing VMethod_frame::fself.
 class Temp_method_frame_self {
 	VMethodFrame& fmethod_frame;
-	Value& saved_self;
+	Value* saved_self;
 public:
 	Temp_method_frame_self(VMethodFrame& amethod_frame, Value& aself) :
 		fmethod_frame(amethod_frame),
-		saved_self(amethod_frame.self()) {
+		saved_self(&amethod_frame.self()) {
 		fmethod_frame.set_self(aself);
 	}
 	~Temp_method_frame_self() {
-		fmethod_frame.set_self(saved_self);
+		fmethod_frame.set_self(*saved_self);
 	}
 };
 

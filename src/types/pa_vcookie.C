@@ -1,25 +1,37 @@
 /** @file
 	Parser: cookie class.
 
-	Copyright(c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCOOKIE_C="$Date: 2003/01/21 15:51:18 $";
+static const char* IDENT_VCOOKIE_C="$Date: 2003/07/24 11:31:25 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
 #include "pa_vcookie.h"
 #include "pa_vstring.h"
-#include "pa_request.h"
 #include "pa_vdate.h"
+#include "pa_vhash.h"
+
+// defines
+
+#define EXPIRES_NAME "expires"
+#define PATH_NAME "path"
+#define PATH_VALUE_DEFAULT "/"
 
 #define SESSION_NAME "session"
 #define DEFAULT_EXPIRES_DAYS 90
 
+// statics
+
+static const String expires_name(EXPIRES_NAME);
+static const String path_name(PATH_NAME);
+static const String path_value_default(PATH_VALUE_DEFAULT);
+
 // VCookie
 
-Value *VCookie::get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
+Value* VCookie::get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
 	// $CLASS
 	if(aname==CLASS_NAME)
 		return this;
@@ -28,33 +40,31 @@ Value *VCookie::get_element(const String& aname, Value& /*aself*/, bool /*lookin
 	if(deleted.get(aname)) // deleted?
 		return 0;
 	
-	if(Value *after_meaning=static_cast<Value *>(after.get(aname))) // assigned 'after'?
-		if(Hash *hash=after_meaning->get_hash(&aname))
-			return static_cast<Value *>(hash->get(*value_name));
+	if(Value* after_meaning=after.get(aname)) // assigned 'after'?
+		if(HashStringValue *hash=after_meaning->get_hash())
+			return hash->get(value_name);
 		else
 			return after_meaning;
 	
 	// neither deleted nor assigned 
 	// return any value it had 'before'
-	return static_cast<Value *>(before.get(aname));
+	return before.get(aname);
 }
 
-bool VCookie::put_element(const String& aname, Value *avalue, bool /*replace*/) {
+bool VCookie::put_element(const String& aname, Value* avalue, bool /*replace*/) {
 	// $cookie
 	bool remove;
-	Value *lvalue;
-	if(Hash *hash=avalue->get_hash(&aname))
-		lvalue=static_cast<Value *>(hash->get(*value_name));
+	Value* lvalue;
+	if(HashStringValue *hash=avalue->get_hash())
+		lvalue=hash->get(value_name);
 	else
 		lvalue=avalue;
 
 	if(lvalue && lvalue->is_string()) {
 		// taint string being assigned
-		VString& vstring=*static_cast<VString *>(lvalue);
-		const String& user=vstring.string();
-		String& tainted=*NEW String(pool());
-		tainted.append(user, String::UL_TAINTED, true /*forced*/);
-		vstring.set_string(tainted);
+		String& tainted=*new String;
+		tainted.append(*lvalue->get_string(), String::L_TAINTED, true /*forced*/);
+		lvalue=new VString(tainted);
 	}
 
 	remove=!lvalue || lvalue->as_string().is_empty();
@@ -87,44 +97,39 @@ static char *search_stop(char*& current, char cstop_at) {
 
 
 //#include <stdio.h>
-void VCookie::fill_fields(Request& request) {
-	//request.info.cookie="test-session=value%3D5; test-default1=value%3D1; test-default2=value%3D2; test-tomorrow=value%3D3";
-	//request.info.cookie="enabled=yes; auth.uid=196325308053599810; enabled=yes; msnames; msuri"; // mdm 
-	if(!request.info.cookie)
+void VCookie::fill_fields(Request_info& request_info) {
+	//request_info.cookie="test-session=value%3D5; test-default1=value%3D1; test-default2=value%3D2; test-tomorrow=value%3D3";
+	//request_info.cookie="enabled=yes; auth.uid=196325308053599810; enabled=yes; msnames; msuri"; // mdm 
+	if(!request_info.cookie)
 		return;
 /*
 	FILE *f=fopen("c:\\temp\\a", "wt");
-	fprintf(f, "cookie=%s", request.info.cookie);
+	fprintf(f, "cookie=%s", request_info.cookie);
 	fclose(f);*/
-	char *cookies=(char *)malloc(strlen(request.info.cookie)+1);
-	strcpy(cookies, request.info.cookie);
-    char *current=cookies;
-	uint line=0;
+	char *cookies=strdup(request_info.cookie);
+	char *current=cookies;
 	//_asm int 3;
-    do {
+	do {
 		if(char *attribute=search_stop(current, '='))
 			if(char *meaning=search_stop(current, ';')) {
-				String& sattribute=*NEW String(pool());
-				String& smeaning=*NEW String(pool());
-				sattribute.APPEND_TAINTED(unescape_chars(pool(), attribute, strlen(attribute)), 0, 
-					"cookie_name", line);
-				smeaning.APPEND_TAINTED(unescape_chars(pool(), meaning, strlen(meaning)), 0, 
-					"cookie_value", line);
-				before.put(sattribute, NEW VString(smeaning));
-				line++;
+				const String& sattribute=
+					*new String(unescape_chars(attribute, strlen(attribute)), 0, true);
+				const String& smeaning=
+					*new String(unescape_chars(meaning, strlen(meaning)), 0, true);
+				before.put(sattribute, new VString(smeaning));
 			}
 	} while(current);
 }
 
-static VDate& expires_vdate(Pool& pool, const String *source, double days_till_expire) {
+static Value& expires_vdate(double days_till_expire) {
 	time_t when=time(NULL)+(time_t)(60*60*24*days_till_expire);
 	struct tm *tms=gmtime(&when);
 	if(!tms)
 		throw Exception(0,
-			source,
+			0,
 			"bad expires time (seconds from epoch=%ld)", when);
 
-	return *new(pool) VDate(pool, when);
+	return *new VDate(when);
 }
 
 /*
@@ -146,43 +151,46 @@ static VDate& expires_vdate(Pool& pool, const String *source, double days_till_e
 		and domains are treated as separate entities and have a 20 cookie limitation 
 		for each, not combined) 
 */
-static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) {
-	Pool& pool=aattribute.pool();
-	String string(pool);
+static void output_set_cookie(
+			      HashStringValue::key_type aattribute, 
+			      HashStringValue::value_type ameaning,
+			      SAPI_Info& sapi_info) {
+	String string;
 	// attribute
-	string.append(aattribute, String::UL_HTTP_HEADER, true);
+	string.append(String(aattribute, String::L_TAINTED), String::L_HTTP_HEADER, true);
 	// attribute=
 	string << "=";
-	Value *meaning;
+	Value* lmeaning;
 	// figure out 'meaning'
 	if(ameaning) { // assigning value
 		// Set-Cookie: (attribute)=(value); path=/
-		meaning=static_cast<Value *>(ameaning);
-		if(Hash *hash=meaning->get_hash(&aattribute)) { // ...[hash value]
+		lmeaning=ameaning;
+		if(HashStringValue *hash=lmeaning->get_hash()) { // ...[hash value]
 			// $expires
-			if(Value *expires=static_cast<Value *>(hash->get(*expires_name))) {
-				const String *string;
-				if((string=expires->get_string()) && (*string==SESSION_NAME))  {
+			if(Value* expires=hash->get(expires_name)) {
+				const String* string;
+				if(expires->is_string() && (string=expires->get_string()) && (*string==SESSION_NAME))  {
 					// $expires[session]
-					hash->remove(*expires_name);
+					hash->remove(expires_name);
 				} else {
-					// $expires(days)
-					if(double days_till_expire=expires->as_double())
-						hash->put(*expires_name, &expires_vdate(pool, &aattribute, days_till_expire));
-					else // $expires(0)
-						hash->remove(*expires_name);
+					if(Value* vdate=expires->as(VDATE_TYPE, false))
+						hash->put(expires_name, vdate); // $expires[DATE]
+					else if(double days_till_expire=expires->as_double())
+						hash->put(expires_name, &expires_vdate(days_till_expire)); // $expires(days)
+					else
+						hash->remove(expires_name); // $expires(0)
 				}
 			} else // $expires not assigned, defaulting
-				hash->put(*expires_name, &expires_vdate(pool, &aattribute, DEFAULT_EXPIRES_DAYS));
+				hash->put(expires_name, &expires_vdate(DEFAULT_EXPIRES_DAYS));
 		} else { // ...[string value]
-			Value *wrap_meaning=new(pool) VHash(pool);
-			// wrapping meaning into hash
-			wrap_meaning->get_hash(&aattribute)->put(*value_name, meaning);
+			Value* wrap_meaning=new VHash;
+			HashStringValue& hash=*wrap_meaning->get_hash();
+			// wrapping lmeaning into hash
+			hash.put(value_name, lmeaning);
 			// string = $expires not assigned, defaulting
-			wrap_meaning->get_hash(&aattribute)->put(*expires_name, 
-				&expires_vdate(pool, &aattribute, DEFAULT_EXPIRES_DAYS));
-			// replacing meaning with hash-wrapped one
-			meaning=wrap_meaning;
+			hash.put(expires_name, &expires_vdate(DEFAULT_EXPIRES_DAYS));
+			// replacing lmeaning with hash-wrapped one
+			lmeaning=wrap_meaning;
 		}
 	} else {// removing value
 		/*
@@ -192,28 +200,34 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 		*/
 
 		// Set-Cookie: (attribute)=; path=/
-		meaning=new(pool) VHash(pool);
-		meaning->get_hash(&aattribute)->put(*expires_name, 
-			&expires_vdate(pool, &aattribute, -DEFAULT_EXPIRES_DAYS));
+		lmeaning=new VHash;
+		lmeaning->get_hash()->put(expires_name, &expires_vdate(-DEFAULT_EXPIRES_DAYS));
 	}
 	// defaulting path
-	if(!meaning->get_hash(&aattribute)->get(*path_name))
-		meaning->get_hash(&aattribute)->put(*path_name, 
-			new(pool) VString(*new(pool) String(pool, "/")));
+	if(!lmeaning->get_hash()->get(path_name))
+		lmeaning->get_hash()->put(path_name, 
+			new VString(path_value_default));
 
-	// append meaning
-	string << attributed_meaning_to_string(*meaning, String::UL_HTTP_HEADER, true);
+	// append lmeaning
+	string << attributed_meaning_to_string(*lmeaning, String::L_HTTP_HEADER, true);
 
 	// output
-	SAPI::add_header_attribute(pool, "set-cookie", string.cstr(String::UL_UNSPECIFIED));
+	SAPI::add_header_attribute(sapi_info, "set-cookie", string.cstr(String::L_UNSPECIFIED));
 }
-static void output_after(const Hash::Key& aattribute, Hash::Val *ameaning, void *) {
-	output_set_cookie(aattribute, ameaning);
+static void output_after(
+						 HashStringValue::key_type aattribute, 
+						 HashStringValue::value_type ameaning,
+						 SAPI_Info* sapi_info) {
+	output_set_cookie(aattribute, ameaning, *sapi_info);
 }
-static void output_deleted(const Hash::Key& aattribute, Hash::Val *ameaning, void *) {
-	output_set_cookie(aattribute, 0);
+static void output_deleted(
+						   HashStringValue::key_type aattribute, 
+						   HashStringValue::value_type ameaning, 
+						   SAPI_Info* sapi_info) {
+	if(ameaning)
+		output_set_cookie(aattribute, 0, *sapi_info);
 }
-void VCookie::output_result() {
-	after.for_each(output_after, this);
-	deleted.for_each(output_deleted, this);
+void VCookie::output_result(SAPI_Info& sapi_info) {
+	after.for_each(output_after, &sapi_info);
+	deleted.for_each(output_deleted, &sapi_info);
 }

@@ -1,12 +1,15 @@
 /** @file
 	Parser: includes all Configure-d headers
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
 	fixed otherwise.
 */
+
+#ifndef PA_CONFIG_INCLUDES_H
+#define PA_CONFIG_INCLUDES_H
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -21,6 +24,10 @@
 
 #ifdef __cplusplus
 #	undef	inline
+#endif
+
+#ifdef HAVE_ASSERT_H
+#	include <assert.h>
 #endif
 
 #ifdef HAVE_CTYPE_H
@@ -67,20 +74,7 @@
 #	include <math.h>
 #endif
 
-#if TIME_WITH_SYS_TIME
-#	include <sys/time.h>
-#	include <time.h>
-#else
-#	ifdef HAVE_SYS_TIME_H
-#		include <sys/time.h>
-#	else
-#		include <time.h>
-#	endif
-#endif
-
-#ifdef HAVE_STDLIB_H
-#	include <stdlib.h>
-#endif
+#include <stdlib.h>
 
 #ifdef HAVE_STRING_H
 #	include <string.h>
@@ -123,8 +117,25 @@
 #endif
 
 #ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>
+#	include <sys/socket.h>
+#else
+#	if defined(HAVE_WINSOCK_H) && !defined(_MSC_VER) && !defined(CYGWIN)
+#		include <winsock.h>
+#	endif
 #endif
+
+// must go anywhere after winsock [cygwin time.h checks for already inclusion of winsock.h]
+#if TIME_WITH_SYS_TIME
+#	include <sys/time.h>
+#	include <time.h>
+#else
+#	ifdef HAVE_SYS_TIME_H
+#		include <sys/time.h>
+#	else
+#		include <time.h>
+#	endif
+#endif
+
 
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
@@ -138,10 +149,26 @@
 #include <netdb.h>
 #endif
 
-#if !defined(max) && !defined(PA_DEFINED_MAX)
+
+// math function replacements
+
+#ifndef HAVE_TRUNC
+inline double trunc(double param) { return param > 0? floor(param) : ceil(param); }
+#endif
+
+#ifndef HAVE_ROUND
+inline double round(double param) { return floor(param+0.5); }
+#endif
+
+#ifndef HAVE_SIGN
+inline double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 ); }
+#endif
+
+#if !defined(max)
 inline int max(int a, int b) { return a>b?a:b; }
 inline int min(int a, int b){ return a<b?a:b; }
 inline size_t max(size_t a, size_t b) { return a>b?a:b; }
 inline size_t min(size_t a, size_t b){ return a<b?a:b; }
-#define PA_DEFINED_MAX
+#endif
+
 #endif

@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b xdoc parser class decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char* IDENT_VXDOC_H="$Date: 2003/01/21 15:51:21 $";
+static const char* IDENT_VXDOC_H="$Date: 2003/07/24 11:31:27 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -21,82 +21,93 @@ static const char* IDENT_VXDOC_H="$Date: 2003/01/21 15:51:21 $";
 
 // externals
 
-extern Methoded *Xdoc_class;
-
-void VXdoc_cleanup(void *);
+extern Methoded* xdoc_class;
 
 /// value of type 'xdoc'. implemented with libxml & co
-class VXdoc : public VXnode {
-	friend void VXdoc_destructor(void *);
+class VXdoc: public VXnode {
 public: // Value
 
-	const char *type() const { return VXDOC_TYPE; }
-	/*override*/ Value *as(const char *atype, bool looking_up);
+	override const char* type() const { return VXDOC_TYPE; }
+	override Value* as(const char* atype, bool looking_up);
 
-	VStateless_class *get_class() { return Xdoc_class; }
-
-	/// VXdoc: true
-	bool as_bool() const { return true; }
+	override VStateless_class* get_class() { return xdoc_class; }
 
 	/// VXdoc: true
-	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), as_bool()); }
+	override bool as_bool() const { return true; }
+
+	/// VXdoc: true
+	override Value& as_expr_result(bool return_string_as_is=false) { return *new VBool(as_bool()); }
 
 	/// VXnode: $CLASS,$method, fields
-	Value *get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 
 public: // VXNode
 
-	virtual GdomeNode *get_node(const String *source) { 
-		return (GdomeNode *)get_document(source);
+	override GdomeNode* get_node() { 
+		return (GdomeNode*)get_document();
 	}
 
 public: // usage
 
-	VXdoc(Pool& apool, GdomeDocument *adocument) : 
-		VXnode(apool, 0), 
-		fdocument(adocument/*not adding ref, owning a doc*/) {
-
-		register_cleanup(VXdoc_destructor, this);
+	VXdoc(Request_charsets* acharsets, GdomeDocument *adocument) : 
+		VXnode(acharsets, 0), 
+		fdocument(0) {
+		assign_document(adocument); // not adding ref, owning a doc
 		memset(&output_options, 0, sizeof(output_options));
 	}
-protected:
-	~VXdoc() {
-		GdomeException exc;
-		if(fdocument)			
-			gdome_doc_unref(fdocument, &exc);
-	}
-public:
 
-	void set_document(GdomeDocument *adocument) { 
+	override ~VXdoc() {
 		GdomeException exc;
-		if(fdocument)			
+		if(fdocument) {
+			gdome_doc_unref(fdocument, &exc);
+			assign_document(0);
+		}
+	}
+
+public: // VXdoc
+
+	void set_document(Request_charsets* acharsets, GdomeDocument *adocument) { 
+		fcharsets=acharsets;
+
+		GdomeException exc;
+		if(fdocument)
 			gdome_doc_unref(fdocument, &exc);
 
-		gdome_doc_ref(fdocument=adocument, &exc);
+		assign_document(adocument);
+		gdome_doc_ref(fdocument, &exc);
 	}
-	GdomeDocument *get_document(const String *source) { 
-		if(!fdocument)
-			throw Exception(0,
-				source,
-				"can not be applied to uninitialized instance");
+	GdomeDocument* get_document() { 
+		assert(fdocument);
 		return fdocument; 
 	}
 
 public:
+
 	struct Output_options {
-		const String *method;            /* the output method */
-		const String *encoding;          /* encoding string */
-		const String *mediaType;         /* media-type string */
-		const String *doctypeSystem;     /* doctype-system string */
-		const String *doctypePublic;     /* doctype-public string */
+		const String* method;            /* the output method */
+		const String* encoding;          /* encoding string */
+		const String* mediaType;         /* media-type string */
+		const String* doctypeSystem;     /* doctype-system string */
+		const String* doctypePublic;     /* doctype-public string */
 		bool indent;                 /* should output being indented */
-		const String *version;           /* version string */
+		const String* version;           /* version string */
 		bool standalone;             /* standalone = "yes" | "no" */
 		bool omitXmlDeclaration;     /* omit-xml-declaration = "yes" | "no" */
 	} output_options;
+
 private:
 
-	GdomeDocument *fdocument;
+	/// hold reference to prevent premature collecting
+	void assign_document(GdomeDocument *adocument) {
+		fdocument=adocument;
+
+		gcref_doc=fdocument?gdome_xml_doc_get_xmlDoc(fdocument):0;
+	}
+
+private:
+
+	GdomeDocument* fdocument;
+	xmlDoc *gcref_doc;
 };
 
 #endif

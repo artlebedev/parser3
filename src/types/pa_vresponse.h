@@ -1,14 +1,14 @@
 /** @file
 	Parser: response class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-static const char* IDENT_VRESPONSE_H="$Date: 2003/01/21 15:51:20 $";
+static const char* IDENT_VRESPONSE_H="$Date: 2003/07/24 11:31:26 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
@@ -17,40 +17,44 @@ static const char* IDENT_VRESPONSE_H="$Date: 2003/01/21 15:51:20 $";
 // forwards
 
 class Response;
+class Request_info;
+class Request_charsets;
 
 // externals
 
-extern Methoded *response_class;
+extern Methoded* response_class;
 
 /// value of type 'response'
-class VResponse : public VStateless_object {
+class VResponse: public VStateless_object {
+
+	Request_info& finfo;
+	Request_charsets& fcharsets;
+
+	HashStringValue ffields;
+
 public: // Value
 	
-	const char *type() const { return "response"; }
-	VStateless_class *get_class() { return response_class; }
+	override const char* type() const { return "response"; }
+	override VStateless_class *get_class() { return response_class; }
 
 	/// Response: ffields
-	Hash *get_hash(const String * /*source*/) { return &ffields; }
+	override HashStringValue* get_hash() { return &ffields; }
 
 	/// Response: method,fields
-	Value *get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 
 	/// Response: (attribute)=value
-	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace);
+	override bool put_element(const String& aname, Value* avalue, bool replace);
 
-public: // usage
+public:	// usage
 
-	VResponse(Pool& apool) : VStateless_object(apool),
-		ffields(apool) {
-	}
-public:	
+	VResponse(Request_info& ainfo, Request_charsets& acharsets): 
+		finfo(ainfo), fcharsets(acharsets) {}
 
-	Hash& fields() { return ffields; }
-
-private:
-
-	Hash ffields;
+	/// used in pa_request.C
+	HashStringValue& fields() { return ffields; }
 
 };
+
 
 #endif

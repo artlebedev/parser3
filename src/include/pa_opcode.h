@@ -1,21 +1,15 @@
 /** @file
 	Parser: compiled code related decls.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-#ifndef CODE_H
-#define CODE_H
+#ifndef OPCODE_H
+#define OPCODE_H
 
-static const char* IDENT_OPCODE_H="$Date: 2003/01/21 15:51:10 $";
-
-#include "pa_string.h"
-#include "pa_array.h"
-
-class Value;
-class Array;
+static const char* IDENT_OPCODE_H="$Date: 2003/07/24 11:31:21 $";
 
 ///	Compiled operation code
 enum OPCODE {
@@ -53,26 +47,6 @@ enum OPCODE {
 	OP_STR_LT, OP_STR_GT, OP_STR_LE, OP_STR_GE, OP_STR_EQ, OP_STR_NE,
 	OP_IS
 	//@}
-};
-
-/** 
-	Parser source code got compiled into intermediate form of Operation-s, 
-	which is executed afterwards.
-
-	It is compiled into Array of Operation-s.
-	Each Operation can be either OPCODE or data pointer, 
-	following the literal-instruction.
-		- OP_VALUE followed by Value*
-		- OP_CURLY_CODE__STORE_PARAM followed by Array*
-		- OP_EXPR_CODE__STORE_PARAM followed by Array*
-		- OP_NESTED_CODE followed by Array*
-*/
-union Operation {
-	void *cast; ///< casting helper 
-
-	OPCODE code; ///< operation code
-	Value *value; ///< not an operation, but rather value stored after argumented op
-	Array *array; ///< not an operation, but rather code array stored after argumented op
 };
 
 #endif

@@ -1,12 +1,25 @@
-0.Assuming your perform your builds in $D directory 
+0.Assuming your perform your builds in $HOME directory 
   and suggested subdirectories.
 
-1.What is the process to compile Parser3? 
+1.What is the process to compile Parser3?
+
+  First, you must have LIBGC installed (conservative garbage collector for C++).
+      libgc >= 6.1 [http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.1.tar.gz]
+    
+    Installation sequence of this library to $HOME/gc:
+
+    cd libgc-x.x
+    ./configure --prefix=$HOME/gc --disable-threads --silent
+    make install
+
+    Then you can use these Parser3 configure options to specify the location and static/dynamic linkage with libgc:
+        --with-static-gc=$HOME/gc/lib
+        --with-shared-gc=$HOME/gc/lib
 
   As most UNIX programs Parser3 follows the "standard":
 
-  mkdir $D/parser3project
-  cd $D/parser3project
+  mkdir $HOME/parser3project
+  cd $HOME/parser3project
   gunzip -c parser3-x.x.tar.gz | tar xvf -
   mv parser3-x.x parser3
   cd parser3
@@ -39,65 +52,58 @@
     $prefix/etc/
       parser3.charsets/   -- charset definition files
         koi8-r.cfg        -- cyrillic charset [KOI8-R encoding]
-        windows-1250.cfg  -- central European charset [windows-1250 encoding]
+        windows-1250.cfg  -- central europian charset [windows-1250 encoding]
         windows-1251.cfg  -- cyrillic charset [windows-1251 encoding]
         windows-1257.cfg  -- baltic charset [windows-1257 encoding]
 
 3.What other libraries are needed to compile/install parser? 
 
-3a. You can compile and use parser without any additional libraries.
-    That would be 'basic' version of it.
-
-3b. In case you wish xml(xdoc and xnode classes) support you need libraries
-      libxml2 >= 2.5.1 [ftp://xmlsoft.org/libxml2-2.5.1.tar.gz]
-      libxslt >= 1.0.23 [ftp://xmlsoft.org/libxslt-1.0.23.tar.gz]
+3a. In case you wish XML(xdoc and xnode classes) support, you need libraries
+      libxml2 >= 2.5.5 [ftp://xmlsoft.org/libxml2-2.5.5.tar.gz]
+      libxslt >= 1.0.28 [ftp://xmlsoft.org/libxslt-1.0.28.tar.gz]
       glib >= 1.2.10 [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz]
-      gdome2 >= 0.7.2 [http://gdome2.cs.unibo.it/tarball/gdome2-0.7.2.tar.gz]
+      gdome2 >= 0.7.4 [http://gdome2.cs.unibo.it/tarball/gdome2-0.7.4.tar.gz]
     on your system, and specify path to them to Parser3 configure script.
 
-    Sources of these two libraries must be patched prior to compile: 
-      * libxml2
-      * libxslt
+    Sources of libgdome library must be patched prior to compile. [library author bug confirmation pending]
 
-    Installation sequence of these libraries to $D/gnome:
+    Installation sequence of these libraries to $HOME/gnome:
 
     libxml2:
 
     cd libxml2-x.x.x
-    patch -p0 < $D/parser3project/parser3/src/lib/patches/libxml2.patch
-    ./configure --prefix=$D/gnome --without-zlib --without-iconv
+    ./configure --prefix=$HOME/gnome --without-zlib --without-iconv --silent
     make install
 
     libxslt:
 
     cd libxslt-x.x.x
-    patch -p0 < $D/parser3project/parser3/src/lib/patches/libxslt.patch
-    ./configure --with-libxml-prefix=$D/gnome --prefix=$D/gnome --without-debug --without-debugger
+    ./configure --with-libxml-prefix=$HOME/gnome --prefix=$HOME/gnome --without-debug --without-debugger --silent
     make install
 
     glib:
 
     cd glib-x.x.x
-    ./configure --prefix=$D/gnome 
+    ./configure --prefix=$HOME/gnome 
     make install
 
     gdome2:
 
     cd gdome2-x.x.x
-    patch -p0 < $D/parser3project/parser3/src/lib/patches/gdome2.patch
-    ./configure --with-glib-prefix=$D/gnome --disable-glibtest --with-libxml-prefix=$D/gnome --prefix=$D/gnome
+    patch -p0 < $HOME/parser3project/parser3/src/lib/patches/gdome2.patch
+    ./configure --with-glib-prefix=$HOME/gnome --disable-glibtest --with-libxml-prefix=$HOME/gnome --prefix=$HOME/gnome --silent
     make install
 
     And copy these additional headers into install includes directory
 
-    mkdir $D/gnome/include/libgdome/gdomecore
-    cp libgdome/gdomecore/gdome-xml-node.h $D/gnome/include/libgdome/gdomecore
-    cp libgdome/gdomecore/gdome-xml-document.h $D/gnome/include/libgdome/gdomecore
+    mkdir $HOME/gnome/include/libgdome/gdomecore
+    cp libgdome/gdomecore/gdome-xml-node.h $HOME/gnome/include/libgdome/gdomecore
+    cp libgdome/gdomecore/gdome-xml-document.h $HOME/gnome/include/libgdome/gdomecore
     
 
     Parser3 configure options, choose whether you need static or dynamic linkage with xml libs:
-        --with-static-xml=$D/gnome
-        --with-shared-xml=$D/gnome
+        --with-static-xml=$HOME/gnome
+        --with-shared-xml=$HOME/gnome
 
     NOTE:
     In case your glib as installed into some other prefix,
@@ -109,7 +115,7 @@
         --with-pathlink=LKEY    put dynamic libraries paths to binary
                                 using linker key (-R, -rpath-link)
 
-3c. In case you wish $mail:receive support you need libraries
+3b. In case you wish $mail:receive support you need libraries
       glib >= 1.2.10 [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz]
       gmime >= 1.0.1 [http://spruce.sourceforge.net/gmime/sources/gmime-1.0.5.tar.gz]
     on your system, and specify path to them to Parser3 configure script.
@@ -119,18 +125,18 @@
     glib:
 
     cd glib-x.x.x
-    ./configure --prefix=$D/gnome 
+    ./configure --prefix=$HOME/gnome 
     make install
 
     gmime:
 
     cd gmime-x.x.x
-    ./configure --prefix=$D/gnome
+    ./configure --prefix=$HOME/gnome
     make install
 
     Parser3 configure options, choose whether you need static or dynamic linkage with xml libs:
-        --with-static-mailreceive=$D/gnome
-        --with-shared-mailreceive=$D/gnome
+        --with-static-mailreceive=$HOME/gnome
+        --with-shared-mailreceive=$HOME/gnome
 
     NOTE:
     In case your glib as installed into some other prefix,
@@ -138,7 +144,7 @@
         --with-glib-config=/path/to/your/glib-config
     NOTE:
     In case you are using SHARED mime library, you may want to link in direct path to it,
-    use this key to specify which linker key to use to do that:
+    use this key to specify which linker key to use do do that:
         --with-pathlink=LKEY    put dynamic libraries paths to binary
                                 using linker key (-R, -rpath-link)
 
@@ -149,10 +155,6 @@
   ./configure --prefix=/your/home/parser3install
   and afterwards copy parser3install/bin/parser3 to your CGI directory
   or make a symlink [if your web server configured to follow symlinks].
-
-  You can disable libstdc++ linkage by setting
-  --disable-link-libstdcpp
-  option to configure.  
 
   You can disable any exec operations by setting
   --disable-execs
@@ -173,6 +175,11 @@
   --with-sjlj-exceptions
   option.  
 
+  By default libstdc++ is linked statically, you can re-enable dynamic libstdc++ linkage by specifying
+  --with-dynamic-stdcpp
+  option to configure.  
+
+
   Some root config options can be specified at configure time, and would override autodetects.
 
   List of enabled charsets:
@@ -186,4 +193,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.32 2003/05/12 06:35:16 paf Exp $
+$Id: INSTALL,v 1.33 2003/07/24 11:31:18 paf Exp $

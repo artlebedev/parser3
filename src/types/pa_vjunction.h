@@ -1,48 +1,49 @@
 /**	@file
 	Parser: @b junction class decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-static const char* IDENT_VJUNCTION_H="$Date: 2003/01/21 15:51:19 $";
+static const char* IDENT_VJUNCTION_H="$Date: 2003/07/24 11:31:26 $";
+
+// include
 
 #include "pa_value.h"
 #include "pa_vbool.h"
+#include "pa_junction.h"
 
 /// junction is method+self+context, implemented with Junction
-class VJunction : public Value {
+class VJunction: public Value {
 public: // VJunction
 
-	const char *type() const { return "junction"; }
+	override const char* type() const { return "junction"; }
 
 	/// VJunction: 0
-	VStateless_class *get_class() { return 0; }
+	override VStateless_class *get_class() { return 0; }
 
 	/// VJunction: false
-	/*override*/ bool is_defined() const { return false; }
+	override bool is_defined() const { return false; }
 
 	/// VJunction: false
-	/*override*/ bool as_bool() const { return is_defined(); }
+	override bool as_bool() const { return is_defined(); }
 
 	/// VJunction: false
-	Value *as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
+	override Value& as_expr_result(bool) { return *new VBool(as_bool()); }
 
 	/// VJunction: method, root,self,rcontext, code
-	Junction *get_junction() { return &fjunction; }
+	override Junction* get_junction() { return fjunction; }
 
 public: // usage
 
-	VJunction(Junction& ajunction) : Value(ajunction.pool()),
-		fjunction(ajunction) {
-	}
+	VJunction(Junction* ajunction): fjunction(ajunction) {}
 
 private:
 
-	Junction& fjunction;
+	Junction* fjunction;
 };
 
 

@@ -1,16 +1,16 @@
 /** @file
 	Parser: sql fconnection decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char* IDENT_SQL_CONNECTION_H="$Date: 2003/01/21 15:51:11 $";
+static const char* IDENT_SQL_CONNECTION_H="$Date: 2003/07/24 11:31:21 $";
 
-#include "pa_pool.h"
+
 #include "pa_sql_driver.h"
 #include "pa_sql_driver_manager.h"
 
@@ -21,41 +21,96 @@ static const char* IDENT_SQL_CONNECTION_H="$Date: 2003/01/21 15:51:11 $";
 	#define SQL_CONNECTION_SERVICED_FUNC_GUARDED(actions) actions
 #else
 	#define SQL_CONNECTION_SERVICED_FUNC_GUARDED(actions) \
-		if(!fservices || !setjmp(fservices->mark)) { \
+		if(!setjmp(fservices.mark)) { \
 			actions; \
 		} else \
-			fservices->propagate_exception();
+			fservices.propagate_exception();
 #endif
 
-/// SQL connection. handy wrapper around low level SQL_Driver
-class SQL_Connection : public Pooled {
+/// SQL_Driver_services Pooled implementation
+class SQL_Driver_services_impl: public SQL_Driver_services {
+	const String* furl;
+	Exception fexception;
+public:
+	SQL_Driver_services_impl(): furl(0) {}
+	void set_url(const String& aurl) { furl=&aurl;}
 
-	friend class SQL_Connection_ptr;
+	override void *malloc(size_t size) { return pa_malloc(size); }
+	override void *malloc_atomic(size_t size) { return pa_malloc_atomic(size); }
+	override void *realloc(void *ptr, size_t size) { return pa_realloc(ptr, size); }
+
+	/**
+		normally we can't 'throw' from dynamic library, so
+		the idea is to #1 jump to C++ some function to main body, where
+		every function stack frame has exception unwind information
+		and from there... #2 propagate_exception()
+
+        but when parser configured --with-sjlj-exceptions
+		one can simply 'throw' from dynamic library.
+		[sad story: one can not longjump/throw due to some bug in gcc as of 3.2.1 version]
+	*/
+	override void _throw(const SQL_Error& aexception) { 
+		// converting SQL_exception to parser Exception
+		// hiding passwords and addresses from accidental show [imagine user forgot @exception]
+#ifdef PA_WITH_SJLJ_EXCEPTIONS
+		throw
+#else
+		fexception=
+#endif
+		Exception(aexception.type(), 
+				&url_without_login(),
+				aexception.comment()); 
+
+#ifndef PA_WITH_SJLJ_EXCEPTIONS
+		longjmp(mark, 1);
+#endif
+	}
+	virtual void propagate_exception() {
+#ifndef PA_WITH_SJLJ_EXCEPTIONS
+		throw fexception;
+#endif
+	}
+
+private:
+	const String& url_without_login() const;
+};
+
+/// SQL connection. handy wrapper around low level SQL_Driver
+class SQL_Connection: public PA_Object {
+	const String&  furl;
+	SQL_Driver& fdriver;
+	SQL_Driver_services_impl fservices;
+	void *fconnection;
+	time_t time_used;
+	bool marked_to_rollback;
 
 public:
 
-	SQL_Connection(Pool& pool, const String& aurl, SQL_Driver& adriver) : Pooled(pool),
+	SQL_Connection(const String& aurl, SQL_Driver& adriver):
 		furl(aurl),
 		fdriver(adriver),
 		fconnection(0),
-		time_used(0), used(0),
+		time_used(0), 
 		marked_to_rollback(false) {
 	}
 	
 	const String& get_url() { return furl; }
 
-	void set_services(SQL_Driver_services *aservices) {
-		fservices=aservices;
+	void set_url() {
+		fservices.set_url(furl);
+	}
+	void use() {
+		time_used=time(0); // they started to use at this time
 	}
 	bool expired(time_t older_dies) {
-		return !used && time_used<older_dies;
+		return /*!freferences && */time_used<older_dies;
 	}
 	time_t get_time_used() { return time_used; }
 
 	bool connected() { return fconnection!=0; }
 	void connect(char *used_only_in_connect_url_cstr) { 
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-			fdriver.connect(used_only_in_connect_url_cstr, *fservices, &fconnection)
+			fdriver.connect(used_only_in_connect_url_cstr, fservices, &fconnection)
 		);
 	}
 	void disconnect() { 
@@ -63,24 +118,24 @@ public:
 	}
 	bool ping() { 
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-			return fdriver.ping(*fservices, fconnection)
+			return fdriver.ping(fservices, fconnection)
 		);
 		return 0; // never reached
 	}
-	uint quote(char *to, const char *from, unsigned int length) {
+	const char* quote(const char* str, unsigned int length) {
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-			return fdriver.quote(*fservices, fconnection, to, from, length)
+			return fdriver.quote(fservices, fconnection, str, length)
 		);
-		return 0; // never reached
+//		return 0; // never reached
 	}
 
 	void query(
-		const char *statement, unsigned long offset, unsigned long limit,
+		const char* statement, unsigned long offset, unsigned long limit,
 		SQL_Driver_query_event_handlers& handlers, 
 		const String& source) {
 		try {
 			SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-				fdriver.query(*fservices, fconnection, 
+				fdriver.query(fservices, fconnection, 
 					statement, offset, limit, 
 					handlers)
 			);	
@@ -91,24 +146,18 @@ public:
 					&source, 
 					"%s", e.comment());
 			} else
-				/*re*/throw;
+				rethrow;
 		}
 	}
 
-	void mark_to_rollback() {
-		marked_to_rollback=true;
-	}
-
-private: // closing process
-
 	void commit() { 
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-			fdriver.commit(*fservices, fconnection) 
+			fdriver.commit(fservices, fconnection) 
 		);
 	}
 	void rollback() { 
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-			fdriver.rollback(*fservices, fconnection)
+			fdriver.rollback(fservices, fconnection)
 		);
 	}
 
@@ -120,64 +169,9 @@ private: // closing process
 		} else
 			commit();
 
-		SQL_driver_manager->close_connection(furl, *this);
+		SQL_driver_manager.close_connection(furl, this);
 	}
 
-private: // connection usage methods
-
-	void use() {
-		time_used=time(0); // they started to use at this time
-		used++;
-	}
-	void unuse() {
-		used--;
-		if(!used)
-			close();
-	}
-
-private: // connection usage data
-
-	int used;
-
-private:
-
-	const String& furl;
-	SQL_Driver& fdriver;
-	SQL_Driver_services *fservices;
-	void *fconnection;
-	time_t time_used;
-	bool marked_to_rollback;
-};
-
-/// Auto-object used to track SQL_Connection usage
-class SQL_Connection_ptr {
-	SQL_Connection *fconnection;
-public:
-	explicit SQL_Connection_ptr(SQL_Connection *aconnection) : fconnection(aconnection) {
-		fconnection->use();
-	}
-	~SQL_Connection_ptr() {
-		fconnection->unuse();
-	}
-	SQL_Connection* operator->() {
-		return fconnection;
-	}
-	SQL_Connection* get() const {
-		return fconnection; 
-	}
-
-	// copying
-	SQL_Connection_ptr(const SQL_Connection_ptr& src) : fconnection(src.fconnection) {
-		fconnection->use();
-	}
-	SQL_Connection_ptr& operator =(const SQL_Connection_ptr& src) {
-		// may do without this=src check
-		fconnection->unuse();
-		fconnection=src.fconnection;
-		fconnection->use();
-
-		return *this;
-	}
 };
 
 #endif

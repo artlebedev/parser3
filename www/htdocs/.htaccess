@@ -1,34 +1,56 @@
-#setenv TEST /foo/bin2
-#setenv HTTP_TEST /foo/bin3!2
-#setenv HTTP_PARSER_SITE_CONFIG /foo/bin3!
-#setenv DOCUMENT_ROOT /test/3
+setenv CGI_YANDEX_TEST old_value
 
-#addhandler parser3-handler .html
-#addhandler parser3-cgi-handler .cgihtml
+#AddType parsed-html html
+AddHandler parsed-html html
+Action parsed-html /cgi-bin/debug/parser3
 
-addhandler parser3-handler .ahtml
-
-action parser3-cgi-handler /cgi-bin/parser3
-addhandler parser3-cgi-handler .html
-
-action parser3-0005-cgi-handler /cgi-bin/parser3_0005
-addhandler parser3-0005-cgi-handler .cgi5html
+#Action parsed-html /cgi-bin/release/parser3
+#Action parsed-html /cgi-bin/ReleaseHEAD/parser3
+#Action parsed-html /cgi-bin/DebugHEAD/parser3
+#Action parsed-html /cgi-bin/ProfileDebug/parser3
+#Action parsed-html /cgi-bin/DebugV7/parser3
+#Action parsed-html /cgi-bin/p2Debug/parser2
 
 
-order deny,allow
-deny from all
+#AddType parser3-handler html
+#AddHandler parser3-handler html
 
-#design network
-allow from 195.218.200 
-allow from 192.168
-allow from 213.152.135
+AddType image/x-icon ico
 
-#satisfy any
-#    AuthType basic
-#    AuthName "parser3"
-#    AuthUserFile Y:\parser3project\parser3\www\htdocs\.htpasswd
-#    Require valid-user
+AddType text/xml xsl
 
-RewriteEngine On
-RewriteCond %{REQUEST_URI} ^/banner$
-RewriteRule .* /banner.html?key=${variant:key}
+RewriteEngine on
+RewriteBase /
+
+
+#maximize
+RewriteRule \.htm$ - [L]
+
+# paf
+RewriteRule ^(admin|404|(rus|eng)/404) - [L]
+
+# если обратились к директории, и нету закрывающего слеша - редиректим и исправляем это
+RewriteCond %{REQUEST_URI} !\.
+RewriteRule ^(.+[^/])$ http://%{SERVER_NAME}/$1/ [L,R,QSA]
+
+# разрешаем смотреть preview и xml только "своим"
+RewriteCond %{QUERY_STRING} mode=(preview|xml|debug)
+RewriteCond %{REMOTE_ADDR} !^(213\.152\.135|194\.44\.50\.2|194\.183\.167\.97|194\.44\.50\.6|194\.44\.50\.253)
+RewriteRule (.*) /404/ [R,L]
+
+# это заремим, пока есть только русскач версия сайта
+RewriteCond %{REQUEST_URI} ^/eng
+#RewriteCond %{REMOTE_ADDR} ^(213\.152\.135|194\.44\.50\.2|194\.183\.167\.97|194\.44\.50\.6|194\.44\.50\.253)
+RewriteRule ^eng(.*)	 /$1?lang=eng [PT,QSA]
+
+RewriteCond %{REQUEST_URI} ^/rus
+RewriteRule ^rus(.*)	 /$1?lang=rus [PT,QSA]
+
+RewriteCond %{REQUEST_URI} !(gif|jpg|js|css|exe|zip|rar|pdf|doc|xls|ppt|swf|ipx|txt|xslt|xsl|tif|eps|tiff|ico|ent)$
+RewriteCond %{REQUEST_URI} !/_
+RewriteRule (.*)  /_doc.html?request=$1 [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME}	!-f
+RewriteRule .*html$ /_doc.html?request=/404/
+
+ErrorDocument 404 /_doc.html?request=/404/

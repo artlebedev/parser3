@@ -1,7 +1,13 @@
 /* src/include/pa_config_auto.h.in.  Generated from configure.in by autoheader.  */
 
+/* using cygwin building environment */
+#undef CYGWIN
+
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
+
+/* Define to 1 if you have the <assert.h> header file. */
+#undef HAVE_ASSERT_H
 
 /* Define to 1 if you have the `crypt' function. */
 #undef HAVE_CRYPT
@@ -87,19 +93,14 @@
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 
-/* Define to 1 if you have the <new> header file. */
-#undef HAVE_NEW
-
-/* compiler supports pragma pack */
-#undef HAVE_PRAGMA_PACK
-
 /* Define to 1 if you have the <process.h> header file. */
 #undef HAVE_PROCESS_H
 
 /* Define to 1 if you have the `qsort' function. */
 #undef HAVE_QSORT
 
-/* Define to 1 if you have the `round' function. */
+/* Define to 1 if you have the `round' (maybe built-in) math function
+   function. */
 #undef HAVE_ROUND
 
 /* Define to 1 if you have the `select' function. */
@@ -108,23 +109,18 @@
 /* Define to 1 if you have the <setjmp.h> header file. */
 #undef HAVE_SETJMP_H
 
-/* library has set_new_handler func */
-#undef HAVE_SET_NEW_HANDLER
-
 /* Define if you have the shl_load function. */
 #undef HAVE_SHL_LOAD
 
 /* Define to 1 if you have the `siglongjmp' function. */
 #undef HAVE_SIGLONGJMP
 
-/* Define to 1 if you have the `sign' function. */
+/* Define to 1 if you have the `sign' (maybe built-in) math function function.
+   */
 #undef HAVE_SIGN
 
 /* Define to 1 if you have the <signal.h> header file. */
 #undef HAVE_SIGNAL_H
-
-/* Define to 1 if you have the `sigsetjmp' function. */
-#undef HAVE_SIGSETJMP
 
 /* Define to 1 if you have the <stdarg.h> header file. */
 #undef HAVE_STDARG_H
@@ -183,7 +179,8 @@
 /* Define if you have tm_tzadj member of tm structure in <time.h> */
 #undef HAVE_TM_TZADJ
 
-/* Define to 1 if you have the `trunc' function. */
+/* Define to 1 if you have the `trunc' (maybe built-in) math function
+   function. */
 #undef HAVE_TRUNC
 
 /* Define to 1 if you have the <unistd.h> header file. */
@@ -195,11 +192,11 @@
 /* Define to 1 if you have the `_locking' function. */
 #undef HAVE__LOCKING
 
+/* assertions disabled */
+#undef NDEBUG
+
 /* pa_exec disabled */
 #undef NO_PA_EXECS
-
-/* no string origin tracking */
-#undef NO_STRING_ORIGIN
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT

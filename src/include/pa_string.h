@@ -1,332 +1,371 @@
 /** @file
 	Parser: string class decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char* IDENT_STRING_H="$Date: 2003/01/21 15:51:11 $";
+static const char* IDENT_STRING_H="$Date: 2003/07/24 11:31:21 $";
 
-#include "pa_pool.h"
+// includes
+
 #include "pa_types.h"
+#include "pa_array.h"
 
-#ifndef NO_STRING_ORIGIN
-#	define STRING_APPEND_PARAMS \
-		const char *src, size_t size,  \
-		uchar lang, \
-		const char *file, uint line
-/// appends piece to String  @see String::real_append
-#	define APPEND(src, size, lang, file, line) \
-		real_append(src, size, lang, file, line)
-#else
-#	define STRING_APPEND_PARAMS \
-		const char *src, \
-		size_t size, \
-		uchar lang
-/// appends piece to String  @see String::real_append
-#	define APPEND(src, size, lang, file, line) \
-		real_append(src, size, lang)
-#endif
-/// appends clean piece to String @see String::real_append
-#define APPEND_CLEAN(src, size, file, line) \
-	APPEND(src, size, String::UL_CLEAN, file, line)
-/// appends piece to String as-is @see String::real_append
-#define APPEND_AS_IS(src, size, file, line) \
-	APPEND(src, size, String::UL_AS_IS, file, line)
-/// appends tainted piece to String  @see String::real_append
-#define APPEND_TAINTED(src, size, file, line) \
-	APPEND(src, size, String::UL_TAINTED, file, line)
-/// handy: appends const char* piece to String  @see String::real_append
-#define	APPEND_CONST(src) APPEND_AS_IS(src, 0, 0, 0)
+extern "C" { // cord's author forgot to do that
+#define CORD_NO_IO
+#include "cord.h"
+};
 
+// forwards
+
+class Charset;
 class Table;
-class Array;
 class SQL_Connection;
 class Dictionary;
+class Request_charsets;
+class String;
+typedef Array<const String*> ArrayString;
+
+/// this is result of pos functions which mean that substr were not found
+#define STRING_NOT_FOUND ((size_t)-1)
+
+class StringBody {
+
+	CORD body;
+
+public:
+
+	StringBody(): body(CORD_EMPTY) {}
+	StringBody(CORD abody): body(abody) {
+		assert(!body // no body
+			|| *body // ordinary string
+			|| body[1]==1 // CONCAT_HDR
+			|| body[1]==4 // FN_HDR 
+			|| body[1]==6 // SUBSTR_HDR 
+			);
+	}
+	/// WARNING: length is only HELPER length, str in ANY case should be zero-terminated
+	StringBody(const char* str, size_t helper_length): body(CORD_EMPTY) {
+		append_know_length(str, helper_length?helper_length:strlen(str));
+	}
+	static StringBody Format(int value);
+
+	void clear() { body=CORD_EMPTY; }
+
+	bool operator! () const { return is_empty(); }
+
+	uint hash_code() const;
+
+	const char* cstr() const { return CORD_to_const_char_star(body); }
+	char* cstrm() const { return CORD_to_char_star(body); }
+
+	size_t length() const { return CORD_len(body); }
+
+	bool is_empty() const { return body==CORD_EMPTY; }
+
+	void append_know_length(const char *str, size_t known_length) {
+		if(known_length)
+			body=CORD_cat_char_star(body, str, known_length);
+	}
+	void append_strdup_know_length(const char* str, size_t known_length) {
+		if(known_length)
+			append_know_length(pa_strdup(str, known_length), known_length);
+	}
+	void append(char c) { body=CORD_cat_char(body, c); }
+	StringBody& operator << (const StringBody src) { body=CORD_cat(body, src.body); return *this; }
+	StringBody& operator << (const char* str) { append_know_length(str, strlen(str)); return *this; }
+
+	// could not figure out why this operator is needed [should do this chain: string->simple->==]
+	bool operator < (const StringBody src) const { return CORD_cmp(body, src.body)<0; }
+	bool operator > (const StringBody src) const { return CORD_cmp(body, src.body)>0; }
+	bool operator <= (const StringBody src) const { return CORD_cmp(body, src.body)<=0; }
+	bool operator >= (const StringBody src) const { return CORD_cmp(body, src.body)>=0; }
+	bool operator != (const StringBody src) const { return CORD_cmp(body, src.body)!=0; }
+	bool operator == (const StringBody src) const { return CORD_cmp(body, src.body)==0; }
+
+	int ncmp(size_t x_begin, const StringBody y, size_t y_begin, size_t size) const {
+		return CORD_ncmp(body, x_begin, y.body, y_begin, size);
+	}
+
+	char fetch(size_t index) const { return CORD_fetch(body, index); }
+	StringBody mid(size_t index, size_t length) const { return CORD_substr(body, index, length); }
+	size_t pos(const char* substr, size_t offset=0) const { return CORD_str(body, offset, substr); }
+	size_t pos(const StringBody substr, size_t offset=0) const { 
+		if(!substr.length())
+			return STRING_NOT_FOUND; // in this case CORD_str returns 0 [parser users got used to -1]
+		return CORD_str(body, offset, substr.body); 
+	}
+	size_t pos(char c, 
+		size_t offset=0) const {
+		return CORD_chr(body, offset, c);
+	}
+
+	template<typename I> void for_each(int (*callback)(const char* s, I), I info) const {
+		CORD_iter5(body, 0, 0, (CORD_batched_iter_fn)callback, info);
+	}
+
+	void set_pos(CORD_pos& pos, size_t index) const { CORD_set_pos(pos, body, index); }
+
+	StringBody normalize() const {
+		return StringBody(CORD_balance(body));
+	}
+
+	void dump() const {
+		CORD_dump(body);
+	}
+};
 
 /** 
-	Pooled string.
-
-	Internal structure:
-	@verbatim
-		String				Chunk0
-		======				========
-		head--------------->[ptr, size, ...]
-		append_here-------->[ptr, size, ...]
-							.
-							.
-							[ptr, size, ...]
-		link_row----------->[link to the next chunk]
-	@endverbatim
+	String which knows the language of all it's fragments.
 
 	All pieces remember 
-	- the file and its line they are from [can be turned off by NO_STRING_ORIGIN]
 	- whether they are tainted or not, 
 	  and the language which should be used to detaint them
 */
-#include "pa_pragma_pack_begin.h"
-class String : public Pooled {
-public:
+class String: public PA_Object {
 
-	enum {
-		CR_PREALLOCATED_COUNT=2, ///< default preallocated item count
-		CR_GROW_COUNT=1 ///< each time the String chunk_is_full() string expanded()
-	};
+//	friend class StringBody;
+
+public:
 
 	/** piece is tainted or not. the language to use when detaint
 		remember to change String_Untaint_lang_name @ untaint.C along
 	*/
-	enum Untaint_lang {
-		UL_UNSPECIFIED=0, ///< zero value handy for hash lookup @see untaint_lang_name2enum
-		// these two must go before others, there are checks for >UL_AS_IS
-		UL_CLEAN, ///< clean
-		UL_AS_IS,     ///< leave all characters intact
+	enum Language {
+		L_UNSPECIFIED=0, ///< zero value handy for hash lookup @see untaint_lang_name2enum
+		// these two must go before others, there are checks for >L_AS_IS
+		L_CLEAN, ///< clean
+		L_AS_IS,     ///< leave all characters intact
 
-		UL_PASS_APPENDED,
+		L_PASS_APPENDED,
 			/**<
 				leave language built into string being appended.
 				just a flag, that value not stored
 			*/
-		UL_TAINTED,  ///< tainted, untaint language as assigned later 
+		L_TAINTED,  ///< tainted, untaint language as assigned later 
 		// untaint languages. assigned by ^untaint[lang]{...}
-		UL_FILE_SPEC, ///< file specification
-		UL_HTTP_HEADER,    ///< text in HTTP response header
-		UL_MAIL_HEADER,    ///< text in mail header
-		UL_URI,       ///< text in uri
-		UL_TABLE,     ///< ^table:set body
-		UL_SQL,       ///< ^table:sql body
-		UL_JS,        ///< JavaScript code
-		UL_XML,		///< ^dom:set xml
-		UL_HTML,      ///< HTML code (for editing)
-		UL_OPTIMIZE_BIT = 0x80  ///< flag, requiring cstr whitespace optimization
+		L_FILE_SPEC, ///< file specification
+		L_HTTP_HEADER,    ///< text in HTTP response header
+		L_MAIL_HEADER,    ///< text in mail header
+		L_URI,       ///< text in uri
+		L_TABLE,     ///< ^table:set body
+		L_SQL,       ///< ^table:sql body
+		L_JS,        ///< JavaScript code
+		L_XML,		///< ^dom:set xml
+		L_HTML,      ///< HTML code (for editing)
+		L_OPTIMIZE_BIT = 0x8000  ///< flag, requiring cstr whitespace optimization
 	};
+
+	struct Fragment { 
+		Language lang; ///< untaint flag, later untaint language
+		size_t length;  ///< length
+		Fragment(Language alang, size_t asize): lang(alang), length(asize) {
+			assert(alang!=L_UNSPECIFIED);
+			assert(asize!=0);
+			assert(asize!=(size_t)-1);
+		}
+	};
+
+	class ArrayFragment: public Array<Fragment> {
+		void append(element_type src) {
+			*static_cast<Array<Fragment> *>(this)+=src;
+		}
+		/// hiding from accidental USE, use append_positions
+		void append(const ArrayFragment& src, int offset, int limit) { 
+			static_cast<Array<Fragment> *>(this)->append(src, offset, limit);
+		}
+	public:
+		ArrayFragment& operator += (element_type src) {
+			if(size_t lcount=count()) { // not empty?
+				// try to join with last
+				Fragment& last=get_ref(lcount-1);
+				if(last.lang==src.lang) {
+					last.length+=src.length;
+					return *this;
+				}
+			}
+			append(src);
+			return *this;
+		}
+		void append(const ArrayFragment& src) { append(src, 0, ARRAY_OPTION_LIMIT_ALL); }
+		void append_positions(const ArrayFragment& src, size_t substr_begin, size_t substr_end);
+
+		size_t length() {
+			size_t result=0;
+			for(Array_iterator<element_type> i(*this); i.has_next(); ) {
+				const Fragment fragment=i.next();
+				result+=fragment.length;
+			}
+			return result;
+		}
+	};
+
+	struct C {
+		const char *str;
+		size_t length;
+		operator const char *() { return str; }
+		C(const char *astr, size_t asize): str(astr), length(asize) {}
+	};
+
+	struct Cm {
+		char *str;
+		size_t length;
+		//operator char *() { return str; }
+		Cm(char *astr, size_t asize): str(astr), length(asize) {}
+	};
+
+private:
+
+	StringBody body; ///< all characters of string
+	ArrayFragment fragments; ///< fragment language+length info
 
 public:
 
-	static String& OnPool(Pool& apool, const char *local_src=0, size_t src_size=0, bool tainted=false);
-	String(Pool& apool, const char *src=0, size_t src_size=0, bool tainted=false);
+	explicit String(const char* cstr=0, size_t helper_length=0, bool tainted=false);
+	explicit String(const C cstr, bool tainted=false);
 	String(const String& src);
-	bool is_empty() const { return append_here==head.chunk.rows; }
-	size_t size() const;
-	/// convert to C string. if 'lang' known, forcing 'lang' to it
-	char *cstr(Untaint_lang lang=UL_AS_IS, 
-		SQL_Connection *connection=0,
-		Charset *cstr_charset=0, const char *cstr_charset_name=0) const {
-
-		char *result=(char *)malloc(cstr_bufsize(lang, connection, cstr_charset));
-		char *eol=store_to(result, lang, connection, cstr_charset, cstr_charset_name);
-		*eol=0;
-		return result;
+	String(StringBody abody, Language alang): body(abody) {
+		fragments+=Fragment(alang, abody.length());
 	}
-	char *cstr_debug_origins() const;
+
+#define ASSERT_STRING_INVARIANT(string) \
+	assert((string).body.length()==(string).fragments.length())
+
+	/// for convinient hash lookup
+	operator const StringBody() const { return body; }
+
+	bool is_empty() const { return body.is_empty(); }
+	size_t length() const { return body.length(); }
+
+	/// convert to CORD. if 'lang' known, forcing 'lang' to it
+	StringBody cstr_to_string_body(Language lang=L_AS_IS, 
+		SQL_Connection* connection=0,
+		const Request_charsets *charsets=0) const;
+
+	/// convert to constant C string. if 'lang' known, forcing 'lang' to it
+	const char* cstr(Language lang=L_AS_IS, 
+		SQL_Connection* connection=0,
+		const Request_charsets *charsets=0) const {
+		return cstr_to_string_body(lang, connection, charsets).cstr();
+	}
+	/// convert to Modifiable C string. if 'lang' known, forcing 'lang' to it
+	char *cstrm(Language lang=L_AS_IS, 
+		SQL_Connection* connection=0,
+		const Request_charsets *charsets=0) const {
+		return cstr_to_string_body(lang, connection, charsets).cstrm();
+	}
 	/// puts pieces to buf
-	void serialize(size_t prolog_size,  void *& buf, size_t& buf_size) const;
+	Cm serialize(size_t prolog_size) const;
 	/// appends pieces from buf to self
-	bool deserialize(size_t prolog_size, void *buf, size_t buf_size, const char *file);
-	/** append fragment
-		@see APPEND_AS_IS, APPEND_CLEAN, APPEND_TAINTED, APPEND_CONST
-	*/
-	String& real_append(STRING_APPEND_PARAMS);
-	/// @return <0 ==0 or >0 depending on comparison result
-	int cmp (int& partial, const String& src, 
-		size_t this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
-	bool operator < (const String& src) const {	int p; return cmp(p, src)<0; }
-	bool operator > (const String& src) const {	int p; return cmp(p, src)>0; }
-	bool operator <= (const String& src) const { int p; return cmp(p, src)<=0; }
-	bool operator >= (const String& src) const { int p; return cmp(p, src)>=0; }
-	bool operator == (const String& src) const {
-		if(size()!=src.size()) // can speed up in trivial case
-			return false;
-		int p; return cmp(p, src)==0;
-	}
-	bool operator != (const String& src) const { int p; return cmp(p, src)!=0; }
+	bool deserialize(size_t prolog_size, void *buf, size_t buf_size);
+	/// @see StringBody::append_know_length
+	String& append_know_length(const char* str, size_t known_length, Language lang);
+	/// @see StringBody::append_help_length
+	String& append_help_length(const char* str, size_t helper_length, Language lang);
+	String& append_strdup(const char* str, size_t helper_length, Language lang);
 
-	/**
-		 @param partial 
-			returns partial match status. 
-			- -1: strings too different
-			-  0: full match
-			-  1: means @c this starts @c src
-			-  2: means @src starts @this
-	*/
-	int cmp(int& partial, const char* src_ptr, size_t src_size=0, 
-		size_t this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
-	/// this starts with src
-	bool starts_with(const char* src_ptr, size_t src_size=0) const {
-		int p; cmp(p, src_ptr, src_size);
-		return p==0 || p==2;
+	bool operator == (const char* y) const { return body==StringBody(y); }
+	bool operator != (const char* y) const { return body!=StringBody(y); }
+
+	/// this starts with y
+	bool starts_with(const char* y) const {
+		return body.ncmp(0/*x_begin*/, StringBody(y), 0/*y_begin*/, strlen(y))==0;
 	}
-	bool operator == (const char* src_ptr) const { 
-		size_t src_size=src_ptr?strlen(src_ptr):0;
-		if(size() != src_size)
-			return false;
-		int partial; // unused
-		return cmp(partial, src_ptr, src_size)==0; 
-	}
-	bool operator != (const char* src_ptr) const { 
-		int partial; // unused
-		return cmp(partial, src_ptr, 0)!=0; 
+	/// x starts with this
+	bool this_starts(const char* x) const {
+		return StringBody(x).ncmp(0/*x_begin*/, body, 0/*y_begin*/, length())==0;
 	}
 
-	String& append(const String& src, uchar lang, bool forced=false);
-	String& operator << (const String& src) { return append(src, UL_PASS_APPENDED); }
-	String& operator << (const char *src) { return APPEND_CONST(src); }
-
-	/// simple hash code of string. used by Hash
-	uint hash_code() const;
+	String& append_to(String& dest, Language lang, bool forced) const;
+	String& append(const String& src, Language lang, bool forced=false) { 
+		return src.append_to(*this, lang, forced);
+	}
+	String& operator << (const String& src) { return append(src, L_PASS_APPENDED); }
+	String& operator << (const char* src) { return append_help_length(src, 0, L_AS_IS); }
+	String& operator << (const StringBody src) { 
+		body<<src;
+		fragments+=Fragment(L_AS_IS, src.length());
+		return *this;
+	}
 
 	/// extracts first char of a string, if any
 	char first_char() const {
-		return is_empty()?0:*head.chunk.rows[0].item.ptr;
+		return is_empty()?0:body.fetch(0);
 	}
 
+	bool operator < (const String& src) const { return body<src.body; }
+	bool operator > (const String& src) const { return body>src.body; }
+	bool operator <= (const String& src) const { return body<=src.body; }
+	bool operator >= (const String& src) const { return body>=src.body; }
+	bool operator != (const String& src) const { return body!=src.body; }
+	bool operator == (const String& src) const { return body==src.body; }
+
 	/// extracts [start, finish) piece of string
-	String& mid(size_t start, size_t finish) const;
+	String& mid(size_t substr_begin, size_t substr_end) const;
 
-	/// @return position of substr in string, -1 means "not found" [String version]
-	int pos(const String& substr, 
-		int this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
-	/// @return position of substr in string, -1 means "not found" [const char* version]
-	int pos(const char *substr, size_t substr_size=0, 
-		int this_offset=0, Untaint_lang lang=UL_UNSPECIFIED) const;
+	/** 
+		ignore lang if it's L_UNSPECIFIED
+		but when specified: look for substring that lies in ONE fragment in THAT lang
+		@return position of substr in string, -1 means "not found" [const char* version]
+	*/
+	size_t pos(const StringBody substr, 
+		size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
+	/// String version of @see pos(const char*, int, Language)
+	size_t pos(const String& substr, 
+		size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
+	size_t pos(char c, 
+		size_t this_offset=0) const {
+		return body.pos(c, this_offset);
+	}
 
-	void split(Array& result, 
-		size_t *pos_after_ref, 
-		const char *delim, size_t delim_size, 
-		Untaint_lang lang=UL_UNSPECIFIED, int limit=-1) const;
-	void split(Array& result, 
-		size_t *pos_after_ref, 
+	void split(ArrayString& result, 
+		size_t& pos_after,
+		const char* delim, 
+		Language lang=L_UNSPECIFIED, int limit=-1) const;
+	void split(ArrayString& result, 
+		size_t& pos_after, 
 		const String& delim, 
-		Untaint_lang lang=UL_UNSPECIFIED, int limit=-1) const;
+		Language lang=L_UNSPECIFIED, int limit=-1) const;
 
-	typedef void (*Row_action)(Table& table, Array *row, 
+	typedef void (*Row_action)(Table& table, ArrayString* row, 
 		int prestart, int prefinish, 
 		int poststart, int postfinish,
 		void *info);
 	/**
-		@return true if fills table.
+		@return table of found items, if any.
 		table format is defined and fixed[can be used by others]: 
 		@verbatim
 			prematch/match/postmatch/1/2/3/...
 		@endverbatim
 	*/
-	bool match(
-		const String *aorigin,		
+	Table* match(Charset& source_charset,
 		const String& regexp, 
-		const String *options,
-		Table **table,
+		const String* options,
 		Row_action row_action, void *info,
-		bool *was_global=0) const;
+		bool& just_matched) const;
 	enum Change_case_kind {
 		CC_UPPER,
 		CC_LOWER
 	};
-	String& change_case(Pool& pool,
+	String& change_case(Charset& source_charset,
 		Change_case_kind kind) const;
-	String& replace(Pool& pool, Dictionary& dict) const;
+	const String& replace(const Dictionary& dict) const;
 	double as_double() const;
 	int as_int() const;
-
-	String& join_chains(Pool& pool, char** cstr) const;
-
-#ifndef NO_STRING_ORIGIN
-	/// origin of string. calculated by first row
-	const Origin& origin() const;
-#endif
-
-private:
-
-	/** several String fragments
-	*/
-	struct Chunk {
-		typedef uchar count_type;
-		count_type count; ///< the number of rows in chunk
-		// here could be some padding bytes
-		/// string fragment or a link to next chunk union
-		typedef union Row {
-			typedef uchar item_size_type;
-			/// fragment
-			struct { 
-				const char *ptr;  ///< pointer to the start
-				item_size_type size;  ///< length
-				uchar/*Untaint_lang*/ lang; ///< untaint flag, later untaint language
-#ifndef NO_STRING_ORIGIN
-				Origin origin;  ///< origin
-#endif
-			} item;
-			// we are using the fact that there's no padding before this field!
-			Chunk *link;  ///< link to the next chunk in chain
-		} rows_type[CR_PREALLOCATED_COUNT];
-		rows_type rows;
-	};
-	/**
-		'mutable' because can write after it's end, after it was appended to somebody 
-		@see String::append
-	*/
-	mutable struct {
-		Chunk chunk;
-		Chunk *link_storage;
-	} head;  ///< the head chunk of the chunk chain
-
-	/// next append would write to this record
-	Chunk::Row *append_here;
-	
-private:
-	/// last chunk
-	mutable Chunk *last_chunk;
-
-private:
-
-	bool chunk_is_full() {
-		return append_here == last_chunk->rows+last_chunk->count;
-	}
-	uint used_rows() const;
-	void expand();
-	
-	Untaint_lang lang_of(size_t offset) const;
-
-	size_t cstr_bufsize(Untaint_lang lang,
-		SQL_Connection *connection,
-		Charset *buf_charset) const;
-	/// convert to C string, store to 'dest' which must be big enough for proper untaint
-	char *store_to(char *dest, Untaint_lang lang=UL_UNSPECIFIED, 
-		SQL_Connection *connection=0,
-		Charset *store_to_charset=0,
-		const char *store_to_charset_name=0) const;
-
-	void join_chain(Pool& pool, 
-					   const Chunk*& achunk, const Chunk::Row*& arow, uint& acountdown, 
-					   uchar& joined_lang, const char *& joined_ptr, size_t& joined_size) const;
 
 private: //disabled
 
 	String& operator = (const String&) { return *this; }
 
 };
-#include "pa_pragma_pack_end.h"
 
-#define STRING_PREPARED_FOREACH_ROW(self, body) \
-	while(row!=(self).append_here) { \
-		if(countdown==0) { \
-			chunk=row->link; \
-			row=chunk->rows; \
-			countdown=chunk->count; \
-		}; \
-		{ body } \
-		row++; countdown--; \
-	} 
-
-#define STRING_PREFIX_FOREACH_ROW(self, body) { \
-	const Chunk *chunk=&(self).head.chunk;  \
-	const Chunk::Row *row=chunk->rows; \
-	uint countdown=chunk->count; \
-	STRING_PREPARED_FOREACH_ROW(self, body) \
+/// simple hash code of string. used by Hash
+inline uint hash_code(const StringBody self) {
+	return self.hash_code();
 }
-
-#define STRING_FOREACH_ROW(body) STRING_PREFIX_FOREACH_ROW(*this, body)
-#define STRING_SRC_FOREACH_ROW(body) STRING_PREFIX_FOREACH_ROW(src, body)
 
 #endif

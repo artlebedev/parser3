@@ -1,7 +1,7 @@
 /** @file
 	Parser: Configure file for autoconf-disabled platforms.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	tested only with MS Visual C++ V6
@@ -10,9 +10,10 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-static const char* IDENT_CONFIG_FIXED_H="$Date: 2003/03/13 08:03:15 $";
+static const char* IDENT_CONFIG_FIXED_H="$Date: 2003/07/24 11:31:21 $";
 
 #define inline  __inline
+#define HAVE_ASSERT_H
 #define HAVE_STDARG_H
 #define HAVE_PROCESS_H
 #define HAVE_FCNTL_H
@@ -24,7 +25,6 @@ static const char* IDENT_CONFIG_FIXED_H="$Date: 2003/03/13 08:03:15 $";
 #define HAVE_CTYPE_H
 #define HAVE_MATH_H
 #define HAVE_TIME_H
-#define HAVE_STDLIB_H
 #define HAVE_STRING_H
 #define HAVE_DIRECT_H
 #define HAVE_SETJMP_H
@@ -35,7 +35,6 @@ static const char* IDENT_CONFIG_FIXED_H="$Date: 2003/03/13 08:03:15 $";
 #define HAVE__LOCKING
 #define HAVE_TIMEZONE
 #define HAVE_DAYLIGHT
-#define HAVE_PRAGMA_PACK
 #define USE_SMTP
 #define PA_WITH_SJLJ_EXCEPTIONS
 
@@ -54,5 +53,12 @@ static const char* IDENT_CONFIG_FIXED_H="$Date: 2003/03/13 08:03:15 $";
 
 // xml-abled parser
 #define XML
+//#define XML_STATIC
+#ifdef XML_STATIC
+#	define LIBXML_STATIC
+#	define LIBXSLT_STATIC
+#	define LIBEXSLT_STATIC
+#	define LIBGDOME_STATIC
+#endif
 
 #endif

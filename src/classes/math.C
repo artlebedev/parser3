@@ -1,15 +1,16 @@
 /** @file
 	Parser: @b math parser class.
 
-	Copyright(c) 2001, 2003 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001-2003 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 
 	portions from gen_uuid.c,
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/07/24 06:49:22 $";
+static const char* IDENT_MATH_C="$Date: 2003/07/24 11:31:20 $";
 
+#include "pa_vmethod_frame.h"
 #include "pa_common.h"
 #include "pa_vint.h"
 #include "pa_vmath.h"
@@ -23,24 +24,31 @@ static const char* IDENT_MATH_C="$Date: 2003/07/24 06:49:22 $";
 #	include <wincrypt.h>
 #endif
 
-#ifdef HAVE_CRYPT_H
-#include <crypt.h>
+#ifdef HAVE_CRYPT
+#	ifdef HAVE_CRYPT_H
+#		include <crypt.h>
+#	endif
+#else
+	extern char *crypt(const char* , const char* );
 #endif
 
 // defines
 
-#define PI 3.1415926535
 #define MAX_SALT 8
 
 // class
 
-class MMath : public Methoded {
+class MMath: public Methoded {
 public:
-	MMath(Pool& pool);
+	MMath();
 
 public: // Methoded
 	bool used_directly() { return false; }
 };
+
+// global variables
+
+DECLARE_CLASS_VAR(math, 0 /*fictive*/, new MMath);
 
 #ifdef WIN32
 class Random_provider {
@@ -144,23 +152,26 @@ static void random(void *buffer, size_t size) {
 #endif
 }
 
+
 // methods
+
+#define MAX_UINT 0xFFFFFFFFu
+
 static inline int _random(uint top) {
 	uint raw;
 	random(&raw, sizeof(raw));
-	return int(double(raw) / 0xFFFFFFFFu * top );
+	return int(double(raw) / MAX_UINT * top );
 }
-static void _random(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
 
-	Value& range=params->as_junction(0, "range must be expression");
+static void _random(Request& r, MethodParams& params) {
+	Value& range=params.as_junction(0, "range must be expression");
 	double top=r.process_to_value(range).as_double();
-	if(top<=0)
+	if(top<=0 || top>MAX_UINT)
 		throw Exception("parser.runtime",
-			&method_name,
-			"top must be above 0(%g)", top);
+			0,
+			"top(%g) must be [1..%u]", top, MAX_UINT);
 	
-	r.write_no_lang(*new(pool) VInt(pool, _random(uint(top))));
+	r.write_no_lang(*new VInt(_random(uint(top))));
 }
 
 
@@ -169,23 +180,20 @@ static double frac(double param) { return param-trunc(param); }
 static double degrees(double param) { return param /PI *180; }
 static double radians(double param) { return param /180 *PI; }
 
-static void math1(Request& r, 
-				  const String& method_name, MethodParams *params,
-				  math1_func_ptr func) {
-	Pool& pool=r.pool();
-	Value& param=params->as_junction(0, "parameter must be expression");
+static void math1(Request& r, MethodParams& params, math1_func_ptr func) {
+	Value& param=params.as_junction(0, "parameter must be expression");
 
-	double result=(*func)(r.process_to_value(param).as_double());
-	r.write_no_lang(*new(pool) VDouble(pool, result));
+	double result=func(r.process_to_value(param).as_double());
+	r.write_no_lang(*new VDouble(result));
 }
 
 #define MATH1(name) \
-	static void _##name(Request& r, const String& method_name, MethodParams *params) {\
-		math1(r, method_name, params, &name);\
+	static void _##name(Request& r, MethodParams& params) {\
+		math1(r, params, &name);\
 	}
 #define MATH1P(name_parser, name_c) \
-	static void _##name_parser(Request& r, const String& method_name, MethodParams *params) {\
-		math1(r, method_name, params, &name_c);\
+	static void _##name_parser(Request& r, MethodParams& params) {\
+		math1(r, params, &name_c);\
 	}
 MATH1(round);	MATH1(floor);	MATH1P(ceiling, ceil);
 MATH1(trunc);	MATH1(frac);
@@ -199,32 +207,29 @@ MATH1(sqrt);
 
 
 typedef double (*math2_func_ptr)(double, double);
-static void math2(Request& r, 
-				  const String& method_name, MethodParams *params,
-				  math2_func_ptr func) {
-	Pool& pool=r.pool();
-	Value& a=params->as_junction(0, "parameter must be expression");
-	Value& b=params->as_junction(1, "parameter must be expression");
+static void math2(Request& r, MethodParams& params, math2_func_ptr func) {
+	Value& a=params.as_junction(0, "parameter must be expression");
+	Value& b=params.as_junction(1, "parameter must be expression");
 
-	double result=(*func)(
+	double result=func(
 		r.process_to_value(a).as_double(),
 		r.process_to_value(b).as_double());
-	r.write_no_lang(*new(pool) VDouble(pool, result));
+	r.write_no_lang(*new VDouble(result));
 }
 
 #define MATH2(name) \
-	static void _##name(Request& r, const String& method_name, MethodParams *params) {\
-		math2(r, method_name, params, &name);\
+	static void _##name(Request& r, MethodParams& params) {\
+		math2(r, params, &name);\
 	}
 MATH2(pow);
 
 inline bool is_salt_body_char(int c) {
 	return isalnum(c) || c == '.' || c=='/';
 }
-static size_t calc_prefix_size(const char *salt) {
+static size_t calc_prefix_size(const char* salt) {
 	if(size_t salt_size=strlen(salt)) {
 		if(!is_salt_body_char(salt[0])) { // $...  {...
-			const char *cur=salt+1; // skip
+			const char* cur=salt+1; // skip
 			while(is_salt_body_char(*cur++)) // ...$  ...}
 				;
 			return cur-salt;
@@ -233,13 +238,12 @@ static size_t calc_prefix_size(const char *salt) {
 	} else
 		return 0;
 }
-static void _crypt(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	const char *password=params->as_string(0, "password must be string").cstr();
-	const char *maybe_bodyless_salt=params->as_string(1, "salt must be string").cstr();
+static void _crypt(Request& r, MethodParams& params) {
+	const char* password=params.as_string(0, "password must be string").cstr();
+	const char* maybe_bodyless_salt=params.as_string(1, "salt must be string").cstr();
 
 	size_t prefix_size=calc_prefix_size(maybe_bodyless_salt);
-	const char *normal_salt;
+	const char* normal_salt;
 	char normalize_buf[MAX_STRING];
 	if(prefix_size==strlen(maybe_bodyless_salt)) { // bodyless?
 		strncpy(normalize_buf, maybe_bodyless_salt, MAX_STRING-MAX_SALT-1);
@@ -258,32 +262,32 @@ static void _crypt(Request& r, const String& method_name, MethodParams *params) 
      */
     if(strncmp(normal_salt, PA_MD5PW_ID, PA_MD5PW_IDLEN) == 0) {
 		const size_t sample_size=120;
-		char *sample_buf=(char *)pool.malloc(sample_size);
-		PA_MD5Encode((const unsigned char *)password,
-			(const unsigned char *)normal_salt, 1/*TRUE: mix in magic string*/,
-			sample_buf, sample_size);
-		r.write_pass_lang(*new(pool) String(pool, sample_buf));
+		char *sample_buf=new(PointerFreeGC) char[sample_size];
+		pa_MD5Encode((const unsigned char *)password,
+				(const unsigned char *)normal_salt, sample_buf, sample_size);
+		String sample(sample_buf);
+		r.write_pass_lang(sample);
     } else {
 #ifdef HAVE_CRYPT
-		const char *sample_buf=crypt(password, normal_salt);
-		if(!sample_buf  // nothing generated
-			|| !sample_buf[0] // generated nothing
-			|| strncmp(sample_buf, normal_salt, prefix_size)!=0) // salt prefix not preserved
+		const char* static_sample_buf=crypt(password, normal_salt);
+		if(!static_sample_buf  // nothing generated
+			|| !static_sample_buf[0] // generated nothing
+			|| strncmp(static_sample_buf, normal_salt, prefix_size)!=0) // salt prefix not preserved
 			throw Exception("parser.runtime",
-				&method_name,
-				"on this platform does not support '%.*s' salt prefix", prefix_size, normal_salt);
+				0,
+				"crypt on this platform does not support '%.*s' salt prefix", prefix_size, normal_salt);
 		
-		r.write_pass_lang(*new(pool) String(pool, sample_buf));
+		r.write_pass_lang(String(pa_strdup(static_sample_buf)));
 #else
 		throw Exception("parser.runtime",
-			&method_name,
+			0,
 			"salt must start with '" PA_MD5PW_ID "'");
 #endif
 	}
 }
 
-static const char* hex_string(Pool& pool, unsigned char* bytes, size_t size, bool upcase) {
-	char *bytes_hex=(char *)pool.malloc(size*2/*byte->hh*/+1/*for zero-teminator*/);
+static const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
+	char *bytes_hex=new(PointerFreeGC) char [size*2/*byte->hh*/+1/*for zero-teminator*/];
 	unsigned char *src=bytes;
 	unsigned char *end=bytes+size;
 	char *dest=bytes_hex;
@@ -300,19 +304,17 @@ static const char* hex_string(Pool& pool, unsigned char* bytes, size_t size, boo
 	return bytes_hex;
 }
 
-static void _md5(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	const char *string=params->as_string(0, "parameter must be string").cstr();
+static void _md5(Request& r, MethodParams& params) {
+	const char *string=params.as_string(0, "parameter must be string").cstr();
 
 
 	PA_MD5_CTX context;
 	unsigned char digest[16];
-	PA_MD5Init(&context);
-	PA_MD5Update(&context, (const unsigned char*)string, strlen(string));
-	PA_MD5Final(digest, &context);
+	pa_MD5Init(&context);
+	pa_MD5Update(&context, (const unsigned char*)string, strlen(string));
+	pa_MD5Final(digest, &context);
 
-	r.write_pass_lang(*new(pool) String(pool, 
-		hex_string(pool, digest, sizeof(digest), false)));
+	r.write_pass_lang(*new String(hex_string(digest, sizeof(digest), false)));
 }
 
 /// to hell with extra bytes on 64bit platforms
@@ -323,8 +325,7 @@ struct uuid {
         unsigned short   clock_seq;
         unsigned char    node[6];
 };
-static void _uuid(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _uuid(Request& r, MethodParams& /*params*/) {
 
 	// random
 	struct uuid uuid;
@@ -347,8 +348,8 @@ static void _uuid(Request& r, const String& method_name, MethodParams *params) {
         uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0FFF) | 0x4000;
  
 	// format 
-	const int uuid_cstr_bufsize=36+1/*for zero-teminator*/+1/*buggy snprintfs*/;
-	char *uuid_cstr=(char *)pool.malloc(uuid_cstr_bufsize);
+	const int uuid_cstr_bufsize=36+1/*for zero-teminator*/+1/*for faulty snprintfs*/;
+	char *uuid_cstr=new(PointerFreeGC) char[uuid_cstr_bufsize];
         snprintf(uuid_cstr, uuid_cstr_bufsize,
                 "%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
                 uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
@@ -356,22 +357,20 @@ static void _uuid(Request& r, const String& method_name, MethodParams *params) {
                 uuid.node[0], uuid.node[1], uuid.node[2],
                 uuid.node[3], uuid.node[4], uuid.node[5]);
 
-	r.write_pass_lang(*new(pool) String(pool, uuid_cstr));
+	r.write_pass_lang(*new String(uuid_cstr));
 }
 
-static void _uid64(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _uid64(Request& r, MethodParams& /*params*/) {
 
 	unsigned char id[64/8];
 	random(&id, sizeof(id));
 
-	r.write_pass_lang(*new(pool) String(pool, 
-		hex_string(pool, id, sizeof(id), true)));
+	r.write_pass_lang(*new String(hex_string(id, sizeof(id), true)));
 }
 
 // constructor
 
-MMath::MMath(Pool& apool) : Methoded(apool, "math") {
+MMath::MMath(): Methoded("math") {
 	// ^FUNC(expr)	
 #define ADDX(name, X) \
 	add_native_method(#name, Method::CT_STATIC, _##name, X, X)
@@ -404,20 +403,4 @@ MMath::MMath(Pool& apool) : Methoded(apool, "math") {
 
 	// ^uid64[]
 	ADD0(uid64);
-}
-
-// global variables
-
-Methoded *math_base_class;
-Hash *math_consts;
-
-// creator
-
-Methoded *MMath_create(Pool& pool) {
-	math_consts=new(pool) Hash(pool);
-	math_consts->put(
-		*new(pool) String(pool, "PI"), 
-		new(pool) VDouble(pool, PI));
-
-	return math_base_class=new(pool) MMath(pool);
 }

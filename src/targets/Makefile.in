@@ -41,7 +41,6 @@ AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
 APACHE13 = @APACHE13@
-APACHE_LIBS = @APACHE_LIBS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -53,20 +52,19 @@ COMPILE_APACHE13_MODULE_FALSE = @COMPILE_APACHE13_MODULE_FALSE@
 COMPILE_APACHE13_MODULE_TRUE = @COMPILE_APACHE13_MODULE_TRUE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CPP_LIBS = @CPP_LIBS@
 CXX = @CXX@
-CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
-DO_NOT_LINK_LIBSTDCPP_FALSE = @DO_NOT_LINK_LIBSTDCPP_FALSE@
-DO_NOT_LINK_LIBSTDCPP_TRUE = @DO_NOT_LINK_LIBSTDCPP_TRUE@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+GC_LIBS = @GC_LIBS@
 INCLTDL = @INCLTDL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -146,7 +144,7 @@ sqldriversdir = @sqldriversdir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-@COMPILE_APACHE13_MODULE_TRUE@SUBDIRS = cgi isapi apache13
+@COMPILE_APACHE13_MODULE_TRUE@SUBDIRS = cgi isapi apache13core apache13
 #don't compile apache
 @COMPILE_APACHE13_MODULE_FALSE@SUBDIRS = cgi isapi
 subdir = src/targets
@@ -161,7 +159,7 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = Makefile.am Makefile.in
-DIST_SUBDIRS = cgi isapi apache13
+DIST_SUBDIRS = cgi isapi apache13core apache13
 all: all-recursive
 
 .SUFFIXES:

@@ -1,14 +1,16 @@
 /** @file
 	Parser: @b bool class decls.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VBOOL_H
 #define PA_VBOOL_H
 
-static const char* IDENT_VBOOL_H="$Date: 2003/01/21 15:51:18 $";
+static const char* IDENT_VBOOL_H="$Date: 2003/07/24 11:31:25 $";
+
+// include
 
 #include "pa_common.h"
 #include "pa_value.h"
@@ -16,26 +18,24 @@ static const char* IDENT_VBOOL_H="$Date: 2003/01/21 15:51:18 $";
 #define MAX_BOOL_AS_STRING 20
 
 /// VBool
-class VBool : public Value {
+class VBool: public Value {
 public: // Value
 
-	const char *type() const { return "bool"; }
+	override const char* type() const { return "bool"; }
 	/// VBool: 0
-	VStateless_class *get_class() { return 0; }
+	override VStateless_class *get_class() { return 0; }
 	/// VBool: clone
-	Value *as_expr_result(bool) { return NEW VBool(pool(), fbool); }
+	override Value& as_expr_result(bool) { return *new VBool(fbool); }
 	/// VBool: fbool
-	bool as_bool() const { return fbool; }
+	override bool as_bool() const { return fbool; }
 	/// VBool: fbool
-	double as_double() const { return fbool; }
+	override double as_double() const { return fbool; }
 	/// VBool: fbool
-	int as_int() const { return fbool; }
+	override int as_int() const { return fbool; }
 
 public: // usage
 
-	VBool(Pool& apool, bool abool) : Value(apool), 
-		fbool(abool) {
-	}
+	VBool(bool abool): fbool(abool) {}
 
 private:
 

@@ -1,22 +1,22 @@
 /** @file
 	Parser: Stylesheet connection decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-static const char* IDENT_STYLESHEET_CONNECTION_H="$Date: 2003/01/21 15:51:11 $";
+static const char* IDENT_STYLESHEET_CONNECTION_H="$Date: 2003/07/24 11:31:21 $";
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"
 
-#include "pa_pool.h"
-#include "pa_stylesheet_manager.h"
+
 #include "pa_exception.h"
 #include "pa_common.h"
+#include "pa_globals.h"
 
 // defines
 
@@ -25,25 +25,27 @@ static const char* IDENT_STYLESHEET_CONNECTION_H="$Date: 2003/01/21 15:51:11 $";
 /**	Connection with stylesheet: 
 	remembers time and can figure out that it needs recompilation
 */
-class Stylesheet_connection : public Pooled {
+class Stylesheet_connection: public PA_Object {
 
 	friend class Stylesheet_connection_ptr;
 
+private:
+
+	const String& ffile_spec;
+	xsltStylesheet *fstylesheet;
+	time_t time_used;
+	time_t prev_disk_time;
+
 public:
 
-	Stylesheet_connection(Pool& pool, const String& afile_spec) : Pooled(pool),
+	Stylesheet_connection(const String& afile_spec):
 		ffile_spec(afile_spec),
 		prev_disk_time(0),
-		fservices_pool(0),
 		fstylesheet(0),
-		time_used(0), used(0) {
-	}
+		time_used(0), used(0)  {}
 	
 	const String& file_spec() { return ffile_spec; }
 
-	void set_services(Pool *aservices_pool) {
-		fservices_pool=aservices_pool;
-	}
 	bool expired(time_t older_dies) {
 		return !used && time_used<older_dies;
 	}
@@ -65,9 +67,7 @@ public:
 private:
 
 	/// return to cache
-	void close() {
-		stylesheet_manager->close_connection(ffile_spec, *this);
-	}
+	void close();
 
 private:
 
@@ -77,12 +77,10 @@ private:
 	}
 
 	void load(time_t new_disk_time) {
-		Pool& pool=*fservices_pool;
-
 		int saved=xmlDoValidityCheckingDefaultValue;//
 		xmlDoValidityCheckingDefaultValue=0;//
 		xsltStylesheet *nstylesheet=
-			xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr(String::UL_FILE_SPEC));
+			xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr(String::L_FILE_SPEC));
 		xmlDoValidityCheckingDefaultValue = saved;//
 		if(xmlHaveGenericErrors()) {
 			GdomeException exc=0;
@@ -114,6 +112,7 @@ private:
 
 private: // connection usage methods
 
+	int used;
 	void use() {
 		time_used=time(0); // they started to use at this time
 		used++;
@@ -124,24 +123,6 @@ private: // connection usage methods
 			close();
 	}
 
-private: // connection usage data
-
-	int used;
-
-private:
-
-	const String& ffile_spec;
-	xsltStylesheet *fstylesheet;
-	time_t time_used;
-	time_t prev_disk_time;
-
-private:
-
-	Pool *fservices_pool;
-
-private:
-	void *malloc(size_t size) { return fservices_pool->malloc(size); }
-	void *calloc(size_t size) { return fservices_pool->calloc(size); }
 };
 
 /// Auto-object used to track Stylesheet_connection usage
@@ -158,6 +139,9 @@ public:
 	Stylesheet_connection* operator->() {
 		return fconnection;
 	}
+/*	Stylesheet_connection& operator*() {
+		return *fconnection;
+	}*/
 
 	// copying
 	Stylesheet_connection_ptr(const Stylesheet_connection_ptr& src) : fconnection(src.fconnection) {

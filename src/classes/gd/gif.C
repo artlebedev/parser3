@@ -1,7 +1,7 @@
 /** @file
 	Parser: image manipulations impl1.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 	based on: gd
 
@@ -14,12 +14,12 @@
 	can incorporate them into new versions. 
 */
 
-static const char* IDENT_GIF_C="$Date: 2003/01/21 15:51:08 $";
+static const char* IDENT_GIF_C="$Date: 2003/07/24 11:31:20 $";
 
 #include "gif.h"
 
 #include "mtables.h"
-#include "pa_common.h"
+//#include "pa_common.h"
 
 //static void BrushApply(int x, int y);
 //static void TileApply(int x, int y);
@@ -32,9 +32,9 @@ void gdImage::Create(int asx, int asy) {
 	pixels = (unsigned char **) malloc(sizeof(unsigned char *) * sx);
 	polyInts = 0;
 	polyAllocated = 0;
-	lineWidth = 1;  lineStyle=0;
+	lineWidth = 1;
 	for (i=0; (i<asx); i++)
-		pixels[i] = (unsigned char *) calloc(asy);
+		pixels[i] = (unsigned char *) malloc_atomic(asy);
 	colorsTotal = 0;
 	transparent = (-1);
 	interlace = 0;
@@ -1089,7 +1089,7 @@ void gdImage::SetLineWidth(int width)
 	lineWidth=width;
 }
 
-void gdImage::SetLineStyle(const char *alineStyle)
+void gdImage::SetLineStyle(const char* alineStyle)
 {
 	lineStyle=alineStyle;
 }

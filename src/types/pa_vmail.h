@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b mail class decls.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
 
-static const char* IDENT_VMAIL_H="$Date: 2003/01/21 15:51:19 $";
+static const char* IDENT_VMAIL_H="$Date: 2003/07/24 11:31:26 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -20,31 +20,30 @@ static const char* IDENT_VMAIL_H="$Date: 2003/01/21 15:51:19 $";
 
 // forwards
 
-class Request;
+class Request_info;
 
 /**
 	$mail:received letter
 */
-class VMail : public VStateless_class {
+class VMail: public VStateless_class {
+
+	VHash* vreceived;
+
 public: // Value
 	
-	const char *type() const { return "mail"; }
+	override const char* type() const { return "mail"; }
 	
 	// mail: CLASS,methods,received field
-	Value *get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 
 public: // usage
 
-	VMail(Pool& apool);
+	VMail();
 	
-	void fill_received(Request& request);
-	const String& message_hash_to_string(Request& r, const String *source, 
-		Hash *message_hash, int level, 
-		const String **from=0, String **to=0);
-
-private:
-
-	VHash vreceived;
+	void fill_received(Request& r);
+	const String& message_hash_to_string(Request& r,
+		HashStringValue* message_hash, int level, 
+		const String* & from, bool extract_to, String* & to);
 
 };
 

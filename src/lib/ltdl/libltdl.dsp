@@ -80,8 +80,8 @@ LIB32=link.exe -lib
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "libltdl___Win32_Profile Release"
-# PROP BASE Intermediate_Dir "libltdl___Win32_Profile Release"
+# PROP BASE Output_Dir "libltdl___Win32_Profile0"
+# PROP BASE Intermediate_Dir "libltdl___Win32_Profile0"
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0

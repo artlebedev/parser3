@@ -1,107 +1,101 @@
 /** @node
 	Parser: @b dnode parser type.
 
-	Copyright(c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char* IDENT_VXNODE_C="$Date: 2003/01/21 15:51:21 $";
+static const char* IDENT_VXNODE_C="$Date: 2003/07/24 11:31:27 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
 #include "pa_vstring.h"
 #include "pa_vbool.h"
 #include "pa_vhash.h"
+#include "pa_request_charsets.h"
+#include "pa_charset.h"
 
-void VXnode_cleanup(void *vxnode) {
-	//_asm int 3;
-	static_cast<VXnode *>(vxnode)->~VXnode();
-}
-
-Value *VXnode::get_element(const String& aname, Value& aself, bool looking_up) { 
+/// @todo strdup properties [now can be: $nodeName[$xdoc.nodeName], free(xdoc), >>print $nodeName<<GPF
+Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) { 
 	// $CLASS,$method
-	if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
+	if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
 		return result;
 
 	// fields
 
-	GdomeNode *selfNode=get_node(&aname);
+	GdomeNode* selfNode=get_node();
 	GdomeException exc;
 
 	if(aname=="nodeName") {
-		return NEW VString(transcode(gdome_n_nodeName(selfNode, &exc), &aname));
+		return new VString(fcharsets->source().transcode(gdome_n_nodeName(selfNode, &exc)));
 	} else if(aname=="nodeValue") {
-		return NEW VString(transcode(gdome_n_nodeValue(selfNode, &exc), &aname));
+		return new VString(fcharsets->source().transcode(gdome_n_nodeValue(selfNode, &exc)));
 	} else if(aname=="nodeType") {
-		return NEW VInt(pool(), gdome_n_nodeType(selfNode, &exc));
+		return new VInt(gdome_n_nodeType(selfNode, &exc));
 	} else if(aname=="parentNode") {
-		if(GdomeNode *result_node=gdome_n_parentNode(selfNode, &exc))
-			return NEW VXnode(pool(), result_node);
+		if(GdomeNode* result_node=gdome_n_parentNode(selfNode, &exc))
+			return new VXnode(fcharsets, result_node);
 		return 0;
 	} else if(aname=="childNodes") {	
-		if(GdomeNode *currentNode=gdome_n_firstChild(selfNode, &exc)) {
-			VHash *result=NEW VHash(pool());
+		if(GdomeNode* currentNode=gdome_n_firstChild(selfNode, &exc)) {
+			VHash* result=new VHash;
 			int i=0;
 			do {
-				String& skey=*NEW String(pool());
-				{
-					char *buf=(char *)malloc(MAX_NUMBER);
-					snprintf(buf, MAX_NUMBER, "%d", i++);
-					skey << buf;
-				}
-				result->hash(&aname).put(skey, NEW VXnode(pool(), currentNode));
+				result->hash().put(
+					StringBody::Format(i++), 
+					new VXnode(fcharsets, currentNode));
 			} while(currentNode=gdome_n_nextSibling(currentNode, &exc));
 			return result;
 		}
 		return 0;
 	} else if(aname=="firstChild") {
-		if(GdomeNode *result_node=gdome_n_firstChild(selfNode, &exc))
-			return NEW VXnode(pool(), result_node);
+		if(GdomeNode* result_node=gdome_n_firstChild(selfNode, &exc))
+			return new VXnode(fcharsets, result_node);
 		return 0;
 	} else if(aname=="lastChild") {
-		if(GdomeNode *result_node=gdome_n_lastChild(selfNode, &exc))
-			return NEW VXnode(pool(), result_node);
+		if(GdomeNode* result_node=gdome_n_lastChild(selfNode, &exc))
+			return new VXnode(fcharsets, result_node);
 		return 0;
 	} else if(aname=="previousSibling") {
-		if(GdomeNode *result_node=gdome_n_previousSibling(selfNode, &exc))
-			return NEW VXnode(pool(), result_node);
+		if(GdomeNode* result_node=gdome_n_previousSibling(selfNode, &exc))
+			return new VXnode(fcharsets, result_node);
 		return 0;
 	} else if(aname=="nextSibling") {
-		if(GdomeNode *result_node=gdome_n_nextSibling(selfNode, &exc))
-			return NEW VXnode(pool(), result_node);
+		if(GdomeNode* result_node=gdome_n_nextSibling(selfNode, &exc))
+			return new VXnode(fcharsets, result_node);
 		return 0;
 	} else if(aname=="ownerDocument") {
 		if(GdomeDocument *document=gdome_n_ownerDocument(selfNode, &exc))
-			return NEW VXdoc(pool(), document);
+			return new VXdoc(fcharsets, document);
 		return 0;
 	} else switch(gdome_n_nodeType(selfNode, &exc)) {
 		case GDOME_ELEMENT_NODE: 
 			if(aname=="attributes") {
 				if(GdomeNamedNodeMap *attributes=gdome_n_attributes(selfNode, &exc)) {
-					VHash *result=NEW VHash(pool());
+					VHash* result=new VHash;
 					gulong length=gdome_nnm_length(attributes, &exc);
 					for(gulong i=0; i<length; i++) {
-						GdomeNode *attr_node=gdome_nnm_item(attributes, i, &exc);
-						result->hash(0).put(
-							transcode(gdome_n_nodeName(attr_node, &exc), &aname), 
-							NEW VXnode(pool(), attr_node));
+						GdomeNode* attr_node=gdome_nnm_item(attributes, i, &exc);
+						result->hash().put(
+							fcharsets->source().transcode(gdome_n_nodeName(attr_node, &exc)), 
+							new VXnode(fcharsets, attr_node));
 					}
 					return result;
 				}
 				return 0;
 			} else if(aname=="tagName") {
-				return NEW VString(transcode(gdome_el_tagName(GDOME_EL(selfNode), &exc), &aname));
+				return new VString(fcharsets->source().transcode(gdome_el_tagName(GDOME_EL(selfNode), &exc)));
 			}
 			break;
 		case GDOME_ATTRIBUTE_NODE: 
 			if(aname=="specified")
-				return NEW VBool(pool(), gdome_a_specified(GDOME_A(selfNode), &exc)!=0);
+				return new VBool(gdome_a_specified(GDOME_A(selfNode), &exc)!=0);
 			else if(aname=="name")
-				return NEW VString(transcode(gdome_a_name(GDOME_A(selfNode), &exc), &aname));
+				return new VString(fcharsets->source().transcode(gdome_a_name(GDOME_A(selfNode), &exc)));
 			else if(aname=="value")
-				return NEW VString(transcode(gdome_a_value(GDOME_A(selfNode), &exc), &aname));
+				return new VString(fcharsets->source().transcode(gdome_a_value(GDOME_A(selfNode), &exc)));
 			break;
 /*
 		case GDOME_COMMENT_NODE: 
@@ -109,9 +103,9 @@ Value *VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 */
 		case GDOME_PROCESSING_INSTRUCTION_NODE: 
 			if(aname=="target")
-				return NEW VString(transcode(gdome_pi_target(GDOME_PI(selfNode), &exc), &aname));
+				return new VString(fcharsets->source().transcode(gdome_pi_target(GDOME_PI(selfNode), &exc)));
 			else if(aname=="data")
-				return NEW VString(transcode(gdome_pi_data(GDOME_PI(selfNode), &exc), &aname));
+				return new VString(fcharsets->source().transcode(gdome_pi_data(GDOME_PI(selfNode), &exc)));
 			break;
 		case GDOME_DOCUMENT_TYPE_NODE: 
 			{
@@ -120,7 +114,7 @@ Value *VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 					// readonly attribute DOMString aname;
 					// The aname of DTD; i.e., the aname immediately following 
 					// the DOCTYPE keyword in an XML source document.
-					return NEW VString(transcode(gdome_dt_name(doctype, &exc), &aname));
+					return new VString(fcharsets->source().transcode(gdome_dt_name(doctype, &exc)));
 				}
 				/*
 				readonly attribute NamedNodeMap entities;
@@ -137,10 +131,10 @@ Value *VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 				GdomeNotation *notation=GDOME_NOT(selfNode);
 				if(aname=="publicId") {
 					// readonly attribute DOMString publicId;
-					return NEW VString(transcode(gdome_not_publicId(notation, &exc), &aname));
+					return new VString(fcharsets->source().transcode(gdome_not_publicId(notation, &exc)));
 				} else if(aname=="systemId") {
 					// readonly attribute DOMString systemId;
-					return NEW VString(transcode(gdome_not_systemId(notation, &exc), &aname));
+					return new VString(fcharsets->source().transcode(gdome_not_systemId(notation, &exc)));
 				}
 			}
 			break;

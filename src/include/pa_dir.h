@@ -1,14 +1,14 @@
 /** @file
 	Parser: directory scanning for different OS-es decls.
 
-	Copyright (c) 2000,2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000,2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-static const char* IDENT_DIR_H="$Date: 2003/01/21 15:51:10 $";
+static const char* IDENT_DIR_H="$Date: 2003/07/24 11:31:21 $";
 
 #include "pa_config_includes.h"
 
@@ -69,7 +69,7 @@ struct ffblk {
 
 #endif
 
-bool findfirst(const char *_pathname, struct ffblk *_ffblk, int _attrib);
+bool findfirst(const char* _pathname, struct ffblk *_ffblk, int _attrib);
 bool findnext(struct ffblk *_ffblk);
 void findclose(struct ffblk *_ffblk);
 

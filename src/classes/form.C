@@ -1,88 +1,85 @@
 /** @file
 	Parser: @b form parser class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FORM_C="$Date: 2003/01/21 15:51:06 $";
+static const char* IDENT_FORM_C="$Date: 2003/07/24 11:31:20 $";
 
 #include "classes.h"
+#include "pa_vmethod_frame.h"
+
 #include "pa_request.h"
 #include "pa_vform.h"
 
 /// $LIMITS.max_post_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*0x400;
 
-// defines
-
-#define LIMITS_NAME "LIMITS"
-
-#define MAX_POST_SIZE_NAME "post_max_size"
-
 // class
 
 class MForm : public Methoded {
-public:
-	MForm(Pool& pool);
 public: // Methoded
+
 	bool used_directly() { return false; }
 	void configure_admin(Request& r);
-private:
-	String max_post_size_name;
-	String limits_name;
+
+public:
+
+	MForm(): Methoded("form") {}
+
 };
+
+// global variable
+
+DECLARE_CLASS_VAR(form, 0/*fictive*/, new MForm);
+
+// defines for statics
+
+#define LIMITS_NAME "LIMITS"
+#define MAX_POST_SIZE_NAME "post_max_size"
+
+// statics
+
+static const String max_post_size_name(MAX_POST_SIZE_NAME);
+static const String limits_name(LIMITS_NAME);
 
 // methods
 
 // constructor & configurator
 
-MForm::MForm(Pool& apool) : Methoded(apool, "form"),
-	max_post_size_name(apool, MAX_POST_SIZE_NAME),
-	limits_name(apool, LIMITS_NAME) {
-}
-
 void MForm::configure_admin(Request& r) {
-	Pool& pool=r.pool();
 
-	Value *limits=r.main_class.get_element(limits_name, r.main_class, false);
-	if(r.info.method && StrEqNc(r.info.method, "post", true)) {
+	Value* limits=r.main_class.get_element(limits_name, r.main_class, false);
+	if(r.request_info.method && StrEqNc(r.request_info.method, "post", true)) {
 		// $limits.max_post_size default 10M
-		Value *element=limits?limits->get_element(max_post_size_name, *limits, false):0;
+		Value* element=limits?limits->get_element(max_post_size_name, *limits, false)
+			:0;
 		size_t value=element?(size_t)element->as_double():0;
 		size_t max_post_size=value?value:MAX_POST_SIZE_DEFAULT;
 		
-		if(r.info.content_length>max_post_size)
+		if(r.request_info.content_length>max_post_size)
 			throw Exception("parser.runtime",
 				0,
 				"posted content_length(%u) > max_post_size(%u)",
-					r.info.content_length, max_post_size);
-		if(r.info.content_length<0)
-			throw Exception(0,
-				0,
-				"posted content_length(%u) < 0",
-					r.info.content_length);
+					r.request_info.content_length, max_post_size);
 
 		// read POST data
-		if(r.info.content_length) {
-			char *post_data=(char *)pool.malloc(r.info.content_length);
-			r.post_size=SAPI::read_post(pool, post_data, r.info.content_length);
-			r.post_data=post_data;
+		if(r.request_info.content_length) {
+			char *post_data=new(PointerFreeGC) char[r.request_info.content_length+1/*terminating zero*/];
+			size_t post_size=SAPI::read_post(r.sapi_info, 
+					post_data, r.request_info.content_length);
+			post_data[post_size]=0; // terminating zero
+			r.request_info.post_data=post_data;
+			r.request_info.post_size=post_size;
+		} else {
+			r.request_info.post_data=0;
+			r.request_info.post_size=0;
 		}
-		if(r.post_size!=r.info.content_length)
+		if(r.request_info.post_size!=r.request_info.content_length)
 			throw Exception(0, 
 				0, 
 				"post_size(%u) != content_length(%u)", 
-					r.post_size, r.info.content_length);
+					r.request_info.post_size, r.request_info.content_length);
 	}
-}
-
-// global variable
-
-Methoded *form_base_class;
-
-// creator
-
-Methoded *MForm_create(Pool& pool) {
-	return form_base_class=new(pool) MForm(pool);
 }

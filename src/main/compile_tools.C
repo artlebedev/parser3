@@ -1,11 +1,11 @@
 /** @file
 	Parser: compiler support helper functions.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMPILE_TOOLS_C="$Date: 2003/01/21 15:51:13 $";
+static const char* IDENT_COMPILE_TOOLS_C="$Date: 2003/07/24 11:31:23 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -14,70 +14,55 @@ static const char* IDENT_COMPILE_TOOLS_C="$Date: 2003/01/21 15:51:13 $";
 #include "pa_vstring.h"
 #include "pa_vdouble.h"
 
-void PV(Array/*<Operation>*/ *result, Value *value) {
-	// append OP_VALUE
-	Operation op; op.code=OP_VALUE;
-	*result+=op.cast;
-
-	// append 'value'
-	*result+=value;
-}
-
-Value *LA2V(Array *literal_string_array, int offset) {
-	Operation op;
-	op.cast=literal_string_array->get(offset+0);
-	return op.code==OP_VALUE?
-		static_cast<Value *>(literal_string_array->get(offset+1))
+Value* LA2V(ArrayOperation& literal_string_array, int offset) {
+	return literal_string_array[offset+0].code==OP_VALUE?literal_string_array[offset+2/*skip opcode&origin*/].value
 		:0;
 }
 
-void change_string_literal_to_double_literal(Array *literal_string_array) {
-	Operation op;
-	op.cast=literal_string_array->get(0);
-	if(op.code==OP_VALUE) {
-		VString *vstring=static_cast<VString *>(literal_string_array->get(1));
-		Value *value=vstring->as_expr_result();
-		literal_string_array->put(1, value);
+void change_string_literal_to_double_literal(ArrayOperation& literal_string_array) {
+	if(literal_string_array[0].code==OP_VALUE) {
+		Value& value=literal_string_array[2/*opcode+origin*/].value->as_expr_result();
+		literal_string_array.put(1, &value);
 	}
 }
 
-void change_string_literal_value(Array *literal_string_array, const String& new_value) {
-	Operation op;
-	op.cast=literal_string_array->get(0);
-	if(op.code==OP_VALUE) { // extra safety
-		VString *vstring=static_cast<VString *>(literal_string_array->get(1));
-		vstring->set_string(new_value);
+void change_string_literal_value(ArrayOperation& literal_string_array, const String& new_value) {
+	if(literal_string_array[0].code==OP_VALUE) { // extra safety
+		static_cast<VString*>(literal_string_array[2/*opcode+origin*/].value)->set_string(new_value);
 	}
 }
 
-void changetail_or_append(Array *opcodes, 
+void changetail_or_append(ArrayOperation& opcodes, 
 						  OPCODE find, bool with_argument, OPCODE replace, OPCODE notfound) {
-	int tail=opcodes->size()-(with_argument?2:1);
+	int tail=opcodes.count()-(with_argument?2:1);
 	if(tail>=0) {
-		Operation op;
-		op.cast=opcodes->get(tail);
+		Operation& op=opcodes.get_ref(tail);
 		if(op.code==find) {
 			op.code=replace;
-			opcodes->put(tail, op.cast);
 			return;
 		}
 	}
 
-	Operation op; op.code=notfound;
-	*opcodes+=op.cast;
+	opcodes+=Operation(notfound);
 }
 
 
-void push_LS(parse_control& pc, lexical_state new_state) { 
+void push_LS(Parse_control& pc, lexical_state new_state) { 
 	if(pc.ls_sp<MAX_LEXICAL_STATES) {
 		pc.ls_stack[pc.ls_sp++]=pc.ls;  
 		pc.ls=new_state;
 	} else
-		throw Exception(0, 0, "push_LS: ls_stack overflow");
+		throw Exception(0, 0, 
+			"push_LS: ls_stack overflow");
 }
-void pop_LS(parse_control& pc) {
+void pop_LS(Parse_control& pc) {
 	if(--pc.ls_sp>=0)
 		pc.ls=pc.ls_stack[pc.ls_sp];
 	else
-		throw Exception(0, 0, "pop_LS: ls_stack underflow");
+		throw Exception(0, 0, 
+			"pop_LS: ls_stack underflow");
+}
+
+const String& Parse_control::alias_method(const String& name) {
+	return (main_alias && name==main_method_name)?*main_alias:name;
 }

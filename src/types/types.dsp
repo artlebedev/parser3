@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
 
-CFG=types - Win32 Profile Debug
+CFG=types - Win32 Profile Release
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,7 +13,7 @@ CFG=types - Win32 Profile Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "types.mak" CFG="types - Win32 Profile Debug"
+!MESSAGE NMAKE /f "types.mak" CFG="types - Win32 Profile Release"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "..\..\..\win32xml\win32\gnome\glib\include" /I "..\..\..\win32xml\win32\gnome\glib\include\glib" /I "..\..\..\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "..\..\..\\win32xml\win32\gnome\libxslt-x.x.x" /I "..\..\..\win32xml\win32\gnome\libxml2-x.x.x\include" /I "..\..\..\win32\psapi" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "\parser3project\win32\psapi" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /I "\parser3project\win32mailreceive\win32\gnome\gmime-x.x.x" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FD /TP /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
@@ -67,7 +67,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "..\..\..\win32xml\win32\gnome\glib\include" /I "..\..\..\win32xml\win32\gnome\glib\include\glib" /I "..\..\..\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "..\..\..\\win32xml\win32\gnome\libxslt-x.x.x" /I "..\..\..\win32xml\win32\gnome\libxml2-x.x.x\include" /I "..\..\..\win32\psapi" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "_AFXDLL" /FD /GZ /TP /c
+# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "\parser3project\win32\psapi" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /I "\parser3project\win32mailreceive\win32\gnome\gmime-x.x.x" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "_AFXDLL" /FD /GZ /TP /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG" /d "_AFXDLL"
@@ -90,9 +90,9 @@ LIB32=link.exe -lib
 # PROP Output_Dir "ProfileRelease"
 # PROP Intermediate_Dir "ProfileRelease"
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "\parser3project\win32\psapi" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\libxml2-x.x.x\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /I "\parser3project\win32mailreceive\win32\gnome\gmime-x.x.x" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FD /TP /c
+# ADD BASE CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "\parser3project\win32\psapi" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /I "\parser3project\win32mailreceive\win32\gnome\gmime-x.x.x" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FD /TP /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "..\..\..\win32xml\win32\gnome\glib\include" /I "..\..\..\win32xml\win32\gnome\glib\include\glib" /I "..\..\..\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "..\..\..\\win32xml\win32\gnome\libxslt-x.x.x" /I "..\..\..\win32xml\win32\gnome\libxml2-x.x.x\include" /I "..\..\..\win32\psapi" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "\parser3project\win32\psapi" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /I "\parser3project\win32mailreceive\win32\gnome\gmime-x.x.x" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FD /TP /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
@@ -105,22 +105,22 @@ LIB32=link.exe -lib
 
 !ELSEIF  "$(CFG)" == "types - Win32 Profile Debug"
 
-# PROP BASE Use_MFC 2
-# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
 # PROP BASE Output_Dir "types___Win32_Profile_Debug"
 # PROP BASE Intermediate_Dir "types___Win32_Profile_Debug"
 # PROP BASE Target_Dir ""
-# PROP Use_MFC 2
-# PROP Use_Debug_Libraries 1
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
 # PROP Output_Dir "ProfileDebug"
 # PROP Intermediate_Dir "ProfileDebug"
 # PROP Target_Dir ""
-# ADD BASE CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "\parser3project\win32\psapi" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\libxml2-x.x.x\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /I "\parser3project\win32mailreceive\win32\gnome\gmime-x.x.x" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "_AFXDLL" /FD /GZ /TP /c
+# ADD BASE CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "\parser3project\win32\psapi" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /I "\parser3project\win32mailreceive\win32\gnome\gmime-x.x.x" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FD /TP /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\pcre" /I "..\..\..\win32xml\win32\gnome\glib\include" /I "..\..\..\win32xml\win32\gnome\glib\include\glib" /I "..\..\..\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "..\..\..\\win32xml\win32\gnome\libxslt-x.x.x" /I "..\..\..\win32xml\win32\gnome\libxml2-x.x.x\include" /I "..\..\..\win32\psapi" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "_AFXDLL" /FD /GZ /TP /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\classes\gd" /I "..\include" /I "..\classes" /I "..\sql" /I "..\lib\gc\include" /I "..\lib\cord\include" /I "..\lib\pcre" /I "\parser3project\win32\psapi" /I "\parser3project\win32xml\win32\gnome\glib\include" /I "\parser3project\win32xml\win32\gnome\glib\include\glib" /I "\parser3project\win32xml\win32\gnome\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\win32\gnome\gnome-xml\include" /I "\parser3project\win32xml\win32\gnome\libxslt-x.x.x" /I "\parser3project\win32mailreceive\win32\gnome\gmime-x.x.x" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /FD /TP /c
 # SUBTRACT CPP /YX
-# ADD BASE RSC /l 0x419 /d "_DEBUG" /d "_AFXDLL"
-# ADD RSC /l 0x419 /d "_DEBUG" /d "_AFXDLL"
+# ADD BASE RSC /l 0x419 /d "NDEBUG"
+# ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -148,6 +148,14 @@ SOURCE=..\..\..\win32\psapi\Psapi.h
 SOURCE=..\..\..\win32\psapi\Psapi.Lib
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\pa_junction.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_method.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\pa_value.C
@@ -210,6 +218,10 @@ SOURCE=.\pa_vform.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_vhash.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_vhash.h
 # End Source File
 # Begin Source File
@@ -238,7 +250,19 @@ SOURCE=.\pa_vmail.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_vmath.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_vmath.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vmemory.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_vmethod_frame.C
 # End Source File
 # Begin Source File
 

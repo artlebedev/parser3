@@ -41,7 +41,6 @@ AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
 APACHE13 = @APACHE13@
-APACHE_LIBS = @APACHE_LIBS@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -53,20 +52,19 @@ COMPILE_APACHE13_MODULE_FALSE = @COMPILE_APACHE13_MODULE_FALSE@
 COMPILE_APACHE13_MODULE_TRUE = @COMPILE_APACHE13_MODULE_TRUE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CPP_LIBS = @CPP_LIBS@
 CXX = @CXX@
-CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
-DO_NOT_LINK_LIBSTDCPP_FALSE = @DO_NOT_LINK_LIBSTDCPP_FALSE@
-DO_NOT_LINK_LIBSTDCPP_TRUE = @DO_NOT_LINK_LIBSTDCPP_TRUE@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+GC_LIBS = @GC_LIBS@
 INCLTDL = @INCLTDL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -147,11 +145,11 @@ subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 SUBDIRS = gd smtp
-INCLUDES = -I../types -I../sql -I../lib/pcre -Igd @XML_INCLUDES@ -I../lib/md5
+INCLUDES = -I../types -I../sql -I../lib/pcre -I../lib/gc/include -I../lib/cord/include -Igd @XML_INCLUDES@ -I../lib/md5
 
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h
-libclasses_a_SOURCES = classes.awk double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C classes.C
+libclasses_a_SOURCES = double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C xnode.C xdoc.C classes.C memory.C
 
 CLASSES_INC_DEPS = *.C
 CLEANFILES = classes.inc
@@ -169,7 +167,8 @@ am_libclasses_a_OBJECTS = double.$(OBJEXT) file.$(OBJEXT) form.$(OBJEXT) \
 	image.$(OBJEXT) int.$(OBJEXT) mail.$(OBJEXT) op.$(OBJEXT) \
 	math.$(OBJEXT) response.$(OBJEXT) string.$(OBJEXT) \
 	table.$(OBJEXT) void.$(OBJEXT) hash.$(OBJEXT) date.$(OBJEXT) \
-	xnode.$(OBJEXT) xdoc.$(OBJEXT) classes.$(OBJEXT)
+	xnode.$(OBJEXT) xdoc.$(OBJEXT) classes.$(OBJEXT) \
+	memory.$(OBJEXT)
 libclasses_a_OBJECTS = $(am_libclasses_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/src/include
@@ -180,10 +179,10 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/form.Po ./$(DEPDIR)/hash.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/image.Po ./$(DEPDIR)/int.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/mail.Po ./$(DEPDIR)/math.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/op.Po ./$(DEPDIR)/response.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/string.Po ./$(DEPDIR)/table.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/void.Po ./$(DEPDIR)/xdoc.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/xnode.Po
+@AMDEP_TRUE@	./$(DEPDIR)/memory.Po ./$(DEPDIR)/op.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/response.Po ./$(DEPDIR)/string.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/table.Po ./$(DEPDIR)/void.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/xdoc.Po ./$(DEPDIR)/xnode.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -237,6 +236,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/int.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mail.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/math.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/op.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/response.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/string.Po@am__quote@

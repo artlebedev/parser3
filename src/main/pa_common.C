@@ -1,26 +1,46 @@
 /** @file
 	Parser: commonly functions.
 
-	Copyright(c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/07/21 07:07:16 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/07/24 11:31:23 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
-#include "pa_globals.h"
 #include "pa_hash.h"
-#include "pa_table.h"
-#include "pa_vstring.h"
-#include "pa_vdate.h"
-#include "pa_vhash.h"
-#include "pa_vtable.h"
+#include "pa_globals.h"
+#include "pa_request_charsets.h"
+#include "pa_charsets.h"
 
-#ifdef WIN32
-#	include <windows.h>
+#define PA_HTTP
+
+#ifdef PA_HTTP
+#include "pa_vstring.h"
+#include "pa_vint.h"
+
+#ifdef CYGWIN
+#define _GNU_H_WINDOWS32_SOCKETS
+// for PASCAL
+#include <windows.h>
+// SOCKET
+typedef u_int	SOCKET;
+int PASCAL closesocket(SOCKET);
 #else
-#	define closesocket close
+#	if defined(WIN32)
+#		include <windows.h>
+#	else
+#		define closesocket close
+#	endif
+#endif
+
+#else
+
+#	if defined(WIN32)
+#		include <windows.h>
+#	endif
+
 #endif
 
 // some maybe-undefined constants
@@ -43,6 +63,9 @@ static const char* IDENT_COMMON_C="$Date: 2003/07/21 07:07:16 $";
 #endif
 
 // locking constants
+//#define PA_DEBUG_NO_LOCKING
+
+#ifdef PA_DEBUG_NO_LOCKING
 
 #ifdef HAVE_FLOCK
 
@@ -87,19 +110,51 @@ static int unlock(int fd) { FLOCK(F_TLOCK); }
 #endif
 #endif
 
+#else
+static int lock_shared_blocking(int fd) { return 0; }
+static int lock_exclusive_blocking(int fd) { return 0; }
+static int lock_exclusive_nonblocking(int fd) { return 0; }
+static int unlock(int fd) { return 0; }
+
+#endif
+
+// defines for globals
+
+#define FILE_STATUS_NAME  "status"
+
+// globals
+
+const String file_status_name(FILE_STATUS_NAME);
+
+// defines for statics
+
+#define HTTP_METHOD_NAME  "method"
+#define HTTP_TIMEOUT_NAME    "timeout"
+#define HTTP_HEADERS_NAME "headers"
+#define HTTP_ANY_STATUS_NAME "any-status"
+#define HTTP_CHARSET_NAME "charset"
+
+// statics
+
+static const String http_method_name(HTTP_METHOD_NAME);
+static const String http_timeout_name(HTTP_TIMEOUT_NAME);
+static const String http_headers_name(HTTP_HEADERS_NAME);
+static const String http_any_status_name(HTTP_ANY_STATUS_NAME);
+static const String http_charset_name(HTTP_CHARSET_NAME);
+
+// defines
+
 #define DEFAULT_USER_AGENT "parser3"
 
+// functions
 
-void fix_line_breaks(char* buf, size_t& size) {
-	if(size==0)
-		return;
-
+void fix_line_breaks(char *str, size_t& length) {
 	//_asm int 3;
-	const char* const eob=buf+size;
-	char* dest=buf;
+	const char* const eob=str+length;
+	char* dest=str;
 	// fix DOS: \r\n -> \n
 	// fix Macintosh: \r -> \n
-	char* bol=buf;
+	char* bol=str;
 	while(char* eol=(char*)memchr(bol, '\r', eob -bol)) {
 		size_t len=eol-bol;
 		if(dest!=bol)
@@ -109,24 +164,30 @@ void fix_line_breaks(char* buf, size_t& size) {
 
 		if(&eol[1]<eob && eol[1]=='\n') { // \r, \n = DOS
 			bol=eol+2;
-			size--; 
+			length--; 
 		} else // \r, not \n = Macintosh
 			bol=eol+1;
 	}
-	// last piece without \r, including terminating 0
+	// last piece without \r
 	if(dest!=bol)
 		memcpy(dest, bol, eob-bol); 
+	str[length]=0; // terminating
 }
 
-char* file_read_text(Pool& pool, const String& file_spec, 
-					 bool fail_on_read_problem,
-					 Hash *params, Hash** out_fields) {
-	void *result;  size_t size;
-	return file_read(pool, file_spec, result, size, true, params, out_fields, fail_on_read_problem)?(char *)result:0;
+char* file_read_text(Request_charsets& charsets, 
+		     const String& file_spec, 
+		     bool fail_on_read_problem,
+		     HashStringValue* params/*, HashStringValue* * out_fields*/) {
+	File_read_result file=
+		file_read(charsets, file_spec, true, params, fail_on_read_problem);
+	return file.success?file.str:0;
 }
 
+#ifdef PA_HTTP
 //http request stuff
-/* ************************ http stuff *********************** */
+
+#undef CRLF
+#define CRLF "\r\n"
 
 static bool set_addr(struct sockaddr_in *addr, const char* host, const short port){
     memset(addr, 0, sizeof(*addr)); 
@@ -143,32 +204,34 @@ static bool set_addr(struct sockaddr_in *addr, const char* host, const short por
 }
 
 static int http_read_response(String& response, int sock, bool fail_on_status_ne_200){
-	const String* status_code=0;
-	ssize_t EOLat=0;
+	int result=0;
+	size_t EOLat=0;
 	while(true) {
-		char *buf=(char *)response.pool().malloc(MAX_STRING); 
+		char *buf=new(PointerFreeGC) char[MAX_STRING]; 
 		ssize_t size=recv(sock, buf, MAX_STRING, 0); 
 		if(size<=0)
 			break;
-		response.APPEND_TAINTED(buf, size, "remote HTTP server response", 0); 
-		if(!status_code && (EOLat=response.pos("\r\n", 2))>=0) { // checking status in first response
+		response.append_strdup(buf, size, String::L_TAINTED); 
+		if(!result && (EOLat=response.pos(CRLF, 2))!=STRING_NOT_FOUND) { // checking status in first response
 			const String& status_line=response.mid(0, (size_t)EOLat);
-			Array astatus(response.pool()); 
-			size_t pos_after_ref=0; status_line.split(astatus, &pos_after_ref, " ", 1); 
-			status_code=astatus.get_string(1); 
+			ArrayString astatus; 
+			size_t pos_after=0;
+			status_line.split(astatus, pos_after, " "); 
+			const String& status_code=*astatus.get(1);
+			result=status_code.as_int(); 
 
-			if(fail_on_status_ne_200 && *status_code!="200")
+			if(fail_on_status_ne_200 && result!=200)
 				throw Exception("http.status",
-					status_code,
+					&status_code,
 					"invalid HTTP response status");
 		}
 	}
-	if(status_code)
-		return status_code->as_int();
+	if(result)
+		return result;
 	else
 		throw Exception("http.response",
 			0,
-			"bad response from host - no status found (size=%lu)", response.size()); 
+			"bad response from host - no status found (size=%lu)", response.length()); 
 }
 
 /* ********************** request *************************** */
@@ -185,14 +248,13 @@ static void timeout_handler(int sig){
 #endif
 
 static int http_request(String& response,
-			const String *origin_string, 
 			const char* host, int port, 
 			const char* request, 
 			int timeout,
 			bool fail_on_status_ne_200) {
 	if(!host)
 		throw Exception("http.host", 
-			origin_string, 
+			0, 
 			"zero hostname");  //never
 
 #ifdef PA_USE_ALARM
@@ -216,24 +278,24 @@ static int http_request(String& response,
 		try {
 			int result;
 			struct sockaddr_in dest;
-
-	    		if(!set_addr(&dest, host, port))
+		
+			if(!set_addr(&dest, host, port))
 				throw Exception("http.host", 
-					origin_string, 
+					0, 
 					"can not resolve hostname \"%s\"", host); 
 			
 			if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/))<0)
 				throw Exception("http.connect", 
-					origin_string, 
+					0, 
 					"can not make socket: %s (%d)", strerror(errno), errno); 
 			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest)))
 				throw Exception("http.connect", 
-					origin_string, 
+					0, 
 					"can not connect to host \"%s\": %s (%d)", host, strerror(errno), errno); 
 			size_t request_size=strlen(request);
 			if(send(sock, request, request_size, 0)!=(ssize_t)request_size)
 				throw Exception("http.connect", 
-					origin_string, 
+					0, 
 					"error sending request: %s (%d)", strerror(errno), errno); 
 
 			result=http_read_response(response, sock, fail_on_status_ne_200); 
@@ -248,193 +310,243 @@ static int http_request(String& response,
 #endif
 			if(sock>=0) 
 				closesocket(sock); 
-			/*re*/throw;
+			rethrow;
 		}
 #ifdef PA_USE_ALARM
 	}
 #endif
 }
 
-#undef CRLF
-#define CRLF "\r\n"
-
 #ifndef DOXYGEN
 struct Http_pass_header_info {
+	Request_charsets* charsets;
 	String* request;
 	bool user_agent_specified;
 };
 #endif
-static void http_pass_header(const Hash::Key& key, Hash::Val *value, void *info)
-{
-	Http_pass_header_info& i=*static_cast<Http_pass_header_info *>(info);
-	Pool& pool=i.request->pool();
-    
-    *(i.request)<<key<<": "
-		<< attributed_meaning_to_string(*static_cast<Value *>(value), String::UL_HTTP_HEADER, false)
-		<< CRLF; 
+static void http_pass_header(HashStringValue::key_type key, 
+			     HashStringValue::value_type value, 
+			     Http_pass_header_info *info) {
+    *info->request <<key<<": "
+	<< attributed_meaning_to_string(*value, String::L_HTTP_HEADER, false)
+	<< CRLF; 
 	
-	if(key.change_case(pool, String::CC_UPPER)=="USER-AGENT")
-		i.user_agent_specified=true;
+    if(String(key, String::L_TAINTED).change_case(info->charsets->source(), String::CC_UPPER)=="USER-AGENT")
+	info->user_agent_specified=true;
 }
-/// @todo build .cookies field. use ^file.tables.SET-COOKIES.menu{ for now
-static void file_read_http(Pool& pool, const String& file_spec, 
-					void*& data, size_t& data_size, 
-					Hash *options=0, Hash** out_fields=0) {
+
+
+static Charset* detect_charset(Charset& source_charset, const String& content_type_value) {
+	const StringBody CONTENT_TYPE_VALUE=
+		content_type_value.change_case(source_charset, String::CC_UPPER);
+	// content-type: xxx/xxx; source_charset=WE-NEED-THIS
+	// content-type: xxx/xxx; source_charset="WE-NEED-THIS"
+	// content-type: xxx/xxx; source_charset="WE-NEED-THIS";
+	size_t before_charseteq_pos=CONTENT_TYPE_VALUE.pos("CHARSET=");
+	if(before_charseteq_pos!=STRING_NOT_FOUND) {
+		size_t charset_begin=before_charseteq_pos+8/*CHARSET="*/;
+		size_t open_quote_pos=CONTENT_TYPE_VALUE.pos('"', charset_begin);
+		bool quoted=open_quote_pos==charset_begin;
+		if(quoted)
+			charset_begin++; // skip opening '"'
+		size_t charset_end=CONTENT_TYPE_VALUE.length();
+		if(quoted) {
+			size_t close_quote_pos=CONTENT_TYPE_VALUE.pos('"', charset_begin);
+			if(close_quote_pos!=STRING_NOT_FOUND)
+				charset_end=close_quote_pos;
+		} else {
+			size_t delim_pos=CONTENT_TYPE_VALUE.pos(';', charset_begin);
+			if(delim_pos!=STRING_NOT_FOUND)
+				charset_end=delim_pos;
+		}
+		const StringBody CHARSET_NAME_BODY=
+			CONTENT_TYPE_VALUE.mid(charset_begin, charset_end);
+
+		return &charsets.get(CHARSET_NAME_BODY);
+	}
+
+	return 0;
+}
+
+
+#ifndef DOXYGEN
+struct File_read_http_result {
+	char *str; size_t length;
+	HashStringValue* headers;
+}; 
+#endif
+static File_read_http_result file_read_http(Request_charsets& charsets, 
+					    const String& file_spec, 
+					    HashStringValue *options=0) {
+	File_read_http_result result;
 	char host[MAX_STRING]; 
 	const char* uri; 
 	int port;
-	const char* method="GET"; 
+	const char* method=0;
 	int timeout=2;
 	bool fail_on_status_ne_200=true;
-	Value *vheaders=0;
-
-	String& connect_string=*new(pool) String(pool); // must not be local [exception may be reported outside]
-	// not in ^sql{... UL_SQL ...} spirit, but closer to ^file::load one
-	connect_string.append(file_spec, String::UL_URI); // tainted pieces -> URI pieces
-
-	char* connect_string_cstr=connect_string.cstr(String::UL_UNSPECIFIED); 
-	if(strncmp(connect_string_cstr, "http://", 7)!=0)
-		throw Exception(0, 
-			&connect_string, 
-			"does not start with http://"); //never
-	connect_string_cstr+=7;
-
-	strncpy(host, connect_string_cstr, sizeof(host)-1);  host[sizeof(host)-1]=0;
-	char* host_uri=lsplit(host, '/'); 
-	uri=host_uri?connect_string_cstr+(host_uri-1-host):"/"; 
-	char* port_cstr=lsplit(host, ':'); 
-	char* error_pos=0;
-	port=port_cstr?strtol(port_cstr, &error_pos, 0):80;
+	Value* vheaders=0;
+	Charset *asked_remote_charset=0;
 
 	if(options) {
 		int valid_options=0;
-		if(Value *vmethod=static_cast<Value *>(options->get(*http_method_name))) {
+		if(Value* vmethod=options->get(http_method_name)) {
 			valid_options++;
-			method=vmethod->as_string().cstr(); 
+			method=vmethod->as_string().cstr();
 		}
-		if(Value *vtimeout=static_cast<Value *>(options->get(*http_timeout_name))) {
+		if(Value* vtimeout=options->get(http_timeout_name)) {
 			valid_options++;
 			timeout=vtimeout->as_int(); 
 		}
-		if(vheaders=static_cast<Value *>(options->get(*http_headers_name))) {
+		if(vheaders=options->get(http_headers_name)) {
 			valid_options++;
 		}
-		if(Value *vany_status=static_cast<Value *>(options->get(*http_any_status_name))) {
+		if(Value* vany_status=options->get(http_any_status_name)) {
 			valid_options++;
 			fail_on_status_ne_200=!vany_status->as_bool(); 
 		}
+		if(Value* vcharset_name=options->get(http_charset_name)) {
+			valid_options++;
+			asked_remote_charset=&::charsets.get(vcharset_name->as_string().
+				change_case(charsets.source(), String::CC_UPPER));
+		}
 
-		if(valid_options!=options->size())
+		if(valid_options!=options->count())
 			throw Exception("parser.runtime",
 				0,
 				"invalid option passed");
-	} 
+	}
+	if(!asked_remote_charset) // defaulting to $request:charset
+		asked_remote_charset=&charsets.source();
 
-	//making request
-	String request(pool);
-	request<< method <<" "<< uri <<" HTTP/1.0" CRLF "Host: "<< host<< CRLF; 
-	bool user_agent_specified=false;
-	if(vheaders && !vheaders->is_string()) { // allow empty
-		if(Hash *headers=vheaders->get_hash(&connect_string)) {
-			Http_pass_header_info info={&request};
-			headers->for_each(http_pass_header, &info); 
-			user_agent_specified=info.user_agent_specified;
-		} else
-			throw Exception("parser.runtime", 
-				&connect_string,
-				"headers param must be hash"); 
-	};
-	if(!user_agent_specified) // defaulting
-		request << "user-agent: " DEFAULT_USER_AGENT CRLF;
-	request<<CRLF; 
+	//preparing request
+	String& connect_string=*new String;
+	// not in ^sql{... L_SQL ...} spirit, but closer to ^file::load one
+	connect_string.append(file_spec, String::L_URI); // tainted pieces -> URI pieces
+
+	const char* request_cstr;
+	{
+		// influence URLencoding of tainted pieces to String::L_URI lang
+		Temp_client_charset temp(charsets, *asked_remote_charset);
+
+		const char* connect_string_cstr=connect_string.cstr(String::L_UNSPECIFIED); 
+
+		const char* current=connect_string_cstr;
+		if(strncmp(current, "http://", 7)!=0)
+			throw Exception(0, 
+				&connect_string, 
+				"does not start with http://"); //never
+		current+=7;
+
+		strncpy(host, current, sizeof(host)-1);  host[sizeof(host)-1]=0;
+		char* host_uri=lsplit(host, '/'); 
+		uri=host_uri?current+(host_uri-1-host):"/"; 
+		char* port_cstr=lsplit(host, ':'); 
+		char* error_pos=0;
+		port=port_cstr?strtol(port_cstr, &error_pos, 0):80;
+
+
+		//making request
+		String request;
+		if(method)
+			request<<method;
+		else
+			request<<"GET";
+		request<< " "<< uri <<" HTTP/1.0" CRLF
+			"host: "<< host << CRLF; 
+		bool user_agent_specified=false;
+		if(vheaders && !vheaders->is_string()) { // allow empty
+			if(HashStringValue *headers=vheaders->get_hash()) {
+				Http_pass_header_info info={&charsets, &request};
+				headers->for_each(http_pass_header, &info); 
+				user_agent_specified=info.user_agent_specified;
+			} else
+				throw Exception("parser.runtime", 
+					&connect_string,
+					"headers param must be hash"); 
+		};
+		if(!user_agent_specified) // defaulting
+			request << "user-agent: " DEFAULT_USER_AGENT CRLF;
+		request << CRLF; 
+
+		request_cstr=request.cstr(String::L_UNSPECIFIED);
+	}
+	// recode those pieces which are not in String::L_URI lang 
+	// [those violating HTTP standard, but widly used]
+	request_cstr=Charset::transcode(
+		String::C(request_cstr, strlen(request_cstr)),
+		charsets.source(),
+		*asked_remote_charset);
 	
 	//sending request
-	String response(pool); 
+	String response;
 	int status_code=http_request(response,
-		&connect_string, host, port, request.cstr(String::UL_UNSPECIFIED), 
+		host, port, request_cstr, 
 		timeout, fail_on_status_ne_200); 
 	
 	//processing results	
-	int pos=response.pos(CRLF CRLF, 4); 
-	if(pos<1){
+	size_t pos=response.pos(CRLF CRLF, 4); 
+	if(pos==STRING_NOT_FOUND || pos<1) {
 		throw Exception("http.response", 
 			&connect_string,
 			"bad response from host - no headers found"); 
 	}
-	String header_block=response.mid(0, pos); 
-	String body=response.mid(pos+4, response.size()); 
+	const String& header_block=response.mid(0, pos); 
+	const String& raw_body=response.mid(pos+4, response.length()); 
 	
-	Array aheaders(pool); 
-	Hash& headers=*new(pool) Hash(pool); 
-	VHash* vtables=new(pool) VHash(pool);
-	headers.put(*http_tables_name, vtables);
-	Hash& tables=vtables->hash(0);
-
-	size_t pos_after_ref=0;
-	header_block.split(aheaders, &pos_after_ref, CRLF, 2); 
+	ArrayString aheaders;
+	result.headers=new HashStringValue;
+	size_t pos_after=0;
+	header_block.split(aheaders, pos_after, CRLF); 
 	
 	//processing headers
-	for(int i=1;i<aheaders.size();i++) {
-		if(const String *line=aheaders.get_string(i)) {
-			pos=line->pos(": ", 2); 
-			if(pos<1)
-				throw Exception("http.response", 
-					&connect_string,
-					"bad response from host - bad header \"%s\"", line->cstr()); 
-		
-			const String& sname=line->mid(0, pos).change_case(pool, String::CC_UPPER);
-			const String& string=line->mid(pos+2, line->size());
-
-			// tables
-			{
-				Value *valready=(Value *)tables.get(sname);
-				bool existed=valready!=0;
-				Table *table;
-				if(existed) {
-					// second+ appearence
-					table=valready->get_table();
-				} else {
-					// first appearence
-					Array& columns=*new(pool) Array(pool, 1);
-					columns+=new(pool) String(pool, "value");
-					table=new(pool) Table(pool, 0, &columns);
-				}
-				// this string becomes next row
-				Array& row=*new(pool) Array(pool, 1);
-				row+=&string;
-				*table+=&row;
-				// not existed before? add it
-				if(!existed)
-					tables.put(sname, new(pool) VTable(pool, table));
-			}
-			headers.put(sname, new(pool) VString(string));
-		} else
+	size_t aheaders_count=aheaders.count();
+	Charset* real_remote_charset=0; // undetected, yet
+	for(size_t i=1; i<aheaders_count; i++) {
+		const String& line=*aheaders.get(i);
+		pos=line.pos(": ", 2); 
+		if(pos==STRING_NOT_FOUND || pos<1)
 			throw Exception("http.response", 
-				&connect_string, 
-				"bad response from host - bad headers \"%s\"", header_block.cstr()); 
+				&connect_string,
+				"bad response from host - bad header \"%s\"", line.cstr());
+		const StringBody HEADER_NAME=
+			line.mid(0, pos).change_case(charsets.source(), String::CC_UPPER);
+		const String& header_value=line.mid(pos+2, line.length());
+		if(HEADER_NAME=="CONTENT-TYPE")
+			real_remote_charset=detect_charset(charsets.source(), header_value);
+		result.headers->put(HEADER_NAME, new VString(header_value));
 	}
+	// defaulting to used-asked charset [it's never empty!]
+	if(!real_remote_charset)
+		real_remote_charset=asked_remote_charset;
 
 	// output response
-	data=body.cstr(); data_size=body.size();
-	if(out_fields) {
-		headers.put(*file_status_name, new(pool) VInt(pool, status_code)); 
-		*out_fields=&headers;
-	}
+	String::C real_body=Charset::transcode(
+		String::C(raw_body.cstrm()/*must be modifiable*/, raw_body.length()),
+		*real_remote_charset,
+		charsets.source());
+
+	result.str=const_cast<char *>(real_body.str); // hacking a little
+	result.length=real_body.length;
+	result.headers->put(file_status_name, new VInt(status_code));
+	return result;
 }
+
+#endif
 
 #ifndef DOXYGEN
 struct File_read_action_info {
-	void **data; size_t *data_size;
+	char **data; size_t *data_size;
 }; 
 #endif
-static void file_read_action(Pool& pool, 
-							 struct stat& finfo, 
-							 int f, 
-							 const String& file_spec, const char* fname, bool as_text, 
-							 void *context) {
+static void file_read_action(
+			     struct stat& finfo, 
+			     int f, 
+			     const String& file_spec, const char* fname, bool as_text, 
+			     void *context) {
 	File_read_action_info& info=*static_cast<File_read_action_info *>(context); 
 	if(size_t to_read_size=(size_t)finfo.st_size) { 
-		*info.data=pool.malloc(to_read_size+(as_text?1:0), 3); 
+		*info.data=new(PointerFreeGC) char[to_read_size+(as_text?1:0)]; 
 		*info.data_size=(size_t)read(f, *info.data, to_read_size); 
 
 		if(ssize_t(*info.data_size)<0 || *info.data_size>to_read_size)
@@ -444,7 +556,7 @@ static void file_read_action(Pool& pool,
 					*info.data_size, to_read_size); 
 	} else { // empty file
 		if(as_text) {
-			*info.data=pool.malloc(1); 
+			*info.data=new(PointerFreeGC) char[1]; 
 			*(char*)(*info.data)=0;
 		} else 
 			*info.data=0;
@@ -452,62 +564,67 @@ static void file_read_action(Pool& pool,
 		return;
 	}
 }
-bool file_read(Pool& pool, const String& file_spec, 
-			   void*& data, size_t& data_size, 
-			   bool as_text, Hash *params, Hash** out_fields, 
+File_read_result file_read(Request_charsets& charsets, const String& file_spec, 
+			   bool as_text, HashStringValue *params,
 			   bool fail_on_read_problem) {
-	bool result;
-	if(file_spec.starts_with("http://", 7)) {
+	File_read_result result={false};
+#ifdef PA_HTTP
+	if(file_spec.starts_with("http://")) {
 		// fail on read problem
-		file_read_http(pool, file_spec, data, data_size, params, out_fields); 
-		result=true;
+		File_read_http_result http=file_read_http(charsets, file_spec, params);
+		result.success=true;
+		result.str=http.str;
+		result.length=http.length;
+		result.headers=http.headers; 
 	} else {
-		File_read_action_info info={&data, &data_size}; 
-		result=file_read_action_under_lock(pool, file_spec, 
+#endif
+		File_read_action_info info={&result.str, &result.length}; 
+		result.success=file_read_action_under_lock(file_spec, 
 			"read", file_read_action, &info, 
 			as_text, fail_on_read_problem); 
+#ifdef PA_HTTP
 	}
+#endif
 
-	if(result && as_text) {
+	if(result.success && as_text) {
 		// UTF-8 signature: EF BB BF
-		if(data_size>=3) {
-			char *in=(char *)data;
-			if((in[0] == '\xEF') && (in[1] == '\xBB') &&
-				(in[2] == '\xBF')) {
-				data=in+3; data_size-=3;// skip prefix
+		if(result.length>=3) {
+			char *in=(char *)result.str;
+			if(strncmp(in, "\xEB\xBB\xBF", 3)==0) {
+				result.str=in+3; result.length-=3;// skip prefix
 			}
 		}
 
-		fix_line_breaks((char *)(data), data_size); 
+		fix_line_breaks((char *)(result.str), result.length); 
 		// note: after fixing
-		((char*&)(data))[data_size]=0;
+		((char*&)(result.str))[result.length]=0;
 	}
 
 	return result;
 }
 
-#ifdef PA_SAFE_MODE
-void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname) {
-	if(finfo.st_uid/*foreign?*/!=geteuid()
-		&& finfo.st_gid/*foreign?*/!=getegid())
-		throw Exception("parser.runtime", 
-			&file_spec, 
-			"parser is in safe mode: "
-			"reading files of foreign group and user disabled "
-			"[recompile parser with --disable-safe-mode configure option], "
-			"actual filename '%s', "
-			"fuid(%d)!=euid(%d) or fgid(%d)!=egid(%d)", 
-				fname,
-				finfo.st_uid, geteuid(),
-				finfo.st_gid, getegid());
-}
-#endif
+#ifdef PA_SAFE_MODE 
+void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname) { 
+	if(finfo.st_uid/*foreign?*/!=geteuid() 
+		&& finfo.st_gid/*foreign?*/!=getegid()) 
+		throw Exception("parser.runtime",  
+			&file_spec,  
+			"parser is in safe mode: " 
+			"reading files of foreign group and user disabled " 
+			"[recompile parser with --disable-safe-mode configure option], " 
+			"actual filename '%s', " 
+			"fuid(%d)!=euid(%d) or fgid(%d)!=egid(%d)",  
+				fname, 
+				finfo.st_uid, geteuid(), 
+				finfo.st_gid, getegid()); 
+} 
+#endif 
 
-bool file_read_action_under_lock(Pool& pool, const String& file_spec, 
+bool file_read_action_under_lock(const String& file_spec, 
 				const char* action_name, File_read_action action, void *context, 
 				bool as_text, 
 				bool fail_on_read_problem) {
-	const char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
+	const char* fname=file_spec.cstr(String::L_FILE_SPEC); 
 	int f;
 
 	// first open, next stat:
@@ -525,24 +642,24 @@ bool file_read_action_under_lock(Pool& pool, const String& file_spec,
 				throw Exception("file.lock", 
 						&file_spec, 
 						"shared lock failed: %s (%d), actual filename '%s'", 
-							strerror(errno), errno, fname); 
+							strerror(errno), errno, fname);
 
 			struct stat finfo;
 			if(stat(fname, &finfo)!=0)
 				throw Exception("file.missing", // hardly possible: we just opened it OK
 					&file_spec, 
 					"stat failed: %s (%d), actual filename '%s'", 
-						strerror(errno), errno, fname); 
+						strerror(errno), errno, fname);
 
 #ifdef PA_SAFE_MODE
 			check_safe_mode(finfo, file_spec, fname);
 #endif
 
-			action(pool, finfo, f, file_spec, fname, as_text, context); 
+			action(finfo, f, file_spec, fname, as_text, context); 
 		} catch(...) {
 			unlock(f);close(f); 
 			if(fail_on_read_problem)
-				/*re*/throw;
+				rethrow;
 			return false;			
 		} 
 
@@ -553,16 +670,16 @@ bool file_read_action_under_lock(Pool& pool, const String& file_spec,
 			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
 				&file_spec, 
 				"%s failed: %s (%d), actual filename '%s'", 
-					action_name, strerror(errno), errno, fname); 
+					action_name, strerror(errno), errno, fname);
 		return false;
 	}
 }
 
 static void create_dir_for_file(const String& file_spec) {
 	size_t pos_after=1;
-	int pos_before;
-	while((pos_before=file_spec.pos("/", 1, pos_after))>=0) {
-		mkdir(file_spec.mid(0, pos_before).cstr(String::UL_FILE_SPEC), 0775); 
+	size_t pos_before;
+	while((pos_before=file_spec.pos('/', pos_after))!=STRING_NOT_FOUND) {
+		mkdir(file_spec.mid(0, pos_before).cstr(String::L_FILE_SPEC), 0775); 
 		pos_after=pos_before+1;
 	}
 }
@@ -574,7 +691,7 @@ bool file_write_action_under_lock(
 				bool do_append, 
 				bool do_block, 
 				bool fail_on_lock_problem) {
-	const char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
+	const char* fname=file_spec.cstr(String::L_FILE_SPEC); 
 	int f;
 	if(access(fname, W_OK)!=0) // no
 		create_dir_for_file(file_spec); 
@@ -587,7 +704,7 @@ bool file_write_action_under_lock(
 			Exception e("file.lock", 
 				&file_spec, 
 				"shared lock failed: %s (%d), actual filename '%s'", 
-				strerror(errno), errno, fname); 
+				strerror(errno), errno, fname);
 			close(f); 
 			if(fail_on_lock_problem)
 				throw e;
@@ -602,7 +719,7 @@ bool file_write_action_under_lock(
 				ftruncate(f, lseek(f, 0, SEEK_CUR)); // one can not use O_TRUNC, read lower
 #endif
 			unlock(f);close(f); 
-			/*re*/throw;
+			rethrow;
 		}
 		
 #ifdef HAVE_FTRUNCATE
@@ -615,19 +732,19 @@ bool file_write_action_under_lock(
 		throw Exception(errno==EACCES?"file.access":0, 
 			&file_spec, 
 			"%s failed: %s (%d), actual filename '%s'", 
-				action_name, strerror(errno), errno, fname); 
+				action_name, strerror(errno), errno, fname);
 	// here should be nothing, see rethrow above
 }
 
 #ifndef DOXYGEN
 struct File_write_action_info {
-	const void *data; size_t size;
+	const char* str; size_t length;
 }; 
 #endif
 static void file_write_action(int f, void *context) {
 	File_write_action_info& info=*static_cast<File_write_action_info *>(context); 
-	if(info.size) {
-		int written=write(f, info.data, info.size); 
+	if(info.length) {
+		int written=write(f, info.str, info.length); 
 		if(written<0)
 			throw Exception(0, 
 				0, 
@@ -636,33 +753,33 @@ static void file_write_action(int f, void *context) {
 }
 void file_write(
 				const String& file_spec, 
-				const void *data, size_t size, 
+				const char* data, size_t size, 
 				bool as_text, 
 				bool do_append) {
 	File_write_action_info info={data, size}; 
 	file_write_action_under_lock(
-				file_spec, 
-				"write", file_write_action, &info, 
-				as_text, 
-				do_append); 
+		file_spec, 
+		"write", file_write_action, &info, 
+		as_text, 
+		do_append); 
 }
 
 // throws nothing! [this is required in file_move & file_delete]
 static void rmdir(const String& file_spec, size_t pos_after) {
-	int pos_before;
-	if((pos_before=file_spec.pos("/", 1, pos_after))>=0)
+	size_t pos_before;
+	if((pos_before=file_spec.pos('/', pos_after))!=STRING_NOT_FOUND)
 		rmdir(file_spec, pos_before+1); 
 	
-	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::UL_FILE_SPEC)); 
+	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::L_FILE_SPEC)); 
 }
 bool file_delete(const String& file_spec, bool fail_on_read_problem) {
-	const char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
+	const char* fname=file_spec.cstr(String::L_FILE_SPEC); 
 	if(unlink(fname)!=0)
 		if(fail_on_read_problem)
 			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
 				&file_spec, 
 				"unlink failed: %s (%d), actual filename '%s'", 
-					strerror(errno), errno, fname); 
+					strerror(errno), errno, fname);
 		else
 			return false;
 
@@ -670,8 +787,8 @@ bool file_delete(const String& file_spec, bool fail_on_read_problem) {
 	return true;
 }
 void file_move(const String& old_spec, const String& new_spec) {
-	const char* old_spec_cstr=old_spec.cstr(String::UL_FILE_SPEC); 
-	const char* new_spec_cstr=new_spec.cstr(String::UL_FILE_SPEC); 
+	const char* old_spec_cstr=old_spec.cstr(String::L_FILE_SPEC); 
+	const char* new_spec_cstr=new_spec.cstr(String::L_FILE_SPEC); 
 	
 	create_dir_for_file(new_spec); 
 
@@ -679,7 +796,7 @@ void file_move(const String& old_spec, const String& new_spec) {
 		throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
 			&old_spec, 
 			"rename failed: %s (%d), actual filename '%s' to '%s'", 
-				strerror(errno), errno, old_spec_cstr, new_spec_cstr); 
+				strerror(errno), errno, old_spec_cstr, new_spec_cstr);
 
 	rmdir(old_spec, 1); 
 }
@@ -694,12 +811,12 @@ bool entry_exists(const char* fname, struct stat *afinfo) {
 }
 
 bool entry_exists(const String& file_spec) {
-	const char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
+	const char* fname=file_spec.cstr(String::L_FILE_SPEC); 
 	return entry_exists(fname, 0); 
 }
 
 static bool entry_readable(const String& file_spec, bool need_dir) {
-    char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
+	char* fname=file_spec.cstrm(String::L_FILE_SPEC); 
 	if(need_dir) {
 		size_t size=strlen(fname); 
 		while(size) {
@@ -723,14 +840,14 @@ bool file_readable(const String& file_spec) {
 bool dir_readable(const String& file_spec) {
 	return entry_readable(file_spec, true); 
 }
-String *file_readable(const String& path, const String& name) {
-	String *result=new(path.pool()) String(path); 
-	*result << "/"; 
-	*result << name;
-	return file_readable(*result)?result:0;
+const String* file_readable(const String& path, const String& name) {
+	String& result=*new String(path);
+	result << "/"; 
+	result << name;
+	return file_readable(result)?&result:0;
 }
 bool file_executable(const String& file_spec) {
-    return access(file_spec.cstr(String::UL_FILE_SPEC), X_OK)==0;
+    return access(file_spec.cstr(String::L_FILE_SPEC), X_OK)==0;
 }
 
 bool file_stat(const String& file_spec, 
@@ -739,15 +856,14 @@ bool file_stat(const String& file_spec,
 			   time_t& rmtime, 
 			   time_t& rctime, 
 			   bool fail_on_read_problem) {
-	Pool& pool=file_spec.pool(); 
-	const char* fname=file_spec.cstr(String::UL_FILE_SPEC); 
-    struct stat finfo;
+	const char* fname=file_spec.cstr(String::L_FILE_SPEC); 
+	struct stat finfo;
 	if(stat(fname, &finfo)!=0)
 		if(fail_on_read_problem)
 			throw Exception("file.missing", 
 				&file_spec, 
 				"getting file size failed: %s (%d), real filename '%s'", 
-					strerror(errno), errno, fname); 
+					strerror(errno), errno, fname);
 		else
 			return false;
 	rsize=finfo.st_size;
@@ -799,7 +915,7 @@ char* rsplit(char* string, char delim) {
 }
 
 /// @todo less stupid type detection
-char* format(Pool& pool, double value, char* fmt) {
+const char* format(double value, char* fmt) {
 	char local_buf[MAX_NUMBER]; 
 	size_t size;
 	
@@ -814,15 +930,13 @@ char* format(Pool& pool, double value, char* fmt) {
 	else
 		size=snprintf(local_buf, sizeof(local_buf), "%d", (int)value); 
 	
-	char* pool_buf=(char *)pool.malloc(size+1, 4); 
-	memcpy(pool_buf, local_buf, size+1); 
-	return pool_buf;
+	return pa_strdup(local_buf, size);
 }
 
 size_t stdout_write(const void *buf, size_t size) {
 #ifdef WIN32
 	do{
-		int chunk_written=fwrite(buf, 1, min(8*0x400, size), stdout); 
+		int chunk_written=fwrite(buf, 1, min((size_t)8*0x400, size), stdout); 
 		if(chunk_written<=0)
 			break;
 		size-=chunk_written;
@@ -835,8 +949,8 @@ size_t stdout_write(const void *buf, size_t size) {
 #endif
 }
 
-char* unescape_chars(Pool& pool, const char* cp, int len) {
-	char* s=(char *)pool.malloc(len + 1, 5); 
+char* unescape_chars(const char* cp, int len) {
+	char* s=new(PointerFreeGC) char[len + 1]; 
 	enum EscapeState {
 		EscapeRest, 
 		EscapeFirst, 
@@ -957,7 +1071,7 @@ int __vsnprintf(char* b, size_t s, const char* f, va_list l) {
 	win32: 
 	mk:@MSITStore:C:\Program%20Files\Microsoft%20Visual%20Studio\MSDN\2001APR\1033\vccore.chm::/html/_crt__vsnprintf.2c_._vsnwprintf.htm
 
-	  if the number of bytes to write exceeds buffer, then count bytes are written and –1 is returned
+	  if the number of bytes to write exceeds buffer, then count bytes are written and Ö1 is returned
 	*/
 	r=_vsnprintf(b, s, f, l); 
 	if(r<0) 
@@ -1007,75 +1121,3 @@ int pa_sleep(unsigned long secs, unsigned long usecs) {
 }
 
 
-// attributed meaning
-
-/// http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
-static size_t date_attribute(const VDate& vdate, char *buf, size_t buf_size) {
-    const char month_names[12][4]={
-		"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-    const char days[7][4]={
-		"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-
-	time_t when=vdate.get_time();
-	struct tm *tms=gmtime(&when);
-	if(!tms)
-		throw Exception(0,
-			0,
-			"bad time in attribute value (seconds from epoch=%ld)", when);
-	return snprintf(buf, MAX_STRING, "%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT", 
-		days[tms->tm_wday],
-		tms->tm_mday,month_names[tms->tm_mon],tms->tm_year+1900,
-		tms->tm_hour,tms->tm_min,tms->tm_sec);
-}
-static void append_attribute_meaning(String& result,
-									 Value& value, String::Untaint_lang lang, bool forced) {
-	if(const String *string=value.get_string())
-		result.append(string->join_chains(result.pool(), 0), lang, forced);
-	else
-		if(Value *vdate=value.as(VDATE_TYPE, false)) {
-			char *buf=(char *)result.malloc(MAX_STRING);
-			size_t size=date_attribute(*static_cast<VDate *>(vdate), 
-				buf, MAX_STRING);
-
-			result.APPEND_CLEAN(buf, size, "converted from date", 0);
-		} else
-			throw Exception("parser.runtime",
-				&result,
-				"trying to append here neither string nor date (%s)",
-					value.type());
-}
-#ifndef DOXYGEN
-struct Attributed_meaning_info {
-	String *header; // header line being constructed
-	String::Untaint_lang lang; // language in which to append to that line
-	bool forced; // do they force that lang?
-};
-#endif
-static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *avalue, 
-										  void *info) {
-	if(akey==VALUE_NAME)
-		return;
-
-	Attributed_meaning_info& ami=*static_cast<Attributed_meaning_info *>(info);
-
-	// ...; charset=windows1251
-	*ami.header << "; ";
-	ami.header->append(akey, ami.lang, ami.forced);
-	*ami.header << "=";
-	append_attribute_meaning(*ami.header, *static_cast<Value *>(avalue), ami.lang, ami.forced);
-}
-const String& attributed_meaning_to_string(Value& meaning, 
-										   String::Untaint_lang lang, bool forced) {
-	String &result=*new(meaning.pool()) String(meaning.pool());
-	if(Hash *hash=meaning.get_hash(0)) {
-		// $value(value) $subattribute(subattribute value)
-		if(Value *value=static_cast<Value *>(hash->get(*value_name)))
-			append_attribute_meaning(result, *value, lang, forced);
-
-		Attributed_meaning_info attributed_meaning_info={&result, lang};
-		hash->for_each(append_attribute_subattribute, &attributed_meaning_info);
-	} else // result value
-		append_attribute_meaning(result, meaning, lang, forced);
-
-	return result;
-}

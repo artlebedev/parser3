@@ -92,7 +92,8 @@ Xне сделано, видимо, не будет сделано
         default as-is
     !^taint[[lang]][код]
         default "just tainted, language unknown"
-    !^process[[$caller.CLASS|$object|$КЛАСС:CLASS]]{строка, которая будет process-ed, как код}
+    !^process[[$caller.CLASS|$object|$КЛАСС:CLASS]]{строка, которая будет process-ed, как код}[во что переименовать @main]
+    !^process..[путь][во что переименовать @main]
       по умолчанию, методы компилируются в $self [в случае оператора, $self=$MAIN:CLASS]
     !^connect[protocol://строка соединения]]{код с ^sql[...]-ями}
         !mysql://user:pass@{host[:port]|[/unix/socket]}/database?
@@ -384,7 +385,9 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 !cookie
     !$cookie:имя считать старое или свежезаданное
     !$cookie:имя[значение] на 90 дней
-    !$cookie:имя[$.value[значение]  $.expires(дней, 0дней=session)]
+    !$cookie:имя[$.value[значение]  $.expires ЗНАЧЕНИЕ ]
+    !значение поля expires может быть 'session', date, или число дней(0дней=session)
+    ! если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
 
 !request
     !$request:query    
@@ -663,7 +666,7 @@ Xhashfile
     !^math:degrees radians
     !^math:pow sqrt
     !^math:random(ширина диапазона)
-    !^math:uuid 
+    !^math:uuid[]
         22C0983C-E26E-4169-BD07-77ECE9405BA5
         win32: пользуется cryptapi
         unix: пользуется /dev/urandom, 
@@ -884,6 +887,11 @@ xdoc(xnode)
         attribute that is already inuse
         elsewhere
 
+!memory
+    !^memory:compact[] собрать мусор, освободив место под новые данные
+    (предупреждение: память процесса никогда не освобождается)
+    полезно делать перед XSL transform.
+
 !status
     !чтобы класс был доступен, в apache нужно сказать 
     <Location /parser-status.html>
@@ -919,6 +927,19 @@ xdoc(xnode)
         !tv_usec
            $s[$status:rusage]
            ^s.tv_sec.format[%.0f].^s.tv_usec.format[%06.0f]
+
+    !$status:memory hash
+        !used
+            Includes some pages that were allocated but never written.		
+
+        !free
+
+        !ever_allocated_since_compact
+            Return the number of bytes allocated since the last collection.	
+
+        !ever_allocated_since_start
+            Return the total number of bytes [EVER(c)PAF] allocated in this process.		
+            Never decreases.							
 
 
 !DATA::=string | file
@@ -964,11 +985,8 @@ xdoc(xnode)
         !по-умолчанию, получение http status != 200 >> создает http.status ошибку,
         !это можно отключить, передав
         !$.any-status(1)
-    !file::load в дополнительные поля записывает 
-        !ПОЛЕ:значение (имена полей ответа заглавными буквами)
-        !tables << хеш их ПОЛЕ->table с единственным столбцом "value". 
-            в таких таблицах можно брать повторяющиеся заголовки. например, несколько set-cookies
-            todo:сделать отдельный cookies
+        !$.charset[кодировка удалённых докуметов по-умолчанию] << если сервер вернёт content-type:charset=ОНА_ПЕРЕБИВАЕТ
+    !file::load в дополнительные поля записывает ПОЛЕ:значение (имена полей ответа заглавными буквами)
 
 !системные типы ошибок:
     !parser.compile       ^test[}                компиляция (непарная скобка, ...)

@@ -1,19 +1,22 @@
 /** @file
 	Parser: parser @b operators.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2003/04/04 09:59:56 $";
+static const char* IDENT_OP_C="$Date: 2003/07/24 11:31:20 $";
 
 #include "classes.h"
+#include "pa_vmethod_frame.h"
+
 #include "pa_common.h"
 #include "pa_request.h"
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
 #include "pa_vdate.h"
 #include "pa_vmethod_frame.h"
+#include "pa_vclass.h"
 
 // limits
 
@@ -27,32 +30,70 @@ static const char* IDENT_OP_C="$Date: 2003/04/04 09:59:56 $";
 
 class VClassMAIN: public VClass {
 public:
-	VClassMAIN(Pool& apool);
+	VClassMAIN();
 };
+
+// defines for statics
+
+#define SWITCH_DATA_NAME "SWITCH-DATA"
+#define CACHE_DATA_NAME "CACHE-DATA"
+#define EXCEPTION_VAR_NAME "exception"
+
+// statics
+
+//^switch ^case
+static const String switch_data_name(SWITCH_DATA_NAME);
+//^cache
+static const String cache_data_name(CACHE_DATA_NAME);
+
+static const String exception_var_name(EXCEPTION_VAR_NAME);
+
+// helpers
+
+class Untaint_lang_name2enum: public Hash<const StringBody, String::Language> {
+public:
+	Untaint_lang_name2enum() {
+		#define ULN(name, LANG) \
+			put(StringBody(name), (value_type)(String::L_##LANG));
+		ULN("as-is", AS_IS);
+		ULN("optimized-as-is", AS_IS|String::L_OPTIMIZE_BIT);
+		ULN("file-spec", FILE_SPEC);
+		ULN("http-header", HTTP_HEADER);
+		ULN("mail-header", MAIL_HEADER);
+		ULN("uri", URI);
+		ULN("table", TABLE);
+		ULN("sql", SQL);
+		ULN("js", JS);
+		ULN("xml", XML);
+		ULN("optimized-xml", XML|String::L_OPTIMIZE_BIT);
+		ULN("html", HTML);
+		ULN("optimized-html", HTML|String::L_OPTIMIZE_BIT);
+		#undef ULN
+	}
+} untaint_lang_name2enum;
 
 // methods
 
-static void _if(Request& r, const String&, MethodParams *params) {
-	Value& condition_code=params->as_junction(0, "condition must be expression");
+static void _if(Request& r, MethodParams& params) {
+	Value& condition_code=params.as_junction(0, "condition must be expression");
 
 	bool condition=r.process_to_value(condition_code, 
 		/*0/*no name* /,*/
 		false/*don't intercept string*/).as_bool();
 	if(condition)
-		r.write_pass_lang(r.process(params->as_junction(1, "'then' parameter must be code")));
-	else if(params->size()>2)
-		r.write_pass_lang(r.process(params->as_junction(2, "'else' parameter must be code")));
+		r.write_pass_lang(r.process(params.as_junction(1, "'then' parameter must be code")));
+	else if(params.count()>2)
+		r.write_pass_lang(r.process(params.as_junction(2, "'else' parameter must be code")));
 }
 
-static void _untaint(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _untaint(Request& r, MethodParams& params) {
 
-	uchar lang;
-	if(params->size()==1)
-		lang=String::UL_AS_IS; // mark as simply 'tainted'. useful in html from sql 
+	String::Language lang;
+	if(params.count()==1)
+		lang=String::L_AS_IS; // mark as simply 'tainted'. useful in html from sql 
 	else {
-		const String& lang_name=params->as_string(0, "lang must be string");
-		lang=untaint_lang_name2enum->get_int(lang_name);
+		const String& lang_name=params.as_string(0, "lang must be string");
+		lang=untaint_lang_name2enum.get(lang_name);
 		if(!lang)
 			throw Exception(0,
 				&lang_name,
@@ -60,22 +101,20 @@ static void _untaint(Request& r, const String& method_name, MethodParams *params
 	}
 
 	{
-		Value& vbody=params->as_junction(params->size()-1, "body must be code");
+		Value& vbody=params.as_junction(params.count()-1, "body must be code");
 		
 		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
 		r.write_pass_lang(r.process(vbody)); // process marking tainted with that lang
 	}
 }
 
-static void _taint(Request& r, const String&, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	uchar lang;
-	if(params->size()==1)
-		lang=String::UL_TAINTED; // mark as simply 'tainted'. useful in table:set
+static void _taint(Request& r, MethodParams& params) {
+	String::Language lang;
+	if(params.count()==1)
+		lang=String::L_TAINTED; // mark as simply 'tainted'. useful in table:set
 	else {
-		const String& lang_name=params->as_string(0, "lang must be string");
-		lang=untaint_lang_name2enum->get_int(lang_name);
+		const String& lang_name=params.as_string(0, "lang must be string");
+		lang=untaint_lang_name2enum.get(lang_name);
 		if(!lang)
 			throw Exception(0,
 				&lang_name,
@@ -83,9 +122,9 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 	}
 
 	{
-		Value& vbody=params->as_no_junction(params->size()-1, "body must not be code");
+		Value& vbody=params.as_no_junction(params.count()-1, "body must not be code");
 		
-		String& result=*new(pool) String(pool);
+		String result;
 		result.append(
 			vbody.as_string(),  // process marking tainted with that lang
 			lang, true);  // force result language to specified
@@ -93,88 +132,76 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 	}
 }
 
-static void _process(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	const Method *main_method;
-	Value& target_self=params->size()>1?
-		params->as_no_junction(0, "target must not be code")
-		:r.get_method_frame()->caller()->self();
-	{
-		Value& vjunction=params->as_junction(params->size()-1, "body must be code");
+static void _process(Request& r, MethodParams& params) {
+	Method* main_method;
 
-		VStateless_class *target_class=target_self.get_last_derived_class();
+	size_t index=0;
+	Value* target_self;
+	Value& maybe_target_self=params[index];
+	if(maybe_target_self.get_string() || maybe_target_self.get_junction())
+		target_self=&r.get_method_frame()->caller()->self();
+	else {
+		target_self=&maybe_target_self;  index++;
+	}
+
+	{
+		VStateless_class *target_class=target_self->get_last_derived_class();
 		if(!target_class)
 			throw Exception("parser.runtime",
-				&method_name,
+				0,
 				"no target class");
-		
-		// evaluate source to process
-		const String& source=r.process_to_string(vjunction);
 
 		// temporary remove language change
-		Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
+		Temp_lang temp_lang(r, String::L_PASS_APPENDED);
 		// temporary zero @main so to maybe-replace it in processed code
-		Temp_method temp_method_main(*target_class, r.main_method_name, 0);
+		Temp_method temp_method_main(*target_class, main_method_name, 0);
 		// temporary zero @auto so it wouldn't be auto-called in Request::use_buf
-		Temp_method temp_method_auto(*target_class, *auto_method_name, 0);
-		
-		// calculate pseudo file name of processed chars
-		// would be something like "/some/file(4) process"
-		char local_place[MAX_STRING];
-#ifndef NO_STRING_ORIGIN
-		const Origin& source_origin=source.origin();
-		const Origin& method_origin=method_name.origin();
-		size_t place_size;
-		if(source_origin.file==method_origin.file)
-			place_size=snprintf(local_place, MAX_STRING, "%s(%d) %s",  // same file
-				source_origin.file?source_origin.file:"unknown_file", 1+source_origin.line, 
-				method_name.cstr())+1;
-		else // different files ^process{external__file_text__or__sql}
-			place_size=snprintf(local_place, MAX_STRING, "%s", 
-				source_origin.file?source_origin.file:"unknown_file")+1;
-#else
-		strncpy(local_place, method_name.cstr(), MAX_STRING-1); place[MAX_STRING-1]=0;
-		size_t place_size=strlen(local_place)+1;
-#endif
-		char *heap_place=(char *)r.malloc(place_size);
-		memcpy(heap_place, local_place, place_size);
+		Temp_method temp_method_auto(*target_class, auto_method_name, 0);
 
-		// process source code, append processed methods to 'self' class
-		// maybe-define new @main
-		r.use_buf(*target_class,
-			source.cstr(String::UL_UNSPECIFIED, r.connection(0)), 
-			*new(pool) String(pool, heap_place, place_size, true /*tainted*/),
-			heap_place);
-		
+		size_t main_alias_index=index+1;
+		const String* main_alias=0;
+		if(main_alias_index<params.count())
+			main_alias=&params.as_string(main_alias_index, "main alias must be string");
+
+		if(const String* file_name=params[index].get_string()) { // ^process...[file]
+			r.use_file(*target_class, r.absolute(*file_name), main_alias, true/*ignore_class_path*/);
+		} else { // process...{string}
+			Value& vjunction=params.as_junction(index, "body must be code");
+			// evaluate source to process
+			const String& source=r.process_to_string(vjunction);
+			r.use_buf(*target_class,
+				source.cstr(String::L_UNSPECIFIED, r.connection(false)),
+				main_alias,
+				pseudo_file_no__process);		
+		}
+
 		// main_method
-		main_method=target_class->get_method(r.main_method_name);
+		main_method=target_class->get_method(main_method_name);
 	}
 	// after restoring current-request-lang
 	// maybe-execute @main[]
 	if(main_method) {
 		// temporarily set method_frame's self to target_self
-		Temp_method_frame_self tmfs(*r.get_method_frame(), target_self);
+		Temp_method_frame_self tmfs(*r.get_method_frame(), *target_self);
 		// execute!	
 		r.execute(*main_method->parser_code);
 	}
 }
 	
-static void _rem(Request& r, const String&, MethodParams *params) {
-	params->as_junction(0, "body must be code");
+static void _rem(Request& r, MethodParams& params) {
+	params.as_junction(0, "body must be code");
 }
 
-static void _while(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	Value& vcondition=params->as_junction(0, "condition must be expression");
-	Value& body=params->as_junction(1, "body must be code");
+static void _while(Request& r, MethodParams& params) {
+	Value& vcondition=params.as_junction(0, "condition must be expression");
+	Value& body=params.as_junction(1, "body must be code");
 
 	// while...
 	int endless_loop_count=0;
 	while(true) {
 		if(++endless_loop_count>=MAX_LOOPS) // endless loop?
 			throw Exception("parser.runtime",
-				&method_name,
+				0,
 				"endless loop detected");
 
 		bool condition=r.process_to_value(vcondition, 
@@ -188,33 +215,32 @@ static void _while(Request& r, const String& method_name, MethodParams *params) 
 	}
 }
 
-static void _use(Request& r, const String& method_name, MethodParams *params) {
-	Value& vfile=params->as_no_junction(0, "file name must not be code");
+static void _use(Request& r, MethodParams& params) {
+	Value& vfile=params.as_no_junction(0, "file name must not be code");
 	r.use_file(r.main_class, vfile.as_string());
 }
 
-static void _for(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	const String& var_name=params->as_string(0, "var name must be string");
-	int from=params->as_int(1, "from must be int", r);
-	int to=params->as_int(2, "to must be int", r);
-	Value& body_code=params->as_junction(3, "body must be code");
-	Value *delim_maybe_code=params->size()>4?&params->get(4):0;
+static void _for(Request& r, MethodParams& params) {
+	const String& var_name=params.as_string(0, "var name must be string");
+	int from=params.as_int(1, "from must be int", r);
+	int to=params.as_int(2, "to must be int", r);
+	Value&  body_code=params.as_junction(3, "body must be code");
+	Value* delim_maybe_code=params.count()>4?&params[4]:0;
 
 	if(to-from>=MAX_LOOPS) // too long loop?
 		throw Exception("parser.runtime",
-			&method_name,
+			0,
 			"endless loop detected");
 
 	bool need_delim=false;
-	VInt *vint=new(pool) VInt(pool, 0);
+	VInt* vint=new VInt(0);
 	r.get_method_frame()->caller()->put_element(var_name, vint, false);
 	for(int i=from; i<=to; i++) {
 		vint->set_int(i);
 
 		StringOrValue sv_processed=r.process(body_code);
-		const String *s_processed=sv_processed.get_string();
-		if(delim_maybe_code && s_processed && s_processed->size()) { // delimiter set and we have body
+		const String* s_processed=sv_processed.get_string();
+		if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
 			if(need_delim) // need delim & iteration produced string?
 				r.write_pass_lang(r.process(*delim_maybe_code));
 			need_delim=true;
@@ -223,34 +249,29 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 	}
 }
 
-static void _eval(Request& r, const String& method_name, MethodParams *params) {
-	Value& expr=params->as_junction(0, "need expression");
+static void _eval(Request& r, MethodParams& params) {
+	Value& expr=params.as_junction(0, "need expression");
 	// evaluate expresion
-	Value *value_result=r.process_to_value(expr, 
+	Value& value_result=r.process_to_value(expr, 
 		/*0/*no name YET* /,*/
 		true/*don't intercept string*/).as_expr_result();
-	if(params->size()>1) {
-		Value& fmt=params->as_no_junction(1, "fmt must not be code");
-
-		Pool& pool=r.pool();
-		String& string=*new(pool) String(pool);
-		string.APPEND_CONST(format(pool, value_result->as_double(), fmt.as_string().cstr()));
-		r.write_no_lang(string);
+	if(params.count()>1) {
+		Value& fmt=params.as_no_junction(1, "fmt must not be code");
+		r.write_no_lang(String(format(value_result.as_double(), fmt.as_string().cstrm())));
 	} else
-		r.write_no_lang(*value_result);
+		r.write_no_lang(value_result);
 }
 
-static void _connect(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _connect(Request& r, MethodParams& params) {
 #ifdef RESOURCES_DEBUG
 struct timeval mt[2];
 #endif
-	Value& url=params->as_no_junction(0, "url must not be code");
-	Value& body_code=params->as_junction(1, "body must be code");
+	Value& url=params.as_no_junction(0, "url must not be code");
+	Value& body_code=params.as_junction(1, "body must be code");
 
-	Table *protocol2driver_and_client=0;
-	if(Value *sql=r.main_class.get_element(*new(pool) String(pool, MAIN_SQL_NAME), r.main_class, false)) {
-		if(Value *element=sql->get_element(*new(pool) String(pool, MAIN_SQL_DRIVERS_NAME), *sql, false)) {
+	Table* protocol2driver_and_client=0;
+	if(Value* sql=r.main_class.get_element(String(MAIN_SQL_NAME), r.main_class, false)) {
+		if(Value* element=sql->get_element(String(MAIN_SQL_DRIVERS_NAME), *sql, false)) {
 			protocol2driver_and_client=element->get_table();
 		}
 	}
@@ -260,8 +281,8 @@ struct timeval mt[2];
 gettimeofday(&mt[0],NULL);
 #endif
 	// connect
-	SQL_Connection_ptr connection=SQL_driver_manager->get_connection(
-		url.as_string(), method_name, protocol2driver_and_client);
+	SQL_Connection* connection=SQL_driver_manager.get_connection(url.as_string(), 
+		protocol2driver_and_client);
 
 #ifdef RESOURCES_DEBUG
 //measure:after connect
@@ -273,76 +294,82 @@ for(int i=0;i<2;i++)
 
 r.sql_connect_time+=t[1]-t[0];
 #endif
-	Temp_connection temp_connection(r, connection.get());
+	Temp_connection temp_connection(r, connection);
 	// execute body
 	try {
 		r.write_assign_lang(r.process(body_code));
+		connection->commit();
+		connection->close();
 	} catch(...) { // process problem
-		connection->mark_to_rollback();
-		/*re*/throw; 
+		connection->rollback();
+		connection->close();
+		rethrow;
 	}
 }
 
 #ifndef DOXYGEN
-struct Switch_data {
-	Request *r;
-	Value *searching;
-	Value *found;
-	Value *_default;
+class Switch_data: public PA_Object {
+public:
+	Request& r;
+	Value& searching;
+	Value* found;
+	Value* _default;
+public:
+	Switch_data(Request& ar, Value& asearching): 
+	  r(ar), searching(asearching) {}
 };
 #endif
-static void _switch(Request& r, const String&, MethodParams *params) {
-	Switch_data data={&r, &r.process_to_value(params->get(0))};	
-	Temp_hash_value switch_data_setter(r.classes_conf, *switch_data_name, &data);
+static void _switch(Request& r, MethodParams& params) {
+	Switch_data* data=new Switch_data(r, r.process_to_value(params[0]));
+	Temp_hash_value<const StringBody, PA_Object*> 
+		switch_data_setter(r.classes_conf, switch_data_name, data);
 
-	Value& cases_code=params->as_junction(1, "switch cases must be code");
+	Value& cases_code=params.as_junction(1, "switch cases must be code");
 	// execution of found ^case[...]{code} must be in context of ^switch[...]{code}
 	// because of stacked WWrapper used there as wcontext
 	r.process(cases_code, true/*intercept_string*/);
-	if(Value *selected_code=data.found ? data.found : data._default) {
+	if(Value* selected_code=data->found? data->found: data->_default) {
 		// setting code context, would execute in ^switch[...]{>>context<<}
 		//selected_code->get_junction()->change_context(cases_code.get_junction());
 		r.write_pass_lang(r.process(*selected_code));
 	}
 }
 
-static void _case(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	Switch_data *data=static_cast<Switch_data *>(r.classes_conf.get(*switch_data_name));
+static void _case(Request& r, MethodParams& params) {
+	Switch_data* data=static_cast<Switch_data*>(r.classes_conf.get(switch_data_name));
 	if(!data)
 		throw Exception("parser.runtime",
-			&method_name,
+			0,
 			"without switch");
 
-	int count=params->size();
-	Value *code=&params->as_junction(--count, "case result must be code");
+	int count=params.count();
+	Value& code=params.as_junction(--count, "case result must be code");
 	
 	// killing context for safety, would execute in ^switch[...]{>>context<<}
 	// reason: context is stacked, and it would become invalid afterwards
 	//code->get_junction()->change_context(0);
 
 	for(int i=0; i<count; i++) {
-		Value& value=r.process_to_value(params->get(i));
+		Value& value=r.process_to_value(params[i]);
 
 		if(value.as_string() == CASE_DEFAULT_VALUE) {
-			data->_default=code;
+			data->_default=&code;
 			break;
 		}
 
 		bool matches;
-		if(data->searching->is_string())
-			matches=data->searching->as_string() == value.as_string();
+		if(data->searching.is_string())
+			matches=data->searching.as_string() == value.as_string();
 		else
-			matches=data->searching->as_double() == value.as_double();
+			matches=data->searching.as_double() == value.as_double();
 
 		if(matches) {
 			if(data->found)
 				throw Exception("parser.runtime",
-					&method_name,
+					0,
 					"duplicate found");
 
-			data->found=code;
+			data->found=&code;
 			break;
 		}
 	}
@@ -352,7 +379,7 @@ static void _case(Request& r, const String& method_name, MethodParams *params) {
 
 // consts
 
-const int DATA_STRING_SERIALIZED_VERSION=0x0002;
+const int DATA_STRING_SERIALIZED_VERSION=0x0004;
 
 // helper types
 
@@ -368,50 +395,52 @@ void cache_delete(const String& file_spec) {
 }
 
 #ifndef DOXYGEN
-struct Cache_data {
+class Cache_data: public PA_Object {
+public:
 	time_t expires;
 };
 struct Locked_process_and_cache_put_action_info {
 	Request *r;
 	Cache_data *data;
-	Value *body_code; const String *evaluated_body;
+	Value* body_code; const String* evaluated_body;
 };
 #endif
+/* @todo maybe network order worth spending some effort?
+	don't bothering myself with network byte order,
+	am not planning to be able to move resulting file across platforms
+*/
 static void locked_process_and_cache_put_action(int f, void *context) {
 	Locked_process_and_cache_put_action_info& info=
 		*static_cast<Locked_process_and_cache_put_action_info *>(context);
-	
+
 	// body->process 
 	info.evaluated_body=&info.r->process_to_string(*info.body_code);
 
 	// expiration time not spoiled by ^cache(0) or something?
 	if(info.data->expires > time(0)) {
 		// string -serialize> buffer
-		void *data; size_t data_size;
-		info.evaluated_body->serialize(
-			sizeof(Data_string_serialized_prolog), 
-			data, data_size);
+		String::Cm serialized=info.evaluated_body->serialize(
+			sizeof(Data_string_serialized_prolog));
 		Data_string_serialized_prolog& prolog=
-			*static_cast<Data_string_serialized_prolog *>(data);
+			*reinterpret_cast<Data_string_serialized_prolog *>(serialized.str);
 		prolog.version=DATA_STRING_SERIALIZED_VERSION;
 		prolog.expires=info.data->expires;
 		
 		// buffer -write> file
-		write(f, data, data_size);
+		write(f, serialized.str, serialized.length);
 	} else // expired!
 		info.data->expires=0; // flag it so that could be easily checked by caller
 }
-const String *locked_process_and_cache_put(Request& r, 
+const String* locked_process_and_cache_put(Request& r, 
 					   Value& body_code,
 					   Cache_data& data,
 					   const String& file_spec) {
-	Locked_process_and_cache_put_action_info info={
-		&r,
-		&data,
-		&body_code
-	};
+	Locked_process_and_cache_put_action_info info={0};
+	info.r=&r;
+	info.data=&data;
+	info.body_code=&body_code;
 
-	const String *result=file_write_action_under_lock(
+	const String* result=file_write_action_under_lock(
 		file_spec, 
 		"cache_put", locked_process_and_cache_put_action, &info,
 		false/*as_text*/,
@@ -423,64 +452,59 @@ const String *locked_process_and_cache_put(Request& r,
 		cache_delete(file_spec);
 	return result;
 }
-String *cache_get(Pool& pool, const String& file_spec, time_t now) {
-	void* data; size_t data_size;
-	if(file_read(pool, file_spec, 
-			   data, data_size, 
+const String* cache_get(Request_charsets& charsets, const String& file_spec, time_t now) {
+	File_read_result file=file_read(charsets, file_spec, 
 			   false/*as_text*/, 
-			   0, 0, //no params&out_fields
-			   false/*fail_on_read_problem*/)
-	    && data_size/* ignore reads which are empty due to 
+			   0, //no params
+			   false/*fail_on_read_problem*/);
+	if(file.success && file.length/* ignore reads which are empty due to 
 			non-unary open+lockEX conflict with lockSH */) {
-	
+			
 		Data_string_serialized_prolog& prolog=
-			*static_cast<Data_string_serialized_prolog *>(data);
+			*reinterpret_cast<Data_string_serialized_prolog *>(file.str);
 
-		String *result=new(pool) String(pool);
+		String* result=new String;
 		if(
-			data_size>=sizeof(Data_string_serialized_prolog)
+			file.length>=sizeof(Data_string_serialized_prolog)
 			&& prolog.version==DATA_STRING_SERIALIZED_VERSION
 			&& prolog.expires > now
-			&& result->deserialize(
-				sizeof(Data_string_serialized_prolog),  data, data_size, file_spec.cstr()))
+			&& result->deserialize(sizeof(Data_string_serialized_prolog),  file.str, file.length))
 			return result;
 	}
 
 	return 0;
 }
-static time_t as_expires(Request& r, const String& method_name, MethodParams *params, 
+static time_t as_expires(Request& r, MethodParams& params, 
 						int index, time_t now) {
 	time_t result;
-	Value& vlifespan_or_expires=params->get(index);
-	if(Value *vdate=vlifespan_or_expires.as(VDATE_TYPE, false))
-		result=static_cast<VDate *>(vdate)->get_time();
+	if(Value* vdate=params[index].as(VDATE_TYPE, false))
+		result=static_cast<VDate*>(vdate)->get_time();
 	else
-		result=now+(time_t)params->as_double(index, "lifespan must be date or number", r);
+		result=now+(time_t)params.as_double(index, "lifespan must be date or number", r);
 	
 	return result;
 }
-static const String as_file_spec(Request&r, MethodParams *params, int index) {
-	return r.absolute(params->as_string(index, "filespec must be string"));
+static const String& as_file_spec(Request& r, MethodParams& params, int index) {
+	return r.absolute(params.as_string(index, "filespec must be string"));
 }
-static void _cache(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
+static void _cache(Request& r, MethodParams& params) {
 	time_t now=time(0);
 
 	// ^cache[filename] ^cache(seconds) ^cache[expires date]
-	if(params->size()==1) {
-		if(params->get(0).is_string()) { // filename?
+	if(params.count()==1) {
+		if(params[0].is_string()) { // filename?
 			cache_delete(as_file_spec(r, params, 0));
 			return;
 		}
 
 		// secods|expires date
-		Cache_data *data=static_cast<Cache_data *>(r.classes_conf.get(*cache_data_name));
+		Cache_data* data=static_cast<Cache_data*>(r.classes_conf.get(cache_data_name));
 		if(!data)
 			throw Exception("parser.runtime",
-				&method_name,
+				0,
 				"expire-time reducing instruction without cache");
 		
-		time_t expires=as_expires(r, method_name, params, 0, now);
+		time_t expires=as_expires(r, params, 0, now);
 		if(expires < data->expires)
 			data->expires=expires;
 
@@ -488,14 +512,15 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	}
 	
 	// file_spec, expires, body code
-	const String &file_spec=r.absolute(params->as_string(0, "filespec must be string"));
+	const String& file_spec=r.absolute(params.as_string(0, "filespec must be string"));
 
-	Cache_data data;
-	Temp_hash_value cache_data_setter(r.classes_conf, *cache_data_name, &data);
-	data.expires=as_expires(r, method_name, params, 1, now);
-	Value& body_code=params->as_junction(2, "body must be code");
+	Cache_data* data=new Cache_data;
+	Temp_hash_value<const StringBody, PA_Object*> 
+		cache_data_setter(r.classes_conf, cache_data_name, data);
+	data->expires=as_expires(r, params, 1, now);
+	Value& body_code=params.as_junction(2, "body must be code");
 
-	if(data.expires>now) { // valid 'expires' specified? try cached copy...
+	if(data->expires>now) { // valid 'expires' specified? try cached copy...
 		// hence we don't hope to have unary create/lockEX
 		// we need some plan to live in a life like that, so... 
 		// worst races plan:
@@ -513,7 +538,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 		//          |lockSH succeeds; ...
 
 		for(int retry=0; retry<2; retry++) {
-			if(String *cached_body=cache_get(pool, file_spec, now)) { // have cached copy?
+			if(const String* cached_body=cache_get(r.charsets, file_spec, now)) { // have cached copy?
 				// write it out 
 				r.write_assign_lang(*cached_body);
 				// happy with it
@@ -521,8 +546,8 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 			}
 
 			// non-blocked lock; process; cache it
-			if(const String*processed_body=
-				locked_process_and_cache_put(r, body_code, data, file_spec)) {
+			if(const String* processed_body=
+				locked_process_and_cache_put(r, body_code, *data, file_spec)) {
 				// write it out 
 				r.write_assign_lang(*processed_body);
 				// happy with it
@@ -548,43 +573,13 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	// never reached
 }
 
+
+
 // also used in pa_request.C to pass param to @unhandled_exception
-VHash& exception2vhash(Pool& pool, const Exception& e) {
-	VHash& result=*new(pool) VHash(pool);
-	Hash& hash=result.hash(0);
-	if(const char *type=e.type(true))
-		hash.put(*exception_type_part_name, new(pool) VString(*new(pool) String(pool, type)));
-	if(const String *asource=e.problem_source()) {
-		String& source=*new(pool) String(pool); 
-		source.append(*asource, String::UL_TAINTED, true/*forced*/);
 
-		hash.put(*exception_source_part_name, new(pool) VString(source));
-#ifndef NO_STRING_ORIGIN
-		const Origin& origin=source.origin();
-		hash.put(*new(pool) String(pool, "file", 0, true),
-			new(pool) VString(*new(pool) String(pool, origin.file)));
-		hash.put(*new(pool) String(pool, "lineno"),
-			new(pool) VInt(pool, 1+origin.line));
-#endif
-	}
-	if(const char *ecomment=e.comment(true)) {
-		int comment_size=strlen(ecomment);
-		char *pcomment=(char *)pool.malloc(comment_size);
-		memcpy(pcomment, ecomment, comment_size);
-		hash.put(*exception_comment_part_name, 
-			new(pool) VString(*new(pool) String(pool, pcomment, comment_size, true/*tainted*/)));
-	}
-	hash.put(*exception_handled_part_name, 
-		new(pool) VBool(pool, false));
-
-	return result;
-}
-
-static void _try_operator(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	Value& body_code=params->as_junction(0, "body_code must be code");
-	Value& catch_code=params->as_junction(1, "catch_code must be code");
+static void _try_operator(Request& r, MethodParams& params) {
+	Value& body_code=params.as_junction(0, "body_code must be code");
+	Value& catch_code=params.as_junction(1, "catch_code must be code");
 
 	StringOrValue result;
 	// taking snapshot of try-context
@@ -592,66 +587,76 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 	try {
 		result=r.process(body_code);
 	} catch(const Exception& e) {
+		Request::Exception_details details=r.get_details(e);
+
 		Request_context_saver throw_context(r); // taking snapshot of throw-context [stack trace contains error]
 		try_context.restore(); // restoring try-context to perform catch-code
 
-		VHash& vhash=exception2vhash(pool, e);
-
-		Junction *junction=catch_code.get_junction();
-		Value *method_frame=junction->method_frame;
-		Value *saved_exception_var_value=method_frame->get_element(*exception_var_name, *method_frame, false);
-		junction->method_frame->put_element(*exception_var_name, &vhash, false);
+		Junction* junction=catch_code.get_junction();
+		Value* method_frame=junction->method_frame;
+		Value* saved_exception_var_value=method_frame->get_element(exception_var_name, *method_frame, false);
+		junction->method_frame->put_element(exception_var_name, &details.vhash, false);
 		result=r.process(catch_code);
 		bool handled=false;
-		if(Value *value=static_cast<Value *>(vhash.hash(0).get(*exception_handled_part_name)))
+		if(Value* value=
+			details.vhash.hash().get(exception_handled_part_name))
 			handled=value->as_bool();		
-		junction->method_frame->put_element(*exception_var_name, saved_exception_var_value, false);
+		junction->method_frame->put_element(exception_var_name, saved_exception_var_value, false);
 
 		if(!handled) {
 			throw_context.restore(); // restoring throw-context [exception were not handled]
-			throw(e); // rethrow
+			rethrow;
 		}
 	}
 	// write out result
 	r.write_pass_lang(result);
 }
 
-static void _throw_operator(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	if(params->size()==1) {
-		Value& param0=params->get(0);
-		if(Hash *hash=param0.get_hash(&method_name)) {
-			const char *type=0;
-			if(Value *value=static_cast<Value *>(hash->get(*exception_type_part_name)))
+static void _throw_operator(Request& r, MethodParams& params) {
+	if(params.count()==1) {
+		if(HashStringValue *hash=params[0].get_hash()) {
+			const char* type=0;
+			if(Value* value=hash->get(exception_type_part_name))
 				type=value->as_string().cstr();
-			const String *source=0;
-			if(Value *value=static_cast<Value *>(hash->get(*exception_source_part_name)))
+			const String* source=0;
+			if(Value* value=hash->get(exception_source_part_name))
 				source=&value->as_string();
-			const char *comment=0;
-			if(Value *value=
-				static_cast<Value *>(hash->get(*exception_comment_part_name)))
+			const char* comment;
+			if(Value* value=hash->get(exception_comment_part_name))
 				comment=value->as_string().cstr();
 
 			throw Exception(type,
-				source?source:&method_name,
-				comment);
+				source?source:0,
+				"%s", comment?comment:"");
 		} else
 			throw Exception("parser.runtime",
-				&method_name,
+				0,
 				"one-param version has hash param");
 	} else {
-		const char *type=params->as_string(0, "type must be string").cstr();
-		const String& source=params->as_string(1, "source must be string");
-		const char *comment=params->size()>2?params->as_string(2, "comment must be string").cstr():0;
+		const char* type=params.as_string(0, "type must be string").cstr();
+		const String& source=params.as_string(1, "source must be string");
+		const char* comment=params.count()>2? params.as_string(2, "comment must be string").cstr()
+			:0;
 		throw Exception(type, &source, "%s", comment?comment:"");
 	}
 }
-	
+
+#if defined(WIN32) && defined(_DEBUG)
+#	define PA_BPT
+static void _bpt(Request& r, MethodParams& params) {
+	_asm int 3;
+}
+#endif
+
 // constructor
 
-VClassMAIN::VClassMAIN(Pool& apool): VClass(apool) {
-	set_name(*NEW String(pool(), MAIN_CLASS_NAME));
+VClassMAIN::VClassMAIN(): VClass() {
+	set_name(*new String(MAIN_CLASS_NAME));
+
+#ifdef PA_BPT
+	// ^bpt[]
+	add_native_method("bpt", Method::CT_ANY, _bpt, 0, 0);
+#endif
 
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
@@ -710,6 +715,6 @@ VClassMAIN::VClassMAIN(Pool& apool): VClass(apool) {
 
 // constructor & configurator
 
-VClass& VClassMAIN_create(Pool& pool) {
-	return *new(pool) VClassMAIN(pool);
+VStateless_class& VClassMAIN_create() {
+	return *new VClassMAIN;
 }

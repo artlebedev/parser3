@@ -1,19 +1,22 @@
 /** @file
 	Parser: compiler support helper functions decls.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char* IDENT_COMPILE_TOOLS_H="$Date: 2003/01/21 15:51:13 $";
+static const char* IDENT_COMPILE_TOOLS_H="$Date: 2003/07/24 11:31:23 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
 #include "pa_vstring.h"
 #include "pa_request.h"
+
+/// used to track source column number
+#define TAB_SIZE 8
 
 enum lexical_state {
 	LS_USER, LS_NAME_SQUARE_PART,
@@ -38,24 +41,37 @@ enum lexical_state {
 	LS_METHOD_ROUND,
 	LS_METHOD_AFTER
 };
+
+struct Pos {
+	uint line;
+	uint col;
+	//Pos(uint aline, uint acol): line(aline), col(acol) {}
+	Pos(): line(0), col(0) {}
+
+	void clear() { line=col=0; }
+	operator bool() { return col!=0; }
+};
+
 /// compiler status
-struct parse_control {
+class Parse_control {
+	const String* main_alias;
+	uint last_line_end_col;
+public:
+	const String& alias_method(const String& name);
 	//@{
 	/// @name input
-	Pool *pool;
-	Request *request;
-	VStateless_class *cclass;
-#ifndef NO_STRING_ORIGIN
-	const char *source;
-	const char *file;
-#endif
-	int line, col;
+	Request& request;
+	VStateless_class* cclass;
+	const char* source;
+	uint file_no;
+	Pos pos;
 	//@}
 	//@{
 	/// @name state; initially
 	bool trim_bof;
 	int pending_state; ///< i=0
-	String *string; ///< =new(pool) String(pool)
+	StringBody string; ///< lexical string accumulator
+	Pos string_start;
 	
 #define MAX_LEXICAL_STATES 100
 	enum lexical_state ls; ///< =LS_USER;
@@ -68,77 +84,118 @@ struct parse_control {
 	
 	/// output: filled input 'methods' and 'error' if any
 	char error[MAX_STRING];
+
+	Parse_control(Request& arequest, 
+		VStateless_class* aclass,
+		const char* asource, const String* amain_alias, 
+		uint afile_no):
+		request(arequest), // input 
+
+		// we were told the class to compile to?
+		cclass(aclass), // until changed with @CLASS would consider operators loading
+
+		source(asource), main_alias(amain_alias),
+
+		file_no(afile_no),
+		last_line_end_col(0),
+
+		// initialize state
+		trim_bof(true),
+		pending_state(0),
+		ls(LS_USER),
+		ls_sp(0),
+		in_call_value(false) {}
+
+	void pos_next_line() {
+		pos.line++;
+		last_line_end_col=pos.col;
+		pos.col=0;
+	}
+	void pos_next_c(char c) {
+		if(c=='\t')
+			pos.col=(pos.col+TAB_SIZE)&~(TAB_SIZE-1);
+		else
+			pos.col++;
+	}
+	/// not precise in case of \t in the middle of the text
+	void pos_prev_c() {
+		if(pos.col==0) {
+			--pos.line;  pos.col=last_line_end_col;
+		} else
+			--pos.col;
+	}
+	void ungetc() {
+		source--;
+		pos_prev_c();
+	}
 };
 
 /// New array // return empty array
-inline Array/*<Operation>*/ *N(Pool& pool) {
-	return new(pool) Array/*<Operation>*/(pool);
+inline ArrayOperation* N() {
+	return new ArrayOperation;
 }
 
 /// Assembler instruction // append ordinary instruction to ops
-inline void O(Array/*<Operation>*/ *result, enum OPCODE code) {
-	Operation op; op.code=code;
-	*result+=op.cast;
+inline void O(ArrayOperation& result, OPCODE code) {
+	result+=Operation(code);
 }
 
 /// aPpend 'code_array' to 'result'
-inline void P(Array/*<Operation>*/ *result, Array *code_array) {
-	result->append_array(*code_array);
+inline void P(ArrayOperation& result, ArrayOperation& code_array) {
+	result.append(code_array);
 }
 /// aPpend part of 'code_array', starting from offset, to 'result'
-inline void P(Array/*<Operation>*/ *result, Array *code_array, int offset) {
-	result->append_array(*code_array, offset);
+inline void P(ArrayOperation& result, ArrayOperation& code_array, int offset) {
+	result.append(code_array, offset);
 }
 
-/// aPpend 'vstring' to 'result'
-void PV(Array/*<Operation>*/ *result, Value *value);
-
-inline void OA(Array/*<Operation>*/ *result, OPCODE opcode, Array/*<Operation>*/ *code_array) {
-	// append OP_CODE
-	Operation op; op.code=opcode;
-	*result+=op.cast;
-
-	// append 'vstring'
-	*result+=code_array;
+/// append cOde Array
+inline void OA(ArrayOperation& result, OPCODE code, ArrayOperation* code_array) {
+	result+=Operation(code); // append OP_CODE
+	result+=Operation(code_array); // append 'code_array'
 }
 
 /**
 	Value Literal // returns array with 
-	- first: OP_VALUE instruction
-	- second op: string itself
+	- first op: OP_VALUE instruction
+	- second op: origin (debug information)
+	- third op: string itself
 */
-inline Array *VL(Value *value) {
+inline ArrayOperation* VL(Value* value, uint file_no, uint line, uint col) {
 	// empty ops array
-	Array *result=N(value->pool());
+	ArrayOperation& result=*N();
 
 	// append 'value' to 'result'
-	PV(result, value);
+	result+=Operation(OP_VALUE);
+	result+=Operation(file_no, line, col); // append origin
+	result+=Operation(value); // append 'value'
 
-	return result;
+	return &result;
 }
 
-/// Literal Array to(2) Value @return Value from literal Array OP+Value
-Value *LA2V(Array *literal_string_array, int offset=0);
-/// Literal Array to(2) String  @return String value from literal Array OP+String array
-inline const String *LA2S(Array *literal_string_array, int offset=0) {
-	if(Value *value=LA2V(literal_string_array, offset))
+/// Literal Array to(2) Value @return Value from literal Array OP+origin+Value
+Value* LA2V(ArrayOperation& literal_string_array, int offset=0);
+/// Literal Array to(2) String  @return String value from literal Array OP+origin+String array
+inline const String* LA2S(ArrayOperation& literal_string_array, int offset=0) {
+	if(Value* value=LA2V(literal_string_array, offset))
 		return value->get_string();
 	return 0;
 }
 
-inline void change_string_literal_to_write_string_literal(Array *literal_string_array) {
-	Operation op; op.code=OP_STRING__WRITE;
-	literal_string_array->put(0, op.cast);
+inline void change_string_literal_to_write_string_literal(ArrayOperation& literal_string_array) {
+	literal_string_array.put(0, OP_STRING__WRITE);
 }
 
-void changetail_or_append(Array *opcodes, 
+
+void change_string_literal_to_double_literal(ArrayOperation& literal_string_array);
+
+void change_string_literal_value(ArrayOperation& literal_string_array, const String& new_value);
+
+void changetail_or_append(ArrayOperation& opcodes, 
 						  OPCODE find, bool with_argument, OPCODE replace, OPCODE notfound);
 
-void change_string_literal_to_double_literal(Array *literal_string_array);
 
-void change_string_literal_value(Array *literal_string_array, const String& new_value);
-
-void push_LS(parse_control& pc, lexical_state new_state);
-void pop_LS(parse_control& pc);
+void push_LS(Parse_control& pc, lexical_state new_state);
+void pop_LS(Parse_control& pc);
 
 #endif

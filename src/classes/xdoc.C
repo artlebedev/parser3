@@ -1,32 +1,32 @@
 /** @file
 	Parser: @b xdoc parser class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-#include "classes.h"
+#include "pa_config_includes.h"
+
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2003/04/11 09:58:10 $";
+static const char* IDENT_XDOC_C="$Date: 2003/07/24 11:31:20 $";
 
-#include "pa_stylesheet_connection.h"
+#include "gdome.h"
+#include "libxml/tree.h"
+#include "libxslt/xsltInternals.h"
+#include "libxslt/transform.h"
+#include "libxslt/xsltutils.h"
+#include "libxslt/variables.h"
+
+
+#include "pa_vmethod_frame.h"
+
+#include "pa_stylesheet_manager.h"
 #include "pa_request.h"
 #include "pa_vxdoc.h"
 #include "pa_charset.h"
 #include "pa_vfile.h"
 #include "xnode.h"
-
-#include "gdome.h"
-#include "libxml/tree.h"
-extern "C" {
-#include "gdomecore/gdome-xml-node.h"
-#include "gdomecore/gdome-xml-document.h"
-};
-#include "libxslt/xsltInternals.h"
-#include "libxslt/transform.h"
-#include "libxslt/xsltutils.h"
-#include "libxslt/variables.h"
 
 // defines
 
@@ -39,16 +39,20 @@ extern "C" {
 
 // class
 
-class MXdoc : public MXnode {
+class MXdoc: public MXnode {
 public: // VStateless_class
-	Value *create_new_value(Pool& pool) { return new(pool) VXdoc(pool, 0); }
+	Value* create_new_value() { return new VXdoc(0, 0); }
 
 public:
-	MXdoc(Pool& pool);
+	MXdoc();
 
 public: // Methoded
 	void configure_admin(Request& r);
 };
+
+// global variable
+
+DECLARE_CLASS_VAR(xdoc, new MXdoc, 0);
 
 // helper classes
 
@@ -153,274 +157,242 @@ private:
 
 // methods
 
-static void writeNode(Request& r,  const String& method_name, GdomeNode *node, 
+static void writeNode(Request& r, GdomeNode *node, 
 					  GdomeException exc) {
 	if(!node || exc)
-		throw Exception(
-			&method_name, 
-			exc);
-
-	Pool& pool=r.pool();
+		throw Exception(0, exc);
 
 	// write out result
-	VXnode& result=*new(pool) VXnode(pool, node);
-	r.write_no_lang(result);
+	r.write_no_lang(*new VXnode(&r.charsets, node));
 }
 
 // Element createElement(in DOMString tagName) raises(DOMException);
-static void _createElement(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _createElement(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& tagName=params->as_string(0, "tagName must be string");
+	const String& tagName=params.as_string(0, "tagName must be string");
 
 	GdomeException exc;
 	GdomeNode *node=
-		(GdomeNode *)gdome_doc_createElement(vdoc.get_document(&method_name), 
-		pool.transcode(tagName).use(),
+		(GdomeNode *)gdome_doc_createElement(vdoc.get_document(), 
+		r.transcode(tagName).use(),
 		&exc);
-	writeNode(r, method_name, node, exc);
+	writeNode(r, node, exc);
 }
 
 // DocumentFragment createDocumentFragment()
-static void _createDocumentFragment(Request& r, const String& method_name, MethodParams *) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _createDocumentFragment(Request& r, MethodParams&) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
 	GdomeException exc;
 	GdomeNode *node=
 		(GdomeNode *)gdome_doc_createDocumentFragment(
-		vdoc.get_document(&method_name),
+		vdoc.get_document(),
 		&exc);
-	writeNode(r, method_name, node, exc);
+	writeNode(r, node, exc);
 }
 
 // Text createTextNode(in DOMString data);
-static void _createTextNode(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _createTextNode(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& data=params->as_string(0, "data must be string");
+	const String& data=params.as_string(0, "data must be string");
 
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createTextNode(
-		vdoc.get_document(&method_name),
-		pool.transcode(data).use(),
+		vdoc.get_document(),
+		r.transcode(data).use(),
 		&exc);
-	writeNode(r, method_name, node, exc);
+	writeNode(r, node, exc);
 }
 
 // Comment createComment(in DOMString data)
-static void _createComment(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _createComment(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& data=params->as_string(0, "data must be string");
+	const String& data=params.as_string(0, "data must be string");
 
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createComment(
-		vdoc.get_document(&method_name),
-		pool.transcode(data).use(),
+		vdoc.get_document(),
+		r.transcode(data).use(),
 		&exc);
-	writeNode(r, method_name, node, exc);
+	writeNode(r, node, exc);
 }
 
 // CDATASection createCDATASection(in DOMString data) raises(DOMException);
-static void _createCDATASection(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _createCDATASection(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& data=params->as_string(0, "data must be string");
+	const String& data=params.as_string(0, "data must be string");
 
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createCDATASection(
-		vdoc.get_document(&method_name),
-		pool.transcode(data).use(),
+		vdoc.get_document(),
+		r.transcode(data).use(),
 		&exc);
-	writeNode(r, method_name, node, exc);
+	writeNode(r, node, exc);
 }
 
 // ProcessingInstruction createProcessingInstruction(in DOMString target,in DOMString data) raises(DOMException);
-static void _createProcessingInstruction(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _createProcessingInstruction(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& target=params->as_string(0, "data must be string");
-	const String& data=params->as_string(1, "data must be string");
+	const String& target=params.as_string(0, "data must be string");
+	const String& data=params.as_string(1, "data must be string");
 
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createProcessingInstruction(
-		vdoc.get_document(&method_name),
-		pool.transcode(target).use(), 
-		pool.transcode(data).use(),
+		vdoc.get_document(),
+		r.transcode(target).use(), 
+		r.transcode(data).use(),
 		&exc);
-	writeNode(r, method_name, node, exc);
+	writeNode(r, node, exc);
 }
 
 // Attr createAttribute(in DOMString name) raises(DOMException);
-static void _createAttribute(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _createAttribute(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& name=params->as_string(0, "name must be string");
+	const String& name=params.as_string(0, "name must be string");
 
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createAttribute(
-		vdoc.get_document(&method_name),
-		pool.transcode(name).use(),
+		vdoc.get_document(),
+		r.transcode(name).use(),
 		&exc);
-	writeNode(r, method_name, node, exc);
+	writeNode(r, node, exc);
 }
 // EntityReference createEntityReference(in DOMString name) raises(DOMException);
-static void _createEntityReference(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _createEntityReference(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& name=params->as_string(0, "name must be string");
+	const String& name=params.as_string(0, "name must be string");
 
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createEntityReference(
-		vdoc.get_document(&method_name),
-		pool.transcode(name).use(),
+		vdoc.get_document(),
+		r.transcode(name).use(),
 		&exc);
-	writeNode(r, method_name, node, exc);
+	writeNode(r, node, exc);
 }
 
 // NodeList getElementsByTagName(in DOMString name);
-static void _getElementsByTagName(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _getElementsByTagName(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& name=params->as_string(0, "name must be string");
+	const String& name=params.as_string(0, "name must be string");
 
-	VHash& result=*new(pool) VHash(pool);
+	VHash& result=*new VHash;
 	GdomeException exc;
 	if(GdomeNodeList *nodes=
 		gdome_doc_getElementsByTagName(
-			vdoc.get_document(&method_name), 
-			pool.transcode(name).use(), 
+			vdoc.get_document(), 
+			r.transcode(name).use(), 
 			&exc)) {
 		gulong length=gdome_nl_length(nodes, &exc);
-		for(gulong i=0; i<length; i++) {
-			String& skey=*new(pool) String(pool);
-			{
-				char *buf=(char *)pool.malloc(MAX_NUMBER);
-				snprintf(buf, MAX_NUMBER, "%d", i);
-				skey << buf;
-			}
-
-			result.hash(0).put(skey, new(pool) VXnode(pool, gdome_nl_item(nodes, i, &exc)));
-		}
+		for(gulong i=0; i<length; i++)
+			result.hash().put(
+				StringBody::Format(i), 
+				new VXnode(&r.charsets, gdome_nl_item(nodes, i, &exc)));
 	} else if(exc)
-		throw Exception(
-			&method_name, 
-			exc);
+		throw Exception(0, exc);
 
 	// write out result
 	r.write_no_lang(result);
 }
 
-static void _getElementsByTagNameNS(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _getElementsByTagNameNS(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
 	// namespaceURI;localName
-	const String& namespaceURI=params->as_string(0, "namespaceURI must be string");
-	const String& localName=params->as_string(1, "localName must be string");
+	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
+	const String& localName=params.as_string(1, "localName must be string");
 
 	GdomeException exc;
-	VHash& result=*new(pool) VHash(pool);
+	VHash& result=*new VHash;
 	if(GdomeNodeList *nodes=
 		gdome_doc_getElementsByTagNameNS(
-			vdoc.get_document(&method_name), 
-			pool.transcode(namespaceURI).use(),
-			pool.transcode(localName).use(),
+			vdoc.get_document(), 
+			r.transcode(namespaceURI).use(),
+			r.transcode(localName).use(),
 			&exc)) {
 		gulong length=gdome_nl_length(nodes, &exc);
-		for(gulong i=0; i<length; i++) {
-			String& skey=*new(pool) String(pool);
-			{
-				char *buf=(char *)pool.malloc(MAX_NUMBER);
-				snprintf(buf, MAX_NUMBER, "%d", i);
-				skey << buf;
-			}
-
-			result.hash(0).put(skey, new(pool) VXnode(pool, gdome_nl_item(nodes, i, &exc)));
-		}
+		for(gulong i=0; i<length; i++)
+			result.hash().put(
+				StringBody::Format(i), 
+				new VXnode(&r.charsets, gdome_nl_item(nodes, i, &exc)));
 	}
 
 	// write out result
 	r.write_no_lang(result);
 }
 
-static void _getElementById(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _getElementById(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
 	// elementId
-	const String& elementId=params->as_string(0, "elementID must be string");
+	const String& elementId=params.as_string(0, "elementID must be string");
 
 	GdomeException exc;
 	if(GdomeNode *node=(GdomeNode *)gdome_doc_getElementById(
-		vdoc.get_document(&method_name),
-		pool.transcode(elementId).use(),
+		vdoc.get_document(),
+		r.transcode(elementId).use(),
 		&exc)) {
 		// write out result
-		VXnode& result=*new(pool) VXnode(pool, node);
-		r.write_no_lang(result);
+		r.write_no_lang(*new VXnode(&r.charsets, node));
 	} else if(exc || xmlHaveGenericErrors())
 		throw Exception(
-			&method_name, 
+			&elementId, 
 			exc);
 }
 
-static void _importNode(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _importNode(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
 	GdomeNode *importedNode=
-		as_node(method_name, params, 0, "importedNode must be node");
+		as_node(params, 0, "importedNode must be node");
 	bool deep=
-		params->as_bool(1, "deep must be bool", r);
+		params.as_bool(1, "deep must be bool", r);
 
 	GdomeException exc;
-	GdomeNode *outputNode=gdome_doc_importNode(vdoc.get_document(&method_name), 
+	GdomeNode *outputNode=gdome_doc_importNode(vdoc.get_document(), 
 		importedNode,
 		deep, &exc);
 	if(exc)
-		throw Exception(
-			&method_name, 
-			exc);
+		throw Exception(0, exc);
 
 	// write out result
-	r.write_no_lang(*new(pool) VXnode(pool, outputNode));
+	r.write_no_lang(*new VXnode(&r.charsets, outputNode));
 }
 /*
 GdomeElement *gdome_doc_createElementNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
 GdomeAttr *gdome_doc_createAttributeNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
 */
 
-static void _create(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _create(Request& r, MethodParams& params) {
+	Charset& source_charset=r.charsets.source();
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	Value& param=params->get(params->size()-1);
+	Value& param=params[params.count()-1];
 	GdomeDocument *document;
+	bool set_encoding=false;
 	if(param.get_junction()) { // {<?xml?>...}
-		Temp_lang temp_lang(r, String::UL_XML);
+		Temp_lang temp_lang(r, String::L_XML);
 		const String& xml=r.process_to_string(param);
 
-		const char *cstr=xml.cstr(String::UL_UNSPECIFIED);
+		const char* cstr=xml.cstr(String::L_UNSPECIFIED);
 		document=(GdomeDocument *)
 			gdome_xml_n_mkref((xmlNode *)xmlParseMemory(
 				cstr, strlen(cstr)
 			));
+		//printf("document=0x%p\n", document);
 		if(!document || xmlHaveGenericErrors()) {
 			GdomeException exc=0;
-			throw Exception(
-				&method_name, 
-				exc);
+			throw Exception(0, exc);
 		}
+
+		// must be last action in if, see after if}
 	} else { // [name]
 		const String& qualifiedName=param.as_string();
 
@@ -428,89 +400,96 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		/*
 		GdomeDocumentType *documentType=gdome_di_createDocumentType (
 			docimpl, 
-			pool.transcode(qualifiedName), 
+			r.transcode(qualifiedName), 
 			0/*publicId* /, 
 			0/*systemId* /, 
 			&exc);
 		if(!documentType || exc || xmlHaveGenericErrors())
 			throw Exception(
-				&method_name, 
+				method_name, 
 				exc);
+		/// +xalan createXMLDecl ?
 		*/
 		document=gdome_di_createDocument (domimpl, 
 			0/*namespaceURI*/, 
-			pool.transcode(qualifiedName).use(), 
+			r.transcode(qualifiedName).use(), 
 			0/*doctype*/, 
 			&exc);
 		if(!document || exc || xmlHaveGenericErrors())
-			throw Exception(
-				&method_name, 
-				exc);
+			throw Exception(0, exc);
 
-		xmlDoc *doc=gdome_xml_doc_get_xmlDoc(document);
-		const char *source_charset_name=pool.get_source_charset().name().cstr();
-		doc->encoding=pool.get_source_charset().transcode_buf2xchar(source_charset_name, strlen(source_charset_name));
-
-		/// +xalan createXMLDecl ?
+		set_encoding=true;
+		// must be last action in if, see after if}
+	}
+	// must be first action after if}
+	// replace any previous parsed source
+	{
+		vdoc.set_document(&r.charsets, document); 
+		GdomeException exc;
+		gdome_doc_unref(document, &exc);
 	}
 	
 	// URI 
-	const char *URI_cstr;
-	if(params->size()>1) { // absolute(param)
-		const String& URI=params->as_string(0, "URI must be string");
-		URI_cstr=r.absolute(URI).cstr();
+	const char* URI_cstr;
+	const char* URI_cstr_ptr;
+	if(params.count()>1) { // absolute(param)
+		const String& URI=params.as_string(0, "URI must be string");
+		URI_cstr=URI_cstr_ptr=r.absolute(URI).cstr();
 	} else // default = disk path to requested document
-		URI_cstr=r.info.path_translated;
+		URI_cstr=r.request_info.path_translated;
 	xmlDoc *doc=gdome_xml_doc_get_xmlDoc(document);
 	if(URI_cstr)
-		doc->URL=pool.transcode_buf2xchar(URI_cstr, strlen(URI_cstr));
+		doc->URL=source_charset.transcode_buf2xchar(URI_cstr, strlen(URI_cstr));
 
-	// replace any previous parsed source
-	vdoc.set_document(document);
+	if(set_encoding) {
+		const char* source_charset_name=source_charset.NAME().cstr();
+		doc->encoding=source_charset.transcode_buf2xchar(source_charset_name, strlen(source_charset_name));
+	}
 }
 
-static void _load(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _load(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
 	// filespec
-	const String& file_name=params->as_string(0, "uri must be string");
+	const String& file_name=params.as_string(0, "uri must be string");
 	const String& uri=r.absolute(file_name);
 
-	void *data;  size_t size;
-	file_read(pool, uri, data, size, false/*not text*/,
-		params->size()>1?params->as_no_junction(1, "additional params must be hash").get_hash(&method_name)
+	File_read_result file=file_read(r.charsets, uri, false/*not text*/,
+		params.count()>1?params.as_no_junction(1, "additional params must be hash")
+			.get_hash()
 			:0);
 
 	GdomeDocument *document=(GdomeDocument *)
-		gdome_xml_n_mkref((xmlNode *)xmlParseMemory((const char *)data, size));
+		gdome_xml_n_mkref((xmlNode *)xmlParseMemory(file.str, file.length));
 	if(!document || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
-		throw Exception(
-			&uri, 
-			exc);
+		throw Exception(&uri, exc);
 	}
-	const char *URI_cstr=uri.cstr();
+	// must be first action after if}
+	// replace any previous parsed source
+	{
+		vdoc.set_document(&r.charsets, document); 
+		GdomeException exc;
+		gdome_doc_unref(document, &exc);
+	}
+
+	const char* URI_cstr=uri.cstr();
 	xmlDoc *doc=gdome_xml_doc_get_xmlDoc(document);
 	if(URI_cstr)
-		doc->URL=pool.transcode_buf2xchar(URI_cstr, strlen(URI_cstr));
+		doc->URL=r.charsets.source().transcode_buf2xchar(URI_cstr, strlen(URI_cstr));
 
-	// replace any previous parsed source
-	vdoc.set_document(document);
 }
 
-static void param_option_over_output_option(Pool& pool, 
-											Hash *param_options, const char *option_name,
-											const String *& output_option) {
-	if(Value *value=static_cast<Value *>(param_options->get(*new(pool) String(pool, 
-		option_name))))
+static void param_option_over_output_option(
+					    HashStringValue& param_options, const char* option_name,
+					    const String*& output_option) {
+	if(Value* value=param_options.get(StringBody(option_name)))
 		output_option=&value->as_string();
 }
-static void param_option_over_output_option(Pool& pool, 
-											Hash *param_options, const char *option_name,
-											bool& output_option) {
-	if(Value *value=static_cast<Value *>(param_options->get(*new(pool) 
-		String(pool, option_name)))) {
+static void param_option_over_output_option(
+					    HashStringValue& param_options, const char* option_name,
+					    bool& output_option) {
+	if(Value* value=param_options.get(StringBody(option_name))) {
 		const String& s=value->as_string();
 		if(s=="yes")
 			output_option=true;
@@ -524,9 +503,9 @@ static void param_option_over_output_option(Pool& pool,
 }
 
 /// @test valid_options check
-static void prepare_output_options(
-								   Pool& pool, const String& method_name, MethodParams *params, int index,
-								   VXdoc::Output_options& oo) {
+static void prepare_output_options(Request& r,
+				   MethodParams& params, size_t index,
+				   VXdoc::Output_options& oo) {
 /*
 <xsl:output
   !method = "xml" | "html" | "text" | qname-but-not-ncname 
@@ -542,65 +521,68 @@ static void prepare_output_options(
 */
 
 	// configuring with options from parameter...
-	if(params->size()>index) {
-		Value& voptions=params->as_no_junction(index, "options must be string");
+	if(params.count()>index) {
+		Value& voptions=params.as_no_junction(index, "options must be string");
 		if(voptions.is_defined()) {
-			if(Hash *options=voptions.get_hash(&method_name)) {
+			if(HashStringValue *options=voptions.get_hash()) {
 				// $.method[xml|html|text]
-				if(Value *vmethod=static_cast<Value *>(options->get(*new(pool) 
-					String(pool, XDOC_OUTPUT_METHOD_OPTION_NAME))))
+				if(Value* vmethod=options->get(StringBody(XDOC_OUTPUT_METHOD_OPTION_NAME)))
 					oo.method=&vmethod->as_string();
 
 				// $.version[1.0]
-				param_option_over_output_option(pool, options, "version", oo.version);
+				param_option_over_output_option(*options, "version", oo.version);
 				// $.encoding[windows-1251|...]
-				param_option_over_output_option(pool, options, "encoding", oo.encoding);
+				param_option_over_output_option(*options, "encoding", oo.encoding);
 				// $.omit-xml-declaration[yes|no]
-				param_option_over_output_option(pool, options, "omit-xml-declaration", oo.omitXmlDeclaration);
+				param_option_over_output_option(*options, "omit-xml-declaration", oo.omitXmlDeclaration);
 				// $.standalone[yes|no]
-				param_option_over_output_option(pool, options, "standalone", oo.standalone);
+				param_option_over_output_option(*options, "standalone", oo.standalone);
 				// $.doctype-public[?]
-				param_option_over_output_option(pool, options, "doctype-public", oo.doctypePublic);
+				param_option_over_output_option(*options, "doctype-public", oo.doctypePublic);
 				// $.doctype-system[?]
-				param_option_over_output_option(pool, options, "doctype-system", oo.doctypeSystem);
+				param_option_over_output_option(*options, "doctype-system", oo.doctypeSystem);
 				// $.indent[yes|no]
-				param_option_over_output_option(pool, options, "indent", oo.indent);
+				param_option_over_output_option(*options, "indent", oo.indent);
 				// $.media-type[text/{html|xml|plain}]
-				param_option_over_output_option(pool, options, "media-type", oo.mediaType);				 
+				param_option_over_output_option(*options, "media-type", oo.mediaType);				 
 			}
 		}
 	}
 
 	// default encoding from pool
 	if(!oo.encoding)
-		oo.encoding=&pool.get_source_charset().name();
+		oo.encoding=new String(r.charsets.source().NAME(), String::L_TAINTED);
 	// default method=xml
 	if(!oo.method)
-		oo.method=new(pool) String(pool, XDOC_OUTPUT_METHOD_OPTION_VALUE_XML);
+		oo.method=new String(XDOC_OUTPUT_METHOD_OPTION_VALUE_XML);
 	// default mediaType = depending on method
 	if(!oo.mediaType) {
 		if(*oo.method==XDOC_OUTPUT_METHOD_OPTION_VALUE_XML)
-			oo.mediaType=new(pool) String(pool, "text/xml");
+			oo.mediaType=new String("text/xml");
 		else if(*oo.method==XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML)
-			oo.mediaType=new(pool) String(pool, "text/html");
+			oo.mediaType=new String("text/html");
 		else // XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT & all others
-			oo.mediaType=new(pool) String(pool, "text/plain");
+			oo.mediaType=new String("text/plain");
 	}
 }
 
-static void xdoc2buf(Pool& pool, VXdoc& vdoc, 
-					 const String& method_name, MethodParams *params, int index,
+struct Xdoc2buf_result {
+	char* str;
+	size_t length;
+};
+static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc, 
+					 MethodParams& params, int index,
 					 VXdoc::Output_options& oo,
-					 const String *file_spec,
-					 char **parser_buf, size_t *parser_size) {
-	prepare_output_options(pool, method_name, params, index,
+					 const String* file_spec) {
+	Xdoc2buf_result result;
+	prepare_output_options(r, params, index,
 		oo);
 
-	const char *encoding_cstr=oo.encoding->cstr();
+	const char* encoding_cstr=oo.encoding->cstr();
 	xmlCharEncodingHandler *encoder=xmlFindCharEncodingHandler(encoding_cstr);
 	if(!encoder)
 		throw Exception("parser.runtime",
-			&method_name,
+			0,
 			"encoding '%s' not supported", encoding_cstr);
 	// UTF-8 encoder contains empty input/output converters, 
 	// which is wrong for xmlOutputBufferCreateIO
@@ -613,11 +595,11 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 	xsltStylesheet_auto_ptr stylesheet(xsltNewStylesheet());
 	if(!stylesheet.get())
 		throw Exception(0,
-			&method_name,
+			0,
 			"xsltNewStylesheet failed");
 
 	#define OOS2STYLE(name) \
-		stylesheet->name=oo.name?BAD_CAST xmlMemStrdup(pool.transcode(*oo.name)->str):0
+		stylesheet->name=oo.name?BAD_CAST xmlMemStrdup(r.transcode(*oo.name)->str):0
 	#define OOE2STYLE(name) \
 		stylesheet->name=oo.name
 
@@ -631,105 +613,101 @@ static void xdoc2buf(Pool& pool, VXdoc& vdoc,
 	OOE2STYLE(standalone);
 	OOE2STYLE(omitXmlDeclaration);
 
-	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document(&method_name));
+	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
 	if(xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0) {
 		GdomeException exc=0;
-		throw Exception(
-			&method_name, 
-			exc);
+		throw Exception(0, exc);
 	}
 
 	// write out result
-	char *gnome_buf;  size_t gnome_size;
+	char *gnome_str;  size_t gnome_length;
 	if(outputBuffer->conv) {
-		gnome_size=outputBuffer->conv->use;
-		gnome_buf=(char *)outputBuffer->conv->content;
+		gnome_length=outputBuffer->conv->use;
+		gnome_str=(char *)outputBuffer->conv->content;
 	} else {
-		gnome_size=outputBuffer->buffer->use;
-		gnome_buf=(char *)outputBuffer->buffer->content;
+		gnome_length=outputBuffer->buffer->use;
+		gnome_str=(char *)outputBuffer->buffer->content;
 	}
+
 	if(file_spec)
-		file_write(
-					*file_spec,
-					gnome_buf, gnome_size, 
-					true/*as_text*/);
-	else if(*parser_size=gnome_size) {
-		*parser_buf=(char *)pool.malloc(gnome_size);
-		memcpy(*parser_buf, gnome_buf, gnome_size);
+		file_write(*file_spec,
+			gnome_str, gnome_length, 
+			true/*as_text*/);
+	else if(result.length=gnome_length) {
+		result.str=pa_strdup(gnome_str, gnome_length);
 	} else
-		*parser_buf=0;
+		result.str=0;
+
+	return result;
 }
 
-static void _file(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _file(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	VXdoc::Output_options oo(vdoc.output_options);
-	char *buf; size_t buf_size;
-	xdoc2buf(pool, vdoc, method_name, params, 0, 
+	Xdoc2buf_result buf=xdoc2buf(r, vdoc, params, 0, 
 		oo,
-		0/*not to file, to memory*/,
-		&buf, &buf_size);
+		0/*not to file, to memory*/);
 	// write out result
-	r.write_no_lang(*new(pool) String(pool, buf, buf_size));
+	r.write_no_lang(String(buf.str, buf.length));
 
 	// write out result
-	VFile& vfile=*new(pool) VFile(pool);
-	Value *vcontent_type;
-	VHash *vhcontent_type=new(pool) VHash(pool);
-	vhcontent_type->hash(&method_name).put(
-		*value_name, 
-		new(pool) VString(*oo.mediaType));
-	vhcontent_type->hash(&method_name).put(
-		*new(pool) String(pool, "charset"), 
-		new(pool) VString(*oo.encoding));
-	vcontent_type=vhcontent_type;
-	
-	vfile.set(false/*tainted*/, buf?buf:""/*to distinguish from stat-ed file*/, buf_size, 
-		0/*file_name*/, vcontent_type);
+	VFile& vfile=*new VFile;
+	VHash& vhcontent_type=*new VHash;
+	vhcontent_type.hash().put(
+		value_name, 
+		new VString(*oo.mediaType));
+	vhcontent_type.hash().put(
+		StringBody("charset"), 
+		new VString(*oo.encoding));
+
+	vfile.set(false/*tainted*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, 
+		0/*file_name*/, &vhcontent_type);
 	r.write_no_lang(vfile);
 }
 
-static void _save(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _save(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& file_spec=r.absolute(params->as_string(0, "file name must be string"));
+	const String& file_spec=r.absolute(params.as_string(0, "file name must be string"));
 	
 	VXdoc::Output_options oo(vdoc.output_options);
-	xdoc2buf(pool, vdoc, method_name, params, 1, 
+	xdoc2buf(r, vdoc, params, 1, 
 		oo,
-		&file_spec,
-		0, 0);
+		&file_spec);
 }
 
-static void _string(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _string(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	VXdoc::Output_options oo(vdoc.output_options);
-	char *buf; size_t buf_size;
-	xdoc2buf(pool, vdoc, method_name, params, 0, 
+	Xdoc2buf_result buf=xdoc2buf(r, vdoc, params, 0, 
 		oo,
-		0/*not to file, to memory*/,
-		&buf, &buf_size);
+		0/*not to file, to memory*/);
 	// write out result
-	r.write_no_lang(*new(pool) String(pool, buf, buf_size));
+	r.write_no_lang(String(buf.str, buf.length));
 }
 
-static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning, 
-						   void *info) {
-	Value *meaning=static_cast<Value *>(ameaning);
-	Pool& pool=meaning->pool();
-	const char ** & current_transform_param=*(const char ***)info;
-	*current_transform_param++=pool.transcode(aattribute)->str;
-	*current_transform_param++=pool.transcode(meaning->as_string())->str;
+#ifndef DOXYGEN
+struct Add_xslt_param_info {
+	Request* r;
+	Array<GdomeDOMString_auto_ptr>* strings;
+	const char** current_transform_param;
+};
+#endif
+static void add_xslt_param(
+			   HashStringValue::key_type attribute, 
+			   HashStringValue::value_type meaning, 
+			   Add_xslt_param_info* info) {
+	GdomeDOMString_auto_ptr s;
+	*info->current_transform_param++=(s=info->r->transcode(attribute))->str; *info->strings+=s;
+	*info->current_transform_param++=(s=info->r->transcode(meaning->as_string()))->str; *info->strings+=s;
 }
-static VXdoc& _transform(Pool& pool, const String *doc_source, const String *stylesheet_source, 
-						 VXdoc& vdoc, xsltStylesheetPtr stylesheet, const char **transform_params) {
-	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document(doc_source));
+static VXdoc& _transform(Request& r, const String* stylesheet_source, 
+						   VXdoc& vdoc, xsltStylesheetPtr stylesheet, const char** transform_params) {
+	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
 	xsltTransformContext_auto_ptr transformContext(
 		xsltNewTransformContext(stylesheet, document));
 	// make params literal
-    if (transformContext->globalVars == NULL) // strangly not initialized by xsltNewTransformContext
+	if (transformContext->globalVars == NULL) // strangly not initialized by xsltNewTransformContext
 		transformContext->globalVars = xmlHashCreate(20);
 	xsltQuoteUserParams(transformContext.get(), transform_params);
 	// do transform
@@ -737,14 +715,12 @@ static VXdoc& _transform(Pool& pool, const String *doc_source, const String *sty
 		stylesheet,
 		document,
 		0/*already quoted-inserted  transform_params*/,
-		0/*const char *output*/,
+		0/*const char* output*/,
 		0/*FILE *profile*/,
 		transformContext.get());
 	if(!transformed || xmlHaveGenericErrors()) {
 		GdomeException exc=0;
-		throw Exception(
-			stylesheet_source, 
-			exc);
+		throw Exception(stylesheet_source, exc);
 	}
 
 	//gdome_xml_doc_mkref dislikes XML_HTML_DOCUMENT_NODE  type, fixing
@@ -753,9 +729,9 @@ static VXdoc& _transform(Pool& pool, const String *doc_source, const String *sty
 	GdomeDocument *gdomeDocument=gdome_xml_doc_mkref(transformed);
 	if(!gdomeDocument)
 		throw Exception(0,
-			doc_source,
+			0,
 			"gdome_xml_doc_mkref failed");
-	VXdoc& result=*new(pool) VXdoc(pool, gdomeDocument);
+	VXdoc& result=*new VXdoc(&r.charsets, gdomeDocument);
 	/* grabbing options
 
 		<xsl:output
@@ -771,47 +747,49 @@ static VXdoc& _transform(Pool& pool, const String *doc_source, const String *sty
 		!indent = "yes" | "no"
 		!media-type = string /> 
 	*/
-	memset(&result.output_options, 0, sizeof(result.output_options));
 	VXdoc::Output_options& oo=result.output_options;
 
-	oo.method=stylesheet->method?&pool.transcode(stylesheet->method, stylesheet_source):0;
-	oo.encoding=stylesheet->encoding?&pool.transcode(stylesheet->encoding, stylesheet_source):0;
-	oo.mediaType=stylesheet->mediaType?&pool.transcode(stylesheet->mediaType, stylesheet_source):0;
-	oo.doctypeSystem=stylesheet->doctypeSystem?&pool.transcode(stylesheet->doctypeSystem, stylesheet_source):0;
-	oo.doctypePublic=stylesheet->doctypePublic?&pool.transcode(stylesheet->doctypePublic, stylesheet_source):0;
+	oo.method=stylesheet->method?&r.transcode(stylesheet->method):0;
+	oo.encoding=stylesheet->encoding?&r.transcode(stylesheet->encoding):0;
+	oo.mediaType=stylesheet->mediaType?&r.transcode(stylesheet->mediaType):0;
+	oo.doctypeSystem=stylesheet->doctypeSystem?&r.transcode(stylesheet->doctypeSystem):0;
+	oo.doctypePublic=stylesheet->doctypePublic?&r.transcode(stylesheet->doctypePublic):0;
 	oo.indent=stylesheet->indent!=0;
-	oo.version=stylesheet->version?&pool.transcode(stylesheet->version, stylesheet_source):0;
+	oo.version=stylesheet->version?&r.transcode(stylesheet->version):0;
 	oo.standalone=stylesheet->standalone!=0;
 	oo.omitXmlDeclaration=stylesheet->omitXmlDeclaration!=0;
 
 	// return
 	return result;
 }
-static void _transform(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.get_self());
+static void _transform(Request& r, MethodParams& params) {
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
 	// params
-	const char **transform_params=0;
-	if(params->size()>1) {
-		Value& vparams=params->as_no_junction(1, "transform parameters must be hash");
+	Array<GdomeDOMString_auto_ptr> transform_strings;
+	const char** transform_params=0;
+	if(params.count()>1) {
+		Value& vparams=params.as_no_junction(1, "transform parameters must be hash");
 		if(!vparams.is_string())
-			if(Hash *params=vparams.get_hash(&method_name)) {
-				const char **current_transform_param=transform_params=
-					(const char **)pool.malloc(sizeof(const char *)*(params->size()*2+1));
-				params->for_each(add_xslt_param, &current_transform_param);
-				transform_params[params->size()*2]=0;				
+			if(HashStringValue* hash=vparams.get_hash()) {
+				transform_params=new(UseGC) const char*[hash->count()*2+1];
+				Add_xslt_param_info info={
+					&r, 
+					&transform_strings,
+					transform_params
+				};
+				hash->for_each(add_xslt_param, &info);
+				transform_params[hash->count()*2]=0;				
 			} else
 				throw Exception("parser.runtime",
-					&method_name,
+					0,
 					"transform parameters parameter must be hash");
 	}
 
-	VXdoc *result;
-	Value& vmaybe_xdoc=params->get(0);
-	if(Value *vxdoc=vmaybe_xdoc.as(VXDOC_TYPE, false)) { // stylesheet (xdoc)
+	VXdoc* result;
+	if(Value *vxdoc=params[0].as(VXDOC_TYPE, false)) { // stylesheet (xdoc)
 		xmlDoc *document=gdome_xml_doc_get_xmlDoc(
-			static_cast<VXdoc *>(vxdoc)->get_document(&method_name));
+			static_cast<VXdoc *>(vxdoc)->get_document());
 		// compile xdoc stylesheet
 		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(document)); 
 		// strange thing - xsltParseStylesheetDoc records document and destroys it in stylesheet destructor
@@ -819,26 +797,26 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 		stylesheet_ptr->doc=0;
 		if(xmlHaveGenericErrors()) {
 			GdomeException exc=0;
-			throw Exception(&method_name, exc);
+			throw Exception(0, exc);
 		}
 		if(!stylesheet_ptr.get())
 			throw Exception("xml",
-				&method_name,
+				0,
 				"stylesheet failed to compile");
 
 		// transform!
-		result=&_transform(pool, &method_name, &method_name,
+		result=&_transform(r, 0,
 			vdoc, stylesheet_ptr.get(),
 			transform_params);
 	} else { // stylesheet (file name)
 		// extablish stylesheet connection
 		const String& stylesheet_filespec=
-			r.absolute(params->as_string(0, "stylesheet must be file name (string) or DOM document (xdoc)"));
-		Stylesheet_connection_ptr connection=stylesheet_manager->get_connection(stylesheet_filespec);
+			r.absolute(params.as_string(0, "stylesheet must be file name (string) or DOM document (xdoc)"));
+		Stylesheet_connection_ptr connection=stylesheet_manager.get_connection(stylesheet_filespec);
 
 		// load and compile file to stylesheet [or get cached if any]
 		// transform!
-		result=&_transform(pool, &method_name, &stylesheet_filespec,
+		result=&_transform(r, &stylesheet_filespec,
 			vdoc, connection->stylesheet(false/*nocache*/),
 			transform_params);
 	}
@@ -850,7 +828,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 // constructor
 
 /// @test how to create empty type html?
-MXdoc::MXdoc(Pool& apool) : MXnode(apool, XDOC_CLASS_NAME, Xnode_class) {
+MXdoc::MXdoc(): MXnode(XDOC_CLASS_NAME, xnode_class) {
 	/// DOM1
 
 	// Element createElement(in DOMString tagName) raises(DOMException);
@@ -916,20 +894,13 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool, XDOC_CLASS_NAME, Xnode_class) {
 void MXdoc::configure_admin(Request& r) {
 }
 
+# else
+
+#include "classes.h"
+
 // global variable
 
-Methoded *Xdoc_class;
-
-// creator
+DECLARE_CLASS_VAR(xdoc, 0, 0); // fictive
 
 #endif
 
-Methoded *MXdoc_create(Pool& pool) {
-	return 
-#ifdef XML
-		Xdoc_class=new(pool) MXdoc(pool)
-#else
-		0
-#endif
-	;
-}

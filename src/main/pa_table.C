@@ -1,115 +1,62 @@
 /** @file
 	Parser: table class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2003/04/14 11:22:53 $";
-
-//#include <stdlib.h>
+static const char* IDENT_TABLE_C="$Date: 2003/07/24 11:31:24 $";
 
 #include "pa_table.h"
-#include "pa_pool.h"
+
 #include "pa_exception.h"
 
-Table::Table(Pool& apool, 
-			 const String *aorigin_string,
-			 const Array *acolumns, 
-			 int initial_rows) :
-	Array(apool, initial_rows),
+Table::Table(columns_type acolumns, size_t initial_rows):
+	Array<element_type>(initial_rows),
 
-	forigin_string(aorigin_string),
 	fcurrent(0),
 	fcolumns(acolumns), 
-	name2number(*NEW Hash(pool())) {
+	name2number(new name2number_hash_class) {
 
-	if(fcolumns)
-		for(int i=0; i<fcolumns->size(); i++) {
-			const String& name=*fcolumns->get_string(i);
-			name2number.put(name, i+1);
+	if(fcolumns) {
+		size_t fcolumns_count=fcolumns->count();
+		size_t number=1;
+		for(Array_iterator<const String*> i(*fcolumns); i.has_next(); ) {
+			const String& name=*i.next();
+			name2number->put(name, number++);
 		}
+	}
 }
 
-Table::Table(Pool& apool, const Table& source, Action_options& options) :
-	Array(apool, options.limit/*may be more than needed, no harm done*/),
+Table::Table(const Table& src, Action_options& options) :
+	Array<element_type>(options.limit==ARRAY_OPTION_LIMIT_ALL?0:options.limit/*may be more than needed, no harm done*/),
 
-	forigin_string(source.forigin_string),
 	fcurrent(0),
-	fcolumns(source.fcolumns),
-	name2number(source.name2number) {
+	fcolumns(src.fcolumns),
+	name2number(src.name2number) {
 
-	append_array(source, options.offset, options.limit, options.reverse);
+	append(src, options.offset, options.limit, options.reverse);
 }
 
 int Table::column_name2index(const String& column_name, bool bark) const {
 	if(fcolumns) {// named
-		int result=name2number.get_int(column_name)-1; // -1 = column not found
+		int result=name2number->get(column_name)-1; // -1 = column not found
 		if(bark && result<0)
 			throw Exception("parser.runtime",
 				&column_name,
 				"column not found");
 		return result;
-	} else { // nameless
-		char *error_pos;
-		const char *cstr=column_name.cstr();
-		int result=(int)strtol(cstr, &error_pos, 0);
-		if(*error_pos/*not EOS*/) {
-			result=-1;
-			if(bark)
-				throw Exception("parser.runtime",
-					&column_name,
-					"invalid column number");
-		}
-		return result;
-	}
+	} else // nameless
+		return column_name.as_int();
 }
 
-const String *Table::item(int column) const {
+const String* Table::item(size_t column) {
 	if(valid(fcurrent)) {
-		const Array& row=at(fcurrent);
-		if(column>=0 && column<row.size()) // proper index?
-			return row.get_string(column);
+		element_type row=get(fcurrent);
+		if(column>=0 && column<row->count()) // proper index?
+			return row->get(column);
 	}
 	return 0; // it's OK we don't have row|column, just return nothing
-}
-
-bool Table::locate(Table::locate_func func, void *info, Table::Action_options& o) {
-	int size=this->size();
-	int row=o.offset;
-	if(!size || !o.limit || row>=size)
-		return false;
-	// max(limit)
-	int m=o.reverse?
-		row
-		:size-row;
-	if(!m)
-		return false;
-	// fix o.limit
-	if(o.limit<0 || o.limit>m)
-		o.limit=m;
-
-	int saved_current=current();
-	if(o.reverse) { // reverse
-		int to=max(0, row-o.limit);
-		for(; row>=to; --row) {
-			set_current(row);
-
-			if(func(*this, info))
-				return true;
-		}
-	} else { // forward
-		int to=min(row+o.limit, size);
-		for(; row<to; row++) {
-			set_current(row);
-
-			if(func(*this, info))
-				return true;
-		}
-	}
-	set_current(saved_current);
-
-	return false;
 }
 
 #ifndef DOXYGEN
@@ -128,7 +75,7 @@ bool locate_int_string(Table& self, void* ainfo) {
 bool Table::locate(int column, const String& value,
 		   Table::Action_options& options) {
 	Locate_int_string_info info={column, &value};
-	return locate(locate_int_string, &info, options);
+	return table_first_that(locate_int_string, &info, options);
 }
 
 bool Table::locate(const String& column, const String& value, 
@@ -137,6 +84,6 @@ bool Table::locate(const String& column, const String& value,
 }
 
 void Table::offset(bool absolute, int offset) {
-	if(size())
-		fcurrent=((absolute?0:fcurrent)+offset+size())%size();
+	if(size_t lcount=count())
+		fcurrent=((absolute?0:fcurrent)+offset+lcount)%lcount;
 }

@@ -1,109 +1,215 @@
 /** @file
 	Parser: hash class decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+*/
+
+/*
+	The prime numbers used from zend_hash.c,
+	the part of Zend scripting engine library,
+	Copyrighted (C) 1999-2000    Zend Technologies Ltd.
+	http://www.zend.com/license/0_92.txt
+	For more information about Zend please visit http://www.zend.com/
 */
 
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char* IDENT_HASH_H="$Date: 2003/01/21 15:51:10 $";
+static const char* IDENT_HASH_H="$Date: 2003/07/24 11:31:21 $";
 
-#include "pa_pool.h"
+#include "pa_memory.h"
 #include "pa_types.h"
-#include "pa_string.h"
+
+const int HASH_ALLOCATES_COUNT=29;
 
 /** 
-	Pooled hash.
+	Simple hash.
 
-	Automatically rehashed when almost full.
+	Automatically rehashed when almost is_full.
 	Contains no 0 values. 
 		get returning 0 means there were no such.
 		"put value 0" means "remove"
 */
-class Hash : public Pooled {
+template<typename K, typename V> class Hash: public PA_Object {
 public:
 
-	typedef String Key; ///< hash Key type. longing for templates
-	typedef void Val; ///< hash Val type. longing for templates
+	typedef K key_type;
+	typedef V value_type;
 
-	/// for_each iterator function type
-	typedef void (*For_each_func)(const Key& key, Val *value, void *info);
-
-	/// for_each iterator function type
-	typedef void (*For_each_func_refed)(const Key& key, Val *& value, void *info);
-
-	/// first_that iterator function type
-	typedef void *(*First_that_func)(const Key& key, Val *value, void *info);
-
-public:
-
-	Hash(Pool& apool) : Pooled(apool) { 
-		construct_new(); 
+	Hash() { 
+		allocated=allocates[allocates_index=0];
+		threshold=allocated*THRESHOLD_PERCENT/100;
+		fpairs_count=fused_refs=0;
+		refs=new(UseGC) Pair*[allocated];
 	}
 
-	Hash(const Hash& source) : Pooled(source.pool()){
-		construct_copy(source);
-	}
+	Hash(const Hash& source) {
+		allocates_index=source.allocates_index;
+		allocated=source.allocated;
+		threshold=source.threshold;
+		fused_refs=source.fused_refs;
+		fpairs_count=source.fpairs_count;
+		refs=new(UseGC) Pair*[allocated];
 
-	/// useful generic hash function
-	static uint generic_code(uint aresult, const char *start, uint allocated);
+		// clone & rehash
+		Pair **old_ref=source.refs;
+		for(int index=0; index<allocated; index++)
+			for(Pair *pair=*old_ref++; pair; ) {
+				Pair *next=pair->link;
+
+				Pair **new_ref=&refs[index];
+				*new_ref=new Pair(pair->code, pair->key, pair->value, *new_ref);
+
+				pair=next;
+			}
+	}
 
 	/// put a [value] under the [key] @returns existed or not
-	bool put(const Key& key, Val *value);
+	bool put(K key, V value) {
+		if(!value) {
+			remove(key);
+			return false;
+		}
+		if(is_full()) 
+			expand();
+
+		uint code=hash_code(key);
+		uint index=code%allocated;
+		Pair **ref=&refs[index];
+		for(Pair *pair=*ref; pair; pair=pair->link)
+			if(pair->code==code && pair->key==key) {
+				// found a pair with the same key
+				pair->value=value;
+				return true;
+			}
+		
+		// proper pair not found -- create&link_in new pair
+		if(!*ref) // root cell were fused_refs?
+			fused_refs++; // not, we'll use it and record the fact
+		*ref=new Pair(code, key, value, *ref);
+		fpairs_count++;
+		return false;
+	}
 
 	/// remove the [key] @returns existed or not
-	bool remove(const Key& key);
-/*
-	/// dirty hack to allow constant items storage. I long for Hash<const Val*>
-	bool put(const Key& key, const Val *value) {
-		return put(key, const_cast<Val *>(value)); 
+	bool remove(K key) {
+		uint code=hash_code(key);
+		uint index=code%allocated;
+		for(Pair **ref=&refs[index]; *ref; ref=&(*ref)->link)
+			if((*ref)->code==code && (*ref)->key==key) {
+				// found a pair with the same key
+				Pair *next=(*ref)->link;
+				delete *ref;
+				*ref=next;
+				--fpairs_count;
+				return true;
+			}
+
+		return false;
 	}
-*/
+
 	/// get associated [value] by the [key]
-	Val *get(const Key& key) const;
+	V get(K key) const {
+		uint code=hash_code(key);
+		uint index=code%allocated;
+		for(Pair *pair=refs[index]; pair; pair=pair->link)
+			if(pair->code==code && pair->key==key)
+				return pair->value;
+		
+		return V(0);
+	}
 
 	/// put a [value] under the [key] if that [key] existed @returns existed or not
-	bool put_replace(const Key& key, Val *value);
+	bool put_replace(K key, V value) {
+		if(!value) {
+			remove(key);
+			return false;
+		}
+		uint code=hash_code(key);
+		uint index=code%allocated;
+		for(Pair *pair=refs[index]; pair; pair=pair->link)
+			if(pair->code==code && pair->key==key) {
+				// found a pair with the same key, replacing
+				pair->value=value;
+				return true;
+			}
 
-	/// put a [value] under the [key] if that [key] NOT existed @returns existed or not
-	bool put_dont_replace(const Key& key, Val *value);
-
-	/// put all 'src' values if NO with same key existed
-	void merge_dont_replace(const Hash& src);
-
-	void put(const Key& key, int     value) { put(key, reinterpret_cast<Val *>(value)); }
-	void put(const Key& key, const String *value) { 
-		put(key, static_cast<Val *>(const_cast<String *>(value))); 
+		// proper pair not found 
+		return false;
 	}
 
-	//@{
-	/// handy get, longing for Hash<int>, Hash<String *>
-	int get_int(const Key& key) const { return reinterpret_cast<int>(get(key)); }
-	const String *get_string(const Key& key) const { return static_cast<String *>(get(key)); }
-	//@}
+	/// put a [value] under the [key] if that [key] NOT existed @returns existed or not
+	bool put_dont_replace(K key, V value) {
+		if(!value) {
+			remove(key);
+			return false;
+		}
+		if(is_full()) 
+			expand();
+
+		uint code=hash_code(key);
+		uint index=code%allocated;
+		Pair **ref=&refs[index];
+		for(Pair *pair=*ref; pair; pair=pair->link)
+			if(pair->code==code && pair->key==key) {
+				// found a pair with the same key, NOT replacing
+				return true;
+			}
+
+		// proper pair not found -- create&link_in new pair
+		if(!*ref) // root cell were fused_refs?
+			fused_refs++; // not, we'll use it and record the fact
+		*ref=new Pair(code, key, value, *ref);
+		fpairs_count++;
+		return false;
+	}
+
+	/** put all 'src' values if NO with same key existed
+		@todo optimize this.allocated==src.allocated case
+	*/
+	void merge_dont_replace(const Hash& src) {
+		for(int i=0; i<src.allocated; i++)
+			for(Pair *pair=src.refs[i]; pair; pair=pair->link)
+				put_dont_replace(pair->key, pair->value);
+	}
 
 	/// number of elements in hash
-	int size() const { return count; }
+	int count() const { return fpairs_count; }
 
-	/// iterate over all not zero elements
-	void for_each(For_each_func func, void *info=0) const;
+	/// iterate over all pairs
+	template<typename I> void for_each(void callback(K, V, I), I info) const {
+		Pair **ref=refs;
+		for(int index=0; index<allocated; index++)
+			for(Pair *pair=*ref++; pair; pair=pair->link)
+				callback(pair->key, pair->value, info);
+	}
 
-	/// iterate over all not zero elements, passing references
-	void for_each(For_each_func_refed func, void *info=0) const;
+	/// iterate over all pairs
+	template<typename I> void for_each_ref(void callback(K, V&, I), I info) const {
+		Pair **ref=refs;
+		for(int index=0; index<allocated; index++)
+			for(Pair *pair=*ref++; pair; pair=pair->link)
+				callback(pair->key, pair->value, info);
+	}
 
-	/// iterate over all elements until condition
-	void *first_that(First_that_func func, void *info=0) const;
+	/// iterate over all pairs until condition becomes true, return that element
+	template<typename I> V first_that(bool callback(K, V, I), I info) const {
+		Pair **ref=refs;
+		for(int index=0; index<allocated; index++)
+			for(Pair *pair=*ref++; pair; pair=pair->link)
+				if(callback(pair->key, pair->value, info))
+					return pair->value;
+		
+		return V(0);
+	}
 
 	/// remove all elements
-	void clear();
-
-protected:
-
-	void construct_new();
-	void construct_copy(const Hash& source);
+	void clear() {
+		memset(refs, 0, sizeof(*refs)*allocated);
+		fpairs_count=fused_refs=0;	
+	}
 
 private:
 
@@ -117,32 +223,28 @@ private:
 
 	/// possible [allocates]. prime numbers
 	static uint allocates[];
-	static int allocates_count;
-
+	
 	/// number of allocated pairs
 	int allocated;
 
-	/// helper: expanding when used == threshold
+	/// helper: expanding when fused_refs == threshold
 	int threshold;
 
 	/// used pairs
-	int used;
+	int fused_refs;
 
 	/// stored pairs total (including those by links)
-	int count;
+	int fpairs_count;
 
 	/// pair storage
-	class Pair {
-		friend class Hash;
-
+	class Pair: public PA_Allocated {
+	public:
 		uint code;
-		const Key& key;
-		Val *value;
+		K key;
+		V value;
 		Pair *link;
 		
-		void *operator new(size_t allocated, Pool& apool);
-
-		Pair(uint acode, const Key& akey, Val *avalue, Pair *alink) :
+		Pair(uint acode, K akey, V avalue, Pair *alink) :
 			code(acode),
 			key(akey),
 			value(avalue),
@@ -150,23 +252,95 @@ private:
 	} **refs;
 
 	/// filled to threshold: needs expanding
-	bool full() { return used==threshold; }
+	bool is_full() { return fused_refs==threshold; }
 
 	/// allocate larger buffer & rehash
-	void expand();
+	void expand() {
+		int old_allocated=allocated;
+		Pair **old_refs=refs;
+
+		allocates_index=allocates_index+1<HASH_ALLOCATES_COUNT?allocates_index+1:HASH_ALLOCATES_COUNT-1;
+		// allocated bigger refs array
+		allocated=allocates[allocates_index];
+		threshold=allocated*THRESHOLD_PERCENT/100;
+		refs=new(UseGC) Pair*[allocated];
+
+		// rehash
+		Pair **old_ref=old_refs;
+		for(int old_index=0; old_index<old_allocated; old_index++)
+			for(Pair *pair=*old_ref++; pair; ) {
+				Pair *next=pair->link;
+
+				uint new_index=pair->code%allocated;
+				Pair **new_ref=&refs[new_index];
+				pair->link=*new_ref;
+				*new_ref=pair;
+
+				pair=next;
+			}
+
+		delete[] old_refs;
+	}
 
 private: //disabled
 
 	Hash& operator = (const Hash&) { return *this; }
 };
 
-///	Auto-object used for temporarily substituting/removing hash values
+/* Zend comment: Generated on an Octa-ALPHA 300MHz CPU & 2.5GB RAM monster */
+template<typename K, typename V>
+uint Hash<K, V>::allocates[HASH_ALLOCATES_COUNT]={
+	5, 11, 19, 53, 107, 223, 463, 983, 1979, 3907, 7963, 
+	16229, 32531, 65407, 130987, 262237, 524521, 1048793, 
+	2097397, 4194103, 8388857, 16777447, 33554201, 67108961, 
+	134217487, 268435697, 536870683, 1073741621, 2147483399};
+
+/// useful generic hash function
+inline void generic_hash_code(uint& result, char c) {
+	result=(result<<4)+c;
+	if(uint g=(result&0xF0000000)) {
+		result=result^(g>>24);
+		result=result^g;
+	}
+}
+/// useful generic hash function
+inline void generic_hash_code(uint& result, const char* s) {
+	while(char c=*s++) {
+		result=(result<<4)+c;
+		if(uint g=(result&0xF0000000)) {
+			result=result^(g>>24);
+			result=result^g;
+		}
+	}
+}
+
+/// useful generic hash function
+inline void generic_hash_code(uint& result, const char* buf, size_t size) {
+	const char* end=buf+size;
+	while(buf<end) {
+		result=(result<<4)+*buf++;
+		if(uint g=(result&0xF0000000)) {
+			result=result^(g>>24);
+			result=result^g;
+		}
+	}
+}
+
+/// simple hash code of int. used by EXIF mapping
+inline uint hash_code(int self) {
+	uint result=0;
+	generic_hash_code(result, (const char*)&self, sizeof(self));
+	return result;
+}
+
+///	Auto-object used to temporarily substituting/removing hash values
+template <typename K, typename V>
 class Temp_hash_value {
-	Hash& fhash;
-	const Hash::Key& fname;
-	Hash::Val *saved_value;
+	Hash<K, V>& fhash;
+	K fname;
+	V saved_value;
 public:
-	Temp_hash_value(Hash& ahash, const Hash::Key& aname, Hash::Val *avalue) : 
+	Temp_hash_value(Hash<K, V>& ahash, K aname, V avalue) : 
 		fhash(ahash),
 		fname(aname),
 		saved_value(ahash.get(aname)) {

@@ -1,57 +1,35 @@
 /** @file
 	Parser: compiler part of request class.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMPILE_C="$Date: 2003/01/21 15:51:12 $";
+static const char* IDENT_COMPILE_C="$Date: 2003/07/24 11:31:22 $";
 
 #include "pa_opcode.h"
 #include "pa_request.h"
-#include "pa_string.h"
-#include "pa_array.h"
 #include "compile_tools.h"
-#include "pa_exception.h"
 
 extern int yydebug;
 extern int yyparse (void *);
 
-VStateless_class& Request::real_compile(COMPILE_PARAMS) {
+VStateless_class& Request::compile(VStateless_class* aclass, 
+				   const char* source, const String* main_alias, 
+				   uint file_no) {
 	// prepare to parse
-	struct parse_control pc;
+	Parse_control pc(*this, aclass, source, main_alias, file_no);
 
-	// input 
-	pc.pool=&pool();
-	pc.request=this;
-	// we were told the class to compile to?
-	pc.cclass=&aclass; // until changed with @CLASS would consider operators loading
-
-	pc.source=source;
-#ifndef NO_STRING_ORIGIN
-	pc.file=file;
-#endif
-	pc.line=pc.col=0; // off the check, 'col' used in compile
-
-	// initialise state
-	pc.trim_bof=true;
-	pc.pending_state=0;
-	pc.string=NEW String(pool());	
-	pc.ls=LS_USER;
-	pc.ls_sp=0;
-	pc.in_call_value=false;
-	
 	// parse=compile! 
 	//yydebug=1;
 	if(yyparse(&pc)) { // error?
-		if(pc.col==0) { // expecting something after EOL means they've expected it BEFORE
-			// step back.  -1 col means EOL
-			pc.line--;
-			pc.col=-1;
-		} 
+		pc.pos_prev_c();
+		if(pc.pos.col==0) // expecting something after EOL means they've expected it BEFORE
+			pc.pos_prev_c();
+
 		throw Exception("parser.compile",
 			0,
-			"%s(%d:%d): %s",  file, 1+pc.line, pc.col,  pc.error);
+			"%s(%d:%d): %s",  file_list[file_no].cstr(), 1+pc.pos.line, 1+pc.pos.col,  pc.error);
 	}
 
 	// result

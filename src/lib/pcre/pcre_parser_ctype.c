@@ -42,7 +42,7 @@ and semantics are as close as possible to those of the Perl 5 language.
 	   
 		See the file Tech.Notes for some information on the internals.
 */
-static const char *RCSId="$Date: 2003/01/21 15:51:12 $"; 
+static const char *RCSId="$Date: 2003/07/24 11:31:22 $"; 
 
 #include <ctype.h>
 #include <stdio.h>

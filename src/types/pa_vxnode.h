@@ -1,64 +1,71 @@
 /** @file
 	Parser: @b xnode parser class decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char* IDENT_VXNODE_H="$Date: 2003/01/21 15:51:22 $";
+static const char* IDENT_VXNODE_H="$Date: 2003/07/24 11:31:27 $";
 
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
 
+extern "C" {
+#include "gdomecore/gdome-xml-node.h"
+#include "gdomecore/gdome-xml-document.h"
+};
+
 // defines
 
 #define VXNODE_TYPE "xnode"
 
+// helper defines
+
+#define gdome_xml_doc_get_xmlDoc(dome_doc) (((_Gdome_xml_Document *)dome_doc)->n)
+
 // externals
 
-extern Methoded *Xnode_class;
-
-//void VXnode_cleanup(void *);
+extern Methoded* xnode_class;
 
 /// value of type 'xnode'. implemented with GdomeNode
-class VXnode : public VStateless_object {
-	friend void VXnode_cleanup(void *);
+class VXnode: public VStateless_object, PA_Cleaned {
 public: // Value
 
-	const char *type() const { return VXNODE_TYPE; }
-	VStateless_class *get_class() { return Xnode_class; }
+	override const char* type() const { return VXNODE_TYPE; }
+	override VStateless_class* get_class() { return xnode_class; }
 
 	/// VXnode: true
-	bool as_bool() const { return true; }
+	override bool as_bool() const { return true; }
 
 	/// VXnode: true
-	Value *as_expr_result(bool return_string_as_is=false) { return NEW VBool(pool(), as_bool()); }
+	override Value& as_expr_result(bool return_string_as_is=false) { return *new VBool(as_bool()); }
 
 	/// VXnode: $CLASS,$method, fields
-	Value *get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 
 public: // usage
 
-	VXnode(Pool& apool, GdomeNode *anode) : 
-		VStateless_object(apool),
+	VXnode(Request_charsets* acharsets, GdomeNode* anode) : 
+		fcharsets(acharsets),
 		fnode(anode/*not adding ref, owning a node*/) {
-		GdomeException exc;
-
-		register_cleanup(VXnode_cleanup, this);
 	}
-protected:
-	~VXnode() {
+
+	override ~VXnode() {
 		GdomeException exc;
 		if(fnode)			
 			gdome_n_unref(fnode, &exc);
 	}
-public:
 
-	void set_node(GdomeNode *anode, bool aowns_node) { 
+public: // VXnode
+
+	/// @todo register disappearing link to parent object?
+	void set_node(Request_charsets* acharsets, GdomeNode* anode, bool aowns_node) { 
+		fcharsets=acharsets;
+
 		GdomeException exc;
 		if(fnode)			
 			gdome_n_unref(fnode, &exc);
@@ -66,20 +73,22 @@ public:
 		gdome_n_ref(fnode=anode, &exc);
 	}
 
-public: // VXnode
-	virtual GdomeNode *get_node(const String *source) { 
+	virtual GdomeNode* get_node() { 
 		if(!fnode)
 			throw Exception(0,
-				source,
+				0,
 				"can not be applied to uninitialized instance");
 
 		return fnode; 
 	}
 
+protected:
+
+	Request_charsets* fcharsets;
+
 private:
 
-	GdomeNode *fnode;
-
+	GdomeNode* fnode;
 };
 
 #endif

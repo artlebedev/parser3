@@ -1,14 +1,14 @@
 /**	@file
 	Parser: write context class decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char* IDENT_WCONTEXT_H="$Date: 2003/01/21 15:51:22 $";
+static const char* IDENT_WCONTEXT_H="$Date: 2003/07/24 11:31:27 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -20,56 +20,58 @@ class StringOrValue {
 public:
 	StringOrValue() : fstring(0), fvalue(0) {}
 	/// anticipating either String or Value [must not be 0&0]
-	StringOrValue(const String *astring, Value *avalue) : fstring(astring), fvalue(avalue) {}
+	StringOrValue(const String* astring, Value* avalue) : fstring(astring), fvalue(avalue) {}
 	void set_string(const String& astring) { fstring=&astring; }
 	void set_value(Value& avalue) { fvalue=&avalue; }
-	const String *get_string() { return fstring; }
-	Value *get_value() { return fvalue; }
+	const String* get_string() { return fstring; }
+	Value* get_value() { return fvalue; }
 	Value& as_value() const {
-		return *(fvalue?fvalue:new(fstring->pool()) VString(*fstring));
+		Value* result=fvalue?fvalue:new VString(*fstring);
+		return *result;
 	}
 	const String& as_string() const {
 		return fstring?*fstring:fvalue->as_string();
 	}
 private:
-	const String *fstring;
-	Value *fvalue;
+	const String* fstring;
+	Value* fvalue;
 };
 
 /** Write context
 	they do different write()s here, later picking up the result
 	@see Request::wcontext
 */
-class WContext : public Value {
+class WContext: public Value {
 	friend class Request;
 
 public: // Value
 
-	const char *type() const { return "wcontext"; }
+	override const char* type() const { return "wcontext"; }
 	/// WContext: accumulated fstring
-	const String *get_string() { return &fstring; };
+	override const String* get_string() { return &fstring; };
 
 	/// WContext: none yet | transparent
-	VStateless_class *get_class() { return fvalue?fvalue->get_class():0; }
+	override VStateless_class *get_class() { return fvalue?fvalue->get_class():0; }
 
 public: // WContext
 
 	/// appends a fstring to result
-	virtual void write(const String& astring, uchar lang) {
-		fstring.append(astring, lang);
+	virtual void write(const String& astring, String::Language alang) {
+		fstring.append(astring, alang);
 	}
 	/// writes Value; raises an error if already, providing origin
-	virtual void write(Value& avalue, const String* origin=0);
+	virtual void write(Value& avalue);
 
 	/**
 		if value is VString writes fstring,
 		else writes Value; raises an error if already, providing origin
 	*/
-	void write(Value& avalue, uchar lang, const String* origin=0) {
-		if(const String *fstring=avalue.get_string())
-			write(*fstring, lang);
+	void write(
+		Value& avalue, String::Language alang) {
+		if(const String* fstring=avalue.get_string())
+			write(*fstring, alang);
 		else
-			write(avalue, origin);
+			write(avalue);
 	}
 
 	/**
@@ -81,17 +83,16 @@ public: // WContext
 		return fvalue?StringOrValue(0, fvalue):StringOrValue(&fstring, 0);
 	}
 
-	void attach_junction(Junction& ajunction) {
-		junctions+=&ajunction;
+	void attach_junction(Junction* ajunction) {
+		junctions+=ajunction;
 	}
 
 public: // usage
 
-	WContext(Pool& apool, Value *avalue, WContext *aparent) : Value(apool), 
-		fstring(*new(apool) String(apool)),
+	WContext(Value* avalue, WContext *aparent):
+		fstring(*new String),
 		fvalue(avalue),
-		fparent(aparent),
-		junctions(apool) {
+		fparent(aparent) {
 		flags.constructing=
 			flags.entered_class=
 			flags.entered_object=0;
@@ -115,7 +116,7 @@ private:
 
 protected:
 	String& fstring;
-	Value *fvalue;
+	Value* fvalue;
 private:
 	struct {
 		int constructing:1;
@@ -127,7 +128,7 @@ private:
 private:
 
 	WContext *fparent;
-	Array  junctions;
+	Array<Junction*>  junctions;
 
 };
 

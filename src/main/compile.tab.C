@@ -43,7 +43,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.83 2003/04/07 07:07:30 paf Exp $
+	$Id: compile.tab.C,v 1.84 2003/07/24 11:31:22 paf Exp $
 */
 
 /**
@@ -57,13 +57,15 @@
 		-#:	in iis make up specialized Pool object for that
 */
 
-#define YYSTYPE  Array/*<Operation>*/ *
+#define YYSTYPE  ArrayOperation* 
 #define YYPARSE_PARAM  pc
 #define YYLEX_PARAM  pc
 #define YYDEBUG  1
 #define YYERROR_VERBOSE	1
-#define yyerror(msg)  real_yyerror((parse_control *)pc, msg)
+#define yyerror(msg)  real_yyerror((Parse_control *)pc, msg)
 #define YYPRINT(file, type, value)  yyprint(file, type, value)
+
+// includes
 
 #include "compile_tools.h"
 #include "pa_value.h"
@@ -74,19 +76,22 @@
 #include "pa_vvoid.h"
 #include "pa_vmethod_frame.h"
 
+// defines
+
 #define USE_CONTROL_METHOD_NAME "USE"
 
-static int real_yyerror(parse_control *pc, char *s);
-static void yyprint(FILE *file, int type, YYSTYPE value);
-static int yylex(YYSTYPE *lvalp, void *pc);
+// forwards
+
+static int real_yyerror(Parse_control* pc, char* s);
+static void yyprint(FILE* file, int type, YYSTYPE value);
+static int yylex(YYSTYPE* lvalp, void* pc);
 
 
 // local convinient inplace typecast & var
 #undef PC
-#define PC  (*(parse_control *)pc)
+#define PC  (*(Parse_control *)pc)
+#undef POOL
 #define POOL  (*PC.pool)
-#undef NEW
-#define NEW new(POOL)
 #ifndef DOXYGEN
 #ifndef YYSTYPE
 #define YYSTYPE int
@@ -211,22 +216,22 @@ static const short yyrhs[] = {    62,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-   116,   126,   128,   128,   129,   131,   131,   133,   200,   200,
-   201,   201,   202,   203,   203,   205,   234,   234,   235,   236,
-   236,   237,   237,   239,   239,   243,   243,   245,   245,   246,
-   246,   247,   247,   247,   251,   258,   259,   259,   260,   261,
-   263,   264,   286,   287,   287,   291,   295,   297,   298,   299,
-   316,   321,   323,   325,   326,   328,   334,   342,   348,   350,
-   351,   353,   359,   360,   360,   364,   370,   373,   376,   389,
-   391,   391,   392,   394,   395,   397,   398,   399,   400,   402,
-   404,   406,   408,   410,   412,   416,   420,   424,   426,   427,
-   429,   438,   438,   440,   440,   441,   442,   450,   455,   457,
-   459,   460,   461,   463,   467,   476,   482,   487,   487,   488,
-   493,   495,   497,   509,   521,   526,   528,   529,   530,   531,
-   532,   534,   535,   536,   537,   538,   539,   540,   541,   543,
-   544,   545,   546,   547,   548,   549,   550,   551,   552,   553,
-   554,   555,   556,   557,   558,   559,   560,   561,   562,   563,
-   564,   565,   566,   567,   568,   569,   572,   581,   586,   587
+   121,   129,   131,   131,   132,   134,   134,   136,   208,   208,
+   209,   209,   210,   211,   211,   213,   242,   242,   243,   244,
+   244,   245,   245,   247,   247,   251,   251,   253,   253,   254,
+   254,   255,   255,   255,   259,   266,   267,   267,   268,   269,
+   271,   272,   294,   295,   295,   299,   303,   305,   306,   307,
+   324,   329,   331,   333,   334,   336,   342,   350,   356,   358,
+   359,   361,   367,   368,   368,   372,   378,   381,   384,   397,
+   399,   399,   400,   402,   403,   405,   406,   407,   408,   410,
+   412,   414,   416,   418,   420,   424,   428,   432,   434,   435,
+   437,   446,   446,   448,   448,   449,   450,   458,   463,   465,
+   467,   468,   469,   471,   475,   484,   490,   495,   495,   496,
+   501,   503,   505,   517,   529,   534,   536,   537,   538,   539,
+   540,   542,   543,   544,   545,   546,   547,   548,   549,   551,
+   552,   553,   554,   555,   556,   557,   558,   559,   560,   561,
+   562,   563,   564,   565,   566,   567,   568,   569,   570,   571,
+   572,   573,   574,   575,   576,   577,   580,   589,   594,   595
 };
 #endif
 
@@ -1033,23 +1038,21 @@ yyreduce:
   switch (yyn) {
 
 case 1:
-#line 117 "compile.y"
+#line 122 "compile.y"
 {
-	Method& method=*NEW Method(POOL, 
-		PC.request->main_method_name, 
-		Method::CT_ANY,
+	Method& method=*new Method(Method::CT_ANY,
 		0, 0, /*min, max numbered_params_count*/
 		0/*param_names*/, 0/*local_names*/, 
 		yyvsp[0]/*parser_code*/, 0/*native_code*/);
-	PC.cclass->add_method(PC.request->main_method_name, method);
+	PC.cclass->add_method(PC.alias_method(main_method_name), method);
 ;
     break;}
 case 8:
-#line 134 "compile.y"
+#line 137 "compile.y"
 {
-	const String& command=*LA2S(yyvsp[-2]);
+	const String& command=*LA2S(*yyvsp[-2]);
 	YYSTYPE strings_code=yyvsp[0];
-	if(strings_code->size()<1*2) {
+	if(strings_code->count()<1*OPERATIONS_PER_OPVALUE) {
 		strcpy(PC.error, "@");
 		strcat(PC.error, command.cstr());
 		strcat(PC.error, " is empty");
@@ -1062,21 +1065,22 @@ case 8:
 			strcat(PC.error, "'");
 			YYERROR;
 		}
-		if(strings_code->size()==1*2) {
+		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
 			// new class' name
-			const String *name=LA2S(strings_code);
+			const String& name=*LA2S(*strings_code);
 			// creating the class
-			PC.cclass=NEW VClass(POOL);
-			PC.cclass->set_name(*name);
+			VStateless_class* cclass=new VClass;
+			PC.cclass=cclass;
+			PC.cclass->set_name(name);
 			// append to request's classes
-			PC.request->classes().put(*name, PC.cclass);
+			PC.request.classes().put(name, cclass);
 		} else {
-			strcpy(PC.error, "@"CLASS_NAME" must contain sole name");
+			strcpy(PC.error, "@"CLASS_NAME" must contain only one line with class name (contains more then one)");
 			YYERROR;
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
-		for(int i=0; i<strings_code->size(); i+=2) 
-			PC.request->use_file(PC.request->main_class, *LA2S(strings_code, i));
+		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE) 
+			PC.request.use_file(PC.request.main_class, *LA2S(*strings_code, i));
 	} else if(command==BASE_NAME) {
 		if(PC.cclass->base_class()) { // already changed from default?
 			strcpy(PC.error, "class already have a base '");
@@ -1084,22 +1088,26 @@ case 8:
 			strcat(PC.error, "'");
 			YYERROR;
 		}
-		if(strings_code->size()==1*2) {
-			const String& base_name=*LA2S(strings_code);
-			Value *vbase_class=static_cast<VClass *>(
-				PC.request->classes().get(base_name));
-			VStateless_class *base_class=vbase_class?vbase_class->get_class():0;
-			if(!base_class) {
+		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
+			const String& base_name=*LA2S(*strings_code);
+			if(Value* base_class_value=PC.request.classes().get(base_name)) {
+				// @CLASS == @BASE sanity check
+				if(VStateless_class *base_class=base_class_value->get_class()) {
+					if(PC.cclass==base_class) {
+						strcpy(PC.error, "@"CLASS_NAME" equals @"BASE_NAME);
+						YYERROR;
+					}
+					PC.cclass->get_class()->set_base(base_class);
+				} else { // they asked to derive from a class without methods ['env' & co]
+					strcpy(PC.error, base_name.cstr());
+					strcat(PC.error, ": you can not derive from this class in @"BASE_NAME);
+					YYERROR;
+				}
+			} else {
 				strcpy(PC.error, base_name.cstr());
 				strcat(PC.error, ": undefined class in @"BASE_NAME);
 				YYERROR;
 			}
-			// @CLASS == @BASE sanity check
-			if(PC.cclass==base_class) {
-				strcpy(PC.error, "@"CLASS_NAME" equals @"BASE_NAME);
-				YYERROR;
-			}
-			PC.cclass->set_base(base_class);
 		} else {
 			strcpy(PC.error, "@"BASE_NAME" must contain sole name");
 			YYERROR;
@@ -1114,557 +1122,557 @@ case 8:
 ;
     break;}
 case 12:
-#line 201 "compile.y"
-{ yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
+#line 209 "compile.y"
+{ yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 16:
-#line 206 "compile.y"
+#line 214 "compile.y"
 {
-	const String *name=LA2S(yyvsp[-5]);
+	const String& name=*LA2S(*yyvsp[-5]);
 
 	YYSTYPE params_names_code=yyvsp[-4];
-	Array *params_names=0;
-	if(int size=params_names_code->size()) {
-		params_names=NEW Array(POOL);
-		for(int i=0; i<size; i+=2)
-			*params_names+=LA2S(params_names_code, i);
+	ArrayString* params_names=0;
+	if(int size=params_names_code->count()) {
+		params_names=new ArrayString;
+		for(int i=0; i<size; i+=OPERATIONS_PER_OPVALUE)
+			*params_names+=LA2S(*params_names_code, i);
 	}
 
 	YYSTYPE locals_names_code=yyvsp[-3];
-	Array *locals_names=0;
-	if(int size=locals_names_code->size()) {
-		locals_names=NEW Array(POOL);
-		for(int i=0; i<size; i+=2)
-			*locals_names+=LA2S(locals_names_code, i);
+	ArrayString* locals_names=0;
+	if(int size=locals_names_code->count()) {
+		locals_names=new ArrayString;
+		for(int i=0; i<size; i+=OPERATIONS_PER_OPVALUE)
+			*locals_names+=LA2S(*locals_names_code, i);
 	}
 
-	Method& method=*NEW Method(POOL, 
-		*name, 
+	Method& method=*new Method(
+		//name, 
 		Method::CT_ANY,
 		0, 0/*min,max numbered_params_count*/, 
 		params_names, locals_names, 
 		yyvsp[0], 0);
-	PC.cclass->add_method(*name, method);
+	PC.cclass->add_method(PC.alias_method(name), method);
 ;
     break;}
 case 19:
-#line 235 "compile.y"
+#line 243 "compile.y"
 {yyval=yyvsp[-1];
     break;}
 case 23:
-#line 237 "compile.y"
-{ yyval=yyvsp[-2]; P(yyval, yyvsp[0]) ;
+#line 245 "compile.y"
+{ yyval=yyvsp[-2]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 29:
-#line 245 "compile.y"
-{ yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
+#line 253 "compile.y"
+{ yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 35:
-#line 251 "compile.y"
+#line 259 "compile.y"
 {
 	yyval=yyvsp[0]; /* stack: resulting value */ 
-	changetail_or_append(yyval, 
+	changetail_or_append(*yyval, 
 		OP_GET_ELEMENT, false,  /*->*/OP_GET_ELEMENT__WRITE,
 		/*or */OP_WRITE_VALUE
 		); /* value=pop; wcontext.write(value) */
 ;
     break;}
 case 36:
-#line 258 "compile.y"
+#line 266 "compile.y"
 { yyval=yyvsp[0] ;
     break;}
 case 39:
-#line 260 "compile.y"
+#line 268 "compile.y"
 { yyval=yyvsp[-1] ;
     break;}
 case 42:
-#line 264 "compile.y"
+#line 272 "compile.y"
 {
-	yyval=N(POOL); 
-	Array *diving_code=yyvsp[0];
-	const String *first_name=LA2S(diving_code);
+	yyval=N(); 
+	ArrayOperation* diving_code=yyvsp[0];
+	const String* first_name=LA2S(*diving_code);
 	// self.xxx... -> xxx...
-	// OP_VALUE+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
+	// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
-		O(yyval, OP_WITH_SELF); /* stack: starting context */
-		P(yyval, diving_code, 
+		O(*yyval, OP_WITH_SELF); /* stack: starting context */
+		P(*yyval, *diving_code, 
 			/* skip over... */
-			diving_code->size()>=3?3/*OP_VALUE+string+OP_GET_ELEMENTx*/:2/*OP_+string*/);
+			diving_code->count()>=4?4/*OP_VALUE+origin+string+OP_GET_ELEMENTx*/:3/*OP_+origin+string*/);
 	} else {
-		O(yyval, OP_WITH_READ); /* stack: starting context */
+		O(*yyval, OP_WITH_READ); /* stack: starting context */
 
 		// ^if ELEMENT -> ^if ELEMENT_OR_OPERATOR
-		// OP_VALUE+string+OP_GET_ELEMENT. -> OP_VALUE+string+OP_GET_ELEMENT_OR_OPERATOR.
-		if(PC.in_call_value && diving_code->size()==3)
-			diving_code->put_int(2, OP_GET_ELEMENT_OR_OPERATOR);
-		P(yyval, diving_code);
+		// OP_VALUE+origin+string+OP_GET_ELEMENT. -> OP_VALUE+origin+string+OP_GET_ELEMENT_OR_OPERATOR.
+		if(PC.in_call_value && diving_code->count()==4)
+			diving_code->put(4-1, OP_GET_ELEMENT_OR_OPERATOR);
+		P(*yyval, *diving_code);
 	}
 	/* diving code; stack: current context */
 ;
     break;}
 case 43:
-#line 286 "compile.y"
-{ yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
+#line 294 "compile.y"
+{ yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 45:
-#line 287 "compile.y"
-{ yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
+#line 295 "compile.y"
+{ yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 46:
-#line 291 "compile.y"
+#line 299 "compile.y"
 {
 	yyval=yyvsp[-1]; /* stack: context,name */
-	P(yyval, yyvsp[0]); /* stack: context,name,constructor_value */
+	P(*yyval, *yyvsp[0]); /* stack: context,name,constructor_value */
 ;
     break;}
 case 50:
-#line 299 "compile.y"
+#line 307 "compile.y"
 {
-	yyval=N(POOL);
-	Array *diving_code=yyvsp[0];
-	const String *first_name=LA2S(diving_code);
+	yyval=N();
+	ArrayOperation* diving_code=yyvsp[0];
+	const String* first_name=LA2S(*diving_code);
 	// $self.xxx... -> $xxx...
-	// OP_VALUE+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
+	// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
-		O(yyval, OP_WITH_SELF); /* stack: starting context */
-		P(yyval, diving_code, 
+		O(*yyval, OP_WITH_SELF); /* stack: starting context */
+		P(*yyval, *diving_code, 
 			/* skip over... */
-			diving_code->size()>=3?3/*OP_VALUE+string+OP_GET_ELEMENTx*/:2/*OP_+string*/);
+			diving_code->count()>=4?4/*OP_VALUE+origin+string+OP_GET_ELEMENTx*/:3/*OP_+origin+string*/);
 	} else {
-		O(yyval, OP_WITH_ROOT); /* stack: starting context */
-		P(yyval, diving_code);
+		O(*yyval, OP_WITH_ROOT); /* stack: starting context */
+		P(*yyval, *diving_code);
 	}
 	/* diving code; stack: current context */
 ;
     break;}
 case 51:
-#line 316 "compile.y"
+#line 324 "compile.y"
 {
-	yyval=N(POOL); 
-	O(yyval, OP_WITH_WRITE); /* stack: starting context */
-	P(yyval, yyvsp[0]); /* diving code; stack: context,name */
+	yyval=N(); 
+	O(*yyval, OP_WITH_WRITE); /* stack: starting context */
+	P(*yyval, *yyvsp[0]); /* diving code; stack: context,name */
 ;
     break;}
 case 52:
-#line 321 "compile.y"
-{ yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
+#line 329 "compile.y"
+{ yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 56:
-#line 328 "compile.y"
+#line 336 "compile.y"
 {
 	// stack: context, name
 	yyval=yyvsp[-1]; // stack: context, name, value
-	O(yyval, OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
+	O(*yyval, OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 ;
     break;}
 case 57:
-#line 334 "compile.y"
+#line 342 "compile.y"
 { 
-	yyval=N(POOL); 
-	O(yyval, OP_PREPARE_TO_EXPRESSION);
+	yyval=N(); 
+	O(*yyval, OP_PREPARE_TO_EXPRESSION);
 	// stack: context, name
-	P(yyval, yyvsp[-1]); // stack: context, name, value
-	O(yyval, OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
+	P(*yyval, *yyvsp[-1]); // stack: context, name, value
+	O(*yyval, OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
 ;
     break;}
 case 58:
-#line 342 "compile.y"
+#line 350 "compile.y"
 {
 	// stack: context, name
-	yyval=N(POOL); 
-	OA(yyval, OP_CURLY_CODE__CONSTRUCT, yyvsp[-1]); /* code=pop; name=pop; context=pop; construct(context,name,junction(code)) */
+	yyval=N(); 
+	OA(*yyval, OP_CURLY_CODE__CONSTRUCT, yyvsp[-1]); /* code=pop; name=pop; context=pop; construct(context,name,junction(code)) */
 ;
     break;}
 case 62:
-#line 353 "compile.y"
+#line 361 "compile.y"
 {
-	yyval=N(POOL); 
-	OA(yyval, OP_OBJECT_POOL, yyvsp[0]); /* stack: empty write context */
+	yyval=N(); 
+	OA(*yyval, OP_OBJECT_POOL, yyvsp[0]); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.value() */
 ;
     break;}
 case 65:
-#line 360 "compile.y"
-{ yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
+#line 368 "compile.y"
+{ yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 66:
-#line 364 "compile.y"
+#line 372 "compile.y"
 {
 	yyval=yyvsp[0]; /* stack: value */
-	changetail_or_append(yyval, 
+	changetail_or_append(*yyval, 
 		OP_CALL, true,  /*->*/ OP_CALL__WRITE,
 		/*or */OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 ;
     break;}
 case 67:
-#line 370 "compile.y"
+#line 378 "compile.y"
 { 
 					PC.in_call_value=true; 
 			;
     break;}
 case 68:
-#line 373 "compile.y"
+#line 381 "compile.y"
 {
 				PC.in_call_value=false;
 			;
     break;}
 case 69:
-#line 376 "compile.y"
+#line 384 "compile.y"
 { /* ^field.$method{vasya} */
 	yyval=yyvsp[-3]; /* with_xxx,diving code; stack: context,method_junction */
 
 	YYSTYPE params_code=yyvsp[-1];
-	if(params_code->size()==3) { // probably [] case. [OP_VALUE + Void + STORE_PARAM]
-		if(Value *value=LA2V(params_code)) // it is OP_VALUE + value?
+	if(params_code->count()==4) { // probably [] case. [OP_VALUE+origin+Void+STORE_PARAM]
+		if(Value* value=LA2V(*params_code)) // it is OP_VALUE+origin+value?
 			if(!value->is_defined()) // value is VVoid?
 				params_code=0; // ^zzz[] case. don't append lone empty param.
 	}
 	/* stack: context, method_junction */
-	OA(yyval, OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value
+	OA(*yyval, OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value
 ;
     break;}
 case 72:
-#line 391 "compile.y"
-{ yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
+#line 399 "compile.y"
+{ yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 76:
-#line 397 "compile.y"
+#line 405 "compile.y"
 {yyval=yyvsp[-1];
     break;}
 case 77:
-#line 398 "compile.y"
+#line 406 "compile.y"
 {yyval=yyvsp[-1];
     break;}
 case 78:
-#line 399 "compile.y"
+#line 407 "compile.y"
 {yyval=yyvsp[-1];
     break;}
 case 80:
-#line 402 "compile.y"
-{ yyval=yyvsp[-2]; P(yyval, yyvsp[0]) ;
+#line 410 "compile.y"
+{ yyval=yyvsp[-2]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 82:
-#line 406 "compile.y"
-{ yyval=yyvsp[-2]; P(yyval, yyvsp[0]) ;
+#line 414 "compile.y"
+{ yyval=yyvsp[-2]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 84:
-#line 410 "compile.y"
-{ yyval=yyvsp[-2]; P(yyval, yyvsp[0]) ;
+#line 418 "compile.y"
+{ yyval=yyvsp[-2]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 85:
-#line 412 "compile.y"
+#line 420 "compile.y"
 {
 	yyval=yyvsp[0];
-	O(yyval, OP_STORE_PARAM);
+	O(*yyval, OP_STORE_PARAM);
 ;
     break;}
 case 86:
-#line 416 "compile.y"
+#line 424 "compile.y"
 {
-	yyval=N(POOL); 
-	OA(yyval, OP_EXPR_CODE__STORE_PARAM, yyvsp[0]);
+	yyval=N(); 
+	OA(*yyval, OP_EXPR_CODE__STORE_PARAM, yyvsp[0]);
 ;
     break;}
 case 87:
-#line 420 "compile.y"
+#line 428 "compile.y"
 {
-	yyval=N(POOL); 
-	OA(yyval, OP_CURLY_CODE__STORE_PARAM, yyvsp[0]);
+	yyval=N(); 
+	OA(*yyval, OP_CURLY_CODE__STORE_PARAM, yyvsp[0]);
 ;
     break;}
 case 91:
-#line 429 "compile.y"
+#line 437 "compile.y"
 {
-	yyval=N(POOL); 
-	O(yyval, OP_PREPARE_TO_EXPRESSION);
-	P(yyval, yyvsp[0]);
-	O(yyval, OP_WRITE_EXPR_RESULT);
+	yyval=N(); 
+	O(*yyval, OP_PREPARE_TO_EXPRESSION);
+	P(*yyval, *yyvsp[0]);
+	O(*yyval, OP_WRITE_EXPR_RESULT);
 ;
     break;}
 case 93:
-#line 438 "compile.y"
-{ yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
+#line 446 "compile.y"
+{ yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 95:
-#line 440 "compile.y"
-{ yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
+#line 448 "compile.y"
+{ yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 97:
-#line 442 "compile.y"
+#line 450 "compile.y"
 {
 	// we know that name_advance1 not called from ^xxx context
 	// so we'll not check for operator call possibility as we do in name_advance2
 
 	/* stack: context */
 	yyval=yyvsp[0]; /* stack: context,name */
-	O(yyval, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	O(*yyval, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 ;
     break;}
 case 98:
-#line 450 "compile.y"
+#line 458 "compile.y"
 {
 	/* stack: context */
 	yyval=yyvsp[0]; /* stack: context,name */
-	O(yyval, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	O(*yyval, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 ;
     break;}
 case 104:
-#line 463 "compile.y"
+#line 471 "compile.y"
 {
 	yyval=yyvsp[0];
-	O(yyval, OP_GET_ELEMENT);
+	O(*yyval, OP_GET_ELEMENT);
 ;
     break;}
 case 105:
-#line 467 "compile.y"
+#line 475 "compile.y"
 {
-	Array *code;
+	ArrayOperation* code;
 	{
-		change_string_literal_to_write_string_literal(code=yyvsp[-1]);
-		P(code, yyvsp[0]);
+		change_string_literal_to_write_string_literal(*(code=yyvsp[-1]));
+		P(*code, *yyvsp[0]);
 	}
-	yyval=N(POOL); 
-	OA(yyval, OP_STRING_POOL, code);
+	yyval=N(); 
+	OA(*yyval, OP_STRING_POOL, code);
 ;
     break;}
 case 106:
-#line 476 "compile.y"
+#line 484 "compile.y"
 {
-	yyval=N(POOL); 
-	OA(yyval, OP_OBJECT_POOL, yyvsp[-1]); /* stack: empty write context */
+	yyval=N(); 
+	OA(*yyval, OP_OBJECT_POOL, yyvsp[-1]); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.value() */
 ;
     break;}
 case 107:
-#line 482 "compile.y"
+#line 490 "compile.y"
 {
-	yyval=N(POOL); 
-	O(yyval, OP_WITH_READ);
-	P(yyval, yyvsp[0]);
+	yyval=N(); 
+	O(*yyval, OP_WITH_READ);
+	P(*yyval, *yyvsp[0]);
 ;
     break;}
 case 109:
-#line 487 "compile.y"
-{ yyval=yyvsp[-1]; P(yyval, yyvsp[0]) ;
+#line 495 "compile.y"
+{ yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;
     break;}
 case 110:
-#line 488 "compile.y"
+#line 496 "compile.y"
 {
 	yyval=yyvsp[0];
-	O(yyval, OP_GET_ELEMENT__WRITE);
+	O(*yyval, OP_GET_ELEMENT__WRITE);
 ;
     break;}
 case 113:
-#line 497 "compile.y"
+#line 505 "compile.y"
 {
 	yyval=yyvsp[-1]; // stack: class name string
-	if(*LA2S(yyval) == BASE_NAME) { // pseude BASE class
-		if(VStateless_class *base=PC.cclass->base_class()) {
-			change_string_literal_value(yyval, base->name());
+	if(*LA2S(*yyval) == BASE_NAME) { // pseudo BASE class
+		if(VStateless_class* base=PC.cclass->base_class()) {
+			change_string_literal_value(*yyval, base->name());
 		} else {
 			strcpy(PC.error, "no base class declared");
 			YYERROR;
 		}
 	}
-	O(yyval, OP_GET_CLASS);
+	O(*yyval, OP_GET_CLASS);
 ;
     break;}
 case 114:
-#line 509 "compile.y"
+#line 517 "compile.y"
 {
 	yyval=yyvsp[-1];
 	if(!PC.in_call_value) {
 		strcpy(PC.error, ":: not allowed here");
 		YYERROR;
 	}
-	O(yyval, OP_PREPARE_TO_CONSTRUCT_OBJECT);
+	O(*yyval, OP_PREPARE_TO_CONSTRUCT_OBJECT);
 ;
     break;}
 case 115:
-#line 521 "compile.y"
+#line 529 "compile.y"
 {
 	// see OP_PREPARE_TO_EXPRESSION!!
-	if((yyval=yyvsp[0])->size()==2) // only one string literal in there?
-		change_string_literal_to_double_literal(yyval); // make that string literal Double
+	if((yyval=yyvsp[0])->count()==2) // only one string literal in there?
+		change_string_literal_to_double_literal(*yyval); // make that string literal Double
 ;
     break;}
 case 119:
-#line 530 "compile.y"
+#line 538 "compile.y"
 { yyval = yyvsp[-1]; ;
     break;}
 case 120:
-#line 531 "compile.y"
+#line 539 "compile.y"
 { yyval = yyvsp[-1]; ;
     break;}
 case 121:
-#line 532 "compile.y"
+#line 540 "compile.y"
 { yyval = yyvsp[-1]; ;
     break;}
 case 122:
-#line 534 "compile.y"
-{ yyval=yyvsp[0];  O(yyval, OP_NEG) ;
+#line 542 "compile.y"
+{ yyval=yyvsp[0];  O(*yyval, OP_NEG) ;
     break;}
 case 123:
-#line 535 "compile.y"
+#line 543 "compile.y"
 { yyval=yyvsp[0] ;
     break;}
 case 124:
-#line 536 "compile.y"
-{ yyval=yyvsp[0];	 O(yyval, OP_INV) ;
+#line 544 "compile.y"
+{ yyval=yyvsp[0];	 O(*yyval, OP_INV) ;
     break;}
 case 125:
-#line 537 "compile.y"
-{ yyval=yyvsp[0];  O(yyval, OP_NOT) ;
+#line 545 "compile.y"
+{ yyval=yyvsp[0];  O(*yyval, OP_NOT) ;
     break;}
 case 126:
-#line 538 "compile.y"
-{ yyval=yyvsp[0];  O(yyval, OP_DEF) ;
+#line 546 "compile.y"
+{ yyval=yyvsp[0];  O(*yyval, OP_DEF) ;
     break;}
 case 127:
-#line 539 "compile.y"
-{ yyval=yyvsp[0];  O(yyval, OP_IN) ;
+#line 547 "compile.y"
+{ yyval=yyvsp[0];  O(*yyval, OP_IN) ;
     break;}
 case 128:
-#line 540 "compile.y"
-{ yyval=yyvsp[0];  O(yyval, OP_FEXISTS) ;
+#line 548 "compile.y"
+{ yyval=yyvsp[0];  O(*yyval, OP_FEXISTS) ;
     break;}
 case 129:
-#line 541 "compile.y"
-{ yyval=yyvsp[0];  O(yyval, OP_DEXISTS) ;
+#line 549 "compile.y"
+{ yyval=yyvsp[0];  O(*yyval, OP_DEXISTS) ;
     break;}
 case 130:
-#line 543 "compile.y"
-{	yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_SUB) ;
+#line 551 "compile.y"
+{	yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_SUB) ;
     break;}
 case 131:
-#line 544 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_ADD) ;
+#line 552 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_ADD) ;
     break;}
 case 132:
-#line 545 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_MUL) ;
+#line 553 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_MUL) ;
     break;}
 case 133:
-#line 546 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_DIV) ;
+#line 554 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_DIV) ;
     break;}
 case 134:
-#line 547 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_MOD) ;
+#line 555 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_MOD) ;
     break;}
 case 135:
-#line 548 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_INTDIV) ;
+#line 556 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_INTDIV) ;
     break;}
 case 136:
-#line 549 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_BIN_SL) ;
+#line 557 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_BIN_SL) ;
     break;}
 case 137:
-#line 550 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_BIN_SR) ;
+#line 558 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_BIN_SR) ;
     break;}
 case 138:
-#line 551 "compile.y"
-{ yyval=yyvsp[-2]; 	P(yyval, yyvsp[0]);  O(yyval, OP_BIN_AND) ;
+#line 559 "compile.y"
+{ yyval=yyvsp[-2]; 	P(*yyval, *yyvsp[0]);  O(*yyval, OP_BIN_AND) ;
     break;}
 case 139:
-#line 552 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_BIN_OR) ;
+#line 560 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_BIN_OR) ;
     break;}
 case 140:
-#line 553 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_BIN_XOR) ;
+#line 561 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_BIN_XOR) ;
     break;}
 case 141:
-#line 554 "compile.y"
-{ yyval=yyvsp[-2];  OA(yyval, OP_NESTED_CODE, yyvsp[0]);  O(yyval, OP_LOG_AND) ;
+#line 562 "compile.y"
+{ yyval=yyvsp[-2];  OA(*yyval, OP_NESTED_CODE, yyvsp[0]);  O(*yyval, OP_LOG_AND) ;
     break;}
 case 142:
-#line 555 "compile.y"
-{ yyval=yyvsp[-2];  OA(yyval, OP_NESTED_CODE, yyvsp[0]);  O(yyval, OP_LOG_OR) ;
+#line 563 "compile.y"
+{ yyval=yyvsp[-2];  OA(*yyval, OP_NESTED_CODE, yyvsp[0]);  O(*yyval, OP_LOG_OR) ;
     break;}
 case 143:
-#line 556 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_LOG_XOR) ;
+#line 564 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_LOG_XOR) ;
     break;}
 case 144:
-#line 557 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_LT) ;
+#line 565 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_LT) ;
     break;}
 case 145:
-#line 558 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_GT) ;
+#line 566 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_GT) ;
     break;}
 case 146:
-#line 559 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_LE) ;
+#line 567 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_LE) ;
     break;}
 case 147:
-#line 560 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_GE) ;
+#line 568 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_GE) ;
     break;}
 case 148:
-#line 561 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_EQ) ;
+#line 569 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_EQ) ;
     break;}
 case 149:
-#line 562 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_NUM_NE) ;
+#line 570 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_NE) ;
     break;}
 case 150:
-#line 563 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_LT) ;
+#line 571 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_LT) ;
     break;}
 case 151:
-#line 564 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_GT) ;
+#line 572 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_GT) ;
     break;}
 case 152:
-#line 565 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_LE) ;
+#line 573 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_LE) ;
     break;}
 case 153:
-#line 566 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_GE) ;
+#line 574 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_GE) ;
     break;}
 case 154:
-#line 567 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_EQ) ;
+#line 575 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_EQ) ;
     break;}
 case 155:
-#line 568 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_STR_NE) ;
+#line 576 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_NE) ;
     break;}
 case 156:
-#line 569 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_IS) ;
+#line 577 "compile.y"
+{ yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_IS) ;
     break;}
 case 157:
-#line 572 "compile.y"
+#line 580 "compile.y"
 {
-	yyval=N(POOL);
-	OA(yyval, OP_STRING_POOL, yyvsp[0]); /* stack: empty write context */
+	yyval=N();
+	OA(*yyval, OP_STRING_POOL, yyvsp[0]); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.get_string() */
 ;
     break;}
 case 158:
-#line 581 "compile.y"
+#line 589 "compile.y"
 {
 	// optimized from OP_STRING+OP_WRITE_VALUE to OP_STRING__WRITE
-	change_string_literal_to_write_string_literal(yyval=yyvsp[0])
+	change_string_literal_to_write_string_literal(*(yyval=yyvsp[0]))
 ;
     break;}
 case 159:
-#line 586 "compile.y"
-{ yyval=VL(NEW VVoid(POOL)) ;
+#line 594 "compile.y"
+{ yyval=VL(new VVoid(), 0, 0, 0) ;
     break;}
 case 160:
-#line 587 "compile.y"
-{ yyval=N(POOL) ;
+#line 595 "compile.y"
+{ yyval=N() ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
@@ -1888,7 +1896,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 589 "compile.y"
+#line 597 "compile.y"
 
 #endif
 
@@ -1908,55 +1916,64 @@ yyerrhandle:
 		4:[^({]=pop
 */
 
-static int yylex(YYSTYPE *lvalp, void *pc) {
-	#define lexical_brackets_nestage PC.brackets_nestages[PC.ls_sp]
+inline void ungetc(Parse_control& pc, uint last_line_end_col) {
+	pc.source--;
+	if(pc.pos.col==0) {
+		--pc.pos.line; pc.pos.col=last_line_end_col;
+	} else
+		--pc.pos.col;
+
+}
+static int yylex(YYSTYPE *lvalp, void *apc) {
+	register Parse_control& pc=*static_cast<Parse_control*>(apc);
+
+	#define lexical_brackets_nestage pc.brackets_nestages[pc.ls_sp]
 	#define RC {result=c; goto break2; }
 
-    register int c;
-    int result;
+	register int c;
+	int result;
 	
-	if(PC.pending_state) {
-		result=PC.pending_state;
-		PC.pending_state=0;
+	if(pc.pending_state) {
+		result=pc.pending_state;
+		pc.pending_state=0;
 		return result;
 	}
 	
-	const char *begin=PC.source;
+	const char *begin=pc.source;
+	Pos begin_pos=pc.pos;
 	const char *end;
-	int begin_line=PC.line;
 	int skip_analized=0;
 	while(true) {
-		c=*(end=(PC.source++));
-//		fprintf(stderr, "\nchar: %c %02X; nestage: %d, sp=%d", c, c, lexical_brackets_nestage, PC.sp);
+		c=*(end=(pc.source++));
+//		fprintf(stderr, "\nchar: %c %02X; nestage: %d, sp=%d", c, c, lexical_brackets_nestage, pc.sp);
 
 		if(c=='\n') {
-			PC.line++;
-			PC.col=0;
+			pc.pos_next_line();
 		} else
-			PC.col++;
+			pc.pos_next_c(c);
 
-		if(c=='@' && PC.col==0+1) {
-			if(PC.ls==LS_DEF_SPECIAL_BODY) {
+		if(c=='@' && pc.pos.col==0+1) {
+			if(pc.ls==LS_DEF_SPECIAL_BODY) {
 				// @SPECIAL
 				// ...
 				// @<here = 
-				pop_LS(PC); // exiting from LS_DEF_SPECIAL_BODY state
+				pop_LS(pc); // exiting from LS_DEF_SPECIAL_BODY state
 			} // continuing checks
-			if(PC.ls==LS_USER) {
-				push_LS(PC, LS_DEF_NAME);
+			if(pc.ls==LS_USER) {
+				push_LS(pc, LS_DEF_NAME);
 				RC;
 			} else // @ in first column inside some code [when could that be?]
 				result=BAD_METHOD_DECL_START;
 			goto break2;
 		} else if(c=='^') {
-			if(PC.ls==LS_METHOD_AFTER) {
+			if(pc.ls==LS_METHOD_AFTER) {
 				// handle after-method situation
-				pop_LS(PC);
+				pop_LS(pc);
 				result=EON;
 				skip_analized=-1; // return to punctuation afterwards to assure it's literality
 				goto break2;
 			}
-			switch(PC.ls) {
+			switch(pc.ls) {
 case LS_EXPRESSION_VAR_NAME_WITH_COLON:
 case LS_EXPRESSION_VAR_NAME_WITHOUT_COLON:
 case LS_VAR_NAME_SIMPLE_WITH_COLON:
@@ -1968,7 +1985,7 @@ case LS_DEF_COMMENT:
 	// no literals in names, please
 	break;
 default:
-			switch(*PC.source) {
+			switch(*pc.source) {
 			// ^escaping some punctuators
 			case '^': case '$': case ';':
 			case '(': case ')':
@@ -1976,41 +1993,44 @@ default:
 			case '{': case '}':
 			case '"':  case ':':
 				if(end!=begin) {
+					if(!pc.string_start)
+						pc.string_start=begin_pos;
 					// append piece till ^
-					PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
+					pc.string.append_strdup_know_length(begin, end-begin);
 				}
 				// reset piece 'begin' position & line
-				begin=PC.source; // ->punctuation
-				begin_line=PC.line;
+				begin=pc.source; // ->punctuation
+				begin_pos=pc.pos;
 				// skip over _ after ^
-				PC.source++;  PC.col++;
+				pc.source++;  pc.pos.col++;
 				// skip analysis = forced literal
 				continue;
 
 			// converting ^#HH into char(hex(HH))
 			case '#':
 				if(end!=begin) {
+					if(!pc.string_start)
+						pc.string_start=begin_pos;
 					// append piece till ^
-					PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
+					pc.string.append_strdup_know_length(begin, end-begin);
 				}
 				// #HH ?
-				if(PC.source[0]=='#' && PC.source[1] && PC.source[2]) {
-					char *hex=(char *)POOL.malloc(1);
-					hex[0]=
-						hex_value[(unsigned char)PC.source[1]]*0x10+
-						hex_value[(unsigned char)PC.source[2]];
-					if(hex[0]==0) {
+				if(pc.source[0]=='#' && pc.source[1] && pc.source[2]) {
+					char c=
+						hex_value[(unsigned char)pc.source[1]]*0x10+
+						hex_value[(unsigned char)pc.source[2]];
+					if(c==0) {
 						result=BAD_HEX_LITERAL;
 						goto break2; // wrong hex value[no ^#00 chars allowed]: bail out
 					}
 					// append char(hex(HH))
-					PC.string->APPEND_CLEAN(hex, 1, PC.file, begin_line);
+					pc.string.append(c);
 					// skip over ^#HH
-					PC.source+=3;
-					PC.col+=3;
+					pc.source+=3;
+					pc.pos.col+=3;
 					// reset piece 'begin' position & line
-					begin=PC.source; // ->after ^#HH
-					begin_line=PC.line;
+					begin=pc.source; // ->after ^#HH
+					begin_pos=pc.pos;
 					// skip analysis = forced literal
 					continue;
 				}
@@ -2020,45 +2040,47 @@ default:
 			}
 		}
 		// #comment  start skipping
-		if(c=='#' && PC.col==1) {
+		if(c=='#' && pc.pos.col==1) {
 			if(end!=begin) {
+				if(!pc.string_start)
+					pc.string_start=begin_pos;
 				// append piece till #
-				PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
+				pc.string.append_strdup_know_length(begin, end-begin);
 			}
 			// fall into COMMENT lexical state [wait for \n]
-			push_LS(PC, LS_USER_COMMENT);
+			push_LS(pc, LS_USER_COMMENT);
 			continue;
 		}
-		switch(PC.ls) {
+		switch(pc.ls) {
 
 		// USER'S = NOT OURS
 		case LS_USER:
-        case LS_NAME_SQUARE_PART: // name.[here].xxx
-			if(PC.trim_bof)
+		case LS_NAME_SQUARE_PART: // name.[here].xxx
+			if(pc.trim_bof)
 				switch(c) {
 				case '\n': case ' ': case '\t':
-					begin=PC.source;
-					begin_line=PC.line;
+					begin=pc.source;
+					begin_pos=pc.pos;
 					continue; // skip it
 				default:
-					PC.trim_bof=false;
+					pc.trim_bof=false;
 				}
 			switch(c) {
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
+				push_LS(pc, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
-				push_LS(PC, LS_METHOD_NAME);
+				push_LS(pc, LS_METHOD_NAME);
 				RC;
 			case ']':
-				if(PC.ls==LS_NAME_SQUARE_PART)
+				if(pc.ls==LS_NAME_SQUARE_PART)
 					if(--lexical_brackets_nestage==0) {// $name.[co<]?>de<]?>
-						pop_LS(PC); // $name.[co<]>de<]!>
+						pop_LS(pc); // $name.[co<]>de<]!>
 						RC;
 					}
 				break;
 			case '[': // $name.[co<[>de]
-				if(PC.ls==LS_NAME_SQUARE_PART)
+				if(pc.ls==LS_NAME_SQUARE_PART)
 					lexical_brackets_nestage++;
 				break;
 			}
@@ -2068,10 +2090,10 @@ default:
 		case LS_USER_COMMENT:
 			if(c=='\n') {
 				// skip comment
-				begin=PC.source;
-				begin_line=PC.line;
+				begin=pc.source;
+				begin_pos=pc.pos;
 
-				pop_LS(PC);
+				pop_LS(pc);
 				continue;
 			}
 			break;
@@ -2083,17 +2105,17 @@ default:
 			case '"':
 			case '\'':
 				if(
-					PC.ls == LS_EXPRESSION_STRING_QUOTED && c=='"' ||
-					PC.ls == LS_EXPRESSION_STRING_APOSTROFED && c=='\'') {
-					pop_LS(PC); //"abc". | 'abc'.
+					pc.ls == LS_EXPRESSION_STRING_QUOTED && c=='"' ||
+					pc.ls == LS_EXPRESSION_STRING_APOSTROFED && c=='\'') {
+					pop_LS(pc); //"abc". | 'abc'.
 					RC;
 				}
 				break;
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
+				push_LS(pc, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
-				push_LS(PC, LS_METHOD_NAME);
+				push_LS(pc, LS_METHOD_NAME);
 				RC;
 			}
 			break;
@@ -2102,10 +2124,10 @@ default:
 		case LS_DEF_NAME:
 			switch(c) {
 			case '[':
-				PC.ls=LS_DEF_PARAMS;
+				pc.ls=LS_DEF_PARAMS;
 				RC;
 			case '\n':
-				PC.ls=LS_DEF_SPECIAL_BODY;
+				pc.ls=LS_DEF_SPECIAL_BODY;
 				RC;
 			}
 			break;
@@ -2118,10 +2140,10 @@ default:
 			case ';':
 				RC;
 			case ']':
-				PC.ls=*PC.source=='['?LS_DEF_LOCALS:LS_DEF_COMMENT;
+				pc.ls=*pc.source=='['?LS_DEF_LOCALS:LS_DEF_COMMENT;
 				RC;
 			case '\n': // wrong. bailing out
-				pop_LS(PC);
+				pop_LS(pc);
 				RC;
 			}
 			break;
@@ -2132,17 +2154,17 @@ default:
 			case ';':
 				RC;
 			case ']':
-				PC.ls=LS_DEF_COMMENT;
+				pc.ls=LS_DEF_COMMENT;
 				RC;
 			case '\n': // wrong. bailing out
-				pop_LS(PC);
+				pop_LS(pc);
 				RC;
 			}
 			break;
 
 		case LS_DEF_COMMENT:
 			if(c=='\n') {
-				pop_LS(PC);
+				pop_LS(pc);
 				RC;
 			}
 			break;
@@ -2158,31 +2180,33 @@ default:
 			switch(c) {
 			case ')':
 				if(--lexical_brackets_nestage==0)
-					if(PC.ls==LS_METHOD_ROUND) // method round param ended
-						PC.ls=LS_METHOD_AFTER; // look for method end
-					else // PC.ls==LS_VAR_ROUND // variable constructor ended
-						pop_LS(PC); // return to normal life
+					if(pc.ls==LS_METHOD_ROUND) // method round param ended
+						pc.ls=LS_METHOD_AFTER; // look for method end
+					else // pc.ls==LS_VAR_ROUND // variable constructor ended
+						pop_LS(pc); // return to normal life
 				RC;
 			case '#': // comment start skipping
 				if(end!=begin) {
+					if(!pc.string_start)
+						pc.string_start=begin_pos;
 					// append piece till #
-					PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
+					pc.string.append_strdup_know_length(begin, end-begin);
 				}
 				// fall into COMMENT lexical state [wait for \n]
-				push_LS(PC, LS_EXPRESSION_COMMENT);
+				push_LS(pc, LS_EXPRESSION_COMMENT);
 				lexical_brackets_nestage=1;
 				continue;
 			case '$':
-				push_LS(PC, LS_EXPRESSION_VAR_NAME_WITH_COLON);				
+				push_LS(pc, LS_EXPRESSION_VAR_NAME_WITH_COLON);				
 				RC;
 			case '^':
-				push_LS(PC, LS_METHOD_NAME);
+				push_LS(pc, LS_METHOD_NAME);
 				RC;
 			case '(':
 				lexical_brackets_nestage++;
 				RC;
 			case '-':
-				switch(*PC.source) {
+				switch(*pc.source) {
 				case 'f': // -f
 					skip_analized=1;
 					result=FEXISTS;
@@ -2201,17 +2225,17 @@ default:
 			case ';':
 				RC;
 			case '&': case '|':
-				if(*PC.source==c) { // && ||
+				if(*pc.source==c) { // && ||
 					result=c=='&'?LAND:LOR;
 					skip_analized=1;
 				} else
 					result=c;
 				goto break2;
 			case '!':
-				switch(PC.source[0]) { 
+				switch(pc.source[0]) { 
 				case '|': // !| !||
 					skip_analized=1;
-					if(PC.source[1]=='|') {
+					if(pc.source[1]=='|') {
 						skip_analized++;
 						result=LXOR;
 					} else
@@ -2225,7 +2249,7 @@ default:
 				RC;
 
 			case '<': // <<, <=, <
-				switch(*PC.source) {
+				switch(*pc.source) {
 				case '<': // <[<]
 					skip_analized=1; result=NSL; break;
 				case '=': // <[=]
@@ -2235,7 +2259,7 @@ default:
 				}
 				goto break2;
 			case '>': // >>, >=, >
-				switch(*PC.source) {
+				switch(*pc.source) {
 				case '>': // >[>]
 					skip_analized=1; result=NSR; break;
 				case '=': // >[=]
@@ -2245,7 +2269,7 @@ default:
 				}
 				goto break2;
 			case '=': // ==
-				switch(*PC.source) {
+				switch(*pc.source) {
 				case '=': // =[=]
 					skip_analized=1; result=NEQ; break;
 				default: // =[]
@@ -2254,15 +2278,15 @@ default:
 				goto break2;
 
 			case '"':
-				push_LS(PC, LS_EXPRESSION_STRING_QUOTED);
+				push_LS(pc, LS_EXPRESSION_STRING_QUOTED);
 				RC;
 			case '\'':
-				push_LS(PC, LS_EXPRESSION_STRING_APOSTROFED);
+				push_LS(pc, LS_EXPRESSION_STRING_APOSTROFED);
 				RC;
 			case 'l': case 'g': case 'e': case 'n':
 				if(end==begin) // right after whitespace
-					if(isspace(PC.source[1])) {
-						switch(*PC.source) {
+					if(isspace(pc.source[1])) {
+						switch(*pc.source) {
 							//					case '?': // ok [and bad cases, yacc would bark at them]
 						case 't': // lt gt [et nt]
 							result=c=='l'?SLT:c=='g'?SGT:BAD_STRING_COMPARISON_OPERATOR;
@@ -2281,8 +2305,8 @@ default:
 				break;
 			case 'i':
 				if(end==begin) // right after whitespace
-					if(isspace(PC.source[1])) {
-						switch(PC.source[0]) {
+					if(isspace(pc.source[1])) {
+						switch(pc.source[0]) {
 						case 'n': // in
 							skip_analized=1;
 							result=IN;
@@ -2296,7 +2320,7 @@ default:
 				break;
 			case 'd':
 				if(end==begin) // right after whitespace
-					if(PC.source[0]=='e' && PC.source[1]=='f') { // def
+					if(pc.source[0]=='e' && pc.source[1]=='f') { // def
 						skip_analized=2;
 						result=DEF;
 						goto break2;
@@ -2310,8 +2334,8 @@ default:
 				// that's a leading|traling space or after-operator-space
 				// ignoring it
 				// reset piece 'begin' position & line
-				begin=PC.source; // after whitespace char
-				begin_line=PC.line;
+				begin=pc.source; // after whitespace char
+				begin_pos=pc.pos;
 				continue;
 			}
 			break;
@@ -2319,17 +2343,17 @@ default:
 			if(c=='(')
 				lexical_brackets_nestage++;
 			
-			switch(*PC.source) {
+			switch(*pc.source) {
 			case '\n': case ')':
-				if(*PC.source==')')
+				if(*pc.source==')')
 					if(--lexical_brackets_nestage!=0)
 						continue;
 
 				// skip comment
-				begin=PC.source;
-				begin_line=PC.line;
+				begin=pc.source;
+				begin_pos=pc.pos;
 
-				pop_LS(PC);
+				pop_LS(pc);
 				continue;
 			}
 			break;
@@ -2340,28 +2364,28 @@ default:
 		case LS_EXPRESSION_VAR_NAME_WITH_COLON: 
 		case LS_EXPRESSION_VAR_NAME_WITHOUT_COLON:
 			if(
-				PC.ls==LS_EXPRESSION_VAR_NAME_WITH_COLON ||
-				PC.ls==LS_EXPRESSION_VAR_NAME_WITHOUT_COLON) {
+				pc.ls==LS_EXPRESSION_VAR_NAME_WITH_COLON ||
+				pc.ls==LS_EXPRESSION_VAR_NAME_WITHOUT_COLON) {
 				// name in expr ends also before 
 				switch(c) {
 				// expression minus
 				case '-': 
 				// expression integer division
 				case '\\':
-					pop_LS(PC);
-					PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
+					pop_LS(pc);
+					pc.ungetc();
 					result=EON;
 					goto break2;
 				}
 			}
 			if(
-				PC.ls==LS_VAR_NAME_SIMPLE_WITHOUT_COLON ||
-				PC.ls==LS_EXPRESSION_VAR_NAME_WITHOUT_COLON) {
+				pc.ls==LS_VAR_NAME_SIMPLE_WITHOUT_COLON ||
+				pc.ls==LS_EXPRESSION_VAR_NAME_WITHOUT_COLON) {
 				// name already has ':', stop before next 
 				switch(c) {
 				case ':': 
-					pop_LS(PC);
-					PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
+					pop_LS(pc);
+					pc.ungetc();
 					result=EON;
 					goto break2;
 				}
@@ -2380,45 +2404,45 @@ default:
 			case ',': case '?': case '#':
 			// before call
 			case '^': 
-				pop_LS(PC);
-				PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
+				pop_LS(pc);
+				pc.ungetc();
 				result=EON;
 				goto break2;
 			case '[':
 				// $name.<[>code]
-				if(PC.col>1/*not first column*/ && (
+				if(pc.pos.col>1/*not first column*/ && (
 					end[-1]=='$'/*was start of get*/ ||
 					end[-1]==':'/*was class name delim */ ||
 					end[-1]=='.'/*was name delim */
 					)) {
-					push_LS(PC, LS_NAME_SQUARE_PART);
+					push_LS(pc, LS_NAME_SQUARE_PART);
 					lexical_brackets_nestage=1;
 					RC;
 				}
-				PC.ls=LS_VAR_SQUARE;
+				pc.ls=LS_VAR_SQUARE;
 				lexical_brackets_nestage=1;
 				RC;
 			case '{':
 				if(begin==end) { // ${name}, no need of EON, switching LS
-					PC.ls=LS_VAR_NAME_CURLY; 
+					pc.ls=LS_VAR_NAME_CURLY; 
 				} else {
-					PC.ls=LS_VAR_CURLY;
+					pc.ls=LS_VAR_CURLY;
 					lexical_brackets_nestage=1;
 				}
 
 				RC;
 			case '(':
-				PC.ls=LS_VAR_ROUND;
+				pc.ls=LS_VAR_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
 			case '.': // name part delim
 			case '$': // name part subvar
 			case ':': // class<:>name
 				// go to _WITHOUT_COLON state variant...
-				if(PC.ls==LS_VAR_NAME_SIMPLE_WITH_COLON)
-					PC.ls=LS_VAR_NAME_SIMPLE_WITHOUT_COLON;
-				else if(PC.ls==LS_EXPRESSION_VAR_NAME_WITH_COLON)
-					PC.ls=LS_EXPRESSION_VAR_NAME_WITHOUT_COLON;
+				if(pc.ls==LS_VAR_NAME_SIMPLE_WITH_COLON)
+					pc.ls=LS_VAR_NAME_SIMPLE_WITHOUT_COLON;
+				else if(pc.ls==LS_EXPRESSION_VAR_NAME_WITH_COLON)
+					pc.ls=LS_EXPRESSION_VAR_NAME_WITHOUT_COLON;
 				// ...stop before next ':'
 				RC;
 			}
@@ -2428,11 +2452,11 @@ default:
 			switch(c) {
 			case '[':
 				// ${name.<[>code]}
-				push_LS(PC, LS_NAME_SQUARE_PART);
+				push_LS(pc, LS_NAME_SQUARE_PART);
 				lexical_brackets_nestage=1;
 				RC;
 			case '}': // ${name} finished, restoring LS
-				pop_LS(PC);
+				pop_LS(pc);
 				RC;
 			case '.': // name part delim
 			case '$': // name part subvar
@@ -2444,14 +2468,14 @@ default:
 		case LS_VAR_SQUARE:
 			switch(c) {
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
+				push_LS(pc, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
-				push_LS(PC, LS_METHOD_NAME);
+				push_LS(pc, LS_METHOD_NAME);
 				RC;
 			case ']':
 				if(--lexical_brackets_nestage==0) {
-					pop_LS(PC);
+					pop_LS(pc);
 					RC;
 				}
 				break;
@@ -2466,14 +2490,14 @@ default:
 		case LS_VAR_CURLY:
 			switch(c) {
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
+				push_LS(pc, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
-				push_LS(PC, LS_METHOD_NAME);
+				push_LS(pc, LS_METHOD_NAME);
 				RC;
 			case '}':
 				if(--lexical_brackets_nestage==0) {
-					pop_LS(PC);
+					pop_LS(pc);
 					RC;
 				}
 				break;
@@ -2488,24 +2512,24 @@ default:
 			switch(c) {
 			case '[':
 				// ^name.<[>code].xxx
-				if(PC.col>1/*not first column*/ && (
+				if(pc.pos.col>1/*not first column*/ && (
 					end[-1]=='^'/*was start of call*/ || // never, ^[ is literal...
 					end[-1]==':'/*was class name delim */ ||
 					end[-1]=='.'/*was name delim */
 					)) {
-					push_LS(PC, LS_NAME_SQUARE_PART);
+					push_LS(pc, LS_NAME_SQUARE_PART);
 					lexical_brackets_nestage=1;
 					RC;
 				}
-				PC.ls=LS_METHOD_SQUARE;
+				pc.ls=LS_METHOD_SQUARE;
 				lexical_brackets_nestage=1;
 				RC;
 			case '{':
-				PC.ls=LS_METHOD_CURLY;
+				pc.ls=LS_METHOD_CURLY;
 				lexical_brackets_nestage=1;
 				RC;
 			case '(':
-				PC.ls=LS_METHOD_ROUND;
+				pc.ls=LS_METHOD_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
 			case '.': // name part delim 
@@ -2520,16 +2544,16 @@ default:
 		case LS_METHOD_SQUARE:
 			switch(c) {
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
+				push_LS(pc, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
-				push_LS(PC, LS_METHOD_NAME);
+				push_LS(pc, LS_METHOD_NAME);
 				RC;
 			case ';': // param delim
 				RC;
 			case ']':
 				if(--lexical_brackets_nestage==0) {
-					PC.ls=LS_METHOD_AFTER;
+					pc.ls=LS_METHOD_AFTER;
 					RC;
 				}
 				break;
@@ -2542,16 +2566,16 @@ default:
 		case LS_METHOD_CURLY:
 			switch(c) {
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
+				push_LS(pc, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
-				push_LS(PC, LS_METHOD_NAME);
+				push_LS(pc, LS_METHOD_NAME);
 				RC;
 			case ';': // param delim
 				RC;
 			case '}':
 				if(--lexical_brackets_nestage==0) {
-					PC.ls=LS_METHOD_AFTER;
+					pc.ls=LS_METHOD_AFTER;
 					RC;
 				}
 				break;
@@ -2563,22 +2587,22 @@ default:
 
 		case LS_METHOD_AFTER:
 			if(c=='[') {/* ][ }[ )[ */
-				PC.ls=LS_METHOD_SQUARE;
+				pc.ls=LS_METHOD_SQUARE;
 				lexical_brackets_nestage=1;
 				RC;
 			}					   
 			if(c=='{') {/* ]{ }{ ){ */
-				PC.ls=LS_METHOD_CURLY;
+				pc.ls=LS_METHOD_CURLY;
 				lexical_brackets_nestage=1;
 				RC;
 			}					   
 			if(c=='(') {/* ]( }( )( */
-				PC.ls=LS_METHOD_ROUND;
+				pc.ls=LS_METHOD_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
 			}					   
-			pop_LS(PC);
-			PC.source--;  if(--PC.col<0) { PC.line--;  PC.col=-1; }
+			pop_LS(pc);
+			pc.ungetc();
 			result=EON;
 			goto break2;
 		}
@@ -2596,31 +2620,36 @@ break2:
 			if(end!=begin && end[-1]=='\n') // allow one empty line before LS_DEF_NAME
 				end--;
 		}
-		if(end!=begin && PC.ls!=LS_USER_COMMENT) { // last piece still alive and not comment?
+		if(end!=begin && pc.ls!=LS_USER_COMMENT) { // last piece still alive and not comment?
+			if(!pc.string_start)
+				pc.string_start=begin_pos;
 			// append it
-			PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line/*, start_col*/);
+			pc.string.append_strdup_know_length(begin, end-begin);
 		}
 	}
-	if(PC.string->size()) { // something accumulated?
-		// create STRING value: array of OP_VALUE+vstring
-		*lvalp=VL(NEW VString(*PC.string));
+	if(!pc.string.is_empty()) { // something accumulated?
+		// create STRING value: array of OP_VALUE+origin+vstring
+ 		*lvalp=VL(
+			new VString(*new String(pc.string, String::L_CLEAN)),
+			pc.file_no, pc.string_start.line, pc.string_start.col);
 		// new pieces storage
-		PC.string=NEW String(POOL);
+		pc.string.clear();
+		pc.string_start.clear();
 		// make current result be pending for next call, return STRING for now
-		PC.pending_state=result;  result=STRING;
+		pc.pending_state=result;  result=STRING;
 	}
 	if(skip_analized) {
-		PC.source+=skip_analized;  PC.col+=skip_analized;
+		pc.source+=skip_analized;  pc.pos.col+=skip_analized;
 	}
 	return result;
 }
 
-static int real_yyerror(parse_control *pc, char *s) {  // Called by yyparse on error
+static int real_yyerror(Parse_control *pc, char *s) {  // Called by yyparse on error
 	   strncpy(PC.error, s, MAX_STRING);
 	   return 1;
 }
 
 static void yyprint(FILE *file, int type, YYSTYPE value) {
 	if(type==STRING)
-		fprintf(file, " \"%s\"", LA2S(value)->cstr());
+		fprintf(file, " \"%s\"", LA2S(*value)->cstr());
 }

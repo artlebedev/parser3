@@ -1,40 +1,45 @@
 /** @file
 	Parser: web server api interface object decl.
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-static const char* IDENT_SAPI_H="$Date: 2003/01/21 15:51:11 $";
+static const char* IDENT_SAPI_H="$Date: 2003/07/24 11:31:21 $";
 
-#include "pa_pool.h"
+// includes
+
+
 #include "pa_types.h"
+#include "pa_array.h"
 
-class Array;
-class String;
-class Hash;
+// forwards
+class SAPI_Info;
 
 /// target web-Server API
 struct SAPI {
 	/// log error message
-	static void log(Pool& pool, const char *fmt, ...);
-	/// log error message & die
-	static void die(const char *fmt, ...);
+	static void log(SAPI_Info& info, const char* fmt, ...);
+	/// log error message & exit
+	static void die(const char* fmt, ...);
+	/// log error message & abort[write core]
+	static void abort(const char* fmt, ...);
 	/// environment strings
-	static const char *const *environment(Pool& pool);
+	static const char* const* environment(SAPI_Info& info);
 	/// get environment string
-	static const char *get_env(Pool& pool, const char *name);
+	static char* get_env(SAPI_Info& info, const char* name);
 	/// read POST request bytes
-	static size_t read_post(Pool& pool, char *buf, size_t max_bytes);
+	static size_t read_post(SAPI_Info& info, char *buf, size_t max_bytes);
 	/// add response header attribute [but do not send it to client]
-	static void add_header_attribute(Pool& pool, const char *key, const char *value);
+	static void add_header_attribute(SAPI_Info& info, 
+		const char* dont_store_key, const char* dont_store_value);
 	/// send collected header attributes to client
-	static void send_header(Pool& pool);
+	static void send_header(SAPI_Info& info);
 	/// output body bytes
-	static void send_body(Pool& pool, const void *buf, size_t size);
+	static void send_body(SAPI_Info& info, const void *buf, size_t size);
 };
 
 #endif
