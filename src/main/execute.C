@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.234 2002/04/16 14:26:12 paf Exp $
+	$Id: execute.C,v 1.235 2002/04/16 14:33:18 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -937,7 +937,13 @@ const String *Request::execute_method(Value& aself, const Method& method,
 	execute(*method.parser_code);
 	
 	// result
-	const String *result=return_cstr ? &wcontext->as_string() : 0;
+	const String *result=0;
+	if(return_cstr) {
+		if(Value *result_var_value=wcontext->get_element(*result_var_name))
+			result=&result_var_value->as_string();
+		else
+			result=&wcontext->as_string();
+	}
 	
 	wcontext=static_cast<WContext *>(POP());  
 	rcontext=POP();  
