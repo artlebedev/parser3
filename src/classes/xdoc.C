@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.27 2001/10/18 13:18:53 parser Exp $
+	$Id: xdoc.C,v 1.28 2001/10/18 13:43:24 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -59,7 +59,7 @@
 
 class MXdoc : public MXnode {
 public: // VStateless_class
-	Value *create_new_value(Pool& pool) { return new(pool) VXdoc(pool); }
+	Value *create_new_value(Pool& pool) { return new(pool) VXdoc(pool, 0, false); }
 
 public:
 	MXdoc(Pool& pool);
@@ -575,7 +575,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	document.appendChild(document.createElement(pool.transcode(qualifiedName)));
 
 	// replace any previous document
-	vdoc.set_document(document);
+	vdoc.set_document(document, true/*owns*/);
 }
 
 static void _load(Request& r, const String& method_name, MethodParams *params) {
@@ -740,8 +740,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	}
 
 	// write out result
-	VXdoc& result=*new(pool) VXdoc(pool);
-	result.set_document(*target);
+	VXdoc& result=*new(pool) VXdoc(pool, target, false/*owns not*/);
 	r.write_no_lang(result);
 }
 

@@ -1,5 +1,5 @@
 @main[]
-#^domedit[]
+^domedit[]
 ^domxslt[]
 #^lsplit2[]
 #^faceesize[]
@@ -51,10 +51,12 @@ $text[^name.appendChild[^xdoc.createTextNode[петросян petrosian]]]
 ^show-xnode1[$xdoc.documentElement;0;1]
 <hr>
 ^show-xdoc2[$xdoc]
+<hr>
 
 @domxslt[]
 ^domdata[]
 ^show-xdoc2[^xdoc.transform[global.xsl;$.param1[123/]]]
+<hr>
 
 @lsplit2[]
 $path[/optics/]

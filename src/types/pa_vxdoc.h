@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxdoc.h,v 1.7 2001/10/18 11:59:42 parser Exp $
+	$Id: pa_vxdoc.h,v 1.8 2001/10/18 13:43:24 parser Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -54,11 +54,11 @@ public: // VDNode
 
 public: // usage
 
-	VXdoc(Pool& apool, XalanDocument *adocument=0) : VXnode(apool, 0, *Xdoc_class), 
+	VXdoc(Pool& apool, XalanDocument *adocument, bool aowns) : VXnode(apool, 0, *Xdoc_class), 
 		ftransformer(0),
 		fparser_liaison(0), ferror_handler(0),
 		fparsed_source(0),
-		fdocument(adocument) {
+		fdocument(adocument), fowns_document(aowns) {
 		register_cleanup(VXdoc_cleanup, this);
 		ftransformer=new XalanTransformer2;
 		fparser_liaison=new XercesParserLiaison;
@@ -67,7 +67,9 @@ public: // usage
 	}
 private:
 	void cleanup() {
-		delete fdocument;
+		if(fowns_document)
+			delete fdocument;
+
 		delete fparsed_source;
 		delete ftransformer;
 		delete fparser_liaison;
@@ -90,7 +92,13 @@ public:
 		return *fparsed_source; 
 	}
 
-	void set_document(XalanDocument& adocument) { fdocument=&adocument; }
+	void set_document(XalanDocument& adocument, bool aowns) { 
+		if(fowns_document)
+			delete fdocument;
+
+		fdocument=&adocument; 
+		fowns_document=aowns;
+	}
 	XalanDocument &get_document(Pool& pool, const String *source) { 
 		if(fparsed_source)
 			return *fparsed_source->getDocument();
@@ -108,6 +116,8 @@ private:
 	ErrorHandler *ferror_handler;
 
 	const XalanParsedSource *fparsed_source;
+
+	bool fowns_document;
 	XalanDocument *fdocument;
 
 };

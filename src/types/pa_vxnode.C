@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vxnode.C,v 1.4 2001/10/15 14:13:22 parser Exp $
+	$Id: pa_vxnode.C,v 1.5 2001/10/18 13:43:24 parser Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -81,7 +81,7 @@ Value *VXnode::get_element(const String& name) {
 				return NEW VXnode(pool(), result_node);
 		} else if(name=="ownerDocument") {
 			if(XalanDocument *document=node.getOwnerDocument())
-				return NEW VXdoc(pool(), document);
+				return NEW VXdoc(pool(), document, false/*owns not*/);
 		} else switch(node.getNodeType()) {
 			case XalanNode::ELEMENT_NODE: 
 				if(name=="attributes") {
