@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.26 2001/03/18 12:10:55 paf Exp $
+	$Id: pa_hash.h,v 1.27 2001/03/18 13:22:05 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -56,6 +56,8 @@ public:
 	int size() { return used; }
 
 	void foreach(Foreach_func func, void *info=0);
+
+	void clear();
 
 protected:
 

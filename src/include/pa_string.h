@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.35 2001/03/14 08:50:01 paf Exp $
+	$Id: pa_string.h,v 1.36 2001/03/18 13:22:05 paf Exp $
 */
 
 /*
@@ -62,7 +62,7 @@ public:
 		NO, // clean
 		YES,  // tainted, untaint language as assigned later 
 		// untaint languages. assigned by ^untaint[lang]{...}
-		PASS_APPENDED,
+		PASS_APPEND,
 			// leave language built into string being appended
 			// just a flag, that value not stored
 		AS_IS,
@@ -99,6 +99,8 @@ public:
 	uint hash_code() const;
 
 	const Origin& origin() const { return head.rows[0].item.origin; }
+
+	void change_lang(Untaint_lang lang);
 
 private:
 

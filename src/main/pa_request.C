@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.42 2001/03/18 11:58:20 paf Exp $
+	$Id: pa_request.C,v 1.43 2001/03/18 13:22:07 paf Exp $
 */
 
 #include <string.h>
@@ -20,12 +20,9 @@
 #include "pa_vmframe.h"
 #include "pa_types.h"
 
-#define NEW_STRING(name, value)  name=NEW String(pool()); name->APPEND_CONST(value)
-#define LOCAL_STRING(name, value)  String name(pool()); name.APPEND_CONST(value)
-
 Request::Request(Pool& apool,
 				 Info& ainfo,
-				 String::Untaint_lang alang) : Pooled(apool),
+				 String::Untaint_lang adefault_lang) : Pooled(apool),
 	stack(apool),
 	ROOT(apool),
 	env(apool),
@@ -33,8 +30,9 @@ Request::Request(Pool& apool,
 	request(apool, *this),
 	response(apool),
 	fclasses(apool),
-	flang(alang),
-	info(ainfo)
+	fdefault_lang(adefault_lang), flang(adefault_lang),
+	info(ainfo),
+	fdefault_content_type(0)
 {
 	// root superclass, 
 	//   parent of all classes, 
@@ -97,8 +95,6 @@ void Request::core(Exception& system_exception,
 		int value=element?(size_t)element->get_double():0;
 		int post_max_size=value?value:10*0x400*400;
 
-		//response.fields().put(*content_type_name, TODO);
-
 		form.fill_fields(*this, post_max_size);
 
 		// TODO: load site auto.p files, all assigned bases from upper dir
@@ -111,8 +107,7 @@ void Request::core(Exception& system_exception,
 		Value *defaults=main_class?main_class->get_element(*defaults_name):0;
 		// $defaults.content-type
 		element=defaults?defaults->get_element(*content_type_name):0;
-		if(element)
-			response.fields().put(*content_type_name, element);
+		response.fields().put(*content_type_name, fdefault_content_type=element);
 
 		// there must be some auto.p
 		if(!main_class)
@@ -137,8 +132,24 @@ void Request::core(Exception& system_exception,
 	CATCH(e) {
 		TRY {
 			// we're returning not result, but error explanation
-			const String *body_string=0;
+
+			// reset language to default
+			flang=fdefault_lang;
 			
+			// reset response
+			response.fields().clear();
+
+			// this is what we'd return in $response:content-type
+			Value *content_type;
+
+			// this is what we'd return in $response:body
+			const String *body_string=0;
+
+			#define NEW_TAINTED(name, value)  \
+				name=NEW String(pool()); name->APPEND_TAINTED(value,0,0,0)
+			#define LOCAL_CONST(name, value)  \
+				String name(pool()); name.APPEND_CONST(value)
+
 			if(main_class) { // we've managed to end up with some main_class
 				// maybe we'd be lucky enough as to report an error
 				// in a gracefull way...
@@ -152,7 +163,7 @@ void Request::core(Exception& system_exception,
 
 							const String *problem_source=e.problem_source();
 							// origin
-							LOCAL_STRING(origin_name, "origin");
+							LOCAL_CONST(origin_name, "origin");
 							Value *origin_value=0;
 #ifndef NO_STRING_ORIGIN
 							if(problem_source) {
@@ -161,7 +172,7 @@ void Request::core(Exception& system_exception,
 									char *buf=(char *)malloc(MAX_STRING);
 									snprintf(buf, MAX_STRING, "%s(%d):", 
 										origin.file, 1+origin.line);
-									String *NEW_STRING(origin_file_line, buf);
+									String *NEW_TAINTED(origin_file_line, buf);
 									origin_value=NEW VString(*origin_file_line);
 								}
 							}
@@ -170,53 +181,55 @@ void Request::core(Exception& system_exception,
 								origin_value?origin_value:NEW VUnknown(pool()));
 
 							// source
-							LOCAL_STRING(source_name, "source");
+							LOCAL_CONST(source_name, "source");
 							Value *source_value=0;
-							if(problem_source)
-								source_value=NEW VString(*problem_source);
+							if(problem_source) {
+								String& problem_source_copy=*NEW String(*problem_source);
+								problem_source_copy.change_lang(flang);
+								source_value=NEW VString(problem_source_copy);
+							}
 							frame.store_param(source_name, 
 								source_value?source_value:NEW VUnknown(pool()));
 
 							// comment
-							LOCAL_STRING(comment_name, "comment");
-							String *NEW_STRING(comment_value, e.comment());
+							LOCAL_CONST(comment_name, "comment");
+							String *NEW_TAINTED(comment_value, e.comment());
 							frame.store_param(comment_name, 
 								NEW VString(*comment_value));
 
 							// type
-							LOCAL_STRING(type_name, "type");
+							LOCAL_CONST(type_name, "type");
 							Value *type_value;
-							if(e.type())
-								type_value=NEW VString(*e.type());
-							else
+							if(e.type()) {
+								String& type_copy=*NEW String(*e.type());
+								type_copy.change_lang(flang);
+								type_value=NEW VString(type_copy);
+							} else
 								type_value=NEW VUnknown(pool());
 							frame.store_param(type_name, type_value);
 
 							// code
-							LOCAL_STRING(code_name, "code");
+							LOCAL_CONST(code_name, "code");
 							Value *code_value;
-							if(e.code())
-								code_value=NEW VString(*e.code());
-							else
+							if(e.code()) {
+								String& code_copy=*NEW String(*e.code());
+								code_copy.change_lang(flang);
+								code_value=NEW VString(code_copy);
+							} else
 								code_value=NEW VUnknown(pool());
 							frame.store_param(code_name, code_value);
 
-							{
-								Temp_lang temp_lang(*this, 
-									String::Untaint_lang::HTML_TYPO);
-								body_string=execute_method(frame, *method);
-							}
+							// future $response:content-type=
+							//   content-type from any auto.p
+							content_type=fdefault_content_type;
+							// future $response:body=
+							//   execute ^exception[origin;source;comment;type;code]
+							body_string=execute_method(frame, *method);
 						}
 			}
 			
 			if(!body_string) {  // couldn't report an error beautifully?
 				// doing that ugly
-
-				// assign content-type
-				String &content_type_value=*NEW String(pool());
-				content_type_value.APPEND_CONST("text/plain");
-				response.fields().put(*content_type_name, 
-					NEW VString(content_type_value));
 
 				// make up result: $origin $source $comment $type $code
 				char *buf=(char *)malloc(MAX_STRING);
@@ -244,10 +257,18 @@ void Request::core(Exception& system_exception,
 						code->cstr());
 				}
 				String *error_string=NEW String(pool()); error_string->APPEND_CONST(buf);
+
+				// future $response:content-type
+				String &content_type_value=*NEW String(pool());
+				content_type_value.APPEND_CONST("text/plain");
+				content_type=NEW VString(content_type_value);
+				// future $response:body
 				body_string=error_string;
 			}
 
-			// store 'body' overwriting any response already had
+			// store $response:content-type
+			response.fields().put(*content_type_name, content_type);
+			// store $response:body
 			response.fields().put(*body_name, NEW VString(*body_string));
 		}
 		CATCH(e) {

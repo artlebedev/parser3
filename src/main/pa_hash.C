@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.22 2001/03/18 12:10:56 paf Exp $
+	$Id: pa_hash.C,v 1.23 2001/03/18 13:22:06 paf Exp $
 */
 
 /*
@@ -13,6 +13,8 @@
 	http://www.zend.com/license/0_92.txt
 	For more information about Zend please visit http://www.zend.com/
 */
+
+#include <string.h>
 
 #include "pa_hash.h"
 #include "pa_threads.h"
@@ -155,4 +157,9 @@ void Hash::foreach(Foreach_func func, void *info) {
 	for(int index=0; index<allocated; index++)
 		for(Pair *pair=*ref++; pair; pair=pair->link)
 			(*func)(pair->key, pair->value, info);
+}
+
+void Hash::clear() {  SYNCHRONIZED(thread_safe);
+	memset(refs, 0, sizeof(*refs)*allocated);
+	used=0;
 }

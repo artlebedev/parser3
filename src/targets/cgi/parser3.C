@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.17 2001/03/18 12:10:57 paf Exp $
+	$Id: parser3.C,v 1.18 2001/03/18 13:22:08 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -70,7 +70,7 @@ int read_post(char *buf, int max_bytes) {
 
 void stdout_write_header_attribute(const Hash::Key& key, Hash::Value *value, void *info) {
 	String *key_to_exclude=static_cast<String *>(info);
-	if(key==*key_to_exclude)
+	if(key==*key_to_exclude || !value)
 		return;
 
 	printf("%s: %s\n", 
@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
 		// prepare to process request
 		Request request(Pool(),
 			request_info,
-			cgi ? String::Untaint_lang::HTML_TYPO : String::Untaint_lang::NO
+			1||cgi ? String::Untaint_lang::HTML_TYPO : String::Untaint_lang::NO
 			);
 		
 		// some root-controlled location

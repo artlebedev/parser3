@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.39 2001/03/13 14:28:51 paf Exp $
+	$Id: pa_string.C,v 1.40 2001/03/18 13:22:07 paf Exp $
 */
 
 #include <string.h>
@@ -36,8 +36,7 @@ void String::expand() {
 	link_row->link=0;
 }
 
-String::String(const String& src) :
-	Pooled(src.pool()) {
+String::String(const String& src) :	Pooled(src.pool()) {
 	head.count=CR_PREALLOCATED_COUNT;
 	
 	int src_used_rows=src.used_rows();
@@ -147,7 +146,7 @@ String& String::append(const String& src, Untaint_lang lang) {
 	return *this;
 }
 void String::set_lang(Chunk::Row *row, Untaint_lang lang, size_t size) {
-	if(lang==PASS_APPENDED)
+	if(lang==PASS_APPEND)
 		return;
 
 	while(size--) {
@@ -155,6 +154,23 @@ void String::set_lang(Chunk::Row *row, Untaint_lang lang, size_t size) {
 		if(item_lang==YES) // tainted? need untaint language assignment
 			item_lang=lang;  // assign untaint language
 	}
+}
+
+void String::change_lang(Untaint_lang lang) {
+	Chunk *chunk=&head; 
+	do {
+		Chunk::Row *row=chunk->rows;
+		for(int i=0; i<chunk->count; i++) {
+			if(row==append_here)
+				goto break2;
+
+			row->item.lang=lang;
+			row++;
+		}
+		chunk=row->link;
+	} while(chunk);
+break2:
+	return;
 }
 
 String& String::real_append(STRING_APPEND_PARAMS) {

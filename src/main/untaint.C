@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: untaint.C,v 1.2 2001/03/12 21:54:20 paf Exp $
+	$Id: untaint.C,v 1.3 2001/03/18 13:22:07 paf Exp $
 */
 
 #include <string.h>
@@ -16,8 +16,7 @@
 #define escape(cases) \
 	{ \
 		const char *ptr=row->item.ptr; \
-		int size=row->item.size; \
-		for (;*ptr;ptr++) \
+		for (int size=row->item.size; size--; ptr++) \
 			switch(*ptr) { \
 				cases \
 				default: *copy_here++=*ptr; break; \

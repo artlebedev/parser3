@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.57 2001/03/18 11:37:51 paf Exp $
+	$Id: pa_request.h,v 1.58 2001/03/18 13:22:05 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -56,7 +56,7 @@ public:
 	
 	Request(Pool& apool,
 		Info& ainfo,
-		String::Untaint_lang alang
+		String::Untaint_lang adefault_lang
 	);
 	~Request() {}
 
@@ -97,7 +97,7 @@ public:
 	}
 	// appending possible string, passing language built into string being written
 	void write_pass_lang(Value& avalue) {
-		wcontext->write(avalue, String::Untaint_lang::PASS_APPENDED); 
+		wcontext->write(avalue, String::Untaint_lang::PASS_APPEND); 
 	}
 	// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
@@ -157,6 +157,11 @@ private: // execute.C
 private: // lang&raw 
 	
 	String::Untaint_lang flang;
+
+private: // defaults
+
+	const String::Untaint_lang fdefault_lang;
+	Value *fdefault_content_type;
 
 private: // lang manipulation
 
