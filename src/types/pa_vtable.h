@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.23 2001/05/08 08:15:00 paf Exp $
+	$Id: pa_vtable.h,v 1.24 2001/05/21 17:12:58 parser Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -13,7 +13,7 @@
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
-#include "pa_vunknown.h"
+#include "pa_vnothing.h"
 
 extern Methoded *table_class;
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.14 2001/05/19 19:52:38 parser Exp $
+	$Id: pa_pool.C,v 1.15 2001/05/21 17:12:58 parser Exp $
 */
 
 #include <stdlib.h>
@@ -62,7 +62,7 @@
 #include "pa_vstateless_object.h"
 #include "pa_vstring.h"
 #include "pa_vtable.h"
-#include "pa_vunknown.h"
+#include "pa_vnothing.h"
 #include "pa_wcontext.h"
 #include "pa_wwrapper.h"
 

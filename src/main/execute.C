@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.163 2001/05/21 16:01:10 parser Exp $
+	$Id: execute.C,v 1.164 2001/05/21 17:12:58 parser Exp $
 */
 
 #include "pa_opcode.h"
@@ -13,7 +13,7 @@
 #include "pa_request.h"
 #include "pa_vstring.h"
 #include "pa_vhash.h"
-#include "pa_vunknown.h"
+#include "pa_vnothing.h"
 #include "pa_vcode_frame.h"
 #include "pa_vmethod_frame.h"
 #include "pa_vobject.h"

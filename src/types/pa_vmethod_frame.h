@@ -5,14 +5,14 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.9 2001/05/17 15:43:08 parser Exp $
+	$Id: pa_vmethod_frame.h,v 1.10 2001/05/21 17:12:58 parser Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
 #include "pa_wcontext.h"
-#include "pa_vunknown.h"
+#include "pa_vnothing.h"
 #include "pa_vjunction.h"
 
 /**	Method frame write context
