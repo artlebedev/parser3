@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2003/11/20 17:46:02 $";
+static const char * const IDENT_STRING_C="$Date: 2003/12/02 11:20:28 $";
 
 #include "pcre.h"
 
@@ -524,8 +524,8 @@ static int serialize_body_piece(const char* s, char** cur) {
 };
 static int serialize_lang_piece(char alang, size_t asize, char** cur) {
 	// lang
-	memcpy(*cur, &alang, sizeof(alang));  *cur+=sizeof(alang);
-	// length
+	**cur=alang; (*cur)++;
+	// length [WARNING: not cast, addresses must be %4=0 on sparc]
 	memcpy(*cur, &asize, sizeof(asize));  *cur+=sizeof(asize);
 
 	return 0; // 0=continue
@@ -542,7 +542,7 @@ String::Cm String::serialize(size_t prolog_length) const {
 
 	// 1: prolog
 	char *cur=result.str+prolog_length;
-	// 2: langs.count
+	// 2: langs.count [WARNING: not cast, addresses must be %4=0 on sparc]
 	memcpy(cur, &fragments_count, sizeof(fragments_count));  cur+=sizeof(fragments_count);
 	// 3: lang info
 	langs.for_each(body, serialize_lang_piece, &cur);
@@ -563,22 +563,30 @@ bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
 	const char* cur=(const char* )buf+prolog_length;
 
 	// 2: langs.count
-	if(buf_length<sizeof(size_t)) // langs.count don't fit?
+	size_t fragments_count;
+	if(buf_length<sizeof(fragments_count)) // langs.count don't fit?
 		return false;
-	size_t fragments_count=*reinterpret_cast<const size_t*>(cur);  cur+=sizeof(size_t);
-	buf_length-=sizeof(size_t);
+	// [WARNING: not cast, addresses must be %4=0 on sparc]
+	memcpy(&fragments_count, cur, sizeof(fragments_count));  cur+=sizeof(fragments_count);
+	buf_length-=sizeof(fragments_count);
 	
 	if(fragments_count) {
 		// 3: lang info
 		size_t total_length=0;
 		for(size_t f=0; f<fragments_count; f++) {
-			size_t piece_length=sizeof(char)+sizeof(size_t);
+			char lang;
+			size_t fragment_length;
+			size_t piece_length=sizeof(lang)+sizeof(fragment_length);
 			if(buf_length<piece_length) // lang+length
 				return false;
 
-			Language lang=*reinterpret_cast<const Language *>(cur);  cur+=sizeof(char);
-			size_t fragment_length=*reinterpret_cast<const size_t*>(cur);  cur+=sizeof(size_t);
-			langs.append(total_length, lang, fragment_length);
+			// lang
+			lang=*cur++;
+			// length [WARNING: not cast, addresses must be %4=0 on sparc]
+			memcpy(&fragment_length, cur, sizeof(fragment_length));  cur+=sizeof(fragment_length);
+
+			// uchar needed to prevent propagating 0x80 bit to upper bytes
+			langs.append(total_length, (String::Language)(uchar)lang, fragment_length);
 			total_length+=fragment_length;
 
 			buf_length-=piece_length;
