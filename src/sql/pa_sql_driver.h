@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver.h,v 1.22 2001/11/11 10:54:49 paf Exp $
+	$Id: pa_sql_driver.h,v 1.23 2001/11/11 12:19:37 paf Exp $
 
 
 	driver dynamic library must look like this:
@@ -63,7 +63,6 @@ public:
 class SQL_Driver {
 public:
 
-	SQL_Driver() {}
 	/// get api version
 	virtual int api_version() =0;
 	/// initialize driver by loading sql dynamic link library
