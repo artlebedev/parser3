@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.h,v 1.5 2001/10/24 09:34:26 parser Exp $
+	$Id: pa_db_connection.h,v 1.6 2001/10/24 09:36:52 parser Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
@@ -60,8 +60,6 @@ public:
 	void put(const String& key, const String& data, time_t time_to_die);
 	String *get(const String& key);
 	void _delete(const String& key);
-
-	DB_Cursor cursor(const String *source);
 
 private:
 
@@ -140,9 +138,8 @@ public:
 /// DB cursor. handy wrapper around low level <db.h> calls
 class DB_Cursor {
 	friend DB_Connection;
-private:
-	DB_Cursor(DB_Connection& aconnection, const String *asource);
 public:
+	DB_Cursor(DB_Connection& aconnection, const String *asource);
 	~DB_Cursor();
 	/// pass empty strings to key&data, would fill them
 	bool get(String *& key, String *& data, u_int32_t flags);

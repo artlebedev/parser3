@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.5 2001/10/24 09:34:26 parser Exp $
+	$Id: pa_db_connection.C,v 1.6 2001/10/24 09:36:52 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -129,7 +129,6 @@ void DB_Connection::disconnect() {
 	check("close", &ffile_spec, db->close(db, 0/*flags*/));  db=0; 
 }
 
-///	@test string pieces [get/put preserve lang]
 void DB_Connection::put(const String& key, const String& data, time_t time_to_die) {
 	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
 	DBT dbt_data;  data_string_to_dbt(data, time_to_die, dbt_data);
@@ -138,7 +137,6 @@ void DB_Connection::put(const String& key, const String& data, time_t time_to_di
 
 String *DB_Connection::get(const String& key) {
 	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
-	// data
 	DBT dbt_data={0}; // must be zeroed
 	int error=db->get(db, ftid, &dbt_key, &dbt_data, 0/*flags*/);
 	if(error==DB_NOTFOUND)
@@ -155,10 +153,6 @@ void DB_Connection::_delete(const String& key) {
 	int error=db->del(db, ftid, &dbt_key, 0/*flags*/);
 	if(error!=DB_NOTFOUND)
 		check("del", &key, error);
-}
-
-DB_Cursor DB_Connection::cursor(const String *source) {
-	return DB_Cursor(*this, source);
 }
 
 // DB_Cursor
