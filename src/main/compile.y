@@ -5,7 +5,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.212 2004/04/06 14:15:22 paf Exp $
+	$Id: compile.y,v 1.213 2004/04/06 14:17:17 paf Exp $
 */
 
 /**
@@ -347,7 +347,7 @@ construct_square: '[' {
 	// allow $result_or_other_variable[ letters here any time ]
 	*reinterpret_cast<bool*>(&$$)=PC.explicit_result; PC.explicit_result=false;
 } any_constructor_code_value {
-	PC.explicit_result=reinterpret_cast<bool>($2);
+	PC.explicit_result=*reinterpret_cast<bool*>(&$2);
 } ']' {
 	// stack: context, name
 	$$=$3; // stack: context, name, value
@@ -421,7 +421,7 @@ store_square_param: '[' {
 	// allow ^call[ letters here any time ]
 	*reinterpret_cast<bool*>(&$$)=PC.explicit_result; PC.explicit_result=false;
 } store_code_param_parts {
-	PC.explicit_result=reinterpret_cast<bool>($2);
+	PC.explicit_result=*reinterpret_cast<bool*>(&$2);
 } ']' {$$=$3};
 store_round_param: '(' store_expr_param_parts ')' {$$=$2};
 store_curly_param: '{' store_curly_param_parts '}' {$$=$2};
@@ -505,7 +505,7 @@ name_square_code_value: '[' {
 	// allow $result_or_other_variable[ letters here any time ]
 	*reinterpret_cast<bool*>(&$$)=PC.explicit_result; PC.explicit_result=false;
 } codes {
-	PC.explicit_result=reinterpret_cast<bool>($2);
+	PC.explicit_result=*reinterpret_cast<bool*>(&$2);
 } ']' {
 	$$=N(); 
 	OA(*$$, OP_OBJECT_POOL, $3); /* stack: empty write context */

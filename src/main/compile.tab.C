@@ -43,7 +43,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.100 2004/04/06 14:15:22 paf Exp $
+	$Id: compile.tab.C,v 1.101 2004/04/06 14:17:16 paf Exp $
 */
 
 /**
@@ -1289,7 +1289,7 @@ case 57:
 case 58:
 #line 349 "compile.y"
 {
-	PC.explicit_result=reinterpret_cast<bool>(yyvsp[-1]);
+	PC.explicit_result=*reinterpret_cast<bool*>(&yyvsp[-1]);
 ;
     break;}
 case 59:
@@ -1381,7 +1381,7 @@ case 79:
 case 80:
 #line 423 "compile.y"
 {
-	PC.explicit_result=reinterpret_cast<bool>(yyvsp[-1]);
+	PC.explicit_result=*reinterpret_cast<bool*>(&yyvsp[-1]);
 ;
     break;}
 case 81:
@@ -1494,7 +1494,7 @@ case 111:
 case 112:
 #line 507 "compile.y"
 {
-	PC.explicit_result=reinterpret_cast<bool>(yyvsp[-1]);
+	PC.explicit_result=*reinterpret_cast<bool*>(&yyvsp[-1]);
 ;
     break;}
 case 113:
