@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/11/28 09:35:02 $";
+static const char * const IDENT="$Date: 2003/11/28 09:36:04 $";
 
 #include "libxslt/extensions.h"
 
@@ -45,7 +45,6 @@ xmlFileMatchLocalhost(const char* filename) {
  */
 static void *
 xmlFileOpenLocalhost (const char* filename) {
-	//_asm int 3;
 	FILE *fd;
 	const char* document_root=pa_thread_request().request_info.document_root;
 	if(!document_root)
@@ -122,7 +121,6 @@ xmlFileMatchMethod(const char* filename) {
 /// parser://method/param/here -> ^MAIN:method[/params/here]
 static void *
 xmlFileOpenMethod (const char* afilename) {
-	//_asm int 3;
 	Request& r=pa_thread_request();
 
 	char* s=pa_strdup(afilename+9 /*strlen("parser://")*/);
