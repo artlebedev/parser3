@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2003/01/21 15:51:06 $";
+static const char* IDENT_DATE_C="$Date: 2003/04/09 10:58:43 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -151,9 +151,9 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	VDate *vdate=static_cast<VDate *>(r.get_self());
 
 	const String& what=params->as_string(0, "'what' must be string");
-    int oyear=0;
-    int omonth=0;
-    int oday=0;
+	int oyear=0;
+	int omonth=0;
+	int oday=0;
 	int *offset;
 	if(what=="year") offset=&oyear;
 	else if(what=="month") offset=&omonth;
@@ -168,48 +168,60 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 	time_t self_time=vdate->get_time();
 	tm tmIn=*localtime(&self_time);
 	tm tmSaved=tmIn;
+	int adjust_day=0;
+	time_t t_changed_date;
+	while(true) {
+		tmIn.tm_year+=oyear;
+		tmIn.tm_mon+=omonth;
+		tmIn.tm_mday+=oday+adjust_day;
+		tmIn.tm_hour=24/2; 
+		tmIn.tm_min=0;
+		tmIn.tm_sec=0;
+		int saved_mon=tmIn.tm_mon;
+		t_changed_date=mktime/*normalizetime*/(&tmIn);
+		if(t_changed_date<0)
+			throw Exception(0,
+				&method_name,
+				"bad resulting time (rolled out of valid date range)");
+		if(oday==0 && tmIn.tm_mon!=saved_mon) {
+			if(adjust_day <= -3/*31->28 max, so never, but...*/)
+				throw Exception(0,
+					&method_name,
+					"bad resulting time (day hole still with %d day adjustment)", adjust_day );
+			
+			tmIn=tmSaved; // restoring
+			--adjust_day; //retrying with prev day
+		} else
+			break;			
+	}
 
-	tmIn.tm_year+=oyear;
-	tmIn.tm_mon+=omonth;
-	tmIn.tm_mday+=oday;
-	tmIn.tm_hour=24/2; 
-	tmIn.tm_min=0;
-	tmIn.tm_sec=0;
-	time_t t=mktime/*normalizetime*/(&tmIn);
-	if(t<0)
-		throw Exception(0,
-		&method_name,
-		"bad resulting time (after roll)");
-	if(oday==0 && tmIn.tm_mday!=tmSaved.tm_mday)
-		throw Exception(0,
-			&method_name,
-			"bad resulting time (day hole)", t);
-
-    tm *tmOut=localtime(&t);
+	tm *tmOut=localtime(&t_changed_date);
 	if(!tmOut)
 		throw Exception(0,
 			&method_name,
-			"bad resulting time (seconds from epoch=%ld)", t);
+			"bad resulting time (seconds from epoch=%d)", t_changed_date);
     
-    tmOut->tm_hour=tmSaved.tm_hour;
-    tmOut->tm_min=tmSaved.tm_min;
-    tmOut->tm_sec=tmSaved.tm_sec;
+	tmOut->tm_hour=tmSaved.tm_hour;
+	tmOut->tm_min=tmSaved.tm_min;
+	tmOut->tm_sec=tmSaved.tm_sec;
 	tmOut->tm_isdst=-1; 
 	{
-		time_t t=mktime/*normalizetime*/(tmOut);
+		time_t t_changed_time=mktime/*normalizetime*/(tmOut);
+		/*autofix: in msk timezone last sunday of april hour hole: [2am->3am)
 		if(
 			tmOut->tm_hour!=tmSaved.tm_hour
 			||tmOut->tm_min!=tmSaved.tm_min)
 			throw Exception(0,
 				&method_name,
 				"bad resulting time (hour hole)");
+		*/
 
-		if(t<0)
+		if(t_changed_time<0)
 			throw Exception(0,
 				&method_name,
 				"bad resulting time (after reconstruction)");
 		
-		vdate->set_time(t);
+		vdate->set_time(t_changed_time);
 	}
 }
 
@@ -218,30 +230,30 @@ static Table *fill_month_days(Request& r,
 	Pool& pool=r.pool();
 	Table *result=new(pool) Table(pool, *date_calendar_table_template);
 
-    int year=params->as_int(1, "year must be int", r);
-    int month=max(1, min(params->as_int(2, "month must be int", r), 12)) -1;
-
-    tm tmIn={0, 0, 0, 1, month, year-1900};
-    time_t t=mktime(&tmIn);
+	int year=params->as_int(1, "year must be int", r);
+	int month=max(1, min(params->as_int(2, "month must be int", r), 12)) -1;
+	
+	tm tmIn={0, 0, 0, 1, month, year-1900};
+	time_t t=mktime(&tmIn);
 	if(t<0)
 		throw Exception(0, 
 			&method_name, 
 			"invalid date");
-    tm *tmOut=localtime(&t);
-
-    int weekDay1=tmOut->tm_wday;
+	tm *tmOut=localtime(&t);
+	
+	int weekDay1=tmOut->tm_wday;
 	if(rus) 
 		weekDay1=weekDay1?weekDay1-1:6; //sunday last
-    int monthDays=getMonthDays(year, month);
-    
-    for(int _day=1-weekDay1; _day<=monthDays;) {
+	int monthDays=getMonthDays(year, month);
+	
+	for(int _day=1-weekDay1; _day<=monthDays;) {
 		Array& row=*new(pool) Array(pool, 7);
 		// calculating year week no [1..54]
 		char *weekno_buf;
 		size_t weekno_size;
 		int weekyear;
 		// 0..6 week days-cells fill with month days
-    	for(int wday=0; wday<7; wday++, _day++) {
+		for(int wday=0; wday<7; wday++, _day++) {
 			String *cell=new(pool) String(pool);
 			if(_day>=1 && _day<=monthDays) {
 				char *buf=(char *)pool.malloc(2+1); 
