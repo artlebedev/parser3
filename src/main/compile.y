@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.144 2001/06/28 07:45:21 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.145 2001/07/02 12:56:33 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -476,6 +476,7 @@ expr:
 |	get_value
 |	call_value
 |	'"' string_inside_quotes_value '"' { $$ = $2; }
+|	'\'' string_inside_quotes_value '\'' { $$ = $2; }
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
 |	'-' expr %prec NEG { $$=$2;  O($$, OP_NEG) }
@@ -664,11 +665,18 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			break;
 			
 		// STRING IN EXPRESSION
-		case LS_EXPRESSION_STRING:
+		case LS_EXPRESSION_STRING_QUOTED:
+		case LS_EXPRESSION_STRING_APOSTROFED:
 			switch(c) {
 			case '"':
-				pop_LS(PC); //"abc".
-				RC;
+			case '\'':
+				if(
+					PC.ls == LS_EXPRESSION_STRING_QUOTED && c=='"' ||
+					PC.ls == LS_EXPRESSION_STRING_APOSTROFED && c=='\'') {
+					pop_LS(PC); //"abc". | 'abc'.
+					RC;
+				}
+				break;
 			case '$':
 				push_LS(PC, LS_VAR_NAME_SIMPLE);
 				RC;
@@ -794,7 +802,10 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 					result=c;
 				goto break2;
 			case '"':
-				push_LS(PC, LS_EXPRESSION_STRING);
+				push_LS(PC, LS_EXPRESSION_STRING_QUOTED);
+				RC;
+			case '\'':
+				push_LS(PC, LS_EXPRESSION_STRING_APOSTROFED);
 				RC;
 			case 'l': case 'g': case 'e': case 'n':
 				if(end==begin) // right after whitespace

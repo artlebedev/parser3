@@ -1,8 +1,18 @@
 @main[]
+^if($form:id ne 'z"'){
+	ne
+}{
+	eq
+}
+<hr>
+
+
+^rem{
 $one(1)
 $z(0)
-^eval(^one.int[]%$z)
+^eval(^one.int[]%0)
 <hr>
+}
 
 $form:id:
 <hr>
