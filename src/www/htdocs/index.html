@@ -1,5 +1,7 @@
 @main[]
-^tcache2[]
+^treplace[]
+#^xslt2[]
+#^tcache2[]
 #$ORIGINS(1)
 #$t[^table::set{a b} ^table::set{c d}]
 #^ttaintuntaint[]
@@ -74,6 +76,29 @@
 #^header[]
 <hr>
 OK
+
+@treplace[]
+$copy-paste-clean[^table::set{a b
+.	_
+,	_
++	_
+&	_
+?	_
+=	_}]
+
+$cache_key[^taint[в.а,с+я]&был?тут=недавно]
+# почему-то этот replace роняет апач в 500 ошибку :(
+^cache_key.replace[$copy-paste-clean]
+
+
+@xslt2[]
+$xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251" ?>
+<document><block><p>hi</p></block></document>
+}]
+#^show-xdoc2[$xdoc]
+^show-xdoc2[^xdoc.transform[templates/_document.xslt]]
+<hr>
+
 
 @tcache2[]
 ^cache[$DB_HOME/keyключ](2){

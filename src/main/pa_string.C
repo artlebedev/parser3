@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.128 2001/12/07 15:24:47 paf Exp $
+	$Id: pa_string.C,v 1.129 2001/12/10 09:44:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -678,7 +678,7 @@ void String::join_chain(Pool& pool,
 				if(row->item.lang==joined_lang)
 					joined_size+=row->item.size;
 				else
-					break;
+					goto break21;
 			}
 			if(chunk=row->link) {
 				start_i=0;
@@ -714,7 +714,7 @@ break21:;
 					memcpy(ptr, row->item.ptr, row->item.size);
 					ptr+=row->item.size;
 				} else
-					break;
+					goto break22;
 			}
 			if(chunk=row->link) {
 				start_i=0;
