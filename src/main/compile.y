@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.135 2001/05/21 16:01:10 parser Exp $
+	$Id: compile.y,v 1.136 2001/05/21 17:12:58 parser Exp $
 */
 
 /**
@@ -34,7 +34,7 @@
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
 #include "pa_globals.h"
-#include "pa_vunknown.h"
+#include "pa_vnothing.h"
 
 #define SELF_ELEMENT_NAME "self"
 #define USE_CONTROL_METHOD_NAME "USE"
@@ -344,9 +344,9 @@ call_value: '^' call_name store_params EON { /* ^field.$method{vasya} */
 	O($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
 
 	YYSTYPE params_code=$3;
-	if(params_code->size()==3) // probably [] case. [OP_VALUE + Unknown + STORE_PARAM]
+	if(params_code->size()==3) // probably [] case. [OP_VALUE + Nothing + STORE_PARAM]
 		if(Value *value=LA2V(params_code)) // it is OP_VALUE + value?
-			if(!value->is_defined()) // value is VUnknown?
+			if(!value->is_defined()) // value is VNothing?
 				params_code=0; // ^zzz[] case. don't append lone empty param.
 	if(params_code)
 		P($$, params_code); // filling method_frame.store_params
@@ -527,7 +527,7 @@ write_string: STRING {
 	change_string_literal_to_write_string_literal($$=$1)
 };
 
-unknown_value: /* empty */ { $$=VL(NEW VUnknown(POOL)) };
+unknown_value: /* empty */ { $$=VL(NEW VNothing(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%

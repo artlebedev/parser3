@@ -5,13 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.3 2001/05/21 16:38:46 parser Exp $
+	$Id: hash.C,v 1.5 2001/05/21 17:13:57 parser Exp $
 */
 
 #include "classes.h"
 #include "pa_request.h"
 #include "pa_vhash.h"
-#include "pa_vunknown.h"
+#include "pa_vnothing.h"
 #include "pa_sql_connection.h"
 
 // defines
@@ -40,7 +40,7 @@ static void _default(Request& r, const String&, MethodParams *params) {
 		vhash.set_default(params->get(0)); // info: may be code..
 	else {
 		Value *default_value=vhash.get_default();
-		r.write_assign_lang(default_value?*default_value:*new(pool) VUnknown(pool));
+		r.write_assign_lang(default_value?*default_value:*new(pool) VNothing(pool));
 	}
 }
 

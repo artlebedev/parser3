@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.15 2001/05/21 17:12:58 parser Exp $
+	$Id: pa_pool.C,v 1.16 2001/05/21 17:13:57 parser Exp $
 */
 
 #include <stdlib.h>
@@ -127,7 +127,7 @@ ST(VStateless_class);
 ST(VStateless_object);
 ST(VString);
 ST(VTable);
-ST(VUnknown);
+ST(VNothing);
 ST(WContext);
 ST(WWrapper);
 

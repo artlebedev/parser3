@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.54 2001/05/21 16:55:52 parser Exp $
+	$Id: string.C,v 1.55 2001/05/21 17:11:57 parser Exp $
 */
 
 #include "classes.h"
@@ -291,12 +291,12 @@ String& sql_result_string(Request& r, const String& method_name, MethodParams *p
 	if(sql_column_count!=1)
 		PTHROW(0, 0,
 			&statement_string,
-			"result must contain only one column");
+			"result must contain only exactly column");
 
 	if(sql_row_count!=1)
 		PTHROW(0, 0,
 			&statement_string,
-			"result must contain only one row");
+			"result must contain only exactly row");
 
 	String& result=*new(pool) String(pool);
 	SQL_Driver::Cell& cell=sql_rows[0][0];

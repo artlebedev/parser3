@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.164 2001/05/21 17:12:58 parser Exp $
+	$Id: execute.C,v 1.165 2001/05/21 17:13:57 parser Exp $
 */
 
 #include "pa_opcode.h"
@@ -300,7 +300,7 @@ void Request::execute(const Array& ops) {
 				if(string)
 					value=NEW VString(*string);
 				else
-					value=NEW VUnknown(pool());
+					value=NEW VNothing(pool());
 				wcontext=static_cast<WContext *>(POP());
 				rcontext=POP();
 				PUSH(value);
@@ -321,7 +321,7 @@ void Request::execute(const Array& ops) {
 				if(string)
 					value=NEW VString(*string);
 				else
-					NEW VUnknown(pool());
+					NEW VNothing(pool());
 				wcontext=static_cast<WContext *>(POP());
 				PUSH(value);
 				break;
@@ -705,7 +705,7 @@ Value *Request::get_element() {
 	if(value)
 		value=&process(*value, &name); // process possible code-junction
 	else {
-		value=NEW VUnknown(pool());
+		value=NEW VNothing(pool());
 		value->set_name(name);
 	}
 

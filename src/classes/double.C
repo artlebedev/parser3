@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.29 2001/05/21 16:55:52 parser Exp $
+	$Id: double.C,v 1.30 2001/05/21 17:11:57 parser Exp $
 */
 
 #include "classes.h"
@@ -27,7 +27,7 @@ class MDouble : public Methoded {
 public:
 	MDouble(Pool& pool);
 public: // Methoded
-	bool used_directly() { return false; }
+	bool used_directly() { return true; }
 };
 
 // methods
@@ -91,6 +91,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 
 MDouble::MDouble(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), DOUBLE_CLASS_NAME));
+
 
 	// ^double.int[]
 	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);

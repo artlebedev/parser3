@@ -367,6 +367,10 @@ SOURCE=..\types\pa_vmethod_frame.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vnothing.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vobject.h
 # End Source File
 # Begin Source File
@@ -404,10 +408,6 @@ SOURCE=..\types\pa_vstring.h
 # Begin Source File
 
 SOURCE=..\types\pa_vtable.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\types\pa_vunknown.h
 # End Source File
 # Begin Source File
 
@@ -492,6 +492,10 @@ SOURCE=..\classes\mail.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\classes\nothing.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\op.C
 # End Source File
 # Begin Source File
@@ -509,10 +513,6 @@ SOURCE=..\classes\string.C
 # Begin Source File
 
 SOURCE=..\classes\table.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\unknown.C
 # End Source File
 # End Group
 # Begin Group "sql"

@@ -1,53 +1,53 @@
 /** @file
-	Parser: @b unknown parser class.
+	Parser: @b nothing parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vunknown.h,v 1.13 2001/05/11 17:45:10 parser Exp $
+	$Id: pa_vnothing.h,v 1.1 2001/05/21 17:11:57 parser Exp $
 */
 
-#ifndef PA_VUNKNOWN_H
-#define PA_VUNKNOWN_H
+#ifndef PA_VNOTHING_H
+#define PA_VNOTHING_H
 
 #include "pa_vstateless_object.h"
 #include "pa_globals.h"
 
-extern Methoded *unknown_class;
+extern Methoded *nothing_class;
 
-/// value of type 'unknown'. ex: usually $sjfklsjfksjdfk has this type
-class VUnknown : public VStateless_object {
+/// value of type 'nothing'. ex: usually $sjfklsjfksjdfk has this type
+class VNothing : public VStateless_object {
 public: // Value
 
-	const char *type() const { return "unknown"; }
+	const char *type() const { return "nothing"; }
 
-	/// VUnknown: ""
+	/// VNothing: ""
 	const String *get_string() { return empty_string; }
-	/// VUnknown: false
+	/// VNothing: false
 	bool is_defined() const { return false; }
-	/// VUnknown: 0
+	/// VNothing: 0
 	double as_double() { return 0; }
-	/// VUnknown: 0
+	/// VNothing: 0
 	int as_int() { return 0; }
-	/// VUnknown: this
+	/// VNothing: this
 	Value *as_expr_result(bool return_string_as_is=false) { return this; }
 
-	/// VUnknown: false
+	/// VNothing: false
 	bool as_bool() { return false; }
 
-	/// VUnknown: methods
+	/// VNothing: methods
 	Value *get_element(const String& name) {
 		// methods
 		if(Value *result=VStateless_object::get_element(name))
 			return result;
 
-		return NEW VUnknown(pool());
+		return NEW VNothing(pool());
 	}
 
 public: // usage
 
-	VUnknown(Pool& apool) : VStateless_object(apool, *unknown_class) {
+	VNothing(Pool& apool) : VStateless_object(apool, *nothing_class) {
 	}
 
 };

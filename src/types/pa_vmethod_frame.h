@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.10 2001/05/21 17:12:58 parser Exp $
+	$Id: pa_vmethod_frame.h,v 1.11 2001/05/21 17:13:57 parser Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -81,14 +81,14 @@ public: // usage
 				// those are flags that name is local == to be looked up in 'my'
 				for(int i=0; i<method.locals_names->size(); i++) {
 					// speedup: not checking for clash with "result" name
-					Value *value=NEW VUnknown(pool());
+					Value *value=NEW VNothing(pool());
 					const String& name=*method.locals_names->get_string(i);
 					my->put(name, value);
 					value->set_name(name);
 				}
 			}
 			{ // always there is one local: $result
-				Value *result_value=NEW VUnknown(pool());
+				Value *result_value=NEW VNothing(pool());
 				my->put(*result_var_name, result_value);
 				result_value->set_name(*result_var_name);
 			}
@@ -126,7 +126,7 @@ public: // usage
 		const Method &method=*junction.method;
 		if(method.params_names) // there are any named parameters might need filling?
 			for(; store_param_index<method.params_names->size(); store_param_index++) {
-				Value *value=NEW VUnknown(pool());
+				Value *value=NEW VNothing(pool());
 				const String& name=*method.params_names->get_string(store_param_index);
 				my->put(name, value);
 				value->set_name(name);

@@ -144,7 +144,7 @@ ${comment}.
 ^connect[$connect-string]{
 	$shit[^taint[our's]]
 #	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
-	^sql{update paf set age=age+1}
+	^nothing:sql{update paf set age=age+1}
 	$paf[^table:sql{select * from paf order by id desc}(5)]
 	$paf{
 	^if(^empty[]){query result is empty}{
@@ -153,8 +153,9 @@ ${comment}.
 		^menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
 	</table>
 	}}
-	^^string:sql{select age from paf where id=1}=^string:sql{select age from paf where id=1}<br>
+	^^string:sql{select name from paf where id=1}=^string:sql{select name from paf where id=1222}<br>
 	^^int:sql{select age from paf where id=1}=^int:sql{select age from paf where id=1}<br>
+	^^double:sql{select age from paf where id=1}=^double:sql{select age from paf where id=1}<br>
 
 	$paf[^hash:sql{select id,age from paf}]
 	^$paf.2.age=$paf.2.age<br>
