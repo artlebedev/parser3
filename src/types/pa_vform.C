@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char* IDENT_VFORM_C="$Date: 2002/08/02 09:33:14 $";
+static const char* IDENT_VFORM_C="$Date: 2002/08/02 10:58:37 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -19,34 +19,41 @@ static const char* IDENT_VFORM_C="$Date: 2002/08/02 09:33:14 $";
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
+// defines
+
+//#define DEBUG_POST
+
 // parse helper funcs
 
 static size_t getHeader(const char *data, size_t len){
     size_t i;
     int enter=-1;
     if (data)
-	for (i=0;i<len;i++)
-	    if (data[i]=='\n'){
-		if (enter>=0) enter++;
-		if (enter>1) return i;
-	    } else if (data[i]!='\r') enter=0;
-    return 0;
+		for (i=0;i<len;i++)
+			if (data[i]=='\n'){
+				if (enter>=0) enter++;
+				if (enter>1) return i;
+			} else if (data[i]!='\r') enter=0;
+		return 0;
 }
 
-static char *searchAttribute(char *data, const char *attr, size_t len){
+static char *searchAttribute(char *data, 
+							 const char *attr,  //< expected to be lowercased
+							 size_t len){
     size_t i;
     if (data)
-	for (i=0;i<len;i++)
-	    if (tolower(data[i])==*attr){
-		size_t j;
-		for (j=i+1;j<=len;j++)
-		    if (!attr[j-i]) return &data[j];
-		    else {
-			if (j==len) break;
-			if (attr[j-i]!=tolower(data[j])) break;
-		    }
-	    }
-    return NULL;
+		for (i=0;i<len;i++)
+			if (tolower(data[i])==*attr){
+				size_t j;
+				for (j=i+1;j<=len;j++)
+					if (!attr[j-i]) return &data[j];
+					else {
+						if (j==len) break;
+						if (attr[j-i]!=tolower(data[j])) break;
+					}
+			}
+
+	return NULL;
 }
 
 // VForm
@@ -138,12 +145,17 @@ void VForm::ParseFormInput(char *data, size_t length) {
 	}
 }
 
+static char *pa_tolower(char *s) {
+	for(char *p=s; *p; p++)
+		*p=tolower(*p);
+	return s;
+}
 void VForm::ParseMimeInput(
 						   char *content_type, 
 						   char *data, size_t length) {
 /* Scan for mime-presented pairs, storing them as they are found. */
 	const char 
-		*boundary=getAttributeValue(content_type, "boundary=", strlen(content_type)), 
+		*boundary=pa_tolower(getAttributeValue(content_type, "boundary=", strlen(content_type))), 
 	    *lastData=&data[length];
 	if(!boundary) 
 		throw Exception(0, 
@@ -235,9 +247,18 @@ void VForm::fill_fields_and_tables(Request& request) {
 		memcpy(buf, request.info.query_string, length);
 		ParseGetFormInput(buf, length);
 	}
-	/*throw Exception("test shit",
-		0,
-		"happened");*/
+
+#ifdef DEBUG_POST
+	request.info.method="POST";
+	void *data;
+	file_read(pool(), *NEW String(pool(), "opera.stdin"),  //"ie.stdin"), //
+			   data, request.post_size, 
+			   false/*as_text*/);	
+	request.post_data=(char*)data;
+	request.info.content_type="multipart/form-data; boundary=----------mcqY2UDNcdEAoN1mLmne2i";
+	//request.info.content_type="multipart/form-data; boundary=---------------------------7d23111f44403a4";
+
+#endif
 
 	// parsing POST data
 	if(request.info.method) {
