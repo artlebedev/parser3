@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/10/14 11:24:00 $";
+static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/10/14 15:22:42 $";
 
 #include "pa_hash.h"
 #include "pa_vjunction.h"
@@ -28,7 +28,7 @@ class Temp_method;
 
 	@see Method, VStateless_object, Temp_method
 */
-class VStateless_class : public Value {
+class VStateless_class: public Value {
 	friend class Temp_method;
 public: // Value
 	

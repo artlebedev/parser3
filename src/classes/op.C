@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/14 13:53:20 $";
+static const char* IDENT_OP_C="$Date: 2002/10/14 15:22:41 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -25,16 +25,9 @@ static const char* IDENT_OP_C="$Date: 2002/10/14 13:53:20 $";
 
 // class
 
-class MOP : public Methoded {
+class VClassMAIN: public VClass {
 public:
-	MOP(Pool& pool);
-public: // Methoded
-	bool used_directly() { return true; }
-	void configure_user(Request& r);
-
-private:
-	String main_sql_name;
-	String main_sql_drivers_name;
+	VClassMAIN(Pool& apool);
 };
 
 // methods
@@ -137,11 +130,10 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 
 		// process source code, append processed methods to 'self' class
 		// maybe-define new @main
-		r.use_buf(
+		r.use_buf(self_class,
 			source.cstr(String::UL_UNSPECIFIED, r.connection(0)), 
 			*new(pool) String(pool, heap_place, place_size, true /*tainted*/),
-			heap_place, 
-			&self_class);
+			heap_place);
 		
 		// main_method
 		main_method=self_class.get_method(r.main_method_name);
@@ -185,7 +177,7 @@ static void _while(Request& r, const String& method_name, MethodParams *params) 
 
 static void _use(Request& r, const String& method_name, MethodParams *params) {
 	Value& vfile=params->as_no_junction(0, "file name must not be code");
-	r.use_file(vfile.as_string());
+	r.use_file(r.main_class, vfile.as_string());
 }
 
 static void _for(Request& r, const String& method_name, MethodParams *params) {
@@ -243,8 +235,12 @@ struct timeval mt[2];
 	Value& url=params->as_no_junction(0, "url must not be code");
 	Value& body_code=params->as_junction(1, "body must be code");
 
-	Table *protocol2driver_and_client=
-		static_cast<Table *>(r.classes_conf.get(r.OP.name()));
+	Table *protocol2driver_and_client=0;
+	if(Value *sql=r.main_class.get_element(*new(pool) String(pool, MAIN_SQL_NAME), &r.main_class, false)) {
+		if(Value *element=sql->get_element(*new(pool) String(pool, MAIN_SQL_DRIVERS_NAME), sql, false)) {
+			protocol2driver_and_client=element->get_table();
+		}
+	}
 
 #ifdef RESOURCES_DEBUG
 //measure:before
@@ -635,10 +631,7 @@ static void _throw_operator(Request& r, const String& method_name, MethodParams 
 	
 // constructor
 
-MOP::MOP(Pool& apool) : Methoded(apool, "OP"),
-	main_sql_name(apool, MAIN_SQL_NAME),
-	main_sql_drivers_name(apool, MAIN_SQL_DRIVERS_NAME)
-{
+VClassMAIN::VClassMAIN(Pool& apool): VClass(apool) {
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
 	add_native_method("if", Method::CT_ANY, _if, 2, 3);
@@ -696,16 +689,6 @@ MOP::MOP(Pool& apool) : Methoded(apool, "OP"),
 
 // constructor & configurator
 
-Methoded *MOP_create(Pool& pool) {
-	return new(pool) MOP(pool);
-}
-
-void MOP::configure_user(Request& r) {
-	Pool& pool=r.pool();
-
-	// $MAIN:SQL.drivers
-	if(Value *sql=r.main_class->get_element(main_sql_name, r.main_class, false))
-		if(Value *element=sql->get_element(main_sql_drivers_name, sql, false))
-			if(Table *protocol2library=element->get_table())
-				r.classes_conf.put(name(), protocol2library);
+VClass& VClassMAIN_create(Pool& pool) {
+	return *new(pool) VClassMAIN(pool);
 }

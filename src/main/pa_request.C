@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/10/14 12:16:06 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/10/14 15:22:42 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -32,7 +32,8 @@ const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
 const char *DEFAULT_CONTENT_TYPE="text/html";
 const char *ORIGINS_CONTENT_TYPE="text/plain";
 
-Methoded *MOP_create(Pool&);
+// op.C
+VClass& VClassMAIN_create(Pool& pool);
 // op.C
 VHash& exception2vhash(Pool& pool, const Exception& e);
 
@@ -43,7 +44,7 @@ Request::Request(Pool& apool,
 				 bool status_allowed) : Pooled(apool),
 	main_method_name(apool, MAIN_METHOD_NAME),
 	stack(apool),
-	OP(*MOP_create(apool)),
+	main_class(VClassMAIN_create(apool)),
 	env(apool),
 	status(apool),
 	form(apool),
@@ -60,7 +61,6 @@ Request::Request(Pool& apool,
 	configure_admin_done(false),
 	default_content_type(0),
 	mime_types(0),
-	main_class(0),
 	fconnection(0),
 	classes_conf(apool),
 	anti_endless_execute_recoursion(0),
@@ -78,8 +78,8 @@ Request::Request(Pool& apool,
 	cache_managers->maybe_expire();
 	
 	/// directly used
-	// operators
-	OP.register_directly_used(*this);
+	// MAIN class, operators
+	classes().put(*NEW String(pool(), MAIN_CLASS_NAME), &main_class);
 	// classes:
 	// table, file, random, mail, image, ...
 	methoded_array->register_directly_used(*this);
@@ -147,7 +147,6 @@ void Request::configure_admin(VStateless_class& conf_class, const String *source
 
 	// configure method_frame options
 	//	until someone with less privileges have overriden them
-	OP.configure_admin(*this);
 	methoded_array->configure_admin(*this);
 }
 
@@ -179,11 +178,9 @@ gettimeofday(&mt[0],NULL);
 		if(config_filespec) {
 			String& filespec=*NEW String(pool());
 			filespec.APPEND_CLEAN(config_filespec, 0, "config", 0);
-			main_class=use_file(
-				filespec, 
-				true/* ignore class_path */, 
-				config_fail_on_read_problem, true/* file must exist if 'fail on read problem' not set */,
-				main_class_name, main_class);
+			use_file(main_class,
+				filespec, true/* ignore class_path */, 
+				config_fail_on_read_problem, true/* file must exist if 'fail on read problem' not set */);
 		}
 
 		// loading auto.p files from document_root/.. 
@@ -207,10 +204,9 @@ gettimeofday(&mt[0],NULL);
 						"path-translated-scanned", step++);
 					sfile_spec << "/" AUTO_FILE_NAME;
 
-					main_class=use_file(sfile_spec, 
-						true/* ignore class_path */, 
-						true/* fail on read problem */, false/* but ignore absence, sole user */,
-						main_class_name, main_class);
+					use_file(main_class,
+						sfile_spec, true/* ignore class_path */, 
+						true/* fail on read problem */, false/* but ignore absence, sole user */);
 				}
 				after=before+1;
 			}
@@ -219,21 +215,19 @@ gettimeofday(&mt[0],NULL);
 		// compile requested file
 		String& spath_translated=*NEW String(pool());
 		spath_translated.APPEND_TAINTED(info.path_translated, 0, "user-request", 0);
-		main_class=use_file(spath_translated, 
-			true/* ignore class_path */, 
-			true/* fail on read problem*/, true/* fail on abscence */,
-			main_class_name, main_class);
+		use_file(main_class,
+			spath_translated, true/* ignore class_path */, 
+			true/* fail on read problem*/, true/* fail on abscence */);
 
 		// configure method_frame options if not configured yet
 		if(!configure_admin_done)
-			configure_admin(*main_class, 0);
+			configure_admin(main_class, 0);
 
 		// configure not-method_frame=user options
-		OP.configure_user(*this);
 		methoded_array->configure_user(*this);
 
 		// $MAIN:MIME-TYPES
-		if(Value *element=main_class->get_element(*mime_types_name, main_class, false))
+		if(Value *element=main_class.get_element(*mime_types_name, &main_class, false))
 			if(Table *table=element->get_table())
 				mime_types=table;			
 
@@ -251,7 +245,7 @@ gettimeofday(&mt[0],NULL);
 gettimeofday(&mt[1],NULL);
 #endif
 		// execute @main[]
-		const String *body_string=execute_virtual_method(*main_class, main_method_name);
+		const String *body_string=execute_virtual_method(main_class, main_method_name);
 		if(!body_string)
 			throw Exception("parser.runtime",
 				0, 
@@ -265,16 +259,16 @@ gettimeofday(&mt[2],NULL);
 		VString body_vstring_before_post_process(*body_string);
 		VString *body_vstring_after_post_process=&body_vstring_before_post_process;
 		// @postprocess
-		if(Value *value=main_class->get_element(
+		if(Value *value=main_class.get_element(
 				*NEW String(pool(), POST_PROCESS_METHOD_NAME), 
-				main_class, 
+				&main_class, 
 				false))
 			if(Junction *junction=value->get_junction())
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
 					//	@postprocess[data]
 					VMethodFrame frame(pool(), method->name, *junction);
-					frame.set_self(*main_class);
+					frame.set_self(main_class);
 
 					frame.store_param(&body_vstring_before_post_process);
 					body_vstring_after_post_process=
@@ -358,51 +352,51 @@ t[9]-t[3]
 			// this is what we'd return in $response:body
 			const String *body_string=0;
 
-			if(main_class) { // we've managed to end up with some main_class
-				// maybe we'd be lucky enough as to report an error
-				// in a gracefull way...
-				if(Value *value=main_class->get_element(
-						*NEW String(pool(), UNHANDLED_EXCEPTION_METHOD_NAME), 
-						main_class,
-						false))
-					if(Junction *junction=value->get_junction())
-						if(const Method *method=junction->method) {
-		 					// preparing to pass parameters to 
-							//	@unhandled_exception[exception;stack]
-							VMethodFrame frame(pool(), method->name, *junction);
-							frame.set_self(*main_class);
+			// maybe we'd be lucky enough as to report an error
+			// in a gracefull way...
+			if(Value *value=main_class.get_element(
+					*NEW String(pool(), UNHANDLED_EXCEPTION_METHOD_NAME), 
+					&main_class,
+					false)) {
+				if(Junction *junction=value->get_junction()) {
+					if(const Method *method=junction->method) {
+		 				// preparing to pass parameters to 
+						//	@unhandled_exception[exception;stack]
+						VMethodFrame frame(pool(), method->name, *junction);
+						frame.set_self(main_class);
 
-							// $exception
-							frame.store_param(&exception2vhash(pool(), e));
-							// $stack[^table::set{name	origin}]
-							Array& stack_trace_columns=*NEW Array(pool());
-							stack_trace_columns+=NEW String(pool(), "name");
-							stack_trace_columns+=NEW String(pool(), "file");
-							stack_trace_columns+=NEW String(pool(), "lineno");
-							Table& stack_trace=*NEW Table(pool(), 0, &stack_trace_columns);
-							Array_iter tracei(exception_trace);
-							while(tracei.has_next()) {
-								Array& row=*NEW Array(pool());
+						// $exception
+						frame.store_param(&exception2vhash(pool(), e));
+						// $stack[^table::set{name	origin}]
+						Array& stack_trace_columns=*NEW Array(pool());
+						stack_trace_columns+=NEW String(pool(), "name");
+						stack_trace_columns+=NEW String(pool(), "file");
+						stack_trace_columns+=NEW String(pool(), "lineno");
+						Table& stack_trace=*NEW Table(pool(), 0, &stack_trace_columns);
+						Array_iter tracei(exception_trace);
+						while(tracei.has_next()) {
+							Array& row=*NEW Array(pool());
 
-								const String *name=(const String *)tracei.next();
-								row+=name; // name column
+							const String *name=(const String *)tracei.next();
+							row+=name; // name column
 #ifndef NO_STRING_ORIGIN
-								const Origin& origin=name->origin();
-								if(origin.file) {
-									row+=NEW String(pool(), origin.file, 0, true); // file column
-									char *buf=(char *)malloc(MAX_NUMBER);
-									size_t buf_size=snprintf(buf, MAX_NUMBER, "%d", 1+origin.line);
-									row+=NEW String(pool(), buf, buf_size, true); // line column
-								}
-#endif
-								stack_trace+=&row;
+							const Origin& origin=name->origin();
+							if(origin.file) {
+								row+=NEW String(pool(), origin.file, 0, true); // file column
+								char *buf=(char *)malloc(MAX_NUMBER);
+								size_t buf_size=snprintf(buf, MAX_NUMBER, "%d", 1+origin.line);
+								row+=NEW String(pool(), buf, buf_size, true); // line column
 							}
-							frame.store_param(NEW VTable(pool(), &stack_trace));
-
-							// future $response:body=
-							//   execute ^unhandled_exception[exception;stack]
-							body_string=&execute_method(frame, *method);
+#endif
+							stack_trace+=&row;
 						}
+						frame.store_param(NEW VTable(pool(), &stack_trace));
+
+						// future $response:body=
+						//   execute ^unhandled_exception[exception;stack]
+						body_string=&execute_method(frame, *method);
+					}
+				}
 			}
 			
 			if(!body_string) {  // couldn't report an error beautifully?
@@ -446,14 +440,12 @@ t[9]-t[3]
 	}
 }
 
-VStateless_class *Request::use_file(const String& file_name, 
-									bool ignore_class_path, 
-									bool fail_on_read_problem, bool fail_on_file_absence,
-									const String *name, 
-									VStateless_class *base_class) {
+VStateless_class *Request::use_file(VStateless_class& aclass,
+									const String& file_name, bool ignore_class_path, 
+									bool fail_on_read_problem, bool fail_on_file_absence) {
 	// cyclic dependence check
 	if(used_files.get(file_name))
-		return base_class;
+		return 0;
 	used_files.put(file_name, (Hash::Val *)true);
 
 	const String *file_spec;
@@ -463,26 +455,25 @@ VStateless_class *Request::use_file(const String& file_name,
 		file_spec=&absolute(file_name);
 	else {
 		file_spec=0;
-		if(main_class)
-			if(Value *element=main_class->get_element(*class_path_name, main_class, false)) {
-				if(element->is_string()) {
-					file_spec=file_readable(absolute(element->as_string()), file_name); // found at class_path?
-				} else if(Table *table=element->get_table()) {
-					int size=table->size();
-					for(int i=size; i--; ) {
-						const String& path=*static_cast<Array *>(table->get(i))->get_string(0);
-						if(file_spec=file_readable(absolute(path), file_name))
-							break; // found along class_path
-					}
-				} else
-					throw Exception("parser.runtime",
-						0,
-						"$" CLASS_PATH_NAME " must be string or table");
-				if(!file_spec)
-					throw Exception("parser.runtime",
-						&file_name,
-						"not found along " MAIN_CLASS_NAME ":" CLASS_PATH_NAME);
-			}
+		if(Value *element=main_class.get_element(*class_path_name, &main_class, false)) {
+			if(element->is_string()) {
+				file_spec=file_readable(absolute(element->as_string()), file_name); // found at class_path?
+			} else if(Table *table=element->get_table()) {
+				int size=table->size();
+				for(int i=size; i--; ) {
+					const String& path=*static_cast<Array *>(table->get(i))->get_string(0);
+					if(file_spec=file_readable(absolute(path), file_name))
+						break; // found along class_path
+				}
+			} else
+				throw Exception("parser.runtime",
+					0,
+					"$" CLASS_PATH_NAME " must be string or table");
+			if(!file_spec)
+				throw Exception("parser.runtime",
+					&file_name,
+					"not found along " MAIN_CLASS_NAME ":" CLASS_PATH_NAME);
+		}
 		if(!file_spec)
 			throw Exception("parser.runtime",
 				&file_name,
@@ -491,40 +482,39 @@ VStateless_class *Request::use_file(const String& file_name,
 
 	if(fail_on_read_problem && !fail_on_file_absence) // ignore file absence if asked for
 		if(!entry_exists(*file_spec))
-			return base_class;
+			return 0;
 
 	char *source=file_read_text(pool(), *file_spec, fail_on_read_problem);
 	if(!source)
-		return base_class;
+		return 0;
 
-	return use_buf(source, *file_spec, file_spec->cstr(), 0/*new class*/, name, base_class);
+	return use_buf(aclass, source, *file_spec, file_spec->cstr());
 }
 
 
-VStateless_class *Request::use_buf(const char *source, 
-								   const String& filespec, const char *filespec_cstr,
-								   VStateless_class *aclass, const String *name, 
-								   VStateless_class *base_class) {
-	// compile loaded class
-	VStateless_class& cclass=COMPILE(source, aclass, name, base_class, filespec_cstr);
+VStateless_class *Request::use_buf(VStateless_class& aclass,
+								   const char *source, 
+								   const String& filespec, const char *filespec_cstr) {
+	// temporary zero @conf so to maybe-replace it in compiled code
+	Temp_method temp_method_conf(aclass, *conf_method_name, 0);
+	// temporary zero @auto so to maybe-replace it in compiled code
+	Temp_method temp_method_auto(aclass, *auto_method_name, 0);
 
-	VString *vfilespec=NEW VString(filespec);
+	// compile loaded class
+	VStateless_class& cclass=COMPILE(aclass, source, filespec_cstr);
 
 	// locate and execute possible @conf[] static
+	VString *vfilespec=NEW VString(filespec);
 	const Method *method_called;
 	execute_nonvirtual_method(cclass, 
-		cclass.get_method(*conf_method_name), vfilespec,
+		*conf_method_name, vfilespec,
 		0/*no result needed*/, &method_called);
-	if(method_called) {
-		if(!main_class)
-			main_class=&cclass; // for method_frame auto.p, when main_class not assigned yet
+	if(method_called)
 		configure_admin(cclass, &method_called->name);
-	}
 
 	// locate and execute possible @auto[] static
-	execute_nonvirtual_method(
-		&cclass==&OP?*main_class:cclass,  // execute operators@auto in MAIN context
-		cclass.get_method(*auto_method_name), vfilespec,
+	execute_nonvirtual_method(cclass, 
+		*auto_method_name, vfilespec,
 		0/*no result needed*/);
 	return &cclass;
 }
@@ -633,4 +623,8 @@ const String& Request::mime_type_of(const char *user_file_name_cstr) {
 						MIME_TYPES_NAME  " table column elements must not be empty");
 		}
 	return *NEW String(pool(), "application/octet-stream");
+}
+
+bool Request::origins_mode() {
+	return main_class.get_element(*origins_mode_name, &main_class, false)!=0;  // $ORIGINS mode
 }

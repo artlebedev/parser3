@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/10/14 12:16:06 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/10/14 15:22:42 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -835,10 +835,10 @@ Value *Request::get_element(const String *& remember_name,
 	Value *ncontext=POP();
 	Value *value=0;
 	if(can_call_operator) {
-		if(Method* method=OP.get_method(name)) { // looking operator of that name FIRST
+		if(Method* method=main_class.get_method(name)) { // looking operator of that name FIRST
 			// as if that method were in self and we have normal dynamic method here
 			Junction& junction=*NEW Junction(pool(), 
-				*main_class, method, 0,0,0,0);
+				main_class, method, 0,0,0,0);
 			value=NEW VJunction(junction);
 		}
 	}
@@ -1008,10 +1008,11 @@ void Request::execute_method(Value& aself,
 }
 
 void Request::execute_nonvirtual_method(VStateless_class& aclass, 
-												 const Method *method, VString *optional_param,
+												 const String& method_name, VString *optional_param,
 												 const String **return_string,
 												 const Method **return_method) {
 
+	const Method *method=aclass.get_method(method_name);
 	if(return_string)
 		*return_string=0;
 	if(return_method)

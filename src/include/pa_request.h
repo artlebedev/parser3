@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/10/14 13:53:21 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/10/14 15:22:41 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -40,19 +40,15 @@ const uint ANTI_ENDLESS_EXECUTE_RECOURSION=500;
 
 #ifndef NO_STRING_ORIGIN
 #	define COMPILE_PARAMS  \
-		const char *source, \
-		VStateless_class *aclass, const String *name, \
-		VStateless_class *base_class, \
-		const char *file
-#	define COMPILE(source, aclass, name, base_class, file)  \
-		real_compile(source, aclass, name, base_class, file)
+		VStateless_class& aclass, const char *source \
+		, const char *file
+#	define COMPILE(aclass, source, file)  \
+		real_compile(aclass, source, file)
 #else
 #	define COMPILE_PARAMS  \
-		const char *source, \
-		VStateless_class *aclass, const String *name, \
-		VStateless_class *base_class
-#	define COMPILE(source, aclass, name, base_class, file)  \
-		real_compile(source, aclass, name, base_class)
+		VStateless_class& aclass, const char *source
+#	define COMPILE(aclass, source, file)  \
+		real_compile(aclass, source)
 #endif
 
 class Temp_lang;
@@ -122,17 +118,14 @@ public:
 	}
 
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
-	VStateless_class *use_file(
+	VStateless_class *use_file(VStateless_class& aclass,
 		const String& file_name, 
 		bool ignore_class_path=false, 
-		bool fail_on_read_problem=true, bool fail_on_file_absence=true,
-		const String *name=0, 
-		VStateless_class *base_class=0); // core.C
+		bool fail_on_read_problem=true, bool fail_on_file_absence=true); // core.C
 	/// compiles a @a source buffer
-	VStateless_class *use_buf(
-		const char *source, const String& filespec, const char *filespec_cstr,
-		VStateless_class *aclass=0, const String *name=0, 
-		VStateless_class *base_class=0); // core.C
+	VStateless_class *use_buf(VStateless_class& aclass,
+		const char *source, 
+		const String& filespec, const char *filespec_cstr); // core.C
 
 	/// processes any code-junction there may be inside of @a value
 	StringOrValue process(Value& input_value, bool intercept_string=true); // execute.C
@@ -220,9 +213,7 @@ public:
 		return fconnection; 
 	}
 
-	bool origins_mode() {
-		return main_class->get_element(*origins_mode_name, main_class, false)!=0;  // $ORIGINS mode
-	}
+	bool origins_mode();
 
 public:
 	
@@ -234,8 +225,8 @@ public:
 	/// name of 'main' method
 	const String main_method_name;
 	
-	/// operators are methods of this class
-	Methoded& OP;
+	/// 'MAIN' class conglomerat & operators are methods of this class
+	VClass& main_class;
 	/// $env:fields
 	VEnv env;
 	/// $status:fields
@@ -252,9 +243,6 @@ public:
 	VResponse response;
 	/// $cookie:elements
 	VCookie cookie;
-
-	/// 'MAIN' class conglomerat
-	VStateless_class *main_class;
 
 	/// classes configured data
 	Hash classes_conf;
@@ -315,7 +303,7 @@ private: // execute.C
 		const Method& method, VString *optional_param,
 		const String **return_string);
 	void execute_nonvirtual_method(VStateless_class& aclass, 
-		const Method *method, VString *optional_param,
+		const String& method_name, VString *optional_param,
 		const String **return_string,
 		const Method **return_method=0);
 	//}

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMPILE_C="$Date: 2002/08/13 13:02:40 $";
+static const char* IDENT_COMPILE_C="$Date: 2002/10/14 15:22:42 $";
 
 #include "pa_opcode.h"
 #include "pa_request.h"
@@ -25,20 +25,8 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 	pc.pool=&pool();
 	pc.request=this;
 	VStateless_class *cclass;
-	if(aclass) // we were told the class to compile to?
-		cclass=aclass; // yes, remember it [used in ^process]
-	else if(name) { // we were told the name of compiled class?
-		// yes. create it
-		cclass=NEW VClass(pool());
-		// defaulting base. may change with @BASE
-		// dont use ?: for there would be getting & of temp object
-		if(base_class)
-			cclass->set_base(base_class);
-		classes().put(*name, cclass);
-		cclass->set_name(*name);
-	} else
-		cclass=&OP; // until changed with @CLASS would consider operators loading
-	pc.cclass=cclass;
+	// we were told the class to compile to?
+	pc.cclass=&aclass; // until changed with @CLASS would consider operators loading
 
 	pc.source=source;
 #ifndef NO_STRING_ORIGIN

@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.197 2002/09/20 14:12:00 paf Exp $
+	$Id: compile.y,v 1.198 2002/10/14 15:22:42 paf Exp $
 */
 
 /**
@@ -159,7 +159,7 @@ control_method: '@' STRING '\n'
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
 		for(int i=0; i<strings_code->size(); i+=2) 
-			PC.request->use_file(*LA2S(strings_code, i));
+			PC.request->use_file(PC.request->main_class, *LA2S(strings_code, i));
 	} else if(command==BASE_NAME) {
 		if(PC.cclass->base_class()) { // already changed from default?
 			strcpy(PC.error, "class already have a base '");

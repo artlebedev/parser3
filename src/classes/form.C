@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FORM_C="$Date: 2002/08/15 10:13:19 $";
+static const char* IDENT_FORM_C="$Date: 2002/10/14 15:22:41 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -45,7 +45,7 @@ MForm::MForm(Pool& apool) : Methoded(apool, "form"),
 void MForm::configure_admin(Request& r) {
 	Pool& pool=r.pool();
 
-	Value *limits=r.main_class?r.main_class->get_element(limits_name, r.main_class, false):0;
+	Value *limits=r.main_class.get_element(limits_name, &r.main_class, false);
 	if(r.info.method && StrEqNc(r.info.method, "post", true)) {
 		// $limits.max_post_size default 10M
 		Value *element=limits?limits->get_element(max_post_size_name, limits, false):0;
