@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.3 2002/06/25 13:36:43 paf Exp $
+#$Id: auto.p.dist.in,v 1.4 2002/08/06 07:54:12 paf Exp $
 
 @conf[]
 $charsetsdir[@charsetsdir@]
@@ -29,6 +29,7 @@ ppt	application/powerpoint
 rtf	application/rtf
 gif	image/gif
 jpg	image/jpeg
+jpeg	image/jpeg
 png	image/png
 tif	image/tiff
 html	text/html
