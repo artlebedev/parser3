@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_object.h,v 1.8 2001/04/26 15:01:52 paf Exp $
+	$Id: pa_vstateless_object.h,v 1.9 2001/05/10 12:49:27 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_OBJECT_H
@@ -30,9 +30,11 @@ public: // Value
 		// $CLASS, $BASE
 		if(Value *result=VAliased::get_element(name))
 			return result;
+
 		// $method=junction(self+class+method)
 		if(Junction *junction=fclass_real.get_junction(*this, name))
 			return NEW VJunction(*junction);
+
 		return 0;
 	}
 

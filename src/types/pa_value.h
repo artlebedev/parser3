@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.57 2001/05/08 10:39:23 paf Exp $
+	$Id: pa_value.h,v 1.58 2001/05/10 12:49:26 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -113,6 +113,7 @@ public: // Value
 		- VAliased: sometimes $CLASS, $BASE [@see VAliased::hide_class()]
 		- VStateless_class: +$method
 		- VStateless_object: +$method
+		- VClass: (field)=STATIC value;(method)=method_ref with self=object_class
 		- VCodeFrame: wcontext_transparent
 		- VMethodFrame: my or self_transparent
 		- VTable: columns,methods

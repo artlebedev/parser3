@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.15 2001/05/07 14:00:53 paf Exp $
+	$Id: pa_vclass.h,v 1.16 2001/05/10 12:49:27 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -17,23 +17,24 @@
 
 /**	stores 
 	- base: VClass::base()
-	- fields: VClass::ffields
+	- static fields: VClass::ffields
 */
 class VClass : public VStateless_class {
 public: // Value
 	
 	const char *type() const { return "class"; }
 
-	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
+	// VClass: (field)=STATIC value;(method)=method_ref with self=object_class
 	Value *get_element(const String& aname) {
-		if(Value *result=VStateless_class::get_element(aname))
-			return result;
-
 		// $field=static field
-		return get_field(aname);
+		if(Value *result=get_field(aname))
+			return result;
+		
+		// $CLASS,$BASE,$method
+		return VStateless_class::get_element(aname);
 	}
 
-	// object_class, operator_class: (field)=value - static values only
+	// VClass: (field)=value - static values only
 	void put_element(const String& name, Value *value) {
 		set_field(name, value);
 	}
