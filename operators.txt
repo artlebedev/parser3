@@ -537,7 +537,6 @@ xdoc(xnode)
         Attributes with the name "ID" are not of type ID unless so defined. 
         Implementations that do not know whether attributes are of type ID or not 
         are expected to return null.
-    !^.getElementsByTagNameNS[namespaceURI;localName] = array of nodes
 
     !кодировка строк и умолчание для $.encoding 
     !равно текущей кодировке выходной страницы,
@@ -639,7 +638,7 @@ xdoc(xnode)
 
     !Introduced in DOM Level 2:
     !Node importNode(in Node importedNode, in boolean deep) raises(DOMException)
-
+    !NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName);
 
     !XPath:
     !^node.select[xpath/query/expression] = array of nodes, 

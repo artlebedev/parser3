@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_types.h,v 1.37 2002/02/08 08:30:14 paf Exp $
+	$Id: pa_types.h,v 1.38 2002/02/20 09:13:07 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -45,7 +45,6 @@ typedef unsigned char uchar;
 
 #undef ushort
 typedef unsigned short ushort;
-const size_t MAX_USHORT=1<<sizeof(ushort)*8-1;
 
 #undef uint
 typedef unsigned int uint;
@@ -53,6 +52,10 @@ typedef unsigned int uint;
 #undef ulong
 typedef unsigned long ulong;
 ///}@
+
+/// max value of integral type
+#define max_integral(type) ((1<<sizeof(type)*8)-1)
+
 
 #ifndef NO_STRING_ORIGIN
 /// all String pieces hold information of where they come from
@@ -62,9 +65,8 @@ struct Origin {
 	const char *file;  ///< macros file name | load file name | sql query text
 	unsigned short line; ///< file line no | record no
 };
-#define ORIGIN_FILE_LINE_FORMAT "%.300s(%d)"
-
 #include "pa_pragma_pack_end.h"
+#define ORIGIN_FILE_LINE_FORMAT "%.300s(%d)"
 
 #endif
 

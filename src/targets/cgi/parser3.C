@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.159 2002/02/18 12:45:46 paf Exp $
+	$Id: parser3.C,v 1.160 2002/02/20 09:13:08 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -29,6 +29,17 @@
 #endif
 
 //#define DEBUG_POOL_MALLOC
+#define DEBUG_STRING_APPENDS_VS_EXPANDS
+
+#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
+extern ulong 
+	string_piece_appends, 
+	string_string_appends, 
+	wcontext_result_size,
+	total_alloc_size,
+	double_appends,
+	string_string_shortcut_economy;
+#endif
 
 // consts
 
@@ -348,6 +359,18 @@ void real_parser_handler(
 	extern void log_pool_stats(Pool& pool);
 	log_pool_stats(pool);
 #endif
+
+#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
+	SAPI::log(pool, 
+		"string piece appends=%lu, string string appends=%lu, wcontext_result_size=%lu, double_appends=%lu, string_string_shortcut_economy=%lu, total_alloc_size=%lu", 
+		string_piece_appends,
+		string_string_appends,
+		wcontext_result_size,
+		double_appends,
+		string_string_shortcut_economy,
+		total_alloc_size);
+#endif
+
 }
 
 void call_real_parser_handler__do_SEH(

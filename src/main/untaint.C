@@ -1,10 +1,10 @@
 /** @file
 	Parser: String class part: untaint mechanizm.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: untaint.C,v 1.89 2002/02/08 08:31:32 paf Exp $
+	$Id: untaint.C,v 1.91 2002/02/20 09:13:08 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -17,6 +17,16 @@
 #include "pa_dictionary.h"
 #include "pa_common.h"
 #include "pa_charset.h"
+
+#define DEBUG_STRING_APPENDS_VS_EXPANDS
+
+#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
+extern ulong string_piece_appends;
+ulong string_string_appends=0;
+ulong double_appends=0;
+ulong string_string_shortcut_economy=0;
+#endif
+
 
 #define escape(action) \
 	{ \
@@ -138,7 +148,41 @@ inline bool need_quote_http_header(const char *ptr, size_t size) {
 	return false;
 }
 
+//#include "pa_sapi.h"
+/** 
+	appends other String.
+	marking all tainted pieces of it with @a lang.
+	or marking ALL pieces of it with a @a lang when @a forced to.
+
+    using architecture advantage: after string-to-string-append string never modified.
+	algorithm:
+	if no language-change specified and src not yet appended to some other string[last_chunk!=0]
+		if dest head is not full, 
+			cloning pieces.
+		if dest head is full,
+			shrinking dest last_chunk[preparing it for linking],
+			shrinking src last_chunk[preparing it to be linked, consequent dest.appends would go there],
+			linking[dest.last_chunk = src.head]
+	if some language-change specified or src already appended to some other string[last_chunk==0]
+		cloning pieces.
+*/
 String& String::append(const String& src, uchar lang, bool forced) {
+#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
+	string_piece_appends-=src.used_rows();
+	string_string_appends+=src.used_rows()*sizeof(String::Chunk::Row);
+	if(!src.last_chunk) {
+		double_appends+=src.used_rows()*sizeof(String::Chunk::Row);
+		//SAPI::log(pool(), "double append: %s", src.cstr());
+	}
+#endif
+	if(!forced && lang==UL_PASS_APPENDED) { // shortcutting only non-modifying appends
+#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
+		if(src.last_chunk)
+			string_string_shortcut_economy+=src.used_rows()*sizeof(String::Chunk::Row);
+#endif
+		src.last_chunk=0; // stop growing
+	}
+
 	// manually unrolled code to avoid do{if(const)} constructs
 	if(forced) 
 		STRING_SRC_FOREACH_ROW(

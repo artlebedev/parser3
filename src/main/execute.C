@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.219 2002/02/18 15:21:01 paf Exp $
+	$Id: execute.C,v 1.220 2002/02/20 09:13:08 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -24,6 +24,14 @@
 #include "pa_wwrapper.h"
 
 //#define DEBUG_EXECUTE
+#define DEBUG_STRING_APPENDS_VS_EXPANDS
+
+
+#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
+ulong wcontext_result_size=0;
+#endif
+
+
 
 const uint ANTI_ENDLESS_EXECUTE_RECOURSION=500;
 
@@ -495,6 +503,11 @@ void Request::execute(const Array& ops) {
 				rcontext=POP();  
 				root=POP();  
 				self=static_cast<VAliased *>(POP());
+
+#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
+				if(const String *s=value->get_string())
+					wcontext_result_size+=s->used_rows()*sizeof(String::Chunk::Row);
+#endif
 
 				PUSH(value);
 #ifdef DEBUG_EXECUTE

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.138 2002/02/08 08:30:16 paf Exp $
+	$Id: pa_string.C,v 1.139 2002/02/20 09:13:08 paf Exp $
 */
 
 #include "pcre.h"
@@ -19,6 +19,13 @@
 #include "pa_table.h"
 #include "pa_dictionary.h"
 #include "pa_charset.h"
+
+#define DEBUG_STRING_APPENDS_VS_EXPANDS
+
+
+#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
+ulong string_piece_appends=0;
+#endif
 
 String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	Pooled(apool) {
@@ -62,7 +69,7 @@ String::String(const String& src) :
 		// remaining rows size_to new_chunk
 		uint curr_chunk_rows=src_used_rows-head.count;
 		last_chunk=static_cast<Chunk *>(
-			malloc(sizeof(uint)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *), 9));
+			malloc(sizeof(Chunk::count_type)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *), 9));
 		last_chunk->count=curr_chunk_rows;
 		head_link=last_chunk;
 		append_here=link_row=&last_chunk->rows[last_chunk->count];
@@ -71,7 +78,7 @@ String::String(const String& src) :
 		Chunk::Row *new_rows=last_chunk->rows;
 		uint rows_left_to_copy=last_chunk->count;
 		while(true) {
-			uint old_count=old_chunk->count;
+			Chunk::count_type old_count=old_chunk->count;
 			Chunk *next_chunk=old_chunk->rows[old_count].link;
 			if(next_chunk) {
 				// not last source chunk
@@ -112,12 +119,12 @@ break2:
 	return result;
 }
 void String::expand() {
-	uint new_chunk_count=last_chunk->count+CR_GROW_COUNT;
-	if(new_chunk_count>MAX_USHORT)
-		new_chunk_count=MAX_USHORT;
+	Chunk::count_type new_chunk_count=last_chunk->count+CR_GROW_COUNT;
+	if(new_chunk_count>max_integral(Chunk::count_type))
+		new_chunk_count=max_integral(Chunk::count_type);
 
 	last_chunk=static_cast<Chunk *>(
-		malloc(sizeof(uint)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *), 10));
+		malloc(sizeof(Chunk::count_type)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *), 10));
 	last_chunk->count=new_chunk_count;
 	link_row->link=last_chunk;
 	append_here=last_chunk->rows;
@@ -126,6 +133,11 @@ void String::expand() {
 }
 
 String& String::real_append(STRING_APPEND_PARAMS) {
+	if(!last_chunk) // growth stopped [we're appended as string to somebody]
+		throw Exception(0, 0,
+			this,
+			"string growth stopped");
+
 	if(!src)
 		return *this;
 	if(!size)
@@ -133,12 +145,17 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 	if(!size)
 		return *this;
 
-	while(size>MAX_USHORT) {
+#ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
+	string_piece_appends++;
+#endif
+
+	// manually unrolled to avoid extra check
+	while(size>max_integral(Chunk::Row::item_size_type)) {
 		if(chunk_is_full())
 			expand();
 
 		append_here->item.ptr=src;
-		append_here->item.size=MAX_USHORT;
+		append_here->item.size=max_integral(Chunk::Row::item_size_type);
 		append_here->item.lang=lang;
 #ifndef NO_STRING_ORIGIN
 		append_here->item.origin.file=file;
@@ -146,8 +163,8 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 #endif
 		append_here++;
 
-		src+=MAX_USHORT;
-		size-=MAX_USHORT;
+		src+=max_integral(Chunk::Row::item_size_type);
+		size-=max_integral(Chunk::Row::item_size_type);
 	}
 
 	if(chunk_is_full())
@@ -365,7 +382,7 @@ const Origin& String::origin() const {
 String& String::mid(size_t start, size_t finish) const {
 	String& result=*NEW String(pool());
 
-	start=max(0, start);
+	start=max(size_t(0), start);
 	finish=min(size(), finish);
 	if(start==finish)
 		return result;
@@ -631,7 +648,7 @@ String& String::change_case(Pool& pool,
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; i++, row++) {
+		for(Chunk::count_type i=0; i<chunk->count; i++, row++) {
 			if(row==append_here)
 				goto break2;
 

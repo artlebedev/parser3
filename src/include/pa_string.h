@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.124 2002/02/08 08:30:14 paf Exp $
+	$Id: pa_string.h,v 1.125 2002/02/20 09:13:07 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -74,7 +74,7 @@ public:
 
 	enum {
 		CR_PREALLOCATED_COUNT=2, ///< default preallocated item count
-		CR_GROW_COUNT=2 ///< each time the String chunk_is_full() string expanded()
+		CR_GROW_COUNT=1 ///< each time the String chunk_is_full() string expanded()
 	};
 
 	/** piece is tainted or not. the language to use when detaint
@@ -165,12 +165,6 @@ public:
 		return cmp(partial, src_ptr, 0)!=0; 
 	}
 
-	/** 
-		appends other String.
-
-		marking all tainted pieces of it with @a lang.
-		or marking ALL pieces of it with a @a lang when @a forced to.
-	*/
 	String& append(const String& src, uchar lang, bool forced=false);
 	String& operator << (const String& src) { return append(src, UL_PASS_APPENDED); }
 	String& operator << (const char *src) { return APPEND_CONST(src); }
@@ -231,18 +225,20 @@ public:
 	const Origin& origin() const;
 #endif
 
-private:
+public: // debug private:
 
 	/// several String fragments
 	struct Chunk {
-		ushort count; ///< the number of rows in chunk
+		typedef uchar count_type;
+		count_type count; ///< the number of rows in chunk
 		/// string fragment or a link to next chunk union
 		union Row {
+			typedef uchar item_size_type;
 			/// fragment
 			struct { 
 				const char *ptr;  ///< pointer to the start
-				ushort size;  ///< length
-				unsigned char/*Untaint_lang*/ lang; ///< untaint flag, later untaint language
+				item_size_type size;  ///< length
+				uchar/*Untaint_lang*/ lang; ///< untaint flag, later untaint language
 #ifndef NO_STRING_ORIGIN
 				Origin origin;  ///< origin
 #endif
@@ -251,7 +247,7 @@ private:
 		} rows[CR_PREALLOCATED_COUNT];
 	}
 		head;  ///< the head chunk of the chunk chain
-	Chunk *head_link; ///< next rows are here
+	Chunk *head_link; ///< next rows are here must go right after 'head'
 
 	/// next append would write to this record
 	Chunk::Row *append_here;
@@ -263,15 +259,19 @@ private:
 
 private:
 	/// last chunk
-	Chunk *last_chunk;
+	mutable Chunk *last_chunk;
 
+public: //debug
+	uint used_rows() const;
 private:
 
 	bool chunk_is_full() {
 		return append_here == link_row;
 	}
-	uint used_rows() const;
+	//uint used_rows() const;
 	void expand();
+	
+	Untaint_lang lang_of(size_t offset) const;
 
 	size_t cstr_bufsize(Untaint_lang lang,
 		SQL_Connection *connection,
