@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.108 2001/10/11 14:00:10 parser Exp $
+	$Id: pa_string.C,v 1.109 2001/10/11 14:41:01 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -738,7 +738,7 @@ String& String::reconstruct(Pool& pool) const {
 				goto break2;
 
 			Untaint_lang joined_lang;
-			char *joined_ptr;
+			const char *joined_ptr;
 			size_t joined_size;
 			join_chain(pool, i, chunk, row,
 				joined_lang, joined_ptr, joined_size);
