@@ -412,8 +412,6 @@ SOURCE=..\include\pa_stylesheet_connection.h
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
 
-# PROP Exclude_From_Build 1
-
 !ENDIF 
 
 # End Source File
@@ -425,8 +423,6 @@ SOURCE=.\pa_stylesheet_manager.C
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
 
-# PROP Exclude_From_Build 1
-
 !ENDIF 
 
 # End Source File
@@ -437,8 +433,6 @@ SOURCE=..\include\pa_stylesheet_manager.h
 !IF  "$(CFG)" == "main - Win32 Release"
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
-
-# PROP Exclude_From_Build 1
 
 !ENDIF 
 

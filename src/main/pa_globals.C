@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.99 2001/12/29 08:39:05 paf Exp $
+	$Id: pa_globals.C,v 1.100 2002/01/14 17:48:57 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -12,7 +12,7 @@
 #include "pa_hash.h"
 #include "pa_sql_driver_manager.h"
 #include "pa_dictionary.h"
-//#include "pa_stylesheet_manager.h"
+#include "pa_stylesheet_manager.h"
 #include "pa_sapi.h"
 #include "pa_cache_managers.h"
 #include "pa_charsets.h"
@@ -260,14 +260,18 @@ void pa_globals_init(Pool& pool) {
 	 * use in multithreaded programs.
 	*/
 	xmlInitParser();
+	
+	// Bit in the loadsubset context field to tell to do ID/REFs lookups 
+	xmlLoadExtDtdDefaultValue |= XML_DETECT_IDS;
+	// Bit in the loadsubset context field to tell to do complete the elements attributes lists 
+	// with the ones defaulted from the DTDs 
+    //never added yet xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
 
 ///	xmlSetGenericErrorFunc(0, xmlGenericErrorDefaultFunc2);
 
-/*
 	// XSLT stylesheet manager
 	cache_managers->put(*NEW String(pool, "stylesheet"), 
 		stylesheet_manager=NEW Stylesheet_manager(pool));
-		*/
 #endif
 }
 

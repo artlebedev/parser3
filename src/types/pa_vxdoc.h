@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxdoc.h,v 1.15 2001/12/28 14:06:52 paf Exp $
+	$Id: pa_vxdoc.h,v 1.16 2002/01/14 17:48:57 paf Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -21,6 +21,7 @@
 //#include "libxslt/libxslt.h"
 //#include "libxslt/extensions.h"
 //#include "libexslt/exslt.h"
+//#include "libxslt/xsltInternals.h"
 
 extern Methoded *Xdoc_class;
 
@@ -63,7 +64,7 @@ public: // usage
 
 		register_cleanup(VXdoc_destructor, this);
 //		ftransformer=new XalanTransformer2;
-//		memset(&output_options, 0, sizeof(output_options));
+		memset(&output_options, 0, sizeof(output_options));
 	}
 protected:
 	~VXdoc() {
@@ -92,21 +93,17 @@ public:
 	}
 
 public:
-/*
 	struct Output_options {
-		const char *method;
-		XalanDOMString encoding;
-		XalanDOMString mediaType;
-		XalanDOMString doctypeSystem;
-		XalanDOMString doctypePublic;
-		bool doIndent;
-		XalanDOMString version;
-		XalanDOMString standalone;
-		bool xmlDecl;
-		Output_options() : method(0), doIndent(false), xmlDecl(false) {
-		}
+		const String *method;            /* the output method */
+		const String *encoding;          /* encoding string */
+		const String *mediaType;         /* media-type string */
+		const String *doctypeSystem;     /* doctype-system string */
+		const String *doctypePublic;     /* doctype-public string */
+		bool indent;                 /* should output being indented */
+		const String *version;           /* version string */
+		bool standalone;             /* standalone = "yes" | "no" */
+		bool omitXmlDeclaration;     /* omit-xml-declaration = "yes" | "no" */
 	} output_options;
-*/
 private:
 
 	GdomeDocument *fdocument;

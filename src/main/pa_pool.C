@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.48 2002/01/10 15:41:50 paf Exp $
+	$Id: pa_pool.C,v 1.49 2002/01/14 17:48:57 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -54,6 +54,14 @@ Charset& Pool::get_client_charset() {
 }
 
 #ifdef XML
+
+const char *Pool::transcode_cstr(xmlChar *s) {
+	return get_source_charset().transcode_cstr(s); 
+}
+
+String& Pool::transcode(xmlChar *s) {
+	return get_source_charset().transcode(s); 
+}
 
 const char *Pool::transcode_cstr(GdomeDOMString *s) { 
 	return get_source_charset().transcode_cstr(s); 

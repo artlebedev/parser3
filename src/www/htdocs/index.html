@@ -4,19 +4,13 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^connect[mysql://fif:el3Snfs@db-mysql/fif]{
-$t[^table::sql{show tables}]
-^t.count[]
-}
-
-
 #^xpath[]
 #^ttablesetlang[]
 #^mail3[]
 #^ttime[]
 #^tupper[]
 #^treplace[]
-#^xslt2[]
+^xslt2[]
 #^tcache2[]
 #$ORIGINS(1)
 #$t[^table::set{a b} ^table::set{c d}]
@@ -183,7 +177,7 @@ $xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251" ?>
 <document><block><p>привет</p></block></document>
 }]
 ^show-xdoc2[$xdoc]
-#^show-xdoc2[^xdoc.transform[templates/_document.xslt]]
+^show-xdoc2[^xdoc.transform[templates/_document.xslt]]
 <hr>
 
 

@@ -4,17 +4,24 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.58 2002/01/14 15:29:41 paf Exp $
+	$Id: xdoc.C,v 1.59 2002/01/14 17:48:56 paf Exp $
 */
 #include "pa_types.h"
-#include "classes.h"
 #ifdef XML
 
+#include "pa_stylesheet_connection.h"
+#include "classes.h"
 #include "pa_request.h"
 #include "pa_vxdoc.h"
 #include "pa_charset.h"
 #include "pa_vfile.h"
 #include "xnode.h"
+
+extern "C" {
+#include "gdomecore/gdome-xml-node.h"
+#include "gdomecore/gdome-xml-document.h"
+};
+#include "libxslt/transform.h"
 
 // defines
 
@@ -575,135 +582,114 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 	r.write_no_lang(vfile);
 }
 
-/*
 /// @test lang=String::UL_UNSPECIFIED?
 static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning, 
 						   void *info) {
-	XalanTransformer2& transformer=*static_cast<XalanTransformer2 *>(info);
-	const char *attribute_cstr=aattribute.cstr(String::UL_UNSPECIFIED);
-	const char *meaning_cstr=static_cast<Value *>(ameaning)->as_string().cstr(String::UL_UNSPECIFIED);
-
-	transformer.setStylesheetParam(
-		XalanDOMString(attribute_cstr),  
-		XalanDOMString(meaning_cstr));
+	Value *meaning=static_cast<Value *>(ameaning);
+	Pool& pool=meaning->pool();
+	const char **transform_params=(const char **)info;
+	*transform_params++=pool.transcode(aattribute)->str;
+	*transform_params++=pool.transcode(meaning->as_string())->str;
 }
 static void _transform(Request& r, const String& method_name, MethodParams *params) {
+	//_asm int 3;
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
 	// params
+	const char **transform_params=0;
 	if(params->size()>1) {
-		Value& vparams=params->as_no_junction(1, "transform parameters parameter must be string");
+		Value& vparams=params->as_no_junction(1, "transform parameters must be hash");
 		if(vparams.is_defined())
-			if(Hash *params=vparams.get_hash(&method_name))
-				params->for_each(add_xslt_param, &vdoc.transformer());
-			else
+			if(Hash *params=vparams.get_hash(&method_name)) {
+				transform_params=
+					(const char **)pool.malloc(sizeof(const char *)*params->size()*2+1);
+				params->for_each(add_xslt_param, transform_params);
+				transform_params[params->size()*2]=0;				
+			} else
 				throw Exception(0, 0,
 					&method_name,
 					"transform parameters parameter must be hash");
 	}
 
 	// stylesheet
-	const String& stylesheet_file_name=params->as_string(0, "file name must be string");
-	const String& stylesheet_filespec=r.absolute(stylesheet_file_name);
-	//_asm int 3;
+	const String& stylesheet_filespec=r.absolute(params->as_string(0, "file name must be string"));
 	Stylesheet_connection& connection=stylesheet_manager->get_connection(stylesheet_filespec);
 
-	// target
-	XalanDocument* target=vdoc.parser_xerces_liaison().createDocument();
-
 	// transform
-	try {
-		// note: 
-		//   actually, never found any difference between the two
-		//   but still there some extra "xerces" words at start of transform body
-		//   wich were originally "xalan"
-		//   not daring to change that
-
-		const XalanCompiledStylesheet& stylesheet=connection.stylesheet(false/*nocache* /);
-		if(vdoc.has_parsed_source()) { // set|load, not create?
-			vdoc.transformer().transform2(
-				vdoc.get_parsed_source(pool, &method_name), 
-				&stylesheet, 
-				target);
-		} else {
-			target=vdoc.parser_xerces_liaison().createDocument();
-			vdoc.transformer().transform2(
-				vdoc.get_document(&method_name), 
-				&stylesheet, 
-				target);
-		}
-		VXdoc& result=*new(pool) VXdoc(pool, target, false/*owns not* /);
-		// write out result
-		r.write_no_lang(result);
-		//
-		if(const StylesheetRoot *stylesheetRoot=stylesheet.getStylesheetRoot()) {
-			/*
-			<xsl:output
-			!method = "xml" | "html" | "text"
-				X| qname-but-not-ncname 
-			!version = nmtoken 
-			!encoding = string 
-			!omit-xml-declaration = "yes" | "no"
-			!standalone = "yes" | "no"
-			!doctype-public = string 
-			!doctype-system = string 
-			cdata-section-elements = qnames 
-			!indent = "yes" | "no"
-			!media-type = string /> 
-			* /
-
-			VXdoc::Output_options& oo=result.output_options;
-			oo.encoding=stylesheetRoot->m_encoding;
-			oo.mediaType=stylesheetRoot->m_mediatype;
-			oo.doctypeSystem=stylesheetRoot->m_doctypeSystem;
-			oo.doctypePublic=stylesheetRoot->m_doctypePublic;
-			oo.doIndent=stylesheetRoot->m_indentResult;
-			oo.version=stylesheetRoot->m_version;
-			oo.standalone=stylesheetRoot->m_standalone;
-			oo.xmlDecl=!stylesheetRoot->m_omitxmlDecl;
-
-			switch(stylesheetRoot->getOutputMethod()) {
-			case FormatterListener::OUTPUT_METHOD_HTML: 
-				oo.method=XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML; break;
-			case FormatterListener::OUTPUT_METHOD_TEXT: 
-				oo.method=XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT; break;
-			case FormatterListener::OUTPUT_METHOD_NONE: 
-			case FormatterListener::OUTPUT_METHOD_XML: 
-				oo.method=XDOC_OUTPUT_METHOD_OPTION_VALUE_XML; break;
-			default:
-				throw Exception(0, 0,
-					&method_name,
-					"unsupported output method specified"); 
-				break; // never
-			}
-		}
-	}
-	catch (XSLException& e)	{
+	xsltStylesheet *stylesheet=connection.stylesheet(false/*nocache*/);
+	xmlDoc *document=((Gdome_xml_Document*)vdoc.get_document(&method_name))->n;
+	xsltTransformContext *transformContext=xsltNewTransformContext(stylesheet, document);
+	xmlDoc *transformed=xsltApplyStylesheetUser(
+		stylesheet,
+		document,
+		transform_params,
+		0/*const char *output*/,
+		0/*FILE *profile*/,
+		transformContext);
+	if(!transformed) {
+		// close
 		connection.close();
-		Exception::provide_source(pool, &stylesheet_file_name, e);
-	}
-	catch (SAXParseException& e)	{
-		connection.close();
-		Exception::provide_source(pool, &stylesheet_file_name, e);
-	}
-	catch (SAXException& e)	{
-		connection.close();
-		Exception::provide_source(pool, &stylesheet_file_name, e);
-	}
-	catch (XMLException& e) {
-		connection.close();
-		Exception::provide_source(pool, &stylesheet_file_name, e);
-	}
-	catch(const XalanDOMException& e)	{
-		connection.close();
-		Exception::provide_source(pool, &stylesheet_file_name, e);
+		throw Exception(0, 0,
+			&method_name, 
+			"transform failed. TODO: show errors");
 	}
 
+	//gdome_xml_doc_mkref: invalid node type
+	transformed->type=XML_DOCUMENT_NODE; //XML_HTML_DOCUMENT_NODE actuall
+	// constructing result
+	GdomeDocument *gdomeDocument=gdome_xml_doc_mkref(transformed);
+	if(!gdomeDocument)
+		throw Exception(0, 0,
+			&method_name,
+			"gdome_xml_doc_mkref failed");
+	VXdoc& result=*new(pool) VXdoc(pool, gdomeDocument);
+	// grabbing <output> options
+	/*
+	<xsl:output
+	!method = "xml" | "html" | "text"
+		X| qname-but-not-ncname 
+	!version = nmtoken 
+	!encoding = string 
+	!omit-xml-declaration = "yes" | "no"
+	!standalone = "yes" | "no"
+	!doctype-public = string 
+	!doctype-system = string 
+	cdata-section-elements = qnames 
+	!indent = "yes" | "no"
+	!media-type = string /> 
+	*/
+	memset(&result.output_options, 0, sizeof(result.output_options));
+	VXdoc::Output_options& oo=result.output_options;
+
+	oo.encoding=&pool.transcode(stylesheet->encoding);
+	oo.mediaType=&pool.transcode(stylesheet->mediaType);
+	oo.doctypeSystem=&pool.transcode(stylesheet->doctypeSystem);
+	oo.doctypePublic=&pool.transcode(stylesheet->doctypePublic);
+	oo.indent=stylesheet->indent!=0;
+	oo.version=&pool.transcode(stylesheet->version);
+	oo.standalone=stylesheet->standalone!=0;
+	oo.omitXmlDeclaration=stylesheet->omitXmlDeclaration!=0;
+
+	xsltFreeTransformContext(transformContext);
 	// close
 	connection.close();
+
+	// exceptions now allowed
+
+	// check method
+	if(oo.method && (
+		*oo.method!=XDOC_OUTPUT_METHOD_OPTION_VALUE_XML
+		|| *oo.method!=XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML
+		|| *oo.method!=XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT))
+		throw Exception(0, 0,
+			&method_name,
+			"unsupported output method specified"); 
+
+	// write out result
+	r.write_no_lang(result);
+
 }
-*/
 
 // constructor
 
@@ -764,7 +750,7 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 
 	// ^xdoc.transform[stylesheet file_name]
 	// ^xdoc.transform[stylesheet file_name;params hash]
-//	add_native_method("transform", Method::CT_DYNAMIC, _transform, 1, 2);
+	add_native_method("transform", Method::CT_DYNAMIC, _transform, 1, 2);
 
 }
 

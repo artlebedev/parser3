@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.13 2002/01/11 12:24:27 paf Exp $
+	$Id: pa_charset.C,v 1.14 2002/01/14 17:48:57 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -541,21 +541,21 @@ void Charset::initTranscoder(const String *source, const char *name_cstr) {
 			"unsupported encoding");
 }
 
-const char *Charset::transcode_cstr(GdomeDOMString *s) { 
+const char *Charset::transcode_cstr(xmlChar *s) {
 	if(!transcoder)
 		throw Exception(0, 0,
 			0,
 			"transcode_cstr no transcoder");
 	if(!s)
-		return 0;
+		return "";
 
-	int inlen=gdome_str_length(s);
+	int inlen=strlen((const char *)s);
 	int outlen=inlen+1; // max
 	char *out=(char *)malloc(outlen*sizeof(char));
 	
 	int size=transcoder->output(
 		(unsigned char*)out, &outlen,
-		(const unsigned char*)s->str, &inlen,
+		(const unsigned char*)s, &inlen,
 		transcoder->outputInfo);
 	if(size<0)
 		throw Exception(0, 0,
@@ -564,6 +564,12 @@ const char *Charset::transcode_cstr(GdomeDOMString *s) {
 
 	out[size]=0;
 	return out;
+}
+String& Charset::transcode(xmlChar *s) { 
+	return *NEW String(pool(), transcode_cstr(s)); 
+}
+const char *Charset::transcode_cstr(GdomeDOMString *s) { 
+	return s?transcode_cstr(BAD_CAST s->str):"";
 }
 String& Charset::transcode(GdomeDOMString *s) { 
 	return *NEW String(pool(), transcode_cstr(s)); 

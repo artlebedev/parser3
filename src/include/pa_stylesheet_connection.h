@@ -4,18 +4,19 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_connection.h,v 1.17 2001/12/15 21:28:20 paf Exp $
+	$Id: pa_stylesheet_connection.h,v 1.18 2002/01/14 17:48:56 paf Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
+#include "libxslt/libxslt.h"
+#include "libxslt/xsltInternals.h"
+
 #include "pa_pool.h"
 #include "pa_stylesheet_manager.h"
 #include "pa_exception.h"
 #include "pa_common.h"
-
-#include "XalanTransformer2.hpp"
 
 // defines
 
@@ -29,8 +30,6 @@ class Stylesheet_connection : public Pooled {
 public:
 
 	Stylesheet_connection(Pool& pool, const String& afile_spec) : Pooled(pool),
-		ftransformer(new XalanTransformer2),
-
 		ffile_spec(afile_spec),
 		time_used(0),
 		prev_disk_time(0),
@@ -54,19 +53,16 @@ public:
 	}
 
 	void disconnect() { 
-		/*ignore error*/ftransformer->destroyStylesheet(fstylesheet);  fstylesheet=0; 
-
-		// connection effectively useless now, free up some memory
-		delete ftransformer; 
+		xsltFreeStylesheet(fstylesheet);  fstylesheet=0; 
 	}
 
 	bool connected() { return fstylesheet!=0; }
 
-	const XalanCompiledStylesheet& stylesheet(bool nocache) { 
+	xsltStylesheet *stylesheet(bool nocache) { 
 		time_t new_disk_time=get_new_disk_time();
 		if(nocache || new_disk_time)
 			load(new_disk_time);
-		return *fstylesheet; 
+		return fstylesheet; 
 	}
 
 private:
@@ -76,31 +72,19 @@ private:
 		return now_disk_time>prev_disk_time?now_disk_time:0;
 	}
 
+	/// @test grab errors
 	void load(time_t new_disk_time) {
 		Pool& pool=*fservices_pool;
 
-		try{
-			const XalanCompiledStylesheet *nstylesheet;
-			ftransformer->compileStylesheet2(ffile_spec.cstr(String::UL_FILE_SPEC), nstylesheet);
-			ftransformer->destroyStylesheet(fstylesheet);  
-			fstylesheet=nstylesheet;
-		}
-		catch (XSLException& e)	{
-			Exception::provide_source(pool, &ffile_spec, e);
-		}
-		catch (SAXParseException& e)	{
-			Exception::provide_source(pool, &ffile_spec, e);
-		}
-		catch (SAXException& e)	{
-			Exception::provide_source(pool, &ffile_spec, e);
-		}
-		catch (XMLException& e) {
-			Exception::provide_source(pool, &ffile_spec, e);
-		}
-		catch(const XalanDOMException&	e)	{
-			Exception::provide_source(pool, &ffile_spec, e);
-		}
+		xsltStylesheet *nstylesheet;
+		nstylesheet=xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr(String::UL_FILE_SPEC));
+		if(!nstylesheet)
+			throw Exception(0, 0,
+				&ffile_spec,
+				"error compiling. TODO: grab errors");
 
+		xsltFreeStylesheet(fstylesheet);  
+		fstylesheet=nstylesheet;
 		prev_disk_time=new_disk_time;
 	}
 
@@ -121,13 +105,11 @@ private:
 private:
 
 	const String& ffile_spec;
-	const XalanCompiledStylesheet *fstylesheet;
+	xsltStylesheet *fstylesheet;
 	time_t time_used;
 	time_t prev_disk_time;
 
 private:
-
-	XalanTransformer2 *ftransformer;
 
 	Pool *fservices_pool;
 

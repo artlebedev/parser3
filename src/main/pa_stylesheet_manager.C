@@ -4,14 +4,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.C,v 1.8 2001/12/13 11:29:22 paf Exp $
+	$Id: pa_stylesheet_manager.C,v 1.9 2002/01/14 17:48:57 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
 
 #include "pa_stylesheet_manager.h"
 #include "pa_stylesheet_connection.h"
-#include "ltdl.h"
 #include "pa_exception.h"
 #include "pa_common.h"
 #include "pa_threads.h"

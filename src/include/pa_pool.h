@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.h,v 1.75 2002/01/10 15:41:49 paf Exp $
+	$Id: pa_pool.h,v 1.76 2002/01/14 17:48:56 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -15,6 +15,8 @@
 
 #ifdef XML
 #	include "gdome.h"
+// for xmlChar
+#	include "libxml/tree.h"
 #endif
 
 // forwards
@@ -71,7 +73,13 @@ public:
 
 #ifdef XML
 
+	/// @see Charset::transcode_cstr(xmlChar *s);
+	const char *transcode_cstr(xmlChar *s);
+	/// @see Charset::transcode(xmlChar *s);
+	String& transcode(xmlChar *s);
+	/// @see Charset::transcode_cstr(GdomeDOMString *s);
 	const char *transcode_cstr(GdomeDOMString *s);
+	/// @see Charset::transcode(GdomeDOMString *s);
 	String& transcode(GdomeDOMString *s);
 	/// @see Charset::transcode(const String& s)
 	GdomeDOMString_auto_ptr transcode(const String& s);
