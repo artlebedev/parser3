@@ -38,7 +38,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.38 2002/02/07 11:31:54 paf Exp $
+	$Id: compile.tab.C,v 1.39 2002/02/07 15:48:59 paf Exp $
 */
 
 /**
@@ -1169,7 +1169,7 @@ case 42:
 
 		// ^if ELEMENT -> ^if ELEMENT_OR_OPERATOR
 		// OP_VALUE+string+OP_GET_ELEMENT. -> OP_VALUE+string+OP_GET_ELEMENT_OR_OPERATOR.
-		if(diving_code->size()==3)
+		if(PC.in_call_value && diving_code->size()==3)
 			diving_code->put_int(2, OP_GET_ELEMENT_OR_OPERATOR);
 		P(yyval, diving_code);
 	}
@@ -1270,13 +1270,13 @@ case 66:
 case 67:
 #line 353 "compile.y"
 { 
-					PC.object_constructor_allowed=true; 
+					PC.in_call_value=true; 
 			;
     break;}
 case 68:
 #line 356 "compile.y"
 {
-				PC.object_constructor_allowed=false;
+				PC.in_call_value=false;
 			;
     break;}
 case 69:
@@ -1435,7 +1435,7 @@ case 114:
 #line 482 "compile.y"
 {
 	yyval=yyvsp[-1];
-	if(!PC.object_constructor_allowed) {
+	if(!PC.in_call_value) {
 		strcpy(PC.error, ":: not allowed here");
 		YYERROR;
 	}

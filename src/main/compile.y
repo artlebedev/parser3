@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.179 2002/02/07 11:16:28 paf Exp $
+	$Id: compile.y,v 1.180 2002/02/07 15:48:59 paf Exp $
 */
 
 /**
@@ -264,7 +264,7 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 
 		// ^if ELEMENT -> ^if ELEMENT_OR_OPERATOR
 		// OP_VALUE+string+OP_GET_ELEMENT. -> OP_VALUE+string+OP_GET_ELEMENT_OR_OPERATOR.
-		if(diving_code->size()==3)
+		if(PC.in_call_value && diving_code->size()==3)
 			diving_code->put_int(2, OP_GET_ELEMENT_OR_OPERATOR);
 		P($$, diving_code);
 	}
@@ -351,10 +351,10 @@ call: call_value {
 	O($$, OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 };
 call_value: '^' { 
-					PC.object_constructor_allowed=true; 
+					PC.in_call_value=true; 
 			}
 			call_name {
-				PC.object_constructor_allowed=false;
+				PC.in_call_value=false;
 			} 
 			store_params EON { /* ^field.$method{vasya} */
 	$$=$3; /* with_xxx,diving code; stack: context,method_junction */
@@ -481,7 +481,7 @@ class_static_prefix: STRING ':' {
 };
 class_constructor_prefix: class_static_prefix ':' {
 	$$=$1;
-	if(!PC.object_constructor_allowed) {
+	if(!PC.in_call_value) {
 		strcpy(PC.error, ":: not allowed here");
 		YYERROR;
 	}
