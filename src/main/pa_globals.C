@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/08/19 09:26:53 $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/09/17 10:58:24 $";
 
 #include "pa_config_includes.h"
 
@@ -70,6 +70,7 @@ String *cache_data_name;
 String *sql_limit_name;
 String *sql_offset_name;
 String *sql_default_name;
+String *sql_distinct_name;
 
 String *charset_UTF8_name;
 
@@ -350,6 +351,7 @@ void pa_globals_init(Pool& pool) {
 	sql_limit_name=NEW String(pool, SQL_LIMIT_NAME);
 	sql_offset_name=NEW String(pool, SQL_OFFSET_NAME);
 	sql_default_name=NEW String(pool, SQL_DEFAULT_NAME);
+	sql_distinct_name=NEW String(pool, SQL_DISTINCT_NAME);
 
 	// charsets
 	charset_UTF8_name=NEW String(pool, CHARSET_UTF8_NAME);

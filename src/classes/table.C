@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_TABLE_C="$Date: 2002/09/17 09:30:06 $";
+static const char* IDENT_TABLE_C="$Date: 2002/09/17 10:58:24 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -299,6 +299,7 @@ struct Row_info {
 	int key_field;
 	Array *value_fields;
 	Hash *hash;
+	bool distinct;
 };
 #endif
 static void table_row_to_hash(Array::Item *value, void *info) {
@@ -319,9 +320,10 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 		
 		const String& key=*row.get_string(ri.key_field);
 		if(ri.hash->put_dont_replace(key, &result)) // put. existed?
-			throw Exception("parser.runtime",
-				&key,
-				"duplicate key");
+			if(!ri.distinct)
+				throw Exception("parser.runtime",
+					&key,
+					"duplicate key");
 	}
 }
 static void _hash(Request& r, const String& method_name, MethodParams *params) {
@@ -334,9 +336,29 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 				"key field name must not be code").as_string();
 			int key_field=self_table.column_name2index(key_field_name, true);
 
+			bool distinct=false;
+			int param_index=params->size()-1;
+			if(Hash *options=
+				params->as_no_junction(param_index, "param must not be code").get_hash(0)) {
+				--param_index;
+				int valid_options=0;
+				if(Value *vdistinct=(Value *)options->get(*sql_distinct_name)) {
+					valid_options++;
+					distinct=r.process_to_value(*vdistinct).as_bool();
+				}
+				if(valid_options!=options->size())
+					throw Exception("parser.runtime",
+						&method_name,
+						"called with invalid option");
+			}
+			if(param_index==2) // bad options param type
+				throw Exception("parser.runtime",
+					&method_name,
+					"options must be hash");
+
 			Array value_fields(pool);
-			if(params->size()>1) {
-				Value& value_fields_param=params->as_no_junction(1, "value field(s) must not be code");
+			if(param_index>0) {
+				Value& value_fields_param=params->as_no_junction(param_index, "value field(s) must not be code");
 				if(value_fields_param.is_string()) {
 					value_fields+=self_table.column_name2index(value_fields_param.as_string(), true);
 				} else if(Table *value_fields_table=value_fields_param.get_table()) {
@@ -356,7 +378,7 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 			}
 
 			// integers: key_field & value_fields
-			Row_info row_info={&self_table, key_field, &value_fields, result.get_hash(0)};
+			Row_info row_info={&self_table, key_field, &value_fields, result.get_hash(0), distinct};
 			self_table.for_each(table_row_to_hash, &row_info);
 		}
 	r.write_no_lang(result);
@@ -732,7 +754,7 @@ MTable::MTable(Pool& apool) : Methoded(apool, "table") {
 
 	// ^table:hash[key field name]
 	// ^table:hash[key field name][value field name(s) string/table]
-	add_native_method("hash", Method::CT_DYNAMIC, _hash, 1, 2);
+	add_native_method("hash", Method::CT_DYNAMIC, _hash, 1, 3);
 
 	// ^table.sort{string-key-maker} ^table.sort{string-key-maker}[desc|asc]
 	// ^table.sort(numeric-key-maker) ^table.sort(numeric-key-maker)[desc|asc]

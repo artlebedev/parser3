@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2002/08/08 14:35:30 $";
+static const char* IDENT_GLOBALS_H="$Date: 2002/09/17 10:58:24 $";
 
 #include "pa_pool.h"
 
@@ -72,6 +72,7 @@ class Table;
 #define SQL_LIMIT_NAME "limit"
 #define SQL_OFFSET_NAME "offset"
 #define SQL_DEFAULT_NAME "default"
+#define SQL_DISTINCT_NAME "distinct"
 
 #define CHARSET_UTF8_NAME "UTF-8"
 
@@ -132,6 +133,7 @@ extern String *cache_data_name;
 extern String *sql_limit_name;
 extern String *sql_offset_name;
 extern String *sql_default_name;
+extern String *sql_distinct_name;
 
 extern String *charset_UTF8_name;
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2002/09/17 09:30:06 $";
+static const char* IDENT_HASH_C="$Date: 2002/09/17 10:58:23 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -35,11 +35,13 @@ class Hash_sql_event_handlers : public SQL_Driver_query_event_handlers {
 public:
 	Hash_sql_event_handlers(Pool& apool, const String& amethod_name,
 		const String& astatement_string, const char *astatement_cstr,
+		bool adistinct,
 		Hash& arows_hash) :
 		pool(apool), 
 		method_name(amethod_name),
 		statement_string(astatement_string),
 		statement_cstr(astatement_cstr),
+		distinct(adistinct),
 		rows_hash(arows_hash),
 		columns(pool),
 		row_index(0) {
@@ -70,9 +72,10 @@ public:
 			VHash *row_vhash=new(pool) VHash(pool);
 			row_hash=row_vhash->get_hash(0);
 			if(rows_hash.put_dont_replace(*cell, row_vhash)) // put. existed?
-				throw Exception("parser.runtime",
-					cell,
-					"duplicate key");
+				if(!distinct)
+					throw Exception("parser.runtime",
+						cell,
+						"duplicate key");
 		} else
 			row_hash->put(*columns.get_string(column_index), new(pool) VString(*cell));
 		column_index++;
@@ -82,6 +85,7 @@ private:
 	Pool& pool;
 	const String& method_name;
 	const String& statement_string; const char *statement_cstr;
+	bool distinct;
 	Hash& rows_hash;
 	Hash *row_hash;
 	int column_index;
@@ -195,14 +199,28 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 
 	ulong limit=0;
 	ulong offset=0;
+	bool distinct=false;
 	if(params->size()>1) {
 		Value& voptions=params->as_no_junction(1, "options must be hash, not code");
 		if(!voptions.is_string())
 			if(Hash *options=voptions.get_hash(&method_name)) {
-				if(Value *vlimit=(Value *)options->get(*sql_limit_name))
+				int valid_options=0;
+				if(Value *vlimit=(Value *)options->get(*sql_limit_name)) {
+					valid_options++;
 					limit=(ulong)r.process_to_value(*vlimit).as_double();
-				if(Value *voffset=(Value *)options->get(*sql_offset_name))
+				}
+				if(Value *voffset=(Value *)options->get(*sql_offset_name)) {
+					valid_options++;
 					offset=(ulong)r.process_to_value(*voffset).as_double();
+				}
+				if(Value *vdistinct=(Value *)options->get(*sql_distinct_name)) {
+					valid_options++;
+					distinct=r.process_to_value(*vdistinct).as_bool();
+				}
+				if(valid_options!=options->size())
+					throw Exception("parser.runtime",
+						&method_name,
+						"called with invalid option");
 			} else
 				throw Exception("parser.runtime",
 					&method_name,
@@ -216,7 +234,9 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Hash& hash=static_cast<VHash *>(r.self)->hash(&method_name);
 	hash.clear();	
 	Hash_sql_event_handlers handlers(pool, method_name,
-		statement_string, statement_cstr, hash);
+		statement_string, statement_cstr, 
+		distinct,
+		hash);
 
 	r.connection(&method_name)->query(
 		statement_cstr, offset, limit,

@@ -238,8 +238,8 @@ $response:charset[windows-1251]
 #^passpost[]
 #^menudelim[]
 #^fordelim[]
-#^duplicatetable2hashkey[]
-^duplicatehashsqlkey[]
+^duplicatetable2hashkey[]
+#^duplicatehashsqlkey[]
 <hr>
 OK
 
@@ -249,7 +249,7 @@ OK
 	$c[^t.columns[]]
 	^c.menu{$c.column}[,]
 
-	$h[^hash::sql{select news_type_id, name from news}]
+	$h[^hash::sql{select news_type_id, name from news}[$.distinct(1)]]
 }
 
 @duplicatetable2hashkey[]
@@ -257,7 +257,9 @@ $t[^table::create{a	b
 1	2
 1	3
 }]
-^t.hash[a;b]
+#^t.hash[a]
+#^t.hash[a;b]
+^t.hash[a][$.distinct[1]]
 
 @menudelim[]
 $t[^table::create{a
