@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.106 2002/01/23 11:59:59 paf Exp $
+	$Id: pa_globals.C,v 1.107 2002/01/23 12:19:56 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -332,6 +332,14 @@ void pa_globals_init(Pool& pool) {
 	 * use in multithreaded programs.
 	*/
 	xmlInitParser();
+
+	// 1. this is needed for proper parsing of stylesheets
+	// there were a situation where honest entity ruined innocent xpath compilation
+	// doc says "you sould turn it on on stylesheet load" without deepening into details
+	// 2. when dom tree with entites goes under transform text nodes 
+	// got [erroreosly] cut on first entity occurance
+	// that is why this is:
+	xmlSubstituteEntitiesDefault(1);
 	
 	// Bit in the loadsubset context field to tell to do ID/REFs lookups 
 	xmlLoadExtDtdDefaultValue |= XML_DETECT_IDS;

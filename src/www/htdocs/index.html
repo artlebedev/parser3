@@ -4,10 +4,9 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-$square[^image::create(100;100;0x000000)]
-^square.arc(50;50;40;60;-900;360;0xFFFFFF)
-$response:body[^square.gif[]]
-  
+$cost_value(2500001)
+^cost_value.format{%.2f}
+
 
 #^xpath[]
 #^ttablesetlang[]
