@@ -5,21 +5,15 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 09:06:09 $";
+static const char* IDENT="$Date: 2003/11/06 09:56:17 $";
 
 #include "apr_file_io.h"
 
 #include "pa_memory.h"
 #include "pa_os.h"
 
-struct apr_file_t: public PA_Cleaned {
+struct apr_file_t {
     int handle;
-
-	~apr_file_t() {
-		if(handle>0) {
-			close(handle);  handle=-1;
-		}
-	}
 };
 
 APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **new_file, const char *fname,
@@ -31,7 +25,7 @@ APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **new_file, const char *fname
     apr_status_t rv;
 #endif
 
-    (*new_file) = new apr_file_t;
+    (*new_file) = (apr_file_t*)pa_malloc_atomic(sizeof(apr_file_t));
 //    (*new_file)->flags = flag;
     (*new_file)->handle = -1;
 
@@ -76,8 +70,7 @@ APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **new_file, const char *fname
 
 APR_DECLARE(apr_status_t) apr_file_close(apr_file_t *file)
 {
-	delete file;
-	return APR_SUCCESS;
+	return close(file->handle);
 }
 
 APR_DECLARE(apr_status_t) apr_file_lock(apr_file_t *file, int type)

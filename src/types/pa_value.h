@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2003/09/25 09:15:03 $";
+static const char* IDENT_VALUE_H="$Date: 2003/11/06 09:56:17 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -161,11 +161,13 @@ const String& attributed_meaning_to_string(Value& meaning,
 ///@{common field names
 #define CHARSET_NAME "charset"
 #define VALUE_NAME "value"
+#define EXPIRES_NAME "expires"
 #define CONTENT_TYPE_NAME "content-type"
 //@}
 
 ///@{common field names
 extern const String value_name;
+extern const String expires_name;
 extern const String content_type_name;
 extern const String name_name;
 ///@}

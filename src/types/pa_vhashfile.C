@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 08:22:50 $";
+static const char* IDENT="$Date: 2003/11/06 09:56:17 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -39,40 +39,54 @@ void VHashfile::clear() {
 }
 
 void VHashfile::put_field(const String& aname, Value *avalue) {
-#if LATER
 	time_t time_to_die=0;
 	const String *value_string;
 
-	if(HashStringValue *hash=avalue->get_hash(&aname)) {
-		if(Value *value_value=(Value *)hash->get(*value_name)) {
+	if(HashStringValue *hash=avalue->get_hash()) {
+		if(Value *value_value=hash->get(value_name)) {
 			if(value_value->get_junction())
-				throw Exception(0, 0,
-					&value_value->name(),
-					"must not be code");
+				throw Exception(0,
+					0,
+					VALUE_NAME" must not be code");
 
 			value_string=&value_value->as_string();
 
-			if(Value *expires_value=(Value *)hash->get(*expires_name))
+			if(Value *expires_value=hash->get(expires_name))
 				time_to_die=time(0)+(time_t)expires_value->as_double();
 		} else
-			throw Exception(0, 0,
+			throw Exception(0,
 				&aname,
-				"put hash value must contain .%s", VALUE_NAME);
+				"put hash value must contain ."VALUE_NAME);
 	} else
 		value_string=&avalue->as_string();
 
-	get_table_ptr(&aname)->put(aname, *value_string, time_to_die);
-#endif
+//	get_table_ptr(&aname)->put(aname, *value_string, time_to_die);
+
+	apr_sdbm_datum_t key;
+	key.dptr=const_cast<char*>(aname.cstr());
+	key.dsize=strlen(key.dptr);
+
+	apr_sdbm_datum_t value;
+	value.dptr=const_cast<char*>(value_string->cstr());
+	value.dsize=strlen(key.dptr);
+
+// *           APR_SDBM_INSERT     return an error if the record exists
+ 	check("apr_sdbm_store", apr_sdbm_store(db, key, value, APR_SDBM_REPLACE));
 }
 
 Value *VHashfile::get_field(const String& aname) {
-#if LATER
-	if(String *string=get_table_ptr(&aname)->get(pool(), aname, 0))
-		return NEW VString(*string);
+	apr_sdbm_datum_t key;
+	key.dptr=const_cast<char*>(aname.cstr());
+	key.dsize=strlen(key.dptr);
+
+	apr_sdbm_datum_t value;
+
+	check("apr_sdbm_fetch", apr_sdbm_fetch(db, &value, key));
+
+	if(value.dptr)
+		return new VString(String(pa_strdup(value.dptr, value.dsize)));
 	else
 		return 0;
-#endif
-	return 0;
 }
 
 HashStringValue *VHashfile::get_hash(const String *source) {

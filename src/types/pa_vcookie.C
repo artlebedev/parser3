@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCOOKIE_C="$Date: 2003/08/19 11:03:55 $";
+static const char* IDENT_VCOOKIE_C="$Date: 2003/11/06 09:56:17 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -16,7 +16,6 @@ static const char* IDENT_VCOOKIE_C="$Date: 2003/08/19 11:03:55 $";
 
 // defines
 
-#define EXPIRES_NAME "expires"
 #define PATH_NAME "path"
 #define PATH_VALUE_DEFAULT "/"
 
@@ -25,7 +24,6 @@ static const char* IDENT_VCOOKIE_C="$Date: 2003/08/19 11:03:55 $";
 
 // statics
 
-static const String expires_name(EXPIRES_NAME);
 static const String path_name(PATH_NAME);
 static const String path_value_default(PATH_VALUE_DEFAULT);
 

@@ -9,14 +9,16 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-static const char* IDENT_MEMORY_H="$Date: 2003/11/06 08:22:49 $";
+static const char* IDENT_MEMORY_H="$Date: 2003/11/06 09:56:17 $";
 
 // include
 
 #include "pa_config_includes.h"
 
 /// to debug backtrace pointers switch this on:
-//#define GC_DEBUG
+#ifdef _DEBUG
+#define GC_DEBUG
+#endif
 #include "gc.h"
 
 // defines

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VALUE_C="$Date: 2003/08/19 12:07:35 $";
+static const char* IDENT_VALUE_C="$Date: 2003/11/06 09:56:17 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -22,6 +22,7 @@ static const char* IDENT_VALUE_C="$Date: 2003/08/19 12:07:35 $";
 const String name_name(NAME_NAME);
 
 const String value_name(VALUE_NAME);
+const String expires_name(EXPIRES_NAME);
 const String content_type_name(CONTENT_TYPE_NAME);
 
 // methods
