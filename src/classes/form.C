@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: form.C,v 1.24 2002/07/01 14:00:36 paf Exp $
+	$Id: form.C,v 1.25 2002/07/01 14:26:19 paf Exp $
 */
 
 #include "classes.h"
@@ -12,7 +12,7 @@
 #include "pa_vform.h"
 
 /// $LIMITS.max_post_size default 10M
-const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
+const size_t MAX_POST_SIZE_DEFAULT=10*0x400*0x400;
 
 // defines
 
@@ -71,7 +71,7 @@ void MForm::configure_admin(Request& r) {
 		if(r.post_size!=r.info.content_length)
 			throw Exception(0, 
 				0, 
-				"post_size(%u)!=content_length(%u)", 
+				"post_size(%u) != content_length(%u)", 
 					r.post_size, r.info.content_length);
 	}
 }
