@@ -1,6 +1,6 @@
 SUBDIRS = src etc bin
 
-EXTRA_DIST = operators.txt parser3.sln
+EXTRA_DIST = operators.txt parser3.sln gnu.vcproj
 
 update:
 	cvs update
