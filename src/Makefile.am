@@ -4,7 +4,7 @@ APACHE_INCLUDES=-I$(APACHE13_SRC)/include -I$(APACHE13_SRC)/os/unix
 
 endif
 
-INCLUDES = $(INCLUDES) $(APACHE_INCLUDES) -I$(XML_SRC)/xml-xerces/c/src -I$(XML_SRC)/xml-xalan/c/src
+INCLUDES:=$(INCLUDES) $(APACHE_INCLUDES) -I$(XML_SRC)/xml-xerces/c/src -I$(XML_SRC)/xml-xalan/c/src
 
 SUBDIRS = classes types main libltdl pcre targets
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_pool.C,v 1.21 2001/09/21 14:46:09 parser Exp $"; 
+static const char *RCSId="$Id: pa_pool.C,v 1.22 2001/09/24 16:41:09 parser Exp $"; 
 
 #include <stdlib.h>
 
