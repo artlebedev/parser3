@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/08/01 11:41:12 $";
+static const char* IDENT_OP_C="$Date: 2002/08/07 11:25:36 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -404,7 +404,8 @@ const String *locked_process_and_cache_put(Request& r,
 		false/*do_append*/,
 		false/*block*/,
 		false/*fail on lock problem*/) ? info.evaluated_body: 0;
-	if(data.expires==0)
+	time_t now=time(0);
+	if(data.expires<=now)
 		cache_delete(file_spec);
 	return result;
 }
