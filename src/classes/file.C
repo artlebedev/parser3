@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2004/07/07 10:22:28 $";
+static const char * const IDENT_FILE_C="$Date: 2004/07/26 10:17:04 $";
 
 #include "pa_config_includes.h"
 
@@ -29,6 +29,7 @@ static const char * const IDENT_FILE_C="$Date: 2004/07/07 10:22:28 $";
 // defines
 
 #define TEXT_MODE_NAME "text"
+#define BINARY_MODE_NAME "binary"
 #define STDIN_EXEC_PARAM_NAME "stdin"
 #define CHARSET_EXEC_PARAM_NAME "charset"
 
@@ -105,13 +106,23 @@ static const String::Body cdate_name("cdate");
 
 // methods
 
+static bool is_text_mode(const String& mode) {
+	if(mode==TEXT_MODE_NAME)
+		return true;
+	if(mode==BINARY_MODE_NAME)
+		return false;
+	throw Exception("parser.runtime",
+		&mode,
+		"is invalid mode, must be either '"TEXT_MODE_NAME"' or '"BINARY_MODE_NAME"'");
+}
+
 static void _save(Request& r, MethodParams& params) {
 	Value& vmode_name=params. as_no_junction(0, "mode must not be code");
 	Value& vfile_name=params.as_no_junction(1, "file name must not be code");
 
 	// save
 	GET_SELF(r, VFile).save(r.absolute(vfile_name.as_string()),
-		vmode_name.as_string()==TEXT_MODE_NAME);
+		is_text_mode(vmode_name.as_string()));
 }
 
 static void _delete(Request& r, MethodParams& params) {
@@ -148,7 +159,7 @@ static void _load(Request& r, MethodParams& params) {
 		alt_filename_param_index++;
 
 	File_read_result file=file_read(r.charsets, lfile_name,
-		vmode_name.as_string()==TEXT_MODE_NAME,
+		is_text_mode(vmode_name.as_string()),
 		third_param_hash
 	);
 
