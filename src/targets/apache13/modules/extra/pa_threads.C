@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_threads.C,v 1.2 2001/05/17 12:51:05 parser Exp $
+	$Id: pa_threads.C,v 1.3 2001/05/19 15:45:10 parser Exp $
 */
 
 #include "pa_threads.h"
@@ -19,12 +19,6 @@ Mutex global_mutex;
 
 Mutex::Mutex() : 
 	handle(reinterpret_cast<uint>(ap_create_mutex(0))) {
-		if(!handle) {
-			__asm {
-				int 3;
-			};
-		}
-			
 }
 
 Mutex::~Mutex() {
@@ -32,10 +26,6 @@ Mutex::~Mutex() {
 }
 
 void Mutex::acquire() {
-	if(!handle)
-			__asm {
-				int 3;
-			};
 	ap_acquire_mutex(reinterpret_cast<mutex *>(handle));
 }
 

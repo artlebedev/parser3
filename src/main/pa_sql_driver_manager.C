@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.19 2001/05/17 18:43:06 parser Exp $
+	$Id: pa_sql_driver_manager.C,v 1.20 2001/05/19 15:45:10 parser Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -55,7 +55,6 @@ private:
 /// @param request_url protocol://[driver-dependent]
 SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url, 
 												   Table *protocol2driver_and_client) {
-////__asm int 3;
 	Pool& pool=request_url.pool(); // request pool											   
 
 	// we have table for locating protocol's library

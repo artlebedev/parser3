@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.11 2001/05/18 12:59:36 parser Exp $
+	$Id: pa_pool.C,v 1.12 2001/05/19 15:45:10 parser Exp $
 */
 
 #include <stdlib.h>
@@ -161,11 +161,6 @@ ST(WWrapper);
 void *Pool::real_malloc(size_t size/*, int place*/) {
 #ifdef DEBUG_POOL_MALLOC
 	int index=min(MALLOC_STAT_MAXSIZE-1, size);
-/*	if(size==88) {
-		_asm { 
-			int 3; 
-		};
-	}*/
 	malloc_times[place][index]++;
 	malloc_places[place]++;
 #endif
