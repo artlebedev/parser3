@@ -63,20 +63,15 @@ host_alias = @host_alias@
 host_triplet = @host@
 APACHE13 = @APACHE13@
 APACHE_LIBS = @APACHE_LIBS@
-AS = @AS@
 AWK = @AWK@
 CC = @CC@
 CXX = @CXX@
-DLLTOOL = @DLLTOOL@
 INCLTDL = @INCLTDL@
 LIBADD_DL = @LIBADD_DL@
 LIBLTDL = @LIBLTDL@
-LIBTOOL = @LIBTOOL@
-LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
 MIME_INCLUDES = @MIME_INCLUDES@
 MIME_LIBS = @MIME_LIBS@
-OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
@@ -162,8 +157,8 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
 	@list='$(bin_PROGRAMS)'; for p in $$list; do \
 	  if test -f $$p; then \
-	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
-	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	    echo "  $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	     $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
 	  else :; fi; \
 	done
 

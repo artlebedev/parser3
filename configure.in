@@ -385,9 +385,6 @@ if test "x$ac_cv_func_dlopen" = xyes || test "x$ac_cv_lib_dl_dlopen" = xyes; the
  LIBS="$LIBS_SAVE"
 fi
 
-dnl PAF added fake to make makefiles look more clean [actually we don't use libtool in this project]
-AC_PROG_LIBTOOL
-
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 AC_TYPE_SIZE_T
