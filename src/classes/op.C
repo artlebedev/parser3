@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2003/11/19 11:00:32 $";
+static const char* IDENT_OP_C="$Date: 2003/11/19 11:14:32 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -540,10 +540,13 @@ const String* locked_process_and_cache_put(Request& r,
 		cache_delete(file_spec);
 	return result;
 }
+#ifndef DOXYGEN
 struct Cache_get_result {
 	const String* body;
 	bool expired;
-} cache_get(Request_charsets& charsets, const String& file_spec, time_t now) {
+};
+#endif
+static Cache_get_result cache_get(Request_charsets& charsets, const String& file_spec, time_t now) {
 	Cache_get_result result={0};
 
 	File_read_result file=file_read(charsets, file_spec, 
