@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.23 2001/02/21 11:10:02 paf Exp $
+  $Id: pa_string.h,v 1.24 2001/02/21 12:43:41 paf Exp $
 */
 
 /*
@@ -56,6 +56,7 @@ public:
 	char *cstr() const;
 	String& real_append(STRING_APPEND_PARAMS);
 	bool operator == (const String& src) const;
+	bool operator == (char* src) const;
 //	String& append(const String_iterator& begin, const String_iterator& end);
 
 	uint hash_code() const;

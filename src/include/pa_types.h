@@ -1,5 +1,5 @@
 /*
-  $Id: pa_types.h,v 1.5 2001/02/21 06:21:19 paf Exp $
+  $Id: pa_types.h,v 1.6 2001/02/21 12:43:41 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -18,6 +18,8 @@
 
 // for now: used in Exception::fcomment
 #define MAX_STRING 5*0x400
+
+#define STATIC_NAME "STATIC"
 
 #undef uint
 typedef unsigned int uint;

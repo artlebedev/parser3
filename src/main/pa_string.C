@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.26 2001/02/20 18:45:53 paf Exp $
+  $Id: pa_string.C,v 1.27 2001/02/21 12:44:02 paf Exp $
 */
 
 #include <string.h>
@@ -209,6 +209,54 @@ bool String::operator == (const String& src) const {
 			b_chunk=b_row->link;
 			b_row=b_chunk->rows;
 			b_countdown=b_chunk->count;
+		}
+	}
+	return a_break==b_break;
+}
+
+bool String::operator == (char* b_ptr) const {
+	size_t b_size=b_ptr?strlen(b_ptr):0;
+	if(size() != b_size)
+		return false;
+
+	const Chunk *a_chunk=&head;
+	const Chunk::Row *a_row=a_chunk->rows;
+	int a_offset=0;
+	int b_offset=0;
+	Chunk::Row *a_end=append_here;
+	int a_countdown=a_chunk->count;
+	bool a_break=false;
+	bool b_break=false;
+	while(true) {
+		int size_diff=
+			(a_row->item.size-a_offset)-
+			(b_size-b_offset);
+
+		if(size_diff==0) { // a has same size as b
+			if(memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
+				return false;
+			a_row++; a_countdown--; a_offset=0;
+			b_break=true;
+		} else if (size_diff>0) { // a longer
+			if(memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, b_size-b_offset)!=0)
+				return false;
+			a_offset+=b_size-b_offset;
+			b_break=true;
+		} else { // b longer
+			if(memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
+				return false;
+			b_offset+=a_row->item.size-a_offset;
+			a_row++; a_countdown--; a_offset=0;
+		}
+
+		a_break=a_row==a_end;
+		if(a_break || b_break)
+			break;
+
+		if(!a_countdown) {
+			a_chunk=a_row->link;
+			a_row=a_chunk->rows;
+			a_countdown=a_chunk->count;
 		}
 	}
 	return a_break==b_break;
