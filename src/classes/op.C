@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/09/17 08:44:44 $";
+static const char* IDENT_OP_C="$Date: 2002/09/17 16:16:16 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -102,15 +102,17 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 
 static void _process(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	VStateless_class& self_class=*r.self->get_class();
+	VStateless_class *self_class=r.self->get_class();
+	if(!self_class)
+		self_class=new(pool) VStateless_class(pool); // methods storage in case of self abscence
 	const Method *main_method;
 	{
 		// temporary remove language change
 		Temp_lang temp_lang(r, String::UL_PASS_APPENDED);
 		// temporary zero @main so to maybe-replace it in processed code
-		Temp_method temp_method_main(self_class, r.main_method_name, 0);
+		Temp_method temp_method_main(*self_class, r.main_method_name, 0);
 		// temporary zero @auto so it wouldn't be auto-called in Request::use_buf
-		Temp_method temp_method_auto(self_class, *auto_method_name, 0);
+		Temp_method temp_method_auto(*self_class, *auto_method_name, 0);
 		
 		// evaluate source to process
 		const String& source=r.process_to_string(params->as_junction(0, "body must be code"));
@@ -141,10 +143,10 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 			source.cstr(String::UL_UNSPECIFIED, r.connection(0)), 
 			*new(pool) String(pool, heap_place, place_size, true /*tainted*/),
 			heap_place, 
-			&self_class);
+			self_class);
 		
 		// main_method
-		main_method=self_class.get_method(r.main_method_name);
+		main_method=self_class->get_method(r.main_method_name);
 	}
 	// after restoring current-request-lang
 	// maybe-execute @main[]

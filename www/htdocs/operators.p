@@ -8,3 +8,6 @@ $a[1]
 #$a[x]
 $x
 $self.x
+
+@three[]
+^process{^^eval(2*2)}
