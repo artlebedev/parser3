@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charsets.C,v 1.6 2002/02/08 08:30:15 paf Exp $
+	$Id: pa_charsets.C,v 1.7 2002/02/28 15:40:31 paf Exp $
 */
 
 #include "pa_charsets.h"
@@ -47,5 +47,5 @@ void Charsets::load_charset(const String& request_name, const String& request_fi
 	// make global_name string on global pool
 	String& global_name=*NEW String(pool(), global_name_cstr);
 	
-	put(request_name, NEW Charset(pool(), global_name, &request_file_spec));
+	put(global_name, NEW Charset(pool(), global_name, &request_file_spec));
 }
