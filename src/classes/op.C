@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2003/09/26 06:53:27 $";
+static const char* IDENT_OP_C="$Date: 2003/10/02 07:26:46 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -639,7 +639,7 @@ static void _throw_operator(Request& r, MethodParams& params) {
 			:0;
 		throw Exception(type, &source, "%s", comment?comment:"");
 	}
-}
+ }
 
 #if defined(WIN32) && defined(_DEBUG)
 #	define PA_BPT

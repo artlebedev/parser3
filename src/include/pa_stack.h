@@ -8,7 +8,7 @@
 #ifndef PA_STACK_H
 #define PA_STACK_H
 
-static const char* IDENT_STACK_H="$Date: 2003/09/26 11:23:37 $";
+static const char* IDENT_STACK_H="$Date: 2003/10/02 07:26:46 $";
 
 #include "pa_config_includes.h"
 #include "pa_array.h"
@@ -32,9 +32,9 @@ public:
 	}
 
 	bool is_empty() { return ftop==0; }
-	size_t top() { return ftop; }
-	void top(size_t atop) { ftop=atop; }
-	T upper_value() { 
+	size_t top_index() { return ftop; }
+	void set_top_index(size_t atop) { ftop=atop; }
+	T top_value() { 
 		assert(!is_empty());
 		return get(ftop-1); 
 	}

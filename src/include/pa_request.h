@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/09/29 10:51:02 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/10/02 07:26:46 $";
 
 #include "pa_hash.h"
 #include "pa_wcontext.h"
@@ -92,6 +92,7 @@ private:
 		Exception_trace(): fbottom(0) {}
 
 		size_t bottom_index() { return fbottom; }
+		void set_bottom_index(size_t abottom) { fbottom=abottom; }
 		element_type bottom_value() { return get(bottom_index()); }
 
 		void clear() {
@@ -422,7 +423,8 @@ class Request_context_saver {
 	Request& fr;
 
 	/// exception stack trace
-	size_t exception_trace;
+	size_t exception_trace_top;
+	size_t exception_trace_bottom;
 	/// execution stack
 	size_t stack;
 	/// contexts
@@ -436,8 +438,9 @@ class Request_context_saver {
 
 public:
 	Request_context_saver(Request& ar) : 
-		exception_trace(ar.exception_trace.top()),	
-		stack(ar.stack.top()),
+		exception_trace_top(ar.exception_trace.top_index()),	
+		exception_trace_bottom(ar.exception_trace.bottom_index()),	
+		stack(ar.stack.top_index()),
 		method_frame(ar.method_frame),
 		rcontext(ar.rcontext),
 		wcontext(ar.wcontext),
@@ -445,8 +448,9 @@ public:
 		fconnection(ar.fconnection),
 		fr(ar) {}
 	void restore() {
-		fr.exception_trace.top(exception_trace);
-		fr.stack.top(stack);
+		fr.exception_trace.set_top_index(exception_trace_top);
+		fr.exception_trace.set_bottom_index(exception_trace_bottom);
+		fr.stack.set_top_index(stack);
 		fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;
 		fr.flang=flang;
 		fr.fconnection=fconnection;

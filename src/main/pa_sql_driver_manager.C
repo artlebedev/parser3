@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/09/25 09:15:03 $";
+static const char* IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/10/02 07:26:47 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -47,7 +47,7 @@ static void expire_connection(SQL_Connection& connection, time_t older_dies) {
 static void expire_connections(SQL_Driver_manager::connection_cache_type::key_type /*key*/, 
 			       SQL_Driver_manager::connection_cache_type::value_type stack, 
 			       time_t older_dies) {
-	for(size_t i=0; i<stack->top(); i++)
+	for(size_t i=0; i<stack->top_index(); i++)
 		expire_connection(*stack->get(i), older_dies);
 }
 

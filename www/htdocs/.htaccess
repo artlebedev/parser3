@@ -3,7 +3,8 @@ deny from 194.84.132.18
 deny from 62.32.47.130
 deny from 62.32.63.235
 
-#AddHandler parser3-handler html #apache
+#apache
+#AddHandler parser3-handler html
 AddHandler parsed-html html
 Action parsed-html /cgi-bin/debug/parser3
 #Action parsed-html /cgi-bin/release/parser3

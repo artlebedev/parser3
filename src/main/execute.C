@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2003/09/29 10:51:02 $";
+static const char* IDENT_EXECUTE_C="$Date: 2003/10/02 07:26:46 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -328,7 +328,7 @@ void Request::execute(ArrayOperation& ops) {
 		case OP_STORE_PARAM:
 			{
 				Value& value=stack.pop().value();
-				VMethodFrame& frame=stack.upper_value().method_frame();
+				VMethodFrame& frame=stack.top_value().method_frame();
 				// this op is executed from CALL local_ops only, so may skip the check "method_frame_to_fill==0"
 				frame.store_param(value);
 				break;
@@ -338,7 +338,7 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				// code
 				ArrayOperation& local_ops=*i.next().ops;
-				VMethodFrame& frame=stack.upper_value().method_frame();
+				VMethodFrame& frame=stack.top_value().method_frame();
 #ifdef DEBUG_EXECUTE
 				debug_printf(sapi_info, " (%d)\n", local_ops.count());
 				debug_dump(sapi_info, 1, local_ops);

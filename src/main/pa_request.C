@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2003/09/29 10:51:02 $";
+static const char* IDENT_REQUEST_C="$Date: 2003/10/02 07:26:47 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -452,7 +452,7 @@ Table::columns_type stack_trace_columns(new ArrayString);
 *stack_trace_columns+=new String("colno");
 Table& stack_trace=*new Table(stack_trace_columns);
 if(!exception_trace.is_empty()/*signed!*/) 
-	for(size_t i=exception_trace.bottom_index(); i<exception_trace.top(); i++) {
+	for(size_t i=exception_trace.bottom_index(); i<exception_trace.top_index(); i++) {
 		Trace trace=exception_trace.get(i);
 		Table::element_type row(new ArrayString);
 
