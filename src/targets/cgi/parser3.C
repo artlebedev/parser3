@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.186 2002/06/26 09:00:03 paf Exp $
+	$Id: parser3.C,v 1.187 2002/07/30 14:30:55 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -31,7 +31,7 @@
 
 //#define DEBUG_POOL_MALLOC
 //#define DEBUG_STRING_APPENDS_VS_EXPANDS
-//#define DEBUG_MAILRECEIVE "test2.eml"
+#define DEBUG_MAILRECEIVE "koi.eml"
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
 extern ulong 
