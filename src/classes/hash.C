@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2004/02/11 15:33:12 $";
+static const char * const IDENT_HASH_C="$Date: 2004/02/17 11:08:38 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -115,9 +115,13 @@ static void copy_all_overwrite_to(
 }
 static void _create_or_add(Request& r, MethodParams& params) {
 	if(params.count()) {
-		Value& vb=params.as_no_junction(0, "param must be hash");
-		if(HashStringValue* b=vb.get_hash())
-			b->for_each(copy_all_overwrite_to, &(GET_SELF(r, VHash).hash()));
+		Value& vsrc=params.as_no_junction(0, "param must be hash");
+		if(HashStringValue* src=vsrc.get_hash()) {
+			HashStringValue* self=&(GET_SELF(r, VHash).hash());
+			if(src==self) // same: doing nothing
+				return;
+			src->for_each(copy_all_overwrite_to, self);
+		}
 	}
 }
 
@@ -128,9 +132,15 @@ static void remove_key_from(
 	dest->remove(key);
 }
 static void _sub(Request& r, MethodParams& params) {
-	Value& vb=params.as_no_junction(0, "param must be hash");
-	if(HashStringValue* b=vb.get_hash())
-		b->for_each(remove_key_from, &GET_SELF(r, VHash).hash());
+	Value& vsrc=params.as_no_junction(0, "param must be hash");
+	if(HashStringValue* src=vsrc.get_hash()) {
+		HashStringValue* self=&(GET_SELF(r, VHash).hash());
+		if(src==self) { // same: clearing
+			self->clear();
+			return;
+		}
+		src->for_each(remove_key_from, self);
+	}
 }
 
 static void copy_all_dontoverwrite_to(
@@ -143,9 +153,9 @@ static void _union(Request& r, MethodParams& params) {
 	// dest = copy of self
 	Value& result=*new VHash(GET_SELF(r, VHash).hash());
 	// dest += b
-	Value& vb=params.as_no_junction(0, "param must be hash");
-	if(HashStringValue* b=vb.get_hash())
-		b->for_each(copy_all_dontoverwrite_to, result.get_hash());
+	Value& vsrc=params.as_no_junction(0, "param must be hash");
+	if(HashStringValue* src=vsrc.get_hash())
+		src->for_each(copy_all_dontoverwrite_to, result.get_hash());
 
 	// return result
 	r.write_no_lang(result);
