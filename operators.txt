@@ -602,7 +602,7 @@ xdoc(xnode)
     !равно текущей кодировке выходной страницы,
         $response:charset
     ::sql{...}
-    !::create{<string/>} старое имя 'set'
+    !::create{<?xml?><string/>} старое имя 'set'
     !::create[qualifiedName]
     !::load[file.xml]
     !.transform[rules.xsl][[params hash]] выдаёт dom
@@ -623,9 +623,9 @@ xdoc(xnode)
         !media-type = string /> 
         !параметры передаются как есть, не xpath выражения
 
-    !.string[output options]
-    !.save[file.xml;output options] с шапкой
-    !.file[output options] = file
+    !.string[[output options]]
+    !.save[file.xml[;output options]] с шапкой
+    !.file[[output options]] = file
         output options идентичны атрибутам xsl:output 
             [исключение: игнорируется cdata-section-elements, нужно будет, сделаю]
         выдаёт media-type при подстановке $response:body[сюда]
@@ -710,9 +710,9 @@ xdoc(xnode)
     !^node.select[xpath/query/expression] = array of nodes, 
         empty array if nothing found
     !^node.selectSingle[xpath/query/expression] = first node if any
-    !^node.selectBool[xpath/query/expression] = bool if any
-    !^node.selectNumber[xpath/query/expression] = double if any
-    !^node.selectString[xpath/query/expression] = string if any
+    !^node.selectBool[xpath/query/expression] = bool if any or die
+    !^node.selectNumber[xpath/query/expression] = double if any or die
+    !^node.selectString[xpath/query/expression] = string if any or die
 
     !error codes(пока придут как текст в случае соответствующих ошибок):
         INDEX_SIZE_ERR
