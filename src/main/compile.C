@@ -1,15 +1,15 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.31 2001/03/18 11:37:51 paf Exp $
+	$Id: compile.C,v 1.32 2001/03/19 16:44:01 paf Exp $
 */
 
+#include "code.h"
 #include "pa_request.h"
 #include "pa_string.h"
 #include "pa_array.h"
-#include "code.h"
 #include "compile_tools.h"
 #include "pa_exception.h"
 

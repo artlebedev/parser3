@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.34 2001/03/19 15:29:38 paf Exp $
+	$Id: pa_pool.h,v 1.35 2001/03/19 16:44:00 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -14,7 +14,7 @@
 class Exception;
 class Temp_exception;
 
-/** @brief
+/** 
 	Pool mechanizm allows users not to free up allocated memory,
 	leaving that problem to 'pools'.
 
@@ -85,7 +85,7 @@ private: //disabled
 	Pool& operator = (const Pool&) { return *this; }
 };
 
-/** @brief
+/** 
 	Base for all classes that are allocated in 'pools'.
 
 	Holds Pool object. Contains useful wrappers to it's methods.
@@ -115,7 +115,7 @@ public:
 /// useful macro for creating objects on current Pooled object Pooled::pool()
 #define NEW new(pool())
 
-/** @brief 
+/** 
 	Auto-object used for temporary changing Pool's exception().
 
 	Use by with these macros:

@@ -1,9 +1,9 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.104 2001/03/18 11:37:52 paf Exp $
+	$Id: compile.y,v 1.105 2001/03/19 16:44:01 paf Exp $
 */
 
 /*
@@ -50,6 +50,7 @@ int yylex(YYSTYPE *lvalp, void *pc);
 #define POOL  *PC->pool
 #undef NEW
 #define NEW new(POOL)
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 %}
 
 %pure_parser
@@ -520,6 +521,7 @@ empty_string_value: /* empty */ { $$=VL(NEW VString(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%
+#endif
 
 /*
     	000$111(2222)00 

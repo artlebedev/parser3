@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: code.h,v 1.24 2001/03/19 15:29:37 paf Exp $
+	$Id: code.h,v 1.25 2001/03/19 16:43:59 paf Exp $
 */
 
 #ifndef CODE_H
@@ -53,7 +53,7 @@ enum OPCODE {
 	//@}
 };
 
-/** @brief
+/** 
 	Parser source code got compiled into intermediate form of Operation-s, 
 	which is executed afterwards.
 

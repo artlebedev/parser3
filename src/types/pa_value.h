@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.22 2001/03/19 15:29:42 paf Exp $
+	$Id: pa_value.h,v 1.23 2001/03/19 16:44:04 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -32,15 +32,13 @@ public: // Value
 	virtual const char *type() const =0;
 	/// - all: for error reporting after fail(), etc
 	const String& name() const { return *fname; }
-	/** @brief 
-		is this value defined?
+	/** is this value defined?
 		@return for
 		- unknown: false
 		- others: true
 	*/
 	virtual bool get_defined() { return true; }
-	/** @brief
-		what's the meaning of this value in context of expression?
+	/** what's the meaning of this value in context of expression?
 		@return for
 		- string: fstring as VDouble
 		- bool: this
@@ -49,15 +47,13 @@ public: // Value
 		- unknown: this
 	*/
 	virtual Value *get_expr_result() { bark("(%s) can not be used in expression"); return 0; }
-	/** @brief
-		extract Hash
+	/** extract Hash
 		@return for
 		- hash: fhash
 		- response: ffields
 	*/
 	virtual Hash *get_hash() { return 0; }
-	/** @brief
-		extract const String
+	/** extract const String
 		@return for
 		- string: value
 		- unknown: ""
@@ -67,8 +63,7 @@ public: // Value
 		- WContext: accumulated fstring
 	*/
 	virtual const String *get_string() { return 0; }
-	/** @brief
-		extract double
+	/** extract double
 		@return for
 		- string: value
 		- double: value
@@ -76,8 +71,7 @@ public: // Value
 		- bool: value
 	*/
 	virtual double get_double() { bark("(%s) does not have numerical value"); return 0; }
-	/** @brief
-		extract bool
+	/** extract bool
 		@return for
 		- unknown: false
 		- bool: value
@@ -85,20 +79,17 @@ public: // Value
 		- double: 0 or !0
 	*/
 	virtual bool get_bool() { bark("(%s) does not have logical value"); return 0; }
-	/** @brief
-		extract Junction
+	/** extract Junction
 		@return for
 		- junction: itself
 	*/
 	virtual Junction *get_junction() { return 0; }
-	/** @brief
-		extract VTable
+	/** extract VTable
 		@return for
 		- table: itself
 	*/
 	virtual VTable *get_vtable() { return 0; }
-	/** @brief
-		extract Value element
+	/** extract Value element
 		@return for
 		- hash: (key)=value
 		- object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
@@ -116,8 +107,7 @@ public: // Value
 		- cookie: CLASS,BASE,method,field
 	*/
 	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
-	/** @brief
-		store Value element under \a name
+	/** store Value element under \a name
 		@return for
 		- hash: (key)=value
 		- object_class, operator_class: (field)=value - static values only
@@ -128,8 +118,7 @@ public: // Value
 		- cookie: field
 	*/
 	virtual void put_element(const String& name, Value *value) { bark("(%s) does not accept elements"); }
-	/** @brief
-		extract VStateless_class
+	/** extract VStateless_class
 		@return for
 		- object_class, object_instance: object_class
 		- wcontext: none yet | transparent
@@ -141,8 +130,7 @@ public: // Value
 		- vcookie: this
 	*/
 	virtual VStateless_class *get_class() { return 0; }
-	/** @brief
-		extract VAliased
+	/** extract VAliased
 		@return for
 		- valiased: this
 		- wcontext: transparent
@@ -195,8 +183,7 @@ protected:
 typedef void (*Native_code_ptr)(Request& request, 
 								const String& method_name, Array *params);
 
-/** @brief
-	\b junction is some code joined with context of it's evaluation
+/** \b junction is some code joined with context of it's evaluation.
 
 	there are code-junctions and method-junctions
 	- code-junctions are used when some parameter passed in cury brackets
@@ -236,7 +223,7 @@ public:
 	//@}
 };
 
-/** @brief
+/** 
 	class method.
 
 	methods can have 

@@ -1,9 +1,9 @@
-/*
+/** @file
 	Parser
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: untaint.C,v 1.6 2001/03/19 15:29:40 paf Exp $
+	$Id: untaint.C,v 1.7 2001/03/19 16:44:03 paf Exp $
 */
 
 #include <string.h>

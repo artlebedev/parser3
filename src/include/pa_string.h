@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.41 2001/03/19 15:29:38 paf Exp $
+	$Id: pa_string.h,v 1.42 2001/03/19 16:44:00 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -42,7 +42,7 @@
 /// handy: appends const char* piece to String
 #define	APPEND_CONST(src) APPEND(src, 0, 0, 0)
 
-/** @brief
+/** 
 	Pooled string.
 
 	Internal structure: @verbatim	
@@ -113,8 +113,8 @@ public:
 	bool operator != (const String& src) const { return cmp(src)!=0; }
 
 	bool operator == (const char* b_ptr) const;
-	/** @brief
-		appends other String
+	/** 
+		appends other String.
 
 		marking all tainted pieces of it with \a lang.
 		or marking ALL pieces of it with a \a lang when \a forced to.

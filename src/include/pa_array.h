@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.24 2001/03/19 15:29:37 paf Exp $
+	$Id: pa_array.h,v 1.25 2001/03/19 16:43:59 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -15,7 +15,7 @@
 #include "pa_types.h"
 #include "pa_string.h"
 
-/**	@brief	
+/**	
 	Pooled Array.
 
 	Internal structure: @verbatim	
@@ -62,8 +62,8 @@ public:
 	/// append other Array portion to this one. starting from offset
 	Array& append_array(const Array& src, int offset=0);
 
-	/** @brief
-		quickly get some item considering
+	/** 
+		quickly gets some item considering...
 
 		these true:
 			- index increments from 0 to size()-1
