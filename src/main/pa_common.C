@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/08/27 15:49:48 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/08/30 09:33:13 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -171,7 +171,7 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 		response_size+=received_size;
 		response[response_size]=0;
 
-		if(!result && (EOLat=strstr(response, "\r"))) { // checking status in first response
+		if(!result && (EOLat=strstr(response, "\n"))) { // checking status in first response
 			const String status_line(pa_strdup(response, EOLat-response));
 			ArrayString astatus; 
 			size_t pos_after=0;
@@ -610,7 +610,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		const String::Body HEADER_NAME=
 			line.mid(0, pos).change_case(charsets.source(), String::CC_UPPER);
 		const String& header_value=line.mid(pos+2, line.length());
-		if(HEADER_NAME=="CONTENT-TYPE")
+		if(as_text && HEADER_NAME=="CONTENT-TYPE")
 			real_remote_charset=detect_charset(charsets.source(), header_value);
 
 		// tables
@@ -638,14 +638,15 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 
 		result.headers->put(HEADER_NAME, new VString(header_value));
 	}
-	// defaulting to used-asked charset [it's never empty!]
-	if(!real_remote_charset)
-		real_remote_charset=asked_remote_charset;
 
 	// output response
 	String::C real_body=String::C(raw_body, raw_body_size);
-	if(as_text && raw_body_size) // must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
+	if(as_text && raw_body_size) { // must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
+		// defaulting to used-asked charset [it's never empty!]
+		if(!real_remote_charset)
+			real_remote_charset=asked_remote_charset;
 		real_body=Charset::transcode(real_body, *real_remote_charset, charsets.source());
+	}
 
 	result.str=const_cast<char *>(real_body.str); // hacking a little
 	result.length=real_body.length;
