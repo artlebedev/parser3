@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vhashfile.C,v 1.6 2001/10/24 09:36:52 parser Exp $
+	$Id: pa_vhashfile.C,v 1.7 2001/10/24 09:40:01 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -52,7 +52,8 @@ Hash *VHashfile::get_hash(const String *source) {
 		if(!cursor.get(key, data, DB_NEXT))
 			break;
 
-		result.put(*key, NEW VString(*data));
+		if(key) // not expired
+			result.put(*key, NEW VString(*data));
 	}
 
 	return &result;

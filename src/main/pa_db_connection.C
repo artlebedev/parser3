@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.6 2001/10/24 09:36:52 parser Exp $
+	$Id: pa_db_connection.C,v 1.7 2001/10/24 09:40:01 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -180,8 +180,10 @@ bool DB_Cursor::get(String *& key, String *& data, u_int32_t flags) {
 
 	check("c_get", fsource, error);
 
-	key=&key_dbt_to_string(dbt_key);
-	data=data_dbt_to_string(dbt_data);
+	if(data=data_dbt_to_string(dbt_data)) // not expired
+		key=&key_dbt_to_string(dbt_key);
+	else
+		key=0;
 	return true;
 }
 
