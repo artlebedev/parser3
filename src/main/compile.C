@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.4 2001/02/21 06:59:43 paf Exp $
+  $Id: compile.C,v 1.5 2001/02/21 07:19:40 paf Exp $
 */
 
 #include "pa_string.h"
@@ -20,7 +20,7 @@ Array *real_compile(COMPILE_PARAMS) {
 
 	Pool& pool=request.pool();
 
-	///yydebug=1;
+	yydebug=1;
 	struct parse_control pc;
 	/* input */
 	pc.pool=&pool;

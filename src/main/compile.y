@@ -502,7 +502,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 	}
 
 break2:
-	if(PC->source-1==start)
+	if(PC->source-1<=start)
 		return result;
 	else {
 		PC->pending_state=result;
@@ -523,7 +523,7 @@ int real_yyerror (parse_control *pc, char *s)  /* Called by yyparse on error */
 	   
 		pc->exception->raise(0,0,
 			0,
-			"%s after %s[%d:%d]", s, pc->file, pc->line, pc->col-1);
+			"%s @%s[%d:%d]", s, pc->file, pc->line, pc->col-1);
 		// never returns
 	   return 1;
      }
