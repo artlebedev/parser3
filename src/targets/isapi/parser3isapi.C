@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3isapi.C,v 1.41 2001/09/15 14:22:47 parser Exp $"; 
+static const char *RCSId="$Id: parser3isapi.C,v 1.42 2001/09/18 16:05:43 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -280,14 +280,18 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 
 		// some root-controlled location
 		//   c:\windows
+		char root_config_path[MAX_STRING];
+		GetWindowsDirectory(root_config_path, MAX_STRING);
 		// must be dynamic: rethrowing from request.core 
 		//   may return 'source' which can be inside of 'root auto.p@exeception'
-		char *root_auto_path=(char *)pool.malloc(MAX_STRING);
-		GetWindowsDirectory(root_auto_path, MAX_STRING);
+		char *root_config_filespec=(char *)pool.malloc(MAX_STRING);
+		snprintf(root_config_filespec, MAX_STRING, 
+			"%s/%s", 
+			root_config_path, CONFIG_FILE_NAME);
 
 		// process the request
 		request.core(
-			root_auto_path, false/*may be abcent*/, // /path/to/admin/auto.p
+			root_config_filespec, false/*may be abcent*/, // /path/to/admin/auto.p
 			0/*parser_site_auto_path*/, false, // /path/to/site/auto.p
 			header_only);
 		// successful finish

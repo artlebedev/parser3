@@ -1,14 +1,12 @@
 /**	@file
 	Parser: @b form class.
+	based on The CGI_C library, by Thomas Boutell.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.35 2001/09/10 08:23:49 parser Exp $
-
-	
-	based on The CGI_C library, by Thomas Boutell.
+	$Id: pa_vform.C,v 1.36 2001/09/18 16:05:43 parser Exp $
 */
 
 #include "pa_sapi.h"
@@ -166,40 +164,37 @@ void VForm::AppendFormEntry(const char *aname,
 	} else {
 		String& string=*NEW String(pool());
 		string.APPEND_TAINTED(value_ptr, value_size, "form", 0);
-		/*
-		if(Value *valready=(Value *)fields.get(sname)) {
-			Table *table=valready->get_table(); // already table?
-			bool existed=table!=0;
-			if(!existed) { // no
+
+		// tables
+		{
+			Value *valready=(Value *)tables.get(sname);
+			bool existed=valready!=0;
+			Table *table;
+			if(existed) {
+				// second+ appearence
+				table=valready->get_table();
+			} else {
+				// first appearence
 				Array& columns=*NEW Array(pool(), 1);
-				columns+=NEW String(pool(), "element");
+				columns+=NEW String(pool(), "field");
 				table=NEW Table(pool(), 0, &columns);
-				if(valready->is_string()) { // previously constructed string becomes first row
-					Array& row=*NEW Array(pool(), 1);
-					row+=&valready->as_string();
-					*table+=&row;
-				}
 			}
 			// this string becomes next row
 			Array& row=*NEW Array(pool(), 1);
 			row+=&string;
 			*table+=&row;
-			if(existed)
-				return; // table already existed, we've just added one line & we're through
-			value=NEW VTable(pool(), table);
-		} else { // first appearence*/
-			value=NEW VString(string);
-		//}
+			// not existed before? add it
+			if(!existed)
+				tables.put(sname, NEW VTable(pool(), table));
+		}
+		value=NEW VString(string);
 	}
 
 	fields.put_dont_replace(sname, value);
 }
 
 /// @todo parse input letter if some switch is on
-void VForm::fill_fields(Request& request) {
-	//AppendFormEntry("fs", "<1!2>", 5, 0);
-	//_asm int 3;
-	//AppendFormEntry("a", "1", 1, 0); AppendFormEntry("a", "2", 1, 0);
+void VForm::fill_fields_and_tables(Request& request) {
 	// parsing QS [GET and ?name=value from uri rewrite)]
 	if(request.info.query_string)
 		ParseGetFormInput(request.info.query_string);
@@ -216,8 +211,15 @@ void VForm::fill_fields(Request& request) {
 		; // letter?
 }
 
-// form: CLASS,method,field
 Value *VForm::get_element(const String& aname) {
+	// $fields
+	if(aname==FORM_FIELDS_ELEMENT_NAME)
+		return NEW VHash(pool(), Hash(fields));
+
+	// $tables
+	if(aname==FORM_TABLES_ELEMENT_NAME)
+		return NEW VHash(pool(), Hash(tables));
+
 	// $CLASS,$method
 	if(Value *result=VStateless_class::get_element(aname))
 		return result;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: compile.C,v 1.47 2001/08/28 10:36:57 parser Exp $"; 
+static const char *RCSId="$Id: compile.C,v 1.48 2001/09/18 16:05:42 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_request.h"
@@ -56,7 +56,7 @@ VStateless_class& Request::real_compile(COMPILE_PARAMS) {
 	pc.object_constructor_allowed=false;
 	
 	// parse=compile! 
-//	yydebug=1;
+	//yydebug=1;
 	if(yyparse(&pc)) { // error?
 		if(pc.col==0) { // expecting something after EOL means they've expected it BEFORE
 			// step back.  -1 col means EOL

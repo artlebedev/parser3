@@ -4,10 +4,8 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
-
-	$Id: image.C,v 1.43 2001/09/15 11:48:41 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.43 2001/09/15 11:48:41 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.44 2001/09/18 16:05:42 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -138,7 +136,7 @@ void measure_gif(Pool& pool, const String *origin_string,
 	if(strncmp(head->type, "GIF", 3)!=0)
 		PTHROW(0, 0, 
 			origin_string, 
-			"not GIF file - signature not found");	
+			"not GIF file - wrong signature");	
 
 	width=little_endian_to_int(head->width);
 	height=little_endian_to_int(head->height);
@@ -162,7 +160,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 	if(!(signature[0]==0xFF && signature[1]==0xD8)) 
 		PTHROW(0, 0, 
 			origin_string, 
-			"not JPEG file - signature not found");
+			"not JPEG file - wrong signature");
 
 	bool found=false;
 	while(true) {
@@ -357,8 +355,7 @@ static gdImage *load(Request& r, const String& method_name,
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
-	const String& file_name=vfile_name.as_string();
+	const String& file_name=params->as_string(0, "file name must not be code");
 
 	gdImage& image=*load(r, method_name, file_name);
 	int width=image.SX();
@@ -467,6 +464,16 @@ static void _bar(Request& r, const String& method_name, MethodParams *params) {
 		image->Color(params->as_int(4, r)));
 }
 
+#ifndef DOXYGEN
+static void add_point(Array::Item *value, void *info) {
+	Array& row=*static_cast<Array *>(value);
+	gdImage::Point **p=static_cast<gdImage::Point **>(info);
+	
+	(**p).x=row.get_string(0)->as_int();
+	(**p).y=row.get_string(1)->as_int();
+	(*p)++;
+}
+#endif
 static void _replace(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -476,21 +483,41 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 			&method_name, 
 			"does not contain an image");
 
-	if((params->size()-2)%2) // I see your thoughts, but that's more readable
-		PTHROW(0, 0, 
-			&method_name, 
-			"y coordinate missing");
+	Table *table=params->as_no_junction(2, "coordinates must not be code").get_table();
+	if(!table) 
+		PTHROW(0, 0,
+			&method_name,
+			"coordinates must be table");
 
-	int n=(params->size()-2)/2;
-	
-	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
-	for(int i=0; i<n; i++) {
-		p[i].x=params->as_int(2+i*2+0, r);
-		p[i].y=params->as_int(2+i*2+1, r);
-	}
-	image->FilledPolygonReplaceColor(p, n, 
+	gdImage::Point *all_p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*table->size());
+	gdImage::Point *add_p=all_p;	
+	table->for_each(add_point, &add_p);
+	image->FilledPolygonReplaceColor(all_p, table->size(), 
 		image->Color(params->as_int(0, r)), // src color
 		image->Color(params->as_int(1, r)));// dest color
+}
+
+static void _polyline(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	gdImage *image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0, 
+			&method_name, 
+			"does not contain an image");
+
+	Table *table=params->as_no_junction(1, "coordinates must not be code").get_table();
+	if(!table) 
+		PTHROW(0, 0,
+			&method_name,
+			"coordinates must be table");
+
+	gdImage::Point *all_p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*table->size());
+	gdImage::Point *add_p=all_p;	
+	table->for_each(add_point, &add_p);
+	image->Polygon(all_p, table->size(), 
+		image->Color(params->as_int(0, r)),
+		false/*not closed*/);
 }
 
 static void _polygon(Request& r, const String& method_name, MethodParams *params) {
@@ -502,19 +529,16 @@ static void _polygon(Request& r, const String& method_name, MethodParams *params
 			&method_name, 
 			"does not contain an image");
 
-	if((params->size()-1)%2) // [I see..] see now?
-		PTHROW(0, 0, 
-			&method_name, 
-			"y coordinate missing");
+	Table *table=params->as_no_junction(1, "coordinates must not be code").get_table();
+	if(!table) 
+		PTHROW(0, 0,
+			&method_name,
+			"coordinates must be table");
 
-	int n=(params->size()-1)/2;
-	
-	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
-	for(int i=0; i<n; i++) {
-		p[i].x=params->as_int(2+i*2+0, r);
-		p[i].y=params->as_int(2+i*2+1, r);
-	}
-	image->Polygon(p, n, 
+	gdImage::Point *all_p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*table->size());
+	gdImage::Point *add_p=all_p;	
+	table->for_each(add_point, &add_p);
+	image->Polygon(all_p, table->size(), 
 		image->Color(params->as_int(0, r)));
 }
 
@@ -527,19 +551,16 @@ static void _polybar(Request& r, const String& method_name, MethodParams *params
 			&method_name, 
 			"does not contain an image");
 
-	if((params->size()-1)%2) // [I see..] see now?
-		PTHROW(0, 0, 
-			&method_name, 
-			"y coordinate missing");
+	Table *table=params->as_no_junction(1, "coordinates must not be code").get_table();
+	if(!table) 
+		PTHROW(0, 0,
+			&method_name,
+			"coordinates must be table");
 
-	int n=(params->size()-1)/2;
-	
-	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
-	for(int i=0; i<n; i++) {
-		p[i].x=params->as_int(2+i*2+0, r);
-		p[i].y=params->as_int(2+i*2+1, r);
-	}
-	image->FilledPolygon(p, n, 
+	gdImage::Point *all_p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*table->size());
+	gdImage::Point *add_p=all_p;	
+	table->for_each(add_point, &add_p);
+	image->FilledPolygon(all_p, table->size(), 
 		image->Color(params->as_int(0, r)));
 }
 
@@ -693,14 +714,17 @@ MImage::MImage(Pool& apool) : Methoded(apool) {
 	// ^image.bar(x0;y0;x1;y1;color)
 	add_native_method("bar", Method::CT_DYNAMIC, _bar, 5, 5);
 
-	// ^image.replace(color-source;color-dest)(x;y)... point coord pairs
-	add_native_method("replace", Method::CT_DYNAMIC, _replace, 2+3*2, 2+100*2);
+	// ^image.replace(color-source;color-dest)[table x:y]
+	add_native_method("replace", Method::CT_DYNAMIC, _replace, 3, 3);
 
-	// ^image.polygon(color)(x;y)... point coord pairs
-	add_native_method("polygon", Method::CT_DYNAMIC, _polygon, 1+3*2, 1+100*2);
+	// ^image.polyline(color)[table x:y]
+	add_native_method("polyline", Method::CT_DYNAMIC, _polyline, 2, 2);
 
-	// ^image.polybar(color)(x;y)... point coord pairs
-	add_native_method("polybar", Method::CT_DYNAMIC, _polybar, 1+3*2, 1+100*2);
+	// ^image.polygon(color)[table x:y]
+	add_native_method("polygon", Method::CT_DYNAMIC, _polygon, 2, 2);
+
+	// ^image.polybar(color)[table x:y]
+	add_native_method("polybar", Method::CT_DYNAMIC, _polybar, 2, 2);
 
     // ^image.font[alPHAbet;font-file-name.gif](spacebar_width)
     // ^image.font[alPHAbet;font-file-name.gif](spacebar_width;width)

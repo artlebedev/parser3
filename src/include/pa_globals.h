@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.61 2001/09/06 08:25:08 parser Exp $
+	$Id: pa_globals.h,v 1.62 2001/09/18 16:05:42 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -20,6 +20,7 @@ class Dictionary;
 
 //@{
 /// constant string. class name, predefined method & co
+#define CONFIG_FILE_NAME "parser3.conf"
 #define AUTO_FILE_NAME "auto.p"
 
 #define USER_HTML_NAME "user-html"
@@ -69,7 +70,7 @@ class Dictionary;
 #define SWITCH_DATA_NAME "SWITCH-DATA"
 #define CASE_DEFAULT_VALUE "DEFAULT"
 
-#define CLASS_PATH_NAME "class_path"
+#define CLASS_PATH_NAME "CLASS_PATH"
 
 #define SQL_LIMIT_NAME "limit"
 #define SQL_OFFSET_NAME "offset"

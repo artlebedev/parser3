@@ -1,14 +1,12 @@
 /** @file
 	Parser: sql driver manager decl.
+	global sql driver manager, must be thread-safe
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.h,v 1.9 2001/09/14 15:41:59 parser Exp $
-
-
-	global sql driver manager, must be thread-safe
+	$Id: pa_sql_driver_manager.h,v 1.10 2001/09/18 16:05:42 parser Exp $
 */
 
 #ifndef PA_SQL_DRIVER_MANAGER_H
@@ -52,7 +50,8 @@ public:
 		using driver dynamic library found in table, if not loaded yet
 		checks driver version
 	*/
-	SQL_Connection& get_connection(const String& url, Table *protocol2driver_and_client);
+	SQL_Connection& get_connection(const String& url, const String& request_origin,
+		Table *protocol2driver_and_client);
 
 private: // driver cache
 

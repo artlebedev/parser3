@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.29 2001/09/18 13:31:56 parser Exp $
+	$Id: pa_vtable.h,v 1.30 2001/09/18 16:05:43 parser Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -14,6 +14,7 @@
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
 #include "pa_vvoid.h"
+#include "pa_vint.h"
 
 #define TABLE_FIELDS_ELEMENT_NAME "fields"
 
@@ -44,7 +45,7 @@ public: // usage
 	void set_table(Table& avalue) { 
 		ftable=&avalue; 
 	}
-	Table& table() { 
+	Table& table() const { 
 		if(!ftable)
 			bark("getting unset vtable value");
 

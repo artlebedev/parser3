@@ -18,7 +18,8 @@ $dom[^dom::set{<?xml version="1.0" encoding="windows-1251"?>
 ^show-dnode[$dom]<hr>
 $people[^dom.xpath[*/man[@id=1]]]
 #^show1[]
-^show-dnodes[$people]<hr>
+#^show-dnodes[$people]<hr>
+^show-dnodes2[$people]<hr>
 #^people.0.owner.hren[]
 
 @show1[]
@@ -37,8 +38,8 @@ $people[^dom.xpath[*/man[@id=1]]]
 	^show-dnode[$array.$i]
 }
 
-@show-dnode[dnode;level]
-$level
+@show-dnode[dnode;level][l]
+^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
 ^if($dnode.type eq element){
 	&lt^;$dnode.name
 $pairs[$dnode.attributes]
@@ -54,5 +55,8 @@ $pairs[$dnode.attributes]
 ^if(def ${dnode.next-sibling}){^show-dnode[$dnode.next-sibling]($level)}
 
 ^if($dnode.type eq element){
-$level&lt^;/$dnode.name&gt^;<br>
+^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$dnode.name&gt^;<br>
 }
+
+@show-dnodes2[people]
+^people.string[]

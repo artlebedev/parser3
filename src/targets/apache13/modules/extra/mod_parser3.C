@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: mod_parser3.C,v 1.41 2001/08/10 08:58:56 parser Exp $"; 
+static const char *RCSId="$Id: mod_parser3.C,v 1.42 2001/09/18 16:05:43 parser Exp $"; 
 
 #include "httpd.h"
 #include "http_config.h"
@@ -35,8 +35,8 @@ static const char *RCSId="$Id: mod_parser3.C,v 1.41 2001/08/10 08:58:56 parser E
 
 /// apache parser module configuration [httpd.conf + .htaccess-es]
 struct Parser_module_config {
-    const char* parser_root_auto_path; ///< filespec of admin's auto.p file
-    const char* parser_site_auto_path; ///< filespec of site's auto.p file
+    const char* parser_root_config_filespec; ///< filespec of admin's config file
+    const char* parser_site_config_filespec; ///< filespec of site's config file
 };
 
 /*
@@ -53,11 +53,11 @@ static Parser_module_config *our_dconfig(request_rec *r) {
 		ap_get_module_config(r->per_dir_config, &PARSER3_MODULE);
 }
 
-static const char *cmd_parser_auto_path(cmd_parms *cmd, void *mconfig, char *file_spec) {
+static const char *cmd_parser_config(cmd_parms *cmd, void *mconfig, char *file_spec) {
     Parser_module_config *cfg = (Parser_module_config *) mconfig;
 
 	// remember assigned filespec into cfg
-	(cmd->info?cfg->parser_root_auto_path:cfg->parser_site_auto_path)=file_spec;
+	(cmd->info?cfg->parser_root_config_filespec:cfg->parser_site_config_filespec)=file_spec;
 
     return NULL;
 }
@@ -205,10 +205,11 @@ static int parser_handler(request_rec *r) {
 		request_info.uri=SAPI::get_env(pool, "REQUEST_URI");
 		request_info.content_type=SAPI::get_env(pool, "CONTENT_TYPE");
 		const char *content_length=SAPI::get_env(pool, "CONTENT_LENGTH");
-		request_info.content_length=(content_length?atoi(content_length):0);
+		request_info.content_length=content_length?atoi(content_length):0;
 		request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
 		request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
 
+		//_asm int 3;
 		// prepare to process request
 		Request request(pool,
 			request_info,
@@ -217,8 +218,8 @@ static int parser_handler(request_rec *r) {
 		
 		// process the request
 		request.core(
-			dcfg->parser_root_auto_path, true, // /path/to/admin/auto.p
-			dcfg->parser_site_auto_path, true, // /path/to/site/auto.p
+			dcfg->parser_root_config_filespec, true, // /path/to/admin/config
+			dcfg->parser_site_config_filespec, true, // /path/to/site/config
 			r->header_only!=0);
 		// no actions with request' data past this point
 		// request.exception not not handled here, but all
@@ -356,8 +357,8 @@ static void *parser_create_dir_config(pool *p, char *dirspec) {
      * Now fill in the defaults.  If there are any `parent' configuration
      * records, they'll get merged as part of a separate callback.
      */
-    cfg->parser_root_auto_path = 0;
-	cfg->parser_site_auto_path = 0;
+    cfg->parser_root_config_filespec = 0;
+	cfg->parser_site_config_filespec = 0;
     return (void *) cfg;
 }
 
@@ -384,13 +385,13 @@ static void *parser_merge_dir_config(pool *p, void *parent_conf,
     Parser_module_config *nconf = (Parser_module_config *) newloc_conf;
 
 	// always from parent
-    merged_config->parser_root_auto_path = ap_pstrdup(p, pconf->parser_root_auto_path);
+    merged_config->parser_root_config_filespec = ap_pstrdup(p, pconf->parser_root_config_filespec);
     /*
      * Some things get copied directly from the more-specific record, rather
      * than getting merged.
      */
-    merged_config->parser_site_auto_path = ap_pstrdup(p, nconf->parser_site_auto_path?
-		nconf->parser_site_auto_path:pconf->parser_site_auto_path);
+    merged_config->parser_site_config_filespec = ap_pstrdup(p, nconf->parser_site_config_filespec?
+		nconf->parser_site_config_filespec:pconf->parser_site_config_filespec);
 
     return (void *) merged_config;
 }
@@ -410,8 +411,8 @@ static void *parser_create_server_config(pool *p, server_rec *s) {
     Parser_module_config *cfg=
 		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
 
-    cfg->parser_root_auto_path = 0;
-	cfg->parser_site_auto_path = 0;
+    cfg->parser_root_config_filespec = 0;
+	cfg->parser_site_config_filespec = 0;
 
     return (void *) cfg;
 }
@@ -442,10 +443,10 @@ static void *parser_merge_server_config(pool *p, void *server1_conf,
      * Our inheritance rules are our own, and part of our module's semantics.
      * Basically, just note whence we came.
      */
-    merged_config->parser_root_auto_path = ap_pstrdup(p, s2conf->parser_root_auto_path?
-		s2conf->parser_root_auto_path:s1conf->parser_root_auto_path);
-    merged_config->parser_site_auto_path = ap_pstrdup(p, s2conf->parser_site_auto_path?
-		s2conf->parser_site_auto_path:s1conf->parser_site_auto_path);
+    merged_config->parser_root_config_filespec = ap_pstrdup(p, s2conf->parser_root_config_filespec?
+		s2conf->parser_root_config_filespec:s1conf->parser_root_config_filespec);
+    merged_config->parser_site_config_filespec = ap_pstrdup(p, s2conf->parser_site_config_filespec?
+		s2conf->parser_site_config_filespec:s1conf->parser_site_config_filespec);
  
 	return (void *) merged_config;
 }
@@ -522,20 +523,20 @@ static int parser_access_checker(request_rec *r) {
 static const command_rec parser_cmds[] =
 {
     {
-        DEBUG_PREFIX"parser_root_auto_path",              /* directive name */
-        (const char *(*)(void))((void *)cmd_parser_auto_path), // config action routine
+        DEBUG_PREFIX"ParserRootConfig",              /* directive name */
+        (const char *(*)(void))((void *)cmd_parser_config), // config action routine
         (void*)true,                   /* argument to include in call */
         (int)(ACCESS_CONF|RSRC_CONF),             /* where available */
         TAKE1,                /* arguments */
-        "Parser root auto.p filespec (Admin)" // directive description
+        "Parser root config filespec (Admin)" // directive description
     },
     {
-        DEBUG_PREFIX"parser_site_auto_path",              /* directive name */
-        (const char *(*)(void))((void *)cmd_parser_auto_path), // config action routine
+        DEBUG_PREFIX"ParserSiteConfig",              /* directive name */
+        (const char *(*)(void))((void *)cmd_parser_config), // config action routine
         (void*)false,                   /* argument to include in call */
         (int)(OR_OPTIONS),             /* where available */
         TAKE1,                /* arguments */
-        "Parser site auto.p filespec" // directive description
+        "Parser site config filespec" // directive description
     },
     {NULL}
 };

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.23 2001/09/10 08:23:49 parser Exp $
+	$Id: pa_vform.h,v 1.24 2001/09/18 16:05:43 parser Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -15,6 +15,7 @@
 #include "pa_common.h"
 
 #define FORM_FIELDS_ELEMENT_NAME "fields"
+#define FORM_TABLES_ELEMENT_NAME "tables"
 
 extern Methoded *form_base_class;
 
@@ -39,18 +40,18 @@ class VForm : public VStateless_class {
 public: // Value
 	
 	const char *type() const { return "form"; }
-
+	
+	// form: CLASS,method,fields,tables,field
 	Value *get_element(const String& aname);
 
 public: // usage
 
 	VForm(Pool& apool) : VStateless_class(apool, form_base_class),
-		fields(apool) {
+		fields(apool),
+		tables(apool) {
 	}
 
-//	Hash& fields() { return ffields; }
-
-	void fill_fields(Request& request);
+	void fill_fields_and_tables(Request& request);
 
 private:
 
@@ -68,6 +69,7 @@ private:
 private:
 
 	Hash fields;
+	Hash tables;
 
 };
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_table.C,v 1.36 2001/09/06 14:55:06 parser Exp $"; 
+static const char *RCSId="$Id: pa_table.C,v 1.37 2001/09/18 16:05:43 parser Exp $"; 
 
 #include <stdlib.h>
 
@@ -43,8 +43,8 @@ int Table::column_name2index(const String& column_name, bool bark) const {
 		char *error_pos;
 		const char *cstr=column_name.cstr();
 		int result=(int)strtol(cstr, &error_pos, 0);
-		if(error_pos==cstr/*empty*/ || *error_pos/*not eos*/) {
-			result=-1; // calm, compiler
+		if(*error_pos/*not EOS*/) {
+			result=-1;
 			if(bark)
 				THROW(0, 0,
 					&column_name,

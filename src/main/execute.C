@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.190 2001/08/02 09:58:34 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.191 2001/09/18 16:05:42 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -702,6 +702,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_IS:
 			{
+				//_asm int 3;
 				Value *b=POP();  Value *a=POP();
 				Value *value=NEW VBool(pool(), b->as_string() == a->type());
 				PUSH(value);
@@ -724,7 +725,7 @@ Value *Request::get_element() {
 		if(Method* method=OP.get_method(name)) { // maybe operator?
 			// as if that method were in self and we have normal dynamic method here
 			Junction& junction=*NEW Junction(pool(), 
-				*self, self->get_class(), method, 0,0,0,0);
+				*root/*self*/, self->get_class(), method, 0,0,0,0);
 			value=NEW VJunction(junction);
 		}
 	if(value)

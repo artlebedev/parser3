@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.111 2001/09/07 12:46:19 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.112 2001/09/18 16:05:42 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -340,13 +340,6 @@ static void _menu(Request& r, const String& method_name, MethodParams *params) {
 		r.write_pass_lang(processed_body);
 	}
 	table.set_current(saved_current);
-}
-
-static void _empty(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	Table& table=static_cast<VTable *>(r.self)->table();
-	
-	r.write_no_lang(*new(pool) VBool(pool, table.size()==0));
 }
 
 #ifndef DOXYGEN
@@ -717,9 +710,6 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 	// ^table.menu{code}  
 	// ^table.menu{code}[delim]
 	add_native_method("menu", Method::CT_DYNAMIC, _menu, 1, 2);
-
-	// ^table.empty[]
-	add_native_method("empty", Method::CT_DYNAMIC, _empty, 0, 0);
 
 	// ^table:hash[key field name]
 	// ^table:hash[key field name][value field name;...]

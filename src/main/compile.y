@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.165 2001/09/06 07:59:11 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.166 2001/09/18 16:05:42 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -423,7 +423,7 @@ name_expr_value:
 	STRING /* subname_is_const */
 |	name_expr_subvar_value /* $subname_is_var_value */
 |	name_expr_with_subvar_value /* xxx$part_of_subname_is_var_value */
-|	name_curly_code_value /* (codes) */
+|	name_square_code_value /* [codes] */
 ;
 name_expr_subvar_value: '$' subvar_ref_name_rdive {
 	$$=$2;
@@ -437,7 +437,7 @@ name_expr_with_subvar_value: STRING subvar_get_writes {
 	P($$, $2);
 	O($$, OP_REDUCE_EWPOOL);
 };
-name_curly_code_value: '[' codes ']' {
+name_square_code_value: '[' codes ']' {
 	$$=N(POOL); 
 	O($$, OP_CREATE_EWPOOL);
 	P($$, $2);
@@ -487,6 +487,7 @@ expr:
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
 |	'-' expr %prec NEG { $$=$2;  O($$, OP_NEG) }
+|	'+' expr %prec NEG { $$=$2 }
 |	'~' expr { $$=$2;	 O($$, OP_INV) }
 |	'!' expr { $$=$2;  O($$, OP_NOT) }
 |	"def" expr { $$=$2;  O($$, OP_DEF) }
@@ -575,6 +576,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 	int skip_analized=0;
 	while(true) {
 		c=*(end=(PC.source++));
+//		fprintf(stderr, "\nchar: %c %02X; nestage: %d, sp=%d", c, c, lexical_brackets_nestage, PC.sp);
 
 		if(c=='\n') {
 			PC.line++;
@@ -650,6 +652,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 
 		// USER'S = NOT OURS
 		case LS_USER:
+        case LS_NAME_SQUARE_PART: // name.[here].xxx
 			if(PC.trim_bof)
 				switch(c) {
 				case '\n': case ' ': case '\t':
@@ -661,7 +664,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				}
 			switch(c) {
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE);
+				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
 				push_LS(PC, LS_METHOD_NAME);
@@ -672,14 +675,16 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 					RC;
 				}
 				break;
-			case ']': // $name.(code<)>
-				if(--lexical_brackets_nestage==0) {
-					pop_LS(PC);
-					RC;
-				}
+			case ']':
+				if(PC.ls==LS_NAME_SQUARE_PART)
+					if(--lexical_brackets_nestage==0) {// $name.[co<]?>de<]?>
+						pop_LS(PC); // $name.[co<]>de<]!>
+						RC;
+					}
 				break;
-			case '[':
-				lexical_brackets_nestage++;
+			case '[': // $name.[co<[>de]
+				if(PC.ls==LS_NAME_SQUARE_PART)
+					lexical_brackets_nestage++;
 				break;
 			}
 			break;
@@ -710,7 +715,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				}
 				break;
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE);
+				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
 				push_LS(PC, LS_METHOD_NAME);
@@ -792,7 +797,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 						pop_LS(PC); // return to normal life
 				RC;
 			case '$':
-				push_LS(PC, LS_EXPRESSION_VAR_NAME);				
+				push_LS(PC, LS_EXPRESSION_VAR_NAME_WITH_COLON);				
 				RC;
 			case '^':
 				push_LS(PC, LS_METHOD_NAME);
@@ -902,10 +907,13 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			break;
 
 		// VARIABLE GET/PUT/WITH
-		case LS_VAR_NAME_SIMPLE:
-		case LS_EXPRESSION_VAR_NAME:
-		case LS_VAR_NAME_NO_COLON:
-			if(PC.ls==LS_EXPRESSION_VAR_NAME) {
+		case LS_VAR_NAME_SIMPLE_WITH_COLON: 
+		case LS_VAR_NAME_SIMPLE_WITHOUT_COLON:
+		case LS_EXPRESSION_VAR_NAME_WITH_COLON: 
+		case LS_EXPRESSION_VAR_NAME_WITHOUT_COLON:
+			if(
+				PC.ls==LS_EXPRESSION_VAR_NAME_WITH_COLON ||
+				PC.ls==LS_EXPRESSION_VAR_NAME_WITHOUT_COLON) {
 				// name in expr ends also before binary operators 
 				switch(c) {
 				case '-': 
@@ -915,7 +923,9 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 					goto break2;
 				}
 			}
-			if(PC.ls==LS_VAR_NAME_NO_COLON) {
+			if(
+				PC.ls==LS_VAR_NAME_SIMPLE_WITHOUT_COLON ||
+				PC.ls==LS_EXPRESSION_VAR_NAME_WITHOUT_COLON) {
 				// name already has ':', stop before next 
 				switch(c) {
 				case ':': 
@@ -950,7 +960,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 					end[-1]==':'/*was class name delim */ ||
 					end[-1]=='.'/*was name delim */
 					)) {
-					push_LS(PC, LS_USER);
+					push_LS(PC, LS_NAME_SQUARE_PART);
 					lexical_brackets_nestage=1;
 					RC;
 				}
@@ -973,7 +983,12 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case '.': // name part delim
 			case '$': // name part subvar
 			case ':': // class<:>name
-				PC.ls=LS_VAR_NAME_NO_COLON; // stop before next ':'
+				// go to _WITHOUT_COLON state variant...
+				if(PC.ls==LS_VAR_NAME_SIMPLE_WITH_COLON)
+					PC.ls=LS_VAR_NAME_SIMPLE_WITHOUT_COLON;
+				else if(PC.ls==LS_EXPRESSION_VAR_NAME_WITH_COLON)
+					PC.ls=LS_EXPRESSION_VAR_NAME_WITHOUT_COLON;
+				// ...stop before next ':'
 				RC;
 			}
 			break;
@@ -981,8 +996,8 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		case LS_VAR_NAME_CURLY:
 			switch(c) {
 			case '[':
-				// ${name.<[>code)}
-				push_LS(PC, LS_USER);
+				// ${name.<[>code]}
+				push_LS(PC, LS_NAME_SQUARE_PART);
 				lexical_brackets_nestage=1;
 				RC;
 			case '}': // ${name} finished, restoring LS
@@ -998,7 +1013,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		case LS_VAR_SQUARE:
 			switch(c) {
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE);
+				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
 				push_LS(PC, LS_METHOD_NAME);
@@ -1020,7 +1035,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		case LS_VAR_CURLY:
 			switch(c) {
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE);
+				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
 				push_LS(PC, LS_METHOD_NAME);
@@ -1041,13 +1056,13 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		case LS_METHOD_NAME:
 			switch(c) {
 			case '[':
-				// $name.<[>code)
+				// ^name.<[>code].xxx
 				if(PC.col>1/*not first column*/ && (
 					end[-1]=='^'/*was start of call*/ || // never, ^[ is literal...
 					end[-1]==':'/*was class name delim */ ||
 					end[-1]=='.'/*was name delim */
 					)) {
-					push_LS(PC, LS_USER);
+					push_LS(PC, LS_NAME_SQUARE_PART);
 					lexical_brackets_nestage=1;
 					RC;
 				}
@@ -1072,7 +1087,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		case LS_METHOD_SQUARE:
 			switch(c) {
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE);
+				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
 				push_LS(PC, LS_METHOD_NAME);
@@ -1094,7 +1109,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		case LS_METHOD_CURLY:
 			switch(c) {
 			case '$':
-				push_LS(PC, LS_VAR_NAME_SIMPLE);
+				push_LS(PC, LS_VAR_NAME_SIMPLE_WITH_COLON);
 				RC;
 			case '^':
 				push_LS(PC, LS_METHOD_NAME);

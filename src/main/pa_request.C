@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.152 2001/08/27 13:27:26 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.153 2001/09/18 16:05:42 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -154,22 +154,22 @@ static void element2case(unsigned char *tables, Value& ctype, const String& name
 	all located classes become children of one another,
 	composing class we name 'MAIN'
 */
-void Request::core(const char *root_auto_path, bool root_auto_fail,
-				   const char *site_auto_path, bool site_auto_fail,
+void Request::core(
+				   const char *root_config_filespec, bool root_config_fail_on_read_problem,
+				   const char *site_config_filespec, bool site_config_fail_on_read_problem,
 				   bool header_only) {
 	//_asm { int 3 }
 	bool need_rethrow=false;  Exception rethrow_me;
 	TRY {
 		char *auto_filespec=(char *)malloc(MAX_STRING);
 		
-		// loading root auto.p 
-		if(root_auto_path) {
+		// loading root config
+		if(root_config_filespec) {
 			String& filespec=*NEW String(pool());
-			filespec.APPEND_CLEAN(root_auto_path, 0, "root_auto", 0);
-			filespec << "/" AUTO_FILE_NAME;
+			filespec.APPEND_CLEAN(root_config_filespec, 0, "root_config", 0);
 			main_class=use_file(
 				filespec, 
-				true/*ignore class_path*/, root_auto_fail,
+				true/*ignore class_path*/, root_config_fail_on_read_problem,
 				main_class_name, main_class);
 		}
 
@@ -178,14 +178,13 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		OP.configure_admin(*this);
 		methoded_array->configure_admin(*this);
 
-		// loading site auto.p
-		if(site_auto_path) {
+		// loading site config
+		if(site_config_filespec) {
 			String& filespec=*NEW String(pool());
-			filespec.APPEND_CLEAN(site_auto_path, 0, "site_auto", 0);
-			filespec << "/" AUTO_FILE_NAME;
+			filespec.APPEND_CLEAN(site_config_filespec, 0, "site_config", 0);
 			main_class=use_file(
 				filespec, 
-				true/*ignore class_path*/, site_auto_fail,
+				true/*ignore class_path*/, site_config_fail_on_read_problem,
 				main_class_name, main_class);
 		}
 
@@ -277,7 +276,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			pcre_tables=pcre_default_tables;
 
 		// filling form fields
-		form.fill_fields(*this);
+		form.fill_fields_and_tables(*this);
 
 		// filling cookies
 		cookie.fill_fields(*this);
@@ -505,34 +504,36 @@ VStateless_class *Request::use_file(const String& file_name,
 	used_files.put(file_name, (Hash::Val *)true);
 
 	const String *file_spec;
-	if(ignore_class_path || file_name.first_char()=='/') {
-		// ignore_class_path | absolute path, no need to scan MAIN:class_path
+	if(ignore_class_path) // ignore_class_path?
 		file_spec=&file_name;
-	} else {
-			file_spec=0;
-			if(main_class)
-				if(Value *element=main_class->get_element(*class_path_name))
-					if(Table *table=element->get_table()) {
-						int size=table->size();
-						for(int i=size; i--; ) {
-							const String& path=*static_cast<Array *>(table->get(i))->get_string(0);
-							String *test_file_spec=NEW String(path);
-							*test_file_spec << "/";
-							*test_file_spec << file_name;
-							if(file_readable(*test_file_spec)) {
-								file_spec=test_file_spec; // found along class_path
-								break;
-							}
-						}
-						if(!file_spec)
-							THROW(0, 0,
-								&file_name,
-								"not found along " CLASS_PATH_NAME);
+	else if(file_name.first_char()=='/') //absolute path, no need to scan MAIN:CLASS_PATH?
+		file_spec=&absolute(file_name);
+	else {
+		file_spec=0;
+		if(main_class)
+			if(Value *element=main_class->get_element(*class_path_name)) {
+				if(element->is_string()) {
+					file_spec=file_readable(element->as_string(), file_name); // found at class_path?
+				} else if(Table *table=element->get_table()) {
+					int size=table->size();
+					for(int i=size; i--; ) {
+						const String& path=*static_cast<Array *>(table->get(i))->get_string(0);
+						if(file_spec=file_readable(path, file_name))
+							break; // found along class_path
 					}
-			if(!file_spec)
-				THROW(0, 0,
-					&file_name,
-					"can not be found because no " CLASS_PATH_NAME " were specified");
+				} else
+					THROW(0, 0,
+						&element->name(),
+						"must be string or table");
+				if(!file_spec)
+					THROW(0, 0,
+						&file_name,
+						"not found along " MAIN_CLASS_NAME ":" CLASS_PATH_NAME);
+			}
+		if(!file_spec)
+			THROW(0, 0,
+				&file_name,
+				"usage failed - no " MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
 	}
 
 	char *source=file_read_text(pool(), *file_spec, fail_on_read_problem);

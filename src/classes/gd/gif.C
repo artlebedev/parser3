@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.5 2001/04/17 19:00:32 paf Exp $
+	$Id: gif.C,v 1.6 2001/09/18 16:05:42 parser Exp $
 */
 
 #include "gif.h"
@@ -19,7 +19,7 @@ void gdImage::Create(int asx, int asy) {
 	pixels = (unsigned char **) malloc(sizeof(unsigned char *) * sx);
 	polyInts = 0;
 	polyAllocated = 0;
-	styleWidth = 1;
+	lineWidth = 1;  lineStyle=0;
 	for (i=0; (i<asx); i++)
 		pixels[i] = (unsigned char *) calloc(asy);
 	colorsTotal = 0;
@@ -116,7 +116,7 @@ void gdImage::SetPixel(int x, int y, int color)
 {
 //paf	int p;
 
-	switch (styleWidth){
+	switch (lineWidth){
 	    case 1: {
 		DoSetPixel(x, y,color);
 		return;
@@ -146,110 +146,24 @@ int gdImage::GetPixel(int x, int y)
 
 /* Bresenham as presented in Foley & Van Dam */
 
-void gdImage::Line(int x1, int y1, int x2, int y2, int color)
-{
-	int dx, dy, incr1, incr2, d, x, y, xend, yend, xdirflag, ydirflag;
-	dx = abs(x2-x1);
-	dy = abs(y2-y1);
-	if (dy <= dx) {
-		d = 2*dy - dx;
-		incr1 = 2*dy;
-		incr2 = 2 * (dy - dx);
-		if (x1 > x2) {
-			x = x2;
-			y = y2;
-			ydirflag = (-1);
-			xend = x1;
-		} else {
-			x = x1;
-			y = y1;
-			ydirflag = 1;
-			xend = x2;
-		}
-		SetPixel(x, y, color);
-		if (((y2 - y1) * ydirflag) > 0) {
-			while (x < xend) {
-				x++;
-				if (d <0) {
-					d+=incr1;
-				} else {
-					y++;
-					d+=incr2;
-				}
-				SetPixel(x, y, color);
-			}
-		} else {
-			while (x < xend) {
-				x++;
-				if (d <0) {
-					d+=incr1;
-				} else {
-					y--;
-					d+=incr2;
-				}
-				SetPixel(x, y, color);
-			}
-		}		
-	} else {
-		d = 2*dx - dy;
-		incr1 = 2*dx;
-		incr2 = 2 * (dx - dy);
-		if (y1 > y2) {
-			y = y2;
-			x = x2;
-			yend = y1;
-			xdirflag = (-1);
-		} else {
-			y = y1;
-			x = x1;
-			yend = y2;
-			xdirflag = 1;
-		}
-		SetPixel(x, y, color);
-		if (((x2 - x1) * xdirflag) > 0) {
-			while (y < yend) {
-				y++;
-				if (d <0) {
-					d+=incr1;
-				} else {
-					x++;
-					d+=incr2;
-				}
-				SetPixel(x, y, color);
-			}
-		} else {
-			while (y < yend) {
-				y++;
-				if (d <0) {
-					d+=incr1;
-				} else {
-					x--;
-					d+=incr2;
-				}
-				SetPixel(x, y, color);
-			}
-		}
-	}
-}
-
 /* As above, plus dashing */
 
-#define dashedSet \
+#define styledSet \
 	{ \
-		dashStep++; \
-		if (dashStep == gdDashSize) { \
-			dashStep = 0; \
-			on = !on; \
+		if (lineStyle) { \
+			if(!lineStyle[styleStep]) \
+				styleStep = 0; \
+			on=lineStyle[styleStep++]!=' '; \
 		} \
 		if (on) { \
 			SetPixel(x, y, color); \
 		} \
 	}
 
-void gdImage::DashedLine(int x1, int y1, int x2, int y2, int color)
+void gdImage::Line(int x1, int y1, int x2, int y2, int color)
 {
 	int dx, dy, incr1, incr2, d, x, y, xend, yend, xdirflag, ydirflag;
-	int dashStep = 0;
+	int styleStep = 0;
 	int on = 1;
 	dx = abs(x2-x1);
 	dy = abs(y2-y1);
@@ -268,7 +182,7 @@ void gdImage::DashedLine(int x1, int y1, int x2, int y2, int color)
 			ydirflag = 1;
 			xend = x2;
 		}
-		dashedSet;
+		styledSet;
 		if (((y2 - y1) * ydirflag) > 0) {
 			while (x < xend) {
 				x++;
@@ -278,7 +192,7 @@ void gdImage::DashedLine(int x1, int y1, int x2, int y2, int color)
 					y++;
 					d+=incr2;
 				}
-				dashedSet;
+				styledSet;
 			}
 		} else {
 			while (x < xend) {
@@ -289,7 +203,7 @@ void gdImage::DashedLine(int x1, int y1, int x2, int y2, int color)
 					y--;
 					d+=incr2;
 				}
-				dashedSet;
+				styledSet;
 			}
 		}		
 	} else {
@@ -307,7 +221,7 @@ void gdImage::DashedLine(int x1, int y1, int x2, int y2, int color)
 			yend = y2;
 			xdirflag = 1;
 		}
-		dashedSet;
+		styledSet;
 		if (((x2 - x1) * xdirflag) > 0) {
 			while (y < yend) {
 				y++;
@@ -317,7 +231,7 @@ void gdImage::DashedLine(int x1, int y1, int x2, int y2, int color)
 					x++;
 					d+=incr2;
 				}
-				dashedSet;
+				styledSet;
 			}
 		} else {
 			while (y < yend) {
@@ -328,7 +242,7 @@ void gdImage::DashedLine(int x1, int y1, int x2, int y2, int color)
 					x--;
 					d+=incr2;
 				}
-				dashedSet;
+				styledSet;
 			}
 		}
 	}
@@ -587,7 +501,7 @@ static int gdGetByte(int *result, FILE *in)
 	return 1;
 }
 
-void gdImage::Polygon(Point *p, int n, int c)
+void gdImage::Polygon(Point *p, int n, int c, bool closed)
 {
 	int i;
 	int lx, ly;
@@ -596,7 +510,8 @@ void gdImage::Polygon(Point *p, int n, int c)
 	}
 	lx = p->x;
 	ly = p->y;
-	Line(lx, ly, p[n-1].x, p[n-1].y, c);
+	if(closed)
+		Line(lx, ly, p[n-1].x, p[n-1].y, c);
 	for (i=1; (i < n); i++) {
 		p++;
 		Line(lx, ly, p->x, p->y, c);
@@ -857,8 +772,13 @@ void gdImage::SetInterlace(int interlaceArg)
 	interlace = interlaceArg;
 }
 
-void gdImage::SetStyle(int width)
+void gdImage::SetLineWidth(int width)
 {
-	styleWidth=width;
+	lineWidth=width;
+}
+
+void gdImage::SetLineStyle(const char *alineStyle)
+{
+	lineStyle=alineStyle;
 }
 

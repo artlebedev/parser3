@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_string.C,v 1.102 2001/09/06 14:55:06 parser Exp $"; 
+static const char *RCSId="$Id: pa_string.C,v 1.103 2001/09/18 16:05:42 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -712,7 +712,7 @@ double String::as_double() const {
 	else
 		result=(double)strtod(cstr, &error_pos);
 
-	if(error_pos==cstr/*empty*/ || *error_pos/*not eos*/)
+	if(*error_pos/*not EOS*/)
 		THROW(0, 0,
 			this,
 			"invalid number (double)");
@@ -732,7 +732,7 @@ int String::as_int() const {
 	else
 		result=(int)strtol(cstr, &error_pos, 0);
 
-	if(error_pos==cstr/*empty*/ || *error_pos/*not eos*/)
+	if(*error_pos/*not EOS*/)
 		THROW(0, 0,
 			this,
 			"invalid number (int)");

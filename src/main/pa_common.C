@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_common.C,v 1.64 2001/09/14 15:41:59 parser Exp $"; 
+static const char *RCSId="$Id: pa_common.C,v 1.65 2001/09/18 16:05:42 parser Exp $"; 
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -202,6 +202,12 @@ bool file_readable(const String& file_spec) {
 }
 bool dir_readable(const String& file_spec) {
 	return entry_readable(file_spec, true);
+}
+String *file_readable(const String& path, const String& name) {
+	String *result=new(path.pool()) String(path);
+	*result << "/";
+	*result << name;
+	return file_readable(*result)?result:0;
 }
 bool file_executable(const String& file_spec) {
     return access(file_spec.cstr(String::UL_FILE_SPEC), X_OK)==0;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.24 2001/09/17 16:49:15 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.25 2001/09/18 16:05:42 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -15,7 +15,6 @@ static const char *RCSId="$Id: dom.C,v 1.24 2001/09/17 16:49:15 parser Exp $";
 #include "classes.h"
 #include "pa_request.h"
 #include "pa_vdom.h"
-#include "pa_vfile.h"
 #include "pa_xslt_stylesheet_manager.h"
 #include "pa_stylesheet_connection.h"
 #include "dnode.h"
@@ -25,26 +24,10 @@ static const char *RCSId="$Id: dom.C,v 1.24 2001/09/17 16:49:15 parser Exp $";
 #include <util/PlatformUtils.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
 #include <XalanTransformer/XalanParsedSource.hpp>
-#include <PlatformSupport/XalanFileOutputStream.hpp>
-#include <PlatformSupport/XalanOutputStreamPrintWriter.hpp>
-#include <PlatformSupport/DOMStringPrintWriter.hpp>
-#include <XMLSupport/FormatterToXML.hpp>
-#include <XMLSupport/FormatterToHTML.hpp>
-#include <XMLSupport/FormatterToText.hpp>
-#include <XMLSupport/FormatterTreeWalker.hpp>
 
 // defines
 
 #define DOM_CLASS_NAME "dom"
-
-#define DOM_OUTPUT_METHOD_OPTION_NAME "method"
-#define DOM_OUTPUT_METHOD_OPTION_VALUE_XML "xml"
-#define DOM_OUTPUT_METHOD_OPTION_VALUE_HTML "html"
-#define DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT "text"
-
-#define DOM_OUTPUT_ENCODING_OPTION_NAME "encoding"
-
-#define DOM_OUTPUT_DEFAULT_INDENT 4
 
 // class
 
@@ -101,180 +84,6 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	// replace any previous parsed source
 	vDom.set_parsed_source(*parsedSource);
 }
-
-class ParserStringXalanOutputStream: public XalanOutputStream {
-public:
-	
-	explicit ParserStringXalanOutputStream(String& astring) : fstring(astring) {}
-
-protected: // XalanOutputStream
-
-	virtual void writeData(const char *theBuffer, unsigned long theBufferLength) {
-		char *copy=(char *)fstring.malloc((size_t)theBufferLength);
-		memcpy(copy, theBuffer, (size_t)theBufferLength);
-		fstring.APPEND_CLEAN(copy, (size_t)theBufferLength, "dom", -1);
-	}
-
-	virtual void doFlush() {}
-
-private:
-
-	String& fstring;
-	
-};
-
-
-static void create_optioned_listener(
-									 const char *& content_type, const char *& charset, FormatterListener *& listener, 
-									 Pool& pool, 
-									 const String& method_name, MethodParams *params, int index, Writer& writer) {
-	charset=0;
-	const String *method=0;
-	XalanDOMString xalan_encoding;
-
-	Value& voptions=params->as_no_junction(index, "options must not be code");
-	if(voptions.is_defined()) {
-		if(Hash *options=voptions.get_hash()) {
-			// $.method[xml|html|text]
-			if(Value *vmethod=static_cast<Value *>(options->get(*new(pool) 
-				String(pool, DOM_OUTPUT_METHOD_OPTION_NAME))))
-				method=&vmethod->as_string();
-
-			// $.encoding[windows-1251|...]
-			if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 
-				String(pool, DOM_OUTPUT_ENCODING_OPTION_NAME)))) {
-				charset=vencoding->as_string().cstr();
-				xalan_encoding.append(charset, strlen(charset));
-			}
-		} else
-			PTHROW(0, 0,
-				&method_name,
-				"options must be hash");
-	}
-
-	if(!method/*default='xml'*/ || *method == DOM_OUTPUT_METHOD_OPTION_VALUE_XML) {
-		content_type="text/xml";
-		listener=new FormatterToXML(writer,
-			XalanDOMString(),  // version
-			true, // doIndent
-			DOM_OUTPUT_DEFAULT_INDENT, // indent 
-			xalan_encoding  // encoding
-		);
-	} else if(*method == DOM_OUTPUT_METHOD_OPTION_VALUE_HTML) {
-		content_type="text/html";
-		listener=new FormatterToHTML(writer,
-			xalan_encoding,  // encoding
-			XalanDOMString(),  // mediaType 
-			XalanDOMString(),  // doctypeSystem; String to be printed at the top of the document 
-			XalanDOMString(),  // doctypePublic  
-			true, // doIndent 
-			DOM_OUTPUT_DEFAULT_INDENT // indent 
-		);
-	} else if(*method == DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT) {
-		content_type="text/plain";
-		listener=new FormatterToText(writer,
-			xalan_encoding  // encoding
-		);
-	} else
-		PTHROW(0, 0,
-			method,
-			DOM_OUTPUT_METHOD_OPTION_NAME " option is invalid; valid methods are: "
-				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_XML "', "
-				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_HTML "', "
-				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT "'");			
-
-	// never reached
-}
-
-static void _save(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VDom& vDom=*static_cast<VDom *>(r.self);
-
-	// filespec
-	const String& file_name=params->as_string(1, "file name must not be code");
-	const char *filespec=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
-	
-	// document
-	XalanDocument& document=vDom.get_document(pool, &method_name);
-
-	try {
-		XalanFileOutputStream stream(XalanDOMString(filespec, strlen(filespec)));
-		XalanOutputStreamPrintWriter writer(stream);
-		const char *content_type, *charset;
-		FormatterListener *formatterListener;
-		create_optioned_listener(content_type, charset, formatterListener, 
-			pool, method_name, params, 0, writer);
-		FormatterTreeWalker treeWalker(*formatterListener);
-		treeWalker.traverse(&document); // Walk the document and produce the XML...
-	} catch(const XSLException& e) {
-		_throw(pool, &method_name, e);
-	}
-}
-
-static void _string(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VDom& vDom=*static_cast<VDom *>(r.self);
-
-	// document
-	XalanDocument& document=vDom.get_document(pool, &method_name);
-
-	try {
-		String parserString=*new(pool) String(pool);
-		ParserStringXalanOutputStream stream(parserString);
-		XalanOutputStreamPrintWriter writer(stream);
-		const char *content_type, *charset;
-		FormatterListener *formatterListener;
-		create_optioned_listener(content_type, charset, formatterListener, 
-			pool, method_name, params, 0, writer);
-		FormatterTreeWalker treeWalker(*formatterListener);
-		treeWalker.traverse(&document); // Walk the document and produce the XML...
-
-		// write out result
-		r.write_no_lang(parserString);
-	} catch(const XSLException& e) {
-		_throw(pool, &method_name, e);
-	}
-}
-
-
-static void _file(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VDom& vDom=*static_cast<VDom *>(r.self);
-
-	// document
-	XalanDocument& document=vDom.get_document(pool, &method_name);
-
-	try {
-		String& parserString=*new(pool) String(pool);
-		ParserStringXalanOutputStream stream(parserString);
-		XalanOutputStreamPrintWriter writer(stream);
-		const char *content_type, *charset;
-		FormatterListener *formatterListener;
-		create_optioned_listener(content_type, charset, formatterListener, 
-			pool, method_name, params, 0, writer);
-		FormatterTreeWalker treeWalker(*formatterListener);
-		treeWalker.traverse(&document); // Walk the document and produce the XML...
-
-		// write out result
-		VFile& vfile=*new(pool) VFile(pool);
-		const char *cstr=parserString.cstr();
-		String *scontent_type=new(pool) String(pool, content_type);
-		Value *vcontent_type;
-		if(charset) {
-			VHash *vhcontent_type=new(pool) VHash(pool);
-			vhcontent_type->hash().put(*value_name, new(pool) VString(*scontent_type));
-			String *scharset=new(pool) String(pool, charset);
-			vhcontent_type->hash().put(*new(pool) String(pool, "charset"), new(pool) VString(*scharset));
-			vcontent_type=vhcontent_type;
-		} else
-			vcontent_type=new(pool) VString(*scontent_type);
-		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*file_name*/, vcontent_type);
-		r.write_no_lang(vfile);
-	} catch(const XSLException& e) {
-		_throw(pool, &method_name, e);
-	}
-}
-
 
 static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning, 
 						   void *info) {
@@ -342,15 +151,6 @@ MDom::MDom(Pool& apool) : MDnode(apool) {
 
 	// ^dom::load[some.xml]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
-
-	// ^dom.save[options hash;some.xml]
-	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 2);
-
-	// ^dom.string[options hash] <doc/>
-	add_native_method("string", Method::CT_DYNAMIC, _string, 1, 1);
-
-	// ^dom.file[options hash] file with "<doc/>"
-	add_native_method("file", Method::CT_DYNAMIC, _file, 1, 1);
 
 	// ^dom.xslt[stylesheet file_name]
 	// ^dom.xslt[stylesheet file_name;params hash]

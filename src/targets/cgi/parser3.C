@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.110 2001/09/05 09:33:33 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.111 2001/09/18 16:05:43 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -275,31 +275,42 @@ int main(int argc, char *argv[]) {
 		
 		// some root-controlled location
 #ifdef SYSCONFDIR
-		const char *root_auto_path=SYSCONFDIR;
+		const char *root_config_filespec=SYSCONFDIR "/" CONFIG_FILE_NAME;
 #else
 #	ifdef WIN32
 		// c:\windows
-		static char root_auto_path[MAX_STRING];
-		GetWindowsDirectory(root_auto_path, MAX_STRING);
+		char root_config_path[MAX_STRING];
+		GetWindowsDirectory(root_config_path, MAX_STRING);
+
+		char root_config_filespec[MAX_STRING];
+		snprintf(root_config_filespec, MAX_STRING, 
+			"%s/%s", 
+			root_config_path, CONFIG_FILE_NAME);
 #	else
 		#error must be compiled either configure/make or MSVC++
 #	endif
 #endif
 		
 		// beside by binary
-		static char site_auto_path[MAX_STRING];
-		strncpy(site_auto_path, argv0, MAX_STRING-1);  site_auto_path[MAX_STRING-1]=0; // filespec of my binary
+		// @todo full path, not ./!
+		static char site_config_path[MAX_STRING];
+		strncpy(site_config_path, argv0, MAX_STRING-1);  site_config_path[MAX_STRING-1]=0; // filespec of my binary
 		if(!(
-			rsplit(site_auto_path, '/') || 
-			rsplit(site_auto_path, '\\'))) { // strip filename
+			rsplit(site_config_path, '/') || 
+			rsplit(site_config_path, '\\'))) { // strip filename
 			// no path, just filename
-			site_auto_path[0]='.'; site_auto_path[1]=0;
+			site_config_path[0]='.'; site_config_path[1]=0;
 		}
+
+		char site_config_filespec[MAX_STRING];
+		snprintf(site_config_filespec, MAX_STRING, 
+			"%s/%s", 
+			site_config_path, CONFIG_FILE_NAME);
 		
 		// process the request
 		request.core(
-			root_auto_path, false,
-			site_auto_path, false,
+			root_config_filespec, false,
+			site_config_filespec, false,
 			header_only);
 
 		//

@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.h,v 1.10 2001/08/28 13:49:19 parser Exp $
+	$Id: gif.h,v 1.11 2001/09/18 16:05:42 parser Exp $
 
 
 	based on:
@@ -29,10 +29,6 @@
 #define gdMaxColors 0x100
 #define HSIZE  5003            /* 80% occupancy */
 
-/* For backwards compatibility only. Use gdImageSetStyle() for MUCH more flexible line drawing. Also see gdImageSetBrush(). */
-#define gdDashSize 4
-
-
 /** Image type. 
 	See functions below; you will not need to change
 	the elements directly. Use the provided macros to
@@ -51,7 +47,7 @@ public:
 	void SetPixel(int x, int y, int color);
 	int GetPixel(int x, int y);
 	void Line(int x1, int y1, int x2, int y2, int color);
-	void DashedLine(int x1, int y1, int x2, int y2, int color);
+	void StyledLine(int x1, int y1, int x2, int y2, int color, const char *lineStyle);
 	void Rectangle(int x1, int y1, int x2, int y2, int color);
 	void LineReplaceColor(int x1, int y1, int x2, int y2, int a, int b);
 	void FilledRectangle(int x1, int y1, int x2, int y2, int color);
@@ -62,7 +58,7 @@ public:
 		int x, y;
 	};
 	
-	void Polygon(Point *p, int n, int c);
+	void Polygon(Point *p, int n, int c, bool closed=true);
 	void FilledPolygon(Point *p, int n, int c);
 	void FilledPolygonReplaceColor(Point *p, int n, int a, int b);
 
@@ -83,7 +79,8 @@ public:
 	void Fill(int x, int y, int color);
 	void Copy(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int w, int h);
 	void CopyResized(gdImage& dst, int dstX, int dstY, int srcX, int srcY, int dstW, int dstH, int srcW, int srcH);
-	void SetStyle(int width);
+	void SetLineWidth(int width);
+	void SetLineStyle(const char *aLineStyle);
 	void SetInterlace(int interlaceArg); /* On or off(1 or 0) */
 	
 public: 
@@ -113,7 +110,7 @@ private:
 	int transparent;
 	int *polyInts;
 	int polyAllocated;
-	int styleWidth;
+	int lineWidth; const char *lineStyle;
 	int interlace;
 
 private: // read gif

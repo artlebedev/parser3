@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.35 2001/09/14 15:49:06 parser Exp $"; 
+static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.36 2001/09/18 16:05:42 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -49,9 +49,10 @@ private:
 // SQL_Driver_manager
 
 /// @param request_url protocol://[driver-dependent]
-SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url, 
+SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
+												   const String& request_origin,
 												   Table *protocol2driver_and_client) {
-	Pool& pool=request_url.pool(); // request pool											   
+	Pool& pool=request_origin.pool(); // request pool											   
 
 	// we have table for locating protocol's library
 	if(!protocol2driver_and_client)
@@ -73,8 +74,8 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 		int pos=request_url.pos("://", 3);
 		if(pos<0)
 			PTHROW(0, 0,
-				&request_url,
-				"no protocol specified"); // NOTE: not THROW, but PTHROW
+				request_url.size()?&request_url:&request_origin,
+				"connection string must start with protocol://"); // NOTE: not THROW, but PTHROW
 
 		// make global_url C-string on global pool
 		request_url_cstr=request_url.cstr(String::UL_AS_IS);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: op.C,v 1.41 2001/09/06 06:11:13 parser Exp $"; 
+static const char *RCSId="$Id: op.C,v 1.42 2001/09/18 16:05:42 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -186,7 +186,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 				&method_name,
 				"endless loop detected");
 		vint->set_int(i);
-		r.root->put_element(var_name, vint);
+		r.self/*root*/->put_element(var_name, vint);
 
 		Value& processed_body=r.process(body_code);
 		if(delim_code) { // delimiter set?
@@ -218,7 +218,7 @@ static void _eval(Request& r, const String& method_name, MethodParams *params) {
 }
 
 
-static void _connect(Request& r, const String&, MethodParams *params) {
+static void _connect(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	Value& url=params->as_no_junction(0, "url must not be code");
@@ -229,7 +229,7 @@ static void _connect(Request& r, const String&, MethodParams *params) {
 
 	// connect
 	SQL_Connection& connection=SQL_driver_manager->get_connection(
-		url.as_string(), protocol2driver_and_client);
+		url.as_string(), method_name, protocol2driver_and_client);
 
 	Exception rethrow_me;
 	// remember/set current connection

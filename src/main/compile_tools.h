@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.47 2001/07/26 12:25:37 parser Exp $
+	$Id: compile_tools.h,v 1.48 2001/09/18 16:05:42 parser Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -18,7 +18,7 @@
 #include "pa_request.h"
 
 enum lexical_state {
-	LS_USER,
+	LS_USER, LS_NAME_SQUARE_PART,
 	LS_COMMENT,
 	LS_DEF_NAME,
 	LS_DEF_PARAMS,
@@ -27,10 +27,9 @@ enum lexical_state {
 	LS_DEF_SPECIAL_BODY,
 	LS_EXPRESSION_STRING_QUOTED,
 	LS_EXPRESSION_STRING_APOSTROFED,
-	LS_EXPRESSION_VAR_NAME,
-	LS_VAR_NAME_SIMPLE,
+	LS_EXPRESSION_VAR_NAME_WITH_COLON, LS_EXPRESSION_VAR_NAME_WITHOUT_COLON,
+	LS_VAR_NAME_SIMPLE_WITH_COLON, LS_VAR_NAME_SIMPLE_WITHOUT_COLON,
 	LS_VAR_NAME_CURLY,
-	LS_VAR_NAME_NO_COLON,
 	LS_VAR_ROUND,
 	LS_VAR_SQUARE,
 	LS_VAR_CURLY,

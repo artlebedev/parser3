@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.14 2001/09/17 14:46:49 parser Exp $
+	$Id: pa_vimage.h,v 1.15 2001/09/18 16:05:43 parser Exp $
 */
 
 #ifndef PA_VIMAGE_H
@@ -39,6 +39,9 @@ public: // Value
 		// $src, $size
 		return static_cast<Value *>(ffields.get(aname));
 	}
+
+	/// VImage: field
+	void put_element(const String& aname, Value *avalue);
 
 protected: // VAliased
 
