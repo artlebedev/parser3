@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/08/07 07:28:26 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/08/07 07:32:52 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -355,21 +355,21 @@ const String& extractEmail(const String& string) {
                  /  "." / "[" / "]"              ;  within a word.
 
 	*/
+	const char *exception_type="email.format";
 	if(strpbrk(email, "()<>,;:\\\"[]"/*specials minus @ and . */))
-		throw Exception(0,
+		throw Exception(exception_type,
 			&result,
 			"email contains characters (specials)");
 	if(string_contains_char_which(email, (string_contains_char_which_check)isspace))
-		throw Exception(0,
+		throw Exception(exception_type,
 			&result,
 			"email contains characters (whitespace)");
 	if(string_contains_char_which(email, (string_contains_char_which_check)iscntrl))
-		throw Exception(0,
+		throw Exception(exception_type,
 			&result,
 			"email contains characters (control)");
-
 	if(result.is_empty())
-		throw Exception(0,
+		throw Exception(exception_type,
 			&string,
 			"email is empty");
 

@@ -913,8 +913,8 @@ xdoc(xnode)
     !xml                  ^xdoc::create{<forgot?>}                    any error in xml/xslt libs
     !smtp.connect                                                     not found/timeout
     !smtp.execute                                                     communication error
-
-
+    !email.format         hren tam@null.ru                            wrong email format(bad chars/empty)
+    
 !нужно выключить русский apache: CharsetDisable on
 
 !если в MAIN будет определён флаг $ORIGINS(1) то вместо обычного вывода страницы будет
