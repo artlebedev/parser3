@@ -4,11 +4,12 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.30 2001/12/29 08:39:05 paf Exp $
+	$Id: pa_exception.C,v 1.31 2002/01/21 12:10:08 paf Exp $
 */
 
 #include "pa_common.h"
 #include "pa_exception.h"
+#include "pa_globals.h"
 
 Exception::Exception() {
 	ftype=fcode=fproblem_source=0;
@@ -54,7 +55,8 @@ Exception::Exception(
 	fproblem_source(aproblem_source),
 	owns_comment(true) {
 
-	if(exc) {
+	const char *xml_generic_errors=xmlGenericErrors();
+	if(xml_generic_errors || exc) {
 		const char *s;
 		switch((GdomeExceptionCode)exc) {
 		case GDOME_NOEXCEPTION_ERR: s="NOEXCEPTION_ERR"; break;
@@ -79,10 +81,14 @@ Exception::Exception(
 		
 		fcomment=(char *)malloc(MAX_STRING);
 		snprintf(fcomment, MAX_STRING, 
-			"DOMException %s (%d)", 
+			"DOMException %s (%d).\n"
+			"%s", 
 				s,  // decoded code of exception
-				exc // code of exception
+				exc, // DOM exception code
+				xml_generic_errors?xml_generic_errors:"<no xml_generic_errors>" // xml generic messages accumulated
 		);
+		if(xml_generic_errors)
+			free((void *)xml_generic_errors);
 	} else
 		fcomment=0;
 }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.73 2001/12/28 14:06:51 paf Exp $
+	$Id: pa_globals.h,v 1.74 2002/01/21 12:10:07 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -145,5 +145,8 @@ extern GdomeDOMImplementation *domimpl;
 
 /// UTF8 charset
 extern Charset *utf8_charset;
+
+/// get xml generic error accumulated for current thread. WARNING: it is up to caller to free up
+const char *xmlGenericErrors();
 
 #endif

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.100 2002/01/14 17:48:57 paf Exp $
+	$Id: pa_globals.C,v 1.101 2002/01/21 12:10:08 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -17,6 +17,7 @@
 #include "pa_cache_managers.h"
 #include "pa_charsets.h"
 #include "pa_charset.h"
+#include "pa_threads.h"
 
 #ifdef DB2
 #include "pa_db_manager.h"
@@ -111,19 +112,74 @@ static void setup_hex_value() {
 	hex_value['f'] = 15;
 }
 
-/*
 #ifdef XML
+
+const int MAX_CONCURRENT_XML_GENERIC_ERROR_THREADS=10;
+
+struct XML_Generic_error_info {
+	pa_thread_t thread_id;
+	char *message;
+} xml_generic_error_infos[MAX_CONCURRENT_XML_GENERIC_ERROR_THREADS];
+
+XML_Generic_error_info *xml_generic_error_info(pa_thread_t thread_id) {
+	for(int i=0; i<MAX_CONCURRENT_XML_GENERIC_ERROR_THREADS; i++) {
+		XML_Generic_error_info *p=xml_generic_error_infos+i;
+		if(p->thread_id==thread_id)
+			return p;
+	}
+	return 0;
+}
+
 static void
-xmlGenericErrorDefaultFunc2(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...) {
-    va_list args;
-    va_start(args, msg);
-    throw Exception(0, 0,
-		0,
-		msg, args);
-    va_end(args);
+xmlParserGenericErrorFunc(void *ctx, const char *msg, ...) { 
+    pa_thread_t thread_id=pa_get_thread_id();
+
+	// infinitely looking for free slot to fill it
+	while(true) {
+		SYNCHRONIZED;  // find+fill blocked
+
+		// first try to get existing for this thread_id
+		XML_Generic_error_info *p=xml_generic_error_info(thread_id);
+		if(!p) { // occupy empty one
+			p=xml_generic_error_info(0);
+			if(!p) // wait for empty for it to appear
+				continue;
+		}
+
+		size_t offset=p->message?strlen(p->message):0;
+		p->message=(char *)realloc(p->message, offset+MAX_STRING);
+		if(!p->message)
+			SAPI::die(
+				"out of memory in 'xmlParserGenericErrorFunc', failed to reallocate to %u bytes", 
+				offset+MAX_STRING);
+		
+		va_list args;
+		va_start(args, msg);
+		vsnprintf(p->message+offset, MAX_STRING, msg, args);
+		va_end(args);
+
+		break;
+	}
+}
+
+const char *xmlGenericErrors() {
+    pa_thread_t thread_id=pa_get_thread_id();
+
+	SYNCHRONIZED;  // find+free blocked
+
+	XML_Generic_error_info *p=xml_generic_error_info(thread_id);
+	if(!p) // no errors for our thread_id registered
+		return 0;
+
+	const char *result=p->message;
+
+	// free slot up 
+	memset(p, 0, sizeof(*p));
+
+	// it is up to caller to free it
+	return result;
 }
 #endif
-*/
 
 void pa_globals_destroy(void *) {
 	try {
@@ -225,6 +281,7 @@ void pa_globals_init(Pool& pool) {
 	charsets->put(*charset_UTF8_name, 
 		utf8_charset=NEW Charset(pool, *charset_UTF8_name, 0/*no file=system*/));
 
+
 	// Status registration, must be initialized before all registrants
 	cache_managers=NEW Cache_managers(pool);
 
@@ -252,7 +309,7 @@ void pa_globals_init(Pool& pool) {
     /*
      * disable CDATA from being built in the document tree
      */
-    xmlDefaultSAXHandler.cdataBlock = NULL;
+    // never added yet  xmlDefaultSAXHandler.cdataBlock = NULL;
 
 	/*
 	 * Initialization function for the XML parser.
@@ -267,7 +324,8 @@ void pa_globals_init(Pool& pool) {
 	// with the ones defaulted from the DTDs 
     //never added yet xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
 
-///	xmlSetGenericErrorFunc(0, xmlGenericErrorDefaultFunc2);
+	memset(xml_generic_error_infos, 0, sizeof(xml_generic_error_infos));
+	xmlSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
 
 	// XSLT stylesheet manager
 	cache_managers->put(*NEW String(pool, "stylesheet"), 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.117 2002/01/16 10:28:34 paf Exp $
+	$Id: pa_request.h,v 1.118 2002/01/21 12:10:07 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -82,7 +82,7 @@ public:
 		uchar adefault_lang, ///< all tainted data default untainting lang
 		bool status_allowed ///<  status class allowed
 	);
-	~Request() {}
+	~Request();
 
 	/// global classes
 	Hash& classes() { return fclasses; }

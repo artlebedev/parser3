@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.191 2002/01/16 10:28:35 paf Exp $
+	$Id: pa_request.C,v 1.192 2002/01/21 12:10:08 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -101,6 +101,17 @@ Request::Request(Pool& apool,
 	// math class
 	classes().put(math.get_class()->base()->name(), &math);	
 }
+
+Request::~Request() {
+#ifdef XML
+	// if for some strange reason xml generic errors failed to be reported, free them up
+	if(const char *xml_generic_errors=xmlGenericErrors()) {
+		SAPI::log(pool(), "warning: unreported xmlGenericErrors: %s", xml_generic_errors);
+		free((void *)xml_generic_errors);
+	}
+#endif
+}
+
 
 /**
 	load MAIN class, execute @main.

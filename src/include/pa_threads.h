@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_threads.h,v 1.20 2001/11/05 11:46:26 paf Exp $
+	$Id: pa_threads.h,v 1.21 2002/01/21 12:10:07 paf Exp $
 */
 
 #ifndef PA_THREADS_H
@@ -12,6 +12,12 @@
 
 #include "pa_config_includes.h"
 #include "pa_types.h"
+
+/// thread ID type
+typedef unsigned int pa_thread_t;
+
+/// get caller thread ID
+pa_thread_t pa_get_thread_id();
 
 class AutoSYNCHRONIZED;
 

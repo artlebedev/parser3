@@ -173,7 +173,7 @@ $cache[^file:list[.;\.cache^$]]
 
 
 @xslt2[]
-$xdoc[^xdoc::set{<?xml version="1.0" encoding="windows-1251" ?>
+$xdoc[^xdoc::set{<?xml version="1.0" encodingz="windows-1251" ?>
 <document><block><p>привет</p></block></document>
 }]
 ^show-xdoc2[$xdoc]
@@ -812,8 +812,8 @@ $file[^xdoc.file[
 ^file.save[text;out/save_file.html]
 #$response:body[^xdoc.file[	$.media-type[text/paf]  ]]
 <pre>^taint[html][^xdoc.string[
-#	$.method[html]
-	$.encoding[utF-8]
+	$.method[html]
+#	$.encoding[utF-8]
 #  	$.omit-xml-declaration[yes]
 #	$.standalone[no]
 #	-$.doctype-public[-//W3C//DTD XHTML]

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_array.h,v 1.48 2001/12/15 21:28:18 paf Exp $
+	$Id: pa_array.h,v 1.49 2002/01/21 12:10:07 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -45,6 +45,10 @@ public:
 
 	/// for_each iterator function type
 	typedef void (*For_each_func)(Item *value, void *info);
+	/*
+	/// for_each iterator function type, passing item storage address
+	typedef void (*For_each_func_storage)(Item ** value, void *info);
+	*/
 
 	/// first_that iterator function type, const info
 	typedef void *(*Item_that_func_const)(Item *value, const void *info);
@@ -85,10 +89,14 @@ public:
 
 	/*/// iterate over all elements, const info
 	void for_each(For_each_func_const func, const void *info=0) const;
-	/*/
+	*/
 
 	/// iterate over all elements
 	void for_each(For_each_func func, void *info=0) const;
+
+	/*/// iterate over all elements, passing address of item storage
+	void for_each(For_each_func_storage func, void *info=0);
+	*/
 
 	/// iterate over all elements until condition, const info
 	void* first_that(Item_that_func_const func, const void *info=0) const;

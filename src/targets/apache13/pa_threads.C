@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_threads.C,v 1.3 2001/11/05 11:46:30 paf Exp $
+	$Id: pa_threads.C,v 1.4 2002/01/21 12:10:08 paf Exp $
 */
 
 #include "pa_threads.h"
@@ -17,6 +17,24 @@ Mutex global_mutex;
 #include "multithread.h"
 
 const bool parser_multithreaded=true;
+
+pa_thread_t pa_get_thread_id() {
+	return static_cast<pa_thread_t>(
+#ifdef WIN32
+		GetThreadID()
+#else
+#	ifdef to-do-PTHREADS
+			pthread_self()
+#	else
+#		ifdef to-do-SOLARIS_THREADS
+			thr_self()
+#		else
+#			error there must be some get_thread_id function
+#		endif
+#	endif
+#endif
+		);
+}
 
 Mutex::Mutex() : 
 	handle(reinterpret_cast<uint>(ap_create_mutex(0))) {
@@ -37,6 +55,8 @@ void Mutex::release() {
 #else
 
 const bool parser_multithreaded=false;
+
+pa_thread_t pa_get_thread_id() { return 0; }
 
 Mutex::Mutex() {}
 Mutex::~Mutex() {}
