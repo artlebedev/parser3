@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/09/13 08:12:57 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/09/13 08:13:41 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
