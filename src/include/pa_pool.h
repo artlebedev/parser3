@@ -9,7 +9,7 @@
 #ifndef PA_POOL_H
 #define PA_POOL_H
 
-static const char* IDENT_POOL_H="$Date: 2003/11/07 13:59:21 $";
+static const char * const IDENT_POOL_H="$Date: 2003/11/20 16:32:12 $";
 
 #include "pa_config_includes.h"
 #include "pa_array.h"

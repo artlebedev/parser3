@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char* IDENT_WCONTEXT_H="$Date: 2003/07/24 11:31:27 $";
+static const char* IDENT_WCONTEXT_H="$Date: 2003/11/20 16:32:12 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -97,7 +97,7 @@ public: // usage
 			flags.entered_class=
 			flags.entered_object=0;
 	}
-	~WContext() {
+	virtual ~WContext() {
 		detach_junctions();
 	}
 

@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char* IDENT_COMPILE_TOOLS_H="$Date: 2003/09/25 09:15:03 $";
+static const char* IDENT_COMPILE_TOOLS_H="$Date: 2003/11/20 16:32:12 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -89,15 +89,15 @@ public:
 		VStateless_class* aclass,
 		const char* asource, const String* amain_alias, 
 		uint afile_no):
+		main_alias(amain_alias),
+		last_line_end_col(0),
+
 		request(arequest), // input 
 
 		// we were told the class to compile to?
 		cclass(aclass), // until changed with @CLASS would consider operators loading
-
-		source(asource), main_alias(amain_alias),
-
+		source(asource), 
 		file_no(afile_no),
-		last_line_end_col(0),
 
 		// initialize state
 		trim_bof(true),

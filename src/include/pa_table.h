@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-static const char* IDENT_TABLE_H="$Date: 2003/11/20 15:35:30 $";
+static const char* IDENT_TABLE_H="$Date: 2003/11/20 16:32:12 $";
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -132,7 +132,7 @@ private:
 	name2number_hash_class* name2number;
 
 	/// is that @c index falid?
-	bool valid(size_t index) const { return index>=0 && index<count(); }
+	bool valid(size_t index) const { return index<count(); }
 
 };
 

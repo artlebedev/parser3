@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/11/20 15:35:31 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/11/20 16:32:12 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -351,7 +351,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 			valid_options++;
 			timeout=vtimeout->as_int(); 
 		}
-		if(vheaders=options->get(http_headers_name)) {
+		if((vheaders=options->get(http_headers_name))) {
 			valid_options++;
 		}
 		if(Value* vany_status=options->get(http_any_status_name)) {
@@ -410,7 +410,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		bool user_agent_specified=false;
 		if(vheaders && !vheaders->is_string()) { // allow empty
 			if(HashStringValue *headers=vheaders->get_hash()) {
-				Http_pass_header_info info={&charsets, &request};
+				Http_pass_header_info info={&charsets, &request, false};
 				headers->for_each(http_pass_header, &info); 
 				user_agent_specified=info.user_agent_specified;
 			} else
@@ -549,7 +549,7 @@ static void file_read_action(
 File_read_result file_read(Request_charsets& charsets, const String& file_spec, 
 			   bool as_text, HashStringValue *params,
 			   bool fail_on_read_problem) {
-	File_read_result result={false};
+	File_read_result result={false, 0, 0, 0};
 #ifdef PA_HTTP
 	if(file_spec.starts_with("http://")) {
 		// fail on read problem
@@ -1078,7 +1078,7 @@ int __vsnprintf(char* b, size_t s, const char* f, va_list l) {
 
 	if(r<0)
 		r=0;
-	else if(r>s)
+	else if((size_t)r>s)
 		r=s;
 #endif
 	b[r]=0;

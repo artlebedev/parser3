@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char* IDENT_VHASH_H="$Date: 2003/08/19 11:04:32 $";
+static const char* IDENT_VHASH_H="$Date: 2003/11/20 16:32:12 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -114,8 +114,8 @@ public: // usage
 
 private:
 
-	bool flocked;
 	HashStringValue fhash;
+	bool flocked;
 	Value* _default;
 
 };

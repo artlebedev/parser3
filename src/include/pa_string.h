@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char* IDENT_STRING_H="$Date: 2003/10/21 05:11:00 $";
+static const char* IDENT_STRING_H="$Date: 2003/11/20 16:32:12 $";
 
 // includes
 
@@ -340,8 +340,8 @@ public:
 
 private:
 
-	Languages langs; ///< string characters lang
 	Body body; ///< all characters of string
+	Languages langs; ///< string characters lang
 
 	const char* v() const;
 

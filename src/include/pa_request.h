@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/11/19 11:00:33 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/11/20 16:32:12 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -440,6 +440,7 @@ class Request_context_saver {
 
 public:
 	Request_context_saver(Request& ar) : 
+		fr(ar),
 		exception_trace_top(ar.exception_trace.top_index()),	
 		exception_trace_bottom(ar.exception_trace.bottom_index()),	
 		stack(ar.stack.top_index()),
@@ -448,8 +449,7 @@ public:
 		rcontext(ar.rcontext),
 		wcontext(ar.wcontext),
 		flang(ar.flang),
-		fconnection(ar.fconnection),
-		fr(ar) {}
+		fconnection(ar.fconnection) {}
 	void restore() {
 		fr.exception_trace.set_top_index(exception_trace_top);
 		fr.exception_trace.set_bottom_index(exception_trace_bottom);

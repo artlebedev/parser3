@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char* IDENT_ARRAY_Y="$Date: 2003/11/07 13:59:21 $";
+static const char* IDENT_ARRAY_Y="$Date: 2003/11/20 16:32:12 $";
 
 // includes
 
@@ -233,39 +233,4 @@ public:
 	}
 
 };
-/*
-/** Nonconst array iterator, usage:
-	@code
-	// Array<T> a;
-	for(Array_iterator<T> i(a); i.has_next(); ) {
-		T& element=i.next();
-		...
-	}	
-	@endcode
-* /
-template<typename T> class Array_modifing_iterator {
-
-	Array<T>& farray;
-	T *fcurrent;
-	T *flast;
-
-public:
-
-	Array_modifing_iterator(Array<T>& aarray): farray(aarray) {
-		fcurrent=farray.felements;
-		flast=farray.felements+farray.count();
-	}
-
-	/// there are still elements
-	bool has_next() {
-		return fcurrent<flast;
-	}
-
-	/// quickly extracts next Array element
-	T& next() {
-		return *(fcurrent++);
-	}
-
-};
-*/
 #endif
