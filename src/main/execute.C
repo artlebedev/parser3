@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.241 2002/06/12 11:40:32 paf Exp $
+	$Id: execute.C,v 1.242 2002/06/20 14:50:23 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -961,36 +961,6 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	return result;
 }
 
-void Request::execute_method(Value& aself, const Method& method,
-		const String **return_string) {
-	PUSH(self);  
-	PUSH(root);  
-	PUSH(rcontext);  
-	PUSH(wcontext);
-	
-	// initialize contexts
-	root=rcontext=self=&aself;
-	WWrapper local(pool(), &aself);
-	wcontext=&local; 
-	
-	// execute!	
-	execute(*method.parser_code);
-	
-	// result
-	const String *result=0;
-	if(return_string) {
-		if(Value *result_var_value=wcontext->get_element(*result_var_name))
-			*return_string=&result_var_value->as_string();
-		else
-			*return_string=&wcontext->as_string();
-	}
-	
-	wcontext=static_cast<WContext *>(POP());  
-	rcontext=POP();  
-	root=POP();  
-	self=static_cast<VAliased *>(POP());
-}
-
 const String& Request::execute_method(VMethodFrame& amethodFrame, const Method& method) {
 	PUSH(self);  
 	PUSH(root);  
@@ -1016,23 +986,52 @@ const String& Request::execute_method(VMethodFrame& amethodFrame, const Method& 
 	return result;
 }
 
-const String *Request::execute_virtual_method(Value& aself, 
-											  const String& method_name) {
-	if(Value *value=aself.get_element(method_name))
-		if(Junction *junction=value->get_junction())
-			if(const Method *method=junction->method) {
-				const String *result;
-				execute_method(aself, *method, &result);
-				return result;
-			}
-			
-	return 0;
+void Request::execute_method(Value& aself, 
+							 const Method& method, VString *optional_param,
+							 const String **return_string) {
+	PUSH(self);  
+	PUSH(root);  
+	PUSH(rcontext);  
+	PUSH(wcontext);
+	
+	// initialize contexts
+	//root=rcontext=self=&aself;
+	self=&aself;	
+//	WWrapper local(pool(), &aself);
+//	wcontext=&local; 
+	Junction local_junction(pool(), *self, self->get_class(), &method, 0,0,0,0);
+	VMethodFrame local_frame(pool(), method.name, local_junction);
+	if(optional_param && local_frame.can_store_param()) {
+		local_frame.store_param(optional_param);
+		local_frame.fill_unspecified_params();
+	}
+	local_frame.set_self(*self);
+	root=rcontext=wcontext=&local_frame; 
+	
+	// execute!	
+	execute(*method.parser_code);
+	
+	// result
+	const String *result=0;
+	if(return_string) {
+		/*if(Value *result_var_value=wcontext->get_element(*result_var_name))
+			*return_string=&result_var_value->as_string();
+		else
+			*return_string=&wcontext->as_string();*/
+		*return_string=&wcontext->result().as_string();
+	}
+	
+	wcontext=static_cast<WContext *>(POP());  
+	rcontext=POP();  
+	root=POP();  
+	self=static_cast<VAliased *>(POP());
 }
 
 void Request::execute_nonvirtual_method(VStateless_class& aclass, 
-												 const String& method_name,
+												 const String& method_name, VString *optional_param,
 												 const String **return_string,
 												 const Method **return_method) {
+
 	const Method *method=aclass.get_method(method_name);
 	if(return_string)
 		*return_string=0;
@@ -1040,5 +1039,19 @@ void Request::execute_nonvirtual_method(VStateless_class& aclass,
 		*return_method=method;
 
 	if(method)
-		execute_method(aclass, *method, return_string);
+		execute_method(aclass, *method, optional_param, return_string);
 }
+
+const String *Request::execute_virtual_method(Value& aself, 
+											  const String& method_name) {
+	if(Value *value=aself.get_element(method_name))
+		if(Junction *junction=value->get_junction())
+			if(const Method *method=junction->method) {
+				const String *result;
+				execute_method(aself, *method, 0/*no params*/, &result);
+				return result;
+			}
+			
+	return 0;
+}
+

@@ -1,6 +1,9 @@
 #@USE
 #t.p
 
+@auto[a]
+^throw[user;$a]
+
 @autoZ[]
 #$form:here
 $request:charset[windows-1251]
@@ -16,6 +19,7 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 @main[]
 $a(123)
 ^a.format[%.10u]
+#$result[111]
 #^f[a]
 
 #^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.96 2002/06/10 14:37:35 paf Exp $
+	$Id: op.C,v 1.97 2002/06/20 14:50:22 paf Exp $
 */
 
 #include "classes.h"
@@ -100,6 +100,7 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 }
 
 static void _process(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
 	// calculate pseudo file name of processed chars
 	// would be something like "/some/file(4) process"
 	char local_place[MAX_STRING];
@@ -133,6 +134,7 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 		// maybe-define new @main
 		r.use_buf(
 			source.cstr(String::UL_UNSPECIFIED, r.connection(0)), 
+			*new(pool) String(pool, heap_place, place_size, true /*tainted*/),
 			heap_place, 
 			&self_class);
 		
@@ -630,7 +632,7 @@ static void _throw_operator(Request& r, const String& method_name, MethodParams 
 		const char *type=params->as_string(0, "type must be string").cstr();
 		const String& source=params->as_string(1, "source must be string");
 		const char *comment=params->size()>2?params->as_string(2, "comment must be string").cstr():0;
-		throw Exception(type, &source, "%s", comment);
+		throw Exception(type, &source, "%s", comment?comment:"");
 	}
 }
 	
