@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2003/11/20 16:34:25 $";
+static const char * const IDENT="$Date: 2004/05/25 11:44:28 $";
 
 #include "apr_file_io.h"
 
@@ -109,7 +109,9 @@ APR_DECLARE(apr_status_t) apr_file_seek(apr_file_t *file,
                                    apr_seek_where_t where,
                                    apr_off_t *offset)
 {
-	return lseek(file->handle, *offset, where);
+    apr_off_t rv = lseek(file->handle, *offset, where);
+    *offset = rv;
+	return rv == -1? errno: APR_SUCCESS;
 }
 
 
