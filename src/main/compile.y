@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.52 2001/03/06 13:24:40 paf Exp $
+  $Id: compile.y,v 1.53 2001/03/06 14:09:36 paf Exp $
 */
 
 %{
@@ -218,7 +218,7 @@ name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
 
 constructor_value: 
 	'[' constructor_code_value ']' { $$=$2 }
-|	'(' constructor_expression_value ')' { $$=$2 }
+|	'(' expression_value ')' { $$=$2 }
 ;
 constructor_code_value: 
 	empty_value /* optimized $var[] case */
@@ -233,21 +233,6 @@ complex_constructor_code_value: complex_constructor_code {
 };
 complex_constructor_code: codes__excluding_sole_str_literal;
 codes__excluding_sole_str_literal: action | code codes { $$=$1; P($$, $2) };
-
-constructor_expression_value:
-	empty_value /* optimized $var() case */
-|	STRING /* optimized $var(STRING) case */
-;/*|	complex_constructor_expression_value /* $var(something complex) * /
-;
-complex_constructor_expression_value: complex_constructor_expression {
-	$$=N(POOL); 
-	OP($$, OP_CREATE_SWPOOL); /* stack: empty write context * /
-	P($$, $1); /* some codes to that context * /
-	OP($$, OP_REDUCE_SWPOOL); /* context=pop; stack: context.get_string() * /
-};
-complex_constructor_expression:
-;
-*/
 
 /* call */
 
@@ -359,6 +344,29 @@ with: '$' name_without_curly_rdive '{' codes '}' {
 	OP($$, OP_REDUCE_RWPOOL);
 	OP($$, OP_WRITE);
 };
+
+/* expression */
+
+expression_value:
+	empty_value /* optimized $var() case */
+|	STRING /* optimized $var(STRING) case */
+|	complex_expression /* $var(something complex) */
+;
+complex_expression: expression_operand '*' expression_operand {
+	$$=$1; // stack: first operand
+	P($$, $3); // stack: first,second operands
+	OP($$, OP_MUL); // value=first*second; stack: value
+};
+expression_operand: STRING;
+
+/*
+complex_expression_value: complex_expression {
+	$$=N(POOL); 
+	OP($$, OP_CREATE_SWPOOL); /* stack: empty write context * /
+	P($$, $1); /* some codes to that context * /
+	OP($$, OP_REDUCE_SWPOOL); /* context=pop; stack: context.get_string() * /
+};
+*/
 
 /* basics */
 

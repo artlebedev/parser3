@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.50 2001/03/06 12:57:30 paf Exp $
+  $Id: execute.C,v 1.51 2001/03/06 14:09:36 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -25,9 +25,8 @@ char *opcode_name[]={
 	"STRING",  "CODE",  "CLASS",
 
 	// actions
-	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
+	"WITH_SELF",	"WITH_ROOT",	"WITH_READ",	"WITH_WRITE",
 	"CONSTRUCT",
-	"EXPRESSION_EVAL",	"MODIFY_EVAL",
 	"WRITE",
 	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
@@ -35,7 +34,7 @@ char *opcode_name[]={
   	"CREATE_SWPOOL",	"REDUCE_SWPOOL",
 	"GET_METHOD_FRAME",
 	"STORE_PARAM",
-	"CALL"
+	"CALL",
 
 	// expression ops: unary
 	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS",
@@ -85,9 +84,9 @@ void dump(int level, const Array& ops) {
 
 void Request::execute(const Array& ops) {
 	if(1) {
-		fputs("source----------------------------", stderr);
+		fputs("source----------------------------\n", stderr);
 		dump(0, ops);
-		fputs("execution-------------------------", stderr);
+		fputs("execution-------------------------\n", stderr);
 	}
 
 	int size=ops.size();
@@ -98,7 +97,7 @@ void Request::execute(const Array& ops) {
 		fprintf(stderr, "%d:%s", stack.top(), opcode_name[op.code]);
 
 		switch(op.code) {
-			// param in next instruction
+		// param in next instruction
 		case OP_STRING:
 			{
 				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
@@ -127,7 +126,7 @@ void Request::execute(const Array& ops) {
 				break;
 			}
 			
-			// OP_WITH
+		// OP_WITH
 		case OP_WITH_SELF: 
 			{
 				PUSH(self);
@@ -149,7 +148,7 @@ void Request::execute(const Array& ops) {
 				break;
 			}
 			
-			// ...
+		// OTHER ACTIONS BUT WITHs
 		case OP_CONSTRUCT:
 			{
 				Value *value=POP();
@@ -159,7 +158,6 @@ void Request::execute(const Array& ops) {
 				ncontext->put_element(name, value);
 				break;
 			}
-			// TODO: OP_EXPRESSION_EVAL,	OP_MODIFY_EVAL,
 		case OP_WRITE:
 			{
 				Value *value=POP();
@@ -231,8 +229,7 @@ void Request::execute(const Array& ops) {
 				break;
 			}
 
-
-			// CALL
+		// CALL
 		case OP_GET_METHOD_FRAME:
 			{
 				Value *value=POP();
@@ -299,6 +296,7 @@ void Request::execute(const Array& ops) {
 				break;
 			}
 
+		// EXPRESSION
 		case OP_MUL: 
 			{
 				Value *b=POP();
