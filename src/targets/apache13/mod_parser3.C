@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.5 2001/10/22 09:02:04 parser Exp $
+	$Id: mod_parser3.C,v 1.6 2001/10/22 09:04:43 parser Exp $
 */
 
 #include "httpd.h"
@@ -284,7 +284,7 @@ void call_real_parser_handler__do_SEH(Pool& pool, request_rec *r) {
 }
 
 static int parser_handler(request_rec *r) {
-//	_asm int 3;
+	//_asm int 3;
     if(r->finfo.st_mode == 0) 
 		return NOT_FOUND;
 	
