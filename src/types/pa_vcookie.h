@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcookie.h,v 1.1 2001/03/18 20:31:30 paf Exp $
+	$Id: pa_vcookie.h,v 1.2 2001/03/18 20:44:41 paf Exp $
 */
 
 #ifndef PA_VCOOKIE_H
@@ -38,13 +38,9 @@ public: // usage
 	void fill_fields(Request& request);
 	void output_result();
 
-public:
-
-	Hash before, deleted;
-
 private:
 
-	Hash after;
+	Hash before, after, deleted;
 
 };
 

@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.1 2001/03/18 20:31:30 paf Exp $
+	$Id: pa_vcookie.C,v 1.2 2001/03/18 20:44:41 paf Exp $
 */
 
 #include <string.h>
@@ -30,8 +30,11 @@ Value *VCookie::get_element(const String& aname) {
 	if(deleted.get(aname)) // deleted?
 		return 0;
 	
-	if(Value *after_value=static_cast<Value *>(after.get(aname))) // assigned 'after'?
-		return after_value;
+	if(Value *after_meaning=static_cast<Value *>(after.get(aname))) // assigned 'after'?
+		if(Hash *hash=after_meaning->get_hash())
+			return static_cast<Value *>(hash->get(*value_name));
+		else
+			return after_meaning;
 	
 	// neither deleted nor assigned 
 	// return any value it had 'before'
