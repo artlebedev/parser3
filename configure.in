@@ -165,6 +165,9 @@ AC_ARG_WITH(pathlink,[  --with-pathlink=LKEY    put dynamic libraries paths to b
                           using linker key (-R, -rpath-link)],
 	LD_PATHLINK=$withval
 )
+AC_ARG_WITH(sjlj-exceptions,[  --with-sjlj-exceptions  enable simple 'throw' from dynamic library],
+	AC_DEFINE(PA_WITH_SJLJ_EXCEPTIONS,,one can throw from dynamic library)
+)
 
 
 AC_ARG_WITH(glib-config,[  --with-glib-config=FILE FILE is glib library
