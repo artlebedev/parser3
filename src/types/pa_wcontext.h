@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.17 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_wcontext.h,v 1.18 2001/10/29 08:23:50 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -21,7 +21,7 @@ class Request;
 	@see Request::wcontext
 */
 class WContext : public Value {
-	friend Request;
+	friend class Request;
 public: // Value
 
 	const char *type() const { return "wcontext"; }

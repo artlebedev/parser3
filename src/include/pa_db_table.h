@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_table.h,v 1.6 2001/10/28 11:40:48 paf Exp $
+	$Id: pa_db_table.h,v 1.7 2001/10/29 08:23:49 paf Exp $
 */
 
 #ifndef PA_DB_TABLE_H
@@ -37,9 +37,9 @@ class DB_Cursor;
 
 /// DB table. handy wrapper around low level <db.h> calls
 class DB_Table : public Pooled {
-	friend DB_Table_ptr;
-	friend DB_Transaction;
-	friend DB_Cursor;
+	friend class DB_Table_ptr;
+	friend class DB_Transaction;
+	friend class DB_Cursor;
 public:
 
 	DB_Table(Pool& apool, const String& afile_name, DB_Connection& aconnection);

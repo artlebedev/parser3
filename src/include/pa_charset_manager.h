@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_manager.h,v 1.1 2001/10/01 10:53:16 parser Exp $
+	$Id: pa_charset_manager.h,v 1.2 2001/10/29 08:23:49 paf Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -29,7 +29,7 @@ class Charset_connection;
 		charset cache
 */
 class Charset_manager : public Pooled {
-	friend Charset_connection;
+	friend class Charset_connection;
 public:
 
 	Charset_manager(Pool& pool) : Pooled(pool),

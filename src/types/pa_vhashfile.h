@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhashfile.h,v 1.9 2001/10/26 13:48:19 paf Exp $
+	$Id: pa_vhashfile.h,v 1.10 2001/10/29 08:23:49 paf Exp $
 */
 
 #ifndef PA_VHASHFILE_H
@@ -28,7 +28,7 @@ class Autosave_marked_to_cancel_cache ;
 /// value of type 'hashfile', implemented with GDBM library
 class VHashfile : public VStateless_class {
 	friend void VHashfile_cleanup(void *);
-	friend Autosave_marked_to_cancel_cache ;
+	friend class Autosave_marked_to_cancel_cache;
 public: // value
 
 	const char *type() const { return "hashfile"; }

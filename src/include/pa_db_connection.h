@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.h,v 1.14 2001/10/28 11:40:48 paf Exp $
+	$Id: pa_db_connection.h,v 1.15 2001/10/29 08:23:49 paf Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
@@ -25,8 +25,8 @@ class DB_Connection_ptr;
 
 /// sql driver connection
 class DB_Connection : public Pooled {
-	friend DB_Table;
-	friend DB_Connection_ptr;
+	friend class DB_Table;
+	friend class DB_Connection_ptr;
 public:
 
 	DB_Connection(Pool& apool, const String& db_home);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.45 2001/10/26 13:48:18 paf Exp $
+	$Id: pa_hash.h,v 1.46 2001/10/29 08:23:49 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -129,7 +129,7 @@ private:
 
 	/// pair storage
 	class Pair {
-		friend Hash;
+		friend class Hash;
 
 		uint code;
 		const Key key;

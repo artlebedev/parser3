@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.106 2001/10/24 10:49:47 parser Exp $
+	$Id: pa_request.h,v 1.107 2001/10/29 08:23:49 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -48,7 +48,7 @@ class Methoded;
 
 /// Main workhorse.
 class Request : public Pooled {
-	friend Temp_lang;
+	friend class Temp_lang;
 public:
 
 	/// some information from web server
