@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.17 2001/03/29 17:11:39 paf Exp $
+	$Id: string.C,v 1.18 2001/03/29 17:23:18 paf Exp $
 */
 
 #include "pa_request.h"
@@ -36,7 +36,7 @@ static void _double(Request& r, const String&, Array *) {
 	r.write_no_lang(value);
 }
 
-void _string_format(Request& r, const String& method_name, Array *params) {
+/*not static*/void _string_format(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
 	Value& fmt=*static_cast<Value *>(params->get(0));
@@ -48,7 +48,7 @@ void _string_format(Request& r, const String& method_name, Array *params) {
 	r.write_no_lang(String(pool, buf));
 }
 
-void _left(Request& r, const String&, Array *params) {
+static void _left(Request& r, const String&, Array *params) {
 	Pool& pool=r.pool();
 
 	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
@@ -57,7 +57,7 @@ void _left(Request& r, const String&, Array *params) {
 	r.write_assign_lang(*new(pool) VString(string.piece(0, n)));
 }
 
-void _right(Request& r, const String&, Array *params) {
+static void _right(Request& r, const String&, Array *params) {
 	Pool& pool=r.pool();
 
 	size_t n=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
@@ -66,7 +66,7 @@ void _right(Request& r, const String&, Array *params) {
 	r.write_assign_lang(*new(pool) VString(string.piece(string.size()-n, string.size())));
 }
 
-void _mid(Request& r, const String&, Array *params) {
+static void _mid(Request& r, const String&, Array *params) {
 	Pool& pool=r.pool();
 
 	size_t p=(size_t)r.process(*static_cast<Value *>(params->get(0))).as_double();
@@ -76,7 +76,7 @@ void _mid(Request& r, const String&, Array *params) {
 	r.write_assign_lang(*new(pool) VString(string.piece(p, p+n)));
 }
 
-void _pos(Request& r, const String& method_name, Array *params) {
+static void _pos(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
 	Value& substr=*static_cast<Value *>(params->get(0));
@@ -87,7 +87,7 @@ void _pos(Request& r, const String& method_name, Array *params) {
 	r.write_assign_lang(*new(pool) VInt(pool, string.pos(substr.as_string())));
 }
 
-void _lsplit(Request& r, const String& method_name, Array *params) {
+static void _lsplit(Request& r, const String& method_name, Array *params) {
 	Pool& pool=r.pool();
 
 	Value& delim_value=*static_cast<Value *>(params->get(0));
@@ -99,18 +99,20 @@ void _lsplit(Request& r, const String& method_name, Array *params) {
 
 	Table& result=*new(pool) Table(pool, &string, 0);
 
-	int pos_before=string.pos(delim);
-	if(pos_before>=0) {
-		{
+	if(delim.size()) {
+		size_t pos_after=0;
+		int pos_before;
+		while((pos_before=string.pos(delim, pos_after))>=0) { // we have 'delim' in 'string'?
 			Array& row=*new(pool) Array(pool, 1);
-			result+=&(row+=&string.piece(0, pos_before));
+			result+=&(row+=&string.piece(pos_after, pos_before));
+			pos_after=pos_before+delim.size();
 		}
-		size_t pos_after=pos_before+delim.size();
+		// last piece
 		if(pos_after<string.size()) {
 			Array& row=*new(pool) Array(pool, 1);
 			result+=&(row+=&string.piece(pos_after, string.size()));
-		}
-	} else {
+		} 
+	} else { // empty delim
 		Array& row=*new(pool) Array(pool, 1);
 		result+=&(row+=&string);
 	}
