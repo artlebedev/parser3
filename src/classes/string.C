@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.88 2001/11/05 11:46:21 paf Exp $
+	$Id: string.C,v 1.89 2001/11/09 11:59:13 paf Exp $
 */
 
 #include "classes.h"
@@ -444,8 +444,9 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	}		
 
 	// write
+	const char *buf=src.cstr(String::UL_UNSPECIFIED);
 	file_write(pool, r.absolute(file_name), 
-		src.cstr(), src.size(), true, do_append);
+		buf, strlen(buf), true, do_append);
 }
 
 // constructor
