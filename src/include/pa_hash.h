@@ -17,12 +17,22 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2003/11/20 16:34:25 $";
+static const char * const IDENT_HASH_H="$Date: 2003/11/24 11:32:14 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
 
 const int HASH_ALLOCATES_COUNT=29;
+
+/** Zend comment: Generated on an Octa-ALPHA 300MHz CPU & 2.5GB RAM monster 
+
+	paf: HPUX ld could not handle static member: unsatisfied symbols
+*/
+static uint Hash_allocates[HASH_ALLOCATES_COUNT]={
+	5, 11, 19, 53, 107, 223, 463, 983, 1979, 3907, 7963, 
+	16229, 32531, 65407, 130987, 262237, 524521, 1048793, 
+	2097397, 4194103, 8388857, 16777447, 33554201, 67108961, 
+	134217487, 268435697, 536870683, 1073741621, 2147483399};
 
 /** 
 	Simple hash.
@@ -39,7 +49,7 @@ public:
 	typedef V value_type;
 
 	Hash() { 
-		allocated=allocates[allocates_index=0];
+		allocated=Hash_allocates[allocates_index=0];
 		threshold=allocated*THRESHOLD_PERCENT/100;
 		fpairs_count=fused_refs=0;
 		refs=new(UseGC) Pair*[allocated];
@@ -218,12 +228,9 @@ private:
 		THRESHOLD_PERCENT=75
 	};
 
-	/// the index of [allocated] in [allocates]
+	/// the index of [allocated] in [Hash_allocates]
 	int allocates_index;
 
-	/// possible [allocates]. prime numbers
-	static uint allocates[];
-	
 	/// number of allocated pairs
 	int allocated;
 
@@ -261,7 +268,7 @@ private:
 
 		allocates_index=allocates_index+1<HASH_ALLOCATES_COUNT?allocates_index+1:HASH_ALLOCATES_COUNT-1;
 		// allocated bigger refs array
-		allocated=allocates[allocates_index];
+		allocated=Hash_allocates[allocates_index];
 		threshold=allocated*THRESHOLD_PERCENT/100;
 		refs=new(UseGC) Pair*[allocated];
 
@@ -286,14 +293,6 @@ private: //disabled
 
 	Hash& operator = (const Hash&) { return *this; }
 };
-
-/* Zend comment: Generated on an Octa-ALPHA 300MHz CPU & 2.5GB RAM monster */
-template<typename K, typename V>
-uint Hash<K, V>::allocates[HASH_ALLOCATES_COUNT]={
-	5, 11, 19, 53, 107, 223, 463, 983, 1979, 3907, 7963, 
-	16229, 32531, 65407, 130987, 262237, 524521, 1048793, 
-	2097397, 4194103, 8388857, 16777447, 33554201, 67108961, 
-	134217487, 268435697, 536870683, 1073741621, 2147483399};
 
 /// useful generic hash function
 inline void generic_hash_code(uint& result, char c) {
