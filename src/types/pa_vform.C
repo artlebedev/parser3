@@ -5,7 +5,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vform.C,v 1.47 2001/11/09 09:53:35 paf Exp $
+	$Id: pa_vform.C,v 1.48 2001/11/09 11:06:57 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -145,7 +145,7 @@ void VForm::ParseMimeInput(char *content_type,
 			char *attr=getAttributeValue(dataStart, " name=", headerSize), 
 			     *fName=getAttributeValue(dataStart, " filename=", headerSize);
 
-			if(attr && valueSize){
+			if(attr && valueSize) {
 				/* OK, we have a new pair, add it to the list. */
 				AppendFormEntry(attr, &dataStart[headerSize+1], valueSize, fName);
 			}

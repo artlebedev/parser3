@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.61 2001/11/08 14:08:54 paf Exp $
+	$Id: pa_common.h,v 1.62 2001/11/09 11:06:57 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -85,8 +85,8 @@ inline double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 )
 	can't say that about other systems/ line break styles
 */
 void fix_line_breaks(
-					 char *cstr,  ///< nevertheless must be 0 ended
-					 size_t& size ///< used to speedup next actions
+					 char *buf,
+					 size_t& size ///< may change! used to speedup next actions
 					 );
 
 /**

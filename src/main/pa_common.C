@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.85 2001/11/05 11:46:27 paf Exp $
+	$Id: pa_common.C,v 1.86 2001/11/09 11:06:57 paf Exp $
 */
 
 #include "pa_common.h"
@@ -43,12 +43,22 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
 
 #endif
 
-void fix_line_breaks(char *cstr, size_t& size) {
+static char *strnchr(char *buf, size_t size, char c) {
+	for(; size-->0; buf++) {
+		if(*buf==c)
+			return buf;
+	}
+
+	return 0;
+}
+
+void fix_line_breaks(char *buf, size_t& size) {
+	const char * const eob=buf+size;
 	char *dest=cstr;
 	// fix DOS: \r\n -> \n
 	// fix Macintosh: \r -> \n
 	char *bol=cstr;
-	while(char *eol=strchr(bol, '\r')) {
+	while(char *eol=strnchr(bol, eob -bol, '\r')) {
 		size_t len=eol-bol;
 		if(dest!=bol)
 			memcpy(dest, bol, len);
