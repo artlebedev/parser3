@@ -9,13 +9,12 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2003/11/26 12:49:44 $";
+static const char * const IDENT="$Date: 2003/11/27 15:10:01 $";
 
 #include "libxslt/extensions.h"
 
 #include "pa_globals.h"
 #include "pa_request.h"
-
 
 /**
  * xmlFileMatchWithLocalhostEqDocumentRoot:
@@ -91,12 +90,91 @@ pa_xmlFileClose (void * context) {
 	return ( ( fclose((FILE *) context) == EOF ) ? -1 : 0 );
 }
 
+//////////////////////////
+
+#ifndef DOXYGEN
+struct MemoryStream {
+	const char* m_buf;
+	size_t m_size;
+	size_t m_position;
+
+	int read(char* a_buffer, size_t a_size) {
+		size_t left=m_size-m_position;
+		if(!left)
+			return 0;
+
+		size_t to_read=min(a_size, left);
+		memcpy(a_buffer, m_buf, to_read);
+		return to_read;
+	}
+
+};
+#endif
+
+static int
+xmlFileMatchMethod(const char* filename) {
+	if (!strncmp(filename, "parser://", 7 /*strlen("parser://"), and check xmlFileOpenMethod*/))
+		return(1);
+	return(0);
+}
+
+/// parser://method/param/here -> ^/abc | ./abc
+static void *
+xmlFileOpenMethod (const char* afilename) {
+	//_asm int 3;
+	Request& r=pa_thread_request();
+
+	char* s=pa_strdup(afilename+7 /*strlen("parser://")*/);
+	const char* method_cstr=lsplit(&s, '/');
+	const String* method=new String(method_cstr);
+	{
+		Temp_lang temp_lang(r, String::L_XML); // default language: XML
+		// @todo: s=params
+		if(const String* body_string=r.execute_virtual_method(r.main_class, *method)) {
+			MemoryStream *stream=new(UseGC) MemoryStream;
+			stream->m_buf=body_string->cstr(String::L_UNSPECIFIED);
+			stream->m_size=strlen(stream->m_buf);
+			return (void*)stream;
+		}
+	}
+
+	throw Exception(0,
+		method,
+		"not found (referred from parser://name/)");
+}
+
+static int
+pa_xmlFileReadMethod (void * context, //< MemoryStream actually
+					  char * buffer, int len) 
+{
+	MemoryStream& stream=*static_cast<MemoryStream*>(context);
+
+	return stream.read(buffer, len);
+}
+
+/**
+ * xmlFileClose:
+ * @context:  the I/O context
+ *
+ * Close an I/O channel
+ */
+static int
+pa_xmlFileCloseMethod (void * /*context*/) {
+	return 0;
+}
+
+
 
 void pa_xml_io_init() {
 	// http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
 	xmlRegisterInputCallbacks(
 		xmlFileMatchLocalhost, xmlFileOpenLocalhost,
 		pa_xmlFileRead, pa_xmlFileClose);
+
+	// parser://method/param/here -> ^/abc | ./abc
+	xmlRegisterInputCallbacks(
+		xmlFileMatchMethod, xmlFileOpenMethod,
+		pa_xmlFileReadMethod, pa_xmlFileCloseMethod);
 }
 
 #endif
