@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/03/21 07:18:01 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/04/07 07:03:05 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -452,6 +452,23 @@ bool file_read(Pool& pool, const String& file_spec,
 	return result;
 }
 
+#ifdef PA_SAFE_MODE
+void check_safe_mode(stat finfo, const String& file_spec, const char* fname) {
+	if(finfo.st_uid/*foreign?*/!=geteuid()
+		&& finfo.st_gid/*foreign?*/!=getegid())
+		throw Exception("parser.runtime", 
+			&file_spec, 
+			"parser is in safe mode: "
+			"reading files of foreign group and user disabled "
+			"[recompile parser with --disable-safe-mode configure option], "
+			"actual filename '%s', "
+			"fuid(%d)!=euid(%d) or fgid(%d)!=egid(%d)", 
+				fname,
+				finfo.st_uid, geteuid(),
+				finfo.st_gid, getegid());
+}
+#endif
+
 bool file_read_action_under_lock(Pool& pool, const String& file_spec, 
 				const char* action_name, File_read_action action, void *context, 
 				bool as_text, 
@@ -484,12 +501,7 @@ bool file_read_action_under_lock(Pool& pool, const String& file_spec,
 						strerror(errno), errno, fname); 
 
 #ifdef PA_SAFE_MODE
-			if(finfo.st_uid/*foreign?*/!=geteuid()
-				&& finfo.st_gid/*foreign?*/!=getegid())
-				throw Exception("parser.runtime", 
-					&file_spec, 
-					"parser is in safe mode: reading files of foreign group and user disabled [recompile parser with --disable-safe-mode configure option], actual filename '%s'", 
-						fname); 
+			check_safe_mode(finfo, file_spec, fname);
 #endif
 
 			action(pool, finfo, f, file_spec, fname, as_text, context); 

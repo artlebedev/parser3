@@ -9,7 +9,7 @@
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Date: 2003/04/04 14:42:38 $";
+static const char* IDENT_EXEC_C="$Date: 2003/04/07 07:03:05 $";
 
 #include "pa_config_includes.h"
 
@@ -437,12 +437,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 					"stat failed: %s (%d), actual filename '%s'", 
 						strerror(errno), errno, file_spec_cstr);
 
-		if(finfo.st_uid/*foreign?*/!=geteuid()
-			&& finfo.st_gid/*foreign?*/!=getegid())
-			throw Exception("parser.runtime", 
-				&file_spec, 
-				"parser is in safe mode: executing files of foreign group and user disabled [recompile parser with --disable-safe-mode configure option], actual filename '%s'", 
-					file_spec_cstr);
+		check_safe_mode(finfo, file_spec, file_spec_cstr);
 	}
 #endif
 
