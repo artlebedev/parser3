@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.28 2001/03/25 09:40:54 paf Exp $
+	$Id: table.C,v 1.29 2001/03/26 09:53:42 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -214,6 +214,34 @@ static void _empty(Request& r, const String&, Array *params) {
 	}
 }
 
+struct Record_info {
+	Pool *pool;
+	Table *table;
+	Hash *hash;
+};
+static void store_column_item_to_hash(Array::Item *item, void *info) {
+	Record_info& ri=*static_cast<Record_info *>(info);
+	String& column_name=*static_cast<String *>(item);
+	const String *column_item=ri.table->item(column_name);
+	Value *value;
+	if(column_item)
+		value=new(*ri.pool) VString(*column_item);
+	else
+		value=new(*ri.pool) VUnknown(*ri.pool);
+	ri.hash->put(column_name, value);
+}
+static void _record(Request& r, const String&, Array *params) {
+	Table& table=static_cast<VTable *>(r.self)->table();
+	if(const Array *columns=table.columns()) {
+		Pool& pool=r.pool();
+		Value& value=*new(pool) VHash(pool);
+		Record_info record_info={&pool, &table, value.get_hash()};
+		columns->for_each(store_column_item_to_hash, &record_info);
+		
+		r.write_no_lang(value);
+	}
+}
+
 // initialize
 
 void initialize_table_class(Pool& pool, VStateless_class& vclass) {
@@ -246,5 +274,8 @@ void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 	// ^table.empty{code-when-empty}  
 	// ^table.empty{code-when-empty}{code-when-not}
 	vclass.add_native_method("empty", _empty, 1, 2);
+
+	// ^table.record[]
+	vclass.add_native_method("record", _record, 0, 0);
 
 }	

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.30 2001/03/24 19:12:18 paf Exp $
+	$Id: pa_array.h,v 1.31 2001/03/26 09:53:42 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -97,10 +97,10 @@ public:
 	}
 
 	/// iterate over all elements
-	void for_each(For_each_func func, void *info=0);
+	void for_each(For_each_func func, void *info=0) const;
 
 	/// iterate over all elements until condition
-	void* first_that(First_that_func func, const void *info=0);
+	void* first_that(First_that_func func, const void *info=0) const;
 
 private:
 

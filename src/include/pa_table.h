@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.21 2001/03/25 09:10:29 paf Exp $
+	$Id: pa_table.h,v 1.22 2001/03/26 09:53:42 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -65,7 +65,7 @@ private:
 	// columns
 	Array *fcolumns;
 
-	bool valid(int index) { return index>=0 && index<size();	}
+	bool valid(int index) { return index>=0 && index<size(); }
 
 	const Array& at(int index);
 

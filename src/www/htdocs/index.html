@@ -17,12 +17,6 @@ _	&nbsp^;
 ^html-typo.save[a]
 
 @main[]
-$a(123)
-$b[$a.CLASS]
-^b.inc[1]
-$a
-<HR>
-
 ^taint[html-typo;не знаю
 я ничего
 
@@ -37,6 +31,9 @@ f
 ^b[]<BR>
 
 ^$t.a=$t.a<BR>
+^t.offset[2]
+$r[^t.record[]]
+^$r.a=$r.a<BR>
 
 ^$request:uri=$request:uri<BR>
 ^$env:PATH_INFO=$env:PATH_INFO<BR>
