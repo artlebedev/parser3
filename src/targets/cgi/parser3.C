@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.141 2001/11/21 08:26:56 paf Exp $
+	$Id: parser3.C,v 1.142 2001/11/21 08:34:43 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -301,7 +301,7 @@ void real_parser_handler(
 	// prepare to process request
 	Request request(pool,
 		request_info,
-		cgi||1 ? String::UL_HTML|String::UL_OPTIMIZE_BIT : String::UL_AS_IS,
+		cgi ? String::UL_HTML|String::UL_OPTIMIZE_BIT : String::UL_AS_IS,
 		true /* status_allowed */);
 	
 	// some root-controlled location
