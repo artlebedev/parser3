@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.78 2001/04/23 13:38:31 paf Exp $
+	$Id: pa_string.C,v 1.79 2001/04/23 15:12:06 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -463,7 +463,7 @@ static void regex_options(char *options, int *result){
 		int *result;
     } regex_option[]={
 		{'i', 0, PCRE_CASELESS, result}, // a=A
-		{'s', 0, PCRE_DOTALL, result}, // \n\n$
+		{'s', 0, PCRE_DOTALL, result}, // \n\n$ [default]
 		{'x', 0, PCRE_EXTENDED, result}, // whitespace in regex ignored
 		{'m', PCRE_DOTALL, PCRE_MULTILINE, result}, // ^aaa\n$^bbb\n$
 		{'g', 0, true, result+1}, // many rows
