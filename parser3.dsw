@@ -72,7 +72,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "libltdl"=.\src\libltdl\libltdl.dsp - Package Owner=<4>
+Project: "libltdl"=.\src\lib\libltdl\libltdl.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -85,6 +85,18 @@ Package=<4>
 ###############################################################################
 
 Project: "main"=.\src\main\main.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "md5"=.\src\lib\md5\md5.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -125,6 +137,9 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name smtp
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name md5
+    End Project Dependency
 }}}
 
 ###############################################################################
@@ -161,11 +176,14 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name smtp
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name md5
+    End Project Dependency
 }}}
 
 ###############################################################################
 
-Project: "pcre"=.\src\pcre\pcre.dsp - Package Owner=<4>
+Project: "pcre"=.\src\lib\pcre\pcre.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -180,7 +198,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "pcre_ctype"=.\src\pcre\pcre_parser_ctype.dsp - Package Owner=<4>
+Project: "pcre_ctype"=.\src\lib\pcre\pcre_parser_ctype.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -192,7 +210,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "pcre_dftables"=.\src\pcre\pcre_dftables.dsp - Package Owner=<4>
+Project: "pcre_dftables"=.\src\lib\pcre\pcre_dftables.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

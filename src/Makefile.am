@@ -1,2 +1,2 @@
-SUBDIRS = libltdl pcre include main patches sql types classes targets
+SUBDIRS = include main sql types classes lib targets
 EXTRA_DIST = ident.awk

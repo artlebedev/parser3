@@ -553,8 +553,8 @@ math
     !^math:degrees radians
     !^math:pow sqrt
     !^math:random(ширина диапазона)
-    ^math:{C2C0983C-E26E-4169-BD07-77ECE9405BA5}
-
+    ^math:GUID {C2C0983C-E26E-4169-BD07-77ECE9405BA5}
+    !^math:crypt[password;$apr1$salt]
 
 !date
     !время типа time можно использовать в выражениях, подставляет 

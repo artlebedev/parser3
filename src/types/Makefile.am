@@ -1,4 +1,4 @@
-INCLUDES = -I../classes -I../sql -I../pcre -I../classes/gd @XML_INCLUDES@
+INCLUDES = -I../classes -I../sql -I../lib/pcre -I../classes/gd @XML_INCLUDES@
 
 noinst_LIBRARIES = libtypes.a
 noinst_HEADERS = pa_valiased.h pa_value.h pa_vbool.h pa_vclass.h pa_vcode_frame.h pa_vcookie.h pa_vdate.h pa_vdouble.h pa_venv.h pa_vfile.h pa_vform.h pa_vhash.h pa_vimage.h pa_vint.h pa_vjunction.h pa_vmath.h pa_vmethod_frame.h pa_vobject.h pa_vrequest.h pa_vresponse.h pa_vstateless_class.h pa_vstateless_object.h pa_vstatus.h pa_vstring.h pa_vtable.h pa_vvoid.h pa_vxdoc.h pa_vxnode.h pa_wcontext.h pa_wwrapper.h

@@ -4,15 +4,17 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: math.C,v 1.18 2002/04/18 10:51:00 paf Exp $
+	$Id: math.C,v 1.19 2002/06/21 12:42:19 paf Exp $
 */
 
 #include "pa_common.h"
 #include "pa_vint.h"
 #include "pa_vmath.h"
 #include "pa_request.h"
+#include "pa_md5.h"
 
 #ifdef WIN32
+// for threadID
 #	include <windows.h>
 #endif
 
@@ -102,6 +104,25 @@ static void math2(Request& r,
 	}
 MATH2(pow);
 
+static void _crypt(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	const char *password=params->as_string(0, "password must be string").cstr();
+	const char *salt=params->as_string(1, "salt must be string").cstr();
+
+    /* FreeBSD style MD5 string 
+     */
+    if (strncmp(salt, PA_MD5PW_ID, PA_MD5PW_IDLEN) == 0) {
+		const size_t sample_size=120;
+		char *sample_buf=(char *)pool.malloc(sample_size);
+		pa_MD5Encode((const unsigned char *)password,
+				 (const unsigned char *)salt, sample_buf, sample_size);
+		r.write_pass_lang(*new(pool) String(pool, sample_buf));
+    } else
+		throw Exception("parser.runtime",
+			&method_name,
+			"salt must start with '" PA_MD5PW_ID "'");
+}
+
 // constructor
 
 MMath::MMath(Pool& apool) : Methoded(apool, "math") {
@@ -126,6 +147,8 @@ MMath::MMath(Pool& apool) : Methoded(apool, "math") {
 	// ^pow(x;y)
 	ADD2(pow);
 
+	// ^crypt[password;salt]
+	ADD2(crypt);
 }
 
 // in MSVC each thread has it's own pseudo-random sequence

@@ -143,3 +143,7 @@
 [Thu Jun 20 19:18:36 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1640:7): parse error, expecting `']'' or `';'' [parser.compile]
 [Thu Jun 20 19:19:33 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1641:12): parse error, expecting `']'' or `';'' [parser.compile]
 [Thu Jun 20 19:23:23 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1642:14): parse error, expecting `']'' or `';'' [parser.compile]
+[Fri Jun 21 16:08:54 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(1647:20): parse error, expecting `']'' or `';'' [parser.compile]
+[Fri Jun 21 16:12:51 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(189): 'crypt' salt must start with '$apr1$' [parser.runtime]
+[Fri Jun 21 16:13:17 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(189): 'crypt' salt must start with '$apr1$' [parser.runtime]
+[Fri Jun 21 16:13:18 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(189): 'crypt' salt must start with '$apr1$' [parser.runtime]

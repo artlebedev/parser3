@@ -14,3 +14,9 @@ deny from all
 allow from 195.218.200 
 allow from 192.168
 allow from 213.152.135
+
+#satisfy any
+#    AuthType basic
+#    AuthName "parser3"
+#    AuthUserFile Y:\parser3project\parser3\www\htdocs\.htpasswd
+#    Require valid-user

@@ -1,4 +1,4 @@
-INCLUDES = -I../types -I../classes -I../sql -I../pcre $(INCLTDL) @XML_INCLUDES@
+INCLUDES = -I../types -I../classes -I../sql -I../lib/pcre $(INCLTDL) @XML_INCLUDES@
 
 noinst_HEADERS = compile_tools.h
 noinst_LIBRARIES = libmain.a

@@ -1,6 +1,5 @@
 SUBDIRS = gd smtp
-
-INCLUDES = -I../types -I../sql -I../pcre -Igd @XML_INCLUDES@
+INCLUDES = -I../types -I../sql -I../lib/pcre -Igd @XML_INCLUDES@ -I../lib/md5
 
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h

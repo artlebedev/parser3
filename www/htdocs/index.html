@@ -183,7 +183,11 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^xdocsave[]
 #^div[]
 #^datecreatestring3[]
-^tfilespec[]
+#^tfilespec[]
+^tcrypt[]
+
+@tcrypt[]
+^math:crypt[paf;^$apr1^$salt123]
 
 @tfilespec[]
 src=$selffilespec<br>
