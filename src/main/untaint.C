@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.75 2001/11/16 12:38:44 paf Exp $
+	$Id: untaint.C,v 1.76 2001/11/16 13:51:14 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -148,13 +148,6 @@ size_t String::cstr_bufsize(Untaint_lang lang,
 
 			Untaint_lang to_lang=lang==UL_UNSPECIFIED?(Untaint_lang)row->item.lang:lang;
 
-			if(forigins_mode) {
-#ifndef NO_STRING_ORIGIN
-				dest+=MAX_STRING;
-#endif
-				dest+=MAX_STRING;
-			}
-
 			switch(to_lang) {
 			case UL_CLEAN:
 				// clean piece
@@ -266,22 +259,6 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				goto break2;
 
 			Untaint_lang to_lang=lang==UL_UNSPECIFIED?(Untaint_lang)row->item.lang:lang;
-
-			char *dest_before_origins=dest;
-
-			if(forigins_mode) {
-#ifndef NO_STRING_ORIGIN
-				if(row->item.origin.file)
-					dest+=sprintf(dest, ORIGIN_FILE_LINE_FORMAT,
-						row->item.origin.file,
-						1+row->item.origin.line);
-				else
-					dest+=sprintf(dest, "<unknown>");
-#endif
-				dest+=sprintf(dest, "#%s: ",
-					String_Untaint_lang_name[to_lang]);
-			}
-			char *dest_after_origins=dest;
 
 			switch(to_lang) {
 			case UL_CLEAN:
@@ -413,19 +390,47 @@ char *String::store_to(char *dest, Untaint_lang lang,
 
 			if((lang==UL_UNSPECIFIED?row->item.lang:lang)!=UL_CLEAN)
 				whitespace=false;
-
-			if(forigins_mode)
-				if(dest==dest_after_origins) // never moved==optimized space
-					dest=dest_before_origins;
-				else {
-					remove_crlf(dest_after_origins, dest);
-
-					to_char('\n');
-				}
 		}
 		chunk=row->link;
 	} while(chunk);
 
 break2:
 	return dest;
+}
+
+char *String::cstr_debug_origins() const {
+	char *result=(char *)malloc(size()+used_rows()*MAX_STRING*2);
+	char *dest=result;
+	
+	const Chunk *chunk=&head; 
+	do {
+		const Chunk::Row *row=chunk->rows;
+		for(uint i=0; i<chunk->count; i++, row++) {
+			if(row==append_here)
+				goto break2;
+
+#ifndef NO_STRING_ORIGIN
+			if(row->item.origin.file)
+				dest+=sprintf(dest, ORIGIN_FILE_LINE_FORMAT,
+					row->item.origin.file,
+					1+row->item.origin.line);
+			else
+				dest+=sprintf(dest, "<unknown>");
+#endif
+			dest+=sprintf(dest, "#%s: ",
+				String_Untaint_lang_name[row->item.lang]);
+			char *dest_after_origins=dest;
+
+			memcpy(dest, row->item.ptr, row->item.size); 
+			dest+=row->item.size;
+
+			remove_crlf(dest_after_origins, dest);
+			to_char('\n');
+		}
+		chunk=row->link;
+	} while(chunk);
+
+break2:
+	*dest=0;
+	return result;
 }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.116 2001/11/16 12:38:43 paf Exp $
+	$Id: pa_string.h,v 1.117 2001/11/16 13:51:14 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -108,9 +108,7 @@ public:
 
 	String(Pool& apool, const char *src=0, size_t src_size=0, bool tainted=false);
 	String(const String& src);
-	size_t size() const { return fsize; }
-	/// makes store_to produce origin:text\n output
-	void set_origins_mode(bool aorigins_mode) const { forigins_mode=aorigins_mode; }
+	size_t size() const;
 	/// convert to C string. if 'lang' known, forcing 'lang' to it
 	char *cstr(Untaint_lang lang=UL_AS_IS, 
 		SQL_Connection *connection=0,
@@ -121,6 +119,7 @@ public:
 		*eol=0;
 		return result;
 	}
+	char *cstr_debug_origins() const;
 	/// puts pieces to buf
 	void serialize(size_t prolog_size,  void *& buf, size_t& buf_size) const;
 	/// appends pieces from buf to self
@@ -264,12 +263,6 @@ private:
 private:
 	/// last chunk
 	Chunk *last_chunk;
-
-	/// string size
-	size_t fsize;
-
-	/// origins_mode changes behaviour of store_to[cstr()]
-	mutable bool forigins_mode;
 
 private:
 

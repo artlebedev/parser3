@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.119 2001/11/05 11:46:28 paf Exp $
+	$Id: pa_string.C,v 1.120 2001/11/16 13:51:14 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -23,14 +23,12 @@
 #include "pa_dictionary.h"
 
 String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
-	Pooled(apool),
-	forigins_mode(false) {
+	Pooled(apool) {
 	last_chunk=&head;
 	head.count=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
 	head.preallocated_link=0;
 	link_row=&head.rows[head.count];
-	fsize=0;
 
 	if(src)
 		if(tainted)
@@ -40,8 +38,7 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 }
 
 String::String(const String& src) :	
-	Pooled(src.pool()),
-	forigins_mode(false) {
+	Pooled(src.pool()) {
 	head.count=CR_PREALLOCATED_COUNT;
 	
 	uint src_used_rows=src.used_rows();
@@ -96,7 +93,24 @@ String::String(const String& src) :
 	}
 	link_row->link=0;
 	src_used_rows;
-	fsize=src.fsize;
+}
+
+size_t  String::size() const {
+	size_t result=0;
+	const Chunk *chunk=&head; 
+	do {
+		const Chunk::Row *row=chunk->rows;
+		for(uint i=0; i<chunk->count; i++, row++) {
+			if(row==append_here)
+				goto break2;
+
+			result+=row->item.size;
+		}
+		chunk=row->link;
+	} while(chunk);
+
+break2:
+	return result;
 }
 
 /// @todo not very optimal
@@ -158,7 +172,6 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 		expand();
 
 	append_here->item.ptr=src;
-	fsize+=append_here->item.size=size;
 	append_here->item.lang=lang;
 #ifndef NO_STRING_ORIGIN
 	append_here->item.origin.file=file;
@@ -170,7 +183,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 }
 
 char String::first_char() const {
-	if(!fsize)
+	if(!used_rows())
 		throw Exception(0, 0,
 			this,
 			"getting first char of empty string");
@@ -358,7 +371,7 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 
 #ifndef NO_STRING_ORIGIN
 const Origin& String::origin() const { 
-	if(!fsize) {
+	if(!used_rows()) {
 		static const Origin empty_origin={"empty string"};
 		return empty_origin;
 	}
