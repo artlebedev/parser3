@@ -1,5 +1,5 @@
 /*
-  $Id: code.h,v 1.3 2001/02/22 08:16:08 paf Exp $
+  $Id: code.h,v 1.4 2001/02/22 09:14:24 paf Exp $
 */
 
 #ifndef CODE_H
@@ -9,8 +9,7 @@
 #include "pa_array.h"
 
 enum OPCODE {
-	OP_STRING,
-	OP_CODE_ARRAY,
+	OP_STRING,  OP_VSTRING,  OP_CODE_ARRAY,
 	OP_WITH_ROOT,	OP_WITH_SELF,	OP_WITH_READ,	OP_WITH_WRITE,
 	OP_CONSTRUCT,
 	OP_EXPRESSION_EVAL,	OP_MODIFY_EVAL,

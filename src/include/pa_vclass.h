@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.3 2001/02/22 08:16:09 paf Exp $
+  $Id: pa_vclass.h,v 1.4 2001/02/22 09:14:25 paf Exp $
 */
 
 /*
@@ -20,19 +20,10 @@ class VClass : public Value {
 public: // Value
 	
 	// all: for error reporting after fail(), etc
-	/*virtual*/ const char *get_type() const { return "Class"; }
-
-	// object_class: [class classname]
-	/*virtual*/ /*String *get_string() const { 
-		String *result=new(pool()) String(pool()); 
-		result->APPEND("[class ", 0, 0, 0);
-		result->APPEND(name().cstr(), 0, 0, 0);
-		result->APPEND("]", 0, 0, 0);
-		return result;
-	}*/
+	const char *type() const { return "Class"; }
 
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
-	/*virtual*/ Value *get_element(const String& name) const {
+	Value *get_element(const String& name) {
 		// $STATIC=STATIC hash
 		if(name==STATIC_NAME)
 			return 0;//TODO:new(pool()) VHash(pool(), STATIC);
@@ -49,20 +40,20 @@ public: // Value
 	}
 
 	// object_class, operator_class: (field)=value - static values only
-	/*virtual*/ void put_element(const String& name, Value *value) {
+	void put_element(const String& name, Value *value) {
 		STATIC.put(name, value);
 	}
 
 	// object_instance, object_class: method
-	/*virtual*/ Method *get_method(const String& name) const {
+	Method *get_method(const String& name) const {
 		return static_cast<Method *>(methods.get(name));
 	}
 
 	// object_class, object_instance: object_class
-	/*virtual*/ VClass *get_class() { return this; /*TODO: think when?*/ }
+	VClass *get_class() { return this; /*TODO: think when?*/ }
 
 	// object_class: true when this class is derived from 'ancestor'
-	/*virtual*/ bool is_or_derived_from(VClass& ancestor) {
+	bool is_or_derived_from(VClass& ancestor) {
 		if(this==&ancestor)
 			return true; // it's me
 

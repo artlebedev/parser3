@@ -127,11 +127,13 @@ constructor_value:
 |	constructor_two_params_value /* $var(=;2*2) $var(%d;2*2) $var(+;1) */
 ;
 constructor_one_param_value: 
-	empty_value /* optimized $var() case */
-|	STRING /* optimized $var(STRING) case */
+	empty /* optimized $var() case */
+|	string_value /* optimized $var(STRING) case */
 |	complex_constructor_param_value /* $var(something complex) */
 ;
-empty_value: empty;
+string_value: STRING {
+	$$=LAS2LAVS($1);
+};
 complex_constructor_param_value: complex_constructor_param_body {
 	$$=N(pool); 
 	OP($$, OP_CREATE_EWPOOL); /* stack: empty write context */

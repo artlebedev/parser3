@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.12 2001/02/22 08:16:09 paf Exp $
+  $Id: pa_value.h,v 1.13 2001/02/22 09:14:25 paf Exp $
 */
 
 /*
@@ -72,29 +72,29 @@ public:
 public:
 
 	// all: for error reporting after fail(), etc
-	virtual const char *get_type() const =0;
+	virtual const char *type() const =0;
 
-	// text: value
-	// object_class: [class classname]
-	virtual String *get_string() { /*vclass: failed("getting string representation"); */return 0; }
+	// string: value
+	// all others: 0
+	virtual String *get_string() { return 0; }
 	
-	// text: value
-	virtual void put_string(const String *astring) { failed("storing string"); }
+	// string: value
+	virtual void put_string(String *astring) { failed("storing string to %s"); }
 
 	// method_ref: self, method
-	virtual Method_ref *get_method_ref() { failed("extracting method reference"); return 0; }
+	virtual Method_ref *get_method_ref() { failed("extracting method reference from %s"); return 0; }
 
 	// junction: auto_calc,root,self,rcontext,wcontext, code
-	virtual Junction *get_junction() { failed("getting junction"); return 0; }
+	virtual Junction *get_junction() { failed("getting junction from %s"); return 0; }
 
 	// hash: (key)=value
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	// object_instance: (field)=value;(STATIC)=hash;(method)=method_ref
 	// operator_class: (field)=value - static values only
-	virtual Value *get_element(const String& name) const =0;
-
+	virtual Value *get_element(const String& name) { failed("getting element from %s"); return 0; }
+	
 	// object_class, operator_class: (field)=value - static values only
-	virtual void put_element(const String& name, Value *value)=0;
+	virtual void put_element(const String& name, Value *value) { failed("putting element to %s"); }
 
 	// object_instance, object_class: method
 	virtual Method *get_method(const String& name) const { return 0; }
@@ -103,14 +103,14 @@ public:
 	virtual VClass *get_class() { return 0; }
 
 	// object_class: true when this class is this or derived from 'ancestor'
-	virtual bool is_or_derived_from(VClass& ancestor) { failed("thoghts of ancestors"); return false; }
+	virtual bool is_or_derived_from(VClass& ancestor) { failed("thoghts of ancestors of %s"); return false; }
 
 private: 
 
 	void failed(char *action) {
 		pool().exception().raise(0,0,
 			0,
-			action);
+			action, type());
 	}
 };
 

@@ -1,17 +1,17 @@
 /*
-  $Id: execute.C,v 1.14 2001/02/22 08:16:31 paf Exp $
+  $Id: execute.C,v 1.15 2001/02/22 09:14:46 paf Exp $
 */
 
 #include "pa_array.h" 
 #include "code.h"
 #include "pa_request.h"
+#include "pa_vstring.h"
 
 #include <stdio.h>
 
 
 char *opcode_name[]={
-	"STRING",
-	"CODE_ARRAY",
+	"STRING",  "VSTRING",  "CODE_ARRAY",
 	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
 	"CONSTRUCT",
 	"EXPRESSION_EVAL",	"MODIFY_EVAL",
@@ -32,8 +32,12 @@ void dump(int level, const Array& ops) {
 		printf("%*s%s", level*4, "", opcode_name[code]);
 
 		if(code==OP_STRING) {
-			const String *string=static_cast<const String *>(ops.quick_get(++i));
+			String *string=static_cast<String *>(ops.quick_get(++i));
 			printf(" \"%s\"", string->cstr());
+		}
+		if(code==OP_VSTRING) {
+			Value *value=static_cast<Value *>(ops.quick_get(++i));
+			printf(" \"%s\"", value->get_string()->cstr());
 		}
 		printf("\n");
 
@@ -67,11 +71,23 @@ void Request::execute(Array& ops) {
 				stack.push(wcontext);
 				break;
 			}
+		case OP_WITH_READ: 
+			{
+				stack.push(rcontext);
+				break;
+			}
 			
 		case OP_STRING:
 			{
 				String *string=static_cast<String *>(ops.quick_get(++i));
 				stack.push(string);
+				break;
+			}
+			
+		case OP_VSTRING:
+			{
+				Value *value=static_cast<Value *>(ops.quick_get(++i));
+				stack.push(value);
 				break;
 			}
 			
@@ -98,7 +114,7 @@ void Request::execute(Array& ops) {
 				break;
 			}
 			
-		/*case OP_GET_ELEMENT:
+		case OP_GET_ELEMENT:
 			{
 				String *name=static_cast<String *>(stack.pop());
 				Value *ncontext=static_cast<Value *>(stack.pop());
@@ -106,7 +122,7 @@ void Request::execute(Array& ops) {
 				// name бывает им€ junction, тогда или оставл€ет в покое, или вычисл€ет в зависимости от флага ј¬“ќ¬џ„»—Ћя“№
 				stack.push(value);
 				break;
-			}*/
+			}
 			
 		default:
 			printf("\tTODO\n");
