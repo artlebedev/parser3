@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2004/02/11 15:33:12 $";
+static const char * const IDENT_MAIL_C="$Date: 2004/02/24 11:15:58 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -60,11 +60,7 @@ static const String mail_sendmail_name(SENDMAIL_NAME);
 
 static void sendmail(Request& r, 
 		     const String& message, 
-		     const String* from, const String* 
-#ifdef _MSC_VER
-			 to
-#endif
-			 ,
+		     const String* from, const String* to,
 			 const String* 
 #ifndef _MSC_VER
 			 options
@@ -78,28 +74,32 @@ static void sendmail(Request& r,
 		throw Exception(exception_type,
 			0,
 			"parameter does not specify 'from' header field");
-
-#ifdef _MSC_VER
 	if(!to) // we use only in SMTP RCPT to: {to}
 		throw Exception(exception_type,
 			0,
 			"parameter does not specify 'to' header field");
 
-	SMTP smtp;
-	Value* server_port;
-	// $MAIN:MAIL.SMTP[mail.yourdomain.ru[:port]]
-	if(vmail_conf && 
-		(server_port=vmail_conf->get_hash()->get(String::Body("SMTP")))) {
-		char* server=server_port->as_string().cstrm();
+	Value* smtp_server_port=0;
+	if(vmail_conf) {
+		// $MAIN:MAIL.SMTP[mail.yourdomain.ru[:port]]
+		smtp_server_port=vmail_conf->get_hash()->get(String::Body("SMTP"));
+	}
+	if(smtp_server_port) {
+		SMTP smtp;
+		char* server=smtp_server_port->as_string().cstrm();
 		const char* port=rsplit(server, ':');
 		if(!port)
 			port="25";
 
 		smtp.Send(server, port, message_cstr, from->cstrm(), to->cstrm());
-	} else
-		throw Exception("parser.runtime",
-			0,
-			"$"MAIN_CLASS_NAME":"MAIL_NAME".SMTP not defined");
+		return;
+	}
+
+#if WIN32
+	// win32 without SMTP server configured
+	throw Exception("parser.runtime",
+		0,
+		"$"MAIN_CLASS_NAME":"MAIL_NAME".SMTP not defined");
 #else
 	// unix
 	// $MAIN:MAIL.sendmail["/usr/sbin/sendmail -t -i -f postmaster"] default
