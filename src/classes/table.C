@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.31 2001/03/27 13:47:29 paf Exp $
+	$Id: table.C,v 1.32 2001/03/27 14:50:44 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -241,6 +241,45 @@ static void _record(Request& r, const String&, Array *params) {
 	}
 }
 
+struct Order_item {
+	int index;
+	Value *value;
+};
+static void _sort(Request& r, const String& method_name, Array *params) {
+	Value& key_maker=*(Value *)params->get(0);
+	// forcing ^sort{this} ^sort(or this) param type
+	r.fail_if_junction_(false, key_maker, method_name, "key-maker must be junction");
+
+	bool reverse;
+	if(params->size()==2) { // ..[asc|desc]
+		Value& order=*(Value *)params->get(1);
+		// forcing ..[this param-type]
+		r.fail_if_junction_(false, order, method_name, "order must not be junction");
+		reverse=order.as_string()=="asc";
+	} else
+		reverse=false;
+
+	// calculating key values
+	Table& table=static_cast<VTable *>(r.self)->table();
+	Order_item *order=(Order_item *)malloc(sizeof(Order_item)*table.size());
+	Order_item *current=order;
+	for(int i=0; i<table.size(); i++) {
+		table.set_current(i);
+		// todo: think about rcontext! must be VTable, could be not
+		// calculate key value
+		current->index=i;
+		current->value=&r.process(key_maker);
+		current++;
+	}
+	// sort keys
+	//\ todo
+
+	// reorder table as they require in 'order'
+	//\ todo
+
+	table.set_current(0);
+}
+
 // initialize
 
 void initialize_table_class(Pool& pool, VStateless_class& vclass) {
@@ -276,5 +315,9 @@ void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^table.record[]
 	vclass.add_native_method("record", _record, 0, 0);
+
+	// ^table.sort{string-key-maker} ^table.sort{string-key-maker}[asc|desc]
+	// ^table.sort(numeric-key-maker) ^table.sort(numeric-key-maker)[asc|desc]
+	vclass.add_native_method("sort", _sort, 1, 2);
 
 }	

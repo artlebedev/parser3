@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.117 2001/03/27 13:47:30 paf Exp $
+	$Id: compile.y,v 1.118 2001/03/27 14:50:47 paf Exp $
 */
 
 /**
@@ -574,7 +574,7 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		} else
 			PC.col++;
 
-		if(c=='^') 
+		if(c=='^' && PC.ls!=LS_COMMENT) 
 			switch(*PC.source) {
 			// escaping: ^^ ^$ ^; ^) ^} ^( ^{ ^"
 			case '^': case '$': case ';':
