@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.83 2001/03/10 12:12:51 paf Exp $
+  $Id: execute.C,v 1.84 2001/03/10 13:07:09 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -562,7 +562,7 @@ Value *Request::get_element() {
 	Value *value=ncontext->get_element(name);
 
 	if(value)
-		value=&autocalc(*value); // autocalc possible code-junction
+		value=&autocalc(*value, &name); // autocalc possible code-junction
 	else {
 		value=NEW VUnknown(pool());
 		value->set_name(name);
@@ -571,7 +571,7 @@ Value *Request::get_element() {
 	return value;
 }
 
-Value& Request::autocalc(Value& value, bool make_string) {
+Value& Request::autocalc(Value& value, const String *name, bool make_string) {
 	Junction *junction=value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
 		// autocalc it
@@ -604,6 +604,8 @@ Value& Request::autocalc(Value& value, bool make_string) {
 			result=NEW VString(*frame->get_string());
 		} else 
 			result=frame->result();
+		if(name)
+			result->set_name(*name);
 		
 		wcontext=static_cast<WContext *>(POP());  
 		rcontext=POP();  
