@@ -1,4 +1,4 @@
-INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql @XML_INCLUDES@
+INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql -I../../pcre @XML_INCLUDES@
 
 #for sysadmin-controlled auto.p
 CPPFLAGS:=$(CPPFLAGS) -DSYSCONFDIR=\"$(sysconfdir)\"
