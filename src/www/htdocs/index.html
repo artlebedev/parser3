@@ -2,12 +2,12 @@
 #^безнадёжна_попытка_поправить_непоправимое[]
 #^tcache[]
 #^thashfileexp[]
-^tcounter[]
+#^tcounter[]
 #^tablehash[]
 #^hashfile[]
 #^formclass[]
 #^hren[]
-#^domedit[]
+^domedit[]
 #^domxslt[]
 #^lsplit2[]
 #^faceesize[]
@@ -128,8 +128,9 @@ paf=$hf.paf
 $a
 $xdoc[^xdoc::create[doc]]
 $doc[$xdoc.documentElement]
-$name[^doc.appendChild[^xdoc.createElement[name]]]
-$text[^name.appendChild[^xdoc.createTextNode[петросян petrosian]]]
+$name[^doc.appendChild[^xdoc.createElement{name}]]
+$text[^name.appendChild[^xdoc.createTextNode{петросян&nbsp^;co}]]
+^untaint[as-is]{=$text.nodeValue=}
 
 @domedit[]
 ^domdata[]
@@ -459,8 +460,9 @@ $file[^xdoc.file[
 	$.method[html]
 ]]
 ^file.save[text;save_file.html]
-<pre>^taint[^xdoc.string[]]
+<pre>taint[^xdoc.string[]]
 #	$.encoding[windows-1251]
 #	$.method[html]
 #]]
 </pre>
+

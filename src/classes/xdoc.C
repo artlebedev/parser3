@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.36 2001/10/26 12:23:16 paf Exp $
+	$Id: xdoc.C,v 1.37 2001/10/26 15:55:20 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -77,7 +77,9 @@ static void _createElement(Request& r, const String& method_name, MethodParams *
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const String& tagName=params->as_string(0, "tagName must be string");
+	Temp_lang temp_lang(r, String::UL_XML);
+	Value& tagName_code=params->as_junction(0, "tagName must be string");
+	const String& tagName=r.process(tagName_code).as_string();
 
 	try {
 		XalanNode *node=
@@ -109,7 +111,9 @@ static void _createTextNode(Request& r, const String& method_name, MethodParams 
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const String& data=params->as_string(0, "data must be string");
+	Temp_lang temp_lang(r, String::UL_XML);
+	Value& data_code=params->as_junction(0, "data must be string");
+	const String& data=r.process(data_code).as_string();
 
 	XalanNode *node=
 		vdoc.get_document(pool, &method_name).

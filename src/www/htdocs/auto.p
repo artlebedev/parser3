@@ -1,0 +1,2 @@
+@auto[]
+#$ORIGINS(1)
