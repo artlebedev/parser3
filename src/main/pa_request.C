@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.124 2001/04/28 10:58:33 paf Exp $
+	$Id: pa_request.C,v 1.125 2001/04/28 12:58:44 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -212,7 +212,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			}
 		}
 
-		// compiling requested file
+		// compile requested file
 		String& spath_translated=*NEW String(pool());
 		spath_translated.APPEND_CLEAN(info.path_translated, 0, "user-request", 0);
 		main_class=use_file(spath_translated, true/*don't ignore read problem*/,
@@ -252,8 +252,6 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 					ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]
 				$word[
 					0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz]
-				$meta[
-					^#00$()*+.?[^{|]
 
 				$lowercase[
 					AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz]

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.85 2001/04/28 10:58:30 paf Exp $
+	$Id: pa_request.h,v 1.86 2001/04/28 12:58:41 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -147,15 +147,15 @@ public:
 
 	/// operators are methods of this class
 	Methoded& OP;
-	/// $env:fields here
+	/// $env:fields
 	VEnv env;
-	/// $form:elements here
+	/// $form:elements
 	VForm form;
-	/// $request:elements here
+	/// $request:elements
 	VRequest request;
-	/// $response:
+	/// $response:elements
 	VResponse response;
-	/// $cookie:
+	/// $cookie:elements
 	VCookie cookie;
 
 	/// contexts
@@ -163,7 +163,7 @@ public:
 	/// contexts
 	WContext *wcontext;
 
-	/// main class conglomerat
+	/// 'MAIN' class conglomerat
 	VStateless_class *main_class;
 
 	/// connection
