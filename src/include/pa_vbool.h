@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vbool.h,v 1.1 2001/03/06 15:55:46 paf Exp $
+  $Id: pa_vbool.h,v 1.2 2001/03/08 12:19:19 paf Exp $
 */
 
 #ifndef PA_VBOOL_H
@@ -15,26 +15,26 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "bool"; }
-	// bool: value
+	// bool: fvalue
 	String *get_string() {
 		String *result=NEW String(pool());
-		result->APPEND_CONST(value?"TRUE":"FALSE");
+		result->APPEND_CONST(fvalue?"TRUE":"FALSE");
 		return result;
 	};
-	// bool: value
-	bool get_bool() { return value; };
-	// bool: value
-	double get_double() { return value; };
+	// bool: fvalue
+	bool get_bool() { return fvalue; };
+	// bool: fvalue
+	double get_double() { return fvalue; };
 
 public: // usage
 
 	VBool(Pool& apool, bool avalue/*=false*/) : Value(apool), 
-		value(avalue) {
+		fvalue(avalue) {
 	}
 
 private:
 
-	bool value;
+	bool fvalue;
 
 };
 

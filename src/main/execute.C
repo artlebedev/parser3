@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.68 2001/03/08 12:13:36 paf Exp $
+  $Id: execute.C,v 1.69 2001/03/08 12:19:21 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -294,11 +294,11 @@ void Request::execute(const Array& ops) {
 					// substitute class alias to the class they are called AS
 					Temp_alias temp_alias(*aliased, *frame->junction.vclass);
 
-					Method& method=frame->junction.method;
-					if(method->native_code) // native code?
-						(*method->native_code)(*this); // execute it
+					Method& method=*frame->junction.method;
+					if(method.native_code) // native code?
+						(*method.native_code)(*this); // execute it
 					else // parser code
-						execute(*method->parser_code); // execute it
+						execute(*method.parser_code); // execute it
 				}
 				Value *value=wcontext->result();
 

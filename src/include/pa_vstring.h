@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vstring.h,v 1.9 2001/03/06 17:03:17 paf Exp $
+  $Id: pa_vstring.h,v 1.10 2001/03/08 12:19:20 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -14,25 +14,25 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "string"; }
-	// value: value
-	String *get_string() { return &value; };
-	// value: value
-	double get_double() { return atof(value.cstr()); }
-	// value: empty or not
-	bool get_bool() { return value.size()!=0; };
+	// fvalue: fvalue
+	String *get_string() { return &fvalue; };
+	// fvalue: fvalue
+	double get_double() { return atof(fvalue.cstr()); }
+	// fvalue: empty or not
+	bool get_bool() { return fvalue.size()!=0; };
 
 public: // usage
 
 	VString(Pool& apool) : Value(apool), 
-		value(*new(apool) String(apool)) {
+		fvalue(*new(apool) String(apool)) {
 	}
 
 	VString(String& avalue) : Value(avalue.pool()), 
-		value(avalue) {
+		fvalue(avalue) {
 	}
 
 private:
-	String& value;
+	String& fvalue;
 
 };
 

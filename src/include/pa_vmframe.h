@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.14 2001/03/08 12:13:35 paf Exp $
+  $Id: pa_vmframe.h,v 1.15 2001/03/08 12:19:20 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -18,20 +18,20 @@ public: // Value
 	Value *get_element(const String& name) { 
 		Value *result=static_cast<Value *>(my.get(name));
 		if(!result)
-			result=self->get_element(name);
+			result=fself->get_element(name);
 		return result; 
 	}
 	// frame: my or self_transparent
 	void put_element(const String& name, Value *value){ 
 		if(!my.put_replace(name, value))
-			self->put_element(name, value);
+			fself->put_element(name, value);
 	}
 
 	// frame: self_transparent
-	VClass* get_class() { return self->get_class(); }
+	VClass* get_class() { return fself->get_class(); }
 
 	// methodframe: self_transparent
-	VAliased *get_aliased() { return self->get_aliased(); }
+	VAliased *get_aliased() { return fself->get_aliased(); }
 
 public: // usage
 
@@ -41,7 +41,7 @@ public: // usage
 		junction(ajunction),
 		store_param_index(0),
 		my(apool),
-		self(0) {
+		fself(0) {
 		if(Method* method=junction.method) { // method junction?
 			if(method->locals_names) { // there are any local var names?
 				// remember them
@@ -55,7 +55,7 @@ public: // usage
 		}
 	}
 
-	void set_self(Value& aself) { self=&aself; }
+	void set_self(Value& aself) { fself=&aself; }
 
 	void store_param(Value *value) {
 		Method *method=junction.method;
@@ -88,7 +88,7 @@ public:
 private:
 	int store_param_index;
 	Hash my;
-	Value *self;
+	Value *fself;
 
 };
 

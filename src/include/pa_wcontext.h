@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.21 2001/03/06 15:02:47 paf Exp $
+  $Id: pa_wcontext.h,v 1.22 2001/03/08 12:19:20 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -14,8 +14,8 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "wcontext"; }
-	// WContext: accumulated string
-	String *get_string() { return &string; };
+	// WContext: accumulated fstring
+	String *get_string() { return &fstring; };
 
 	// WContext: none yet | transparent
 	VClass *get_class() { return fvalue?fvalue->get_class():0; }
@@ -24,10 +24,10 @@ public: // Value
 
 public: // WContext
 
-	// appends a string to result
+	// appends a fstring to result
 	virtual void write(String *astring);
 
-	// if value is VString writes string,
+	// if value is VString writes fstring,
 	// else writes Value; raises an error if already
 	virtual void write(Value *avalue);
 
@@ -36,7 +36,7 @@ public: // usage
 	WContext(Pool& apool, Value *avalue, bool aconstructing) : Value(apool), 
 		fvalue(avalue),
 		fconstructing(aconstructing),
-		string(*new(apool) String(apool)) {
+		fstring(*new(apool) String(apool)) {
 	}
 
 	bool constructing() { return fconstructing; }
@@ -48,14 +48,14 @@ public: // usage
 	// retrives the resulting value
 	// that can be VString if value==0 or the Value object
 	Value *result() const {
-		return fvalue?fvalue:NEW VString(string);
+		return fvalue?fvalue:NEW VString(fstring);
 	}
 
 protected:
 	Value *fvalue;
 private:
 	bool fconstructing;
-	String& string;
+	String& fstring;
 };
 
 #endif

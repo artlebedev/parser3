@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vjunction.h,v 1.2 2001/03/06 15:02:47 paf Exp $
+  $Id: pa_vjunction.h,v 1.3 2001/03/08 12:19:20 paf Exp $
 */
 
 #ifndef PA_VJUNCTION_H
@@ -11,20 +11,20 @@ class VJunction : public Value {
 public: // VJunction
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "junction"; }
+	const char *type() const { return "fjunction"; }
 
-	// junction: method, root,self,rcontext, code
-	Junction *get_junction() { return &junction; }
+	// fjunction: method, root,self,rcontext, code
+	Junction *get_junction() { return &fjunction; }
 
 public: // usage
 
 	VJunction(Junction& ajunction) : Value(ajunction.pool()),
-		junction(ajunction) {
+		fjunction(ajunction) {
 	}
 
 private:
 
-	Junction& junction;
+	Junction& fjunction;
 };
 
 
