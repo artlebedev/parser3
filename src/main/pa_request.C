@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.111 2001/04/11 08:36:19 paf Exp $
+	$Id: pa_request.C,v 1.112 2001/04/11 15:45:51 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -22,7 +22,7 @@
 #include "_file.h"
 #include "pa_globals.h"
 #include "pa_vint.h"
-#include "pa_vmframe.h"
+#include "pa_vmethod_frame.h"
 #include "pa_types.h"
 #include "pa_vtable.h"
 #include "_random.h"

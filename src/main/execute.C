@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.144 2001/04/10 10:32:10 paf Exp $
+	$Id: execute.C,v 1.145 2001/04/11 15:45:50 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -15,8 +15,8 @@
 #include "pa_vstring.h"
 #include "pa_vhash.h"
 #include "pa_vunknown.h"
-#include "pa_vcframe.h"
-#include "pa_vmframe.h"
+#include "pa_vcode_frame.h"
+#include "pa_vmethod_frame.h"
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
 #include "pa_vbool.h"

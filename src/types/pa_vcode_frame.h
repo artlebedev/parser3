@@ -3,11 +3,11 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcframe.h,v 1.3 2001/03/16 11:10:21 paf Exp $
+	$Id: pa_vcode_frame.h,v 1.1 2001/04/11 15:45:53 paf Exp $
 */
 
-#ifndef PA_VCFRAME_H
-#define PA_VCFRAME_H
+#ifndef PA_VCODE_FRAME_H
+#define PA_VCODE_FRAME_H
 
 #include "pa_wwrapper.h"
 #include "pa_vunknown.h"
