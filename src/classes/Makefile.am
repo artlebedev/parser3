@@ -13,5 +13,5 @@ $(CLASSES_INC): $(METHODED) classes.awk
 $(CLASSES_C): $(CLASSES_INC)
 
 noinst_LIBRARIES = libclasses.a
-libclasses_a_SOURCES = $(CLASSES_C) double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C
+libclasses_a_SOURCES = $(CLASSES_C) double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C date.C dom.C dnode.C
 CLEANFILES = $(CLASSES_INC)

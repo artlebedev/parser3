@@ -76,6 +76,7 @@ OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
+XML_SRC = @XML_SRC@
 YACC = @YACC@
 host_os = @host_os@
 
@@ -109,7 +110,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/compile.P .deps/compile.tab.P .deps/compile_tools.P \
 .deps/execute.P .deps/pa_array.P .deps/pa_common.P \
@@ -223,7 +224,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
@@ -357,6 +358,7 @@ all-redirect all-am all installdirs mostlyclean-generic \
 distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
+#libmain_a_LDADD = -I$(XML_SRC)/xml-xerces/c/src -I$(XML_SRC)/xml-xalan/c/src
 
 compile.tab.C: compile.y
 	bison -v $< -o $@

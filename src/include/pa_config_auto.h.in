@@ -78,6 +78,9 @@
 /* no 'first' module */
 #undef WITHOUT_FIRST
 
+/* xml-abled parser */
+#undef XML
+
 /* Windows32 target platform */
 #undef WIN32
 
