@@ -88,7 +88,7 @@ host_os = @host_os@
 sqldriversdir = @sqldriversdir@
 
 charsetsdir = @charsetsdir@
-charsets_DATA = windows-1251.cfg koi8-r.cfg
+charsets_DATA = windows-1251.cfg koi8-r.cfg windows-1250.cfg
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
