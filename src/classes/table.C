@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.105 2001/08/21 11:12:20 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.106 2001/08/24 06:26:13 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -152,7 +152,7 @@ static Table *fill_month_days(Request& r,
     	for(int wday=0; wday<7; wday++, _day++) {
         	String *cell=new(pool) String(pool);
 			if(_day>=1 && _day<=monthDays) {
-				char *buf=(char *)malloc(2+1); 
+				char *buf=(char *)pool.malloc(2+1); 
 				cell->APPEND_CLEAN(buf, sprintf(buf, "%02d", _day), 
 					method_name.origin().file, method_name.origin().line);
             }
@@ -196,7 +196,7 @@ static Table *fill_week_days(Request& r,
         tm *tmOut=localtime(&t);
 		Array& row=*new(pool) Array(pool, 4);
 #define WDFILL(size, value) { \
-		char *buf=(char *)malloc(size+1); \
+		char *buf=(char *)pool.malloc(size+1); \
 		String *cell=new(pool) String(pool); \
 		cell->APPEND_CLEAN(buf, sprintf(buf, "%0"#size"d", value), \
 			method_name.origin().file, \
@@ -261,7 +261,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		} else { // nameless table
 			if(int lsize=table.size()?static_cast<Array *>(table.get(0))->size():0)
 				for(int column=0; column<lsize; column++) {
-					char *cindex_tab=(char *)malloc(MAX_NUMBER);
+					char *cindex_tab=(char *)pool.malloc(MAX_NUMBER);
 					snprintf(cindex_tab, MAX_NUMBER, "%d\t", column);
 					sdata.APPEND_CONST(cindex_tab);
 				}

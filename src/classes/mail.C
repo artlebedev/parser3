@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.34 2001/08/06 16:18:26 parser Exp $
+	$Id: mail.C,v 1.35 2001/08/24 06:26:13 parser Exp $
 */
-static const char *RCSId="$Id: mail.C,v 1.34 2001/08/06 16:18:26 parser Exp $"; 
+static const char *RCSId="$Id: mail.C,v 1.35 2001/08/24 06:26:13 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -278,7 +278,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 
 			// body parts..
 			// ..collect
-			Mail_seq_item *seq=(Mail_seq_item *)malloc(sizeof(Mail_seq_item)*body_hash->size());
+			Mail_seq_item *seq=(Mail_seq_item *)pool.malloc(sizeof(Mail_seq_item)*body_hash->size());
 			Mail_seq_item *seq_ref=seq;  body_hash->for_each(add_part, &seq_ref);
 			// ..sort
 			_qsort(seq, body_hash->size(), sizeof(Mail_seq_item), 

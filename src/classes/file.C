@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.49 2001/08/23 12:10:30 parser Exp $
+	$Id: file.C,v 1.50 2001/08/24 06:26:13 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.49 2001/08/23 12:10:30 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.50 2001/08/24 06:26:13 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -315,7 +315,7 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 				&regexp->mid(erroffset, regexp->size()), 
 				"regular expression syntax error - %s", errptr);
 
-		ovector=(int *)malloc(sizeof(int)*(ovecsize=(1/*match*/)*3));
+		ovector=(int *)pool.malloc(sizeof(int)*(ovecsize=(1/*match*/)*3));
 	} else 
 		regexp_code=0;
 
@@ -347,7 +347,7 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 		}
 
 		if(suits) {
-			char *file_name_cstr=(char *)r.malloc(file_name_size);
+			char *file_name_cstr=(char *)pool.malloc(file_name_size);
 			memcpy(file_name_cstr, ffblk.ff_name, file_name_size);
 			String &file_name=*new(pool) String(pool);
 			file_name.APPEND(file_name_cstr, file_name_size, String::UL_FILE_NAME, 

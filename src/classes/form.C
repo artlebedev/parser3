@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: form.C,v 1.13 2001/06/28 07:44:17 parser Exp $
+	$Id: form.C,v 1.14 2001/08/24 06:26:13 parser Exp $
 */
-static const char *RCSId="$Id: form.C,v 1.13 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: form.C,v 1.14 2001/08/24 06:26:13 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -65,7 +65,7 @@ void MForm::configure_admin(Request& r) {
 					r.post_size, max_post_size);
 
 		// read POST data
-		r.post_data=(char *)malloc(r.info.content_length);
+		r.post_data=(char *)pool.malloc(r.info.content_length);
 		r.post_size=SAPI::read_post(pool, r.post_data, r.info.content_length);
 		if(r.post_size!=r.info.content_length)
 			PTHROW(0, 0, 
