@@ -1,3 +1,5 @@
+// TODO: $RESULT
+
 enum Prefix {
 	NO_PREFIX,
 	ROOT_PREFIX,
@@ -23,6 +25,7 @@ Char_types var_or_method_start_or_constructor_stop;
 Char_types var_or_method_start_or_block_stop;
 Char_types common_names_breaks, var_names_breaks, method_names_breaks;
 String SELF;
+String RESULT;
 
 void prepare() {
 	var_or_method_start.set('$', VAR_START_TYPE);
@@ -46,6 +49,7 @@ void prepare() {
 	method_names_breaks.set('[', BLOCK_START_TYPE);
 
 	SELF.APPEND("self", 0, 0);
+	RESULT.APPEND("result", 0, 0);
 }
 
 CHAR_TYPE process(method_self_n_params_n_locals& root, Value& self,
@@ -122,14 +126,19 @@ void process_var(method_self_n_params_n_locals& root, Value& self,
 			// .name(construct-code), processing on arcontext in empty temp awcontext
 			// pure side effect, no awcontext.write here
 			// last .name
+			// prepare context
 			String& name=static_cast<String&>(names.get[steps]);
 			WContext local_wcontext(pool /* empty */);
+			// evaluate constructor-code in that context
 			process(root, self, arcontext, local_wcontext, iter, ')');
+			// store constructed value under 'name'
 			context->put_element(name, local_wcontext.value());
-		} else { // =='['
-			// .name[with-code], processing on 'context'
+		} else { // =='['  .name[with-code]
+			// prepare context
 			WContext local_context(pool, context);
+			// evaluate with-code in that context
 			process(root, self, local_context, local_context, iter, ']');
+			// emit result
 			awcontext.write(local_context);
 		}
 		
@@ -232,20 +241,16 @@ void process_method(method_self_n_params_n_locals& root, Value& self,
 		method->local_names);
 	WContext local_wcontext(pool, context);
 	String_iterator local_iter(method->code);
-	// call method/operator
+	// call method/operator in those contexts
 	process(
 		local_rcontext/* $:vars */, context /* $self.vars */,
 		local_rcontext, local_wcontext, 
 		local_iter, 0);
+	// emit result
 	awcontext.write(local_wcontext);
 }
 
 
-enum Prefix {
-	NO_PREFIX,
-	ROOT_PREFIX,
-	SELF_PREFIX
-};
 CHAR_TYPE get_names(
 		String_iterator& iter, Char_types& breaks,
 		Prefix& prefix, Array& names) {
