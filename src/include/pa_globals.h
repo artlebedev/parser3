@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.18 2001/03/21 15:53:20 paf Exp $
+	$Id: pa_globals.h,v 1.19 2001/03/21 16:48:13 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -55,7 +55,7 @@ struct Service_funcs {
 	/// get env
 	const char *(*get_env)(Pool& pool, const char *name);
 	/// read POST request bytes
-	int (*read_post)(Pool& pool, char *buf, int max_bytes);
+	uint (*read_post)(Pool& pool, char *buf, uint max_bytes);
 	/// add response header attribute
 	void (*add_header_attribute)(Pool& pool, const char *key, const char *value);
 	/// add response header attribute

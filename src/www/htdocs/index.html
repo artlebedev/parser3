@@ -1,14 +1,12 @@
 @main[]
-$href[${request:uri}.]
-<a href=$href>$href</a>
-<HR>
+<form method=post>
+(^$form:name=$form:name)<BR>
+<input name=name value="^default[$form:name;не знаю]">
+<input type=submit>
+</form>
 
-^$cookie:a={$cookie:a}<BR>
-$cookie:a[123]
-^$form:a={$form:a}<BR>
-$env:CONTENT_LENGTH ?<BR>
-
-^$env:REQUEST_URI={$env:REQUEST_URI}<BR>
+@default[test;def]
+^if(^test.length[]){$test}{$def}
 
 @exception[origin;source;comment;type;code]
 ERROR:

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.4 2001/03/21 15:53:26 paf Exp $
+	$Id: mod_parser3.C,v 1.5 2001/03/21 16:48:17 paf Exp $
 */
 
 #include "httpd.h"
@@ -78,8 +78,8 @@ static table *static_calls_made = NULL;
  * freed each time we modify the trace.  That way previous layers of trace
  * data don't get lost.
  */
-static pool *example_pool = NULL;
-static pool *example_subpool = NULL;
+static pool *parser3_pool = NULL;
+static pool *parser3_subpool = NULL;
 
 /*
  * Declare ourselves so the configuration routines can find and know us.
@@ -246,15 +246,15 @@ static void setup_module_cells()
     /*
      * If we haven't already allocated our module-private pool, do so now.
      */
-    if (example_pool == NULL) {
-        example_pool = ap_make_sub_pool(NULL);
+    if (parser3_pool == NULL) {
+        parser3_pool = ap_make_sub_pool(NULL);
     };
     /*
      * Likewise for the table of routine/environment pairs we visit outside of
      * request context.
      */
     if (static_calls_made == NULL) {
-        static_calls_made = ap_make_table(example_pool, 16);
+        static_calls_made = ap_make_table(parser3_pool, 16);
     };
 }
 
@@ -312,7 +312,7 @@ static void trace_add(server_rec *s, request_rec *r, excfg *mconfig,
          * Make a new sub-pool and copy any existing trace to it.  Point the
          * trace cell at the copied value.
          */
-        p = ap_make_sub_pool(example_pool);
+        p = ap_make_sub_pool(parser3_pool);
         if (trace != NULL) {
             trace = ap_pstrdup(p, trace);
         }
@@ -320,10 +320,10 @@ static void trace_add(server_rec *s, request_rec *r, excfg *mconfig,
          * Now, if we have a sub-pool from before, nuke it and replace with
          * the one we just allocated.
          */
-        if (example_subpool != NULL) {
-            ap_destroy_pool(example_subpool);
+        if (parser3_subpool != NULL) {
+            ap_destroy_pool(parser3_subpool);
         }
-        example_subpool = p;
+        parser3_subpool = p;
         trace_copy = trace;
     }
     /*
@@ -376,8 +376,8 @@ static void trace_add(server_rec *s, request_rec *r, excfg *mconfig,
      * these co-routines are called for every single request, and the impact
      * on the size (and readability) of the error_log is considerable.
      */
-#define EXAMPLE_LOG_EACH 0
-#if EXAMPLE_LOG_EACH
+#define parser3_LOG_EACH 0
+#if parser3_LOG_EACH
     if (s != NULL) {
         ap_log_error(APLOG_MARK, APLOG_DEBUG, s, "mod_example: %s", note);
     }
@@ -453,18 +453,31 @@ const char *get_env(Pool& pool, const char *name) {
  	return (const char *)ap_table_get(r->subprocess_env, name);
 }
 
-int read_post(Pool& pool, char *buf, int max_bytes) {
-	return 0;/* @todo
-	int read_size=0;
-	do {
-		int chunk_size=read
-			(fileno(stdin), buf+read_size, min(0x400*0x400, max_bytes-read_size));
-		if(chunk_size<0)
-			break;
-		read_size+=chunk_size;
-	} while(read_size<max_bytes);
+uint read_post(Pool& pool, char *buf, uint max_bytes) {
+	request_rec *r=static_cast<request_rec *>(pool.info());
 
-	return read_size;*/
+/*    ap_log_error(APLOG_MARK, APLOG_DEBUG, r->server, 
+		"mod_parser3: read_post(max=%u)", max_bytes);
+*/
+	int retval;
+    if((retval = ap_setup_client_block(r, REQUEST_CHUNKED_ERROR)))
+		return 0;
+	if(!ap_should_client_block(r))
+		return 0;
+
+	uint total_read_bytes=0;
+	void (*handler)(int)=signal(SIGPIPE, SIG_IGN);
+	while (total_read_bytes<max_bytes) {
+		ap_hard_timeout("Read POST information", r); /* start timeout timer */
+		uint read_bytes=
+			ap_get_client_block(r, buf+total_read_bytes, max_bytes-total_read_bytes);
+		ap_reset_timeout(r);
+		if (read_bytes<=0)
+			break;
+		total_read_bytes+=read_bytes;
+	}
+	signal(SIGPIPE, handler);	
+	return total_read_bytes;
 }
 
 void add_header_attribute(Pool& pool, const char *key, const char *value) {
@@ -483,12 +496,18 @@ void add_header_attribute(Pool& pool, const char *key, const char *value) {
 
 void send_header(Pool& pool) {
 	request_rec *r=static_cast<request_rec *>(pool.info());
+
+    ap_hard_timeout("send header", r);
     ap_send_http_header(r);
+	ap_kill_timeout(r);
 }
 
 void send_body(Pool& pool, const char *buf, size_t size) {
 	request_rec *r=static_cast<request_rec *>(pool.info());
+
+    ap_hard_timeout("send body", r);
 	ap_rwrite(buf, size, r);
+	ap_kill_timeout(r);
 }
 
 ///@todo initSocks();
@@ -508,7 +527,6 @@ static int parser3_handler(request_rec *r)
 	 */
 	r->no_cache=1;
 
-    ap_soft_timeout("send example call trace", r);
 	PTRY { // global try
 		const char *filespec_to_process=r->filename;
 
@@ -531,7 +549,8 @@ static int parser3_handler(request_rec *r)
 		request_info.query_string=r->args;
 		request_info.uri=
 			(const char *)ap_table_get(r->subprocess_env, "REQUEST_URI");
-		request_info.content_type=r->content_type;
+		request_info.content_type=
+			(const char *)ap_table_get(r->subprocess_env, "CONTENT_TYPE");
 		const char *content_length = 
 			(const char *)ap_table_get(r->subprocess_env, "CONTENT_LENGTH");
 		request_info.content_length=(content_length?atoi(content_length):0);
@@ -596,7 +615,6 @@ static int parser3_handler(request_rec *r)
 		// unsuccessful finish
 	}
 	PEND_CATCH
-	ap_kill_timeout(r);
 
     /*
      * We did what we wanted to do, so tell the rest of the server we
@@ -688,7 +706,7 @@ static void parser3_init(server_rec *s, pool *p)
 /*
  * All our process-initialiser does is add its trace to the log.
  */
-static void example_child_init(server_rec *s, pool *p)
+static void parser3_child_init(server_rec *s, pool *p)
 {
 
     char *note;
@@ -703,7 +721,7 @@ static void example_child_init(server_rec *s, pool *p)
      * we're being called.
      */
     sname = (sname != NULL) ? sname : "";
-    note = ap_pstrcat(p, "example_child_init(", sname, ")", NULL);
+    note = ap_pstrcat(p, "parser3_child_init(", sname, ")", NULL);
     trace_add(s, NULL, NULL, note);
 }
 
@@ -719,7 +737,7 @@ static void example_child_init(server_rec *s, pool *p)
 /*
  * All our process-death routine does is add its trace to the log.
  */
-static void example_child_exit(server_rec *s, pool *p)
+static void parser3_child_exit(server_rec *s, pool *p)
 {
 
     char *note;
@@ -730,7 +748,7 @@ static void example_child_exit(server_rec *s, pool *p)
      * we're being called.
      */
     sname = (sname != NULL) ? sname : "";
-    note = ap_pstrcat(p, "example_child_exit(", sname, ")", NULL);
+    note = ap_pstrcat(p, "parser3_child_exit(", sname, ")", NULL);
     trace_add(s, NULL, NULL, note);
 }
 
@@ -746,7 +764,7 @@ static void example_child_exit(server_rec *s, pool *p)
  * The return value is a pointer to the created module-specific
  * structure.
  */
-static void *example_create_dir_config(pool *p, char *dirspec)
+static void *parser3_create_dir_config(pool *p, char *dirspec)
 {
 
     excfg *cfg;
@@ -768,7 +786,7 @@ static void *example_create_dir_config(pool *p, char *dirspec)
      */
     dname = (dname != NULL) ? dname : "";
     cfg->loc = ap_pstrcat(p, "DIR(", dname, ")", NULL);
-    trace_add(NULL, NULL, cfg, "example_create_dir_config()");
+    trace_add(NULL, NULL, cfg, "parser3_create_dir_config()");
     return (void *) cfg;
 }
 
@@ -787,7 +805,7 @@ static void *example_create_dir_config(pool *p, char *dirspec)
  * The return value is a pointer to the created module-specific structure
  * containing the merged values.
  */
-static void *example_merge_dir_config(pool *p, void *parent_conf,
+static void *parser3_merge_dir_config(pool *p, void *parent_conf,
                                       void *newloc_conf)
 {
 
@@ -819,7 +837,7 @@ static void *example_merge_dir_config(pool *p, void *parent_conf,
      * Now just record our being called in the trace list.  Include the
      * locations we were asked to merge.
      */
-    note = ap_pstrcat(p, "example_merge_dir_config(\"", pconf->loc, "\",\"",
+    note = ap_pstrcat(p, "parser3_merge_dir_config(\"", pconf->loc, "\",\"",
                    nconf->loc, "\")", NULL);
     trace_add(NULL, NULL, merged_config, note);
     return (void *) merged_config;
@@ -832,14 +850,14 @@ static void *example_merge_dir_config(pool *p, void *parent_conf,
  * The return value is a pointer to the created module-specific
  * structure.
  */
-static void *example_create_server_config(pool *p, server_rec *s)
+static void *parser3_create_server_config(pool *p, server_rec *s)
 {
 
     excfg *cfg;
     char *sname = s->server_hostname;
 
     /*
-     * As with the example_create_dir_config() reoutine, we allocate and fill
+     * As with the parser3_create_dir_config() reoutine, we allocate and fill
      * in an empty record.
      */
     cfg = (excfg *) ap_pcalloc(p, sizeof(excfg));
@@ -851,7 +869,7 @@ static void *example_create_server_config(pool *p, server_rec *s)
      */
     sname = (sname != NULL) ? sname : "";
     cfg->loc = ap_pstrcat(p, "SVR(", sname, ")", NULL);
-    trace_add(s, NULL, cfg, "example_create_server_config()");
+    trace_add(s, NULL, cfg, "parser3_create_server_config()");
     return (void *) cfg;
 }
 
@@ -868,7 +886,7 @@ static void *example_create_server_config(pool *p, server_rec *s)
  * The return value is a pointer to the created module-specific structure
  * containing the merged values.
  */
-static void *example_merge_server_config(pool *p, void *server1_conf,
+static void *parser3_merge_server_config(pool *p, void *server1_conf,
                                          void *server2_conf)
 {
 
@@ -889,32 +907,10 @@ static void *example_merge_server_config(pool *p, void *server1_conf,
     /*
      * Trace our call, including what we were asked to merge.
      */
-    note = ap_pstrcat(p, "example_merge_server_config(\"", s1conf->loc, "\",\"",
+    note = ap_pstrcat(p, "parser3_merge_server_config(\"", s1conf->loc, "\",\"",
                    s2conf->loc, "\")", NULL);
     trace_add(NULL, NULL, merged_config, note);
     return (void *) merged_config;
-}
-
-/*
- * This routine is called after the request has been read but before any other
- * phases have been processed.  This allows us to make decisions based upon
- * the input header fields.
- *
- * The return value is OK, DECLINED, or HTTP_mumble.  If we return OK, no
- * further modules are called for this phase.
- */
-static int example_post_read_request(request_rec *r)
-{
-
-    excfg *cfg;
-
-    cfg = our_dconfig(r);
-    /*
-     * We don't actually *do* anything here, except note the fact that we were
-     * called.
-     */
-    trace_add(r->server, r, cfg, "example_post_read_request()");
-    return DECLINED;
 }
 
 /*
@@ -925,7 +921,7 @@ static int example_post_read_request(request_rec *r)
  * The return value is OK, DECLINED, or HTTP_mumble.  If we return OK, no
  * further modules are called for this phase.
  */
-static int example_translate_handler(request_rec *r)
+static int parser3_translate_handler(request_rec *r)
 {
 
     excfg *cfg;
@@ -935,7 +931,7 @@ static int example_translate_handler(request_rec *r)
      * We don't actually *do* anything here, except note the fact that we were
      * called.
      */
-    trace_add(r->server, r, cfg, "example_translate_handler()");
+    trace_add(r->server, r, cfg, "parser3_translate_handler()");
     return DECLINED;
 }
 
@@ -948,7 +944,7 @@ static int example_translate_handler(request_rec *r)
  * HTTP_UNAUTHORIZED).  If we return OK, no other modules are given a chance
  * at the request during this phase.
  */
-static int example_check_user_id(request_rec *r)
+static int parser3_check_user_id(request_rec *r)
 {
 
     excfg *cfg;
@@ -957,7 +953,7 @@ static int example_check_user_id(request_rec *r)
     /*
      * Don't do anything except log the call.
      */
-    trace_add(r->server, r, cfg, "example_check_user_id()");
+    trace_add(r->server, r, cfg, "parser3_check_user_id()");
     return DECLINED;
 }
 
@@ -971,7 +967,7 @@ static int example_check_user_id(request_rec *r)
  * If *all* modules return DECLINED, the request is aborted with a server
  * error.
  */
-static int example_auth_checker(request_rec *r)
+static int parser3_auth_checker(request_rec *r)
 {
 
     excfg *cfg;
@@ -981,7 +977,7 @@ static int example_auth_checker(request_rec *r)
      * Log the call and return OK, or access will be denied (even though we
      * didn't actually do anything).
      */
-    trace_add(r->server, r, cfg, "example_auth_checker()");
+    trace_add(r->server, r, cfg, "parser3_auth_checker()");
     return DECLINED;
 }
 
@@ -994,57 +990,14 @@ static int example_auth_checker(request_rec *r)
  * return OK or DECLINED.  The first one to return any other status, however,
  * will abort the sequence (and the request) as usual.
  */
-static int example_access_checker(request_rec *r)
+static int parser3_access_checker(request_rec *r)
 {
 
     excfg *cfg;
 
     cfg = our_dconfig(r);
-    trace_add(r->server, r, cfg, "example_access_checker()");
+    trace_add(r->server, r, cfg, "parser3_access_checker()");
     return DECLINED;
-}
-
-/*
- * This routine is called to determine and/or set the various document type
- * information bits, like Content-type (via r->content_type), language, et
- * cetera.
- *
- * The return value is OK, DECLINED, or HTTP_mumble.  If we return OK, no
- * further modules are given a chance at the request for this phase.
- */
-static int example_type_checker(request_rec *r)
-{
-
-    excfg *cfg;
-
-    cfg = our_dconfig(r);
-    /*
-     * Log the call, but don't do anything else - and report truthfully that
-     * we didn't do anything.
-     */
-    trace_add(r->server, r, cfg, "example_type_checker()");
-    return DECLINED;
-}
-
-/*
- * This routine is called to perform any module-specific fixing of header
- * fields, et cetera.  It is invoked just before any content-handler.
- *
- * The return value is OK, DECLINED, or HTTP_mumble.  If we return OK, the
- * server will still call any remaining modules with an handler for this
- * phase.
- */
-static int example_fixer_upper(request_rec *r)
-{
-
-    excfg *cfg;
-
-    cfg = our_dconfig(r);
-    /*
-     * Log the call and exit.
-     */
-    trace_add(r->server, r, cfg, "example_fixer_upper()");
-    return OK;
 }
 
 /*
@@ -1054,33 +1007,16 @@ static int example_fixer_upper(request_rec *r)
  * The return value is OK, DECLINED, or HTTP_mumble.  If we return OK, any
  * remaining modules with an handler for this phase will still be called.
  */
-static int example_logger(request_rec *r)
+static int parser3_logger(request_rec *r)
 {
 
     excfg *cfg;
 
     cfg = our_dconfig(r);
-    trace_add(r->server, r, cfg, "example_logger()");
+    trace_add(r->server, r, cfg, "parser3_logger()");
     return DECLINED;
 }
 
-/*
- * This routine is called to give the module a chance to look at the request
- * headers and take any appropriate specific actions early in the processing
- * sequence.
- *
- * The return value is OK, DECLINED, or HTTP_mumble.  If we return OK, any
- * remaining modules with handlers for this phase will still be called.
- */
-static int example_header_parser(request_rec *r)
-{
-
-    excfg *cfg;
-
-    cfg = our_dconfig(r);
-    trace_add(r->server, r, cfg, "example_header_parser()");
-    return DECLINED;
-}
 
 /*--------------------------------------------------------------------------*/
 /*                                                                          */
@@ -1094,7 +1030,7 @@ static int example_header_parser(request_rec *r)
 /* 
  * List of directives specific to our module.
  */
-static const command_rec example_cmds[] =
+static const command_rec parser3_cmds[] =
 {
     {
         "Example",              /* directive name */
@@ -1149,29 +1085,29 @@ module MODULE_VAR_EXPORT parser3_module =
 {
     STANDARD_MODULE_STUFF,
     parser3_init,               /* module initializer */
-    example_create_dir_config,  /* per-directory config creator */
-    example_merge_dir_config,   /* dir config merger */
-    example_create_server_config,       /* server config creator */
-    example_merge_server_config,        /* server config merger */
-    example_cmds,               /* command table */
+    parser3_create_dir_config,  /* per-directory config creator */
+    parser3_merge_dir_config,   /* dir config merger */
+    parser3_create_server_config,       /* server config creator */
+    parser3_merge_server_config,        /* server config merger */
+    parser3_cmds,               /* command table */
     parser3_handlers,           /* [9] list of handlers */
-    example_translate_handler,  /* [2] filename-to-URI translation */
-    example_check_user_id,      /* [5] check/validate user_id */
-    example_auth_checker,       /* [6] check user_id is valid *here* */
-    example_access_checker,     /* [4] check access by host address */
-    example_type_checker,       /* [7] MIME type checker/setter */
-    example_fixer_upper,        /* [8] fixups */
-    example_logger,             /* [10] logger */
+    parser3_translate_handler,  /* [2] filename-to-URI translation */
+    parser3_check_user_id,      /* [5] check/validate user_id */
+    parser3_auth_checker,       /* [6] check user_id is valid *here* */
+    parser3_access_checker,     /* [4] check access by host address */
+    0,                          /* [7] MIME type checker/setter */
+    0,                          /* [8] fixups */
+    parser3_logger              /* [10] logger */
 #if MODULE_MAGIC_NUMBER >= 19970103
-    example_header_parser,      /* [3] header parser */
+    ,0                          /* [3] header parser */
 #endif
 #if MODULE_MAGIC_NUMBER >= 19970719
-    example_child_init,         /* process initializer */
+    ,parser3_child_init         /* process initializer */
 #endif
 #if MODULE_MAGIC_NUMBER >= 19970728
-    example_child_exit,         /* process exit/cleanup */
+    ,parser3_child_exit         /* process exit/cleanup */
 #endif
 #if MODULE_MAGIC_NUMBER >= 19970902
-    example_post_read_request   /* [1] post read_request handling */
+    ,0   /* [1] post read_request handling */
 #endif
 };
