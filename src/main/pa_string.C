@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/02/27 15:24:03 $";
+static const char * const IDENT_STRING_C="$Date: 2004/04/02 13:57:07 $";
 
 #include "pcre.h"
 
@@ -32,8 +32,11 @@ int pa_atoi(const char* str, const String* problem_source) {
 	if(str[0]=='0')
 		if(str[1]=='x' || str[1]=='X')
 			result=(int)(unsigned long)strtol(str, &error_pos, 0);
-		else
-			result=(int)strtol(str+1/*skip leading 0*/, &error_pos, 0);
+		else {
+			 // skip leading 0000, to disable octal interpretation
+			do str++; while(*str=='0');				
+			result=(int)strtol(str, &error_pos, 0);
+		}
 	else
 		result=(int)strtol(str, &error_pos, 0);
 
