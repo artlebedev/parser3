@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.h,v 1.7 2001/10/24 10:26:16 parser Exp $
+	$Id: pa_db_connection.h,v 1.8 2001/10/25 09:48:18 paf Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
@@ -91,10 +91,10 @@ private: // transaction
 	
 	/// stars new current trunsaction @returns previous transaction handle
 	DB_TXN *transaction_begin_save() {
-		DB_TXN *result=ftid;
-		check("txn_begin", &ffile_spec, ::txn_begin(fdbenv.tx_info, 0/*parent*/, &ftid));
+		DB_TXN *parent=ftid;
+		check("txn_begin", &ffile_spec, ::txn_begin(fdbenv.tx_info, parent, &ftid));
 
-		return result;
+		return parent;
 	}
 	
 private:

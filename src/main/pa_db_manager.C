@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.C,v 1.4 2001/10/24 14:11:25 parser Exp $
+	$Id: pa_db_manager.C,v 1.5 2001/10/25 09:48:18 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -55,7 +55,7 @@ DB_Manager::DB_Manager(Pool& pool) : Pooled(pool),
 	dbenv.db_errcall=db_errcall;
 
 	check("db_appinit", 0/*global*/, db_appinit(
-		0/*db_home*/,
+		"c:/temp"/*0db_home*/,
 		0/*db_config*/, 
 		&dbenv, 
 		DB_CREATE | DB_INIT_MPOOL | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_TXN));

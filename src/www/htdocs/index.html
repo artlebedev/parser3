@@ -1,4 +1,5 @@
 @main[]
+#^безнадёжна_попытка_поправить_непоправимое[]
 #^tcache[]
 #^thashfileexp[]
 ^tcounter[]
@@ -43,6 +44,13 @@
 #^xml[]
 #^header[]
 OK
+
+@безнадёжна_попытка_поправить_непоправимое[]
+$dom_from_disk[^xdoc::load[input.xml]]
+$dom_created_in_air[^xdoc::create[doc]]
+^dom_created_in_air.documentElement.appendChild[^dom_from_disk.documentElement.cloneNode(1)]
+^show-xdoc2[$dom_created_in_air]
+
 
 @tcache[]
 #^hashfile:clear[cache]
