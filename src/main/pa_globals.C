@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.33 2001/03/25 09:10:30 paf Exp $
+	$Id: pa_globals.C,v 1.34 2001/03/25 09:57:11 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -156,16 +156,48 @@ void pa_globals_init(Pool& pool) {
 	// tables
 	default_typo_table=NEW Table(pool, 0, 0);
 	{
+		// < -> &lt;
+		{
+			Array *row=NEW Array(pool);
+			*row+=NEW String(pool, "<");	
+			*row+=NEW String(pool, "&lt;");
+			*default_typo_table+=row;
+		}
+		// > -> &gt;
+		{
+			Array *row=NEW Array(pool);
+			*row+=NEW String(pool, ">");	
+			*row+=NEW String(pool, "&gt;");
+			*default_typo_table+=row;
+		}
+		// " -> &quot;
+		{
+			Array *row=NEW Array(pool);
+			*row+=NEW String(pool, "\"");	
+			*row+=NEW String(pool, "&quot;");
+			*default_typo_table+=row;
+		}
+		// & -> &amp;
+		{
+			Array *row=NEW Array(pool);
+			*row+=NEW String(pool, "&");	
+			*row+=NEW String(pool, "&amp;");
+			*default_typo_table+=row;
+		}
 		// \n\n -> <p>
-		Array *row1=NEW Array(pool);
-		*row1+=NEW String(pool, "\\n\\n");	
-		*row1+=NEW String(pool, "<p>");
-		*default_typo_table+=row1;
+		{
+			Array *row=NEW Array(pool);
+			*row+=NEW String(pool, "\\n\\n");	
+			*row+=NEW String(pool, "<p>");
+			*default_typo_table+=row;
+		}
 		// \n -> <br>
-		Array *row2=NEW Array(pool);
-		*row2+=NEW String(pool, "\\n");	
-		*row2+=NEW String(pool, "<br>");
-		*default_typo_table+=row2;
+		{
+			Array *row=NEW Array(pool);
+			*row+=NEW String(pool, "\\n");	
+			*row+=NEW String(pool, "<br>");
+			*default_typo_table+=row;
+		}
 	}
 
 	// stateless classes

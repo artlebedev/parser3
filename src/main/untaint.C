@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.18 2001/03/25 09:40:55 paf Exp $
+	$Id: untaint.C,v 1.19 2001/03/25 09:57:11 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -147,23 +147,24 @@ char *String::store_to(char *dest) const {
 					case '>': to_string("&gt;", 4);  break;
 					case '<': to_string("&lt;", 4);  break;
 					case '"': to_string("&quot;", 6);  break;
-					//TODO: XSLT to_string!'\'', "&apos;", 6)
+					//TODO: XSLT case '\'': to_string("&apos;", 6);  break;
 					_default;
 				});
 				break;
 			case UL_HTML_TYPO: {
 				// tainted, untaint language: html-typo
-				char *html_for_typo=
-					(char *)malloc(size()*6/*"&quot;" the longest possible*/+1);
+				char *html_for_typo=(char *)malloc(size()*2/* '\n' -> '\' 'n' */+1);
+				// note:
+				//   there still is a possibility that user 
+				//   would not replace \n as she supposed to
+				//   and rather replace \ and n into huge strings
+				//   thus causing memory overrun
+				//   this can be dealed by allocating *2 memory, but that's too expensive
+				// todo parser4: fix that
 				size_t html_for_typo_size;
 				{ // local dest
 					char *dest=html_for_typo;
 					escape(switch(*src) {
-						// BEWARE: check maximum replacement length in malloc above
-						case '&': to_string("&amp;", 5);  break;
-						case '>': to_string("&gt;", 4);  break;
-						case '<': to_string("&lt;", 4);  break;
-						case '"': to_string("&quot;", 6);  break;
 						// convinient name for typo match "\n"
 						case '\r': 
 							if(typo_table) {
@@ -176,7 +177,7 @@ char *String::store_to(char *dest) const {
 							if(typo_table)
 								to_string("\\n", 2);
 							break;
-						//TODO: XSLT to_string!'\'', "&apos;", 6)
+						//TODO: XSLT case '\'': to_string("&apos;", 6);  break;
 						_default;
 					});
 					*dest=0;
