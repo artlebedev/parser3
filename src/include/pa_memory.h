@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-static const char* IDENT_MEMORY_H="$Date: 2003/08/19 09:12:04 $";
+static const char* IDENT_MEMORY_H="$Date: 2003/09/22 09:19:18 $";
 
 // include
 
@@ -33,21 +33,11 @@ void* pa_gc_malloc(size_t size);
 void* pa_gc_malloc_atomic(size_t size);
 void* pa_gc_realloc(void* ptr, size_t size);
 void pa_gc_free(void* ptr);
-
-#	define PA_GC_MALLOC(size) pa_gc_malloc(size)
-#	define PA_GC_MALLOC_ATOMIC(size) pa_gc_malloc_atomic(size)
-#	define PA_GC_REALLOC(ptr,size) pa_gc_realloc(ptr,size)
-#	define PA_GC_FREE(ptr) pa_gc_free(ptr)
 #else
 inline void* pa_gc_malloc(size_t size) { return GC_MALLOC(size); }
 inline void* pa_gc_malloc_atomic(size_t size) { return GC_MALLOC_ATOMIC(size); }
 inline void* pa_gc_realloc(void* ptr, size_t size) { return GC_REALLOC(ptr, size); }
 inline void pa_gc_free(void* ptr) { GC_FREE(ptr); }
-
-#	define PA_GC_MALLOC(size) pa_gc_malloc(size)
-#	define PA_GC_MALLOC_ATOMIC(size) pa_gc_malloc_atomic(size)
-#	define PA_GC_REALLOC(ptr,size) pa_gc_realloc(ptr,size)
-#	define PA_GC_FREE(ptr) pa_gc_free(ptr)
 #endif
 
 
@@ -58,14 +48,14 @@ void *pa_fail_alloc(const char* what, size_t size);
 // inlines
 
 inline void *pa_malloc(size_t size) {
-	if(void *result=PA_GC_MALLOC(size))
+	if(void *result=pa_gc_malloc(size))
 		return result;
 
 	return pa_fail_alloc("allocate", size);
 }
 
 inline void *pa_malloc_atomic(size_t size) {
-	if(void *result=PA_GC_MALLOC_ATOMIC(size))
+	if(void *result=pa_gc_malloc_atomic(size))
 		return result;
 
 	return pa_fail_alloc("allocate clean", size);
@@ -75,7 +65,7 @@ inline char *pa_strdup(const char* auto_variable_never_null, size_t helper_lengt
 	size_t known_length=(helper_length?helper_length:strlen(auto_variable_never_null));
 
 	size_t size=known_length+1;
-	if(char *result=static_cast<char*>(PA_GC_MALLOC_ATOMIC(size))) {
+	if(char *result=static_cast<char*>(pa_gc_malloc_atomic(size))) {
 		memcpy(result, auto_variable_never_null, size);
 		result[known_length]=0;
 		return result;
@@ -85,11 +75,11 @@ inline char *pa_strdup(const char* auto_variable_never_null, size_t helper_lengt
 }
 
 inline void pa_free(void *ptr) {
-	PA_GC_FREE(ptr);
+	pa_gc_free(ptr);
 }
 
 inline void *pa_realloc(void *ptr, size_t size) {
-	if(void *result=PA_GC_REALLOC(ptr, size))
+	if(void *result=pa_gc_realloc(ptr, size))
 		return result;
 
 	return pa_fail_alloc("reallocate to", size);

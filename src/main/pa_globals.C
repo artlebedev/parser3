@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2003/07/24 12:07:03 $";
+static const char* IDENT_GLOBALS_C="$Date: 2003/09/22 09:19:18 $";
 
 #include "pa_config_includes.h"
 
@@ -240,6 +240,9 @@ static char *pa_GC_strdup(const char *s) {
 
 	size_t size=strlen(s)+1;
 	char *result=(char *)GC_malloc_atomic(size);
+	if(!result)
+		SAPI::abort("out of memory (while duplicating XML string [size=%d])", size);
+
 	memcpy(result, s, size);
 	return result;
 }
@@ -282,6 +285,24 @@ static void pa_gc_free_log(void *p){
 //		fprintf(stderr,"catched debug free(0x%p)\n", p);
         pa_gc_free(p);
 }
+#else
+
+inline void *check(void *result, const char *where, size_t size) {
+	if(!result)
+		SAPI::abort("out of memory (while %s [size=%d])", where, size);
+
+	return result;
+}
+static void* pa_gc_malloc_nonull(size_t size) { 
+	return check(pa_gc_malloc(size), "allocating XML compsite memory", size);
+}
+static void* pa_gc_malloc_atomic_nonull(size_t size) { 
+	return check(pa_gc_malloc_atomic(size), "allocating XML atomic memory", size);
+}
+static void* pa_gc_realloc_nonull(void* ptr, size_t size) { 
+	return check(pa_gc_realloc(ptr, size), "reallocating XML memory", size);
+}
+
 #endif
 #endif
 
@@ -290,7 +311,6 @@ void pa_CORD_oom_fn(void) {
 }
 
 /**
-	@todo LIBXML_VERSION with xmlGcMemSetup will be 2.5.7
 	@todo gc: libltdl: substitute lt_dlmalloc & co
 */
 static void gc_substitute_memory_management_functions() {
@@ -308,9 +328,9 @@ static void gc_substitute_memory_management_functions() {
 #else
 	xmlGcMemSetup(
 		/*xmlFreeFunc */pa_gc_free,
-		/*xmlMallocFunc */pa_gc_malloc,
-		/*xmlMallocFunc */pa_gc_malloc_atomic,
-		/*xmlReallocFunc */pa_gc_realloc,
+		/*xmlMallocFunc */pa_gc_malloc_nonull,
+		/*xmlMallocFunc */pa_gc_malloc_atomic_nonull,
+		/*xmlReallocFunc */pa_gc_realloc_nonull,
 		/*xmlStrdupFunc */pa_GC_strdup);
 #endif
 
