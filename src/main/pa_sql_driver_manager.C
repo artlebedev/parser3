@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.28 2001/08/27 12:02:24 parser Exp $"; 
+static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.29 2001/08/28 10:43:33 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"

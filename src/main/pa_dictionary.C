@@ -5,12 +5,12 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_dictionary.C,v 1.4 2001/08/28 09:27:42 parser Exp $"; 
+static const char *RCSId="$Id: pa_dictionary.C,v 1.5 2001/08/28 10:43:33 parser Exp $"; 
 
 #include "pa_dictionary.h"
 #include "pa_exception.h"
 
-static void add_first(Array::Item *value, void *info) {
+void Dictionary::add_first(Array::Item *value, void *info) {
 	Dictionary& self=*static_cast<Dictionary *>(info);
 	Array *row=static_cast<Array *>(value);
 	// get a=>b values
