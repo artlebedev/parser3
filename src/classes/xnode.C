@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.25 2002/01/11 13:45:21 paf Exp $
+	$Id: xnode.C,v 1.26 2002/01/14 15:29:41 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -332,8 +332,8 @@ static void _removeAttributeNode(Request& r, const String& method_name, MethodPa
 	gdome_el_removeAttributeNode(element, oldAttr, &exc);
 	if(exc)
 		throw Exception(0, 0, 
-		&method_name, 
-		exc);
+			&method_name, 
+			exc);
 }	
 
 // NodeList getElementsByTagName(in DOMString name);
@@ -360,8 +360,8 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 		}
 	} else if(exc)
 		throw Exception(0, 0, 
-		&method_name, 
-		exc);
+			&method_name, 
+			exc);
 
 	// write out result
 	r.write_no_lang(result);
@@ -377,124 +377,201 @@ static void _normalize(Request& r, const String& method_name, MethodParams *) {
 	gdome_n_normalize(selfNode, &exc);
 	if(exc)
 		throw Exception(0, 0, 
-		&method_name, 
-		exc);
+			&method_name, 
+			exc);
+}
+
+static void _selectX(Request& r, const String& method_name, MethodParams *params,
+					 void (*handler)(Pool& pool,
+							  const String& expression, 
+							  xmlXPathObject_auto_ptr res,
+							  Value *& result)) {
+//	_asm int 3;
+	Pool& pool=r.pool();
+	VXnode& vnode=*static_cast<VXnode *>(r.self);
+
+	// expression
+	const String& expression=params->as_string(0, "expression must be string");
+
+	GdomeException exc;
+	GdomeNode *dome_node=vnode.get_node(&method_name);
+	GdomeDocument *dome_document=gdome_n_ownerDocument(dome_node, &exc);
+	if(!dome_document)
+		dome_document=GDOME_DOC(dome_node);
+	xmlDoc *xml_document=((_Gdome_xml_Document *)dome_document)->n;
+    xmlXPathContext_auto_ptr ctxt(xmlXPathNewContext(xml_document));
+	ctxt->node=xmlDocGetRootElement(xml_document);
+	/*error to stderr for now*/
+	xmlXPathObject_auto_ptr res(
+		xmlXPathEvalExpression(BAD_CAST pool.transcode(expression)->str, ctxt.get()));
+
+	Value *result=0;
+   	if(res.get())
+		handler(pool, expression, res, result);
+	if(result) {
+		result->set_name(method_name);
+		r.write_no_lang(*result);
+	}
+}
+
+static void selectNodesHandler(Pool& pool,
+							  const String& expression,
+							  xmlXPathObject_auto_ptr res,
+							  Value *& result) {
+	switch(res->type) {
+	case XPATH_UNDEFINED: 
+		break;
+	case XPATH_NODESET:
+		if(int size=res->nodesetval->nodeNr) {
+			VHash *vhash=new(pool) VHash(pool);
+			Hash& hash=vhash->hash(0);
+			for(int i=0; i<size; i++) {
+				String& skey=*new(pool) String(pool);
+				{
+					char *buf=(char *)pool.malloc(MAX_NUMBER);
+					snprintf(buf, MAX_NUMBER, "%d", i);
+					skey << buf;
+				}
+
+				hash.put(skey, new(pool) VXnode(pool, 
+					gdome_xml_n_mkref(res->nodesetval->nodeTab[0])));
+			}
+			result=vhash;
+		}
+		break;
+	default: 
+		throw Exception(0, 0,
+			&expression,
+			"wrong xmlXPathEvalExpression result type (%d)", res->type);
+		break; // never
+	}
+}
+
+static void selectNodeHandler(Pool& pool,
+							  const String& expression,
+							  xmlXPathObject_auto_ptr res,
+							  Value *& result) {
+	switch(res->type) {
+	case XPATH_UNDEFINED: 
+		break;
+	case XPATH_NODESET: 
+		if(res->nodesetval->nodeNr) { // empty result strangly has NODESET  res->type
+			if(res->nodesetval->nodeNr>1)
+				throw Exception(0, 0,
+				&expression,
+				"resulted not in a single node (%d)", res->nodesetval->nodeNr);
+			
+			result=new(pool) VXnode(pool, gdome_xml_n_mkref(res->nodesetval->nodeTab[0]));
+		}
+		break;
+	case XPATH_BOOLEAN: 
+		result=new(pool) VBool(pool, res->boolval!=0);
+		break;
+	case XPATH_NUMBER: 
+		result=new(pool) VDouble(pool, res->floatval);
+		break;
+	case XPATH_STRING:
+		result=new(pool) VString(
+			pool.transcode(
+				GdomeDOMString_auto_ptr(
+					gdome_str_mkref_dup((const gchar *)res->stringval)).get()));
+		break;
+	default: 
+		throw Exception(0, 0,
+			&expression,
+			"wrong xmlXPathEvalExpression result type (%d)", res->type);
+		break; // never
+	}
+}
+
+static void selectBoolHandler(Pool& pool,
+							  const String& expression,
+							  xmlXPathObject_auto_ptr res,
+							  Value *& result) {
+	switch(res->type) {
+	case XPATH_BOOLEAN: 
+		result=new(pool) VBool(pool, res->boolval!=0);
+		break;
+	case XPATH_NODESET: 
+		if(!res->nodesetval->nodeNr)
+			break;
+		// else[nodeset] fall down to default
+	default: 
+		throw Exception(0, 0,
+			&expression,
+			"wrong xmlXPathEvalExpression result type (%d)", res->type);
+		break; // never
+	}
+}
+
+static void selectNumberHandler(Pool& pool,
+							  const String& expression,
+							  xmlXPathObject_auto_ptr res,
+							  Value *& result) {
+	switch(res->type) {
+	case XPATH_NUMBER: 
+		result=new(pool) VDouble(pool, res->floatval);
+		break;
+	case XPATH_NODESET:
+		if(!res->nodesetval->nodeNr)
+			break;
+		// else[nodeset] fall down to default
+	default: 
+		throw Exception(0, 0,
+			&expression,
+			"wrong xmlXPathEvalExpression result type (%d)", res->type);
+		break; // never
+	}
+}
+
+static void selectStringHandler(Pool& pool,
+							  const String& expression,
+							  xmlXPathObject_auto_ptr res,
+							  Value *& result) {
+	switch(res->type) {
+	case XPATH_UNDEFINED: 
+		break;
+	case XPATH_STRING:
+		result=new(pool) VString(
+			pool.transcode(
+				GdomeDOMString_auto_ptr(
+					gdome_str_mkref_dup((const gchar *)res->stringval)).get()));
+		break;
+	case XPATH_NODESET: 
+		if(!res->nodesetval->nodeNr)
+			break;
+		// else[nodeset] fall down to default
+	default: 
+		throw Exception(0, 0,
+			&expression,
+			"wrong xmlXPathEvalExpression result type (%d)", res->type);
+		break; // never
+	}
 }
 
 static void _select(Request& r, const String& method_name, MethodParams *params) {
-//	_asm int 3;
-	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
-
-	// expression
-	const String& expression=params->as_string(0, "expression must be string");
-
-	GdomeException exc;
-	GdomeNode *dome_node=vnode.get_node(&method_name);
-	GdomeDocument *dome_document=gdome_n_ownerDocument(dome_node, &exc);
-	if(!dome_document)
-		dome_document=GDOME_DOC(dome_node);
-	xmlDoc *xml_document=((_Gdome_xml_Document *)dome_document)->n;
-    xmlXPathContext_auto_ptr ctxt(xmlXPathNewContext(xml_document));
-	ctxt->node=xmlDocGetRootElement(xml_document);
-	/*error to stderr for now*/
-	xmlXPathObject_auto_ptr res(
-		xmlXPathEvalExpression(BAD_CAST pool.transcode(expression)->str, ctxt.get()));
-
-	Value *result=0;
-   	if(res.get())
-		switch(res->type) {
-		case XPATH_UNDEFINED: 
-			break;
-		case XPATH_NODESET:
-			if(int size=res->nodesetval->nodeNr) {
-				VHash *vhash=new(pool) VHash(pool);
-				Hash& hash=vhash->hash(0);
-				for(int i=0; i<size; i++) {
-					String& skey=*new(pool) String(pool);
-					{
-						char *buf=(char *)pool.malloc(MAX_NUMBER);
-						snprintf(buf, MAX_NUMBER, "%d", i);
-						skey << buf;
-					}
-
-					hash.put(skey, new(pool) VXnode(pool, 
-						gdome_xml_n_mkref(res->nodesetval->nodeTab[0])));
-				}
-				result=vhash;
-			}
-			break;
-		default: 
-			throw Exception(0, 0,
-				&expression,
-				"unrecognized xmlXPathEvalExpression result type (%d)", res->type);
-			break; // never
-		}
-
-	if(result) {
-		result->set_name(method_name);
-		r.write_no_lang(*result);
-	}
+	_selectX(r, method_name, params,
+		selectNodesHandler);
 }
 
 static void _selectSingle(Request& r, const String& method_name, MethodParams *params) {
-//	_asm int 3;
-	Pool& pool=r.pool();
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
+	_selectX(r, method_name, params,
+		selectNodeHandler);
+}
 
-	// expression
-	const String& expression=params->as_string(0, "expression must be string");
+static void _selectBool(Request& r, const String& method_name, MethodParams *params) {
+	_selectX(r, method_name, params,
+		selectBoolHandler);
+}
 
-	GdomeException exc;
-	GdomeNode *dome_node=vnode.get_node(&method_name);
-	GdomeDocument *dome_document=gdome_n_ownerDocument(dome_node, &exc);
-	if(!dome_document)
-		dome_document=GDOME_DOC(dome_node);
-	xmlDoc *xml_document=((_Gdome_xml_Document *)dome_document)->n;
-    xmlXPathContext_auto_ptr ctxt(xmlXPathNewContext(xml_document));
-	ctxt->node=xmlDocGetRootElement(xml_document);
-	/*error to stderr for now*/
-	xmlXPathObject_auto_ptr res(
-		xmlXPathEvalExpression(BAD_CAST pool.transcode(expression)->str, ctxt.get()));
+static void _selectNumber(Request& r, const String& method_name, MethodParams *params) {
+	_selectX(r, method_name, params,
+		selectNumberHandler);
+}
 
-	Value *result=0;
-   	if(res.get())
-		switch(res->type) {
-		case XPATH_UNDEFINED: 
-			break;
-		case XPATH_NODESET: 
-			if(res->nodesetval->nodeNr) { // empty result strangly has NODESET  res->type
-				if(res->nodesetval->nodeNr>1)
-					throw Exception(0, 0,
-					&expression,
-					"resulted not in a single node (%d)", res->nodesetval->nodeNr);
-				
-				result=new(pool) VXnode(pool, gdome_xml_n_mkref(res->nodesetval->nodeTab[0]));
-			}
-			break;
-		case XPATH_BOOLEAN: 
-			result=new(pool) VBool(pool, res->boolval!=0);
-			break;
-		case XPATH_NUMBER: 
-			result=new(pool) VDouble(pool, res->floatval);
-			break;
-		case XPATH_STRING:
-			result=new(pool) VString(
-				pool.transcode(
-					GdomeDOMString_auto_ptr(
-						gdome_str_mkref_dup((const gchar *)res->stringval)).get()));
-			break;
-		default: 
-			throw Exception(0, 0,
-				&expression,
-				"unrecognized xmlXPathEvalExpression result type (%d)", res->type);
-			break; // never
-		}
-
-	if(result) {
-		result->set_name(method_name);
-		r.write_no_lang(*result);
-	}
+static void _selectString(Request& r, const String& method_name, MethodParams *params) {
+	_selectX(r, method_name, params,
+		selectStringHandler);
 }
 
 // constructor
@@ -541,8 +618,14 @@ MXnode::MXnode(Pool& apool) : Methoded(apool),
 	// ^node.select[/some/xpath/query] = hash $.#[dnode]
 	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
 
-	// ^node.selectSingle[/some/xpath/query] = first dnode
+	// ^node.selectSingle[/some/xpath/query] = first node [if any]
 	add_native_method("selectSingle", Method::CT_DYNAMIC, _selectSingle, 1, 1);
+	// ^node.selectBool[/some/xpath/query] = bool value [if any]
+	add_native_method("selectBool", Method::CT_DYNAMIC, _selectBool, 1, 1);
+	// ^node.selectNumber[/some/xpath/query] = double value [if any]
+	add_native_method("selectNumber", Method::CT_DYNAMIC, _selectNumber, 1, 1);
+	// ^node.selectString[/some/xpath/query] = strinv value [if any]
+	add_native_method("selectString", Method::CT_DYNAMIC, _selectString, 1, 1);
 
 	// consts
 

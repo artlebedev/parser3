@@ -4,7 +4,13 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^xpath[]
+^connect[mysql://fif:el3Snfs@db-mysql/fif]{
+$t[^table::sql{show tables}]
+^t.count[]
+}
+
+
+#^xpath[]
 #^ttablesetlang[]
 #^mail3[]
 #^ttime[]

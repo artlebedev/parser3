@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.57 2002/01/10 15:41:49 paf Exp $
+	$Id: xdoc.C,v 1.58 2002/01/14 15:29:41 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -531,56 +531,50 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 			exc);
 
 	// move to pool memory
-	size_t size=strlen(mem);
-	char *buf=(char *)pool.malloc(size);
-	memcpy(buf, mem, size);
+	size_t buf_size=strlen(mem);
+	char *buf=(char *)pool.malloc(buf_size);
+	memcpy(buf, mem, buf_size);
 	g_free(mem);
 	// write out result
-	r.write_no_lang(*new(pool) String(pool, buf, size));
+	r.write_no_lang(*new(pool) String(pool, buf, buf_size));
 }
 
-/*
+/// @test remove text/xml const. <output method+mediatype / ^file[method+mediatype
 static void _file(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-	VXnode& vnode=*static_cast<VXnode *>(r.self);
 
-	// node
-	GdomeNode *node=vnode.get_node(pool, &method_name);
+	char *mem;
+	GdomeException exc;
+	if(!gdome_di_saveDocToMemory(domimpl,
+		vdoc.get_document(&method_name),
+		&mem,
+		GDOME_SAVE_LIBXML_INDENT /*GDOME_SAVE_STANDARD */,
+		&exc))
+		throw Exception(0, 0, 
+			&method_name, 
+			exc);
 
-	try {
-		VXdoc::Output_options oo(vdoc.output_options);
-		String& parserString=*new(pool) String(pool);
-		ParserStringXalanOutputStream stream(parserString);
-		XalanOutputStreamPrintWriter writer(stream);
-		std::auto_ptr<FormatterListener> formatterListener=
-			create_optioned_listener(pool, method_name, params, 0, 
-				oo, writer);
-		FormatterTreeWalker treeWalker(*formatterListener);
-		treeWalker.traverse(&node); // Walk that node and produce the XML...
+	// move to pool memory
+	size_t buf_size=strlen(mem);
+	char *buf=(char *)pool.malloc(buf_size);
+	memcpy(buf, mem, buf_size);
+	g_free(mem);
 
-		// write out result
-		VFile& vfile=*new(pool) VFile(pool);
-		const char *cstr=parserString.cstr();
-		const String& scontent_type=pool.transcode(oo.mediaType);
-		Value *vcontent_type;
-		if(oo.encoding.empty()) 
-			vcontent_type=new(pool) VString(scontent_type);
-		else {
-			VHash *vhcontent_type=new(pool) VHash(pool);
-			vhcontent_type->hash(&method_name).put(*value_name, new(pool) VString(scontent_type));
-			const String& scharset=pool.transcode(oo.encoding);
-			vhcontent_type->hash(&method_name).put(*new(pool) String(pool, "charset"), new(pool) VString(scharset));
-			vcontent_type=vhcontent_type;
-		}
-		
-		vfile.set(false/*tainted* /, cstr, strlen(cstr), 0/*file_name* /, vcontent_type);
-		r.write_no_lang(vfile);
-	} catch(const XSLException& e) {
-		Exception::provide_source(pool, &method_name, e);
-	}
+	// write out result
+	VFile& vfile=*new(pool) VFile(pool);
+	const String& scontent_type=*new(pool) String(pool, "text/xml");
+	Value *vcontent_type=new(pool) VString(scontent_type);
+	VHash *vhcontent_type=new(pool) VHash(pool);
+	vhcontent_type->hash(&method_name).put(*value_name, new(pool) VString(scontent_type));
+	const String& scharset=pool.get_source_charset().name();
+	vhcontent_type->hash(&method_name).put(*new(pool) String(pool, "charset"), new(pool) VString(scharset));
+	vcontent_type=vhcontent_type;
+	
+	vfile.set(false/*tainted*/, buf, buf_size, 0/*file_name*/, vcontent_type);
+	r.write_no_lang(vfile);
 }
-*/
+
 /*
 /// @test lang=String::UL_UNSPECIFIED?
 static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning, 
@@ -766,7 +760,7 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 
 	// ^xdoc.file[] file with "<doc/>"
 	// ^xdoc.file[options hash] file with "<doc/>"
-//	add_native_method("file", Method::CT_DYNAMIC, _file, 0, 1);
+	add_native_method("file", Method::CT_DYNAMIC, _file, 0, 1);
 
 	// ^xdoc.transform[stylesheet file_name]
 	// ^xdoc.transform[stylesheet file_name;params hash]
