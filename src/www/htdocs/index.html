@@ -43,7 +43,9 @@ OK
 ^$form:CLASS.a=$form:CLASS.a
 
 @domdata[]
-^hren[]
+^if(1){
+	^hren[]
+}
 $xdoc[^xdoc::create[doc]]
 $doc[$xdoc.documentElement]
 $name[^doc.appendChild[^xdoc.createElement[name]]]
@@ -382,21 +384,3 @@ $file[^xdoc.file[
 #	$.method[html]
 #]]
 </pre>
-
-@exception[origin;source;comment;type;code;stack]
-<title>CGIBIN_ERROR</title>
-<body zbgcolor=white>
-<font color=black>
-^if(def $source){$origin<br>
-<pre>$source</pre>
-}
-${comment}.
-^if(def $type){type=$type}
-^if(def $code){code=$code}
-^if($stack){
-	<hr>
-	stack backtrace:<br>
-	^stack.menu{
-		$stack.origin: $stack.name<br>
-	}
-}
