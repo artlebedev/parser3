@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.6 2001/04/15 13:12:17 paf Exp $
+	$Id: op.C,v 1.7 2001/04/15 14:40:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -233,10 +233,6 @@ static void _sign(Request& r, const String& method_name, MethodParams *params) {
 }
 
 /// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
-/**
-	@test make params not Array but something with useful method for extracting,
-	with typecast and junction/not test
-*/
 static void _connect(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
