@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2004/03/01 13:22:25 $";
+static const char * const IDENT_IMAGE_C="$Date: 2004/03/01 13:33:11 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -1136,10 +1136,14 @@ static void _copy(Request& r, MethodParams& params) {
 static void _pixel(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	image.Fill(
-		params.as_int(0, "x must be int", r), 
-		params.as_int(1, "y must be int", r), 
-		image.Color(params.as_int(2, "color must be int", r)));
+	int x=params.as_int(0, "x must be int", r); 
+	int y=params.as_int(1, "y must be int", r);
+
+	if(params.count()>2) {
+		image.SetPixel(x, y, 
+			image.Color(params.as_int(2, "color must be int", r)));
+	} else 
+		r.write_no_lang(*new VInt(image.DecodeColor(image.GetPixel(x, y))));
 }
 
 
@@ -1210,5 +1214,5 @@ MImage::MImage(): Methoded("image") {
 	add_native_method("copy", Method::CT_DYNAMIC, _copy, 1+2+2+2, (1+2+2+2)+2+1);
 
 	// ^image.pixel(x;y)[(color)]
-	add_native_method("copy", Method::CT_DYNAMIC, _pixel, 2, 3);
+	add_native_method("pixel", Method::CT_DYNAMIC, _pixel, 2, 3);
 }

@@ -14,7 +14,7 @@
 	can incorporate them into new versions. 
 */
 
-static const char * const IDENT_GIF_C="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_GIF_C="$Date: 2004/03/01 13:33:11 $";
 
 #include "gif.h"
 
@@ -111,6 +111,9 @@ int gdImage::ColorRGB(int r, int g, int b){
 int gdImage::Color(unsigned int rgb){
     unsigned int b=rgb, g=b>>8, r=g>>8;
     return ColorRGB(r & 0xFF,g & 0xFF,b & 0xFF);
+}
+unsigned int gdImage::DecodeColor(int color) {
+	return (((red[color]<<8) + green[color])<<8)+blue[color];
 }
 
 void gdImage::ColorDeallocate(int color)

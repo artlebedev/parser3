@@ -18,7 +18,7 @@
 #ifndef GIF_H
 #define GIF_H
 
-static const char * const IDENT_GIF_H="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_GIF_H="$Date: 2004/03/01 13:33:11 $";
 
 #include "pa_config_includes.h"
 
@@ -97,6 +97,7 @@ public:
 	int ColorExact(int r, int g, int b);
 	int ColorRGB(int r, int g, int b);
 	int Color(unsigned int rgb);
+	unsigned int DecodeColor(int color);
 	void ColorDeallocate(int color);
 	void SetColorTransparent(int color);
 	
