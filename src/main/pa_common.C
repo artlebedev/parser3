@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.89 2001/11/14 11:27:39 paf Exp $
+	$Id: pa_common.C,v 1.90 2001/11/14 13:07:41 paf Exp $
 */
 
 #include "pa_common.h"
@@ -45,7 +45,7 @@ int __vsnprintf(char *b, size_t s, const char *f, va_list l) {
 	if(r<0) 
 		r=s;
 #else
-	r=vsnprintf(b, s, f, l);
+	r=_vsnprintf(b, s, f, l);
 	/*
 	solaris: 
 	man vsnprintf
@@ -73,7 +73,6 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
     va_end(l);
 	return r;
 }
-
 
 static char *strnchr(char *buf, size_t size, char c) {
 	for(; size-->0; buf++) {
