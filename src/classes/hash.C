@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hash.C,v 1.32 2002/01/16 10:28:33 paf Exp $
+	$Id: hash.C,v 1.33 2002/01/25 12:18:13 paf Exp $
 */
 
 #include "classes.h"
@@ -200,15 +200,19 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Value& statement=params->as_junction(0, "statement must be code");
 
 	ulong limit=0;
-	if(params->size()>1) {
-		Value& limit_code=params->as_junction(1, "limit must be expression");
-		limit=(uint)r.process(limit_code).as_double();
-	}
-
 	ulong offset=0;
-	if(params->size()>2) {
-		Value& offset_code=params->as_junction(2, "offset must be expression");
-		offset=(ulong)r.process(offset_code).as_double();
+	if(params->size()>1) {
+		Value& voptions=params->as_no_junction(1, "options must be hash, not code");
+		if(voptions.is_defined())
+			if(Hash *options=voptions.get_hash(&method_name)) {
+				if(Value *vlimit=(Value *)options->get(*sql_limit_name))
+					limit=(ulong)r.process(*vlimit).as_double();
+				if(Value *voffset=(Value *)options->get(*sql_offset_name))
+					offset=(ulong)r.process(*voffset).as_double();
+			} else
+				throw Exception(0, 0,
+					&method_name,
+					"options must be hash");
 	}
 
 	Temp_lang temp_lang(r, String::UL_SQL);
@@ -334,8 +338,8 @@ MHash::MHash(Pool& apool) : Methoded(apool) {
 	// ^a.delete[key]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
 
-	// ^hash:sql[query][(count[;offset])]
-	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);
+	// ^hash:sql[query][$.limit(1) $.offset(2)]
+	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 
 	// ^hash._keys[]
 	add_native_method("_keys", Method::CT_DYNAMIC, _keys, 0, 0);	
