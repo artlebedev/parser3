@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/02/17 15:08:14 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/02/17 15:08:51 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -53,41 +53,6 @@ public:
 // global variable
 
 DECLARE_CLASS_VAR(xdoc, new MXdoc, 0);
-
-// helper classes
-
-class xmlOutputBuffer_auto_ptr {
-public:
-	explicit xmlOutputBuffer_auto_ptr(xmlOutputBuffer *_APtr = 0) 
-		: _Owns(_APtr != 0), _Ptr(_APtr) {}
-	xmlOutputBuffer_auto_ptr(const xmlOutputBuffer_auto_ptr& _Y) 
-		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
-	xmlOutputBuffer_auto_ptr& operator=(const xmlOutputBuffer_auto_ptr& _Y) 
-		{if (this != &_Y)
-			{if (_Ptr != _Y.get())
-				{if (_Owns && _Ptr)
-					xmlOutputBufferClose(_Ptr);
-				_Owns = _Y._Owns; }
-			else if (_Y._Owns)
-				_Owns = true;
-			_Ptr = _Y.release(); }
-		return (*this); }
-	~xmlOutputBuffer_auto_ptr()
-		{if (_Owns && _Ptr)
-			xmlOutputBufferClose(_Ptr); }
-	xmlOutputBuffer& operator*() const 
-		{return (*get()); }
-	xmlOutputBuffer *operator->() const 
-		{return (get()); }
-	xmlOutputBuffer *get() const 
-		{return (_Ptr); }
-	xmlOutputBuffer *release() const 
-		{((xmlOutputBuffer_auto_ptr *)this)->_Owns = false;
-		return (_Ptr); }
-private:
-	bool _Owns;
-	xmlOutputBuffer *_Ptr;
-};
 
 class xsltTransformContext_auto_ptr {
 public:
