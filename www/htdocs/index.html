@@ -289,13 +289,26 @@ OK
 #$response:Content-TypE[bad]
 #^emailhead2[]
 #^includet2overridedynamic[]
-^includet2overridestatic[]
+#^includet2overridestatic[]
+^virtualtest2[]
+
+@virtualtest2[]
+$derived[^derived::create[]]
+^derived.first[]
+
 
 @includet2overridedynamic[]
+includet2overridedynamic:<br>
+shold say 'hello in some.p'<br>
+<hr>
 $derived[^derived::create[]]
 ^derived.includet2override[]
 
 @includet2overridestatic[]
+includet2overridestatic:<br>
+shold say 'hello in derived.p'<br>
+because in static classes there's no way to determine derived class (no virtual mech becase of no virtual table)<br>
+<hr>
 ^derived:includet2override[]
 
 @emailhead2[]

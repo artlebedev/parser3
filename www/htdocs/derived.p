@@ -7,48 +7,12 @@ derived
 @BASE
 base
 
-@auto[]
-$aaa[1]
-$includet2derived_var[1]
+#@create[]
 
-@create[aderived_param]
-^BASE:create[base create actual param]
-$derived_var[$aderived_param]
+@first[]
+[derived::first]<br>
+^second[]
 
-@test[][aaa]
-$aaa[xxx]
-^$CLASS.aaa=$CLASS.aaa<br>
-^$aaa=$aaa<br>
-^$derived_var=$derived_var<br>
-^BASE:test[]
+@override[]
+[derived::override]<br>
 
-@test2[]
-derived_test2<br>
-^$field=$field<br>
-#^shit[]
-
-@includet[]
-derived_includet<br>
-^include[some.p]
-^self.included_method[2]
-
-@includet2override[]
-$includet2override_var[1]
-^do_include[]
-^override[]
-
-@override[] me
-in derived.p
-
-
-@inclass_process_test[][ipt]
-$ipt[3]
-#^process[$MAIN:CLASS]{^^eval($ipt*2)}
-#^process[$MAIN:CLASS]{^^test2[]}
-$field[derived field value]
-^process{^^test2[]}
-
-
-@explodejunction[param]
-$param
-junction exploded<br>
