@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.16 2002/01/21 16:44:48 paf Exp $
+	$Id: pa_charset.C,v 1.17 2002/01/21 17:17:27 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -554,10 +554,14 @@ const char *Charset::transcode_cstr(xmlChar *s) {
 	int outlen=inlen+1; // max
 	char *out=(char *)malloc(outlen*sizeof(char));
 	
-	int size=transcoder(0)->output(
-		(unsigned char*)out, &outlen,
-		(const unsigned char*)s, &inlen,
-		transcoder(0)->outputInfo);
+	int size;
+	if(xmlCharEncodingOutputFunc output=transcoder(0)->output) {
+		size=output(
+			(unsigned char*)out, &outlen,
+			(const unsigned char*)s, &inlen,
+			transcoder(0)->outputInfo);
+	} else
+		memcpy(out, s, size=inlen);
 	if(size<0)
 		throw Exception(0, 0,
 			0,
@@ -580,10 +584,16 @@ String& Charset::transcode(GdomeDOMString *s) {
 GdomeDOMString_auto_ptr Charset::transcode_buf(const char *buf, size_t buf_size) { 
 	int outlen=buf_size*6/*max*/+1;
 	unsigned char *out=(unsigned char*)malloc(outlen*sizeof(unsigned char));
-	int size=transcoder(0)->input(
-		out, &outlen,
-		(const unsigned char *)buf,  (int *)&buf_size,
-		transcoder(0)->inputInfo);
+
+	int size;
+	if(xmlCharEncodingInputFunc input=transcoder(0)->input) {
+		size=input(
+			out, &outlen,
+			(const unsigned char *)buf,  (int *)&buf_size,
+			transcoder(0)->inputInfo);
+	} else
+		memcpy(out, buf, size=buf_size);
+	
 	if(size<0)
 		throw Exception(0, 0,
 			0,
