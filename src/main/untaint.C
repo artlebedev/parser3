@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: untaint.C,v 1.94 2002/02/20 12:35:29 paf Exp $
+	$Id: untaint.C,v 1.95 2002/02/20 12:40:24 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -18,7 +18,7 @@
 #include "pa_common.h"
 #include "pa_charset.h"
 
-#define DEBUG_STRING_APPENDS_VS_EXPANDS
+//#define DEBUG_STRING_APPENDS_VS_EXPANDS
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
 ulong string_string_shortcut_economy=0;

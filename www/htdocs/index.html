@@ -1,7 +1,7 @@
 @main[][l]
 $request[^trim[$form:request;/]]
 $request[^trim[/branches/moscow/tariff/;/]]
-$request[^trim[/branches/regional/;/]]
+#$request[^trim[/branches/regional/;/]]
 $mode[^if(def $form:mode){^trim[^form:mode.lower[]]}]
 
 ^if(def $form:print){

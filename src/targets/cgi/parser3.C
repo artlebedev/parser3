@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.161 2002/02/20 10:40:08 paf Exp $
+	$Id: parser3.C,v 1.162 2002/02/20 12:40:24 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -29,7 +29,7 @@
 #endif
 
 //#define DEBUG_POOL_MALLOC
-#define DEBUG_STRING_APPENDS_VS_EXPANDS
+//#define DEBUG_STRING_APPENDS_VS_EXPANDS
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
 extern ulong 

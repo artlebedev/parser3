@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.220 2002/02/20 09:13:08 paf Exp $
+	$Id: execute.C,v 1.221 2002/02/20 12:40:24 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -24,7 +24,7 @@
 #include "pa_wwrapper.h"
 
 //#define DEBUG_EXECUTE
-#define DEBUG_STRING_APPENDS_VS_EXPANDS
+//#define DEBUG_STRING_APPENDS_VS_EXPANDS
 
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS

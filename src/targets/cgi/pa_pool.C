@@ -4,13 +4,13 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.37 2002/02/20 09:13:08 paf Exp $
+	$Id: pa_pool.C,v 1.38 2002/02/20 12:40:24 paf Exp $
 */
 
 #include "pa_pool.h"
 #include "pool_storage.h"
 
-#define DEBUG_STRING_APPENDS_VS_EXPANDS
+//#define DEBUG_STRING_APPENDS_VS_EXPANDS
 
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
 unsigned long total_alloc_size=0;

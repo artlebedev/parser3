@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.128 2002/02/20 12:35:29 paf Exp $
+	$Id: pa_string.h,v 1.129 2002/02/20 12:40:24 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -226,7 +226,7 @@ public:
 	const Origin& origin() const;
 #endif
 
-public: // debug private:
+private:
 
 	/** several String fragments
 		
@@ -261,14 +261,12 @@ private:
 	/// last chunk
 	mutable Chunk *last_chunk;
 
-public: //debug
-	uint used_rows() const;
 private:
 
 	bool chunk_is_full() {
 		return append_here == last_chunk->rows+last_chunk->count;
 	}
-	//uint used_rows() const;
+	uint used_rows() const;
 	void expand();
 	
 	Untaint_lang lang_of(size_t offset) const;
