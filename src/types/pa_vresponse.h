@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vresponse.h,v 1.5 2001/03/26 09:09:49 paf Exp $
+	$Id: pa_vresponse.h,v 1.6 2001/03/27 15:43:21 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -44,8 +44,8 @@ public: // Value
 
 protected: // VAliased
 
-	/// disable .CLASS element. @see VAliased::get_class_alias
-	VStateless_class *get_class_alias() { return 0; }
+	/// disable .CLASS element. @see VAliased::get_element
+	bool are_static_calls_disabled() { return true; }
 
 public: // usage
 

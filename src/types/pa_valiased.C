@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.C,v 1.4 2001/03/26 08:27:27 paf Exp $
+	$Id: pa_valiased.C,v 1.5 2001/03/27 15:43:21 paf Exp $
 */
 
 #include "pa_valiased.h"
@@ -18,16 +18,18 @@
 Value *VAliased::get_element(const String& aname) {
 	// $CLASS=my class=myself
 	if(aname==CLASS_NAME) {
-		if(VStateless_class *lclass_alias=get_class_alias())
-			return lclass_alias;
-		else
+		if(are_static_calls_disabled())
 			bark("(%s) has no "CLASS_NAME" element");
+		else
+			return fclass_alias;			
 	}
 
 	// $BASE=my parent
 	if(aname==BASE_NAME) {
-		if(VStateless_class *lclass_alias=get_class_alias()) {
-			Value *result=lclass_alias->base();
+		if(are_static_calls_disabled()) 
+			bark("%s has no "BASE_NAME" element");
+		else {
+			Value *result=fclass_alias->base();
 			// check whether result has base
 			// note:
 			//   all classes have silent ROOT superclass.
@@ -36,10 +38,9 @@ Value *VAliased::get_element(const String& aname) {
 				return result;
 			else
 				THROW(0, 0,
-				&aname,
-				"undefined");
-		} else
-			bark("%s has no "BASE_NAME" element");
+					&aname,
+					"undefined");
+		}
 	}
 	
 	return 0;

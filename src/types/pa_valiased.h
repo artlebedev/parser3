@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.h,v 1.10 2001/03/26 09:09:48 paf Exp $
+	$Id: pa_valiased.h,v 1.11 2001/03/27 15:43:21 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -66,7 +66,7 @@ public: // creation
 protected: // VAliased
 
 /**
-	used in get_element for getting $CLASS and $BASE. @returns current class alias.
+	used in get_element for getting $CLASS and $BASE.
 
 	some classes have only dynamic method calls
 	and don't want to deal with static method calls:
@@ -86,9 +86,9 @@ protected: // VAliased
 		@endverbatim
 
 	to disable that and to enable no 'self' checks in methods realisations
-	such classes can override this method with @c {return0;}
+	such classes can override this method with @c {return true;}
 */
-	virtual VStateless_class *get_class_alias() { return fclass_alias; }
+	virtual bool are_static_calls_disabled() { return false; }
 
 private: // alias handling
 
