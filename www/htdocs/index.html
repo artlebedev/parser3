@@ -233,11 +233,17 @@ $response:charset[windows-1251]
 #^calltest[]
 #^xpath3[]
 #^mail2[]
-^doubleliterals[]
+#^doubleliterals[]
+^newxor[]
 <hr>
 OK
 
-@method[$bad]
+@newxor[]
+^eval(1!|2)<br>
+#^eval(1!||2)<br>
+^if(1!|1){y}{n}
+
+#@method[$bad]
 
 @doubleliterals[]
 #^eval(1e-10)

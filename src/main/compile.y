@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.192 2002/09/13 11:35:13 paf Exp $
+	$Id: compile.y,v 1.193 2002/09/13 13:41:48 paf Exp $
 */
 
 /**
@@ -60,10 +60,13 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 %token BAD_STRING_COMPARISON_OPERATOR
 %token BAD_HEX_LITERAL
 %token BAD_METHOD_DECL_START
+%token BAD_METHOD_PARAMETER_NAME_CHARACTER
+%token BAD_MATH_OPERATOR_CHARACTER
 
 %token LAND "&&"
 %token LOR "||"
-%token LXOR "##"
+%token LXOR "!||"
+%token NXOR "!|"
 
 %token NLE "<="
 %token NGE ">="
@@ -84,7 +87,7 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 %token IS "is"
 
 /* logical */
-%left "##"
+%left "!||"
 %left "||"
 %left "&&"
 %left '<' '>' "<=" ">="   "lt" "gt" "le" "ge"
@@ -93,7 +96,7 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 %left '!'
 
 /* bitwise */
-%left '#'
+%left "!|"
 %left '|'
 %left '&' 
 %left '~'
@@ -539,10 +542,10 @@ expr:
 |	expr '\\' expr { $$=$1;  P($$, $3);  O($$, OP_INTDIV) }
 |	expr '&' expr { $$=$1; 	P($$, $3);  O($$, OP_BIN_AND) }
 |	expr '|' expr { $$=$1;  P($$, $3);  O($$, OP_BIN_OR) }
-|	expr '#' expr { $$=$1;  P($$, $3);  O($$, OP_BIN_XOR) }
+|	expr "!|" expr { $$=$1;  P($$, $3);  O($$, OP_BIN_XOR) }
 |	expr "&&" expr { $$=$1;  OA($$, OP_NESTED_CODE, $3);  O($$, OP_LOG_AND) }
 |	expr "||" expr { $$=$1;  OA($$, OP_NESTED_CODE, $3);  O($$, OP_LOG_OR) }
-|	expr "##" expr { $$=$1;  P($$, $3);  O($$, OP_LOG_XOR) }
+|	expr "!||" expr { $$=$1;  P($$, $3);  O($$, OP_LOG_XOR) }
 |	expr '<' expr { $$=$1;  P($$, $3);  O($$, OP_NUM_LT) }
 |	expr '>' expr { $$=$1;  P($$, $3);  O($$, OP_NUM_GT) }
 |	expr "<=" expr { $$=$1;  P($$, $3);  O($$, OP_NUM_LE) }
@@ -797,7 +800,8 @@ default:
 		case LS_DEF_PARAMS:
 			switch(c) {
 			case '$': // common error
-				RC;
+				result=BAD_METHOD_PARAMETER_NAME_CHARACTER;
+				goto break2;
 			case ';':
 				RC;
 			case ']':
@@ -874,21 +878,37 @@ default:
 			case '~':
 			case ';':
 				RC;
-			case '&': case '|':  case '#':
+			//case '#': // comment start
+			case '&': case '|':
 				if(*PC.source==c) { // && ||
-					result=c=='#'?LXOR:c=='&'?LAND:LOR;
+					result=c=='&'?LAND:LOR;
 					skip_analized=1;
 				} else
 					result=c;
 				goto break2;
-			case '<': case '>': case '=': case '!': 
-				if(*PC.source=='=') { // <= >= == !=
+			case '!':
+				switch(PC.source[0]) { 
+				case '|': // !| !||
+					skip_analized=1;
+					if(PC.source[1]=='|') {
+						skip_analized++;
+						result=LXOR;
+					} else
+						result=NXOR;
+					goto break2;
+				case '=': // !=
+					skip_analized=1;
+					result=NNE; 
+					goto break2;
+				}
+				RC;
+			case '<': case '>': case '=': 
+				if(*PC.source=='=') { // <= >= ==
 					skip_analized=1;
 					switch(c) {
 					case '<': result=NLE; break;
 					case '>': result=NGE; break;
 					case '=': result=NEQ; break;
-					case '!': result=NNE; break;
 					}
 				} else
 					result=c;
