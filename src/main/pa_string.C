@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.160 2002/06/24 11:59:33 paf Exp $
+	$Id: pa_string.C,v 1.161 2002/06/25 16:05:22 paf Exp $
 */
 
 #include "pcre.h"
@@ -705,6 +705,13 @@ double String::as_double() const {
 		cstr=buf;
 	} else
 		cstr=this->cstr();
+	while(*cstr && isspace(*cstr))
+		cstr++;
+	if(!*cstr)
+		throw Exception("number.format",
+			this,
+			"blank string is invalid number (double)");
+
 	char *error_pos;
 	// 0xABC
 	if(cstr[0]=='0')
@@ -734,6 +741,13 @@ int String::as_int() const {
 		cstr=buf;
 	} else
 		cstr=this->cstr();
+	while(*cstr && isspace(*cstr))
+		cstr++;
+	if(!*cstr)
+		throw Exception("number.format",
+			this,
+			"blank string is invalid number (int)");
+
 	char *error_pos;
 	// 0xABC
 	if(cstr[0]=='0')
