@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.90 2001/05/21 16:39:32 parser Exp $
+	$Id: pa_string.C,v 1.91 2001/05/23 08:57:39 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -186,7 +186,7 @@ int String::cmp(int& partial, const String& src,
 	size_t pos=0; 
 
 	bool a_break=size()==0;
-	bool b_break=size()==0;
+	bool b_break=src.size()==0;
 	if(!(a_break || b_break)) while(true) {
 		if(pos+a_row->item.size > this_offset) {
 			if(lang!=UL_UNSPECIFIED && a_row->item.lang!=lang) 
