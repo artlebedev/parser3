@@ -1,6 +1,7 @@
 @main[]
+^thash[]
 #^tdef[]
-^ford[]
+#^ford[]
 #^tif[]
 #^image[]
 #^mail2[]
@@ -18,6 +19,15 @@
 #^xml[]
 #^header[]
 OK
+
+@thash[]
+$table[^table::set{id	name	age
+1	paf	278
+2	пиф	234
+}]
+$hash[^table.hash[id;^table::set[nameless]{id
+name}]]
+$hash.2.id $hash.2.name $hash.2.age
 
 @tdef[]
 $s[0]
@@ -63,7 +73,7 @@ $env:HTTP_COOKIE<br>
 
 @xslt[]
 ^xdata[]
-^show-xdoc2[^xdoc.transform[global.xsl]]
+^show-xdoc2[^xdoc.transform[global.xsl;$.param1[123/]]]
 
 @regexp2[]
 $s[  select]

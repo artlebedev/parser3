@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.122 2001/10/09 09:17:43 parser Exp $
+	$Id: table.C,v 1.123 2001/10/09 12:49:01 parser Exp $
 */
 
 #include "classes.h"
@@ -372,34 +372,38 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 }
 static void _hash(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Table& table=static_cast<VTable *>(r.self)->table();
+	Table& self_table=static_cast<VTable *>(r.self)->table();
 	Value& result=*new(pool) VHash(pool);
-	if(const Array *columns=table.columns()) 
+	if(const Array *columns=self_table.columns()) 
 		if(columns->size()>1) {
-
 			const String& key_field_name=params->as_no_junction(0, 
 				"key field name must not be code").as_string();
-			int key_field=table.column_name2index(key_field_name, true);
-			int value_fields_count=params->size()-1;
-			bool value_fields_by_params=value_fields_count!=0;
-			if(!value_fields_by_params)
-				value_fields_count=columns->size()-1; // all columns except key
-			Array value_fields(pool, value_fields_count);
-			if(value_fields_by_params) {
-				for(int i=1; i<params->size(); i++) {
-					const String& value_field_name=params->as_no_junction(i, 
-						"value field name must not be code").as_string();
-					value_fields+=table.column_name2index(value_field_name, true);
-				}
-			} else { // by all columns except key
+			int key_field=self_table.column_name2index(key_field_name, true);
+
+			Array value_fields(pool);
+			if(params->size()>1) {
+				Value& value_fields_param=params->as_no_junction(1, "value field(s) must not be code");
+				if(value_fields_param.is_string()) {
+					value_fields+=self_table.column_name2index(value_fields_param.as_string(), true);
+				} else if(Table *value_fields_table=value_fields_param.get_table()) {
+					for(int i=0; i<value_fields_table->size(); i++) {
+						const String& value_field_name=
+							*static_cast<Array *>(value_fields_table->get(i))->get_string(0);
+						value_fields+=self_table.column_name2index(value_field_name, true);
+					}
+				} else
+					PTHROW(0, 0,
+						&method_name,
+						"value field(s) must be string or self_table"
+					);
+			} else { // by all columns, including key
 				for(int i=0; i<columns->size(); i++)
-					if(i!=key_field)
-						value_fields+=i;
+					value_fields+=i;
 			}
 
 			// integers: key_field & value_fields
-			Row_info row_info={&table, key_field, &value_fields, result.get_hash()};
-			table.for_each(table_row_to_hash, &row_info);
+			Row_info row_info={&self_table, key_field, &value_fields, result.get_hash()};
+			self_table.for_each(table_row_to_hash, &row_info);
 		}
 	result.set_name(method_name);
 	r.write_no_lang(result);
@@ -715,8 +719,8 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 	add_native_method("menu", Method::CT_DYNAMIC, _menu, 1, 2);
 
 	// ^table:hash[key field name]
-	// ^table:hash[key field name][value field name;...]
-	add_native_method("hash", Method::CT_DYNAMIC, _hash, 1, 1000);
+	// ^table:hash[key field name][value field name(s) string/table]
+	add_native_method("hash", Method::CT_DYNAMIC, _hash, 1, 2);
 
 	// ^table.sort{string-key-maker} ^table.sort{string-key-maker}[desc|asc]
 	// ^table.sort(numeric-key-maker) ^table.sort(numeric-key-maker)[desc|asc]

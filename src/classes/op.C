@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.50 2001/10/09 09:17:43 parser Exp $
+	$Id: op.C,v 1.51 2001/10/09 12:49:01 parser Exp $
 */
 
 #include "classes.h"
@@ -340,7 +340,7 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	add_native_method("process", Method::CT_ANY, _process, 1, 1);
 
 	// ^rem{code}
-	add_native_method("rem", Method::CT_ANY, _rem, 1, 1000);
+	add_native_method("rem", Method::CT_ANY, _rem, 1, 10000);
 
 	// ^while(condition){code}
 	add_native_method("while", Method::CT_ANY, _while, 2, 2);
@@ -365,7 +365,7 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	add_native_method("switch", Method::CT_ANY, _switch, 2, 2);
 
 	// ^case[value]{code}
-	add_native_method("case", Method::CT_ANY, _case, 2, 1000);
+	add_native_method("case", Method::CT_ANY, _case, 2, 10000);
 }
 
 // constructor & configurator
