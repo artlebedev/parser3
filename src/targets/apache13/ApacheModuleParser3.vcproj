@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.10"
+	Name="ApacheModuleParser3"
+	SccProjectName="ApacheModuleParser3"
+	SccAuxPath=""
+	SccLocalPath="..\.."
+	SccProvider="MSSCCI:Jalindi Igloo">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory=".\Debug"
+			IntermediateDirectory=".\Debug"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="\parser3project\win32\apache13\src\include,\parser3project\win32\apache13\src\os\win32"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;SHARED_MODULE"
+				RuntimeLibrary="3"
+				PrecompiledHeaderFile=".\Debug/ApacheModuleParser3.pch"
+				AssemblerListingLocation=".\Debug/"
+				ObjectFile=".\Debug/"
+				ProgramDataBaseFileName=".\Debug/"
+				BrowseInformation="1"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
+				CompileAs="1"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="TRUE"
+				AdditionalDependencies="wsock32.lib"
+				OutputFile="Debug/ApacheModuleParser3Debug.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile=".\Debug/ApacheModuleParser3Debug.pdb"
+				SubSystem="2"
+				ImportLibrary=".\Debug/ApacheModuleParser3Debug.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/ApacheModuleParser3.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Starting apache..."
+				CommandLine="net start apache_debug
+dir&gt;nul
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"
+				Description="Stopping apache..."
+				CommandLine="net stop apache_debug
+dir&gt;nul
+"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="2057"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory=".\Release"
+			IntermediateDirectory=".\Release"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="..\..,\parser3project\win32\apache13\src\include,\parser3project\win32\apache13\src\os\win32"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;SHARED_MODULE"
+				StringPooling="TRUE"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="TRUE"
+				PrecompiledHeaderFile=".\Release/ApacheModuleParser3.pch"
+				AssemblerListingLocation=".\Release/"
+				ObjectFile=".\Release/"
+				ProgramDataBaseFileName=".\Release/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
+				CompileAs="1"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="TRUE"
+				AdditionalDependencies="wsock32.lib"
+				OutputFile=".\Release/ApacheModuleParser3.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				ProgramDatabaseFile=".\Release/ApacheModuleParser3.pdb"
+				SubSystem="2"
+				ImportLibrary=".\Release/ApacheModuleParser3.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/ApacheModuleParser3.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Starting apache..."
+				CommandLine="net start apache_release
+dir&gt;nul
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"
+				Description="Stopping apache..."
+				CommandLine="net stop apache_release
+dir&gt;nul
+"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="2057"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<File
+			RelativePath="mod_parser3.c">
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					Optimization="0"
+					AdditionalIncludeDirectories=""
+					PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;SHARED_MODULE;$(NoInherit)"
+					BrowseInformation="1"
+					CompileAs="1"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					Optimization="2"
+					AdditionalIncludeDirectories=""
+					PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;SHARED_MODULE;$(NoInherit)"
+					CompileAs="1"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="pa_httpd.h">
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

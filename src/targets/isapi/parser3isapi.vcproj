@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="7.10"
+	Name="parser3isapi"
+	SccProjectName="parser3isapi"
+	SccAuxPath=""
+	SccLocalPath="."
+	SccProvider="MSSCCI:Jalindi Igloo"
+	Keyword="MFCProj">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory=".\Release"
+			IntermediateDirectory=".\Release"
+			ConfigurationType="2"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories="..\..\..\..\sql,..\..\..\..\include,..\..\..\..,..\..\..\..\types,..\..\..\..\classes,..\..,..\..\types,..\..\include,..\..\classes,..\..\sql,..\..\lib\gc\include,..\..\lib\cord\include,..\..\lib\pcre,\parser3project\win32\gnome\glib\include,\parser3project\win32\gnome\glib\include\glib,\parser3project\win32\gnome\gdome2-x.x.x\libgdome,\parser3project\win32\gnome\gnome-xml\include,\parser3project\win32\gnome\libxslt-x.x.x"
+				PreprocessorDefinitions="WIN32"
+				StringPooling="TRUE"
+				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="TRUE"
+				PrecompiledHeaderFile=".\Release/parser3isapi.pch"
+				AssemblerListingLocation=".\Release/"
+				ObjectFile=".\Release/"
+				ProgramDataBaseFileName=".\Release/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
+				CompileAs="2"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="TRUE"
+				AdditionalDependencies="wsock32.lib"
+				OutputFile=".\Release/parser3isapi.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				ModuleDefinitionFile=".\parser3isapi.def"
+				ProgramDatabaseFile=".\Release/parser3isapi.pdb"
+				ImportLibrary=".\Release/parser3isapi.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/parser3isapi.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Starting inetinfo..."
+				CommandLine="CD \parser3project\win32\tools
+istart
+dir&gt;nul
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"
+				Description="Stopping inetinfo..."
+				CommandLine="CD \parser3project\win32\tools
+istop
+dir&gt;nul
+"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1049"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory=".\Debug"
+			IntermediateDirectory=".\Debug"
+			ConfigurationType="2"
+			UseOfMFC="2"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\..,..\..\types,..\..\include,..\..\classes,..\..\sql,..\..\lib\gc\include,..\..\lib\cord\include,..\..\lib\pcre,\parser3project\win32\gnome\glib\include,\parser3project\win32\gnome\glib\include\glib,\parser3project\win32\gnome\gdome2-x.x.x\libgdome,\parser3project\win32\gnome\gnome-xml\include,\parser3project\win32\gnome\libxslt-x.x.x"
+				PreprocessorDefinitions="_DEBUG;WIN32"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
+				PrecompiledHeaderFile=".\Debug/parser3isapi.pch"
+				AssemblerListingLocation=".\Debug/"
+				ObjectFile=".\Debug/"
+				ProgramDataBaseFileName=".\Debug/"
+				WarningLevel="3"
+				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
+				CompileAs="2"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				IgnoreImportLibrary="TRUE"
+				AdditionalDependencies="user32.lib kernel32.lib wsock32.lib advapi32.lib"
+				OutputFile=".\Debug/parser3isapi.dll"
+				LinkIncremental="1"
+				SuppressStartupBanner="TRUE"
+				ModuleDefinitionFile=".\parser3isapi.def"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile=".\Debug/parser3isapi.pdb"
+				ImportLibrary=".\Debug/parser3isapi.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="TRUE"
+				SuppressStartupBanner="TRUE"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/parser3isapi.tlb"
+				HeaderFileName=""/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				Description="Starting inetinfo..."
+				CommandLine="CD \parser3project\win32\tools
+istart
+dir&gt;nul
+"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"
+				Description="Stopping inetinfo..."
+				CommandLine="CD \parser3project\win32\tools
+istop
+dir&gt;nul
+"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1049"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<File
+			RelativePath="pa_threads.C">
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					Optimization="2"
+					AdditionalIncludeDirectories=""
+					PreprocessorDefinitions="WIN32;$(NoInherit)"
+					CompileAs="2"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					Optimization="0"
+					AdditionalIncludeDirectories=""
+					PreprocessorDefinitions=""
+					BasicRuntimeChecks="3"
+					CompileAs="2"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="parser3isapi.C">
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					Optimization="2"
+					AdditionalIncludeDirectories=""
+					PreprocessorDefinitions="WIN32;$(NoInherit)"
+					CompileAs="2"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					Optimization="0"
+					AdditionalIncludeDirectories=""
+					PreprocessorDefinitions=""
+					BasicRuntimeChecks="3"
+					CompileAs="2"/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="parser3isapi.def">
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>
