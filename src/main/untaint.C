@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2003/09/25 09:41:24 $";
+static const char* IDENT_UNTAINT_C="$Date: 2003/09/26 15:10:39 $";
 
 
 #include "pa_string.h"
@@ -170,7 +170,7 @@ inline bool need_quote_http_header(const char* ptr, size_t size) {
 #ifndef DOXYGEN
 struct Append_fragment_info {
 	String::Language lang;
-	const String::Body dest_body;
+	String::Body dest_body;
 	String::Languages* dest_languages;
 	size_t dest_body_plan_length;
 };
