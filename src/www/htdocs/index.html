@@ -7,10 +7,10 @@
 OK
 
 @testdom4[]
-$dom[^dom::set[<?xml version="1.0" encoding="windows-1251"?>
+$dom[^dom::set{<?xml version="1.0" encoding="windows-1251"?>
 
-<doc>testing проверка ПРОВЕРКА</doc>
-]]
+<doc>testing проверка ПРОВЕРКА. ^$form:a='$form:a'</doc>
+}]
 $response:body[^dom.file[$.encoding[windows-1251]]]
 
 @testdom3[]
