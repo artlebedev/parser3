@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char* IDENT_EXEC_C="$Date: 2002/11/22 10:28:42 $";
+static const char* IDENT_EXEC_C="$Date: 2002/12/24 08:31:31 $";
 
 #include "pa_config_includes.h"
 
@@ -163,10 +163,10 @@ static const char *buildCommand(Pool& pool,
 
 #else
 
-static int execve_piped(const char *file_spec_cstr, 
+static pid_t execve_piped(const char *file_spec_cstr, 
 			char * const argv[], char * const env[],
 			int *pipe_in, int *pipe_out, int *pipe_err) {
-	int pid;
+	pid_t pid;
 	int in_fds[2];
 	int out_fds[2];
 	int err_fds[2];
@@ -211,7 +211,7 @@ static int execve_piped(const char *file_spec_cstr,
 			close(err_fds[0]); close(err_fds[1]);
 		}
 		errno=save_errno;
-		return 0;
+		return -1;
 	}
 	
 	if(!pid) {
@@ -413,11 +413,11 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		*env_ref=0;
 	}
 
-	int pid=execve_piped(
+	pid_t pid=execve_piped(
 		file_spec_cstr,
 		argv_cstrs, env_cstrs,
 		&pipe_write, &pipe_read, &pipe_err);
-	if(pid) {
+	if(pid>0) {
 		// in child
 		const char *in_cstr=in.cstr();
 		if(*in_cstr) // there is some in data
@@ -432,7 +432,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	} else 
 		throw Exception(0,
 			&file_spec,
-			"pipe error");
+			"%s error: %s (%d)", pid<0?"fork":"pipe", strerror(errno), errno); 
 #endif
 
 	return 0;
