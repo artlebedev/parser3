@@ -239,11 +239,18 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         0
     !^имя.pos[...]
         -1
+    !^void.left(n)
+       ничего не выдаёт
+    !^void.right(n)
+       ничего не выдаёт
+    !^void.pos(p[;n])
+       ничего не выдаёт
     !^имя.int[]  (default) 
         0 или default
     !^имя.double[] (default)
         0 или default
     !^void:sql{запрос без результата}
+
 
 !int,double
     !^имя.int[]  целочисленное значение 

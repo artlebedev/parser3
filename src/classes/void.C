@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2004/02/11 15:33:13 $";
+static const char * const IDENT_VOID_C="$Date: 2004/03/02 16:55:28 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -87,6 +87,34 @@ static void _sql(Request& r, MethodParams& params) {
 		statement_string);
 }
 
+static void _left_right(Request& r, MethodParams& params) {
+	ssize_t sn=params.as_int(0, "n must be int", r);
+	if(sn<0)
+		throw Exception("parser.runtime",
+			0, 
+			"n(%d) must be >=0", sn);
+
+	// return nothing
+}
+
+static void _mid(Request& r, MethodParams& params) {
+	ssize_t sbegin=params.as_int(0, "p must be int", r);
+	if(sbegin<0)
+		throw Exception("parser.runtime",
+			0, 
+			"p(%d) must be >=0", sbegin);
+
+	if(params.count()>1) {
+		ssize_t sn=params.as_int(1, "n must be int", r);
+		if(sn<0)
+			throw Exception("parser.runtime",
+				0, 
+				"n(%d) must be >=0", sn);
+	}
+
+	// return nothing
+}
+
 // constructor
 
 MVoid::MVoid(): Methoded("void") {
@@ -96,14 +124,21 @@ MVoid::MVoid(): Methoded("void") {
 	// ^void.pos[substr]
 	add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 1);
 
-	// ^void.int[] 
+	// ^void.int[]
 	// ^void.int(default)
 	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
 
-	// ^void.double[] 
+	// ^void.double[]
 	// ^void.double(default)
 	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 1);
 
 	// ^sql[query]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 1);
+
+	// ^void.left() ^void.right()
+	add_native_method("left", Method::CT_DYNAMIC, _left_right, 1, 1);
+	add_native_method("right", Method::CT_DYNAMIC, _left_right, 1, 1);
+
+	// ^void.mid(p;n)
+	add_native_method("mid", Method::CT_DYNAMIC, _mid, 1, 2);
 }
