@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.40 2001/03/23 13:08:12 paf Exp $
+	$Id: parser3.C,v 1.41 2001/03/23 14:03:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -83,7 +83,7 @@ void SAPI::add_header_attribute(Pool& pool, const char *key, const char *value) 
 /// @todo intelligent cache-control
 void SAPI::send_header(Pool& pool) {
 	if(cgi) {
-		puts("Expires: Fri, 23 Mar 2001 09:32:23 GMT");
+		puts("expires: Fri, 23 Mar 2001 09:32:23 GMT");
 
 		// header | body  delimiter
 		puts("");

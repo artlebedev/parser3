@@ -96,7 +96,7 @@ void SAPI::send_header(Pool& pool) {
 	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
 
 	ctx.header->APPEND_CONST(
-		"Expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
+		"expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
 		"\n");
 	HSE_SEND_HEADER_EX_INFO header_info;
 
@@ -171,7 +171,8 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 	@todo 
 		IIS: remove trailing default-document[index.html] from $request.uri.
 		to do that we need to consult metabase,
-		wich is tested&works but seems slow.
+		wich is tested&works but seems slow runtime 
+		and not could-be-quickly-implemented if prepared.
 */
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	Pool pool;
@@ -180,10 +181,11 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	PTRY { // global try
 		sapi_func_context ctx={
 			lpECB,
-			new(pool) String(pool),
+			0, // filling later: so that if there would be error pool would have ctx
 			200
 		};
 		pool.set_context(&ctx);
+		ctx.header=new(pool) String(pool);
 		
 		// Request info
 		Request::Info request_info;
@@ -239,25 +241,39 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 			header_only);
 		
 		// successful finish
-	} PCATCH(e) { // global problem 
+	} PCATCH(e) { // global problem
+		// don't allocate anything on pool here:
+		//   possible pool' exception not catch-ed now
+		//   and there could be out-of-memory exception
 		const char *body=e.comment();
 		int content_length=strlen(body);
 
-		// prepare header
-		SAPI::add_header_attribute(pool, "content-type", "text/plain");
-		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
-		SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
+		// prepare header // not using SAPI func wich allocates on pool
+		char header_buf[MAX_STRING];
+		int header_len=snprintf(header_buf, MAX_STRING,
+			"content-type: text/plain\n"
+			"content-length: %ul\n"
+			"expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
+			"\n",
+			content_length);
 
+		HSE_SEND_HEADER_EX_INFO header_info;
+		header_info.pszStatus="200 OK";
+		header_info.cchStatus=strlen(header_info.pszStatus);
+		header_info.pszHeader=header_buf;
+		header_info.cchHeader=header_len;
+		header_info.fKeepConn=true;
+		
 		// send header
-		SAPI::send_header(pool);
+		lpECB->dwHttpStatusCode=200;
+		lpECB->ServerSupportFunction(lpECB->ConnID, 
+			HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
 
 		// send body
 		if(!header_only)
 			SAPI::send_body(pool, body, content_length);
 
 		// unsuccessful finish
-		_endthread();
 	}
 	PEND_CATCH
 	
