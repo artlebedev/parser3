@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.108 2002/04/22 14:10:55 paf Exp $
+	$Id: string.C,v 1.109 2002/04/22 14:25:41 paf Exp $
 */
 
 #include "classes.h"
@@ -103,7 +103,7 @@ static void _right(Request& r, const String&, MethodParams *params) {
 
 static void _mid(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
+	const String& string=*r.self->get_string();
 
 	size_t p=(size_t)params->as_int(0, "p must be int", r);
 	size_t n=params->size()>1?
@@ -131,7 +131,7 @@ static void split_list(Request& r, const String& method_name, MethodParams *para
 
 static void _lsplit(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
+	const String& string=*r.self->get_string();
 
 	Array pieces(pool);
 	split_list(r, method_name, params, string, pieces);
@@ -152,7 +152,7 @@ static void _lsplit(Request& r, const String& method_name, MethodParams *params)
 
 static void _rsplit(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& string=static_cast<VString *>(r.self)->optimized_string(r.origins_mode());
+	const String& string=*r.self->get_string();
 
 	Array pieces(pool);
 	split_list(r, method_name, params, string, pieces);
@@ -223,7 +223,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 		const String& src=static_cast<VString *>(r.self)->string();
 
 		bool was_global;
-		bool matched=src.match(0,
+		bool matched=src.match(
 			&method_name, 
 			regexp.as_string(), options,
 			&table,
@@ -239,7 +239,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 		r.write_assign_lang(*result);
 	} else { // replace
 		char* src_cstr;
-		const String& src=static_cast<VString *>(r.self)->optimized_string(r.origins_mode(), &src_cstr);
+		const String& src=*r.self->get_string();
 
 		Value& replacement_code=params->as_junction(2, "replacement param must be code");
 
@@ -254,7 +254,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 		Temp_value_element temp_match_var(
 			*replacement_code.get_junction()->root, 
 			*match_var_name, &vtable);
-		src.match(src_cstr,
+		src.match(
 			&method_name, 
 			r.process_to_string(regexp), options,
 			&table,
@@ -391,9 +391,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 
 static void _replace(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& src=static_cast<VString *>(r.self)->optimized_string(false/*unused*/, 
-		0/*cstr not needed*/, true/*optimization forced, 
-								  so that replace fould strings that span across pices*/);
+	const String& src=*r.self->get_string();
 
 	Table *table=params->as_no_junction(0, "parameter must not be code").get_table();
 	if(!table)
@@ -426,6 +424,10 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	const char *buf=src.cstr(String::UL_UNSPECIFIED);
 	file_write(r.absolute(file_name), 
 		buf, strlen(buf), true, do_append);
+}
+
+static void _optimize(Request& r, const String& method_name, MethodParams * /*params*/) {
+ 	r.write_assign_lang(r.self->get_string()->join_chains(r.pool(), 0/*cstr*/));
 }
 
 // constructor
@@ -477,6 +479,9 @@ MString::MString(Pool& apool) : Methoded(apool, "string") {
 
 	// ^string.save[file]  
 	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
+
+	// ^string.optimize[]  
+	add_native_method("optimize", Method::CT_DYNAMIC, _optimize, 0, 0);
 }	
 
 // global variable

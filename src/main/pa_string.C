@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.157 2002/04/22 14:11:28 paf Exp $
+	$Id: pa_string.C,v 1.158 2002/04/22 14:25:41 paf Exp $
 */
 
 #include "pcre.h"
@@ -474,7 +474,7 @@ static void regex_options(const String *options, int *result, bool& need_pre_pos
 }
 
 /// @todo make replacement Table stacked
-bool String::match(const char *acstr,
+bool String::match(
 				   const String *aorigin,
 				   const String& regexp, 
 				   const String *options,
@@ -512,7 +512,7 @@ bool String::match(const char *acstr,
 				info_substrings);
 	}
 
-	const char *subject=acstr?acstr:cstr();
+	const char *subject=cstr();
 	int length=strlen(subject);
 	const int ovecsize=(1/*match*/+MAX_STRING_MATCH_TABLE_COLUMNS)*3;
 	int ovector[ovecsize];
@@ -646,31 +646,6 @@ String& String::replace(Pool& pool, Dictionary& dict) const {
 			row->item.origin.file, row->item.origin.line);
 	);
 	return result;
-}
-
-/// @test real!
-bool String::is_join_chains_profitable() const {
-	// mimimum actually sizeof(String), 
-	// but one must also consider CPU time optimize would eat
-	const int minimum_economy=sizeof(String)*2;
-
-	size_t wasted=0;
-	STRING_FOREACH_ROW(
-		uchar joined_lang=row->item.lang;
-		STRING_PREPARED_FOREACH_ROW(*this, 
-			if(row->item.lang==joined_lang) {
-				wasted+=sizeof(String::Chunk::rows_type);
-				if(wasted>minimum_economy)
-					return true;
-			} else
-				break; // before non-ours
-		);
-
-		// pointers are after joined piece
-		// & one step back, see STRING_FOREACH_ROW
-		--row;  ++countdown;
-	);
-	return false;
 }
 
 String& String::join_chains(Pool& pool, char** acstr) const {

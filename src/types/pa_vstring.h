@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstring.h,v 1.45 2002/04/19 11:59:44 paf Exp $
+	$Id: pa_vstring.h,v 1.46 2002/04/22 14:25:42 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -75,9 +75,6 @@ public: // usage
 
 	const String& string() const { return *fstring; }
 	void set_string(const String& astring) { fstring=&astring; }
-
-	const String& optimized_string(bool suppressed_until_forced, 
-		char** cstr=0, bool forced=false);
 
 private:
 	const String *fstring;
