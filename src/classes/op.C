@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.73 2002/03/04 14:51:10 paf Exp $
+	$Id: op.C,v 1.74 2002/03/18 15:29:45 paf Exp $
 */
 
 #include "classes.h"
@@ -227,17 +227,6 @@ static void _eval(Request& r, const String& method_name, MethodParams *params) {
 	r.write_no_lang(*result);
 }
 
-static void _error(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-
-	const String& serror=params->as_string(0, "message must be string");
-	throw Exception(0, 0,
-		&method_name,
-		"%s", serror.cstr());
-}
-
-
-/// @todo rewrite ugly code with try/try to autoobject TempConnection
 static void _connect(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 #ifdef RESOURCES_DEBUG
@@ -487,6 +476,108 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	// never reached
 }
 
+// also used in pa_request.C to pass param to @unhandled_exception
+VHash& exception2vhash(Pool& pool, const Exception& e) {
+	VHash& result=*new(pool) VHash(pool);
+	Hash& hash=result.hash(0);
+	if(const String *type=e.type())
+		hash.put(*exception_type_part_name, new(pool) VString(*type));
+	if(const String *source=e.problem_source()) {
+		result.set_name(*source);
+
+		hash.put(*exception_source_part_name, new(pool) VString(*source));
+#ifndef NO_STRING_ORIGIN
+		const Origin& origin=source->origin();
+		hash.put(*new(pool) String(pool, "file"), 				
+			new(pool) VString(*new(pool) String(pool, origin.file)));
+		hash.put(*new(pool) String(pool, "lineno"),
+			new(pool) VInt(pool, 1+origin.line));
+#endif
+	}
+	if(const char *ecomment=e.comment()) {
+		int comment_size=strlen(ecomment);
+		char *pcomment=(char *)pool.malloc(comment_size);
+		memcpy(pcomment, ecomment, comment_size);
+		hash.put(*exception_comment_part_name, 
+			new(pool) VString(*new(pool) String(pool, pcomment, comment_size)));
+	}
+	hash.put(*exception_handled_part_name, 
+		new(pool) VBool(pool, false));
+
+	return result;
+}
+
+static void _try_operator(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	Value& body_code=params->as_junction(0, "body_code must be code");
+	Value& catch_code=params->as_junction(1, "catch_code must be code");
+
+	Value *result;
+
+	// taking snapshot of request processing status
+	int stop_index=r.stack.top_index();
+	Value *sself=r.self, *sroot=r.root, *srcontext=r.rcontext;  
+	WContext *swcontext=r.wcontext;	
+	try {
+		result=&r.process(body_code);
+	} catch(const Exception& e) {
+		// restoring request processing status
+		r.stack.top_index(stop_index);
+		r.self=sself; r.root=sroot, r.rcontext=srcontext; r.wcontext=swcontext;
+		
+		VHash& vhash=exception2vhash(pool, e);
+
+		Junction *junction=catch_code.get_junction();
+		Value *saved_exception_var_value=junction->root->get_element(*exception_var_name);
+		junction->root->put_element(*exception_var_name, &vhash);
+		result=&r.process(catch_code);
+		bool handled=false;
+		if(Value *value=static_cast<Value *>(vhash.hash(0).get(*exception_handled_part_name)))
+			handled=value->as_bool();		
+		junction->root->put_element(*exception_var_name, saved_exception_var_value);
+
+		if(!handled)
+			throw(e); // rethrow
+	}
+	// write it out 
+	r.write_pass_lang(*result);
+}
+
+static void _throw_operator(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	if(params->size()==1) {
+		Value& param0=params->get(0);
+		if(Hash *hash=param0.get_hash(&method_name)) {
+			const String *type=0;
+			if(Value *value=static_cast<Value *>(hash->get(*exception_type_part_name)))
+				type=&value->as_string();
+			const String *source=0;
+			if(Value *value=static_cast<Value *>(hash->get(*exception_source_part_name)))
+				source=&value->as_string();
+			const char *comment=0;
+			if(Value *value=
+				static_cast<Value *>(hash->get(*exception_comment_part_name)))
+				comment=value->as_string().cstr();
+
+			throw Exception(type, 0,
+				source?source:&method_name,
+				comment);
+		} else
+			throw Exception(0, 0,
+				&method_name,
+				"one-param version has hash param");
+	} else {
+		const String& type=params->as_string(0, "type must be string");
+		const String& source=params->as_string(1, "source must be string");
+		const char *comment=params->as_string(2, "comment must be string").cstr();
+		throw Exception(&type, 0,
+			&source,
+			comment);
+	}
+}
+	
 // constructor
 
 MOP::MOP(Pool& apool) : Methoded(apool),
@@ -524,10 +615,6 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	// ^eval(expr)[format]
 	add_native_method("eval", Method::CT_ANY, _eval, 1, 2);
 
-	// ^error[msg]
-	add_native_method("error", Method::CT_ANY, _error, 1, 1);
-
-
 	// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
 	add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
 
@@ -543,6 +630,15 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 
 	// ^case[value]{code}
 	add_native_method("case", Method::CT_ANY, _case, 2, 10000);
+
+	// try-catch
+
+	// ^try{code}{catch code}
+	add_native_method("try", Method::CT_ANY, _try_operator, 2, 2);
+	// ^throw[$exception hash]
+	// ^throw[type;source;comment]
+	add_native_method("throw", Method::CT_ANY, _throw_operator, 1, 3);
+
 }
 
 // constructor & configurator

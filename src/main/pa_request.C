@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.194 2002/02/08 08:30:16 paf Exp $
+	$Id: pa_request.C,v 1.195 2002/03/18 15:29:46 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -30,6 +30,8 @@ const char *DEFAULT_CONTENT_TYPE="text/html";
 const char *ORIGINS_CONTENT_TYPE="text/plain";
 
 Methoded *MOP_create(Pool&);
+// op.C
+VHash& exception2vhash(Pool& pool, const Exception& e);
 
 static void load_charset(const Hash::Key& akey, Hash::Val *avalue, 
 										  void *) {
@@ -343,7 +345,7 @@ t[9]-t[3]
 			if(main_class) { // we've managed to end up with some main_class
 				// maybe we'd be lucky enough as to report an error
 				// in a gracefull way...
-				if(Value *value=main_class->get_element(*exception_method_name))
+				if(Value *value=main_class->get_element(*unhandled_exception_method_name))
 					if(Junction *junction=value->get_junction())
 						if(const Method *method=junction->method) {
 		 					// preparing to pass parameters to 
@@ -351,65 +353,12 @@ t[9]-t[3]
 							VMethodFrame frame(pool(), value->name(), *junction);
 							frame.set_self(*main_class);
 
-							const String *problem_source=e.problem_source();
-							// origin
-							Value *origin_value=0;
-#ifndef NO_STRING_ORIGIN
-							if(problem_source && problem_source->size()) {
-								const Origin& origin=problem_source->origin();
-								if(origin.file) {
-									char *buf=(char *)malloc(MAX_STRING);
-									size_t buf_size=snprintf(buf, MAX_STRING, ORIGIN_FILE_LINE_FORMAT, 
-										origin.file, 1+origin.line);
-									origin_value=NEW VString(*NEW String(pool(),
-										buf, buf_size, true));
-								}
-							}
-#endif
-							frame.store_param(method->name, 
-								origin_value?origin_value:NEW VVoid(pool()));
-
-							// source
-							Value *source_value=0;
-							if(problem_source && problem_source->size()) {
-								String& problem_source_copy=*NEW String(pool());
-								problem_source_copy.append(*problem_source, 
-									flang, true);
-								source_value=NEW VString(problem_source_copy);
-							}
-							frame.store_param(method->name, 
-								source_value?source_value:NEW VVoid(pool()));
-
-							// comment
-							String *comment_value=NEW String(pool(),
-								e.comment(), 0, true);
-							frame.store_param(method->name, 
-								NEW VString(*comment_value));
-
-							// type
-							Value *type_value;
-							if(e.type()) {
-								String& type_copy=*NEW String(pool());
-								type_value=NEW VString(type_copy.append(*e.type(), 
-									flang, true));
-							} else
-								type_value=NEW VVoid(pool());
-							frame.store_param(method->name, type_value);
-
-							// code
-							Value *code_value;
-							if(e.code()) {
-								String& code_copy=*NEW String(pool());
-								code_value=NEW VString(code_copy.append(*e.code(), 
-									flang, true));
-							} else
-								code_value=NEW VVoid(pool());
-							frame.store_param(method->name, code_value);
-
+							frame.store_param(method->name, &exception2vhash(pool(), e));
 							// $stack[^table::set{name	origin}]
 							Array& stack_trace_columns=*NEW Array(pool());
 							stack_trace_columns+=NEW String(pool(), "name");
-							stack_trace_columns+=NEW String(pool(), "origin");
+							stack_trace_columns+=NEW String(pool(), "file");
+							stack_trace_columns+=NEW String(pool(), "lineno");
 							Table& stack_trace=*NEW Table(pool(), 0, &stack_trace_columns);
 							Array_iter tracei(trace);
 							while(tracei.has_next()) {
@@ -420,10 +369,10 @@ t[9]-t[3]
 #ifndef NO_STRING_ORIGIN
 								const Origin& origin=name->origin();
 								if(origin.file) {
-									char *buf=(char *)malloc(MAX_STRING);
-									size_t buf_size=snprintf(buf, MAX_STRING, ORIGIN_FILE_LINE_FORMAT, 
-										origin.file, 1+origin.line);
-									row+=NEW String(pool(), buf, buf_size, true); // origin column
+									row+=NEW String(pool(), origin.file, 0, true); // file column
+									char *buf=(char *)malloc(MAX_NUMBER);
+									size_t buf_size=snprintf(buf, MAX_NUMBER, "%d", 1+origin.line);
+									row+=NEW String(pool(), buf, buf_size, true); // line column
 								}
 #endif
 								stack_trace+=&row;

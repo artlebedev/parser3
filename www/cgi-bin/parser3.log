@@ -76,3 +76,53 @@ z
 [Thu Feb 28 18:36:18 2002] transcodeFromUTF8 error: too big tmpVal(0x0001086D) [- -]
 [Thu Feb 28 18:37:36 2002] transcodeFromUTF8 error: too big tmpVal(0x0001086D) [- -]
 [Mon Mar 04 17:25:50 2002] user-request(0): 'c:/drives/Y/parser3project/parser3/www/htdocs/more.html' read failed: No such file or directory (2), actual filename 'c:/drives/Y/parser3project/parser3/www/htdocs/more.html' [- -]
+[Mon Mar 18 14:25:56 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(964:24): parse error, expecting `']'' or `';'' [- -]
+[Mon Mar 18 14:26:08 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(964:24): parse error, expecting `']'' or `';'' [- -]
+[Mon Mar 18 16:47:01 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(112): 'try' native method of exceptions1 (method_frame) accepts minimum 2 parameter(s) (1 present) [- -]
+[Mon Mar 18 16:47:22 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(965:2): parse error, expecting `STRING' or `'$'' or `'^'' [- -]
+[Mon Mar 18 16:53:04 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(968:4): parse error, expecting `']'' or `';'' [- -]
+[Mon Mar 18 16:53:46 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(970:2): parse error, expecting `']'' or `';'' [- -]
+[Mon Mar 18 17:39:24 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:39:25 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:39:32 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:41:06 2002] c:/drives/Y/parser3project/parser3/www/htdocs/index.html(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:56:21 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:56:22 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:56:23 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:57:06 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:57:06 2002] exception in request exception handler: column not found
+[Mon Mar 18 17:57:26 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:57:26 2002] exception in request exception handler: element can not be stored to table
+[Mon Mar 18 17:57:40 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:57:40 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
+[Mon Mar 18 17:57:50 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:57:50 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
+[Mon Mar 18 17:58:03 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:58:03 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
+[Mon Mar 18 17:58:06 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:58:15 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:58:15 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
+[Mon Mar 18 17:58:15 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:58:15 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
+[Mon Mar 18 17:59:46 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:59:46 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
+[Mon Mar 18 17:59:47 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 17:59:47 2002] exception in request exception handler: (junction) illegal assignment attempt to 'line' (junction), use constructor instead
+[Mon Mar 18 17:59:54 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 18:00:01 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 18:00:27 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 18:00:32 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 18:00:58 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'error' (void) not a method or junction, can not call it [- -]
+[Mon Mar 18 18:01:16 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'throw' one-param version has hash param [- -]
+[Mon Mar 18 18:01:35 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(969:18): parse error, expecting `']'' or `';'' [- -]
+[Mon Mar 18 18:01:36 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'throw' method of exceptions1 (method_frame) accepts maximum 3 parameter(s) [- -]
+[Mon Mar 18 18:01:46 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
+[Mon Mar 18 18:02:28 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
+[Mon Mar 18 18:25:11 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
+[Mon Mar 18 18:25:12 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
+[Mon Mar 18 18:25:24 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(970:16): parse error, expecting `']'' or `';'' [- -]
+[Mon Mar 18 18:26:26 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
+[Mon Mar 18 18:29:13 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
+[Mon Mar 18 18:29:16 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
+[Mon Mar 18 18:29:19 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]
+[Mon Mar 18 18:29:46 2002] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(114): 'paf' is stupid [user -]

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stack.h,v 1.13 2002/02/08 08:30:14 paf Exp $
+	$Id: pa_stack.h,v 1.14 2002/03/18 15:29:46 paf Exp $
 */
 
 #ifndef PA_STACK_H
@@ -32,6 +32,7 @@ public:
 	}
 
 	int top_index() { return ftop-1; }
+	void top_index(int top_index) { ftop=top_index+1; }
 	Item *top_value() { return get(top_index()); }
 
 private:

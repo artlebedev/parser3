@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.118 2002/03/05 07:48:06 paf Exp $
+	$Id: pa_globals.C,v 1.119 2002/03/18 15:29:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -39,7 +39,7 @@ String *name_name;
 String *size_name;
 String *text_name;
 
-String *exception_method_name;
+String *unhandled_exception_method_name;
 String *post_process_method_name;
 
 String *content_disposition_name;
@@ -57,6 +57,12 @@ String *match_var_name;
 String *string_pre_match_name;
 String *string_match_name;
 String *string_post_match_name;
+
+String *exception_var_name;
+String *exception_type_part_name;
+String *exception_source_part_name;
+String *exception_comment_part_name;
+String *exception_handled_part_name;
 
 String *charsets_name;
 String *mime_types_name;
@@ -314,7 +320,7 @@ void pa_globals_init(Pool& pool) {
 	size_name=NEW String(pool, SIZE_NAME);
 	text_name=NEW String(pool, TEXT_NAME);
 
-	exception_method_name=NEW String(pool, EXCEPTION_METHOD_NAME);
+	unhandled_exception_method_name=NEW String(pool, UNHANDLED_EXCEPTION_METHOD_NAME);
 	post_process_method_name=NEW String(pool, POST_PROCESS_METHOD_NAME);
 
 	content_disposition_name=NEW String(pool, CONTENT_DISPOSITION_NAME);
@@ -333,6 +339,11 @@ void pa_globals_init(Pool& pool) {
 	string_match_name=NEW String(pool, STRING_MATCH_NAME);
 	string_post_match_name=NEW String(pool, STRING_POST_MATCH_NAME);
 
+	exception_var_name=NEW String(pool, EXCEPTION_VAR_NAME);
+	exception_type_part_name=NEW String(pool, EXCEPTION_TYPE_PART_NAME);
+	exception_source_part_name=NEW String(pool, EXCEPTION_SOURCE_PART_NAME);
+	exception_comment_part_name=NEW String(pool, EXCEPTION_COMMENT_PART_NAME);
+	exception_handled_part_name=NEW String(pool, EXCEPTION_HANDLED_PART_NAME);
 
 	charsets_name=NEW String(pool, CHARSETS_NAME);
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);

@@ -49,14 +49,39 @@ Xне сделано, видимо, не будет сделано
     !^switch[значение]{^case[вариант1[;вариант2...]]{действие}^case[DEFAULT]{действие по умолчанию}}
     !^while(условие){тело}
     !^for[i](0;4){тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
-    X^exit[] + - прекращяет обработку запроса. 
-        удобно сделать после выставления 401 ошибки
-    X^return[результат] + - отваливает из выполнения метода, 
-        выдавая нестандартный результат
-    X^break[] + - обрывает цикл
-    X^continue[] + - обрывает итерацию цикла
     !^use[модуль]
-    X^try{код}{...catch...} пока не придумал, как лучше
+    !^try{
+    	...
+        !^throw[sql.connect;вася;болван] // был ^error[текст]
+        ...
+    }{
+    	^if($exception.type eq sql){
+    		$exception.handled(1)  ^rem{флаг, что exception обработан}
+    		....
+    	}
+    	
+    	^switch($exception.type){
+	    	^case[sql;mail]{
+	    		$exception.handled(1)
+    	        код, обрабатывающий sql ошибку
+    			$exception.type = sql.connect
+			    $exception.file $exception.lineno [если не запрещены при компиляции]
+    			$exception.source = вася
+    			$exception.comment = болван
+    			^if($exception.type eq connect){^cache[read]}
+	    	}
+    		^case[_default]{
+    			код, обрабатывающий другую ошибку
+    			^throw[$exception] << re-throw
+	    	}
+	    }
+    }
+    ^exit[] + - прекращяет обработку запроса. 
+        удобно сделать после выставления 401 ошибки
+    ^return[результат] + - отваливает из выполнения метода, 
+        выдавая нестандартный результат
+    ^break[] + - обрывает цикл
+    ^continue[] + - обрывает итерацию цикла
     !^untaint[[as-is|file-spec|http-header|mail-header|uri|table|sql|js|xml|html|optimized-html]]{код}
         default as-is
     !^taint[[lang]][код]
@@ -114,10 +139,12 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         ставить такой префикс перед открывающим апострофом, впритык, везде без проблелов
         /**имя_поля**/'literal'
     !^rem{}
-    !^error[текст]
     !^cache[файл](секунд){код}
         !скэшировать строку, которая получается при выполнении кода на 'секунд' секунд
         !если 0секунд, значит не кэшировать, а старый такой стереть
+	^cache[delete] << не кэшировать, старое забыть
+	^cache[read] << взять скэшированное насильно, игнорируя expires
+
 
     Xесть глобальный флажок в свойствах/командной строке "не оптимизировать"
     !и есть исключение: ^untaint[html]{код} не оптимизируется безотностительно флажка
@@ -328,6 +355,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         ! $value[abc] field: {abc}<<часть
         ! $attribute[zzz] field: abc; {attribute=zzz}<<часть
     !$response:body[DATA]  замещает стандартный ответ
+    !$response:status
     !^response:clear[] забыть все заданные response поля
     !$response:charset
         кодировка клиента т.е. та, 
@@ -747,16 +775,15 @@ xdoc(xnode)
     !результат которого передаётся в его @post-process[data] if($data is string) ...
     !результат которого отдаётся пользователю
 
-    !если встречается ошибка, её можно красиво сообщить пользователю, 
+    !если встречается ошибка и try не задан, её можно красиво сообщить пользователю, 
     !определив
-    !@exception[origin;source;comment;type;code;stack]
-    !origin файл(строка) где случилась проблема
-    !source строка, из-за которой случилась проблема
-    !comment комментарий english
-    !type строка "тип проблемы" (пока пусто)
-    !code строка "код проблемы" (пока пусто)
-    !stack табличка из колонок origin name,
-        там лежат в обратном порядке имена[name] и места вызовов[origin] 
+    !@unhandled_exception[exception;stack]
+    !$exception.type  строка "тип проблемы"
+    !$exception.file $exception.lineno файл и строка где случилась проблема [если не запрещены при компиляции]
+    !$exception.source строка, из-за которой случилась проблема
+    !$exception.comment комментарий english
+    !stack табличка из колонок file line name,
+        там лежат в обратном порядке имена[name] и места вызовов[file line] 
         операторов/методов, приведших к ошибке.
 
     !нужно выключить русский apache: CharsetDisable on

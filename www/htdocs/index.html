@@ -7,7 +7,8 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-^locate_by_expr[]
+^exceptions1[]
+#^locate_by_expr[]
 #^method_junction_params{...}
 #^verifyCookie[paf]
 #^execlangs[]
@@ -107,6 +108,20 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@exceptions1[]
+^try{
+	aaa
+	^throw[user;paf;is stupid]
+}{
+#$exception.handled(1)
+#^throw[$exception]
+	type=$exception.type<br>
+    source=$exception.source<br>
+    file=$exception.file<br>
+    lineno=$exception.lineno<br>
+    comment=$exception.comment<br>
+}
 
 @locate_by_expr[]
 $t[^table::create{a	b

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.78 2002/02/08 08:30:13 paf Exp $
+	$Id: pa_globals.h,v 1.79 2002/03/18 15:29:45 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -33,7 +33,7 @@ class Charset;
 #define SIZE_NAME "size"
 #define TEXT_NAME "text"
 
-#define EXCEPTION_METHOD_NAME "exception"
+#define UNHANDLED_EXCEPTION_METHOD_NAME "unhandled_exception"
 #define POST_PROCESS_METHOD_NAME "postprocess"
 
 #define UNNAMED_NAME "unnamed"
@@ -51,6 +51,13 @@ class Charset;
 
 #define RESULT_VAR_NAME "result"
 #define MATCH_VAR_NAME "match"
+
+#define EXCEPTION_VAR_NAME "exception"
+#define EXCEPTION_TYPE_PART_NAME "type"
+#define EXCEPTION_SOURCE_PART_NAME "source"
+#define EXCEPTION_COMMENT_PART_NAME "comment"
+#define EXCEPTION_HANDLED_PART_NAME "handled"
+
 
 #define STRING_PRE_MATCH_NAME "prematch"
 #define STRING_MATCH_NAME "match"
@@ -93,7 +100,7 @@ extern String *name_name;
 extern String *size_name;
 extern String *text_name;
 
-extern String *exception_method_name;
+extern String *unhandled_exception_method_name;
 extern String *post_process_method_name;
 
 extern String *unnamed_name;
@@ -115,6 +122,12 @@ extern String *match_var_name;
 extern String *string_pre_match_name;
 extern String *string_match_name;
 extern String *string_post_match_name;
+
+extern String *exception_var_name;
+extern String *exception_type_part_name;
+extern String *exception_source_part_name;
+extern String *exception_comment_part_name;
+extern String *exception_handled_part_name;
 
 extern String *content_disposition_name;
 extern String *content_disposition_filename_name;

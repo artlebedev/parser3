@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.122 2002/02/18 15:21:00 paf Exp $
+	$Id: pa_request.h,v 1.123 2002/03/18 15:29:45 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -196,10 +196,14 @@ public:
 	/// $cookie:elements
 	VCookie cookie;
 
+	//@{ request processing status
+	/// execution stack
+	Stack stack;
 	/// contexts
 	Value *self, *root, *rcontext;
 	/// contexts
 	WContext *wcontext;
+	//@}
 
 	/// 'MAIN' class conglomerat
 	VStateless_class *main_class;
@@ -214,9 +218,6 @@ private: // core data
 
 	/// already used files to avoid cyclic uses
 	Hash used_files;
-
-	/// execution stack
-	Stack stack;
 
 	/**	endless execute(execute(... preventing counter 
 		@see ANTI_ENDLESS_EXECUTE_RECOURSION

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.h,v 1.31 2002/02/08 08:30:13 paf Exp $
+	$Id: pa_exception.h,v 1.32 2002/03/18 15:29:45 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -17,7 +17,6 @@ class Pool;
 
 // defines
 
-/// Just simple longjump mechanizm dressed in class clothes. use Temp_exception
 class Exception {
 public:
 
