@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 
-	$Id: math.C,v 1.20 2002/06/25 13:36:44 paf Exp $
+	$Id: math.C,v 1.21 2002/06/25 13:45:49 paf Exp $
 */
 
 #include "pa_common.h"
@@ -163,7 +163,7 @@ static void _crypt(Request& r, const String& method_name, MethodParams *params) 
 			|| strncmp(sample_buf, normal_salt, prefix_size)!=0) // salt prefix not preserved
 			throw Exception("parser.runtime",
 				&method_name,
-				"this platform does not support '%*s' salt prefix", prefix_size, normal_salt);
+				"on this platform does not support '%.*s' salt prefix", prefix_size, normal_salt);
 		
 		r.write_pass_lang(*new(pool) String(pool, sample_buf));
 #else
