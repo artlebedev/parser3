@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.124 2002/04/22 14:11:28 paf Exp $
+	$Id: pa_globals.C,v 1.125 2002/05/06 10:53:53 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -385,7 +385,7 @@ void pa_globals_init(Pool& pool) {
 		*string_match_table_columns+=NEW String(pool, STRING_MATCH_NAME);
 		*string_match_table_columns+=NEW String(pool, STRING_POST_MATCH_NAME);
 		for(int i=1; i<=MAX_STRING_MATCH_TABLE_COLUMNS; i++) {
-			char *column=(char *)malloc(MAX_NUMBER);
+			char *column=(char *)pool.malloc(MAX_NUMBER);
 			snprintf(column, MAX_NUMBER, "%d", i);
 			*string_match_table_columns+=NEW String(pool, column); // .i column name
 		}
