@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char* IDENT_VHASH_H="$Date: 2002/08/15 09:07:49 $";
+static const char* IDENT_VHASH_H="$Date: 2002/09/20 11:04:32 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -65,7 +65,13 @@ public: // value
 	
 	/// VHash: (key)=value
 	/*override*/ bool put_element(const String& aname, Value *avalue, bool /*replace*/) { 
-		hash(&aname).put(aname, avalue);
+		if(locked) {
+			if(!fhash.put_replace(aname, avalue))
+				throw Exception("parser.runtime",
+					&aname,
+					"can not insert new hash key (hash locked)");
+		} else
+			fhash.put(aname, avalue);
 
 		return true;
 	}
