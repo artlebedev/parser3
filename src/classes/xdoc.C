@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2003/12/15 14:56:19 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/01/22 09:34:05 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -819,9 +819,6 @@ static void _transform(Request& r, MethodParams& params) {
 			static_cast<VXdoc *>(vxdoc)->get_document());
 		// compile xdoc stylesheet
 		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(document)); 
-		// strange thing - xsltParseStylesheetDoc records document and destroys it in stylesheet destructor
-		// we don't need that
-		stylesheet_ptr->doc=0;
 		if(xmlHaveGenericErrors()) {
 			GdomeException exc=0;
 			throw XmlException(0, exc);
@@ -830,6 +827,9 @@ static void _transform(Request& r, MethodParams& params) {
 			throw Exception("xml",
 				0,
 				"stylesheet failed to compile");
+		// strange thing - xsltParseStylesheetDoc records document and destroys it in stylesheet destructor
+		// we don't need that
+		stylesheet_ptr->doc=0;
 
 		// transform!
 		result=&_transform(r, 0,
