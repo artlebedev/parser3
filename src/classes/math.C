@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/05/26 09:32:29 $";
+static const char* IDENT_MATH_C="$Date: 2003/07/24 06:49:22 $";
 
 #include "pa_common.h"
 #include "pa_vint.h"
@@ -347,7 +347,7 @@ static void _uuid(Request& r, const String& method_name, MethodParams *params) {
         uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0FFF) | 0x4000;
  
 	// format 
-	const int uuid_cstr_bufsize=32+1/*for zero-teminator*/;
+	const int uuid_cstr_bufsize=36+1/*for zero-teminator*/+1/*buggy snprintfs*/;
 	char *uuid_cstr=(char *)pool.malloc(uuid_cstr_bufsize);
         snprintf(uuid_cstr, uuid_cstr_bufsize,
                 "%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
