@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VCOOKIE_C="$Date: 2002/08/28 11:02:58 $";
+static const char* IDENT_VCOOKIE_C="$Date: 2002/08/28 11:35:57 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -47,6 +47,15 @@ bool VCookie::put_element(const String& aname, Value *avalue, bool /*replace*/) 
 		lvalue=static_cast<Value *>(hash->get(*value_name));
 	else
 		lvalue=avalue;
+
+	if(lvalue && lvalue->is_string()) {
+		// taint string being assigned
+		VString& vstring=*static_cast<VString *>(lvalue);
+		const String& user=vstring.string();
+		String& tainted=*NEW String(pool());
+		tainted.append(user, String::UL_TAINTED, true /*forced*/);
+		vstring.set_string(tainted);
+	}
 
 	remove=!lvalue || lvalue->as_string().is_empty();
 
