@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.135 2002/06/11 12:20:41 paf Exp $
+	$Id: pa_request.h,v 1.136 2002/06/12 10:58:42 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -278,6 +278,13 @@ private: // core data
 		@see ANTI_ENDLESS_EXECUTE_RECOURSION
 	*/
 	uint anti_endless_execute_recoursion;
+
+private:
+
+	/// already executed some @conf method
+	bool configure_admin_done;
+
+	void configure_admin(VStateless_class& conf_class, const String *source);
 
 private: // compile.C
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.207 2002/05/07 07:39:19 paf Exp $
+	$Id: pa_request.C,v 1.208 2002/06/12 10:58:43 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -19,8 +19,8 @@
 #include "pa_vtable.h"
 #include "pa_vfile.h"
 #include "pa_dictionary.h"
-#include "pa_charsets.h"
 #include "pa_charset.h"
+#include "pa_charsets.h"
 
 const char *POST_PROCESS_METHOD_NAME="postprocess";
 const char *UNHANDLED_EXCEPTION_METHOD_NAME="unhandled_exception";
@@ -35,11 +35,6 @@ const char *ORIGINS_CONTENT_TYPE="text/plain";
 Methoded *MOP_create(Pool&);
 // op.C
 VHash& exception2vhash(Pool& pool, const Exception& e);
-
-static void load_charset(const Hash::Key& akey, Hash::Val *avalue, 
-										  void *) {
-	charsets->load_charset(akey, static_cast<Value *>(avalue)->as_string());
-}
 
 //
 Request::Request(Pool& apool,
@@ -61,6 +56,7 @@ Request::Request(Pool& apool,
 	info(ainfo),
 	post_data(0), post_size(0),
 	used_files(apool),
+	configure_admin_done(false),
 	default_content_type(0),
 	mime_types(0),
 	main_class(0),
@@ -119,6 +115,38 @@ Request::~Request() {
 #endif
 }
 
+static void load_charset(const Hash::Key& akey, Hash::Val *avalue, void *) {
+	charsets->load_charset(akey, static_cast<Value *>(avalue)->as_string());
+}
+void Request::configure_admin(VStateless_class& conf_class, const String *source) {
+	if(configure_admin_done)
+		throw Exception("parser.runtime",
+		source,
+		"parser already configured");
+	configure_admin_done=true;
+	
+	// charsets must only be specified in root config
+	// so that users would not interfere
+
+	/* $MAIN:CHARSETS[
+			$.charsetname1[/full/path/to/charset/file.cfg]
+			...
+		]
+	*/
+	if(Value *vcharsets=conf_class.get_element(*charsets_name)) {
+		if(Hash *charsets=vcharsets->get_hash(0))
+			charsets->for_each(load_charset);
+		else
+			throw Exception("parser.runtime",
+				0,
+				"$" CHARSETS_NAME " must be hash");
+	}
+
+	// configure root options
+	//	until someone with less privileges have overriden them
+	OP.configure_admin(*this);
+	methoded_array->configure_admin(*this);
+}
 
 /**
 	load MAIN class, execute @main.
@@ -154,27 +182,6 @@ gettimeofday(&mt[0],NULL);
 				true/*ignore class_path*/, root_config_fail_on_read_problem,
 				main_class_name, main_class);
 		}
-		// charsets must only be specified in root config
-		// so that users would not interfere
-		if(main_class) {
-			/* $MAIN:CHARSETS[
-					$.charsetname1[/full/path/to/charset/file.cfg]
-					...
-				]
-			*/
-			if(Value *vcharsets=main_class->get_element(*charsets_name)) {
-				if(Hash *charsets=vcharsets->get_hash(0))
-					charsets->for_each(load_charset);
-				else
-					throw Exception("parser.runtime",
-						0,
-						"$" CHARSETS_NAME " must be hash");
-			}
-		}
-		// configure root options
-		//	until someone with less privileges have overriden them
-		OP.configure_admin(*this);
-		methoded_array->configure_admin(*this);
 
 		// loading site config
 		if(site_config_filespec) {
@@ -481,13 +488,18 @@ VStateless_class *Request::use_file(const String& file_name,
 	return use_buf(source, file_spec->cstr(), 0/*new class*/, name, base_class);
 }
 
+
 VStateless_class *Request::use_buf(const char *source, const char *file,
 								   VStateless_class *aclass, const String *name, 
 								   VStateless_class *base_class) {
 	// compile loaded class
 	VStateless_class& cclass=COMPILE(source, aclass, name, base_class, file);
 
-	// locate and execute possible @auto[] static method
+	// locate and execute possible @conf[] static
+	if(const String *conf=execute_nonvirtual_method(cclass, *conf_method_name, true /*we need does_exist(result)*/))
+		configure_admin(cclass, conf);
+
+	// locate and execute possible @auto[] static
 	execute_nonvirtual_method(cclass, *auto_method_name, false /*no result needed*/);
 	return &cclass;
 }
