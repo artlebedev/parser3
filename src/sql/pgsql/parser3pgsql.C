@@ -7,7 +7,7 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.7 2001/08/01 07:41:37 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.8 2001/08/01 09:30:35 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -16,10 +16,11 @@ static const char *RCSId="$Id: parser3pgsql.C,v 1.7 2001/08/01 07:41:37 parser E
 #include <libpq-fe.h>
 #include <libpq-fs.h>
 
-// #include <catalog/pg_type.h>
+// OIDOID from #include <catalog/pg_type.h>
 #define OIDOID			26
-#define LO_BUFSIZE		  0x1000/*8192*/
-
+// LO_BUFSIZE from interfaces\libpq\fe-lobj.c = 8192 (0x2000)
+// actually writing chunks of that size failed, reduced it twice
+#define LO_BUFSIZE		  0x1000
 
 #include "ltdl.h"
 
@@ -66,9 +67,6 @@ public:
 	/**	connect
 		@param used_only_in_connect_url
 			format: @b user:pass@host[:port]|[local]/database
-			3.23.22b
-			Currently the only option for @b character_set_name is cp1251_koi8.
-			WARNING: must be used only to connect, for buffer doesn't live long
 	*/
 	void connect(
 		char *used_only_in_connect_url, 
@@ -81,7 +79,6 @@ public:
 		char *pwd=lsplit(user, ':');
 		char *port=lsplit(host, ':');
 
-//		_asm  int 3; 
 		PGconn *conn=PQsetdbLogin(
 			strcasecmp(host, "local")==0?NULL/* local Unix domain socket */:host, port, 
 			NULL, NULL, db, user, pwd);
@@ -94,11 +91,9 @@ public:
 		begin_transaction(services, conn);
 	}
 	void disconnect(SQL_Driver_services&, void *connection) {
-//		_asm int 3;
 	    PQfinish((PGconn *)connection);
 	}
 	void commit(SQL_Driver_services& services, void *connection) {
-//		_asm int 3;
 		PGconn *conn=(PGconn *)connection;
 		if(PGresult *res=PQexec(conn, "COMMIT"))
 			PQclear(res);
@@ -107,7 +102,6 @@ public:
 		begin_transaction(services, conn);
 	}
 	void rollback(SQL_Driver_services& services, void *connection) {
-//		_asm int 3;
 		PGconn *conn=(PGconn *)connection;
 		if(PGresult *res=PQexec(conn, "ROLLBACK"))
 			PQclear(res);
@@ -198,7 +192,6 @@ public:
 					void *ptr;
 					if(PQftype(res, i)==OIDOID) {
 						// ObjectID column, read object bytes
-//						_asm int 3;
 
 						char *error_pos=0;
 						Oid oid=cell?atoi(cell):0;
@@ -227,7 +220,7 @@ public:
 						} else
 							PQclear_throwPQerror;
 					} else {
-						// normal column, read it as ASCII string
+						// normal column, read it normally
 						size=(size_t)PQgetlength(res, r, i);
 						if(size) {
 							ptr=services.malloc(size);
