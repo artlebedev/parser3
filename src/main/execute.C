@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.230 2002/04/15 12:03:32 paf Exp $
+	$Id: execute.C,v 1.231 2002/04/15 13:39:53 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -821,6 +821,7 @@ void Request::execute(const Array& ops) {
 	}
 }
 
+/// @test cache|prepare junctions 
 Value *Request::get_element(bool can_call_operator) {
 	const String& name=POP_NAME();
 	Value *ncontext=POP();

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_value.h,v 1.82 2002/04/15 11:34:24 paf Exp $
+	$Id: pa_value.h,v 1.83 2002/04/15 13:39:54 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -211,7 +211,7 @@ public: // usage
 
 	/// updates the name which is used in error messages [sets only when were unnamed]
 	void update_name(const String& aname) {
-		if(fname!=unnamed_name)
+		if(fname==unnamed_name)
 			fname=&aname; 
 	}
 	

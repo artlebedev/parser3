@@ -32,3 +32,13 @@
 ] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(128:1): parse error, expecting `']'' [parser.compile]
 [Mon Apr 15 15:59:30 2002
 ] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(128:1): parse error, expecting `']'' [parser.compile]
+[Mon Apr 15 17:32:29 2002
+] global(0): 'unnamed' body must be code (parameter #1) [parser.runtime]
+[Mon Apr 15 17:33:53 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(9): 'process' body must be code (parameter #1) [parser.runtime]
+[Mon Apr 15 17:35:04 2002
+] global(0): 'unnamed' body must be code (parameter #1) [parser.runtime]
+[Mon Apr 15 17:35:05 2002
+] global(0): 'unnamed' body must be code (parameter #1) [parser.runtime]
+[Mon Apr 15 17:36:13 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(9): 'process' body must be code (parameter #1) [parser.runtime]
