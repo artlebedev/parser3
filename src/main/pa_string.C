@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.85 2001/05/15 15:51:05 parser Exp $
+	$Id: pa_string.C,v 1.86 2001/05/16 08:10:22 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -308,7 +308,8 @@ int String::cmp(int& partial, const char* b_ptr, size_t src_size,
 			a_row++; a_countdown--; 
 		}
 
-		if(a_break=a_row==a_end)
+		a_break=a_row==a_end;
+		if(a_break || b_break)
 			break;
 		if(!a_countdown) {
 			a_chunk=a_row->link;

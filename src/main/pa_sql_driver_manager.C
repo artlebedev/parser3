@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.10 2001/05/07 13:30:04 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.11 2001/05/16 08:10:22 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -78,11 +78,11 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_owned_u
 			&request_owned_url,
 			"no protocol specified"); // NOTE: not THROW, but PTHROW
 
-	// make url C-string on global pool
+	// make global_owned_url C-string on global pool
 	char *url_cstr=(char *)malloc(MAX_STRING);
 	strncpy(url_cstr, request_owned_url.cstr(String::UL_AS_IS), MAX_STRING);
-	// make url string on global pool
-	String& url=*new(this->pool()) String(this->pool(), url_cstr);
+	// make global_owned_url string on global pool
+	String& global_owned_url=*new(this->pool()) String(this->pool(), url_cstr);
 	
 	char *protocol_cstr=lsplit(&url_cstr, ':');
 	String& protocol=*new(this->pool()) String(this->pool(), protocol_cstr);
@@ -108,7 +108,7 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_owned_u
 					"client library column for protocol '%s' is empty", protocol_cstr);
 		} else
 			PTHROW(0, 0,
-				&url,
+				&request_owned_url,
 				"undefined protocol '%s'", protocol_cstr);
 
 		const char *filename=library->cstr(String::UL_FILE_NAME);
@@ -151,13 +151,13 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_owned_u
 	
 	// services associated with request
 	SQL_Driver_services_impl& services=
-		*new(pool) SQL_Driver_services_impl(pool, url);
+		*new(pool) SQL_Driver_services_impl(pool, request_owned_url);
 
 	// allocate in global pool 
 	// associate with services[request], deassociates at close
 	SQL_Connection& result=
 		*new(this->pool()) SQL_Connection(this->pool(), 
-		url, *driver, services, url_cstr);
+		global_owned_url, *driver, services, url_cstr);
 	
 	return result;
 }
