@@ -394,6 +394,9 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !$request:query    
     !$request:body unprocessed POST request body
     !$request:uri
+    !$request:document-root
+        каталог, относительно которого считаются пути в parser, по-умолчанию = $env:DOCUMENT_ROOT
+        можно изменить, если на hosting что-то неудобно настроено
     X!$request:browser  это hash, поля:
         !$type = ie/nn и !$version = номер, скажем 5.5       
     X$request:user
