@@ -1,3 +1,84 @@
+2004-02-06  paf
+	* src/main/untaint.C 1.128:
+		beauty: removed old def/ifdef
+
+	* src/main/pa_sql_driver_manager.C 1.81:
+	* src/main/pa_stylesheet_manager.C 1.25:
+		beauty: unified destructing style
+
+	* src/main/untaint.C 1.127:
+		beauty: coredump @unknown untaint language now
+
+2004-02-03  paf
+	* src/main/pa_common.C 1.173:
+		typo: %l -> %u
+
+	* src/classes/xnode.C 1.64:
+		memleaks found: not fixed yet. todo
+
+	* src/classes/xdoc.C 1.130:
+		bugfix: libxml: FOR UTF-8 TOO russian letters in attributes or
+		documents-results of transform now not &#04xx;
+
+	* src/main/pa_charset.C 1.47:
+		bugfix: forgot to undo some
+
+	* src/classes/image.C 1.104:
+	* src/main/pa_exec.C 1.56:
+	* src/main/pa_memory.C 1.4:
+	* src/targets/isapi/parser3isapi.C 1.86:
+	* src/types/pa_value.C 1.15:
+	* src/types/pa_vcookie.C 1.62:
+		beauty: %u is more simple=proper for size_t then %ld/%lu
+
+	* src/main/pa_charset.C 1.46:
+		beauty: uncomment PA_PATCHED_LIBXML_BACKWARD to link with old
+		patched libxml libraries
+
+2004-02-02  paf
+	* src/types/pa_vform.C 1.78:
+		bugfix: empty values with enctype=multipart/form-data now produce entries in $form:tables
+		<form method=post enctype=multipart/form-data>
+		<input type=hidden name=a>
+		<input type=hidden name=b>
+		
+		<input type=submit>
+		</form>
+		$k[^form:fields._keys[]]
+		^eval($k)
+		<hr>
+		<pre>$request:body
+
+	* src/types/pa_vcookie.C 1.61:
+		bugfix: erasing cookie: params now output
+		$cookie:example[
+			$.value[value]
+			$.path[/there/]
+		]
+		
+		$cookie:example[
+			$.value[]
+			$.expires[session]
+			$.path[/there/]
+			$.domain[test.com]
+		]
+
+2004-01-30  paf
+	* src/classes/date.C 1.59:
+	* www/htdocs/.htaccess 1.26:
+		bugfix: ^date::create[invalid year] now produces exception. 
+		todo: check other fields
+
+	* src/classes/date.C 1.60:
+	* src/classes/date.C 1.61:
+	* src/include/pa_string.h 1.155:
+	* src/main/pa_string.C 1.193:
+		bugfix: ^date::create[invalid fields now produce exception.
+
+	* src/classes/xdoc.C 1.129:
+		bugfix: libxml: russian letters in attributes or documents
+		results of transform now not &#04xx;
+
 2004-01-29  paf
 	* src/targets/apache13core/mod_parser3_core.C 1.2:
 		bugfix: old style new used
@@ -5,6 +86,9 @@
 	* src/include/pa_memory.h 1.9:
 		bugfix: [potential] strdup copied one more byte then specified
 		 then zeroed it << useless and potentially harmful(could gpf)
+
+	* src/include/pa_memory.h 1.10:
+		typo error
 
 2004-01-22  paf
 	* src/main/pa_common.C [release_3_1_1] 1.160.2.1:
@@ -10911,7 +10995,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2004/01/30 09:39:44 $
+		$Date: 2004/02/11 09:18:22 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -18071,7 +18155,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.32 2004/01/30 09:39:44 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.33 2004/02/11 09:18:22 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -18114,7 +18198,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.32 2004/01/30 09:39:44 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.33 2004/02/11 09:18:22 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -23477,7 +23561,7 @@
 	* src/main/pa_pool.C 1.2:
 	* src/main/pa_string.C 1.3:
 	* src/main/pa_string.C 1.4:
-		$Id: ChangeLog,v 1.32 2004/01/30 09:39:44 paf Exp $ check
+		$Id: ChangeLog,v 1.33 2004/02/11 09:18:22 paf Exp $ check
 
 	* src/include/pa_pool.h 1.5:
 	* src/include/pa_string.h 1.2:

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2004/01/22 07:11:59 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2004/02/11 09:18:24 $";
 
 #include "pa_config_includes.h"
 
@@ -364,20 +364,20 @@ void pa_globals_init() {
 #	ifdef _DEBUG
 
 #		ifdef LIBXML_STATIC
-#			pragma comment(lib, GNOME_LIBS "/gnome-xml/win32/binaries-debug/libxml2_a.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/binaries-debug/libxml2_a.lib")
 #		else
-#			pragma comment(lib, GNOME_LIBS "/gnome-xml/win32/binaries-debug/libxml2.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/binaries-debug/libxml2.lib")
 #		endif
 
 #		ifdef LIBXSLT_STATIC
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libxslt_DebugStatic/libxslt.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/binaries-debug/libxslt_a.lib")
 #		else
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libxslt_DebugDynamic/libxslt.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/binaries-debug/libxslt.lib")
 #		endif
 #		ifdef LIBEXSLT_STATIC
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libexslt_DebugStatic/libexslt.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/binaries-debug/libexslt_a.lib")
 #		else
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libexslt_DebugDynamic/libexslt.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/binaries-debug/libexslt.lib")
 #		endif
 
 #		ifdef LIBGDOME_STATIC
@@ -389,20 +389,20 @@ void pa_globals_init() {
 #else
 
 #		ifdef LIBXML_STATIC
-#			pragma comment(lib, GNOME_LIBS "/gnome-xml/win32/binaries-release/libxml2_a.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/binaries-release/libxml2_a.lib")
 #		else
-#			pragma comment(lib, GNOME_LIBS "/gnome-xml/win32/binaries-release/libxml2.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/binaries-release/libxml2.lib")
 #		endif
 
 #		ifdef LIBXSLT_STATIC
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libxslt_ReleaseStatic/libxslt.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/binaries-release/libxslt_a.lib")
 #		else
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libxslt_ReleaseDynamic/libxslt.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/binaries-release/libxslt.lib")
 #		endif
 #		ifdef LIBEXSLT_STATIC
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libexslt_ReleaseStatic/libexslt.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/binaries-release/libexslt_a.lib")
 #		else
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/dsp/libexslt_ReleaseDynamic/libexslt.lib")
+#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/binaries-release/libexslt.lib")
 #		endif
 
 #		ifdef LIBGDOME_STATIC

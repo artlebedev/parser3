@@ -24,7 +24,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\..\..\sql,..\..\..\..\include,..\..\..\..,..\..\..\..\types,..\..\..\..\classes,..\..,..\..\types,..\..\include,..\..\classes,..\..\sql,..\..\lib\gc\include,..\..\lib\cord\include,..\..\lib\pcre,\parser3project\win32\gnome\glib\include,\parser3project\win32\gnome\glib\include\glib,\parser3project\win32\gnome\gdome2-x.x.x\libgdome,\parser3project\win32\gnome\gnome-xml\include,\parser3project\win32\gnome\libxslt-x.x.x"
+				AdditionalIncludeDirectories="..\..\..\..\sql,..\..\..\..\include,..\..\..\..,..\..\..\..\types,..\..\..\..\classes,..\..,..\..\types,..\..\include,..\..\classes,..\..\sql,..\..\lib\gc\include,..\..\lib\cord\include,..\..\lib\pcre,\parser3project\win32\gnome\glib\include,\parser3project\win32\gnome\glib\include\glib,\parser3project\win32\gnome\gdome2-x.x.x\libgdome,\parser3project\win32\gnome\libxml2-x.x.x\include,\parser3project\win32\gnome\libxslt-x.x.x"
 				PreprocessorDefinitions="WIN32"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -99,7 +99,7 @@ dir&gt;nul
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..,..\..\types,..\..\include,..\..\classes,..\..\sql,..\..\lib\gc\include,..\..\lib\cord\include,..\..\lib\pcre,\parser3project\win32\gnome\glib\include,\parser3project\win32\gnome\glib\include\glib,\parser3project\win32\gnome\gdome2-x.x.x\libgdome,\parser3project\win32\gnome\gnome-xml\include,\parser3project\win32\gnome\libxslt-x.x.x"
+				AdditionalIncludeDirectories="..\..,..\..\types,..\..\include,..\..\classes,..\..\sql,..\..\lib\gc\include,..\..\lib\cord\include,..\..\lib\pcre,\parser3project\win32\gnome\glib\include,\parser3project\win32\gnome\glib\include\glib,\parser3project\win32\gnome\gdome2-x.x.x\libgdome,\parser3project\win32\gnome\libxml2-x.x.x\include,\parser3project\win32\gnome\libxslt-x.x.x"
 				PreprocessorDefinitions="_DEBUG;WIN32"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
