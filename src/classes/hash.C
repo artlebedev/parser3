@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2004/03/01 13:46:46 $";
+static const char * const IDENT_HASH_C="$Date: 2004/03/25 11:49:25 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -85,20 +85,22 @@ public:
 			String& cell=*new String;
 			if(length)
 				cell.append_know_length(ptr, length, String::L_TAINTED);
-			if(column_index==0) {
+			bool duplicate=false;
+			if(only_one_column) {
+				duplicate=rows_hash.put_dont_replace(cell, &only_one_column_value);  // put. existed?
+			} else if(column_index==0) {
 				VHash* row_vhash=new VHash;
 				row_hash=&row_vhash->hash();
-				if(rows_hash.put_dont_replace(cell, row_vhash)) // put. existed?
-					if(!distinct) {
-						error=SQL_Error("parser.runtime", "duplicate key");
-						return true;
-					}
-				if(only_one_column)
-					row_hash->put(cell, &only_one_column_value);
+				duplicate=rows_hash.put_dont_replace(cell, row_vhash); // put. existed?
 			} else
 				row_hash->put(*columns[column_index], new VString(cell));
-			column_index++;
 
+			if(duplicate & !distinct) {
+				error=SQL_Error("parser.runtime", "duplicate key");
+				return true;
+			}
+
+			column_index++;
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Hash_sql_event_handlers::add_row_cell");
