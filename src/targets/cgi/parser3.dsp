@@ -113,10 +113,6 @@ LINK32=link.exe
 # Name "parser3 - Win32 Profile"
 # Begin Source File
 
-SOURCE=.\aaa.txt
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\acconfig.h
 # End Source File
 # Begin Source File

@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSET_C="$Date: 2002/09/10 08:41:00 $";
+static const char* IDENT_CHARSET_C="$Date: 2002/09/11 11:11:06 $";
 
 #include "pa_charset.h"
 
@@ -372,7 +372,7 @@ of ocetes consumed.
 	return 0;
 }
 /// @todo digital entites only when xml/html output [at output in html/xml mode, in html part of a letter]
-static size_t transcodeFromUTF8(
+static int transcodeFromUTF8(
 								const XMLByte *srcData, size_t& srcLen,
 								XMLByte* toFill, size_t& toFillLen,
 								const Charset::Tables& tables) {
@@ -574,20 +574,22 @@ const char *Charset::transcode_cstr(xmlChar *s) {
 	int outlen=inlen+1; // max
 	char *out=(char *)malloc(outlen*sizeof(char));
 	
-	int size;
+	int error;
 	if(xmlCharEncodingOutputFunc output=transcoder(0)->output) {
-		size=output(
+		error=output(
 			(unsigned char*)out, &outlen,
 			(const unsigned char*)s, &inlen,
 			transcoder(0)->outputInfo);
-	} else
-		memcpy(out, s, size=inlen);
-	if(size<0)
+	} else {
+		memcpy(out, s, outlen=inlen);
+		error=0;
+	}
+	if(error<0)
 		throw Exception(0,
 			0,
-			"transcode_cstr failed (%d)", size);
+			"transcode_cstr failed (%d)", error);
 
-	out[size]=0;
+	out[outlen/*surely would be less then on input*/]=0;
 	return out;
 }
 String& Charset::transcode(xmlChar *s) { 
@@ -602,24 +604,29 @@ String& Charset::transcode(GdomeDOMString *s) {
 
 /// @test less memory using -maybe- xmlParserInputBufferCreateMem
 xmlChar *Charset::transcode_buf2xchar(const char *buf, size_t buf_size) {
-	int outlen=buf_size*6/*max*/+1;
-	unsigned char *out=(unsigned char*)malloc(outlen*sizeof(unsigned char));
-
-	int size;
+	unsigned char *out;
+	int outlen;
+	int error;
 	if(xmlCharEncodingInputFunc input=transcoder(0)->input) {
-		size=input(
+		outlen=buf_size*6/*max*/+1;
+		out=(unsigned char*)malloc(outlen*sizeof(unsigned char));
+		error=input(
 			out, &outlen,
 			(const unsigned char *)buf,  (int *)&buf_size,
 			transcoder(0)->inputInfo);
-	} else
-		memcpy(out, buf, size=buf_size);
+	} else {
+		outlen=buf_size;
+		out=(unsigned char*)malloc(outlen*sizeof(unsigned char));
+		memcpy(out, buf, outlen);
+		error=0;
+	}
 	
-	if(size<0)
+	if(error<0)
 		throw Exception(0,
 			0,
-			"transcode_buf failed (%d)", size);
+			"transcode_buf failed (%d)", error);
 
-	out[size]=0;
+	out[outlen/*surely would be less then on input*/]=0;
 	return (xmlChar *)out;
 }
 GdomeDOMString_auto_ptr Charset::transcode_buf2dom(const char *buf, size_t buf_size) { 
