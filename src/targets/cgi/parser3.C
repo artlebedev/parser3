@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.86 2001/05/21 07:58:41 parser Exp $
+	$Id: parser3.C,v 1.87 2001/05/21 08:01:36 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -274,7 +274,7 @@ int main(int argc, char *argv[]) {
 		static char site_auto_path[MAX_STRING];
 		strncpy(site_auto_path, argv[0], MAX_STRING);  // filespec of my binary
 		rsplit(site_auto_path, '/');  rsplit(site_auto_path, '\\');// strip filename
-		SAPI::log(pool, "r=%s, s=%s", 
+		printf("content-type:text/plain\n\nr=%s, s=%s", 
 			root_auto_path, 
 			site_auto_path);
 		
