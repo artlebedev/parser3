@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2004/02/11 15:33:13 $";
+static const char * const IDENT_TABLE_C="$Date: 2004/03/25 11:50:10 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -629,7 +629,7 @@ static void _hash(Request& r, MethodParams& params) {
 				} else
 					throw Exception("parser.runtime",
 						0,
-						"value field(s) must be string or self_table"
+						"value field(s) must be string or table"
 					);
 			} else { // by all columns, including key
 				if(!(distinct!=D_ILLEGAL && distinct!=D_FIRST))
@@ -644,7 +644,7 @@ static void _hash(Request& r, MethodParams& params) {
 					&r,
 					&self_table,
 					/*key_code=*/key_param->get_junction()?key_param:0,
-					/*key_field=*/0,
+					/*key_field=*/0/*filled below*/,
 					&value_fields,
 					&result.hash(),
 					distinct,
