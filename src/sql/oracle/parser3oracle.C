@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6 [@test tested with Oracle 7.x.x]
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.17 2001/09/05 09:22:45 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.18 2001/09/06 06:11:13 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -49,6 +49,7 @@ static char *lsplit(char *string, char delim) {
     return 0;
 }
 
+#ifndef DOXYGEN
 struct OracleSQL_connection_struct {
 	jmp_buf mark; char error[MAX_STRING];
 	OCIEnv *envhp;
@@ -81,7 +82,7 @@ struct OracleSQL_query_lobs {
 	} items[MAX_IN_LOBS];
 	int count;
 };
-
+#endif
 
 // forwards
 void check(

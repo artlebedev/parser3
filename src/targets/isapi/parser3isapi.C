@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3isapi.C,v 1.37 2001/09/04 19:07:38 parser Exp $"; 
+static const char *RCSId="$Id: parser3isapi.C,v 1.38 2001/09/06 06:11:13 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -27,16 +27,17 @@ static const char *RCSId="$Id: parser3isapi.C,v 1.37 2001/09/04 19:07:38 parser 
 
 // SAPI
 
-/** 
+#ifndef DOXYGEN
+/*
 	ISAPI SAPI functions receive this context information. 
-
-	@see Pool::set_context
+	see Pool::set_context
 */
 struct SAPI_func_context {
 	LPEXTENSION_CONTROL_BLOCK lpECB;
 	String *header;
 	DWORD http_response_code;
 };
+#endif
 
 // goes to 'cs-uri-query' log file field. webmaster: switch it ON[default OFF].
 void SAPI::log(Pool& pool, const char *fmt, ...) {

@@ -5,18 +5,19 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vtable.C,v 1.2 2001/07/25 14:36:03 parser Exp $
+	$Id: pa_vtable.C,v 1.3 2001/09/06 06:11:13 parser Exp $
 */
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
 
-/// used by table: _record / store_column_item_to_hash
+#ifndef DOXYGEN
 struct Record_info {
 	Pool *pool;
 	Table *table;
 	Hash *hash;
 };
+#endif
 static void store_column_item_to_hash(Array::Item *item, void *info) {
 	Record_info& ri=*static_cast<Record_info *>(info);
 	String& column_name=*static_cast<String *>(item);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.109 2001/09/05 15:05:27 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.110 2001/09/06 06:11:13 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -349,13 +349,14 @@ static void _empty(Request& r, const String& method_name, MethodParams *params) 
 	r.write_no_lang(*new(pool) VBool(pool, table.size()==0));
 }
 
-/// used by table: _hash / table_row_to_hash
+#ifndef DOXYGEN
 struct Row_info {
 	Table *table;
 	int key_field;
 	Array *value_fields;
 	Hash *hash;
 };
+#endif
 static void table_row_to_hash(Array::Item *value, void *info) {
 	Array& row=*static_cast<Array *>(value);
 	Row_info& ri=*static_cast<Row_info *>(info);
@@ -410,7 +411,7 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 	r.write_no_lang(result);
 }
 
-/// used by table: _sort / sort_cmp_string|sort_cmp_double
+#ifndef DOXYGEN
 struct Table_seq_item {
 	Array *row;
 	union {
@@ -418,6 +419,7 @@ struct Table_seq_item {
 		double d;
 	} value;
 };
+#endif
 static int sort_cmp_string(const void *a, const void *b) {
 	return strcmp(
 		static_cast<const Table_seq_item *>(a)->value.c_str, 

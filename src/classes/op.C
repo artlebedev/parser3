@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: op.C,v 1.40 2001/09/05 09:02:52 parser Exp $"; 
+static const char *RCSId="$Id: op.C,v 1.41 2001/09/06 06:11:13 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -267,12 +267,13 @@ static void _connect(Request& r, const String&, MethodParams *params) {
 			rethrow_me.comment());
 }
 
+#ifndef DOXYGEN
 struct Switch_data {
 	Value *searching;
 	Value *found;
 	Value *_default;
 };
-
+#endif
 static void _switch(Request& r, const String&, MethodParams *params) {
 	void *backup=r.classes_conf.get(*switch_data_name);
 	Switch_data data={&r.process(params->get(0))};	

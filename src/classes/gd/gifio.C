@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gifio.C,v 1.10 2001/08/28 13:49:19 parser Exp $
+	$Id: gifio.C,v 1.11 2001/09/06 06:11:13 parser Exp $
 
 
 	based on:
@@ -744,13 +744,14 @@ gdGifEncoder::gdGifEncoder(Pool& pool, gdImage& aim, String& afp) : Pooled(pool)
 #endif
 
 /// Graphic Control Extension struct
+#ifndef DOXYGEN
 struct Gif89 {
 	int     transparent;
 	int     delayTime;
 	int     inputFlag;
 	int     disposal;
 };
-
+#endif
 static int ReadColorMap(FILE *fd, int number, unsigned char(*buffer)[256]);
 static int GetCode(FILE *fd, int code_size, int flag);
 

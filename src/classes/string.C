@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.73 2001/09/05 15:05:27 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.74 2001/09/06 06:11:13 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -196,13 +196,14 @@ static void search_action(Table& table, Array *row, int, int, void *) {
 		table+=row;
 }
 
-/// used by string: _match / replace_action
+#ifndef DOXYGEN
 struct Replace_action_info {
 	Request *request;  const String *origin;
 	const String *src;  String *dest;
 	Value *replacement_code;
 	const String *post_match;
 };
+#endif
 static void replace_action(Table& table, Array *row, int start, int finish, 
 							   void *info) {
 	Replace_action_info& ai=*static_cast<Replace_action_info *>(info);

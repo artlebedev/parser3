@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.39 2001/09/04 19:44:32 parser Exp $
+	$Id: image.C,v 1.40 2001/09/06 06:11:13 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.39 2001/09/04 19:44:32 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.40 2001/09/06 06:11:13 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -219,11 +219,12 @@ void measure(Pool& pool, const String& file_name,
 			"can not determine image type - no file name extension");
 }
 
-/// used by image: _measure / read_mem
+#ifndef DOXYGEN
 struct Read_mem_info {
 	unsigned char *ptr;
 	unsigned char *eof;
 };
+#endif
 static size_t read_mem(void*& buf, size_t limit, void *info) {
 	Read_mem_info& rmi=*static_cast<Read_mem_info *>(info);
 	buf=rmi.ptr;
@@ -232,11 +233,12 @@ static size_t read_mem(void*& buf, size_t limit, void *info) {
 	return read_size;
 }
 
-/// used by image: _measure / read_disk
+#ifndef DOXYGEN
 struct Read_disk_info {
 	const String *file_spec;
 	size_t offset;
 };
+#endif
 static size_t read_disk(void*& buf, size_t limit, void *info) {
 	Read_disk_info& rdi=*static_cast<Read_disk_info *>(info);
 	Pool& pool=rdi.file_spec->pool();
@@ -283,11 +285,12 @@ static void _measure(Request& r, const String& method_name, MethodParams *params
 	static_cast<VImage *>(r.self)->set(file_name, width, height);
 }
 
-/// used by image: _html / append_attrib_pair
+#ifndef DOXYGEN
 struct Attrib_info {
 	String *tag; ///< html tag being constructed
 	Hash *skip; ///< tag attributes not to append to tag string [to skip]
 };
+#endif
 static void append_attrib_pair(const Hash::Key& key, Hash::Val *val, void *info) {
 	Attrib_info& ai=*static_cast<Attrib_info *>(info);
 
