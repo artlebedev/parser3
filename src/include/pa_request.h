@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.64 2001/03/20 06:45:18 paf Exp $
+	$Id: pa_request.h,v 1.65 2001/03/21 14:06:43 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -49,7 +49,8 @@ class Request : public Pooled {
 public:
 
 	/// some information from web server
-	struct Info {
+	class Info {
+	public:
 		const char *document_root;
 		const char *path_translated;
 		const char *method;
@@ -69,10 +70,15 @@ public:
 	/// global classes
 	Hash& classes() { return fclasses; }
 
-	/// core request processing
-	void core(Exception& system_exception,
+	/**
+		core request processing
+
+		BEWARE: may throw exception to you: catch it!
+	*/
+	void core(
 		const char *sys_auto_path1,
-		const char *sys_auto_path2);
+		const char *sys_auto_path2,
+		bool header_only);
 
 	/// executes ops
 	void execute(const Array& ops);
@@ -93,17 +99,13 @@ public:
 		const String *name=0,
 		bool intercept_string=true); // execute.C
 
-	/// write(const) = clean
-	void write(const String& astring) {
-		wcontext->write(astring, String::Untaint_lang::NO);
-	}
 	/// appending, sure of clean string inside
-	void write_no_lang(String& astring) {
-		wcontext->write(astring, String::Untaint_lang::NO);
+	void write_no_lang(const String& astring) {
+		wcontext->write(astring, String::UL_NO);
 	}
 	/// appending string, passing language built into string being written
-	void write_pass_lang(String& astring) {
-		wcontext->write(astring, String::Untaint_lang::PASS_APPENDED); 
+	void write_pass_lang(const String& astring) {
+		wcontext->write(astring, String::UL_PASS_APPENDED); 
 	}
 	/// appending possible string, assigning untaint language
 	void write_assign_lang(Value& avalue) {
@@ -111,11 +113,11 @@ public:
 	}
 	/// appending possible string, passing language built into string being written
 	void write_pass_lang(Value& avalue) {
-		wcontext->write(avalue, String::Untaint_lang::PASS_APPENDED); 
+		wcontext->write(avalue, String::UL_PASS_APPENDED); 
 	}
 	/// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
-		wcontext->write(avalue, String::Untaint_lang::NO);
+		wcontext->write(avalue, String::UL_NO);
 	}
 	/// appending sure value, not VString
 	void write_expr_result(Value& avalue) {
@@ -123,7 +125,8 @@ public:
 	}
 
 	/// handy is-value-a-junction ensurer
-	void fail_if_junction_(bool is, Value& value, const String& method_name, char *msg);
+	void fail_if_junction_(bool is, Value& value, 
+		const String& method_name, const char *msg);
 
 	/// returns relative to @a path  path to @a file 
 	char *relative(const char *path, const char *file);
@@ -197,7 +200,7 @@ private: // lang manipulation
 
 private:
 
-	void output_result(const String& body_string);
+	void output_result(const String& body_string, bool header_only);
 };
 
 ///	Auto-object used for temporary changing Request::flang.

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.24 2001/03/20 06:45:19 paf Exp $
+	$Id: pa_globals.C,v 1.25 2001/03/21 14:06:46 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -127,23 +127,23 @@ void globals_init(Pool& pool) {
 	// hashes
 	untaint_lang_name2enum=new(pool) Hash(pool);
 	String as_is(pool, "as-is");  
-	untaint_lang_name2enum->put(as_is, (int)String::Untaint_lang::AS_IS);
+	untaint_lang_name2enum->put(as_is, (int)String::UL_AS_IS);
 	String file_name(pool, "file-name");  
-	untaint_lang_name2enum->put(file_name, (int)String::Untaint_lang::FILE_NAME);
+	untaint_lang_name2enum->put(file_name, (int)String::UL_FILE_NAME);
 	String header(pool, "header");  
-	untaint_lang_name2enum->put(header, (int)String::Untaint_lang::HEADER);
+	untaint_lang_name2enum->put(header, (int)String::UL_HEADER);
 	String uri(pool, "uri");  
-	untaint_lang_name2enum->put(uri, (int)String::Untaint_lang::URI);
+	untaint_lang_name2enum->put(uri, (int)String::UL_URI);
 	String table(pool, "table");
-	untaint_lang_name2enum->put(table, (int)String::Untaint_lang::TABLE);
+	untaint_lang_name2enum->put(table, (int)String::UL_TABLE);
 	String sql(pool, "sql");
-	untaint_lang_name2enum->put(sql, (int)String::Untaint_lang::SQL);
+	untaint_lang_name2enum->put(sql, (int)String::UL_SQL);
 	String js(pool, "js");
-	untaint_lang_name2enum->put(js, (int)String::Untaint_lang::JS);
+	untaint_lang_name2enum->put(js, (int)String::UL_JS);
 	String html(pool, "html");
-	untaint_lang_name2enum->put(html, (int)String::Untaint_lang::HTML);
+	untaint_lang_name2enum->put(html, (int)String::UL_HTML);
 	String html_typo(pool, "html-typo");
-	untaint_lang_name2enum->put(html_typo, (int)String::Untaint_lang::HTML_TYPO);
+	untaint_lang_name2enum->put(html_typo, (int)String::UL_HTML_TYPO);
 
 	// read-only stateless classes
 	initialize_string_class(pool, *(string_class=new(pool) VStateless_class(pool)));  string_class->freeze();

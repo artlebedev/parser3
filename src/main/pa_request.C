@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.61 2001/03/20 07:34:32 paf Exp $
+	$Id: pa_request.C,v 1.62 2001/03/21 14:06:46 paf Exp $
 */
 
 #include <string.h>
@@ -56,23 +56,24 @@ Request::Request(Pool& apool,
 	classes().put(*cookie_class_name, &cookie);
 }
 
-static void output_response_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
-									  void *info) {
+static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
+								 void *info) {
 	String *attribute_to_exclude=static_cast<String *>(info);
 	if(aattribute==*attribute_to_exclude)
 		return;
 
-	String attribute(aattribute.pool());
-	attribute.append(aattribute, String::Untaint_lang::HEADER, true);
+	Value& lmeaning=*static_cast<Value *>(ameaning);
+	Pool& pool=lmeaning.pool();
 
-	(*service_funcs.output_header_attribute)(
-		attribute.cstr(), 
-		attributed_meaning_string(static_cast<Value *>(ameaning)).cstr());
+	String attribute(pool);
+	(*service_funcs.add_header_attribute)(pool,
+		attribute.append(aattribute, String::UL_HEADER, true).cstr(), 
+		attributed_meaning_to_string(lmeaning).cstr());
 }
 
-void Request::core(Exception& system_exception,
-				   const char *sys_auto_path1,
-				   const char *sys_auto_path2) {
+void Request::core(const char *sys_auto_path1,
+				   const char *sys_auto_path2,
+				   bool header_only) {
 	VStateless_class *main_class=0;
 	bool need_rethrow=false;  Exception rethrow_me;
 	TRY {
@@ -126,7 +127,7 @@ void Request::core(Exception& system_exception,
 		fdefault_content_type=defaults?defaults->get_element(*content_type_name):0;
 
 		// there must be some auto.p
-		if(!main_class)
+		if(/*\*/0&&!main_class)
 			THROW(0,0,
 				0,
 				"no 'auto.p' found (nither system nor any site's)");
@@ -149,7 +150,7 @@ void Request::core(Exception& system_exception,
 			body_string=&body_value->as_string();// TODO: IMAGE&FILE
 
 		// OK. write out the result
-		output_result(*body_string);
+		output_result(*body_string, header_only);
 	} 
 	CATCH(e) {
 		TRY {
@@ -279,7 +280,7 @@ void Request::core(Exception& system_exception,
 			}
 
 			// ERROR. write it out
-			output_result(*body_string);
+			output_result(*body_string, header_only);
 		}
 		CATCH(e) {
 			// exception in request exception handler
@@ -292,7 +293,7 @@ void Request::core(Exception& system_exception,
 	          // any throw() would try to use zero exception() pointer 
 
 	if(need_rethrow) // there were an exception set for us to rethrow?
-		system_exception._throw(rethrow_me.type(), rethrow_me.code(),
+		THROW(rethrow_me.type(), rethrow_me.code(),
 			rethrow_me.problem_source(),
 			rethrow_me.comment());
 
@@ -326,8 +327,8 @@ VStateless_class *Request::use_buf(
 	- fail_if_junction(true, junction = fail
 	- fail_if_junction(false, not junction = fail
 */
-void Request::fail_if_junction_(bool is, 
-								Value& value, const String& method_name, char *msg) {
+void Request::fail_if_junction_(bool is, Value& value, 
+								const String& method_name, const char *msg) {
 
 	if((value.get_junction()!=0) ^ !is)
 		THROW(0, 0,
@@ -354,7 +355,7 @@ char *Request::absolute(const char *name) {
 		return relative(info.path_translated, name);
 }
 
-void Request::output_result(const String& body_string) {
+void Request::output_result(const String& body_string, bool header_only) {
 	// header: cookies
 	cookie.output_result();
 	
@@ -362,17 +363,22 @@ void Request::output_result(const String& body_string) {
 	if(fdefault_content_type)
 		response.fields().put_dont_replace(*content_type_name, fdefault_content_type);
 
-	// header: $response:fields without :body
-	response.fields().foreach(output_response_attribute, /*excluding*/ body_name);
+	// prepare header: $response:fields without :body
+	response.fields().foreach(add_header_attribute, /*excluding*/ body_name);
 
-	// prepare
+	// prepare...
 	const char *body=body_string.cstr();
 	size_t content_length=strlen(body);
 
-	// header: content-length
+	// prepare header: content-length
 	char content_length_cstr[MAX_NUMBER];
 	snprintf(content_length_cstr, MAX_NUMBER, "%d", content_length);
-	(*service_funcs.output_header_attribute)("content-length", content_length_cstr);
-	// body
-	(*service_funcs.output_body)(body, content_length);
+	(*service_funcs.add_header_attribute)(pool(), "content-length", content_length_cstr);
+
+	// send header
+	(*service_funcs.send_header)(pool());
+
+	// send body
+	if(!header_only)
+		(*service_funcs.send_body)(pool(), body, content_length);
 }

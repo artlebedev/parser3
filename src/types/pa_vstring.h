@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.10 2001/03/16 09:26:45 paf Exp $
+	$Id: pa_vstring.h,v 1.11 2001/03/21 14:06:54 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -31,7 +31,7 @@ public: // Value
 		char *error_pos=0;
 		// 0xABC
 		if(cstr[0]=='0' && (cstr[1]=='x' || cstr[1]=='X'))
-			result=(double)strtoul(cstr, &error_pos, 0);
+			result=(double)(unsigned long)strtol(cstr, &error_pos, 0);
 		else
 			result=strtod(cstr, &error_pos);
 

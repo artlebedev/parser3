@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: untaint.C,v 1.10 2001/03/20 06:45:19 paf Exp $
+	$Id: untaint.C,v 1.11 2001/03/21 14:06:46 paf Exp $
 */
 
 #include <string.h>
@@ -78,51 +78,51 @@ char *String::cstr() const {
 			// WARNING:
 			//	string can grow only UNTAINT_TIMES_BIGGER
 			switch(row->item.lang) {
-			case NO:
+			case UL_NO:
 				// clean piece
-			case YES:
+			case UL_YES:
 				// tainted piece, but undefined untaint language
 				// for VString.get_double of tainted values
 				// for ^process{body} evaluation
-			case AS_IS:
+			case UL_AS_IS:
 				// tainted, untaint language: as-is
 				memcpy(copy_here, row->item.ptr, row->item.size); 
 				copy_here+=row->item.size;
 				break;
-			case FILE_NAME:
+			case UL_FILE_NAME:
 				// tainted, untaint language: file [name]
 				escape(
 					escape_value(' ', '_');
 					escape_encode(need_file_encode, '-');
 				);
 				break;
-			case URI:
+			case UL_URI:
 				// tainted, untaint language: uri
 				escape(
 					escape_value(' ', '+');
 					escape_encode(need_uri_encode, '%');
 				);
 				break;
-			case HEADER:
+			case UL_HEADER:
 				// tainted, untaint language: header
 				escape(
 					escape_encode(need_header_encode, '%');
 				);
 				break;
-			case TABLE: 
+			case UL_TABLE: 
 				escape(
 					escape_value('\t', ' ');
 					escape_value('\n', ' ');
 					escape_default;
 				);
 				break;
-			case SQL:
+			case UL_SQL:
 				// tainted, untaint language: sql
 				// TODO: зависимость от sql сервера
 				memset(copy_here, '?', row->item.size); 
 				copy_here+=row->item.size;
 				break;
-			case JS:
+			case UL_JS:
 				escape(
 					escape_subst('"', "\\\"", 2);
 					escape_subst('\'', "\\'", 2);
@@ -133,7 +133,7 @@ char *String::cstr() const {
 					escape_default;
 				);
 				break;
-			case HTML:
+			case UL_HTML:
 				escape(
 					escape_subst('&', "&amp;", 5); // BEFORE consequent relpaces yelding '&'
 					escape_subst('>', "&gt;", 4);
@@ -144,7 +144,7 @@ char *String::cstr() const {
 					escape_default;
 				);
 				break;
-			case HTML_TYPO: 
+			case UL_HTML_TYPO: 
 				// tainted, untaint language: html-typo
 				escape(
 					escape_subst('&', "&amp;", 5); // BEFORE consequent relpaces yelding '&'

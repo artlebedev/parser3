@@ -1,3 +1,3 @@
-#  $Id: Makefile.am,v 1.3 2001/01/30 14:58:45 paf Exp $
+#  $Id: Makefile.am,v 1.4 2001/03/21 14:06:48 paf Exp $
 
-SUBDIRS = parser
+SUBDIRS = cgi

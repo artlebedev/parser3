@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.4 2001/03/20 06:45:16 paf Exp $
+	$Id: file.C,v 1.5 2001/03/21 14:06:42 paf Exp $
 */
 
 #include "pa_request.h"
@@ -27,7 +27,7 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	// forcing untaint language
 	String lfile_name(pool);
 	lfile_name.append(vfile_name->as_string(),
-		String::Untaint_lang::FILE_NAME, true);
+		String::UL_FILE_NAME, true);
 		
 	static_cast<VFile *>(r.self)->save(r.absolute(lfile_name.cstr()));
 }

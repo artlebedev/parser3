@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.46 2001/03/19 17:42:16 paf Exp $
+	$Id: pa_string.C,v 1.47 2001/03/21 14:06:46 paf Exp $
 */
 
 #include <string.h>
@@ -154,12 +154,12 @@ String& String::append(const String& src, Untaint_lang lang, bool forced) {
 	return *this;
 }
 void String::set_lang(Chunk::Row *row, Untaint_lang lang, bool forced, size_t size) {
-	if(lang==PASS_APPENDED)
+	if(lang==UL_PASS_APPENDED)
 		return;
 
 	while(size--) {
 		Untaint_lang& item_lang=(row++)->item.lang;
-		if(item_lang==YES || forced) // tainted? need untaint language assignment
+		if(item_lang==UL_YES || forced) // tainted? need untaint language assignment
 			item_lang=lang;  // assign untaint language
 	}
 }
@@ -194,7 +194,7 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 
 	append_here->item.ptr=src;
 	fsize+=append_here->item.size=size;
-	append_here->item.lang=tainted?YES:NO;
+	append_here->item.lang=tainted?UL_YES:UL_NO;
 #ifndef NO_STRING_ORIGIN
 	append_here->item.origin.file=file;
 	append_here->item.origin.line=line;

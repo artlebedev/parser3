@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.106 2001/03/19 17:42:14 paf Exp $
+	$Id: compile.y,v 1.107 2001/03/21 14:06:45 paf Exp $
 */
 
 /**
@@ -52,7 +52,7 @@ int yylex(YYSTYPE *lvalp, void *pc);
 #define POOL  *PC->pool
 #undef NEW
 #define NEW new(POOL)
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef DOXYGEN
 %}
 
 %pure_parser

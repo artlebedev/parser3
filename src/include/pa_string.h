@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.47 2001/03/20 06:45:18 paf Exp $
+	$Id: pa_string.h,v 1.48 2001/03/21 14:06:44 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -27,21 +27,21 @@
 		const char *src, size_t size,  \
 		bool tainted, \
 		const char *file, uint line
-/// appends clean piece to String @see String::real_append
+/// appends clean piece to String  @see String::real_append
 #	define APPEND(src, size, file, line) real_append(src, size, false, file, line)
-/// appends tainted piece to String @see String::real_append
+/// appends tainted piece to String  @see String::real_append
 #	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true, file, line)
 #else
 #	define STRING_APPEND_PARAMS \
 		const char *src, \
 		size_t size, \
 		bool tainted
-/// appends clean piece to String @see String::real_append
+/// appends clean piece to String  @see String::real_append
 #	define APPEND(src, size, file, line) real_append(src, size, false)
-/// appends tainted piece to String @see String::real_append
+/// appends tainted piece to String  @see String::real_append
 #	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true)
 #endif
-/// handy: appends const char* piece to String @see String::real_append
+/// handy: appends const char* piece to String  @see String::real_append
 #define	APPEND_CONST(src) APPEND(src, 0, 0, 0)
 
 /** 
@@ -66,6 +66,7 @@
 */
 class String : public Pooled {
 public:
+
 	enum {
 		CR_PREALLOCATED_COUNT=5, ///< default preallocated item count
 		CR_GROW_PERCENT=60 ///< each time the Array chunk_is_full() array expanded()
@@ -73,24 +74,24 @@ public:
 
 	/// piece is tainted or not. the language to use when detaint 
 	enum Untaint_lang {
-		UNKNOWN=0, ///< when get by name fails
-		NO, ///< clean
-		YES,  ///< tainted, untaint language as assigned later 
+		UL_UNKNOWN=0, ///< when get by name fails
+		UL_NO, ///< clean
+		UL_YES,  ///< tainted, untaint language as assigned later 
 		// untaint languages. assigned by ^untaint[lang]{...}
-		PASS_APPENDED,
+		UL_PASS_APPENDED,
 			/**<
 				leave language built into string being appended.
 				just a flag, that value not stored
 			*/
-		AS_IS,     ///< leave all characters intact
-		FILE_NAME, ///< filename
-		HEADER,    ///< text in response header
-		URI,       ///< text in uri
-		TABLE,     ///< ^table:set body
-		SQL,       ///< ^table:sql body
-		JS,        ///< JavaScript code
-		HTML,      ///< HTML code (for editing)
-		HTML_TYPO  ///< HTML code with TYPOgraphic replacements (for showing)
+		UL_AS_IS,     ///< leave all characters intact
+		UL_FILE_NAME, ///< filename
+		UL_HEADER,    ///< text in response header
+		UL_URI,       ///< text in uri
+		UL_TABLE,     ///< ^table:set body
+		UL_SQL,       ///< ^table:sql body
+		UL_JS,        ///< JavaScript code
+		UL_HTML,      ///< HTML code (for editing)
+		UL_HTML_TYPO  ///< HTML code with TYPOgraphic replacements (for showing)
 	};
 
 public:

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.15 2001/03/19 17:42:16 paf Exp $
+	$Id: pa_table.C,v 1.16 2001/03/21 14:06:46 paf Exp $
 */
 
 #include <stdlib.h>
@@ -32,7 +32,7 @@ Table::Table(Pool& apool,
 }
 
 const Array &Table::at(int index) {
-	return *static_cast<const Array *>(get(index));
+	return *const_cast<const Array *>(static_cast<Array *>(get(index)));
 }
 
 const String *Table::item(const String& column_name) {

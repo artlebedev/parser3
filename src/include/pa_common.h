@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.19 2001/03/20 07:34:31 paf Exp $
+	$Id: pa_common.h,v 1.20 2001/03/21 14:06:43 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -13,10 +13,6 @@
 
 #ifdef HAVE_CONFIG_H
 #	include "pa_config.h"
-#endif
-
-#ifdef WIN32
-#	include <sys/locking.h>
 #endif
 
 #include <stdio.h>
@@ -28,21 +24,27 @@ class Value;
 
 #ifdef WIN32
 
-#define open _open
-#define close _close
-#define read _read
-#define stat _stat
+#ifndef open
+#	define open _open
+#endif
+#ifndef close
+#	define close _close
+#endif
+#ifndef read
+#	define read _read
+#endif
+#ifndef stat
+#	define stat _stat
+#endif
 
-#define vsnprintf __vsnprintf 
-#define snprintf __snprintf
-
+#ifndef vsnprintf
+#	define vsnprintf __vsnprintf 
 int __vsnprintf(char *, size_t, const char *, va_list);
+#endif
+#ifndef snprintf
+#	define snprintf __snprintf
 int __snprintf(char *, size_t, const char *, ...);
-
-//flock
-#define LOCK_EX _LK_NBLCK
-#define LOCK_UN _LK_UNLCK
-void flock(int fd, int operation);
+#endif
 
 //access
 #define F_OK 0
@@ -50,26 +52,21 @@ void flock(int fd, int operation);
 #define W_OK 2
 #define R_OK 4
 
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#define mkdir(path, mode) _mkdir(path)
-
-#define putenv _putenv
-
+#ifndef strcasecmp
+#	define strcasecmp _stricmp
+#endif
+#ifndef strncasecmp
+#	define strncasecmp _strnicmp
+#endif
+#ifndef mkdir
+#	define mkdir(path, mode) _mkdir(path)
 #endif
 
-/// @todo define it
-#ifdef SUN
-//flock
-#define LOCK_EX F_LOCK
-#define LOCK_UN F_ULOCK
-void flock(int fd, int operation);
+#ifndef putenv
+#	define putenv _putenv
 #endif
 
-/// @todo use somewhere
-void lock(FILE *f, long position);
-/// @todo use somewhere
-void unlock(FILE *f);
+#endif
 
 /**
 	read specified text file using pool, 
@@ -86,8 +83,8 @@ char *file_read_text(Pool& pool,
 void file_write(Pool& pool, 
 				const char *fname,
 				const char *data, size_t size, 
-				bool as_text,
-				bool exclusive=false);
+				bool as_text/*,
+				bool exclusive=false*/);
 
 /**
 	scans for @a delim[default \n] in @a *row_ref, 
@@ -110,6 +107,6 @@ size_t stdout_write(const char *buf, size_t size);
 
 const char *unescape_chars(Pool& pool, const char *cp, int len);
 
-const String& attributed_meaning_string(Value *meaning);
+const String& attributed_meaning_to_string(Value& meaning);
 
 #endif

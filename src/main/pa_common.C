@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.19 2001/03/20 07:34:32 paf Exp $
+	$Id: pa_common.C,v 1.20 2001/03/21 14:06:45 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -18,6 +18,12 @@
 #include <io.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
+
+#ifdef WIN32
+#else
+#	include <unistd.h>
+#endif
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -44,34 +50,6 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
 }
 
 #endif
-
-
-#ifdef WIN32
-
-void flock(int fd, int operation) {
-	lseek(fd, 0, SEEK_SET);
-	while(_locking(fd, operation, 1)!=0);
-	lseek(fd, 0, SEEK_SET);
-}
-
-#endif
-
-/// @todo define it
-#ifdef SUN
-
-void flock(int fd, int operation) {
-	lseek(fd, 0, SEEK_SET);
-	lockf(fd, operation, 1);
-	lseek(fd, 0, SEEK_SET);
-}
-#endif
-
-void lock(FILE *f, long position) {
-	flock(fileno(f), LOCK_EX);
-}
-void unlock(FILE *f) {
-	flock(fileno(f), LOCK_UN);
-}
 
 
 char *file_read_text(Pool& pool, const char *fname, bool fail_on_read_problem) {
@@ -104,8 +82,8 @@ char *file_read_text(Pool& pool, const char *fname, bool fail_on_read_problem) {
 void file_write(Pool& pool, 
 				const char *fname, 
 				const char *data, size_t size, 
-				bool as_text,
-				bool exclusive) {
+				bool as_text/*,
+				bool exclusive*/) {
 	if(fname) {
 		int f;
 		if(access(fname, F_OK)!=0) {/*no*/
@@ -118,19 +96,17 @@ void file_write(Pool& pool,
 				|O_TRUNC
 #endif
 			;
-#ifdef WIN32
 			mode|=as_text?_O_TEXT:_O_BINARY;
-#endif
 			if((f=open(fname,mode,0666))>=0) {
-				if(exclusive)
-					flock(f, LOCK_EX);
+				/*if(exclusive)
+					flock(f, LOCK_EX);*/
 				
 				if(size) write(f,data,size);
 #ifndef WIN32
 				ftruncate(f,size);
 #endif
-				if(exclusive)
-					flock(f, LOCK_UN);
+				/*if(exclusive)
+					flock(f, LOCK_UN);*/
 				close(f);
 				return;
 			}
@@ -266,21 +242,21 @@ static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *aval
 	// ...; charset=windows1251
 	String *string=static_cast<String *>(info);
 	string->APPEND_CONST("; ");
-	string->append(akey, String::Untaint_lang::HEADER, true);
+	string->append(akey, String::UL_HEADER, true);
 	string->APPEND_CONST("=");
 	string->append(static_cast<Value *>(avalue)->as_string(), 
-		String::Untaint_lang::HEADER, true);
+		String::UL_HEADER, true);
 }
-const String& attributed_meaning_string(Value *meaning) {
-	String &result=*new(meaning->pool()) String(meaning->pool());
-	if(Hash *hash=meaning->get_hash()) {
+const String& attributed_meaning_to_string(Value& meaning) {
+	String &result=*new(meaning.pool()) String(meaning.pool());
+	if(Hash *hash=meaning.get_hash()) {
 		// $value(value) $subattribute(subattribute value)
 		if(Value *value=static_cast<Value *>(hash->get(*value_name)))
-			result.append(value->as_string(), String::Untaint_lang::HEADER, true);
+			result.append(value->as_string(), String::UL_HEADER, true);
 
 		hash->foreach(append_attribute_subattribute, &result);
 	} else // result value
-		result.append(meaning->as_string(), String::Untaint_lang::HEADER, true);
+		result.append(meaning.as_string(), String::UL_HEADER, true);
 
 	return result;
 }

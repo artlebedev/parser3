@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.22 2001/03/20 07:34:30 paf Exp $
+	$Id: table.C,v 1.23 2001/03/21 14:06:42 paf Exp $
 */
 
 #include <string.h>
@@ -40,11 +40,11 @@ static void set_or_load(
 		// forcing untaint language
 		String lfile_name(pool);
 		lfile_name.append(vdata_or_filename->as_string(),
-			String::Untaint_lang::FILE_NAME, true);
+			String::UL_FILE_NAME, true);
 		ldata_or_filename=lfile_name.cstr();
 	} else {
 		// suggesting untaint language
-		Temp_lang temp_lang(r, String::Untaint_lang::TABLE);
+		Temp_lang temp_lang(r, String::UL_TABLE);
 		ldata_or_filename=r.process(*vdata_or_filename).as_string().cstr();
 	}
 	// data
@@ -109,7 +109,7 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	// forcing untaint language
 	String lfile_name(pool);
 	lfile_name.append(vfile_name->as_string(),
-		String::Untaint_lang::FILE_NAME, true);
+		String::UL_FILE_NAME, true);
 
 	Table& table=static_cast<VTable *>(r.self)->table();
 
@@ -121,7 +121,7 @@ static void _save(Request& r, const String& method_name, Array *params) {
 				if(column)
 					sdata.APPEND_CONST("\t");
 				sdata.append(*static_cast<String *>(columns->quick_get(column)), 
-					String::Untaint_lang::TABLE);
+					String::UL_TABLE);
 			}
 		} else { // nameless table
 			int size=table.size()?static_cast<Array *>(table.get(0))->size():0;
@@ -143,14 +143,14 @@ static void _save(Request& r, const String& method_name, Array *params) {
 			if(column)
 				sdata.APPEND_CONST("\t");
 			sdata.append(*static_cast<String *>(row->quick_get(column)), 
-				String::Untaint_lang::TABLE);
+				String::UL_TABLE);
 		}
 		sdata.APPEND_CONST("\n");
 	}
 
 	// write
 	char *cdata=sdata.cstr();
-	file_write(pool, r.absolute(lfile_name.cstr()), cdata, strlen(cdata), true, true);
+	file_write(pool, r.absolute(lfile_name.cstr()), cdata, strlen(cdata), true);
 }
 
 static void _count(Request& r, const String&, Array *) {

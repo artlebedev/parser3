@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: scripting and CGI main.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.26 2001/03/19 21:39:35 paf Exp $
+	$Id: parser3.C,v 1.27 2001/03/21 14:06:52 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -14,7 +16,15 @@
 #ifdef WIN32
 #	include <windows.h>
 #	include <io.h>
+#else
+#	include <unistd.h>
 #endif
+
+//\ifwin32
+#include <io.h>
+//#include <fcntl.h>
+//\endifwin32
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -24,8 +34,8 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 
-Pool pool; // global pool
-bool cgi;
+Pool pool; ///< global pool
+bool cgi; ///< we were started as CGI?
 
 #ifdef WIN32
 #	if _MSC_VER
@@ -55,12 +65,16 @@ LONG WINAPI TopLevelExceptionFilter (
 }
 #	endif
 
-void fix_slashes(char *s) {
-	for(; *s; s++)
-		if(*s=='\\')
-			*s='/';
-}
 #endif
+
+//\if
+void fix_slashes(char *s) {
+	if(s)
+		for(; *s; s++)
+			if(*s=='\\')
+				*s='/';
+}
+//\endif
 
 // service funcs
 
@@ -93,11 +107,11 @@ void output_body(const char *buf, size_t size) {
 
 int main(int argc, char *argv[]) {
 	// TODO:umask(2);
-#ifdef WIN32
-	_setmode(fileno(stdin), _O_BINARY);
-	_setmode(fileno(stdout), _O_BINARY);
-	_setmode(fileno(stderr), _O_BINARY);
-#endif
+//\#ifdef WIN32
+	setmode(fileno(stdin), _O_BINARY);
+	setmode(fileno(stdout), _O_BINARY);
+	setmode(fileno(stderr), _O_BINARY);
+//\#endif
 
 	// Service funcs 
 	service_funcs.read_post=read_post;
@@ -120,9 +134,9 @@ int main(int argc, char *argv[]) {
 	}
 
 	char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
-#ifdef WIN32
+//\#ifdef WIN32
 	fix_slashes(filespec_to_process);
-#endif
+//\#endif
 
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
@@ -161,9 +175,10 @@ int main(int argc, char *argv[]) {
 		request_info.cookie=getenv("HTTP_COOKIE");
 
 		// prepare to process request
-		Request request(Pool(),
+		Pool request_pool;
+		Request request(request_pool,
 			request_info,
-			cgi ? String::Untaint_lang::HTML_TYPO : String::Untaint_lang::NO
+			cgi ? String::UL_HTML_TYPO : String::UL_NO
 			);
 		
 		// some root-controlled location

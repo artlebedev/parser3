@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.121 2001/03/19 22:11:09 paf Exp $
+	$Id: execute.C,v 1.122 2001/03/21 14:06:45 paf Exp $
 */
 
 #include "code.h"
@@ -223,7 +223,7 @@ void Request::execute(const Array& ops) {
 			{
 				VString *vstring=static_cast<VString *>(ops.quick_get(++i));
 				log_printf(" \"%s\"", vstring->string().cstr());
-				write(vstring->string());
+				write_no_lang(vstring->string());
 				break;
 			}
 			
@@ -352,7 +352,7 @@ void Request::execute(const Array& ops) {
 						else // stateful object
 							self=NEW VObject(pool(), *called_class);
 						frame->write(*self, 
-							String::Untaint_lang::NO  // not used, always an object, not string
+							String::UL_NO  // not used, always an object, not string
 						);
 					} else 
 						self=&frame->junction.self; // no, static or simple dynamic call

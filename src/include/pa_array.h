@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.27 2001/03/20 06:45:18 paf Exp $
+	$Id: pa_array.h,v 1.28 2001/03/21 14:06:43 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -86,7 +86,7 @@ public:
 	void put(int index, Item *item);
 	/// convinient way to get strings from Array. I long for Array<const String *>
 	const String *get_string(int index) const { 
-		return static_cast<const String *>(get(index)); 
+		return const_cast<const String *>(static_cast<String *>(get(index))); 
 	}
 
 private:
