@@ -1,0 +1,21 @@
+--- HTMLtree.c.0	Fri Nov  2 06:35:08 2001
++++ HTMLtree.c	Thu Jan 24 18:17:42 2002
+@@ -854,8 +854,10 @@
+     }
+     xmlOutputBufferWriteString(buf, " ");
+     xmlOutputBufferWriteString(buf, (const char *)cur->name);
++    // patched by PAF@design.ru [xslt yields childless nodes in attr="" cases]
+     if (cur->children != NULL) {
+ 	value = xmlNodeListGetString(doc, cur->children, 0);
++	} else value=NULL;
+ 	if (value) {
+ 	    xmlOutputBufferWriteString(buf, "=");
+ 	    xmlBufferWriteQuotedString(buf->buffer, value);
+@@ -863,7 +865,6 @@
+ 	} else  {
+ 	    xmlOutputBufferWriteString(buf, "=\"\"");
+ 	}
+-    }
+ }
+ 
+ /**
