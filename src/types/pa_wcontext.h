@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.19 2001/10/29 16:07:36 paf Exp $
+	$Id: pa_wcontext.h,v 1.20 2001/10/29 18:05:54 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -61,29 +61,31 @@ public: // usage
 
 	WContext(Pool& apool, Value *avalue) : Value(apool), 
 		fstring(*new(apool) String(apool)),
-		fvalue(avalue),
-		fconstructing(false), fentered_object(false), fentered_class(false) {
+		fvalue(avalue) {
+		flags.constructing=
+			flags.entered_class=
+			flags.entered_object=0;
 	}
 
-	void set_constructing(bool aconstructing) { fconstructing=aconstructing; }
-	bool get_constructing() { return fconstructing; }
+	void set_constructing(bool aconstructing) { flags.constructing=aconstructing?1:0; }
+	bool get_constructing() { return flags.constructing!=0; }
 
-	void set_somebody_entered_some_class() { fentered_class=true; }
-	bool get_somebody_entered_some_class() { return fentered_class; }
+	void set_somebody_entered_some_class() { flags.entered_class=1; }
+	bool get_somebody_entered_some_class() { return flags.entered_class!=0; }
 
 	void set_somebody_entered_some_object(bool aentered_object) {   
-		fentered_object=aentered_object; }
-	bool get_somebody_entered_some_object() { return fentered_object; }
+		flags.entered_object=aentered_object?1:0; }
+	bool get_somebody_entered_some_object() { return flags.entered_object!=0; }
 
 protected:
 	String& fstring;
 	Value *fvalue;
 private:
 	struct {
-		bool fconstructing:1;
-		bool fentered_object:1;
-		bool fentered_class:1;
-	};
+		int constructing:1;
+		int entered_object:1;
+		int entered_class:1;
+	} flags;
 };
 
 #endif
