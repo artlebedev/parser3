@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.28 2001/04/03 15:25:07 paf Exp $
+	$Id: string.C,v 1.29 2001/04/03 15:35:23 paf Exp $
 */
 
 #include "pa_request.h"
@@ -146,18 +146,21 @@ struct Replace_action_info {
 	String *dest;
 	Value *replacement_code;
 	bool first_time;
+	const String *post_match;
 };
 static void replace_row_action(Table& table, Array *row, void *info) {
 	Replace_action_info& ai=*static_cast<Replace_action_info *>(info);
 	//table+=&row;
-	if(ai.first_time) { // begin
-		ai.first_time=false;
-		ai.dest->APPEND_CONST("B");
-	}
-	if(row) // middle
+	if(row) { // begin/middle
+		if(ai.first_time) { // begin
+			ai.first_time=false;
+			ai.dest->append(*(String *)row->get(0/*pre_match*/), 
+				String::UL_PASS_APPENDED);
+		}
 		ai.dest->APPEND_CONST("M");
-	else // end
-		ai.dest->APPEND_CONST("E");
+		ai.post_match=(String *)row->get(2/*post_match*/);
+	} else // end
+		ai.dest->append(*ai.post_match, String::UL_PASS_APPENDED);
 }
 
 /** search/replace
@@ -206,7 +209,8 @@ static void _match(Request& r, const String& method_name, Array *params) {
 		Replace_action_info replace_action_info={
 			&dest,
 			&replacement_code,
-			true
+			true,
+			&src
 		};
 		src.match(&method_name, 
 			r.process(regexp).as_string(), options,

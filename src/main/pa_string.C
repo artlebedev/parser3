@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.65 2001/04/03 15:25:09 paf Exp $
+	$Id: pa_string.C,v 1.66 2001/04/03 15:35:24 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -485,7 +485,14 @@ static void regex_options(char *options, int *result){
 			}
 }
 
-/// @test setlocale param to auto.p
+/**
+	returns true if fills table.
+	table format is defined and fixed[can be used by others]: 
+	@verbatim
+		pre-match/match/post-match/1/2/3/...
+	@endverbatim
+	@test setlocale param to auto.p
+*/
 bool String::match(const String *aorigin,
 				   const String& regexp, 
 				   const String *options,
