@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.2 2001/12/15 21:39:32 paf Exp $
+	$Id: pa_charset.C,v 1.3 2001/12/15 21:49:18 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -516,10 +516,14 @@ void Charset::transcodeFromUTF8(Pool& pool,
 void Charset::transcodeToCharset(Pool& pool,
 									   const Charset& dest_charset,
 									   const void *source_body, size_t source_content_length,
-									   const void *& adest_body, size_t& dest_content_length) const {
-	throw Exception(0, 0,
-		0,
-		"transcodeToCharset not supported(yet)");
+									   const void *& dest_body, size_t& dest_content_length) const {
+	if(&dest_charset==this) {
+		dest_body=source_body;
+		dest_content_length=source_content_length;
+	} else
+		throw Exception(0, 0,
+			0,
+			"transcodeToCharset not supported(yet)");
 /*
 	void *dest_body;
 
