@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vxdoc.h,v 1.2 2001/10/05 16:12:40 parser Exp $
+	$Id: pa_vxdoc.h,v 1.3 2001/10/08 08:21:05 parser Exp $
 */
 
 #ifndef PA_VXDOC_H
@@ -65,6 +65,7 @@ public: // usage
 	}
 private:
 	void cleanup() {
+		delete fparsed_source;
 		delete ftransformer;
 		delete fparser_liaison;
 		delete ferror_handler;
@@ -74,7 +75,10 @@ public:
 	XalanTransformer& transformer() {return *ftransformer; }
 	XercesParserLiaison& parser_liaison() { return *fparser_liaison; }
 
-	void set_parsed_source(const XalanParsedSource& aparsed_source) { fparsed_source=&aparsed_source; }
+	void set_parsed_source(const XalanParsedSource& aparsed_source) { 
+		delete fparsed_source; // delete prev
+		fparsed_source=&aparsed_source; 
+	}
 	const XalanParsedSource& get_parsed_source(Pool& pool, const String *source) { 
 		if(!fparsed_source)
 			PTHROW(0, 0,

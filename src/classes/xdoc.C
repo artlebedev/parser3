@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.10 2001/10/05 17:33:50 parser Exp $
+	$Id: xdoc.C,v 1.11 2001/10/08 08:21:04 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -110,6 +110,7 @@ public:
 	}
 	
 	~XalanSourceTreeParserLiaison2() {
+		delete ferror_handler;
 	}
 private:
 	ErrorHandler *ferror_handler;
@@ -120,9 +121,6 @@ class XalanDefaultParsedSource2 : public XalanParsedSource
 public:
 
 	XalanDefaultParsedSource2(const XSLTInputSource&		theInputSource);
-
-	virtual
-	~XalanDefaultParsedSource2();
 
 	virtual XalanDocument*
 	getDocument() const;
@@ -148,12 +146,6 @@ XalanDefaultParsedSource2::XalanDefaultParsedSource2(const XSLTInputSource&	theI
 	assert(m_parsedSource != 0);
 
 	m_domSupport.setParserLiaison(&m_parserLiaison2);
-}
-
-
-
-XalanDefaultParsedSource2::~XalanDefaultParsedSource2()
-{
 }
 
 
@@ -347,10 +339,8 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 			vdoc.transformer().getLastError());
 */
 
-	try
-	{
-			parsedSource = new XalanDefaultParsedSource2(&stream);
-		//todo free parsedSource
+	try {
+		parsedSource = new XalanDefaultParsedSource2(&stream);
 	}
 	catch (XSLException& e)	{
 		r._throw(&method_name, e);
