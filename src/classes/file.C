@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.42 2001/07/18 16:28:46 parser Exp $
+	$Id: file.C,v 1.43 2001/07/18 16:39:25 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.42 2001/07/18 16:28:46 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.43 2001/07/18 16:39:25 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -256,7 +256,7 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			*new(pool) String(pool, "stderr"),
 			new(pool) VString(err));
 
-		SAPI::log(pool, "file:cgi: %s", err.cstr());
+		SAPI::log(pool, cgi?"file:cgi: %s":"file:exec: %s", err.cstr());
 	}
 }
 static void _exec(Request& r, const String& method_name, MethodParams *params) {
