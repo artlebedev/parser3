@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.79 2002/03/28 14:26:48 paf Exp $
+	$Id: op.C,v 1.80 2002/03/29 11:28:40 paf Exp $
 */
 
 #include "classes.h"
@@ -464,9 +464,6 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	Value& body_code=params->as_junction(2, "body must be code");
 
 	if(data.expires>now) { // valid 'expires' specified? try cached copy...
-		size_t size;
-		time_t atime, mtime, ctime;
-
 		// hence we don't hope to have unary create/lockEX
 		// we need some plan to live in a life like that, so... 
 		// worst races plan:
