@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.26 2002/02/26 13:45:12 paf Exp $
+	$Id: pa_exec.C,v 1.27 2002/03/01 10:09:56 paf Exp $
 
 
 	@todo setrlimit
@@ -154,14 +154,9 @@ static const char *buildCommand(Pool& pool,
 
 #else
 
-static int execle_piped(const char *path, 
-						const char *arg1, const char *arg2,
-						const char *arg3, const char *arg4,
-						const char *arg5, const char *arg6,
-						const char *arg7, const char *arg8,
-						const char *arg9, const char *arg10,
-						char * const env[],
-						int *pipe_in, int *pipe_out, int *pipe_err) {
+static int execve_piped(const char *path, 
+			char * const argv[], char * const env[],
+			int *pipe_in, int *pipe_out, int *pipe_err) {
 	int pid;
 	int in_fds[2];
 	int out_fds[2];
@@ -234,7 +229,7 @@ static int execle_piped(const char *path,
 		/* HP-UX SIGCHLD fix goes here, if someone will remind me what it is... */
 		signal(SIGCHLD, SIG_DFL);	/* Was that it? */
 	
-		execle(path, path, arg1, arg2, arg3, arg4, arg5, NULL, env);
+		execve(path, argv, env);
 		exit(-errno);
 	}
 	
@@ -360,21 +355,19 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 #else
 
 	int pipe_write, pipe_read, pipe_err;
-	const char *argv_cstrs[10]={
-		"", "", "", "", "", 
-		"", "", "", "", ""
-	};
+	char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC);
+	char *argv_cstrs[1+10+1]={file_spec_cstr, 0};
 	if(argv) {
 		const int argv_size=argv->size();
-		const int argv_max=sizeof(argv_cstrs)/sizeof(argv_cstrs[0]);
+		const int argv_max=sizeof(argv_cstrs)/sizeof(argv_cstrs[0])-1-1;
 		if(argv_size>argv_max)
 			throw Exception(0, 0,
 				&file_spec,
 				"too many arguments (%d > max %d)", argv_size, argv_max);
 		for(int i=0; i<argv_size; i++)
-			argv_cstrs[i]=argv->get_string(i)->cstr();
+			argv_cstrs[1+i]=argv->get_string(i)->cstr();
+		argv_cstrs[1+argv_size]=0;
 	}
-	const char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC);
 	char **env_cstrs=0;
 	if(env) {
 		env_cstrs=
@@ -388,11 +381,9 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	strncpy(dir, file_spec_cstr, MAX_STRING);
 	rsplit(dir,'/'); // trim filename
     chdir(dir);
-	int pid=execle_piped(
+	int pid=execve_piped(
 		file_spec_cstr,
-		argv_cstrs[0], argv_cstrs[1], argv_cstrs[2], argv_cstrs[3], argv_cstrs[4],
-		argv_cstrs[5], argv_cstrs[6], argv_cstrs[7], argv_cstrs[8], argv_cstrs[9],
-		env_cstrs,
+		argv_cstrs, env_cstrs,
 		&pipe_write, &pipe_read, &pipe_err);
     if (pwd) 
 		chdir(pwd);
