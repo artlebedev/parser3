@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.185 2002/06/24 14:47:53 paf Exp $
+	$Id: parser3.C,v 1.186 2002/06/26 09:00:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -250,7 +250,7 @@ static void real_parser_handler(
 	// init global variables
 	pa_globals_init(*pool);
 	
-	if(!filespec_to_process)
+	if(!filespec_to_process || !*filespec_to_process)
 		SAPI::die("Parser/%s", PARSER_VERSION);
 	
 	// Request info
