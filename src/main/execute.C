@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.63 2001/03/07 13:54:48 paf Exp $
+  $Id: execute.C,v 1.64 2001/03/08 09:13:33 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -115,7 +115,7 @@ void Request::execute(const Array& ops) {
 				
 				Junction& j=*NEW Junction(pool(), 
 					*self, 0, 0,
-					rcontext, frame, frame, local_ops);
+					root, frame, frame, local_ops);
 				
 				Value *value=NEW VJunction(j);
 				value->set_name(frame->name());
