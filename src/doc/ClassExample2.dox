@@ -1,0 +1,37 @@
+/**	@page ClassExample2  Пример создания простого класса (только поля)
+
+Чтобы создать свой класс, не содержащий методов[таков, например, env; см. VEnv], 
+следует создать потомка Value, в котором переопределить Value::type,
+а также Value::get_element и/или Value::put_element.
+
+@test 2
+
+Файл vexample2.C в каталоге types/:
+@code
+#define EXAMPLE2_CLASS_NAME "example2"
+
+/// env class
+class VExample2 : public Value {
+public: // Value
+	
+	// all: for error reporting after fail(), etc
+	const char *type() const { return "example2"; }
+
+	// VEnv: field
+	Value *get_element(const String& aname) {
+		// getenv
+		double temperature=25; // считать показания датчика
+		return NEW VDouble(temperature);
+	}
+
+public: // usage
+
+	VExample2(Pool& apool) : Value(apool) {
+	}
+
+};
+@endcode
+
+
+
+*/

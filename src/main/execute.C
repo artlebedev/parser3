@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.150 2001/04/28 09:14:49 paf Exp $
+	$Id: execute.C,v 1.151 2001/05/04 11:08:09 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -459,7 +459,8 @@ void Request::execute(const Array& ops) {
 			{
 				Value *operand=POP();
 				const char *path=operand->as_string().cstr();
-				Value *value=NEW VBool(pool(), info.uri && strcmp(path, info.uri)<=0);
+				Value *value=NEW VBool(pool(), 
+					info.uri && strncmp(path, info.uri, strlen(path))==0);
 				PUSH(value);
 				break;
 			}
