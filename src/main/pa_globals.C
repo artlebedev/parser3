@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/12/19 10:17:41 $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/12/25 10:48:50 $";
 
 #include "pa_config_includes.h"
 
@@ -382,6 +382,7 @@ void pa_globals_init(Pool& pool) {
 	#define ULN(cstr, LANG) \
 		untaint_lang_name2enum->put(*NEW String(pool, cstr), (int)String::UL_##LANG);
 	ULN("as-is", AS_IS);
+	ULN("optimized-as-is", AS_IS|String::UL_OPTIMIZE_BIT);
 	ULN("file-spec", FILE_SPEC);
 	ULN("http-header", HTTP_HEADER);
 	ULN("mail-header", MAIL_HEADER);
