@@ -129,7 +129,7 @@
     ./configure --prefix=$D/gnome 
     make install
 
-    gmime:  [http://spruce.sourceforge.net/gmime/sources/gmime-1.0.1.tar.gz]
+    gmime:  [http://spruce.sourceforge.net/gmime/sources/gmime-1.0.5.tar.gz]
 
     cd gmime-x.x.x
     ./configure --prefix=$D/gnome
@@ -189,4 +189,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.24 2002/06/24 15:26:34 paf Exp $
+$Id: INSTALL,v 1.25 2002/08/27 09:49:12 paf Exp $
