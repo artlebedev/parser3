@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: type used for wcontext when executing method.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.2 2001/04/12 13:15:25 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.3 2001/04/15 12:33:01 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -13,6 +15,10 @@
 #include "pa_vunknown.h"
 #include "pa_vjunction.h"
 
+/*
+	this value type accepts values written by method code
+	also it handles method parameters and local variables
+*/
 class VMethodFrame : public WContext {
 public: // Value
 
@@ -58,15 +64,16 @@ public: // usage
 		junction(ajunction),
 		is_constructor(ais_constructor),
 		store_param_index(0),
-		my(0), fnumbered_params(0),
 		fself(0) {
 
 		const Method &method=*junction.method;
 
-		if(method.max_numbered_params_count) // are this method params numbered?
-			fnumbered_params=NEW Array(pool()); // create storage
-		else { // named params
+		if(method.max_numbered_params_count) { // are this method params numbered?
+			my=0; // no named parameters
+			fnumbered_params=NEW MethodParams(pool(), name()); // create storage
+		} else { // named params
 			my=NEW Hash(pool()); // create storage
+			fnumbered_params=0; // no numbered parameters
 			
 			if(method.locals_names) { // are there any local var names?
 				// remember them
@@ -126,7 +133,7 @@ public: // usage
 			}
 	}
 
-	Array *numbered_params() { return fnumbered_params; }
+	MethodParams *numbered_params() { return fnumbered_params; }
 
 public:
 	
@@ -135,7 +142,7 @@ public:
 
 private:
 	int store_param_index;
-	Hash *my;/*OR*/Array *fnumbered_params;
+	Hash *my;/*OR*/MethodParams *fnumbered_params;
 	Value *fself;
 
 };

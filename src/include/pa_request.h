@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.81 2001/04/09 09:48:18 paf Exp $
+	$Id: pa_request.h,v 1.82 2001/04/15 12:32:59 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -127,10 +127,6 @@ public:
 	void write_expr_result(Value& avalue) {
 		wcontext->write(avalue); 
 	}
-
-	/// handy is-value-a-junction ensurer
-	void fail_if_junction_(bool is, Value& value, 
-		const String& method_name, const char *msg);
 
 	/// returns relative to @a path  path to @a file 
 	const String& relative(const char *apath, const String& relative_name);

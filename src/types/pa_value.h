@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.47 2001/04/12 13:15:25 paf Exp $
+	$Id: pa_value.h,v 1.48 2001/04/15 12:33:01 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -231,10 +231,51 @@ public:
 	//@}
 };
 
-/// native code method
+/**
+	@b method parameters passed in this array.
+	contains handy typecast ad junction/not junction ensurers
+
+*/
+class MethodParams : public Array {
+public:
+	MethodParams(Pool& pool, const String& amethod_name) : Array(pool),
+		fmethod_name(amethod_name) {
+	}
+
+	/// handy typecast. I long for templates
+	Value& get(int index) { return *static_cast<Value *>(Array::get(0)); }
+	/// handy is-value-a-junction ensurer
+	Value& get_junction(int index, const char *msg) { return as(true, index, msg); }
+	/// handy value-is-not-a-junction ensurer
+	Value& get_no_junction(int index, const char *msg) { return as(false, index, msg); }
+
+private:
+
+	/// handy value-is/not-a-junction ensurer
+	Value& as(bool is, int index, const char *msg) { 
+		Value& result=get(index);
+		if((result.get_junction()!=0) ^ !is)
+			THROW(0, 0,
+				&fmethod_name,
+				msg);
+		return result;
+	}
+
+private:
+
+	const String& fmethod_name;
+
+};
+
+/**
+	native code method
+	params can be NULL when 
+	method min&max params (@see VStateless_class::add_native_method)
+	counts are zero.	
+*/
 typedef void (*Native_code_ptr)(Request& request, 
 								const String& method_name, 
-								Array *params);
+								MethodParams *params);
 
 /** 
 	class method.

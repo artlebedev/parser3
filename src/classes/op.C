@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.4 2001/04/12 13:15:18 paf Exp $
+	$Id: op.C,v 1.5 2001/04/15 12:32:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -17,34 +17,23 @@
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
 
-static void _if(Request& r, const String& method_name, Array *params) {
-	Value& condition_code=*static_cast<Value *>(params->get(0));
-	// forcing ^if(this param type)
-	r.fail_if_junction_(false, condition_code, 
-		method_name, "condition must be expression");
+static void _if(Request& r, const String&, MethodParams *params) {
+	Value& condition_code=params->get(0);
 
 	bool condition=r.process(condition_code, 
 		0/*no name*/,
 		false/*don't intercept string*/).as_bool();
 	if(condition) {
-		Value& then_code=*static_cast<Value *>(params->get(1));
-		// forcing ^if{this param type}
-		r.fail_if_junction_(false, then_code, 
-			method_name, "then-parameter must be code");
-		r.write_pass_lang(r.process(then_code));
+		r.write_pass_lang(r.process(params->get(1)));
 	} else if(params->size()==3) {
-		Value& else_code=*static_cast<Value *>(params->get(2));
-		// forcing ^if{this param type}
-		r.fail_if_junction_(false, else_code, 
-			method_name, "else-parameter must be code");
-		r.write_pass_lang(r.process(else_code));
+		r.write_pass_lang(r.process(params->get(2)));
 	}
 }
 
-static void _untaint(Request& r, const String& method_name, Array *params) {
+static void _untaint(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	const String& lang_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
+	const String& lang_name=r.process(params->get(0)).as_string();
 	String::Untaint_lang lang=static_cast<String::Untaint_lang>(
 		untaint_lang_name2enum->get_int(lang_name));
 	if(!lang)
@@ -53,17 +42,14 @@ static void _untaint(Request& r, const String& method_name, Array *params) {
 			"invalid untaint language");
 
 	{
-		Value *vbody=static_cast<Value *>(params->get(1));
-		// forcing ^untaint[]{this param type}
-		r.fail_if_junction_(false, *vbody, 
-			method_name, "body must be code");
+		Value& vbody=params->get_junction(1, "body must be code");
 		
 		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
-		r.write_pass_lang(r.process(*vbody)); // process marking tainted with that lang
+		r.write_pass_lang(r.process(vbody)); // process marking tainted with that lang
 	}
 }
 
-static void _taint(Request& r, const String& method_name, Array *params) {
+static void _taint(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	String::Untaint_lang lang;
@@ -71,7 +57,7 @@ static void _taint(Request& r, const String& method_name, Array *params) {
 		lang=String::UL_TAINTED; // mark as simply 'tainted'. useful in table:set
 	else {
 		const String& lang_name=
-			r.process(*static_cast<Value *>(params->get(0))).as_string();
+			r.process(params->get(0)).as_string();
 		lang=static_cast<String::Untaint_lang>(
 			untaint_lang_name2enum->get_int(lang_name));
 		if(!lang)
@@ -81,9 +67,7 @@ static void _taint(Request& r, const String& method_name, Array *params) {
 	}
 
 	{
-		Value& vbody=*static_cast<Value *>(params->get(params->size()-1));
-		// forcing [this param type]
-		r.fail_if_junction_(true, vbody, method_name, "body must not be code");
+		Value& vbody=params->get_no_junction(params->size()-1, "body must not be code");
 		
 		String result(r.pool());
 		result.append(
@@ -93,7 +77,7 @@ static void _taint(Request& r, const String& method_name, Array *params) {
 	}
 }
 
-static void _process(Request& r, const String& method_name, Array *params) {
+static void _process(Request& r, const String& method_name, MethodParams *params) {
 	// calculate pseudo file name of processed chars
 	// would be something like "/some/file(4) process"
 	char place[MAX_STRING];
@@ -115,7 +99,7 @@ static void _process(Request& r, const String& method_name, Array *params) {
 		
 		// evaluate source to process
 		const String& source=
-			r.process(*static_cast<Value *>(params->get(0))).as_string();
+			r.process(params->get(0)).as_string();
 
 		// process source code, append processed methods to 'self' class
 		// maybe-define new @main
@@ -129,24 +113,15 @@ static void _process(Request& r, const String& method_name, Array *params) {
 	}
 }
 	
-static void _rem(Request& r, const String& method_name, Array *params) {
-	// forcing ^rem{this param type}
-	r.fail_if_junction_(false, *static_cast<Value *>(params->get(0)), 
-		method_name, "body must be code");
+static void _rem(Request& r, const String&, MethodParams *params) {
+	params->get_junction(0, "body must be code");
 }
 
-static void _while(Request& r, const String& method_name, Array *params) {
+static void _while(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& vcondition=*static_cast<Value *>(params->get(0));
-	// forcing ^while(this param type){}
-	r.fail_if_junction_(false, vcondition, 
-		method_name, "condition must be expression");
-	
-	Value& body=*static_cast<Value *>(params->get(1));
-	// forcing ^while(){this param type}
-	r.fail_if_junction_(false, body, 
-		method_name, "body must be code");
+	Value& vcondition=params->get_junction(0, "condition must be expression");
+	Value& body=params->get_junction(1, "body must be code");
 
 	// while...
 	int endless_loop_count=0;
@@ -169,26 +144,19 @@ static void _while(Request& r, const String& method_name, Array *params) {
 	}
 }
 
-static void _use(Request& r, const String& method_name, Array *params) {
-	Value& vfile=*static_cast<Value *>(params->get(0));
-	// forcing ^rem{this param type}
-	r.fail_if_junction_(true, vfile, 
-		method_name, "file name must not be code");
-
+static void _use(Request& r, const String& method_name, MethodParams *params) {
+	Value& vfile=params->get_no_junction(0, "file name must not be code");
 	r.use_file(r.absolute(vfile.as_string()));
 }
 
 /// ^for[i;from-number;to-number-inclusive]{code}[delim]
-static void _for(Request& r, const String& method_name, Array *params) {
+static void _for(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	const String& var_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
-	int from=(int)r.process(*static_cast<Value *>(params->get(1))).as_double();
-	int to=(int)r.process(*static_cast<Value *>(params->get(2))).as_double();
-	Value& body_code=*static_cast<Value *>(params->get(3));
-	// forcing ^menu{this param type}
-	r.fail_if_junction_(false, body_code, 
-		method_name, "body must be code");
-	Value *delim_code=params->size()==3+1+1?static_cast<Value *>(params->get(3+1)):0;
+	const String& var_name=r.process(params->get(0)).as_string();
+	int from=(int)r.process(params->get(1)).as_double();
+	int to=(int)r.process(params->get(2)).as_double();
+	Value& body_code=params->get_junction(3, "body must be code");
+	Value *delim_code=params->size()==3+1+1?&params->get(3+1):0;
 
 	bool need_delim=false;
 	VInt *vint=new(pool) VInt(pool, 0);
@@ -212,19 +180,14 @@ static void _for(Request& r, const String& method_name, Array *params) {
 	}
 }
 
-static void _eval(Request& r, const String& method_name, Array *params) {
-	Value& expr=*static_cast<Value *>(params->get(0));
-	r.fail_if_junction_(false, expr, 
-		method_name, "need expression");
+static void _eval(Request& r, const String&, MethodParams *params) {
+	Value& expr=params->get_junction(0, "need expression");
 	// evaluate expresion
 	Value *result=r.process(expr, 
 		0/*no name*/,
 		true/*don't intercept string*/).as_expr_result();
 	if(params->size()==2) {
-		Value& fmt=*static_cast<Value *>(params->get(1));
-		// forcing ^format[this param type]
-		r.fail_if_junction_(true, fmt, 
-			method_name, "fmt must not be code");
+		Value& fmt=params->get_no_junction(1, "fmt must not be code");
 
 		Pool& pool=r.pool();
 		String& string=*new(pool) String(pool);
@@ -241,36 +204,32 @@ static double sign(double op) { return op > 0 ? 1 : ( op < 0 ? -1 : 0 ); }
 
 static void double_one_op(
 								Request& r, 
-								const String& method_name, Array *params,
+								const String& method_name, MethodParams *params,
 								math_one_double_op_func_ptr func) {
 	Pool& pool=r.pool();
-	Value& param=*static_cast<Value *>(params->get(0));
-
-	// forcing ^round(this param type)
-	r.fail_if_junction_(false, param, 
-		method_name, "parameter must be expression");
+	Value& param=params->get_junction(0, "parameter must be expression");
 
 	Value& result=*new(pool) VDouble(pool, (*func)(r.process(param).as_double()));
 	r.write_no_lang(result);
 }
 
-static void _round(Request& r, const String& method_name, Array *params) {
+static void _round(Request& r, const String& method_name, MethodParams *params) {
 	double_one_op(r, method_name, params,	&round);
 }
 
-static void _floor(Request& r, const String& method_name, Array *params) {
+static void _floor(Request& r, const String& method_name, MethodParams *params) {
 	double_one_op(r, method_name, params,	&floor);
 }
 
-static void _ceiling(Request& r, const String& method_name, Array *params) {
+static void _ceiling(Request& r, const String& method_name, MethodParams *params) {
 	double_one_op(r, method_name, params,	&ceil);
 }
 
-static void _abs(Request& r, const String& method_name, Array *params) {
+static void _abs(Request& r, const String& method_name, MethodParams *params) {
 	double_one_op(r, method_name, params,	&fabs);
 }
 
-static void _sign(Request& r, const String& method_name, Array *params) {
+static void _sign(Request& r, const String& method_name, MethodParams *params) {
 	double_one_op(r, method_name, params,	&sign);
 }
 
@@ -279,16 +238,11 @@ static void _sign(Request& r, const String& method_name, Array *params) {
 	@test make params not Array but something with useful method for extracting,
 	with typecast and junction/not test
 */
-static void _connect(Request& r, const String& method_name, Array *params) {
+static void _connect(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	Value& url=*static_cast<Value *>(params->get(0));
-	r.fail_if_junction_(true, url, 
-		method_name, "url must not be code");
-
-	Value& body_code=*static_cast<Value *>(params->get(1));
-	r.fail_if_junction_(false, body_code, 
-		method_name, "body must be code");
+	Value& url=params->get_no_junction(0, "url must not be code");
+	Value& body_code=params->get_junction(1, "body must be code");
 
 	// connect
 	SQL_Connection& connection=SQL_driver_manager->get_connection(
