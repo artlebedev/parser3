@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.123 2001/03/23 13:08:10 paf Exp $
+	$Id: execute.C,v 1.124 2001/03/24 09:57:51 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -63,7 +63,6 @@ void va_log_printf(const char *fmt,va_list args) {
 }
 
 void log_printf(const char *fmt, ...) {
-	// TODO: куда-нибудь пристроить
     va_list args;
     va_start(args,fmt);
     va_log_printf(fmt,args);

@@ -271,10 +271,6 @@ SOURCE=..\types\pa_vcframe.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\types\pa_vclass.C
-# End Source File
-# Begin Source File
-
 SOURCE=..\types\pa_vclass.h
 # End Source File
 # Begin Source File
