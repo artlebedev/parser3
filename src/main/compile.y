@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.170 2001/10/10 12:22:17 parser Exp $
+	$Id: compile.y,v 1.171 2001/10/10 12:41:29 parser Exp $
 */
 
 /**
@@ -59,6 +59,7 @@ static int yylex(YYSTYPE *lvalp, void *pc);
 
 %token BAD_STRING_COMPARISON_OPERATOR
 %token BAD_HEX_LITERAL
+%token BAD_METHOD_DECL_START
 
 %token LAND "&&"
 %token LOR "||"
@@ -584,7 +585,14 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 		} else
 			PC.col++;
 
-		if(c=='^')
+		if(c=='@' && PC.col==0+1) {
+			if(PC.ls==LS_USER) {
+				push_LS(PC, LS_DEF_NAME);
+				RC;
+			} else // @ in first column inside some code
+				result=BAD_METHOD_DECL_START;
+			goto break2;
+		} else if(c=='^')
 			switch(PC.ls) {
 case LS_EXPRESSION_VAR_NAME_WITH_COLON:
 case LS_EXPRESSION_VAR_NAME_WITHOUT_COLON:
@@ -683,12 +691,6 @@ default:
 			case '^':
 				push_LS(PC, LS_METHOD_NAME);
 				RC;
-			case '@':
-				if(PC.col==0+1) {
-					push_LS(PC, LS_DEF_NAME);
-					RC;
-				}
-				break;
 			case ']':
 				if(PC.ls==LS_NAME_SQUARE_PART)
 					if(--lexical_brackets_nestage==0) {// $name.[co<]?>de<]?>
