@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.5 2001/01/29 09:57:22 paf Exp $
+  $Id: pa_array.C,v 1.6 2001/01/29 10:15:04 paf Exp $
 */
 
 #include <string.h>
@@ -11,14 +11,12 @@ void *Array::operator new(size_t size, Pool *apool) {
 }
 
 void Array::construct(Pool *apool, int initial_rows) {
-	tail
 	pool=apool;
-	curr_chunk_rows=initial_rows;
-	head=static_cast<Chunk *>(
-		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
-	head->count=curr_chunk_rows;
+	head=tail=static_cast<Chunk *>(
+		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*initial_rows+sizeof(Chunk *)));
+	head->count=initial_rows;
 	append_here=head->rows;
-	link_row=&head->rows[curr_chunk_rows];
+	link_row=&head->rows[initial_rows];
 	link_row->link=0;
 	fused_rows=0;
 
@@ -26,22 +24,20 @@ void Array::construct(Pool *apool, int initial_rows) {
 	cache_chunk=head;
 }
 
-void Array::expand() {
-	tail
-	curr_chunk_rows+=curr_chunk_rows*CR_GROW_PERCENT/100;
-	Chunk *chunk=static_cast<Chunk *>(
-		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
-	chunk->count=curr_chunk_rows;
+void Array::expand(int chunk_rows) {
+	Chunk *chunk=tail=static_cast<Chunk *>(
+		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*chunk_rows+sizeof(Chunk *)));
+	chunk->count=chunk_rows;
 	link_row->link=chunk;
 	append_here=chunk->rows;
-	link_row=&chunk->rows[curr_chunk_rows];
+	link_row=&chunk->rows[chunk_rows];
 	link_row->link=0;
 }
 
 
 Array& Array::operator += (Item src) {
 	if(chunk_is_full())
-		expand();
+		expand(tail->count*CR_GROW_PERCENT/100);
 
 	append_here->item=src;
 	append_here++; fused_rows++;
@@ -73,51 +69,42 @@ Array::Item& Array::operator [] (int index) {
 }
 
 Array& Array::operator += (Array& src) {
-	int src_size=src.size();
+	int src_used_rows=src.fused_rows;
 	int last_chunk_rows_left=link_row-append_here;
 	
 	// our last chunk too small for src to fit?
-	if(src_size>last_chunk_rows_left) {
+	if(src_used_rows>last_chunk_rows_left) {
 		// shrink last chunk to used rows
 		tail->count-=last_chunk_rows_left;
 		link_row=append_here;
 
-		// append new src_size-ed chunk 
-		Chunk *chunk=static_cast<Chunk *>(
-			pool->malloc(sizeof(int)+sizeof(Chunk::Row)*src_size+sizeof(Chunk *)));
-		chunk->count=src_size;
-		tail=link_row->link=chunk;
-		append_here=chunk->rows;
-		link_row=&chunk->rows[curr_chunk_rows];
-		link_row->link=0;
+		// append new src_used_rows-ed chunk 
+		expand(src_used_rows);
 	}
 
-		Chunk *src_chunk=src.head; 
-		Chunk::Row *dest_rows=append_here;
-		int rows_left_to_copy=src_size;
-		while(true) {
-			int src_count=src_chunk->count;
-			Chunk *next_chunk=src_chunk->rows[src_count].link;
-			if(next_chunk) {
-				// not last source chunk
-				// taking it all
-				memcpy(dest_rows, src_chunk->rows, sizeof(Chunk::Row)*src_count);
-				dest_rows+=src_count;
-				rows_left_to_copy-=src_count;
-
-				src_chunk=next_chunk;
-			} else {
-				// the last source chunk
-				// taking only those rows of chunk that _left_to_copy
-				memcpy(dest_rows, src_chunk->rows, sizeof(Chunk::Row)*rows_left_to_copy);
-				break;
-			}
+	Chunk *src_chunk=src.head; 
+	Chunk::Row *dest_rows=append_here;
+	int rows_left_to_copy=src_used_rows;
+	while(true) {
+		int src_count=src_chunk->count;
+		Chunk *next_chunk=src_chunk->rows[src_count].link;
+		if(next_chunk) {
+			// not last source chunk
+			// taking it all
+			memcpy(dest_rows, src_chunk->rows, sizeof(Chunk::Row)*src_count);
+			dest_rows+=src_count;
+			rows_left_to_copy-=src_count;
+			
+			src_chunk=next_chunk;
+		} else {
+			// the last source chunk
+			// taking only those rows of chunk that _left_to_copy
+			memcpy(dest_rows, src_chunk->rows, sizeof(Chunk::Row)*rows_left_to_copy);
+			break;
 		}
-	} else {
 	}
+	append_here+=src_used_rows;
+	fused_rows+=src_used_rows;
 
 	return *this;
-}
-
-void Array::remove(int index, int count=1) {
 }

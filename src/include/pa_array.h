@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.4 2001/01/29 09:38:33 paf Exp $
+  $Id: pa_array.h,v 1.5 2001/01/29 10:15:14 paf Exp $
 */
 
 /*
@@ -50,6 +50,10 @@ private:
 	}
 		*head;  // the head chunk of the chunk chain
 
+	// last allocated chunk
+	// helps appending Arrays
+	Chunk *tail;
+
 	// next append would write to this record
 	Chunk::Row *append_here;
 	
@@ -58,9 +62,6 @@ private:
 	Chunk::Row *link_row;
 
 private:
-	// last chank allocated count
-	int curr_chunk_rows;
-
 	// array size
 	int fused_rows;
 
@@ -83,7 +84,7 @@ private:
 	bool chunk_is_full() {
 		return append_here == link_row;
 	}
-	void expand();
+	void expand(int chunk_rows);
 
 public:
 
@@ -91,7 +92,6 @@ public:
 	Array& operator += (Item src);
 	Item& operator [] (int index);
 	Array& operator += (Array& src);
-	void remove(int index, int count=1);
 
 private: //disabled
 
