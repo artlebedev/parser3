@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.11 2001/10/11 14:57:53 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.12 2001/10/18 08:09:44 parser Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -80,7 +80,10 @@ private:
 		Pool& pool=*fservices_pool;
 
 		try{
-			ftransformer->compileStylesheet2(ffile_spec.cstr(String::UL_FILE_SPEC), fstylesheet);
+			const XalanCompiledStylesheet *nstylesheet;
+			ftransformer->compileStylesheet2(ffile_spec.cstr(String::UL_FILE_SPEC), nstylesheet);
+			ftransformer->destroyStylesheet(fstylesheet);  
+			fstylesheet=nstylesheet;
 		}
 		catch (XSLException& e)	{
 			pool.exception()._throw(pool, &ffile_spec, e);
