@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xnode.C,v 1.7 2001/10/16 14:43:30 parser Exp $
+	$Id: xnode.C,v 1.8 2001/10/16 14:44:40 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -239,7 +239,7 @@ static void _removeAttributeNode(Request& r, const String& method_name, MethodPa
 	XalanAttr& oldAttr=as_attr(pool, method_name, params, 0, "oldAttr must be ATTRIBUTE node");
 
 	try {
-		/*XalanAttr *returnAttr*/element.removeAttributeNode(&oldAttr));
+		/*XalanAttr *returnAttr*/element.removeAttributeNode(&oldAttr);
 	} catch(const XalanDOMException& e)	{
 		pool.exception()._throw(pool, &method_name, e);
 	}
