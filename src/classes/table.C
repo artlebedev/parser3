@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2004/07/29 18:02:38 $";
+static const char * const IDENT_TABLE_C="$Date: 2004/12/23 14:51:31 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -658,6 +658,8 @@ static void _hash(Request& r, MethodParams& params) {
 				int saved_current=self_table.current();
 				self_table.for_each(table_row_to_hash, &info);
 				self_table.set_current(saved_current);
+
+				result.extract_default();
 			}
 		}
 	r.write_no_lang(result);

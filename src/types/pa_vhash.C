@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2004/07/26 14:43:09 $";
+static const char * const IDENT="$Date: 2004/12/23 14:51:32 $";
 
 #include "pa_vhash.h"
 #include "pa_vfile.h"
@@ -16,3 +16,8 @@ VFile* VHash::as_vfile(String::Language /*lang*/,
 	return new VFile(fhash);
 }
 
+void VHash::extract_default()
+{
+	if( (_default=fhash.get(HASH_DEFAULT_ELEMENT_NAME) ) )
+		fhash.remove(HASH_DEFAULT_ELEMENT_NAME);
+}

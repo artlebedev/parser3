@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2004/07/26 14:43:09 $";
+static const char * const IDENT_VHASH_H="$Date: 2004/12/23 14:51:32 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -107,6 +107,8 @@ public: // usage
 	Value* get_default() { 
 		return _default;
 	}
+
+	void extract_default();
 
 	void check_lock() {
 		if(flocked)
