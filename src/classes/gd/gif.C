@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.10 2001/10/08 14:05:15 parser Exp $
+	$Id: gif.C,v 1.11 2001/10/08 15:13:38 parser Exp $
 
 	based on: gd
 
@@ -18,6 +18,8 @@
 */
 
 #include "gif.h"
+
+#include "mtables.h"
 
 //static void BrushApply(int x, int y);
 //static void TileApply(int x, int y);
@@ -268,6 +270,61 @@ void gdImage::Line(int x1, int y1, int x2, int y2, int color)
   Bresenham to ellipses and partial arcs of ellipses is non-trivial,
   at least for me) and there are other inefficiencies (small circles
   do far too much work). */
+/* s and e are integers modulo 360 (degrees), with 0 degrees
+  being the rightmost extreme and degrees changing clockwise.
+  cx and cy are the center in pixels; w and h are the horizontal 
+  and vertical diameter in pixels. Nice interface, but slow, since
+  I don't yet use Bresenham (I'm using an inefficient but
+  simple solution with too much work going on in it; generalizing
+  Bresenham to ellipses and partial arcs of ellipses is non-trivial,
+  at least for me) and there are other inefficiencies (small circles
+  do far too much work). */
+
+void gdImage::Arc(int cx, int cy, int w, int h, int s, int e, int color)
+{
+	int i;
+	int lx = 0, ly = 0;
+	int w2, h2;
+	w2 = w/2;
+	h2 = h/2;
+	while (e < s) {
+		e += 360;
+	}
+	for (i=s; (i <= e); i++) {
+		int x, y;
+		x = ((long)cost[i % 360] * (long)w2 / costScale) + cx; 
+		y = ((long)sint[i % 360] * (long)h2 / sintScale) + cy;
+		if (i != s) {
+			Line(lx, ly, x, y, color);	
+		}
+		lx = x;
+		ly = y;
+	}
+}
+
+
+#if 0
+	/* Bresenham octant code, which I should use eventually */
+	int x, y, d;
+	x = 0;
+	y = w;
+	d = 3-2*w;
+	while (x < y) {
+		SetPixel(cx+x, cy+y, color);
+		if (d < 0) {
+			d += 4 * x + 6;
+		} else {
+			d += 4 * (x - y) + 10;
+			y--;
+		}
+		x++;
+	}
+	if (x == y) {
+		SetPixel(cx+x, cy+y, color);
+	}
+#endif
+
+
 
 void gdImage::FillToBorder(int x, int y, int border, int color)
 {
