@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: untaint.C,v 1.95 2002/02/20 12:40:24 paf Exp $
+	$Id: untaint.C,v 1.96 2002/02/21 14:36:54 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -23,7 +23,6 @@
 #ifdef DEBUG_STRING_APPENDS_VS_EXPANDS
 ulong string_string_shortcut_economy=0;
 #endif
-
 
 #define escape(action) \
 	{ \
@@ -184,7 +183,7 @@ String& String::append(const String& src, uchar lang, bool forced) {
 		// which means that we know that 
 		// src.head would fit into this.head
 		if(is_empty()) { // our head is empty
-			// they have more than head? we need all head : we need only filled-part of head
+/*			// they have more than head? we need all head : we need only filled-part of head
 			Chunk *src_head_link=src.head.rows[src.head.count].link;
 			size_t head_count=src_head_link?src.head.count:(src.append_here-src.head.rows);
 			// "your head is my head"
@@ -201,20 +200,28 @@ String& String::append(const String& src, uchar lang, bool forced) {
 				last_chunk=&head;
 				// "your append_here is recalc-mine now"
 				append_here=head.rows+head_count;
-			}
+			}*/
 		} else { // our head contains something
+			/*
+			for(Chunk::Row *row=src.last_chunk->rows; row<src.append_here; row++)
+				if(row->link==(void*)0xcdcdcdcd)
+					_asm int 3;
 			// "chopping off my tail-reserve"
+			last_chunk->count=append_here-last_chunk->rows;
 			// "you is my tail"
-			last_chunk->rows[last_chunk->count=append_here-last_chunk->rows].link=&src.head;
+			append_here->link=&src.head;
 			// "your last_chunk is mine now"
 			last_chunk=src.last_chunk;
 			// "your append_here is mine now"
 			append_here=src.append_here;
+		// stop-growing mark
+		src.last_chunk=0;
+		return *this;*/
 		}
 
 		// stop-growing mark
-		src.last_chunk=0;
-		return *this;
+//		src.last_chunk=0;
+//		return *this;
 	}
 
 	// manually unrolled code to avoid do{if(const)} constructs
@@ -248,7 +255,10 @@ String& String::append(const String& src, uchar lang, bool forced) {
 				row->item.lang==UL_TAINTED?lang:row->item.lang,
 				row->item.origin.file, row->item.origin.line);
 		);
-break2:
+
+			for(Chunk::Row *row=last_chunk->rows; row<append_here; row++)
+				if(row->link==(void*)0xcdcdcdcd)
+					_asm int 3;
 	return *this;
 }
 
@@ -332,7 +342,6 @@ size_t String::cstr_bufsize(Untaint_lang lang,
 			break;
 		}
 	);
-break2:
 	return dest;
 }
 
@@ -342,14 +351,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 	// WARNING:
 	//	 before any changes check cstr_bufsize first!!!
 	bool whitespace=true;
-	// expanded STRING_FOREACH_ROW here for debugging purposes
-	const Chunk *chunk=&head;  \
-	do { \
-		const Chunk::Row *row=chunk->rows; \
-		for(uint i=0; i<chunk->count; i++, row++) { \
-			if(row==append_here) \
-				goto break2; \
-			\
+	STRING_FOREACH_ROW(
 		uchar to_lang=lang==UL_UNSPECIFIED?row->item.lang:lang;
 
 		char *start=dest;
@@ -501,12 +503,8 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				};
 		} else // piece without optimization
 			whitespace=false;
+	);
 
-		} \
-		chunk=row->link; \
-	} while(chunk); \
-
-break2:
 	return dest;
 }
 
@@ -515,43 +513,34 @@ char *String::cstr_debug_origins() const {
 	char *result=(char *)malloc(size()+used_rows()*MAX_STRING*2);
 	char *dest=result;
 	
-	const Chunk *chunk=&head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(uint i=0; i<chunk->count; i++, row++) {
-			if(row==append_here)
-				goto break2;
+	STRING_FOREACH_ROW(
+IFNDEF_NO_STRING_ORIGIN(
+		if(row->item.origin.file)
+			dest+=sprintf(dest, ORIGIN_FILE_LINE_FORMAT,
+				row->item.origin.file,
+				1+row->item.origin.line);
+		else
+			dest+=sprintf(dest, "<unknown>");
+);
+		uchar show_lang=row->item.lang & ~UL_OPTIMIZE_BIT;
+		if(show_lang>=sizeof(String_Untaint_lang_name)/sizeof(String_Untaint_lang_name[0]))
+			throw Exception(0, 0, 
+				this, 
+				"unknown untaint language #%d", 
+					static_cast<int>(show_lang)); // sould never
 
-#ifndef NO_STRING_ORIGIN
-			if(row->item.origin.file)
-				dest+=sprintf(dest, ORIGIN_FILE_LINE_FORMAT,
-					row->item.origin.file,
-					1+row->item.origin.line);
-			else
-				dest+=sprintf(dest, "<unknown>");
-#endif
-			uchar show_lang=row->item.lang & ~UL_OPTIMIZE_BIT;
-			if(show_lang>=sizeof(String_Untaint_lang_name)/sizeof(String_Untaint_lang_name[0]))
-				throw Exception(0, 0, 
-					this, 
-					"unknown untaint language #%d", 
-						static_cast<int>(show_lang)); // sould never
+		dest+=sprintf(dest, "#%s%s: ",
+			String_Untaint_lang_name[show_lang],
+			row->item.lang & UL_OPTIMIZE_BIT?".O":"");
+		char *dest_after_origins=dest;
 
-			dest+=sprintf(dest, "#%s%s: ",
-				String_Untaint_lang_name[show_lang],
-				row->item.lang & UL_OPTIMIZE_BIT?".O":"");
-			char *dest_after_origins=dest;
+		memcpy(dest, row->item.ptr, row->item.size); 
+		dest+=row->item.size;
 
-			memcpy(dest, row->item.ptr, row->item.size); 
-			dest+=row->item.size;
+		remove_crlf(dest_after_origins, dest);
+		to_char('\n');
+	);
 
-			remove_crlf(dest_after_origins, dest);
-			to_char('\n');
-		}
-		chunk=row->link;
-	} while(chunk);
-
-break2:
 	*dest=0;
 	return result;
 }

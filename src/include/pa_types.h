@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_types.h,v 1.38 2002/02/20 09:13:07 paf Exp $
+	$Id: pa_types.h,v 1.39 2002/02/21 14:36:54 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -68,6 +68,14 @@ struct Origin {
 #include "pa_pragma_pack_end.h"
 #define ORIGIN_FILE_LINE_FORMAT "%.300s(%d)"
 
+/** helper used from body from STRING_FOREACH_ROW 
+	to make preprocessor do if before macro expansion, 
+	not after[which is impossible and caused errors]
+*/
+#define IFNDEF_NO_STRING_ORIGIN(body) body
+
+#else
+#define IFNDEF_NO_STRING_ORIGIN(body)
 #endif
 
 #endif

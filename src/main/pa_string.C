@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.142 2002/02/20 12:35:29 paf Exp $
+	$Id: pa_string.C,v 1.143 2002/02/21 14:36:54 paf Exp $
 */
 
 #include "pcre.h"
@@ -32,7 +32,6 @@ String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	last_chunk=&head;
 	head.count=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
-	initial_head_link=0;
 
 	if(src)
 		if(tainted)
@@ -46,7 +45,6 @@ String::String(const String& src) :
 	last_chunk=&head;
 	head.count=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
-	initial_head_link=0;
 
 	append(src, UL_UNSPECIFIED);
 }
@@ -56,7 +54,6 @@ size_t  String::size() const {
 	STRING_FOREACH_ROW(
 			result+=row->item.size;
 	);
-break2:
 	return result;
 }
 
@@ -66,11 +63,10 @@ uint String::used_rows() const {
 	STRING_FOREACH_ROW(
 		result++;
 	);
-break2:
 	return result;
 }
 void String::expand() {
-	Chunk::count_type new_chunk_count=last_chunk->count+CR_GROW_COUNT;
+	uint new_chunk_count=last_chunk->count+CR_GROW_COUNT;
 	if(new_chunk_count>max_integral(Chunk::count_type))
 		new_chunk_count=max_integral(Chunk::count_type);
 
@@ -147,7 +143,6 @@ uint String::hash_code() const {
 	STRING_FOREACH_ROW(
 			result=Hash::generic_code(result, row->item.ptr, row->item.size);
 	);
-break2:
 	return result;
 }
 
@@ -596,137 +591,87 @@ String& String::change_case(Pool& pool,
 		break; // never
 	}	
 
-	const Chunk *chunk=&head; 
-	do {
-		const Chunk::Row *row=chunk->rows;
-		for(Chunk::count_type i=0; i<chunk->count; i++, row++) {
-			if(row==append_here)
-				goto break2;
+	STRING_FOREACH_ROW(
+		char *new_cstr=(char *)pool.malloc(row->item.size, 12);
+		char *dest=new_cstr;
+		const char *src=row->item.ptr; 
+		for(int size=row->item.size; size--; src++) {
+			unsigned char c=a[(unsigned char)*src];
+			if(b)
+				c=b[c];
 
-			char *new_cstr=(char *)pool.malloc(row->item.size, 12);
-			char *dest=new_cstr;
-			const char *src=row->item.ptr; 
-			for(int size=row->item.size; size--; src++) {
-				unsigned char c=a[(unsigned char)*src];
-				if(b)
-					c=b[c];
-
-				*dest++=(char)c;
-			}
-			
-			result.APPEND(new_cstr, row->item.size, 
-				row->item.lang,
-				row->item.origin.file, row->item.origin.line);
+			*dest++=(char)c;
 		}
-		chunk=row->link;
-	} while(chunk);
-break2:
+		
+		result.APPEND(new_cstr, row->item.size, 
+			row->item.lang,
+			row->item.origin.file, row->item.origin.line);
+	);
 
 	return result;
 }
 
 void String::join_chain(Pool& pool, 
-					   uint& ai, const Chunk*& achunk, const Chunk::Row*& arow,
+					   const Chunk*& achunk, const Chunk::Row*& arow, uint& acountdown, 
 					   uchar& joined_lang, const char *& joined_ptr, size_t& joined_size) const {
 	joined_lang=arow->item.lang;
 	
 	// calc size
 	joined_size=0;
 	{
-		uint start_i=ai;
-		const Chunk::Row *start_row=arow;
-		const Chunk *chunk=achunk;
-		do {
-			const Chunk::Row *row=start_row;
-			for(uint i=start_i; i<chunk->count; i++, row++) {
-				if(row==append_here)
-					goto break21;
-				
-				if(row->item.lang==joined_lang)
-					joined_size+=row->item.size;
-				else
-					goto break21;
-			}
-			if(chunk=row->link) {
-				start_i=0;
-				start_row=chunk->rows;
-			} else
+		const Chunk* chunk=achunk;
+		const Chunk::Row* row=arow;
+		uint countdown=acountdown;
+		STRING_PREPARED_FOREACH_ROW(*this, 
+			if(row->item.lang==joined_lang)
+				joined_size+=row->item.size;
+			else
 				break;
-		} while(true);
-break21:;
+		);
 	}
 
 	// if one row, return simply itself
 	if(joined_size==arow->item.size) {
 		joined_ptr=arow->item.ptr;
-		ai++; arow++;
-		if(ai==achunk->count) {
-			if(achunk=arow->link) {
-				ai=0;
-				arow=achunk->rows;
-			}
-		}
 	} else {
 		// join adjacent rows
-		char *ptr=(char *)pool.malloc(joined_size,13);
+		char *ptr=(char *)pool.malloc(joined_size,13);  
 		joined_ptr=ptr;
-		uint start_i=ai;
-		const Chunk::Row *start_row=arow;
-		const Chunk *chunk=achunk;
-		uint i;
-		const Chunk::Row *row;
-		do {
-			row=start_row;
-			for(i=start_i; i<chunk->count; i++, row++) {
-				if(row==append_here)
-					goto break22;
-				
-				if(row->item.lang==joined_lang) {
-					memcpy(ptr, row->item.ptr, row->item.size);
-					ptr+=row->item.size;
-				} else
-					goto break22;
-			}
-			if(chunk=row->link) {
-				start_i=0;
-				start_row=chunk->rows;
+
+		const Chunk* chunk=achunk;
+		const Chunk::Row* row=arow;
+		uint countdown=acountdown;
+		STRING_PREPARED_FOREACH_ROW(*this, 
+			if(row->item.lang==joined_lang) {
+				memcpy(ptr, row->item.ptr, row->item.size);  ptr+=row->item.size;
 			} else
 				break;
-		} while(true);
-break22:;
+		);
 		
 		// return joined rows
-		ai=i;
-		arow=row;
 		achunk=chunk;
+		arow=row-1; // -1 to step back from last row|row with wrong lang, see String::reconstruct
+		acountdown=countdown;
 	}
 }
 
 String& String::reconstruct(Pool& pool) const {
 	//_asm int 3;
 	String& result=*new(pool) String(pool);
-	const Chunk *chunk=&head; 
-	const Chunk::Row *row=chunk->rows;
-	for(uint i=0; i<chunk->count; ) {
-		if(row==append_here)
-			break;
-
+	STRING_FOREACH_ROW(
 		uchar joined_lang;
 		const char *joined_ptr;
 		size_t joined_size;
-#ifndef NO_STRING_ORIGIN
+IFNDEF_NO_STRING_ORIGIN(
 		const char *joined_origin_file=row->item.origin.file;
 		const size_t joined_origin_line=row->item.origin.line;
-#endif
-		join_chain(pool, i, chunk, row,
+);
+		join_chain(pool, chunk, row, countdown,
 			joined_lang, joined_ptr, joined_size);
 
 		result.APPEND(joined_ptr, joined_size, joined_lang,
 			joined_origin_file, joined_origin_line);
-
-		if(!chunk)
-			break;
-	}
+	);
 
 	return result;
 };
@@ -759,7 +704,6 @@ String& String::replace_in_reconstructed(Pool& pool, Dictionary& dict) const {
 			row->item.lang,
 			row->item.origin.file, row->item.origin.line);
 	);
-break2:
 	return result;
 }
 
@@ -857,8 +801,6 @@ void String::serialize(size_t prolog_size, void *& buf, size_t& buf_size) const 
 		memcpy(cur, row->item.ptr, row->item.size);
 		cur+=row->item.size;
 	);
-break2:
-	;
 }
 void String::deserialize(size_t prolog_size, void *buf, size_t buf_size, const char *file) {
 	if(buf_size<=prolog_size)

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.129 2002/02/20 12:40:24 paf Exp $
+	$Id: pa_string.h,v 1.130 2002/02/21 14:36:54 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -249,10 +249,9 @@ private:
 #endif
 			} item;
 			Chunk *link;  ///< link to the next chunk in chain
-		} rows[CR_PREALLOCATED_COUNT];
+		} rows[CR_PREALLOCATED_COUNT+1/*for head.rows[CR_PREALLOCATED_COUNT].link*/];
 	}
 		head;  ///< the head chunk of the chunk chain
-	Chunk *initial_head_link; ///< next rows initially are here[can shrink! @see String::append]. must go right after 'head'
 
 	/// next append would write to this record
 	Chunk::Row *append_here;
@@ -281,7 +280,7 @@ private:
 
 	String& reconstruct(Pool& pool) const;
 	void join_chain(Pool& pool, 
-					   uint& ai, const Chunk*& achunk, const Chunk::Row*& arow,
+					   const Chunk*& achunk, const Chunk::Row*& arow, uint& acountdown, 
 					   uchar& joined_lang, const char *& joined_ptr, size_t& joined_size) const;
 	String& replace_in_reconstructed(Pool& pool, Dictionary& dict) const;
 
@@ -292,18 +291,23 @@ private: //disabled
 };
 #include "pa_pragma_pack_end.h"
 
-#define STRING_PREFIX_FOREACH_ROW(src, body) { \
-	const Chunk *chunk=&(src).head;  \
-	do { \
-		const Chunk::Row *row=chunk->rows; \
-		for(uint i=0; i<chunk->count; i++, row++) { \
-			if(row==(src).append_here) \
-				goto break2; \
-			\
-			body \
-		} \
-		chunk=row->link; \
-	} while(chunk); \
+#define STRING_PREPARED_FOREACH_ROW(self, body) \
+	while(row!=(self).append_here) { \
+		if(countdown==0) { \
+			chunk=row->link; \
+			row=chunk->rows; \
+			countdown=chunk->count; \
+		}; \
+		countdown--;\
+		{ body } \
+		row++; \
+	} 
+
+#define STRING_PREFIX_FOREACH_ROW(self, body) { \
+	const Chunk *chunk=&(self).head;  \
+	const Chunk::Row *row=chunk->rows; \
+	uint countdown=chunk->count; \
+	STRING_PREPARED_FOREACH_ROW(self, body) \
 }
 
 #define STRING_FOREACH_ROW(body) STRING_PREFIX_FOREACH_ROW(*this, body)
