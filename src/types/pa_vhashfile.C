@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 12:11:51 $";
+static const char* IDENT="$Date: 2003/11/06 12:14:01 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -165,7 +165,6 @@ void VHashfile::clear() {
 static void get_hash__put(const String::Body key, const String& value, void* aresult) {
 	static_cast<HashStringValue*>(aresult)->put(key, new VString(value));
 }
-
 HashStringValue *VHashfile::get_hash() {
 	HashStringValue& result=*new HashStringValue();
 
