@@ -542,7 +542,7 @@ xdoc(xnode)
     !равно текущей кодировке выходной страницы,
         $response:charset
     ::sql{...}
-    !::set{<string/>}
+    !::create{<string/>} старое имя 'set'
     !::create[qualifiedName]
     !::load[file.xml]
     !.transform[rules.xsl][[params hash]] выдаёт dom

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.82 2002/01/31 11:51:46 paf Exp $
+	$Id: xdoc.C,v 1.83 2002/02/07 12:15:47 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -402,58 +402,51 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 
-	const String& qualifiedName=params->as_string(0, "qualifiedName must be string");
+	Value& param=params->get(0);
+	GdomeDocument *document;
+	if(param.get_junction()) { // {<tag/>}
+		Temp_lang temp_lang(r, String::UL_XML);
+		const String& xml=r.process(param).as_string();
 
-	GdomeException exc;
-	/*
-	GdomeDocumentType *documentType=gdome_di_createDocumentType (
-		docimpl, 
-		pool.transcode(qualifiedName), 
-		0/*publicId* /, 
-		0/*systemId* /, 
-		&exc);
-	if(!documentType || exc || xmlHaveGenericErrors())
-		throw Exception(0, 0, 
-			&method_name, 
-			exc);
-	*/
-	GdomeDocument *document=gdome_di_createDocument (domimpl, 
-		0/*namespaceURI*/, 
-		pool.transcode(qualifiedName).get(), 
-		0/*doctype*/, 
-		&exc);
-	if(!document || exc || xmlHaveGenericErrors())
-		throw Exception(0, 0, 
-			&method_name, 
-			exc);
+		const char *cstr=xml.cstr(String::UL_UNSPECIFIED);
+		document=(GdomeDocument *)
+			gdome_xml_n_mkref((xmlNode *)xmlParseMemory(
+				cstr, strlen(cstr)
+			));
+		if(!document || xmlHaveGenericErrors()) {
+			GdomeException exc=0;
+			throw Exception(0, 0, 
+				&method_name, 
+				exc);
+		}
+	} else { // [name]
+		const String& qualifiedName=param.as_string();
 
-	/// +xalan createXMLDecl ?
+		GdomeException exc;
+		/*
+		GdomeDocumentType *documentType=gdome_di_createDocumentType (
+			docimpl, 
+			pool.transcode(qualifiedName), 
+			0/*publicId* /, 
+			0/*systemId* /, 
+			&exc);
+		if(!documentType || exc || xmlHaveGenericErrors())
+			throw Exception(0, 0, 
+				&method_name, 
+				exc);
+		*/
+		document=gdome_di_createDocument (domimpl, 
+			0/*namespaceURI*/, 
+			pool.transcode(qualifiedName).get(), 
+			0/*doctype*/, 
+			&exc);
+		if(!document || exc || xmlHaveGenericErrors())
+			throw Exception(0, 0, 
+				&method_name, 
+				exc);
 
-	// replace any previous parsed source
-	vdoc.set_document(document);
-}
-
-static void _set(Request& r, const String& method_name, MethodParams *params) {
-//	_asm int 3;
-	Pool& pool=r.pool();
-	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
-
-	Value& vxml=params->as_junction(0, "xml must be code");
-	Temp_lang temp_lang(r, String::UL_XML);
-	const String& xml=r.process(vxml).as_string();
-
-	const char *cstr=xml.cstr(String::UL_UNSPECIFIED);
-	GdomeDocument *document=(GdomeDocument *)
-		gdome_xml_n_mkref((xmlNode *)xmlParseMemory(
-			cstr, strlen(cstr)
-		));
-	if(!document || xmlHaveGenericErrors()) {
-		GdomeException exc=0;
-		throw Exception(0, 0, 
-			&method_name, 
-			exc);
+		/// +xalan createXMLDecl ?
 	}
-
 	// replace any previous parsed source
 	vdoc.set_document(document);
 }
@@ -827,9 +820,10 @@ MXdoc::MXdoc(Pool& apool) : MXnode(apool) {
 	/// parser
 	
 	// ^xdoc::create{qualifiedName}
+	// ^xdoc::_create[<some>xml</some>]
 	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 1);	
-	// ^xdoc::set[<some>xml</some>]
-	add_native_method("set", Method::CT_DYNAMIC, _set, 1, 1);
+	// for backward compatibility with <=v 1.82 2002/01/31 11:51:46 paf
+	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 1);
 
 	// ^xdoc::load[some.xml]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
