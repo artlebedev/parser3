@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.8 2001/01/27 12:04:53 paf Exp $
+  $Id: pa_string.C,v 1.9 2001/01/27 13:09:45 paf Exp $
 */
 
 #include <string.h>
@@ -41,7 +41,6 @@ String::String(String& src) {
 		curr_chunk_rows=head.count;
 		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
 		append_here=&head.rows[src_used_rows];
-		head.preallocated_link=0;
 		link_row=&head.rows[curr_chunk_rows];
 	} else {
 		// warning: 
@@ -91,11 +90,17 @@ String::String(String& src) {
 }
 
 String& String::operator += (char *src) {
+	if(!src)
+		return *this;
+	int len=strlen(src);
+	if(!len)
+		return *this;
+
 	if(chunk_is_full())
 		expand();
 
 	append_here->item.ptr=src;
-	fsize+=append_here->item.size=strlen(src);
+	fsize+=append_here->item.size=len;
 	append_here++; fused_rows++;
 
 	return *this;
@@ -146,10 +151,55 @@ bool String::operator == (String& src) {
 	if(size() != src.size())
 		return false;
 
-	// FIX: 0 approach!
-	// use: in Hash it's "this" that has less chunks
-	if(head.rows[0].item.size==src.head.rows[0].item.size)
-		if(memcmp(head.rows[0].item.ptr, src.head.rows[0].item.ptr, head.rows[0].item.size)==0)
-			return true;
-	return false;
+	Chunk *a_chunk=&head;
+	Chunk *b_chunk=&src.head;
+	Chunk::Row *a_row=a_chunk->rows;
+	Chunk::Row *b_row=b_chunk->rows;
+	int a_offset=0;
+	int b_offset=0;
+	Chunk::Row *a_end=append_here;
+	Chunk::Row *b_end=src.append_here;
+	int a_count=a_chunk->count;
+	int b_count=b_chunk->count;
+	bool a_break=false;
+	bool b_break=false;
+	while(true) {
+		int size_diff=
+			(a_row->item.size-a_offset)-
+			(b_row->item.size-b_offset);
+
+		if(size_diff==0) { // a has same size as b
+			if(memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset)!=0)
+				return false;
+			a_row++; a_count--; a_offset=0;
+			b_row++; b_count--; b_offset=0;
+		} else if (size_diff>0) { // a longer
+			if(memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, b_row->item.size-b_offset)!=0)
+				return false;
+			a_offset+=b_row->item.size-b_offset;
+			b_row++; b_count--; b_offset=0;
+		} else { // b longer
+			if(memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset)!=0)
+				return false;
+			b_offset+=a_row->item.size-a_offset;
+			a_row++; a_count--; a_offset=0;
+		}
+
+		a_break=a_row==a_end;
+		b_break=b_row==b_end;
+		if(a_break || b_break)
+			break;
+
+		if(!a_count) {
+			a_chunk=a_row->link;
+			a_row=a_chunk->rows;
+			a_count=a_chunk->count;
+		}
+		if(!b_count) {
+			b_chunk=b_row->link;
+			b_row=b_chunk->rows;
+			b_count=b_chunk->count;
+		}
+	}
+	return a_break==b_break;
 }
