@@ -7,7 +7,7 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.2 2001/07/31 07:47:08 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.3 2001/07/31 07:58:47 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -101,11 +101,16 @@ public:
 
 			it's already UNTAINT_TIMES_BIGGER
 		*/
-		// ' -> ''
 		unsigned int result=length;
 		while(length--) {
-			if(*from=='\'')
+			switch(*from) {
+			case '\'': // "'" -> "''"
 				*to++='\'';
+				break;
+			case '\\': // "\" -> "\\"
+				*to++='\'';
+				break;
+			}
 			*to++=*from++;
 		}
 		return result;
