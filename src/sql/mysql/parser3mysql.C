@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.18 2001/05/17 13:23:28 parser Exp $
+	$Id: parser3mysql.C,v 1.19 2001/05/17 16:43:10 parser Exp $
 */
 
 #include "config_includes.h"
@@ -150,11 +150,10 @@ public:
 		if(!*column_count) // old client
 			*column_count=mysql_field_count(mysql);
 
-		*columns=(Cell *)services.malloc(sizeof(Cell)*(*column_count));
+		if(!*column_count)
+			services._throw("result contains no columns");
 
-		*row_count=(unsigned long)mysql_num_rows(res);
-		*rows=(Cell **)services.malloc(sizeof(Cell *)*(*row_count));
-		
+		*columns=(Cell *)services.malloc(sizeof(Cell)*(*column_count));
 		for(unsigned int i=0; i<(*column_count); i++){
 			MYSQL_FIELD *field=mysql_fetch_field(res);
 			size_t size=strlen(field->name);
@@ -163,19 +162,24 @@ public:
 			memcpy((*columns)[i].ptr, field->name, size);
 		}
 		
-		for(unsigned long r=0; r<(*row_count); r++) 
-			if(MYSQL_ROW mysql_row=mysql_fetch_row(res)) { // never false..
-				unsigned long *lengths=mysql_fetch_lengths(res);
-				Cell *row=(Cell *)malloc(sizeof(Cell)*(*column_count));
-				(*rows)[r]=row;
-				for(unsigned int i=0; i<(*column_count); i++){
-					size_t size=(size_t)lengths[i];
-					row[i].size=size;
-					row[i].ptr=services.malloc(size);
-					memcpy(row[i].ptr, mysql_row[i], size);
+		if(*row_count=(unsigned long)mysql_num_rows(res)) {
+			*rows=(Cell **)services.malloc(sizeof(Cell *)*(*row_count));
+			
+			for(unsigned long r=0; r<(*row_count); r++) 
+				if(MYSQL_ROW mysql_row=mysql_fetch_row(res)) { // never false..
+					unsigned long *lengths=mysql_fetch_lengths(res);
+					Cell *row=(Cell *)malloc(sizeof(Cell)*(*column_count));
+					(*rows)[r]=row;
+					for(unsigned int i=0; i<(*column_count); i++){
+						size_t size=(size_t)lengths[i];
+						row[i].size=size;
+						row[i].ptr=services.malloc(size);
+						memcpy(row[i].ptr, mysql_row[i], size);
+					}
 				}
-		}
-		
+		} else
+			*rows=0;
+
 		mysql_free_result(res);
 	}
 
