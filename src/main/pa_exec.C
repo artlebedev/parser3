@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_exec.C,v 1.15 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_exec.C,v 1.16 2001/10/30 15:08:19 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -132,7 +132,7 @@ static const char *buildCommand(Pool& pool,
 					string << " " << file_spec_cstr;
 					if(argv)
 						for(int i=0; i<argv->size(); i++)
-							string << argv->get_string(i)->cstr(String::UL_AS_IS);
+							string << argv->get_string(i)->cstr();
 					result=string.cstr();
 				}
 			}
@@ -147,7 +147,7 @@ static const char *buildCommand(Pool& pool,
 			buf << *argv->get_string(i);
 		}
 
-		result=buf.cstr(String::UL_AS_IS);
+		result=buf.cstr();
 	}
 
 	return result;
@@ -314,12 +314,12 @@ int pa_exec(const String& file_spec,
 	if(env) {
 		String string(env->pool());
 		env->for_each(append_env_pair, &string);
-		env_cstr=string.cstr(String::UL_AS_IS);
+		env_cstr=string.cstr();
 	}
 	if(CreateHiddenConsoleProcess(cmd, env_cstr, &pi, &hInWrite, &hOutRead, &hErrRead)) {
 		SetCurrentDirectory(pwd);
 
-		const char *in_cstr=in.cstr(String::UL_AS_IS);
+		const char *in_cstr=in.cstr();
 		DWORD written_size;
 		WriteFile(hInWrite, in_cstr, in.size(), &written_size, NULL);
 		// EOF for stupid text reads
@@ -365,7 +365,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	if(argv) {
 		int size=min(5, argv->size());
 		for(int i=0; i<size; i++)
-			argv_cstrs[i]=argv->get_string(i)->cstr(String::UL_AS_IS);
+			argv_cstrs[i]=argv->get_string(i)->cstr();
 	}
 	const char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC);
 	char **env_cstrs=0;
@@ -383,7 +383,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		env_cstrs,
 		&pipe_write, &pipe_read, &pipe_err)) {
 
-		const char *in_cstr=in.cstr(String::UL_AS_IS);
+		const char *in_cstr=in.cstr();
 		write(pipe_write, in_cstr, in.size());
 		close(pipe_write);
 		read_pipe(out, pipe_read, file_spec_cstr);

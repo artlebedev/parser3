@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_manager.C,v 1.9 2001/10/27 13:00:09 paf Exp $
+	$Id: pa_db_manager.C,v 1.10 2001/10/30 15:08:19 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -62,7 +62,7 @@ DB_Connection_ptr DB_Manager::get_connection_ptr(const String& request_db_home,
 	DB_Connection *result=get_connection_from_cache(request_db_home);
 	if(!result) { // no cached connection
 		// make global_db_home C-string on global pool
-		const char *request_db_home_cstr=request_db_home.cstr(String::UL_AS_IS);
+		const char *request_db_home_cstr=request_db_home.cstr();
 		char *global_db_home_cstr=(char *)malloc(strlen(request_db_home_cstr)+1);
 		strcpy(global_db_home_cstr, request_db_home_cstr);
 		// make global_db_home string on global pool

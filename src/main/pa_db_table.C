@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_table.C,v 1.8 2001/10/28 14:19:27 paf Exp $
+	$Id: pa_db_table.C,v 1.9 2001/10/30 15:08:19 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -124,7 +124,7 @@ void DB_Table::check(const char *operation, const String *source, int error) {
 
 void DB_Table::key_string_to_dbt(const String& key_string, DBT& key_result) {
 	memset(&key_result, 0, sizeof(key_result));
-	key_result.data=key_string.cstr(String::UL_AS_IS);
+	key_result.data=key_string.cstr();
 	key_result.size=key_string.size();
 }
 

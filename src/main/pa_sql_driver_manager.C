@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.45 2001/10/29 13:04:46 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.46 2001/10/30 15:08:20 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -121,7 +121,7 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 				"connection string must start with protocol://"); // NOTE: not THROW, but PTHROW
 
 		// make global_url C-string on global pool
-		request_url_cstr=request_url.cstr(String::UL_AS_IS);
+		request_url_cstr=request_url.cstr();
 		char *global_url_cstr=(char *)malloc(strlen(request_url_cstr)+1);
 		strcpy(global_url_cstr, request_url_cstr);
 		// make global_url string on global pool

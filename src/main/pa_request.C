@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.172 2001/10/23 14:43:44 parser Exp $
+	$Id: pa_request.C,v 1.173 2001/10/30 15:08:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -279,17 +279,17 @@ void Request::core(
 					problem_source->origin().file?problem_source->origin().file:"global",
 					problem_source->origin().line,
 #endif
-					problem_source->cstr(String::UL_AS_IS),
+					problem_source->cstr(),
 					e.comment(),
-					e.type()?e.type()->cstr(String::UL_AS_IS):"-",
-					e.code()?e.code()->cstr(String::UL_AS_IS):"-"
+					e.type()?e.type()->cstr():"-",
+					e.code()?e.code()->cstr():"-"
 				);
 			else
 				SAPI::log(pool(),
 					"%s [%s %s]",
 					e.comment(),
-					e.type()?e.type()->cstr(String::UL_AS_IS):"-",
-					e.code()?e.code()->cstr(String::UL_AS_IS):"-"
+					e.type()?e.type()->cstr():"-",
+					e.code()?e.code()->cstr():"-"
 					);
 
 			/// @test log stack trace
@@ -417,18 +417,18 @@ void Request::core(
 						origin.file, 1+origin.line);
 #endif
 					printed+=snprintf(buf+printed, MAX_STRING-printed, "'%s' ", 
-						problem_source->cstr(String::UL_AS_IS));
+						problem_source->cstr());
 				}
 				printed+=snprintf(buf+printed, MAX_STRING-printed, "%s", 
 					e.comment());
 				const String *type=e.type();
 				if(type) {
 					printed+=snprintf(buf+printed, MAX_STRING-printed, "  type: %s", 
-						type->cstr(String::UL_AS_IS));
+						type->cstr());
 					const String *code=e.code();
 					if(code)
 						printed+=snprintf(buf+printed, MAX_STRING-printed, ", code: %s", 
-						code->cstr(String::UL_AS_IS));
+						code->cstr());
 				}
 
 				// future $response:content-type
@@ -540,7 +540,7 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 	Pool& pool=lmeaning.pool();
 
 	SAPI::add_header_attribute(pool,
-		aattribute.cstr(String::UL_AS_IS), 
+		aattribute.cstr(), 
 		attributed_meaning_to_string(lmeaning, String::UL_HTTP_HEADER).cstr());
 }
 void Request::output_result(const VFile& body_file, bool header_only) {

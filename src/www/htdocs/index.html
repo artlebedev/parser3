@@ -1,5 +1,6 @@
 @main[]
-^filelist[]
+^formattest[]
+#^filelist[]
 #^connect[mysql://user:pass@host]{ }
 #^безнадёжна_попытка_поправить_непоправимое[]
 #^tcache[]
@@ -46,6 +47,11 @@
 #^xml[]
 #^header[]
 OK
+
+@formattest[]
+$size(15.124)
+
+^size.format{%.2f}
 
 @filelist[]
 $html[^file:list[.;\.html^$]]

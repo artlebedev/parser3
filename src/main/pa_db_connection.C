@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.23 2001/10/28 14:47:20 paf Exp $
+	$Id: pa_db_connection.C,v 1.24 2001/10/30 15:08:19 paf Exp $
 
 	developed with LIBDB 2.7.4
 */
@@ -151,7 +151,7 @@ DB_Table_ptr DB_Connection::get_table_ptr(const String& request_file_name, const
 	DB_Table *result=get_table_from_cache(request_file_name);
 	if(!result) { // no cached table
 		// make global_file_name C-string on global pool
-		const char *request_file_name_cstr=request_file_name.cstr(String::UL_AS_IS);
+		const char *request_file_name_cstr=request_file_name.cstr();
 		char *global_file_name_cstr=(char *)malloc(strlen(request_file_name_cstr)+1);
 		strcpy(global_file_name_cstr, request_file_name_cstr);
 		// make global_file_name string on global pool

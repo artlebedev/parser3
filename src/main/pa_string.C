@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.117 2001/10/29 16:56:31 paf Exp $
+	$Id: pa_string.C,v 1.118 2001/10/30 15:08:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -529,7 +529,7 @@ bool String::match(const unsigned char *pcre_tables,
 		throw Exception(0, 0,
 			aorigin,
 			"regexp is empty");
-	const char *pattern=regexp.cstr(UL_AS_IS);
+	const char *pattern=regexp.cstr();
 	const char *errptr;
 	int erroffset;
     int option_bits[2];  regex_options(options?options->cstr():0, option_bits);
@@ -554,7 +554,7 @@ bool String::match(const unsigned char *pcre_tables,
 	}
 
 	int startoffset=0;
-	const char *subject=cstr(UL_AS_IS);
+	const char *subject=cstr();
 	int length=strlen(subject);
 	int ovecsize;
 	int *ovector=(int *)malloc(sizeof(int)*
