@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.9 2001/10/25 13:17:53 paf Exp $
+	$Id: hashfile.C,v 1.10 2001/10/26 07:06:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -70,7 +70,7 @@ static void _transaction(Request& r, const String& method_name, MethodParams *pa
 	DB_Table& table=self.get_table(&method_name);
 
 	// transaction
-	Auto_transaction transaction(table);
+	DB_Transaction transaction(table);
 
 	// execute body
 	try {
@@ -105,7 +105,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	DB_Table& table=self.get_table(&method_name);
 
 	// transaction
-	Auto_transaction transaction(table);
+	DB_Transaction transaction(table);
 
 	// execute body
 	try {

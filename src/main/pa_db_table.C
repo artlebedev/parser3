@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_table.C,v 1.1 2001/10/25 13:18:19 paf Exp $
+	$Id: pa_db_table.C,v 1.2 2001/10/26 07:06:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -37,7 +37,7 @@ DB_Table::DB_Table(Pool& pool, const String& afile_spec, DB_Connection& aconnect
 	fconnection(aconnection),
 	dbenv(aconnection.dbenv),
 	ffile_spec(afile_spec), file_spec_cstr(afile_spec.cstr(String::UL_FILE_SPEC)),
-	db(0), ftid(0), errors(0) {
+	db(0), ftid(0), ftid_has_parent(false), errors(0) {
 }
 
 void DB_Table::check(const char *operation, const String *source, int error) {
