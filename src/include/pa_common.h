@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.22 2001/03/24 08:54:01 paf Exp $
+	$Id: pa_common.h,v 1.23 2001/03/24 09:24:42 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -108,5 +108,11 @@ size_t stdout_write(const char *buf, size_t size);
 const char *unescape_chars(Pool& pool, const char *cp, int len);
 
 const String& attributed_meaning_to_string(Value& meaning);
+
+
+#ifdef WIN32
+void back_slashes_to_slashes(char *s);
+#endif
+
 
 #endif

@@ -4,12 +4,8 @@ $t[^table:load[/test.cfg]]
 ^$t.a=$t.a<BR>
 
 ^$request:uri=$request:uri<BR>
-^$env:REQUEST_URI=$env:REQUEST_URI<BR>
 ^$env:PATH_INFO=$env:PATH_INFO<BR>
-
-
 ^$env:REMOTE_ADDR=$env:REMOTE_ADDR<BR>
-^$env:REQUEST_URI=$env:REQUEST_URI<BR>
 
 ^rem{
 $response:body[]
@@ -17,9 +13,13 @@ $response:location[http://parser3/123]
 }
 
 
-^$root_test=$root_test !<BR>
-^$site_test=$site_test !<BR>
-^$main_test=$main_test !<BR>
+<HR>
+^^auto_test[]:<BR>
+<ol>
+^auto_test[]
+</ol>
+<HR>
+
 ^${cookie:вот}=${cookie:вот}?<BR>
 ^$request:query=$request:query<BR>
 ^$request:uri=$request:uri<BR>
@@ -42,5 +42,7 @@ ${comment}.
 ^if(def $type){type=$type}
 ^if(def $code){code=$code}
 
-@auto[]
-$main_test[$main_test + .html]
+@auto_test[]
+^BASE.auto_test[]
+<li>$request:uri<BR>
+

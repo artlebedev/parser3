@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.23 2001/03/24 08:54:03 paf Exp $
+	$Id: pa_common.C,v 1.24 2001/03/24 09:24:44 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -251,3 +251,12 @@ const String& attributed_meaning_to_string(Value& meaning) {
 
 	return result;
 }
+
+#ifdef WIN32
+void back_slashes_to_slashes(char *s) {
+	if(s)
+		for(; *s; s++)
+			if(*s=='\\')
+				*s='/';
+}
+#endif

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.15 2001/03/23 10:27:32 paf Exp $
+	$Id: mod_parser3.C,v 1.16 2001/03/24 09:24:45 paf Exp $
 */
 
 #include "httpd.h"
@@ -149,8 +149,7 @@ void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 */
 static int parser_handler(request_rec *r)
 {
-	Pool pool;
-	pool.set_storage(r->pool);
+	Pool pool(r->pool);
 	pool.set_context(r);
 
     Parser_module_config *dcfg=our_dconfig(r);
@@ -272,10 +271,7 @@ static void setup_module_cells() {
 	/*
      * allocate our module-private pool.
      */
-    pool *module_pool=ap_make_sub_pool(NULL);
-
-	static Pool pool; // global pool
-	pool.set_storage(module_pool);
+	static Pool pool(ap_make_sub_pool(NULL)); // global pool
 	PTRY {
 		// init global variables
 		pa_globals_init(pool);

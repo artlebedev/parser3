@@ -1,11 +1,11 @@
 /** @file
 	Parser: scripting and CGI main.
 
-	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.42 2001/03/24 08:54:04 paf Exp $
+	$Id: parser3.C,v 1.43 2001/03/24 09:24:45 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -32,7 +32,7 @@ bool cgi; ///< we were started as CGI?
 
 #ifdef WIN32
 /// global system errors into parser exceptions converter
-static LONG WINAPI TopLevelExceptionFilter (struct _EXCEPTION_POINTERS *ExceptionInfo) {
+static LONG WINAPI TopLevelExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo) {
 	char buf[MAX_STRING];
 	if(ExceptionInfo && ExceptionInfo->ExceptionRecord) {
 		struct _EXCEPTION_RECORD *er=ExceptionInfo->ExceptionRecord;
@@ -47,15 +47,6 @@ static LONG WINAPI TopLevelExceptionFilter (struct _EXCEPTION_POINTERS *Exceptio
 		buf);
 
 	return EXCEPTION_EXECUTE_HANDLER; // never reached
-}
-#endif
-
-#ifdef WIN32
-static void fix_slashes(char *s) {
-	if(s)
-		for(; *s; s++)
-			if(*s=='\\')
-				*s='/';
 }
 #endif
 
@@ -132,7 +123,7 @@ int main(int argc, char *argv[]) {
 
 	char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
 #ifdef WIN32
-	fix_slashes(filespec_to_process);
+	back_slashes_to_slashes(filespec_to_process);
 #endif
 
 	const char *request_method=getenv("REQUEST_METHOD");
@@ -167,7 +158,7 @@ int main(int argc, char *argv[]) {
 			} else
 				PTHROW(0, 0,
 					0,
-					"CGI: no PATH_INFO defined (in reinventing DOCUMENT_ROOT)");
+					"CGI: no PATH_INFO defined(in reinventing DOCUMENT_ROOT)");
 		} else {
 			static char buf[MAX_STRING];
 			strncpy(buf, filespec_to_process, MAX_STRING);
@@ -181,7 +172,7 @@ int main(int argc, char *argv[]) {
 		if(cgi) 
 			if(const char *env_request_uri=getenv("REQUEST_URI"))
 				request_info.uri=env_request_uri;
-			else if (const char *path_info=getenv("PATH_INFO"))
+			else if(const char *path_info=getenv("PATH_INFO"))
 				if(query_string) {
 					char *reconstructed_uri=(char *)malloc(
 						strlen(path_info)+1/*'?'*/+
@@ -195,7 +186,7 @@ int main(int argc, char *argv[]) {
 			else
 				PTHROW(0, 0,
 					0,
-					"CGI: no PATH_INFO defined (in reinventing REQUEST_URI)");
+					"CGI: no PATH_INFO defined(in reinventing REQUEST_URI)");
 		else
 			request_info.uri=0;
 
@@ -238,6 +229,11 @@ int main(int argc, char *argv[]) {
 		// successful finish
 		return 0;
 	} PCATCH(e) { // global problem 
+		// must be first in PCATCH{}
+#ifdef WIN32
+		SetUnhandledExceptionFilter(0);
+#endif
+
 		const char *body=e.comment();
 		int content_length=strlen(body);
 

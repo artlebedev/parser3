@@ -191,8 +191,14 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		
 		// Request info
 		Request::Info request_info;
-		
-		const char *filespec_to_process=lpECB->lpszPathTranslated;
+
+		size_t path_translated_buf_size=strlen(lpECB->lpszPathTranslated)+1;
+		char *filespec_to_process=(char *)malloc(path_translated_buf_size);
+		memcpy(filespec_to_process, lpECB->lpszPathTranslated, path_translated_buf_size);
+#ifdef WIN32
+		back_slashes_to_slashes(filespec_to_process);
+#endif
+
 		if(const char *path_info=SAPI::get_env(pool, "PATH_INFO")) {
 			// IIS
 			size_t len=strlen(filespec_to_process)-strlen(path_info);
