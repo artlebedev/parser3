@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.163 2002/03/05 07:48:07 paf Exp $
+	$Id: parser3.C,v 1.164 2002/03/25 12:21:48 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -61,7 +61,8 @@ const char **RCSIds[]={
 	0
 };
 
-const char *PARSER_ROOT_CONFIG_ENV_NAME="PARSER_ROOT_CONFIG";
+const char *PARSER_ROOT_CONFIG_ENV_NAME="HTTP_PARSER_ROOT_CONFIG";
+const char *PARSER_SITE_CONFIG_ENV_NAME="HTTP_PARSER_SITE_CONFIG";
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
@@ -196,7 +197,7 @@ void SAPI::send_body(Pool& , const void *buf, size_t size) {
 
 char *full_file_spec(char *file_name) {
 	if(file_name && !strchr(file_name, '/')) {
-		static char cwd[MAX_STRING];  getcwd(cwd, MAX_STRING);
+		char cwd[MAX_STRING];  getcwd(cwd, MAX_STRING);
 		static char buf[MAX_STRING];
 		snprintf(buf, MAX_STRING, "%s/%s", cwd, file_name);
 		return buf;
@@ -243,7 +244,7 @@ void real_parser_handler(
 			0,
 			"CGI: no PATH_INFO defined(in reinventing DOCUMENT_ROOT)");
 	} else {
-		static char buf[MAX_STRING];
+		char buf[MAX_STRING];
 		strncpy(buf, filespec_to_process, MAX_STRING-1); buf[MAX_STRING-1]=0;
 		if(rsplit(buf, '/') || rsplit(buf, '\\')) // strip filename
 			request_info.document_root=buf;
@@ -328,20 +329,26 @@ void real_parser_handler(
 #endif
 	}
 	
+	const char *site_config_filespec;
+	if(const char *site_config_by_env=getenv(PARSER_SITE_CONFIG_ENV_NAME))
+		site_config_filespec=site_config_by_env;
+	else {
 	// beside by binary
 	// @todo full path, not ./!
-	static char site_config_path[MAX_STRING];
-	strncpy(site_config_path, argv0, MAX_STRING-1);  site_config_path[MAX_STRING-1]=0; // filespec of my binary
-	if(!(
-		rsplit(site_config_path, '/') || 
-		rsplit(site_config_path, '\\'))) { // strip filename
-		// no path, just filename
-		site_config_path[0]='.'; site_config_path[1]=0;
+		char beside_binary_path[MAX_STRING];
+		strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
+		if(!(
+			rsplit(beside_binary_path, '/') || 
+			rsplit(beside_binary_path, '\\'))) { // strip filename
+			// no path, just filename
+			beside_binary_path[0]='.'; beside_binary_path[1]=0;
+		}
+		char buf[MAX_STRING];
+		snprintf(buf, MAX_STRING, 
+			"%s/%s", 
+			beside_binary_path, CONFIG_FILE_NAME);
+		site_config_filespec=buf;
 	}
-	char site_config_filespec[MAX_STRING];
-	snprintf(site_config_filespec, MAX_STRING, 
-		"%s/%s", 
-		site_config_path, CONFIG_FILE_NAME);
 	
 	// process the request
 	request.core(
