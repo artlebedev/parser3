@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3isapi.C,v 1.36 2001/08/28 10:30:29 parser Exp $"; 
+static const char *RCSId="$Id: parser3isapi.C,v 1.37 2001/09/04 19:07:38 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -212,6 +212,8 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 		to do that we need to consult metabase,
 		wich is tested&works but seems slow runtime 
 		and not could-be-quickly-implemented if prepared.
+	@test
+		PARSER_VERSION from outside
 */
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	Pool_storage pool_storage;
