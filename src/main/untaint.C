@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.37 2001/04/09 11:04:12 paf Exp $
+	$Id: untaint.C,v 1.38 2001/04/10 11:24:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -49,7 +49,7 @@ inline bool need_file_encode(unsigned char c){
 #ifdef WIN32
 		":\\~"
 #endif
-		"./", c);
+		"./()_", c);
 }
 inline bool need_uri_encode(unsigned char c){
     if((c>='0') &&(c<='9') ||(c>='A') &&(c<='Z') ||(c>='a') &&(c<='z')) 
@@ -245,7 +245,7 @@ char *String::store_to(char *dest, Untaint_lang lang, SQL_Connection *connection
 					this, 
 					"unknown untaint language #%d of %d piece", 
 						static_cast<int>(row->item.lang), 
-						i);
+						i); // never
 			}
 		}
 		chunk=row->link;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.59 2001/04/06 13:41:29 paf Exp $
+	$Id: table.C,v 1.60 2001/04/10 11:23:54 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -566,7 +566,7 @@ static void _dir(Request& r, const String& method_name, Array *params) {
 				(*pcre_free)(regexp_code);
 				PTHROW(0, 0,
 					regexp,
-					"regular expression execute #%d", 
+					"regular expression execute (%d)", 
 						exec_result);
 			}
 		}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.37 2001/04/10 10:32:08 paf Exp $
+	$Id: pa_common.h,v 1.38 2001/04/10 11:23:58 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -36,6 +36,9 @@ class Value;
 #endif
 #ifndef stat
 #	define stat _stat
+#endif
+#ifndef lseek
+#	define lseek _lseek
 #endif
 
 #ifndef vsnprintf

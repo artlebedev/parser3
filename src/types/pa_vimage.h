@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.1 2001/04/10 10:32:15 paf Exp $
+	$Id: pa_vimage.h,v 1.2 2001/04/10 11:24:03 paf Exp $
 */
 
 #ifndef PA_VIMAGE_H
@@ -52,7 +52,7 @@ public: // usage
 		ffields(apool) {
 	}
 
-	void set(int width, int height);
+	void set(const String& src, int width, int height);
 	void save(const String& image_spec) {
 		/*if(fvalue_ptr)
 			image_write(pool(), image_spec, fvalue_ptr, fvalue_size, false);

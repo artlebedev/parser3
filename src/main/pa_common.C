@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.44 2001/04/10 10:32:10 paf Exp $
+	$Id: pa_common.C,v 1.45 2001/04/10 11:24:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -60,7 +60,7 @@ bool file_read(Pool& pool, const String& file_spec,
     struct stat finfo;
 
 	// first open, next stat:
-	// directory update of NTFS symbolic links performed on open.
+	// directory update of NTFS hard links performed on open.
 	// ex: 
 	//   a.html:^test[] and b.html hardlink to a.html
 	//   user inserts ! before ^test in a.html
@@ -74,6 +74,8 @@ bool file_read(Pool& pool, const String& file_spec,
 			flock(f, LOCK_EX);*/
 		size_t max_size=limit?min(offset+limit, finfo.st_size)-offset:finfo.st_size;
 		data=pool.malloc(max_size+(as_text?1:0));
+		if(offset)
+			lseek(f, offset, SEEK_SET);
 		read_size=read(f, data, max_size);
 		/*if(exclusive)
 			flock(f, LOCK_UN);*/
@@ -93,7 +95,7 @@ bool file_read(Pool& pool, const String& file_spec,
 	if(fail_on_read_problem)
 		PTHROW(0, 0, 
 			&file_spec, 
-			"read failed: %s (#%d)", strerror(errno), errno);
+			"read failed: %s (%d)", strerror(errno), errno);
     return false;
 }
 
@@ -131,14 +133,14 @@ void file_write(Pool& pool,
 	}
 	PTHROW(0, 0, 
 		&file_spec, 
-		"write failed: %s (#%d)", strerror(errno), errno);
+		"write failed: %s (%d)", strerror(errno), errno);
 }
 
 void file_delete(Pool& pool, const String& file_spec) {
 	if(unlink(file_spec.cstr(String::UL_FILE_NAME))!=0)
 		PTHROW(0, 0, 
 			&file_spec, 
-			"unlink failed: %s (#%d)", strerror(errno), errno);
+			"unlink failed: %s (%d)", strerror(errno), errno);
 }
 
 bool file_readable(const String& file_spec) {
@@ -155,7 +157,7 @@ size_t file_size(const String& file_spec) {
 	if(stat(fname, &finfo)!=0)
 		PTHROW(0, 0, 
 			&file_spec, 
-			"write failed: %s (#%d)", strerror(errno), errno);
+			"write failed: %s (%d)", strerror(errno), errno);
 	return finfo.st_size;
 }
 

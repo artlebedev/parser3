@@ -31,12 +31,20 @@ $n
 $m ^if(^s.match[$:m;i]){matches}{does not match} $s<BR>
 
 @main[]
+$face[^image:measure[001004paf(c)lena_karin.gif]]
+^$face.src=$face.src<BR>
+^$face.width=$face.width<BR>
+^$face.height=$face.height<BR>
+<HR>
+
+^rem{
 ^mail:send[
 	$to[paf@design.ru]
 	$subject[test]
 	$body[test]
 ]
 <HR>
+}
 
 $e[^file:cgi[env.pl;$t[<b>1</b>]]]
 $e.text

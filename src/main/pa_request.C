@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.108 2001/04/09 14:01:58 paf Exp $
+	$Id: pa_request.C,v 1.109 2001/04/10 11:24:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -29,8 +29,9 @@
 #include "pa_vfile.h"
 #include "_mail.h"
 #include "_exec.h"
+#include "_image.h"
 
-/// $limits.post_max_size default 10M
+/// $LIMITS.post_max_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
 
 /// content type of exception response, when no @MAIN:exception handler defined
@@ -83,6 +84,8 @@ Request::Request(Pool& apool,
 	classes().put(*cookie_class_name, &cookie);
 	// mail class
 	classes().put(*mail_class_name, mail_class);
+	// image class
+	classes().put(*image_class_name, image_class);
 }
 
 /**

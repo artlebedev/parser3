@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.75 2001/04/09 09:48:20 paf Exp $
+	$Id: pa_string.C,v 1.76 2001/04/10 11:24:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -518,7 +518,7 @@ bool String::match(const String *aorigin,
 		(*pcre_free)(code);
 		THROW(0, 0,
 			aorigin,
-			"pcre_info error #%d", 
+			"pcre_info error (%d)", 
 				info_substrings);
 	}
 
@@ -558,7 +558,7 @@ bool String::match(const String *aorigin,
 			(*pcre_free)(code);
 			THROW(0, 0,
 				aorigin,
-				"regular expression execute error #%d", 
+				"regular expression execute error (%d)", 
 					exec_substrings);
 		}
 
