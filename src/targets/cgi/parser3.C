@@ -4,13 +4,14 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.130 2001/11/08 11:52:34 paf Exp $
+	$Id: parser3.C,v 1.131 2001/11/15 16:30:02 paf Exp $
 */
 
 #include "pa_config_includes.h"
 
 #ifdef WIN32
 #	include <windows.h>
+#	include <new.h>
 #endif
 
 #include "pa_sapi.h"
@@ -349,6 +350,47 @@ void call_real_parser_handler__do_SEH(
 #endif
 }
 
+void report_error(const char *prefix, const char *body, bool header_only) {
+	if(!body)
+		body="<unknown error>";
+
+	// log it
+	SAPI::log(pool, "%s%s", prefix?prefix:"", body);
+
+	//
+	int content_length=strlen(body);
+
+	// prepare header
+	SAPI::add_header_attribute(pool, "content-type", "text/plain");
+	char content_length_cstr[MAX_NUMBER];
+	snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
+	SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
+
+	// send header
+	SAPI::send_header(pool);
+
+	// body
+	if(!header_only)
+		SAPI::send_body(pool, body, content_length);
+}
+
+#ifdef WIN32
+int failed_new(size_t size) {
+    const char *msg="out of memory";
+    report_error(0, msg, false/*header_only*/);
+	SAPI::die(msg);
+	return 0; // not reached
+}
+#endif
+
+#ifdef HAVE_SET_NEW_HANDLER
+void failed_new() {
+    const char *msg="out of memory";
+    report_error(0, msg, false/*header_only*/);
+	SAPI::die(msg);
+}
+#endif
+
 int main(int argc, char *argv[]) {
 	int result;
 	argv0=argv[0];
@@ -389,6 +431,15 @@ int main(int argc, char *argv[]) {
 
 	const char *request_method=getenv("REQUEST_METHOD");
 	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
+
+#ifdef WIN32
+	_set_new_handler(failed_new);
+#endif
+
+#ifdef HAVE_SET_NEW_HANDLER
+	set_new_handler(failed_new);
+#endif
+
 	try { // global try
 		call_real_parser_handler__do_SEH(
 			filespec_to_process,
@@ -401,25 +452,12 @@ int main(int argc, char *argv[]) {
 		//   possible pool' exception not catch-ed now
 		//   and there could be out-of-memory exception
 
-		const char *body=e.comment();
-		// log it
-		SAPI::log(pool, "exception in request exception handler: %s", body);
+		report_error("exception in request exception handler: ", e.comment(), header_only);
 
-		//
-		int content_length=strlen(body);
-
-		// prepare header
-		SAPI::add_header_attribute(pool, "content-type", "text/plain");
-		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
-		SAPI::add_header_attribute(pool, "content-length", content_length_cstr);
-
-		// send header
-		SAPI::send_header(pool);
-
-		// body
-		if(!header_only)
-			SAPI::send_body(pool, body, content_length);
+		// unsuccessful finish
+		result=1;
+	} catch(...) { 
+		report_error(0, "<unknown exception>", header_only);
 
 		// unsuccessful finish
 		result=1;
