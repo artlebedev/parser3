@@ -86,9 +86,14 @@ $copy-paste-clean[^table::set{a b
 ?	_
 =	_}]
 
-$cache_key[^taint[в.а,с+я]&был?тут=недавно]
+$cache_key[^taint[в.а,с+я]&был?тут=недавно.cache]
 # почему-то этот replace роняет апач в 500 ошибку :(
-^cache_key.replace[$copy-paste-clean]
+#^cache_key.replace[$copy-paste-clean]
+$test[abc]
+^test.save[$cache_key]saved<br>
+$cache[^file:list[.;\.cache^$]]
+^file:delete[$cache_key]deleted($cache.name)<br>
+
 
 
 @xslt2[]

@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.82 2001/11/22 10:29:47 paf Exp $
+	$Id: untaint.C,v 1.83 2001/12/10 10:20:24 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -25,7 +25,6 @@
 	}
 #define _default  default: *dest++=*src; break
 #define encode(need_encode_func, prefix)  \
-		default: \
 			if(need_encode_func(*src)) { \
 				static const char *hex="0123456789ABCDEF"; \
 				char chunk[3]={prefix}; \
@@ -41,14 +40,20 @@
 		dest+=bsize; \
 
 inline bool need_file_encode(unsigned char c){
+	// theoretical problem with, for instance, "_2B" and "." fragments, 
+	// they would yield the same 
+	// because need_file_encode('_')=false
+	// but we need to delete such files somehow, getting names from ^index
+
     if((c>='0') &&(c<='9') ||(c>='A') &&(c<='Z') ||(c>='a') &&(c<='z')) 
 		return false;
 
     return !strchr(
+		"_./()-"
 #ifdef WIN32
 		":\\~"
 #endif
-		"./()_-", c);
+		, c);
 }
 inline bool need_uri_encode(unsigned char c){
     if((c>='0') &&(c<='9') ||(c>='A') &&(c<='Z') ||(c>='a') &&(c<='z')) 
@@ -285,23 +290,22 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			break;
 		case UL_FILE_SPEC:
 			// tainted, untaint language: file [name]
-			escape(switch(*src) {
-				case ' ': to_char('_');  break;
-				encode(need_file_encode, '+');
-			});
+			escape(
+				encode(need_file_encode, '_');
+			);
 			break;
 		case UL_URI:
 			// tainted, untaint language: uri
 			escape(switch(*src) {
 				case ' ': to_char('+');  break;
-				encode(need_uri_encode, '%');
+				default: encode(need_uri_encode, '%');
 			});
 			break;
 		case UL_HTTP_HEADER:
 			// tainted, untaint language: http-field-content-text
 			escape(switch(*src) {
 				case ' ': to_char('+');  break;
-				encode(need_uri_encode, '%');
+				default: encode(need_uri_encode, '%');
 			});
 			break;
 		case UL_MAIL_HEADER:
