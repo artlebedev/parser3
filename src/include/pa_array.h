@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.3 2001/01/27 15:45:24 paf Exp $
+  $Id: pa_array.h,v 1.4 2001/01/29 09:38:33 paf Exp $
 */
 
 /*
@@ -89,12 +89,9 @@ public:
 
 	int size() { return fused_rows; }
 	Array& operator += (Item src);
-
-	/*
-	void put(int index, Item item);
-	Item get(int index);
-	*/
 	Item& operator [] (int index);
+	Array& operator += (Array& src);
+	void remove(int index, int count=1);
 
 private: //disabled
 

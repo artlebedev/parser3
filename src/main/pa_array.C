@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.3 2001/01/27 15:45:24 paf Exp $
+  $Id: pa_array.C,v 1.4 2001/01/29 09:38:33 paf Exp $
 */
 
 #include <string.h>
@@ -47,37 +47,6 @@ Array& Array::operator += (Item src) {
 	return *this;
 }
 
-/*
-char *Array::c_str() {
-	char *result=static_cast<char *>(pool->malloc(size()+1));
-
-	char *copy_here=result;
-	Chunk *chunk=&head; 
-	do {
-		Chunk::Row *row=chunk->rows;
-		for(int i=0; i<chunk->count; i++) {
-			if(row==append_here)
-				goto break2;
-
-			memcpy(copy_here, row->item.ptr, row->item.size);
-			copy_here+=row->item.size;
-			row++;
-		}
-		chunk=row->link;
-	} while(chunk);
-break2:
-	*copy_here=0;
-	return result;
-}
-*/
-/*
-void Array::put(int index, Item item) {
-}
-
-Array::Item Array::get(int index) {
-}
-*/
-
 Array::Item& Array::operator [] (int index) {
 	if(!(index>=0 && index<size())) {
 		// FIX: some sort of thread-global error
@@ -99,4 +68,40 @@ Array::Item& Array::operator [] (int index) {
 	}
 
 	return cache_chunk->rows[index-cache_chunk_base].item;
+}
+
+Array& Array::operator += (Array& src) {
+	int src_size=src.size();
+	int last_chunk_rows_left=link_row-append_here;
+	
+	// src fits into our lask chunk?
+	if(src_size<=last_chunk_rows_left) {
+		Chunk *src_chunk=src.head; 
+		Chunk::Row *dest_rows=append_here;
+		int rows_left_to_copy=src_size;
+		while(true) {
+			int src_count=src_chunk->count;
+			Chunk *next_chunk=src_chunk->rows[src_count].link;
+			if(next_chunk) {
+				// not last source chunk
+				// taking it all
+				memcpy(dest_rows, src_chunk->rows, sizeof(Chunk::Row)*src_count);
+				dest_rows+=src_count;
+				rows_left_to_copy-=src_count;
+
+				src_chunk=next_chunk;
+			} else {
+				// the last source chunk
+				// taking only those rows of chunk that _left_to_copy
+				memcpy(dest_rows, src_chunk->rows, sizeof(Chunk::Row)*rows_left_to_copy);
+				break;
+			}
+		}
+	} else {
+	}
+
+	return *this;
+}
+
+void Array::remove(int index, int count=1) {
 }
