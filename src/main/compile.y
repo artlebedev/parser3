@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.60 2001/03/06 18:12:56 paf Exp $
+  $Id: compile.y,v 1.61 2001/03/07 09:29:54 paf Exp $
 */
 
 %{
@@ -61,6 +61,8 @@ int yylex(YYSTYPE *lvalp, void *pc);
 %token SNE "ne"
 
 /* logical */
+%left "lt" "gt" "le" "ge"
+%left "eq" "ne"
 %left '<' '>' "<=" ">=" "##"
 %left "==" "!="
 %left "||"
@@ -411,9 +413,12 @@ expr:
 |	expr ">=" expr { $$=$1;  P($$, $3);  O($$, OP_NUM_GE) }
 |	expr "==" expr { $$=$1;  P($$, $3);  O($$, OP_NUM_EQ) }
 |	expr "!=" expr { $$=$1;  P($$, $3);  O($$, OP_NUM_NE) }
-/*
-	OP_STR_LT, OP_STR_GT, OP_STR_LE, OP_STR_GE, OP_STR_EQ, OP_STR_NE
-*/
+|	expr "lt" expr { $$=$1;  P($$, $3);  O($$, OP_STR_LT) }
+|	expr "gt" expr { $$=$1;  P($$, $3);  O($$, OP_STR_GT) }
+|	expr "le" expr { $$=$1;  P($$, $3);  O($$, OP_STR_LE) }
+|	expr "ge" expr { $$=$1;  P($$, $3);  O($$, OP_STR_GE) }
+|	expr "eq" expr { $$=$1;  P($$, $3);  O($$, OP_STR_EQ) }
+|	expr "ne" expr { $$=$1;  P($$, $3);  O($$, OP_STR_NE) }
 ;
 
 /*

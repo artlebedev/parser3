@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.57 2001/03/07 08:27:10 paf Exp $
+  $Id: execute.C,v 1.58 2001/03/07 09:29:54 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -497,18 +497,63 @@ void Request::execute(const Array& ops) {
 				PUSH(value);
 				break;
 			}
-		case OP_STR_LT:
-		case OP_STR_GT:
-		case OP_STR_LE: 
-		case OP_STR_GE: 
-		case OP_STR_EQ:
-		case OP_STR_NE:
+		case OP_STR_LT: 
 			{
 				Value *b=POP();
 				Value *a=POP();
 				Value *value=NEW VBool(pool(), 
-					/*a->get_string() @
-					b->get_string()*/false);
+					a->as_string() <
+					b->as_string());
+				PUSH(value);
+				break;
+			}
+		case OP_STR_GT: 
+			{
+				Value *b=POP();
+				Value *a=POP();
+				Value *value=NEW VBool(pool(), 
+					a->as_string() >
+					b->as_string());
+				PUSH(value);
+				break;
+			}
+		case OP_STR_LE: 
+			{
+				Value *b=POP();
+				Value *a=POP();
+				Value *value=NEW VBool(pool(), 
+					a->as_string() <=
+					b->as_string());
+				PUSH(value);
+				break;
+			}
+		case OP_STR_GE: 
+			{
+				Value *b=POP();
+				Value *a=POP();
+				Value *value=NEW VBool(pool(), 
+					a->as_string() >=
+					b->as_string());
+				PUSH(value);
+				break;
+			}
+		case OP_STR_EQ: 
+			{
+				Value *b=POP();
+				Value *a=POP();
+				Value *value=NEW VBool(pool(), 
+					a->as_string() ==
+					b->as_string());
+				PUSH(value);
+				break;
+			}
+		case OP_STR_NE: 
+			{
+				Value *b=POP();
+				Value *a=POP();
+				Value *value=NEW VBool(pool(), 
+					a->as_string() !=
+					b->as_string());
 				PUSH(value);
 				break;
 			}

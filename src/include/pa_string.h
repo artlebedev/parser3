@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.25 2001/02/22 08:16:09 paf Exp $
+  $Id: pa_string.h,v 1.26 2001/03/07 09:29:53 paf Exp $
 */
 
 /*
@@ -51,7 +51,18 @@ public:
 	int used_rows() const { return fused_rows; }
 	char *cstr() const;
 	String& real_append(STRING_APPEND_PARAMS);
-	bool operator == (const String& src) const;
+	int cmp (const String& src) const;
+	bool operator < (const String& src) const {	return cmp(src)<0; }
+	bool operator > (const String& src) const {	return cmp(src)>0; }
+	bool operator <= (const String& src) const { return cmp(src)<=0; }
+	bool operator >= (const String& src) const { return cmp(src)>=0; }
+	bool operator == (const String& src) const {
+		if(size()!=src.size()) // can speed up in trivial case
+			return false;
+		return cmp(src)==0;
+	}
+	bool operator != (const String& src) const { return cmp(src)!=0; }
+
 	bool operator == (char* src) const;
 	String& operator += (const String& src);
 

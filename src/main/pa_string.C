@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.31 2001/02/22 12:43:55 paf Exp $
+  $Id: pa_string.C,v 1.32 2001/03/07 09:29:54 paf Exp $
 */
 
 #include <string.h>
@@ -203,10 +203,7 @@ break2:
 	return result;
 }
 
-bool String::operator == (const String& src) const {
-	if(size() != src.size())
-		return false;
-
+int String::cmp(const String& src) const {
 	const Chunk *a_chunk=&head;
 	const Chunk *b_chunk=&src.head;
 	const Chunk::Row *a_row=a_chunk->rows;
@@ -219,24 +216,28 @@ bool String::operator == (const String& src) const {
 	int b_countdown=b_chunk->count;
 	bool a_break=false;
 	bool b_break=false;
+	int result;
 	while(true) {
 		int size_diff=
 			(a_row->item.size-a_offset)-
 			(b_row->item.size-b_offset);
 
 		if(size_diff==0) { // a has same size as b
-			if(memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset)!=0)
-				return false;
+			result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset);
+			if(result)
+				return result;
 			a_row++; a_countdown--; a_offset=0;
 			b_row++; b_countdown--; b_offset=0;
 		} else if (size_diff>0) { // a longer
-			if(memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, b_row->item.size-b_offset)!=0)
-				return false;
+			result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, b_row->item.size-b_offset);
+			if(result)
+				return result;
 			a_offset+=b_row->item.size-b_offset;
 			b_row++; b_countdown--; b_offset=0;
 		} else { // b longer
-			if(memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset)!=0)
-				return false;
+			result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset);
+			if(result)
+				return result;
 			b_offset+=a_row->item.size-a_offset;
 			a_row++; a_countdown--; a_offset=0;
 		}
@@ -257,7 +258,13 @@ bool String::operator == (const String& src) const {
 			b_countdown=b_chunk->count;
 		}
 	}
-	return a_break==b_break;
+	if(a_break==b_break) // ended simultaneously
+		result=0;
+	else if(a_break) // first bytes equal, but a ended before b
+		result=-1;
+	else
+		result=+1;
+	return result;
 }
 
 bool String::operator == (char* b_ptr) const {
