@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vhashfile.C,v 1.1 2001/10/22 12:30:24 parser Exp $
+	$Id: pa_vhashfile.C,v 1.2 2001/10/22 13:52:20 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -62,7 +62,7 @@ void VHashfile::put_field(const String& name, Value *value) {
 	memset(&dbinfo, 0, sizeof(dbinfo));
 	check("open/create", &name, db_open(
 		get_file_spec_cstr(&name), 
-		PA_DB_ACCESS_METHOD , 
+		PA_DB_ACCESS_METHOD, 
 		DB_CREATE /*| DB_THREAD*/,
 		0666, 
 		0, &dbinfo, &db));
@@ -104,7 +104,7 @@ Value *VHashfile::get_field(const String& name) {
 	memset(&dbinfo, 0, sizeof(dbinfo));
 	check("open", &name, db_open(
 		get_file_spec_cstr(&name), 
-		PA_DB_ACCESS_METHOD , 
+		PA_DB_ACCESS_METHOD, 
 		0 /*| DB_THREAD*/,
 		0, 
 		0, &dbinfo, &db));
