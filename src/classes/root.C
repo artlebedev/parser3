@@ -1,5 +1,5 @@
 /*
-$Id: root.C,v 1.2 2001/03/08 13:42:30 paf Exp $
+$Id: root.C,v 1.3 2001/03/08 13:52:08 paf Exp $
 */
 
 #include "pa_request.h"
@@ -10,8 +10,7 @@ static void _if(Request& r, Array& params) {
 			*static_cast<Value *>(params.get(0)), 
 			false/*don't make it string*/).get_bool();
 	Value& value=r.autocalc(
-		*static_cast<Value *>(params.get(condition?1:2)), 
-		true/*make it string*/);
+		*static_cast<Value *>(params.get(condition?1:2)));
 	r.write(value);
 }
 

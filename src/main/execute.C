@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.71 2001/03/08 13:42:32 paf Exp $
+  $Id: execute.C,v 1.72 2001/03/08 13:52:10 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -544,7 +544,7 @@ Value *Request::get_element() {
 	Value *value=ncontext->get_element(name);
 
 	// autocalc possible code-junction
-	value=value?&autocalc(*value, true/*make_string*/):NEW VUnknown(pool());
+	value=value?&autocalc(*value):NEW VUnknown(pool());
 
 	value->set_name(name);
 	return value;
