@@ -13,8 +13,9 @@
 	<xsl:template match="/doc">
 		<html>
 		<head/>
-		мычит<br/>
+		<xsl:value-of select="."/> - в шаблоне<br/>
 		</html>
 	</xsl:template>
+	
 	
 </xsl:stylesheet>

@@ -1,11 +1,11 @@
-@main[]
+﻿@main[]
 $request:charset[UTF-8]
 #$response:charset[UTF-8]
 $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
-$xdoc[^xdoc::create{<?xml version="1.0"?>
+$xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 <doc>
-<br/>
+исходный
 </doc>
 }]
 $xdoc[^xdoc.transform[_bug.xsl]]
