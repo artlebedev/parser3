@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2004/11/09 11:34:06 $";
+static const char * const IDENT_PARSER3_C="$Date: 2004/11/09 11:59:05 $";
 
 #include "pa_config_includes.h"
 
@@ -30,7 +30,7 @@ static const char * const IDENT_PARSER3_C="$Date: 2004/11/09 11:34:06 $";
 // defines
 
 // comment remove me after debugging
-#define PA_DEBUG_CGI_ENTRY_EXIT	"c:\\parser3.log"
+//#define PA_DEBUG_CGI_ENTRY_EXIT	"c:\\parser\\debug-parser3.log"
 
 #if _MSC_VER && !defined(_DEBUG)
 #	define PA_SUPPRESS_SYSTEM_EXCEPTION
