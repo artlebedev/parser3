@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.15 2001/02/22 16:21:49 paf Exp $
+  $Id: pa_value.h,v 1.16 2001/02/23 09:43:13 paf Exp $
 */
 
 /*
@@ -75,7 +75,8 @@ public:
 	virtual const char *type() const =0;
 
 	// string: value
-	// all others: 0
+	// unknown: ""
+	// others: 0
 	virtual String *get_string() { return 0; }
 	
 	// string: value

@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.24 2001/02/22 15:39:23 paf Exp $
+  $Id: compile.y,v 1.25 2001/02/23 09:43:14 paf Exp $
 */
 
 %{
@@ -26,7 +26,9 @@ int yylex(YYSTYPE *lvalp, void *pc);
 
 // local convinient inplace typecast & var
 #define PC  ((parse_control *)pc)
-#define pool  *PC->pool
+#define POOL  *PC->pool
+#undef NEW
+#define NEW new(POOL)
 %}
 
 %pure_parser
@@ -39,11 +41,11 @@ int yylex(YYSTYPE *lvalp, void *pc);
 
 all:
 	one_big_piece {
-	String& name_main=*new(pool) String(pool);
+	String& name_main=*NEW String(POOL);
 	name_main.APPEND_CONST(MAIN_METHOD_NAME);
-	Array& param_names=*new(pool) Array(pool);
-	Array& local_names=*new(pool) Array(pool);
-	Method *method=new(pool) Method(pool, name_main, param_names, local_names, *$1);
+	Array& param_names=*NEW Array(POOL);
+	Array& local_names=*NEW Array(POOL);
+	Method *method=NEW Method(POOL, name_main, param_names, local_names, *$1);
 	*PC->methods+=method;
 }
 |	methods;
@@ -56,16 +58,16 @@ method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment
 	const String *name=LA2S($2);
 
 	YYSTYPE params_names_code=$3;
-	Array& params_names=*new(pool) Array(pool);
+	Array& params_names=*NEW Array(POOL);
 	for(int i=0; i<params_names_code->size(); i+=2)
 		params_names+=LA2S(params_names_code, i);
 
 	YYSTYPE locals_names_code=$4;
-	Array& locals_names=*new(pool) Array(pool);
+	Array& locals_names=*NEW Array(POOL);
 	for(int i=0; i<locals_names_code->size(); i+=2)
 		locals_names+=LA2S(locals_names_code, i);
 
-	Method *method=new(pool) Method(pool, *name, params_names, locals_names, *$7);
+	Method *method=NEW Method(POOL, *name, params_names, locals_names, *$7);
 	*PC->methods+=method;
 };
 
@@ -99,7 +101,7 @@ any_name: name_without_curly_rdive EON | name_in_curly_rdive;
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
 name_without_curly_rdive: name_without_curly_rdive_read | name_without_curly_rdive_root;
 name_without_curly_rdive_read: name_without_curly_rdive_code {
-	$$=N(pool); 
+	$$=N(POOL); 
 	Array *diving_code=$1;
 	String *first_name=LA2S(diving_code);
 	if(first_name && *first_name==SELF_NAME) {
@@ -114,7 +116,7 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 	/* diving code; stack: current context */
 };
 name_without_curly_rdive_root: ':' name_without_curly_rdive_code {
-	$$=N(pool); 
+	$$=N(POOL); 
 	OP($$, OP_WITH_ROOT); /* stack: starting context */
 	P($$, $2); /* diving code; stack: current context */
 };
@@ -135,7 +137,7 @@ put: '$' name_expr_dive '(' constructor_value ')' {
 };
 name_expr_dive: name_expr_dive_write | name_expr_dive_root;
 name_expr_dive_write: name_expr_dive_code {
-	$$=N(pool); 
+	$$=N(POOL); 
 	Array *diving_code=$1;
 	String *first_name=LA2S(diving_code);
 	if(first_name && *first_name==SELF_NAME) {
@@ -150,7 +152,7 @@ name_expr_dive_write: name_expr_dive_code {
 	/* diving code; stack: current context */
 };
 name_expr_dive_root: ':' name_expr_dive_code {
-	$$=N(pool); 
+	$$=N(POOL); 
 	OP($$, OP_WITH_ROOT); /* stack: starting context */
 	P($$, $2); /* diving code; stack: context,name */
 };
@@ -165,7 +167,7 @@ constructor_one_param_value:
 |	complex_constructor_param_value /* $var(something complex) */
 ;
 complex_constructor_param_value: complex_constructor_param_body {
-	$$=N(pool); 
+	$$=N(POOL); 
 	OP($$, OP_CREATE_EWPOOL); /* stack: empty write context */
 	P($$, $1); /* some codes to that context */
 	OP($$, OP_REDUCE_EWPOOL); /* context=pop; stack: context.value() */
@@ -176,7 +178,7 @@ complex_constructor_param_body:
 ;
 constructor_two_params_value: STRING ';' constructor_one_param_value {
 	char *operator_or_fmt=LA2S($1)->cstr();
-	$$=N(pool);
+	$$=N(POOL);
 	P($$, $1); /* stack: ncontext name operator_or_fmt */
 	P($$, $3); /* stack: ncontext name operator_or_fmt expr */
 	switch(operator_or_fmt[0]) {
@@ -212,7 +214,7 @@ call: '^' name_expr_dive store_params EON { /* ^field.$method{vasya} */
 			иначе  // ^result(value)
 				обругать безобразие
 */
-	$$=N(pool); 
+	$$=N(POOL); 
 	OP($$, OP_WITH_READ); /* stack: starting context */
 	P($$, $2); /* diving code; stack: context,method_name */
 	OP($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
@@ -229,7 +231,7 @@ store_param_part: constructor_one_param_value {
 	OP($$, OP_STORE_PARAM);
 }
 store_curly_param: '{' maybe_codes '}' {
-	$$=N(pool); 
+	$$=N(POOL); 
 	OP($$, OP_CODE_ARRAY);
 	AA($$, $2);
 	OP($$, OP_CREATE_JUNCTION);
@@ -264,7 +266,7 @@ name_expr_subvar_value: '$' subvar_ref_name_rdive {
 	OP($$, OP_GET_ELEMENT);
 };
 name_expr_with_subvar_value: STRING subvar_get_writes {
-	$$=N(pool); 
+	$$=N(POOL); 
 	OP($$, OP_CREATE_EWPOOL);
 	P($$, $1);
 	OP($$, OP_WRITE);
@@ -273,12 +275,12 @@ name_expr_with_subvar_value: STRING subvar_get_writes {
 };
 subvar_ref_name_rdive: subvar_ref_name_rdive_read | subvar_ref_name_rdive_root;
 subvar_ref_name_rdive_read: STRING {
-	$$=N(pool); 
+	$$=N(POOL); 
 	OP($$, OP_WITH_READ);
 	P($$, $1);
 };
 subvar_ref_name_rdive_root: ':' STRING {
-	$$=N(pool); 
+	$$=N(POOL); 
 	OP($$, OP_WITH_ROOT);
 	P($$, $2);
 };
@@ -321,7 +323,7 @@ write_str_literal: STRING {
 
 /* */
 
-empty: /* empty */ { $$=N(pool) };
+empty: /* empty */ { $$=N(POOL) };
 
 %%
 
@@ -654,9 +656,9 @@ break2:
 		// append last piece
 		PC->string->APPEND(begin, end-begin, PC->file, begin_line/*, start_col*/);
 		// create STRING value: array of OP_VALUE+vstring
-		*lvalp=L(new(pool) VString(PC->string));
+		*lvalp=L(NEW VString(PC->string));
 		// new pieces storage
-		PC->string=new(pool) String(pool);
+		PC->string=NEW String(POOL);
 		// go!
 		return STRING;
 	}

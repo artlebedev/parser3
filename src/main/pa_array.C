@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.18 2001/02/22 15:17:40 paf Exp $
+  $Id: pa_array.C,v 1.19 2001/02/23 09:43:15 paf Exp $
 */
 
 #include <string.h>
@@ -117,10 +117,11 @@ Array& Array::append_array(const Array& src, int offset) {
 			if(rows_to_copy_now>0)
 				memcpy(dest_rows, src_chunk->rows+rows_left_to_skip, 
 					sizeof(Chunk::Row)*rows_to_copy_now);
+			else
+				rows_left_to_skip-=src_count;
+
 			dest_rows+=rows_to_copy_now;
 			rows_left_to_copy-=src_count;
-			rows_left_to_skip-=src_count;
-			
 			src_chunk=next_chunk;
 		} else {
 			// the last source chunk

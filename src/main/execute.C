@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.22 2001/02/22 16:21:49 paf Exp $
+  $Id: execute.C,v 1.23 2001/02/23 09:43:14 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -7,6 +7,7 @@
 #include "pa_request.h"
 #include "pa_vstring.h"
 #include "pa_vhash.h"
+#include "pa_vunknown.h"
 
 #include <stdio.h>
 
@@ -27,18 +28,30 @@ char *opcode_name[]={
 };
 
 void dump(int level, const Array& ops) {
-	int size=ops.size();
-	for(int i=0; i<size; i++) {
-		int code=reinterpret_cast<int>(ops.quick_get(i));
-		printf("%*s%s", level*4, "", opcode_name[code]);
+	if(0){
+		int size=ops.size();
+		printf("size=%d\n", size);
+		for(int i=0; i<size; i++) {
+			Operation op;
+			op.cast=ops.quick_get(i);
+			printf("%8X\n", op.cast);
+		}
+	}
 
-		if(code==OP_STRING) {
+	int size=ops.size();
+	printf("size=%d\n", size);
+	for(int i=0; i<size; i++) {
+		Operation op;
+		op.cast=ops.quick_get(i);
+		printf("%*s%s", level*4, "", opcode_name[op.code]);
+
+		if(op.code==OP_STRING) {
 			VString *vstring=static_cast<VString *>(ops.quick_get(++i));
 			printf(" \"%s\"", vstring->get_string()->cstr());
 		}
 		printf("\n");
 
-		if(code==OP_CODE_ARRAY) {
+		if(op.code==OP_CODE_ARRAY) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 			dump(level+1, *local_ops);
 		}
@@ -53,16 +66,18 @@ void Request::execute(Array& ops) {
 	}
 
 	int size=ops.size();
+	printf("size=%d\n", size);
 	for(int i=0; i<size; i++) {
-		int code=reinterpret_cast<int>(ops.quick_get(i));
-		printf("%d:%s", stack.top(), opcode_name[code]);
+		Operation op;
+		op.cast=ops.quick_get(i);
+		printf("%d:%s", stack.top(), opcode_name[op.code]);
 
-		if(code==OP_CODE_ARRAY) {
+		if(op.code==OP_CODE_ARRAY) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 			//dump(level+1, *local_ops);
 		}
 		
-		switch(code) {
+		switch(op.code) {
 		case OP_WITH_WRITE: 
 			{
 				stack.push(wcontext);
@@ -151,8 +166,9 @@ Value *Request::get_element() {
 	// name бывает им€ junction, тогда или оставл€ет в покое, или вычисл€ет в зависимости от флага ј¬“ќ¬џ„»—Ћя“№
 
 	if(!value) {
-		value=NEW VHash(pool());
-		ncontext->put_element(*name, value);
+//		value=NEW VHash(pool());
+//		ncontext->put_element(*name, value);
+		value=NEW VUnknown(pool());
 	}
 	return value;
 }

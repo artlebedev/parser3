@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.9 2001/02/22 16:21:49 paf Exp $
+  $Id: pa_wcontext.h,v 1.10 2001/02/23 09:43:14 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -7,6 +7,7 @@
 
 #include "pa_value.h"
 #include "pa_vstring.h"
+#include "pa_vhash.h"
 
 class WContext : public Value {
 public: // Value
@@ -18,7 +19,13 @@ public: // Value
 	// wcontext: transparent
 	Value *get_element(const String& name) { return check_value()->get_element(name); }
 	// wcontext: transparent
-	void put_element(const String& name, Value *avalue){ check_value()->put_element(name, avalue); }
+//	void put_element(const String& name, Value *avalue){ check_value()->put_element(name, avalue); }
+	void put_element(const String& name, Value *avalue){ 
+		if(!fvalue)
+			fvalue=NEW VHash(pool());
+		fvalue->put_element(name, avalue); 
+	}
+
 	// wcontext: transparent
 	Method *get_method(const String& name) const { return check_value()->get_method(name); }
 	// wcontext: none yet | transparent
