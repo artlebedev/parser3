@@ -43,7 +43,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.89 2003/09/25 09:15:02 paf Exp $
+	$Id: compile.tab.C,v 1.90 2003/10/07 14:29:02 paf Exp $
 */
 
 /**
@@ -2537,6 +2537,7 @@ default:
 			case ':': // ':name' or 'class:name'
 			case '^': // ^abc^xxx wrong. bailing out
 			case ']': case '}': case ')': // ^abc]}) wrong. bailing out
+			case ' ': // ^if ( wrong. bailing out
 				RC;
 			}
 			break;

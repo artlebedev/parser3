@@ -5,7 +5,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.206 2003/07/24 11:31:23 paf Exp $
+	$Id: compile.y,v 1.207 2003/10/07 14:29:03 paf Exp $
 */
 
 /**
@@ -1234,6 +1234,7 @@ default:
 			case ':': // ':name' or 'class:name'
 			case '^': // ^abc^xxx wrong. bailing out
 			case ']': case '}': case ')': // ^abc]}) wrong. bailing out
+			case ' ': // ^if ( wrong. bailing out
 				RC;
 			}
 			break;
