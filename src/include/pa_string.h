@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.55 2001/03/29 15:36:15 paf Exp $
+	$Id: pa_string.h,v 1.56 2001/03/29 16:12:45 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -119,17 +119,17 @@ public:
 	*/
 	String& real_append(STRING_APPEND_PARAMS);
 	/// @return <0 ==0 or >0 depending on comparison result
-	int cmp (const String& src) const;
-	bool operator < (const String& src) const {	return cmp(src)<0; }
-	bool operator > (const String& src) const {	return cmp(src)>0; }
-	bool operator <= (const String& src) const { return cmp(src)<=0; }
-	bool operator >= (const String& src) const { return cmp(src)>=0; }
+	int cmp (int& partial, const String& src, size_t this_offset=0) const;
+	bool operator < (const String& src) const {	int p; return cmp(p, src)<0; }
+	bool operator > (const String& src) const {	int p; return cmp(p, src)>0; }
+	bool operator <= (const String& src) const { int p; return cmp(p, src)<=0; }
+	bool operator >= (const String& src) const { int p; return cmp(p, src)>=0; }
 	bool operator == (const String& src) const {
 		if(size()!=src.size()) // can speed up in trivial case
 			return false;
-		return cmp(src)==0;
+		int p; return cmp(p, src)==0;
 	}
-	bool operator != (const String& src) const { return cmp(src)!=0; }
+	bool operator != (const String& src) const { int p; return cmp(p, src)!=0; }
 
 	/**
 		 @param partial 
@@ -139,13 +139,13 @@ public:
 			-  1: means @c this starts @c src
 			-  2: means @src starts @this
 	*/
-	int cmp(const char* src_ptr, int& partial, size_t src_size=0) const;
+	int cmp(int& partial, const char* src_ptr, size_t src_size=0) const;
 	bool operator == (const char* src_ptr) const { 
 		size_t src_size=src_ptr?strlen(src_ptr):0;
 		if(size() != src_size)
 			return false;
 		int partial; // unused
-		return cmp(src_ptr, partial, src_size)==0; 
+		return cmp(partial, src_ptr, src_size)==0; 
 	}
 
 	/** 
@@ -174,7 +174,7 @@ private:
 
 	struct Chunk {
 		// the number of rows in chunk
-		int count;
+		size_t count;
 		union Row {
 			// fragment
 			struct { 

@@ -1,11 +1,11 @@
 /** @file
-	Parser: string class. @see untaint.C.
+	Parser: string class. @see untasize_t.C.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.54 2001/03/29 15:36:16 paf Exp $
+	$Id: pa_string.C,v 1.55 2001/03/29 16:12:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -18,7 +18,7 @@
 
 // String
 
-String::String(Pool& apool, const char *src, bool tainted) :
+String::String(Pool& apool, const char *src, bool tasize_ted) :
 	Pooled(apool) {
 	last_chunk=&head;
 	head.count=CR_PREALLOCATED_COUNT;
@@ -28,16 +28,16 @@ String::String(Pool& apool, const char *src, bool tainted) :
 	fused_rows=fsize=0;
 
 	if(src)
-		if(tainted)
+		if(tasize_ted)
 			APPEND_TAINTED(src, 0, 0, 0);
 		else
 			APPEND_CONST(src);
 }
 
 void String::expand() {
-	int new_chunk_count=last_chunk->count+last_chunk->count*CR_GROW_PERCENT/100;
+	size_t new_chunk_count=last_chunk->count+last_chunk->count*CR_GROW_PERCENT/100;
 	last_chunk=static_cast<Chunk *>(
-		malloc(sizeof(int)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *)));
+		malloc(sizeof(size_t)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *)));
 	last_chunk->count=new_chunk_count;
 	link_row->link=last_chunk;
 	append_here=last_chunk->rows;
@@ -48,10 +48,10 @@ void String::expand() {
 String::String(const String& src) :	Pooled(src.pool()) {
 	head.count=CR_PREALLOCATED_COUNT;
 	
-	int src_used_rows=src.fused_rows;
+	size_t src_used_rows=src.fused_rows;
 	if(src_used_rows<=head.count) {
-		// all new rows fit into preallocated area
-		int curr_chunk_rows=head.count;
+		// all new rows fit size_to preallocated area
+		size_t curr_chunk_rows=head.count;
 		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
 		append_here=&head.rows[src_used_rows];
 		link_row=&head.rows[curr_chunk_rows];
@@ -64,22 +64,22 @@ String::String(const String& src) :	Pooled(src.pool()) {
 		//   allocating only enough mem to fit src string rows
 		//   next append would allocate a new chunk
 		//
-		// new rows don't fit into preallocated area: splitting into two chunks
+		// new rows don't fit size_to preallocated area: splitting size_to two chunks
 		// preallocated chunk src to constructing head
 		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*head.count);
-		// remaining rows into new_chunk
-		int curr_chunk_rows=src_used_rows-head.count;
+		// remaining rows size_to new_chunk
+		size_t curr_chunk_rows=src_used_rows-head.count;
 		Chunk *new_chunk=static_cast<Chunk *>(
-			malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
+			malloc(sizeof(size_t)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
 		new_chunk->count=curr_chunk_rows;
 		head.preallocated_link=new_chunk;
 		append_here=link_row=&new_chunk->rows[new_chunk->count];
 
 		Chunk *old_chunk=src.head.preallocated_link; 
 		Chunk::Row *new_rows=new_chunk->rows;
-		int rows_left_to_copy=new_chunk->count;
+		size_t rows_left_to_copy=new_chunk->count;
 		while(true) {
-			int old_count=old_chunk->count;
+			size_t old_count=old_chunk->count;
 			Chunk *next_chunk=old_chunk->rows[old_count].link;
 			if(next_chunk) {
 				// not last source chunk
@@ -103,32 +103,32 @@ String::String(const String& src) :	Pooled(src.pool()) {
 }
 
 String& String::append(const String& src, Untaint_lang lang, bool forced) {
-	int src_used_rows=src.fused_rows;
-	int dst_free_rows=link_row-append_here;
+	size_t src_used_rows=src.fused_rows;
+	size_t dst_free_rows=link_row-append_here;
 	
 	if(src_used_rows<=dst_free_rows) {
-		// all new rows fit into last chunk
+		// all new rows fit size_to last chunk
 		memcpy(append_here, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
 		set_lang(append_here, lang, forced, src_used_rows);
 		append_here+=src_used_rows;
 	} else {
-		// not all new rows fit into last chunk: shrinking it to used part,
-		int used_rows=last_chunk->count-dst_free_rows;
-		//int *countp=append_here
+		// not all new rows fit size_to last chunk: shrinking it to used part,
+		size_t used_rows=last_chunk->count-dst_free_rows;
+		//size_t *countp=append_here
 		link_row=&last_chunk->rows[last_chunk->count=used_rows];
 		//   allocating only enough mem to fit src string rows
 		//   next append would allocate a new chunk
 		last_chunk=static_cast<Chunk *>(
-			malloc(sizeof(int)+sizeof(Chunk::Row)*src_used_rows+sizeof(Chunk *)));
+			malloc(sizeof(size_t)+sizeof(Chunk::Row)*src_used_rows+sizeof(Chunk *)));
 		last_chunk->count=src_used_rows;
 		link_row->link=last_chunk;
 		append_here=link_row=&last_chunk->rows[src_used_rows];
 
 		const Chunk *old_chunk=&src.head; 
 		Chunk::Row *new_rows=last_chunk->rows;
-		int rows_left_to_copy=src_used_rows;
+		size_t rows_left_to_copy=src_used_rows;
 		while(true) {
-			int old_count=old_chunk->count;
+			size_t old_count=old_chunk->count;
 			Chunk *next_chunk=old_chunk->rows[old_count].link;
 			if(next_chunk) {
 				// not last source chunk
@@ -160,8 +160,8 @@ void String::set_lang(Chunk::Row *row, Untaint_lang lang, bool forced, size_t si
 
 	while(size--) {
 		Untaint_lang& item_lang=(row++)->item.lang;
-		if(item_lang==UL_YES || forced) // tainted? need untaint language assignment
-			item_lang=lang;  // assign untaint language
+		if(item_lang==UL_YES || forced) // tasize_ted? need untasize_t language assignment
+			item_lang=lang;  // assign untasize_t language
 	}
 }
 
@@ -169,7 +169,7 @@ void String::set_lang(Chunk::Row *row, Untaint_lang lang, bool forced, size_t si
 	Chunk *chunk=&head; 
 	do {
 		Chunk::Row *row=chunk->rows;
-		for(int i=0; i<chunk->count; i++) {
+		for(size_t i=0; i<chunk->count; i++) {
 			if(row==append_here)
 				goto break2;
 
@@ -211,7 +211,7 @@ uint String::hash_code() const {
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(int i=0; i<chunk->count; i++) {
+		for(size_t i=0; i<chunk->count; i++) {
 			if(row==append_here)
 				goto break2;
 
@@ -224,48 +224,60 @@ break2:
 	return result;
 }
 
-int String::cmp(const String& src) const {
+int String::cmp(int& partial, const String& src, size_t this_offset) const {
+	this_offset=min(this_offset, size()-1);
+
 	const Chunk *a_chunk=&head;
 	const Chunk *b_chunk=&src.head;
 	const Chunk::Row *a_row=a_chunk->rows;
 	const Chunk::Row *b_row=b_chunk->rows;
-	int a_offset=0;
-	int b_offset=0;
+	size_t a_offset=this_offset;
+	size_t b_offset=0;
 	Chunk::Row *a_end=append_here;
 	Chunk::Row *b_end=src.append_here;
-	int a_countdown=a_chunk->count;
-	int b_countdown=b_chunk->count;
+	size_t a_countdown=a_chunk->count;
+	size_t b_countdown=b_chunk->count;
 	bool a_break=false;
 	bool b_break=false;
-	int result;
-	while(true) {
+	size_t result;
+	for(size_t pos=0; true; pos+=a_row->item.size) {
 		a_break=a_row==a_end;
 		b_break=b_row==b_end;
 		if(a_break || b_break)
 			break;
 
-		int size_diff=
-			(a_row->item.size-a_offset)-
-			(b_row->item.size-b_offset);
+		if(pos+a_row->item.size > this_offset) {
+			int size_diff=
+				(a_row->item.size-a_offset)-
+				(b_row->item.size-b_offset);
+			
+			if(size_diff==0) { // a has same size as b
+				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset);
+				if(result)
+					return result;
+				a_row++; a_countdown--; a_offset=0;
+				b_row++; b_countdown--; b_offset=0;
+			} else if (size_diff>0) { // a longer
+				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, b_row->item.size-b_offset);
+				if(result)
+					return result;
+				a_offset+=b_row->item.size-b_offset;
+				b_row++; b_countdown--; b_offset=0;
+			} else { // b longer
+				result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset);
+				if(result)
+					return result;
+				b_offset+=a_row->item.size-a_offset;
+				a_row++; a_countdown--; a_offset=0;
+			}
 
-		if(size_diff==0) { // a has same size as b
-			result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset);
-			if(result)
-				return result;
-			a_row++; a_countdown--; a_offset=0;
-			b_row++; b_countdown--; b_offset=0;
-		} else if (size_diff>0) { // a longer
-			result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, b_row->item.size-b_offset);
-			if(result)
-				return result;
-			a_offset+=b_row->item.size-b_offset;
-			b_row++; b_countdown--; b_offset=0;
-		} else { // b longer
-			result=memcmp(a_row->item.ptr+a_offset, b_row->item.ptr+b_offset, a_row->item.size-a_offset);
-			if(result)
-				return result;
-			b_offset+=a_row->item.size-a_offset;
-			a_row++; a_countdown--; a_offset=0;
+			if(!b_countdown) {
+				b_chunk=b_row->link;
+				b_row=b_chunk->rows;
+				b_countdown=b_chunk->count;
+			}
+		} else {
+			a_row++; a_countdown--; a_offset-=a_row->item.size;
 		}
 
 		if(!a_countdown) {
@@ -273,31 +285,26 @@ int String::cmp(const String& src) const {
 			a_row=a_chunk->rows;
 			a_countdown=a_chunk->count;
 		}
-		if(!b_countdown) {
-			b_chunk=b_row->link;
-			b_row=b_chunk->rows;
-			b_countdown=b_chunk->count;
-		}
 	}
-	if(a_break==b_break) // ended simultaneously
-		result=0;
-	else if(a_break) // first bytes equal, but a ended before b
-		result=-1;
-	else
-		result=+1;
-	return result;
+	if(a_break==b_break) { // ended simultaneously
+		partial=0; return 0;
+	} else if(a_break) { // first bytes equal, but a ended before b
+		partial=1; return -1;
+	} else {
+		partial=2; return +1;
+	}
 }
 
-int String::cmp(const char* b_ptr, int& partial, size_t src_size) const {
+int String::cmp(int& partial, const char* b_ptr, size_t src_size) const {
 	size_t b_size=src_size?src_size:b_ptr?strlen(b_ptr):0;
 
 	partial=-1;
 	const Chunk *a_chunk=&head;
 	const Chunk::Row *a_row=a_chunk->rows;
-	int a_offset=0;
-	int b_offset=0;
+	size_t a_offset=0;
+	size_t b_offset=0;
 	Chunk::Row *a_end=append_here;
-	int a_countdown=a_chunk->count;
+	size_t a_countdown=a_chunk->count;
 	bool a_break=false;
 	bool b_break=false;
 	while(true) {
@@ -310,17 +317,17 @@ int String::cmp(const char* b_ptr, int& partial, size_t src_size) const {
 			(b_size-b_offset);
 
 		if(size_diff==0) { // a has same size as b
-			if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
+			if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
 				return result;
 			a_row++; a_countdown--; a_offset=0;
 			b_break=true;
 		} else if (size_diff>0) { // a longer
-			if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, b_size-b_offset)!=0)
+			if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, b_size-b_offset)!=0)
 				return result;
 			a_offset+=b_size-b_offset;
 			b_break=true;
 		} else { // b longer
-			if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
+			if(size_t result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
 				return result;
 			b_offset+=a_row->item.size-a_offset;
 			a_row++; a_countdown--; a_offset=0;
@@ -332,12 +339,13 @@ int String::cmp(const char* b_ptr, int& partial, size_t src_size) const {
 			a_countdown=a_chunk->count;
 		}
 	}
-	if(a_break==b_break) // ended simultaneously
-		return partial=0;
-	else if(a_break) // first bytes equal, but a ended before b
-		return partial=1;
-	else
-		return partial=2;
+	if(a_break==b_break) { // ended simultaneously
+		partial=0; return 0;
+	} else if(a_break) { // first bytes equal, but a ended before b
+		partial=1; return -1;
+	} else {
+		partial=2; return +1;
+	}
 }
 
 #ifndef NO_STRING_ORIGIN
@@ -364,7 +372,7 @@ String& String::piece(size_t start, size_t finish) const {
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(int i=0; i<chunk->count; pos+=row->item.size, i++, row++) {
+		for(size_t i=0; i<chunk->count; pos+=row->item.size, i++, row++) {
 			if(row==append_here)
 				goto break2;
 
@@ -389,5 +397,13 @@ break2:
 }
 
 size_t String::pos(const String& substr) const {
-	return 0;
+	for(size_t result=0; result<size(); result++) {
+		int partial; cmp(partial, substr, result);
+		if(
+			partial==0 || // full match
+			partial==2) // 'substr' starts 'this'+'result'
+			return result;
+	}
+	
+	return -1;
 }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.27 2001/03/29 15:00:22 paf Exp $
+	$Id: untaint.C,v 1.28 2001/03/29 16:12:46 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -65,7 +65,7 @@ static bool typo_present(Array::Item *value, const void *info) {
 	const char *src=static_cast<const char *>(info);
 
 	int partial;
-	row->get_string(0)->cmp(src, partial);
+	row->get_string(0)->cmp(partial, src);
 	return 
 		partial==0 || // full match
 		partial==1; // typo left column starts 'src'
@@ -80,7 +80,7 @@ char *String::store_to(char *dest) const {
 	const Chunk *chunk=&head; 
 	do {
 		const Chunk::Row *row=chunk->rows;
-		for(int i=0; i<chunk->count; i++, row++) {
+		for(size_t i=0; i<chunk->count; i++, row++) {
 			if(row==append_here)
 				goto break2;
 
