@@ -125,16 +125,16 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 
 			String cn(pool);  cn.append(0, ni);
 			Class *right_class=classes.get(cn);
-			if(!oc) // bad: no such class
+			if(!right_class) // bad: no such class
 				pool.exception().raise(cn, "call: undefined class");
 			Class *left_class=awcontext.get_class();
 			if(left_class) {
 				if(left_class.has_parent(right_class)) // dynamic call
-					;
+					context=awcontext.value(); // it's 'self'
 				else // static call
-					context=right_class;
+					context=right_class; // 'self' := class, not instance
 			} else { // constructor: $some(^class:method[..]) call
-				context=new(pool) VClass(pool, right_class);
+				context=new(pool) VClass(pool, right_class); // 'self' := new VClass of 'class:'
 				awcontext.write(context);
 			}
 		}
@@ -160,7 +160,7 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 	Array/*<String&>*/ param_values(pool);
 	get_params(
 		iter,
-		awcontext,
+		arcontext,
 		&param_values);
 	iter++; // skip ']'
 
@@ -168,9 +168,9 @@ void process_bird(method_self_n_params_n_locals& root, Value& self,
 		context,
 		method->param_names, param_values,
 		method->local_names);
-	WContext local_wcontext(pool, local_self);
+	WContext local_wcontext(pool, context);
 	process(
-		context, local_rcontext, 
+		local_rcontext/* $:vars */, context /* $self.vars */,
 		local_rcontext, local_wcontext, 
 		iter, ']');
 	awcontext.write(local_wcontext);

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.5 2001/02/13 15:10:45 paf Exp $
+  $Id: pa_value.h,v 1.6 2001/02/14 12:20:48 paf Exp $
 */
 
 /*
@@ -44,6 +44,9 @@ public:
 
 	// object_class, object_instance: object_class
 	virtual Class *get_class() const =0;
+
+	// object_class: true when this class is derived from 'parent'
+	virtual bool has_parent(Class *aparent) const =0;
 };
 
 /*

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_context.h,v 1.4 2001/02/13 15:10:45 paf Exp $
+  $Id: pa_context.h,v 1.5 2001/02/14 12:20:47 paf Exp $
 */
 
 /*
@@ -41,7 +41,8 @@ public: //implement by replicating to value->calls
 
 	virtual Method *get_method(const String& name) const { return check(value)->get_method(name); }
 
-	virtual Class *get_class() const { return check(value)->get_class(); }
+	virtual Class *get_class() const { return value?value->get_class():0; }
+	virtual bool has_parent(Class *aparent) { return value?value->has_parent(aparent):false; }
 
 private:
 	String& string;
