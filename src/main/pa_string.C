@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/09/17 14:22:29 $";
+static const char* IDENT_STRING_C="$Date: 2002/11/28 09:37:32 $";
 
 #include "pcre.h"
 
@@ -459,7 +459,7 @@ static void regex_options(const String *options, int *result, bool& need_pre_pos
 		{"'", 0, 0, 0, 0, &need_pre_post_match},
 		{0}
     };
-	result[0]=PCRE_EXTRA | PCRE_DOTALL;
+	result[0]=PCRE_EXTRA | PCRE_DOTALL | PCRE_DOLLAR_ENDONLY;
 	result[1]=0;
 
     if(options) 
