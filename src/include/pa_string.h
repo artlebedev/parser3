@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.1 2001/01/26 15:43:11 paf Exp $
+  $Id: pa_string.h,v 1.2 2001/01/26 18:34:02 paf Exp $
 */
 
 /*
@@ -47,7 +47,7 @@ private:
 				size_t size;  // length of the fragment
 			} item;
 			Chunk *link;  // link to the next chunk in chain
-		} first[CR_PREALLOCATED_COUNT];
+		} rows[CR_PREALLOCATED_COUNT];
 		// next rows are here
 		Chunk *preallocated_link;
 	}
@@ -64,6 +64,7 @@ private:
 	void *operator new(size_t size, Pool *apool);
 
 	void construct(Pool *apool);
+	String() { /* never */}
 	String(Pool *apool) { 
 		construct(apool); 
 	}
@@ -76,12 +77,17 @@ private:
 		return append_here == link_row;
 	}
 	void expand();
+	int used_rows();
 
 public:
 
+	String(String& src);
 	size_t size();
 	char *c_str();
 	String& operator += (char *src);
+	bool operator == (String& src);
+
+	unsigned int hash_code();
 };
 
 #endif

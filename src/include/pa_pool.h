@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.h,v 1.4 2001/01/26 15:43:11 paf Exp $
+  $Id: pa_pool.h,v 1.5 2001/01/26 18:34:02 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -8,19 +8,24 @@
 #include <stddef.h>
 
 #include "pa_string.h"
+#include "pa_hash.h"
 
 class Pool {
 public:
 	Pool();
 	~Pool();
-    void *alloc(size_t size);
+    void *malloc(size_t size);
     void *calloc(size_t size);
 
-	String *makeString() { 
+	String *make_string() { 
 		return new(this) String(this);
 	}
-	String *makeString(char *src) {
+	String *make_string(char *src) {
 		return new(this) String(this, src);
+	}
+
+	Hash<String, String> *make_hash() {
+		return new(this) Hash<String, String>(this);
 	}
 };
 

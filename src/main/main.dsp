@@ -87,6 +87,10 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\pa_hash.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_pool.C
 # End Source File
 # Begin Source File
@@ -99,7 +103,15 @@ SOURCE=.\pa_string.C
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=..\include\pa_hash.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_pool.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_string.h
 # End Source File
 # End Group
 # End Target

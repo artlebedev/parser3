@@ -1,5 +1,5 @@
 /*
-  $Id: pa_pool.C,v 1.2 2001/01/26 15:32:52 paf Exp $
+  $Id: pa_pool.C,v 1.3 2001/01/26 18:34:02 paf Exp $
 */
 
 #include <stdlib.h>
@@ -12,7 +12,7 @@ Pool::Pool() {
 Pool::~Pool() {
 }
 
-void *Pool::alloc(size_t size) {
+void *Pool::malloc(size_t size) {
 	return ::malloc(size);
 }
 
