@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.12 2001/11/05 11:46:20 paf Exp $
+	$Id: date.C,v 1.13 2001/11/12 10:32:24 paf Exp $
 */
 
 #include "classes.h"
@@ -110,17 +110,35 @@ static void _roll(Request& r, const String& method_name, MethodParams *params) {
 			&method_name,
 			"offset must be +/- 1");
 
-	time_t tIn=vdate->get_time();
-    tm *tmIn=localtime(&tIn);
-	tmIn->tm_year+=oyear;
-	time_t t=mktime(tmIn);
-	if(t<0)
+	time_t self_time=vdate->get_time();
+	tm tmIn=*localtime(&self_time);
+	// we will preserve daytime from day-light-saving shifts across roll
+	tm tmSaved=tmIn;
+	tmIn.tm_hour=24/2; tmIn.tm_min=tmIn.tm_sec=0;
+
+    tmIn.tm_year+=oyear;
+    time_t t=mktime(&tmIn);
+    t+=omonth*getMonthDays(tmIn.tm_year, (tmIn.tm_mon+(omonth<0?-1:0)+12)%12)*SECS_PER_DAY;
+    t+=oday*SECS_PER_DAY;
+    
+    tm *tmOut=localtime(&t);
+	if(!tmOut)
 		throw Exception(0, 0,
 			&method_name,
-			"invalid datetime");
-	t+=omonth*getMonthDays(tmIn->tm_year, (tmIn->tm_mon+(omonth<0?-1:0)+12)%12)*SECS_PER_DAY;
-    t+=oday*SECS_PER_DAY;
-	vdate->set_time(t);
+			"bad resulting time (seconds from epoch=%ld)", t);
+    
+    tmOut->tm_hour=tmSaved.tm_hour;
+    tmOut->tm_min=tmSaved.tm_min;
+    tmOut->tm_sec=tmSaved.tm_sec;
+	{
+		time_t t=mktime(tmOut);
+		if(t<0)
+			throw Exception(0, 0,
+			&method_name,
+			"bad resulting time (after reconstruction)");
+		
+		vdate->set_time(t);
+	}
 }
 
 static Table *fill_month_days(Request& r, 

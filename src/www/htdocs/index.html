@@ -1,5 +1,6 @@
 @main[]
-^cookie2[]
+^roll[]
+#^cookie2[]
 #^tableset[]
 #^math:PI.format{%.30f}
 #^xchildren[]
@@ -60,6 +61,11 @@
 #^xml[]
 #^header[]
 OK
+
+@roll[]
+$date[^date::set(2001;10;1)]
+^date.roll[month](+1)
+$date.year  $date.month  $date.day
 
 @cookie2[]
 #=$cookie:clientType[$.value[test]]=<br>
