@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.106 2002/03/27 15:30:36 paf Exp $
+	$Id: pa_common.C,v 1.107 2002/03/28 11:50:14 paf Exp $
 */
 
 #include "pa_common.h"
@@ -151,7 +151,7 @@ bool file_read(Pool& pool, const String& file_spec,
 		}
 #ifdef NO_FOREIGN_GROUP_FILES
 		if(finfo.st_gid/*foreign?*/!=getegid()) {
-			Exception e("parser.runtime", 0,
+			Exception e("parser.runtime",
 				&file_spec,
 				"parser reading files of foreign group disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
 					fname);
