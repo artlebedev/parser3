@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.28 2001/03/19 22:11:11 paf Exp $
+	$Id: pa_value.h,v 1.29 2001/03/19 22:38:11 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -91,10 +91,9 @@ public: // Value
 	/** extract Value element
 		@return for
 		- VHash: (key)=value
-		- VStateless_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
-		- object_base: (CLASS)=vclass;(BASE)=base;(method)=method_ref
-		- VStateless_object: (field)=value;(CLASS)=vclass;(method)=method_ref
-		- operator_class: (field)=value - static values only
+		- VAliased: $CLASS, $BASE
+		- VStateless_class: +$method
+		- VStateless_object: +$method
 		- VCode_frame: wcontext_transparent
 		- VMethod_frame: my or self_transparent
 		- VTable: column

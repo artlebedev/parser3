@@ -5,15 +5,19 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.h,v 1.6 2001/03/19 21:39:37 paf Exp $
+	$Id: pa_valiased.h,v 1.7 2001/03/19 22:38:11 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
 #define PA_VALIASED_H
 
+#include "pa_globals.h"
 #include "pa_value.h"
 
 class Temp_alias;
+
+#define CLASS_NAME "CLASS"
+#define BASE_NAME "BASE"
 
 /**
 	the object or class which effective class can change along method call.
@@ -55,6 +59,9 @@ public: // creation
 
 	// valiased: this
 	VAliased *get_aliased() { return this; }
+
+	// VAliased: $CLASS, $BASE
+	Value *get_element(const String& aname);
 
 private: // alias handling
 

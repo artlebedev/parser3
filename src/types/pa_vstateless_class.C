@@ -3,25 +3,11 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.C,v 1.4 2001/03/18 13:38:49 paf Exp $
+	$Id: pa_vstateless_class.C,v 1.5 2001/03/19 22:38:11 paf Exp $
 */
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"
-
-Value *VStateless_class::get_element(const String& aname) {
-	// $CLASS=my class=myself
-	if(aname==CLASS_NAME)
-		return fclass_alias;
-	// $BASE=my parent
-	if(aname==BASE_NAME)
-		return fclass_alias->base();
-	// $method=junction(self+class+method)
-	if(Junction *junction=get_junction(*this, aname))
-		return NEW VJunction(*junction);
-
-	return 0;
-}
 
 void VStateless_class::add_native_method(
 	const char *cstr_name,

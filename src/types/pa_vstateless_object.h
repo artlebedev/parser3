@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_object.h,v 1.6 2001/03/19 21:47:02 paf Exp $
+	$Id: pa_vstateless_object.h,v 1.7 2001/03/19 22:38:11 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_OBJECT_H
@@ -25,14 +25,11 @@ public: // Value
 	/// VStateless_object: fclass_real
 	VStateless_class *get_class() { return &fclass_real; }
 
-	/// VStateless_object: (CLASS)=vclass;(BASE)=base;(method)=method_ref
+	/// VStateless_object: +$method
 	Value *get_element(const String& name) {
-		// $CLASS=my class
-		if(name==CLASS_NAME)
-			return fclass_alias;
-		// $BASE=my parent
-		if(name==BASE_NAME)
-			return fclass_alias->base();
+		// $CLASS, $BASE
+		if(Value *result=VAliased::get_element(name))
+			return result;
 		// $method=junction(self+class+method)
 		if(Junction *junction=fclass_real.get_junction(*this, name))
 			return NEW VJunction(*junction);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.6 2001/03/19 21:39:37 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.7 2001/03/19 22:38:11 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -14,9 +14,6 @@
 #include "pa_valiased.h"
 #include "pa_vhash.h"
 #include "pa_vjunction.h"
-
-#define CLASS_NAME "CLASS"
-#define BASE_NAME "BASE"
 
 class Temp_method;
 
@@ -46,9 +43,18 @@ public: // Value
 
 	/// VStateless_class: this
 	VStateless_class *get_class() { return this; }
-
-	/// VStateless_class: $CLASS,$BASE,$method
-	Value *get_element(const String& aname);
+	
+	/// VStateless_class: +$method
+	Value *get_element(const String& aname) {
+		// $CLASS, $BASE
+		if(Value *result=VAliased::get_element(aname))
+			return result;
+		// $method=junction(self+class+method)
+		if(Junction *junction=get_junction(*this, aname))
+			return NEW VJunction(*junction);
+		
+		return 0;
+	}
 
 public: // usage
 
