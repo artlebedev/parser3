@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.10 2001/02/21 17:36:58 paf Exp $
+  $Id: compile.C,v 1.11 2001/02/21 17:50:02 paf Exp $
 */
 
 #include "pa_request.h"
@@ -31,7 +31,7 @@ Array& Request::real_compile(COMPILE_PARAMS) {
 #endif
 	// initialise state
 	pc.pending_state=0;
-	String string(pool());	pc.string=&string;
+	pc.string=new(pool()) String(pool());	
 	pc.ls=LS_USER;
 	pc.sp=0;
 	

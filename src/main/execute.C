@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.11 2001/02/21 17:36:58 paf Exp $
+  $Id: execute.C,v 1.12 2001/02/21 17:50:02 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -32,7 +32,8 @@ void dump(int level, const Array& ops) {
 		printf("%*s%s", level*4, "", opcode_name[code]);
 
 		if(code==OP_STRING) {
-			printf(" \"%s\"", static_cast<const String *>(ops.quick_get(++i))->cstr());
+			const String *string=static_cast<const String *>(ops.quick_get(++i));
+			printf(" \"%s\"", string->cstr());
 		}
 		printf("\n");
 
@@ -44,6 +45,12 @@ void dump(int level, const Array& ops) {
 }
 
 void Request::execute(Array& ops) {
+	if(1) {
+		puts("---------------------------");
+		dump(0, ops);
+		puts("---------------------------");
+	}
+
 	int size=ops.size();
 	for(int i=0; i<size; i++) {
 		int code=reinterpret_cast<int>(ops.quick_get(i));
@@ -92,9 +99,4 @@ void Request::execute(Array& ops) {
 			break;
 		}
 	}
-
-	return;
-	puts("---------------------------");
-	dump(0, ops);
-	puts("---------------------------");
 }

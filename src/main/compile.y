@@ -27,7 +27,7 @@ int yylex(YYSTYPE *lvalp, void *pc);
 
 %pure_parser
 
-%token END_OF_NAME
+%token EON
 %token STRING
 %token BOGUS
 
@@ -90,7 +90,7 @@ get: '$' any_name {
 	OP($$, OP_WRITE); /* value=pop; write(value) */
 };
 
-any_name: name_without_curly_rdive END_OF_NAME | name_in_curly_rdive;
+any_name: name_without_curly_rdive EON | name_in_curly_rdive;
 
 name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
 name_without_curly_rdive: name_rdive {
@@ -164,7 +164,7 @@ constructor_two_params_value: STRING ';' constructor_one_param_value {
 
 /* call */
 
-call: '^' name_expr_dive store_params END_OF_NAME { /* ^field.$method{vasya} */
+call: '^' name_expr_dive store_params EON { /* ^field.$method{vasya} */
 /*
 	TODO: подсмотреть в $3, и если там в первом элементе первая буква ":"
 		то выкинуть её и делать не OP_WITH_READ, а WITH_ROOT
@@ -430,10 +430,10 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 				c==')' || c=='}') {
 				pop_LS(PC);
 				PC->source--;	PC->col--;
-				result=END_OF_NAME;
+				result=EON;
 				goto break2;
 			}
-			if(begin==end && c=='{') { /* ${name}, no need of END_OF_NAME, switching LS */
+			if(begin==end && c=='{') { /* ${name}, no need of EON, switching LS */
 				PC->ls=LS_VAR_NAME_CURLY; 
 				result=c;
 				goto break2;
@@ -590,7 +590,7 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 			}					   
 			pop_LS(PC);
 			PC->source--;  PC->col--;
-			result=END_OF_NAME;
+			result=EON;
 			goto break2;
 		}
 		if(c==0) {
