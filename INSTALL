@@ -4,7 +4,7 @@
 1.What is the process to compile Parser3?
 
   First, you must have LIBGC installed (conservative garbage collector for C++).
-      libgc >= 6.1 [http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.1.tar.gz]
+      libgc >= 6.1 [http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.4.tar.gz]
     
     Installation sequence of this library to $HOME/gc:
 
@@ -29,7 +29,7 @@
   gunzip -c parser3-x.x.tar.gz | tar xvf -
   mv parser3-x.x parser3
   cd parser3
-  ./configure --prefix=/usr/local
+  ./configure --prefix=$HOME/parser3install --silent
   make
   
   That renaming is needed for SQL drivers to be able to find 
@@ -65,10 +65,10 @@
 3.What other libraries are needed to compile/install parser? 
 
 3a. In case you wish XML(xdoc and xnode classes) support, you need libraries
-      libxml2 >= 2.6.5 [ftp://xmlsoft.org/libxml2-2.6.5.tar.gz]
-      libxslt >= 1.1.2 [ftp://xmlsoft.org/libxslt-1.1.2.tar.gz]
+      libxml2 >= 2.6.5 [ftp://xmlsoft.org/libxml2-2.6.17.tar.gz]
+      libxslt >= 1.1.2 [ftp://xmlsoft.org/libxslt-1.1.10-1.src.rpm]
       glib >= 1.2.10 [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz]
-      gdome2 >= 0.7.4 [http://gdome2.cs.unibo.it/tarball/gdome2-0.7.4.tar.gz]
+      gdome2 >= 0.7.4 [http://gdome2.cs.unibo.it/tarball/gdome2-0.8.1.tar.gz]
     on your system, and specify path to them to Parser3 configure script.
 
     Sources of libgdome library must be patched prior to compile. [library author bug confirmation pending]
@@ -102,7 +102,7 @@
 
     And copy these additional headers into install includes directory
 
-    mkdir $HOME/gnome/include/libgdome/gdomecore
+    mkdir -p $HOME/gnome/include/libgdome/gdomecore
     cp libgdome/gdomecore/gdome-xml-node.h $HOME/gnome/include/libgdome/gdomecore
     cp libgdome/gdomecore/gdome-xml-document.h $HOME/gnome/include/libgdome/gdomecore
     
@@ -123,7 +123,7 @@
 
 3b. In case you wish $mail:receive support you need libraries
       glib >= 1.2.10 [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz]
-      gmime >= 1.0.1 [http://spruce.sourceforge.net/gmime/sources/gmime-1.0.5.tar.gz]
+      gmime >= 1.0.1 [http://spruce.sourceforge.net/gmime/sources/v1.0/gmime-1.0.8.tar.gz]
     on your system, and specify path to them to Parser3 configure script.
 
     You may have already installed glib at 3b step.
@@ -212,4 +212,4 @@
   
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.38 2004/03/03 12:41:42 paf Exp $
+$Id: INSTALL,v 1.39 2005/01/31 08:51:32 paf Exp $
