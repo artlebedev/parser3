@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6, tested with Oracle 7.x.x
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.1 2001/08/22 14:02:17 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.2 2001/08/22 14:45:16 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -120,6 +120,7 @@ public:
 /*		const char *error=dlopen_file_spec?
 			dlink(dlopen_file_spec):"client library column is empty";
 		if(!error) {*/
+		_asm int 3;
 			OCIInitialize((ub4) OCI_THREADED /*| OCI_OBJECT*/, (dvoid *)0, 
 				(dvoid * (*)(void *, unsigned int)) 0, 
 				(dvoid * (*)(void*, void*, unsigned int)) 0,  
@@ -132,7 +133,7 @@ public:
 
 	/**	connect
 		@param used_only_in_connect_url
-			format: @b user:pass@host[:port]|[local]/database
+			format: @b user:pass@service
 	*/
 	void connect(
 		char *used_only_in_connect_url, 
@@ -146,49 +147,63 @@ public:
 		OracleSQL_connection_struct &cs=
 			*(OracleSQL_connection_struct  *)services.calloc(sizeof(OracleSQL_connection_struct));
 
+		if(!(user && pwd && service))
+			services._throw("mailformed connect part. must be 'user:pass@service'");
+
 		if(setjmp(cs.mark))
 			services._throw(cs.error);
 
 		dvoid *tmp;
 
-		OCIHandleAlloc( (dvoid *) NULL, (dvoid **) &cs.envhp, (ub4) OCI_HTYPE_ENV, 
-			52, (dvoid **) &tmp);
+		check(services, cs, "OCIHandleAlloc envhp", OCIHandleAlloc( 
+			(dvoid *) NULL, (dvoid **) &cs.envhp, (ub4) OCI_HTYPE_ENV, 
+			52, (dvoid **) &tmp));
 		
-		OCIEnvInit( &cs.envhp, (ub4) OCI_DEFAULT, 21, (dvoid **) &tmp  );
+		check(services, cs, "OCIEnvInit", OCIEnvInit( 
+			&cs.envhp, (ub4) OCI_DEFAULT, 21, (dvoid **) &tmp));
 		
-		OCIHandleAlloc( (dvoid *) cs.envhp, (dvoid **) &cs.errhp, (ub4) OCI_HTYPE_ERROR, 
-			52, (dvoid **) &tmp);
-		OCIHandleAlloc( (dvoid *) cs.envhp, (dvoid **) &cs.srvhp, (ub4) OCI_HTYPE_SERVER, 
-			52, (dvoid **) &tmp);
+		check(services, cs, "OCIHandleAlloc errhp", OCIHandleAlloc( 
+			(dvoid *) cs.envhp, (dvoid **) &cs.errhp, (ub4) OCI_HTYPE_ERROR, 
+			52, (dvoid **) &tmp));
+		check(services, cs, "OCIHandleAlloc srvhp", OCIHandleAlloc( 
+			(dvoid *) cs.envhp, (dvoid **) &cs.srvhp, (ub4) OCI_HTYPE_SERVER, 
+			52, (dvoid **) &tmp));
 		
-		OCIServerAttach( cs.srvhp, cs.errhp, (text *) service, (sb4) strlen(service), (ub4) OCI_DEFAULT);
+		check(services, cs, "OCIServerAttach", OCIServerAttach( 
+			cs.srvhp, cs.errhp, (text *) service, (sb4) strlen(service), (ub4) OCI_DEFAULT));
 		
-		OCIHandleAlloc( (dvoid *) cs.envhp, (dvoid **) &cs.svchp, (ub4) OCI_HTYPE_SVCCTX, 
-			52, (dvoid **) &tmp);
+		check(services, cs, "OCIHandleAlloc svchp", OCIHandleAlloc( 
+			(dvoid *) cs.envhp, (dvoid **) &cs.svchp, (ub4) OCI_HTYPE_SVCCTX, 
+			52, (dvoid **) &tmp));
 		
 		/* set attribute server context in the service context */
-		OCIAttrSet( (dvoid *) cs.svchp, (ub4) OCI_HTYPE_SVCCTX, 
+		check(services, cs, "OCIAttrSet server-service", OCIAttrSet( 
+			(dvoid *) cs.svchp, (ub4) OCI_HTYPE_SVCCTX, 
 			(dvoid *) cs.srvhp, (ub4) 0, 
-			(ub4) OCI_ATTR_SERVER, (OCIError *) cs.errhp);
+			(ub4) OCI_ATTR_SERVER, (OCIError *) cs.errhp));
 		
 		/* allocate a user context handle */
-		OCIHandleAlloc((dvoid *)cs.envhp, (dvoid **)&cs.usrhp, (ub4) OCI_HTYPE_SESSION, 
-			(size_t) 0, (dvoid **) 0);
+		check(services, cs, "OCIHandleAlloc usrhp", OCIHandleAlloc(
+			(dvoid *)cs.envhp, (dvoid **)&cs.usrhp, (ub4) OCI_HTYPE_SESSION, 
+			(size_t) 0, (dvoid **) 0));
 		
-		OCIAttrSet((dvoid *)cs.usrhp, (ub4)OCI_HTYPE_SESSION, 
+		check(services, cs, "OCIAttrSet user-session", OCIAttrSet(
+			(dvoid *)cs.usrhp, (ub4)OCI_HTYPE_SESSION, 
 			(dvoid *)user, (ub4)strlen(user), 
-			OCI_ATTR_USERNAME, cs.errhp);
+			OCI_ATTR_USERNAME, cs.errhp));
 		
-		OCIAttrSet((dvoid *)cs.usrhp, (ub4)OCI_HTYPE_SESSION, 
+		check(services, cs, "OCIAttrSet pwd-session", OCIAttrSet(
+			(dvoid *)cs.usrhp, (ub4)OCI_HTYPE_SESSION, 
 			(dvoid *)pwd, (ub4)strlen(pwd), 
-			OCI_ATTR_PASSWORD, cs.errhp);
+			OCI_ATTR_PASSWORD, cs.errhp));
 		
 		check(services, cs, "OCISessionBegin", OCISessionBegin (cs.svchp, cs.errhp, cs.usrhp, 
 			OCI_CRED_RDBMS, OCI_DEFAULT));
 		
-		OCIAttrSet((dvoid *)cs.svchp, (ub4)OCI_HTYPE_SVCCTX, 
+		check(services, cs, "OCIAttrSet service-session", OCIAttrSet(
+			(dvoid *)cs.svchp, (ub4)OCI_HTYPE_SVCCTX, 
 			(dvoid *)cs.usrhp, (ub4)0, 
-			OCI_ATTR_SESSION, cs.errhp);
+			OCI_ATTR_SESSION, cs.errhp));
 
 		*(OracleSQL_connection_struct **)connection=&cs;
 	}
@@ -423,7 +438,7 @@ private: // private funcs
 			(OCISnapshot *) NULL, 
 			(OCISnapshot *) NULL, (ub4) OCI_DEFAULT);
 
-		if (status != OCI_NO_DATA)
+		if (status!=OCI_NO_DATA)
 			check(services, cs, "execute", status);
 
 		{
@@ -481,7 +496,7 @@ private: // private funcs
 
 		for(column_count=0; column_count<MAX_COLS; column_count++) {
 			/* get next descriptor, if there is one */
-			parm_status = OCIParamGet(stmthp, OCI_HTYPE_STMT, cs.errhp, (void **)&mypard, 
+			parm_status=OCIParamGet(stmthp, OCI_HTYPE_STMT, cs.errhp, (void **)&mypard, 
 				(ub4) 1+column_count);
 			if(parm_status!=OCI_SUCCESS)
 				break;
@@ -541,10 +556,10 @@ private: // private funcs
 		int i;
 		int status;
 		for (int row=0;row<limit+offset;row++) {
-			status = OCIStmtFetch(stmthp, cs.errhp, (ub4) 1,  (ub4) OCI_FETCH_NEXT, 
+			status=OCIStmtFetch(stmthp, cs.errhp, (ub4) 1,  (ub4) OCI_FETCH_NEXT, 
 				(ub4) OCI_DEFAULT);
-			if(status != 0) {
-				if ( status != OCI_NO_DATA )
+			if(status!=0) {
+				if ( status!=OCI_NO_DATA )
 					check(services, cs, "fetch", status);
 				break;
 			}
@@ -556,9 +571,9 @@ private: // private funcs
 					if(cols[i].indicator==0) switch(cols[i].type) {
 					case SQLT_CLOB: 
 						{
-							ub4   amtp = 4096000000UL;
-							ub4   offset = 1;
-							ub4   loblen = 0;
+							ub4   amtp=4096000000UL;
+							ub4   offset=1;
+							ub4   loblen=0;
 							OCILobLocator *var=(OCILobLocator *)cols[i].var;
 							(void) OCILobGetLength(cs.svchp, cs.errhp, var, &loblen);
 							if(loblen) {
@@ -625,7 +640,7 @@ void check(
 	SQL_Driver_services& services, OracleSQL_connection_struct &cs, 
 	const char *step, sword status) {
 
-//		char reason[MAX_STRING/2];
+	char reason[MAX_STRING/2];
 	const char *msg=0;
 
 	switch (status) {
@@ -635,7 +650,7 @@ void check(
 		/*
 	case OCI_ERROR:
 		{
-		sb4 errcode = 0;
+		sb4 errcode=0;
 		(void) OCIErrorGet((dvoid *)cs.errhp, (ub4) 1, (text *) NULL, &errcode, 
 			reason, (ub4) sizeof(reason), OCI_HTYPE_ERROR);
 		reason[sizeof(reason)-1]=0;
@@ -656,10 +671,16 @@ void check(
 		msg="OCI_CONTINUE"; break;
 		*/
 	}
-	if(!msg)
-		msg="UNKNOWN";
+	if(!msg) {
+		sb4 errcode=0;
+		if(OCIErrorGet((dvoid *)cs.errhp, (ub4) 1, (text *) NULL, &errcode, 
+			(text *) reason, (ub4) sizeof(reason), OCI_HTYPE_ERROR)==OCI_SUCCESS)
+			msg=reason;
+		else
+			msg="UNKNOWN";
+	}
 
-	snprintf(cs.error, sizeof(cs.error), "Error at %s - %s (%d)", 
+	snprintf(cs.error, sizeof(cs.error), "%s error - %s (%d)", 
 		step, msg, (int)status);
 	longjmp(cs.mark, 1);
 }
@@ -676,11 +697,11 @@ static sb4 cbf_no_data(
 				ub4 *alenpp, 
 				ub1 *piecep, 
 				dvoid **indpp) {
-	*bufpp = (dvoid *) 0;
-	*alenpp = 0;
-	static sb2 null_ind = -1;
-	*indpp = (dvoid *) &null_ind;
-	*piecep = OCI_ONE_PIECE;
+	*bufpp=(dvoid *) 0;
+	*alenpp=0;
+	static sb2 null_ind=-1;
+	*indpp=(dvoid *) &null_ind;
+	*piecep=OCI_ONE_PIECE;
 	
 	return OCI_CONTINUE;
 }
@@ -699,12 +720,12 @@ static sb4 cbf_get_data(dvoid *ctxp,
 	OracleSQL_query_lobs::cbf_context_struct &context=
 		*(OracleSQL_query_lobs::cbf_context_struct *)ctxp;
 
-	if (index == 0) {
-		static ub4  rows = 0;
+	if (index==0) {
+		static ub4  rows=0;
 		(void) OCIAttrGet((CONST dvoid *) bindp, OCI_HTYPE_BIND, (dvoid *)&rows, 
 			(ub4 *)sizeof(ub2), OCI_ATTR_ROWS_RETURNED, context.cs->errhp);
-		context.rows->count = (ub2)rows;
-		context.rows->row=(OracleSQL_query_lobs::return_rows::return_row*)
+		context.rows->count=(ub2)rows;
+		context.rows->row=(OracleSQL_query_lobs::return_rows::return_row *)
 			context.services->malloc(sizeof(OracleSQL_query_lobs::return_rows::return_row)*rows);
 	}
 
@@ -715,11 +736,11 @@ static sb4 cbf_get_data(dvoid *ctxp,
 		(ub4) OCI_DTYPE_LOB, 
 		(size_t) 0, (dvoid **) 0));
 
-	*bufpp = var.locator;
-	*alenp = &var.len;
-	*indpp = (dvoid *) &var.ind;
-	*piecep = OCI_ONE_PIECE;
-	*rcodepp = &var.rcode;
+	*bufpp=var.locator;
+	*alenp=&var.len;
+	*indpp=(dvoid *) &var.ind;
+	*piecep=OCI_ONE_PIECE;
+	*rcodepp=&var.rcode;
 	
 	return OCI_CONTINUE;
 }

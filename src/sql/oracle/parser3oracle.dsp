@@ -83,9 +83,9 @@ LINK32=link.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Stopping apache...
-PreLink_Cmds=net stop apache
+PreLink_Cmds=rem net stop apache
 PostBuild_Desc=Starting apache...
-PostBuild_Cmds=net start apache
+PostBuild_Cmds=rem net start apache
 # End Special Build Tool
 
 !ENDIF 
@@ -122,5 +122,13 @@ SOURCE=.\config_includes.h
 SOURCE=..\pa_sql_driver.h
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\oracle32\lib\oraSQL8.LIB
+# End Source File
+# Begin Source File
+
+SOURCE=.\oracle32\lib\oci.lib
+# End Source File
 # End Target
 # End Project
