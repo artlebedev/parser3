@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/03/01 11:43:01 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/03/01 12:16:00 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -63,6 +63,10 @@ int PASCAL closesocket(SOCKET);
 #		error you must have either ftruncate function or _O_TRUNC bit declared
 #	endif
 #endif
+
+#	ifndef INADDR_NONE
+#		define INADDR_NONE ((ulong) -1)
+#	endif
 
 // defines for globals
 
