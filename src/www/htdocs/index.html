@@ -3,7 +3,8 @@ $request:charset[windows-1251]
 $response:charset[windows-1251]
 
 @main[]
-^ttime[]
+^mail3[]
+#^ttime[]
 #^tupper[]
 #^treplace[]
 #^xslt2[]
@@ -82,6 +83,20 @@ $response:charset[windows-1251]
 #^header[]
 <hr>
 OK
+
+@mail3[]
+^mail:send[
+	$.from[Александр Петросян <paf@design.ru>]
+	$.to[Александр Петросян <paf@design.ru>]
+	$.subject[проверка2]
+	$.body[
+		$.text[
+			$.content-type[$.value[text/plain] $.charset[windows-1251]]
+			$.body[проверка]
+		]
+	]
+]
+
 
 @ttime[]
 $now[^date::now[]]

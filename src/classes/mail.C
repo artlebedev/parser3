@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.47 2001/12/19 12:26:11 paf Exp $
+	$Id: mail.C,v 1.48 2001/12/24 10:00:04 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -147,7 +147,7 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 		file_name=&vfile_name->as_string();
 	else // no $file-name, VFile surely knows name
 		file_name=&static_cast<Value *>(vfile->fields().get(*name_name))->as_string();
-	const char *file_name_cstr=file_name->cstr(String::UL_FILE_SPEC);
+	const char *file_name_cstr=file_name->cstr();
 
 	String& result=*new(pool) String(pool);
 
@@ -264,13 +264,6 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 
 	if(Value *body_element=static_cast<Value *>(letter_hash.get(*body_name))) {
 		if(Hash *body_hash=body_element->get_hash(&method_name)) {
-			char *boundary=(char *)pool.malloc(MAX_NUMBER);
-			snprintf(boundary, MAX_NUMBER-5/*lEvEl*/, "lEvEl%d", level);
-			// multi-part
-			result << "content-type: multipart/mixed; boundary=\"" << boundary << "\"\n";
-			result << "\n" 
-				"This is a multi-part message in MIME format.";
-
 			// body parts..
 			// ..collect
 			Mail_seq_item *seq=(Mail_seq_item *)pool.malloc(sizeof(Mail_seq_item)*body_hash->size());
@@ -278,10 +271,25 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			// ..sort
 			_qsort(seq, body_hash->size(), sizeof(Mail_seq_item), 
 				sort_cmp_string_double_value);
+
+			bool multipart=body_hash->size()>1;
+			// header
+			char *boundary=0;
+			if(multipart) {
+				boundary=(char *)pool.malloc(MAX_NUMBER);
+				snprintf(boundary, MAX_NUMBER-5/*lEvEl*/, "lEvEl%d", level);
+				// multi-part
+				result << "content-type: multipart/mixed; boundary=\"" << boundary << "\"\n";
+				result << "\n" 
+					"This is a multi-part message in MIME format.";
+			}
+
 			// ..insert in 'seq' order
 			for(int i=0; i<body_hash->size(); i++) {
-				// intermediate boundary
-				result << "\n--" << boundary << "\n";
+				if(multipart) {
+					// intermediate boundary
+					result << "\n--" << boundary << "\n";
+				}
 
 				if(Hash *part_hash=seq[i].value->get_hash(&method_name))
 					if(seq[i].weight>=ATTACHMENT_WEIGHT)
@@ -296,7 +304,9 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			}
 
 			// finish boundary
-			result << "\n--" << boundary << "--\n";
+			if(multipart) {
+				result << "\n--" << boundary << "--\n";
+			}
 		} else {
 			result << 
 				"\n"; // header|body separator
