@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2003/11/26 12:49:27 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2003/12/01 14:20:44 $";
 
 #include "pa_config_includes.h"
 
@@ -25,6 +25,7 @@ extern "C" {
 #include "pa_sapi.h"
 #include "pa_threads.h"
 #include "pa_xml_io.h"
+#include "pa_common.h"
 
 // defines
 
