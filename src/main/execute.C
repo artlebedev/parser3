@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.46 2001/02/25 17:33:44 paf Exp $
+  $Id: execute.C,v 1.47 2001/02/25 17:35:49 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -241,7 +241,7 @@ void Request::execute(const Array& ops) {
 					self=NEW VObject(pool(), *called_class);
 					frame->write(self);
 				} else {  // no
-					// context is object & is it my class or my parent's class?
+					// context is object or class & is it my class or my parent's class?
 					VClass *read_class=rcontext->get_class();
 					if(read_class && read_class->is_or_derived_from(*called_class)) // yes
 						self=rcontext; // class dynamic call
@@ -249,10 +249,12 @@ void Request::execute(const Array& ops) {
 						self=&frame->junction.self; // static or simple dynamic call
 				}
 				frame->set_self(*self);
-				VAliased *aliased=reinterpret_cast<VAliased *>(self->get_aliased());
-				Temp_alias temp_alias(*aliased, *frame->junction.vclass);
 				root=rcontext=wcontext=frame;
-				execute(frame->junction.method->code);
+				{
+					VAliased *aliased=reinterpret_cast<VAliased *>(self->get_aliased());
+					Temp_alias temp_alias(*aliased, *frame->junction.vclass);
+					execute(frame->junction.method->code);
+				}
 				Value *value=wcontext->result();
 
 				wcontext=static_cast<WContext *>(POP());  
