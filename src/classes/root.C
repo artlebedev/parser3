@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.32 2001/03/12 21:54:18 paf Exp $
+	$Id: root.C,v 1.33 2001/03/12 22:39:14 paf Exp $
 */
 
 #include <string.h>
@@ -165,6 +165,27 @@ static void _for(Request& r, const String& method_name, Array *params) {
 	}
 }
 
+static void _eval(Request& r, const String& method_name, Array *params) {
+	Value& expr=*static_cast<Value *>(params->get(0));
+	r.fail_if_junction_(false, expr, 
+		method_name, "need expression");
+	// evaluate expresion
+	Value *result=r.process(expr, 
+		0/*no name*/,
+		true/*don't intercept string*/).get_expr_result();
+	if(params->size()==2) {
+		Value& fmt=*static_cast<Value *>(params->get(1));
+		// forcing ^format[this param type]
+		r.fail_if_junction_(true, fmt, 
+			method_name, "fmt must not be junction");
+
+		Pool& pool=r.pool();
+		String *string=new(pool) String(pool);
+		string->APPEND_CONST(format(pool, result->get_double(), fmt.as_string().cstr()));
+		result=new(pool) VString(*string);
+	}
+	r.wcontext->write(*result,  String::Untaint_lang::NO /*always object, not string*/);
+}
 
 
 typedef double (*math_one_double_op_func_ptr)(double);
@@ -228,6 +249,10 @@ void initialize_root_class(Pool& pool, VClass& vclass) {
 
 	// ^for[i;from-number;to-number-inclusive]{code}[delim]
 	vclass.add_native_method("for", _for, 3+1, 3+1+1);
+
+	// ^eval(expr)
+	// ^eval(expr)[format]
+	vclass.add_native_method("eval", _eval, 1, 2);
 
 
 	// math functions
