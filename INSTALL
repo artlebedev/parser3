@@ -16,17 +16,26 @@
   That renaming is needed for SQL drivers to be able to find 
   necessary include-file in Parser3 sources.
 
-  NOTE: on some system you sould run 'gmake'.
+  NOTE:
+  On some system you should run 'gmake'.
 
+  NOTE:
   By default your would get 'parser3' binary without support of these features:
 	* xml(xdoc and xnode classes)
+  Read section (3) on getting xml-abled parser.
 
-
+  NOTE:	
   In case you're not root on machine you're installing Parser,
   we recommend you to do:
   ./configure --prefix=/your/home/parser3install
   and afterwards copy parser3install/bin/parser3 to your CGI directory
   or make a symlink [if your web server configured to follow symlinks].
+
+  NOTE:
+  You can disable any exec operations by setting
+  --disable-execs
+  option to configure.
+  file::exec, file::cgi and mail:send (unix version) methods would be disabled.
 
 2.What is the process to install Parser3?
 
@@ -51,7 +60,7 @@
     
     it will update parser3 binary only.
 
-2.What other libraries are needed to compile/install libxml ? 
+3.What other libraries are needed to compile/install parser? 
 
   * You can compile and use parser without any additional libraries.
     That would be 'basic' version of it.
@@ -128,4 +137,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.9 2002/02/27 16:23:27 paf Exp $
+$Id: INSTALL,v 1.10 2002/03/11 08:06:11 paf Exp $
