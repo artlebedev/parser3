@@ -393,6 +393,10 @@ SOURCE=..\classes\_int.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\classes\_random.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\_response.h
 # End Source File
 # Begin Source File
@@ -422,6 +426,10 @@ SOURCE=..\classes\form.C
 # Begin Source File
 
 SOURCE=..\classes\int.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\random.C
 # End Source File
 # Begin Source File
 

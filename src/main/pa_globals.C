@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.36 2001/03/28 14:07:16 paf Exp $
+	$Id: pa_globals.C,v 1.37 2001/04/02 08:44:56 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -19,6 +19,7 @@
 #include "_form.h"
 #include "_response.h"
 #include "_file.h"
+#include "_random.h"
 
 String *html_typo_name;
 String *content_type_name;
@@ -47,6 +48,7 @@ String *form_class_name;
 String *request_class_name;
 String *response_class_name;
 String *cookie_class_name;
+String *random_class_name;
 
 String *result_var_name;
 
@@ -127,6 +129,7 @@ void pa_globals_init(Pool& pool) {
 	request_class_name=NEW String(pool, REQUEST_CLASS_NAME);	
 	response_class_name=NEW String(pool, RESPONSE_CLASS_NAME);
 	cookie_class_name=NEW String(pool, COOKIE_CLASS_NAME);
+	random_class_name=NEW String(pool, RANDOM_CLASS_NAME);
 
 	result_var_name=NEW String(pool, RESULT_VAR_NAME);
 
@@ -213,6 +216,7 @@ void pa_globals_init(Pool& pool) {
 	initialize_table_class(pool, *(table_class=NEW VStateless_class(pool)));
 	initialize_file_class(pool, *(file_class=NEW VStateless_class(pool)));
 	initialize_response_class(pool, *(response_class=NEW VStateless_class(pool)));
+	initialize_random_class(pool, *(random_class=NEW VStateless_class(pool)));
 
 	// stateless base classes
 	initialize_form_base_class(pool, *(form_base_class=NEW VStateless_class(pool)));  form_base_class->set_name(*form_class_name);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.88 2001/03/29 15:00:22 paf Exp $
+	$Id: pa_request.C,v 1.89 2001/04/02 08:44:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -23,6 +23,7 @@
 #include "pa_vmframe.h"
 #include "pa_types.h"
 #include "pa_vtable.h"
+#include "_random.h"
 
 /// $limits.post_max_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
@@ -60,6 +61,8 @@ Request::Request(Pool& apool,
 	classes().put(*table_class_name, table_class);	
 	// file class
 	classes().put(*file_class_name, file_class);	
+	// random class
+	classes().put(*random_class_name, random_class);	
 	// env class
 	classes().put(*env_class_name, &env);
 	// form class

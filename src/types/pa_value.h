@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.39 2001/03/30 05:53:04 paf Exp $
+	$Id: pa_value.h,v 1.40 2001/04/02 08:45:46 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -236,7 +236,7 @@ typedef void (*Native_code_ptr)(Request& request,
 	- parser or 
 	- native onces
 
-	hold
+	holds
 	- parameter names or number limits
 	- local names
 	- code [parser or native]
