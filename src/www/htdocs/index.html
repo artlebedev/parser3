@@ -18,23 +18,8 @@ $t[^table:set{key	value
 2	v2}]
 $h[^t.hash[key]]
 
-
-#^rem{
-^for[i](1;2){
-^connect[$SQL.connect-string]{
-	$shit[^taint[our's]]
-#	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
-	$paf[^table:sql{select * from paf order by id desc}(5)]
-	$paf{
-	^if(^empty[]){query result is empty}{
-	<table border=1>
-		<tr><td>id</td><td>name</td><td>age</td></tr>
-		^menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
-	</table>
-	}}
-}
-}
-#}
+^sql_test[$SQL.connect-string]
+^sql_test[mysql://test:test@localhost/test/cp1251_koi8]
 
 <HR>
 $abc{}
@@ -150,4 +135,21 @@ ${comment}.
 @end
 
 
-@a[]
+@sql_test[connect-string]
+#^rem{
+^for[i](1;2){
+^connect[$connect-string]{
+	$shit[^taint[our's]]
+#	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
+	$paf[^table:sql{select * from paf order by id desc}(5)]
+	$paf{
+	^if(^empty[]){query result is empty}{
+	<table border=1>
+		<tr><td>id</td><td>name</td><td>age</td></tr>
+		^menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
+	</table>
+	}}
+}
+}
+#}
+

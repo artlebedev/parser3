@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.17 2001/05/17 18:26:22 parser Exp $
+	$Id: pa_sql_driver_manager.C,v 1.18 2001/05/17 18:36:33 parser Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -230,11 +230,14 @@ void SQL_Driver_manager::put_connection_to_cache(const String& url,
 static void expire_connection(Array::Item *value, void *info) {
 	SQL_Connection& connection=*static_cast<SQL_Connection *>(value);
 	time_t older_dies=reinterpret_cast<time_t>(info);
+
 	if(connection.expired(older_dies))
 		connection.disconnect();
 }
 static void expire_connections(const Hash::Key& key, Hash::Val *value, void *info) {
-	static_cast<Stack *>(value)->for_each(expire_connection, info);
+	Stack& stack=*static_cast<Stack *>(value);
+	for(int i=0; i<=stack.top_index(); i++)
+		expire_connection(stack.get(i), info);
 }
 void SQL_Driver_manager::maybe_expire_connection_cache() {
 	time_t now=time(0);
