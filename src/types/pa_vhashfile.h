@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char * const IDENT_VHASHFILE_H="$Date: 2004/02/11 15:33:18 $";
+static const char * const IDENT_VHASHFILE_H="$Date: 2004/05/12 10:16:49 $";
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -32,9 +32,6 @@ public: // value
 
 	override const char *type() const { return VHASHFILE_TYPE; }
 	override VStateless_class *get_class() { return hashfile_class; }
-
-	/// VHashfile: true
-	override bool is_defined() const { return true; }
 
 	/// VHashfile: convert to VHash
 	override HashStringValue *get_hash();

@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2004/02/11 15:33:18 $";
+static const char * const IDENT_VHASH_H="$Date: 2004/05/12 10:16:49 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -44,9 +44,9 @@ public: // value
 	/// VHash: finteger
 	override double as_double() const { return as_int(); }
 	/// VHash: count!=0
-	override bool is_defined() const { return as_int()!=0; }
+	override bool is_defined() const { return as_bool(); }
 	/// VHash: count!=0
-	override bool as_bool() const { return is_defined(); }
+	override bool as_bool() const { return as_int()!=0; }
 	/// VHash: count
 	override Value& as_expr_result(bool ) { return *new VInt(as_int()); }
 

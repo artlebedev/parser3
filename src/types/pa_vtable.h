@@ -8,7 +8,7 @@
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-static const char * const IDENT_VTABLE_H="$Date: 2004/02/11 15:33:19 $";
+static const char * const IDENT_VTABLE_H="$Date: 2004/05/12 10:16:50 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
@@ -35,9 +35,9 @@ public: // Value
 	/// VTable: count
 	override double as_double() const { return as_int(); }
 	/// VTable: count!=0
-	override bool is_defined() const { return as_int()!=0; }
+	override bool is_defined() const { return as_bool(); }
 	/// VTable: 0 or !0
-	override bool as_bool() const { return is_defined(); }
+	override bool as_bool() const { return as_int()!=0; }
 	/// VTable: count
 	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VInt(as_int()); }
 	/// extract VTable
