@@ -61,10 +61,6 @@ MTL=midl.exe
 # Name "gnu - Win32 Debug"
 # Begin Source File
 
-SOURCE=.\acconfig.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\acinclude.m4
 # End Source File
 # Begin Source File
