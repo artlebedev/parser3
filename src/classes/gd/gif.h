@@ -3,8 +3,6 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.h,v 1.11 2001/09/18 16:05:42 parser Exp $
-
 
 	based on:
 	gd.h: declarations file for the gifdraw module.

@@ -5,14 +5,14 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.76 2001/09/21 14:46:09 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.77 2001/09/21 15:35:45 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
 #include "pa_hash.h"
 #include "pa_sql_driver_manager.h"
-#include "pa_xslt_stylesheet_manager.h"
 #include "pa_dictionary.h"
+#include "pa_xslt_stylesheet_manager.h"
 
 #ifdef XML
 #include <util/PlatformUtils.hpp>

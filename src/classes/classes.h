@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: classes.h,v 1.10 2001/09/17 14:46:49 parser Exp $
+	$Id: classes.h,v 1.11 2001/09/21 15:35:45 parser Exp $
 */
 
 #ifndef CLASSES_H
@@ -35,8 +35,8 @@ public: // Methoded
 
 public: // usage
 
-	Methoded(Pool& apool) : VStateless_class(apool) {
-	} 
+	Methoded(Pool& pool) : VStateless_class(pool) {
+	}
 
 	void register_directly_used(Request& r);
 

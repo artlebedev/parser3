@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.h,v 1.10 2001/09/18 16:05:42 parser Exp $
+	$Id: pa_sql_driver_manager.h,v 1.11 2001/09/21 15:35:45 parser Exp $
 */
 
 #ifndef PA_SQL_DRIVER_MANAGER_H
@@ -30,11 +30,7 @@
 
 class SQL_Connection;
 
-/**	sql driver manager
-		maintains 
-		- driver cache  which never expires
-		- connection cache  unused connections got expired
-*/
+/// sql driver manager
 class SQL_Driver_manager : public Pooled {
 	friend SQL_Connection;
 public:

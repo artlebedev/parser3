@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: hash.C,v 1.17 2001/09/18 16:05:42 parser Exp $"; 
+static const char *RCSId="$Id: hash.C,v 1.18 2001/09/21 15:35:45 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -13,7 +13,6 @@ static const char *RCSId="$Id: hash.C,v 1.17 2001/09/18 16:05:42 parser Exp $";
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
 #include "pa_vtable.h"
-#include "pa_vint.h"
 
 // defines
 

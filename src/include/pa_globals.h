@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.63 2001/09/20 14:25:06 parser Exp $
+	$Id: pa_globals.h,v 1.64 2001/09/21 15:35:45 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H

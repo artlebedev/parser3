@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_exec.C,v 1.12 2001/09/14 15:41:59 parser Exp $"; 
+static const char *RCSId="$Id: pa_exec.C,v 1.13 2001/09/21 15:35:45 parser Exp $"; 
 
 #include "pa_config_includes.h"
 

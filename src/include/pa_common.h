@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.49 2001/09/18 16:05:42 parser Exp $
+	$Id: pa_common.h,v 1.50 2001/09/21 15:35:45 parser Exp $
 */
 
 #ifndef PA_COMMON_H

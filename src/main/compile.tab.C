@@ -31,7 +31,7 @@
 
 #line 8 "compile.y"
 
-static char *RCSId="$Id: compile.tab.C,v 1.11 2001/09/18 16:05:42 parser Exp $"; 
+static char *RCSId="$Id: compile.tab.C,v 1.12 2001/09/21 15:35:45 parser Exp $"; 
 
 /**
 	@todo parser4: 
