@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.2 2001/01/26 18:34:02 paf Exp $
+  $Id: pa_string.h,v 1.3 2001/01/26 18:55:55 paf Exp $
 */
 
 /*
@@ -86,6 +86,7 @@ public:
 	char *c_str();
 	String& operator += (char *src);
 	bool operator == (String& src);
+	String& operator = (String& src);
 
 	unsigned int hash_code();
 };

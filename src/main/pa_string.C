@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.5 2001/01/26 18:34:02 paf Exp $
+  $Id: pa_string.C,v 1.6 2001/01/26 18:55:55 paf Exp $
 */
 
 #include <string.h>
@@ -48,6 +48,10 @@ String::String(String& src) {/*
 break2:
 	return result;*/
 
+}
+
+String& String::operator = (String& src) {
+	return *this;
 }
 
 
@@ -128,7 +132,7 @@ unsigned int String::hash_code() {
 			if(row==append_here)
 				goto break2;
 
-			result=Hash<String, String>::generic_code(result, row->item.ptr, row->item.size);
+			result=Hash::generic_code(result, row->item.ptr, row->item.size);
 			row++;
 		}
 		chunk=row->link;
