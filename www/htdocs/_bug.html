@@ -1,34 +1,17 @@
-@main[]
-$soft(1)
-^cache[/cache/soft-$soft.id](86400){
-^math:random(1000);
-}
-#^xdoc::load[a.xml]
-
 @main2[]
-^connect[odbc://DSN=test_dbf]{
-^int:sql{select count(*) from test}
+^switch[2]{
+	^case(1){one}
+	^case[DEFAULT]{def}
 }
 
-@mainx[]
-$request:charset[windows-1251]
-$response:charset[windows-1251]
-$response:content-type[text/html]
 
-$xdoc[^xdoc::load[_bug.xml]]
-#^xdoc.string[]
-$xdoc.search-namespaces.x[http://pif.design.ru/]
-$nodes[^xdoc.select[//x:second]]
-^nodes._count[]
+@get[]
+$result[
+	$._default{^math:random(10)}
+]
+#end @getBasketData[]
 
 @main[]
-^bug.bug[]
+$h[^get[]]
 
-@main[]
-$d[^date::unix-timestamp(1079695550.808)]
-#$d[^date::unix-timestamp(1079695983.321)]
-
-^d.sql-string[]
-
-@main[]
-^date::now[]
+=$h.1=

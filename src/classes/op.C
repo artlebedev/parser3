@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2004/02/26 14:37:30 $";
+static const char * const IDENT_OP_C="$Date: 2004/03/23 09:43:44 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -366,11 +366,8 @@ static void _switch(Request& r, MethodParams& params) {
 	// execution of found ^case[...]{code} must be in context of ^switch[...]{code}
 	// because of stacked WWrapper used there as wcontext
 	r.process(cases_code, true/*intercept_string*/);
-	if(Value* selected_code=data->found? data->found: data->_default) {
-		// setting code context, would execute in ^switch[...]{>>context<<}
-		//selected_code->get_junction()->change_context(cases_code.get_junction());
+	if(Value* selected_code=data->found? data->found: data->_default)
 		r.write_pass_lang(r.process(*selected_code));
-	}
 }
 
 static void _case(Request& r, MethodParams& params) {
@@ -383,10 +380,6 @@ static void _case(Request& r, MethodParams& params) {
 	int count=params.count();
 	Value& code=params.as_junction(--count, "case result must be code");
 	
-	// killing context for safety, would execute in ^switch[...]{>>context<<}
-	// reason: context is stacked, and it would become invalid afterwards
-	//code->get_junction()->change_context(0);
-
 	for(int i=0; i<count; i++) {
 		Value& value=r.process_to_value(params[i]);
 

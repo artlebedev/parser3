@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2004/02/11 15:33:17 $";
+static const char * const IDENT_VALUE_C="$Date: 2004/03/23 09:43:44 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -74,27 +74,16 @@ Junction::Junction(Value& aself,
 }
 
 void Junction::reattach(WContext *new_wcontext) {
-	if(new_wcontext)
+	if(new_wcontext) {
+		assert(wcontext!=new_wcontext);
 		wcontext=new_wcontext;
-	else {
+		wcontext->attach_junction(this);
+	} else {
 		method_frame=0;
 		rcontext=0;
 		wcontext=0;
 	}
 }
-
-/*
-void Junction::change_context(Junction *source) {
-	if(source) {
-		method_frame=source->method_frame;
-		rcontext=source->rcontext;
-		wcontext=source->wcontext;
-	} else {
-		method_frame=rcontext=0;
-		wcontext=0;
-	}
-}
-*/
 
 // attributed meaning
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_WCONTEXT_C="$Date: 2004/03/19 12:22:56 $";
+static const char * const IDENT_WCONTEXT_C="$Date: 2004/03/23 09:43:44 $";
 
 #include "pa_wcontext.h"
 
@@ -29,4 +29,5 @@ void WContext::detach_junctions() {
 		i.next()->reattach(fparent);
 	// someday free junctions
 	// the day has come?
+	// no, libgc will do that for us!
 }
