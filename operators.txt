@@ -700,6 +700,8 @@ Xhashfile
         для удобного создания по значению из базы
         формат1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
         формат2: %H:%M[:%S]
+    ^date::unix-timestamp()
+    ^date.unix-timestamp[]
     !$date.year month day  hour minute second  weekday yearday(0...) daylightsaving TZ
         read-only
         TZ="" << локальная зона

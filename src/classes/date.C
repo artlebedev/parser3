@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_DATE_C="$Date: 2003/10/30 13:16:53 $";
+static const char* IDENT_DATE_C="$Date: 2003/11/03 11:06:18 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -378,6 +378,21 @@ static void _calendar(Request& r, MethodParams& params) {
 	r.write_no_lang(*new VTable(table));
 }
 
+static void _unix_timestamp(Request& r, MethodParams& params) {
+	VDate& vdate=GET_SELF(r, VDate);
+
+	if(params.count()==0) { 
+		// ^date.unix-timestamp[]
+		r.write_no_lang(*new VInt((int)vdate.get_time()));
+	} else {
+			// ^unix-timestamp(time_t)
+			time_t t=(time_t)params.as_int(0, "Unix timestamp must be integer", r);
+
+			vdate.set_time(t);
+	}
+}
+
+
 // constructor
 
 MDate::MDate(): Methoded("date") {
@@ -399,4 +414,7 @@ MDate::MDate(): Methoded("date") {
 	// ^date:calendar[week|weekeng;year;month;day] = table
 	add_native_method("calendar", Method::CT_STATIC, _calendar, 3, 4);
 
+
+	// ^unix-timestamp[]
+	add_native_method("unix-timestamp", Method::CT_DYNAMIC, _unix_timestamp, 0, 1);
 }
