@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.60 2002/03/27 15:30:34 paf Exp $
+	$Id: mail.C,v 1.61 2002/04/01 09:37:50 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -170,7 +170,7 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 
 #ifndef DOXYGEN
 struct Mail_info {
-	Charset *charset;
+	Charset *charset; const char *content_charset_name;
 	String *header;
 	const String **from, **to;
 };
@@ -196,7 +196,7 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 	*mi.header << 
 		aattribute << ":" << 
 		attributed_meaning_to_string(lmeaning, String::UL_MAIL_HEADER).
-			cstr(String::UL_UNSPECIFIED, 0, mi.charset) << 
+			cstr(String::UL_UNSPECIFIED, 0, mi.charset, mi.content_charset_name) << 
 		"\n";
 }
 
@@ -246,17 +246,23 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 	String& result=*new(pool) String(pool);
 
 	Charset *charset;
-	if(Value *vcharset_name=static_cast<Value *>(letter_hash.get(*charset_name)))
-		charset=&charsets->get_charset(vcharset_name->as_string());
+	if(Value *vrecodecharset_name=static_cast<Value *>(letter_hash.get(*charset_name)))
+		charset=&charsets->get_charset(vrecodecharset_name->as_string());
 	else
 		charset=&pool.get_source_charset();
+
+	const char *content_charset_name=0;
+	if(Value *vcontent_type=static_cast<Value *>(letter_hash.get(*content_type_name)))
+		if(Hash *hcontent_type=vcontent_type->get_hash(0))
+			if(Value *vcontentcharset_name=static_cast<Value *>(hcontent_type->get(*charset_name)))
+				content_charset_name=vcontentcharset_name->as_string().cstr();
 
 	if(from)
 		*from=0;
 	if(to)
 		*to=0;
 	Mail_info mail_info={
-		charset,
+		charset, content_charset_name,
 		&result,
 		from, to
 	};

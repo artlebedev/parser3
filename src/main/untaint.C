@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: untaint.C,v 1.99 2002/03/27 15:30:37 paf Exp $
+	$Id: untaint.C,v 1.100 2002/04/01 09:37:51 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -340,7 +340,8 @@ size_t String::cstr_bufsize(Untaint_lang lang,
 
 char *String::store_to(char *dest, Untaint_lang lang, 
 					   SQL_Connection *connection,
-					   Charset *store_to_charset) const {
+					   Charset *store_to_charset,
+					   const char *store_to_charset_name) const {
 	// WARNING:
 	//	 before any changes check cstr_bufsize first!!!
 	bool whitespace=true;
@@ -394,7 +395,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			break;
 		case UL_MAIL_HEADER:
 			// tainted, untaint language: mail-header
-			if(store_to_charset) {
+			if(store_to_charset && store_to_charset_name) {
 				const void *mail_ptr;
 				size_t mail_size;
 				Charset::transcode(pool(), 
@@ -405,9 +406,11 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				const char *src=(const char *)mail_ptr;
 				bool to_quoted_printable=false;
 				for(int size=mail_size; size--; src++) {
-					if(*src & 0x80) {
+					if(*src & 0x80  // starting quote-printable-encoding on first 8bit char
+						|| (to_quoted_printable && (*src=='?' || *src=='=')) // additionally encoding '?' and '|'
+						) {
 						if(!to_quoted_printable) {
-							dest+=sprintf(dest, "=?%s?Q?", store_to_charset->name().cstr());
+							dest+=sprintf(dest, "=?%s?Q?", store_to_charset_name);
 							to_quoted_printable=true;
 						}
 						dest+=sprintf(dest, "=%02X", *src & 0xFF);

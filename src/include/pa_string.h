@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.132 2002/03/04 10:03:35 paf Exp $
+	$Id: pa_string.h,v 1.133 2002/04/01 09:37:50 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -114,10 +114,10 @@ public:
 	/// convert to C string. if 'lang' known, forcing 'lang' to it
 	char *cstr(Untaint_lang lang=UL_AS_IS, 
 		SQL_Connection *connection=0,
-		Charset *cstr_charset=0) const {
+		Charset *cstr_charset=0, const char *cstr_charset_name=0) const {
 
 		char *result=(char *)malloc(cstr_bufsize(lang, connection, cstr_charset));
-		char *eol=store_to(result, lang, connection, cstr_charset);
+		char *eol=store_to(result, lang, connection, cstr_charset, cstr_charset_name);
 		*eol=0;
 		return result;
 	}
@@ -276,7 +276,8 @@ private:
 	/// convert to C string, store to 'dest' which must be big enough for proper untaint
 	char *store_to(char *dest, Untaint_lang lang=UL_UNSPECIFIED, 
 		SQL_Connection *connection=0,
-		Charset *store_to_charset=0) const;
+		Charset *store_to_charset=0,
+		const char *store_to_charset_name=0) const;
 
 	String& reconstruct(Pool& pool) const;
 	void join_chain(Pool& pool, 
