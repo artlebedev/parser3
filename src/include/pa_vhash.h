@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vhash.h,v 1.6 2001/03/07 13:55:45 paf Exp $
+  $Id: pa_vhash.h,v 1.7 2001/03/08 16:54:25 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -12,27 +12,33 @@ class VHash : public Value {
 public: // value
 
 	// all: for error reporting after fail(), etc
-	const char *type() const { return "hash"; }
+	const char *type() const { return "fvalue"; }
+	// clone
+	Value *clone() { return NEW VHash(pool(), fvalue); };
 
-	// hash: (key)=value
+	// fvalue: (key)=value
 	Value *get_element(const String& name) { 
-		return static_cast<Value *>(hash.get(name));
+		return static_cast<Value *>(fvalue.get(name));
 	}
 	
-	// hash: (key)=value
+	// fvalue: (key)=value
 	void put_element(const String& name, Value *value) { 
-		hash.put(name, value);
+		fvalue.put(name, value);
 	}
 
-	// hash: size!=0
-	bool get_bool() { return hash.size()!=0; }
+	// fvalue: size!=0
+	bool get_bool() { return fvalue.size()!=0; }
 
 public: // usage
 
-	VHash(Pool& apool) : Value(apool), hash(apool) {}
+	VHash(Pool& apool) : Value(apool), 
+		fvalue(*new(apool) Hash(apool)) {}
+
+	VHash(Pool& apool, Hash& avalue) : Value(apool), 
+		fvalue(avalue) {}
 
 private:
-	Hash hash;
+	Hash& fvalue;
 };
 
 #endif

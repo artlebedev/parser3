@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vobject.h,v 1.10 2001/03/07 13:55:46 paf Exp $
+  $Id: pa_vobject.h,v 1.11 2001/03/08 16:54:25 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -17,19 +17,22 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "object"; }
 
+	// clone
+	Value *clone() { return NEW VObject(fclass_real, ffields); };
+
 	// object_instance: (field)=value;(CLASS)=vclass;(method)=method_ref
 	Value *get_element(const String& name) {
 		// $CLASS=my class
 		if(name==CLASS_NAME)
-			return class_alias;
+			return fclass_alias;
 		// $BASE=my parent
 		if(name==BASE_NAME)
-			return class_alias->base();
+			return fclass_alias->base();
 		// $method=junction(self+class+method)
-		if(Junction *junction=class_real.get_junction(*this, name))
+		if(Junction *junction=fclass_real.get_junction(*this, name))
 			return NEW VJunction(*junction);;
-		// $field=fields.field
-		return static_cast<Value *>(fields.get(name));
+		// $field=ffields.field
+		return static_cast<Value *>(ffields.get(name));
 	}
 
 	// object_instance: (field)=value
@@ -41,23 +44,28 @@ public: // Value
 		//   will not check for '$method_name(subst)' trick
 		//   -same-
 
-		fields.put(name, value);
+		ffields.put(name, value);
 	}
 
 	// object_class, object_instance: object_class
-	VClass *get_class() { return &class_real; }
+	VClass *get_class() { return &fclass_real; }
 
 public: // creation
 
-	VObject(Pool& apool, VClass& vclass) : VAliased(apool, vclass), 
-		class_real(vclass),
-		fields(apool) {
+	VObject(VClass& aclass_real) : VAliased(aclass_real.pool(), aclass_real), 
+		fclass_real(aclass_real),
+		ffields(*new(aclass_real.pool()) Hash(aclass_real.pool())) {
+	}
+
+	VObject(VClass& aclass_real, Hash& afields) : VAliased(aclass_real.pool(), aclass_real), 
+		fclass_real(aclass_real),
+		ffields(afields) {
 	}
 
 private:
 
-	VClass& class_real;
-	Hash fields;
+	VClass& fclass_real;
+	Hash& ffields;
 };
 
 #endif

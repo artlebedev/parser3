@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.17 2001/03/08 15:32:51 paf Exp $
+  $Id: pa_vmframe.h,v 1.18 2001/03/08 16:54:25 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -72,18 +72,20 @@ public: // usage
 		if(store_param_index==max_params)
 			THROW(0,0,
 				&junction.self.name(),
-				"%s method '%s' accepts maximum %d parameters", 
+				"%s method '%s' accepts maximum %d parameter(s)", 
 					junction.self.type(),
 					method.name.cstr(),
 					max_params);
 		
 		if(method.numbered_params_count) { // are this method params numbered?
 			*fnumbered_params+=value;
-		} else { // named params
+		} else { // named param
+			// clone it
 			String& name=*static_cast<String *>(
 				method.params_names->get(store_param_index++));
-			my->put(name, value);
-			value->set_name(name);
+			Value *copy=value->clone(); // make a copy of a value so to safely rename it
+			my->put(name, copy); // remember param
+			copy->set_name(name); // rename 'copy' to param's 'name'
 		}
 	}
 	void fill_unspecified_params() {

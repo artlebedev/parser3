@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.22 2001/03/07 13:55:45 paf Exp $
+  $Id: pa_vclass.h,v 1.23 2001/03/08 16:54:25 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -19,17 +19,20 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "class"; }
 
+	// clone
+	Value *clone() const { return NEW VClass(pool(), fbase, ffields, fmethods); };
+
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	Value *get_element(const String& aname) {
 		// $NAME=my name
 		if(aname==NAME_NAME)
-			return NEW VString(class_alias->name());
+			return NEW VString(fclass_alias->name());
 		// $CLASS=my class=myself
 		if(aname==CLASS_NAME)
-			return class_alias;
+			return fclass_alias;
 		// $BASE=my parent
 		if(aname==BASE_NAME)
-			return class_alias->base();
+			return fclass_alias->base();
 		// $method=junction(self+class+method)
 		if(Junction *junction=get_junction(*this, aname))
 			return NEW VJunction(*junction);
@@ -48,9 +51,17 @@ public: // Value
 public: // usage
 
 	VClass(Pool& apool) : VAliased(apool, *this), 
-		fields(apool),
-		fmethods(apool),
-		fbase(0) {
+		fbase(0),
+		ffields(*new(apool) Hash(apool)),
+		fmethods(*new(apool) Hash(apool)) {
+	}
+
+	VClass(Pool& apool, 
+		VClass *abase, Hash& afields, Hash& amethods) : VAliased(apool, *this), 
+
+		fbase(abase),
+		ffields(afields),
+		fmethods(amethods) {
 	}
 
 	void add_method(const String& name, Method& method) {
@@ -81,7 +92,7 @@ public: // usage
 private:
 
 	Value *get_field(const String& name) {
-		Value *result=static_cast<Value *>(fields.get(name));
+		Value *result=static_cast<Value *>(ffields.get(name));
 		if(!result && fbase)
 			result=fbase->get_field(name);
 		return result;
@@ -91,19 +102,19 @@ private:
 		if(fbase && fbase->replace_field(name, value))
 			return;
 
-		fields.put(name, value);
+		ffields.put(name, value);
 	}
 	bool replace_field(const String& name, Value *value) {
 		return 
 			(fbase && fbase->replace_field(name, value)) ||
-			fields.put_replace(name, value);
+			ffields.put_replace(name, value);
 	}
 	
 private:
 
 	VClass *fbase;
-	Hash fields;
-	Hash fmethods;
+	Hash& ffields;
+	Hash& fmethods;
 };
 
 #endif

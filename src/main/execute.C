@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.76 2001/03/08 15:32:52 paf Exp $
+  $Id: execute.C,v 1.77 2001/03/08 16:54:27 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -281,7 +281,7 @@ void Request::execute(const Array& ops) {
 				else // no, not me or relative of mine (total stranger)
 					if(wcontext->constructing()) {  // constructing?
 						// yes, constructor call: $some(^class:method(..))
-						self=NEW VObject(pool(), *called_class);
+						self=NEW VObject(*called_class);
 						frame->write(*self);
 					} else 
 						self=&frame->junction.self; // no, static or simple dynamic call
@@ -316,43 +316,44 @@ void Request::execute(const Array& ops) {
 		case OP_NEG:
 			{
 				Value *operand=POP();
-				Value *value=NEW VDouble(pool(), -operand->get_double());
+				Value *value=NEW VDouble(*NEW Double(pool(), 
+					-operand->get_double()));
 				PUSH(value);
 				break;
 			}
 		case OP_INV:
 			{
 				Value *operand=POP();
-				Value *value=NEW VDouble(pool(), 
-					~static_cast<int>(operand->get_double()));
+				Value *value=NEW VDouble(*NEW Double(pool(), 
+					~static_cast<int>(operand->get_double())));
 				PUSH(value);
 				break;
 			}
 		case OP_NOT:
 			{
 				Value *operand=POP();
-				Value *value=NEW VBool(pool(), !operand->get_bool());
+				Value *value=NEW VBool(*NEW Bool(pool(), !operand->get_bool()));
 				PUSH(value);
 				break;
 			}
 		case OP_DEF:
 			{
 				Value *operand=POP();
-				Value *value=NEW VBool(pool(), operand->get_defined());
+				Value *value=NEW VBool(*NEW Bool(pool(), operand->get_defined()));
 				PUSH(value);
 				break;
 			}
 		case OP_IN:
 			{
 				Value *operand=POP();
-				Value *value=NEW VBool(pool(), true/*TODO*/);
+				Value *value=NEW VBool(*NEW Bool(pool(), true/*TODO*/));
 				PUSH(value);
 				break;
 			}
 		case OP_FEXISTS:
 			{
 				Value *operand=POP();
-				Value *value=NEW VBool(pool(), true/*TODO*/);
+				Value *value=NEW VBool(*NEW Bool(pool(), true/*TODO*/));
 				PUSH(value);
 				break;
 			}
@@ -361,169 +362,173 @@ void Request::execute(const Array& ops) {
 		case OP_SUB: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->get_double() - b->get_double());
+				Value *value=NEW VDouble(*NEW Double(pool(), 
+					a->get_double() - b->get_double()));
 				PUSH(value);
 				break;
 			}
 		case OP_ADD: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->get_double() + b->get_double());
+				Value *value=NEW VDouble(*NEW Double(pool(), 
+					a->get_double() + b->get_double()));
 				PUSH(value);
 				break;
 			}
 		case OP_MUL: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->get_double() * b->get_double());
+				Value *value=NEW VDouble(*NEW Double(pool(), 
+					a->get_double() * b->get_double()));
 				PUSH(value);
 				break;
 			}
 		case OP_DIV: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), a->get_double() / b->get_double());
+				Value *value=NEW VDouble(*NEW Double(pool(), 
+					a->get_double() / b->get_double()));
 				PUSH(value);
 				break;
 			}
 		case OP_MOD: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
+				Value *value=NEW VDouble(*NEW Double(pool(), 
 					static_cast<int>(a->get_double()) %
-					static_cast<int>(b->get_double()));
+					static_cast<int>(b->get_double())));
 				PUSH(value);
 				break;
 			}
 		case OP_BIN_AND:
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
+				Value *value=NEW VDouble(*NEW Double(pool(), 
 					static_cast<int>(a->get_double()) &
-					static_cast<int>(b->get_double()));
+					static_cast<int>(b->get_double())));
 				PUSH(value);
 				break;
 			}
 		case OP_BIN_OR:
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
+				Value *value=NEW VDouble(*NEW Double(pool(), 
 					static_cast<int>(a->get_double()) |
-					static_cast<int>(b->get_double()));
+					static_cast<int>(b->get_double())));
 				PUSH(value);
 				break;
 			}
 		case OP_BIN_XOR:
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VDouble(pool(), 
+				Value *value=NEW VDouble(*NEW Double(pool(), 
 					static_cast<int>(a->get_double()) ^
-					static_cast<int>(b->get_double()));
+					static_cast<int>(b->get_double())));
 				PUSH(value);
 				break;
 			}
 		case OP_LOG_AND:
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_bool() && b->get_bool());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->get_bool() && b->get_bool()));
 				PUSH(value);
 				break;
 			}
 		case OP_LOG_OR:
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_bool() || b->get_bool());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->get_bool() || b->get_bool()));
 				PUSH(value);
 				break;
 			}
 		case OP_LOG_XOR:
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_bool() ^ b->get_bool());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->get_bool() ^ b->get_bool()));
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_LT: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() < b->get_double());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->get_double() < b->get_double()));
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GT: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() > b->get_double());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->get_double() > b->get_double()));
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_LE: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() <= b->get_double());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->get_double() <= b->get_double()));
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_GE: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() >= b->get_double());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->get_double() >= b->get_double()));
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_EQ: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() == b->get_double());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->get_double() == b->get_double()));
 				PUSH(value);
 				break;
 			}
 		case OP_NUM_NE: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->get_double() != b->get_double());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->get_double() != b->get_double()));
 				PUSH(value);
 				break;
 			}
 		case OP_STR_LT: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() < b->as_string());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->as_string() < b->as_string()));
 				PUSH(value);
 				break;
 			}
 		case OP_STR_GT: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() > b->as_string());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->as_string() > b->as_string()));
 				PUSH(value);
 				break;
 			}
 		case OP_STR_LE: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() <= b->as_string());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->as_string() <= b->as_string()));
 				PUSH(value);
 				break;
 			}
 		case OP_STR_GE: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() >= b->as_string());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->as_string() >= b->as_string()));
 				PUSH(value);
 				break;
 			}
 		case OP_STR_EQ: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() == b->as_string());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->as_string() == b->as_string()));
 				PUSH(value);
 				break;
 			}
 		case OP_STR_NE: 
 			{
 				Value *b=POP();  Value *a=POP();
-				Value *value=NEW VBool(pool(), a->as_string() != b->as_string());
+				Value *value=NEW VBool(*NEW Bool(pool(), a->as_string() != b->as_string()));
 				PUSH(value);
 				break;
 			}

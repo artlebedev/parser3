@@ -1,5 +1,5 @@
 /*
-  $Id: pa_valiased.h,v 1.1 2001/03/06 12:22:57 paf Exp $
+  $Id: pa_valiased.h,v 1.2 2001/03/08 16:54:25 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -13,9 +13,8 @@ class VAliased : public Value {
 	friend Temp_alias;
 public: // creation
 
-	VAliased(Pool& apool, VClass& aclass_alias) : 
-		Value(apool), 
-		class_alias(&aclass_alias) {
+	VAliased(Pool& apool, VClass& aclass_alias) : Value(apool), 
+		fclass_alias(&aclass_alias) {
 	}
 
 	// valiased: this
@@ -26,17 +25,17 @@ private: // alias handling
 	// VAliased replacement mechanism is 'protected' from direct usage
 	// Temp_alias object enforces paired set/restore
 	VClass *set_alias(VClass *aclass_alias){
-		VClass *result=class_alias;
-		class_alias=aclass_alias;
+		VClass *result=fclass_alias;
+		fclass_alias=aclass_alias;
 		return result;
 	}
 	void restore_alias(VClass *aclass_alias) {
-		class_alias=aclass_alias;
+		fclass_alias=aclass_alias;
 	}
 
 protected:
 
-	VClass *class_alias;
+	VClass *fclass_alias;
 };
 
 class Temp_alias {

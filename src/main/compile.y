@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.76 2001/03/08 13:13:40 paf Exp $
+  $Id: compile.y,v 1.77 2001/03/08 16:54:26 paf Exp $
 */
 
 %{
@@ -351,6 +351,7 @@ store_code_param_part:
 }
 |	constructor_code_value { /* (something complex) */
 	$$=$1;
+	O($$, OP_STORE_PARAM);
 }
 ;
 store_expr_param_part: write_expr_value {
@@ -494,7 +495,7 @@ write_str_literal: STRING {
 	O($$, OP_WRITE);
 };
 
-empty_double_value: /* empty */ { $$=VL(NEW VDouble(POOL)) };
+empty_double_value: /* empty */ { $$=VL(NEW VDouble(*NEW Double(POOL, 0))) };
 empty_string_value: /* empty */ { $$=VL(NEW VString(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 

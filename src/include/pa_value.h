@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.45 2001/03/08 13:42:31 paf Exp $
+  $Id: pa_value.h,v 1.46 2001/03/08 16:54:25 paf Exp $
 */
 
 /*
@@ -85,6 +85,7 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	virtual const char *type() const =0;
 	String& name() const { return *fname; }
+	virtual Value *clone() const { failed("cloning '%s'"); return 0; }
 
 	// unknown: false
 	// others: true
@@ -159,7 +160,7 @@ private:
 
 private: 
 
-	void failed(char *action);
+	void failed(char *action) const;
 };
 
 #endif

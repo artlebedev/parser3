@@ -188,7 +188,15 @@ SOURCE=..\include\pa_array.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_bool.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_common.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_double.h
 # End Source File
 # Begin Source File
 
@@ -289,13 +297,6 @@ SOURCE=..\include\pa_wwrapper.h
 # Begin Source File
 
 SOURCE=..\classes\root.C
-
-!IF  "$(CFG)" == "main - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "main - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # End Group
 # End Target

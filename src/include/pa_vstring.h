@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vstring.h,v 1.10 2001/03/08 12:19:20 paf Exp $
+  $Id: pa_vstring.h,v 1.11 2001/03/08 16:54:25 paf Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -14,6 +14,8 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "string"; }
+	// clone
+	Value *clone() const { return NEW VString(fvalue); };
 	// fvalue: fvalue
 	String *get_string() { return &fvalue; };
 	// fvalue: fvalue
