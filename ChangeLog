@@ -107,6 +107,9 @@
 	* src/lib/cord/source.url 1.2:
 	* src/lib/gc/Makefile.am 1.2:
 	* src/lib/gc/Makefile.in 1.2:
+	* src/lib/gc/include/Makefile.am 1.2:
+	* src/lib/gc/include/Makefile.in 1.2:
+	* src/lib/gc/include/gc.h 1.2:
 	* src/lib/ltdl/Makefile.in 1.5:
 	* src/lib/ltdl/libltdl.dsp 1.6:
 	* src/lib/md5/Makefile.in 1.7:
@@ -279,10 +282,23 @@
 	* tests/results/078.processed [template_gc] 1.1.2.1.2.2:
 		to reflect date format change (were - become ' ')
 
+	* src/classes/classes.dsp 1.30:
+	* src/classes/gd/gd.dsp 1.31:
+	* src/classes/smtp/smtp.dsp 1.27:
+	* src/main/main.dsp 1.166:
+	* src/main/pa_globals.C 1.158:
+	* src/targets/apache13core/ApacheModuleParser3Core.dsp 1.3:
+	* src/targets/cgi/parser3.dsp 1.65:
+	* src/targets/isapi/parser3isapi.dsp 1.43:
+	* src/types/types.dsp 1.41:
+		cvs: getting rid of win32xml pseudo project
+
 	* src/classes/math.C 1.33:
 		merged uuid bugfix
 
 	* src/include/pa_version.h [release_3_0_8] 1.7.18.1:
+	* src/include/pa_version.h [release_3_1_0] 1.7.20.1:
+	* src/lib/patches/Makefile.in [release_3_1_0] 1.11.2.1:
 		release
 
 	* src/classes/math.C [release_3_0_8] 1.33.2.1:
@@ -292,10 +308,6 @@
 	* src/targets/apache13/pa_md5c.c [release_3_0_8] 1.5.6.1:
 		apache module compiled [were minor unnecessary changes in lib
 		md5 interface]
-
-	* tests/141.html [template_gc] 1.1.2.3:
-	* tests/results/141.processed [template_gc] 1.1.2.3:
-		fixed bug with too-small-a-buffer
 
 	* tests/001.html 1.2:
 	* tests/002.html 1.2:
@@ -599,6 +611,10 @@
 	* tests/run_parser.sh 1.2:
 		merged(copied) to HEAD from template_gc
 
+	* tests/141.html [template_gc] 1.1.2.3:
+	* tests/results/141.processed [template_gc] 1.1.2.3:
+		fixed bug with too-small-a-buffer
+
 2003-07-23  paf
 	* src/targets/apache13core/ApacheModuleParser3Core.dsp 1.1:
 		file ApacheModuleParser3Core.dsp was initially added on branch
@@ -632,11 +648,6 @@
 
 	* src/targets/apache13core/mod_parser3.C 1.1:
 		file mod_parser3.C was initially added on branch template_gc.
-
-	* src/targets/apache13/hook/Makefile.am [template_gc] 1.1.14.1:
-	* src/targets/apache13/hook/Makefile.in [template_gc] 1.6.2.3.2.2:
-	* src/targets/apache13/hook/mod_parser3.c [template_gc] 1.2.14.1:
-		not needed now
 
 	* src/classes/op.C [template_gc] 1.127.2.22.2.34:
 	* src/include/pa_sql_connection.h [template_gc] 1.30.2.7.2.8:
@@ -700,12 +711,12 @@
 		this bug remains even in latest-at-the-moment: gc6.2alpha6
 		just reported to hans
 
-	* src/targets/apache13core/pa_threads.C 1.1:
-		file pa_threads.C was initially added on branch template_gc.
-
 	* src/targets/apache13/mod_parser3_main.C 1.1:
 		file mod_parser3_main.C was initially added on branch
 		template_gc.
+
+	* src/targets/apache13core/pa_threads.C 1.1:
+		file pa_threads.C was initially added on branch template_gc.
 
 2003-07-22  paf
 	* src/main/pa_exec.C [template_gc] 1.48.2.18.2.17:
@@ -2382,7 +2393,6 @@
 	* src/sql/Makefile.in [template_gc] 1.11.2.3.2.1:
 	* src/targets/Makefile.in [template_gc] 1.42.2.3.2.1:
 	* src/targets/apache13/Makefile.in [template_gc] 1.44.2.3.2.1:
-	* src/targets/apache13/hook/Makefile.in [template_gc] 1.6.2.3.2.1:
 	* src/targets/apache13/p3runConfigure.in [template_gc] 1.11.14.4.2.1:
 	* src/targets/cgi/Makefile.am [template_gc] 1.46.2.5.2.1:
 	* src/targets/cgi/Makefile.in [template_gc] 1.62.2.5.2.1:
@@ -3617,7 +3627,6 @@
 	* Makefile.am [autoptr] 1.34.2.3:
 	* Makefile.in [autoptr] 1.48.2.5:
 	* src/targets/apache13/Makefile.in 1.45:
-	* src/targets/apache13/hook/Makefile.in 1.7:
 	* src/targets/apache13/p3runConfigure.in 1.12:
 	* src/targets/apache13/p3runConfigure.in [autoptr] 1.11.14.2:
 	* tests/Makefile [autoptr] 1.1.2.8:
@@ -3649,7 +3658,6 @@
 	* src/sql/Makefile.in [autoptr] 1.11.2.2:
 	* src/targets/Makefile.in [autoptr] 1.42.2.2:
 	* src/targets/apache13/Makefile.in [autoptr] 1.44.2.2:
-	* src/targets/apache13/hook/Makefile.in [autoptr] 1.6.2.2:
 	* src/targets/apache13/p3runConfigure.in [autoptr] 1.11.14.3:
 	* src/targets/cgi/Makefile.am [autoptr] 1.46.2.3:
 	* src/targets/cgi/Makefile.in [autoptr] 1.62.2.3:
@@ -3668,7 +3676,6 @@
 	* src/lib/ltdl/configure [autoptr] 1.4.2.1:
 	* src/lib/ltdl/configure.in [autoptr] 1.4.2.1:
 	* src/targets/apache13/Makefile.in [autoptr] 1.44.2.3:
-	* src/targets/apache13/hook/Makefile.in [autoptr] 1.6.2.3:
 	* src/targets/cgi/Makefile.am [autoptr] 1.46.2.5:
 	* src/targets/cgi/Makefile.in [autoptr] 1.62.2.5:
 		lib/ltdl/Makefile now created by /configure.in only [were by
@@ -6966,7 +6973,6 @@
 	* config.sub 1.4:
 	* ltmain.sh 1.4:
 	* src/targets/apache13/Makefile.in 1.44:
-	* src/targets/apache13/hook/Makefile.in 1.6:
 		removed last piece of configure.in(libtool) hacks
 
 	* src/lib/ltdl/COPYING.LIB 1.1:
@@ -7049,7 +7055,6 @@
 	* src/sql/Makefile.in 1.10:
 	* src/targets/Makefile.in 1.41:
 	* src/targets/apache13/Makefile.in 1.43:
-	* src/targets/apache13/hook/Makefile.in 1.5:
 	* src/targets/cgi/Makefile.am 1.46:
 	* src/targets/cgi/Makefile.in 1.61:
 	* src/targets/isapi/Makefile.in 1.10:
@@ -7234,7 +7239,6 @@
 	* src/sql/Makefile.in 1.9:
 	* src/targets/Makefile.in 1.40:
 	* src/targets/apache13/Makefile.in 1.42:
-	* src/targets/apache13/hook/Makefile.in 1.4:
 	* src/targets/cgi/Makefile.in 1.60:
 	* src/targets/isapi/Makefile.in 1.9:
 	* src/types/Makefile.in 1.48:
@@ -7373,7 +7377,6 @@
 	* src/sql/Makefile.in 1.8:
 	* src/targets/Makefile.in 1.39:
 	* src/targets/apache13/Makefile.in 1.41:
-	* src/targets/apache13/hook/Makefile.in 1.3:
 	* src/targets/cgi/Makefile.in 1.59:
 	* src/targets/isapi/Makefile.in 1.8:
 	* src/types/Makefile.in 1.47:
@@ -8312,7 +8315,6 @@
 	* src/sql/Makefile.in 1.7:
 	* src/targets/Makefile.in 1.38:
 	* src/targets/apache13/Makefile.in 1.39:
-	* src/targets/apache13/hook/Makefile.in 1.2:
 	* src/targets/cgi/Makefile.in 1.54:
 	* src/targets/isapi/Makefile.in 1.7:
 	* src/types/Makefile.in 1.44:
@@ -8586,15 +8588,10 @@
 		# now delimiter
 
 2002-08-26  paf
-	* src/targets/apache13/hook/Makefile.am 1.1:
-	* src/targets/apache13/hook/Makefile.in 1.1:
-		*** empty log message ***
-
 	* configure 1.36:
 	* configure.in 1.37:
 	* src/targets/apache13/Makefile.am 1.14:
 	* src/targets/apache13/Makefile.in 1.38:
-	* src/targets/apache13/hook/mod_parser3.c 1.2:
 		apache13/hook added to make dist.
 
 2002-08-23  paf
@@ -9408,7 +9405,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2003/07/24 12:07:02 $
+		$Date: 2003/07/24 14:09:56 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -14653,7 +14650,6 @@
 		    !^hash::append[append_from]
 
 	* src/targets/apache13/Makefile.am 1.7:
-	* src/targets/apache13/hook/mod_parser3.c 1.1:
 	* src/targets/apache13/p3runConfigure.in 1.2:
 		added
 
@@ -16753,7 +16749,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.24 2003/07/24 12:07:02 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.24.2.1 2003/07/24 14:09:56 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -16796,7 +16792,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.24 2003/07/24 12:07:02 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.24.2.1 2003/07/24 14:09:56 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -22206,7 +22202,7 @@
 	* src/main/pa_pool.C 1.2:
 	* src/main/pa_string.C 1.3:
 	* src/main/pa_string.C 1.4:
-		$Id: ChangeLog,v 1.24 2003/07/24 12:07:02 paf Exp $ check
+		$Id: ChangeLog,v 1.24.2.1 2003/07/24 14:09:56 paf Exp $ check
 
 	* src/include/pa_pool.h 1.5:
 	* src/include/pa_string.h 1.2:
