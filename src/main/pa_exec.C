@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.29 2002/03/11 08:00:01 paf Exp $
+	$Id: pa_exec.C,v 1.30 2002/03/22 14:30:07 paf Exp $
 
 
 	@todo setrlimit
@@ -76,7 +76,7 @@ static BOOL WINAPI CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
                               NULL,
                               NULL,
                               TRUE,
-                              0, //todo CREATE_NO_WINDOW,
+                              CREATE_NO_WINDOW,
                               szEnv,
                               NULL,
                               &si,
@@ -103,8 +103,7 @@ static void read_pipe(String& result, HANDLE hOutRead, const char *file_spec){
 	while(true) {
 		char *buf=(char *)result.pool().malloc(MAX_STRING);
 		unsigned long size;
-		ReadFile(hOutRead, buf, MAX_STRING, &size, NULL);
-		if(!size) 
+		if(!ReadFile(hOutRead, buf, MAX_STRING, &size, NULL) || !size) 
 			break;
 		result.APPEND_AS_IS(buf, size, file_spec, 0);
     }
@@ -265,7 +264,7 @@ static void read_pipe(String& result, int file, const char *file_spec){
 	while(true) {
 		char *buf=(char *)result.pool().malloc(MAX_STRING);
 		size_t size=read(file, buf, MAX_STRING);
-		if(!size) 
+		if(!size)
 			break;
 		result.APPEND_AS_IS(buf, size, file_spec, 0);
     }
@@ -273,6 +272,7 @@ static void read_pipe(String& result, int file, const char *file_spec){
 
 #endif
 
+///@test maybe here and at argv construction --- cstr(String::UL_UNSPECIFIED
 static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) {
 #ifdef WIN32
 	String& string=*static_cast<String *>(info);
@@ -287,6 +287,11 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 	**env_ref=string.cstr();  (*env_ref)++;
 #endif
 }
+/**
+	@test thread safety: SetCurrentDirectory works per-process, not .
+	there's a field in createprocess, which is.
+	@test thread safety: on unix we sould change dir after fork!
+*/
 int pa_exec(const String& file_spec, 
 			const Hash *env,
 			const Array *argv,
