@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.84 2001/10/23 12:53:22 parser Exp $
+	$Id: pa_globals.C,v 1.85 2001/10/27 10:31:10 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -266,3 +266,14 @@ void pa_globals_init(Pool& pool) {
 #		pragma comment(lib, XALAN_BUILD_WIN32_BUILD "/Release/XSLT.lib")
 #	endif
 #endif
+
+
+#if defined(HAVE_LIBDB) && defined(_MSC_VER)
+#	define LIBDB_WIN32_BUILD "/parser3project/win32db/lib"
+#	ifdef _DEBUG
+#		pragma comment(lib, LIBDB_WIN32_BUILD "/debug/libdb.lib")
+#	else
+#		pragma comment(lib, LIBDB_WIN32_BUILD "/release/libdb.lib")
+#	endif
+#endif
+

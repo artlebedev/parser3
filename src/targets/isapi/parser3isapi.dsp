@@ -159,40 +159,6 @@ SOURCE=.\ident.C
 SOURCE=.\ident.C.new
 # End Source File
 # End Group
-# Begin Group "libs debug"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\..\..\win32db\lib\debug\libdb.lib
-
-!IF  "$(CFG)" == "parser3isapi - Win32 Release"
-
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "parser3isapi - Win32 Debug"
-
-!ENDIF 
-
-# End Source File
-# End Group
-# Begin Group "libs release"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\..\..\win32db\lib\release\libdb.lib
-
-!IF  "$(CFG)" == "parser3isapi - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "parser3isapi - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# End Group
 # Begin Source File
 
 SOURCE=.\pa_pool.C
