@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.45 2001/02/25 13:23:02 paf Exp $
+  $Id: compile.y,v 1.46 2001/02/26 09:54:14 paf Exp $
 */
 
 %{
@@ -729,7 +729,7 @@ int real_yyerror(parse_control *pc, char *s)  /* Called by yyparse on error */
      {
        //fprintf(stderr, "[%s]\n", s);
 
-	   s[MAX_STRING-1]=0; strcpy(pc->error, s);
+	   strncpy(pc->error, s, MAX_STRING); // TODO: перепроверить с треклятым последним байтом
 	   return 1;
      }
 
