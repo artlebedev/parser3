@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/02/11 15:33:12 $";
+static const char * const IDENT_STRING_C="$Date: 2004/02/27 15:07:46 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -36,6 +36,9 @@ DECLARE_CLASS_VAR(string, new MString, 0);
 // defines for statics
 
 #define MATCH_VAR_NAME "match"
+#define TRIM_START_OPTION "start"
+#define TRIM_BOTH_OPTION "both"
+#define TRIM_END_OPTION "end"
 
 // statics
 
@@ -494,6 +497,33 @@ static void _normalize(Request& r, MethodParams&) {
 	r.write_assign_lang(src);
 }
 
+static void _trim(Request& r, MethodParams& params) {
+	const String& src=GET_SELF(r, VString).string();
+
+	String::Trim_kind kind=String::TRIM_BOTH;
+	const char* chars=0;
+	if(params.count()>0) {
+		const String& skind=params.as_string(0, 
+			"'where' must be string");
+		if(skind==TRIM_START_OPTION)
+			kind=String::TRIM_START;
+		else if(skind==TRIM_END_OPTION)
+			kind=String::TRIM_END;
+		else if(skind==TRIM_BOTH_OPTION)
+			kind=String::TRIM_BOTH;
+		else
+			throw Exception("parser.runtime",
+				&skind,
+				"'kind' should be one of "TRIM_START_OPTION", "TRIM_BOTH_OPTION", "TRIM_END_OPTION);
+
+		if(params.count()>1)
+			chars=params.as_string(1, 
+			"'chars' must be string").cstr();
+	}
+
+	r.write_assign_lang(src.trim(kind, chars));
+}
+
 // constructor
 
 MString::MString(): Methoded("string") {
@@ -550,4 +580,7 @@ MString::MString(): Methoded("string") {
 
 	// ^string.normalize[]  
 	add_native_method("normalize", Method::CT_DYNAMIC, _normalize, 0, 0);
+
+	// ^string.trim[[start|both|end][;chars]]
+	add_native_method("trim", Method::CT_DYNAMIC, _trim, 0, 2);
 }	

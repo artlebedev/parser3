@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2004/02/11 15:33:14 $";
+static const char * const IDENT_STRING_H="$Date: 2004/02/27 15:07:46 $";
 
 // includes
 
@@ -99,6 +99,12 @@ public:
 		L_OPTIMIZE_BIT = 0x80  ///< flag, requiring cstr whitespace optimization
 	};
 
+	enum Trim_kind {
+		TRIM_BOTH,
+		TRIM_START,
+		TRIM_END
+	};
+
 	union Languages {
 
 		struct {
@@ -120,7 +126,7 @@ public:
 				:CORD_chars((char)opt.lang, alength);
 		}
 
-		/// appending when 'langs' already contain something [simple cases hanled elsewhere]
+		/// appending when 'langs' already contain something [simple cases handled elsewhere]
 		template<typename C>
 		void append(C current, 
 			const CORD to_nonempty_target_langs) {
@@ -327,6 +333,10 @@ public:
 		/*Body normalize() const {
 			return Body(CORD_balance(body));
 		}*/
+
+		/// @returns this or 0 or mid. if returns this or 0 out_* are not filled
+		Body trim(Trim_kind kind=TRIM_BOTH, const char* chars=0,
+			size_t* out_start=0, size_t* out_length=0) const;
 	};
 
 	struct C {
@@ -481,6 +491,7 @@ public:
 	String& change_case(Charset& source_charset,
 		Change_case_kind kind) const;
 	const String& replace(const Dictionary& dict) const;
+	const String& trim(Trim_kind kind=TRIM_BOTH, const char* chars=0) const;
 	double as_double() const { return pa_atod(cstr(), this); }
 	int as_int() const { return pa_atoi(cstr(), this); }
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/02/11 15:33:16 $";
+static const char * const IDENT_STRING_C="$Date: 2004/02/27 15:07:46 $";
 
 #include "pcre.h"
 
@@ -140,6 +140,45 @@ String::Body String::Body::Format(int value) {
 	char local[MAX_NUMBER];
 	size_t length=snprintf(local, MAX_NUMBER, "%d", value);
 	return String::Body(pa_strdup(local, length), length);
+}
+
+String::Body String::Body::trim(String::Trim_kind kind, const char* chars, 
+								size_t* out_start, size_t* out_length) const {
+	size_t our_length=length();
+	if(!our_length)
+		return *this;
+	if(!chars)
+		chars=" \t\n"; // white space
+	Body result=*this;
+
+	size_t start=0;
+	size_t end=our_length;
+	bool trim_start=(kind!=TRIM_END);
+	if(trim_start) {
+		CORD_pos pos; set_pos(pos, 0);
+		while(true) {
+			char c=CORD_pos_fetch(pos);
+			if(strchr(chars, c)) {
+				if(++start==our_length)
+					return 0; // all chars are empty, just return empty string
+			} else
+				break;			
+
+			CORD_next(pos);
+		}
+	}
+	// todo справа
+
+	if(start==0 && end==our_length) // nobody moved a thing
+		return *this;
+
+	if(out_start)
+		*out_start=start;
+	size_t new_length=end-start;
+	if(out_length)
+		*out_length=new_length;
+
+	return mid(start, new_length);
 }
 
 static int CORD_batched_iter_fn_generic_hash_code(char c, void * client_data) {
@@ -618,7 +657,7 @@ const char* String::Languages::v() const {
 		return (const char*)&langs;
 }
 const char* String::v() const {
-#define LIMIT_VIEW 20
+	const int LIMIT_VIEW=20;
 	char* buf=(char*)malloc(MAX_STRING);
 	const char*body_view=body.v();
 	const char*langs_view=langs.v();
@@ -630,5 +669,28 @@ const char* String::v() const {
 	);
 
 	return buf;
-#undef LIMIT_VIEW
+}
+
+const String& String::trim(String::Trim_kind kind, const char* chars) const {
+	if(!length())
+		return *this;
+
+	size_t substr_begin, substr_length;
+	Body new_body=body.trim(kind, chars, &substr_begin, &substr_length);
+	if(new_body==body) // we received unchanged pointer, do likewise
+		return *this;
+	// new_body differs from body, adjust langs along
+
+	String& result=*new String;
+	if(!new_body) // body.trim produced empty result
+		return result;
+	// body.trim produced nonempty result
+
+	// first: their langs
+	result.langs.append(result.body, langs, substr_begin, substr_length);
+	// next: letters themselves
+	result.body=new_body;
+
+	ASSERT_STRING_INVARIANT(result);
+	return result;
 }
