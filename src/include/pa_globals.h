@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char* IDENT_GLOBALS_H="$Date: 2002/08/06 09:07:59 $";
+static const char* IDENT_GLOBALS_H="$Date: 2002/08/08 14:35:30 $";
 
 #include "pa_pool.h"
 
@@ -58,6 +58,7 @@ class Table;
 #define STRING_POST_MATCH_NAME "postmatch"
 
 #define DATE_CALENDAR_WEEKNO_NAME "week"
+#define DATE_CALENDAR_WEEKYEAR_NAME "year"
 
 #define CONTENT_DISPOSITION_NAME "content-disposition"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"

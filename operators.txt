@@ -632,7 +632,6 @@ math
     !временна€ зона задаЄтс€ вне parser средствами OS
     $date:UTC-offset  сколько дней надо прибавить,чтобы попасть в local врем€
     $date:TZ  наш часовой по€с, дробное, в часах (где-то есть с точностью до получаса)
-    $date:isdst 1/0  действует ли сейчас летнее врем€
     !^date::now[]
     !^date::now(смещение в дн€х) выдаЄт сейчас+смещение
     !^date::create(дней с epoch) // старое им€ set
@@ -648,6 +647,7 @@ math
         where published='$дата.sql-string[]'
     !^date:calendar[rus|eng;год;мес€ц] выдаЄт неименованную таблицу 
         столбцы: 0..6, week
+        todo:weekyear
     !^date:calendar[rus|eng;год;мес€ц;день] выдаЄт именнованную таблицу
         столбцы: year, month, day, weekday
     

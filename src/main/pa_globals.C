@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/08/06 09:07:59 $";
+static const char* IDENT_GLOBALS_C="$Date: 2002/08/08 14:35:31 $";
 
 #include "pa_config_includes.h"
 
@@ -396,6 +396,7 @@ void pa_globals_init(Pool& pool) {
 			*columns+=NEW String(pool, column); // .i column name
 		}
 		*columns+=NEW String(pool, DATE_CALENDAR_WEEKNO_NAME);
+		*columns+=NEW String(pool, DATE_CALENDAR_WEEKYEAR_NAME);
 		date_calendar_table_template=NEW Table(pool, 0, columns);
 	}
 
