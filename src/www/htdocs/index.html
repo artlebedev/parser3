@@ -36,9 +36,10 @@ dtf.p
 #^func(0)<hr>
 
 @tdupleform[]
+$form:a
 #$c[^form:a.columns[]]
 #^c.menu{$c.column}[,]<br>
-^form:a.menu{$form:a.element=}[,]
+#^form:a.menu{$form:a.element=}[,]
 
 @tvoiddefault[]
 $var[$form:element]
@@ -46,7 +47,7 @@ $var[$form:element]
 
 
 @testdom0[]
-$dom[^dom::load[a.xml]]
+$dom[^dom::load[test.xml]]
 
 
 @testlocal[level][local]

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.33 2001/09/07 11:05:02 parser Exp $
+	$Id: pa_vform.C,v 1.34 2001/09/07 12:46:19 parser Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.

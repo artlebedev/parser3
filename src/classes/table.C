@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.110 2001/09/06 06:11:13 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.111 2001/09/07 12:46:19 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -80,11 +80,11 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	// filename is last parameter
-	Value& vfilename=params->as_no_junction(params->size()-1, 
+	const String& filename=params->as_string(params->size()-1, 
 		"file name must not be code");
 
 	// loading text
-	char *data=file_read_text(pool, r.absolute(vfilename.as_string()));
+	char *data=file_read_text(pool, r.absolute(filename));
 
 	// parse columns
 	Array *columns;

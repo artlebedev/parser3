@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /O2 /I "..\libltdl" /I "..\include" /I "..\types" /I "..\classes" /I "..\classes\gd" /I "..\pcre" /I "..\sql" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /O2 /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "..\classes\xml-xalan\c\src" /I "..\classes\xml-xerces\c\src" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /Zi /Od /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /Zi /Od /I "..\libltdl" /I "..\classes\gd" /I "..\include" /I "..\types" /I "..\classes" /I "..\pcre" /I "..\sql" /I "..\classes\xml-xalan\c\src" /I "..\classes\xml-xerces\c\src" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
 # SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -331,6 +331,10 @@ SOURCE=..\types\pa_vdate.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vdom.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vdouble.h
 # End Source File
 # Begin Source File
@@ -488,6 +492,19 @@ SOURCE=..\classes\date.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\classes\dom.C
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# ADD CPP /GX
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\double.C
 # End Source File
 # Begin Source File
@@ -547,5 +564,21 @@ SOURCE=..\classes\void.C
 SOURCE=..\sql\pa_sql_driver.h
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE="..\classes\xml-xerces\c\Build\Win32\VC6\Debug\xerces-c_1D.lib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XSLTD.lib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XPathD.lib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XalanTransformerD.lib"
+# End Source File
 # End Target
 # End Project
