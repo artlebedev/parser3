@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/10/22 09:40:11 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/10/31 10:27:57 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -824,7 +824,7 @@ void Request::execute(const Array& ops) {
 	}
 }
 
-/// @test cache|prepare junctions 
+/// @todo cache|prepare junctions 
 Value *Request::get_element(const String *& remember_name, bool can_call_operator) {
 	const String& name=POP_NAME();  remember_name=&name;
 	Value *ncontext=POP();
