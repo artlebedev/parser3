@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vhash.h,v 1.30 2002/03/27 15:30:38 paf Exp $
+	$Id: pa_vhash.h,v 1.31 2002/04/17 12:47:48 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -24,7 +24,7 @@ extern Methoded *hash_base_class;
 class VHash_lock;
 
 /// value of type 'hash', implemented with Hash
-class VHash : public VStateless_class {
+class VHash : public VStateless_object {
 	friend class VHash_lock;
 public: // value
 
@@ -50,7 +50,7 @@ public: // value
 	/// VHash: (key)=value
 	Value *get_element(const String& name) { 
 		// $CLASS,$method
-		if(Value *result=VStateless_class::get_element(name))
+		if(Value *result=VStateless_object::get_element(name))
 			return result;
 
 		// $element
@@ -68,11 +68,11 @@ public: // value
 
 public: // usage
 
-	VHash(Pool& apool) : VStateless_class(apool, hash_base_class), 
+	VHash(Pool& apool) : VStateless_object(apool, *hash_base_class), 
 		fhash(apool), locked(false) {
 	}
 
-	VHash(Pool& apool, const Hash& source) : VStateless_class(apool, hash_base_class), 
+	VHash(Pool& apool, const Hash& source) : VStateless_object(apool, *hash_base_class), 
 		fhash(source), locked(false) {
 	}
 
