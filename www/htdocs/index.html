@@ -244,7 +244,6 @@ $response:charset[windows-1251]
 #^zeroinstdin[]
 #^shifts[]
 #^jspace[]
-#^user-foreach-test[]
 #^hashselfmodification[]
 #^emptyTransformResult[]
 #^badxdoccreate[]
@@ -259,10 +258,28 @@ $response:charset[windows-1251]
 #^cookie2[]
 #^menudelim[]
 #^touchittest[]
-^touchittest2[]
+#^touchittest2[]
 #^opauto[]
 #^trycontextt[]
 #^tfor[]
+#^user-foreach-test[]
+#^includet[]
+^derived:includet[]
+
+@includet[]
+^include[some.p]
+^included_method[2]
+
+@user-foreach-test[][key;value]
+^user-foreach[key;value]{$key=$value<br>}
+
+@user-foreach[key;value;code]
+^for[i](1;10){
+	$caller.$key($i)
+	$caller.$value($i*2)
+	$code
+}
+
 
 @tfor[][i]
 ^for[i](1;10){
@@ -356,16 +373,6 @@ $i[before]
 ^touchit[]
 $i
 
-
-@user-foreach-test[][key;value]
-^user-foreach[key;value]{$key=$value<br>}
-
-@user-foreach[key;value;code]
-^for[i](1;10){
-	$code.$key($i)
-	$code.$value($i*2)
-	$code
-}
 
 @jspace[]
 $a(1)

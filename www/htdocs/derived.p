@@ -24,3 +24,8 @@ $aaa[xxx]
 @test2[]
 derived_test2
 #^shit[]
+
+@includet[]
+derived_includet<br>
+^include[some.p]
+^self.included_method[2]
