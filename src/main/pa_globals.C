@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.123 2002/04/19 09:36:51 paf Exp $
+	$Id: pa_globals.C,v 1.124 2002/04/22 14:11:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -78,7 +78,7 @@ String *charset_UTF8_name;
 
 String *hash_default_element_name;
 
-Array *string_match_table_columns;
+Table *string_match_table_template;
 
 Hash *untaint_lang_name2enum;
 
@@ -380,7 +380,7 @@ void pa_globals_init(Pool& pool) {
 
 	// table
 	{ // create table
-		string_match_table_columns=NEW Array(pool);
+		Array *string_match_table_columns=NEW Array(pool);
 		*string_match_table_columns+=NEW String(pool, STRING_PRE_MATCH_NAME);
 		*string_match_table_columns+=NEW String(pool, STRING_MATCH_NAME);
 		*string_match_table_columns+=NEW String(pool, STRING_POST_MATCH_NAME);
@@ -389,6 +389,7 @@ void pa_globals_init(Pool& pool) {
 			snprintf(column, MAX_NUMBER, "%d", i);
 			*string_match_table_columns+=NEW String(pool, column); // .i column name
 		}
+		string_match_table_template=NEW Table(pool, 0, string_match_table_columns);
 	}
 
 	// charsets

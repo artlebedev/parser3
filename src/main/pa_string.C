@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.156 2002/04/19 11:59:44 paf Exp $
+	$Id: pa_string.C,v 1.157 2002/04/22 14:11:28 paf Exp $
 */
 
 #include "pcre.h"
@@ -518,7 +518,7 @@ bool String::match(const char *acstr,
 	int ovector[ovecsize];
 
 	// create table
-	*table=NEW Table(pool(), 0, string_match_table_columns);		
+	*table=NEW Table(pool(), *string_match_table_template);
 
 	int exec_option_bits=0;
 	int prestart=0;
