@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: op.C,v 1.32 2001/07/03 09:37:04 parser Exp $"; 
+static const char *RCSId="$Id: op.C,v 1.33 2001/07/03 10:10:21 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -227,60 +227,6 @@ static void _eval(Request& r, const String& method_name, MethodParams *params) {
 }
 
 
-typedef double (*math1_func_ptr)(double);
-static double round(double param) { return floor(param+0.5); }
-static double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 ); }
-
-static void math1(Request& r, 
-				  const String& method_name, MethodParams *params,
-				  math1_func_ptr func) {
-	Pool& pool=r.pool();
-	Value& param=params->get_junction(0, "parameter must be expression");
-
-	Value& result=*new(pool) VDouble(pool, (*func)(r.process(param).as_double()));
-	result.set_name(method_name);
-	r.write_no_lang(result);
-}
-
-#define MATH1(name) \
-	static void _##name(Request& r, const String& method_name, MethodParams *params) {\
-		math1(r, method_name, params, &name);\
-	}
-#define MATH1P(name_parser, name_c) \
-	static void _##name_parser(Request& r, const String& method_name, MethodParams *params) {\
-		math1(r, method_name, params, &name_c);\
-	}
-MATH1(round);	MATH1(floor);	MATH1P(ceiling, ceil);
-MATH1P(abs, fabs);	MATH1(sign);
-MATH1(exp);	MATH1(log);	
-MATH1(sin);	MATH1(asin);	
-MATH1(cos);	MATH1(acos);	
-MATH1(tan);	MATH1(atan);
-MATH1(sqrt);
-
-
-typedef double (*math2_func_ptr)(double, double);
-static void math2(Request& r, 
-				  const String& method_name, MethodParams *params,
-				  math2_func_ptr func) {
-	Pool& pool=r.pool();
-	Value& a=params->get_junction(0, "parameter must be expression");
-	Value& b=params->get_junction(1, "parameter must be expression");
-
-	Value& result=*new(pool) VDouble(pool, (*func)(
-		r.process(a).as_double(),
-		r.process(b).as_double()));
-	result.set_name(method_name);
-	r.write_no_lang(result);
-}
-
-#define MATH2(name) \
-	static void _##name(Request& r, const String& method_name, MethodParams *params) {\
-		math2(r, method_name, params, &name);\
-	}
-MATH2(pow);
-
-
 static void _connect(Request& r, const String&, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -417,27 +363,6 @@ MOP::MOP(Pool& apool) : Methoded(apool),
 	// ^eval(expr)
 	// ^eval(expr)[format]
 	add_native_method("eval", Method::CT_ANY, _eval, 1, 2);
-
-
-	// math functions
-
-	// ^FUNC(expr)	
-#define ADD_MATH1(name) \
-	add_native_method(#name, Method::CT_ANY, _##name, 1, 1)
-
-	ADD_MATH1(round);	ADD_MATH1(floor);	ADD_MATH1(ceiling);
-	ADD_MATH1(abs);	ADD_MATH1(sign);
-	ADD_MATH1(exp);	ADD_MATH1(log);	
-	ADD_MATH1(sin);	ADD_MATH1(asin);	
-	ADD_MATH1(cos);	ADD_MATH1(acos);	
-	ADD_MATH1(tan);	ADD_MATH1(atan);
-	ADD_MATH1(sqrt);
-
-#define ADD_MATH2(name) \
-	add_native_method(#name, Method::CT_ANY, _##name, 2, 2)
-
-	// ^pow(x;y)
-	ADD_MATH2(pow);
 
 
 	// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}

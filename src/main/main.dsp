@@ -492,11 +492,11 @@ SOURCE=..\classes\mail.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\classes\op.C
+SOURCE=..\classes\math.C
 # End Source File
 # Begin Source File
 
-SOURCE=..\classes\random.C
+SOURCE=..\classes\op.C
 # End Source File
 # Begin Source File
 
