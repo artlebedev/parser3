@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.61 2002/01/15 13:18:42 paf Exp $
+	$Id: xdoc.C,v 1.62 2002/01/15 15:02:13 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -504,14 +504,6 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 			exc);
 }
 
-int xmlOutputWriteToParserString(void *context, const char *buffer, int len) {
-	String& string=*static_cast<String *>(context);
-	char *copy=(char *)string.malloc((size_t)len);
-	memcpy(copy, buffer, (size_t)len);
-	string.APPEND_CLEAN(copy, (size_t)len, "xdoc", 0);
-	return len;
-}
-
 static void _string(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
@@ -535,12 +527,7 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 	if(encoder && strcmp(encoder->name, "UTF-8")==0)
 		encoder=0;
 
-	String& result=*new(pool) String(pool);
-	xmlOutputBuffer_auto_ptr outputBuffer(xmlOutputBufferCreateIO(
-		xmlOutputWriteToParserString,
-		0/*xmlOutputCloseCallback*/,
-		&result,
-		encoder));
+	xmlOutputBuffer_auto_ptr outputBuffer(xmlAllocOutputBuffer(encoder));
 
 	xsltStylesheet *stylesheet=xsltNewStylesheet();
 	if(!stylesheet)
@@ -548,42 +535,38 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 			&method_name,
 			"xsltNewStylesheet failed");
 
-	#define OO2STYLE(name) \
+	#define OOS2STYLE(name) \
 		stylesheet->name=oo.name?BAD_CAST g_strdup(pool.transcode(*oo.name)->str):0
+	#define OOE2STYLE(name) \
+		stylesheet->name=oo.name
 
-	OO2STYLE(method);
-	OO2STYLE(encoding);
-	OO2STYLE(mediaType);
-	OO2STYLE(doctypeSystem);
-	OO2STYLE(doctypePublic);
-	stylesheet->indent=oo.indent;
-	OO2STYLE(version);
-	stylesheet->standalone=oo.standalone;
-	stylesheet->omitXmlDeclaration=oo.omitXmlDeclaration;
+	OOS2STYLE(method);
+	OOS2STYLE(encoding);
+	OOS2STYLE(mediaType);
+	OOS2STYLE(doctypeSystem);
+	OOS2STYLE(doctypePublic);
+	OOE2STYLE(indent);
+	OOS2STYLE(version);
+	OOE2STYLE(standalone);
+	OOE2STYLE(omitXmlDeclaration);
 
 	xmlDoc *document=((Gdome_xml_Document*)vdoc.get_document(&method_name))->n;
 	xsltSaveResultTo(outputBuffer.get(), document, stylesheet);
 	xsltFreeStylesheet(stylesheet);
-/*
-	char *mem;
-	GdomeException exc;
-	if(!gdome_di_saveDocToMemory(domimpl,
-		vdoc.get_document(&method_name),
-		&mem,
-		vdoc.output_options.indent?GDOME_SAVE_LIBXML_INDENT:GDOME_SAVE_STANDARD,
-		&exc))
-		throw Exception(0, 0, 
-			&method_name, 
-			exc);
-
-	// move to pool memory
-	size_t buf_size=strlen(mem);
-	char *buf=(char *)pool.malloc(buf_size);
-	memcpy(buf, mem, buf_size);
-	g_free(mem);*/
 
 	// write out result
-	r.write_no_lang(result);
+	char *gnome_buf; size_t buf_size;
+    if(outputBuffer->conv) {
+		buf_size=outputBuffer->conv->use;
+		gnome_buf=(char *)outputBuffer->conv->content;
+    } else {
+		buf_size=outputBuffer->buffer->use;
+		gnome_buf=(char *)outputBuffer->buffer->content;
+    }
+
+	char *request_buf=(char *)pool.malloc(buf_size);
+	memcpy(request_buf, gnome_buf, buf_size);
+	r.write_no_lang(*new(pool) String(pool, request_buf, buf_size));
 }
 
 /// @test remove text/xml const. <output method+mediatype / ^file[method+mediatype
