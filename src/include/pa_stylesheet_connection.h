@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_connection.h,v 1.22 2002/01/21 16:44:48 paf Exp $
+	$Id: pa_stylesheet_connection.h,v 1.23 2002/01/22 13:04:26 paf Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -80,7 +80,11 @@ private:
 		Pool& pool=*fservices_pool;
 
 		xsltStylesheet *nstylesheet;
-		nstylesheet=xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr(String::UL_FILE_SPEC));
+		{
+			int savedReplaceEntities=xmlSubstituteEntitiesDefault(1);
+			nstylesheet=xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr(String::UL_FILE_SPEC));
+			xmlSubstituteEntitiesDefault(savedReplaceEntities);
+		}
 		if(!nstylesheet || xmlHaveGenericErrors()) {
 			GdomeException exc=0;
 			throw Exception(0, 0,

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.103 2002/01/21 16:44:49 paf Exp $
+	$Id: pa_globals.C,v 1.104 2002/01/22 13:04:26 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -211,6 +211,7 @@ void pa_globals_destroy(void *) {
 	}
 }
 
+/// @test // replace entities on load. WARNING: in sources there is a hint on one should call this for each thread xmlSubstituteEntitiesDefault(1);
 void pa_globals_init(Pool& pool) {
 	pool.register_cleanup(pa_globals_destroy, 0);
 
@@ -338,9 +339,13 @@ void pa_globals_init(Pool& pool) {
 	// with the ones defaulted from the DTDs 
     //never added yet xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
 
+//regretfully this not only replaces entities on parse, but also on generate	xmlSubstituteEntitiesDefault(1);
+
 	memset(xml_generic_error_infos, 0, sizeof(xml_generic_error_infos));
 	xmlSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
 	xsltSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
+	FILE *f=fopen("y:\\xslt.log", "wt");
+	xsltSetGenericDebugFunc(f/*stderr*/, 0);
 
 	// XSLT stylesheet manager
 	cache_managers->put(*NEW String(pool, "stylesheet"), 
