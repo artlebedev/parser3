@@ -38,8 +38,8 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "ApacheModuleParser3R"
-# PROP Intermediate_Dir "ApacheModuleParser3R"
+# PROP Output_Dir "Release"
+# PROP Intermediate_Dir "Release"
 # PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /c
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 user32.lib kernel32.lib wsock32.lib /nologo /subsystem:windows /dll /machine:I386
+# ADD LINK32 user32.lib kernel32.lib wsock32.lib /nologo /subsystem:windows /dll /machine:I386 /out:"Release/ApacheModuleParser3.dll"
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
@@ -72,12 +72,12 @@ PostBuild_Cmds=net start apache
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "ApacheModuleParser3D"
-# PROP Intermediate_Dir "ApacheModuleParser3D"
+# PROP Output_Dir "Debug"
+# PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /c
-# ADD CPP /nologo /MDd /W3 /Gm /Zi /Od /I "..\..\..\..\sql" /I "\apache-1.3\src\include" /I "\apache-1.3\src\os\win32" /I "..\..\..\..\include" /I "..\..\..\.." /I "..\..\..\..\types" /I "..\..\..\..\classes" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "SHARED_MODULE" /FD /TP /c
+# ADD CPP /nologo /MDd /W3 /Gm /ZI /Od /I "..\..\..\..\sql" /I "\apache-1.3\src\include" /I "\apache-1.3\src\os\win32" /I "..\..\..\..\include" /I "..\..\..\.." /I "..\..\..\..\types" /I "..\..\..\..\classes" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "SHARED_MODULE" /YX /FD /TP /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x809 /d "_DEBUG"
@@ -87,7 +87,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
-# ADD LINK32 user32.lib kernel32.lib wsock32.lib /nologo /subsystem:windows /dll /debug /machine:I386
+# ADD LINK32 user32.lib kernel32.lib wsock32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"Debug/ApacheModuleParser3Debug.dll" /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none /map
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
