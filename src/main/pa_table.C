@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.17 2001/03/25 08:52:36 paf Exp $
+	$Id: pa_table.C,v 1.18 2001/03/25 09:10:30 paf Exp $
 */
 
 #include <stdlib.h>
@@ -14,10 +14,12 @@
 #include "pa_pool.h"
 
 Table::Table(Pool& apool, 
+			 const String *aorigin_string,
 			 Array *acolumns, 
 			 int initial_rows) :
 	Array(apool, initial_rows),
 
+	forigin_string(aorigin_string),
 	fcurrent(0),
 	fcolumns(acolumns), 
 	name2number(pool(), false) {

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.32 2001/03/25 08:52:36 paf Exp $
+	$Id: pa_globals.C,v 1.33 2001/03/25 09:10:30 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -154,7 +154,7 @@ void pa_globals_init(Pool& pool) {
 	untaint_lang_name2enum->put(html_typo, (int)String::UL_HTML_TYPO);
 
 	// tables
-	default_typo_table=NEW Table(pool, 0);
+	default_typo_table=NEW Table(pool, 0, 0);
 	{
 		// \n\n -> <p>
 		Array *row1=NEW Array(pool);

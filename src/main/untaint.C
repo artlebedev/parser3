@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.16 2001/03/25 09:01:00 paf Exp $
+	$Id: untaint.C,v 1.17 2001/03/25 09:10:30 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -194,7 +194,7 @@ char *String::store_to(char *dest) const {
 							if(a.size()==0) {
 								pool().set_tag(0); // avoid recursion
 								THROW(0, 0,
-									&a,
+									typo_table->origin_string(),
 									"typo table first column elements must not be empty");
 							}
 							// overflow check:

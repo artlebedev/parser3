@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.20 2001/03/25 08:52:34 paf Exp $
+	$Id: pa_table.h,v 1.21 2001/03/25 09:10:29 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -33,8 +33,12 @@ class Table : public Array {
 public:
 
 	Table(Pool& apool,
+		const String *aorigin,
 		Array *acolumns,
 		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
+
+	/// where this table came from, may be NULL
+	const String *origin_string() { return forigin_string; }
 
 	/// column names
 	const Array *columns() { return fcolumns; }
@@ -48,6 +52,9 @@ public:
 	const String *item(const String& column_name);
 
 private:
+	
+	// where this table came from, may be NULL
+	const String *forigin_string;
 
 	// column name->number lookup table
 	Hash name2number;
