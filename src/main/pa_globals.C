@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_GLOBALS_C="$Date: 2002/12/25 10:49:42 $";
+static const char* IDENT_GLOBALS_C="$Date: 2003/02/04 10:15:50 $";
 
 #include "pa_config_includes.h"
 
@@ -258,23 +258,8 @@ xmlFileOpenLocalhost (const char *filename) {
  * Returns the number of bytes written
  */
 static int
-xmlFileRead (void * context, char * buffer, int len) {
+pa_xmlFileRead (void * context, char * buffer, int len) {
     return(fread(&buffer[0], 1,  len, (FILE *) context));
-}
-
-/**
- * xmlFileWrite:
- * @context:  the I/O context
- * @buffer:  where to drop data
- * @len:  number of bytes to write
- *
- * Write @len bytes from @buffer to the I/O channel.
- *
- * Returns the number of bytes written
- */
-static int
-xmlFileWrite (void * context, const char * buffer, int len) {
-    return(fwrite(&buffer[0], 1,  len, (FILE *) context));
 }
 
 /**
@@ -284,7 +269,7 @@ xmlFileWrite (void * context, const char * buffer, int len) {
  * Close an I/O channel
  */
 static int
-xmlFileClose (void * context) {
+pa_xmlFileClose (void * context) {
     return ( ( fclose((FILE *) context) == EOF ) ? -1 : 0 );
 }
 
@@ -588,7 +573,7 @@ void pa_globals_init(Pool& pool) {
 	// http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
 	xmlRegisterInputCallbacks(
 		xmlFileMatchLocalhost, xmlFileOpenLocalhost,
-		xmlFileRead, xmlFileClose);
+		pa_xmlFileRead, pa_xmlFileClose);
 
 	// XSLT stylesheet manager
 	cache_managers->put(*NEW String(pool, "stylesheet"), 
