@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/08/28 18:27:30 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/08/29 12:22:48 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -508,16 +508,9 @@ static const String& text_value_to_string(Request& r, const String *source,
 	case P_HTML: 
 		{
 			Temp_lang temp_lang(r, String::UL_HTML | String::UL_OPTIMIZE_BIT);
-			if(Junction *junction=text_value->get_junction()) {
-				// execution of found $.html{code} must be in context of ^send[...]
-				// setting code context, would execute in ^.send[>>context<<]
-				//junction->change_context(?.get_junction());
-				junction->root=r.root;
-				junction->rcontext=r.rcontext;
-				junction->wcontext=r.wcontext;
-				
+			if(Junction *junction=text_value->get_junction())
 				result << r.process_to_string(*text_value);
-			} else
+			else
 				throw Exception("parser.runtime",
 					source,
 					"html part value must be code");

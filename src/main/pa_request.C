@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/08/13 15:55:42 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/08/29 12:22:47 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -68,7 +68,7 @@ Request::Request(Pool& apool,
 #ifdef RESOURCES_DEBUG
 	, sql_connect_time(0),sql_request_time(0)
 #endif
-	, self(0), root(0), rcontext(0), wcontext(0)
+	, self(0), method_frame(0), rcontext(0), wcontext(0)
 {
 	// default charsets
 	pool().set_source_charset(*utf8_charset);
@@ -128,7 +128,7 @@ void Request::configure_admin(VStateless_class& conf_class, const String *source
 		"parser already configured");
 	configure_admin_done=true;
 	
-	// charsets must only be specified in root config
+	// charsets must only be specified in method_frame config
 	// so that users would not interfere
 
 	/* $MAIN:CHARSETS[
@@ -145,7 +145,7 @@ void Request::configure_admin(VStateless_class& conf_class, const String *source
 				"$" MAIN_CLASS_NAME ":" CHARSETS_NAME " must be hash");
 	}
 
-	// configure root options
+	// configure method_frame options
 	//	until someone with less privileges have overriden them
 	OP.configure_admin(*this);
 	methoded_array->configure_admin(*this);
@@ -221,11 +221,11 @@ gettimeofday(&mt[0],NULL);
 			true/*ignore class_path*/, true/*don't ignore read problem*/,
 			main_class_name, main_class);
 
-		// configure root options if not configured yet
+		// configure method_frame options if not configured yet
 		if(!configure_admin_done)
 			configure_admin(*main_class, 0);
 
-		// configure not-root=user options
+		// configure not-method_frame=user options
 		OP.configure_user(*this);
 		methoded_array->configure_user(*this);
 
@@ -509,7 +509,7 @@ VStateless_class *Request::use_buf(const char *source,
 		0/*no result needed*/, &method_called);
 	if(method_called) {
 		if(!main_class)
-			main_class=&cclass; // for root auto.p, when main_class not assigned yet
+			main_class=&cclass; // for method_frame auto.p, when main_class not assigned yet
 		configure_admin(cclass, &method_called->name);
 	}
 

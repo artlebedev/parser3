@@ -8,13 +8,15 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/15 10:21:43 $";
+static const char* IDENT_VALUE_H="$Date: 2002/08/29 12:22:48 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
 #include "pa_array.h"
 #include "pa_exception.h"
 #include "pa_globals.h"
+
+// forwards
 
 class VStateless_class;
 class WContext;
@@ -26,6 +28,7 @@ class Hash;
 class VFile;
 class MethodParams;
 class VObject;
+class VMethodFrame;
 
 ///	grandfather of all @a values in @b Parser
 class Value : public Pooled {
@@ -254,6 +257,27 @@ protected:
 	there are code-junctions and method-junctions
 	- code-junctions are used when some parameter passed in cury brackets
 	- method-junctions used in ^method[] calls or $method references
+
+	Junctions register themselves in method_frame [if any] for consequent invalidation.
+	This prevents evaluation of junctions in outdated context
+
+	To stop situations like this:
+@code
+	@main[]
+	^method1[]
+	^method2[]
+
+	@method1[]
+	$junction{
+		some code
+	}
+
+	@method2[]
+	^junction[]
+@endcode
+
+	On scope exit (VMethodFrame::~VMethodFrame()) got cleaned - Junction::method_frame becomes 0,
+	which later in Request::process triggers exception
 */
 class Junction : public Pooled {
 public:
@@ -261,29 +285,12 @@ public:
 	Junction(Pool& apool,
 		Value& aself,
 		VStateless_class *avclass, const Method *amethod,
-		Value *aroot,
+		VMethodFrame *amethod_frame,
 		Value *arcontext,
 		WContext *awcontext,
-		const Array *acode) : Pooled(apool),
-		
-		self(aself),
-		vclass(avclass), method(amethod),
-		root(aroot),
-		rcontext(arcontext),
-		wcontext(awcontext),
-		code(acode) {
-	}
+		const Array *acode);
 
-	void change_context(Junction *source) {
-		if(source) {
-			root=source->root;
-			rcontext=source->rcontext;
-			wcontext=source->wcontext;
-		} else {
-			root=rcontext=0;
-			wcontext=0;
-		}
-	}
+	void invalidate();
 
 	/// always present
 	Value& self;
@@ -293,7 +300,7 @@ public:
 	//@}
 	//@{
 	/// @name or these are present // so called 'code-junction'
-	Value *root;
+	VMethodFrame *method_frame;
 	Value *rcontext;
 	WContext *wcontext;
 	const Array *code;

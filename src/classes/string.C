@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/08/28 10:53:58 $";
+static const char* IDENT_STRING_C="$Date: 2002/08/29 12:22:46 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -16,6 +16,7 @@ static const char* IDENT_STRING_C="$Date: 2002/08/28 10:53:58 $";
 #include "pa_string.h"
 #include "pa_sql_connection.h"
 #include "pa_dictionary.h"
+#include "pa_vmethod_frame.h"
 
 // class
 
@@ -328,7 +329,7 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 			&replacement_code
 		};
 		Temp_value_element temp_match_var(
-			*replacement_code.get_junction()->root, 
+			*replacement_code.get_junction()->method_frame, 
 			*match_var_name, &vtable);
 		src.match(
 			&method_name, 
@@ -412,7 +413,7 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 					offset=(ulong)r.process_to_value(*voffset).as_double();
 				if(default_code=(Value *)options->get(*sql_default_name)) {
 					if(Junction *default_junction=default_code->get_junction())
-						default_junction->change_context(statement.get_junction());
+						;//default_junction->change_context(statement.get_junction());
 					else
 						throw Exception("parser.runtime",
 							&method_name,

@@ -115,6 +115,26 @@ SOURCE=..\sql\pa_sql_driver.h
 # End Group
 # Begin Source File
 
+SOURCE=..\..\acconfig.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\acinclude.m4
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\aclocal.m4
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\AUTHORS
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\ChangeLog
+# End Source File
+# Begin Source File
+
 SOURCE=.\compile.C
 # End Source File
 # Begin Source File
@@ -180,6 +200,26 @@ SOURCE=.\compile_tools.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\config.guess
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\config.sub
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\configure
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\configure.in
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\COPYING
+# End Source File
+# Begin Source File
+
 SOURCE=.\execute.C
 
 !IF  "$(CFG)" == "main - Win32 Release"
@@ -199,6 +239,38 @@ SOURCE=.\execute.C
 # Begin Source File
 
 SOURCE=..\..\..\win32xml\win32\gnome\glib\include\glib\glib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\INSTALL
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\install-sh"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Makefile.am
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Makefile.in
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\missing
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\mkinstalldirs
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\NEWS
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\operators.txt
 # End Source File
 # Begin Source File
 
@@ -401,6 +473,14 @@ SOURCE=.\pa_uue.C
 # Begin Source File
 
 SOURCE=..\include\pa_uue.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\parser3.dsw
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\README
 # End Source File
 # Begin Source File
 

@@ -7,6 +7,10 @@ Project: "ApacheModuleParser3"=.\src\targets\apache13\ApacheModuleParser3.dsp - 
 
 Package=<5>
 {{{
+    begin source code control
+    ApacheModuleParser3
+    .\src
+    end source code control
 }}}
 
 Package=<4>
@@ -52,6 +56,10 @@ Project: "classes"=.\src\classes\classes.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    classes
+    .\src\classes
+    end source code control
 }}}
 
 Package=<4>
@@ -64,6 +72,10 @@ Project: "gd"=.\src\classes\gd\gd.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    gd
+    .\src\classes\gd
+    end source code control
 }}}
 
 Package=<4>
@@ -76,6 +88,10 @@ Project: "libltdl"=.\src\lib\libltdl\libltdl.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    libltdl
+    .\src\lib\libltdl
+    end source code control
 }}}
 
 Package=<4>
@@ -88,6 +104,10 @@ Project: "main"=.\src\main\main.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    main
+    .\src
+    end source code control
 }}}
 
 Package=<4>
@@ -100,6 +120,10 @@ Project: "md5"=.\src\lib\md5\md5.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    md5
+    .\src\lib\md5
+    end source code control
 }}}
 
 Package=<4>
@@ -112,6 +136,10 @@ Project: "parser3"=.\src\targets\cgi\parser3.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    parser3
+    .\src\targets\cgi
+    end source code control
 }}}
 
 Package=<4>
@@ -148,6 +176,10 @@ Project: "parser3isapi"=.\src\targets\isapi\parser3isapi.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    parser3isapi
+    .\src\targets\isapi
+    end source code control
 }}}
 
 Package=<4>
@@ -187,6 +219,10 @@ Project: "pcre"=.\src\lib\pcre\pcre.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    pcre
+    .\src\lib\pcre
+    end source code control
 }}}
 
 Package=<4>
@@ -202,6 +238,10 @@ Project: "pcre_ctype"=.\src\lib\pcre\pcre_parser_ctype.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    pcre_parser_ctype
+    .\src\lib\pcre
+    end source code control
 }}}
 
 Package=<4>
@@ -214,6 +254,10 @@ Project: "pcre_dftables"=.\src\lib\pcre\pcre_dftables.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    pcre_dftables
+    .\src\lib\pcre
+    end source code control
 }}}
 
 Package=<4>
@@ -226,6 +270,10 @@ Project: "smtp"=.\src\classes\smtp\smtp.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    smtp
+    .\src\classes\smtp
+    end source code control
 }}}
 
 Package=<4>
@@ -238,6 +286,10 @@ Project: "types"=.\src\types\types.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    types
+    .\src\types
+    end source code control
 }}}
 
 Package=<4>

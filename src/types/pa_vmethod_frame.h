@@ -8,11 +8,12 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/08/14 14:18:30 $";
+static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/08/29 12:22:48 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
 #include "pa_vjunction.h"
+#include "pa_request.h"
 
 /**	Method frame write context
 	accepts values written by method code
@@ -52,7 +53,7 @@ public: // Value
 
 public: // WContext
 
-	StringOrValue result() {
+	/* override */ StringOrValue result() {
 		// check the $result value
 		Value *result_value=get_result_variable();
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue
@@ -74,7 +75,9 @@ public: // usage
 		fnumbered_params(apool, aname),
 
 		fself(0),
-		fresult_initial_void(0) {
+		fresult_initial_void(0),
+
+		junctions(apool) {
 
 		if(has_my()) { // this method uses named params?
 			const Method &method=*junction.method;
@@ -95,6 +98,9 @@ public: // usage
 		}
 	}
 
+	~VMethodFrame() {
+		invalidate_junctions();
+	}
 	const String& name() { return fname; }
 
 	void set_self(Value& aself) { fself=&aself; }
@@ -138,6 +144,10 @@ public: // usage
 
 	MethodParams *numbered_params() { return &fnumbered_params; }
 
+	void register_junction(Junction& ajunction) {
+		junctions+=&ajunction;
+	}
+
 private:
 
 	bool has_my() {
@@ -153,11 +163,19 @@ private:
 		return result && result!=fresult_initial_void ? result : 0;
 	}
 
+	void invalidate_junctions() {
+		Array_iter i(junctions);
+		while(i.has_next())
+			static_cast<Junction *>(i.next())->invalidate();
+		// someday free junctions
+	}
+
 public:
 	
 	const Junction& junction;
 
 private:
+
 	const String& fname;
 
 	int store_param_index;
@@ -165,7 +183,12 @@ private:
 	Value *fself;
 
 private:
+
 	Value *fresult_initial_void;
+
+private:
+
+	Array  junctions;
 
 };
 

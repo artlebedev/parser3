@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/08/15 09:07:48 $";
+static const char* IDENT_OP_C="$Date: 2002/08/29 12:22:46 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -13,6 +13,7 @@ static const char* IDENT_OP_C="$Date: 2002/08/15 09:07:48 $";
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
 #include "pa_vdate.h"
+#include "pa_vmethod_frame.h"
 
 // limits
 
@@ -202,7 +203,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 
 	bool need_delim=false;
 	VInt *vint=new(pool) VInt(pool, 0);
-	r.root->put_element(var_name, vint, false);
+	r.method_frame->put_element(var_name, vint, false);
 	for(int i=from; i<=to; i++) {
 		vint->set_int(i);
 
@@ -291,7 +292,7 @@ static void _switch(Request& r, const String&, MethodParams *params) {
 	r.process(cases_code, true/*intercept_string*/);
 	if(Value *selected_code=data.found ? data.found : data._default) {
 		// setting code context, would execute in ^switch[...]{>>context<<}
-		selected_code->get_junction()->change_context(cases_code.get_junction());
+		//selected_code->get_junction()->change_context(cases_code.get_junction());
 		r.write_pass_lang(r.process(*selected_code));
 	}
 }
@@ -310,7 +311,7 @@ static void _case(Request& r, const String& method_name, MethodParams *params) {
 	
 	// killing context for safety, would execute in ^switch[...]{>>context<<}
 	// reason: context is stacked, and it would become invalid afterwards
-	code->get_junction()->change_context(0);
+	//code->get_junction()->change_context(0);
 
 	for(int i=0; i<count; i++) {
 		Value& value=r.process_to_value(params->get(i));
@@ -580,7 +581,9 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 	// taking snapshot of request processing status
 	//int ssexception_trace=r.exception_trace.top_index();
 	int sstack=r.stack.top_index();
-	Value *sself=r.self, *sroot=r.root, *srcontext=r.rcontext;  
+	Value *sself=r.self;
+	VMethodFrame *smethod_frame=r.method_frame;
+	Value *srcontext=r.rcontext;  
 	WContext *swcontext=r.wcontext;	
 	try {
 		result=r.process(body_code);
@@ -588,20 +591,20 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 		// restoring request processing status
 		//r.exception_trace.top_index(ssexception_trace);
 		r.stack.top_index(sstack);
-		r.self=sself; r.root=sroot, r.rcontext=srcontext; r.wcontext=swcontext;
+		r.self=sself; r.method_frame=smethod_frame, r.rcontext=srcontext; r.wcontext=swcontext;
 		
 		
 		VHash& vhash=exception2vhash(pool, e);
 
 		Junction *junction=catch_code.get_junction();
-		Value *root=junction->root;
-		Value *saved_exception_var_value=root->get_element(*exception_var_name, root, false);
-		junction->root->put_element(*exception_var_name, &vhash, false);
+		Value *method_frame=junction->method_frame;
+		Value *saved_exception_var_value=method_frame->get_element(*exception_var_name, method_frame, false);
+		junction->method_frame->put_element(*exception_var_name, &vhash, false);
 		result=r.process(catch_code);
 		bool handled=false;
 		if(Value *value=static_cast<Value *>(vhash.hash(0).get(*exception_handled_part_name)))
 			handled=value->as_bool();		
-		junction->root->put_element(*exception_var_name, saved_exception_var_value, false);
+		junction->method_frame->put_element(*exception_var_name, saved_exception_var_value, false);
 
 		if(!handled)
 			throw(e); // rethrow

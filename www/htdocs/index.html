@@ -223,9 +223,40 @@ $selffilespec[$filespec]
 #^badcolumntest[]
 #^delimiters[]
 #^новый-split[]
-^грязные-cookie[]
+#^грязные-cookie[]
+#^html-почта[]
+#^badswitchtest[]
+^okswitchtest[]
 <hr>
 OK
+
+@okswitchtest[]
+$local[local value]
+^switch[1]{
+	^case[1]{1code $local}
+}
+
+@badswitchtest[]
+^switch[1]{
+	^badswitchtestcase[]
+}
+@badswitchtestcase[][local]
+$local[local value]
+	^case[1]{1code $local}
+
+@badjunction[]
+^badj1[]
+^badj2[]
+
+@html-почта[]
+$переменная[значение]
+^mail:send[
+	$.from[paf@mail]
+	$.to[paf@mail]
+	$.subject[htmltest1]
+	$.html{тест$переменная=  !}
+]
+
                  
 @грязные-cookie[]
 $cookie:a[&]
