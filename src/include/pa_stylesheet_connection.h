@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.3 2001/09/17 14:46:49 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.4 2001/09/25 09:36:51 parser Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -63,7 +63,7 @@ public:
 
 	bool connected() { return fstylesheet!=0; }
 
-	XalanCompiledStylesheet& stylesheet() { 
+	const XalanCompiledStylesheet& stylesheet() { 
 		if(time_t new_disk_time=get_new_disk_time())
 			load(new_disk_time);
 		return *fstylesheet; 
@@ -106,7 +106,7 @@ private:
 private:
 
 	const String& ffile_spec;
-	XalanCompiledStylesheet *fstylesheet;
+	const XalanCompiledStylesheet *fstylesheet;
 	time_t time_used;
 	time_t prev_disk_time;
 

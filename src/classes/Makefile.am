@@ -1,6 +1,6 @@
 SUBDIRS = gd
 
-INCLUDES = -I../types -I../sql -I../pcre -Igd
+INCLUDES = -I../types -I../sql -I../pcre -Igd @XML_INCLUDES@
 
 CLASSES_INC=classes.inc
 CLASSES_C=classes.C

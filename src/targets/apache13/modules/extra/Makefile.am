@@ -1,4 +1,4 @@
-INCLUDES = $(INCLUDES) -I../../../../classes -I../../../../types $(INCLTDL) -I../../../../sql
+INCLUDES := $(INCLUDES) -I../parser3/classes -I../parser3/types $(INCLTDL) -I../parser3/sql -I$(APACHE13_SRC)/include -I$(APACHE13_SRC)/os/unix -I$(APACHE13_SRC)/os/win32 @XML_INCLUDES@
 
 noinst_LIBRARIES = libmod_parser3.a libpostbuildmessage.a
 libmod_parser3_a_SOURCES = pa_pool.C pa_threads.C mod_parser3.C

@@ -76,13 +76,14 @@ OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
-XML_SRC = @XML_SRC@
+XML_INCLUDES = @XML_INCLUDES@
+XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 host_os = @host_os@
 
 SUBDIRS = gd
 
-INCLUDES = -I../types -I../sql -I../pcre -Igd
+INCLUDES = -I../types -I../sql -I../pcre -Igd @XML_INCLUDES@
 
 CLASSES_INC = classes.inc
 CLASSES_C = classes.C

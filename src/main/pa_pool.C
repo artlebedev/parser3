@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_pool.C,v 1.26 2001/09/21 14:46:09 parser Exp $"; 
+static const char *RCSId="$Id: pa_pool.C,v 1.27 2001/09/25 09:36:51 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_exception.h"
@@ -100,17 +100,17 @@ void Pool::_throw(const String *source, const XSLException& e) {
 		THROW(0, 0,
 			source,
 			"%s (%s)",
-				transcode(e.getMessage()),  // message for exception
-				transcode(e.getType()) // type of exception
+				transcode_cstr(e.getMessage()),  // message for exception
+				transcode_cstr(e.getType()) // type of exception
 		);
 	else
 		THROW(0, 0,
 			source,
 			"%s (%s) %s(%d:%d)'", 
-				transcode(e.getMessage()),  // message for exception
-				transcode(e.getType()), // type of exception
+				transcode_cstr(e.getMessage()),  // message for exception
+				transcode_cstr(e.getType()), // type of exception
 				
-				transcode(e.getURI()),  // URI for the associated document, if any
+				transcode_cstr(e.getURI()),  // URI for the associated document, if any
 				e.getLineNumber(),  // line number, or -1 if unknown
 				e.getColumnNumber() // column number, or -1 if unknown
 		);

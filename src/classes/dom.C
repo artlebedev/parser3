@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char *RCSId="$Id: dom.C,v 1.33 2001/09/21 14:46:09 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.34 2001/09/25 09:36:51 parser Exp $"; 
 
 #include "pa_request.h"
 #include "pa_vdom.h"
@@ -68,7 +68,7 @@ protected: // XalanOutputStream
 	virtual void writeData(const char *theBuffer, unsigned long theBufferLength) {
 		char *copy=(char *)fstring.malloc((size_t)theBufferLength);
 		memcpy(copy, theBuffer, (size_t)theBufferLength);
-		fstring.APPEND_CLEAN(copy, (size_t)theBufferLength, "dom", -1);
+		fstring.APPEND_CLEAN(copy, (size_t)theBufferLength, "dom", 0);
 	}
 
 	virtual void doFlush() {}
@@ -242,7 +242,7 @@ static void _set(Request& r, const String& method_name, MethodParams *params) {
 	const String& xml=r.process(vxml).as_string();
 
 	std::istrstream stream(xml.cstr());
-	XalanParsedSource* parsedSource;
+	const XalanParsedSource* parsedSource;
 	int error=vdom.transformer().parseSource(&stream, parsedSource);
 
 	if(error)
@@ -262,7 +262,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	const String& file_name=params->as_string(0, "file name must not be code");
 	const char *filespec=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
 	
-	XalanParsedSource* parsedSource;
+	const XalanParsedSource* parsedSource;
 	int error=vdom.transformer().parseSource(filespec, parsedSource);
 
 	if(error)
@@ -301,7 +301,7 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 	}
 
 	// source
-	XalanParsedSource &parsed_source=vdom.get_parsed_source(pool, &method_name);
+	const XalanParsedSource &parsed_source=vdom.get_parsed_source(pool, &method_name);
 
 	// stylesheet
 	const String& stylesheet_file_name=params->as_string(0, "file name must not be code");

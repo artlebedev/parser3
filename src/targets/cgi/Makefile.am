@@ -1,8 +1,8 @@
-INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql
+INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql @XML_INCLUDES@
 
 #for sysadmin-controlled auto.p
 CPPFLAGS:=$(CPPFLAGS) -DSYSCONFDIR=\"$(sysconfdir)\"
 
 bin_PROGRAMS = parser3
 parser3_SOURCES = pa_pool.C pa_threads.C parser3.C
-parser3_LDADD=../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../pcre/libpcre.a
+parser3_LDADD=../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../pcre/libpcre.a @XML_LIBS@

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.12 2001/09/18 13:31:56 parser Exp $
+	$Id: pa_vdom.h,v 1.13 2001/09/25 09:36:51 parser Exp $
 */
 
 #ifndef PA_VDOM_H
@@ -71,8 +71,8 @@ public:
 	XalanTransformer& transformer() {return *ftransformer; }
 	XercesParserLiaison& parser_liaison() { return *fparser_liaison; }
 
-	void set_parsed_source(XalanParsedSource& aparsed_source) { fparsed_source=&aparsed_source; }
-	XalanParsedSource& get_parsed_source(Pool& pool, const String *source) { 
+	void set_parsed_source(const XalanParsedSource& aparsed_source) { fparsed_source=&aparsed_source; }
+	const XalanParsedSource& get_parsed_source(Pool& pool, const String *source) { 
 		if(!fparsed_source)
 			PTHROW(0, 0,
 				source,
@@ -96,7 +96,7 @@ private:
 	XalanTransformer *ftransformer;
 	XercesParserLiaison	*fparser_liaison;
 
-	XalanParsedSource *fparsed_source;
+	const XalanParsedSource *fparsed_source;
 	XalanDocument *fdocument;
 
 };
