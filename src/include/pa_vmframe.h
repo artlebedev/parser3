@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.11 2001/03/06 15:02:47 paf Exp $
+  $Id: pa_vmframe.h,v 1.12 2001/03/07 13:54:47 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -15,7 +15,7 @@ public: // Value
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "method_frame"; }
 	// frame: my or self_transparent
-	Value *get_element(const String& name) { 
+	Value *get_element(String& name) { 
 		Value *result=static_cast<Value *>(my.get(name));
 		if(!result)
 			result=self->get_element(name);
@@ -59,8 +59,11 @@ public: // usage
 		Method *method=junction.method;
 		if(store_param_index==method->params_names.size())
 			THROW(0,0,
-				&name(),
-				"call: too many params (max=%d)", method->params_names.size());
+				&junction.self.name(),
+				"%s method '%s' accepts maximum %d parameters", 
+					junction.self.type(),
+					method->name.cstr(),
+					method->params_names.size());
 		
 		String& name=*static_cast<String *>(method->params_names.get(store_param_index++));
 		my.put(name, value);

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_stack.h,v 1.2 2001/02/22 13:33:24 paf Exp $
+  $Id: pa_stack.h,v 1.3 2001/03/07 13:54:46 paf Exp $
 */
 
 #ifndef PA_STACK_H
@@ -28,7 +28,7 @@ public:
 		return get(ftop-top_offset-1);
 	}
 
-	int top() { return ftop; }
+	int top() { return ftop-1; }
 
 private:
 

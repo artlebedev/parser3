@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.20 2001/03/06 15:02:46 paf Exp $
+  $Id: pa_vclass.h,v 1.21 2001/03/07 13:54:46 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -20,7 +20,7 @@ public: // Value
 	const char *type() const { return "class"; }
 
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
-	Value *get_element(const String& aname) {
+	Value *get_element(String& aname) {
 		// $NAME=my name
 		if(aname==NAME_NAME)
 			return NEW VString(class_alias->name());

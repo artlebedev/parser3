@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vobject.h,v 1.8 2001/03/06 15:02:47 paf Exp $
+  $Id: pa_vobject.h,v 1.9 2001/03/07 13:54:47 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -18,7 +18,7 @@ public: // Value
 	const char *type() const { return "object"; }
 
 	// object_instance: (field)=value;(CLASS)=vclass;(method)=method_ref
-	Value *get_element(const String& name) {
+	Value *get_element(String& name) {
 		// $CLASS=my class
 		if(name==CLASS_NAME)
 			return class_alias;
@@ -27,7 +27,7 @@ public: // Value
 			return class_alias->base();
 		// $method=junction(self+class+method)
 		if(Junction *junction=class_real.get_junction(*this, name))
-			return NEW VJunction(*junction);
+			return NEW VJunction(*junction);;
 		// $field=fields.field
 		return static_cast<Value *>(fields.get(name));
 	}

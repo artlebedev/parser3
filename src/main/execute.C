@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.62 2001/03/07 11:14:12 paf Exp $
+  $Id: execute.C,v 1.63 2001/03/07 13:54:48 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -95,7 +95,7 @@ void Request::execute(const Array& ops) {
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
-		fprintf(stderr, "%d:%s", stack.top(), opcode_name[op.code]); fflush(stderr);
+		fprintf(stderr, "%d:%s", stack.top()+1, opcode_name[op.code]); fflush(stderr);
 
 		switch(op.code) {
 		// param in next instruction
@@ -108,19 +108,17 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_CODE:
 			{
+				VMethodFrame *frame=static_cast<VMethodFrame *>(stack[stack.top()]);
 				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 				fprintf(stderr, " (%d)\n", local_ops->size());
 				dump(1, *local_ops);
-				// TODO: rcontext junction должен быть контекстом вызываемого объекта
-				// чтобы вот эти конструкции орудовали одними полями внутри {}  :
-				//   $var{$field}
-				//   ^var.menu{$field}
-				// поскольку они суть одно и то же, и так удобнее
+				
 				Junction& j=*NEW Junction(pool(), 
 					*self, 0, 0,
-					root,rcontext,wcontext,local_ops);
+					rcontext, frame, frame, local_ops);
 				
 				Value *value=NEW VJunction(j);
+				value->set_name(frame->name());
 				PUSH(value);
 				break;
 			}
@@ -248,6 +246,7 @@ void Request::execute(const Array& ops) {
 							value->type()); 
 				//unless(method) method=operators.get_method[...;code/native_code](name)
 				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);
+				frame->set_name(junction->self.name());
 				PUSH(frame);
 				break;
 			}
@@ -561,9 +560,9 @@ Value *Request::get_element() {
 
 			fprintf(stderr, "<-ja returned");
 		}
-	} else {
+	} else
 		value=NEW VUnknown(pool());
-		value->set_name(name);
-	}
+
+	value->set_name(name);
 	return value;
 }
