@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.71 2002/07/31 14:35:57 paf Exp $
+	$Id: mail.C,v 1.72 2002/07/31 14:58:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -97,31 +97,34 @@ struct Mail_info {
 	Charset *charset; const char *content_charset_name;
 	String *header;
 	const String **from, **to;
+	const String *errors_to;
 };
 #endif
 
 const String& extractEmail(const String& string);
-static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameaning, 
+static void add_header_attribute(const Hash::Key& raw_element_name, Hash::Val *aelement_value, 
 								 void *info) {
-
-	Value& lmeaning=*static_cast<Value *>(ameaning);
+	Value& element_value=*static_cast<Value *>(aelement_value);
+	const String& low_element_name=raw_element_name.change_case(raw_element_name.pool(), String::CC_LOWER);
 	Mail_info& mi=*static_cast<Mail_info *>(info);
 
 	// exclude one attribute [body]
-	if(aattribute==BODY_NAME
-		|| aattribute==CHARSET_NAME)
+	if(low_element_name==BODY_NAME
+		|| low_element_name==CHARSET_NAME)
 		return;
 
 	// fetch from & to from header for SMTP
-	if(mi.from && aattribute=="from")
-		*mi.from=&extractEmail(lmeaning.as_string());
-	if(mi.to && aattribute=="to")
-		*mi.to=&extractEmail(lmeaning.as_string());
+	if(mi.from && low_element_name=="from")
+		*mi.from=&extractEmail(element_value.as_string());
+	if(mi.to && low_element_name=="to")
+		*mi.to=&extractEmail(element_value.as_string());
+	if(low_element_name=="errors-to")
+		mi.errors_to=&extractEmail(element_value.as_string());
 
 	// append header line
 	*mi.header << 
-		aattribute << ":" << 
-		attributed_meaning_to_string(lmeaning, String::UL_MAIL_HEADER).
+		low_element_name << ":" << 
+		attributed_meaning_to_string(element_value, String::UL_MAIL_HEADER).
 			cstr(String::UL_UNSPECIFIED, 0, mi.charset, mi.content_charset_name) << 
 		"\n";
 }
@@ -193,6 +196,8 @@ static const String& message_hash_to_string(Request& r, const String& method_nam
 		from, to
 	};
 	message_hash.for_each(add_header_attribute, &mail_info);
+	if(!mail_info.errors_to)
+		result << "errors-to: postmaster\n"; // errors-to: default
 
 	if(Value *body_element=static_cast<Value *>(message_hash.get(*body_name))) {
 		if(Hash *body_hash=body_element->get_hash(&method_name)) {
