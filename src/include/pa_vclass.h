@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.27 2001/03/10 11:18:14 paf Exp $
+  $Id: pa_vclass.h,v 1.28 2001/03/10 11:21:46 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -61,6 +61,7 @@ public: // usage
 	}
 
 	void set_field(const String& name, Value *value) {
+		value->set_name(name);
 		if(fbase && fbase->replace_field(name, value))
 			return;
 
