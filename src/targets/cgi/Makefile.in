@@ -92,8 +92,8 @@ sqldriversdir = @sqldriversdir@
 INCLUDES = -I../../classes -I../../types -I../../sql -I../../lib/pcre -I../../lib/md5 -I$(INCLTDL) @XML_INCLUDES@
 
 bin_PROGRAMS = parser3
-noinst_HEADERS = pool_storage.h
-parser3_SOURCES = pa_pool.C pa_threads.C parser3.C getopt.c
+noinst_HEADERS = pool_storage.h fixopt.h
+parser3_SOURCES = pa_pool.C pa_threads.C parser3.C getopt.c fixopt.C
 parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a ../../lib/pcre/libpcre.a ../../lib/md5/libmd5.a $(LIBLTDL) $(LIBADD_DL) @XML_LIBS@ @MIME_LIBS@
 
 EXTRA_DIST = parser3.dsp getopt.h
@@ -107,7 +107,7 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I../../../src/include
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-parser3_OBJECTS =  pa_pool.o pa_threads.o parser3.o getopt.o
+parser3_OBJECTS =  pa_pool.o pa_threads.o parser3.o getopt.o fixopt.o
 parser3_DEPENDENCIES =  ../../main/libmain.a ../../classes/libclasses.a \
 ../../main/libmain.a ../../types/libtypes.a ../../classes/gd/libgd.a \
 ../../lib/pcre/libpcre.a ../../lib/md5/libmd5.a
@@ -128,8 +128,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP_ENV = --best
-DEP_FILES =  .deps/getopt.P .deps/pa_pool.P .deps/pa_threads.P \
-.deps/parser3.P
+DEP_FILES =  .deps/fixopt.P .deps/getopt.P .deps/pa_pool.P \
+.deps/pa_threads.P .deps/parser3.P
 SOURCES = $(parser3_SOURCES)
 OBJECTS = $(parser3_OBJECTS)
 
