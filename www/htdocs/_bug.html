@@ -1,17 +1,5 @@
-@main2[]
-^switch[2]{
-	^case(1){one}
-	^case[DEFAULT]{def}
-}
-
-
-@get[]
-$result[
-	$._default{^math:random(10)}
-]
-#end @getBasketData[]
-
-@main[]
-$h[^get[]]
-
-=$h.1=
+$picture[^image::create(100;100;0xffffff)]
+$coordinates[^table::create{x   y
+# могут быть еще координаты
+2	3	4}]
+^picture.polyline(0x000000)[$coordinates]

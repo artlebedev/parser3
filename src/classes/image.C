@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2004/03/01 13:33:11 $";
+static const char * const IDENT_IMAGE_C="$Date: 2004/03/23 15:11:15 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -876,6 +876,10 @@ static void _bar(Request& r, MethodParams& params) {
 #ifndef DOXYGEN
 static void add_point(Table::element_type row, 
 					  gdImage::Point **p) {
+	if(row->count()!=2)
+		throw Exception(0,
+			0,
+			"coordinates table must contain two columns: x and y values");
 	(**p).x=row->get(0)->as_int();
 	(**p).y=row->get(1)->as_int();
 	(*p)++;

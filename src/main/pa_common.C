@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/03/09 14:49:46 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2004/03/23 15:11:15 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -174,7 +174,7 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 			ArrayString astatus; 
 			size_t pos_after=0;
 			status_line.split(astatus, pos_after, " "); 
-			const String& status_code=*astatus.get(1);
+			const String& status_code=*astatus.get(astatus.count()>1?1:0);
 			result=status_code.as_int(); 
 
 			if(fail_on_status_ne_200 && result!=200)
