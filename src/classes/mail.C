@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.57 2002/03/25 12:04:15 paf Exp $
+	$Id: mail.C,v 1.58 2002/03/25 12:13:56 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -370,7 +370,7 @@ static void sendmail(Request& r, const String& method_name,
 
 	const String *sendmail_command;
 #ifdef PA_FORCED_SENDMAIL
-	sendmail_command=PA_FORCED_SENDMAIL;
+	sendmail_command=new(pool) String(pool, PA_FORCED_SENDMAIL);
 #else
 	const char *sendmailkey_cstr="sendmail";
 	if(mail_conf) {
@@ -407,10 +407,10 @@ static void sendmail(Request& r, const String& method_name,
 			file_spec, 
 			"is not executable."
 #ifdef PA_FORCED_SENDMAIL
+			" Use configure key --with-sendmail=\"appropriate sendmail command\""
+#else
 			" Set $"MAIN_CLASS_NAME":"MAIL_NAME".%s with appropriate sendmail command", 
 				sendmailkey_cstr
-#else
-			" Use configure key --with-sendmail=\"appropriate sendmail command\""
 #endif
 		);
 
