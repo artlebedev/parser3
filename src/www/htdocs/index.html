@@ -1,7 +1,14 @@
 @main[]
-^testdom2[]
+^testdom3[]
+#^testdom2[]
 #^testdom1[]
 #^testdom0[]
+OK
+
+@testdom3[]
+$dom[^dom::load[test.xml]]
+$dom[^dom.xslt[test.xsl;$.param1(48)]]
+$dom[^dom.xslt[test.xsl;$.param1(48)]]
 
 @testdom2[]
 $dom[^dom::load[test.xml]]

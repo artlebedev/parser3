@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.4 2001/09/10 14:24:37 parser Exp $
+	$Id: pa_vdom.h,v 1.5 2001/09/11 08:43:39 parser Exp $
 */
 
 #ifndef PA_VDOM_H
@@ -57,7 +57,7 @@ public: // usage
 		if(!fparsed_source)
 			PTHROW(0, 0,
 				source,
-				"this instance can not be used for this purpose");
+				"can not be performed on this instance (xslt[xslt] not supported)");
 		return *fparsed_source; 
 	}
 
@@ -68,7 +68,7 @@ public: // usage
 		if(!fdocument)
 			PTHROW(0, 0,
 				source,
-				"this instance does not contain document");
+				"can not be applied to uninitialized instance");
 		return *fdocument; 
 	}
 
