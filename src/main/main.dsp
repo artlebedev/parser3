@@ -129,8 +129,6 @@ SOURCE=.\core.C
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
 
-# PROP Exclude_From_Build 1
-
 !ENDIF 
 
 # End Source File
@@ -160,6 +158,10 @@ SOURCE=.\pa_pool.C
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_request.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_string.C
 # End Source File
 # Begin Source File
@@ -180,6 +182,10 @@ SOURCE=..\include\compile.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\core.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\execute.h
 # End Source File
 # Begin Source File
@@ -189,10 +195,6 @@ SOURCE=..\include\pa_array.h
 # Begin Source File
 
 SOURCE=..\include\pa_common.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\pa_context.h
 # End Source File
 # Begin Source File
 
@@ -233,6 +235,10 @@ SOURCE=..\include\pa_value.h
 # Begin Source File
 
 SOURCE=..\include\pa_vclass.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_wcontext.h
 # End Source File
 # End Group
 # End Target

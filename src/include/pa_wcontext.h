@@ -1,18 +1,19 @@
 /*
-  $Id: pa_context.h,v 1.7 2001/02/21 11:10:02 paf Exp $
+  $Id: pa_wcontext.h,v 1.1 2001/02/21 16:11:49 paf Exp $
 */
 
 /*
 	data core
 */
 
-#ifndef PA_CONTEXT_H
-#define PA_CONTEXT_H
+#ifndef PA_WCONTEXT_H
+#define PA_WCONTEXT_H
 
 #include "pa_value.h"
 
 class WContext : public Value {
 public:
+	WContext(Pool& apool) : Pooled(apool), string(apool) {}
 
 	// appends a string to result
 	// until Value written, ignores afterwards
@@ -46,7 +47,7 @@ public: //implement by replicating to value->calls
 	bool has_parent(Class *aparent) { return value?value->has_parent(aparent):false; }
 
 private:
-	String& string;
+	String string;
 	Value *value;
 
 private:

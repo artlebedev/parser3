@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.5 2001/02/21 11:10:02 paf Exp $
+  $Id: pa_request.h,v 1.6 2001/02/21 16:11:49 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -8,6 +8,8 @@
 #include "pa_pool.h"
 #include "pa_exception.h"
 #include "pa_hash.h"
+#include "pa_context.h"
+#include "pa_value.h"
 
 class Local_request_exception;
 
@@ -15,9 +17,12 @@ class Request {
 	friend Local_request_exception;
 public:
 	
-	Request(Pool& apool) : 
+	Request(Pool& apool, 
+		Value *aroot, Value *aself, Value *arcontext, WContext *awcontext) : 
 		fpool(apool), 
-		fclasses(new(apool) Hash(apool)) {
+		root(aroot), self(aself), rcontext(arcontext), wcontext(awcontext),
+		fclasses(apool)
+		{
 	}
 	~Request() {}
 
@@ -25,7 +30,23 @@ public:
 	Pool& pool() { return fpool; }
 
 	Exception& exception() { return *fexception; }
-	Hash& classes() { return *fclasses; }
+	Hash& classes() { return fclasses; }
+
+	// core request processing
+	void core();
+
+protected: // core
+
+	// classes
+	Hash fclasses;
+
+	// contexts
+	Value *root, *self, *rcontext;
+	WContext *wcontext;
+	
+	Array& load_and_compile_RUN();
+	VClass *construct_class(String& name, Array& compiled_methods);
+	char *execute_MAIN(Value *class_RUN);
 
 protected:
 
@@ -47,9 +68,6 @@ private:
 
 	// current request's exception object
 	Exception *fexception;
-
-	// defined classes
-	Hash *fclasses;
 
 };
 

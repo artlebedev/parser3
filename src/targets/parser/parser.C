@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.13 2001/02/21 15:27:00 paf Exp $
+  $Id: parser.C,v 1.14 2001/02/21 16:12:16 paf Exp $
 */
 
 #include <stdio.h>
@@ -14,12 +14,17 @@
 #include "execute.h"
 #include "pa_vclass.h"
 
+#include "core.h"
+
 char *itoa(int n, char *buf){
     snprintf(buf,MAX_STRING,"%d",n);
     return buf;
 }
 
 int main(int argc, char *argv[]) {
+	core();
+	exit 0;
+
 	Exception fatal_exception;
 	if(EXCEPTION_TRY(fatal_exception)) {
 		Pool pool(fatal_exception);
@@ -146,38 +151,6 @@ int main(int argc, char *argv[]) {
 			int type=si.skip_to(types);
 			si++;
 */
-			// compile
-			char *file="c:\\temp\\test.p";
-			char *source=file_read(request.pool(), file);
-			Array& compiled_methods=COMPILE(request, source, file);
-			
-			String name_RUN(request.pool()); name_RUN.APPEND_CONST("RUN");
-			//   create new 'name' vclass, add it to request's classes
-			{
-				Array immediate_parents(pool);
-				VClass *vclass=new(pool) VClass(pool, &name_RUN, immediate_parents);
-				request.classes().put(name_RUN, vclass);
-
-				for(int i=0; i<compiled_methods.size(); i++) {
-					Method &method=*static_cast<Method *>(compiled_methods.quick_get(i));
-					vclass->add_method(method.name, method);
-				}
-			}
-
-			{
-				VClass *class_RUN=static_cast<VClass *>(request.classes().get(name_RUN));
-				String name_main(pool);
-				name_main.APPEND_CONST(MAIN_METHOD_NAME);
-				Method *method_main=class_RUN->get_method(name_main);
-				if(!method_main)
-					request.exception().raise(0,0,
-						&class_RUN->name(),
-						"no 'main' method in class");
-
-				Array& code=method_main->code;
-				execute(pool, code);
-			}
-
 		} else {
 			Exception& e=request.exception();
 			printf("operator_error occured: %s\n", e.comment());
