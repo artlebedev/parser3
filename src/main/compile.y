@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.73 2001/03/08 11:27:49 paf Exp $
+  $Id: compile.y,v 1.74 2001/03/08 11:34:22 paf Exp $
 */
 
 %{
@@ -86,7 +86,7 @@ int yylex(YYSTYPE *lvalp, void *pc);
 
 %%
 
-all:
+all: /* TODO: у ^execute непременно задать какой-то name, см. 'RUN' */
 	one_big_piece {
 	String& name_main=*NEW String(POOL);
 	name_main.APPEND_CONST(MAIN_METHOD_NAME);
@@ -104,15 +104,15 @@ method: control_method | code_method;
 
 control_method: '@' STRING '\n' 
 				control_strings {
-	String& name=*SLA2S($2);
+	String& command=*SLA2S($2);
 	YYSTYPE strings_code=$4;
 	if(strings_code->size()<1*2) {
 		strcpy(PC->error, "@");
-		strcat(PC->error, name.cstr());
+		strcat(PC->error, command.cstr());
 		strcat(PC->error, " is empty");
 		YYERROR;
 	}
-	if(name==CLASS_NAME) {
+	if(command==CLASS_NAME) {
 		if(PC->vclass!=&PC->request->ROOT_CLASS) { // already changed from default?
 			strcpy(PC->error, "class already have a name '");
 			strncat(PC->error, PC->vclass->name().cstr(), 100);
@@ -135,13 +135,13 @@ control_method: '@' STRING '\n'
 			YYERROR;
 		}
 	} else {
-		if(name==USE_NAME) {
+		if(command==USE_NAME) {
 			for(int i=0; i<strings_code->size(); i+=2) {
 				String *file=SLA2S(strings_code, i);
 				file->APPEND_CONST(".p");
 				PC->request->use(file->cstr(), 0);
 			}
-		} else if(name==BASE_NAME) {
+		} else if(command==BASE_NAME) {
 			if(PC->vclass->base()!=&PC->request->ROOT_CLASS) { // already changed from default?
 				strcpy(PC->error, "there must be only one @"BASE_NAME);
 				YYERROR;
@@ -162,7 +162,7 @@ control_method: '@' STRING '\n'
 				YYERROR;
 			}
 		} else {
-			strcpy(PC->error, name.cstr());
+			strcpy(PC->error, command.cstr());
 			strcat(PC->error, ": invalid special name. valid names are "
 				CLASS_NAME", "USE_NAME" and "BASE_NAME);
 			YYERROR;
