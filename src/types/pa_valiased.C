@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.C,v 1.2 2001/03/19 22:44:23 paf Exp $
+	$Id: pa_valiased.C,v 1.3 2001/03/24 15:16:41 paf Exp $
 */
 
 #include "pa_valiased.h"
@@ -16,8 +16,15 @@ Value *VAliased::get_element(const String& aname) {
 	if(aname==CLASS_NAME)
 		return fclass_alias;
 	// $BASE=my parent
-	if(aname==BASE_NAME)
-		return fclass_alias->base();
+	if(aname==BASE_NAME) {
+		Value *result=fclass_alias->base();
+		if(result->get_class()->base()) // all classes have silent ROOT superclass.
+			return result;
+		else
+			THROW(0, 0,
+				&aname,
+				"undefined");
+	}
 
 	return 0;
 }

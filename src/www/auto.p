@@ -7,8 +7,6 @@ ${comment}.
 
 
 @auto[]
-$site_test(345)
-
 $limits[
 	$post_max_size(10*0x400*0x400)
 ]	
@@ -19,3 +17,9 @@ $defaults[
 		$charset[windows-1251]
 	]
 ]
+
+@auto_test[]
+^BASE.auto_test[]
+<li>site
+
+
