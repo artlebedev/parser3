@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.95 2002/05/07 07:39:17 paf Exp $
+	$Id: op.C,v 1.96 2002/06/10 14:37:35 paf Exp $
 */
 
 #include "classes.h"
@@ -400,7 +400,8 @@ const String *locked_process_and_cache_put(Request& r,
 		"cache_put", locked_process_and_cache_put_action, &info,
 		false/*as_text*/,
 		false/*do_append*/,
-		false/*block*/) ? info.evaluated_body: 0;
+		false/*block*/,
+		false/*fail on lock problem*/) ? info.evaluated_body: 0;
 	if(data.expires==0)
 		cache_delete(file_spec);
 	return result;

@@ -819,6 +819,7 @@ xdoc(xnode)
     !parser.runtime       ^if(0).                параметры (больше/меньше, чем нужно, не тех типов, ...)
     !number.zerodivision  ^eval(1/0) ^eval(1%0)
     !number.format        ^eval(abc*5)
+    !file.lock                                                        shared/exclusive lock error
     !file.missing         ^file:delete[delme]                         not found
     !file.access          ^table::load[.]                             no rights
     !image.format         ^image::measure[index.html]                 not gif/jpg

@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.109 2002/06/10 09:24:36 paf Exp $
+	$Id: pa_common.C,v 1.110 2002/06/10 14:37:35 paf Exp $
 */
 
 #include "pa_common.h"
@@ -137,7 +137,17 @@ bool file_read(Pool& pool, const String& file_spec,
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
     if((f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
-		lock_shared_blocking(f);		
+		if(lock_shared_blocking(f)!=0) {
+			Exception e("file.lock",
+					&file_spec, 
+					"shared lock failed: %s (%d), actual filename '%s'", 
+						strerror(errno), errno, fname);
+			unlock(f);
+			close(f);
+			if(fail_on_read_problem)
+				throw e;
+			return false;
+		}
 		if(stat(fname, &finfo)!=0) {
 			Exception e("file.missing",
 					&file_spec, 
@@ -216,7 +226,8 @@ bool file_write_action_under_lock(
 				const char *action_name, void (*action)(int, void *), void *context,
 				bool as_text,
 				bool do_append,
-				bool do_block) {
+				bool do_block,
+				bool fail_on_lock_problem) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	int f;
 	if(access(fname, W_OK)!=0) // no
@@ -227,7 +238,13 @@ bool file_write_action_under_lock(
 		|(as_text?_O_TEXT:_O_BINARY)
 		|(do_append?O_APPEND:O_TRUNC), 0664))>=0) {
 		if((do_block?lock_exclusive_blocking(f):lock_exclusive_nonblocking(f))!=0) {
+			Exception e("file.lock",
+				&file_spec, 
+				"shared lock failed: %s (%d), actual filename '%s'", 
+				strerror(errno), errno, fname);
 			close(f);
+			if(fail_on_lock_problem)
+				throw e;
 			return false;
 		}
 

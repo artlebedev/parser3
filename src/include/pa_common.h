@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.76 2002/03/26 17:01:49 paf Exp $
+	$Id: pa_common.h,v 1.77 2002/06/10 14:37:35 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -120,7 +120,8 @@ bool file_write_action_under_lock(
 				const char *action_name, void (*action)(int, void *), void *context=0,
 				bool as_text=false,
 				bool do_append=false,
-				bool do_block=true);
+				bool do_block=true,
+				bool fail_on_lock_problem=true);
 
 /**
 	write data to specified file, 
