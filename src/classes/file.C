@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/11/25 14:10:51 $";
+static const char* IDENT_FILE_C="$Date: 2002/11/25 14:57:32 $";
 
 #include "pa_config_includes.h"
 
@@ -116,6 +116,10 @@ static void _move(Request& r, const String&, MethodParams *params) {
 		r.absolute(vto_file_name.as_string()));
 }
 
+static void _load_pass_param(const Hash::Key& key, Hash::Val *value, void *info) {
+	Hash& dest=*static_cast<Hash *>(info);
+	dest.put(key, value);
+}
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	Value& vmode_name=params-> as_no_junction(0, "mode must not be code");
@@ -146,6 +150,8 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	
 	VFile& self=*static_cast<VFile *>(r.get_self());
 	self.set(true/*tainted*/, data, size, user_file_name, vcontent_type);
+	if(fields)
+		fields->for_each(_load_pass_param, &self.fields());
 }
 
 static void _stat(Request& r, const String& method_name, MethodParams *params) {

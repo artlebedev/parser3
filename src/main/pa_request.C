@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/11/25 14:10:53 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/11/25 14:57:33 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -140,12 +140,13 @@ void Request::configure_admin(VStateless_class& conf_class, const String *source
 		]
 	*/
 	if(Value *vcharsets=conf_class.get_element(*charsets_name, conf_class, false)) {
-		if(Hash *charsets=vcharsets->get_hash(0))
-			charsets->for_each(load_charset);
-		else if(!vcharsets->get_string())
-			throw Exception("parser.runtime",
-				0,
-				"$" MAIN_CLASS_NAME ":" CHARSETS_NAME " must be hash");
+		if(!vcharsets->is_string())
+			if(Hash *charsets=vcharsets->get_hash(0))
+				charsets->for_each(load_charset);
+			else
+				throw Exception("parser.runtime",
+					0,
+					"$" MAIN_CLASS_NAME ":" CHARSETS_NAME " must be hash");
 	}
 
 	// configure method_frame options

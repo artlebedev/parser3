@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2002/11/25 14:10:52 $";
+static const char* IDENT_XDOC_C="$Date: 2002/11/25 14:57:32 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -791,7 +791,7 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	const char **transform_params=0;
 	if(params->size()>1) {
 		Value& vparams=params->as_no_junction(1, "transform parameters must be hash");
-		if(vparams.is_defined())
+		if(!vparams.is_string())
 			if(Hash *params=vparams.get_hash(&method_name)) {
 				const char **current_transform_param=transform_params=
 					(const char **)pool.malloc(sizeof(const char *)*(params->size()*2+1));

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/11/25 14:10:52 $"; 
+static const char* IDENT_COMMON_C="$Date: 2002/11/25 14:57:33 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -72,6 +72,9 @@ static int unlock(int fd) { FLOCK(F_TLOCK); }
 #endif
 #endif
 #endif
+
+#define DEFAULT_USER_AGENT "parser3"
+
 
 
 static char* strnchr(char* buf, size_t size, char c) {
@@ -187,21 +190,21 @@ static void http_request(String& response,
     		if(!set_addr(&dest, host, port))
 				throw Exception("http.host", 
 					origin_string, 
-					"can't resolve hostname \"%s\"", host); 
+					"can not resolve hostname \"%s\"", host); 
 			
 			if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/))<0)
 				throw Exception("http.connect", 
 					origin_string, 
-					"can't make socket : %s (%d)", strerror(errno), errno); 
+					"can not make socket: %s (%d)", strerror(errno), errno); 
 			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest)))
 				throw Exception("http.connect", 
 					origin_string, 
-					"can't connect to host \"%s\": %s (%d)", host, strerror(errno), errno); 
+					"can not connect to host \"%s\": %s (%d)", host, strerror(errno), errno); 
 			size_t request_size=strlen(request);
 			if(send(sock, request, request_size, 0)!=(ssize_t)request_size)
 				throw Exception("http.connect", 
 					origin_string, 
-					"error sending request : %s (%d)", strerror(errno), errno); 
+					"error sending request: %s (%d)", strerror(errno), errno); 
 
 			http_read_response(response, sock); 
 			if(sock>=0) 
@@ -219,20 +222,31 @@ static void http_request(String& response,
 	}
 }
 
-static void headers_foreacher(const Hash::Key& key, Hash::Val *value, void *info)
+#ifndef DOXYGEN
+struct Http_pass_header_info {
+	String* request;
+	bool user_agent_specified;
+};
+#endif
+static void http_pass_header(const Hash::Key& key, Hash::Val *value, void *info)
 {
-    String * request=static_cast<String *>(info); 
-    *(request)<<key<<": "<<*(static_cast<Value *>(value))->get_string()<<"\n"; 
-}
+	Http_pass_header_info& i=*static_cast<Http_pass_header_info *>(info);
+	Pool& pool=i.request->pool();
+    
+    *(i.request)<<key<<": "<<*(static_cast<Value *>(value))->get_string()<<"\n"; 
 
+	if(key.change_case(pool, String::CC_UPPER)=="USER-AGENT")
+		i.user_agent_specified=true;
+}
 static void file_read_http(Pool& pool, const String& file_spec, 
 					void*& data, size_t& data_size, 
-					Hash *params=0, Hash** out_fields=0) {
+					Hash *options=0, Hash** out_fields=0) {
 	char host[MAX_STRING]; 
 	char* uri; 
 	int port;
 	const char* method="GET"; 
 	int timeout=2;
+	Value *vheaders=0;
 
 	char* connect_string=file_spec.cstr(String::UL_UNSPECIFIED); 
 	if(strncmp(connect_string, "http://", 7)!=0)
@@ -248,22 +262,41 @@ static void file_read_http(Pool& pool, const String& file_spec,
 	char* error_pos=0;
 	port=port_cstr?strtol(port_cstr, &error_pos, 0):80;
 
-	if(params) {
-		if(Value *method_element=static_cast<Value *>(params->get(*http_method_name)))
-			method=method_element->as_string().cstr(); 
-		if(Value *timeout_element=static_cast<Value *>(params->get(*http_timeout_name)))
-			timeout=timeout_element->as_int(); 
+	if(options) {
+		int valid_options=0;
+		if(Value *vmethod=static_cast<Value *>(options->get(*http_method_name))) {
+			valid_options++;
+			method=vmethod->as_string().cstr(); 
+		}
+		if(Value *vtimeout=static_cast<Value *>(options->get(*http_timeout_name))) {
+			valid_options++;
+			timeout=vtimeout->as_int(); 
+		}
+		if(vheaders=static_cast<Value *>(options->get(*http_headers_name))) {
+			valid_options++;
+		}
+		if(valid_options!=options->size())
+			throw Exception("parser.runtime",
+				0,
+				"invalid option passed");
 	}
 
 	//making request
-	String request(pool); 
+	String request(pool);
 	request<< method <<" "<< uri <<" HTTP/1.0\nHost: "<< host<<"\n"; 
-	if(params)
-		if(Value *headers_element=static_cast<Value *>(params->get(*http_headers_name)))
-		{
-			Hash *headers=headers_element->get_hash(&file_spec); 
-			headers->for_each(headers_foreacher, &request); 
-		}
+	bool user_agent_specified=false;
+	if(vheaders && !vheaders->is_string()) { // allow empty
+		if(Hash *headers=vheaders->get_hash(&file_spec)) {
+			Http_pass_header_info info={&request};
+			headers->for_each(http_pass_header, &info); 
+			user_agent_specified=info.user_agent_specified;
+		} else
+			throw Exception("parser.runtime", 
+				&file_spec,
+				"headers param must be hash"); 
+	};
+	if(!user_agent_specified) // defaulting
+		request << "user-agent: " DEFAULT_USER_AGENT "\n";
 	request<<"\n"; 
 	
 	//sending request
