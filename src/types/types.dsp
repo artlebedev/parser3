@@ -187,6 +187,10 @@ SOURCE=.\pa_vint.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_vjunction.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_vjunction.h
 # End Source File
 # Begin Source File
