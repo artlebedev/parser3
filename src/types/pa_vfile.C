@@ -1,11 +1,11 @@
-/**
-	Parser: file class.
+/** @file
+	Parser: file object.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.4 2001/03/19 21:39:37 paf Exp $
+	$Id: pa_vfile.C,v 1.5 2001/03/19 21:47:02 paf Exp $
 */
 
 #include <string.h>

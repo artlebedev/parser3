@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_object.h,v 1.5 2001/03/19 21:39:37 paf Exp $
+	$Id: pa_vstateless_object.h,v 1.6 2001/03/19 21:47:02 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_OBJECT_H
@@ -15,10 +15,9 @@
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
 
-/**
-	the object of some class. 
+/**	the object of some class. 
 	
-	"of some class" means "with some methods".
+	"of some class" means "with some set of methods".
 */
 class VStateless_object : public VAliased {
 public: // Value

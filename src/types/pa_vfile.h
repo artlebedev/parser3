@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: file object decl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.3 2001/03/19 21:39:37 paf Exp $
+	$Id: pa_vfile.h,v 1.4 2001/03/19 21:47:02 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -14,8 +16,10 @@
 #include "pa_vstateless_object.h"
 #include "_file.h"
 
-class Request;
+/** holds received file.
 
+	@see VForm
+*/
 class VFile : public VStateless_object {
 public: // Value
 	
