@@ -6,7 +6,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vmail.C,v 1.9 2002/07/31 14:31:02 paf Exp $
+	$Id: pa_vmail.C,v 1.10 2002/07/31 14:58:00 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -306,7 +306,7 @@ void VMail::fill_received(Request& request) {
 struct Store_message_element_info {
 	Charset *charset;
 	String *header;
-	const String **from, **to;
+	const String **from, **to, **errors_to;
 	Array *parts[P_TYPES_COUNT];
 	int parts_count;
 	bool has_content_type;
@@ -390,11 +390,13 @@ static void store_message_element(const Hash::Key& raw_element_name, Hash::Val *
 		}
 	}
 
-	// fetch from & to from header for SMTP
+	// fetch some special headers
 	if(i.from && low_element_name=="from")
 		*i.from=&extractEmail(element_value.as_string());
 	if(i.to && low_element_name=="to")
 		*i.to=&extractEmail(element_value.as_string());
+	if(i.errors_to && low_element_name=="errors-to")
+		*i.errors_to=&extractEmail(element_value.as_string());	
 
 	// append header line
 	*i.header << 
@@ -545,6 +547,8 @@ const String& VMail::message_hash_to_string(Request& r, const String *source,
 		for(int pt=0; pt<P_TYPES_COUNT; pt++)
 			info.parts[pt]=NEW Array(pool());
 		message_hash->for_each(store_message_element, &info);
+		if(!info.errors_to)
+			result << "errors-to: postmaster\n"; // errors-to: default
 	}
 
 	int textCount=info.parts[P_TEXT]->size();
