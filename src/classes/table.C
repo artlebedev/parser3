@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.12 2001/03/13 11:19:29 paf Exp $
+	$Id: table.C,v 1.13 2001/03/13 12:07:14 paf Exp $
 */
 
 #include "pa_request.h"
@@ -17,9 +17,6 @@
 VClass *table_class;
 
 // methods
-
-
-// TODO: проверить ^set в ^menu & co
 
 static void set_or_load(
 						Request& r, 

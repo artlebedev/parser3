@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.23 2001/03/13 11:23:29 paf Exp $
+	$Id: pa_request.C,v 1.24 2001/03/13 12:07:15 paf Exp $
 */
 
 #include <string.h>
@@ -45,7 +45,7 @@ Request::Request(Pool& apool) : Pooled(apool),
 
 
 	// web
-	// todo: ifdef WIN32 flip \\ to /
+	// TODO: ifdef WIN32 flip \\ to /
 	document_root="Y:/parser3/src/";
 	page_filespec="Y:/parser3/src/test.p";
 }
@@ -70,7 +70,7 @@ void Request::core() {
 		if(!main_class)
 			THROW(0,0,
 				0,
-				"'auto.p' not found");
+				"no 'auto.p' found (nither system nor any site's)");
 
 		// compiling requested file
 		use_file(page_filespec, true/*don't ignore read problem*/,
