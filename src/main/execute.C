@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.175 2001/07/13 10:58:03 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.176 2001/07/13 12:13:50 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -805,7 +805,8 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 	return *result;
 }
 
-const String *Request::execute_method(Value& aself, const Method& method, bool return_cstr) {
+const String *Request::execute_method(Value& aself, const Method& method, 
+									  bool return_cstr) {
 	PUSH(self);  
 	PUSH(root);  
 	PUSH(rcontext);  
@@ -834,13 +835,22 @@ const String *Request::execute_method(Value& aself, const Method& method, bool r
 	return result;
 }
 
-/// @test remove virtual @auto calls when initializing children
-const String *Request::execute_method(Value& aself, 
-							  const String& method_name, bool return_cstr) {
+const String *Request::execute_virtual_method(Value& aself, 
+											  const String& method_name, 
+											  bool return_cstr) {
 	if(Value *value=aself.get_element(method_name))
 		if(Junction *junction=value->get_junction())
 			if(const Method *method=junction->method) 
 				return execute_method(aself, *method, return_cstr);
+
+	return 0;
+}
+
+const String *Request::execute_nonvirtual_method(VStateless_class& aself, 
+												 const String& method_name, 
+												 bool return_cstr) {
+	if(Value *value=aself.get_method(method_name))
+		return execute_method(aself, *method, return_cstr);
 
 	return 0;
 }
