@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char * const IDENT_SQL_DRIVER_H="$Date: 2004/03/05 10:01:50 $";
+static const char * const IDENT_SQL_DRIVER_H="$Date: 2004/05/25 07:05:52 $";
 
 #include <sys/types.h>
 #include <setjmp.h>
@@ -128,13 +128,12 @@ public:
 	/// initialize driver by loading sql dynamic link library
 	virtual const char* initialize(char *dlopen_file_spec) =0;
 	/**	connect to sql database using 
-		@param used_only_to_connect_url 
+		@param url_cstr
 			format is driver specific
-			WARNING: must be used only to connect, for buffer doesn't live long enough
 
 		@returns true+'connection' on success. 'error' on failure
 	*/
-	virtual void connect(char *used_only_in_connect_url_cstr, 
+	virtual void connect(char *url_cstr, 
 		SQL_Driver_services& services, void **connection) =0;
 	virtual void disconnect(void *connection) =0;
 	virtual void commit(void *connection) =0;
