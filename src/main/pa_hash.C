@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.C,v 1.43 2001/10/29 13:04:46 paf Exp $
+	$Id: pa_hash.C,v 1.44 2001/11/01 10:59:26 paf Exp $
 */
 
 /*
@@ -109,6 +109,18 @@ bool Hash::put(const Key& key, Val *value) {
 	return false;
 }
 
+void Hash::remove(const Key& key) {
+	uint code=key.hash_code();
+	uint index=code%allocated;
+	for(Pair **ref=&refs[index]; *ref; ref=&(*ref)->link)
+		if((*ref)->code==code && (*ref)->key==key) {
+			// found a pair with the same key
+			*ref=(*ref)->link;
+			--count;
+			return;
+		}
+}
+
 Hash::Val *Hash::get(const Key& key) const {
 	uint code=key.hash_code();
 	uint index=code%allocated;
@@ -165,25 +177,22 @@ void Hash::for_each(For_each_func func, void *info) const {
 	Pair **ref=refs;
 	for(int index=0; index<allocated; index++)
 		for(Pair *pair=*ref++; pair; pair=pair->link)
-			if(pair->value)
-				(*func)(pair->key, pair->value, info);
+			(*func)(pair->key, pair->value, info);
 }
 
 void Hash::for_each(For_each_func_refed func, void *info) const {
 	Pair **ref=refs;
 	for(int index=0; index<allocated; index++)
 		for(Pair *pair=*ref++; pair; pair=pair->link)
-			if(pair->value)
-				(*func)(pair->key, pair->value, info);
+			(*func)(pair->key, pair->value, info);
 }
 
 void* Hash::first_that(First_that_func func, void *info) const {
 	Pair **ref=refs;
 	for(int index=0; index<allocated; index++)
 		for(Pair *pair=*ref++; pair; pair=pair->link)
-			if(pair->value)
-				if(void *result=(*func)(pair->key, pair->value, info))
-					return result;
+			if(void *result=(*func)(pair->key, pair->value, info))
+				return result;
 	return 0;
 }
 

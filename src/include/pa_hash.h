@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.47 2001/10/29 14:13:14 paf Exp $
+	$Id: pa_hash.h,v 1.48 2001/11/01 10:59:26 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -52,6 +52,9 @@ public:
 
 	/// put a [value] under the [key], return existed or not
 	bool put(const Key& key, Val *value);
+
+	/// remove the [key]
+	void remove(const Key& key);
 /*
 	/// dirty hack to allow constant items storage. I long for Hash<const Val*>
 	bool put(const Key& key, const Val *value) {

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.24 2001/10/23 14:43:44 parser Exp $
+	$Id: hash.C,v 1.25 2001/11/01 10:59:25 paf Exp $
 */
 
 #include "classes.h"
@@ -107,7 +107,7 @@ static void _create_or_add(Request& r, const String& method_name, MethodParams *
 
 static void remove_key_from(const Hash::Key& key, Hash::Val *value, void *info) {
 	Hash& dest=*static_cast<Hash *>(info);
-	dest.put(key, 0);
+	dest.remove(key);
 }
 
 static void _sub(Request& r, const String& method_name, MethodParams *params) {
@@ -263,6 +263,12 @@ static void _count(Request& r, const String& method_name, MethodParams *) {
 	r.write_no_lang(result);
 }
 
+static void _delete(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	static_cast<VHash *>(r.self)->hash().remove(params->as_string(0, "key must be string"));
+}
+
 // constructor
 
 MHash::MHash(Pool& apool) : Methoded(apool) {
@@ -280,6 +286,9 @@ MHash::MHash(Pool& apool) : Methoded(apool) {
 	add_native_method("intersection", Method::CT_DYNAMIC, _intersection, 1, 1);
 	// ^a.intersects[b] = bool
 	add_native_method("intersects", Method::CT_DYNAMIC, _intersects, 1, 1);
+
+	// ^a.delete[key]
+	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
 
 	// ^hash:sql[query][(count[;offset])]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);

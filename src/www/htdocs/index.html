@@ -1,4 +1,5 @@
 @main[]
+^thashdelete[]
 #^connect[mysql://user:pass@cd.rinet.ru/db]{^void:sql{z} }
 #^tappend[]
 #^sappend[]
@@ -10,7 +11,7 @@
 #^безнадёжна_попытка_поправить_непоправимое[]
 #^tcache[]
 #^thashfileexp[]
-^tcounter[]
+#^tcounter[]
 #^tablehash[]
 #j^hashfile[]
 #^formclass[]
@@ -52,6 +53,18 @@
 #^xml[]
 #^header[]
 OK
+
+@thashdelete[]
+$h[$.a[1] $.b[2]]
+was:<br>
+count=^h._count[] <br>
+b='$h.b' <br>
+
+^h.delete[b] 
+
+now:<br>
+count=^h._count[] <br>
+b='$h.b' 
 
 @sappend[]
 $test[123]

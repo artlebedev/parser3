@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.30 2001/10/29 13:04:47 paf Exp $
+	$Id: pa_vcookie.C,v 1.31 2001/11/01 10:59:26 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -148,7 +148,7 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 				const String *string;
 				if((string=expires->get_string()) && (*string==SESSION_NAME))  {
 					// $expires[session]
-					hash->put(*expires_name, 0);
+					hash->remove(*expires_name);
 				} else {
 					// $expires(days)
 					hash->put(*expires_name, 
