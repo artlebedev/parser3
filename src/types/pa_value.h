@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.24 2001/03/19 17:42:18 paf Exp $
+	$Id: pa_value.h,v 1.25 2001/03/19 19:17:46 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -36,49 +36,49 @@ public: // Value
 	const String& name() const { return *fname; }
 	/** is this value defined?
 		@return for
-		- unknown: false
+		- VUnknown: false
 		- others: true
 	*/
 	virtual bool get_defined() { return true; }
 	/** what's the meaning of this value in context of expression?
 		@return for
-		- string: fstring as VDouble
-		- bool: this
-		- double: this
-		- int: this
-		- unknown: this
+		- VString: fstring as VDouble
+		- VBool: this
+		- VDouble: this
+		- VInt: this
+		- VUnknown: this
 	*/
 	virtual Value *get_expr_result() { bark("(%s) can not be used in expression"); return 0; }
 	/** extract Hash
 		@return for
-		- hash: fhash
-		- response: ffields
+		- VHash: fhash
+		- VResponse: ffields
 	*/
 	virtual Hash *get_hash() { return 0; }
 	/** extract const String
 		@return for
-		- string: value
-		- unknown: ""
-		- double: value
-		- bool: must be 0: so in ^if(1>2) it would'nt become "FALSE" string which is 'true'
+		- VString: value
+		- VUnknown: ""
+		- VDouble: value
+		- VBool: must be 0: so in ^if(1>2) it would'nt become "FALSE" string which is 'true'
 		- others: 0
 		- WContext: accumulated fstring
 	*/
 	virtual const String *get_string() { return 0; }
 	/** extract double
 		@return for
-		- string: value
-		- double: value
-		- integer: finteger
-		- bool: value
+		- VString: value
+		- VDouble: value
+		- VInt: finteger
+		- VBool: value
 	*/
 	virtual double get_double() { bark("(%s) does not have numerical value"); return 0; }
 	/** extract bool
 		@return for
-		- unknown: false
-		- bool: value
-		- integer: 0 or !0
-		- double: 0 or !0
+		- VUnknown: false
+		- VBool: value
+		- VInt: 0 or !0
+		- VDouble: 0 or !0
 	*/
 	virtual bool get_bool() { bark("(%s) does not have logical value"); return 0; }
 	/** extract Junction
@@ -88,48 +88,50 @@ public: // Value
 	virtual Junction *get_junction() { return 0; }
 	/** extract VTable
 		@return for
-		- table: itself
+		- VTable: itself
 	*/
 	virtual VTable *get_vtable() { return 0; }
 	/** extract Value element
 		@return for
-		- hash: (key)=value
+		- VHash: (key)=value
 		- object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 		- object_base: (CLASS)=vclass;(BASE)=base;(method)=method_ref
 		- object_instance: (field)=value;(CLASS)=vclass;(method)=method_ref
 		- operator_class: (field)=value - static values only
-		- codeframe: wcontext_transparent
+		- VCode_frame: wcontext_transparent
 		- methodframe: my or self_transparent
-		- table: column
+		- VTable: column
 		- env: CLASS,BASE,method,field
-		- form: CLASS,BASE,method,field
-		- string: $CLASS,$BASE,$method
-		- request: CLASS,BASE,method,fields
-		- response: CLASS,BASE,method,fields
-		- cookie: CLASS,BASE,method,field
+		- VForm: CLASS,BASE,method,field
+		- VString: $CLASS,$BASE,$method
+		- VRequest: CLASS,BASE,method,fields
+		- VResponse: CLASS,BASE,method,fields
+		- VCookie: CLASS,BASE,method,field
 	*/
 	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
 	/** store Value element under \a name
 		@return for
-		- hash: (key)=value
-		- object_class, operator_class: (field)=value - static values only
+		- VHash: (key)=value
+		- VStateless_object: (CLASS)=vclass;(BASE)=base;(method)=method_ref
+		- object_class: (field)=value - static values only
 		- object_instance: (field)=value
-		- codeframe: wcontext_transparent
+		- VCode_frame: wcontext_transparent
 		- methodframe: my or self_transparent
-		- response: (attribute)=value
-		- cookie: field
+		- VResponse: (attribute)=value
+		- VCookie: field
 	*/
 	virtual void put_element(const String& name, Value *value) { bark("(%s) does not accept elements"); }
 	/** extract VStateless_class
 		@return for
-		- object_class, object_instance: object_class
+		- VStateless_class: this
+		- VStateless_object: fclass_real
 		- wcontext: none yet | transparent
-		- form: this
+		- VForm: this
 		- class: this
 		- env: this
-		- request: this
-		- hash: this
-		- vcookie: this
+		- VRequest: this
+		- VHash: this
+		- vVCookie: this
 	*/
 	virtual VStateless_class *get_class() { return 0; }
 	/** extract VAliased

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.56 2001/03/19 17:56:28 paf Exp $
+	$Id: pa_request.C,v 1.57 2001/03/19 19:17:44 paf Exp $
 */
 
 #include <string.h>
@@ -44,7 +44,6 @@ Request::Request(Pool& apool,
 	classes().put(*root_class_name, &ROOT);
 	// table class
 	classes().put(*table_class_name, table_class);	
-//	table_class->set_name(*table_class_name);
 
 	// env class
 	classes().put(*env_class_name, &env);

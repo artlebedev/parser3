@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.37 2001/03/19 18:00:26 paf Exp $
+	$Id: pa_pool.h,v 1.38 2001/03/19 19:17:43 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -22,6 +22,8 @@ class Temp_exception;
 
 	Also holds Exception object, which can be temporary set using 
 	Temp_exception auto-object.
+
+	@see Pooled
 */
 
 class Pool {
@@ -91,6 +93,8 @@ private: //disabled
 	Base for all classes that are allocated in 'pools'.
 
 	Holds Pool object. Contains useful wrappers to it's methods.
+
+	@see NEW, Temp_exception
 */
 class Pooled {
 	// the pool i'm allocated on
@@ -122,18 +126,20 @@ public:
 	Auto-object used for temporary changing Pool's exception().
 
 	Use by with these macros:
-	\code
+	@code
 		TRY { 
-			... 
+			// ... 
 			if(?) 
 				THROW(?); 
-			...;
+			// ...
 		} CATCH(e) { 
-			code, using e fields
-			e.comment() 
+			// code, using e fields
+			// e.comment() 
 		}
 		END_CATCH
-	\endcode
+	@endcode
+
+	@see TRY, THROW
 */
 class Temp_exception {
 	Pool& fpool;

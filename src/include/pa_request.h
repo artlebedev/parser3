@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.62 2001/03/19 17:42:12 paf Exp $
+	$Id: pa_request.h,v 1.63 2001/03/19 19:17:43 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -62,7 +62,7 @@ public:
 	
 	Request(Pool& apool,
 		Info& ainfo,
-		String::Untaint_lang adefault_lang ///< all tainted data default untainted
+		String::Untaint_lang adefault_lang ///< all tainted data default untainting lang
 	);
 	~Request() {}
 

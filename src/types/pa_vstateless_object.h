@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_object.h,v 1.3 2001/03/16 08:31:24 paf Exp $
+	$Id: pa_vstateless_object.h,v 1.4 2001/03/19 19:17:47 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_OBJECT_H
@@ -16,7 +16,10 @@
 class VStateless_object : public VAliased {
 public: // Value
 	
-	// object_base: (CLASS)=vclass;(BASE)=base;(method)=method_ref
+	/// VStateless_object: fclass_real
+	VStateless_class *get_class() { return &fclass_real; }
+
+	/// VStateless_object: (CLASS)=vclass;(BASE)=base;(method)=method_ref
 	Value *get_element(const String& name) {
 		// $CLASS=my class
 		if(name==CLASS_NAME)
@@ -29,9 +32,6 @@ public: // Value
 			return NEW VJunction(*junction);
 		return 0;
 	}
-
-	// object_class, object_instance: object_class
-	VStateless_class *get_class() { return &fclass_real; }
 
 public: // creation
 

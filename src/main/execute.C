@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.118 2001/03/19 17:42:15 paf Exp $
+	$Id: execute.C,v 1.119 2001/03/19 19:17:44 paf Exp $
 */
 
 #include "code.h"
@@ -347,7 +347,7 @@ void Request::execute(const Array& ops) {
 						wcontext->somebody_entered_some_class()) { // ^class:method[..]?
 						// yes, this is a constructor call
 						// some stateless_object derivates with constructors
-						if(called_class->name()==TABLE_CLASS_NAME)
+						if(called_class==table_class)///called_class->name()==TABLE_CLASS_NAME)
 							self=NEW VTable(pool());
 						else /*if(called_class->name()==ENV_CLASS_NAME)
 							self=NEW VEnv(pool());

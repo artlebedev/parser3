@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.15 2001/03/19 17:42:13 paf Exp $
+	$Id: pa_table.h,v 1.16 2001/03/19 19:17:43 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -17,9 +17,10 @@
 #include "pa_string.h"
 #include "pa_request.h"
 
-/// parser \b table class backend
-/**
-	holds 
+/** 
+	parser \b table class backend.
+
+	holds:
 	- column names[if any]
 	- data rows
 	- current row pointer

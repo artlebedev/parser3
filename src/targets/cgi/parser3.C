@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.24 2001/03/19 16:06:15 paf Exp $
+	$Id: parser3.C,v 1.25 2001/03/19 19:17:45 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -189,9 +189,9 @@ int main(int argc, char *argv[]) {
 #	if _MSC_VER
 		SetUnhandledExceptionFilter(0);
 #	endif
+#endif
 		// successful finish
 		return 0;
-#endif
 	} PCATCH(e) { // global problem 
 		const char *body=e.comment();
 		int content_length=strlen(body);

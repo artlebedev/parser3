@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.7 2001/03/19 15:29:42 paf Exp $
+	$Id: pa_vform.C,v 1.8 2001/03/19 19:17:47 paf Exp $
 */
 
 /**
@@ -114,11 +114,10 @@ void VForm::ParsePostFormInput(const char *content_type, int post_size,
 		ParseMimeInput(content_type, input, post_size);
 	else
 		ParseFormInput(input, post_size);
-	//free(input);
 }
 
 void VForm::ParseFormInput(const char *data, int length) {
-		/* Scan for pairs, unescaping and storing them as they are found. */
+	/* Scan for pairs, unescaping and storing them as they are found. */
 	int pos=0;
 	while(pos !=length) {
 		int foundEq=0;
@@ -159,7 +158,7 @@ void VForm::ParseFormInput(const char *data, int length) {
 }
 
 void VForm::ParseMimeInput(const char *content_type, 
-									  const char *data, int length) {
+						   const char *data, int length) {
 /* Scan for mime-presented pairs, storing them as they are found. */
 	const char 
 		*boundary=getAttributeValue(content_type,"boundary=",strlen(content_type)),

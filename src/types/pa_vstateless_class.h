@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.4 2001/03/13 20:02:12 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.5 2001/03/19 19:17:47 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -22,10 +22,13 @@ class VStateless_class : public VAliased {
 	friend Temp_method;
 public: // Value
 	
-	// all: for error reporting after fail(), etc
+	/// all: for error reporting after fail(), etc
 	const char *type() const { return "stateless_class"; }
 
-	// stateless_class: $CLASS,$BASE,$method
+	/// VStateless_class: this
+	VStateless_class *get_class() { return this; }
+
+	/// VStateless_class: $CLASS,$BASE,$method
 	Value *get_element(const String& aname);
 
 public: // usage
