@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2003/07/24 11:31:23 $";
+static const char* IDENT_EXECUTE_C="$Date: 2003/09/29 10:51:02 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -938,7 +938,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	return result;
 }
 
-const String& Request::execute_method(VMethodFrame& amethod_frame, const Method& method) {
+StringOrValue Request::execute_method(VMethodFrame& amethod_frame, const Method& method) {
 	VMethodFrame *saved_method_frame=method_frame;  
 	Value* saved_rcontext=rcontext;  
 	WContext *saved_wcontext=wcontext;
@@ -950,7 +950,7 @@ const String& Request::execute_method(VMethodFrame& amethod_frame, const Method&
 	execute(*method.parser_code);
 	
 	// result
-	const String& result=wcontext->result().as_string();
+	StringOrValue result=wcontext->result();
 	
 	wcontext=saved_wcontext;
 	rcontext=saved_rcontext;

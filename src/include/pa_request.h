@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/09/29 10:51:02 $";
 
 #include "pa_hash.h"
 #include "pa_wcontext.h"
@@ -362,7 +362,7 @@ private: // compile.C
 private: // execute.C
 
 	/// for @postprocess[body]
-	const String& execute_method(VMethodFrame& amethodFrame, const Method& method);
+	StringOrValue execute_method(VMethodFrame& amethodFrame, const Method& method);
 	//{ for @conf[filespec] and @auto[filespec]
 	const String* execute_method(Value& aself, 
 		const Method& method, VString* optional_param,

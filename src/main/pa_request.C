@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2003/09/25 09:15:03 $";
+static const char* IDENT_REQUEST_C="$Date: 2003/09/29 10:51:02 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -332,8 +332,14 @@ gettimeofday(&mt[1],NULL);
 gettimeofday(&mt[2],NULL);
 #endif
 
-		VString& body_vstring_before_post_process=*new VString(*body_string);
-		VString* body_vstring_after_post_process=&body_vstring_before_post_process;
+		// extract response body
+		Value* body_value=response.fields().get(download_name); // $response:download?
+		bool as_attachment=body_value!=0;
+		if(!body_value)
+			body_value=response.fields().get(body_name); // $response:body
+		if(!body_value)
+			body_value=new VString(*body_string); // just result of ^main[]
+
 		// @postprocess
 		if(Value* value=main_class.get_element(post_process_method_name, main_class, false))
 			if(Junction* junction=value->get_junction())
@@ -343,22 +349,12 @@ gettimeofday(&mt[2],NULL);
 					VMethodFrame frame(/*method->name, */ *junction, 0/*no parent*/);
 					frame.set_self(main_class);
 
-					frame.store_param(body_vstring_before_post_process);
-					body_vstring_after_post_process=
-						new VString(execute_method(frame, *method));
+					frame.store_param(*body_value);
+					body_value=&execute_method(frame, *method).as_value();
 				}
 
-		VFile* body_file=body_vstring_after_post_process->as_vfile(
+		VFile* body_file=body_value->as_vfile(
 			String::L_UNSPECIFIED, &charsets);
-
-		// extract response body
-		Value* body_value=response.fields().get(download_name);
-		bool as_attachment=body_value!=0;
-		if(!body_value)
-			body_value=response.fields().get(body_name);
-
-		if(body_value) // there is some $response:body
-			body_file=body_value->as_vfile(String::L_UNSPECIFIED, &charsets);
 
 #ifdef RESOURCES_DEBUG
 //measure:after postprocess
@@ -473,7 +469,7 @@ frame.store_param(*new VTable(&stack_trace));
 
 // future $response:body=
 //   execute ^unhandled_exception[exception;stack]
-body_string=&execute_method(frame, *method);
+body_string=&execute_method(frame, *method).as_string();
 					}
 				}
 			}
