@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhashfile.h,v 1.6 2001/10/24 10:04:54 parser Exp $
+	$Id: pa_vhashfile.h,v 1.7 2001/10/24 11:06:26 parser Exp $
 */
 
 #ifndef PA_VHASHFILE_H
@@ -16,11 +16,18 @@
 #include "pa_vint.h"
 #include "pa_db_connection.h"
 
+// externs
+
 extern Methoded *hashfile_base_class;
+
+// forwards
+
+class Autosave_marked_to_cancel_cache ;
 
 /// value of type 'hashfile', implemented with GDBM library
 class VHashfile : public VStateless_class {
 	friend void VHashfile_cleanup(void *);
+	friend Autosave_marked_to_cancel_cache ;
 public: // value
 
 	const char *type() const { return "hashfile"; }
@@ -52,7 +59,7 @@ public: // value
 public: // usage
 
 	VHashfile(Pool& apool) : VStateless_class(apool, hashfile_base_class),
-		fconnection(0) {
+		fconnection(0), fmarked_to_cancel_cache(false) {
 		register_cleanup(VHashfile_cleanup, this);
 	}
 private:
@@ -72,6 +79,9 @@ public:
 		return *fconnection;
 	}
 
+	void mark_to_cancel_cache() { fmarked_to_cancel_cache=true; }
+	bool marked_to_cancel_cache() { return fmarked_to_cancel_cache; }
+
 private:
 
 	Value *get_field(const String& name);
@@ -80,7 +90,21 @@ private:
 private:
 
 	DB_Connection *fconnection;
+	bool fmarked_to_cancel_cache;
 
+};
+
+///	Auto-object used for temporary changing DB_Connection::tid.
+class Autosave_marked_to_cancel_cache {
+	VHashfile& fhashfile;
+	bool saved;
+public:
+	Autosave_marked_to_cancel_cache(VHashfile& ahashfile) : 
+		fhashfile(ahashfile), saved(ahashfile.fmarked_to_cancel_cache) {
+	}
+	~Autosave_marked_to_cancel_cache() {
+		fhashfile.fmarked_to_cancel_cache=saved;
+	}
 };
 
 #endif

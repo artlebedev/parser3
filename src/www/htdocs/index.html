@@ -47,8 +47,9 @@ OK
 @tcache[]
 #^hashfile:clear[cache]
 $code[^hashfile::open[cache]]
-^code.cache[key](10){
+^code.cache[key](100){
 	^eval(2*3)
+	^code.delete[]
 }
 
 

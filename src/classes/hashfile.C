@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hashfile.C,v 1.7 2001/10/24 10:49:47 parser Exp $
+	$Id: hashfile.C,v 1.8 2001/10/24 11:06:26 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -71,19 +71,6 @@ static void _transaction(Request& r, const String& method_name, MethodParams *pa
 	}
 }
 
-static void remove(Request& r, const String& method_name, MethodParams *params) {
-	Pool& pool=r.pool();
-	VHashfile& self=*static_cast<VHashfile *>(r.self);
-	
-	// key
-	const String &key=params->as_string(0, "key must be string");
-
-	// connection
-	DB_Connection& connection=self.get_connection(&method_name);
-
-	connection.remove(key);
-}
-
 static void _clear(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	
@@ -129,17 +116,36 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 		} else // 'expires'=0, forget cached copy
 			connection.remove(key);
 
+		// save
+		Autosave_marked_to_cancel_cache saved(self);
+
 		// process
 		Value& processed_body=r.process(body_code);
 		r.write_assign_lang(processed_body);
 		
-		// put it to cache if 'expires' specified
-		if(expires)
+		// put it to cache if 'expires' specified & never called ^delete[]
+		if(expires && !self.marked_to_cancel_cache())
 			connection.put(key, processed_body.as_string(), time(0)+(time_t)expires);
 	} catch(...) { // process/commit problem
 		transaction.mark_to_rollback();
 		
 		/*re*/throw; 
+	}
+}
+
+static void _delete(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	VHashfile& self=*static_cast<VHashfile *>(r.self);
+	
+	if(params->size()==0)
+		self.mark_to_cancel_cache();
+	else {
+		// key
+		const String &key=params->as_string(0, "key must be string");
+		// connection
+		DB_Connection& connection=self.get_connection(&method_name);
+		// remove
+		connection.remove(key);
 	}
 }
 
@@ -152,14 +158,14 @@ MHashfile::MHashfile(Pool& apool) : Methoded(apool) {
 	add_native_method("open", Method::CT_DYNAMIC, _open, 1, 1);
 	// ^transaction{code}
 	add_native_method("transaction", Method::CT_DYNAMIC, _transaction, 1, 1);
-	// ^hashfile.delete[key]
-	add_native_method("delete", Method::CT_DYNAMIC, remove, 1, 1);
 	// ^hashfile:clear[filename]
 	add_native_method("clear", Method::CT_STATIC, _clear, 1, 1);
 	// ^hash[]
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
 	// ^cache[key](seconds){code}
 	add_native_method("cache", Method::CT_DYNAMIC, _cache, 3, 3);
+	// ^hashfile.delete[key]
+	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
 }
 
 // global variable
