@@ -517,7 +517,7 @@ Xhashfile
     !^date:calendar[rus|eng;год;мес€ц] выдаЄт неименованную таблицу 
     	столбцы: 0..6 
     !^date:calendar[rus|eng;год;мес€ц;день] выдаЄт именнованную таблицу
-    	столбцы: year, month, day, week_day
+    	столбцы: year, month, day, weekday
     
 xdoc(xnode)
     DOM1 attributes:
