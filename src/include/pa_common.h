@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2002/08/23 07:32:24 $";
+static const char* IDENT_COMMON_H="$Date: 2002/09/18 12:40:38 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -145,6 +145,7 @@ bool file_delete(const String& file_spec, bool fail_on_read_problem=true);
 void file_move(const String& old_spec, const String& new_spec);
 
 bool entry_exists(const char *fname, struct stat *afinfo=0);
+bool entry_exists(const String& file_spec);
 bool file_readable(const String& file_spec);
 bool dir_readable(const String& file_spec);
 String *file_readable(const String& path, const String& name);

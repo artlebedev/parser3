@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2002/09/18 08:52:50 $";
+static const char* IDENT_REQUEST_H="$Date: 2002/09/18 12:40:38 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -124,7 +124,8 @@ public:
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
 	VStateless_class *use_file(
 		const String& file_name, 
-		bool ignore_class_path=false, bool fail_on_read_problem=true,
+		bool ignore_class_path=false, 
+		bool fail_on_read_problem=true, bool fail_on_file_absence=true,
 		const String *name=0, 
 		VStateless_class *base_class=0); // core.C
 	/// compiles a @a source buffer

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/08/23 07:32:24 $";
+static const char* IDENT_COMMON_C="$Date: 2002/09/18 12:40:38 $";
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -342,6 +342,11 @@ bool entry_exists(const char *fname, struct stat *afinfo) {
 	if(afinfo)
 		*afinfo=lfinfo;
 	return result;
+}
+
+bool entry_exists(const String& file_spec) {
+	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
+	return entry_exists(fname, 0);
 }
 
 static bool entry_readable(const String& file_spec, bool need_dir) {

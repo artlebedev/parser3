@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/09/17 16:46:25 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/09/18 12:40:38 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -181,7 +181,8 @@ gettimeofday(&mt[0],NULL);
 			filespec.APPEND_CLEAN(config_filespec, 0, "config", 0);
 			main_class=use_file(
 				filespec, 
-				true/*ignore class_path*/, config_fail_on_read_problem,
+				true/* ignore class_path */, 
+				config_fail_on_read_problem, true/* file must exist if 'fail on read problem' not set */,
 				main_class_name, main_class);
 		}
 
@@ -207,7 +208,8 @@ gettimeofday(&mt[0],NULL);
 					sfile_spec << "/" AUTO_FILE_NAME;
 
 					main_class=use_file(sfile_spec, 
-						true/*ignore class_path*/, false/*ignore read problem*/,
+						true/* ignore class_path */, 
+						true/* fail on read problem */, false/* but ignore absence, sole user */,
 						main_class_name, main_class);
 				}
 				after=before+1;
@@ -218,7 +220,8 @@ gettimeofday(&mt[0],NULL);
 		String& spath_translated=*NEW String(pool());
 		spath_translated.APPEND_TAINTED(info.path_translated, 0, "user-request", 0);
 		main_class=use_file(spath_translated, 
-			true/*ignore class_path*/, true/*don't ignore read problem*/,
+			true/* ignore class_path */, 
+			true/* fail on read problem*/, true/* fail on abscence */,
 			main_class_name, main_class);
 
 		// configure method_frame options if not configured yet
@@ -444,7 +447,8 @@ t[9]-t[3]
 }
 
 VStateless_class *Request::use_file(const String& file_name, 
-									bool ignore_class_path, bool fail_on_read_problem,
+									bool ignore_class_path, 
+									bool fail_on_read_problem, bool fail_on_file_absence,
 									const String *name, 
 									VStateless_class *base_class) {
 	// cyclic dependence check
@@ -484,6 +488,10 @@ VStateless_class *Request::use_file(const String& file_name,
 				&file_name,
 				"usage failed - no $" MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
 	}
+
+	if(fail_on_read_problem && !fail_on_file_absence) // ignore file absence if asked for
+		if(!entry_exists(*file_spec))
+			return base_class;
 
 	char *source=file_read_text(pool(), *file_spec, fail_on_read_problem);
 	if(!source)
