@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 10:09:33 $";
+static const char* IDENT="$Date: 2003/11/06 10:25:40 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -26,7 +26,7 @@ void check(const char *step, apr_status_t status) {
 
 void VHashfile::open(const String& afile_name) {
 	check("apr_sdbm_open", apr_sdbm_open(&db, afile_name.cstr(String::L_FILE_SPEC), 
-                                        APR_WRITE|APR_CREATE, 
+                                        APR_WRITE|APR_CREATE|APR_SHARELOCK, 
                                         0664, 0));
 }
 
@@ -97,25 +97,28 @@ void VHashfile::remove(const String& aname) {
 	check("apr_sdbm_delete", apr_sdbm_delete(db, key));
 }
 
-HashStringValue *VHashfile::get_hash(const String *source) {
-#if LATER
-	DB_Cursor cursor(*get_table_ptr(source), source);
+HashStringValue *VHashfile::get_hash() {
+	HashStringValue& result=*new HashStringValue();
 
-	HashStringValue& result=*NEW HashStringValue(pool());
+	check("apr_sdbm_lock", apr_sdbm_lock(db, APR_FLOCK_SHARED));
+	try {
+		apr_sdbm_datum_t apkey;
+		apr_status_t status;
+		if(apr_sdbm_firstkey(db, &apkey)==APR_SUCCESS)
+			do {
+				apr_sdbm_datum_t apvalue;
+				check("apr_sdbm_fetch", apr_sdbm_fetch(db, &apvalue, apkey));
 
-	while(true) {
-		String *key;
-		String *data;
-		if(!cursor.get(pool(), key, data, DB_NEXT))
-			break;
+				const char *clkey=pa_strdup(apkey.dptr, apkey.dsize);
+				const char *clvalue=pa_strdup(apvalue.dptr, apvalue.dsize);
+				result.put(clkey, new VString(*new String(clvalue)));
+			} while(apr_sdbm_nextkey(db, &apkey)==APR_SUCCESS);
 
-		if(!key) 
-			continue; // expired
-
-		result.put(*key, NEW VString(*data));
+		return &result;
+	} catch(...) {
+			check("apr_sdbm_unlock", apr_sdbm_unlock(db));
+			rethrow;
 	}
 
-	return &result;
-#endif
-	return 0;
+	check("apr_sdbm_unlock", apr_sdbm_unlock(db));
 }

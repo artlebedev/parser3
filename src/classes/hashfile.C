@@ -6,7 +6,7 @@
 */
 
 
-static const char* IDENT="$Id: hashfile.C,v 1.25 2003/11/06 10:09:33 paf Exp $";
+static const char* IDENT="$Id: hashfile.C,v 1.26 2003/11/06 10:25:40 paf Exp $";
 
 #include "classes.h"
 
@@ -39,16 +39,14 @@ static void _open(Request& r, MethodParams& params) {
 	self.open(r.absolute(params.as_string(0, "filename must be string")));
 }
 
-#if LATER
 static void _hash(Request& r, MethodParams& params) {
 	VHashfile& self=GET_SELF(r, VHashfile);
 	
 	// write out result
-	VHash& result=*new(pool) VHash(pool, *self.get_hash(&method_name));
-	result.set_name(method_name);
+	VHash& result=*new VHash(*self.get_hash());
 	r.write_no_lang(result);
 }
-#endif
+
 static void _delete(Request& r, MethodParams& params) {
 	VHashfile& self=GET_SELF(r, VHashfile);
 	
@@ -110,7 +108,7 @@ MHashfile::MHashfile(): Methoded("hashfile") {
 	// ^hashfile::open[db_home;filename]
 	add_native_method("open", Method::CT_DYNAMIC, _open, 1, 1);
 	// ^hash[]
-//	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
+	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
 	// ^hashfile.delete[key]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
 	// ^hashfile.clear[]

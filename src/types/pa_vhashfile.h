@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char* IDENT_VHASHFILE_H="$Date: 2003/11/06 10:09:33 $";
+static const char* IDENT_VHASHFILE_H="$Date: 2003/11/06 10:25:40 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -40,7 +40,7 @@ public: // value
 	override bool is_defined() const { return true; }
 
 	/// VHashfile: convert to VHash
-	override HashStringValue *get_hash(const String *source);
+	override HashStringValue *get_hash();
 
 	/// VHashfile: (key)=value
 	override Value* get_element(const String& aname, Value& aself, bool looking_up) { 
