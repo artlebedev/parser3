@@ -1,5 +1,9 @@
 /*
-  $Id: pa_vint.h,v 1.3 2001/03/10 15:17:44 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_vint.h,v 1.4 2001/03/10 16:34:36 paf Exp $
 */
 
 #ifndef PA_VINT_H

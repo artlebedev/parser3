@@ -1,5 +1,9 @@
 /*
-  $Id: compile.y,v 1.86 2001/03/10 16:15:38 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: compile.y,v 1.87 2001/03/10 16:34:38 paf Exp $
 */
 
 %{

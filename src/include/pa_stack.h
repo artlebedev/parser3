@@ -1,5 +1,9 @@
 /*
-  $Id: pa_stack.h,v 1.4 2001/03/08 15:15:45 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_stack.h,v 1.5 2001/03/10 16:34:35 paf Exp $
 */
 
 #ifndef PA_STACK_H

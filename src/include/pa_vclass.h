@@ -1,5 +1,9 @@
 /*
-  $Id: pa_vclass.h,v 1.28 2001/03/10 11:21:46 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_vclass.h,v 1.29 2001/03/10 16:34:36 paf Exp $
 */
 
 #ifndef PA_VCLASS_H

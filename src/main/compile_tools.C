@@ -1,5 +1,9 @@
 /*
-  $Id: compile_tools.C,v 1.24 2001/03/10 15:17:46 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: compile_tools.C,v 1.25 2001/03/10 16:34:38 paf Exp $
 */
 
 #include "compile_tools.h"

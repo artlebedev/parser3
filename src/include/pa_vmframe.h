@@ -1,5 +1,9 @@
 /*
-  $Id: pa_vmframe.h,v 1.22 2001/03/09 08:28:33 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_vmframe.h,v 1.23 2001/03/10 16:34:37 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H

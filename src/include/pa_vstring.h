@@ -1,5 +1,9 @@
 /*
-  $Id: pa_vstring.h,v 1.16 2001/03/10 15:17:44 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_vstring.h,v 1.17 2001/03/10 16:34:37 paf Exp $
 */
 
 #ifndef PA_VSTRING_H

@@ -1,5 +1,9 @@
 /*
-  $Id: pa_threads.h,v 1.4 2001/01/29 12:16:07 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_threads.h,v 1.5 2001/03/10 16:34:35 paf Exp $
 */
 
 #ifndef PA_THREADS_H

@@ -1,5 +1,9 @@
 /*
-  $Id: pa_vdouble.h,v 1.11 2001/03/10 11:44:32 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_vdouble.h,v 1.12 2001/03/10 16:34:36 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H

@@ -1,5 +1,9 @@
 /*
-  $Id: pa_array.C,v 1.20 2001/02/24 12:58:15 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_array.C,v 1.21 2001/03/10 16:34:39 paf Exp $
 */
 
 #include <string.h>

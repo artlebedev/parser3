@@ -1,6 +1,9 @@
-
 /*
-  $Id: pa_value.h,v 1.49 2001/03/10 11:44:31 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_value.h,v 1.50 2001/03/10 16:34:35 paf Exp $
 */
 
 /*

@@ -1,10 +1,9 @@
 /*
-  $Id: pa_hash.h,v 1.20 2001/03/10 11:44:31 paf Exp $
-*/
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
 
-/*
-
-
+	$Id: pa_hash.h,v 1.21 2001/03/10 16:34:35 paf Exp $
 */
 
 #ifndef PA_HASH_H

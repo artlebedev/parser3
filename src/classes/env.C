@@ -1,5 +1,9 @@
 /*
-$Id: env.C,v 1.2 2001/03/10 11:46:55 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: env.C,v 1.3 2001/03/10 16:34:33 paf Exp $
 */
 
 #include "pa_request.h"

@@ -1,5 +1,9 @@
 /*
-  $Id: pa_exception.C,v 1.4 2001/02/22 10:43:45 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_exception.C,v 1.5 2001/03/10 16:34:39 paf Exp $
 */
 
 #include <stdio.h>

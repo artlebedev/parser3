@@ -1,5 +1,9 @@
 /*
-$Id: pa_request.C,v 1.8 2001/03/10 16:21:49 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_request.C,v 1.9 2001/03/10 16:34:39 paf Exp $
 */
 
 #include "pa_request.h"

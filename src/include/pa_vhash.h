@@ -1,5 +1,9 @@
 /*
-  $Id: pa_vhash.h,v 1.11 2001/03/09 04:47:27 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_vhash.h,v 1.12 2001/03/10 16:34:36 paf Exp $
 */
 
 #ifndef PA_VHASH_H

@@ -1,5 +1,9 @@
 /*
-  $Id: pa_pool.h,v 1.26 2001/03/10 15:44:30 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_pool.h,v 1.27 2001/03/10 16:34:35 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -7,7 +11,6 @@
 
 #include <stddef.h>
 
-//class String;
 class Exception;
 class Temp_exception;
 

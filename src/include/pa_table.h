@@ -1,5 +1,9 @@
 /*
-  $Id: pa_table.h,v 1.8 2001/02/20 18:45:51 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_table.h,v 1.9 2001/03/10 16:34:35 paf Exp $
 */
 
 /*

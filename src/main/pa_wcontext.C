@@ -1,5 +1,9 @@
 /*
-  $Id: pa_wcontext.C,v 1.9 2001/03/10 12:12:51 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_wcontext.C,v 1.10 2001/03/10 16:34:40 paf Exp $
 */
 
 #include "pa_wcontext.h"

@@ -1,5 +1,9 @@
 /*
-  $Id: pa_wwrapper.h,v 1.12 2001/03/08 13:42:31 paf Exp $
+	Parser
+	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+	Author: Alexander Petrosyan <paf@design.ru>
+
+	$Id: pa_wwrapper.h,v 1.13 2001/03/10 16:34:37 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
