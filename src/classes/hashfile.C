@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hashfile.C,v 1.19 2001/12/24 09:05:34 paf Exp $
+	$Id: hashfile.C,v 1.20 2002/01/24 17:18:47 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -53,17 +53,8 @@ static void _transaction(Request& r, const String& method_name, MethodParams *pa
 	// table
 	DB_Table_ptr table_ptr=self.get_table_ptr(&method_name);
 
-	// transaction
-	DB_Transaction transaction(pool, *table_ptr, self.current_transaction);
-
 	// execute body
-	try {
-		r.write_assign_lang(r.process(body_code));
-	} catch(...) { // process/commit problem
-		transaction.mark_to_rollback();
-		
-		/*re*/throw; 
-	}
+	r.write_assign_lang(r.process(body_code));
 }
 
 static void _hash(Request& r, const String& method_name, MethodParams *params) {
@@ -87,14 +78,14 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 
 	DB_Table_ptr table_ptr=self.get_table_ptr(&method_name);
 
-		if(lifespan) { // 'lifespan' specified? try cached copy...
-		if(String *cached_body=table_ptr->get(self.current_transaction, pool, key, lifespan)) { // have cached copy?
+	if(lifespan) { // 'lifespan' specified? try cached copy...
+		if(String *cached_body=table_ptr->get(pool, key, lifespan)) { // have cached copy?
 			r.write_assign_lang(*cached_body);
 			// happy with it
 			return;
 		}
 	} else // 'lifespan'=0, forget cached copy
-		table_ptr->remove(self.current_transaction, key);
+		table_ptr->remove(key);
 
 	// save
 	Autosave_marked_to_cancel_cache saved(self);
@@ -105,7 +96,7 @@ static void _cache(Request& r, const String& method_name, MethodParams *params) 
 	
 	// put it to cache if 'lifespan' specified & never called ^delete[]
 	if(lifespan && !self.marked_to_cancel_cache())
-		table_ptr->put(self.current_transaction, key, processed_body.as_string(), lifespan);
+		table_ptr->put(key, processed_body.as_string(), lifespan);
 }
 
 static void _delete(Request& r, const String& method_name, MethodParams *params) {
@@ -118,16 +109,14 @@ static void _delete(Request& r, const String& method_name, MethodParams *params)
 		// key
 		const String &key=params->as_string(0, "key must be string");
 		// remove
-		self.get_table_ptr(&method_name)->remove(self.current_transaction, key);
+		self.get_table_ptr(&method_name)->remove(key);
 	}
 }
 
 static void _clear(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 	VHashfile& self=*static_cast<VHashfile *>(r.self);
-	DB_Cursor cursor(
-		*self.get_table_ptr(&method_name), 
-		self.current_transaction, &method_name);
+	DB_Cursor cursor(*self.get_table_ptr(&method_name), &method_name);
 
 	while(true) {
 		if(!cursor.move(DB_NEXT))
@@ -151,9 +140,7 @@ static void _foreach(Request& r, const String& method_name, MethodParams *params
 	VString& vkey=*new(pool) VString(pool);
 	VString& vvalue=*new(pool) VString(pool);
 
-	DB_Cursor cursor(
-		*self.get_table_ptr(&method_name), 
-		self.current_transaction, &method_name);
+	DB_Cursor cursor(*self.get_table_ptr(&method_name), &method_name);
 	while(true) {
 		String *key;
 		String *data;

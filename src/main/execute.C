@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.208 2001/12/21 12:47:56 paf Exp $
+	$Id: execute.C,v 1.209 2002/01/24 17:18:48 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -31,6 +31,7 @@ const uint ANTI_ENDLESS_EXECUTE_RECOURSION=500;
 char *opcode_name[]={
 	// literals
 	"VALUE",  "CURLY_CODE__STORE_PARAM",  "EXPR_CODE__STORE_PARAM",
+	"NESTED_CODE",
 
 	// actions
 	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
@@ -89,6 +90,7 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 		case OP_CURLY_CODE__STORE_PARAM: 
 		case OP_EXPR_CODE__STORE_PARAM:
 		case OP_CURLY_CODE__CONSTRUCT:
+		case OP_NESTED_CODE:
 			const Array *local_ops=reinterpret_cast<const Array *>(i.next());
 			debug_dump(pool, level+1, *local_ops);
 		}
@@ -99,6 +101,7 @@ void debug_dump(Pool& pool, int level, const Array& ops) {
 #define PUSH(value) stack.push(value)
 #define POP() static_cast<Value *>(stack.pop())
 #define POP_NAME() static_cast<Value *>(stack.pop())->as_string()
+#define POP_CODE() static_cast<Array *>(stack.pop())
 
 void Request::execute(const Array& ops) {
 //	_asm int 3;
@@ -118,6 +121,7 @@ void Request::execute(const Array& ops) {
 
 		Value *value;
 		Value *a; Value *b;
+		Array *b_code;
 		switch(op.code) {
 		// param in next instruction
 		case OP_VALUE:
@@ -235,6 +239,16 @@ void Request::execute(const Array& ops) {
 				Value *ncontext=POP();
 				ncontext->put_element(name, value);
 				value->set_name(name);
+				break;
+			}
+		case OP_NESTED_CODE:
+			{
+				Array *local_ops=static_cast<Array *>(i.next());
+#ifdef DEBUG_EXECUTE
+				debug_printf(pool(), " (%d)\n", local_ops->size());
+				debug_dump(pool(), 1, *local_ops);
+#endif				
+				PUSH(local_ops);
 				break;
 			}
 		case OP_WRITE_VALUE:
@@ -635,15 +649,30 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_LOG_AND:
 			{
-				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_bool() && b->as_bool());
+				b_code=POP_CODE();  a=POP();
+				bool result;
+				if(a->as_bool()) {
+					execute(*b_code);
+					b=POP();
+					result=b->as_bool();
+				} else
+					result=false;
+				value=NEW VBool(pool(), result);
 				PUSH(value);
 				break;
 			}
 		case OP_LOG_OR:
 			{
-				b=POP();  a=POP();
-				value=NEW VBool(pool(), a->as_bool() || b->as_bool());
+				b_code=POP_CODE();  a=POP();
+				bool result;
+				if(a->as_bool()) 
+					result=true;
+				else {
+					execute(*b_code);
+					b=POP();
+					result=b->as_bool();
+				}
+				value=NEW VBool(pool(), result);
 				PUSH(value);
 				break;
 			}

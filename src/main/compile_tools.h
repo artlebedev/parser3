@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.h,v 1.52 2001/12/15 21:28:20 paf Exp $
+	$Id: compile_tools.h,v 1.53 2002/01/24 17:18:48 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -80,11 +80,6 @@ inline void O(Array/*<Operation>*/ *result, enum OPCODE code) {
 	*result+=op.cast;
 }
 
-/// Argument Eval_expression // append eval_expression to ops
-inline void AE(Array/*<Operation>*/ *result, char *eval_expression) {
-	*result+=eval_expression;
-}
-
 /// aPpend 'code_array' to 'result'
 inline void P(Array/*<Operation>*/ *result, Array *code_array) {
 	result->append_array(*code_array);
@@ -93,6 +88,7 @@ inline void P(Array/*<Operation>*/ *result, Array *code_array) {
 inline void P(Array/*<Operation>*/ *result, Array *code_array, int offset) {
 	result->append_array(*code_array, offset);
 }
+
 /// aPpend 'vstring' to 'result'
 void PV(Array/*<Operation>*/ *result, VString *vstring);
 /// Parameter 'simple Code_Array'
@@ -101,6 +97,8 @@ void PCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
 void PEA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
 /// Construct 'simple Code_Array'
 void CCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
+/// aPpend Nested Code
+void PNC(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array);
 
 /**
 	Value Literal // returns array with 

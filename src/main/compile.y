@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.173 2001/10/31 13:07:35 paf Exp $
+	$Id: compile.y,v 1.174 2002/01/24 17:18:48 paf Exp $
 */
 
 /**
@@ -505,8 +505,8 @@ expr:
 |	expr '&' expr { $$=$1; 	P($$, $3);  O($$, OP_BIN_AND) }
 |	expr '|' expr { $$=$1;  P($$, $3);  O($$, OP_BIN_OR) }
 |	expr '#' expr { $$=$1;  P($$, $3);  O($$, OP_BIN_XOR) }
-|	expr "&&" expr { $$=$1;  P($$, $3);  O($$, OP_LOG_AND) }
-|	expr "||" expr { $$=$1;  P($$, $3);  O($$, OP_LOG_OR) }
+|	expr "&&" expr { $$=$1;  PNC($$, $3);  O($$, OP_LOG_AND) }
+|	expr "||" expr { $$=$1;  PNC($$, $3);  O($$, OP_LOG_OR) }
 |	expr "##" expr { $$=$1;  P($$, $3);  O($$, OP_LOG_XOR) }
 |	expr '<' expr { $$=$1;  P($$, $3);  O($$, OP_NUM_LT) }
 |	expr '>' expr { $$=$1;  P($$, $3);  O($$, OP_NUM_GT) }

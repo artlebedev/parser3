@@ -38,7 +38,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.29 2002/01/23 10:38:17 paf Exp $
+	$Id: compile.tab.C,v 1.30 2002/01/24 17:18:48 paf Exp $
 */
 
 /**
@@ -1515,11 +1515,11 @@ case 138:
     break;}
 case 139:
 #line 508 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_LOG_AND) ;
+{ yyval=yyvsp[-2];  PNC(yyval, yyvsp[0]);  O(yyval, OP_LOG_AND) ;
     break;}
 case 140:
 #line 509 "compile.y"
-{ yyval=yyvsp[-2];  P(yyval, yyvsp[0]);  O(yyval, OP_LOG_OR) ;
+{ yyval=yyvsp[-2];  PNC(yyval, yyvsp[0]);  O(yyval, OP_LOG_OR) ;
     break;}
 case 141:
 #line 510 "compile.y"

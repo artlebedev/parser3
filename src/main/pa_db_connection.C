@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_connection.C,v 1.34 2001/12/13 11:29:21 paf Exp $
+	$Id: pa_db_connection.C,v 1.35 2002/01/24 17:18:49 paf Exp $
 
 	developed with LIBDB 2.7.4
 */
@@ -64,18 +64,15 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 	prev_expiration_pass_time(0) {
 	//_asm  int 3;
 	char DB_DATA_DIR__VALUE[MAX_STRING];
-	char DB_LOG_DIR__VALUE[MAX_STRING];
 	char DB_TMP_DIR__VALUE[MAX_STRING];
 
 	const char *db_home_cstr=fdb_home.cstr(String::UL_FILE_SPEC);
 
 	snprintf(DB_DATA_DIR__VALUE, MAX_STRING, "DB_DATA_DIR %s", db_home_cstr);
-	snprintf(DB_LOG_DIR__VALUE, MAX_STRING, "DB_LOG_DIR %s", db_home_cstr);
 	snprintf(DB_TMP_DIR__VALUE, MAX_STRING, "DB_TMP_DIR %s", db_home_cstr);
 
 	char *db_config[] = {
 		DB_DATA_DIR__VALUE,
-		DB_LOG_DIR__VALUE,
 		DB_TMP_DIR__VALUE, 
 		0
 	};
@@ -83,7 +80,7 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 	u_int32_t flags=
 		(parser_multithreaded?DB_THREAD:0)
 		| DB_CREATE 
-		| DB_INIT_MPOOL | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_TXN;
+		| DB_INIT_MPOOL;
 
 	// prepare dbenv structure
 	memset(&dbenv, 0, sizeof(dbenv));
@@ -104,12 +101,6 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 		&dbenv, 
 		flags
 		));
-
-	// after some hang noticed this to be null
-	if(!dbenv.tx_info) 
-		throw Exception(0, 0,
-			&fdb_home,
-			"transaction system failed to initialize");
 }
 
 DB_Connection::~DB_Connection() {
@@ -143,20 +134,6 @@ void DB_Connection::check(const char *operation, const String *source, int error
 }
 
 DB_Table_ptr DB_Connection::get_table_ptr(const String& request_file_name, const String *source) {
-	// checkpoint
-	{ 
-		int error=txn_checkpoint(dbenv.tx_info, 0/*kbyte*/, DB_CHECKPOINT_MINUTES/*min*/);
-		/*
-		DB_INCOMPLETE if there were pages that needed to be written 
-		but that memp_sync was unable to write immediately. 
-		In this case, the txn_checkpoint call should be retried. 
-
-		we'll just ignore that
-		*/
-		if(error!=DB_INCOMPLETE)
-			check("checkpoint", source, error);
-	}
-
 	// first trying to get cached table
 	DB_Table *result=get_table_from_cache(request_file_name);
 	if(!result) { // no cached table

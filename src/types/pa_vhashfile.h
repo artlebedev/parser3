@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vhashfile.h,v 1.12 2001/11/05 11:46:33 paf Exp $
+	$Id: pa_vhashfile.h,v 1.13 2002/01/24 17:18:49 paf Exp $
 */
 
 #ifndef PA_VHASHFILE_H
@@ -61,7 +61,6 @@ public: // usage
 
 	VHashfile(Pool& apool) : VStateless_class(apool, hashfile_base_class),
 		fdb_home(0), ffile_name(0), 
-		current_transaction(0), 
 		fmarked_to_cancel_cache(false) {
 	}
 
@@ -82,14 +81,9 @@ public: // usage
 	}
 
 	void mark_to_cancel_cache() { 
-		if(current_transaction) // do something only inside of ^cache
-			fmarked_to_cancel_cache=true; 
+		fmarked_to_cancel_cache=true; 
 	}
 	bool marked_to_cancel_cache() { return fmarked_to_cancel_cache; }
-
-public:
-
-	DB_Transaction *current_transaction;
 
 private:
 

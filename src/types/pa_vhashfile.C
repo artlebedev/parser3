@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_vhashfile.C,v 1.16 2001/12/07 15:24:48 paf Exp $
+	$Id: pa_vhashfile.C,v 1.17 2002/01/24 17:18:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -40,18 +40,18 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 	} else
 		value_string=&avalue->as_string();
 
-	get_table_ptr(&aname)->put(current_transaction, aname, *value_string, time_to_die);
+	get_table_ptr(&aname)->put(aname, *value_string, time_to_die);
 }
 
 Value *VHashfile::get_field(const String& aname) {
-	if(String *string=get_table_ptr(&aname)->get(current_transaction, pool(), aname, 0))
+	if(String *string=get_table_ptr(&aname)->get(pool(), aname, 0))
 		return NEW VString(*string);
 	else
 		return 0;
 }
 
 Hash *VHashfile::get_hash(const String *source) {
-	DB_Cursor cursor(*get_table_ptr(source), current_transaction, source);
+	DB_Cursor cursor(*get_table_ptr(source), source);
 
 	Hash& result=*NEW Hash(pool());
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.h,v 1.12 2001/12/17 19:16:09 paf Exp $
+	$Id: pa_db_table.h,v 1.13 2002/01/24 17:18:48 paf Exp $
 */
 
 #ifndef PA_DB_TABLE_H
@@ -29,7 +29,6 @@
 class DB_Connection;
 
 class DB_Table_ptr;
-class DB_Transaction;
 class DB_Cursor;
 
 // class
@@ -37,7 +36,6 @@ class DB_Cursor;
 /// DB table. handy wrapper around low level <db.h> calls
 class DB_Table : public Pooled {
 	friend class DB_Table_ptr;
-	friend class DB_Transaction;
 	friend class DB_Cursor;
 public:
 
@@ -52,9 +50,9 @@ public:
 	time_t get_time_used() { return time_used; }
 	int get_users_count() { return used; }
 
-	void put(DB_Transaction *t, const String& key, const String& data, time_t lifespan);
-	String *get(DB_Transaction *t, Pool& pool, const String& key, time_t lifespan);
-	void remove(DB_Transaction *t, const String& key);
+	void put(const String& key, const String& data, time_t lifespan);
+	String *get(Pool& pool, const String& key, time_t lifespan);
+	void remove(const String& key);
 
 private: // table usage methods
 
@@ -119,46 +117,10 @@ public:
 	}
 };
 
-///	Auto-object used for temporary changing DB_Table::tid.
-class DB_Transaction {
-public:
-
-	DB_Transaction(Pool& apool, DB_Table& atable, DB_Transaction *& aparent_ref);
-	~DB_Transaction();
-	DB_TXN *id() { return fid; }
-	void mark_to_rollback();
-
-	void put(const String& key, const String& data, time_t lifespan) {
-		ftable.put(this, key, data, lifespan);
-	}
-	String *get(const String& key, time_t lifespan) {
-		return ftable.get(this, fpool, key, lifespan);
-	}
-	void remove(const String& key) {
-		ftable.remove(this, key);
-	}
-
-private:
-
-	void check(const char *operation, const String *source, int error) {
-		ftable.check(operation, source, error);
-	}
-
-private:
-
-	Pool& fpool;
-	DB_Table& ftable;
-	DB_Transaction *parent;
-	DB_Transaction *& fparent_ref;
-	DB_TXN *fid;
-	bool marked_to_rollback;
-
-};
-
 /// DB cursor. handy wrapper around low level <db.h> calls
 class DB_Cursor {
 public:
-	DB_Cursor(DB_Table& atable, DB_Transaction *transaction, const String *asource);
+	DB_Cursor(DB_Table& atable, const String *asource);
 	~DB_Cursor();
 	/// pass empty strings to key&data, would fill them
 	bool get(Pool& pool, String *& key, String *& data, u_int32_t flags);

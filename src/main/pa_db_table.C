@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.C,v 1.17 2001/12/24 09:05:34 paf Exp $
+	$Id: pa_db_table.C,v 1.18 2002/01/24 17:18:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -185,16 +185,16 @@ String *DB_Table::data_dbt_to_string(Pool& pool, const DBT& data_dbt, time_t lif
 	return &result;
 }
 
-void DB_Table::put(DB_Transaction *t, const String& key, const String& data, time_t time_to_die) {
+void DB_Table::put(const String& key, const String& data, time_t time_to_die) {
 	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
 	DBT dbt_data;  data_string_to_dbt(data, time_to_die, dbt_data);
-	check("put", &key, db->put(db, t?t->id():0, &dbt_key, &dbt_data, 0/*flags*/));
+	check("put", &key, db->put(db, 0, &dbt_key, &dbt_data, 0/*flags*/));
 }
 
-String *DB_Table::get(DB_Transaction *t, Pool& pool, const String& key, time_t lifespan) {
+String *DB_Table::get(Pool& pool, const String& key, time_t lifespan) {
 	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
 	DBT_auto dbt_data;
-	int error=db->get(db, t?t->id():0, &dbt_key, &dbt_data, 
+	int error=db->get(db, 0, &dbt_key, &dbt_data, 
 		DEADLOCK_POSSIBILITY_REDUCTION_FLAGS);
 	if(error==DB_NOTFOUND)
 		return 0;
@@ -202,59 +202,29 @@ String *DB_Table::get(DB_Transaction *t, Pool& pool, const String& key, time_t l
 		check("get", &key, error);
 		String *result=data_dbt_to_string(pool, dbt_data, lifespan);
 		if(!result) // save efforts by deleting expired keys
-			check("del expired", &key, db->del(db, t?t->id():0, &dbt_key, 0/*flags*/));
+			check("del expired", &key, db->del(db, 0, &dbt_key, 0/*flags*/));
 		return result;
 	}		
 }
 
-void DB_Table::remove(DB_Transaction *t, const String& key) {
+void DB_Table::remove(const String& key) {
 	DBT dbt_key;  key_string_to_dbt(key, dbt_key);
 
-	int error=db->del(db, t?t->id():0, &dbt_key, 0/*flags*/);
+	int error=db->del(db, 0, &dbt_key, 0/*flags*/);
 	if(error!=DB_NOTFOUND)
 		check("del", &key, error);
-}
-
-// DB_Transaction
-
-DB_Transaction::DB_Transaction(Pool& apool, DB_Table& atable, DB_Transaction *& aparent_ref) : 
-	fpool(apool), ftable(atable), fparent_ref(aparent_ref), 
-		parent(aparent_ref),
-		fid(0), marked_to_rollback(false) {
-
-	check("txn_begin", 
-		&ftable.file_name(), txn_begin(ftable.dbenv.tx_info, parent?parent->fid:0, &fid));
-
-	aparent_ref=this;
-}
-DB_Transaction::~DB_Transaction() { 
-	fparent_ref=parent;
-
-	if(parent) // all in hands of our parent
-		return;
-
-	if(marked_to_rollback)
-		check("txn_abort", &ftable.file_name(), txn_abort(fid));
-	else
-		check("txn_commit", &ftable.file_name(), txn_commit(fid));
-}
-void DB_Transaction::mark_to_rollback() {
-	if(parent)
-		parent->mark_to_rollback();
-	else
-		marked_to_rollback=true;
 }
 
 // DB_Cursor
 
 DB_Cursor::DB_Cursor(
-					 DB_Table& atable, DB_Transaction *transaction, 
+					 DB_Table& atable, 
 					 const String *asource) : 
 	ftable(atable), fsource(asource), 
 	cursor(0) {
 
 	check("cursor", fsource, ftable.db->cursor(ftable.db,
-		transaction?transaction->id():0, &cursor
+		0, &cursor
 #if DB_VERSION_MINOR >= 7
 		, 0/*flags*/
 #endif

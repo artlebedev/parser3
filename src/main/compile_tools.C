@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.C,v 1.40 2001/11/05 11:46:26 paf Exp $
+	$Id: compile_tools.C,v 1.41 2002/01/24 17:18:48 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -49,6 +49,16 @@ void CCA(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
 	// append 'vstring'
 	*result+=code_array;
 }
+
+void PNC(Array/*<Operation>*/ *result, Array/*<Operation>*/ *code_array) {
+	// append OP_CODE
+	Operation op; op.code=OP_NESTED_CODE;
+	*result+=op.cast;
+
+	// append 'vstring'
+	*result+=code_array;
+}
+
 
 Array *VL(Value *value) {
 	// empty ops array

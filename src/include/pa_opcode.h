@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_opcode.h,v 1.9 2001/12/15 21:28:19 paf Exp $
+	$Id: pa_opcode.h,v 1.10 2002/01/24 17:18:48 paf Exp $
 */
 
 #ifndef CODE_H
@@ -22,6 +22,7 @@ enum OPCODE {
 	//@{ 
 	/// @name literals
 	OP_VALUE,  OP_CURLY_CODE__STORE_PARAM,  OP_EXPR_CODE__STORE_PARAM,
+	OP_NESTED_CODE,
 	//@}
 
 	//@{
@@ -64,6 +65,7 @@ enum OPCODE {
 		- OP_VALUE followed by Value*
 		- OP_CURLY_CODE__STORE_PARAM followed by Array*
 		- OP_EXPR_CODE__STORE_PARAM followed by Array*
+		- OP_NESTED_CODE followed by Array*
 */
 union Operation {
 	void *cast; ///< casting helper 
