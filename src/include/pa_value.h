@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.1 2001/02/11 19:35:38 paf Exp $
+  $Id: pa_value.h,v 1.2 2001/02/12 11:34:11 paf Exp $
 */
 
 /*
@@ -17,6 +17,12 @@ public:
 	String code;
 };
 
+class Method_ref {
+public:
+	Value *self;
+	Method& method;
+};
+
 class Value {
 public:
 	// text: value
@@ -24,16 +30,16 @@ public:
 	virtual String *put_string(const String *astring)=0;
 
 	// hash: (key)=value
-	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with this=object_class
+	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	// object_instance: (field)=value;(STATIC)=hash;(method)=method_ref
 	virtual Value *get_element(const String& name) const =0;
 	virtual Value *put_element(const String& name, const Value *avalue)=0;
 
 	// object_instance, object_class: method
-	virtual Method* get_method(const String& name) const =0;
+	virtual Method *get_method(const String& name) const =0;
 
 	// method_ref: "self" part, method
-	virtual Value *get_self&method() const =0;
+	virtual Method_ref *get_method_ref() const =0;
 };
 
 /*
@@ -43,8 +49,8 @@ descendants:
     table:+ columns_order:Array, columns:Hash, rows:Array
     object_class:+ STATIC:Hash, methods:Hash
     object_instance:+ object_class, fields:Hash
-    method_ref:+ this:Value/object_class, method:String
-    method_this_n_params:+ this:Value/object_class[1st try], params&values:Hash[2nd try]
+    method_ref:+ self:Value/object_class, method:String
+    method_self_n_params:+ self:Value/object_class[1st try], params&values:Hash[2nd try]
 
 
 */

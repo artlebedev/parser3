@@ -113,7 +113,7 @@ void process_bird(Pool& pool,
 		&param_values);
 	iter++; // skip ']'
 
-	Method_this_n_params local_rcontext(pool, 
+	Method_self_n_params local_rcontext(pool, 
 		local_self,
 		method->param_names, param_values);
 	WContext local_wcontext(pool /* empty */);
