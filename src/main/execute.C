@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.66 2001/03/08 10:07:10 paf Exp $
+  $Id: execute.C,v 1.67 2001/03/08 10:13:26 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -524,8 +524,9 @@ void Request::execute(const Array& ops) {
 			}
 
 		default:
-			fprintf(stderr, "\tTODO");
-			break;
+			THROW(0,0,
+				0,
+				"unhandled '%s' opcode", opcode_name[op.code]); 
 		}
 		fprintf(stderr, "\n");
 	}
