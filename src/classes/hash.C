@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hash.C,v 1.30 2001/11/05 11:46:20 paf Exp $
+	$Id: hash.C,v 1.31 2001/11/12 10:00:31 paf Exp $
 */
 
 #include "classes.h"
@@ -95,7 +95,6 @@ static void copy_all_overwrite_to(const Hash::Key& key, Hash::Val *value, void *
 	Hash& dest=*static_cast<Hash *>(info);
 	dest.put(key, value);
 }
-
 static void _create_or_add(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	
@@ -110,7 +109,6 @@ static void remove_key_from(const Hash::Key& key, Hash::Val *value, void *info) 
 	Hash& dest=*static_cast<Hash *>(info);
 	dest.remove(key);
 }
-
 static void _sub(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	
@@ -123,7 +121,6 @@ static void copy_all_dontoverwrite_to(const Hash::Key& key, Hash::Val *value, vo
 	Hash& dest=*static_cast<Hash *>(info);
 	dest.put_dont_replace(key, value);
 }
-
 static void _union(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -153,7 +150,6 @@ static void copy_intersection_to(const Hash::Key& key, Hash::Val *value, void *i
 	if(i.b->get(key))
 		i.dest->put_dont_replace(key, value);
 }
-
 static void _intersection(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 

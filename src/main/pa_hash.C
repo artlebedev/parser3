@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_hash.C,v 1.47 2001/11/05 11:46:28 paf Exp $
+	$Id: pa_hash.C,v 1.48 2001/11/12 10:00:32 paf Exp $
 */
 
 /*
@@ -88,6 +88,9 @@ uint Hash::generic_code(uint aresult, const char *start, uint allocated) {
 }
 
 bool Hash::put(const Key& key, Val *value) {
+	if(!value)
+		return remove(key);
+
 	if(full()) 
 		expand();
 
@@ -109,7 +112,7 @@ bool Hash::put(const Key& key, Val *value) {
 	return false;
 }
 
-void Hash::remove(const Key& key) {
+bool Hash::remove(const Key& key) {
 	uint code=key.hash_code();
 	uint index=code%allocated;
 	for(Pair **ref=&refs[index]; *ref; ref=&(*ref)->link)
@@ -117,8 +120,10 @@ void Hash::remove(const Key& key) {
 			// found a pair with the same key
 			*ref=(*ref)->link;
 			--count;
-			return;
+			return true;
 		}
+
+	return false;
 }
 
 Hash::Val *Hash::get(const Key& key) const {
@@ -146,6 +151,9 @@ bool Hash::put_replace(const Key& key, Val *value) {
 }
 
 bool Hash::put_dont_replace(const Key& key, Val *value) {
+	if(!value)
+		return remove(key);
+
 	if(full()) 
 		expand();
 

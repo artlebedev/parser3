@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.C,v 1.17 2001/11/08 14:47:32 paf Exp $
+	$Id: pa_db_manager.C,v 1.18 2001/11/12 10:00:32 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -29,12 +29,11 @@ const int CHECK_EXPIRED_CONNECTIONS_SECONDS=EXPIRE_UNUSED_CONNECTION_SECONDS*2;
 // callbacks
 
 static void expire_connection(const Hash::Key& key, Hash::Val *& value, void *info) {
-	if(DB_Connection *connection=static_cast<DB_Connection *>(value)) {
-		time_t older_dies=reinterpret_cast<time_t>(info);
+	DB_Connection *connection=static_cast<DB_Connection *>(value);
+	time_t older_dies=reinterpret_cast<time_t>(info);
 
-		if(connection->expired(older_dies)) {
-			connection->~DB_Connection();  value=0;
-		}
+	if(connection->expired(older_dies)) {
+		connection->~DB_Connection();  value=0;
 	}
 }
 
@@ -107,13 +106,12 @@ void DB_Manager::maybe_expire_cache() {
 }
 
 static void add_connection_to_status_status_cache(const Hash::Key& key, Hash::Val *value, void *info) {
-	if(DB_Connection *connection=static_cast<DB_Connection *>(value)) {
-		VHash& status_cache=*static_cast<VHash *>(info);
-		Pool& pool=status_cache.pool();
-	
-		// file => tables table
-		status_cache.hash(0).put(connection->db_home(), &connection->get_status(pool, 0));
-	}
+	DB_Connection *connection=static_cast<DB_Connection *>(value);
+	VHash& status_cache=*static_cast<VHash *>(info);
+	Pool& pool=status_cache.pool();
+
+	// file => tables table
+	status_cache.hash(0).put(connection->db_home(), &connection->get_status(pool, 0));
 }
 Value& DB_Manager::get_status(Pool& pool, const String *source) {
 	VHash& result=*new(pool) VHash(pool);

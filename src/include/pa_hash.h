@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_hash.h,v 1.50 2001/11/05 11:46:24 paf Exp $
+	$Id: pa_hash.h,v 1.51 2001/11/12 10:00:31 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -20,6 +20,9 @@
 	Pooled hash.
 
 	Automatically rehashed when almost full.
+	Contains no 0 values. 
+		get returning 0 means there were no such.
+		"put value 0" means "remove"
 */
 class Hash : public Pooled {
 public:
@@ -49,11 +52,11 @@ public:
 	/// useful generic hash function
 	static uint generic_code(uint aresult, const char *start, uint allocated);
 
-	/// put a [value] under the [key], return existed or not
+	/// put a [value] under the [key] @returns existed or not
 	bool put(const Key& key, Val *value);
 
-	/// remove the [key]
-	void remove(const Key& key);
+	/// remove the [key] @returns existed or not
+	bool remove(const Key& key);
 /*
 	/// dirty hack to allow constant items storage. I long for Hash<const Val*>
 	bool put(const Key& key, const Val *value) {
@@ -63,10 +66,10 @@ public:
 	/// get associated [value] by the [key]
 	Val *get(const Key& key) const;
 
-	/// put a [value] under the [key] if that [key] existed, return existed or not
+	/// put a [value] under the [key] if that [key] existed @returns existed or not
 	bool put_replace(const Key& key, Val *value);
 
-	/// put a [value] under the [key] if that [key] NOT existed, return existed or not
+	/// put a [value] under the [key] if that [key] NOT existed @returns existed or not
 	bool put_dont_replace(const Key& key, Val *value);
 
 	/// put all 'src' values if NO with same key existed

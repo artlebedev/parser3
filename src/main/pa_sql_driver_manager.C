@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.C,v 1.54 2001/11/11 10:53:48 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.55 2001/11/12 10:00:32 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -320,8 +320,6 @@ static void add_connections_to_status_cache_table(const Hash::Key& key, Hash::Va
 	for(int countdown=stack.top_index(); countdown-->=0; )
 		add_connection_to_status_cache_table(iter.next(), info);
 }
-
-
 Value& SQL_Driver_manager::get_status(Pool& pool, const String *source) {
 	VHash& result=*new(pool) VHash(pool);
 	

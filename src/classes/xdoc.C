@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.44 2001/11/09 12:09:53 paf Exp $
+	$Id: xdoc.C,v 1.45 2001/11/12 10:00:31 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"
@@ -623,7 +623,6 @@ static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning,
 		XalanDOMString(attribute_cstr),  
 		XalanDOMString(meaning_cstr));
 }
-
 static void _transform(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);

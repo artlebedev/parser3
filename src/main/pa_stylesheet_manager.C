@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.C,v 1.6 2001/11/08 14:47:32 paf Exp $
+	$Id: pa_stylesheet_manager.C,v 1.7 2001/11/12 10:00:32 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -150,7 +150,6 @@ static void add_connections_to_status_cache_table(const Hash::Key& key, Hash::Va
 	for(int countdown=stack.top_index(); countdown-->=0; )
 		add_connection_to_status_cache_table(iter.next(), info);
 }
-
 Value& Stylesheet_manager::get_status(Pool& pool, const String *source) {
 	VHash& result=*new(pool) VHash(pool);
 

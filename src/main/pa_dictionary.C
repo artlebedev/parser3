@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_dictionary.C,v 1.9 2001/11/05 11:46:27 paf Exp $
+	$Id: pa_dictionary.C,v 1.10 2001/11/12 10:00:32 paf Exp $
 */
 
 #include "pa_dictionary.h"
@@ -33,7 +33,6 @@ void Dictionary::add_first(Array::Item *value, void *info) {
 
 	self.constructor_line++;
 }
-
 Dictionary::Dictionary(Table& atable, double amin_ratio) : Pooled(atable.pool()), 
 	table(atable), 
 	fmax_ratio(amin_ratio)  {

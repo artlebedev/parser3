@@ -1,5 +1,6 @@
 @main[]
-^tableset[]
+^cookie2[]
+#^tableset[]
 #^math:PI.format{%.30f}
 #^xchildren[]
 #^thashforeach3[]
@@ -55,10 +56,15 @@
 #^exec[]
 #^fori[]
 #^tconnect[]
-^xslt[]
-^xml[]
+#^xslt[]
+#^xml[]
 #^header[]
 OK
+
+@cookie2[]
+#=$cookie:clientType[$.value[test]]=<br>
+=$cookie:clientType=<br>
+
 
 @tableset[]
 $a[^table::set{a

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_connection.C,v 1.32 2001/11/05 17:00:44 paf Exp $
+	$Id: pa_db_connection.C,v 1.33 2001/11/12 10:00:31 paf Exp $
 
 	developed with LIBDB 2.7.4
 */
@@ -47,12 +47,11 @@ static void db_errcall(const char *, char *buffer) {
 }
 
 static void expire_table(const Hash::Key& key, Hash::Val *& value, void *info) {
-	if(DB_Table *table=static_cast<DB_Table *>(value)) {
-		time_t older_dies=reinterpret_cast<time_t>(info);
+	DB_Table *table=static_cast<DB_Table *>(value);
+	time_t older_dies=reinterpret_cast<time_t>(info);
 
-		if(table->expired(older_dies)) {
-			table->~DB_Table();  value=0;
-		}
+	if(table->expired(older_dies)) {
+		table->~DB_Table();  value=0;
 	}
 }
 
@@ -208,28 +207,27 @@ void DB_Connection::maybe_expire_table_cache() {
 }
 
 static void add_table_to_status_table(const Hash::Key& key, Hash::Val *& value, void *info) {
-	if(DB_Table *db_table=static_cast<DB_Table *>(value)) {
-		Table& status_table=*static_cast<Table *>(info);
-		Pool& pool=status_table.pool();
+	DB_Table *db_table=static_cast<DB_Table *>(value);
+	Table& status_table=*static_cast<Table *>(info);
+	Pool& pool=status_table.pool();
 
-		Array& row=*new(pool) Array(pool);
+	Array& row=*new(pool) Array(pool);
 
-		// name
-		row+=&db_table->file_name();
-		// time
-		time_t time_stamp=db_table->get_time_used();
-		const char *unsafe_time_cstr=ctime(&time_stamp);
-		int time_buf_size=strlen(unsafe_time_cstr);
-		char *safe_time_buf=(char *)pool.malloc(time_buf_size);
-		memcpy(safe_time_buf, unsafe_time_cstr, time_buf_size);
-		row+=new(pool) String(pool, safe_time_buf, time_buf_size);
-		// users
-		char *users_buf=(char *)pool.malloc(MAX_NUMBER);
-		row+=new(pool) String(pool, 
-			users_buf, snprintf(users_buf, MAX_NUMBER, "%d", db_table->get_users_count()));
+	// name
+	row+=&db_table->file_name();
+	// time
+	time_t time_stamp=db_table->get_time_used();
+	const char *unsafe_time_cstr=ctime(&time_stamp);
+	int time_buf_size=strlen(unsafe_time_cstr);
+	char *safe_time_buf=(char *)pool.malloc(time_buf_size);
+	memcpy(safe_time_buf, unsafe_time_cstr, time_buf_size);
+	row+=new(pool) String(pool, safe_time_buf, time_buf_size);
+	// users
+	char *users_buf=(char *)pool.malloc(MAX_NUMBER);
+	row+=new(pool) String(pool, 
+		users_buf, snprintf(users_buf, MAX_NUMBER, "%d", db_table->get_users_count()));
 
-		status_table+=&row;
-	}
+	status_table+=&row;
 }
 Value& DB_Connection::get_status(Pool& pool, const String *source) {
 	Array& columns=*new(pool) Array(pool);
